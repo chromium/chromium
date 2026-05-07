@@ -51,7 +51,8 @@ class PLATFORM_EXPORT MultiBufferDataSource
    public:
     using UrlDataCb = base::RepeatingCallback<void(
         const GURL& url,
-        DataSource::CacheMode cache_mode,
+        media::DataSource::CacheMode cache_mode,
+        media::DataSource::EncodingMode encoding_mode,
         base::OnceCallback<void(scoped_refptr<UrlData>)>)>;
 
     ~Factory() override;
@@ -64,7 +65,8 @@ class PLATFORM_EXPORT MultiBufferDataSource
             scoped_refptr<base::SingleThreadTaskRunner> main_task_runner);
 
     void Create(const GURL& uri,
-                DataSource::CacheMode cache_mode,
+                media::DataSource::CacheMode cache_mode,
+                media::DataSource::EncodingMode encoding_mode,
                 DataSourceCb cb) override;
 
    private:

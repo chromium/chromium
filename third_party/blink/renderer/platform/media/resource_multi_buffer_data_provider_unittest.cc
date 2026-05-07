@@ -89,10 +89,13 @@ class ResourceMultiBufferDataProviderTest : public testing::Test {
   ResourceMultiBufferDataProviderTest& operator=(
       const ResourceMultiBufferDataProviderTest&) = delete;
 
-  void Initialize(const char* url, int first_position) {
+  void Initialize(const char* url,
+                  int first_position,
+                  media::DataSource::EncodingMode encoding_mode =
+                      media::DataSource::EncodingMode::kIdentity) {
     url_ = KURL(url);
-    url_data_ =
-        url_index_->GetByUrl(url_, UrlData::CORS_UNSPECIFIED, UrlData::kNormal);
+    url_data_ = url_index_->GetByUrl(url_, UrlData::CORS_UNSPECIFIED,
+                                     UrlData::kNormal, encoding_mode);
     url_data_->set_etag(kEtag);
     DCHECK(url_data_);
     url_data_->OnRedirect(
@@ -435,6 +438,29 @@ TEST_F(ResourceMultiBufferDataProviderTest, NoCrossOriginMediaLeaks) {
 
   // Redirecting back to A should fail cross origin checks.
   EXPECT_FALSE(loader_->WillFollowRedirect(url_a2, response_a2));
+  StopWhenLoad();
+}
+
+TEST_F(ResourceMultiBufferDataProviderTest, AllowGzip) {
+  Initialize(kHttpUrl, 0, media::DataSource::EncodingMode::kAllowGzip);
+
+  auto url_loader = std::make_unique<NiceMock<MockWebAssociatedURLLoader>>();
+  EXPECT_CALL(*url_loader,
+              LoadAsynchronously(
+                  Truly([](const WebURLRequest& request) {
+                    std::string value =
+                        request
+                            .HttpHeaderField(WebString::FromUtf8(
+                                net::HttpRequestHeaders::kAcceptEncoding))
+                            .Utf8();
+                    return value.contains("gzip");
+                  }),
+                  loader_.get()));
+
+  EXPECT_CALL(fetch_context_, CreateUrlLoader(_))
+      .WillOnce(testing::Return(testing::ByMove(std::move(url_loader))));
+
+  Start();
   StopWhenLoad();
 }
 

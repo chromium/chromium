@@ -39,7 +39,9 @@ class MEDIA_EXPORT HlsNetworkAccessImpl final : public HlsNetworkAccess {
   void ReadAllInternal(
       const GURL& uri,
       HlsDataSourceProvider::ReadCb cb,
-      DataSource::CacheMode cache_mode = DataSource::CacheMode::kHitCache);
+      DataSource::CacheMode cache_mode = DataSource::CacheMode::kHitCache,
+      DataSource::EncodingMode encoding_mode =
+          DataSource::EncodingMode::kIdentity);
   void OnKeyFetch(
       scoped_refptr<hls::MediaSegment::EncryptionData> enc_data,
       base::OnceCallback<void(HlsDataSourceProvider::ReadCb)> next_op,

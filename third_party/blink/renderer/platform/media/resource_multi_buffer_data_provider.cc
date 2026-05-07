@@ -93,6 +93,7 @@ void ResourceMultiBufferDataProvider::Start() {
       is_client_audio_element_
           ? network::mojom::blink::RequestDestination::kAudio
           : network::mojom::blink::RequestDestination::kVideo);
+
   request.SetHttpHeaderField(
       WebString::FromUtf8(net::HttpRequestHeaders::kRange),
       WebString::FromUtf8(
@@ -105,10 +106,18 @@ void ResourceMultiBufferDataProvider::Start() {
   // along the way. See crbug.com/41185060 and crbug.com/41300485 for more
   // information.
 
-  // Disable compression, compression for audio/video doesn't make sense...
-  request.SetHttpHeaderField(
-      WebString::FromUtf8(net::HttpRequestHeaders::kAcceptEncoding),
-      WebString("identity;q=1, *;q=0"));
+  if (url_data_->encoding_mode() ==
+      media::DataSource::EncodingMode::kAllowGzip) {
+    // Allow gzip for manifests or when explicitly requested.
+    request.SetHttpHeaderField(
+        WebString::FromUtf8(net::HttpRequestHeaders::kAcceptEncoding),
+        WebString("gzip, identity;q=1, *;q=0"));
+  } else {
+    // Disable compression, compression for audio/video doesn't make sense...
+    request.SetHttpHeaderField(
+        WebString::FromUtf8(net::HttpRequestHeaders::kAcceptEncoding),
+        WebString("identity;q=1, *;q=0"));
+  }
 
   // Start resource loading.
   WebAssociatedURLLoaderOptions options;

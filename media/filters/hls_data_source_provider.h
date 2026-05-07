@@ -54,6 +54,8 @@ class MEDIA_EXPORT HlsDataSourceProvider {
     const GURL uri;
     const std::optional<hls::types::ByteRange> range;
     const DataSource::CacheMode cache_mode;
+    const DataSource::EncodingMode encoding_mode =
+        DataSource::EncodingMode::kIdentity;
   };
   using SegmentQueue = base::queue<UrlDataSegment>;
 
@@ -152,7 +154,10 @@ class MEDIA_EXPORT HlsDataSourceStream {
   // segments. It is invalid to call this method if `RequiresNextDataSource`
   // does not return true. This method will also update the internal range if
   // the segment has one.
-  std::tuple<GURL, DataSource::CacheMode, DataSource::RangeMode>
+  std::tuple<GURL,
+             DataSource::CacheMode,
+             DataSource::RangeMode,
+             DataSource::EncodingMode>
   GetNextSegmentURIAndCacheStatus();
 
   // Has the stream read all possible data?

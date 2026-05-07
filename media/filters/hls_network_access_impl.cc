@@ -30,14 +30,16 @@ void HlsNetworkAccessImpl::ReadSegmentQueueInternal(
                 base::BindPostTaskToCurrentDefault(std::move(cb)));
 }
 
-void HlsNetworkAccessImpl::ReadAllInternal(const GURL& uri,
-                                           HlsDataSourceProvider::ReadCb cb,
-                                           DataSource::CacheMode cache_mode) {
+void HlsNetworkAccessImpl::ReadAllInternal(
+    const GURL& uri,
+    HlsDataSourceProvider::ReadCb cb,
+    DataSource::CacheMode cache_mode,
+    DataSource::EncodingMode encoding_mode) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(media_sequence_checker_);
   // Callers of `ReadAllInternal` should enforce this.
   CHECK(data_source_provider_);
   HlsDataSourceProvider::SegmentQueue queue;
-  queue.emplace(uri, std::nullopt, cache_mode);
+  queue.emplace(uri, std::nullopt, cache_mode, encoding_mode);
   ReadSegmentQueueInternal(
       std::move(queue),
       base::BindOnce(&HlsNetworkAccessImpl::ReadUntilExhausted,
@@ -79,7 +81,8 @@ void HlsNetworkAccessImpl::ReadManifest(const GURL& uri,
     std::move(cb).Run(HlsDataSourceProvider::ReadStatus::Codes::kStopped);
     return;
   }
-  ReadAllInternal(uri, std::move(cb), DataSource::CacheMode::kBypassCache);
+  ReadAllInternal(uri, std::move(cb), DataSource::CacheMode::kBypassCache,
+                  DataSource::EncodingMode::kAllowGzip);
 }
 
 void HlsNetworkAccessImpl::ReadKey(

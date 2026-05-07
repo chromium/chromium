@@ -214,8 +214,12 @@ class MockDataSourceFactory : public DataSource::Factory {
  public:
   ~MockDataSourceFactory() override;
   MockDataSourceFactory();
+  MOCK_METHOD(void,
+              MockCreate,
+              (const GURL&, DataSource::CacheMode, DataSource::EncodingMode));
   void Create(const GURL& uri,
               DataSource::CacheMode cache_mode,
+              DataSource::EncodingMode encoding_mode,
               DataSource::DataSourceCb cb) override;
   void AddReadExpectation(size_t from, size_t to, int response);
   testing::NiceMock<MockDataSource>* PregenerateNextMock();

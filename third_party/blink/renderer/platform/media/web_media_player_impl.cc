@@ -1745,11 +1745,12 @@ UrlData::CacheMode TranslateCacheMode(bool always_disable,
 void WebMediaPlayerImpl::GetUrlData(
     const GURL& gurl,
     media::DataSource::CacheMode cache_mode,
+    media::DataSource::EncodingMode encoding_mode,
     base::OnceCallback<void(scoped_refptr<UrlData>)> cb) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   auto url_data = url_index_->GetByUrl(
       KURL(gurl), static_cast<UrlData::CorsMode>(cors_mode_),
-      TranslateCacheMode(is_cache_disabled_, cache_mode));
+      TranslateCacheMode(is_cache_disabled_, cache_mode), encoding_mode);
   std::move(cb).Run(std::move(url_data));
 }
 

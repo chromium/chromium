@@ -224,4 +224,17 @@ TEST_F(UrlIndexTest, RedirectToPreservesCrossOrigin) {
   EXPECT_TRUE(b->is_cors_cross_origin());
 }
 
+TEST_F(UrlIndexTest, AllowGzip) {
+  KURL url("http://foo.bar.com");
+  scoped_refptr<UrlData> a =
+      url_index_->GetByUrl(url, UrlData::CORS_UNSPECIFIED, UrlData::kNormal,
+                           media::DataSource::EncodingMode::kAllowGzip);
+  EXPECT_EQ(a->encoding_mode(), media::DataSource::EncodingMode::kAllowGzip);
+
+  scoped_refptr<UrlData> b =
+      url_index_->GetByUrl(url, UrlData::CORS_UNSPECIFIED, UrlData::kNormal,
+                           media::DataSource::EncodingMode::kIdentity);
+  EXPECT_EQ(b->encoding_mode(), media::DataSource::EncodingMode::kIdentity);
+}
+
 }  // namespace blink

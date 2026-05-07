@@ -51,6 +51,11 @@ class MEDIA_EXPORT DataSource : public DataSourceInfo {
     kHitCache,
   };
 
+  enum class EncodingMode {
+    kIdentity,
+    kAllowGzip,
+  };
+
   enum { kReadError = -1, kAborted = -2 };
 
   // Used to specify video preload states. They are "hints" to the browser about
@@ -71,6 +76,7 @@ class MEDIA_EXPORT DataSource : public DataSourceInfo {
     virtual ~Factory();
     virtual void Create(const GURL& uri,
                         CacheMode cache_mode,
+                        EncodingMode encoding_mode,
                         DataSourceCb cb) = 0;
   };
 

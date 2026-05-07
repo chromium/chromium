@@ -54,17 +54,20 @@ void ResourceMultiBuffer::OnEmpty() {
 UrlData::UrlData(base::PassKey<UrlIndex>,
                  const KURL& url,
                  CorsMode cors_mode,
+                 media::DataSource::EncodingMode encoding_mode,
                  base::WeakPtr<UrlIndex> url_index,
                  CacheMode cache_lookup_mode,
                  scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : UrlData(url,
               cors_mode,
+              encoding_mode,
               url_index,
               cache_lookup_mode,
               std::move(task_runner)) {}
 
 UrlData::UrlData(const KURL& url,
                  CorsMode cors_mode,
+                 media::DataSource::EncodingMode encoding_mode,
                  base::WeakPtr<UrlIndex> url_index,
                  CacheMode cache_lookup_mode,
                  scoped_refptr<base::SingleThreadTaskRunner> task_runner)
@@ -76,7 +79,8 @@ UrlData::UrlData(const KURL& url,
       range_supported_(false),
       cacheable_(false),
       cache_lookup_mode_(cache_lookup_mode),
-      multibuffer_(this, url_index_->block_shift_, std::move(task_runner)) {}
+      encoding_mode_(encoding_mode),
+      multibuffer_(this, url_index_->block_shift(), std::move(task_runner)) {}
 
 UrlData::~UrlData() = default;
 
@@ -274,9 +278,11 @@ void UrlIndex::RemoveUrlData(const scoped_refptr<UrlData>& url_data) {
   }
 }
 
-scoped_refptr<UrlData> UrlIndex::GetByUrl(const KURL& url,
-                                          UrlData::CorsMode cors_mode,
-                                          UrlData::CacheMode cache_mode) {
+scoped_refptr<UrlData> UrlIndex::GetByUrl(
+    const KURL& url,
+    UrlData::CorsMode cors_mode,
+    UrlData::CacheMode cache_mode,
+    media::DataSource::EncodingMode encoding_mode) {
   if (cache_mode == UrlData::kNormal) {
     auto i = indexed_data_.find(std::make_pair(url, cors_mode));
     if (i != indexed_data_.end() && i->value->Valid()) {
@@ -284,16 +290,17 @@ scoped_refptr<UrlData> UrlIndex::GetByUrl(const KURL& url,
     }
   }
 
-  return NewUrlData(url, cors_mode, cache_mode);
+  return NewUrlData(url, cors_mode, cache_mode, encoding_mode);
 }
 
 scoped_refptr<UrlData> UrlIndex::NewUrlData(
     const KURL& url,
     UrlData::CorsMode cors_mode,
-    UrlData::CacheMode cache_lookup_mode) {
-  return base::MakeRefCounted<UrlData>(base::PassKey<UrlIndex>(), url,
-                                       cors_mode, weak_factory_.GetWeakPtr(),
-                                       cache_lookup_mode, task_runner_);
+    UrlData::CacheMode cache_lookup_mode,
+    media::DataSource::EncodingMode encoding_mode) {
+  return base::MakeRefCounted<UrlData>(
+      base::PassKey<UrlIndex>(), url, cors_mode, encoding_mode,
+      weak_factory_.GetWeakPtr(), cache_lookup_mode, task_runner_);
 }
 
 namespace {

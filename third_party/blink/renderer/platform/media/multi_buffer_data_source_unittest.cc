@@ -131,8 +131,15 @@ class TestUrlData : public UrlData {
               CorsMode cors_mode,
               base::WeakPtr<UrlIndex> url_index,
               UrlData::CacheMode cache_mode,
-              scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-      : UrlData(url, cors_mode, url_index, cache_mode, task_runner),
+              scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+              media::DataSource::EncodingMode encoding_mode =
+                  media::DataSource::EncodingMode::kIdentity)
+      : UrlData(url,
+                cors_mode,
+                encoding_mode,
+                url_index,
+                cache_mode,
+                task_runner),
         block_shift_(url_index->block_shift()),
         task_runner_(std::move(task_runner)) {}
 
@@ -167,12 +174,15 @@ class TestUrlIndex : public UrlIndex {
       : UrlIndex(fetch_context, task_runner),
         task_runner_(std::move(task_runner)) {}
 
-  scoped_refptr<UrlData> NewUrlData(const KURL& url,
-                                    UrlData::CorsMode cors_mode,
-                                    UrlData::CacheMode cache_mode) override {
+  scoped_refptr<UrlData> NewUrlData(
+      const KURL& url,
+      UrlData::CorsMode cors_mode,
+      UrlData::CacheMode cache_mode,
+      media::DataSource::EncodingMode encoding_mode) override {
     NotifyNewUrlData(url, cors_mode, cache_mode);
     last_url_data_ = base::MakeRefCounted<TestUrlData>(
-        url, cors_mode, weak_factory_.GetWeakPtr(), cache_mode, task_runner_);
+        url, cors_mode, weak_factory_.GetWeakPtr(), cache_mode, task_runner_,
+        encoding_mode);
     return last_url_data_;
   }
 
@@ -2117,12 +2127,14 @@ TEST_F(MultiBufferDataSourceTest, FactoryCreation) {
       base::BindRepeating(
           [](UrlIndex* url_index, const GURL& url,
              media::DataSource::CacheMode cache_mode,
+             media::DataSource::EncodingMode encoding_mode,
              base::OnceCallback<void(scoped_refptr<UrlData>)> cb) {
             std::move(cb).Run(url_index->GetByUrl(
                 KURL(url), UrlData::CORS_UNSPECIFIED,
                 cache_mode == media::DataSource::CacheMode::kBypassCache
                     ? UrlData::kCacheDisabled
-                    : UrlData::kNormal));
+                    : UrlData::kNormal,
+                encoding_mode));
           },
           base::Unretained(&url_index_)),
       /*is_audio_element=*/true,
@@ -2134,6 +2146,7 @@ TEST_F(MultiBufferDataSourceTest, FactoryCreation) {
 
   std::unique_ptr<media::DataSource> created_source;
   factory.Create(GURL(kHttpUrl), media::DataSource::CacheMode::kHitCache,
+                 media::DataSource::EncodingMode::kIdentity,
                  base::BindOnce(
                      [](std::unique_ptr<media::DataSource>* out_source,
                         std::unique_ptr<media::DataSource> source) {
@@ -2163,12 +2176,14 @@ TEST_F(MultiBufferDataSourceTest, FactoryCreationDefault) {
       base::BindRepeating(
           [](UrlIndex* url_index, const GURL& url,
              media::DataSource::CacheMode cache_mode,
+             media::DataSource::EncodingMode encoding_mode,
              base::OnceCallback<void(scoped_refptr<UrlData>)> cb) {
             std::move(cb).Run(url_index->GetByUrl(
                 KURL(url), UrlData::CORS_UNSPECIFIED,
                 cache_mode == media::DataSource::CacheMode::kBypassCache
                     ? UrlData::kCacheDisabled
-                    : UrlData::kNormal));
+                    : UrlData::kNormal,
+                encoding_mode));
           },
           base::Unretained(&url_index_)),
       /*is_audio_element=*/false,
@@ -2177,6 +2192,7 @@ TEST_F(MultiBufferDataSourceTest, FactoryCreationDefault) {
 
   std::unique_ptr<media::DataSource> created_source;
   factory.Create(GURL(kHttpUrl), media::DataSource::CacheMode::kHitCache,
+                 media::DataSource::EncodingMode::kIdentity,
                  base::BindOnce(
                      [](std::unique_ptr<media::DataSource>* out_source,
                         std::unique_ptr<media::DataSource> source) {

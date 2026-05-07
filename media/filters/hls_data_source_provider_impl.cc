@@ -109,12 +109,12 @@ void HlsDataSourceProviderImpl::ReadFromExistingStream(
   // try to make one. Creating a new data source will re-enter this function to
   // complete `callback`.
   if (stream->RequiresNextDataSource()) {
-    auto [new_uri, cache_mode, range_mode] =
+    auto [new_uri, cache_mode, range_mode, encoding_mode] =
         stream->GetNextSegmentURIAndCacheStatus();
     TRACE_EVENT_BEGIN("media", "HLS::CreateDataSource",
                       perfetto::Track::FromPointer(this), "uri", new_uri);
     data_source_factory_->Create(
-        std::move(new_uri), cache_mode,
+        std::move(new_uri), cache_mode, encoding_mode,
         base::BindOnce(&HlsDataSourceProviderImpl::OnDataSourceCreated,
                        weak_factory_.GetWeakPtr(), range_mode,
                        std::move(stream), std::move(callback)));

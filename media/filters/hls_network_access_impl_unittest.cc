@@ -396,4 +396,60 @@ TEST_F(HlsNetworkAccessImplUnittest, TestSegmentWithRedirectionKey) {
   task_environment_.RunUntilIdle();
 }
 
+TEST_F(HlsNetworkAccessImplUnittest, TestReadManifestAllowsGzip) {
+  factory_->AddReadExpectation(0, 16384, 800);
+  factory_->AddReadExpectation(800, 16384, 0);
+
+  EXPECT_CALL(*factory_, MockCreate(GURL("https://example.com/manifest.m3u8"),
+                                    DataSource::CacheMode::kBypassCache,
+                                    DataSource::EncodingMode::kAllowGzip))
+      .Times(1);
+
+  network_access_->ReadManifest(
+      GURL("https://example.com/manifest.m3u8"),
+      base::BindOnce([](HlsDataSourceProvider::ReadResult result) {
+        ASSERT_TRUE(result.has_value());
+      }));
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(HlsNetworkAccessImplUnittest, TestReadKeyDisallowsGzip) {
+  auto segment = MakeSegment(std::nullopt, std::nullopt, InitMode::kAbsent,
+                             "https://example.com/enc.key");
+
+  auto* ds_for_keyfetch = factory_->PregenerateNextMock();
+  EXPECT_CALL(*ds_for_keyfetch, Initialize)
+      .WillOnce(base::test::RunOnceCallback<0>(true));
+  EXPECT_CALL(*ds_for_keyfetch, Read(0, SpanSizeEq(16384), _))
+      .WillOnce([](int64_t, base::span<uint8_t> data, DataSource::ReadCB cb) {
+        std::ranges::fill(data.first<16>(), 'x');
+        std::move(cb).Run(16);
+      });
+  EXPECT_CALL(*ds_for_keyfetch, Read(16, SpanSizeEq(16384), _))
+      .WillOnce(base::test::RunOnceCallback<2>(0));
+  EXPECT_CALL(*ds_for_keyfetch, WouldTaintOrigin())
+      .WillRepeatedly(testing::Return(true));
+
+  EXPECT_CALL(*factory_, MockCreate(GURL("https://example.com/enc.key"),
+                                    DataSource::CacheMode::kHitCache,
+                                    DataSource::EncodingMode::kIdentity))
+      .Times(1);
+  EXPECT_CALL(*factory_, MockCreate(GURL("https://example.com/"),
+                                    DataSource::CacheMode::kHitCache,
+                                    DataSource::EncodingMode::kIdentity))
+      .Times(1);
+
+  factory_->AddReadExpectation(0, 16384, 1000);
+  factory_->AddReadExpectation(1000, 16384, 0);
+
+  ASSERT_NE(segment->GetEncryptionData(), nullptr);
+  ASSERT_TRUE(segment->GetEncryptionData()->NeedsKeyFetch());
+  network_access_->ReadMediaSegment(
+      *segment, /*read_chunked=*/false, /*include_init_segment=*/true,
+      base::BindOnce([](HlsDataSourceProvider::ReadResult result) {
+        ASSERT_TRUE(result.has_value());
+      }));
+  task_environment_.RunUntilIdle();
+}
+
 }  // namespace media

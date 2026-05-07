@@ -804,9 +804,11 @@ MultiBufferDataSource::Factory::Factory(
       base::DoNothing(), tick_clock);
 }
 
-void MultiBufferDataSource::Factory::Create(const GURL& uri,
-                                            DataSource::CacheMode cache_mode,
-                                            DataSourceCb cb) {
+void MultiBufferDataSource::Factory::Create(
+    const GURL& uri,
+    media::DataSource::CacheMode cache_mode,
+    media::DataSource::EncodingMode encoding_mode,
+    DataSourceCb cb) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   auto download_cb =
 #if DCHECK_IS_ON()
@@ -820,7 +822,7 @@ void MultiBufferDataSource::Factory::Create(const GURL& uri,
 #endif
 
   get_url_data_.Run(
-      uri, cache_mode,
+      uri, cache_mode, encoding_mode,
       blink::BindOnce(&Factory::OnUrlData, weak_factory_.GetWeakPtr(),
                       std::move(cb), std::move(download_cb)));
 }

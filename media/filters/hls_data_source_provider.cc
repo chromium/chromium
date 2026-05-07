@@ -46,7 +46,10 @@ GURL HlsDataSourceStream::GetNextSegmentURI() {
   return std::get<0>(GetNextSegmentURIAndCacheStatus());
 }
 
-std::tuple<GURL, DataSource::CacheMode, DataSource::RangeMode>
+std::tuple<GURL,
+           DataSource::CacheMode,
+           DataSource::RangeMode,
+           DataSource::EncodingMode>
 HlsDataSourceStream::GetNextSegmentURIAndCacheStatus() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(requires_next_data_source_);
@@ -64,7 +67,8 @@ HlsDataSourceStream::GetNextSegmentURIAndCacheStatus() {
   GURL new_url = std::move(first.uri);
   segments_.pop();
   requires_next_data_source_ = false;
-  return std::make_tuple(new_url, first.cache_mode, range_mode);
+  return std::make_tuple(new_url, first.cache_mode, range_mode,
+                         first.encoding_mode);
 }
 
 bool HlsDataSourceStream::CanReadMore() const {

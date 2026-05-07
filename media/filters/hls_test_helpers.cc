@@ -86,9 +86,11 @@ FileHlsDataSourceStreamFactory::CreateStream(std::string filename,
 MockDataSourceFactory::~MockDataSourceFactory() = default;
 MockDataSourceFactory::MockDataSourceFactory() = default;
 
-void MockDataSourceFactory::Create(const GURL&,
-                                   DataSource::CacheMode,
+void MockDataSourceFactory::Create(const GURL& uri,
+                                   DataSource::CacheMode cache_mode,
+                                   DataSource::EncodingMode encoding_mode,
                                    DataSource::DataSourceCb cb) {
+  MockCreate(uri, cache_mode, encoding_mode);
   if (!next_mock_) {
     PregenerateNextMock();
     EXPECT_CALL(*next_mock_, Initialize)
