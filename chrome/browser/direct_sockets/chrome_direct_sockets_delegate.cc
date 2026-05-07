@@ -107,6 +107,15 @@ bool ChromeDirectSocketsDelegate::AreDirectSocketsAllowed(
     content::BrowserContext* browser_context,
     const url::Origin& origin) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+  const GURL& url = origin.GetURL();
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Allow restricted context APIs in special pages.
+  if (url.SchemeIs("chrome-untrusted") && url.host() == "terminal") {
+    return true;
+  }
+#endif
+
   // This function might be called for profiles that do not support extensions.
   auto* registry = extensions::ExtensionRegistry::Get(browser_context);
   if (!registry) {
@@ -114,8 +123,7 @@ bool ChromeDirectSocketsDelegate::AreDirectSocketsAllowed(
   }
 
   // Allow Direct Sockets in Chrome Apps and selected extensions.
-  auto* extension =
-      registry->enabled_extensions().GetExtensionOrAppByURL(origin.GetURL());
+  auto* extension = registry->enabled_extensions().GetExtensionOrAppByURL(url);
   return extension &&
          (IsExtensionIdAllowedToUseDirectSockets(extension) ||
           extension->is_platform_app()) &&
@@ -147,6 +155,13 @@ bool ChromeDirectSocketsDelegate::ValidateRequest(
   if (url.SchemeIs(webapps::kIsolatedAppScheme)) {
     return ValidateAddressAndPortForIwa(request);
   }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Allow restricted context APIs in special pages.
+  if (url.SchemeIs("chrome-untrusted") && url.host() == "terminal") {
+    return true;
+  }
+#endif
 
   return false;
 }
