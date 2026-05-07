@@ -431,8 +431,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
 
   virtual scoped_refptr<CanvasResourceSharedImage> NewOrRecycledResource() = 0;
 
-  virtual void OnContextLost();
-
   // The resource that is currently being used by this provider.
   scoped_refptr<CanvasResourceSharedImage> resource_;
 
@@ -454,7 +452,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
     return static_cast<const CanvasResourceSharedImage*>(resource_.get());
   }
 
-  bool notified_context_lost_ = false;
   base::WeakPtrFactory<CanvasResourceProviderSharedImage> weak_ptr_factory_{
       this};
 };
@@ -582,14 +579,10 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   }
 
   // viz::ContextLostObserver implementation.
-  void OnContextLost() override {
-    CanvasResourceProviderSharedImage::OnContextLost();
-  }
+  void OnContextLost() override;
 
   // BitmapGpuChannelLostObserver implementation.
-  void OnGpuChannelLost() override {
-    CanvasResourceProviderSharedImage::OnContextLost();
-  }
+  void OnGpuChannelLost() override;
 
   bool ShouldReplaceTargetBuffer(
       PaintImage::ContentId content_id = PaintImage::kInvalidContentId);
@@ -614,6 +607,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   const bool is_accelerated_;
   const bool is_software_;
   bool is_cleared_ = false;
+  bool notified_context_lost_ = false;
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
   base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
@@ -790,14 +784,10 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   }
 
   // viz::ContextLostObserver implementation.
-  void OnContextLost() override {
-    CanvasResourceProviderSharedImage::OnContextLost();
-  }
+  void OnContextLost() override;
 
   // BitmapGpuChannelLostObserver implementation.
-  void OnGpuChannelLost() override {
-    CanvasResourceProviderSharedImage::OnContextLost();
-  }
+  void OnGpuChannelLost() override;
 
   bool ShouldReplaceTargetBuffer(
       PaintImage::ContentId content_id = PaintImage::kInvalidContentId);
@@ -820,6 +810,7 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   const bool is_accelerated_;
   const bool is_software_;
   bool is_cleared_ = false;
+  bool notified_context_lost_ = false;
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
   base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>

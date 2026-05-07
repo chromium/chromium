@@ -272,19 +272,6 @@ CanvasResourceProviderSharedImage::CreateWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void CanvasResourceProviderSharedImage::OnContextLost() {
-  if (notified_context_lost_) {
-    return;
-  }
-  ClearUnusedResources();
-  // Notify the owner of this resource provider that the GPU context was
-  // lost. The call is done in a separate task, so that the owner can delete
-  // this resource provider if needed.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&NotifyGpuContextLostTask, CreateWeakPtr()));
-  notified_context_lost_ = true;
-}
-
 scoped_refptr<CanvasResourceSharedImage>
 Canvas2DResourceProviderSharedImage::NewOrRecycledResource() {
   if (!image_pool_) {
@@ -397,6 +384,26 @@ void Canvas2DResourceProviderSharedImage::SetResourceRecyclingEnabled(
   if (!resource_recycling_enabled_) {
     ClearUnusedResources();
   }
+}
+
+void Canvas2DResourceProviderSharedImage::OnContextLost() {
+  if (notified_context_lost_) {
+    return;
+  }
+  ClearUnusedResources();
+  // Notify the owner of this resource provider that the GPU context was
+  // lost. The call is done in a separate task, so that the owner can delete
+  // this resource provider if needed.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &CanvasResourceProviderSharedImage::NotifyGpuContextLostTask,
+          CreateWeakPtr()));
+  notified_context_lost_ = true;
+}
+
+void Canvas2DResourceProviderSharedImage::OnGpuChannelLost() {
+  OnContextLost();
 }
 
 bool Canvas2DResourceProviderSharedImage::ShouldReplaceTargetBuffer(
@@ -679,6 +686,27 @@ bool CanvasNon2DResourceProviderSharedImage::UploadToBackingSharedImage(
 
   return true;
 }
+
+void CanvasNon2DResourceProviderSharedImage::OnContextLost() {
+  if (notified_context_lost_) {
+    return;
+  }
+  ClearUnusedResources();
+  // Notify the owner of this resource provider that the GPU context was
+  // lost. The call is done in a separate task, so that the owner can delete
+  // this resource provider if needed.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &CanvasResourceProviderSharedImage::NotifyGpuContextLostTask,
+          CreateWeakPtr()));
+  notified_context_lost_ = true;
+}
+
+void CanvasNon2DResourceProviderSharedImage::OnGpuChannelLost() {
+  OnContextLost();
+}
+
 bool CanvasNon2DResourceProviderSharedImage::CopyToBackingSharedImage(
     const scoped_refptr<gpu::ClientSharedImage>& shared_image,
     uint32_t src_x,
