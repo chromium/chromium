@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/command_line.h"
 #include "base/strings/stringprintf.h"
 #include "base/uuid.h"
 #include "chrome/browser/profiles/profile.h"
@@ -15,6 +16,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "ui/accessibility/accessibility_switches.h"
 #include "url/gurl.h"
 
 using PrefsInternalsTest = InProcessBrowserTest;
@@ -30,6 +32,13 @@ IN_PROC_BROWSER_TEST_F(PrefsInternalsTest, TestPrefsAreServed) {
 
   // First, check that navigation succeeds.
   GURL kUrl(content::GetWebUIURL(chrome::kChromeUIPrefsInternalsHost));
+  // We request only the specific pref we set to avoid loading the entire list
+  // of prefs on the accessibility bot, which can be very large and cause
+  // timeouts (see crbug.com/417174864).
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kForceRendererAccessibility)) {
+    kUrl = kUrl.Resolve(prefs::kHomePage);
+  }
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kUrl));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
