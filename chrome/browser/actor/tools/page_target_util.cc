@@ -118,9 +118,8 @@ std::optional<TargetNodeInfo> FindLastObservedNodeForActionTargetPoint(
   return optimization_guide::FindNodeAtPoint(*apc, target_blink_pixels);
 }
 
-std::optional<optimization_guide::TargetNodeInfo>
-FindLastObservedNodeForActionTarget(
-    const optimization_guide::proto::AnnotatedPageContent* apc,
+std::optional<TargetNodeInfo> FindLastObservedNodeForActionTarget(
+    const AnnotatedPageContent* apc,
     const PageTarget& target) {
   return std::visit(
       absl::Overload{
@@ -132,6 +131,27 @@ FindLastObservedNodeForActionTarget(
           },
       },
       target);
+}
+
+autofill::FieldGlobalId GetFieldIdFromPageTarget(
+    const AnnotatedPageContent* last_observation,
+    tabs::TabInterface* tab,
+    const PageTarget& target) {
+  if (std::optional<TargetNodeInfo> node_info =
+          FindLastObservedNodeForActionTarget(last_observation, target)) {
+    if (content::WebContents* web_contents = tab->GetContents()) {
+      if (RenderFrameHost* rfh =
+              optimization_guide::GetRenderFrameForDocumentIdentifier(
+                  *web_contents,
+                  node_info->document_identifier.serialized_token())) {
+        return autofill::FieldGlobalId(
+            autofill::LocalFrameToken(rfh->GetFrameToken().value()),
+            autofill::FieldRendererId(node_info->node->content_attributes()
+                                          .common_ancestor_dom_node_id()));
+      }
+    }
+  }
+  return {};
 }
 
 }  // namespace actor

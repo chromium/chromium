@@ -25,40 +25,14 @@
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "components/optimization_guide/content/browser/page_content_proto_util.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 
 namespace actor {
 
 using autofill::FieldGlobalId;
-using content::RenderFrameHost;
-using content::WebContents;
-using optimization_guide::TargetNodeInfo;
-using optimization_guide::proto::AnnotatedPageContent;
 
 namespace {
-
-FieldGlobalId GetFieldIdFromPageTarget(
-    const optimization_guide::proto::AnnotatedPageContent* last_observation,
-    tabs::TabInterface* tab,
-    const PageTarget& target) {
-  if (std::optional<TargetNodeInfo> node_info =
-          FindLastObservedNodeForActionTarget(last_observation, target)) {
-    if (WebContents* web_contents = tab->GetContents()) {
-      if (RenderFrameHost* rfh =
-              optimization_guide::GetRenderFrameForDocumentIdentifier(
-                  *web_contents,
-                  node_info->document_identifier.serialized_token())) {
-        return FieldGlobalId(
-            autofill::LocalFrameToken(rfh->GetFrameToken().value()),
-            autofill::FieldRendererId(node_info->node->content_attributes()
-                                          .common_ancestor_dom_node_id()));
-      }
-    }
-  }
-  return {};
-}
 
 mojom::ActionResultPtr FromServiceError(autofill::ActorFormFillingError error) {
   switch (error) {
