@@ -2674,10 +2674,6 @@ bool RenderWidgetHostViewAndroid::LockKeyboard(
     return true;
   }
 
-  if (!base::FeatureList::IsEnabled(features::kKeyboardLockApiOnAndroid)) {
-    return false;
-  }
-
   ui::WindowAndroid* window_android = view_.GetWindowAndroid();
   if (!window_android) {
     return false;
@@ -2694,7 +2690,6 @@ bool RenderWidgetHostViewAndroid::LockKeyboard(
 
 void RenderWidgetHostViewAndroid::UnlockKeyboard() {
   CHECK(keyboard_locked_);
-  CHECK(base::FeatureList::IsEnabled(features::kKeyboardLockApiOnAndroid));
   keyboard_locked_ = false;
   locked_keyboard_keys_.reset();
   if (ui::WindowAndroid* window_android = view_.GetWindowAndroid()) {

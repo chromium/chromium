@@ -399,10 +399,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebauthnDisabledOnAuto);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kEnableExclusiveAccessManager);
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kKeyboardLockApiOnAndroid);
-#endif  // BUILDFLAG(IS_ANDROID)
-
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kIOThreadInteractiveThreadType);
 
 // Number of days to "store" IPH guardrails for navigation captured app launches

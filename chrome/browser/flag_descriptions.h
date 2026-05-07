@@ -1022,11 +1022,6 @@ inline constexpr char kAutofillEnablePayNowPayLaterTabsDescription[] =
     "autofill when buy now pay later options are available for the merchant "
     "webpage.";
 
-inline constexpr char kKeyboardLockApiOnAndroidName[] =
-    "Keyboard Lock API on Android";
-inline constexpr char kKeyboardLockApiOnAndroidDescription[] =
-    "When enabled, allows websites to use keyboard.lock() on Android";
-
 inline constexpr char kAutofillEnablePrefetchingRiskDataForRetrievalName[] =
     "Enable prefetching of risk data during payments autofill retrieval";
 inline constexpr char

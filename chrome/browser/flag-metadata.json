@@ -6047,11 +6047,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "keyboard-lock-api-on-android",
-    "owners": ["japhet@chromium.org"],
-    "expiry_milestone": 145
-  },
-  {
     "name": "language-packs-in-settings",
     "owners": ["mlcui@google.com", "claudiomagni@chromium.org", "cros-borders-eng@google.com"],
     "expiry_milestone": 126
