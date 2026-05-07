@@ -44,6 +44,7 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PaymentAppProperties.PAYMENT_APP_NAME;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.ACCEPT_BUTTON_CALLBACK;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.DECLINE_BUTTON_CALLBACK;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.SETTINGS_LINK_CALLBACK;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN_VIEW_MODEL;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SURVIVES_NAVIGATION;
@@ -1443,9 +1444,11 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
                         mFacilitatedPaymentsPaymentMethodsModel
                                 .get(SCREEN_VIEW_MODEL)
                                 .getAllProperties();
-        assertThat(propertyKeys, hasSize(2));
+        assertThat(propertyKeys, hasSize(3));
         assertThat(
-                propertyKeys, containsInAnyOrder(ACCEPT_BUTTON_CALLBACK, DECLINE_BUTTON_CALLBACK));
+                propertyKeys,
+                containsInAnyOrder(
+                        ACCEPT_BUTTON_CALLBACK, DECLINE_BUTTON_CALLBACK, SETTINGS_LINK_CALLBACK));
         assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(SURVIVES_NAVIGATION), is(true));
     }
 

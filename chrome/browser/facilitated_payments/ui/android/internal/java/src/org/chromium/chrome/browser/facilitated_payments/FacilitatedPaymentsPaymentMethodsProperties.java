@@ -257,9 +257,13 @@ class FacilitatedPaymentsPaymentMethodsProperties {
                 new WritableObjectPropertyKey<>("accept_button_callback");
         static final WritableObjectPropertyKey<OnClickListener> DECLINE_BUTTON_CALLBACK =
                 new WritableObjectPropertyKey<>("decline_button_callback");
+        static final WritableObjectPropertyKey<OnClickListener> SETTINGS_LINK_CALLBACK =
+                new WritableObjectPropertyKey<>("settings_link_callback");
 
         /** All the properties of Pix account linking prompt. */
-        static final PropertyKey[] ALL_KEYS = {ACCEPT_BUTTON_CALLBACK, DECLINE_BUTTON_CALLBACK};
+        static final PropertyKey[] ALL_KEYS = {
+            ACCEPT_BUTTON_CALLBACK, DECLINE_BUTTON_CALLBACK, SETTINGS_LINK_CALLBACK
+        };
     }
 
     private FacilitatedPaymentsPaymentMethodsProperties() {}

@@ -54,4 +54,5 @@ found in the LICENSE file.
     <dimen name="pix_account_linking_prompt_accept_button_top_margin">20dp</dimen>
     <dimen name="pix_account_linking_prompt_decline_button_top_margin">8dp</dimen>
     <dimen name="pix_account_linking_prompt_decline_button_bottom_margin">8dp</dimen>
+    <dimen name="pix_account_linking_prompt_settings_link_top_margin">12dp</dimen>
 </resources>

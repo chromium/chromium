@@ -64,6 +64,17 @@ found in the LICENSE file.
         android:textAppearance="@style/TextAppearance.TextLarge.Primary"
         android:focusable="true" />
 
+    <TextView
+        android:id="@+id/pix_code_detection_settings_link"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/pix_account_linking_prompt_settings_link_top_margin"
+        android:layout_marginHorizontal="@dimen/pix_account_linking_prompt_value_prop_message_margin_horizontal"
+        android:text="@string/pix_account_linking_prompt_b_settings_link"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+        android:textColorLink="@macro/default_text_color_link"
+        android:focusable="true" />
+
     <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/accept_button"
         android:layout_width="match_parent"

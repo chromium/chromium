@@ -34,6 +34,7 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VisibleState.HIDDEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VisibleState.SHOWN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VisibleState.SWAPPING_SCREEN;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.SETTINGS_LINK_CALLBACK;
 
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
@@ -935,6 +936,7 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
         runOnUiThreadBlocking(
                 () -> {
                     mModel.set(SCREEN, PIX_ACCOUNT_LINKING_PROMPT);
+                    mModel.get(SCREEN_VIEW_MODEL).set(SETTINGS_LINK_CALLBACK, v -> {});
                     mModel.set(VISIBLE_STATE, SHOWN);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -953,6 +955,12 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
         TextView valuePropMessage2 = mView.getContentView().findViewById(R.id.value_prop_message_2);
         assertThat(valuePropMessage2.getText(), is("Google encryption protects your info"));
         assertNotNull(valuePropMessage2.getCompoundDrawablesRelative()[0]);
+
+        TextView settingsLink =
+                mView.getContentView().findViewById(R.id.pix_code_detection_settings_link);
+        assertThat(
+                settingsLink.getText().toString(),
+                is("To turn off Pix code detection, go to Chrome settings"));
 
         ButtonCompat acceptButton = mView.getContentView().findViewById(R.id.accept_button);
         assertThat(acceptButton.getText(), is("Link your account"));
