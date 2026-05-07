@@ -8,11 +8,6 @@
 //    clang-format -i -style=chromium filename
 // DO NOT EDIT!
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef UI_GL_GL_ENUMS_IMPLEMENTATION_AUTOGEN_H_
 #define UI_GL_GL_ENUMS_IMPLEMENTATION_AUTOGEN_H_
 
@@ -7177,11 +7172,11 @@ static constexpr EnumToString kEnumToStringTable[] = {
     },
     {
         0x9770,
-        "GL_HUAWEI_SHADER_BINARY",
+        "GL_SHADER_BINARY_HUAWEI",
     },
     {
         0x9771,
-        "GL_HUAWEI_PROGRAM_BINARY",
+        "GL_PROGRAM_BINARY_HUAWEI",
     },
     {
         0xC0,
