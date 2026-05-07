@@ -12,6 +12,7 @@
 #include <memory>
 #include <optional>
 #include <utility>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -142,6 +143,10 @@ namespace {
 
 MATCHER(UniquePtrMatches, negation ? "do not match" : "match") {
   return std::get<0>(arg).get() == std::get<1>(arg);
+}
+
+ClientLayerTreeHostImpl* client_host_impl(LayerTreeHostImpl* host) {
+  return static_cast<ClientLayerTreeHostImpl*>(host);
 }
 
 class TestInputHandlerClient : public InputHandlerClient {
@@ -308,6 +313,28 @@ class LayerTreeHostImplBrowserControlsTest : public LayerTreeHostImplTest {
                         scroll_layer_size);
   }
 
+  void ExpectViewportGeometries(float expected_browser_controls_shown_ratio) {
+    auto* tree = host_impl_->active_tree();
+    auto* property_trees = tree->property_trees();
+    EXPECT_EQ(expected_browser_controls_shown_ratio,
+              tree->CurrentTopControlsShownRatio());
+    EXPECT_EQ(
+        tree->top_controls_height() * expected_browser_controls_shown_ratio,
+        host_impl_->browser_controls_manager()->ContentTopOffset());
+    int delta = (tree->top_controls_height() + tree->bottom_controls_height()) *
+                (1 - expected_browser_controls_shown_ratio);
+    int scaled_delta = delta / tree->min_page_scale_factor();
+    gfx::Size inner_scroll_bounds = tree->InnerViewportScrollNode()->bounds;
+    inner_scroll_bounds.Enlarge(0, scaled_delta);
+    EXPECT_EQ(inner_scroll_bounds, InnerViewportScrollLayer()->bounds());
+    EXPECT_EQ(gfx::RectF(gfx::SizeF(inner_scroll_bounds)),
+              tree->OuterViewportClipNode()->clip);
+    EXPECT_EQ(gfx::Vector2dF(0, delta),
+              property_trees->inner_viewport_container_bounds_delta());
+    EXPECT_EQ(gfx::Vector2dF(0, scaled_delta),
+              property_trees->outer_viewport_container_bounds_delta());
+  }
+
   gfx::Size layer_size_;
   gfx::Size clip_size_;
   gfx::Size viewport_size_;
@@ -359,29 +386,6 @@ class TestRenderFrameMetadataObserver : public RenderFrameMetadataObserver {
   std::optional<RenderFrameMetadata> last_metadata_;
 };
 
-#define EXPECT_VIEWPORT_GEOMETRIES(expected_browser_controls_shown_ratio)    \
-  do {                                                                       \
-    auto* tree = host_impl_->active_tree();                                  \
-    auto* property_trees = tree->property_trees();                           \
-    EXPECT_EQ(expected_browser_controls_shown_ratio,                         \
-              tree->CurrentTopControlsShownRatio());                         \
-    EXPECT_EQ(                                                               \
-        tree->top_controls_height() * expected_browser_controls_shown_ratio, \
-        host_impl_->browser_controls_manager()->ContentTopOffset());         \
-    int delta =                                                              \
-        (tree->top_controls_height() + tree->bottom_controls_height()) *     \
-        (1 - expected_browser_controls_shown_ratio);                         \
-    int scaled_delta = delta / tree->min_page_scale_factor();                \
-    gfx::Size inner_scroll_bounds = tree->InnerViewportScrollNode()->bounds; \
-    inner_scroll_bounds.Enlarge(0, scaled_delta);                            \
-    EXPECT_EQ(inner_scroll_bounds, InnerViewportScrollLayer()->bounds());    \
-    EXPECT_EQ(gfx::RectF(gfx::SizeF(inner_scroll_bounds)),                   \
-              tree->OuterViewportClipNode()->clip);                          \
-    EXPECT_EQ(gfx::Vector2dF(0, delta),                                      \
-              property_trees->inner_viewport_container_bounds_delta());      \
-    EXPECT_EQ(gfx::Vector2dF(0, scaled_delta),                               \
-              property_trees->outer_viewport_container_bounds_delta());      \
-  } while (false)
 
 // Checks that we use the memory limits provided.
 // TODO(crbug.com/458776836): Review memory limit related cc_unittests for
@@ -689,10 +693,7 @@ TEST_P(ClientModeLayerTreeHostImplTest,
   host_impl_->WillBeginImplFrame(args);
   // Expect no crash because the operation is within an impl frame.
   // TODO(496580137): Move this to ClientLayerTreeHostImpl specific tests.
-  if (!host_impl_->settings().trees_in_viz_in_viz_process) {
-    static_cast<ClientLayerTreeHostImpl*>(host_impl_.get())
-        ->InvalidateContentOnImplSide();
-  }
+  client_host_impl(host_impl_.get())->InvalidateContentOnImplSide();
 
   // Once the impl frame is finished the impl thread phase is set to IDLE.
   host_impl_->DidFinishImplFrame(args);
@@ -702,10 +703,7 @@ TEST_P(ClientModeLayerTreeHostImplTest,
   // Expect no crash when using synchronous renderer compositor regardless the
   // impl thread phase.
   // TODO(496580137): Move this to ClientLayerTreeHostImpl specific tests.
-  if (!host_impl_->settings().trees_in_viz_in_viz_process) {
-    static_cast<ClientLayerTreeHostImpl*>(host_impl_.get())
-        ->InvalidateContentOnImplSide();
-  }
+  client_host_impl(host_impl_.get())->InvalidateContentOnImplSide();
 
   // Test passes when there is no crash.
 }
@@ -772,10 +770,7 @@ TEST_P(ClientModeLayerTreeHostImplTest, NonCompositedScrollUsesRaster) {
 
     // This call sets the invalidate_raster_scroll bit.
     // TODO(496580137): Move this to ClientLayerTreeHostImpl specific tests.
-    if (!host_impl_->settings().trees_in_viz_in_viz_process) {
-      static_cast<ClientLayerTreeHostImpl*>(host_impl_.get())
-          ->InvalidateContentOnImplSide();
-    }
+    client_host_impl(host_impl_.get())->InvalidateContentOnImplSide();
     if (!CommitsToActiveTree()) {
       // Activate the pending tree before drawing layers.
       host_impl_->ActivateSyncTree();
@@ -1134,7 +1129,7 @@ TEST_P(LayerTreeHostImplBrowserControlsTest,
 
   // The browser controls should start off showing so the viewport should be
   // shrunk.
-  EXPECT_VIEWPORT_GEOMETRIES(1);
+  ExpectViewportGeometries(1);
   EXPECT_EQ(gfx::SizeF(50, 50), active_tree->ScrollableSize());
 
   EXPECT_EQ(ScrollThread::kScrollOnImplThread,
@@ -1150,17 +1145,17 @@ TEST_P(LayerTreeHostImplBrowserControlsTest,
   // Hide the browser controls by a bit, the scrollable size should increase but
   // the actual content bounds shouldn't.
   host_impl_->browser_controls_manager()->ScrollBy(gfx::Vector2dF(0, 25));
-  EXPECT_VIEWPORT_GEOMETRIES(0.5f);
+  ExpectViewportGeometries(0.5f);
   EXPECT_EQ(gfx::SizeF(50, 75), active_tree->ScrollableSize());
 
   // Fully hide the browser controls.
   host_impl_->browser_controls_manager()->ScrollBy(gfx::Vector2dF(0, 25));
-  EXPECT_VIEWPORT_GEOMETRIES(0);
+  ExpectViewportGeometries(0);
   EXPECT_EQ(gfx::SizeF(50, 100), active_tree->ScrollableSize());
 
   // Scrolling additionally shouldn't have any effect.
   host_impl_->browser_controls_manager()->ScrollBy(gfx::Vector2dF(0, 25));
-  EXPECT_VIEWPORT_GEOMETRIES(0);
+  ExpectViewportGeometries(0);
   EXPECT_EQ(gfx::SizeF(50, 100), active_tree->ScrollableSize());
 
   host_impl_->browser_controls_manager()->ScrollEnd();
@@ -1281,7 +1276,7 @@ TEST_P(LayerTreeHostImplBrowserControlsTest,
   host_impl_->OuterViewportScrollNode()->snap_container_data.emplace(container);
 
   DrawFrame();
-  EXPECT_VIEWPORT_GEOMETRIES(1.0f);
+  ExpectViewportGeometries(1.0f);
 
   LayerTreeImpl* active_tree = host_impl_->active_tree();
   PropertyTrees* property_trees = active_tree->property_trees();
@@ -1352,7 +1347,7 @@ TEST_P(LayerTreeHostImplBrowserControlsTest,
 
   // The browser controls should start off showing so the viewport should be
   // shrunk.
-  EXPECT_VIEWPORT_GEOMETRIES(1.0f);
+  ExpectViewportGeometries(1.0f);
   EXPECT_EQ(gfx::SizeF(200, 1000), active_tree->ScrollableSize());
 
   ASSERT_EQ(ScrollThread::kScrollOnImplThread,
@@ -1370,7 +1365,7 @@ TEST_P(LayerTreeHostImplBrowserControlsTest,
   GetInputHandler().ScrollUpdate(
       UpdateState(gfx::Point(0, 0), gfx::Vector2dF(0, 25),
                   ui::ScrollInputType::kTouchscreen));
-  EXPECT_VIEWPORT_GEOMETRIES(0.5f);
+  ExpectViewportGeometries(0.5f);
 
   GetInputHandler().ScrollEnd(/*should_snap=*/false, std::nullopt);
 }
@@ -1401,7 +1396,7 @@ TEST_P(LayerTreeHostImplBrowserControlsTest,
 
   // The browser controls should start off showing so the viewport should be
   // shrunk.
-  EXPECT_VIEWPORT_GEOMETRIES(1.0f);
+  ExpectViewportGeometries(1.0f);
   EXPECT_EQ(gfx::SizeF(50, 50), active_tree->ScrollableSize());
   EXPECT_EQ(gfx::Size(50, 15), scrollbar_layer->bounds());
   EXPECT_EQ(gfx::Rect(20, 0, 10, 3), scrollbar_layer->ComputeThumbQuadRect());
@@ -1420,7 +1415,7 @@ TEST_P(LayerTreeHostImplBrowserControlsTest,
   // the actual content bounds shouldn't.
   {
     host_impl_->browser_controls_manager()->ScrollBy(gfx::Vector2dF(0, 25));
-    EXPECT_VIEWPORT_GEOMETRIES(0.5f);
+    ExpectViewportGeometries(0.5f);
     EXPECT_EQ(gfx::SizeF(50, 75), active_tree->ScrollableSize());
     EXPECT_EQ(gfx::Size(50, 15), scrollbar_layer->bounds());
     EXPECT_EQ(gfx::Rect(20, 25, 10, 3),
@@ -1430,7 +1425,7 @@ TEST_P(LayerTreeHostImplBrowserControlsTest,
   // Fully hide the browser controls.
   {
     host_impl_->browser_controls_manager()->ScrollBy(gfx::Vector2dF(0, 25));
-    EXPECT_VIEWPORT_GEOMETRIES(0);
+    ExpectViewportGeometries(0);
     EXPECT_EQ(gfx::SizeF(50, 100), active_tree->ScrollableSize());
     EXPECT_EQ(gfx::Size(50, 15), scrollbar_layer->bounds());
     EXPECT_EQ(gfx::Rect(20, 50, 10, 3),
@@ -1440,7 +1435,7 @@ TEST_P(LayerTreeHostImplBrowserControlsTest,
   // Additional scrolling shouldn't have any effect.
   {
     host_impl_->browser_controls_manager()->ScrollBy(gfx::Vector2dF(0, 25));
-    EXPECT_VIEWPORT_GEOMETRIES(0);
+    ExpectViewportGeometries(0);
     EXPECT_EQ(gfx::SizeF(50, 100), active_tree->ScrollableSize());
     EXPECT_EQ(gfx::Size(50, 15), scrollbar_layer->bounds());
     EXPECT_EQ(gfx::Rect(20, 50, 10, 3),
@@ -2433,7 +2428,77 @@ gfx::PresentationFeedback ExampleFeedback() {
 
 // Test fixture that enables only Pending tree commit modes,
 // CommitToPendingTree and CommitToPendingTreeTreesInVizClient.
-class PendingTreeLayerTreeHostImplTest : public LayerTreeHostImplTest {};
+class PendingTreeLayerTreeHostImplTest : public LayerTreeHostImplTest {
+ protected:
+  void SetupScrollDelayTest() {
+    CreateHostImpl(DefaultSettings(), CreateLayerTreeFrameSink());
+    SetupRootLayer<SolidColorLayerImpl>(host_impl_->active_tree(),
+                                        gfx::Size(10, 10));
+    UpdateDrawProperties(host_impl_->active_tree());
+    EXPECT_EQ(first_scroll_observed, 0);
+  }
+
+  void QueueLatencyInfoSwapPromise(ui::LatencyComponentType type,
+                                   int trace_id) {
+    ui::LatencyInfo latency_info;
+    latency_info.set_trace_id(trace_id);
+    latency_info.AddLatencyNumber(type);
+    std::unique_ptr<SwapPromise> swap_promise(
+        new LatencyInfoSwapPromise(latency_info));
+    host_impl_->active_tree()->QueuePinnedSwapPromise(std::move(swap_promise));
+  }
+
+  void DrawAndPresentFrame(uint32_t frame_token, bool damage = true) {
+    if (damage) {
+      host_impl_->SetFullViewportDamage();
+      host_impl_->SetNeedsRedraw(/*animation_only=*/false,
+                                 /*skip_if_inside_draw=*/false);
+    }
+    DrawFrame();
+    viz::FrameTimingDetails mock_details;
+    mock_details.presentation_feedback = ExampleFeedback();
+    host_impl_->DidPresentCompositorFrame(frame_token, mock_details);
+  }
+
+  void RunPaintWorkletCommitTest() {
+    auto painter_owned = std::make_unique<TestPaintWorkletLayerPainter>();
+    TestPaintWorkletLayerPainter* painter = painter_owned.get();
+    host_impl_->SetPaintWorkletLayerPainter(std::move(painter_owned));
+
+    client_host_impl(host_impl_.get())->CreatePendingTree();
+    auto* root = SetupRootLayer<PictureLayerImpl>(host_impl_->pending_tree(),
+                                                  gfx::Size(100, 100));
+    root->SetNeedsPushProperties();
+
+    scoped_refptr<RasterSource> raster_source_with_pws =
+        FakeRasterSource::CreateFilledWithPaintWorklet(root->bounds());
+    root->SetRasterSourceForTesting(raster_source_with_pws);
+    UpdateDrawProperties(host_impl_->pending_tree());
+
+    did_prepare_tiles_ = false;
+    client_host_impl(host_impl_.get())->CommitComplete();
+    EXPECT_FALSE(did_prepare_tiles_);
+
+    ASSERT_EQ(root->GetPaintWorkletRecordMap().size(), 1u);
+    scoped_refptr<const PaintWorkletInput> input =
+        root->GetPaintWorkletRecordMap().begin()->first;
+    int worklet_id = input->WorkletId();
+
+    PaintWorkletJob painted_job(worklet_id, input, {});
+    PaintRecord record;
+    painted_job.SetOutput(record);
+
+    auto painted_job_vector = base::MakeRefCounted<PaintWorkletJobVector>();
+    painted_job_vector->data.push_back(std::move(painted_job));
+    PaintWorkletJobMap painted_job_map;
+    painted_job_map[worklet_id] = std::move(painted_job_vector);
+
+    std::move(painter->TakeDoneCallback()).Run(std::move(painted_job_map));
+    EXPECT_TRUE(root->GetPaintWorkletRecordMap()
+                    .find(input)
+                    ->second.second->EqualsForTesting(record));
+  }
+};
 
 INSTANTIATE_COMMIT_TO_PENDING_TREE_TEST_P(PendingTreeLayerTreeHostImplTest);
 
@@ -2749,8 +2814,7 @@ TEST_P(PendingTreeLayerTreeHostImplTest,
                                              scroll->element_id(), false}));
     EXPECT_FALSE(scrollbar_controller->visibility_changed());
     EXPECT_TRUE(did_request_redraw_);
-    EXPECT_EQ(!host_impl_->settings().trees_in_viz_in_viz_process,
-              did_request_commit_);
+    EXPECT_TRUE(did_request_commit_);
   }
 }
 
@@ -2916,108 +2980,37 @@ TEST_P(PendingTreeLayerTreeHostImplTest,
 }
 
 TEST_P(PendingTreeLayerTreeHostImplTest, OneScrollForFirstScrollDelay) {
-  CreateHostImpl(DefaultSettings(), CreateLayerTreeFrameSink());
-  SetupRootLayer<SolidColorLayerImpl>(host_impl_->active_tree(),
-                                      gfx::Size(10, 10));
-  UpdateDrawProperties(host_impl_->active_tree());
-  EXPECT_EQ(first_scroll_observed, 0);
+  SetupScrollDelayTest();
 
-  // LatencyInfo for the first scroll.
-  ui::LatencyInfo latency_info;
-  latency_info.set_trace_id(5);
-  latency_info.AddLatencyNumber(
-      ui::INPUT_EVENT_LATENCY_SCROLL_UPDATE_ORIGINAL_COMPONENT);
-  std::unique_ptr<SwapPromise> swap_promise(
-      new LatencyInfoSwapPromise(latency_info));
-  host_impl_->active_tree()->QueuePinnedSwapPromise(std::move(swap_promise));
+  QueueLatencyInfoSwapPromise(
+      ui::INPUT_EVENT_LATENCY_SCROLL_UPDATE_ORIGINAL_COMPONENT, 5);
 
-  host_impl_->SetFullViewportDamage();
-  host_impl_->SetNeedsRedraw(/*animation_only=*/false,
-                             /*skip_if_inside_draw=*/false);
-  DrawFrame();
-
-  constexpr uint32_t frame_token_1 = 1;
-  viz::FrameTimingDetails mock_details;
-  mock_details.presentation_feedback = ExampleFeedback();
-  // When the LayerTreeHostImpl receives presentation feedback, the callback
-  // will be fired.
-  host_impl_->DidPresentCompositorFrame(frame_token_1, mock_details);
+  DrawAndPresentFrame(1);
 
   EXPECT_EQ(first_scroll_observed, 1);
 }
 
 TEST_P(PendingTreeLayerTreeHostImplTest, OtherInputsForFirstScrollDelay) {
-  CreateHostImpl(DefaultSettings(), CreateLayerTreeFrameSink());
-  SetupRootLayer<SolidColorLayerImpl>(host_impl_->active_tree(),
-                                      gfx::Size(10, 10));
-  UpdateDrawProperties(host_impl_->active_tree());
-  EXPECT_EQ(first_scroll_observed, 0);
+  SetupScrollDelayTest();
 
-  // LatencyInfo for the first input, which is not scroll.
-  ui::LatencyInfo latency_info;
-  latency_info.set_trace_id(5);
-  latency_info.AddLatencyNumber(ui::INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT);
-  std::unique_ptr<SwapPromise> swap_promise(
-      new LatencyInfoSwapPromise(latency_info));
-  host_impl_->active_tree()->QueuePinnedSwapPromise(std::move(swap_promise));
+  QueueLatencyInfoSwapPromise(ui::INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT, 5);
 
-  host_impl_->SetFullViewportDamage();
-  host_impl_->SetNeedsRedraw(/*animation_only=*/false,
-                             /*skip_if_inside_draw=*/false);
-  DrawFrame();
-
-  constexpr uint32_t frame_token_1 = 1;
-  viz::FrameTimingDetails mock_details;
-  mock_details.presentation_feedback = ExampleFeedback();
-  // When the LayerTreeHostImpl receives presentation feedback, the callback
-  // will be fired.
-  host_impl_->DidPresentCompositorFrame(frame_token_1, mock_details);
+  DrawAndPresentFrame(1);
 
   EXPECT_EQ(first_scroll_observed, 0);
 }
 
 TEST_P(PendingTreeLayerTreeHostImplTest, MultipleScrollsForFirstScrollDelay) {
-  CreateHostImpl(DefaultSettings(), CreateLayerTreeFrameSink());
-  SetupRootLayer<SolidColorLayerImpl>(host_impl_->active_tree(),
-                                      gfx::Size(10, 10));
-  UpdateDrawProperties(host_impl_->active_tree());
-  EXPECT_EQ(first_scroll_observed, 0);
+  SetupScrollDelayTest();
 
-  // LatencyInfo for the first scroll.
-  ui::LatencyInfo latency_info;
-  latency_info.set_trace_id(5);
-  latency_info.AddLatencyNumber(
-      ui::INPUT_EVENT_LATENCY_SCROLL_UPDATE_ORIGINAL_COMPONENT);
-  std::unique_ptr<SwapPromise> swap_promise(
-      new LatencyInfoSwapPromise(latency_info));
-  host_impl_->active_tree()->QueuePinnedSwapPromise(std::move(swap_promise));
-  DrawFrame();
-  constexpr uint32_t frame_token_1 = 1;
-  viz::FrameTimingDetails mock_details;
-  mock_details.presentation_feedback = ExampleFeedback();
-  // When the LayerTreeHostImpl receives presentation feedback, the callback
-  // will be fired.
-  host_impl_->DidPresentCompositorFrame(frame_token_1, mock_details);
+  QueueLatencyInfoSwapPromise(
+      ui::INPUT_EVENT_LATENCY_SCROLL_UPDATE_ORIGINAL_COMPONENT, 5);
+  DrawAndPresentFrame(1, /*damage=*/false);
   EXPECT_EQ(first_scroll_observed, 1);
 
-  // LatencyInfo for the second scroll.
-  ui::LatencyInfo latency_info2;
-  latency_info2.set_trace_id(6);
-  latency_info2.AddLatencyNumber(
-      ui::INPUT_EVENT_LATENCY_SCROLL_UPDATE_ORIGINAL_COMPONENT);
-  std::unique_ptr<SwapPromise> swap_promise2(
-      new LatencyInfoSwapPromise(latency_info2));
-  host_impl_->active_tree()->QueuePinnedSwapPromise(std::move(swap_promise2));
-  host_impl_->SetFullViewportDamage();
-  host_impl_->SetNeedsRedraw(/*animation_only=*/false,
-                             /*skip_if_inside_draw=*/false);
-  DrawFrame();
-  constexpr uint32_t frame_token_2 = 2;
-  viz::FrameTimingDetails mock_details2;
-  mock_details2.presentation_feedback = ExampleFeedback();
-  // When the LayerTreeHostImpl receives presentation feedback, the callback
-  // will be fired.
-  host_impl_->DidPresentCompositorFrame(frame_token_2, mock_details2);
+  QueueLatencyInfoSwapPromise(
+      ui::INPUT_EVENT_LATENCY_SCROLL_UPDATE_ORIGINAL_COMPONENT, 6);
+  DrawAndPresentFrame(2, /*damage=*/true);
   EXPECT_EQ(first_scroll_observed, 1);
 }
 
@@ -3175,10 +3168,7 @@ TEST_P(PendingTreeLayerTreeHostImplTest, CheckerImagingTileInvalidation) {
 
   // Create the pending tree.
   // TODO(496580137): Move this to ClientLayerTreeHostImpl specific tests.
-  if (!host_impl_->settings().trees_in_viz_in_viz_process) {
-    static_cast<ClientLayerTreeHostImpl*>(host_impl_.get())
-        ->BeginCommit(0, BeginMainFrameTraceId{1});
-  }
+  client_host_impl(host_impl_.get())->BeginCommit(0, BeginMainFrameTraceId{1});
   LayerTreeImpl* pending_tree = host_impl_->pending_tree();
   auto* root = SetupRootLayer<FakePictureLayerImpl>(pending_tree, layer_size,
                                                     raster_source);
@@ -3188,9 +3178,7 @@ TEST_P(PendingTreeLayerTreeHostImplTest, CheckerImagingTileInvalidation) {
   // CompleteCommit which should perform a PrepareTiles, adding tilings for the
   // root layer, each one having a raster task.
   // TODO(496580137): Move this to ClientLayerTreeHostImpl specific tests.
-  if (!host_impl_->settings().trees_in_viz_in_viz_process) {
-    static_cast<ClientLayerTreeHostImpl*>(host_impl_.get())->CommitComplete();
-  }
+  client_host_impl(host_impl_.get())->CommitComplete();
   EXPECT_EQ(root->num_tilings(), 1U);
   const PictureLayerTiling* tiling = root->tilings()->tiling_at(0);
   EXPECT_EQ(tiling->AllTilesForTesting().size(), 9U);
@@ -3213,10 +3201,7 @@ TEST_P(PendingTreeLayerTreeHostImplTest, CheckerImagingTileInvalidation) {
   // Invalidate content on impl-side and ensure that the correct tiles are
   // invalidated on the pending tree.
   // TODO(496580137): Move this to ClientLayerTreeHostImpl specific tests.
-  if (!host_impl_->settings().trees_in_viz_in_viz_process) {
-    static_cast<ClientLayerTreeHostImpl*>(host_impl_.get())
-        ->InvalidateContentOnImplSide();
-  }
+  client_host_impl(host_impl_.get())->InvalidateContentOnImplSide();
   pending_tree = host_impl_->pending_tree();
   root = static_cast<FakePictureLayerImpl*>(pending_tree->root_layer());
   for (auto* tile : root->tilings()->tiling_at(0)->AllTilesForTesting()) {
@@ -3378,18 +3363,13 @@ TEST_P(PendingTreeLayerTreeHostImplTest, DrawAfterDroppingTileResources) {
 TEST_P(PendingTreeLayerTreeHostImplTest, CommitWithNoPaintWorkletLayerPainter) {
   ASSERT_FALSE(host_impl_->GetPaintWorkletLayerPainterForTesting());
   // TODO(496580137): Move this to ClientLayerTreeHostImpl specific tests.
-  if (!host_impl_->settings().trees_in_viz_in_viz_process) {
-    static_cast<ClientLayerTreeHostImpl*>(host_impl_.get())
-        ->CreatePendingTree();
-  }
+  client_host_impl(host_impl_.get())->CreatePendingTree();
 
   // When there is no PaintWorkletLayerPainter registered, commits should finish
   // immediately and move onto preparing tiles.
   ASSERT_FALSE(did_prepare_tiles_);
   // TODO(496580137): Move this to ClientLayerTreeHostImpl specific tests.
-  if (!host_impl_->settings().trees_in_viz_in_viz_process) {
-    static_cast<ClientLayerTreeHostImpl*>(host_impl_.get())->CommitComplete();
-  }
+  client_host_impl(host_impl_.get())->CommitComplete();
   EXPECT_TRUE(did_prepare_tiles_);
 }
 
@@ -3397,74 +3377,18 @@ TEST_P(PendingTreeLayerTreeHostImplTest, CommitWithNoPaintWorklets) {
   host_impl_->SetPaintWorkletLayerPainter(
       std::make_unique<TestPaintWorkletLayerPainter>());
   // TODO(496580137): Move this to ClientLayerTreeHostImpl specific tests.
-  if (!host_impl_->settings().trees_in_viz_in_viz_process) {
-    static_cast<ClientLayerTreeHostImpl*>(host_impl_.get())
-        ->CreatePendingTree();
-  }
+  client_host_impl(host_impl_.get())->CreatePendingTree();
 
   // When there are no PaintWorklets in the committed display lists, commits
   // should finish immediately and move onto preparing tiles.
   ASSERT_FALSE(did_prepare_tiles_);
   // TODO(496580137): Move this to ClientLayerTreeHostImpl specific tests.
-  if (!host_impl_->settings().trees_in_viz_in_viz_process) {
-    static_cast<ClientLayerTreeHostImpl*>(host_impl_.get())->CommitComplete();
-  }
+  client_host_impl(host_impl_.get())->CommitComplete();
   EXPECT_TRUE(did_prepare_tiles_);
 }
 
 TEST_P(PendingTreeLayerTreeHostImplTest, CommitWithDirtyPaintWorklets) {
-  auto painter_owned = std::make_unique<TestPaintWorkletLayerPainter>();
-  TestPaintWorkletLayerPainter* painter = painter_owned.get();
-  host_impl_->SetPaintWorkletLayerPainter(std::move(painter_owned));
-
-  // Setup the pending tree with a PictureLayerImpl that will contain
-  // PaintWorklets.
-  // TODO(496580137): Move this to ClientLayerTreeHostImpl specific tests.
-  if (!host_impl_->settings().trees_in_viz_in_viz_process) {
-    static_cast<ClientLayerTreeHostImpl*>(host_impl_.get())
-        ->CreatePendingTree();
-  }
-  auto* root = SetupRootLayer<PictureLayerImpl>(host_impl_->pending_tree(),
-                                                gfx::Size(100, 100));
-  root->SetNeedsPushProperties();
-
-  // Add a PaintWorkletInput to the PictureLayerImpl.
-  scoped_refptr<RasterSource> raster_source_with_pws =
-      FakeRasterSource::CreateFilledWithPaintWorklet(root->bounds());
-  root->SetRasterSourceForTesting(raster_source_with_pws);
-  UpdateDrawProperties(host_impl_->pending_tree());
-
-  // Since we have dirty PaintWorklets, committing will not cause tile
-  // preparation to happen. Instead, it will be delayed until the callback
-  // passed to the PaintWorkletLayerPainter is called.
-  did_prepare_tiles_ = false;
-  // TODO(496580137): Move this to ClientLayerTreeHostImpl specific tests.
-  if (!host_impl_->settings().trees_in_viz_in_viz_process) {
-    static_cast<ClientLayerTreeHostImpl*>(host_impl_.get())->CommitComplete();
-  }
-  EXPECT_FALSE(did_prepare_tiles_);
-
-  // Set up a result to have been 'painted'.
-  ASSERT_EQ(root->GetPaintWorkletRecordMap().size(), 1u);
-  scoped_refptr<const PaintWorkletInput> input =
-      root->GetPaintWorkletRecordMap().begin()->first;
-  int worklet_id = input->WorkletId();
-
-  PaintWorkletJob painted_job(worklet_id, input, {});
-  PaintRecord record;
-  painted_job.SetOutput(record);
-
-  auto painted_job_vector = base::MakeRefCounted<PaintWorkletJobVector>();
-  painted_job_vector->data.push_back(std::move(painted_job));
-  PaintWorkletJobMap painted_job_map;
-  painted_job_map[worklet_id] = std::move(painted_job_vector);
-
-  // Finally, 'paint' the content. This should unlock tile preparation and
-  // update the PictureLayerImpl's map.
-  std::move(painter->TakeDoneCallback()).Run(std::move(painted_job_map));
-  EXPECT_TRUE(root->GetPaintWorkletRecordMap()
-                  .find(input)
-                  ->second.second->EqualsForTesting(record));
+  RunPaintWorkletCommitTest();
   EXPECT_TRUE(did_prepare_tiles_);
 }
 
@@ -3473,10 +3397,7 @@ TEST_P(PendingTreeLayerTreeHostImplTest, CommitWithNoDirtyPaintWorklets) {
       std::make_unique<TestPaintWorkletLayerPainter>());
 
   // TODO(496580137): Move this to ClientLayerTreeHostImpl specific tests.
-  if (!host_impl_->settings().trees_in_viz_in_viz_process) {
-    static_cast<ClientLayerTreeHostImpl*>(host_impl_.get())
-        ->CreatePendingTree();
-  }
+  client_host_impl(host_impl_.get())->CreatePendingTree();
   auto* root = SetupRootLayer<PictureLayerImpl>(host_impl_->pending_tree(),
                                                 gfx::Size(100, 100));
   root->SetNeedsPushProperties();
@@ -3497,9 +3418,7 @@ TEST_P(PendingTreeLayerTreeHostImplTest, CommitWithNoDirtyPaintWorklets) {
   // prepare tiles.
   ASSERT_FALSE(did_prepare_tiles_);
   // TODO(496580137): Move this to ClientLayerTreeHostImpl specific tests.
-  if (!host_impl_->settings().trees_in_viz_in_viz_process) {
-    static_cast<ClientLayerTreeHostImpl*>(host_impl_.get())->CommitComplete();
-  }
+  client_host_impl(host_impl_.get())->CommitComplete();
   EXPECT_TRUE(did_prepare_tiles_);
 }
 
@@ -3582,10 +3501,7 @@ TEST_P(PendingTreeLayerTreeHostImplTest,
   }
   // This call creates a new pending tree.
   // TODO(496580137): Move this to ClientLayerTreeHostImpl specific tests.
-  if (!host_impl_->settings().trees_in_viz_in_viz_process) {
-    static_cast<ClientLayerTreeHostImpl*>(host_impl_.get())
-        ->InvalidateContentOnImplSide();
-  }
+  client_host_impl(host_impl_.get())->InvalidateContentOnImplSide();
   if (!CommitsToActiveTree()) {
     // If a pending tree exists, we expect to see that there are metrics
     // associated with the raster frame associated with it.
@@ -3800,61 +3716,7 @@ INSTANTIATE_COMMIT_TO_PENDING_TREE_TEST_P(
 
 TEST_P(ForceActivateAfterPaintWorkletPaintLayerTreeHostImplTest,
        ForceActivationAfterPaintWorkletsFinishPainting) {
-  auto painter_owned = std::make_unique<TestPaintWorkletLayerPainter>();
-  TestPaintWorkletLayerPainter* painter = painter_owned.get();
-  host_impl_->SetPaintWorkletLayerPainter(std::move(painter_owned));
-
-  // Setup the pending tree with a PictureLayerImpl that will contain
-  // PaintWorklets.
-  // TODO(496580137): Move this to ClientLayerTreeHostImpl specific tests.
-  if (!host_impl_->settings().trees_in_viz_in_viz_process) {
-    static_cast<ClientLayerTreeHostImpl*>(host_impl_.get())
-        ->CreatePendingTree();
-  }
-  auto* root = SetupRootLayer<PictureLayerImpl>(host_impl_->pending_tree(),
-                                                gfx::Size(100, 100));
-  root->SetNeedsPushProperties();
-
-  // Add a PaintWorkletInput to the PictureLayerImpl.
-  scoped_refptr<RasterSource> raster_source_with_pws =
-      FakeRasterSource::CreateFilledWithPaintWorklet(root->bounds());
-  root->SetRasterSourceForTesting(raster_source_with_pws);
-
-  UpdateDrawProperties(host_impl_->pending_tree());
-
-  // Since we have dirty PaintWorklets, committing will not cause tile
-  // preparation to happen. Instead, it will be delayed until the callback
-  // passed to the PaintWorkletLayerPainter is called.
-  did_prepare_tiles_ = false;
-  // TODO(496580137): Move this to ClientLayerTreeHostImpl specific tests.
-  if (!host_impl_->settings().trees_in_viz_in_viz_process) {
-    static_cast<ClientLayerTreeHostImpl*>(host_impl_.get())->CommitComplete();
-  }
-  EXPECT_FALSE(did_prepare_tiles_);
-
-  // Set up a result to have been 'painted'.
-  ASSERT_EQ(root->GetPaintWorkletRecordMap().size(), 1u);
-  scoped_refptr<const PaintWorkletInput> input =
-      root->GetPaintWorkletRecordMap().begin()->first;
-  int worklet_id = input->WorkletId();
-
-  PaintWorkletJob painted_job(worklet_id, input, {});
-  PaintRecord record;
-  painted_job.SetOutput(record);
-
-  auto painted_job_vector = base::MakeRefCounted<PaintWorkletJobVector>();
-  painted_job_vector->data.push_back(std::move(painted_job));
-  PaintWorkletJobMap painted_job_map;
-  painted_job_map[worklet_id] = std::move(painted_job_vector);
-
-  // Finally, 'paint' the content. The test class causes a forced activation
-  // during NotifyPaintWorkletStateChange. The PictureLayerImpl should still be
-  // updated, but since the tree was force activated there should be no tile
-  // preparation.
-  std::move(painter->TakeDoneCallback()).Run(std::move(painted_job_map));
-  EXPECT_TRUE(root->GetPaintWorkletRecordMap()
-                  .find(input)
-                  ->second.second->EqualsForTesting(record));
+  RunPaintWorkletCommitTest();
   EXPECT_FALSE(did_prepare_tiles_);
 }
 
