@@ -9730,7 +9730,7 @@
   {
     "name": "web-hid-in-web-view",
     "owners": [ "giovax@google.com", "pwa-commercial@google.com", "pwa-team@google.com" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 180
   },
   {
     "name": "web-identity-digital-credentials",
