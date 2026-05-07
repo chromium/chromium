@@ -12,27 +12,23 @@
 #include "components/os_crypt/async/common/encryptor.h"
 #include "sql/database.h"
 #include "sql/statement.h"
+#include "sql/statement_id.h"
+#include "sql/table_management_helpers.h"
 #include "sql/transaction.h"
 #include "url/gurl.h"
 
 namespace accessibility_annotator {
 
 namespace {
-// Table creation should be pegged to a specific version number, enforcing
-// linear migration-only updates.
 
-constexpr char kContentAnnotationsTableVersion1CreationSql[] =
-    R"SQL(
-  CREATE TABLE content_annotations (
-    visit_id INTEGER PRIMARY KEY NOT NULL,
-    url TEXT NOT NULL,
-    navigation_timestamp INTEGER NOT NULL,
-    proto_data BLOB NOT NULL,
-    tab_id INTEGER NOT NULL,
-    page_title TEXT NOT NULL,
-    classifier_results TEXT NOT NULL
-  )
-  )SQL";
+constexpr std::string_view kContentAnnotationsTable = "content_annotations";
+constexpr std::string_view kVisitIdColumn = "visit_id";
+constexpr std::string_view kUrlColumn = "url";
+constexpr std::string_view kNavigationTimestampColumn = "navigation_timestamp";
+constexpr std::string_view kProtoDataColumn = "proto_data";
+constexpr std::string_view kTabIdColumn = "tab_id";
+constexpr std::string_view kPageTitleColumn = "page_title";
+constexpr std::string_view kClassifierResultsColumn = "classifier_results";
 
 std::optional<ContentAnnotationsData> ToContentAnnotationsData(
     sql::Statement& statement,
@@ -87,10 +83,17 @@ bool ContentAnnotationsTable::MigrateFromCleanStateToVersion1() {
     return false;
   }
 
-  if (!db_->Execute(kContentAnnotationsTableVersion1CreationSql)) {
-    return false;
-  }
-  return true;
+  return sql::CreateTable(*db_, kContentAnnotationsTable,
+                          /*column_names_and_types=*/
+                          {
+                              {kVisitIdColumn, "INTEGER PRIMARY KEY NOT NULL"},
+                              {kUrlColumn, "TEXT NOT NULL"},
+                              {kNavigationTimestampColumn, "INTEGER NOT NULL"},
+                              {kProtoDataColumn, "BLOB NOT NULL"},
+                              {kTabIdColumn, "INTEGER NOT NULL"},
+                              {kPageTitleColumn, "TEXT NOT NULL"},
+                              {kClassifierResultsColumn, "TEXT NOT NULL"},
+                          });
 }
 
 bool ContentAnnotationsTable::AddContentAnnotation(
@@ -114,13 +117,13 @@ bool ContentAnnotationsTable::AddContentAnnotation(
     return false;
   }
 
-  sql::Statement statement(db_->GetCachedStatement(
-      SQL_FROM_HERE,
-      "INSERT OR REPLACE INTO content_annotations "
-      "(visit_id, url, navigation_timestamp, proto_data, "
-      "tab_id, page_title, classifier_results) "
-      "VALUES(?, ?, ?, ?, ?, ?, ?)"));
-
+  sql::Statement statement;
+  sql::CachedInsertBuilder(
+      SQL_FROM_HERE, *db_, statement, kContentAnnotationsTable,
+      /*column_names=*/
+      {kVisitIdColumn, kUrlColumn, kNavigationTimestampColumn, kProtoDataColumn,
+       kTabIdColumn, kPageTitleColumn, kClassifierResultsColumn},
+      /*or_replace=*/true);
   statement.BindInt64(0, visit_id);
   statement.BindString(1, database_utils::GurlToDatabaseUrl(data.url));
   statement.BindTime(2, data.navigation_timestamp);
@@ -138,13 +141,13 @@ ContentAnnotationsTable::GetContentAnnotation(history::VisitID visit_id) {
     return std::nullopt;
   }
 
-  sql::Statement statement(db_->GetCachedStatement(
-      SQL_FROM_HERE,
-      "SELECT "
-      "visit_id, url, navigation_timestamp, proto_data, tab_id, "
-      "page_title, classifier_results "
-      "FROM content_annotations "
-      "WHERE visit_id = ?"));
+  sql::Statement statement;
+  sql::CachedSelectBuilder(
+      SQL_FROM_HERE, *db_, statement, kContentAnnotationsTable,
+      /*columns=*/
+      {kVisitIdColumn, kUrlColumn, kNavigationTimestampColumn, kProtoDataColumn,
+       kTabIdColumn, kPageTitleColumn, kClassifierResultsColumn},
+      /*modifiers=*/"WHERE visit_id = ?");
   statement.BindInt64(0, visit_id);
 
   if (!statement.Step()) {
@@ -161,13 +164,13 @@ ContentAnnotationsTable::GetAllContentAnnotations() {
     return results;
   }
 
-  sql::Statement statement(db_->GetCachedStatement(
-      SQL_FROM_HERE,
-      "SELECT "
-      "visit_id, url, navigation_timestamp, proto_data, "
-      "tab_id, page_title, classifier_results "
-      "FROM content_annotations "
-      "ORDER BY visit_id DESC"));
+  sql::Statement statement;
+  sql::CachedSelectBuilder(
+      SQL_FROM_HERE, *db_, statement, kContentAnnotationsTable,
+      /*columns=*/
+      {kVisitIdColumn, kUrlColumn, kNavigationTimestampColumn, kProtoDataColumn,
+       kTabIdColumn, kPageTitleColumn, kClassifierResultsColumn},
+      /*modifiers=*/"ORDER BY visit_id DESC");
 
   while (statement.Step()) {
     history::VisitID visit_id = statement.ColumnInt64(0);
@@ -194,12 +197,13 @@ std::vector<history::VisitID> ContentAnnotationsTable::DeleteContentAnnotations(
     return {};
   }
 
-  std::vector<std::string> placeholders(visit_ids.size(), "?");
-  std::string query = "DELETE FROM content_annotations WHERE visit_id IN (" +
-                      base::JoinString(placeholders, ",") +
-                      ") RETURNING visit_id";
-
-  sql::Statement statement(db_->GetUniqueStatement(query));
+  std::vector<std::string_view> placeholders(visit_ids.size(),
+                                             sql::kPlaceholder);
+  std::string where_clause = base::StrCat({kVisitIdColumn, " IN (",
+                                           base::JoinString(placeholders, ","),
+                                           ") RETURNING ", kVisitIdColumn});
+  sql::Statement statement;
+  sql::DeleteBuilder(*db_, statement, kContentAnnotationsTable, where_clause);
   for (size_t i = 0; i < visit_ids.size(); ++i) {
     statement.BindInt64(static_cast<int>(i), visit_ids[i]);
   }
@@ -221,7 +225,7 @@ bool ContentAnnotationsTable::ClearAllContentAnnotations() {
     return false;
   }
 
-  return db_->Execute("DELETE FROM content_annotations");
+  return sql::DeleteAllRows(*db_, kContentAnnotationsTable);
 }
 
 }  // namespace accessibility_annotator
