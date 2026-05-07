@@ -315,12 +315,8 @@ class OmniboxEditModel {
     return keyword_placeholder_;
   }
 
-  bool is_keyword_hint() const {
-    CHECK((keyword_state_ == KeywordState::kNone) == keyword_.empty());
-    return is_keyword_hint(keyword_state_);
-  }
+  bool is_keyword_hint() const { return is_keyword_hint(keyword_state_); }
   bool is_keyword_selected() const {
-    CHECK((keyword_state_ == KeywordState::kNone) == keyword_.empty());
     return is_keyword_selected(keyword_state_);
   }
   static bool is_keyword_hint(KeywordState keyword_state) {
@@ -747,10 +743,12 @@ class OmniboxEditModel {
   // primary data source, this should not be called when there's no view.
   std::u16string GetText() const;
 
-  // Always use these to set keyword members instead of mutating them directly.
-  void SetKeyword(const std::u16string& keyword);
-  void SetKeywordPlaceholder(const std::u16string& keyword_placeholder);
-  void SetKeywordState(KeywordState keyword_state);
+  // Always use this to set keyword members instead of mutating them directly.
+  void SetKeywordInfo(KeywordState keyword_state,
+                      const std::u16string& keyword,
+                      const std::u16string& keyword_placeholder,
+                      metrics::OmniboxEventProto::KeywordModeEntryMethod
+                          keyword_mode_entry_method);
 
   // Record various UMA metrics associated with the AIM page action.
   // `query_text` represents the text entered by the user at activation time.
@@ -875,6 +873,11 @@ class OmniboxEditModel {
   // whether to trigger "ctrl-enter" behavior.
   ControlKeyState control_key_state_ = ControlKeyState::kUp;
 
+  // True if the keyword associated with this match is merely a hint, i.e. the
+  // user hasn't actually selected a keyword yet.  When this is true, we can use
+  // keyword_ to show a "Press <tab> to search" sort of hint.
+  KeywordState keyword_state_ = KeywordState::kNone;
+
   // The keyword associated with the current match.  The user may have an actual
   // selected keyword, or just some input text that looks like a keyword (so we
   // can show a hint to press <tab>).  This is the keyword in either case;
@@ -884,11 +887,6 @@ class OmniboxEditModel {
   // The placeholder text displayed for the keyword the user has selected.
   // Usually empty. Only used when the user input is empty.
   std::u16string keyword_placeholder_;
-
-  // True if the keyword associated with this match is merely a hint, i.e. the
-  // user hasn't actually selected a keyword yet.  When this is true, we can use
-  // keyword_ to show a "Press <tab> to search" sort of hint.
-  KeywordState keyword_state_ = KeywordState::kNone;
 
   // Indicates how the user entered keyword mode if the user is actually in
   // keyword mode.  Otherwise, the value of this variable is INVALID.  This

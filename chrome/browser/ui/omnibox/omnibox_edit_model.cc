@@ -345,10 +345,9 @@ void OmniboxEditModel::RestoreState(const State* state) {
     if ((!state->user_text.empty() || !state->keyword.empty()) && view_) {
       view_->SetUserText(state->user_text, false);
     }
-    SetKeyword(state->keyword);
-    SetKeywordPlaceholder(state->keyword_placeholder);
-    SetKeywordState(state->keyword_state);
-    keyword_mode_entry_method_ = state->keyword_mode_entry_method;
+    SetKeywordInfo(state->keyword_state, state->keyword,
+                   state->keyword_placeholder,
+                   state->keyword_mode_entry_method);
     if (view_) {
       view_->OnKeywordPlaceholderTextChange();
     }
@@ -406,10 +405,7 @@ std::u16string OmniboxEditModel::GetPermanentDisplayText() const {
 
 void OmniboxEditModel::SetUserText(const std::u16string& text) {
   SetInputInProgress(true);
-  SetKeyword(std::u16string());
-  keyword_placeholder_.clear();
-  SetKeywordState(KeywordState::kNone);
-  keyword_mode_entry_method_ = OmniboxEventProto::INVALID;
+  SetKeywordInfo(KeywordState::kNone, u"", u"", OmniboxEventProto::INVALID);
   if (view_) {
     view_->OnKeywordPlaceholderTextChange();
   }
@@ -611,10 +607,7 @@ void OmniboxEditModel::Revert() {
   input_.Clear();
   paste_state_ = PasteState::kNone;
   InternalSetUserText(std::u16string());
-  SetKeyword(std::u16string());
-  keyword_placeholder_.clear();
-  SetKeywordState(KeywordState::kNone);
-  keyword_mode_entry_method_ = OmniboxEventProto::INVALID;
+  SetKeywordInfo(KeywordState::kNone, u"", u"", OmniboxEventProto::INVALID);
   if (view_) {
     view_->OnKeywordPlaceholderTextChange();
   }
@@ -735,10 +728,8 @@ void OmniboxEditModel::EnterKeywordMode(
   DCHECK(template_url);
   controller_->StopAutocomplete(/*clear_result=*/false);
 
-  SetKeyword(template_url->keyword());
-  SetKeywordPlaceholder(placeholder_text);
-  SetKeywordState(KeywordState::kKeyword);
-  keyword_mode_entry_method_ = entry_method;
+  SetKeywordInfo(KeywordState::kKeyword, template_url->keyword(),
+                 placeholder_text, entry_method);
   if (view_) {
     view_->OnKeywordPlaceholderTextChange();
   }
@@ -1123,12 +1114,12 @@ void OmniboxEditModel::AcceptKeyword(
     OmniboxEventProto::KeywordModeEntryMethod entry_method) {
   TRACE_EVENT0("omnibox", "OmniboxEditModel::AcceptKeyword");
 
-  DCHECK(!keyword_.empty()) << keyword_;
+  DCHECK(!keyword_.empty());
 
   controller_->StopAutocomplete(/*clear_result=*/false);
 
-  SetKeywordState(KeywordState::kKeyword);
-  keyword_mode_entry_method_ = entry_method;
+  SetKeywordInfo(KeywordState::kKeyword, keyword_, keyword_placeholder_,
+                 entry_method);
   if (original_user_text_with_keyword_.empty()) {
     original_user_text_with_keyword_ = user_text_;
   }
@@ -1246,8 +1237,8 @@ void OmniboxEditModel::ClearKeyword() {
   // search, which feels bizarre.
   if (was_toggled_into_keyword_mode && entry_by_tab) {
     // State 4 above.
-    SetKeywordState(KeywordState::kHint);
-    keyword_mode_entry_method_ = OmniboxEventProto::INVALID;
+    SetKeywordInfo(KeywordState::kHint, keyword_, keyword_placeholder_,
+                   OmniboxEventProto::INVALID);
     const std::u16string window_text = keyword_ + view_->GetText();
     view_->SetWindowTextAndCaretPos(window_text, keyword_.length(), false,
                                     true);
@@ -1283,10 +1274,7 @@ void OmniboxEditModel::ClearKeyword() {
       prefix = keyword_ + u" ";
     }
 
-    SetKeyword(std::u16string());
-    keyword_placeholder_.clear();
-    SetKeywordState(KeywordState::kNone);
-    keyword_mode_entry_method_ = OmniboxEventProto::INVALID;
+    SetKeywordInfo(KeywordState::kNone, u"", u"", OmniboxEventProto::INVALID);
     if (view_) {
       view_->OnKeywordPlaceholderTextChange();
     }
@@ -1637,26 +1625,25 @@ void OmniboxEditModel::OnPopupDataChanged(
       (keyword_ != keyword) ||
       (is_keyword_hint() != is_keyword_hint(keyword_state) && !keyword.empty());
   if (keyword_state_changed) {
-    bool keyword_was_selected = is_keyword_selected();
-    SetKeyword(keyword);
-    SetKeywordPlaceholder(keyword_placeholder);
-    SetKeywordState(keyword_state);
-    if (!keyword_was_selected && is_keyword_selected()) {
-      // Since we entered keyword mode, record the reason. Note that we
-      // don't do this simply because the keyword changes, since the user
-      // never left keyword mode.
-      // This is called when arrowing to a in-keyword mode suggestion. Since
-      // keyword entry was already logged when initially creating the in-keyword
-      // suggestion, don't re-log `EmitEnteredKeywordModeHistogram()`. This is
-      // inconsistent with other keyword re-entry methods that do re-log
-      // `EmitEnteredKeywordModeHistogram()`. This also means keyword histograms
-      // logged before and after this point for this keyword will have different
-      // `keyword_mode_entry_method_` slices.
-      keyword_mode_entry_method_ = OmniboxEventProto::SELECT_SUGGESTION;
-    } else if (!is_keyword_selected()) {
+    metrics::OmniboxEventProto::KeywordModeEntryMethod entry_method =
+        keyword_mode_entry_method_;
+    if (!is_keyword_selected(keyword_state)) {
       // We've left keyword mode, so align the entry method field with that.
-      keyword_mode_entry_method_ = OmniboxEventProto::INVALID;
+      entry_method = OmniboxEventProto::INVALID;
+    } else if (!is_keyword_selected()) {
+      // Since we entered keyword mode, record the reason. Note that we don't do
+      // this simply because the keyword changes, since the user never left
+      // keyword mode. This is called when arrowing to a in-keyword mode
+      // suggestion. Since keyword entry was already logged when initially
+      // creating the in-keyword suggestion, don't re-log
+      // `EmitEnteredKeywordModeHistogram()`. This is inconsistent with other
+      // keyword re-entry methods that do
+      // re-log`EmitEnteredKeywordModeHistogram()`. This also means keyword
+      // histograms logged before and after this point for this keyword will
+      // have different `keyword_mode_entry_method_` slices.
+      entry_method = OmniboxEventProto::SELECT_SUGGESTION;
     }
+    SetKeywordInfo(keyword_state, keyword, keyword_placeholder, entry_method);
     if (view_) {
       view_->OnKeywordPlaceholderTextChange();
     }
@@ -1666,8 +1653,8 @@ void OmniboxEditModel::OnPopupDataChanged(
   // context menu button. This should reflect whether keyword mode is actually
   // entered, not simply match selection state (a match with keyword may be
   // selected but the keyword mode still not entered yet).
-  // Note, this doesn't do edge detection with `keyword_was_selected` because
-  // keyword state can be changed elsewhere, not only from here.
+  // Note, this doesn't do edge detection because keyword state can be changed
+  // elsewhere, not only from here.
   observers_.Notify(&Observer::OnKeywordStateChanged, is_keyword_selected());
 
   // Handle changes to temporary text.
@@ -1805,7 +1792,8 @@ bool OmniboxEditModel::OnAfterPossibleChange(
     view_->UpdatePopup();
   }
   if (allow_exact_keyword_match_) {
-    keyword_mode_entry_method_ = OmniboxEventProto::SPACE_IN_MIDDLE;
+    SetKeywordInfo(keyword_state_, keyword_, keyword_placeholder_,
+                   OmniboxEventProto::SPACE_IN_MIDDLE);
     const TemplateURL* turl = controller_->client()
                                   ->GetTemplateURLService()
                                   ->GetTemplateURLForKeyword(keyword_);
@@ -3372,17 +3360,23 @@ std::u16string OmniboxEditModel::GetText() const {
   }
 }
 
-void OmniboxEditModel::SetKeyword(const std::u16string& keyword) {
-  keyword_ = keyword;
-}
+void OmniboxEditModel::SetKeywordInfo(
+    KeywordState keyword_state,
+    const std::u16string& keyword,
+    const std::u16string& keyword_placeholder,
+    metrics::OmniboxEventProto::KeywordModeEntryMethod
+        keyword_mode_entry_method) {
+  // Entry should be valid iff in keyword mode.
+  CHECK_EQ(keyword_state == KeywordState::kKeyword,
+           keyword_mode_entry_method !=
+               metrics::OmniboxEventProto_KeywordModeEntryMethod_INVALID);
+  // `keyword` should be populated iff in keyword or hint mode.
+  CHECK_EQ(keyword_state == KeywordState::kNone, keyword.empty());
 
-void OmniboxEditModel::SetKeywordPlaceholder(
-    const std::u16string& keyword_placeholder) {
-  keyword_placeholder_ = keyword_placeholder;
-}
-
-void OmniboxEditModel::SetKeywordState(KeywordState keyword_state) {
   keyword_state_ = keyword_state;
+  keyword_ = keyword;
+  keyword_placeholder_ = keyword_placeholder;
+  keyword_mode_entry_method_ = keyword_mode_entry_method;
 }
 
 void OmniboxEditModel::RecordAiModeMetrics(const std::u16string& query_text,
