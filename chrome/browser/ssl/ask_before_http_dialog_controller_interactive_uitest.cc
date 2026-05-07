@@ -38,6 +38,7 @@
 #include "net/test/test_data_directory.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/styled_label.h"
 
 using security_interstitials::MetricsHelper;
@@ -495,4 +496,62 @@ IN_PROC_BROWSER_TEST_P(AskBeforeHttpDialogControllerUiTest,
                                   MetricsHelper::Decision::DONT_PROCEED, 1);
 
   ExpectUKMEntry(http_url, BlockingResult::kInterstitialDontProceed);
+}
+
+// Test-only View used to artificially trigger the sequence of actions
+// required to trigger the crash in crbug.com/505796019.
+class CrashTriggerView : public views::View {
+  METADATA_HEADER(CrashTriggerView, views::View)
+ public:
+  explicit CrashTriggerView(Browser* browser) : browser_(browser) {
+    SetFocusBehavior(FocusBehavior::ALWAYS);
+    GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
+    GetViewAccessibility().SetName(u"Crash Trigger");
+  }
+
+  void OnFocus() override {
+    if (auto* tab = tabs::TabInterface::MaybeGetFromContents(
+            browser_->tab_strip_model()->GetActiveWebContents())) {
+      if (auto* controller = AskBeforeHttpDialogController::From(tab)) {
+        controller->CloseDialog();
+      }
+    }
+    views::View::OnFocus();
+  }
+
+ private:
+  raw_ptr<Browser> browser_;
+};
+
+BEGIN_METADATA(CrashTriggerView)
+END_METADATA
+
+// Regression test for crbug.com/505796019.
+// This test ensures that navigating away while the ABH dialog is open and a
+// view inside it has focus does not cause a Use-After-Free when focus is later
+// changed.
+IN_PROC_BROWSER_TEST_P(AskBeforeHttpDialogControllerUiTest,
+                       FocusUAFOnNavigation) {
+  GURL http_url = http_server()->GetURL("bad-https.com", "/simple.html");
+
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestTab);
+
+  RunTestSequence(
+      InstrumentTab(kTestTab, std::nullopt, GetBrowser()),
+      NavigateWebContents(kTestTab, http_url),
+      InAnyContext(WaitForShow(AskBeforeHttpDialogController::kGoBackButtonId)),
+      InSameContext(
+          // 1. Focus the "Go back" button in the dialog.
+          WithView(AskBeforeHttpDialogController::kGoBackButtonId,
+                   [](views::View* view) { view->RequestFocus(); }),
+          CheckViewProperty(AskBeforeHttpDialogController::kGoBackButtonId,
+                            &views::View::HasFocus, true),
+
+          Do([&]() {
+            auto* browser_view =
+                BrowserView::GetBrowserViewForBrowser(GetBrowser());
+            auto* crash_trigger = browser_view->AddChildView(
+                std::make_unique<CrashTriggerView>(GetBrowser()));
+            crash_trigger->RequestFocus();
+          })));
 }

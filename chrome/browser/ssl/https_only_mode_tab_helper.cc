@@ -20,18 +20,21 @@ void HttpsOnlyModeTabHelper::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   if (base::FeatureList::IsEnabled(
           security_interstitials::features::kHttpsFirstDialogUi)) {
-    // Close the Ask-before-HTTP dialog if a new navigation begins.
-    // TabDialogManager has a parameter to close tab-modal dialogs
-    // if a cross-site navigation occurs, but we need to be more
-    // strict and close on *any* new navigation. (For example, without
-    // this when a user clicks from badssl.com to http.badssl.com, sees
-    // the warning prompt, and then clicks the back button, the warning
-    // prompt would still be showing.)
-    if (auto* tab = tabs::TabInterface::MaybeGetFromContents(
-            navigation_handle->GetWebContents())) {
-      auto* const dialog_controller = AskBeforeHttpDialogController::From(tab);
-      if (dialog_controller && dialog_controller->HasOpenDialog()) {
-        dialog_controller->CloseDialog();
+    // Close the Ask-before-HTTP dialog if a new navigation begins in the
+    // primary main frame. TabDialogManager has a parameter to close tab-modal
+    // dialogs if a cross-site navigation occurs, but we need to be more strict
+    // and close on *any* new navigation. (For example, without this when a user
+    // clicks from badssl.com to http.badssl.com, sees the warning prompt, and
+    // then clicks the back button, the warning prompt would still be showing.)
+    if (navigation_handle->IsInPrimaryMainFrame() &&
+        !navigation_handle->IsSameDocument()) {
+      if (auto* tab = tabs::TabInterface::MaybeGetFromContents(
+              navigation_handle->GetWebContents())) {
+        auto* const dialog_controller =
+            AskBeforeHttpDialogController::From(tab);
+        if (dialog_controller && dialog_controller->HasOpenDialog()) {
+          dialog_controller->CloseDialog();
+        }
       }
     }
   }
