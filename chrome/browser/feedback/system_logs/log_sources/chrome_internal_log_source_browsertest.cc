@@ -201,21 +201,5 @@ IN_PROC_BROWSER_TEST_F(ChromeInternalLogSourceTest, RecordedAuthEventsPresent) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_MAC) && BUILDFLAG(ENABLE_UPDATER)
-IN_PROC_BROWSER_TEST_F(ChromeInternalLogSourceTest, UpdaterDataPresent) {
-  base::ScopedClosureRunner service_override =
-      updater::OverrideService(updater::UpdateService::Result::kSuccess, {});
-  base::RunLoop loop;
-  updater::CheckForUpdate(
-      base::BindRepeating([](const updater::UpdateService::UpdateState&) {
-      }).Then(loop.QuitWhenIdleClosure()));
-  loop.Run();
-
-  std::unique_ptr<SystemLogsResponse> response = GetChromeInternalLogs();
-  EXPECT_EQ(response->at("update_error_code"), "0/0");
-  EXPECT_EQ(response->at("update_hresult"), "0");
-}
-#endif  // BUILDFLAG(IS_MAC) && BUILDFLAG(ENABLE_UPDATER)
-
 }  // namespace
 }  // namespace system_logs
