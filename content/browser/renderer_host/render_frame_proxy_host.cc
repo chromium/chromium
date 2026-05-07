@@ -789,7 +789,8 @@ void RenderFrameProxyHost::OpenURL(blink::mojom::OpenURLParamsPtr params) {
         GetProcess()->GetDeprecatedID(), params->initiator_frame_token.value());
     if (current_rfh->IsOutermostMainFrame()) {
       MaybeRecordAdClickMainFrameNavigationMetrics(
-          initiator_frame, params->user_gesture, params->started_by_ad);
+          /*initiator_frame=*/initiator_frame, /*target_frame=*/current_rfh,
+          validated_url, params->user_gesture, params->started_by_ad);
     }
   }
 

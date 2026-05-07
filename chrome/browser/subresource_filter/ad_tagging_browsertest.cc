@@ -1084,7 +1084,76 @@ IN_PROC_BROWSER_TEST_F(AdClickMetricsBrowserTest,
       browser()->tab_strip_model()->GetWebContentsAt(0));
 
   EXPECT_FALSE(HasAdClickMainFrameNavigationUseCounterForUrl(url));
-  EXPECT_TRUE(HasAdNavWithoutGestureUseCounter(url));
+  EXPECT_FALSE(HasAdNavWithoutGestureUseCounter(url));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    AdClickMetricsBrowserTest,
+    WindowOpenWithGesture_NavigateFromAdScriptWithoutGesture) {
+  GURL url =
+      embedded_test_server()->GetURL("a.com", "/ad_tagging/frame_factory.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  GURL popup_url =
+      embedded_test_server()->GetURL("c.com", "/ad_tagging/frame_factory.html");
+
+  content::WebContents* original_web_contents = GetWebContents();
+  content::WebContentsAddedObserver observer;
+  // Open a new tab with gesture, but no URL (initial empty document).
+  EXPECT_TRUE(content::ExecJs(original_web_contents->GetPrimaryMainFrame(),
+                              "window.my_popup = window.open('');"));
+
+  content::WebContents* new_web_contents = observer.GetWebContents();
+  content::TestNavigationObserver navigation_observer(new_web_contents);
+
+  // Now navigate that frame from ad script without gesture.
+  content::ExecuteScriptAsyncWithoutUserGesture(
+      original_web_contents->GetPrimaryMainFrame(),
+      content::JsReplace("navigatePopupFromAdScript($1)", popup_url));
+
+  navigation_observer.Wait();
+
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+
+  EXPECT_FALSE(
+      navigation_observer.last_navigation_started_with_transient_activation());
+  EXPECT_TRUE(navigation_observer.last_navigation_started_by_ad());
+
+  NavigateAwayToFlushUseCounterUKM(
+      browser()->tab_strip_model()->GetWebContentsAt(0));
+
+  EXPECT_FALSE(HasAdClickMainFrameNavigationUseCounterForUrl(url));
+  // We expect FALSE because the filter in BeginNavigation should trigger
+  // (target is outermost main frame, opener is initiator, and last committed
+  // URL was empty).
+  EXPECT_FALSE(HasAdNavWithoutGestureUseCounter(url));
+}
+
+IN_PROC_BROWSER_TEST_F(AdClickMetricsBrowserTest,
+                       LocationAssign_FromAdScriptWithoutGesture_SameSite) {
+  GURL url =
+      embedded_test_server()->GetURL("a.com", "/ad_tagging/frame_factory.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  GURL new_url = embedded_test_server()->GetURL(
+      "a.com", "/ad_tagging/frame_factory.html?same_site=true");
+
+  content::TestNavigationObserver navigation_observer(GetWebContents());
+  // Use a script that is tagged as an ad.
+  EXPECT_TRUE(content::ExecJs(
+      GetWebContents()->GetPrimaryMainFrame(),
+      content::JsReplace("executeLocationAssignFromAdScript($1)", new_url),
+      content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  navigation_observer.Wait();
+
+  EXPECT_FALSE(
+      navigation_observer.last_navigation_started_with_transient_activation());
+  EXPECT_TRUE(navigation_observer.last_navigation_started_by_ad());
+
+  NavigateAwayToFlushUseCounterUKM(GetWebContents());
+
+  EXPECT_FALSE(HasAdNavWithoutGestureUseCounter(url));
+  EXPECT_FALSE(HasAdClickMainFrameNavigationUseCounterForUrl(url));
 }
 
 IN_PROC_BROWSER_TEST_F(AdClickMetricsBrowserTest,
@@ -1299,7 +1368,7 @@ IN_PROC_BROWSER_TEST_F(AdClickMetricsBrowserTest,
       browser()->tab_strip_model()->GetWebContentsAt(0));
 
   EXPECT_FALSE(HasAdClickMainFrameNavigationUseCounterForUrl(url));
-  EXPECT_TRUE(HasAdNavWithoutGestureUseCounter(url));
+  EXPECT_FALSE(HasAdNavWithoutGestureUseCounter(url));
 }
 
 IN_PROC_BROWSER_TEST_F(AdClickMetricsBrowserTest,

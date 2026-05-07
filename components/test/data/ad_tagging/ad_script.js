@@ -56,6 +56,10 @@ function windowOpenFromAdScript(url) {
   window.open(url);
 }
 
+function navigatePopupFromAdScript(url) {
+  window.my_popup.location.href = url;
+}
+
 function navigateIframeFromAdScript(name, url) {
   document.getElementsByName(name)[0].src = url;
 }
