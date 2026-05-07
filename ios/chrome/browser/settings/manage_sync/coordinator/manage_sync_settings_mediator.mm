@@ -1239,19 +1239,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
     if (errorSectionPreviouslyExisted) {
       [self removeSyncErrorsSection:notifyConsumer];
     }
-
-    // Storing the item type in `syncErrorItem` serves as a state token to track
-    // that the administrator error is active, even though it isn't displayed in
-    // this section.
-    if (hasErrorNow &&
-        type.value() == SyncDisabledByAdministratorErrorItemType) {
-      // TODO(crbug.com/510642956): The item is never added into the model.
-      // Do we want to remove `createSyncDisabledByAdministratorErrorItem`?
-      // Or do we want to fix the code and show this item?
-      self.syncErrorItem = [self createSyncDisabledByAdministratorErrorItem];
-    } else {
       self.syncErrorItem = nil;
-    }
     return;
   }
 
@@ -1329,25 +1317,12 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
 
 // Returns whether the error state has changed since the last update.
 - (BOOL)needsErrorSectionUpdate:(std::optional<SyncSettingsItemType>)type {
-  BOOL hasError = type.has_value();
-  return (hasError && !self.syncErrorItem) ||
-         (!hasError && self.syncErrorItem) ||
-         (hasError && self.syncErrorItem &&
+  BOOL shouldDisplayError =
+      type.has_value() && (type != SyncDisabledByAdministratorErrorItemType);
+  return (shouldDisplayError && !self.syncErrorItem) ||
+         (!shouldDisplayError && self.syncErrorItem) ||
+         (shouldDisplayError && self.syncErrorItem &&
           type.value() != self.syncErrorItem.type);
-}
-
-// Returns an item to show to the user the sync cannot be turned on for an
-// enterprise policy reason.
-- (TableViewItem*)createSyncDisabledByAdministratorErrorItem {
-  TableViewImageItem* item = [[TableViewImageItem alloc]
-      initWithType:SyncDisabledByAdministratorErrorItemType];
-  item.image = SymbolWithPalette(CustomSettingsRootSymbol(kEnterpriseSymbol),
-                                 @[ [UIColor colorNamed:kStaticGrey600Color] ]);
-  item.title = GetNSString(
-      IDS_IOS_GOOGLE_SERVICES_SETTINGS_SYNC_DISABLBED_BY_ADMINISTRATOR_TITLE);
-  item.enabled = NO;
-  item.textColor = [UIColor colorNamed:kTextSecondaryColor];
-  return item;
 }
 
 // Returns YES if the given type is managed by policies (i.e. is not syncable)
