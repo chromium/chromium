@@ -434,46 +434,45 @@ void GlicPrivateInvokeFunction::OnPromptRetrieved(
 
   tabs::TabInterface* tab_interface = nullptr;
 
-  if (in_new_tab) {
-    // Navigate to a new tab.
-    NavigateParams navigate_params(profile, chrome::ChromeUINewTabURLAsGURL(),
-                                   ui::PAGE_TRANSITION_LINK);
-    bool open_in_foreground =
-        extensions_features::kGlicOpenNewTabInForegroundParam.Get();
-    navigate_params.disposition =
-        open_in_foreground ? WindowOpenDisposition::NEW_FOREGROUND_TAB
-                           : WindowOpenDisposition::NEW_BACKGROUND_TAB;
-    base::WeakPtr<content::NavigationHandle> navigation_handle =
-        Navigate(&navigate_params);
-    if (navigation_handle) {
-      tab_interface = tabs::TabInterface::MaybeGetFromContents(
-          navigation_handle->GetWebContents());
-    }
-  } else {
-    content::RenderFrameHost* rfh = GetRfhForDocumentId(document_id);
-    if (!rfh) {
-      Respond(GetPromptResponseValueAndLog(
-          api::glic_private::ErrorCode::kLocalInvalidDocumentId));
-      return;
-    }
-
-    if (!IsAccountConsistent(IdentityManagerFactory::GetForProfile(profile),
-                             *rfh)) {
-      Respond(GetPromptResponseValueAndLog(
-          api::glic_private::ErrorCode::kLocalAccountMismatch));
-      return;
-    }
-    tab_interface = tabs::TabInterface::MaybeGetFromContents(
-        content::WebContents::FromRenderFrameHost(rfh));
+  content::RenderFrameHost* rfh = GetRfhForDocumentId(document_id);
+  if (!rfh) {
+    Respond(GetPromptResponseValueAndLog(
+        api::glic_private::ErrorCode::kLocalInvalidDocumentId));
+    return;
   }
 
+  if (!IsAccountConsistent(IdentityManagerFactory::GetForProfile(profile),
+                           *rfh)) {
+    Respond(GetPromptResponseValueAndLog(
+        api::glic_private::ErrorCode::kLocalAccountMismatch));
+    return;
+  }
+
+  tab_interface = tabs::TabInterface::MaybeGetFromContents(
+      content::WebContents::FromRenderFrameHost(rfh));
   if (!tab_interface) {
     Respond(GetPromptResponseValueAndLog(
         extensions::api::glic_private::ErrorCode::kLocalNoActiveTab));
     return;
   }
 
-  options.target.surface = tab_interface;
+  if (in_new_tab) {
+    extensions_features::GlicOpenNewTabDisposition disposition =
+        extensions_features::kGlicOpenNewTabDispositionParam.Get();
+    bool open_in_foreground = true;
+    if (disposition ==
+        extensions_features::GlicOpenNewTabDisposition::kBackground) {
+      open_in_foreground = false;
+    } else if (disposition == extensions_features::GlicOpenNewTabDisposition::
+                                  kForegroundIfNotConsented) {
+      open_in_foreground =
+          !CreateProfileState(profile).is_enabled_and_consented;
+    }
+    options.target.surface = glic::NewTab(
+        tab_interface->GetBrowserWindowInterface(), open_in_foreground);
+  } else {
+    options.target.surface = tab_interface;
+  }
 
   glic::GlicKeyedService* glic_service =
       glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile,

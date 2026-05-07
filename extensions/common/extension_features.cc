@@ -57,10 +57,20 @@ const base::FeatureParam<bool> kGlicRequireConsentForInvokeParam(
     "glic_require_consent_for_invoke",
     false);
 
-const base::FeatureParam<bool> kGlicOpenNewTabInForegroundParam(
-    &kApiGlicAccessFromGoogleWebpage,
-    "glic_open_new_tab_in_foreground",
-    true);
+const base::FeatureParam<GlicOpenNewTabDisposition>::Option
+    kGlicOpenNewTabDispositionOptions[] = {
+        {GlicOpenNewTabDisposition::kForeground,
+         kGlicOpenNewTabDispositionForeground},
+        {GlicOpenNewTabDisposition::kBackground,
+         kGlicOpenNewTabDispositionBackground},
+        {GlicOpenNewTabDisposition::kForegroundIfNotConsented,
+         kGlicOpenNewTabDispositionForegroundIfNotConsented}};
+
+const base::FeatureParam<GlicOpenNewTabDisposition>
+    kGlicOpenNewTabDispositionParam{&kApiGlicAccessFromGoogleWebpage,
+                                    "glic_open_new_tab_disposition",
+                                    GlicOpenNewTabDisposition::kForeground,
+                                    &kGlicOpenNewTabDispositionOptions};
 
 BASE_FEATURE(kApiProxyOverrideRulesPrivate, base::FEATURE_ENABLED_BY_DEFAULT);
 

@@ -195,7 +195,7 @@ class GlicPrivateApiNewTabInBackgroundTest
   GlicPrivateApiNewTabInBackgroundTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         extensions_features::kApiGlicAccessFromGoogleWebpage,
-        {{"glic_open_new_tab_in_foreground", "false"}});
+        {{"glic_open_new_tab_disposition", "background"}});
   }
 
  private:
