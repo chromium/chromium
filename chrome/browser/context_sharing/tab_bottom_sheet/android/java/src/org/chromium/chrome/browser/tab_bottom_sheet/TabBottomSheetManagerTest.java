@@ -35,6 +35,7 @@ import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -500,6 +501,7 @@ public class TabBottomSheetManagerTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/510449718")
     public void testDetachNativeInterfaceDelegate() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
