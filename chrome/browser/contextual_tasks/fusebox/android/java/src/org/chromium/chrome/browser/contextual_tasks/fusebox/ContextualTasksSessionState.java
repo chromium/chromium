@@ -49,6 +49,11 @@ public class ContextualTasksSessionState extends FuseboxSessionState {
     }
 
     @Override
+    protected void createAutoComplete(Profile profile) {
+        mAutocomplete = null;
+    }
+
+    @Override
     public void destroy() {
         // We override deactivate() to be a no-op, so we must explicitly call the base
         // implementation during destruction to ensure cleanup.

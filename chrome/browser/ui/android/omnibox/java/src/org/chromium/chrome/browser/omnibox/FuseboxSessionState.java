@@ -68,9 +68,9 @@ public class FuseboxSessionState implements UserData {
     private final AutocompleteInput mAutocompleteInput = new AutocompleteInput();
 
     private @Nullable FuseboxMetrics mMetrics;
-    private @Nullable Profile mProfile;
+    protected @Nullable Profile mProfile;
     private @Nullable ComposeboxQueryControllerBridge mComposeBoxQueryControllerBridge;
-    private @Nullable AutocompleteController mAutocomplete;
+    protected @Nullable AutocompleteController mAutocomplete;
     private @Nullable FuseboxAttachmentModelList mFuseboxAttachmentModelList;
     private @Nullable OneShotCallback<Profile> mPendingProfileCallback;
     private @Nullable WebContents mWebContents;
@@ -212,9 +212,7 @@ public class FuseboxSessionState implements UserData {
         assert (mProfile == null);
         mProfile = profile;
 
-        // AutocompleteController is currently a Profile-keyed instance and does not require
-        // explicit destruction.
-        mAutocomplete = AutocompleteController.getForProfile(mProfile);
+        createAutoComplete(profile);
 
         if (mComposeBoxQueryControllerBridge == null) {
             mComposeBoxQueryControllerBridge =
@@ -234,6 +232,17 @@ public class FuseboxSessionState implements UserData {
 
         linkSessionControllers();
         if (onFullyActivated != null) onFullyActivated.run();
+    }
+
+    /**
+     * Create the AutocompleteController for the session.
+     *
+     * @param profile The profile to create the controller for.
+     */
+    protected void createAutoComplete(Profile profile) {
+        // AutocompleteController is currently a Profile-keyed instance and does not require
+        // explicit destruction.
+        mAutocomplete = AutocompleteController.getForProfile(profile);
     }
 
     @Override

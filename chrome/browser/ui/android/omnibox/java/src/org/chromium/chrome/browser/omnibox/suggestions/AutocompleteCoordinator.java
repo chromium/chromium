@@ -365,6 +365,13 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
     }
 
     /**
+     * @return Whether the coordinator has an AutocompleteController.
+     */
+    public boolean hasAutocompleteController() {
+        return mMediator.hasAutocompleteController();
+    }
+
+    /**
      * Handle the key events associated with the suggestion list.
      *
      * @param keyCode The keycode representing what key was interacted with.
@@ -390,7 +397,7 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
 
             boolean openInNewTab = event.isAltPressed();
             boolean openInNewWindow = !openInNewTab && event.isShiftPressed();
-            if (mParent.getVisibility() == View.VISIBLE) {
+            if (mParent.getVisibility() == View.VISIBLE && mMediator.hasAutocompleteController()) {
                 mMediator.loadTypedOmniboxText(event.getEventTime(), openInNewTab, openInNewWindow);
                 return true;
             }

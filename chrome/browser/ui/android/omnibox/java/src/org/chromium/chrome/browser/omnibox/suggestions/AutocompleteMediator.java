@@ -349,6 +349,13 @@ class AutocompleteMediator
     }
 
     /**
+     * @return Whether the mediator has an AutocompleteController.
+     */
+    public boolean hasAutocompleteController() {
+        return mAutocomplete != null;
+    }
+
+    /**
      * Retrieve the omnibox suggestion at the specified index. The index represents the ordering in
      * the underlying model. The index does not represent visibility due to the current scroll
      * position of the list.

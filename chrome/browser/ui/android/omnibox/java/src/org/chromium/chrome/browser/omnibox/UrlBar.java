@@ -184,6 +184,13 @@ public class UrlBar extends AutocompleteEditText {
 
         /** Called to notify that UrlBar has been touched after focus. */
         void onTouchAfterFocus();
+
+        /**
+         * Called when an editor action is performed on the UrlBar.
+         *
+         * @param actionCode The action code performed.
+         */
+        default void onEditorAction(int actionCode) {}
     }
 
     /** Delegate that provides the additional functionality to the textual context menus. */
@@ -579,6 +586,14 @@ public class UrlBar extends AutocompleteEditText {
         }
 
         return result;
+    }
+
+    @Override
+    public void onEditorAction(int actionCode) {
+        if (mUrlBarDelegate != null) {
+            mUrlBarDelegate.onEditorAction(actionCode);
+        }
+        super.onEditorAction(actionCode);
     }
 
     /**
