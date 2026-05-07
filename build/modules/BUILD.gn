@@ -4,6 +4,7 @@
 
 import("//build/config/c++/c++.gni")
 import("//build/config/clang/clang.gni")
+import("//build/config/compiler_cpu_abi.gn")
 import("//build/config/sysroot.gni")
 import("//buildtools/third_party/libc++/libcxx_headers.gni")
 import("//buildtools/third_party/libc++/modules.gni")
@@ -43,24 +44,28 @@ if (use_unified_system_module) {
     script = "//build/modules/unified/generate_system_modulemap.py"
 
     args = [
-      "--clang",
-      rebase_path("${clang_base_path}/bin/clang++", root_build_dir),
-      "--sysroot",
-      rebase_path(sysroot, root_build_dir),
-      "--output",
-      rebase_path(modulemap, root_build_dir),
-      "--modulemap",
-      rebase_path("//third_party/libc++/src/include/module.modulemap.in",
-                  root_build_dir),
-      "--modulemap",
-      rebase_path("${clang_dir}/module.modulemap", root_build_dir),
-      "--module-name",
-      "//build/modules:system",
-      "--os",
-      current_os,
-      "--cpu",
-      current_cpu,
-    ]
+             "--clang",
+             rebase_path("${clang_base_path}/bin/clang++", root_build_dir),
+             "--sysroot",
+             rebase_path(sysroot, root_build_dir),
+             "--output",
+             rebase_path(modulemap, root_build_dir),
+             "--modulemap",
+             rebase_path("//third_party/libc++/src/include/module.modulemap.in",
+                         root_build_dir),
+             "--modulemap",
+             rebase_path("${clang_dir}/module.modulemap", root_build_dir),
+             "--module-name",
+             "//build/modules:system",
+             "--os",
+             current_os,
+             "--cpu",
+             current_cpu,
+             "--",
+           ] + cpu_abi_cflags
+    if (is_chromeos) {
+      args += cros_cpu_abi_cflags
+    }
   }
 
   source_set("system") {

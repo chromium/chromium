@@ -376,31 +376,14 @@ def combine_modulemaps(out: pathlib.Path, modulemaps: list[pathlib.Path],
     return s.getvalue()
 
 
-def main(args):
+def main(args, extra_args):
   """Executes the modulemap generation pipeline."""
-  clang_cpu = _CPU_ARG[args.cpu]
-  if args.os == 'android':
-    # The real triple is x86_64-linux-android29, for example, but it appears
-    # to work fine without the version number, and this way we don't have to
-    # keep updating it.
-    target = f'{clang_cpu}-linux-android'
-  elif args.os == 'fuchsia':
-    target = f'{clang_cpu}-unknown-fuchsia'
-  elif args.os == "mac":
-    target = f'{clang_cpu}-apple-macos'
-  elif args.os == "ios":
-    target = f'{clang_cpu}-apple-ios'
-  else:
-    target = f'{clang_cpu}-unknown-{args.os}-gnu'
   deps = calculate_transitive_headers(
       clang_args=[
           str(args.clang),
           # Some files are only read with optimization flags enabled.
           '-O2',
           '-D_FORTIFY_SOURCE=3',
-          # Target architecture is required for preprocessor to define built-in
-          # target-specific macros (e.g., __x86_64__).
-          f'--target={target}',
           f'--sysroot={args.sysroot}',
           # Ensure we're using the right libc++
           '-nostdinc++',
@@ -414,6 +397,7 @@ def main(args):
           # Ensures that paths to compiler builtin headers are kept relative
           # rather than being resolved to absolute/canonical symlinked paths.
           '-no-canonical-prefixes',
+          *extra_args,
       ],
       include_dirs=[parse_modulemap(mm) for mm in args.modulemap],
       sysroot=args.sysroot,
@@ -460,4 +444,7 @@ if __name__ == '__main__':
       help=(
           f'Instead of compiling, generate a bash script {str(_DEBUG_SCRIPT)} '
           'that attempts to compile'))
-  main(parser.parse_args())
+  args, remaining_args = parser.parse_known_args()
+  if remaining_args and remaining_args[0] == '--':
+    remaining_args.pop(0)
+  main(args, remaining_args)
