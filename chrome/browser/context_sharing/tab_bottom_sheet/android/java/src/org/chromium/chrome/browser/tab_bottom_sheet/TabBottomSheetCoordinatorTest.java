@@ -285,28 +285,6 @@ public class TabBottomSheetCoordinatorTest {
     }
 
     @Test
-    public void testTabBottomSheetContentDestroyClearsContainer() {
-        simulateShowSuccessAndGetObserver();
-        verify(mMockBottomSheetController)
-                .requestShowContent(mBottomSheetContentArgumentCaptor.capture(), eq(true));
-        TabBottomSheetContent content = mBottomSheetContentArgumentCaptor.getValue();
-        assertNotNull(content);
-
-        ViewGroup peekContainer = mView.findViewById(R.id.actor_control_container);
-        assertNotNull(peekContainer);
-
-        // Simulate a stale view.
-        View staleView = new View(mContext);
-        peekContainer.addView(staleView);
-        assertEquals(1, peekContainer.getChildCount());
-
-        content.destroy();
-
-        // Verify no children are left in the container.
-        assertEquals(0, peekContainer.getChildCount());
-    }
-
-    @Test
     public void testCorrectFullHeightRatio_WithoutKeyboard() {
         when(mKeyboardDelegate.isKeyboardShowing(eq(mView))).thenReturn(false);
         simulateShowSuccessAndGetObserver();

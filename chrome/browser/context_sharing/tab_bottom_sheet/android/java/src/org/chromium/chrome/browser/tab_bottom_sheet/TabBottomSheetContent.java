@@ -6,13 +6,13 @@ package org.chromium.chrome.browser.tab_bottom_sheet;
 
 import android.content.Context;
 import android.view.View;
-import android.view.ViewGroup;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.StringRes;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.build.NullUtil;
 import org.chromium.chrome.browser.context_sharing.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -27,9 +27,10 @@ public class TabBottomSheetContent implements BottomSheetContent {
     private final int mPeekViewHeight;
     private final @ColorInt int mBackgroundColor;
     private final @Nullable GlowSpec mGlowSpec;
-    private final ViewGroup mPeekContainer;
 
     /**
+     * Constructor.
+     *
      * @param contentView The inflated view for the bottom sheet.
      * @param fullHeightRatio The full height ratio for the bottom sheet.
      * @param backgroundColor The background color for the bottom sheet.
@@ -54,9 +55,10 @@ public class TabBottomSheetContent implements BottomSheetContent {
                 mContentView
                         .getResources()
                         .getDimensionPixelSize(R.dimen.tab_bottom_sheet_peek_height_total);
-        mPeekContainer = (ViewGroup) mContentView.findViewById(R.id.actor_control_container);
-        assert mPeekContainer != null;
-        mPeekContainer.setBackgroundColor(mBackgroundColor);
+
+        View view = mContentView.findViewById(R.id.actor_control_container);
+        View peekContainer = NullUtil.assertNonNull(view);
+        peekContainer.setBackgroundColor(mBackgroundColor);
     }
 
     @Override
@@ -81,9 +83,7 @@ public class TabBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public void destroy() {
-        mPeekContainer.removeAllViews();
-    }
+    public void destroy() {}
 
     @Override
     public int getPriority() {
