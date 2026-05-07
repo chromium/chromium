@@ -106,7 +106,6 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser/ash/account_manager",
-    "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/signin",
     "//chrome/test:test_support",
@@ -128,23 +127,38 @@ source_set("browser_tests") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "os_sync_handler_unittest.cc" ]
+  sources = [
+    "os_sync_handler_unittest.cc",
+    "people_section_unittest.cc",
+  ]
 
   deps = [
     ":people",
     "//ash/public/cpp:test_support",
     "//base",
+    "//base/test:test_support",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/ash/login/users",
     "//chrome/browser/sync",
     "//chrome/browser/ui/webui/ash/settings",
+    "//chrome/browser/ui/webui/ash/settings/search",
     "//chrome/common",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
+    "//chromeos/ash/components/account_manager",
+    "//chromeos/ash/components/dbus/userdataauth",
+    "//components/account_id",
+    "//components/account_manager_core",
     "//components/keyed_service/core",
+    "//components/prefs",
+    "//components/session_manager/test:test_support",
     "//components/signin/public/identity_manager:test_support",
     "//components/sync:test_support",
     "//components/sync/base",
+    "//components/user_manager",
     "//content/public/browser",
     "//content/test:test_support",
+    "//google_apis",
     "//testing/gmock",
     "//testing/gtest",
   ]

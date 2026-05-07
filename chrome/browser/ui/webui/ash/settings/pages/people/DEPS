@@ -42,4 +42,7 @@ specific_include_rules = {
   "graduation_handler\.cc": [
     "+chrome/browser/ui/ash/system_web_apps/system_web_app_utils.h",
   ],
+  "people_section_unittest\\.cc": [
+    "+chrome/browser/ash/login/users/profile_user_manager_controller.h",
+  ],
 }

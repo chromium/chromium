@@ -47,7 +47,6 @@
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
-#include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/pref_names.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
@@ -514,7 +513,7 @@ PeopleSection::PeopleSection(Profile* profile,
         AccountManagerFactory::Get()->GetAccountManagerFacade(
             profile->GetPath().value());
     DCHECK(account_manager_facade_);
-    account_manager_facade_observation_.Observe(account_manager_facade_.get());
+    account_manager_observation_.Observe(account_manager_.get());
     account_apps_availability_ =
         AccountAppsAvailabilityFactory::GetForProfile(profile);
     FetchAccounts();
@@ -560,7 +559,7 @@ void PeopleSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   // Toggles the ChromeOS Account Manager submenu in the People section.
   html_source->AddBoolean("isAccountManagerEnabled",
-                          account_manager_facade_ != nullptr);
+                          account_manager_ != nullptr);
   html_source->AddBoolean("isDeviceAccountManaged",
                           profile()->GetProfilePolicyConnector()->IsManaged());
 
@@ -652,25 +651,19 @@ void PeopleSection::RegisterHierarchy(HierarchyGenerator* generator) const {
 }
 
 void PeopleSection::FetchAccounts() {
-  account_manager_facade_->GetAccounts(
+  CHECK(account_manager_);
+  account_manager_->GetAccounts(
       base::BindOnce(&PeopleSection::UpdateAccountManagerSearchTags,
                      weak_factory_.GetWeakPtr()));
 }
 
-void PeopleSection::OnAccountUpserted(
-    const ::account_manager::Account& account) {
+void PeopleSection::OnTokenUpserted(const ::account_manager::Account& account) {
   FetchAccounts();
 }
 
 void PeopleSection::OnAccountRemoved(
     const ::account_manager::Account& account) {
   FetchAccounts();
-}
-
-void PeopleSection::OnAuthErrorChanged(
-    const account_manager::AccountKey& account,
-    const GoogleServiceAuthError& error) {
-  // Nothing to do.
 }
 
 void PeopleSection::UpdateAccountManagerSearchTags(

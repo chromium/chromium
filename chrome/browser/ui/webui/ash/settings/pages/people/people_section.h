@@ -13,7 +13,6 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/os_settings_section.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "components/account_manager_core/account.h"
-#include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/prefs/pref_change_registrar.h"
 
@@ -27,6 +26,13 @@ class WebUIDataSource;
 namespace signin {
 class IdentityManager;
 }  // namespace signin
+
+// TODO(crbug.com/365741912, crbug.com/365902693): Remove this forward
+// declaration in a near-future CL after moving AccountManagerUIHandler off the
+// facade.
+namespace account_manager {
+class AccountManagerFacade;
+}  // namespace account_manager
 
 namespace ash {
 
@@ -43,7 +49,7 @@ class SearchTagRegistry;
 // allowed by policy/flags. Different sets of Sync tags are shown depending on
 // whether the feature is enabed or disabled.
 class PeopleSection : public OsSettingsSection,
-                      public account_manager::AccountManagerFacade::Observer {
+                      public account_manager::AccountManager::Observer {
  public:
   PeopleSection(Profile* profile,
                 SearchTagRegistry* search_tag_registry,
@@ -63,14 +69,15 @@ class PeopleSection : public OsSettingsSection,
   void RegisterHierarchy(HierarchyGenerator* generator) const override;
 
  private:
-  // AccountManagerFacade::Observer:
-  void OnAccountUpserted(const ::account_manager::Account& account) override;
+  // account_manager::AccountManager::Observer:
   void OnAccountRemoved(const ::account_manager::Account& account) override;
-  void OnAuthErrorChanged(const account_manager::AccountKey& account,
-                          const GoogleServiceAuthError& error) override;
+  void OnTokenUpserted(const ::account_manager::Account& account) override;
+
+  // Account list reads for this class use direct `AccountManager`. The facade
+  // is still kept only for `AccountManagerUIHandler` construction.
+  void FetchAccounts();
 
   bool AreFingerprintSettingsAllowed();
-  void FetchAccounts();
   void UpdateAccountManagerSearchTags(
       const std::vector<::account_manager::Account>& accounts);
 
@@ -81,11 +88,11 @@ class PeopleSection : public OsSettingsSection,
   raw_ptr<signin::IdentityManager> identity_manager_;
   raw_ptr<PrefService> pref_service_;
 
-  // An observer for `AccountManagerFacade`. Automatically deregisters when
-  // `this` is destructed.
-  base::ScopedObservation<account_manager::AccountManagerFacade,
-                          account_manager::AccountManagerFacade::Observer>
-      account_manager_facade_observation_{this};
+  // An observer for `AccountManager`. Automatically deregisters when `this` is
+  // destructed.
+  base::ScopedObservation<account_manager::AccountManager,
+                          account_manager::AccountManager::Observer>
+      account_manager_observation_{this};
 
   AuthPerformer auth_performer_;
   LegacyFingerprintEngine fp_engine_;
