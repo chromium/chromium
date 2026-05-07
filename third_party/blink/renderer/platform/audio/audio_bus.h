@@ -94,6 +94,7 @@ class PLATFORM_EXPORT AudioBus final : public ThreadSafeRefCounted<AudioBus> {
   void SetChannelMemory(unsigned channel_index,
                         base::span<float> storage,
                         uint32_t length);
+  void SetChannelMemory(unsigned channel_index, base::span<float> storage);
 
   // Channels
   unsigned NumberOfChannels() const { return channels_.size(); }

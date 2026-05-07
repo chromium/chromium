@@ -34,7 +34,9 @@
 #include <algorithm>
 #include <array>
 #include <memory>
+
 #include "base/compiler_specific.h"
+#include "base/numerics/safe_conversions.h"
 #include "media/base/audio_bus.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_audio_bus.h"
@@ -115,6 +117,12 @@ void AudioBus::SetChannelMemory(unsigned channel_index,
     Channel(channel_index)->Set(storage, length);
     length_ = length;
   }
+}
+
+void AudioBus::SetChannelMemory(unsigned channel_index,
+                                base::span<float> storage) {
+  SetChannelMemory(channel_index, storage,
+                   base::checked_cast<uint32_t>(storage.size()));
 }
 
 void AudioBus::ResizeSmaller(uint32_t new_length) {

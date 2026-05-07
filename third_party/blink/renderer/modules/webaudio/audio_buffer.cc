@@ -328,9 +328,11 @@ std::unique_ptr<SharedAudioBuffer> AudioBuffer::CreateSharedAudioBuffer() {
 SharedAudioBuffer::SharedAudioBuffer(AudioBuffer* buffer)
     : sample_rate_(buffer->sampleRate()), length_(buffer->length()) {
   channels_.resize(buffer->numberOfChannels());
+  channel_spans_.resize(buffer->numberOfChannels());
   for (unsigned int i = 0; i < buffer->numberOfChannels(); ++i) {
-    buffer->getChannelData(i)->buffer()->ShareNonSharedForInternalUse(
-        channels_[i]);
+    NotShared<DOMFloat32Array> channel_data = buffer->getChannelData(i);
+    channel_spans_[i] = channel_data->AsSpan();
+    channel_data->buffer()->ShareNonSharedForInternalUse(channels_[i]);
   }
 }
 

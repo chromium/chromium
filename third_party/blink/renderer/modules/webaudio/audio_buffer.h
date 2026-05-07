@@ -29,6 +29,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_AUDIO_BUFFER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_AUDIO_BUFFER_H_
 
+#include "base/memory/raw_span.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -139,6 +140,9 @@ class SharedAudioBuffer final {
   float sampleRate() const { return sample_rate_; }
 
   const Vector<ArrayBufferContents>& channels() { return channels_; }
+  base::span<float> ChannelSpan(unsigned channel_index) const {
+    return channel_spans_[channel_index];
+  }
 
   void Zero();
 
@@ -146,6 +150,7 @@ class SharedAudioBuffer final {
   float sample_rate_;
   uint32_t length_;
   Vector<ArrayBufferContents> channels_;
+  Vector<base::raw_span<float>> channel_spans_;
 };
 
 }  // namespace blink
