@@ -11,6 +11,7 @@ source_set("eg2_tests") {
     "bookmarks_entries_egtest.mm",
     "bookmarks_interaction_egtest.mm",
     "bookmarks_search_egtest.mm",
+    "bookmarks_security_egtest.mm",
     "managed_bookmarks_egtest.mm",
   ]
   deps = [
