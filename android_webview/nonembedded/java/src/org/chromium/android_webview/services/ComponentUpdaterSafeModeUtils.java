@@ -36,7 +36,7 @@ public class ComponentUpdaterSafeModeUtils {
                     HISTOGRAM_COMPONENT_UPDATER_SAFEMODE_EXECUTED, false);
             return false;
         }
-        Set<String> actions = controller.queryActions(packageName);
+        Set<String> actions = controller.queryActionsUnsafe(packageName);
 
         if (actions.isEmpty() || !actions.contains(SafeModeActionIds.RESET_COMPONENT_UPDATER)) {
             RecordHistogram.recordBooleanHistogram(

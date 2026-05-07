@@ -28,15 +28,12 @@ import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsStatics;
 import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.common.SafeModeAction;
-import org.chromium.android_webview.common.SafeModeActionIds;
 import org.chromium.android_webview.common.SafeModeController;
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingConfigHelper;
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingSafeModeAction;
 import org.chromium.base.Callback;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
-
-import java.util.Set;
 
 /** Tests for AwSafeBrowsingSafeModeAction. */
 @RunWith(Parameterized.class)
@@ -72,7 +69,7 @@ public class SafeBrowsingSafeModeTest extends AwParameterizedTest {
         SafeModeController safeModeController = SafeModeController.getInstance();
         safeModeController.registerActions(
                 new SafeModeAction[] {new AwSafeBrowsingSafeModeAction()});
-        safeModeController.executeActions(Set.of(SafeModeActionIds.DISABLE_AW_SAFE_BROWSING));
+        safeModeController.enableAllRegisteredActionsForTesting();
 
         mContentsClient = new TestAwContentsClient();
         mContainerView = mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
@@ -90,7 +87,7 @@ public class SafeBrowsingSafeModeTest extends AwParameterizedTest {
         SafeModeController safeModeController = SafeModeController.getInstance();
         safeModeController.registerActions(
                 new SafeModeAction[] {new AwSafeBrowsingSafeModeAction()});
-        safeModeController.executeActions(Set.of(SafeModeActionIds.DISABLE_AW_SAFE_BROWSING));
+        safeModeController.enableAllRegisteredActionsForTesting();
 
         mContentsClient = new TestAwContentsClient();
         mContainerView = mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
@@ -111,8 +108,7 @@ public class SafeBrowsingSafeModeTest extends AwParameterizedTest {
         SafeModeController.getInstance()
                 .registerActions(new SafeModeAction[] {new AwSafeBrowsingSafeModeAction()});
         assertFalse(AwSafeBrowsingSafeModeAction.isSafeBrowsingDisabled());
-        SafeModeController.getInstance()
-                .executeActions(Set.of(SafeModeActionIds.DISABLE_AW_SAFE_BROWSING));
+        SafeModeController.getInstance().enableAllRegisteredActionsForTesting();
         assertTrue(AwSafeBrowsingSafeModeAction.isSafeBrowsingDisabled());
     }
 
@@ -124,7 +120,7 @@ public class SafeBrowsingSafeModeTest extends AwParameterizedTest {
         SafeModeController safeModeController = SafeModeController.getInstance();
         safeModeController.registerActions(
                 new SafeModeAction[] {new AwSafeBrowsingSafeModeAction()});
-        safeModeController.executeActions(Set.of(SafeModeActionIds.DISABLE_AW_SAFE_BROWSING));
+        safeModeController.enableAllRegisteredActionsForTesting();
 
         MockPlatformServiceBridge mockPlatformServiceBridge = new MockPlatformServiceBridge();
         PlatformServiceBridge.injectInstance(mockPlatformServiceBridge);

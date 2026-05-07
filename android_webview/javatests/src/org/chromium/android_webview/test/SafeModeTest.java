@@ -394,6 +394,8 @@ public class SafeModeTest extends AwParameterizedTest {
     @MediumTest
     @Feature({"AndroidWebView"})
     public void testQueryActions_disabled() throws Throwable {
+        // Must call registerActions before queryActions.
+        SafeModeController.getInstance().registerActions(new SafeModeAction[0]);
         Assert.assertEquals(
                 "Querying the ContentProvider should yield empty set when SafeMode is disabled",
                 asSet(),
@@ -404,6 +406,8 @@ public class SafeModeTest extends AwParameterizedTest {
     @MediumTest
     @Feature({"AndroidWebView"})
     public void testQueryActions_singleAction() throws Throwable {
+        // Must call registerActions before queryActions.
+        SafeModeController.getInstance().registerActions(new SafeModeAction[0]);
         final String variationsActionId = new VariationsSeedSafeModeAction().getId();
         setSafeMode(Arrays.asList(variationsActionId));
 
@@ -420,6 +424,8 @@ public class SafeModeTest extends AwParameterizedTest {
     @MediumTest
     @Feature({"AndroidWebView"})
     public void testQueryActions_multipleActions() throws Throwable {
+        // Must call registerActions before queryActions.
+        SafeModeController.getInstance().registerActions(new SafeModeAction[0]);
         final String variationsActionId = new VariationsSeedSafeModeAction().getId();
         setSafeMode(Arrays.asList(SAFEMODE_ACTION_NAME, variationsActionId));
 
@@ -436,6 +442,8 @@ public class SafeModeTest extends AwParameterizedTest {
     @MediumTest
     @Feature({"AndroidWebView"})
     public void testQueryActions_autoDisableAfter30Days() throws Throwable {
+        // Must call registerActions before queryActions.
+        SafeModeController.getInstance().registerActions(new SafeModeAction[0]);
         final String variationsActionId = new VariationsSeedSafeModeAction().getId();
         final long initialStartTimeMs = 12345L;
         SafeModeService.setClockForTesting(
@@ -482,6 +490,8 @@ public class SafeModeTest extends AwParameterizedTest {
     @MediumTest
     @Feature({"AndroidWebView"})
     public void testQueryActions_autoDisableIfTimestampInFuture() throws Throwable {
+        // Must call registerActions before queryActions.
+        SafeModeController.getInstance().registerActions(new SafeModeAction[0]);
         final String variationsActionId = new VariationsSeedSafeModeAction().getId();
         final long initialStartTimeMs = 12345L;
         SafeModeService.setClockForTesting(
@@ -514,6 +524,8 @@ public class SafeModeTest extends AwParameterizedTest {
     @MediumTest
     @Feature({"AndroidWebView"})
     public void testQueryActions_extendTimeoutWithDuplicateConfig() throws Throwable {
+        // Must call registerActions before queryActions.
+        SafeModeController.getInstance().registerActions(new SafeModeAction[0]);
         final String variationsActionId = new VariationsSeedSafeModeAction().getId();
         final long initialStartTimeMs = 12345L;
         SafeModeService.setClockForTesting(
@@ -560,6 +572,8 @@ public class SafeModeTest extends AwParameterizedTest {
     @MediumTest
     @Feature({"AndroidWebView"})
     public void testQueryActions_autoDisableIfMissingTimestamp() throws Throwable {
+        // Must call registerActions before queryActions.
+        SafeModeController.getInstance().registerActions(new SafeModeAction[0]);
         final String variationsActionId = new VariationsSeedSafeModeAction().getId();
         setSafeMode(Arrays.asList(variationsActionId));
 
@@ -583,6 +597,8 @@ public class SafeModeTest extends AwParameterizedTest {
     @MediumTest
     @Feature({"AndroidWebView"})
     public void testQueryActions_autoDisableIfMissingActions() throws Throwable {
+        // Must call registerActions before queryActions.
+        SafeModeController.getInstance().registerActions(new SafeModeAction[0]);
         final String variationsActionId = new VariationsSeedSafeModeAction().getId();
         setSafeMode(Arrays.asList(variationsActionId));
 
@@ -606,6 +622,8 @@ public class SafeModeTest extends AwParameterizedTest {
     @MediumTest
     @Feature({"AndroidWebView"})
     public void testQueryActions_emptyAction() throws Throwable {
+        // Must call registerActions before queryActions.
+        SafeModeController.getInstance().registerActions(new SafeModeAction[0]);
         final String invalidWebViewPackageName = "org.chromium.android_webview.test";
 
         Assert.assertFalse(
@@ -615,6 +633,23 @@ public class SafeModeTest extends AwParameterizedTest {
                 "ContentProvider should return empty set when cursor is null",
                 asSet(),
                 SafeModeController.getInstance().queryActions(invalidWebViewPackageName));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testQueryActions_enablesActions() throws Throwable {
+        TestSafeModeAction testAction1 = new TestSafeModeAction("test1");
+        TestSafeModeAction testAction2 = new TestSafeModeAction("test2");
+        setSafeMode(List.of("test2"));
+        SafeModeController controller = SafeModeController.getInstance();
+        controller.registerActions(new SafeModeAction[] {testAction1, testAction2});
+        Assert.assertFalse(controller.isActionEnabled(testAction1.getId()));
+        Assert.assertFalse(controller.isActionEnabled(testAction2.getId()));
+
+        controller.queryActions(TEST_WEBVIEW_PACKAGE_NAME);
+        Assert.assertFalse(controller.isActionEnabled(testAction1.getId()));
+        Assert.assertTrue(controller.isActionEnabled(testAction2.getId()));
     }
 
     private class TestSafeModeAction extends SafeModeAction {
@@ -1670,8 +1705,7 @@ public class SafeModeTest extends AwParameterizedTest {
                 "Crashy class should not be disabled initially",
                 AwCrashyClassUtils.shouldCrashJava());
 
-        SafeModeController.getInstance()
-                .executeActions(Set.of(SafeModeActionIds.DISABLE_CRASHY_CLASS));
+        SafeModeController.getInstance().enableAllRegisteredActionsForTesting();
 
         Assert.assertFalse(
                 "Crashy class should be disabled after executing the action",
