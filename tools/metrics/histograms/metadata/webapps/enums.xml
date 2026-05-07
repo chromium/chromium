@@ -870,6 +870,7 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Failed to read pending update app icons"/>
   <int value="5" label="Command failed due to system shutdown"/>
   <int value="6" label="Command ran successfully"/>
+  <int value="7" label="Update metadata insignificant, silently updated"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/web_applications/commands/app_update_data_read_command.h:AppUpdateDataReadResult) -->

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/commands/command_result.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
@@ -15,6 +16,8 @@
 #include "chrome/browser/web_applications/ui_manager/update_dialog_types.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "components/webapps/common/web_app_id.h"
+
+class Profile;
 
 namespace web_app {
 
@@ -36,9 +39,11 @@ enum class AppUpdateDataReadResult {
   kFailedToReadPendingAppIconsWhenRequested = 4,
   // System shutdown in the middle of running.
   kSystemShutdown = 5,
-  // Data parsing successful.
+  // Data parsing successful, the user can see the dialog.
   kSuccess = 6,
-  kMaxValue = kSuccess
+  // App has insignificant change after setting update fields.
+  kInsignificantChangeAfterUpdate = 7,
+  kMaxValue = kInsignificantChangeAfterUpdate
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/webapps/enums.xml:WebAppUpdateDataReadResult)
@@ -53,6 +58,7 @@ class AppUpdateDataReadCommand
  public:
   AppUpdateDataReadCommand(
       const webapps::AppId& app_id,
+      Profile* profile,
       base::OnceCallback<void(UpdateMetadata)> completed_callback);
   ~AppUpdateDataReadCommand() override;
 
@@ -69,12 +75,24 @@ class AppUpdateDataReadCommand
   void SetOldIconForIdentityUpdate(SkBitmap old_icon);
   void SetNewIconForIdentityUpdate(SkBitmap new_icon);
   void OnIconsProcessedCreateIdentity();
+
+  // Marks the icon diffs as insignificant after comparing them by reading from
+  // the disk.
+  //
+  // This can happen for apps that have no trusted icons on the disk, and the
+  // icon reading code falls back to reading manifest icons. Since the trusted
+  // icon is a subset of the manifest icons, the icons that show up on the
+  // dialog look the same.
+  //
+  // For this case, the update will be applied silently.
+  void OnImageDiffComputedUpdateIdentity(bool more_than_ten_percent_diff);
   void ReportResultAndDestroy(AppUpdateDataReadResult data_read_result);
 
   std::unique_ptr<AppLock> lock_;
   const webapps::AppId app_id_;
   proto::PendingUpdateInfo pending_update_info_;
   WebAppIdentityUpdate update_;
+  const raw_ref<Profile> profile_;
 
   base::WeakPtrFactory<AppUpdateDataReadCommand> weak_factory_{this};
 };

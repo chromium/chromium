@@ -845,7 +845,8 @@ void WebAppCommandScheduler::ReadAppUpdateDataFromDisk(
     base::OnceCallback<void(std::optional<WebAppIdentityUpdate>)> callback,
     const base::Location& location) {
   provider_->command_manager().ScheduleCommand(
-      std::make_unique<AppUpdateDataReadCommand>(app_id, std::move(callback)),
+      std::make_unique<AppUpdateDataReadCommand>(app_id, &profile_.get(),
+                                                 std::move(callback)),
       location);
 }
 
