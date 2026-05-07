@@ -13,7 +13,6 @@ import org.jni_zero.CalledByNative;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.TimeUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -101,13 +100,7 @@ public class PasswordManagerErrorMessageHelperBridge {
         final Activity activity = windowAndroid.getActivity().get();
         assert activity != null : "Activity should not be null";
         AccountManagerFacadeProvider.getInstance()
-                .updateCredentials(
-                        primaryAccountInfo,
-                        activity,
-                        (success) -> {
-                            RecordHistogram.recordBooleanHistogram(
-                                    "PasswordManager.UPMUpdateSignInCredentialsSucces", success);
-                        });
+                .updateCredentials(primaryAccountInfo, activity, (success) -> {});
     }
 
     /**

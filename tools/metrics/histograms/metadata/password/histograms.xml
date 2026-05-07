@@ -4302,18 +4302,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </token>
 </histogram>
 
-<histogram name="PasswordManager.UPMUpdateSignInCredentialsSucces"
-    enum="Boolean" expires_after="2026-03-01">
-  <owner>izuzic@google.com</owner>
-  <owner>ioanap@chromium.org</owner>
-  <summary>
-    Records whether the user was successfully signed in after using the sign in
-    button on the Password Manager error message. The outcome can be either
-    success or failure. It's recorded when the sign in flow that updates
-    credentials finishes. Currently only used on Android.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.UserActionTriggerThatRetrievedPasskeySecret"
     enum="TrustedVaultUserActionTrigger" expires_after="2026-09-13">
   <owner>izuzic@google.com</owner>

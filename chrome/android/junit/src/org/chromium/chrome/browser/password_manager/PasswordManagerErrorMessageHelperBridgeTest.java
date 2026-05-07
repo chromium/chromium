@@ -4,12 +4,10 @@
 
 package org.chromium.chrome.browser.password_manager;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -29,11 +27,9 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.Callback;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.Promise;
 import org.chromium.base.TimeUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
@@ -173,53 +169,15 @@ public class PasswordManagerErrorMessageHelperBridgeTest {
     }
 
     @Test
-    public void testUpdateCredentialsRecordsSuccessWhenSigningInSucceeds() {
+    public void testUpdateCredentialsCallsAccountManager() {
         final Activity activity = mock(Activity.class);
         when(mWindowAndroidMock.getActivity()).thenReturn(new WeakReference<>(activity));
-        doAnswer(
-                        invocation -> {
-                            Callback<Boolean> callback = invocation.getArgument(2);
-                            callback.onResult(true);
-                            return null;
-                        })
-                .when(mFakeAccountManagerFacade)
-                .updateCredentials(eq(TestAccounts.ACCOUNT1), eq(activity), any());
 
         PasswordManagerErrorMessageHelperBridge.startUpdateAccountCredentialsFlow(
                 mWindowAndroidMock, mProfile);
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PasswordManager.UPMUpdateSignInCredentialsSucces", 1));
-        assertEquals(
-                0,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PasswordManager.UPMUpdateSignInCredentialsSucces", 0));
-    }
 
-    @Test
-    public void testUpdateCredentialsRecordsSuccessWhenSigningInFailed() {
-        final Activity activity = mock(Activity.class);
-        when(mWindowAndroidMock.getActivity()).thenReturn(new WeakReference<>(activity));
-        doAnswer(
-                        invocation -> {
-                            Callback<Boolean> callback = invocation.getArgument(2);
-                            callback.onResult(false);
-                            return null;
-                        })
-                .when(mFakeAccountManagerFacade)
+        verify(mFakeAccountManagerFacade)
                 .updateCredentials(eq(TestAccounts.ACCOUNT1), eq(activity), any());
-
-        PasswordManagerErrorMessageHelperBridge.startUpdateAccountCredentialsFlow(
-                mWindowAndroidMock, mProfile);
-        assertEquals(
-                1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PasswordManager.UPMUpdateSignInCredentialsSucces", 0));
-        assertEquals(
-                0,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "PasswordManager.UPMUpdateSignInCredentialsSucces", 1));
     }
 
     @Test
