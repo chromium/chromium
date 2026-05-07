@@ -1420,7 +1420,7 @@ LayoutUnit GridLanesLayoutAlgorithm::ComputeGridLanesItemBlockContribution(
   return baseline_fragment.BlockSize();
 }
 
-GridLayoutSubtree* GridLanesLayoutAlgorithm::ComputeGridLanesGeometry(
+GridSizingTree GridLanesLayoutAlgorithm::ComputeGridLanesSizingTree(
     SizingConstraint sizing_constraint,
     bool should_apply_inline_size_containment,
     GridItems** grid_items,
@@ -1528,7 +1528,18 @@ GridLayoutSubtree* GridLanesLayoutAlgorithm::ComputeGridLanesGeometry(
       MakeGarbageCollected<GridLayoutTrackCollection>(sizing_collection));
 
   *grid_items = &sizing_tree.GetGridItems();
-  return MakeGarbageCollected<GridLayoutSubtree>((sizing_tree.FinalizeTree()));
+  return sizing_tree;
+}
+
+GridLayoutSubtree* GridLanesLayoutAlgorithm::ComputeGridLanesGeometry(
+    SizingConstraint sizing_constraint,
+    bool should_apply_inline_size_containment,
+    GridItems** grid_items,
+    HeapVector<Member<LayoutBox>>* opt_oof_children) {
+  GridSizingTree sizing_tree = ComputeGridLanesSizingTree(
+      sizing_constraint, should_apply_inline_size_containment, grid_items,
+      opt_oof_children);
+  return MakeGarbageCollected<GridLayoutSubtree>(sizing_tree.FinalizeTree());
 }
 
 void GridLanesLayoutAlgorithm::BuildSizingCollection(

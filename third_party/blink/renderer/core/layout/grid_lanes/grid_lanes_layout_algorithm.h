@@ -94,6 +94,16 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
     kFinalPlacement,
   };
 
+  // Builds the grid-lanes sizing tree, runs track sizing (including any
+  // intrinsic repeat passes), and baseline alignment. Grid items are moved out
+  // via the `grid_items` parameter. `opt_oof_children` is an optional vector of
+  // out-of-flow direct children of the grid-lanes container.
+  GridSizingTree ComputeGridLanesSizingTree(
+      SizingConstraint sizing_constraint,
+      bool should_apply_inline_size_containment,
+      GridItems** grid_items,
+      HeapVector<Member<LayoutBox>>* opt_oof_children = nullptr);
+
   // Computes the grid-lanes geometry by running track sizing (including any
   // intrinsic repeat passes), baseline alignment, and finalization. Returns
   // the finalized layout subtree. Grid items are moved out via the
