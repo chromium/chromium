@@ -9,6 +9,9 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/content_settings/core/browser/permission_settings_info.h"
+#include "components/content_settings/core/browser/permission_settings_registry.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/permissions/permission_recovery_success_rate_tracker.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
@@ -44,9 +47,12 @@ TEST_F(PageSpecificContentSettingsTest, HistogramTest) {
   NavigateAndCommit(test_url);
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(profile());
-  map->SetContentSettingDefaultScope(test_url, test_url,
-                                     ContentSettingsType::GEOLOCATION,
-                                     ContentSetting::CONTENT_SETTING_ALLOW);
+  const content_settings::PermissionSettingsInfo* geolocation_info =
+      content_settings::PermissionSettingsRegistry::GetInstance()->Get(
+          content_settings::GeolocationContentSettingsType());
+  map->SetPermissionSettingDefaultScope(
+      test_url, test_url, content_settings::GeolocationContentSettingsType(),
+      geolocation_info->delegate().ToPermissionSetting(CONTENT_SETTING_ALLOW));
   map->SetContentSettingDefaultScope(test_url, test_url,
                                      ContentSettingsType::MEDIASTREAM_MIC,
                                      ContentSetting::CONTENT_SETTING_ALLOW);
@@ -60,11 +66,13 @@ TEST_F(PageSpecificContentSettingsTest, HistogramTest) {
           web_contents()->GetPrimaryMainFrame());
 
   histograms.ExpectTotalCount(kGeolocationHistogramName, 0);
-  content_settings->OnContentAllowed(ContentSettingsType::GEOLOCATION);
+  content_settings->OnContentAllowed(
+      content_settings::GeolocationContentSettingsType());
   histograms.ExpectTotalCount(kGeolocationHistogramName, 1);
   EXPECT_THAT(histograms.GetAllSamples(kGeolocationHistogramName),
               testing::ElementsAre(base::Bucket(1, 1)));
-  content_settings->OnContentAllowed(ContentSettingsType::GEOLOCATION);
+  content_settings->OnContentAllowed(
+      content_settings::GeolocationContentSettingsType());
   // Count should stay same even after multiple usage of permission
   histograms.ExpectTotalCount(kGeolocationHistogramName, 1);
 
