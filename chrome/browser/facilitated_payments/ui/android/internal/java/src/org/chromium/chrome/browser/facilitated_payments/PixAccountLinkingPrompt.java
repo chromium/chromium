@@ -8,6 +8,7 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.ALL_KEYS;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.DECLINE_BUTTON_CALLBACK;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.SETTINGS_LINK_CALLBACK;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.VIDEO_LINK_CALLBACK;
 
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
@@ -98,6 +99,31 @@ public class PixAccountLinkingPrompt implements FacilitatedPaymentsSequenceView 
                                             }
                                         })));
                 settingsLink.setMovementMethod(LinkMovementMethod.getInstance());
+            }
+        } else if (propertyKey == VIDEO_LINK_CALLBACK) {
+            TextView valueProp1 = view.findViewById(R.id.value_prop_message_1);
+            if (valueProp1 != null) {
+                valueProp1.setText(
+                        SpanApplier.applySpans(
+                                valueProp1
+                                        .getContext()
+                                        .getString(
+                                                R.string
+                                                        .pix_account_linking_prompt_b_value_prop_message_1),
+                                new SpanApplier.SpanInfo(
+                                        "<link1>",
+                                        "</link1>",
+                                        new ChromeClickableSpan(
+                                                valueProp1.getContext(),
+                                                v -> model.get(VIDEO_LINK_CALLBACK).onClick(v)) {
+                                            @Override
+                                            public void updateDrawState(
+                                                    android.text.TextPaint textPaint) {
+                                                super.updateDrawState(textPaint);
+                                                textPaint.setUnderlineText(false);
+                                            }
+                                        })));
+                valueProp1.setMovementMethod(LinkMovementMethod.getInstance());
             }
         } else {
             assert false : "Unhandled update to property: " + propertyKey;

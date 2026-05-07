@@ -36,6 +36,7 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.ACCEPT_BUTTON_CALLBACK;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.DECLINE_BUTTON_CALLBACK;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.SETTINGS_LINK_CALLBACK;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.VIDEO_LINK_CALLBACK;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN_VIEW_MODEL;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SURVIVES_NAVIGATION;
@@ -53,10 +54,13 @@ import static org.chromium.components.browser_ui.settings.SettingsNavigation.Set
 import static org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment.PAYMENT_METHODS;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.net.Uri;
+import android.text.TextUtils;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -256,6 +260,18 @@ class FacilitatedPaymentsPaymentMethodsMediator {
                 .set(DECLINE_BUTTON_CALLBACK, v -> mDelegate.onPixAccountLinkingPromptDeclined());
         mModel.get(SCREEN_VIEW_MODEL)
                 .set(SETTINGS_LINK_CALLBACK, v -> startSettings(FINANCIAL_ACCOUNTS));
+        mModel.get(SCREEN_VIEW_MODEL)
+                .set(
+                        VIDEO_LINK_CALLBACK,
+                        v -> {
+                            String videoUrl =
+                                    ChromeFeatureList.getFieldTrialParamByFeature(
+                                            ChromeFeatureList.ENABLE_PIX_ACCOUNT_LINKING_NATIVE,
+                                            "video_url_on_prompt");
+                            if (!TextUtils.isEmpty(videoUrl)) {
+                                openUrl(videoUrl);
+                            }
+                        });
         // Prevent the bottom sheet from closing during page navigations.
         mModel.set(SURVIVES_NAVIGATION, true);
         mModel.set(VISIBLE_STATE, SHOWN);
@@ -452,6 +468,12 @@ class FacilitatedPaymentsPaymentMethodsMediator {
     private void startSettings(int settingsFragment) {
         SettingsNavigationFactory.createSettingsNavigation()
                 .startSettings(mContext, settingsFragment);
+    }
+
+    private void openUrl(String url) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        mContext.startActivity(intent);
     }
 
     @VisibleForTesting

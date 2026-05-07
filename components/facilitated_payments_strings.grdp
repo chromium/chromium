@@ -132,7 +132,7 @@
     Pay with Pix without switching apps
   </message>
   <message name="IDS_PIX_ACCOUNT_LINKING_PROMPT_B_VALUE_PROP_MESSAGE_1" desc="First value prop message in the bottom sheet showing Pix account linking prompt (Variation B)." formatter_data="android_java">
-    Pay without copying and pasting Pix code. See how it works
+    Pay without copying and pasting Pix code. <ph name="BEGIN_LINK1">&lt;link1&gt;</ph>See how it works<ph name="END_LINK1">&lt;/link1&gt;</ph>
   </message>
   <message name="IDS_PIX_ACCOUNT_LINKING_PROMPT_B_VALUE_PROP_MESSAGE_2" desc="Second value prop message in the bottom sheet showing Pix account linking prompt (Variation B)." formatter_data="android_java">
     Google encryption protects your info

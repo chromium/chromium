@@ -21,6 +21,7 @@ extern const base::FeatureParam<std::string>
     kPixAccountLinkingNativePromptVariant;
 extern const base::FeatureParam<int>
     kPixAccountLinkingNativeTriggerDelaySeconds;
+extern const base::FeatureParam<std::string> kVideoUrlOnPrompt;
 BASE_DECLARE_FEATURE(kEnableStaticQrCodeForPix);
 BASE_DECLARE_FEATURE(kEnableIframeForPix);
 BASE_DECLARE_FEATURE(kEnablePixInCct);

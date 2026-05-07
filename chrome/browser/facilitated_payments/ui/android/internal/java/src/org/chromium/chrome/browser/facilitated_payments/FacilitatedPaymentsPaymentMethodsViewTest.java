@@ -22,6 +22,8 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.CONTINUE_BUTTON;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.EWALLET;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.PAYMENT_APP;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.SETTINGS_LINK_CALLBACK;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.VIDEO_LINK_CALLBACK;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN_VIEW_MODEL;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SURVIVES_NAVIGATION;
@@ -34,7 +36,6 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VisibleState.HIDDEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VisibleState.SHOWN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VisibleState.SWAPPING_SCREEN;
-import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.PixAccountLinkingPromptProperties.SETTINGS_LINK_CALLBACK;
 
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
@@ -933,10 +934,13 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
     @MediumTest
     @EnableFeatures({"EnablePixAccountLinkingNative:prompt_variant/VariationB"})
     public void testPixAccountLinkingPromptContents_VariantB() {
+        boolean[] videoLinkClicked = new boolean[1];
         runOnUiThreadBlocking(
                 () -> {
                     mModel.set(SCREEN, PIX_ACCOUNT_LINKING_PROMPT);
                     mModel.get(SCREEN_VIEW_MODEL).set(SETTINGS_LINK_CALLBACK, v -> {});
+                    mModel.get(SCREEN_VIEW_MODEL)
+                            .set(VIDEO_LINK_CALLBACK, v -> videoLinkClicked[0] = true);
                     mModel.set(VISIBLE_STATE, SHOWN);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -949,7 +953,7 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
 
         TextView valuePropMessage1 = mView.getContentView().findViewById(R.id.value_prop_message_1);
         assertThat(
-                valuePropMessage1.getText(),
+                valuePropMessage1.getText().toString(),
                 is("Pay without copying and pasting Pix code. See how it works"));
         assertNotNull(valuePropMessage1.getCompoundDrawablesRelative()[0]);
         TextView valuePropMessage2 = mView.getContentView().findViewById(R.id.value_prop_message_2);
@@ -966,6 +970,15 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
         assertThat(acceptButton.getText(), is("Link your account"));
         ButtonCompat declineButton = mView.getContentView().findViewById(R.id.decline_button);
         assertThat(declineButton.getText(), is("Not now"));
+
+        android.text.Spanned spannedText = (android.text.Spanned) valuePropMessage1.getText();
+        android.text.style.ClickableSpan[] spans =
+                spannedText.getSpans(
+                        0, spannedText.length(), android.text.style.ClickableSpan.class);
+        assertThat(spans.length, is(1));
+
+        runOnUiThreadBlocking(() -> spans[0].onClick(valuePropMessage1));
+        assertThat(videoLinkClicked[0], is(true));
     }
 
     @Test

@@ -37,6 +37,11 @@ const base::FeatureParam<std::string> kPixAccountLinkingNativePromptVariant{
 const base::FeatureParam<int> kPixAccountLinkingNativeTriggerDelaySeconds{
     &kEnablePixAccountLinkingNative, "trigger_delay_seconds", 3};
 
+// TODO: Replace with a public YouTube link for production to guarantee access.
+const base::FeatureParam<std::string> kVideoUrlOnPrompt{
+    &kEnablePixAccountLinkingNative, "video_url_on_prompt",
+    "https://support.google.com/wallet/answer/14616353?hl=en"};
+
 // When enabled, static qr code will be supported for pix pay flow.
 BASE_FEATURE(kEnableStaticQrCodeForPix, base::FEATURE_DISABLED_BY_DEFAULT);
 
