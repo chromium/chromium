@@ -33,8 +33,15 @@ constexpr int kAudioFramerate = 100;  // 100 FPS for 10ms packets.
 constexpr int kMinVideoBitrate = 300000;
 constexpr int kMaxVideoBitrate = 5000000;
 constexpr int kAudioBitrate = 0;   // 0 means automatic.
-constexpr int kMaxFrameRate = 30;  // The maximum frame rate for captures.
+constexpr int kDefaultMaxFrameRate = 30;   // The default maximum frame rate.
+constexpr int kTargetMaxFrameRate60 = 60;  // Target frame rate for 60FPS.
 constexpr int kMaxWidth = 1920;    // Maximum video width in pixels.
+
+int GetMaxFrameRate() {
+  return base::FeatureList::IsEnabled(features::kCastStreaming60fps)
+             ? kTargetMaxFrameRate60
+             : kDefaultMaxFrameRate;
+}
 constexpr int kMaxHeight = 1080;   // Maximum video height in pixels.
 constexpr int kMinWidth = 180;     // Minimum video frame width in pixels.
 constexpr int kMinHeight = 180;    // Minimum video frame height in pixels.
@@ -114,7 +121,7 @@ FrameSenderConfig MirrorSettings::GetDefaultVideoConfig(
   config.min_bitrate = kMinVideoBitrate;
   config.max_bitrate = kMaxVideoBitrate;
   config.start_bitrate = kMinVideoBitrate;
-  config.max_frame_rate = kMaxFrameRate;
+  config.max_frame_rate = GetMaxFrameRate();
   config.video_codec_params = VideoCodecParams(codec);
   return config;
 }
@@ -132,7 +139,7 @@ media::VideoCaptureParams MirrorSettings::GetVideoCaptureParams() {
   media::VideoCaptureParams params;
   params.requested_format =
       media::VideoCaptureFormat(gfx::Size(max_width_, max_height_),
-                                kMaxFrameRate, media::PIXEL_FORMAT_I420);
+                                GetMaxFrameRate(), media::PIXEL_FORMAT_I420);
   if (max_height_ == min_height_ && max_width_ == min_width_) {
     params.resolution_change_policy = ResolutionChangePolicy::FIXED_RESOLUTION;
   } else if (enable_sender_side_letterboxing_) {

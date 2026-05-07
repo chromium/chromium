@@ -8059,6 +8059,7 @@ from previous Chrome versions.
   <int value="-1988840552" label="WebViewExtraHeadersSameOriginOnly:disabled"/>
   <int value="-1988567154" label="ObservableAPI:enabled"/>
   <int value="-1988415440" label="BackgroundListening:enabled"/>
+  <int value="-1988218085" label="CastStreaming60fps:enabled"/>
   <int value="-1988127107" label="UseNotificationCompatBuilder:enabled"/>
   <int value="-1987939098"
       label="AutofillEnablePasswordInfoBarAccountIndicationFooter:enabled"/>
@@ -13131,6 +13132,7 @@ from previous Chrome versions.
   <int value="-306935714" label="lite-video-force-override-decision"/>
   <int value="-306885206" label="NtpModulesHeaderIcon:disabled"/>
   <int value="-306831741" label="TabGroupPaneAndroid:disabled"/>
+  <int value="-306439706" label="CastStreaming60fps:disabled"/>
   <int value="-306412483"
       label="OverlayScrollbarFlashOnlyOnceVisibleOnViewport:enabled"/>
   <int value="-304951461" label="TextSuggestionsTouchBar:enabled"/>

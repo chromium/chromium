@@ -15,6 +15,9 @@ namespace features {
 COMPONENT_EXPORT(MIRRORING_SERVICE)
 BASE_DECLARE_FEATURE(kCastEnableStreamingWithHiDPI);
 
+COMPONENT_EXPORT(MIRRORING_SERVICE)
+BASE_DECLARE_FEATURE(kCastStreaming60fps);
+
 }  // namespace features
 }  // namespace mirroring
 

@@ -5509,6 +5509,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCastStreamingPerformanceOverlayDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(media::kCastStreamingPerformanceOverlay)},
 
+    {"enable-cast-streaming-60fps", flag_descriptions::kCastStreaming60fpsName,
+     flag_descriptions::kCastStreaming60fpsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(mirroring::features::kCastStreaming60fps)},
+
     {"enable-cast-streaming-av1", flag_descriptions::kCastStreamingAv1Name,
      flag_descriptions::kCastStreamingAv1Description, kOsDesktop,
      FEATURE_VALUE_TYPE(media::kCastStreamingAv1)},

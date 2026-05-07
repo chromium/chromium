@@ -2479,6 +2479,10 @@ inline constexpr char kCastMessageLoggingDescription[] =
     "Enables logging of all messages exchanged between websites, Chrome, "
     "and Cast receivers in chrome://media-router-internals.";
 
+inline constexpr char kCastStreaming60fpsName[] = "Cast Streaming 60fps";
+inline constexpr char kCastStreaming60fpsDescription[] =
+    "Enables Cast Streaming at 60 frames per second.";
+
 inline constexpr char kCastStreamingAv1Name[] =
     "Enable AV1 video encoding for Cast Streaming";
 inline constexpr char kCastStreamingAv1Description[] =
