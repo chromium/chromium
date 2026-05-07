@@ -22377,6 +22377,36 @@
             ]
         }
     ],
+    "SkiaGraphiteWinIntel": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SkiaGraphiteWinIntel"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SkiaGraphiteWinNonIntel": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SkiaGraphiteWinNonIntel"
+                    ]
+                }
+            ]
+        }
+    ],
     "Skills": [
         {
             "platforms": [

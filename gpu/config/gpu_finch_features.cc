@@ -320,7 +320,7 @@ const base::FeatureParam<std::string> kDrDcBlockListByAndroidBuildFP{
     &kEnableDrDc, "BlockListByAndroidBuildFP", ""};
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// Enable Skia Graphite with the platform's default Dawn backend.
+// // Enable Skia Graphite with the platform's default Dawn backend.
 // Note: This can be overridden by --enable-skia-graphite and
 // --disable-skia-graphite which take precedence over the feature flag, and the
 // Dawn backend can be overridden with the --skia-graphite-dawn-backend flag.
@@ -331,6 +331,14 @@ BASE_FEATURE(kSkiaGraphite,
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
+
+// Enables Skia Graphite on Intel GPUs on Windows.
+// Note: SkiaGraphite feature must be enabled for this flag to have any effect.
+BASE_FEATURE(kSkiaGraphiteWinIntel, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables Skia Graphite on Non-Intel GPUs on Windows.
+// Note: SkiaGraphite feature must be enabled for this flag to have any effect.
+BASE_FEATURE(kSkiaGraphiteWinNonIntel, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Allows CompoundImageBacking to allocate backings during runtime if a
 // compatible backing to serve clients requested usage is not already present.
