@@ -264,30 +264,6 @@ BASE_FEATURE(kWebGPUDecomposeUniformBuffers, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
 
-const base::FeatureParam<std::string> kVulkanBlockListByHardware{
-    &kVulkan, "BlockListByHardware", ""};
-
-const base::FeatureParam<std::string> kVulkanBlockListByBrand{
-    &kVulkan, "BlockListByBrand", ""};
-
-const base::FeatureParam<std::string> kVulkanBlockListByDevice{
-    &kVulkan, "BlockListByDevice", ""};
-
-const base::FeatureParam<std::string> kVulkanBlockListByAndroidBuildId{
-    &kVulkan, "BlockListByAndroidBuildId", ""};
-
-const base::FeatureParam<std::string> kVulkanBlockListByManufacturer{
-    &kVulkan, "BlockListByManufacturer", ""};
-
-const base::FeatureParam<std::string> kVulkanBlockListByModel{
-    &kVulkan, "BlockListByModel", ""};
-
-const base::FeatureParam<std::string> kVulkanBlockListByBoard{
-    &kVulkan, "BlockListByBoard", ""};
-
-const base::FeatureParam<std::string> kVulkanBlockListByAndroidBuildFP{
-    &kVulkan, "BlockListByAndroidBuildFP", ""};
-
 // Blocklists meant for DrDc.
 // crbug.com/1294648, crbug.com/1397578: the screen flickers.
 const base::FeatureParam<std::string> kDrDcBlockListByDevice{
@@ -490,8 +466,9 @@ bool IsUsingVulkan() {
   base::FeatureList* feature_list = base::FeatureList::GetInstance();
   if (feature_list &&
       feature_list->IsFeatureOverriddenFromCommandLine(
-          features::kVulkan.name, base::FeatureList::OVERRIDE_ENABLE_FEATURE))
+          features::kVulkan.name, base::FeatureList::OVERRIDE_ENABLE_FEATURE)) {
     return true;
+  }
 
   // WebView checks, which do not use (and disables) kVulkan.
   // Do this above the Android version check because there are test devices
@@ -499,56 +476,9 @@ bool IsUsingVulkan() {
           switches::kWebViewDrawFunctorUsesVulkan)) {
     return true;
   }
-
-  // No support for devices before Q -- exit before checking feature flags
-  // so that devices are not counted in finch trials.
-  if (base::android::android_info::sdk_int() <
-      base::android::android_info::SDK_VERSION_Q) {
-    return false;
-  }
-
-  if (!base::FeatureList::IsEnabled(kVulkan))
-    return false;
-
-  // Check block list against build info.
-  if (IsDeviceBlocked(base::android::android_info::hardware(),
-                      kVulkanBlockListByHardware.Get())) {
-    return false;
-  }
-  if (IsDeviceBlocked(base::android::android_info::brand(),
-                      kVulkanBlockListByBrand.Get())) {
-    return false;
-  }
-  if (IsDeviceBlocked(base::android::android_info::device(),
-                      kVulkanBlockListByDevice.Get())) {
-    return false;
-  }
-  if (IsDeviceBlocked(base::android::android_info::android_build_id(),
-                      kVulkanBlockListByAndroidBuildId.Get())) {
-    return false;
-  }
-  if (IsDeviceBlocked(base::android::android_info::manufacturer(),
-                      kVulkanBlockListByManufacturer.Get())) {
-    return false;
-  }
-  if (IsDeviceBlocked(base::android::android_info::model(),
-                      kVulkanBlockListByModel.Get())) {
-    return false;
-  }
-  if (IsDeviceBlocked(base::android::android_info::board(),
-                      kVulkanBlockListByBoard.Get())) {
-    return false;
-  }
-  if (IsDeviceBlocked(base::android::android_info::android_build_fp(),
-                      kVulkanBlockListByAndroidBuildFP.Get())) {
-    return false;
-  }
-
-  return true;
-
-#else
-  return base::FeatureList::IsEnabled(kVulkan);
 #endif
+
+  return base::FeatureList::IsEnabled(kVulkan);
 }
 
 bool IsUsingThreadSafeMediaForWebView() {
