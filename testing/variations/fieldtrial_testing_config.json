@@ -21101,7 +21101,7 @@
             ]
         }
     ],
-    "ScrollEndRepaintFollowsScrollUpdate": [
+    "ScrollJankV4SlowPathScrollHandling": [
         {
             "platforms": [
                 "android",
@@ -21112,9 +21112,22 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_Both",
+                    "enable_features": [
+                        "ScrollEndRepaintFollowsScrollUpdate",
+                        "UseScrollIdToCalculateScrollJankV4FrameStages"
+                    ]
+                },
+                {
+                    "name": "Enabled_ScrollEndRepaintFollowsScrollUpdateOnly",
                     "enable_features": [
                         "ScrollEndRepaintFollowsScrollUpdate"
+                    ]
+                },
+                {
+                    "name": "Enabled_UseScrollIdToCalculateScrollJankV4FrameStagesOnly",
+                    "enable_features": [
+                        "UseScrollIdToCalculateScrollJankV4FrameStages"
                     ]
                 }
             ]
