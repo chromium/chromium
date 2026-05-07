@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -87,6 +88,20 @@ String ValidateAndStringifyObject(ScriptState* script_state,
   }
 
   return result;
+}
+
+bool IsValidToolName(const String& name) {
+  if (name.empty() || name.length() > 128) {
+    return false;
+  }
+  for (wtf_size_t i = 0; i < name.length(); ++i) {
+    UChar c = name[i];
+    if (!IsAsciiAlphanumeric(c) && c != '_' && c != '-' && c != '.') {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 ScriptObject JSONStringToScriptObject(ScriptState* script_state,
@@ -269,9 +284,9 @@ void ModelContext::registerTool(ScriptState* script_state,
     return;
   }
 
-  if (!tool->name() || tool->name().empty()) {
+  if (!IsValidToolName(tool->name())) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Tool name is required");
+                                      "Invalid tool name");
     return;
   }
 
@@ -626,6 +641,8 @@ void ModelContext::RegisterDeclarativeTool(
     return;
   }
 
+  // TODO(https://crbug.com/509983792): Surface an error if the tool's name is
+  // not valid.
   UseCounter::Count(document_,
                     WebFeature::kModelContextRegisterDeclarativeTool);
 
