@@ -1,0 +1,43 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos)
+
+source_set("digital_goods") {
+  public = [ "digital_goods_factory_impl.h" ]
+
+  public_deps = [
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//third_party/blink/public/mojom:android_mojo_bindings",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "digital_goods_factory_impl.cc",
+    "digital_goods_impl.cc",
+    "digital_goods_impl.h",
+    "util.cc",
+    "util.h",
+  ]
+
+  deps = [
+    ":digital_goods",
+    "//base",
+    "//chrome/browser/ash/apps",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/web_applications",
+    "//chrome/browser/web_applications/proto",
+    "//chromeos/ash/experiences/arc",
+    "//components/digital_goods/mojom",
+    "//components/payments/core",
+    "//components/tabs:public",
+    "//content/public/browser",
+    "//services/network/public/mojom",
+  ]
+}

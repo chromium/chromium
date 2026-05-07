@@ -3009,12 +3009,6 @@ static_library("browser") {
 
   if (is_chromeos) {
     sources += [
-      "apps/digital_goods/digital_goods_factory_impl.cc",
-      "apps/digital_goods/digital_goods_factory_impl.h",
-      "apps/digital_goods/digital_goods_impl.cc",
-      "apps/digital_goods/digital_goods_impl.h",
-      "apps/digital_goods/util.cc",
-      "apps/digital_goods/util.h",
       "apps/intent_helper/chromeos_disabled_apps_throttle.cc",
       "apps/intent_helper/chromeos_disabled_apps_throttle.h",
       "browser_process_platform_part_ash.cc",
@@ -3110,6 +3104,8 @@ static_library("browser") {
       "//chrome/browser/apps/app_service/app_install:implementation",
       "//chrome/browser/apps/app_service/app_install:navigation_throttle",
       "//chrome/browser/apps/browser_instance",
+      "//chrome/browser/apps/digital_goods",
+      "//chrome/browser/apps/digital_goods:impl",
       "//chrome/browser/ash/accessibility",
       "//chrome/browser/ash/accessibility/live_caption",
       "//chrome/browser/ash/account_manager",
