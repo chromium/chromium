@@ -184,9 +184,10 @@ class AudioManagerAndroid {
         }
 
         // Set the audio capture policy based on the device class.
-        // For non-desktop devices, allow capture only by the system.
-        // For desktop devices, use the default behavior to allow capture by all apps.
-        if (!DeviceInfo.isDesktop()) {
+        // For non-desktop devices, restrict capture to the system apps, unless the
+        // feature is enabled to allow capture for all apps on all form factors.
+        if (!DeviceInfo.isDesktop()
+                && !AudioManagerAndroidJni.get().isAudioPlaybackCaptureAllowedFeatureEnabled()) {
             mAudioManager.setAllowedCapturePolicy(AudioAttributes.ALLOW_CAPTURE_BY_SYSTEM);
         }
 
@@ -792,5 +793,7 @@ class AudioManagerAndroid {
         void setMute(long nativeAudioManagerAndroid, boolean muted);
 
         void onScoStateChanged(long nativeAudioManagerAndroid, boolean state);
+
+        boolean isAudioPlaybackCaptureAllowedFeatureEnabled();
     }
 }

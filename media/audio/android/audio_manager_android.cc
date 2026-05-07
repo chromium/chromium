@@ -359,6 +359,11 @@ static void JNI_AudioManagerAndroid_OnDevicesChanged(JNIEnv* env, bool added) {
   }
 }
 
+static bool JNI_AudioManagerAndroid_IsAudioPlaybackCaptureAllowedFeatureEnabled(
+    JNIEnv* env) {
+  return base::FeatureList::IsEnabled(media::kAllowAudioPlaybackCapture);
+}
+
 std::unique_ptr<AudioManager> CreateAudioManager(
     std::unique_ptr<AudioThread> audio_thread,
     AudioLogFactory* audio_log_factory) {
