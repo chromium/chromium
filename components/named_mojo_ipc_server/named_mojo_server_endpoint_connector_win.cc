@@ -181,14 +181,22 @@ void NamedMojoServerEndpointConnectorWin::OnReady() {
     OnError();
     return;
   }
-  ULONG peer_session_id;
-  if (!GetNamedPipeClientSessionId(pending_named_pipe_handle_.Get(),
-                                   &peer_session_id)) {
-    PLOG(ERROR) << "Failed to get peer session ID";
-    OnError();
-    return;
+  // GetNamedPipeClientSessionId is not available on all Windows SKUs (e.g.
+  // Xbox), so load it dynamically to avoid a static import that would prevent
+  // the DLL from loading on those platforms.
+  using GetNamedPipeClientSessionIdFn = BOOL(WINAPI*)(HANDLE, PULONG);
+  static const auto get_session_id =
+      reinterpret_cast<GetNamedPipeClientSessionIdFn>(::GetProcAddress(
+          ::GetModuleHandle(L"kernel32.dll"), "GetNamedPipeClientSessionId"));
+  if (get_session_id) {
+    ULONG peer_session_id;
+    if (!get_session_id(pending_named_pipe_handle_.Get(), &peer_session_id)) {
+      PLOG(ERROR) << "Failed to get peer session ID";
+      OnError();
+      return;
+    }
+    info->session_id = peer_session_id;
   }
-  info->session_id = peer_session_id;
   if (options_.include_peer_process_info) {
     info->process = base::Process::OpenWithAccess(
         info->pid, PROCESS_QUERY_LIMITED_INFORMATION);
