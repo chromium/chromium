@@ -663,7 +663,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void initializeColorSpinner() {
-        Spinner colorSpinner = (Spinner) findViewById(R.id.color_spinner);
+        Spinner colorSpinner = findViewById(R.id.color_spinner);
         HashMap<String, String> colors = new HashMap<>();
         colors.put("Default", "");
         colors.put("White (AGA Light)", "#ffffff");
@@ -913,7 +913,7 @@ public class MainActivity extends AppCompatActivity
         mOverflowContextualMenuItemCheckbox.setChecked(
                 mSharedPref.getInt(SHARED_PREF_OVERFLOW_CONTEXTUAL_MENU_ITEM_BUTTON, CHECKED)
                         == CHECKED);
-        EditText customSchemeEdit = (EditText) findViewById(R.id.custom_scheme);
+        EditText customSchemeEdit = findViewById(R.id.custom_scheme);
         customSchemeEdit.setText(mCustomScheme, TextView.BufferType.NORMAL);
         mInitialIntentCanLeaveBrowser = findViewById(R.id.allow_initial_navigation_to_leave);
         mInitialIntentCanLeaveBrowser.setChecked(
@@ -921,7 +921,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void initializeCctSpinner() {
-        Spinner cctSpinner = (Spinner) findViewById(R.id.cct_spinner);
+        Spinner cctSpinner = findViewById(R.id.cct_spinner);
         String[] cctOptions =
                 new String[] {
                     CCT_OPTION_REGULAR, CCT_OPTION_PARTIAL, CCT_OPTION_INCOGNITO, CCT_OPTION_AUTHTAB

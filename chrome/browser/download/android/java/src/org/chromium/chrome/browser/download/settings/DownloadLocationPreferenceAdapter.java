@@ -55,10 +55,10 @@ public class DownloadLocationPreferenceAdapter extends DownloadDirectoryAdapter
         DirectoryOption directoryOption = (DirectoryOption) getItem(position);
         if (directoryOption == null) return view;
 
-        TextView titleText = (TextView) view.findViewById(R.id.title);
+        TextView titleText = view.findViewById(R.id.title);
         titleText.setText(directoryOption.name);
 
-        TextView summaryText = (TextView) view.findViewById(R.id.description);
+        TextView summaryText = view.findViewById(R.id.description);
         if (isEnabled(position)) {
             String summary =
                     StringUtils.getAvailableBytesForUi(

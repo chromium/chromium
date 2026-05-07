@@ -222,7 +222,7 @@ public class RecentTabsPageTest {
         final String title = group.getTitle();
         waitForView(title);
 
-        ImageView iconView = (ImageView) mPage.getView().findViewById(R.id.row_icon);
+        ImageView iconView = mPage.getView().findViewById(R.id.row_icon);
         assertNotNull(iconView.getBackground());
         assertEquals(View.VISIBLE, iconView.getVisibility());
         assertThat(iconView.getBackground(), instanceOf(GradientDrawable.class));
@@ -272,7 +272,7 @@ public class RecentTabsPageTest {
         waitForViewToDisappear(groupString);
 
         // Check that the remaining show history row item does not have an icon visible.
-        ImageView iconView = (ImageView) mPage.getView().findViewById(R.id.row_icon);
+        ImageView iconView = mPage.getView().findViewById(R.id.row_icon);
         assertEquals(View.GONE, iconView.getVisibility());
     }
 

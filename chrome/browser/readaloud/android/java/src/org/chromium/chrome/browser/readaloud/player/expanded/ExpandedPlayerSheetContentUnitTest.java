@@ -320,7 +320,7 @@ public class ExpandedPlayerSheetContentUnitTest {
 
     @Test
     public void testLoadingTextIsSetCorrectly() {
-        TextView loadingText = (TextView) mContentView.findViewById(R.id.readaloud_loading_text);
+        TextView loadingText = mContentView.findViewById(R.id.readaloud_loading_text);
 
         mContent.setRequestedPlaybackMode(PlaybackMode.OVERVIEW);
         assertEquals(

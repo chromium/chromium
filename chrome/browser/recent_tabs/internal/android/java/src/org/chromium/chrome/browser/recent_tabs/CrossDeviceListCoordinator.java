@@ -40,7 +40,7 @@ public class CrossDeviceListCoordinator {
                 (CrossDevicePaneView)
                         LayoutInflater.from(context)
                                 .inflate(R.layout.cross_device_pane, /* root= */ null);
-        ListView listView = (ListView) mView.findViewById(R.id.cross_device_list_view);
+        ListView listView = mView.findViewById(R.id.cross_device_list_view);
         listView.setAdapter(adapter);
 
         PropertyModel model = CrossDeviceListProperties.create();

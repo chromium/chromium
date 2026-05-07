@@ -90,7 +90,7 @@ public class ReaderModePrefsViewUnitTest {
         assertTrue(
                 ((MaterialButton) mReaderModePrefsView.findViewById(R.id.font_sans_serif))
                         .isChecked());
-        Slider slider = (Slider) mReaderModePrefsView.findViewById(R.id.font_size_slider);
+        Slider slider = mReaderModePrefsView.findViewById(R.id.font_size_slider);
         assertEquals(1.0f, slider.getValue(), 0.0f);
     }
 
@@ -236,7 +236,7 @@ public class ReaderModePrefsViewUnitTest {
                         .expectIntRecord(
                                 "DomDistiller.Android.FontScalingSelected", expectedMaxPercent)
                         .build();
-        Slider slider = (Slider) mReaderModePrefsView.findViewById(R.id.font_size_slider);
+        Slider slider = mReaderModePrefsView.findViewById(R.id.font_size_slider);
 
         // Manually force abritary size on the slider for the purposes of simulating drag motion.
         slider.measure(

@@ -363,7 +363,7 @@ public class OmniboxTest {
                     locationBar.getStatusCoordinatorForTesting();
             final int firstIcon = statusCoordinator.getSecurityIconResourceIdForTesting();
 
-            UrlBar urlBar = (UrlBar) mActivityTestRule.getActivity().findViewById(R.id.url_bar);
+            UrlBar urlBar = mActivityTestRule.getActivity().findViewById(R.id.url_bar);
             ThreadUtils.runOnUiThreadBlocking(() -> urlBar.requestFocus());
             CriteriaHelper.pollUiThread(
                     () -> statusCoordinator.getSecurityIconResourceIdForTesting() != firstIcon);

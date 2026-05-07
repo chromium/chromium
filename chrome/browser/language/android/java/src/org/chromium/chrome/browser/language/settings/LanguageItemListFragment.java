@@ -133,7 +133,7 @@ public abstract class LanguageItemListFragment extends Fragment
                 inflater.inflate(R.layout.language_list_with_add_button, container, false);
         final Activity activity = getActivity();
 
-        RecyclerView recyclerView = (RecyclerView) inflatedView.findViewById(R.id.language_list);
+        RecyclerView recyclerView = inflatedView.findViewById(R.id.language_list);
         LinearLayoutManager layoutManager = new LinearLayoutManager(activity);
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.addItemDecoration(
@@ -149,7 +149,7 @@ public abstract class LanguageItemListFragment extends Fragment
                         SettingsUtils.getShowShadowOnScrollListener(
                                 scrollView, inflatedView.findViewById(R.id.shadow)));
 
-        TextView addLanguageButton = (TextView) inflatedView.findViewById(R.id.add_language);
+        TextView addLanguageButton = inflatedView.findViewById(R.id.add_language);
         final TintedDrawable tintedDrawable =
                 TintedDrawable.constructTintedDrawable(getContext(), R.drawable.plus);
         tintedDrawable.setTint(SemanticColorUtils.getDefaultControlColorActive(getContext()));

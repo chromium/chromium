@@ -179,9 +179,8 @@ public class VoiceMenuUnitTest {
     }
 
     private static RadioButton getRadioButton(MenuItem item) {
-        return (RadioButton) item.findViewById(R.id.readaloud_radio_button);
+        return item.findViewById(R.id.readaloud_radio_button);
     }
-
 
     @Test
     public void testEmptyVoiceList() {

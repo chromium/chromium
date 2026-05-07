@@ -103,7 +103,7 @@ public class SogouPromoDialog extends PromoDialog {
         }
 
         StyleSpan boldSpan = new StyleSpan(Typeface.BOLD);
-        TextView textView = (TextView) findViewById(R.id.subheader);
+        TextView textView = findViewById(R.id.subheader);
         SpannableString description =
                 SpanApplier.applySpans(
                         getContext().getString(R.string.sogou_explanation),

@@ -101,7 +101,7 @@ public abstract class AutofillEditorBase extends Fragment
                         SettingsUtils.getShowShadowOnScrollListener(
                                 scrollView, baseView.findViewById(R.id.shadow)));
         // Inflate the editor and buttons into the "content" LinearLayout.
-        LinearLayout contentLayout = (LinearLayout) scrollView.findViewById(R.id.content);
+        LinearLayout contentLayout = scrollView.findViewById(R.id.content);
         inflater.inflate(getLayoutId(), contentLayout, true);
         inflater.inflate(R.layout.autofill_editor_base_buttons, contentLayout, true);
 
@@ -149,7 +149,7 @@ public abstract class AutofillEditorBase extends Fragment
 
     /** Initializes the buttons within the layout. */
     protected void initializeButtons(View layout) {
-        Button button = (Button) layout.findViewById(R.id.button_secondary);
+        Button button = layout.findViewById(R.id.button_secondary);
         button.setOnClickListener(
                 new View.OnClickListener() {
                     @Override

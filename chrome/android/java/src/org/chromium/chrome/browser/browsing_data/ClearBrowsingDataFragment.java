@@ -578,7 +578,7 @@ public class ClearBrowsingDataFragment extends ChromeBaseSettingsFragment
 
     /** Disable the "Clear" button if none of the options are selected. Otherwise, enable it. */
     private void updateButtonState() {
-        Button clearButton = (Button) assumeNonNull(getView()).findViewById(R.id.clear_button);
+        Button clearButton = assumeNonNull(getView()).findViewById(R.id.clear_button);
         boolean isEnabled = !getSelectedOptions().isEmpty();
         clearButton.setEnabled(isEnabled);
     }

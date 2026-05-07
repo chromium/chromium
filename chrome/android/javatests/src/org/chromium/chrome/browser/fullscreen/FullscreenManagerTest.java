@@ -569,7 +569,7 @@ public class FullscreenManagerTest {
         FullscreenManagerTestUtils.waitForBrowserControlsToBeMoveable(activity);
 
         // Check that the URL bar has not grabbed focus (http://crbug.com/40315594)
-        UrlBar urlBar = (UrlBar) activity.findViewById(R.id.url_bar);
+        UrlBar urlBar = activity.findViewById(R.id.url_bar);
         Assert.assertFalse("Url bar grabbed focus", urlBar.hasFocus());
     }
 
@@ -597,7 +597,7 @@ public class FullscreenManagerTest {
         FullscreenManagerTestUtils.waitForBrowserControlsToBeMoveable(activity);
 
         // Check that the URL bar has not grabbed focus (http://crbug.com/40315594)
-        UrlBar urlBar = (UrlBar) activity.findViewById(R.id.url_bar);
+        UrlBar urlBar = activity.findViewById(R.id.url_bar);
         Assert.assertFalse("Url bar grabbed focus", urlBar.hasFocus());
     }
 

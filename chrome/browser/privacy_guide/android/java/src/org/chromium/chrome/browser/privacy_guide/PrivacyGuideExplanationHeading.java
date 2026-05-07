@@ -28,7 +28,7 @@ public class PrivacyGuideExplanationHeading extends LinearLayout {
                 context.obtainStyledAttributes(
                         attrs, R.styleable.PrivacyGuideExplanationHeading, 0, 0);
 
-        TextView title = (TextView) view.findViewById(R.id.title);
+        TextView title = view.findViewById(R.id.title);
         title.setText(styledAttrs.getText(R.styleable.PrivacyGuideExplanationHeading_titleText));
 
         styledAttrs.recycle();

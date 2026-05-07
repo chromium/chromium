@@ -58,7 +58,7 @@ public class SiteSearchViewBinder {
                             : R.drawable.ic_expand_more_black_24dp;
             holder.mActionIcon.setImageResource(iconRes);
         } else if (SiteSearchProperties.MENU_DELEGATE == propertyKey) {
-            ListMenuButton button = (ListMenuButton) view.findViewById(R.id.overflow_menu_button);
+            ListMenuButton button = view.findViewById(R.id.overflow_menu_button);
             ListMenuDelegate delegate = model.get(SiteSearchProperties.MENU_DELEGATE);
             button.setDelegate(delegate);
             button.setEnabled(delegate != null);

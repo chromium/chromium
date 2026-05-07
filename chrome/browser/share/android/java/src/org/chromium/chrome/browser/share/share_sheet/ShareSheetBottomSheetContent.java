@@ -226,19 +226,19 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
     private static void bindShareItem(
             PropertyModel model, ViewGroup parent, PropertyKey propertyKey) {
         if (ShareSheetItemViewProperties.ICON.equals(propertyKey)) {
-            ImageView view = (ImageView) parent.findViewById(R.id.icon);
+            ImageView view = parent.findViewById(R.id.icon);
             view.setImageDrawable(model.get(ShareSheetItemViewProperties.ICON));
         } else if (ShareSheetItemViewProperties.LABEL.equals(propertyKey)) {
-            TextView view = (TextView) parent.findViewById(R.id.text);
+            TextView view = parent.findViewById(R.id.text);
             view.setText(model.get(ShareSheetItemViewProperties.LABEL));
         } else if (ShareSheetItemViewProperties.CONTENT_DESCRIPTION.equals(propertyKey)) {
-            TextView view = (TextView) parent.findViewById(R.id.text);
+            TextView view = parent.findViewById(R.id.text);
             view.setContentDescription(model.get(ShareSheetItemViewProperties.CONTENT_DESCRIPTION));
         } else if (ShareSheetItemViewProperties.CLICK_LISTENER.equals(propertyKey)) {
-            View layout = (View) parent.findViewById(R.id.layout);
+            View layout = parent.findViewById(R.id.layout);
             layout.setOnClickListener(model.get(ShareSheetItemViewProperties.CLICK_LISTENER));
         } else if (ShareSheetItemViewProperties.SHOW_NEW_BADGE.equals(propertyKey)) {
-            TextView newBadge = (TextView) parent.findViewById(R.id.display_new);
+            TextView newBadge = parent.findViewById(R.id.display_new);
             newBadge.setVisibility(
                     model.get(ShareSheetItemViewProperties.SHOW_NEW_BADGE)
                             ? View.VISIBLE
@@ -250,8 +250,8 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
             PropertyModel model, ViewGroup parent, PropertyKey propertyKey) {
         bindShareItem(model, parent, propertyKey);
         if (ShareSheetItemViewProperties.ICON.equals(propertyKey)) {
-            ImageView view = (ImageView) parent.findViewById(R.id.icon);
-            View layout = (View) parent.findViewById(R.id.layout);
+            ImageView view = parent.findViewById(R.id.icon);
+            View layout = parent.findViewById(R.id.layout);
 
             final int iconSize =
                     ContextUtils.getApplicationContext()

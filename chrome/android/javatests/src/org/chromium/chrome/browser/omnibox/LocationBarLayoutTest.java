@@ -84,11 +84,11 @@ public class LocationBarLayoutTest {
     }
 
     private UrlBar getUrlBar() {
-        return (UrlBar) mActivityTestRule.getActivity().findViewById(R.id.url_bar);
+        return mActivityTestRule.getActivity().findViewById(R.id.url_bar);
     }
 
     private LocationBarLayout getLocationBar() {
-        return (LocationBarLayout) mActivityTestRule.getActivity().findViewById(R.id.location_bar);
+        return mActivityTestRule.getActivity().findViewById(R.id.location_bar);
     }
 
     private LocationBarMediator getLocationBarMediator() {

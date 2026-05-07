@@ -354,7 +354,7 @@ public class FeedV2NewTabPageTest {
     }
 
     RecyclerView getRecyclerView() {
-        return (RecyclerView) getRootView().findViewById(R.id.feed_stream_recycler_view);
+        return getRootView().findViewById(R.id.feed_stream_recycler_view);
     }
 
     private View getRootView() {

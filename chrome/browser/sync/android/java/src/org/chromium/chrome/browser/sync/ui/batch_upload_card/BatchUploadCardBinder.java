@@ -25,14 +25,14 @@ class BatchUploadCardBinder {
      */
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
         if (BatchUploadCardProperties.DESCRIPTION_TEXT == propertyKey) {
-            TextView text = (TextView) view.findViewById(R.id.signin_settings_card_description);
+            TextView text = view.findViewById(R.id.signin_settings_card_description);
             text.setText(model.get(BatchUploadCardProperties.DESCRIPTION_TEXT));
         } else if (BatchUploadCardProperties.BUTTON_TEXT == propertyKey) {
-            Button button = (Button) view.findViewById(R.id.signin_settings_card_button);
+            Button button = view.findViewById(R.id.signin_settings_card_button);
             button.setText(model.get(BatchUploadCardProperties.BUTTON_TEXT));
             button.setOnClickListener(model.get(BatchUploadCardProperties.ON_CLICK_LISTENER));
         } else if (BatchUploadCardProperties.ICON == propertyKey) {
-            ImageView image = (ImageView) view.findViewById(R.id.signin_settings_card_icon);
+            ImageView image = view.findViewById(R.id.signin_settings_card_icon);
             image.setImageDrawable(model.get(BatchUploadCardProperties.ICON));
         }
     }

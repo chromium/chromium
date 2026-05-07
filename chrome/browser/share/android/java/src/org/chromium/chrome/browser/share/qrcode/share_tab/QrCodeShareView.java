@@ -40,9 +40,9 @@ class QrCodeShareView {
                         LayoutInflater.from(context)
                                 .inflate(R.layout.qrcode_share_layout, null, false);
 
-        Button downloadButton = (Button) mView.findViewById(R.id.download);
+        Button downloadButton = mView.findViewById(R.id.download);
         downloadButton.setOnClickListener(listener);
-        Button settingsButton = (Button) mView.findViewById(R.id.settings);
+        Button settingsButton = mView.findViewById(R.id.settings);
         settingsButton.setOnClickListener(
                 new OnClickListener() {
                     @Override
@@ -116,8 +116,8 @@ class QrCodeShareView {
             return;
         }
 
-        Button downloadButton = (Button) mView.findViewById(R.id.download);
-        Button settingsButton = (Button) mView.findViewById(R.id.settings);
+        Button downloadButton = mView.findViewById(R.id.download);
+        Button settingsButton = mView.findViewById(R.id.settings);
         if (mHasStoragePermission) {
             downloadButton.setVisibility(View.VISIBLE);
             settingsButton.setVisibility(View.GONE);

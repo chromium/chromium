@@ -255,9 +255,9 @@ public class TipsPromoCoordinator {
                                     /* attachToRoot= */ false);
             stepView.setBackgroundResource(TipsUtils.getDetailStepBackground(i, steps.size()));
             // TODO(crbug.com/454724965): Translate the step number set for all languages.
-            TextView stepNumber = (TextView) stepView.findViewById(R.id.step_number);
+            TextView stepNumber = stepView.findViewById(R.id.step_number);
             stepNumber.setText(String.valueOf(i + 1));
-            TextView stepContent = (TextView) stepView.findViewById(R.id.step_content);
+            TextView stepContent = stepView.findViewById(R.id.step_content);
             stepContent.setText(steps.get(i));
             stepsContainer.addView(stepView);
         }

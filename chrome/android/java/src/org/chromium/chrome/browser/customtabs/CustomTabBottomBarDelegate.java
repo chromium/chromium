@@ -238,7 +238,7 @@ public class CustomTabBottomBarDelegate
         if (mCustomButtonsUpdater != null && mCustomButtonsUpdater.updateBottomBarButton(params)) {
             return;
         }
-        ImageButton button = (ImageButton) getBottomBarView().findViewById(params.getId());
+        ImageButton button = getBottomBarView().findViewById(params.getId());
         button.setContentDescription(params.getDescription());
         button.setImageDrawable(params.getIcon(mActivity, getButtonIconTint()));
     }

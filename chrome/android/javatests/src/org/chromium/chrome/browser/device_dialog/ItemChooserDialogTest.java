@@ -167,11 +167,11 @@ public class ItemChooserDialogTest implements ItemChooserDialog.ItemSelectedCall
     }
 
     private ImageView getIconImageView(Dialog dialog, int position) {
-        return (ImageView) getRowView(dialog, position).findViewById(R.id.icon);
+        return getRowView(dialog, position).findViewById(R.id.icon);
     }
 
     private TextView getDescriptionTextView(Dialog dialog, int position) {
-        return (TextView) getRowView(dialog, position).findViewById(R.id.description);
+        return getRowView(dialog, position).findViewById(R.id.description);
     }
 
     @Test
@@ -944,7 +944,7 @@ public class ItemChooserDialogTest implements ItemChooserDialog.ItemSelectedCall
                             return dialog1;
                         });
 
-        Button cancelButton = (Button) dialog.findViewById(R.id.negative);
+        Button cancelButton = dialog.findViewById(R.id.negative);
         CriteriaHelper.pollUiThread(
                 () -> Criteria.checkThat(cancelButton.getVisibility(), Matchers.is(View.VISIBLE)));
         CriteriaHelper.pollUiThread(

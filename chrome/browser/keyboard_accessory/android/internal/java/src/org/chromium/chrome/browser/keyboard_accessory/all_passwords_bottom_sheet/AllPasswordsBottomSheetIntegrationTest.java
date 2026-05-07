@@ -180,7 +180,7 @@ public class AllPasswordsBottomSheetIntegrationTest {
     private RecyclerView getCredentials() {
         BottomSheetContent content = assumeNonNull(mBottomSheetController).getCurrentSheetContent();
         assertNonNull(content);
-        return (RecyclerView) content.getContentView().findViewById(R.id.sheet_item_list);
+        return content.getContentView().findViewById(R.id.sheet_item_list);
     }
 
     private ChipView getCredentialNameAt(int index) {

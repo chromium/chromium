@@ -1193,7 +1193,7 @@ public class FeedSurfaceCoordinator
             mHeaderView.setVisibility(View.GONE);
         } else {
             mHeaderView.setVisibility(View.VISIBLE);
-            TextView titleView = (TextView) mHeaderView.findViewById(R.id.header_title);
+            TextView titleView = mHeaderView.findViewById(R.id.header_title);
             if (titleView != null) {
                 titleView.setText(headerText);
             }

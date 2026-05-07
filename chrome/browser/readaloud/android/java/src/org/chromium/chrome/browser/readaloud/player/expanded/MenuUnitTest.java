@@ -80,7 +80,7 @@ public class MenuUnitTest {
         // addItem and setValue
         MenuItem item = mMenu.addItem(1, 0, "Toggle action", /* header= */ null, Action.TOGGLE);
         item.setValue(true);
-        SwitchCompat toggle = (SwitchCompat) item.findViewById(R.id.toggle_switch);
+        SwitchCompat toggle = item.findViewById(R.id.toggle_switch);
         assertTrue(toggle.isChecked());
         item.setValue(false);
         assertFalse(toggle.isChecked());
@@ -98,7 +98,7 @@ public class MenuUnitTest {
         // addItem and setValue
         MenuItem item = mMenu.addItem(1, 0, "Radio action", /* header= */ null, Action.RADIO);
         item.setValue(true);
-        RadioButton radioButton = (RadioButton) item.findViewById(R.id.readaloud_radio_button);
+        RadioButton radioButton = item.findViewById(R.id.readaloud_radio_button);
         assertTrue(radioButton.isChecked());
         item.setValue(false);
         assertFalse(radioButton.isChecked());
@@ -146,7 +146,7 @@ public class MenuUnitTest {
         mMenu.setPlayButtonClickHandler(mHandler);
         MenuItem item = mMenu.addItem(1, 0, "test item", /* header= */ null, Action.NONE);
         item.addPlayButton();
-        ImageView playButton = (ImageView) item.findViewById(R.id.play_button);
+        ImageView playButton = item.findViewById(R.id.play_button);
         assertEquals(View.VISIBLE, playButton.getVisibility());
 
         assertTrue(playButton.performClick());
@@ -182,7 +182,7 @@ public class MenuUnitTest {
                 (LinearLayout)
                         mActivity.getLayoutInflater().inflate(R.layout.readaloud_menu_item, null);
         item.getLayoutSupplier().set(layout);
-        SwitchCompat button = (SwitchCompat) item.findViewById(R.id.toggle_switch);
+        SwitchCompat button = item.findViewById(R.id.toggle_switch);
         assertNotNull(button);
 
         // tests if onInitializeAccessibilityEvent is properly setting the event's checked state to

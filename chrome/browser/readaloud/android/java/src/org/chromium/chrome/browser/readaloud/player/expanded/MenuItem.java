@@ -289,11 +289,11 @@ public class MenuItem extends FrameLayout {
     }
 
     private SwitchCompat getToggleSwitch() {
-        return (SwitchCompat) findViewById(R.id.toggle_switch);
+        return findViewById(R.id.toggle_switch);
     }
 
     private RadioButton getRadioButton() {
-        return (RadioButton) findViewById(R.id.readaloud_radio_button);
+        return findViewById(R.id.readaloud_radio_button);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
