@@ -4583,6 +4583,8 @@ const FeatureEntry::FeatureVariation kBookmarksEncryptionVariations[] = {
     {"Stage3", kBookmarksEncryptionStage3, nullptr}};
 
 #if BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam kGestureUserEducationPageDelay2Seconds[] = {
+    {"gesture-user-education-page-delay", "2000"}};
 const FeatureEntry::FeatureParam kGestureUserEducationPageDelay4Seconds[] = {
     {"gesture-user-education-page-delay", "4000"}};
 const FeatureEntry::FeatureParam kGestureUserEducationPageDelay6Seconds[] = {
@@ -4593,6 +4595,7 @@ const FeatureEntry::FeatureParam kGestureUserEducationPageDelay10Seconds[] = {
     {"gesture-user-education-page-delay", "10000"}};
 
 const FeatureEntry::FeatureVariation kGestureUserEducationVariations[] = {
+    {"2000ms delay", kGestureUserEducationPageDelay2Seconds, nullptr},
     {"4000ms delay", kGestureUserEducationPageDelay4Seconds, nullptr},
     {"6000ms delay", kGestureUserEducationPageDelay6Seconds, nullptr},
     {"8000ms delay", kGestureUserEducationPageDelay8Seconds, nullptr},
