@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
@@ -22,6 +23,8 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/contents_capture_border_view.h"
+#include "chrome/browser/ui/views/frame/contents_container_view.h"
 #include "chrome/browser/ui/views/tab_sharing/tab_sharing_infobar.h"
 #include "chrome/browser/ui/views/tab_sharing/tab_sharing_test_utils.h"
 #include "chrome/common/chrome_features.h"
@@ -49,6 +52,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/controls/button/button_controller.h"
+#include "ui/views/view_tracker.h"
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -60,6 +64,8 @@ using ::testing::_;
 using ::testing::Not;
 using TabSharingInfoBarButton =
     ::TabSharingInfoBarDelegate::TabSharingInfoBarButton;
+
+constexpr int kNullTabIndex = -1;
 
 content::WebContents* GetWebContents(Browser* browser, int tab) {
   return browser->tab_strip_model()->GetWebContentsAt(tab);
@@ -196,10 +202,17 @@ content::DesktopMediaID GetDesktopMediaID(Browser* browser, int tab) {
           main_frame->GetRoutingID()));
 }
 
-views::Widget* GetContentsBorder(Browser* browser) {
-  return BrowserView::GetBrowserViewForBrowser(browser)
-      ->GetActiveContentsContainerView()
-      ->capture_contents_border_widget();
+ContentsCaptureBorderView* GetContentsBorder(Browser* browser,
+                                             int tab_index = kNullTabIndex) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  if (tab_index == kNullTabIndex) {
+    return browser_view->GetActiveContentsContainerView()
+        ->capture_contents_border_view();
+  }
+  return browser_view
+      ->GetContentsContainerViewFor(
+          browser->tab_strip_model()->GetWebContentsAt(tab_index))
+      ->capture_contents_border_view();
 }
 
 scoped_refptr<MediaStreamCaptureIndicator> GetCaptureIndicator() {
@@ -219,7 +232,6 @@ bool IsActive(Browser* browser, int tab) {
          GetWebContents(browser, tab);
 }
 
-constexpr int kNullTabIndex = -1;
 const std::u16string kShareThisTabInsteadMessage = u"Share this tab instead";
 const std::u16string kViewTabMessage = u"View tab:";
 
@@ -318,8 +330,6 @@ class TabSharingUIViewsBrowserTestBase : public InProcessBrowserTest {
     DCHECK((capturing_tab != kNullTabIndex && captured_tab != kNullTabIndex) ||
            (capturing_tab == kNullTabIndex && captured_tab == kNullTabIndex));
 
-    views::Widget* contents_border = GetContentsBorder(browser);
-    EXPECT_EQ(has_border, contents_border != nullptr);
     auto capture_indicator = GetCaptureIndicator();
     for (int i = 0; i < browser->tab_strip_model()->count(); ++i) {
       // All tabs have |infobar_count| tab sharing infobars.
@@ -334,14 +344,18 @@ class TabSharingUIViewsBrowserTestBase : public InProcessBrowserTest {
       // Content border is only visible on the shared tab.
       if (has_border) {
         ActivateTab(browser, i);
-        EXPECT_EQ(i == captured_tab, contents_border->IsVisible());
+        ContentsCaptureBorderView* contents_border =
+            GetContentsBorder(browser, i);
+        EXPECT_TRUE(base::test::RunUntil([&]() {
+          return (i == captured_tab) == contents_border->GetVisible();
+        }));
 
         // The contents border should surround the contents container view
         BrowserView* const browser_view =
             BrowserView::GetBrowserViewForBrowser(browser);
         content::WebContents* const web_contents =
             browser->tab_strip_model()->GetWebContentsAt(i);
-        EXPECT_EQ(contents_border->GetWindowBoundsInScreen(),
+        EXPECT_EQ(contents_border->GetBoundsInScreen(),
                   browser_view->GetContentsContainerViewFor(web_contents)
                       ->GetBoundsInScreen());
       }
@@ -539,9 +553,9 @@ IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest,
       .browser = new_browser, .capturing_tab = 0, .captured_tab = 2});
 
 #if !BUILDFLAG(IS_CHROMEOS)
-  auto contents_border_weakptr = GetContentsBorder(new_browser)->GetWeakPtr();
+  views::ViewTracker contents_border_tracker(GetContentsBorder(new_browser, 2));
   CloseBrowserSynchronously(new_browser);
-  EXPECT_FALSE(contents_border_weakptr);
+  EXPECT_EQ(contents_border_tracker.view(), nullptr);
 #endif
 }
 
@@ -960,16 +974,16 @@ IN_PROC_BROWSER_TEST_F(MultipleTabSharingUIViewsBrowserTest, VerifyUi) {
   }
 
 #if !BUILDFLAG(IS_CHROMEOS)
-  views::Widget* contents_border = GetContentsBorder(browser());
+  ContentsCaptureBorderView* contents_border = GetContentsBorder(browser());
   // The capturing tab, which is not itself being captured, does not have
   // the contents-border.
   ActivateTab(browser(), 0);
-  EXPECT_FALSE(contents_border->IsVisible());
+  EXPECT_FALSE(contents_border->GetVisible());
   // All other tabs are being captured, and therefore have a visible
   // contents-borders whenever they themselves (the tabs) are visible.
   for (int i = 1; i < tab_count; ++i) {
     ActivateTab(browser(), i);
-    ASSERT_TRUE(contents_border->IsVisible());
+    ASSERT_TRUE(contents_border->GetVisible());
   }
 #endif
 }

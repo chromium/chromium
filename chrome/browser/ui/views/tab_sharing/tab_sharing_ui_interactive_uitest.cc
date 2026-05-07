@@ -6,6 +6,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/contents_capture_border_view.h"
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
 #include "chrome/browser/ui/views/tab_sharing/tab_capture_contents_border_helper.h"
@@ -75,9 +76,9 @@ class TabSharingMultiContentsViewTest
           ContentsContainerView* const contents_container_view =
               multi_contents_view
                   ->contents_container_views()[contents_container_index];
-          views::Widget* const border_widget =
-              contents_container_view->capture_contents_border_widget();
-          return border_widget ? border_widget->IsVisible() : false;
+          ContentsCaptureBorderView* const border_view =
+              contents_container_view->capture_contents_border_view();
+          return border_view ? border_view->GetVisible() : false;
         },
         should_show);
   }

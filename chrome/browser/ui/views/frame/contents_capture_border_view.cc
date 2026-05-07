@@ -6,15 +6,28 @@
 
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_container_outline.h"
+#include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
+#include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/view_class_properties.h"
 
 ContentsCaptureBorderView::ContentsCaptureBorderView(views::View* mini_toolbar)
     : mini_toolbar_(mini_toolbar) {
+  SetPaintToLayer();
+  layer()->SetFillsBoundsOpaquely(false);
+  layer()->SetOpacity(0.50f);
+
+  SetVisible(false);
+  SetCanProcessEventsWithinSubtree(false);
+  GetViewAccessibility().SetIsInvisible(true);
+
   SetProperty(views::kElementIdentifierKey, kContentsCaptureBorder);
   SetBorder(views::CreateSolidBorder(kContentsBorderThickness,
                                      kColorCapturedTabContentsBorder));
@@ -38,6 +51,15 @@ void ContentsCaptureBorderView::SetIsInSplit(bool is_in_split) {
     // In split mode, we'll draw the border in OnPaint()
     SetBorder(nullptr);
   }
+}
+
+void ContentsCaptureBorderView::SetCaptureContentsBorderLocation(
+    std::optional<gfx::Rect> location) {
+  if (capture_location_ == location) {
+    return;
+  }
+  capture_location_ = location;
+  InvalidateLayout();
 }
 
 void ContentsCaptureBorderView::OnViewBoundsChanged(
