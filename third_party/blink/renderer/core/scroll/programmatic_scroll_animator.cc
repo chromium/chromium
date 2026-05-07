@@ -19,9 +19,12 @@ ProgrammaticScrollAnimator::ProgrammaticScrollAnimator(
     ScrollableArea* scrollable_area)
     : scrollable_area_(scrollable_area) {}
 
-ProgrammaticScrollAnimator::~ProgrammaticScrollAnimator() {
-  if (on_finish_)
+ProgrammaticScrollAnimator::~ProgrammaticScrollAnimator() = default;
+
+void ProgrammaticScrollAnimator::Dispose() {
+  if (on_finish_) {
     std::move(on_finish_).Run(ScrollableArea::ScrollCompletionMode::kFinished);
+  }
 }
 
 void ProgrammaticScrollAnimator::ResetAnimationState() {
