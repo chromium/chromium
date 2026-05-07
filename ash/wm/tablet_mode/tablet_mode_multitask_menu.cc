@@ -66,8 +66,8 @@ class TabletModeMultitaskMenuView : public views::View {
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
 
-    SetBackground(views::CreateRoundedRectBackground(
-        kColorAshShieldAndBaseOpaque, kCornerRadius));
+    SetBackground(views::CreateRoundedRectBackground(ui::kColorSysSurface3,
+                                                     kCornerRadius));
     SetBorder(std::make_unique<views::HighlightBorder>(
         kCornerRadius, views::HighlightBorder::Type::kHighlightBorderOnShadow));
 

@@ -192,7 +192,7 @@ MultitaskMenuView::MultitaskMenuView(aura::Window* window,
   DCHECK(window);
   DCHECK(close_callback_);
   DCHECK(dismiss_callback_);
-  SetBackground(views::CreateSolidBackground(ui::kColorSysSurface3));
+
   SetUseDefaultFillLayout(true);
 
   window_observation_.Observe(window);
