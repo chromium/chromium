@@ -48,6 +48,10 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 using user_education::HelpBubbleArrow;
 using user_education::HelpBubbleParams;
 using user_education::HelpBubbleView;
@@ -349,6 +353,13 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest, MAYBE_AnnotateMenu) {
     GTEST_SKIP_(kLinuxWaylandErrorMessage);
   }
 
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/510801992): Re-enable on macOS 26 once test is deflaked
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
+
   UNCALLED_MOCK_CALLBACK(base::OnceClosure, default_button_clicked);
   constexpr char16_t kButton1Text[] = u"button 1";
 
@@ -390,6 +401,13 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest, TwoMenuHelpBubbles) {
   if (SkipIfLinuxWayland()) {
     GTEST_SKIP_(kLinuxWaylandErrorMessage);
   }
+
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/510801992): Re-enable on macOS 26 once test is deflaked
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
 
   UNCALLED_MOCK_CALLBACK(base::OnceClosure, button_clicked);
   constexpr char16_t kButtonText[] = u"button";

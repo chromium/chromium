@@ -65,6 +65,7 @@
 #endif  // BUILDFLAG(IS_LINUX) && BUILDFLAG(IS_OZONE)
 
 #if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
 #include "ui/base/cocoa/nswindow_test_util.h"
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -1545,6 +1546,11 @@ IN_PROC_BROWSER_TEST_F(MAYBE_MultiScreenFullscreenControllerInteractiveTest,
   SetUpWindowManagementTab();
 #if !BUILDFLAG(IS_MAC)
   const gfx::Rect original_bounds = browser()->window()->GetBounds();
+#else
+  // TODO(crbug.com/510801992): Re-enable on macOS 26 once test is deflaked
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
 #endif
   const display::Display original_display = GetCurrentDisplay(browser());
 
@@ -1630,6 +1636,11 @@ IN_PROC_BROWSER_TEST_F(MAYBE_MultiScreenFullscreenControllerInteractiveTest,
   SetUpWindowManagementTab();
 #if !BUILDFLAG(IS_MAC)
   const gfx::Rect original_bounds = browser()->window()->GetBounds();
+#else
+  // TODO(crbug.com/510801992): Re-enable on macOS 26 once test is deflaked
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
 #endif
   const display::Display original_display = GetCurrentDisplay(browser());
 

@@ -103,6 +103,10 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 #if defined(USE_AURA)
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_window_delegate.h"
@@ -3270,6 +3274,12 @@ void DragAllStep2(DetachToBrowserTabDragControllerTest* test) {
 #define MAYBE_DragAll DragAll
 #endif
 IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest, MAYBE_DragAll) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/510801992): Re-enable on macOS 26 once test is deflaked
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
   AddTabsAndResetBrowser(browser(), 1);
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
   browser()->tab_strip_model()->SelectTabAt(0);
@@ -6219,19 +6229,19 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestTouch,
   run_loop.Run();
 
   // Drag the tab 1 to left-snapping.
-  DragTabAndNotify(
-      tab_strip, base::BindLambdaForTesting([&]() {
-        const gfx::Rect display_bounds =
-            display::Screen::Get()->GetPrimaryDisplay().bounds();
-        const gfx::Point target(display_bounds.x(),
-                                display_bounds.CenterPoint().y());
-        ASSERT_TRUE(DragInputToNotifyWhenDone(
-            target,
-            base::BindLambdaForTesting([&]() { ASSERT_TRUE(ReleaseInput()); }),
-            // The window hint isn't used on Ash.
-            gfx::NativeWindow()));
-      }),
-      1);
+  DragTabAndNotify(tab_strip, base::BindLambdaForTesting([&]() {
+                     const gfx::Rect display_bounds =
+                         display::Screen::Get()->GetPrimaryDisplay().bounds();
+                     const gfx::Point target(display_bounds.x(),
+                                             display_bounds.CenterPoint().y());
+                     ASSERT_TRUE(DragInputToNotifyWhenDone(
+                         target, base::BindLambdaForTesting([&]() {
+                           ASSERT_TRUE(ReleaseInput());
+                         }),
+                         // The window hint isn't used on Ash.
+                         gfx::NativeWindow()));
+                   }),
+                   1);
 
   ASSERT_FALSE(TabDragController::IsActive());
   EXPECT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());

@@ -52,6 +52,10 @@
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/test/views_test_utils.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 namespace {
 class ViewBoundsChangedObserver : public views::ViewObserver,
                                   public ui::test::StateObserver<int> {
@@ -511,7 +515,6 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest, ResizesToSnapPointWidth) {
           }),
           kMultiContentsViewLayoutSnapResizeObserver));
 }
-
 
 // TODO(crbug.com/399212996): Flaky on all platforms.
 IN_PROC_BROWSER_TEST_F(MultiContentsViewUiTest,
@@ -1169,6 +1172,12 @@ IN_PROC_BROWSER_TEST_F(MultiContentsViewDragEntrypointsUiTest,
 
 IN_PROC_BROWSER_TEST_F(MultiContentsViewDragEntrypointsUiTest,
                        DoesNotShowDropTargetOnChromePageLinkDragged) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/510801992): Re-enable on macOS 26 once test is deflaked
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
   RunTestSequence(
       AddInstrumentedTab(kNewTab, GURL(chrome::kChromeUIChromeURLsURL), 0),
       WaitForActiveTabChange(0),
