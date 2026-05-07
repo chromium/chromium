@@ -77,6 +77,9 @@ class CORE_EXPORT FrameCaret final : public GarbageCollected<FrameCaret> {
   // Fetch value of CaretShape, which is kBar, kBlock or kUnderscore.
   CaretShape GetCaretShape() const;
 
+  // Exposed for FrameSelection block caret offset computation.
+  const PositionWithAffinity CaretPosition() const;
+
   // Paint invalidation methods delegating to DisplayItemClient.
   void LayoutBlockWillBeDestroyed(const LayoutBlock&);
   void UpdateStyleAndLayoutIfNeeded();
@@ -112,8 +115,6 @@ class CORE_EXPORT FrameCaret final : public GarbageCollected<FrameCaret> {
   EffectPaintPropertyNode::State CaretEffectNodeState(
       bool visible,
       const TransformPaintPropertyNodeOrAlias& local_transform_space) const;
-
-  const PositionWithAffinity CaretPosition() const;
 
   bool IsCaretEnabled() const {
     return caret_status_bits_.get<CaretEnabledFlag>();

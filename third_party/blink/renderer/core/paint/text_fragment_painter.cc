@@ -600,6 +600,40 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
         NOTREACHED();
     }
   }
+
+  // Paint the character overlapping the block caret with the second value of
+  // caret-color when it's non-auto.
+  std::optional<unsigned> block_caret_char_offset;
+  if (!is_printing && !is_rendering_resource &&
+      paint_info.phase != PaintPhase::kTextClip &&
+      RuntimeEnabledFeatures::CSSCaretColorWithOptionalSecondValueEnabled(
+          layout_object->GetDocument().GetExecutionContext()) &&
+      !layout_object->StyleRef().IsCaretTextColorAuto()) [[unlikely]] {
+    if (LocalFrame* frame = layout_object->GetDocument().GetFrame()) {
+      block_caret_char_offset =
+          frame->Selection().ComputeBlockCaretCharacterOffset(cursor_);
+    }
+  }
+  if (block_caret_char_offset) [[unlikely]] {
+    std::optional<Color> block_text_color =
+        layout_object->StyleRef().ResolvedCaretTextColor();
+    if (block_text_color) {
+      TextPaintStyle block_style = text_style;
+      block_style.fill_color = *block_text_color;
+      block_style.stroke_color = *block_text_color;
+      block_style.emphasis_mark_color = *block_text_color;
+      const unsigned char_start =
+          fragment_paint_info.from + *block_caret_char_offset;
+      const unsigned char_end = char_start + 1;
+      std::optional<GraphicsContextStateSaver> fit_text_state_saver;
+      text_painter.ApplyTextFitScale(fragment_paint_info,
+                                     &fit_text_state_saver);
+      text_painter.Paint(fragment_paint_info.WithStartOffset(char_start)
+                             .WithEndOffset(char_end),
+                         block_style, node_id, auto_dark_mode,
+                         TextPainter::kTextProperOnly);
+    }
+  }
 }
 
 }  // namespace blink

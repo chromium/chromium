@@ -327,6 +327,12 @@ class CORE_EXPORT FrameSelection final
   SelectionState ComputePaintingSelectionStateForCursor(
       const InlineCursorPosition& position) const;
 
+  // Returns the fragment-local character offset of the character covered by
+  // the block caret within |cursor|'s current text fragment, or std::nullopt
+  // if the block caret does not overlap this fragment.
+  std::optional<unsigned> ComputeBlockCaretCharacterOffset(
+      const InlineCursor& cursor) const;
+
   // Notifications from the Document.
   void ContextDestroyed();
   void DidChangeChildren(const ContainerNode::ChildrenChange& change);

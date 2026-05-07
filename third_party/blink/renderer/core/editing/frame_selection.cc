@@ -81,7 +81,11 @@
 #include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
 #include "third_party/blink/renderer/core/layout/hit_test_request.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
+#include "third_party/blink/renderer/core/layout/inline/fragment_item.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
+#include "third_party/blink/renderer/core/layout/inline/offset_mapping.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
+#include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
@@ -1497,6 +1501,57 @@ LayoutSelectionStatus FrameSelection::ComputeLayoutSelectionStatus(
 SelectionState FrameSelection::ComputePaintingSelectionStateForCursor(
     const InlineCursorPosition& position) const {
   return layout_selection_->ComputePaintingSelectionStateForCursor(position);
+}
+
+std::optional<unsigned> FrameSelection::ComputeBlockCaretCharacterOffset(
+    const InlineCursor& cursor) const {
+  if (GetCaretShape() != CaretShape::kBlock) {
+    return std::nullopt;
+  }
+
+  const PositionWithAffinity caret_pos = frame_caret_->CaretPosition();
+  if (caret_pos.IsNull() || !caret_pos.AnchorNode()->IsTextNode()) {
+    return std::nullopt;
+  }
+
+  const FragmentItem* item = cursor.CurrentItem();
+  if (!item || !item->IsText()) {
+    return std::nullopt;
+  }
+
+  // Resolve the fragment's associated DOM node (handles ::first-letter).
+  const LayoutObject* layout_object = cursor.Current().GetLayoutObject();
+  Node* fragment_node = nullptr;
+  if (const auto* text_fragment =
+          DynamicTo<LayoutTextFragment>(layout_object)) {
+    fragment_node = text_fragment->AssociatedTextNode();
+  } else {
+    fragment_node = layout_object->GetNode();
+  }
+  if (fragment_node != caret_pos.AnchorNode()) {
+    return std::nullopt;
+  }
+
+  // Map the DOM caret position to the InlineNode text content offset.
+  const Position position = caret_pos.GetPosition();
+  const OffsetMapping* offset_mapping = OffsetMapping::GetFor(position);
+  if (!offset_mapping) {
+    return std::nullopt;
+  }
+
+  const std::optional<unsigned> tc_offset =
+      offset_mapping->GetTextContentOffset(position);
+  if (!tc_offset) {
+    return std::nullopt;
+  }
+
+  const unsigned fragment_start = item->StartOffset();
+  const unsigned fragment_end = item->EndOffset();
+  if (*tc_offset < fragment_start || *tc_offset >= fragment_end) {
+    return std::nullopt;
+  }
+
+  return *tc_offset - fragment_start;
 }
 
 bool FrameSelection::IsDirectional() const {

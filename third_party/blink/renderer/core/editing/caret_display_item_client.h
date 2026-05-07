@@ -42,6 +42,7 @@ namespace blink {
 
 class GraphicsContext;
 class LayoutBlock;
+class Node;
 class PhysicalBoxFragment;
 struct PaintInvalidatorContext;
 
@@ -126,6 +127,12 @@ class CORE_EXPORT CaretDisplayItemClient final
   Member<const LayoutBlock> previous_layout_block_;
 
   WeakMember<const PhysicalBoxFragment> box_fragment_;
+
+  // The text node at the current block-caret position.
+  // It is used to invalidate its LayoutObject when the caret moves so the
+  // character is repainted with the second value of caret-color if it's
+  // non-auto.
+  WeakMember<Node> block_caret_anchor_;
 
   bool is_active_ = false;
   bool needs_paint_invalidation_ = false;

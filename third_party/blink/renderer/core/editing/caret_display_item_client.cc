@@ -53,6 +53,7 @@ void CaretDisplayItemClient::Trace(Visitor* visitor) const {
   visitor->Trace(layout_block_);
   visitor->Trace(previous_layout_block_);
   visitor->Trace(box_fragment_);
+  visitor->Trace(block_caret_anchor_);
   DisplayItemClient::Trace(visitor);
 }
 
@@ -173,16 +174,13 @@ void CaretDisplayItemClient::UpdateStyleAndLayoutIfNeeded(
   if (!previous_layout_block_)
     previous_layout_block_ = layout_block_.Get();
 
-  CaretShape caret_shape = CaretShape::kBar;
-  bool is_caret_color_auto = false;
-  if (caret_position.AnchorNode() && IsEditable(*caret_position.AnchorNode())) {
-    const ComputedStyle* style =
-        GetComputedStyleForElementOrLayoutObject(*caret_position.AnchorNode());
-    if (style) {
-      is_caret_color_auto = style->IsCaretColorAuto();
-      caret_shape = GetCaretShapeFromComputedStyle(*style);
-    }
-  }
+  const ComputedStyle* style =
+      (caret_position.AnchorNode() && IsEditable(*caret_position.AnchorNode()))
+          ? GetComputedStyleForElementOrLayoutObject(
+                *caret_position.AnchorNode())
+          : nullptr;
+  CaretShape caret_shape =
+      style ? GetCaretShapeFromComputedStyle(*style) : CaretShape::kBar;
 
   CaretRectAndPainterBlock rect_and_block =
       ComputeCaretRectAndPainterBlock(caret_position, caret_shape);
@@ -250,20 +248,54 @@ void CaretDisplayItemClient::UpdateStyleAndLayoutIfNeeded(
     }
   }
 
-  // TODO(https://crbug.com/353713061):
   // https://drafts.csswg.org/css-ui/#caret-color When caret-shape is block,
   // ensuring good visibility and contrast is best achieved with a
   // UA-determined color other than currentColor.
-  if (is_caret_color_auto && caret_shape == CaretShape::kBlock) {
+  // The good visibility can be done via setting the text color (the second
+  // value of caret-color). However, when no value is set, we temporarily set
+  // opacity to 0.5 here to achieve certain visibility.
+  if (caret_shape == CaretShape::kBlock && style &&
+      style->IsCaretTextColorAuto() && style->IsCaretColorAuto()) {
     // Temporarily set opacity to 0.5.
     color_.SetAlpha(0.5);
   }
 
+  const PhysicalRect old_local_rect = local_rect_;
   auto new_local_rect = rect_and_block.caret_rect;
   // TODO(crbug.com/1123630): Avoid paint invalidation on caret movement.
   if (new_local_rect != local_rect_) {
     needs_paint_invalidation_ = true;
     local_rect_ = new_local_rect;
+  }
+
+  // For block caret shape: invalidate the text LayoutObject at both the old
+  // and new caret positions so the character under the caret is repainted
+  // with the second value of caret-color when it's non-auto. Otherwise,
+  // DrawingRecorder reuses the cached text drawing when the caret moves, and
+  // the color override never runs.
+  Node* new_anchor =
+      (caret_shape == CaretShape::kBlock && style &&
+       !style->IsCaretTextColorAuto() &&
+       caret_position.AnchorNode()->IsTextNode() &&
+       RuntimeEnabledFeatures::CSSCaretColorWithOptionalSecondValueEnabled(
+           caret_position.AnchorNode()->GetExecutionContext()))
+          ? caret_position.AnchorNode()
+          : nullptr;
+  if (new_anchor != block_caret_anchor_ || new_local_rect != old_local_rect) {
+    if (block_caret_anchor_) {
+      if (LayoutObject* layout_object =
+              block_caret_anchor_->GetLayoutObject()) {
+        layout_object->SetShouldDoFullPaintInvalidationWithoutLayoutChange(
+            PaintInvalidationReason::kCaret);
+      }
+    }
+    if (new_anchor && new_anchor != block_caret_anchor_) {
+      if (LayoutObject* layout_object = new_anchor->GetLayoutObject()) {
+        layout_object->SetShouldDoFullPaintInvalidationWithoutLayoutChange(
+            PaintInvalidationReason::kCaret);
+      }
+    }
+    block_caret_anchor_ = new_anchor;
   }
 
   if (needs_paint_invalidation_)
