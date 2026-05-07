@@ -1361,24 +1361,12 @@ const FeatureEntry::FeatureParam kAfterEditForExplainGeminiEditMenu[] = {
     {kExplainGeminiEditMenuParams, "1"}};
 const FeatureEntry::FeatureParam kAfterSearchForExplainGeminiEditMenu[] = {
     {kExplainGeminiEditMenuParams, "2"}};
-const FeatureEntry::FeatureParam
-    kAfterEditMinLength10ForExplainGeminiEditMenu[] = {
-        {kExplainGeminiEditMenuParams, "1"},
-        {kExplainGeminiEditMenuMinTextLengthParam, "10"}};
-const FeatureEntry::FeatureParam
-    kAfterEditMinLength20ForExplainGeminiEditMenu[] = {
-        {kExplainGeminiEditMenuParams, "1"},
-        {kExplainGeminiEditMenuMinTextLengthParam, "20"}};
 
 const FeatureEntry::FeatureVariation kPositionForExplainGeminiEditMenu[] = {
     {"Explain Gemini shows up after Edit", kAfterEditForExplainGeminiEditMenu,
      nullptr},
     {"Explain Gemini shows up after Search with Google",
-     kAfterSearchForExplainGeminiEditMenu, nullptr},
-    {"Explain Gemini after Edit, Min Length 10",
-     kAfterEditMinLength10ForExplainGeminiEditMenu, nullptr},
-    {"Explain Gemini after Edit, Min Length 20",
-     kAfterEditMinLength20ForExplainGeminiEditMenu, nullptr}};
+     kAfterSearchForExplainGeminiEditMenu, nullptr}};
 
 const FeatureEntry::FeatureParam kPageActionMenuIconSparkles1[] = {
     {kPageActionMenuIconParams, "1"}};

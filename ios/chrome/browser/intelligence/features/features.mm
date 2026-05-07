@@ -257,19 +257,6 @@ PositionForExplainGeminiEditMenu ExplainGeminiEditMenuPosition() {
   return PositionForExplainGeminiEditMenu::kDisabled;
 }
 
-const char kExplainGeminiEditMenuMinTextLengthParam[] =
-    "ExplainGeminiEditMenuMinTextLength";
-
-BASE_FEATURE_PARAM(int,
-                   kExplainGeminiEditMenuMinTextLengthFeatureParam,
-                   &kExplainGeminiEditMenu,
-                   kExplainGeminiEditMenuMinTextLengthParam,
-                   0);
-
-int ExplainGeminiEditMenuMinTextLength() {
-  return kExplainGeminiEditMenuMinTextLengthFeatureParam.Get();
-}
-
 BASE_FEATURE(kExplainGeminiEditMenu, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGeminiPreciseLocation, base::FEATURE_DISABLED_BY_DEFAULT);
