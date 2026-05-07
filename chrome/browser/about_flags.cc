@@ -3726,18 +3726,6 @@ const FeatureEntry::FeatureVariation kGlicButtonPressedStateVariations[] = {
     {"force solid color icon when pressed",
      kGlicButtonPressedStateForceSolidIcon, nullptr}};
 
-const FeatureEntry::FeatureParam kGlicButtonAltLabelVariant0[] = {
-    {"glic-button-alt-label-variant", "0"}};
-const FeatureEntry::FeatureParam kGlicButtonAltLabelVariant1[] = {
-    {"glic-button-alt-label-variant", "1"}};
-const FeatureEntry::FeatureParam kGlicButtonAltLabelVariant2[] = {
-    {"glic-button-alt-label-variant", "2"}};
-
-const FeatureEntry::FeatureVariation kGlicButtonAltLabelVariations[] = {
-    {"A", kGlicButtonAltLabelVariant0, nullptr},
-    {"B", kGlicButtonAltLabelVariant1, nullptr},
-    {"C", kGlicButtonAltLabelVariant2, nullptr}};
-
 const FeatureEntry::FeatureParam kGlicToolbarButtonLocation_LeftOfProfile[] = {
     {"glic-toolbar-button-location", "LeftOfProfileChip"}};
 const FeatureEntry::FeatureParam kGlicToolbarButtonLocation_RightOfOmnibox[] = {
@@ -10618,11 +10606,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kGlicBindPinnedUnboundTabName,
      flag_descriptions::kGlicBindPinnedUnboundTabDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kGlicBindPinnedUnboundTab)},
-    {"glic-button-alt-label", flag_descriptions::kGlicButtonAltLabelName,
-     flag_descriptions::kGlicButtonAltLabelDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kGlicButtonAltLabel,
-                                    kGlicButtonAltLabelVariations,
-                                    "GlicButtonAltLabel")},
     {"glic-button-auto-summarize",
      flag_descriptions::kGlicButtonAutoSummarizeName,
      flag_descriptions::kGlicButtonAutoSummarizeDescription, kOsDesktop,

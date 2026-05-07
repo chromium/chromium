@@ -574,22 +574,8 @@ class GlicButton : public GlicBaseShim<T>,
   }
 
   static std::u16string GetLabelText() {
-    if (base::FeatureList::IsEnabled(features::kGlicButtonAltLabel)) {
-      switch (features::kGlicButtonAltLabelVariant.Get()) {
-        case 0:
           return l10n_util::GetStringUTF16(
               IDS_GLIC_BUTTON_ENTRYPOINT_ASK_GEMINI_LABEL);
-        case 1:
-          return l10n_util::GetStringUTF16(
-              IDS_GLIC_BUTTON_ENTRYPOINT_ASK_BROWSER_LABEL);
-        case 2:
-          return l10n_util::GetStringUTF16(
-              IDS_GLIC_BUTTON_ENTRYPOINT_BROWSE_LABEL);
-        default:
-          break;
-      }
-    }
-    return l10n_util::GetStringUTF16(IDS_GLIC_BUTTON_ENTRYPOINT_LABEL);
   }
 
   bool IsAnimatingTextVisibility() const {

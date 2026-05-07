@@ -53,23 +53,13 @@ namespace glic {
 
 namespace {
 
-const base::FeatureParam<bool> kAdjustMargins{
-    &features::kGlicButtonAltLabel, "glic-button-alt-label-adjust-margins",
-    true};
-
 gfx::Insets GetIconMargins(bool label_shown) {
   int left = 6;
-  int right = 4;
+  int right = 5;
 
   if (label_shown) {
     // Extra left margin if the label is shown.
     left += 2;
-  }
-
-  if (base::FeatureList::IsEnabled(features::kGlicButtonAltLabel) &&
-      kAdjustMargins.Get()) {
-    // TODO(crbug.com/485624752): Consolidate after launch.
-    right += 1;
   }
 
   return gfx::Insets().set_left_right(left, right);
@@ -130,11 +120,7 @@ void TabStripGlicButton::ResetSplitButtonCornerStyling() {
 }
 
 void TabStripGlicButton::SetLabelMargins() {
-  int bottom = 0;
-  if (base::FeatureList::IsEnabled(features::kGlicButtonAltLabel) &&
-      kAdjustMargins.Get()) {
-    bottom += 1;
-  }
+  int bottom = 1;
 
   int right = kLabelRightMargin;
   if (!close_button()->GetVisible()) {
