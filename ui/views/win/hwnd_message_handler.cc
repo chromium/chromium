@@ -3355,6 +3355,24 @@ LRESULT HWNDMessageHandler::HandleMouseEventInternal(UINT message,
                     l_param,
                     static_cast<DWORD>(message_time),
                     {CR_GET_X_LPARAM(l_param), CR_GET_Y_LPARAM(l_param)}};
+  // Windows generates these events even if the mouse does not leave the window
+  // when the mouse is crossing between Client area and Non Client area.
+  // Do not map these events to kMouseExited in that case, because the mouse is
+  // not exiting the window.
+  if (message == WM_MOUSELEAVE || message == WM_NCMOUSELEAVE) {
+    // These messages do not have location information.
+    POINT cursor_pos;
+    ::GetCursorPos(&cursor_pos);
+    HWND hwnd_at_position = ::WindowFromPoint(cursor_pos);
+    // Do not generate the kMouseExit if the mouse is still on the window.
+    if (hwnd() == hwnd_at_position || ::IsChild(hwnd(), hwnd_at_position)) {
+      return 0;
+    }
+
+    msg.pt.x = cursor_pos.x;
+    msg.pt.y = cursor_pos.y;
+  }
+
   ui::MouseEvent event(msg);
   if (IsSynthesizedMouseMessage(message, message_time, l_param)) {
     event.SetFlags(event.flags() | ui::EF_FROM_TOUCH);
