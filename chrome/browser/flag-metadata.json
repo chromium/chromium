@@ -9770,7 +9770,7 @@
   {
     "name": "webium",
     "owners": [ "robliao@chromium.org", "kerenzhu@chromium.org" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 155
   },
   {
     "name": "webnn-coreml",
