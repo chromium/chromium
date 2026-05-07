@@ -184,6 +184,17 @@ chromium-metrics-reviews@google.com.
   <summary>Tracks users' actions for turning on/off caret browsing.</summary>
 </histogram>
 
+<histogram name="Accessibility.Android.ContentChanged.Subtree"
+    enum="BooleanUsage" expires_after="2027-04-09">
+  <owner>gmarcoesau@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Will count the amount of times we call an event with either
+    CONTENT_CHANGE_TYPE_SUBTREE being true or false. This will be called
+    everytime an event of this type is fired.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.Android.FindElementType.Usage2.{RunningATs}"
     enum="AccessibilityPredicateType" expires_after="2026-08-16">
   <owner>mschillaci@google.com</owner>
@@ -477,6 +488,36 @@ chromium-metrics-reviews@google.com.
     WebContentsAccessibilityImpl object loses foreground focus (e.g. switching
     tabs, closing tabs, sending Chrome to the background, etc).
   </summary>
+</histogram>
+
+<histogram name="Accessibility.Android.Performance.FakeCache.{Metric}"
+    units="%" expires_after="2027-04-09">
+  <owner>gmarcoesau@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    {Metric} which will be recorded every time a validation is performed on the
+    fake cache.
+  </summary>
+  <token key="Metric">
+    <variant name="CacheHealthIndex"
+        summary="A composite score that measures the health of the fake
+                 cache. Unlike simple occupancy metrics, this score does not
+                 penalize small caches. Instead, it specifically penalizes
+                 Churn and Staleness."/>
+    <variant name="PercentageChurn"
+        summary="Measures the percentage of the fake cache that was removed
+                 compared to the last cache size."/>
+    <variant name="PercentageEfficiency"
+        summary="Measure how much we're deleting from the fake cache."/>
+    <variant name="PercentageOccupancy"
+        summary="Measures how much of the tree is being covered by the cache."/>
+    <variant name="PercentageStaleNodes"
+        summary="Measure how many nodes have become stale compared to the
+                 cache size."/>
+    <variant name="PercentageThrashing"
+        summary="Measures how much was instantly removed after just being
+                 added to the fake cache."/>
+  </token>
 </histogram>
 
 <histogram name="Accessibility.Android.Performance.OneShotTreeSearch"
