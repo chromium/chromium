@@ -31,9 +31,6 @@ class PasswordManualFallbackMetricsRecorder {
   // between the start of the fetch and the end of the fetch.
   void DataFetchingStarted();
 
-  // Records "PasswordManager.ManualFallback.ShowSuggestions.Latency" metric.
-  void RecordDataFetchingLatency() const;
-
   // Called when a suggestion is shown.
   void OnDidShowSuggestions(bool classified_as_target_filling_password);
 

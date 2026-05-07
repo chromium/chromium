@@ -11,12 +11,6 @@
 
 namespace password_manager {
 
-namespace {
-constexpr auto kLatencyDelta = base::Milliseconds(123u);
-constexpr char kShowSuggestionLatency[] =
-    "PasswordManager.ManualFallback.ShowSuggestions.Latency";
-}  // namespace
-
 class PasswordManualFallbackMetricsRecorderTest : public testing::Test {
  public:
   PasswordManualFallbackMetricsRecorderTest() = default;
@@ -36,17 +30,5 @@ class PasswordManualFallbackMetricsRecorderTest : public testing::Test {
 
   PasswordManualFallbackMetricsRecorder metrics_recorder_;
 };
-
-TEST_F(PasswordManualFallbackMetricsRecorderTest, RecordDataFetchingLatency) {
-  base::HistogramTester histogram_tester;
-
-  metrics_recorder().DataFetchingStarted();
-  AdvanceClock(kLatencyDelta);
-  metrics_recorder().RecordDataFetchingLatency();
-
-  histogram_tester.ExpectTotalCount(kShowSuggestionLatency, 1);
-  histogram_tester.ExpectTimeBucketCount(kShowSuggestionLatency, kLatencyDelta,
-                                         1);
-}
 
 }  // namespace password_manager

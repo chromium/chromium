@@ -67,9 +67,6 @@ constexpr const char kUrl[] = "https://example.com/";
 constexpr const char kPSLExtension[] = "https://psl.example.com/";
 constexpr const char kUrlWithNoExactMatches[] = "https://www.foo.com/";
 
-constexpr char kShowSuggestionLatency[] =
-    "PasswordManager.ManualFallback.ShowSuggestions.Latency";
-
 Matcher<Suggestion> EqualsManualFallbackSuggestion(SuggestionType type,
                                                    bool is_acceptable) {
   return AllOf(Field("type", &Suggestion::type, type),
@@ -314,8 +311,6 @@ TEST_F(PasswordManualFallbackFlowTest, RunFlow_NoSuggestionsReturned) {
 
   flow().RunFlow(MakeFieldRendererId(), gfx::RectF{},
                  TextDirection::LEFT_TO_RIGHT);
-  // Latency should not be logged if the passwords are not read from disk.
-  histogram_tester.ExpectTotalCount(kShowSuggestionLatency, 0);
 }
 
 // Test that the suggestions are not shown when the passwords are fetched from
@@ -327,9 +322,6 @@ TEST_F(PasswordManualFallbackFlowTest, ReturnSuggestions_NoFlowInvocation) {
   EXPECT_CALL(autofill_client(), ShowAutofillSuggestions).Times(0);
 
   ProcessPasswordStoreUpdates();
-  // The latency should be logged if the passwords are read from disk but the
-  // flow is not invoked.
-  histogram_tester.ExpectTotalCount(kShowSuggestionLatency, 1);
 }
 
 // Test that the suggestions are shown when the flow is invoked after the
@@ -355,9 +347,6 @@ TEST_F(PasswordManualFallbackFlowTest, ReturnSuggestions_InvokeFlow) {
           _));
 
   flow().RunFlow(MakeFieldRendererId(), bounds, TextDirection::LEFT_TO_RIGHT);
-  // The latency should be logged if the passwords are read from disk before the
-  // flow is invoked.
-  histogram_tester.ExpectTotalCount(kShowSuggestionLatency, 1);
 }
 
 // Test that the suggestions are shown when the flow is invoked before the
@@ -384,9 +373,6 @@ TEST_F(PasswordManualFallbackFlowTest, InvokeFlow_ReturnSuggestions) {
           _));
 
   ProcessPasswordStoreUpdates();
-  // The latency should be logged if the passwords are read from disk after the
-  // flow is invoked.
-  histogram_tester.ExpectTotalCount(kShowSuggestionLatency, 1);
 }
 
 // Test that the suggestions are shown using the last parameters passed to

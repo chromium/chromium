@@ -9,11 +9,6 @@
 
 namespace password_manager {
 
-namespace {
-constexpr char kShowSuggestionLatency[] =
-    "PasswordManager.ManualFallback.ShowSuggestions.Latency";
-}  // namespace
-
 PasswordManualFallbackMetricsRecorder::PasswordManualFallbackMetricsRecorder() =
     default;
 
@@ -34,12 +29,6 @@ PasswordManualFallbackMetricsRecorder::
 
 void PasswordManualFallbackMetricsRecorder::DataFetchingStarted() {
   latency_duration_start_ = base::Time::Now();
-}
-
-void PasswordManualFallbackMetricsRecorder::RecordDataFetchingLatency() const {
-  base::TimeDelta duration = base::Time::Now() - latency_duration_start_;
-
-  base::UmaHistogramTimes(kShowSuggestionLatency, duration);
 }
 
 void PasswordManualFallbackMetricsRecorder::OnDidShowSuggestions(
