@@ -28,6 +28,9 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
 
+using queryLocalBookmarksCompletion = void (^)(int local_bookmarks_count,
+                                               std::string user_email);
+
 typedef NS_ENUM(NSInteger, BookmarksHomeSectionIdentifier) {
   // Section to invite the user to sign in and sync.
   BookmarksHomeSectionIdentifierPromo = kSectionIdentifierEnumZero,
@@ -129,8 +132,7 @@ typedef NS_ENUM(NSInteger, BookmarksHomeItemType) {
 - (void)triggerBatchUpload;
 
 // Queries the sync service for the count of local bookmarks.
-- (void)queryLocalBookmarks:(void (^)(int local_bookmarks_count,
-                                      std::string user_email))completion;
+- (void)queryLocalBookmarks:(queryLocalBookmarksCompletion)completion;
 
 // Returns weather the slashed cloud icon should be displayed for
 // `bookmarkNode`.

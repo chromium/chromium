@@ -85,6 +85,21 @@ bool AnyNodeHasChildren(const std::vector<const BookmarkNode*>& nodes) {
   return false;
 }
 
+void QueryLocalBookmarksCompletionWithDescription(
+    std::string user_email,
+    queryLocalBookmarksCompletion completion,
+    std::map<syncer::DataType, syncer::LocalDataDescription> description) {
+  CHECK(completion);
+  auto it = description.find(syncer::BOOKMARKS);
+  // GetLocalDataDescriptions() can return an empty result if data type is
+  // still in configuration, or has an error.
+  if (it != description.end()) {
+    completion(it->second.item_count, std::move(user_email));
+    return;
+  }
+  completion(0, std::move(user_email));
+}
+
 }  // namespace
 
 bool IsABookmarkNodeSectionForIdentifier(
@@ -448,22 +463,13 @@ bool IsABookmarkNodeSectionForIdentifier(
                           true);
 }
 
-- (void)queryLocalBookmarks:(void (^)(int local_bookmarks_count,
-                                      std::string user_email))completion {
-  std::string user_email = self.syncService->GetAccountInfo().email;
+- (void)queryLocalBookmarks:(queryLocalBookmarksCompletion)completion {
+  std::string userEmail = self.syncService->GetAccountInfo().email;
+  CHECK(completion);
   self.syncService->GetLocalDataDescriptions(
       syncer::DataTypeSet({syncer::BOOKMARKS}),
-      base::BindOnce(^(std::map<syncer::DataType, syncer::LocalDataDescription>
-                           description) {
-        auto it = description.find(syncer::BOOKMARKS);
-        // GetLocalDataDescriptions() can return an empty result if data type is
-        // still in configuration, or has an error.
-        if (it != description.end()) {
-          completion(it->second.item_count, std::move(user_email));
-          return;
-        }
-        completion(0, std::move(user_email));
-      }));
+      base::BindOnce(&QueryLocalBookmarksCompletionWithDescription, userEmail,
+                     completion));
 }
 
 - (bookmark_utils_ios::NodeSet&)selectedNodesForEditMode {
