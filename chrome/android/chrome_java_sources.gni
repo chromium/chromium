@@ -340,6 +340,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/compositor/layouts/eventfilter/OverlayPanelEventFilter.java",
   "java/src/org/chromium/chrome/browser/compositor/layouts/phone/AnimationFreezeChecker.java",
   "java/src/org/chromium/chrome/browser/compositor/layouts/phone/AnimationInterruptor.java",
+  "java/src/org/chromium/chrome/browser/compositor/layouts/phone/NewBackgroundTabAnimationData.java",
   "java/src/org/chromium/chrome/browser/compositor/layouts/phone/NewBackgroundTabAnimationHostView.java",
   "java/src/org/chromium/chrome/browser/compositor/layouts/phone/NewBackgroundTabFakeTabSwitcherButton.java",
   "java/src/org/chromium/chrome/browser/compositor/layouts/phone/NewForegroundTabAnimationHostView.java",

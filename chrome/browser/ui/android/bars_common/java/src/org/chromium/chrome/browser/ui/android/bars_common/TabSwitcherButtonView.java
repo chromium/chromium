@@ -35,6 +35,14 @@ public class TabSwitcherButtonView extends ListMenuButton {
         setImageDrawable(mTabSwitcherDrawable);
     }
 
+    @Override
+    public void setImageTintList(@Nullable ColorStateList tint) {
+        if (mTabSwitcherDrawable != null && tint != null) {
+            mTabSwitcherDrawable.setTintList(tint);
+        }
+        super.setImageTintList(tint);
+    }
+
     public void setTabCount(int tabCount, boolean isIncognito) {
         mTabSwitcherDrawable.updateForTabCount(tabCount, isIncognito);
     }
@@ -49,16 +57,12 @@ public class TabSwitcherButtonView extends ListMenuButton {
         }
     }
 
-    @Override
-    public void setImageTintList(@Nullable ColorStateList tint) {
-        if (mTabSwitcherDrawable != null && tint != null) {
-            mTabSwitcherDrawable.setTint(tint);
-        }
-        super.setImageTintList(tint);
-    }
-
     public void setDrawableForTesting(TabSwitcherDrawable drawable) {
         mTabSwitcherDrawable = drawable;
         setImageDrawable(drawable);
+    }
+
+    public boolean isNotificationDotVisible() {
+        return mTabSwitcherDrawable.getShowIconNotificationStatus();
     }
 }

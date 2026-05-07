@@ -11,6 +11,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.drawable.ColorDrawable;
 import android.util.AttributeSet;
@@ -25,7 +26,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.android.bars_common.TabSwitcherDrawable;
 import org.chromium.chrome.browser.ui.android.bars_common.TabSwitcherDrawable.TabSwitcherDrawableLocation;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
@@ -86,7 +86,6 @@ public class NewBackgroundTabFakeTabSwitcherButton extends FrameLayout implement
                         getContext(),
                         BrandedColorScheme.LIGHT_BRANDED_THEME,
                         TabSwitcherDrawableLocation.TAB_TOOLBAR);
-        setBrandedColorScheme(BrandedColorScheme.LIGHT_BRANDED_THEME);
         setTabCount(mTabCount, mIsIncognito);
         setNotificationIconStatus(false);
 
@@ -95,12 +94,24 @@ public class NewBackgroundTabFakeTabSwitcherButton extends FrameLayout implement
         mTabSwitcherButtonView.setImageDrawable(mTabSwitcherDrawable);
     }
 
-    /* package */ void setBrandedColorScheme(@BrandedColorScheme int brandedColorScheme) {
-        mTabSwitcherDrawable.setTint(
-                ThemeUtils.getThemedToolbarIconTint(getContext(), brandedColorScheme));
+    /**
+     * Sets the branded color scheme and icon tint.
+     *
+     * @param brandedColorScheme The {@link BrandedColorScheme} to use.
+     * @param iconTint The {@link ColorStateList} for the icon tint.
+     */
+    /* package */ void setBrandedColorScheme(
+            @BrandedColorScheme int brandedColorScheme, ColorStateList iconTint) {
+        mTabSwitcherDrawable.setTintList(iconTint);
         mTabSwitcherDrawable.setNotificationBackground(brandedColorScheme);
     }
 
+    /**
+     * Sets the tab count and incognito status.
+     *
+     * @param tabCount The number of tabs to display.
+     * @param isIncognito True if in incognito mode.
+     */
     /* package */ void setTabCount(int tabCount, boolean isIncognito) {
         mTabCount = tabCount;
         mIsIncognito = isIncognito;
@@ -108,6 +119,11 @@ public class NewBackgroundTabFakeTabSwitcherButton extends FrameLayout implement
         mTabSwitcherDrawable.setIncognitoStatus(isIncognito);
     }
 
+    /**
+     * Sets whether the notification icon should be shown.
+     *
+     * @param shouldShow True to show the notification icon.
+     */
     /* package */ void setNotificationIconStatus(boolean shouldShow) {
         mTabSwitcherDrawable.setNotificationIconStatus(shouldShow);
     }
@@ -122,6 +138,11 @@ public class NewBackgroundTabFakeTabSwitcherButton extends FrameLayout implement
         mInnerContainer.setBackgroundColor(color);
     }
 
+    /**
+     * Returns the animator set for shrinking the button.
+     *
+     * @param incrementCount True if the tab count should be incremented at start.
+     */
     /* package */ AnimatorSet getShrinkAnimator(boolean incrementCount) {
         mTabSwitcherButtonView.setAlpha(1f);
 
@@ -152,6 +173,14 @@ public class NewBackgroundTabFakeTabSwitcherButton extends FrameLayout implement
         return animatorSet;
     }
 
+    /**
+     * Returns the animator set for translating the button.
+     *
+     * <p>The translation distance is calculated as {@code (containerHeight + viewHeight) / 2},
+     * ensuring the button translates to the correct position relative to the container.
+     *
+     * @param direction The {@link TranslateDirection} (UP or DOWN).
+     */
     /* package */ AnimatorSet getTranslateAnimator(@TranslateDirection int direction) {
         float containerHeight = mInnerContainer.getHeight();
         float viewHeight = mTabSwitcherButtonView.getHeight();
@@ -177,6 +206,7 @@ public class NewBackgroundTabFakeTabSwitcherButton extends FrameLayout implement
         return animatorSet;
     }
 
+    /** Returns the animator set for scaling and fading the button. */
     /* package */ AnimatorSet getScaleFadeAnimator() {
         ObjectAnimator fadeAnimator =
                 ObjectAnimator.ofFloat(mTabSwitcherButtonView, View.ALPHA, 0f, 1f);
@@ -199,6 +229,7 @@ public class NewBackgroundTabFakeTabSwitcherButton extends FrameLayout implement
         return animatorSet;
     }
 
+    /** Returns the animator set for scaling down the button. */
     /* package */ AnimatorSet getScaleDownAnimator() {
         ObjectAnimator scaleXAnimator =
                 ObjectAnimator.ofFloat(mTabSwitcherButtonView, View.SCALE_X, 1.15f, 1f);
@@ -241,6 +272,11 @@ public class NewBackgroundTabFakeTabSwitcherButton extends FrameLayout implement
         location[1] += mTabSwitcherButtonView.getMeasuredHeight() / 2 - yOffset;
     }
 
+    /**
+     * Prepares the button for the NTP animation variant (bottom bar disabled).
+     *
+     * @param incrementCount True if the tab count should be incremented.
+     */
     /* package */ void setUpNtpAnimation(boolean incrementCount) {
         if (incrementCount) incrementTabCount();
 
@@ -260,6 +296,15 @@ public class NewBackgroundTabFakeTabSwitcherButton extends FrameLayout implement
         mTabSwitcherButtonView.setLayoutParams(tabSwitcherParams);
     }
 
+    /**
+     * Sets the margin for the fake tab switcher button container and the inner container.
+     *
+     * <p>The vertical margin is applied to the outer container and the horizontal margin to the
+     * inner container to position the fake button.
+     *
+     * @param vertical The vertical margin to set on the outer container.
+     * @param horizontal The horizontal margin to set on the inner container.
+     */
     /* package */ void setMargin(int vertical, int horizontal) {
         FrameLayout.LayoutParams containerParams = (FrameLayout.LayoutParams) getLayoutParams();
         containerParams.topMargin = vertical;
@@ -269,6 +314,30 @@ public class NewBackgroundTabFakeTabSwitcherButton extends FrameLayout implement
                 (FrameLayout.LayoutParams) mInnerContainer.getLayoutParams();
         innerContainerParams.leftMargin = horizontal;
         mInnerContainer.setLayoutParams(innerContainerParams);
+    }
+
+    /**
+     * Sets the size of the fake tab switcher button.
+     *
+     * <p>Both the inner container and the button view are set to these dimensions. This establishes
+     * a consistent baseline size that {@link #getTranslateAnimator} relies on to calculate the
+     * exact distance needed to translate the button to the correct position.
+     *
+     * @param width The width of the fake tab switcher button.
+     * @param height The height of the fake tab switcher button.
+     */
+    /* package */ void setSize(int width, int height) {
+        FrameLayout.LayoutParams innerContainerParams =
+                (FrameLayout.LayoutParams) mInnerContainer.getLayoutParams();
+        innerContainerParams.width = width;
+        innerContainerParams.height = height;
+        mInnerContainer.setLayoutParams(innerContainerParams);
+
+        FrameLayout.LayoutParams tabSwitcherParams =
+                (FrameLayout.LayoutParams) mTabSwitcherButtonView.getLayoutParams();
+        tabSwitcherParams.width = width;
+        tabSwitcherParams.height = height;
+        mTabSwitcherButtonView.setLayoutParams(tabSwitcherParams);
     }
 
     private void incrementTabCount() {

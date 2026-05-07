@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.compositor.layouts.phone;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.mockito.Mockito.when;
 
 import android.animation.Animator;
 import android.animation.AnimatorSet;
@@ -25,7 +24,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -34,7 +32,6 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.layouts.phone.NewBackgroundTabAnimationHostView.AnimationType;
-import org.chromium.chrome.browser.toolbar.top.ToggleTabStackButton;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.base.TestActivity;
@@ -50,7 +47,6 @@ public class NewBackgroundTabAnimationHostViewUnitTest {
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
-    @Mock private ToggleTabStackButton mTabSwitcherButton;
 
     private Activity mActivity;
     private NewBackgroundTabAnimationHostView mHostView;
@@ -93,48 +89,59 @@ public class NewBackgroundTabAnimationHostViewUnitTest {
                 NewBackgroundTabAnimationHostView.calculateAnimationType(
                         /* tabSwitcherButtonIsVisible= */ true,
                         /* isNtp= */ false,
-                        /* ntpToolbarTransitionPercentage= */ 0f));
+                        /* ntpToolbarTransitionPercentage= */ 0f,
+                        /* bottomBarVisible= */ false));
         assertEquals(
                 AnimationType.DEFAULT,
                 NewBackgroundTabAnimationHostView.calculateAnimationType(
                         /* tabSwitcherButtonIsVisible= */ true,
                         /* isNtp= */ true,
-                        /* ntpToolbarTransitionPercentage= */ 0f));
+                        /* ntpToolbarTransitionPercentage= */ 0f,
+                        /* bottomBarVisible= */ false));
         assertEquals(
                 AnimationType.NTP_PARTIAL_SCROLL,
                 NewBackgroundTabAnimationHostView.calculateAnimationType(
                         /* tabSwitcherButtonIsVisible= */ false,
                         /* isNtp= */ true,
-                        /* ntpToolbarTransitionPercentage= */ 0f));
+                        /* ntpToolbarTransitionPercentage= */ 0f,
+                        /* bottomBarVisible= */ false));
         assertEquals(
                 AnimationType.NTP_PARTIAL_SCROLL,
                 NewBackgroundTabAnimationHostView.calculateAnimationType(
                         /* tabSwitcherButtonIsVisible= */ false,
                         /* isNtp= */ true,
-                        /* ntpToolbarTransitionPercentage= */ 0.5f));
+                        /* ntpToolbarTransitionPercentage= */ 0.5f,
+                        /* bottomBarVisible= */ false));
         assertEquals(
                 AnimationType.NTP_FULL_SCROLL,
                 NewBackgroundTabAnimationHostView.calculateAnimationType(
                         /* tabSwitcherButtonIsVisible= */ false,
                         /* isNtp= */ true,
-                        /* ntpToolbarTransitionPercentage= */ 1f));
+                        /* ntpToolbarTransitionPercentage= */ 1f,
+                        /* bottomBarVisible= */ false));
+        assertEquals(
+                AnimationType.DEFAULT,
+                NewBackgroundTabAnimationHostView.calculateAnimationType(
+                        /* tabSwitcherButtonIsVisible= */ false,
+                        /* isNtp= */ true,
+                        /* ntpToolbarTransitionPercentage= */ 0.5f,
+                        /* bottomBarVisible= */ true));
     }
 
     @Test
     public void testSetUpAnimation_Default() {
-        when(mTabSwitcherButton.shouldShowNotificationIcon()).thenReturn(true);
         mHostView.setUpAnimation(
-                mTabSwitcherButton,
-                mTabSwitcherRect,
+                /* shouldShowNotificationIcon= */ true,
+                new Rect(50, 30, 120, 130),
                 /* isIncognito= */ false,
-                /* isTopToolbar= */ false,
+                /* isTargetOnTop= */ false,
                 /* backgroundColor= */ Color.CYAN,
                 NewBackgroundTabAnimationHostView.AnimationType.DEFAULT,
                 BrandedColorScheme.APP_DEFAULT,
                 /* tabCount= */ 12,
-                /* toolbarHeight= */ 30,
                 /* statusBarHeight= */ 5,
-                /* xOffset= */ 3);
+                /* xOffset= */ 3,
+                /* iconTint= */ ColorStateList.valueOf(Color.BLACK));
 
         assertDefaultSettings(
                 /* tabCount= */ 12,
@@ -142,33 +149,32 @@ public class NewBackgroundTabAnimationHostViewUnitTest {
                 /* leftMargin= */ 47,
                 /* showNotificationIcon= */ true);
 
-        when(mTabSwitcherButton.shouldShowNotificationIcon()).thenReturn(false);
         mHostView.setUpAnimation(
-                mTabSwitcherButton,
-                mTabSwitcherRect,
+                /* shouldShowNotificationIcon= */ false,
+                new Rect(50, 7, 120, 107),
                 /* isIncognito= */ false,
-                /* isTopToolbar= */ false,
+                /* isTargetOnTop= */ false,
                 /* backgroundColor= */ Color.CYAN,
                 NewBackgroundTabAnimationHostView.AnimationType.DEFAULT,
                 BrandedColorScheme.APP_DEFAULT,
                 /* tabCount= */ 12,
-                /* toolbarHeight= */ 7,
                 /* statusBarHeight= */ 10,
-                /* xOffset= */ 3);
+                /* xOffset= */ 3,
+                /* iconTint= */ ColorStateList.valueOf(Color.BLACK));
         assertFalse(mFakeTabSwitcherButton.getShowIconNotificationStatusForTesting());
 
         mHostView.setUpAnimation(
-                mTabSwitcherButton,
-                mTabSwitcherRect,
+                /* shouldShowNotificationIcon= */ false,
+                new Rect(50, 94, 120, 194),
                 /* isIncognito= */ false,
-                /* isTopToolbar= */ false,
+                /* isTargetOnTop= */ false,
                 /* backgroundColor= */ Color.CYAN,
                 NewBackgroundTabAnimationHostView.AnimationType.DEFAULT,
                 BrandedColorScheme.APP_DEFAULT,
                 /* tabCount= */ 56,
-                /* toolbarHeight= */ 94,
                 /* statusBarHeight= */ 10,
-                /* xOffset= */ 5);
+                /* xOffset= */ 5,
+                /* iconTint= */ ColorStateList.valueOf(Color.BLACK));
 
         assertDefaultSettings(
                 /* tabCount= */ 56,
@@ -180,17 +186,17 @@ public class NewBackgroundTabAnimationHostViewUnitTest {
     @Test
     public void testSetUpAnimation_NtpPartialScroll() {
         mHostView.setUpAnimation(
-                mTabSwitcherButton,
-                mTabSwitcherRect,
+                /* shouldShowNotificationIcon= */ false,
+                new Rect(50, 7, 120, 107),
                 /* isIncognito= */ false,
-                /* isTopToolbar= */ false,
+                /* isTargetOnTop= */ false,
                 /* backgroundColor= */ Color.CYAN,
                 NewBackgroundTabAnimationHostView.AnimationType.NTP_PARTIAL_SCROLL,
                 BrandedColorScheme.APP_DEFAULT,
                 /* tabCount= */ 38,
-                /* toolbarHeight= */ 7,
                 /* statusBarHeight= */ 3,
-                /* xOffset= */ 1);
+                /* xOffset= */ 1,
+                /* iconTint= */ ColorStateList.valueOf(Color.BLACK));
 
         assertNtpSettings(
                 AnimationType.NTP_PARTIAL_SCROLL,
@@ -202,17 +208,17 @@ public class NewBackgroundTabAnimationHostViewUnitTest {
     @Test
     public void testSetUpAnimation_NtpFullScroll() {
         mHostView.setUpAnimation(
-                mTabSwitcherButton,
-                mTabSwitcherRect,
+                /* shouldShowNotificationIcon= */ false,
+                new Rect(50, 12, 120, 112),
                 /* isIncognito= */ false,
-                /* isTopToolbar= */ false,
+                /* isTargetOnTop= */ false,
                 /* backgroundColor= */ Color.CYAN,
                 NewBackgroundTabAnimationHostView.AnimationType.NTP_FULL_SCROLL,
                 BrandedColorScheme.APP_DEFAULT,
                 /* tabCount= */ 9,
-                /* toolbarHeight= */ 12,
                 /* statusBarHeight= */ 10,
-                /* xOffset= */ 15);
+                /* xOffset= */ 15,
+                /* iconTint= */ ColorStateList.valueOf(Color.BLACK));
         assertNtpSettings(
                 AnimationType.NTP_FULL_SCROLL,
                 /* tabCount= */ 9,
@@ -228,17 +234,17 @@ public class NewBackgroundTabAnimationHostViewUnitTest {
     @Test
     public void testGetAnimatorSet_Default() {
         mHostView.setUpAnimation(
-                mTabSwitcherButton,
+                /* shouldShowNotificationIcon= */ false,
                 mTabSwitcherRect,
                 /* isIncognito= */ false,
-                /* isTopToolbar= */ false,
+                /* isTargetOnTop= */ false,
                 /* backgroundColor= */ Color.CYAN,
                 NewBackgroundTabAnimationHostView.AnimationType.DEFAULT,
                 BrandedColorScheme.APP_DEFAULT,
                 /* tabCount= */ 9,
-                /* toolbarHeight= */ 0,
                 /* statusBarHeight= */ 0,
-                /* xOffset= */ 0);
+                /* xOffset= */ 0,
+                /* iconTint= */ ColorStateList.valueOf(Color.BLACK));
 
         AnimatorSet animatorSet = mHostView.getAnimatorSet(/* originX= */ -1, /* originY= */ -1);
         ArrayList<Animator> animators = animatorSet.getChildAnimations();
@@ -250,17 +256,17 @@ public class NewBackgroundTabAnimationHostViewUnitTest {
     @Test
     public void testGetAnimatorSet_NtpPartialScroll() {
         mHostView.setUpAnimation(
-                mTabSwitcherButton,
+                /* shouldShowNotificationIcon= */ false,
                 mTabSwitcherRect,
                 /* isIncognito= */ false,
-                /* isTopToolbar= */ false,
+                /* isTargetOnTop= */ false,
                 /* backgroundColor= */ Color.CYAN,
                 NewBackgroundTabAnimationHostView.AnimationType.NTP_PARTIAL_SCROLL,
                 BrandedColorScheme.APP_DEFAULT,
                 /* tabCount= */ 9,
-                /* toolbarHeight= */ 0,
                 /* statusBarHeight= */ 0,
-                /* xOffset= */ 0);
+                /* xOffset= */ 0,
+                /* iconTint= */ ColorStateList.valueOf(Color.BLACK));
 
         AnimatorSet animatorSet = mHostView.getAnimatorSet(/* originX= */ -1, /* originY= */ -1);
         ArrayList<Animator> animators = animatorSet.getChildAnimations();
@@ -272,17 +278,17 @@ public class NewBackgroundTabAnimationHostViewUnitTest {
     @Test
     public void testGetAnimatorSet_NtpFullScroll() {
         mHostView.setUpAnimation(
-                mTabSwitcherButton,
+                /* shouldShowNotificationIcon= */ false,
                 mTabSwitcherRect,
                 /* isIncognito= */ false,
-                /* isTopToolbar= */ false,
+                /* isTargetOnTop= */ false,
                 /* backgroundColor= */ Color.CYAN,
                 NewBackgroundTabAnimationHostView.AnimationType.NTP_FULL_SCROLL,
                 BrandedColorScheme.APP_DEFAULT,
                 /* tabCount= */ 9,
-                /* toolbarHeight= */ 0,
                 /* statusBarHeight= */ 0,
-                /* xOffset= */ 0);
+                /* xOffset= */ 0,
+                /* iconTint= */ ColorStateList.valueOf(Color.BLACK));
         AnimatorSet animatorSet = mHostView.getAnimatorSet(/* originX= */ -1, /* originY= */ -1);
         ArrayList<Animator> animators = animatorSet.getChildAnimations();
         assertEquals(4, animators.size());
@@ -294,17 +300,17 @@ public class NewBackgroundTabAnimationHostViewUnitTest {
     @Config(qualifiers = "night")
     public void testNightMode() {
         mHostView.setUpAnimation(
-                mTabSwitcherButton,
+                /* shouldShowNotificationIcon= */ false,
                 mTabSwitcherRect,
                 /* isIncognito= */ false,
-                /* isTopToolbar= */ false,
+                /* isTargetOnTop= */ false,
                 /* backgroundColor= */ Color.CYAN,
                 NewBackgroundTabAnimationHostView.AnimationType.DEFAULT,
                 BrandedColorScheme.APP_DEFAULT,
                 /* tabCount= */ 0,
-                /* toolbarHeight= */ 0,
                 /* statusBarHeight= */ 0,
-                /* xOffset= */ 0);
+                /* xOffset= */ 0,
+                /* iconTint= */ ColorStateList.valueOf(Color.BLACK));
 
         GradientDrawable roundedRect = (GradientDrawable) mLinkIconView.getBackground();
         assertEquals(

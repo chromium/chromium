@@ -849,7 +849,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
                 == StateTransition.SNAP_TO_TOP;
     }
 
-    static void resetCachedToolbarConfigurationForTesting() {
+    public static void resetCachedToolbarConfigurationForTesting() {
         sToolbarShouldShowOnTop = null;
     }
 

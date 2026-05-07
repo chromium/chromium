@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.compositor.layouts;
 
+import static org.mockito.Mockito.when;
+
 import static org.chromium.base.test.util.Batch.PER_CLASS;
 import static org.chromium.ui.test.util.ViewUtils.createMotionEvent;
 
@@ -62,6 +64,7 @@ import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
+import org.chromium.chrome.browser.tabmodel.OverridableTabCount;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -102,6 +105,7 @@ public class LayoutManagerTest implements MockTabModelDelegate {
     @Mock private ToolbarManager mToolbarManager;
     @Mock private ViewGroup mContentView;
     @Mock private CompositorViewHolder mCompositorViewHolder;
+    @Mock private OverridableTabCount mOverridableTabCount;
 
     private NonNullObservableSupplier<CompositorViewHolder> mCompositorViewHolderSupplier;
     private TabModelSelector mTabModelSelector;
@@ -218,6 +222,10 @@ public class LayoutManagerTest implements MockTabModelDelegate {
                 ObservableSuppliers.createMonotonic();
 
         mTabSwitcherSupplier = new OneshotSupplierImpl<>();
+        mContentView = new FrameLayout(context);
+        when(mToolbarManager.getNtpSearchBoxTransitionPercentageSupplier())
+                .thenReturn(ObservableSuppliers.createNonNull(0f));
+        when(mToolbarManager.getOverridableTabCount()).thenReturn(mOverridableTabCount);
         mManagerPhone =
                 new LayoutManagerChromePhone(
                         layoutManagerHost,

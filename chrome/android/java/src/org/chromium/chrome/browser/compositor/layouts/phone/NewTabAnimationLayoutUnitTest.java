@@ -228,9 +228,8 @@ public class NewTabAnimationLayoutUnitTest {
                                 mTransitiveTopInsetProvider));
         mNewTabAnimationLayout.setTabModelSelector(mTabModelSelector);
         mNewTabAnimationLayout.setTabContentManager(mTabContentManager);
-        when(mAnimationHostView.findViewById(R.id.tab_switcher_button))
-                .thenReturn(mTabSwitcherButton);
         when(mAnimationHostView.findViewById(R.id.toolbar)).thenReturn(mToolbar);
+        when(mToolbar.findViewById(R.id.tab_switcher_button)).thenReturn(mTabSwitcherButton);
         when(mAnimationHostView.getWidth()).thenReturn(40);
         when(mAnimationHostView.getHeight()).thenReturn(40);
         mNewTabAnimationLayout.onFinishNativeInitialization();

@@ -36,6 +36,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.layouts.phone.NewBackgroundTabFakeTabSwitcherButton.TranslateDirection;
+import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -134,7 +135,10 @@ public class NewBackgroundTabFakeTabSwitcherButtonRenderTest {
     public void testRenderFakeTabSwitcherButton_Incognito() throws Exception {
         Runnable updateRunnable =
                 () -> {
-                    mFakeTabSwitcherButton.setBrandedColorScheme(BrandedColorScheme.INCOGNITO);
+                    mFakeTabSwitcherButton.setBrandedColorScheme(
+                            BrandedColorScheme.INCOGNITO,
+                            ThemeUtils.getThemedToolbarIconTint(
+                                    sActivity, BrandedColorScheme.INCOGNITO));
                     mFakeTabSwitcherButton.setTabCount(/* tabCount= */ 4, /* isIncognito= */ true);
                 };
         runUpdateOnUiThreadAndPerformRender(updateRunnable, "fake_tab_switcher_button_4_incognito");

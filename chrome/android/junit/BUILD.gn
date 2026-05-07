@@ -615,6 +615,7 @@ if (is_android) {
       "//chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/LayoutManagerChromeUnitTest.java",
       "//chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/phone/AnimationFreezeCheckerUnitTest.java",
       "//chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/phone/AnimationInterruptorUnitTest.java",
+      "//chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/phone/NewBackgroundTabAnimationDataUnitTest.java",
       "//chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/phone/NewBackgroundTabAnimationHostViewUnitTest.java",
       "//chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/phone/NewTabAnimationLayoutUnitTest.java",
       "src/org/chromium/chrome/browser/compositor/CompositorSurfaceManagerImplTest.java",
