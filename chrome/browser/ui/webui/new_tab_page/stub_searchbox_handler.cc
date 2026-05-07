@@ -115,15 +115,15 @@ void StubSearchboxHandler::AddFileContext(
     AddFileContextCallback callback) {
   std::move(callback).Run({});
 }
+void StubSearchboxHandler::SetSmartComposeStats(
+    searchbox::mojom::SmartComposeStatsPtr smart_compose_stats) {}
 void StubSearchboxHandler::AddTabContext(int32_t tab_id,
                                          bool delay_upload,
                                          AddTabContextCallback callback) {
   std::move(callback).Run({});
 }
-void StubSearchboxHandler::AddDriveContext(const std::string& drive_id,
-                                           const std::string& resource_key,
-                                           const std::string& mime_type,
-                                           AddDriveContextCallback callback) {
+void StubSearchboxHandler::OnDriveUploadClicked(
+    OnDriveUploadClickedCallback callback) {
   std::move(callback).Run({});
 }
 void StubSearchboxHandler::DeleteContext(

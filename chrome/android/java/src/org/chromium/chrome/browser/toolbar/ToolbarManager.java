@@ -1896,7 +1896,7 @@ public class ToolbarManager
         return mOmniboxFocusStateSupplier.get()
                 || (mToolbarPositionController != null
                         && mToolbarPositionController.doesPrefMismatchPosition())
-                || (getNewTabPageForCurrentTab() != null);
+                || isNewTabPage();
     }
 
     private void back(int metaState, int buttonState) {
@@ -2116,7 +2116,7 @@ public class ToolbarManager
      * @param context {@link Context} used for launching a settings activity.
      */
     private void onHomeButtonMenuClick(Context context) {
-        boolean isNtp = getNewTabPageForCurrentTab() != null;
+        boolean isNtp = isNewTabPage();
         HomepageManager.getInstance().onMenuClick(context);
         if (isNtp) {
             BrowserUiUtils.recordModuleLongClickHistogram(ModuleTypeOnStartAndNtp.HOME_BUTTON);
@@ -2189,7 +2189,7 @@ public class ToolbarManager
 
         @Override
         public boolean isCurrentlyVisible() {
-            return getNewTabPageForCurrentTab() != null;
+            return isNewTabPage();
         }
 
         @Override
@@ -2321,6 +2321,18 @@ public class ToolbarManager
             }
         }
         return null;
+    }
+
+    private boolean isWebUiNtp() {
+        if (mLocationBarModel.hasTab()) {
+            Tab tab = mLocationBarModel.getTab();
+            return tab != null && UrlUtilities.isNtpUrl(tab.getUrl());
+        }
+        return false;
+    }
+
+    private boolean isNewTabPage() {
+        return getNewTabPageForCurrentTab() != null || isWebUiNtp();
     }
 
     /**

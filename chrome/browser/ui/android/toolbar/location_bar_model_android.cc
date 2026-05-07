@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/android/toolbar/location_bar_model_android.h"
 
 #include "base/android/jni_string.h"
+#include "base/command_line.h"
+#include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/omnibox/browser/location_bar_model_impl.h"
@@ -73,6 +75,13 @@ bool LocationBarModelAndroid::IsNewTabPage() const {
   // Android Chrome has its own Instant NTP page implementation.
   if (url.SchemeIs(chrome::kChromeNativeScheme) &&
       url.host() == chrome::kChromeUINewTabHost) {
+    return true;
+  }
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kUseWebUiNtp) &&
+      url.SchemeIs(content::kChromeUIScheme) &&
+      url.host() == chrome::kChromeUINewTabPageHost) {
     return true;
   }
 

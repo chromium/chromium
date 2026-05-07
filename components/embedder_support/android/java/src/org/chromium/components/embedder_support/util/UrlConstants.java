@@ -55,6 +55,7 @@ public class UrlConstants {
     public static final String ABOUT_URL = "chrome://about/";
 
     public static final String NTP_HOST = "newtab";
+    public static final String NEW_TAB_PAGE_HOST = "new-tab-page";
     public static final String NTP_ABOUT_URL = "about:newtab";
 
     // Don't use this URL. The constant is added for legacy reasons.

@@ -85,13 +85,12 @@ class StubSearchboxHandler : public searchbox::mojom::PageHandler {
   void AddFileContext(searchbox::mojom::SelectedFileInfoPtr file_info,
                       mojo_base::BigBuffer file_bytes,
                       AddFileContextCallback callback) override;
+  void SetSmartComposeStats(
+      searchbox::mojom::SmartComposeStatsPtr smart_compose_stats) override;
   void AddTabContext(int32_t tab_id,
                      bool delay_upload,
                      AddTabContextCallback callback) override;
-  void AddDriveContext(const std::string& drive_id,
-                       const std::string& resource_key,
-                       const std::string& mime_type,
-                       AddDriveContextCallback callback) override;
+  void OnDriveUploadClicked(OnDriveUploadClickedCallback callback) override;
   void DeleteContext(const base::UnguessableToken& file_token,
                      bool from_automatic_chip) override;
   void ClearFiles(bool should_block_auto_suggested_tabs) override;
