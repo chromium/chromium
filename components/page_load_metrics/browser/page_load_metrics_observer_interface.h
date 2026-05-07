@@ -354,7 +354,7 @@ class PageLoadMetricsObserverInterface {
                               const mojom::PageLoadTiming& timing) = 0;
 
   // The callback is invoked when a soft navigation is detected.
-  // See https://bit.ly/soft-navigation for more details.
+  // See https://github.com/WICG/soft-navigations for more details.
   virtual void OnSoftNavigation() = 0;
 
   // The callback is invoked when one or more soft largest contentful
