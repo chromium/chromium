@@ -101,12 +101,12 @@ const float kAudioMeterRangeMaxUnclipped = 47.0f / 48.0f;
 // Returns true if more than 5% of the samples are at min or max value.
 bool DetectClipping(const AudioChunk& chunk) {
   const int num_samples = chunk.NumSamples();
-  const int16_t* samples = chunk.SamplesData16();
+  base::span<const int16_t> samples = chunk.SamplesData16AsSpan();
   const int kThreshold = num_samples / 20;
   int clipping_samples = 0;
 
-  for (int i = 0; i < num_samples; ++i) {
-    if (UNSAFE_TODO(samples[i] <= -32767 || samples[i] >= 32767)) {
+  for (const int16_t sample : samples) {
+    if (sample <= -32767 || sample >= 32767) {
       if (++clipping_samples > kThreshold)
         return true;
     }

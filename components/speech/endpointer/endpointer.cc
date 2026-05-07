@@ -5,6 +5,7 @@
 #include "components/speech/endpointer/endpointer.h"
 
 #include "base/compiler_specific.h"
+#include "base/containers/span_reader.h"
 #include "base/time/time.h"
 #include "components/speech/audio_buffer.h"
 
@@ -90,24 +91,21 @@ EpStatus Endpointer::Status(int64_t* time) {
 }
 
 EpStatus Endpointer::ProcessAudio(const AudioChunk& raw_audio, float* rms_out) {
-  return ProcessAudio(raw_audio.SamplesData16(), raw_audio.NumSamples(),
-                      rms_out);
+  return ProcessAudio(raw_audio.SamplesData16AsSpan(), rms_out);
 }
 
-EpStatus Endpointer::ProcessAudio(const int16_t* audio_data,
-                                  const int num_samples,
+EpStatus Endpointer::ProcessAudio(base::span<const int16_t> audio_data,
                                   float* rms_out) {
+  base::SpanReader audio_data_reader(audio_data);
   EpStatus ep_status = EP_PRE_SPEECH;
 
   // Process the input data in blocks of frame_size_.
-  int sample_index = 0;
-  while (sample_index < num_samples) {
-    int frame_size = std::min(frame_size_, num_samples - sample_index);
+  while (audio_data_reader.remaining() > 0) {
+    size_t frame_size = std::min(static_cast<size_t>(frame_size_),
+                                 audio_data_reader.remaining());
     // Have the endpointer process the frame.
-    energy_endpointer_.ProcessAudioFrame(audio_frame_time_us_,
-                                         UNSAFE_TODO(audio_data + sample_index),
-                                         frame_size, rms_out);
-    sample_index += frame_size;
+    energy_endpointer_.ProcessAudioFrame(
+        audio_frame_time_us_, *audio_data_reader.Read(frame_size), rms_out);
     audio_frame_time_us_ +=
         (frame_size * kMicrosecondsPerSecond) / sample_rate_;
 
