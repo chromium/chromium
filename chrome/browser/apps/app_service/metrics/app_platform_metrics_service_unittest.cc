@@ -1830,14 +1830,6 @@ class AppPlatformInputMetricsTest : public AppPlatformMetricsServiceTest {
     }
   }
 
-  std::unique_ptr<Browser> CreateBrowser() {
-    Browser::CreateParams params(profile(), true);
-    params.type = Browser::TYPE_NORMAL;
-    browser_window_ = std::make_unique<TestBrowserWindow>();
-    browser_window_->SetNativeWindow(window());
-    params.window = browser_window_.release();
-    return Browser::DeprecatedCreateOwnedForTesting(params);
-  }
 
   TestApp& ActivatePreInstalledApp(const std::string& app_id) {
     EXPECT_TRUE(pre_installed_apps().contains(app_id));
@@ -1890,7 +1882,6 @@ class AppPlatformInputMetricsTest : public AppPlatformMetricsServiceTest {
   // Where down events are dispatched to.
   std::unique_ptr<views::Widget> widget_;
 
-  std::unique_ptr<TestBrowserWindow> browser_window_;
 };
 
 // Verify no more input event is recorded when the window is destroyed.
