@@ -24418,7 +24418,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "UseUIGraphicsImageRendererForFallbackIconsIOS"
+                        "UseUIGraphicsImageRendererForFallbackIcons"
                     ]
                 }
             ]
