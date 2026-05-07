@@ -226,7 +226,7 @@ class CredentialProviderService
   const raw_ptr<signin::IdentityManager> identity_manager_;
 
   // Sync Service to observe.
-  const raw_ptr<syncer::SyncService> sync_service_;
+  raw_ptr<syncer::SyncService> sync_service_;
 
   // Helper which injects branding information from affiliation service.
   const std::unique_ptr<password_manager::AffiliatedMatchHelper>

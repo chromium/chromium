@@ -259,7 +259,10 @@ void CredentialProviderService::Shutdown() {
     passkey_model_->RemoveObserver(this);
   }
   identity_manager_->RemoveObserver(this);
-  sync_service_->RemoveObserver(this);
+  if (sync_service_) {
+    sync_service_->RemoveObserver(this);
+    sync_service_ = nullptr;
+  }
 }
 
 void CredentialProviderService::OnLoginsChanged(
