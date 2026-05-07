@@ -73,6 +73,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/service/sync_service.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
+#include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -451,8 +452,30 @@ bool PopupViewViews::HandleKeyPressEvent(
       // We do not want to handle Mod+TAB for other modifiers because this may
       // have other purposes (e.g., change the tab).
       if (!kHasNonShiftModifier) {
+        // If there is a BNPL footnote settings link, we want to focus it to
+        // make it accessible for keyboard and screenreader users, since the
+        // BNPL footnote suggestion itself is not selectable.
+        PopupBnplFootnoteView* bnpl_footnote = GetBnplFootnoteView();
+        if (bnpl_footnote) {
+          if (bnpl_footnote->IsSettingsLinkFocused()) {
+            return false;
+          }
+          bnpl_footnote->FocusSettingsLink();
+          SetSelectedCell(std::nullopt, PopupCellSelectionSource::kKeyboard);
+          return true;
+        }
+
         AcceptSelectedContentOrCreditCardCell(
             AutofillMetrics::SuggestionAcceptedMethod::kKeyboard);
+      }
+      return false;
+    case ui::VKEY_RETURN:
+      if (!GetSelectedCell()) {
+        PopupBnplFootnoteView* bnpl_footnote = GetBnplFootnoteView();
+        if (bnpl_footnote && bnpl_footnote->IsSettingsLinkFocused()) {
+          bnpl_footnote->ActivateSettingsLink();
+          return true;
+        }
       }
       return false;
     default:
@@ -895,6 +918,12 @@ void PopupViewViews::SetSelectedCell(
   open_sub_popup_timer_.Stop();
 
   if (cell_index && HasSelectablePopupRowViewAt(cell_index->first)) {
+    if (auto* footnote = GetBnplFootnoteView()) {
+      // Since cell selection is based on virtual focus and not real focus,
+      // we need to manually unfocus the settings link when updating virtual
+      // focus.
+      footnote->UnfocusSettingsLink();
+    }
     has_keyboard_focus_ = true;
     // The sub-popup hiding is canceled because the newly selected cell will
     // rule the sub-pupop visibility from now.
@@ -1005,11 +1034,8 @@ void PopupViewViews::MaybeAnnounceCurrentTabAndFootnote() {
   }
 
   std::u16string footnote_text;
-  for (const RowPointer& row : rows_) {
-    if (const auto* footnote = std::get_if<PopupBnplFootnoteView*>(&row)) {
-      footnote_text = (*footnote)->GetFullText();
-      break;
-    }
+  if (PopupBnplFootnoteView* bnpl_footnote = GetBnplFootnoteView()) {
+    footnote_text = bnpl_footnote->GetFullText();
   }
 
   if (!footnote_text.empty()) {
@@ -1041,6 +1067,15 @@ bool PopupViewViews::HasSelectablePopupRowViewAt(size_t index) const {
   return index < rows_.size() &&
          std::holds_alternative<PopupRowView*>(rows_[index]) &&
          GetPopupRowViewAt(index).IsSelectable();
+}
+
+PopupBnplFootnoteView* PopupViewViews::GetBnplFootnoteView() const {
+  for (const RowPointer& row : rows_) {
+    if (const auto* footnote = std::get_if<PopupBnplFootnoteView*>(&row)) {
+      return *footnote;
+    }
+  }
+  return nullptr;
 }
 
 void PopupViewViews::InitViews() {
@@ -1298,7 +1333,9 @@ void PopupViewViews::CreateSuggestionViews() {
     } else if (suggestions[current_line_number].type ==
                SuggestionType::kBnplFootnote) {
       rows_.push_back(footer_container_->AddChildView(
-          std::make_unique<PopupBnplFootnoteView>(controller())));
+          std::make_unique<PopupBnplFootnoteView>(
+              controller(), /*a11y_selection_delegate=*/*this,
+              base::BindRepeating(&DefaultA11yAnnouncer))));
     } else {
       rows_.push_back(footer_container_->AddChildView(CreatePopupRowView(
           controller(), /*a11y_selection_delegate=*/*this,

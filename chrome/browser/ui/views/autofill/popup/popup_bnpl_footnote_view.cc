@@ -26,31 +26,25 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
+#include "ui/views/controls/link.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/view_utils.h"
 
 namespace autofill {
 
 namespace {
-
-void OnSettingsLinkClicked(base::WeakPtr<AutofillPopupController> controller) {
-  if (!controller || !controller->GetWebContents()) {
-    return;
-  }
-
-  Profile* profile = Profile::FromBrowserContext(
-      controller->GetWebContents()->GetBrowserContext());
-  if (!profile) {
-    return;
-  }
-
-  chrome::ShowSettingsSubPageForProfile(profile, chrome::kPaymentsSubPage);
+constexpr int kSelectionBorderThickness = 1;
 }
 
-}  // namespace
-
 PopupBnplFootnoteView::PopupBnplFootnoteView(
-    base::WeakPtr<AutofillPopupController> controller) {
+    base::WeakPtr<AutofillPopupController> controller,
+    PopupRowView::AccessibilitySelectionDelegate& a11y_selection_delegate,
+    base::RepeatingCallback<void(const std::u16string&, bool)>
+        announce_callback)
+    : a11y_selection_delegate_(a11y_selection_delegate) {
+  controller_ = controller;
+  announce_callback_ = std::move(announce_callback);
   // TODO(crbug.com/477689220): Investigate better approaches to manage the
   // layout that doesn't rely on setting custom margins, and instead
   // reuses underlying code.
@@ -60,6 +54,8 @@ PopupBnplFootnoteView::PopupBnplFootnoteView(
                       PopupBaseView::ArrowHorizontalMargin())));
 
   SetBackground(views::CreateSolidBackground(ui::kColorBubbleFooterBackground));
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);
 
   if (!controller || !controller->GetWebContents()) {
     return;
@@ -92,14 +88,70 @@ PopupBnplFootnoteView::PopupBnplFootnoteView(
 
   views::StyledLabel::RangeStyleInfo link_style =
       views::StyledLabel::RangeStyleInfo::CreateForLink(
-          base::BindRepeating(&OnSettingsLinkClicked, controller));
+          base::BindRepeating(&PopupBnplFootnoteView::ActivateSettingsLink,
+                              weak_ptr_factory_.GetWeakPtr()));
   link_style.text_style = views::style::STYLE_LINK_5;
   styled_label->AddStyleRange(text_with_link.offset, link_style);
 
   AddChildView(std::move(styled_label));
+
+  if (auto* link = GetSettingsLink()) {
+    link->SetBorder(views::CreateEmptyBorder(kSelectionBorderThickness));
+  }
 }
 
 PopupBnplFootnoteView::~PopupBnplFootnoteView() = default;
+
+views::Link* PopupBnplFootnoteView::GetSettingsLink() const {
+  for (views::View* child : children()) {
+    if (auto* styled_label = views::AsViewClass<views::StyledLabel>(child)) {
+      for (views::View* label_child : styled_label->children()) {
+        if (auto* link = views::AsViewClass<views::Link>(label_child)) {
+          return link;
+        }
+      }
+    }
+  }
+  return nullptr;
+}
+
+void PopupBnplFootnoteView::FocusSettingsLink() {
+  if (auto* link = GetSettingsLink()) {
+    is_settings_link_selected_ = true;
+    link->SetBorder(views::CreateSolidBorder(kSelectionBorderThickness,
+                                             ui::kColorFocusableBorderFocused));
+    a11y_selection_delegate_->NotifyAXSelection(*this);
+    this->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kFocus, true);
+    this->GetViewAccessibility().SetIsSelected(true);
+    announce_callback_.Run(std::u16string(link->GetText()), /*polite=*/false);
+  }
+}
+
+bool PopupBnplFootnoteView::IsSettingsLinkFocused() const {
+  return is_settings_link_selected_;
+}
+
+void PopupBnplFootnoteView::ActivateSettingsLink() {
+  if (!controller_ || !controller_->GetWebContents()) {
+    return;
+  }
+
+  Profile* profile = Profile::FromBrowserContext(
+      controller_->GetWebContents()->GetBrowserContext());
+  if (!profile) {
+    return;
+  }
+
+  chrome::ShowSettingsSubPageForProfile(profile, chrome::kPaymentsSubPage);
+}
+
+void PopupBnplFootnoteView::UnfocusSettingsLink() {
+  is_settings_link_selected_ = false;
+  if (auto* link = GetSettingsLink()) {
+    link->SetBorder(views::CreateEmptyBorder(kSelectionBorderThickness));
+  }
+  this->GetViewAccessibility().SetIsSelected(false);
+}
 
 BEGIN_METADATA(PopupBnplFootnoteView)
 END_METADATA

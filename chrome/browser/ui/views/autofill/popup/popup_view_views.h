@@ -223,6 +223,8 @@ class PopupViewViews : public PopupBaseView,
   // selectable.
   bool HasSelectablePopupRowViewAt(size_t index) const;
 
+  PopupBnplFootnoteView* GetBnplFootnoteView() const;
+
   // Instantiates the content of the popup.
   void InitViews();
 

@@ -6,8 +6,10 @@
 
 #include <memory>
 
+#include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/autofill/mock_autofill_popup_controller.h"
+#include "chrome/browser/ui/views/autofill/popup/mock_accessibility_selection_delegate.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -25,8 +27,9 @@ class PopupBnplFootnoteViewTest : public ChromeViewsTestBase {
   }
 
   void ShowView() {
-    view_ = widget_->SetContentsView(
-        std::make_unique<PopupBnplFootnoteView>(controller_.GetWeakPtr()));
+    view_ = widget_->SetContentsView(std::make_unique<PopupBnplFootnoteView>(
+        controller_.GetWeakPtr(), a11y_selection_delegate_,
+        base::BindRepeating([](const std::u16string&, bool) {})));
     widget_->Show();
   }
 
@@ -41,22 +44,21 @@ class PopupBnplFootnoteViewTest : public ChromeViewsTestBase {
   views::Widget& widget() { return *widget_; }
 
   testing::NiceMock<MockAutofillPopupController> controller_;
+  testing::NiceMock<MockAccessibilitySelectionDelegate>
+      a11y_selection_delegate_;
 
  private:
   std::unique_ptr<views::Widget> widget_;
   raw_ptr<PopupBnplFootnoteView> view_ = nullptr;
 };
 
-TEST_F(PopupBnplFootnoteViewTest, AccessibilityWrapperRole) {
+TEST_F(PopupBnplFootnoteViewTest, AccessibleProperties) {
   ShowView();
   ui::AXNodeData node_data;
 
   view().GetViewAccessibility().GetAccessibleNodeData(&node_data);
 
-  // Check that PopupBnplFootnoteView is a layout wrapper, ensuring that the
-  // child `views::StyledLabel` handles the text and link accessibility
-  // natively.
-  EXPECT_EQ(ax::mojom::Role::kUnknown, node_data.role);
+  EXPECT_EQ(ax::mojom::Role::kGroup, node_data.role);
 }
 
 }  // namespace autofill
