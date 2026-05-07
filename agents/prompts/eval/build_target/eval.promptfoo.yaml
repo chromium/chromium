@@ -13,5 +13,5 @@ tests:
     - type: icontains
       value: viz_unittests
     metadata:
-      pass_k_threshold: 1
-      runs_per_test: 3
+      tags:
+      - stable
