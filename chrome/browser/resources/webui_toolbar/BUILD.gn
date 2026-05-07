@@ -19,6 +19,7 @@ build_webui("build") {
     "rhs_icons/mic_off_chrome_refresh.svg",
     "rhs_icons/notifications_chrome_refresh.svg",
     "rhs_icons/notifications_off_chrome_refresh.svg",
+    "rhs_icons/password_manager.svg",
     "rhs_icons/videocam_chrome_refresh.svg",
     "rhs_icons/videocam_off_chrome_refresh.svg",
     "lhs_icons/business_chrome_refresh.svg",
