@@ -374,6 +374,11 @@ void RemoveAttachmentWithTitle(NSString* title) {
 // Tests that tapping the attach tabs button opens the tab picker. Ensures that
 // the title is set correctly and buttons are correctly enabled or disabled.
 - (void)testTabPickerUI {
+  if ([ComposeboxAppInterface isServerSideStateEnabled]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Skipped when kComposeboxServerSideState is enabled.");
+  }
+
   [ComposeboxAppInterface setFuseboxEligible:YES];
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   OpenTabPicker();
@@ -437,6 +442,11 @@ void RemoveAttachmentWithTitle(NSString* title) {
 // (User should not be able to attach NTPs to the composebox). It also ensure
 // that the user can dismiss the view.
 - (void)testTabPickerEmptyStateView {
+  if ([ComposeboxAppInterface isServerSideStateEnabled]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Skipped when kComposeboxServerSideState is enabled.");
+  }
+
   [ComposeboxAppInterface setFuseboxEligible:YES];
   [ChromeEarlGrey closeAllNormalTabs];
   [ChromeEarlGrey openNewTab];
@@ -474,6 +484,10 @@ void RemoveAttachmentWithTitle(NSString* title) {
 // carousel, the attachment limit is respected, and the AIM button is visible.
 
 - (void)testAttachMultipleTabsAndLimit {
+  if ([ComposeboxAppInterface isServerSideStateEnabled]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Skipped when kComposeboxServerSideState is enabled.");
+  }
   [ComposeboxAppInterface setFuseboxEligible:YES];
   [ComposeboxAppInterface setTabUploadAutoSucceed:YES];
   std::vector<GURL> URLS;
@@ -575,10 +589,17 @@ void RemoveAttachmentWithTitle(NSString* title) {
 
 #pragma mark - ComposeboxEligiblityTestCase
 
-@interface ComposeboxEligiblityTestCase : ComposeboxTestCase
+@interface ComposeboxEligiblityTestCase : ChromeTestCase
 @end
 
 @implementation ComposeboxEligiblityTestCase
+
+- (void)setUp {
+  [super setUp];
+  self.testServer->RegisterRequestHandler(
+      base::BindRepeating(&StandardResponse));
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+}
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
@@ -589,12 +610,6 @@ void RemoveAttachmentWithTitle(NSString* title) {
   // server-side checks.
   config.features_disabled.push_back(omnibox::kAimServerEligibilityEnabled);
   return config;
-}
-
-- (void)setUp {
-  [super setUp];
-  // Disable all tools.
-  [ComposeboxAppInterface setAllToolsEnabled:NO];
 }
 
 // Tests that the image generation action is not available when not eligible.
@@ -624,6 +639,10 @@ void RemoveAttachmentWithTitle(NSString* title) {
 // Tests that a tab cannot be attached when in image generation mode, and that
 // image generation mode can be entered after attachments are removed.
 - (void)testNoTabAttachmentsInImageGeneration {
+  if ([ComposeboxAppInterface isServerSideStateEnabled]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Skipped when kComposeboxServerSideState is enabled.");
+  }
   [ComposeboxAppInterface setFuseboxEligible:YES];
   [ComposeboxAppInterface setCreateImagesEligible:YES];
 
@@ -711,6 +730,11 @@ void RemoveAttachmentWithTitle(NSString* title) {
 
 // Tests that image generation action is present when eligible.
 - (void)testComposeboxCreateImageEligible {
+  if ([ComposeboxAppInterface isServerSideStateEnabled]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Skipped when kComposeboxServerSideState is enabled.");
+  }
+
   [ComposeboxAppInterface setFuseboxEligible:YES];
   [ComposeboxAppInterface setCreateImagesEligible:YES];
 

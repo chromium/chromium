@@ -41,6 +41,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/aim/model:test_support",
     "//ios/chrome/browser/composebox/model",
     "//ios/chrome/browser/composebox/model:test_support",
+    "//ios/chrome/browser/composebox/public:features",
     "//ios/chrome/browser/composebox/ui",
     "//ios/chrome/browser/composebox/ui:state",
     "//ios/chrome/browser/shared/model/profile",

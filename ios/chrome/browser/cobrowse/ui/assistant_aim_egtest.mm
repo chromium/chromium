@@ -114,6 +114,10 @@ void OpenCoBrowse(net::EmbeddedTestServer* testServer) {
 }
 
 - (void)testCloseButtonDismissesAssistant {
+  if ([ComposeboxAppInterface isServerSideStateEnabled]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Skipped when kComposeboxServerSideState is enabled.");
+  }
   OpenCoBrowse(self.testServer);
 
   // Wait for the assistant to appear.
@@ -135,6 +139,10 @@ void OpenCoBrowse(net::EmbeddedTestServer* testServer) {
 }
 
 - (void)testAssistantPersistsThroughTabGrid {
+  if ([ComposeboxAppInterface isServerSideStateEnabled]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Skipped when kComposeboxServerSideState is enabled.");
+  }
   OpenCoBrowse(self.testServer);
 
   // Wait for the assistant to appear.
@@ -162,6 +170,10 @@ void OpenCoBrowse(net::EmbeddedTestServer* testServer) {
 // Tests that the assistant can transition between medium, large, and minimized
 // detents.
 - (void)testDetentTransitions {
+  if ([ComposeboxAppInterface isServerSideStateEnabled]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Skipped when kComposeboxServerSideState is enabled.");
+  }
   OpenCoBrowse(self.testServer);
 
   // Wait for the assistant to appear.
@@ -193,6 +205,10 @@ void OpenCoBrowse(net::EmbeddedTestServer* testServer) {
 // All 3 detents are available in this mode. This test verifies that we start
 // in minimized and are not stuck in it.
 - (void)testMinimizedStateWhenFlagEnabled {
+  if ([ComposeboxAppInterface isServerSideStateEnabled]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Skipped when kComposeboxServerSideState is enabled.");
+  }
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   // Remove from disabled list to allow enabling it.
   std::erase(config.features_disabled, kAssistantAimMinimizedState);

@@ -36,6 +36,9 @@
 // Resets testing overrides for all tools accessible.
 + (void)setAllToolsEnabled:(BOOL)enabled;
 
+// Returns whether the composebox server side state is enabled.
++ (BOOL)isServerSideStateEnabled;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_EG_TESTS_COMPOSEBOX_APP_INTERFACE_H_
