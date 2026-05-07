@@ -1256,32 +1256,6 @@ void Canvas2DResourceProviderSharedImage::RasterRecordForCanvas2D(
   resource()->EndAccess(std::move(access));
 }
 
-sk_sp<SkSurface> CanvasResourceProviderSharedImage::CreateSkSurface() const {
-  TRACE_EVENT0("blink", "CanvasResourceProviderSharedImage::CreateSkSurface");
-
-  CHECK(!IsAccelerated());
-
-  if (IsSoftware()) {
-    const auto props = GetSkSurfaceProps();
-    const auto info = SkImageInfo::Make(
-        size_.width(), size_.height(), viz::ToClosestSkColorType(format_),
-        alpha_type_, color_space_.ToSkColorSpace());
-    return SkSurfaces::Raster(info, &props);
-  }
-
-  if (IsGpuContextLost() || !resource_) {
-    return nullptr;
-  }
-
-  const auto props = GetSkSurfaceProps();
-
-  // When using software raster with GPU compositing, we render into CPU memory
-  // managed internally by SkSurface and copy the rendered results to the
-  // current resource's backing SharedImage before dispatching that SharedImage
-  // to the display compositor.
-  return SkSurfaces::Raster(resource_->CreateSkImageInfo(), &props);
-}
-
 // For WebGpu RecyclableCanvasResource.
 void CanvasNon2DResourceProviderSharedImage::
     OnAcquireRecyclableCanvasResource() {
@@ -1903,14 +1877,6 @@ CanvasResourceProvider::UnacceleratedSnapshotForCanvas2D(
                                                 orientation);
 }
 
-gpu::raster::RasterInterface*
-CanvasResourceProviderSharedImage::RasterInterface() const {
-  if (!ContextProviderWrapper()) {
-    return nullptr;
-  }
-  return ContextProviderWrapper()->ContextProvider().RasterInterface();
-}
-
 SkSurfaceProps CanvasResourceProvider::GetSkSurfaceProps() const {
   const bool can_use_lcd_text = GetAlphaType() == kOpaque_SkAlphaType;
   return skia::LegacyDisplayGlobals::ComputeSurfaceProps(can_use_lcd_text);
@@ -2059,12 +2025,6 @@ void CanvasResourceProvider::UnacceleratedRasterRecordForCanvas2D(
         GetOrCreateSWCanvasImageProviderForCanvas2D());
   }
   skia_canvas_for_canvas_2d_->drawPicture(std::move(last_recording));
-}
-
-bool CanvasResourceProviderSharedImage::IsGpuContextLost() const {
-  auto* raster_interface = RasterInterface();
-  return !raster_interface ||
-         raster_interface->GetGraphicsResetStatusKHR() != GL_NO_ERROR;
 }
 
 void CanvasResourceProviderSharedImage::NotifyGpuContextLostTask(
@@ -2253,6 +2213,46 @@ bool Canvas2DResourceProviderSharedImage::IsSingleBuffered() const {
 
 bool Canvas2DResourceProviderSharedImage::HasUnusedResourcesForTesting() const {
   return image_pool_ && image_pool_->GetPoolSizeForTesting() > 0;
+}
+
+gpu::raster::RasterInterface*
+Canvas2DResourceProviderSharedImage::RasterInterface() const {
+  if (!ContextProviderWrapper()) {
+    return nullptr;
+  }
+  return ContextProviderWrapper()->ContextProvider().RasterInterface();
+}
+
+bool Canvas2DResourceProviderSharedImage::IsGpuContextLost() const {
+  auto* raster_interface = RasterInterface();
+  return !raster_interface ||
+         raster_interface->GetGraphicsResetStatusKHR() != GL_NO_ERROR;
+}
+
+sk_sp<SkSurface> Canvas2DResourceProviderSharedImage::CreateSkSurface() const {
+  TRACE_EVENT0("blink", "Canvas2DResourceProviderSharedImage::CreateSkSurface");
+
+  CHECK(!IsAccelerated());
+
+  if (is_software_) {
+    const auto props = GetSkSurfaceProps();
+    const auto info = SkImageInfo::Make(
+        size_.width(), size_.height(), viz::ToClosestSkColorType(format_),
+        alpha_type_, color_space_.ToSkColorSpace());
+    return SkSurfaces::Raster(info, &props);
+  }
+
+  if (IsGpuContextLost() || !resource_) {
+    return nullptr;
+  }
+
+  const auto props = GetSkSurfaceProps();
+
+  // When using software raster with GPU compositing, we render into CPU memory
+  // managed internally by SkSurface and copy the rendered results to the
+  // current resource's backing SharedImage before dispatching that SharedImage
+  // to the display compositor.
+  return SkSurfaces::Raster(resource_->CreateSkImageInfo(), &props);
 }
 
 CanvasNon2DResourceProviderSharedImage::CanvasNon2DResourceProviderSharedImage(
@@ -2458,6 +2458,48 @@ void CanvasNon2DResourceProviderSharedImage::OnMemoryDump(
 
   std::string cached_path = path + "/cached";
   image_pool_->OnMemoryDump(pmd, cached_path);
+}
+
+gpu::raster::RasterInterface*
+CanvasNon2DResourceProviderSharedImage::RasterInterface() const {
+  if (!ContextProviderWrapper()) {
+    return nullptr;
+  }
+  return ContextProviderWrapper()->ContextProvider().RasterInterface();
+}
+
+bool CanvasNon2DResourceProviderSharedImage::IsGpuContextLost() const {
+  auto* raster_interface = RasterInterface();
+  return !raster_interface ||
+         raster_interface->GetGraphicsResetStatusKHR() != GL_NO_ERROR;
+}
+
+sk_sp<SkSurface> CanvasNon2DResourceProviderSharedImage::CreateSkSurface()
+    const {
+  TRACE_EVENT0("blink",
+               "CanvasNon2DResourceProviderSharedImage::CreateSkSurface");
+
+  CHECK(!IsAccelerated());
+
+  if (is_software_) {
+    const auto props = GetSkSurfaceProps();
+    const auto info = SkImageInfo::Make(
+        size_.width(), size_.height(), viz::ToClosestSkColorType(format_),
+        alpha_type_, color_space_.ToSkColorSpace());
+    return SkSurfaces::Raster(info, &props);
+  }
+
+  if (IsGpuContextLost() || !resource_) {
+    return nullptr;
+  }
+
+  const auto props = GetSkSurfaceProps();
+
+  // When using software raster with GPU compositing, we render into CPU memory
+  // managed internally by SkSurface and copy the rendered results to the
+  // current resource's backing SharedImage before dispatching that SharedImage
+  // to the display compositor.
+  return SkSurfaces::Raster(resource_->CreateSkImageInfo(), &props);
 }
 
 bool CanvasResourceProvider::UnacceleratedWritePixelsForCanvas2D(

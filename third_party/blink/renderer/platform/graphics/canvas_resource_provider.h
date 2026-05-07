@@ -405,9 +405,7 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
 
   bool IsAccelerated() const override = 0;
   virtual bool IsSoftware() const = 0;
-  bool IsGpuContextLost() const override;
 
-  sk_sp<SkSurface> CreateSkSurface() const override;
   void OnFlushForImage(cc::PaintImage::ContentId content_id) override = 0;
 
   // Indicates that the compositing path is single buffered, meaning that
@@ -425,7 +423,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   }
   virtual base::WeakPtr<WebGraphicsContext3DProviderWrapper>
   ContextProviderWrapper() const = 0;
-  virtual gpu::raster::RasterInterface* RasterInterface() const;
   virtual void EnsureWriteAccess() = 0;
   virtual void EndWriteAccess() = 0;
 
@@ -516,6 +513,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
 
   bool IsAccelerated() const override { return is_accelerated_; }
   bool IsSoftware() const override { return is_software_; }
+  bool IsGpuContextLost() const override;
 
   // WebGraphicsContext3DProviderWrapper::DestructionObserver implementation.
   void OnContextDestroyed() override;
@@ -595,6 +593,9 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   // by this provider.
   void WillDrawUnaccelerated();
   void DisableLineDrawingAsPathsIfNecessaryForCanvas2D() override;
+
+  sk_sp<SkSurface> CreateSkSurface() const override;
+  gpu::raster::RasterInterface* RasterInterface() const;
 
   // If this instance is single-buffered or |resource_recycling_enabled_| is
   // false, |image_pool_| will not recycle resources.
@@ -695,6 +696,7 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
 
   bool IsAccelerated() const override { return is_accelerated_; }
   bool IsSoftware() const override { return is_software_; }
+  bool IsGpuContextLost() const override;
 
   // WebGraphicsContext3DProviderWrapper::DestructionObserver implementation.
   void OnContextDestroyed() override;
@@ -776,6 +778,9 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   // write have completed. Ensures that the next read of this resource (whether
   // via raster or the compositor) waits on this token.
   void EndExternalWrite(const gpu::SyncToken& external_write_sync_token);
+
+  sk_sp<SkSurface> CreateSkSurface() const override;
+  gpu::raster::RasterInterface* RasterInterface() const;
 
  private:
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()
