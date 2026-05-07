@@ -11,6 +11,7 @@
 #include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_metrics.h"
 #include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
@@ -283,7 +284,7 @@ void ActorToolsTest::SetPageContent(
     optimization_guide::AIPageContentResultOrError page_content) {
   auto apc = std::move(page_content->proto);
   auto* tab_data = ActorTabData::From(active_tab());
-  tab_data->DidObserveContent(apc);
+  tab_data->DidObserveContent(apc, ApcSource::kActor);
   std::move(quit_closure).Run();
 }
 

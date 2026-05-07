@@ -19,6 +19,12 @@ class ActionsResult;
 
 namespace actor {
 
+// The source or feature that triggered an Annotated Page Content (APC) fetch.
+enum class ApcSource {
+  kActor,
+  kGlic,
+};
+
 // Records the number of actions taken in `from_state` before transitioning to
 // `to_state`.
 void RecordActorTaskStateTransitionActionCount(size_t action_count,
@@ -75,6 +81,10 @@ void RecordDirectDownloadTriggered(bool success);
 
 // Recorded when a 'save as' download dialog is triggered by an ActorTask.
 void RecordDownloadSaveAsDialogTriggered(bool success);
+
+// Records whether the APC is identical to the one from the previous fetch
+// from ANY source.
+void RecordApcComparisonIdentical(ApcSource source, bool identical);
 
 // Records script tool specific metrics.
 void RecordScriptToolActionResultCode(

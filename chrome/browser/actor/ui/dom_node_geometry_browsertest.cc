@@ -9,6 +9,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/actor/actor_metrics.h"
 #include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -155,7 +156,7 @@ class ActorUiDomNodeGeometryBrowserTest
 
     tab_data_ =
         ActorTabData::From(browser()->tab_strip_model()->GetActiveTab());
-    tab_data_->DidObserveContent(apc);
+    tab_data_->DidObserveContent(apc, ApcSource::kActor);
     std::move(quit_closure).Run();
   }
 

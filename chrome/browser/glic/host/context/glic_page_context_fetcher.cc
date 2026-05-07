@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
+#include "chrome/browser/actor/actor_metrics.h"
 #include "chrome/browser/actor/actor_proto_conversion.h"
 #include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/aggregated_journal.h"
@@ -195,7 +196,8 @@ void HandleFetchPageResult(
     if (tab) {
       if (auto* actor_tab_data = actor::ActorTabData::From(tab.get())) {
         actor_tab_data->DidObserveContent(
-            page_context.annotated_page_content_result->proto);
+            page_context.annotated_page_content_result->proto,
+            actor::ApcSource::kGlic);
       }
     }
 

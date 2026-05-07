@@ -15,6 +15,9 @@
 #include "ui/gfx/geometry/point.h"
 
 namespace actor {
+
+enum class ApcSource;
+
 namespace ui {
 class DomNodeGeometry;
 }
@@ -29,7 +32,8 @@ class ActorTabData {
   static ActorTabData* From(tabs::TabInterface* tab);
 
   void DidObserveContent(
-      optimization_guide::proto::AnnotatedPageContent& content);
+      const optimization_guide::proto::AnnotatedPageContent& content,
+      ApcSource source);
 
   // Returns last observed page content, nullptr if no observation has been
   // made.

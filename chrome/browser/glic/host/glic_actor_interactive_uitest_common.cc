@@ -18,6 +18,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_metrics.h"
 #include "chrome/browser/actor/actor_proto_conversion.h"
 #include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/actor_task.h"
@@ -658,7 +659,8 @@ MultiStep GlicActorUiTest::GetPageContextForActorTab() {
             actor::ActorTabData* tab_data =
                 actor::ActorTabData::From(tab_handle_.Get());
             if (tab_data) {
-              tab_data->DidObserveContent(*annotated_page_content_);
+              tab_data->DidObserveContent(*annotated_page_content_,
+                                          actor::ApcSource::kActor);
             }
           }
           run_loop.Quit();
