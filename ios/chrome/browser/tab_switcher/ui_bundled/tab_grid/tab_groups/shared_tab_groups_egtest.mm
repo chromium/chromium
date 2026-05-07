@@ -36,6 +36,7 @@
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
+#import "ios/testing/earl_grey/disabled_test_macros.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "net/test/embedded_test_server/request_handler_util.h"
@@ -726,7 +727,12 @@ std::unique_ptr<net::test_server::HttpResponse> HandleAttackerPage(
 //     - Cross button
 //     - Context menu and then 'Close Tab'
 // * Close from the navigating view, long press on the tab grid icon.
+// TODO(crbug.com/510742361): Disable this test on iPad due to flakiness.
 - (void)testLastTabClosedAlerts {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Disabled on iPad.");
+  }
+
   AddSharedGroup(/*owner=*/YES, self.testServer);
   [ChromeEarlGrey waitForMainTabCount:1];
   // Open the group view.
