@@ -264,9 +264,18 @@ IN_PROC_BROWSER_TEST_F(SyncSettingsInteractiveTest,
 
 // Tests that a signed in user on the web can trigger and see the History
 // Sync Optin dialog.
+
+// TODO(crbug.com/510237034): Re-enable test on Mac
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ShowHistorySyncOptinDialogFromSettingsInAccountAwareMode \
+  DISABLED_ShowHistorySyncOptinDialogFromSettingsInAccountAwareMode
+#else
+#define MAYBE_ShowHistorySyncOptinDialogFromSettingsInAccountAwareMode \
+  ShowHistorySyncOptinDialogFromSettingsInAccountAwareMode
+#endif
 IN_PROC_BROWSER_TEST_F(
     SyncSettingsInteractiveTest,
-    ShowHistorySyncOptinDialogFromSettingsInAccountAwareMode) {
+    MAYBE_ShowHistorySyncOptinDialogFromSettingsInAccountAwareMode) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabId);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kHistorySyncOptinDialogContentsId);
   const DeepQuery kContinueAsButton = {"settings-ui",
