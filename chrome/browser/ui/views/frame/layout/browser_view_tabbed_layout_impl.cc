@@ -404,6 +404,14 @@ BrowserViewTabbedLayoutImpl::CalculateVerticalTabStripAnimation(
 }
 
 int BrowserViewTabbedLayoutImpl::GetMinimumGrabHandlePadding() const {
+  if (base::FeatureList::IsEnabled(features::kVerticalTabsGrabHandleRemoval)) {
+    if (features::kVerticalTabsGrabHandleRemovalAlways.Get() ||
+        GetVerticalTabStripCollapsedState() ==
+            VerticalTabStripCollapsedState::kExpanded) {
+      return 0;
+    }
+  }
+
   return kVerticalTabsGrabHandleSize -
          GetLayoutInsets(LayoutInset::TOOLBAR_INTERIOR_MARGIN).right();
 }

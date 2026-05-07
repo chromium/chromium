@@ -471,4 +471,14 @@ BASE_FEATURE_PARAM(bool,
                    "tab_groups_focusing_default_to_focused",
                    false);
 
+BASE_FEATURE(kVerticalTabsGrabHandleRemoval, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If false, then the grab handle will only be removed when the vertical tab
+// strip is expanded.
+BASE_FEATURE_PARAM(bool,
+                   kVerticalTabsGrabHandleRemovalAlways,
+                   &kVerticalTabsGrabHandleRemoval,
+                   "vertical_tab_grab_handle_remove_always",
+                   true);
+
 }  // namespace features
