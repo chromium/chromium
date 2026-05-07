@@ -53,7 +53,7 @@ function toExtensionsBookmarkTreeNode(mojoNode: BookmarksTreeNode):
   return extensionNode;
 }
 
-interface PowerBookmarksDragDelegate extends HTMLElement {
+export interface PowerBookmarksDragDelegate extends HTMLElement {
   getFallbackBookmark(): BookmarksTreeNode;
   getFallbackDropTargetElement(): HTMLElement;
   onFinishDrop(dropTarget: BookmarksTreeNode): void;

@@ -7,6 +7,7 @@ import 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_list.js';
 import type {BookmarksTreeNode} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks.mojom-webui.js';
 import type {PowerBookmarkRowElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmark_row.js';
 import type {PowerBookmarkRowItemElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmark_row_item.js';
+import type {PowerBookmarksAppElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_app.js';
 import type {PowerBookmarksListElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_list.js';
 import type {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -87,14 +88,18 @@ export function createTestBookmarks(): BookmarksTreeNode[] {
   ];
 }
 
-export function getBookmarks(element: PowerBookmarksListElement) {
+export function getBookmarks(
+    element: PowerBookmarksListElement|PowerBookmarksAppElement) {
   return getBookmarksInList(element, 0).concat(getBookmarksInList(element, 1));
 }
 
 export function getBookmarksInList(
-    element: PowerBookmarksListElement,
+    element: PowerBookmarksListElement|PowerBookmarksAppElement,
     listIndex: number): BookmarksTreeNode[] {
-  const ironList = element.shadowRoot!.querySelector<IronListElement>(
+  const root = 'bookmarksList' in element.$ ?
+      element.$.bookmarksList.shadowRoot! :
+      element.shadowRoot!;
+  const ironList = root.querySelector<IronListElement>(
       `#shownBookmarksIronList${listIndex}`);
   if (!ironList || !ironList.items) {
     return [];
@@ -103,21 +108,26 @@ export function getBookmarksInList(
 }
 
 export function getBookmarkWithId(
-    element: PowerBookmarksListElement, id: string): BookmarksTreeNode|
-    undefined {
+    element: PowerBookmarksListElement|PowerBookmarksAppElement,
+    id: string): BookmarksTreeNode|undefined {
   return getBookmarks(element).find(bookmark => bookmark.id === id);
 }
 
 export function getPowerBookmarksRowElement(
-    element: PowerBookmarksListElement|PowerBookmarkRowElement,
+    element: PowerBookmarksListElement|PowerBookmarksAppElement|
+    PowerBookmarkRowElement,
     id: string): PowerBookmarkRowElement|undefined {
-  return element.shadowRoot!.querySelector<PowerBookmarkRowElement>(
-             `#bookmark-${id}`) ||
+  const root = (element instanceof HTMLElement &&
+                element.tagName === 'POWER-BOOKMARKS-APP') ?
+      (element as PowerBookmarksAppElement).$.bookmarksList.shadowRoot! :
+      element.shadowRoot!;
+  return (root.querySelector<PowerBookmarkRowElement>(`#bookmark-${id}`)) ||
       undefined;
 }
 
 export function getPowerBookmarksRowItemElement(
-    element: PowerBookmarksListElement|PowerBookmarkRowElement,
+    element: PowerBookmarksListElement|PowerBookmarksAppElement|
+    PowerBookmarkRowElement,
     id: string): PowerBookmarkRowItemElement|null {
   const row = getPowerBookmarksRowElement(element, id);
   if (!row) {
@@ -126,19 +136,17 @@ export function getPowerBookmarksRowItemElement(
   return row.shadowRoot.querySelector('power-bookmark-row-item');
 }
 
-export async function initializeUi(bookmarksApi: TestBookmarksApiProxy):
-    Promise<PowerBookmarksListElement> {
-  const element = document.createElement('power-bookmarks-list');
+export async function initializeAppUi(bookmarksApi: TestBookmarksApiProxy):
+    Promise<PowerBookmarksAppElement> {
+  const element = document.createElement('power-bookmarks-app');
 
-  // Ensure the PowerBookmarksListElement is given a fixed height to expand
-  // to.
   const parentElement = document.createElement('div');
   parentElement.style.height = '500px';
   parentElement.appendChild(element);
   document.body.appendChild(parentElement);
 
   await bookmarksApi.whenCalled('getAllBookmarks');
-  await waitAfterNextRender(element);
+  await waitAfterNextRender(element.$.bookmarksList);
   flush();
   return element;
 }

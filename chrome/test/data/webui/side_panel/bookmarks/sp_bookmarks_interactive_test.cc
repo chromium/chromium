@@ -57,28 +57,28 @@ IN_PROC_BROWSER_TEST_F(SidePanelPowerBookmarksTest, Labels) {
   RunTest("side_panel/bookmarks/power_bookmarks_labels_test.js", "mocha.run()");
 }
 
-using SidePanelBookmarksListTest = SidePanelBookmarksTest;
+using SidePanelBookmarksAppTest = SidePanelBookmarksTest;
 // TODO(crbug.com/489813344): Flaky test.
-IN_PROC_BROWSER_TEST_F(SidePanelBookmarksListTest, DISABLED_General1) {
+IN_PROC_BROWSER_TEST_F(SidePanelBookmarksAppTest, DISABLED_General1) {
   SidePanelBookmarksTest::RunTest(
-      "side_panel/bookmarks/power_bookmarks_list_test.js",
+      "side_panel/bookmarks/power_bookmarks_app_test.js",
       "runMochaSuite('General Part1');");
 }
 
-IN_PROC_BROWSER_TEST_F(SidePanelBookmarksListTest, General2) {
+IN_PROC_BROWSER_TEST_F(SidePanelBookmarksAppTest, General2) {
   SidePanelBookmarksTest::RunTest(
-      "side_panel/bookmarks/power_bookmarks_list_test.js",
+      "side_panel/bookmarks/power_bookmarks_app_test.js",
       "runMochaSuite('General Part2');");
 }
 
-IN_PROC_BROWSER_TEST_F(SidePanelBookmarksListTest, BookmarksMigrateUiChanges) {
+IN_PROC_BROWSER_TEST_F(SidePanelBookmarksAppTest, BookmarksMigrateUiChanges) {
   RunTest(
       "side_panel/bookmarks/"
-      "power_bookmarks_list_migrate_ui_changes_test.js",
+      "power_bookmarks_app_migrate_ui_changes_test.js",
       "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(SidePanelBookmarksListTest, TreeView) {
-  RunTest("side_panel/bookmarks/power_bookmarks_list_tree_view_test.js",
+IN_PROC_BROWSER_TEST_F(SidePanelBookmarksAppTest, TreeView) {
+  RunTest("side_panel/bookmarks/power_bookmarks_app_tree_view_test.js",
           "mocha.run()");
 }

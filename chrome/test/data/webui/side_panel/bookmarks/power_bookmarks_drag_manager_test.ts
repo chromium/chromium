@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 
+import 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_app.js';
+
 import type {BookmarksTreeNode} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks.mojom-webui.js';
 import {BookmarksApiProxyImpl} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks_api_proxy.js';
 import {PowerBookmarkRowElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmark_row.js';
 import {DROP_POSITION_ATTR, DropPosition} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_drag_manager.js';
-import {PowerBookmarksListElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_list.js';
+import type {PowerBookmarksListElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_list.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -100,8 +102,9 @@ suite('SidePanelPowerBookmarkDragManagerTest', () => {
       viewType: 0,
     });
 
-    delegate = new PowerBookmarksListElement();
-    document.body.appendChild(delegate);
+    const app = document.createElement('power-bookmarks-app');
+    document.body.appendChild(app);
+    delegate = app.$.bookmarksList;
 
     await bookmarksApi.whenCalled('getAllBookmarks');
     await flushTasks();

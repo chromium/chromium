@@ -8,7 +8,6 @@ import {SortOrder, ViewType} from 'chrome://bookmarks-side-panel.top-chrome/book
 import type {BookmarksTreeNode} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks.mojom-webui.js';
 import {BookmarksApiProxyImpl} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks_api_proxy.js';
 import {NESTED_BOOKMARKS_BASE_MARGIN, NESTED_BOOKMARKS_MARGIN_PER_DEPTH} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmark_row.js';
-import type {PowerBookmarksListElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_list.js';
 import {PageCallbackRouter} from 'chrome://resources/cr_components/commerce/price_tracking.mojom-webui.js';
 import {PriceTrackingBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/price_tracking_browser_proxy.js';
 import {PageImageServiceBrowserProxy} from 'chrome://resources/cr_components/page_image_service/browser_proxy.js';
@@ -21,7 +20,7 @@ import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {createTestBookmarks, getBookmarks, getPowerBookmarksRowElement, getPowerBookmarksRowItemElement, initializeUi} from './power_bookmarks_list_test_util.js';
+import {createTestBookmarks, getBookmarks, getPowerBookmarksRowElement, getPowerBookmarksRowItemElement, initializeAppUi} from './power_bookmarks_app_test_util.js';
 import {TestBookmarksApiProxy} from './test_bookmarks_api_proxy.js';
 
 const nestedBookmarks: BookmarksTreeNode[] = [
@@ -216,9 +215,12 @@ const ARROW_RIGHT_EVENT = new KeyboardEvent(
 const ARROW_LEFT_EVENT = new KeyboardEvent(
     'keydown', {key: 'ArrowLeft', bubbles: true, composed: true});
 
+import 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_app.js';
+import type {PowerBookmarksAppElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_app.js';
+
 suite('TreeView', () => {
   const FOLDERS = createTestBookmarks();
-  let powerBookmarksList: PowerBookmarksListElement;
+  let powerBookmarksApp: PowerBookmarksAppElement;
   let bookmarksApi: TestBookmarksApiProxy;
   const priceTrackingProxy = TestMock.fromClass(PriceTrackingBrowserProxyImpl);
   let imageServiceHandler: TestMock<PageImageServiceHandlerRemote>&
@@ -265,32 +267,29 @@ suite('TreeView', () => {
       emptyTitleGuest: 'guest title',
       emptyBodyGuest: 'guest body',
       bookmarksTreeViewEnabled: true,
+      tooltipBack: 'Back',
     });
 
-    powerBookmarksList = await initializeUi(bookmarksApi);
+    powerBookmarksApp = await initializeAppUi(bookmarksApi);
   });
 
   test('ShowsExpandButtonForFolders', () => {
-    const folderElement = getPowerBookmarksRowElement(powerBookmarksList, '5');
+    const folderElement = getPowerBookmarksRowElement(powerBookmarksApp, '5');
     assertTrue(!!folderElement);
 
-    const folderItem = getPowerBookmarksRowItemElement(powerBookmarksList, '5');
+    const folderItem = getPowerBookmarksRowItemElement(powerBookmarksApp, '5');
     assertTrue(!!folderItem);
 
     let expandButton =
-        folderItem.shadowRoot.querySelector<HTMLElement>(
-            '#expandButton');
-    // Assert that the expand button is present for folders
+        folderItem.shadowRoot.querySelector<HTMLElement>('#expandButton');
     assertTrue(!!expandButton);
 
     const singleBookmarkItem =
-        getPowerBookmarksRowItemElement(powerBookmarksList, '3');
+        getPowerBookmarksRowItemElement(powerBookmarksApp, '3');
     assertTrue(!!singleBookmarkItem);
 
-    expandButton =
-        singleBookmarkItem.shadowRoot.querySelector<HTMLElement>(
-            '#expandButton');
-    // Assert that the expand button is not present for single bookmarks
+    expandButton = singleBookmarkItem.shadowRoot.querySelector<HTMLElement>(
+        '#expandButton');
     assertFalse(!!expandButton);
   });
 
@@ -298,9 +297,9 @@ suite('TreeView', () => {
     bookmarksApi = new TestBookmarksApiProxy();
     bookmarksApi.setAllBookmarks(structuredClone(nestedBookmarks));
     BookmarksApiProxyImpl.setInstance(bookmarksApi);
-    powerBookmarksList = await initializeUi(bookmarksApi);
+    powerBookmarksApp = await initializeAppUi(bookmarksApi);
 
-    const folderRow = getPowerBookmarksRowElement(powerBookmarksList, '5');
+    const folderRow = getPowerBookmarksRowElement(powerBookmarksApp, '5');
     assertTrue(!!folderRow);
     assertFalse(folderRow.toggleExpand, 'Folder should be initially collapsed');
 
@@ -310,20 +309,21 @@ suite('TreeView', () => {
     assertTrue(!!rowItem);
     const urlListItem = rowItem.$.crUrlListItem;
     urlListItem.focus();
-    powerBookmarksList.getKeyboardNavigationServiceforTesting()
+    powerBookmarksApp.$.bookmarksList.getKeyboardNavigationServiceforTesting()
         .setCurrentFocusIndex(folderRow);
 
     // Expand with Right Arrow.
     const toggleEvent =
-        eventToPromise('power-bookmark-toggle', powerBookmarksList);
+        eventToPromise('power-bookmark-toggle', powerBookmarksApp);
     folderRow.dispatchEvent(ARROW_RIGHT_EVENT);
     await toggleEvent;
     await flushTasks();
-    await waitAfterNextRender(powerBookmarksList);
+    await waitAfterNextRender(powerBookmarksApp);
 
     // Default sort is kNewest.
     assertArrayEquals(
-        powerBookmarksList.getKeyboardNavigationServiceforTesting()
+        powerBookmarksApp.$.bookmarksList
+            .getKeyboardNavigationServiceforTesting()
             .getElementsForTesting()
             .map((el: HTMLElement) => el.id),
         [
@@ -343,7 +343,8 @@ suite('TreeView', () => {
     await flushTasks();
 
     assertArrayEquals(
-        powerBookmarksList.getKeyboardNavigationServiceforTesting()
+        powerBookmarksApp.$.bookmarksList
+            .getKeyboardNavigationServiceforTesting()
             .getElementsForTesting()
             .map((el: HTMLElement) => el.id),
         [
@@ -362,18 +363,18 @@ suite('TreeView', () => {
   test('ShowsCorrectFoldersOnTreeView', () => {
     assertEquals(
         FOLDERS[1]!.children!.length + 1,
-        getBookmarks(powerBookmarksList).length);
+        getBookmarks(powerBookmarksApp).length);
   });
 
   test('ExpandAndCollapseNestedBookmarks', async () => {
-    const folderElement = getPowerBookmarksRowElement(powerBookmarksList, '5');
+    const folderElement = getPowerBookmarksRowElement(powerBookmarksApp, '5');
     assertTrue(!!folderElement);
 
-    const bookmarkRowItem = getPowerBookmarksRowItemElement(powerBookmarksList, '5');
+    const bookmarkRowItem =
+        getPowerBookmarksRowItemElement(powerBookmarksApp, '5');
     assertTrue(!!bookmarkRowItem);
     const expandButton =
-        bookmarkRowItem.shadowRoot.querySelector<HTMLElement>(
-            '#expandButton');
+        bookmarkRowItem.shadowRoot.querySelector<HTMLElement>('#expandButton');
     assertTrue(!!expandButton);
 
     expandButton.click();
@@ -396,8 +397,7 @@ suite('TreeView', () => {
     assertEquals(loadTimeData.getString('tooltipMore'), dotsIcon.title);
 
     const bookmarkDiv =
-        rowItem.shadowRoot.querySelector<HTMLElement>(
-            '#crUrlListItem');
+        rowItem.shadowRoot.querySelector<HTMLElement>('#crUrlListItem');
     assertTrue(!!bookmarkDiv);
 
     // Check if the depth is correctly applied to the style
@@ -416,13 +416,13 @@ suite('TreeView', () => {
 
 
   test('expands and collapses folders with arrow keys', async () => {
-    const folderRow = getPowerBookmarksRowElement(powerBookmarksList, '5');
+    const folderRow = getPowerBookmarksRowElement(powerBookmarksApp, '5');
     assertTrue(!!folderRow);
     assertFalse(folderRow.toggleExpand, 'Folder should be initially collapsed');
 
     // Child should not be visible initially.
     assertFalse(
-        !!getPowerBookmarksRowElement(powerBookmarksList, '6'),
+        !!getPowerBookmarksRowElement(powerBookmarksApp, '6'),
         'Child bookmark should not be visible initially');
 
     // Focus the item before sending key presses.
@@ -431,16 +431,16 @@ suite('TreeView', () => {
     assertTrue(!!rowItem);
     const urlListItem = rowItem.$.crUrlListItem;
     urlListItem.focus();
-    powerBookmarksList.getKeyboardNavigationServiceforTesting()
+    powerBookmarksApp.$.bookmarksList.getKeyboardNavigationServiceforTesting()
         .setCurrentFocusIndex(folderRow);
 
     // Expand with Right Arrow.
     let toggleEvent =
-        eventToPromise('power-bookmark-toggle', powerBookmarksList);
+        eventToPromise('power-bookmark-toggle', powerBookmarksApp);
     folderRow.dispatchEvent(ARROW_RIGHT_EVENT);
     await toggleEvent;
     await flushTasks();
-    await waitAfterNextRender(powerBookmarksList);
+    await waitAfterNextRender(powerBookmarksApp);
     assertTrue(
         folderRow.toggleExpand, 'Folder should be expanded after ArrowRight');
     assertTrue(
@@ -448,11 +448,11 @@ suite('TreeView', () => {
         'Child bookmark should be visible');
 
     // Collapse with Left Arrow.
-    toggleEvent = eventToPromise('power-bookmark-toggle', powerBookmarksList);
+    toggleEvent = eventToPromise('power-bookmark-toggle', powerBookmarksApp);
     folderRow.dispatchEvent(ARROW_LEFT_EVENT);
     await toggleEvent;
     await flushTasks();
-    await waitAfterNextRender(powerBookmarksList);
+    await waitAfterNextRender(powerBookmarksApp);
     assertFalse(
         folderRow.toggleExpand, 'Folder should be collapsed after ArrowLeft');
     assertFalse(
@@ -462,25 +462,27 @@ suite('TreeView', () => {
 
   test(
       'moves focus to first child on right arrow if already open', async () => {
-        const folderRow = getPowerBookmarksRowElement(powerBookmarksList, '5');
+        const folderRow = getPowerBookmarksRowElement(powerBookmarksApp, '5');
         assertTrue(!!folderRow);
         const folderItem =
             folderRow.shadowRoot.querySelector('power-bookmark-row-item');
         assertTrue(!!folderItem);
-        powerBookmarksList.flushNavigationElementsDebouncerForTesting();
+        powerBookmarksApp.$.bookmarksList
+            .flushNavigationElementsDebouncerForTesting();
 
         const urlListItem = folderItem.$.crUrlListItem;
         urlListItem.focus();
-        powerBookmarksList.getKeyboardNavigationServiceforTesting()
+        powerBookmarksApp.$.bookmarksList
+            .getKeyboardNavigationServiceforTesting()
             .setCurrentFocusIndex(folderRow);
 
         // Expand the folder first.
         const toggleEvent =
-            eventToPromise('power-bookmark-toggle', powerBookmarksList);
+            eventToPromise('power-bookmark-toggle', powerBookmarksApp);
         folderRow.dispatchEvent(ARROW_RIGHT_EVENT);
         await toggleEvent;
         await flushTasks();
-        await waitAfterNextRender(powerBookmarksList);
+        await waitAfterNextRender(powerBookmarksApp);
         assertTrue(folderRow.toggleExpand, 'Folder should be expanded');
 
         const childRow = getPowerBookmarksRowElement(folderRow, '6')!;
@@ -488,7 +490,7 @@ suite('TreeView', () => {
         // Right arrow on expanded folder should move focus.
         folderRow.dispatchEvent(ARROW_RIGHT_EVENT);
         await flushTasks();
-        await waitAfterNextRender(powerBookmarksList);
+        await waitAfterNextRender(powerBookmarksApp);
         await flushTasks();
 
         assertEquals(
@@ -497,8 +499,7 @@ suite('TreeView', () => {
       });
 
   test('right arrow does nothing on non-folder', async () => {
-    const bookmarkRow =
-        getPowerBookmarksRowItemElement(powerBookmarksList, '3');
+    const bookmarkRow = getPowerBookmarksRowItemElement(powerBookmarksApp, '3');
     assertTrue(!!bookmarkRow);
 
     const urlListItem = bookmarkRow.$.crUrlListItem;
@@ -509,29 +510,30 @@ suite('TreeView', () => {
     await flushTasks();
 
     // No toggleExpand property to check, just make sure nothing broke.
-    assertTrue(!!getPowerBookmarksRowItemElement(powerBookmarksList, '3'));
+    assertTrue(!!getPowerBookmarksRowItemElement(powerBookmarksApp, '3'));
   });
 
   test('moves focus to parent on left arrow from child', async () => {
-    const folderRow = getPowerBookmarksRowElement(powerBookmarksList, '5');
+    const folderRow = getPowerBookmarksRowElement(powerBookmarksApp, '5');
     assertTrue(!!folderRow);
     const folderItem =
         folderRow.shadowRoot.querySelector('power-bookmark-row-item');
     assertTrue(!!folderItem);
-    powerBookmarksList.flushNavigationElementsDebouncerForTesting();
+    powerBookmarksApp.$.bookmarksList
+        .flushNavigationElementsDebouncerForTesting();
 
     const urlListItem = folderItem.$.crUrlListItem;
     urlListItem.focus();
-    powerBookmarksList.getKeyboardNavigationServiceforTesting()
+    powerBookmarksApp.$.bookmarksList.getKeyboardNavigationServiceforTesting()
         .setCurrentFocusIndex(folderRow);
 
     // Expand the folder first.
     const toggleEvent =
-        eventToPromise('power-bookmark-toggle', powerBookmarksList);
+        eventToPromise('power-bookmark-toggle', powerBookmarksApp);
     folderRow.dispatchEvent(ARROW_RIGHT_EVENT);
     await toggleEvent;
     await flushTasks();
-    await waitAfterNextRender(powerBookmarksList);
+    await waitAfterNextRender(powerBookmarksApp);
     assertTrue(folderRow.toggleExpand, 'Folder should be expanded');
 
     const childRow = getPowerBookmarksRowElement(folderRow, '6')!;
@@ -539,7 +541,7 @@ suite('TreeView', () => {
     // Right arrow on expanded folder should move focus.
     folderRow.dispatchEvent(ARROW_RIGHT_EVENT);
     await flushTasks();
-    await waitAfterNextRender(powerBookmarksList);
+    await waitAfterNextRender(powerBookmarksApp);
 
     assertEquals(
         childRow.id, folderRow.shadowRoot.activeElement!.id,
@@ -547,28 +549,29 @@ suite('TreeView', () => {
 
     childRow.dispatchEvent(ARROW_LEFT_EVENT);
     await flushTasks();
-    await waitAfterNextRender(powerBookmarksList);
+    await waitAfterNextRender(powerBookmarksApp);
 
     assertEquals(
-        folderRow.id, powerBookmarksList.shadowRoot!.activeElement!.id,
+        folderRow.id,
+        powerBookmarksApp.$.bookmarksList.shadowRoot!.activeElement!.id,
         'Focus should move to the parent row');
   });
 
   test('LogsMetricsCountExpanded', async () => {
-    powerBookmarksList = await initializeUi(bookmarksApi);
+    powerBookmarksApp = await initializeAppUi(bookmarksApi);
 
-    const folderRow = getPowerBookmarksRowItemElement(powerBookmarksList, '5');
+    const folderRow = getPowerBookmarksRowItemElement(powerBookmarksApp, '5');
     assertTrue(!!folderRow);
 
     const urlListItem = folderRow.$.crUrlListItem;
     urlListItem.focus();
 
     const toggleEvent =
-        eventToPromise('power-bookmark-toggle', powerBookmarksList);
+        eventToPromise('power-bookmark-toggle', powerBookmarksApp);
     folderRow.dispatchEvent(ARROW_RIGHT_EVENT);
     await toggleEvent;
     await flushTasks();
-    await waitAfterNextRender(powerBookmarksList);
+    await waitAfterNextRender(powerBookmarksApp);
 
     assertEquals(
         1, metrics.count('PowerBookmarks.SidePanel.BookmarksShown', 5));
@@ -579,17 +582,19 @@ suite('TreeView', () => {
     bookmarksApi = new TestBookmarksApiProxy();
     bookmarksApi.setAllBookmarks(structuredClone(nestedBookmarks));
     BookmarksApiProxyImpl.setInstance(bookmarksApi);
-    powerBookmarksList = await initializeUi(bookmarksApi);
+    powerBookmarksApp = await initializeAppUi(bookmarksApi);
 
-    const folder5 = getPowerBookmarksRowElement(powerBookmarksList, '5')!;
-    const folder6 = getPowerBookmarksRowElement(powerBookmarksList, '6')!;
+    const folder5 = getPowerBookmarksRowElement(powerBookmarksApp, '5')!;
+    const folder6 = getPowerBookmarksRowElement(powerBookmarksApp, '6')!;
     assertTrue(!!folder5, 'Folder 5 should exist');
     assertTrue(!!folder6, 'Folder 6 should exist');
 
     // Expand Folder 5 and Folder 6 to reveal their children.
-    const folderItem5 = getPowerBookmarksRowItemElement(powerBookmarksList, '5')!;
+    const folderItem5 =
+        getPowerBookmarksRowItemElement(powerBookmarksApp, '5')!;
     folderItem5.shadowRoot.querySelector<HTMLElement>('#expandButton')!.click();
-    const folderItem6 = getPowerBookmarksRowItemElement(powerBookmarksList, '6')!;
+    const folderItem6 =
+        getPowerBookmarksRowItemElement(powerBookmarksApp, '6')!;
     folderItem6.shadowRoot.querySelector<HTMLElement>('#expandButton')!.click();
     await flushTasks();
 

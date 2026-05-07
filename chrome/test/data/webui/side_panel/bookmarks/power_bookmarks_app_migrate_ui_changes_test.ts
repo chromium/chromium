@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 import 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_list.js';
+import 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_app.js';
 
 import {ActionSource, SortOrder, ViewType} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks.mojom-webui.js';
 import {BookmarksApiProxyImpl} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks_api_proxy.js';
-import type {PowerBookmarksListElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_list.js';
+import type {PowerBookmarksAppElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_app.js';
 import {PageCallbackRouter} from 'chrome://resources/cr_components/commerce/price_tracking.mojom-webui.js';
 import {PriceTrackingBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/price_tracking_browser_proxy.js';
 import {PageImageServiceBrowserProxy} from 'chrome://resources/cr_components/page_image_service/browser_proxy.js';
@@ -17,11 +18,11 @@ import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
-import {createTestBookmarks, getBookmarkWithId, initializeUi} from './power_bookmarks_list_test_util.js';
+import {createTestBookmarks, getBookmarkWithId, initializeAppUi} from './power_bookmarks_app_test_util.js';
 import {TestBookmarksApiProxy} from './test_bookmarks_api_proxy.js';
 
 suite('MigrateUiChangesUseBrowserEditDialog', () => {
-  let powerBookmarksList: PowerBookmarksListElement;
+  let powerBookmarksApp: PowerBookmarksAppElement;
   let bookmarksApi: TestBookmarksApiProxy;
   const priceTrackingProxy = TestMock.fromClass(PriceTrackingBrowserProxyImpl);
   let imageServiceHandler: TestMock<PageImageServiceHandlerRemote>&
@@ -66,20 +67,21 @@ suite('MigrateUiChangesUseBrowserEditDialog', () => {
       emptyBodyGuest: 'guest body',
       bookmarksTreeViewEnabled: false,
       isBookmarksMigrationUiChanges: true,
+      tooltipBack: 'Back',
     });
 
-    powerBookmarksList = await initializeUi(bookmarksApi);
+    powerBookmarksApp = await initializeAppUi(bookmarksApi);
   });
 
   test('EditBookmarkWithBookmarks', async () => {
     const bookmarkId = '3';
-    const contextMenu = powerBookmarksList.$.contextMenu;
+    const contextMenu = powerBookmarksApp.$.contextMenu;
     const editClicked = eventToPromise('edit-clicked', contextMenu);
 
     // Open the context menu.
     contextMenu.showAtPosition(
         new MouseEvent('click'),
-        [getBookmarkWithId(powerBookmarksList, bookmarkId)!], false, false,
+        [getBookmarkWithId(powerBookmarksApp, bookmarkId)!], false, false,
         false, 1);
     await waitAfterNextRender(contextMenu);
 
@@ -87,8 +89,9 @@ suite('MigrateUiChangesUseBrowserEditDialog', () => {
     const menuItems = contextMenu.shadowRoot.querySelectorAll('.dropdown-item');
     assertTrue(
         menuItems[4]!.textContent.includes(loadTimeData.getString('menuEdit')));
-    const editItem = contextMenu.shadowRoot.querySelectorAll<HTMLElement>(
-        '.dropdown-item')[4]!;
+    const editItem =
+        (contextMenu.shadowRoot.querySelectorAll('.dropdown-item')[4]!) as
+        HTMLElement;
 
     // Click on edit and wait for the call to propagate.
     editItem.click();
@@ -106,10 +109,10 @@ suite('MigrateUiChangesUseBrowserEditDialog', () => {
   test('MoveBookmarksWithBookmarks', async () => {
     const bookmarkId = '3';
     const bookmarks = [
-      getBookmarkWithId(powerBookmarksList, bookmarkId)!,
-      getBookmarkWithId(powerBookmarksList, '5')!,
+      getBookmarkWithId(powerBookmarksApp, bookmarkId)!,
+      getBookmarkWithId(powerBookmarksApp, '5')!,
     ];
-    const contextMenu = powerBookmarksList.$.contextMenu;
+    const contextMenu = powerBookmarksApp.$.contextMenu;
     const editClicked = eventToPromise('edit-clicked', contextMenu);
 
     // Open the context menu.
@@ -122,8 +125,9 @@ suite('MigrateUiChangesUseBrowserEditDialog', () => {
     assertTrue(
         menuItems[4]!.textContent.includes(
             loadTimeData.getString('tooltipMove')));
-    const moveItem = contextMenu.shadowRoot.querySelectorAll<HTMLElement>(
-        '.dropdown-item')[4]!;
+    const moveItem =
+        (contextMenu.shadowRoot.querySelectorAll('.dropdown-item')[4]!) as
+        HTMLElement;
 
     // Click on move and wait for the call to propagate.
     moveItem.click();

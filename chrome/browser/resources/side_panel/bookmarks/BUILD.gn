@@ -16,7 +16,10 @@ build_webui("build") {
     "power_bookmarks.html",
   ]
 
-  web_component_files = [ "power_bookmarks_list.ts" ]
+  web_component_files = [
+    "power_bookmarks_list.ts",
+    "power_bookmarks_app.ts",
+  ]
 
   ts_files = [
     "bookmarks_api_proxy.ts",
