@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/default_popup_menu_bg"
+    android:elevation="@dimen/app_menu_elevation"
+    android:clipToOutline="true">
+
+    <TextView
+        android:id="@+id/extension_action_hover_card_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="@dimen/extension_action_hover_card_horizontal_padding"
+        android:paddingVertical="@dimen/extension_action_hover_card_vertical_padding"
+        android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+
+    <View
+        android:id="@+id/extension_action_hover_card_site_access_divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider" />
+
+    <LinearLayout
+        android:id="@+id/extension_action_hover_card_site_access_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="@dimen/extension_action_hover_card_horizontal_padding"
+        android:paddingVertical="@dimen/extension_action_hover_card_vertical_padding">
+
+        <TextView
+            android:id="@+id/extension_action_hover_card_site_access_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+
+        <TextView
+            android:id="@+id/extension_action_hover_card_site_access_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+    </LinearLayout>
+
+    <View
+        android:id="@+id/extension_action_hover_card_policy_divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="?android:attr/listDivider" />
+
+    <LinearLayout
+        android:id="@+id/extension_action_hover_card_policy_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="@dimen/extension_action_hover_card_horizontal_padding"
+        android:paddingVertical="@dimen/extension_action_hover_card_vertical_padding">
+
+        <TextView
+            android:id="@+id/extension_action_hover_card_policy_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+    </LinearLayout>
+
+</LinearLayout>

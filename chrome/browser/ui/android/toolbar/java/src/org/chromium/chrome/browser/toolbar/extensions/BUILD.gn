@@ -23,6 +23,8 @@ android_library("java") {
     "ExtensionActionButtonViewBinder.java",
     "ExtensionActionContextMenuUtils.java",
     "ExtensionActionDragHelper.java",
+    "ExtensionActionHoverCardProperties.java",
+    "ExtensionActionHoverCardViewBinder.java",
     "ExtensionActionIconUtil.java",
     "ExtensionActionListAnchoredModelList.java",
     "ExtensionActionListCoordinator.java",

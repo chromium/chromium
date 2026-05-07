@@ -93,4 +93,9 @@ found in the LICENSE file.
     <dimen name="extension_action_popup_min_width" tools:ignore="UnusedResources">25dp</dimen>
     <dimen name="extension_action_popup_min_height" tools:ignore="UnusedResources">25dp</dimen>
     <dimen name="extension_action_popup_elevation" tools:ignore="UnusedResources">6dp</dimen>
+
+    <!-- Extension Action Hover Card -->
+    <dimen name="extension_action_hover_card_width" tools:ignore="UnusedResources">270dp</dimen>
+    <dimen name="extension_action_hover_card_horizontal_padding" tools:ignore="UnusedResources">16dp</dimen>
+    <dimen name="extension_action_hover_card_vertical_padding" tools:ignore="UnusedResources">12dp</dimen>
 </resources>

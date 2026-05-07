@@ -275,6 +275,7 @@ android_resources("java_resources") {
     "java/res/drawable/ic_settings.xml",
     "java/res/drawable/ic_webstore.xml",
     "java/res/layout/extension_action_button.xml",
+    "java/res/layout/extension_action_hover_card.xml",
     "java/res/layout/extension_install_dialog.xml",
     "java/res/layout/extension_install_dialog_permission_item.xml",
     "java/res/layout/extensions_menu.xml",

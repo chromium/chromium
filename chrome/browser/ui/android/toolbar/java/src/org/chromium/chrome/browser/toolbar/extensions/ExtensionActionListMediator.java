@@ -7,6 +7,14 @@ package org.chromium.chrome.browser.toolbar.extensions;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Handler;
+import android.os.Looper;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.View;
+import android.view.ViewConfiguration;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -23,6 +31,7 @@ import org.chromium.chrome.browser.toolbar.MenuBuilderHelper;
 import org.chromium.chrome.browser.toolbar.extensions.ExtensionActionButtonProperties.ListItemType;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.extensions.ExtensionAction;
+import org.chromium.chrome.browser.ui.extensions.ExtensionAction.HoverCardState;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionContextMenuBridge;
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionPopupContents;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsToolbarBridge;
@@ -35,6 +44,9 @@ import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.widget.AnchoredPopupWindow;
+import org.chromium.ui.widget.RectProvider;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -112,6 +124,11 @@ class ExtensionActionListMediator implements Destroyable {
     private final @Nullable SelectionDropdownMenuDelegate mSelectionDropdownMenuDelegate;
     private final ExtensionActionListCoordinator.RecyclerViewDelegate mRecyclerViewDelegate;
     private final TabModelSelector mTabModelSelector;
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
+
+    private @Nullable AnchoredPopupWindow mHoverCard;
+    private @Nullable String mHoverCardActionId;
+    private @Nullable Runnable mShowHoverCardRunnable;
 
     private final ExtensionsToolbarBridge mExtensionsToolbarBridge;
     private final ToolbarDelegate mToolbarDelegate = new ToolbarDelegate();
@@ -165,8 +182,14 @@ class ExtensionActionListMediator implements Destroyable {
 
     @Override
     public void destroy() {
+        if (mShowHoverCardRunnable != null) {
+            mHandler.removeCallbacks(mShowHoverCardRunnable);
+            mShowHoverCardRunnable = null;
+        }
+
         mRecyclerViewDelegate.clearOnAnimationsFinishedRunnables();
 
+        closeHoverCard();
         closePopup();
         closeContextMenu();
 
@@ -360,6 +383,11 @@ class ExtensionActionListMediator implements Destroyable {
                                 ExtensionActionButtonProperties.ON_CLICK_LISTENER,
                                 (view) -> onPrimaryClick(actionId))
                         .with(
+                                ExtensionActionButtonProperties.ON_HOVER_LISTENER,
+                                (view, event) -> {
+                                    return onHover(actionId, event, webContents);
+                                })
+                        .with(
                                 ExtensionActionButtonProperties.ON_LONG_CLICK_LISTENER,
                                 (view) -> {
                                     requestShowContextMenu(actionId);
@@ -440,6 +468,116 @@ class ExtensionActionListMediator implements Destroyable {
         return mModels.get(index).model.get(ExtensionActionButtonProperties.ID);
     }
 
+    private boolean onHover(String actionId, MotionEvent event, @Nullable WebContents webContents) {
+        if (!(mActionState instanceof ActionState.Idle)) {
+            return false;
+        }
+
+        if (event.getAction() == MotionEvent.ACTION_HOVER_ENTER) {
+            if (mShowHoverCardRunnable != null) {
+                mHandler.removeCallbacks(mShowHoverCardRunnable);
+            }
+
+            if (mHoverCard == null) {
+                mHoverCardActionId = actionId;
+                mShowHoverCardRunnable =
+                        () -> {
+                            showHoverCard(actionId, webContents);
+                            mShowHoverCardRunnable = null;
+                        };
+                mHandler.postDelayed(
+                        mShowHoverCardRunnable, ViewConfiguration.getLongPressTimeout());
+            } else if (!actionId.equals(mHoverCardActionId)) {
+                closeHoverCard();
+                showHoverCard(actionId, webContents);
+            }
+        } else if (event.getAction() == MotionEvent.ACTION_HOVER_EXIT) {
+            if (actionId.equals(mHoverCardActionId)) {
+                if (mShowHoverCardRunnable != null) {
+                    mHandler.removeCallbacks(mShowHoverCardRunnable);
+                    mShowHoverCardRunnable = null;
+                }
+                closeHoverCard();
+            }
+        }
+
+        // We don't consume the event because we want the button to still be hovered.
+        return false;
+    }
+
+    private void showHoverCard(String actionId, @Nullable WebContents webContents) {
+        if (webContents == null) {
+            return;
+        }
+
+        Activity activity = mWindowAndroid.getActivity().get();
+        if (activity == null) {
+            return;
+        }
+
+        ExtensionAction action = mExtensionsToolbarBridge.getAction(actionId, webContents);
+        if (action == null) {
+            return;
+        }
+
+        View anchorView = mRecyclerViewDelegate.getButtonViewForId(actionId);
+        if (anchorView == null) {
+            return;
+        }
+
+        HoverCardState state = action.getHoverCardState();
+        RectProvider rectProvider = MenuBuilderHelper.getRectProvider(anchorView);
+
+        View contentView =
+                LayoutInflater.from(activity).inflate(R.layout.extension_action_hover_card, null);
+
+        PropertyModel model =
+                new PropertyModel.Builder(ExtensionActionHoverCardProperties.ALL_KEYS)
+                        .with(ExtensionActionHoverCardProperties.ACTION_TITLE, action.getTitle())
+                        .with(
+                                ExtensionActionHoverCardProperties.SITE_ACCESS_TITLE,
+                                state.getSiteAccessTitle())
+                        .with(
+                                ExtensionActionHoverCardProperties.SITE_ACCESS_DESC,
+                                state.getSiteAccessDescription())
+                        .with(ExtensionActionHoverCardProperties.POLICY_TEXT, state.getPolicyText())
+                        .build();
+
+        PropertyModelChangeProcessor.create(
+                model, contentView, ExtensionActionHoverCardViewBinder::bind);
+
+        mHoverCard =
+                new AnchoredPopupWindow.Builder(
+                                anchorView.getContext(),
+                                anchorView.getRootView(),
+                                new ColorDrawable(Color.TRANSPARENT),
+                                () -> contentView,
+                                rectProvider)
+                        .setVerticalOverlapAnchor(false)
+                        .setHorizontalOverlapAnchor(true)
+                        .setMaxWidth(
+                                anchorView
+                                        .getResources()
+                                        .getDimensionPixelSize(
+                                                R.dimen.extension_action_hover_card_width))
+                        .setFocusable(false)
+                        .setTouchable(false)
+                        .setAnimateFromAnchor(false)
+                        .setAnimationStyle(R.style.PopupWindowAnimFade)
+                        .build();
+
+        mHoverCard.show();
+        mHoverCardActionId = actionId;
+    }
+
+    private void closeHoverCard() {
+        if (mHoverCard != null) {
+            mHoverCard.dismiss();
+            mHoverCard = null;
+            mHoverCardActionId = null;
+        }
+    }
+
     private void onPrimaryClick(String actionId) {
         if (mActionState instanceof ActionState.PopupActive activeState) {
             boolean closeOnly = activeState.getActionId().equals(actionId);
@@ -505,6 +643,7 @@ class ExtensionActionListMediator implements Destroyable {
     }
 
     private void requestShowPopup(String actionId, long nativeHostPtr) {
+        closeHoverCard();
         closePopup();
         closeContextMenu();
 
@@ -595,6 +734,7 @@ class ExtensionActionListMediator implements Destroyable {
 
     @VisibleForTesting
     void requestShowContextMenu(String actionId) {
+        closeHoverCard();
         closePopup();
         closeContextMenu();
 
