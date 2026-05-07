@@ -391,11 +391,6 @@
   color: var(--color-composebox-font);
 }
 
-#composebox::part(input),
-#composebox::part(smart-compose) {
-  min-height: 48px;
-}
-
 #composebox::part(context-menu-and-tools) {
   min-height: var(--cr-icon-button-size);
 }
