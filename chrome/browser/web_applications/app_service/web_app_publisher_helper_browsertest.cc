@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
+#include "chrome/browser/web_applications/test/web_app_page_waiter.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -254,12 +255,14 @@ IN_PROC_BROWSER_TEST_F(WebAppPublisherHelperMigrationTest, MigrationCalls) {
   GURL to_url = embedded_test_server()->GetURL(
       "/web_apps/migration/migrate_to/suggest.html");
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), to_url));
-  web_app::test::WaitForLoadCompleteAndMaybeManifestSeen(
-      *browser()->tab_strip_model()->GetActiveWebContents());
+  EXPECT_TRUE(web_app::test::WebAppPageWaiter(
+                  browser()->tab_strip_model()->GetActiveWebContents())
+                  .ExpectUrl(to_url)
+                  .ManifestOrLoadedNoManifest()
+                  .WaitAndFlushCommands());
 
   web_app::WebAppProvider* provider =
       web_app::WebAppProvider::GetForTest(browser()->profile());
-  provider->command_manager().AwaitAllCommandsCompleteForTesting();
 
   // 3. Accept migration dialog.
   views::NamedWidgetShownWaiter update_dialog_waiter(

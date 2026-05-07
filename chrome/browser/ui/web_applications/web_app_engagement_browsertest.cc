@@ -246,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, DiyAppInWindow) {
   base::HistogramTester tester;
 
   GURL example_url(
-      embedded_test_server()->GetURL("/banners/manifest_test_page.html"));
+      embedded_test_server()->GetURL("/banners/no_manifest_test_page.html"));
   auto web_app_info =
       WebAppInstallInfo::CreateWithStartUrlForTesting(example_url);
   web_app_info->scope = example_url;
@@ -315,7 +315,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, DiyAppInTab) {
   base::HistogramTester tester;
 
   GURL example_url(
-      embedded_test_server()->GetURL("/banners/manifest_test_page.html"));
+      embedded_test_server()->GetURL("/banners/no_manifest_test_page.html"));
 
   auto web_app_info =
       WebAppInstallInfo::CreateWithStartUrlForTesting(example_url);

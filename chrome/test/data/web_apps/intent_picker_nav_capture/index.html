@@ -1,7 +1,14 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <link rel="manifest" href="manifest.json">
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const manifest = params.get('manifest') || 'manifest.json';
+    const link = document.createElement('link');
+    link.rel = 'manifest';
+    link.id = 'manifest';
+    link.href = manifest;
+    document.head.appendChild(link);
+  </script>
   <link rel="icon" href="basic-48.png">
 </head>
 <script>

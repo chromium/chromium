@@ -7,7 +7,7 @@
       "type": "image/png"
     }
   ],
-  "start_url": "manifest_test_page.html",
+  "start_url": "manifest_test_page.html?manifest=manifest_tabbed_display_override.json",
   "display": "standalone",
   "display_override": [ "tabbed" ]
 }

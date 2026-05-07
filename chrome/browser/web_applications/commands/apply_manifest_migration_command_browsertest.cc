@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
 #include "chrome/browser/web_applications/scheduler/apply_manifest_migration_result.h"
+#include "chrome/browser/web_applications/test/web_app_page_waiter.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -84,12 +85,14 @@ IN_PROC_BROWSER_TEST_F(ApplyManifestMigrationCommandBrowserTest,
       browser(), embedded_https_test_server().GetURL(kMigrateFromInstallUrl));
 
   // This should register the migration:
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      embedded_https_test_server().GetURL(kMigrateToWithSuggestMigrationUrl)));
-  test::WaitForLoadCompleteAndMaybeManifestSeen(
-      *browser()->tab_strip_model()->GetActiveWebContents());
-  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+  GURL migrate_to_url =
+      embedded_https_test_server().GetURL(kMigrateToWithSuggestMigrationUrl);
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), migrate_to_url));
+  EXPECT_TRUE(test::WebAppPageWaiter(
+                  browser()->tab_strip_model()->GetActiveWebContents())
+                  .ExpectUrl(migrate_to_url)
+                  .ManifestOrLoadedNoManifest()
+                  .WaitAndFlushCommands());
 
   // Approve the migration, waiting for the old browser to be closed and new one
   // to be created.

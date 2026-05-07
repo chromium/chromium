@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/callback_list.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/timer/timer.h"
@@ -41,17 +42,26 @@ namespace web_app::test {
 // error (like a network error).
 class WebAppPageWaiter : public content::WebContentsObserver {
  public:
+  enum class Expectation {
+    kUnset,
+    kManifest,
+    kNoManifest,
+    kManifestOrLoadedNoManifest,
+  };
+
   explicit WebAppPageWaiter(content::WebContents* web_contents);
   ~WebAppPageWaiter() override;
 
   // Configures the waiter to expect the WebContents to navigate to and finish
   // loading the specified URL.
+  //
+  // If the page redirects during navigation, and the redirect starts from
+  // the expected URL, the waiter will automatically update its expectation
+  // to the redirect destination and log a warning.
   WebAppPageWaiter& ExpectUrl(const GURL& url);
 
-  // Configures the waiter to expect a URL that satisfies the given matcher
-  // callback.
-  WebAppPageWaiter& ExpectUrlIf(
-      base::RepeatingCallback<bool(const GURL&)> url_matcher);
+  // Same as above, for any of the given urls.
+  WebAppPageWaiter& ExpectAnyUrl(base::flat_set<GURL> urls);
 
   // Configures the waiter to expect a valid manifest to be discovered and
   // processed.
@@ -93,27 +103,23 @@ class WebAppPageWaiter : public content::WebContentsObserver {
  private:
   void OnManifestProcessed(const webapps::ManifestId& manifest_id);
   void MaybeQuit();
-  bool UrlMatches() const;
 
-  enum class Expectation {
-    kUnset,
-    kManifest,
-    kNoManifest,
-    kManifestOrLoadedNoManifest,
-  };
+  bool UrlMatches() const;
 
   Expectation expectation_ = Expectation::kUnset;
   std::optional<webapps::ManifestId> expected_manifest_id_;
-  base::RepeatingCallback<bool(const GURL&)> url_matcher_;
+  base::flat_set<GURL> expected_urls_;
   std::optional<webapps::ManifestId> processed_manifest_id_;
+
+  bool is_waiting_for_url_load_ = false;
 
   bool document_loaded_ = false;
   bool load_failed_ = false;
   bool matching_manifest_processed_ = false;
   bool destroyed_ = false;
+  bool wait_called_ = false;
 
   base::CallbackListSubscription manifest_subscription_;
-  base::RepeatingClosure url_quit_closure_;
   base::RunLoop run_loop_;
 };
 

@@ -10,6 +10,7 @@
 #include "ash/constants/web_app_id_constants.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/model/pending_migration_info.h"
 #include "chrome/browser/web_applications/test/prevent_close_test_base.h"
@@ -113,7 +114,7 @@ class WebAppMenuModelBrowserTest : public WebAppBrowserTestBase {
 
 IN_PROC_BROWSER_TEST_F(WebAppMenuModelBrowserTest, HasPendingUpdate) {
   const GURL app_url = GetInstallableAppURL();
-  const webapps::AppId app_id = InstallPWA(app_url);
+  const webapps::AppId app_id = InstallWebAppFromPage(browser(), app_url);
   Browser* const browser = LaunchWebAppBrowser(app_id);
 
   {
@@ -177,7 +178,7 @@ class WebAppMenuModelMigrationBrowserTest : public WebAppBrowserTestBase {
 IN_PROC_BROWSER_TEST_F(WebAppMenuModelMigrationBrowserTest,
                        HasPendingMigration) {
   const GURL app_url = GetInstallableAppURL();
-  const webapps::AppId app_id = InstallPWA(app_url);
+  const webapps::AppId app_id = InstallWebAppFromPage(browser(), app_url);
   Browser* const browser = LaunchWebAppBrowser(app_id);
 
   {

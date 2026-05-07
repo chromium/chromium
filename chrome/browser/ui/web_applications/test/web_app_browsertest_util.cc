@@ -120,6 +120,15 @@ webapps::AppId InstallWebAppFromPage(Browser* browser,
                                      const GURL& app_url,
                                      InstallWebAppOptions options) {
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser, app_url));
+  testing::AssertionResult waiter_result =
+      test::WebAppPageWaiter(browser->tab_strip_model()->GetActiveWebContents())
+          .ExpectUrl(app_url)
+          .ManifestOrLoadedNoManifest()
+          .WaitAndFlushCommands();
+  EXPECT_TRUE(waiter_result);
+  if (!waiter_result) {
+    return webapps::AppId();
+  }
 
   webapps::AppId app_id;
   base::RunLoop run_loop;
@@ -139,7 +148,9 @@ webapps::AppId InstallWebAppFromPage(Browser* browser,
     return webapps::AppId();
   }
 
-  provider->command_manager().AwaitAllCommandsCompleteForTesting();
+  if (options.launch_or_reparent_page_to_app) {
+    provider->command_manager().AwaitAllCommandsCompleteForTesting();
+  }
 
   EXPECT_EQ(install_future.Get<webapps::InstallResultCode>(),
             webapps::InstallResultCode::kSuccessNewInstall);
@@ -188,6 +199,15 @@ webapps::AppId InstallWebAppFromManifest(Browser* browser,
                                                       app_url);
   NavigateViaLinkClickToURLAndWait(browser, app_url);
   registration_waiter.AwaitRegistration();
+  testing::AssertionResult waiter_result =
+      test::WebAppPageWaiter(browser->tab_strip_model()->GetActiveWebContents())
+          .ExpectUrl(app_url)
+          .ExpectManifest()
+          .WaitAndFlushCommands();
+  EXPECT_TRUE(waiter_result);
+  if (!waiter_result) {
+    return webapps::AppId();
+  }
 
   webapps::AppId app_id;
   base::RunLoop run_loop;
@@ -198,7 +218,7 @@ webapps::AppId InstallWebAppFromManifest(Browser* browser,
   provider->scheduler().FetchManifestAndInstall(
       webapps::WebappInstallSource::MENU_BROWSER_TAB,
       browser->tab_strip_model()->GetActiveWebContents()->GetWeakPtr(),
-      base::BindOnce(&AutoAcceptDialogCallback, true),
+      base::BindOnce(&AutoAcceptDialogCallback, /*launch=*/false),
       base::BindLambdaForTesting(
           [&run_loop, &app_id](const webapps::AppId& installed_app_id,
                                webapps::InstallResultCode code) {
@@ -209,7 +229,6 @@ webapps::AppId InstallWebAppFromManifest(Browser* browser,
       FallbackBehavior::kCraftedManifestOnly);
 
   run_loop.Run();
-  provider->command_manager().AwaitAllCommandsCompleteForTesting();
   return app_id;
 }
 
@@ -244,7 +263,14 @@ Browser* LaunchWebAppBrowser(Profile* profile,
   // that case from waiting for loading to stop.
   bool will_url_finish_loading = start_url.GetPath() != "/hung";
   if (will_url_finish_loading) {
-    content::WaitForLoadStop(web_contents);
+    testing::AssertionResult waiter_result =
+        test::WebAppPageWaiter(web_contents)
+            .ManifestOrLoadedNoManifest()
+            .WaitAndFlushCommands();
+    EXPECT_TRUE(waiter_result);
+    if (!waiter_result) {
+      return nullptr;
+    }
   }
 
   WebAppTabHelper* tab_helper = WebAppTabHelper::FromWebContents(web_contents);
@@ -271,16 +297,7 @@ Browser* LaunchWebAppBrowser(Profile* profile,
 Browser* LaunchWebAppBrowserAndWait(Profile* profile,
                                     const webapps::AppId& app_id,
                                     WindowOpenDisposition disposition) {
-  ui_test_utils::UrlLoadObserver url_observer(
-      WebAppProvider::GetForTest(profile)->registrar_unsafe().GetAppLaunchUrl(
-          app_id));
-  Browser* const app_browser =
-      LaunchWebAppBrowser(profile, app_id, disposition);
-  if (app_browser) {
-    url_observer.Wait();
-    content::WaitForLoadStop(url_observer.web_contents());
-  }
-  return app_browser;
+  return LaunchWebAppBrowser(profile, app_id, disposition);
 }
 
 Browser* LaunchBrowserForWebAppInTab(Profile* profile,

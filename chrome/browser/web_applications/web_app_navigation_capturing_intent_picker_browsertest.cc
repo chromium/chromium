@@ -41,15 +41,23 @@ namespace web_app {
 class WebAppNavigationCapturingIntentPickerBrowserTest
     : public WebAppNavigationCapturingBrowserTestBase {
  protected:
-  GURL GetAppUrl() {
-    return embedded_https_test_server().GetURL(
+  GURL GetAppUrl(std::string manifest = "") {
+    GURL url = embedded_https_test_server().GetURL(
         "/web_apps/intent_picker_nav_capture/index.html");
+    if (!manifest.empty()) {
+      url = GURL(url.spec() + "?manifest=" + manifest);
+    }
+    return url;
   }
 
-  GURL GetAppUrlWithQuery() {
-    return embedded_https_test_server().GetURL(
+  GURL GetAppUrlWithQuery(std::string manifest = "") {
+    GURL url = embedded_https_test_server().GetURL(
         "/web_apps/intent_picker_nav_capture/"
         "index.html?q=fake_query_to_check_navigation");
+    if (!manifest.empty()) {
+      url = GURL(url.spec() + "&manifest=" + manifest);
+    }
+    return url;
   }
 
   GURL GetAppUrlWithWCO() {
@@ -68,7 +76,8 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIntentPickerBrowserTest,
                        MAYBE_FocusExisting) {
   webapps::AppId app_id = test::InstallWebApp(
       profile(), WebAppInstallInfo::CreateForTesting(
-                     GetAppUrl(), blink::mojom::DisplayMode::kMinimalUi,
+                     GetAppUrl("manifest_focus.json"),
+                     blink::mojom::DisplayMode::kMinimalUi,
                      mojom::UserDisplayMode::kStandalone,
                      ManifestLaunchHandler_ClientMode::kFocusExisting));
 
@@ -77,8 +86,8 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIntentPickerBrowserTest,
   content::WebContents* app_contents =
       app_browser->tab_strip_model()->GetWebContentsAt(0);
 
-  content::RenderFrameHost* host =
-      ui_test_utils::NavigateToURL(browser(), GetAppUrlWithQuery());
+  content::RenderFrameHost* host = ui_test_utils::NavigateToURL(
+      browser(), GetAppUrlWithQuery("manifest_focus.json"));
   EXPECT_NE(nullptr, host);
 
   // Warning: A `tab_contents` pointer obtained from browser() will be invalid
@@ -94,7 +103,7 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIntentPickerBrowserTest,
   // Check the end state for the app.
   EXPECT_EQ(1, app_browser->tab_strip_model()->count());
   EXPECT_EQ(app_contents->GetPrimaryMainFrame()->GetLastCommittedURL(),
-            GetAppUrl());
+            GetAppUrl("manifest_focus.json"));
 
   std::vector<GURL> launch_params = apps::test::GetLaunchParamUrlsInContents(
       app_contents, "launchParamsTargetUrls");
@@ -102,7 +111,8 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIntentPickerBrowserTest,
   // for when the existing app got focus (via the Intent Picker) and launch
   // params were enqueued.
   EXPECT_THAT(launch_params,
-              testing::ElementsAre(GetAppUrl(), GetAppUrlWithQuery()));
+              testing::ElementsAre(GetAppUrl("manifest_focus.json"),
+                                   GetAppUrlWithQuery("manifest_focus.json")));
 }
 
 // TODO(crbug.com/382315984): Fix this flake.
@@ -115,7 +125,8 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIntentPickerBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIntentPickerBrowserTest,
                        MAYBE_NavigateExisting) {
   webapps::AppId app_id = InstallWebApp(WebAppInstallInfo::CreateForTesting(
-      GetAppUrl(), blink::mojom::DisplayMode::kMinimalUi,
+      GetAppUrl("manifest_navigate.json"),
+      blink::mojom::DisplayMode::kMinimalUi,
       mojom::UserDisplayMode::kStandalone,
       ManifestLaunchHandler_ClientMode::kNavigateExisting));
 
@@ -124,8 +135,8 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIntentPickerBrowserTest,
   content::WebContents* app_contents =
       app_browser->tab_strip_model()->GetWebContentsAt(0);
 
-  content::RenderFrameHost* host =
-      ui_test_utils::NavigateToURL(browser(), GetAppUrlWithQuery());
+  content::RenderFrameHost* host = ui_test_utils::NavigateToURL(
+      browser(), GetAppUrlWithQuery("manifest_navigate.json"));
   EXPECT_NE(nullptr, host);
 
   // Warning: A `tab_contents` pointer obtained from browser() will be invalid
@@ -138,13 +149,14 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIntentPickerBrowserTest,
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
   EXPECT_EQ(1, app_browser->tab_strip_model()->count());
   EXPECT_EQ(app_contents->GetPrimaryMainFrame()->GetLastCommittedURL(),
-            GetAppUrlWithQuery());
+            GetAppUrlWithQuery("manifest_navigate.json"));
 
   std::vector<GURL> launch_params = apps::test::GetLaunchParamUrlsInContents(
       app_contents, "launchParamsTargetUrls");
   // There should be one launch param -- because the Intent Picker triggers a
   // new navigation in the app (and launch params are then enqueued).
-  EXPECT_THAT(launch_params, testing::ElementsAre(GetAppUrlWithQuery()));
+  EXPECT_THAT(launch_params, testing::ElementsAre(
+                                 GetAppUrlWithQuery("manifest_navigate.json")));
 }
 
 // Test that the intent picker shows up for chrome://password-manager, since it

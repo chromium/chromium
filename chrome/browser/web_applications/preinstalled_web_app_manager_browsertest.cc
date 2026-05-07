@@ -48,6 +48,7 @@
 #include "chrome/browser/web_applications/test/test_file_utils.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_page_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/user_uninstalled_preinstalled_web_app_prefs.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -2054,7 +2055,10 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerSimpleBrowserTest,
   base::WeakPtr<content::WebContents> web_contents =
       launch.Get<base::WeakPtr<content::WebContents>>();
   ASSERT_TRUE(web_contents);
-  content::WaitForLoadStop(web_contents.get());
+  EXPECT_TRUE(test::WebAppPageWaiter(web_contents.get())
+                  .ExpectUrl(GetOutOfScopeUrl())
+                  .ManifestOrLoadedNoManifest()
+                  .WaitAndFlushCommands());
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
 
   EXPECT_EQ(provider().registrar_unsafe().GetAppShortName(GetAppId()),
@@ -2082,7 +2086,10 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppManagerSimpleBrowserTest,
   base::WeakPtr<content::WebContents> web_contents =
       launch.Get<base::WeakPtr<content::WebContents>>();
   ASSERT_TRUE(web_contents);
-  content::WaitForLoadStop(web_contents.get());
+  EXPECT_TRUE(test::WebAppPageWaiter(web_contents.get())
+                  .ExpectUrl(GetOutOfScopeUrl())
+                  .ManifestOrLoadedNoManifest()
+                  .WaitAndFlushCommands());
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
   histogram_tester.ExpectUniqueSample("WebApp.FetchManifestAndUpdate.Result",
                                       FetchManifestAndUpdateResult::kSuccess,

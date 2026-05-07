@@ -1813,13 +1813,18 @@ void WebAppIntegrationTestDriver::LaunchFileExpectDialog(
       target_contents = tab_added_waiter.Wait();
     }
     ASSERT_TRUE(target_contents);
-    auto url_matcher = base::BindRepeating([](const GURL& url) {
-      return base::EndsWith(url.path(), "foo_handler.html") ||
-             base::EndsWith(url.path(), "bar_handler.html");
-    });
-    test::WebAppPageWaiter page_waiter(target_contents);
-    page_waiter.ExpectUrlIf(url_matcher).ManifestOrLoadedNoManifest();
-    ASSERT_TRUE(page_waiter.WaitAndFlushCommands());
+
+    base::flat_set<GURL> valid_urls = {
+        delegate_->EmbeddedTestServer()->GetURL(
+            "/webapps_integration/file_handler/bar_handler.html"),
+        delegate_->EmbeddedTestServer()->GetURL(
+            "/webapps_integration/file_handler/foo_handler.html")
+
+    };
+    ASSERT_TRUE(test::WebAppPageWaiter(target_contents)
+                    .ExpectAnyUrl(valid_urls)
+                    .ManifestOrLoadedNoManifest()
+                    .WaitAndFlushCommands());
   }
 
   AfterStateChangeAction();
@@ -1865,18 +1870,22 @@ void WebAppIntegrationTestDriver::LaunchFileExpectNoDialog(
   bool is_denied = site_remember_deny_open_file_.contains(site);
   std::string expected_fallback_path = GetSiteConfiguration(site).relative_url;
 
-  auto url_matcher = base::BindRepeating(
-      [](bool is_denied, const std::string& fallback_path, const GURL& url) {
-        if (is_denied) {
-          return url.path() == fallback_path;
-        }
-        return base::EndsWith(url.path(), "foo_handler.html") ||
-               base::EndsWith(url.path(), "bar_handler.html");
-      },
-      is_denied, expected_fallback_path);
-  test::WebAppPageWaiter waiter(target_contents);
-  waiter.ExpectUrlIf(url_matcher).ManifestOrLoadedNoManifest();
-  ASSERT_TRUE(waiter.WaitAndFlushCommands());
+  base::flat_set<GURL> valid_urls;
+  if (is_denied) {
+    valid_urls = {
+        delegate_->EmbeddedTestServer()->GetURL(expected_fallback_path)};
+  } else {
+    valid_urls = {delegate_->EmbeddedTestServer()->GetURL(
+                      "/webapps_integration/file_handler/bar_handler.html"),
+                  delegate_->EmbeddedTestServer()->GetURL(
+                      "/webapps_integration/file_handler/foo_handler.html")
+
+    };
+  }
+  ASSERT_TRUE(test::WebAppPageWaiter(target_contents)
+                  .ExpectAnyUrl(valid_urls)
+                  .ManifestOrLoadedNoManifest()
+                  .WaitAndFlushCommands());
 
   AfterStateChangeAction();
 }

@@ -60,8 +60,8 @@ class WebAppIconManagerBrowserTest : public WebAppBrowserTestBase {
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppIconManagerBrowserTest, SingleIcon) {
-  const GURL start_url =
-      embedded_https_test_server().GetURL("/banners/manifest_test_page.html");
+  const GURL start_url = embedded_https_test_server().GetURL(
+      "/banners/no_manifest_test_page.html");
 
   webapps::AppId app_id;
   {

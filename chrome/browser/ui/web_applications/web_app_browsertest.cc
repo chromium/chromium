@@ -71,6 +71,7 @@
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_page_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
@@ -265,8 +266,10 @@ class WebAppBrowserTest : public WebAppBrowserTestBase {
 
     content::WebContents* const web_contents =
         app_browser->tab_strip_model()->GetActiveWebContents();
-    EXPECT_TRUE(WaitForLoadStop(web_contents));
-    EXPECT_EQ(app_url, web_contents->GetVisibleURL());
+    EXPECT_TRUE(test::WebAppPageWaiter(web_contents)
+                    .ExpectUrl(app_url)
+                    .ManifestOrLoadedNoManifest()
+                    .WaitAndFlushCommands());
 
     const bool result = app_browser->app_controller()->HasMinimalUiButtons();
     EXPECT_EQ(
