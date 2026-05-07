@@ -5,10 +5,10 @@
 #ifndef NET_BASE_DIRECTORY_LISTER_H_
 #define NET_BASE_DIRECTORY_LISTER_H_
 
+#include <atomic>
 #include <memory>
 #include <vector>
 
-#include "base/atomicops.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
