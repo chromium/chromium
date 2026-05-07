@@ -476,7 +476,7 @@ bool QuicChromiumClientStream::Handle::IsFirstStream() const {
 bool QuicChromiumClientStream::Handle::can_migrate_to_cellular_network() {
   if (!stream_)
     return false;
-  return stream_->can_migrate_to_cellular_network();
+  return stream_->CanMigrateToCellularNetwork();
 }
 
 const NetLogWithSource& QuicChromiumClientStream::Handle::net_log() const {
@@ -559,7 +559,7 @@ QuicChromiumClientStream::QuicChromiumClientStream(
     const NetLogWithSource& net_log,
     const NetworkTrafficAnnotationTag& traffic_annotation,
     std::optional<base::TimeDelta> max_stream_limit_pending_delay)
-    : quic::QuicSpdyStream(id, session, type),
+    : QuicChromiumClientStreamBase(id, session, type),
       net_log_(net_log),
       session_(session),
       server_id_(std::move(server_id)),
@@ -572,7 +572,7 @@ QuicChromiumClientStream::QuicChromiumClientStream(
     quic::QuicServerId server_id,
     const NetLogWithSource& net_log,
     const NetworkTrafficAnnotationTag& traffic_annotation)
-    : quic::QuicSpdyStream(*pending, session),
+    : QuicChromiumClientStreamBase(pending, session),
       net_log_(net_log),
       session_(session),
       server_id_(std::move(server_id)),
@@ -771,8 +771,7 @@ void QuicChromiumClientStream::ClearHandle() {
 
 void QuicChromiumClientStream::OnError(int error) {
   if (handle_) {
-    QuicChromiumClientStream::Handle* handle = handle_;
-    handle_ = nullptr;
+    auto handle = std::exchange(handle_, nullptr);
     handle->OnError(error);
   }
 }
@@ -928,7 +927,7 @@ void QuicChromiumClientStream::NotifyHandleOfDataAvailable() {
 }
 
 void QuicChromiumClientStream::DisableConnectionMigrationToCellularNetwork() {
-  can_migrate_to_cellular_network_ = false;
+  set_can_migrate_to_cellular_network(false);
 }
 
 quic::QuicPacketLength

@@ -22,7 +22,7 @@ WebSocketQuicSpdyStream::WebSocketQuicSpdyStream(
     quic::QuicStreamId id,
     quic::QuicSpdyClientSessionBase* session,
     quic::StreamType type)
-    : quic::QuicSpdyStream(id, session, type) {}
+    : QuicChromiumClientStreamBase(id, session, type) {}
 
 WebSocketQuicSpdyStream::~WebSocketQuicSpdyStream() {
   if (delegate_) {

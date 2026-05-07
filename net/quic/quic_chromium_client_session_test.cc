@@ -33,6 +33,7 @@
 #include "net/http/transport_security_state_test_util.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_source.h"
+#include "net/net_buildflags.h"
 #include "net/quic/address_utils.h"
 #include "net/quic/crypto/proof_verifier_chromium.h"
 #include "net/quic/mock_crypto_client_stream_factory.h"
@@ -88,6 +89,10 @@
 #include "url/scheme_host_port.h"
 #include "url/url_constants.h"
 
+#if BUILDFLAG(ENABLE_WEBSOCKETS)
+#include "net/websockets/websocket_quic_spdy_stream.h"
+#endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
+
 using testing::_;
 
 namespace net::test {
@@ -100,6 +105,19 @@ const size_t kMaxReadersPerQuicSession = 5;
 
 const handles::NetworkHandle kDefaultNetworkForTests = 1;
 const handles::NetworkHandle kNewNetworkForTests = 2;
+
+#if BUILDFLAG(ENABLE_WEBSOCKETS)
+quic::QuicStreamId ActivateWebSocketStream(QuicChromiumClientSession* session) {
+  quic::QuicStreamId stream_id =
+      quic::test::QuicSessionPeer::GetNextOutgoingBidirectionalStreamId(
+          session);
+  auto websocket_stream = std::make_unique<WebSocketQuicSpdyStream>(
+      stream_id, session, quic::BIDIRECTIONAL);
+  quic::test::QuicSessionPeer::ActivateStream(session,
+                                              std::move(websocket_stream));
+  return stream_id;
+}
+#endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
 
 class TestingQuicConnection : public quic::QuicConnection {
  public:
@@ -2735,6 +2753,68 @@ TEST_P(QuicChromiumClientSessionTest, AllowExtendedConnect) {
   // Now allow_extended_connect() should return true.
   EXPECT_TRUE(session_->allow_extended_connect());
 }
+
+#if BUILDFLAG(ENABLE_WEBSOCKETS)
+// Mixed-stream case where GOAWAY visits both a regular HTTP stream and a
+// WebSocket stream.
+TEST_P(QuicChromiumClientSessionTest,
+       OnHttp3GoAwayWithWebSocketStreamDoesNotCrash) {
+  MockQuicData quic_data(version_);
+  quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakeInitialSettingsPacket(1));
+  quic_data.AddRead(ASYNC, ERR_IO_PENDING);
+  quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
+  quic_data.AddSocketDataToFactory(&socket_factory_);
+  Initialize();
+  CompleteCryptoHandshake();
+
+  session_->OnSetting(quic::SETTINGS_ENABLE_CONNECT_PROTOCOL, 1);
+  ASSERT_TRUE(session_->allow_extended_connect());
+
+  QuicChromiumClientStream* http_stream =
+      QuicChromiumClientSessionPeer::CreateOutgoingStream(session_.get());
+  ASSERT_TRUE(http_stream);
+  quic::QuicStreamId http_stream_id = http_stream->id();
+  quic::QuicStreamId websocket_stream_id =
+      ActivateWebSocketStream(session_.get());
+
+  EXPECT_NE(nullptr, quic::test::QuicSessionPeer::GetStream(session_.get(),
+                                                            http_stream_id));
+  EXPECT_NE(nullptr, quic::test::QuicSessionPeer::GetStream(
+                         session_.get(), websocket_stream_id));
+
+  // Use the smallest valid client-initiated bidirectional stream ID so GOAWAY
+  // reaches both the HTTP stream and the WebSocket stream.
+  session_->OnHttp3GoAway(/*id=*/0);
+
+  // If the GOAWAY path did not crash, the session should now reject new
+  // outgoing streams.
+  EXPECT_TRUE(session_->goaway_received());
+  EXPECT_EQ(nullptr, QuicChromiumClientSessionPeer::CreateOutgoingStream(
+                         session_.get()));
+}
+
+// Covers the same mixed-stream setup for CloseSessionOnError(), which walks
+// all active streams during session shutdown.
+TEST_P(QuicChromiumClientSessionTest,
+       CloseSessionOnErrorWithWebSocketStreamDoesNotCrash) {
+  MockQuicData quic_data(version_);
+  quic_data.AddWrite(SYNCHRONOUS, client_maker_.MakeInitialSettingsPacket(1));
+  quic_data.AddRead(ASYNC, ERR_IO_PENDING);
+  quic_data.AddRead(ASYNC, ERR_CONNECTION_CLOSED);
+  quic_data.AddSocketDataToFactory(&socket_factory_);
+  Initialize();
+  CompleteCryptoHandshake();
+
+  session_->OnSetting(quic::SETTINGS_ENABLE_CONNECT_PROTOCOL, 1);
+
+  ASSERT_TRUE(
+      QuicChromiumClientSessionPeer::CreateOutgoingStream(session_.get()));
+  ActivateWebSocketStream(session_.get());
+
+  session_->CloseSessionOnError(ERR_ABORTED, quic::QUIC_INTERNAL_ERROR,
+                                quic::ConnectionCloseBehavior::SILENT_CLOSE);
+}
+#endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
 
 }  // namespace
 }  // namespace net::test

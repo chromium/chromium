@@ -895,6 +895,8 @@ component("net") {
     "quic/quic_chromium_client_session.h",
     "quic/quic_chromium_client_stream.cc",
     "quic/quic_chromium_client_stream.h",
+    "quic/quic_chromium_client_stream_base.cc",
+    "quic/quic_chromium_client_stream_base.h",
     "quic/quic_chromium_connection_helper.cc",
     "quic/quic_chromium_connection_helper.h",
     "quic/quic_chromium_packet_reader.cc",

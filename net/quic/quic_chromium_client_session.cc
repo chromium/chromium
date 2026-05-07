@@ -1238,7 +1238,7 @@ void QuicChromiumClientSession::OnHttp3GoAway(uint64_t id) {
 
   PerformActionOnActiveStreams([id](quic::QuicStream* stream) {
     if (stream->id() >= id) {
-      static_cast<QuicChromiumClientStream*>(stream)->OnError(
+      static_cast<QuicChromiumClientStreamBase*>(stream)->OnError(
           ERR_QUIC_GOAWAY_REQUEST_CAN_BE_RETRIED);
     }
     return true;
@@ -3277,7 +3277,7 @@ void QuicChromiumClientSession::CloseSessionOnErrorLater(
 
 void QuicChromiumClientSession::NotifyAllStreamsOfError(int net_error) {
   PerformActionOnActiveStreams([net_error](quic::QuicStream* stream) {
-    static_cast<QuicChromiumClientStream*>(stream)->OnError(net_error);
+    static_cast<QuicChromiumClientStreamBase*>(stream)->OnError(net_error);
     return true;
   });
 }
@@ -3723,7 +3723,7 @@ bool QuicChromiumClientSession::CheckIdleTimeExceedsIdleMigrationPeriod() {
 
   HistogramAndLogMigrationFailure(MIGRATION_STATUS_IDLE_MIGRATION_TIMEOUT,
                                   connection_id(),
-                                  "Ilde migration period exceeded");
+                                  "Idle migration period exceeded");
   CloseSessionOnErrorLater(ERR_NETWORK_CHANGED, quic::QUIC_NETWORK_IDLE_TIMEOUT,
                            quic::ConnectionCloseBehavior::SILENT_CLOSE);
   return true;
@@ -3733,13 +3733,12 @@ void QuicChromiumClientSession::ResetNonMigratableStreams() {
   // TODO(zhongyi): may close non-migratable draining streams as well to avoid
   // sending additional data on alternate networks.
   PerformActionOnActiveStreams([](quic::QuicStream* stream) {
-    QuicChromiumClientStream* chrome_stream =
-        static_cast<QuicChromiumClientStream*>(stream);
-    if (!chrome_stream->can_migrate_to_cellular_network()) {
+    if (!static_cast<QuicChromiumClientStreamBase*>(stream)
+             ->CanMigrateToCellularNetwork()) {
       // Close the stream in both direction by resetting the stream.
       // TODO(zhongyi): use a different error code to reset streams for
       // connection migration.
-      chrome_stream->Reset(quic::QUIC_STREAM_CANCELLED);
+      stream->Reset(quic::QUIC_STREAM_CANCELLED);
     }
     return true;
   });

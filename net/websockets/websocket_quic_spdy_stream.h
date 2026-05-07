@@ -9,21 +9,18 @@
 
 #include "base/memory/raw_ptr.h"
 #include "net/base/net_export.h"
-#include "net/quic/quic_chromium_client_stream.h"
-#include "net/third_party/quiche/src/quiche/quic/core/http/quic_spdy_client_session_base.h"
-#include "net/third_party/quiche/src/quiche/quic/core/http/quic_spdy_stream.h"
-#include "net/third_party/quiche/src/quiche/quic/core/quic_types.h"
+#include "net/quic/quic_chromium_client_stream_base.h"
 
 namespace quic {
 class QuicHeaderList;
-class QuicSpdyClientSessionBase;
 }  // namespace quic
 
 namespace net {
 
 class IOBuffer;
 
-class NET_EXPORT_PRIVATE WebSocketQuicSpdyStream : public quic::QuicSpdyStream {
+class NET_EXPORT_PRIVATE WebSocketQuicSpdyStream
+    : public QuicChromiumClientStreamBase {
  public:
   class NET_EXPORT_PRIVATE Delegate {
    public:

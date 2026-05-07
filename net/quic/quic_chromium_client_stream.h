@@ -28,20 +28,17 @@
 #include "net/http/http_response_info.h"
 #include "net/http/http_stream.h"
 #include "net/log/net_log_with_source.h"
+#include "net/quic/quic_chromium_client_stream_base.h"
 #include "net/third_party/quiche/src/quiche/common/http/http_header_block.h"
-#include "net/third_party/quiche/src/quiche/quic/core/http/quic_spdy_stream.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_server_id.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
-namespace quic {
-class QuicSpdyClientSessionBase;
-}  // namespace quic
 namespace net {
 
 // A client-initiated ReliableQuicStream.  Instances of this class
 // are owned by the QuicClientSession which created them.
 class NET_EXPORT_PRIVATE QuicChromiumClientStream
-    : public quic::QuicSpdyStream {
+    : public QuicChromiumClientStreamBase {
  public:
   // Wrapper for interacting with the session in a restricted fashion.
   class NET_EXPORT_PRIVATE Handle {
@@ -290,6 +287,7 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
       bool fin,
       quiche::QuicheReferenceCountedPointer<quic::QuicAckListenerInterface>
           ack_listener) override;
+  void OnError(int error) override;
 
   // While the server's set_priority shouldn't be called externally, the creator
   // of client-side streams should be able to set the priority.
@@ -311,9 +309,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
   // Clears |handle_| from this stream.
   void ClearHandle();
 
-  // Notifies the stream handle of error, but doesn't close the stream.
-  void OnError(int error);
-
   // Reads at most |buf_len| bytes into |buf|. Returns the number of bytes read.
   int Read(IOBuffer* buf, int buf_len);
 
@@ -322,10 +317,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
   // Prevents this stream from migrating to a cellular network. May be reset
   // when connection migrates to a cellular network.
   void DisableConnectionMigrationToCellularNetwork();
-
-  bool can_migrate_to_cellular_network() {
-    return can_migrate_to_cellular_network_;
-  }
 
   // True if the underlying QUIC session supports HTTP/3 Datagrams.
   bool SupportsH3Datagram() const;
@@ -370,10 +361,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientStream
   raw_ptr<quic::QuicSpdyClientSessionBase> session_;
   const quic::QuicServerId server_id_;
   quic::QuicTransportVersion quic_version_;
-
-  // Set to false if this stream should not be migrated to a cellular network
-  // during connection migration.
-  bool can_migrate_to_cellular_network_ = true;
 
   // True if non-informational (non-1xx) initial headers have arrived.
   bool initial_headers_arrived_ = false;
