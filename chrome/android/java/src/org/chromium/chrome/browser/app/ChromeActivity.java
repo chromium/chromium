@@ -1599,6 +1599,10 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             mFullscreenVideoPictureInPictureController.onFrameworkExitedPictureInPicture();
         }
 
+        if (mActorPipController != null) {
+            mActorPipController.onNewIntent(intent);
+        }
+
         super.onNewIntentWithNative(intent);
         getLaunchCauseMetrics().onReceivedIntent();
     }

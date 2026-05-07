@@ -184,6 +184,9 @@ public class ActorPictureInPictureControllerTest {
         mController.setInActorPiPForTesting(true);
         mController.onPictureInPictureEvent(PictureInPictureDelegate.Event.EXITED, null);
 
+        // Allow the delayed tab selection task to run.
+        ShadowLooper.idleMainLooper();
+
         verify(mockHideTabSwitcher).run();
         verify(mToggleGlicCallback).onResult(true);
     }
@@ -193,6 +196,137 @@ public class ActorPictureInPictureControllerTest {
         mController.setInActorPiPForTesting(true);
         mController.onPictureInPictureEvent(PictureInPictureDelegate.Event.EXITED, null);
         verify(mMockCoordinator).setVisibility(false);
+    }
+
+    @Test
+    public void testExitPip_WithNonActorIntent_SkipsTabSelection() {
+        Runnable mockHideTabSwitcher = mock(Runnable.class);
+        mController =
+                new ActorPictureInPictureController(
+                        mActivity,
+                        mProfileSupplier,
+                        () -> mActivity.findViewById(android.R.id.content),
+                        () -> mTabModelSelector,
+                        mockHideTabSwitcher,
+                        mToggleGlicCallback,
+                        new Size(1920, 1080),
+                        mOnPipChangedCallback);
+
+        // Enter PiP
+        mController.setInActorPiPForTesting(true);
+
+        // Receive a non-actor intent while in PiP
+        Intent nonActorIntent = new Intent();
+        nonActorIntent.putExtra(ActorNotificationFactory.EXTRA_SHOW_ACTOR_CONTROL, false);
+        mController.onNewIntent(nonActorIntent);
+
+        // Exit PiP
+        mController.onPictureInPictureEvent(PictureInPictureDelegate.Event.EXITED, null);
+
+        // Run delayed task
+        ShadowLooper.idleMainLooper();
+
+        // Verify tab selection was skipped
+        verify(mockHideTabSwitcher, never()).run();
+        verify(mToggleGlicCallback, never()).onResult(any());
+    }
+
+    @Test
+    public void testExitPip_ManualExpand_PerformsTabSelection() {
+        Runnable mockHideTabSwitcher = mock(Runnable.class);
+        mController =
+                new ActorPictureInPictureController(
+                        mActivity,
+                        mProfileSupplier,
+                        () -> mActivity.findViewById(android.R.id.content),
+                        () -> mTabModelSelector,
+                        mockHideTabSwitcher,
+                        mToggleGlicCallback,
+                        new Size(1920, 1080),
+                        mOnPipChangedCallback);
+
+        createMockActorTask(101, "Task", ActorTaskState.ACTING);
+
+        // Enter PiP
+        mController.setInActorPiPForTesting(true);
+
+        // Exit PiP (No intent received -> Manual expand)
+        mController.onPictureInPictureEvent(PictureInPictureDelegate.Event.EXITED, null);
+
+        // Run delayed task
+        ShadowLooper.idleMainLooper();
+
+        // Verify tab selection was performed
+        verify(mockHideTabSwitcher).run();
+        verify(mToggleGlicCallback).onResult(true);
+    }
+
+    @Test
+    public void testExitPip_WithActorIntent_PerformsTabSelection() {
+        Runnable mockHideTabSwitcher = mock(Runnable.class);
+        mController =
+                new ActorPictureInPictureController(
+                        mActivity,
+                        mProfileSupplier,
+                        () -> mActivity.findViewById(android.R.id.content),
+                        () -> mTabModelSelector,
+                        mockHideTabSwitcher,
+                        mToggleGlicCallback,
+                        new Size(1920, 1080),
+                        mOnPipChangedCallback);
+
+        createMockActorTask(101, "Task", ActorTaskState.ACTING);
+
+        // Enter PiP
+        mController.setInActorPiPForTesting(true);
+
+        // Receive an actor intent while in PiP
+        Intent actorIntent = new Intent();
+        actorIntent.putExtra(ActorNotificationFactory.EXTRA_SHOW_ACTOR_CONTROL, true);
+        mController.onNewIntent(actorIntent);
+
+        // Exit PiP
+        mController.onPictureInPictureEvent(PictureInPictureDelegate.Event.EXITED, null);
+
+        // Run delayed task
+        ShadowLooper.idleMainLooper();
+
+        // Verify tab selection was performed
+        verify(mockHideTabSwitcher).run();
+        verify(mToggleGlicCallback).onResult(true);
+    }
+
+    @Test
+    public void testEnterPip_CancelsPendingTabSelection() {
+        Runnable mockHideTabSwitcher = mock(Runnable.class);
+        mController =
+                new ActorPictureInPictureController(
+                        mActivity,
+                        mProfileSupplier,
+                        () -> mActivity.findViewById(android.R.id.content),
+                        () -> mTabModelSelector,
+                        mockHideTabSwitcher,
+                        mToggleGlicCallback,
+                        new Size(1920, 1080),
+                        mOnPipChangedCallback);
+
+        createMockActorTask(101, "Task", ActorTaskState.ACTING);
+
+        // Enter PiP
+        mController.setInActorPiPForTesting(true);
+
+        // Exit PiP -> Posts tab selection
+        mController.onPictureInPictureEvent(PictureInPictureDelegate.Event.EXITED, null);
+
+        // Immediately Enter PiP again
+        mController.onPictureInPictureEvent(PictureInPictureDelegate.Event.ENTERED, null);
+
+        // Run delayed tasks
+        ShadowLooper.idleMainLooper();
+
+        // Verify tab selection was NOT performed
+        verify(mockHideTabSwitcher, never()).run();
+        verify(mToggleGlicCallback, never()).onResult(any());
     }
 
     @Test

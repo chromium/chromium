@@ -71,7 +71,9 @@ public class ActorPictureInPictureController
     private boolean mInActorPiP;
     private @Nullable ActorPictureInPictureOverlayCoordinator mPipOverlayCoordinator;
     private @Nullable Runnable mExitPipRunnable;
+    private @Nullable Runnable mTabSelectRunnable;
     private @Nullable Tab mActingTab;
+    private boolean mReceivedNewIntent;
 
     /**
      * @param activity The ComponentActivity.
@@ -106,6 +108,26 @@ public class ActorPictureInPictureController
         mPipDelegate.addOnPictureInPictureEventListener(
                 ContextCompat.getMainExecutor(activity), this);
         updatePipState();
+    }
+
+    /**
+     * Called when the Activity receives a new intent.
+     *
+     * <p>ActorPictureInPictureController will automatically perform a tab routing attempt when PiP
+     * exits. In cases where PiP exits due to non-actor initiated intent (e.g. VIEW intent), we
+     * should not perform the tab routing.
+     *
+     * @param intent The new intent.
+     */
+    public void onNewIntent(Intent intent) {
+        boolean isActorIntent =
+                intent.getBooleanExtra(ActorNotificationFactory.EXTRA_SHOW_ACTOR_CONTROL, false);
+
+        // We only record mReceivedNewIntent when actor is in pip and we get intent from somewhere
+        // that is not for actor, so in this case we shouldn't open tab.
+        if (mInActorPiP && !isActorIntent) {
+            mReceivedNewIntent = true;
+        }
     }
 
     /** Checks if there are active Actor tasks. */
@@ -325,7 +347,12 @@ public class ActorPictureInPictureController
     }
 
     private void enterPictureInPicture() {
+        if (mTabSelectRunnable != null) {
+            mHandler.removeCallbacks(mTabSelectRunnable);
+            mTabSelectRunnable = null;
+        }
         mInActorPiP = true;
+        mReceivedNewIntent = false;
         mActingTab = getCurrentActingTab();
         ActorMetrics.recordPipStatus(ActorMetrics.ActorPipStatus.ENTERED);
         startOffscreenRendering();
@@ -339,13 +366,31 @@ public class ActorPictureInPictureController
         mInActorPiP = false;
         ActorMetrics.recordPipStatus(ActorMetrics.ActorPipStatus.EXITED);
         stopOffscreenRendering();
-        maybeSelectActingTabOnExpand();
+
+        // Delay the tab selection to ensure it runs after onNewIntent has been processed.
+        // This allows us to detect if the expansion was caused by a new intent (e.g. launcher icon
+        // or external link) vs a manual expand button click.
+        mTabSelectRunnable =
+                () -> {
+                    mTabSelectRunnable = null;
+                    maybeSelectActingTabOnExpand();
+                };
+        mHandler.post(mTabSelectRunnable);
+
         hideOverlay();
         updatePipState();
         cancelPendingExit();
     }
 
     private void maybeSelectActingTabOnExpand() {
+        // If the activity was resumed with a new intent that is not an Actor intent (e.g. launcher
+        // icon, external link), we should not select the acting tab. This allows the normal
+        // Chrome intent handling to take over.
+        if (mReceivedNewIntent) {
+            mReceivedNewIntent = false;
+            return;
+        }
+
         ActorMetrics.recordPipUserInteraction(ActorMetrics.ActorPipUserInteraction.EXPAND);
         TabModelSelector selector = mTabModelSelectorSupplier.get();
         if (selector == null) return;
@@ -385,6 +430,10 @@ public class ActorPictureInPictureController
     /** Called when the Activity is destroyed. */
     public void destroy() {
         cancelPendingExit();
+        if (mTabSelectRunnable != null) {
+            mHandler.removeCallbacks(mTabSelectRunnable);
+            mTabSelectRunnable = null;
+        }
         if (mPipOverlayCoordinator != null) {
             mPipOverlayCoordinator.destroy();
             mPipOverlayCoordinator = null;
