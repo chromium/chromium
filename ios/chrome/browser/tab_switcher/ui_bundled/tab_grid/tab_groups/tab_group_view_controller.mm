@@ -81,6 +81,8 @@ UIButton* TopToolbarButton(NSString* symbol_name,
                            UIColor* background_color) {
   UIBackgroundConfiguration* background_configuration =
       [UIBackgroundConfiguration clearConfiguration];
+  // This visualEffect should stay in sync with the one used by the
+  // `_titleButton` of `TabGroupHeader`.
   background_configuration.visualEffect = [UIBlurEffect
       effectWithStyle:UIBlurEffectStyleSystemUltraThinMaterialDark];
   background_configuration.backgroundColor = background_color;

@@ -16,7 +16,7 @@ constexpr CGFloat kDotTitleSeparationMargin = 8;
 constexpr CGFloat kColoredDotSize = 20;
 constexpr CGFloat kTitleHorizontalInset = 12;
 constexpr CGFloat kTitleVerticalInset = 8;
-constexpr CGFloat kTitleBackgroundCornderRadius = 16;
+constexpr CGFloat kTitleBackgroundCornerRadius = 16;
 constexpr CGFloat kTitleBackgroundAlpha = 0.2;
 
 // Returns the horizontal inset constraint for the title and dot views.
@@ -42,8 +42,8 @@ CGFloat GetVerticalInsetForConstraints() {
   UILabel* _titleView;
   // Dot view.
   UIView* _coloredDotView;
-  // Container for the whole title.
-  UIView* _container;
+  // The button container for the whole title.
+  UIButton* _titleButton;
   // Constraints for regular width.
   NSArray<NSLayoutConstraint*>* _regularWidthConstraints;
   // Constraints for compact width.
@@ -56,27 +56,28 @@ CGFloat GetVerticalInsetForConstraints() {
     _titleView = [self titleView];
     _coloredDotView = [self coloredDotView];
 
-    _container = [self titleButton];
-    [self addSubview:_container];
+    _titleButton = [self titleButton];
+    _titleButton.translatesAutoresizingMaskIntoConstraints = NO;
+    [self addSubview:_titleButton];
 
-    [_container addSubview:_coloredDotView];
-    [_container addSubview:_titleView];
+    [_titleButton addSubview:_coloredDotView];
+    [_titleButton addSubview:_titleView];
 
     _regularWidthConstraints = @[
-      [_container.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
-      [_container.widthAnchor
+      [_titleButton.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
+      [_titleButton.widthAnchor
           constraintLessThanOrEqualToAnchor:self.widthAnchor],
     ];
 
     _compactWidthConstraints = @[
-      [_container.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
-      [_container.trailingAnchor
+      [_titleButton.leadingAnchor constraintEqualToAnchor:self.leadingAnchor],
+      [_titleButton.trailingAnchor
           constraintLessThanOrEqualToAnchor:self.trailingAnchor],
     ];
 
     [NSLayoutConstraint activateConstraints:@[
       [_coloredDotView.leadingAnchor
-          constraintEqualToAnchor:_container.leadingAnchor
+          constraintEqualToAnchor:_titleButton.leadingAnchor
                          constant:GetHorizontalInsetForConstraints()],
       [_coloredDotView.centerYAnchor
           constraintEqualToAnchor:_titleView.centerYAnchor],
@@ -86,17 +87,17 @@ CGFloat GetVerticalInsetForConstraints() {
                          constant:kDotTitleSeparationMargin],
 
       [_titleView.trailingAnchor
-          constraintEqualToAnchor:_container.trailingAnchor
+          constraintEqualToAnchor:_titleButton.trailingAnchor
                          constant:-GetHorizontalInsetForConstraints()],
       [_titleView.topAnchor
-          constraintEqualToAnchor:_container.topAnchor
+          constraintEqualToAnchor:_titleButton.topAnchor
                          constant:GetVerticalInsetForConstraints()],
       [_titleView.bottomAnchor
-          constraintEqualToAnchor:_container.bottomAnchor
+          constraintEqualToAnchor:_titleButton.bottomAnchor
                          constant:-GetVerticalInsetForConstraints()],
 
-      [_container.topAnchor constraintEqualToAnchor:self.topAnchor],
-      [_container.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
+      [_titleButton.topAnchor constraintEqualToAnchor:self.topAnchor],
+      [_titleButton.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
     ]];
 
     if (self.traitCollection.horizontalSizeClass ==
@@ -128,7 +129,7 @@ CGFloat GetVerticalInsetForConstraints() {
                     range:NSMakeRange(0, title.length)];
   _titleView.attributedText = boldTitle;
   if (IsOpenEditGroupViewByTappingTitleEnabled()) {
-    _container.accessibilityLabel = title;
+    _titleButton.accessibilityLabel = title;
   }
 }
 
@@ -142,8 +143,11 @@ CGFloat GetVerticalInsetForConstraints() {
   if (!IsOpenEditGroupViewByTappingTitleEnabled()) {
     return;
   }
-  _container.backgroundColor =
+
+  UIButtonConfiguration* containerConfiguration = _titleButton.configuration;
+  containerConfiguration.background.backgroundColor =
       [color colorWithAlphaComponent:kTitleBackgroundAlpha];
+  _titleButton.configuration = containerConfiguration;
 }
 
 #pragma mark - Private
@@ -188,26 +192,24 @@ CGFloat GetVerticalInsetForConstraints() {
 
 // Configures the title button.
 - (UIButton*)titleButton {
-  UIButton* titleButton = [[UIButton alloc] init];
-  titleButton.translatesAutoresizingMaskIntoConstraints = NO;
-
   if (!IsOpenEditGroupViewByTappingTitleEnabled()) {
-    return titleButton;
+    return [[UIButton alloc] init];
   }
 
-  titleButton.layer.cornerRadius = kTitleBackgroundCornderRadius;
+  UIBackgroundConfiguration* backgroundConfiguration =
+      [UIBackgroundConfiguration clearConfiguration];
+  // This visualEffect should stay in sync with the one used for the
+  // buttons of the `topToolBar` in `TabGroupViewController`.
+  backgroundConfiguration.visualEffect = [UIBlurEffect
+      effectWithStyle:UIBlurEffectStyleSystemUltraThinMaterialDark];
+  backgroundConfiguration.cornerRadius = kTitleBackgroundCornerRadius;
 
-  UIBlurEffect* blurEffect =
-      [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemThinMaterial];
-  UIVisualEffectView* blurEffectView =
-      [[UIVisualEffectView alloc] initWithEffect:blurEffect];
-  blurEffectView.translatesAutoresizingMaskIntoConstraints = NO;
-  blurEffectView.layer.cornerRadius = kTitleBackgroundCornderRadius;
-  blurEffectView.clipsToBounds = YES;
-  blurEffectView.userInteractionEnabled = NO;
+  UIButtonConfiguration* buttonConfiguration =
+      [UIButtonConfiguration plainButtonConfiguration];
+  buttonConfiguration.background = backgroundConfiguration;
 
-  [titleButton addSubview:blurEffectView];
-  AddSameConstraints(titleButton, blurEffectView);
+  UIButton* titleButton = [UIButton buttonWithConfiguration:buttonConfiguration
+                                              primaryAction:nil];
 
   titleButton.accessibilityIdentifier =
       kTabGroupTitleButtonToEditGroupIdentifier;
