@@ -1,0 +1,35 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+static_library("gemini") {
+  sources = [
+    "get_gemini_status_request.cc",
+    "get_gemini_status_request.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos/ash/components/boca",
+    "//chromeos/ash/components/boca/session_api",
+    "//google_apis",
+    "//google_apis/common",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "get_gemini_status_request_unittest.cc" ]
+
+  deps = [
+    ":gemini",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/ash/components/boca",
+    "//chromeos/ash/components/boca/session_api",
+    "//testing/gtest",
+  ]
+}

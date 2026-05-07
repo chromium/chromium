@@ -15,6 +15,7 @@ group("unit_tests") {
     "//chromeos/ash/components/auto_sign_out:unit_tests",
     "//chromeos/ash/components/boca:unit_tests",
     "//chromeos/ash/components/boca/babelorca:unit_tests",
+    "//chromeos/ash/components/boca/gemini:unit_tests",
     "//chromeos/ash/components/boca/on_task:unit_tests",
     "//chromeos/ash/components/boca/receiver:unit_tests",
     "//chromeos/ash/components/boca/session_api:unit_tests",
