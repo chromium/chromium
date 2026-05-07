@@ -150,7 +150,9 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
   if ([self isRunningTest:@selector(testToggleEnhancedAutofillSwitch)] ||
       [self isRunningTest:@selector(testAddAndDeleteEntityUsingMenu)] ||
       [self isRunningTest:@selector(testVerificationSwitchReauthFailure)] ||
-      [self isRunningTest:@selector(testVerificationSwitchReauthSuccess)]) {
+      [self isRunningTest:@selector(testVerificationSwitchReauthSuccess)] ||
+      [self isRunningTest:@selector(testEditButtonEnablesOnAddingEntity)] ||
+      [self isRunningTest:@selector(testAutoExitEditModeOnDeletion)]) {
     config.features_enabled.push_back(
         autofill::features::kAutofillAiCreateEntityDataManager);
     config.features_enabled.push_back(
