@@ -706,7 +706,6 @@ source_set("browser_tests") {
       "host/glic_api_browsertest.cc",
       "host/glic_permission_enforcement_browsertest.cc",
       "host/guest_util_browsertest.cc",
-      "host/new_glic_api_alt_browsertest.cc",
       "public/glic_enabling_browsertest.cc",
       "widget/application_hotkey_delegate_browsertest.cc",
       "widget/glic_side_panel_coordinator_browsertest.cc",
