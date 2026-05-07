@@ -1134,6 +1134,8 @@ class PDFiumEngine : public DocumentLoader::Client,
 #if BUILDFLAG(ENABLE_PDF_INK2)
   std::vector<FPDF_PAGEOBJECT> GetActiveInkPageObjectsForPage(
       int page_index) const;
+
+  bool PageStillHasEdits(int page_index) const;
 #endif
 
   const raw_ptr<PDFiumEngineClient> client_;

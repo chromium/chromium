@@ -665,6 +665,18 @@ sk_sp<const SkData> MakeDataAvoidingCopy(SkStreamAsset* stream) {
   }
   return SkData::MakeFromStream(stream, stream->getLength());
 }
+
+void RemovePageObjectsFromPage(FPDF_PAGE page,
+                               base::span<FPDF_PAGEOBJECT> page_objects) {
+  for (FPDF_PAGEOBJECT page_object : page_objects) {
+    CHECK(FPDFPage_RemoveObject(page, page_object));
+
+    // FPDFPage_RemoveObject() transferred ownership of `page_object` to the
+    // caller. Free it since `page_object` is being discarded.
+    FPDFPageObj_Destroy(page_object);
+  }
+}
+
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
 void CheckBitmapProperties(const SkBitmap& sk_bitmap, FPDF_BITMAP fpdf_bitmap) {
@@ -5243,23 +5255,11 @@ void PDFiumEngine::DiscardStroke(int page_index, InkStrokeId id) {
   CHECK(PageIndexInBounds(page_index));
   auto it = ink_stroke_data_.find(id);
   CHECK(it != ink_stroke_data_.end());
-  for (FPDF_PAGEOBJECT page_object : it->second.page_objects) {
-    bool result =
-        FPDFPage_RemoveObject(pages_[page_index]->GetPage(), page_object);
-    CHECK(result);
-
-    // FPDFPage_RemoveObject() transferred ownership of `page_object` to the
-    // caller. Free it since `page_object` is being discarded.
-    FPDFPageObj_Destroy(page_object);
-  }
+  RemovePageObjectsFromPage(pages_[page_index]->GetPage(),
+                            it->second.page_objects);
   ink_stroke_data_.erase(it);
 
-  bool page_still_has_shapes_or_strokes =
-      pages_with_loaded_v2_ink_shapes_.contains(page_index) ||
-      std::ranges::any_of(ink_stroke_data_, [page_index](const auto& it) {
-        return it.second.page_index == page_index;
-      });
-  if (!page_still_has_shapes_or_strokes) {
+  if (!PageStillHasEdits(page_index)) {
     edited_pages_unload_preventers_.erase(page_index);
   }
 }
@@ -5423,6 +5423,14 @@ std::vector<FPDF_PAGEOBJECT> PDFiumEngine::GetActiveInkPageObjectsForPage(
     }
   }
   return active_page_objects;
+}
+
+bool PDFiumEngine::PageStillHasEdits(int page_index) const {
+  CHECK(PageIndexInBounds(page_index));
+  return pages_with_loaded_v2_ink_shapes_.contains(page_index) ||
+         std::ranges::any_of(ink_stroke_data_, [page_index](const auto& it) {
+           return it.second.page_index == page_index;
+         });
 }
 
 PDFiumEngine::InkStrokeData::InkStrokeData(
