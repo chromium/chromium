@@ -2403,7 +2403,7 @@ ci.builder(
             ),
             # If you change this, make similar changes in android-x86-code-coverage
             "content_shell_crash_test": targets.remove(
-                reason = "crbug.com/1084353",
+                reason = "crbug.com/40131701",
             ),
             # If you change this, make similar changes in android-x86-code-coverage
             "content_shell_test_apk": targets.mixin(
@@ -2611,7 +2611,7 @@ ci.builder(
                 ),
             ),
             "content_shell_crash_test": targets.remove(
-                reason = "crbug.com/1084353",
+                reason = "crbug.com/40131701",
             ),
             "content_shell_test_apk": targets.mixin(
                 args = [

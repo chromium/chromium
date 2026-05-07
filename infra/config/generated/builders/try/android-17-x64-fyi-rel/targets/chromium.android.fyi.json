@@ -3789,48 +3789,6 @@
       },
       {
         "args": [
-          "--platform=android",
-          "--avd-config=../../tools/android/avd/proto/android_37_google_apis_ps16k_x64.textpb"
-        ],
-        "description": "Run with android_37_google_apis_ps16k_x64",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "module_name": "//content/shell:content_shell_crash_test",
-        "module_scheme": "single",
-        "name": "content_shell_crash_test",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true,
-          "result_format": "single"
-        },
-        "swarming": {
-          "dimensions": {
-            "cores": "8",
-            "cpu": "x86-64",
-            "device_os": null,
-            "device_type": null,
-            "os": "Ubuntu-22.04",
-            "pool": "chromium.tests.avd"
-          },
-          "named_caches": [
-            {
-              "name": "android_37_google_apis_ps16k_x64",
-              "path": ".android_emulator/android_37_google_apis_ps16k_x64"
-            }
-          ],
-          "optional_dimensions": {
-            "60": {
-              "caches": "android_37_google_apis_ps16k_x64"
-            }
-          },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "content_shell_crash_test",
-        "test_id_prefix": "ninja://content/shell:content_shell_crash_test/"
-      },
-      {
-        "args": [
           "--avd-config=../../tools/android/avd/proto/android_37_google_apis_ps16k_x64.textpb"
         ],
         "description": "Run with android_37_google_apis_ps16k_x64",

@@ -454,6 +454,9 @@ ci.builder(
                     shards = 30,
                 ),
             ),
+            "content_shell_crash_test": targets.remove(
+                reason = "crbug.com/40131701",
+            ),
             "telemetry_perf_unittests_android_chrome": targets.mixin(
                 # For whatever reason, automatic browser selection on this bot chooses
                 # webview instead of the full browser, so explicitly specify it here.
@@ -574,6 +577,9 @@ ci.builder(
                 args = [
                     "--browser=android-chromium",
                 ],
+            ),
+            "content_shell_crash_test": targets.remove(
+                reason = "crbug.com/40131701",
             ),
         },
     ),
