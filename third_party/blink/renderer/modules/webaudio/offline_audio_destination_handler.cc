@@ -220,8 +220,7 @@ void OfflineAudioDestinationHandler::SuspendOfflineRendering() {
   PostCrossThreadTask(
       *main_thread_task_runner_, FROM_HERE,
       CrossThreadBindOnce(&OfflineAudioDestinationHandler::NotifySuspend,
-                          WrapRefCounted(this),
-                          Context()->CurrentSampleFrame()));
+                          GetWeakPtr(), Context()->CurrentSampleFrame()));
 }
 
 void OfflineAudioDestinationHandler::FinishOfflineRendering() {
@@ -231,7 +230,7 @@ void OfflineAudioDestinationHandler::FinishOfflineRendering() {
   PostCrossThreadTask(
       *main_thread_task_runner_, FROM_HERE,
       CrossThreadBindOnce(&OfflineAudioDestinationHandler::NotifyComplete,
-                          WrapRefCounted(this)));
+                          GetWeakPtr()));
 }
 
 void OfflineAudioDestinationHandler::NotifySuspend(size_t frame) {

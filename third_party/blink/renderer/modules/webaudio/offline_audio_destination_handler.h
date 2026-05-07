@@ -103,6 +103,17 @@ class OfflineAudioDestinationHandler final : public AudioDestinationHandler {
   // from AudioWorkletThread will be used until the rendering is finished.
   void PrepareTaskRunnerForRendering();
 
+  // For cross-thread posting, this object uses two different targets.
+  // 1. rendering thread -> main thread: WeakPtr
+  //    When the main thread starts deleting this object, a task posted with
+  //    a WeakPtr from the rendering thread will be cancelled.
+  // 2. main thread -> rendering thread: scoped_refptr
+  //    `render_thread_` is owned by this object, so it is safe to target with
+  //    `WrapRefCounted()` instead of `GetWeakPtr()`.
+  base::WeakPtr<OfflineAudioDestinationHandler> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
   // This AudioHandler renders into this SharedAudioBuffer.
   std::unique_ptr<SharedAudioBuffer> shared_render_target_;
   // Temporary AudioBus for each render quantum.
@@ -128,6 +139,7 @@ class OfflineAudioDestinationHandler final : public AudioDestinationHandler {
   scoped_refptr<base::SingleThreadTaskRunner> render_thread_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner_;
 
+  base::WeakPtrFactory<OfflineAudioDestinationHandler> weak_factory_{this};
 };
 
 }  // namespace blink
