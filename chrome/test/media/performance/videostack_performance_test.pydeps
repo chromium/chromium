@@ -14,6 +14,7 @@
 ../../../../build/util/lib/results/__init__.py
 ../../../../build/util/lib/results/result_sink.py
 ../../../../build/util/lib/results/result_types.py
+../../../../fuchsia_web/av_testing/camera.py
 ../../../../fuchsia_web/av_testing/server.py
 ../../../../fuchsia_web/av_testing/video_analyzer.py
 common.py

@@ -18,7 +18,12 @@ python_library("videostack_performance_test") {
     "//fuchsia_web/av_testing/server.py",
     "//fuchsia_web/av_testing/video.html",
     "//fuchsia_web/av_testing/cast_starter.html",
+    "//build/fuchsia/test/common.py",
+    "//build/fuchsia/test/compatible_utils.py",
+    "//build/fuchsia/test/monitors.py",
+    "//build/fuchsia/test/perf_trace.py",
     "//build/fuchsia/test/repeating_log.py",
+    "//build/fuchsia/test/version.py",
   ]
   deps = [ ":common" ]
 }
@@ -32,7 +37,12 @@ python_library("openscreen_cast_performance_test") {
     "//fuchsia_web/av_testing/server.py",
     "//fuchsia_web/av_testing/video.html",
     "//fuchsia_web/av_testing/cast_starter.html",
+    "//build/fuchsia/test/common.py",
+    "//build/fuchsia/test/compatible_utils.py",
+    "//build/fuchsia/test/monitors.py",
+    "//build/fuchsia/test/perf_trace.py",
     "//build/fuchsia/test/repeating_log.py",
+    "//build/fuchsia/test/version.py",
   ]
   deps = [ ":common" ]
 }
@@ -46,7 +56,13 @@ python_library("openscreen_remoting_performance_test") {
     "//fuchsia_web/av_testing/server.py",
     "//fuchsia_web/av_testing/video.html",
     "//fuchsia_web/av_testing/cast_starter.html",
+    "//build/fuchsia/test/common.py",
+    "//build/fuchsia/test/compatible_utils.py",
+    "//build/fuchsia/test/monitors.py",
+    "//build/fuchsia/test/perf_trace.py",
     "//build/fuchsia/test/repeating_log.py",
+    "//build/fuchsia/test/version.py",
+    "//third_party/catapult/third_party/gsutil/",
   ]
   deps = [ ":common" ]
 }

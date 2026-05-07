@@ -27,6 +27,7 @@ CHROME_FUCHSIA_ROOT = os.path.join(REPO_ROOT, 'fuchsia_web', 'av_testing')
 sys.path.append(CHROME_FUCHSIA_ROOT)
 import server  # pylint: disable=unused-import
 import video_analyzer  # pylint: disable=unused-import
+import camera  # pylint: disable=unused-import
 
 TEST_SCRIPTS_ROOT = os.path.join(REPO_ROOT, 'build', 'fuchsia', 'test')
 sys.path.append(TEST_SCRIPTS_ROOT)
@@ -90,6 +91,9 @@ SENDER_CHROMEDRIVER_CHECK_CMD = {
         'powershell -Command "Get-Process -Name chromedriver -ErrorAction '
         'SilentlyContinue"'
     ),
+    'linux': (
+        'pgrep chromedriver'
+    ),
 }
 
 SENDER_STATUS_CMD = {
@@ -99,6 +103,10 @@ SENDER_STATUS_CMD = {
     ),
     'win': (
         f'curl.exe -s -o NUL -w "%{{http_code}}" '
+        f'http://{LOCAL_HOST_IP}:{CHROMEDRIVER_PORT}/status'
+    ),
+    'linux': (
+        'curl -s -o /dev/null -w "%{http_code}" '
         f'http://{LOCAL_HOST_IP}:{CHROMEDRIVER_PORT}/status'
     ),
 }
@@ -112,6 +120,9 @@ SENDER_TERMINATE_DRIVER_CMD = {
         '-ErrorAction SilentlyContinue; '
         'taskkill /F /IM chromedriver.exe /IM chrome.exe /T '
         '/FI \'STATUS eq RUNNING\' /FI \'SESSION ne 0\'"'
+    ),
+    'linux': (
+        'pkill -f chromedriver || true && pkill -f chrome || true'
     ),
 }
 
@@ -139,18 +150,35 @@ class StartProcess(AbstractContextManager):
 
 def send_ssh_command(hostname, username, command, blocking=False):
     """
-    Sends a command to a remote host via SSH.
+    Sends a command to a host. If hostname is 'localhost' or None, it runs
+    locally. Otherwise, it uses SSH.
 
     Args:
-        hostname (str): The remote host to connect to.
+        hostname (str): The host to connect to.
         username (str): The username for the SSH connection.
-        command (str): The command to execute on the remote host.
+        command (str): The command to execute.
         blocking (bool): If True, waits for the command to complete.
                          If False, runs the command in a non-blocking way.
 
     Returns:
         subprocess.CompletedProcess or subprocess.Popen: The process object.
     """
+    if hostname in ['localhost', '127.0.0.1', None]:
+        logging.debug('Executing local command: %s', command)
+        if blocking:
+            return subprocess.run(command,
+                                    shell=True,
+                                    capture_output=True,
+                                    text=True,
+                                    timeout=120,
+                                    check=False)
+        return subprocess.Popen(command,
+                                 shell=True,
+                                 stdin=subprocess.PIPE,
+                                 stdout=subprocess.PIPE,
+                                 stderr=subprocess.PIPE,
+                                 text=True)
+
     key_path = os.path.expanduser('~/.ssh/id_ed25519')
     ssh_command = [
         'ssh',
@@ -198,7 +226,16 @@ def terminate_old_chromedriver(args):
 
 
 def get_remote_info(args):
-    """Detects info (arch, OS version) of the remote machine."""
+    """Detects info (arch, OS version) of the machine."""
+    if args.sender in ['localhost', '127.0.0.1', None]:
+        import platform
+        arch = platform.machine()
+        info = {
+            'arch': 'x64' if arch == 'x86_64' else arch,
+            'os_version': platform.release()
+        }
+        return info
+
     info = {'arch': None, 'os_version': None}
     if args.sender_os == 'mac':
         # Use absolute paths on Mac to avoid PATH issues in non-interactive SSH.
@@ -255,6 +292,20 @@ def get_remote_info(args):
             blocking=True)
         info['os_version'] = version_result.stdout.strip()
 
+    elif args.sender_os == 'linux':
+        arch_result = send_ssh_command(args.sender,
+                                       args.username,
+                                       'uname -m',
+                                       blocking=True)
+        arch = arch_result.stdout.strip()
+        info['arch'] = 'x64' if arch == 'x86_64' else arch
+
+        version_result = send_ssh_command(args.sender,
+                                          args.username,
+                                          'uname -r',
+                                          blocking=True)
+        info['os_version'] = version_result.stdout.strip()
+
     return info
 
 
@@ -303,6 +354,9 @@ def install_and_setup_chrome(args, chrome_version):
         'win': {
             'x64': 'win64',
             'x86': 'win32'
+        },
+        'linux': {
+            'x64': 'linux64'
         }
     }
 
@@ -316,8 +370,43 @@ def install_and_setup_chrome(args, chrome_version):
         platform_name, chrome_version)
     remote_app_path = None
 
-    # --- Download and Unzip on Remote ---
-    logging.info("Downloading Chrome and Chromedriver on remote machine.")
+    # --- Download and Unzip ---
+    logging.info("Downloading Chrome and Chromedriver.")
+    if args.sender in ['localhost', '127.0.0.1', None]:
+        # Handle local installation on the NUC.
+        tmp_dir = '/tmp'
+        chrome_zip = chrome_url.split('/')[-1]
+        driver_zip = driver_url.split('/')[-1]
+
+        subprocess.run(
+            f"curl -L {chrome_url} -o {tmp_dir}/{chrome_zip} && "
+            f"curl -L {driver_url} -o {tmp_dir}/{driver_zip} && "
+            f"unzip -o {tmp_dir}/{chrome_zip} -d {tmp_dir} && "
+            f"unzip -o {tmp_dir}/{driver_zip} -d {tmp_dir}",
+            shell=True, check=True, timeout=120)
+
+        chrome_dir = chrome_zip.replace('.zip', '')
+        driver_dir = driver_zip.replace('.zip', '')
+        remote_app_path = (f"{tmp_dir}/{chrome_dir}/"
+                           "Google Chrome for Testing.app")
+        if sys.platform == 'linux':
+             remote_app_path = f"{tmp_dir}/{chrome_dir}/chrome"
+
+        remote_chromedriver_path = f"{tmp_dir}/{driver_dir}/chromedriver"
+
+        subprocess.run(f'chmod +x {remote_chromedriver_path}',
+                       shell=True, check=True)
+        # Start chromedriver locally.
+        subprocess.Popen(
+            f'nohup {remote_chromedriver_path} --port={CHROMEDRIVER_PORT} '
+            '--disable-ipv6 --allowed-origins=\"*\" --allowed-ips= '
+            '--verbose --log-path=/tmp/chromedriver_verbose.log '
+            '--enable-chrome-logs '
+            f'> /tmp/chromedriver_console.log 2>&1 &', shell=True)
+
+        logging.info("Finished local chromedriver setup.")
+        return remote_app_path, chrome_version_actual
+
     if args.sender_os == 'mac':
         remote_tmp_dir = '/tmp'
         chrome_zip = chrome_url.split('/')[-1]
@@ -342,6 +431,35 @@ def install_and_setup_chrome(args, chrome_version):
             (f"xattr -cr {remote_tmp_dir}/{chrome_zip.replace('.zip', '')} && "
              f"xattr -cr {remote_tmp_dir}/{driver_zip.replace('.zip', '')}"),
             blocking=True)
+
+        send_ssh_command(args.sender, args.username,
+                         f'chmod +x {remote_chromedriver_path}',
+                         blocking=True)
+        send_ssh_command(
+            args.sender, args.username,
+            (f'nohup {remote_chromedriver_path} --port={CHROMEDRIVER_PORT} '
+             '--disable-ipv6 --allowed-origins=\"*\" --allowed-ips= '
+             '--verbose --log-path=/tmp/chromedriver_verbose.log '
+             '--enable-chrome-logs '
+             f'> /tmp/chromedriver_console.log 2>&1 &'))
+
+    elif args.sender_os == 'linux':
+        remote_tmp_dir = '/tmp'
+        chrome_zip = chrome_url.split('/')[-1]
+        driver_zip = driver_url.split('/')[-1]
+
+        send_ssh_command(
+            args.sender, args.username,
+            (f"curl -L {chrome_url} -o {remote_tmp_dir}/{chrome_zip} && "
+             f"curl -L {driver_url} -o {remote_tmp_dir}/{driver_zip} && "
+             f"unzip -o {remote_tmp_dir}/{chrome_zip} -d {remote_tmp_dir} && "
+             f"unzip -o {remote_tmp_dir}/{driver_zip} -d {remote_tmp_dir}"),
+            blocking=True)
+
+        chrome_dir = chrome_zip.replace('.zip', '')
+        driver_dir = driver_zip.replace('.zip', '')
+        remote_app_path = f"{remote_tmp_dir}/{chrome_dir}/chrome"
+        remote_chromedriver_path = f"{remote_tmp_dir}/{driver_dir}/chromedriver"
 
         send_ssh_command(args.sender, args.username,
                          f'chmod +x {remote_chromedriver_path}',
@@ -484,8 +602,12 @@ def wait_for_chromedriver(args):
     raise RuntimeError("Chromedriver still not ready after multiple attempts.")
 
 def start_ssh_tunnel(args):
-    # pylint: disable=consider-using-with
     """Starts the SSH tunnel process."""
+    if args.sender in ['localhost', '127.0.0.1', None]:
+        logging.info("Local sender detected. Skipping SSH tunnel.")
+        return None
+
+    # pylint: disable=consider-using-with
     host_tunnel_cmd = [
         'ssh',
         '-i',
@@ -561,6 +683,10 @@ def teardown_test_environment(driver, tunnel_proc, args):
         'win': (
             f'powershell -Command "Remove-Item -Path {WIN_REMOTE_TMP_DIR} '
             '-Recurse -Force -ErrorAction SilentlyContinue"'
+        ),
+        'linux': (
+            "rm -rf /tmp/chrome-linux64-* /tmp/chromedriver-linux64-* "
+            "/tmp/*.zip"
         ),
     }
 
