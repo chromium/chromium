@@ -71,11 +71,12 @@ struct ChromeMLModelData {
   // Matching `file_id` tells the backend that the data also matches.
   std::optional<uint32_t> file_id;
 
-  // Files holding the weight cache. These files will be owned by the inference
-  // library and closed upon model destruction.
+  // Files holding the weight caches or program cache (GPU only). These files
+  // will be owned by the inference library and closed upon model destruction.
   PlatformFile cache_file = kInvalidPlatformFile;
   PlatformFile encoder_cache_file = kInvalidPlatformFile;
   PlatformFile adapter_cache_file = kInvalidPlatformFile;
+  PlatformFile program_cache_file = kInvalidPlatformFile;
 
   // Null-terminated model path pointing to the model to use. Only kApuBackend
   // provides this field. Other backends provide model through the

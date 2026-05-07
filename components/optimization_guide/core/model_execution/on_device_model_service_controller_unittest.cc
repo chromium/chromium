@@ -434,6 +434,47 @@ TEST_F(OnDeviceModelServiceControllerTest, CacheWeightExecutionSuccess) {
   EXPECT_FALSE(broker_.launcher().is_service_running());
 }
 
+TEST_F(OnDeviceModelServiceControllerTest,
+       ShaderCacheExecutionSuccessWithFastestInferenceGpuModel) {
+  base::test::ScopedFeatureList feature_list;
+  // TODO(crbug.com/461547475): GPU cache flag is experimental for now, remove
+  // once it's no longer needed.
+  feature_list.InitWithFeaturesAndParameters(
+      {{features::kOptimizationGuideOnDeviceModel,
+        {{"on_device_model_topk", "1"}, {"on_device_model_temperature", "0"}}},
+       {on_device_model::features::kOnDeviceModelGpuCache, {}}},
+      {});
+
+  broker_.InstallBaseModel(std::make_unique<FakeBaseModelAsset>(
+      std::vector<proto::OnDeviceModelPerformanceHint>{
+          proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_FASTEST_INFERENCE},
+      FakeBaseModelAsset::Content{
+          .shader_cache_data = "0xcafebabe",
+      }));
+  Initialize(InitializeParams{
+      .base_model_content = std::nullopt,
+      .safety = &standard_assets_.safety,
+      .language = &standard_assets_.language,
+      .adaptations = {&standard_assets_.compose},
+  });
+  auto session = CreateSession(SessionConfigParams{});
+  ASSERT_TRUE(session);
+  session->ExecuteModel(PageUrlRequest("foo"),
+                        response_.GetStreamingCallback());
+  ASSERT_TRUE(response_.GetFinalStatus());
+  EXPECT_EQ(*response_.value(),
+            "Fastest inference"
+            "Shader cache data: 0xcafebabe"
+            "execute:foo max:1024");
+  // Destroy the session and run until the service is no longer running.
+  session.reset();
+  task_environment_.FastForwardBy(features::GetOnDeviceModelIdleTimeout() +
+                                  base::Seconds(1));
+  EXPECT_TRUE(broker_.launcher().did_launch_service());
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return !broker_.launcher().is_service_running(); }));
+}
+
 TEST_F(OnDeviceModelServiceControllerTest, AdaptationModelExecutionSuccess) {
   FakeAdaptationAsset compose_asset({
       .config = SimpleComposeConfig(),

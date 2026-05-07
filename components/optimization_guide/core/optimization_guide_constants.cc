@@ -54,6 +54,9 @@ const base::FilePath::CharType kEncoderCacheFile[] =
 const base::FilePath::CharType kAdapterCacheFile[] =
     FILE_PATH_LITERAL("adapter_cache.bin");
 
+const base::FilePath::CharType kProgramCacheFile[] =
+    FILE_PATH_LITERAL("program_cache.bin");
+
 const base::FilePath::CharType kTsDataFile[] = FILE_PATH_LITERAL("ts.bin");
 
 const base::FilePath::CharType kTsSpModelFile[] =

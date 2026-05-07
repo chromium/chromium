@@ -789,6 +789,14 @@ LoadModelResult OnDeviceModelExecutor::Init(
   if (assets.adapter_cache.IsValid()) {
     data.adapter_cache_file = assets.adapter_cache.TakePlatformFile();
   }
+  // TODO(crbug.com/461547475): GPU cache is experimental for now, remove
+  // once feature flag it's no longer needed.
+  if (base::FeatureList::IsEnabled(
+          on_device_model::features::kOnDeviceModelGpuCache) &&
+      params->backend_type == ml::ModelBackendType::kGpuBackend &&
+      assets.program_cache.IsValid()) {
+    data.program_cache_file = assets.program_cache.TakePlatformFile();
+  }
   ChromeMLModelDescriptor descriptor = {
       .backend_type = params->backend_type,
       .model_data = &data,

@@ -160,6 +160,7 @@ class FakeOnDeviceModel : public mojom::OnDeviceModel {
     std::string cache_weight = "";
     std::string encoder_cache_weight = "";
     std::string adapter_cache_weight = "";
+    std::string shader_cache_data = "";
     std::vector<uint32_t> adaptation_ranks;
   };
   explicit FakeOnDeviceModel(FakeOnDeviceServiceSettings* settings,

@@ -33,6 +33,9 @@ class FakeBaseModelAsset {
     uint32_t cache_weight = 0;
     uint32_t encoder_cache_weight = 0;
     uint32_t adapter_cache_weight = 0;
+    // Using C string to avoid manual ctor of non-trivial types for test-only
+    // purposes, otherwise non-aggregate initializer for struct is disallowed.
+    const char* shader_cache_data = "";
   };
   FakeBaseModelAsset();
   explicit FakeBaseModelAsset(Content content);
@@ -40,6 +43,9 @@ class FakeBaseModelAsset {
       const std::vector<proto::OnDeviceModelPerformanceHint>& hints);
   explicit FakeBaseModelAsset(
       proto::OnDeviceModelValidationConfig&& validation_config);
+  FakeBaseModelAsset(
+      const std::vector<proto::OnDeviceModelPerformanceHint>& hints,
+      Content content);
   ~FakeBaseModelAsset();
 
   // Overwrites content in the same file.

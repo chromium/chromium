@@ -196,6 +196,7 @@ class OnDeviceModelServiceController final {
     // Return the remote for direct use by the feature, adjusting idle timeout.
     mojo::Remote<on_device_model::mojom::OnDeviceModel>& DirectUse();
 
+    // Returns the file paths to load model assets for execution.
     on_device_model::ModelAssetPaths PopulateModelPaths();
 
     const OnDeviceModelMetadata* model_metadata() const {

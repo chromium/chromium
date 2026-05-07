@@ -122,6 +122,16 @@ void RecordOnDeviceLoadModelResult(
       "OptimizationGuide.ModelExecution.OnDeviceBaseModelLoadResult", result);
 }
 
+ml::ModelBackendType GetBackendType(
+    const proto::OnDeviceModelPerformanceHint& performance_hint) {
+  if (performance_hint == proto::OnDeviceModelPerformanceHint::
+                              ON_DEVICE_MODEL_PERFORMANCE_HINT_CPU) {
+    return ml::ModelBackendType::kCpuBackend;
+  }
+  // Update once we support more backend types for performance hints.
+  return ml::ModelBackendType::kGpuBackend;
+}
+
 }  // namespace
 
 OnDeviceModelServiceController::OnDeviceModelServiceController(
@@ -461,9 +471,10 @@ on_device_model::ModelAssetPaths
 OnDeviceModelServiceController::BaseModelController::PopulateModelPaths() {
   on_device_model::ModelAssetPaths model_paths;
   model_paths.weights = model_metadata_->model_path().Append(kWeightsFile);
+  const ml::ModelBackendType backend_type =
+      GetBackendType(model_metadata_->performance_hint());
 
-  if (model_metadata_->performance_hint() ==
-      proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_CPU) {
+  if (backend_type == ml::ModelBackendType::kCpuBackend) {
     // Weights cache is used for CPU backend (XNNPACK) only and re-built when
     // it's deemed stale by version compatibility (see crbug.com/400998489).
     model_paths.cache = model_metadata_->model_path().Append(kWeightCacheFile);
@@ -472,6 +483,15 @@ OnDeviceModelServiceController::BaseModelController::PopulateModelPaths() {
       model_metadata_->model_path().Append(kEncoderCacheFile);
   model_paths.adapter_cache =
       model_metadata_->model_path().Append(kAdapterCacheFile);
+  // TODO(crbug.com/461547475): GPU cache is experimental for now, remove
+  // once feature flag it's no longer needed.
+  if (base::FeatureList::IsEnabled(
+          on_device_model::features::kOnDeviceModelGpuCache) &&
+      backend_type == ml::ModelBackendType::kGpuBackend) {
+    // Program cache will be used for GPU backend only.
+    model_paths.program_cache =
+        model_metadata_->model_path().Append(kProgramCacheFile);
+  }
 
   return model_paths;
 }
@@ -483,17 +503,17 @@ void OnDeviceModelServiceController::BaseModelController::OnModelAssetsLoaded(
               "OnDeviceModelServiceController::BaseModelController::"
               "OnModelAssetsLoaded");
   auto params = on_device_model::mojom::LoadModelParams::New();
-  params->backend_type = ml::ModelBackendType::kGpuBackend;
   params->assets = std::move(assets);
   params->max_tokens = kOnDeviceModelMaxTokens;
   params->adaptation_ranks = supported_adaptation_ranks_;
 
   proto::OnDeviceModelPerformanceHint hint =
       model_metadata_->performance_hint();
-  if (hint == proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_CPU) {
-    params->backend_type = ml::ModelBackendType::kCpuBackend;
-  } else if (hint ==
-             proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_FASTEST_INFERENCE) {
+  params->backend_type = GetBackendType(hint);
+  // TODO(crbug.com/510448557): Currently CPU defaults to `kHighestQuality` mojo
+  // enum, which is mismatched from the proto performance hint CPU enum. The
+  // mojo enum definition should be updated to match.
+  if (hint == proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_FASTEST_INFERENCE) {
     params->performance_hint = ml::ModelPerformanceHint::kFastestInference;
   }
   controller_->service_client_->Get()->LoadModel(
