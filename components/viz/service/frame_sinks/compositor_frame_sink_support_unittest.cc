@@ -2407,6 +2407,30 @@ TEST_P(CompositorFrameSinkSupportTest,
   EXPECT_TRUE(props_with_frame->transform_to_root.IsIdentity());
 }
 
+#if BUILDFLAG(IS_ANDROID)
+TEST_P(CompositorFrameSinkSupportTest,
+       GetRequestRegionProperties_EntireTabOverriddenByAndroidViewport) {
+  const SurfaceId surface_id(support_->frame_sink_id(), local_surface_id_);
+  constexpr gfx::Rect kViewportRect{0, 0, 10, 10};
+
+  auto frame = CompositorFrameBuilder()
+                   .AddDefaultRenderPass()
+                   .SetReferencedSurfaces({SurfaceRange(surface_id)})
+                   .Build();
+  frame.metadata.visible_viewport_size = kViewportRect.size();
+
+  support_->SubmitCompositorFrame(local_surface_id_, std::move(frame));
+
+  // Passing in an empty sub-target triggers "Entire Tab Capture" logic.
+  const auto props =
+      support_->GetRequestRegionProperties(VideoCaptureSubTarget());
+
+  ASSERT_TRUE(props.has_value());
+  EXPECT_EQ(kViewportRect, props->render_pass_subrect);
+  EXPECT_EQ(kDefaultSize, props->root_render_pass_size);
+}
+#endif
+
 TEST_P(CompositorFrameSinkSupportTest,
        GetRequestRegionProperties_RenderPassWithSubtreeSize) {
   constexpr SubtreeCaptureId kSubtreeId(base::Token(0, 22u));

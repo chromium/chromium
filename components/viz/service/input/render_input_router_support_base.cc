@@ -107,7 +107,8 @@ gfx::Size RenderInputRouterSupportBase::GetVisibleViewportSize() {
   if (!metadata) {
     return gfx::Size();
   }
-  return metadata->visible_viewport_size;
+  return gfx::ScaleToFlooredSize(metadata->visible_viewport_size,
+                                 1 / metadata->device_scale_factor);
 }
 
 void RenderInputRouterSupportBase::OnAutoscrollStart() {

@@ -2302,8 +2302,7 @@ viz::CompositorFrameMetadata LayerTreeHostImpl::MakeCompositorFrameMetadata() {
     // Uses InnerViewportScrollNode's container bounds in since it represents
     // visual scroll layers.
     metadata.visible_viewport_size =
-        gfx::ScaleToFlooredSize(InnerViewportScrollNode()->container_bounds,
-                                1 / metadata.device_scale_factor);
+        InnerViewportScrollNode()->container_bounds;
   }
 
   metadata.root_background_color = active_tree_->background_color();

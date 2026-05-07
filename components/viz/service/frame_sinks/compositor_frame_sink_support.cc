@@ -1359,6 +1359,16 @@ CompositorFrameSinkSupport::GetRequestRegionProperties(
 
   // If we don't have a sub target, capture everything in the frame.
   if (IsEntireTabCapture(sub_target)) {
+#if BUILDFLAG(IS_ANDROID)
+    // On Android, the browser viewport includes the space used for browser
+    // controls so that scrolling can hide controls smoothly without the need to
+    // resize the viewport. However, for media capture scenarios (e.g. tab
+    // sharing), the desired capture area is just the web content viewport.
+    if (!frame.metadata.visible_viewport_size.IsEmpty()) {
+      out.render_pass_subrect = gfx::Rect(frame.metadata.visible_viewport_size);
+      return out;
+    }
+#endif
     out.render_pass_subrect = gfx::Rect(out.root_render_pass_size);
     return out;
   }

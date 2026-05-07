@@ -89,7 +89,7 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
 
   gfx::SizeF scrollable_viewport_size;
 
-  // The size of the viewport for the visible region in DIP.
+  // The size of the viewport for the visible region in pixels.
   gfx::Size visible_viewport_size;
 
   gfx::ContentColorUsage content_color_usage = gfx::ContentColorUsage::kSRGB;
