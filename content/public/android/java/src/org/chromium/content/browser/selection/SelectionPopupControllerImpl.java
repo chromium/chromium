@@ -17,6 +17,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.text.TextUtils;
 import android.view.ActionMode;
 import android.view.HapticFeedbackConstants;
@@ -199,6 +200,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     private boolean mUnselectAllOnDismiss;
     private String mLastSelectedText;
     private int mLastSelectionOffset;
+    private long mShowMenuStartTimeMs;
     private boolean mIsInHandleDragging;
 
     // Tracks whether a touch selection is currently active.
@@ -534,6 +536,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
             int sourceType,
             RenderFrameHost renderFrameHost,
             MenuModelBridge menuModelBridge) {
+        mShowMenuStartTimeMs = SystemClock.elapsedRealtime();
         mMenuModelBridge = menuModelBridge;
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.ShowSelectionMenuSourceType", sourceType, MenuSourceType.MAX_VALUE);
@@ -605,6 +608,16 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
                 createAndShowDropdownMenu();
                 break;
         }
+        if (mShowMenuStartTimeMs > 0) {
+            long duration = SystemClock.elapsedRealtime() - mShowMenuStartTimeMs;
+            recordShowMenuTime(duration);
+            mShowMenuStartTimeMs = 0;
+        }
+    }
+
+    private void recordShowMenuTime(long durationMs) {
+        RecordHistogram.recordCustomTimesHistogram(
+                "Android.SelectionMenu.TimeToShowMenu", durationMs, 1, 2000, 50);
     }
 
     /**
