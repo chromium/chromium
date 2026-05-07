@@ -58,6 +58,7 @@ public class TabModelOrchestrator {
     private @Nullable SettableMonotonicObservableSupplier<TabModelStartupInfo>
             mTabModelStartupInfoSupplier;
     private boolean mIgnoreIncognitoFiles;
+    private boolean mIgnoreRegularFiles;
     private int mStandardCount;
     private int mIncognitoCount;
     private int mStandardActiveIndex = TabModel.INVALID_TAB_INDEX;
@@ -174,19 +175,23 @@ public class TabModelOrchestrator {
      * tabs shall not be restored until {@link #restoreTabs} is called.
      *
      * @param ignoreIncognitoFiles Whether to skip loading incognito tabs.
+     * @param ignoreRegularFiles Whether to skip loading regular tabs.
      * @param onStandardActiveIndexRead The callback to be called when the active non-incognito Tab
      *     is found.
      */
     public void loadState(
-            boolean ignoreIncognitoFiles, @Nullable Callback<String> onStandardActiveIndexRead) {
+            boolean ignoreIncognitoFiles,
+            boolean ignoreRegularFiles,
+            @Nullable Callback<String> onStandardActiveIndexRead) {
         assertInitialized();
         mIgnoreIncognitoFiles = ignoreIncognitoFiles;
+        mIgnoreRegularFiles = ignoreRegularFiles;
         mOnStandardActiveIndexRead = onStandardActiveIndexRead;
 
         if (!mTabPersistentStoreDestroyedEarly) {
-            mTabPersistentStore.loadState(ignoreIncognitoFiles);
+            mTabPersistentStore.loadState(ignoreIncognitoFiles, ignoreRegularFiles);
             if (mShadowTabPersistentStore != null) {
-                mShadowTabPersistentStore.loadState(ignoreIncognitoFiles);
+                mShadowTabPersistentStore.loadState(ignoreIncognitoFiles, ignoreRegularFiles);
             }
         }
     }
@@ -215,6 +220,12 @@ public class TabModelOrchestrator {
             if (mIgnoreIncognitoFiles) {
                 mIncognitoCount = 0;
                 mIncognitoActiveIndex = TabModel.INVALID_TAB_INDEX;
+            }
+
+            // If we're going to cull the regular tabs, reset the startup state.
+            if (mIgnoreRegularFiles) {
+                mStandardCount = 0;
+                standardActiveIndex = TabModel.INVALID_TAB_INDEX;
             }
 
             // Account for tabs created on startup (e.g. through intents).

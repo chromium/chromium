@@ -488,21 +488,22 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
     }
 
     @VisibleForTesting
-    /* package */ void initializeRestoreVars(boolean ignoreIncognitoFiles) {
-        mCancelNormalTabLoads = false;
+    /* package */ void initializeRestoreVars(
+            boolean ignoreIncognitoFiles, boolean ignoreRegularFiles) {
+        mCancelNormalTabLoads = ignoreRegularFiles;
         mCancelIncognitoTabLoads = ignoreIncognitoFiles;
         mNormalTabsRestored = new SparseIntArray();
         mIncognitoTabsRestored = new SparseIntArray();
     }
 
     @Override
-    public void loadState(boolean ignoreIncognitoFiles) {
+    public void loadState(boolean ignoreIncognitoFiles, boolean ignoreRegularFiles) {
         // If a cleanup task is in progress, cancel it before loading state.
         mPersistencePolicy.cancelCleanupInProgress();
 
         waitForMigrationToFinish();
 
-        initializeRestoreVars(ignoreIncognitoFiles);
+        initializeRestoreVars(ignoreIncognitoFiles, ignoreRegularFiles);
 
         try {
             mTabRestoreStartTime = SystemClock.elapsedRealtime();
@@ -575,7 +576,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
         }
 
         // Initialize variables.
-        initializeRestoreVars(false);
+        initializeRestoreVars(mCancelIncognitoTabLoads, mCancelNormalTabLoads);
 
         try {
             // Read the tab state metadata file.
@@ -1023,6 +1024,11 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
         mLastSavedMetadata = listData;
     }
 
+    private boolean shouldCancelTabLoad(@Nullable Boolean isIncognito) {
+        return (mCancelIncognitoTabLoads && Boolean.TRUE.equals(isIncognito))
+                || (mCancelNormalTabLoads && Boolean.FALSE.equals(isIncognito));
+    }
+
     /**
      * @param isIncognitoSelected Whether the tab model is incognito.
      * @return A callback for reading data from tab models.
@@ -1035,7 +1041,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
                 @Nullable Boolean isIncognito,
                 boolean isStandardActiveIndex,
                 boolean isIncognitoActiveIndex) -> {
-            if (mCancelIncognitoTabLoads && (isIncognito != null && isIncognito)) {
+            if (shouldCancelTabLoad(isIncognito)) {
                 return;
             }
 

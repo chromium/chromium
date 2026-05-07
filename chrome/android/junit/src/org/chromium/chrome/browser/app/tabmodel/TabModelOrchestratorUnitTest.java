@@ -129,9 +129,75 @@ public class TabModelOrchestratorUnitTest {
     @Test
     @SmallTest
     @Feature({"TabStripPerformance"})
+    public void testTabModelStartupInfo_IgnoreRegular() {
+        mTabModelOrchestrator.loadState(
+                /* ignoreIncognitoFiles= */ false,
+                /* ignoreRegularFiles= */ true,
+                /* onStandardActiveIndexRead= */ null);
+        verify(mMockShadowPersistentStore)
+                .loadState(/* ignoreIncognitoFiles= */ false, /* ignoreRegularFiles= */ true);
+
+        // Send test tab model info.
+        int numIncognitoTabs = 2;
+        int numStandardTabs = 3;
+        int incognitoIndex = 1;
+        int standardIndex = 2;
+        boolean fromMerge = false;
+        readTabState(numStandardTabs, numIncognitoTabs, standardIndex, incognitoIndex, fromMerge);
+
+        // Verify that the {@link TabModelStartupInfo} is as expected.
+        TabModelStartupInfo startupInfo = mTabModelStartupInfoSupplier.get();
+
+        assertEquals("Unexpected standard tab count.", 0, startupInfo.standardCount);
+        assertEquals(
+                "Unexpected incognito tab count.", numIncognitoTabs, startupInfo.incognitoCount);
+        assertEquals(
+                "Unexpected standard active tab index.",
+                TabModel.INVALID_TAB_INDEX,
+                startupInfo.standardActiveIndex);
+        assertEquals(
+                "Unexpected incognito active tab index.",
+                incognitoIndex,
+                startupInfo.incognitoActiveIndex);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"TabStripPerformance"})
+    public void testTabModelStartupInfo_NoIgnoreRegular() {
+        mTabModelOrchestrator.loadState(
+                /* ignoreIncognitoFiles= */ false,
+                /* ignoreRegularFiles= */ false,
+                /* onStandardActiveIndexRead= */ null);
+        verify(mMockShadowPersistentStore)
+                .loadState(/* ignoreIncognitoFiles= */ false, /* ignoreRegularFiles= */ false);
+
+        // Send test tab model info.
+        int numIncognitoTabs = 2;
+        int numStandardTabs = 3;
+        int incognitoIndex = 1;
+        int standardIndex = 2; // Active standard tab is at index 2 (of [0, 1, 2])
+        boolean fromMerge = false;
+        readTabState(numStandardTabs, numIncognitoTabs, standardIndex, incognitoIndex, fromMerge);
+
+        // Verify that the {@link TabModelStartupInfo} is as expected.
+        TabModelStartupInfo startupInfo = mTabModelStartupInfoSupplier.get();
+
+        assertEquals("Unexpected standard tab count.", numStandardTabs, startupInfo.standardCount);
+        assertEquals(
+                "Unexpected incognito tab count.", numIncognitoTabs, startupInfo.incognitoCount);
+        assertEquals(
+                "Unexpected standard active tab index.",
+                standardIndex,
+                startupInfo.standardActiveIndex);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"TabStripPerformance"})
     public void testTabModelStartupInfo_IgnoreIncognito() {
-        mTabModelOrchestrator.loadState(true, null);
-        verify(mMockShadowPersistentStore).loadState(true);
+        mTabModelOrchestrator.loadState(true, false, null);
+        verify(mMockShadowPersistentStore).loadState(true, false);
 
         // Send test tab model info.
         int numIncognitoTabs = 2;

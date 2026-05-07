@@ -128,7 +128,8 @@ public class HeadlessTabModelOrchestrator implements Destroyable {
         mTabPersistentStore.onNativeLibraryReady();
         if (mShadowTabPersistentStore != null) mShadowTabPersistentStore.onNativeLibraryReady();
 
-        mTabPersistentStore.loadState(/* ignoreIncognitoFiles= */ false);
+        mTabPersistentStore.loadState(
+                /* ignoreIncognitoFiles= */ false, /* ignoreRegularFiles= */ false);
         mTabPersistentStore.restoreTabs(/* setActiveTab= */ true);
 
         TabGroupSyncService tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);

@@ -121,8 +121,9 @@ public interface TabPersistentStore {
      * will be restored into this instance.
      *
      * @param ignoreIncognitoFiles Whether to skip loading incognito tabs.
+     * @param ignoreRegularFiles Whether to skip loading regular tabs.
      */
-    void loadState(boolean ignoreIncognitoFiles);
+    void loadState(boolean ignoreIncognitoFiles, boolean ignoreRegularFiles);
 
     /**
      * Merge the tabs of the other Chrome instance into this instance by reading its tab metadata

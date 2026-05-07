@@ -205,7 +205,8 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
         ApplicationStatus.unregisterApplicationStateListener(sApplicationStateListener);
     }
 
-    private ArchivedTabModelOrchestrator(Profile profile) {
+    @VisibleForTesting
+    ArchivedTabModelOrchestrator(Profile profile) {
         mProfile = profile;
         mArchivedTabCreatorManager =
                 new TabCreatorManager() {
@@ -433,7 +434,10 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
         // This will be called from a deferred task which sets up the entire class, so therefore all
         // of the methods required for proper initialization need to be called here.
         onNativeLibraryReady(tabContentManager);
-        loadState(/* ignoreIncognitoFiles= */ true, /* onStandardActiveIndexRead= */ null);
+        loadState(
+                /* ignoreIncognitoFiles= */ true,
+                /* ignoreRegularFiles= */ false,
+                /* onStandardActiveIndexRead= */ null);
         restoreTabs(/* setActiveTab= */ false);
 
         mInitCalled = true;
@@ -601,11 +605,13 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
 
     @Override
     public void loadState(
-            boolean ignoreIncognitoFiles, @Nullable Callback<String> onStandardActiveIndexRead) {
+            boolean ignoreIncognitoFiles,
+            boolean ignoreRegularFiles,
+            @Nullable Callback<String> onStandardActiveIndexRead) {
         if (mLoadStateCalled) return;
         mLoadStateCalled = true;
         assert ignoreIncognitoFiles : "Must ignore incognito files for archived tabs.";
-        super.loadState(ignoreIncognitoFiles, onStandardActiveIndexRead);
+        super.loadState(ignoreIncognitoFiles, ignoreRegularFiles, onStandardActiveIndexRead);
     }
 
     @Override

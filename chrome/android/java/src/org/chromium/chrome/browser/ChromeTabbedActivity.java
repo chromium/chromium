@@ -2346,7 +2346,10 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                                 }
                             };
                 }
-                mTabModelOrchestrator.loadState(ignoreIncognitoFiles, onStandardActiveIndexRead);
+                mTabModelOrchestrator.loadState(
+                        ignoreIncognitoFiles,
+                        /* ignoreRegularFiles= */ false,
+                        onStandardActiveIndexRead);
             }
 
             getProfileProviderSupplier()

@@ -346,7 +346,8 @@ public class TabStateStoreUnitTest {
         mTabStateStore.onNativeLibraryReady();
         when(mCipherFactory.getKeyForTabStateStorage()).thenReturn(new byte[1]);
 
-        mTabStateStore.loadState(false);
+        mTabStateStore.loadState(
+                /* ignoreIncognitoFiles= */ false, /* ignoreRegularFiles= */ false);
 
         verify(mTabStateStorageService, times(2))
                 .loadAllData(eq(WINDOW_TAG), anyBoolean(), mCallbackCaptor.capture());
@@ -379,7 +380,8 @@ public class TabStateStoreUnitTest {
         when(mRegularData.getLoadedTabStates()).thenReturn(new LoadedTabState[] {loadedTabState});
 
         mTabStateStore.destroy();
-        mTabStateStore.loadState(false);
+        mTabStateStore.loadState(
+                /* ignoreIncognitoFiles= */ false, /* ignoreRegularFiles= */ false);
 
         verify(mTabStateStorageService, times(2))
                 .loadAllData(eq(WINDOW_TAG), anyBoolean(), mCallbackCaptor.capture());
@@ -395,7 +397,8 @@ public class TabStateStoreUnitTest {
     @Test
     public void testLoadStateFailure_Authoritative() {
         mTabStateStore.onNativeLibraryReady();
-        mTabStateStore.loadState(false);
+        mTabStateStore.loadState(
+                /* ignoreIncognitoFiles= */ false, /* ignoreRegularFiles= */ false);
 
         verify(mTabStateStorageService, times(2))
                 .loadAllData(eq(WINDOW_TAG), anyBoolean(), mCallbackCaptor.capture());
@@ -440,7 +443,8 @@ public class TabStateStoreUnitTest {
         mTabStateStore.addObserver(mObserver);
 
         mTabStateStore.onNativeLibraryReady();
-        mTabStateStore.loadState(false);
+        mTabStateStore.loadState(
+                /* ignoreIncognitoFiles= */ false, /* ignoreRegularFiles= */ false);
 
         verify(mTabStateStorageService, times(2))
                 .loadAllData(eq(WINDOW_TAG), anyBoolean(), mCallbackCaptor.capture());
@@ -491,7 +495,8 @@ public class TabStateStoreUnitTest {
     @Test
     public void testDestroy() {
         mTabStateStore.onNativeLibraryReady();
-        mTabStateStore.loadState(false);
+        mTabStateStore.loadState(
+                /* ignoreIncognitoFiles= */ false, /* ignoreRegularFiles= */ false);
 
         verify(mTabStateStorageService, times(2))
                 .loadAllData(eq(WINDOW_TAG), anyBoolean(), mCallbackCaptor.capture());
@@ -515,7 +520,8 @@ public class TabStateStoreUnitTest {
         mTabStateStore.onNativeLibraryReady();
         when(mCipherFactory.getKeyForTabStateStorage()).thenReturn(new byte[1]);
 
-        mTabStateStore.loadState(false);
+        mTabStateStore.loadState(
+                /* ignoreIncognitoFiles= */ false, /* ignoreRegularFiles= */ false);
 
         verify(mTabCountTracker).getRestoredTabCount(false);
         verify(mTabCountTracker).getRestoredTabCount(true);
@@ -526,7 +532,7 @@ public class TabStateStoreUnitTest {
         mTabStateStore.onNativeLibraryReady();
         when(mCipherFactory.getKeyForTabStateStorage()).thenReturn(new byte[1]);
 
-        mTabStateStore.loadState(true);
+        mTabStateStore.loadState(/* ignoreIncognitoFiles= */ true, /* ignoreRegularFiles= */ false);
 
         verify(mTabCountTracker).getRestoredTabCount(false);
         verify(mTabCountTracker, never()).getRestoredTabCount(true);
@@ -543,7 +549,8 @@ public class TabStateStoreUnitTest {
                 mTabStateStorageService,
                 mTabCountTracker);
 
-        mTabStateStore.loadState(false);
+        mTabStateStore.loadState(
+                /* ignoreIncognitoFiles= */ false, /* ignoreRegularFiles= */ false);
 
         verify(mTabStateStorageService, times(2))
                 .loadAllData(eq(WINDOW_TAG), anyBoolean(), mCallbackCaptor.capture());
@@ -599,7 +606,8 @@ public class TabStateStoreUnitTest {
                 mTabStateStorageService,
                 mTabCountTracker);
 
-        mTabStateStore.loadState(false);
+        mTabStateStore.loadState(
+                /* ignoreIncognitoFiles= */ false, /* ignoreRegularFiles= */ false);
 
         verify(mTabStateStorageService, times(2))
                 .loadAllData(eq(WINDOW_TAG), anyBoolean(), mCallbackCaptor.capture());
@@ -669,11 +677,39 @@ public class TabStateStoreUnitTest {
     }
 
     @Test
+    public void testLoadState_IgnoreRegular() {
+        mTabStateStore.onNativeLibraryReady();
+        when(mCipherFactory.getKeyForTabStateStorage()).thenReturn(new byte[1]);
+
+        mTabStateStore.loadState(/* ignoreIncognitoFiles= */ false, /* ignoreRegularFiles= */ true);
+
+        verify(mTabStateStorageService, never()).loadAllData(eq(WINDOW_TAG), eq(false), any());
+        verify(mTabStateStorageService).loadAllData(eq(WINDOW_TAG), eq(true), any());
+        verify(mTabCountTracker).clearTabCount(false);
+        verify(mActiveTabCache).clearActiveTab(false);
+        verify(mTabStateStorageService).clearUnusedNodesForWindow(WINDOW_TAG, false, null);
+    }
+
+    @Test
+    public void testLoadState_NoIgnoreRegular() {
+        mTabStateStore.onNativeLibraryReady();
+        when(mCipherFactory.getKeyForTabStateStorage()).thenReturn(new byte[1]);
+
+        mTabStateStore.loadState(
+                /* ignoreIncognitoFiles= */ false, /* ignoreRegularFiles= */ false);
+
+        verify(mTabStateStorageService).loadAllData(eq(WINDOW_TAG), eq(false), any());
+        verify(mTabStateStorageService).loadAllData(eq(WINDOW_TAG), eq(true), any());
+        verify(mTabCountTracker, never()).clearTabCount(false);
+        verify(mActiveTabCache, never()).clearActiveTab(false);
+    }
+
+    @Test
     public void testLoadState_IgnoreIncognito() {
         mTabStateStore.onNativeLibraryReady();
         when(mCipherFactory.getKeyForTabStateStorage()).thenReturn(new byte[1]);
 
-        mTabStateStore.loadState(true);
+        mTabStateStore.loadState(/* ignoreIncognitoFiles= */ true, /* ignoreRegularFiles= */ false);
 
         verify(mModelTrackingOrchestrator).setLoadIncognitoTabsOnStart(false);
         verify(mTabStateStorageService).loadAllData(eq(WINDOW_TAG), eq(false), any());
@@ -688,7 +724,8 @@ public class TabStateStoreUnitTest {
         mTabStateStore.onNativeLibraryReady();
         when(mCipherFactory.getKeyForTabStateStorage()).thenReturn(new byte[1]);
 
-        mTabStateStore.loadState(false);
+        mTabStateStore.loadState(
+                /* ignoreIncognitoFiles= */ false, /* ignoreRegularFiles= */ false);
 
         verify(mModelTrackingOrchestrator).setLoadIncognitoTabsOnStart(true);
         verify(mTabStateStorageService).loadAllData(eq(WINDOW_TAG), eq(false), any());
@@ -716,7 +753,8 @@ public class TabStateStoreUnitTest {
         noCipherTabStateStore.addObserver(mObserver);
         noCipherTabStateStore.onNativeLibraryReady();
 
-        noCipherTabStateStore.loadState(false);
+        noCipherTabStateStore.loadState(
+                /* ignoreIncognitoFiles= */ false, /* ignoreRegularFiles= */ false);
 
         // Incognito data should not be loaded.
         verify(mModelTrackingOrchestrator).setLoadIncognitoTabsOnStart(false);

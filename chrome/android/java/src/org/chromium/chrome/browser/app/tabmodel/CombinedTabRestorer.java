@@ -70,7 +70,7 @@ class CombinedTabRestorer {
     }
 
     private final TabRestorerDelegate mDelegate;
-    private final TabRestorer mRegularTabRestorer;
+    private final @Nullable TabRestorer mRegularTabRestorer;
     private final @Nullable TabRestorer mIncognitoTabRestorer;
     private final long mLoadStartTime;
 
@@ -123,10 +123,15 @@ class CombinedTabRestorer {
         private int mRestoredTabCount;
 
         TabRestorerDelegateImpl(
-                CombinedTabRestorerDelegate delegate, boolean restoreIncognitoTabs) {
+                CombinedTabRestorerDelegate delegate,
+                boolean restoreIncognitoTabs,
+                boolean restoreRegularTabs) {
             mOrchestratorDelegate = delegate;
             if (!restoreIncognitoTabs) {
                 mIncognitoState.setAll();
+            }
+            if (!restoreRegularTabs) {
+                mRegularState.setAll();
             }
         }
 
@@ -205,12 +210,9 @@ class CombinedTabRestorer {
             }
 
             if (mRegularState.isFinishedOrCancelled()) {
-                assert !mIncognitoState.isFinishedOrCancelled();
-                assumeNonNull(mIncognitoTabRestorer);
-                mIncognitoTabRestorer.start(/* restoreActiveTabImmediately= */ false);
+                startRemainingRestorer(mIncognitoState, mIncognitoTabRestorer);
             } else if (mIncognitoState.isFinishedOrCancelled()) {
-                assert !mRegularState.isFinishedOrCancelled();
-                mRegularTabRestorer.start(/* restoreActiveTabImmediately= */ false);
+                startRemainingRestorer(mRegularState, mRegularTabRestorer);
             } else {
                 assert false : "Not reached.";
             }
@@ -219,6 +221,7 @@ class CombinedTabRestorer {
 
     /**
      * @param restoreIncognitoTabs Whether to restore incognito tabs.
+     * @param restoreRegularTabs Whether to restore regular tabs.
      * @param delegate The delegate to be notified of events from the tab restorers.
      * @param tabCreatorManager The tab creator manager to create the tabs.
      * @param batchFactory The factory to create scoped storage batches.
@@ -228,21 +231,24 @@ class CombinedTabRestorer {
      */
     CombinedTabRestorer(
             boolean restoreIncognitoTabs,
+            boolean restoreRegularTabs,
             CombinedTabRestorerDelegate delegate,
             TabCreatorManager tabCreatorManager,
             Supplier<ScopedStorageBatch> batchFactory,
             TabModelSelector tabModelSelector,
             boolean logRestoreDuration,
             boolean isFromRecreating) {
-        mDelegate = new TabRestorerDelegateImpl(delegate, restoreIncognitoTabs);
+        mDelegate = new TabRestorerDelegateImpl(delegate, restoreIncognitoTabs, restoreRegularTabs);
         mRegularTabRestorer =
-                new TabRestorer(
-                        /* incognito= */ false,
-                        mDelegate,
-                        tabCreatorManager.getTabCreator(/* incognito= */ false),
-                        batchFactory,
-                        tabModelSelector,
-                        isFromRecreating);
+                restoreRegularTabs
+                        ? new TabRestorer(
+                                /* incognito= */ false,
+                                mDelegate,
+                                tabCreatorManager.getTabCreator(/* incognito= */ false),
+                                batchFactory,
+                                tabModelSelector,
+                                isFromRecreating)
+                        : null;
         mIncognitoTabRestorer =
                 restoreIncognitoTabs
                         ? new TabRestorer(
@@ -266,7 +272,7 @@ class CombinedTabRestorer {
         if (incognito) {
             assumeNonNull(mIncognitoTabRestorer).onCachedActiveTabLoaded(tab);
         } else {
-            mRegularTabRestorer.onCachedActiveTabLoaded(tab);
+            assumeNonNull(mRegularTabRestorer).onCachedActiveTabLoaded(tab);
         }
     }
 
@@ -278,10 +284,9 @@ class CombinedTabRestorer {
      */
     void onDataLoaded(StorageLoadedData data, boolean incognito) {
         if (incognito) {
-            assumeNonNull(mIncognitoTabRestorer);
-            mIncognitoTabRestorer.onDataLoaded(data);
+            assumeNonNull(mIncognitoTabRestorer).onDataLoaded(data);
         } else {
-            mRegularTabRestorer.onDataLoaded(data);
+            assumeNonNull(mRegularTabRestorer).onDataLoaded(data);
         }
     }
 
@@ -298,14 +303,16 @@ class CombinedTabRestorer {
     void start(boolean isIncognitoSelected, boolean restoreActiveTabImmediately) {
         if (isIncognitoSelected && mIncognitoTabRestorer != null) {
             mIncognitoTabRestorer.start(restoreActiveTabImmediately);
-        } else {
+        } else if (mRegularTabRestorer != null) {
             mRegularTabRestorer.start(restoreActiveTabImmediately);
         }
     }
 
     /** Cancels the restoration of both the regular and incognito tab restorers. */
     void cancel() {
-        mRegularTabRestorer.cancel();
+        if (mRegularTabRestorer != null) {
+            mRegularTabRestorer.cancel();
+        }
         if (mIncognitoTabRestorer != null) {
             mIncognitoTabRestorer.cancel();
         }
@@ -318,7 +325,7 @@ class CombinedTabRestorer {
      */
     void cancelLoadingTabs(boolean incognito) {
         if (!incognito) {
-            mRegularTabRestorer.cancel();
+            if (mRegularTabRestorer != null) mRegularTabRestorer.cancel();
         } else if (mIncognitoTabRestorer != null) {
             mIncognitoTabRestorer.cancel();
         }
@@ -330,7 +337,8 @@ class CombinedTabRestorer {
      * @param url The URL to restore the tab state for.
      */
     void restoreTabStateForUrl(String url) {
-        boolean success = mRegularTabRestorer.restoreTabStateForUrl(url);
+        boolean success =
+                mRegularTabRestorer != null && mRegularTabRestorer.restoreTabStateForUrl(url);
         if (!success && mIncognitoTabRestorer != null) {
             mIncognitoTabRestorer.restoreTabStateForUrl(url);
         }
@@ -342,9 +350,19 @@ class CombinedTabRestorer {
      * @param tabId The tab ID to restore the tab state for.
      */
     void restoreTabStateForId(@TabId int tabId) {
-        boolean success = mRegularTabRestorer.restoreTabStateForId(tabId);
+        boolean success =
+                mRegularTabRestorer != null && mRegularTabRestorer.restoreTabStateForId(tabId);
         if (!success && mIncognitoTabRestorer != null) {
             mIncognitoTabRestorer.restoreTabStateForId(tabId);
+        }
+    }
+
+    private void startRemainingRestorer(
+            RestoreState remainingState, @Nullable TabRestorer remainingRestorer) {
+        assert !remainingState.isFinishedOrCancelled();
+
+        if (remainingRestorer != null) {
+            remainingRestorer.start(/* restoreActiveTabImmediately= */ false);
         }
     }
 }

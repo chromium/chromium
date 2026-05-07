@@ -464,6 +464,8 @@ if (is_android) {
       "src/org/chromium/chrome/browser/app/tab_activity_glue/PopupCreatorImplUnitTest.java",
       "src/org/chromium/chrome/browser/app/tab_activity_glue/ReparentingTaskUnitTest.java",
       "src/org/chromium/chrome/browser/app/tab_activity_glue/TabReparentingControllerTest.java",
+      "src/org/chromium/chrome/browser/app/tabmodel/ArchivedTabModelOrchestratorUnitTest.java",
+      "src/org/chromium/chrome/browser/app/tabmodel/CombinedTabRestorerUnitTest.java",
       "src/org/chromium/chrome/browser/app/tabmodel/PersistentStoreCleanerUnitTest.java",
       "src/org/chromium/chrome/browser/app/tabmodel/PersistentStoreMigrationManagerImplUnitTest.java",
       "src/org/chromium/chrome/browser/app/tabmodel/TabCountTrackerUnitTest.java",

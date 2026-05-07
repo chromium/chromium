@@ -411,7 +411,8 @@ public class CustomTabActivityTabController implements PauseResumeWithNativeObse
         boolean hadCipherData = mCipherFactory.restoreFromBundle(mSavedInstanceStateSupplier.get());
         if (!hadCipherData && mIntentDataProvider.isOffTheRecord()) return null;
 
-        tabModelOrchestrator.loadState(/* ignoreIncognitoFiles= */ false, null);
+        tabModelOrchestrator.loadState(
+                /* ignoreIncognitoFiles= */ false, /* ignoreRegularFiles= */ false, null);
         tabModelOrchestrator.restoreTabs(true);
         Tab tab = tabModelOrchestrator.getCurrentTab();
         if (tab != null) {

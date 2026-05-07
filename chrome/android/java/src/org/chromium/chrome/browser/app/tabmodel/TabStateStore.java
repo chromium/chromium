@@ -277,7 +277,7 @@ public class TabStateStore implements TabPersistentStore {
     }
 
     @Override
-    public void loadState(boolean ignoreIncognitoFiles) {
+    public void loadState(boolean ignoreIncognitoFiles, boolean ignoreRegularFiles) {
         assertInitialized();
 
         ignoreIncognitoFiles |= !mHasCipherFactory;
@@ -292,6 +292,7 @@ public class TabStateStore implements TabPersistentStore {
         mCombinedTabRestorer =
                 new CombinedTabRestorer(
                         !ignoreIncognitoFiles,
+                        !ignoreRegularFiles,
                         mCombinedTabRestorerDelegate,
                         mTabCreatorManager,
                         mTabStateStorageService::createBatch,
@@ -305,16 +306,17 @@ public class TabStateStore implements TabPersistentStore {
                         : new boolean[] {false, true};
         for (boolean incognito : restoreOrder) {
             if (incognito && ignoreIncognitoFiles) continue;
+            if (!incognito && ignoreRegularFiles) continue;
             loadCachedActiveTab(incognito);
             mTabStateStorageService.loadAllData(
                     mWindowTag, incognito, data -> onDataLoaded(data, incognito));
         }
 
         if (ignoreIncognitoFiles) {
-            mTabCountTracker.clearTabCount(/* incognito= */ true);
-            mTabStateStorageService.clearUnusedNodesForWindow(
-                    mWindowTag, /* isOffTheRecord= */ true, /* tabStripCollection= */ null);
-            mActiveTabCache.clearActiveTab(/* incognito= */ true);
+            clearStateForWindow(/* incognito= */ true);
+        }
+        if (ignoreRegularFiles) {
+            clearStateForWindow(/* incognito= */ false);
         }
     }
 
@@ -353,6 +355,7 @@ public class TabStateStore implements TabPersistentStore {
         mMergeCombinedTabRestorer =
                 new CombinedTabRestorer(
                         /* restoreIncognitoTabs= */ true,
+                        /* restoreRegularTabs= */ true,
                         delegate,
                         mTabCreatorManager,
                         mTabStateStorageService::createBatch,
@@ -705,6 +708,14 @@ public class TabStateStore implements TabPersistentStore {
         if (!mModelTrackingManager.isSynchronizerPresent(incognito)) return;
         int tabCountForModel = mTabModelSelector.getModel(incognito).getCount();
         mTabCountTracker.updateTabCount(incognito, tabCountForModel);
+    }
+
+    private void clearStateForWindow(boolean incognito) {
+        assertInitialized();
+        mTabCountTracker.clearTabCount(incognito);
+        mTabStateStorageService.clearUnusedNodesForWindow(
+            mWindowTag, incognito, /* tabStripCollection= */ null);
+        mActiveTabCache.clearActiveTab(incognito);
     }
 
     /**
