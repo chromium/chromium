@@ -2465,6 +2465,25 @@ _BANNED_MOJOM_PATTERNS: Sequence[BanRule] = (
     ),
 )
 
+_BANNED_GN_PATTERNS: Sequence[BanRule] = (BanRule(
+    pattern=r'/(?i)is_desktop_android',
+    explanation=(
+        'Usage of IS_DESKTOP_ANDROID build flag ',
+        'is discouraged. Use system affordances to determine feature ',
+        'availablility. Refer to https://chromium.googlesource.com/chromium/src/+/HEAD/docs/ui/android/device_form_factor.md for guidelines. ',
+        'To request an exception, file a bug at ',
+        'https://b.corp.google.com/issues/new?component=1753515&template=2172655',
+        'Once approved, use centralized util DeviceInfo.isDesktop() ',
+        'instead of direct build flag or PackageManager.FEATURE_PC checks. ',
+        'Allowances may be granted to only the directories below: ',
+        '[build/, chrome/, components/, extensions/, infra/, tools/] ',
+        'Note: in particular we need to avoid components shared with ',
+        'WebView.',
+    ),
+    treat_as_error=False,
+    surface_as_gerrit_lint=True,
+), )
+
 _IPC_ENUM_TRAITS_DEPRECATED = (
     'You are using IPC_ENUM_TRAITS() in your code. It has been deprecated.\n'
     'See http://www.chromium.org/Home/chromium-security/education/'
@@ -3232,6 +3251,12 @@ def CheckNoBannedPatterns(input_api, output_api):
     for f in input_api.AffectedFiles(file_filter=file_filter):
         for line_num, line in f.ChangedContents():
             for ban_rule in _BANNED_MOJOM_PATTERNS:
+                CheckForMatch(f, line_num, line, ban_rule)
+
+    file_filter = lambda f: f.LocalPath().endswith(('.gn', '.gni'))
+    for f in input_api.AffectedFiles(file_filter=file_filter):
+        for line_num, line in f.ChangedContents():
+            for ban_rule in _BANNED_GN_PATTERNS:
                 CheckForMatch(f, line_num, line, ban_rule)
 
     return results

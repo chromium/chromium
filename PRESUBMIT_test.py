@@ -3033,6 +3033,26 @@ class BannedTypeCheckTest(unittest.TestCase):
         self.assertIn('content/java/problematic/desktopandroid2.java',
                       errors[13].message)
 
+    def testBannedGnPatterns(self):
+        input_api = MockInputApi()
+        input_api.files = [
+            MockFile('some/path/BUILD.gn', ['if (IS_DESKTOP_ANDROID) {']),
+            MockFile('some/path/config.gni',
+                     ['is_desktop = IS_DESKTOP_ANDROID']),
+            MockFile('some/path/ok.gn', ['# A comment with no flag']),
+            MockFile('some/path/BUILD_lower.gn',
+                     ['if (is_desktop_android) {']),
+        ]
+
+        results = PRESUBMIT.CheckNoBannedPatterns(input_api, MockOutputApi())
+
+        self.assertEqual(3, len(results))
+        self.assertIn('some/path/BUILD.gn', results[0].message)
+        self.assertIn('some/path/config.gni', results[1].message)
+        self.assertIn('some/path/BUILD_lower.gn', results[2].message)
+        self.assertTrue(
+            all('some/path/ok.gn' not in r.message for r in results))
+
     def testBannedCppFunctions(self):
         input_api = MockInputApi()
         input_api.files = [
