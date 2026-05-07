@@ -68,23 +68,3 @@ crbug.com/460799715 [ mac x86_64 ] external/wpt/ai/summarizer/summarizer-summari
 crbug.com/460799715 [ mac x86_64 ] external/wpt/ai/writer/writer-abort.tentative.https.window.html [ Timeout Pass ]
 crbug.com/460799715 [ mac x86_64 ] external/wpt/ai/writer/writer-create-available.tentative.https.window.html [ Timeout Pass ]
 crbug.com/460799715 [ mac x86_64 ] external/wpt/ai/writer/writer-write-streaming.tentative.https.window.html [ Timeout Pass ]
-
-### virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/
-crbug.com/505425447 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/cast.https.any.html?gpu [ Failure Crash ]
-crbug.com/505425447 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/conv_transpose2d.https.any.html?gpu [ Failure Crash ]
-crbug.com/489522225 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/dequantizeLinear.https.any.html?gpu [ Failure Crash ]
-crbug.com/505425447 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/l2Pool2d.https.any.html?gpu [ Failure Crash ]
-crbug.com/505425447 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/leaky_relu.https.any.html?gpu [ Failure Crash ]
-crbug.com/505425447 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/logical_and.https.any.html?gpu [ Failure Crash ]
-crbug.com/505425447 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/logical_not.https.any.html?gpu [ Failure Crash ]
-crbug.com/505425447 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/logical_or.https.any.html?gpu [ Failure Crash ]
-crbug.com/505425447 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/logical_xor.https.any.html?gpu [ Failure Crash ]
-crbug.com/505425447 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/lstm_cell.https.any.html?gpu [ Failure Crash ]
-crbug.com/505425447 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/maxPool2d.https.any.html?gpu [ Failure Crash ]
-crbug.com/489392110 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/quantizeLinear.https.any.html?gpu [ Failure Crash ]
-crbug.com/505425447 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/reduce_log_sum_exp.https.any.html?gpu [ Failure Crash ]
-crbug.com/505425447 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/relu.https.any.html?gpu [ Failure Crash ]
-crbug.com/505425447 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/where.https.any.html?gpu [ Failure Crash ]
-
-### virtual/webnn-service-with-gpu/external/wpt/webnn/validation_tests/
-crbug.com/505425447 virtual/webnn-service-with-gpu/external/wpt/webnn/validation_tests/pooling.https.any.html?gpu [ Failure Crash ]
