@@ -116,7 +116,6 @@ static_library("main_parts") {
     "//chrome/common:non_code_constants",
     "//chromeos/ash/components/attestation",
     "//chromeos/ash/components/audio",
-    "//chromeos/ash/components/audio/public/cpp/sounds",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/carrier_lock",
     "//chromeos/ash/components/cryptohome",

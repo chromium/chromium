@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/audio/public/cpp/sounds/audio_stream_handler.h"
+#include "services/audio/public/cpp/sounds/audio_stream_handler.h"
 
 #include <memory>
 #include <string_view>
@@ -17,7 +17,6 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
-#include "chromeos/ash/components/audio/public/cpp/sounds/test_data.h"
 #include "media/audio/audio_io.h"
 #include "media/audio/simple_sources.h"
 #include "media/audio/test_audio_thread.h"
@@ -26,6 +25,7 @@
 #include "media/base/test_data_util.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/audio/public/cpp/output_device.h"
+#include "services/audio/public/cpp/sounds/test_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace audio {

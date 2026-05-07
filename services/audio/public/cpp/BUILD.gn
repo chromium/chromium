@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
+
 component("cpp") {
   sources = [
     "audio_system_to_service_adapter.cc",
@@ -17,6 +19,15 @@ component("cpp") {
     "output_device.cc",
     "output_device.h",
   ]
+
+  if (is_win || is_mac || is_linux || is_chromeos_ash) {
+    sources += [
+      "sounds/audio_stream_handler.cc",
+      "sounds/audio_stream_handler.h",
+      "sounds/sounds_manager.cc",
+      "sounds/sounds_manager.h",
+    ]
+  }
 
   defines = [ "IS_AUDIO_PUBLIC_CPP_IMPL" ]
 
@@ -41,6 +52,13 @@ source_set("test_support") {
     "fake_system_info.cc",
     "fake_system_info.h",
   ]
+
+  if (is_win || is_mac || is_linux || is_chromeos_ash) {
+    sources += [
+      "sounds/test_data.cc",
+      "sounds/test_data.h",
+    ]
+  }
 
   public_deps = [
     ":cpp",

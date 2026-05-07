@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ASH_COMPONENTS_AUDIO_PUBLIC_CPP_SOUNDS_AUDIO_STREAM_HANDLER_H_
-#define CHROMEOS_ASH_COMPONENTS_AUDIO_PUBLIC_CPP_SOUNDS_AUDIO_STREAM_HANDLER_H_
+#ifndef SERVICES_AUDIO_PUBLIC_CPP_SOUNDS_AUDIO_STREAM_HANDLER_H_
+#define SERVICES_AUDIO_PUBLIC_CPP_SOUNDS_AUDIO_STREAM_HANDLER_H_
 
 #include <string_view>
 
@@ -12,18 +12,17 @@
 #include "base/sequence_checker.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
-#include "chromeos/ash/components/audio/public/cpp/sounds/sounds_manager.h"
 #include "media/audio/audio_io.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_renderer_sink.h"
 #include "media/base/media_export.h"
+#include "services/audio/public/cpp/sounds/sounds_manager.h"
 
 namespace audio {
 
 // This class sends a sound to the audio output device.
-class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO_PUBLIC_CPP_SOUNDS)
-    AudioStreamHandler {
+class COMPONENT_EXPORT(AUDIO_PUBLIC_CPP) AudioStreamHandler {
  public:
   class TestObserver {
    public:
@@ -85,4 +84,4 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO_PUBLIC_CPP_SOUNDS)
 
 }  // namespace audio
 
-#endif  // CHROMEOS_ASH_COMPONENTS_AUDIO_PUBLIC_CPP_SOUNDS_AUDIO_STREAM_HANDLER_H_
+#endif  // SERVICES_AUDIO_PUBLIC_CPP_SOUNDS_AUDIO_STREAM_HANDLER_H_

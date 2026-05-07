@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_ASH_COMPONENTS_AUDIO_PUBLIC_CPP_SOUNDS_SOUNDS_MANAGER_H_
-#define CHROMEOS_ASH_COMPONENTS_AUDIO_PUBLIC_CPP_SOUNDS_SOUNDS_MANAGER_H_
+#ifndef SERVICES_AUDIO_PUBLIC_CPP_SOUNDS_SOUNDS_MANAGER_H_
+#define SERVICES_AUDIO_PUBLIC_CPP_SOUNDS_SOUNDS_MANAGER_H_
 
 #include <string_view>
 
@@ -20,8 +20,7 @@ namespace audio {
 
 // This class is used for reproduction of system sounds. All methods
 // should be accessed from the Audio thread.
-class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO_PUBLIC_CPP_SOUNDS)
-    SoundsManager {
+class COMPONENT_EXPORT(AUDIO_PUBLIC_CPP) SoundsManager {
  public:
   typedef int SoundKey;
 
@@ -73,4 +72,4 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO_PUBLIC_CPP_SOUNDS)
 
 }  // namespace audio
 
-#endif  // CHROMEOS_ASH_COMPONENTS_AUDIO_PUBLIC_CPP_SOUNDS_SOUNDS_MANAGER_H_
+#endif  // SERVICES_AUDIO_PUBLIC_CPP_SOUNDS_SOUNDS_MANAGER_H_

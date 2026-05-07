@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/audio/public/cpp/sounds/sounds_manager.h"
+#include "services/audio/public/cpp/sounds/sounds_manager.h"
 
 #include <memory>
 #include <string_view>
@@ -11,8 +11,8 @@
 
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
-#include "chromeos/ash/components/audio/public/cpp/sounds/audio_stream_handler.h"
 #include "media/base/audio_codecs.h"
+#include "services/audio/public/cpp/sounds/audio_stream_handler.h"
 
 namespace audio {
 
