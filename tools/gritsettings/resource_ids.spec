@@ -596,6 +596,10 @@
     "META": {"sizes": {"includes": [5]}},
     "includes": [4360],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/multistep_filter_internals/resources.grd": {
+    "META": {"sizes": {"includes": [10]}},
+    "includes": [4370],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/net_internals/resources.grd": {
     "META": {"sizes": {"includes": [20]}},
     "includes": [4380],

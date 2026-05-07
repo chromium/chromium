@@ -768,6 +768,7 @@ chromium-metrics-reviews@google.com.
   <int value="-1169621742" label="chrome://linux-proxy-config/"/>
   <int value="-1147478891" label="chrome-untrusted://sample-system-web-app/"/>
   <int value="-1137946367" label="chrome://webrt-logs/"/>
+  <int value="-1124468987" label="chrome://multistep-filter-internals/"/>
   <int value="-1108319739" label="chrome://sync-internals/"/>
   <int value="-1087461470" label="chrome://management/"/>
   <int value="-1084687099" label="chrome://newtab-footer/"/>

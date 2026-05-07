@@ -55,6 +55,8 @@
 #include "chrome/browser/ui/webui/infobar_internals/infobar_internals.mojom.h"
 #include "chrome/browser/ui/webui/infobar_internals/infobar_internals_ui.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
+#include "chrome/browser/ui/webui/multistep_filter_internals/multistep_filter_internals.mojom.h"
+#include "chrome/browser/ui/webui/multistep_filter_internals/multistep_filter_internals_ui.h"
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_footer/new_tab_footer_ui.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom.h"
@@ -112,6 +114,7 @@
 #include "components/guest_contents/common/guest_contents.mojom.h"
 #include "components/history_clusters/core/history_clusters_service.h"
 #include "components/lens/lens_features.h"
+#include "components/multistep_filter/core/features.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -525,6 +528,11 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
 
   RegisterWebUIControllerInterfaceBinder<::mojom::WebAppInternalsHandler,
                                          WebAppInternalsUI>(map);
+  if (base::FeatureList::IsEnabled(multistep_filter::kMultistepFilter)) {
+    RegisterWebUIControllerInterfaceBinder<
+        multistep_filter_internals::mojom::PageHandlerFactory,
+        multistep_filter_internals::MultistepFilterInternalsUI>(map);
+  }
   if (base::FeatureList::IsEnabled(
           optimization_guide::features::kOptimizationGuideOnDeviceModel)) {
     RegisterWebUIControllerInterfaceBinder<

@@ -16,26 +16,42 @@ source_set("multistep_filter_internals") {
   sources = [
     "multistep_filter_internals_page_handler.cc",
     "multistep_filter_internals_page_handler.h",
+    "multistep_filter_internals_ui.cc",
+    "multistep_filter_internals_ui.h",
   ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/multistep_filter_internals:resources",
+    "//chrome/common",
+    "//content/public/browser",
+    "//ui/webui",
+  ]
 
   public_deps = [
     ":mojo_bindings",
+    "//chrome/browser/multistep_filter/core",
     "//components/multistep_filter/core",
+    "//components/multistep_filter/core:features",
     "//components/multistep_filter/core/logging",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "multistep_filter_internals_page_handler_unittest.cc" ]
+  sources = [
+    "multistep_filter_internals_page_handler_unittest.cc",
+    "multistep_filter_internals_ui_unittest.cc",
+  ]
 
   deps = [
     ":multistep_filter_internals",
     "//base/test:test_support",
+    "//chrome/test:test_support",
     "//components/multistep_filter/core",
     "//components/multistep_filter/core/logging",
+    "//content/test:test_support",
     "//mojo/public/cpp/bindings",
     "//testing/gmock",
     "//testing/gtest",

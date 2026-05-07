@@ -70,6 +70,7 @@ ts_library("build_ts") {
     "//chrome/browser/resources/lens/shared:build_ts",
     "//chrome/browser/resources/management:build_ts",
     "//chrome/browser/resources/media_router/cast_feedback:build_ts",
+    "//chrome/browser/resources/multistep_filter_internals:build_ts",
     "//chrome/browser/resources/new_tab_footer:build_ts",
     "//chrome/browser/resources/new_tab_page:build_ts",
     "//chrome/browser/resources/new_tab_shared:build_ts",

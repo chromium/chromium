@@ -109,6 +109,7 @@ base::span<const std::string_view> GetChromeUrlsForTest() {
       "chrome://media-internals",
       "chrome://media-router-internals",
       "chrome://metrics-internals",
+      "chrome://multistep-filter-internals",
       "chrome://net-export",
       "chrome://net-internals",
       "chrome://network-errors",

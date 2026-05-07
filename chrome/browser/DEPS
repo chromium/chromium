@@ -212,6 +212,7 @@ include_rules = [
   "+components/history_embeddings/content",
   "+components/history_embeddings/core",
   "+components/manta",
+  "+components/multistep_filter/core",
   "+components/media_effects",
   "+components/memory_pressure",
   "+components/memory_system",
