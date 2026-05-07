@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/layout/layout_box_utils.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/logical_fragment.h"
@@ -152,17 +153,13 @@ class OOFCandidateStyleIterator {
       return GetStyle();
     }
     const ComputedStyle& base_style = GetBaseStyle();
-    if (&base_style != &GetStyle()) {
-      element_->GetLayoutObject()->SetStyle(
-          &base_style, LayoutObject::ApplyStyleChanges::kNo);
-    }
+    ActivateStyle(base_style);
     return base_style;
   }
 
   const ComputedStyle& ActivateStyleForChosenFallback() {
     const ComputedStyle& style = GetStyle();
-    element_->GetLayoutObject()->SetStyle(&style,
-                                          LayoutObject::ApplyStyleChanges::kNo);
+    ActivateStyle(style);
     return style;
   }
 
@@ -337,11 +334,25 @@ class OOFCandidateStyleIterator {
             .UpdateStyleAndLayoutTreeForOutOfFlow(
                 *element_, fallback, &anchor_evaluator_,
                 container_writing_direction_)) {
-      CHECK(element_->GetLayoutObject());
+      LayoutObject* layout_object = element_->GetLayoutObject();
+      CHECK(layout_object);
       // Returns LayoutObject ComputedStyle instead of element style for layout
       // purposes. The style may be different, in particular for body -> html
       // propagation of writing modes.
-      style_ = element_->GetLayoutObject()->Style();
+      style_ = &layout_object->StyleRef();
+      layout_object->SetNeedsLayout(
+          layout_invalidation_reason::kAnchorPositioning, kMarkOnlyThis);
+    }
+  }
+
+  void ActivateStyle(const ComputedStyle& new_style) {
+    LayoutObject* layout_object = element_->GetLayoutObject();
+    if (new_style != layout_object->StyleRef()) {
+      layout_object->SetStyle(&new_style, LayoutObject::ApplyStyleChanges::kNo);
+      // We need to invalidate layout in order to avoid invalid cache hits, as
+      // our style isn't part of the LayoutResult cache key.
+      layout_object->SetNeedsLayout(
+          layout_invalidation_reason::kAnchorPositioning, kMarkOnlyThis);
     }
   }
 
