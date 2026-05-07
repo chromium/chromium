@@ -86,20 +86,6 @@ std::string PrefixExpectedPdfSubframeIncognitoTitle(const std::string& title) {
       IDS_TASK_MANAGER_PDF_SUBFRAME_INCOGNITO_PREFIX, base::UTF8ToUTF16(title));
 }
 
-// Filter out tool tasks.
-std::vector<raw_ptr<Task, VectorExperimental>> NonToolTasks(
-    std::vector<raw_ptr<Task, VectorExperimental>> tasks) {
-  std::u16string tool_prefix =
-      l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_TOOL_PREFIX, u"");
-
-  std::vector<raw_ptr<Task, VectorExperimental>> non_tool_tasks;
-  std::ranges::copy_if(tasks, std::back_inserter(non_tool_tasks),
-                       [&](const auto& task) {
-                         return !task->title().starts_with(tool_prefix);
-                       });
-  return non_tool_tasks;
-}
-
 }  // namespace
 
 // A test for OOPIFs and how they show up in the task manager as
@@ -149,14 +135,14 @@ IN_PROC_BROWSER_TEST_F(SubframeTaskBrowserTest, TaskManagerShowsSubframeTasks) {
   task_manager.StartObserving();
 
   // Currently only the about:blank page.
-  ASSERT_THAT(MockWebContentsTaskManager::TaskTitles(
-                  NonToolTasks(task_manager.tasks())),
-              testing::ElementsAre(PrefixExpectedTabTitle("about:blank")));
+  ASSERT_THAT(
+      MockWebContentsTaskManager::TaskTitles(task_manager.NonToolTasks()),
+      testing::ElementsAre(PrefixExpectedTabTitle("about:blank")));
   NavigateTo(kCrossSitePageUrl);
 
   // Whether sites are isolated or not, we expect to have at least one tab
   // contents task.
-  auto tasks = NonToolTasks(task_manager.tasks());
+  auto tasks = task_manager.NonToolTasks();
   ASSERT_GE(tasks.size(), 1u);
   const Task* cross_site_task = tasks[0];
   EXPECT_EQ(cross_site_task->GetType(), Task::RENDERER);
@@ -190,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(SubframeTaskBrowserTest, TaskManagerShowsSubframeTasks) {
   // page is saved in the back-forward cache.
   NavigateTo(kSimplePageUrl);
 
-  tasks = NonToolTasks(task_manager.tasks());
+  tasks = task_manager.NonToolTasks();
   ASSERT_EQ(
       tasks.size(),
       content::BackForwardCache::IsBackForwardCacheFeatureEnabled() ? 4u : 1u);
@@ -243,7 +229,7 @@ IN_PROC_BROWSER_TEST_F(SubframeTaskBrowserTest, TaskManagerHungSubframe) {
   NavigateTo(kCrossSitePageUrl);
 
   // We expect SubframeTasks for b.com and c.com, in either order.
-  auto tasks = NonToolTasks(task_manager.tasks());
+  auto tasks = task_manager.NonToolTasks();
   ASSERT_THAT(MockWebContentsTaskManager::TaskTitles(tasks),
               testing::ElementsAre(
                   PrefixExpectedTabTitle("cross-site iframe test").c_str(),
@@ -311,7 +297,7 @@ IN_PROC_BROWSER_TEST_P(SubframeTaskPDFBrowserTest,
   clear_port.ClearPort();
   GURL server_url_without_port = server_url.ReplaceComponents(clear_port);
 
-  auto tasks = NonToolTasks(task_manager.tasks());
+  auto tasks = task_manager.NonToolTasks();
   ASSERT_THAT(
       MockWebContentsTaskManager::TaskTitles(tasks),
       testing::ElementsAre(
@@ -348,7 +334,7 @@ IN_PROC_BROWSER_TEST_P(SubframeTaskPDFBrowserTest,
   clear_port.ClearPort();
   GURL server_url_without_port = server_url.ReplaceComponents(clear_port);
 
-  auto tasks = NonToolTasks(task_manager.tasks());
+  auto tasks = task_manager.NonToolTasks();
   ASSERT_THAT(
       MockWebContentsTaskManager::TaskTitles(tasks),
       testing::ElementsAre(

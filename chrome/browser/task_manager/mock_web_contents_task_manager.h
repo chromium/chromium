@@ -12,9 +12,12 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/task_manager/providers/task.h"
 #include "chrome/browser/task_manager/providers/task_provider_observer.h"
 #include "chrome/browser/task_manager/providers/web_contents/web_contents_tags_manager.h"
 #include "chrome/browser/task_manager/providers/web_contents/web_contents_task_provider.h"
+#include "chrome/grit/generated_resources.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace task_manager {
 
@@ -53,6 +56,18 @@ class MockWebContentsTaskManager : public TaskProviderObserver {
         tasks, std::back_inserter(task_titles),
         [&](const auto& task) { return base::UTF16ToUTF8(task->title()); });
     return task_titles;
+  }
+
+  // Filter out tool tasks.
+  std::vector<raw_ptr<Task, VectorExperimental>> NonToolTasks() {
+    std::u16string tool_prefix =
+        l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_TOOL_PREFIX, u"");
+    std::vector<raw_ptr<Task, VectorExperimental>> non_tool_tasks;
+    std::ranges::copy_if(tasks_, std::back_inserter(non_tool_tasks),
+                         [&](const auto& task) {
+                           return !task->title().starts_with(tool_prefix);
+                         });
+    return non_tool_tasks;
   }
 
  private:
