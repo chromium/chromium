@@ -166,6 +166,8 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
                 .setActionChipLabelResId(R.string.glic_button_status_review)
                 .setShouldSuppressCpa(true)
                 .setActionChipCollapseDelayMs(ACTION_CHIP_COLLAPSE_DELAY_MS)
+                .setActionChipBackgroundColorResId(R.attr.colorSecondaryContainer)
+                .setActionChipTextColorResId(R.attr.colorOnSecondaryContainer)
                 .build();
     }
 
@@ -174,6 +176,8 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
                 .setActionChipLabelResId(R.string.glic_button_status_done)
                 .setShouldSuppressCpa(true)
                 .setActionChipCollapseDelayMs(ACTION_CHIP_COLLAPSE_DELAY_MS)
+                .setActionChipBackgroundColorResId(R.attr.colorTertiaryContainer)
+                .setActionChipTextColorResId(R.attr.colorOnTertiaryContainer)
                 .build();
     }
 

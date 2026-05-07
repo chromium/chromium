@@ -628,6 +628,37 @@ public class OptionalButtonViewTest {
     }
 
     @Test
+    public void testUpdateButtonWithAnimation_actionChipWithCustomColors() {
+        ButtonDataImpl actionChipButtonData = getDataForReaderModeActionChip();
+
+        // Use custom background and text color attributes.
+        int backgroundColorAttr = R.attr.colorTertiaryContainer;
+        int textColorAttr = R.attr.colorOnTertiaryContainer;
+
+        actionChipButtonData.setButtonSpec(
+                new ButtonSpec.Builder(actionChipButtonData.getButtonSpec())
+                        .setActionChipBackgroundColorResId(backgroundColorAttr)
+                        .setActionChipTextColorResId(textColorAttr)
+                        .build());
+
+        mOptionalButtonView.updateButtonWithAnimation(actionChipButtonData);
+
+        mOptionalButtonView.onTransitionStart(null);
+        mOptionalButtonView.onTransitionEnd(null);
+
+        int expectedTextColor =
+                com.google.android.material.color.MaterialColors.getColor(
+                        mOptionalButtonView, textColorAttr);
+        assertEquals(expectedTextColor, mActionChipLabel.getCurrentTextColor());
+
+        assertEquals(
+                ColorStateList.valueOf(expectedTextColor),
+                ImageViewCompat.getImageTintList(mButton));
+
+        assertNotNull(mButtonBackground.getColorFilter());
+    }
+
+    @Test
     public void testSetIconDrawableWithAnimation_hideIcon() {
         ButtonData buttonData = getDataForStaticNewTabIconButton();
 

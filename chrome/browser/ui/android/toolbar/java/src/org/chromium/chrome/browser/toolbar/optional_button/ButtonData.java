@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.toolbar.optional_button;
 
+import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.View.OnLongClickListener;
 
+import androidx.annotation.AttrRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
@@ -66,6 +68,8 @@ public interface ButtonData {
         private final boolean mIsChecked;
         private final boolean mShouldSuppressCpa;
         private final int mActionChipCollapseDelayMs;
+        private final @AttrRes int mActionChipBackgroundColorResId;
+        private final @AttrRes int mActionChipTextColorResId;
 
         private ButtonSpec(
                 @Nullable Drawable drawable,
@@ -81,7 +85,9 @@ public interface ButtonData {
                 boolean hasErrorBadge,
                 boolean isChecked,
                 boolean shouldSuppressCpa,
-                int actionChipCollapseDelayMs) {
+                int actionChipCollapseDelayMs,
+                @AttrRes int actionChipBackgroundColorResId,
+                @AttrRes int actionChipTextColorResId) {
             mDrawable = drawable;
             mCollapsedDrawable = collapsedDrawable;
             mOnClickListener = onClickListener;
@@ -97,6 +103,8 @@ public interface ButtonData {
             mIsChecked = isChecked;
             mShouldSuppressCpa = shouldSuppressCpa;
             mActionChipCollapseDelayMs = actionChipCollapseDelayMs;
+            mActionChipBackgroundColorResId = actionChipBackgroundColorResId;
+            mActionChipTextColorResId = actionChipTextColorResId;
         }
 
         /** Builder for {@link ButtonSpec}. */
@@ -116,6 +124,8 @@ public interface ButtonData {
             private boolean mIsChecked;
             private boolean mShouldSuppressCpa;
             private int mActionChipCollapseDelayMs = DEFAULT_ACTION_CHIP_DELAY_MS;
+            private @AttrRes int mActionChipBackgroundColorResId = Resources.ID_NULL;
+            private @AttrRes int mActionChipTextColorResId = Resources.ID_NULL;
 
             /**
              * Creates a new {@link Builder} with the required properties.
@@ -153,6 +163,8 @@ public interface ButtonData {
                 mIsChecked = buttonSpec.mIsChecked;
                 mShouldSuppressCpa = buttonSpec.mShouldSuppressCpa;
                 mActionChipCollapseDelayMs = buttonSpec.mActionChipCollapseDelayMs;
+                mActionChipBackgroundColorResId = buttonSpec.mActionChipBackgroundColorResId;
+                mActionChipTextColorResId = buttonSpec.mActionChipTextColorResId;
             }
 
             public Builder setDrawable(@Nullable Drawable drawable) {
@@ -226,6 +238,17 @@ public interface ButtonData {
                 return this;
             }
 
+            public Builder setActionChipBackgroundColorResId(
+                    @AttrRes int actionChipBackgroundColorResId) {
+                mActionChipBackgroundColorResId = actionChipBackgroundColorResId;
+                return this;
+            }
+
+            public Builder setActionChipTextColorResId(@AttrRes int actionChipTextColorResId) {
+                mActionChipTextColorResId = actionChipTextColorResId;
+                return this;
+            }
+
             public ButtonSpec build() {
                 return new ButtonSpec(
                         mDrawable,
@@ -241,7 +264,9 @@ public interface ButtonData {
                         mHasErrorBadge,
                         mIsChecked,
                         mShouldSuppressCpa,
-                        mActionChipCollapseDelayMs);
+                        mActionChipCollapseDelayMs,
+                        mActionChipBackgroundColorResId,
+                        mActionChipTextColorResId);
             }
         }
 
@@ -342,6 +367,24 @@ public interface ButtonData {
             return mActionChipCollapseDelayMs;
         }
 
+        /**
+         * Returns the resource ID of the attribute for the action chip background color. This is
+         * only applied when the action chip is on the expanding and expanded states. It will use
+         * the default colors otherwise.
+         */
+        public @AttrRes int getActionChipBackgroundColorResId() {
+            return mActionChipBackgroundColorResId;
+        }
+
+        /**
+         * Returns the resource ID of the attribute for the action chip text color. This is only
+         * applied when the action chip is on the expanding and expanded states. It will use the
+         * default colors otherwise.
+         */
+        public @AttrRes int getActionChipTextColorResId() {
+            return mActionChipTextColorResId;
+        }
+
         @Override
         public boolean equals(Object o) {
             if (this == o) {
@@ -355,9 +398,13 @@ public interface ButtonData {
                     && mButtonVariant == that.mButtonVariant
                     && mIsDynamicAction == that.mIsDynamicAction
                     && mActionChipLabelResId == that.mActionChipLabelResId
+                    && mTooltipTextResId == that.mTooltipTextResId
+                    && mHasErrorBadge == that.mHasErrorBadge
                     && mIsChecked == that.mIsChecked
                     && mShouldSuppressCpa == that.mShouldSuppressCpa
                     && mActionChipCollapseDelayMs == that.mActionChipCollapseDelayMs
+                    && mActionChipBackgroundColorResId == that.mActionChipBackgroundColorResId
+                    && mActionChipTextColorResId == that.mActionChipTextColorResId
                     && Objects.equals(mDrawable, that.mDrawable)
                     && Objects.equals(mOnClickListener, that.mOnClickListener)
                     && Objects.equals(mOnLongClickListener, that.mOnLongClickListener)
@@ -377,9 +424,13 @@ public interface ButtonData {
                     mButtonVariant,
                     mIsDynamicAction,
                     mActionChipLabelResId,
+                    mTooltipTextResId,
+                    mHasErrorBadge,
                     mIsChecked,
                     mShouldSuppressCpa,
-                    mActionChipCollapseDelayMs);
+                    mActionChipCollapseDelayMs,
+                    mActionChipBackgroundColorResId,
+                    mActionChipTextColorResId);
         }
     }
 }
