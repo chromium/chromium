@@ -147,26 +147,6 @@ FFTFrame::FFTFrame(unsigned fft_size)
   InitializeFFTSetupForSize(fft_size);
 }
 
-// Creates a blank/empty frame (interpolate() must later be called).
-FFTFrame::FFTFrame() : fft_size_(0), log2fft_size_(0) {}
-
-// Copy constructor.
-FFTFrame::FFTFrame(const FFTFrame& frame)
-    : fft_size_(frame.fft_size_),
-      log2fft_size_(frame.log2fft_size_),
-      real_data_(frame.fft_size_ / 2),
-      imag_data_(frame.fft_size_ / 2),
-      complex_data_(frame.fft_size_),
-      pffft_work_(frame.fft_size_) {
-  // Initialize the PFFFT_Setup object here so that it will be ready when we
-  // compute FFTs.
-  InitializeFFTSetupForSize(fft_size_);
-
-  // Copy/setup frame data.
-  real_data_.as_span().copy_from(frame.real_data_.as_span());
-  imag_data_.as_span().copy_from(frame.imag_data_.as_span());
-}
-
 unsigned FFTFrame::MinFFTSize() {
   return 1u << kMinFFTPow2Size;
 }
@@ -200,9 +180,6 @@ void FFTFrame::Cleanup() {
   for (auto& setup : FFTSetups()) {
     setup.value.reset();
   }
-}
-
-FFTFrame::~FFTFrame() {
 }
 
 void FFTFrame::DoFFT(const float* data) {

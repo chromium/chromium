@@ -61,10 +61,10 @@ class PLATFORM_EXPORT FFTFrame final {
   // have platform-dependent implementations.
 
   explicit FFTFrame(unsigned fft_size);
-  // creates a blank/empty frame for later use with createInterpolatedFrame()
-  FFTFrame();
-  FFTFrame(const FFTFrame& frame);
-  ~FFTFrame();
+  FFTFrame() = delete;
+  FFTFrame(const FFTFrame&) = delete;
+  FFTFrame& operator=(const FFTFrame&) = delete;
+  ~FFTFrame() = default;
 
   // Returns the smallest and largest supported FFT lengths.
   static unsigned MinFFTSize();
