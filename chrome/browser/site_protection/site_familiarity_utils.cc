@@ -6,12 +6,14 @@
 
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/content_settings/browser/ui/javascript_optimizer_setting.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/search_engines/template_url_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_instance.h"
@@ -172,6 +174,19 @@ void EnableV8Optimizations(content::WebContents* web_contents) {
   map->SetContentSettingDefaultScope(site_url, site_url,
                                      ContentSettingsType::JAVASCRIPT_OPTIMIZER,
                                      ContentSetting::CONTENT_SETTING_ALLOW);
+}
+
+bool IsDefaultSearchEngineUrl(const GURL& url, Profile* profile) {
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile);
+  if (!template_url_service) {
+    return false;
+  }
+  if (!template_url_service->GetDefaultSearchProvider()) {
+    return false;
+  }
+  return template_url_service->IsSearchResultsPageFromDefaultSearchProvider(
+      url);
 }
 
 }  // namespace site_protection

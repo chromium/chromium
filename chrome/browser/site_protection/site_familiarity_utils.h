@@ -54,6 +54,10 @@ GetJavascriptOptimizerSettingSource(content::WebContents* web_contents);
 // started (e.g. a new tab is opened).
 void EnableV8Optimizations(content::WebContents* web_contents);
 
+// Returns true if the URL is to the default search engine's search results
+// page.
+bool IsDefaultSearchEngineUrl(const GURL& url, Profile* profile);
+
 }  // namespace site_protection
 
 #endif  // CHROME_BROWSER_SITE_PROTECTION_SITE_FAMILIARITY_UTILS_H_

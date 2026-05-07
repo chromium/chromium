@@ -12,6 +12,7 @@ static_library("utils") {
 
   deps = [
     "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/search_engines",
     "//components/content_settings/browser/ui",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",

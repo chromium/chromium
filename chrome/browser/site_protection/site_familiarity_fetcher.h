@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SITE_PROTECTION_SITE_FAMILIARITY_FETCHER_H_
 #define CHROME_BROWSER_SITE_PROTECTION_SITE_FAMILIARITY_FETCHER_H_
 
+#include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -18,6 +19,8 @@
 class Profile;
 
 namespace site_protection {
+
+BASE_DECLARE_FEATURE(kSkipSiteFamiliarityDeferralForDefaultSearchEngine);
 
 // The minimum site engagement score that a site must have in order to be
 // considered familiar.
