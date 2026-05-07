@@ -19,7 +19,6 @@
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/time/time.h"
 #include "base/values.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/prefs/pref_service.h"
@@ -178,8 +177,7 @@ bool SpellingServiceClient::RequestTextCheck(
   loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory.get(),
       base::BindOnce(&SpellingServiceClient::OnSimpleLoaderComplete,
-                     base::Unretained(this), std::move(it),
-                     base::TimeTicks::Now()));
+                     base::Unretained(this), std::move(it)));
   return true;
 }
 
@@ -287,22 +285,22 @@ bool SpellingServiceClient::ParseResponse(
   }
 
   // Check for errors from spelling service.
-    const base::Value* error = value->Find(kErrorPath);
-    if (error) {
+  const base::Value* error = value->Find(kErrorPath);
+  if (error) {
     return false;
-    }
+  }
 
   // Retrieve the array of Misspelling objects. When the input text does not
   // have misspelled words, it returns an empty JSON. (In this case, its HTTP
   // status is 200.) We just return true for this case.
-    const base::ListValue* misspellings =
-        value->FindListByDottedPath(kMisspellingsRestPath);
+  const base::ListValue* misspellings =
+      value->FindListByDottedPath(kMisspellingsRestPath);
 
-    if (!misspellings) {
+  if (!misspellings) {
     return true;
-    }
+  }
 
-    for (const base::Value& misspelling : *misspellings) {
+  for (const base::Value& misspelling : *misspellings) {
     // Retrieve the i-th misspelling region and put it to the given vector. When
     // the Spelling service sends two or more suggestions, we read only the
     // first one because SpellCheckResult can store only one suggestion.
@@ -331,7 +329,7 @@ bool SpellingServiceClient::ParseResponse(
     SpellCheckResult result(spellcheck::Decoration::SPELLING, *start, *length,
                             base::UTF8ToUTF16(*replacement));
     results->push_back(result);
-    }
+  }
   return true;
 }
 
@@ -348,11 +346,7 @@ SpellingServiceClient::TextCheckCallbackData::~TextCheckCallbackData() =
 
 void SpellingServiceClient::OnSimpleLoaderComplete(
     SpellCheckLoaderList::iterator it,
-    base::TimeTicks request_start,
     std::optional<std::string> response_body) {
-  UMA_HISTOGRAM_TIMES("SpellCheck.SpellingService.RequestDuration",
-                      base::TimeTicks::Now() - request_start);
-
   TextCheckCompleteCallback callback = std::move(it->get()->callback);
   std::u16string text = it->get()->text;
   bool success = false;

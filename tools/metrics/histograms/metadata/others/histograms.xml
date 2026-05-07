@@ -7119,17 +7119,6 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="SpellCheck.SpellingService.RequestDuration" units="ms"
-    expires_after="2024-12-01">
-  <owner>shend@chromium.org</owner>
-  <owner>essential-inputs-team@google.com</owner>
-  <summary>
-    The elapsed time, in ms, between the moment the SimpleURLLoader starts
-    downloading the request and the moment the SimpleURLLoader callback is
-    invoked after the request finishes, whether an error or a success.
-  </summary>
-</histogram>
-
 <histogram name="SpellCheck.SpellingService.RequestHttpResponseCode"
     enum="HttpResponseCode" expires_after="2025-11-16">
   <owner>shend@chromium.org</owner>

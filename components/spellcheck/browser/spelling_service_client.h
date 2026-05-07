@@ -11,16 +11,11 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
 
 struct SpellCheckResult;
-
-namespace base {
-class TimeTicks;
-}
 
 namespace content {
 class BrowserContext;
@@ -150,7 +145,6 @@ class SpellingServiceClient {
       std::list<std::unique_ptr<TextCheckCallbackData>>;
 
   void OnSimpleLoaderComplete(SpellCheckLoaderList::iterator it,
-                              base::TimeTicks request_start,
                               std::optional<std::string> response_body);
 
   // List of loaders in use.
