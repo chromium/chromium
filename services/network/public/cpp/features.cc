@@ -558,7 +558,7 @@ BASE_FEATURE(kCSPScriptSrcHashesInV1,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kCacheSharingForPervasiveResources,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSendSameSiteLaxForFedCM, base::FEATURE_DISABLED_BY_DEFAULT);
 
