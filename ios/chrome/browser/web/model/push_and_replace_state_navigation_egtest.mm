@@ -2,16 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/path_service.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
-#import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/net/url_test_util.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#import "ios/web/public/test/http_server/http_server.h"
-#import "ios/web/public/test/http_server/http_server_util.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
+#import "net/test/embedded_test_server/http_request.h"
+#import "net/test/embedded_test_server/http_response.h"
 
 using chrome_test_util::BackButton;
 using chrome_test_util::ForwardButton;
@@ -19,36 +21,69 @@ using chrome_test_util::ForwardButton;
 namespace {
 
 const char* kHistoryTestUrl =
-    "http://ios/testing/data/http_server_files/history.html";
-const char* kNonPushedUrl =
-    "http://ios/testing/data/http_server_files/pony.html";
+    "/ios/testing/data/http_server_files/history.html";
+const char* kNonPushedUrl = "/ios/testing/data/http_server_files/pony.html";
 const char* kReplaceStateHashWithObjectURL =
-    "http://ios/testing/data/http_server_files/history.html#replaceWithObject";
+    "/ios/testing/data/http_server_files/history.html#replaceWithObject";
 const char* kPushStateHashStringURL =
-    "http://ios/testing/data/http_server_files/history.html#string";
+    "/ios/testing/data/http_server_files/history.html#string";
 const char* kReplaceStateHashStringURL =
-    "http://ios/testing/data/http_server_files/history.html#replace";
-const char* kPushStatePathURL =
-    "http://ios/testing/data/http_server_files/path";
-const char* kReplaceStateRootPathSpaceURL = "http://ios/rep lace";
+    "/ios/testing/data/http_server_files/history.html#replace";
+const char* kPushStatePathURL = "/ios/testing/data/http_server_files/path";
+const char* kReplaceStateRootPathSpaceURL = "/ios/rep lace";
 
 }  // namespace
 
+static std::unique_ptr<net::test_server::HttpResponse>
+HandlePushAndReplaceStateRequest(const net::test_server::HttpRequest& request) {
+  if (request.relative_url == "/foo.com/foo/bar.html") {
+    NSString* baseTag = @"<base href=\"/\">";
+    NSString* pushAndReplaceButtons =
+        @"<input type=\"button\" value=\"pushState\" "
+         "id=\"pushState\" onclick=\"history.pushState("
+         "{}, 'Foo', './pushed/relative/url');\"><br>"
+         "<input type=\"button\" value=\"replaceState\" "
+         "id=\"replaceState\" onclick=\"history.replaceState("
+         "{}, 'Foo', './replaced/relative/url');\"><br>";
+    NSString* simplePage =
+        @"<!doctype html><html><head>%@</head><body>%@</body></html>";
+
+    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+    response->set_code(net::HTTP_OK);
+    response->set_content_type("text/html");
+    response->set_content(base::SysNSStringToUTF8([NSString
+        stringWithFormat:simplePage, baseTag, pushAndReplaceButtons]));
+    return response;
+  }
+
+  return nullptr;
+}
+
 // Tests for pushState/replaceState navigations.
-@interface PushAndReplaceStateNavigationTestCase : WebHttpServerChromeTestCase
+@interface PushAndReplaceStateNavigationTestCase : ChromeTestCase
 @end
 
 @implementation PushAndReplaceStateNavigationTestCase
 
+- (void)setUp {
+  [super setUp];
+
+  self.testServer->ServeFilesFromDirectory(
+      base::PathService::CheckedGet(base::DIR_ASSETS));
+
+  self.testServer->RegisterRequestHandler(
+      base::BindRepeating(&HandlePushAndReplaceStateRequest));
+
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+}
+
 // Tests calling history.pushState() multiple times and navigating back/forward.
 - (void)testHtml5HistoryPushStateThenGoBackAndForward {
-  const GURL pushStateHashWithObjectURL = web::test::HttpServer::MakeUrl(
-      "http://ios/testing/data/http_server_files/history.html#pushWithObject");
-  const GURL pushStateRootPathURL =
-      web::test::HttpServer::MakeUrl("http://ios/rootpath");
-  const GURL pushStatePathSpaceURL =
-      web::test::HttpServer::MakeUrl("http://ios/pa%20th");
-  [ChromeEarlGrey loadURL:web::test::HttpServer::MakeUrl(kHistoryTestUrl)];
+  const GURL pushStateHashWithObjectURL = self.testServer->GetURL(
+      "/ios/testing/data/http_server_files/history.html#pushWithObject");
+  const GURL pushStateRootPathURL = self.testServer->GetURL("/ios/rootpath");
+  const GURL pushStatePathSpaceURL = self.testServer->GetURL("/ios/pa%20th");
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kHistoryTestUrl)];
 
   // Push 3 URLs. Verify that the URL changed and the status was updated.
   [ChromeEarlGrey tapWebStateElementWithID:@"pushStateHashWithObject"];
@@ -71,8 +106,7 @@ const char* kReplaceStateRootPathSpaceURL = "http://ios/rep lace";
                  withURL:pushStateHashWithObjectURL];
 
   [ChromeEarlGrey tapWebStateElementWithID:@"goBack"];
-  [self assertStatusText:nil
-                 withURL:web::test::HttpServer::MakeUrl(kHistoryTestUrl)];
+  [self assertStatusText:nil withURL:self.testServer->GetURL(kHistoryTestUrl)];
 
   // Go forward 2 pages and check that the page doesn't load and the status text
   // is updated by the popstate event.
@@ -82,15 +116,15 @@ const char* kReplaceStateRootPathSpaceURL = "http://ios/rep lace";
 
 // Tests that calling replaceState() changes the current history entry.
 - (void)testHtml5HistoryReplaceStateThenGoBackAndForward {
-  const GURL initialURL = web::test::HttpServer::MakeUrl(kNonPushedUrl);
+  const GURL initialURL = self.testServer->GetURL(kNonPushedUrl);
   const std::string initialOmniboxText =
       net::GetContentAndFragmentForUrl(initialURL);
   [ChromeEarlGrey loadURL:initialURL];
-  [ChromeEarlGrey loadURL:web::test::HttpServer::MakeUrl(kHistoryTestUrl)];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kHistoryTestUrl)];
 
   // Replace the URL and go back then forward.
   const GURL replaceStateHashWithObjectURL =
-      web::test::HttpServer::MakeUrl(kReplaceStateHashWithObjectURL);
+      self.testServer->GetURL(kReplaceStateHashWithObjectURL);
   [ChromeEarlGrey tapWebStateElementWithID:@"replaceStateHashWithObject"];
   [self assertStatusText:@"replaceStateHashWithObject"
                  withURL:replaceStateHashWithObjectURL];
@@ -107,23 +141,22 @@ const char* kReplaceStateRootPathSpaceURL = "http://ios/rep lace";
 
   // Push URL then replace it. Do this twice.
   const GURL pushStateHashStringURL =
-      web::test::HttpServer::MakeUrl(kPushStateHashStringURL);
+      self.testServer->GetURL(kPushStateHashStringURL);
   [ChromeEarlGrey tapWebStateElementWithID:@"pushStateHashString"];
   [self assertStatusText:@"pushStateHashString" withURL:pushStateHashStringURL];
 
   const GURL replaceStateHashStringURL =
-      web::test::HttpServer::MakeUrl(kReplaceStateHashStringURL);
+      self.testServer->GetURL(kReplaceStateHashStringURL);
   [ChromeEarlGrey tapWebStateElementWithID:@"replaceStateHashString"];
   [self assertStatusText:@"replaceStateHashString"
                  withURL:replaceStateHashStringURL];
 
-  const GURL pushStatePathURL =
-      web::test::HttpServer::MakeUrl(kPushStatePathURL);
+  const GURL pushStatePathURL = self.testServer->GetURL(kPushStatePathURL);
   [ChromeEarlGrey tapWebStateElementWithID:@"pushStatePath"];
   [self assertStatusText:@"pushStatePath" withURL:pushStatePathURL];
 
   const GURL replaceStateRootPathSpaceURL =
-      web::test::HttpServer::MakeUrl(kReplaceStateRootPathSpaceURL);
+      self.testServer->GetURL(kReplaceStateRootPathSpaceURL);
   [ChromeEarlGrey tapWebStateElementWithID:@"replaceStateRootPathSpace"];
   [self assertStatusText:@"replaceStateRootPathSpace"
                  withURL:replaceStateRootPathSpaceURL];
@@ -145,14 +178,13 @@ const char* kReplaceStateRootPathSpaceURL = "http://ios/rep lace";
 // Tests calling history.replaceState(), then history.pushState() and then
 // navigating back/forward.
 - (void)testHtml5HistoryReplaceStatePushStateThenGoBackAndForward {
-  const GURL replaceStateThenPushStateURL = web::test::HttpServer::MakeUrl(
-      "http://ios/testing/data/http_server_files/history.html"
-      "#replaceStateThenPushState");
-  const GURL firstReplaceStateURL = web::test::HttpServer::MakeUrl(
-      "http://ios/testing/data/http_server_files/history.html"
-      "#firstReplaceState");
+  const GURL replaceStateThenPushStateURL =
+      self.testServer->GetURL("/ios/testing/data/http_server_files/"
+                              "history.html#replaceStateThenPushState");
+  const GURL firstReplaceStateURL = self.testServer->GetURL(
+      "/ios/testing/data/http_server_files/history.html#firstReplaceState");
 
-  [ChromeEarlGrey loadURL:web::test::HttpServer::MakeUrl(kHistoryTestUrl)];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kHistoryTestUrl)];
 
   // Replace state and then push state. Verify that at the end, the URL changed
   // to the pushed URL and the status was updated.
@@ -174,13 +206,13 @@ const char* kReplaceStateRootPathSpaceURL = "http://ios/rep lace";
 // Tests calling history.pushState(), then history.replaceState() and then
 // navigating back/forward.
 - (void)testHtml5HistoryPushStateReplaceStateThenGoBackAndForward {
-  const GURL firstPushStateURL = web::test::HttpServer::MakeUrl(
-      "http://ios/testing/data/http_server_files/history.html#firstPushState");
-  const GURL pushStateThenReplaceStateURL = web::test::HttpServer::MakeUrl(
-      "http://ios/testing/data/http_server_files/history.html"
-      "#pushStateThenReplaceState");
+  const GURL firstPushStateURL = self.testServer->GetURL(
+      "/ios/testing/data/http_server_files/history.html#firstPushState");
+  const GURL pushStateThenReplaceStateURL =
+      self.testServer->GetURL("/ios/testing/data/http_server_files/"
+                              "history.html#pushStateThenReplaceState");
 
-  const GURL historyTestURL = web::test::HttpServer::MakeUrl(kHistoryTestUrl);
+  const GURL historyTestURL = self.testServer->GetURL(kHistoryTestUrl);
   [ChromeEarlGrey loadURL:historyTestURL];
   const std::string historyTestOmniboxText =
       net::GetContentAndFragmentForUrl(historyTestURL);
@@ -204,15 +236,15 @@ const char* kReplaceStateRootPathSpaceURL = "http://ios/rep lace";
 
 // Tests that page loads occur when navigating to or past a non-pushed URL.
 - (void)testHtml5HistoryNavigatingPastNonPushedURL {
-  GURL nonPushedURL = web::test::HttpServer::MakeUrl(kNonPushedUrl);
-  const GURL historyTestURL = web::test::HttpServer::MakeUrl(kHistoryTestUrl);
+  GURL nonPushedURL = self.testServer->GetURL(kNonPushedUrl);
+  const GURL historyTestURL = self.testServer->GetURL(kHistoryTestUrl);
   [ChromeEarlGrey loadURL:historyTestURL];
   const std::string historyTestOmniboxText =
       net::GetContentAndFragmentForUrl(historyTestURL);
 
   // Push same URL twice. Verify that URL changed and the status was updated.
   const GURL pushStateHashStringURL =
-      web::test::HttpServer::MakeUrl(kPushStateHashStringURL);
+      self.testServer->GetURL(kPushStateHashStringURL);
   [ChromeEarlGrey tapWebStateElementWithID:@"pushStateHashString"];
   [self assertStatusText:@"pushStateHashString" withURL:pushStateHashStringURL];
   [ChromeEarlGrey tapWebStateElementWithID:@"pushStateHashString"];
@@ -259,18 +291,16 @@ const char* kReplaceStateRootPathSpaceURL = "http://ios/rep lace";
 - (void)testHtml5HistoryPushUnicodeCharacters {
   // The GURL object %-escapes Unicode characters in the URL's fragment,
   // but the omnibox decodes them back to Unicode for display.
-  const GURL pushStateUnicodeURL = web::test::HttpServer::MakeUrl(
-      "http://ios/testing/data/http_server_files/"
-      "history.html#unicode\xe1\x84\x91");
-  const GURL pushStateUnicode2URL = web::test::HttpServer::MakeUrl(
-      "http://ios/testing/data/http_server_files/"
-      "history.html#unicode2\xe2\x88\xa2");
+  const GURL pushStateUnicodeURL = self.testServer->GetURL(
+      "/ios/testing/data/http_server_files/history.html#unicode\xe1\x84\x91");
+  const GURL pushStateUnicode2URL = self.testServer->GetURL(
+      "/ios/testing/data/http_server_files/history.html#unicode2\xe2\x88\xa2");
   const char pushStateUnicodeLabel[] = "Action: pushStateUnicodeᄑ";
   NSString* pushStateUnicodeStatus = @"pushStateUnicodeᄑ";
   const char pushStateUnicode2Label[] = "Action: pushStateUnicode2∢";
   NSString* pushStateUnicode2Status = @"pushStateUnicode2∢";
 
-  [ChromeEarlGrey loadURL:web::test::HttpServer::MakeUrl(kHistoryTestUrl)];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kHistoryTestUrl)];
 
   // Do 2 push states with unicode characters.
   [ChromeEarlGrey tapWebStateElementWithID:@"pushStateUnicode"];
@@ -282,8 +312,7 @@ const char* kReplaceStateRootPathSpaceURL = "http://ios/rep lace";
   [ChromeEarlGrey waitForWebStateContainingText:pushStateUnicode2Label];
 
   // Do a push state without a unicode character.
-  const GURL pushStatePathURL =
-      web::test::HttpServer::MakeUrl(kPushStatePathURL);
+  const GURL pushStatePathURL = self.testServer->GetURL(kPushStatePathURL);
   [ChromeEarlGrey tapWebStateElementWithID:@"pushStatePath"];
 
   [self assertStatusText:@"pushStatePath" withURL:pushStatePathURL];
@@ -298,9 +327,7 @@ const char* kReplaceStateRootPathSpaceURL = "http://ios/rep lace";
 
 // Tests that pushState/replaceState handling properly handles <base>.
 - (void)testHtml5HistoryWithBase {
-  std::map<GURL, std::string> responses;
-  GURL originURL =
-      web::test::HttpServer::MakeUrl("http://foo.com/foo/bar.html");
+  GURL originURL = self.testServer->GetURL("/foo.com/foo/bar.html");
   GURL pushResultURL =
       originURL.DeprecatedGetOriginAsURL().Resolve("pushed/relative/url");
   const std::string pushResultOmniboxText =
@@ -309,23 +336,6 @@ const char* kReplaceStateRootPathSpaceURL = "http://ios/rep lace";
       originURL.DeprecatedGetOriginAsURL().Resolve("replaced/relative/url");
   const std::string replaceResultOmniboxText =
       net::GetContentAndFragmentForUrl(replaceResultURL);
-
-  // A simple HTML page with a base tag that makes all relative URLs
-  // domain-relative, a button to trigger a relative pushState, and a button
-  // to trigger a relative replaceState.
-  NSString* baseTag = @"<base href=\"/\">";
-  NSString* pushAndReplaceButtons =
-      @"<input type=\"button\" value=\"pushState\" "
-       "id=\"pushState\" onclick=\"history.pushState("
-       "{}, 'Foo', './pushed/relative/url');\"><br>"
-       "<input type=\"button\" value=\"replaceState\" "
-       "id=\"replaceState\" onclick=\"history.replaceState("
-       "{}, 'Foo', './replaced/relative/url');\"><br>";
-  NSString* simplePage =
-      @"<!doctype html><html><head>%@</head><body>%@</body></html>";
-  responses[originURL] = base::SysNSStringToUTF8(
-      [NSString stringWithFormat:simplePage, baseTag, pushAndReplaceButtons]);
-  web::test::SetUpSimpleHttpServer(responses);
 
   [ChromeEarlGrey loadURL:originURL];
   [ChromeEarlGrey tapWebStateElementWithID:@"pushState"];
