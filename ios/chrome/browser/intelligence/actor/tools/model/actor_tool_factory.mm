@@ -49,7 +49,10 @@ ActorToolFactory::CreateTool(const optimization_guide::proto::Action& action,
       return base::unexpected(
           ToolExecutionResult(InternalToolErrorCode::kUnsupportedAction));
   }
-  // LINT.ThenChange(//ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.mm:SupportedCapabilities)
+  // LINT.ThenChange(
+  //   //ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.mm:SupportedCapabilities,
+  //   //ios/chrome/browser/intelligence/bwg/model/gemini_actuation_handler.mm:InjectTabIdIntoAction
+  // )
 }
 
 std::vector<optimization_guide::proto::Action::ActionCase>

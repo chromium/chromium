@@ -204,7 +204,8 @@ GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
     if (IsGeminiActorEnabled() && IsActorEnabled()) {
       gemini_actuation_handler_ = [[GeminiActuationHandler alloc]
           initWithActorService:actor::ActorServiceFactory::GetForProfile(
-                                   browser_->GetProfile())];
+                                   browser_->GetProfile())
+                  webStateList:browser_->GetWebStateList()];
       bwg_gateway_.actuationHandler = gemini_actuation_handler_;
     }
 

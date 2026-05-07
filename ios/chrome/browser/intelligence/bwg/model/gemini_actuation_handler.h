@@ -13,11 +13,14 @@ namespace actor {
 class ActorService;
 }
 
+class WebStateList;
+
 // The handler for Gemini actuations, bridging to the Actor orchestration layer.
 @interface GeminiActuationHandler : NSObject <GeminiActuationDelegate>
 
-// Initialize the handler with the ActorService.
+// Initialize the handler with the ActorService and WebStateList.
 - (instancetype)initWithActorService:(actor::ActorService*)actorService
+                        webStateList:(WebStateList*)webStateList
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

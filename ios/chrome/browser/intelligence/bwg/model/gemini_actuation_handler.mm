@@ -4,11 +4,13 @@
 
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_actuation_handler.h"
 
+#import <map>
 #import <string>
 #import <vector>
 
 #import "base/barrier_callback.h"
 #import "base/base64.h"
+#import "base/check.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
@@ -17,6 +19,9 @@
 #import "ios/chrome/browser/intelligence/actor/model/actor_service.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/web/public/web_state.h"
+#import "ios/web/public/web_state_id.h"
 
 namespace {
 
@@ -128,17 +133,64 @@ NSData* CreateSerializedFailureActionsResult(const std::string& error_message) {
   return SerializeProtoToNSData(actionsResult);
 }
 
+// Injects the tab ID into the given action depending on its case.
+// LINT.IfChange(InjectTabIdIntoAction)
+void InjectTabIdIntoAction(optimization_guide::proto::Action& action,
+                           web::WebStateID web_state_id) {
+  int32_t tab_id = web_state_id.identifier();
+  switch (action.action_case()) {
+    case optimization_guide::proto::Action::kNavigate:
+      action.mutable_navigate()->set_tab_id(tab_id);
+      break;
+    case optimization_guide::proto::Action::kClick:
+      action.mutable_click()->set_tab_id(tab_id);
+      break;
+    case optimization_guide::proto::Action::kBack:
+      action.mutable_back()->set_tab_id(tab_id);
+      break;
+    case optimization_guide::proto::Action::kForward:
+      action.mutable_forward()->set_tab_id(tab_id);
+      break;
+    case optimization_guide::proto::Action::kSelect:
+      action.mutable_select()->set_tab_id(tab_id);
+      break;
+    case optimization_guide::proto::Action::kType:
+      action.mutable_type()->set_tab_id(tab_id);
+      break;
+    case optimization_guide::proto::Action::kWait:
+      action.mutable_wait()->set_observe_tab_id(tab_id);
+      break;
+    case optimization_guide::proto::Action::kScroll:
+      action.mutable_scroll()->set_tab_id(tab_id);
+      break;
+    case optimization_guide::proto::Action::kScrollTo:
+      action.mutable_scroll_to()->set_tab_id(tab_id);
+      break;
+    default:
+      break;
+  }
+}
+// LINT.ThenChange(//ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.mm:CreateTool)
+
 }  // namespace
 
 @implementation GeminiActuationHandler {
   // The ActorService to use for actuating tasks.
   raw_ptr<actor::ActorService> _actorService;
+
+  // The WebStateList to obtain the active WebState.
+  raw_ptr<WebStateList> _webStateList;
+
+  // Map from task IDs to WebState IDs.
+  std::map<actor::ActorTaskId, web::WebStateID> _taskToWebStateIDMap;
 }
 
-- (instancetype)initWithActorService:(actor::ActorService*)actorService {
+- (instancetype)initWithActorService:(actor::ActorService*)actorService
+                        webStateList:(WebStateList*)webStateList {
   self = [super init];
   if (self) {
     _actorService = actorService;
+    _webStateList = webStateList;
   }
   return self;
 }
@@ -192,7 +244,22 @@ NSData* CreateSerializedFailureActionsResult(const std::string& error_message) {
 #pragma mark - GeminiActuationDelegate
 
 - (actor::ActorTaskId)createTaskWithTitle:(NSString*)title {
-  return _actorService->CreateTask(base::SysNSStringToUTF8(title), false);
+  actor::ActorTaskId taskID = actor::ActorTaskId();
+  if (!_webStateList) {
+    return taskID;
+  }
+
+  // TODO(crbug.com/510404682): Don't use the active WebState, instead get the
+  // tab ID from the Gemini SDK.
+  web::WebState* activeWebState = _webStateList->GetActiveWebState();
+  if (!activeWebState) {
+    return taskID;
+  }
+
+  taskID = _actorService->CreateTask(base::SysNSStringToUTF8(title),
+                                     /*allow_incognito_web_states=*/false);
+  _taskToWebStateIDMap[taskID] = activeWebState->GetUniqueIdentifier();
+  return taskID;
 }
 
 - (void)addTaskUpdatesObserver:(id<ActorTaskUpdatesObserver>)observer
@@ -214,6 +281,14 @@ NSData* CreateSerializedFailureActionsResult(const std::string& error_message) {
     return;
   }
 
+  auto it = _taskToWebStateIDMap.find(taskID);
+  if (it == _taskToWebStateIDMap.end()) {
+    completionBlock(CreateSerializedFailureActionsResult(
+        "Failed to perform actions: Task ID not found."));
+    return;
+  }
+  web::WebStateID webStateId = it->second;
+
   std::vector<optimization_guide::proto::Action> actions;
   for (NSData* data in serializedActionProtos) {
     optimization_guide::proto::Action action;
@@ -222,6 +297,7 @@ NSData* CreateSerializedFailureActionsResult(const std::string& error_message) {
           CreateSerializedFailureActionsResult("Failed to parse action proto"));
       return;
     }
+    InjectTabIdIntoAction(action, webStateId);
     actions.push_back(action);
   }
 
@@ -317,6 +393,7 @@ NSData* CreateSerializedFailureActionsResult(const std::string& error_message) {
 - (void)stopTaskWithID:(actor::ActorTaskId)taskID
                 reason:(actor::ActorTaskStoppedReason)reason {
   _actorService->StopTask(taskID, reason);
+  _taskToWebStateIDMap.erase(taskID);
 }
 
 @end
