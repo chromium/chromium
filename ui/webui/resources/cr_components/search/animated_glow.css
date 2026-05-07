@@ -211,15 +211,6 @@
   z-index: var(--search-animated-glow-gradient-z-index, 2);
 }
 
-:host([animation-state='listening']) {
-  --search-animated-glif-rotation-duration: 1.5s;
-}
-
-:host([animation-state='listening']) .gradient::before {
-  animation: gradient-spin-listen var(--glif-rotation-duration_)
-    var(--search-animated-glow-gradient-curve) forwards;
-}
-
 :host([animation-state='dragging'][energy-effect-animation-enabled]),
 :host([animation-state='expanding'][energy-effect-animation-enabled][is-zero-state]),
 :host([animation-state='submitting'][energy-effect-animation-enabled]) {
@@ -428,11 +419,6 @@
   animation: color-pulse-on-expand var(--expand-duration,
       var(--search-animated-glow-expand-duration))
       var(--standard-curve, var(--search-animated-glow-standard-curve));
-}
-
-:host([animation-state='listening']) .background::before {
-  animation:
-      plate-background-blur-on-listen var(--expand-timing_);
 }
 
 @keyframes plate-background-blur-on-expand {
@@ -658,10 +644,6 @@
 
 :host([animation-state='submitting']) .background {
   animation: gradient-border-width-close-submit var(--expand-timing_);
-}
-
-:host([animation-state='listening']) .background {
-  animation: gradient-border-width-close-listen var(--expand-timing_);
 }
 
 :host([animation-state='dragging']) .background::before {
