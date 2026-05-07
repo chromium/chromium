@@ -810,6 +810,7 @@ public class SigninPromoCoordinatorTest {
     @MediumTest
     @Feature("RenderTest")
     @ParameterAnnotations.UseMethodParameter(RenderTestParams.class)
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
     public void testRendering_noAccount(
             @SigninAccessPoint int accessPoint, boolean nightModeEnabled) throws Exception {
         if (accessPoint == SigninAccessPoint.HISTORY_PAGE) {
@@ -827,6 +828,7 @@ public class SigninPromoCoordinatorTest {
     @MediumTest
     @Feature("RenderTest")
     @ParameterAnnotations.UseMethodParameter(RenderTestParams.class)
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
     public void testRendering_withAccount(
             @SigninAccessPoint int accessPoint, boolean nightModeEnabled) throws Exception {
         if (accessPoint == SigninAccessPoint.HISTORY_PAGE) {
