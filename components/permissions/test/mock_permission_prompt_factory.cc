@@ -57,6 +57,10 @@ std::unique_ptr<PermissionPrompt> MockPermissionPromptFactory::Create(
     show_bubble_quit_closure_.Run();
 
   manager_->set_auto_response_for_test(response_type_);
+  if (response_prompt_options_) {
+    manager_->set_auto_response_prompt_options_for_test(
+        response_prompt_options_.value());
+  }
   return base::WrapUnique(prompt);
 }
 

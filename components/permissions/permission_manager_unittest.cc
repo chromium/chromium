@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
@@ -14,13 +15,16 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/permissions/content_setting_permission_context_base.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_util.h"
+#include "components/permissions/resolvers/permission_prompt_options.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/permissions/test/permission_test_util.h"
 #include "components/permissions/test/test_permissions_client.h"
@@ -152,10 +156,18 @@ class PermissionManagerTest : public content::RenderViewHostTestHarness {
                      const GURL& embedding_origin,
                      PermissionType type,
                      PermissionStatus value) {
-    GetHostContentSettingsMap()->SetContentSettingDefaultScope(
-        requesting_origin, embedding_origin,
-        permissions::PermissionUtil::PermissionTypeToContentSettingsType(type),
-        permissions::PermissionUtil::PermissionStatusToContentSetting(value));
+    ContentSettingsType content_settings_type =
+        permissions::PermissionUtil::PermissionTypeToContentSettingsType(type);
+    PermissionSetting permission_setting =
+        content_settings::PermissionSettingsRegistry::GetInstance()
+            ->Get(content_settings_type)
+            ->delegate()
+            .ToPermissionSetting(
+                permissions::PermissionUtil::PermissionStatusToContentSetting(
+                    value));
+    GetHostContentSettingsMap()->SetPermissionSettingDefaultScope(
+        requesting_origin, embedding_origin, content_settings_type,
+        permission_setting);
   }
 
   void RequestPermissionFromCurrentDocument(PermissionType type,
@@ -494,7 +506,7 @@ TEST_F(PermissionManagerTest, PermissionIgnoredCleanup) {
 
   NavigateAndCommit(url());
 
-  RequestPermissionFromCurrentDocumentNonBlocking(PermissionType::GEOLOCATION,
+  RequestPermissionFromCurrentDocumentNonBlocking(PermissionType::MIDI_SYSEX,
                                                   main_rfh());
 
   EXPECT_FALSE(PendingRequestsEmpty());
@@ -557,7 +569,7 @@ TEST_F(PermissionManagerTest, KillSwitchOnIsNotOverridable) {
   // Turn on kill switch for GEOLOCATION.
   std::map<std::string, std::string> params;
   params[PermissionUtil::GetPermissionString(
-      ContentSettingsType::GEOLOCATION)] =
+      content_settings::GeolocationContentSettingsType())] =
       PermissionContextBase::kPermissionsKillSwitchBlockedValue;
   base::AssociateFieldTrialParams(
       PermissionContextBase::kPermissionsKillSwitchFieldStudy, "TestGroup",
@@ -634,6 +646,11 @@ TEST_F(PermissionManagerTest, GetPermissionStatusDelegation) {
       PermissionRequestManager::FromWebContents(web_contents());
   auto prompt_factory = std::make_unique<MockPermissionPromptFactory>(manager);
   prompt_factory->set_response_type(PermissionRequestManager::ACCEPT_ALL);
+  if (base::FeatureList::IsEnabled(
+          content_settings::features::kApproximateGeolocationPermission)) {
+    prompt_factory->set_response_prompt_options(GeolocationPromptOptions{
+        .selected_accuracy = GeolocationAccuracy::kPrecise});
+  }
   prompt_factory->DocumentOnLoadCompletedInPrimaryMainFrame();
 
   RequestPermissionFromCurrentDocument(PermissionType::GEOLOCATION, child);

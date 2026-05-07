@@ -13,6 +13,7 @@
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_request_manager.h"
+#include "components/permissions/resolvers/permission_prompt_options.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -49,6 +50,10 @@ class MockPermissionPromptFactory : PermissionRequestManager::Observer {
 
   void set_response_type(PermissionRequestManager::AutoResponseType type) {
     response_type_ = type;
+  }
+
+  void set_response_prompt_options(const PromptOptions& prompt_options) {
+    response_prompt_options_ = prompt_options;
   }
 
   PermissionRequestManager::AutoResponseType response_type() {
@@ -91,6 +96,7 @@ class MockPermissionPromptFactory : PermissionRequestManager::Observer {
 
   std::vector<raw_ptr<MockPermissionPrompt, VectorExperimental>> prompts_;
   PermissionRequestManager::AutoResponseType response_type_;
+  std::optional<PromptOptions> response_prompt_options_;
 
   base::RepeatingClosure show_bubble_quit_closure_;
 
