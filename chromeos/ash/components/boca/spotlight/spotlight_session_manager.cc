@@ -130,6 +130,7 @@ void SpotlightSessionManager::OnConsumerActivityUpdated(
         request_in_progress_ = false;
         notification_handler_->StopSpotlightCountdown();
         spotlight_crd_manager_->HidePersistentNotification();
+        spotlight_crd_manager_->OnSessionEnded();
         break;
       default:
         break;

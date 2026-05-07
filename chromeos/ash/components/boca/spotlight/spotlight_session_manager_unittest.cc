@@ -524,5 +524,24 @@ TEST_F(SpotlightSessionManagerTest,
   histograms.ExpectTotalCount(kOnRegisterScreenRequestSentErrorCodeUmaPath, 0);
 }
 
+TEST_F(SpotlightSessionManagerTest,
+       TerminatesSpotlightSessionWhenStateInactive) {
+  ::boca::StudentDevice device;
+  device.mutable_view_screen_config()->set_view_screen_state(
+      ::boca::ViewScreenConfig::INACTIVE);
+  ::boca::StudentStatus status;
+  status.mutable_devices()->emplace(kDeviceId, device);
+
+  std::map<std::string, ::boca::StudentStatus> activities;
+  activities.emplace(kGaiaId, status);
+
+  EXPECT_CALL(*spotlight_crd_manager(), OnSessionEnded).Times(1);
+
+  ::boca::UserIdentity producer;
+  producer.set_email(kUserEmail);
+  spotlight_session_manager_->OnSessionStarted(kSessionId, producer);
+  spotlight_session_manager_->OnConsumerActivityUpdated(activities);
+}
+
 }  // namespace
 }  // namespace ash::boca
