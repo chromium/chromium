@@ -53,6 +53,25 @@ bool ReadAnythingImmersiveWebView::HandleContextMenu(
   return false;
 }
 
+// content::WebContentsDelegate:
+// This is called when the WebContents wants to open a link in a new tab,
+// such as with the "Search Google for" context menu option. We forward the
+// request to the main browser window to handle the navigation.
+content::WebContents* ReadAnythingImmersiveWebView::OpenURLFromTab(
+    content::WebContents* source,
+    const content::OpenURLParams& params,
+    base::OnceCallback<void(content::NavigationHandle&)>
+        navigation_handle_callback) {
+  auto* controller =
+      ReadAnythingControllerGlue::FromWebContents(web_contents())->controller();
+  if (controller && controller->tab() &&
+      controller->tab()->GetBrowserWindowInterface()) {
+    return controller->tab()->GetBrowserWindowInterface()->OpenURL(
+        params, std::move(navigation_handle_callback));
+  }
+  return nullptr;
+}
+
 bool ReadAnythingImmersiveWebView::HandleKeyboardEvent(
     content::WebContents* source,
     const input::NativeWebKeyboardEvent& event) {

@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -40,6 +41,8 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/prefs/pref_service.h"
+#include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
@@ -1843,6 +1846,71 @@ IN_PROC_BROWSER_TEST_F(
   histogram_tester.ExpectUniqueSample(
       "Accessibility.ReadAnything.SidePanelTriggeredByEmptyState",
       ReadAnythingOpenTrigger::kOmniboxChip, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       OpenURLFromTab_InImmersiveMode_OpensNewTab) {
+  // Navigate to a page to have content to select.
+  GURL url(embedded_test_server()->GetURL("/simple.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  // Get controller.
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* controller = ReadAnythingController::From(tab);
+  ASSERT_TRUE(controller);
+
+  // Show immersive reading mode.
+  controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+  AwaitAndAssertOverlayVisibility(/*visible=*/true);
+
+  // Get the immersive web contents.
+  content::WebContents* immersive_web_contents = GetImmersiveWebContents();
+  ASSERT_TRUE(immersive_web_contents);
+
+  // Wait for the web contents to be ready.
+  EXPECT_TRUE(content::WaitForLoadStop(immersive_web_contents));
+
+  // Simulate selecting text.
+  ASSERT_TRUE(content::ExecJs(immersive_web_contents,
+                              "const p = document.createElement('p');"
+                              "p.textContent = 'test';"
+                              "document.body.appendChild(p);"
+                              "const range = document.createRange();"
+                              "range.selectNodeContents(p);"
+                              "const selection = window.getSelection();"
+                              "selection.removeAllRanges();"
+                              "selection.addRange(range);"));
+
+  // Simulate "Search Google for" action.
+  content::ContextMenuParams params;
+  params.page_url = GURL("http://example.com");
+  params.selection_text = u"test";
+
+  TestRenderViewContextMenu menu(*immersive_web_contents->GetPrimaryMainFrame(),
+                                 params);
+  menu.Init();
+
+  // Add a waiter for the new tab.
+  ui_test_utils::TabAddedWaiter tab_waiter(browser());
+  menu.ExecuteCommand(IDC_CONTENT_CONTEXT_SEARCHWEBFOR, 0);
+  tab_waiter.Wait();
+
+  // Verify the new tab was opened with the correct search args.
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  content::WebContents* new_tab =
+      browser()->tab_strip_model()->GetWebContentsAt(1);
+
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(browser()->profile());
+  const TemplateURL* default_provider =
+      template_url_service->GetDefaultSearchProvider();
+  ASSERT_TRUE(default_provider);
+  TemplateURLRef::SearchTermsArgs search_args(u"test");
+  GURL expected_url(default_provider->url_ref().ReplaceSearchTerms(
+      search_args, template_url_service->search_terms_data()));
+
+  EXPECT_EQ(expected_url, new_tab->GetURL());
 }
 
 IN_PROC_BROWSER_TEST_F(
