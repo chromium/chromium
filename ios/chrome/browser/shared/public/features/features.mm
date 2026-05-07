@@ -82,6 +82,12 @@ bool IsDockingPromoV2Enabled() {
   return base::FeatureList::IsEnabled(kIOSDockingPromoV2);
 }
 
+BASE_FEATURE(kIOSHowToChrome, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsHowToChromeEnabled() {
+  return base::FeatureList::IsEnabled(kIOSHowToChrome);
+}
+
 BASE_FEATURE(kEnableLensInOmniboxCopiedImage,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

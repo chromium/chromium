@@ -155,6 +155,7 @@ source_set("scene") {
     "//ios/chrome/browser/first_run/coordinator",
     "//ios/chrome/browser/first_run/model",
     "//ios/chrome/browser/geolocation/model",
+    "//ios/chrome/browser/how_to_chrome/model",
     "//ios/chrome/browser/incognito_reauth/ui_bundled:incognito_reauth_scene_agent",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/intelligence/bwg/coordinator",

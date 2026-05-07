@@ -952,6 +952,10 @@ inline constexpr char kIOSExpandedTipsDescription[] =
     "Enables a feature that adds several new Tips Notifications that can be "
     "sent.";
 
+inline constexpr char kIOSHowToChromeName[] = "How to Chrome";
+inline constexpr char kIOSHowToChromeDescription[] =
+    "Enables the 'How to Chrome' feature on iOS.";
+
 inline constexpr char kIOSKeyboardAccessoryDefaultViewName[] =
     "Default Input Accessory View";
 inline constexpr char kIOSKeyboardAccessoryDefaultViewDescription[] =

@@ -69,6 +69,7 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/first_run/model/first_run.h"
 #import "ios/chrome/browser/geolocation/model/geolocation_manager.h"
+#import "ios/chrome/browser/how_to_chrome/model/how_to_chrome_scene_agent.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -1475,6 +1476,10 @@ bool IsProfileUnmanaged(ProfileIOS* profile) {
 
   [sceneState addAgent:[[WhatsNewSceneAgent alloc]
                            initWithPromosManager:promosManager]];
+
+  if (IsHowToChromeEnabled()) {
+    [sceneState addAgent:[[HowToChromeSceneAgent alloc] init]];
+  }
 
   if (IsDockingPromoV2Enabled()) {
     [sceneState addAgent:[[DockingPromoSceneAgent alloc]

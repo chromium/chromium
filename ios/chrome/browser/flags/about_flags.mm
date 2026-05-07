@@ -2917,6 +2917,9 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kIOSMiniMapUniversalLinkCounterfactualDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kIOSMiniMapUniversalLinkCounterfactual)},
+    {"ios-how-to-chrome", flag_descriptions::kIOSHowToChromeName,
+     flag_descriptions::kIOSHowToChromeDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kIOSHowToChrome)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
