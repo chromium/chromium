@@ -52,6 +52,7 @@ class ComposeboxHandler : public composebox::mojom::PageHandler,
   void GetSmartTabSharingActive(
       GetSmartTabSharingActiveCallback callback) override;
   void OnContextMenuOpened() override;
+  void NotifyComposeboxQuerySubmittedWithContext() override;
 
   // searchbox::mojom::PageHandler:
   void ExecuteAction(uint8_t line,

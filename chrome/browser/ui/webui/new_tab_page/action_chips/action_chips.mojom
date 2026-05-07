@@ -86,6 +86,9 @@ interface ActionChipsHandler {
 
   // Changes the visibility of the action chips feature.
   SetActionChipsVisibility(bool is_visible);
+
+  // Notifies the feature engagement tracker that an action chip was clicked.
+  NotifyActionChipClicked();
 };
 
 // Interface for the page-side handler receiving information from the browser.

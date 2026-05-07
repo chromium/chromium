@@ -47,6 +47,7 @@ class ActionChipsHandler : public action_chips::mojom::ActionChipsHandler,
   void StartActionChipsRetrieval() override;
   void ActivateMetricsFunnel(const std::string& funnel_name) override;
   void SetActionChipsVisibility(bool is_visible) override;
+  void NotifyActionChipClicked() override;
 
   void OnTabStripModelChanged(
       TabStripModel* tab_strip_model,
