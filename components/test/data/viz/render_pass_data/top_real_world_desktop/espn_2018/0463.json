@@ -252,12 +252,6 @@
          "render_pass_id": "12",
          "resources": [  ],
          "shared_quad_state_index": 0,
-         "tex_coord_rect": {
-            "height": 40.0,
-            "width": 40.0,
-            "x": 0.0,
-            "y": 0.0
-         },
          "visible_rect": {
             "height": 40,
             "width": 40,
@@ -960,12 +954,6 @@
          "render_pass_id": "6",
          "resources": [  ],
          "shared_quad_state_index": 0,
-         "tex_coord_rect": {
-            "height": 40.0,
-            "width": 40.0,
-            "x": 0.0,
-            "y": 0.0
-         },
          "visible_rect": {
             "height": 40,
             "width": 40,
@@ -1004,12 +992,6 @@
          "render_pass_id": "7",
          "resources": [  ],
          "shared_quad_state_index": 1,
-         "tex_coord_rect": {
-            "height": 40.0,
-            "width": 40.0,
-            "x": 0.0,
-            "y": 0.0
-         },
          "visible_rect": {
             "height": 40,
             "width": 40,
@@ -1573,12 +1555,6 @@
          "render_pass_id": "11",
          "resources": [  ],
          "shared_quad_state_index": 6,
-         "tex_coord_rect": {
-            "height": 40.0,
-            "width": 40.0,
-            "x": 0.0,
-            "y": 0.0
-         },
          "visible_rect": {
             "height": 40,
             "width": 40,
@@ -1643,12 +1619,6 @@
          "render_pass_id": "9",
          "resources": [  ],
          "shared_quad_state_index": 8,
-         "tex_coord_rect": {
-            "height": 251.0,
-            "width": 825.0,
-            "x": 0.0,
-            "y": 0.0
-         },
          "visible_rect": {
             "height": 251,
             "width": 825,
@@ -1765,12 +1735,6 @@
          "render_pass_id": "5",
          "resources": [  ],
          "shared_quad_state_index": 10,
-         "tex_coord_rect": {
-            "height": 24.0,
-            "width": 437.0,
-            "x": 0.0,
-            "y": 0.0
-         },
          "visible_rect": {
             "height": 24,
             "width": 437,

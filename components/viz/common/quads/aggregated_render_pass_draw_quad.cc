@@ -34,7 +34,6 @@ bool AggregatedRenderPassDrawQuad::Equals(
          backdrop_filter_bounds == other.backdrop_filter_bounds &&
          filters_scale == other.filters_scale &&
          filters_origin == other.filters_origin &&
-         tex_coord_rect == other.tex_coord_rect &&
          backdrop_filter_quality == other.backdrop_filter_quality &&
          force_anti_aliasing_off == other.force_anti_aliasing_off &&
          intersects_damage_under == other.intersects_damage_under &&
@@ -53,7 +52,6 @@ void AggregatedRenderPassDrawQuad::SetNew(
     ResourceId mask_resource_id,
     const gfx::RectF& mask_uv_rect,
     const gfx::Size& mask_texture_size,
-    const gfx::RectF& tex_coord_rect,
     bool force_anti_aliasing_off) {
   DCHECK(render_pass);
 
@@ -67,9 +65,9 @@ void AggregatedRenderPassDrawQuad::SetNew(
   std::optional<SkPath> pass_backdrop_filter_bounds;
   SetAll(shared_quad_state, rect, visible_rect, needs_blending, render_pass,
          mask_resource_id, mask_uv_rect, mask_texture_size, filters_scale,
-         filters_origin, tex_coord_rect, force_anti_aliasing_off,
-         backdrop_filter_quality, intersects_damage_under, pass_filters,
-         pass_backdrop_filters, pass_backdrop_filter_bounds);
+         filters_origin, force_anti_aliasing_off, backdrop_filter_quality,
+         intersects_damage_under, pass_filters, pass_backdrop_filters,
+         pass_backdrop_filter_bounds);
 }
 
 void AggregatedRenderPassDrawQuad::SetFilters(
@@ -102,7 +100,6 @@ void AggregatedRenderPassDrawQuad::SetAll(
   mask_texture_size = other.mask_texture_size;
   filters_scale = other.filters_scale;
   filters_origin = other.filters_origin;
-  tex_coord_rect = other.tex_coord_rect;
   force_anti_aliasing_off = other.force_anti_aliasing_off;
   backdrop_filter_quality = other.backdrop_filter_quality;
   intersects_damage_under = other.intersects_damage_under;
@@ -122,7 +119,6 @@ void AggregatedRenderPassDrawQuad::SetAll(
     const gfx::Size& mask_texture_size,
     const gfx::Vector2dF& filters_scale,
     const gfx::PointF& filters_origin,
-    const gfx::RectF& tex_coord_rect,
     bool force_anti_aliasing_off,
     float backdrop_filter_quality,
     bool intersects_damage_under,
@@ -139,7 +135,6 @@ void AggregatedRenderPassDrawQuad::SetAll(
   this->mask_texture_size = mask_texture_size;
   this->filters_scale = filters_scale;
   this->filters_origin = filters_origin;
-  this->tex_coord_rect = tex_coord_rect;
   this->force_anti_aliasing_off = force_anti_aliasing_off;
   this->backdrop_filter_quality = backdrop_filter_quality;
   this->intersects_damage_under = intersects_damage_under;

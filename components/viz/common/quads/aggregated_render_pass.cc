@@ -96,7 +96,7 @@ AggregatedRenderPass::CopyFromAndAppendRenderPassDrawQuad(
       shared_quad_state_list.back(), quad->rect, quad->visible_rect,
       quad->needs_blending, render_pass_id, quad->mask_resource_id(),
       quad->mask_uv_rect, quad->mask_texture_size, quad->filters_scale,
-      quad->filters_origin, quad->tex_coord_rect, quad->force_anti_aliasing_off,
+      quad->filters_origin, quad->force_anti_aliasing_off,
       quad->backdrop_filter_quality, quad->intersects_damage_under,
       render_pass.filters, render_pass.backdrop_filters,
       render_pass.backdrop_filter_bounds);

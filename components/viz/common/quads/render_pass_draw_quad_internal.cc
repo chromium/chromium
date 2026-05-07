@@ -33,7 +33,6 @@ void RenderPassDrawQuadInternal::ExtendValue(
   cc::MathUtil::AddToTracedValue("mask_texture_size", mask_texture_size, value);
   cc::MathUtil::AddToTracedValue("filters_scale", filters_scale, value);
   cc::MathUtil::AddToTracedValue("filters_origin", filters_origin, value);
-  cc::MathUtil::AddToTracedValue("tex_coord_rect", tex_coord_rect, value);
   value->SetDouble("backdrop_filter_quality", backdrop_filter_quality);
   value->SetBoolean("force_anti_aliasing_off", force_anti_aliasing_off);
   value->SetBoolean("intersects_damage_under", intersects_damage_under);

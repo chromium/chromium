@@ -298,12 +298,6 @@ struct StructTraits<viz::mojom::CompositorRenderPassQuadStateDataView,
     return quad->filters_origin;
   }
 
-  static const gfx::RectF& tex_coord_rect(const viz::DrawQuad& input) {
-    const viz::CompositorRenderPassDrawQuad* quad =
-        viz::CompositorRenderPassDrawQuad::MaterialCast(&input);
-    return quad->tex_coord_rect;
-  }
-
   static bool force_anti_aliasing_off(const viz::DrawQuad& input) {
     const viz::CompositorRenderPassDrawQuad* quad =
         viz::CompositorRenderPassDrawQuad::MaterialCast(&input);

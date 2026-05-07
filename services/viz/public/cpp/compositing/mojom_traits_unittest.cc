@@ -1181,7 +1181,6 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   const gfx::Size mask_texture_size(1234, 5678);
   gfx::Vector2dF filters_scale(1234.1f, 4321.2f);
   gfx::PointF filters_origin(8765.4f, 4567.8f);
-  gfx::RectF tex_coord_rect(1.f, 1.f, 1234.f, 5678.f);
   const float backdrop_filter_quality = 1.0f;
   const bool intersects_damage_under = false;
 
@@ -1189,7 +1188,7 @@ TEST_F(StructTraitsTest, QuadListBasic) {
       render_pass->CreateAndAppendDrawQuad<CompositorRenderPassDrawQuad>();
   render_pass_quad->SetAll(sqs, rect4, rect4, needs_blending, render_pass_id,
                            resource_id4, mask_uv_rect, mask_texture_size,
-                           filters_scale, filters_origin, tex_coord_rect,
+                           filters_scale, filters_origin,
                            force_anti_aliasing_off, backdrop_filter_quality,
                            intersects_damage_under);
 
@@ -1281,7 +1280,6 @@ TEST_F(StructTraitsTest, QuadListBasic) {
   EXPECT_EQ(mask_texture_size, out_render_pass_draw_quad->mask_texture_size);
   EXPECT_EQ(filters_scale, out_render_pass_draw_quad->filters_scale);
   EXPECT_EQ(filters_origin, out_render_pass_draw_quad->filters_origin);
-  EXPECT_EQ(tex_coord_rect, out_render_pass_draw_quad->tex_coord_rect);
   EXPECT_EQ(force_anti_aliasing_off,
             out_render_pass_draw_quad->force_anti_aliasing_off);
   EXPECT_EQ(backdrop_filter_quality,

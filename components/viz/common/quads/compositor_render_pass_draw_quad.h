@@ -33,7 +33,6 @@ class VIZ_COMMON_EXPORT CompositorRenderPassDrawQuad
               ResourceId mask_resource_id,
               const gfx::RectF& mask_uv_rect,
               const gfx::Size& mask_texture_size,
-              const gfx::RectF& tex_coord_rect,
               bool force_anti_aliasing_off);
 
   void SetAll(const SharedQuadState* shared_quad_state,
@@ -46,7 +45,6 @@ class VIZ_COMMON_EXPORT CompositorRenderPassDrawQuad
               const gfx::Size& mask_texture_size,
               const gfx::Vector2dF& filters_scale,
               const gfx::PointF& filters_origin,
-              const gfx::RectF& tex_coord_rect,
               bool force_anti_aliasing_off,
               float backdrop_filter_quality,
               bool intersects_damage_under);

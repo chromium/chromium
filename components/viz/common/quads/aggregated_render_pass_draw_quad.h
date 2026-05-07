@@ -37,7 +37,6 @@ class VIZ_COMMON_EXPORT AggregatedRenderPassDrawQuad
               ResourceId mask_resource_id,
               const gfx::RectF& mask_uv_rect,
               const gfx::Size& mask_texture_size,
-              const gfx::RectF& tex_coord_rect,
               bool force_anti_aliasing_off);
 
   void SetFilters(cc::FilterOperations filters,
@@ -59,13 +58,14 @@ class VIZ_COMMON_EXPORT AggregatedRenderPassDrawQuad
               const gfx::Size& mask_texture_size,
               const gfx::Vector2dF& filters_scale,
               const gfx::PointF& filters_origin,
-              const gfx::RectF& tex_coord_rect,
               bool force_anti_aliasing_off,
               float backdrop_filter_quality,
               bool intersects_damage_under,
               cc::FilterOperations filters,
               cc::FilterOperations backdrop_filters,
               std::optional<SkPath> backdrop_filter_bounds);
+
+  gfx::RectF tex_coord_rect() const { return gfx::RectF(rect.size()); }
 
   AggregatedRenderPassId render_pass_id;
 

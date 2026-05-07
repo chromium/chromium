@@ -267,7 +267,7 @@ AggregatedRenderPassDrawQuad* CreateRenderPassDrawQuadAt(
   AggregatedRenderPassDrawQuad* quad =
       render_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
   quad->SetNew(shared_quad_state, rect, rect, render_pass_id, ResourceId(2),
-               gfx::RectF(), gfx::Size(), gfx::RectF(), false);
+               gfx::RectF(), gfx::Size(), false);
   return quad;
 }
 
@@ -2711,7 +2711,6 @@ class OverlayProcessorWinSurfacePlaneTest
             /*mask_resource_id=*/kInvalidResourceId,
             /*mask_uv_rect=*/gfx::RectF(),
             /*mask_texture_size=*/gfx::Size(),
-            /*tex_coord_rect=*/gfx::RectF(pass_list_->back()->output_rect),
             /*force_anti_aliasing_off=*/false);
 
         // Pretend that our old root pass is actually the root pass of a

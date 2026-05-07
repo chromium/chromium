@@ -27,7 +27,6 @@ void CompositorRenderPassDrawQuad::SetNew(
     ResourceId mask_resource_id,
     const gfx::RectF& mask_uv_rect,
     const gfx::Size& mask_texture_size,
-    const gfx::RectF& tex_coord_rect,
     bool force_anti_aliasing_off) {
   DCHECK(render_pass);
 
@@ -38,8 +37,8 @@ void CompositorRenderPassDrawQuad::SetNew(
   float backdrop_filter_quality = 1.0f;
   SetAll(shared_quad_state, rect, visible_rect, needs_blending, render_pass,
          mask_resource_id, mask_uv_rect, mask_texture_size, filters_scale,
-         filters_origin, tex_coord_rect, force_anti_aliasing_off,
-         backdrop_filter_quality, intersects_damage_under);
+         filters_origin, force_anti_aliasing_off, backdrop_filter_quality,
+         intersects_damage_under);
 }
 
 void CompositorRenderPassDrawQuad::SetAll(
@@ -53,7 +52,6 @@ void CompositorRenderPassDrawQuad::SetAll(
     const gfx::Size& mask_texture_size,
     const gfx::Vector2dF& filters_scale,
     const gfx::PointF& filters_origin,
-    const gfx::RectF& tex_coord_rect,
     bool force_anti_aliasing_off,
     float backdrop_filter_quality,
     bool intersects_damage_under) {
@@ -67,7 +65,6 @@ void CompositorRenderPassDrawQuad::SetAll(
   this->mask_texture_size = mask_texture_size;
   this->filters_scale = filters_scale;
   this->filters_origin = filters_origin;
-  this->tex_coord_rect = tex_coord_rect;
   this->force_anti_aliasing_off = force_anti_aliasing_off;
   this->backdrop_filter_quality = backdrop_filter_quality;
   this->intersects_damage_under = intersects_damage_under;

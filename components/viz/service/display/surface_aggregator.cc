@@ -1088,11 +1088,6 @@ void SurfaceAggregator::EmitSurfaceContent(
         surface_quad->visible_rect, inverse_extra_content_scale_x,
         inverse_extra_content_scale_y));
 
-    // |tex_coord_rect| - A rectangle representing the bounds of the texture
-    //   in the RenderPass's |quad_rect|. Not in content space, instead as an
-    //   offset within |quad_rect|.
-    gfx::RectF tex_coord_rect = gfx::RectF(gfx::SizeF(quad_rect.size()));
-
     // We can't produce content outside of |quad_rect|, so clip the visible
     // rect if necessary.
     quad_visible_rect.Intersect(quad_rect);
@@ -1108,8 +1103,7 @@ void SurfaceAggregator::EmitSurfaceContent(
           dest_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
       quad->SetNew(shared_quad_state, quad_rect, quad_visible_rect,
                    remapped_pass_id, kInvalidResourceId, gfx::RectF(),
-                   gfx::Size(), tex_coord_rect,
-                   /*force_anti_aliasing_off=*/false);
+                   gfx::Size(), /*force_anti_aliasing_off=*/false);
       quad->SetFilters(resolved_root_pass.render_pass().filters,
                        resolved_root_pass.render_pass().backdrop_filters,
                        resolved_root_pass.render_pass().backdrop_filter_bounds,
@@ -1311,7 +1305,6 @@ void SurfaceAggregator::AddRenderPassHelper(
       render_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
   quad->SetNew(shared_quad_state, current_output_rect, current_output_rect,
                quad_pass_id, kInvalidResourceId, gfx::RectF(), gfx::Size(),
-               gfx::RectF(current_output_rect),
                /*force_anti_aliasing_off=*/false);
   dest_pass_list_->push_back(std::move(render_pass));
 }

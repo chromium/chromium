@@ -61,8 +61,6 @@ struct CompositorRenderPassQuadState {
   // original primitive. This used to correctly position crop rects, lights,
   // etc.
   gfx.mojom.PointF filters_origin;
-  // Render surface's non-normalized texture rect.
-  gfx.mojom.RectF tex_coord_rect;
 
   bool force_anti_aliasing_off;
   float backdrop_filter_quality;

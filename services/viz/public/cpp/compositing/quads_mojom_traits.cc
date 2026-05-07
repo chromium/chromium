@@ -98,7 +98,6 @@ bool StructTraits<
       !data.ReadMaskTextureSize(&quad->mask_texture_size) ||
       !data.ReadFiltersScale(&quad->filters_scale) ||
       !data.ReadFiltersOrigin(&quad->filters_origin) ||
-      !data.ReadTexCoordRect(&quad->tex_coord_rect) ||
       !data.ReadRenderPassId(&quad->render_pass_id) ||
       !data.ReadMaskResourceId(&quad->resource_id)) {
     return false;

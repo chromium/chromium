@@ -911,14 +911,13 @@ void LayerTreeImpl::Draw(Layer& layer,
   auto* quad =
       parent_pass.CreateAndAppendDrawQuad<viz::CompositorRenderPassDrawQuad>();
 
-  gfx::RectF tex_coord_rect(gfx::Rect(content_rect.size()));
   quad->SetAll(shared_quad_state, content_rect, content_rect,
                /*needs_blending=*/true, new_pass->id,
                /*mask_resource_id=*/viz::kInvalidResourceId,
                /*mask_uv_rect=*/gfx::RectF(),
                /*mask_texture_size=*/gfx::Size(),
                /*filters_scale=*/scale_to_new_pass,
-               /*filters_origin=*/gfx::PointF(), tex_coord_rect,
+               /*filters_origin=*/gfx::PointF(),
                /*force_anti_aliasing_off=*/false,
                /*backdrop_filter_quality=*/1.f,
                /*intersects_damage_under=*/true);

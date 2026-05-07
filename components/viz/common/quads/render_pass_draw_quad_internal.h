@@ -34,8 +34,6 @@ class VIZ_COMMON_EXPORT RenderPassDrawQuadInternal : public DrawQuad {
   // crop rects, lights, etc.
   gfx::PointF filters_origin;
 
-  gfx::RectF tex_coord_rect;
-
   float backdrop_filter_quality = 1.0f;
 
   bool force_anti_aliasing_off = false;

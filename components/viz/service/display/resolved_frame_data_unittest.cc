@@ -87,7 +87,7 @@ void AddRenderPassQuad(CompositorRenderPass* render_pass,
   auto* quad =
       render_pass->CreateAndAppendDrawQuad<CompositorRenderPassDrawQuad>();
   quad->SetNew(sqs, kOutputRect, kOutputRect, render_pass_id,
-               kInvalidResourceId, gfx::RectF(), gfx::Size(), gfx::RectF(),
+               kInvalidResourceId, gfx::RectF(), gfx::Size(),
                /*force_anti_aliasing_off=*/false);
 }
 

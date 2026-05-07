@@ -129,7 +129,7 @@ Self& AddQuads<Self>::AddRenderPassQuad(const gfx::Rect& rect,
   quad->SetAll(
       sqs, rect, visible_rect, params.needs_blending, id, kInvalidResourceId,
       gfx::RectF(), gfx::Size(), gfx::Vector2dF(1.0f, 1.0f), gfx::PointF(),
-      gfx::RectF(), params.force_anti_aliasing_off,
+      params.force_anti_aliasing_off,
       /*backdrop_filter_quality=*/1.0f, params.intersects_damage_under);
 
   return ThisRef();

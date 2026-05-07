@@ -416,8 +416,7 @@ TEST_P(RendererPixelTest, BypassableTextureQuad_ClipRect) {
       auto* pass_quad =
           root_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
       pass_quad->SetNew(sqs, child_pass_rect, child_pass_rect, child_pass_id,
-                        kInvalidResourceId, gfx::RectF(), gfx::Size(),
-                        gfx::RectF(child_pass_rect), false);
+                        kInvalidResourceId, gfx::RectF(), gfx::Size(), false);
     }
     {
       auto* sqs =
@@ -497,8 +496,7 @@ TEST_P(RendererPixelTest, BypassableTextureQuad_Rotation_ClipRect) {
       auto* pass_quad =
           root_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
       pass_quad->SetNew(sqs, child_pass_rect, child_pass_rect, child_pass_id,
-                        kInvalidResourceId, gfx::RectF(), gfx::Size(),
-                        gfx::RectF(child_pass_rect), false);
+                        kInvalidResourceId, gfx::RectF(), gfx::Size(), false);
     }
     {
       auto* sqs =
@@ -589,7 +587,7 @@ TEST_P(RendererPixelTest, BypassableRenderPassQuad) {
         child_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
     pass_quad->SetNew(sqs, grand_child_pass_rect, grand_child_pass_rect,
                       grand_child_pass_id, kInvalidResourceId, gfx::RectF(),
-                      gfx::Size(), gfx::RectF(grand_child_pass_rect), false);
+                      gfx::Size(), false);
     pass_list.push_back(std::move(child_pass));
   }
 
@@ -604,8 +602,7 @@ TEST_P(RendererPixelTest, BypassableRenderPassQuad) {
       auto* pass_quad =
           root_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
       pass_quad->SetNew(sqs, child_pass_rect, child_pass_rect, child_pass_id,
-                        kInvalidResourceId, gfx::RectF(), gfx::Size(),
-                        gfx::RectF(child_pass_rect), false);
+                        kInvalidResourceId, gfx::RectF(), gfx::Size(), false);
     }
     {
       auto* sqs =
@@ -686,7 +683,7 @@ TEST_P(RendererPixelTest, BypassableRenderPassQuad_DoubleBypass) {
         child_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
     pass_quad->SetNew(sqs, grand_child_pass_rect, grand_child_pass_rect,
                       grand_child_pass_id, kInvalidResourceId, gfx::RectF(),
-                      gfx::Size(), gfx::RectF(grand_child_pass_rect), false);
+                      gfx::Size(), false);
     pass_list.push_back(std::move(child_pass));
   }
 
@@ -701,8 +698,7 @@ TEST_P(RendererPixelTest, BypassableRenderPassQuad_DoubleBypass) {
       auto* pass_quad =
           root_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
       pass_quad->SetNew(sqs, child_pass_rect, child_pass_rect, child_pass_id,
-                        kInvalidResourceId, gfx::RectF(), gfx::Size(),
-                        gfx::RectF(child_pass_rect), false);
+                        kInvalidResourceId, gfx::RectF(), gfx::Size(), false);
     }
     {
       auto* sqs =
@@ -785,7 +781,7 @@ TEST_P(RendererPixelTest, BypassableRenderPassQuad_DoubleBypass_ScaledClip) {
         child_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
     pass_quad->SetNew(sqs, grand_child_pass_rect, grand_child_pass_rect,
                       grand_child_pass_id, kInvalidResourceId, gfx::RectF(),
-                      gfx::Size(), gfx::RectF(grand_child_pass_rect), false);
+                      gfx::Size(), false);
     pass_list.push_back(std::move(child_pass));
   }
 
@@ -800,8 +796,7 @@ TEST_P(RendererPixelTest, BypassableRenderPassQuad_DoubleBypass_ScaledClip) {
       auto* pass_quad =
           root_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
       pass_quad->SetNew(sqs, child_pass_rect, child_pass_rect, child_pass_id,
-                        kInvalidResourceId, gfx::RectF(), gfx::Size(),
-                        gfx::RectF(child_pass_rect), false);
+                        kInvalidResourceId, gfx::RectF(), gfx::Size(), false);
     }
     {
       auto* sqs =
@@ -891,7 +886,7 @@ TEST_P(RendererPixelTest, BypassableRenderPassQuad_BackdropFilter_Extents) {
           root_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
       pass_quad->SetNew(sqs, backdrop_pass_rect, backdrop_pass_rect,
                         backdrop_pass_id, kInvalidResourceId, gfx::RectF(),
-                        gfx::Size(), gfx::RectF(backdrop_pass_rect), false);
+                        gfx::Size(), false);
       pass_quad->SetFilters(
           /*filters=*/{}, /*backdrop_filters=*/
           cc::FilterOperations({cc::FilterOperation::CreateBlurFilter(
@@ -1316,7 +1311,7 @@ TEST_P(RendererPixelTest, FastPassColorFilterAlpha) {
       root_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
   render_pass_quad->SetNew(pass_shared_state, pass_rect, pass_rect,
                            child_pass_id, kInvalidResourceId, gfx::RectF(),
-                           gfx::Size(), gfx::RectF(pass_rect), false);
+                           gfx::Size(), false);
   render_pass_quad->SetFilters(filters, /*backdrop_filters=*/{},
                                /*backdrop_filter_bounds=*/std::nullopt,
                                /*filters_scale=*/gfx::Vector2dF(1.0f, 1.0f),
@@ -1378,7 +1373,7 @@ TEST_P(RendererPixelTest, FastPassSaturateFilter) {
       root_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
   render_pass_quad->SetNew(pass_shared_state, pass_rect, pass_rect,
                            child_pass_id, kInvalidResourceId, gfx::RectF(),
-                           gfx::Size(), gfx::RectF(pass_rect), false);
+                           gfx::Size(), false);
   render_pass_quad->SetFilters(
       /*filters=*/cc::FilterOperations(
           {cc::FilterOperation::CreateSaturateFilter(0.5f)}),
@@ -1446,7 +1441,7 @@ TEST_P(RendererPixelTest, FastPassFilterChain) {
       root_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
   render_pass_quad->SetNew(pass_shared_state, pass_rect, pass_rect,
                            child_pass_id, kInvalidResourceId, gfx::RectF(),
-                           gfx::Size(), gfx::RectF(pass_rect), false);
+                           gfx::Size(), false);
   render_pass_quad->SetFilters(filters, /*backdrop_filters=*/{},
                                /*backdrop_filter_bounds=*/std::nullopt,
                                /*filters_scale=*/gfx::Vector2dF(1.0f, 1.0f),
@@ -1532,7 +1527,7 @@ TEST_P(RendererPixelTest, FastPassColorFilterAlphaTranslation) {
       root_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
   render_pass_quad->SetNew(pass_shared_state, pass_rect, pass_rect,
                            child_pass_id, kInvalidResourceId, gfx::RectF(),
-                           gfx::Size(), gfx::RectF(pass_rect), false);
+                           gfx::Size(), false);
   render_pass_quad->SetFilters(filters, /*backdrop_filters=*/{},
                                /*backdrop_filter_bounds=*/std::nullopt,
                                /*filters_scale=*/gfx::Vector2dF(1.0f, 1.0f),
@@ -1794,7 +1789,6 @@ TEST_P(RendererPixelTest, RenderPassAndMaskWithPartialQuad) {
       gfx::ScaleRect(gfx::RectF(sub_rect), 2.f / mask_rect.width(),
                      2.f / mask_rect.height()),  // mask_uv_rect
       gfx::Size(mask_rect.size()),               // mask_texture_size
-      gfx::RectF(sub_rect),                      // tex_coord_rect
       false);                                    // force_anti_aliasing_off
   // White background behind the masked render pass.
   auto* white = root_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
@@ -1889,7 +1883,6 @@ TEST_P(RendererPixelTest, RenderPassAndMaskWithPartialQuad2) {
       gfx::ScaleRect(gfx::RectF(sub_rect), 2.f / mask_rect.width(),
                      2.f / mask_rect.height()),  // mask_uv_rect
       gfx::Size(mask_rect.size()),               // mask_texture_size
-      gfx::RectF(sub_rect),                      // tex_coord_rect
       false);                                    // force_anti_aliasing_off
   // White background behind the masked render pass.
   auto* white = root_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
@@ -1971,7 +1964,6 @@ TEST_P(RendererPixelTest, RenderPassAndMaskForRoundedCorner) {
       gfx::ScaleRect(gfx::RectF(viewport_rect), 1.f / mask_rect.width(),
                      1.f / mask_rect.height()),  // mask_uv_rect
       gfx::Size(mask_rect.size()),               // mask_texture_size
-      gfx::RectF(viewport_rect),                 // tex_coord_rect
       false);                                    // force_anti_aliasing_off
   // White background behind the masked render pass.
   auto* white = root_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
@@ -2074,7 +2066,6 @@ TEST_P(RendererPixelTest, RenderPassAndMaskForRoundedCornerMultiRadii) {
       gfx::ScaleRect(gfx::RectF(viewport_rect), 1.f / mask_rect.width(),
                      1.f / mask_rect.height()),  // mask_uv_rect
       gfx::Size(mask_rect.size()),               // mask_texture_size
-      gfx::RectF(viewport_rect),                 // tex_coord_rect
       false);                                    // force_anti_aliasing_off
   // White background behind the masked render pass.
   auto* white = root_pass->CreateAndAppendDrawQuad<SolidColorDrawQuad>();
@@ -2193,7 +2184,6 @@ class RendererPixelTestWithBackdropFilter : public VizPixelTestWithParam {
                                filter_pass_layer_rect_, filter_pass_id,
                                mapped_mask_resource_id, mask_uv_rect,
                                mask_texture_size,
-                               gfx::RectF(),  // tex_coord_rect
                                false);        // force_anti_aliasing_off
       filter_pass_quad->SetFilters(
           /*filters=*/{}, this->backdrop_filters_,
@@ -2506,8 +2496,8 @@ TEST_P(GPURendererPixelTest, RenderPassDrawQuadForceAntiAliasingOff) {
   pass_quad->SetAll(pass_shared_state, rect, rect, needs_blending,
                     child_pass_id, kInvalidResourceId, gfx::RectF(),
                     gfx::Size(), gfx::Vector2dF(1.0f, 1.0f), gfx::PointF(),
-                    gfx::RectF(rect), force_anti_aliasing_off,
-                    backdrop_filter_quality, intersects_damage_under,
+                    force_anti_aliasing_off, backdrop_filter_quality,
+                    intersects_damage_under,
                     /*filters=*/cc::FilterOperations(),
                     /*backdrop_filters=*/cc::FilterOperations(),
                     /*backdrop_filter_bounds=*/std::nullopt);
@@ -2678,8 +2668,7 @@ TEST_P(GPURendererPixelTest, TrilinearFiltering) {
       root_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
   child_pass_quad->SetNew(child_pass_shared_state, child_pass_rect,
                           child_pass_rect, child_pass_id, kInvalidResourceId,
-                          gfx::RectF(), gfx::Size(),
-                          gfx::RectF(child_pass_rect), false);
+                          gfx::RectF(), gfx::Size(), false);
 
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(child_pass));
@@ -4140,7 +4129,7 @@ TEST_P(RendererPixelTest, BlurExpandsBounds) {
       root_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
   render_pass_quad->SetNew(pass_shared_state, pass_rect, pass_rect,
                            child_pass_id, kInvalidResourceId, gfx::RectF(),
-                           gfx::Size(), gfx::RectF(pass_rect), false);
+                           gfx::Size(), false);
   // Add 60px blur to draw quad.
   render_pass_quad->SetFilters(
       /*filters=*/cc::FilterOperations(

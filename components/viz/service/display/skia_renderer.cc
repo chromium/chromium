@@ -2918,7 +2918,7 @@ void SkiaRenderer::ScheduleOverlays() {
         // SkiaRenderer might've allocated a larger backing than our render
         // pass' requested size.
         overlay.uv_rect =
-            gfx::MapRect(overlay.rpdq->tex_coord_rect,
+            gfx::MapRect(overlay.rpdq->tex_coord_rect(),
                          gfx::RectF(backing->size), gfx::RectF(1, 1));
 
         if (overlay.rpdq->visible_rect != overlay.rpdq->rect) {
@@ -3391,7 +3391,7 @@ void SkiaRenderer::DrawRenderPassQuad(
         SkSamplingOptions(SkFilterMode::kLinear, SkMipmapMode::kLinear);
 
   params->vis_tex_coords = cc::MathUtil::ScaleRectProportional(
-      quad->tex_coord_rect, gfx::RectF(quad->rect), params->visible_rect);
+      quad->tex_coord_rect(), gfx::RectF(quad->rect), params->visible_rect);
   gfx::RectF valid_texel_bounds(content_image->width(),
                                 content_image->height());
 
@@ -4107,7 +4107,7 @@ void SkiaRenderer::PrepareRenderPassOverlay(
       }
 
       params.vis_tex_coords = cc::MathUtil::ScaleRectProportional(
-          quad->tex_coord_rect, gfx::RectF(quad->rect), params.visible_rect);
+          quad->tex_coord_rect(), gfx::RectF(quad->rect), params.visible_rect);
 
       gfx::RectF valid_texel_bounds(content_image->width(),
                                     content_image->height());

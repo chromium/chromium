@@ -628,7 +628,6 @@ void RenderSurfaceImpl::AppendQuads(const AppendQuadsContext& context,
         mask_uv_size.height() / unclipped_mask_target_size.height());
   }
 
-  gfx::RectF tex_coord_rect(gfx::Rect(output_rect.size()));
   auto* quad =
       render_pass->CreateAndAppendDrawQuad<viz::CompositorRenderPassDrawQuad>();
   const auto& append_render_pass_id =
@@ -640,7 +639,7 @@ void RenderSurfaceImpl::AppendQuads(const AppendQuadsContext& context,
       shared_quad_state, output_rect, unoccluded_output_rect,
       /*needs_blending=*/true, append_render_pass_id, mask_resource_id,
       mask_uv_rect, mask_texture_size, surface_contents_scale, gfx::PointF(),
-      tex_coord_rect, !layer_tree_impl_->settings().enable_edge_anti_aliasing,
+      !layer_tree_impl_->settings().enable_edge_anti_aliasing,
       OwningEffectNode()->backdrop_filter_quality, intersects_damage_under_);
 }
 

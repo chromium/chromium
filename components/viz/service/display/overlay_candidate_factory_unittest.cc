@@ -256,7 +256,7 @@ AggregatedRenderPassDrawQuad* AddRenderPassQuad(
   auto* rpdq =
       render_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
   rpdq->SetNew(quad_state, quad_rect, quad_rect, rpid, kInvalidResourceId,
-               gfx::RectF(), gfx::Size(), gfx::RectF(), false);
+               gfx::RectF(), gfx::Size(), false);
   return rpdq;
 }
 
@@ -668,8 +668,7 @@ TEST_F(OverlayCandidateFactoryArbitraryTransformTest,
       quad_list.AllocateAndConstruct<AggregatedRenderPassDrawQuad>();
   rpdq->SetNew(render_pass.CreateAndAppendSharedQuadState(),
                gfx::Rect(1, 1, 1, 1), gfx::Rect(1, 1, 1, 1), render_pass_id,
-               kInvalidResourceId, gfx::RectF(), gfx::Size(), gfx::RectF(),
-               false);
+               kInvalidResourceId, gfx::RectF(), gfx::Size(), false);
   // The actual filter operation doesn't matter in this case.
   rpdq->SetFilters(
       /*filters=*/{}, /*backdrop_filters=*/

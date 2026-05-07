@@ -545,7 +545,7 @@ void SoftwareRenderer::DrawRenderPassQuad(
 
   SkRect dest_rect = gfx::RectToSkRect(quad->rect);
   SkRect dest_visible_rect = gfx::RectToSkRect(quad->visible_rect);
-  SkRect content_rect = RectFToSkRect(quad->tex_coord_rect);
+  SkRect content_rect = RectFToSkRect(quad->tex_coord_rect());
 
   if (source_bitmap && content_rect.isEmpty()) {
     // In case someone forgets to set it, we're treating an empty

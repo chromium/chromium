@@ -146,15 +146,10 @@ void CreateTestRenderPassDrawQuad(const SharedQuadState* shared_state,
                                   cc::FilterOperations filters) {
   auto* quad =
       render_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
-  // The full `rect` is drawn (visible_rect == rect) but texture coords
-  // are relative to the underlying image.
-  gfx::RectF tex_coords{static_cast<float>(rect.width()),
-                        static_cast<float>(rect.height())};
   quad->SetNew(shared_state, rect, rect, pass_id,
                kInvalidResourceId,        // mask_resource_id
                gfx::RectF(),              // mask_uv_rect
                gfx::Size(),               // mask_texture_size
-               tex_coords,                // tex_coord_rect
                false);                    // force_anti_aliasing_off
   quad->SetFilters(filters, {},           // backdrop_filters
                    std::nullopt,          // backdrop_filter_bounds
