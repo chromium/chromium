@@ -20,9 +20,6 @@ class FakeGlobalBrowserCollection : public GlobalBrowserCollection {
   void SimulateBrowserClosed(BrowserWindowInterface* browser) {
     GlobalBrowserCollection::OnBrowserClosed(browser);
   }
-  void SimulateBrowserActivated(BrowserWindowInterface* browser) {
-    GlobalBrowserCollection::OnBrowserActivated(browser);
-  }
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_TEST_FAKE_GLOBAL_BROWSER_COLLECTION_H_

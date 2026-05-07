@@ -8,26 +8,18 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/global_features.h"
-#include "chrome/browser/global_features_test_support.h"
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
-#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
-#include "chrome/browser/ui/browser_window/test/fake_global_browser_collection.h"
-#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "content/public/test/browser_task_environment.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -37,35 +29,14 @@ constexpr base::TimeDelta kLongTimeOfInactivity = base::Minutes(30);
 
 }  // namespace
 
-class GlobalFeaturesFake : public GlobalFeatures {
- public:
-  GlobalFeaturesFake() = default;
-
- protected:
-  std::unique_ptr<GlobalBrowserCollection> CreateGlobalBrowserCollection()
-      override {
-    return std::make_unique<FakeGlobalBrowserCollection>();
-  }
-};
-
-std::unique_ptr<GlobalFeatures> CreateGlobalFeatures() {
-  return std::make_unique<GlobalFeaturesFake>();
-}
-
 class ProfileActivityMetricsRecorderTest : public testing::Test {
  public:
   ProfileActivityMetricsRecorderTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        profile_manager_(TestingBrowserProcess::GetGlobal()),
-        scoped_features_override_(base::BindRepeating(&CreateGlobalFeatures)) {
+        profile_manager_(TestingBrowserProcess::GetGlobal()) {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kNoFirstRun);
     base::SetRecordActionTaskRunner(
         task_environment_.GetMainThreadTaskRunner());
-  }
-
-  FakeGlobalBrowserCollection* GetFakeCollection() {
-    return static_cast<FakeGlobalBrowserCollection*>(
-        g_browser_process->GetFeatures()->global_browser_collection());
   }
 
   ProfileActivityMetricsRecorderTest(
@@ -84,44 +55,19 @@ class ProfileActivityMetricsRecorderTest : public testing::Test {
   }
 
   void TearDown() override {
-    // Clean up mock browsers from the global collection before they are
-    // destroyed
-    for (auto& browser : mock_browsers_) {
-      GetFakeCollection()->SimulateBrowserClosed(browser.get());
-    }
-    mock_browsers_.clear();
-
     // Clean up the global state, so it can be correctly initialized for the
     // next test case.
     ProfileActivityMetricsRecorder::CleanupForTesting();
     metrics::DesktopSessionDurationTracker::CleanupForTesting();
+
   }
 
   void ActivateBrowser(Profile* profile) {
-    auto mock_browser =
-        std::make_unique<testing::NiceMock<MockBrowserWindowInterface>>();
-    ON_CALL(*mock_browser, GetProfile())
-        .WillByDefault(testing::Return(profile));
+    Browser::CreateParams browser_params(profile, false);
+    browsers_.push_back(CreateBrowserWithTestWindowForParams(browser_params));
 
-    // Create a dummy TabStripModel and configure the mock to return it.
-    auto tab_strip_delegate = std::make_unique<TestTabStripModelDelegate>();
-    auto tab_strip_model =
-        std::make_unique<TabStripModel>(tab_strip_delegate.get(), profile);
-    ON_CALL(*mock_browser, GetTabStripModel())
-        .WillByDefault(testing::Return(tab_strip_model.get()));
-
-    // Register the mock browser creation before activating it
-    GetFakeCollection()->SimulateBrowserCreated(mock_browser.get());
-
-    // Trigger the recorder by notifying the global collection's observer
-    // interface
-    GetFakeCollection()->SimulateBrowserActivated(mock_browser.get());
-
-    // Keep the delegates and models alive for the lifetime of the mock browser.
-    mock_tab_strip_delegates_.push_back(std::move(tab_strip_delegate));
-    mock_tab_strip_models_.push_back(std::move(tab_strip_model));
-    mock_browsers_.push_back(std::move(mock_browser));
-
+    // This triggers the recorder to post a task, wait until that's done.
+    browsers_.back().get()->DidBecomeActive();
     task_environment_.RunUntilIdle();
   }
 
@@ -159,13 +105,8 @@ class ProfileActivityMetricsRecorderTest : public testing::Test {
 
   TestingProfileManager profile_manager_;
   base::HistogramTester histogram_tester_;
-  test::ScopedGlobalFeaturesOverride scoped_features_override_;
 
-  std::vector<std::unique_ptr<TestTabStripModelDelegate>>
-      mock_tab_strip_delegates_;
-  std::vector<std::unique_ptr<TabStripModel>> mock_tab_strip_models_;
-  std::vector<std::unique_ptr<testing::NiceMock<MockBrowserWindowInterface>>>
-      mock_browsers_;
+  std::vector<std::unique_ptr<Browser>> browsers_;
 };
 
 TEST_F(ProfileActivityMetricsRecorderTest, GuestProfile) {

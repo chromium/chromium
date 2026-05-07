@@ -10275,7 +10275,6 @@ test("unit_tests") {
       # chrome_browser_cloud_management_register_watcher_unittest.cc is
       # modularized.
       "//chrome/browser/policy:impl",
-      "//chrome/browser/ui/browser_window/test:test_support",
     ]
 
     if (is_linux || is_win || is_mac) {
