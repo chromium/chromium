@@ -217,7 +217,7 @@
     {
         "name": "runtime-annotation-android",
         "group": "androidx.compose.runtime",
-        "version": "1.12.0-alpha01"
+        "version": "1.12.0-alpha02"
     },
     {
         "name": "runtime-retain",
@@ -422,7 +422,7 @@
     {
         "name": "datastore",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha08"
+        "version": "1.3.0-alpha09"
     },
     {
         "name": "datastore-android",
@@ -437,17 +437,17 @@
     {
         "name": "datastore-core-android",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha08"
+        "version": "1.3.0-alpha09"
     },
     {
         "name": "datastore-core-okio",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha08"
+        "version": "1.3.0-alpha09"
     },
     {
         "name": "datastore-core-okio-jvm",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha08"
+        "version": "1.3.0-alpha09"
     },
     {
         "name": "datastore-preferences",
@@ -457,27 +457,27 @@
     {
         "name": "datastore-preferences-android",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha08"
+        "version": "1.3.0-alpha09"
     },
     {
         "name": "datastore-preferences-core",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha08"
+        "version": "1.3.0-alpha09"
     },
     {
         "name": "datastore-preferences-core-android",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha08"
+        "version": "1.3.0-alpha09"
     },
     {
         "name": "datastore-preferences-external-protobuf",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha08"
+        "version": "1.3.0-alpha09"
     },
     {
         "name": "datastore-preferences-proto",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha08"
+        "version": "1.3.0-alpha09"
     },
     {
         "name": "documentfile",
@@ -1152,7 +1152,7 @@
     {
         "name": "tracing-android",
         "group": "androidx.tracing",
-        "version": "2.0.0-alpha06"
+        "version": "2.0.0-alpha07"
     },
     {
         "name": "tracing-ktx",
@@ -1652,7 +1652,7 @@
     {
         "name": "protobuf-javalite",
         "group": "com.google.protobuf",
-        "version": "4.35.0-RC1"
+        "version": "4.35.0-RC2"
     },
     {
         "name": "protobuf-lite",
