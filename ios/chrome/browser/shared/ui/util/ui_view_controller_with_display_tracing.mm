@@ -12,27 +12,9 @@
 #import "base/trace_event/trace_event.h"
 #import "base/trace_event/typed_macros.h"
 
-namespace {
-enum class UIUpdatePhase {
-  kAfterUpdateScheduled,
-  kBeforeEventDispatch,
-  kAfterEventDispatch,
-  kBeforeCADisplayLinkDispatch,
-  kAfterCADisplayLinkDispatch,
-  kBeforeCATransactionCommit,
-  kAfterCATransactionCommit,
-  kBeforeLowLatencyEventDispatch,
-  kAfterLowLatencyEventDispatch,
-  kBeforeLowLatencyCATransactionCommit,
-  kAfterLowLatencyCATransactionCommit,
-  kAfterUpdateComplete,
-};
-}  // namespace
-
 @implementation UIViewControllerWithDisplayTracing {
   std::string _className;
-  BOOL _phaseActive;
-  UIUpdateLink* _updateLink;
+  CADisplayLink* _displayLink;
 }
 
 - (instancetype)init {
@@ -63,110 +45,28 @@ enum class UIUpdatePhase {
 
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
-  [self maybeInitializeUpdateLink];
-}
 
-- (void)viewDidAppear:(BOOL)animated {
-  [super viewDidAppear:animated];
-  [self maybeInitializeUpdateLink];
-}
-
-- (void)maybeInitializeUpdateLink {
-  // UIUpdateLink requires the view to be attached to a window hierarchy to be
-  // correctly configured. If `self.view.window` is nil (which is often the
-  // case during the initial `viewWillAppear:`), defer initialization until
-  // the window is available (e.g., in `viewDidAppear:`).
-  if (!_updateLink && self.view.window) {
-    _updateLink = [UIUpdateLink updateLinkForView:self.view];
-    if (!_updateLink) {
-      return;
-    }
-
-    UIUpdateLink* localUpdateLink = _updateLink;
-    __weak __typeof(self) weakSelf = self;
-    auto registerPhase = ^(UIUpdateActionPhase* phase, UIUpdatePhase phaseId) {
-      [localUpdateLink
-          addActionToPhase:phase
-                   handler:^(UIUpdateLink* link, UIUpdateInfo* info) {
-                     [weakSelf handleUpdatePhase:phaseId];
-                   }];
-    };
-
-    registerPhase(UIUpdateActionPhase.afterUpdateScheduled,
-                  UIUpdatePhase::kAfterUpdateScheduled);
-    registerPhase(UIUpdateActionPhase.beforeEventDispatch,
-                  UIUpdatePhase::kBeforeEventDispatch);
-    registerPhase(UIUpdateActionPhase.afterEventDispatch,
-                  UIUpdatePhase::kAfterEventDispatch);
-    registerPhase(UIUpdateActionPhase.beforeCADisplayLinkDispatch,
-                  UIUpdatePhase::kBeforeCADisplayLinkDispatch);
-    registerPhase(UIUpdateActionPhase.afterCADisplayLinkDispatch,
-                  UIUpdatePhase::kAfterCADisplayLinkDispatch);
-    registerPhase(UIUpdateActionPhase.beforeCATransactionCommit,
-                  UIUpdatePhase::kBeforeCATransactionCommit);
-    registerPhase(UIUpdateActionPhase.afterCATransactionCommit,
-                  UIUpdatePhase::kAfterCATransactionCommit);
-    registerPhase(UIUpdateActionPhase.beforeLowLatencyEventDispatch,
-                  UIUpdatePhase::kBeforeLowLatencyEventDispatch);
-    registerPhase(UIUpdateActionPhase.afterLowLatencyEventDispatch,
-                  UIUpdatePhase::kAfterLowLatencyEventDispatch);
-    registerPhase(UIUpdateActionPhase.beforeLowLatencyCATransactionCommit,
-                  UIUpdatePhase::kBeforeLowLatencyCATransactionCommit);
-    registerPhase(UIUpdateActionPhase.afterLowLatencyCATransactionCommit,
-                  UIUpdatePhase::kAfterLowLatencyCATransactionCommit);
-    registerPhase(UIUpdateActionPhase.afterUpdateComplete,
-                  UIUpdatePhase::kAfterUpdateComplete);
-
-    _updateLink.enabled = YES;
-  }
-}
-
-- (void)endCurrentPhaseIfNeeded {
-  if (_phaseActive) {
-    TRACE_EVENT_END("ui");
-    _phaseActive = NO;
+  if (!_displayLink) {
+    _displayLink = [CADisplayLink displayLinkWithTarget:self
+                                               selector:@selector(didDisplay:)];
+    [_displayLink addToRunLoop:[NSRunLoop mainRunLoop]
+                       forMode:NSRunLoopCommonModes];
   }
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
   [super viewDidDisappear:animated];
 
-  if (_updateLink) {
-    [self endCurrentPhaseIfNeeded];
-    _updateLink.enabled = NO;
-    _updateLink = nil;
-  }
+  [_displayLink invalidate];
+  _displayLink = nil;
 }
 
-- (void)handleUpdatePhase:(UIUpdatePhase)phaseId {
-  [self endCurrentPhaseIfNeeded];
-
-  const char* phaseName = nullptr;
-  switch (phaseId) {
-    case UIUpdatePhase::kBeforeEventDispatch:
-      phaseName = "EventDispatch";
-      break;
-    case UIUpdatePhase::kBeforeCADisplayLinkDispatch:
-      phaseName = "CADisplayLinkDispatch";
-      break;
-    case UIUpdatePhase::kBeforeCATransactionCommit:
-      phaseName = "CATransactionCommit";
-      break;
-    case UIUpdatePhase::kBeforeLowLatencyEventDispatch:
-      phaseName = "LowLatencyEventDispatch";
-      break;
-    case UIUpdatePhase::kBeforeLowLatencyCATransactionCommit:
-      phaseName = "LowLatencyCATransactionCommit";
-      break;
-    default:
-      break;
-  }
-
-  if (phaseName) {
-    TRACE_EVENT_BEGIN("ui", perfetto::DynamicString(phaseName), "controller",
-                      _className);
-    _phaseActive = YES;
-  }
+- (void)didDisplay:(CADisplayLink*)displayLink {
+  // Note: Even though the class name is immutable, to avoid potential trace
+  // data corruption if the view controller is destryed while a trace is being
+  // captured, we must use perfetto::DynamicString.
+  TRACE_EVENT_INSTANT("ui", perfetto::DynamicString(_className.c_str()),
+                      perfetto::NamedTrack("Display"));
 }
 
 @end
