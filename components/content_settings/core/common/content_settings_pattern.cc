@@ -576,11 +576,20 @@ bool ContentSettingsPattern::CompareDomains::operator()(
     return false;
   }
 
-  if (net::IsSubdomainOf(domain_a, domain_b)) {
-    return true;
-  }
-  if (net::IsSubdomainOf(domain_b, domain_a)) {
-    return false;
+  // A subdomain is always strictly longer than its parent (it has at least one
+  // extra label plus a dot). Use this to skip IsSubdomainOf calls: when lengths
+  // are equal neither can be a subdomain, and when they differ only the longer
+  // one can be.
+  if (domain_a.size() != domain_b.size()) {
+    if (domain_a.size() > domain_b.size()) {
+      if (net::IsSubdomainOf(domain_a, domain_b)) {
+        return true;
+      }
+    } else {
+      if (net::IsSubdomainOf(domain_b, domain_a)) {
+        return false;
+      }
+    }
   }
   return CompareDomainNames(domain_a, domain_b) < 0;
 }

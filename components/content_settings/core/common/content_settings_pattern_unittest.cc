@@ -1091,6 +1091,17 @@ TEST(ContentSettingsPatternTest, CompareDomains) {
   EXPECT_FALSE(less("b", "c.b"));
   EXPECT_FALSE(less("c.b", "a.b"));
 
+  // Equal-length domains that are not subdomains of each other: should compare
+  // alphabetically (exercises the equal-length fast path).
+  EXPECT_TRUE(less("a.b", "c.d"));
+  EXPECT_FALSE(less("c.d", "a.b"));
+  EXPECT_FALSE(less("a.b", "a.b"));
+
+  // Different-length non-subdomain pairs (exercises the single-direction
+  // IsSubdomainOf check). "a.c" vs "b" compares rightmost labels "c" > "b".
+  EXPECT_FALSE(less("a.c", "b"));
+  EXPECT_TRUE(less("b", "a.c"));
+
   std::vector<std::string> domains{
       "b",
       "a",
