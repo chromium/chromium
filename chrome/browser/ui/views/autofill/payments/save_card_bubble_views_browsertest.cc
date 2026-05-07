@@ -1457,8 +1457,6 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Upload_RequestedCardholderNameTextfieldIsPrefilledWithFocusName) {
-  base::HistogramTester histogram_tester;
-
   // Start sync.
   ASSERT_TRUE(SetupSyncAndHideAccountNameEmailProfile());
   // Set the user's full name.
@@ -1478,8 +1476,6 @@ IN_PROC_BROWSER_TEST_P(
   views::Textfield* cardholder_name_textfield = static_cast<views::Textfield*>(
       FindViewInBubbleById(DialogViewId::CARDHOLDER_NAME_TEXTFIELD));
   EXPECT_EQ(cardholder_name_textfield->GetText(), u"John Smith");
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.SaveCardCardholderNamePrefilled", true, 1);
   EXPECT_TRUE(FindViewInBubbleById(DialogViewId::CARDHOLDER_NAME_TOOLTIP));
 }
 
@@ -1489,8 +1485,6 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream,
     Upload_RequestedCardholderNameTextfieldIsNotPrefilledWithFocusNameIfMissing) {
-  base::HistogramTester histogram_tester;
-
   // Start sync. SetupSyncAndHideAccountNameEmailProfile() usually seeds account
   // information, including the full name, so a workaround for that is to sign
   // in first.
@@ -1511,8 +1505,6 @@ IN_PROC_BROWSER_TEST_P(
   views::Textfield* cardholder_name_textfield = static_cast<views::Textfield*>(
       FindViewInBubbleById(DialogViewId::CARDHOLDER_NAME_TEXTFIELD));
   EXPECT_TRUE(cardholder_name_textfield->GetText().empty());
-  histogram_tester.ExpectUniqueSample(
-      "Autofill.SaveCardCardholderNamePrefilled", false, 1);
   EXPECT_FALSE(FindViewInBubbleById(DialogViewId::CARDHOLDER_NAME_TOOLTIP));
 }
 

@@ -62,10 +62,6 @@ void LogCreditCardUploadLegalMessageLinkClicked() {
       "Autofill_CreditCardUpload_LegalMessageLinkClicked"));
 }
 
-void LogSaveCardCardholderNamePrefilled(bool prefilled) {
-  UMA_HISTOGRAM_BOOLEAN("Autofill.SaveCardCardholderNamePrefilled", prefilled);
-}
-
 void LogSaveCardCardholderNameWasEdited(bool edited) {
   UMA_HISTOGRAM_BOOLEAN("Autofill.SaveCardCardholderNameWasEdited", edited);
 }

@@ -271,8 +271,6 @@ std::unique_ptr<views::View> SaveCardOfferBubbleViews::CreateMainContentView() {
     cardholder_name_textfield_->SetTextInputType(
         ui::TextInputType::TEXT_INPUT_TYPE_TEXT);
     cardholder_name_textfield_->SetText(prefilled_name);
-    autofill_metrics::LogSaveCardCardholderNamePrefilled(
-        !prefilled_name.empty());
 
     // Add cardholder name elements to a single view, then to the final dialog.
     std::unique_ptr<views::View> cardholder_name_view =

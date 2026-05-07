@@ -97,22 +97,6 @@ TEST_F(CardNameFixFlowControllerImplTest, LogShown) {
       AutofillMetrics::CARDHOLDER_NAME_FIX_FLOW_PROMPT_SHOWN, 1);
 }
 
-TEST_F(CardNameFixFlowControllerImplTest, LogPrefilled) {
-  base::HistogramTester histogram_tester;
-  ShowPromptWithInferredName();
-
-  histogram_tester.ExpectBucketCount("Autofill.SaveCardCardholderNamePrefilled",
-                                     true, 1);
-}
-
-TEST_F(CardNameFixFlowControllerImplTest, LogNotPrefilled) {
-  base::HistogramTester histogram_tester;
-  ShowPromptWithoutInferredName();
-
-  histogram_tester.ExpectBucketCount("Autofill.SaveCardCardholderNamePrefilled",
-                                     false, 1);
-}
-
 TEST_F(CardNameFixFlowControllerImplTest, LogAccepted) {
   base::HistogramTester histogram_tester;
   ShowPromptWithInferredName();

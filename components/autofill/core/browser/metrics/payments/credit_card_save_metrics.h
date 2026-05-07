@@ -213,10 +213,6 @@ void LogCreditCardSaveNotOfferedDueToStrikeDatabaseMetric(
 
 void LogCreditCardUploadLegalMessageLinkClicked();
 
-// When a cardholder name fix flow is shown during credit card upload, logs
-// whether the cardholder name was prefilled or not.
-void LogSaveCardCardholderNamePrefilled(bool prefilled);
-
 // When a cardholder name fix flow is shown during credit card upload and the
 // user accepts upload, logs whether the final cardholder name was changed
 // from its prefilled value or not.

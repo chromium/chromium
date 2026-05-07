@@ -41,8 +41,6 @@ void CardNameFixFlowControllerImpl::Show(
   name_accepted_callback_ = std::move(name_accepted_callback);
 
   inferred_cardholder_name_ = inferred_cardholder_name;
-  autofill_metrics::LogSaveCardCardholderNamePrefilled(
-      !inferred_cardholder_name_.empty());
 
   card_name_fix_flow_view_->Show();
   AutofillMetrics::LogCardholderNameFixFlowPromptEvent(
