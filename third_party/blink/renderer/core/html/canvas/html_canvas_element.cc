@@ -47,6 +47,7 @@
 #include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
 #include "cc/layers/texture_layer.h"
+#include "cc/trees/layer_tree_host.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/blink/public/common/features.h"
@@ -901,7 +902,17 @@ void HTMLCanvasElement::OnWidthOrHeightAssigned() {
 }
 
 void HTMLCanvasElement::ResetLayer() {
-  if (cc_layer_) {
+  if (!cc_layer_) {
+    return;
+  }
+
+  bool in_will_commit = false;
+  if (auto* host = cc_layer_->layer_tree_host()) {
+    in_will_commit = host->in_will_commit();
+  }
+
+  // In commit, we cannot modify cc::Layers, see: crbug.com/510426944.
+  if (!in_will_commit) {
     // Orphaning the layer is required to trigger the recreation of a new
     // layer in the case where destruction is caused by a canvas resize. Test:
     // virtual/gpu/fast/canvas/canvas-resize-after-paint-without-layout.html
