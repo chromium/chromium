@@ -1222,49 +1222,48 @@ void StoragePartitionImpl::RegisterKeepAliveHandle(
   keep_alive_handles_receiver_set_.Add(std::move(handle), std::move(receiver));
 }
 
-void StoragePartitionImpl::RevokeNetworkForNoncesInNetworkContext(
+void StoragePartitionImpl::RestrictNetworkForIdsInNetworkContext(
     const std::map<base::UnguessableToken, network::ConnectionAllowlists>&
-        nonces_to_allowlists,
+        ids_to_allowlists,
     base::OnceClosure callback) {
-  std::vector<network::mojom::NonceAndAllowlistedPatternsPtr> dest_vector;
-  for (const auto& pair : nonces_to_allowlists) {
+  std::vector<network::mojom::IdAndAllowlistedPatternsPtr> dest_vector;
+  for (const auto& pair : ids_to_allowlists) {
     // Create a new Mojo struct pointer for each map entry.
-    auto nonce_and_patterns =
-        network::mojom::NonceAndAllowlistedPatterns::New();
-    nonce_and_patterns->nonce = pair.first;
-    nonce_and_patterns->allowlists = pair.second;
-    dest_vector.push_back(std::move(nonce_and_patterns));
+    auto id_and_patterns = network::mojom::IdAndAllowlistedPatterns::New();
+    id_and_patterns->network_restrictions_id = pair.first;
+    id_and_patterns->allowlists = pair.second;
+    dest_vector.push_back(std::move(id_and_patterns));
   }
-  GetNetworkContext()->RevokeNetworkForNonces(std::move(dest_vector),
-                                              std::move(callback));
+  GetNetworkContext()->RestrictNetworkForIds(std::move(dest_vector),
+                                             std::move(callback));
 
-  // Save nonces and allowlisted URLs in `StoragePartitionImpl`. When there is a
-  // crash of `NetworkService`, the network revocation nonces of
+  // Save IDs and allowlisted URLs in `StoragePartitionImpl`. When there is a
+  // crash of `NetworkService`, the network restriction IDs of
   // `NetworkContext` will be restored using this.
-  for (const auto& pair : nonces_to_allowlists) {
-    network_revocation_nonces_.insert_or_assign(pair.first, pair.second);
+  for (const auto& pair : ids_to_allowlists) {
+    network_restrictions_ids_.insert_or_assign(pair.first, pair.second);
   }
 }
 
-void StoragePartitionImpl::ClearNoncesInNetworkContextAfterDelay(
-    const std::vector<base::UnguessableToken>& nonces) {
+void StoragePartitionImpl::ClearNetworkRestrictionsAfterDelay(
+    const std::vector<base::UnguessableToken>& network_restrictions_ids) {
   GetUIThreadTaskRunner({})->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(
-          &StoragePartitionImpl::ClearNoncesInNetworkContextAfterDelayCallback,
-          weak_factory_.GetWeakPtr(), nonces),
-      clear_nonces_in_network_context_delay_);
+          &StoragePartitionImpl::ClearNetworkRestrictionsAfterDelayCallback,
+          weak_factory_.GetWeakPtr(), network_restrictions_ids),
+      clear_network_restrictions_delay_);
 }
 
-void StoragePartitionImpl::ClearNoncesInNetworkContextAfterDelayCallback(
-    const std::vector<base::UnguessableToken>& nonces) {
-  GetNetworkContext()->ClearNonces(nonces);
+void StoragePartitionImpl::ClearNetworkRestrictionsAfterDelayCallback(
+    const std::vector<base::UnguessableToken>& network_restrictions_ids) {
+  GetNetworkContext()->ClearNetworkRestrictions(network_restrictions_ids);
 
-  for (const auto& nonce : nonces) {
-    network_revocation_nonces_.erase(nonce);
+  for (const auto& network_restrictions_id : network_restrictions_ids) {
+    network_restrictions_ids_.erase(network_restrictions_id);
   }
 
-  clear_nonces_in_network_context_callback_for_testing_.Run();
+  clear_network_restrictions_callback_for_testing_.Run();  // IN-TEST
 }
 
 void StoragePartitionImpl::RemoveKeepAliveHandleFromMap(
@@ -3399,11 +3398,12 @@ void StoragePartitionImpl::OverrideDeleteStaleSessionOnlyCookiesDelayForTesting(
   delete_stale_session_only_cookies_delay_ = delay;
 }
 
-void StoragePartitionImpl::SetClearNoncesInNetworkContextParamsForTesting(
-    const base::TimeDelta& delay,
-    base::RepeatingClosure callback) {
-  clear_nonces_in_network_context_delay_ = delay;
-  clear_nonces_in_network_context_callback_for_testing_ = callback;
+void StoragePartitionImpl::
+    SetClearNetworkRestrictionsParamsForTesting(  // IN-TEST
+        const base::TimeDelta& delay,
+        base::RepeatingClosure callback) {
+  clear_network_restrictions_delay_ = delay;
+  clear_network_restrictions_callback_for_testing_ = callback;
 }
 
 base::WeakPtr<StoragePartitionImpl> StoragePartitionImpl::GetWeakPtr() {
@@ -3638,13 +3638,13 @@ void StoragePartitionImpl::InitNetworkContext() {
 
   // Restore the saved network revocation nonces. This allows network access
   // states to be persisted in case of a `NetworkService` crash.
-  std::vector<network::mojom::NonceAndAllowlistedPatternsPtr> dest_vector;
-  for (const auto& [nonce, allowlists] : network_revocation_nonces_) {
+  std::vector<network::mojom::IdAndAllowlistedPatternsPtr> dest_vector;
+  for (const auto& [id, allowlists] : network_restrictions_ids_) {
     dest_vector.push_back(
-        network::mojom::NonceAndAllowlistedPatterns::New(nonce, allowlists));
+        network::mojom::IdAndAllowlistedPatterns::New(id, allowlists));
   }
 
-  network_context_owner_->network_context->RevokeNetworkForNonces(
+  network_context_owner_->network_context->RestrictNetworkForIds(
       std::move(dest_vector), base::NullCallback());
 
   network_context_client_receiver_.reset();

@@ -130,7 +130,7 @@ void WebSocketFactory::CreateWebSocket(
   // ws(s):// to http(s):// for allowlist matching, since the allowlist patterns
   // use HTTP schemes.
   if (network_restrictions_id.has_value() &&
-      !context_->IsNetworkForNonceAndUrlAllowed(
+      !context_->IsNetworkForNetworkRestrictionsIdAndUrlAllowed(
           *network_restrictions_id, net::ChangeWebSocketSchemeToHttpScheme(url),
           isolation_info.network_anonymization_key())) {
     mojo::Remote<mojom::WebSocketHandshakeClient> handshake_client_remote(

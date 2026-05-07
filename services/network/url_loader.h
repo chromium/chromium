@@ -254,11 +254,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   void ContinueWithoutCertificate() override;
   void CancelRequest() override;
 
-  // Cancel the request because network revocation was triggered.
-  void CancelRequestIfNonceMatchesAndUrlNotExempted(
-      const base::UnguessableToken& nonce,
-      const std::set<GURL>& exemptions);
-
   // Called when the browser process responds to a request for platform-specific
   // local network permission. If the user granted the permission, this will
   // restart the transaction. Otherwise, it will cancel the request.

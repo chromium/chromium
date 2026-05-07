@@ -87,7 +87,7 @@ DocumentAssociatedData::~DocumentAssociatedData() {
   if (network_restrictions_id_.has_value()) {
     StoragePartitionImpl* storage_partition =
         GetWeakPtr()->GetStoragePartition();
-    storage_partition->ClearNoncesInNetworkContextAfterDelay({
+    storage_partition->ClearNetworkRestrictionsAfterDelay({
         network_restrictions_id_.value(),
     });
   }

@@ -1110,7 +1110,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
   std::map<base::UnguessableToken, network::ConnectionAllowlists>
       nonces_to_allowlists;
   nonces_to_allowlists[nonce] = std::move(allowlists);
-  partition->RevokeNetworkForNoncesInNetworkContext(
+  partition->RestrictNetworkForIdsInNetworkContext(
       std::move(nonces_to_allowlists), base::DoNothing());
 
   // Make a get request, which should be blocked.

@@ -953,13 +953,13 @@ struct URLLoaderFactoryParams {
 
   // An unguessable token used to apply network restrictions to outgoing
   // requests using this factory. The token is matched against the tokens in
-  // `NetworkContext::network_revocation_nonces_`.
+  // `NetworkContext::network_restrictions_ids_`.
   // If no value is present, network restrictions will not be checked.
   mojo_base.mojom.UnguessableToken? network_restrictions_id;
 };
 
-struct NonceAndAllowlistedPatterns {
-  mojo_base.mojom.UnguessableToken nonce;
+struct IdAndAllowlistedPatterns {
+  mojo_base.mojom.UnguessableToken network_restrictions_id;
   ConnectionAllowlists allowlists;
 };
 
@@ -974,11 +974,11 @@ struct NonceAndAllowlistedPatterns {
 // WARNING: When adding a new entry point function in the NetworkContext to
 // send a network request, make sure to send the network_restrictions_id
 // so it can be checked that network is not restricted via
-// NetworkContext::IsNetworkForNonceAndUrlAllowed() (See
+// NetworkContext::IsNetworkForNetworkRestrictionsIdAndUrlAllowed() (See
 // example check in NetworkContext::ResolveHost). If the request is
 // allowed to access the network, please add a comment in the function as to
 // why network restrictions don’t apply to that request. More context on
-// network restrictions is in the comment for `RevokeNetworkForNonces()` below.
+// network restrictions is in the comment for `RestrictNetworkForIds()` below.
 [RequireContext=sandbox.mojom.Context.kPrivilegedUtility]
 interface NetworkContext {
   // Sets a client for this network context.
@@ -1516,7 +1516,7 @@ interface NetworkContext {
   // 2. or the url is blocked by the connection-allowlist associated with the
   // `network_restrictions_id`. Please see: crbug.com/447954811.
   // More context on network revocation and connection-allowlist is in the
-  // comment for `RevokeNetworkForNonces()`. If `network_restrictions_id` is
+  // comment for `RestrictNetworkForIds()`. If `network_restrictions_id` is
   // nullopt, connection-allowlist is not enforced on the preconnect.
   PreconnectSockets(
       uint32 num_streams,
@@ -1753,34 +1753,30 @@ interface NetworkContext {
   // selection policy changes (e.g., AutoSelectCertificateForUrls).
   FlushClientCertCache();
 
-  // Clients should revoke network access for nonces using
-  // `StoragePartitionImpl::RevokeNetworkForNoncesInNetworkContext` instead of
-  // this function. This is because `RevokeNetworkForNoncesInNetworkContext`
-  // replicates the nonces so that they can be restored in case of a
+  // Clients should restrict network access for IDs using
+  // `StoragePartitionImpl::RestrictNetworkForIdsInNetworkContext` instead of
+  // this function. This is because `RestrictNetworkForIdsInNetworkContext`
+  // replicates the IDs so that they can be restored in case of a
   // `NetworkService` crash.
-  // TODO(crbug.com/447954811): Rename this function when connection-allowlist
-  // feature is beyond the prototype phase. Initially this name made sense
-  // since it was intended to revoke network access for fenced frames. But with
-  // the connection-allowlist feature it is extended to also add allowlisted
-  // URLs for iframes and top-level frames. Also rename the corresponding
-  // NetworkContext::network_revocation_nonces_ to network_restriction_nonces_.
   // Used for connection-allowlist (see
   // https://github.com/WICG/connection-allowlists). Network from the
-  // URLLoaderfactory whose `network_restriction_id` matches `nonces` will only
-  // be allowed to `allowlisted_patterns` and blocked otherwise.
-  RevokeNetworkForNonces(
-      array<NonceAndAllowlistedPatterns> nonces_to_patterns) => ();
+  // URLLoaderfactory whose `network_restriction_id` matches `ids_to_patterns`
+  // will only be allowed to `allowlisted_patterns` and blocked otherwise.
+  RestrictNetworkForIds(
+      array<IdAndAllowlistedPatterns> ids_to_patterns) => ();
 
   // Clients should clear nonces tagged for network revocation using
-  // `StoragePartitionImpl::ClearNoncesInNetworkContextAfterDelay` instead of
+  // Clients should clear restrictions using
+  // `StoragePartitionImpl::ClearNetworkRestrictionsAfterDelay` instead of
   // this function. This is because `StoragePartitionImpl` also handles clearing
-  // the nonces in the browser-side replication data structure, which will
-  // ensure that stale nonces aren't re-added to the `NetworkContext` after a
-  // `NetworkService` crash. Note that this will only clear nonces specified
-  // previously in `RevokeNetworkForNonces`, and should only be called when
-  // those nonces are no longer relevant (for instance, after the corresponding
+  // the IDs in the browser-side replication data structure, which will
+  // ensure that stale IDs aren't re-added to the `NetworkContext` after a
+  // `NetworkService` crash. Note that this will only clear IDs specified
+  // previously in `RestrictNetworkForIds`, and should only be called when
+  // those IDs are no longer relevant (for instance, after the corresponding
   // frame is destroyed).
-  ClearNonces(array<mojo_base.mojom.UnguessableToken> nonces);
+  ClearNetworkRestrictions(
+    array<mojo_base.mojom.UnguessableToken> network_restrictions_ids);
 
   // Request that `request` be performed and cached as a prefetch. If a matching
   // request is subseqently received from a render process, the prefetch will

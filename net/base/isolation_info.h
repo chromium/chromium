@@ -68,15 +68,6 @@ namespace net {
 // cookie partition keyed using that nonce. Keep this in mind when using a
 // nonced IsolationInfo for credentialed requests.
 //
-// In addition to the sharding described above, `IsolationInfo::nonce()` is also
-// used to check if a given network request should be disallowed because the
-// initiating fenced frame has revoked network access. More context on
-// network revocation is in network_context.mojom in the comment for
-// `NetworkContext::RevokeNetworkForNonces()`. Not providing the correct
-// `nonce` will therefore lead to sending network requests that should
-// have been blocked. See `RenderFrameHostImpl::ComputeNonce()` which
-// computes the correct nonce for a given frame.
-//
 // There are also several special cases of IsolationInfos. Specifically:
 //  - Transient: Created by `IsolationInfo::CreateTransient()`, used for
 //    requests that should not be persisted to disk or send cookies, and that

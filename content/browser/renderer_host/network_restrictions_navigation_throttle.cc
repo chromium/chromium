@@ -95,7 +95,7 @@ NetworkRestrictionsNavigationThrottle::MaybeApplyNetworkRestrictions(
       navigation_request.GetRenderFrameHost()->GetReportingSource();
   navigation_request.GetRenderFrameHost()
       ->GetStoragePartition()
-      ->RevokeNetworkForNoncesInNetworkContext(
+      ->RestrictNetworkForIdsInNetworkContext(
           {{*network_restrictions_id, std::move(allowlists)}},
           std::move(on_complete));
 

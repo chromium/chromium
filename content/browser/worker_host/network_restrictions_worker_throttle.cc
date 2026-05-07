@@ -88,9 +88,9 @@ void NetworkRestrictionsWorkerThrottle::WillProcessResponse(
   }
 
   *defer = true;
-  storage_partition_->RevokeNetworkForNoncesInNetworkContext(
+  storage_partition_->RestrictNetworkForIdsInNetworkContext(
       {{network_restrictions_id_, policies.connection_allowlists}},
-      base::BindOnce(&NetworkRestrictionsWorkerThrottle::OnRevokeComplete,
+      base::BindOnce(&NetworkRestrictionsWorkerThrottle::OnRestrictionsApplied,
                      weak_factory_.GetWeakPtr()));
 }
 
@@ -99,7 +99,7 @@ NetworkRestrictionsWorkerThrottle::NameForLoggingWillProcessResponse() {
   return "NetworkRestrictionsWorkerThrottle";
 }
 
-void NetworkRestrictionsWorkerThrottle::OnRevokeComplete() {
+void NetworkRestrictionsWorkerThrottle::OnRestrictionsApplied() {
   delegate_->Resume();
 }
 

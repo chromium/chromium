@@ -40,7 +40,7 @@ class NetworkRestrictionsWorkerThrottle : public blink::URLLoaderThrottle {
   const char* NameForLoggingWillProcessResponse() override;
 
  private:
-  void OnRevokeComplete();
+  void OnRestrictionsApplied();
 
   base::WeakPtr<StoragePartitionImpl> storage_partition_;
   const base::UnguessableToken network_restrictions_id_;

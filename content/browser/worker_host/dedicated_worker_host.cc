@@ -172,7 +172,7 @@ DedicatedWorkerHost::~DedicatedWorkerHost() {
     lock_manager->RemoveLockObserver(GetToken().value());
   }
 
-  GetStoragePartitionImpl()->ClearNoncesInNetworkContextAfterDelay({
+  GetStoragePartitionImpl()->ClearNetworkRestrictionsAfterDelay({
       network_restrictions_id_,
   });
 

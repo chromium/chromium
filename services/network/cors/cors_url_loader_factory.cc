@@ -428,7 +428,7 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
 
   // Check if the initiator's network access has been restricted.
   if (network_restrictions_id_.has_value() &&
-      !context_->IsNetworkForNonceAndUrlAllowed(
+      !context_->IsNetworkForNetworkRestrictionsIdAndUrlAllowed(
           *network_restrictions_id_, resource_request.url,
           isolation_info_ptr->network_anonymization_key())) {
     // TODO(crbug.com/447954811): Perhaps change to a new error code and

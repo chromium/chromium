@@ -717,7 +717,7 @@ void CorsURLLoader::OnReceiveRedirect(const net::RedirectInfo& redirect_info,
   DCHECK(!deferred_redirect_url_);
 
   if (redirect_count_ == 0 && network_restrictions_id_) {
-    if (!context_->IsNetworkForNonceAndUrlAllowed(
+    if (!context_->IsNetworkForNetworkRestrictionsIdAndUrlAllowed(
             *network_restrictions_id_, request_.url,
             isolation_info_.network_anonymization_key(),
             /*is_redirect=*/true)) {

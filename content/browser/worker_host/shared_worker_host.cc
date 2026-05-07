@@ -224,7 +224,7 @@ SharedWorkerHost::~SharedWorkerHost() {
       lock_manager->RemoveLockObserver(token().value());
     }
 
-    GetStoragePartitionImpl()->ClearNoncesInNetworkContextAfterDelay({
+    GetStoragePartitionImpl()->ClearNetworkRestrictionsAfterDelay({
         network_restrictions_id_,
     });
   }

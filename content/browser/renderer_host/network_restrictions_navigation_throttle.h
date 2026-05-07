@@ -14,7 +14,7 @@ class NavigationRequest;
 // A NavigationThrottle that applies network restrictions based on
 // PolicyContainerPolicies and the network_restrictions_id_ of the navigation.
 // It defers commit until the network restrictions have been applied (i.e., the
-// callback from RevokeNetworkForNoncesInNetworkContext is invoked).
+// callback from RestrictNetworkForIdsInNetworkContext is invoked).
 class NetworkRestrictionsNavigationThrottle : public NavigationThrottle {
  public:
   enum class NetworkRestrictionsResult {
