@@ -70,6 +70,25 @@ themselves in the active VCS (`JJ` or `GIT`) and Harness (`JETSKI` or
 `GENERIC_CLI`). They MUST adjust their tool usage and command construction
 natively to match this environment.
 
+**THE CHECKLIST LIFECYCLE STATE MACHINE:** The session's verification
+integrity is governed by a deterministic boolean checklist state machine:
+*   **Phase 0 (Initialization):** Scoping Lead initializes
+    `project.magi.json#checklist` as an empty object `{}`.
+*   **Phase 2 (Activation):** The Orchestrator reads all selected
+    `personas/**/*.json` checklists, takes the **Union Set** of all keys,
+    and initializes the active `checklist` in `state_block.magi.json` with all
+    values set to `false`.
+*   **Phase 5 (Assertion):** Reviewers toggle their domain-specific keys in
+    their `ReviewFeedback` checklist. The Supervisor/Review Analyst performs a
+    **Logical AND** consolidation across all reviews. A key in the consolidated
+    `state_block.magi.json#checklist` only becomes `true` if **ALL** reviewers
+    evaluating that key asserted `true`. Any `false` keys or
+    `unlisted_issues_found` are translated into strict constraints in
+    `constraints.magi.[iteration].json`.
+*   **Phase 8 (Upgrades):** Once consensus is reached (all checklist items are
+    `true`), the Trainer uses `unlisted_issues_found` history to append new
+    keys to the appropriate `personas/**/*.json` checklists.
+
 **PHASE SIGNALING:** The Orchestrator MUST use an appropriate status-reporting
 mechanism prior to invoking any sub-agents to clearly identify the current phase
 of the MAGI protocol to the user (e.g., "MAGI Phase 2: Engineering Manager").
@@ -100,6 +119,7 @@ next expert.
 - **The Specification:** The Scoping Lead investigates the codebase
   (`grep_search`, `read_file`) to locate the relevant code and writes a strict
   specification to `project.magi.json` conforming to `magi_schema.json`.
+  The `"checklist"` field MUST be initialized as an empty object `{}`.
 
   **Environment Discovery:** Before writing the file, the Scoping Lead MUST
   discover the environment:
@@ -156,6 +176,10 @@ next expert.
   catalog) to assess and select the most appropriate Domain Experts required
   to implement the stubs. It returns the absolute file paths of their definition
   files to the Orchestrator.
+- **Checklist Initialization:** The Orchestrator MUST read the `checklist` from
+  every selected persona JSON file, compute the **Union Set** of all checklist
+  keys, and initialize `state_block.magi.json#checklist` with all these keys
+  set to `false`.
 - **Review Mode Selection:** The Engineering Manager MUST select the
   `review_mode` (`SUPERVISOR` or `CONSENSUS`) and include it in the initial
   `state_block.magi.json`.
@@ -210,6 +234,9 @@ Once the Domain Experts finish:
     ```json
     {
       "$schema": "./magi_schema.json#definitions/StateBlock",
+      "checklist": {
+        "[Merged keys from selected personas]": false
+      },
       "iteration": 1,
       "stall_count": 0,
       "active_constraints": [],
@@ -241,18 +268,26 @@ Once the Domain Experts finish:
     >   prevention. Accept unless catastrophic."]
     > Project Spec: Read the requirements from `project.magi.json`.
     > Priority: [Priority].
-    > Task: Review Draft [filename]. Save a JSON object with `verdict`
-    >   ("ACCEPT" or "REJECT"), `reasoning` (array of bullet points), `comments`
-    >   (array of objects with `file`, optional `line`, and `comment`), and
-    >   `next_phase` ("ANALYSIS") to `review.[persona].magi.[iteration].json`.
+    > Task: Review Draft [filename]. Auditing against your persona checklist.
+    >   Save a JSON object conforming to
+    >   `magi_schema.json#definitions/ReviewFeedback` with `checklist`
+    >   (updating your evaluated keys to true/false), `verdict` ("ACCEPT" or
+    >   "REJECT"), `reasoning` (array of bullet points), `comments` (array of
+    >   objects with `file`, optional `line`, and `comment`), optional
+    >   `unlisted_issues_found` (array of strings), and `next_phase`
+    >   ("ANALYSIS") to `review.[persona].magi.[iteration].json`.
 
 #### Path A: Supervisor Synthesis (Default)
 If `review_mode == SUPERVISOR`, the Orchestrator (or a specialized Supervisor
 agent) performs the following in a single turn:
 1.  **Decision:** Read all `review.*.magi.[iteration].json` files.
-2.  **State Update:** Update `state_block.magi.json` with the new iteration
-    and stall count.
-3.  **Constraint Generation:** Save a strict list of Actionable Constraints and
+2.  **State Update:** Consolidate the checklists using **Logical AND** (a key
+    only becomes `true` in `state_block.magi.json#checklist` if all reviewers
+    evaluating it set it to `true`). Append any `unlisted_issues_found` to the
+    historical logs. Update `state_block.magi.json` with the new iteration and
+    stall count.
+3.  **Constraint Generation:** Save a strict list of Actionable Constraints
+    (generated from all `false` checklist keys and `unlisted_issues_found`) and
     the current `review_mode` to `constraints.magi.[iteration].json`.
 4.  **Handoff:** Signal `next_phase: SYNTHESIS` (if more work is needed) or
     `TRAINING`.
@@ -260,8 +295,10 @@ agent) performs the following in a single turn:
 #### Path B: Consensus Loop (Verbose/Paranoia)
 If `review_mode == CONSENSUS`, use the granular relay:
 1.  **The Review Analyst:** If any agent rejects, this agent reads all
-    `review.*.magi.[iteration].json` files and saves a strict list of 3-5
-    Actionable Constraints, `review_mode: "CONSENSUS"`, and
+    `review.*.magi.[iteration].json` files, performs the **Logical AND**
+    consolidation on the checklists, and saves a strict list of 3-5 Actionable
+    Constraints (derived from `false` checklist keys and
+    `unlisted_issues_found`), `review_mode: "CONSENSUS"`, and
     `next_phase: TPM_UPDATE` to `constraints.magi.[iteration].json` on disk.
 2.  **The Technical Program Manager:** Reads `constraints.magi.[iteration].json`
     and updates `state_block.magi.json` conforming to `magi_schema.json`. Checks
