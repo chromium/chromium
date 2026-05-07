@@ -34,6 +34,7 @@
 #include "build/build_config.h"
 #include "components/mirroring/service/captured_audio_input.h"
 #include "components/mirroring/service/mirroring_features.h"
+#include "components/mirroring/service/remoting_sender.h"
 #include "components/mirroring/service/rpc_dispatcher_impl.h"
 #include "components/mirroring/service/video_capture_client.h"
 #include "components/openscreen_platform/network_context.h"
@@ -240,6 +241,17 @@ class OpenscreenSessionHost::AudioCapturingCallback final
   bool has_captured_ = false;
 };
 
+OpenscreenSessionHost::RemotingStreamData::RemotingStreamData(
+    std::unique_ptr<openscreen::cast::Sender> audio_sender,
+    std::unique_ptr<openscreen::cast::Sender> video_sender,
+    std::optional<media::cast::FrameSenderConfig> audio_config,
+    std::optional<media::cast::FrameSenderConfig> video_config)
+    : audio_sender(std::move(audio_sender)),
+      video_sender(std::move(video_sender)),
+      audio_config(std::move(audio_config)),
+      video_config(std::move(video_config)) {}
+OpenscreenSessionHost::RemotingStreamData::~RemotingStreamData() = default;
+
 OpenscreenSessionHost::OpenscreenSessionHost(
     mojom::SessionParametersPtr session_params,
     const gfx::Size& max_resolution,
@@ -423,10 +435,10 @@ void OpenscreenSessionHost::OnNegotiated(
     CHECK(!audio_config || audio_config->is_remoting());
     CHECK(!video_config || video_config->is_remoting());
 
-    media_remoter_->StartRpcMessaging(
-        cast_environment_, std::move(senders.audio_sender),
-        std::move(senders.video_sender), std::move(audio_config),
-        std::move(video_config));
+    remoting_stream_data_ = std::make_unique<RemotingStreamData>(
+        std::move(senders.audio_sender), std::move(senders.video_sender),
+        std::move(audio_config), std::move(video_config));
+    media_remoter_->OnRemotingStarted();
     if (session_params_.is_remote_playback) {
       remote_playback_start_timer_.Stop();
     }
@@ -724,6 +736,30 @@ void OpenscreenSessionHost::RestartMirroringStreaming() {
   Negotiate();
 }
 
+std::unique_ptr<media::mojom::RemotingDataStreamSender>
+OpenscreenSessionHost::CreateRemotingDataStreamSender(
+    bool is_audio,
+    mojo::ScopedDataPipeConsumerHandle pipe,
+    mojo::PendingReceiver<media::mojom::RemotingDataStreamSender> receiver,
+    base::OnceClosure error_callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!remoting_stream_data_) {
+    return nullptr;
+  }
+  auto& config = is_audio ? remoting_stream_data_->audio_config
+                          : remoting_stream_data_->video_config;
+  auto& sender = is_audio ? remoting_stream_data_->audio_sender
+                          : remoting_stream_data_->video_sender;
+
+  if (!config || !config->is_remoting() || !sender) {
+    return nullptr;
+  }
+
+  return std::make_unique<RemotingSender>(
+      cast_environment_, std::move(sender), *config, std::move(pipe),
+      std::move(receiver), std::move(error_callback));
+}
+
 void OpenscreenSessionHost::SwitchSourceTab() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (observer_) {
@@ -813,6 +849,7 @@ void OpenscreenSessionHost::StopStreaming() {
   audio_stream_.reset();
   video_stream_.reset();
   gpu_factories_factory_.reset();
+  remoting_stream_data_.reset();
 }
 
 void OpenscreenSessionHost::StopSession() {

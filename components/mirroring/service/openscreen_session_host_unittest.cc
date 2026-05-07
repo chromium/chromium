@@ -13,6 +13,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -1053,6 +1054,100 @@ TEST_F(OpenscreenSessionHostTest, GetStatsEnabled) {
                 /* rtcp_reporting */ true);
   session_host().SetSenderStatsForTest(ConstructDefaultSenderStats());
   EXPECT_FALSE(session_host().GetMirroringStats().empty());
+}
+
+TEST_F(OpenscreenSessionHostTest,
+       CreateRemotingDataStreamSenderReturnsNullBeforeRemoting) {
+  CreateSession(SessionType::AUDIO_AND_VIDEO);
+  StartSession();
+
+  // Before remoting starts, remoting_stream_data_ is null so
+  // CreateRemotingDataStreamSender should return nullptr.
+  mojo::ScopedDataPipeProducerHandle producer;
+  mojo::ScopedDataPipeConsumerHandle consumer;
+  ASSERT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(1000, producer, consumer));
+  mojo::PendingRemote<media::mojom::RemotingDataStreamSender> pending_sender;
+  auto result = session_host().CreateRemotingDataStreamSender(
+      /*is_audio=*/true, std::move(consumer),
+      pending_sender.InitWithNewPipeAndPassReceiver(), base::DoNothing());
+  EXPECT_FALSE(result);
+
+  StopSession();
+}
+
+TEST_F(OpenscreenSessionHostTest,
+       CreateRemotingDataStreamSenderSucceedsDuringRemoting) {
+  CreateSession(SessionType::AUDIO_AND_VIDEO);
+  StartSession();
+  SendRemotingCapabilities();
+  StartRemoting();
+  RemotingStarted();
+
+  // After remoting has started and negotiation completed,
+  // CreateRemotingDataStreamSender should return a valid sender.
+  mojo::ScopedDataPipeProducerHandle audio_producer;
+  mojo::ScopedDataPipeConsumerHandle audio_consumer;
+  ASSERT_EQ(MOJO_RESULT_OK,
+            mojo::CreateDataPipe(1000, audio_producer, audio_consumer));
+  mojo::PendingRemote<media::mojom::RemotingDataStreamSender>
+      audio_pending_sender;
+  auto audio_result = session_host().CreateRemotingDataStreamSender(
+      /*is_audio=*/true, std::move(audio_consumer),
+      audio_pending_sender.InitWithNewPipeAndPassReceiver(), base::DoNothing());
+  EXPECT_TRUE(audio_result);
+
+  mojo::ScopedDataPipeProducerHandle video_producer;
+  mojo::ScopedDataPipeConsumerHandle video_consumer;
+  ASSERT_EQ(MOJO_RESULT_OK,
+            mojo::CreateDataPipe(1000, video_producer, video_consumer));
+  mojo::PendingRemote<media::mojom::RemotingDataStreamSender>
+      video_pending_sender;
+  auto video_result = session_host().CreateRemotingDataStreamSender(
+      /*is_audio=*/false, std::move(video_consumer),
+      video_pending_sender.InitWithNewPipeAndPassReceiver(), base::DoNothing());
+  EXPECT_TRUE(video_result);
+
+  // RemotingSender objects must be destroyed before StopSession(), since Open
+  // Screen requires all Senders to be destroyed before the SenderSession.
+  audio_result.reset();
+  video_result.reset();
+
+  StopSession();
+}
+
+TEST_F(OpenscreenSessionHostTest,
+       CreateRemotingDataStreamSenderReturnsNullAfterSenderConsumed) {
+  CreateSession(SessionType::AUDIO_AND_VIDEO);
+  StartSession();
+  SendRemotingCapabilities();
+  StartRemoting();
+  RemotingStarted();
+
+  // First call should succeed and move the sender out.
+  mojo::ScopedDataPipeProducerHandle producer1;
+  mojo::ScopedDataPipeConsumerHandle consumer1;
+  ASSERT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(1000, producer1, consumer1));
+  mojo::PendingRemote<media::mojom::RemotingDataStreamSender> pending1;
+  auto result1 = session_host().CreateRemotingDataStreamSender(
+      /*is_audio=*/true, std::move(consumer1),
+      pending1.InitWithNewPipeAndPassReceiver(), base::DoNothing());
+  EXPECT_TRUE(result1);
+
+  // Second call for the same stream should return nullptr since the sender
+  // was already moved.
+  mojo::ScopedDataPipeProducerHandle producer2;
+  mojo::ScopedDataPipeConsumerHandle consumer2;
+  ASSERT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(1000, producer2, consumer2));
+  mojo::PendingRemote<media::mojom::RemotingDataStreamSender> pending2;
+  auto result2 = session_host().CreateRemotingDataStreamSender(
+      /*is_audio=*/true, std::move(consumer2),
+      pending2.InitWithNewPipeAndPassReceiver(), base::DoNothing());
+  EXPECT_FALSE(result2);
+
+  // RemotingSender must be destroyed before StopSession().
+  result1.reset();
+
+  StopSession();
 }
 
 }  // namespace mirroring

@@ -13,6 +13,7 @@
 #include "components/mirroring/mojom/cast_message_channel.mojom.h"
 #include "components/mirroring/mojom/session_parameters.mojom.h"
 #include "components/mirroring/service/mirror_settings.h"
+#include "components/mirroring/service/remoting_sender.h"
 #include "components/mirroring/service/rpc_dispatcher.h"
 #include "components/openscreen_platform/task_runner.h"
 #include "media/base/audio_codecs.h"
@@ -122,6 +123,31 @@ class MediaRemoterTest : public mojom::CastMessageChannel,
     OnConnectToRemotingSource();
   }
 
+  std::unique_ptr<media::mojom::RemotingDataStreamSender>
+  CreateRemotingDataStreamSender(
+      bool is_audio,
+      mojo::ScopedDataPipeConsumerHandle pipe,
+      mojo::PendingReceiver<media::mojom::RemotingDataStreamSender> receiver,
+      base::OnceClosure error_callback) override {
+    if (!openscreen_test_senders_) {
+      return nullptr;
+    }
+    auto& sender = is_audio ? openscreen_test_senders_->audio_sender
+                            : openscreen_test_senders_->video_sender;
+    if (!sender) {
+      return nullptr;
+    }
+
+    auto config =
+        is_audio
+            ? MirrorSettings::GetDefaultAudioConfig(media::AudioCodec::kUnknown)
+            : MirrorSettings::GetDefaultVideoConfig(
+                  media::VideoCodec::kUnknown);
+    return std::make_unique<RemotingSender>(
+        cast_environment(), std::move(sender), config, std::move(pipe),
+        std::move(receiver), std::move(error_callback));
+  }
+
   void CreateRemoter() {
     EXPECT_FALSE(media_remoter_);
     EXPECT_CALL(*this, OnConnectToRemotingSource());
@@ -168,11 +194,7 @@ class MediaRemoterTest : public mojom::CastMessageChannel,
                 GetMockTickClock(),
                 openscreen::cast::RtpPayloadType::kAudioVarious,
                 openscreen::cast::RtpPayloadType::kVideoVarious));
-    media_remoter_->StartRpcMessaging(
-        cast_environment(), std::move(openscreen_test_senders_->audio_sender),
-        std::move(openscreen_test_senders_->video_sender),
-        MirrorSettings::GetDefaultAudioConfig(media::AudioCodec::kUnknown),
-        MirrorSettings::GetDefaultVideoConfig(media::VideoCodec::kUnknown));
+    media_remoter_->OnRemotingStarted();
     RunUntilIdle();
     Mock::VerifyAndClear(&remoting_source_);
   }

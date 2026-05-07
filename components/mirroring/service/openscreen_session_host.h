@@ -134,6 +134,12 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
       override;
   void RequestRemotingStreaming() override;
   void RestartMirroringStreaming() override;
+  std::unique_ptr<media::mojom::RemotingDataStreamSender>
+  CreateRemotingDataStreamSender(
+      bool is_audio,
+      mojo::ScopedDataPipeConsumerHandle pipe,
+      mojo::PendingReceiver<media::mojom::RemotingDataStreamSender> receiver,
+      base::OnceClosure error_callback) override;
 
   void SwitchSourceTab();
 
@@ -346,6 +352,23 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) OpenscreenSessionHost final
   // Manages remoting content to the Cast Receiver. Created when a successful
   // capabilities response arrives.
   std::unique_ptr<MediaRemoter> media_remoter_;
+
+  // Stored between OnNegotiated() and CreateRemotingDataStreamSender() calls
+  // during a remoting session.
+  struct RemotingStreamData {
+    RemotingStreamData(
+        std::unique_ptr<openscreen::cast::Sender> audio_sender,
+        std::unique_ptr<openscreen::cast::Sender> video_sender,
+        std::optional<media::cast::FrameSenderConfig> audio_config,
+        std::optional<media::cast::FrameSenderConfig> video_config);
+    ~RemotingStreamData();
+
+    std::unique_ptr<openscreen::cast::Sender> audio_sender;
+    std::unique_ptr<openscreen::cast::Sender> video_sender;
+    std::optional<media::cast::FrameSenderConfig> audio_config;
+    std::optional<media::cast::FrameSenderConfig> video_config;
+  };
+  std::unique_ptr<RemotingStreamData> remoting_stream_data_;
 
   // GPU specific properties, used to indicate whether HW encoding should be
   // used and to help initialize it if enabled.
