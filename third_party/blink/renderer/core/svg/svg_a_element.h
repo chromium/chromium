@@ -43,6 +43,7 @@ class CORE_EXPORT SVGAElement final : public SVGGraphicsElement,
 
   void Trace(Visitor*) const override;
 
+  KURL Url() const;
   uint32_t GetLinkRelations() const { return link_relations_; }
   DOMTokenList& relList() const { return *rel_list_; }
 

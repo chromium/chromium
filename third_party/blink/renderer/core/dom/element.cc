@@ -11215,7 +11215,7 @@ KURL Element::HrefURL() const {
     return GetURLAttributeAsKURL(html_names::kHrefAttr);
   }
   if (auto* svg_a = DynamicTo<SVGAElement>(*this)) {
-    return svg_a->LegacyHrefURL(GetDocument());
+    return svg_a->Url();
   }
   return KURL();
 }

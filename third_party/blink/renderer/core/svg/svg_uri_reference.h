@@ -50,10 +50,6 @@ class CORE_EXPORT SVGURIReference : public GarbageCollectedMixin {
   // SVGURIReference.
   static const AtomicString& LegacyHrefString(const SVGElement&);
 
-  // Like above, but for elements that inherit from SVGURIReference. Resolves
-  // against the base URL of the passed Document.
-  KURL LegacyHrefURL(const Document&) const;
-
   static AtomicString FragmentIdentifierFromIRIString(const String&,
                                                       const TreeScope&);
   static Element* TargetElementFromIRIString(const String&,

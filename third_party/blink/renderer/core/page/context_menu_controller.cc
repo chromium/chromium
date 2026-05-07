@@ -826,8 +826,7 @@ bool ContextMenuController::ShowContextMenu(
       // Extract suggested filename for same-origin URLS for saving file.
       const SecurityOrigin* origin =
           selected_frame->GetSecurityContext()->GetSecurityOrigin();
-      const KURL& complete_url = anchor->LegacyHrefURL(anchor->GetDocument());
-      if (origin->CanReadContent(complete_url)) {
+      if (origin->CanReadContent(anchor->Url())) {
         data.suggested_filename =
             anchor->FastGetAttribute(svg_names::kDownloadAttr).Utf8();
       }

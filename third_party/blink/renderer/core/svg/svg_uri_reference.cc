@@ -86,10 +86,6 @@ const AtomicString& SVGURIReference::LegacyHrefString(
   return element.getAttribute(xlink_names::kHrefAttr);
 }
 
-KURL SVGURIReference::LegacyHrefURL(const Document& document) const {
-  return document.CompleteURL(StripLeadingAndTrailingHtmlSpaces(HrefString()));
-}
-
 SVGURLReferenceResolver::SVGURLReferenceResolver(const String& url_string,
                                                  const Document& document)
     : relative_url_(url_string),

@@ -234,6 +234,11 @@ bool SVGAElement::IsValidInterestInvoker(Element& target) const {
   return IsLink();
 }
 
+KURL SVGAElement::Url() const {
+  return GetDocument().CompleteURL(
+      StripLeadingAndTrailingHtmlSpaces(HrefString()));
+}
+
 bool SVGAElement::HasActivationBehavior() const {
   return true;
 }
