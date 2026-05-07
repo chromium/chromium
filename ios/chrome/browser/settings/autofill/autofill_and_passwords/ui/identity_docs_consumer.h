@@ -7,10 +7,13 @@
 
 #import <Foundation/Foundation.h>
 
+@class TableViewItem;
+
 // Consumer protocol for the Identity Docs settings page.
 @protocol IdentityDocsConsumer <NSObject>
 
-// For now, empty page requires no methods.
+// Sets the list of identity docs items.
+- (void)setIdentityDocsItems:(NSArray<TableViewItem*>*)identityDocsItems;
 
 @end
 

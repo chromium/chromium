@@ -19,36 +19,50 @@ source_set("coordinator") {
   ]
   deps = [
     "//base",
+    "//components/application_locale_storage",
     "//components/autofill/core/browser",
     "//components/autofill/core/common",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/common",
     "//components/prefs",
     "//components/prefs/ios",
+    "//ios/chrome/app/strings:ios_strings__strings_grit",
     "//ios/chrome/browser/autofill/model",
+    "//ios/chrome/browser/settings/autofill/autofill_ai/coordinator",
+    "//ios/chrome/browser/settings/autofill/autofill_ai/ui",
     "//ios/chrome/browser/settings/autofill/autofill_and_passwords/ui:autofill_and_passwords",
     "//ios/chrome/browser/settings/ui_bundled/autofill",
     "//ios/chrome/browser/settings/ui_bundled/password",
     "//ios/chrome/browser/settings/ui_bundled/password/reauthentication:reauthentication_delegate",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/list_model",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/common/ui/table_view:cells_constants",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "autofill_and_passwords_mediator_unittest.mm" ]
+  sources = [
+    "autofill_and_passwords_mediator_unittest.mm",
+    "identity_docs_mediator_unittest.mm",
+  ]
   deps = [
     ":coordinator",
     "//base/test:test_support",
     "//components/autofill/core/common",
     "//components/password_manager/core/common",
     "//components/prefs:test_support",
+    "//ios/chrome/browser/autofill/model",
+    "//ios/chrome/browser/settings/autofill/autofill_ai/ui",
     "//ios/chrome/browser/settings/autofill/autofill_and_passwords/ui:autofill_and_passwords",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/webdata_services/model",
     "//ios/web/public/test",
     "//testing/gtest",
     "//third_party/ocmock",

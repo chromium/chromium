@@ -24,6 +24,7 @@ source_set("autofill_and_passwords") {
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/common/ui/table_view:cells_constants",
     "//ui/base",
   ]
 }

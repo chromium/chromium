@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/identity_docs_coordinator.h"
 
 #import "base/apple/foundation_util.h"
@@ -9,6 +10,7 @@
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/identity_docs_mediator.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/ui/identity_docs_table_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 
 @interface IdentityDocsCoordinator () <IdentityDocsTableViewControllerDelegate>
@@ -37,8 +39,17 @@
       initWithStyle:ChromeTableViewStyle()];
   _viewController.delegate = self;
 
-  _mediator = [[IdentityDocsMediator alloc] init];
+  autofill::EntityDataManager* entityDataManager =
+      IOSAutofillEntityDataManagerFactory::GetForProfile(
+          self.browser->GetProfile());
+  // The Identity Docs setting page is only accessible if entityDataManager is
+  // present.
+  CHECK(entityDataManager);
+
+  _mediator = [[IdentityDocsMediator alloc]
+      initWithEntityDataManager:entityDataManager];
   _mediator.consumer = _viewController;
+  _viewController.mutator = _mediator;
 
   [self.baseNavigationController pushViewController:_viewController
                                            animated:YES];
