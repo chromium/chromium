@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "services/preferences/public/cpp/tracked/tracked_preference_histogram_names.h"
 #include "services/preferences/tracked/device_id.h"
 #include "services/preferences/tracked/hash_store_contents.h"
 
@@ -266,8 +267,11 @@ PrefHashStoreImpl::PrefHashStoreTransactionImpl::PrefHashStoreTransactionImpl(
       encryptor_(encryptor_ptr),
       super_mac_valid_(false),
       super_mac_dirty_(false) {
-  if (!outer_->use_super_mac_)
+  // Super MAC validation is skipped if the outer store does not use it or if
+  // the specific hash store contents implementation does not support it.
+  if (!outer_->use_super_mac_ || !contents_->SupportsSuperMac()) {
     return;
+  }
 
   // The store must have a valid super MAC to be trusted.
   std::string super_mac = contents_->GetSuperMac();
@@ -281,7 +285,8 @@ PrefHashStoreImpl::PrefHashStoreTransactionImpl::PrefHashStoreTransactionImpl(
 
 PrefHashStoreImpl::PrefHashStoreTransactionImpl::
     ~PrefHashStoreTransactionImpl() {
-  if (super_mac_dirty_ && outer_->use_super_mac_) {
+  if (super_mac_dirty_ && outer_->use_super_mac_ &&
+      contents_->SupportsSuperMac()) {
     // Get the dictionary of hashes (or NULL if it doesn't exist).
     const base::DictValue* hashes_dict = contents_->GetContents();
     contents_->SetSuperMac(outer_->ComputeMac("", hashes_dict));

@@ -71,6 +71,9 @@ class HashStoreContents {
   // successfully removed.
   virtual bool RemoveEntry(const std::string& path) = 0;
 
+  // Returns true if this store supports super MACs.
+  virtual bool SupportsSuperMac() const = 0;
+
   // Only needed if this store supports super MACs.
   virtual const base::DictValue* GetContents() const = 0;
 

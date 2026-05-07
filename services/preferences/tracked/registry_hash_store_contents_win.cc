@@ -185,6 +185,10 @@ bool RegistryHashStoreContentsWin::RemoveEntry(const std::string& path) {
          ClearSplitMac(preference_key_name_, path);
 }
 
+bool RegistryHashStoreContentsWin::SupportsSuperMac() const {
+  return false;
+}
+
 void RegistryHashStoreContentsWin::ImportEntry(const std::string& path,
                                                const base::Value* in_value) {
   NOTREACHED()

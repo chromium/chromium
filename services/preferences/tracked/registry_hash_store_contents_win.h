@@ -47,6 +47,7 @@ class RegistryHashStoreContentsWin : public HashStoreContents {
                    const std::string& split_path,
                    const std::string& value) override;
   bool RemoveEntry(const std::string& path) override;
+  bool SupportsSuperMac() const override;
 
   // Unsupported HashStoreContents overrides:
   void ImportEntry(const std::string& path,

@@ -625,6 +625,7 @@ class MockHashStoreContents : public HashStoreContents {
   void ImportEntry(const std::string& path,
                    const base::Value* in_value) override;
   bool RemoveEntry(const std::string& path) override;
+  bool SupportsSuperMac() const override { return false; }
   const base::DictValue* GetContents() const override;
   std::string GetSuperMac() const override;
   void SetSuperMac(const std::string& super_mac) override;
@@ -1957,7 +1958,10 @@ TEST_P(PrefHashFilterEncryptedTest, PostsDeferredTaskOnlyWhenFeatureEnabled) {
   }
 }
 
-TEST_P(PrefHashFilterEncryptedTest, DeferredRevalidationSkipsIfValueChanged) {
+TEST_P(PrefHashFilterEncryptedTest, DeferredRevalidationResetsIfValueChanged) {
+  if (GetParam() != EnforcementLevel::ENFORCE_ON_LOAD) {
+    return;
+  }
   InitializeAsyncOSCrypt();
   ResetImpl(true, test_os_crypt_async_.get());
 
@@ -1990,12 +1994,19 @@ TEST_P(PrefHashFilterEncryptedTest, DeferredRevalidationSkipsIfValueChanged) {
       base::Unretained(this), &was_validation_performed,
       revalidation_run_loop.QuitClosure()));
   mock_pref_hash_store_->ClearTestState();
+  // Re-configure the mock to return an invalid encrypted MAC for the async
+  // pass.
+  mock_pref_hash_store_->SetCheckResult(kAtomicPref,
+                                        ValueState::CHANGED_ENCRYPTED);
   revalidation_run_loop.Run();
 
-  EXPECT_FALSE(mock_pref_service_->WasCleared(kAtomicPref));
+  EXPECT_FALSE(mock_pref_service_->GetUserPrefValue(kAtomicPref));
 }
 
-TEST_P(PrefHashFilterEncryptedTest, DeferredRevalidationSkipsIfValueCleared) {
+TEST_P(PrefHashFilterEncryptedTest, DeferredRevalidationResetsIfValueCleared) {
+  if (GetParam() != EnforcementLevel::ENFORCE_ON_LOAD) {
+    return;
+  }
   InitializeAsyncOSCrypt();
   ResetImpl(true, test_os_crypt_async_.get());
 
@@ -2011,10 +2022,6 @@ TEST_P(PrefHashFilterEncryptedTest, DeferredRevalidationSkipsIfValueCleared) {
 
   pref_store_contents_.Set(kAtomicPref, "value_at_load");
   mock_pref_hash_store_->SetCheckResult(kAtomicPref, ValueState::UNCHANGED);
-  // Set the encrypted hash explicitly to be invalid, so the deferred task will
-  // try to reset the pref.
-  mock_pref_hash_store_->SetCheckResult("prefix." + std::string(kAtomicPref),
-                                        ValueState::CHANGED);
 
   pref_hash_filter_->FilterOnLoad(
       base::BindOnce(&PrefHashFilterTest::GetPrefsBack, base::Unretained(this),
@@ -2030,12 +2037,17 @@ TEST_P(PrefHashFilterEncryptedTest, DeferredRevalidationSkipsIfValueCleared) {
       revalidation_run_loop.QuitClosure()));
 
   mock_pref_service_->ClearClearedPrefsForTesting();
+  mock_pref_hash_store_->ClearTestState();
+  // Re-configure the mock to return an invalid encrypted MAC for the async
+  // pass.
+  mock_pref_hash_store_->SetCheckResult(kAtomicPref,
+                                        ValueState::CHANGED_ENCRYPTED);
   revalidation_run_loop.Run();
 
   EXPECT_TRUE(was_validation_performed);
 
-  // This means ClearPref should NOT be called a second time.
-  EXPECT_FALSE(mock_pref_service_->WasCleared(kAtomicPref));
+  // This means the pref should have been cleared (again).
+  EXPECT_FALSE(mock_pref_service_->GetUserPrefValue(kAtomicPref));
 }
 
 TEST_P(PrefHashFilterEncryptedTest,

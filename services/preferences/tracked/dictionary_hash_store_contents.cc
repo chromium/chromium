@@ -110,6 +110,10 @@ bool DictionaryHashStoreContents::RemoveEntry(const std::string& path) {
   return false;
 }
 
+bool DictionaryHashStoreContents::SupportsSuperMac() const {
+  return true;
+}
+
 std::string DictionaryHashStoreContents::GetSuperMac() const {
   if (const std::string* super_mac_string =
           storage_->FindStringByDottedPath(kSuperMACPref)) {
