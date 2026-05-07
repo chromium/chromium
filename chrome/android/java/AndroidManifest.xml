@@ -1232,15 +1232,7 @@ by a child template that "extends" this file.
         <service android:name="org.chromium.chrome.browser.app.usb.UsbNotificationService"
             android:exported="false"/>
 
-        <service android:name="org.chromium.chrome.browser.data_import.DataImporterService"
-            android:exported="true" tools:ignore="ExportedService">
-          <intent-filter>
-            <action android:name="io.grpc.action.BIND" />
-            <data android:host=""
-                android:path="/com.google.osmigration.systemappapi.TargetService"
-                android:scheme="grpc" />
-          </intent-filter>
-        </service>
+
 
         <meta-data android:name="org.chromium.content.browser.SMART_CLIP_PROVIDER"
             android:value="org.chromium.content_public.browser.SmartClipProvider"/>

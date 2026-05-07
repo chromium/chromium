@@ -278,11 +278,6 @@
     "expiry_milestone": 155
   },
   {
-    "name": "android-data-importer-service",
-    "owners": [ "treib@chromium.org", "fsenra@google.com" ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "android-desktop-aim-gate",
     "owners": [ "skym@chromium.org", "chrome-mobile-search@google.com" ],
     "expiry_milestone": 160

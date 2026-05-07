@@ -38,7 +38,6 @@ BASE_DECLARE_FEATURE(kAndroidBookmarkBarFastFollow);
 BASE_DECLARE_FEATURE(kAndroidBottomBar);
 BASE_DECLARE_FEATURE(kAndroidBottomToolbarV2);
 BASE_DECLARE_FEATURE(kAndroidContextMenuNewActions);
-BASE_DECLARE_FEATURE(kAndroidDataImporterService);
 BASE_DECLARE_FEATURE(kAndroidDesktopDensity);
 BASE_DECLARE_FEATURE(kAndroidElegantTextHeight);
 BASE_DECLARE_FEATURE(kAndroidFirstRunLaunchBounds);

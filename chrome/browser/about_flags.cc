@@ -11553,13 +11553,6 @@ const FeatureEntry kFeatureEntries[] = {
              kSafetyHubUnusedPermissionRevocationForAllSurfaces)},
 
 #if BUILDFLAG(IS_ANDROID)
-    {"android-data-importer-service",
-     flag_descriptions::kAndroidDataImporterServiceName,
-     flag_descriptions::kAndroidDataImporterServiceDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAndroidDataImporterService)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
     {"media-indicators-android", flag_descriptions::kMediaIndicatorsAndroidName,
      flag_descriptions::kMediaIndicatorsAndroidDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kMediaIndicatorsAndroid,

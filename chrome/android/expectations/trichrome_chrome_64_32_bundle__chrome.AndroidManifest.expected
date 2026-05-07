@@ -937,14 +937,6 @@
         <category android:name="androidx.browser.trusted.category.WebShareTargetV2"/>
       </intent-filter>  # DIFF-ANCHOR: d46bf795
     </service>  # DIFF-ANCHOR: ee1c39a8
-    <service  # DIFF-ANCHOR: e52d1b8f
-        android:name="org.chromium.chrome.browser.data_import.DataImporterService"
-        android:exported="true">
-      <intent-filter>  # DIFF-ANCHOR: ec53b68d
-        <action android:name="io.grpc.action.BIND"/>
-        <data android:host="" android:path="/com.google.osmigration.systemappapi.TargetService" android:scheme="grpc"/>
-      </intent-filter>  # DIFF-ANCHOR: ec53b68d
-    </service>  # DIFF-ANCHOR: e52d1b8f
     <service  # DIFF-ANCHOR: 4b22c3f5
         android:name="org.chromium.chrome.browser.download.DownloadBroadcastManager"
         android:exported="false">

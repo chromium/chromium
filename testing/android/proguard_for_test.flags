@@ -75,3 +75,6 @@
 # We have some "library class WebView depends on program class SslCertificate"
 # warnings, and they don't affect us.
 -dontwarn android.webkit.WebView*
+
+# Keep generic signatures; needed for correct type resolution
+-keepattributes Signature

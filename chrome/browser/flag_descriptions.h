@@ -5123,11 +5123,6 @@ inline constexpr char kAndroidContextMenuNewActionsName[] =
 inline constexpr char kAndroidContextMenuNewActionsDescription[] =
     "Adds new context menu actions.";
 
-inline constexpr char kAndroidDataImporterServiceName[] =
-    "Data Importer Service";
-inline constexpr char kAndroidDataImporterServiceDescription[] =
-    "Enables the service for importing user data from other browsers.";
-
 inline constexpr char kAndroidDesktopUAPlatformName[] =
     "Android platform client hint for Desktop Android";
 inline constexpr char kAndroidDesktopUAPlatformDescription[] =

@@ -584,7 +584,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/customtabs/features/toolbar/NoOpkeyboardVisibilityDelegate.java",
   "java/src/org/chromium/chrome/browser/customtabs/features/toolbar/SecurityButtonAnimationDelegate.java",
   "java/src/org/chromium/chrome/browser/customtabs/features/toolbar/TitleAndUrlLayout.java",
-  "java/src/org/chromium/chrome/browser/data_import/DataImporterBridge.java",
   "java/src/org/chromium/chrome/browser/datareduction/DataSaverOSSetting.java",
   "java/src/org/chromium/chrome/browser/desktop_site/DesktopSiteSettingsIphController.java",
   "java/src/org/chromium/chrome/browser/device_dialog/ChromeBluetoothChooserAndroidDelegate.java",
