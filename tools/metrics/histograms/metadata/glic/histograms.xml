@@ -477,6 +477,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.ExperimentalTriggering.StateOnActuationRequest"
+    enum="GlicExperimentalTriggeringState" expires_after="2027-05-06">
+  <owner>sauski@google.com</owner>
+  <owner>qinmin@chromium.org</owner>
+  <summary>
+    Records the GlicExperimentalTriggeringState of the user when an experimental
+    actuation request is received.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Focus.Settings.Shortcut.Customized" enum="BooleanEnabled"
     expires_after="2026-05-31">
   <owner>bryantchandler@chromium.org</owner>

@@ -8,11 +8,14 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/test_support/new_glic_api_test.h"
 #include "chrome/common/chrome_features.h"
 #include "components/sharing_message/mock_sharing_message_sender.h"
@@ -50,6 +53,15 @@ class GlicExperimentalTriggeringMessageHandlerBrowserTest
         GetTestUrl("page.html")));
   }
 
+  void OptIn() {
+    auto* glic_service = glic::GlicKeyedService::Get(GetProfile());
+    ASSERT_TRUE(glic_service);
+    glic_service->enabling().SetCompletedFre(
+        glic::prefs::FreStatus::kCompleted);
+    glic_service->enabling().SetUserEnabledActuationOnWeb(true);
+    glic_service->enabling().SetExperimentalTriggeringEnabled(true);
+  }
+
   void TearDownOnMainThread() override {
     handler_.reset();
     GlicApiBrowserTest::TearDownOnMainThread();
@@ -62,6 +74,8 @@ class GlicExperimentalTriggeringMessageHandlerBrowserTest
 
 IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
                        testGetExperimentalTriggeringUpdates) {
+  OptIn();
+  base::HistogramTester histogram_tester;
   components_sharing_message::SharingMessage message;
   message.mutable_glic_experimental_triggering()
       ->mutable_request()
@@ -96,6 +110,10 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
   handler_->OnMessage(std::move(message), done_future.GetCallback());
 
   EXPECT_TRUE(done_future.Wait());
+
+  histogram_tester.ExpectUniqueSample(
+      "Glic.ExperimentalTriggering.StateOnActuationRequest",
+      syncer::DeviceInfo::GlicExperimentalTriggeringState::kReady, 1);
 
   // Verify that a new tab was created and it is in the background.
   EXPECT_EQ(GetTabListInterface()->GetTabCount(), initial_tab_count + 1);
@@ -143,6 +161,7 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
                        testRelaysUpdatesWithSequenceNumbers) {
+  OptIn();
   components_sharing_message::SharingMessage message;
   message.mutable_server_channel_configuration()->set_configuration(
       "test_config");
@@ -205,6 +224,7 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
                        testRespectsLastSeenSequenceNumber) {
+  OptIn();
   components_sharing_message::SharingMessage message;
   message.mutable_server_channel_configuration()->set_configuration(
       "test_config");
@@ -363,6 +383,70 @@ IN_PROC_BROWSER_TEST_F(
                 .data_type(),
             components_sharing_message::GlicExperimentalTriggering::
                 ExperimentalTriggeringResponse::TaskUpdate::ERROR_MESSAGE);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,
+                       RejectRequestWhenNotOptedIn) {
+  // Ensure we are NOT opted in.
+  auto* glic_service = glic::GlicKeyedService::Get(GetProfile());
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(glic_service);
+  glic_service->enabling().SetCompletedFre(glic::prefs::FreStatus::kNotStarted);
+  glic_service->enabling().SetUserEnabledActuationOnWeb(false);
+  glic_service->enabling().SetExperimentalTriggeringEnabled(false);
+
+  components_sharing_message::SharingMessage message;
+  message.mutable_glic_experimental_triggering()
+      ->mutable_request()
+      ->mutable_trigger_actuation_request();
+
+  auto* server_channel_config = message.mutable_server_channel_configuration();
+  server_channel_config->set_configuration("test_config");
+
+  base::test::TestFuture<
+      std::unique_ptr<components_sharing_message::ResponseMessage>>
+      done_future;
+
+  base::test::TestFuture<components_sharing_message::SharingMessage> future;
+  EXPECT_CALL(mock_sharing_message_sender_,
+              SendMessageToServerTarget(_, _, _, _, _))
+      .WillOnce(
+          [&](const components_sharing_message::ServerChannelConfiguration&,
+              base::TimeDelta,
+              components_sharing_message::SharingMessage message,
+              SharingMessageSender::DelegateType,
+              SharingMessageSender::ResponseCallback) {
+            future.SetValue(std::move(message));
+            return base::OnceClosure();
+          });
+
+  handler_->OnMessage(std::move(message), done_future.GetCallback());
+
+  EXPECT_TRUE(done_future.Wait());
+
+  histogram_tester.ExpectUniqueSample(
+      "Glic.ExperimentalTriggering.StateOnActuationRequest",
+      syncer::DeviceInfo::GlicExperimentalTriggeringState::kNeedsOptIn, 1);
+
+  // Verify that Glic was NOT invoked (no new tabs created).
+  EXPECT_EQ(GetTabListInterface()->GetTabCount(), 1);
+
+  // Verify that a FAILED response was sent back with the correct error message.
+  auto response = future.Take();
+  EXPECT_TRUE(response.has_glic_experimental_triggering());
+  EXPECT_EQ(
+      response.glic_experimental_triggering().response().task_update().state(),
+      components_sharing_message::GlicExperimentalTriggering::
+          ExperimentalTriggeringResponse::TaskUpdate::FAILED);
+  EXPECT_EQ(response.glic_experimental_triggering()
+                .response()
+                .task_update()
+                .data_type(),
+            components_sharing_message::GlicExperimentalTriggering::
+                ExperimentalTriggeringResponse::TaskUpdate::ERROR_MESSAGE);
+  EXPECT_EQ(
+      response.glic_experimental_triggering().response().task_update().data(),
+      "User is not opted in to experimental triggering.");
 }
 
 }  // namespace glic

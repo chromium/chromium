@@ -187,6 +187,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.h:EntryPointStatus) -->
 
+<!-- LINT.IfChange(GlicExperimentalTriggeringState) -->
+
+<enum name="GlicExperimentalTriggeringState">
+  <int value="0" label="Unavailable"/>
+  <int value="1" label="Needs Opt-In"/>
+  <int value="2" label="Ready"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/sync_device_info/device_info.h:GlicExperimentalTriggeringState) -->
+
 <enum name="GlicFeatureDisabledReason">
   <int value="0" label="Feature Flag Disabled"/>
   <int value="1" label="Country Disabled"/>

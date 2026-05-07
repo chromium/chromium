@@ -9,9 +9,11 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_controller.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -205,6 +207,54 @@ tabs::TabInterface* GlicExperimentalTriggeringMessageHandler::GetActiveTab()
   return browser ? TabListInterface::From(browser)->GetActiveTab() : nullptr;
 }
 
+bool GlicExperimentalTriggeringMessageHandler::
+    HandleUnavailableExperimentalTriggering(
+        glic::GlicKeyedService* glic_service,
+        const components_sharing_message::SharingMessage& message,
+        SharingMessageHandler::DoneCallback& done_callback) {
+  auto state = glic_service->enabling().GetExperimentalTriggeringState();
+  base::UmaHistogramEnumeration(
+      "Glic.ExperimentalTriggering.StateOnActuationRequest", state);
+
+  if (state == syncer::DeviceInfo::GlicExperimentalTriggeringState::kReady) {
+    return false;
+  }
+
+  DLOG(WARNING) << "Rejecting remote request: Glic not opted-in for "
+                   "experimental triggering.";
+  if (message.has_server_channel_configuration() && message_sender_) {
+    components_sharing_message::SharingMessage response_message;
+    auto* triggering_response =
+        response_message.mutable_glic_experimental_triggering();
+    auto* response = triggering_response->mutable_response();
+    auto* task_update = response->mutable_task_update();
+
+    task_update->set_state(
+        components_sharing_message::GlicExperimentalTriggering::
+            ExperimentalTriggeringResponse::TaskUpdate::FAILED);
+    task_update->set_data_type(
+        components_sharing_message::GlicExperimentalTriggering::
+            ExperimentalTriggeringResponse::TaskUpdate::ERROR_MESSAGE);
+    task_update->set_data("User is not opted in to experimental triggering.");
+
+    message_sender_->SendMessageToServerTarget(
+        message.server_channel_configuration(), kUpdateMessageTimeout,
+        std::move(response_message), SharingMessageSender::DelegateType::kFCM,
+        base::BindOnce(
+            [](SharingSendMessageResult result,
+               std::unique_ptr<components_sharing_message::ResponseMessage>
+                   response) {
+              if (result != SharingSendMessageResult::kSuccessful) {
+                DLOG(WARNING) << "Failed to send rejection response to server. "
+                                 "Result: "
+                              << static_cast<int>(result);
+              }
+            }));
+  }
+  std::move(done_callback).Run(nullptr);
+  return true;
+}
+
 // TODO(b/505825633): Refine ResponseMessage errors for experimental triggering.
 void GlicExperimentalTriggeringMessageHandler::OnMessage(
     components_sharing_message::SharingMessage message,
@@ -247,6 +297,11 @@ void GlicExperimentalTriggeringMessageHandler::OnMessage(
   }
 
   if (request.request().has_trigger_actuation_request()) {
+    if (HandleUnavailableExperimentalTriggering(glic_service, message,
+                                                done_callback)) {
+      return;
+    }
+
     auto options = CreateInvokeOptions(request, active_tab);
     if (message.has_server_channel_configuration()) {
       std::optional<int64_t> last_seen_sequence_number;

@@ -175,8 +175,10 @@ class DeviceInfo {
     kUnavailable = 0,
     kNeedsOptIn = 1,
     kReady = 2,
+    kMaxValue = kReady,
   };
   // LINT.ThenChange(//components/sync/protocol/sync_enums.proto:GlicExperimentalTriggeringState)
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicExperimentalTriggeringState)
 
   DeviceInfo(
       const std::string& guid,

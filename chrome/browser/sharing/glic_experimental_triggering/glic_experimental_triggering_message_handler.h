@@ -64,6 +64,17 @@ class GlicExperimentalTriggeringMessageHandler : public SharingMessageHandler {
       glic::GlicKeyedService* glic_service,
       DoneCallback done_callback);
 
+  // Checks if experimental triggering is allowed for the profile. If NOT
+  // allowed, handles the rejection by logging metrics, sending a FAILED
+  // response back to the server (if FCM is configured), invoking the
+  // `done_callback`, and returning true to indicate the message has been fully
+  // handled. If allowed, returns false to indicate that normal handling should
+  // proceed.
+  bool HandleUnavailableExperimentalTriggering(
+      glic::GlicKeyedService* glic_service,
+      const components_sharing_message::SharingMessage& message,
+      SharingMessageHandler::DoneCallback& done_callback);
+
   const raw_ptr<Profile> profile_;
 
   const raw_ptr<SharingMessageSender> message_sender_;
