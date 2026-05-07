@@ -191,7 +191,8 @@ class MagiPresubmitTest(unittest.TestCase):
             '"next_phase": "CRITIQUE"}')
         self.mock_input.affected_files = [
             MockAffectedFile('remoting/tools/magi-mode/state_block.magi.json'),
-            MockAffectedFile('remoting/tools/magi-mode/personas/core/security.json')
+            MockAffectedFile(
+                'remoting/tools/magi-mode/personas/core/security.json')
         ]
         self.mock_input.files_content = {
             'remoting/tools/magi-mode/state_block.magi.json': valid_json,
@@ -257,18 +258,23 @@ class MagiPresubmitTest(unittest.TestCase):
     def testJsonStateBlockInvalidChecklistValue(self):
         # Non-boolean value in checklist ("checked_xyz": "not_a_boolean")
         invalid_checklist_json = (
-            '{"checklist": {"checked_xyz": "not_a_boolean"}, "unlisted_issues_found": [], '
-            '"iteration": 1, "stall_count": 0, "active_constraints": [], '
-            '"resolved_constraints": [], "personas": ["src/remoting/tools/magi-mode/personas/core/security.json"], '
+            '{"checklist": {"checked_xyz": "not_a_boolean"}, '
+            '"unlisted_issues_found": [], "iteration": 1, '
+            '"stall_count": 0, "active_constraints": [], '
+            '"resolved_constraints": [], "personas": '
+            '["src/remoting/tools/magi-mode/personas/core/security.json"], '
             '"review_mode": "SUPERVISOR", "state_transport": "EPHEMERAL", '
             '"next_phase": "CRITIQUE"}')
         self.mock_input.affected_files = [
             MockAffectedFile('remoting/tools/magi-mode/state_block.magi.json'),
-            MockAffectedFile('remoting/tools/magi-mode/personas/core/security.json')
+            MockAffectedFile(
+                'remoting/tools/magi-mode/personas/core/security.json')
         ]
         self.mock_input.files_content = {
-            'remoting/tools/magi-mode/state_block.magi.json': invalid_checklist_json,
-            'remoting/tools/magi-mode/personas/core/security.json': '{"checklist": {"checked_xyz": "Desc"}}'
+            'remoting/tools/magi-mode/state_block.magi.json': (
+                invalid_checklist_json),
+            'remoting/tools/magi-mode/personas/core/security.json': (
+                '{"checklist": {"checked_xyz": "Desc"}}')
         }
         schema_json = (
             '{"definitions": {"ChecklistObject": {"type": "object", '
@@ -293,23 +299,29 @@ class MagiPresubmitTest(unittest.TestCase):
             results = PRESUBMIT.CheckJsonFiles(
                 self.mock_input, self.mock_output)
             self.assertTrue(any(
-                'checklist key "checked_xyz" must be a boolean' in r for r in results))
+                'checklist key "checked_xyz" must be a boolean' in r
+                for r in results))
 
     def testJsonStateBlockArbitraryChecklistKey(self):
         # Arbitrary key in checklist ("check_arbitrary": true) not in security.json
         arbitrary_key_json = (
-            '{"checklist": {"checked_xyz": true, "check_arbitrary": true}, "unlisted_issues_found": [], '
-            '"iteration": 1, "stall_count": 0, "active_constraints": [], '
-            '"resolved_constraints": [], "personas": ["src/remoting/tools/magi-mode/personas/core/security.json"], '
+            '{"checklist": {"checked_xyz": true, "check_arbitrary": true}, '
+            '"unlisted_issues_found": [], "iteration": 1, '
+            '"stall_count": 0, "active_constraints": [], '
+            '"resolved_constraints": [], "personas": '
+            '["src/remoting/tools/magi-mode/personas/core/security.json"], '
             '"review_mode": "SUPERVISOR", "state_transport": "EPHEMERAL", '
             '"next_phase": "CRITIQUE"}')
         self.mock_input.affected_files = [
             MockAffectedFile('remoting/tools/magi-mode/state_block.magi.json'),
-            MockAffectedFile('remoting/tools/magi-mode/personas/core/security.json')
+            MockAffectedFile(
+                'remoting/tools/magi-mode/personas/core/security.json')
         ]
         self.mock_input.files_content = {
-            'remoting/tools/magi-mode/state_block.magi.json': arbitrary_key_json,
-            'remoting/tools/magi-mode/personas/core/security.json': '{"checklist": {"checked_xyz": "Desc"}}'
+            'remoting/tools/magi-mode/state_block.magi.json': (
+                arbitrary_key_json),
+            'remoting/tools/magi-mode/personas/core/security.json': (
+                '{"checklist": {"checked_xyz": "Desc"}}')
         }
         schema_json = (
             '{"definitions": {"ChecklistObject": {"type": "object", '
@@ -334,7 +346,8 @@ class MagiPresubmitTest(unittest.TestCase):
             results = PRESUBMIT.CheckJsonFiles(
                 self.mock_input, self.mock_output)
             self.assertTrue(any(
-                'checklist contains arbitrary keys not defined in selected personas: check_arbitrary' in r for r in results))
+                'checklist contains arbitrary keys not defined in selected '
+                'personas: check_arbitrary' in r for r in results))
 
     def testJsonProjectSpecValidation(self):
         # Valid project spec
@@ -564,7 +577,8 @@ class MagiPresubmitTest(unittest.TestCase):
         state_json = (
             '{"checklist": {}, "unlisted_issues_found": [], '
             '"iteration": 1, "stall_count": 0, "active_constraints": [], '
-            '"resolved_constraints": [], "personas": ["Security"], '
+            '"resolved_constraints": [], "personas": '
+            '["src/remoting/tools/magi-mode/personas/core/security.json"], '
             '"review_mode": "SUPERVISOR", "state_transport": "EPHEMERAL", '
             '"next_phase": "CRITIQUE"}')
 
@@ -572,7 +586,9 @@ class MagiPresubmitTest(unittest.TestCase):
         proj_verbose = '{"auditability_level": "VERBOSE"}'
 
         self.mock_input.affected_files = [
-            MockAffectedFile('remoting/tools/magi-mode/state_block.magi.json')
+            MockAffectedFile('remoting/tools/magi-mode/state_block.magi.json'),
+            MockAffectedFile(
+                'remoting/tools/magi-mode/personas/core/security.json')
         ]
 
         def mock_exists(path):
@@ -580,7 +596,9 @@ class MagiPresubmitTest(unittest.TestCase):
 
         # Test EPHEMERAL with paranoia_mode: true
         self.mock_input.files_content = {
-            'remoting/tools/magi-mode/state_block.magi.json': state_json
+            'remoting/tools/magi-mode/state_block.magi.json': state_json,
+            'remoting/tools/magi-mode/personas/core/security.json': (
+                '{"checklist": {}}')
         }
 
         with patch('os.path.exists', side_effect=mock_exists):
