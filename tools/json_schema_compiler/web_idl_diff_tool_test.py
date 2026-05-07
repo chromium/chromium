@@ -47,6 +47,7 @@ _CONVERTED_SCHEMAS = [
     ('web_accessible_resources.idl', 'web_accessible_resources.webidl'),
     ('enterprise_platform_keys_internal.idl',
      'enterprise_platform_keys_internal.webidl'),
+    ('experimental_ai_data.idl', 'experimental_ai_data.webidl'),
     ('web_accessible_resources_mv2.idl', 'web_accessible_resources_mv2.webidl'),
     ('automation_internal.idl', 'automation_internal.webidl'),
     ('automation.idl', 'automation.webidl'),
