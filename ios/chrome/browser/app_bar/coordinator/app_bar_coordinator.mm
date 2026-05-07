@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/authentication/account_menu/public/account_menu_constants.h"
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
@@ -131,6 +132,8 @@
                                           GetForProfile(profile)
                         geminiService:GeminiServiceFactory::GetForProfile(
                                           profile)
+                   geminiBrowserAgent:GeminiBrowserAgent::FromBrowser(
+                                          _regularBrowser)
                             URLLoader:UrlLoadingBrowserAgent::FromBrowser(
                                           _regularBrowser)
                          tabGridState:sceneState.tabGridState

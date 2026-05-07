@@ -54,6 +54,10 @@ constexpr CGFloat kSpotlightViewVerticalInset = 2;
 // Offset of the tab count label in the tab grid button tab group state.
 constexpr CGFloat kTabGroupLabelOffset = 3;
 
+// The size of the assistant button highlight.
+constexpr CGFloat kAssistantHighlightWidth = 44;
+constexpr CGFloat kAssistantHighlightHeight = 30;
+
 // The spacing inside the stack view.
 constexpr CGFloat kStackViewSpacing = 4;
 // The horizontal margins of the stack view.
@@ -139,8 +143,14 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
   NSArray<NSLayoutConstraint*>* _tabGridButtonTabGroupStateConstraints;
   // Cached state for the assistant button.
   AppBarAssistantButtonState _assistantButtonState;
+  // Whether the assistant button is highlighted.
+  BOOL _assistantButtonHighlighted;
   // Cached avatar for the assistant button.
   UIImage* _assistantButtonAvatar;
+  // The highlight view for the assistant button.
+  UIView* _assistantHighlightView;
+  // Constraints for the assistant highlight view.
+  NSArray<NSLayoutConstraint*>* _assistantHighlightConstraints;
   // The background view.
   AppBarBackgroundView* _backgroundView;
   // The stack view constraints that are updated on rotation.
@@ -396,8 +406,10 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
   NOTREACHED();
 }
 
-- (void)setAssistantButtonState:(AppBarAssistantButtonState)state {
+- (void)setAssistantButtonState:(AppBarAssistantButtonState)state
+                    highlighted:(BOOL)highlighted {
   _assistantButtonState = state;
+  _assistantButtonHighlighted = highlighted;
 
   [self updateAssistantButton];
 }
@@ -591,7 +603,54 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
   UIButtonConfiguration* configuration = _assistantButton.configuration;
   configuration.title = title;
   configuration.image = image ? image : CustomAppBarSymbol(kCameraLensSymbol);
+
+  // Set up custom background view if not already done
+  if (_assistantButtonHighlighted && !configuration.background.customView) {
+    UIView* customBackgroundView = [[UIView alloc] init];
+    customBackgroundView.backgroundColor = [UIColor clearColor];
+
+    _assistantHighlightView = [[UIView alloc] init];
+    _assistantHighlightView.translatesAutoresizingMaskIntoConstraints = NO;
+    _assistantHighlightView.backgroundColor = [UIColor colorWithWhite:1.0
+                                                                alpha:0.2];
+    _assistantHighlightView.layer.cornerRadius =
+        kAssistantHighlightHeight / 2.0;
+    _assistantHighlightView.layer.masksToBounds = YES;
+    _assistantHighlightView.hidden = YES;
+
+    [customBackgroundView addSubview:_assistantHighlightView];
+    configuration.background.backgroundColor = [UIColor clearColor];
+    configuration.background.customView = customBackgroundView;
+  }
+  _assistantHighlightView.hidden = !_assistantButtonHighlighted;
+
+  if (_assistantButtonHighlighted) {
+    configuration.baseForegroundColor = [UIColor whiteColor];
+  } else {
+    configuration.baseForegroundColor = ButtonsForegroundColor();
+  }
+
   _assistantButton.configuration = configuration;
+
+  // Update constraints to point to the current imageView
+  if (_assistantHighlightConstraints) {
+    [NSLayoutConstraint deactivateConstraints:_assistantHighlightConstraints];
+    _assistantHighlightConstraints = nil;
+  }
+
+  if (_assistantHighlightView && _assistantButton.imageView) {
+    _assistantHighlightConstraints = @[
+      [_assistantHighlightView.centerXAnchor
+          constraintEqualToAnchor:_assistantButton.imageView.centerXAnchor],
+      [_assistantHighlightView.centerYAnchor
+          constraintEqualToAnchor:_assistantButton.imageView.centerYAnchor],
+      [_assistantHighlightView.widthAnchor
+          constraintEqualToConstant:kAssistantHighlightWidth],
+      [_assistantHighlightView.heightAnchor
+          constraintEqualToConstant:kAssistantHighlightHeight],
+    ];
+    [NSLayoutConstraint activateConstraints:_assistantHighlightConstraints];
+  }
 }
 
 // Returns a new "Assistant" button.
@@ -652,12 +711,19 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
   UIButtonConfiguration* config = button.configuration;
   CGFloat highlightAlpha = ButtonHighlightAlpha(button);
 
-  // Image only fades on highlight/disabled.
+  BOOL isAssistantButtonHighlighted =
+      (button == _assistantButton && _assistantButtonHighlighted);
+
+  CGFloat activeAlpha = isAssistantButtonHighlighted ? 1.0 : highlightAlpha;
+
   config.imageColorTransformer = ^UIColor*(UIColor* color) {
-    return [ButtonsForegroundColor() colorWithAlphaComponent:highlightAlpha];
+    UIColor* baseColor = isAssistantButtonHighlighted
+                             ? [UIColor whiteColor]
+                             : ButtonsForegroundColor();
+    return [baseColor colorWithAlphaComponent:activeAlpha];
   };
 
-  [self updateButtonTitleConfiguration:config highlightAlpha:highlightAlpha];
+  [self updateButtonTitleConfiguration:config highlightAlpha:activeAlpha];
 
   button.configuration = config;
 }

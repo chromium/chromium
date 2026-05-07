@@ -11,6 +11,7 @@
 
 @protocol AppBarConsumer;
 class AuthenticationService;
+class GeminiBrowserAgent;
 class GeminiService;
 @class BrowserActionFactory;
 @protocol FullscreenBrowserAgentObserving;
@@ -96,6 +97,7 @@ class WebStateList;
               authenticationService:
                   (AuthenticationService*)authenticationService
                       geminiService:(GeminiService*)geminiService
+                 geminiBrowserAgent:(GeminiBrowserAgent*)geminiBrowserAgent
                           URLLoader:(UrlLoadingBrowserAgent*)URLLoader
                        tabGridState:(TabGridState*)tabGridState
                      incognitoState:(IncognitoState*)incognitoState;

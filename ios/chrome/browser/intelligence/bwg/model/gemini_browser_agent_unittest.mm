@@ -17,6 +17,7 @@
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/identity_manager/primary_account_change_event.h"
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_configuration.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_extractor_java_script_feature.h"
@@ -188,6 +189,10 @@ class GeminiBrowserAgentTest : public PlatformTest {
   }
 
   // Setter for `floaty_hidden_timestamp_`.
+  // Wrapper for `InvokeFloaty`.
+  void InvokeFloaty(GeminiConfiguration* config) {
+    gemini_browser_agent_->InvokeFloaty(config);
+  }
   void SetFloatyHiddenTimestamp(base::TimeTicks timestamp) {
     gemini_browser_agent_->floaty_hidden_timestamp_ = timestamp;
   }
@@ -214,9 +219,39 @@ class GeminiBrowserAgentTest : public PlatformTest {
   FakeSnapshotGeneratorDelegate* fake_snapshot_delegate_;
 };
 
+// A test observer for GeminiBrowserAgent.
+class TestGeminiObserver : public GeminiBrowserAgent::Observer {
+ public:
+  void OnFloatyInvokedChanged(bool is_invoked) override {
+    is_invoked_ = is_invoked;
+    call_count_++;
+  }
+  bool is_invoked_ = false;
+  int call_count_ = 0;
+};
+
 // Tests that the GeminiBrowserAgent can be instantiated.
 TEST_F(GeminiBrowserAgentTest, TestGeminiBrowserAgentInstantiation) {
   EXPECT_NE(nullptr, gemini_browser_agent_);
+}
+
+// Tests that observers are notified when the floaty invocation state changes.
+TEST_F(GeminiBrowserAgentTest, TestObserverNotification) {
+  TestGeminiObserver observer;
+  gemini_browser_agent_->AddObserver(&observer);
+
+  // Set invoked.
+  SetIsFloatyInvoked(false);
+  InvokeFloaty([[GeminiConfiguration alloc] init]);
+  EXPECT_TRUE(observer.is_invoked_);
+  EXPECT_EQ(1, observer.call_count_);
+
+  // Dismiss.
+  gemini_browser_agent_->DismissFloaty();
+  EXPECT_FALSE(observer.is_invoked_);
+  EXPECT_EQ(2, observer.call_count_);
+
+  gemini_browser_agent_->RemoveObserver(&observer);
 }
 
 // Tests the presentation of the BWG overlay and state of tab helper side

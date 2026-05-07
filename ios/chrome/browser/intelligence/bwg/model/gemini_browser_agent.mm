@@ -320,6 +320,14 @@ void GeminiBrowserAgent::BrowserDestroyed(Browser* browser) {
   browser->RemoveObserver(this);
 }
 
+void GeminiBrowserAgent::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void GeminiBrowserAgent::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void GeminiBrowserAgent::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
   signin::PrimaryAccountChangeEvent::Type event_type =
@@ -532,6 +540,9 @@ void GeminiBrowserAgent::InvokeFloaty(GeminiConfiguration* config) {
   ios::provider::StartBwgOverlay(config);
   last_shown_view_state_ = ios::provider::GetCurrentGeminiViewState();
   is_floaty_invoked_ = true;
+  for (auto& observer : observers_) {
+    observer.OnFloatyInvokedChanged(is_floaty_invoked_);
+  }
 }
 
 void GeminiBrowserAgent::ForceShowFloatyIfInvoked() {
@@ -810,6 +821,9 @@ void GeminiBrowserAgent::DismissFloaty() {
   RecordFloatyDismissedState(last_shown_view_state_);
 
   is_floaty_invoked_ = false;
+  for (auto& observer : observers_) {
+    observer.OnFloatyInvokedChanged(is_floaty_invoked_);
+  }
   active_hiding_sources_.clear();
   is_hidden_by_keyboard_ = false;
   elapsed_minimized_floaty_time_ = base::TimeTicks();

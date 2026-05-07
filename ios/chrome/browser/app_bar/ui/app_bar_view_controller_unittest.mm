@@ -36,6 +36,16 @@ class AppBarViewControllerTest : public PlatformTest {
   UIButton* tabGridButton() {
     return [view_controller_ valueForKey:@"tabGridButton"];
   }
+
+  // Helper to access the private `_assistantButton` ivar using KVC.
+  UIButton* assistantButton() {
+    return [view_controller_ valueForKey:@"assistantButton"];
+  }
+
+  // Helper to access the private `_assistantHighlightView` ivar using KVC.
+  UIView* assistantHighlightView() {
+    return [view_controller_ valueForKey:@"assistantHighlightView"];
+  }
 };
 
 // Tests that the new tab button shows the menu as primary action when the
@@ -174,6 +184,48 @@ TEST_F(AppBarViewControllerTest, TestNewTabButtonMenuManagement) {
   [view_controller_ setTabGroupVisible:NO];
   EXPECT_FALSE(openNewTabButton().showsMenuAsPrimaryAction);
   EXPECT_NSEQ(openNewTabButton().menu, nil);
+}
+
+// Tests that the assistant button highlight state toggles the custom highlight
+// view and does not set the button background color.
+TEST_F(AppBarViewControllerTest, TestAssistantButtonHighlightState) {
+  UIButton* button = assistantButton();
+  ASSERT_NE(button, nil);
+
+  // Initially not highlighted.
+  [view_controller_ setAssistantButtonState:AppBarAssistantButtonState::kAsk
+                                highlighted:NO];
+  [button setNeedsUpdateConfiguration];
+  [button layoutIfNeeded];
+
+  UIView* highlightView = assistantHighlightView();
+  // It might be nil if not created yet, or created and hidden.
+  if (highlightView) {
+    EXPECT_TRUE(highlightView.hidden);
+  }
+
+  // Highlighted.
+  [view_controller_ setAssistantButtonState:AppBarAssistantButtonState::kAsk
+                                highlighted:YES];
+  [button setNeedsUpdateConfiguration];
+  [button layoutIfNeeded];
+
+  highlightView = assistantHighlightView();
+  ASSERT_NE(highlightView, nil);
+  EXPECT_FALSE(highlightView.hidden);
+
+  // Verify button background color is clearColor (we use customView instead).
+  UIButtonConfiguration* config = button.configuration;
+  EXPECT_TRUE(config.background.backgroundColor == [UIColor clearColor]);
+  EXPECT_TRUE(config.background.customView != nil);
+
+  // Not highlighted again.
+  [view_controller_ setAssistantButtonState:AppBarAssistantButtonState::kAsk
+                                highlighted:NO];
+  [button setNeedsUpdateConfiguration];
+  [button layoutIfNeeded];
+
+  EXPECT_TRUE(highlightView.hidden);
 }
 
 }  // namespace
