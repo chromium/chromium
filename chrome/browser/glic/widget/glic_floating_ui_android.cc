@@ -5,7 +5,6 @@
 #include "chrome/browser/glic/widget/glic_floating_ui_android.h"
 
 #include "chrome/browser/glic/host/glic.mojom.h"
-#include "chrome/browser/glic/widget/glic_inactive_floating_ui_android.h"
 
 namespace glic {
 
@@ -57,7 +56,7 @@ bool GlicFloatingUi::HasFocus() {
 }
 
 std::unique_ptr<GlicUiEmbedder> GlicFloatingUi::CreateInactiveEmbedder() const {
-  return GlicInactiveFloatingUi::From(*this);
+  return nullptr;
 }
 
 mojom::PanelState GlicFloatingUi::GetPanelState() const {
