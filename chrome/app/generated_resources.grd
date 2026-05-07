@@ -13868,7 +13868,7 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       </if>
 
       <!-- Self share item in different entry points. -->
-      <message name="IDS_OMNIBOX_ICON_SEND_TAB_TO_SELF" desc="The label of item for share this tab to other devices in different context menus.">
+      <message name="IDS_SEND_TAB_TO_SELF_SEND_BUTTON_LABEL" desc="The label of the Send button in the Send Tab to Self bubble.">
         Send
       </message>
       <message name="IDS_OMNIBOX_TOOLTIP_SEND_TAB_TO_SELF" desc="The label of item for share this tab to other devices in different context menus.">
@@ -13879,6 +13879,12 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       </message>
       <message name="IDS_TOOLBAR_BUTTON_SEND_TAB_TO_SELF_TITLE" desc="The title for the received tab dialog shown from the toolbar button.">
         Page shared from another device
+      </message>
+      <message name="IDS_SEND_TAB_TO_SELF_DEVICE_PICKER_TITLE" desc="Title for the Send Tab To Self device picker bubble.">
+        Choose a device
+      </message>
+      <message name="IDS_SEND_TAB_TO_SELF_DEVICE_PICKER_SUBTITLE" desc="Subtitle for the Send Tab To Self device picker bubble.">
+        Select the device where you want to get this link.
       </message>
       <message name="IDS_TOOLBAR_BUTTON_SEND_TAB_TO_SELF_BUTTON_LABEL" desc="The label for the button in the received tab dialog shown from the toolbar button.">
         Open in New Tab

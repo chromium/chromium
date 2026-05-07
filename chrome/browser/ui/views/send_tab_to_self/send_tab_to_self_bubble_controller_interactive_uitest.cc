@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_controller.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_device_button.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_device_picker_bubble_view.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -35,6 +36,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/window/dialog_client_view.h"
 
 namespace send_tab_to_self {
 
@@ -42,7 +44,7 @@ namespace {
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryTabId);
 // Baseline Gerrit CL number of the most recent CL that modified the UI.
-constexpr char kScreenshotBaselineCL[] = "7765290";
+constexpr char kScreenshotBaselineCL[] = "7819337";
 
 class SendTabToSelfInteractiveUiTest : public InteractiveBrowserTest {
  public:
@@ -105,6 +107,13 @@ class SendTabToSelfInteractiveUiTest : public InteractiveBrowserTest {
         std::move(params)));
   }
 
+  SendTabToSelfDevicePickerBubbleView* GetBubbleView() {
+    return static_cast<SendTabToSelfDevicePickerBubbleView*>(
+        SendTabToSelfBubbleController::CreateOrGetFromWebContents(
+            browser()->tab_strip_model()->GetActiveWebContents())
+            ->send_tab_to_self_bubble_view());
+  }
+
  protected:
   base::test::ScopedFeatureList feature_list_;
   base::CallbackListSubscription create_services_subscription_;
@@ -120,6 +129,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfInteractiveUiTest,
   RunTestSequence(
       InstrumentTab(kPrimaryTabId),
       NavigateWebContents(kPrimaryTabId, test_url),
+      FocusWebContents(kPrimaryTabId),
       SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                               "Should only run in pixel_tests."),
       Do([this]() {
@@ -154,6 +164,164 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfInteractiveUiTest,
       }),
       WaitForHide(SendTabToSelfDevicePickerBubbleView::
                       kSendTabToSelfDevicePickerBubbleId));
+}
+
+class SendTabToSelfDeviceSelectionInteractiveUiTest
+    : public SendTabToSelfInteractiveUiTest {
+ public:
+  SendTabToSelfDeviceSelectionInteractiveUiTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        kSendTabToSelfShowTargetsInContextMenus);
+  }
+  ~SendTabToSelfDeviceSelectionInteractiveUiTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SendTabToSelfDeviceSelectionInteractiveUiTest,
+                       SendTabShowsBubbleAndToastDeviceSelection) {
+  const GURL test_url("chrome://flags/");
+  RunTestSequence(
+      InstrumentTab(kPrimaryTabId),
+      NavigateWebContents(kPrimaryTabId, test_url),
+      FocusWebContents(kPrimaryTabId),
+      SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
+                              "Should only run in pixel_tests."),
+      Do([this]() {
+        identity_test_env_adaptor_->identity_test_env()
+            ->MakePrimaryAccountAvailable("user@example.com",
+                                          signin::ConsentLevel::kSignin);
+        StubSendTabToSelfSyncService* sync_service =
+            static_cast<StubSendTabToSelfSyncService*>(
+                SendTabToSelfSyncServiceFactory::GetForProfile(
+                    browser()->profile()));
+        sync_service->GetFakeSendTabToSelfModel()
+            ->SetTargetDeviceInfoSortedList({TargetDeviceInfo(
+                "device_1", "device_1",
+                syncer::DeviceInfo::FormFactor::kDesktop, base::Time::Now())});
+      }),
+      ShowBubble(),
+      WaitForShow(SendTabToSelfDevicePickerBubbleView::
+                      kSendTabToSelfDevicePickerBubbleId),
+      // Capture a screenshot of the modernized bubble for Gold pixel
+      // verification.
+      Screenshot(SendTabToSelfDevicePickerBubbleView::
+                     kSendTabToSelfDevicePickerBubbleId,
+                 /*screenshot_name=*/"SendTabToSelfDevicePickerDeviceSelection",
+                 /*baseline_cl=*/kScreenshotBaselineCL),
+      NameDescendantViewByType<SendTabToSelfBubbleDeviceButton>(
+          SendTabToSelfDevicePickerBubbleView::
+              kSendTabToSelfDevicePickerBubbleId,
+          "device_button_1", 0),
+      CheckViewProperty(views::DialogClientView::kOkButtonElementId,
+                        &views::View::GetEnabled, true),
+      CheckViewProperty("device_button_1",
+                        &SendTabToSelfBubbleDeviceButton::IsSelected, true),
+      PressButton(views::DialogClientView::kOkButtonElementId),
+      WaitForShow(toasts::ToastView::kToastViewId), StopToastTimer(),
+      Do([this]() {
+        SendTabToSelfBubbleController::CreateOrGetFromWebContents(
+            browser()->tab_strip_model()->GetActiveWebContents())
+            ->HideBubble();
+      }),
+      WaitForHide(SendTabToSelfDevicePickerBubbleView::
+                      kSendTabToSelfDevicePickerBubbleId));
+}
+
+IN_PROC_BROWSER_TEST_F(SendTabToSelfDeviceSelectionInteractiveUiTest,
+                       SendTabMultipleDevicesDeviceSelection) {
+  const GURL test_url("chrome://flags/");
+  RunTestSequence(
+      InstrumentTab(kPrimaryTabId),
+      NavigateWebContents(kPrimaryTabId, test_url),
+      FocusWebContents(kPrimaryTabId),
+      SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
+                              "Should only run in pixel_tests."),
+      Do([this]() {
+        identity_test_env_adaptor_->identity_test_env()
+            ->MakePrimaryAccountAvailable("user@example.com",
+                                          signin::ConsentLevel::kSignin);
+        StubSendTabToSelfSyncService* sync_service =
+            static_cast<StubSendTabToSelfSyncService*>(
+                SendTabToSelfSyncServiceFactory::GetForProfile(
+                    browser()->profile()));
+        sync_service->GetFakeSendTabToSelfModel()
+            ->SetTargetDeviceInfoSortedList(
+                {TargetDeviceInfo("device_1", "device_1",
+                                  syncer::DeviceInfo::FormFactor::kDesktop,
+                                  base::Time::Now()),
+                 TargetDeviceInfo("device_2", "device_2",
+                                  syncer::DeviceInfo::FormFactor::kPhone,
+                                  base::Time::Now())});
+      }),
+      ShowBubble(),
+      WaitForShow(SendTabToSelfDevicePickerBubbleView::
+                      kSendTabToSelfDevicePickerBubbleId),
+      NameDescendantViewByType<SendTabToSelfBubbleDeviceButton>(
+          SendTabToSelfDevicePickerBubbleView::
+              kSendTabToSelfDevicePickerBubbleId,
+          "device_button_1", 0),
+      NameDescendantViewByType<SendTabToSelfBubbleDeviceButton>(
+          SendTabToSelfDevicePickerBubbleView::
+              kSendTabToSelfDevicePickerBubbleId,
+          "device_button_2", 1),
+      CheckViewProperty(views::DialogClientView::kOkButtonElementId,
+                        &views::View::GetEnabled, true),
+      CheckViewProperty("device_button_1",
+                        &SendTabToSelfBubbleDeviceButton::IsSelected, true),
+      CheckViewProperty("device_button_2",
+                        &SendTabToSelfBubbleDeviceButton::IsSelected, false),
+      // Clicking the already selected device should keep it selected.
+      PressButton("device_button_1"),
+      CheckViewProperty("device_button_1",
+                        &SendTabToSelfBubbleDeviceButton::IsSelected, true),
+      PressButton("device_button_1"),
+      CheckViewProperty("device_button_1",
+                        &SendTabToSelfBubbleDeviceButton::IsSelected, true),
+      PressButton("device_button_2"),
+      CheckViewProperty("device_button_1",
+                        &SendTabToSelfBubbleDeviceButton::IsSelected, false),
+      CheckViewProperty("device_button_2",
+                        &SendTabToSelfBubbleDeviceButton::IsSelected, true),
+      PressButton(views::DialogClientView::kOkButtonElementId),
+      WaitForShow(toasts::ToastView::kToastViewId), StopToastTimer(),
+      Do([this]() {
+        SendTabToSelfBubbleController::CreateOrGetFromWebContents(
+            browser()->tab_strip_model()->GetActiveWebContents())
+            ->HideBubble();
+      }),
+      WaitForHide(SendTabToSelfDevicePickerBubbleView::
+                      kSendTabToSelfDevicePickerBubbleId));
+}
+
+IN_PROC_BROWSER_TEST_F(SendTabToSelfDeviceSelectionInteractiveUiTest,
+                       CancelClosesBubbleWithoutSending) {
+  const GURL test_url("chrome://flags/");
+  RunTestSequence(
+      InstrumentTab(kPrimaryTabId),
+      NavigateWebContents(kPrimaryTabId, test_url), Do([this]() {
+        identity_test_env_adaptor_->identity_test_env()
+            ->MakePrimaryAccountAvailable("user@example.com",
+                                          signin::ConsentLevel::kSignin);
+        StubSendTabToSelfSyncService* sync_service =
+            static_cast<StubSendTabToSelfSyncService*>(
+                SendTabToSelfSyncServiceFactory::GetForProfile(
+                    browser()->profile()));
+        sync_service->GetFakeSendTabToSelfModel()
+            ->SetTargetDeviceInfoSortedList({TargetDeviceInfo(
+                "device_1", "device_1",
+                syncer::DeviceInfo::FormFactor::kDesktop, base::Time::Now())});
+      }),
+      ShowBubble(),
+      WaitForShow(SendTabToSelfDevicePickerBubbleView::
+                      kSendTabToSelfDevicePickerBubbleId),
+      // Click the Cancel button
+      PressButton(views::DialogClientView::kCancelButtonElementId),
+      // The bubble should hide, and NO toast should be shown.
+      WaitForHide(SendTabToSelfDevicePickerBubbleView::
+                      kSendTabToSelfDevicePickerBubbleId),
+      EnsureNotPresent(toasts::ToastView::kToastViewId));
 }
 
 }  // namespace

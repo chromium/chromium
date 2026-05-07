@@ -5,10 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_DEVICE_PICKER_BUBBLE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_DEVICE_PICKER_BUBBLE_VIEW_H_
 
-#include <memory>
-#include <string>
-#include <vector>
-
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/media_router/cast_dialog_controller.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_view.h"
@@ -23,15 +19,14 @@ namespace send_tab_to_self {
 class SendTabToSelfBubbleController;
 class SendTabToSelfBubbleDeviceButton;
 
-// View component of the send tab to self bubble that allows users to choose
-// target device to send tab to.
+// A bubble dialog that allows users to select a target device to send a tab to.
 class SendTabToSelfDevicePickerBubbleView : public SendTabToSelfBubbleView {
   METADATA_HEADER(SendTabToSelfDevicePickerBubbleView, SendTabToSelfBubbleView)
 
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSendTabToSelfDevicePickerBubbleId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kManageDevicesLinkElementId);
 
-  // Bubble will be anchored to `anchor`.
   SendTabToSelfDevicePickerBubbleView(views::BubbleAnchor anchor,
                                       content::WebContents* web_contents);
 
@@ -41,6 +36,7 @@ class SendTabToSelfDevicePickerBubbleView : public SendTabToSelfBubbleView {
       const SendTabToSelfDevicePickerBubbleView&) = delete;
 
   void DeviceButtonPressed(SendTabToSelfBubbleDeviceButton* device_button);
+  void SelectTargetDevice(SendTabToSelfBubbleDeviceButton* device_button);
 
   const views::View* GetButtonContainerForTesting() const;
 
@@ -48,19 +44,31 @@ class SendTabToSelfDevicePickerBubbleView : public SendTabToSelfBubbleView {
   // views::BubbleDialogDelegateView:
   void Init() override;
 
-  // Creates the subtitle / hint text used in V2.
+  // Hides the close button in the modernized flow (which has a Cancel button).
+  bool ShouldShowCloseButton() const override;
+
+  // Initializes the legacy bubble layout (instant-send on click, avatar
+  // footer).
+  void InitInstantSendBubble();
+
+  // Initializes the modernized selection bubble layout (Send/Cancel buttons).
+  void InitDeviceSelectionBubble();
+
+  // Handles the "Send" button click.
+  void HandleSendClicked();
+
+  // Creates the subtitle / description label.
   void CreateHintTextLabel();
 
   // Creates the scroll view containing target devices.
   void CreateDevicesScrollView();
 
-  // Creates the link leading to a page where the user can manage their known
-  // target devices.
-  void CreateManageDevicesLink();
-
   // ScrollView containing the list of device buttons.
   // Only kept for GetButtonContainerForTesting().
   raw_ptr<views::ScrollView> scroll_view_ = nullptr;
+
+  // Currently selected device button.
+  raw_ptr<SendTabToSelfBubbleDeviceButton> selected_button_ = nullptr;
 };
 
 }  // namespace send_tab_to_self

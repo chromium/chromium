@@ -34,10 +34,16 @@ class SendTabToSelfBubbleDeviceButton : public HoverButton {
   const std::string& device_name() const { return device_name_; }
   const std::string& device_guid() const { return device_guid_; }
 
+  void SetSelected(bool selected);
+  bool IsSelected() const { return is_selected_; }
+
  private:
+  void ApplyDeviceSelectionStyling();
+
   std::string device_name_;
   std::string device_guid_;
   syncer::DeviceInfo::FormFactor device_form_factor_;
+  bool is_selected_ = false;
 };
 
 }  // namespace send_tab_to_self
