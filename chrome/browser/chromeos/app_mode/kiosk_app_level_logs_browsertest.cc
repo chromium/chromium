@@ -13,9 +13,9 @@
 #include "chrome/browser/ash/app_mode/test/kiosk_mixin.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_level_logs_manager.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
@@ -196,7 +196,7 @@ class WebKioskAppLevelLogsTest : public KioskAppLevelLogsTestBase {
  private:
   void ExpectOnlyKioskAppOpen() const {
     // The initial browser should exist in the web kiosk session.
-    ASSERT_EQ(chrome::GetTotalBrowserCount(), 1u);
+    ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
     BrowserWindowInterface* const kiosk_browser =
         GetLastActiveBrowserWindowInterfaceWithAnyProfile();
     ASSERT_EQ(kiosk_browser->GetTabStripModel()->count(), 1);

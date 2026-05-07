@@ -13,7 +13,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_ui.h"
@@ -99,7 +99,7 @@ class TabInfoCollectorProducerTest : public TabInfoCollectorTest {
 
 IN_PROC_BROWSER_TEST_F(TabInfoCollectorProducerTest,
                        GetTabListForProducerNonEmptyWindow) {
-  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
+  ASSERT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
 
   // Create browser 1 and navigate to url1 and then url2
   CreateBrowser({GURL(kTabUrl1), GURL(kTabUrl2)});
@@ -143,7 +143,7 @@ IN_PROC_BROWSER_TEST_F(TabInfoCollectorProducerTest,
                        GetTabListForProducerEmptyWindow) {
   // Close the browser and verify that all browser windows are closed.
   CloseBrowserSynchronously(browser());
-  ASSERT_EQ(0u, chrome::GetTotalBrowserCount());
+  ASSERT_EQ(0u, GlobalBrowserCollection::GetInstance()->GetSize());
 
   base::test::TestFuture<std::vector<mojom::WindowPtr>> future;
   tab_info_collector()->GetWindowTabInfo(future.GetCallback());
@@ -155,7 +155,7 @@ IN_PROC_BROWSER_TEST_F(TabInfoCollectorProducerTest,
 IN_PROC_BROWSER_TEST_F(TabInfoCollectorProducerTest,
                        GetTabListForProducerIncognitoWindow) {
   CreateIncognitoBrowser(ProfileManager::GetActiveUserProfile());
-  ASSERT_EQ(2u, chrome::GetTotalBrowserCount());
+  ASSERT_EQ(2u, GlobalBrowserCollection::GetInstance()->GetSize());
 
   base::test::TestFuture<std::vector<mojom::WindowPtr>> future;
   tab_info_collector()->GetWindowTabInfo(future.GetCallback());
@@ -166,7 +166,7 @@ IN_PROC_BROWSER_TEST_F(TabInfoCollectorProducerTest,
 
 IN_PROC_BROWSER_TEST_F(TabInfoCollectorConsumerTest,
                        GetTabListForTargetWindow) {
-  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
+  ASSERT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
   views::AnyWidgetObserver observer(views::test::AnyWidgetTestPasskey{});
   observer.set_shown_callback(
       base::BindLambdaForTesting([&](views::Widget* widget) {

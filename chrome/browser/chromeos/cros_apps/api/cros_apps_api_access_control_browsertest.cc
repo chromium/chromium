@@ -10,8 +10,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -89,7 +89,7 @@ class CrosAppsApiAccessControlBrowsertestBase : public InProcessBrowserTest {
     // Create the browser with a default WebContents for running the tests.
     Browser::CreateParams params(profile, /*user_gesture=*/true);
     BrowserWindowInterface* const new_browser = Browser::Create(params);
-    CHECK_EQ(1u, chrome::GetTotalBrowserCount());
+    CHECK_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
     SetBrowser(new_browser);
     browser()->window()->Show();
 
