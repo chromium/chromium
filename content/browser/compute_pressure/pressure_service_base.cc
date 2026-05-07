@@ -95,7 +95,7 @@ bool PressureServiceBase::HasImplicitFocus(RenderFrameHost* render_frame_host) {
             auto origin = PictureInPictureWindowController::
                               GetOrCreateVideoPictureInPictureController(wc)
                                   ->GetOrigin();
-            return current_origin == origin.value() &&
+            return origin.has_value() && current_origin == origin.value() &&
                    wc->GetBrowserContext() == web_contents->GetBrowserContext();
           })) {
     return true;
