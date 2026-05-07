@@ -714,8 +714,9 @@ TEST_F(GeminiBrowserAgentTest, TestSwitchToTextModeOnBackgroundingIfLive) {
   EXPECT_EQ(ios::provider::GetCurrentMode(),
             ios::provider::GeminiViewMode::kLive);
 
-  // Simulate app backgrounding via SceneState activation level.
-  browser_->GetSceneState().activationLevel = SceneActivationLevelBackground;
+  // Simulate app backgrounding via SceneState activation level callback.
+  gemini_browser_agent_->OnSceneActivationLevelChanged(
+      SceneActivationLevelBackground);
 
   // Verify it switched to Floaty (text mode).
   EXPECT_EQ(ios::provider::GetCurrentMode(),
@@ -736,8 +737,9 @@ TEST_F(GeminiBrowserAgentTest, TestNoSwitchOnBackgroundingIfNotLive) {
   EXPECT_EQ(ios::provider::GetCurrentMode(),
             ios::provider::GeminiViewMode::kFloaty);
 
-  // Simulate app backgrounding via SceneState activation level.
-  browser_->GetSceneState().activationLevel = SceneActivationLevelBackground;
+  // Simulate app backgrounding via SceneState activation level callback.
+  gemini_browser_agent_->OnSceneActivationLevelChanged(
+      SceneActivationLevelBackground);
 
   // Verify it remained Floaty (text mode).
   EXPECT_EQ(ios::provider::GetCurrentMode(),
