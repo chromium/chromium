@@ -268,6 +268,8 @@ class KeyboardAccessoryMediator
             case SuggestionType.GENERATE_PASSWORD_ENTRY:
             case SuggestionType.MANAGE_ADDRESS:
             case SuggestionType.MANAGE_AUTOFILL_AI:
+            case SuggestionType.MANAGE_AUTOFILL_AI_IDENTITY_DOCS:
+            case SuggestionType.MANAGE_AUTOFILL_AI_TRAVEL:
             case SuggestionType.MANAGE_CREDIT_CARD:
             case SuggestionType.MANAGE_IBAN:
             case SuggestionType.MANAGE_LOYALTY_CARD:
