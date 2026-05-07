@@ -125,7 +125,8 @@ class PpdProviderTest : public ::testing::Test {
 
   // Creates and return a provider for a test that uses the given |options|.
   scoped_refptr<PpdProvider> CreateProvider(
-      PpdCacheRunLocation where_ppd_cache_runs) {
+      PpdCacheRunLocation where_ppd_cache_runs,
+      std::string_view version = "40.8.6753.09") {
     switch (where_ppd_cache_runs) {
       case PpdCacheRunLocation::kOnTestThread:
         ppd_cache_ = PpdCache::CreateForTesting(
@@ -151,7 +152,7 @@ class PpdProviderTest : public ::testing::Test {
     auto remote_ppd_fetcher = std::make_unique<MockRemotePpdFetcher>();
     provider_backdoor_.remote_ppd_fetcher = remote_ppd_fetcher.get();
 
-    return PpdProvider::Create(base::Version("40.8.6753.09"), ppd_cache_,
+    return PpdProvider::Create(base::Version(version), ppd_cache_,
                                std::move(manager), std::move(config_cache),
                                std::move(remote_ppd_fetcher));
   }
@@ -276,7 +277,8 @@ class PpdProviderTest : public ::testing::Test {
              R"({
                 "printers": [ {
                   "name": "printer_a",
-                  "emm": "printer_a_ref"
+                  "emm": "printer_a_ref",
+                  "restriction": { "minMilestone": 30 }
                 }, {
                   "name": "printer_b",
                   "emm": "printer_b_ref"
@@ -295,7 +297,11 @@ class PpdProviderTest : public ::testing::Test {
                   "printer_a_ref": {
                     "ppdMetadata": [ {
                       "name": "printer_a.ppd",
-                      "license": "fake_license"
+                      "license": "fake_license",
+                      "restriction": { "minMilestone": 30, "maxMilestone": 251 }
+                    }, {
+                      "name": "printer_e.ppd",
+                      "restriction": { "minMilestone": 251 }
                     } ]
                   }
                 }
@@ -1211,6 +1217,150 @@ TEST_F(PpdProviderTest, ResultCodeNames) {
             "INTERNAL_ERROR");
   EXPECT_EQ(PpdProvider::CallbackResultCodeName(PpdProvider::PPD_TOO_LARGE),
             "PPD_TOO_LARGE");
+}
+
+// Test that all entrypoints will work correctly when the matching printer does
+// not meet restrictions.
+TEST_F(PpdProviderTest, VersionUnderMinMilestone) {
+  auto provider =
+      CreateProvider(PpdCacheRunLocation::kInBackgroundThreads, "29.99.99.99");
+  StartFakePpdServer();
+
+  // Required setup calls to advance past PpdProvider's method deferral.
+  ASSERT_TRUE(provider_backdoor_.metadata_manager->SetManufacturersForTesting(
+      kDefaultManufacturersJson));
+  provider->ResolvePrinters(
+      "Manufacturer A", base::BindOnce(&PpdProviderTest::CaptureResolvePrinters,
+                                       base::Unretained(this)));
+
+  std::string ref = "pRiNteR_A_reF";
+
+  Printer::PpdReference ppd_ref;
+  ppd_ref.effective_make_and_model = ref;
+  provider->ResolvePpd(ppd_ref,
+                       base::BindOnce(&PpdProviderTest::CaptureResolvePpd,
+                                      base::Unretained(this)));
+  provider->ReverseLookup(ref,
+                          base::BindOnce(&PpdProviderTest::CaptureReverseLookup,
+                                         base::Unretained(this)));
+  PrinterSearchData printer_info;
+  printer_info.make_and_model = {ref};
+  provider->ResolvePpdReference(
+      printer_info, base::BindOnce(&PpdProviderTest::CaptureResolvePpdReference,
+                                   base::Unretained(this)));
+  provider->ResolvePpdLicense(
+      ref, base::BindOnce(&PpdProviderTest::CaptureResolvePpdLicense,
+                          base::Unretained(this)));
+  task_environment_.RunUntilIdle();
+
+  // Check PpdProvider::ResolvePrinters
+  ASSERT_EQ(1UL, captured_resolve_printers_.size());
+  EXPECT_EQ(PpdProvider::SUCCESS, captured_resolve_printers_[0].first);
+  EXPECT_EQ(1UL, captured_resolve_printers_[0].second.size());
+  EXPECT_EQ("printer_b", captured_resolve_printers_[0].second[0].name);
+
+  // Check PpdProvider::ResolvePpd
+  ASSERT_EQ(1UL, captured_resolve_ppd_.size());
+  EXPECT_EQ(PpdProvider::NOT_FOUND, captured_resolve_ppd_[0].code);
+
+  // Check PpdProvider::ReverseLookup
+  ASSERT_EQ(1UL, captured_reverse_lookup_.size());
+  // TODO(pawliczek) - this should be NOT_FOUND, but it returns SUCCESS.
+  // EXPECT_EQ(PpdProvider::NOT_FOUND, captured_reverse_lookup_[0].code);
+
+  // Check PpdProvider::ResolvePpdReference
+  ASSERT_EQ(1UL, captured_resolve_ppd_references_.size());
+  EXPECT_EQ(PpdProvider::NOT_FOUND, captured_resolve_ppd_references_[0].code);
+
+  // Check PpdProvider::ResolvePpdLicense
+  ASSERT_EQ(1UL, captured_resolve_ppd_license_.size());
+  EXPECT_EQ(PpdProvider::NOT_FOUND, captured_resolve_ppd_license_[0].code);
+}
+
+// Test that all entrypoints will choose a PPD metadata record that matches the
+// version of the client.
+TEST_F(PpdProviderTest, VersionMatchingTheSecondPpdMetadata) {
+  auto provider =
+      CreateProvider(PpdCacheRunLocation::kInBackgroundThreads, "251.0.1234.0");
+  StartFakePpdServer();
+
+  // Required setup calls to advance past PpdProvider's method deferral.
+  ASSERT_TRUE(provider_backdoor_.metadata_manager->SetManufacturersForTesting(
+      kDefaultManufacturersJson));
+  provider->ResolvePrinters(
+      "Manufacturer A", base::BindOnce(&PpdProviderTest::CaptureResolvePrinters,
+                                       base::Unretained(this)));
+
+  std::string ref = "pRiNteR_A_reF";
+
+  Printer::PpdReference ppd_ref;
+  ppd_ref.effective_make_and_model = ref;
+  provider->ResolvePpd(ppd_ref,
+                       base::BindOnce(&PpdProviderTest::CaptureResolvePpd,
+                                      base::Unretained(this)));
+  provider->ReverseLookup(ref,
+                          base::BindOnce(&PpdProviderTest::CaptureReverseLookup,
+                                         base::Unretained(this)));
+  PrinterSearchData printer_info;
+  printer_info.make_and_model = {ref};
+  provider->ResolvePpdReference(
+      printer_info, base::BindOnce(&PpdProviderTest::CaptureResolvePpdReference,
+                                   base::Unretained(this)));
+  provider->ResolvePpdLicense(
+      ref, base::BindOnce(&PpdProviderTest::CaptureResolvePpdLicense,
+                          base::Unretained(this)));
+  task_environment_.RunUntilIdle();
+
+  // Check PpdProvider::ResolvePrinters
+  ASSERT_EQ(1UL, captured_resolve_printers_.size());
+  EXPECT_EQ(PpdProvider::SUCCESS, captured_resolve_printers_[0].first);
+  EXPECT_EQ(2UL, captured_resolve_printers_[0].second.size());
+  EXPECT_EQ("printer_a", captured_resolve_printers_[0].second[0].name);
+  EXPECT_EQ("printer_b", captured_resolve_printers_[0].second[1].name);
+
+  // Check PpdProvider::ResolvePpd
+  ASSERT_EQ(1UL, captured_resolve_ppd_.size());
+  EXPECT_EQ(PpdProvider::SUCCESS, captured_resolve_ppd_[0].code);
+  EXPECT_EQ("e", captured_resolve_ppd_[0].ppd_contents);
+  EXPECT_EQ("printer_e.ppd", captured_resolve_ppd_[0].ppd_name);
+
+  // Check PpdProvider::ReverseLookup
+  ASSERT_EQ(1UL, captured_reverse_lookup_.size());
+  EXPECT_EQ(PpdProvider::SUCCESS, captured_reverse_lookup_[0].code);
+  EXPECT_EQ("manufacturer_a_en", captured_reverse_lookup_[0].manufacturer);
+  EXPECT_EQ("printer_a", captured_reverse_lookup_[0].model);
+
+  // Check PpdProvider::ResolvePpdReference
+  ASSERT_EQ(1UL, captured_resolve_ppd_references_.size());
+  EXPECT_EQ(PpdProvider::SUCCESS, captured_resolve_ppd_references_[0].code);
+  EXPECT_EQ("printer_a_ref",
+            captured_resolve_ppd_references_[0].ref.effective_make_and_model);
+
+  // Check PpdProvider::ResolvePpdLicense
+  ASSERT_EQ(1UL, captured_resolve_ppd_license_.size());
+  // TODO(pawliczek) - this should be NOT_FOUND, but it returns SUCCESS.
+  // EXPECT_EQ(PpdProvider::NOT_FOUND, captured_resolve_ppd_license_[0].code);
+}
+
+// Test that maxMilestone restriction works correctly.
+TEST_F(PpdProviderTest, VersionEqualsMaxMilestone) {
+  auto provider = CreateProvider(PpdCacheRunLocation::kInBackgroundThreads,
+                                 "250.99.9999.99");
+  StartFakePpdServer();
+  std::string ref = "pRiNteR_A_reF";
+
+  Printer::PpdReference ppd_ref;
+  ppd_ref.effective_make_and_model = ref;
+  provider->ResolvePpd(ppd_ref,
+                       base::BindOnce(&PpdProviderTest::CaptureResolvePpd,
+                                      base::Unretained(this)));
+  task_environment_.RunUntilIdle();
+
+  // Check PpdProvider::ResolvePpd
+  ASSERT_EQ(1UL, captured_resolve_ppd_.size());
+  EXPECT_EQ(PpdProvider::SUCCESS, captured_resolve_ppd_[0].code);
+  EXPECT_EQ(kCupsFilterPpdContents, captured_resolve_ppd_[0].ppd_contents);
+  EXPECT_EQ("printer_a.ppd", captured_resolve_ppd_[0].ppd_name);
 }
 
 }  // namespace
