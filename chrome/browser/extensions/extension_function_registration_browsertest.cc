@@ -44,15 +44,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionFunctionRegistrationTest,
   std::set<std::string> seen_names;
   std::map<functions::HistogramValue, std::string> seen_histograms;
 
-  // The following are methods that are undocumented and may or may not ship
-  // with a final API. We allow them to use the UNKNOWN histogram entry in the
-  // meantime.
-  // Each entry should have a bug number associated with it.
-  static const constexpr char* kAllowedUnknownHistogramEntries[] = {
-      // https://crbug.com/40849649.
-      "offscreen.hasDocument",
-  };
-
   for (const auto& key_value : factories) {
     const ExtensionFunctionRegistry::FactoryEntry& entry = key_value.second;
     SCOPED_TRACE(entry.function_name_);
@@ -62,20 +53,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionFunctionRegistrationTest,
     // for different functions.
     // EXPECT_TRUE(seen_factories.insert(entry.factory_).second);
 
+    // The chrome.test API uses an "unknown" histogram value, but should be the
+    // only API that does.
     if (entry.histogram_value_ == functions::UNKNOWN) {
-      // The chrome.test API uses UNKNOWN; it's only used in tests.
-      if (base::StartsWith(entry.function_name_, "test.",
-                           base::CompareCase::SENSITIVE)) {
-        continue;
-      }
-      // Some undocumented, unlaunched APIs may also use UNKNOWN if it's unclear
-      // (or unlikely) if they will ever launch.
-      if (std::ranges::contains(kAllowedUnknownHistogramEntries,
-                                std::string(entry.function_name_))) {
-        continue;
-      }
-      ADD_FAILURE() << "Un-allowlisted API found using UNKNOWN histogram entry."
-                    << entry.function_name_;
+      EXPECT_TRUE(base::StartsWith(entry.function_name_, "test.",
+                                   base::CompareCase::SENSITIVE));
     } else {
       bool is_success =
           seen_histograms.emplace(entry.histogram_value_, entry.function_name_)

@@ -82,14 +82,10 @@ interface Offscreen {
   static Promise<undefined> closeDocument();
 
   // Determines whether the extension has an active document.
-  // TODO(crbug.com/40849649): This probably isn't something we want to
-  // ship in its current form (hence the nodoc). Instead of this, we should
-  // integrate offscreen documents into a service worker-compatible getViews()
-  // alternative. But this is pretty useful in testing environments.
   // |Returns|: Promise that resolves with the result of whether the
   // extension has an active offscreen document.
   // |PromiseValue|: result
-  [ nodoc, requiredCallback ] static Promise<boolean> hasDocument();
+  [requiredCallback] static Promise<boolean> hasDocument();
 };
 
 partial interface Browser {

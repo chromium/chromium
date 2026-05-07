@@ -2028,6 +2028,9 @@ enum HistogramValue {
   MIMEHANDLER_GETSTREAMINFO = 1965,
   INDIGOPRIVATE_GETORIGINALIMAGE = 1966,
   INDIGOPRIVATE_GETREPLACEMENTIMAGE = 1967,
+  // This value was added significantly after the method was introduced and was
+  // previously logged as UNKNOWN.
+  OFFSCREEN_HASDOCUMENT = 1968,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

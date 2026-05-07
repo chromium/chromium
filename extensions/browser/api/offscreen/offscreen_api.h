@@ -86,9 +86,7 @@ class OffscreenCloseDocumentFunction : public ExtensionFunction,
 class OffscreenHasDocumentFunction : public ExtensionFunction,
                                      public ExtensionHostObserver {
  public:
-  // Note: We use `UNKNOWN` as the histogram value here because we are unlikely
-  // to ship this API to stable.
-  DECLARE_EXTENSION_FUNCTION("offscreen.hasDocument", UNKNOWN)
+  DECLARE_EXTENSION_FUNCTION("offscreen.hasDocument", OFFSCREEN_HASDOCUMENT)
 
   OffscreenHasDocumentFunction();
   OffscreenHasDocumentFunction(const OffscreenHasDocumentFunction&) = delete;
