@@ -10,6 +10,7 @@
 #include <string_view>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_paths.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/files/file_path.h"
@@ -60,7 +61,9 @@
 namespace ash {
 namespace {
 
-  // Manifest attributes names.
+using ::extensions::ExternalProviderImpl;
+
+// Manifest attributes names.
 const char kVersionAttr[] = "version";
 const char kDefaultAttr[] = "default";
 const char kInitialLocaleAttr[] = "initial_locale";
@@ -753,9 +756,32 @@ base::DictValue ServicesCustomizationDocument::GetDefaultAppsInProviderFormat(
         prefs.clear();
         break;
       }
-      if (!entry.Find(extensions::ExternalProviderImpl::kExternalUpdateUrl)) {
-        entry.Set(extensions::ExternalProviderImpl::kExternalUpdateUrl,
-                  extension_urls::GetWebstoreUpdateUrl().spec());
+      base::Value* update_url_value =
+          entry.Find(ExternalProviderImpl::kExternalUpdateUrl);
+      if (ash::features::IsOemAppsMustUpdateFromWebstoreEnabled()) {
+        // Fix for crbug.com/502771678. OEM apps must update from the webstore.
+        // Providing a non-webstore update URL is a fatal error.
+        if (update_url_value) {
+          CHECK(update_url_value->is_string());
+          GURL update_url(update_url_value->GetString());
+          CHECK(update_url.is_valid());
+          if (!extension_urls::IsWebstoreUpdateUrl(update_url)) {
+            // Use log because official builds strip the stream passed to CHECK.
+            LOG(FATAL) << "Invalid update URL: " << update_url;
+          }
+          // If we get here, a extension provided a valid update URL.
+        } else {
+          // Provide the default update URL.
+          entry.Set(ExternalProviderImpl::kExternalUpdateUrl,
+                    extension_urls::GetWebstoreUpdateUrl().spec());
+        }
+      } else {
+        // Legacy behavior. Keep any provided external_update_url value, but
+        // override to web store if it's not set.
+        if (!update_url_value) {
+          entry.Set(ExternalProviderImpl::kExternalUpdateUrl,
+                    extension_urls::GetWebstoreUpdateUrl().spec());
+        }
       }
       prefs.SetByDottedPath(app_id, std::move(entry));
     }
