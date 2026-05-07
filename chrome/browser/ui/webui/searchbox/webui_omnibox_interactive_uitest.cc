@@ -512,12 +512,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest,
       InAnyContext(WaitForElementToRender(kAimPopupWebView, kDeepSearchChip)));
 }
 
-// TODO(crbug.com/509753148): Re-enable this test on Windows.
-#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/509753148): Re-enable after fixing pixel screenshots on all
+// platforms.
 #define MAYBE_QueryWithTabContext DISABLED_QueryWithTabContext
-#else
-#define MAYBE_QueryWithTabContext QueryWithTabContext
-#endif
 IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest,
                        MAYBE_QueryWithTabContext) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
