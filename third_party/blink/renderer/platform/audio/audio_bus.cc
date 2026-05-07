@@ -102,27 +102,12 @@ AudioBus::AudioBus(unsigned number_of_channels, uint32_t length, bool allocate)
 }
 
 void AudioBus::SetChannelMemory(unsigned channel_index,
-                                float* storage,
-                                uint32_t length) {
+                                base::span<float> storage) {
   if (channel_index < channels_.size()) {
-    SetChannelMemory(channel_index,
-                     UNSAFE_TODO(base::span<float>(storage, length)), length);
-  }
-}
-
-void AudioBus::SetChannelMemory(unsigned channel_index,
-                                base::span<float> storage,
-                                uint32_t length) {
-  if (channel_index < channels_.size()) {
+    const uint32_t length = base::checked_cast<uint32_t>(storage.size());
     Channel(channel_index)->Set(storage, length);
     length_ = length;
   }
-}
-
-void AudioBus::SetChannelMemory(unsigned channel_index,
-                                base::span<float> storage) {
-  SetChannelMemory(channel_index, storage,
-                   base::checked_cast<uint32_t>(storage.size()));
 }
 
 void AudioBus::ResizeSmaller(uint32_t new_length) {
