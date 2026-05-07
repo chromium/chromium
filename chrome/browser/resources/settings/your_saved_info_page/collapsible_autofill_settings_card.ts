@@ -28,6 +28,7 @@ import '../autofill_page/walletable_pass_detection_toggle.js';
 // </if>
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
+import {CrSettingsPrefs} from '/shared/settings/prefs/prefs_types.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -290,6 +291,7 @@ export class CollapsibleCardElement extends SettingsViewMixin
       }
     }
 
+    await CrSettingsPrefs.initialized;
     const autofillAiPolicyValue =
         this.getPref(AiEnterpriseFeaturePrefName.AUTOFILL_AI).value;
 

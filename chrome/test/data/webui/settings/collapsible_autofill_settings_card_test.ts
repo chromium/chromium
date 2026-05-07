@@ -39,13 +39,12 @@ suite('CollapsibleAutofillSettingsCard', function() {
       'prefs.autofill.autofill_ai.reauth_before_viewing_sensitive_data';
   // </if>
 
-  suiteSetup(function() {
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
-
-  setup(function() {
+  setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    settingsPrefs = document.createElement('settings-prefs');
+    document.body.appendChild(settingsPrefs);
+    await CrSettingsPrefs.initialized;
 
     entityDataManager = new TestEntityDataManagerProxy();
     EntityDataManagerProxyImpl.setInstance(entityDataManager);
@@ -58,7 +57,6 @@ suite('CollapsibleAutofillSettingsCard', function() {
     OpenWindowProxyImpl.setInstance(openWindowProxy);
 
     setupDefaultPrefs(settingsPrefs);
-    loadTimeData.overrideValues({userEligibleForAutofillAi: false});
   });
 
   teardown(function() {

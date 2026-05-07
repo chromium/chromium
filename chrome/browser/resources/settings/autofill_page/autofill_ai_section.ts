@@ -28,6 +28,7 @@ import './autofill_ai_entries_list.js';
 import './walletable_pass_detection_toggle.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
+import {CrSettingsPrefs} from '/shared/settings/prefs/prefs_types.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -183,13 +184,14 @@ export class SettingsAutofillAiSectionElement extends
   private entityDataManager_: EntityDataManagerProxy =
       EntityDataManagerProxyImpl.getInstance();
 
-  override connectedCallback() {
+  override async connectedCallback() {
     super.connectedCallback();
 
     if (!this.enableYourSavedInfoPolicyAndExtentionToggleIndicators_) {
       this.entityDataManager_.getOptInStatus().then(
           optedIn =>
               this.set('optedIn_.value', !this.ineligibleUser && optedIn));
+      await CrSettingsPrefs.initialized;
       const policyDisabled =
           this.getPref(AiEnterpriseFeaturePrefName.AUTOFILL_AI).value ===
           ModelExecutionEnterprisePolicyValue.DISABLE;
@@ -202,10 +204,6 @@ export class SettingsAutofillAiSectionElement extends
             chrome.settingsPrivate.ControlledBy.USER_POLICY);
       }
     }
-  }
-
-  override disconnectedCallback() {
-    super.disconnectedCallback();
   }
 
   private async onEnterprisePolicyChanged_() {
