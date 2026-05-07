@@ -3093,12 +3093,12 @@
   {
     "name": "enable-compression-dictionary-transport",
     "owners": [ "pmeenan@chromium.org", "net-dev@chromium.org" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 180
   },
   {
     "name": "enable-compression-dictionary-ttl",
     "owners": [ "pmeenan@chromium.org", "net-dev@chromium.org" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 180
   },
   {
     "name": "enable-controlled-frame",
