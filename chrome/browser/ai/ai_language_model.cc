@@ -439,7 +439,9 @@ class AILanguageModel::PromptState
       auto generate_options = on_device_model::mojom::GenerateOptions::New();
       generate_options->constraint = std::move(constraint_);
       generate_options->max_output_tokens = max_output_tokens_;
-      generate_options->add_output_tokens_to_context = true;
+      generate_options->add_output_tokens_to_context =
+          base::FeatureList::IsEnabled(
+              features::kAILanguageModelAppendOutputTokensToContext);
       session_->Generate(std::move(generate_options),
                          response_receiver_.BindNewPipeAndPassRemote());
       response_receiver_.set_disconnect_with_reason_handler(
@@ -1127,6 +1129,17 @@ void AILanguageModel::OnPromptOutputComplete() {
     // here.
     HandleOverflow();
     responder->OnContextOverflow();
+  } else if (!base::FeatureList::IsEnabled(
+                 features::kAILanguageModelAppendOutputTokensToContext) &&
+             model_output) {
+    // Add the output to the session since this is not added automatically from
+    // the Generate() call. The previous token will be a kModel token from
+    // ConvertToInputForExecute().
+    current_session_->Append(
+        MakeAppendOptions(
+            std::move(model_output),
+            on_device_model::mojom::InputSource::kModelOutputFeedback),
+        {});
   }
   uint32_t total_tokens =
       context_->non_evictable_tokens() + context_->evictable_tokens();

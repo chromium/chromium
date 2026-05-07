@@ -11,6 +11,7 @@
 namespace features {
 
 BASE_DECLARE_FEATURE(kAILanguageModelOverrideConfiguration);
+BASE_DECLARE_FEATURE(kAILanguageModelAppendOutputTokensToContext);
 extern const base::FeatureParam<int>
     kAILanguageModelOverrideConfigurationOutputBuffer;
 
