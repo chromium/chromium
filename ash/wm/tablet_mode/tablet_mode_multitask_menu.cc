@@ -63,6 +63,9 @@ class TabletModeMultitaskMenuView : public views::View {
   TabletModeMultitaskMenuView(aura::Window* window,
                               base::RepeatingClosure close_callback,
                               base::RepeatingClosure dismiss_callback) {
+    SetPaintToLayer();
+    layer()->SetFillsBoundsOpaquely(false);
+
     SetBackground(views::CreateRoundedRectBackground(
         kColorAshShieldAndBaseOpaque, kCornerRadius));
     SetBorder(std::make_unique<views::HighlightBorder>(
@@ -121,9 +124,6 @@ class TabletModeMultitaskMenuView : public views::View {
     layout->set_cross_axis_alignment(
         views::BoxLayout::CrossAxisAlignment::kCenter);
 
-    SetPaintToLayer();
-    layer()->SetFillsBoundsOpaquely(false);
-
     shadow_ = SystemShadow::CreateShadowOnNinePatchLayer(
         SystemShadow::Type::kElevation12,
         SystemShadow::LayerRecreatedCallback());
@@ -166,6 +166,7 @@ TabletModeMultitaskMenu::TabletModeMultitaskMenu(
   params.parent = window->GetRootWindow()->GetChildById(
       kShellWindowId_AlwaysOnTopContainer);
   params.name = "TabletModeMultitaskMenuWidget";
+  params.layer_type = ui::LAYER_NOT_DRAWN;
 
   widget_->Init(std::move(params));
   widget_->SetVisibilityChangedAnimationsEnabled(false);
