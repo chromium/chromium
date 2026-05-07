@@ -350,7 +350,7 @@ search-animated-glow {
 
 #voiceSearchButton {
   --cr-icon-button-fill-color: var(--color-composebox-font-light);
-  --cr-icon-button-hover-background-color: var(--color-composebox-context-entrypoint-hover-background);
+  --cr-icon-button-hover-background-color: var(--color-composebox-voice-button-hover-background);
   --cr-icon-button-margin-end: 0px;
   --cr-icon-button-margin-start: 0px;
   --cr-icon-button-size: 36px;
