@@ -1104,8 +1104,8 @@ static_library("browser") {
     "//chrome/browser/ui/webui/actor_internals",
     "//chrome/browser/ui/webui/bluetooth_internals",
     "//chrome/browser/ui/webui/bluetooth_internals:mojo_bindings",
-    "//chrome/browser/ui/webui/intro:mojo_bindings",
     "//chrome/browser/ui/webui/internal_debug_pages_disabled",
+    "//chrome/browser/ui/webui/intro:mojo_bindings",
     "//chrome/browser/ui/zoom",
     "//chrome/browser/updater",
     "//chrome/browser/updates/announcement_notification",
@@ -1664,7 +1664,13 @@ static_library("browser") {
   if (is_android) {
     deps += [
       "//chrome/browser/ntp_customization",
+      "//chrome/browser/ui/android",
+      "//chrome/browser/ui/android:context_menu_helper",
+      "//chrome/browser/ui/android/autofill",
+      "//chrome/browser/ui/android/exclusive_access",
       "//chrome/browser/ui/android/lens",
+      "//chrome/browser/ui/android/logo",
+      "//chrome/browser/ui/android/webid",
       "//chrome/browser/webapps:android",
       "//chrome/browser/webapps:android_impl",
       "//chrome/browser/webapps/installable:android",
@@ -4717,6 +4723,7 @@ static_library("browser") {
 
     deps += [
       "//chrome/browser/extensions",
+      "//chrome/browser/ui/android/extensions",
       "//extensions/browser:keepalive",
     ]
 
@@ -4727,7 +4734,10 @@ static_library("browser") {
     # TODO(https://crbug.com/356905053): Remove the circular dependency once
     # we port ExtensionService and migrate away from
     # extensions/desktop_android/desktop_android_extension_system.cc.
-    allow_circular_includes_from += [ "//chrome/browser/extensions" ]
+    allow_circular_includes_from += [
+      "//chrome/browser/extensions",
+      "//chrome/browser/ui/android:context_menu_helper",
+    ]
   }
 
   if (enable_library_cdms) {

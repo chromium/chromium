@@ -76,6 +76,7 @@ source_set("read_anything") {
     "//chrome/browser/extensions",
     "//chrome/browser/language",
     "//chrome/browser/profiles",
+    "//chrome/browser/ui:accelerator_utils_headers",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/exclusive_access",
     "//chrome/browser/ui/find_bar",

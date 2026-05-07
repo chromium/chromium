@@ -275,6 +275,7 @@ source_set("arc_util_impl") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_manager",
     "//chrome/browser/tab_contents",
+    "//chrome/browser/ui:simple_message_box_headers",
     "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/ash/shelf",
     "//chromeos/ash/components/browser_context_helper",

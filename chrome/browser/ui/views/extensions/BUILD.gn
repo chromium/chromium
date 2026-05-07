@@ -4,6 +4,14 @@
 
 import("//build/config/ui.gni")
 
+source_set("extensions_menu_handler") {
+  sources = [ "extensions_menu_handler.h" ]
+  deps = [
+    "//extensions/browser",
+    "//extensions/common",
+  ]
+}
+
 if (toolkit_views) {
   source_set("extension_post_install_dialog_view_utils") {
     sources = [

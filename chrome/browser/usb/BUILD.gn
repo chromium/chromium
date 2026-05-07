@@ -108,7 +108,10 @@ source_set("impl") {
       "android/usb_bridge.cc",
       "android/web_usb_chooser_android.cc",
     ]
-    deps += [ "//chrome/browser/usb/android:jni_headers" ]
+    deps += [
+      "//chrome/browser/ui/android/device_dialog",
+      "//chrome/browser/usb/android:jni_headers",
+    ]
   } else {
     sources += [
       "usb_connection_tracker.cc",

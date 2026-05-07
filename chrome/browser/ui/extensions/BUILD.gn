@@ -166,6 +166,7 @@ source_set("impl") {
       "//chrome/browser/signin",
       "//chrome/browser/supervised_user",
       "//chrome/browser/tab_list",
+      "//chrome/browser/ui:simple_message_box_headers",
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/color:color_headers",

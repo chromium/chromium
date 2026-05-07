@@ -503,6 +503,7 @@ component("chrome_features") {
 static_library("url_constants") {
   visibility = [
     "//chrome/browser/contextual_tasks/*",
+    "//chrome/browser/ui/android",
     "//chrome/common/*",
   ]
   sources = [

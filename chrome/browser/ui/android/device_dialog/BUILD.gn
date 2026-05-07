@@ -1,0 +1,57 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("device_dialog") {
+  sources = [
+    "chrome_bluetooth_chooser_android_delegate.cc",
+    "chrome_bluetooth_chooser_android_delegate.h",
+    "chrome_bluetooth_scanning_prompt_android_delegate.cc",
+    "chrome_bluetooth_scanning_prompt_android_delegate.h",
+    "serial_chooser_dialog_android.cc",
+    "serial_chooser_dialog_android.h",
+    "usb_chooser_dialog_android.cc",
+    "usb_chooser_dialog_android.h",
+  ]
+  deps = [
+    "//base",
+    "//chrome/android:chrome_jni_headers",
+    "//chrome/browser/profiles",
+    "//chrome/common",
+    "//components/permissions",
+    "//components/security_state/content",
+    "//components/security_state/core",
+    "//components/url_formatter",
+    "//content/public/browser",
+    "//device/vr/buildflags",
+    "//third_party/jni_zero",
+    "//ui/android",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "serial_chooser_dialog_android_unittest.cc",
+    "usb_chooser_dialog_android_unittest.cc",
+  ]
+  deps = [
+    ":device_dialog",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ssl",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/serial",
+    "//chrome/browser/ui/serial:test_support",
+    "//chrome/browser/usb",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//services/device/public/mojom",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/blink/public/mojom:mojom_platform",
+    "//ui/android",
+  ]
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+}

@@ -588,6 +588,7 @@ source_set("unit_tests") {
     "//chrome/browser/touch_to_fill/password_manager/password_generation/android:public",
     "//chrome/browser/touch_to_fill/password_manager/password_generation/android:test_support",
     "//chrome/browser/trusted_vault",
+    "//chrome/browser/ui/android/passwords",
     "//chrome/browser/ui/autofill",
     "//chrome/test:test_support",
     "//components/affiliations/core/browser:test_support",

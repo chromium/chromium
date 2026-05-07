@@ -775,6 +775,7 @@ source_set("profiles_extra_parts_impl") {
       "//chrome/browser/commerce/merchant_viewer:merchant_viewer_data_manager",
       "//chrome/browser/feed",
       "//chrome/browser/tab",
+      "//chrome/browser/ui/android",
       "//components/commerce/core:merchant_signal_db_proto",
     ]
     if (enable_webui_ntp) {

@@ -64,6 +64,8 @@ generate_jni("jni_headers") {
   visibility = [
     ":*",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/android/autofill",
+    "//chrome/browser/ui/android/autofill/payments",
   ]
   sources = [
     "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetBridge.java",

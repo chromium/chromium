@@ -1,0 +1,41 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("exclusive_access") {
+  sources = [
+    "exclusive_access_bubble_android.cc",
+    "exclusive_access_bubble_android.h",
+    "exclusive_access_context_android.cc",
+    "exclusive_access_context_android.h",
+    "exclusive_access_manager_android.cc",
+    "exclusive_access_manager_android.h",
+  ]
+  deps = [
+    "//base",
+    "//chrome/android:jni_headers",
+    "//chrome/browser/profiles",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/exclusive_access",
+    "//components/fullscreen_control",
+    "//components/input",
+    "//components/url_formatter",
+    "//content/public/browser",
+    "//third_party/jni_zero",
+    "//ui/base",
+    "//ui/strings",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "exclusive_access_bubble_android_unittest.cc" ]
+  deps = [
+    ":exclusive_access",
+    "//base",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

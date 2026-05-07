@@ -212,6 +212,7 @@ source_set("impl") {
     "//chrome/browser/metrics",
     "//chrome/browser/prefs",
     "//chrome/browser/supervised_user",
+    "//chrome/browser/ui:simple_message_box_headers",
     "//chrome/browser/ui/dialogs:browser_dialogs",
     "//chrome/browser/webdata_services",
     "//components/application_locale_storage",

@@ -251,6 +251,7 @@ source_set("impl") {
       "//chrome/browser/autofill/android:jni_headers",
       "//chrome/browser/keyboard_accessory/android",
       "//chrome/browser/keyboard_accessory/android:impl",
+      "//chrome/browser/ui/android/autofill",
       "//components/android_autofill/browser:android",
       "//components/messages/android:feature_flags",
       "//components/password_manager/core/browser/features:password_features",
@@ -386,6 +387,7 @@ source_set("unit_tests") {
       "//chrome/browser/autofill/android:jni_test_headers",
       "//chrome/browser/keyboard_accessory/android:impl",
       "//chrome/browser/preferences:android",
+      "//chrome/browser/ui/android/autofill",
       "//components/messages/android:test_support",
     ]
   } else {

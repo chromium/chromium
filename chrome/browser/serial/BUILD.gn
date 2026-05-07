@@ -86,7 +86,10 @@ source_set("impl") {
       "android/serial_bridge.cc",
       "android/web_serial_chooser_android.cc",
     ]
-    deps += [ "//chrome/browser/serial/android:jni_headers" ]
+    deps += [
+      "//chrome/browser/serial/android:jni_headers",
+      "//chrome/browser/ui/android/device_dialog",
+    ]
   }
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]

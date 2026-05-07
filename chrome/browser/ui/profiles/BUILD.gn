@@ -62,6 +62,7 @@ source_set("impl") {
   deps = [
     ":profiles",
     "//chrome/browser/feedback",
+    "//chrome/browser/ui:simple_message_box_headers",
   ]
   public_deps = []
 

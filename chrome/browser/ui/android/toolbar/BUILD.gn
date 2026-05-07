@@ -41,7 +41,7 @@ android_library("adaptive_features_java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
-  srcjar_deps = [ "//chrome/browser/ui:adaptive_toolbar_enums_java" ]
+  srcjar_deps = [ ":adaptive_toolbar_enums_java" ]
 }
 
 android_library("optional_button_java") {
@@ -606,4 +606,53 @@ if (enable_extensions_core) {
     deps =
         [ "java/src/org/chromium/chrome/browser/toolbar/extensions:javatests" ]
   }
+}
+
+source_set("toolbar") {
+  sources = [
+    "adaptive_toolbar_bridge.cc",
+    "adaptive_toolbar_bridge.h",
+    "adaptive_toolbar_enums.h",
+    "location_bar_model_android.cc",
+    "location_bar_model_android.h",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser/profiles",
+    "//chrome/browser/segmentation_platform",
+    "//chrome/browser/ui/android/toolbar:adaptive_jni_headers",
+    "//chrome/browser/ui/android/toolbar:jni_headers",
+    "//chrome/browser/ui/toolbar",
+    "//chrome/common",
+    "//components/omnibox/browser",
+    "//components/omnibox/common",
+    "//components/segmentation_platform/public",
+    "//content/public/browser",
+    "//ui/base",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "adaptive_toolbar_bridge_unittest.cc",
+    "location_bar_model_android_unittest.cc",
+  ]
+  deps = [
+    ":toolbar",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/segmentation_platform",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//components/segmentation_platform/public:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+java_cpp_enum("adaptive_toolbar_enums_java") {
+  sources = [ "adaptive_toolbar_enums.h" ]
 }

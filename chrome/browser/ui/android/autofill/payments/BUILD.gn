@@ -1,0 +1,33 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("payments") {
+  sources = [
+    "payments_window_bridge.cc",
+    "payments_window_bridge.h",
+    "payments_window_delegate.h",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser/ui/android/autofill/internal:jni_headers",
+    "//content/public/browser",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "payments_window_bridge_unittest.cc" ]
+  deps = [
+    ":payments",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//components/autofill/content/browser:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+}

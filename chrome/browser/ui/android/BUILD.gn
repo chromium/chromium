@@ -1,0 +1,109 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//extensions/buildflags/buildflags.gni")
+
+if (is_android) {
+  source_set("android") {
+    sources = [
+      "accelerator_utils_android.cc",
+      "android_about_app_info.cc",
+      "android_about_app_info.h",
+      "android_profile_browser_collection_service.cc",
+      "android_profile_browser_collection_service.h",
+      "android_profile_browser_collection_service_factory.cc",
+      "android_profile_browser_collection_service_factory.h",
+      "browser_navigator_android.cc",
+      "chrome_http_auth_handler.cc",
+      "chrome_http_auth_handler.h",
+      "chrome_javascript_app_modal_dialog_android.cc",
+      "login_handler_android.cc",
+      "simple_message_box_android.cc",
+      "ssl_client_certificate_selector.cc",
+      "status_tray_android.cc",
+    ]
+    deps = [
+      "//base",
+      "//chrome/android:chrome_jni_headers",
+      "//chrome/browser/android:tabs_public",
+      "//chrome/browser/profiles",
+      "//chrome/browser/ssl",
+      "//chrome/browser/status_icons",
+      "//chrome/browser/tab_list",
+      "//chrome/browser/ui:accelerator_utils_headers",
+      "//chrome/browser/ui:simple_message_box_headers",
+      "//chrome/browser/ui/android/tab_model",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/browser_window:create_browser_window",
+      "//chrome/browser/ui/javascript_dialogs",
+      "//chrome/browser/ui/login",
+      "//chrome/browser/ui/navigator",
+      "//chrome/common:url_constants",
+      "//components/browser_ui/client_certificate/android",
+      "//components/embedder_support:user_agent",
+      "//components/javascript_dialogs",
+      "//components/keyed_service/content",
+      "//components/keyed_service/core",
+      "//components/password_manager/core/browser",
+      "//components/tabs:public",
+      "//content/public/browser",
+      "//net",
+      "//ui/android",
+      "//ui/base",
+      "//ui/events",
+      "//ui/events:platform_event_android",
+      "//url",
+    ]
+  }
+
+  source_set("context_menu_helper") {
+    sources = [
+      "context_menu_helper.cc",
+      "context_menu_helper.h",
+    ]
+    deps = [
+      "//base",
+      "//chrome/android:chrome_jni_headers",
+      "//chrome/common:mojo_bindings",
+      "//components/embedder_support/android:context_menu",
+      "//content/public/browser",
+      "//extensions/buildflags",
+      "//mojo/public/cpp/bindings",
+      "//third_party/blink/public/mojom:mojom_platform",
+      "//ui/android",
+      "//ui/gfx/geometry",
+      "//ui/menus",
+      "//url",
+    ]
+    if (enable_desktop_android_extensions) {
+      # extension_menu_model_android.h is in the chrome/browser/extensions/
+      # directory; dep on that target to make it accessible.
+      deps += [ "//chrome/browser/extensions" ]
+    }
+  }
+}
+
+# TODO(crbug.com/473636857): Include once all Android builds correctly use BrowserWindowInterface.
+if (is_desktop_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "browser_navigator_android_browsertest.cc" ]
+    deps = [
+      "//base",
+      "//chrome/browser/android:tabs_public",
+      "//chrome/browser/flags:flags_android",
+      "//chrome/browser/tab_list",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/browser_window:create_browser_window",
+      "//chrome/browser/ui/browser_window/test:android_browser_test_support",
+      "//chrome/browser/ui/navigator",
+      "//chrome/test:test_support_ui_android",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//net:test_support",
+    ]
+  }
+}

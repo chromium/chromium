@@ -3240,6 +3240,10 @@ if (_is_default_toolchain) {
       "//components/ukm/android:jni_headers",
       "//components/webauthn/android:jni_headers",
     ]
+
+    if (enable_extensions_core) {
+      public_deps += [ "//chrome/browser/ui/android/extensions:jni_headers" ]
+    }
   }
 
   chrome_common_shared_library("libchromefortest") {

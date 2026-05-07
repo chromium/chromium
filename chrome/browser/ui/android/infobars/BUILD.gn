@@ -1,0 +1,24 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("infobars") {
+  sources = [
+    "infobar_container_android.cc",
+    "infobar_container_android.h",
+    "simple_confirm_infobar_builder.cc",
+  ]
+  deps = [
+    "//base",
+    "//chrome/android:chrome_jni_headers",
+    "//chrome/browser/android:resource_mapper",
+    "//chrome/browser/android:tabs_public",
+    "//chrome/browser/ui/messages/android:jni_headers",
+    "//components/infobars/android",
+    "//components/infobars/content",
+    "//components/infobars/core",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/gfx",
+  ]
+}

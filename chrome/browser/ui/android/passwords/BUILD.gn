@@ -1,0 +1,26 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("passwords") {
+  sources = [
+    "all_passwords_bottom_sheet_view.h",
+    "all_passwords_bottom_sheet_view_impl.cc",
+    "all_passwords_bottom_sheet_view_impl.h",
+    "credential_leak_dialog_view_android.cc",
+    "credential_leak_dialog_view_android.h",
+  ]
+  deps = [
+    "//base",
+    "//chrome/android:chrome_jni_headers",
+    "//chrome/android/features/keyboard_accessory:jni_headers",
+    "//chrome/browser/password_manager",
+    "//chrome/browser/profiles",
+    "//chrome/browser/ui/passwords",
+    "//components/affiliations/core/browser:affiliations",
+    "//components/autofill/core/common/mojom:mojo_types",
+    "//components/password_manager/core/browser",
+    "//ui/android",
+    "//ui/base",
+  ]
+}

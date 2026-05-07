@@ -228,6 +228,7 @@ source_set("impl") {
       "//chrome/browser/touch_to_fill/password_manager/no_passkeys/android:public",
       "//chrome/browser/touch_to_fill/password_manager/password_generation/android",
       "//chrome/browser/touch_to_fill/password_manager/password_generation/android:public",
+      "//chrome/browser/ui/android/passwords",
       "//chrome/browser/webauthn:webauthn_request_delegate_android",
       "//components/messages/android",
       "//components/password_manager/core/browser/affiliation:affiliation_fetching",

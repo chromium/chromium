@@ -538,7 +538,9 @@ source_set("extensions") {
     "//chrome/browser/ssl",
     "//chrome/browser/tab_group_sync:factories",
     "//chrome/browser/tab_list",
+    "//chrome/browser/ui:accelerator_utils_headers",
     "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui:simple_message_box_headers",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/autofill",
     "//chrome/browser/ui/browser_window",
@@ -667,6 +669,12 @@ source_set("extensions") {
       "//chrome/android:chrome_jni_headers",
       "//chrome/browser/ui/android/tab_model",
     ]
+
+    if (enable_desktop_android_extensions) {
+      # pack_extension_job.cc and developer_private_functions.cc include headers
+      # from android extension bridges under IS_ANDROID.
+      deps += [ "//chrome/browser/ui/android/extensions:public" ]
+    }
   } else {
     sources += [
       "api/chrome_extensions_api_client_non_android.cc",
@@ -2123,5 +2131,11 @@ source_set("unit_tests") {
       sources += [ "api/mdns/mdns_api_unittest.cc" ]
       deps += [ "//chrome/browser/extensions/api/mdns" ]
     }
+  }
+
+  if (enable_desktop_android_extensions) {
+    # developer_private_api_unittest.cc includes extension_util_bridge.h under
+    # IS_ANDROID.
+    deps += [ "//chrome/browser/ui/android/extensions:public" ]
   }
 }

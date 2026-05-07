@@ -43,6 +43,7 @@ source_set("payments") {
     ]
     public_deps += [
       "//chrome/browser/touch_to_fill/autofill/android:public",
+      "//chrome/browser/ui/android/autofill/payments",
       "//components/autofill/android:autofill_core_browser_java_enums",
       "//components/messages/android",
     ]
@@ -131,6 +132,8 @@ source_set("impl") {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/touch_to_fill/autofill/android",
       "//chrome/browser/touch_to_fill/autofill/android:impl",
+      "//chrome/browser/ui/android/autofill",
+      "//chrome/browser/ui/android/autofill/payments",
       "//chrome/browser/ui/android/tab_model",
       "//chrome/browser/ui/browser_window",
       "//components/infobars/core",
@@ -281,6 +284,7 @@ source_set("unit_tests") {
       "//chrome/browser/autofill:test_support",
       "//chrome/browser/keyboard_accessory/test_utils/android",
       "//chrome/browser/touch_to_fill/autofill/android:test_support",
+      "//chrome/browser/ui/android/autofill",
       "//chrome/browser/ui/android/tab_model:test_support",
       "//components/autofill/android:autofill_core_browser_java_enums",
       "//components/autofill/content/browser:test_support",
@@ -327,6 +331,7 @@ source_set("test_support") {
 
   if (is_android) {
     sources += [ "android_payments_window_manager_test_api.h" ]
+    public_deps += [ "//chrome/browser/ui/android/autofill" ]
   } else {
     sources += [ "desktop_payments_window_manager_test_api.h" ]
   }

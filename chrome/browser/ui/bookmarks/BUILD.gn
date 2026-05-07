@@ -72,6 +72,7 @@ source_set("impl") {
     "//chrome/browser/renderer_host",
     "//chrome/browser/search",
     "//chrome/browser/tab_group_sync:factories",
+    "//chrome/browser/ui:simple_message_box_headers",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/dialogs",

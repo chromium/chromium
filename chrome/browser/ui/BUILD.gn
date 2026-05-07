@@ -39,6 +39,18 @@ generate_allowlist_from_histograms_file("webui_name_variants") {
   allow_list_name = "WebUIName"
 }
 
+source_set("accelerator_utils_headers") {
+  public = [ "accelerator_utils.h" ]
+}
+
+source_set("simple_message_box_headers") {
+  public = [ "simple_message_box.h" ]
+  public_deps = [
+    "//base",
+    "//ui/gfx",
+  ]
+}
+
 # Use a static library here because many test binaries depend on this but don't
 # require many files from it. This makes linking more efficient.
 # TODO(https://crbug.com/353332589): Once //chrome/browser is properly
@@ -47,7 +59,6 @@ generate_allowlist_from_histograms_file("webui_name_variants") {
 # circular includes from each other.
 static_library("ui") {
   sources = [
-    "accelerator_utils.h",
     "browser_ui_prefs.cc",
     "browser_ui_prefs.h",
     "confirm_bubble.h",
@@ -62,7 +73,6 @@ static_library("ui") {
     "recently_audible_helper.h",
     "screen_capture_notification_ui.h",
     "session_crashed_bubble.h",
-    "simple_message_box.h",
     "simple_message_box_internal.cc",
     "simple_message_box_internal.h",
     "status_bubble.h",
@@ -227,6 +237,8 @@ static_library("ui") {
     # ui_public_dependencies.
     # New dependencies inside of //chrome/browser that generate header files
     # should be added to //chrome/browser:browser_generated_files.
+    ":accelerator_utils_headers",
+    ":simple_message_box_headers",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser:primitives",
     "//chrome/browser/feedback",
@@ -767,10 +779,6 @@ static_library("ui") {
     "//chrome/browser/sessions:impl",
   ]
 
-  if (is_android) {
-    sources += [ "//chrome/browser/ui/android/browser_navigator_android.cc" ]
-  }
-
   # Desktop-Android-only dependencies.
   if (is_desktop_android) {
     deps += [ "//chrome/browser/ui/android/extensions/windowing/internal" ]
@@ -998,117 +1006,6 @@ static_library("ui") {
 
   if (is_android) {
     sources += [
-      "android/accelerator_utils_android.cc",
-      "android/android_about_app_info.cc",
-      "android/android_about_app_info.h",
-      "android/android_profile_browser_collection_service.cc",
-      "android/android_profile_browser_collection_service.h",
-      "android/android_profile_browser_collection_service_factory.cc",
-      "android/android_profile_browser_collection_service_factory.h",
-      "android/autofill/at_memory_bottom_sheet_bridge.cc",
-      "android/autofill/at_memory_bottom_sheet_bridge.h",
-      "android/autofill/at_memory_bottom_sheet_delegate_android.cc",
-      "android/autofill/at_memory_bottom_sheet_delegate_android.h",
-      "android/autofill/authenticator_selection_dialog_view_android.cc",
-      "android/autofill/authenticator_selection_dialog_view_android.h",
-      "android/autofill/autofill_ai_save_update_entity_flow_manager.cc",
-      "android/autofill/autofill_ai_save_update_entity_flow_manager.h",
-      "android/autofill/autofill_ai_save_update_entity_prompt_view_android.cc",
-      "android/autofill/autofill_ai_save_update_entity_prompt_view_android.h",
-      "android/autofill/autofill_cvc_save_message_delegate.cc",
-      "android/autofill/autofill_cvc_save_message_delegate.h",
-      "android/autofill/autofill_error_dialog_view_android.cc",
-      "android/autofill/autofill_error_dialog_view_android.h",
-      "android/autofill/autofill_keyboard_accessory_view_impl.cc",
-      "android/autofill/autofill_keyboard_accessory_view_impl.h",
-      "android/autofill/autofill_progress_dialog_view_android.cc",
-      "android/autofill/autofill_progress_dialog_view_android.h",
-      "android/autofill/autofill_save_card_bottom_sheet_bridge.cc",
-      "android/autofill/autofill_save_card_bottom_sheet_bridge.h",
-      "android/autofill/autofill_save_card_delegate_android.cc",
-      "android/autofill/autofill_save_card_delegate_android.h",
-      "android/autofill/autofill_save_iban_bottom_sheet_bridge.cc",
-      "android/autofill/autofill_save_iban_bottom_sheet_bridge.h",
-      "android/autofill/autofill_save_iban_delegate.cc",
-      "android/autofill/autofill_save_iban_delegate.h",
-      "android/autofill/autofill_vcn_enroll_bottom_sheet_bridge.cc",
-      "android/autofill/autofill_vcn_enroll_bottom_sheet_bridge.h",
-      "android/autofill/card_expiration_date_fix_flow_view_android.cc",
-      "android/autofill/card_expiration_date_fix_flow_view_android.h",
-      "android/autofill/card_name_fix_flow_view_android.cc",
-      "android/autofill/card_name_fix_flow_view_android.h",
-      "android/autofill/card_unmask_prompt_view_android.cc",
-      "android/autofill/card_unmask_prompt_view_android.h",
-      "android/autofill/credit_card_scanner_view_android.cc",
-      "android/autofill/credit_card_scanner_view_android.h",
-      "android/autofill/dialog/autofill_dialog_view_android.cc",
-      "android/autofill/dialog/autofill_dialog_view_android.h",
-      "android/autofill/manual_filling_view_android.cc",
-      "android/autofill/manual_filling_view_android.h",
-      "android/autofill/otp_verification_dialog_view_android.cc",
-      "android/autofill/otp_verification_dialog_view_android.h",
-      "android/autofill/payments/payments_window_bridge.cc",
-      "android/autofill/payments/payments_window_bridge.h",
-      "android/autofill/payments/payments_window_delegate.h",
-      "android/autofill/save_update_address_profile_flow_manager.cc",
-      "android/autofill/save_update_address_profile_flow_manager.h",
-      "android/autofill/save_update_address_profile_prompt_view_android.cc",
-      "android/autofill/save_update_address_profile_prompt_view_android.h",
-      "android/autofill/snackbar/autofill_snackbar_view_android.cc",
-      "android/autofill/snackbar/autofill_snackbar_view_android.h",
-      "android/autofill/virtual_card_utils.cc",
-      "android/autofill/virtual_card_utils.h",
-      "android/chrome_http_auth_handler.cc",
-      "android/chrome_http_auth_handler.h",
-      "android/chrome_javascript_app_modal_dialog_android.cc",
-      "android/context_menu_helper.cc",
-      "android/context_menu_helper.h",
-      "android/device_dialog/chrome_bluetooth_chooser_android_delegate.cc",
-      "android/device_dialog/chrome_bluetooth_chooser_android_delegate.h",
-      "android/device_dialog/chrome_bluetooth_scanning_prompt_android_delegate.cc",
-      "android/device_dialog/chrome_bluetooth_scanning_prompt_android_delegate.h",
-      "android/device_dialog/serial_chooser_dialog_android.cc",
-      "android/device_dialog/serial_chooser_dialog_android.h",
-      "android/device_dialog/usb_chooser_dialog_android.cc",
-      "android/device_dialog/usb_chooser_dialog_android.h",
-      "android/exclusive_access/exclusive_access_bubble_android.cc",
-      "android/exclusive_access/exclusive_access_bubble_android.h",
-      "android/exclusive_access/exclusive_access_context_android.cc",
-      "android/exclusive_access/exclusive_access_context_android.h",
-      "android/exclusive_access/exclusive_access_manager_android.cc",
-      "android/exclusive_access/exclusive_access_manager_android.h",
-      "android/infobars/infobar_container_android.cc",
-      "android/infobars/infobar_container_android.h",
-      "android/infobars/simple_confirm_infobar_builder.cc",
-      "android/login_handler_android.cc",
-      "android/logo/logo_bridge.cc",
-      "android/logo/logo_bridge.h",
-      "android/omnibox/omnibox_view_util.cc",
-      "android/omnibox/omnibox_view_util.h",
-      "android/overlay/immersive_overlay_window_android.cc",
-      "android/overlay/overlay_window_android.cc",
-      "android/overlay/overlay_window_android.h",
-      "android/overlay/overlay_window_android_factory.cc",
-      "android/overlay/picture_in_picture_overlay_window_android.cc",
-      "android/passwords/all_passwords_bottom_sheet_view.h",
-      "android/passwords/all_passwords_bottom_sheet_view_impl.cc",
-      "android/passwords/all_passwords_bottom_sheet_view_impl.h",
-      "android/passwords/credential_leak_dialog_view_android.cc",
-      "android/passwords/credential_leak_dialog_view_android.h",
-      "android/safe_browsing/password_reuse_dialog_view_android.cc",
-      "android/safe_browsing/password_reuse_dialog_view_android.h",
-      "android/simple_message_box_android.cc",
-      "android/ssl_client_certificate_selector.cc",
-      "android/status_tray_android.cc",
-      "android/tab_contents/chrome_web_contents_view_delegate_android.cc",
-      "android/tab_contents/chrome_web_contents_view_delegate_android.h",
-      "android/toolbar/adaptive_toolbar_bridge.cc",
-      "android/toolbar/adaptive_toolbar_bridge.h",
-      "android/toolbar/adaptive_toolbar_enums.h",
-      "android/toolbar/location_bar_model_android.cc",
-      "android/toolbar/location_bar_model_android.h",
-      "android/webid/account_selection_view_android.cc",
-      "android/webid/account_selection_view_android.h",
       "browser_otr_state_android.cc",
       "screen_capture_notification_ui_stub.cc",
       "webui/bookmarks/bookmarks_ui_android.cc",
@@ -1142,7 +1039,6 @@ static_library("ui") {
       "//chrome/browser/password_manager/android:utils",
       "//chrome/browser/resources/feed_internals:resources",
       "//chrome/browser/touch_to_fill/autofill/android",
-      "//chrome/browser/ui/android/autofill/internal:jni_headers",
       "//chrome/browser/ui/android/hats",
       "//chrome/browser/ui/android/hats:impl",
       "//chrome/browser/ui/android/tab_model",
@@ -1206,49 +1102,10 @@ static_library("ui") {
     # system
     deps += [ "//chrome/browser/ui/color:color_headers" ]
 
-    # TODO(b/335257259): Resolve circular deps.
-    # Any circular includes must depend on the target "//chrome/browser:browser_public_dependencies".
-    allow_circular_includes_from += [ "//chrome/browser/facilitated_payments" ]
-
-    # This can be removed when browser_navigator.h is modularized (see below TODOs).
-    allow_circular_includes_from +=
-        [ "//chrome/browser/ui/browser_window/internal" ]
-
-    # TODO(crbug.com/504985497): Remove this circular dependency.
-    allow_circular_includes_from +=
-        [ "//chrome/browser/keyboard_accessory/android:impl" ]
-
-    if (enable_extensions_core) {
-      sources += [
-        "android/extensions/extension_action_context_menu_bridge.cc",
-        "android/extensions/extension_action_context_menu_bridge.h",
-        "android/extensions/extension_action_delegate_android.cc",
-        "android/extensions/extension_action_delegate_android.h",
-        "android/extensions/extension_action_popup_contents.cc",
-        "android/extensions/extension_action_popup_contents.h",
-        "android/extensions/extension_actions_bridge.cc",
-        "android/extensions/extension_actions_bridge.h",
-        "android/extensions/extension_developer_private_bridge.cc",
-        "android/extensions/extension_developer_private_bridge.h",
-        "android/extensions/extension_install_dialog_view_android.cc",
-        "android/extensions/extension_install_dialog_view_android.h",
-        "android/extensions/extension_keybinding_registry_android.cc",
-        "android/extensions/extension_keybinding_registry_android.h",
-        "android/extensions/extension_util_bridge.cc",
-        "android/extensions/extension_util_bridge.h",
-        "android/extensions/extensions_menu_delegate_android.cc",
-        "android/extensions/extensions_menu_delegate_android.h",
-        "android/extensions/extensions_toolbar_android.cc",
-        "android/extensions/extensions_toolbar_android.h",
-      ]
-
-      deps += [
-        "//chrome/browser/extensions/api/omnibox",
-        "//chrome/browser/extensions/api/web_navigation",
-        "//chrome/browser/ui/android/extensions:jni_headers",
-        "//extensions/browser:extension_action_enums",
-      ]
-    }
+    deps += [
+      "//chrome/browser/ui/android",
+      "//chrome/browser/ui/android:context_menu_helper",
+    ]
   } else {
     # !is_android
     sources += [
@@ -1806,6 +1663,7 @@ static_library("ui") {
       "//chrome/browser/ui/user_education:impl",
       "//chrome/browser/ui/views/contextual_tasks",
       "//chrome/browser/ui/views/contextual_tasks:impl",
+      "//chrome/browser/ui/views/extensions:extensions_menu_handler",
       "//chrome/browser/ui/views/js_optimization",
       "//chrome/browser/ui/views/location_bar",
       "//chrome/browser/ui/views/new_tab_footer",
@@ -3291,10 +3149,10 @@ static_library("ui") {
       "webui/browser_switch/browser_switch_ui.h",
       "webui/intro/intro_handler.cc",
       "webui/intro/intro_handler.h",
-      "webui/intro/sign_in_celebration_handler.cc",
-      "webui/intro/sign_in_celebration_handler.h",
       "webui/intro/intro_ui.cc",
       "webui/intro/intro_ui.h",
+      "webui/intro/sign_in_celebration_handler.cc",
+      "webui/intro/sign_in_celebration_handler.h",
       "webui/on_device_translation_internals/on_device_translation_internals_page_handler_impl.cc",
       "webui/on_device_translation_internals/on_device_translation_internals_page_handler_impl.h",
       "webui/on_device_translation_internals/on_device_translation_internals_ui.cc",
@@ -3330,9 +3188,9 @@ static_library("ui") {
       "//chrome/browser/ui/webui/app_home:impl",
       "//chrome/browser/ui/webui/app_settings",
       "//chrome/browser/ui/webui/app_settings:impl",
+      "//chrome/browser/ui/webui/intro:mojo_bindings",
       "//chrome/browser/ui/webui/signin:profile",
       "//chrome/browser/ui/webui/signin:profile_impl",
-      "//chrome/browser/ui/webui/intro:mojo_bindings",
       "//chrome/browser/ui/webui/updater:mojo_bindings",
       "//chrome/browser/updater",
       "//chrome/enterprise_companion:constants_prod",
@@ -4022,7 +3880,6 @@ static_library("ui") {
       "views/extensions/extensions_menu_delegate_desktop.h",
       "views/extensions/extensions_menu_entry_view.cc",
       "views/extensions/extensions_menu_entry_view.h",
-      "views/extensions/extensions_menu_handler.h",
       "views/extensions/extensions_menu_item_view.cc",
       "views/extensions/extensions_menu_item_view.h",
       "views/extensions/extensions_menu_main_page_view.cc",
@@ -5434,6 +5291,7 @@ static_library("ui") {
     ]
     deps += [
       "//chrome/browser/extensions",
+      "//chrome/browser/extensions/api/web_navigation",
       "//extensions/common",
       "//extensions/strings",
     ]
@@ -5970,9 +5828,7 @@ static_library("test_support") {
   }
 
   if (is_android) {
-    sources += [
-      "android/autofill/save_update_address_profile_flow_manager_test_api.h",
-    ]
+    deps += [ "//chrome/browser/ui/android/autofill:test_support" ]
   } else {
     sources += [
       "webui/help/test_version_updater.cc",
@@ -6005,12 +5861,6 @@ static_library("browser_element_identifiers") {
   ]
   deps = [ "//ui/base" ]
   public_deps = [ "//ui/base/interaction" ]
-}
-
-if (is_android) {
-  java_cpp_enum("adaptive_toolbar_enums_java") {
-    sources = [ "android/toolbar/adaptive_toolbar_enums.h" ]
-  }
 }
 
 if (use_aura) {

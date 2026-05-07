@@ -5,6 +5,26 @@
 import("//build/config/android/rules.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
+source_set("logo") {
+  sources = [
+    "logo_bridge.cc",
+    "logo_bridge.h",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser/profiles",
+    "//chrome/browser/search_provider_logos",
+    "//chrome/browser/ui/android/logo:jni_headers",
+    "//components/search_provider_logos",
+    "//content/public/browser",
+    "//net",
+    "//services/network/public/cpp",
+    "//skia",
+    "//ui/gfx",
+    "//url",
+  ]
+}
+
 android_library("java") {
   srcjar_deps = [ ":jni_headers" ]
   sources = [

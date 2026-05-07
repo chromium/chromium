@@ -139,6 +139,7 @@ if (enable_printing) {
       "//chrome/browser/enterprise",
       "//chrome/browser/headless",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui:simple_message_box_headers",
       "//chrome/browser/ui/browser_window",
       "//chrome/common",
       "//chrome/common/printing",

@@ -133,6 +133,7 @@ source_set("impl") {
       "//chrome/browser/flags:flags_android",
       "//chrome/browser/ui",
       "//chrome/browser/ui/android/tab_model",
+      "//chrome/browser/ui/android/toolbar",
       "//components/commerce/core:shopping_service",
       "//components/segmentation_platform/embedder/home_modules:constants",
     ]

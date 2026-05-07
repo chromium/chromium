@@ -77,7 +77,9 @@ source_set("impl") {
     "//ui/base/clipboard:file_info",
     "//ui/gfx/codec",
   ]
-  if (!is_android) {
+  if (is_android) {
+    deps += [ "//chrome/browser/ui/android/tab_contents" ]
+  } else {
     deps += [
       "//chrome/browser/glic",
       "//chrome/browser/ui/views/side_panel",

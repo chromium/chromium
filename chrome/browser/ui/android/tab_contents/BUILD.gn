@@ -1,0 +1,40 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("tab_contents") {
+  sources = [
+    "chrome_web_contents_view_delegate_android.cc",
+    "chrome_web_contents_view_delegate_android.h",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser/flags:flags_android",
+    "//chrome/browser/profiles",
+    "//chrome/browser/search_engines",
+    "//chrome/browser/ui/android:context_menu_helper",
+    "//components/dom_distiller/core",
+    "//components/search_engines",
+    "//content/public/browser",
+    "//ui/gfx",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "chrome_web_contents_view_delegate_android_unittest.cc" ]
+  deps = [
+    ":tab_contents",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/search_engines",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//components/dom_distiller/core",
+    "//components/search_engines:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/gfx",
+    "//url",
+  ]
+}

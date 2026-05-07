@@ -1023,6 +1023,7 @@ source_set("impl") {
       "//chrome/browser/lens",
       "//chrome/browser/policy/android",
       "//chrome/browser/policy/android:jni_headers",
+      "//chrome/browser/ui/android",
       "//chrome/browser/ui/android/tab_model",
       "//components/enterprise/device_trust",
       "//components/performance_manager",

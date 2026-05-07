@@ -40,6 +40,7 @@ source_set("internal") {
       "//chrome/browser/devtools",
       "//chrome/browser/prefs",
       "//chrome/browser/profiles:profile_util",
+      "//chrome/browser/ui/android",
       "//chrome/browser/ui/blocked_content",
       "//chrome/browser/ui/navigator",
       "//components/blocked_content",

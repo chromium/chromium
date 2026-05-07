@@ -152,6 +152,8 @@ source_set("cocoa") {
     "//chrome/browser/search_engines",
     "//chrome/browser/status_icons",
     "//chrome/browser/themes",
+    "//chrome/browser/ui:accelerator_utils_headers",
+    "//chrome/browser/ui:simple_message_box_headers",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/autofill",
     "//chrome/browser/ui/bookmarks",

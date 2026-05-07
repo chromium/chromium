@@ -14,6 +14,7 @@ source_set("impl") {
   deps = [
     ":omnibox",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/android/omnibox",
     "//chrome/browser/ui/android/omnibox:jni_headers",
     "//url",
   ]

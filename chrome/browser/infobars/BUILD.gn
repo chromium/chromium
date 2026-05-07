@@ -27,7 +27,10 @@ source_set("infobars") {
   }
 
   if (is_android) {
-    public_deps += [ "//components/infobars/android" ]
+    public_deps += [
+      "//chrome/browser/ui/android/infobars",
+      "//components/infobars/android",
+    ]
   }
 }
 

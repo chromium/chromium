@@ -7,6 +7,68 @@ import("//build/config/android/rules.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
+if (enable_extensions_core) {
+  # Thin headers-only target providing bridge interfaces to
+  # //chrome/browser/extensions without creating a circular dependency.
+  # //chrome/browser/extensions can dep on this without a cycle
+  # since this target does not depend on //chrome/browser/extensions.
+  source_set("public") {
+    sources = [
+      "extension_developer_private_bridge.h",
+      "extension_util_bridge.h",
+    ]
+    deps = [ "//base" ]
+  }
+
+  source_set("extensions") {
+    sources = [
+      "extension_action_context_menu_bridge.cc",
+      "extension_action_context_menu_bridge.h",
+      "extension_action_delegate_android.cc",
+      "extension_action_delegate_android.h",
+      "extension_action_popup_contents.cc",
+      "extension_action_popup_contents.h",
+      "extension_actions_bridge.cc",
+      "extension_actions_bridge.h",
+      "extension_developer_private_bridge.cc",
+      "extension_developer_private_bridge.h",
+      "extension_install_dialog_view_android.cc",
+      "extension_install_dialog_view_android.h",
+      "extension_keybinding_registry_android.cc",
+      "extension_keybinding_registry_android.h",
+      "extension_util_bridge.cc",
+      "extension_util_bridge.h",
+      "extensions_menu_delegate_android.cc",
+      "extensions_menu_delegate_android.h",
+      "extensions_toolbar_android.cc",
+      "extensions_toolbar_android.h",
+    ]
+    deps = [
+      "//base",
+      "//chrome/app:generated_resources",
+      "//chrome/browser/extensions",
+      "//chrome/browser/extensions/api/omnibox",
+      "//chrome/browser/extensions/api/web_navigation",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/android/extensions:jni_headers",
+      "//chrome/browser/ui/android/tab_model",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/browser_window/internal",
+      "//chrome/browser/ui/color:color_headers",
+      "//chrome/browser/ui/extensions",
+      "//chrome/browser/ui/toolbar",
+      "//chrome/browser/ui/views/extensions:extensions_menu_handler",
+      "//content/public/browser",
+      "//extensions/browser",
+      "//extensions/browser:extension_action_enums",
+      "//extensions/common",
+      "//net",
+      "//ui/menus",
+      "//url",
+    ]
+  }
+}
+
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/ui/extensions/ExtensionUi.java",

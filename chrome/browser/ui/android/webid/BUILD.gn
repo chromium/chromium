@@ -53,3 +53,21 @@ java_cpp_enum("java_enums_srcjar") {
     "//content/public/browser/webid/identity_request_dialog_controller.h",
   ]
 }
+
+source_set("webid") {
+  sources = [
+    "account_selection_view_android.cc",
+    "account_selection_view_android.h",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/android/webid:jni_headers",
+    "//chrome/browser/ui/webid",
+    "//content/public/browser",
+    "//third_party/blink/public/mojom:mojom_platform",
+    "//ui/android",
+    "//ui/gfx",
+    "//url",
+  ]
+}

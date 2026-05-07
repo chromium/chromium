@@ -79,6 +79,7 @@ static_library("plugin_vm") {
     "//chrome/browser/notifications",
     "//chrome/browser/profiles",
     "//chrome/browser/signin",
+    "//chrome/browser/ui:simple_message_box_headers",
     "//chrome/common:chrome_features",
     "//chromeos/ash/components/dbus/cicerone",
     "//chromeos/ash/components/dbus/cicerone:cicerone_proto",
