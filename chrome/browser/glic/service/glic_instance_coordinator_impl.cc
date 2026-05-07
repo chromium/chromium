@@ -712,6 +712,13 @@ void GlicInstanceCoordinatorImpl::SwitchConversation(
   mutable_options.focus_on_show = source_instance.HasFocus();
   mutable_options.reinitialize_if_already_active = true;
 
+  // TODO(b/510405771): Remove animation suppression once bottom sheet hide is
+  // cancelable.
+  if (auto* side_panel_options = std::get_if<SidePanelShowOptions>(
+          &mutable_options.embedder_options)) {
+    side_panel_options->suppress_opening_animation = true;
+  }
+
   GlicInstanceImpl* target_instance = nullptr;
   if (!info->conversation_id.empty()) {
     target_instance = GetInstanceImplForConversationId(info->conversation_id);

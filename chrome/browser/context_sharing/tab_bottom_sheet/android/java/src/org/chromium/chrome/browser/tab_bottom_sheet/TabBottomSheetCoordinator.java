@@ -230,7 +230,7 @@ public class TabBottomSheetCoordinator {
                                         mBottomSheetController.getMaxOffset());
                         if (startsExpanded) {
                             if (mSheetContent != null && isSheetHeightSufficient) {
-                                mBottomSheetController.expandSheet();
+                                mBottomSheetController.expandSheet(animate);
                             } else {
                                 mSheetEventsCallback.onBottomSheetOpened(/* isExpanded= */ false);
                             }

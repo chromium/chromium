@@ -85,7 +85,7 @@ void GlicSidePanelCoordinatorAndroid::Close(const CloseOptions& options) {
     return;
   }
 
-  bridge_->Close(/* animate= */ false);
+  bridge_->Close(/* animate= */ !options.suppress_animations);
 }
 
 bool GlicSidePanelCoordinatorAndroid::IsShowing() const {

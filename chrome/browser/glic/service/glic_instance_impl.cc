@@ -851,7 +851,7 @@ void GlicInstanceImpl::UnbindEmbedder(EmbedderKey key) {
   }
 
   if (auto* entry = GetEmbedderEntry(key)) {
-    CloseInternal(key, *entry, CloseOptions{});
+    CloseInternal(key, *entry, {.suppress_animations = true});
   }
 
   // Deactivate if this was the active embedder. This ensures predictable state
