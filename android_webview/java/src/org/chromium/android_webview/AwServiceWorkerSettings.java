@@ -6,7 +6,6 @@ package org.chromium.android_webview;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.os.Process;
 import android.webkit.WebSettings;
 
 import org.chromium.android_webview.common.Lifetime;
@@ -41,10 +40,7 @@ public class AwServiceWorkerSettings {
 
     public AwServiceWorkerSettings(Context context) {
         boolean hasInternetPermission =
-                context.checkPermission(
-                                android.Manifest.permission.INTERNET,
-                                Process.myPid(),
-                                Process.myUid())
+                context.checkSelfPermission(android.Manifest.permission.INTERNET)
                         == PackageManager.PERMISSION_GRANTED;
         synchronized (mAwServiceWorkerSettingsLock) {
             mHasInternetPermission = hasInternetPermission;

@@ -14,7 +14,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
-import android.os.Process;
 import android.webkit.WebSettings;
 
 import androidx.annotation.IntDef;
@@ -402,10 +401,7 @@ public class AwSettings {
             boolean doNotUpdateSelectionOnMutatingSelectionRange) {
         mContext = context;
         boolean hasInternetPermission =
-                context.checkPermission(
-                                android.Manifest.permission.INTERNET,
-                                Process.myPid(),
-                                Process.myUid())
+                mContext.checkSelfPermission(android.Manifest.permission.INTERNET)
                         == PackageManager.PERMISSION_GRANTED;
         synchronized (mAwSettingsLock) {
             mHasInternetPermission = hasInternetPermission;

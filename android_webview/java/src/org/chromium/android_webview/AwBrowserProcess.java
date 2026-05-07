@@ -16,7 +16,6 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
-import android.os.Process;
 import android.os.StrictMode;
 import android.os.SystemClock;
 import android.os.storage.StorageManager;
@@ -807,10 +806,7 @@ public final class AwBrowserProcess {
             boolean forceUpdateNetworkState =
                     !AwFeatureMap.isEnabled(
                             AwFeatures.WEBVIEW_USE_INITIAL_NETWORK_STATE_AT_STARTUP);
-            if (applicationContext.checkPermission(
-                            Manifest.permission.ACCESS_NETWORK_STATE,
-                            Process.myPid(),
-                            Process.myUid())
+            if (applicationContext.checkSelfPermission(Manifest.permission.ACCESS_NETWORK_STATE)
                     == PackageManager.PERMISSION_GRANTED) {
                 NetworkChangeNotifier.init();
                 NetworkChangeNotifier.setAutoDetectConnectivityState(
