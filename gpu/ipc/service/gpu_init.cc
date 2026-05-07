@@ -353,44 +353,6 @@ void SetupGLDisplayManagerEGL(const GPUInfo& gpu_info,
 }
 #endif  // IS_WIN || IS_MAC
 
-// Falls back from Graphite to Ganesh on Windows if the corresponding vendor
-// feature flag is disabled.
-void DisableVendorSpecificGraphite(const base::CommandLine* command_line,
-                                   const GPUInfo& gpu_info,
-                                   GpuPreferences& gpu_preferences,
-                                   GpuFeatureInfo& gpu_feature_info) {
-#if BUILDFLAG(IS_WIN)
-  if (!(gpu_feature_info.status_values[GPU_FEATURE_TYPE_SKIA_GRAPHITE] ==
-            kGpuFeatureStatusEnabled ||
-        gpu_preferences.gr_context_type == GrContextType::kGraphiteDawn)) {
-    return;
-  }
-
-  if (command_line->HasSwitch(switches::kEnableSkiaGraphite)) {
-    return;
-  }
-
-  // Fallback to Ganesh based on whether Intel or Non-Intel flag is enabled.
-  bool is_intel = gpu::GetIntelGpuGeneration(gpu_info) !=
-                  gpu::IntelGpuGeneration::kNonIntel;
-  bool should_disable = false;
-
-  if (is_intel) {
-    should_disable =
-        !base::FeatureList::IsEnabled(features::kSkiaGraphiteWinIntel);
-  } else {
-    should_disable =
-        !base::FeatureList::IsEnabled(features::kSkiaGraphiteWinNonIntel);
-  }
-
-  if (should_disable) {
-    gpu_preferences.gr_context_type = GrContextType::kGL;
-    gpu_feature_info.status_values[GPU_FEATURE_TYPE_SKIA_GRAPHITE] =
-        kGpuFeatureStatusDisabled;
-  }
-#endif  // BUILDFLAG(IS_WIN)
-}
-
 }  // namespace
 
 GpuInit::GpuInit() = default;
@@ -768,9 +730,6 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
       }
 #endif
     }
-
-    DisableVendorSpecificGraphite(command_line, gpu_info_, gpu_preferences_,
-                                  gpu_feature_info_);
 
     ResumeGpuWatchdog(watchdog_thread_.get());
   }
@@ -1251,8 +1210,6 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
   DisableInProcessGpuVulkan(&gpu_feature_info_, &gpu_preferences_);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  DisableVendorSpecificGraphite(command_line, gpu_info_, gpu_preferences_,
-                                gpu_feature_info_);
   InitializeDawnProcs();
 #if !BUILDFLAG(IS_ANDROID)
   if (gpu_preferences_.gr_context_type == GrContextType::kGraphiteDawn) {
