@@ -521,6 +521,8 @@ crbug.com/1021428 [ linux angle-vulkan passthrough intel ] WebglExtension_WEBGL_
 ## Linux / OpenGL / GTX 1660 ##
 crbug.com/498282277 [ linux angle-opengl nvidia-0x2184 ] conformance/textures/canvas/tex-2d-rgba-rgba-unsigned_byte.html [ RetryOnFailure ]
 
+crbug.com/510410317 [ linux nvidia passthrough ] conformance/offscreencanvas/offscreencanvas-transfer-image-bitmap.html [ RetryOnFailure ]
+
 ####################
 # Android failures #
 ####################
