@@ -147,14 +147,14 @@ int AudioDestination::Render(base::TimeDelta delay,
 
   // Associate the destination data array with the output bus.
   for (unsigned i = 0; i < number_of_output_channels_; ++i) {
-    output_bus_->SetChannelMemory(i, dest->channel(i).data(), number_of_frames);
+    output_bus_->SetChannelMemory(i, dest->channel(i).first(number_of_frames));
   }
 
   absl::Cleanup cleanup_and_report_metrics = [this, start_timestamp] {
     uma_reporter_.AddRenderDuration(/*duration=*/base::TimeTicks::Now() -
                                     start_timestamp);
     for (unsigned i = 0; i < number_of_output_channels_; ++i) {
-      output_bus_->SetChannelMemory(i, nullptr, 0);
+      output_bus_->SetChannelMemory(i, base::span<float>());
     }
   };
 

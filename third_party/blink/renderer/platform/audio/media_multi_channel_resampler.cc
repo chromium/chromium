@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/numerics/safe_conversions.h"
 #include "media/base/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 
@@ -55,14 +56,14 @@ void MediaMultiChannelResampler::ProvideResamplerInput(
 
   for (int i = 0; i < resampler_output_bus->channels(); ++i) {
     resampler_output_bus_wrapper_->SetChannelMemory(
-        i, resampler_output_bus->channel(i).data(),
-        resampler_output_bus->frames());
+        i, resampler_output_bus->channel(i).first(
+               base::checked_cast<size_t>(resampler_output_bus->frames())));
   }
   read_cb_.Run(resampler_frame_delay, resampler_output_bus_wrapper_.get());
 
   for (unsigned i = 0; i < resampler_output_bus_wrapper_->NumberOfChannels();
        ++i) {
-    resampler_output_bus_wrapper_->SetChannelMemory(i, nullptr, 0);
+    resampler_output_bus_wrapper_->SetChannelMemory(i, base::span<float>());
   }
 }
 

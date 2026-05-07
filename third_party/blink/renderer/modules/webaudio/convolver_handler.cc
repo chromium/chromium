@@ -166,8 +166,8 @@ void ConvolverHandler::SetBuffer(AudioBuffer* buffer,
   }
 
   for (unsigned i = 0; i < number_of_channels; ++i) {
-    buffer_bus->SetChannelMemory(i, buffer->getChannelData(i)->Data(),
-                                 buffer_length);
+    buffer_bus->SetChannelMemory(
+        i, buffer->getChannelData(i)->AsSpan().first(buffer_length));
   }
 
   buffer_bus->SetSampleRate(buffer->sampleRate());

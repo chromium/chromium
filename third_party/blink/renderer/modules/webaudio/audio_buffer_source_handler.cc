@@ -478,17 +478,14 @@ void AudioBufferSourceHandler::SetBuffer(AudioBuffer* buffer,
         base::HeapArray<base::raw_span<float>>::WithSize(number_of_channels);
 
     for (unsigned i = 0; i < number_of_channels; ++i) {
-      const auto& channel = shared_buffer_->channels()[i];
-      if (!channel.IsValid()) {
+      const base::span<const float> channel = shared_buffer_->ChannelSpan(i);
+      if (channel.empty()) {
         source_channels_[i] = {};
         continue;
       }
 
-      DCHECK_EQ(channel.DataLength(),
-                static_cast<size_t>(shared_buffer_->length()) * sizeof(float));
-      source_channels_[i] = base::raw_span<const float>(
-          base::subtle::reinterpret_span<const float>(
-              channel.ByteSpanMaybeShared()));
+      DCHECK_EQ(channel.size(), shared_buffer_->length());
+      source_channels_[i] = channel;
     }
 
     // If this is a grain (as set by a previous call to start()), validate the

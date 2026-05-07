@@ -657,8 +657,7 @@ void LanguageModelPromptBuilder::ToMojo(AudioBuffer* audio_buffer,
           DOMException::GetErrorName(DOMExceptionCode::kNotSupportedError)));
       return;
     }
-    bus->SetChannelMemory(i, audio_buffer->getChannelData(i)->Data(),
-                          audio_buffer->getChannelData(i)->length());
+    bus->SetChannelMemory(i, audio_buffer->getChannelData(i)->AsSpan());
   }
 
   auto audio_data = on_device_model::mojom::blink::AudioData::New();

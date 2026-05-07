@@ -168,14 +168,8 @@ void ScriptProcessorHandler::Process(uint32_t frames_to_process) {
     // `input_bus` can be different. See crbug.com/1189528.
     for (uint32_t i = 0; i < number_of_input_channels_; ++i) {
       internal_input_bus_->SetChannelMemory(
-          i,
-          reinterpret_cast<float*>(
-              shared_input_buffer->channels()[i]
-                  .ByteSpan()
-                  .subspan(buffer_read_write_index_ * sizeof(float),
-                           frames_to_process * sizeof(float))
-                  .data()),
-          frames_to_process);
+          i, shared_input_buffer->ChannelSpan(i).subspan(
+                 buffer_read_write_index_, frames_to_process));
     }
 
     if (number_of_input_channels_) {

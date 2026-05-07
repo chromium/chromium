@@ -150,7 +150,7 @@ void SincResampler::ConsumeSource(base::span<float> buffer) {
       AudioBus::Create(1, number_of_source_frames, false);
 
   // FIXME: Find a way to make the following const-correct:
-  bus->SetChannelMemory(0, buffer.data(), number_of_source_frames);
+  bus->SetChannelMemory(0, buffer);
 
   source_provider_->ProvideInput(
       bus.get(), base::checked_cast<int>(number_of_source_frames));

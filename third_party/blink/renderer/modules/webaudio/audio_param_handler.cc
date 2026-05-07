@@ -366,8 +366,8 @@ void AudioParamHandler::CalculateFinalValues(base::span<float> values,
     // If we're not sample accurate, we only need one value, so make the summing
     // bus have length 1.  When the connections are added in, only the first
     // value will be added.  Which is exactly what we want.
-    summing_bus_->SetChannelMemory(0, values.data(),
-                                   sample_accurate ? values.size() : 1);
+    summing_bus_->SetChannelMemory(
+        0, values.first(sample_accurate ? values.size() : 1u));
 
     for (unsigned i = 0; i < NumberOfRenderingConnections(); ++i) {
       AudioNodeOutput* output = RenderingOutput(i);
@@ -405,7 +405,7 @@ void AudioParamHandler::CalculateFinalValues(base::span<float> values,
 
     // Clear the channel memory to avoid holding a reference to the external
     // `values` buffer, which may be garbage collected.
-    summing_bus_->SetChannelMemory(0, nullptr, 0);
+    summing_bus_->SetChannelMemory(0, base::span<float>());
   }
 }
 
