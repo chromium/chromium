@@ -28,9 +28,7 @@ class CORE_EXPORT StaticRange final : public AbstractRange {
         range->endContainer(), range->endOffset());
   }
   static StaticRange* Create(const EphemeralRange&);
-  static StaticRange* Create(Document&,
-                             const StaticRangeInit*,
-                             ExceptionState&);
+  static StaticRange* Create(const StaticRangeInit*, ExceptionState&);
 
   StaticRange(Document&,
               Node* start_container,

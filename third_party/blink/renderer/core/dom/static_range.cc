@@ -36,8 +36,7 @@ StaticRange* StaticRange::Create(const EphemeralRange& range) {
       range.EndPosition().ComputeOffsetInContainerNode());
 }
 
-StaticRange* StaticRange::Create(Document& document,
-                                 const StaticRangeInit* static_range_init,
+StaticRange* StaticRange::Create(const StaticRangeInit* static_range_init,
                                  ExceptionState& exception_state) {
   DCHECK(static_range_init);
 
@@ -51,10 +50,17 @@ StaticRange* StaticRange::Create(Document& document,
         "Attribute node.");
   }
 
+  // Use the start container's document as the owner document so that the
+  // resulting StaticRange is associated with the document its endpoints
+  // actually live in, even when the range is constructed from a different
+  // realm (for example, when a parent document creates a StaticRange over
+  // nodes inside a same-origin iframe). The W3C StaticRange spec does not
+  // define an owner document; this is an internal field that must reflect
+  // the range's actual position in the DOM.
   return MakeGarbageCollected<StaticRange>(
-      document, static_range_init->startContainer(),
-      static_range_init->startOffset(), static_range_init->endContainer(),
-      static_range_init->endOffset());
+      static_range_init->startContainer()->GetDocument(),
+      static_range_init->startContainer(), static_range_init->startOffset(),
+      static_range_init->endContainer(), static_range_init->endOffset());
 }
 
 bool StaticRange::IsValid() const {

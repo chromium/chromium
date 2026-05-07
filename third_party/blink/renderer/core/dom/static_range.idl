@@ -6,5 +6,5 @@
 
 [Exposed=Window]
 interface StaticRange : AbstractRange {
-  [CallWith=Document, RaisesException] constructor(StaticRangeInit init);
+  [RaisesException] constructor(StaticRangeInit init);
 };
