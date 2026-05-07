@@ -35,7 +35,7 @@ class ToolbarGlicButton : public GlicButton<ToolbarButton> {
   bool IsWidgetAlive() const;
   void AddedToWidget() override;
   void UpdateColors() override;
-  void SetWidthFactor(float factor);
+  void UpdateStyle(bool should_match_toolbar);
   void AddCloseButton(PressedCallback pressed_callback);
   BrowserFrameView* GetBrowserFrameView() const;
   void SetForegroundFrameActiveColorId(ui::ColorId new_color_id) override;

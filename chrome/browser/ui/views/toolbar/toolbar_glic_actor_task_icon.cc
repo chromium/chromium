@@ -6,6 +6,8 @@
 
 #include "chrome/browser/actor/resources/grit/actor_browser_resources.h"
 #include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
+#include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/glic/glic_actor_task_icon.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -23,7 +25,14 @@ ToolbarGlicActorTaskIcon::~ToolbarGlicActorTaskIcon() = default;
 void ToolbarGlicActorTaskIcon::AddedToWidget() {
   split_rounded_edge_radius_ = GetRoundedCornerRadius();
   SetLeftRightCornerRadii(kSplitLeftEdgeRadius, GetSplitRoundedEdgeRadius());
-  SetDefaultBackgroundColorId(kColorToolbarGlicButtonBackgroundDefault);
+
+  bool show_before_avatar =
+      base::FeatureList::IsEnabled(features::kGlicToolbarButtonLocation) &&
+      features::kGlicToolbarButtonLocationParam.Get() ==
+          features::GlicToolbarButtonLocation::kLeftOfProfileChip;
+  SetDefaultBackgroundColorId(show_before_avatar
+                                  ? kColorToolbar
+                                  : kColorToolbarGlicButtonBackgroundDefault);
   UpdateIconsWithStandardColors(
       glic::GlicVectorIconManager::GetVectorIcon(IDR_ACTOR_AUTO_BROWSE_ICON));
   GlicActorTaskIcon<ToolbarButton>::AddedToWidget();

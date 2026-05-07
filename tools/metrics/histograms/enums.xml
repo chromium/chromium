@@ -11559,6 +11559,7 @@ from previous Chrome versions.
   <int value="-835331907" label="TabOutlinesInLowContrastThemes:disabled"/>
   <int value="-835242361" label="OmniboxAdaptiveSuggestionsCount:enabled"/>
   <int value="-834661509" label="ModalPermissionPrompts:disabled"/>
+  <int value="-834268572" label="GlicToolbarButtonLocation:disabled"/>
   <int value="-834234595" label="BorealisProvision:enabled"/>
   <int value="-833438724" label="AlwaysDrawCompositedToolbarHairline:enabled"/>
   <int value="-833319821" label="AutoRevokeSuspiciousNotification:enabled"/>
@@ -14778,6 +14779,7 @@ from previous Chrome versions.
   <int value="245896533" label="SearchSuggestionsOnLocalNtp:enabled"/>
   <int value="246106068" label="HandwritingLegacyRecognition:disabled"/>
   <int value="246451316" label="NotificationInteractionHistory:enabled"/>
+  <int value="247069527" label="GlicToolbarButtonLocation:enabled"/>
   <int value="247200195" label="EnhancedProtectionPromoCard:enabled"/>
   <int value="248485874" label="FieldClassificationModelCaching:disabled"/>
   <int value="249465446" label="UseRealColorSpaceForAndroidVideo:enabled"/>

@@ -1547,6 +1547,10 @@ inline constexpr char kGlicHorizontalTabToolbarButtonName[] =
 inline constexpr char kGlicHorizontalTabToolbarButtonDescription[] =
     "Enables the toolbar Gemini button when the horizontal tab strip is "
     "enabled, and disables the tab strip Gemini button.";
+inline constexpr char kGlicToolbarButtonLocationName[] =
+    "Glic Toolbar Button Location";
+inline constexpr char kGlicToolbarButtonLocationDescription[] =
+    "Specifies the location of the toolbar Gemini button.";
 
 inline constexpr char kSkillsEnabledName[] = "Skills";
 inline constexpr char kSkillsEnabledDescription[] =

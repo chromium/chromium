@@ -101,6 +101,20 @@ const base::flat_set<int32_t>& GetGlicTieredRolloutV2EligibleTiers() {
 BASE_FEATURE(kGlicHorizontalTabToolbarButton,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kGlicToolbarButtonLocation, base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<GlicToolbarButtonLocation>::Option
+    kGlicButtonLocationOptions[] = {
+        {GlicToolbarButtonLocation::kRightOfOmnibox,
+         kGlicToolbarButtonLocationRightOfOmnibox},
+        {GlicToolbarButtonLocation::kLeftOfProfileChip,
+         kGlicToolbarButtonLocationLeftOfProfileChip}};
+
+const base::FeatureParam<GlicToolbarButtonLocation>
+    kGlicToolbarButtonLocationParam{
+        &kGlicToolbarButtonLocation, "glic-toolbar-button-location",
+        GlicToolbarButtonLocation::kLeftOfProfileChip,
+        &kGlicButtonLocationOptions};
+
 BASE_FEATURE(kGlicButtonAutoSummarize, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicGetTabFaviconById, base::FEATURE_ENABLED_BY_DEFAULT);

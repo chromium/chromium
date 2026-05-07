@@ -4,7 +4,9 @@
 // found in the LICENSE file.
 #include "chrome/browser/ui/views/toolbar/toolbar_glic_button.h"
 
+#include "base/logging.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -50,7 +52,13 @@ ToolbarGlicButton::~ToolbarGlicButton() = default;
 void ToolbarGlicButton::AddedToWidget() {
   split_rounded_edge_radius_ = GetRoundedCornerRadius();
   SetLeftRightCornerRadii(GetRoundedCornerRadius(), GetRoundedCornerRadius());
-  SetDefaultBackgroundColorId(kColorToolbarGlicButtonBackgroundDefault);
+  bool show_before_avatar =
+      base::FeatureList::IsEnabled(features::kGlicToolbarButtonLocation) &&
+      features::kGlicToolbarButtonLocationParam.Get() ==
+          features::GlicToolbarButtonLocation::kLeftOfProfileChip;
+  SetDefaultBackgroundColorId(show_before_avatar
+                                  ? kColorToolbar
+                                  : kColorToolbarGlicButtonBackgroundDefault);
   GlicButton<ToolbarButton>::AddedToWidget();
 }
 
@@ -101,6 +109,15 @@ int ToolbarGlicButton::GetIconSize() const {
 
 void ToolbarGlicButton::UpdateColors() {
   ToolbarButton::UpdateColorsAndInsets();
+}
+
+void ToolbarGlicButton::UpdateStyle(bool should_match_toolbar) {
+  ChromeColorIds background_color_id =
+      should_match_toolbar ? kColorToolbar
+                           : kColorToolbarGlicButtonBackgroundDefault;
+
+  SetDefaultBackgroundColorId(background_color_id);
+  UpdateColors();
 }
 
 void ToolbarGlicButton::SetCloseButtonFocusBehavior(

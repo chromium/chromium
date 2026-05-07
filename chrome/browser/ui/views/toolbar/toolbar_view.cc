@@ -458,17 +458,13 @@ void ToolbarView::Init() {
     location_bar_ = toolbar_webview_->GetLocationBar();
   }
 
-  if (glic::GlicEnabling::IsProfileEligible(browser_view_->GetProfile())) {
-    auto* vertical_tab_strip_state_controller =
-        tabs::VerticalTabStripStateController::From(browser_view_->browser());
-    if (base::FeatureList::IsEnabled(features::kGlicActorUi) &&
-        features::kGlicActorUiTaskIcon.Get()) {
-      glic_actor_button_container_ =
-          AddChildView(CreateGlicActorButtonContainer());
-      glic_actor_task_icon_ =
-          glic_actor_button_container_->AddChildView(CreateGlicActorTaskIcon());
-      glic_actor_button_container_->SetVisible(false);
-    }
+  bool is_glic_left_of_profile =
+      base::FeatureList::IsEnabled(features::kGlicToolbarButtonLocation) &&
+      features::kGlicToolbarButtonLocationParam.Get() ==
+          features::GlicToolbarButtonLocation::kLeftOfProfileChip;
+  if (glic::GlicEnabling::IsProfileEligible(browser_view_->GetProfile()) &&
+      !is_glic_left_of_profile) {
+    InitGlicContainer();
 
     glic_button_ = AddChildView(CreateGlicButton());
     std::unique_ptr<ToolbarDivider> glic_button_divider =
@@ -478,15 +474,6 @@ void ToolbarView::Init() {
         views::kMarginsKey,
         gfx::Insets::VH(
             0, GetLayoutConstant(LayoutConstant::kToolbarDividerSpacing)));
-    if (vertical_tab_strip_state_controller) {
-      vertical_tab_subscription_ =
-          vertical_tab_strip_state_controller->RegisterOnModeChanged(
-              base::BindRepeating(&ToolbarView::OnVerticalTabStripModeChanged,
-                                  base::Unretained(this)));
-      should_display_vertical_tabs_ =
-          vertical_tab_strip_state_controller->ShouldDisplayVerticalTabs();
-    }
-    UpdateGlicButtonVisibility();
   }
 
   if (extensions_container) {
@@ -573,8 +560,17 @@ void ToolbarView::Init() {
     }
   }
 
+  if (is_glic_left_of_profile &&
+      glic::GlicEnabling::IsProfileEligible(browser_view_->GetProfile())) {
+    InitGlicContainer();
+
+    glic_button_ = AddChildView(CreateGlicButton());
+    UpdateGlicButtonVisibility();
+  }
+
   avatar_ = AddChildView(std::make_unique<AvatarToolbarButton>(browser_view_));
   bool show_avatar_toolbar_button = true;
+
 #if BUILDFLAG(IS_CHROMEOS)
   // ChromeOS only badges Incognito, Guest, and captive portal signin icons in
   // the browser window.
@@ -651,6 +647,20 @@ void ToolbarView::Init() {
     home_->SetVisible(show_home_button_.GetValue());
   }
 
+  if (glic::GlicEnabling::IsProfileEligible(browser_view_->GetProfile())) {
+    auto* vertical_tab_strip_state_controller =
+        tabs::VerticalTabStripStateController::From(browser_view_->browser());
+    if (vertical_tab_strip_state_controller) {
+      vertical_tab_subscription_ =
+          vertical_tab_strip_state_controller->RegisterOnModeChanged(
+              base::BindRepeating(&ToolbarView::OnVerticalTabStripModeChanged,
+                                  base::Unretained(this)));
+      should_display_vertical_tabs_ =
+          vertical_tab_strip_state_controller->ShouldDisplayVerticalTabs();
+    }
+    UpdateGlicButtonVisibility();
+  }
+
   InitLayout();
 
   for (auto* button : std::array<views::Button*, 5>{back_, forward_, reload_,
@@ -661,6 +671,18 @@ void ToolbarView::Init() {
   }
 
   initialized_ = true;
+}
+
+void ToolbarView::InitGlicContainer() {
+  if (base::FeatureList::IsEnabled(features::kGlicActorUi) &&
+      features::kGlicActorUiTaskIcon.Get()) {
+    glic_actor_button_container_ =
+        AddChildView(CreateGlicActorButtonContainer());
+    glic_actor_task_icon_ =
+        glic_actor_button_container_->AddChildView(CreateGlicActorTaskIcon());
+    glic_actor_button_container_->SetVisible(false);
+    glic_actor_task_icon_->SetVisible(false);
+  }
 }
 
 void ToolbarView::OnVerticalTabStripModeChanged(
@@ -972,7 +994,11 @@ void ToolbarView::FinalizeHideGlicActorTaskIcon() {
   }
   glic_actor_task_icon_->SetVisible(false);
   glic_actor_task_icon_->SetTaskIconToDefault();
-  const size_t insertion_index = GetIndexOf(glic_button_divider_).value();
+
+  size_t insertion_index = GetIndexOf(avatar_.get()).value();
+  if (glic_button_divider_) {
+    insertion_index = GetIndexOf(glic_button_divider_).value();
+  }
   glic_button_ = AddChildViewAt(std::move(glic_button_.get()), insertion_index);
   glic_actor_button_container_->SetVisible(false);
   glic_button_->Expand();
@@ -1063,6 +1089,14 @@ void ToolbarView::UpdateGlicActorVisibility() {
        base::FeatureList::IsEnabled(features::kGlicHorizontalTabToolbarButton));
 
   glic_actor_task_icon_->SetVisible(is_glic_actor_visible);
+  if (glic_button_) {
+    bool is_glic_left_of_profile =
+        base::FeatureList::IsEnabled(features::kGlicToolbarButtonLocation) &&
+        features::kGlicToolbarButtonLocationParam.Get() ==
+            features::GlicToolbarButtonLocation::kLeftOfProfileChip;
+    glic_button_->UpdateStyle(
+        !(is_glic_left_of_profile && is_glic_actor_visible));
+  }
 }
 
 void ToolbarView::UpdateGlicButtonVisibility() {
@@ -1076,13 +1110,22 @@ void ToolbarView::UpdateGlicButtonVisibility() {
        base::FeatureList::IsEnabled(features::kGlicHorizontalTabToolbarButton));
 
   glic_button_->SetVisible(is_glic_visible);
-  glic_button_divider_->SetVisible(is_glic_visible);
+  if (glic_button_divider_) {
+    glic_button_divider_->SetVisible(is_glic_visible);
+  }
 
   if (glic_actor_button_container_) {
     // glic_actor_button_container_ should only be visible at the same time as
     // glic_button_.
     glic_actor_button_container_->SetVisible(is_glic_visible);
   }
+  bool is_glic_left_of_profile =
+      base::FeatureList::IsEnabled(features::kGlicToolbarButtonLocation) &&
+      features::kGlicToolbarButtonLocationParam.Get() ==
+          features::GlicToolbarButtonLocation::kLeftOfProfileChip;
+  bool is_task_icon_visible =
+      glic_actor_task_icon_ && glic_actor_task_icon_->GetVisible();
+  glic_button_->UpdateStyle(!(is_glic_left_of_profile && is_task_icon_visible));
 }
 
 void ToolbarView::SetGlicActorShowState(bool show) {
