@@ -53,9 +53,11 @@ const base::FeatureParam<std::string>
     kPassthroughCommandDecoderBlockListByManufacturer{
         &kDefaultPassthroughCommandDecoder, "BlockListByManufacturer", ""};
 
+// b/455412928 flickering issue with WebView on the following XR devices
 const base::FeatureParam<std::string>
     kPassthroughCommandDecoderBlockListByModel{
-        &kDefaultPassthroughCommandDecoder, "BlockListByModel", ""};
+        &kDefaultPassthroughCommandDecoder, "BlockListByModel",
+        "SM-I610|SM-I610H|Robin XR"};
 
 const base::FeatureParam<std::string>
     kPassthroughCommandDecoderBlockListByBoard{
@@ -105,18 +107,8 @@ BASE_FEATURE(kGpuVsync, base::FEATURE_ENABLED_BY_DEFAULT);
 // Feature lives in ui/gl because it affects the GL binding initialization on
 // platforms that would otherwise not default to using EGL bindings.
 BASE_FEATURE(kDefaultPassthroughCommandDecoder,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Add a small delay in shader compiling if validating command decoder is used.
-// This is to verify if passthrough command decoder impacting negatively top
-// level metrics could be due to slower shader compiling.
-BASE_FEATURE(kAddDelayToGLCompileShader, base::FEATURE_DISABLED_BY_DEFAULT);
-// Histogram |GrCompileShaderUs| mean is 1.8ms (native) vs 3.1ms (ANGLE).
-// Therefore, we add a 1.3ms delay to shader compiling.
-constexpr base::FeatureParam<base::TimeDelta> kGLCompileShaderDelay = {
-    &kAddDelayToGLCompileShader, /*name=*/"interval",
-    /*default_value=*/base::Microseconds(1300)};
-#endif  // !defined(PASSTHROUGH_COMMAND_DECODER_LAUNCHED)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(ENABLE_VALIDATING_COMMAND_DECODER)
 
 // Controls whether the GPU process falls back to software if GLES3 is not
 // supported.
@@ -368,20 +360,6 @@ bool IsSoftwareGLFallbackDueToCrashesAllowed(
   }
 
   return base::FeatureList::IsEnabled(kAllowSoftwareGLFallbackDueToCrashes);
-}
-
-base::TimeDelta GetGLCompileShaderDelay() {
-#if BUILDFLAG(ENABLE_VALIDATING_COMMAND_DECODER)
-  if (UsePassthroughCommandDecoder()) {
-    return base::TimeDelta();
-  }
-  if (!base::FeatureList::IsEnabled(kAddDelayToGLCompileShader)) {
-    return base::TimeDelta();
-  }
-  return kGLCompileShaderDelay.Get();
-#else
-  return base::TimeDelta();
-#endif  // BUILDFLAG(ENABLE_VALIDATING_COMMAND_DECODER)
 }
 
 BASE_FEATURE(kAllowANGLED3D9Fallback, base::FEATURE_DISABLED_BY_DEFAULT);

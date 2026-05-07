@@ -31,13 +31,6 @@ namespace gl::init {
 // synchronization on platforms that does not have GL fences but support EGL
 namespace {
 
-// If enabled, adds a delay to GL program link whose value is given by the
-// feature param. Used for an ablation study.
-BASE_FEATURE(kAddDelayToGLProgramLink, base::FEATURE_DISABLED_BY_DEFAULT);
-constexpr base::FeatureParam<int> kGLProgramLinkDelayMicroseconds{
-    &kAddDelayToGLProgramLink, /*name=*/"GLProgramLinkDelayMicroseconds",
-    /*default_value=*/1000};
-
 struct EGLFenceData {
   EGLSync sync;
   EGLDisplay display;
@@ -188,11 +181,6 @@ bind_timed_compile_function(R(GL_BINDING_CALL* func)(GLuint shader, Args...),
     gl::ScopedProgressReporter scoped_reporter(progress_reporter);
     SCOPED_UMA_HISTOGRAM_TIMER_MICROS("Gpu.GrCompileShaderUs");
 
-    base::TimeDelta delay = features::GetGLCompileShaderDelay();
-    if (delay.is_positive()) {
-      base::PlatformThread::Sleep(delay);
-    }
-
     func(shader, args...);
 
     GLint compile_result = 0;
@@ -214,11 +202,6 @@ GrGLFunction<R GR_GL_FUNCTION_TYPE(GLuint, Args...)> bind_timed_link_function(
                                                    Args... args) -> R {
     gl::ScopedProgressReporter scoped_reporter(progress_reporter);
     SCOPED_UMA_HISTOGRAM_TIMER_MICROS("Gpu.GrLinkProgramUs");
-
-    if (base::FeatureList::IsEnabled(kAddDelayToGLProgramLink)) {
-      base::PlatformThread::Sleep(
-          base::Microseconds(kGLProgramLinkDelayMicroseconds.Get()));
-    }
 
     func(program, args...);
 

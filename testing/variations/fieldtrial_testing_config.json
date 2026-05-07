@@ -8273,26 +8273,6 @@
             ]
         }
     ],
-    "DefaultPassthroughCommandDecoder": [
-        {
-            "platforms": [
-                "android",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "BlockListByDevice": "",
-                        "BlockListByModel": ""
-                    },
-                    "enable_features": [
-                        "DefaultPassthroughCommandDecoder"
-                    ]
-                }
-            ]
-        }
-    ],
     "DeferSpeculativeRFHCreation": [
         {
             "platforms": [

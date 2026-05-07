@@ -25,7 +25,6 @@ GL_EXPORT bool UseCompositorClockVSyncInterval();
 // All features in alphabetical order. The features should be documented
 // alongside the definition of their values in the .cc file.
 GL_EXPORT BASE_DECLARE_FEATURE(kDefaultPassthroughCommandDecoder);
-GL_EXPORT BASE_DECLARE_FEATURE(kAddDelayToGLCompileShader);
 #endif
 
 GL_EXPORT BASE_DECLARE_FEATURE(kFallbackToSWIfGLES3NotSupported);
@@ -80,10 +79,6 @@ GL_EXPORT bool IsAnySoftwareGLAllowed(const base::CommandLine* command_line);
 // allowed.
 GL_EXPORT bool IsSoftwareGLFallbackDueToCrashesAllowed(
     const base::CommandLine* command_line);
-
-// Query the delay we add to glCompileShader.
-// Default is 0 if kAddDelayToGLCompileShader is off.
-GL_EXPORT base::TimeDelta GetGLCompileShaderDelay();
 
 // Check if ANGLE's D3D9 backend is a valid fallback if D3D11 does not
 // initialize or is disabled.
