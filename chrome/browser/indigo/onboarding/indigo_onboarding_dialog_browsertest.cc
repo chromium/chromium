@@ -15,6 +15,7 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -40,6 +41,12 @@ class IndigoOnboardingDialogBrowserTest : public InteractiveBrowserTest {
  public:
   IndigoOnboardingDialogBrowserTest() {
     feature_list_.InitAndEnableFeature(features::kIndigo);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InteractiveBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(switches::kIsolateOrigins,
+                                    "http://isolated.com");
   }
 
  protected:
@@ -218,6 +225,35 @@ IN_PROC_BROWSER_TEST_F(IndigoOnboardingDialogBrowserTest,
                   Check([&]() { return WasDialogClosed(); }), Check([&]() {
                     return last_result_.acknowledge_chrome_disclaimer;
                   }));
+}
+
+// Tests that acknowledging the disclaimer works after the onboarding dialog
+// navigates to an isolated origin (i.e. a RenderFrameHost swap occurs during
+// the initial navigation).
+IN_PROC_BROWSER_TEST_F(IndigoOnboardingDialogBrowserTest, CrossRfhNavigation) {
+  GURL onboarding_url =
+      embedded_test_server()->GetURL("isolated.com", "/empty.html");
+  tabs::TabInterface* tab = browser()->GetActiveTabInterface();
+
+  RunTestSequence(
+      Do([&]() { OpenDialog(*tab, onboarding_url); }),
+      WaitForShow(IndigoOnboardingDialog::kWebViewId),
+      InstrumentNonTabWebView(kDialogWebContentsId,
+                              IndigoOnboardingDialog::kWebViewId),
+      WaitForWebContentsReady(kDialogWebContentsId, onboarding_url),
+      CheckJsResult(kDialogWebContentsId,
+                    "() => typeof window.chromeOnboarding", "object"),
+      ExecuteJs(kDialogWebContentsId,
+                R"js(
+                  () => {
+                    window.chromeOnboarding.acknowledgeChromeDisclaimer();
+                    window.close();
+                  }
+                )js",
+                ExecuteJsMode::kFireAndForget),
+      WaitForHide(IndigoOnboardingDialog::kWebViewId),
+      Check([&]() { return WasDialogClosed(); }),
+      Check([&]() { return last_result_.acknowledge_chrome_disclaimer; }));
 }
 
 }  // namespace
