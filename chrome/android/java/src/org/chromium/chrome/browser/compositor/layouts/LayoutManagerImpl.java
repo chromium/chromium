@@ -1021,7 +1021,7 @@ public class LayoutManagerImpl
 
         TopUiThemeColorProvider topUiTheme = mTopUiThemeColorProvider.get();
         layoutTab.initFromHost(
-                topUiTheme.getBackgroundColor(tab),
+                ThemeUtils.getBackgroundColor(tab),
                 canUseLiveTexture,
                 topUiTheme.getSceneLayerBackground(tab),
                 ThemeUtils.getTextBoxColorForToolbarBackground(
@@ -1040,8 +1040,7 @@ public class LayoutManagerImpl
         LayoutTab layoutTab = mTabCache.get(tabId);
         if (layoutTab == null) return;
 
-        layoutTab.set(
-                LayoutTab.BACKGROUND_COLOR, mTopUiThemeColorProvider.get().getBackgroundColor(tab));
+        layoutTab.set(LayoutTab.BACKGROUND_COLOR, ThemeUtils.getBackgroundColor(tab));
     }
 
     @Override

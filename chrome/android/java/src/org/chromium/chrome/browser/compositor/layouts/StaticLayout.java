@@ -411,7 +411,7 @@ public class StaticLayout extends Layout {
         }
 
         TopUiThemeColorProvider topUiTheme = mTopUiThemeColorProvider.get();
-        mModel.set(LayoutTab.BACKGROUND_COLOR, topUiTheme.getBackgroundColor(tab));
+        mModel.set(LayoutTab.BACKGROUND_COLOR, ThemeUtils.getBackgroundColor(tab));
         mModel.set(LayoutTab.TOOLBAR_BACKGROUND_COLOR, topUiTheme.getSceneLayerBackground(tab));
         mModel.set(LayoutTab.TEXT_BOX_BACKGROUND_COLOR, getToolbarTextBoxBackgroundColor(tab));
         mModel.set(LayoutTab.CAN_USE_LIVE_TEXTURE, useLiveTexture);

@@ -62,6 +62,8 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
+import org.chromium.chrome.browser.ui.native_page.NativePage;
+import org.chromium.content_public.browser.RenderWidgetHostView;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -180,7 +182,6 @@ public class StaticLayoutUnitTest {
         mModel = mStaticLayout.getModelForTesting();
         mStaticLayout.setIsActive(true);
 
-        doReturn(BACKGROUND_COLOR).when(mTopUiThemeColorProvider).getBackgroundColor(any());
         doReturn(TOOLBAR_BACKGROUND_COLOR)
                 .when(mTopUiThemeColorProvider)
                 .getSceneLayerBackground(any());
@@ -232,7 +233,11 @@ public class StaticLayoutUnitTest {
         doReturn(false).when(tab).isIncognito();
         doReturn(url).when(tab).getUrl();
         doReturn(false).when(tab).isNativePage();
-        doReturn(mock(WebContents.class)).when(tab).getWebContents();
+        WebContents webContents = mock(WebContents.class);
+        RenderWidgetHostView rwhv = mock(RenderWidgetHostView.class);
+        doReturn(rwhv).when(webContents).getRenderWidgetHostView();
+        doReturn(BACKGROUND_COLOR).when(rwhv).getBackgroundColor();
+        doReturn(webContents).when(tab).getWebContents();
         doReturn(true).when(tab).isInitialized();
         doReturn(TOOLBAR_BACKGROUND_COLOR).when(tab).getThemeColor();
         when(tab.getUserDataHost()).thenReturn(mUserDataHost);
@@ -298,6 +303,9 @@ public class StaticLayoutUnitTest {
     public void testTabSelectionNativeTab() {
         assertNotEquals(mTab2.getId(), mModel.get(LayoutTab.TAB_ID));
         doReturn(true).when(mTab2).isNativePage();
+        NativePage nativePage = mock(NativePage.class);
+        doReturn(BACKGROUND_COLOR).when(nativePage).getBackgroundColor();
+        doReturn(nativePage).when(mTab2).getNativePage();
 
         getTabModelSelectorTabModelObserverFromCaptor()
                 .didSelectTab(mTab2, TabSelectionType.FROM_USER, TAB1_ID);
@@ -342,7 +350,8 @@ public class StaticLayoutUnitTest {
         mModel.set(LayoutTab.BACKGROUND_COLOR, Color.WHITE);
 
         // Index 0 is the TabObserver for mTab1.
-        doReturn(Color.RED).when(mTopUiThemeColorProvider).getBackgroundColor(mTab1);
+        RenderWidgetHostView rwhv = mTab1.getWebContents().getRenderWidgetHostView();
+        doReturn(Color.RED).when(rwhv).getBackgroundColor();
         mTabObserverCaptor.getAllValues().get(0).onBackgroundColorChanged(mTab1, Color.RED);
 
         assertEquals(Color.RED, mModel.get(LayoutTab.BACKGROUND_COLOR));

@@ -82,11 +82,14 @@ public class AppThemeColorProviderUnitTest {
                 ThemeUtils.getThemedToolbarIconTintForActivityState(
                         mContext, brandedColorScheme, false);
 
-        assertEquals("Default tint is not correct.", tint, mAppThemeColorProvider.getTint());
+        assertEquals(
+                "Default tint is not correct.",
+                tint.toString(),
+                mAppThemeColorProvider.getTint().toString());
         assertEquals(
                 "Activity focus tint is not correct.",
-                unfocusedActivityTint,
-                mAppThemeColorProvider.getActivityFocusTint());
+                unfocusedActivityTint.toString(),
+                mAppThemeColorProvider.getActivityFocusTint().toString());
         verify(mTintObserver).onTintChanged(tint, unfocusedActivityTint, brandedColorScheme);
     }
 
@@ -103,21 +106,27 @@ public class AppThemeColorProviderUnitTest {
         var brandedColorScheme = BrandedColorScheme.APP_DEFAULT;
         var tint = ThemeUtils.getThemedToolbarIconTint(mContext, brandedColorScheme);
 
-        assertEquals("Default tint is not correct.", tint, mAppThemeColorProvider.getTint());
+        assertEquals(
+                "Default tint is not correct.",
+                tint.toString(),
+                mAppThemeColorProvider.getTint().toString());
         assertEquals(
                 "Activity focus tint is not correct.",
-                tint,
-                mAppThemeColorProvider.getActivityFocusTint());
+                tint.toString(),
+                mAppThemeColorProvider.getActivityFocusTint().toString());
 
         // Assume that the activity gained focus.
         mAppThemeColorProvider.onTopResumedActivityChanged(true);
 
         // Verify.
-        assertEquals("Default tint is not correct.", tint, mAppThemeColorProvider.getTint());
+        assertEquals(
+                "Default tint is not correct.",
+                tint.toString(),
+                mAppThemeColorProvider.getTint().toString());
         assertEquals(
                 "Activity focus tint is not correct.",
-                tint,
-                mAppThemeColorProvider.getActivityFocusTint());
+                tint.toString(),
+                mAppThemeColorProvider.getActivityFocusTint().toString());
 
         verify(mTintObserver).onTintChanged(tint, tint, brandedColorScheme);
     }
@@ -138,22 +147,28 @@ public class AppThemeColorProviderUnitTest {
                 ThemeUtils.getThemedToolbarIconTintForActivityState(
                         mContext, brandedColorScheme, false);
 
-        assertEquals("Default tint is not correct.", tint, mAppThemeColorProvider.getTint());
+        assertEquals(
+                "Default tint is not correct.",
+                tint.toString(),
+                mAppThemeColorProvider.getTint().toString());
         assertEquals(
                 "Activity focus tint is not correct.",
-                unfocusedActivityTint,
-                mAppThemeColorProvider.getActivityFocusTint());
+                unfocusedActivityTint.toString(),
+                mAppThemeColorProvider.getActivityFocusTint().toString());
         verify(mTintObserver).onTintChanged(tint, unfocusedActivityTint, brandedColorScheme);
 
         // Assume that the activity gained focus.
         mAppThemeColorProvider.onTopResumedActivityChanged(true);
 
         // Verify.
-        assertEquals("Default tint is not correct.", tint, mAppThemeColorProvider.getTint());
+        assertEquals(
+                "Default tint is not correct.",
+                tint.toString(),
+                mAppThemeColorProvider.getTint().toString());
         assertEquals(
                 "Activity focus tint is not correct.",
-                tint,
-                mAppThemeColorProvider.getActivityFocusTint());
+                tint.toString(),
+                mAppThemeColorProvider.getActivityFocusTint().toString());
         verify(mTintObserver).onTintChanged(tint, tint, brandedColorScheme);
     }
 
