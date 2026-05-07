@@ -13,7 +13,7 @@ import android.widget.LinearLayout;
 import androidx.annotation.NonNull;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -30,7 +30,7 @@ public class GroupSuggestionsPromotionCoordinator {
     public GroupSuggestionsPromotionCoordinator(
             @NonNull Context context,
             @NonNull BottomSheetController bottomSheetController,
-            @NonNull TabGroupModelFilter tabGroupModelFilter) {
+            @NonNull TabModel tabModel) {
         LinearLayout groupSuggestionsBottomSheetContainer =
                 (LinearLayout)
                         LayoutInflater.from(context)
@@ -47,9 +47,9 @@ public class GroupSuggestionsPromotionCoordinator {
                 new GroupSuggestionsPromotionMediator(
                         model,
                         GroupSuggestionsServiceFactory.getForProfile(
-                                assumeNonNull(tabGroupModelFilter.getTabModel().getProfile())),
+                                assumeNonNull(tabModel.getProfile())),
                         bottomSheetController,
-                        tabGroupModelFilter,
+                        tabModel,
                         groupSuggestionsBottomSheetContainer);
     }
 

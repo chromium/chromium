@@ -69,7 +69,6 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedIns
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils.PersistentStateIdVerification;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
@@ -115,7 +114,6 @@ public class MultiWindowUtilsUnitTest {
     private boolean mIsInMultiDisplayMode;
 
     @Mock TabModelSelector mTabModelSelector;
-    @Mock TabGroupModelFilter mTabGroupModelFilter;
     @Mock TabModel mNormalTabModel;
     @Mock TabModel mIncognitoTabModel;
     @Mock HomepageManager mHomepageManager;
@@ -896,12 +894,11 @@ public class MultiWindowUtilsUnitTest {
             testHasAtMostOneTabGroupWithHomepageEnabled_OneTabGroupAndNoOtherTabs_HasCustomHomepage() {
         when(mHomepageManager.shouldCloseAppWithZeroTabs()).thenReturn(true);
         when(mTabModelSelector.getTotalTabCount()).thenReturn(3);
-        when(mTabGroupModelFilter.getTabCountForGroup(any())).thenReturn(3);
+        when(mNormalTabModel.getTabCountForGroup(any())).thenReturn(3);
         when(mNormalTabModel.getTabAt(0)).thenReturn(mTab1);
         assertTrue(
                 "Should return true with one tab group and custom homepage.",
-                mUtils.hasAtMostOneTabGroupWithHomepageEnabled(
-                        mTabModelSelector, mTabGroupModelFilter));
+                mUtils.hasAtMostOneTabGroupWithHomepageEnabled(mTabModelSelector, mNormalTabModel));
     }
 
     @Test
@@ -909,36 +906,33 @@ public class MultiWindowUtilsUnitTest {
             testHasAtMostOneTabWithHomepageEnabled_OneTabGroupAndNoOtherTabs_NoCustomHomepage() {
         when(mHomepageManager.shouldCloseAppWithZeroTabs()).thenReturn(false);
         when(mTabModelSelector.getTotalTabCount()).thenReturn(3);
-        when(mTabGroupModelFilter.getTabCountForGroup(any())).thenReturn(3);
+        when(mNormalTabModel.getTabCountForGroup(any())).thenReturn(3);
         when(mNormalTabModel.getTabAt(0)).thenReturn(mTab1);
         assertFalse(
                 "Should return true with one tab group and custom homepage.",
-                mUtils.hasAtMostOneTabGroupWithHomepageEnabled(
-                        mTabModelSelector, mTabGroupModelFilter));
+                mUtils.hasAtMostOneTabGroupWithHomepageEnabled(mTabModelSelector, mNormalTabModel));
     }
 
     @Test
     public void testHasAtMostOneTabWithHomepageEnabled_WithMoreThanOneTabGroup_HasCustomHomepage() {
         when(mHomepageManager.shouldCloseAppWithZeroTabs()).thenReturn(true);
         when(mTabModelSelector.getTotalTabCount()).thenReturn(4);
-        when(mTabGroupModelFilter.getTabCountForGroup(any())).thenReturn(3);
+        when(mNormalTabModel.getTabCountForGroup(any())).thenReturn(3);
         when(mNormalTabModel.getTabAt(0)).thenReturn(mTab1);
         assertFalse(
                 "Should return false for multiple tabs.",
-                mUtils.hasAtMostOneTabGroupWithHomepageEnabled(
-                        mTabModelSelector, mTabGroupModelFilter));
+                mUtils.hasAtMostOneTabGroupWithHomepageEnabled(mTabModelSelector, mNormalTabModel));
     }
 
     @Test
     public void testHasAtMostOneTabWithHomepageEnabled_WithMoreThanOneTabGroup_NoCustomHomepage() {
         when(mHomepageManager.shouldCloseAppWithZeroTabs()).thenReturn(false);
         when(mTabModelSelector.getTotalTabCount()).thenReturn(4);
-        when(mTabGroupModelFilter.getTabCountForGroup(any())).thenReturn(3);
+        when(mNormalTabModel.getTabCountForGroup(any())).thenReturn(3);
         when(mNormalTabModel.getTabAt(0)).thenReturn(mTab1);
         assertFalse(
                 "Should return false for multiple tabs.",
-                mUtils.hasAtMostOneTabGroupWithHomepageEnabled(
-                        mTabModelSelector, mTabGroupModelFilter));
+                mUtils.hasAtMostOneTabGroupWithHomepageEnabled(mTabModelSelector, mNormalTabModel));
     }
 
     @Test

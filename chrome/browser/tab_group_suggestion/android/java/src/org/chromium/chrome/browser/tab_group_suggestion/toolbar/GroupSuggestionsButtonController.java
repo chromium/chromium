@@ -5,7 +5,7 @@
 package org.chromium.chrome.browser.tab_group_suggestion.toolbar;
 
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabwindow.WindowId;
 
 /**
@@ -45,9 +45,9 @@ public interface GroupSuggestionsButtonController {
      * operation and it tells the backend that the suggestion was accepted by the user.
      *
      * @param tab Tab on which the button was clicked.
-     * @param tabGroupModelFilter Tab group model, used to retrieve tabs and perform the grouping.
+     * @param tabModel Tab model, used to retrieve tabs and perform the grouping.
      */
-    void onButtonClicked(Tab tab, TabGroupModelFilter tabGroupModelFilter);
+    void onButtonClicked(Tab tab, TabModel tabModel);
 
     /** Destroys any cached suggestion callbacks that need to be deleted. */
     void destroy();

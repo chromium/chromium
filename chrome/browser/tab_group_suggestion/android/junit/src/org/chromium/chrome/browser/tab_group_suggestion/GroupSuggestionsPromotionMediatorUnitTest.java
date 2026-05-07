@@ -44,7 +44,6 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -82,7 +81,6 @@ public class GroupSuggestionsPromotionMediatorUnitTest {
     @Mock GroupSuggestionsService mGroupSuggestionsService;
     @Mock BottomSheetController mBottomSheetController;
     @Mock View mContainerView;
-    @Mock TabGroupModelFilter mTabGroupModelFilter;
     @Mock TabModel mTabModel;
     @Mock Tab mTab1;
     @Mock Tab mTab2;
@@ -95,14 +93,13 @@ public class GroupSuggestionsPromotionMediatorUnitTest {
     @Before
     public void setup() {
         mModel = new PropertyModel(GroupSuggestionsPromotionProperties.ALL_KEYS);
-        doReturn(mTabModel).when(mTabGroupModelFilter).getTabModel();
         doNothing().when(mBottomSheetController).addObserver(mBottomSheetObserver.capture());
         mMediator =
                 new GroupSuggestionsPromotionMediator(
                         mModel,
                         mGroupSuggestionsService,
                         mBottomSheetController,
-                        mTabGroupModelFilter,
+                        mTabModel,
                         mContainerView);
         doReturn(mTab1).when(mTabModel).getTabById(TAB_1_ID);
         doReturn(TAB_1_TITLE).when(mTab1).getTitle();
@@ -230,7 +227,7 @@ public class GroupSuggestionsPromotionMediatorUnitTest {
         mModel.get(GroupSuggestionsPromotionProperties.ACCEPT_BUTTON_LISTENER)
                 .onClick(mock(View.class));
 
-        verify(mTabGroupModelFilter)
+        verify(mTabModel)
                 .mergeListOfTabsToGroup(
                         eq(Arrays.asList(mTab1, mTab2)),
                         eq(mTab1),
@@ -269,8 +266,7 @@ public class GroupSuggestionsPromotionMediatorUnitTest {
         mModel.get(GroupSuggestionsPromotionProperties.REJECT_BUTTON_LISTENER)
                 .onClick(mock(View.class));
 
-        verify(mTabGroupModelFilter, never())
-                .mergeListOfTabsToGroup(anyList(), any(Tab.class), anyInt());
+        verify(mTabModel, never()).mergeListOfTabsToGroup(anyList(), any(Tab.class), anyInt());
         verify(mBottomSheetController).hideContent(eq(currentContent), eq(true));
         assertNull(mMediator.getCurrentSheetContent());
         assertEquals(UserResponse.REJECTED, userResponse.get());
@@ -304,8 +300,7 @@ public class GroupSuggestionsPromotionMediatorUnitTest {
 
         mBottomSheetObserver.getValue().onSheetClosed(0);
 
-        verify(mTabGroupModelFilter, never())
-                .mergeListOfTabsToGroup(anyList(), any(Tab.class), anyInt());
+        verify(mTabModel, never()).mergeListOfTabsToGroup(anyList(), any(Tab.class), anyInt());
         verify(mBottomSheetController, never())
                 .hideContent(any(GroupSuggestionsBottomSheetContent.class), anyBoolean());
         assertNull(mMediator.getCurrentSheetContent());

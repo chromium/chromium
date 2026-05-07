@@ -31,7 +31,6 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
@@ -52,7 +51,6 @@ public class TabArchiverUnitTest {
 
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
 
-    private @Mock TabGroupModelFilter mArchivedTabGroupModelFilter;
     private @Mock TabModel mArchivedTabModel;
     private @Mock TabCreator mArchivedTabCreator;
     private @Mock TabArchiveSettings mTabArchiveSettings;
@@ -80,7 +78,7 @@ public class TabArchiverUnitTest {
         setupTabsForArchive();
         mTabArchiver =
                 new TabArchiverImpl(
-                        mArchivedTabGroupModelFilter,
+                        mArchivedTabModel,
                         mArchivedTabCreator,
                         mTabArchiveSettings,
                         mClock,
@@ -90,9 +88,8 @@ public class TabArchiverUnitTest {
     private void setupTabModels() {
         PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
 
-        // Setup the archived tab model filter to always return a mock TabModel. This behavior can
-        // be overridden in tests to test if an archived tab exists in the regular tab model.
-        doReturn(mArchivedTabModel).when(mArchivedTabGroupModelFilter).getTabModel();
+        // Setup the archived tab model. This behavior can be overridden in tests to test if an
+        // archived tab exists in the regular tab model.
         MockTab tab = new MockTab(0, mProfile);
         doReturn(tab).when(mArchivedTabCreator).createFrozenTab(any(), anyInt(), anyInt());
         doAnswer(inv -> Collections.emptyList().iterator()).when(mArchivedTabModel).iterator();

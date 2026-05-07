@@ -8,7 +8,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.tab_group_sync.ClosingSource;
@@ -29,7 +28,7 @@ import java.util.Set;
 @NullMarked
 public class StartupHelper {
     private static final String TAG = "TG.StartupHelper";
-    private final TabGroupModelFilter mTabGroupModelFilter;
+    private final TabModel mTabModel;
     private final TabGroupSyncService mTabGroupSyncService;
     private final LocalTabGroupMutationHelper mLocalTabGroupMutationHelper;
     private final RemoteTabGroupMutationHelper mRemoteTabGroupMutationHelper;
@@ -38,19 +37,19 @@ public class StartupHelper {
     /**
      * Constructor.
      *
-     * @param tabGroupModelFilter The local tab group model.
+     * @param tabModel The local tab model.
      * @param tabGroupSyncService The sync back end.
      * @param localTabGroupMutationHelper Helper to mutate local tab groups based on remote state.
      * @param remoteTabGroupMutationHelper Helper to mutate remote tab groups based on local state.
      * @param prefService Pref service for checking tab group sync migration status in past.
      */
     public StartupHelper(
-            TabGroupModelFilter tabGroupModelFilter,
+            TabModel tabModel,
             TabGroupSyncService tabGroupSyncService,
             LocalTabGroupMutationHelper localTabGroupMutationHelper,
             RemoteTabGroupMutationHelper remoteTabGroupMutationHelper,
             PrefService prefService) {
-        mTabGroupModelFilter = tabGroupModelFilter;
+        mTabModel = tabModel;
         mTabGroupSyncService = tabGroupSyncService;
         mLocalTabGroupMutationHelper = localTabGroupMutationHelper;
         mRemoteTabGroupMutationHelper = remoteTabGroupMutationHelper;
@@ -95,7 +94,7 @@ public class StartupHelper {
         LogUtils.log(TAG, "closeDeletedGroupsFromTabModel");
         int tabGroupsClosed = 0;
         for (LocalTabGroupId tabGroupId : mTabGroupSyncService.getDeletedGroupIds()) {
-            if (!TabGroupSyncUtils.isInCurrentWindow(mTabGroupModelFilter, tabGroupId)) continue;
+            if (!TabGroupSyncUtils.isInCurrentWindow(mTabModel, tabGroupId)) continue;
 
             mLocalTabGroupMutationHelper.closeTabGroup(
                     tabGroupId, ClosingSource.CLEANED_UP_ON_STARTUP);
@@ -161,15 +160,11 @@ public class StartupHelper {
 
     private Set<LocalTabGroupId> getLocalTabGroupIds() {
         Set<LocalTabGroupId> localTabGroups = new HashSet<>();
-        for (Tab tab : getTabModel()) {
+        for (Tab tab : mTabModel) {
             LocalTabGroupId localTabGroupId = TabGroupSyncUtils.getLocalTabGroupId(tab);
             if (localTabGroupId == null) continue;
             localTabGroups.add(localTabGroupId);
         }
         return localTabGroups;
-    }
-
-    private TabModel getTabModel() {
-        return mTabGroupModelFilter.getTabModel();
     }
 }

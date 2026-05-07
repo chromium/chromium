@@ -509,7 +509,7 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
 
         TabGroupSyncService tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
         if (tabGroupSyncService != null) {
-            TabGroupSyncUtils.unmapLocalIdsNotInTabGroupModelFilter(tabGroupSyncService, tabModel);
+            TabGroupSyncUtils.unmapLocalIdsNotInTabModel(tabGroupSyncService, tabModel);
         }
     }
 }

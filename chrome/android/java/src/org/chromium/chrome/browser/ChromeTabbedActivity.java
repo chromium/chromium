@@ -285,7 +285,6 @@ import org.chromium.chrome.browser.tabmodel.TabClosureParamsUtils;
 import org.chromium.chrome.browser.tabmodel.TabCreatorUtil;
 import org.chromium.chrome.browser.tabmodel.TabGroupColorUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupMetadata;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -1906,9 +1905,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     }
 
     private void openTabGroupFromHubSearchSuggestion(
-            String tabGroupId,
-            TabGroupSyncService tabGroupSyncService,
-            TabGroupModelFilter filter) {
+            String tabGroupId, TabGroupSyncService tabGroupSyncService, TabModel tabModel) {
         Runnable openTabGroupRunnable =
                 () -> {
                     HubManager hubManager = mHubProvider.getHubManagerSupplier().get();
@@ -1921,7 +1918,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                             tabGroupSyncService,
                             ((TabbedRootUiCoordinator) mRootUiCoordinator)
                                     .getTabGroupSyncController(),
-                            filter,
+                            tabModel,
                             (rootId) -> {
                                 Pane curPane =
                                         assumeNonNull(paneManager.getFocusedPaneSupplier().get());

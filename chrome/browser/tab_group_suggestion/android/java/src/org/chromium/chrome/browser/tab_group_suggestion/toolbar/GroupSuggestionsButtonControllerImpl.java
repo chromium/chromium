@@ -12,8 +12,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_suggestion.SuggestionMetricsService;
 import org.chromium.chrome.browser.tab_group_suggestion.SuggestionMetricsServiceFactory;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabwindow.WindowId;
 import org.chromium.components.visited_url_ranking.url_grouping.CachedSuggestions;
@@ -84,7 +84,7 @@ public class GroupSuggestionsButtonControllerImpl implements GroupSuggestionsBut
     }
 
     @Override
-    public void onButtonClicked(Tab tab, TabGroupModelFilter tabGroupModelFilter) {
+    public void onButtonClicked(Tab tab, TabModel tabModel) {
         if (!isSuggestionValidForTab(tab)) {
             clearCachedSuggestion(UserResponse.UNKNOWN);
             return;
@@ -104,10 +104,9 @@ public class GroupSuggestionsButtonControllerImpl implements GroupSuggestionsBut
             }
         }
 
-        var tabModel = tabGroupModelFilter.getTabModel();
         List<Tab> tabsToGroup =
                 TabModelUtils.getTabsById(tabIdList, tabModel, /* allowClosing= */ false);
-        tabGroupModelFilter.mergeListOfTabsToGroup(
+        tabModel.mergeListOfTabsToGroup(
                 tabsToGroup,
                 tab,
                 /* indexInGroup= */ null,

@@ -30,7 +30,6 @@ import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
@@ -54,7 +53,6 @@ public class TabSwitcherUtilsUnitTest {
     @Mock private LayoutManager mLayoutManager;
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private TabGroupUiActionHandler mTabGroupUiActionHandler;
-    @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private Callback<Integer> mRequestOpenTabGroupDialog;
 
     @Before
@@ -83,7 +81,7 @@ public class TabSwitcherUtilsUnitTest {
                 SYNC_GROUP_ID1,
                 mTabGroupSyncService,
                 mTabGroupUiActionHandler,
-                mTabGroupModelFilter,
+                mTabModel,
                 mRequestOpenTabGroupDialog);
 
         verifyNoInteractions(mRequestOpenTabGroupDialog);
@@ -96,7 +94,7 @@ public class TabSwitcherUtilsUnitTest {
         SavedTabGroup syncGroup2 = new SavedTabGroup();
         syncGroup2.localId = new LocalTabGroupId(TAB_GROUP_ID_1);
         when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID1)).thenReturn(syncGroup1);
-        when(mTabGroupModelFilter.getGroupLastShownTabId(TAB_GROUP_ID_1)).thenReturn(TAB_ID_1);
+        when(mTabModel.getGroupLastShownTabId(TAB_GROUP_ID_1)).thenReturn(TAB_ID_1);
         doAnswer(
                         invocation -> {
                             Mockito.reset(mTabGroupSyncService);
@@ -111,7 +109,7 @@ public class TabSwitcherUtilsUnitTest {
                 SYNC_GROUP_ID1,
                 mTabGroupSyncService,
                 mTabGroupUiActionHandler,
-                mTabGroupModelFilter,
+                mTabModel,
                 mRequestOpenTabGroupDialog);
 
         verify(mRequestOpenTabGroupDialog).onResult(TAB_ID_1);
@@ -122,14 +120,13 @@ public class TabSwitcherUtilsUnitTest {
         SavedTabGroup syncGroup = new SavedTabGroup();
         syncGroup.localId = new LocalTabGroupId(TAB_GROUP_ID_1);
         when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID1)).thenReturn(syncGroup);
-        when(mTabGroupModelFilter.getGroupLastShownTabId(TAB_GROUP_ID_1))
-                .thenReturn(INVALID_TAB_ID);
+        when(mTabModel.getGroupLastShownTabId(TAB_GROUP_ID_1)).thenReturn(INVALID_TAB_ID);
 
         TabSwitcherUtils.openTabGroupDialog(
                 SYNC_GROUP_ID1,
                 mTabGroupSyncService,
                 mTabGroupUiActionHandler,
-                mTabGroupModelFilter,
+                mTabModel,
                 mRequestOpenTabGroupDialog);
 
         verifyNoInteractions(mTabGroupUiActionHandler);
@@ -141,13 +138,13 @@ public class TabSwitcherUtilsUnitTest {
         SavedTabGroup syncGroup = new SavedTabGroup();
         syncGroup.localId = new LocalTabGroupId(TAB_GROUP_ID_1);
         when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID1)).thenReturn(syncGroup);
-        when(mTabGroupModelFilter.getGroupLastShownTabId(TAB_GROUP_ID_1)).thenReturn(TAB_ID_1);
+        when(mTabModel.getGroupLastShownTabId(TAB_GROUP_ID_1)).thenReturn(TAB_ID_1);
 
         TabSwitcherUtils.openTabGroupDialog(
                 SYNC_GROUP_ID1,
                 mTabGroupSyncService,
                 mTabGroupUiActionHandler,
-                mTabGroupModelFilter,
+                mTabModel,
                 mRequestOpenTabGroupDialog);
 
         verifyNoInteractions(mTabGroupUiActionHandler);

@@ -327,9 +327,9 @@ public class ModelTrackingOrchestrator {
         mGroupIncognitoStatus.clear();
 
         for (boolean incognito : new boolean[] {false, true}) {
-            TabGroupModelFilter filter = getFilter(incognito);
-            if (filter != null) {
-                filter.removeTabGroupObserver(mVisualDataUpdateObserver);
+            TabModel tabModel = getTabModel(incognito);
+            if (tabModel != null) {
+                tabModel.removeTabGroupObserver(mVisualDataUpdateObserver);
             }
         }
 
@@ -489,15 +489,15 @@ public class ModelTrackingOrchestrator {
     }
 
     private void initVisualDataTracking(boolean incognito) {
-        TabGroupModelFilter filter = getFilter(incognito);
-        assert filter != null;
+        TabModel tabModel = getTabModel(incognito);
+        assert tabModel != null;
 
         // Add forwarders for untracked groups.
-        for (Token groupId : filter.getAllTabGroupIds()) {
+        for (Token groupId : tabModel.getAllTabGroupIds()) {
             mGroupIncognitoStatus.put(groupId, incognito);
         }
 
-        filter.addTabGroupObserver(mVisualDataUpdateObserver);
+        tabModel.addTabGroupObserver(mVisualDataUpdateObserver);
     }
 
     private void clearUnusedNodesForModel(TabModel model) {
@@ -511,7 +511,7 @@ public class ModelTrackingOrchestrator {
                 mWindowTag, model.isOffTheRecord(), model.getTabStripCollection());
     }
 
-    private @Nullable TabGroupModelFilter getFilter(boolean incognito) {
+    private @Nullable TabModel getTabModel(boolean incognito) {
         return mTabModelSelector.getModel(incognito);
     }
 

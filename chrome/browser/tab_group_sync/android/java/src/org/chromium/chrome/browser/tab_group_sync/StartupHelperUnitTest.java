@@ -34,7 +34,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.tab_group_sync.ClosingSource;
@@ -60,7 +59,6 @@ public class StartupHelperUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Profile mProfile;
     private MockTabModel mTabModel;
-    private @Mock TabGroupModelFilter mTabGroupModelFilter;
     private TabGroupSyncService mTabGroupSyncService;
     private @Mock LocalTabGroupMutationHelper mLocalMutationHelper;
     private @Mock RemoteTabGroupMutationHelper mRemoteMutationHelper;
@@ -86,7 +84,6 @@ public class StartupHelperUnitTest {
         mTab2 = prepareTab(TAB_ID_2, TOKEN_1);
 
         mTabModel = spy(new MockTabModel(mProfile, null));
-        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
 
         doAnswer(
                         invocation -> {
@@ -102,15 +99,15 @@ public class StartupHelperUnitTest {
 
         mStartupHelper =
                 new StartupHelper(
-                        mTabGroupModelFilter,
+                        mTabModel,
                         mTabGroupSyncService,
                         mLocalMutationHelper,
                         mRemoteMutationHelper,
                         mPrefService);
 
-        when(mTabGroupModelFilter.tabGroupExists(TOKEN_1)).thenReturn(true);
-        when(mTabGroupModelFilter.getGroupLastShownTabId(any())).thenReturn(Tab.INVALID_TAB_ID);
-        when(mTabGroupModelFilter.getGroupLastShownTabId(TOKEN_1)).thenReturn(ROOT_ID_1);
+        when(mTabModel.tabGroupExists(TOKEN_1)).thenReturn(true);
+        when(mTabModel.getGroupLastShownTabId(any())).thenReturn(Tab.INVALID_TAB_ID);
+        when(mTabModel.getGroupLastShownTabId(TOKEN_1)).thenReturn(ROOT_ID_1);
 
         when(mTabGroupSyncService.getDeletedGroupIds()).thenReturn(new ArrayList<>());
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[0]);
@@ -136,8 +133,8 @@ public class StartupHelperUnitTest {
         List<Tab> tabs = new ArrayList<>();
         tabs.add(mTab1);
         tabs.add(mTab2);
-        when(mTabGroupModelFilter.getRelatedTabList(ROOT_ID_1)).thenReturn(tabs);
-        when(mTabGroupModelFilter.getTabsInGroup(TOKEN_1)).thenReturn(tabs);
+        when(mTabModel.getRelatedTabList(ROOT_ID_1)).thenReturn(tabs);
+        when(mTabModel.getTabsInGroup(TOKEN_1)).thenReturn(tabs);
 
         when(mTab1.getTabGroupId()).thenReturn(TOKEN_1);
         when(mTab2.getTabGroupId()).thenReturn(TOKEN_1);

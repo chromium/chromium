@@ -42,7 +42,6 @@ import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupVisualDataStore;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -672,7 +671,7 @@ public class TabWindowManagerImpl implements TabWindowManager {
         TabGroupSyncService tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
         if (tabGroupSyncService == null) return;
 
-        List<TabGroupModelFilter> filterList = new ArrayList<>();
+        List<TabModel> tabModelList = new ArrayList<>();
         for (TabModelSelector selector : tabModelSelectorList) {
             // This process is async and it's possible something was shut down during
             // the wait for all these tab models to init. In that case, just bail and
@@ -681,10 +680,9 @@ public class TabWindowManagerImpl implements TabWindowManager {
                 return;
             }
 
-            filterList.add(selector.getModel(/* incognito= */ false));
+            tabModelList.add(selector.getModel(/* incognito= */ false));
         }
-        TabGroupSyncUtils.unmapLocalIdsNotInTabGroupModelFilterList(
-                tabGroupSyncService, filterList);
+        TabGroupSyncUtils.unmapLocalIdsNotInTabModelList(tabGroupSyncService, tabModelList);
     }
 
     private void deleteOrphanedTabGroupData(List<TabModelSelector> tabModelSelectors) {

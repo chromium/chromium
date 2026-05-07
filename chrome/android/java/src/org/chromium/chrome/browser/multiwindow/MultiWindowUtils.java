@@ -62,7 +62,6 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowApp
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabPersistenceUtils;
@@ -405,16 +404,16 @@ public class MultiWindowUtils implements ActivityStateListener {
 
     /**
      * @param tabModelSelector Used to pull total tab count.
-     * @param tabGroupModelFilter Used to pull tab group info.
+     * @param tabModel Used to pull tab group info.
      * @return whether it is last tab group with homepage enabled and set to an custom url.
      */
     public boolean hasAtMostOneTabGroupWithHomepageEnabled(
-            TabModelSelector tabModelSelector, TabGroupModelFilter tabGroupModelFilter) {
+            TabModelSelector tabModelSelector, TabModel tabModel) {
         int numOfTabs = tabModelSelector.getTotalTabCount();
         Tab firstTab =
                 assumeNonNull(tabModelSelector.getCurrentTabModelSupplier().get()).getTabAt(0);
         if (firstTab == null) return true;
-        int numOfTabsInGroup = tabGroupModelFilter.getTabCountForGroup(firstTab.getTabGroupId());
+        int numOfTabsInGroup = tabModel.getTabCountForGroup(firstTab.getTabGroupId());
 
         // Chrome app is set to close with zero tabs when homepage is enabled and set to a custom
         // url other than the NTP. We should not allow dragging the last tab group in this scenario

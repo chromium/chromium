@@ -14,7 +14,6 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserv
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -63,14 +62,14 @@ public class TabSwitcherUtils {
      * @param syncId The id of the tab group, might or might not correspond to an open group.
      * @param tabGroupSyncService Used to open closed groups and convert to local ids.
      * @param tabGroupUiActionHandler Used to open a closed group.
-     * @param tabGroupModelFilter Used to get root id.
+     * @param tabModel Used to get root id.
      * @param requestOpenTabGroupDialog Callback to actually open a group dialog.
      */
     public static void openTabGroupDialog(
             String syncId,
             TabGroupSyncService tabGroupSyncService,
             TabGroupUiActionHandler tabGroupUiActionHandler,
-            TabGroupModelFilter tabGroupModelFilter,
+            TabModel tabModel,
             Callback<Integer> requestOpenTabGroupDialog) {
         SavedTabGroup syncGroup = tabGroupSyncService.getGroup(syncId);
         if (syncGroup == null) return;
@@ -82,7 +81,7 @@ public class TabSwitcherUtils {
             assert syncGroup.localId != null;
         }
 
-        int tabId = tabGroupModelFilter.getGroupLastShownTabId(syncGroup.localId.tabGroupId);
+        int tabId = tabModel.getGroupLastShownTabId(syncGroup.localId.tabGroupId);
         if (tabId == Tab.INVALID_TAB_ID) return;
         requestOpenTabGroupDialog.onResult(tabId);
     }

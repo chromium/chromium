@@ -41,7 +41,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncControllerImpl.TabCreationDelegate;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
@@ -76,7 +75,6 @@ public class LocalTabGroupMutationHelperUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Profile mProfile;
     @Mock private TabRemover mTabRemover;
-    @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private TabGroupSyncUtilsJni mTabGroupSyncUtilsJni;
 
@@ -93,15 +91,14 @@ public class LocalTabGroupMutationHelperUnitTest {
         TabGroupSyncUtilsJni.setInstanceForTesting(mTabGroupSyncUtilsJni);
         mTabModel = spy(new MockTabModel(mProfile, null));
         mTabModel.setTabRemoverForTesting(mTabRemover);
-        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         mTabCreationDelegate = spy(new TestTabCreationDelegate());
         mLocalMutationHelper =
                 new LocalTabGroupMutationHelper(
-                        mTabGroupModelFilter, mTabGroupSyncService, mTabCreationDelegate);
+                        mTabModel, mTabGroupSyncService, mTabCreationDelegate);
 
-        when(mTabGroupModelFilter.getGroupLastShownTabId(any())).thenReturn(Tab.INVALID_TAB_ID);
-        when(mTabGroupModelFilter.getGroupLastShownTabId(TOKEN_1)).thenReturn(TAB_ID_1);
-        when(mTabGroupModelFilter.tabGroupExists(TOKEN_1)).thenReturn(true);
+        when(mTabModel.getGroupLastShownTabId(any())).thenReturn(Tab.INVALID_TAB_ID);
+        when(mTabModel.getGroupLastShownTabId(TOKEN_1)).thenReturn(TAB_ID_1);
+        when(mTabModel.tabGroupExists(TOKEN_1)).thenReturn(true);
 
         doNothing().when(mTabGroupSyncService).recordTabGroupEvent(mEventDetailsCaptor.capture());
 
@@ -116,8 +113,8 @@ public class LocalTabGroupMutationHelperUnitTest {
         List<Tab> tabs = new ArrayList<>();
         tabs.add(mTab1);
         when(mTab1.getTabGroupId()).thenReturn(TOKEN_1);
-        when(mTabGroupModelFilter.getTabsInGroup(eq(TOKEN_1))).thenReturn(tabs);
-        when(mTabGroupModelFilter.tabGroupExists(TOKEN_1)).thenReturn(true);
+        when(mTabModel.getTabsInGroup(eq(TOKEN_1))).thenReturn(tabs);
+        when(mTabModel.tabGroupExists(TOKEN_1)).thenReturn(true);
     }
 
     private Tab prepareTab(int tabId, Token tabGroupId) {
@@ -148,11 +145,11 @@ public class LocalTabGroupMutationHelperUnitTest {
         mLocalMutationHelper.createNewTabGroup(savedTabGroup, OpeningSource.AUTO_OPENED_FROM_SYNC);
 
         // Verify calls to create local tab group, and update ID mappings for group and tabs.
-        verify(mTabGroupModelFilter)
+        verify(mTabModel)
                 .mergeListOfTabsToGroup(anyList(), any(), eq(MergeNotificationType.DONT_NOTIFY));
-        verify(mTabGroupModelFilter).setTabGroupColor(any(), anyInt());
-        verify(mTabGroupModelFilter).setTabGroupTitle(any(), any());
-        verify(mTabGroupModelFilter).setTabGroupCollapsed(any(), eq(true));
+        verify(mTabModel).setTabGroupColor(any(), anyInt());
+        verify(mTabModel).setTabGroupTitle(any(), any());
+        verify(mTabModel).setTabGroupCollapsed(any(), eq(true));
         verify(mTabGroupSyncService)
                 .updateLocalTabGroupMapping(any(), any(), eq(OpeningSource.AUTO_OPENED_FROM_SYNC));
         verify(mTabGroupSyncService, times(2)).updateLocalTabId(any(), any(), anyInt());
@@ -165,9 +162,9 @@ public class LocalTabGroupMutationHelperUnitTest {
         mLocalMutationHelper.createNewTabGroup(savedTabGroup, OpeningSource.OPENED_FROM_REVISIT_UI);
 
         // Verify calls to create local tab group, and update ID mappings for group and tabs.
-        verify(mTabGroupModelFilter).createSingleTabGroup(any());
-        verify(mTabGroupModelFilter).setTabGroupColor(any(), anyInt());
-        verify(mTabGroupModelFilter).setTabGroupTitle(any(), any());
+        verify(mTabModel).createSingleTabGroup(any());
+        verify(mTabModel).setTabGroupColor(any(), anyInt());
+        verify(mTabModel).setTabGroupTitle(any(), any());
         verify(mTabGroupSyncService)
                 .updateLocalTabGroupMapping(any(), any(), eq(OpeningSource.OPENED_FROM_REVISIT_UI));
         verify(mTabGroupSyncService, times(1)).updateLocalTabId(any(), any(), anyInt());
@@ -182,8 +179,8 @@ public class LocalTabGroupMutationHelperUnitTest {
         savedTabGroup.title = "Updated group";
         mLocalMutationHelper.updateTabGroup(savedTabGroup);
 
-        verify(mTabGroupModelFilter).setTabGroupTitle(eq(TOKEN_1), eq(savedTabGroup.title));
-        verify(mTabGroupModelFilter).setTabGroupColor(eq(TOKEN_1), anyInt());
+        verify(mTabModel).setTabGroupTitle(eq(TOKEN_1), eq(savedTabGroup.title));
+        verify(mTabModel).setTabGroupColor(eq(TOKEN_1), anyInt());
     }
 
     @Test
@@ -207,7 +204,7 @@ public class LocalTabGroupMutationHelperUnitTest {
     public void testUpdateTabGroup_AddTabsFromSync() {
         // One local group with one tab syncing.
         addOneTab();
-        when(mTabGroupModelFilter.getTabGroupCollapsed(TOKEN_1)).thenReturn(true);
+        when(mTabModel.getTabGroupCollapsed(TOKEN_1)).thenReturn(true);
 
         // One saved group with two tabs: both with no local mapping.
         SavedTabGroup savedTabGroup =
@@ -215,11 +212,10 @@ public class LocalTabGroupMutationHelperUnitTest {
         mLocalMutationHelper.updateTabGroup(savedTabGroup);
 
         // Collapsed must be re-set after the merge.
-        InOrder inOrder =
-                inOrder(mTabGroupModelFilter, mTabModel, mTabGroupSyncService, mTabRemover);
+        InOrder inOrder = inOrder(mTabModel, mTabModel, mTabGroupSyncService, mTabRemover);
         verify(mTabCreationDelegate, times(2))
                 .createBackgroundTab(any(), anyString(), any(), anyInt());
-        inOrder.verify(mTabGroupModelFilter, times(2))
+        inOrder.verify(mTabModel, times(2))
                 .mergeListOfTabsToGroup(
                         anyList(),
                         argThat(tab -> tab.getId() == TAB_ID_1),
@@ -227,7 +223,7 @@ public class LocalTabGroupMutationHelperUnitTest {
         verify(mTabGroupSyncService, times(1))
                 .updateLocalTabId(eq(LOCAL_TAB_GROUP_ID_1), any(), eq(TAB_ID_1));
         inOrder.verify(mTabRemover).forceCloseTabs(argThat(params -> params.tabs.size() == 1));
-        inOrder.verify(mTabGroupModelFilter).setTabGroupCollapsed(TOKEN_1, true);
+        inOrder.verify(mTabModel).setTabGroupCollapsed(TOKEN_1, true);
     }
 
     @Test
@@ -249,7 +245,7 @@ public class LocalTabGroupMutationHelperUnitTest {
 
         verify(mTabCreationDelegate, never())
                 .createBackgroundTab(any(), anyString(), any(), anyInt());
-        verify(mTabGroupModelFilter, never()).mergeListOfTabsToGroup(anyList(), any(), anyInt());
+        verify(mTabModel, never()).mergeListOfTabsToGroup(anyList(), any(), anyInt());
         verify(mTabGroupSyncService, never()).updateLocalTabId(any(), any(), anyInt());
         verify(mTabRemover, never()).forceCloseTabs(any());
         verify(mTabCreationDelegate, times(1))
@@ -295,7 +291,7 @@ public class LocalTabGroupMutationHelperUnitTest {
 
         verify(mTabCreationDelegate, never())
                 .createBackgroundTab(any(), anyString(), any(), anyInt());
-        verify(mTabGroupModelFilter, never()).mergeListOfTabsToGroup(anyList(), any(), anyInt());
+        verify(mTabModel, never()).mergeListOfTabsToGroup(anyList(), any(), anyInt());
         verify(mTabGroupSyncService, never()).updateLocalTabId(any(), any(), anyInt());
         verify(mTabRemover, never()).closeTabs(any(), anyBoolean());
         verify(mTabCreationDelegate, never())
@@ -366,7 +362,7 @@ public class LocalTabGroupMutationHelperUnitTest {
 
         verify(mTabCreationDelegate, times(1))
                 .createBackgroundTab(any(), anyString(), any(), anyInt());
-        verify(mTabGroupModelFilter, times(1)).mergeListOfTabsToGroup(anyList(), any(), anyInt());
+        verify(mTabModel, times(1)).mergeListOfTabsToGroup(anyList(), any(), anyInt());
         verify(mTabGroupSyncService, times(1))
                 .updateLocalTabId(eq(LOCAL_TAB_GROUP_ID_1), any(), eq(TAB_ID_1));
     }

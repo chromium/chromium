@@ -32,7 +32,6 @@ import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
@@ -57,7 +56,6 @@ public class QuickDeleteTabsFilterTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private TabGroupModelFilter mTabGroupModelFilterMock;
     @Mock private TabModel mTabModelMock;
     @Mock private TabList mComprehensiveModel;
     @Mock private TabRemover mTabRemoverMock;
@@ -87,17 +85,16 @@ public class QuickDeleteTabsFilterTest {
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
 
         doReturn(false).when(mTabModelMock).isIncognito();
-        doReturn(mTabModelMock).when(mTabGroupModelFilterMock).getTabModel();
         when(mTabModelMock.getTabRemover()).thenReturn(mTabRemoverMock);
         when(mTabModelMock.getComprehensiveModel()).thenReturn(mComprehensiveModel);
         when(mTabModelMock.getProfile()).thenReturn(mProfileMock);
-        mQuickDeleteTabsFilter = new QuickDeleteTabsFilter(mTabGroupModelFilterMock);
+        mQuickDeleteTabsFilter = new QuickDeleteTabsFilter(mTabModelMock);
     }
 
     @Test(expected = AssertionError.class)
     public void testIncognitoTabModel_ThrowsAssertionError() {
         doReturn(true).when(mTabModelMock).isIncognito();
-        mQuickDeleteTabsFilter = new QuickDeleteTabsFilter(mTabGroupModelFilterMock);
+        mQuickDeleteTabsFilter = new QuickDeleteTabsFilter(mTabModelMock);
     }
 
     @Test

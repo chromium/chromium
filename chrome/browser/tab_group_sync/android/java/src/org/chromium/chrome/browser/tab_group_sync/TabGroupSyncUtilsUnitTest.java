@@ -32,7 +32,6 @@ import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.tab_group_sync.ClosingSource;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
@@ -59,7 +58,6 @@ public class TabGroupSyncUtilsUnitTest {
 
     @Spy private TabGroupSyncService mTabGroupSyncService;
     @Mock private Profile mProfile;
-    @Mock private TabGroupModelFilter mTabGroupModelFilter;
     private MockTabModel mTabModel;
     private Tab mTab1;
     private Tab mTab2;
@@ -67,7 +65,6 @@ public class TabGroupSyncUtilsUnitTest {
     @Before
     public void setUp() {
         mTabModel = spy(new MockTabModel(mProfile, null));
-        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabModel.isIncognito()).thenReturn(false);
 
         mTab1 = mTabModel.addTab(TAB_ID_1);
@@ -97,11 +94,10 @@ public class TabGroupSyncUtilsUnitTest {
                 .thenReturn(new String[] {SYNC_GROUP_ID1, SYNC_GROUP_ID2});
         when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID1)).thenReturn(group1);
         when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID2)).thenReturn(group2);
-        when(mTabGroupModelFilter.tabGroupExists(TOKEN_1)).thenReturn(true);
-        when(mTabGroupModelFilter.tabGroupExists(TOKEN_2)).thenReturn(false);
+        when(mTabModel.tabGroupExists(TOKEN_1)).thenReturn(true);
+        when(mTabModel.tabGroupExists(TOKEN_2)).thenReturn(false);
 
-        TabGroupSyncUtils.unmapLocalIdsNotInTabGroupModelFilter(
-                mTabGroupSyncService, mTabGroupModelFilter);
+        TabGroupSyncUtils.unmapLocalIdsNotInTabModel(mTabGroupSyncService, mTabModel);
 
         verify(mTabGroupSyncService, never())
                 .removeLocalTabGroupMapping(
@@ -125,11 +121,10 @@ public class TabGroupSyncUtilsUnitTest {
         when(mTabGroupSyncService.getAllGroupIds()).thenReturn(new String[] {SYNC_GROUP_ID1});
         when(mTabGroupSyncService.getGroup(SYNC_GROUP_ID1)).thenReturn(group1);
 
-        TabGroupSyncUtils.unmapLocalIdsNotInTabGroupModelFilter(
-                mTabGroupSyncService, mTabGroupModelFilter);
+        TabGroupSyncUtils.unmapLocalIdsNotInTabModel(mTabGroupSyncService, mTabModel);
 
         // Shouldn't crash and never called.
-        verify(mTabGroupModelFilter, never()).tabGroupExists(any());
+        verify(mTabModel, never()).tabGroupExists(any());
         verify(mTabGroupSyncService, never())
                 .removeLocalTabGroupMapping(eq(LOCAL_TAB_GROUP_ID_1), anyInt());
     }
@@ -174,7 +169,7 @@ public class TabGroupSyncUtilsUnitTest {
         for (Tab tab : tabs) {
             tab.setTabGroupId(tabGroupId);
         }
-        when(mTabGroupModelFilter.getTabsInGroup(eq(tabGroupId))).thenReturn(tabs);
-        when(mTabGroupModelFilter.tabGroupExists(tabGroupId)).thenReturn(true);
+        when(mTabModel.getTabsInGroup(eq(tabGroupId))).thenReturn(tabs);
+        when(mTabModel.tabGroupExists(tabGroupId)).thenReturn(true);
     }
 }

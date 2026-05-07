@@ -12,7 +12,6 @@ import org.chromium.chrome.browser.data_sharing.DataSharingTabGroupUtils;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabGroupUtils.GroupsPendingDestroy;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 
@@ -28,7 +27,7 @@ class QuickDeleteTabsFilter {
     static final long ONE_WEEK_IN_MS = ONE_DAY_IN_MS * 7;
     static final long FOUR_WEEKS_IN_MS = ONE_WEEK_IN_MS * 4;
 
-    private final TabGroupModelFilter mTabGroupModelFilter;
+    private final TabModel mTabModel;
 
     /**
      * List of tabs that are filtered for deletion. This should get updated every time the time
@@ -43,19 +42,16 @@ class QuickDeleteTabsFilter {
     private @Nullable Long mCurrentTimeForTesting;
 
     /**
-     * @param tabModel A regular {@link TabGroupModelFilter} which is used to observe the tab
-     *     related changes.
+     * @param tabModel A regular {@link TabModel} which is used to observe the tab related changes.
      */
-    QuickDeleteTabsFilter(TabGroupModelFilter tabGroupModelFilter) {
-        assert !tabGroupModelFilter.getTabModel().isIncognito()
-                : "Incognito tab model is not supported.";
-        mTabGroupModelFilter = tabGroupModelFilter;
+    QuickDeleteTabsFilter(TabModel tabModel) {
+        assert !tabModel.isIncognito() : "Incognito tab model is not supported.";
+        mTabModel = tabModel;
     }
 
     private List<Tab> getListOfAllTabsToBeClosed() {
         List<Tab> tabList = new ArrayList<>();
-        TabModel tabModel = mTabGroupModelFilter.getTabModel();
-        for (Tab tab : tabModel) {
+        for (Tab tab : mTabModel) {
             if (tab == null || tab.isCustomTab()) continue;
             tabList.add(tab);
         }
@@ -97,11 +93,11 @@ class QuickDeleteTabsFilter {
         // If quick delete runs on a tab model that does not have a profile it may crash the app.
         // This should only happen if quick delete is triggered very early in startup or after the
         // app has already started to shutdown.
-        var tabModel = mTabGroupModelFilter.getTabModel();
-        if (tabModel.getProfile() == null) {
+        if (mTabModel.getProfile() == null) {
             return;
         }
-        tabModel.getTabRemover()
+        mTabModel
+                .getTabRemover()
                 .closeTabs(
                         TabClosureParams.closeTabs(mTabs)
                                 .allowUndo(false)
@@ -122,9 +118,8 @@ class QuickDeleteTabsFilter {
      */
     List<Tab> getListOfTabsFilteredToBeClosedExcludingPlaceholderTabGroups() {
         List<Tab> tabs = getListOfTabsFilteredToBeClosed();
-        TabModel tabModel = mTabGroupModelFilter.getTabModel();
         GroupsPendingDestroy destroyedGroups =
-                DataSharingTabGroupUtils.getSyncedGroupsDestroyedByTabRemoval(tabModel, tabs);
+                DataSharingTabGroupUtils.getSyncedGroupsDestroyedByTabRemoval(mTabModel, tabs);
         if (destroyedGroups.collaborationGroupsDestroyed.isEmpty()) {
             return tabs;
         }
@@ -159,8 +154,7 @@ class QuickDeleteTabsFilter {
         }
 
         List<Tab> tabList = new ArrayList<>();
-        TabModel tabModel = mTabGroupModelFilter.getTabModel();
-        for (Tab tab : tabModel) {
+        for (Tab tab : mTabModel) {
             if (tab == null || tab.isCustomTab()) continue;
 
             final long recentNavigationTime = tab.getLastNavigationCommittedTimestampMillis();
