@@ -24,6 +24,7 @@ class PrefService;
 @protocol TabGridCommands;
 @protocol SettingsCommands;
 @protocol BWGCommands;
+@protocol FullscreenCommands;
 @class TabGridState;
 @protocol TabGroupsCommands;
 class TemplateURLService;
@@ -63,6 +64,12 @@ class WebStateList;
 
 // Handler for the BWG commands.
 @property(nonatomic, weak) id<BWGCommands> geminiHandler;
+
+// The regular FullscreenCommands handler.
+@property(nonatomic, weak) id<FullscreenCommands> regularFullscreenHandler;
+
+// The incognito FullscreenCommands handler.
+@property(nonatomic, weak) id<FullscreenCommands> incognitoFullscreenHandler;
 
 // The consumer of this mediator.
 @property(nonatomic, weak)

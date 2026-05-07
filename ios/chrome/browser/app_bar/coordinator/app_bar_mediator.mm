@@ -36,6 +36,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
+#import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
@@ -269,6 +270,8 @@
   _incognitoFullscreenController = nullptr;
   _regularFullscreenBrowserAgent = nullptr;
   _incognitoFullscreenBrowserAgent = nullptr;
+  _regularFullscreenHandler = nil;
+  _incognitoFullscreenHandler = nil;
   [_tabGridState removeObserver:self];
   [_incognitoState removeObserver:self];
   _observerBridge.reset();
@@ -361,13 +364,23 @@
   _currentPage = _tabGridState.currentPage;
   self.currentTabGroup = _tabGridState.visibleTabGroup;
 
-  FullscreenController* fullscreenController =
-      _incognitoState.incognitoContentVisible ? _incognitoFullscreenController
-                                              : _regularFullscreenController;
+  if (IsFullscreenRefactoringEnabled()) {
+    id<FullscreenCommands> fullscreenHandler =
+        _incognitoState.incognitoContentVisible
+            ? self.incognitoFullscreenHandler
+            : self.regularFullscreenHandler;
+    [fullscreenHandler
+        exitFullscreenWithTrigger:FullscreenModeTransitionTrigger::kForcedByCode
+                         animated:YES];
+  } else {
+    FullscreenController* fullscreenController =
+        _incognitoState.incognitoContentVisible ? _incognitoFullscreenController
+                                                : _regularFullscreenController;
 
-  if (fullscreenController && fullscreenController->GetProgress() < 1.0) {
-    fullscreenController->ExitFullscreen(
-        FullscreenModeTransitionTrigger::kForcedByCode);
+    if (fullscreenController && fullscreenController->GetProgress() < 1.0) {
+      fullscreenController->ExitFullscreen(
+          FullscreenModeTransitionTrigger::kForcedByCode);
+    }
   }
   [self updateConsumer];
 }
