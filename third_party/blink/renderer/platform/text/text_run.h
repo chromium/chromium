@@ -63,14 +63,7 @@ class PLATFORM_EXPORT TextRun final {
   TextRun(TextRun&&) = default;
   TextRun& operator=(TextRun&&) = delete;
 
-  UChar operator[](unsigned i) const { return UNSAFE_TODO(text_[i]); }
-
-  base::span<const LChar> Span8() const { return text_.Span8(); }
-  base::span<const UChar> Span16() const { return text_.Span16(); }
-
   const StringView& ToStringView() const { return text_; }
-
-  bool Is8Bit() const { return text_.Is8Bit(); }
   unsigned length() const { return text_.length(); }
 
   TextDirection Direction() const {
