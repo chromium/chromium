@@ -889,26 +889,12 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest,
   WaitForConsoleObserver(*console_observer);
 }
 
-// Tests behavior of translator.translateStreaming().
-class OnDeviceTranslateStreamingBrowserTest
-    : public OnDeviceTranslationBrowserTest {
- public:
-  OnDeviceTranslateStreamingBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(kTranslateStreamingBySentence);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
 // Tests the behavior of streaming translation.
-IN_PROC_BROWSER_TEST_F(OnDeviceTranslateStreamingBrowserTest,
-                       TranslateStreaming) {
+IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest, TranslateStreaming) {
   MockComponentManager mock_component_manager(GetTempDir());
   mock_component_manager.ExpectCallRegisterTranslateKitComponentAndInstall();
   mock_component_manager.ExpectCallRegisterLanguagePackComponentAndInstall(
       {LanguagePackKey::kEn_Ja});
-
   NavigateToEmptyPage();
 
   // Create a translator and call translateStreaming().
@@ -939,15 +925,12 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslateStreamingBrowserTest,
             "en to ja: Sentence one en to ja: Sentence two");
 }
 
-// Tests the FIFO order of multiple parallel invocations of
-// TranslateStreaming().
-IN_PROC_BROWSER_TEST_F(OnDeviceTranslateStreamingBrowserTest,
-                       MultipleInvocations) {
+// Tests the FIFO order of multiple parallel TranslateStreaming() invocations.
+IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest, MultipleStreamingCalls) {
   MockComponentManager mock_component_manager(GetTempDir());
   mock_component_manager.ExpectCallRegisterTranslateKitComponentAndInstall();
   mock_component_manager.ExpectCallRegisterLanguagePackComponentAndInstall(
       {LanguagePackKey::kEn_Ja});
-
   NavigateToEmptyPage();
 
   // Create one translator and call translateStreaming() multiple times in

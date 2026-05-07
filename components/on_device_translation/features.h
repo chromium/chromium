@@ -33,9 +33,6 @@ extern const base::FeatureParam<base::TimeDelta>
 // created per browser context.
 extern const base::FeatureParam<size_t> kTranslationAPIMaxServiceCount;
 
-// Enables the translateStreaming API by splitting the input into sentences.
-BASE_DECLARE_FEATURE(kTranslateStreamingBySentence);
-
 // Enables automatic download of language packs for on-device translation.
 BASE_DECLARE_FEATURE(kAutoDownloadTranslateLanguagePacks);
 

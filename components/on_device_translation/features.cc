@@ -38,8 +38,6 @@ const base::FeatureParam<base::TimeDelta> kTranslationAPIServiceIdleTimeout{
 const base::FeatureParam<size_t> kTranslationAPIMaxServiceCount{
     &blink::features::kTranslationAPI, "TranslationAPIMaxServiceCount", 10};
 
-BASE_FEATURE(kTranslateStreamingBySentence, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kAutoDownloadTranslateLanguagePacks,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

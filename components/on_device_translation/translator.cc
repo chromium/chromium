@@ -185,10 +185,6 @@ void Translator::TranslateStreaming(
     const std::string& input,
     mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
         pending_responder) {
-  if (!base::FeatureList::IsEnabled(kTranslateStreamingBySentence)) {
-    Translate(input, std::move(pending_responder));
-    return;
-  }
   mojo::Remote<blink::mojom::ModelStreamingResponder> responder(
       std::move(pending_responder));
 
