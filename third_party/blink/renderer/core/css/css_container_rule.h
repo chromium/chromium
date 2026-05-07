@@ -32,6 +32,7 @@ class CORE_EXPORT CSSContainerRule final : public CSSConditionRule {
   // TODO(crbug.com/41491726): Returns a single container selector used by
   // devtools to look up container candidates.
   const ContainerSelector& SelectorForInspector() const;
+  void SetQueryText(const ExecutionContext*, String);
   void SetConditionText(const ExecutionContext*, String);
 
   void Trace(Visitor*) const override;

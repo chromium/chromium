@@ -128,7 +128,8 @@ class AnchoredFeatureSet : public MediaQueryParser::FeatureSet {
 ContainerQueryParser::ContainerQueryParser(const CSSParserContext& context)
     : context_(context) {}
 
-const ConditionalExpNode* ContainerQueryParser::ParseCondition(String value) {
+const ConditionalExpNode* ContainerQueryParser::ParseCondition(
+    const String& value) {
   CSSParserTokenStream stream(value);
   const ConditionalExpNode* node = ParseCondition(stream);
   if (!stream.AtEnd()) {
@@ -299,6 +300,17 @@ const ContainerQuerySet* ContainerQueryParser::ParseContainerQuerySet(
            css_parsing_utils::ConsumeCommaIncludingWhitespace(stream));
 
   return MakeGarbageCollected<ContainerQuerySet>(std::move(queries));
+}
+
+const ContainerQuerySet* ContainerQueryParser::ParseContainerQuerySet(
+    const String& input,
+    const CSSParserContext& context) {
+  CSSParserTokenStream stream(input);
+  const ContainerQuerySet* query_set = ParseContainerQuerySet(stream, context);
+  if (!stream.AtEnd()) {
+    return nullptr;
+  }
+  return query_set;
 }
 
 }  // namespace blink

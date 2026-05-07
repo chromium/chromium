@@ -7,6 +7,7 @@ Dumping styles for ::scroll-marker-group: [
         rule : {
             containerQueries : [
                 [0] : {
+                    conditionText : (width = 400px)
                     physicalAxes : Horizontal
                     range : {
                         endColumn : 26

@@ -561,6 +561,9 @@ class CORE_EXPORT StyleRuleContainer : public StyleRuleCondition {
   void SetConditionText(const ExecutionContext*,
                         StyleSheetContents* parent_contents,
                         String);
+  void SetQueryText(const ExecutionContext*,
+                    StyleSheetContents* parent_contents,
+                    String);
 
   void TraceAfterDispatch(blink::Visitor*) const;
 

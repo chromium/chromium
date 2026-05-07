@@ -1503,20 +1503,18 @@ CSSMediaRule* InspectorStyleSheet::SetMediaRuleText(
   return media_rule;
 }
 
-CSSContainerRule* InspectorStyleSheet::SetContainerRuleText(
-    const SourceRange& range,
-    const String& text,
-    SourceRange* new_range,
-    String* old_text,
+CSSContainerRule* InspectorStyleSheet::ContainerRuleFromSourceData(
+    const String& query_text,
+    CSSRuleSourceData* source_data,
     ExceptionState& exception_state) {
-  if (!VerifyContainerQueryText(page_style_sheet_->OwnerDocument(), text)) {
+  if (!VerifyContainerQueryText(page_style_sheet_->OwnerDocument(),
+                                query_text)) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kSyntaxError,
         "Selector or container query text is not valid.");
     return nullptr;
   }
 
-  CSSRuleSourceData* source_data = FindRuleByHeaderRange(range);
   if (!source_data || !source_data->HasContainer()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotFoundError,
@@ -1533,15 +1531,43 @@ CSSContainerRule* InspectorStyleSheet::SetContainerRuleText(
     return nullptr;
   }
 
-  CSSContainerRule* container_rule =
-      InspectorCSSAgent::AsCSSContainerRule(rule);
-  container_rule->SetConditionText(
-      page_style_sheet_->OwnerDocument()->GetExecutionContext(), text);
+  return InspectorCSSAgent::AsCSSContainerRule(rule);
+}
 
-  ReplaceText(source_data->rule_header_range, text, new_range, old_text);
-  OnStyleSheetTextChanged();
+CSSContainerRule* InspectorStyleSheet::SetContainerRuleText(
+    const SourceRange& range,
+    const String& text,
+    SourceRange* new_range,
+    String* old_text,
+    ExceptionState& exception_state) {
+  CSSRuleSourceData* source_data = FindRuleByHeaderRange(range);
+  if (CSSContainerRule* container_rule =
+          ContainerRuleFromSourceData(text, source_data, exception_state)) {
+    container_rule->SetQueryText(
+        page_style_sheet_->OwnerDocument()->GetExecutionContext(), text);
+    ReplaceText(source_data->rule_header_range, text, new_range, old_text);
+    OnStyleSheetTextChanged();
+    return container_rule;
+  }
+  return nullptr;
+}
 
-  return container_rule;
+CSSContainerRule* InspectorStyleSheet::SetContainerRuleConditionText(
+    const SourceRange& range,
+    const String& text,
+    SourceRange* new_range,
+    String* old_text,
+    ExceptionState& exception_state) {
+  CSSRuleSourceData* source_data = FindRuleByHeaderRange(range);
+  if (CSSContainerRule* container_rule =
+          ContainerRuleFromSourceData(text, source_data, exception_state)) {
+    container_rule->SetConditionText(
+        page_style_sheet_->OwnerDocument()->GetExecutionContext(), text);
+    ReplaceText(source_data->rule_header_range, text, new_range, old_text);
+    OnStyleSheetTextChanged();
+    return container_rule;
+  }
+  return nullptr;
 }
 
 CSSSupportsRule* InspectorStyleSheet::SetSupportsRuleText(

@@ -530,6 +530,7 @@ class InspectorCSSAgent::ModifyRuleAction final
     kSetStyleText,
     kSetMediaRuleText,
     kSetContainerRuleText,
+    kSetContainerRuleConditionText,
     kSetSupportsRuleText,
     kSetKeyframeKey,
     kSetPropertyName,
@@ -568,6 +569,9 @@ class InspectorCSSAgent::ModifyRuleAction final
       case kSetContainerRuleText:
         return style_sheet_->SetContainerRuleText(
             new_range_, old_text_, nullptr, nullptr, exception_state);
+      case kSetContainerRuleConditionText:
+        return style_sheet_->SetContainerRuleConditionText(
+            new_range_, old_text_, nullptr, nullptr, exception_state);
       case kSetSupportsRuleText:
         return style_sheet_->SetSupportsRuleText(new_range_, old_text_, nullptr,
                                                  nullptr, exception_state);
@@ -605,6 +609,10 @@ class InspectorCSSAgent::ModifyRuleAction final
         break;
       case kSetContainerRuleText:
         css_rule_ = style_sheet_->SetContainerRuleText(
+            old_range_, new_text_, &new_range_, &old_text_, exception_state);
+        break;
+      case kSetContainerRuleConditionText:
+        css_rule_ = style_sheet_->SetContainerRuleConditionText(
             old_range_, new_text_, &new_range_, &old_text_, exception_state);
         break;
       case kSetSupportsRuleText:
@@ -3193,6 +3201,38 @@ protocol::Response InspectorCSSAgent::setContainerQueryText(
   return InspectorDOMAgent::ToResponse(exception_state);
 }
 
+protocol::Response InspectorCSSAgent::setContainerQueryConditionText(
+    const String& style_sheet_id,
+    std::unique_ptr<protocol::CSS::SourceRange> range,
+    const String& text,
+    std::unique_ptr<protocol::CSS::CSSContainerQuery>* result) {
+  FrontendOperationScope scope;
+  InspectorStyleSheet* inspector_style_sheet = nullptr;
+  protocol::Response response =
+      AssertInspectorStyleSheetForId(style_sheet_id, inspector_style_sheet);
+  if (!response.IsSuccess()) {
+    return response;
+  }
+  SourceRange text_range;
+  response =
+      JsonRangeToSourceRange(inspector_style_sheet, range.get(), &text_range);
+  if (!response.IsSuccess()) {
+    return response;
+  }
+
+  DummyExceptionStateForTesting exception_state;
+  ModifyRuleAction* action = MakeGarbageCollected<ModifyRuleAction>(
+      ModifyRuleAction::kSetContainerRuleConditionText, inspector_style_sheet,
+      text_range, text);
+  bool success = dom_agent_->History()->Perform(action, exception_state);
+  if (success) {
+    CSSContainerRule* rule =
+        InspectorCSSAgent::AsCSSContainerRule(action->TakeRule());
+    *result = BuildContainerQueryObject(rule);
+  }
+  return InspectorDOMAgent::ToResponse(exception_state);
+}
+
 protocol::Response InspectorCSSAgent::setScopeText(
     const String& style_sheet_id,
     std::unique_ptr<protocol::CSS::SourceRange> range,
@@ -3659,6 +3699,7 @@ InspectorCSSAgent::BuildContainerQueryObject(CSSContainerRule* rule) {
   std::unique_ptr<protocol::CSS::CSSContainerQuery> container_query_object =
       protocol::CSS::CSSContainerQuery::create()
           .setText(rule->containerQuery())
+          .setConditionText(rule->conditionText())
           .build();
 
   auto it =

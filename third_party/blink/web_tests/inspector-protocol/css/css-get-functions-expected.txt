@@ -184,6 +184,7 @@ function rule: {
                 ]
                 conditionText : (width > 300px)
                 containerQueries : {
+                    conditionText : (width > 300px)
                     physicalAxes : Horizontal
                     styleSheetId : <string 1>
                     text : (width > 300px)

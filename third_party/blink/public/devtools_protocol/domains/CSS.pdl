@@ -338,7 +338,10 @@ experimental domain CSS
   experimental type CSSContainerQuery extends object
     properties
       # Container query text.
-      string text
+      # Contains the query part without the container name for a single query.
+      # Deprecated in favor of conditionText which contains the full prelude
+      # after @container.
+      deprecated string text
       # The associated rule header range in the enclosing stylesheet (if
       # available).
       optional SourceRange range
@@ -354,6 +357,8 @@ experimental domain CSS
       optional boolean queriesScrollState
       # true if the query contains anchored() queries.
       optional boolean queriesAnchored
+      # CSSContainerRule.conditionText
+      string conditionText
 
   # CSS Supports at-rule descriptor.
   experimental type CSSSupports extends object
@@ -927,7 +932,17 @@ experimental domain CSS
       CSSMedia media
 
   # Modifies the expression of a container query.
-  experimental command setContainerQueryText
+  # Deprecated. Use setContainerQueryConditionText instead.
+  experimental deprecated command setContainerQueryText
+    parameters
+      DOM.StyleSheetId styleSheetId
+      SourceRange range
+      string text
+    returns
+      # The resulting CSS container query rule after modification.
+      CSSContainerQuery containerQuery
+
+  experimental command setContainerQueryConditionText
     parameters
       DOM.StyleSheetId styleSheetId
       SourceRange range

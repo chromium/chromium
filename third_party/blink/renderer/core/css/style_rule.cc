@@ -1080,6 +1080,21 @@ void StyleRuleContainer::SetConditionText(
     const ExecutionContext* execution_context,
     StyleSheetContents* parent_sheet_contents,
     String value) {
+  auto* context = MakeGarbageCollected<CSSParserContext>(*execution_context);
+
+  if (const ContainerQuerySet* container_query_set =
+          ContainerQueryParser::ParseContainerQuerySet(value, *context)) {
+    condition_text_ = container_query_set->ToString();
+    container_query_set_ = container_query_set;
+    if (parent_sheet_contents) {
+      parent_sheet_contents->NotifyRuleChanged(this);
+    }
+  }
+}
+
+void StyleRuleContainer::SetQueryText(const ExecutionContext* execution_context,
+                                      StyleSheetContents* parent_sheet_contents,
+                                      String value) {
   const ContainerQuery* query = container_query_set_->SingleQuery();
   if (!query) {
     return;
@@ -1097,7 +1112,6 @@ void StyleRuleContainer::SetConditionText(
         MakeGarbageCollected<ContainerQuery>(std::move(selector), exp_node));
     container_query_set_ =
         MakeGarbageCollected<ContainerQuerySet>(std::move(queries));
-
     if (parent_sheet_contents) {
       parent_sheet_contents->NotifyRuleChanged(this);
     }

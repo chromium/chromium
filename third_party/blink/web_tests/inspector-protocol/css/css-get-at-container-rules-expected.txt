@@ -1,9 +1,11 @@
 Verify that nested @container rules reported with the correct values.
 [
     [0] : {
+        conditionText : --anchored not anchored(fallback)
+        name : --anchored
         queriesAnchored : true
         range : {
-            endColumn : 33
+            endColumn : 44
             endLine : 1
             startColumn : 11
             startLine : 1
@@ -14,10 +16,12 @@ Verify that nested @container rules reported with the correct values.
 ]
 [
     [0] : {
+        conditionText : --size-state not (scroll-state(scrollable) and (inline-size > 10000px))
         logicalAxes : Inline
+        name : --size-state
         queriesScrollState : true
         range : {
-            endColumn : 69
+            endColumn : 82
             endLine : 4
             startColumn : 11
             startLine : 4

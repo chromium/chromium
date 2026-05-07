@@ -1,14 +1,14 @@
 (async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   var {page, session, dp} = await testRunner.startHTML(`
 <style>
-@container not anchored(fallback) {
+@container --anchored not anchored(fallback) {
   #anchored-child { --anchored: true }
 }
-@container not (scroll-state(scrollable) and (inline-size > 10000px)) {
+@container --size-state not (scroll-state(scrollable) and (inline-size > 10000px)) {
   #scroll-state-child { --scroll-state: true }
 }
-#anchored { container-type: anchored; }
-#scroll-state { container-type: inline-size scroll-state; }
+#anchored { container-type: anchored; container-name: --anchored; }
+#scroll-state { container-type: inline-size scroll-state; container-name: --size-state; }
 </style>
 <div id="anchored">
   <div id="anchored-child"></div>

@@ -45,6 +45,16 @@ void CSSContainerRule::SetConditionText(
   conditions_ = nullptr;
 }
 
+void CSSContainerRule::SetQueryText(const ExecutionContext* execution_context,
+                                    String value) {
+  StyleSheetContents* parent_contents =
+      parentStyleSheet() ? parentStyleSheet()->Contents() : nullptr;
+  CSSStyleSheet::RuleMutationScope mutation_scope(this);
+  To<StyleRuleContainer>(group_rule_.Get())
+      ->SetQueryText(execution_context, parent_contents, value);
+  conditions_ = nullptr;
+}
+
 String CSSContainerRule::containerName() const {
   if (const ContainerQuery* query = SingleContainerQuery()) {
     String name = query->Selector().Name();
@@ -79,7 +89,11 @@ const FrozenArray<CSSContainerCondition>& CSSContainerRule::conditions() {
     FrozenArray<CSSContainerCondition>::VectorType condition_array;
     for (const ContainerQuery* query : GetContainerQuerySet().Queries()) {
       CSSContainerCondition* condition = CSSContainerCondition::Create();
-      condition->setName(query->Selector().Name());
+      if (!query->Selector().Name().empty()) {
+        condition->setName(query->Selector().Name());
+      } else {
+        condition->setName(g_empty_atom);
+      }
       if (const ConditionalExpNode* query_exp = query->Query()) {
         condition->setQuery(query_exp->Serialize());
       } else {
