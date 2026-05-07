@@ -71,7 +71,7 @@ public class PwaRestoreBottomSheetView {
                         ? ResourcesCompat.getDrawable(
                                 mContext.getResources(), backArrowId, mContext.getTheme())
                         : null;
-        ImageView backArrowView = (ImageView) mContentView.findViewById(R.id.back);
+        ImageView backArrowView = mContentView.findViewById(R.id.back);
         backArrowView.setImageDrawable(backArrow);
         backArrowView.setOnClickListener(this::onClickBack);
     }
@@ -134,7 +134,7 @@ public class PwaRestoreBottomSheetView {
 
             ((ImageView) appView.findViewById(R.id.app_icon)).setImageBitmap(app.getIcon());
             ((TextView) appView.findViewById(R.id.app_name)).setText(app.getName());
-            CheckBox checkBox = (CheckBox) appView.findViewById(R.id.checkbox);
+            CheckBox checkBox = appView.findViewById(R.id.checkbox);
             checkBox.setTag(app.getId());
             checkBox.setChecked(app.isSelected());
             checkBox.setOnClickListener(this::onClick);
