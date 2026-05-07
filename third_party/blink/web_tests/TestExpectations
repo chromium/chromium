@@ -9799,5 +9799,5 @@ crbug.com/510085315 [ Win ] virtual/fenced-frame-mparch/external/wpt/fenced-fram
 crbug.com/510103893 [ Linux ] external/wpt/ai/language-model/language-model-create.tentative.https.window.html [ Failure ]
 crbug.com/510116037 [ Linux ] external/wpt/client-hints/critical-ch/request-count.https.window.html [ Failure ]
 crbug.com/510116037 [ Linux ] external/wpt/client-hints/critical-ch/subresource.https.window.html [ Failure ]
-
+crbug.com/510128101 [ Win ] fast/forms/color/color-picker-events-change.html [ Failure ]
 crbug.com/506273267 virtual/permission-element/external/wpt/html/semantics/permission-element/usermedia/set-constraints-combinations.tentative.https.html [ Failure Pass ]
