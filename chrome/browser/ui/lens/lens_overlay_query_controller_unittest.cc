@@ -26,6 +26,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/lens/lens_overlay_gen204_controller.h"
 #include "chrome/browser/ui/lens/test_lens_overlay_query_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/base32/base32.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
@@ -4885,6 +4886,156 @@ TEST_F(LensOverlayQueryControllerTest,
   // Wait for the cluster info request to be sent again.
   ASSERT_TRUE(full_image_response_future.Wait());
   EXPECT_EQ(2, query_controller.num_cluster_info_fetch_requests_sent());
+
+  query_controller.EndQuery();
+}
+
+TEST_F(LensOverlayQueryControllerTest,
+       SendContextualTextQuery_AimM3Disabled_StripsAimModeParam) {
+  feature_list_.Reset();
+  // Enable kWebUIOmniboxAimPopup but disable kLensSearchAimM3.
+  feature_list_.InitWithFeatures(
+      {omnibox::internal::kWebUIOmniboxAimPopup},
+      {lens::features::kLensSearchAimM3, lens::features::kLensSearchAimM3EnUs});
+
+  // Set up the AimEligibilityService to be eligible so IsAimPopupEnabled is
+  // true.
+  auto* mock_aim_eligibility_service = static_cast<MockAimEligibilityService*>(
+      AimEligibilityServiceFactory::GetForProfile(profile()));
+  EXPECT_CALL(*mock_aim_eligibility_service, IsAimEligible())
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(*mock_aim_eligibility_service, IsFuseboxEligible())
+      .WillRepeatedly(testing::Return(true));
+
+  base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
+                         lens::mojom::TextPtr, bool>
+      full_image_response_future;
+  base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
+      url_response_future;
+  base::test::TestFuture<const std::string&, const SkBitmap&>
+      thumbnail_created_future;
+  TestLensOverlayQueryController query_controller(
+      full_image_response_future.GetRepeatingCallback(),
+      url_response_future.GetRepeatingCallback(), base::NullCallback(),
+      thumbnail_created_future.GetRepeatingCallback(), base::NullCallback(),
+      fake_variations_client_.get(),
+      IdentityManagerFactory::GetForProfile(profile()), profile(),
+      lens::LensOverlayInvocationSource::kAppMenu,
+      /*use_dark_mode=*/false, GetGen204Controller());
+
+  // Set up the query controller responses.
+  lens::LensOverlayServerClusterInfoResponse fake_cluster_info_response;
+  fake_cluster_info_response.set_server_session_id(kTestServerSessionId);
+  fake_cluster_info_response.set_search_session_id(kTestSearchSessionId);
+  query_controller.set_fake_cluster_info_response(fake_cluster_info_response);
+  lens::LensOverlayObjectsResponse fake_objects_response;
+  fake_objects_response.mutable_cluster_info()->set_server_session_id(
+      kTestServerSessionId);
+  query_controller.set_fake_objects_response(fake_objects_response);
+  lens::LensOverlayInteractionResponse fake_interaction_response;
+  fake_interaction_response.set_encoded_response(kTestSuggestSignals);
+  query_controller.set_fake_interaction_response(fake_interaction_response);
+
+  SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
+  std::map<std::string, std::string> additional_search_query_params = {
+      {"udm", "50"}};
+  query_controller.StartQueryFlow(
+      bitmap, GURL(kTestPageUrl),
+      std::make_optional<std::string>(kTestPageTitle),
+      std::vector<lens::mojom::CenterRotatedBoxPtr>(), kFakeTextPageContents,
+      lens::MimeType::kPlainText,
+      /*pdf_current_page=*/std::nullopt, 0, base::TimeTicks::Now());
+
+  ASSERT_TRUE(full_image_response_future.Wait());
+
+  // Send contextual text query.
+  query_controller.SendContextualTextQuery(
+      kTestTime, kTestQueryText,
+      lens::LensOverlaySelectionType::MULTIMODAL_SEARCH,
+      additional_search_query_params);
+
+  ASSERT_TRUE(url_response_future.Wait());
+
+  // Verify that udm=50 was stripped since AimM3 is disabled.
+  GURL url(url_response_future.Get().url());
+  std::string udm_val;
+  EXPECT_FALSE(net::GetValueForKeyInQuery(url, "udm", &udm_val) &&
+               udm_val == "50");
+
+  query_controller.EndQuery();
+}
+
+TEST_F(LensOverlayQueryControllerTest,
+       SendContextualTextQuery_AimM3Enabled_AppendsAimModeParam) {
+  feature_list_.Reset();
+  // Enable kWebUIOmniboxAimPopup and kLensSearchAimM3.
+  feature_list_.InitWithFeatures({omnibox::internal::kWebUIOmniboxAimPopup,
+                                  lens::features::kLensSearchAimM3},
+                                 {});
+
+  // Set up the AimEligibilityService to be eligible so IsAimPopupEnabled is
+  // true.
+  auto* mock_aim_eligibility_service = static_cast<MockAimEligibilityService*>(
+      AimEligibilityServiceFactory::GetForProfile(profile()));
+  EXPECT_CALL(*mock_aim_eligibility_service, IsAimEligible())
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(*mock_aim_eligibility_service, IsFuseboxEligible())
+      .WillRepeatedly(testing::Return(true));
+
+  base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
+                         lens::mojom::TextPtr, bool>
+      full_image_response_future;
+  base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
+      url_response_future;
+  base::test::TestFuture<const std::string&, const SkBitmap&>
+      thumbnail_created_future;
+  TestLensOverlayQueryController query_controller(
+      full_image_response_future.GetRepeatingCallback(),
+      url_response_future.GetRepeatingCallback(), base::NullCallback(),
+      thumbnail_created_future.GetRepeatingCallback(), base::NullCallback(),
+      fake_variations_client_.get(),
+      IdentityManagerFactory::GetForProfile(profile()), profile(),
+      lens::LensOverlayInvocationSource::kAppMenu,
+      /*use_dark_mode=*/false, GetGen204Controller());
+
+  // Set up the query controller responses.
+  lens::LensOverlayServerClusterInfoResponse fake_cluster_info_response;
+  fake_cluster_info_response.set_server_session_id(kTestServerSessionId);
+  fake_cluster_info_response.set_search_session_id(kTestSearchSessionId);
+  query_controller.set_fake_cluster_info_response(fake_cluster_info_response);
+  lens::LensOverlayObjectsResponse fake_objects_response;
+  fake_objects_response.mutable_cluster_info()->set_server_session_id(
+      kTestServerSessionId);
+  query_controller.set_fake_objects_response(fake_objects_response);
+  lens::LensOverlayInteractionResponse fake_interaction_response;
+  fake_interaction_response.set_encoded_response(kTestSuggestSignals);
+  query_controller.set_fake_interaction_response(fake_interaction_response);
+
+  SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
+  std::map<std::string, std::string> additional_search_query_params;
+  query_controller.StartQueryFlow(
+      bitmap, GURL(kTestPageUrl),
+      std::make_optional<std::string>(kTestPageTitle),
+      std::vector<lens::mojom::CenterRotatedBoxPtr>(), kFakeTextPageContents,
+      lens::MimeType::kPlainText,
+      /*pdf_current_page=*/std::nullopt, 0, base::TimeTicks::Now());
+
+  ASSERT_TRUE(full_image_response_future.Wait());
+
+  // Send contextual text query.
+  query_controller.SendContextualTextQuery(
+      kTestTime, kTestQueryText,
+      lens::LensOverlaySelectionType::MULTIMODAL_SEARCH,
+      additional_search_query_params);
+
+  ASSERT_TRUE(url_response_future.Wait());
+
+  // Verify that udm=50 is correctly appended since both AIM popup and M3
+  // features are enabled.
+  GURL url(url_response_future.Get().url());
+  std::string udm_val;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(url, "udm", &udm_val) &&
+              udm_val == "50");
 
   query_controller.EndQuery();
 }
