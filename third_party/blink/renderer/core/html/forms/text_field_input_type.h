@@ -78,7 +78,7 @@ class TextFieldInputType : public InputType,
                           mojom::blink::FocusType) override;
 
   virtual bool NeedsContainer() const { return false; }
-  virtual String ConvertFromVisibleValue(const String&) const;
+  String ConvertFromVisibleValue(const String&) const override;
   virtual void DidSetValueByUserEdit();
 
   void HandleKeydownEventForSpinButton(KeyboardEvent&);

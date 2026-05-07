@@ -248,6 +248,7 @@ class CORE_EXPORT InputType : public GarbageCollected<InputType> {
   bool CanSetStringValue() const;
   virtual String LocalizeValue(const String&) const;
   virtual String VisibleValue() const;
+  virtual String ConvertFromVisibleValue(const String&) const;
   // Returing the null string means "use the default value."
   // This function must be called only by HTMLInputElement::sanitizeValue().
   virtual String SanitizeValue(const String&) const;

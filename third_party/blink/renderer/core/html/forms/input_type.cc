@@ -869,6 +869,10 @@ String InputType::VisibleValue() const {
   return GetElement().Value();
 }
 
+String InputType::ConvertFromVisibleValue(const String& visible_value) const {
+  return SanitizeValue(visible_value);
+}
+
 String InputType::SanitizeValue(const String& proposed_value) const {
   return proposed_value;
 }

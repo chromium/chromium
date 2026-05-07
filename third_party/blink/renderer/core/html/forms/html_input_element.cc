@@ -112,6 +112,19 @@ namespace {
 
 static bool is_default_font_prewarmed_ = false;
 
+String ConvertSanitizedValueToStateValue(const InputType& input_type,
+                                         const String& sanitized_value) {
+  if (RuntimeEnabledFeatures::SanitizeIDNEmailFormInputEnabled() &&
+      input_type.IsEmailInputType()) {
+    // `sanitized_value` is already in canonical state-value form. Running
+    // visible-value conversion for non-email types can corrupt it, e.g.
+    // locale-aware number parsing may reinterpret "." in "1.5". The IDN
+    // domain normalization is email-specific.
+    return input_type.ConvertFromVisibleValue(sanitized_value);
+  }
+  return sanitized_value;
+}
+
 }  // namespace
 
 using ValueMode = InputType::ValueMode;
@@ -403,8 +416,10 @@ void HTMLInputElement::InitializeTypeInParsing() {
   input_type_ = InputType::Create(*this, new_type_name);
   input_type_view_ = input_type_->CreateView();
   String default_value = FastGetAttribute(html_names::kValueAttr);
-  if (input_type_->GetValueMode() == ValueMode::kValue)
-    non_attribute_value_ = SanitizeValue(default_value);
+  if (input_type_->GetValueMode() == ValueMode::kValue) {
+    non_attribute_value_ = ConvertSanitizedValueToStateValue(
+        *input_type_, SanitizeValue(default_value));
+  }
 
   UpdateHasBeenPasswordField(new_type_name);
 
@@ -554,7 +569,8 @@ void HTMLInputElement::UpdateType(const AtomicString& type_attribute_value) {
            new_value_mode == ValueMode::kValue) {
     AtomicString value_string = FastGetAttribute(html_names::kValueAttr);
     input_type_->WarnIfValueIsInvalid(value_string);
-    non_attribute_value_ = SanitizeValue(value_string);
+    non_attribute_value_ = ConvertSanitizedValueToStateValue(
+        *input_type_, SanitizeValue(value_string));
     has_dirty_value_ = false;
   }
   // 3. Otherwise, if the previous state of the element's type attribute put the
@@ -576,6 +592,9 @@ void HTMLInputElement::UpdateType(const AtomicString& type_attribute_value) {
 
     if (new_value_mode == ValueMode::kValue) {
       String new_value = SanitizeValue(non_attribute_value_);
+      if (!HasDirtyValue()) {
+        new_value = ConvertSanitizedValueToStateValue(*input_type_, new_value);
+      }
       if (!EqualIgnoringNullity(new_value, non_attribute_value_)) {
         if (HasDirtyValue())
           SetValue(new_value);
@@ -893,8 +912,10 @@ void HTMLInputElement::ParseAttribute(
     // We only need to setChanged if the form is looking at the default value
     // right now.
     if (!HasDirtyValue()) {
-      if (input_type_->GetValueMode() == ValueMode::kValue)
-        non_attribute_value_ = SanitizeValue(value);
+      if (input_type_->GetValueMode() == ValueMode::kValue) {
+        non_attribute_value_ = ConvertSanitizedValueToStateValue(
+            *input_type_, SanitizeValue(value));
+      }
       UpdatePlaceholderVisibility();
       SetNeedsStyleRecalc(
           kSubtreeStyleChange,
