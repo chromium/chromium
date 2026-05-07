@@ -1142,9 +1142,6 @@ public final class ProductionSupportedFlagList {
                 AwSwitches.WEBVIEW_OPT_IN_TO_GMS_BIND_SERVICE_OPTIMIZATION,
                 "Opt-in WebView to GMSCore's bindService optimizations"),
         Flag.baseFeature(
-                AwSwitches.WEBVIEW_DEFER_STARTUP_GMS_CALLS,
-                "Defers GMS calls to after Chromium startup."),
-        Flag.baseFeature(
                 AwFeatures.WEBVIEW_MOVE_WORK_TO_PROVIDER_INIT,
                 " Moves some of the work that is being run during `startChromium` to be done"
                     + " beforehand during WebView provider initialization. This is expected to"

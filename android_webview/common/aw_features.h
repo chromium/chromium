@@ -22,7 +22,6 @@ BASE_DECLARE_FEATURE(kWebViewBackgroundTracingInit);
 BASE_DECLARE_FEATURE(kWebViewBypassHttpCacheForPrefetchFromHeader);
 BASE_DECLARE_FEATURE(kWebViewConfigurableLibraryPrefetch);
 BASE_DECLARE_FEATURE(kWebViewContentRestrictionSupport);
-BASE_DECLARE_FEATURE(kWebViewDeferStartupGmsCalls);
 BASE_DECLARE_FEATURE(kWebViewEarlyStartupTracing);
 BASE_DECLARE_FEATURE(kWebViewEarlyTracingInit);
 BASE_DECLARE_FEATURE(kWebViewFileSystemAccess);

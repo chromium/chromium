@@ -34,9 +34,6 @@ BASE_FEATURE(kWebViewConfigurableLibraryPrefetch,
 BASE_FEATURE(kWebViewContentRestrictionSupport,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, defers GMS calls to after Chromium startup.
-BASE_FEATURE(kWebViewDeferStartupGmsCalls, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable JS FileSystemAccess API.
 // This flag is set by WebView internal code based on an app's targetSdkVersion.
 // It is enabled for version B+. The default value here is not relevant, and is

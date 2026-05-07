@@ -33,7 +33,6 @@ extern const char kWebViewStartupTasksYieldToNative[];
 extern const char kStartupNonBlockingWebViewConstructor[];
 extern const char kPostChromiumStartupInWebViewConstructor[];
 extern const char kWebViewStaticMethodsNotTriggerStartup[];
-extern const char kWebViewDeferStartupGmsCalls[];
 extern const char kWebViewOptInToGmsBindServiceOptimization[];
 extern const char kWebViewRendererLibraryPrefetch[];
 extern const char kWebViewRendererLibraryPrefetchDisabled[];

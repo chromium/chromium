@@ -736,12 +736,10 @@ public class WebViewChromiumAwInit {
                         AwDarkMode.enableSimplifiedDarkMode();
                     }
 
-                    if (AwBrowserProcess.shouldDeferGmsCalls()) {
-                        AwBrowserProcess.maybeEnableSafeBrowsingFromGms();
-                        AwBrowserProcess.setupSupervisedUser();
-                        AwBrowserProcess.handleMinidumpsAndSetMetricsConsent(
-                                /* updateMetricsConsent= */ true);
-                    }
+                    AwBrowserProcess.maybeEnableSafeBrowsingFromGms();
+                    AwBrowserProcess.setupSupervisedUser();
+                    AwBrowserProcess.handleMinidumpsAndSetMetricsConsent(
+                            /* updateMetricsConsent= */ true);
 
                     AwBrowserProcess.postBackgroundTasks(
                             mFactory.isSafeModeEnabled(), mFactory.getWebViewPrefs());
@@ -826,9 +824,7 @@ public class WebViewChromiumAwInit {
     private void runImmediateTaskAfterBrowserProcessInit() {
         // TODO(crbug.com/332706093): See if this can be moved before loading native.
         AwClassPreloader.preloadClasses();
-        if (!AwBrowserProcess.shouldDeferGmsCalls()) {
-            AwBrowserProcess.handleMinidumpsAndSetMetricsConsent(/* updateMetricsConsent= */ true);
-        }
+
         AwBrowserProcess.doNetworkInitializations(ContextUtils.getApplicationContext());
     }
 
