@@ -28,6 +28,8 @@ const EVENT1_NAME: string = 'kFirstExampleCustomEvent';
 const EVENT2_NAME: string = 'kSecondExampleCustomEvent';
 const CLOSE_BUTTON_ALT_TEXT: string = 'Close help bubble.';
 const BODY_ICON_ALT_TEXT: string = 'Icon help bubble.';
+const CUSTOM_CONTAINER_NATIVE_ID: string =
+    'kHelpBubbleMixinTestCustomContainerElementId';
 
 const HelpBubbleMixinTestElementBase = HelpBubbleMixinLit(CrLitElement);
 
@@ -45,6 +47,7 @@ let p1Bubble: HelpBubbleController;
 let bulletListBubble: HelpBubbleController;
 let spanBubble: HelpBubbleController;
 let nestedChildBubble: HelpBubbleController;
+let customContainerBubble: HelpBubbleController;
 
 // HelpBubbleMixinTestElement
 class HelpBubbleMixinTestElement extends HelpBubbleMixinTestElementBase {
@@ -64,6 +67,8 @@ class HelpBubbleMixinTestElement extends HelpBubbleMixinTestElementBase {
       <span style="display: block;">Span text</span>
       <help-bubble-mixin-test-container id="container-element">
       </help-bubble-mixin-test-container>
+      <div id="custom-container"></div>
+      <div id="custom-anchor">Custom Anchor</div>
     </div>`;
   }
 
@@ -81,6 +86,14 @@ class HelpBubbleMixinTestElement extends HelpBubbleMixinTestElementBase {
     // using different types of selectors to test query mechanism
     nestedChildBubble = this.registerHelpBubble(
         NESTED_CHILD_NATIVE_ID, ['#container-element', '.child-element'])!;
+
+    const customContainer =
+        this.shadowRoot.querySelector<HTMLElement>('#custom-container');
+    assertTrue(
+        customContainer !== null, 'connectedCallback: custom container exists');
+    customContainerBubble = this.registerHelpBubble(
+        CUSTOM_CONTAINER_NATIVE_ID, '#custom-anchor',
+        {containerElement: customContainer})!;
   }
 }
 
@@ -321,6 +334,21 @@ suite('CrComponentsHelpBubbleMixinLitTest', () => {
       });
 
   test(
+      'help bubble mixin shows bubble attached to custom containerElement',
+      () => {
+        assertFalse(container.isHelpBubbleShowing());
+        assertFalse(customContainerBubble.isBubbleShowing());
+        container.showHelpBubble(customContainerBubble, defaultParams);
+        assertTrue(container.isHelpBubbleShowing());
+        assertTrue(customContainerBubble.isBubbleShowing());
+        const bubble = container.getHelpBubbleForTesting('custom-anchor');
+        assertTrue(!!bubble, 'bubble exists');
+        assertEquals(
+            container.shadowRoot.querySelector('#custom-container'),
+            bubble.parentElement, 'bubble is child of custom container');
+      });
+
+  test(
       'help bubble mixin can pierce shadow dom to anchor to deep query', () => {
         const containerElement =
             container.shadowRoot
@@ -528,6 +556,7 @@ suite('CrComponentsHelpBubbleMixinLitTest', () => {
           [LIST_NATIVE_ID, true],
           [SPAN_NATIVE_ID, true],
           [NESTED_CHILD_NATIVE_ID, true],
+          [CUSTOM_CONTAINER_NATIVE_ID, true],
         ]),
         testProxy.getTrackedElementHandler().visibility);
   });
@@ -543,6 +572,7 @@ suite('CrComponentsHelpBubbleMixinLitTest', () => {
           [LIST_NATIVE_ID, false],
           [SPAN_NATIVE_ID, false],
           [NESTED_CHILD_NATIVE_ID, false],
+          [CUSTOM_CONTAINER_NATIVE_ID, false],
         ]),
         testProxy.getTrackedElementHandler().visibility);
   });

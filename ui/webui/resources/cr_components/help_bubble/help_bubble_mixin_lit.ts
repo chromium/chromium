@@ -588,6 +588,7 @@ export interface Options {
   anchorPaddingBottom?: number;
   anchorPaddingRight?: number;
   fixed?: boolean;
+  containerElement?: HTMLElement;
 }
 
 export function parseOptions(options: Options) {
@@ -599,6 +600,7 @@ export function parseOptions(options: Options) {
   return {
     padding,
     fixed: !!options.fixed,
+    containerElement: options.containerElement,
   };
 }
 

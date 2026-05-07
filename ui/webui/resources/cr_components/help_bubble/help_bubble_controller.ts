@@ -19,6 +19,7 @@ export const ANCHOR_HIGHLIGHT_CLASS = 'help-anchor-highlight';
 interface Options {
   padding: InsetsF;
   fixed: boolean;
+  containerElement?: HTMLElement;
 }
 
 // Return whether the current language is right-to-left
@@ -276,7 +277,13 @@ export class HelpBubbleController {
         'fixed') {
       this.bubble_.fixed = true;
     }
-    this.anchor_.parentNode.insertBefore(this.bubble_, this.anchor_);
+
+    const container = this.options_.containerElement;
+    if (container) {
+      container.appendChild(this.bubble_);
+    } else {
+      this.anchor_.parentNode.insertBefore(this.bubble_, this.anchor_);
+    }
     return this.bubble_;
   }
 
