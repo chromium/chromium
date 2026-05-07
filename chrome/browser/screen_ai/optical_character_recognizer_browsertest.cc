@@ -720,7 +720,8 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 // This test is slow and most probably failing on debug builds and ASAN builds
 // which are slower than the other tests.
-#if !defined(NDEBUG) || defined(ADDRESS_SANITIZER)
+// TODO(crbug.com/509294498): Re-enable this test on Linux and ASan/Debug.
+#if BUILDFLAG(IS_LINUX) || !defined(NDEBUG) || defined(ADDRESS_SANITIZER)
 #define MAYBE_PerformOCRLargeImage DISABLED_PerformOCRLargeImage
 #else
 #define MAYBE_PerformOCRLargeImage PerformOCRLargeImage

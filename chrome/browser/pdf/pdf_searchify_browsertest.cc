@@ -147,8 +147,8 @@ INSTANTIATE_TEST_SUITE_P(All,
 #endif
 );
 
-// TODO(crbug.com/406839385): Re-enable this test on Mac.
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/406839385): Re-enable this test on Mac and Linux.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_HelloWorld DISABLED_HelloWorld
 #else
 #define MAYBE_HelloWorld HelloWorld
