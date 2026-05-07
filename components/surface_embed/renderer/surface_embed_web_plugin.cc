@@ -114,8 +114,7 @@ void SurfaceEmbedWebPlugin::UpdateAllLifecyclePhases(
 
 void SurfaceEmbedWebPlugin::Paint(cc::PaintCanvas* canvas,
                                   const gfx::Rect& rect) {
-  // No action needed as we're using a compositor layer to render the red
-  // placeholder rectangle.
+  // No action needed as we're using a compositor layer to render.
 }
 
 void SurfaceEmbedWebPlugin::UpdateGeometry(const gfx::Rect& window_rect,
@@ -314,9 +313,10 @@ void SurfaceEmbedWebPlugin::SynchronizeVisualProperties() {
 }
 
 void SurfaceEmbedWebPlugin::OnHostDisconnected() {
-  // If the browser side of the connection goes down, we're in an unexpected
-  // state. We expect the pipe to only be closed by the renderer.
-  NOTREACHED();
+  // We handle closing the connection unexpectedly via the sad plugin path,
+  // since that provides fallback painting behavior suggesting that something
+  // went wrong.
+  ChildProcessGone();
 }
 
 void SurfaceEmbedWebPlugin::SetFrameSinkId(

@@ -39,7 +39,6 @@ namespace {
 constexpr std::string_view kAttachHarnessUrl =
     "/surface_embed/attach_harness.html";
 constexpr std::string_view kBlueBoxUrl = "/surface_embed/blue_box.html";
-
 constexpr std::string_view kRedBoxUrl = "/surface_embed/red_box.html";
 constexpr std::string_view kFocusHarnessUrl =
     "/surface_embed/focus_harness.html";
@@ -119,6 +118,11 @@ class SurfaceEmbedTestContentBrowserClient
 
 class SurfaceEmbedBrowserTest : public content::ContentBrowserTest {
  public:
+  // If `enable_binder` is true, SurfaceEmbedTestContentBrowserClient will be
+  // installed to provide a binder for SurfaceEmbedHost interface.
+  explicit SurfaceEmbedBrowserTest(bool enable_binder = true)
+      : enable_binder_(enable_binder) {}
+
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(features::kSurfaceEmbed);
     content::ContentBrowserTest::SetUp();
@@ -127,8 +131,10 @@ class SurfaceEmbedBrowserTest : public content::ContentBrowserTest {
   void CreatedBrowserMainParts(
       content::BrowserMainParts* browser_main_parts) override {
     content::ContentBrowserTest::CreatedBrowserMainParts(browser_main_parts);
-    test_browser_client_ =
-        std::make_unique<SurfaceEmbedTestContentBrowserClient>(&tracker_);
+    if (enable_binder_) {
+      test_browser_client_ =
+          std::make_unique<SurfaceEmbedTestContentBrowserClient>(&tracker_);
+    }
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -339,8 +345,56 @@ class SurfaceEmbedBrowserTest : public content::ContentBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   SurfaceEmbedHostTracker tracker_;
+  bool enable_binder_;
   std::unique_ptr<SurfaceEmbedTestContentBrowserClient> test_browser_client_;
 };
+
+// A fixture where the browser-side support isn't provided.
+class SurfaceEmbedBrowserTestNoHost : public SurfaceEmbedBrowserTest {
+ public:
+  SurfaceEmbedBrowserTestNoHost()
+      : SurfaceEmbedBrowserTest(/*enable_binder=*/false) {}
+};
+
+// Test that trying to create a web plugin w/o providing support via
+// SurfaceEmbedTestContentBrowserClient doesn't crash. This will imply
+// that content_shell won't crash in similar circumstances.
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTestNoHost, NoCrash) {
+  auto child_contents = SetupHarnessAndChild();
+
+  guest_contents::GuestContentsHandle* guest_handle =
+      guest_contents::GuestContentsHandle::CreateForWebContents(
+          child_contents.get());
+  ASSERT_NE(guest_handle, nullptr);
+  std::string script =
+      content::JsReplace("createEmbed($1);", guest_handle->id().ToString());
+  ASSERT_TRUE(content::ExecJs(web_contents(), script));
+
+  // Access an unknown property on the embed to force plugin creation
+  // (since otherwise it's on a timer).
+  EXPECT_EQ(
+      base::Value(),
+      content::EvalJs(web_contents(), "document.embeds[0].noSuchProperty"));
+
+  // Check that the sad plugin page got rendered.
+  EXPECT_TRUE(CheckHasPixelInColor(SkColors::kGray.toSkColor()));
+
+  // Try attaching a new child. Still shouldn't crash.
+  // (Handling data-content-id changes isn't implemented yet, but once it is,
+  //  this should help make sure we don't get confused).
+  auto child_contents2 = CreateChildWebContents();
+  NavigateChildToUrl(child_contents2.get(), kBlueBoxUrl);
+  guest_contents::GuestContentsHandle* guest_handle2 =
+      guest_contents::GuestContentsHandle::CreateForWebContents(
+          child_contents2.get());
+  EXPECT_TRUE(content::ExecJs(
+      web_contents(),
+      content::JsReplace(
+          "document.embeds[0].setAttribute('data-content-id', $1)",
+          guest_handle2->id().ToString())));
+
+  EXPECT_TRUE(CheckHasPixelInColor(SkColors::kGray.toSkColor()));
+}
 
 IN_PROC_BROWSER_TEST_F(SurfaceEmbedBrowserTest, EmbedTagCreatesPlugin) {
   auto child_contents = SetupHarnessAndChild();
