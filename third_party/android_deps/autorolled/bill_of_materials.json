@@ -212,7 +212,7 @@
     {
         "name": "runtime-annotation",
         "group": "androidx.compose.runtime",
-        "version": "1.12.0-alpha01"
+        "version": "1.12.0-alpha02"
     },
     {
         "name": "runtime-annotation-android",
@@ -357,7 +357,7 @@
     {
         "name": "core",
         "group": "androidx.core",
-        "version": "1.19.0-alpha01"
+        "version": "1.19.0-alpha02"
     },
     {
         "name": "core-animation",
@@ -372,7 +372,7 @@
     {
         "name": "core-ktx",
         "group": "androidx.core",
-        "version": "1.19.0-alpha01"
+        "version": "1.19.0-alpha02"
     },
     {
         "name": "core-pip",
@@ -397,7 +397,7 @@
     {
         "name": "credentials",
         "group": "androidx.credentials",
-        "version": "1.7.0-alpha01"
+        "version": "1.7.0-alpha02"
     },
     {
         "name": "credentials-play-services-auth",
@@ -427,12 +427,12 @@
     {
         "name": "datastore-android",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha08"
+        "version": "1.3.0-alpha09"
     },
     {
         "name": "datastore-core",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha08"
+        "version": "1.3.0-alpha09"
     },
     {
         "name": "datastore-core-android",
@@ -452,7 +452,7 @@
     {
         "name": "datastore-preferences",
         "group": "androidx.datastore",
-        "version": "1.3.0-alpha08"
+        "version": "1.3.0-alpha09"
     },
     {
         "name": "datastore-preferences-android",
@@ -547,7 +547,7 @@
     {
         "name": "graphics-path",
         "group": "androidx.graphics",
-        "version": "1.1.0-SNAPSHOT"
+        "version": "1.1.0"
     },
     {
         "name": "graphics-shapes",
@@ -832,7 +832,7 @@
     {
         "name": "media",
         "group": "androidx.media",
-        "version": "1.8.0-rc01"
+        "version": "1.8.0"
     },
     {
         "name": "mediarouter",
@@ -1007,12 +1007,12 @@
     {
         "name": "savedstate",
         "group": "androidx.savedstate",
-        "version": "1.5.0-beta01"
+        "version": "1.5.0-rc01"
     },
     {
         "name": "savedstate-android",
         "group": "androidx.savedstate",
-        "version": "1.5.0-beta01"
+        "version": "1.5.0-rc01"
     },
     {
         "name": "savedstate-compose",
@@ -1147,7 +1147,7 @@
     {
         "name": "tracing",
         "group": "androidx.tracing",
-        "version": "2.0.0-alpha06"
+        "version": "2.0.0-alpha07"
     },
     {
         "name": "tracing-android",

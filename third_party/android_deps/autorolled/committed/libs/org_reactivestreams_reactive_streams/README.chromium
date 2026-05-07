@@ -3,7 +3,7 @@ Short Name: reactive-streams
 URL: https://repo.maven.apache.org/maven2/org/reactivestreams/reactive-streams/1.0.4/reactive-streams-1.0.4.jar
 Version: 1.0.4
 Update Mechanism: Autoroll
-License: MIT-0
+License: MIT
 License File: LICENSE
 CPEPrefix: unknown
 Security Critical: yes

@@ -3,7 +3,7 @@ Short Name: play-services-auth
 URL: https://dl.google.com/dl/android/maven2/com/google/android/gms/play-services-auth/21.4.0/play-services-auth-21.4.0.aar
 Version: 21.4.0
 Update Mechanism: Autoroll
-License: Android-SDK, MIT, Apache-2.0, BSD-3-Clause, GPL-2.0-with-classpath-exception, APSL-2.0, ICU, Unicode-DFS-2015, NAIST-2003, BSD-2-Clause, SunPro, CPL-1.0, LGPL-2.1, MPL-1.1, NPL-1.1, GPL-2.0, MIT-0, BSL-1.0, EPL-1.0, CC0-1.0
+License: Android Software Development Kit License
 License File: LICENSE
 CPEPrefix: unknown
 Security Critical: yes

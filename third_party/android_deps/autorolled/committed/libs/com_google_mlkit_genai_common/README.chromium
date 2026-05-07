@@ -3,7 +3,7 @@ Short Name: genai-common
 URL: https://dl.google.com/dl/android/maven2/com/google/mlkit/genai-common/1.0.0-beta3/genai-common-1.0.0-beta3.aar
 Version: 1.0.0-beta3
 Update Mechanism: Autoroll
-License: Apache-2.0, Android-SDK, MIT, BSD-3-Clause, GPL-2.0-with-classpath-exception, APSL-2.0, ICU, Unicode-DFS-2015, NAIST-2003, BSD-2-Clause, SunPro, CPL-1.0, BSL-1.0, EPL-1.0
+License: Apache-2.0
 License File: LICENSE
 CPEPrefix: unknown
 Security Critical: yes
