@@ -798,8 +798,8 @@ class PermissionUmaUtil {
 
   static void RecordPageInfoPermissionChange(
       ContentSettingsType type,
-      ContentSetting setting_before,
-      ContentSetting setting_after,
+      PermissionSetting setting_before,
+      PermissionSetting setting_after,
       bool is_subscribed_to_permission_change_event);
 
   static std::string GetPermissionActionString(
