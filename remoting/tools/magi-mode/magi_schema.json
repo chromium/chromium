@@ -21,6 +21,14 @@
         "^.*$": { "type": "boolean" }
       }
     },
+    "EnvironmentDef": {
+      "type": "object",
+      "properties": {
+        "vcs": { "type": "string", "enum": ["GIT", "JJ"] },
+        "harness": { "type": "string", "enum": ["JETSKI", "GENERIC_CLI"] }
+      },
+      "required": ["vcs", "harness"]
+    },
     "StateBlock": {
       "type": "object",
       "properties": {
@@ -79,7 +87,8 @@
         "auditability_level": {
           "type": "string",
           "enum": ["NORMAL", "VERBOSE"]
-        }
+        },
+        "environment": { "$ref": "#/definitions/EnvironmentDef" }
       },
       "required": [
         "checklist",
@@ -89,7 +98,8 @@
         "edge_cases",
         "next_phase",
         "paranoia_mode",
-        "auditability_level"
+        "auditability_level",
+        "environment"
       ]
     },
     "ReviewFeedback": {

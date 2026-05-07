@@ -490,6 +490,31 @@ def CheckJsonFiles(input_api, output_api):
                 f'File {f.LocalPath()} must signal next_phase: SCAFFOLDING'
             )
         )
+      if 'environment' in content:
+        environment = content['environment']
+        if not isinstance(environment, dict):
+          results.append(
+              output_api.PresubmitError(
+                  f'File {f.LocalPath()} key "environment" must be an object.'
+              )
+          )
+        else:
+          vcs = environment.get('vcs')
+          harness = environment.get('harness')
+          if vcs not in ('GIT', 'JJ'):
+            results.append(
+                output_api.PresubmitError(
+                    f'File {f.LocalPath()} environment.vcs must be GIT or JJ, '
+                    f'got {vcs}'
+                )
+            )
+          if harness not in ('JETSKI', 'GENERIC_CLI'):
+            results.append(
+                output_api.PresubmitError(
+                    f'File {f.LocalPath()} environment.harness must be '
+                    f'JETSKI or GENERIC_CLI, got {harness}'
+                )
+            )
     elif filename.startswith('review'):
       if next_p and next_p != 'ANALYSIS':
         results.append(
