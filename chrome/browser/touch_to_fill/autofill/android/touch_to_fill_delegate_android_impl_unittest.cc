@@ -595,6 +595,9 @@ TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
 
 TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
        TryToShowTouchToFillFailsIfShownBeforeAndShouldReshow_FlagOff) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndDisableFeature(
+      features::kAutofillEnableTouchToFillReshowForBnpl);
   TryToShowTouchToFill(/*expected_success=*/true);
 
   ASSERT_TRUE(touch_to_fill_delegate_->IsShowingTouchToFill());

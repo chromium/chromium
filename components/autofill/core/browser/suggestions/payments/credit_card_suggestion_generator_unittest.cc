@@ -2850,7 +2850,8 @@ TEST_F(CreditCardSuggestionGeneratorBnplTest,
 // BNPL is eligible and there are credit card suggestions.
 TEST_F(CreditCardSuggestionGeneratorBnplTest,
        GetCreditCardSuggestionsForTouchToFill_BnplSuggestionAdded) {
-  payments_data().AddBnplIssuer(test::GetTestUnlinkedBnplIssuer());
+  BnplIssuer bnpl_issuer = test::GetTestUnlinkedBnplIssuer();
+  payments_data().AddBnplIssuer(bnpl_issuer);
 
   ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
               autofill_client().GetAutofillOptimizationGuideDecider()),
@@ -2871,8 +2872,7 @@ TEST_F(CreditCardSuggestionGeneratorBnplTest,
           SuggestionType::kBnplEntry,
           l10n_util::GetStringUTF16(IDS_AUTOFILL_BNPL_PAY_LATER_OPTIONS_TEXT),
           Suggestion::Icon::kBnplGeneric,
-          {{Suggestion::Text(l10n_util::GetStringFUTF16(
-              IDS_AUTOFILL_BNPL_CREDIT_CARD_SUGGESTION_LABEL, u"$35"))}}));
+          {{Suggestion::Text(bnpl_issuer.GetDisplayName())}}));
   EXPECT_TRUE(payments_data().IsAutofillHasSeenBnplPrefEnabled());
 }
 
