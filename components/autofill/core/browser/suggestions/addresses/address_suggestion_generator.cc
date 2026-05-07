@@ -534,37 +534,6 @@ std::vector<AutofillProfile> GetProfilesToSuggest(
     });
     CHECK(!profiles_to_suggest.empty());
   }
-  // TODO(crbug.com/393114125): Change to use `AutofillField::field_modifiers_`
-  // after launching `kAutofillFixIsAutofilled`.
-  if (trigger_field.is_autofilled_according_to_renderer() &&
-      profiles_to_suggest.size() > 1) {
-    // This is just a simulation of the logic behind the feature flag in order
-    // to understand the reason behind the CHECK failure. Profiles are copied so
-    // that the ones used for suggestions are not modified and the branch
-    // effectively remains a functional no-op.
-    std::vector<ProfileWithText> profiles_to_suggest_copy = profiles_to_suggest;
-    const size_t size_before_filter = profiles_to_suggest.size();
-    std::erase_if(profiles_to_suggest_copy,
-                  [&](const ProfileWithText& profile) {
-                    return trigger_field.value() == profile.text;
-                  });
-    if (profiles_to_suggest_copy.empty()) {
-      SCOPED_CRASH_KEY_NUMBER("Autofill", "field_types_size",
-                              field_types.size());
-      SCOPED_CRASH_KEY_NUMBER("Autofill", "field_types_contains",
-                              field_types.contains(trigger_field_type));
-      SCOPED_CRASH_KEY_NUMBER("Autofill", "trigger_field_type",
-                              std::to_underlying(trigger_field_type));
-      SCOPED_CRASH_KEY_NUMBER("Autofill", "size_before_filter",
-                              size_before_filter);
-      SCOPED_CRASH_KEY_NUMBER("Autofill", "trigger_field_value_size",
-                              trigger_field.value().size());
-      SCOPED_CRASH_KEY_NUMBER(
-          "Autofill", "trigger_field_form_ctrl_type",
-          std::to_underlying(trigger_field.form_control_type()));
-      base::debug::DumpWithoutCrashing();
-    }
-  }
 
   // Do not show more than `kMaxDisplayedAddressSuggestions` suggestions since
   // it would result in poor UX.

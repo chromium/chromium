@@ -3828,14 +3828,12 @@ TEST_F(BrowserAutofillManagerTest, GetFieldSuggestionsWithDuplicateValues) {
   ASSERT_TRUE(field.global_id() == autofill_field->global_id());
   field.set_is_autofilled_according_to_renderer(true);
   autofill_field->set_autofilled_type(autofill_field->Type().GetAddressType());
-  field.set_value(u"Elvis");
+  field.set_value(u"Charles");
   OnAskForValuesToFill(form, field);
   // Test that we sent the right values to the external delegate.
   external_delegate()->CheckSuggestions(
       field.global_id(),
       {Suggestion(u"Elvis", u"", Suggestion::Icon::kAccount,
-                  SuggestionType::kAddressFieldByFieldFilling),
-       Suggestion(u"Charles", u"", Suggestion::Icon::kAccount,
                   SuggestionType::kAddressFieldByFieldFilling),
        Suggestion(SuggestionType::kSeparator),
        CreateUndoOrClearFormSuggestion(), CreateManageAddressesSuggestion()});
