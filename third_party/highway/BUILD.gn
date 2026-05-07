@@ -21,11 +21,6 @@ config("libhwy_external_config") {
     # for absl::uint128 is 16.
     defines += [ "HWY_BROKEN_TARGETS=HWY_ALL_SVE" ]
   }
-  if (current_cpu == "riscv64") {
-    # Runtime dispatch for RVV is broken in highway
-    # ref: https://github.com/google/highway/commit/c95cc0237d2f7a0
-    defines += [ "HWY_BROKEN_TARGETS=HWY_RVV" ]
-  }
 }
 
 source_set("libhwy") {
