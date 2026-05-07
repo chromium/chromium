@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider.IncognitoStateObserver;
 import org.chromium.chrome.browser.theme.ThemeColorProvider.ThemeColorObserver;
 import org.chromium.chrome.browser.theme.ThemeColorProvider.TintObserver;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
@@ -139,7 +140,9 @@ public class BottomUiThemeColorProvider extends ThemeColorProvider
                     mToolbarThemeColorProvider.getActivityFocusTint(),
                     mToolbarThemeColorProvider.getBrandedColorScheme());
         }
-        mBottomControlsStacker.notifyBackgroundColor(getThemeColor());
+        if (!BottomBarConfigUtils.isBottomBarEnabled(mContext)) {
+            mBottomControlsStacker.notifyBackgroundColor(getThemeColor());
+        }
     }
 
     private @Nullable ColorStateList getTintForTopAnchoredToolbar() {

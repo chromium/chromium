@@ -194,12 +194,6 @@ public class MiniPlayerMediator implements BottomControlsLayer {
     }
 
     private void growBottomControls() {
-        if (!mBottomControlsStacker.isLayerVisible(LayerType.BOTTOM_TOOLBAR)) {
-            // TODO(crbug.com/345488108): Handle background coloring for bottom controls layers in a
-            // more coordinated way.
-            mBottomControlsStacker.notifyBackgroundColor(
-                    mModel.get(Properties.BACKGROUND_COLOR_ARGB));
-        }
         updateBottomControlsHeight();
     }
 
@@ -282,6 +276,11 @@ public class MiniPlayerMediator implements BottomControlsLayer {
         } else {
             return LayerVisibility.HIDDEN;
         }
+    }
+
+    @Override
+    public @Nullable @ColorInt Integer getBackgroundColor() {
+        return mModel.get(Properties.BACKGROUND_COLOR_ARGB);
     }
 
     @Override

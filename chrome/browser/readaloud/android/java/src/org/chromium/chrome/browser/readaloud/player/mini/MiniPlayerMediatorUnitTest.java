@@ -233,7 +233,6 @@ public class MiniPlayerMediatorUnitTest {
         verify(mBottomControlsStacker).requestLayerUpdate(eq(true));
         doReturn(HEIGHT_PX).when(mBrowserControlsStateProvider).getBottomControlsHeight();
         doReturn(HEIGHT_PX).when(mBrowserControlsStateProvider).getBottomControlsMinHeight();
-        verify(mBottomControlsStacker).notifyBackgroundColor(0xAABBCCDD);
 
         assertEquals(HEIGHT_PX, mModel.get(Properties.HEIGHT));
 
@@ -567,5 +566,11 @@ public class MiniPlayerMediatorUnitTest {
                 .getValue()
                 .onBottomControlsHeightChanged(
                         bottomControlContainerHeight, bottomControlMinHeight);
+    }
+
+    @Test
+    public void testGetBackgroundColor() {
+        mMediator.onBackgroundColorUpdated(0xAABBCCDD);
+        assertEquals(Integer.valueOf(0xAABBCCDD), mMediator.getBackgroundColor());
     }
 }

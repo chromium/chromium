@@ -554,6 +554,8 @@ class AutocompleteMediator
             mAnimationDriver.onOmniboxSessionStateChange(false);
         }
 
+        propagateOmniboxSessionStateChange(false);
+
         // Propagate the information about omnibox session state change to all the processors first.
         // Processors need this for accounting purposes.
         // The change information should be passed before Processors receive first
@@ -685,9 +687,12 @@ class AutocompleteMediator
      *     org.chromium.chrome.browser.omnibox.UrlFocusChangeListener#onUrlAnimationFinished(boolean)
      */
     void onUrlAnimationFinished() {
+        if (!isInInputSession()) {
+            return;
+        }
         // mAnimationDriver has the responsibility of calling propagateOmniboxSessionStateChange if
         // it's present and currently active.
-        if (isInInputSession() && mAnimationDriver.isAnimationEnabled()) {
+        if (mAnimationDriver.isAnimationEnabled()) {
             return;
         }
         propagateOmniboxSessionStateChange(true);

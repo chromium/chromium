@@ -25,6 +25,7 @@ android_library("java") {
     "//chrome/browser/ntp_customization:public_java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
+    "//chrome/browser/ui/android/bottombar:config_java",
     "//chrome/browser/ui/android/desktop_windowing:java",
     "//chrome/browser/ui/android/native_page:java",
     "//components/browser_ui/styles/android:java",

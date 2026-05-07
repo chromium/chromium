@@ -308,7 +308,10 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
 
     /**
      * @see BrowserControlsSizer#notifyBackgroundColor(int).
+     * @deprecated {@link BottomControlsLayer} should provide the background color to the {@link
+     *     BottomControlsStacker} instead.
      */
+    @Deprecated
     public void notifyBackgroundColor(@ColorInt int color) {
         mCurrentBackgroundColor = color;
         mBrowserControlsSizer.notifyBackgroundColor(color);
