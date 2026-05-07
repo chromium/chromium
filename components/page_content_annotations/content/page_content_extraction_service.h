@@ -173,7 +173,8 @@ class PageContentExtractionService : public KeyedService,
 
   // Called when a new navigation happens in a WebContents.
   void OnNewNavigation(std::optional<int64_t> tab_id,
-                       content::WebContents* web_contents);
+                       content::WebContents* web_contents,
+                       bool is_same_document);
 
   // Called when all the tab models are initialized to perform cleanup of stale
   // entries in the page content cache.

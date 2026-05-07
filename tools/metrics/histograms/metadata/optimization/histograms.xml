@@ -2195,6 +2195,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="OptimizationGuide.PageContentExtraction.EnablementSourcePerNavigation"
+    enum="PageContentExtractionEnablementSource" expires_after="2026-11-05">
+  <owner>alexmt@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the reason (if any) that page content extraction was enabled.
+    Recorded once per cross-document navigation.
+  </summary>
+</histogram>
+
 <histogram name="OptimizationGuide.PageContentExtraction.IsCacheHit"
     enum="BooleanCacheHit" expires_after="2026-09-16">
   <owner>alexmt@chromium.org</owner>
@@ -2202,6 +2213,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records whether the requested page content was found in the cache. Recorded
     once for every request to get extracted page content for a page.
+  </summary>
+</histogram>
+
+<histogram
+    name="OptimizationGuide.PageContentExtraction.ObserverCountPerNavigation"
+    units="count" expires_after="2026-11-05">
+  <owner>alexmt@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records the number of active observers for page content extraction during a
+    cross-document navigation. Recorded once per cross-document navigation.
   </summary>
 </histogram>
 

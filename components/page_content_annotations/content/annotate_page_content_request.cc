@@ -283,7 +283,8 @@ void AnnotatedPageContentRequest::ResetForNewNavigation(bool is_same_document) {
   extraction_timer_ = std::nullopt;
 
   page_content_extraction_service_->OnNewNavigation(
-      get_tab_id_callback_.Run(web_contents()), web_contents());
+      get_tab_id_callback_.Run(web_contents()), web_contents(),
+      is_same_document);
 }
 
 void AnnotatedPageContentRequest::MaybeScheduleExtraction(bool on_hide) {

@@ -37,6 +37,16 @@ namespace page_content_annotations {
 
 namespace {
 
+// LINT.IfChange(EnablementSource)
+enum class EnablementSource {
+  kNone = 0,
+  kFeatureFlag = 1,
+  kObserverPresent = 2,
+  kBoth = 3,
+  kMaxValue = kBoth,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/optimization/enums.xml:PageContentExtractionEnablementSource)
+
 WebStateWrapper ToWebStateWrapper(content::WebContents* web_contents) {
   return WebStateWrapper(
       web_contents->GetBrowserContext()->IsOffTheRecord(),
@@ -295,10 +305,33 @@ void PageContentExtractionService::OnVisibilityChanged(
 
 void PageContentExtractionService::OnNewNavigation(
     std::optional<int64_t> tab_id,
-    content::WebContents* web_contents) {
+    content::WebContents* web_contents,
+    bool is_same_document) {
   if (is_page_content_cache_enabled_) {
     page_content_cache_handler_->OnNewNavigation(
         tab_id, ToWebStateWrapper(web_contents));
+  }
+
+  if (!is_same_document) {
+    bool feature_enabled = base::FeatureList::IsEnabled(
+        page_content_annotations::features::kAnnotatedPageContentExtraction);
+    bool has_observers = !observers_.empty();
+
+    EnablementSource source = EnablementSource::kNone;
+    if (feature_enabled && has_observers) {
+      source = EnablementSource::kBoth;
+    } else if (feature_enabled) {
+      source = EnablementSource::kFeatureFlag;
+    } else if (has_observers) {
+      source = EnablementSource::kObserverPresent;
+    }
+
+    base::UmaHistogramEnumeration(
+        "OptimizationGuide.PageContentExtraction.EnablementSourcePerNavigation",
+        source);
+    base::UmaHistogramCounts100(
+        "OptimizationGuide.PageContentExtraction.ObserverCountPerNavigation",
+        std::distance(observers_.begin(), observers_.end()));
   }
 }
 

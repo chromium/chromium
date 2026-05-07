@@ -889,6 +889,17 @@ struct.unpack('>L', hashlib.md5(version.encode('utf-8')).digest()[4:8])[0]
   <int value="6" label="ContentsDeletedOnTabUpdate"/>
 </enum>
 
+<!-- LINT.IfChange(PageContentExtractionEnablementSource) -->
+
+<enum name="PageContentExtractionEnablementSource">
+  <int value="0" label="None"/>
+  <int value="1" label="Feature flag"/>
+  <int value="2" label="Observer(s) present"/>
+  <int value="3" label="Both"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/page_content_annotations/content/page_content_extraction_service.cc:EnablementSource) -->
+
 </enums>
 
 </histogram-configuration>
