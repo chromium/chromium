@@ -30,7 +30,6 @@
 #include <array>
 #include <iterator>
 
-#include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
@@ -2213,8 +2212,6 @@ bool EditorCommand::Execute(const String& parameter,
 
   GetFrame().GetDocument()->UpdateStyleAndLayout(
       DocumentUpdateReason::kEditing);
-  base::UmaHistogramSparse("WebCore.Editing.Commands",
-                           static_cast<int>(command_->command_type));
   return command_->execute(*frame_, triggering_event, source_, parameter);
 }
 

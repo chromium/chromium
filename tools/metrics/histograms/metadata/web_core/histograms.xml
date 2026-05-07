@@ -89,16 +89,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebCore.Editing.Commands" enum="MappedEditingCommands"
-    expires_after="2026-05-08">
-  <owner>kojii@chromium.org</owner>
-  <owner>tkent@chromium.org</owner>
-  <summary>
-    Counts the number of times each Editor::Command::execute is called. This
-    doesn't count commands not supported by Blink.
-  </summary>
-</histogram>
-
 <histogram
     name="WebCore.Editing.SpellCheckUserActionLimitation.{Source}.{Action}"
     enum="Boolean" expires_after="2026-09-06">
