@@ -20,6 +20,7 @@ fuzzer_test("empty_fuzzer") {
 fuzzer_test("string_compare_fuzzer") {
   sources = [ "string_compare_fuzzer.cc" ]
   additional_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
+  is_fuzztest_compatible = false
 }
 
 fuzzer_test("string_compare_proto_fuzzer") {

@@ -48,6 +48,9 @@ template("fuzzer_test") {
     _additional_configs = invoker.additional_configs
   }
 
+  # TODO(crbug.com/505034799): Remove this when adding the wrapper.
+  not_needed(invoker, [ "is_fuzztest_compatible" ])
+
   # This ensures that the target name is suffixed by `_fuzzer` if
   # "//testing/libfuzzer:no_clusterfuzz" cannot be found in
   # `additional_configs`.
