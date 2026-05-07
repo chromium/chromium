@@ -86,8 +86,7 @@ class MockFileSystemManager : public mojom::blink::FileSystemManager {
   }
 
   // mojom::blink::FileSystem
-  void Open(const scoped_refptr<const SecurityOrigin>& origin,
-            mojom::blink::FileSystemType file_system_type,
+  void Open(mojom::blink::FileSystemType file_system_type,
             OpenCallback callback) override {}
   void ResolveURL(const KURL& filesystem_url,
                   ResolveURLCallback callback) override {}

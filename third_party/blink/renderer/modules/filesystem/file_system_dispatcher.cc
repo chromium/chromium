@@ -114,23 +114,20 @@ mojom::blink::FileSystemManager& FileSystemDispatcher::GetFileSystemManager() {
 }
 
 void FileSystemDispatcher::OpenFileSystem(
-    const SecurityOrigin* origin,
     mojom::blink::FileSystemType type,
     std::unique_ptr<FileSystemCallbacks> callbacks) {
   GetFileSystemManager().Open(
-      origin, type,
-      blink::BindOnce(&FileSystemDispatcher::DidOpenFileSystem,
-                      WrapWeakPersistent(this), std::move(callbacks)));
+      type, blink::BindOnce(&FileSystemDispatcher::DidOpenFileSystem,
+                            WrapWeakPersistent(this), std::move(callbacks)));
 }
 
 void FileSystemDispatcher::OpenFileSystemSync(
-    const SecurityOrigin* origin,
     mojom::blink::FileSystemType type,
     std::unique_ptr<FileSystemCallbacks> callbacks) {
   String name;
   KURL root_url;
   base::File::Error error_code = base::File::FILE_ERROR_FAILED;
-  GetFileSystemManager().Open(origin, type, &name, &root_url, &error_code);
+  GetFileSystemManager().Open(type, &name, &root_url, &error_code);
   DidOpenFileSystem(std::move(callbacks), std::move(name), root_url,
                     error_code);
 }

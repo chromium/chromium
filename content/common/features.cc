@@ -220,13 +220,6 @@ BASE_FEATURE(kEnableDevToolsJsErrorReporting,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-// Enforces the use of the browser-authoritative origin from the Mojo receiver
-// context instead of the renderer-supplied origin in FileSystemManager::Open.
-// TODO(crbug.com/497254383): Remove this flag and the origin parameter from
-// the Mojo interface.
-BASE_FEATURE(kEnforceFileSystemManagerOpenOrigin,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, enforces that same-document navigations must not change
 // the committed origin, insecure request policy, or insecure navigations set.
 // Any mismatch will result in a renderer kill via bad_message handling.

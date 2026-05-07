@@ -22,7 +22,6 @@ namespace blink {
 class Blob;
 class ExecutionContext;
 class KURL;
-class SecurityOrigin;
 
 // Sends messages via mojo to the blink::mojom::FileSystemManager service
 // running in the browser process. It is owned by ExecutionContext, and
@@ -43,11 +42,9 @@ class FileSystemDispatcher : public GarbageCollected<FileSystemDispatcher>,
 
   mojom::blink::FileSystemManager& GetFileSystemManager();
 
-  void OpenFileSystem(const SecurityOrigin* origin,
-                      mojom::blink::FileSystemType type,
+  void OpenFileSystem(mojom::blink::FileSystemType type,
                       std::unique_ptr<FileSystemCallbacks> callbacks);
-  void OpenFileSystemSync(const SecurityOrigin* origin,
-                          mojom::blink::FileSystemType type,
+  void OpenFileSystemSync(mojom::blink::FileSystemType type,
                           std::unique_ptr<FileSystemCallbacks> callbacks);
 
   void ResolveURL(const KURL& filesystem_url,

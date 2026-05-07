@@ -146,11 +146,9 @@ void LocalFileSystem::FileSystemAllowedInternal(
   ExecutionContext* context = GetSupplementable();
   FileSystemDispatcher& dispatcher = FileSystemDispatcher::From(context);
   if (sync_type == kSynchronous) {
-    dispatcher.OpenFileSystemSync(context->GetSecurityOrigin(), type,
-                                  std::move(callbacks));
+    dispatcher.OpenFileSystemSync(type, std::move(callbacks));
   } else {
-    dispatcher.OpenFileSystem(context->GetSecurityOrigin(), type,
-                              std::move(callbacks));
+    dispatcher.OpenFileSystem(type, std::move(callbacks));
   }
 }
 

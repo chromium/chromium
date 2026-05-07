@@ -73,10 +73,8 @@ interface FileSystemManager {
   // Opens a new filesystem and returns a name and root path for the requested
   // filesystem and a success error code if the operation succeeds. If the
   // operation fails, |error_code| indicates the reason for failure.
-  // TODO(https://crbug.com/873661): Make interface per frame/worker and remove
-  // |origin|.
   [Sync]
-  Open(url.mojom.Origin origin, blink.mojom.FileSystemType file_system_type) =>
+  Open(blink.mojom.FileSystemType file_system_type) =>
       (string name,
        url.mojom.Url root_url,
        mojo_base.mojom.FileError error_code);

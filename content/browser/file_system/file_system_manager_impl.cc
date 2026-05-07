@@ -19,7 +19,6 @@
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/file_system/browser_file_system_helper.h"
-#include "content/common/features.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/child_process_id.h"
@@ -214,16 +213,9 @@ void FileSystemManagerImpl::BindReceiver(
   receivers_.Add(this, std::move(receiver), storage_key);
 }
 
-void FileSystemManagerImpl::Open(const url::Origin& origin,
-                                 blink::mojom::FileSystemType file_system_type,
+void FileSystemManagerImpl::Open(blink::mojom::FileSystemType file_system_type,
                                  OpenCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-
-  url::Origin origin_to_check = origin;
-  if (base::FeatureList::IsEnabled(
-          features::kEnforceFileSystemManagerOpenOrigin)) {
-    origin_to_check = receivers_.current_context().origin();
-  }
 
   // Run the access check on the UI thread using a duplicated
   // ChildProcessSecurityPolicy::Handle, ensuring the SecurityState exists when
@@ -234,7 +226,7 @@ void FileSystemManagerImpl::Open(const url::Origin& origin,
           &ChildProcessSecurityPolicyImpl::Handle::CanAccessDataForOrigin,
           std::make_unique<ChildProcessSecurityPolicyImpl::Handle>(
               security_policy_handle_.Duplicate()),
-          origin_to_check),
+          receivers_.current_context().origin()),
       base::BindOnce(&FileSystemManagerImpl::ContinueOpen,
                      weak_factory_.GetWeakPtr(), file_system_type,
                      receivers_.GetBadMessageCallback(), std::move(callback),

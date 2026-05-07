@@ -74,8 +74,7 @@ class CONTENT_EXPORT FileSystemManagerImpl
       mojo::PendingReceiver<blink::mojom::FileSystemManager> receiver);
 
   // blink::mojom::FileSystem
-  void Open(const url::Origin& origin,
-            blink::mojom::FileSystemType file_system_type,
+  void Open(blink::mojom::FileSystemType file_system_type,
             OpenCallback callback) override;
   void ResolveURL(const GURL& filesystem_url,
                   ResolveURLCallback callback) override;
