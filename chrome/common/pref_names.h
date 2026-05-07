@@ -1433,6 +1433,12 @@ inline constexpr char kTabSearchPinnedToTabstrip[] =
 inline constexpr char kTabSearchPinnedToTabstripMigrationComplete[] =
     "tab_search.pinned_to_tabstrip_migration_complete";
 
+// Boolean indicating whether the tab search pinning migration to the tab strip
+// is complete. This was created to fix a bug in the initial implementation,
+// which referenced kTabSearchPinnedToTabstripMigrationComplete.
+inline constexpr char kTabSearchPinnedToTabstripMigrationComplete2[] =
+    "tab_search.pinned_to_tabstrip_migration_complete_2";
+
 // Boolean determining whether the projects panel button is pinned to the tab
 // strip.
 inline constexpr char kProjectsPanelPinnedToTabstrip[] =

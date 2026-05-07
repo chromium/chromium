@@ -786,6 +786,7 @@ if (!is_android) {
       "tab_strip_model_selection_state_unittest.cc",
       "tab_strip_model_stats_recorder_unittest.cc",
       "tab_strip_model_unittest.cc",
+      "tab_strip_prefs_unittest.cc",
       "vertical_tab_strip_state_controller_unittest.cc",
     ]
 

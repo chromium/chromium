@@ -41,6 +41,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kTabSearchPinnedToTabstrip, true);
   registry->RegisterBooleanPref(
       prefs::kTabSearchPinnedToTabstripMigrationComplete, false);
+  registry->RegisterBooleanPref(
+      prefs::kTabSearchPinnedToTabstripMigrationComplete2, false);
   registry->RegisterBooleanPref(prefs::kProjectsPanelPinnedToTabstrip, true);
   registry->RegisterBooleanPref(prefs::kEverythingMenuPinnedToTabstrip, true);
   registry->RegisterBooleanPref(prefs::kVerticalTabsEnabled, false);
@@ -55,25 +57,37 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
 void MigrateTabSearchPref(PrefService* profile_prefs) {
   if (profile_prefs->GetBoolean(
-          prefs::kTabSearchPinnedToTabstripMigrationComplete)) {
+          prefs::kTabSearchPinnedToTabstripMigrationComplete2)) {
     return;
   }
 
-  const std::optional<std::string>& tab_search_action_id =
-      actions::ActionIdMap::ActionIdToString(kActionTabSearch);
-  if (tab_search_action_id.has_value()) {
-    const base::ListValue& pinned_actions =
-        profile_prefs->GetList(prefs::kPinnedActions);
-    bool is_pinned = false;
-    for (const auto& action : pinned_actions) {
-      if (action.is_string() && action.GetString() == *tab_search_action_id) {
-        is_pinned = true;
-        break;
-      }
-    }
-    profile_prefs->SetBoolean(prefs::kTabSearchPinnedToTabstrip, is_pinned);
+  // If the user was hit by the broken migration (MigrationComplete was true
+  // but they are not in the toolbar experiment), they will have their pin
+  // state set to false. Reset it to true for them.
+  if (profile_prefs->GetBoolean(
+          prefs::kTabSearchPinnedToTabstripMigrationComplete) &&
+      !features::HasTabSearchToolbarButton()) {
+    profile_prefs->SetBoolean(prefs::kTabSearchPinnedToTabstrip, true);
   }
-  profile_prefs->SetBoolean(prefs::kTabSearchPinnedToTabstripMigrationComplete,
+
+  if (features::HasTabSearchToolbarButton()) {
+    const std::optional<std::string>& tab_search_action_id =
+        actions::ActionIdMap::ActionIdToString(kActionTabSearch);
+    if (tab_search_action_id.has_value()) {
+      const base::ListValue& pinned_actions =
+          profile_prefs->GetList(prefs::kPinnedActions);
+      bool is_pinned = false;
+      for (const auto& action : pinned_actions) {
+        if (action.is_string() && action.GetString() == *tab_search_action_id) {
+          is_pinned = true;
+          break;
+        }
+      }
+      profile_prefs->SetBoolean(prefs::kTabSearchPinnedToTabstrip, is_pinned);
+    }
+  }
+
+  profile_prefs->SetBoolean(prefs::kTabSearchPinnedToTabstripMigrationComplete2,
                             true);
 }
 
