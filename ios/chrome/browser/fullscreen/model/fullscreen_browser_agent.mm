@@ -125,8 +125,12 @@ void FullscreenBrowserAgent::UpdateProgressAndBroadcast(
 
 void FullscreenBrowserAgent::NotifyObserversOfUpdatedState(
     base::TimeDelta duration) {
+  // Prevent reentrant calls that can occur when layout changes or scroll
+  // events are synchronously triggered while notifying observers.
+  if (updating_insets_) {
+    return;
+  }
   animation_duration_ = duration;
-  CHECK(!updating_insets_);
   updating_insets_ = true;
   UIEdgeInsets old_insets = insets_;
   insets_ = UIEdgeInsetsZero;
