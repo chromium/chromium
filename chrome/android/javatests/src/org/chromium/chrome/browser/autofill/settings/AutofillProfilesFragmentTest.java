@@ -31,7 +31,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -59,8 +58,6 @@ import androidx.test.filters.SmallTest;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -209,36 +206,30 @@ public class AutofillProfilesFragmentTest {
 
     @Rule public final AutofillTestRule rule = new AutofillTestRule();
 
-    @ClassRule
-    public static final SettingsActivityTestRule<AutofillProfilesFragment>
-            sSettingsActivityTestRule =
-                    new SettingsActivityTestRule<>(AutofillProfilesFragment.class);
+    @Rule
+    public final SettingsActivityTestRule<AutofillProfilesFragment> mSettingsActivityTestRule =
+            new SettingsActivityTestRule<>(AutofillProfilesFragment.class);
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
-    @Mock private IdentityServicesProvider mIdentityServicesProvider;
     @Mock private IdentityManager mIdentityManagerMock;
     @Mock private SyncService mSyncService;
     @Mock private ReauthenticatorBridge mMockReauthenticatorBridge;
-    private static EntityDataManager sEntityDataManager;
+    @Mock private EntityDataManager mEntityDataManager;
 
-    private final AutofillTestHelper mHelper = new AutofillTestHelper();
-
-    @BeforeClass
-    public static void setUpClass() {
-        sEntityDataManager = mock(EntityDataManager.class);
-        when(sEntityDataManager.getEntitiesWithLabels()).thenReturn(Collections.emptyList());
-        EntityDataManagerFactory.setInstanceForTesting(sEntityDataManager);
-        sSettingsActivityTestRule.startSettingsActivity();
-    }
+    private AutofillTestHelper mHelper;
 
     @Before
     public void setUp() throws TimeoutException {
         ReauthenticatorBridge.setInstanceForTesting(mMockReauthenticatorBridge);
         Intents.init();
-        when(sEntityDataManager.isWalletPublicPassStorageEnabled()).thenReturn(true);
-        when(sEntityDataManager.canListEntityInstancesInSettings()).thenReturn(true);
+        when(mEntityDataManager.getEntitiesWithLabels()).thenReturn(Collections.emptyList());
+        EntityDataManagerFactory.setInstanceForTesting(mEntityDataManager);
+        when(mEntityDataManager.isWalletPublicPassStorageEnabled()).thenReturn(true);
+        when(mEntityDataManager.canListEntityInstancesInSettings()).thenReturn(true);
+        mSettingsActivityTestRule.startSettingsActivity();
+        mHelper = new AutofillTestHelper();
         mHelper.setProfile(sLocalOrSyncProfile);
         mHelper.setProfile(
                 AutofillProfile.builder()
@@ -300,7 +291,7 @@ public class AutofillProfilesFragmentTest {
     @Feature({"Preferences"})
     @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     public void testAddProfile() throws Exception {
-        AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
+        AutofillProfilesFragment autofillProfileFragment = mSettingsActivityTestRule.getFragment();
 
         // Check the preferences on the initial screen.
         checkPreferenceCount(6 /* One toggle + one add button + four profiles. */);
@@ -347,7 +338,7 @@ public class AutofillProfilesFragmentTest {
             AutofillProfile profile, @LayoutRes int expectedWidgetLayout, String expectedUrl)
             throws Exception {
         mHelper.setProfile(profile);
-        AutofillProfilesFragment fragment = sSettingsActivityTestRule.getFragment();
+        AutofillProfilesFragment fragment = mSettingsActivityTestRule.getFragment();
 
         AutofillProfileEditorPreference profilePreference =
                 fragment.findPreference(profile.getInfo(FieldType.NAME_FULL));
@@ -405,7 +396,7 @@ public class AutofillProfilesFragmentTest {
     @Feature({"Preferences"})
     @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     public void testAddIncompletedProfile() throws Exception {
-        AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
+        AutofillProfilesFragment autofillProfileFragment = mSettingsActivityTestRule.getFragment();
 
         // Check the preferences on the initial screen.
         checkPreferenceCount(6 /* One toggle + one add button + four profiles. */);
@@ -431,7 +422,7 @@ public class AutofillProfilesFragmentTest {
     @Feature({"Preferences"})
     @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     public void testAddProfileWithInvalidPhone() throws Exception {
-        AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
+        AutofillProfilesFragment autofillProfileFragment = mSettingsActivityTestRule.getFragment();
 
         // Check the preferences on the initial screen.
         checkPreferenceCount(6 /* One toggle + one add button + four profiles. */);
@@ -460,7 +451,7 @@ public class AutofillProfilesFragmentTest {
     private void testDeleteProfile(
             String profileNameToDelete, int initialCount, String expectedConfirmationMessage)
             throws Exception {
-        AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
+        AutofillProfilesFragment autofillProfileFragment = mSettingsActivityTestRule.getFragment();
 
         // Check the preferences on the initial screen.
         checkPreferenceCount(initialCount);
@@ -534,7 +525,7 @@ public class AutofillProfilesFragmentTest {
     @Feature({"Preferences"})
     @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     public void testDeleteLocalProfile() throws Exception {
-        Context context = sSettingsActivityTestRule.getFragment().getContext();
+        Context context = mSettingsActivityTestRule.getFragment().getContext();
         setUpMockSyncService(new HashSet<>());
         testDeleteProfile(
                 "Seb Doe",
@@ -547,7 +538,7 @@ public class AutofillProfilesFragmentTest {
     @Feature({"Preferences"})
     @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     public void testDeleteSyncableProfile() throws Exception {
-        Context context = sSettingsActivityTestRule.getFragment().getContext();
+        Context context = mSettingsActivityTestRule.getFragment().getContext();
         setUpMockSyncService(Collections.singleton(UserSelectableType.AUTOFILL));
         testDeleteProfile(
                 "Seb Doe",
@@ -563,7 +554,7 @@ public class AutofillProfilesFragmentTest {
         // Setup specific to this test case.
         setUpMockPrimaryAccount(TestAccounts.ACCOUNT1);
         mHelper.setProfile(sAccountProfile);
-        Context context = sSettingsActivityTestRule.getFragment().getContext();
+        Context context = mSettingsActivityTestRule.getFragment().getContext();
 
         // Prepare the expected confirmation message with the account email.
         String expectedMessage =
@@ -579,7 +570,7 @@ public class AutofillProfilesFragmentTest {
     @Feature({"Preferences"})
     @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     public void testEditProfile() throws Exception {
-        AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
+        AutofillProfilesFragment autofillProfileFragment = mSettingsActivityTestRule.getFragment();
 
         // Check the preferences on the initial screen.
         checkPreferenceCount(6 /* One toggle + one add button + four profiles. */);
@@ -642,7 +633,7 @@ public class AutofillProfilesFragmentTest {
                         .setLanguageCode("en-US")
                         .build());
 
-        AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
+        AutofillProfilesFragment autofillProfileFragment = mSettingsActivityTestRule.getFragment();
         Context context = autofillProfileFragment.getContext();
 
         // Check the preferences on the initial screen.
@@ -718,7 +709,7 @@ public class AutofillProfilesFragmentTest {
                         .setLanguageCode("en-US")
                         .build());
 
-        AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
+        AutofillProfilesFragment autofillProfileFragment = mSettingsActivityTestRule.getFragment();
 
         // Check the preferences on the initial screen.
         checkPreferenceCount(7 /* One toggle + one add button + 5 profiles. */);
@@ -761,7 +752,7 @@ public class AutofillProfilesFragmentTest {
         // Open the profile.
         ThreadUtils.runOnUiThreadBlocking(bobProfile::performClick);
         rule.setEditorDialogAndWait(
-                sSettingsActivityTestRule.getFragment().getEditorDialogForTest());
+                mSettingsActivityTestRule.getFragment().getEditorDialogForTest());
         rule.clickInEditorAndWait(
                 R.id.editor_dialog_done_button, /* waitForPreferenceUpdate= */ true);
 
@@ -782,7 +773,7 @@ public class AutofillProfilesFragmentTest {
         // Open the profile.
         ThreadUtils.runOnUiThreadBlocking(billProfile::performClick);
         rule.setEditorDialogAndWait(
-                sSettingsActivityTestRule.getFragment().getEditorDialogForTest());
+                mSettingsActivityTestRule.getFragment().getEditorDialogForTest());
         rule.clickInEditorAndWait(
                 R.id.editor_dialog_done_button, /* waitForPreferenceUpdate= */ true);
 
@@ -795,7 +786,7 @@ public class AutofillProfilesFragmentTest {
     @Feature({"Preferences"})
     @DisabledTest(message = "https://crbug.com/381982174")
     public void testKeyboardShownOnDpadCenter() throws TimeoutException {
-        AutofillProfilesFragment fragment = sSettingsActivityTestRule.getFragment();
+        AutofillProfilesFragment fragment = mSettingsActivityTestRule.getFragment();
         AutofillProfileEditorPreference addProfile =
                 fragment.findPreference(AutofillProfilesFragment.PREF_NEW_PROFILE);
         assertNotNull(addProfile);
@@ -804,7 +795,7 @@ public class AutofillProfilesFragmentTest {
         ThreadUtils.runOnUiThreadBlocking(addProfile::performClick);
         rule.setEditorDialogAndWait(fragment.getEditorDialogForTest());
         // The keyboard is shown as soon as AutofillProfileEditorPreference comes into view.
-        waitForKeyboardStatus(true, sSettingsActivityTestRule.getActivity());
+        waitForKeyboardStatus(true, mSettingsActivityTestRule.getActivity());
 
         final List<EditText> fields =
                 fragment.getEditorDialogForTest().getEditableTextFieldsForTest();
@@ -819,7 +810,7 @@ public class AutofillProfilesFragmentTest {
                     KeyboardVisibilityDelegate.getInstance().hideKeyboard(fields.get(0));
                 });
         // Check that the keyboard is hidden.
-        waitForKeyboardStatus(false, sSettingsActivityTestRule.getActivity());
+        waitForKeyboardStatus(false, mSettingsActivityTestRule.getActivity());
 
         // Send a d-pad key event to one of the text fields
         try {
@@ -828,7 +819,7 @@ public class AutofillProfilesFragmentTest {
             ex.printStackTrace();
         }
         // Check that the keyboard was shown.
-        waitForKeyboardStatus(true, sSettingsActivityTestRule.getActivity());
+        waitForKeyboardStatus(true, mSettingsActivityTestRule.getActivity());
 
         // Close the dialog.
         rule.clickInEditorAndWait(
@@ -862,9 +853,7 @@ public class AutofillProfilesFragmentTest {
     @MediumTest
     @Feature({"Preferences"})
     public void testLocalProfiles_UserNotSignedIn() throws Exception {
-        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
-        when(IdentityServicesProvider.get().getIdentityManager(any()))
-                .thenReturn(mIdentityManagerMock);
+        IdentityServicesProvider.setIdentityManagerForTesting(mIdentityManagerMock);
         when(mIdentityManagerMock.hasPrimaryAccount()).thenReturn(false);
         setUpMockSyncService(new HashSet<>());
 
@@ -913,7 +902,7 @@ public class AutofillProfilesFragmentTest {
                             AndroidAutofillAvailabilityStatus.AVAILABLE);
                 });
 
-        AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
+        AutofillProfilesFragment autofillProfileFragment = mSettingsActivityTestRule.getFragment();
 
         // Trigger address profile list rebuild.
         mHelper.setProfile(sAccountProfile);
@@ -946,7 +935,7 @@ public class AutofillProfilesFragmentTest {
                     AutofillClientProviderUtils.setAutofillAvailabilityToUseForTesting(
                             AndroidAutofillAvailabilityStatus.AVAILABLE);
                 });
-        AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
+        AutofillProfilesFragment autofillProfileFragment = mSettingsActivityTestRule.getFragment();
 
         // Trigger address profile list rebuild.
         mHelper.setProfile(sAccountProfile);
@@ -965,7 +954,7 @@ public class AutofillProfilesFragmentTest {
                     AutofillClientProviderUtils.setAutofillAvailabilityToUseForTesting(
                             AndroidAutofillAvailabilityStatus.AVAILABLE);
                 });
-        AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
+        AutofillProfilesFragment autofillProfileFragment = mSettingsActivityTestRule.getFragment();
         Context context = autofillProfileFragment.getContext();
 
         // Trigger address profile list rebuild.
@@ -993,7 +982,7 @@ public class AutofillProfilesFragmentTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    sSettingsActivityTestRule.getActivity().onBackPressed();
+                    mSettingsActivityTestRule.getActivity().onBackPressed();
                 });
     }
 
@@ -1007,7 +996,7 @@ public class AutofillProfilesFragmentTest {
                     AutofillClientProviderUtils.setAutofillAvailabilityToUseForTesting(
                             AndroidAutofillAvailabilityStatus.AVAILABLE);
                 });
-        AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
+        AutofillProfilesFragment autofillProfileFragment = mSettingsActivityTestRule.getFragment();
         Context context = autofillProfileFragment.getContext();
 
         // Trigger address profile list rebuild.
@@ -1035,7 +1024,7 @@ public class AutofillProfilesFragmentTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    sSettingsActivityTestRule.getActivity().onBackPressed();
+                    mSettingsActivityTestRule.getActivity().onBackPressed();
                 });
     }
 
@@ -1048,9 +1037,9 @@ public class AutofillProfilesFragmentTest {
                     AutofillClientProviderUtils.setAutofillAvailabilityToUseForTesting(
                             AndroidAutofillAvailabilityStatus.SETTING_TURNED_OFF);
                 });
-        when(sEntityDataManager.isWalletPublicPassStorageEnabled()).thenReturn(false);
+        when(mEntityDataManager.isWalletPublicPassStorageEnabled()).thenReturn(false);
 
-        AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
+        AutofillProfilesFragment autofillProfileFragment = mSettingsActivityTestRule.getFragment();
 
         // Trigger address profile list rebuild.
         ThreadUtils.runOnUiThreadBlocking(autofillProfileFragment::onPersonalDataChanged);
@@ -1070,9 +1059,9 @@ public class AutofillProfilesFragmentTest {
                     AutofillClientProviderUtils.setAutofillAvailabilityToUseForTesting(
                             AndroidAutofillAvailabilityStatus.SETTING_TURNED_OFF);
                 });
-        when(sEntityDataManager.isWalletPublicPassStorageEnabled()).thenReturn(true);
+        when(mEntityDataManager.isWalletPublicPassStorageEnabled()).thenReturn(true);
 
-        AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
+        AutofillProfilesFragment autofillProfileFragment = mSettingsActivityTestRule.getFragment();
 
         // Trigger address profile list rebuild.
         ThreadUtils.runOnUiThreadBlocking(autofillProfileFragment::onPersonalDataChanged);
@@ -1091,9 +1080,9 @@ public class AutofillProfilesFragmentTest {
                     AutofillClientProviderUtils.setAutofillAvailabilityToUseForTesting(
                             AndroidAutofillAvailabilityStatus.AVAILABLE);
                 });
-        when(sEntityDataManager.isWalletPublicPassStorageEnabled()).thenReturn(false);
+        when(mEntityDataManager.isWalletPublicPassStorageEnabled()).thenReturn(false);
 
-        AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
+        AutofillProfilesFragment autofillProfileFragment = mSettingsActivityTestRule.getFragment();
 
         // Trigger address profile list rebuild.
         ThreadUtils.runOnUiThreadBlocking(autofillProfileFragment::onPersonalDataChanged);
@@ -1113,9 +1102,9 @@ public class AutofillProfilesFragmentTest {
                     AutofillClientProviderUtils.setAutofillAvailabilityToUseForTesting(
                             AndroidAutofillAvailabilityStatus.SETTING_TURNED_OFF);
                 });
-        when(sEntityDataManager.isWalletPublicPassStorageEnabled()).thenReturn(false);
+        when(mEntityDataManager.isWalletPublicPassStorageEnabled()).thenReturn(false);
 
-        AutofillProfilesFragment autofillProfileFragment = sSettingsActivityTestRule.getFragment();
+        AutofillProfilesFragment autofillProfileFragment = mSettingsActivityTestRule.getFragment();
 
         // Trigger address profile list rebuild.
         ThreadUtils.runOnUiThreadBlocking(autofillProfileFragment::onPersonalDataChanged);
@@ -1143,15 +1132,15 @@ public class AutofillProfilesFragmentTest {
                 new LinkedHashMap<>();
         instancesMap.put(vehicleType, Arrays.asList(entity1));
 
-        when(sEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
-        when(sEntityDataManager.canListEntityInstancesInSettings()).thenReturn(false);
+        when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
+        when(mEntityDataManager.canListEntityInstancesInSettings()).thenReturn(false);
 
         ThreadUtils.runOnUiThreadBlocking(
-                () -> sSettingsActivityTestRule.getFragment().onPersonalDataChanged());
+                () -> mSettingsActivityTestRule.getFragment().onPersonalDataChanged());
 
         CriteriaHelper.pollUiThread(
                 () -> {
-                    AutofillProfilesFragment fragment = sSettingsActivityTestRule.getFragment();
+                    AutofillProfilesFragment fragment = mSettingsActivityTestRule.getFragment();
                     Preference category = fragment.findPreference("Vehicle");
                     Criteria.checkThat(
                             "Vehicle category should NOT exist", category, Matchers.nullValue());
@@ -1191,18 +1180,18 @@ public class AutofillProfilesFragmentTest {
         instancesMap.put(passportType, Arrays.asList(entity2));
         instancesMap.put(nationalIdType, Collections.emptyList());
 
-        when(sEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
-        when(sEntityDataManager.isEligibleToAutofillAi()).thenReturn(true);
-        when(sEntityDataManager.getAutofillAiOptInStatus()).thenReturn(true);
-        EntityDataManagerFactory.setInstanceForTesting(sEntityDataManager);
+        when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
+        when(mEntityDataManager.isEligibleToAutofillAi()).thenReturn(true);
+        when(mEntityDataManager.getAutofillAiOptInStatus()).thenReturn(true);
+        EntityDataManagerFactory.setInstanceForTesting(mEntityDataManager);
 
         // Trigger a rebuild of the profile list to pick up the new mock entities.
         ThreadUtils.runOnUiThreadBlocking(
-                () -> sSettingsActivityTestRule.getFragment().onPersonalDataChanged());
+                () -> mSettingsActivityTestRule.getFragment().onPersonalDataChanged());
 
         CriteriaHelper.pollUiThread(
                 () -> {
-                    AutofillProfilesFragment fragment = sSettingsActivityTestRule.getFragment();
+                    AutofillProfilesFragment fragment = mSettingsActivityTestRule.getFragment();
                     Preference vehicleCategory = fragment.findPreference("Vehicle");
                     Criteria.checkThat(
                             "Vehicle entity category should exist",
@@ -1284,17 +1273,17 @@ public class AutofillProfilesFragmentTest {
                 new LinkedHashMap<>();
         instancesMap.put(disabledType, Collections.emptyList());
 
-        when(sEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
-        when(sEntityDataManager.isEligibleToAutofillAi()).thenReturn(true);
-        when(sEntityDataManager.getAutofillAiOptInStatus()).thenReturn(true);
-        EntityDataManagerFactory.setInstanceForTesting(sEntityDataManager);
+        when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
+        when(mEntityDataManager.isEligibleToAutofillAi()).thenReturn(true);
+        when(mEntityDataManager.getAutofillAiOptInStatus()).thenReturn(true);
+        EntityDataManagerFactory.setInstanceForTesting(mEntityDataManager);
 
         ThreadUtils.runOnUiThreadBlocking(
-                () -> sSettingsActivityTestRule.getFragment().onPersonalDataChanged());
+                () -> mSettingsActivityTestRule.getFragment().onPersonalDataChanged());
 
         CriteriaHelper.pollUiThread(
                 () -> {
-                    AutofillProfilesFragment fragment = sSettingsActivityTestRule.getFragment();
+                    AutofillProfilesFragment fragment = mSettingsActivityTestRule.getFragment();
                     Preference category =
                             fragment.findPreference(disabledType.getTypeNameAsString());
                     Criteria.checkThat(
@@ -1318,17 +1307,17 @@ public class AutofillProfilesFragmentTest {
                 new LinkedHashMap<>();
         instancesMap.put(readOnlyType, Collections.emptyList());
 
-        when(sEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
-        when(sEntityDataManager.isEligibleToAutofillAi()).thenReturn(true);
-        when(sEntityDataManager.getAutofillAiOptInStatus()).thenReturn(true);
-        EntityDataManagerFactory.setInstanceForTesting(sEntityDataManager);
+        when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
+        when(mEntityDataManager.isEligibleToAutofillAi()).thenReturn(true);
+        when(mEntityDataManager.getAutofillAiOptInStatus()).thenReturn(true);
+        EntityDataManagerFactory.setInstanceForTesting(mEntityDataManager);
 
         ThreadUtils.runOnUiThreadBlocking(
-                () -> sSettingsActivityTestRule.getFragment().onPersonalDataChanged());
+                () -> mSettingsActivityTestRule.getFragment().onPersonalDataChanged());
 
         CriteriaHelper.pollUiThread(
                 () -> {
-                    AutofillProfilesFragment fragment = sSettingsActivityTestRule.getFragment();
+                    AutofillProfilesFragment fragment = mSettingsActivityTestRule.getFragment();
                     Preference category =
                             fragment.findPreference(readOnlyType.getTypeNameAsString());
                     Criteria.checkThat(
@@ -1361,17 +1350,17 @@ public class AutofillProfilesFragmentTest {
                 new LinkedHashMap<>();
         instancesMap.put(disabledType, Arrays.asList(entity));
 
-        when(sEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
-        when(sEntityDataManager.isEligibleToAutofillAi()).thenReturn(true);
-        when(sEntityDataManager.getAutofillAiOptInStatus()).thenReturn(true);
-        EntityDataManagerFactory.setInstanceForTesting(sEntityDataManager);
+        when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
+        when(mEntityDataManager.isEligibleToAutofillAi()).thenReturn(true);
+        when(mEntityDataManager.getAutofillAiOptInStatus()).thenReturn(true);
+        EntityDataManagerFactory.setInstanceForTesting(mEntityDataManager);
 
         ThreadUtils.runOnUiThreadBlocking(
-                () -> sSettingsActivityTestRule.getFragment().onPersonalDataChanged());
+                () -> mSettingsActivityTestRule.getFragment().onPersonalDataChanged());
 
         CriteriaHelper.pollUiThread(
                 () -> {
-                    AutofillProfilesFragment fragment = sSettingsActivityTestRule.getFragment();
+                    AutofillProfilesFragment fragment = mSettingsActivityTestRule.getFragment();
                     Preference category =
                             fragment.findPreference(disabledType.getTypeNameAsString());
                     Criteria.checkThat(
@@ -1422,18 +1411,18 @@ public class AutofillProfilesFragmentTest {
                 new LinkedHashMap<>();
         instancesMap.put(vehicleType, Arrays.asList(entity2, entity3, entity1));
 
-        when(sEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
-        when(sEntityDataManager.isEligibleToAutofillAi()).thenReturn(true);
-        when(sEntityDataManager.getAutofillAiOptInStatus()).thenReturn(true);
-        EntityDataManagerFactory.setInstanceForTesting(sEntityDataManager);
+        when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
+        when(mEntityDataManager.isEligibleToAutofillAi()).thenReturn(true);
+        when(mEntityDataManager.getAutofillAiOptInStatus()).thenReturn(true);
+        EntityDataManagerFactory.setInstanceForTesting(mEntityDataManager);
 
         // Trigger a rebuild of the profile list to pick up the new mock entities.
         ThreadUtils.runOnUiThreadBlocking(
-                () -> sSettingsActivityTestRule.getFragment().onPersonalDataChanged());
+                () -> mSettingsActivityTestRule.getFragment().onPersonalDataChanged());
 
         CriteriaHelper.pollUiThread(
                 () -> {
-                    AutofillProfilesFragment fragment = sSettingsActivityTestRule.getFragment();
+                    AutofillProfilesFragment fragment = mSettingsActivityTestRule.getFragment();
                     PreferenceCategory category = fragment.findPreference("Vehicle");
                     Criteria.checkThat(
                             "Vehicle category should exist", category, Matchers.notNullValue());
@@ -1466,21 +1455,21 @@ public class AutofillProfilesFragmentTest {
                 new LinkedHashMap<>();
         instancesMap.put(vehicleType, Collections.emptyList());
 
-        when(sEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
-        when(sEntityDataManager.isEligibleToAutofillAi()).thenReturn(true);
-        when(sEntityDataManager.getAutofillAiOptInStatus()).thenReturn(true);
-        when(sEntityDataManager.canEnableOrDisableAutofillAi()).thenReturn(true);
-        EntityDataManagerFactory.setInstanceForTesting(sEntityDataManager);
+        when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
+        when(mEntityDataManager.isEligibleToAutofillAi()).thenReturn(true);
+        when(mEntityDataManager.getAutofillAiOptInStatus()).thenReturn(true);
+        when(mEntityDataManager.canEnableOrDisableAutofillAi()).thenReturn(true);
+        EntityDataManagerFactory.setInstanceForTesting(mEntityDataManager);
 
         // Trigger a rebuild of the profile list to pick up the new mock entities.
         ThreadUtils.runOnUiThreadBlocking(
-                () -> sSettingsActivityTestRule.getFragment().onPersonalDataChanged());
+                () -> mSettingsActivityTestRule.getFragment().onPersonalDataChanged());
 
         Preference addVehicle =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             PreferenceCategory category =
-                                    sSettingsActivityTestRule
+                                    mSettingsActivityTestRule
                                             .getFragment()
                                             .findPreference("Vehicle");
                             return category.findPreference("Vehicle" + " Add");
@@ -1494,7 +1483,7 @@ public class AutofillProfilesFragmentTest {
 
         // Click the "Done" button.
         onView(withText("Done")).perform(click());
-        verify(sEntityDataManager)
+        verify(mEntityDataManager)
                 .addOrUpdateEntityInstance(
                         any(),
                         eq(R.string.autofill_ai_save_or_update_local_entity_source_notice),
@@ -1516,21 +1505,21 @@ public class AutofillProfilesFragmentTest {
                 new LinkedHashMap<>();
         instancesMap.put(vehicleType, Collections.emptyList());
 
-        when(sEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
-        when(sEntityDataManager.isEligibleToAutofillAi()).thenReturn(true);
-        when(sEntityDataManager.getAutofillAiOptInStatus()).thenReturn(true);
-        when(sEntityDataManager.canEnableOrDisableAutofillAi()).thenReturn(true);
-        EntityDataManagerFactory.setInstanceForTesting(sEntityDataManager);
+        when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
+        when(mEntityDataManager.isEligibleToAutofillAi()).thenReturn(true);
+        when(mEntityDataManager.getAutofillAiOptInStatus()).thenReturn(true);
+        when(mEntityDataManager.canEnableOrDisableAutofillAi()).thenReturn(true);
+        EntityDataManagerFactory.setInstanceForTesting(mEntityDataManager);
 
         // Trigger a rebuild of the profile list to pick up the new mock entities.
         ThreadUtils.runOnUiThreadBlocking(
-                () -> sSettingsActivityTestRule.getFragment().onPersonalDataChanged());
+                () -> mSettingsActivityTestRule.getFragment().onPersonalDataChanged());
 
         Preference addVehicle =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             PreferenceCategory category =
-                                    sSettingsActivityTestRule
+                                    mSettingsActivityTestRule
                                             .getFragment()
                                             .findPreference("Vehicle");
                             return category.findPreference("Vehicle" + " Add");
@@ -1546,7 +1535,7 @@ public class AutofillProfilesFragmentTest {
         // snackbar is displayed.
         onView(withText("Done")).perform(click());
         ArgumentCaptor<Runnable> localSaveFallbackCaptor = ArgumentCaptor.forClass(Runnable.class);
-        verify(sEntityDataManager)
+        verify(mEntityDataManager)
                 .addOrUpdateEntityInstance(
                         any(),
                         eq(R.string.autofill_ai_save_or_update_entity_in_wallet_source_notice),
@@ -1556,7 +1545,7 @@ public class AutofillProfilesFragmentTest {
         ThreadUtils.runOnUiThreadBlocking(() -> localSaveFallbackCaptor.getValue().run());
 
         String snackbarMessage =
-                sSettingsActivityTestRule
+                mSettingsActivityTestRule
                         .getActivity()
                         .getString(
                                 R.string
@@ -1566,7 +1555,7 @@ public class AutofillProfilesFragmentTest {
 
     /** Wait for the snackbar to show on the main activity post deletion. */
     private void waitForSnackbar(String expectedSnackbarMessage) {
-        SettingsActivity activity = sSettingsActivityTestRule.getActivity();
+        SettingsActivity activity = mSettingsActivityTestRule.getActivity();
         CriteriaHelper.pollUiThread(
                 () -> {
                     SnackbarManager snackbarManager = activity.getSnackbarManager();
@@ -1598,7 +1587,7 @@ public class AutofillProfilesFragmentTest {
                 new LinkedHashMap<>();
         instancesMap.put(vehicleType, Arrays.asList(entity1));
 
-        when(sEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
+        when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
 
         EntityInstance entityInstance =
                 new EntityInstance.Builder(vehicleType)
@@ -1609,16 +1598,16 @@ public class AutofillProfilesFragmentTest {
                         .setUseCount(0)
                         .build();
 
-        when(sEntityDataManager.getEntityInstance("guid1")).thenReturn(entityInstance);
-        EntityDataManagerFactory.setInstanceForTesting(sEntityDataManager);
+        when(mEntityDataManager.getEntityInstance("guid1")).thenReturn(entityInstance);
+        EntityDataManagerFactory.setInstanceForTesting(mEntityDataManager);
 
         // Trigger a rebuild of the profile list to pick up the new mock entities.
         ThreadUtils.runOnUiThreadBlocking(
-                () -> sSettingsActivityTestRule.getFragment().onPersonalDataChanged());
+                () -> mSettingsActivityTestRule.getFragment().onPersonalDataChanged());
 
         Preference vehicleEntity =
                 ThreadUtils.runOnUiThreadBlocking(
-                        () -> sSettingsActivityTestRule.getFragment().findPreference("guid1"));
+                        () -> mSettingsActivityTestRule.getFragment().findPreference("guid1"));
         assertNotNull(vehicleEntity);
         ThreadUtils.runOnUiThreadBlocking(vehicleEntity::performClick);
 
@@ -1641,20 +1630,20 @@ public class AutofillProfilesFragmentTest {
                 new LinkedHashMap<>();
         instancesMap.put(vehicleType, Collections.emptyList());
 
-        when(sEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
-        when(sEntityDataManager.isEligibleToAutofillAi()).thenReturn(true);
-        when(sEntityDataManager.canEnableOrDisableAutofillAi()).thenReturn(true);
-        EntityDataManagerFactory.setInstanceForTesting(sEntityDataManager);
+        when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
+        when(mEntityDataManager.isEligibleToAutofillAi()).thenReturn(true);
+        when(mEntityDataManager.canEnableOrDisableAutofillAi()).thenReturn(true);
+        EntityDataManagerFactory.setInstanceForTesting(mEntityDataManager);
 
         // Trigger a rebuild of the profile list to pick up the new mock entities.
         ThreadUtils.runOnUiThreadBlocking(
-                () -> sSettingsActivityTestRule.getFragment().onPersonalDataChanged());
+                () -> mSettingsActivityTestRule.getFragment().onPersonalDataChanged());
 
         Preference addVehicle =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             PreferenceCategory category =
-                                    sSettingsActivityTestRule
+                                    mSettingsActivityTestRule
                                             .getFragment()
                                             .findPreference("Vehicle");
                             return category.findPreference("Vehicle" + " Add");
@@ -1666,7 +1655,7 @@ public class AutofillProfilesFragmentTest {
 
         onView(withText("Add Vehicle")).check(matches(isDisplayed()));
 
-        Context context = sSettingsActivityTestRule.getFragment().getContext();
+        Context context = mSettingsActivityTestRule.getFragment().getContext();
         String expectedNoticeText =
                 context.getString(R.string.autofill_ai_save_or_update_local_entity_source_notice);
         onView(withText(expectedNoticeText)).check(matches(isDisplayed()));
@@ -1689,20 +1678,20 @@ public class AutofillProfilesFragmentTest {
                 new LinkedHashMap<>();
         instancesMap.put(vehicleType, Collections.emptyList());
 
-        when(sEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
-        when(sEntityDataManager.isEligibleToAutofillAi()).thenReturn(true);
-        when(sEntityDataManager.canEnableOrDisableAutofillAi()).thenReturn(true);
-        EntityDataManagerFactory.setInstanceForTesting(sEntityDataManager);
+        when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
+        when(mEntityDataManager.isEligibleToAutofillAi()).thenReturn(true);
+        when(mEntityDataManager.canEnableOrDisableAutofillAi()).thenReturn(true);
+        EntityDataManagerFactory.setInstanceForTesting(mEntityDataManager);
 
         // Trigger a rebuild of the profile list to pick up the new mock entities.
         ThreadUtils.runOnUiThreadBlocking(
-                () -> sSettingsActivityTestRule.getFragment().onPersonalDataChanged());
+                () -> mSettingsActivityTestRule.getFragment().onPersonalDataChanged());
 
         Preference addVehicle =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             PreferenceCategory category =
-                                    sSettingsActivityTestRule
+                                    mSettingsActivityTestRule
                                             .getFragment()
                                             .findPreference("Vehicle");
                             return category.findPreference("Vehicle" + " Add");
@@ -1714,7 +1703,7 @@ public class AutofillProfilesFragmentTest {
 
         onView(withText("Add Vehicle")).check(matches(isDisplayed()));
 
-        Context context = sSettingsActivityTestRule.getFragment().getContext();
+        Context context = mSettingsActivityTestRule.getFragment().getContext();
         String walletTitle = context.getString(R.string.autofill_google_wallet_title);
         String expectedNoticeText =
                 context.getString(
@@ -1749,16 +1738,16 @@ public class AutofillProfilesFragmentTest {
                 new LinkedHashMap<>();
         instancesMap.put(vehicleType, Arrays.asList(entity1));
 
-        when(sEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
-        EntityDataManagerFactory.setInstanceForTesting(sEntityDataManager);
+        when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
+        EntityDataManagerFactory.setInstanceForTesting(mEntityDataManager);
 
         // Trigger a rebuild of the profile list to pick up the new mock entities.
         ThreadUtils.runOnUiThreadBlocking(
-                () -> sSettingsActivityTestRule.getFragment().onPersonalDataChanged());
+                () -> mSettingsActivityTestRule.getFragment().onPersonalDataChanged());
 
         Preference vehicleEntity =
                 ThreadUtils.runOnUiThreadBlocking(
-                        () -> sSettingsActivityTestRule.getFragment().findPreference("guid1"));
+                        () -> mSettingsActivityTestRule.getFragment().findPreference("guid1"));
         assertNotNull(vehicleEntity);
 
         // Mock the intent that should be fired.
@@ -1793,16 +1782,16 @@ public class AutofillProfilesFragmentTest {
                 new LinkedHashMap<>();
         instancesMap.put(vehicleType, Arrays.asList(entity1));
 
-        when(sEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
-        EntityDataManagerFactory.setInstanceForTesting(sEntityDataManager);
+        when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
+        EntityDataManagerFactory.setInstanceForTesting(mEntityDataManager);
 
         // Trigger a rebuild of the profile list to pick up the new mock entities.
         ThreadUtils.runOnUiThreadBlocking(
-                () -> sSettingsActivityTestRule.getFragment().onPersonalDataChanged());
+                () -> mSettingsActivityTestRule.getFragment().onPersonalDataChanged());
 
         Preference vehicleEntity =
                 ThreadUtils.runOnUiThreadBlocking(
-                        () -> sSettingsActivityTestRule.getFragment().findPreference("guid1"));
+                        () -> mSettingsActivityTestRule.getFragment().findPreference("guid1"));
         assertNotNull(vehicleEntity);
 
         // Mock the intent that should be fired.
@@ -1842,16 +1831,16 @@ public class AutofillProfilesFragmentTest {
                 new LinkedHashMap<>();
         instancesMap.put(passportType, Arrays.asList(entity1));
 
-        when(sEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
-        EntityDataManagerFactory.setInstanceForTesting(sEntityDataManager);
+        when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
+        EntityDataManagerFactory.setInstanceForTesting(mEntityDataManager);
 
         // Trigger a rebuild of the profile list to pick up the new mock entities.
         ThreadUtils.runOnUiThreadBlocking(
-                () -> sSettingsActivityTestRule.getFragment().onPersonalDataChanged());
+                () -> mSettingsActivityTestRule.getFragment().onPersonalDataChanged());
 
         Preference passportEntity =
                 ThreadUtils.runOnUiThreadBlocking(
-                        () -> sSettingsActivityTestRule.getFragment().findPreference("guid1"));
+                        () -> mSettingsActivityTestRule.getFragment().findPreference("guid1"));
         assertNotNull(passportEntity);
 
         // Mock the intent that should be fired.
@@ -1886,16 +1875,16 @@ public class AutofillProfilesFragmentTest {
                 new LinkedHashMap<>();
         instancesMap.put(passportType, Arrays.asList(entity1));
 
-        when(sEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
-        EntityDataManagerFactory.setInstanceForTesting(sEntityDataManager);
+        when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
+        EntityDataManagerFactory.setInstanceForTesting(mEntityDataManager);
 
         // Trigger a rebuild of the profile list to pick up the new mock entities.
         ThreadUtils.runOnUiThreadBlocking(
-                () -> sSettingsActivityTestRule.getFragment().onPersonalDataChanged());
+                () -> mSettingsActivityTestRule.getFragment().onPersonalDataChanged());
 
         Preference passportEntity =
                 ThreadUtils.runOnUiThreadBlocking(
-                        () -> sSettingsActivityTestRule.getFragment().findPreference("guid1"));
+                        () -> mSettingsActivityTestRule.getFragment().findPreference("guid1"));
         assertNotNull(passportEntity);
 
         // Mock the intent that should be fired.
@@ -1932,13 +1921,13 @@ public class AutofillProfilesFragmentTest {
                 new LinkedHashMap<>();
         instancesMap1.put(vehicleType, Arrays.asList(entity1));
 
-        when(sEntityDataManager.getInstancesToList()).thenReturn(instancesMap1);
-        EntityDataManagerFactory.setInstanceForTesting(sEntityDataManager);
+        when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap1);
+        EntityDataManagerFactory.setInstanceForTesting(mEntityDataManager);
 
         // Capture the observer registered by the fragment.
         ArgumentCaptor<EntityDataManagerObserver> captor =
                 ArgumentCaptor.forClass(EntityDataManagerObserver.class);
-        verify(sEntityDataManager, atLeastOnce()).registerDataObserver(captor.capture());
+        verify(mEntityDataManager, atLeastOnce()).registerDataObserver(captor.capture());
         EntityDataManagerObserver observer = captor.getValue();
 
         // Initially check that the entity is rendered.
@@ -1946,7 +1935,7 @@ public class AutofillProfilesFragmentTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     Preference vehicleEntity =
-                            sSettingsActivityTestRule.getFragment().findPreference("guid1");
+                            mSettingsActivityTestRule.getFragment().findPreference("guid1");
                     Criteria.checkThat(
                             "Vehicle entity should exist", vehicleEntity, Matchers.notNullValue());
                 });
@@ -1955,14 +1944,14 @@ public class AutofillProfilesFragmentTest {
         LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap2 =
                 new LinkedHashMap<>();
         instancesMap2.put(vehicleType, Collections.emptyList());
-        when(sEntityDataManager.getInstancesToList()).thenReturn(instancesMap2);
+        when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap2);
         ThreadUtils.runOnUiThreadBlocking(() -> observer.onEntityInstancesChanged());
 
         // Verify that the entity is gone.
         CriteriaHelper.pollUiThread(
                 () -> {
                     Preference vehicleEntity =
-                            sSettingsActivityTestRule.getFragment().findPreference("guid1");
+                            mSettingsActivityTestRule.getFragment().findPreference("guid1");
                     Criteria.checkThat(
                             "Vehicle entity should no longer exist",
                             vehicleEntity,
@@ -1974,13 +1963,11 @@ public class AutofillProfilesFragmentTest {
     @MediumTest
     @EnableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     public void testAddressSectionTitle_featureEnabled_showsTitle() throws Exception {
-        sSettingsActivityTestRule.startSettingsActivity();
-
-        AutofillProfilesFragment fragment = sSettingsActivityTestRule.getFragment();
+        AutofillProfilesFragment fragment = mSettingsActivityTestRule.getFragment();
         Preference category = fragment.findPreference("autofill_section_title");
         assertNotNull(category);
         assertEquals(
-                sSettingsActivityTestRule
+                mSettingsActivityTestRule
                         .getActivity()
                         .getString(R.string.autofill_addresses_section_title),
                 category.getTitle());
@@ -1990,9 +1977,7 @@ public class AutofillProfilesFragmentTest {
     @MediumTest
     @DisableFeatures(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA)
     public void testAddressSectionTitle_featureDisabled_noTitle() throws Exception {
-        sSettingsActivityTestRule.startSettingsActivity();
-
-        AutofillProfilesFragment fragment = sSettingsActivityTestRule.getFragment();
+        AutofillProfilesFragment fragment = mSettingsActivityTestRule.getFragment();
         Preference category = fragment.findPreference("autofill_section_title");
         assertNull(category);
     }
@@ -2001,12 +1986,10 @@ public class AutofillProfilesFragmentTest {
     @MediumTest
     @DisableFeatures({ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID})
     public void testTitle_HoTDisabled_showsAddresses() throws Exception {
-        sSettingsActivityTestRule.startSettingsActivity();
-
-        AutofillProfilesFragment fragment = sSettingsActivityTestRule.getFragment();
+        AutofillProfilesFragment fragment = mSettingsActivityTestRule.getFragment();
         assertThat(fragment.getPageTitle().get())
                 .isEqualTo(
-                        sSettingsActivityTestRule
+                        mSettingsActivityTestRule
                                 .getActivity()
                                 .getString(R.string.autofill_addresses_settings_title));
     }
@@ -2015,12 +1998,10 @@ public class AutofillProfilesFragmentTest {
     @MediumTest
     @EnableFeatures({ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID})
     public void testTitle_HoTEnabled_showsContactInfo() throws Exception {
-        sSettingsActivityTestRule.startSettingsActivity();
-
-        AutofillProfilesFragment fragment = sSettingsActivityTestRule.getFragment();
+        AutofillProfilesFragment fragment = mSettingsActivityTestRule.getFragment();
         assertThat(fragment.getPageTitle().get())
                 .isEqualTo(
-                        sSettingsActivityTestRule
+                        mSettingsActivityTestRule
                                 .getActivity()
                                 .getString(R.string.autofill_contact_info_title));
     }
@@ -2041,7 +2022,7 @@ public class AutofillProfilesFragmentTest {
         LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap =
                 new LinkedHashMap<>();
         instancesMap.put(TestUtils.getVehicleEntityType(), Arrays.asList(entity1));
-        when(sEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
+        when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
 
         EntityInstance entityInstance =
                 new EntityInstance.Builder(TestUtils.getVehicleEntityType())
@@ -2053,16 +2034,16 @@ public class AutofillProfilesFragmentTest {
                         .setRequiresReauthToSee(true)
                         .build();
 
-        when(sEntityDataManager.getEntityInstance("guid1")).thenReturn(entityInstance);
-        EntityDataManagerFactory.setInstanceForTesting(sEntityDataManager);
+        when(mEntityDataManager.getEntityInstance("guid1")).thenReturn(entityInstance);
+        EntityDataManagerFactory.setInstanceForTesting(mEntityDataManager);
 
         // Trigger a rebuild of the profile list.
         ThreadUtils.runOnUiThreadBlocking(
-                () -> sSettingsActivityTestRule.getFragment().onPersonalDataChanged());
+                () -> mSettingsActivityTestRule.getFragment().onPersonalDataChanged());
 
         Preference vehicleEntity =
                 ThreadUtils.runOnUiThreadBlocking(
-                        () -> sSettingsActivityTestRule.getFragment().findPreference("guid1"));
+                        () -> mSettingsActivityTestRule.getFragment().findPreference("guid1"));
 
         // Click entity and capture reauth callback.
         ThreadUtils.runOnUiThreadBlocking(vehicleEntity::performClick);
@@ -2091,7 +2072,7 @@ public class AutofillProfilesFragmentTest {
         LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap =
                 new LinkedHashMap<>();
         instancesMap.put(TestUtils.getVehicleEntityType(), Arrays.asList(entity1));
-        when(sEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
+        when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
 
         EntityInstance entityInstance =
                 new EntityInstance.Builder(TestUtils.getVehicleEntityType())
@@ -2103,16 +2084,16 @@ public class AutofillProfilesFragmentTest {
                         .setRequiresReauthToSee(true)
                         .build();
 
-        when(sEntityDataManager.getEntityInstance("guid1")).thenReturn(entityInstance);
-        EntityDataManagerFactory.setInstanceForTesting(sEntityDataManager);
+        when(mEntityDataManager.getEntityInstance("guid1")).thenReturn(entityInstance);
+        EntityDataManagerFactory.setInstanceForTesting(mEntityDataManager);
 
         // Trigger a rebuild of the profile list.
         ThreadUtils.runOnUiThreadBlocking(
-                () -> sSettingsActivityTestRule.getFragment().onPersonalDataChanged());
+                () -> mSettingsActivityTestRule.getFragment().onPersonalDataChanged());
 
         Preference vehicleEntity =
                 ThreadUtils.runOnUiThreadBlocking(
-                        () -> sSettingsActivityTestRule.getFragment().findPreference("guid1"));
+                        () -> mSettingsActivityTestRule.getFragment().findPreference("guid1"));
 
         // Click entity and capture reauth callback.
         ThreadUtils.runOnUiThreadBlocking(vehicleEntity::performClick);
@@ -2136,9 +2117,9 @@ public class AutofillProfilesFragmentTest {
                 new LinkedHashMap<>();
         instancesMap.put(vehicleType, Collections.emptyList());
 
-        when(sEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
-        when(sEntityDataManager.canEnableOrDisableAutofillAi()).thenReturn(true);
-        EntityDataManagerFactory.setInstanceForTesting(sEntityDataManager);
+        when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
+        when(mEntityDataManager.canEnableOrDisableAutofillAi()).thenReturn(true);
+        EntityDataManagerFactory.setInstanceForTesting(mEntityDataManager);
 
         // Set third party mode.
         ThreadUtils.runOnUiThreadBlocking(
@@ -2148,11 +2129,11 @@ public class AutofillProfilesFragmentTest {
                 });
 
         ThreadUtils.runOnUiThreadBlocking(
-                () -> sSettingsActivityTestRule.getFragment().onPersonalDataChanged());
+                () -> mSettingsActivityTestRule.getFragment().onPersonalDataChanged());
 
         CriteriaHelper.pollUiThread(
                 () -> {
-                    AutofillProfilesFragment fragment = sSettingsActivityTestRule.getFragment();
+                    AutofillProfilesFragment fragment = mSettingsActivityTestRule.getFragment();
                     PreferenceCategory category = fragment.findPreference("Vehicle");
                     Criteria.checkThat(category, Matchers.notNullValue());
                     Preference addVehicle = category.findPreference("Vehicle" + " Add");
@@ -2170,7 +2151,7 @@ public class AutofillProfilesFragmentTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    sSettingsActivityTestRule.getFragment().onOpenGoogleWalletForTesting(false);
+                    mSettingsActivityTestRule.getFragment().onOpenGoogleWalletForTesting(false);
                 });
 
         intended(hasAction(Intent.ACTION_VIEW));
@@ -2186,7 +2167,7 @@ public class AutofillProfilesFragmentTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    sSettingsActivityTestRule.getFragment().onOpenGoogleWalletForTesting(true);
+                    mSettingsActivityTestRule.getFragment().onOpenGoogleWalletForTesting(true);
                 });
 
         intended(hasAction(Intent.ACTION_VIEW));
@@ -2197,7 +2178,7 @@ public class AutofillProfilesFragmentTest {
         int preferenceCount =
                 ThreadUtils.runOnUiThreadBlocking(
                         () ->
-                                sSettingsActivityTestRule
+                                mSettingsActivityTestRule
                                         .getFragment()
                                         .getPreferenceScreen()
                                         .getPreferenceCount());
@@ -2207,7 +2188,7 @@ public class AutofillProfilesFragmentTest {
     @Nullable
     private AutofillProfileEditorPreference findPreference(String title) {
         return ThreadUtils.runOnUiThreadBlocking(
-                () -> sSettingsActivityTestRule.getFragment().findPreference(title));
+                () -> mSettingsActivityTestRule.getFragment().findPreference(title));
     }
 
     private void waitForKeyboardStatus(
@@ -2243,9 +2224,7 @@ public class AutofillProfilesFragmentTest {
 
     private void setUpMockPrimaryAccount(AccountInfo accountInfo) {
         rule.addAccount(accountInfo);
-        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
-        when(IdentityServicesProvider.get().getIdentityManager(any()))
-                .thenReturn(mIdentityManagerMock);
+        IdentityServicesProvider.setIdentityManagerForTesting(mIdentityManagerMock);
         when(mIdentityManagerMock.getPrimaryAccountInfo()).thenReturn(accountInfo);
         when(mIdentityManagerMock.hasPrimaryAccount()).thenReturn(true);
     }
@@ -2266,16 +2245,16 @@ public class AutofillProfilesFragmentTest {
                 new LinkedHashMap<>();
         instancesMap.put(vehicleType, Collections.emptyList());
 
-        when(sEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
-        when(sEntityDataManager.canEnableOrDisableAutofillAi()).thenReturn(true);
-        EntityDataManagerFactory.setInstanceForTesting(sEntityDataManager);
+        when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
+        when(mEntityDataManager.canEnableOrDisableAutofillAi()).thenReturn(true);
+        EntityDataManagerFactory.setInstanceForTesting(mEntityDataManager);
 
         ThreadUtils.runOnUiThreadBlocking(
-                () -> sSettingsActivityTestRule.getFragment().onPersonalDataChanged());
+                () -> mSettingsActivityTestRule.getFragment().onPersonalDataChanged());
 
         CriteriaHelper.pollUiThread(
                 () -> {
-                    AutofillProfilesFragment fragment = sSettingsActivityTestRule.getFragment();
+                    AutofillProfilesFragment fragment = mSettingsActivityTestRule.getFragment();
                     PreferenceCategory category = fragment.findPreference("Vehicle");
                     Criteria.checkThat(category, Matchers.notNullValue());
                     Preference addVehicle = category.findPreference("Vehicle" + " Add");
@@ -2295,16 +2274,16 @@ public class AutofillProfilesFragmentTest {
                 new LinkedHashMap<>();
         instancesMap.put(vehicleType, Collections.emptyList());
 
-        when(sEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
-        when(sEntityDataManager.canEnableOrDisableAutofillAi()).thenReturn(false);
-        EntityDataManagerFactory.setInstanceForTesting(sEntityDataManager);
+        when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
+        when(mEntityDataManager.canEnableOrDisableAutofillAi()).thenReturn(false);
+        EntityDataManagerFactory.setInstanceForTesting(mEntityDataManager);
 
         ThreadUtils.runOnUiThreadBlocking(
-                () -> sSettingsActivityTestRule.getFragment().onPersonalDataChanged());
+                () -> mSettingsActivityTestRule.getFragment().onPersonalDataChanged());
 
         CriteriaHelper.pollUiThread(
                 () -> {
-                    AutofillProfilesFragment fragment = sSettingsActivityTestRule.getFragment();
+                    AutofillProfilesFragment fragment = mSettingsActivityTestRule.getFragment();
                     PreferenceCategory category = fragment.findPreference("Vehicle");
                     Criteria.checkThat(category, Matchers.notNullValue());
                     Preference addVehicle = category.findPreference("Vehicle" + " Add");
@@ -2324,17 +2303,17 @@ public class AutofillProfilesFragmentTest {
                 new LinkedHashMap<>();
         instancesMap.put(vehicleType, Collections.emptyList());
 
-        when(sEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
-        when(sEntityDataManager.isEligibleToAutofillAi()).thenReturn(true);
-        when(sEntityDataManager.getAutofillAiOptInStatus()).thenReturn(true);
-        EntityDataManagerFactory.setInstanceForTesting(sEntityDataManager);
+        when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
+        when(mEntityDataManager.isEligibleToAutofillAi()).thenReturn(true);
+        when(mEntityDataManager.getAutofillAiOptInStatus()).thenReturn(true);
+        EntityDataManagerFactory.setInstanceForTesting(mEntityDataManager);
 
         ThreadUtils.runOnUiThreadBlocking(
-                () -> sSettingsActivityTestRule.getFragment().onPersonalDataChanged());
+                () -> mSettingsActivityTestRule.getFragment().onPersonalDataChanged());
 
         CriteriaHelper.pollUiThread(
                 () -> {
-                    AutofillProfilesFragment fragment = sSettingsActivityTestRule.getFragment();
+                    AutofillProfilesFragment fragment = mSettingsActivityTestRule.getFragment();
                     PreferenceCategory category = fragment.findPreference("Vehicle");
                     Criteria.checkThat(category, Matchers.notNullValue());
                     Preference addVehicle = category.findPreference("Vehicle" + " Add");
@@ -2354,17 +2333,17 @@ public class AutofillProfilesFragmentTest {
                 new LinkedHashMap<>();
         instancesMap.put(vehicleType, Collections.emptyList());
 
-        when(sEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
-        when(sEntityDataManager.isEligibleToAutofillAi()).thenReturn(false);
-        when(sEntityDataManager.getAutofillAiOptInStatus()).thenReturn(true);
-        EntityDataManagerFactory.setInstanceForTesting(sEntityDataManager);
+        when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
+        when(mEntityDataManager.isEligibleToAutofillAi()).thenReturn(false);
+        when(mEntityDataManager.getAutofillAiOptInStatus()).thenReturn(true);
+        EntityDataManagerFactory.setInstanceForTesting(mEntityDataManager);
 
         ThreadUtils.runOnUiThreadBlocking(
-                () -> sSettingsActivityTestRule.getFragment().onPersonalDataChanged());
+                () -> mSettingsActivityTestRule.getFragment().onPersonalDataChanged());
 
         CriteriaHelper.pollUiThread(
                 () -> {
-                    AutofillProfilesFragment fragment = sSettingsActivityTestRule.getFragment();
+                    AutofillProfilesFragment fragment = mSettingsActivityTestRule.getFragment();
                     PreferenceCategory category = fragment.findPreference("Vehicle");
                     Criteria.checkThat(category, Matchers.notNullValue());
                     Preference addVehicle = category.findPreference("Vehicle" + " Add");
@@ -2383,17 +2362,17 @@ public class AutofillProfilesFragmentTest {
                 new LinkedHashMap<>();
         instancesMap.put(vehicleType, Collections.emptyList());
 
-        when(sEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
-        when(sEntityDataManager.isEligibleToAutofillAi()).thenReturn(true);
-        when(sEntityDataManager.getAutofillAiOptInStatus()).thenReturn(false);
-        EntityDataManagerFactory.setInstanceForTesting(sEntityDataManager);
+        when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
+        when(mEntityDataManager.isEligibleToAutofillAi()).thenReturn(true);
+        when(mEntityDataManager.getAutofillAiOptInStatus()).thenReturn(false);
+        EntityDataManagerFactory.setInstanceForTesting(mEntityDataManager);
 
         ThreadUtils.runOnUiThreadBlocking(
-                () -> sSettingsActivityTestRule.getFragment().onPersonalDataChanged());
+                () -> mSettingsActivityTestRule.getFragment().onPersonalDataChanged());
 
         CriteriaHelper.pollUiThread(
                 () -> {
-                    AutofillProfilesFragment fragment = sSettingsActivityTestRule.getFragment();
+                    AutofillProfilesFragment fragment = mSettingsActivityTestRule.getFragment();
                     PreferenceCategory category = fragment.findPreference("Vehicle");
                     Criteria.checkThat(category, Matchers.notNullValue());
                     Preference addVehicle = category.findPreference("Vehicle" + " Add");
@@ -2409,7 +2388,7 @@ public class AutofillProfilesFragmentTest {
 
         verify(mHelpAndFeedbackLauncher)
                 .show(
-                        sSettingsActivityTestRule.getActivity(),
+                        mSettingsActivityTestRule.getActivity(),
                         ContextUtils.getApplicationContext()
                                 .getString(R.string.help_context_autofill),
                         /* url= */ null);

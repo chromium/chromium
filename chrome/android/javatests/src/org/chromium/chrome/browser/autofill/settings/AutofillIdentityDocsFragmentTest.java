@@ -35,7 +35,6 @@ import androidx.test.filters.SmallTest;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -99,13 +98,7 @@ public class AutofillIdentityDocsFragmentTest {
     @Mock private Profile mProfileMock;
     @Mock private ReauthenticatorBridge mMockReauthenticatorBridge;
 
-    private static EntityDataManager sEntityDataManager;
-
-    @BeforeClass
-    public static void beforeClass() {
-        sEntityDataManager = mock(EntityDataManager.class);
-        EntityDataManagerFactory.setInstanceForTesting(sEntityDataManager);
-    }
+    @Mock private EntityDataManager mEntityDataManager;
 
     @Before
     public void setUp() {
@@ -113,10 +106,12 @@ public class AutofillIdentityDocsFragmentTest {
         HelpAndFeedbackLauncherFactory.setInstanceForTesting(mHelpAndFeedbackLauncher);
         ReauthenticatorBridge.setInstanceForTesting(mMockReauthenticatorBridge);
 
-        when(sEntityDataManager.getInstancesToList()).thenReturn(new LinkedHashMap<>());
-        when(sEntityDataManager.getEntitiesWithLabels()).thenReturn(Collections.emptyList());
-        when(sEntityDataManager.canListEntityInstancesInSettings()).thenReturn(true);
-        when(sEntityDataManager.canEnableOrDisableAutofillAi()).thenReturn(true);
+        mEntityDataManager = mock(EntityDataManager.class);
+        EntityDataManagerFactory.setInstanceForTesting(mEntityDataManager);
+        when(mEntityDataManager.getInstancesToList()).thenReturn(new LinkedHashMap<>());
+        when(mEntityDataManager.getEntitiesWithLabels()).thenReturn(Collections.emptyList());
+        when(mEntityDataManager.canListEntityInstancesInSettings()).thenReturn(true);
+        when(mEntityDataManager.canEnableOrDisableAutofillAi()).thenReturn(true);
         when(mMockReauthenticatorBridge.getBiometricAvailabilityStatus())
                 .thenReturn(BiometricStatus.BIOMETRICS_AVAILABLE);
     }
@@ -207,7 +202,7 @@ public class AutofillIdentityDocsFragmentTest {
         instancesMap.put(passportType, Arrays.asList(entity1));
         instancesMap.put(vehicleType, Arrays.asList(entity2));
 
-        when(sEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
+        when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
 
         mSettingsActivityTestRule.startSettingsActivity();
 
@@ -250,7 +245,7 @@ public class AutofillIdentityDocsFragmentTest {
         instancesMap.put(passportType, Arrays.asList(entity1));
         instancesMap.put(nationalIdType, Arrays.asList(entity2));
 
-        when(sEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
+        when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
 
         mSettingsActivityTestRule.startSettingsActivity();
 
@@ -316,7 +311,7 @@ public class AutofillIdentityDocsFragmentTest {
                 new LinkedHashMap<>();
         instancesMap.put(disabledType, Collections.emptyList());
 
-        when(sEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
+        when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
 
         mSettingsActivityTestRule.startSettingsActivity();
 
@@ -346,7 +341,7 @@ public class AutofillIdentityDocsFragmentTest {
                 new LinkedHashMap<>();
         instancesMap.put(readOnlyType, Collections.emptyList());
 
-        when(sEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
+        when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
 
         mSettingsActivityTestRule.startSettingsActivity();
 
@@ -385,7 +380,7 @@ public class AutofillIdentityDocsFragmentTest {
                 new LinkedHashMap<>();
         instancesMap.put(disabledType, Arrays.asList(entity));
 
-        when(sEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
+        when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
 
         mSettingsActivityTestRule.startSettingsActivity();
 
@@ -416,7 +411,7 @@ public class AutofillIdentityDocsFragmentTest {
                 new LinkedHashMap<>();
         instancesMap.put(passportType, Collections.emptyList());
 
-        when(sEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
+        when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
 
         mSettingsActivityTestRule.startSettingsActivity();
 
@@ -491,7 +486,7 @@ public class AutofillIdentityDocsFragmentTest {
         LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap =
                 new LinkedHashMap<>();
         instancesMap.put(passportType, Arrays.asList(entity1));
-        when(sEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
+        when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
 
         EntityInstance entityInstance =
                 new EntityInstance.Builder(passportType)
@@ -502,7 +497,7 @@ public class AutofillIdentityDocsFragmentTest {
                         .setRequiresReauthToSee(true)
                         .build();
 
-        when(sEntityDataManager.getEntityInstance("guid1")).thenReturn(entityInstance);
+        when(mEntityDataManager.getEntityInstance("guid1")).thenReturn(entityInstance);
 
         mSettingsActivityTestRule.startSettingsActivity();
 
@@ -537,7 +532,7 @@ public class AutofillIdentityDocsFragmentTest {
         LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap =
                 new LinkedHashMap<>();
         instancesMap.put(passportType, Arrays.asList(entity1));
-        when(sEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
+        when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
 
         EntityInstance entityInstance =
                 new EntityInstance.Builder(passportType)
@@ -549,7 +544,7 @@ public class AutofillIdentityDocsFragmentTest {
                         .setRequiresReauthToSee(true)
                         .build();
 
-        when(sEntityDataManager.getEntityInstance("guid1")).thenReturn(entityInstance);
+        when(mEntityDataManager.getEntityInstance("guid1")).thenReturn(entityInstance);
 
         mSettingsActivityTestRule.startSettingsActivity();
 
