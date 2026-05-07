@@ -314,7 +314,6 @@ static_library("common") {
     "command.h",
     "common_manifest_handlers.cc",
     "common_manifest_handlers.h",
-    "common_param_traits.h",
     "content_script_injection_url_getter.cc",
     "content_script_injection_url_getter.h",
     "context_data.h",
