@@ -519,8 +519,6 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
       GridLayoutData* child_layout_data = child_layout_subtree->LayoutData();
       CHECK(child_layout_data->HasSubgriddedAxis(grid_axis_direction));
 
-      // TODO(almaher): `SubgriddedItemData` should incorporate the parent
-      // subgrid's info.
       const SubgriddedItemData subgridded_item_data(
           grid_lanes_item, &layout_data, container_writing_mode);
       const ConstraintSpace subgrid_space =
@@ -546,8 +544,6 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
     // sizing, so they can be skipped.
     std::optional<LayoutUnit> opt_fixed_inline_size;
     if (is_for_layout && !is_subgrid) {
-      // TODO(almaher): `SubgriddedItemData` should incorporate the parent
-      // subgrid's info.
       const ConstraintSpace space_for_measure =
           CreateConstraintSpaceForMeasure(SubgriddedItemData(
               grid_lanes_item, &layout_data, container_writing_mode));
@@ -849,6 +845,7 @@ void GridLanesLayoutAlgorithm::PlaceOutOfFlowItems(
 }
 
 LayoutUnit GridLanesLayoutAlgorithm::ComputeSharedBaselineForGroup(
+    const GridSizingSubtree& sizing_subtree,
     const GridItems::GridItemDataVector& group_items,
     GridTrackSizingDirection grid_axis_direction,
     SizingConstraint sizing_constraint) const {
@@ -870,21 +867,20 @@ LayoutUnit GridLanesLayoutAlgorithm::ComputeSharedBaselineForGroup(
       continue;
     }
 
-    // TODO(almaher): `SubgriddedItemData` should incorporate the parent
-    // subgrid's info.
-    //
-    // TODO(almaher): Plumb the parent grid's `GridLayoutData` here instead of
-    // passing nullptr.
-    const auto space_for_measure = CreateConstraintSpaceForMeasure(
-        SubgriddedItemData(*group_item, /*parent_layout_data=*/nullptr,
-                           GetConstraintSpace().GetWritingMode()));
+    const SubgriddedItemData subgridded_item =
+        group_item->is_subgridded_to_parent_grid
+            ? sizing_subtree.LookupSubgriddedItemData(*group_item)
+            : SubgriddedItemData(*group_item, &sizing_subtree.LayoutData(),
+                                 GetConstraintSpace().GetWritingMode());
+    const auto space_for_measure =
+        CreateConstraintSpaceForMeasure(subgridded_item);
     const BoxStrut margins = ComputeMarginsFor(
         space_for_measure, group_item->node.Style(), GetConstraintSpace());
     const LayoutUnit extra_margin =
         GetBaselineSideMargin(*group_item, margins, grid_axis_direction);
 
     const LayoutResult* result = LayoutItemForMeasureWithFallback(
-        group_item, space_for_measure, sizing_constraint);
+        sizing_subtree, group_item, space_for_measure, sizing_constraint);
     LogicalBoxFragment baseline_fragment(
         group_item->BaselineWritingDirection(grid_axis_direction),
         To<PhysicalBoxFragment>(result->GetPhysicalFragment()));
@@ -1057,7 +1053,7 @@ void GridLanesLayoutAlgorithm::MeasureVirtualGridLanesItems(
     // produced from this group observe it via their shared `Member<>` pointer
     // (e.g. for the per-track baseline loop later).
     const LayoutUnit shared_baseline = ComputeSharedBaselineForGroup(
-        group->items, grid_axis_direction, sizing_constraint);
+        sizing_subtree, group->items, grid_axis_direction, sizing_constraint);
     contribution_sizes->SetSharedBaseline(shared_baseline);
 
     for (const Member<GridItemData>& group_item : group->items) {
@@ -1071,14 +1067,12 @@ void GridLanesLayoutAlgorithm::MeasureVirtualGridLanesItems(
       }
 
       const BlockNode& item_node = item_data.node;
-      // TODO(almaher): `SubgriddedItemData` should incorporate the parent
-      // subgrid's info.
-      //
-      // TODO(almaher): Plumb the parent grid's `GridLayoutData` here instead
-      // of passing nullptr.
-      const auto space = CreateConstraintSpaceForMeasure(
-          SubgriddedItemData(item_data, /*parent_layout_data=*/nullptr,
-                             GetConstraintSpace().GetWritingMode()));
+      const SubgriddedItemData subgridded_item =
+          item_data.is_subgridded_to_parent_grid
+              ? sizing_subtree.LookupSubgriddedItemData(item_data)
+              : SubgriddedItemData(item_data, &layout_data,
+                                   GetConstraintSpace().GetWritingMode());
+      const auto space = CreateConstraintSpaceForMeasure(subgridded_item);
       const ComputedStyle& item_style = item_node.Style();
 
       const bool use_item_inline_contribution =
@@ -1134,8 +1128,8 @@ void GridLanesLayoutAlgorithm::MeasureVirtualGridLanesItems(
         }
       } else {
         LayoutUnit block_contribution = ComputeGridLanesItemBlockContribution(
-            grid_axis_direction, sizing_constraint, space, &item_data,
-            needs_intrinsic_track_size, margins, shared_baseline,
+            sizing_subtree, grid_axis_direction, sizing_constraint, space,
+            &item_data, needs_intrinsic_track_size, margins, shared_baseline,
             baseline_shim);
         min_max_contribution =
             MinMaxSizes(block_contribution, block_contribution);
@@ -1341,6 +1335,7 @@ GridLanesLayoutAlgorithm::ComputeIntrinsicBlockSizeIgnoringChildren() {
 }
 
 const LayoutResult* GridLanesLayoutAlgorithm::LayoutItemForMeasureWithFallback(
+    const GridSizingSubtree& sizing_subtree,
     GridItemData* grid_lanes_item,
     const ConstraintSpace& space_for_measure,
     SizingConstraint sizing_constraint) const {
@@ -1368,15 +1363,13 @@ const LayoutResult* GridLanesLayoutAlgorithm::LayoutItemForMeasureWithFallback(
       grid_lanes_item->is_sizing_dependent_on_block_size = true;
     }
     const MinMaxSizes sizes = min_max_sizes_result.sizes;
-    // TODO(almaher): `SubgriddedItemData` should incorporate the parent
-    // subgrid's info.
-    //
-    // TODO(almaher): Plumb the parent grid's `GridLayoutData` here instead of
-    // passing nullptr.
+    const SubgriddedItemData subgridded_item =
+        grid_lanes_item->is_subgridded_to_parent_grid
+            ? sizing_subtree.LookupSubgriddedItemData(*grid_lanes_item)
+            : SubgriddedItemData(*grid_lanes_item, &sizing_subtree.LayoutData(),
+                                 GetConstraintSpace().GetWritingMode());
     const auto fallback_space = CreateConstraintSpaceForMeasure(
-        SubgriddedItemData(*grid_lanes_item, /*parent_layout_data=*/nullptr,
-                           GetConstraintSpace().GetWritingMode()),
-        /*opt_fixed_inline_size=*/sizes.max_size);
+        subgridded_item, /*opt_fixed_inline_size=*/sizes.max_size);
     return LayoutGridItemForMeasure(*grid_lanes_item, fallback_space,
                                          sizing_constraint);
   }
@@ -1387,6 +1380,7 @@ const LayoutResult* GridLanesLayoutAlgorithm::LayoutItemForMeasureWithFallback(
 // TODO(almaher): Eventually look into consolidating repeated code with
 // GridLayoutAlgorithm::ContributionSizeForGridItem().
 LayoutUnit GridLanesLayoutAlgorithm::ComputeGridLanesItemBlockContribution(
+    const GridSizingSubtree& sizing_subtree,
     GridTrackSizingDirection track_direction,
     SizingConstraint sizing_constraint,
     const ConstraintSpace space_for_measure,
@@ -1407,7 +1401,7 @@ LayoutUnit GridLanesLayoutAlgorithm::ComputeGridLanesItemBlockContribution(
   //  - We'll need to respect the aspect-ratio when appropriate.
 
   const LayoutResult* result = LayoutItemForMeasureWithFallback(
-      grid_lanes_item, space_for_measure, sizing_constraint);
+      sizing_subtree, grid_lanes_item, space_for_measure, sizing_constraint);
 
   LogicalBoxFragment baseline_fragment(
       grid_lanes_item->BaselineWritingDirection(track_direction),

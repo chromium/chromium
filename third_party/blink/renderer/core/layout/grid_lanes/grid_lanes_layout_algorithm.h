@@ -241,6 +241,7 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
   // to that value, which accounts for extra space needed to align the item's
   // baseline with the shared baseline of its track.
   LayoutUnit ComputeGridLanesItemBlockContribution(
+      const GridSizingSubtree& sizing_subtree,
       GridTrackSizingDirection track_direction,
       SizingConstraint sizing_constraint,
       const ConstraintSpace space_for_measure,
@@ -274,6 +275,7 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
   // (i.e., items that share the same span and baseline alignment). Returns the
   // maximum baseline among all items in the group.
   LayoutUnit ComputeSharedBaselineForGroup(
+      const GridSizingSubtree& sizing_subtree,
       const GridItems::GridItemDataVector& group_items,
       GridTrackSizingDirection grid_axis_direction,
       SizingConstraint sizing_constraint) const;
@@ -298,6 +300,7 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
   // item), falls back to using the item's max-content contribution as its
   // inline size.
   const LayoutResult* LayoutItemForMeasureWithFallback(
+      const GridSizingSubtree& sizing_subtree,
       GridItemData* grid_lanes_item,
       const ConstraintSpace& space_for_measure,
       SizingConstraint sizing_constraint) const;
