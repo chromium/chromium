@@ -693,6 +693,11 @@ void GeminiBrowserAgent::CancelTimeoutAndUpdateFloatyPageContext(
 void GeminiBrowserAgent::OnViewStateChanged(
     ios::provider::GeminiViewState view_state) {
   if (view_state == ios::provider::GeminiViewState::kExpanded) {
+    if (is_floaty_temporarily_hidden_) {
+      ForceShowFloatyIfInvoked();
+      active_hiding_sources_.clear();
+      is_hidden_by_keyboard_ = false;
+    }
     UpdateGeminiPageContext();
   }
 }

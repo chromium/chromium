@@ -647,6 +647,22 @@ TEST_F(GeminiBrowserAgentTest, TestForceDismissedWhenTemporarilyHidden) {
   EXPECT_TRUE(IsConversationIdPrefCleared());
 }
 
+// Tests that when the floaty is expanded/focused while temporarily hidden,
+// it becomes visible again, resetting the temporary hidden state.
+TEST_F(GeminiBrowserAgentTest,
+       TestFloatyVisibleWhenExpandedWhileTemporarilyHidden) {
+  SetIsFloatyInvoked(true);
+  SetIsFloatyTemporarilyHidden(true);
+
+  EXPECT_TRUE(IsFloatyTemporarilyHidden());
+
+  // Simulate view state changing to expanded.
+  gemini_browser_agent_->OnViewStateChanged(
+      ios::provider::GeminiViewState::kExpanded);
+
+  EXPECT_FALSE(IsFloatyTemporarilyHidden());
+}
+
 // Tests that OnProcessingStatusChanged(kDormant) switches the view mode to
 // kFloaty (i.e., text mode) if the current mode is kLive.
 TEST_F(GeminiBrowserAgentTest,
