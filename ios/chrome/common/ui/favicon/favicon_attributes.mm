@@ -59,7 +59,7 @@ const CGFloat kFallbackIconDefaultTextColorGrayscale = 0.667;
               defaultBackgroundColor:defaultBackgroundColor];
 }
 
-#pragma mark - NSCoding
+#pragma mark - NSSecureCoding
 
 + (BOOL)supportsSecureCoding {
   return YES;

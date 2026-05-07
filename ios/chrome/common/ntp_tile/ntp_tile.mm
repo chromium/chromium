@@ -61,6 +61,8 @@ NSString* const kPosition = @"position";
   return self;
 }
 
+#pragma mark - NSSecureCoding
+
 + (BOOL)supportsSecureCoding {
   return YES;
 }
