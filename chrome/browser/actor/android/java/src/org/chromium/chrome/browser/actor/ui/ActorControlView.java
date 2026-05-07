@@ -90,16 +90,15 @@ public class ActorControlView extends RelativeLayout {
     void configurePeekViewForState(PeekViewUiState state) {
         Context context = getContext();
         setDescriptionView(state.getDescription(context), state.getDescriptionVisibility());
-        mTitleView.setTextAppearance(state.getTitleTextAppearanceResId());
+        mTitleView.setTextAppearance(context, state.getTitleTextAppearanceResId());
 
         mActorControlButton.setVisibility(state.getButtonVisibility());
         mActorControlButton.setText(state.getButtonText(context));
         mActorControlButton.setIconResource(state.buttonIconResId);
         mActorControlButton.setBackgroundTintList(state.getButtonBackgroundTint(context));
-        mActorControlButton.setCornerRadius(state.getButtonCornerRadius(context));
         mActorControlButton.setIconTint(state.getIconTint(context));
         int horizontalPadding = state.getButtonHorizontalPadding(context);
-        mActorControlButton.setPadding(horizontalPadding, 0, horizontalPadding, 0);
+        mActorControlButton.setPaddingRelative(horizontalPadding, 0, horizontalPadding, 0);
     }
 
     String getStepDescriptionForTesting() {

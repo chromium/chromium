@@ -9,7 +9,6 @@ import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.view.View;
 
-import androidx.annotation.AttrRes;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DimenRes;
 import androidx.annotation.DrawableRes;
@@ -17,8 +16,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
 import androidx.appcompat.content.res.AppCompatResources;
-
-import com.google.android.material.color.MaterialColors;
+import androidx.core.content.ContextCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -56,21 +54,19 @@ public class PeekViewUiState {
 
     // UI properties for the actor control button
     public final @DrawableRes int buttonIconResId;
-    public final @AttrRes int buttonBackgroundAttr;
-    public final @DimenRes int buttonCornerRadiusResId;
     public final @DimenRes int buttonHorizontalPaddingResId;
     public final @ColorRes int iconTintResId;
     public final @Visibility int buttonVisibility;
     public final @StringRes int buttonTextResId;
     public final @Visibility int descriptionVisibility;
     public final @StyleRes int titleTextAppearanceResId;
+    public final @ColorRes int buttonBackgroundResId;
 
     private PeekViewUiState(
             @StateType int type,
             @StringRes int descriptionResId,
             @DrawableRes int buttonIconResId,
-            @AttrRes int buttonBackgroundAttr,
-            @DimenRes int buttonCornerRadiusResId,
+            @ColorRes int buttonBackgroundResId,
             @DimenRes int buttonHorizontalPaddingResId,
             @ColorRes int iconTintResId,
             @Visibility int buttonVisibility,
@@ -80,8 +76,7 @@ public class PeekViewUiState {
         this.type = type;
         this.descriptionResId = descriptionResId;
         this.buttonIconResId = buttonIconResId;
-        this.buttonBackgroundAttr = buttonBackgroundAttr;
-        this.buttonCornerRadiusResId = buttonCornerRadiusResId;
+        this.buttonBackgroundResId = buttonBackgroundResId;
         this.buttonHorizontalPaddingResId = buttonHorizontalPaddingResId;
         this.iconTintResId = iconTintResId;
         this.buttonVisibility = buttonVisibility;
@@ -96,21 +91,11 @@ public class PeekViewUiState {
      * @param context The {@link Context} to use for retrieving resources.
      * @return The background color tint list for the actor control button.
      */
-    public ColorStateList getButtonBackgroundTint(Context context) {
-        return ColorStateList.valueOf(
-                MaterialColors.getColor(context, buttonBackgroundAttr, /* defaultValue= */ 0));
-    }
-
-    /**
-     * Returns the corner radius for the actor control button.
-     *
-     * @param context The {@link Context} to use for retrieving resources.
-     * @return The corner radius for the actor control button.
-     */
-    public int getButtonCornerRadius(Context context) {
-        return (buttonCornerRadiusResId != Resources.ID_NULL)
-                ? context.getResources().getDimensionPixelSize(buttonCornerRadiusResId)
-                : 0;
+    public @Nullable ColorStateList getButtonBackgroundTint(Context context) {
+        if (buttonBackgroundResId == Resources.ID_NULL) {
+            return null;
+        }
+        return ColorStateList.valueOf(ContextCompat.getColor(context, buttonBackgroundResId));
     }
 
     /**
@@ -196,8 +181,7 @@ public class PeekViewUiState {
         return type == that.type
                 && descriptionResId == that.descriptionResId
                 && buttonIconResId == that.buttonIconResId
-                && buttonBackgroundAttr == that.buttonBackgroundAttr
-                && buttonCornerRadiusResId == that.buttonCornerRadiusResId
+                && buttonBackgroundResId == that.buttonBackgroundResId
                 && buttonHorizontalPaddingResId == that.buttonHorizontalPaddingResId
                 && iconTintResId == that.iconTintResId
                 && buttonVisibility == that.buttonVisibility
@@ -212,8 +196,7 @@ public class PeekViewUiState {
                 type,
                 descriptionResId,
                 buttonIconResId,
-                buttonBackgroundAttr,
-                buttonCornerRadiusResId,
+                buttonBackgroundResId,
                 buttonHorizontalPaddingResId,
                 iconTintResId,
                 buttonVisibility,
@@ -228,9 +211,7 @@ public class PeekViewUiState {
                     /* type= */ StateType.ACTING,
                     /* descriptionResId= */ R.string.peek_state_acting,
                     /* buttonIconResId= */ ICON_ACTING,
-                    /* buttonBackgroundAttr= */ R.attr.colorSurfaceContainer,
-                    /* buttonCornerRadiusResId= */ R.dimen
-                            .actor_control_button_corner_radius_play_pause,
+                    /* buttonBackgroundResId= */ R.color.actor_control_icon_button_bg,
                     /* buttonHorizontalPaddingResId= */ Resources.ID_NULL,
                     /* iconTintResId= */ R.color.default_icon_color_tint_list,
                     /* buttonVisibility= */ View.VISIBLE,
@@ -243,9 +224,7 @@ public class PeekViewUiState {
                     /* type= */ StateType.PAUSED,
                     /* descriptionResId= */ R.string.peek_state_paused,
                     /* buttonIconResId= */ ICON_PAUSED,
-                    /* buttonBackgroundAttr= */ R.attr.colorSurfaceContainerLow,
-                    /* buttonCornerRadiusResId= */ R.dimen
-                            .actor_control_button_corner_radius_play_pause,
+                    /* buttonBackgroundResId= */ R.color.actor_control_icon_button_bg,
                     /* buttonHorizontalPaddingResId= */ Resources.ID_NULL,
                     /* iconTintResId= */ R.color.default_icon_color_tint_list,
                     /* buttonVisibility= */ View.VISIBLE,
@@ -258,11 +237,9 @@ public class PeekViewUiState {
                     /* type= */ StateType.WAITING,
                     /* descriptionResId= */ R.string.peek_state_waiting,
                     /* buttonIconResId= */ ICON_WAITING,
-                    /* buttonBackgroundAttr= */ R.attr.colorPrimary,
-                    /* buttonCornerRadiusResId= */ R.dimen
-                            .actor_control_button_corner_radius_waiting,
+                    /* buttonBackgroundResId= */ R.color.actor_view_button_background_color,
                     /* buttonHorizontalPaddingResId= */ R.dimen
-                            .actor_control_button_horizontal_padding_waiting,
+                            .actor_control_view_button_horizontal_padding,
                     /* iconTintResId= */ Resources.ID_NULL,
                     /* buttonVisibility= */ View.VISIBLE,
                     /* buttonTextResId= */ R.string.peek_state_view_button_label,
@@ -274,12 +251,11 @@ public class PeekViewUiState {
                     /* type= */ StateType.DEFAULT,
                     /* descriptionResId= */ Resources.ID_NULL,
                     /* buttonIconResId= */ ICON_DEFAULT,
-                    /* buttonBackgroundAttr= */ Resources.ID_NULL,
-                    /* buttonCornerRadiusResId= */ Resources.ID_NULL,
+                    /* buttonBackgroundResId= */ Resources.ID_NULL,
                     /* buttonHorizontalPaddingResId= */ Resources.ID_NULL,
                     /* iconTintResId= */ Resources.ID_NULL,
                     /* buttonVisibility= */ View.GONE,
                     /* buttonTextResId= */ Resources.ID_NULL,
                     /* descriptionVisibility= */ View.GONE,
-                    /* titleTextAppearanceResId= */ R.style.TextAppearance_TextLarge_Primary);
+                    /* titleTextAppearanceResId= */ R.style.TextAppearance_Headline2Thick);
 }

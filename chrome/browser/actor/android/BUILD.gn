@@ -130,14 +130,16 @@ source_set("android") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/color/actor_control_icon_button_bg.xml",
     "java/res/drawable/actor_gts_tab_indicator_background.xml",
     "java/res/drawable/actor_thumbnail_overlay_outline.xml",
     "java/res/layout/actor_control_layout.xml",
     "java/res/layout/actor_gts_tab_indicator.xml",
     "java/res/layout/actor_overlay.xml",
     "java/res/layout/actor_picture_in_picture_overlay.xml",
-    "java/res/values/dimens.xml",
+    "java/res/values-night/colors.xml",
     "java/res/values/colors.xml",
+    "java/res/values/dimens.xml",
   ]
   deps = [
     "//chrome/app:java_strings_grd",
