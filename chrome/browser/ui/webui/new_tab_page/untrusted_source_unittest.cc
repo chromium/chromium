@@ -9,9 +9,9 @@
 #include <string>
 
 #include "base/base64.h"
-#include "base/functional/bind.h"
+#include "base/files/file_util.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/strings/strcat.h"
+#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -162,4 +162,75 @@ TEST_F(UntrustedSourceTest, OneGoogleBarRequest_ParamsEncoded) {
             1u);
   ASSERT_EQ(one_google_bar_service()->additional_query_params().at("async"),
             "fixed:0");
+}
+
+TEST_F(UntrustedSourceTest, BackgroundRequest_Valid) {
+  static constexpr uint8_t kData[] = {1, 2, 3, 4};
+  ASSERT_TRUE(base::WriteFile(profile_->GetPath().AppendASCII("background.jpg"),
+                              kData));
+
+  {
+    base::RunLoop run_loop;
+    base::MockCallback<content::URLDataSource::GotDataCallback> callback;
+    EXPECT_CALL(callback, Run(testing::_))
+        .Times(1)
+        .WillOnce([&](scoped_refptr<base::RefCountedMemory> memory) {
+          EXPECT_EQ(base::span(kData), base::span(*memory));
+          run_loop.Quit();
+        });
+
+    untrusted_source_->StartDataRequest(
+        GURL("chrome-untrusted://new-tab-page/background.jpg"),
+        test_web_contents_getter_, callback.Get());
+    run_loop.Run();
+  }
+
+  // Verify that a valid token-prefixed URL also works.
+  static constexpr char kToken[] = "1234567890ABCDEF1234567890ABCDEF";
+  base::FilePath token_background_img =
+      profile_->GetPath().AppendASCII(std::string(kToken) + "background.jpg");
+  static constexpr uint8_t kTokenData[] = {5, 6, 7, 8};
+  ASSERT_TRUE(base::WriteFile(token_background_img, kTokenData));
+
+  {
+    base::RunLoop run_loop;
+    base::MockCallback<content::URLDataSource::GotDataCallback> callback;
+    EXPECT_CALL(callback, Run(testing::_))
+        .Times(1)
+        .WillOnce([&](scoped_refptr<base::RefCountedMemory> memory) {
+          EXPECT_EQ(base::span(kTokenData), base::span(*memory));
+          run_loop.Quit();
+        });
+
+    untrusted_source_->StartDataRequest(
+        GURL(std::string("chrome-untrusted://new-tab-page/") + kToken +
+             "background.jpg"),
+        test_web_contents_getter_, callback.Get());
+    run_loop.Run();
+  }
+}
+
+// Verifies that directory traversal is disallowed (crbug.com/497241148).
+TEST_F(UntrustedSourceTest, BackgroundRequest_DirectoryTraversal) {
+  base::FilePath extensions_dir =
+      profile_->GetPath().AppendASCII("12345678901234567890123456789012");
+  ASSERT_TRUE(base::CreateDirectory(extensions_dir));
+  base::FilePath background_img = extensions_dir.AppendASCII("background.jpg");
+  static constexpr uint8_t kData[] = {1, 2, 3, 4};
+  ASSERT_TRUE(base::WriteFile(background_img, kData));
+
+  base::RunLoop run_loop;
+  base::MockCallback<content::URLDataSource::GotDataCallback> callback;
+  EXPECT_CALL(callback, Run(testing::_))
+      .Times(1)
+      .WillOnce([&](scoped_refptr<base::RefCountedMemory> memory) {
+        EXPECT_TRUE(base::span(*memory).empty());
+        run_loop.Quit();
+      });
+
+  untrusted_source_->StartDataRequest(
+      GURL("chrome-untrusted://new-tab-page/12345678901234567890123456789012/"
+           "background.jpg"),
+      test_web_contents_getter_, callback.Get());
+  run_loop.Run();
 }
