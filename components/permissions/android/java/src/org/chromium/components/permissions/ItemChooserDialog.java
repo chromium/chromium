@@ -199,7 +199,7 @@ public class ItemChooserDialog implements DeviceItemAdapter.Observer {
                     }
                 };
 
-        Button cancelButton = (Button) dialogContainer.findViewById(R.id.negative);
+        Button cancelButton = dialogContainer.findViewById(R.id.negative);
         if (PermissionsAndroidFeatureMap.isEnabled(
                 PermissionsAndroidFeatureList.ANDROID_ITEM_CHOOSER_CANCEL_BUTTON)) {
             cancelButton.setText(context.getString(R.string.item_chooser_dialog_cancel_button));

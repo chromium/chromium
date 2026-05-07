@@ -40,7 +40,7 @@ public class PageInfoView extends FrameLayout implements OnClickListener {
         super(context);
         LayoutInflater.from(context).inflate(R.layout.page_info, this, true);
         // Elevate the "Cookies and site data" item.
-        LinearLayout rowWrapper = (LinearLayout) findViewById(R.id.page_info_row_wrapper);
+        LinearLayout rowWrapper = findViewById(R.id.page_info_row_wrapper);
 
         mRowWrapper = rowWrapper;
         mCookiesRow = findViewById(R.id.page_info_cookies_row);

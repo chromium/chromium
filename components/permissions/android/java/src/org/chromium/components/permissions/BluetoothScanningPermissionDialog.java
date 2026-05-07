@@ -177,10 +177,10 @@ public class BluetoothScanningPermissionDialog {
         mListView.setEmptyView(emptyMessage);
         mListView.setDivider(null);
 
-        ProgressBar progressBar = (ProgressBar) dialogContainer.findViewById(R.id.progress);
+        ProgressBar progressBar = dialogContainer.findViewById(R.id.progress);
         progressBar.setVisibility(View.GONE);
 
-        Button blockButton = (Button) dialogContainer.findViewById(R.id.block);
+        Button blockButton = dialogContainer.findViewById(R.id.block);
         blockButton.setText(blockButtonText);
         blockButton.setEnabled(true);
         blockButton.setOnClickListener(
@@ -190,7 +190,7 @@ public class BluetoothScanningPermissionDialog {
                     mDialog.dismiss();
                 });
 
-        Button allowButton = (Button) dialogContainer.findViewById(R.id.allow);
+        Button allowButton = dialogContainer.findViewById(R.id.allow);
         allowButton.setText(allowButtonText);
         allowButton.setEnabled(true);
         allowButton.setOnClickListener(
