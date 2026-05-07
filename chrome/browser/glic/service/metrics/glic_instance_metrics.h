@@ -416,6 +416,7 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   raw_ptr<PrefService> pref_service_ = nullptr;
 
   bool first_side_panel_close_recorded_ = false;
+  bool first_floaty_close_recorded_ = false;
   bool saas_usage_recorded_ = false;
 
   // The following variables are used for recording scroll related metrics.

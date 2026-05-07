@@ -336,6 +336,71 @@ TEST_F(GlicInstanceMetricsTest,
       base::Minutes(5), 1);
 }
 
+TEST_F(GlicInstanceMetricsTest, FloatyFirstOpenDuration_LoggedOnFirstClose) {
+  ShowOptions show_options{FloatingShowOptions{}};
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnShowInFloaty(show_options);
+  task_environment_.FastForwardBy(base::Minutes(5));
+
+  metrics_.OnFloatyClosed();
+
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.InvocationSource.TopChromeButton.FloatyFirstOpenDuration",
+      base::Minutes(5), 1);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       FloatyFirstOpenDuration_NotLoggedOnSecondClose) {
+  ShowOptions show_options{FloatingShowOptions{}};
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnShowInFloaty(show_options);
+
+  task_environment_.FastForwardBy(base::Minutes(5));
+  metrics_.OnFloatyClosed();
+
+  histogram_tester_.ExpectTotalCount(
+      "Glic.InvocationSource.TopChromeButton.FloatyFirstOpenDuration", 1);
+
+  metrics_.OnOpen(mojom::InvocationSource::kOsButton, show_options);
+  metrics_.OnShowInFloaty(show_options);
+  task_environment_.FastForwardBy(base::Minutes(2));
+  metrics_.OnFloatyClosed();
+
+  histogram_tester_.ExpectTotalCount(
+      "Glic.InvocationSource.TopChromeButton.FloatyFirstOpenDuration", 1);
+  histogram_tester_.ExpectTotalCount(
+      "Glic.InvocationSource.OsButton.FloatyFirstOpenDuration", 0);
+}
+
+TEST_F(GlicInstanceMetricsTest,
+       FloatyFirstOpenDuration_ShownWithoutToggleCall) {
+  ShowOptions show_options{FloatingShowOptions{}};
+  metrics_.OnShowInFloaty(show_options);
+  task_environment_.FastForwardBy(base::Minutes(5));
+  metrics_.OnFloatyClosed();
+
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.InvocationSource.Unsupported.FloatyFirstOpenDuration",
+      base::Minutes(5), 1);
+}
+
+TEST_F(GlicInstanceMetricsTest, FloatyFirstOpenDuration_LoggedOnUnbind) {
+  ShowOptions show_options{FloatingShowOptions{}};
+  metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);
+  metrics_.OnShowInFloaty(show_options);
+  task_environment_.FastForwardBy(base::Minutes(5));
+
+  metrics_.OnUnbindEmbedder(FloatingEmbedderKey{});
+
+  histogram_tester_.ExpectUniqueTimeSample(
+      "Glic.InvocationSource.TopChromeButton.FloatyFirstOpenDuration",
+      base::Minutes(5), 1);
+
+  // Verify that Floaty.OpenDuration is logged on unbind.
+  histogram_tester_.ExpectUniqueTimeSample("Glic.Instance.Floaty.OpenDuration",
+                                           base::Minutes(5), 1);
+}
+
 TEST_F(GlicInstanceMetricsTest, InstanceEvents_LogsEventCountsAndHadEvent) {
   ShowOptions show_options{FloatingShowOptions{}};
   metrics_.OnOpen(mojom::InvocationSource::kTopChromeButton, show_options);

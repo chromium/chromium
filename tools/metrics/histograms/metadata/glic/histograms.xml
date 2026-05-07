@@ -1545,6 +1545,18 @@ chromium-metrics-reviews@google.com.
   <token key="InvocationSource" variants="GlicInvocationSource"/>
 </histogram>
 
+<histogram
+    name="Glic.InvocationSource.{InvocationSource}.FloatyFirstOpenDuration"
+    units="ms" expires_after="2027-05-06">
+  <owner>andreaxg@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the duration that a Glic Floaty window was open. Recorded for the
+    first time the floaty was open for an instance without an error.
+  </summary>
+  <token key="InvocationSource" variants="GlicInvocationSource"/>
+</histogram>
+
 <histogram name="Glic.InvocationSource.{InvocationSource}.HadEvent"
     enum="GlicInstanceEvent" expires_after="2026-10-04">
   <owner>birnie@google.com</owner>

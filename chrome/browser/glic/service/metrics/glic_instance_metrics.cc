@@ -397,9 +397,19 @@ void GlicInstanceMetrics::OnFloatyClosed() {
         GlicInstanceMetricsError::kFloatyClosedWithoutOpen);
     return;
   }
-  base::UmaHistogramCustomTimes("Glic.Instance.Floaty.OpenDuration",
-                                base::TimeTicks::Now() - floaty_open_time_,
+  base::TimeDelta duration = base::TimeTicks::Now() - floaty_open_time_;
+  base::UmaHistogramCustomTimes("Glic.Instance.Floaty.OpenDuration", duration,
                                 base::Milliseconds(1), base::Hours(1), 50);
+  if (!first_floaty_close_recorded_) {
+    first_floaty_close_recorded_ = true;
+    mojom::InvocationSource source = initial_invocation_source_.value_or(
+        mojom::InvocationSource::kUnsupported);
+    base::UmaHistogramCustomTimes(
+        base::StrCat({"Glic.InvocationSource.",
+                      GetInvocationSourceString(source),
+                      ".FloatyFirstOpenDuration"}),
+        duration, base::Milliseconds(1), base::Hours(1), 50);
+  }
   floaty_open_time_ = base::TimeTicks();
 }
 
@@ -427,9 +437,10 @@ void GlicInstanceMetrics::OnSidePanelClosed(
     return;
   }
 
+  base::TimeDelta duration = base::TimeTicks::Now() - it->second;
   base::UmaHistogramCustomTimes("Glic.Instance.SidePanel.OpenDuration",
-                                base::TimeTicks::Now() - it->second,
-                                base::Milliseconds(1), base::Hours(1), 50);
+                                duration, base::Milliseconds(1), base::Hours(1),
+                                50);
 
   if (!first_side_panel_close_recorded_) {
     first_side_panel_close_recorded_ = true;
@@ -439,8 +450,7 @@ void GlicInstanceMetrics::OnSidePanelClosed(
         base::StrCat({"Glic.InvocationSource.",
                       GetInvocationSourceString(source),
                       ".SidePanelFirstOpenDuration"}),
-        base::TimeTicks::Now() - it->second, base::Milliseconds(1),
-        base::Hours(1), 50);
+        duration, base::Milliseconds(1), base::Hours(1), 50);
   }
   side_panel_open_times_.erase(it);
 }
@@ -466,9 +476,10 @@ void GlicInstanceMetrics::OnUnbindEmbedder(EmbedderKey key) {
     tabs::TabHandle tab_handle = tab->GetHandle();
     auto it = side_panel_open_times_.find(tab_handle);
     if (it != side_panel_open_times_.end()) {
+      base::TimeDelta duration = base::TimeTicks::Now() - it->second;
       base::UmaHistogramCustomTimes("Glic.Instance.SidePanel.OpenDuration",
-                                    base::TimeTicks::Now() - it->second,
-                                    base::Milliseconds(1), base::Hours(1), 50);
+                                    duration, base::Milliseconds(1),
+                                    base::Hours(1), 50);
       if (!first_side_panel_close_recorded_) {
         first_side_panel_close_recorded_ = true;
         mojom::InvocationSource source = initial_invocation_source_.value_or(
@@ -477,8 +488,7 @@ void GlicInstanceMetrics::OnUnbindEmbedder(EmbedderKey key) {
             base::StrCat({"Glic.InvocationSource.",
                           GetInvocationSourceString(source),
                           ".SidePanelFirstOpenDuration"}),
-            base::TimeTicks::Now() - it->second, base::Milliseconds(1),
-            base::Hours(1), 50);
+            duration, base::Milliseconds(1), base::Hours(1), 50);
       }
       side_panel_open_times_.erase(it);
 
@@ -490,6 +500,24 @@ void GlicInstanceMetrics::OnUnbindEmbedder(EmbedderKey key) {
     tab_depths_.erase(tab_handle);
     if (bound_tab_count_ > 0) {
       bound_tab_count_--;
+    }
+  } else {
+    if (!floaty_open_time_.is_null()) {
+      base::TimeDelta duration = base::TimeTicks::Now() - floaty_open_time_;
+      base::UmaHistogramCustomTimes("Glic.Instance.Floaty.OpenDuration",
+                                    duration, base::Milliseconds(1),
+                                    base::Hours(1), 50);
+      if (!first_floaty_close_recorded_) {
+        first_floaty_close_recorded_ = true;
+        mojom::InvocationSource source = initial_invocation_source_.value_or(
+            mojom::InvocationSource::kUnsupported);
+        base::UmaHistogramCustomTimes(
+            base::StrCat({"Glic.InvocationSource.",
+                          GetInvocationSourceString(source),
+                          ".FloatyFirstOpenDuration"}),
+            duration, base::Milliseconds(1), base::Hours(1), 50);
+      }
+      floaty_open_time_ = base::TimeTicks();
     }
   }
 }
