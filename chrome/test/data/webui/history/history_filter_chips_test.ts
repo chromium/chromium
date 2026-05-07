@@ -53,8 +53,8 @@ suite('HistoryFilterChipsTest', function() {
     // Show user visits only.
     userChip.click();
     await microtasksFinished();
-    const action = await browserService.whenCalled('recordAction');
-    assertEquals('HistoryPage_ShowUserOnlyEnabled', action);
+    const action1 = await browserService.whenCalled('recordAction');
+    assertEquals('HistoryPage_ShowUserOnlyEnabled', action1);
     browserService.resetResolver('recordAction');
 
     assertTrue(!!eventDetail);
@@ -86,8 +86,8 @@ suite('HistoryFilterChipsTest', function() {
 
     // Show actor visits only.
     actorChip.click();
-    const action = await browserService.whenCalled('recordAction');
-    assertEquals('HistoryPage_ShowActorOnlyEnabled', action);
+    const action1 = await browserService.whenCalled('recordAction');
+    assertEquals('HistoryPage_ShowActorOnlyEnabled', action1);
     await microtasksFinished();
     browserService.resetResolver('recordAction');
 
@@ -115,34 +115,63 @@ suite('HistoryFilterChipsTest', function() {
         element.shadowRoot.querySelector<HTMLElement>('#actorVisitsChip');
     assertTrue(!!userChip && !!actorChip);
 
-    // Start at User Only.
+    let eventDetail: {userVisits: boolean, actorVisits: boolean}|undefined;
+    element.addEventListener('filter-changed', ((e: CustomEvent) => {
+                                                 eventDetail = e.detail;
+                                               }) as EventListener);
+
+    // Start at 'User Only' by clicking the user chip.
     userChip.click();
-    const action = await browserService.whenCalled('recordAction');
-    assertEquals('HistoryPage_ShowUserOnlyEnabled', action);
+    const action1 = await browserService.whenCalled('recordAction');
+    assertEquals('HistoryPage_ShowUserOnlyEnabled', action1);
+    await microtasksFinished();
     browserService.resetResolver('recordAction');
+
+    assertTrue(!!eventDetail);
+    assertTrue(eventDetail.userVisits);
+    assertFalse(eventDetail.actorVisits);
     assertTrue(userChip.hasAttribute('selected'));
     assertFalse(actorChip.hasAttribute('selected'));
 
-    // Clicking Actor Chip while User Only is active should switch to Actor
-    // visits only.
+    // Clicking Actor Chip while 'User Only' is active should
+    // switch directly to 'Actor Only'.
     actorChip.click();
     const action2 = await browserService.whenCalled('recordAction');
     assertEquals('HistoryPage_ShowActorOnlyEnabled', action2);
-    browserService.resetResolver('recordAction');
     await microtasksFinished();
+    browserService.resetResolver('recordAction');
 
+    assertTrue(!!eventDetail);
+    assertFalse(eventDetail.userVisits);
+    assertTrue(eventDetail.actorVisits);
     assertFalse(userChip.hasAttribute('selected'));
     assertTrue(actorChip.hasAttribute('selected'));
 
-    // Clicking User Chip while Actor Only is active should switch to User
-    // visits only.
+    // Clicking User Chip while 'Actor Only' is active should
+    // switch back to 'User Only'.
     userChip.click();
     const action3 = await browserService.whenCalled('recordAction');
     assertEquals('HistoryPage_ShowUserOnlyEnabled', action3);
+    await microtasksFinished();
     browserService.resetResolver('recordAction');
+
+    assertTrue(!!eventDetail);
+    assertTrue(eventDetail.userVisits);
+    assertFalse(eventDetail.actorVisits);
+    assertTrue(userChip.hasAttribute('selected'));
+    assertFalse(actorChip.hasAttribute('selected'));
+
+    // Clicking User Chip again while 'User Only' is active
+    // should return to 'Show All'.
+    userChip.click();
+    const action4 = await browserService.whenCalled('recordAction');
+    assertEquals('HistoryPage_ShowAllEnabled', action4);
     await microtasksFinished();
 
-    assertTrue(userChip.hasAttribute('selected'));
+    assertTrue(!!eventDetail);
+    assertTrue(eventDetail.userVisits);
+    assertTrue(eventDetail.actorVisits);
+    assertFalse(userChip.hasAttribute('selected'));
     assertFalse(actorChip.hasAttribute('selected'));
   });
 });
