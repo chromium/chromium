@@ -428,6 +428,9 @@ bool TabGroupsMoveFunction::MoveGroup(int group_id,
         *error = ExtensionTabUtil::kTabStripDoesNotSupportTabGroupsError;
         return false;
       }
+      // TODO(crbug.com/510803459): This is a potential leak if there is an
+      // error in the Java layer and OnTabGroupCreated() isn't called.
+      AddRef();  // Balanced in OnTabGroupCreated().
       observer_helper_ =
           std::make_unique<ObserverHelper>(this, target_tab_model);
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -517,6 +520,8 @@ void TabGroupsMoveFunction::OnTabGroupCreated(tab_groups::TabGroupId group_id) {
   auto group_object = ExtensionTabUtil::CreateTabGroupObject(group_id);
   CHECK(group_object);
   Respond(ArgumentList(api::tab_groups::Get::Results::Create(*group_object)));
+
+  Release();  // Balanced in MoveGroup().
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

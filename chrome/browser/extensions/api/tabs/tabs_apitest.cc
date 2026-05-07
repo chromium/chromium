@@ -658,7 +658,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabPrerenderingTest,
   ASSERT_TRUE(RunExtensionTest("tabs/prerendering_into_new_tab")) << message_;
 }
 
-// TODO(https://crbug.com/449095632): Port to desktop android.
+// TODO(https://crbug.com/449095632): Port to desktop android. Currently fails
+// because the chrome.tabGroups.onRemoved notification is not received.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Tests the tabs.onUpdated events dispatched when moving a tab group from one

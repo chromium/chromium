@@ -119,6 +119,13 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiTest, TestTabGroupsWorks) {
   ASSERT_TRUE(RunExtensionTest("tab_groups/basics")) << message_;
 }
 
+// Tests moving a tab group from one window to another using the JavaScript
+// API. Regression test for https://crbug.com/509581460, which was a problem
+// with ref-counting that only showed up in real JS tests.
+IN_PROC_BROWSER_TEST_F(TabGroupsApiTest, MoveToWindow) {
+  ASSERT_TRUE(RunExtensionTest("tab_groups/move_to_window")) << message_;
+}
+
 // Tests that events are restricted to their respective browser contexts,
 // especially between on-the-record and off-the-record browsers.
 IN_PROC_BROWSER_TEST_F(TabGroupsApiTest, TestTabGroupEventsAcrossProfiles) {
