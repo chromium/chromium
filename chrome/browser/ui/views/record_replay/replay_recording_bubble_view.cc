@@ -44,8 +44,8 @@ std::unique_ptr<views::Widget> ReplayRecordingBubbleView::Show(
       ui::ImageModel::FromImage(gfx::Image(gfx::CreateVectorIcon(
           vector_icons::kPlayArrowIcon, /*dip_size=*/100,
           anchor_view->GetColorProvider()->GetColor(ui::kColorIcon)))));
-  std::unique_ptr<views::Widget> widget =
-      views::BubbleDialogDelegate::CreateBubble(std::move(bubble));
+  auto widget = base::WrapUnique(views::BubbleDialogDelegateView::CreateBubble(
+      std::move(bubble), views::Widget::InitParams::CLIENT_OWNS_WIDGET));
   bubble_ptr->ShowForReason(LocationBarBubbleDelegateView::USER_GESTURE);
   return widget;
 }

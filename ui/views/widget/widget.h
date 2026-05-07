@@ -166,9 +166,6 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   using ShapeRects = std::vector<gfx::Rect>;
   using PaintAsActiveCallbackList = base::RepeatingClosureList;
 
-  enum class ClosedReason;
-  using ClosedCallback = base::OnceCallback<void(ClosedReason)>;
-
   enum class FrameType {
     kDefault,      // Use whatever the default would be.
     kForceCustom,  // Force the custom frame.
@@ -902,7 +899,8 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // It is OK to not reset the Widget in the callback. This blocks the window
   // from closing. Used for example in web page unload handlers that shows a
   // dialog to the user to confirm whether to discard changes.
-  void MakeCloseSynchronous(ClosedCallback override_close);
+  void MakeCloseSynchronous(
+      base::OnceCallback<void(ClosedReason)> override_close);
 
   // A UI test which tries to asynchronously examine a widget (e.g. the pixel
   // tests) will fail if the widget is closed before that.  This can happen

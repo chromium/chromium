@@ -241,8 +241,8 @@ CandidateWindowView::CandidateWindowView(gfx::NativeView parent)
 CandidateWindowView::~CandidateWindowView() = default;
 
 std::unique_ptr<views::Widget> CandidateWindowView::InitWidget() {
-  std::unique_ptr<views::Widget> widget =
-      BubbleDialogDelegate::CreateBubble(base::WrapUnique(this));
+  views::Widget* widget = BubbleDialogDelegateView::CreateBubble(
+      this, views::Widget::InitParams::CLIENT_OWNS_WIDGET);
 
   wm::SetWindowVisibilityAnimationTransition(widget->GetNativeView(),
                                              wm::ANIMATE_NONE);
@@ -250,7 +250,7 @@ std::unique_ptr<views::Widget> CandidateWindowView::InitWidget() {
   GetBubbleFrameView()->SetBubbleBorder(
       std::make_unique<CandidateWindowBorder>());
   GetBubbleFrameView()->OnThemeChanged();
-  return widget;
+  return base::WrapUnique(widget);
 }
 
 void CandidateWindowView::OnThemeChanged() {

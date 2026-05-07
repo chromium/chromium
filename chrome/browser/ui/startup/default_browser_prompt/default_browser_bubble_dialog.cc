@@ -188,8 +188,9 @@ std::unique_ptr<views::Widget> ShowDefaultBrowserBubbleDialog(
   auto bubble = std::make_unique<views::BubbleDialogModelHost>(
       std::move(dialog_model), anchor, views::BubbleBorder::TOP_RIGHT);
 
-  std::unique_ptr<views::Widget> widget =
-      views::BubbleDialogDelegate::CreateBubble(std::move(bubble));
+  auto widget =
+      base::WrapUnique(views::BubbleDialogDelegate::CreateBubbleDeprecated(
+          std::move(bubble), views::Widget::InitParams::CLIENT_OWNS_WIDGET));
 
   widget->Show();
 

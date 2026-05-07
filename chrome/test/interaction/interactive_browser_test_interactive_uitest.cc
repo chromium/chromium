@@ -745,7 +745,9 @@ class InteractiveBrowserTestHoverUiTest : public InteractiveBrowserTestUiTest {
     auto bubble_view = std::make_unique<HoverDetectionBubbleView>(anchor_view);
     bubble_view_ = bubble_view.get();
     bubble_widget_ =
-        views::BubbleDialogDelegate::CreateBubble(std::move(bubble_view));
+        base::WrapUnique(views::BubbleDialogDelegate::CreateBubbleDeprecated(
+            std::move(bubble_view),
+            views::Widget::InitParams::CLIENT_OWNS_WIDGET));
     bubble_widget_->Show();
     bubble_view_->SizeToContents();
   }

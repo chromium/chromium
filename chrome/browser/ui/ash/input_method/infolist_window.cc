@@ -229,15 +229,15 @@ InfolistWindow::InfolistWindow(views::View* candidate_window,
 InfolistWindow::~InfolistWindow() = default;
 
 std::unique_ptr<views::Widget> InfolistWindow::InitWidget() {
-  std::unique_ptr<views::Widget> widget =
-      views::BubbleDialogDelegate::CreateBubble(base::WrapUnique(this));
+  views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(
+      this, views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   wm::SetWindowVisibilityAnimationType(
       widget->GetNativeView(), wm::WINDOW_VISIBILITY_ANIMATION_TYPE_FADE);
 
   // BubbleFrameView will be initialized through CreateBubble.
   GetBubbleFrameView()->SetBubbleBorder(std::make_unique<InfolistBorder>());
   SizeToContents();
-  return widget;
+  return base::WrapUnique(widget);
 }
 
 void InfolistWindow::Relayout(const std::vector<ui::InfolistEntry>& entries) {

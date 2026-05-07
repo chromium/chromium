@@ -93,10 +93,10 @@ class HelpBubbleViewsCustomBubbleTest : public views::ViewsTestBase {
     auto bubble = std::make_unique<test::TestCustomHelpBubbleView>(
         anchor_view_, views::BubbleBorder::TOP_RIGHT);
     auto* const result = bubble.get();
-    std::unique_ptr<views::Widget> widget =
-        views::BubbleDialogDelegate::CreateBubble(std::move(bubble));
+    auto* const widget = views::BubbleDialogDelegateView::CreateBubble(
+        std::move(bubble), views::Widget::InitParams::CLIENT_OWNS_WIDGET);
     widget->Show();
-    return HelpBubbleViewInfo(std::move(widget), result);
+    return HelpBubbleViewInfo(base::WrapUnique(widget), result);
   }
 
   views::View* anchor_view() const { return anchor_view_; }
