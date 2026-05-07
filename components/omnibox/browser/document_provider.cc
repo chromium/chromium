@@ -556,7 +556,9 @@ DocumentProvider::DocumentProvider(AutocompleteProviderClient* client,
                                    AutocompleteProviderListener* listener)
     : AutocompleteProvider(AutocompleteProvider::TYPE_DOCUMENT),
       client_(client),
-      debouncer_(std::make_unique<AutocompleteProviderDebouncer>(true, 300)),
+      debouncer_(std::make_unique<AutocompleteProviderDebouncer>(
+          true,
+          omnibox_feature_configs::DocumentProvider::Get().debounce_delay_ms)),
       matches_cache_(20),
       task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
   AddListener(listener);
