@@ -320,6 +320,8 @@ source_set("ondevice") {
       "model_execution/on_device_model_service_controller.h",
       "model_execution/on_device_model_validator.cc",
       "model_execution/on_device_model_validator.h",
+      "model_execution/on_device_telemetry_logger.cc",
+      "model_execution/on_device_telemetry_logger.h",
       "model_execution/performance_class.cc",
       "model_execution/performance_class.h",
       "model_execution/repetition_checker.cc",

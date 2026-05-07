@@ -29,6 +29,7 @@
 #include "components/on_device_ai/ai_utils.h"
 #include "components/optimization_guide/core/model_execution/multimodal_message.h"
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
+#include "components/optimization_guide/core/model_execution/on_device_telemetry_logger.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/model_execution/substitution.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
@@ -239,6 +240,9 @@ class AILanguageModel::PromptState
   }
 
   ~PromptState() override {
+    if (!completed_ && telemetry_logger_.has_value()) {
+      telemetry_logger_->RecordDestroyedWhileWaiting();
+    }
     OnError(blink::mojom::ModelStreamingResponseStatus::kErrorCancelled);
   }
 
@@ -250,7 +254,8 @@ class AILanguageModel::PromptState
       uint32_t available_context_tokens,
       std::optional<uint32_t> configured_max_output_tokens,
       base::OnceClosure callback) {
-    start_ = base::TimeTicks::Now();
+    telemetry_logger_.emplace(
+        optimization_guide::mojom::OnDeviceFeature::kPromptApi);
     callback_ = std::move(callback);
     // Subtract 1 to make sure the model's max tokens is never actually reached.
     max_output_tokens_ =
@@ -271,6 +276,7 @@ class AILanguageModel::PromptState
 
   void OnError(blink::mojom::ModelStreamingResponseStatus error,
                blink::mojom::QuotaErrorInfoPtr quota_error_info = nullptr) {
+    completed_ = true;
     if (responder_) {
       on_device_ai::SendStreamingStatus(responder_, error,
                                         std::move(quota_error_info));
@@ -315,6 +321,8 @@ class AILanguageModel::PromptState
   Mode mode() const { return mode_; }
 
  private:
+  bool completed_ = false;
+
   void OnDisconnect(uint32_t custom_reason, const std::string& description) {
     VLOG(1) << "LanguageModel ModelStreamingResponder disconnect; reason: "
             << custom_reason << ", description: " << description;
@@ -334,8 +342,11 @@ class AILanguageModel::PromptState
   void OnComplete(uint32_t tokens_processed) override {
     base::UmaHistogramCounts10000("AI.Session.LanguageModel.ContextTokens",
                                   tokens_processed);
-    base::UmaHistogramMediumTimes("AI.Session.LanguageModel.ContextTime",
-                                  base::TimeTicks::Now() - start_);
+    CHECK(telemetry_logger_.has_value());
+    telemetry_logger_->RecordContextTime();
+    base::UmaHistogramMediumTimes(
+        "AI.Session.LanguageModel.ContextTime",
+        telemetry_logger_->GetTimeToContextProcessing());
     if (logger_ && logger_->ShouldEnableDebugLogs()) {
       OPTIMIZATION_GUIDE_LOGGER(
           optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
@@ -348,16 +359,19 @@ class AILanguageModel::PromptState
     context_receiver_.reset();
     token_count_ = tokens_processed;
     if (mode_ == Mode::kAppendOnly) {
+      completed_ = true;
       RunCallback();
     }
   }
 
   // on_device_model::mojom::StreamingResponder:
   void OnResponse(on_device_model::mojom::ResponseChunkPtr chunk) override {
-    if (full_response_.empty()) {
+    if (output_tokens_ == 0) {
+      CHECK(telemetry_logger_.has_value());
+      telemetry_logger_->RecordFirstResponse();
       base::UmaHistogramMediumTimes(
           "AI.Session.LanguageModel.FirstResponseTime",
-          base::TimeTicks::Now() - start_);
+          telemetry_logger_->GetTimeToFirstResponse());
     }
     output_tokens_++;
     full_response_ += chunk->text;
@@ -380,6 +394,17 @@ class AILanguageModel::PromptState
   }
 
   void OnComplete(on_device_model::mojom::ResponseSummaryPtr summary) override {
+    completed_ = true;
+    token_count_ += summary->output_token_count;
+
+    CHECK(telemetry_logger_.has_value());
+    telemetry_logger_->RecordCompletion(summary->output_token_count);
+    base::UmaHistogramMediumTimes(
+        "AI.Session.LanguageModel.ResponseCompleteTime",
+        base::TimeTicks::Now() - generate_start_);
+    base::UmaHistogramCounts10000("AI.Session.LanguageModel.ResponseTokens",
+                                  summary->output_token_count);
+
     // The `OnComplete()` method on `responder_` will be called in
     // `AILanguageModel::OnPromptOutputComplete()` after adding the response to
     // the session and handling overflow.
@@ -470,12 +495,6 @@ class AILanguageModel::PromptState
     if (HandleSafetyError(std::move(safety_result))) {
       return;
     }
-    token_count_ += summary->output_token_count;
-    base::UmaHistogramMediumTimes(
-        "AI.Session.LanguageModel.ResponseCompleteTime",
-        base::TimeTicks::Now() - generate_start_);
-    base::UmaHistogramCounts10000("AI.Session.LanguageModel.ResponseTokens",
-                                  summary->output_token_count);
 
     if (logger_ && logger_->ShouldEnableDebugLogs()) {
       OPTIMIZATION_GUIDE_LOGGER(
@@ -546,7 +565,8 @@ class AILanguageModel::PromptState
   uint32_t max_output_tokens_ = 0;
   Mode mode_;
 
-  base::TimeTicks start_;
+  std::optional<optimization_guide::OnDeviceRequestTelemetryLogger>
+      telemetry_logger_;
   base::TimeTicks generate_start_;
 
   base::WeakPtrFactory<PromptState> weak_factory_{this};

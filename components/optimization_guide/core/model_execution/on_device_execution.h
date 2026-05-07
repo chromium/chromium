@@ -18,6 +18,7 @@
 #include "components/optimization_guide/core/model_execution/on_device_capability.h"
 #include "components/optimization_guide/core/model_execution/on_device_context.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
+#include "components/optimization_guide/core/model_execution/on_device_telemetry_logger.h"
 #include "components/optimization_guide/core/model_execution/repetition_checker.h"
 #include "components/optimization_guide/core/model_execution/safety_checker.h"
 #include "components/optimization_guide/core/model_execution/substitution.h"
@@ -202,10 +203,8 @@ class OnDeviceExecution final
   MultimodalMessage last_message_;
   // A constraint defining structured output requirements for the response.
   on_device_model::mojom::ResponseConstraintPtr constraint_;
-  // Time ExecuteModel() was called.
-  base::TimeTicks start_;
-  // Time we receive the first token.
-  base::TimeTicks first_response_time_;
+  // Handles telemetry logging for the execution.
+  OnDeviceRequestTelemetryLogger telemetry_logger_;
   // Used to log the result of ExecuteModel().
   std::unique_ptr<ResultLogger> histogram_logger_;
   // Used to log execution information for the request.

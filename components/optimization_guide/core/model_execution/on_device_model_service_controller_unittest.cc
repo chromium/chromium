@@ -341,6 +341,23 @@ TEST_F(OnDeviceModelServiceControllerTest, BaseModelExecutionSuccess) {
       "OptimizationGuide.ModelExecution.OnDeviceModelEligibilityReason.Compose",
       OnDeviceModelEligibilityReason::kSuccess, 1);
 
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecution."
+      "OnDeviceFirstResponseTime.Compose",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecution."
+      "OnDeviceResponseCompleteTime.Compose",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecution."
+      "OnDeviceResponseCompleteTokens.Compose",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecution."
+      "OnDeviceResponseTokensTimeToNextToken.Compose",
+      1);
+
   // If we destroy all sessions and wait long enough, everything should idle out
   // and the service should get terminated.
   session.reset();

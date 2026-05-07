@@ -74,37 +74,6 @@ void LogResponseHasRepeats(mojom::OnDeviceFeature feature, bool has_repeats) {
       has_repeats);
 }
 
-void LogResponseCompleteTime(mojom::OnDeviceFeature feature,
-                             base::TimeDelta time_to_completion) {
-  base::UmaHistogramMediumTimes(
-      base::StrCat(
-          {"OptimizationGuide.ModelExecution.OnDeviceResponseCompleteTime.",
-           GetVariantName(feature)}),
-      time_to_completion);
-}
-
-void LogResponseCompleteTokens(mojom::OnDeviceFeature feature,
-                               uint32_t tokens) {
-  base::UmaHistogramCounts10000(
-      base::StrCat(
-          {"OptimizationGuide.ModelExecution.OnDeviceResponseCompleteTokens.",
-           GetVariantName(feature)}),
-      tokens);
-}
-
-void LogResponseTimeToNextToken(mojom::OnDeviceFeature feature,
-                                uint32_t tokens,
-                                base::TimeDelta token_time) {
-  if (tokens == 0) {
-    return;
-  }
-  base::UmaHistogramTimes(
-      base::StrCat({"OptimizationGuide.ModelExecution."
-                    "OnDeviceResponseTokensTimeToNextToken.",
-                    GetVariantName(feature)}),
-      token_time / tokens);
-}
-
 std::string GenerateExecutionId() {
   return "on-device:" + base::Uuid::GenerateRandomV4().AsLowercaseString();
 }
@@ -129,12 +98,12 @@ OnDeviceExecution::OnDeviceExecution(
       opts_(std::move(opts)),
       last_message_(std::move(message)),
       constraint_(std::move(constraint)),
+      telemetry_logger_(feature),
       histogram_logger_(std::move(logger)),
       callback_(std::move(callback)),
       cleanup_callback_(std::move(cleanup_callback)) {
   exec_log_.set_execution_id(GenerateExecutionId());
   exec_log_.mutable_on_device_model_execution_info()->add_execution_infos();
-  start_ = base::TimeTicks::Now();
   *(exec_log_.mutable_on_device_model_execution_info()
         ->mutable_model_versions()) = opts_.model_versions;
   // Note: if on-device fails for some reason, the result will be changed.
@@ -146,11 +115,7 @@ OnDeviceExecution::~OnDeviceExecution() {
     if (histogram_logger_) {
       histogram_logger_->set_result(Result::kDestroyedWhileWaitingForResponse);
     }
-    base::UmaHistogramMediumTimes(
-        base::StrCat({"OptimizationGuide.ModelExecution."
-                      "OnDeviceDestroyedWhileWaitingForResponseTime.",
-                      GetVariantName(feature_)}),
-        base::TimeTicks::Now() - start_);
+    telemetry_logger_.RecordDestroyedWhileWaiting();
   }
 }
 
@@ -274,15 +239,9 @@ void OnDeviceExecution::OnResponse(
       MutableLoggedResponse();
 
   if (current_response_.empty()) {
-    first_response_time_ = base::TimeTicks::Now();
-    base::TimeDelta time_to_first_response = first_response_time_ - start_;
-    base::UmaHistogramMediumTimes(
-        base::StrCat(
-            {"OptimizationGuide.ModelExecution.OnDeviceFirstResponseTime.",
-             GetVariantName(feature_)}),
-        time_to_first_response);
+    telemetry_logger_.RecordFirstResponse();
     logged_response->set_time_to_first_response_millis(
-        time_to_first_response.InMilliseconds());
+        telemetry_logger_.GetTimeToFirstResponse().InMilliseconds());
   }
 
   if (GetOnDeviceModelWithholdNewlines()) {
@@ -331,19 +290,14 @@ void OnDeviceExecution::OnComplete(
     on_device_model::mojom::ResponseSummaryPtr summary) {
   TRACE_EVENT("optimization_guide", "OnDeviceExecution::OnComplete", "feature",
               base::ToString(feature_));
-  base::TimeTicks completion_time = base::TimeTicks::Now();
-  base::TimeDelta time_to_completion = completion_time - start_;
   receiver_.reset();  // Suppress expected disconnect
 
   bool has_repeats = MutableLoggedResponse()->has_repeats();
 
   LogResponseHasRepeats(feature_, has_repeats);
-  LogResponseCompleteTokens(feature_, num_response_tokens_);
-  LogResponseCompleteTime(feature_, time_to_completion);
-  LogResponseTimeToNextToken(feature_, num_response_tokens_,
-                             completion_time - first_response_time_);
+  telemetry_logger_.RecordCompletion(num_response_tokens_);
   MutableLoggedResponse()->set_time_to_completion_millis(
-      time_to_completion.InMilliseconds());
+      telemetry_logger_.GetTimeToCompletion().InMilliseconds());
 
   output_token_count_ = summary->output_token_count;
 

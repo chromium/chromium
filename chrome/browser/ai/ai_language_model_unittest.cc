@@ -21,6 +21,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/current_thread.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -377,6 +378,29 @@ TEST_F(AILanguageModelTest, Prompt) {
   EXPECT_THAT(Prompt(*session, MakeInput("foo")), ElementsAreArray({"UfooEM"}));
 }
 
+TEST_F(AILanguageModelTest, PromptTelemetry) {
+  base::HistogramTester histogram_tester;
+  auto session = CreateSession();
+  Prompt(*session, MakeInput("foo"));
+
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecution."
+      "OnDeviceFirstResponseTime.PromptApi",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecution."
+      "OnDeviceResponseCompleteTime.PromptApi",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecution."
+      "OnDeviceResponseCompleteTokens.PromptApi",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecution."
+      "OnDeviceResponseTokensTimeToNextToken.PromptApi",
+      1);
+}
+
 TEST_F(AILanguageModelTest, MultiplePrompts) {
   auto session = CreateSession();
   EXPECT_THAT(Prompt(*session, MakeInput("foo")), ElementsAreArray({"UfooEM"}));
@@ -404,6 +428,19 @@ TEST_F(AILanguageModelTest, AppendMultipleContents) {
   Append(*session, MakeInput({"foo", "bar"}));
   EXPECT_THAT(Prompt(*session, MakeInput("baz")),
               ElementsAre("UfoobarE", "UbazEM"));
+}
+
+TEST_F(AILanguageModelTest, AppendDoesNotLogDestroyedMetric) {
+  base::HistogramTester histogram_tester;
+  auto session = CreateSession();
+  Append(*session, MakeInput("foo"));
+
+  session.reset();
+
+  histogram_tester.ExpectTotalCount(
+      "OptimizationGuide.ModelExecution."
+      "OnDeviceDestroyedWhileWaitingForResponseTime.PromptApi",
+      0);
 }
 
 TEST_F(AILanguageModelTest, PromptTokenCounts) {
