@@ -4,167 +4,161 @@
 
 #include "services/data_decoder/public/cpp/xml_dom.h"
 
-#include <memory>
-#include <string>
 #include <utility>
 #include <variant>
 
+#include "base/check.h"
+#include "base/containers/map_util.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 #include "base/types/pass_key.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
-// -- XmlNode --
+namespace data_decoder::xml {
 
-XmlNode::ElementData::ElementData() = default;
-XmlNode::ElementData::ElementData(ElementData&&) = default;
-XmlNode::ElementData& XmlNode::ElementData::operator=(ElementData&&) = default;
-XmlNode::ElementData::~ElementData() = default;
+namespace {
 
-// Private Constructor
-XmlNode::XmlNode(base::PassKey<XmlDocument>,
-                 Type type,
-                 const std::string& tag_name,
-                 const std::string& text_content)
-    : parent_(nullptr) {
-  if (type == Type::kELEMENT) {
-    data_ = ElementData();
-    std::get<ElementData>(data_).tag = tag_name;
-  } else {
-    data_ = text_content;
+template <typename F>
+const Node* DepthFirstSearch(const Node& node, const F& f) {
+  if (f(node)) {
+    return &node;
   }
-}
-
-XmlNode::~XmlNode() = default;
-
-XmlNode::Type XmlNode::GetType() const {
-  return std::holds_alternative<ElementData>(data_) ? Type::kELEMENT
-                                                    : Type::kTEXT;
-}
-
-const std::string& XmlNode::GetTagName() const {
-  DCHECK(GetType() == Type::kELEMENT);
-  return std::get<ElementData>(data_).tag;
-}
-
-const std::string& XmlNode::GetTextContent() const {
-  DCHECK(GetType() == Type::kTEXT);
-  return std::get<std::string>(data_);
-}
-
-std::optional<std::string> XmlNode::GetAttribute(std::string_view name) const {
-  DCHECK(GetType() == Type::kELEMENT);
-  const auto& attributes = std::get<ElementData>(data_).attributes;
-  auto it = attributes.find(std::string(name));
-  if (it != attributes.end()) {
-    return it->second;
+  if (node.GetType() != Node::Type::kElement) {
+    return nullptr;
   }
-  return std::nullopt;
+  for (const auto& child : node.GetChildren()) {
+    if (const auto* result = DepthFirstSearch(*child, f)) {
+      return result;
+    }
+  }
+  return nullptr;
 }
 
-const std::vector<std::unique_ptr<XmlNode>>& XmlNode::GetChildren() const {
-  CHECK(GetType() == Type::kELEMENT)
-      << "GetChildren can only be called on ELEMENT nodes";
-  return std::get<ElementData>(data_).children;
+}  // namespace
+
+Document::Document(std::unique_ptr<Node> root) : root_(std::move(root)) {
+  CHECK(root_);
 }
 
-const XmlNode* XmlNode::GetParent() const {
-  return parent_;
+Document::~Document() = default;
+Document::Document(Document&&) = default;
+Document& Document::operator=(Document&&) = default;
+
+const Node* Document::GetRoot() const {
+  return root_.get();
 }
 
-std::vector<const XmlNode*> XmlNode::GetChildrenByTagName(
-    std::string_view tag_name) const {
-  CHECK(GetType() == Type::kELEMENT)
-      << "GetChildrenByTagName can only be called on ELEMENT nodes";
-  std::vector<const XmlNode*> result;
-  const auto& children = std::get<ElementData>(data_).children;
-  for (const auto& child : children) {
-    if (child->GetType() == Type::kELEMENT && child->GetTagName() == tag_name) {
+const Node* Document::FindFirstElementByTagName(Name name) const {
+  if (!root_) {
+    return nullptr;
+  }
+
+  return DepthFirstSearch(*root_, [&](const Node& node) {
+    return node.GetType() == Node::Type::kElement && node.GetName() == name;
+  });
+}
+
+Node::Element::Element() = default;
+Node::Element::Element(std::string local_name) : name{std::move(local_name)} {}
+Node::Element::Element(Element&&) = default;
+Node::Element& Node::Element::operator=(Element&&) = default;
+Node::Element::~Element() = default;
+
+Node::~Node() = default;
+
+Node::Type Node::GetType() const {
+  return std::visit(
+      absl::Overload{[](const Element&) { return Type::kElement; },
+                     [](const Text&) { return Type::kText; },
+                     [](const Cdata&) { return Type::kCdata; }},
+      data_);
+}
+
+const OwnedName& Node::GetName() const {
+  return std::get<Element>(data_).name;
+}
+const std::string& Node::GetLocalName() const {
+  return GetName().local_name;
+}
+
+const absl::flat_hash_map<OwnedName, std::string>& Node::GetAttributes() const {
+  return std::get<Element>(data_).attributes;
+}
+
+const std::string* Node::GetAttribute(Name name) const {
+  return base::FindOrNull(GetAttributes(), name);
+}
+
+const std::vector<std::unique_ptr<Node>>& Node::GetChildren() const {
+  return std::get<Element>(data_).children;
+}
+
+std::vector<const Node*> Node::GetChildrenByTagName(Name name) const {
+  std::vector<const Node*> result;
+  for (const auto& child : GetChildren()) {
+    if (child->GetType() == Type::kElement && child->GetName() == name) {
       result.push_back(child.get());
     }
   }
   return result;
 }
 
-const XmlNode* XmlNode::GetFirstChildByTagName(
-    std::string_view tag_name) const {
-  CHECK(GetType() == Type::kELEMENT)
-      << "GetFirstChildByTagName can only be called on ELEMENT nodes";
-  for (const auto& child : std::get<ElementData>(data_).children) {
-    if (child->GetTagName() == tag_name) {
+const Node* Node::FindFirstChildByTagName(Name name) const {
+  for (const auto& child : GetChildren()) {
+    if (child->GetType() == Type::kElement && child->GetName() == name) {
       return child.get();
     }
   }
   return nullptr;
 }
 
-void XmlNode::AddChildForTesting(std::unique_ptr<XmlNode> child) {
-  CHECK(GetType() == Type::kELEMENT)
-      << "AddChildForTesting can only be called on ELEMENT nodes";
+const std::string& Node::GetTextContent() const {
+  return std::visit(
+      absl::Overload{
+          [](const Element&) -> const std::string& {
+            NOTREACHED()
+                << "GetTextContent() cannot be called on element nodes";
+          },
+          [](const auto& node) -> const std::string& { return node.text; },
+      },
+      data_);
+}
+
+// static
+std::unique_ptr<Node> Node::CreateElement(
+    base::PassKey<ffi::DomBuilder> pass_key,
+    std::string local_name) {
+  return base::WrapUnique(new Node(Element(std::move(local_name))));
+}
+
+// static
+std::unique_ptr<Node> Node::CreateTextNode(
+    base::PassKey<ffi::DomBuilder> pass_key,
+    std::string text) {
+  return base::WrapUnique(new Node(Text{std::move(text)}));
+}
+
+// static
+std::unique_ptr<Node> Node::CreateCdataNode(
+    base::PassKey<ffi::DomBuilder> pass_key,
+    std::string text) {
+  return base::WrapUnique(new Node(Cdata{std::move(text)}));
+}
+
+void Node::SetAttribute(base::PassKey<ffi::DomBuilder>,
+                        std::string local_name,
+                        std::string value) {
+  std::get<Element>(data_).attributes[OwnedName{std::move(local_name)}] =
+      std::move(value);
+}
+
+void Node::AddChild(base::PassKey<ffi::DomBuilder>,
+                    std::unique_ptr<Node> child) {
   DCHECK(child);
   DCHECK(!child->parent_);
   child->parent_ = this;
-  std::get<ElementData>(data_).children.push_back(std::move(child));
+  std::get<Element>(data_).children.push_back(std::move(child));
 }
 
-void XmlNode::SetAttributeForTesting(const std::string& name,
-                                     const std::string& value) {
-  CHECK(GetType() == Type::kELEMENT)
-      << "SetAttributeForTesting can only be called on ELEMENT nodes";
-  std::get<ElementData>(data_).attributes[name] = value;
-}
-
-XmlDocument::XmlDocument() : root_(nullptr) {}
-
-XmlDocument::~XmlDocument() = default;
-
-XmlDocument::XmlDocument(XmlDocument&&) = default;
-XmlDocument& XmlDocument::operator=(XmlDocument&&) = default;
-
-const XmlNode* XmlDocument::GetRoot() const {
-  return root_.get();
-}
-
-const XmlNode* XmlDocument::FindFirstElementByTagName(
-    std::string_view tag_name) const {
-  if (!root_) {
-    return nullptr;
-  }
-  return FindFirstElementByTagNameRecursive(root_.get(), tag_name);
-}
-
-const XmlNode* XmlDocument::FindFirstElementByTagNameRecursive(
-    const XmlNode* node,
-    std::string_view tag_name) const {
-  if (node->GetType() == XmlNode::Type::kELEMENT) {
-    if (node->GetTagName() == tag_name) {
-      return node;
-    }
-    for (const auto& child : node->GetChildren()) {
-      const XmlNode* found =
-          FindFirstElementByTagNameRecursive(child.get(), tag_name);
-      if (found) {
-        return found;
-      }
-    }
-  }
-  return nullptr;
-}
-
-void XmlDocument::SetRootForTesting(std::unique_ptr<XmlNode> root) {
-  root_ = std::move(root);
-}
-
-// static
-std::unique_ptr<XmlNode> XmlDocument::CreateElementNodeForTesting(
-    const std::string& tag_name) {
-  return base::WrapUnique(new XmlNode(base::PassKey<XmlDocument>(),
-                                      XmlNode::Type::kELEMENT, tag_name,
-                                      /*text_content=*/""));
-}
-
-// static
-std::unique_ptr<XmlNode> XmlDocument::CreateTextNodeForTesting(
-    const std::string& text_content) {
-  return base::WrapUnique(new XmlNode(base::PassKey<XmlDocument>(),
-                                      XmlNode::Type::kTEXT, /*tag_name=*/"",
-                                      text_content));
-}
+}  // namespace data_decoder::xml

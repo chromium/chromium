@@ -5,117 +5,154 @@
 #ifndef SERVICES_DATA_DECODER_PUBLIC_CPP_XML_DOM_H_
 #define SERVICES_DATA_DECODER_PUBLIC_CPP_XML_DOM_H_
 
-#include <map>
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
-#include <sstream>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <variant>
 #include <vector>
 
-#include "base/check.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/types/pass_key.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
-class XmlDocument;
+namespace data_decoder::xml {
 
-namespace data_decoder {
-class XmlDomTest;  // Forward declaration for friending
+namespace ffi {
+class DomBuilder;
 }
 
-class XmlNode {
+class Node;
+
+// A qualified name in XML, as defined in https://www.w3.org/TR/xml-names/.
+// Used for both element and attribute names.
+//
+// TODO(dcheng): Implement prefix support.
+struct Name {
+  std::string_view local_name;
+};
+
+// Equivalent to `Name` but owns its fields.
+struct OwnedName {
+  std::string local_name;
+
+  bool operator==(const OwnedName& other) const = default;
+  bool operator==(const Name& other) const {
+    return local_name == other.local_name;
+  }
+
+  struct absl_container_hash {
+    using is_transparent = void;
+
+    size_t operator()(const OwnedName& name) const {
+      return absl::HashOf(name.local_name);
+    }
+
+    size_t operator()(const Name& name) const {
+      return absl::HashOf(name.local_name);
+    }
+  };
+};
+
+class Document {
  public:
-  enum class Type { kELEMENT, kTEXT };
+  explicit Document(std::unique_ptr<Node> root);
+  ~Document();
 
-  ~XmlNode();
+  Document(const Document&) = delete;
+  Document& operator=(const Document&) = delete;
+  Document(Document&&);
+  Document& operator=(Document&&);
 
-  // Get the type of the node
+  static std::optional<Document> FromBytes(base::span<const uint8_t> bytes);
+  static std::optional<Document> FromUtf8(std::string_view str);
+
+  const Node* GetRoot() const;
+
+  // Depth-first search for the first element with a matching `name`, or
+  // `nullptr` if there is no such element.
+  const Node* FindFirstElementByTagName(Name name) const;
+
+ private:
+  std::unique_ptr<Node> root_;
+};
+
+// This node representation only supports element nodes, text nodes, and CDATA
+// nodes. The address of a Node is guaranteed to be stable.
+//
+// Unlike XML/XSLT/XPath, namespaces and attributes are not represented as a
+// distinct node type and are just extra bits of data stored on element nodes,
+// i.e. nodes for which `GetType() == Type::kElement` is true.
+//
+// TODO(dcheng): Implement namespace support.
+class Node {
+ public:
+  enum class Type { kElement, kText, kCdata };
+
+  ~Node();
+
   Type GetType() const;
+  const Node* parent() const { return parent_; }
 
-  // Get the tag name (only for ELEMENT nodes)
-  const std::string& GetTagName() const;
+  // These methods are only usable on element nodes and will crash if called on
+  // non-element nodes.
+  const OwnedName& GetName() const;
+  const std::string& GetLocalName() const;
 
-  // Get the text content (only for TEXT nodes)
+  const absl::flat_hash_map<OwnedName, std::string>& GetAttributes() const;
+  // The value of the attribute with the given `name`, or `nullptr` if the
+  // element does not specify an attribute with `name`.
+  const std::string* GetAttribute(Name name) const;
+
+  const std::vector<std::unique_ptr<Node>>& GetChildren() const;
+  std::vector<const Node*> GetChildrenByTagName(Name name) const;
+  const Node* FindFirstChildByTagName(Name name) const;
+
+  // These methods are only usable on text or cdata nodes and will crash if
+  // called on non-text and non-cdata nodes.
   const std::string& GetTextContent() const;
 
-  // Get an attribute value by name (only for ELEMENT nodes)
-  std::optional<std::string> GetAttribute(std::string_view name) const;
-
-  // Get all child nodes
-  const std::vector<std::unique_ptr<XmlNode>>& GetChildren() const;
-
-  // Get parent node
-  const XmlNode* GetParent() const;
-
-  // Find all direct child elements with a specific tag name
-  std::vector<const XmlNode*> GetChildrenByTagName(
-      std::string_view tag_name) const;
-
-  // Get the first direct child element with a specific tag name
-  const XmlNode* GetFirstChildByTagName(std::string_view tag_name) const;
-
-  // Testing methods.
-  void AddChildForTesting(std::unique_ptr<XmlNode> child);
-  void SetAttributeForTesting(const std::string& name,
-                              const std::string& value);
+  // Rust FFI helpers:
+  static std::unique_ptr<Node> CreateElement(base::PassKey<ffi::DomBuilder>,
+                                             std::string local_name);
+  static std::unique_ptr<Node> CreateTextNode(base::PassKey<ffi::DomBuilder>,
+                                              std::string text);
+  static std::unique_ptr<Node> CreateCdataNode(base::PassKey<ffi::DomBuilder>,
+                                               std::string text);
+  void SetAttribute(base::PassKey<ffi::DomBuilder>,
+                    std::string local_name,
+                    std::string value);
+  void AddChild(base::PassKey<ffi::DomBuilder>, std::unique_ptr<Node> child);
 
  private:
-  friend class XmlDocument;
-  // Private constructor for all node types.
-  XmlNode(base::PassKey<XmlDocument>,
-          Type type,
-          const std::string& tag_name,
-          const std::string& text_content);
+  template <typename T>
+  explicit Node(T data) : data_(std::move(data)), parent_(nullptr) {}
 
-  struct ElementData {
-    ElementData();
-    explicit ElementData(std::string tag_name);
-    ElementData(ElementData&&);
-    ElementData& operator=(ElementData&&);
-    ~ElementData();
+  struct Element {
+    Element();
+    explicit Element(std::string local_name);
+    Element(Element&&);
+    Element& operator=(Element&&);
+    ~Element();
 
-    std::string tag;
-    absl::flat_hash_map<std::string, std::string> attributes;
-    std::vector<std::unique_ptr<XmlNode>> children;
+    OwnedName name;
+    absl::flat_hash_map<OwnedName, std::string> attributes;
+    std::vector<std::unique_ptr<Node>> children;
   };
-  std::variant<ElementData, std::string> data_;
-  raw_ptr<XmlNode> parent_;
+  struct Text {
+    std::string text;
+  };
+  struct Cdata {
+    std::string text;
+  };
+  std::variant<Element, Text, Cdata> data_;
+  raw_ptr<Node> parent_;
 };
 
-class XmlDocument {
- public:
-  XmlDocument();
-  ~XmlDocument();
-
-  // Disallow copy and assign
-  XmlDocument(const XmlDocument&) = delete;
-  XmlDocument& operator=(const XmlDocument&) = delete;
-
-  // Allow move
-  XmlDocument(XmlDocument&&);
-  XmlDocument& operator=(XmlDocument&&);
-
-  // Get the root element of the document
-  const XmlNode* GetRoot() const;
-
-  // Find the first element with a given tag name (DFS)
-  const XmlNode* FindFirstElementByTagName(std::string_view tag_name) const;
-
-  // Testing methods.
-  void SetRootForTesting(std::unique_ptr<XmlNode> root);
-  static std::unique_ptr<XmlNode> CreateElementNodeForTesting(
-      const std::string& tag_name);
-  static std::unique_ptr<XmlNode> CreateTextNodeForTesting(
-      const std::string& text_content);
-
- private:
-  std::unique_ptr<XmlNode> root_;
-
-  const XmlNode* FindFirstElementByTagNameRecursive(
-      const XmlNode* node,
-      std::string_view tag_name) const;
-};
+}  // namespace data_decoder::xml
 
 #endif  // SERVICES_DATA_DECODER_PUBLIC_CPP_XML_DOM_H_

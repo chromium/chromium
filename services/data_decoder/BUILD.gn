@@ -70,6 +70,7 @@ source_set("tests") {
     "public/cpp/safe_web_bundle_parser_unittest.cc",
     "public/cpp/safe_xml_parser_unittest.cc",
     "public/cpp/xml_dom_unittest.cc",
+    "xml/xml_parser_rs_unittest.cc",
     "xml_parser_unittest.cc",
   ]
 
@@ -82,6 +83,7 @@ source_set("tests") {
     "//components/web_package/test_support",
     "//services/data_decoder/public/cpp",
     "//services/data_decoder/public/cpp:test_support",
+    "//services/data_decoder/xml:xml_parser_rs",
     "//skia",
     "//testing/gtest",
     "//ui/gfx",

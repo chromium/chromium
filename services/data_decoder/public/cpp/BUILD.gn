@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/features.gni")
+import("//build/rust/rust_static_library.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
 # This should be merged into the ":cpp" target below once that target is
@@ -68,13 +69,39 @@ source_set("safe_xml_parser") {
   deps = [ "//services/data_decoder/public/mojom:mojom_xml_parser" ]
 }
 
-source_set("xml_dom") {
+# This is split up into two targets to workaround some dependency issues. The
+# Rust FFI bindings depends on parts of xml_dom.h, since the Rust portion of
+# the parser builds up the C++ structures via builder-style callbacks. But the
+# C++ entrypoint to the parser also depends on the Rust FFI bindings, which
+# would be a circular dependency.
+#
+# xml_dom.h, which is part of the `xml_dom_core` target, declares the parser
+# entrypoints, but they are implemented in a separate `xml_dom` target, which
+# depends on both the Rust FFI bindings and `xml_dom_core`. In the future,
+# `xml_dom` is intended to the publicly-exposed target for consumers of the
+# Rust-based parser.
+source_set("xml_dom_core") {
   public = [ "xml_dom.h" ]
+  visibility = [
+    ":*",
+    "//services/data_decoder/xml:*",
+  ]
 
   sources = [ "xml_dom.cc" ]
 
   public_deps = [ "//base" ]
-  deps = [ "//third_party/abseil-cpp:absl" ]
+  deps = [
+    "//services/data_decoder/public/mojom:mojom_xml_parser",
+    "//third_party/abseil-cpp:absl",
+  ]
+}
+
+source_set("xml_dom") {
+  visibility = [ ":*" ]
+
+  public_deps = [ ":xml_dom_core" ]
+  sources = [ "xml_dom_parser.cc" ]
+  deps = [ "//services/data_decoder/xml:xml_parser_rs" ]
 }
 
 source_set("test_support") {

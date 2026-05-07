@@ -13,4 +13,5 @@ include_rules = [
   "+third_party/zlib",
   "+tools/v8_context_snapshot/buildflags.h",
   "+ui/gfx",
+  "+third_party/rust/cxx/v1",
 ]
