@@ -100,11 +100,7 @@ constexpr char kDefaultEnabledLocales[] =
 namespace {
 
 signin::Tribool CanUseGeminiInChrome(AccountCapabilities& capabilities) {
-#if BUILDFLAG(IS_ANDROID)
-  return signin::Tribool::kUnknown;
-#else  // TODO: Re-enable after crrev.com/c/7281467
   return capabilities.can_use_gemini_in_chrome();
-#endif
 }
 
 std::vector<std::string> GetFieldTrialParamAsSplitString(
