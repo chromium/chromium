@@ -1905,7 +1905,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
 - (UIView*)viewAboveTabGroup {
   if (IsChromeNextIaEnabled() && !IsFullscreenRefactoringEnabled()) {
-    SceneState* sceneState = _regularBrowser->GetSceneState();
+    SceneState* sceneState = self.regularBrowser->GetSceneState();
     return [LayoutGuideCenterForScene(sceneState)
         referencedViewUnderName:kAppContentGuide];
   }
