@@ -424,12 +424,9 @@ void ComputeInsets(const LayoutUnit available_size,
   *inset_end_out = imcb_end + margin_end;
 }
 
-bool CanComputeBlockSizeWithoutLayout(
-    const BlockNode& node,
-    WritingDirectionMode container_writing_direction,
-    ItemPosition block_alignment_position,
-    bool has_auto_block_inset,
-    bool has_inline_size) {
+bool CanComputeBlockSizeWithoutLayout(const BlockNode& node,
+                                      AutoSizeBehavior block_auto_size_behavior,
+                                      bool has_inline_size) {
   // Tables (even with an explicit size) apply a min-content constraint.
   if (node.IsTable()) {
     return false;
@@ -444,25 +441,21 @@ bool CanComputeBlockSizeWithoutLayout(
       style.LogicalMaxHeight().HasContentOrIntrinsic()) {
     return false;
   }
-  if (style.LogicalHeight().HasAuto()) {
-    // Any 'auto' inset will trigger fit-content.
-    if (has_auto_block_inset) {
-      return false;
-    }
-    // Check for an explicit stretch.
-    if (block_alignment_position == ItemPosition::kStretch) {
-      return true;
-    }
-    // Non-normal alignment will trigger fit-content.
-    if (block_alignment_position != ItemPosition::kNormal) {
-      return false;
-    }
-    // An aspect-ratio (with a definite inline-size) will trigger fit-content.
-    if (!style.AspectRatio().IsAuto() && has_inline_size) {
-      return false;
-    }
+  if (!style.LogicalHeight().HasAuto()) {
+    return true;
   }
-  return true;
+  switch (block_auto_size_behavior) {
+    case AutoSizeBehavior::kFitContent:
+      return false;
+    case AutoSizeBehavior::kStretchExplicit:
+      return true;
+    case AutoSizeBehavior::kStretchImplicit:
+      // An aspect-ratio (with a definite inline-size) will trigger fit-content.
+      if (has_inline_size && !style.AspectRatio().IsAuto()) {
+        return false;
+      }
+      return true;
+  }
 }
 
 }  // namespace
@@ -685,19 +678,16 @@ bool ComputeOofInlineDimensions(
     const BoxStrut& border_padding,
     const std::optional<LogicalSize>& replaced_size,
     const BoxStrut& container_insets,
+    AutoSizeBehavior inline_auto_size_behavior,
+    AutoSizeBehavior block_auto_size_behavior,
     WritingDirectionMode container_writing_direction,
     LogicalOofDimensions* dimensions) {
   DCHECK(dimensions);
   DCHECK_GE(imcb.InlineSize(), LayoutUnit());
 
-  const auto alignment_position = alignment.inline_alignment.GetPosition();
-  const auto block_alignment_position = alignment.block_alignment.GetPosition();
-
   bool depends_on_min_max_sizes = false;
   const bool can_compute_block_size_without_layout =
-      CanComputeBlockSizeWithoutLayout(node, container_writing_direction,
-                                       block_alignment_position,
-                                       imcb.has_auto_block_inset,
+      CanComputeBlockSizeWithoutLayout(node, block_auto_size_behavior,
                                        /* has_inline_size */ false);
 
   auto MinMaxSizesFunc = [&](SizeType type) -> MinMaxSizesResult {
@@ -713,10 +703,11 @@ bool ComputeOofInlineDimensions(
 
     // Compute our block-size if we haven't already.
     if (dimensions->size.block_size == kIndefiniteSize) {
-      ComputeOofBlockDimensions(
-          node, break_token, style, space, imcb, anchor_center_position,
-          alignment, border_padding, /*replaced_size=*/std::nullopt,
-          container_insets, container_writing_direction, dimensions);
+      ComputeOofBlockDimensions(node, break_token, style, space, imcb,
+                                anchor_center_position, alignment,
+                                border_padding, /*replaced_size=*/std::nullopt,
+                                container_insets, block_auto_size_behavior,
+                                container_writing_direction, dimensions);
     }
 
     // Create a new space, setting the fixed block-size.
@@ -736,50 +727,38 @@ bool ComputeOofInlineDimensions(
     DCHECK(node.IsReplaced());
     inline_size = replaced_size->inline_size;
   } else {
-    const Length& main_inline_length = style.LogicalWidth();
-
-    const bool is_implicit_stretch =
-        !imcb.has_auto_inline_inset &&
-        alignment_position == ItemPosition::kNormal;
-    const bool is_explicit_stretch =
-        !imcb.has_auto_inline_inset &&
-        alignment_position == ItemPosition::kStretch;
-    const bool is_stretch = is_implicit_stretch || is_explicit_stretch;
-
-    // If our block constraint is strong/explicit.
-    const bool is_block_explicit =
-        !style.LogicalHeight().HasAuto() ||
-        (!imcb.has_auto_block_inset &&
-         block_alignment_position == ItemPosition::kStretch);
-
     // Determine how "auto" should resolve.
     bool apply_automatic_min_size = false;
     const Length& auto_length = ([&]() {
-      // Tables always shrink-to-fit unless explicitly asked to stretch.
-      if (node.IsTable()) {
-        return is_explicit_stretch ? Length::Stretch() : Length::FitContent();
+      const bool may_apply_aspect_ratio = !style.AspectRatio().IsAuto() &&
+                                          can_compute_block_size_without_layout;
+      switch (inline_auto_size_behavior) {
+        case AutoSizeBehavior::kFitContent:
+          // Check if we need to apply the auto min-size.
+          if (may_apply_aspect_ratio &&
+              style.OverflowInlineDirection() == EOverflow::kVisible) {
+            apply_automatic_min_size = true;
+          }
+          return Length::FitContent();
+        case AutoSizeBehavior::kStretchExplicit:
+          return Length::Stretch();
+        case AutoSizeBehavior::kStretchImplicit:
+          // Check if the aspect-ratio applies (we have an explicit block-size).
+          const bool is_block_explicit =
+              !style.LogicalHeight().HasAuto() ||
+              block_auto_size_behavior == AutoSizeBehavior::kStretchExplicit;
+          if (may_apply_aspect_ratio && is_block_explicit) {
+            if (style.OverflowInlineDirection() == EOverflow::kVisible) {
+              apply_automatic_min_size = true;
+            }
+            return Length::FitContent();
+          }
+          return Length::Stretch();
       }
-      // We'd like to apply the aspect-ratio.
-      // The aspect-ratio applies from the block-axis if we can compute our
-      // block-size without invoking layout, and either:
-      //  - We aren't stretching our auto inline-size.
-      //  - We are stretching our auto inline-size, but the block-size has a
-      //    stronger (explicit) constraint, e.g:
-      //    "height:10px" or "align-self:stretch".
-      if (!style.AspectRatio().IsAuto() &&
-          can_compute_block_size_without_layout &&
-          (!is_stretch || (is_implicit_stretch && is_block_explicit))) {
-        // See if we should apply the automatic minimum size.
-        if (style.OverflowInlineDirection() == EOverflow::kVisible) {
-          apply_automatic_min_size = true;
-        }
-        return Length::FitContent();
-      }
-      return is_stretch ? Length::Stretch() : Length::FitContent();
     })();
 
     const LayoutUnit main_inline_size = ResolveMainInlineLength(
-        space, style, border_padding, MinMaxSizesFunc, main_inline_length,
+        space, style, border_padding, MinMaxSizesFunc, style.LogicalWidth(),
         &auto_length, imcb.InlineSize());
     const MinMaxSizes min_max_inline_sizes = ComputeMinMaxInlineSizes(
         space, node, border_padding,
@@ -843,12 +822,11 @@ const LayoutResult* ComputeOofBlockDimensions(
     const BoxStrut& border_padding,
     const std::optional<LogicalSize>& replaced_size,
     const BoxStrut& container_insets,
+    AutoSizeBehavior block_auto_size_behavior,
     WritingDirectionMode container_writing_direction,
     LogicalOofDimensions* dimensions) {
   DCHECK(dimensions);
   DCHECK_GE(imcb.BlockSize(), LayoutUnit());
-
-  const auto alignment_position = alignment.block_alignment.GetPosition();
 
   const LayoutResult* result = nullptr;
   LayoutUnit block_size;
@@ -856,8 +834,7 @@ const LayoutResult* ComputeOofBlockDimensions(
     DCHECK(node.IsReplaced());
     block_size = replaced_size->block_size;
   } else if (CanComputeBlockSizeWithoutLayout(
-                 node, container_writing_direction, alignment_position,
-                 imcb.has_auto_block_inset,
+                 node, block_auto_size_behavior,
                  /* has_inline_size */ dimensions->size.inline_size !=
                      kIndefiniteSize)) {
     DCHECK(!node.IsTable());
@@ -887,13 +864,7 @@ const LayoutResult* ComputeOofBlockDimensions(
     if (space.IsHiddenForPaint()) {
       builder.SetIsHiddenForPaint(true);
     }
-
-    // Tables need to know about the explicit stretch constraint to produce
-    // the correct result.
-    if (!imcb.has_auto_block_inset &&
-        alignment_position == ItemPosition::kStretch) {
-      builder.SetBlockAutoBehavior(AutoSizeBehavior::kStretchExplicit);
-    }
+    builder.SetBlockAutoBehavior(block_auto_size_behavior);
 
     if (space.IsInitialColumnBalancingPass()) {
       // The |fragmentainer_offset_delta| will not make a difference in the

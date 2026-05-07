@@ -16,6 +16,7 @@
 
 namespace blink {
 
+enum class AutoSizeBehavior : uint8_t;
 class BlockNode;
 class ConstraintSpace;
 class LayoutResult;
@@ -187,6 +188,8 @@ CORE_EXPORT bool ComputeOofInlineDimensions(
     const BoxStrut& border_padding,
     const std::optional<LogicalSize>& replaced_size,
     const BoxStrut& container_insets,
+    AutoSizeBehavior inline_auto_size_behavior,
+    AutoSizeBehavior block_auto_size_behavior,
     WritingDirectionMode container_writing_direction,
     LogicalOofDimensions* dimensions);
 
@@ -203,6 +206,7 @@ CORE_EXPORT const LayoutResult* ComputeOofBlockDimensions(
     const BoxStrut& border_padding,
     const std::optional<LogicalSize>& replaced_size,
     const BoxStrut& container_insets,
+    AutoSizeBehavior block_auto_size_behavior,
     WritingDirectionMode container_writing_direction,
     LogicalOofDimensions* dimensions);
 

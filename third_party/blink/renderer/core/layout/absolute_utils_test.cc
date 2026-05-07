@@ -85,6 +85,11 @@ class AbsoluteUtilsTest : public RenderingTest {
     RunDocumentLifecycle();
   }
 
+  static AutoSizeBehavior ToAutoSizeBehavior(bool has_auto_inset) {
+    return has_auto_inset ? AutoSizeBehavior::kFitContent
+                          : AutoSizeBehavior::kStretchImplicit;
+  }
+
   void ComputeOutOfFlowInlineDimensions(
       const BlockNode& node,
       const ConstraintSpace& space,
@@ -105,10 +110,13 @@ class AbsoluteUtilsTest : public RenderingTest {
             node, space.AvailableSize(), LogicalAlignment(), insets,
             static_position, container_writing_direction,
             node.Style().GetWritingDirection());
-    ComputeOofInlineDimensions(
-        node, /*break_token=*/nullptr, node.Style(), space, imcb,
-        LogicalAnchorCenterPosition(), LogicalAlignment(), border_padding,
-        std::nullopt, BoxStrut(), container_writing_direction, dimensions);
+    ComputeOofInlineDimensions(node, /*break_token=*/nullptr, node.Style(),
+                               space, imcb, LogicalAnchorCenterPosition(),
+                               LogicalAlignment(), border_padding, std::nullopt,
+                               BoxStrut(),
+                               ToAutoSizeBehavior(imcb.has_auto_inline_inset),
+                               ToAutoSizeBehavior(imcb.has_auto_block_inset),
+                               container_writing_direction, dimensions);
     GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kAfterPerformLayout);
     GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kLayoutClean);
   }
@@ -136,7 +144,8 @@ class AbsoluteUtilsTest : public RenderingTest {
     ComputeOofBlockDimensions(
         node, /*break_token=*/nullptr, node.Style(), space, imcb,
         LogicalAnchorCenterPosition(), LogicalAlignment(), border_padding,
-        std::nullopt, BoxStrut(), container_writing_direction, dimensions);
+        std::nullopt, BoxStrut(), ToAutoSizeBehavior(imcb.has_auto_block_inset),
+        container_writing_direction, dimensions);
     GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kAfterPerformLayout);
     GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kLayoutClean);
   }

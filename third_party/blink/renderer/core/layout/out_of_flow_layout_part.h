@@ -226,8 +226,11 @@ class CORE_EXPORT OutOfFlowLayoutPart {
     // re-used or replaced in the final layout pass.
     Member<const LayoutResult> initial_layout_result;
 
-    // `container_content_size` is wrt. the candidate's writing mode.
+    // The following fields are in the writing-direction of the candidate, and
+    // are used for creating the constraint space for layout.
     LogicalSize container_content_size;
+    LayoutUnit imcb_block_size;
+    AutoSizeBehavior block_auto_size_behavior;
 
     LogicalOofDimensions node_dimensions;
 
