@@ -1,0 +1,22 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/speculative_load_measurement
+
+// Represents the type of speculative navigation.
+enum SpeculationNavigationType { "prefetch", "prerender", "prerender-until-script" };
+
+// Represents the eagerness level for speculation rules.
+enum SpeculationEagernessValue { "conservative", "moderate", "eager", "immediate" };
+
+[
+    RuntimeEnabled=SpeculationMeasurement,
+    Exposed=Window
+]
+interface SpeculationNavigationData {
+    readonly attribute SpeculationNavigationType type;
+    readonly attribute USVString url;
+    readonly attribute FrozenArray<DOMString>? tags;
+    readonly attribute SpeculationEagernessValue? eagerness;
+};

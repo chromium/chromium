@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://github.com/yoavweiss/speculative_load_measurement
+// https://github.com/WICG/speculative_load_measurement
 
 [
     RuntimeEnabled=SpeculationMeasurement,
@@ -10,4 +10,5 @@
 ]
 interface SpeculationData {
     readonly attribute FrozenArray<PreloadData> preloads;
+    readonly attribute FrozenArray<SpeculationNavigationData> navigations;
 };

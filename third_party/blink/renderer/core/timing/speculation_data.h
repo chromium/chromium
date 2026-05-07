@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/timing/preload_data.h"
+#include "third_party/blink/renderer/core/timing/speculation_navigation_data.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -19,14 +20,19 @@ class SpeculationData final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit SpeculationData(HeapVector<Member<PreloadData>> preloads);
+  SpeculationData(HeapVector<Member<PreloadData>> preloads,
+                  HeapVector<Member<SpeculationNavigationData>> navigations);
 
   const HeapVector<Member<PreloadData>>& preloads() const { return preloads_; }
+  const HeapVector<Member<SpeculationNavigationData>>& navigations() const {
+    return navigations_;
+  }
 
   void Trace(Visitor* visitor) const override;
 
  private:
   HeapVector<Member<PreloadData>> preloads_;
+  HeapVector<Member<SpeculationNavigationData>> navigations_;
 };
 
 }  // namespace blink

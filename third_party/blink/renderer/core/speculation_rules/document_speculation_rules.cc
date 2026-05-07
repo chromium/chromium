@@ -608,6 +608,7 @@ void DocumentSpeculationRules::Trace(Visitor* visitor) const {
   visitor->Trace(stale_links_);
   visitor->Trace(elements_blocking_child_style_recalc_);
   visitor->Trace(selectors_);
+  visitor->Trace(sent_candidates_);
 }
 
 mojom::blink::SpeculationHost* DocumentSpeculationRules::GetHost() {
@@ -746,6 +747,9 @@ void DocumentSpeculationRules::UpdateSpeculationCandidates() {
       base::checked_cast<wtf_size_t>(last.begin() - candidates.begin()));
 
   probe::SpeculationCandidatesUpdated(document, candidates);
+
+  // Store candidates for the SpeculationMeasurement API.
+  sent_candidates_ = candidates;
 
   using SpeculationEagerness = blink::mojom::SpeculationEagerness;
   base::EnumSet<SpeculationEagerness, SpeculationEagerness::kMinValue,

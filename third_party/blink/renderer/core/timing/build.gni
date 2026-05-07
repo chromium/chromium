@@ -97,6 +97,8 @@ blink_core_sources_timing = [
   "render_blocking_metrics_reporter.h",
   "speculation_data.cc",
   "speculation_data.h",
+  "speculation_navigation_data.cc",
+  "speculation_navigation_data.h",
   "soft_navigation_context.cc",
   "soft_navigation_context.h",
   "soft_navigation_heuristics.cc",

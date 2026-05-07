@@ -71,6 +71,12 @@ class CORE_EXPORT DocumentSpeculationRules
 
   const HeapVector<Member<StyleRule>>& selectors() { return selectors_; }
 
+  // Returns the speculation candidates last sent to the browser process.
+  // Used by performance.getSpeculations() to expose navigation data.
+  const HeapVector<Member<SpeculationCandidate>>& sent_candidates() const {
+    return sent_candidates_;
+  }
+
   // Requests a future call to UpdateSpeculationCandidates, if none is yet
   // scheduled.
   void QueueUpdateSpeculationCandidates(bool force_style_update = false);
@@ -181,6 +187,12 @@ class CORE_EXPORT DocumentSpeculationRules
   bool wants_pointer_events_ = false;
 
   bool first_update_after_restored_from_bfcache_ = false;
+
+  // Stores the current speculation candidates for the
+  // SpeculationMeasurement API. These are populated when candidates are
+  // sent to the browser and represent what the page has requested via
+  // speculation rules.
+  HeapVector<Member<SpeculationCandidate>> sent_candidates_;
 };
 
 }  // namespace blink

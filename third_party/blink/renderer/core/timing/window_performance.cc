@@ -80,6 +80,8 @@
 #include "third_party/blink/renderer/core/page/page_hidden_state.h"
 #include "third_party/blink/renderer/core/paint/timing/container_timing.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
+#include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
+#include "third_party/blink/renderer/core/speculation_rules/speculation_candidate.h"
 #include "third_party/blink/renderer/core/timing/animation_frame_timing_info.h"
 #include "third_party/blink/renderer/core/timing/global_performance.h"
 #include "third_party/blink/renderer/core/timing/interaction_contentful_paint.h"
@@ -101,6 +103,7 @@
 #include "third_party/blink/renderer/core/timing/soft_navigation_entry.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/core/timing/speculation_data.h"
+#include "third_party/blink/renderer/core/timing/speculation_navigation_data.h"
 #include "third_party/blink/renderer/core/timing/timing_utils.h"
 #include "third_party/blink/renderer/core/timing/visibility_state_entry.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
@@ -1536,22 +1539,46 @@ EventCounts* WindowPerformance::eventCounts() {
 
 SpeculationData* WindowPerformance::getSpeculations() {
   LocalDOMWindow* window = DomWindow();
-  if (!window || !window->document() || !window->document()->Fetcher()) {
+  if (!window || !window->document()) {
     return MakeGarbageCollected<SpeculationData>(
-        HeapVector<Member<PreloadData>>());
+        HeapVector<Member<PreloadData>>(),
+        HeapVector<Member<SpeculationNavigationData>>());
   }
 
+  Document* document = window->document();
+
+  // Collect preloads.
   HeapVector<Member<PreloadData>> preloads;
-  const auto& preload_records =
-      window->document()->Fetcher()->GetPreloadRecords();
-  for (const auto& [url, info] : preload_records) {
-    preloads.push_back(MakeGarbageCollected<PreloadData>(
-        url, info.resource_type,
-        info.crossorigin.value_or(kCrossOriginAttributeNotSet),
-        info.used_time));
+  if (document->Fetcher()) {
+    const auto& preload_records = document->Fetcher()->GetPreloadRecords();
+    for (const auto& [url, info] : preload_records) {
+      preloads.push_back(MakeGarbageCollected<PreloadData>(
+          url, info.resource_type,
+          info.crossorigin.value_or(kCrossOriginAttributeNotSet),
+          info.used_time));
+    }
   }
 
-  return MakeGarbageCollected<SpeculationData>(std::move(preloads));
+  // Collect navigational speculations (prefetches and prerenders).
+  HeapVector<Member<SpeculationNavigationData>> navigations;
+  if (DocumentSpeculationRules* spec_rules =
+          DocumentSpeculationRules::FromIfExists(*document)) {
+    const auto& candidates = spec_rules->sent_candidates();
+    for (const SpeculationCandidate* candidate : candidates) {
+      std::optional<Vector<String>> tags;
+      // When no tag is specified, the candidate has tags=[""]
+      // (a single null atom as default). Treat this as no tags.
+      const auto& candidate_tags = candidate->tags();
+      if (!(candidate_tags.size() == 1 && candidate_tags[0].empty())) {
+        tags = candidate_tags;
+      }
+      navigations.push_back(MakeGarbageCollected<SpeculationNavigationData>(
+          candidate->action(), candidate->url(), tags, candidate->eagerness()));
+    }
+  }
+
+  return MakeGarbageCollected<SpeculationData>(std::move(preloads),
+                                               std::move(navigations));
 }
 
 uint64_t WindowPerformance::interactionCount() const {

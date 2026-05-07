@@ -6,11 +6,14 @@
 
 namespace blink {
 
-SpeculationData::SpeculationData(HeapVector<Member<PreloadData>> preloads)
-    : preloads_(std::move(preloads)) {}
+SpeculationData::SpeculationData(
+    HeapVector<Member<PreloadData>> preloads,
+    HeapVector<Member<SpeculationNavigationData>> navigations)
+    : preloads_(std::move(preloads)), navigations_(std::move(navigations)) {}
 
 void SpeculationData::Trace(Visitor* visitor) const {
   visitor->Trace(preloads_);
+  visitor->Trace(navigations_);
   ScriptWrappable::Trace(visitor);
 }
 
