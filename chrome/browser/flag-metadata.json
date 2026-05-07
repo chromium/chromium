@@ -1449,7 +1449,7 @@
   {
     "name": "canvas-draw-element",
     "owners": [ "schenney@chromium.org", "pdr@chromium.org", "chrishtr@chromium.org" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 156
   },
   {
     "name": "cast-message-logging",
