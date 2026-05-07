@@ -153,3 +153,7 @@ struct WebNNPendingConstantToken {
 struct WebNNTensorToken {
   mojo_base.mojom.UnguessableToken value;
 };
+
+struct WebNNGraphToken {
+  mojo_base.mojom.UnguessableToken value;
+};

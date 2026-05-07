@@ -1448,14 +1448,8 @@ struct GraphInfo {
       id_to_constant_tensor_operand_map;
 };
 
-// WebNNGraph runs in the GPU process and is called by the renderer process to
-// execute the computational graph. Graph execution is performed by calling
-// hardware accelerated OS machine learning APIs.
+// WebNNGraph runs in the GPU process and is called by the renderer process.
+// Graph execution is performed via WebNNContext::Dispatch().
+// This interface is lifecycle-only: pipe disconnect signals graph destruction.
 interface WebNNGraph {
-  // Called by the renderer process to carry out the computational workload of
-  // the compiled graph. The key of map is the name of input/output to identify
-  // the tensor in the graph, the value is the MLTensor containing the tensor
-  // data.
-  Dispatch(map<string, blink.mojom.WebNNTensorToken> named_inputs,
-           map<string, blink.mojom.WebNNTensorToken> named_outputs);
 };

@@ -24,6 +24,7 @@
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_graph_builder.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_tensor.mojom-blink.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -64,6 +65,9 @@
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "gpu/command_buffer/common/capabilities.h"
@@ -228,6 +232,89 @@ base::expected<void, std::string> IsValidTensorSize(
   return base::ok();
 }
 #endif  // BUILDFLAG(IS_MAC)
+
+#define THROW_AND_RETURN_IF_ERROR(func, msg)                      \
+  RETURN_IF_ERROR(func, [&exception_state](const String& error) { \
+    exception_state.ThrowTypeError(StrCat({msg, error}));         \
+    return;                                                       \
+  });
+
+template <typename T>
+void AppendVectorOfNumbers(const std::vector<T>& vector,
+                           StringBuilder& builder) {
+  builder.AppendRange(vector, ", ");
+}
+
+base::expected<void, String> ValidateNamedMLTensors(
+    const MLContext* context,
+    const MLNamedTensors& named_tensors,
+    const MLGraph::NamedOperandDescriptors& expected_named_descriptors) {
+  if (named_tensors.size() !=
+      base::checked_cast<wtf_size_t>(expected_named_descriptors.size())) {
+    return base::unexpected(String::Format(
+        "The number (%u) of MLTensor(s) doesn't match the "
+        "expectation (%u).",
+        named_tensors.size(), expected_named_descriptors.size()));
+  }
+  for (const auto& [name, tensor] : named_tensors) {
+    if (!expected_named_descriptors.Contains(name)) {
+      return base::unexpected(
+          StrCat({"The name \"", name, "\" isn't part of the graph."}));
+    }
+    const auto& info = expected_named_descriptors.at(name);
+    if (tensor->DataType() != info->data_type()) {
+      return base::unexpected(
+          StrCat({"The data type \"", tensor->dataType().AsStringView(),
+                  "\", of the MLTensor with name \"", name,
+                  "\" doesn't match the expected data type (",
+                  V8MLOperandDataType(ToBlinkDataType(info->data_type()))
+                      .AsStringView(),
+                  ")."}));
+    }
+    if (tensor->Shape() != info->shape()) {
+      StringBuilder message;
+      message.Append("The shape [");
+      AppendVectorOfNumbers(tensor->Shape(), message);
+      message.Append("], of the MLTensor with name \"");
+      message.Append(name);
+      message.Append("\" doesn't match the expected shape: [");
+      AppendVectorOfNumbers(info->shape(), message);
+      message.Append("]");
+      return base::unexpected(message.ToString());
+    }
+    if (tensor->context() != context) {
+      return base::unexpected(
+          StrCat({"The context of MLGraph doesn't match the context of the "
+                  "MLTensor with name \"",
+                  name, "\"."}));
+    }
+  }
+  return base::ok();
+}
+
+base::expected<void, String> ValidateMLTensorUsage(
+    const MLNamedTensors& named_inputs,
+    const MLNamedTensors& named_outputs) {
+  // Validate that output tensors are unique.
+  HeapHashSet<Member<MLTensor>> output_tensors;
+  for (const auto& named_output : named_outputs) {
+    output_tensors.insert(named_output.second);
+  }
+
+  if (output_tensors.size() != named_outputs.size()) {
+    return base::unexpected(
+        "The same MLTensor cannot be used more than once as output.");
+  }
+
+  // Validate tensors used for input and output are unique.
+  for (const auto& named_input : named_inputs) {
+    if (output_tensors.Contains(named_input.second)) {
+      return base::unexpected(
+          "The same MLTensor cannot be used as input and output.");
+    }
+  }
+  return base::ok();
+}
 
 }  // namespace
 
@@ -1553,14 +1640,81 @@ void MLContext::dispatch(ScriptState* script_state,
     return;
   }
 
-  if (graph->Context() != this) {
-    exception_state.ThrowTypeError(
-        "The graph isn't built within this context.");
+  if (!context_remote_.is_bound()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Context is lost.");
     return;
   }
 
-  return graph->Dispatch(std::move(scoped_trace), inputs, outputs,
-                         exception_state);
+  if (graph->Context() != this) {
+    exception_state.ThrowTypeError("The graph wasn't built with this context.");
+    return;
+  }
+
+  if (graph->IsDestroyed()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Graph has been destroyed.");
+    return;
+  }
+
+  // Validate the MLNamedTensors.
+  THROW_AND_RETURN_IF_ERROR(
+      ValidateNamedMLTensors(this, inputs, graph->GetInputConstraints()),
+      "Invalid inputs: ");
+  THROW_AND_RETURN_IF_ERROR(
+      ValidateNamedMLTensors(this, outputs, graph->GetOutputConstraints()),
+      "Invalid outputs: ");
+  THROW_AND_RETURN_IF_ERROR(ValidateMLTensorUsage(inputs, outputs),
+                            "Invalid dispatch: ");
+
+  // The inputs and outputs were already verified so we can pass the tensor
+  // directly with the input and output tensors.
+  HashMap<String, blink::WebNNTensorToken> mojo_inputs;
+  for (const auto& [name, input_tensor] : inputs) {
+    if (!input_tensor->IsValid()) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                        "Invalid input tensor state");
+      return;
+    }
+
+    if (input_tensor->Usage().Has(webnn::MLTensorUsageFlags::kGraphConstant)) {
+      exception_state.ThrowTypeError("Invalid input tensor usage");
+      return;
+    }
+
+    if (input_tensor->is_exported_to_webgpu()) {
+      exception_state.ThrowTypeError(
+          "Input tensor has been exported to WebGPU");
+      return;
+    }
+
+    mojo_inputs.insert(name, input_tensor->handle());
+  }
+
+  HashMap<String, blink::WebNNTensorToken> mojo_outputs;
+  for (const auto& [name, output_tensor] : outputs) {
+    if (!output_tensor->IsValid()) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                        "Invalid output tensor state");
+      return;
+    }
+
+    if (output_tensor->Usage().Has(webnn::MLTensorUsageFlags::kGraphConstant)) {
+      exception_state.ThrowTypeError("Invalid output tensor usage");
+      return;
+    }
+
+    if (output_tensor->is_exported_to_webgpu()) {
+      exception_state.ThrowTypeError(
+          "Output tensor has been exported to WebGPU");
+      return;
+    }
+
+    mojo_outputs.insert(name, output_tensor->handle());
+  }
+
+  context_remote_->Dispatch(graph->graph_token(), std::move(mojo_inputs),
+                            std::move(mojo_outputs));
 }
 
 void MLContext::DidCreateWebNNTensor(

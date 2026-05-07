@@ -38,6 +38,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) GraphBuilderContext {
     GraphCreationResult& operator=(GraphCreationResult&&);
     ~GraphCreationResult();
 
+    blink::WebNNGraphToken graph_token;
     std::vector<mojom::Device> devices;
   };
 

@@ -123,6 +123,10 @@ mojom_component("tokens") {
           mojom = "blink.mojom.WebNNTensorToken"
           cpp = "::blink::WebNNTensorToken"
         },
+        {
+          mojom = "blink.mojom.WebNNGraphToken"
+          cpp = "::blink::WebNNGraphToken"
+        },
       ]
       traits_headers = [
         "//third_party/blink/public/common/tokens/token_mojom_traits_helper.h",

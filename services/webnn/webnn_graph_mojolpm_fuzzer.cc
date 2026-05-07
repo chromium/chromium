@@ -213,6 +213,8 @@ class WebnnGraphLPMFuzzer {
     }
     webnn_graph_remote.Bind(
         std::move(create_graph_result.value()->graph_remote));
+    blink::WebNNGraphToken graph_token =
+        create_graph_result.value()->graph_token;
 
     // Get graph_info again for tensor operations.
     graph_info = webnn::mojom::GraphInfo::New();
@@ -289,7 +291,8 @@ class WebnnGraphLPMFuzzer {
           *operand.name, create_tensor_result->get_success()->tensor_handle);
     }
 
-    webnn_graph_remote->Dispatch(named_input_handles, named_output_handles);
+    webnn_context_remote->Dispatch(graph_token, named_input_handles,
+                                   named_output_handles);
 
     // Wait for reading all output data.
     for (auto& remote : output_remotes) {

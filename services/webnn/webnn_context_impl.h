@@ -281,6 +281,11 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
                                const gpu::Mailbox& mailbox,
                                const gpu::SyncToken& fence,
                                CreateTensorCallback callback) override;
+  void Dispatch(
+      const blink::WebNNGraphToken& graph_token,
+      const base::flat_map<std::string, blink::WebNNTensorToken>& named_inputs,
+      const base::flat_map<std::string, blink::WebNNTensorToken>& named_outputs)
+      override;
 
   // This method will be called by `CreateTensor()` after the tensor info is
   // validated. A backend subclass should implement this method to create and

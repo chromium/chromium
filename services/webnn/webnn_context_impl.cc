@@ -5,6 +5,7 @@
 #include "services/webnn/webnn_context_impl.h"
 
 #include <memory>
+#include <set>
 #include <utility>
 
 #include "base/atomic_sequence_num.h"
@@ -23,6 +24,7 @@
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
 #include "services/webnn/public/cpp/supported_tensors.h"
+#include "services/webnn/public/cpp/webnn_trace.h"
 #include "services/webnn/public/mojom/webnn_context.mojom.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
@@ -47,6 +49,49 @@
 namespace {
 // Generates process-unique IDs to use for tracing resources.
 base::AtomicSequenceNumber g_next_webnn_context_tracing_id;
+
+// Return false if the named tensors for dispatch don't match the built
+// graph's expectation.
+bool ValidateWebNNTensors(
+    const base::flat_map<std::string, scoped_refptr<webnn::WebNNTensorImpl>>&
+        named_tensors,
+    const base::flat_map<std::string, webnn::OperandDescriptor>&
+        names_to_descriptors) {
+  return std::ranges::equal(
+      named_tensors, names_to_descriptors,
+      [](const auto& named_tensor, const auto& tensor_spec) {
+        const auto& [tensor_name, tensor_impl] = named_tensor;
+        const auto& [tensor_spec_name, tensor_spec_descriptor] = tensor_spec;
+        return tensor_name == tensor_spec_name &&
+               tensor_impl->data_type() == tensor_spec_descriptor.data_type() &&
+               tensor_impl->shape() == tensor_spec_descriptor.shape();
+      });
+}
+
+// Return false if the same tensor was specified in inputs and outputs.
+bool ValidateWebNNTensorsUsage(
+    const base::flat_map<std::string, blink::WebNNTensorToken>& named_inputs,
+    const base::flat_map<std::string, blink::WebNNTensorToken>& named_outputs) {
+  // Validate that output tensors are unique.
+  std::set<blink::WebNNTensorToken> output_tensors;
+  for (const auto& named_output : named_outputs) {
+    output_tensors.insert(named_output.second);
+  }
+
+  if (output_tensors.size() != named_outputs.size()) {
+    return false;
+  }
+
+  // Validate tensors used for input and output are unique.
+  for (const auto& named_input : named_inputs) {
+    if (output_tensors.contains(named_input.second)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 }  // namespace
 
 namespace webnn {
@@ -252,6 +297,7 @@ void WebNNContextImpl::OnGraphBuilt(
   }
 
   GraphCreationResult creation_result;
+  creation_result.graph_token = result.value()->handle();
   creation_result.devices = result.value()->devices();
 
   graph_impls_.emplace(std::move(result.value()));
@@ -485,6 +531,91 @@ void WebNNContextImpl::CreateTensorFromMailbox(mojom::TensorInfoPtr tensor_info,
           std::move(tensor_info), mailbox, std::move(mojo_callback_wrapper),
           std::move(scoped_trace)),
       fence);
+}
+
+void WebNNContextImpl::Dispatch(
+    const blink::WebNNGraphToken& graph_token,
+    const base::flat_map<std::string, blink::WebNNTensorToken>& named_inputs,
+    const base::flat_map<std::string, blink::WebNNTensorToken>& named_outputs) {
+  ScopedTrace scoped_trace("WebNNContextImpl::Dispatch");
+
+  if (!ValidateWebNNTensorsUsage(named_inputs, named_outputs)) {
+    GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
+    return;
+  }
+
+  // Resolve graph token to graph impl.
+  auto graph_it = graph_impls_.find(graph_token);
+  if (graph_it == graph_impls_.end()) {
+    GetMojoReceiver().ReportBadMessage(kBadMessageInvalidGraph);
+    return;
+  }
+  scoped_refptr<WebNNGraphImpl> graph_impl = *graph_it;
+
+  // Resolve the token of an input MLTensor to the corresponding `WebNNTensor`
+  // instance.
+  std::vector<std::pair<std::string, scoped_refptr<WebNNTensorImpl>>>
+      name_to_input_tensors;
+  name_to_input_tensors.reserve(named_inputs.size());
+  for (const auto& [name, tensor_handle] : named_inputs) {
+    scoped_refptr<WebNNTensorImpl> input_tensor =
+        GetWebNNTensorImpl(tensor_handle);
+    if (!input_tensor) {
+      return;
+    }
+
+    // Input MLTensor is always dispatchable, which isn't allowed when used as
+    // a graph constant.
+    if (input_tensor->usage().Has(MLTensorUsageFlags::kGraphConstant)) {
+      GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
+      return;
+    }
+
+    name_to_input_tensors.emplace_back(name, std::move(input_tensor));
+  }
+  base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>>
+      name_to_input_tensor_map(std::move(name_to_input_tensors));
+  if (!ValidateWebNNTensors(
+          name_to_input_tensor_map,
+          graph_impl->compute_resource_info().input_names_to_descriptors)) {
+    GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
+    return;
+  }
+
+  // Resolve the token of an output MLTensor to the corresponding `WebNNTensor`
+  // instance.
+  std::vector<std::pair<std::string, scoped_refptr<WebNNTensorImpl>>>
+      name_to_output_tensors;
+  name_to_output_tensors.reserve(named_outputs.size());
+  for (const auto& [name, tensor_handle] : named_outputs) {
+    scoped_refptr<WebNNTensorImpl> output_tensor =
+        GetWebNNTensorImpl(tensor_handle);
+    if (!output_tensor) {
+      return;
+    }
+
+    // Output MLTensor is always dispatchable, which isn't allowed when used as
+    // a graph constant.
+    if (output_tensor->usage().Has(MLTensorUsageFlags::kGraphConstant)) {
+      GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
+      return;
+    }
+
+    name_to_output_tensors.emplace_back(name, std::move(output_tensor));
+  }
+
+  base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>>
+      name_to_output_tensor_map(std::move(name_to_output_tensors));
+  if (!ValidateWebNNTensors(
+          name_to_output_tensor_map,
+          graph_impl->compute_resource_info().output_names_to_descriptors)) {
+    GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
+    return;
+  }
+
+  graph_impl->RunDispatch(
+      std::move(name_to_input_tensor_map), std::move(name_to_output_tensor_map),
+      std::move(scoped_trace), GetMojoReceiver().GetBadMessageCallback());
 }
 
 void WebNNContextImpl::RemoveWebNNTensorImpl(

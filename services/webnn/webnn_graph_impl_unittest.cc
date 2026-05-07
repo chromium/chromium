@@ -276,6 +276,7 @@ bool ValidateDispatch(
       create_graph_result = create_graph_future.Take();
   mojo::AssociatedRemote<mojom::WebNNGraph> webnn_graph;
   webnn_graph.Bind(std::move(create_graph_result.value()->graph_remote));
+  blink::WebNNGraphToken graph_token = create_graph_result.value()->graph_token;
 
   // Validate the inputs in the `Dispatch` function.
   bool valid = true;
@@ -301,11 +302,11 @@ bool ValidateDispatch(
   // Ensure CreateTensor messages have a chance to finish before calling
   // Dispatch().
   webnn_context.FlushForTesting();
-  webnn_graph->Dispatch(dispatch_inputs, dispatch_outputs);
+  webnn_context->Dispatch(graph_token, dispatch_inputs, dispatch_outputs);
 
   // Ensure Dispatch message has a chance to finish before removing the error
   // handler.
-  webnn_graph.FlushForTesting();
+  webnn_context.FlushForTesting();
   mojo::SetDefaultProcessErrorHandler(base::NullCallback());
   return valid;
 }

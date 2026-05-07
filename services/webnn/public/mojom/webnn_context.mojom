@@ -52,4 +52,15 @@ interface WebNNContext {
   // must be verified and obtained from the SharedImageInterface.
   CreateTensorFromMailbox(TensorInfo tensor_info, gpu.mojom.Mailbox mailbox,
    gpu.mojom.SyncToken fence) => (CreateTensorResult result);
+
+  // Execute the compiled platform graph identified by `graph`. The graph is
+  // identified by a token rather than via the WebNNGraph interface to preserve
+  // message ordering with ReadTensor/WriteTensor: both Dispatch and
+  // ReadTensor/WriteTensor are on the WebNNContext pipe, so the service
+  // processes them in order. If Dispatch were on a separate (non-associated)
+  // WebNNGraph pipe, the service could receive Dispatch before a preceding
+  // WriteTensor, executing inference with stale input data.
+  Dispatch(blink.mojom.WebNNGraphToken graph,
+           map<string, blink.mojom.WebNNTensorToken> named_inputs,
+           map<string, blink.mojom.WebNNTensorToken> named_outputs);
 };

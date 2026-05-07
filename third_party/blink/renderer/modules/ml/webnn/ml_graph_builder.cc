@@ -3511,7 +3511,7 @@ void MLGraphBuilder::DidCreateWebNNGraph(
   }
   auto* graph = MakeGarbageCollected<MLGraph>(
       resolver->GetExecutionContext(), ml_context_,
-      std::move(success->graph_remote),
+      std::move(success->graph_remote), success->graph_token,
       std::move(input_and_output_constraints.first),
       std::move(input_and_output_constraints.second), std::move(devices),
       base::PassKey<MLGraphBuilder>());

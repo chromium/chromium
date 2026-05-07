@@ -408,6 +408,13 @@ struct StructTraits<blink::mojom::WebNNTensorTokenDataView,
           blink::mojom::WebNNTensorTokenDataView,
           blink::WebNNTensorToken> {};
 
+template <>
+struct StructTraits<blink::mojom::WebNNGraphTokenDataView,
+                    blink::WebNNGraphToken>
+    : public blink::TokenMojomTraitsHelper<
+          blink::mojom::WebNNGraphTokenDataView,
+          blink::WebNNGraphToken> {};
+
 }  // namespace mojo
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_TOKENS_TOKENS_MOJOM_TRAITS_H_

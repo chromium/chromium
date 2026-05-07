@@ -2996,7 +2996,8 @@ void WebNNGraphBuilderImpl::DidCreateGraph(
   }
 
   auto success = mojom::CreateGraphSuccess::New(
-      std::move(remote), std::move(result.value().devices));
+      std::move(remote), result.value().graph_token,
+      std::move(result.value().devices));
   std::move(callback).Run(std::move(success));
 }
 

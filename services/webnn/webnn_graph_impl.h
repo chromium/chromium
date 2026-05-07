@@ -12,8 +12,10 @@
 #include "base/memory/raw_ref.h"
 #include "base/types/pass_key.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
+#include "services/webnn/public/cpp/webnn_trace.h"
 #include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "services/webnn/webnn_object_impl.h"
@@ -80,6 +82,16 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphImpl
 
   const std::vector<mojom::Device>& devices() { return devices_; }
 
+  // Execute the dispatch on the GPU sequence (or directly if no GPU sequence).
+  // Called by WebNNContextImpl::Dispatch() after input/output tensors have been
+  // validated and resolved. Schedules the backend's DispatchImpl() on the GPU
+  // sequence, checking that no tensors are exported before running.
+  void RunDispatch(
+      base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>> named_inputs,
+      base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>> named_outputs,
+      webnn::ScopedTrace scoped_trace,
+      mojo::ReportBadMessageCallback bad_message_cb);
+
  protected:
   ~WebNNGraphImpl() override;
 
@@ -89,14 +101,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphImpl
  private:
   void OnDisconnect() override;
 
-  // mojom::WebNNGraph
-  void Dispatch(
-      const base::flat_map<std::string, blink::WebNNTensorToken>& named_inputs,
-      const base::flat_map<std::string, blink::WebNNTensorToken>& named_outputs)
-      override;
-
   // Execute the compiled platform graph. The `named_inputs` and `named_outputs`
-  // were validated in base class.
+  // were validated in WebNNContextImpl::Dispatch().
   virtual void DispatchImpl(
       base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>> named_inputs,
       base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>>

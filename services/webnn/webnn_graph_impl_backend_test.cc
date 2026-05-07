@@ -169,6 +169,7 @@ BuildAndCompute(
 
   mojo::AssociatedRemote<mojom::WebNNGraph> graph_remote;
   graph_remote.Bind(std::move(create_graph_result.value()->graph_remote));
+  blink::WebNNGraphToken graph_token = create_graph_result.value()->graph_token;
 
   std::vector<std::pair<std::string, blink::WebNNTensorToken>>
       named_input_handles;
@@ -189,7 +190,8 @@ BuildAndCompute(
       });
 
   // The GraphImpl should compute successfully.
-  graph_remote->Dispatch(named_input_handles, named_output_handles);
+  context_remote->Dispatch(graph_token, named_input_handles,
+                           named_output_handles);
 
   // Read back the results from the output buffers.
   std::vector<std::pair<std::string, std::vector<OutputDataType>>>

@@ -382,11 +382,6 @@ class FakeWebNNGraph : public blink_mojom::WebNNGraph {
   ~FakeWebNNGraph() override = default;
 
  private:
-  // Just return for testing the validation of inputs and outputs.
-  void Dispatch(
-      const HashMap<String, blink::WebNNTensorToken>& named_inputs,
-      const HashMap<String, blink::WebNNTensorToken>& named_outputs) override {}
-
   // TODO(crbug.com/354741414): Fix this dangling pointer.
   const raw_ref<MLGraphTest, DanglingUntriaged> helper_;
 };
@@ -492,7 +487,8 @@ class FakeWebNNGraphBuilder : public blink_mojom::WebNNGraphBuilder {
         blink_remote.InitWithNewEndpointAndPassReceiver());
 
     auto success = blink_mojom::CreateGraphSuccess::New(
-        std::move(blink_remote), Vector<blink_mojom::Device>());
+        std::move(blink_remote), blink::WebNNGraphToken(),
+        Vector<blink_mojom::Device>());
     std::move(callback).Run(std::move(success));
   }
 
@@ -551,6 +547,13 @@ class FakeWebNNContext : public blink_mojom::WebNNContext {
                                const gpu::SyncToken& fence,
                                CreateTensorCallback callback) override {
     NOTIMPLEMENTED();
+  }
+
+  void Dispatch(
+      const blink::WebNNGraphToken& graph,
+      const HashMap<String, blink::WebNNTensorToken>& named_inputs,
+      const HashMap<String, blink::WebNNTensorToken>& named_outputs) override {
+    // No-op for testing.
   }
 
   // TODO(crbug.com/354741414): Fix this dangling pointer.

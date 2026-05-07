@@ -25,52 +25,6 @@
 
 namespace webnn {
 
-namespace {
-
-// Return false if the named tensors for dispatch don't match the built
-// graph's expectation.
-bool ValidateWebNNTensors(
-    const base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>>&
-        named_tensors,
-    const base::flat_map<std::string, OperandDescriptor>&
-        names_to_descriptors) {
-  return std::ranges::equal(
-      named_tensors, names_to_descriptors,
-      [](const auto& named_tensor, const auto& tensor_spec) {
-        const auto& [tensor_name, tensor_impl] = named_tensor;
-        const auto& [tensor_spec_name, tensor_spec_descriptor] = tensor_spec;
-        return tensor_name == tensor_spec_name &&
-               tensor_impl->data_type() == tensor_spec_descriptor.data_type() &&
-               tensor_impl->shape() == tensor_spec_descriptor.shape();
-      });
-}
-
-// Return false if the same tensor was specified in inputs and outputs.
-bool ValidateWebNNTensorsUsage(
-    const base::flat_map<std::string, blink::WebNNTensorToken>& named_inputs,
-    const base::flat_map<std::string, blink::WebNNTensorToken>& named_outputs) {
-  // Validate that output tensors are unique.
-  std::set<blink::WebNNTensorToken> output_tensors;
-  for (const auto& named_output : named_outputs) {
-    output_tensors.insert(named_output.second);
-  }
-
-  if (output_tensors.size() != named_outputs.size()) {
-    return false;
-  }
-
-  // Validate tensors used for input and output are unique.
-  for (const auto& named_input : named_inputs) {
-    if (output_tensors.contains(named_input.second)) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-}  // namespace
-
 WebNNGraphImpl::ComputeResourceInfo::ComputeResourceInfo(
     base::flat_map<std::string, OperandDescriptor> input_names_to_descriptors,
     base::flat_map<std::string, OperandDescriptor> output_names_to_descriptors,
@@ -114,77 +68,13 @@ void WebNNGraphImpl::OnDisconnect() {
   context_->RemoveWebNNGraphImpl(handle());
 }
 
-void WebNNGraphImpl::Dispatch(
-    const base::flat_map<std::string, blink::WebNNTensorToken>& named_inputs,
-    const base::flat_map<std::string, blink::WebNNTensorToken>& named_outputs) {
-  ScopedTrace scoped_trace("WebNNGraphImpl::Dispatch");
-
-  if (!ValidateWebNNTensorsUsage(named_inputs, named_outputs)) {
-    GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
-    return;
-  }
-
-  // Resolve the token of a input MLTensor to the corresponding `WebNNTensor`
-  // instance.
-  std::vector<std::pair<std::string, scoped_refptr<WebNNTensorImpl>>>
-      name_to_input_tensors;
-  name_to_input_tensors.reserve(named_inputs.size());
-  for (const auto& [name, tensor_handle] : named_inputs) {
-    scoped_refptr<WebNNTensorImpl> input_tensor =
-        context_->GetWebNNTensorImpl(tensor_handle);
-    if (!input_tensor) {
-      return;
-    }
-
-    // Input MLTensor is always dispatchable, which isn’t allowed when used as
-    // a graph constant.
-    if (input_tensor->usage().Has(MLTensorUsageFlags::kGraphConstant)) {
-      GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
-      return;
-    }
-
-    name_to_input_tensors.emplace_back(name, std::move(input_tensor));
-  }
-  base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>>
-      name_to_input_tensor_map(std::move(name_to_input_tensors));
-  if (!ValidateWebNNTensors(
-          name_to_input_tensor_map,
-          compute_resource_info_.input_names_to_descriptors)) {
-    GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
-    return;
-  }
-
-  // Resolve the token of a output MLTensor to the corresponding `WebNNTensor`
-  // instance.
-  std::vector<std::pair<std::string, scoped_refptr<WebNNTensorImpl>>>
-      name_to_output_tensors;
-  name_to_output_tensors.reserve(named_outputs.size());
-  for (const auto& [name, tensor_handle] : named_outputs) {
-    scoped_refptr<WebNNTensorImpl> output_tensor =
-        context_->GetWebNNTensorImpl(tensor_handle);
-    if (!output_tensor) {
-      return;
-    }
-
-    // Output MLTensor is always dispatchable, which isn’t allowed when used as
-    // a graph constant.
-    if (output_tensor->usage().Has(MLTensorUsageFlags::kGraphConstant)) {
-      GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
-      return;
-    }
-
-    name_to_output_tensors.emplace_back(name, std::move(output_tensor));
-  }
-
-  base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>>
-      name_to_output_tensor_map(std::move(name_to_output_tensors));
-  if (!ValidateWebNNTensors(
-          name_to_output_tensor_map,
-          compute_resource_info_.output_names_to_descriptors)) {
-    GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
-    return;
-  }
-
+void WebNNGraphImpl::RunDispatch(
+    base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>>
+        name_to_input_tensor_map,
+    base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>>
+        name_to_output_tensor_map,
+    ScopedTrace scoped_trace,
+    mojo::ReportBadMessageCallback bad_message_cb) {
   // Call DispatchImpl() implemented by an `mojom::WebNNGraph` backend.
   context_->RunOrScheduleTask(base::BindOnce(
       [](WebNNGraphImpl* self,
@@ -219,7 +109,7 @@ void WebNNGraphImpl::Dispatch(
       },
       base::RetainedRef(this), std::move(name_to_input_tensor_map),
       std::move(name_to_output_tensor_map), std::move(scoped_trace),
-      GetMojoReceiver().GetBadMessageCallback()));
+      std::move(bad_message_cb)));
 }
 
 }  // namespace webnn

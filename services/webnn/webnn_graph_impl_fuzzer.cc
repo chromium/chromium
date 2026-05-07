@@ -1270,6 +1270,7 @@ void BuildAndCompute(
 
   mojo::AssociatedRemote<mojom::WebNNGraph> graph_remote;
   graph_remote.Bind(std::move(create_graph_result.value()->graph_remote));
+  blink::WebNNGraphToken graph_token = create_graph_result.value()->graph_token;
 
   std::vector<std::pair<std::string, blink::WebNNTensorToken>>
       named_input_handles;
@@ -1289,7 +1290,8 @@ void BuildAndCompute(
         return std::make_pair(output.first, output.second.handle);
       });
 
-  graph_remote->Dispatch(named_input_handles, named_output_handles);
+  context_remote->Dispatch(graph_token, named_input_handles,
+                           named_output_handles);
 
   // Wait for the computation to complete.
   for (auto& output : named_output_remotes_and_handles) {
