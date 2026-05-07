@@ -543,4 +543,35 @@ public class OverlayPanelBaseTest {
                 mExpandPanel.getOffsetY(),
                 MathUtils.EPSILON);
     }
+
+    @Test
+    @SmallTest
+    @Feature({"OverlayPanelBase"})
+    @UiThreadTest
+    public void testResizeOnBottomControlsHeightChange() {
+        final float tabHeight = 1000;
+        mExpandPanel.onLayoutChanged(400, tabHeight, 100);
+        mExpandPanel.setIsFullWidthSizePanelForTesting(true);
+
+        when(mBrowserControlsStateProvider.getControlsPosition()).thenReturn(ControlsPosition.TOP);
+
+        float peekHeight = mExpandPanel.getPeekedHeight();
+        mExpandPanel.setPanelState(PanelState.PEEKED, StateChangeReason.UNKNOWN);
+        mExpandPanel.setPanelHeight(peekHeight);
+        Assert.assertEquals(tabHeight - peekHeight, mExpandPanel.getOffsetY(), MathUtils.EPSILON);
+
+        when(mBrowserControlsStateProvider.getControlsPosition())
+                .thenReturn(ControlsPosition.BOTTOM);
+        when(mBottomControlsStacker.getTotalHeight()).thenReturn(MOCK_TOOLBAR_HEIGHT + CHIN_HEIGHT);
+        when(mBottomControlsStacker.getHeightFromLayerToBottom(LayerType.BOTTOM_CHIN))
+                .thenReturn(CHIN_HEIGHT);
+
+        mBrowserControlsStateProviderObserverCaptor
+                .getValue()
+                .onBottomControlsHeightChanged(MOCK_TOOLBAR_HEIGHT + CHIN_HEIGHT, 0);
+        Assert.assertEquals(
+                tabHeight - peekHeight - (MOCK_TOOLBAR_HEIGHT * mExpandPanel.mPxToDp),
+                mExpandPanel.getOffsetY(),
+                MathUtils.EPSILON);
+    }
 }

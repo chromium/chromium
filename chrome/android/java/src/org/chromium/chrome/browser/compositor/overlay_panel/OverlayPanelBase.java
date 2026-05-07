@@ -193,6 +193,16 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderO
                             boolean bottomControlsMinHeightChanged,
                             boolean requestNewFrame,
                             boolean isVisibilityForced) {
+                        maybeUpdatePanelForHeight();
+                    }
+
+                    @Override
+                    public void onBottomControlsHeightChanged(
+                            int bottomControlsHeight, int bottomControlsMinHeight) {
+                        maybeUpdatePanelForHeight();
+                    }
+
+                    private void maybeUpdatePanelForHeight() {
                         if (mPanelState > PanelState.CLOSED) {
                             updatePanelForHeight(mHeight);
                         }
