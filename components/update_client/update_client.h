@@ -72,13 +72,13 @@
 // Otherwise, the version of the CRX set in the CrxComponent may not be correct.
 //
 // The UpdateClient public interface includes two functions: Install and
-// Update. These functions correspond to installing one CRX immediately as a
-// foreground activity (Install), and updating a group of CRXs silently in the
-// background (Update). This distinction is important. Background updates are
-// queued up and their actions run serially, one at a time, for the purpose of
-// conserving local resources such as CPU, network, and I/O.
-// On the other hand, installs are never queued up but run concurrently, as
-// requested by the user.
+// Update. The primary distinction between them relates to concurrency and
+// queuing. Calls to Update result in a queuing behavior, where the execution of
+// each call is serialized for the purpose of conserving local resources such
+// as CPU, network, and I/O. On the other hand, calls to Install are never
+// queued up but run concurrently. While Install is used for immediate
+// foreground installation of a single item, Update supports both background
+// and foreground operations for a set of items.
 //
 // The update client introduces a runtime constraint regarding interleaving
 // updates and installs. If installs or updates for a given CRX are in progress,
@@ -453,12 +453,11 @@ class UpdateClient : public base::RefCountedThreadSafe<UpdateClient> {
   // instances of CrxComponent to be used for this update. Provides state change
   // notifications through invocations of the optional
   // |crx_state_change_callback| callback.
-  // The |Update| function is intended to be used for background updates of
-  // several CRXs. Overlapping calls to this function result in a queuing
-  // behavior, and the execution of each call is serialized. In addition,
-  // updates are always queued up when installs are running. The |is_foreground|
-  // parameter must be set to true if the invocation of this function is a
-  // result of a user initiated update.
+  // The |Update| function updates the specified CRXs. Overlapping calls to
+  // this function result in a queuing behavior, and the execution of each call
+  // is serialized. In addition, updates are always queued up when installs are
+  // running. The |is_foreground| parameter must be set to true if the
+  // invocation of this function is a result of a user initiated update.
   virtual void Update(const std::vector<std::string>& ids,
                       CrxDataCallback crx_data_callback,
                       CrxStateChangeCallback crx_state_change_callback,

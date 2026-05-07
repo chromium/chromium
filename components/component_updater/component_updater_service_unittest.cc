@@ -141,7 +141,6 @@ class LoopHandler {
                 UpdateClient::CrxStateChangeCallback,
                 bool is_foreground,
                 Callback callback) {
-    EXPECT_FALSE(is_foreground);
     Handle(std::move(callback));
   }
 
@@ -330,7 +329,7 @@ TEST_F(ComponentUpdaterTest, RegisterComponent) {
 
   // Quit after two update checks have fired.
   LoopHandler loop_handler(2, quit_closure());
-  EXPECT_CALL(update_client(), Update(_, _, _, _, _))
+  EXPECT_CALL(update_client(), Update(_, _, _, /*is_foreground=*/false, _))
       .WillRepeatedly(Invoke(&loop_handler, &LoopHandler::OnUpdate));
 
   EXPECT_CALL(update_client(), IsUpdating(id1));
@@ -349,7 +348,7 @@ TEST_F(ComponentUpdaterTest, RegisterComponent) {
   ht.ExpectTotalCount("ComponentUpdater.UpdateCompleteTime", 2);
 }
 
-// Tests that on-demand updates invoke UpdateClient::Install.
+// Tests that on-demand updates invoke UpdateClient::Update.
 TEST_F(ComponentUpdaterTest, OnDemandUpdate) {
   base::HistogramTester ht;
 
@@ -366,16 +365,15 @@ TEST_F(ComponentUpdaterTest, OnDemandUpdate) {
       &cus, "ihfokbkgjpifnbbojhneepfflplebdkc",
       OnDemandUpdater::Priority::FOREGROUND);
 
-  // Register two components, then call |OnDemand| for each component, with
-  // foreground and background priorities. Expect calls to |Schedule| because
-  // components have registered, calls to |Install| and |Update| corresponding
-  // to each |OnDemand| invocation, and calls to |Stop| when the mocks are
-  // torn down.
+  // Register two components, then call `OnDemand` for each component, with
+  // foreground and background priorities. Expect calls to `Schedule` because
+  // components have registered, calls `Update` corresponding to each `OnDemand`
+  // invocation, and calls to `Stop` when the mocks are torn down.
   LoopHandler loop_handler(2, quit_closure());
   EXPECT_CALL(scheduler(), Schedule(_, _, _, _));
-  EXPECT_CALL(update_client(), Install(_, _, _, _))
-      .WillOnce(Invoke(&loop_handler, &LoopHandler::OnInstall));
-  EXPECT_CALL(update_client(), Update(_, _, _, _, _))
+  EXPECT_CALL(update_client(), Update(_, _, _, /*is_foreground=*/true, _))
+      .WillOnce(Invoke(&loop_handler, &LoopHandler::OnUpdate));
+  EXPECT_CALL(update_client(), Update(_, _, _, /*is_foreground=*/false, _))
       .WillOnce(Invoke(&loop_handler, &LoopHandler::OnUpdate));
   EXPECT_CALL(update_client(), Stop());
   EXPECT_CALL(scheduler(), Stop());
@@ -421,7 +419,7 @@ TEST_F(ComponentUpdaterTest, OnDemandUpdate) {
   ht.ExpectTotalCount("ComponentUpdater.UpdateCompleteTime", 2);
 }
 
-// Tests that throttling an update invokes UpdateClient::Install.
+// Tests that throttling an update invokes UpdateClient::Update.
 TEST_F(ComponentUpdaterTest, MaybeThrottle) {
   base::HistogramTester ht;
 
@@ -429,8 +427,8 @@ TEST_F(ComponentUpdaterTest, MaybeThrottle) {
   ON_CALL(scheduler(), Schedule(_, _, _, _)).WillByDefault(Return());
 
   LoopHandler loop_handler(1, quit_closure());
-  EXPECT_CALL(update_client(), Install(_, _, _, _))
-      .WillOnce(Invoke(&loop_handler, &LoopHandler::OnInstall));
+  EXPECT_CALL(update_client(), Update(_, _, _, /*is_foreground=*/true, _))
+      .WillOnce(Invoke(&loop_handler, &LoopHandler::OnUpdate));
   EXPECT_CALL(update_client(), Stop());
   EXPECT_CALL(scheduler(), Schedule(_, _, _, _));
   EXPECT_CALL(scheduler(), Stop());

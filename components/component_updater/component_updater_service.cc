@@ -336,7 +336,7 @@ update_client::CrxComponent CrxUpdateService::ToCrxComponent(
   // Some components should update even when enterprise policy disables
   // updates.
   bool override_component_updates_enabled =
-    !component.supports_group_policy_enable_component_updates;
+      !component.supports_group_policy_enable_component_updates;
   bool should_update =
       override_component_updates_enabled || component_updates_enabled;
   crx.updates_enabled = component.allow_updates && should_update;
@@ -419,21 +419,15 @@ void CrxUpdateService::OnDemandUpdateInternal(const std::string& id,
   UMA_HISTOGRAM_ENUMERATION("ComponentUpdater.Calls", UPDATE_TYPE_MANUAL,
                             UPDATE_TYPE_COUNT);
 
-  auto crx_data_callback = base::BindOnce(&CrxUpdateService::GetCrxComponents,
-                                          weak_ptr_factory_.GetWeakPtr());
-  auto update_complete_callback = base::BindOnce(
-      &CrxUpdateService::OnUpdateComplete, weak_ptr_factory_.GetWeakPtr(),
-      std::move(callback), base::TimeTicks::Now());
-  switch (priority) {
-    case Priority::FOREGROUND:
-      update_client_->Install(id, std::move(crx_data_callback), {},
-                              std::move(update_complete_callback));
-      break;
-    case Priority::BACKGROUND:
-      update_client_->Update({id}, std::move(crx_data_callback), {}, false,
-                             std::move(update_complete_callback));
-      break;
-  }
+  update_client_->Update(
+      {id},
+      base::BindOnce(&CrxUpdateService::GetCrxComponents,
+                     weak_ptr_factory_.GetWeakPtr()),
+      /*crx_state_change_callback=*/{},
+      /*is_foreground=*/priority == Priority::FOREGROUND,
+      base::BindOnce(&CrxUpdateService::OnUpdateComplete,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     base::TimeTicks::Now()));
 }
 
 bool CrxUpdateService::CheckForUpdates(
