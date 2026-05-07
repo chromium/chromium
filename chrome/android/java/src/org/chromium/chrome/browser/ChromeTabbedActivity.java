@@ -237,6 +237,7 @@ import org.chromium.chrome.browser.setup_list.SetupListModuleUtils;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfAndroidBridge;
+import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfGestureDetector;
 import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfMetricsRecorder;
 import org.chromium.chrome.browser.signin.SigninAndHistorySyncActivityLauncherImpl;
 import org.chromium.chrome.browser.single_tab.SingleTabModuleBuilder;
@@ -675,6 +676,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     private DragAndDropDelegate mDragDropDelegate;
 
     private CookiesFetcher mIncognitoCookiesFetcher;
+
+    private @Nullable SendTabToSelfGestureDetector mSendTabToSelfGestureDetector;
 
     private SuggestionEventObserver mSuggestionEventObserver;
     private GroupSuggestionsPromotionCoordinator mGroupSuggestionsPromotionCoordinator;
@@ -1781,6 +1784,18 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 mRootUiCoordinator.getDesktopWindowStateManager(),
                 mInstanceAllocationType,
                 !mFromResumption);
+
+        if (mSendTabToSelfGestureDetector == null
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.SEND_TAB_TO_SELF_GESTURE)) {
+            mSendTabToSelfGestureDetector =
+                    new SendTabToSelfGestureDetector(
+                            this, getActivityTabProvider(), mTabModelProfileSupplier);
+        }
+        // This is not inside the above if-statement to handle the case where the gesture detector
+        // might have been stopped if the activity went to the background.
+        if (mSendTabToSelfGestureDetector != null) {
+            mSendTabToSelfGestureDetector.start();
+        }
     }
 
     @Override
@@ -5036,6 +5051,9 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     public void onStop() {
         try (TraceEvent e = TraceEvent.scoped("ChromeTabbedActivity.onStop")) {
             super.onStop();
+            if (mSendTabToSelfGestureDetector != null) {
+                mSendTabToSelfGestureDetector.stop();
+            }
         }
     }
 

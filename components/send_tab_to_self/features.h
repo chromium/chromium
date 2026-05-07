@@ -55,6 +55,12 @@ BASE_DECLARE_FEATURE(kSendTabToSelfPostSendToast);
 // to the Omnibox context menu.
 BASE_DECLARE_FEATURE(kSendTabToSelfExtraEntryPoints);
 
+#if BUILDFLAG(IS_ANDROID)
+// If this feature is enabled, physical double-tap gestures will be detected
+// and used to trigger sending tabs to self on Android devices.
+BASE_DECLARE_FEATURE(kSendTabToSelfGesture);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_IOS)
 // If this feature is enabled, users can schedule tab reminder iOS push
 // notifications.

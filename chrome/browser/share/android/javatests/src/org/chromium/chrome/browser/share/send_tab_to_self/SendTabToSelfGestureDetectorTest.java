@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.share.send_tab_to_self;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
@@ -13,6 +14,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
+import android.hardware.Sensor;
 import android.hardware.SensorManager;
 
 import androidx.test.filters.SmallTest;
@@ -41,6 +43,7 @@ public class SendTabToSelfGestureDetectorTest {
 
     @Mock private Context mContext;
     @Mock private SensorManager mSensorManager;
+    @Mock private Sensor mSensor;
     @Mock private Tab mTab;
     @Mock private Profile mProfile;
     @Mock private WebContents mWebContents;
@@ -51,6 +54,7 @@ public class SendTabToSelfGestureDetectorTest {
     @Before
     public void setUp() {
         when(mContext.getSystemService(Context.SENSOR_SERVICE)).thenReturn(mSensorManager);
+        when(mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION)).thenReturn(mSensor);
 
         SendTabToSelfAndroidBridgeJni.setInstanceForTesting(mNativeMock);
 
@@ -192,5 +196,38 @@ public class SendTabToSelfGestureDetectorTest {
 
         verify(mNativeMock, times(1))
                 .sendTabToDevice(any(), any(), anyString(), anyString(), anyString(), any());
+    }
+
+    @Test
+    @SmallTest
+    public void testStartRegistersListener() {
+        mDetector.start();
+        verify(mSensorManager).registerListener(eq(mDetector), eq(mSensor), anyInt());
+    }
+
+    @Test
+    @SmallTest
+    public void testStopUnregistersListener() {
+        mDetector.start();
+        mDetector.stop();
+        verify(mSensorManager).unregisterListener(mDetector);
+    }
+
+    @Test
+    @SmallTest
+    public void testStartDoesNotRegisterIfSensorMissing() {
+        when(mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION)).thenReturn(null);
+        SendTabToSelfGestureDetector detector =
+                new SendTabToSelfGestureDetector(mContext, () -> mTab, () -> mProfile);
+
+        detector.start();
+        verify(mSensorManager, never()).registerListener(any(), any(), anyInt());
+    }
+
+    @Test
+    @SmallTest
+    public void testStopDoesNothingIfNotStarted() {
+        mDetector.stop();
+        verify(mSensorManager, never()).unregisterListener(eq(mDetector));
     }
 }
