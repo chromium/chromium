@@ -29,6 +29,8 @@ static_library("receiver") {
     "update_kiosk_receiver_state_request.h",
   ]
 
+  public_deps = [ "//chromeos/ash/components/boca:boca_request" ]
+
   deps = [
     ":util",
     "//ash/constants",
@@ -81,6 +83,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/components/boca",
+    "//chromeos/ash/components/boca:boca_request",
     "//chromeos/ash/components/boca/proto",
     "//chromeos/ash/components/boca/session_api",
     "//components/signin/public/identity_manager",

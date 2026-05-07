@@ -12,7 +12,7 @@ static_library("gemini") {
 
   deps = [
     "//base",
-    "//chromeos/ash/components/boca",
+    "//chromeos/ash/components/boca:boca_request",
     "//chromeos/ash/components/boca/session_api",
     "//google_apis",
     "//google_apis/common",
@@ -28,7 +28,7 @@ source_set("unit_tests") {
     ":gemini",
     "//base",
     "//base/test:test_support",
-    "//chromeos/ash/components/boca",
+    "//chromeos/ash/components/boca:boca_request",
     "//chromeos/ash/components/boca/session_api",
     "//testing/gtest",
   ]

@@ -12,8 +12,6 @@ static_library("boca") {
     "boca_metrics_manager.h",
     "boca_metrics_util.cc",
     "boca_metrics_util.h",
-    "boca_request.cc",
-    "boca_request.h",
     "boca_role_util.cc",
     "boca_role_util.h",
     "boca_session_manager.cc",
@@ -23,16 +21,14 @@ static_library("boca") {
     "boca_window_observer.h",
     "notifications/boca_notification_handler.cc",
     "notifications/boca_notification_handler.h",
-    "retriable_request_sender.h",
     "screen_presenter_factory.h",
     "shared_crd_session_wrapper.h",
     "student_screen_presenter.h",
     "teacher_screen_presenter.h",
-    "util.cc",
-    "util.h",
   ]
   deps = [
     # TODO(crbug.com/376673450):Clean up unused and unwanted dependencies.
+    ":boca_request",
     ":invalidation_delegate",
     "//ash/constants",
     "//ash/public/cpp",
@@ -57,6 +53,24 @@ static_library("boca") {
     "//services/network/public/mojom",
     "//ui/base",
     "//ui/message_center",
+    "//url",
+  ]
+}
+
+static_library("boca_request") {
+  sources = [
+    "boca_request.cc",
+    "boca_request.h",
+    "retriable_request_sender.h",
+    "util.cc",
+    "util.h",
+  ]
+  deps = [
+    "//base",
+    "//chromeos/ash/components/channel",
+    "//google_apis/common",
+    "//net",
+    "//services/network/public/mojom",
     "//url",
   ]
 }
@@ -175,6 +189,7 @@ source_set("unit_tests") {
 
   deps = [
     ":boca",
+    ":boca_request",
     ":invalidation_delegate",
     ":invalidations",
     ":spotlight",
