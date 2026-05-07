@@ -1393,8 +1393,6 @@ bool IsFullscreenNextIAEnabled() {
     // (Landscape).
     self.secondaryToolbarRegularBottomConstraint = [toolbarView.bottomAnchor
         constraintEqualToAnchor:self.view.bottomAnchor];
-    self.secondaryToolbarRegularBottomConstraint.active = YES;
-
   } else {
     [toolbarView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor]
         .active = YES;
