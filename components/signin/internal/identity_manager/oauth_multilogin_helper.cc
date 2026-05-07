@@ -550,10 +550,20 @@ void OAuthMultiloginHelper::OnBoundSessionsCreated(
         session_results,
     std::vector<net::CookieInclusionStatus> cookie_results) {
   bool all_success = true;
+  std::string_view partition_suffix =
+      PartitionSuffixToString(partition_delegate_->GetPartitionSuffix());
+  static constexpr std::string_view kBaseHistogramName =
+      "Signin.DeviceBoundSessions.OAuthMultilogin.SessionCreationError";
+  std::string partition_histogram_name;
+  if (!partition_suffix.empty()) {
+    partition_histogram_name =
+        base::JoinString({kBaseHistogramName, partition_suffix}, ".");
+  }
   for (const auto& error : session_results) {
-    base::UmaHistogramEnumeration(
-        "Signin.DeviceBoundSessions.OAuthMultilogin.SessionCreationError",
-        error);
+    base::UmaHistogramEnumeration(kBaseHistogramName, error);
+    if (!partition_histogram_name.empty()) {
+      base::UmaHistogramEnumeration(partition_histogram_name, error);
+    }
     all_success &=
         (error ==
          net::device_bound_sessions::SessionError::ErrorType::kSuccess);

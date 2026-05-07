@@ -1616,6 +1616,10 @@ TEST_F(OAuthMultiloginHelperStandardBoundSessionsEnabledTest,
       "Signin.DeviceBoundSessions.OAuthMultilogin.SessionCreationError",
       net::device_bound_sessions::SessionError::ErrorType::kSuccess,
       /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.DeviceBoundSessions.OAuthMultilogin.SessionCreationError.Test",
+      net::device_bound_sessions::SessionError::ErrorType::kSuccess,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(OAuthMultiloginHelperStandardBoundSessionsEnabledTest,
@@ -1911,6 +1915,16 @@ TEST_F(OAuthMultiloginHelperStandardBoundSessionsEnabledTest,
           base::Bucket(net::device_bound_sessions::SessionError::ErrorType::
                            kInvalidSessionId,
                        1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(
+          "Signin.DeviceBoundSessions.OAuthMultilogin.SessionCreationError."
+          "Test"),
+      UnorderedElementsAre(
+          base::Bucket(
+              net::device_bound_sessions::SessionError::ErrorType::kSuccess, 1),
+          base::Bucket(net::device_bound_sessions::SessionError::ErrorType::
+                           kInvalidSessionId,
+                       1)));
 }
 
 TEST_F(OAuthMultiloginHelperStandardBoundSessionsEnabledTest,
@@ -1962,6 +1976,9 @@ TEST_F(OAuthMultiloginHelperStandardBoundSessionsEnabledTest,
       /*expected_bucket_count=*/1);
   histogram_tester.ExpectTotalCount(
       "Signin.DeviceBoundSessions.OAuthMultilogin.SessionCreationError",
+      /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.DeviceBoundSessions.OAuthMultilogin.SessionCreationError.Test",
       /*expected_count=*/0);
 }
 
@@ -2040,6 +2057,9 @@ TEST_F(OAuthMultiloginHelperStandardBoundSessionsEnabledTest,
   histogram_tester.ExpectTotalCount(
       "Signin.DeviceBoundSessions.OAuthMultilogin.SessionCreationError",
       /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.DeviceBoundSessions.OAuthMultilogin.SessionCreationError.Test",
+      /*expected_count=*/0);
 }
 
 TEST_F(
@@ -2093,6 +2113,9 @@ TEST_F(
       /*expected_count=*/0);
   histogram_tester.ExpectTotalCount(
       "Signin.DeviceBoundSessions.OAuthMultilogin.SessionCreationError",
+      /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.DeviceBoundSessions.OAuthMultilogin.SessionCreationError.Test",
       /*expected_count=*/0);
 }
 
@@ -2156,6 +2179,10 @@ TEST_F(OAuthMultiloginHelperStandardBoundSessionsEnabledPrototypeDisabledTest,
       "Signin.DeviceBoundSessions.OAuthMultilogin.SessionCreationError",
       net::device_bound_sessions::SessionError::ErrorType::kSuccess,
       /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.DeviceBoundSessions.OAuthMultilogin.SessionCreationError.Test",
+      net::device_bound_sessions::SessionError::ErrorType::kSuccess,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(
@@ -2205,6 +2232,9 @@ TEST_F(
       /*expected_count=*/0);
   histogram_tester.ExpectTotalCount(
       "Signin.DeviceBoundSessions.OAuthMultilogin.SessionCreationError",
+      /*expected_count=*/0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.DeviceBoundSessions.OAuthMultilogin.SessionCreationError.Test",
       /*expected_count=*/0);
 }
 
