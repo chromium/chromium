@@ -87,6 +87,7 @@ _CONVERTED_SCHEMAS = [
     ('enterprise_networking_attributes.idl',
      'enterprise_networking_attributes.webidl'),
     ('enterprise_platform_keys.idl', 'enterprise_platform_keys.webidl'),
+    ('experimental_actor.idl', 'experimental_actor.webidl'),
 ]
 
 class WebIdlDiffToolTest(unittest.TestCase):

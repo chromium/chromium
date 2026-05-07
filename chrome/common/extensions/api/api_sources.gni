@@ -80,7 +80,7 @@ if (enable_extensions) {
     "command_line_private.json",
     "crash_report_private.webidl",
     "enterprise_reporting_private.webidl",
-    "experimental_actor.idl",
+    "experimental_actor.webidl",
     "experimental_ai_data.webidl",
     "image_writer_private.idl",
     "indigo_private.webidl",
