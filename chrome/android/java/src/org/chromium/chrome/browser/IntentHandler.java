@@ -324,6 +324,14 @@ public class IntentHandler {
     public static final String EXTRA_CCT_EARLY_NAV = "org.chromium.chrome.browser.cct_early_nav";
 
     /**
+     * Intent extra indicating that the tab is being reparented from another activity. When this is
+     * true, the initial navigation in the new activity should be skipped to preserve the existing
+     * state and ongoing navigations of the reparented tab.
+     */
+    public static final String EXTRA_SKIP_LOAD_ON_REPARENTING =
+            "org.chromium.chrome.browser.skip_load_on_reparenting";
+
+    /**
      * Used to determine the {@link TipsNotificationFeatureType} that the tip is attempting to show.
      */
     public static final String EXTRA_TIPS_NOTIFICATION_FEATURE_TYPE =

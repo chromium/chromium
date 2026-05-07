@@ -20,12 +20,30 @@
 #include "components/feed/feed_feature_list.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 
 namespace {
+class NavigationStartedObserver : public content::WebContentsObserver {
+ public:
+  explicit NavigationStartedObserver(content::WebContents* web_contents)
+      : content::WebContentsObserver(web_contents) {}
+
+  void DidStartNavigation(
+      content::NavigationHandle* navigation_handle) override {
+    navigation_started_ = true;
+  }
+
+  bool navigation_started() const { return navigation_started_; }
+
+ private:
+  bool navigation_started_ = false;
+};
+
 BrowserWindowInterface* CreateBrowserWindowSync(
     BrowserWindowInterface::Type type,
     Profile* profile,
@@ -321,6 +339,8 @@ IN_PROC_BROWSER_TEST_F(
       content::WebContents::Create(content::WebContents::CreateParams(profile));
   content::WebContents* expected_web_contents = web_contents.get();
 
+  NavigationStartedObserver observer(expected_web_contents);
+
   BrowserWindowCreateParams create_params(type, *profile, false);
   create_params.web_contents = std::move(web_contents);
 
@@ -336,4 +356,5 @@ IN_PROC_BROWSER_TEST_F(
   auto* tab = tab_list_interface->GetActiveTab();
   ASSERT_NE(tab, nullptr);
   EXPECT_EQ(tab->GetContents(), expected_web_contents);
+  EXPECT_FALSE(observer.navigation_started());
 }

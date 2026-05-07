@@ -8,9 +8,12 @@ import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.text.TextUtils;
 
+import org.chromium.base.IntentUtils;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
@@ -51,6 +54,13 @@ public class DefaultCustomTabIntentHandlingStrategy implements CustomTabIntentHa
 
     @Override
     public void handleInitialIntent(BrowserServicesIntentDataProvider intentDataProvider) {
+        Intent intent = intentDataProvider.getIntent();
+        assertNonNull(intent);
+        if (IntentUtils.safeGetBooleanExtra(
+                intent, IntentHandler.EXTRA_SKIP_LOAD_ON_REPARENTING, false)) {
+            return;
+        }
+
         @TabCreationMode int initialTabCreationMode = mTabProvider.getInitialTabCreationMode();
         if (mTabProvider.getTab() != null) {
             CustomTabAuthUrlHeuristics.setFirstCctPageLoadForMetrics(mTabProvider.getTab());

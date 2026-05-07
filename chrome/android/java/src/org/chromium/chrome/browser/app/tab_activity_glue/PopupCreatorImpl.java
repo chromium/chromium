@@ -29,6 +29,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
@@ -104,6 +105,7 @@ public class PopupCreatorImpl implements PopupCreator {
         final Intent intent =
                 createTrustedPopupIntent(
                         windowFeatures, tab.isIncognitoBranded(), additionalIntentExtras);
+        intent.putExtra(IntentHandler.EXTRA_SKIP_LOAD_ON_REPARENTING, true);
 
         boolean success =
                 getReparentingTask(tab).begin(tab.getContext(), intent, optionsBundle, null);
