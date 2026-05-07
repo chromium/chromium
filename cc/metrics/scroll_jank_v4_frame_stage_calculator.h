@@ -17,6 +17,24 @@ namespace cc {
 
 class CC_EXPORT ScrollJankV4FrameStageCalculator {
  public:
+  // The issues encountered by the scroll-ID-based implementation of
+  // `ScrollJankV4FrameStageCalculator` when processing scroll events in a
+  // single frame. Only emitted for frames which contain at least one GSU.
+  // LINT.IfChange(ScrollIdBasedCalculationIssues)
+  enum class ScrollIdBasedCalculationIssues {
+    // The frame only contained eligible scroll updates from at most one scroll.
+    kNoIssues = 0,
+    // The frame contained eligible scroll updates from more than one scroll.
+    kOverlappingScrolls = 1,
+    // The frame contained scroll updates that the calculator ignored because
+    // they arrived after the corresponding scroll has already ended.
+    kLateUpdate = 2,
+    // The frame contained both overlapping scrolls and late updates.
+    kOverlappingScrollsAndLateUpdate = 3,
+    kMaxValue = kOverlappingScrollsAndLateUpdate,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/event/enums.xml:FrameStageScrollIdBasedCalculationIssues)
+
   static std::unique_ptr<ScrollJankV4FrameStageCalculator> Create();
 
   virtual ~ScrollJankV4FrameStageCalculator() = default;
