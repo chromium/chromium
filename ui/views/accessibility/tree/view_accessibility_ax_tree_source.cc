@@ -61,17 +61,19 @@ bool ViewAccessibilityAXTreeSource::GetTreeData(
   tree_data->parent_tree_id = parent_tree_id_;
   tree_data->loaded = true;
   tree_data->loading_progress = 1.0;
-  tree_data->focus_id = focused_node_id_;
+  const ui::AXNodeID focus_id =
+      transient_focus_id_for_serialization_.value_or(focused_node_id_);
+  tree_data->focus_id = focus_id;
 
   // Populate text selection fields from the focused node's attributes.
-  if (focused_node_id_ != ui::kInvalidAXNodeID) {
-    if (ViewAccessibility* focused_node = cache_->Get(focused_node_id_)) {
+  if (focus_id != ui::kInvalidAXNodeID) {
+    if (ViewAccessibility* focused_node = cache_->Get(focus_id)) {
       ui::AXNodeData node_data;
       focused_node->GetAccessibleNodeData(&node_data);
       if (node_data.HasIntAttribute(ax::mojom::IntAttribute::kTextSelStart) &&
           node_data.HasIntAttribute(ax::mojom::IntAttribute::kTextSelEnd)) {
-        tree_data->sel_anchor_object_id = focused_node_id_;
-        tree_data->sel_focus_object_id = focused_node_id_;
+        tree_data->sel_anchor_object_id = focus_id;
+        tree_data->sel_focus_object_id = focus_id;
         tree_data->sel_anchor_offset =
             node_data.GetIntAttribute(ax::mojom::IntAttribute::kTextSelStart);
         tree_data->sel_focus_offset =

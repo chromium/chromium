@@ -167,6 +167,19 @@ void WidgetAXManager::OnEvent(ViewAccessibility& view_ax,
   }
 }
 
+void WidgetAXManager::OnTransientFocusRequested(ViewAccessibility& view_ax) {
+  if (!is_enabled_) {
+    return;
+  }
+
+  CHECK(tree_source_);
+  pending_data_updates_.insert(view_ax.GetUniqueId());
+  tree_source_->SetTransientFocusIdForNextSerialization(view_ax.GetUniqueId());
+  auto clear_transient_focus = absl::MakeCleanup(
+      [this] { tree_source_->ClearTransientFocusIdForNextSerialization(); });
+  SendPendingUpdate();
+}
+
 void WidgetAXManager::OnDataChanged(ViewAccessibility& view_ax) {
   if (!is_enabled_) {
     return;

@@ -295,6 +295,22 @@ void ViewAccessibility::FireFocusAfterMenuClose() {
 }
 
 void ViewAccessibility::NotifyTransientFocus() {
+  if (IsViewsAccessibilityTreeEnabled()) {
+    if (!ready_to_notify_events_) {
+      return;
+    }
+
+    Widget* const widget = GetWidget();
+    if (!widget || !widget->GetNativeView()) {
+      return;
+    }
+
+    if (auto* ax_manager = widget->ax_manager()) {
+      ax_manager->OnTransientFocusRequested(*this);
+    }
+    return;
+  }
+
   NotifyEvent(ax::mojom::Event::kFocusContext, true);
 }
 

@@ -72,6 +72,7 @@ class VIEWS_EXPORT WidgetAXManager : public ui::AXModeObserver,
   void RemoveObserver(WidgetAXManagerObserver* observer);
 
   void OnEvent(ViewAccessibility& view_ax, ax::mojom::Event event_type);
+  void OnTransientFocusRequested(ViewAccessibility& view_ax);
   void OnDataChanged(ViewAccessibility& view_ax);
 
   void OnChildAdded(ViewAccessibility& child, ViewAccessibility& parent);
