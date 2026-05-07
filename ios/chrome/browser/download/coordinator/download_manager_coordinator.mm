@@ -77,6 +77,7 @@
 #import "ios/web/public/download/download_task.h"
 #import "ios/web/public/web_client.h"
 #import "net/base/apple/url_conversions.h"
+#import "net/base/filename_util.h"
 #import "net/base/net_errors.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -504,8 +505,7 @@
     (UIViewController*)controller {
   base::RecordAction(base::UserMetricsAction("IOSDownloadOpen"));
   base::FilePath path = _mediator.GetDownloadPath();
-  GURL filePathURL =
-      GURL(base::StringPrintf("%s://%s", "file", path.value().c_str()));
+  GURL filePathURL = net::FilePathToFileURL(path);
   GURL virtualFilePathURL = GURL(
       base::StringPrintf("%s://%s/%s", kChromeUIScheme, kChromeUIDownloadsHost,
                          filePathURL.ExtractFileName().c_str()));

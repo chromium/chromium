@@ -40,6 +40,8 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/download_list_commands.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/file_size_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -51,6 +53,8 @@
 #import "ios/web/public/test/fakes/fake_download_task.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
+#import "net/base/apple/url_conversions.h"
+#import "net/base/filename_util.h"
 #import "net/base/net_errors.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -964,4 +968,96 @@ TEST_F(DownloadManagerCoordinatorTest, ViewController) {
     [coordinator_ stop];
   }
   EXPECT_FALSE(coordinator_.viewController);
+}
+
+// Tests opening the downloaded file. Verifies that the file URL is safely
+// constructed (escaped) and dispatched via `OpenNewTabCommand`.
+TEST_F(DownloadManagerCoordinatorTest, OpenDownloadedFile) {
+  std::unique_ptr<web::FakeDownloadTask> task = CreateTestTask();
+  web::FakeDownloadTask* task_ptr = task.get();
+
+  // Configure the task with an unsafe filename.
+  task_ptr->SetGeneratedFileName(base::FilePath("file name %2e%2e%2f.zip"));
+
+  tab_helper()->SetCurrentDownload(std::move(task));
+  coordinator_.downloadTask = task_ptr->GetWeakPtr();
+  [coordinator_ start];
+
+  DownloadManagerViewController* viewController =
+      base_view_controller_.childViewControllers.firstObject;
+  ASSERT_EQ([DownloadManagerViewController class], [viewController class]);
+
+  id<SceneCommands> scene_dispatcher_mock =
+      OCMProtocolMock(@protocol(SceneCommands));
+  [browser_->GetCommandDispatcher()
+      startDispatchingToTarget:scene_dispatcher_mock
+                   forProtocol:@protocol(SceneCommands)];
+
+  // Start the download from the coordinator.
+  @autoreleasepool {
+    [viewController.delegate
+        downloadManagerViewControllerDidStartDownload:viewController];
+  }
+
+  // Complete the download.
+  task_ptr->SetDone(true);
+
+  // Wait for the final file path to be resolved.
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForDownloadTimeout, true, ^{
+        return !tab_helper()->GetDownloadTaskFinalFilePath().empty();
+      }));
+
+  base::FilePath final_path = tab_helper()->GetDownloadTaskFinalFilePath();
+
+  // Expect `OpenNewTabCommand` with properly escaped URLs.
+  __block BOOL command_verified = NO;
+  OCMStub([scene_dispatcher_mock
+      openURLInNewTab:[OCMArg checkWithBlock:^(id object) {
+        EXPECT_EQ([OpenNewTabCommand class], [object class]);
+        OpenNewTabCommand* command =
+            base::apple::ObjCCastStrict<OpenNewTabCommand>(object);
+
+        // The file URL should have escaped characters:
+        // space -> %20, % -> %25
+        // So "file name %2e%2e%2f.zip" -> "file%20name%20%252e%252e%252f.zip"
+        std::string expected_url_spec =
+            net::FilePathToFileURL(final_path).spec();
+        EXPECT_EQ(expected_url_spec, command.URL.spec());
+
+        // The virtual URL should be
+        // chrome://downloads/file%20name%20%252e%252e%252f.zip
+        std::string expected_virtual_url_spec =
+            "chrome://downloads/file%20name%20%252e%252e%252f.zip";
+        EXPECT_EQ(expected_virtual_url_spec, command.virtualURL.spec());
+
+        command_verified = YES;
+        return YES;
+      }]]);
+
+  // Open the downloaded file.
+  @autoreleasepool {
+    [viewController.delegate
+        openDownloadedFileForDownloadManagerViewController:viewController];
+  }
+
+  EXPECT_TRUE(command_verified);
+
+  // Verify the path traversal safety difference when decoded once (as the OS
+  // loader does):
+  // 1. Unsafe URL decodes once to literal ".." traversal components:
+  GURL unsafeGURL("file:///Documents/file%20name%20%2e%2e%2f.zip");
+  NSString* unsafeDecoded = [base::SysUTF8ToNSString(unsafeGURL.spec())
+      stringByRemovingPercentEncoding];
+  EXPECT_TRUE([unsafeDecoded containsString:@"/.."] ||
+              [unsafeDecoded containsString:@".."]);
+
+  // 2. Safe URL decodes once to "%2e%2e%2f", NOT containing literal traversal
+  // components:
+  GURL safeGURL("file:///Documents/file%20name%20%252e%252e%252f.zip");
+  NSString* safeDecoded = [base::SysUTF8ToNSString(safeGURL.spec())
+      stringByRemovingPercentEncoding];
+  EXPECT_FALSE([safeDecoded containsString:@"/.."] ||
+               [safeDecoded containsString:@".."]);
+  EXPECT_TRUE([safeDecoded containsString:@"%2e%2e%2f"]);
 }
