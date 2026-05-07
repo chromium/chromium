@@ -45,7 +45,6 @@ class GlicFrePageHandler : public glic::mojom::FrePageHandler,
   void LogWebUiLoadComplete() override;
 
   // Called by the controller when another FRE instance has accepted the FRE.
-  // This instance should log a specific metric indicating it lost the race.
   void OnAcceptedByOtherInstance();
 
  private:
@@ -71,12 +70,6 @@ class GlicFrePageHandler : public glic::mojom::FrePageHandler,
   // Tracks elapsed time between the start of the web client loading and the
   // moment it's fully loaded.
   std::optional<base::ElapsedTimer> web_client_load_timer_;
-
-  // Used to track the total time this specific FRE instance has been open.
-  // It is also used to measure the time between the request for the FRE to show
-  // to the time it is fully loaded and showing (presentation time). This value
-  // is determined immediately upon construction.
-  base::TimeTicks open_start_time_;
 
   // Used to track the time between the start of the WebUI framework loading and
   // the moment it's fully loaded. This ends right before the web client begins

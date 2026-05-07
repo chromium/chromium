@@ -58,16 +58,6 @@ GlicView::~GlicView() = default;
 
 bool GlicView::HandleKeyboardEvent(content::WebContents* source,
                                    const input::NativeWebKeyboardEvent& event) {
-  if (event.GetType() == input::NativeWebKeyboardEvent::Type::kRawKeyDown &&
-      event.windows_key_code == ui::VKEY_ESCAPE) {
-    if (auto* glic_service = GlicKeyedServiceFactory::GetGlicKeyedService(
-            source->GetBrowserContext())) {
-      if (glic_service->fre_controller().ShouldShowFreDialog() &&
-          glic_service->IsWindowOrFreShowing()) {
-        base::RecordAction(base::UserMetricsAction("Glic.Fre.CloseWithEsc"));
-      }
-    }
-  }
   return GetWidget() && unhandled_keyboard_event_handler_.HandleKeyboardEvent(
                             event, GetWidget()->GetFocusManager());
 }

@@ -15030,6 +15030,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Glic.Fre.CloseWithEsc">
+  <obsolete>Feature removed May 2026.</obsolete>
   <owner>birnie@google.com</owner>
   <description>
     User pressed the Escape key to close the Glic First Run Experience dialog.

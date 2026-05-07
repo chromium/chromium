@@ -22,10 +22,8 @@ GlicFrePageHandler::GlicFrePageHandler(
       is_unified_fre_(is_unified_fre),
       webui_contents_(webui_contents),
       receiver_(this, std::move(receiver)) {
-  auto timestamps =
+  framework_start_time_ =
       GetGlicService()->fre_controller().RegisterPageHandler(this);
-  open_start_time_ = timestamps.open_start_time;
-  framework_start_time_ = timestamps.framework_start_time;
 }
 
 GlicFrePageHandler::~GlicFrePageHandler() {
@@ -43,11 +41,10 @@ void GlicFrePageHandler::OnVisibilityChanged(content::Visibility visibility) {
     if (!is_unified_fre_) {
       return;
     }
-    // Reset session timers for a warmed start. Only do this if we were
-    // previously dismissed/hidden to avoid overwriting the initial cold start
-    // time.
+    // Reset interaction_timer_ for a warmed start. Only do this
+    // if we were previously dismissed/hidden to avoid overwriting the initial
+    // cold start time.
     if (close_reason_ == CloseReason::kDismissed) {
-      open_start_time_ = base::TimeTicks::Now();
       // If we are already ready, restart interaction timer immediately.
       if (webui_state_ == mojom::FreWebUiState::kReady) {
         interaction_timer_.emplace();
@@ -65,14 +62,6 @@ void GlicFrePageHandler::LogDismissalMetrics() {
   // Only log if we are currently active.
   if (close_reason_ != CloseReason::kActive) {
     return;
-  }
-  // Skip TotalTime if the start timestamp was missing or already consumed to
-  // avoid invalid durations.
-  if (!open_start_time_.is_null()) {
-    base::UmaHistogramMediumTimes(is_unified_fre_
-                                      ? "Glic.UnifiedFre.TotalTime.Dismissed"
-                                      : "Glic.Fre.TotalTime.Dismissed",
-                                  base::TimeTicks::Now() - open_start_time_);
   }
   if (interaction_timer_) {
     base::UmaHistogramTimes(is_unified_fre_
@@ -94,14 +83,6 @@ GlicKeyedService* GlicFrePageHandler::GetGlicService() {
 }
 
 void GlicFrePageHandler::AcceptFre() {
-  // Log metrics for this specific instance. Skip TotalTime if the start
-  // timestamp was missing or already consumed to avoid invalid durations.
-  if (!open_start_time_.is_null()) {
-    base::UmaHistogramMediumTimes(is_unified_fre_
-                                      ? "Glic.UnifiedFre.TotalTime.Accepted"
-                                      : "Glic.Fre.TotalTime.Accepted",
-                                  base::TimeTicks::Now() - open_start_time_);
-  }
   if (interaction_timer_) {
     base::UmaHistogramTimes(is_unified_fre_
                                 ? "Glic.UnifiedFre.InteractionTime.Accepted"
@@ -114,14 +95,6 @@ void GlicFrePageHandler::AcceptFre() {
 }
 
 void GlicFrePageHandler::RejectFre() {
-  // Log metrics for this specific instance. Skip TotalTime if the start
-  // timestamp was missing or already consumed to avoid invalid durations.
-  if (!open_start_time_.is_null()) {
-    base::UmaHistogramMediumTimes(is_unified_fre_
-                                      ? "Glic.UnifiedFre.TotalTime.NoThanks"
-                                      : "Glic.Fre.TotalTime.NoThanks",
-                                  base::TimeTicks::Now() - open_start_time_);
-  }
   if (interaction_timer_) {
     base::UmaHistogramTimes(is_unified_fre_
                                 ? "Glic.UnifiedFre.InteractionTime.NoThanks"
@@ -133,15 +106,9 @@ void GlicFrePageHandler::RejectFre() {
 }
 
 void GlicFrePageHandler::OnAcceptedByOtherInstance() {
-  // Skip TotalTime if the start timestamp was missing or already consumed to
-  // avoid invalid durations.
-  if (close_reason_ != CloseReason::kActive || open_start_time_.is_null()) {
+  if (close_reason_ != CloseReason::kActive) {
     return;
   }
-  // Another instance accepted/rejected. Log that this instance lost the race.
-  base::UmaHistogramMediumTimes(
-      "Glic.UnifiedFre.TotalTime.AcceptedByOtherInstance",
-      base::TimeTicks::Now() - open_start_time_);
   close_reason_ = CloseReason::kAcceptedByOtherInstance;
 }
 
@@ -178,20 +145,7 @@ void GlicFrePageHandler::WebUiStateChanged(mojom::FreWebUiState new_state) {
       // Reset so we don't record again on a re-render without a full reload.
       web_client_load_timer_.reset();
     }
-    // Only if we have a valid start time and haven't hit an error state before.
-    if (!open_start_time_.is_null()) {
-      base::UmaHistogramMediumTimes("Glic.FrePresentationTime",
-                                    base::TimeTicks::Now() - open_start_time_);
-    }
     interaction_timer_.emplace();
-  }
-  // It is possible for the FRE to open directly in an error state. In this
-  // case, we should not record the FRE load time metric if the content is
-  // loaded at a later point.
-  if (webui_state_ == mojom::FreWebUiState::kError ||
-      webui_state_ == mojom::FreWebUiState::kOffline) {
-    // Invalidate the start time so PresentationTime won't be recorded later.
-    open_start_time_ = base::TimeTicks();
   }
   GetGlicService()->fre_controller().WebUiStateChanged(webui_state_);
 }

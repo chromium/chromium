@@ -557,16 +557,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Glic.Fre.TotalTime.Accepted" units="ms"
-    expires_after="2026-08-03">
-  <owner>birnie@google.com</owner>
-  <owner>carlosk@google.com</owner>
-  <summary>
-    Records the time elapsed from when the FRE is first opened until the user
-    accepts it.
-  </summary>
-</histogram>
-
 <histogram name="Glic.Fre.TotalTime.Accepted.Onboarding" units="ms"
     expires_after="2026-10-04">
   <owner>tommasin@chromium.org</owner>
@@ -574,16 +564,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the time elapsed from when the Trust-First Onboarding flow (side
     panel) is first shown until the user accepts it (starts chat).
-  </summary>
-</histogram>
-
-<histogram name="Glic.Fre.TotalTime.Dismissed" units="ms"
-    expires_after="2026-08-03">
-  <owner>birnie@google.com</owner>
-  <owner>carlosk@google.com</owner>
-  <summary>
-    Records the time elapsed from when the FRE is first opened until it is
-    dismissed by the user (e.g. closing the tab).
   </summary>
 </histogram>
 
@@ -595,16 +575,6 @@ chromium-metrics-reviews@google.com.
     Records the time elapsed from when the Trust-First Onboarding flow (side
     panel) is first shown until it is dismissed by the user (e.g. closing the
     side panel).
-  </summary>
-</histogram>
-
-<histogram name="Glic.Fre.TotalTime.NoThanks" units="ms"
-    expires_after="2026-08-03">
-  <owner>birnie@google.com</owner>
-  <owner>carlosk@google.com</owner>
-  <summary>
-    Records the time elapsed from when the FRE is first opened until the user
-    clicks the No Thanks button.
   </summary>
 </histogram>
 
@@ -660,18 +630,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Glic.Fre.WidgetClosedReason2" enum="GlicFreWidgetClosedReason"
-    expires_after="2026-08-30">
-  <owner>birnie@google.com</owner>
-  <owner>cuianthony@google.com</owner>
-  <summary>
-    Records the reason why the Glic FRE widget was closed. This is a successor
-    to Glic.Fre.WidgetClosedReason and includes more detailed reasons related to
-    tab movement and close in addition to the standard WidgetCloseReasons from
-    before.
-  </summary>
-</histogram>
-
 <histogram name="Glic.FreErrorStateReason" enum="FreErrorStateReason"
     expires_after="2026-09-27">
   <owner>birnie@google.com</owner>
@@ -679,16 +637,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the reason the error panel was shown. This is recorded either before
     the FRE is shown if its an issue during auth, or after loading times out.
-  </summary>
-</histogram>
-
-<histogram name="Glic.FrePresentationTime" units="ms"
-    expires_after="2026-09-27">
-  <owner>dewittj@google.com</owner>
-  <owner>vollick@google.com</owner>
-  <owner>baranerf@google.com</owner>
-  <summary>
-    Records the time taken for content to load after the FRE window appears.
   </summary>
 </histogram>
 
@@ -2699,50 +2647,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the source of the turn, including the UI mode (Side Panel or Floaty)
     and the input mode (Text or Audio). Recorded at the end of each turn.
-  </summary>
-</histogram>
-
-<histogram name="Glic.UnifiedFre.InteractionTime.Accepted" units="ms"
-    expires_after="2026-08-03">
-  <owner>michelleabreo@google.com</owner>
-  <owner>birnie@google.com</owner>
-  <summary>
-    Records the time elapsed between an instance of a sidepanel FRE being fully
-    loaded (the Ready state) and the user clicking the accept/continue button.
-    This is logged when the user accepts the FRE.
-  </summary>
-</histogram>
-
-<histogram name="Glic.UnifiedFre.InteractionTime.Dismissed" units="ms"
-    expires_after="2026-10-04">
-  <owner>michelleabreo@google.com</owner>
-  <owner>birnie@google.com</owner>
-  <summary>
-    Records the time elapsed between an instance of a sidepanel FRE being fully
-    loaded (the Ready state) and the user dismissing the panel through an
-    indirect action (e.g., closing the tab, pressing Esc, clicking the glic
-    entrypoint toggle).
-  </summary>
-</histogram>
-
-<histogram name="Glic.UnifiedFre.InteractionTime.NoThanks" units="ms"
-    expires_after="2026-10-04">
-  <owner>michelleabreo@google.com</owner>
-  <owner>birnie@google.com</owner>
-  <summary>
-    Records the time elapsed between an instance of a sidepanel FRE being fully
-    loaded (the Ready state) and the user explicitly clicking the No thanks
-    button. This is logged when the user rejects the FRE.
-  </summary>
-</histogram>
-
-<histogram name="Glic.UnifiedFre.TotalTime.Accepted" units="ms"
-    expires_after="2026-10-04">
-  <owner>michelleabreo@google.com</owner>
-  <owner>birnie@google.com</owner>
-  <summary>
-    Records the time elapsed from when an instance of a sidepanel FRE is first
-    opened until the user accepts it.
   </summary>
 </histogram>
 

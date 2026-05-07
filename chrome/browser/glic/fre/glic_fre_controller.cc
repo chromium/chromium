@@ -63,58 +63,12 @@ base::CallbackListSubscription GlicFreController::AddWebUiStateChangedCallback(
   return webui_state_callback_list_.Add(std::move(callback));
 }
 
-bool GlicFreController::ShouldShowFreDialog() {
-  return false;
-}
-
-#if !BUILDFLAG(IS_ANDROID)
-bool GlicFreController::CanShowFreDialog(BrowserWindowInterface* bwi) {
-  // The FRE can only be shown given a valid browser. If there is no browser,
-  // then an OS-level entrypoint is being used, which should not be possible
-  // before the FRE has been accepted.
-  if (!bwi) {
-    return false;
-  }
-  // If there is a browser, the FRE can only be shown if no other modal is
-  // currently being shown on the same tab.
-  tabs::TabInterface* tab = bwi->GetActiveTabInterface();
-  return tab && tab->CanShowModalUI();
-}
-#endif
-
-#if !BUILDFLAG(IS_ANDROID)
-void GlicFreController::OpenFreDialogInNewTab(
-    base::WeakPtr<BrowserWindowInterface> bwi,
-    mojom::InvocationSource source) {
-  if (!bwi) {
-    return;
-  }
-  Browser* browser = bwi->GetBrowserForMigrationOnly();
-  if (!ShouldShowFreDialog()) {
-    return;
-  }
-  chrome::AddAndReturnTabAt(browser, GURL(), /*index=*/-1, /*foreground=*/true);
-  if (CanShowFreDialog(bwi.get())) {
-    GlicKeyedServiceFactory::GetGlicKeyedService(profile_)->ToggleUI(
-        bwi.get(), /*prevent_close=*/true, source);
-  }
-}
-#endif
-
-void GlicFreController::MarkFreStartAttempt() {
-  pending_open_start_time_ = base::TimeTicks::Now();
-}
-
-void GlicFreController::MarkSidepanelFreShown() {
-  base::RecordAction(base::UserMetricsAction("Glic.Fre.Shown"));
-}
-
 void GlicFreController::RecordFrameworkStartTime() {
   pending_framework_start_time_ = base::TimeTicks::Now();
 }
 
 void GlicFreController::AcceptFre(GlicFrePageHandler* handler) {
-  // Notify other handlers that they lost the race.
+  // Notify other handlers so they can update their state.
   for (GlicFrePageHandler* other_handler : handlers_) {
     if (other_handler != handler) {
       other_handler->OnAcceptedByOtherInstance();
@@ -127,27 +81,11 @@ void GlicFreController::AcceptFre(GlicFrePageHandler* handler) {
 
 #if !BUILDFLAG(IS_ANDROID)
   GlicLauncherConfiguration::CheckDefaultBrowserToEnableLauncher();
-
-  // Dismiss the FRE window and then show the Glic panel, but store source
-  // browser before it is cleared.
-  BrowserWindowInterface* source_browser = source_browser_;
-  CloseWithFreReason(GlicFreWidgetClosedReason::kAcceptButtonClicked);
-
-  // Show a glic window attached to the invocation source browser.
-  if (source_browser) {
-    GlicKeyedServiceFactory::GetGlicKeyedService(profile_)->ToggleUI(
-        source_browser, /*prevent_close=*/true, mojom::InvocationSource::kFre);
-  }
 #endif
 }
 
 void GlicFreController::RejectFre() {
   base::RecordAction(base::UserMetricsAction("Glic.Fre.NoThanks"));
-  CloseWithFreReason(GlicFreWidgetClosedReason::kCancelButtonClicked);
-}
-
-void GlicFreController::CloseWithFreReason(GlicFreWidgetClosedReason reason) {
-  base::UmaHistogramEnumeration("Glic.Fre.WidgetClosedReason2", reason);
 }
 
 void GlicFreController::PrepareForClient(
@@ -205,122 +143,16 @@ void GlicFreController::OnLinkClicked(const GURL& url) {
   }
 }
 
-namespace {
-
-constexpr net::NetworkTrafficAnnotationTag kGlicFrePreconnectTrafficAnnotation =
-    net::DefineNetworkTrafficAnnotation("glic_fre_preconnect",
-                                        R"(
-    semantics {
-      sender: "Gemini in Chrome"
-      description:
-        "This request is issued when the Gemini in Chrome first-run experience "
-        "is predicted to be issued soon, to establish a connection to the "
-        "server."
-      trigger:
-        "Hovering or focusing the Gemini button."
-      data:
-        "Minimal data is exchanged, though this may share network state "
-        "with credentialed requests."
-      destination: GOOGLE_OWNED_SERVICE
-      internal {
-        contacts {
-          owners: "//chrome/browser/glic/OWNERS"
-        }
-      }
-      user_data {
-        type: NONE
-      }
-      last_reviewed: "2025-02-26"
-    }
-    policy {
-      cookies_allowed: YES
-      cookies_store: "user"
-      setting:
-        "There are a number of ways to prevent this request:"
-        "A) Disable predictive operations under Settings > Performance "
-        "   > Preload pages for faster browsing and searching,"
-        "B) Disable Gemini in Chrome altogether"
-      chrome_policy {
-        GeminiSettings {
-          GeminiSettings: 1
-        }
-        GenAiDefaultSettings {
-          GenAiDefaultSettings: 2
-        }
-      }
-    }
-)");
-
-BASE_FEATURE(kGlicFrePreconnect, base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE_PARAM(bool,
-                   kGlicFrePreconnectToSubresourceDomains,
-                   &kGlicFrePreconnect,
-                   "GlicFrePreconnectToSubresourceDomains",
-                   true);
-
-}  // namespace
-
-void GlicFreController::MaybePreconnect() {
-  if (!ShouldShowFreDialog() ||
-      !base::FeatureList::IsEnabled(kGlicFrePreconnect)) {
-    return;
-  }
-  GURL fre_url = glic::GetFreURL(profile_);
-  // We'll need this to be in the "same-site" socket pool for the FRE's site,
-  // since that's the one that will be used for a real page load.
-  net::NetworkAnonymizationKey anonymization_key =
-      net::NetworkAnonymizationKey::CreateSameSite(net::SchemefulSite(fre_url));
-  predictors::LoadingPredictor* loading_predictor =
-      predictors::LoadingPredictorFactory::GetForProfile(profile_);
-  content::StoragePartitionConfig storage_partition_config =
-      GetFreStoragePartitionConfig(profile_);
-  loading_predictor->PreconnectURLIfAllowed(
-      glic::GetFreURL(profile_), /*allow_credentials=*/true, anonymization_key,
-      kGlicFrePreconnectTrafficAnnotation, &storage_partition_config);
-  if (kGlicFrePreconnectToSubresourceDomains.Get() &&
-      google_util::IsGoogleDomainUrl(fre_url, google_util::ALLOW_SUBDOMAIN,
-                                     google_util::ALLOW_NON_STANDARD_PORTS)) {
-    loading_predictor->PreconnectURLIfAllowed(
-        GURL("https://www.gstatic.com/"), /*allow_credentials=*/true,
-        anonymization_key, kGlicFrePreconnectTrafficAnnotation,
-        &storage_partition_config);
-  }
-}
-
-void GlicFreController::OnTabShowingModalWillDetach(
-    tabs::TabInterface* tab,
-    tabs::TabInterface::DetachReason reason) {
-  GlicFreWidgetClosedReason glic_reason;
-  switch (reason) {
-    case tabs::TabInterface::DetachReason::kDelete:
-      base::RecordAction(
-          base::UserMetricsAction("Glic.Fre.CloseByClosingHostTab"));
-      glic_reason = GlicFreWidgetClosedReason::kHostTabClosed;
-      break;
-    case tabs::TabInterface::DetachReason::kInsertIntoOtherWindow:
-      base::RecordAction(
-          base::UserMetricsAction("Glic.Fre.CloseByMovingHostTab"));
-      glic_reason = GlicFreWidgetClosedReason::kHostTabMoved;
-      break;
-  }
-  base::UmaHistogramEnumeration("Glic.Fre.WidgetClosedReason2", glic_reason);
-}
-
-GlicFreController::InitTimestamps GlicFreController::RegisterPageHandler(
+base::TimeTicks GlicFreController::RegisterPageHandler(
     GlicFrePageHandler* handler) {
   handlers_.push_back(handler);
 
-  InitTimestamps timestamps;
-  timestamps.open_start_time =
-      pending_open_start_time_.value_or(base::TimeTicks());
-  timestamps.framework_start_time =
+  base::TimeTicks framework_start_time =
       pending_framework_start_time_.value_or(base::TimeTicks());
 
-  pending_open_start_time_.reset();
   pending_framework_start_time_.reset();
 
-  return timestamps;
+  return framework_start_time;
 }
 
 void GlicFreController::UnregisterPageHandler(GlicFrePageHandler* handler) {

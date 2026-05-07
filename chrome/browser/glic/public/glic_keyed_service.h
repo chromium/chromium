@@ -124,9 +124,6 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
 
   virtual base::WeakPtr<GlicInstance> Invoke(GlicInvokeOptions options);
 
-  virtual void OpenFreDialogInNewTab(BrowserWindowInterface* bwi,
-                                     mojom::InvocationSource source);
-
   // Close the active embedder and clear contents for an instance associated
   // with this render frame host.
   void CloseAndShutdown(content::RenderFrameHost* render_frame_host);

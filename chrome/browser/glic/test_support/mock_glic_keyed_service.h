@@ -31,10 +31,6 @@ class MockGlicKeyedService : public GlicKeyedService {
               (override));
   MOCK_METHOD(void, CloseFloatingPanel, (), (override));
   MOCK_METHOD(void,
-              OpenFreDialogInNewTab,
-              (BrowserWindowInterface*, mojom::InvocationSource),
-              (override));
-  MOCK_METHOD(void,
               ToggleUI,
               (BrowserWindowInterface*, bool, mojom::InvocationSource),
               (override));

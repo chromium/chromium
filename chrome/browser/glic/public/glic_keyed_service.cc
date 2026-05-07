@@ -268,12 +268,6 @@ void GlicKeyedService::ToggleUIInternal(
     return;
   }
 
-  // Show the FRE if not yet completed, and if we have a browser to use.
-  if (fre_controller_->ShouldShowFreDialog()) {
-    fre_controller_->MarkFreStartAttempt();
-    fre_controller_->MarkSidepanelFreShown();
-  }
-
   instance_coordinator().Toggle(
       bwi ? bwi : GetActiveGlicEligibleBrowser(profile_), prevent_close, source,
       prompt_suggestion);
@@ -342,24 +336,6 @@ base::WeakPtr<GlicInstance> GlicKeyedService::Invoke(
 
   return static_cast<GlicInstanceCoordinatorImpl&>(instance_coordinator())
       .Invoke(std::move(options));
-}
-
-void GlicKeyedService::OpenFreDialogInNewTab(BrowserWindowInterface* bwi,
-                                             mojom::InvocationSource source) {
-#if !BUILDFLAG(IS_ANDROID)
-  // Glic may be disabled for certain user profiles (the user is browsing in
-  // incognito or guest mode, policy, etc). In those cases, the entry points to
-  // this method should already have been removed.
-  CHECK(GlicEnabling::IsEnabledForProfile(profile_));
-
-  GlicProfileManager* glic_profile_manager = GlicProfileManager::GetInstance();
-  if (glic_profile_manager) {
-    glic_profile_manager->SetActiveGlic(this);
-  }
-  fre_controller().OpenFreDialogInNewTab(bwi->GetWeakPtr(), source);
-#else
-  NOTIMPLEMENTED() << "OpenFreDialogInNewTab";
-#endif
 }
 
 void GlicKeyedService::CloseAndShutdown(

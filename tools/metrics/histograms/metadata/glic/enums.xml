@@ -234,21 +234,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/resources/glic/fre/metrics_enums.ts:GlicFreWebviewLoadAbortReason) -->
 
-<!-- LINT.IfChange(GlicFreWidgetClosedReason) -->
-
-<enum name="GlicFreWidgetClosedReason">
-  <int value="0" label="Unspecified"/>
-  <int value="1" label="EscKeyPressed"/>
-  <int value="2" label="CloseButtonClicked"/>
-  <int value="3" label="LostFocus"/>
-  <int value="4" label="CancelButtonClicked"/>
-  <int value="5" label="AcceptButtonClicked"/>
-  <int value="6" label="HostTabClosed"/>
-  <int value="7" label="HostTabMoved"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/browser/glic/fre/glic_fre_controller.h:GlicFreWidgetClosedReason) -->
-
 <!-- LINT.IfChange(GlicGetContextFromTabError) -->
 
 <enum name="GlicGetContextFromTabError">

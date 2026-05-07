@@ -792,10 +792,6 @@ void GlicInstanceImpl::GetZeroStateSuggestionsAndSubscribe(
 }
 
 void GlicInstanceImpl::PrepareForOpen() {
-  GlicKeyedServiceFactory::GetGlicKeyedService(profile_)
-      ->fre_controller()
-      .MaybePreconnect();
-
   // TODO(crbug.com/444463509): Update this when we have per-instance
   // sharing managers set up without auto-focus.
   auto* active_web_contents =
