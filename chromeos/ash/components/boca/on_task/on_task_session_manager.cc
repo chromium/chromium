@@ -161,6 +161,11 @@ void OnTaskSessionManager::OnBundleUpdated(const ::boca::Bundle& bundle) {
   for (const ::boca::ContentConfig& content_config : bundle.content_configs()) {
     CHECK(content_config.has_url());
     const GURL url(content_config.url());
+    if (!url.SchemeIsHTTPOrHTTPS()) {
+      LOG(WARNING) << "Bypassing URL with non-HTTP/HTTPS scheme: "
+                   << url.possibly_invalid_spec();
+      continue;
+    }
     provider_url_set_.insert(url);
 
     ::boca::LockedNavigationOptions::NavigationType restriction_level;

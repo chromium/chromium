@@ -406,6 +406,28 @@ TEST_F(OnTaskSessionManagerTest, ShouldOpenTabsOnBundleUpdated) {
       kOnTaskBundleContentAddedNotificationId));
 }
 
+TEST_F(OnTaskSessionManagerTest, ShouldSkipInvalidSchemeTabsOnBundleUpdated) {
+  const SessionID kWindowId = SessionID::NewUnique();
+  const SessionID kTabId_1 = SessionID::NewUnique();
+  EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveSystemWebAppWindowID())
+      .WillRepeatedly(Return(kWindowId));
+  EXPECT_CALL(*system_web_app_manager_ptr_,
+              CreateBackgroundTabWithUrl(kWindowId, GURL(kTestUrl1), _))
+      .WillOnce(Return(kTabId_1));
+  EXPECT_CALL(*system_web_app_manager_ptr_,
+              CreateBackgroundTabWithUrl(_, GURL("file:///etc/passwd"), _))
+      .Times(0);
+  EXPECT_CALL(*system_web_app_manager_ptr_,
+              CreateBackgroundTabWithUrl(_, GURL("chrome://restart"), _))
+      .Times(0);
+
+  ::boca::Bundle bundle;
+  bundle.add_content_configs()->set_url(kTestUrl1);
+  bundle.add_content_configs()->set_url("file:///etc/passwd");
+  bundle.add_content_configs()->set_url("chrome://restart");
+  session_manager_->OnBundleUpdated(bundle);
+}
+
 TEST_F(OnTaskSessionManagerTest,
        TabsCreatedAfterSWALaunchedWhenSessionStartsAndBundleUpdated) {
   const SessionID kWindowId = SessionID::NewUnique();
