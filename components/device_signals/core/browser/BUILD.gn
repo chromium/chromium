@@ -72,11 +72,13 @@ static_library("browser") {
   } else if (is_win || is_mac || is_linux) {
     public += [
       "agent_signals_collector.h",
+      "certificate_signals_collector.h",
       "crowdstrike_client.h",
       "desktop/desktop_os_signals_collector.h",
     ]
     sources += [
       "agent_signals_collector.cc",
+      "certificate_signals_collector.cc",
       "crowdstrike_client.cc",
       "desktop/desktop_os_signals_collector.cc",
     ]
