@@ -23,6 +23,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
+#include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/test_support/interactive_test_util.h"
@@ -333,9 +334,13 @@ void GlicE2ETest::ThrottleWebContentsNetwork(
 }
 
 void GlicE2ETest::ThrottleGlicNetwork() {
-  for (auto* guest_contents :
-       glic::GetAllGlicGuestWebContentsForTesting(browser()->profile())) {
-    ThrottleWebContentsNetwork(guest_contents);
+  for (auto* instance : instance_coordinator().GetInstances()) {
+    auto* instance_impl = static_cast<GlicInstanceImpl*>(instance);
+    content::WebContents* guest_contents =
+        instance_impl->host().web_client_contents();
+    if (guest_contents) {
+      ThrottleWebContentsNetwork(guest_contents);
+    }
   }
 }
 

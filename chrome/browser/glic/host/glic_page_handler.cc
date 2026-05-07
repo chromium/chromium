@@ -2441,6 +2441,7 @@ GlicPageHandler::GlicPageHandler(
       page_(std::move(page)) {
   VLOG(1) << "Glic [PageHandler] Constructor";
   CHECK(host_);
+  MarkProcessAsGlic(webui_contents->GetPrimaryMainFrame()->GetProcess());
   host_->WebUIPageHandlerAdded(this);
   host_->AddPanelStateObserver(this);
   UpdatePageState(host_->GetPanelState(web_client_handler_.get()).kind);

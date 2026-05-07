@@ -14,7 +14,7 @@ class BrowserContext;
 class RenderFrameHost;
 class RenderProcessHost;
 class WebContents;
-}
+}  // namespace content
 
 namespace glic {
 
@@ -56,10 +56,11 @@ bool OnGuestAdded(content::WebContents* guest_contents);
 bool IsMediaRequestFromGlic(content::BrowserContext* browser_context,
                             const std::string& request_id);
 
-// Returns all Glic guest WebContents for the given browser context.
-std::vector<content::WebContents*> GetAllGlicGuestWebContentsForTesting(
-    content::BrowserContext* browser_context);
+// Identifies Glic processes.
+void MarkProcessAsGlic(content::RenderProcessHost* rph);
 
+// Instantiates Glic WebUI metadata on a WebContents.
+void CreateGlicWebUiData(content::WebContents* webui_contents);
 }  // namespace glic
 
 #endif  // CHROME_BROWSER_GLIC_HOST_GUEST_UTIL_H_

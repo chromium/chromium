@@ -8,6 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/test_support/glic_browser_test.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -109,32 +110,11 @@ guest_view::TestGuestViewManager& GetGuestViewManager(
                          ->CreateGuestViewManagerDelegate()));
 }
 
-class GuestUtilBrowserTest : public InProcessBrowserTest {
- public:
-  GuestUtilBrowserTest() = default;
-  GuestUtilBrowserTest(const GuestUtilBrowserTest&) = delete;
-  GuestUtilBrowserTest& operator=(const GuestUtilBrowserTest&) = delete;
-
-  ~GuestUtilBrowserTest() override = default;
-
-  void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
-  }
-
-  void TearDownOnMainThread() override {
-    InProcessBrowserTest::TearDownOnMainThread();
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // Load blank page in glic guest view
-    command_line->AppendSwitchASCII(::switches::kGlicGuestURL, "about:blank");
-  }
-
+class GuestUtilBrowserTest : public GlicBrowserTest {
  protected:
   guest_view::TestGuestViewManagerFactory& factory() { return factory_; }
 
  private:
-  glic::GlicTestEnvironment glic_test_environment_;
   guest_view::TestGuestViewManagerFactory factory_;
 };
 
@@ -159,7 +139,7 @@ IN_PROC_BROWSER_TEST_F(GuestUtilBrowserTest, OnGuestAdded_NonGlic) {
 IN_PROC_BROWSER_TEST_F(GuestUtilBrowserTest, OnGuestAdded_Glic) {
   EXPECT_EQ(0ULL, GetGuestViewManager(factory()).GetCurrentGuestCount());
 
-  OpenWebUiWithGuestView(GURL{chrome::kChromeUIGlicURL});
+  ASSERT_OK(OpenGlicForActiveTab());
 
   auto* guest_view =
       GetGuestViewManager(factory()).WaitForSingleGuestViewCreated();

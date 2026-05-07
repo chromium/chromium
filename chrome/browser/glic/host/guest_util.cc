@@ -5,7 +5,10 @@
 #include "chrome/browser/glic/host/guest_util.h"
 
 #include "base/command_line.h"
+#include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/supports_user_data.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -16,6 +19,8 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/guest_view/browser/guest_view_base.h"
+#include "components/guest_view/browser/guest_view_manager.h"
 #include "components/guest_view/buildflags/buildflags.h"
 #include "components/language/core/common/language_util.h"
 #include "components/prefs/pref_service.h"
@@ -24,6 +29,8 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
+#include "content/public/browser/web_contents_user_data.h"
 #include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "net/base/url_util.h"
@@ -35,12 +42,6 @@
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "url/gurl.h"
-
-// Note: guest_view isn't available on android mobile yet. Once it is, we can
-// include these unconditionally.
-#if BUILDFLAG(ENABLE_GUEST_VIEW)
-#include "components/guest_view/browser/guest_view_base.h"
-#endif
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #else
@@ -52,6 +53,83 @@ namespace glic {
 BASE_FEATURE(kGlicGuestUrlMultiInstanceParam, base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace {
+
+// Attached to the WebUI WebContents using WebContentsUserData.
+// Acts as both a marker for Glic WebUI and a link to its guest WebContents.
+class GlicWebUiData : public content::WebContentsUserData<GlicWebUiData>,
+                      public content::WebContentsObserver {
+ public:
+  ~GlicWebUiData() override = default;
+
+  // Call this when the guest is attached to establish the link.
+  void SetGuestContents(content::WebContents* guest_contents) {
+    Observe(guest_contents);
+  }
+
+  // Returns the guest WebContents if it is attached and valid, nullptr
+  // otherwise.
+  content::WebContents* guest_contents() const {
+    content::WebContents* guest = web_contents();
+    if (!guest) {
+      return nullptr;
+    }
+    auto* guest_view = guest_view::GuestViewBase::FromWebContents(guest);
+    if (guest_view && !guest_view->attached()) {
+      return nullptr;
+    }
+    return guest;
+  }
+
+ private:
+  explicit GlicWebUiData(content::WebContents* webui_contents)
+      : content::WebContentsUserData<GlicWebUiData>(*webui_contents),
+        content::WebContentsObserver(nullptr),
+        webui_contents_(webui_contents) {}
+  friend class content::WebContentsUserData<GlicWebUiData>;
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
+
+  using WebContentsObserver::web_contents;
+
+  raw_ptr<content::WebContents> webui_contents_;
+};
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(GlicWebUiData);
+
+// Attached to RenderProcessHost to identify Glic processes.
+class GlicProcessUserData : public base::SupportsUserData::Data {
+ public:
+  static constexpr char kKey[] = "glic::GlicProcessUserData";
+
+  ~GlicProcessUserData() override = default;
+
+  static GlicProcessUserData* FromProcessHost(content::RenderProcessHost* rph) {
+    return rph ? static_cast<GlicProcessUserData*>(rph->GetUserData(kKey))
+               : nullptr;
+  }
+
+  static void MarkProcess(content::RenderProcessHost* rph) {
+    if (rph && !FromProcessHost(rph)) {
+      rph->SetUserData(kKey, base::WrapUnique(new GlicProcessUserData()));
+    }
+  }
+
+ private:
+  GlicProcessUserData() = default;
+};
+
+// Attached to Guest WebContents to identify it directly.
+class GlicGuestMarker : public content::WebContentsUserData<GlicGuestMarker> {
+ public:
+  ~GlicGuestMarker() override = default;
+
+ private:
+  explicit GlicGuestMarker(content::WebContents* web_contents)
+      : content::WebContentsUserData<GlicGuestMarker>(*web_contents) {}
+  friend class content::WebContentsUserData<GlicGuestMarker>;
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
+};
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(GlicGuestMarker);
 
 // LINT.IfChange(WebViewAutoPlayProgress)
 enum class WebViewAutoPlayProgress {
@@ -87,19 +165,23 @@ class WebviewWebContentsObserver : public content::WebContentsObserver,
   }
 };
 
-std::vector<Host*> GetAllHosts(content::BrowserContext* context) {
-  std::vector<Host*> hosts;
-  GlicKeyedService* service =
-      GlicKeyedServiceFactory::GetGlicKeyedService(context, /*create=*/false);
-  if (service) {
-    for (auto* instance : service->instance_coordinator().GetInstances()) {
-      hosts.push_back(&instance->host());
-    }
+bool IsGlicGuest(content::WebContents* web_contents) {
+  if (!web_contents ||
+      GlicGuestMarker::FromWebContents(web_contents) == nullptr) {
+    return false;
   }
-  return hosts;
+  auto* guest_view = guest_view::GuestViewBase::FromWebContents(web_contents);
+  return guest_view && guest_view->attached();
+}
+}  // namespace
+
+void MarkProcessAsGlic(content::RenderProcessHost* rph) {
+  GlicProcessUserData::MarkProcess(rph);
 }
 
-}  // namespace
+void CreateGlicWebUiData(content::WebContents* webui_contents) {
+  GlicWebUiData::CreateForWebContents(webui_contents);
+}
 
 GURL GetGuestURL() {
   auto* command_line = base::CommandLine::ForCurrentProcess();
@@ -180,18 +262,12 @@ GURL MaybeAddMultiInstanceParameter(const GURL& guest_url) {
 
 bool IsGlicWebUI(const content::WebContents* web_contents) {
   return web_contents &&
-         web_contents->GetLastCommittedURL() == chrome::kChromeUIGlicURL;
+         GlicWebUiData::FromWebContents(web_contents) != nullptr;
 }
 
 bool IsProcessHostForGlic(content::RenderProcessHost* process_host) {
-  for (Host* host : GetAllHosts(process_host->GetBrowserContext())) {
-    auto* webui_contents = host->webui_contents();
-    if (webui_contents &&
-        webui_contents->GetPrimaryMainFrame()->GetProcess() == process_host) {
-      return true;
-    }
-  }
-  return false;
+  return process_host &&
+         GlicProcessUserData::FromProcessHost(process_host) != nullptr;
 }
 
 content::WebContents* GetGlicGuestWebContents(
@@ -199,14 +275,8 @@ content::WebContents* GetGlicGuestWebContents(
   if (!webui_contents) {
     return nullptr;
   }
-  for (Host* host : GetAllHosts(webui_contents->GetBrowserContext())) {
-    if (host->webui_contents() == webui_contents) {
-      content::RenderFrameHost* guest_rfh = host->GetGuestMainFrame();
-      return guest_rfh ? content::WebContents::FromRenderFrameHost(guest_rfh)
-                       : nullptr;
-    }
-  }
-  return nullptr;
+  auto* data = GlicWebUiData::FromWebContents(webui_contents);
+  return data ? data->guest_contents() : nullptr;
 }
 
 bool OnGuestAdded(content::WebContents* guest_contents) {
@@ -236,22 +306,21 @@ bool OnGuestAdded(content::WebContents* guest_contents) {
   guest_contents->SetSupportsDraggableRegions(true);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  for (Host* host : GetAllHosts(top->GetBrowserContext())) {
-    auto* webui_contents = host->webui_contents();
-    if (!webui_contents || top != webui_contents) {
-      continue;
-    }
+  if (auto* data = GlicWebUiData::FromWebContents(top)) {
+    data->SetGuestContents(guest_contents);
+    GlicGuestMarker::CreateForWebContents(guest_contents);
+    GlicProcessUserData::MarkProcess(
+        guest_contents->GetPrimaryMainFrame()->GetProcess());
 
 #if !BUILDFLAG(IS_ANDROID)
     // TODO(harringtond): This looks wrong, either fix or document this.
     blink::web_pref::WebPreferences prefs(top->GetOrCreateWebPreferences());
     prefs.default_font_size =
-        host->webui_contents()->GetOrCreateWebPreferences().default_font_size;
+        top->GetOrCreateWebPreferences().default_font_size;
     top->SetWebPreferences(prefs);
 #else
     // TODO(b/470059315): What do we do for Android?
 #endif
-    break;
   }
 
   guest_contents->SetUserData(
@@ -266,31 +335,12 @@ bool OnGuestAdded(content::WebContents* guest_contents) {
   return true;
 }
 
-std::vector<content::WebContents*> GetAllGlicGuestWebContentsForTesting(
-    content::BrowserContext* browser_context) {
-  std::vector<content::WebContents*> guest_contents;
-  for (Host* host : GetAllHosts(browser_context)) {
-    auto* guest = host->web_client_contents();
-    if (guest) {
-      guest_contents.push_back(guest);
-    }
-  }
-  return guest_contents;
-}
-
 bool IsMediaRequestFromGlic(content::BrowserContext* browser_context,
                             const std::string& request_id) {
-  for (Host* host : GetAllHosts(browser_context)) {
-    auto* guest = host->web_client_contents();
-    if (!guest) {
-      continue;
-    }
-    if (content::MediaSession::GetRequestIdFromWebContents(guest).ToString() ==
-        request_id) {
-      return true;
-    }
-  }
-  return false;
+  content::WebContents* web_contents =
+      content::MediaSession::GetWebContentsFromRequestId(request_id);
+  return web_contents && web_contents->GetBrowserContext() == browser_context &&
+         IsGlicGuest(web_contents);
 }
 
 }  // namespace glic

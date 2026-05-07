@@ -11,6 +11,7 @@
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/host/glic_ui.h"
+#include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -64,6 +65,7 @@ WebUIContentsContainerImpl::WebUIContentsContainerImpl(Profile* profile,
                       "WebUIContentsContainerImpl::WebUIContentsContainerImpl",
                       perfetto::Flow::FromPointer(this));
   CHECK(web_contents_);
+  CreateGlicWebUiData(web_contents_.get());
   Observe(web_contents_.get());
   web_contents_->SetPageBaseBackgroundColor(
       web_contents_->GetColorProvider().GetColor(kColorGlicBackground));
