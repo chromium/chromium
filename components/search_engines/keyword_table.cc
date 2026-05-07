@@ -11,6 +11,7 @@
 #include <string_view>
 #include <tuple>
 
+#include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -26,6 +27,7 @@
 #include "build/build_config.h"
 #include "components/database_utils/url_converter.h"
 #include "components/os_crypt/async/common/encryptor.h"
+#include "components/search_engines/search_engines_switches.h"
 #include "components/search_engines/search_terms_data.h"
 #include "components/search_engines/template_url.h"
 #include "components/webdata/common/web_database.h"
@@ -54,7 +56,9 @@ enum class HashValidationStatus {
   kNotVerifiedNoCrypto = 4,
   // The hash was not verified as verification is disabled.
   kNotVerifiedFeatureDisabled = 5,
-  kMaxValue = kNotVerifiedFeatureDisabled,
+  // The hash was encrypted with a weak algorithm.
+  kWeakAlgorithmUsed = 6,
+  kMaxValue = kWeakAlgorithmUsed,
 };
 
 // Keys used in the meta table.
@@ -639,10 +643,26 @@ std::optional<TemplateURLData> KeywordTable::GetKeywordDataFromStatement(
   if (!encryptor()->IsDecryptionAvailable()) {
     status = HashValidationStatus::kNotVerifiedNoCrypto;
   } else {
-    const auto hash = encryptor()->DecryptData(s.ColumnBlob(27));
+    os_crypt_async::Encryptor::DecryptFlags flags;
+    const auto encrypted_hash = s.ColumnBlob(27);
+    const auto hash = encryptor()->DecryptData(encrypted_hash, &flags);
     if (!hash) {
       status = HashValidationStatus::kDecryptFailed;
       return std::nullopt;
+    }
+    if (base::FeatureList::IsEnabled(switches::kRejectWeakKeywordHashes) &&
+        flags.should_reencrypt) {
+      // This must be true, since if decryption succeeded the data must contain
+      // header + nonce which is at least 15 bytes.
+      CHECK_GE(encrypted_hash.size(), 2u);
+      // Check for v10 encrypted data - if encrypted with v10 but a better
+      // cipher is available, it's considered invalid. This should never happen
+      // as v20 was shipped in crrev.com/c/5825155 (M130 - Aug 2024) and hashes
+      // were added in crrev.com/c/6040381 (M133 - Dec 2024).
+      if (encrypted_hash[1] == '1') {
+        status = HashValidationStatus::kWeakAlgorithmUsed;
+        return std::nullopt;
+      }
     }
 
     const auto expected_hash = data.GenerateHash();

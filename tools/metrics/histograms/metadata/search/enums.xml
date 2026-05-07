@@ -242,6 +242,9 @@ chromium-metrics-reviews@google.com.
       label="Hash was not verified as decryption services were not available"/>
   <int value="5"
       label="Hash was not verified as hash verification is disabled"/>
+  <int value="6"
+      label="Hash was rejected as it was encrypted with a weak algorithm
+             (Added May 2026)"/>
 </enum>
 
 <!-- LINT.IfChange(LaunchOsChoiceScreenTapHandlingStatus) -->
