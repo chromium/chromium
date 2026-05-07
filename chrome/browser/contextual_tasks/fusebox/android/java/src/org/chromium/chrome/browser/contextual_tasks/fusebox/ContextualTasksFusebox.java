@@ -20,13 +20,13 @@ import org.chromium.chrome.browser.omnibox.LocationBarEmbedderUiOverrides;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBridge;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDelegateImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.chrome.browser.ui.edge_to_edge.NoOpTopInsetProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.ui.base.WindowAndroid;
 
 /** The fusebox (omnibox) component for contextual tasks. */
@@ -145,14 +145,10 @@ public class ContextualTasksFusebox {
                     new UrlFocusChangeListener() {
                         @Override
                         public void onUrlFocusChange(boolean hasFocus) {
-                            if (hasFocus) {
-                                // If user clicked/tapped, ensure we transition to Expanded
-                                // (AI_MODE).
-                                var session = mDataProvider.getFuseboxSessionState();
-                                if (session != null) {
-                                    session.getAutocompleteInput()
-                                            .setRequestType(AutocompleteRequestType.AI_MODE);
-                                }
+                            FuseboxCoordinator coordinator =
+                                    mLocationBarCoordinator.getFuseboxCoordinator();
+                            if (coordinator != null) {
+                                coordinator.onContextualTaskFocusChanged(hasFocus);
                             }
                         }
                     });

@@ -1186,6 +1186,11 @@ class LocationBarMediator
         // This guarantees that any calls to onSuggestionsChanged() will see the correct
         // mCurrentInput instance.
         mCurrentInput = session.getAutocompleteInput();
+        // If the session is already in a specialized mode (e.g. IMAGE_GENERATION), we preserve it.
+        // Otherwise, we apply the default request type for the current page.
+        if (mCurrentInput.getRequestType() == AutocompleteRequestType.SEARCH) {
+            mCurrentInput.setRequestType(mLocationBarDataProvider.getDefaultRequestType());
+        }
 
         session.activate(
                 mContext,
@@ -1261,12 +1266,20 @@ class LocationBarMediator
     private void endInputInternal() {
         if (mAutocompleteCoordinator == null || mCurrentInput == null) return;
         mAutocompleteCoordinator.endInput();
-        mFuseboxCoordinator.endInput();
+
         mStatusCoordinator.endInput();
+
         if (mScrimHandler != null) mScrimHandler.setVisibility(false);
         mCurrentInput.getRequestTypeSupplier().removeObserver(mAutocompleteRequestTypeObserver);
         FuseboxSessionState state = FuseboxSessionState.from(mLocationBarDataProvider);
-        if (state != null) state.deactivate();
+        if (state != null) {
+            state.deactivate();
+            // Only for Contextual Tasks, we skip ending the Fusebox input to allow it to stay warm
+            // in compact mode.
+            if (!state.isContextualTasksState()) {
+                mFuseboxCoordinator.endInput();
+            }
+        }
 
         mCurrentInput = null;
         // The hint text depends on mCurrentInput, nulling it may change the outcome.
@@ -2580,8 +2593,9 @@ class LocationBarMediator
         @AutocompleteRequestType
         int requestType =
                 mCurrentInput == null
-                        ? AutocompleteRequestType.SEARCH
+                        ? mLocationBarDataProvider.getDefaultRequestType()
                         : mCurrentInput.getRequestType();
+
         FuseboxSessionState fuseboxSessionState = null;
         if (OmniboxFeatures.sShowModelPicker.getValue()) {
             fuseboxSessionState = FuseboxSessionState.from(mLocationBarDataProvider);

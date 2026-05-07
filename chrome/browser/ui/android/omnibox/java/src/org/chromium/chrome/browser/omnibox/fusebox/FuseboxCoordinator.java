@@ -106,6 +106,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
     private @Nullable BottomSheetRectProvider mBottomSheetRectProvider;
     private final Supplier<@Nullable View> mScrimAnchorViewSupplier;
     private final ScrimManager mScrimManager;
+    private boolean mHasContextualTasksFocus;
 
     // Mediator is scoped to a particular profile. Can reuse as long as the profile does not change.
     private @Nullable FuseboxMediator mMediator;
@@ -255,6 +256,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
                         Clipboard.getInstance(),
                         mScrimManager,
                         mScrimAnchorViewSupplier);
+        mMediator.onContextualTaskFocusChanged(mHasContextualTasksFocus);
         if (mLastBrandedColorScheme != null) {
             mMediator.updateVisualsForState(mLastBrandedColorScheme);
         }
@@ -358,6 +360,18 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         mInput = null;
         mMetrics = null;
         mPendingSession = null;
+    }
+
+    /**
+     * Called when focus is lost or gained while in a Contextual Tasks session.
+     *
+     * @param hasFocus Whether the omnibox has focus.
+     */
+    public void onContextualTaskFocusChanged(boolean hasFocus) {
+        mHasContextualTasksFocus = hasFocus;
+        if (mMediator != null) {
+            mMediator.onContextualTaskFocusChanged(hasFocus);
+        }
     }
 
     // TemplateUrlServiceObserver

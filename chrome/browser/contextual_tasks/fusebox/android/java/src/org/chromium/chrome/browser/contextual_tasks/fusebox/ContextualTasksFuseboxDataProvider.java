@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBrid
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
+import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.security_state.ConnectionMaliciousContentStatus;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.content_public.browser.WebContents;
@@ -117,6 +118,11 @@ public class ContextualTasksFuseboxDataProvider implements LocationBarDataProvid
     @Override
     public boolean hasTab() {
         return false;
+    }
+
+    @Override
+    public @AutocompleteRequestType int getDefaultRequestType() {
+        return AutocompleteRequestType.AI_MODE;
     }
 
     @Override

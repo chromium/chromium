@@ -43,6 +43,11 @@ public class ContextualTasksSessionState extends FuseboxSessionState {
     }
 
     @Override
+    public boolean isContextualTasksState() {
+        return true;
+    }
+
+    @Override
     public void deactivate() {
         // No-op: Prevent LocationBarMediator from clearing the session when focus is lost.
         // Contextual Tasks manages its own session lifecycle in ContextualTasksFuseboxManager.
