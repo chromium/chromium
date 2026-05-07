@@ -7,5 +7,9 @@ This is a testharness.js-based test.
   assert_unreached: Should have rejected: undefined Reached unreachable code
 [FAIL] Test that encodingInfo rejects if the audio configuration contentType has one parameter that isn't codecs
   assert_unreached: Should have rejected: undefined Reached unreachable code
+[FAIL] Test that encodingInfo rejects if colorGamut is specified for type webrtc
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+[FAIL] Test that encodingInfo rejects if transferFunction is specified for type webrtc
+  assert_unreached: Should have rejected: undefined Reached unreachable code
 Harness: the test ran to completion.
 

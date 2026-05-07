@@ -161,7 +161,6 @@
 ../../web_tests/external/wpt/jpegxl/resources/green_queen_modular_e3.jxl
 ../../web_tests/external/wpt/jpegxl/resources/green_queen_vardct_e3.jxl
 ../../web_tests/external/wpt/jpegxl/resources/has_permutation.jxl
-../../web_tests/external/wpt/jpegxl/resources/hdr_alpha.jxl
 ../../web_tests/external/wpt/jpegxl/resources/hdr_hlg_test.jxl
 ../../web_tests/external/wpt/jpegxl/resources/hdr_pq_test.jxl
 ../../web_tests/external/wpt/jpegxl/resources/issue648_palette0.jxl
@@ -170,7 +169,6 @@
 ../../web_tests/external/wpt/jpegxl/resources/orientation8_rotate_90_ccw.jxl
 ../../web_tests/external/wpt/jpegxl/resources/progressive-lf.jxl
 ../../web_tests/external/wpt/jpegxl/resources/progressive_ac.jxl
-../../web_tests/external/wpt/jpegxl/resources/sdr_alpha.jxl
 ../../web_tests/external/wpt/jpegxl/resources/smallest_valid.jxl
 ../../web_tests/external/wpt/jpegxl/resources/spline_on_first_frame.jxl
 ../../web_tests/external/wpt/jpegxl/resources/with_icc.jxl

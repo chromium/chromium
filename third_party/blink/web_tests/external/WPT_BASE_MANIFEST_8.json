@@ -6647,6 +6647,13 @@
         {}
        ]
       ],
+      "input-range-content-url.html": [
+       "87840a95cd90719749156d7466019a31d4c97b17",
+       [
+        null,
+        {}
+       ]
+      ],
       "outline-scrollIntoView-crash.html": [
        "58bbd4c6b4f1b634400b5c37c06f743f4dda852d",
        [
@@ -93610,6 +93617,19 @@
           ]
          ]
         }
+       ]
+      ],
+      "border-shape-outline-invalidation.html": [
+       "33f5964b82cbeb291ee9caac3ecba7e19d19c832",
+       [
+        null,
+        [
+         [
+          "/css/css-borders/border-shape/border-shape-outline-invalidation-ref.html",
+          "=="
+         ]
+        ],
+        {}
        ]
       ],
       "border-shape-outline-offset.html": [
@@ -189775,6 +189795,19 @@
        {}
       ]
      ],
+     "max-height-stretch-relayout.html": [
+      "eda960a575084dff09f478df460a3c4729dae731",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "move-with-text-after-paint.html": [
       "1ea3d4b58bce1fe07a57faa05b008e426368925a",
       [
@@ -264584,6 +264617,84 @@
        {}
       ]
      ],
+     "caret-color-bar-shape-text-color.html": [
+      "0efaf096481e6d74378a3cfe63285aefa9ad0632",
+      [
+       null,
+       [
+        [
+         "/css/css-ui/caret-color-non-block-shape-text-color-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "caret-color-block-shape-text-color-001.html": [
+      "cd6d9e18b69788ad1bc8cdd58a6f6249fad48e47",
+      [
+       null,
+       [
+        [
+         "/css/css-ui/caret-color-block-shape-text-color-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "caret-color-block-shape-text-color-002.html": [
+      "8bd1e92b633513468257d3f27777345611ce9b92",
+      [
+       null,
+       [
+        [
+         "/css/css-ui/caret-color-block-shape-text-color-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "caret-color-block-shape-text-color-003.html": [
+      "4b8804ea01ac854c8228adf92c4343701d1780dc",
+      [
+       null,
+       [
+        [
+         "/css/css-ui/caret-color-block-shape-text-color-003-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "caret-color-block-shape-text-color-004.html": [
+      "6d8b350beec5dbf00eb3d423b3661e2e547c2d5d",
+      [
+       null,
+       [
+        [
+         "/css/css-ui/caret-color-block-shape-text-color-004-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "caret-color-underscore-shape-text-color.html": [
+      "806e32037efb020ddfd9eccae443526530a5e936",
+      [
+       null,
+       [
+        [
+         "/css/css-ui/caret-color-non-block-shape-text-color-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "caret-eol-001.html": [
       "456c38643975f8bb311a3210cac940cc7369fd59",
       [
@@ -305294,6 +305405,35 @@
        {}
       ]
      ],
+     "backdrop-filter-3d-transform-perspective.html": [
+      "1df16d5773c6c56e1b2c0e8be8db14e67047722f",
+      [
+       null,
+       [
+        [
+         "/css/filter-effects/backdrop-filter-3d-transform-perspective-ref.html",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            150
+           ],
+           [
+            0,
+            400
+           ]
+          ]
+         ]
+        ]
+       }
+      ]
+     ],
      "backdrop-filter-backdrop-root-animation-in-effect.html": [
       "111cafe96d90c10ffdfb5498edc0895650263c4c",
       [
@@ -306019,6 +306159,35 @@
         ]
        ],
        {}
+      ]
+     ],
+     "backdrop-filter-nested-3d-transform-perspective.html": [
+      "6bd22e83e94fbcf051b2ae169c6d5a39d06c645d",
+      [
+       null,
+       [
+        [
+         "/css/filter-effects/backdrop-filter-nested-3d-transform-perspective-ref.html",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            150
+           ],
+           [
+            0,
+            400
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "backdrop-filter-nested-border-radius-clip-2.html": [
@@ -332177,6 +332346,19 @@
        ]
       },
       "the-video-element": {
+       "video-poster-clone-template.html": [
+        "6825635499b3b4ebf85c2f77420f4393e3a13627",
+        [
+         null,
+         [
+          [
+           "/html/semantics/embedded-content/the-video-element/video_dynamic_poster-ref.htm",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "video-poster-shown-preload-auto.html": [
         "95e32bb77ce1f7642a881edc1c61ae4d6879cea2",
         [
@@ -332946,6 +333128,19 @@
            ],
            "testdriver": true
           }
+         ]
+        ],
+        "select-appearance-base-display.html": [
+         "70bd8717745a57af0cae7762e0937ef235820fa3",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/select-appearance-base-display-ref.html",
+            "=="
+           ]
+          ],
+          {}
          ]
         ],
         "select-appearance-button-after-option.html": [
@@ -342508,19 +342703,6 @@
       {}
      ]
     ],
-    "hdr-alpha-reftest.html": [
-     "90c50ec37d49cad95366c491ef4894ecc6d8bd44",
-     [
-      null,
-      [
-       [
-        "/jpegxl/hdr-alpha-reftest-ref.html",
-        "=="
-       ]
-      ],
-      {}
-     ]
-    ],
     "html-embed-object-iframe.html": [
      "a4fc7f549de5c92d642ea34da5608ed4a1c76bff",
      [
@@ -342707,19 +342889,6 @@
         ]
        ]
       }
-     ]
-    ],
-    "sdr-alpha-reftest.html": [
-     "5e7dc266f87beed6318d797e447822b743268694",
-     [
-      null,
-      [
-       [
-        "/jpegxl/sdr-alpha-reftest-ref.html",
-        "=="
-       ]
-      ],
-      {}
      ]
     ],
     "smallest-valid-reftest.html": [
@@ -353732,39 +353901,52 @@
        {}
       ]
      ],
-     "svg-filter-render-local-frame.tentative.https.html": [
-      "1ef2ef0e90830695cb884ce7e7a457ed5cf41747",
+     "svg-filter-render-cross-origin-frame-in-same-origin-frame.tentative.https.html": [
+      "1f2aa4aa8aa93adfc5954f61b5834b904ade8965",
       [
        null,
        [
         [
-         "/svg/styling/svg-filter-render-local-frame-ref.tentative.html",
+         "/svg/styling/svg-filter-render-cross-origin-frame-in-same-origin-frame-ref.tentative.html",
          "=="
         ]
        ],
        {}
       ]
      ],
-     "svg-filter-render-remote-frame-in-local-frame.tentative.https.html": [
-      "bb7d00d027a6f71817580866aa7248ce26a051c7",
+     "svg-filter-render-cross-origin-frame.tentative.sub.https.html": [
+      "8bd318d663a538b6f583e950eaa196533b95a8a5",
       [
        null,
        [
         [
-         "/svg/styling/svg-filter-render-remote-frame-in-local-frame-ref.tentative.html",
+         "/svg/styling/svg-filter-render-cross-origin-frame-ref.tentative.sub.html",
          "=="
         ]
        ],
        {}
       ]
      ],
-     "svg-filter-render-remote-frame.tentative.sub.https.html": [
-      "cf0e7272987d6df135315a3cdc9367d16dfc35b8",
+     "svg-filter-render-same-origin-frame.tentative.https.html": [
+      "e1518e6dd958c77abf9c34c772fcd40aed694e8a",
       [
        null,
        [
         [
-         "/svg/styling/svg-filter-render-remote-frame-ref.tentative.sub.html",
+         "/svg/styling/svg-filter-render-same-origin-frame-ref.tentative.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "svg-filter-render-sandbox-frame.tentative.https.html": [
+      "c4cdf31e7e4d355ea1ba8f4137faaa5c46d9f7c4",
+      [
+       null,
+       [
+        [
+         "/svg/styling/svg-filter-render-sandbox-frame-ref.tentative.html",
          "=="
         ]
        ],
@@ -377073,6 +377255,10 @@
       ],
       "border-shape-outline-double-shape-ref.html": [
        "6fd6516e469233e7ac7b201a49c0874ca498c657",
+       []
+      ],
+      "border-shape-outline-invalidation-ref.html": [
+       "950931a3baafb282c6bba4eb084c849696902d4c",
        []
       ],
       "border-shape-outline-offset-ref.html": [
@@ -417764,6 +417950,26 @@
       "5304352e6bafd1d25436babfc2afc0ba1aa26fa3",
       []
      ],
+     "caret-color-block-shape-text-color-001-ref.html": [
+      "8bb15a550f4d58658cbd2df55000392913599c31",
+      []
+     ],
+     "caret-color-block-shape-text-color-002-ref.html": [
+      "95240c0ef8f200e0a3e7074d242a5be83cc7b923",
+      []
+     ],
+     "caret-color-block-shape-text-color-003-ref.html": [
+      "39c75ef10bc2a2fd7f6a0d3065a6856eef406a6f",
+      []
+     ],
+     "caret-color-block-shape-text-color-004-ref.html": [
+      "f58619754d1e8dd00710bd7ddc4fd878cd691014",
+      []
+     ],
+     "caret-color-non-block-shape-text-color-ref.html": [
+      "27e03bcd744ffff6191f701adeb804d5115e8d93",
+      []
+     ],
      "caret-shape-block-001-ref.html": [
       "2e6f802c638a4e4cc2fd9ae70efd523ab13defae",
       []
@@ -424818,6 +425024,10 @@
        []
       ]
      },
+     "backdrop-filter-3d-transform-perspective-ref.html": [
+      "323f5aa42b57298fa9c709763ef96afc23c4b2a6",
+      []
+     ],
      "backdrop-filter-backdrop-root-animation-in-effect-ref.html": [
       "336f76866e938887410b3cc33ea6691bd4d04d01",
       []
@@ -424908,6 +425118,10 @@
      ],
      "backdrop-filter-image-size-filter-size-mismatch-ref.html": [
       "28f3c415f94ab6dd6e63a061e984475593400fd8",
+      []
+     ],
+     "backdrop-filter-nested-3d-transform-perspective-ref.html": [
+      "d62a223566cc27cbfc7a5393657e1a54a3a1c215",
       []
      ],
      "backdrop-filter-nested-border-radius-clip-2-ref.html": [
@@ -426599,14 +426813,6 @@
        "ff7a2c894a85507b73b85bb2056682b02633bf08",
        []
       ],
-      "media-loading-pseudo-classes-in-has.sub-expected.txt": [
-       "065681d3a804ee058f031e369180e9b025517057",
-       []
-      ],
-      "media-pseudo-classes-in-has-expected.txt": [
-       "1c4bd18666556fd94694e97d1662f92fab8218f0",
-       []
-      ],
       "negated-always-matches-negated-first-of-type-when-ancestor-changes-ref.html": [
        "2ddb130e05f5fe92afb1450de69894b60beb9fad",
        []
@@ -426769,24 +426975,8 @@
        "4cd0fc2726292091a0f7f98f47934afc1578b60b",
        []
       ],
-      "media-loading-state-timing.sub-expected.txt": [
-       "66520084a2e9e81749108de5b636199f055b99aa",
-       []
-      ],
-      "media-loading-state.sub-expected.txt": [
-       "4de3618e7de779ac4480e3d92db3375b77332e9b",
-       []
-      ],
-      "media-playback-state-expected.txt": [
-       "8b1bbd1ced2e5c32b4d0b43cdc43be910ace79c9",
-       []
-      ],
-      "media-playback-state-timing-expected.txt": [
-       "7d6f7c49b05061ae527de7a324d9f56be06eaf09",
-       []
-      ],
       "sound-state-expected.txt": [
-       "eaa0be79b8668b177382a4f4ece7e59ccb00b0ba",
+       "f80c43e0dfad2650427c86877b256ba662874a67",
        []
       ],
       "support": {
@@ -450633,16 +450823,8 @@
          "b2153184c497d4d4ccb2eeca7b522ac1902fb9ff",
          []
         ],
-        "load-events-networkState-expected.txt": [
-         "a68c278688e6d8af08db9907120fe45f74b7cefa",
-         []
-        ],
         "resource-selection-candidate-moved-expected.txt": [
          "4b7ec31280cf04cb5c6087c288a781293b75964f",
-         []
-        ],
-        "resource-selection-invoke-insert-into-iframe-expected.txt": [
-         "fed0105b593455c14cdb552bbbb9f35a42ef7175",
          []
         ],
         "resource-selection-pointer-control-expected.txt": [
@@ -452525,6 +452707,10 @@
         },
         "select-appearance-active-ref.html": [
          "b6b93cd8ae2152e317e6c10b0a828a5c70ee245d",
+         []
+        ],
+        "select-appearance-base-display-ref.html": [
+         "909459a042b613e23d3010eb755b5f548907d769",
          []
         ],
         "select-appearance-button-after-option-ref.html": [
@@ -461471,10 +461657,6 @@
      "cf2a9a5ef403c4415fe74bf8fae2c7bd2d3ba24c",
      []
     ],
-    "hdr-alpha-reftest-ref.html": [
-     "26e0d3dac0ba2a06c6f74230c6b102ed1be349e4",
-     []
-    ],
     "html-embed-object-iframe-ref.html": [
      "acaa6a238497686ca164dbed17cde78ad0359dc0",
      []
@@ -461660,14 +461842,6 @@
       "c5def3bbe5f2de1cfed122c6709c8807a92e227f",
       []
      ],
-     "hdr_alpha.jxl": [
-      "68226864c8b81fef4facad21f9c602e1d5d1d8c9",
-      []
-     ],
-     "hdr_alpha.png": [
-      "320c0f4843bc913f3a838e1b87c7e8e19ea6fc96",
-      []
-     ],
      "hdr_hlg_test.jxl": [
       "c7a1f342d7c39bf4f376a93ef888cfc45ad22158",
       []
@@ -461736,14 +461910,6 @@
       "3cf484d968fff55fb51cfe6c4b24a386bde21c6f",
       []
      ],
-     "sdr_alpha.jxl": [
-      "9982d7295dc3a9a5480a38a7b0e16bf11f38eec0",
-      []
-     ],
-     "sdr_alpha.png": [
-      "37c22d64e65ba3916125b7017923dc11aed13be5",
-      []
-     ],
      "smallest_valid.jxl": [
       "615989a5ca12529c5a5566d73f0b9ba5a2364f2c",
       []
@@ -461769,10 +461935,6 @@
       []
      ]
     },
-    "sdr-alpha-reftest-ref.html": [
-     "2b22c7a2984ee76528b2a987018ccbb94b91db99",
-     []
-    ],
     "smallest-valid-reftest-ref.html": [
      "1c72b20dc82bb9f8f309da2273393b5a117bef81",
      []
@@ -463479,6 +463641,10 @@
        "9b050b0119a74e73e091723fdd5ae843db94dc26",
        []
       ],
+      "html-or-svg-or-mathml-element-interfaces-expected.txt": [
+       "4b9dce23aa0ebf1dbe49767abdde58d88eaca190",
+       []
+      ],
       "integration-point-1-ref.html": [
        "49877549670ae9fdd81e24801c74756465c4c595",
        []
@@ -463515,11 +463681,11 @@
        "f885eaec428b72e767ee167834e5371c3486476c",
        []
       ],
-      "tabindex-001.tentative-expected.txt": [
+      "tabindex-001-expected.txt": [
        "643140aff548bb9a4b93193a847fd1b277323e54",
        []
       ],
-      "tabindex-focus-001.tentative-expected.txt": [
+      "tabindex-focus-001-expected.txt": [
        "1229e9ec3e8ce5076dcdfdc9e0ace3367f39a4a7",
        []
       ],
@@ -464010,11 +464176,11 @@
      []
     ],
     "decodingInfo-webrtc.any-expected.txt": [
-     "6a336652b2f1bafc67168972fba097d22f0e84fa",
+     "1b0704feba1e815f2134b9a4639dc84101ce9bcd",
      []
     ],
     "decodingInfo-webrtc.any.worker-expected.txt": [
-     "6a336652b2f1bafc67168972fba097d22f0e84fa",
+     "1b0704feba1e815f2134b9a4639dc84101ce9bcd",
      []
     ],
     "decodingInfo.any-expected.txt": [
@@ -464026,19 +464192,19 @@
      []
     ],
     "encodingInfo-webrtc.any-expected.txt": [
-     "bc95729a63f6eb0bdae97f901e861eb3298b2fdd",
+     "610e9047ca0b7e7dc907d1c728d34272b0e5979b",
      []
     ],
     "encodingInfo-webrtc.any.worker-expected.txt": [
-     "bc95729a63f6eb0bdae97f901e861eb3298b2fdd",
+     "610e9047ca0b7e7dc907d1c728d34272b0e5979b",
      []
     ],
     "encodingInfo.any-expected.txt": [
-     "7314b25c538792f217f05101d475e4ece09ded53",
+     "23cf6b2532b6c7534b0777d6f5352cb56c77da66",
      []
     ],
     "encodingInfo.any.worker-expected.txt": [
-     "7314b25c538792f217f05101d475e4ece09ded53",
+     "23cf6b2532b6c7534b0777d6f5352cb56c77da66",
      []
     ]
    },
@@ -479267,25 +479433,29 @@
        "8d897abee303ea0707c60ef85ebe3b46114e493b",
        []
       ],
+      "svg-filter-render-cross-origin-iframe.sub.html": [
+       "6c26cf90d24ac4ba8d99395c683ec4ec1dc3b137",
+       []
+      ],
       "svg-filter-render-iframe.html": [
        "e29630d6f0fe437e1e5934f8a8738b048c234ec7",
        []
-      ],
-      "svg-filter-render-remote-iframe.sub.html": [
-       "6c26cf90d24ac4ba8d99395c683ec4ec1dc3b137",
-       []
       ]
      },
-     "svg-filter-render-local-frame-ref.tentative.html": [
+     "svg-filter-render-cross-origin-frame-in-same-origin-frame-ref.tentative.html": [
+      "660b8b90ee90314e62e3df2750d437430b07a65c",
+      []
+     ],
+     "svg-filter-render-cross-origin-frame-ref.tentative.sub.html": [
+      "a54aabc2520c85da8d5283055c02fd043590ea9b",
+      []
+     ],
+     "svg-filter-render-same-origin-frame-ref.tentative.html": [
       "a68b2434b5f9c3013e6172f0b68279c8f7a87a78",
       []
      ],
-     "svg-filter-render-remote-frame-in-local-frame-ref.tentative.html": [
-      "7aafa025defbe7b4067bc975d27f6d4148b80cdd",
-      []
-     ],
-     "svg-filter-render-remote-frame-ref.tentative.sub.html": [
-      "a54aabc2520c85da8d5283055c02fd043590ea9b",
+     "svg-filter-render-sandbox-frame-ref.tentative.html": [
+      "16575f040baec42397aeec7175a84fe3de65d910",
       []
      ],
      "svg-filter-render-web-plugin-ref.tentative.html": [
@@ -487629,7 +487799,7 @@
     },
     "resources": {
      "minimum_datatype_set.json": [
-      "5dbc5f531bd6a9184aad3b0ea4d8b938a7cad1b8",
+      "218975d47c11e9a9495ba39e51959d7431898b63",
       []
      ],
      "utils.js": [
@@ -554865,6 +555035,13 @@
        {}
       ]
      ],
+     "transform-017.html": [
+      "45e4a30bf690ff22a9aafe09baace72b653ed1fb",
+      [
+       null,
+       {}
+      ]
+     ],
      "try-tactic-alignment.html": [
       "9f4d6078d2e0ccf0e38e2b1d23c268763cad6227",
       [
@@ -559492,7 +559669,7 @@
        ]
       ],
       "container-rule-cssom.html": [
-       "4563044357433ade0d2f9f4ab2cd7e802adbd96e",
+       "4479faf290a47effb96c62b31f9af1dacfc60313",
        [
         null,
         {}
@@ -578579,6 +578756,15 @@
       ]
      ],
      "input": {
+      "keyboard-snap-interruption.html": [
+       "6e0aa362c0433fe6d9ff0f28b0c29f3ba140c8c9",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
       "keyboard.html": [
        "25f430b705e885b780bb6aa2ed2cb74cc1e7040f",
        [
@@ -591448,21 +591634,21 @@
        ]
       ],
       "caret-color-computed.html": [
-       "0428c783f5b0b0efc664d18529f8cae22acf72e2",
+       "aa17b64fe5960d6486f4837f6e78d83b74650e41",
        [
         null,
         {}
        ]
       ],
       "caret-color-invalid.html": [
-       "a59b01ec2bb6d2ada5acef7ac7ec68417d79fa03",
+       "120b3ef14befc2eaa71c52547897fe0349ded2ef",
        [
         null,
         {}
        ]
       ],
       "caret-color-valid.html": [
-       "dd35cf8e903f544b284ebd2b7d83fb6b5e989274",
+       "8a5ab945bd398a438938623056eb5ed347e2e15b",
        [
         null,
         {}
@@ -593366,7 +593552,7 @@
       ]
      },
      "typed_arithmetic.html": [
-      "948ba20d6279e6c19f699a8cce2cf298d5393d65",
+      "f988e40bd7a8d46479798831393c2080b9cdc556",
       [
        null,
        {}
@@ -593841,6 +594027,13 @@
      ],
      "variable-created-element.html": [
       "84bc1b6e46a539287aa359b89303a45c923cac97",
+      [
+       null,
+       {}
+      ]
+     ],
+     "variable-css-wide-keywords-after-substitution.html": [
+      "78b4851ed860ef73fb28729018e174c39ec58c11",
       [
        null,
        {}
@@ -601398,7 +601591,7 @@
        ]
       ],
       "media-loading-state.sub.html": [
-       "53cb9b4f67f44d4e7449c205123a184050165e9a",
+       "05639e174d45fc9fdce96c654b4316539a52d798",
        [
         null,
         {
@@ -602899,7 +603092,7 @@
       ]
      ],
      "scoped-custom-element-registry-customelementregistry-attribute.html": [
-      "c29ad6b636f696ff3ee018880cd3d968dba23b97",
+      "ed553db5b722f41cc97537617cf9454ae017f3ed",
       [
        null,
        {}
@@ -701950,7 +702143,7 @@
         ]
        ],
        "dataset.html": [
-        "a4a16d014d9b6de9c5fa5523a0fc11b801383931",
+        "3a97454ccfc83f4bb0bd3cff70e7a3f1bbe8ce29",
         [
          null,
          {}
@@ -717987,6 +718180,15 @@
        ],
        "select-many-options.tentative.html": [
         "2aef5b138afd9863b954af9544909f2d4c2bb977",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
+       "select-multiple-resize-does-not-autoscroll.html": [
+        "18f5e1e93ff2b0892c535919a6f02f3b58fcb9d0",
         [
          null,
          {
@@ -738318,7 +738520,7 @@
      ]
     ],
     "longtask-in-childiframe-crossorigin.html": [
-     "03f3dbf337d357da8c862aa9d150e91992623d31",
+     "7ab9d2c38ede4f24d769468df936c37625e34333",
      [
       null,
       {}
@@ -739822,8 +740024,8 @@
         }
        ]
       ],
-      "html-or-foreign-element-interfaces.tentative.html": [
-       "028428cd758d66c787f0bf4a90b13b980eab9b80",
+      "html-or-svg-or-mathml-element-interfaces.html": [
+       "83518bafb252d42f1b233e0725a3cd393555a525",
        [
         null,
         {}
@@ -739852,14 +740054,14 @@
         }
        ]
       ],
-      "tabindex-001.tentative.html": [
+      "tabindex-001.html": [
        "5da95646af89d0c8c09bdf46f6d4f935537797cb",
        [
         null,
         {}
        ]
       ],
-      "tabindex-002.tentative.html": [
+      "tabindex-002.html": [
        "4f27df5a993a743633bb02a13d03691882499400",
        [
         null,
@@ -739869,7 +740071,7 @@
         }
        ]
       ],
-      "tabindex-focus-001.tentative.html": [
+      "tabindex-focus-001.html": [
        "dbd21a9af167bb42d6d836ff364733572739e064",
        [
         null,
@@ -740313,7 +740515,7 @@
    },
    "media-capabilities": {
     "decodingInfo-webrtc.any.js": [
-     "34ce5fb2921810df672b4a90e678d05f7bdfc8d1",
+     "69dd288600d23761512ac9b26ab0cb45f47cbb02",
      [
       "media-capabilities/decodingInfo-webrtc.any.html",
       {
@@ -740340,7 +740542,7 @@
      ]
     ],
     "decodingInfo.any.js": [
-     "510a59d9d781d8b400ad429bbeccd94b319ae3d5",
+     "852e723224074588691c3644ea8e6ccf39747bd0",
      [
       "media-capabilities/decodingInfo.any.html",
       {
@@ -740383,7 +740585,7 @@
      ]
     ],
     "encodingInfo-webrtc.any.js": [
-     "1369941a0a5d52bdcbcc3ffe6ba0feaddce8329c",
+     "696483d3f1d5984df2986e1a7aa15857e09a0547",
      [
       "media-capabilities/encodingInfo-webrtc.any.html",
       {
@@ -740410,7 +740612,7 @@
      ]
     ],
     "encodingInfo.any.js": [
-     "97b6c196f09d3c4fc3d46f92a916e4020c39d646",
+     "a12d49dca4396d1ae56c3e00f314722593ae1f69",
      [
       "media-capabilities/encodingInfo.any.html",
       {}
@@ -753574,6 +753776,13 @@
      ]
     ],
     "crashtests": {
+     "permissions-query-worker.window.js": [
+      "915e62e9f16dd0b404ea33006ed451c4a7dd8485",
+      [
+       "permissions/crashtests/permissions-query-worker.window.html",
+       {}
+      ]
+     ],
      "permissions-query.any.js": [
       "2e207fa2f226fc1dd3501c56e5c2ffaaab206f60",
       [
@@ -782853,6 +783062,20 @@
          {}
         ]
        ],
+       "shadowrootadoptedstylesheets-clonenode-async-fetch.html": [
+        "94b83b5828e82b75bca5b4b5d3b7cffa2e46bbfe",
+        [
+         null,
+         {}
+        ]
+       ],
+       "shadowrootadoptedstylesheets-clonenode.html": [
+        "85a5222fdfdd21054930c95c0d3554613a702ecd",
+        [
+         null,
+         {}
+        ]
+       ],
        "shadowrootadoptedstylesheets-fetched-module.html": [
         "bdcd229d8b536da0250e64316310cb54ec4fa2ef",
         [
@@ -782973,7 +783196,7 @@
         ]
        ],
        "shadowrootadoptedstylesheets-serialization.html": [
-        "e36882d8a33685fa0dce2a8559c738f56e549bc2",
+        "743ffd8142615e7515d2b3ad0ea795f5eba7280e",
         [
          null,
          {}
@@ -783189,6 +783412,13 @@
        {
         "testdriver": true
        }
+      ]
+     ],
+     "focus-preserved-on-slot-reorder.html": [
+      "74f9dc9dae47acfa7f8067c51cf9f3875780d1aa",
+      [
+       null,
+       {}
       ]
      ],
      "focus-pseudo-matches-on-shadow-host.html": [
@@ -804759,6 +804989,13 @@
        {}
       ]
      ],
+     "animate-path-additive-sum-both-empty-over-base.tentative.html": [
+      "3398f9eee725051815879edf7f61412a8e4a7024",
+      [
+       null,
+       {}
+      ]
+     ],
      "animate-path-animation-Cc-Ss.tentative.html": [
       "69b3cc7af4cf00c301c1e2e6d86641181b356b5a",
       [
@@ -804843,6 +805080,13 @@
        {}
       ]
      ],
+     "animate-path-by-animation-empty-base.tentative.html": [
+      "c674aa1f1471e755c40f50de6ac8fed07cb4f42b",
+      [
+       null,
+       {}
+      ]
+     ],
      "animate-path-by-animation-mismatch.tentative.html": [
       "6e9973d39830dfed33afcf26c6332ed54d96868a",
       [
@@ -804852,6 +805096,27 @@
      ],
      "animate-path-by-animation.tentative.html": [
       "d34e1262fd6ea956d19bf225ace0b6b76d47570f",
+      [
+       null,
+       {}
+      ]
+     ],
+     "animate-path-from-by-animation-both-empty.tentative.html": [
+      "9a1b4c875f72c36193ee5183df2114e2a541485a",
+      [
+       null,
+       {}
+      ]
+     ],
+     "animate-path-from-by-animation-empty-by.tentative.html": [
+      "907996524ceec73ea66ddff3141163b608effc56",
+      [
+       null,
+       {}
+      ]
+     ],
+     "animate-path-from-by-animation-empty-from.tentative.html": [
+      "ac38041596ee134839af3efca8e7a8f5b38f04dd",
       [
        null,
        {}
@@ -804871,6 +805136,27 @@
        {}
       ]
      ],
+     "animate-path-from-to-animation-both-empty.tentative.html": [
+      "82c4c96df64e0bf6d26ec9afbca96a80788d88d8",
+      [
+       null,
+       {}
+      ]
+     ],
+     "animate-path-from-to-animation-empty-from.tentative.html": [
+      "37ce54171d030f06a9fcdfe9ad4252fd7da43f7e",
+      [
+       null,
+       {}
+      ]
+     ],
+     "animate-path-from-to-animation-empty-to.tentative.html": [
+      "4598acfae3521a4ad4b28f2e897eab5479f9fbc2",
+      [
+       null,
+       {}
+      ]
+     ],
      "animate-path-from-to-animation-mismatch-diff-seg-counts.tentative.html": [
       "6ff0f1dffcdda1f03266caaeb2d2291a6d05d268",
       [
@@ -804880,6 +805166,13 @@
      ],
      "animate-path-from-to-animation-mismatch-same-seg-count.tentative.html": [
       "6c873b0b775a6dd9d6ae11b470dd089db72c6354",
+      [
+       null,
+       {}
+      ]
+     ],
+     "animate-path-to-animation-empty-base.tentative.html": [
+      "c40478c449f8add0259f965a6ab8f4b1b433c2f8",
       [
        null,
        {}
@@ -830161,7 +830454,7 @@
       ]
      ],
      "contention.https.window.js": [
-      "e305b9cfe600d870cec83d1707d86bb23c7e26c5",
+      "ea8d95fb370b25dc16ea6d8f41db00623c60349c",
       [
        "web-locks/bfcache/contention.https.window.html?context=document&contention=query",
        {
@@ -830189,6 +830482,22 @@
          [
           "variant",
           "?context=shared-worker&contention=request"
+         ],
+         [
+          "variant",
+          "?context=document&contention=request-if-available"
+         ],
+         [
+          "variant",
+          "?context=worker&contention=request-if-available"
+         ],
+         [
+          "variant",
+          "?context=nested-worker&contention=request-if-available"
+         ],
+         [
+          "variant",
+          "?context=shared-worker&contention=request-if-available"
          ],
          [
           "variant",
@@ -830260,6 +830569,106 @@
          ],
          [
           "variant",
+          "?context=document&contention=request-if-available"
+         ],
+         [
+          "variant",
+          "?context=worker&contention=request-if-available"
+         ],
+         [
+          "variant",
+          "?context=nested-worker&contention=request-if-available"
+         ],
+         [
+          "variant",
+          "?context=shared-worker&contention=request-if-available"
+         ],
+         [
+          "variant",
+          "?context=document&contention=query"
+         ],
+         [
+          "variant",
+          "?context=worker&contention=query"
+         ],
+         [
+          "variant",
+          "?context=nested-worker&contention=query"
+         ],
+         [
+          "variant",
+          "?context=shared-worker&contention=query"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/web-locks/resources/helpers.js"
+         ],
+         [
+          "script",
+          "/html/browsers/browsing-the-web/back-forward-cache/resources/helper.sub.js"
+         ],
+         [
+          "script",
+          "./helpers.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "web-locks/bfcache/contention.https.window.html?context=document&contention=request-if-available",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Web Locks API: bfcache contention test"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?context=document&contention=request"
+         ],
+         [
+          "variant",
+          "?context=worker&contention=request"
+         ],
+         [
+          "variant",
+          "?context=nested-worker&contention=request"
+         ],
+         [
+          "variant",
+          "?context=shared-worker&contention=request"
+         ],
+         [
+          "variant",
+          "?context=document&contention=request-if-available"
+         ],
+         [
+          "variant",
+          "?context=worker&contention=request-if-available"
+         ],
+         [
+          "variant",
+          "?context=nested-worker&contention=request-if-available"
+         ],
+         [
+          "variant",
+          "?context=shared-worker&contention=request-if-available"
+         ],
+         [
+          "variant",
           "?context=document&contention=query"
          ],
          [
@@ -830325,6 +830734,22 @@
          [
           "variant",
           "?context=shared-worker&contention=request"
+         ],
+         [
+          "variant",
+          "?context=document&contention=request-if-available"
+         ],
+         [
+          "variant",
+          "?context=worker&contention=request-if-available"
+         ],
+         [
+          "variant",
+          "?context=nested-worker&contention=request-if-available"
+         ],
+         [
+          "variant",
+          "?context=shared-worker&contention=request-if-available"
          ],
          [
           "variant",
@@ -830396,6 +830821,106 @@
          ],
          [
           "variant",
+          "?context=document&contention=request-if-available"
+         ],
+         [
+          "variant",
+          "?context=worker&contention=request-if-available"
+         ],
+         [
+          "variant",
+          "?context=nested-worker&contention=request-if-available"
+         ],
+         [
+          "variant",
+          "?context=shared-worker&contention=request-if-available"
+         ],
+         [
+          "variant",
+          "?context=document&contention=query"
+         ],
+         [
+          "variant",
+          "?context=worker&contention=query"
+         ],
+         [
+          "variant",
+          "?context=nested-worker&contention=query"
+         ],
+         [
+          "variant",
+          "?context=shared-worker&contention=query"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/web-locks/resources/helpers.js"
+         ],
+         [
+          "script",
+          "/html/browsers/browsing-the-web/back-forward-cache/resources/helper.sub.js"
+         ],
+         [
+          "script",
+          "./helpers.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "web-locks/bfcache/contention.https.window.html?context=nested-worker&contention=request-if-available",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Web Locks API: bfcache contention test"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?context=document&contention=request"
+         ],
+         [
+          "variant",
+          "?context=worker&contention=request"
+         ],
+         [
+          "variant",
+          "?context=nested-worker&contention=request"
+         ],
+         [
+          "variant",
+          "?context=shared-worker&contention=request"
+         ],
+         [
+          "variant",
+          "?context=document&contention=request-if-available"
+         ],
+         [
+          "variant",
+          "?context=worker&contention=request-if-available"
+         ],
+         [
+          "variant",
+          "?context=nested-worker&contention=request-if-available"
+         ],
+         [
+          "variant",
+          "?context=shared-worker&contention=request-if-available"
+         ],
+         [
+          "variant",
           "?context=document&contention=query"
          ],
          [
@@ -830461,6 +830986,22 @@
          [
           "variant",
           "?context=shared-worker&contention=request"
+         ],
+         [
+          "variant",
+          "?context=document&contention=request-if-available"
+         ],
+         [
+          "variant",
+          "?context=worker&contention=request-if-available"
+         ],
+         [
+          "variant",
+          "?context=nested-worker&contention=request-if-available"
+         ],
+         [
+          "variant",
+          "?context=shared-worker&contention=request-if-available"
          ],
          [
           "variant",
@@ -830532,6 +831073,106 @@
          ],
          [
           "variant",
+          "?context=document&contention=request-if-available"
+         ],
+         [
+          "variant",
+          "?context=worker&contention=request-if-available"
+         ],
+         [
+          "variant",
+          "?context=nested-worker&contention=request-if-available"
+         ],
+         [
+          "variant",
+          "?context=shared-worker&contention=request-if-available"
+         ],
+         [
+          "variant",
+          "?context=document&contention=query"
+         ],
+         [
+          "variant",
+          "?context=worker&contention=query"
+         ],
+         [
+          "variant",
+          "?context=nested-worker&contention=query"
+         ],
+         [
+          "variant",
+          "?context=shared-worker&contention=query"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/web-locks/resources/helpers.js"
+         ],
+         [
+          "script",
+          "/html/browsers/browsing-the-web/back-forward-cache/resources/helper.sub.js"
+         ],
+         [
+          "script",
+          "./helpers.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "web-locks/bfcache/contention.https.window.html?context=shared-worker&contention=request-if-available",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Web Locks API: bfcache contention test"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?context=document&contention=request"
+         ],
+         [
+          "variant",
+          "?context=worker&contention=request"
+         ],
+         [
+          "variant",
+          "?context=nested-worker&contention=request"
+         ],
+         [
+          "variant",
+          "?context=shared-worker&contention=request"
+         ],
+         [
+          "variant",
+          "?context=document&contention=request-if-available"
+         ],
+         [
+          "variant",
+          "?context=worker&contention=request-if-available"
+         ],
+         [
+          "variant",
+          "?context=nested-worker&contention=request-if-available"
+         ],
+         [
+          "variant",
+          "?context=shared-worker&contention=request-if-available"
+         ],
+         [
+          "variant",
           "?context=document&contention=query"
          ],
          [
@@ -830600,6 +831241,22 @@
          ],
          [
           "variant",
+          "?context=document&contention=request-if-available"
+         ],
+         [
+          "variant",
+          "?context=worker&contention=request-if-available"
+         ],
+         [
+          "variant",
+          "?context=nested-worker&contention=request-if-available"
+         ],
+         [
+          "variant",
+          "?context=shared-worker&contention=request-if-available"
+         ],
+         [
+          "variant",
           "?context=document&contention=query"
          ],
          [
@@ -830665,6 +831322,106 @@
          [
           "variant",
           "?context=shared-worker&contention=request"
+         ],
+         [
+          "variant",
+          "?context=document&contention=request-if-available"
+         ],
+         [
+          "variant",
+          "?context=worker&contention=request-if-available"
+         ],
+         [
+          "variant",
+          "?context=nested-worker&contention=request-if-available"
+         ],
+         [
+          "variant",
+          "?context=shared-worker&contention=request-if-available"
+         ],
+         [
+          "variant",
+          "?context=document&contention=query"
+         ],
+         [
+          "variant",
+          "?context=worker&contention=query"
+         ],
+         [
+          "variant",
+          "?context=nested-worker&contention=query"
+         ],
+         [
+          "variant",
+          "?context=shared-worker&contention=query"
+         ],
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "/common/dispatcher/dispatcher.js"
+         ],
+         [
+          "script",
+          "/web-locks/resources/helpers.js"
+         ],
+         [
+          "script",
+          "/html/browsers/browsing-the-web/back-forward-cache/resources/helper.sub.js"
+         ],
+         [
+          "script",
+          "./helpers.js"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "web-locks/bfcache/contention.https.window.html?context=worker&contention=request-if-available",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Web Locks API: bfcache contention test"
+         ],
+         [
+          "timeout",
+          "long"
+         ],
+         [
+          "variant",
+          "?context=document&contention=request"
+         ],
+         [
+          "variant",
+          "?context=worker&contention=request"
+         ],
+         [
+          "variant",
+          "?context=nested-worker&contention=request"
+         ],
+         [
+          "variant",
+          "?context=shared-worker&contention=request"
+         ],
+         [
+          "variant",
+          "?context=document&contention=request-if-available"
+         ],
+         [
+          "variant",
+          "?context=worker&contention=request-if-available"
+         ],
+         [
+          "variant",
+          "?context=nested-worker&contention=request-if-available"
+         ],
+         [
+          "variant",
+          "?context=shared-worker&contention=request-if-available"
          ],
          [
           "variant",
@@ -832563,7 +833320,7 @@
        ]
       ],
       "audiocontext-sinkid-state-change.https.html": [
-       "8462b5261981f2b33de5682ce3e6130d69c01122",
+       "d9369e3347c2d645c68bb790c09ae35dcb80abde",
        [
         null,
         {}
@@ -854628,7 +855385,7 @@
       ]
      ],
      "prelu.https.any.js": [
-      "3de7353d62d0fd07278e63a3ad87f54a43f822b9",
+      "c3c18659c55b5df5410004877d15438f2a6c178f",
       [
        "webnn/conformance_tests/prelu.https.any.html?cpu",
        {
