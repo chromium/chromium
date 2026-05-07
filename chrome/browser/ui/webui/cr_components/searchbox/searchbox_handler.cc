@@ -453,6 +453,7 @@ base::DictValue SearchboxHandler::GetWebUIDataSourceDict(
       {"composeFileTypesAllowedError",
        IDS_NTP_COMPOSE_FILE_TYPE_NOT_ALLOWED_ERROR},
       {"voiceClose", IDS_NEW_TAB_VOICE_CLOSE_TOOLTIP},
+      {"voiceStop", IDS_FUSEBOX_VOICE_SEARCH_STOP_TITLE},
       {"voiceDetails", IDS_NEW_TAB_VOICE_DETAILS},
       {"voiceListening", IDS_NEW_TAB_VOICE_LISTENING},
       {"voicePermissionError", IDS_NEW_TAB_VOICE_PERMISSION_ERROR},

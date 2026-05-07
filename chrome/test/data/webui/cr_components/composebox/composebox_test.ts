@@ -58,6 +58,7 @@ suite('ComposeboxTest', () => {
       voiceListening: 'Listening',
       voiceDetails: 'Details',
       voiceClose: 'Close',
+      voiceStop: 'Stop',
       dismissButton: 'Dismiss',
       composeboxDragAndDropHint: 'Hint',
       removeSuggestion: 'Remove',
