@@ -4,7 +4,7 @@
 <translation id="1007349221964075684">Upotrijebite zaključavanje zaslona za prikaz otvorenih anonimnih prozora</translation>
 <translation id="1010283278930414892">Na ovom uređaju nema spremljenih zaporki</translation>
 <translation id="1011749477052068769">Premjesti ovdje</translation>
-<translation id="1014083013111769343">Postavke čitačkog načina otvorene su u punoj visini</translation>
+<translation id="1014083013111769343">Postavke prozora za čitanje otvorene su u punoj visini</translation>
 <translation id="1014147525163127655">Na ovom uređaju nema nijednog pristupnog ključa za aplikaciju <ph name="ORIGIN" /></translation>
 <translation id="1016498331642356377">Brzo pretražujte glasovno. Da biste uredili taj prečac, dodirnite ga i zadržite pritisak.</translation>
 <translation id="1028699632127661925">Šalje se uređaju <ph name="DEVICE_NAME" />...</translation>
@@ -56,7 +56,7 @@
 <translation id="11947597112837849">e-adresu</translation>
 <translation id="1197267115302279827">Premjesti oznake</translation>
 <translation id="1197761954713363183">Zatvoren je list za potvrdu pristupnog ključa</translation>
-<translation id="1197933394627598677">Prikaži čitački način</translation>
+<translation id="1197933394627598677">Prikaži prozor za čitanje</translation>
 <translation id="1197935538609051549">Deaktiviraj</translation>
 <translation id="1201402288615127009">Dalje</translation>
 <translation id="1202892408424955784">Praćeni proizvodi</translation>
@@ -233,7 +233,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="197288927597451399">Zadrži</translation>
 <translation id="1973912524893600642">Zadrži podatke</translation>
 <translation id="1974060860693918893">Napredno</translation>
-<translation id="1982274314082047220">Prijeđite prstom prema gore da biste otvorili postavke čitačkog načina</translation>
+<translation id="1982274314082047220">Prijeđite prstom prema gore da biste otvorili postavke prozora za čitanje</translation>
 <translation id="1984087999855033707">telefonski broj</translation>
 <translation id="1984417487208496350">Bez zaštite (ne preporučuje se)</translation>
 <translation id="1986685561493779662">Naziv već postoji</translation>
@@ -483,7 +483,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="2992473221983447149">Opisi slika</translation>
 <translation id="2996291259634659425">Stvaranje zaporke</translation>
 <translation id="2996809686854298943">Potreban URL</translation>
-<translation id="3024215143424744261">Postavke čitačkog načina su zatvorene</translation>
+<translation id="3024215143424744261">Postavke prozora za čitanje su zatvorene</translation>
 <translation id="3026955690410463085">Uključi vezu</translation>
 <translation id="3027644380269727216">Na temelju vaše aktivnosti na web-lokaciji. Postavka je uključena.</translation>
 <translation id="3027950907978057636">Izvor: <ph name="APP_LABEL" /></translation>
@@ -549,7 +549,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 <translation id="3305130791745726624">Pošalji na uređaje</translation>
 <translation id="3305795716056605962">Prevedite stranice pomoću gumba Više opcija</translation>
 <translation id="3307355280394823921">Otvaranje povijesti</translation>
-<translation id="3309978850836730073">Čitački način uvijek je dostupan ovdje</translation>
+<translation id="3309978850836730073">Prozor za čitanje uvijek je dostupan ovdje</translation>
 <translation id="331080746368555063">Privatne web-lokacije mogu uključivati stvari poput intraneta vaše tvrtke</translation>
 <translation id="3311330810461485557">Pretražujte po aplikaciji, datumu i drugom.</translation>
 <translation id="3331974543021145906">Informacije o aplikaciji</translation>
@@ -1256,7 +1256,7 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="6232535412751077445">Omogućivanje opcije "Nemoj pratiti" znači da će se u promet pregledavanja uključiti zahtjev. Učinak ovisi o tome odgovara li web-lokacija na taj zahtjev i kako se zahtjev tumači.
 
 Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikažu oglase koji se ne temelje na drugim web-lokacijama koje ste posjetili. Mnoge web-lokacije i dalje će prikupljati i upotrebljavati vaše podatke o pregledavanju, primjerice, za poboljšanje sigurnosti, pružanje sadržaja, oglasa i preporuka, kao i za generiranje statističkih izvješća.</translation>
-<translation id="623755660902014047">Čitački način</translation>
+<translation id="623755660902014047">Prozor za čitanje</translation>
 <translation id="6247557882553405851">Google upravitelj zaporki</translation>
 <translation id="6248988683584659830">Pretraživanje postavki</translation>
 <translation id="6250847299079540062"><ph name="TAB_TITLE" />, višestruko odabrana prikvačena anonimna kartica</translation>
@@ -1385,7 +1385,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="6676927815633975364">Prijavite se na ovu web-lokaciju i Chrome</translation>
 <translation id="6684262542644248484">Prijavite se na web-lokaciju</translation>
 <translation id="6684809838922667136">Poboljšavanje Chromea</translation>
-<translation id="6689436252814043643">Čitački način nije dostupan</translation>
+<translation id="6689436252814043643">Prozor za čitanje nije dostupan</translation>
 <translation id="669971068476817798">Dodirnite Spremi</translation>
 <translation id="6700279777779583398">Odabiri su spremljeni</translation>
 <translation id="670498945988402717">Provjera je izvršena jučer</translation>
@@ -1475,7 +1475,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="696447261358045621">Napusti anonimni način</translation>
 <translation id="6965382102122355670">U redu</translation>
 <translation id="6968350777423863208">{NUMBER_OF_TABS,plural, =1{Pogledajte <ph name="TABS_COUNT_ONE" /> standardnu karticu s novom aktivnošću u dijeljenim grupama kartica}one{Pogledajte <ph name="TABS_COUNT_MANY" /> standardnu karticu s novom aktivnošću u dijeljenim grupama kartica}few{Pogledajte <ph name="TABS_COUNT_MANY" /> standardne kartice s novom aktivnošću u dijeljenim grupama kartica}other{Pogledajte <ph name="TABS_COUNT_MANY" /> standardnih kartica s novom aktivnošću u dijeljenim grupama kartica}}</translation>
-<translation id="6971555615916967190">Postavke čitačkog načina otvorene su na pola visine</translation>
+<translation id="6971555615916967190">Postavke prozora za čitanje otvorene su na pola visine</translation>
 <translation id="6971862865055170158">Nemoj odobriti</translation>
 <translation id="6976223255612495095"><ph name="TAB_TITLE" />, nova ili ažurirana kartica</translation>
 <translation id="6976811588313110624">Dodajte novi prečac.</translation>
@@ -1549,7 +1549,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="722681077040152344">Otkazana je pretplata na ovoliko web-lokacija: <ph name="COUNT" /></translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 preuzimanje na čekanju}one{# preuzimanje na čekanju}few{# preuzimanja na čekanju}other{# preuzimanja na čekanju}}</translation>
 <translation id="7237724030342645845">Google upravitelj zaporki više ne funkcionira</translation>
-<translation id="7239496616545081903">Sakrij čitački način</translation>
+<translation id="7239496616545081903">Sakrij prozor za čitanje</translation>
 <translation id="72415438529550637">Prijedlog zaporke je zatvoren.</translation>
 <translation id="724510009481365878">Stranica se ne može ispisati</translation>
 <translation id="7248671827512403053">Aplikacija</translation>
@@ -1930,7 +1930,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="8725066075913043281">Pokušajte ponovno</translation>
 <translation id="8727043961453758442">Iskoristite sve prednosti preglednika Chrome</translation>
 <translation id="8731268612289859741">Sigurnosni kôd</translation>
-<translation id="8738163682604285902">Želite li pregledati u čitačkom načinu?</translation>
+<translation id="8738163682604285902">Želite li prikazati prozor za čitanje?</translation>
 <translation id="8746155870861185046">Podijeli isticanje</translation>
 <translation id="8748850008226585750">Sadržaj je skriven</translation>
 <translation id="8754448020583829686">Kopiranje bez veze</translation>

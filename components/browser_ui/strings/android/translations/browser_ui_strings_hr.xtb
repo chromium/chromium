@@ -41,7 +41,7 @@
 <translation id="1415855080660575082">Dopustite Chromeu da dijeli vaše nedavne kartice s uređajem kako biste ih vidjeli na popisu aplikacija i u rezultatima pretraživanja na uređaju. Tu značajku možete uključiti ili isključiti u postavkama Chromea.</translation>
 <translation id="1420688843103859429">Krećite se unatrag i unaprijed prelaskom dvama prstima na dodirnoj podlozi</translation>
 <translation id="1432650420699700107">Web-lokacije mogu tražiti dopuštenje za povezivanje s bilo kojim uređajem na vašoj lokalnoj mreži</translation>
-<translation id="1442081309487427303">Uključite veze čitačkog načina</translation>
+<translation id="1442081309487427303">Uključite veze prozora za čitanje</translation>
 <translation id="1448064542941920355">Smanjite zumiranje</translation>
 <translation id="1464044141348608623">Ne dopuštaj web-lokacijama da znaju kad aktivno koristite uređaj</translation>
 <translation id="146867109637325312">{COUNT,plural, =1{<ph name="SITE_COUNT" /> web-lokacija}one{<ph name="SITE_COUNT" /> web-lokacija}few{<ph name="SITE_COUNT" /> web-lokacije}other{<ph name="SITE_COUNT" /> web-lokacija}}</translation>
@@ -76,7 +76,7 @@
 <translation id="1766455884659449403">Primajte obavijesti sa savjetima za Chrome</translation>
 <translation id="1777815584158991902">Donja tablica feeda Discovera</translation>
 <translation id="1779089405699405702">Dekodiranje slika</translation>
-<translation id="1781533683087883868">Isključite veze čitačkog načina</translation>
+<translation id="1781533683087883868">Isključite veze prozora za čitanje</translation>
 <translation id="1785415724048343560">Preporučuje se za najbolji doživljaj</translation>
 <translation id="1796588414813960292">Značajke kojima je potreban zvuk neće funkcionirati</translation>
 <translation id="1799920918471566157">Savjeti za Chrome</translation>
@@ -299,7 +299,7 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:
 <translation id="3903738175795615004">Povucite od vrha ili pritisnite tipku Esc za izlaz iz prikaza na cijelom zaslonu.</translation>
 <translation id="3905475044299942653">Zaustavljanje mnogo obavijesti</translation>
 <translation id="3922092564198021702">Otvorite Postavke na telefonu</translation>
-<translation id="3924858949939391676">Prikaži veze nakon uključivanja načina za čitanje</translation>
+<translation id="3924858949939391676">Prikaži veze nakon uključivanja prozora za čitanje</translation>
 <translation id="3933121352599513978">Sažmite neželjene zahtjeve (preporučeno)</translation>
 <translation id="393417216277380082">Senzori kretanja i svjetlosni senzori</translation>
 <translation id="3934905113567851655">Spojite prste za promjenu veličine</translation>
