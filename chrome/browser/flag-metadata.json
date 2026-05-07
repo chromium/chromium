@@ -5679,9 +5679,9 @@
     "expiry_milestone": 159
   },
   {
-    "name": "import-export-flags",
-    "owners": [ "//ui/webui/PLATFORM_OWNERS" ],
-    "expiry_milestone": 150
+   "name": "import-export-flags",
+   "owners": [ "ananyaseelam@google.com", "kiehl@google.com", "//ui/webui/PLATFORM_OWNERS" ],
+   "expiry_milestone": 160
   },
   {
     "name": "in-flow-trusted-vault-key-retrieval-android",
