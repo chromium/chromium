@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/cobrowse/model/cobrowse_browser_agent.h"
 
+#import "base/functional/bind.h"
 #import "components/omnibox/browser/aim_eligibility_service.h"
 #import "components/search_engines/util.h"
 #import "ios/chrome/browser/aim/model/ios_chrome_aim_eligibility_service_factory.h"
@@ -19,6 +20,16 @@ CobrowseBrowserAgent::CobrowseBrowserAgent(Browser* browser)
     : BrowserUserData<CobrowseBrowserAgent>(browser) {
   CHECK(IsAimCobrowseEnabled());
   StartObserving(browser);
+
+  AimEligibilityService* aim_eligibility_service =
+      IOSChromeAimEligibilityServiceFactory::GetForProfile(
+          browser_->GetProfile());
+  if (aim_eligibility_service) {
+    eligibility_subscription_ =
+        aim_eligibility_service->RegisterEligibilityChangedCallback(
+            base::BindRepeating(&CobrowseBrowserAgent::OnEligibilityChanged,
+                                base::Unretained(this)));
+  }
 }
 
 CobrowseBrowserAgent::~CobrowseBrowserAgent() {
@@ -83,6 +94,22 @@ bool CobrowseBrowserAgent::IsSessionActive() {
 
 void CobrowseBrowserAgent::SetSessionActive(bool active) {
   is_session_active_ = active;
+}
+
+void CobrowseBrowserAgent::OnEligibilityChanged() {
+  AimEligibilityService* aim_eligibility_service =
+      IOSChromeAimEligibilityServiceFactory::GetForProfile(
+          browser_->GetProfile());
+  if (!aim_eligibility_service ||
+      !aim_eligibility_service->IsFuseboxEligible() ||
+      !aim_eligibility_service->IsCobrowseEligible()) {
+    if (is_session_active_) {
+      id<SceneCommands> scene_commands_handler =
+          HandlerForProtocol(browser_->GetCommandDispatcher(), SceneCommands);
+      [scene_commands_handler hideAssistant];
+      SetSessionActive(false);
+    }
+  }
 }
 
 #pragma mark - TabsDependencyInstaller
