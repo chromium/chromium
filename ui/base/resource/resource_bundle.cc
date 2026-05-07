@@ -1296,9 +1296,9 @@ std::u16string ResourceBundle::GetLocalizedStringImpl(int resource_id) const {
   // Data pack encodes strings as either UTF8 or UTF16.
   std::u16string msg;
   if (encoding == ResourceHandle::UTF16) {
-    CHECK_EQ(data->size() % sizeof(std::u16string::value_type), 0u);
-    msg.resize(data->size() / sizeof(std::u16string::value_type));
-    base::as_writable_byte_span(msg).copy_from(base::as_byte_span(*data));
+    auto utf16_span = base::subtle::reinterpret_span<const char16_t>(
+        base::as_byte_span(*data));
+    msg.assign(utf16_span.begin(), utf16_span.end());
   } else if (encoding == ResourceHandle::UTF8) {
     // Best-effort conversion.
     base::UTF8ToUTF16(data->data(), data->size(), &msg);
