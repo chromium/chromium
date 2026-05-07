@@ -1,19 +1,57 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "definitions": {
+    "PersonaDef": {
+      "type": "object",
+      "properties": {
+        "role": { "type": "string" },
+        "mandate": { "type": "string" },
+        "checklist": {
+          "type": "object",
+          "patternProperties": {
+            "^.*$": { "type": "string" }
+          }
+        }
+      },
+      "required": ["role", "mandate", "checklist"]
+    },
+    "ChecklistObject": {
+      "type": "object",
+      "patternProperties": {
+        "^.*$": { "type": "boolean" }
+      }
+    },
     "StateBlock": {
       "type": "object",
       "properties": {
+        "checklist": { "$ref": "#/definitions/ChecklistObject" },
+        "unlisted_issues_found": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
         "iteration": { "type": "integer" },
         "stall_count": { "type": "integer" },
-        "active_constraints": { "type": "array", "items": { "type": "string" } },
-        "resolved_constraints": { "type": "array", "items": { "type": "string" } },
+        "active_constraints": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "resolved_constraints": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
         "personas": { "type": "array", "items": { "type": "string" } },
         "next_phase": { "type": "string" },
-        "review_mode": { "type": "string", "enum": ["SUPERVISOR", "CONSENSUS"] },
-        "state_transport": { "type": "string", "enum": ["FILE_IO", "EPHEMERAL", "EPHEMERAL_WITH_LOGS"] }
+        "review_mode": {
+          "type": "string",
+          "enum": ["SUPERVISOR", "CONSENSUS"]
+        },
+        "state_transport": {
+          "type": "string",
+          "enum": ["FILE_IO", "EPHEMERAL", "EPHEMERAL_WITH_LOGS"]
+        }
       },
       "required": [
+        "checklist",
         "iteration",
         "stall_count",
         "active_constraints",
@@ -27,6 +65,11 @@
     "ProjectSpec": {
       "type": "object",
       "properties": {
+        "checklist": { "$ref": "#/definitions/ChecklistObject" },
+        "unlisted_issues_found": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
         "goal": { "type": "string" },
         "target_files": { "type": "array", "items": { "type": "string" } },
         "anti_goals": { "type": "array", "items": { "type": "string" } },
@@ -39,6 +82,7 @@
         }
       },
       "required": [
+        "checklist",
         "goal",
         "target_files",
         "anti_goals",
@@ -51,6 +95,11 @@
     "ReviewFeedback": {
       "type": "object",
       "properties": {
+        "checklist": { "$ref": "#/definitions/ChecklistObject" },
+        "unlisted_issues_found": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
         "verdict": { "type": "string", "enum": ["ACCEPT", "REJECT"] },
         "reasoning": { "type": "array", "items": { "type": "string" } },
         "comments": {
@@ -67,17 +116,31 @@
         },
         "next_phase": { "type": "string" }
       },
-      "required": ["verdict", "reasoning", "next_phase"]
+      "required": ["checklist", "verdict", "reasoning", "next_phase"]
     },
     "Constraints": {
       "type": "object",
       "properties": {
+        "checklist": { "$ref": "#/definitions/ChecklistObject" },
+        "unlisted_issues_found": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
         "iteration": { "type": "integer" },
         "constraints": { "type": "array", "items": { "type": "string" } },
         "next_phase": { "type": "string" },
-        "review_mode": { "type": "string", "enum": ["SUPERVISOR", "CONSENSUS"] }
+        "review_mode": {
+          "type": "string",
+          "enum": ["SUPERVISOR", "CONSENSUS"]
+        }
       },
-      "required": ["iteration", "constraints", "review_mode", "next_phase"]
+      "required": [
+        "checklist",
+        "iteration",
+        "constraints",
+        "review_mode",
+        "next_phase"
+      ]
     }
   }
 }

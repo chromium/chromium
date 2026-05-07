@@ -284,8 +284,16 @@ Once consensus is reached, the Orchestrator MUST invoke a "Trainer" sub-agent.
 The Trainer evaluates the final State Block and Review Analyst constraints to
 identify systemic gaps in the Personas' knowledge. If a Persona made a recurring
 mistake or lacked domain context, the Trainer proposes an upgrade to their
-`personas/*.md` file and applies the improvements. The Trainer SHOULD signal
-`next_phase: VALIDATION`.
+`personas/*.json` file by adding a new Boolean constraint to their checklist.
+
+**Persona Splitting (Hierarchical Specialization):** The Trainer MUST NOT let a
+persona's checklist exceed 10 items. If adding a new constraint exceeds this
+limit, the Trainer MUST "fork" the persona using a nested directory structure
+representing `[category]/[domain]/[specialty].json` (e.g., split
+`core/security.json` into `core/security/memory.json` and
+`core/security/network.json`). Do not use flat files with underscores. Migrate
+the relevant checks and update `PERSONAS.md`.
+The Trainer SHOULD signal `next_phase: VALIDATION`.
 
 **VCS Isolation Rule:** Any modifications to MAGI files (e.g., adding/updating
 personas by the Recruiter or Trainer) MUST be excluded from the feature/bugfix
@@ -310,8 +318,8 @@ The Release Engineer's **exclusive mandate** is:
 3. **The Feature CL:** Stage *only* the product source files. Verify the commit
    message. Upload the main feature CL.
 4. **The MAGI CL:** Create a new branch/bookmark. Stage the `PERSONAS.md` and
-   `personas/*.md` files updated by the Recruiter/Trainer. Upload the secondary
-   CL.
+   `personas/*.json` files updated by the Recruiter or Trainer. Upload the
+   secondary CL.
 
 ## When to Invoke
 - When an automated review finds a flaw that is hard to resolve without

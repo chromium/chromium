@@ -319,6 +319,7 @@ def CheckJsonFiles(input_api, output_api):
       'ReviewFeedback', {}
   )
   constraints_schema = schema.get('definitions', {}).get('Constraints', {})
+  persona_def_schema = schema.get('definitions', {}).get('PersonaDef', {})
 
   def FileFilter(affected_file):
     return input_api.FilterSourceFile(
@@ -326,6 +327,7 @@ def CheckJsonFiles(input_api, output_api):
         files_to_check=(
             r'.*(state_block|project|review(\..+)?|constraints)'
             r'\.magi(\.\d+)?\.json$',
+            r'.*personas/.*\.json$',
         ),
     )
 
@@ -360,6 +362,8 @@ def CheckJsonFiles(input_api, output_api):
       active_schema = review_feedback_schema
     elif filename.startswith('constraints'):
       active_schema = constraints_schema
+    elif 'personas' in f.LocalPath().replace('\\', '/').split('/'):
+      active_schema = persona_def_schema
     else:
       continue
 
