@@ -743,6 +743,8 @@ std::optional<GURL> ChromePermissionsClient::GetEmbeddingOriginOverride(
   return std::nullopt;
 }
 
+// Considers any `new tab page` or `new tab` origins as being from the new tab
+// page.
 bool ChromePermissionsClient::IsFromNewTabPage(
     content::WebContents* web_contents,
     const GURL& requester,
@@ -754,8 +756,8 @@ bool ChromePermissionsClient::IsFromNewTabPage(
       url::Origin::Create(chrome::ChromeUINewTabURLAsGURL());
   url::Origin ntp_origin =
       url::Origin::Create(chrome::ChromeUINewTabPageURLAsGURL());
-  // A page is not from the new tab page if its embedder is not a new tab page
-  // type.
+  // A page is definitely not from the new tab page if its embedder is not a
+  // new tab page type (`new tab page` or `new tab`).
   if (embedding_origin != ntp_origin && embedding_origin != new_tab_origin) {
     return false;
   }
