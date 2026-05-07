@@ -4543,18 +4543,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Hyphenation.Open" units="ms" expires_after="2026-05-08">
-  <owner>kojii@chromium.org</owner>
-  <owner>layout-dev@chromium.org</owner>
-  <summary>The time it takes to open a hyphenation dictionary.</summary>
-</histogram>
-
-<histogram name="Hyphenation.Open.File" units="ms" expires_after="2026-05-08">
-  <owner>kojii@chromium.org</owner>
-  <owner>layout-dev@chromium.org</owner>
-  <summary>The time it takes to open a hyphenation dictionary file.</summary>
-</histogram>
-
 <histogram name="Import.ImporterType.AutoImport" enum="ImporterType"
     expires_after="2026-01-11">
   <owner>robliao@chromium.org</owner>

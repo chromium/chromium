@@ -11,13 +11,11 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "base/timer/elapsed_timer.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
@@ -80,9 +78,7 @@ base::File GetDictionaryFile(const std::string& locale) {
 #endif
   std::string filename = base::StringPrintf("hyph-%s.hyb", locale);
   base::FilePath path = dir.AppendASCII(filename);
-  base::ElapsedTimer timer;
   file.Initialize(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
-  UMA_HISTOGRAM_TIMES("Hyphenation.Open.File", timer.Elapsed());
   return file.Duplicate();
 }
 
