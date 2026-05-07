@@ -405,8 +405,8 @@ TEST_F(RTCDiagnosticLoggingTest, StartFinishAndUploadDiagnosticLogging) {
   //
   // test_value
   // ------**--yradnuoBgoLtrapitluMklaTelgooG--**----
-  // Content-Disposition: form-data; name="other_webrtc_log";
-  // filename="other_webrtc_log.gz" Content-Type: application/gzip
+  // Content-Disposition: form-data; name="cs_webrtc_log";
+  // filename="cs_webrtc_log.gz" Content-Type: application/gzip
   //
   // <gzipped_content>
   // ------**--yradnuoBgoLtrapitluMklaTelgooG--**----
@@ -466,7 +466,7 @@ TEST_F(RTCDiagnosticLoggingTest, StartFinishAndUploadDiagnosticLogging) {
   EXPECT_EQ(multipart_data[13],
             "Content-Disposition: form-data; name=\"type\"");
   EXPECT_TRUE(multipart_data[14].empty());
-  EXPECT_EQ(multipart_data[15], "webrtc_log");
+  EXPECT_EQ(multipart_data[15], WebRtcLogUploader::kWebRtcLogContentType);
 
   EXPECT_EQ(multipart_data[16], boundary);
   EXPECT_EQ(multipart_data[17],
@@ -483,8 +483,10 @@ TEST_F(RTCDiagnosticLoggingTest, StartFinishAndUploadDiagnosticLogging) {
 
   EXPECT_EQ(multipart_data[24], boundary);
   EXPECT_EQ(multipart_data[25],
-            "Content-Disposition: form-data; name=\"other_webrtc_log\"; "
-            "filename=\"other_webrtc_log.gz\"");
+            base::StrCat({"Content-Disposition: form-data; name=\"",
+                          WebRtcLogUploader::kCrossSiteContentName, "\"; ",
+                          "filename=\"",
+                          WebRtcLogUploader::kCrossSiteContentName, ".gz\""}));
   EXPECT_TRUE(multipart_data[26].empty());
 }
 
@@ -494,8 +496,10 @@ TEST_F(RTCDiagnosticLoggingTest, UploadSiteOriginLogging) {
       GURL("https://example.upload.com"));
   EXPECT_THAT(
       uploaded,
-      testing::HasSubstr("Content-Disposition: form-data; name=\"webrtc_log\"; "
-                         "filename=\"webrtc_log.gz\""));
+      testing::HasSubstr(base::StrCat(
+          {"Content-Disposition: form-data; name=\"",
+           WebRtcLogUploader::kSameSiteContentName, "\"; ", "filename=\"",
+           WebRtcLogUploader::kSameSiteContentName, ".gz\""})));
   EXPECT_THAT(uncompressed_log,
               testing::HasSubstr("test message in StartAndStopLogging"));
 }

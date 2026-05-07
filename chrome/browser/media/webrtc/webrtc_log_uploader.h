@@ -56,8 +56,13 @@ struct WebRtcLogUploadFailureReason {
 // when disabled: product: "Chrome_Mac", version: "121.0.6151.0-webrtc"
 BASE_DECLARE_FEATURE(kWebRTCLogUploadSuffix);
 
+enum class WebRtcLogUploadSite {
+  kSameSite,
+  kCrossSite,
+};
+
 // Returns the product string to use for crash log uploads.
-std::string GetLogUploadProduct();
+std::string GetLogUploadProduct(WebRtcLogUploadSite site);
 
 // Returns the version string to use for crash log uploads.
 std::string GetLogUploadVersion();
@@ -77,6 +82,11 @@ class WebRtcLogUploader {
 
   static constexpr char kLogUploadDisabledMsg[] =
       "WebRtc text log upload is disabled";
+
+  static constexpr char kSameSiteContentName[] = "webrtc_log";
+  static constexpr char kCrossSiteContentName[] = "cs_webrtc_log";
+
+  static constexpr char kWebRtcLogContentType[] = "webrtc_log";
 
   // Used when uploading is done to perform post-upload actions. |paths| is
   // also used pre-upload.
@@ -119,7 +129,7 @@ class WebRtcLogUploader {
   // either this function or LoggingStoppedDontUpload().
   // |upload_done_data.local_log_id| is set and used internally and should be
   // left empty.
-  void OnLoggingStopped(const std::string& content_name,
+  void OnLoggingStopped(WebRtcLogUploadSite site,
                         std::unique_ptr<WebRtcLogBuffer> log_buffer,
                         std::unique_ptr<WebRtcLogMetaDataMap> meta_data,
                         UploadDoneData upload_done_data,
@@ -175,7 +185,7 @@ class WebRtcLogUploader {
   // Sets up a multipart body to be uploaded. The body is produced according
   // to RFC 2046.
   void SetupMultipart(std::string* post_data,
-                      const std::string& content_name,
+                      WebRtcLogUploadSite site,
                       const std::string& compressed_log,
                       const base::FilePath& incoming_rtp_dump,
                       const base::FilePath& outgoing_rtp_dump,
@@ -192,7 +202,7 @@ class WebRtcLogUploader {
   void WriteCompressedLogToFile(const std::string& compressed_log,
                                 const base::FilePath& log_file_path);
 
-  void PrepareMultipartPostData(const std::string& content_name,
+  void PrepareMultipartPostData(WebRtcLogUploadSite site,
                                 const std::string& compressed_log,
                                 std::unique_ptr<WebRtcLogMetaDataMap> meta_data,
                                 UploadDoneData upload_done_data);

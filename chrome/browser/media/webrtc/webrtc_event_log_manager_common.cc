@@ -50,6 +50,9 @@ const size_t kWebRtcEventLogIdLength = 32;
 const size_t kMinWebRtcEventLogWebAppId = 1;
 const size_t kMaxWebRtcEventLogWebAppId = 99;
 
+const size_t kSameSiteWebAppId = 1;
+const size_t kCrossSiteWebAppId = 99;
+
 // Sentinel value for an invalid web-app ID.
 const size_t kInvalidWebRtcEventLogWebAppId = 0;
 static_assert(kInvalidWebRtcEventLogWebAppId < kMinWebRtcEventLogWebAppId ||

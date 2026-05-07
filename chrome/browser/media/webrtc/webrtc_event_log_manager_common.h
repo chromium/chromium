@@ -52,6 +52,9 @@ extern const size_t kWebRtcEventLogIdLength;
 extern const size_t kMinWebRtcEventLogWebAppId;
 extern const size_t kMaxWebRtcEventLogWebAppId;
 
+extern const size_t kSameSiteWebAppId;
+extern const size_t kCrossSiteWebAppId;
+
 // Sentinel value, guaranteed not to fall inside the range of min-max valid IDs.
 extern const size_t kInvalidWebRtcEventLogWebAppId;
 
