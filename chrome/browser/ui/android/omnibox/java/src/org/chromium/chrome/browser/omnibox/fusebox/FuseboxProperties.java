@@ -232,6 +232,10 @@ class FuseboxProperties {
     public static final WritableObjectPropertyKey<String> POPUP_TOOL_HEADER_TEXT =
             new WritableObjectPropertyKey<>();
 
+    /** Whether to show the request type button. */
+    public static final WritableBooleanPropertyKey SHOW_REQUEST_TYPE_BUTTON =
+            new WritableBooleanPropertyKey();
+
     public static final PropertyKey[] ALL_KEYS = {
         // go/keep-sorted start
         ADAPTER,
@@ -269,7 +273,8 @@ class FuseboxProperties {
         POPUP_TOOL_BUTTON_DATA_LIST,
         POPUP_TOOL_DIVIDER_VISIBLE,
         POPUP_TOOL_HEADER_TEXT,
-        POPUP_TOOL_HEADER_VISIBLE
+        POPUP_TOOL_HEADER_VISIBLE,
+        SHOW_REQUEST_TYPE_BUTTON
         // go/keep-sorted end
     };
 }

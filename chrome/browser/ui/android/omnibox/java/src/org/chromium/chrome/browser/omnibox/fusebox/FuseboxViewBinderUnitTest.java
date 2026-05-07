@@ -48,7 +48,6 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxProperties.PopupButton
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.IconResourceIdsProto.IconResourceIds;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -70,8 +69,7 @@ public class FuseboxViewBinderUnitTest {
     @Retention(RetentionPolicy.SOURCE)
     private @interface Variant {
         int DEFAULT = 0;
-        int DEDICATED_BUTTON = 1;
-        int COMPACT = 2;
+        int COMPACT = 1;
     }
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -113,6 +111,7 @@ public class FuseboxViewBinderUnitTest {
         mModel.set(FuseboxProperties.ADD_BUTTON_VISIBLE, true);
         mModel.set(FuseboxProperties.FUSEBOX_STATE, FuseboxState.EXPANDED);
         mModel.set(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE, AutocompleteRequestType.SEARCH);
+        mModel.set(FuseboxProperties.SHOW_REQUEST_TYPE_BUTTON, false);
         mModel.set(FuseboxProperties.COLOR_SCHEME, BrandedColorScheme.APP_DEFAULT);
 
         PropertyModelChangeProcessor.create(mModel, mViewHolder, FuseboxViewBinder::bind);
@@ -141,6 +140,7 @@ public class FuseboxViewBinderUnitTest {
                 FuseboxProperties.FUSEBOX_STATE,
                 testCase == Variant.COMPACT ? FuseboxState.COMPACT : FuseboxState.EXPANDED);
         mModel.set(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE, requestType);
+        mModel.set(FuseboxProperties.SHOW_REQUEST_TYPE_BUTTON, false);
     }
 
     @Test
@@ -226,15 +226,6 @@ public class FuseboxViewBinderUnitTest {
     public void updateButtonsVisibility_AndStyling_noParams() {
         configureFusebox(Variant.DEFAULT, AutocompleteRequestType.SEARCH);
         assertEquals(View.GONE, mViewHolder.requestType.getVisibility());
-    }
-
-    @Test
-    public void updateButtonsVisibility_AndStyling_notDesktopPlatform() {
-        OmniboxFeatures.setIsDesktopPlatformForTesting(false);
-        configureFusebox(Variant.DEFAULT, AutocompleteRequestType.AI_MODE);
-
-        // It should be VISIBLE on non-desktop when other conditions met.
-        assertEquals(View.VISIBLE, mViewHolder.requestType.getVisibility());
     }
 
     @Test

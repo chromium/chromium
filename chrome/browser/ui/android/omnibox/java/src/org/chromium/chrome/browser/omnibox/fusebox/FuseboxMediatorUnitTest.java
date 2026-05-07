@@ -473,6 +473,33 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
+    public void updateFuseboxState_setsShowRequestTypeButton_true() {
+        OmniboxFeatures.setIsDesktopPlatformForTesting(false);
+        mInput.setRequestType(AutocompleteRequestType.AI_MODE);
+        recreateMediator();
+
+        assertTrue(mModel.get(FuseboxProperties.SHOW_REQUEST_TYPE_BUTTON));
+    }
+
+    @Test
+    public void updateFuseboxState_setsShowRequestTypeButton_false_conventional() {
+        OmniboxFeatures.setIsDesktopPlatformForTesting(false);
+        mInput.setRequestType(AutocompleteRequestType.SEARCH);
+        recreateMediator();
+
+        assertFalse(mModel.get(FuseboxProperties.SHOW_REQUEST_TYPE_BUTTON));
+    }
+
+    @Test
+    public void updateFuseboxState_setsShowRequestTypeButton_false_desktopAiMode() {
+        OmniboxFeatures.setIsDesktopPlatformForTesting(true);
+        mInput.setRequestType(AutocompleteRequestType.AI_MODE);
+        recreateMediator();
+
+        assertFalse(mModel.get(FuseboxProperties.SHOW_REQUEST_TYPE_BUTTON));
+    }
+
+    @Test
     public void endInput_clearsState() {
         assertNotEquals(
                 FuseboxState.DISABLED, mModel.get(FuseboxProperties.FUSEBOX_STATE).intValue());

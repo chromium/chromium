@@ -57,13 +57,4 @@ public class ToolModeUtils {
             default -> AutocompleteRequestType.AI_MODE;
         };
     }
-
-    /**
-     * @param requestType The current request type.
-     */
-    public static boolean shouldShowRequestTypeButton(@AutocompleteRequestType int requestType) {
-        return !(isConventionalRequest(requestType)
-                || (OmniboxFeatures.isDesktopPlatform()
-                        && requestType == AutocompleteRequestType.AI_MODE));
-    }
 }

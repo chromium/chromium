@@ -40,7 +40,6 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.IconResourceIdsProto.IconResourceIds;
 import org.chromium.components.omnibox.ToolModeProto.ToolMode;
-import org.chromium.components.omnibox.ToolModeUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
@@ -95,7 +94,6 @@ class FuseboxViewBinder {
         } else if (propertyKey == FuseboxProperties.COLOR_SCHEME) {
             updateButtonsVisibilityAndStyling(model, view);
         } else if (propertyKey == FuseboxProperties.FUSEBOX_STATE) {
-            updateRequestTypeButton(model, view);
             reanchorViewsForCompactFusebox(model, view);
         } else if (propertyKey == FuseboxProperties.POPUP_ATTACH_CAMERA_CLICKED) {
             view.popup.mCameraButton.setOnClickListener(
@@ -201,6 +199,8 @@ class FuseboxViewBinder {
                     model.get(FuseboxProperties.POPUP_TOOL_HEADER_VISIBLE)
                             ? View.VISIBLE
                             : View.GONE);
+        } else if (propertyKey == FuseboxProperties.SHOW_REQUEST_TYPE_BUTTON) {
+            updateRequestTypeButton(model, view);
         }
     }
 
@@ -503,15 +503,13 @@ class FuseboxViewBinder {
     }
 
     private static void updateRequestTypeButton(PropertyModel model, FuseboxViewHolder view) {
-        boolean fuseboxDisabled =
-                model.get(FuseboxProperties.FUSEBOX_STATE) == FuseboxState.DISABLED;
-        @AutocompleteRequestType
-        int requestType = model.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE);
-
-        if (fuseboxDisabled || !ToolModeUtils.shouldShowRequestTypeButton(requestType)) {
+        if (!model.get(FuseboxProperties.SHOW_REQUEST_TYPE_BUTTON)) {
             view.requestType.setVisibility(View.GONE);
             return;
         }
+
+        @AutocompleteRequestType
+        int requestType = model.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE);
 
         @BrandedColorScheme int brandedColorScheme = model.get(FuseboxProperties.COLOR_SCHEME);
         Context context = view.parentView.getContext();

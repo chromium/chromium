@@ -402,14 +402,15 @@ import java.util.function.Supplier;
 
     private void updateFuseboxState() {
         @FuseboxState int targetState;
+        boolean showRequestTypeButton = shouldShowRequestTypeButton();
         if (!isInInputSession()) {
             targetState = FuseboxState.DISABLED;
         } else if (!OmniboxFeatures.sCompactFusebox.getValue()) {
             targetState = FuseboxState.EXPANDED;
         } else {
             targetState =
-                    // If we're showing the dedicated mode button...
-                    ToolModeUtils.shouldShowRequestTypeButton(mInput.getRequestType())
+                    // If we're showing the request type button...
+                    showRequestTypeButton
                                     // or the text is wrapping...
                                     || mIsTextWrapping
                                     // or the attachments list has elements - expand the fusebox.
@@ -420,6 +421,25 @@ import java.util.function.Supplier;
         mFuseboxStateSupplier.set(targetState);
         mModel.set(FuseboxProperties.FUSEBOX_STATE, targetState);
         mModel.set(FuseboxProperties.ADD_BUTTON_VISIBLE, targetState == FuseboxState.EXPANDED);
+        mModel.set(FuseboxProperties.SHOW_REQUEST_TYPE_BUTTON, showRequestTypeButton);
+    }
+
+    @SuppressWarnings("checkstyle:SimplifyBooleanReturn")
+    private boolean shouldShowRequestTypeButton() {
+        // Conditions here, when grouped into a single return, are difficult to parse.
+        // Breaking down into explicit if/elseif/else to help understand what's going on.
+        if (!isInInputSession()) {
+            return false;
+        } else if (ToolModeUtils.isConventionalRequest(mInput.getRequestType())) {
+            // Never show mode button if in Search mode.
+            return false;
+        } else if (mInput.getRequestType() == AutocompleteRequestType.AI_MODE
+                && OmniboxFeatures.isDesktopPlatform()) {
+            // Special Desktop case -> AI Mode only changes the status icon.
+            return false;
+        }
+
+        return true;
     }
 
     /** Toggles the visibility of the attachments popup. */
