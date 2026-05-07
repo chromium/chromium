@@ -70,6 +70,9 @@ const CGFloat kHeaderHeight = 56.0;
 // Height of the Google Wallet logo.
 const CGFloat kGoogleWalletLogoHeight = 32.0;
 #endif
+
+// Separator for expiration date components (Month/Year).
+NSString* const kDateSeparator = @"/";
 }  // namespace
 
 @interface PaymentsScanSaveAndFillEditViewController () <
@@ -84,6 +87,11 @@ const CGFloat kGoogleWalletLogoHeight = 32.0;
   NSString* _cardholderName;
   NSString* _cardCVC;
   NSString* _nickname;
+
+  // Initial scanned details.
+  NSString* _scannedCardNumber;
+  NSString* _scannedExpirationMonth;
+  NSString* _scannedExpirationYear;
 
   // Tracked edit items for diffable data source.
   TableViewTextEditItem* _cardNumberItem;
@@ -290,6 +298,29 @@ const CGFloat kGoogleWalletLogoHeight = 32.0;
     return;
   }
   base::UmaHistogramEnumeration("IOS.ScanCardOfferToSave", action);
+
+  if (action == ScanCardOfferToSaveAction::kAccept) {
+    if (_scannedCardNumber.length > 0) {
+      BOOL numberEdited =
+          ![_cardNumberItem.textFieldValue isEqualToString:_scannedCardNumber];
+      base::UmaHistogramBoolean("IOS.ScannedCard.NumberEdited", numberEdited);
+    }
+
+    NSArray<NSString*>* components = [_expirationDateItem.textFieldValue
+        componentsSeparatedByString:kDateSeparator];
+    NSString* currentMonth = components.count > 0 ? components[0] : @"";
+    NSString* currentYear = components.count > 1 ? components[1] : @"";
+
+    if (_scannedExpirationMonth.length > 0) {
+      BOOL monthEdited =
+          ![currentMonth isEqualToString:_scannedExpirationMonth];
+      base::UmaHistogramBoolean("IOS.ScannedCard.ExpMonthEdited", monthEdited);
+    }
+    if (_scannedExpirationYear.length > 0) {
+      BOOL yearEdited = ![currentYear isEqualToString:_scannedExpirationYear];
+      base::UmaHistogramBoolean("IOS.ScannedCard.ExpYearEdited", yearEdited);
+    }
+  }
   _actionLogged = YES;
 }
 
@@ -312,10 +343,15 @@ const CGFloat kGoogleWalletLogoHeight = 32.0;
 - (void)setCreditCardNumber:(NSString*)cardNumber
             expirationMonth:(NSString*)expirationMonth
              expirationYear:(NSString*)expirationYear {
+  _scannedCardNumber = cardNumber;
+  _scannedExpirationMonth = expirationMonth;
+  _scannedExpirationYear = expirationYear;
+
   _cardNumber = cardNumber;
   if (expirationMonth.length > 0 && expirationYear.length > 0) {
     _expirationDate =
-        [NSString stringWithFormat:@"%@/%@", expirationMonth, expirationYear];
+        [NSString stringWithFormat:@"%@%@%@", expirationMonth, kDateSeparator,
+                                   expirationYear];
   }
 
   std::string appLocale =

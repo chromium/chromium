@@ -566,3 +566,52 @@ TEST_F(PaymentsScanSaveAndFillEditViewControllerTest,
   histogram_tester.ExpectUniqueSample("IOS.ScanCardOfferToSave.ValidExpYear",
                                       false, 1);
 }
+
+TEST_F(PaymentsScanSaveAndFillEditViewControllerTest,
+       TestMetricsOnSaveWithEdits) {
+  base::HistogramTester histogram_tester;
+  CreateController();
+  [view_controller_ loadViewIfNeeded];
+
+  // Populate initial scanned data.
+  [view_controller_ setCreditCardNumber:@"1234567812345678"
+                        expirationMonth:@"12"
+                         expirationYear:@"26"];
+
+  // Simulate manual edits.
+  TableViewTextEditItem* numberItem =
+      [view_controller_ valueForKey:@"_cardNumberItem"];
+  numberItem.textFieldValue = @"1234567812340000";
+
+  TableViewTextEditItem* expDateItem =
+      [view_controller_ valueForKey:@"_expirationDateItem"];
+  expDateItem.textFieldValue = @"11/26";
+
+  [view_controller_ didTapSave];
+
+  histogram_tester.ExpectUniqueSample("IOS.ScannedCard.NumberEdited", true, 1);
+  histogram_tester.ExpectUniqueSample("IOS.ScannedCard.ExpMonthEdited", true,
+                                      1);
+  histogram_tester.ExpectUniqueSample("IOS.ScannedCard.ExpYearEdited", false,
+                                      1);
+}
+
+TEST_F(PaymentsScanSaveAndFillEditViewControllerTest,
+       TestMetricsOnSaveWithoutEdits) {
+  base::HistogramTester histogram_tester;
+  CreateController();
+  [view_controller_ loadViewIfNeeded];
+
+  // Populate initial scanned data.
+  [view_controller_ setCreditCardNumber:@"1234567812345678"
+                        expirationMonth:@"12"
+                         expirationYear:@"26"];
+
+  [view_controller_ didTapSave];
+
+  histogram_tester.ExpectUniqueSample("IOS.ScannedCard.NumberEdited", false, 1);
+  histogram_tester.ExpectUniqueSample("IOS.ScannedCard.ExpMonthEdited", false,
+                                      1);
+  histogram_tester.ExpectUniqueSample("IOS.ScannedCard.ExpYearEdited", false,
+                                      1);
+}

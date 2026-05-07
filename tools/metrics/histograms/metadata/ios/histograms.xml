@@ -6799,6 +6799,39 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.ScannedCard.ExpMonthEdited" enum="Boolean"
+    expires_after="2027-04-01">
+  <owner>qihuizhao@google.com</owner>
+  <owner>yiwenqian@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records whether the user manually edited the card expiration month after
+    scanning. Recorded when the user accepts the save offer.
+  </summary>
+</histogram>
+
+<histogram name="IOS.ScannedCard.ExpYearEdited" enum="Boolean"
+    expires_after="2027-04-01">
+  <owner>qihuizhao@google.com</owner>
+  <owner>yiwenqian@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records whether the user manually edited the card expiration year after
+    scanning. Recorded when the user accepts the save offer.
+  </summary>
+</histogram>
+
+<histogram name="IOS.ScannedCard.NumberEdited" enum="Boolean"
+    expires_after="2027-04-01">
+  <owner>qihuizhao@google.com</owner>
+  <owner>yiwenqian@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records whether the user manually edited the card number after scanning.
+    Recorded when the user accepts the save offer.
+  </summary>
+</histogram>
+
 <histogram name="IOS.SearchWith.CharSelected" units="characters"
     expires_after="2027-04-01">
   <owner>olivierrobin@chromium.org</owner>
