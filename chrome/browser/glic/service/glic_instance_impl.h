@@ -71,7 +71,8 @@ class GlicInstanceImpl : public GlicInstance,
                          public Host::Observer,
                          public GlicSharingManagerProvider,
                          public GlicUiEmbedder::Delegate,
-                         public actor::ActorTaskDelegate {
+                         public actor::ActorTaskDelegate,
+                         public GlicActorTaskManager::Delegate {
  public:
   class InstanceCoordinatorDelegate {
    public:
@@ -184,6 +185,7 @@ class GlicInstanceImpl : public GlicInstance,
   const InstanceId& id() const override;
   void SetIdForRestoration(InstanceId id);
   std::optional<std::string> conversation_id() const override;
+  base::WeakPtr<actor::ActorTaskDelegate> GetActorTaskDelegate() override;
   std::string conversation_title() const override;
   base::CallbackListSubscription RegisterStateChange(
       StateChangeCallback callback) override;
@@ -203,35 +205,7 @@ class GlicInstanceImpl : public GlicInstance,
       bool open_in_background,
       const std::optional<int32_t>& window_id,
       glic::mojom::WebClientHandler::CreateTabCallback callback) override;
-  void CreateTask(
-      base::WeakPtr<actor::ActorTaskDelegate> delegate,
-      actor::webui::mojom::TaskOptionsPtr options,
-      mojom::WebClientHandler::CreateTaskCallback callback) override;
-  void PerformActions(
-      const std::vector<uint8_t>& actions_proto,
-      mojom::WebClientHandler::PerformActionsCallback callback) override;
-  void CancelActions(
-      actor::TaskId task_id,
-      mojom::WebClientHandler::CancelActionsCallback callback) override;
-  void StopActorTask(actor::TaskId task_id,
-                     mojom::ActorTaskStopReason stop_reason) override;
-  void PauseActorTask(actor::TaskId task_id,
-                      mojom::ActorTaskPauseReason pause_reason,
-                      tabs::TabInterface::Handle tab_handle) override;
-  void ResumeActorTask(
-      actor::TaskId task_id,
-      const mojom::GetTabContextOptions& context_options,
-      glic::mojom::WebClientHandler::ResumeActorTaskCallback callback) override;
-  void InterruptActorTask(
-      actor::TaskId task_id,
-      std::optional<mojom::ActorTaskInterruptReason> interrupt_reason) override;
-  void UninterruptActorTask(actor::TaskId task_id) override;
-  void CreateActorTab(
-      actor::TaskId task_id,
-      bool open_in_background,
-      const std::optional<int32_t>& initiator_tab_id,
-      const std::optional<int32_t>& initiator_window_id,
-      glic::mojom::WebClientHandler::CreateActorTabCallback callback) override;
+  GlicActorClientSession* BindActorClientSession() override;
   void FetchZeroStateSuggestions(
       bool is_first_run,
       std::optional<std::vector<std::string>> supported_tools,

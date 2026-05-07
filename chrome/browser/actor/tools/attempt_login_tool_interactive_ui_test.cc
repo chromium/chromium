@@ -202,8 +202,16 @@ class AttemptLoginToolInteractiveUiTest
         base::expected<int32_t, glic::mojom::CreateTaskErrorReason>>
         create_task_future;
     ASSERT_TRUE(GetGlicInstanceImpl());
-    GetGlicInstanceImpl()->CreateTask(nullptr, nullptr,
-                                      create_task_future.GetCallback());
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return GetGlicInstanceImpl()
+                 ->GetActorTaskManager()
+                 ->GetClientSessionForTesting() != nullptr;
+    }));
+    GetGlicInstanceImpl()
+        ->GetActorTaskManager()
+        ->GetClientSessionForTesting()
+        ->CreateTask(actor::webui::mojom::TaskOptions::New(),
+                     create_task_future.GetCallback());
     auto create_task_result = create_task_future.Get();
     ASSERT_TRUE(create_task_result.has_value());
     task_id_ = TaskId(create_task_result.value());

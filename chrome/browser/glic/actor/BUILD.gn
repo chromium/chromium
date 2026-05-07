@@ -16,6 +16,7 @@ source_set("actor") {
     "//chrome/browser/actor",
     "//chrome/browser/actor/ui",
     "//chrome/browser/glic",
+    "//chrome/browser/glic:glic_metrics",
     "//chrome/browser/glic:mojo_bindings",
     "//chrome/browser/signin",
     "//chrome/common:actor_webui_mojom",

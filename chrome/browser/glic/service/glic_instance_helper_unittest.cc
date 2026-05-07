@@ -7,6 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/glic/public/glic_instance.h"
+#include "chrome/browser/glic/service/metrics/glic_instance_helper_metrics.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"

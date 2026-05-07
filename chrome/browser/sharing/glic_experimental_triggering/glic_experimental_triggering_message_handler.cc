@@ -12,6 +12,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_controller.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
@@ -389,10 +391,9 @@ void GlicExperimentalTriggeringMessageHandler::ProcessStopActionRequest(
     if (!base::StringToInt(request.task_metadata().task_id(), &task_id_int)) {
       DLOG(WARNING) << "Invalid task ID format: "
                     << request.task_metadata().task_id();
-    } else {
-      instance->host().instance_delegate().StopActorTask(
-          actor::TaskId(task_id_int),
-          glic::mojom::ActorTaskStopReason::kStoppedByUser);
+    } else if (auto* actor_service = actor::ActorKeyedService::Get(profile_)) {
+      actor_service->StopTask(actor::TaskId(task_id_int),
+                              actor::ActorTask::StoppedReason::kStoppedByUser);
       stopped = true;
     }
   }

@@ -19,6 +19,7 @@ source_set("impl") {
 
   deps = [
     ":glic_experimental_triggering",
+    "//chrome/browser/actor",
     "//chrome/browser/glic",
     "//chrome/browser/glic:impl",
     "//chrome/browser/profiles:profile",

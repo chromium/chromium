@@ -38,6 +38,7 @@
 #include "chrome/browser/feedback/feedback_uploader_chrome.h"
 #include "chrome/browser/feedback/feedback_uploader_factory_chrome.h"
 #include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
+#include "chrome/browser/glic/actor/glic_actor_task_manager.h"
 #include "chrome/browser/glic/common/future_browser_features.h"
 #include "chrome/browser/glic/common/glic_navigation.h"
 #include "chrome/browser/glic/fre/fre_util.h"
@@ -708,6 +709,11 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     web_client_.set_disconnect_handler(base::BindOnce(
         &GlicWebClientHandler::WebClientDisconnected, base::Unretained(this)));
 
+    if (base::FeatureList::IsEnabled(features::kGlicActor)) {
+      actor_client_session_ =
+          host().instance_delegate().BindActorClientSession()->GetWeakPtr();
+    }
+
     page_metadata_manager_ =
         std::make_unique<PageMetadataManager>(profile_, web_client_.get());
 
@@ -1158,46 +1164,48 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
   void CreateTask(actor::webui::mojom::TaskOptionsPtr options,
                   CreateTaskCallback callback) override {
-    host().instance_delegate().CreateTask(nullptr, std::move(options),
-                                          std::move(callback));
+    if (!actor_client_session_) {
+      std::move(callback).Run(base::unexpected(
+          mojom::CreateTaskErrorReason::kTaskSystemUnavailable));
+      return;
+    }
+    actor_client_session_->CreateTask(std::move(options), std::move(callback));
   }
 
   void PerformActions(const std::vector<uint8_t>& actions_proto,
                       PerformActionsCallback callback) override {
-    if (!base::FeatureList::IsEnabled(features::kGlicActor)) {
+    if (!actor_client_session_) {
       receiver_.ReportBadMessage(
           "PerformActions cannot be called without GlicActor enabled.");
       return;
     }
-    host().instance_delegate().PerformActions(actions_proto,
-                                              std::move(callback));
+    actor_client_session_->PerformActions(actions_proto, std::move(callback));
   }
 
   void CancelActions(int32_t task_id, CancelActionsCallback callback) override {
-    if (!base::FeatureList::IsEnabled(features::kGlicActor)) {
+    if (!actor_client_session_) {
       receiver_.ReportBadMessage(
           "CancelActions cannot be called without GlicActor enabled.");
       return;
     }
-    host().instance_delegate().CancelActions(actor::TaskId(task_id),
-                                             std::move(callback));
+    actor_client_session_->CancelActions(actor::TaskId(task_id),
+                                         std::move(callback));
   }
 
   void StopActorTask(int32_t task_id,
                      mojom::ActorTaskStopReason stop_reason) override {
-    if (!base::FeatureList::IsEnabled(features::kGlicActor)) {
+    if (!actor_client_session_) {
       receiver_.ReportBadMessage(
           "StopActorTask cannot be called without GlicActor enabled.");
       return;
     }
-    host().instance_delegate().StopActorTask(actor::TaskId(task_id),
-                                             stop_reason);
+    actor_client_session_->StopActorTask(actor::TaskId(task_id), stop_reason);
   }
 
   void PauseActorTask(int32_t task_id,
                       mojom::ActorTaskPauseReason pause_reason,
                       std::optional<int32_t> tab_id) override {
-    if (!base::FeatureList::IsEnabled(features::kGlicActor)) {
+    if (!actor_client_session_) {
       receiver_.ReportBadMessage(
           "PauseActorTask cannot be called without GlicActor enabled.");
       return;
@@ -1206,41 +1214,40 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     if (tab_id.has_value()) {
       tab_handle = tabs::TabInterface::Handle(*tab_id);
     }
-    host().instance_delegate().PauseActorTask(actor::TaskId(task_id),
-                                              pause_reason, tab_handle);
+    actor_client_session_->PauseActorTask(actor::TaskId(task_id), pause_reason,
+                                          tab_handle);
   }
 
   void ResumeActorTask(int32_t task_id,
                        glic::mojom::GetTabContextOptionsPtr context_options,
                        ResumeActorTaskCallback callback) override {
-    if (!base::FeatureList::IsEnabled(features::kGlicActor)) {
+    if (!actor_client_session_) {
       receiver_.ReportBadMessage(
           "ResumeActorTask cannot be called without GlicActor enabled.");
       return;
     }
-    host().instance_delegate().ResumeActorTask(
+    actor_client_session_->ResumeActorTask(
         actor::TaskId(task_id), *context_options, std::move(callback));
   }
 
   void InterruptActorTask(int32_t task_id,
                           std::optional<glic::mojom::ActorTaskInterruptReason>
                               interrupt_reason) override {
-    if (!base::FeatureList::IsEnabled(features::kGlicActor)) {
+    if (!actor_client_session_) {
       receiver_.ReportBadMessage(
           "InterruptActorTask cannot be called without GlicActor enabled.");
       return;
     }
-    host().instance_delegate().InterruptActorTask(actor::TaskId(task_id),
-                                                  interrupt_reason);
+    actor_client_session_->InterruptActorTask(actor::TaskId(task_id));
   }
 
   void UninterruptActorTask(int32_t task_id) override {
-    if (!base::FeatureList::IsEnabled(features::kGlicActor)) {
+    if (!actor_client_session_) {
       receiver_.ReportBadMessage(
           "UninterruptActorTask cannot be called without GlicActor enabled.");
       return;
     }
-    host().instance_delegate().UninterruptActorTask(actor::TaskId(task_id));
+    actor_client_session_->UninterruptActorTask(actor::TaskId(task_id));
   }
 
   void CreateSkill(mojom::CreateSkillRequestPtr request,
@@ -1329,12 +1336,12 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
                       std::optional<int32_t> initiator_tab_id,
                       std::optional<int32_t> initiator_window_id,
                       CreateActorTabCallback callback) override {
-    if (!base::FeatureList::IsEnabled(features::kGlicActor)) {
+    if (!actor_client_session_) {
       receiver_.ReportBadMessage(
           "StopActorTask cannot be called without GlicActor enabled.");
       return;
     }
-    host().instance_delegate().CreateActorTab(
+    actor_client_session_->CreateActorTab(
         actor::TaskId(task_id), open_in_background, initiator_tab_id,
         initiator_window_id, std::move(callback));
   }
@@ -2072,6 +2079,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     if (skills_service_) {
       skills_service_->RemoveObserver(this);
     }
+    actor_client_session_ = nullptr;
   }
 
   void WebClientDisconnected() {
@@ -2417,6 +2425,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   raw_ptr<skills::SkillsService> skills_service_;
   base::WeakPtr<actor::AutofillSelectionDialogEventHandler>
       autofill_selection_event_handler_;
+  base::WeakPtr<GlicActorClientSession> actor_client_session_;
   bool floating_panel_can_attach_ = false;
 };
 

@@ -63,9 +63,8 @@ source_set("glic") {
     "public/glic_passkeys.h",
     "public/glic_side_panel_coordinator.cc",
     "public/glic_side_panel_coordinator.h",
-    "service/glic_instance_helper.cc",
     "service/glic_instance_helper.h",
-    "service/metrics/glic_instance_helper_metrics.h",
+    "service/glic_ui_types.h",
     "service/metrics/metrics_types.cc",
     "service/metrics/metrics_types.h",
   ]
@@ -194,6 +193,33 @@ source_set("enum") {
   sources = [ "glic_enums.h" ]
 }
 
+source_set("glic_metrics") {
+  sources = [
+    "service/glic_state_tracker.cc",
+    "service/glic_state_tracker.h",
+    "service/metrics/glic_instance_coordinator_metrics.cc",
+    "service/metrics/glic_instance_coordinator_metrics.h",
+    "service/metrics/glic_instance_helper_metrics.cc",
+    "service/metrics/glic_instance_helper_metrics.h",
+    "service/metrics/glic_instance_metrics.cc",
+    "service/metrics/glic_instance_metrics.h",
+    "service/metrics/glic_metrics_session_manager.cc",
+    "service/metrics/glic_metrics_session_manager.h",
+  ]
+  deps = [
+    ":enum",
+    ":glic",
+    ":mojo_bindings",
+    "//base",
+    "//chrome/browser/glic/public:features",
+    "//components/metrics",
+    "//components/prefs",
+    "//components/skills/public",
+    "//content/public/browser",
+    "//services/metrics/public/cpp:ukm_builders",
+  ]
+}
+
 # TODO(b/430371855): This is the better target for resources only needed
 # by the Glic implementation. Prefer adding to this target any new sources or
 # dependencies that are only needed internally.
@@ -277,24 +303,15 @@ source_set("impl") {
     "public/glic_keyed_service_factory.cc",
     "service/glic_instance_coordinator_impl.cc",
     "service/glic_instance_coordinator_impl.h",
+    "service/glic_instance_helper.cc",
     "service/glic_instance_impl.cc",
     "service/glic_instance_impl.h",
     "service/glic_invoke_handler.cc",
     "service/glic_invoke_handler.h",
     "service/glic_invoke_task.cc",
     "service/glic_invoke_task.h",
-    "service/glic_state_tracker.cc",
-    "service/glic_state_tracker.h",
     "service/glic_ui_embedder.h",
     "service/glic_ui_types.cc",
-    "service/glic_ui_types.h",
-    "service/metrics/glic_instance_coordinator_metrics.cc",
-    "service/metrics/glic_instance_coordinator_metrics.h",
-    "service/metrics/glic_instance_helper_metrics.cc",
-    "service/metrics/glic_instance_metrics.cc",
-    "service/metrics/glic_instance_metrics.h",
-    "service/metrics/glic_metrics_session_manager.cc",
-    "service/metrics/glic_metrics_session_manager.h",
     "suggestions/caching_zero_state_suggestions_manager.cc",
     "suggestions/caching_zero_state_suggestions_manager.h",
     "widget/browser_conditions.cc",
@@ -303,9 +320,13 @@ source_set("impl") {
     "widget/conversions.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/actor",
+  ]
   deps = [
     ":glic",
+    ":glic_metrics",
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
     "//chrome/browser/actor",
@@ -554,6 +575,7 @@ source_set("unit_tests") {
   ]
   deps = [
     ":glic",
+    ":glic_metrics",
     ":impl",
     "//base/test:test_support",
     "//chrome/browser/background/glic",
@@ -637,6 +659,7 @@ source_set("browser_tests") {
 
   deps = [
     ":glic",
+    ":glic_metrics",
     ":impl",
     "//chrome/app:command_ids",
     "//chrome/browser:browser_features",
@@ -807,6 +830,7 @@ if (!is_android) {
 
     deps = [
       ":glic",
+      ":glic_metrics",
       ":impl",
       "//chrome/browser:global_features",
       "//chrome/browser/actor",

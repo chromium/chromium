@@ -25,6 +25,7 @@
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/service/glic_instance_helper.h"
 #include "chrome/browser/glic/service/glic_state_tracker.h"
+#include "chrome/browser/glic/service/metrics/glic_instance_helper_metrics.h"
 #include "chrome/browser/glic/service/metrics/glic_metrics_session_manager.h"
 #include "chrome/browser/glic/service/metrics/metrics_types.h"
 #include "chrome/common/chrome_features.h"

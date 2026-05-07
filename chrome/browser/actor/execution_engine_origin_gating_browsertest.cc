@@ -6,6 +6,7 @@
 #include "base/task/current_thread.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
@@ -239,8 +240,16 @@ class ExecutionEngineOriginGatingBrowserTestBase
         base::expected<int32_t, glic::mojom::CreateTaskErrorReason>>
         create_task_future;
     ASSERT_TRUE(GetGlicInstanceImpl());
-    GetGlicInstanceImpl()->CreateTask(nullptr, nullptr,
-                                      create_task_future.GetCallback());
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return GetGlicInstanceImpl()
+                 ->GetActorTaskManager()
+                 ->GetClientSessionForTesting() != nullptr;
+    }));
+    GetGlicInstanceImpl()
+        ->GetActorTaskManager()
+        ->GetClientSessionForTesting()
+        ->CreateTask(actor::webui::mojom::TaskOptions::New(),
+                     create_task_future.GetCallback());
     auto result = create_task_future.Get();
     ASSERT_TRUE(result.has_value());
     task_id_ = TaskId(result.value());
@@ -1751,12 +1760,12 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineGatingConfirmationMetricBrowserTest,
 
   StopAllTasks();
   if (recording_metrics_enabled()) {
-    base::test::RunUntil([&]() {
+    ASSERT_TRUE(base::test::RunUntil([&]() {
       return histogram_tester
                  .GetAllSamples(
                      "Actor.NavigationGating.ActionNavigationsApprovedByServer")
                  .size() == 1;
-    });
+    }));
     histogram_tester.ExpectUniqueSample(
         "Actor.NavigationGating.ActionNavigationsApprovedByServer", true, 1);
   } else {
@@ -1787,12 +1796,12 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineGatingConfirmationMetricBrowserTest,
 
   StopAllTasks();
   if (recording_metrics_enabled()) {
-    base::test::RunUntil([&]() {
+    ASSERT_TRUE(base::test::RunUntil([&]() {
       return histogram_tester
                  .GetAllSamples(
                      "Actor.NavigationGating.ActionNavigationsApprovedByServer")
                  .size() == 1;
-    });
+    }));
     histogram_tester.ExpectUniqueSample(
         "Actor.NavigationGating.ActionNavigationsApprovedByServer", true, 1);
   } else {
@@ -1830,12 +1839,12 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineGatingConfirmationMetricBrowserTest,
 
   StopAllTasks();
   if (recording_metrics_enabled()) {
-    base::test::RunUntil([&]() {
+    ASSERT_TRUE(base::test::RunUntil([&]() {
       return histogram_tester
                  .GetAllSamples(
                      "Actor.NavigationGating.ActionNavigationsApprovedByServer")
                  .size() == 1;
-    });
+    }));
     histogram_tester.ExpectUniqueSample(
         "Actor.NavigationGating.ActionNavigationsApprovedByServer", false, 1);
   } else {
@@ -1885,12 +1894,12 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineGatingConfirmationMetricBrowserTest,
 
   StopAllTasks();
   if (recording_metrics_enabled()) {
-    base::test::RunUntil([&]() {
+    ASSERT_TRUE(base::test::RunUntil([&]() {
       return histogram_tester
                  .GetAllSamples(
                      "Actor.NavigationGating.ActionNavigationsApprovedByServer")
                  .size() == 1;
-    });
+    }));
     histogram_tester.ExpectUniqueSample(
         "Actor.NavigationGating.ActionNavigationsApprovedByServer", true, 1);
   } else {
@@ -1932,12 +1941,12 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineGatingConfirmationMetricBrowserTest,
 
   StopAllTasks();
   if (recording_metrics_enabled()) {
-    base::test::RunUntil([&]() {
+    ASSERT_TRUE(base::test::RunUntil([&]() {
       return histogram_tester
                  .GetAllSamples(
                      "Actor.NavigationGating.ActionNavigationsApprovedByServer")
                  .size() == 1;
-    });
+    }));
     histogram_tester.ExpectUniqueSample(
         "Actor.NavigationGating.ActionNavigationsApprovedByServer", true, 1);
   } else {
@@ -1979,12 +1988,12 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineGatingConfirmationMetricBrowserTest,
 
   StopAllTasks();
   if (recording_metrics_enabled()) {
-    base::test::RunUntil([&]() {
+    ASSERT_TRUE(base::test::RunUntil([&]() {
       return histogram_tester
                  .GetAllSamples(
                      "Actor.NavigationGating.ActionNavigationsApprovedByServer")
                  .size() == 1;
-    });
+    }));
     histogram_tester.ExpectUniqueSample(
         "Actor.NavigationGating.ActionNavigationsApprovedByServer", true, 1);
   } else {

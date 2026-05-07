@@ -979,12 +979,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorActorTaskTest,
   }));
 
   // Create a task to make it "actuating".
-  base::test::TestFuture<
-      base::expected<int32_t, glic::mojom::CreateTaskErrorReason>>
-      create_task_future;
-  instance->CreateTask(nullptr, actor::webui::mojom::TaskOptions::New(),
-                       create_task_future.GetCallback());
-  ASSERT_TRUE(create_task_future.Get().has_value());
+  ASSERT_OK(CreateActorTask(instance));
   EXPECT_TRUE(instance->IsActuating());
 
   // Reload the instance.
@@ -994,12 +989,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorActorTaskTest,
   EXPECT_TRUE(base::test::RunUntil([&]() { return !instance->IsActuating(); }));
 
   // verify that task can be created again.
-  base::test::TestFuture<
-      base::expected<int32_t, glic::mojom::CreateTaskErrorReason>>
-      create_task_future2;
-  instance->CreateTask(nullptr, actor::webui::mojom::TaskOptions::New(),
-                       create_task_future2.GetCallback());
-  ASSERT_TRUE(create_task_future2.Get().has_value());
+  ASSERT_OK(CreateActorTask(instance));
   EXPECT_TRUE(instance->IsActuating());
 }
 
@@ -1682,12 +1672,7 @@ IN_PROC_BROWSER_TEST_F(
   }));
 
   // Create a task to make it "actuating".
-  base::test::TestFuture<
-      base::expected<int32_t, glic::mojom::CreateTaskErrorReason>>
-      create_task_future;
-  instance1->CreateTask(nullptr, actor::webui::mojom::TaskOptions::New(),
-                        create_task_future.GetCallback());
-  ASSERT_TRUE(create_task_future.Get().has_value());
+  ASSERT_OK(CreateActorTask(instance1));
   EXPECT_TRUE(instance1->IsActuating());
 
   // Close the side panel on tab 1 to prevent new tab daisy chaining.
@@ -1852,13 +1837,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorActuationBrowserTest,
   handler->Invoke();
 
   // Create a task AFTER Invoke.
-  base::test::TestFuture<
-      base::expected<int32_t, glic::mojom::CreateTaskErrorReason>>
-      create_task_future;
-  instance->CreateTask(nullptr, actor::webui::mojom::TaskOptions::New(),
-                       create_task_future.GetCallback());
-  ASSERT_TRUE(create_task_future.Get().has_value());
-  actor::TaskId task_id(create_task_future.Get().value());
+  ASSERT_OK_AND_ASSIGN(actor::TaskId task_id, CreateActorTask(instance));
 
   // Wait for IsActuating to be true.
   EXPECT_TRUE(actuating_true_future.Wait());
@@ -1867,8 +1846,8 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorActuationBrowserTest,
   EXPECT_FALSE(success_future.IsReady());
 
   // Stop the task and verify callback IS called.
-  instance->StopActorTask(task_id,
-                          glic::mojom::ActorTaskStopReason::kTaskComplete);
+  instance->GetActorTaskManager()->GetClientSessionForTesting()->StopActorTask(
+      task_id, glic::mojom::ActorTaskStopReason::kTaskComplete);
 
   EXPECT_TRUE(success_future.Wait());
 

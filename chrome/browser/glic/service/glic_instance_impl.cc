@@ -104,9 +104,6 @@ BASE_FEATURE(kGlicAvoidReactivatingActiveEmbedder,
 
 BASE_FEATURE(kGlicUnpinOnUnbindIfUnused, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kGlicRequireConversationIdForActorTask,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSuppressFocusOnReady, base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr size_t kMaxRecentConversationsForPanel = 3;
@@ -297,7 +294,8 @@ GlicInstanceImpl::GlicInstanceImpl(
   if (auto* actor_keyed_service =
           actor::ActorKeyedServiceFactory::GetActorKeyedService(profile_)) {
     actor_task_manager_ = std::make_unique<GlicActorTaskManager>(
-        profile, actor_keyed_service, service_->actor_policy_checker());
+        profile_, actor_keyed_service, service_->actor_policy_checker(),
+        &instance_metrics_, this);
   }
 
   browser_collection_observation_.Observe(
@@ -684,100 +682,11 @@ void GlicInstanceImpl::CreateTab(
                                  /*success=*/true, created_tab, source_tab);
 }
 
-void GlicInstanceImpl::CreateTask(
-    base::WeakPtr<actor::ActorTaskDelegate> delegate,
-    actor::webui::mojom::TaskOptionsPtr options,
-    mojom::WebClientHandler::CreateTaskCallback callback) {
-  if (!actor_task_manager_) {
-    std::move(callback).Run(
-        base::unexpected(mojom::CreateTaskErrorReason::kTaskSystemUnavailable));
-    return;
+GlicActorClientSession* GlicInstanceImpl::BindActorClientSession() {
+  if (actor_task_manager_) {
+    return actor_task_manager_->BindSession();
   }
-
-  // Conversation ID must be available since a turn is required to create a task
-  // and an ID becomes available at first turn. If you hit this in a test you
-  // probably need to call RegisterConversation on your GlicInstance.
-  // TODO(b/494212836) - The front end currently doesn't guarantee that
-  // RegisterConversation is called first. Allow creating a task without a
-  // conversationId until that's fixed (the conversationId in ActorTask isn't
-  // yet used).
-  std::optional<std::string> id = conversation_id();
-  if (!id.has_value() &&
-      base::FeatureList::IsEnabled(kGlicRequireConversationIdForActorTask)) {
-    std::move(callback).Run(base::unexpected(
-        mojom::CreateTaskErrorReason::kConversationNotRegistered));
-    return;
-  }
-
-  instance_metrics_.OnCreateTask();
-  actor_task_manager_->CreateTask(weak_ptr_factory_.GetWeakPtr(), id,
-                                  std::move(options), std::move(callback));
-}
-
-void GlicInstanceImpl::PerformActions(
-    const std::vector<uint8_t>& actions_proto,
-    mojom::WebClientHandler::PerformActionsCallback callback) {
-  CHECK(actor_task_manager_);
-  instance_metrics_.OnPerformActions();
-  actor_task_manager_->PerformActions(actions_proto, std::move(callback));
-}
-
-void GlicInstanceImpl::CancelActions(
-    actor::TaskId task_id,
-    mojom::WebClientHandler::CancelActionsCallback callback) {
-  CHECK(actor_task_manager_);
-  actor_task_manager_->CancelActions(task_id, std::move(callback));
-}
-
-void GlicInstanceImpl::StopActorTask(actor::TaskId task_id,
-                                     mojom::ActorTaskStopReason stop_reason) {
-  CHECK(actor_task_manager_);
-  instance_metrics_.OnStopActorTask();
-  actor_task_manager_->StopActorTask(task_id, stop_reason);
-}
-
-void GlicInstanceImpl::PauseActorTask(actor::TaskId task_id,
-                                      mojom::ActorTaskPauseReason pause_reason,
-                                      tabs::TabInterface::Handle tab_handle) {
-  CHECK(actor_task_manager_);
-  instance_metrics_.OnPauseActorTask();
-  actor_task_manager_->PauseActorTask(task_id, pause_reason, tab_handle);
-}
-
-void GlicInstanceImpl::ResumeActorTask(
-    actor::TaskId task_id,
-    const mojom::GetTabContextOptions& context_options,
-    glic::mojom::WebClientHandler::ResumeActorTaskCallback callback) {
-  CHECK(actor_task_manager_);
-  instance_metrics_.OnResumeActorTask();
-  actor_task_manager_->ResumeActorTask(task_id, context_options,
-                                       std::move(callback));
-}
-
-void GlicInstanceImpl::InterruptActorTask(
-    actor::TaskId task_id,
-    std::optional<mojom::ActorTaskInterruptReason> interrupt_reason) {
-  CHECK(actor_task_manager_);
-  instance_metrics_.InterruptActorTask();
-  actor_task_manager_->InterruptActorTask(task_id);
-}
-
-void GlicInstanceImpl::UninterruptActorTask(actor::TaskId task_id) {
-  CHECK(actor_task_manager_);
-  instance_metrics_.UninterruptActorTask();
-  actor_task_manager_->UninterruptActorTask(task_id);
-}
-
-void GlicInstanceImpl::CreateActorTab(
-    actor::TaskId task_id,
-    bool open_in_background,
-    const std::optional<int32_t>& initiator_tab_id,
-    const std::optional<int32_t>& initiator_window_id,
-    glic::mojom::WebClientHandler::CreateActorTabCallback callback) {
-  CHECK(actor_task_manager_);
-  actor_task_manager_->CreateActorTab(task_id, open_in_background,
-                                      initiator_tab_id, initiator_window_id,
-                                      std::move(callback));
+  return nullptr;
 }
 
 void GlicInstanceImpl::GetZeroStateSuggestionsAndSubscribe(
@@ -967,6 +876,11 @@ std::optional<std::string> GlicInstanceImpl::conversation_id() const {
     return conversation_info_->conversation_id;
   }
   return std::nullopt;
+}
+
+base::WeakPtr<actor::ActorTaskDelegate>
+GlicInstanceImpl::GetActorTaskDelegate() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 std::string GlicInstanceImpl::conversation_title() const {
