@@ -267,7 +267,7 @@ class WallpaperPolicyTest : public LoginManagerTest,
     builder->Build();
     FakeSessionManagerClient::Get()->set_user_policy(
         cryptohome::CreateAccountIdentifierFromAccountId(account_id),
-        builder->GetBlob());
+        login_manager::POLICY_DOMAIN_CHROME, builder->GetBlob());
     const user_manager::User* user =
         user_manager::UserManager::Get()->FindUser(account_id);
     ASSERT_TRUE(user);

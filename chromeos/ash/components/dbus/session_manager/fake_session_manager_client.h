@@ -220,8 +220,10 @@ class COMPONENT_EXPORT(SESSION_MANAGER) FakeSessionManagerClient
 
   // Accessors for user policy. Only available for PolicyStorageType::kInMemory.
   const std::string& user_policy(
-      const cryptohome::AccountIdentifier& cryptohome_id) const;
+      const cryptohome::AccountIdentifier& cryptohome_id,
+      login_manager::PolicyDomain domain) const;
   void set_user_policy(const cryptohome::AccountIdentifier& cryptohome_id,
+                       login_manager::PolicyDomain domain,
                        const std::string& policy_blob);
 
   // Accessors for device local account policy. Only available for

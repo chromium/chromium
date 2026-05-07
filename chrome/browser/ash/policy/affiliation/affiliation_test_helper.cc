@@ -134,7 +134,7 @@ void AffiliationTestHelper::SetUserAffiliationIDs(
 
   fake_session_manager_client_->set_user_policy(
       cryptohome::CreateAccountIdentifierFromAccountId(user_account_id),
-      user_policy->GetBlob());
+      login_manager::POLICY_DOMAIN_CHROME, user_policy->GetBlob());
 }
 
 // static

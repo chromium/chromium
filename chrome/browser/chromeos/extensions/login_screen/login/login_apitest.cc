@@ -461,7 +461,7 @@ class LoginApitestWithEnterpriseUser : public LoginApitest {
         user_policy_builder_->payload(), account_id.GetUserEmail());
     session_manager_client()->set_user_policy(
         cryptohome::CreateAccountIdentifierFromAccountId(account_id),
-        user_policy_builder_->GetBlob());
+        login_manager::POLICY_DOMAIN_CHROME, user_policy_builder_->GetBlob());
     RefreshPolicies();
 
     registry_observer->WaitForExtensionReady();

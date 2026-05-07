@@ -660,8 +660,9 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerPolicyTest, SetAndClear) {
   user_policy_.payload().mutable_useravatarimage()->set_value(
       ConstructPolicy(test::kUserAvatarImage2RelativePath));
   user_policy_.Build();
-  FakeSessionManagerClient::Get()->set_user_policy(cryptohome_id_,
-                                                   user_policy_.GetBlob());
+  FakeSessionManagerClient::Get()->set_user_policy(
+      cryptohome_id_, login_manager::POLICY_DOMAIN_CHROME,
+      user_policy_.GetBlob());
   run_loop_ = std::make_unique<base::RunLoop>();
   store->Load();
   run_loop_->Run();
@@ -686,8 +687,9 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerPolicyTest, SetAndClear) {
   // image.
   user_policy_.payload().Clear();
   user_policy_.Build();
-  FakeSessionManagerClient::Get()->set_user_policy(cryptohome_id_,
-                                                   user_policy_.GetBlob());
+  FakeSessionManagerClient::Get()->set_user_policy(
+      cryptohome_id_, login_manager::POLICY_DOMAIN_CHROME,
+      user_policy_.GetBlob());
   run_loop_ = std::make_unique<base::RunLoop>();
   store->AddObserver(this);
   store->Load();
@@ -752,8 +754,9 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerPolicyTest, PolicyOverridesUser) {
   user_policy_.payload().mutable_useravatarimage()->set_value(
       ConstructPolicy(test::kUserAvatarImage2RelativePath));
   user_policy_.Build();
-  FakeSessionManagerClient::Get()->set_user_policy(cryptohome_id_,
-                                                   user_policy_.GetBlob());
+  FakeSessionManagerClient::Get()->set_user_policy(
+      cryptohome_id_, login_manager::POLICY_DOMAIN_CHROME,
+      user_policy_.GetBlob());
   run_loop_ = std::make_unique<base::RunLoop>();
   store->Load();
   run_loop_->Run();
@@ -792,8 +795,9 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerPolicyTest, UserDoesNotOverridePolicy) {
   user_policy_.payload().mutable_useravatarimage()->set_value(
       ConstructPolicy(test::kUserAvatarImage2RelativePath));
   user_policy_.Build();
-  FakeSessionManagerClient::Get()->set_user_policy(cryptohome_id_,
-                                                   user_policy_.GetBlob());
+  FakeSessionManagerClient::Get()->set_user_policy(
+      cryptohome_id_, login_manager::POLICY_DOMAIN_CHROME,
+      user_policy_.GetBlob());
   run_loop_ = std::make_unique<base::RunLoop>();
   store->Load();
   run_loop_->Run();

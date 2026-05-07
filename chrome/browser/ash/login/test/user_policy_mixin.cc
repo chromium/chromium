@@ -103,7 +103,8 @@ void UserPolicyMixin::SetUpPolicy() {
 
   const cryptohome::AccountIdentifier cryptohome_id =
       cryptohome::CreateAccountIdentifierFromAccountId(account_id_);
-  FakeSessionManagerClient::Get()->set_user_policy(cryptohome_id, policy_blob);
+  FakeSessionManagerClient::Get()->set_user_policy(
+      cryptohome_id, login_manager::POLICY_DOMAIN_CHROME, policy_blob);
 
   if (embedded_policy_server_) {
     embedded_policy_server_->UpdateUserPolicy(user_policy_builder_.payload(),

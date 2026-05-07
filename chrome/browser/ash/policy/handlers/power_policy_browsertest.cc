@@ -218,7 +218,7 @@ void PowerPolicyBrowserTestBase::StoreAndReloadUserPolicy() {
   session_manager_client()->set_user_policy(
       cryptohome::CreateAccountIdentifierFromAccountId(
           AccountId::FromUserEmail(user_policy_.policy_data().username())),
-      user_policy_.GetBlob());
+      login_manager::POLICY_DOMAIN_CHROME, user_policy_.GetBlob());
 
   // Reload user policy from session manager client and wait for the update to
   // take effect.
