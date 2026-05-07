@@ -10,6 +10,7 @@ source_set("model") {
   deps = [
     ":store",
     "//base",
+    "//components/enterprise/browser/groups:prefs",
     "//components/variations",
     "//components/variations/service",
     "//components/version_info",
@@ -17,6 +18,7 @@ source_set("model") {
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/paths",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/common",
     "//ios/web/public",
   ]

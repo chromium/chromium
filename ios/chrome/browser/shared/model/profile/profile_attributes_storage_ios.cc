@@ -12,6 +12,7 @@
 
 #include "base/check_deref.h"
 #include "base/check_op.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
@@ -235,6 +236,20 @@ void ProfileAttributesStorageIOS::SetPersonalProfileName(
   DCHECK(!profile_name.empty());
   DCHECK(HasProfileWithName(profile_name));
   prefs_->SetString(prefs::kPersonalProfileName, profile_name);
+}
+
+// static
+base::flat_set<std::string> ProfileAttributesStorageIOS::GetAllProfileNames(
+    PrefService* local_prefs) {
+  base::flat_set<std::string> profile_names;
+
+  const base::DictValue& attribute_storage =
+      local_prefs->GetDict(prefs::kProfileInfoCache);
+  for (const auto attribute_entry : attribute_storage) {
+    profile_names.insert(attribute_entry.first);
+  }
+
+  return profile_names;
 }
 
 // static
