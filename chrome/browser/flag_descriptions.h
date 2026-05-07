@@ -3549,6 +3549,12 @@ inline constexpr char kWebUIOmniboxPopupSelectionControlName[] =
 inline constexpr char kWebUIOmniboxPopupSelectionControlDescription[] =
     "If enabled, the WebUI omnibox popup will control its own selection state.";
 
+inline constexpr char kWebUIOmniboxSimplificationName[] =
+    "WebUI Omnibox Simplification";
+inline constexpr char kWebUIOmniboxSimplificationDescription[] =
+    "If enabled, the WebUI omnibox popup will have a different UX for the "
+    "entrypoint to composebox.";
+
 inline constexpr char kWebuiRefresh2026Name[] = "WebUI Refresh 2026";
 inline constexpr char kWebuiRefresh2026Description[] =
     "Enables the WebUI Refresh 2026 feature.";

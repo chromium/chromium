@@ -934,6 +934,46 @@ const FeatureEntry::FeatureVariation
         {"with holdback", kSearchPrefetchWithHoldback, nullptr}};
 
 #if !BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam kPedalRowWithPlusButtonOnly[] = {
+    {"Omnibox_AddContextButtonVariant", "below_results"},
+    {"Omnibox_HideClassicContextButton", "false"},
+    {"Omnibox_ShowLensSearchChip", "false"},
+    {"Omnibox_ContextButtonShapeIsOblong", "true"},
+    {"Omnibox_ContextButtonHasBackground", "false"},
+    {"Omnibox_ContextButtonShowSuggestionLabel", "false"},
+};
+const FeatureEntry::FeatureParam kPedalRowWithPlusButtonWithBackground[] = {
+    {"Omnibox_AddContextButtonVariant", "below_results"},
+    {"Omnibox_HideClassicContextButton", "false"},
+    {"Omnibox_ShowLensSearchChip", "false"},
+    {"Omnibox_ContextButtonShapeIsOblong", "true"},
+    {"Omnibox_ContextButtonHasBackground", "true"},
+    {"Omnibox_ContextButtonShowSuggestionLabel", "false"},
+};
+const FeatureEntry::FeatureParam kPedalRowWithSuggestionLikeButton[] = {
+    {"Omnibox_AddContextButtonVariant", "below_results"},
+    {"Omnibox_HideClassicContextButton", "false"},
+    {"Omnibox_ShowLensSearchChip", "false"},
+    {"Omnibox_ContextButtonShapeIsOblong", "true"},
+    {"Omnibox_ContextButtonHasBackground", "false"},
+    {"Omnibox_ContextButtonShowSuggestionLabel", "true"},
+};
+const FeatureEntry::FeatureParam kChipWithPlusButtonWithBackground[] = {
+    {"Omnibox_AddContextButtonVariant", "below_results"},
+    {"Omnibox_HideClassicContextButton", "false"},
+    {"Omnibox_ShowLensSearchChip", "true"},
+    {"Omnibox_ContextButtonShapeIsOblong", "true"},
+    {"Omnibox_ContextButtonHasBackground", "true"},
+    {"Omnibox_ContextButtonShowSuggestionLabel", "false"},
+};
+const FeatureEntry::FeatureVariation kWebUIOmniboxSimplificationVariations[] = {
+    {"- Pedal row with plus button only", kPedalRowWithPlusButtonOnly, nullptr},
+    {"- Pedal row with plus button and background",
+     kPedalRowWithPlusButtonWithBackground, nullptr},
+    {"- Pedal row with suggestion label", kPedalRowWithSuggestionLikeButton,
+     nullptr},
+    {"- Chip with plus button and background",
+     kChipWithPlusButtonWithBackground, nullptr}};
 
 const FeatureEntry::FeatureParam kWebUIOmniboxPopupDebugSxS[] = {
     {"SxS", "true"}};
@@ -9329,6 +9369,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebUIOmniboxPopupSelectionControlDescription,
      kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kWebUIOmniboxPopupSelectionControl)},
+
+    {"webui-omnibox-simplification",
+     flag_descriptions::kWebUIOmniboxSimplificationName,
+     flag_descriptions::kWebUIOmniboxSimplificationDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         omnibox::internal::kWebUIOmniboxSimplification,
+         kWebUIOmniboxSimplificationVariations,
+         "WebUIOmniboxSimplificationVariations")},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)

@@ -71,6 +71,8 @@ extern const base::FeatureParam<bool> kShowComposeboxZps;
 extern const base::FeatureParam<bool> kShowContextMenu;
 // Whether or not to show a description in the context menu entrypoint, or just
 // the icon.
+// TODO (crbug.com/509939902): Remove this when finch experiment reference
+// is removed.
 extern const base::FeatureParam<bool> kShowContextMenuDescription;
 // Whether to show tab previews on hover for the composebox context menu.
 extern const base::FeatureParam<bool> kShowContextMenuTabPreviews;
@@ -94,8 +96,6 @@ extern const base::FeatureParam<bool> kContextButtonHasBackground;
 extern const base::FeatureParam<bool> kContextButtonShapeIsOblong;
 // Whether to show the "Ask about tabs" label for the context menu entrypoint.
 extern const base::FeatureParam<bool> kContextButtonShowSuggestionLabel;
-// Whether to show the "Ask about tabs" action in the context menu.
-extern const base::FeatureParam<bool> kContextMenuShowAskAboutTabsAction;
 
 // Returns true if `kWebUIOmniboxPopup` is enabled.
 bool IsWebUIOmniboxPopupEnabled();

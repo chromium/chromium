@@ -50,12 +50,13 @@ constexpr base::FeatureParam<AddContextButtonVariant>::Option
 // Configures the placement of the "Add Context" button in the Omnibox popup.
 const base::FeatureParam<AddContextButtonVariant>
     kWebUIOmniboxAimPopupAddContextButtonVariantParam{
-        &internal::kWebUIOmniboxAimPopup, "Omnibox_AddContextButtonVariant",
+        &internal::kWebUIOmniboxSimplification, "Omnibox_AddContextButtonVariant",
         AddContextButtonVariant::kBelowResults,
         &kAddContextButtonVariantOptions};
 // If true, hides the "Add Context" button in the "classic" popup.
 const base::FeatureParam<bool> kHideClassicContextButton{
-    &internal::kWebUIOmniboxAimPopup, "Omnibox_HideClassicContextButton", true};
+    &internal::kWebUIOmniboxSimplification, "Omnibox_HideClassicContextButton",
+    true};
 
 // When enabled, clicking aim button in omnibox always navigates directly to
 // g.com/aimode, e.g. instead of opening the AI Mode popup
@@ -325,9 +326,9 @@ const base::FeatureParam<bool> kShowContextMenuTabPreviews(
     "Omnibox_ShowContextMenuTabPreviews",
     true);
 const base::FeatureParam<bool> kShowLensSearchChip(
-    &internal::kWebUIOmniboxAimPopup,
+    &internal::kWebUIOmniboxSimplification,
     "Omnibox_ShowLensSearchChip",
-    true);
+    false);
 const base::FeatureParam<bool> kAddTabUploadDelayOnRecentTabChipClick(
     &internal::kWebUIOmniboxAimPopup,
     "Omnibox_AddTabUploadDelayOnRecentTabChipClick",
@@ -335,7 +336,7 @@ const base::FeatureParam<bool> kAddTabUploadDelayOnRecentTabChipClick(
 const base::FeatureParam<bool> kShowRecentTabChip(
     &internal::kWebUIOmniboxAimPopup,
     "Omnibox_ShowRecentTabChip",
-    true);
+    false);
 const base::FeatureParam<bool> kShowSmartCompose(
     &internal::kWebUIOmniboxAimPopup,
     "Omnibox_ShowSmartCompose",
@@ -361,9 +362,6 @@ const base::FeatureParam<bool> kContextButtonShapeIsOblong{
 const base::FeatureParam<bool> kContextButtonShowSuggestionLabel{
     &internal::kWebUIOmniboxSimplification,
     "Omnibox_ContextButtonShowSuggestionLabel", false};
-const base::FeatureParam<bool> kContextMenuShowAskAboutTabsAction{
-    &internal::kWebUIOmniboxSimplification,
-    "Omnibox_ContextMenuShowAskAboutTabsAction", false};
 
 FeatureConfig::FeatureConfig() : config(GetNTPComposeboxConfig()) {}
 
