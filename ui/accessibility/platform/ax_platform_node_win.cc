@@ -8154,7 +8154,6 @@ std::optional<DWORD> AXPlatformNodeWin::MojoEventToMSAAEvent(
     case ax::mojom::Event::kStateChanged:
       return EVENT_OBJECT_STATECHANGE;
     case ax::mojom::Event::kFocus:
-    case ax::mojom::Event::kFocusContext:
     case ax::mojom::Event::kFocusAfterMenuClose:
       return EVENT_OBJECT_FOCUS;
     case ax::mojom::Event::kLiveRegionChanged:
@@ -8201,7 +8200,6 @@ std::optional<EVENTID> AXPlatformNodeWin::MojoEventToUIAEvent(
     case ax::mojom::Event::kEndOfTest:
       return UiaRegistrarWin::GetInstance().GetTestCompleteEventId();
     case ax::mojom::Event::kFocus:
-    case ax::mojom::Event::kFocusContext:
     case ax::mojom::Event::kFocusAfterMenuClose:
       return UIA_AutomationFocusChangedEventId;
     case ax::mojom::Event::kLiveRegionChanged:

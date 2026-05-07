@@ -46,7 +46,7 @@ enum EventType {
   "focus",
   "focusAfterMenuClose",
   "focusChanged",
-  "focusContext",
+  "focusContextDeprecated",
   "grabbedChanged",
   "grammarMarkerChanged",
   "haspopupChanged",

@@ -4106,7 +4106,6 @@ void AXPlatformNodeAuraLinux::NotifyAccessibilityEvent(
       OnExpandedStateChanged(HasState(ax::mojom::State::kExpanded));
       break;
     case ax::mojom::Event::kFocus:
-    case ax::mojom::Event::kFocusContext:
       OnFocused();
       break;
     case ax::mojom::Event::kFocusAfterMenuClose:

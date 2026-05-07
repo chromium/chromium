@@ -53,8 +53,7 @@ enum Event {
   kFocus = 14,
   kFocusAfterMenuClose = 15,
 
-  // Contextual focus event that must delay the next focus event.
-  kFocusContext = 16,
+  kFocusContextDeprecated = 16,  // Deprecated: Do not use.
   kHide = 17,          // Remove: http://crbug.com/392502
   kHitTestResult = 18,
   kHover = 19,

@@ -46,7 +46,7 @@ bool ShouldIgnoreAXEventForAutomation(ax::mojom::Event event_type) {
     case ax::mojom::Event::kEndOfTest:
     case ax::mojom::Event::kFocus:
     case ax::mojom::Event::kFocusAfterMenuClose:
-    case ax::mojom::Event::kFocusContext:
+    case ax::mojom::Event::kFocusContextDeprecated:
     case ax::mojom::Event::kHide:
     case ax::mojom::Event::kHitTestResult:
     case ax::mojom::Event::kHover:

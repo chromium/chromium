@@ -44,8 +44,8 @@ const char* ToString(ax::mojom::Event event) {
       return "focus";
     case ax::mojom::Event::kFocusAfterMenuClose:
       return "focusAfterMenuClose";
-    case ax::mojom::Event::kFocusContext:
-      return "focusContext";
+    case ax::mojom::Event::kFocusContextDeprecated:
+      return "focusContextDeprecated";
     case ax::mojom::Event::kHide:
       return "hide";
     case ax::mojom::Event::kHitTestResult:

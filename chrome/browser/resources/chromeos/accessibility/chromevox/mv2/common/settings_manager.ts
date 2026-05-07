@@ -235,7 +235,7 @@ SettingsManager.EVENT_STREAM_FILTERS = [
   'documentTitleChanged',
   'expandedChanged',
   'focus',
-  'focusContext',
+  'focusContextDeprecated',
   'hide',
   'hitTestResult',
   'hover',

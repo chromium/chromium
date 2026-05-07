@@ -311,7 +311,7 @@ void ViewAccessibility::NotifyTransientFocus() {
     return;
   }
 
-  NotifyEvent(ax::mojom::Event::kFocusContext, true);
+  NotifyEvent(ax::mojom::Event::kFocus, true);
 }
 
 void ViewAccessibility::SetIsLeaf(bool value) {

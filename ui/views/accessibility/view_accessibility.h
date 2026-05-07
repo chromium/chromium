@@ -174,7 +174,7 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   virtual void FireFocusAfterMenuClose();
 
   // Sends a transient focus notification without changing the focused view.
-  void NotifyTransientFocus();
+  virtual void NotifyTransientFocus();
 
   // Sets/gets whether or not this view's descendants should be included in
   // the accessibility tree. It is the functional equivalent of calling

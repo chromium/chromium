@@ -1241,28 +1241,20 @@ TEST_F(ViewAXPlatformNodeDelegateTest, TransientFocusDelaysNextFocusEvent) {
   textfield_accessibility()->SetName("Textfield",
                                      ax::mojom::NameFrom::kAttribute);
 
-  int context_events = 0;
   int focus_events = 0;
-  ui::AXPlatformNodeBase::SetOnNotifyEventCallbackForTesting(
-      ax::mojom::Event::kFocusContext,
-      base::BindRepeating([](int* count) { ++*count; }, &context_events));
-
   ui::AXPlatformNodeBase::SetOnNotifyEventCallbackForTesting(
       ax::mojom::Event::kFocus,
       base::BindRepeating([](int* count) { ++*count; }, &focus_events));
 
   widget()->GetRootView()->GetViewAccessibility().NotifyTransientFocus();
-  EXPECT_EQ(1, context_events);
-  EXPECT_EQ(0, focus_events);
-
-  button_->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kFocus, true);
-  EXPECT_EQ(0, focus_events);
-
-  EXPECT_TRUE(base::test::RunUntil([&]() { return focus_events == 1; }));
   EXPECT_EQ(1, focus_events);
 
-  ui::AXPlatformNodeBase::SetOnNotifyEventCallbackForTesting(
-      ax::mojom::Event::kFocusContext, {});
+  button_->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kFocus, true);
+  EXPECT_EQ(1, focus_events);
+
+  EXPECT_TRUE(base::test::RunUntil([&]() { return focus_events == 2; }));
+  EXPECT_EQ(2, focus_events);
+
   ui::AXPlatformNodeBase::SetOnNotifyEventCallbackForTesting(
       ax::mojom::Event::kFocus, {});
 }

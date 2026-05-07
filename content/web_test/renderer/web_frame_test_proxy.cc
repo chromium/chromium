@@ -694,7 +694,7 @@ void WebFrameTestProxy::HandleWebAccessibilityEventForTest(
     case ax::mojom::Event::kEndOfTest:
     case ax::mojom::Event::kEnabledChanged:
     case ax::mojom::Event::kFocusAfterMenuClose:
-    case ax::mojom::Event::kFocusContext:
+    case ax::mojom::Event::kFocusContextDeprecated:
     case ax::mojom::Event::kHitTestResult:
     case ax::mojom::Event::kImageFrameUpdated:
     case ax::mojom::Event::kLiveRegionCreated:

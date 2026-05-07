@@ -88,7 +88,6 @@ bool ShouldSerializeEvent(Event event_type) {
   // being addressed incrementally, one event at a time.
   switch (event_type) {
     case Event::kFocusAfterMenuClose:
-    case Event::kFocusContext:
     case Event::kMenuEnd:
     case Event::kMenuPopupEnd:
     case Event::kMenuPopupStart:

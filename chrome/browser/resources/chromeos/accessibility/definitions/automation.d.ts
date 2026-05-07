@@ -50,7 +50,7 @@ declare namespace chrome {
       FOCUS = 'focus',
       FOCUS_AFTER_MENU_CLOSE = 'focusAfterMenuClose',
       FOCUS_CHANGED = 'focusChanged',
-      FOCUS_CONTEXT = 'focusContext',
+      FOCUS_CONTEXT_DEPRECATED = 'focusContextDeprecated',
       GRABBED_CHANGED = 'grabbedChanged',
       HASPOPUP_CHANGED = 'haspopupChanged',
       HIDE = 'hide',

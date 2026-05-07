@@ -217,6 +217,39 @@ void ViewAXPlatformNodeDelegate::FireFocusAfterMenuClose() {
   }
 }
 
+void ViewAXPlatformNodeDelegate::NotifyTransientFocus() {
+  if (ViewAccessibility::IsViewsAccessibilityTreeEnabled()) {
+    ViewAccessibility::NotifyTransientFocus();
+    return;
+  }
+
+  DCHECK(ax_platform_node_);
+  if (!IsReadyToNotifyEvents()) {
+    return;
+  }
+
+  Widget* const widget = view()->GetWidget();
+  if (!widget || !widget->GetNativeView() || widget->IsClosed()) {
+    return;
+  }
+
+  if (g_is_flushing) {
+    return;
+  }
+
+  if (accessibility_events_callback_) {
+    accessibility_events_callback_.Run(this, ax::mojom::Event::kFocus);
+  }
+
+  if (g_is_queueing_events) {
+    GetEventQueue().emplace_back(ax::mojom::Event::kFocus, GetUniqueId());
+    return;
+  }
+
+  PostFlushEventQueueTaskIfNecessary();
+  ax_platform_node_->NotifyAccessibilityEvent(ax::mojom::Event::kFocus);
+}
+
 gfx::NativeViewAccessible ViewAXPlatformNodeDelegate::GetNativeObject() const {
   DCHECK(ax_platform_node_);
   return ax_platform_node_->GetNativeViewAccessible();
@@ -270,12 +303,6 @@ void ViewAXPlatformNodeDelegate::FireNativeEvent(ax::mojom::Event event_type) {
                "ViewAccessibility::EndPopupFocusOverride(), and focus has "
                "now moved on.";
       }
-      break;
-    }
-    case ax::mojom::Event::kFocusContext: {
-      // NotifyTransientFocus() sends a focus event before the next focus event.
-      // Delay the rest of this synchronous batch so ordering remains the same.
-      PostFlushEventQueueTaskIfNecessary();
       break;
     }
     case ax::mojom::Event::kLiveRegionChanged: {

@@ -222,7 +222,7 @@ AX_TEST_F(
         documentTitleChanged: false,
         expandedChanged: false,
         focus: true,
-        focusContext: true,
+        focusContextDeprecated: true,
         hide: false,
         hitTestResult: true,
         hover: true,

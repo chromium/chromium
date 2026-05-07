@@ -5386,7 +5386,7 @@ bool AXObjectCacheImpl::IsImmediateProcessingRequiredForEvent(
     case ax::mojom::blink::Event::kEnabledChanged:
     case ax::mojom::blink::Event::kEndOfTest:
     case ax::mojom::blink::Event::kFocusAfterMenuClose:
-    case ax::mojom::blink::Event::kFocusContext:
+    case ax::mojom::blink::Event::kFocusContextDeprecated:
     case ax::mojom::blink::Event::kHide:
     case ax::mojom::blink::Event::kHitTestResult:
     case ax::mojom::blink::Event::kImageFrameUpdated:
