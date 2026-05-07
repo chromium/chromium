@@ -18,6 +18,12 @@ namespace ui {
 // For testing only. Create CADisplayLink in the GPU process.
 BASE_FEATURE(kCADisplayLinkInGpu, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// For testing only. If enabled, CADisplayLink is initially created in the GPU
+// process, but falls back to the browser process after a power event or
+// refresh rate change.
+BASE_FEATURE(kCADisplayLinkInGpuThenInBrowser,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 ////////////////////////////////////////////////////////////////////////////////
 // DisplayLinkMac
 
@@ -50,7 +56,7 @@ scoped_refptr<DisplayLinkMac> DisplayLinkMac::GetForDisplay(
   CGDirectDisplayID display_id =
       base::checked_cast<CGDirectDisplayID>(vsync_display_id);
 
-  // CADisplayLink is available only for MacOS 14.0+.
+  // For testing only. CADisplayLink is available only for MacOS 14.0+.
   if (@available(macos 14.0, *)) {
     if (base::FeatureList::IsEnabled(kCADisplayLinkInGpu)) {
       return CADisplayLinkMac::GetForDisplay(display_id,
@@ -59,10 +65,14 @@ scoped_refptr<DisplayLinkMac> DisplayLinkMac::GetForDisplay(
   }
 
   if (SupportsDisplayLinkMacInBrowser()) {
-    if (CADisplayLinkMac::IsValidInGpuProcess(display_id)) {
+    // For testing only. If kCADisplayLinkInGpuThenInBrowser is enabled, attempt
+    // to use the GPU process instance if it is still valid.
+    if (base::FeatureList::IsEnabled(kCADisplayLinkInGpuThenInBrowser) &&
+        CADisplayLinkMac::IsValidInGpuProcess(display_id)) {
       return CADisplayLinkMac::GetForDisplay(display_id,
                                              /*in_gpu_process=*/true);
     }
+
     return ExternalDisplayLinkMac::GetForDisplay(display_id);
   }
 
