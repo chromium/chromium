@@ -90,11 +90,11 @@ class ActionTrackerTest : public DNRTestBase {
       std::string_view url,
       WebRequestResourceType web_request_type,
       int tab_id) {
-    const int kRendererId = 1;
+    const content::ChildProcessId kRendererId(1);
     WebRequestInfoInitParams info;
     info.url = GURL(url);
     info.web_request_type = web_request_type;
-    info.render_process_id = kRendererId;
+    info.global_id.child_id = kRendererId;
     info.frame_data.tab_id = tab_id;
 
     if (web_request_type == WebRequestResourceType::MAIN_FRAME) {

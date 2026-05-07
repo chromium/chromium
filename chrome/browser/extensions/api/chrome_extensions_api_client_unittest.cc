@@ -49,7 +49,7 @@ TEST_F(ChromeExtensionsAPIClientTest, ShouldHideBrowserNetworkRequest) {
     request_params.url = GURL("https://example.com/script.js");
     request_params.initiator =
         url::Origin::Create(chrome::ChromeUINewTabURLAsGURL());
-    request_params.render_process_id = -1;
+    request_params.global_id = content::GlobalRenderFrameHostId();
     request_params.web_request_type = web_request_type;
     return request_params;
   };
@@ -68,7 +68,8 @@ TEST_F(ChromeExtensionsAPIClientTest, ShouldHideBrowserNetworkRequest) {
   // Similar requests made by the renderer should be visible to extensions.
   WebRequestInfoInitParams params =
       create_params(WebRequestResourceType::SCRIPT);
-  params.render_process_id = 2;
+  params.global_id = content::GlobalRenderFrameHostId(
+      content::ChildProcessId(2), IPC::mojom::kRoutingIdNone);
   EXPECT_FALSE(client.ShouldHideBrowserNetworkRequest(
       nullptr /* context */, WebRequestInfo(std::move(params))));
 }

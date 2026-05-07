@@ -55,8 +55,10 @@ bool IsRedirectToFileUrl(const std::optional<RequestAction>& action) {
 void NotifyRequestWithheld(const ExtensionId& extension_id,
                            const WebRequestInfo& request) {
   DCHECK(ExtensionsAPIClient::Get());
+  // TODO(crbug.com/379869738): Remove GetUnsafeValue.
   ExtensionsAPIClient::Get()->NotifyWebRequestWithheld(
-      request.render_process_id, request.frame_routing_id, extension_id);
+      request.global_id.child_id.GetUnsafeValue(),
+      request.global_id.frame_routing_id, extension_id);
 }
 
 // Helper to log the time taken in RulesetManager::EvaluateRequestInternal.

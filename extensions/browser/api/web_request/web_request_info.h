@@ -44,8 +44,7 @@ struct WebRequestInfoInitParams {
   // URLLoaderFactory interface.
   WebRequestInfoInitParams(
       uint64_t request_id,
-      int render_process_id,
-      int frame_routing_id,
+      content::GlobalRenderFrameHostId global_id,
       std::unique_ptr<ExtensionNavigationUIData> navigation_ui_data,
       const network::ResourceRequest& request,
       bool is_download,
@@ -63,8 +62,7 @@ struct WebRequestInfoInitParams {
 
   uint64_t id = 0;
   GURL url;
-  int render_process_id = -1;
-  int frame_routing_id = IPC::mojom::kRoutingIdNone;
+  content::GlobalRenderFrameHostId global_id;
   std::string method;
   bool is_navigation_request = false;
   std::optional<url::Origin> initiator;
@@ -129,13 +127,9 @@ struct WebRequestInfo {
   // The URL of the request.
   const GURL url;
 
-  // The ID of the render process which initiated the request, or -1 of not
-  // applicable (i.e. if initiated by the browser).
-  const int render_process_id;
-
-  // The frame routing ID of the frame which initiated this request, or
-  // IPC::mojom::kRoutingIdNone if the request was not initiated by a frame.
-  const int frame_routing_id = IPC::mojom::kRoutingIdNone;
+  // The ID and frame routing ID of the render process which initiated the
+  // request, or invalid if not applicable (i.e. if initiated by the browser).
+  const content::GlobalRenderFrameHostId global_id;
 
   // The HTTP method used for the request, if applicable.
   const std::string method;

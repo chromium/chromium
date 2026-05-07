@@ -366,9 +366,7 @@ void WebViewGuest::CleanUp(content::BrowserContext* browser_context,
 
   // Clean up web request event listeners for the WebView.
   WebRequestEventRouter::Get(browser_context)
-      // TODO(crbug.com/379869738): remove GetUnsafeValue
-      ->RemoveWebViewEventListeners(browser_context,
-                                    embedder_process_id.GetUnsafeValue(),
+      ->RemoveWebViewEventListeners(browser_context, embedder_process_id,
                                     view_instance_id);
 
   // Clean up content scripts for the WebView.

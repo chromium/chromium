@@ -143,11 +143,11 @@ class RulesetManagerTest : public DNRTestBase {
       std::string_view url,
       std::optional<url::Origin> initiator = std::nullopt,
       WebRequestResourceType web_request_type = WebRequestResourceType::OTHER) {
-    const int kRendererId = 1;
+    const content::ChildProcessId kRendererId(1);
     WebRequestInfoInitParams info;
     info.url = GURL(url);
     info.method = net::HttpRequestHeaders::kGetMethod;
-    info.render_process_id = kRendererId;
+    info.global_id.child_id = kRendererId;
     info.initiator = std::move(initiator);
     info.web_request_type = web_request_type;
     return info;
@@ -158,11 +158,11 @@ class RulesetManagerTest : public DNRTestBase {
   WebRequestInfoInitParams GetRequestParamsForURLWithHeaders(
       std::string_view url,
       const std::vector<std::string>& request_headers) {
-    const int kRendererId = 1;
+    const content::ChildProcessId kRendererId(1);
     WebRequestInfoInitParams info;
     info.url = GURL(url);
     info.method = net::HttpRequestHeaders::kGetMethod;
-    info.render_process_id = kRendererId;
+    info.global_id.child_id = kRendererId;
 
     net::HttpRequestHeaders extra_request_headers;
     for (const auto& header : request_headers) {

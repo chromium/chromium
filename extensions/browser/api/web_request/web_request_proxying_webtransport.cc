@@ -301,15 +301,16 @@ void StartWebRequestProxyingWebTransport(
   request.url = url;
   request.request_initiator = initiator_origin;
 
-  const int process_id = render_process_host.GetDeprecatedID();
+  const content::ChildProcessId process_id = render_process_host.GetID();
 
-  WebRequestInfoInitParams params =
-      WebRequestInfoInitParams(request_id, process_id, frame_routing_id,
-                               /*navigation_ui_data=*/nullptr, request,
-                               /*is_download=*/false,
-                               /*is_async=*/true,
-                               /*is_service_worker_script=*/false,
-                               /*navigation_id=*/std::nullopt);
+  WebRequestInfoInitParams params = WebRequestInfoInitParams(
+      request_id,
+      content::GlobalRenderFrameHostId(process_id, frame_routing_id),
+      /*navigation_ui_data=*/nullptr, request,
+      /*is_download=*/false,
+      /*is_async=*/true,
+      /*is_service_worker_script=*/false,
+      /*navigation_id=*/std::nullopt);
   params.web_request_type = WebRequestResourceType::WEB_TRANSPORT;
 
   auto proxy = std::make_unique<WebTransportHandshakeProxy>(

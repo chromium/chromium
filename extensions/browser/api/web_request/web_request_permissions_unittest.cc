@@ -171,17 +171,17 @@ TEST_P(ExtensionWebRequestPermissionsWithHashRealTimeDependenceTest,
   }
   cases.insert(cases.end(), additional_cases.begin(), additional_cases.end());
 
-  const int kRendererProcessId = 1;
-  const int kBrowserProcessId = -1;
+  const content::ChildProcessId kRendererProcessId(1);
+  const content::ChildProcessId kBrowserProcessId;
 
   // Returns a WebRequestInfoInitParams instance constructed as per the given
   // parameters.
   auto create_request_params = [](const GURL& url,
                                   WebRequestResourceType web_request_type,
-                                  int render_process_id) {
+                                  content::ChildProcessId render_process_id) {
     WebRequestInfoInitParams request;
     request.url = url;
-    request.render_process_id = render_process_id;
+    request.global_id.child_id = render_process_id;
     request.web_request_type = web_request_type;
     request.is_navigation_request =
         web_request_type == WebRequestResourceType::MAIN_FRAME ||
@@ -264,11 +264,9 @@ TEST_P(ExtensionWebRequestPermissionsWithHashRealTimeDependenceTest,
 
   // If the origin is labeled by the WebStoreAppId, it becomes protected.
   {
-    const int kWebstoreProcessId = 42;
-    // TODO(crbug.com/379869738) Remove FromUnsafeValue.
+    const content::ChildProcessId kWebstoreProcessId(42);
     ProcessMap::Get(browser_context())
-        ->Insert(extensions::kWebStoreAppId,
-                 content::ChildProcessId::FromUnsafeValue(kWebstoreProcessId));
+        ->Insert(extensions::kWebStoreAppId, kWebstoreProcessId);
     WebRequestInfo sensitive_request_info(create_request_params(
         non_sensitive_url, WebRequestResourceType::SCRIPT, kWebstoreProcessId));
     EXPECT_TRUE(WebRequestPermissions::HideRequest(permission_helper,
@@ -314,7 +312,7 @@ TEST_F(ExtensionWebRequestPermissionsTest,
                                         WebRequestResourceType type) {
     WebRequestInfoInitParams request;
     request.url = url;
-    request.render_process_id = 1;
+    request.global_id.child_id = content::ChildProcessId(1);
     request.web_request_type = type;
     request.initiator = url::Origin::Create(GURL("chrome-untrusted://test/"));
 
@@ -353,7 +351,7 @@ TEST_F(ExtensionWebRequestPermissionsTest,
   auto create_sub_frame_navigation_request = [](const GURL& url) {
     WebRequestInfoInitParams request;
     request.url = url;
-    request.render_process_id = 1;
+    request.global_id.child_id = content::ChildProcessId(1);
     request.web_request_type = WebRequestResourceType::SUB_FRAME;
     request.is_navigation_request = true;
     request.initiator = url::Origin::Create(GURL("chrome-untrusted://test/"));
@@ -376,7 +374,7 @@ TEST_F(ExtensionWebRequestPermissionsTest,
   auto create_main_frame_request_info = [](const GURL& url) {
     WebRequestInfoInitParams request;
     request.url = url;
-    request.render_process_id = 1;
+    request.global_id.child_id = content::ChildProcessId(1);
     request.web_request_type = WebRequestResourceType::MAIN_FRAME;
     request.is_navigation_request = true;
     request.initiator = url::Origin::Create(GURL("chrome-untrusted://test/"));

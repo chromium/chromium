@@ -32,7 +32,7 @@ TEST(WebRequestInfoTest, CreateRequestBodyDataFromFile) {
   request.request_body->AppendFileRange(base::FilePath::FromASCII(kFilePath), 0,
                                         std::numeric_limits<uint64_t>::max(),
                                         base::Time());
-  WebRequestInfo info(WebRequestInfoInitParams(0, 0, 0, nullptr, request, false,
+  WebRequestInfo info(WebRequestInfoInitParams(0, {}, nullptr, request, false,
                                                false, false, std::nullopt));
   ASSERT_TRUE(info.request_body_data);
   base::Value* value = info.request_body_data->Find(

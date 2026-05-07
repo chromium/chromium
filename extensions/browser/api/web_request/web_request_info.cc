@@ -176,8 +176,7 @@ WebRequestInfoInitParams::WebRequestInfoInitParams() = default;
 
 WebRequestInfoInitParams::WebRequestInfoInitParams(
     uint64_t request_id,
-    int render_process_id,
-    int frame_routing_id,
+    content::GlobalRenderFrameHostId global_id,
     std::unique_ptr<ExtensionNavigationUIData> navigation_ui_data,
     const network::ResourceRequest& request,
     bool is_download,
@@ -186,8 +185,7 @@ WebRequestInfoInitParams::WebRequestInfoInitParams(
     std::optional<int64_t> navigation_id)
     : id(request_id),
       url(request.url),
-      render_process_id(render_process_id),
-      frame_routing_id(frame_routing_id),
+      global_id(global_id),
       method(request.method),
       is_navigation_request(!!navigation_ui_data),
       initiator(request.request_initiator),
@@ -229,12 +227,14 @@ void WebRequestInfoInitParams::InitializeWebViewAndFrameData(
     }
     frame_data = navigation_ui_data->frame_data();
     parent_routing_id = navigation_ui_data->parent_routing_id();
-  } else if (frame_routing_id != IPC::mojom::kRoutingIdNone) {
+  } else if (global_id.frame_routing_id != IPC::mojom::kRoutingIdNone) {
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
     // Grab any WebView-related information if relevant.
     WebViewRendererState::WebViewInfo web_view_info;
+    // TODO(crbug.com/379869738): Remove GetUnsafeValue.
     if (WebViewRendererState::GetInstance()->GetInfo(
-            render_process_id, frame_routing_id, &web_view_info)) {
+            global_id.child_id.GetUnsafeValue(), global_id.frame_routing_id,
+            &web_view_info)) {
       is_web_view = true;
       web_view_instance_id = web_view_info.instance_id;
       web_view_rules_registry_id = web_view_info.rules_registry_id;
@@ -242,8 +242,7 @@ void WebRequestInfoInitParams::InitializeWebViewAndFrameData(
     }
 #endif
 
-    parent_routing_id =
-        content::GlobalRenderFrameHostId(render_process_id, frame_routing_id);
+    parent_routing_id = global_id;
 
     // For subresource loads we attempt to resolve the FrameData immediately.
     frame_data = ExtensionApiFrameIdMap::Get()->GetFrameData(parent_routing_id);
@@ -253,8 +252,7 @@ void WebRequestInfoInitParams::InitializeWebViewAndFrameData(
 WebRequestInfo::WebRequestInfo(WebRequestInfoInitParams params)
     : id(params.id),
       url(std::move(params.url)),
-      render_process_id(params.render_process_id),
-      frame_routing_id(params.frame_routing_id),
+      global_id(params.global_id),
       method(std::move(params.method)),
       is_navigation_request(params.is_navigation_request),
       initiator(std::move(params.initiator)),

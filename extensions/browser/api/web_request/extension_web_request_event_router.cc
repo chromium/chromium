@@ -252,14 +252,13 @@ bool IsWebRequestEvent(std::string_view event_name) {
 // |context|.
 bool IsRequestFromExtension(const WebRequestInfo& request,
                             content::BrowserContext* context) {
-  if (request.render_process_id == -1) {
+  if (!request.global_id.child_id) {
     return false;
   }
 
-  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
   const Extension* extension =
       ProcessMap::Get(context)->GetEnabledExtensionByProcessID(
-          content::ChildProcessId::FromUnsafeValue(request.render_process_id));
+          request.global_id.child_id);
   return extension && !extension->is_hosted_app();
 }
 
@@ -616,7 +615,7 @@ WebRequestEventRouter::EventListener::InitFromInactiveListenerValue(
 
   // Initialize as an inactive lazy listener.
   EventListener::ID listener_id(context, extension_id, *sub_event_name,
-                                /*render_process_id=*/-1,
+                                content::ChildProcessId(),
                                 /*web_view_instance_id=*/0,
                                 /*worker_thread_id=*/kMainThreadId,
                                 /*service_worker_version_id=*/
@@ -988,7 +987,7 @@ WebRequestEventRouter::EventListener::ID::ID(
     content::BrowserContext* browser_context,
     const ExtensionId& extension_id,
     const std::string& sub_event_name,
-    int render_process_id,
+    content::ChildProcessId render_process_id,
     int web_view_instance_id,
     int worker_thread_id,
     int64_t service_worker_version_id)
@@ -1760,7 +1759,7 @@ void WebRequestEventRouter::DispatchEventToListeners(
 
   for (const EventListener::ID& id : *listener_ids) {
     // Look for the event listener in the different listener sources.
-    bool is_active = id.render_process_id != -1;
+    bool is_active = !id.render_process_id.is_null();
     Listeners* on_the_record_listeners =
         is_active ? &active_listeners : &inactive_listeners;
     Listeners* cross_listeners =
@@ -1829,12 +1828,13 @@ void WebRequestEventRouter::DispatchEventToListeners(
       // extension listener (as can happen if the extension fails to re-register
       // the event listener synchronously). If this happens, we treat the event
       // as handled so as to not block indefinitely.
+      // TODO(crbug.com/379869738): Remove GetUnsafeValue.
       event->cannot_dispatch_callback = base::BindRepeating(
           &WebRequestEventRouter::OnEventHandled,
           weak_ptr_factory_.GetWeakPtr(), id.browser_context, id.extension_id,
-          event_name, id.sub_event_name, request_id, id.render_process_id,
-          id.web_view_instance_id, id.worker_thread_id,
-          id.service_worker_version_id, nullptr);
+          event_name, id.sub_event_name, request_id,
+          id.render_process_id.GetUnsafeValue(), id.web_view_instance_id,
+          id.worker_thread_id, id.service_worker_version_id, nullptr);
       EventRouter::Get(id.browser_context)
           ->DispatchEventToExtension(id.extension_id, std::move(event));
     }
@@ -1854,9 +1854,11 @@ void WebRequestEventRouter::OnEventHandled(
     std::unique_ptr<EventResponse> response) {
   BrowserContextData& context_data =
       data_[GetBrowserContextID(browser_context)];
-  EventListener::ID id(browser_context, extension_id, sub_event_name,
-                       render_process_id, web_view_instance_id,
-                       worker_thread_id, service_worker_version_id);
+  // TODO(crbug.com/379869738): Remove FromUnsafeValue.
+  EventListener::ID id(
+      browser_context, extension_id, sub_event_name,
+      content::ChildProcessId::FromUnsafeValue(render_process_id),
+      web_view_instance_id, worker_thread_id, service_worker_version_id);
   EventListener* listener = nullptr;
 
   // Check if the "handled" event was for an inactive listener (indicated by
@@ -1913,9 +1915,12 @@ bool WebRequestEventRouter::AddEventListener(
   }
 
   BrowserContextID browser_context_id = GetBrowserContextID(browser_context);
-  EventListener::ID id(browser_context, extension_id, sub_event_name,
-                       render_process_id, web_view_instance_id,
-                       worker_thread_id, service_worker_version_id);
+
+  // TODO(crbug.com/379869738): Remove FromUnsafeValue.
+  EventListener::ID id(
+      browser_context, extension_id, sub_event_name,
+      content::ChildProcessId::FromUnsafeValue(render_process_id),
+      web_view_instance_id, worker_thread_id, service_worker_version_id);
   if (is_lazy &&
       FindEventListenerBySubEventName(browser_context_id, extension_id,
                                       event_name, sub_event_name)) {
@@ -2071,8 +2076,7 @@ WebRequestEventRouter::RemoveMatchingListeners(
     bool listener_matches =
         extension_id == id.extension_id &&
         sub_event_name == id.sub_event_name &&
-        (!render_process_id ||
-         render_process_id->GetUnsafeValue() == id.render_process_id) &&
+        (!render_process_id || render_process_id == id.render_process_id) &&
         (!worker_thread_id || worker_thread_id == id.worker_thread_id) &&
         (!service_worker_version_id ||
          service_worker_version_id == id.service_worker_version_id);
@@ -2182,7 +2186,7 @@ void WebRequestEventRouter::UpdateActiveListener(
       listener->id.worker_thread_id = kMainThreadId;
       listener->id.service_worker_version_id =
           blink::mojom::kInvalidServiceWorkerVersionId;
-      listener->id.render_process_id = -1;
+      listener->id.render_process_id = content::ChildProcessId();
       data.inactive_listeners[event_name].push_back(std::move(listener));
     } else if (update_type == ListenerUpdateType::kRemove) {
       // Service worker listeners should always be removed via
@@ -2314,7 +2318,7 @@ void WebRequestEventRouter::RemovePersistedLazyListener(
 
 void WebRequestEventRouter::RemoveWebViewEventListeners(
     content::BrowserContext* browser_context,
-    int render_process_id,
+    content::ChildProcessId render_process_id,
     int web_view_instance_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -2745,8 +2749,7 @@ bool WebRequestEventRouter::ListenerMatchesRequest(
   }
 
   if (request.is_web_view) {
-    if (listener.id.render_process_id !=
-            request.web_view_embedder_process_id.value() ||
+    if (listener.id.render_process_id != request.web_view_embedder_process_id ||
         listener.id.web_view_instance_id != request.web_view_instance_id) {
       return false;
     }
@@ -2757,7 +2760,7 @@ bool WebRequestEventRouter::ListenerMatchesRequest(
   // Filter requests from other extensions / apps. This does not work for
   // content scripts, or extension pages in non-extension processes.
   if (is_request_from_extension &&
-      listener.id.render_process_id != request.render_process_id) {
+      listener.id.render_process_id != request.global_id.child_id) {
     return false;
   }
 
@@ -2793,9 +2796,10 @@ bool WebRequestEventRouter::ListenerMatchesRequest(
     if (access != PermissionsData::PageAccess::kAllowed) {
       if (access == PermissionsData::PageAccess::kWithheld) {
         DCHECK(ExtensionsAPIClient::Get());
+        // TODO(crbug.com/379869738): Remove GetUnsafeValue.
         ExtensionsAPIClient::Get()->NotifyWebRequestWithheld(
-            request.render_process_id, request.frame_routing_id,
-            listener.id.extension_id);
+            request.global_id.child_id.GetUnsafeValue(),
+            request.global_id.frame_routing_id, listener.id.extension_id);
       }
 
       return false;

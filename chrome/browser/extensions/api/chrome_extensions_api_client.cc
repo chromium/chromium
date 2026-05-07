@@ -155,8 +155,14 @@ bool ChromeExtensionsAPIClient::ShouldHideBrowserNetworkRequest(
   // But we do still need to protect some sensitive sub-frame navigation
   // requests.
   // Exclude main frame navigation requests.
+  // TODO(crbug.com/379869738: Remove GetUnsafeValue once there is a better way
+  // to identify prefetch requests from the browser.  Changing this to the
+  // correct code of `is_null()` breaks functionality as the magic value 0 is
+  // actually used for prefetches, even though it's usually used by the browser
+  // process.  When uses are correctly ported to content::ChildProcessId we
+  // should be able to fix this.  See also WebRequestPermissions::HideRequest.
   bool is_browser_request =
-      request.render_process_id == -1 &&
+      request.global_id.child_id.GetUnsafeValue() == -1 &&
       request.web_request_type != WebRequestResourceType::MAIN_FRAME;
 
   // Hide requests made by the Devtools frontend.
@@ -183,8 +189,9 @@ bool ChromeExtensionsAPIClient::ShouldHideBrowserNetworkRequest(
           ? InstantServiceFactory::GetForProfile(static_cast<Profile*>(context))
           : nullptr;
   if (instant_service) {
-    is_sensitive_request |=
-        instant_service->IsInstantProcess(request.render_process_id);
+    // TODO(crbug.com/379869738): Remove GetUnsafeValue.
+    is_sensitive_request |= instant_service->IsInstantProcess(
+        request.global_id.child_id.GetUnsafeValue());
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

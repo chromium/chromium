@@ -304,7 +304,7 @@ class WebRequestEventRouter : public KeyedService {
 
   // Removes the listeners for a given <webview>.
   void RemoveWebViewEventListeners(content::BrowserContext* browser_context,
-                                   int render_process_id,
+                                   content::ChildProcessId render_process_id,
                                    int web_view_instance_id);
 
   // Called when an incognito browser_context is created or destroyed. When
@@ -422,7 +422,7 @@ class WebRequestEventRouter : public KeyedService {
       ID(content::BrowserContext* browser_context,
          const ExtensionId& extension_id,
          const std::string& sub_event_name,
-         int render_process_id,
+         content::ChildProcessId render_process_id,
          int web_view_instance_id,
          int worker_thread_id,
          int64_t service_worker_version_id);
@@ -436,7 +436,7 @@ class WebRequestEventRouter : public KeyedService {
       ExtensionId extension_id;
       std::string sub_event_name;
       // In the case of a webview, this is the process ID of the embedder.
-      int render_process_id;
+      content::ChildProcessId render_process_id;
       int web_view_instance_id;
       // The worker_thread_id and service_worker_version_id members are only
       // meaningful for event listeners for ServiceWorker events. Otherwise,

@@ -119,7 +119,8 @@ WebRequestEventDetails::WebRequestEventDetails(const WebRequestInfo& request,
               ToString(request.frame_data.document_lifecycle));
   }
   initiator_ = request.initiator;
-  render_process_id_ = request.render_process_id;
+  // TODO(crbug.com/379869738): Remove GetUnsafeValue.
+  render_process_id_ = request.global_id.child_id.GetUnsafeValue();
 }
 
 WebRequestEventDetails::~WebRequestEventDetails() = default;

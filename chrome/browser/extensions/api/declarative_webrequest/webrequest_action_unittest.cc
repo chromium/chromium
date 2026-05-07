@@ -116,14 +116,14 @@ bool WebRequestActionWithThreadsTest::ActionWorksOnRequest(
     const std::string& extension_id,
     const WebRequestActionSet* action_set,
     RequestStage stage) {
-  const int kRendererId = 2;
+  const content::ChildProcessId kRendererId(2);
   EventResponseDeltas deltas;
   scoped_refptr<net::HttpResponseHeaders> headers(
       new net::HttpResponseHeaders(""));
   WebRequestInfoInitParams params;
   params.url = GURL(url_string);
   WebRequestInfoInitParams request_params(std::move(params));
-  request_params.render_process_id = kRendererId;
+  request_params.global_id.child_id = kRendererId;
   WebRequestInfo request_info(std::move(request_params));
   WebRequestData request_data(&request_info, stage, headers.get());
   std::set<std::string> ignored_tags;

@@ -76,10 +76,10 @@ WebRequestProxyingWebSocket::WebRequestProxyingWebSocket(
       response_(network::mojom::URLResponseHead::New()),
       has_extra_headers_(has_extra_headers),
       has_security_info_(has_security_info),
+      // TODO(crbug.com/379869738): Port process_id to ChildProcessId.
       info_(WebRequestInfoInitParams(
           request_id_generator->Generate(IPC::mojom::kRoutingIdNone, 0),
-          process_id,
-          render_frame_id,
+          content::GlobalRenderFrameHostId(process_id, render_frame_id),
           nullptr,
           request,
           /*is_download=*/false,
