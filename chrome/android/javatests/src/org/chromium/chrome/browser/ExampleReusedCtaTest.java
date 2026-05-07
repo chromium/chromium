@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser;
 
+import org.chromium.base.test.util.DisableIf;
+import org.chromium.ui.base.DeviceFormFactor;
+
 import androidx.test.filters.LargeTest;
 
 import org.junit.Rule;
@@ -25,6 +28,7 @@ import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
+@DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
 public class ExampleReusedCtaTest {
     @Rule
     public ReusedCtaTransitTestRule<RegularNewTabPageStation> mActivityTestRule =

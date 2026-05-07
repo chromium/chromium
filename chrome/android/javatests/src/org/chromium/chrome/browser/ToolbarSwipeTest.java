@@ -24,6 +24,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
@@ -162,6 +163,7 @@ public class ToolbarSwipeTest {
     @Test
     @MediumTest
     @Feature({"Android-TabSwitcher"})
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
     public void testToolbarSwipeNextThenPrevTabIncognito() {
         WebPageStation pageStation =
                 initToolbarSwipeTest(

@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.app;
 
+import org.chromium.base.test.util.DisableIf;
+import org.chromium.ui.base.DeviceFormFactor;
+
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
@@ -56,6 +59,7 @@ import java.util.concurrent.TimeoutException;
 })
 @EnableFeatures({ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU})
 @Batch(Batch.PER_CLASS)
+@DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
 public class ContextMenuDragTest {
 
     // Test distance

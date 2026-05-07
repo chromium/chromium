@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.browser_window;
 
+import org.chromium.base.test.util.DisableIf;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -82,6 +84,7 @@ import java.util.concurrent.atomic.AtomicReference;
                 "Tests will be flaky if batched as they create/close windows and change window"
                         + " states in quick succession")
 @NullMarked
+@DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
 public class ChromeAndroidTaskIntegrationTest {
 
     @Rule
