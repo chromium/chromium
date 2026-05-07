@@ -1,3 +1,0 @@
-include_rules = [
-  "+ios/chrome/browser/backend_promo_service/model/backend_promo_service.h",
-]

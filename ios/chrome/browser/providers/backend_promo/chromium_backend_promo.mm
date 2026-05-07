@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/backend_promo_service/model/backend_promo_service.h"
+#import "ios/chrome/browser/backend_promo/model/backend_promo_service.h"
 
 class ChromiumBackendPromoService final : public BackendPromoService {
  public:
