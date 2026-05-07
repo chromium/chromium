@@ -846,6 +846,8 @@ class AISummarizerManifestTest : public AITestUtils::AITestManifestBase {
         "summarizer_small_expert_model";
     (*summarizer_cfg.mutable_preference_use_cases())["capability"] =
         "summarizer_api";
+    (*summarizer_cfg.mutable_experimental_use_cases())["v4"] =
+        "summarizer_gemma4";
 
     optimization_guide::proto::Any any_cfg;
     any_cfg.set_type_url(
@@ -863,6 +865,13 @@ class AISummarizerManifestTest : public AITestUtils::AITestManifestBase {
 
     optimization_guide::ScenarioBuilder(
         fake_manifest_broker_->component_state())
+        .AddBaseModel(
+            "summarizer_gemma4_solution",
+            optimization_guide::BaseModelRecipeArgs(
+                optimization_guide::proto::BaseModelRecipe::BACKEND_TYPE_GPU,
+                optimization_guide::proto::BaseModelRecipe::
+                    PERFORMANCE_HINT_HIGHEST_QUALITY,
+                {}, kTestMaxTokens))
         .AddBaseModel(
             "summarizer_api_solution",
             optimization_guide::BaseModelRecipeArgs(
@@ -883,6 +892,8 @@ class AISummarizerManifestTest : public AITestUtils::AITestManifestBase {
         .AddSafeSolution("summarizer_small_expert_model",
                          "summarizer_small_expert_model_solution", "safety",
                          solution_config)
+        .AddSafeSolution("summarizer_gemma4", "summarizer_gemma4_solution",
+                         "safety", solution_config)
         .SetFeatureConfig(optimization_guide::DeviceCategory::kGpuHighTier,
                           "summarizer_api", any_cfg)
         .Finish();
@@ -894,8 +905,23 @@ class AISummarizerManifestTest : public AITestUtils::AITestManifestBase {
   optimization_guide::proto::OnDeviceModelExecutionFeatureConfig CreateConfig()
       override {
     optimization_guide::proto::OnDeviceModelExecutionFeatureConfig config;
+    config.set_can_skip_text_safety(true);
     config.set_feature(optimization_guide::proto::ModelExecutionFeature::
                            MODEL_EXECUTION_FEATURE_SUMMARIZE);
+
+    auto& input_config = *config.mutable_input_config();
+    input_config.set_request_base_name(SummarizeRequest().GetTypeName());
+
+    *input_config.add_execute_substitutions() = FieldSubstitution(
+        "%s", ProtoField({SummarizeRequest::kArticleFieldNumber}));
+    *input_config.add_execute_substitutions() = FieldSubstitution(
+        "%s", ProtoField({SummarizeRequest::kContextFieldNumber}));
+
+    auto& output_config = *config.mutable_output_config();
+    output_config.set_proto_type(
+        optimization_guide::proto::StringValue().GetTypeName());
+    *output_config.mutable_proto_field() = StringValueField();
+
     return config;
   }
 
@@ -939,10 +965,25 @@ TEST_F(AISummarizerManifestTest,
 }
 
 TEST_F(AISummarizerManifestTest, CanCreateAndCreateWithManifestAutoPreference) {
-  fake_manifest_broker_->client().RequestAssetsFor("summarizer_api");
+  // Even if gemma4 assets are available, it shouldn't use it by default.
+  // Since summarizer_api is the default use case, and it's not downloaded yet,
+  // it should return kDownloadable.
+  fake_manifest_broker_->client().RequestAssetsFor("summarizer_gemma4");
 
   auto options = GetDefaultOptions();
-  options->output_language = blink::mojom::AILanguageCode::New("en");
+
+  base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult>
+      gemma4_future;
+  GetAIManagerInterface()->CanCreateSummarizer(options.Clone(),
+                                               gemma4_future.GetCallback());
+  EXPECT_EQ(gemma4_future.Get(),
+            blink::mojom::ModelAvailabilityCheckResult::kDownloadable);
+
+  // Now request assets for summarizer_api, and it should return kAvailable.
+  fake_manifest_broker_->client().RequestAssetsFor("summarizer_api");
+  // Advance the event loop so that the fake manifest broker can finish
+  // processing the asset request before we check the availability again.
+  base::RunLoop().RunUntilIdle();
 
   base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
   GetAIManagerInterface()->CanCreateSummarizer(options.Clone(),
@@ -1104,7 +1145,7 @@ TEST_F(AISummarizerManifestTest,
   GetAIManagerInterface()->CanCreateSummarizer(GetDefaultOptions(),
                                                future.GetCallback());
   EXPECT_EQ(future.Get(), blink::mojom::ModelAvailabilityCheckResult::
-                              kUnavailableFeatureExecutionNotEnabled);
+                              kUnavailableServiceNotRunning);
 }
 
 TEST_F(AISummarizerManifestTest, CreateIncompatibleOptionsForSpeedPreference) {
@@ -1149,6 +1190,45 @@ TEST_F(AISummarizerManifestTest, SummarizeWithSpeedPreferenceAndContextFails) {
   EXPECT_FALSE(responder.WaitForCompletion());
   EXPECT_EQ(responder.error_status(),
             blink::mojom::ModelStreamingResponseStatus::kErrorInvalidRequest);
+}
+
+TEST_F(AISummarizerManifestTest, CanCreateAndCreateWithManifestGemma4) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kAIApiFoundationalModel, {{"model_version", "v4"}});
+
+  fake_manifest_broker_->client().RequestAssetsFor("summarizer_gemma4");
+
+  // Verify CanCreateSummarizer check passes successfully for default options
+  // mapping to gemma4. We requested assets only for summarizer_gemma4,
+  // so receiving kAvailable implicitly verifies the correct use case mapping.
+  base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+  ai_manager_->CanCreateSummarizer(GetDefaultOptions(), future.GetCallback());
+  EXPECT_EQ(future.Get(),
+            blink::mojom::ModelAvailabilityCheckResult::kAvailable);
+
+  // Verify CreateSummarizer can retrieve the model successfully.
+  TestCreateSummarizerClient create_summarizer_client;
+  GetAIManagerRemote()->CreateSummarizer(
+      create_summarizer_client.BindNewPipeAndPassRemote(), GetDefaultOptions());
+
+  auto result = create_summarizer_client.result().Take();
+  EXPECT_TRUE(result.has_value());
+}
+
+TEST_F(AISummarizerManifestTest, CanCreateBeforeDownloadGemma4) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kAIApiFoundationalModel, {{"model_version", "v4"}});
+
+  // Assets are requested for summarizer_api, but since gemma4 is the configured
+  // model_version, we should get kDownloadable for gemma4.
+  fake_manifest_broker_->client().RequestAssetsFor("summarizer_api");
+
+  base::test::TestFuture<blink::mojom::ModelAvailabilityCheckResult> future;
+  ai_manager_->CanCreateSummarizer(GetDefaultOptions(), future.GetCallback());
+  EXPECT_EQ(future.Get(),
+            blink::mojom::ModelAvailabilityCheckResult::kDownloadable);
 }
 
 }  // namespace
