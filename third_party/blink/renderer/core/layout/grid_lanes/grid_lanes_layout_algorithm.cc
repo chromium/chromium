@@ -72,7 +72,6 @@ MinMaxSizesResult GridLanesLayoutAlgorithm::ComputeMinMaxSizes(
   const bool is_for_columns = grid_axis_direction == kForColumns;
 
   GridItems* grid_items = nullptr;
-  const GridLayoutSubtree* layout_subtree = nullptr;
 
   auto ComputeIntrinsicInlineSize = [&](SizingConstraint sizing_constraint) {
     const bool should_apply_inline_size_containment =
@@ -81,11 +80,11 @@ MinMaxSizesResult GridLanesLayoutAlgorithm::ComputeMinMaxSizes(
     // TODO(almaher): Do we need to do something special for subgrid
     // related to GetGridLayoutSubtree()?
 
-    layout_subtree = ComputeGridLanesGeometry(
+    GridSizingTree sizing_tree = ComputeGridLanesSizingTree(
         sizing_constraint, should_apply_inline_size_containment, &grid_items);
     CHECK(grid_items);
 
-    auto* layout_data = layout_subtree->LayoutData();
+    auto* layout_data = &sizing_tree.LayoutData();
     const auto& track_collection =
         is_for_columns ? layout_data->Columns() : layout_data->Rows();
 
@@ -105,8 +104,12 @@ MinMaxSizesResult GridLanesLayoutAlgorithm::ComputeMinMaxSizes(
           track_collection, style,
           ResolveFlowToleranceForGridLanes(style, grid_lanes_available_size_));
 
+      const GridSizingSubtree sizing_subtree(&sizing_tree);
+      auto* layout_subtree =
+          MakeGarbageCollected<GridLayoutSubtree>(sizing_tree.FinalizeTree());
       PlaceGridLanesItems(*grid_items, layout_subtree, *layout_data,
-                          running_positions, sizing_constraint);
+                          running_positions, sizing_constraint,
+                          &sizing_subtree);
       // `stacking_axis_gap` represents the space between each of the items
       // in the row. We need to subtract this as it is always added to
       // `running_positions` whenever an item is placed, but the very last
@@ -286,21 +289,20 @@ LayoutUnit CalculateSynthesizedBaselineShim(
 }  // namespace
 
 LayoutUnit GridLanesLayoutAlgorithm::CalculateItemInlineContribution(
+    const GridSizingSubtree& sizing_subtree,
     const GridItemData& grid_lanes_item,
     const GridLayoutTrackCollection& track_collection,
     SizingConstraint sizing_constraint) {
   CHECK_NE(sizing_constraint, SizingConstraint::kLayout);
   // We need to compute the available space for the item if we are using it
   // to compute min/max content sizes.
-  //
-  // TODO(almaher): `SubgriddedItemData` should incorporate the parent
-  // subgrid's info.
-  //
-  // TODO(almaher): Plumb the parent grid's `GridLayoutData` here instead of
-  // passing nullptr.
+  const SubgriddedItemData subgridded_item =
+      grid_lanes_item.is_subgridded_to_parent_grid
+          ? sizing_subtree.LookupSubgriddedItemData(grid_lanes_item)
+          : SubgriddedItemData(grid_lanes_item, &sizing_subtree.LayoutData(),
+                               GetConstraintSpace().GetWritingMode());
   const ConstraintSpace space_for_measure = CreateConstraintSpaceForMeasure(
-      SubgriddedItemData(grid_lanes_item, /*parent_layout_data=*/nullptr,
-                         GetConstraintSpace().GetWritingMode()),
+      subgridded_item,
       /*opt_fixed_inline_size=*/std::nullopt, &track_collection);
   const MinMaxSizes sizes = ComputeMinAndMaxContentContributionForSelf(
                                 grid_lanes_item.node, space_for_measure)
@@ -314,7 +316,8 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItems(
     const GridLayoutSubtree* layout_subtree,
     GridLayoutData& layout_data,
     GridLanesRunningPositions& running_positions,
-    std::optional<SizingConstraint> sizing_constraint) {
+    std::optional<SizingConstraint> sizing_constraint,
+    const GridSizingSubtree* opt_sizing_subtree) {
   const auto& style = Style();
   const auto grid_axis_direction = style.GridLanesTrackSizingDirection();
   const auto& track_collection = grid_axis_direction == kForColumns
@@ -344,10 +347,10 @@ void GridLanesLayoutAlgorithm::PlaceGridLanesItems(
   // layout results are only added to the container during this final placement
   // pass, ensuring all alignment and baseline information is available before
   // items are positioned.
-  RunGridLanesPlacementPhase(grid_items, layout_subtree, layout_data,
-                             sizing_constraint, stacking_axis_gap,
-                             PlacementPhase::kFinalPlacement,
-                             baseline_accumulator, running_positions);
+  RunGridLanesPlacementPhase(
+      grid_items, layout_subtree, layout_data, sizing_constraint,
+      stacking_axis_gap, PlacementPhase::kFinalPlacement, baseline_accumulator,
+      running_positions, opt_sizing_subtree);
 
   // Propagate the baselines to the container.
   if (auto first_baseline = baseline_accumulator->FirstBaseline()) {
@@ -455,8 +458,11 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
     LayoutUnit stacking_axis_gap,
     PlacementPhase placement_phase,
     BaselineAccumulator* baseline_accumulator,
-    GridLanesRunningPositions& running_positions) {
+    GridLanesRunningPositions& running_positions,
+    const GridSizingSubtree* opt_sizing_subtree) {
   const bool is_for_layout = sizing_constraint == SizingConstraint::kLayout;
+  DCHECK(is_for_layout || opt_sizing_subtree);
+
   const auto& container_space = GetConstraintSpace();
   const auto& style = Style();
   const auto border_scrollbar_padding = BorderScrollbarPadding();
@@ -560,8 +566,6 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
     // offset of the item.
     LogicalRect containing_grid_area;
 
-    // TODO(almaher): `SubgriddedItemData` should incorporate the parent
-    // subgrid's info.
     const ConstraintSpace space =
         is_for_layout
             ? CreateConstraintSpaceForLayout(
@@ -573,10 +577,14 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
                   /*opt_child_block_offset=*/std::nullopt,
                   opt_fixed_inline_size)
             : CreateConstraintSpaceForMeasure(
-                  SubgriddedItemData(grid_lanes_item, &layout_data,
-                                     container_writing_mode),
+                  grid_lanes_item.is_subgridded_to_parent_grid
+                      ? opt_sizing_subtree->LookupSubgriddedItemData(
+                            grid_lanes_item)
+                      : SubgriddedItemData(grid_lanes_item, &layout_data,
+                                           container_writing_mode),
                   CalculateItemInlineContribution(
-                      grid_lanes_item, track_collection, *sizing_constraint),
+                      *opt_sizing_subtree, grid_lanes_item, track_collection,
+                      *sizing_constraint),
                   &track_collection,
                   /*is_for_min_max_sizing=*/true);
 

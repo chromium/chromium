@@ -120,13 +120,16 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
   // resolved position is translated based on the cached start offset.
   // Placement of the items is finalized within this method. `running_positions`
   // is an output parameter that can be used to find the intrinsic inline size
-  // when the stacking axis is the inline axis.
+  // when the stacking axis is the inline axis. `opt_sizing_subtree` is required
+  // when `sizing_constraint` is for measure so that subgridded item data can be
+  // accessed for proper sizing.
   void PlaceGridLanesItems(
       GridItems& grid_items,
       const GridLayoutSubtree* layout_subtree,
       GridLayoutData& layout_data,
       GridLanesRunningPositions& running_positions,
-      std::optional<SizingConstraint> sizing_constraint = std::nullopt);
+      std::optional<SizingConstraint> sizing_constraint = std::nullopt,
+      const GridSizingSubtree* opt_sizing_subtree = nullptr);
 
   // Iterates through and lays out each item in `grid_lanes_items`. If
   // `placement_phase` is kCalculateBaselines, this method measures items and
@@ -138,7 +141,9 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
   // are positioned. The `running_positions` output parameter tracks the
   // cumulative positions along the stacking axis for each track. The
   // `baseline_accumulator` output parameter accumulates container-level
-  // baselines from the items.
+  // baselines from the items. `opt_sizing_subtree` is required
+  // when `sizing_constraint` is for measure so that subgridded item data can be
+  // accessed for proper sizing.
   void RunGridLanesPlacementPhase(
       GridItems& grid_items,
       const GridLayoutSubtree* layout_subtree,
@@ -147,7 +152,8 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
       LayoutUnit stacking_axis_gap,
       PlacementPhase placement_phase,
       BaselineAccumulator* baseline_accumulator,
-      GridLanesRunningPositions& running_positions);
+      GridLanesRunningPositions& running_positions,
+      const GridSizingSubtree* opt_sizing_subtree = nullptr);
 
   // Places all out-of-flow (OOF) grid-lanes items. For each item, this method
   // computes the size and location of the containing block rectangle within the
@@ -271,6 +277,7 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
   // Return the inline contribution of `grid_lanes_item` calculated to either
   // the min-width or the max-width based on `sizing_constraint`.
   LayoutUnit CalculateItemInlineContribution(
+      const GridSizingSubtree& sizing_subtree,
       const GridItemData& grid_lanes_item,
       const GridLayoutTrackCollection& track_collection,
       SizingConstraint sizing_constraint);
