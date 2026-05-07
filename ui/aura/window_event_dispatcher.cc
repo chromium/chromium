@@ -152,16 +152,17 @@ void WindowEventDispatcher::DispatchCancelModeEvent() {
 void WindowEventDispatcher::DispatchGestureEvent(
     ui::GestureConsumer* raw_input_consumer,
     ui::GestureEvent* event) {
+  base::WeakPtr<ui::GestureConsumer> consumer_weak_ptr =
+      raw_input_consumer ? raw_input_consumer->GetWeakPtr() : nullptr;
+
   DispatchDetails details = DispatchHeldEvents();
-  if (details.dispatcher_destroyed)
+  if (details.dispatcher_destroyed || !consumer_weak_ptr) {
     return;
-  Window* target = ConsumerToWindow(raw_input_consumer);
-  if (target) {
-    event->ConvertLocationToTarget(window(), target);
-    details = DispatchEvent(target, event);
-    if (details.dispatcher_destroyed)
-      return;
   }
+
+  Window* target = ConsumerToWindow(consumer_weak_ptr.get());
+  event->ConvertLocationToTarget(window(), target);
+  details = DispatchEvent(target, event);
 }
 
 DispatchDetails WindowEventDispatcher::DispatchMouseExitAtPoint(

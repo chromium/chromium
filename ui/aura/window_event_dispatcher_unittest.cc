@@ -17,6 +17,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
@@ -2172,6 +2173,89 @@ class DeleteHostFromHeldMouseEventDelegate : public test::TestWindowDelegate {
 };
 
 }  // namespace
+
+namespace {
+
+// Pre-target handler on the root window that synchronously deletes a target
+// window the first time it sees a kTouchMoved event. Mirrors what a
+// close-on-exit widget / popup-dismissal handler can do during dispatch of a
+// held move event.
+class DeleteWindowOnHeldTouchMove : public ui::EventHandler {
+ public:
+  explicit DeleteWindowOnHeldTouchMove(aura::Window* victim)
+      : victim_(victim) {}
+
+  DeleteWindowOnHeldTouchMove(const DeleteWindowOnHeldTouchMove&) = delete;
+  DeleteWindowOnHeldTouchMove& operator=(const DeleteWindowOnHeldTouchMove&) =
+      delete;
+
+  bool did_delete() const { return did_delete_; }
+
+  void OnTouchEvent(ui::TouchEvent* event) override {
+    if (event->type() == ui::EventType::kTouchMoved && victim_) {
+      aura::Window* w = victim_.ExtractAsDangling();
+      did_delete_ = true;
+      delete w;
+      event->StopPropagation();
+    }
+  }
+
+ private:
+  raw_ptr<aura::Window> victim_;
+  bool did_delete_ = false;
+};
+
+}  // namespace
+
+// Regression test for a use-after-free in
+// WindowEventDispatcher::DispatchGestureEvent. On the timer-driven gesture
+// path (SHOW_PRESS / LONG_PRESS), DispatchGestureEvent receives the gesture
+// target as a bare ui::GestureConsumer* and first calls DispatchHeldEvents().
+// If a handler reached during the held-event dispatch synchronously destroys
+// the touched window, DispatchGestureEvent must not dereference the
+// now-dangling consumer pointer. Before the fix this test triggers an ASAN
+// heap-use-after-free at Window::ConvertPointToTarget (called from
+// LocatedEvent::ConvertLocationToTarget).
+TEST_F(WindowEventDispatcherTest,
+       GestureConsumerDestroyedDuringHeldEventDispatch) {
+  // Owned by root_window() (and later deleted by |handler|).
+  Window* w = CreateNormalWindow(1, root_window(), nullptr);
+  w->SetBounds(gfx::Rect(0, 0, 40, 40));
+
+  // 1) Touch-press on |w|: arms the SHOW_PRESS timer (5 ms in tests) and
+  //    creates a GestureProviderAura whose gesture_consumer_ is |w|.
+  ui::TouchEvent press(ui::EventType::kTouchPressed, gfx::Point(10, 10),
+                       ui::EventTimeForNow(),
+                       ui::PointerDetails(ui::EventPointerType::kTouch, 0));
+  DispatchEventUsingWindowDispatcher(&press);
+
+  // 2) Hold pointer moves so the next touch-move is queued as
+  //    held_move_event_ instead of dispatched immediately. This is the same
+  //    state that WindowTreeHost::OnCompositingChildResizing produces on
+  //    ChromeOS in production.
+  host()->dispatcher()->HoldPointerMoves();
+  ui::TouchEvent move(ui::EventType::kTouchMoved, gfx::Point(11, 10),
+                      ui::EventTimeForNow(),
+                      ui::PointerDetails(ui::EventPointerType::kTouch, 0));
+  DispatchEventUsingWindowDispatcher(&move);
+
+  // 3) Install a root pre-target handler that deletes |w| when the held
+  //    touch-move is later flushed by DispatchGestureEvent ->
+  //    DispatchHeldEvents().
+  DeleteWindowOnHeldTouchMove handler(w);
+  root_window()->AddPreTargetHandler(&handler);
+
+  // 4) Spin the loop until the SHOW_PRESS timer fires. The timer callback
+  //    calls WindowEventDispatcher::DispatchGestureEvent(w, show_press),
+  //    which first runs DispatchHeldEvents() -> dispatches the held
+  //    kTouchMoved -> |handler| deletes |w| -> control returns to
+  //    DispatchGestureEvent which then dereferences the freed |w| via
+  //    ConsumerToWindow / ConvertLocationToTarget.
+  EXPECT_TRUE(base::test::RunUntil([&]() { return handler.did_delete(); }));
+
+  root_window()->RemovePreTargetHandler(&handler);
+  host()->dispatcher()->ReleasePointerMoves();
+}
 
 // Verifies if a WindowTreeHost is deleted from dispatching a held mouse event
 // we don't crash.
