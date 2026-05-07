@@ -282,6 +282,7 @@ void HistorySyncOptinService::OnPrimaryAccountChanged(
     case signin_metrics::AccessPoint::kSearchAIModeBubble:
     case signin_metrics::AccessPoint::kIosAppBar:
     case signin_metrics::AccessPoint::kIosPageActionMenu:
+    case signin_metrics::AccessPoint::kDeepLinkDefault:
       return;
   }
 

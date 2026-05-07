@@ -1021,6 +1021,7 @@ chromium-metrics-reviews@google.com.
   <int value="100" label="Page Action Menu (iOS only)"/>
   <int value="101"
       label="Autofill and passwords settings page on iOS and Android"/>
+  <int value="102" label="Sign-in deep link (e.g. from cross-device QR code)"/>
 </enum>
 
 <enum name="SigninAccountReconcilorState">

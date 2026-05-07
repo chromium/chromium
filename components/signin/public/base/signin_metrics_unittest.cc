@@ -247,6 +247,8 @@ class SigninMetricsTest : public ::testing::Test {
         return "PageActionMenu";
       case AccessPoint::kSettingsAutofillAndPasswords:
         return "SettingsAutofillAndPasswords";
+      case AccessPoint::kDeepLinkDefault:
+        return "DeepLinkDefault";
     }
   }
 };

@@ -342,10 +342,12 @@ enum class AccessPoint : int {
   kIosPageActionMenu = 100,
   // Autofill and passwords settings page on iOS and Android.
   kSettingsAutofillAndPasswords = 101,
+  // Deep link to the sign-in flow (e.g. from cross-device QR code sharing).
+  kDeepLinkDefault = 102,
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in
   // tools/metrics/histograms/metadata/signin/enums.xml.
-  kMaxValue = kSettingsAutofillAndPasswords,  // This must be last.
+  kMaxValue = kDeepLinkDefault,  // This must be last.
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/signin/enums.xml)
 

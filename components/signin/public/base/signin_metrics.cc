@@ -145,6 +145,7 @@ std::optional<AccessPoint> AccessPointFromInt(int value) {
     case AccessPoint::kIosAppBar:
     case AccessPoint::kIosPageActionMenu:
     case AccessPoint::kSettingsAutofillAndPasswords:
+    case AccessPoint::kDeepLinkDefault:
       return access_point;
   }
 
@@ -581,6 +582,7 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::kIosChromeWebView:
     case AccessPoint::kAshChromeSessionManager:
     case AccessPoint::kAshUserSessionManager:
+    case AccessPoint::kDeepLinkDefault:
       NOTREACHED() << "Access point " << static_cast<int>(access_point)
                    << " is not supposed to log signin user actions.";
     case AccessPoint::kCollaborationShareTabGroup:
@@ -922,6 +924,7 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::kAshChromeSessionManager:
     case AccessPoint::kAvatarPillExpandPromo:
     case AccessPoint::kIosPageActionMenu:
+    case AccessPoint::kDeepLinkDefault:
       NOTREACHED() << "Signin_Impression_From* user actions are not recorded "
                       "for access point "
                    << static_cast<int>(access_point);
