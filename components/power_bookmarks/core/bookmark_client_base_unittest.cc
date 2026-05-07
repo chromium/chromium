@@ -17,6 +17,7 @@
 #include "base/uuid.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
+#include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/power_bookmarks/core/suggested_save_location_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -47,6 +48,12 @@ class TestBookmarkClientImpl : public BookmarkClientBase {
 
   bool IsNodeManaged(const bookmarks::BookmarkNode* node) override {
     return false;
+  }
+
+  bookmarks::BookmarkFormFactor GetBookmarkFormFactor() override {
+    return bookmarks::TestBookmarkClient::IsDesktopFormFactorByDefault()
+               ? bookmarks::BookmarkFormFactor::kDesktop
+               : bookmarks::BookmarkFormFactor::kMobile;
   }
 
   std::string EncodeLocalOrSyncableBookmarkSyncMetadata() override {

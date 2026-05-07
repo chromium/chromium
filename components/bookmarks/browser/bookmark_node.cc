@@ -16,7 +16,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
-#include "build/build_config.h"
 #include "components/bookmarks/browser/bookmark_uuids.h"
 #include "components/bookmarks/common/bookmark_features.h"
 #include "components/strings/grit/components_strings.h"
@@ -153,12 +152,10 @@ BookmarkPermanentNode::CreateManagedBookmarks(int64_t id) {
 }
 
 // static
-bool BookmarkPermanentNode::IsTypeVisibleWhenEmpty(Type type) {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  bool is_desktop = false;
-#else
-  bool is_desktop = true;
-#endif
+bool BookmarkPermanentNode::IsTypeVisibleWhenEmpty(
+    Type type,
+    BookmarkFormFactor form_factor) {
+  bool is_desktop = form_factor == BookmarkFormFactor::kDesktop;
 
   switch (type) {
     case BookmarkNode::URL:
@@ -173,7 +170,7 @@ bool BookmarkPermanentNode::IsTypeVisibleWhenEmpty(Type type) {
                                kAllBookmarksBaselineFolderVisibility);
     case BookmarkNode::MOBILE:
       // Either MOBILE or OTHER_NODE is visible when empty, but never both.
-      return !IsTypeVisibleWhenEmpty(BookmarkNode::OTHER_NODE);
+      return !IsTypeVisibleWhenEmpty(BookmarkNode::OTHER_NODE, form_factor);
   }
   NOTREACHED();
 }
