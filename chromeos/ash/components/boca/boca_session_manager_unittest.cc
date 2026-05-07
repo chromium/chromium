@@ -56,6 +56,7 @@
 #include "google_apis/common/request_sender.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
@@ -2603,6 +2604,22 @@ TEST_F(BocaSessionManagerStudentHeartbeatNoPollingTest,
       std::make_unique<::boca::Session>(session_1), /*dispatch_event=*/true);
 
   task_environment()->FastForwardBy(kDefaultStudentHeartbeatInterval);
+}
+
+TEST_F(BocaSessionManagerTest, StartCrdClientFailsWithNullManager) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      ash::features::kBocaSpotlightRobotRequester);
+
+  base::test::TestFuture<CrdConnectionState> future;
+  boca_session_manager()->StartCrdClient(
+      "connection_code",
+      /*done_callback=*/base::DoNothing(),
+      /*frame_received_callback=*/base::DoNothing(),
+      /*crd_state_callback=*/base::BindLambdaForTesting(
+          [&](CrdConnectionState state) { future.SetValue(state); }));
+
+  EXPECT_EQ(CrdConnectionState::kFailed, future.Get());
 }
 
 class BocaSessionManagerConsumerTest : public BocaSessionManagerTest {

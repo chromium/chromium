@@ -406,6 +406,15 @@ void BocaSessionManager::StartCrdClient(
     SpotlightCrdStateUpdatedCallback crd_state_callback) {
   CHECK(ash::features::IsBocaSpotlightRobotRequesterEnabled());
 
+  if (!remoting_client_manager_) {
+    LOG(ERROR) << "[Boca] Failed to start CRD client: remoting_client_manager "
+                  "is null.";
+    if (crd_state_callback) {
+      crd_state_callback.Run(CrdConnectionState::kFailed);
+    }
+    return;
+  }
+
   remoting_client_manager_->StartCrdClient(
       crd_connection_code, std::move(done_callback),
       std::move(frame_received_callback),

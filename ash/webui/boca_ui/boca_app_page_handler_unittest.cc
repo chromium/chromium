@@ -27,6 +27,7 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -76,6 +77,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/system/functions.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -513,6 +515,7 @@ class FakePage : public mojom::Page {
 class BocaAppPageHandlerTest : public testing::Test {
  public:
   BocaAppPageHandlerTest() = default;
+  mojo::Remote<mojom::PageHandler>& remote() { return remote_; }
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         {ash::features::kBoca, ash::features::kBocaScreenSharingStudent,
@@ -1223,6 +1226,46 @@ TEST_F(BocaAppPageHandlerConsumerTest, GetSessionWithFullInputTest) {
   EXPECT_EQ(1u, activities.size());
   EXPECT_FALSE(activities[0]->activity->is_active);
   EXPECT_EQ("google", activities[0]->activity->active_tab);
+}
+
+TEST_F(BocaAppPageHandlerConsumerTest, StartSpotlightFailsForConsumer) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      ash::features::kBocaSpotlightRobotRequester);
+
+  std::string bad_message;
+  mojo::SetDefaultProcessErrorHandler(base::BindLambdaForTesting(
+      [&bad_message](const std::string& error) { bad_message = error; }));
+
+  remote().get()->StartSpotlight("123456789012", base::DoNothing());
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&bad_message]() { return !bad_message.empty(); }));
+
+  EXPECT_EQ("StartSpotlight without active producer session", bad_message);
+
+  mojo::SetDefaultProcessErrorHandler(base::NullCallback());
+}
+
+TEST_F(BocaAppPageHandlerProducerTest, StartSpotlightIgnoresRaceCondition) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      ash::features::kBocaSpotlightRobotRequester);
+
+  EXPECT_CALL(*session_manager(), GetCurrentSession())
+      .WillRepeatedly(Return(nullptr));
+
+  std::string bad_message;
+  mojo::SetDefaultProcessErrorHandler(base::BindLambdaForTesting(
+      [&bad_message](const std::string& error) { bad_message = error; }));
+
+  base::test::TestFuture<void> future;
+  remote().get()->StartSpotlight("123456789012", future.GetCallback());
+
+  EXPECT_TRUE(future.Wait());
+  EXPECT_TRUE(bad_message.empty());
+
+  mojo::SetDefaultProcessErrorHandler(base::NullCallback());
 }
 
 TEST_F(BocaAppPageHandlerProducerTest, GetSessionWithPartialInputTest) {

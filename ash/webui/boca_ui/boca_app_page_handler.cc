@@ -762,6 +762,17 @@ void BocaAppHandler::StartSpotlight(const std::string& crd_connection_code,
                                     StartSpotlightCallback callback) {
   if (!ash::features::IsBocaSpotlightRobotRequesterEnabled()) {
     std::move(callback).Run();
+    return;
+  }
+  if (!is_producer_) {
+    receiver_.ReportBadMessage(
+        "StartSpotlight without active producer session");
+    return;
+  }
+  auto* session = GetSessionManager()->GetCurrentSession();
+  if (!session || !IsActiveSession(session->session_id())) {
+    std::move(callback).Run();
+    return;
   }
   GetSessionManager()->StartCrdClient(
       crd_connection_code,
