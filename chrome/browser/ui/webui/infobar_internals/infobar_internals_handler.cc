@@ -28,10 +28,15 @@
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_ui.h"
+#include "content/public/common/buildflags.h"
 #include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(ENABLE_PLUGINS)
+#include "chrome/browser/plugins/reload_plugin_infobar_delegate.h"
+#endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/api/debugger/extension_dev_tools_infobar_delegate.h"
@@ -116,7 +121,6 @@ void InfoBarInternalsHandler::GetInfoBars(GetInfoBarsCallback callback) {
       "want to allow an extension to communicate with a website in "
       "incognito mode. This trigger shows the infobar."));
 #endif
-
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   infobar_list.emplace_back(InfoBarEntry::New(
       /*type=*/InfoBarType::kInstallerDownloader,
@@ -127,7 +131,17 @@ void InfoBarInternalsHandler::GetInfoBars(GetInfoBarsCallback callback) {
       "prevent it to shown and then trigger a show request."));
 #endif
 
+#if BUILDFLAG(ENABLE_PLUGINS)
+  infobar_list.emplace_back(InfoBarEntry::New(
+      /*type=*/InfoBarType::kReloadPlugin, /*name=*/"Reload Plugin",
+      /*description=*/
+      "The Reload Plugin infobar is used to ask the user to reload a "
+      "page when a plugin has crashed or disconnected. This trigger "
+      "shows the infobar."));
+#endif
+
 #if BUILDFLAG(IS_WIN)
+
   infobar_list.emplace_back(InfoBarEntry::New(
       /*type=*/InfoBarType::kStartupLaunch, /*name=*/"Startup Launch",
       /*description=*/
@@ -304,6 +318,24 @@ bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
         return true;
       }
       return false;
+    }
+#endif
+#if BUILDFLAG(ENABLE_PLUGINS)
+    case InfoBarType::kReloadPlugin: {
+      BrowserWindowInterface* const bwi =
+          GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+      if (!bwi || !bwi->GetActiveTabInterface()) {
+        return false;
+      }
+
+      content::WebContents* web_contents =
+          bwi->GetActiveTabInterface()->GetContents();
+      ReloadPluginInfoBarDelegate::Create(
+          infobars::ContentInfoBarManager::FromWebContents(web_contents),
+          &web_contents->GetController(),
+          l10n_util::GetStringFUTF16(IDS_PLUGIN_CRASHED_PROMPT,
+                                     u"Infobar Internals"));
+      return true;
     }
 #endif
 #if BUILDFLAG(IS_WIN)

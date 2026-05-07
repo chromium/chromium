@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//content/public/common/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
@@ -14,6 +15,9 @@ mojom("mojo_bindings") {
   enabled_features = []
   if (enable_extensions) {
     enabled_features += [ "enable_extensions" ]
+  }
+  if (enable_plugins) {
+    enabled_features += [ "enable_plugins" ]
   }
   if (is_win && is_chrome_branded) {
     enabled_features += [ "is_win_and_chrome_branded" ]
