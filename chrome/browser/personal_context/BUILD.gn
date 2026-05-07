@@ -1,0 +1,31 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("personal_context") {
+  sources = [
+    "personal_context_service_factory.cc",
+    "personal_context_service_factory.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/personal_context/core",
+    "//components/personal_context/core:features",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "personal_context_service_factory_unittest.cc" ]
+  deps = [
+    ":personal_context",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//components/personal_context/core",
+    "//components/personal_context/core:features",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

@@ -7152,6 +7152,7 @@ test("unit_tests") {
     "//chrome/browser/permissions:test_support",
     "//chrome/browser/permissions:unit_tests",
     "//chrome/browser/persisted_state_db",
+    "//chrome/browser/personal_context:unit_tests",
     "//chrome/browser/picture_in_picture",
     "//chrome/browser/picture_in_picture:unit_tests",
     "//chrome/browser/plugins:unit_tests",

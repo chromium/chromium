@@ -851,6 +851,7 @@ static_library("browser") {
     "//chrome/browser/performance_monitor",
     "//chrome/browser/permissions",
     "//chrome/browser/persisted_state_db",
+    "//chrome/browser/personal_context",
     "//chrome/browser/picture_in_picture",
     "//chrome/browser/picture_in_picture:impl",
     "//chrome/browser/plugins:impl",

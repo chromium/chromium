@@ -682,6 +682,7 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/performance_manager",
     "//chrome/browser/permissions",
     "//chrome/browser/persisted_state_db",
+    "//chrome/browser/personal_context",
     "//chrome/browser/plus_addresses",
     "//chrome/browser/predictors",
     "//chrome/browser/prefs",
