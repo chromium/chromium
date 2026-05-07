@@ -13,7 +13,6 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/security_principal.h"
@@ -24,16 +23,22 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
-#include "extensions/browser/app_window/app_window.h"
-#include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
+#include "extensions/browser/app_window/app_window.h"
+#include "extensions/browser/app_window/app_window_registry.h"
+#endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -371,6 +376,7 @@ class ProcessMapBrowserTest : public ExtensionBrowserTest {
     return extension;
   }
 
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
   content::WebContents* GetAppWindowContents() {
     AppWindowRegistry* registry = AppWindowRegistry::Get(profile());
     if (registry->app_windows().size() != 1) {
@@ -381,6 +387,7 @@ class ProcessMapBrowserTest : public ExtensionBrowserTest {
 
     return (*registry->app_windows().begin())->web_contents();
   }
+#endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
 
   content::WebContents* GetWebViewFromEmbedder(content::WebContents* embedder) {
     std::vector<content::WebContents*> inner_web_contents =
@@ -408,8 +415,10 @@ class ProcessMapBrowserTest : public ExtensionBrowserTest {
 
   // Opens a new tab to a Web UI page.
   void OpenWebUi() {
+    // Use chrome://version because it is Web UI on all platforms, including
+    // Android (which has some native UI chrome:// pages like settings).
     ASSERT_TRUE(
-        NavigateToURL(GetActiveWebContents(), GURL("chrome://settings")));
+        NavigateToURL(GetActiveWebContents(), GURL("chrome://version")));
   }
 
   // Opens a new tab to a page in the given `extension`.
@@ -1408,6 +1417,8 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
   }
 }
 
+// These tests use platform app windows.
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
 IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
                        IsPrivilegedExtensionProcess_WebViews) {
   const Extension* extension = AddExtensionWithWebViewAndOpen();
@@ -1462,6 +1473,7 @@ IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest, CanHostContextType_WebViews) {
       {mojom::ContextType::kWebPage, mojom::ContextType::kUntrustedWebUi},
       "webview process without extension passed");
 }
+#endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
 
 IN_PROC_BROWSER_TEST_F(ProcessMapBrowserTest,
                        IsPrivilegedExtensionProcess_UserScripts) {
