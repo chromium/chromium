@@ -349,7 +349,6 @@ source_set("unit_tests") {
   ]
   if (!is_ios) {
     sources += [
-      "content_setting_permission_context_base_unittest.cc",
       "contexts/camera_pan_tilt_zoom_permission_context_unittest.cc",
       "contexts/geolocation_permission_context_unittest.cc",
       "contexts/keyboard_lock_prompt_unittest.cc",
@@ -358,6 +357,7 @@ source_set("unit_tests") {
       "object_permission_context_base_unittest.cc",
       "pepc_initiated_permission_request_unittest.cc",
       "permission_actions_history_unittest.cc",
+      "permission_context_unittest.cc",
       "permission_decision_auto_blocker_unittest.cc",
       "permission_manager_unittest.cc",
       "permission_request_manager_unittest.cc",

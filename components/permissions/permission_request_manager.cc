@@ -624,7 +624,8 @@ void PermissionRequestManager::Accept(const PromptOptions& prompt_options) {
             ContentSettingsType::GEOLOCATION_WITH_OPTIONS ||
         std::holds_alternative<std::monostate>(prompt_options))
       << "Requests that are not for Geolocation with options should not "
-         "pass any options (must be std::monostate).";
+         "pass any options (must be std::monostate)."
+      << requests_[0]->GetContentSettingsType();
 
   if (ignore_callbacks_from_prompt_) {
     return;
