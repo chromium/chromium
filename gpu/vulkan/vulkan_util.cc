@@ -105,88 +105,8 @@ bool IsBlockedByBuildInfo() {
   return false;
 }
 
-BASE_FEATURE(kVulkanV2, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kVulkanV3, base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsDeviceBlockedByFeatureParams(const GPUInfo& gpu_info,
-                                    const base::Feature* feature) {
-  const base::FeatureParam<std::string> kBlockListByHardware{
-      feature, "BlockListByHardware", ""};
-
-  const base::FeatureParam<std::string> kBlockListByBrand{
-      feature, "BlockListByBrand", ""};
-
-  const base::FeatureParam<std::string> kBlockListByDevice{
-      feature, "BlockListByDevice", ""};
-
-  const base::FeatureParam<std::string> kBlockListByAndroidBuildId{
-      feature, "BlockListByAndroidBuildId", ""};
-
-  const base::FeatureParam<std::string> kBlockListByManufacturer{
-      feature, "BlockListByManufacturer", ""};
-
-  const base::FeatureParam<std::string> kBlockListByModel{
-      feature, "BlockListByModel", ""};
-
-  const base::FeatureParam<std::string> kBlockListByBoard{
-      feature, "BlockListByBoard", ""};
-
-  const base::FeatureParam<std::string> kBlockListByAndroidBuildFP{
-      feature, "BlockListByAndroidBuildFP", ""};
-
-  const base::FeatureParam<std::string> kBlockListByGLDriver{
-      feature, "BlockListByGLDriver", ""};
-
-  const base::FeatureParam<std::string> kBlockListByGLRenderer{
-      feature, "BlockListByGLRenderer", ""};
-
-  // Check block list against build info.
-  if (IsDeviceBlocked(base::android::android_info::hardware(),
-                      kBlockListByHardware.Get())) {
-    return true;
-  }
-  if (IsDeviceBlocked(base::android::android_info::brand(),
-                      kBlockListByBrand.Get())) {
-    return true;
-  }
-  if (IsDeviceBlocked(base::android::android_info::device(),
-                      kBlockListByDevice.Get())) {
-    return true;
-  }
-  if (IsDeviceBlocked(base::android::android_info::android_build_id(),
-                      kBlockListByAndroidBuildId.Get())) {
-    return true;
-  }
-  if (IsDeviceBlocked(base::android::android_info::manufacturer(),
-                      kBlockListByManufacturer.Get())) {
-    return true;
-  }
-  if (IsDeviceBlocked(base::android::android_info::model(),
-                      kBlockListByModel.Get())) {
-    return true;
-  }
-  if (IsDeviceBlocked(base::android::android_info::board(),
-                      kBlockListByBoard.Get())) {
-    return true;
-  }
-  if (IsDeviceBlocked(base::android::android_info::android_build_fp(),
-                      kBlockListByAndroidBuildFP.Get())) {
-    return true;
-  }
-
-  if (IsDeviceBlocked(gpu_info.gl_renderer, kBlockListByGLRenderer.Get())) {
-    return true;
-  }
-
-  if (IsDeviceBlocked(gpu_info.gpu.driver_version,
-                      kBlockListByGLDriver.Get())) {
-    return true;
-  }
-
-  return false;
-}
-
-bool IsVulkanV2Allowed() {
+// Everything that passed 2022 deQP tests.
+bool HasMinDeqpLevelForMediaTek() {
   // We require at least android V deqp test to pass for v2.
   constexpr int32_t kVulkanDEQPAndroidV = 0x7e80301;
   if (base::android::device_info::vulkan_deqp_level() < kVulkanDEQPAndroidV) {
@@ -195,122 +115,6 @@ bool IsVulkanV2Allowed() {
 
   return true;
 }
-
-bool IsVulkanV2Enabled(const GPUInfo& gpu_info,
-                       std::string_view experiment_arm) {
-  if (!IsVulkanV2Allowed()) {
-    return false;
-  }
-
-  if (!base::FeatureList::IsEnabled(kVulkanV2)) {
-    return false;
-  }
-
-  if (IsDeviceBlockedByFeatureParams(gpu_info, &kVulkanV2)) {
-    return false;
-  }
-
-  const base::FeatureParam<std::string> kBlockListByExperimentArm{
-      &kVulkanV2, "BlockListByExperimentArm", ""};
-
-  if (IsDeviceBlocked(experiment_arm, kBlockListByExperimentArm.Get())) {
-    return false;
-  }
-
-  return true;
-}
-
-bool ShouldBypassMediatekBlock(const GPUInfo& gpu_info) {
-  return IsVulkanV2Enabled(gpu_info, "Mediatek");
-}
-
-// Everything except MediaTek.
-bool IsVulkanV1EnabledForMali(const GPUInfo& gpu_info) {
-  // https://crbug.com/1183702
-  if (IsDeviceBlocked(gpu_info.gl_renderer, "*Mali-G?? M*")) {
-    return false;
-  }
-  return true;
-}
-
-// Everything that passed 2022 deQP tests.
-bool IsVulkanV2EnabledForMali(
-    const GPUInfo& gpu_info,
-    const VulkanPhysicalDeviceProperties& device_properties) {
-  // Mali-G57 have problems initializing Vulkan even with 2022 deQP tests
-  // passed, devices that init successfully show performance regression.
-  if (base::StartsWith(device_properties.device_name, "Mali-G57")) {
-    return false;
-  }
-
-  // For V2 we MediaTek is allowed.
-  return ShouldBypassMediatekBlock(gpu_info);
-}
-
-// Only Adreno 630 with drivers newer than 444.0
-bool IsVulkanV1EnabledForAdreno(
-    const GPUInfo& gpu_info,
-    const VulkanPhysicalDeviceProperties& device_properties) {
-  // https://crbug.com/1246857
-  if (IsDeviceBlocked(gpu_info.gpu.driver_version,
-                      "324.0|331.0|334.0|378.0|415.0|420.0|444.0")) {
-    return false;
-  }
-
-  // https:://crbug.com/1165783: Performance is not yet as good as GL.
-  return device_properties.device_name == std::string_view("Adreno (TM) 630");
-}
-
-bool IsVulkanV2EnabledForAdreno(
-    const GPUInfo& gpu_info,
-    const VulkanPhysicalDeviceProperties& device_properties) {
-  // Adreno shows regression even with 2022 deQP tests.
-  return false;
-}
-
-// Adreno 610+ and drivers 502+.
-bool IsVulkanV3EnabledForAdreno(
-    const GPUInfo& gpu_info,
-    const VulkanPhysicalDeviceProperties& device_properties) {
-  // If IsVulkanV2Allowed(), this device is part of VulkanV2 finch and we should
-  // not make decision again. This is to prevent VulkanV2 control group to get
-  // Vulkan enabled by getting into VulkanV3 enabled group.
-  if (IsVulkanV2Allowed()) {
-    return false;
-  }
-
-  std::vector<const char*> slow_gpus_for_v3 = {
-      "Adreno (TM) 2??",
-      "Adreno (TM) 3??",
-      "Adreno (TM) 4??",
-      "Adreno (TM) 5??",
-  };
-
-  const bool is_slow_gpu_for_v3 =
-      std::ranges::any_of(slow_gpus_for_v3, [&](const char* pattern) {
-        return base::MatchPattern(device_properties.device_name, pattern);
-      });
-
-  if (is_slow_gpu_for_v3) {
-    return false;
-  }
-
-  constexpr uint32_t kMinVersion = 0x801F6000;  // 502.0
-  if (device_properties.driver_version < kMinVersion) {
-    return false;
-  }
-
-  if (!base::FeatureList::IsEnabled(kVulkanV3)) {
-    return false;
-  }
-
-  if (IsDeviceBlockedByFeatureParams(gpu_info, &kVulkanV3)) {
-    return false;
-  }
-
-  return true;
-}
-
 #endif
 }  // namespace
 
@@ -475,11 +279,11 @@ bool CheckVulkanCompatibilities(
   return true;
 #endif
 #else   // BUILDFLAG(IS_ANDROID)
-   if (base::FeatureList::IsEnabled(features::kSkipVulkanBlocklist)) {
+  if (base::FeatureList::IsEnabled(features::kSkipVulkanBlocklist)) {
     return true;
   }
 
-  if (IsBlockedByBuildInfo() && !ShouldBypassMediatekBlock(gpu_info)) {
+  if (IsBlockedByBuildInfo() && !HasMinDeqpLevelForMediaTek()) {
     return false;
   }
 
@@ -523,14 +327,29 @@ bool CheckVulkanCompatibilities(
       return false;
     }
 
-    return IsVulkanV1EnabledForMali(gpu_info) ||
-           IsVulkanV2EnabledForMali(gpu_info, device_properties);
+    // Allow remaining Mali GPUs that aren't MediaTek. https://crbug.com/1183702
+    if (!IsDeviceBlocked(gpu_info.gl_renderer, "*Mali-G?? M*")) {
+      return true;
+    }
+
+    // MediaTek Mali-G57 has problems initializing Vulkan even with 2022 deQP
+    // tests passed, devices that init successfully show performance regression.
+    if (device_name == "G57") {
+      return false;
+    }
+
+    // For MediaTek allow everything that passed 2022 deQP tests.
+    return HasMinDeqpLevelForMediaTek();
   }
 
   if (device_properties.vendor_id == kVendorQualcomm) {
-    return IsVulkanV1EnabledForAdreno(gpu_info, device_properties) ||
-           IsVulkanV2EnabledForAdreno(gpu_info, device_properties) ||
-           IsVulkanV3EnabledForAdreno(gpu_info, device_properties);
+    // Only Adreno 630 with drivers newer than 444.0. This was launched for
+    // Pixel 3 in the original Vulkan launch but otherwise Vulkan hasn't
+    // performan as well as GL. https:://crbug.com/1165783
+    return device_properties.device_name ==
+               std::string_view("Adreno (TM) 630") &&
+           !IsDeviceBlocked(gpu_info.gpu.driver_version,
+                            "324.0|331.0|334.0|378.0|415.0|420.0|444.0");
   }
 
   if (device_properties.vendor_id == kVendorImagination) {
