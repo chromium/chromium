@@ -77,8 +77,8 @@ scoped_refptr<AudioBus> AudioBus::TryCreate(unsigned number_of_channels,
   scoped_refptr<AudioBus> bus =
       base::AdoptRef(new AudioBus(number_of_channels, length, false));
 
-  for (unsigned i = 0; i < number_of_channels; ++i) {
-    if (!bus->Channel(i)->TryAllocate(length)) {
+  for (AudioChannel& channel : bus->channels_) {
+    if (!channel.TryAllocate(length)) {
       return nullptr;
     }
   }
@@ -256,9 +256,8 @@ scoped_refptr<AudioBus> AudioBus::CreateBufferFromRange(
 
 float AudioBus::MaxAbsValue() const {
   float max = 0.0f;
-  for (unsigned i = 0; i < NumberOfChannels(); ++i) {
-    const AudioChannel* channel = Channel(i);
-    max = std::max(max, channel->MaxAbsValue());
+  for (const AudioChannel& channel : channels_) {
+    max = std::max(max, channel.MaxAbsValue());
   }
 
   return max;
@@ -272,8 +271,8 @@ void AudioBus::Normalize() {
 }
 
 void AudioBus::Scale(float scale) {
-  for (unsigned i = 0; i < NumberOfChannels(); ++i) {
-    Channel(i)->Scale(scale);
+  for (AudioChannel& channel : channels_) {
+    channel.Scale(scale);
   }
 }
 
@@ -323,19 +322,10 @@ void AudioBus::SumFrom(const AudioBus& source_bus,
 }
 
 void AudioBus::DiscreteSumFrom(const AudioBus& source_bus) {
-  unsigned number_of_source_channels = source_bus.NumberOfChannels();
-  unsigned number_of_destination_channels = NumberOfChannels();
-
-  if (number_of_destination_channels < number_of_source_channels) {
-    // Down-mix by summing channels and dropping the remaining.
-    for (unsigned i = 0; i < number_of_destination_channels; ++i) {
-      Channel(i)->SumFrom(source_bus.Channel(i));
-    }
-  } else if (number_of_destination_channels > number_of_source_channels) {
-    // Up-mix by summing as many channels as we have.
-    for (unsigned i = 0; i < number_of_source_channels; ++i) {
-      Channel(i)->SumFrom(source_bus.Channel(i));
-    }
+  DCHECK_NE(NumberOfChannels(), source_bus.NumberOfChannels());
+  unsigned count = std::min(NumberOfChannels(), source_bus.NumberOfChannels());
+  for (unsigned i = 0; i < count; ++i) {
+    Channel(i)->SumFrom(source_bus.Channel(i));
   }
 }
 
