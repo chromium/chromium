@@ -102,6 +102,7 @@ ALIGNMENT_ORDER = [
     'BorderValue',
     'StyleColor',
     'StyleAutoColor',
+    'StyleCaretColor',
     'Color',
     'StyleHyphenateLimitChars',
     'LayoutUnit',

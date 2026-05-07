@@ -2834,6 +2834,18 @@ std::optional<blink::Color> ComputedStyle::AccentColorResolved() const {
   return auto_color.Resolve(GetCurrentColor(), UsedColorScheme());
 }
 
+std::optional<blink::Color> ComputedStyle::ResolvedCaretTextColor() const {
+  const StyleAutoColor& text_color = CaretColor().TextColor();
+  if (text_color.IsAutoColor()) {
+    return std::nullopt;
+  }
+  const StyleColor& style_color = text_color.ToStyleColor();
+  if (ShouldForceColor(style_color)) {
+    return GetInternalForcedCurrentColor(nullptr);
+  }
+  return style_color.Resolve(GetCurrentColor(), UsedColorScheme(), nullptr);
+}
+
 std::optional<blink::Color> ComputedStyle::ScrollbarThumbColorResolved() const {
   if (const StyleScrollbarColor* scrollbar_color = UsedScrollbarColor()) {
     return scrollbar_color->GetThumbColor().Resolve(GetCurrentColor(),

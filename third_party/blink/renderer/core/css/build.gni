@@ -769,6 +769,7 @@ blink_core_sources_css = [
   "style_attribute_mutation_scope.cc",
   "style_attribute_mutation_scope.h",
   "style_auto_color.h",
+  "style_caret_color.h",
   "style_change_reason.cc",
   "style_change_reason.h",
   "style_color.cc",

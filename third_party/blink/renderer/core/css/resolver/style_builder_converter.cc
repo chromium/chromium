@@ -77,6 +77,7 @@
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/resolver/filter_operation_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/transform_builder.h"
+#include "third_party/blink/renderer/core/css/style_caret_color.h"
 #include "third_party/blink/renderer/core/css/style_color.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
@@ -3066,6 +3067,20 @@ StyleAutoColor StyleBuilderConverter::ConvertStyleAutoColor(
     }
   }
   return StyleAutoColor(ConvertStyleColor(state, value, for_visited_link));
+}
+
+StyleCaretColor StyleBuilderConverter::ConvertStyleCaretColor(
+    StyleResolverState& state,
+    const CSSValue& value,
+    bool for_visited_link) {
+  if (const auto* list = DynamicTo<CSSValueList>(value)) {
+    DCHECK_EQ(list->length(), 2u);
+    return StyleCaretColor(
+        ConvertStyleAutoColor(state, list->Item(0), for_visited_link),
+        ConvertStyleAutoColor(state, list->Item(1), for_visited_link));
+  }
+  return StyleCaretColor(ConvertStyleAutoColor(state, value, for_visited_link),
+                         StyleAutoColor::AutoColor());
 }
 
 SVGPaint StyleBuilderConverter::ConvertSVGPaint(StyleResolverState& state,

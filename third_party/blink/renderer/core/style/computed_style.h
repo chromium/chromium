@@ -981,6 +981,12 @@ class ComputedStyle final : public ComputedStyleBase {
   }
 
   bool IsCaretColorAuto() const { return CaretColor().IsAutoColor(); }
+  bool IsCaretTextColorAuto() const {
+    return CaretColor().TextColor().IsAutoColor();
+  }
+  // Returns the resolved the second value of caret-color for the color of
+  // the text that under block caret shape or nullopt if the value is 'auto'.
+  std::optional<blink::Color> ResolvedCaretTextColor() const;
 
   // accent-color
   // An empty optional means the accent-color is 'auto'

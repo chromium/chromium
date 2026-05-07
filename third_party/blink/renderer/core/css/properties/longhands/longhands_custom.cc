@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
+#include "third_party/blink/renderer/core/css/style_caret_color.h"
 #include "third_party/blink/renderer/core/css/style_color.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/zoom_adjusted_pixel_value.h"
@@ -2138,10 +2139,35 @@ const CSSValue* CaretColor::ParseSingleValue(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     CSSParserLocalContext& local_context) const {
+  const CSSValue* first;
   if (stream.Peek().Id() == CSSValueID::kAuto) {
-    return css_parsing_utils::ConsumeIdent(stream);
+    first = css_parsing_utils::ConsumeIdent(stream);
+  } else {
+    first = css_parsing_utils::ConsumeColor(stream, context, local_context);
   }
-  return css_parsing_utils::ConsumeColor(stream, context, local_context);
+  if (!first) {
+    return nullptr;
+  }
+
+  if (!RuntimeEnabledFeatures::CSSCaretColorWithOptionalSecondValueEnabled(
+          context.GetExecutionContext())) {
+    return first;
+  }
+
+  const CSSValue* second;
+  if (stream.Peek().Id() == CSSValueID::kAuto) {
+    second = css_parsing_utils::ConsumeIdent(stream);
+  } else {
+    second = css_parsing_utils::ConsumeColor(stream, context, local_context);
+  }
+  if (!second) {
+    return first;
+  }
+
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  list->Append(*first);
+  list->Append(*second);
+  return list;
 }
 
 const CSSValue* CaretShape::CSSValueFromComputedStyleInternal(
@@ -2157,7 +2183,7 @@ const blink::Color CaretColor::ColorIncludingFallback(
     const ComputedStyle& style,
     bool* is_current_color) const {
   DCHECK(!visited_link);
-  const StyleAutoColor& auto_color = style.CaretColor();
+  const StyleAutoColor& auto_color = style.CaretColor().FillColor();
   // TODO(rego): We may want to adjust the caret color if it's the same as
   // the background to ensure good visibility and contrast.
   const StyleColor result = auto_color.IsAutoColor()
@@ -2179,19 +2205,31 @@ const CSSValue* CaretColor::CSSValueFromComputedStyleInternal(
     return cssvalue::CSSColor::Create(style.VisitedDependentColor(*this));
   }
 
-  const StyleAutoColor& auto_color = style.CaretColor();
+  const StyleCaretColor& caret_color = style.CaretColor();
+  const StyleAutoColor& fill_color = caret_color.FillColor();
   // TODO(rego): We may want to adjust the caret color if it's the same as
   // the background to ensure good visibility and contrast.
-  const StyleColor result = auto_color.IsAutoColor()
+  const StyleColor result = fill_color.IsAutoColor()
                                 ? StyleColor::CurrentColor()
-                                : auto_color.ToStyleColor();
+                                : fill_color.ToStyleColor();
   if (value_phase == CSSValuePhase::kResolvedValue &&
       style.ShouldForceColor(result)) {
     return cssvalue::CSSColor::Create(style.GetInternalForcedCurrentColor());
   }
 
-  return ComputedStyleUtils::ValueForStyleAutoColor(style, style.CaretColor(),
-                                                    value_phase);
+  const CSSValue* first_value = ComputedStyleUtils::ValueForStyleAutoColor(
+      style, fill_color, value_phase);
+
+  // Include the color for text overlapping with block caret when it's non-auto.
+  const StyleAutoColor& text_color = caret_color.TextColor();
+  if (!text_color.IsAutoColor()) {
+    CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+    list->Append(*first_value);
+    list->Append(*ComputedStyleUtils::ValueForStyleAutoColor(style, text_color,
+                                                             value_phase));
+    return list;
+  }
+  return first_value;
 }
 
 bool CaretColor::IsAffectedByCurrentColor(const ComputedStyle& style) const {
@@ -5538,7 +5576,8 @@ const blink::Color InternalVisitedCaretColor::ColorIncludingFallback(
     const ComputedStyle& style,
     bool* is_current_color) const {
   DCHECK(visited_link);
-  const StyleAutoColor& auto_color = style.InternalVisitedCaretColor();
+  const StyleAutoColor& auto_color =
+      style.InternalVisitedCaretColor().FillColor();
   const StyleColor result = auto_color.IsAutoColor()
                                 ? StyleColor::CurrentColor()
                                 : auto_color.ToStyleColor();
