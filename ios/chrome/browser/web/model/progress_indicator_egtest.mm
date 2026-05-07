@@ -5,6 +5,7 @@
 #import <memory>
 
 #import "base/apple/foundation_util.h"
+#import "base/path_service.h"
 #import "base/run_loop.h"
 #import "base/strings/stringprintf.h"
 #import "base/synchronization/condition_variable.h"
@@ -14,12 +15,12 @@
 #import "ios/chrome/browser/web/model/progress_indicator_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
-#import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#import "ios/web/public/test/http_server/html_response_provider.h"
-#import "ios/web/public/test/http_server/http_server.h"
-#import "ios/web/public/test/http_server/http_server_util.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
+#import "net/test/embedded_test_server/http_request.h"
+#import "net/test/embedded_test_server/http_response.h"
 #import "url/gurl.h"
 
 namespace {
@@ -33,14 +34,16 @@ const char kPageText[] = "Navigation testing page";
 // Identifier of form to submit on form page.
 const char kFormID[] = "testform";
 
-// URL string for a form page.
-const char kFormURL[] = "http://form";
+// URL strings for form pages with different behaviors.
+const char kFormInfiniteURL[] = "/form_infinite";
+const char kFormSimpleURL[] = "/form_simple";
+const char kFormSuppressedURL[] = "/form_suppressed";
 
 // URL string for an infinite pending page.
-const char kInfinitePendingPageURL[] = "http://infinite";
+const char kInfinitePendingPageURL[] = "/infinite";
 
 // URL string for a simple page containing `kPageText`.
-const char kSimplePageURL[] = "http://simplepage";
+const char kSimplePageURL[] = "/simplepage";
 
 // ProgressView from primary toolbar.
 id<GREYMatcher> ProgressViewInPrimaryToolbar() {
@@ -94,87 +97,78 @@ void CheckProgressViewNotVisible() {
   }
 }
 
-// Response provider that serves the page which never finishes loading.
-// TODO(crbug.com/41311220): Convert this to Embedded Test Server.
-class InfinitePendingResponseProvider : public HtmlResponseProvider {
- public:
-  explicit InfinitePendingResponseProvider(const GURL& url)
-      : url_(url),
-        aborted_(false),
-        terminated_(false),
-        condition_variable_(&lock_) {}
-  ~InfinitePendingResponseProvider() override {
-    GREYAssert(terminated_, @"Request was not aborted.");
-  }
+std::unique_ptr<net::test_server::HttpResponse> CreateHttpResponse(
+    const std::string& content) {
+  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+  response->set_code(net::HTTP_OK);
+  response->set_content_type("text/html");
+  response->set_content(content);
+  return response;
+}
 
-  // Interrupt the current infinite request.
-  // Must be called before the object is destroyed.
-  void Abort() {
-    {
-      base::AutoLock auto_lock(lock_);
-      aborted_.store(true, std::memory_order_release);
-      condition_variable_.Signal();
-    }
-
-    const bool success =
-        base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(10), ^{
-          base::AutoLock auto_lock(lock_);
-          return terminated_.load(std::memory_order_acquire);
-        });
-    GREYAssertTrue(success, @"Timed out trying to Abort()");
-  }
-
-  // HtmlResponseProvider overrides:
-  bool CanHandleRequest(const Request& request) override {
-    return request.url == url_ ||
-           request.url == GetInfinitePendingResponseUrl();
-  }
-  void GetResponseHeadersAndBody(
-      const Request& request,
-      scoped_refptr<net::HttpResponseHeaders>* headers,
-      std::string* response_body) override {
-    *headers = GetDefaultResponseHeaders();
-    if (request.url == url_) {
-      *response_body =
-          base::StringPrintf("<p>%s</p><img src='%s'/>", kPageText,
-                             GetInfinitePendingResponseUrl().spec().c_str());
-    } else {
-      *response_body = base::StringPrintf("<p>%s</p>", kPageText);
-      {
-        base::AutoLock auto_lock(lock_);
-        while (!aborted_.load(std::memory_order_acquire)) {
-          condition_variable_.Wait();
-        }
-        terminated_.store(true, std::memory_order_release);
-      }
-    }
-  }
-
- private:
-  // Returns a url for which this response provider will never reply.
-  GURL GetInfinitePendingResponseUrl() const {
-    GURL::Replacements replacements;
-    replacements.SetPathStr("resource");
-    return url_.DeprecatedGetOriginAsURL().ReplaceComponents(replacements);
-  }
-
-  // Main page URL that never finish loading.
-  GURL url_;
-
-  // Everything below is protected by lock_.
-  mutable base::Lock lock_;
-  std::atomic_bool aborted_;
-  std::atomic_bool terminated_;
-  base::ConditionVariable condition_variable_;
-};
+std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
+  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+  response->set_code(net::HTTP_NOT_FOUND);
+  return response;
+}
 
 }  // namespace
 
 // Tests webpage loading progress indicator.
-@interface ProgressIndicatorTestCase : WebHttpServerChromeTestCase
+@interface ProgressIndicatorTestCase : ChromeTestCase
 @end
 
 @implementation ProgressIndicatorTestCase
+
+- (void)setUp {
+  [super setUp];
+
+  __weak ProgressIndicatorTestCase* weakSelf = self;
+  self.testServer->RegisterRequestHandler(
+      base::BindRepeating(^std::unique_ptr<net::test_server::HttpResponse>(
+          const net::test_server::HttpRequest& request) {
+        return [weakSelf handleProgressIndicatorRequest:request];
+      }));
+
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+}
+
+// Handles requests for the embedded test server.
+- (std::unique_ptr<net::test_server::HttpResponse>)
+    handleProgressIndicatorRequest:
+        (const net::test_server::HttpRequest&)request {
+  if (request.relative_url == kInfinitePendingPageURL) {
+    return CreateHttpResponse(
+        base::StringPrintf("<p>%s</p><img src='/resource'/>", kPageText));
+  }
+
+  if (request.relative_url == "/resource") {
+    return std::make_unique<net::test_server::DelayedHttpResponse>(
+        base::Minutes(10));
+  }
+
+  if (request.relative_url == kFormInfiniteURL) {
+    GURL infinitePendingURL = self.testServer->GetURL(kInfinitePendingPageURL);
+    return CreateHttpResponse(
+        [self formPageHTMLWithFormSubmitURL:infinitePendingURL]);
+  }
+
+  if (request.relative_url == kFormSimpleURL) {
+    GURL simplePageURL = self.testServer->GetURL(kSimplePageURL);
+    return CreateHttpResponse(
+        [self formPageHTMLWithFormSubmitURL:simplePageURL]);
+  }
+
+  if (request.relative_url == kFormSuppressedURL) {
+    return CreateHttpResponse([self formPageHTMLWithSuppressedSubmitEvent]);
+  }
+
+  if (request.relative_url == kSimplePageURL) {
+    return CreateHttpResponse(kPageText);
+  }
+
+  return NotFoundResponse();
+}
 
 // Returns an HTML string for a form with the submission action set to
 // `submitURL`.
@@ -201,12 +195,7 @@ class InfinitePendingResponseProvider : public HtmlResponseProvider {
 
   // Load a page which never finishes loading.
   const GURL infinitePendingURL =
-      web::test::HttpServer::MakeUrl(kInfinitePendingPageURL);
-  auto uniqueInfinitePendingProvider =
-      std::make_unique<InfinitePendingResponseProvider>(infinitePendingURL);
-  InfinitePendingResponseProvider* infinitePendingProvider =
-      uniqueInfinitePendingProvider.get();
-  web::test::SetUpHttpServer(std::move(uniqueInfinitePendingProvider));
+      self.testServer->GetURL(kInfinitePendingPageURL);
 
   // EG synchronizes with WKWebView. Disable synchronization for EG interation
   // during when page is loading.
@@ -223,7 +212,6 @@ class InfinitePendingResponseProvider : public HtmlResponseProvider {
   CheckProgressViewVisibleWithProgress(0.5);
 
   [ChromeEarlGreyUI waitForToolbarVisible:YES];
-  infinitePendingProvider->Abort();
 }
 
 // Tests that the progress indicator is shown and has expected progress value
@@ -233,21 +221,9 @@ class InfinitePendingResponseProvider : public HtmlResponseProvider {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad (no progress view in tablet)");
   }
 
-  const GURL formURL = web::test::HttpServer::MakeUrl(kFormURL);
-  const GURL infinitePendingURL =
-      web::test::HttpServer::MakeUrl(kInfinitePendingPageURL);
-
-  // Create a page with a form to test.
-  std::map<GURL, std::string> responses;
-  responses[formURL] = [self formPageHTMLWithFormSubmitURL:infinitePendingURL];
-  web::test::SetUpSimpleHttpServer(responses);
+  const GURL formURL = self.testServer->GetURL(kFormInfiniteURL);
 
   // Add responseProvider for page that never finishes loading.
-  auto uniqueInfinitePendingProvider =
-      std::make_unique<InfinitePendingResponseProvider>(infinitePendingURL);
-  InfinitePendingResponseProvider* infinitePendingProvider =
-      uniqueInfinitePendingProvider.get();
-  web::test::AddResponseProvider(std::move(uniqueInfinitePendingProvider));
 
   // EG synchronizes with WKWebView. Disable synchronization for EG interation
   // during when page is loading.
@@ -266,7 +242,6 @@ class InfinitePendingResponseProvider : public HtmlResponseProvider {
   CheckProgressViewVisibleWithProgress(0.5);
 
   [ChromeEarlGreyUI waitForToolbarVisible:YES];
-  infinitePendingProvider->Abort();
 }
 
 // Tests that the progress indicator disappears after form has been submitted.
@@ -275,14 +250,7 @@ class InfinitePendingResponseProvider : public HtmlResponseProvider {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad (no progress view in tablet)");
   }
 
-  const GURL formURL = web::test::HttpServer::MakeUrl(kFormURL);
-  const GURL simplePageURL = web::test::HttpServer::MakeUrl(kSimplePageURL);
-
-  // Create a page with a form to test.
-  std::map<GURL, std::string> responses;
-  responses[formURL] = [self formPageHTMLWithFormSubmitURL:simplePageURL];
-  responses[simplePageURL] = kPageText;
-  web::test::SetUpSimpleHttpServer(responses);
+  const GURL formURL = self.testServer->GetURL(kFormSimpleURL);
 
   [ChromeEarlGrey loadURL:formURL];
 
@@ -305,10 +273,7 @@ class InfinitePendingResponseProvider : public HtmlResponseProvider {
   }
 
   // Create a page with a form to test.
-  const GURL formURL = web::test::HttpServer::MakeUrl(kFormURL);
-  std::map<GURL, std::string> responses;
-  responses[formURL] = [self formPageHTMLWithSuppressedSubmitEvent];
-  web::test::SetUpSimpleHttpServer(responses);
+  const GURL formURL = self.testServer->GetURL(kFormSuppressedURL);
 
   [ChromeEarlGrey loadURL:formURL];
 
