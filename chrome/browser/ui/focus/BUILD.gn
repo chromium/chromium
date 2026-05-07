@@ -7,16 +7,23 @@ import("//build/config/ui.gni")
 assert(!is_android)
 
 source_set("focus") {
-  public = [ "browser_focus_controller.h" ]
+  public = [
+    "browser_focus_controller.h",
+    "browser_focus_controller_delegate_views.h",
+  ]
 
   public_deps = [
     "//base",
+    "//chrome/browser/ui:browser_element_identifiers",
     "//ui/base/unowned_user_data",
   ]
 }
 
 source_set("impl") {
-  sources = [ "browser_focus_controller.cc" ]
+  sources = [
+    "browser_focus_controller.cc",
+    "browser_focus_controller_delegate_views.cc",
+  ]
 
   public_deps = [
     ":focus",

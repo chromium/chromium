@@ -69,6 +69,7 @@
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/focus/browser_focus_controller.h"
+#include "chrome/browser/ui/focus/browser_focus_controller_delegate_views.h"
 #include "chrome/browser/ui/fullscreen/browser_window_fullscreen_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/omnibox/ai_mode_page_action_controller.h"
@@ -419,9 +420,6 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
       GetUserDataFactory().CreateInstance<TranslateBubbleController>(
           *browser, browser, browser_actions_->root_action_item());
 
-  browser_focus_controller_ =
-      std::make_unique<BrowserFocusController>(*browser);
-
   cookie_controls_controller_ =
       std::make_unique<content_settings::CookieControlsController>(
           CookieSettingsFactory::GetForProfile(profile),
@@ -571,11 +569,25 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
 }
 
 void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
+  Profile* const profile = browser_->GetProfile();
+  BrowserView* const browser_view =
+      BrowserView::GetBrowserViewForBrowser(browser);
+
   desktop_browser_window_capabilities_ =
       GetUserDataFactory().CreateInstance<DesktopBrowserWindowCapabilities>(
           *browser, browser_window_modal_dialog_delegate_.get(),
           unload_controller_.get(), browser->window(),
           browser->GetUnownedUserDataHost());
+
+  browser_focus_controller_ =
+      GetUserDataFactory().CreateInstance<BrowserFocusController>(
+          *browser, browser->GetWindow(), browser->GetUnownedUserDataHost());
+  if (browser_view) {
+    browser_focus_controller_->SetDelegate(
+        std::make_unique<BrowserFocusControllerDelegateViews>(
+            profile, browser_elements_.get(),
+            ToolbarButtonProvider::From(browser)));
+  }
 
   if (WebUIBrowserWindow* webui_browser_window =
           WebUIBrowserWindow::FromBrowser(browser)) {
@@ -596,9 +608,6 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
   }
 #endif
 
-  Profile* const profile = browser_->GetProfile();
-  BrowserView* const browser_view =
-      BrowserView::GetBrowserViewForBrowser(browser);
   if (browser_view) {
     // Initialize fullscreen control host after exclusive access manager is
     // ready.
@@ -1117,6 +1126,7 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
 
   data_protection_ui_controller_.reset();
 
+  browser_focus_controller_.reset();
   desktop_browser_window_capabilities_.reset();
   signin_view_controller_->TearDownPreBrowserWindowDestruction();
 
