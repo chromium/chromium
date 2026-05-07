@@ -42,9 +42,10 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="NotBoundedBySelection"/>
   <int value="4" label="NoCompositionBounds"/>
   <int value="5" label="InvalidCompositionRange"/>
+  <int value="6" label="InvalidSelectionRange"/>
 </enum>
 
-<!-- LINT.ThenChange(//content/browser/renderer_host/render_widget_host_view_mac.mm:GetCachedFirstRectResult) -->
+<!-- LINT.ThenChange(//content/browser/renderer_host/render_widget_host_view_mac.h:GetCachedFirstRectResult) -->
 
 <enum name="IMEAssistiveDisabledReason">
   <int value="0" label="None"/>

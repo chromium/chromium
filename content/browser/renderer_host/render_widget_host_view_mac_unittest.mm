@@ -9,12 +9,14 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <string>
 #include <tuple>
 
 #include "base/apple/scoped_cftyperef.h"
 #include "base/apple/scoped_nsautorelease_pool.h"
 #include "base/command_line.h"
 #include "base/containers/queue.h"
+#include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/stack_allocated.h"
@@ -34,6 +36,7 @@
 #include "content/browser/renderer_host/render_widget_host_delegate.h"
 #include "content/browser/renderer_host/text_input_manager.h"
 #include "content/browser/site_instance_group.h"
+#include "content/common/features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_widget_host_view_mac_delegate.h"
@@ -64,10 +67,14 @@
 #include "ui/events/blink/blink_features.h"
 #include "ui/events/blink/web_input_event_traits.h"
 #include "ui/events/test/cocoa_test_event_utils.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
+#include "ui/gfx/range/range.h"
 #include "ui/latency/latency_info.h"
 
 using testing::_;
+using testing::Bool;
+using testing::Combine;
 
 // Helper class with methods used to mock -[NSEvent phase], used by
 // |MockScrollWheelEventWithPhase()|.
@@ -594,6 +601,88 @@ class RenderWidgetHostViewMacTest : public RenderViewHostImplTestHarness {
   base::SimpleTestTickClock mock_clock_;
 };
 
+class RenderWidgetHostViewMacCachedFirstRectTest
+    : public RenderWidgetHostViewMacTest,
+      public ::testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+ protected:
+  using GetCachedFirstRectResult =
+      RenderWidgetHostViewMac::GetCachedFirstRectResult;
+
+  RenderWidgetHostViewMacCachedFirstRectTest() {
+    std::tie(more_selection_fallbacks_, allow_range_outside_selection_,
+             allow_invalid_selection_) = GetParam();
+    scoped_feature_list_.InitWithFeatureStates({
+        {features::kCachedFirstRectMoreSelectionFallbacks,
+         more_selection_fallbacks_},
+        {features::kCachedFirstRectAllowRangeOutsideSelection,
+         allow_range_outside_selection_},
+        {features::kCachedFirstRectAllowInvalidSelection,
+         allow_invalid_selection_},
+    });
+  }
+
+  // Expect that the result of GetCachedFirstRectForCharacterRange() is
+  // `expected_result`. If the expected result is kFound, also expects that the
+  // outputs match `expected_rect` and `expected_range`, otherwise they're
+  // ignored.
+  void ExpectCachedFirstRect(
+      const gfx::Range& requested_range,
+      GetCachedFirstRectResult expected_result,
+      const gfx::Rect& expected_rect,
+      const gfx::Range& expected_range,
+      const base::Location& location = base::Location::Current()) {
+    SCOPED_TRACE(::testing::Message() << "requested_range " << requested_range
+                                      << ", from " << location.ToString());
+    gfx::Rect rect;
+    // Make sure not crashing by passing nullptr instead of `actual_range`.
+    EXPECT_EQ(rwhv_mac_->GetCachedFirstRectForCharacterRange(requested_range,
+                                                             &rect, nullptr),
+              expected_result);
+    // If the result doesn't match, log the returned rect and range for
+    // debugging.
+    gfx::Range actual_range;
+    ASSERT_EQ(rwhv_mac_->GetCachedFirstRectForCharacterRange(
+                  requested_range, &rect, &actual_range),
+              expected_result)
+        << "rect " << rect.ToString() << " actual_range "
+        << actual_range.ToString();
+    if (expected_result == GetCachedFirstRectResult::kFound) {
+      EXPECT_EQ(rect, expected_rect);
+      EXPECT_EQ(actual_range, expected_range);
+    }
+  }
+
+  GetCachedFirstRectResult RangeOutsideSelectionResult() const {
+    if (allow_range_outside_selection_) {
+      return GetCachedFirstRectResult::kFound;
+    }
+    return GetCachedFirstRectResult::kNotBoundedBySelection;
+  }
+
+  GetCachedFirstRectResult InvalidSelectionResult() const {
+    // No range can be bounded by an invalid selection range, so invalid
+    // selections only return kFound if BOTH features are enabled.
+    if (allow_invalid_selection_ && allow_range_outside_selection_) {
+      return GetCachedFirstRectResult::kFound;
+    }
+    return GetCachedFirstRectResult::kInvalidSelection;
+  }
+
+  bool more_selection_fallbacks() const { return more_selection_fallbacks_; }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  bool more_selection_fallbacks_;
+  bool allow_range_outside_selection_;
+  bool allow_invalid_selection_;
+};
+
+INSTANTIATE_TEST_SUITE_P(OptimizeCachedFirstRect,
+                         RenderWidgetHostViewMacCachedFirstRectTest,
+                         Combine(/*more_selection_fallbacks=*/Bool(),
+                                 /*allow_range_outside_selection=*/Bool(),
+                                 /*allow_invalid_selection=*/Bool()));
+
 TEST_F(RenderWidgetHostViewMacTest, Basic) {
 }
 
@@ -697,30 +786,30 @@ TEST_F(RenderWidgetHostViewMacTest, InvalidKeyCode) {
   EXPECT_EQ(0U, host_->GetAndResetDispatchedMessages().size());
 }
 
-TEST_F(RenderWidgetHostViewMacTest, GetFirstRectForCharacterRangeCaretCase) {
+TEST_P(RenderWidgetHostViewMacCachedFirstRectTest,
+       GetFirstRectForCharacterRangeCaretCase) {
   const std::u16string kDummyString = u"hogehoge";
   const size_t kDummyOffset = 0;
 
   gfx::Rect caret_rect(10, 11, 0, 10);
   gfx::Range caret_range(0, 0);
 
-  gfx::Rect rect;
-  gfx::Range actual_range;
   rwhv_mac_->SelectionChanged(kDummyString, kDummyOffset, caret_range);
   rwhv_mac_->SelectionBoundsChanged(caret_rect, base::i18n::LEFT_TO_RIGHT,
                                     caret_rect, base::i18n::LEFT_TO_RIGHT,
                                     gfx::Rect(), false);
-  EXPECT_TRUE(rwhv_mac_->GetCachedFirstRectForCharacterRange(caret_range, &rect,
-                                                             &actual_range));
-  EXPECT_EQ(caret_rect, rect);
-  EXPECT_EQ(caret_range, gfx::Range(actual_range));
+  // `actual_range` is the requested range since it matches the caret.
+  ExpectCachedFirstRect(gfx::Range(0, 0), GetCachedFirstRectResult::kFound,
+                        caret_rect, gfx::Range(0, 0));
+  ExpectCachedFirstRect(gfx::Range(0, 1), GetCachedFirstRectResult::kFound,
+                        caret_rect, gfx::Range(0, 1));
 
-  EXPECT_TRUE(rwhv_mac_->GetCachedFirstRectForCharacterRange(
-      gfx::Range(0, 1), &rect, &actual_range));
-  EXPECT_FALSE(rwhv_mac_->GetCachedFirstRectForCharacterRange(
-      gfx::Range(1, 1), &rect, &actual_range));
-  EXPECT_FALSE(rwhv_mac_->GetCachedFirstRectForCharacterRange(
-      gfx::Range(2, 3), &rect, &actual_range));
+  // Requested range outside selection. If allowed, `actual_range` is the
+  // selection range.
+  ExpectCachedFirstRect(gfx::Range(1, 1), RangeOutsideSelectionResult(),
+                        caret_rect, caret_range);
+  ExpectCachedFirstRect(gfx::Range(2, 3), RangeOutsideSelectionResult(),
+                        caret_rect, caret_range);
 
   // Caret moved.
   caret_rect = gfx::Rect(20, 11, 0, 10);
@@ -729,66 +818,119 @@ TEST_F(RenderWidgetHostViewMacTest, GetFirstRectForCharacterRangeCaretCase) {
   rwhv_mac_->SelectionBoundsChanged(caret_rect, base::i18n::LEFT_TO_RIGHT,
                                     caret_rect, base::i18n::LEFT_TO_RIGHT,
                                     gfx::Rect(), false);
-  EXPECT_TRUE(rwhv_mac_->GetCachedFirstRectForCharacterRange(caret_range, &rect,
-                                                             &actual_range));
-  EXPECT_EQ(caret_rect, rect);
-  EXPECT_EQ(caret_range, actual_range);
+  ExpectCachedFirstRect(gfx::Range(1, 1), GetCachedFirstRectResult::kFound,
+                        caret_rect, gfx::Range(1, 1));
+  ExpectCachedFirstRect(gfx::Range(0, 0), RangeOutsideSelectionResult(),
+                        caret_rect, caret_range);
+  ExpectCachedFirstRect(gfx::Range(1, 2), GetCachedFirstRectResult::kFound,
+                        caret_rect, gfx::Range(1, 2));
+  ExpectCachedFirstRect(gfx::Range(2, 3), RangeOutsideSelectionResult(),
+                        caret_rect, caret_range);
 
-  EXPECT_FALSE(rwhv_mac_->GetCachedFirstRectForCharacterRange(
-      gfx::Range(0, 0), &rect, &actual_range));
-  EXPECT_TRUE(rwhv_mac_->GetCachedFirstRectForCharacterRange(
-      gfx::Range(1, 2), &rect, &actual_range));
-  EXPECT_FALSE(rwhv_mac_->GetCachedFirstRectForCharacterRange(
-      gfx::Range(2, 3), &rect, &actual_range));
-
-  // No caret.
+  // Caret outside selection bounds.
   caret_range = gfx::Range(1, 2);
   rwhv_mac_->SelectionChanged(kDummyString, kDummyOffset, caret_range);
   rwhv_mac_->SelectionBoundsChanged(
       caret_rect, base::i18n::LEFT_TO_RIGHT, gfx::Rect(30, 11, 0, 10),
       base::i18n::LEFT_TO_RIGHT, gfx::Rect(), false);
-  EXPECT_FALSE(rwhv_mac_->GetCachedFirstRectForCharacterRange(
-      gfx::Range(0, 0), &rect, &actual_range));
-  EXPECT_FALSE(rwhv_mac_->GetCachedFirstRectForCharacterRange(
-      gfx::Range(0, 1), &rect, &actual_range));
-  EXPECT_TRUE(rwhv_mac_->GetCachedFirstRectForCharacterRange(
-      gfx::Range(1, 1), &rect, &actual_range));
-  EXPECT_TRUE(rwhv_mac_->GetCachedFirstRectForCharacterRange(
-      gfx::Range(1, 2), &rect, &actual_range));
-  EXPECT_TRUE(rwhv_mac_->GetCachedFirstRectForCharacterRange(
-      gfx::Range(2, 2), &rect, &actual_range));
+  ExpectCachedFirstRect(gfx::Range(0, 0), RangeOutsideSelectionResult(),
+                        caret_rect, caret_range);
+  ExpectCachedFirstRect(gfx::Range(0, 1), RangeOutsideSelectionResult(),
+                        caret_rect, caret_range);
+  ExpectCachedFirstRect(gfx::Range(1, 1), GetCachedFirstRectResult::kFound,
+                        caret_rect, caret_range);
+  ExpectCachedFirstRect(gfx::Range(1, 2), GetCachedFirstRectResult::kFound,
+                        caret_rect, caret_range);
+  ExpectCachedFirstRect(gfx::Range(2, 2), GetCachedFirstRectResult::kFound,
+                        caret_rect, caret_range);
 }
 
-TEST_F(RenderWidgetHostViewMacTest, UpdateCompositionSinglelineCase) {
+TEST_P(RenderWidgetHostViewMacCachedFirstRectTest, UpdateCompositionNotSent) {
   ActivateViewWithTextInputManager(rwhv_mac_, ui::TEXT_INPUT_TYPE_TEXT);
-  const gfx::Point kOrigin(10, 11);
-  const gfx::Size kBoundsUnit(10, 20);
 
-  gfx::Rect rect;
-  // Make sure not crashing by passing nullptr pointer instead of
-  // |actual_range|.
-  EXPECT_FALSE(rwhv_mac_->GetCachedFirstRectForCharacterRange(gfx::Range(0, 0),
-                                                              &rect, nullptr));
+  // If there are no updates from renderer, always return selection position.
+  ExpectCachedFirstRect(gfx::Range(0, 0), InvalidSelectionResult(), gfx::Rect(),
+                        gfx::Range::InvalidRange());
+  ExpectCachedFirstRect(gfx::Range(0, 1), InvalidSelectionResult(), gfx::Rect(),
+                        gfx::Range::InvalidRange());
+  ExpectCachedFirstRect(gfx::Range(1, 0), InvalidSelectionResult(), gfx::Rect(),
+                        gfx::Range::InvalidRange());
+  ExpectCachedFirstRect(gfx::Range(1, 1), InvalidSelectionResult(), gfx::Rect(),
+                        gfx::Range::InvalidRange());
+  ExpectCachedFirstRect(gfx::Range(1, 2), InvalidSelectionResult(), gfx::Rect(),
+                        gfx::Range::InvalidRange());
 
-  // If there are no update from renderer, always returned caret position.
-  gfx::Range actual_range;
-  EXPECT_FALSE(rwhv_mac_->GetCachedFirstRectForCharacterRange(
-      gfx::Range(0, 0), &rect, &actual_range));
-  EXPECT_FALSE(rwhv_mac_->GetCachedFirstRectForCharacterRange(
-      gfx::Range(0, 1), &rect, &actual_range));
-  EXPECT_FALSE(rwhv_mac_->GetCachedFirstRectForCharacterRange(
-      gfx::Range(1, 0), &rect, &actual_range));
-  EXPECT_FALSE(rwhv_mac_->GetCachedFirstRectForCharacterRange(
-      gfx::Range(1, 1), &rect, &actual_range));
-  EXPECT_FALSE(rwhv_mac_->GetCachedFirstRectForCharacterRange(
-      gfx::Range(1, 2), &rect, &actual_range));
+  const std::u16string kDummyString = u"hogehoge";
+  const size_t kDummyOffset = 0;
+
+  gfx::Rect caret_rect(10, 11, 0, 10);
+  gfx::Rect focus_rect(10, 11, 20, 10);
+  gfx::Range caret_range(1, 2);
+
+  rwhv_mac_->SelectionChanged(kDummyString, kDummyOffset, caret_range);
+  rwhv_mac_->SelectionBoundsChanged(caret_rect, base::i18n::LEFT_TO_RIGHT,
+                                    focus_rect, base::i18n::LEFT_TO_RIGHT,
+                                    gfx::Rect(), false);
+
+  ExpectCachedFirstRect(gfx::Range(0, 0), RangeOutsideSelectionResult(),
+                        caret_rect, caret_range);
+  ExpectCachedFirstRect(gfx::Range(0, 1), RangeOutsideSelectionResult(),
+                        caret_rect, caret_range);
+  ExpectCachedFirstRect(gfx::Range(1, 0), RangeOutsideSelectionResult(),
+                        caret_rect, caret_range);
+  ExpectCachedFirstRect(gfx::Range(1, 1), GetCachedFirstRectResult::kFound,
+                        caret_rect, caret_range);
+  ExpectCachedFirstRect(gfx::Range(1, 2), GetCachedFirstRectResult::kFound,
+                        caret_rect, caret_range);
+}
+
+TEST_P(RenderWidgetHostViewMacCachedFirstRectTest,
+       UpdateCompositionEmptyVector) {
+  ActivateViewWithTextInputManager(rwhv_mac_, ui::TEXT_INPUT_TYPE_TEXT);
 
   // If the firstRectForCharacterRange is failed in renderer, empty rect vector
   // is sent. Make sure this does not crash.
-  rwhv_mac_->ImeCompositionRangeChanged(gfx::Range(10, 12),
+  rwhv_mac_->ImeCompositionRangeChanged(gfx::Range(2, 12),
                                         std::vector<gfx::Rect>());
-  EXPECT_FALSE(rwhv_mac_->GetCachedFirstRectForCharacterRange(
-      gfx::Range(10, 11), &rect, nullptr));
+
+  // If more_selection_fallbacks() is enabled, empty composition range will fall
+  // back to the selection, which doesn't exist.
+  ExpectCachedFirstRect(gfx::Range(2, 11),
+                        more_selection_fallbacks()
+                            ? InvalidSelectionResult()
+                            : GetCachedFirstRectResult::kNoCompositionBounds,
+                        gfx::Rect(), gfx::Range::InvalidRange());
+
+  // If there's a selection, maybe fall back to it.
+  const std::u16string kDummyString = u"hogehoge";
+  const size_t kDummyOffset = 0;
+
+  gfx::Rect caret_rect(10, 11, 0, 10);
+  gfx::Rect focus_rect(10, 11, 50, 10);
+  gfx::Range caret_range(2, 5);
+
+  rwhv_mac_->SelectionChanged(kDummyString, kDummyOffset, caret_range);
+  rwhv_mac_->SelectionBoundsChanged(caret_rect, base::i18n::LEFT_TO_RIGHT,
+                                    focus_rect, base::i18n::LEFT_TO_RIGHT,
+                                    gfx::Rect(), false);
+
+  ExpectCachedFirstRect(gfx::Range(2, 4),
+                        more_selection_fallbacks()
+                            ? GetCachedFirstRectResult::kFound
+                            : GetCachedFirstRectResult::kNoCompositionBounds,
+                        caret_rect, caret_range);
+  ExpectCachedFirstRect(gfx::Range(2, 11),
+                        more_selection_fallbacks()
+                            ? RangeOutsideSelectionResult()
+                            : GetCachedFirstRectResult::kNoCompositionBounds,
+                        caret_rect, caret_range);
+}
+
+TEST_P(RenderWidgetHostViewMacCachedFirstRectTest,
+       UpdateCompositionSingleLineCase) {
+  ActivateViewWithTextInputManager(rwhv_mac_, ui::TEXT_INPUT_TYPE_TEXT);
+  const gfx::Point kOrigin(10, 11);
+  const gfx::Size kBoundsUnit(10, 20);
 
   const int kCompositionLength = 10;
   std::vector<gfx::Rect> composition_bounds;
@@ -802,19 +944,65 @@ TEST_F(RenderWidgetHostViewMacTest, UpdateCompositionSinglelineCase) {
                                &composition_bounds);
   rwhv_mac_->ImeCompositionRangeChanged(kCompositionRange, composition_bounds);
 
-  // Out of range requests will return caret position.
-  EXPECT_FALSE(rwhv_mac_->GetCachedFirstRectForCharacterRange(
-      gfx::Range(0, 0), &rect, &actual_range));
-  EXPECT_FALSE(rwhv_mac_->GetCachedFirstRectForCharacterRange(
-      gfx::Range(1, 1), &rect, &actual_range));
-  EXPECT_FALSE(rwhv_mac_->GetCachedFirstRectForCharacterRange(
-      gfx::Range(1, 2), &rect, &actual_range));
-  EXPECT_FALSE(rwhv_mac_->GetCachedFirstRectForCharacterRange(
-      gfx::Range(2, 2), &rect, &actual_range));
-  EXPECT_TRUE(rwhv_mac_->GetCachedFirstRectForCharacterRange(
-      gfx::Range(13, 14), &rect, &actual_range));
-  EXPECT_TRUE(rwhv_mac_->GetCachedFirstRectForCharacterRange(
-      gfx::Range(14, 15), &rect, &actual_range));
+  // If more_selection_fallbacks() is enabled, invalid composition range will
+  // fall back to the selection, which doesn't exist.
+  const GetCachedFirstRectResult invalid_composition_range_result =
+      more_selection_fallbacks()
+          ? InvalidSelectionResult()
+          : GetCachedFirstRectResult::kInvalidCompositionRange;
+
+  // Out of range requests.
+  ExpectCachedFirstRect(gfx::Range(0, 0), invalid_composition_range_result,
+                        gfx::Rect(), gfx::Range::InvalidRange());
+  ExpectCachedFirstRect(gfx::Range(1, 1), invalid_composition_range_result,
+                        gfx::Rect(), gfx::Range::InvalidRange());
+  ExpectCachedFirstRect(gfx::Range(1, 2), invalid_composition_range_result,
+                        gfx::Rect(), gfx::Range::InvalidRange());
+  ExpectCachedFirstRect(gfx::Range(2, 2), invalid_composition_range_result,
+                        gfx::Rect(), gfx::Range::InvalidRange());
+
+  // If there's a selection, maybe fall back to it.
+  const std::u16string kDummyString = u"hogehoge";
+  const size_t kDummyOffset = 0;
+
+  gfx::Rect caret_rect(10, 11, 0, 10);
+  gfx::Rect focus_rect(10, 11, 50, 10);
+  gfx::Range caret_range(1, 2);
+
+  rwhv_mac_->SelectionChanged(kDummyString, kDummyOffset, caret_range);
+  rwhv_mac_->SelectionBoundsChanged(caret_rect, base::i18n::LEFT_TO_RIGHT,
+                                    focus_rect, base::i18n::LEFT_TO_RIGHT,
+                                    gfx::Rect(), false);
+
+  // Out of composition range but inside selection.
+  const GetCachedFirstRectResult outside_composition_result =
+      more_selection_fallbacks()
+          ? GetCachedFirstRectResult::kFound
+          : GetCachedFirstRectResult::kInvalidCompositionRange;
+  // Out of composition range and outside selection.
+  const GetCachedFirstRectResult outside_composition_and_selection_result =
+      more_selection_fallbacks()
+          ? RangeOutsideSelectionResult()
+          : GetCachedFirstRectResult::kInvalidCompositionRange;
+  ExpectCachedFirstRect(gfx::Range(0, 0),
+                        outside_composition_and_selection_result, caret_rect,
+                        caret_range);
+  ExpectCachedFirstRect(gfx::Range(1, 1), outside_composition_result,
+                        caret_rect, caret_range);
+  ExpectCachedFirstRect(gfx::Range(1, 2), outside_composition_result,
+                        caret_rect, caret_range);
+  ExpectCachedFirstRect(gfx::Range(2, 2), outside_composition_result,
+                        caret_rect, caret_range);
+
+  // Inside composition range. Selection is ignored.
+
+  // 10th rect starts at position 13.
+  gfx::Rect tenth_rect(kOrigin, gfx::Size(0, kBoundsUnit.height()));
+  tenth_rect.Offset(10 * kBoundsUnit.width(), 0);
+  ExpectCachedFirstRect(gfx::Range(13, 14), GetCachedFirstRectResult::kFound,
+                        tenth_rect, gfx::Range(13, 13));
+  ExpectCachedFirstRect(gfx::Range(14, 15), GetCachedFirstRectResult::kFound,
+                        tenth_rect, gfx::Range(13, 13));
 
   for (int i = 0; i <= kCompositionLength; ++i) {
     for (int j = 0; j <= kCompositionLength - i; ++j) {
@@ -825,26 +1013,17 @@ TEST_F(RenderWidgetHostViewMacTest, UpdateCompositionSinglelineCase) {
                                                       0);
       const gfx::Range request_range = gfx::Range(
           kCompositionStart + range.start(), kCompositionStart + range.end());
-      EXPECT_TRUE(rwhv_mac_->GetCachedFirstRectForCharacterRange(
-            request_range,
-            &rect,
-            &actual_range));
-      EXPECT_EQ(request_range, actual_range);
-      EXPECT_EQ(expected_rect, rect);
-
-      // Make sure not crashing by passing nullptr pointer instead of
-      // |actual_range|.
-      EXPECT_TRUE(rwhv_mac_->GetCachedFirstRectForCharacterRange(
-          request_range, &rect, nullptr));
+      ExpectCachedFirstRect(request_range, GetCachedFirstRectResult::kFound,
+                            expected_rect, request_range);
     }
   }
 }
 
-TEST_F(RenderWidgetHostViewMacTest, UpdateCompositionMultilineCase) {
+TEST_P(RenderWidgetHostViewMacCachedFirstRectTest,
+       UpdateCompositionMultilineCase) {
   ActivateViewWithTextInputManager(rwhv_mac_, ui::TEXT_INPUT_TYPE_TEXT);
   const gfx::Point kOrigin(10, 11);
   const gfx::Size kBoundsUnit(10, 20);
-  gfx::Rect rect;
 
   const int kCompositionLength = 30;
   std::vector<gfx::Rect> composition_bounds;
@@ -863,76 +1042,71 @@ TEST_F(RenderWidgetHostViewMacTest, UpdateCompositionMultilineCase) {
   // Range doesn't contain line breaking point.
   gfx::Range range;
   range = gfx::Range(5, 8);
-  gfx::Range actual_range;
-  EXPECT_TRUE(rwhv_mac_->GetCachedFirstRectForCharacterRange(range, &rect,
-                                                             &actual_range));
-  EXPECT_EQ(range, actual_range);
-  EXPECT_EQ(GetExpectedRect(kOrigin, kBoundsUnit, range, 0), rect);
+  ExpectCachedFirstRect(range, GetCachedFirstRectResult::kFound,
+                        GetExpectedRect(kOrigin, kBoundsUnit, range, 0), range);
   range = gfx::Range(15, 18);
-  EXPECT_TRUE(rwhv_mac_->GetCachedFirstRectForCharacterRange(range, &rect,
-                                                             &actual_range));
-  EXPECT_EQ(range, actual_range);
-  EXPECT_EQ(GetExpectedRect(kOrigin, kBoundsUnit, gfx::Range(5, 8), 1), rect);
+  ExpectCachedFirstRect(
+      range, GetCachedFirstRectResult::kFound,
+      GetExpectedRect(kOrigin, kBoundsUnit, gfx::Range(5, 8), 1), range);
   range = gfx::Range(25, 28);
-  EXPECT_TRUE(rwhv_mac_->GetCachedFirstRectForCharacterRange(range, &rect,
-                                                             &actual_range));
-  EXPECT_EQ(range, actual_range);
-  EXPECT_EQ(GetExpectedRect(kOrigin, kBoundsUnit, gfx::Range(5, 8), 2), rect);
+  ExpectCachedFirstRect(
+      range, GetCachedFirstRectResult::kFound,
+      GetExpectedRect(kOrigin, kBoundsUnit, gfx::Range(5, 8), 2), range);
 
   // Range contains line breaking point.
   range = gfx::Range(8, 12);
-  EXPECT_TRUE(rwhv_mac_->GetCachedFirstRectForCharacterRange(range, &rect,
-                                                             &actual_range));
-  EXPECT_EQ(gfx::Range(8, 10), actual_range);
-  EXPECT_EQ(GetExpectedRect(kOrigin, kBoundsUnit, gfx::Range(8, 10), 0), rect);
+  ExpectCachedFirstRect(
+      range, GetCachedFirstRectResult::kFound,
+      GetExpectedRect(kOrigin, kBoundsUnit, gfx::Range(8, 10), 0),
+      gfx::Range(8, 10));
   range = gfx::Range(18, 22);
-  EXPECT_TRUE(rwhv_mac_->GetCachedFirstRectForCharacterRange(range, &rect,
-                                                             &actual_range));
-  EXPECT_EQ(gfx::Range(18, 20), actual_range);
-  EXPECT_EQ(GetExpectedRect(kOrigin, kBoundsUnit, gfx::Range(8, 10), 1), rect);
+  ExpectCachedFirstRect(
+      range, GetCachedFirstRectResult::kFound,
+      GetExpectedRect(kOrigin, kBoundsUnit, gfx::Range(8, 10), 1),
+      gfx::Range(18, 20));
 
   // Start point is line breaking point.
   range = gfx::Range(10, 12);
-  EXPECT_TRUE(rwhv_mac_->GetCachedFirstRectForCharacterRange(range, &rect,
-                                                             &actual_range));
-  EXPECT_EQ(gfx::Range(10, 12), actual_range);
-  EXPECT_EQ(GetExpectedRect(kOrigin, kBoundsUnit, gfx::Range(0, 2), 1), rect);
+  ExpectCachedFirstRect(
+      range, GetCachedFirstRectResult::kFound,
+      GetExpectedRect(kOrigin, kBoundsUnit, gfx::Range(0, 2), 1),
+      gfx::Range(10, 12));
   range = gfx::Range(20, 22);
-  EXPECT_TRUE(rwhv_mac_->GetCachedFirstRectForCharacterRange(range, &rect,
-                                                             &actual_range));
-  EXPECT_EQ(gfx::Range(20, 22), actual_range);
-  EXPECT_EQ(GetExpectedRect(kOrigin, kBoundsUnit, gfx::Range(0, 2), 2), rect);
+  ExpectCachedFirstRect(
+      range, GetCachedFirstRectResult::kFound,
+      GetExpectedRect(kOrigin, kBoundsUnit, gfx::Range(0, 2), 2),
+      gfx::Range(20, 22));
 
   // End point is line breaking point.
   range = gfx::Range(5, 10);
-  EXPECT_TRUE(rwhv_mac_->GetCachedFirstRectForCharacterRange(range, &rect,
-                                                             &actual_range));
-  EXPECT_EQ(gfx::Range(5, 10), actual_range);
-  EXPECT_EQ(GetExpectedRect(kOrigin, kBoundsUnit, gfx::Range(5, 10), 0), rect);
+  ExpectCachedFirstRect(
+      range, GetCachedFirstRectResult::kFound,
+      GetExpectedRect(kOrigin, kBoundsUnit, gfx::Range(5, 10), 0),
+      gfx::Range(5, 10));
   range = gfx::Range(15, 20);
-  EXPECT_TRUE(rwhv_mac_->GetCachedFirstRectForCharacterRange(range, &rect,
-                                                             &actual_range));
-  EXPECT_EQ(gfx::Range(15, 20), actual_range);
-  EXPECT_EQ(GetExpectedRect(kOrigin, kBoundsUnit, gfx::Range(5, 10), 1), rect);
+  ExpectCachedFirstRect(
+      range, GetCachedFirstRectResult::kFound,
+      GetExpectedRect(kOrigin, kBoundsUnit, gfx::Range(5, 10), 1),
+      gfx::Range(15, 20));
 
   // Start and end point are same line breaking point.
   range = gfx::Range(10, 10);
-  EXPECT_TRUE(rwhv_mac_->GetCachedFirstRectForCharacterRange(range, &rect,
-                                                             &actual_range));
-  EXPECT_EQ(gfx::Range(10, 10), actual_range);
-  EXPECT_EQ(GetExpectedRect(kOrigin, kBoundsUnit, gfx::Range(0, 0), 1), rect);
+  ExpectCachedFirstRect(
+      range, GetCachedFirstRectResult::kFound,
+      GetExpectedRect(kOrigin, kBoundsUnit, gfx::Range(0, 0), 1),
+      gfx::Range(10, 10));
   range = gfx::Range(20, 20);
-  EXPECT_TRUE(rwhv_mac_->GetCachedFirstRectForCharacterRange(range, &rect,
-                                                             &actual_range));
-  EXPECT_EQ(gfx::Range(20, 20), actual_range);
-  EXPECT_EQ(GetExpectedRect(kOrigin, kBoundsUnit, gfx::Range(0, 0), 2), rect);
+  ExpectCachedFirstRect(
+      range, GetCachedFirstRectResult::kFound,
+      GetExpectedRect(kOrigin, kBoundsUnit, gfx::Range(0, 0), 2),
+      gfx::Range(20, 20));
 
   // Start and end point are different line breaking point.
   range = gfx::Range(10, 20);
-  EXPECT_TRUE(rwhv_mac_->GetCachedFirstRectForCharacterRange(range, &rect,
-                                                             &actual_range));
-  EXPECT_EQ(gfx::Range(10, 20), actual_range);
-  EXPECT_EQ(GetExpectedRect(kOrigin, kBoundsUnit, gfx::Range(0, 10), 1), rect);
+  ExpectCachedFirstRect(
+      range, GetCachedFirstRectResult::kFound,
+      GetExpectedRect(kOrigin, kBoundsUnit, gfx::Range(0, 10), 1),
+      gfx::Range(10, 20));
 }
 
 // Check that events coming from AppKit via -[NSTextInputClient

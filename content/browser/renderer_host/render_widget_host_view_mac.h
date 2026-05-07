@@ -91,6 +91,21 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
       public ui::AcceleratedWidgetMacNSView,
       public ui::AccessibilityFocusOverrider::Client {
  public:
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(GetCachedFirstRectResult)
+  enum class GetCachedFirstRectResult {
+    kFound = 0,
+    kNoTextInputManager = 1,
+    kNoTextSelection = 2,
+    kNotBoundedBySelection = 3,
+    kNoCompositionBounds = 4,
+    kInvalidCompositionRange = 5,
+    kInvalidSelection = 6,
+    kMaxValue = kInvalidSelection,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/input/enums.xml:GetCachedFirstRectResult)
+
   // The view will associate itself with the given widget. The native view must
   // be hooked up immediately to the view hierarchy, or else when it is
   // deleted it will delete this out from under the caller.
@@ -265,10 +280,10 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   // Returns true and stores first rectangle for character range if the
   // requested |range| is already cached, otherwise returns false.
   // Exposed for testing.
-  CONTENT_EXPORT bool GetCachedFirstRectForCharacterRange(
-      const gfx::Range& requested_range,
-      gfx::Rect* rect,
-      gfx::Range* actual_range);
+  CONTENT_EXPORT GetCachedFirstRectResult
+  GetCachedFirstRectForCharacterRange(const gfx::Range& requested_range,
+                                      gfx::Rect* rect,
+                                      gfx::Range* actual_range);
 
   // Returns true if there is line break in |range| and stores line breaking
   // point to |line_breaking_point|. The |line_break_point| is valid only if
@@ -288,7 +303,8 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   // range at the composition end as a heuristic result.
   // If the conversion failed, return gfx::Range::InvalidRange.
   gfx::Range ConvertCharacterRangeToCompositionRange(
-      const gfx::Range& request_range);
+      const gfx::Range& request_range,
+      const TextInputManager::CompositionRangeInfo* composition_info);
 
   WebContents* GetWebContents();
 
@@ -574,6 +590,15 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   // Returns true if running with no associated platform window, i.e. has NSView
   // but no NSWindow, like when in headless.
   bool IsHeadless() const;
+
+  // If `requested_range` is within the selection region, stores the first rect
+  // of the region in `rect` and the selection range in `actual_range`, and
+  // returns true. Otherwise returns false.
+  GetCachedFirstRectResult GetFirstRectFromSelection(
+      const gfx::Range& requested_range,
+      const TextInputManager::TextSelection* selection,
+      gfx::Rect* rect,
+      gfx::Range* actual_range);
 
   // Interface through which the NSView is to be manipulated. This points either
   // to |in_process_ns_view_bridge_| or to |remote_ns_view_|.
