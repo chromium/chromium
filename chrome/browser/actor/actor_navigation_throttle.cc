@@ -24,6 +24,7 @@
 #include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/browser/web_contents.h"
 #include "net/http/http_response_headers.h"
+#include "ui/base/page_transition_types.h"
 
 namespace actor {
 namespace {
@@ -186,19 +187,35 @@ void ActorNavigationThrottle::OnNavigationConfirmationDecision(
   }
 }
 
+void ActorNavigationThrottle::OnUserLeaveDialogDecision(bool may_continue) {
+  CHECK(!navigation_handle()->IsInPrerenderedMainFrame())
+      << "We should not be prompting for pre-rendered frame navigations.";
+
+  AggregatedJournal& journal = GetJournal();
+  if (may_continue) {
+    // User agreed to navigate away. Resume navigation, and stop Actor task.
+    journal.Log(navigation_handle()->GetURL(), task_id_, "NavThrottle",
+                JournalDetailsBuilder()
+                    .Add("navigate", "User allowed navigation (Leaving task)")
+                    .Build());
+    Resume();
+    if (auto* service = ActorKeyedService::Get(GetProfile())) {
+      service->StopTask(task_id_, ActorTask::StoppedReason::kUserNavigatedAway);
+    }
+    return;
+  }
+  // User refused to leave (stayed). Cancel navigation, do NOT fail tool.
+  journal.Log(navigation_handle()->GetURL(), task_id_, "NavThrottle",
+              JournalDetailsBuilder()
+                  .AddError("User cancelled navigation (Stayed)")
+                  .Build());
+  CancelDeferredNavigation(CANCEL_AND_IGNORE);
+}
+
 content::NavigationThrottle::ThrottleCheckResult
 ActorNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
   const GURL& navigation_url = navigation_handle()->GetURL();
-
   AggregatedJournal& journal = GetJournal();
-
-  if (!is_redirection && !navigation_handle()->IsRendererInitiated()) {
-    journal.Log(navigation_url, task_id_, "NavThrottle",
-                JournalDetailsBuilder()
-                    .Add("navigate", "Not triggered by page")
-                    .Build());
-    return content::NavigationThrottle::PROCEED;
-  }
 
   actor::ActorTask* task =
       ActorKeyedService::Get(GetProfile())->GetTask(task_id_);
@@ -206,6 +223,46 @@ ActorNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
     journal.Log(navigation_url, task_id_, "NavThrottle",
                 JournalDetailsBuilder().AddError("TaskWentAway").Build());
     return content::NavigationThrottle::CANCEL_AND_IGNORE;
+  }
+
+  if (!is_redirection && !navigation_handle()->IsRendererInitiated()) {
+    journal.Log(navigation_url, task_id_, "NavThrottle",
+                JournalDetailsBuilder()
+                    .Add("navigate", "Not triggered by page")
+                    .Build());
+    // This is a browser-initiated navigation. It could be a user action in the
+    // Chrome UI (Home button, Omnibox, bookmarks) OR a navigation initiated by
+    // the Glic Actor itself via its tools.
+    //
+    // We want to intercept only explicit user-initiated UI navigations that
+    // take the user away from the active task, while allowing Glic's own
+    // background navigations (which do not carry these user UI transition
+    // qualifiers) to proceed without prompting.
+    ::ui::PageTransition transition = navigation_handle()->GetPageTransition();
+    // TODO(crbug.com/500826418): Consider ignoring same-origin/same-site
+    // navigations here since they are less disruptive to active tasks.
+    bool is_user_ui_navigation =
+        !::ui::PageTransitionIsWebTriggerable(transition) ||
+        (transition & ::ui::PAGE_TRANSITION_HOME_PAGE);
+
+    if (!is_user_ui_navigation) {
+      return content::NavigationThrottle::PROCEED;
+    }
+
+    if (task->navigation_delegate()) {
+      if (task->navigation_delegate()->MaybeDeferNavigation(
+              navigation_url,
+              base::BindOnce(
+                  &ActorNavigationThrottle::OnUserLeaveDialogDecision,
+                  weak_factory_.GetWeakPtr()))) {
+        journal.Log(navigation_url, task_id_, "NavThrottle",
+                    JournalDetailsBuilder()
+                        .Add("navigate", "Deferred by delegate")
+                        .Build());
+        return content::NavigationThrottle::DEFER;
+      }
+    }
+    return content::NavigationThrottle::PROCEED;
   }
 
   auto journal_entry = journal.CreatePendingAsyncEntry(

@@ -154,6 +154,9 @@ enum ActionResultCode {
   // inspections for sensitive data.
   kActionBlockedByEnterpriseContentScan = 49,
 
+  // The user manually navigated away, interrupting Glic task actuation.
+  kUserNavigatedAway = 50,
+
   // Please see the comment above about adding new values.
 
   ///////////////////////////////////////////////////////////////////////

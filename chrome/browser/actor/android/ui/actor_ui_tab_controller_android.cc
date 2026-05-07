@@ -3,8 +3,11 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/actor/android/ui/actor_ui_tab_controller_android.h"
+#include "url/android/gurl_android.h"
 
+#include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
+#include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/check_deref.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
@@ -26,7 +29,11 @@ ActorUiTabControllerAndroid::ActorUiTabControllerAndroid(
       tab_(tab),
       actor_keyed_service_(actor_keyed_service),
       task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
-      scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {}
+      scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {
+  if (auto* task = actor_keyed_service_->GetTaskFromTab(*tab_)) {
+    task->SetNavigationDelegate(weak_factory_.GetWeakPtr());
+  }
+}
 
 ActorUiTabControllerAndroid::~ActorUiTabControllerAndroid() = default;
 
@@ -75,6 +82,21 @@ void ActorUiTabControllerAndroid::SetActorTaskResume() {
   if (auto* task = actor_keyed_service_->GetTaskFromTab(*tab_)) {
     task->Resume();
   }
+}
+
+bool ActorUiTabControllerAndroid::MaybeDeferNavigation(
+    const GURL& url,
+    NavigationConfirmedCallback callback) {
+  DCHECK(tab_->GetContents());
+  TabAndroid* tab_android = TabAndroid::FromWebContents(tab_->GetContents());
+  if (!tab_android) {
+    return false;
+  }
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_ActorUiTabController_maybeDeferNavigation(
+      env, tab_android->GetJavaObject(), url,
+      base::android::ToJniCallback(env, std::move(callback)));
 }
 
 base::WeakPtr<ActorUiTabControllerInterface>

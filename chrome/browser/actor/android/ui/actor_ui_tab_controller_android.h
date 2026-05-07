@@ -6,11 +6,14 @@
 #define CHROME_BROWSER_ACTOR_ANDROID_UI_ACTOR_UI_TAB_CONTROLLER_ANDROID_H_
 
 #include "base/android/scoped_java_ref.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/actor/actor_navigation_throttle.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+#include "url/gurl.h"
 
 namespace tabs {
 class TabInterface;
@@ -22,7 +25,8 @@ class ActorKeyedService;
 
 namespace actor::ui {
 
-class ActorUiTabControllerAndroid : public ActorUiTabControllerInterface {
+class ActorUiTabControllerAndroid : public ActorUiTabControllerInterface,
+                                    public ActorNavigationThrottle::Delegate {
  public:
   ActorUiTabControllerAndroid(tabs::TabInterface& tab,
                               ActorKeyedService* actor_keyed_service);
@@ -36,6 +40,10 @@ class ActorUiTabControllerAndroid : public ActorUiTabControllerInterface {
   void SetActorTaskResume() override;
   base::WeakPtr<ActorUiTabControllerInterface> GetWeakPtr() override;
   UiTabState GetCurrentUiTabState() const override;
+
+  // ActorNavigationThrottle::Delegate:
+  bool MaybeDeferNavigation(const GURL& url,
+                            NavigationConfirmedCallback callback) override;
 
  private:
   const raw_ref<tabs::TabInterface> tab_;

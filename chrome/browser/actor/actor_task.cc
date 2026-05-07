@@ -423,15 +423,19 @@ void ActorTask::OnFinishedAct(
 void ActorTask::Stop(StoppedReason stop_reason) {
   // Invoke the callback before changing states so that the client sees the Act
   // result before seeing the state transition.
+  mojom::ActionResultCode result_code = mojom::ActionResultCode::kTaskWentAway;
+  if (stop_reason == StoppedReason::kUserNavigatedAway) {
+    result_code = mojom::ActionResultCode::kUserNavigatedAway;
+  }
+
   if (callback_for_act_) {
     DCHECK(state_ == State::kActing || state_ == State::kWaitingOnUser);
-    mojom::ActionResultPtr result =
-        MakeResult(mojom::ActionResultCode::kTaskWentAway);
+    mojom::ActionResultPtr result = MakeResult(result_code);
     action_tracker_for_metrics_->OnFinishedAct(*result);
     std::move(callback_for_act_).Run(MakeResultVector(std::move(result)));
   }
 
-  CancelOngoingActions(mojom::ActionResultCode::kTaskWentAway);
+  CancelOngoingActions(result_code);
 
   end_time_ = base::Time::Now();
   State final_state = GetTaskStateFromStoppedReason(stop_reason);
@@ -515,6 +519,7 @@ bool ActorTask::CancelOngoingActions(mojom::ActionResultCode reason) {
   switch (reason) {
     case mojom::ActionResultCode::kTaskWentAway:
     case mojom::ActionResultCode::kActionsCancelled:
+    case mojom::ActionResultCode::kUserNavigatedAway:
       execution_engine_->RunUserTakeoverCallbackIfExists(
           /*should_cancel=*/true);
       break;
@@ -925,6 +930,7 @@ ActorTask::State ActorTask::GetTaskStateFromStoppedReason(
     case StoppedReason::kUserStartedNewChat:
     case StoppedReason::kUserLoadedPreviousChat:
     case StoppedReason::kStoppedByUser:
+    case StoppedReason::kUserNavigatedAway:
     case StoppedReason::kTabDetached:
     case StoppedReason::kShutdown:
       final_state = State::kCancelled;

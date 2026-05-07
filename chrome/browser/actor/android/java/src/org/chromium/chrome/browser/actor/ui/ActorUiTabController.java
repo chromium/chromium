@@ -10,8 +10,10 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.UserData;
 import org.chromium.build.annotations.NullMarked;
@@ -19,6 +21,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
+import org.chromium.url.GURL;
 
 /** Java-side representation of the C++ ActorUiTabControllerAndroid. */
 @JNINamespace("actor::ui")
@@ -192,6 +195,15 @@ public class ActorUiTabController implements UserData {
     @Override
     public void destroy() {
         mObservers.clear();
+    }
+
+    @CalledByNative
+    @SuppressWarnings("unused")
+    private boolean maybeDeferNavigation(
+            @JniType("GURL") GURL url, Callback<Boolean> navigationConfirmedCallback) {
+        // TODO(crbug.com/500826418): Placeholder for C++ unit tests.
+        // By default, do not defer and let it proceed.
+        return false;
     }
 
     @NativeMethods

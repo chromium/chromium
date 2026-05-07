@@ -50,6 +50,7 @@ chromium-metrics-reviews@google.com.
   <variant name="PreviousChat" summary="User selected a previous chat."/>
   <variant name="Shutdown" summary="Chrome was being shut down."/>
   <variant name="TabDetached" summary="The acting tab was closed."/>
+  <variant name="UserNavigatedAway" summary="User manually navigated away."/>
 </variants>
 
 <!-- LINT.ThenChange(//chrome/browser/actor/actor_task.h:StoppedReason) -->

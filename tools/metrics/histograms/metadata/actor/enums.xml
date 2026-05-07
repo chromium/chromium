@@ -68,6 +68,7 @@ chromium-metrics-reviews@google.com.
   <int value="47" label="ActionsBlockedForScheme"/>
   <int value="48" label="ActionsBlockedOnErrorPage"/>
   <int value="49" label="ActionBlockedByEnterpriseContentScan"/>
+  <int value="50" label="UserNavigatedAway"/>
   <int value="100" label="NavigateInvalidUrl"/>
   <int value="101" label="NavigateFailedToStart"/>
   <int value="102" label="NavigateCommittedErrorPage"/>
@@ -393,6 +394,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Shutdown"/>
   <int value="6" label="Started new chat"/>
   <int value="7" label="Loaded previous chat"/>
+  <int value="8" label="User navigated away"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/actor/actor_task.h:StoppedReason) -->

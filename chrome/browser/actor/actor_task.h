@@ -21,6 +21,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
+#include "chrome/browser/actor/actor_navigation_throttle.h"
 #include "chrome/browser/actor/actor_task_delegate.h"
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/tools/tool_request.h"
@@ -98,6 +99,14 @@ class ActorTask : public base::SupportsUserData {
   const std::string& title() const { return title_; }
   base::WeakPtr<ActorTaskDelegate> delegate() const { return delegate_; }
 
+  void SetNavigationDelegate(
+      base::WeakPtr<ActorNavigationThrottle::Delegate> delegate) {
+    navigation_delegate_ = std::move(delegate);
+  }
+  base::WeakPtr<ActorNavigationThrottle::Delegate> navigation_delegate() const {
+    return navigation_delegate_;
+  }
+
   const EnterprisePolicyChecker& policy_checker() const {
     return policy_checker_.get();
   }
@@ -138,7 +147,8 @@ class ActorTask : public base::SupportsUserData {
     kShutdown = 5,
     kUserStartedNewChat = 6,
     kUserLoadedPreviousChat = 7,
-    kMaxValue = kUserLoadedPreviousChat,
+    kUserNavigatedAway = 8,
+    kMaxValue = kUserNavigatedAway,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/histograms.xml:StoppedReason,
   // //tools/metrics/histograms/metadata/actor/enums.xml:StoppedReasonEnum)
@@ -401,6 +411,8 @@ class ActorTask : public base::SupportsUserData {
 
   // Delegate for task-related events.
   base::WeakPtr<ActorTaskDelegate> delegate_;
+
+  base::WeakPtr<ActorNavigationThrottle::Delegate> navigation_delegate_;
 
   base::WeakPtrFactory<ui::UiEventDispatcher> ui_weak_ptr_factory_;
   base::WeakPtrFactory<ActorTask> weak_ptr_factory_{this};
