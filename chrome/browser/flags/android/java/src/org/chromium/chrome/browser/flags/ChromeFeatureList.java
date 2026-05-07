@@ -1053,8 +1053,7 @@ public abstract class ChromeFeatureList {
                     /* defaultValue= */ true,
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sLogoViewRefactor =
-            newCachedFlag(
-                    LOGO_VIEW_REFACTOR, /* defaultValue= */ false, /* defaultValueInTests= */ true);
+            newCachedFlag(LOGO_VIEW_REFACTOR, /* defaultValue= */ true);
     public static final CachedFlag sMaliciousApkDownloadCheck =
             newCachedFlag(
                     MALICIOUS_APK_DOWNLOAD_CHECK,
