@@ -1858,6 +1858,14 @@ class AdsPageLoadMetricsObserverResourceBrowserTest
         switches::kEnableExperimentalWebPlatformFeatures);
   }
 
+  void CloseAllTabs() {
+    TabStripModel* tab_strip_model = browser()->tab_strip_model();
+    content::WebContentsDestroyedWatcher destroyed_watcher(
+        tab_strip_model->GetActiveWebContents());
+    tab_strip_model->CloseAllTabs();
+    destroyed_watcher.Wait();
+  }
+
   virtual std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
       const {
     std::vector<base::test::FeatureRefAndParams> enabled{
@@ -2055,7 +2063,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
   // Close all tabs instead of navigating as the embedded_test_server will
   // hang waiting for loads to finish when we have an unfinished
   // ControllableHttpResponse.
-  browser()->tab_strip_model()->CloseAllTabs();
+  CloseAllTabs();
 
   histogram_tester.ExpectTotalCount(
       "Blink.UseCounter.PermissionsPolicy.PrivacySensitive.Enabled", features.size());
@@ -2132,7 +2140,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
   // Close all tabs instead of navigating as the embedded_test_server will
   // hang waiting for loads to finish when we have an unfinished
   // ControllableHttpResponse.
-  browser()->tab_strip_model()->CloseAllTabs();
+  CloseAllTabs();
 
   // We have received 4 KB of ads, including 1 KB of mainframe ads, plus 1 KB of
   // mainframe content.
@@ -2189,7 +2197,7 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverResourceBrowserTest,
   // Close all tabs instead of navigating as the embedded_test_server will
   // hang waiting for loads to finish when we have an unfinished
   // ControllableHttpResponse.
-  browser()->tab_strip_model()->CloseAllTabs();
+  CloseAllTabs();
 
   base::ByteCount expected_page_size = initial_page_bytes + response_size;
 
@@ -2813,7 +2821,7 @@ IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverRecordedUKMMetricsTest,
   waiter->Wait();
 
   // Close all tabs to report metrics.
-  browser()->tab_strip_model()->CloseAllTabs();
+  CloseAllTabs();
 
   // Verify UKM Metrics recorded.
   auto entries =
