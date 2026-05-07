@@ -150,10 +150,8 @@ feedwire::Request CreateFeedQueryRequest(
     feed_request.add_client_capability(capability);
 
   feed_request.add_client_capability(Capability::READ_LATER);
-  // Cormorant is only enabled for en.* locales
-  if (feed::IsCormorantEnabledForLocale(request_metadata.country)) {
-    feed_request.add_client_capability(Capability::OPEN_WEB_FEED_COMMAND);
-  }
+  // TODO(crbug.com/407797637): remove OPEN_WEB_FEED_COMMAND from
+  // components/feed/core/proto/v2/wire/capability.proto
 
   if (base::FeatureList::IsEnabled(kPersonalizeFeedUnsignedUsers)) {
     feed_request.add_client_capability(Capability::ON_DEVICE_USER_PROFILE);

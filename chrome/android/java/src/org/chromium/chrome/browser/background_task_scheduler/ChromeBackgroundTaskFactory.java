@@ -95,7 +95,6 @@ public class ChromeBackgroundTaskFactory implements BackgroundTaskFactory {
             // End of Java tasks. All native tasks should be listed here.
             case TaskIds.QUERY_TILE_JOB_ID:
             case TaskIds.FEEDV2_REFRESH_JOB_ID:
-            case TaskIds.WEBFEEDS_REFRESH_JOB_ID:
             case TaskIds.UMA_UPLOAD_JOB_ID:
             case TaskIds.UKM_UPLOAD_JOB_ID:
             case TaskIds.DWA_UPLOAD_JOB_ID:

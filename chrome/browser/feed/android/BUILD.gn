@@ -217,7 +217,6 @@ android_library("javatests") {
 robolectric_library("junit") {
   sources = [
     "java/src/org/chromium/chrome/browser/feed/FakeLinearLayoutManager.java",
-    "java/src/org/chromium/chrome/browser/feed/FeedFeaturesTest.java",
     "java/src/org/chromium/chrome/browser/feed/FeedListContentManagerTest.java",
     "java/src/org/chromium/chrome/browser/feed/FeedLoggingParametersTest.java",
     "java/src/org/chromium/chrome/browser/feed/FeedPlaceholderLayoutTest.java",

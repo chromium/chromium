@@ -988,11 +988,9 @@ constexpr char kSafeBrowsingModuleOpened[] =
 // Deprecated 04/2026.
 constexpr char kTpcdMetadataCohorts[] = "tpcd.metadata.cohorts";
 
-#if BUILDFLAG(IS_ANDROID)
 // Deprecated 04/2026.
 constexpr char kHasSeenWebFeed[] = "webfeed.has_seen_feed";
 constexpr char kLastBadgeAnimationTime[] = "webfeed.last_badge_animation_time";
-#endif  // BUILDFLAG(IS_ANDROID)
 
 // Deprecated 04/2026.
 inline constexpr char kPreallocatedAddressesVersion[] =
@@ -1006,10 +1004,12 @@ inline constexpr char kFirstPlusAddressCreationTime[] =
 inline constexpr char kLastPlusAddressFillingTime[] =
     "plus_addresses.last.filling.time";
 
-#if BUILDFLAG(IS_ANDROID)
 // Deprecated 05/2026.
 constexpr char kWebFeedContentOrder[] = "webfeed.content_order";
-#endif  // BUILDFLAG(IS_ANDROID)
+constexpr char kWebFeedsRequestSchedule[] = "webfeed.request_schedule";
+constexpr char kEnableWebFeedFollowIntroDebug[] =
+    "webfeed_follow_intro_debug.enable";
+constexpr char kLastSeenFeedType[] = "feedv2.last_seen_feed_type";
 
 // Register local state used only for migration (clearing or moving to a new
 // key).
@@ -1122,11 +1122,9 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   // Deprecated 04/2026.
   registry->RegisterDictionaryPref(kTpcdMetadataCohorts);
 
-#if BUILDFLAG(IS_ANDROID)
   // Deprecated 04/2026.
   registry->RegisterBooleanPref(kHasSeenWebFeed, false);
   registry->RegisterTimePref(kLastBadgeAnimationTime, base::Time());
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -1390,10 +1388,11 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterTimePref(kFirstPlusAddressCreationTime, base::Time());
   registry->RegisterTimePref(kLastPlusAddressFillingTime, base::Time());
 
-#if BUILDFLAG(IS_ANDROID)
   // Deprecated 05/2026.
   registry->RegisterIntegerPref(kWebFeedContentOrder, 0);
-#endif  // BUILDFLAG(IS_ANDROID)
+  registry->RegisterDictionaryPref(kWebFeedsRequestSchedule);
+  registry->RegisterBooleanPref(kEnableWebFeedFollowIntroDebug, false);
+  registry->RegisterIntegerPref(kLastSeenFeedType, 0);
 }
 
 }  // namespace
@@ -2418,11 +2417,9 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   tabs::MigrateHoverCardMemoryPref(local_state);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_ANDROID)
   // Added 04/2026.
   local_state->ClearPref(kHasSeenWebFeed);
   local_state->ClearPref(kLastBadgeAnimationTime);
-#endif  // BUILDFLAG(IS_ANDROID)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
@@ -2717,10 +2714,11 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kFirstPlusAddressCreationTime);
   profile_prefs->ClearPref(kLastPlusAddressFillingTime);
 
-#if BUILDFLAG(IS_ANDROID)
   // Added 05/2026.
   profile_prefs->ClearPref(kWebFeedContentOrder);
-#endif  // BUILDFLAG(IS_ANDROID)
+  profile_prefs->ClearPref(kWebFeedsRequestSchedule);
+  profile_prefs->ClearPref(kEnableWebFeedFollowIntroDebug);
+  profile_prefs->ClearPref(kLastSeenFeedType);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

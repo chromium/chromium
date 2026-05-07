@@ -546,11 +546,6 @@ bool FeedStream::IsFeedEnabledByDse() {
   return true;
 }
 
-bool FeedStream::IsWebFeedEnabled() {
-  return feed::IsWebFeedEnabledForLocale(delegate_->GetCountry()) &&
-         !base::FeatureList::IsEnabled(kWebFeedKillSwitch);
-}
-
 void FeedStream::EnabledPreferencesChanged() {
   // Assume there might be stored data if the Feed is ever enabled.
   if (IsEnabledAndVisible())

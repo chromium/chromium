@@ -55,14 +55,6 @@ void OverrideWithFinch(Config& config) {
           kInterestFeedV2, "content_expiration_threshold_seconds",
           config.content_expiration_threshold.InSecondsF()));
 
-  if (base::FeatureList::IsEnabled(kWebFeedOnboarding)) {
-    config.subscriptionless_content_expiration_threshold =
-        base::Seconds(base::GetFieldTrialParamByFeatureAsDouble(
-            kWebFeedOnboarding,
-            "subscriptionless_content_expiration_threshold_seconds",
-            config.subscriptionless_content_expiration_threshold.InSecondsF()));
-  }
-
   config.background_refresh_window_length =
       base::Seconds(base::GetFieldTrialParamByFeatureAsDouble(
           kInterestFeedV2, "background_refresh_window_length_seconds",
@@ -113,15 +105,6 @@ void OverrideWithFinch(Config& config) {
           kInterestFeedV2, "max_prefetch_image_requests_per_refresh",
           config.max_prefetch_image_requests_per_refresh);
 
-  if (base::FeatureList::IsEnabled(kWebFeedOnboarding)) {
-    config.subscriptionless_web_feed_stale_content_threshold =
-        base::Seconds(base::GetFieldTrialParamByFeatureAsDouble(
-            kWebFeedOnboarding,
-            "subscriptionless_web_feed_stale_content_threshold_seconds",
-            config.subscriptionless_web_feed_stale_content_threshold
-                .InSecondsF()));
-  }
-
   // Erase any capabilities with "enable_CAPABILITY = false" set.
   base::EraseIf(config.experimental_capabilities, CapabilityDisabled);
 
@@ -169,15 +152,9 @@ Config::Config() = default;
 Config::Config(const Config& other) = default;
 Config::~Config() = default;
 
-base::TimeDelta Config::GetStalenessThreshold(const StreamType& stream_type,
-                                              bool has_subscriptions) const {
-  if (stream_type.IsForYou()) {
-    return stale_content_threshold;
-  }
-  if (has_subscriptions) {
-    return web_feed_stale_content_threshold;
-  }
-  return subscriptionless_web_feed_stale_content_threshold;
+base::TimeDelta Config::GetStalenessThreshold(
+    const StreamType& stream_type) const {
+  return stale_content_threshold;
 }
 
 }  // namespace feed

@@ -77,8 +77,6 @@ import java.lang.annotation.RetentionPolicy;
     FeatureConstants.IPH_TAB_SWITCHER_XR,
     FeatureConstants.IPH_TAB_TEARING_XR,
     FeatureConstants.IPH_TOUCH_TO_SEARCH_CALLOUT,
-    FeatureConstants.IPH_WEB_FEED_POST_FOLLOW_DIALOG_FEATURE,
-    FeatureConstants.IPH_WEB_FEED_POST_FOLLOW_DIALOG_FEATURE_WITH_UI_UPDATE,
     FeatureConstants.KEYBOARD_ACCESSORY_ACCOUNT_NAME_EMAIL_SUGGESTION_FEATURE,
     FeatureConstants.KEYBOARD_ACCESSORY_ADDRESS_FILL_FEATURE,
     FeatureConstants.KEYBOARD_ACCESSORY_AT_MEMORY_FEATURE,
@@ -315,13 +313,6 @@ public @interface FeatureConstants {
 
     /** An IPH feature to inform users that the touch to search panel can be expanded. */
     String IPH_TOUCH_TO_SEARCH_CALLOUT = "IPH_TouchToSearchCallout";
-
-    /** A dialog IPH feature to inform users about the WebFeed post-follow. */
-    String IPH_WEB_FEED_POST_FOLLOW_DIALOG_FEATURE = "IPH_WebFeedPostFollowDialog";
-
-    /** A dialog IPH feature to inform users about the WebFeed post-follow after the UI update. */
-    String IPH_WEB_FEED_POST_FOLLOW_DIALOG_FEATURE_WITH_UI_UPDATE =
-            "IPH_WebFeedPostFollowDialogWithUIUpdate";
 
     String KEYBOARD_ACCESSORY_ACCOUNT_NAME_EMAIL_SUGGESTION_FEATURE =
             "IPH_AutofillAccountNameEmailSuggestion";

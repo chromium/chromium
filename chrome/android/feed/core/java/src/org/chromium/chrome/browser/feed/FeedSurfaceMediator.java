@@ -176,8 +176,6 @@ public class FeedSurfaceMediator
     /** Internal implementation of Stream.StreamsMediator. */
     @VisibleForTesting
     public class StreamsMediatorImpl implements Stream.StreamsMediator {
-        // TODO(crbug.com/407797637): Removes the logic responsible for switching between the
-        // 'Following' and 'For You' streams.
         @Override
         public void refreshStream() {
             mCoordinator.nonSwipeRefresh();

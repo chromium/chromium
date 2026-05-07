@@ -114,7 +114,7 @@ import java.util.function.Supplier;
 /** Tests for {@link FeedSurfaceCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@DisableFeatures({ChromeFeatureList.WEB_FEED_ONBOARDING, ChromeFeatureList.FEED_CONTAINMENT})
+@DisableFeatures({ChromeFeatureList.FEED_CONTAINMENT})
 @EnableFeatures({SigninFeatures.ENABLE_SEAMLESS_SIGNIN})
 public class FeedSurfaceCoordinatorTest {
     private static final @SurfaceType int SURFACE_TYPE = SurfaceType.NEW_TAB_PAGE;

@@ -119,7 +119,7 @@ public class FeedStream implements Stream {
                         disposition = BrowserUiUtils.getDispositionFromMetaState(mLastMetaState);
                     }
                     mLastMetaState = 0;
-                    openSuggestionUrl(url, disposition, /* inGroup= */ false, options);
+                    openSuggestionUrl(url, disposition, /* inGroup= */ false);
                     break;
                 case OpenMode.NEW_TAB:
                     mBridge.reportOpenAction(
@@ -127,19 +127,13 @@ public class FeedStream implements Stream {
                             getSliceIdFromView(options.actionSourceView()),
                             OpenActionType.NEW_TAB);
                     openSuggestionUrl(
-                            url,
-                            WindowOpenDisposition.NEW_BACKGROUND_TAB,
-                            /* inGroup= */ false,
-                            options);
+                            url, WindowOpenDisposition.NEW_BACKGROUND_TAB, /* inGroup= */ false);
                     break;
                 case OpenMode.INCOGNITO_TAB:
                     mBridge.reportOtherUserAction(
                             FeedUserActionType.TAPPED_OPEN_IN_NEW_INCOGNITO_TAB);
                     openSuggestionUrl(
-                            url,
-                            WindowOpenDisposition.OFF_THE_RECORD,
-                            /* inGroup= */ false,
-                            options);
+                            url, WindowOpenDisposition.OFF_THE_RECORD, /* inGroup= */ false);
                     break;
                 case OpenMode.DOWNLOAD_LINK:
                     mBridge.reportOtherUserAction(FeedUserActionType.TAPPED_DOWNLOAD);
@@ -155,10 +149,7 @@ public class FeedStream implements Stream {
                             getSliceIdFromView(options.actionSourceView()),
                             OpenActionType.NEW_TAB_IN_GROUP);
                     openSuggestionUrl(
-                            url,
-                            WindowOpenDisposition.NEW_BACKGROUND_TAB,
-                            /* inGroup= */ true,
-                            options);
+                            url, WindowOpenDisposition.NEW_BACKGROUND_TAB, /* inGroup= */ true);
                     break;
             }
 
@@ -230,12 +221,7 @@ public class FeedStream implements Stream {
             mBridge.updateUserProfileOnLinkClick(new GURL(url), entityArray);
         }
 
-        // TODO(crbug.com/407797637): Remove the unused parameter openOptions.
-        private void openSuggestionUrl(
-                String url,
-                int disposition,
-                boolean inGroup,
-                @SuppressWarnings("unused") OpenUrlOptions openOptions) {
+        private void openSuggestionUrl(String url, int disposition, boolean inGroup) {
             int pageId = sPageId.incrementAndGet();
             if (disposition != WindowOpenDisposition.NEW_BACKGROUND_TAB
                     && mReliabilityLogger != null) {

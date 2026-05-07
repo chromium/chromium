@@ -722,14 +722,6 @@ chromium-metrics-reviews@google.com.
       summary="Video tutorial card on NTP about voice search in chrome"/>
   <variant name="IPH_VideoTutorial_TryNow"
       summary="Video tutorial Try Now feature"/>
-  <variant name="IPH_WebFeedAwareness"
-      summary="proactive announcement of web feed on NTP/start surface"/>
-  <variant name="IPH_WebFeedFollow"
-      summary="proactive Web Feed follow recommendations"/>
-  <variant name="IPH_WebFeedPostFollowDialog"
-      summary="Web Feed successful follow operations"/>
-  <variant name="IPH_WebFeedPostFollowDialogWithUIUpdate"
-      summary="Web Feed successful follow operations with UI update"/>
   <variant name="IPH_WebUiHelpBubbleTest"
       summary="testing the WebUI help bubble"/>
   <variant name="IPH_WhatsNewUpdated"

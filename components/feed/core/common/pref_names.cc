@@ -34,16 +34,12 @@ const char kThrottlerLastRequestTime[] =
     "feedv2.request_throttler.last_request_time";
 const char kDebugStreamData[] = "feedv2.debug_stream_data";
 const char kRequestSchedule[] = "feedv2.request_schedule";
-const char kWebFeedsRequestSchedule[] = "webfeed.request_schedule";
 const char kMetricsData[] = "feedv2.metrics_data";
 const char kClientInstanceId[] = "feedv2.client_instance_id";
 // This pref applies to all discover APIs despite the string.
 const char kDiscoverAPIEndpointOverride[] = "feedv2.actions_endpoint_override";
-const char kEnableWebFeedFollowIntroDebug[] =
-    "webfeed_follow_intro_debug.enable";
 const char kReliabilityLoggingIdSalt[] = "feedv2.reliability_logging_id_salt";
 const char kHasStoredData[] = "feedv2.has_stored_data";
-const char kLastSeenFeedType[] = "feedv2.last_seen_feed_type";
 const char kFeedOnDeviceUserActionsCollector[] = "feed.user_actions_collection";
 const char kInfoCardStates[] = "feed.info_card_states";
 const char kExperimentsV3[] = "feedv2.experiments_v3";
@@ -71,7 +67,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
                              base::Time());
   registry->RegisterStringPref(feed::prefs::kDebugStreamData, std::string());
   registry->RegisterDictionaryPref(feed::prefs::kRequestSchedule);
-  registry->RegisterDictionaryPref(feed::prefs::kWebFeedsRequestSchedule);
   registry->RegisterDictionaryPref(feed::prefs::kMetricsData);
   registry->RegisterStringPref(feed::prefs::kClientInstanceId, "");
   registry->RegisterStringPref(feed::prefs::kDiscoverAPIEndpointOverride, "");
@@ -81,11 +76,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterIntegerPref(feed::prefs::kNoticeCardViewsCount, 0);
   registry->RegisterIntegerPref(feed::prefs::kNoticeCardClicksCount, 0);
-  registry->RegisterBooleanPref(feed::prefs::kEnableWebFeedFollowIntroDebug,
-                                false);
   registry->RegisterUint64Pref(feed::prefs::kReliabilityLoggingIdSalt, 0);
   registry->RegisterBooleanPref(feed::prefs::kHasStoredData, false);
-  registry->RegisterIntegerPref(feed::prefs::kLastSeenFeedType, 0);
   registry->RegisterListPref(feed::prefs::kFeedOnDeviceUserActionsCollector,
                              PrefRegistry::LOSSY_PREF);
   registry->RegisterDictionaryPref(feed::prefs::kInfoCardStates, 0);

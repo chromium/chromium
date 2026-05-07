@@ -196,20 +196,20 @@ public class FeedSettingsMediatorUnitTest {
 
         mFeedSettingsMediator.setListItemsContentForTesting(
                 mFeedSettingsMediator.buildFeedListContent());
-        ListContainerViewDelegate delegateForWebFeedDisabled =
+        ListContainerViewDelegate delegateWithoutFollowing =
                 mFeedSettingsMediator.createListDelegate();
-        content = delegateForWebFeedDisabled.getListItems();
+        content = delegateWithoutFollowing.getListItems();
         Assert.assertTrue(content.contains(ACTIVITY));
         Assert.assertTrue(content.contains(INTERESTS));
 
         testCreateListContainerViewDelegateImplForSectionTitle(
-                delegateForSignedIn, delegateForWebFeedDisabled);
+                delegateForSignedIn, delegateWithoutFollowing);
 
         testCreateListContainerViewDelegateImplForSectionSubtitle(
-                delegateForSignedIn, delegateForWebFeedDisabled);
+                delegateForSignedIn, delegateWithoutFollowing);
 
         testCreateListContainerViewDelegateImplForSectionListener(
-                delegateForSignedIn, delegateForWebFeedDisabled);
+                delegateForSignedIn, delegateWithoutFollowing);
     }
 
     @Test
@@ -222,68 +222,68 @@ public class FeedSettingsMediatorUnitTest {
 
     /** Verifies that the subtitles of sections are correct. */
     private void testCreateListContainerViewDelegateImplForSectionSubtitle(
-            ListContainerViewDelegate delegateForWebFeedEnabled,
-            ListContainerViewDelegate delegateForWebFeedDisabled) {
+            ListContainerViewDelegate delegateWithFollowing,
+            ListContainerViewDelegate delegateWithoutFollowing) {
         assertEquals(
                 mContext.getString(R.string.feed_manage_activity_description),
-                delegateForWebFeedEnabled.getListItemSubtitle(ACTIVITY, mContext));
+                delegateWithFollowing.getListItemSubtitle(ACTIVITY, mContext));
         assertEquals(
                 mContext.getString(R.string.feed_manage_following_description),
-                delegateForWebFeedEnabled.getListItemSubtitle(FOLLOWING, mContext));
+                delegateWithFollowing.getListItemSubtitle(FOLLOWING, mContext));
         assertEquals(
                 mContext.getString(R.string.feed_manage_hidden_description),
-                delegateForWebFeedEnabled.getListItemSubtitle(HIDDEN, mContext));
+                delegateWithFollowing.getListItemSubtitle(HIDDEN, mContext));
         assertEquals(
                 mContext.getString(R.string.feed_manage_interests_description),
-                delegateForWebFeedDisabled.getListItemSubtitle(INTERESTS, mContext));
+                delegateWithoutFollowing.getListItemSubtitle(INTERESTS, mContext));
     }
 
     /** Verifies that the titles of sections are correct. */
     private void testCreateListContainerViewDelegateImplForSectionTitle(
-            ListContainerViewDelegate delegateForWebFeedEnabled,
-            ListContainerViewDelegate delegateForWebFeedDisabled) {
+            ListContainerViewDelegate delegateWithFollowing,
+            ListContainerViewDelegate delegateWithoutFollowing) {
         assertEquals(
                 mContext.getString(R.string.feed_manage_activity),
-                delegateForWebFeedEnabled.getListItemTitle(ACTIVITY, mContext));
+                delegateWithFollowing.getListItemTitle(ACTIVITY, mContext));
         assertEquals(
                 mContext.getString(R.string.feed_manage_following),
-                delegateForWebFeedEnabled.getListItemTitle(FOLLOWING, mContext));
+                delegateWithFollowing.getListItemTitle(FOLLOWING, mContext));
         assertEquals(
                 mContext.getString(R.string.feed_manage_hidden),
-                delegateForWebFeedEnabled.getListItemTitle(HIDDEN, mContext));
+                delegateWithFollowing.getListItemTitle(HIDDEN, mContext));
         assertEquals(
                 mContext.getString(R.string.feed_manage_interests),
-                delegateForWebFeedDisabled.getListItemTitle(INTERESTS, mContext));
+                delegateWithoutFollowing.getListItemTitle(INTERESTS, mContext));
     }
 
     /** Verifies that the click listener of sections are correct. */
     private void testCreateListContainerViewDelegateImplForSectionListener(
-            ListContainerViewDelegate delegateForWebFeedEnabled,
-            ListContainerViewDelegate delegateForWebFeedDisabled) {
+            ListContainerViewDelegate delegateWithFollowing,
+            ListContainerViewDelegate delegateWithoutFollowing) {
         when(mView.getContext()).thenReturn(mActivity);
 
         // Verifies the click listener is correct for Activity section.
-        delegateForWebFeedEnabled.getListener(ACTIVITY).onClick(mView);
+        delegateWithFollowing.getListener(ACTIVITY).onClick(mView);
         Intent intent = mShadowActivity.peekNextStartedActivityForResult().intent;
         assertEquals(
                 intent.getData(), Uri.parse("https://myactivity.google.com/myactivity?product=50"));
 
         // Verifies the click listener is correct for Following section.
-        delegateForWebFeedEnabled.getListener(FOLLOWING).onClick(mView);
+        delegateWithFollowing.getListener(FOLLOWING).onClick(mView);
         intent = mShadowActivity.peekNextStartedActivityForResult().intent;
         assertEquals(
                 intent.getData(),
                 Uri.parse("https://www.google.com/preferences/interests/yourinterests?sh=n"));
 
         // Verifies the click listener is correct for Hidden section.
-        delegateForWebFeedEnabled.getListener(HIDDEN).onClick(mView);
+        delegateWithFollowing.getListener(HIDDEN).onClick(mView);
         intent = mShadowActivity.peekNextStartedActivityForResult().intent;
         assertEquals(
                 intent.getData(),
                 Uri.parse("https://www.google.com/preferences/interests/hidden?sh=n"));
 
         // Verifies the click listener is correct for Interests section.
-        delegateForWebFeedDisabled.getListener(INTERESTS).onClick(mView);
+        delegateWithoutFollowing.getListener(INTERESTS).onClick(mView);
         intent = mShadowActivity.peekNextStartedActivityForResult().intent;
         assertEquals(intent.getData(), Uri.parse("https://www.google.com/preferences/interests"));
     }

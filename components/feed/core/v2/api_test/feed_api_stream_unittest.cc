@@ -663,8 +663,7 @@ TEST_F(FeedApiTest, ForceRefreshIfMissedScheduledRefresh) {
 
 TEST_F(FeedApiTest, LoadFromNetworkBecauseStoreIsStale_NetworkStaleAge) {
   base::TimeDelta default_staleness_threshold =
-      GetFeedConfig().GetStalenessThreshold(StreamType(StreamKind::kForYou),
-                                            /*is_web_feed_subscriber=*/true);
+      GetFeedConfig().GetStalenessThreshold(StreamType(StreamKind::kForYou));
   base::TimeDelta server_staleness_threshold = default_staleness_threshold / 2;
 
   {
@@ -761,8 +760,7 @@ TEST_P(FeedStreamTestForAllStreamTypes, LoadFromNetworkBecauseStoreIsStale) {
           kTestTimeEpoch -
               // TODO(crbug.com/407797637): Remove hardcoded false once WebFeed
               // is fully removed.
-              GetFeedConfig().GetStalenessThreshold(
-                  GetStreamType(), /*is_web_feed_subscriber=*/false) -
+              GetFeedConfig().GetStalenessThreshold(GetStreamType()) -
               base::Minutes(1)),
       base::DoNothing());
 

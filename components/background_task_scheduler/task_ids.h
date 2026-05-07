@@ -131,7 +131,7 @@ enum class TaskIds {
   // component: UI>Browser>ContentSuggestions>Feed
   // team_email: feed@chromium.org
   // owner: dewittj@chromium.org
-  WEBFEEDS_REFRESH_JOB_ID = 109,
+  //  WEBFEEDS_REFRESH_JOB_ID = 109,
   // component: Mobile>WebView
   // team_email: android-webview-dev@chromium.org
   // owner: ntfschr@chromium.org, torne@chromium.org

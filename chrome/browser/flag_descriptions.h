@@ -6121,14 +6121,6 @@ inline constexpr char kUseAngleDescriptionAndroid[] =
 inline constexpr char kUseAngleGLES[] = "OpenGL ES";
 inline constexpr char kUseAngleVulkan[] = "Vulkan";
 
-inline constexpr char kWebFeedDeprecationName[] = "Web feed deprecation";
-inline constexpr char kWebFeedDeprecationDescription[] =
-    "Deprecate the web feed.";
-
-inline constexpr char kWebFeedOnboardingName[] = "Web Feed Onboarding";
-inline constexpr char kWebFeedOnboardingDescription[] =
-    "Helps the user understand how to use the web feed.";
-
 inline constexpr char kXplatSyncedSetupName[] = "Cross-platform synced setup";
 inline constexpr char kXplatSyncedSetupDescription[] =
     "Enables the Cross-platform synced setup feature.";

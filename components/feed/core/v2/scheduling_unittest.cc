@@ -183,123 +183,103 @@ class ContentLifetimeTest : public testing::Test {
 };
 
 TEST_F(ContentLifetimeTest, ShouldWaitForNewContent_DefaultThreshold) {
-  EXPECT_FALSE(ShouldWaitForNewContent(
-      metadata_, StreamType(StreamKind::kForYou), kDefaultStaleContentThreshold,
-      /*is_web_feed_subscriber=*/true));
+  EXPECT_FALSE(ShouldWaitForNewContent(metadata_,
+                                       StreamType(StreamKind::kForYou),
+                                       kDefaultStaleContentThreshold));
+  EXPECT_TRUE(
+      ShouldWaitForNewContent(metadata_, StreamType(StreamKind::kForYou),
+                              WithEpsilon(kDefaultStaleContentThreshold)));
   EXPECT_TRUE(ShouldWaitForNewContent(
-      metadata_, StreamType(StreamKind::kForYou),
-      WithEpsilon(kDefaultStaleContentThreshold), true));
-  EXPECT_TRUE(ShouldWaitForNewContent(
-      metadata_, StreamType(StreamKind::kForYou), base::Hours(5),
-      /*is_web_feed_subscriber=*/true));
+      metadata_, StreamType(StreamKind::kForYou), base::Hours(5)));
   EXPECT_FALSE(ShouldWaitForNewContent(
-      metadata_, StreamType(StreamKind::kForYou), base::Hours(3),
-      /*is_web_feed_subscriber=*/true));
+      metadata_, StreamType(StreamKind::kForYou), base::Hours(3)));
   // If the web feed onboarding feature is turned off, then we should return
   // true even if the user is not subscribed.
   EXPECT_TRUE(ShouldWaitForNewContent(
-      metadata_, StreamType(StreamKind::kForYou), base::Days(8),
-      /*is_web_feed_subscriber=*/false));
+      metadata_, StreamType(StreamKind::kForYou), base::Days(8)));
   EXPECT_TRUE(ShouldWaitForNewContent(
-      metadata_, StreamType(StreamKind::kForYou), base::Days(6),
-      /*is_web_feed_subscriber=*/false));
+      metadata_, StreamType(StreamKind::kForYou), base::Days(6)));
 }
 
 TEST_F(ContentLifetimeTest, ShouldWaitForNewContent_ServerThreshold_Valid) {
   set_stale_age(base::Minutes(60));
   EXPECT_TRUE(ShouldWaitForNewContent(
-      metadata_, StreamType(StreamKind::kForYou), base::Minutes(61),
-      /*is_web_feed_subscriber=*/true));
+      metadata_, StreamType(StreamKind::kForYou), base::Minutes(61)));
   EXPECT_FALSE(ShouldWaitForNewContent(
-      metadata_, StreamType(StreamKind::kForYou), base::Minutes(59),
-      /*is_web_feed_subscriber=*/true));
+      metadata_, StreamType(StreamKind::kForYou), base::Minutes(59)));
 }
 
 TEST_F(ContentLifetimeTest, ShouldWaitForNewContent_ServerThreshold_Invalid) {
   // We ignore stale ages greater than the default.
-  EXPECT_TRUE(ShouldWaitForNewContent(
-      metadata_, StreamType(StreamKind::kForYou),
-      WithEpsilon(kDefaultStaleContentThreshold), true));
+  EXPECT_TRUE(
+      ShouldWaitForNewContent(metadata_, StreamType(StreamKind::kForYou),
+                              WithEpsilon(kDefaultStaleContentThreshold)));
   set_stale_age(kDefaultStaleContentThreshold + base::Minutes(1));
   EXPECT_TRUE(
       ShouldWaitForNewContent(metadata_, StreamType(StreamKind::kForYou),
-                              WithEpsilon(kDefaultStaleContentThreshold),
-                              /*is_web_feed_subscriber=*/true));
+                              WithEpsilon(kDefaultStaleContentThreshold)));
 
   // We ignore zero durations.
   set_stale_age(base::Days(0));
-  EXPECT_FALSE(ShouldWaitForNewContent(
-      metadata_, StreamType(StreamKind::kForYou), kDefaultStaleContentThreshold,
-      /*is_web_feed_subscriber=*/true));
-  EXPECT_TRUE(ShouldWaitForNewContent(
-      metadata_, StreamType(StreamKind::kForYou),
-      WithEpsilon(kDefaultStaleContentThreshold), true));
+  EXPECT_FALSE(ShouldWaitForNewContent(metadata_,
+                                       StreamType(StreamKind::kForYou),
+                                       kDefaultStaleContentThreshold));
+  EXPECT_TRUE(
+      ShouldWaitForNewContent(metadata_, StreamType(StreamKind::kForYou),
+                              WithEpsilon(kDefaultStaleContentThreshold)));
 
   // We ignore negative durations.
   set_stale_age(base::Days(-1));
-  EXPECT_FALSE(ShouldWaitForNewContent(
-      metadata_, StreamType(StreamKind::kForYou), kDefaultStaleContentThreshold,
-      /*is_web_feed_subscriber=*/true));
+  EXPECT_FALSE(ShouldWaitForNewContent(metadata_,
+                                       StreamType(StreamKind::kForYou),
+                                       kDefaultStaleContentThreshold));
   EXPECT_TRUE(
       ShouldWaitForNewContent(metadata_, StreamType(StreamKind::kForYou),
-                              WithEpsilon(kDefaultStaleContentThreshold),
-                              /*is_web_feed_subscriber=*/true));
+                              WithEpsilon(kDefaultStaleContentThreshold)));
 }
 
 TEST_F(ContentLifetimeTest, ContentInvalidFromAge_DefaultThreshold) {
   EXPECT_FALSE(ContentInvalidFromAge(metadata_, StreamType(StreamKind::kForYou),
-                                     kDefaultContentExpiration,
-                                     /*is_web_feed_subscriber=*/true));
+                                     kDefaultContentExpiration));
   EXPECT_TRUE(
       ContentInvalidFromAge(metadata_, StreamType(StreamKind::kForYou),
-                            kDefaultContentExpiration + base::Milliseconds(1),
-                            /*is_web_feed_subscriber=*/true));
+                            kDefaultContentExpiration + base::Milliseconds(1)));
   EXPECT_TRUE(ContentInvalidFromAge(metadata_, StreamType(StreamKind::kForYou),
-                                    base::Hours(25),
-                                    /*is_web_feed_subscriber=*/true));
+                                    base::Hours(25)));
   EXPECT_FALSE(ContentInvalidFromAge(metadata_, StreamType(StreamKind::kForYou),
-                                     base::Hours(23),
-                                     /*is_web_feed_subscriber=*/true));
+                                     base::Hours(23)));
 }
 
 TEST_F(ContentLifetimeTest, ContentInvalidFromAge_ServerThreshold_Valid) {
   set_invalid_age(base::Minutes(60));
   EXPECT_TRUE(ContentInvalidFromAge(metadata_, StreamType(StreamKind::kForYou),
-                                    base::Minutes(61),
-                                    /*is_web_feed_subscriber=*/true));
+                                    base::Minutes(61)));
   EXPECT_FALSE(ContentInvalidFromAge(metadata_, StreamType(StreamKind::kForYou),
-                                     base::Minutes(59),
-                                     /*is_web_feed_subscriber=*/true));
+                                     base::Minutes(59)));
 }
 
 TEST_F(ContentLifetimeTest, ContentInvalidFromAge_ServerThreshold_Invalid) {
   // We ignore stale ages greater than the default.
   EXPECT_TRUE(ContentInvalidFromAge(metadata_, StreamType(StreamKind::kForYou),
-                                    WithEpsilon(kDefaultContentExpiration),
-                                    /*is_web_feed_subscriber=*/true));
+                                    WithEpsilon(kDefaultContentExpiration)));
   set_invalid_age(kDefaultContentExpiration + base::Minutes(1));
   EXPECT_TRUE(ContentInvalidFromAge(metadata_, StreamType(StreamKind::kForYou),
-                                    WithEpsilon(kDefaultContentExpiration),
-                                    /*is_web_feed_subscriber=*/true));
+                                    WithEpsilon(kDefaultContentExpiration)));
 
   // We ignore zero durations.
   set_invalid_age(base::Days(0));
   EXPECT_FALSE(ContentInvalidFromAge(metadata_, StreamType(StreamKind::kForYou),
-                                     kDefaultContentExpiration,
-                                     /*is_web_feed_subscriber=*/true));
+                                     kDefaultContentExpiration));
   EXPECT_TRUE(ContentInvalidFromAge(
       metadata_, StreamType(StreamKind::kForYou),
-      WithEpsilon(kDefaultSubscriptionlessContentExpiration),
-      /*is_web_feed_subscriber=*/true));
+      WithEpsilon(kDefaultSubscriptionlessContentExpiration)));
 
   // We ignore negative durations.
   set_invalid_age(base::Days(-1));
   EXPECT_FALSE(ContentInvalidFromAge(metadata_, StreamType(StreamKind::kForYou),
-                                     kDefaultContentExpiration,
-                                     /*is_web_feed_subscriber=*/true));
+                                     kDefaultContentExpiration));
   EXPECT_TRUE(ContentInvalidFromAge(metadata_, StreamType(StreamKind::kForYou),
-                                    WithEpsilon(kDefaultContentExpiration),
-                                    /*is_web_feed_subscriber=*/true));
+                                    WithEpsilon(kDefaultContentExpiration)));
 }
 
 }  // namespace

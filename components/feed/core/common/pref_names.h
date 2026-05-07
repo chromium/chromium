@@ -58,32 +58,22 @@ extern const char kThrottlerLastRequestTime[];
 extern const char kDebugStreamData[];
 // The pref names for storing the request schedules.
 extern const char kRequestSchedule[];
-extern const char kWebFeedsRequestSchedule[];
 // The pref name for storing the persistent metrics data.
 extern const char kMetricsData[];
 // The pref name for storing client instance id.
 extern const char kClientInstanceId[];
 // The pref name for the Discover API endpoint override.
 extern const char kDiscoverAPIEndpointOverride[];
-// If set to true, the WebFeed follow intro bypasses some gates and only checks
-// for recommended and scroll status.
-extern const char kEnableWebFeedFollowIntroDebug[];
 // Random bytes used in generating reliability logging ID.
 extern const char kReliabilityLoggingIdSalt[];
 // Whether the Feed may have data stored, which should be deleted if the Feed
 // is ever turned off.
 extern const char kHasStoredData[];
-// The last feed type that the user was viewing.
-extern const char kLastSeenFeedType[];
 // The pref name for storing user actions. Used for personalizing feed for
 // unsigned users. The list is sorted by ascenting time stamp.
 extern const char kFeedOnDeviceUserActionsCollector[];
 // The pref name for the keys of the info cards.
 extern const char kInfoCardStates[];
-// The pref name for whether the user has opened/seen web feed at least once.
-extern const char kHasSeenWebFeed[];
-// The pref name for when the user last saw badge animation for web feed.
-extern const char kLastBadgeAnimationTime[];
 // The pref name for storing the server experiments the client is in.
 extern const char kExperimentsV3[];
 // Contains a dictionary of tracking states for all info cards in the feed.

@@ -150,13 +150,15 @@ void FeedV2InternalsPageHandler::OverrideFeedStreamData(
 }
 
 bool FeedV2InternalsPageHandler::IsWebFeedFollowIntroDebugEnabled() {
-  return pref_service_->GetBoolean(feed::prefs::kEnableWebFeedFollowIntroDebug);
+  // TODO(crbug.com/407797637): remove the web feed this function and the
+  // related UI
+  return false;
 }
 
 void FeedV2InternalsPageHandler::SetWebFeedFollowIntroDebugEnabled(
     const bool enabled) {
-  pref_service_->SetBoolean(feed::prefs::kEnableWebFeedFollowIntroDebug,
-                            enabled);
+  // TODO(crbug.com/407797637): remove the web feed this function and the
+  // related UI
 }
 
 bool FeedV2InternalsPageHandler::ShouldUseFeedQueryRequests() {

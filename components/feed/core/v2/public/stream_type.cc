@@ -22,8 +22,6 @@ StreamType StreamType::ForTaskId(RefreshTaskId task_id) {
   switch (task_id) {
     case RefreshTaskId::kRefreshForYouFeed:
       return StreamType(StreamKind::kForYou);
-    case RefreshTaskId::kRefreshWebFeed:
-      return StreamType(StreamKind::kFollowing);
   }
 }
 

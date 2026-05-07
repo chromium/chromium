@@ -20,8 +20,6 @@ background_task::TaskIds ToBackgroundTaskId(RefreshTaskId id) {
   switch (id) {
     case RefreshTaskId::kRefreshForYouFeed:
       return background_task::TaskIds::FEEDV2_REFRESH_JOB_ID;
-    case RefreshTaskId::kRefreshWebFeed:
-      return background_task::TaskIds::WEBFEEDS_REFRESH_JOB_ID;
   }
 }
 }  // namespace
@@ -71,8 +69,6 @@ base::OnceClosure& RefreshTaskSchedulerImpl::TaskCallback(
   switch (task_id) {
     case RefreshTaskId::kRefreshForYouFeed:
       return for_you_task_complete_callback_;
-    case RefreshTaskId::kRefreshWebFeed:
-      return web_feeds_task_complete_callback_;
   }
 }
 

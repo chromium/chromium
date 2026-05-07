@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_FEED_FEED_FEATURE_LIST_H_
 #define COMPONENTS_FEED_FEED_FEATURE_LIST_H_
 
-#include <string>
-
 #include "base/component_export.h"
 #include "base/feature_list.h"
 #include "base/time/time.h"
@@ -36,13 +34,6 @@ BASE_DECLARE_FEATURE(kFeedLoadingPlaceholder);
 // percentage of the maximum size calculated for the device.
 COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kFeedImageMemoryCacheSizePercentage);
-
-// Feature that provides the user assistance in using the web feed.
-COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
-BASE_DECLARE_FEATURE(kWebFeedOnboarding);
-
-COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
-bool IsCormorantEnabledForLocale(std::string country);
 
 // Personalize feed for unsigned users.
 COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
@@ -78,10 +69,6 @@ BASE_DECLARE_FEATURE(kRefreshFeedOnRestart);
 COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kFeedContainment);
 
-// Kill-switch for the web feed feature.
-COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
-BASE_DECLARE_FEATURE(kWebFeedKillSwitch);
-
 // Feature that unmount RecyclerBinder on view detach to fix a memory leak.
 COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kFeedRecyclerBinderUnmountOnDetach);
@@ -97,9 +84,6 @@ BASE_DECLARE_FEATURE(kFeedAudioOverviews);
 // Feature that enables opening Incognito windows.
 COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
 BASE_DECLARE_FEATURE(kAndroidOpenIncognitoAsWindow);
-
-COMPONENT_EXPORT(COMPONENTS_FEED_FEATURE_LIST)
-bool IsWebFeedEnabledForLocale(const std::string& country);
 
 }  // namespace feed
 

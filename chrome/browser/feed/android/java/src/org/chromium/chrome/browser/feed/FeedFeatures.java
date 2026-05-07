@@ -9,7 +9,6 @@ import org.chromium.base.DeviceInfo;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator.StreamTabId;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -57,22 +56,5 @@ public final class FeedFeatures {
     public static void setFakePrefsForTest(PrefService fakePref) {
         sFakePrefServiceForTest = fakePref;
         ResettersForTesting.register(() -> sFakePrefServiceForTest = null);
-    }
-
-    /**
-     * Returns the feed tab ID to restore depending on the configured logic controlling the
-     * "stickiness" of the selected feed tab.
-     */
-    public static @StreamTabId int getFeedTabIdToRestore(Profile profile) {
-        // Default behavior (reset_for_every_new_ntp).
-        setLastSeenFeedTabId(profile, StreamTabId.FOR_YOU);
-        return StreamTabId.FOR_YOU;
-    }
-
-    public static void setLastSeenFeedTabId(Profile profile, @StreamTabId int tabId) {
-        // Note: the "first check" flag is updated here to make sure that if setLastSeenFeedTabId is
-        // called before getFeedTabIdToRestore, the value set here is taken into account in by the
-        // latter at least for some of the restore logic atlernatives.
-        getPrefService(profile).setInteger(Pref.LAST_SEEN_FEED_TYPE, tabId);
     }
 }

@@ -29,12 +29,6 @@ BASE_FEATURE(kFeedLoadingPlaceholder, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kFeedImageMemoryCacheSizePercentage,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kWebFeedOnboarding, base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsCormorantEnabledForLocale(std::string country) {
-  return IsWebFeedEnabledForLocale(country);
-}
-
 BASE_FEATURE(kPersonalizeFeedUnsignedUsers, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // TODO(crbug.com/40764861): Remove this helper, directly use kSignin instead.
@@ -56,8 +50,6 @@ BASE_FEATURE(kRefreshFeedOnRestart, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kFeedContainment, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kWebFeedKillSwitch, base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kFeedRecyclerBinderUnmountOnDetach,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -66,12 +58,5 @@ BASE_FEATURE(kFeedStreaming, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kFeedAudioOverviews, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidOpenIncognitoAsWindow, base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsWebFeedEnabledForLocale(const std::string& country) {
-  const std::vector<std::string> launched_countries = {"AU", "CA", "GB",
-                                                       "NZ", "US", "ZA"};
-  return std::ranges::contains(launched_countries, country) &&
-         !base::FeatureList::IsEnabled(kWebFeedKillSwitch);
-}
 
 }  // namespace feed

@@ -47,13 +47,11 @@ base::Time NextScheduledRequestTime(base::Time now, RequestSchedule* schedule);
 // Returns whether we should wait for new content before showing stream content.
 bool ShouldWaitForNewContent(const feedstore::Metadata& metadata,
                              const StreamType& stream_type,
-                             base::TimeDelta content_age,
-                             bool is_web_feed_subscriber);
+                             base::TimeDelta content_age);
 
 bool ContentInvalidFromAge(const feedstore::Metadata& metadata,
                            const StreamType& stream_type,
-                           base::TimeDelta content_age,
-                           bool is_web_feed_subscriber);
+                           base::TimeDelta content_age);
 }  // namespace feed
 
 #endif  // COMPONENTS_FEED_CORE_V2_SCHEDULING_H_

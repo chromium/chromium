@@ -423,8 +423,7 @@ TEST_F(FeedApiReliabilityLoggingTest, CacheRead_Stale) {
       MakeTypicalInitialModelState(
           /*first_cluster_id=*/0, kTestTimeEpoch -
                                       GetFeedConfig().GetStalenessThreshold(
-                                          StreamType(StreamKind::kForYou),
-                                          /*is_web_feed_subscriber=*/true) -
+                                          StreamType(StreamKind::kForYou)) -
                                       base::Minutes(1)),
       base::DoNothing());
 
@@ -457,8 +456,7 @@ TEST_F(FeedApiReliabilityLoggingTest, CacheRead_StaleWithNetworkError) {
       MakeTypicalInitialModelState(
           /*first_cluster_id=*/0, kTestTimeEpoch -
                                       GetFeedConfig().GetStalenessThreshold(
-                                          StreamType(StreamKind::kForYou),
-                                          /*is_web_feed_subscriber=*/true) -
+                                          StreamType(StreamKind::kForYou)) -
                                       base::Minutes(1)),
       base::DoNothing());
 

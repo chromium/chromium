@@ -33,9 +33,6 @@ public interface Stream {
 
         /** Request the immediate refresh of the contents of the active stream. */
         default void refreshStream() {}
-
-        /** Disable the follow button, used in case of an error scenario. */
-        default void disableFollowButton() {}
     }
 
     /** Called when the Stream is no longer needed. */

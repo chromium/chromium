@@ -333,8 +333,6 @@ class FeedStream : public FeedApi,
 
   bool IsEnabledAndVisible();
 
-  bool IsWebFeedEnabled();
-
   PrefService* profile_prefs() const { return profile_prefs_; }
 
   base::WeakPtr<FeedStream> GetWeakPtr() {

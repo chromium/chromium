@@ -22,8 +22,6 @@ const char* RequestSchedulePrefName(RefreshTaskId task_id) {
   switch (task_id) {
     case feed::RefreshTaskId::kRefreshForYouFeed:
       return kRequestSchedule;
-    case feed::RefreshTaskId::kRefreshWebFeed:
-      return kWebFeedsRequestSchedule;
   }
 }
 

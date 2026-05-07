@@ -9725,16 +9725,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "web-feed-deprecation",
-    "owners": [ "//chrome/android/feed/OWNERS", "jianli@chromium.org" ],
-    "expiry_milestone": 145
-  },
-  {
-    "name": "web-feed-onboarding",
-    "owners": ["//chrome/android/feed/OWNERS", "feed@chromium.org" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "web-hid-in-web-view",
     "owners": [ "giovax@google.com", "pwa-commercial@google.com", "pwa-team@google.com" ],
     "expiry_milestone": 180

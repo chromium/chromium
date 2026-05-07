@@ -32,7 +32,7 @@ public interface SurfaceCoordinator {
     void onActivityResumed();
 
     /** Enumeration of the possible selection options of feed tabs. */
-    @IntDef({StreamTabId.DEFAULT, StreamTabId.FOR_YOU, StreamTabId.FOLLOWING})
+    @IntDef({StreamTabId.DEFAULT, StreamTabId.FOR_YOU})
     @interface StreamTabId {
         /**
          * Used for NTP restore operations, when it may be desirable to recover the previous tab
@@ -42,9 +42,6 @@ public interface SurfaceCoordinator {
 
         /** Selects the For you feed tab. */
         int FOR_YOU = 0;
-
-        /** Selects the Following feed tab. */
-        int FOLLOWING = 1;
     };
 
     void restoreInstanceState(@Nullable String state);
