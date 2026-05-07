@@ -48,6 +48,7 @@
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -155,6 +156,47 @@ NotificationCenterBlock ClosureToNotificationCenterBlock(
 
 }  // namespace
 
+@interface GeminiSceneStateObserver : NSObject <SceneStateObserver>
+
+- (instancetype)initWithBrowserAgent:(GeminiBrowserAgent*)browserAgent
+                          sceneState:(SceneState*)sceneState;
+
+- (void)disconnect;
+
+@end
+
+@implementation GeminiSceneStateObserver {
+  raw_ptr<GeminiBrowserAgent> _browserAgent;
+  __weak SceneState* _sceneState;
+}
+
+- (instancetype)initWithBrowserAgent:(GeminiBrowserAgent*)browserAgent
+                          sceneState:(SceneState*)sceneState {
+  self = [super init];
+  if (self) {
+    _browserAgent = browserAgent;
+    _sceneState = sceneState;
+    [_sceneState addObserver:self];
+  }
+  return self;
+}
+
+- (void)disconnect {
+  [_sceneState removeObserver:self];
+  _browserAgent = nullptr;
+}
+
+#pragma mark - SceneStateObserver
+
+- (void)sceneState:(SceneState*)sceneState
+    transitionedToActivationLevel:(SceneActivationLevel)level {
+  if (_browserAgent) {
+    _browserAgent->OnSceneActivationLevelChanged(level);
+  }
+}
+
+@end
+
 GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
     : BrowserUserData(browser) {
   browser_->AddObserver(this);
@@ -244,6 +286,13 @@ GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
                                weak_factory_.GetWeakPtr(),
                                /*is_visible=*/false))];
 
+    SceneState* scene_state = browser_->GetSceneState();
+    if (scene_state) {
+      scene_state_observer_ =
+          [[GeminiSceneStateObserver alloc] initWithBrowserAgent:this
+                                                      sceneState:scene_state];
+    }
+
     scroll_observer_ = [[GeminiScrollObserver alloc]
         initWithScrollCallback:base::BindRepeating(
                                    &GeminiBrowserAgent::OnScrollEvent,
@@ -285,6 +334,8 @@ GeminiBrowserAgent::~GeminiBrowserAgent() {
         removeObserver:keyboard_hide_observer_];
     keyboard_hide_observer_ = nil;
   }
+  [scene_state_observer_ disconnect];
+  scene_state_observer_ = nil;
 
   web::WebState* active_web_state =
       browser_->GetWebStateList()->GetActiveWebState();
@@ -407,6 +458,18 @@ void GeminiBrowserAgent::OnKeyboardStateChanged(bool is_visible) {
     ShowFloatyIfInvoked(/*animated=*/false,
                         gemini::FloatyUpdateSource::Keyboard);
     is_hidden_by_keyboard_ = false;
+  }
+}
+
+void GeminiBrowserAgent::OnSceneActivationLevelChanged(
+    SceneActivationLevel level) {
+  if (level == SceneActivationLevelBackground) {
+    if (IsGeminiLiveEnabled() && is_floaty_invoked_ &&
+        ios::provider::GetCurrentMode() ==
+            ios::provider::GeminiViewMode::kLive) {
+      ios::provider::SwitchToMode(ios::provider::GeminiViewMode::kFloaty,
+                                  /*animated=*/false);
+    }
   }
 }
 

@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper_observer.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_view_state_change_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_activation_level.h"
 #import "ios/chrome/browser/shared/model/browser/browser_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/chrome/browser/tabs/model/tabs_dependency_installer.h"
@@ -51,6 +52,7 @@ class ScopedFullscreenDisabler;
 @class GeminiPageContext;
 @class GeminiViewStateChangeHandler;
 @class GeminiScrollObserver;
+@class GeminiSceneStateObserver;
 @class GeminiSuggestionHandler;
 @class GeminiActuationHandler;
 
@@ -149,6 +151,9 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   void CollapseFloatyIfInvoked() override;
   void SetLastShownViewState(
       ios::provider::GeminiViewState view_state) override;
+
+  // Called when the scene activation level changes.
+  void OnSceneActivationLevelChanged(SceneActivationLevel level);
 
   // Called when trait collection is updated.
   void UpdateForTraitCollection(UITraitCollection* traitCollection);
@@ -340,6 +345,9 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // Observers for keyboard events.
   id keyboard_show_observer_ = nil;
   id keyboard_hide_observer_ = nil;
+
+  // Observer for scene state activation changes.
+  __strong GeminiSceneStateObserver* scene_state_observer_ = nil;
 
   // Observer for scroll events.
   __strong GeminiScrollObserver* scroll_observer_ = nullptr;

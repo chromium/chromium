@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -76,7 +77,8 @@ class GeminiBrowserAgentTest : public PlatformTest {
         ->ConfigureFeatures(
             {web::FindInPageJavaScriptFeature::GetInstance(),
              PageContextExtractorJavaScriptFeature::GetInstance()});
-    browser_ = std::make_unique<TestBrowser>(profile_);
+    SceneState* scene_state = [[SceneState alloc] initWithAppState:nil];
+    browser_ = std::make_unique<TestBrowser>(profile_, scene_state);
     GeminiBrowserAgent::CreateForBrowser(browser_.get());
     gemini_browser_agent_ = GeminiBrowserAgent::FromBrowser(browser_.get());
 
@@ -698,10 +700,9 @@ TEST_F(GeminiBrowserAgentTest,
   EXPECT_FALSE(IsFloatyTemporarilyHidden());
 }
 
-// Tests that OnProcessingStatusChanged(kDormant) switches the view mode to
-// kFloaty (i.e., text mode) if the current mode is kLive.
-TEST_F(GeminiBrowserAgentTest,
-       TestOnProcessingStatusChangedDormantSwitchesToFloaty) {
+// Tests that the view mode switches to text/floaty mode on backgrounding if the
+// current mode is live.
+TEST_F(GeminiBrowserAgentTest, TestSwitchToTextModeOnBackgroundingIfLive) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({kGeminiLive}, {});
 
@@ -713,11 +714,32 @@ TEST_F(GeminiBrowserAgentTest,
   EXPECT_EQ(ios::provider::GetCurrentMode(),
             ios::provider::GeminiViewMode::kLive);
 
-  // Call OnProcessingStatusChanged with kDormant.
-  gemini_browser_agent_->OnProcessingStatusChanged(
-      ios::provider::GeminiClientMode::kDormant);
+  // Simulate app backgrounding via SceneState activation level.
+  browser_->GetSceneState().activationLevel = SceneActivationLevelBackground;
 
   // Verify it switched to Floaty (text mode).
+  EXPECT_EQ(ios::provider::GetCurrentMode(),
+            ios::provider::GeminiViewMode::kFloaty);
+}
+
+// Tests that the view mode does not change on backgrounding if it is not
+// currently in live mode.
+TEST_F(GeminiBrowserAgentTest, TestNoSwitchOnBackgroundingIfNotLive) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({kGeminiLive}, {});
+
+  SetIsFloatyInvoked(true);
+
+  // Set the current mode to Floaty (text mode).
+  ios::provider::SwitchToMode(ios::provider::GeminiViewMode::kFloaty,
+                              /*animated=*/false);
+  EXPECT_EQ(ios::provider::GetCurrentMode(),
+            ios::provider::GeminiViewMode::kFloaty);
+
+  // Simulate app backgrounding via SceneState activation level.
+  browser_->GetSceneState().activationLevel = SceneActivationLevelBackground;
+
+  // Verify it remained Floaty (text mode).
   EXPECT_EQ(ios::provider::GetCurrentMode(),
             ios::provider::GeminiViewMode::kFloaty);
 }
