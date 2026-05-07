@@ -63,6 +63,8 @@ IN_PROC_BROWSER_TEST_P(TextfieldDumpAccessibilityEventsTest, ValueChanged) {
 #endif
 IN_PROC_BROWSER_TEST_P(TextfieldDumpAccessibilityEventsTest,
                        MAYBE_TextSelectionChanged) {
+  AddDenyFilter("AutomationFocusChanged*");
+
   textfield_->SetText(u"Hello World");
   textfield_->SetSelectedRange(gfx::Range(0));
   WaitForPendingSerialization();

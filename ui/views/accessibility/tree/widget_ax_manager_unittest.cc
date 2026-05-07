@@ -382,8 +382,10 @@ TEST_F(WidgetAXManagerTest, OnEvent_PostsSingleTaskAndQueuesCorrectly) {
 
   // Fire an event on v1, one on v2, before the first send.
   auto before = task_environment()->GetPendingMainThreadTaskCount();
-  manager()->OnEvent(v1->GetViewAccessibility(), ax::mojom::Event::kFocus);
-  manager()->OnEvent(v2->GetViewAccessibility(), ax::mojom::Event::kFocus);
+  manager()->OnEvent(v1->GetViewAccessibility(),
+                     ax::mojom::Event::kControlsChanged);
+  manager()->OnEvent(v2->GetViewAccessibility(),
+                     ax::mojom::Event::kControlsChanged);
 
   // Still just one task posted.
   EXPECT_EQ(task_environment()->GetPendingMainThreadTaskCount(), before + 1u);
@@ -402,9 +404,9 @@ TEST_F(WidgetAXManagerTest, OnEvent_PostsSingleTaskAndQueuesCorrectly) {
   ASSERT_EQ(api.last_serialization().events.size(), 2u);
   ASSERT_GE(api.last_serialization().updates.size(), 1u);
   EXPECT_EQ(api.last_serialization().events[0].event_type,
-            ax::mojom::Event::kFocus);
+            ax::mojom::Event::kControlsChanged);
   EXPECT_EQ(api.last_serialization().events[1].event_type,
-            ax::mojom::Event::kFocus);
+            ax::mojom::Event::kControlsChanged);
 }
 
 TEST_F(WidgetAXManagerTest, DiesOnUnhandledEventRouting) {
@@ -467,7 +469,8 @@ TEST_F(WidgetAXManagerTest, OnEvent_CanScheduleAgainAfterSend) {
   api.WaitForNextSerialization();
 
   // First batch.
-  manager()->OnEvent(v->GetViewAccessibility(), ax::mojom::Event::kFocus);
+  manager()->OnEvent(v->GetViewAccessibility(),
+                     ax::mojom::Event::kControlsChanged);
   api.WaitForNextSerialization();
 
   EXPECT_FALSE(api.processing_update_posted());
@@ -475,11 +478,12 @@ TEST_F(WidgetAXManagerTest, OnEvent_CanScheduleAgainAfterSend) {
   EXPECT_TRUE(api.pending_data_updates().empty());
   ASSERT_EQ(api.last_serialization().events.size(), 1u);
   EXPECT_EQ(api.last_serialization().events[0].event_type,
-            ax::mojom::Event::kFocus);
+            ax::mojom::Event::kControlsChanged);
 
   // Second batch.
   auto before = task_environment()->GetPendingMainThreadTaskCount();
-  manager()->OnEvent(v->GetViewAccessibility(), ax::mojom::Event::kFocus);
+  manager()->OnEvent(v->GetViewAccessibility(),
+                     ax::mojom::Event::kControlsChanged);
   EXPECT_EQ(task_environment()->GetPendingMainThreadTaskCount(), before + 1u);
   EXPECT_TRUE(api.processing_update_posted());
   EXPECT_EQ(api.pending_events().size(), 1u);
@@ -488,7 +492,7 @@ TEST_F(WidgetAXManagerTest, OnEvent_CanScheduleAgainAfterSend) {
   api.WaitForNextSerialization();
   ASSERT_EQ(api.last_serialization().events.size(), 1u);
   EXPECT_EQ(api.last_serialization().events[0].event_type,
-            ax::mojom::Event::kFocus);
+            ax::mojom::Event::kControlsChanged);
 }
 
 TEST_F(WidgetAXManagerTest, OnDataChanged_CanScheduleAgainAfterSend) {
@@ -566,12 +570,12 @@ TEST_F(WidgetAXManagerTest, SendPendingUpdate_SendsSerializedUpdates) {
   api.Enable();
 
   manager()->OnEvent(widget()->GetRootView()->GetViewAccessibility(),
-                     ax::mojom::Event::kFocus);
+                     ax::mojom::Event::kControlsChanged);
   api.WaitForNextSerialization();
 
   EXPECT_EQ(api.last_serialization().events.size(), 1u);
   EXPECT_EQ(api.last_serialization().events[0].event_type,
-            ax::mojom::Event::kFocus);
+            ax::mojom::Event::kControlsChanged);
 
   EXPECT_FALSE(api.last_serialization().updates.empty());
 
