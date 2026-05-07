@@ -685,6 +685,7 @@ public abstract class ChromeFeatureList {
     public static final String TEST_DEFAULT_DISABLED = "TestDefaultDisabled";
     public static final String TEST_DEFAULT_ENABLED = "TestDefaultEnabled";
     public static final String THREE_DOT_MENU_BACK_BUTTON = "ThreeDotMenuBackButton";
+    public static final String TOOLBAR_CAPTURE_FIX_FOR_SPAS = "ToolbarCaptureFixForSPAs";
     public static final String TOOLBAR_PHONE_ANIMATION_REFACTOR = "ToolbarPhoneAnimationRefactor";
     public static final String TOOLBAR_SCROLL_ABLATION = "AndroidToolbarScrollAblation";
     public static final String TOOLBAR_SNAPSHOT_REFACTOR = "ToolbarSnapshotRefactor";
@@ -1171,6 +1172,8 @@ public abstract class ChromeFeatureList {
                     THREE_DOT_MENU_BACK_BUTTON,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
+    public static final CachedFlag sToolbarCaptureFixForSPAs =
+            newCachedFlag(TOOLBAR_CAPTURE_FIX_FOR_SPAS, /* defaultValue= */ false);
     public static final CachedFlag sToolbarPhoneAnimationRefactor =
             newCachedFlag(
                     TOOLBAR_PHONE_ANIMATION_REFACTOR,
@@ -1387,6 +1390,7 @@ public abstract class ChromeFeatureList {
                     sTabStripDensityChangeAndroid,
                     sTabWindowManagerReportIndicesMismatch,
                     sThreeDotMenuBackButton,
+                    sToolbarCaptureFixForSPAs,
                     sToolbarPhoneAnimationRefactor,
                     sToolbarSnapshotRefactor,
                     sToolbarStaleCaptureBugFix,

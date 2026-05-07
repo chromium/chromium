@@ -525,6 +525,7 @@ public class ToolbarControlContainerTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.TOOLBAR_CAPTURE_FIX_FOR_SPAS)
     public void testInvalidate_whileHidden_producesCapture() {
         makeAndInitAdapter();
         when(mBrowserControlsStateProvider.getBrowserControlHiddenRatio()).thenReturn(1f);
@@ -536,6 +537,7 @@ public class ToolbarControlContainerTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.TOOLBAR_CAPTURE_FIX_FOR_SPAS)
     public void testInvalidate_whileHidden_coalescesMultipleInvalidationsPerFrame() {
         makeAndInitAdapter();
         when(mBrowserControlsStateProvider.getBrowserControlHiddenRatio()).thenReturn(1f);
@@ -549,6 +551,7 @@ public class ToolbarControlContainerTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.TOOLBAR_CAPTURE_FIX_FOR_SPAS)
     public void testInvalidate_whileVisible_doesNotCapture() {
         makeAndInitAdapter();
         when(mBrowserControlsStateProvider.getBrowserControlHiddenRatio()).thenReturn(0.5f);
@@ -559,6 +562,7 @@ public class ToolbarControlContainerTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.TOOLBAR_CAPTURE_FIX_FOR_SPAS)
     public void testInvalidate_stopsCapturingAfterReveal() {
         makeAndInitAdapter();
         when(mBrowserControlsStateProvider.getBrowserControlHiddenRatio()).thenReturn(1f);
@@ -575,6 +579,7 @@ public class ToolbarControlContainerTest {
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.TOOLBAR_CAPTURE_FIX_FOR_SPAS)
     public void testInvalidate_afterDestroy_doesNotCapture() {
         makeAndInitAdapter();
         when(mBrowserControlsStateProvider.getBrowserControlHiddenRatio()).thenReturn(1f);

@@ -286,6 +286,7 @@ BASE_DECLARE_FEATURE(kTabWindowManagerReportIndicesMismatch);
 BASE_DECLARE_FEATURE(kTestDefaultDisabled);
 BASE_DECLARE_FEATURE(kTestDefaultEnabled);
 BASE_DECLARE_FEATURE(kThreeDotMenuBackButton);
+BASE_DECLARE_FEATURE(kToolbarCaptureFixForSPAs);
 BASE_DECLARE_FEATURE(kToolbarPhoneAnimationRefactor);
 BASE_DECLARE_FEATURE(kToolbarSnapshotRefactor);
 BASE_DECLARE_FEATURE(kToolbarStaleCaptureBugFix);
