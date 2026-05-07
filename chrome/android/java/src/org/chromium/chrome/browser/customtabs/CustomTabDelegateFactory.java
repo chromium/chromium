@@ -8,7 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
 
 import android.app.Activity;
-import android.content.ActivityNotFoundException;
+import android.app.ActivityManager.AppTask;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
 import android.graphics.Rect;
@@ -58,6 +58,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.ExclusiveAccessManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
+import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
@@ -284,30 +285,26 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             assert mActivity != null;
 
             if (ChromeFeatureList.sUseAppTaskForCustomTabActivation.isEnabled()) {
-                // Clone the original intent to preserve WebappExtras and SessionHolder.
-                // If we use a generic intent, CustomTabIntentHandler.onNewIntent() will
-                // treat it as an invalid cross-session launch and crash.
-                Intent newIntent = new Intent(mActivity.getIntent());
-                // NEW_TASK starts the activity. SINGLE_TOP and CLEAR_TOP ensure we route the
-                // launch intent to the existing activity's onNewIntent() instead of creating
-                // a duplicate instance.
-                newIntent.addFlags(
-                        Intent.FLAG_ACTIVITY_NEW_TASK
-                                | Intent.FLAG_ACTIVITY_SINGLE_TOP
-                                | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                AppTask appTask =
+                        AndroidTaskUtils.getAppTaskFromId(mActivity, mActivity.getTaskId());
+                if (appTask != null) {
+                    // Clone the original intent to preserve WebappExtras and SessionHolder.
+                    // If we use a generic intent, CustomTabIntentHandler.onNewIntent() will
+                    // treat it as an invalid cross-session launch and crash.
+                    Intent newIntent = new Intent(mActivity.getIntent());
+                    newIntent.removeFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
-                // Use standard startActivity() because it works universally across package
-                // boundaries (even for WebAPKs running in separate shell packages) and is
-                // BAL-exempt when triggered from a notification.
-                try {
-                    mActivity.startActivity(newIntent);
-                    return;
-                } catch (ActivityNotFoundException | SecurityException e) {
-                    Log.e(TAG, "Failed to start activity via startActivity", e);
+                    try {
+                        appTask.startActivity(mActivity, newIntent, null);
+                        return;
+                    } catch (IllegalArgumentException | SecurityException e) {
+                        Log.e(TAG, "Failed to start activity via AppTask", e);
+                    }
                 }
             }
 
-            // Fallback for when the flag is disabled, or startActivity fails.
+            // Fallback for when the flag is disabled, AppTask is not found, or the startActivity
+            // call fails.
             ApiCompatibilityUtils.moveTaskToFront(mActivity, mActivity.getTaskId(), 0);
         }
 
