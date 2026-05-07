@@ -47,7 +47,9 @@ class MockReadAnythingLifecycleObserver : public ReadAnythingLifecycleObserver {
  public:
   MOCK_METHOD(void,
               Activate,
-              (bool active, std::optional<ReadAnythingOpenTrigger>),
+              (bool active,
+               std::optional<ReadAnythingOpenTrigger>,
+               std::optional<base::TimeDelta>),
               (override));
   MOCK_METHOD(void, OnDestroyed, (), (override));
 };
@@ -144,8 +146,10 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingSidePanelControllerTest,
   entry->set_last_open_trigger(SidePanelOpenTrigger::kReadAnythingOmniboxChip);
 
   EXPECT_CALL(read_anything_observer_,
-              Activate(true, std::optional<ReadAnythingOpenTrigger>(
-                                 ReadAnythingOpenTrigger::kOmniboxChip)))
+              Activate(true,
+                       std::optional<ReadAnythingOpenTrigger>(
+                           ReadAnythingOpenTrigger::kOmniboxChip),
+                       testing::_))
       .Times(1);
   OnEntryShown(entry);
 }
@@ -158,7 +162,8 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingSidePanelControllerTest,
           ->GetEntryForKey(
               SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
 
-  EXPECT_CALL(read_anything_observer_, Activate(false, empty_trigger()))
+  EXPECT_CALL(read_anything_observer_,
+              Activate(false, empty_trigger(), testing::_))
       .Times(1);
   OnEntryHidden(entry);
 }

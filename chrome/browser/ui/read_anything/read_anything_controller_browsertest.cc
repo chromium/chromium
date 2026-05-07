@@ -59,7 +59,9 @@ class MockReadAnythingLifecycleObserver : public ReadAnythingLifecycleObserver {
  public:
   MOCK_METHOD(void,
               Activate,
-              (bool active, std::optional<ReadAnythingOpenTrigger>),
+              (bool active,
+               std::optional<ReadAnythingOpenTrigger>,
+               std::optional<base::TimeDelta>),
               (override));
   MOCK_METHOD(void, OnDestroyed, (), (override));
   MOCK_METHOD(void, OnReadingModePresenterChanged, (), (override));
@@ -208,9 +210,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   controller->AddObserver(&observer);
 
   base::RunLoop run_loop;
-  EXPECT_CALL(observer, Activate(true, testing::_)).WillOnce([&run_loop]() {
-    run_loop.Quit();
-  });
+  EXPECT_CALL(observer, Activate(true, testing::_, testing::_))
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
 
   controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
   run_loop.Run();
@@ -230,25 +231,22 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
 
   // 1. Show Immersive UI (first time)
   base::RunLoop run_loop_1;
-  EXPECT_CALL(observer, Activate(true, testing::_)).WillOnce([&run_loop_1]() {
-    run_loop_1.Quit();
-  });
+  EXPECT_CALL(observer, Activate(true, testing::_, testing::_))
+      .WillOnce([&run_loop_1]() { run_loop_1.Quit(); });
   controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
   run_loop_1.Run();
 
   // 2. Close Immersive UI
   base::RunLoop run_loop_2;
-  EXPECT_CALL(observer, Activate(false, testing::_)).WillOnce([&run_loop_2]() {
-    run_loop_2.Quit();
-  });
+  EXPECT_CALL(observer, Activate(false, testing::_, testing::_))
+      .WillOnce([&run_loop_2]() { run_loop_2.Quit(); });
   controller->CloseImmersiveUI(ReadAnythingCloseReason::kClosedByUser);
   run_loop_2.Run();
 
   // 3. Show Immersive UI (second time - reuse WebUI)
   base::RunLoop run_loop_3;
-  EXPECT_CALL(observer, Activate(true, testing::_)).WillOnce([&run_loop_3]() {
-    run_loop_3.Quit();
-  });
+  EXPECT_CALL(observer, Activate(true, testing::_, testing::_))
+      .WillOnce([&run_loop_3]() { run_loop_3.Quit(); });
   controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
   run_loop_3.Run();
 
@@ -271,9 +269,42 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
 
   // Close it
   base::RunLoop run_loop;
-  EXPECT_CALL(observer, Activate(false, testing::_)).WillOnce([&run_loop]() {
-    run_loop.Quit();
-  });
+  EXPECT_CALL(observer, Activate(false, testing::_, testing::_))
+      .WillOnce([&run_loop]() { run_loop.Quit(); });
+  controller->CloseImmersiveUI(ReadAnythingCloseReason::kClosedByUser);
+  run_loop.Run();
+
+  // Cleanup
+  controller->RemoveObserver(&observer);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       CloseImmersiveUI_NotifiesObserversWithDuration) {
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* controller = ReadAnythingController::From(tab);
+  ASSERT_TRUE(controller);
+
+  MockReadAnythingLifecycleObserver observer;
+  controller->AddObserver(&observer);
+
+  base::RunLoop show_loop;
+  EXPECT_CALL(observer, Activate(true, testing::_, testing::_))
+      .WillOnce([&show_loop]() { show_loop.Quit(); });
+
+  // Show it first
+  controller->ShowImmersiveUI(ReadAnythingOpenTrigger::kOmniboxChip);
+  show_loop.Run();
+
+  // Close it
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer, Activate(false, testing::_, testing::_))
+      .WillOnce([&run_loop](
+                    bool active, std::optional<ReadAnythingOpenTrigger> trigger,
+                    std::optional<base::TimeDelta> completed_session_duration) {
+        EXPECT_TRUE(completed_session_duration.has_value());
+        run_loop.Quit();
+      });
   controller->CloseImmersiveUI(ReadAnythingCloseReason::kClosedByUser);
   run_loop.Run();
 

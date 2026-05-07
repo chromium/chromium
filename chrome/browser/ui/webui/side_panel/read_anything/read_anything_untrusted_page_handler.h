@@ -237,8 +237,10 @@ class ReadAnythingUntrustedPageHandler :
 
   // ReadAnythingLifecycleObserver:
   void OnDestroyed() override;
-  void Activate(bool active,
-                std::optional<ReadAnythingOpenTrigger> open_trigger) override;
+  void Activate(
+      bool active,
+      std::optional<ReadAnythingOpenTrigger> open_trigger,
+      std::optional<base::TimeDelta> completed_session_duration) override;
   void OnReadingModePresenterChanged() override;
 
   void OnTabWillDetach(tabs::TabInterface* tab,

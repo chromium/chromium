@@ -75,7 +75,8 @@ void ReadAnythingOmniboxController::OnTabBackgrounded(tabs::TabInterface* tab) {
 
 void ReadAnythingOmniboxController::Activate(
     bool active,
-    std::optional<ReadAnythingOpenTrigger> open_trigger) {
+    std::optional<ReadAnythingOpenTrigger> open_trigger,
+    std::optional<base::TimeDelta> completed_session_duration) {
   if (active) {
     if (iph_response_timer_ && iph_response_timer_->IsRunning()) {
       iph_response_timer_->Stop();

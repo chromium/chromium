@@ -224,8 +224,11 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
   // (e.g. due to being unresponsive).
   void OnRendererCrashed();
 
-  // Helper function to record OnEntryHidden metrics.
-  void RecordEntryHiddenMetrics();
+  // Records OnEntryHidden metrics and returns the calculated session duration
+  // if Reading Mode was successfully shown. Returns std::nullopt if the UI is
+  // closed before being successfully shown or hidden due to an in-progress
+  // presentation mode transition.
+  std::optional<base::TimeDelta> RecordEntryHiddenMetrics();
 
   // Returns the SidePanelUI for the active tab if it can be shown.
   // Otherwise, returns nullptr.

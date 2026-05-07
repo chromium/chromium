@@ -191,7 +191,9 @@ void ReadAnythingSidePanelController::OnEntryShown(SidePanelEntry* entry) {
     CHECK(controller);
     controller->OnEntryShown(read_anything_trigger);
   } else {
-    observers_.Notify(&Observer::Activate, true, read_anything_trigger);
+    observers_.Notify(&Observer::Activate, /*active=*/true,
+                      read_anything_trigger,
+                      /*completed_session_duration=*/std::nullopt);
   }
 }
 
@@ -227,8 +229,9 @@ void ReadAnythingSidePanelController::OnEntryHidden(SidePanelEntry* entry) {
     CHECK(controller);
     controller->OnEntryHidden();
   } else {
-    observers_.Notify(&Observer::Activate, false,
-                      std::optional<ReadAnythingOpenTrigger>());
+    observers_.Notify(&Observer::Activate, /*active=*/false,
+                      /*trigger=*/std::optional<ReadAnythingOpenTrigger>(),
+                      /*completed_session_duration=*/std::nullopt);
   }
 
   // When the reading mode side panel is replaced with another side panel,
