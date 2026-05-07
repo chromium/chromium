@@ -9,7 +9,7 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {ActuationEligibility, ActuationTarget, AllowedInflightNavigation, FeatureMode, FreOverride, InvocationSource} from '../glic.mojom-webui.js';
 import {InternalsPageHandlerFactory, InternalsPageHandlerRemote} from '../glic_internals.mojom-webui.js';
-import type {InternalsDataPayload} from '../glic_internals.mojom-webui.js';
+import type {InternalsDataPayload, TriggerInvokeFromInternalsOptions} from '../glic_internals.mojom-webui.js';
 
 import {getCss} from './glic_internals_app.css.js';
 import {getHtml} from './glic_internals_app.html.js';
@@ -44,6 +44,7 @@ export class GlicInternalsAppElement extends CrLitElement {
       invokeOpenInForeground_: {type: Boolean},
       invokeActuationTarget_: {type: Number},
       actuationTargetEnumValues_: {type: Array},
+      invokeShowPanel_: {type: Boolean},
 
       selectedTabIndex_: {type: Number},
       tabNames_: {type: Array},
@@ -66,6 +67,7 @@ export class GlicInternalsAppElement extends CrLitElement {
   protected accessor invokeOpenInForeground_: boolean = true;
   protected accessor invokeActuationTarget_: ActuationTarget =
       ActuationTarget.kAgentDecides;
+  protected accessor invokeShowPanel_: boolean = true;
 
   protected accessor selectedTabIndex_: number = 0;
   protected accessor tabNames_: string[] = ['General', 'Debug Controls'];
@@ -292,6 +294,9 @@ export class GlicInternalsAppElement extends CrLitElement {
     this.invokeActuationTarget_ = Number((e.target as HTMLSelectElement).value);
   }
 
+  protected onInvokeShowPanelChange_(e: Event) {
+    this.invokeShowPanel_ = (e.target as HTMLInputElement).checked;
+  }
   protected onTriggerInvokeClick_() {
     this.invokeLogs_ =
         [`[${new Date().toLocaleTimeString()}] TRIGGERING INVOKE...`];
@@ -301,7 +306,7 @@ export class GlicInternalsAppElement extends CrLitElement {
         {newTab: {openInForeground: this.invokeOpenInForeground_}} :
         {defaultSurface: {}};
 
-    const options = {
+    const options: TriggerInvokeFromInternalsOptions = {
       invocationSource: this.invokeInvocationSource_,
       prompts: this.invokePrompt_ ? [this.invokePrompt_] : [],
       additionalContext: null,
@@ -320,6 +325,7 @@ export class GlicInternalsAppElement extends CrLitElement {
       waitForPanelOpen: this.invokeWaitForPanelOpen_,
       surface: surface,
       actuationTarget: this.invokeActuationTarget_,
+      showPanel: this.invokeAutoSubmit_ ? this.invokeShowPanel_ : null,
     };
 
     this.pageHandler_.triggerInvokeFromInternalsAction(options).then(

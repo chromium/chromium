@@ -111,6 +111,15 @@ export function getHtml(this: GlicInternalsAppElement) {
               Wait for Panel Open
             </label>
           </div>
+          ${this.invokeAutoSubmit_ ? html`
+            <div style="display: flex; gap: 16px; align-items: center;">
+              <label>
+                <input type="checkbox" .checked="${this.invokeShowPanel_}"
+                    @change="${this.onInvokeShowPanelChange_}">
+                Show Panel
+              </label>
+            </div>
+          ` : html``}
           <label for="invokeInvocationSourceSelect">Invocation Source</label>
           <select id="invokeInvocationSourceSelect"
               .value="${this.invokeInvocationSource_.toString()}"
