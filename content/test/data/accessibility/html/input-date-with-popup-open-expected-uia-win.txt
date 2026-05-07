@@ -15,7 +15,7 @@ Document
 ++++++++++++Group IsControlElement=false
 ++++++++++++++Group IsControlElement=false
 ++++++++++++++++Group IsControlElement=false
-++++++++++++++++++Button Name='Show month selection panel'
+++++++++++++++++++Button Name='September 2008'
 ++++++++++++++++++++Text Name='September 2008' IsControlElement=false
 ++++++++++++++++++++Image
 ++++++++++++++++Button Name='Show previous month'

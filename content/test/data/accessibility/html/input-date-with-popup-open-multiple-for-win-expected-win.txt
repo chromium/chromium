@@ -32,8 +32,8 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++++++++++IA2_ROLE_SECTION
 ++++++++++++IA2_ROLE_SECTION
 ++++++++++++++IA2_ROLE_SECTION
-++++++++++++++++ROLE_SYSTEM_PUSHBUTTON name='Show month selection panel' FOCUSABLE
-++++++++++++++++++ROLE_SYSTEM_STATICTEXT
+++++++++++++++++ROLE_SYSTEM_PUSHBUTTON name='September 2008' FOCUSABLE description:Show month selection panel description-from:aria-description description='Show month selection panel'
+++++++++++++++++++ROLE_SYSTEM_STATICTEXT name='September 2008'
 ++++++++++++++++++ROLE_SYSTEM_GRAPHIC READONLY
 ++++++++++++++ROLE_SYSTEM_PUSHBUTTON name='Show previous month' FOCUSABLE description-from:tooltip description='Show previous month'
 ++++++++++++++++ROLE_SYSTEM_GRAPHIC READONLY

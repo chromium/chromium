@@ -62,9 +62,9 @@ rootWebArea
 ++++++++++++++++genericContainer
 ++++++++++++++++++genericContainer ignored
 ++++++++++++++++++++genericContainer
-++++++++++++++++++++++button name='Show month selection panel'
-++++++++++++++++++++++++staticText
-++++++++++++++++++++++++++inlineTextBox
+++++++++++++++++++++++button description='Show month selection panel' name='September 2008' descriptionFrom=ariaDescription
+++++++++++++++++++++++++staticText name='September 2008'
+++++++++++++++++++++++++++inlineTextBox name='September 2008'
 ++++++++++++++++++++++++image
 ++++++++++++++++++++button description='Show previous month' name='Show previous month' descriptionFrom=title
 ++++++++++++++++++++++image

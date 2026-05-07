@@ -14,7 +14,7 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE ia2_hypertext='<obj0>'
 ++++++++++IA2_ROLE_SECTION ia2_hypertext='<obj0>'
 ++++++++++++IA2_ROLE_SECTION ia2_hypertext='<obj0><obj1><obj2><obj3>'
 ++++++++++++++IA2_ROLE_SECTION ia2_hypertext='<obj0>'
-++++++++++++++++ROLE_SYSTEM_PUSHBUTTON name='Show month selection panel' FOCUSABLE
+++++++++++++++++ROLE_SYSTEM_PUSHBUTTON FOCUSABLE description:Show month selection panel description-from:aria-description description='Show month selection panel'
 ++++++++++++++++++ROLE_SYSTEM_STATICTEXT
 ++++++++++++++++++ROLE_SYSTEM_GRAPHIC READONLY
 ++++++++++++++ROLE_SYSTEM_PUSHBUTTON name='Show previous month' FOCUSABLE description-from:tooltip ia2_hypertext='<obj0>' description='Show previous month'

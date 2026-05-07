@@ -26,7 +26,7 @@ rootWebArea
 ++++++++++++++++genericContainer
 ++++++++++++++++++genericContainer ignored
 ++++++++++++++++++++genericContainer
-++++++++++++++++++++++button name='Show month selection panel'
+++++++++++++++++++++++button description='Show month selection panel' descriptionFrom=ariaDescription
 ++++++++++++++++++++++++staticText
 ++++++++++++++++++++++++++inlineTextBox
 ++++++++++++++++++++++++image
