@@ -415,7 +415,7 @@ TEST_F(VectorMathTest, Vsma) {
     }
     for (auto& dest : GetSecondaryVectors(GetDestination(1u), source)) {
       std::ranges::copy(dest_source, dest.begin());
-      Vsma(source.p(), source.stride(), &scale, dest.p(), dest.stride(),
+      Vsma(source.p(), source.stride(), scale, dest.p(), dest.stride(),
            source.size());
       // Different optimizations may use different precisions for intermediate
       // results which may result in different rounding errors thus let's
@@ -446,7 +446,7 @@ TEST_F(VectorMathTest, Vsmul) {
       expected_dest[i] = scale * source[i];
     }
     for (auto& dest : GetSecondaryVectors(GetDestination(1u), source)) {
-      Vsmul(source.p(), source.stride(), &scale, dest.p(), dest.stride(),
+      Vsmul(source.p(), source.stride(), scale, dest.p(), dest.stride(),
             source.size());
       EXPECT_EQ(expected_dest, dest);
     }
@@ -461,7 +461,7 @@ TEST_F(VectorMathTest, Vsadd) {
       expected_dest[i] = addend + source[i];
     }
     for (auto& dest : GetSecondaryVectors(GetDestination(1u), source)) {
-      Vsadd(source.p(), source.stride(), &addend, dest.p(), dest.stride(),
+      Vsadd(source.p(), source.stride(), addend, dest.p(), dest.stride(),
             source.size());
       EXPECT_EQ(expected_dest, dest);
     }

@@ -59,7 +59,7 @@ void AudioChannel::Scale(float scale) {
     return;
   }
 
-  vector_math::Vsmul(Data(), 1, &scale, MutableData(), 1, length());
+  vector_math::Vsmul(Data(), 1, scale, MutableData(), 1, length());
 }
 
 void AudioChannel::CopyFrom(const AudioChannel* source_channel) {

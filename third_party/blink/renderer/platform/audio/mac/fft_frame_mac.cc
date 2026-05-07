@@ -171,8 +171,8 @@ void FFTFrame::DoFFT(const float* data) {
   // the correct scaling.
   float scale = 0.5f;
 
-  vector_math::Vsmul(frame_.realp, 1, &scale, frame_.realp, 1, fft_size_ / 2);
-  vector_math::Vsmul(frame_.imagp, 1, &scale, frame_.imagp, 1, fft_size_ / 2);
+  vector_math::Vsmul(frame_.realp, 1, scale, frame_.realp, 1, fft_size_ / 2);
+  vector_math::Vsmul(frame_.imagp, 1, scale, frame_.imagp, 1, fft_size_ / 2);
 }
 
 void FFTFrame::DoInverseFFT(float* data) {
@@ -181,7 +181,7 @@ void FFTFrame::DoInverseFFT(float* data) {
 
   // Do final scaling so that x == IFFT(FFT(x)).
   float scale = 1.0f / fft_size_;
-  vector_math::Vsmul(data, 1, &scale, data, 1, fft_size_);
+  vector_math::Vsmul(data, 1, scale, data, 1, fft_size_);
 }
 
 unsigned FFTFrame::MinFFTSize() {

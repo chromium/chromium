@@ -172,38 +172,12 @@ void Vmul(const float* source1p,
 
 void Vsma(const float* source_p,
           int source_stride,
-          const float* scale,
-          float* dest_p,
-          int dest_stride,
-          uint32_t frames_to_process) {
-  const float k = *scale;
-
-  impl::Vsma(source_p, source_stride, &k, dest_p, dest_stride,
-             frames_to_process);
-}
-
-void Vsma(const float* source_p,
-          int source_stride,
           float scale,
           float* dest_p,
           int dest_stride,
           uint32_t frames_to_process) {
-  const float k = scale;
-
-  impl::Vsma(source_p, source_stride, &k, dest_p, dest_stride,
+  impl::Vsma(source_p, source_stride, &scale, dest_p, dest_stride,
              frames_to_process);
-}
-
-void Vsmul(const float* source_p,
-           int source_stride,
-           const float* scale,
-           float* dest_p,
-           int dest_stride,
-           uint32_t frames_to_process) {
-  const float k = *scale;
-
-  impl::Vsmul(source_p, source_stride, &k, dest_p, dest_stride,
-              frames_to_process);
 }
 
 void Vsmul(const float* source_p,
@@ -212,21 +186,7 @@ void Vsmul(const float* source_p,
            float* dest_p,
            int dest_stride,
            uint32_t frames_to_process) {
-  const float k = scale;
-
-  impl::Vsmul(source_p, source_stride, &k, dest_p, dest_stride,
-              frames_to_process);
-}
-
-void Vsadd(const float* source_p,
-           int source_stride,
-           const float* addend,
-           float* dest_p,
-           int dest_stride,
-           uint32_t frames_to_process) {
-  const float k = *addend;
-
-  impl::Vsadd(source_p, source_stride, &k, dest_p, dest_stride,
+  impl::Vsmul(source_p, source_stride, &scale, dest_p, dest_stride,
               frames_to_process);
 }
 
@@ -236,9 +196,7 @@ void Vsadd(const float* source_p,
            float* dest_p,
            int dest_stride,
            uint32_t frames_to_process) {
-  const float k = addend;
-
-  impl::Vsadd(source_p, source_stride, &k, dest_p, dest_stride,
+  impl::Vsadd(source_p, source_stride, &addend, dest_p, dest_stride,
               frames_to_process);
 }
 

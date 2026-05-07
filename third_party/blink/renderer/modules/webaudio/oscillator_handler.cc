@@ -323,7 +323,7 @@ bool OscillatorHandler::CalculateSampleAccuratePhaseIncrements(
 
     // Convert from cents to rate scalar.
     float k = 1.0 / 1200;
-    vector_math::Vsmul(detune_values.data(), 1, &k, detune_values.data(), 1,
+    vector_math::Vsmul(detune_values.data(), 1, k, detune_values.data(), 1,
                        frames_to_process);
     for (unsigned i = 0; i < frames_to_process; ++i) {
       detune_values[i] = std::exp2(detune_values[i]);
@@ -345,7 +345,7 @@ bool OscillatorHandler::CalculateSampleAccuratePhaseIncrements(
   if (has_sample_accurate_values) {
     ClampFrequency(phase_increments, Context()->sampleRate() / 2);
     // Convert from frequency to wavetable increment.
-    vector_math::Vsmul(phase_increments.data(), 1, &final_scale,
+    vector_math::Vsmul(phase_increments.data(), 1, final_scale,
                        phase_increments.data(), 1, frames_to_process);
   }
 

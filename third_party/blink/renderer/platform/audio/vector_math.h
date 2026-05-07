@@ -60,13 +60,6 @@ PLATFORM_EXPORT void PrepareFilterForConv(base::span<const float> filter,
 // different results from what linux and windows would do.
 PLATFORM_EXPORT void Vsma(const float* source_p,
                           int source_stride,
-                          const float* scale,
-                          float* dest_p,
-                          int dest_stride,
-                          uint32_t frames_to_process);
-
-PLATFORM_EXPORT void Vsma(const float* source_p,
-                          int source_stride,
                           float scale,
                           float* dest_p,
                           int dest_stride,
@@ -77,21 +70,7 @@ PLATFORM_EXPORT void Vsma(const float* source_p,
 // dest[k*dest_stride] = scale * source[k*source_stride]
 PLATFORM_EXPORT void Vsmul(const float* source_p,
                            int source_stride,
-                           const float* scale,
-                           float* dest_p,
-                           int dest_stride,
-                           uint32_t frames_to_process);
-
-PLATFORM_EXPORT void Vsmul(const float* source_p,
-                           int source_stride,
                            float scale,
-                           float* dest_p,
-                           int dest_stride,
-                           uint32_t frames_to_process);
-
-PLATFORM_EXPORT void Vsadd(const float* source_p,
-                           int source_stride,
-                           const float* addend,
                            float* dest_p,
                            int dest_stride,
                            uint32_t frames_to_process);

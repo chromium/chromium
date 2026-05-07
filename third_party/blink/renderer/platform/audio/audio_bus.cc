@@ -406,8 +406,8 @@ void AudioBus::SumFromByDownMixing(const AudioBus& source_bus) {
     float* destination = ChannelByType(kChannelLeft)->MutableData();
     float scale = 0.5;
 
-    Vsma(source_l, 1, &scale, destination, 1, length());
-    Vsma(source_r, 1, &scale, destination, 1, length());
+    Vsma(source_l, 1, scale, destination, 1, length());
+    Vsma(source_r, 1, scale, destination, 1, length());
   } else if (number_of_source_channels == 4 &&
              number_of_destination_channels == 1) {
     // Down-mixing: 4 -> 1
@@ -422,10 +422,10 @@ void AudioBus::SumFromByDownMixing(const AudioBus& source_bus) {
     float* destination = ChannelByType(kChannelLeft)->MutableData();
     float scale = 0.25;
 
-    Vsma(source_l, 1, &scale, destination, 1, length());
-    Vsma(source_r, 1, &scale, destination, 1, length());
-    Vsma(source_sl, 1, &scale, destination, 1, length());
-    Vsma(source_sr, 1, &scale, destination, 1, length());
+    Vsma(source_l, 1, scale, destination, 1, length());
+    Vsma(source_r, 1, scale, destination, 1, length());
+    Vsma(source_sl, 1, scale, destination, 1, length());
+    Vsma(source_sr, 1, scale, destination, 1, length());
   } else if (number_of_source_channels == 6 &&
              number_of_destination_channels == 1) {
     // Down-mixing: 5.1 -> 1
@@ -443,11 +443,11 @@ void AudioBus::SumFromByDownMixing(const AudioBus& source_bus) {
     float scale_sqrt_half = sqrtf(0.5);
     float scale_half = 0.5;
 
-    Vsma(source_l, 1, &scale_sqrt_half, destination, 1, length());
-    Vsma(source_r, 1, &scale_sqrt_half, destination, 1, length());
+    Vsma(source_l, 1, scale_sqrt_half, destination, 1, length());
+    Vsma(source_r, 1, scale_sqrt_half, destination, 1, length());
     Vadd(source_c, 1, destination, 1, destination, 1, length());
-    Vsma(source_sl, 1, &scale_half, destination, 1, length());
-    Vsma(source_sr, 1, &scale_half, destination, 1, length());
+    Vsma(source_sl, 1, scale_half, destination, 1, length());
+    Vsma(source_sr, 1, scale_half, destination, 1, length());
   } else if (number_of_source_channels == 4 &&
              number_of_destination_channels == 2) {
     // Down-mixing: 4 -> 2
@@ -464,10 +464,10 @@ void AudioBus::SumFromByDownMixing(const AudioBus& source_bus) {
     float* destination_r = ChannelByType(kChannelRight)->MutableData();
     float scale_half = 0.5;
 
-    Vsma(source_l, 1, &scale_half, destination_l, 1, length());
-    Vsma(source_sl, 1, &scale_half, destination_l, 1, length());
-    Vsma(source_r, 1, &scale_half, destination_r, 1, length());
-    Vsma(source_sr, 1, &scale_half, destination_r, 1, length());
+    Vsma(source_l, 1, scale_half, destination_l, 1, length());
+    Vsma(source_sl, 1, scale_half, destination_l, 1, length());
+    Vsma(source_r, 1, scale_half, destination_r, 1, length());
+    Vsma(source_sr, 1, scale_half, destination_r, 1, length());
   } else if (number_of_source_channels == 6 &&
              number_of_destination_channels == 2) {
     // Down-mixing: 5.1 -> 2
@@ -486,11 +486,11 @@ void AudioBus::SumFromByDownMixing(const AudioBus& source_bus) {
     float scale_sqrt_half = sqrtf(0.5);
 
     Vadd(source_l, 1, destination_l, 1, destination_l, 1, length());
-    Vsma(source_c, 1, &scale_sqrt_half, destination_l, 1, length());
-    Vsma(source_sl, 1, &scale_sqrt_half, destination_l, 1, length());
+    Vsma(source_c, 1, scale_sqrt_half, destination_l, 1, length());
+    Vsma(source_sl, 1, scale_sqrt_half, destination_l, 1, length());
     Vadd(source_r, 1, destination_r, 1, destination_r, 1, length());
-    Vsma(source_c, 1, &scale_sqrt_half, destination_r, 1, length());
-    Vsma(source_sr, 1, &scale_sqrt_half, destination_r, 1, length());
+    Vsma(source_c, 1, scale_sqrt_half, destination_r, 1, length());
+    Vsma(source_sr, 1, scale_sqrt_half, destination_r, 1, length());
   } else if (number_of_source_channels == 6 &&
              number_of_destination_channels == 4) {
     // Down-mixing: 5.1 -> 4
@@ -507,9 +507,9 @@ void AudioBus::SumFromByDownMixing(const AudioBus& source_bus) {
     float scale_sqrt_half = sqrtf(0.5);
 
     Vadd(source_l, 1, destination_l, 1, destination_l, 1, length());
-    Vsma(source_c, 1, &scale_sqrt_half, destination_l, 1, length());
+    Vsma(source_c, 1, scale_sqrt_half, destination_l, 1, length());
     Vadd(source_r, 1, destination_r, 1, destination_r, 1, length());
-    Vsma(source_c, 1, &scale_sqrt_half, destination_r, 1, length());
+    Vsma(source_c, 1, scale_sqrt_half, destination_r, 1, length());
     Channel(2)->SumFrom(source_bus.Channel(4));
     Channel(3)->SumFrom(source_bus.Channel(5));
   } else {
@@ -567,7 +567,7 @@ void AudioBus::CopyWithGainFrom(const AudioBus& source_bus, float gain) {
   } else {
     for (unsigned channel_index = 0; channel_index < number_of_channels;
          ++channel_index) {
-      vector_math::Vsmul(sources[channel_index].data(), 1, &gain,
+      vector_math::Vsmul(sources[channel_index].data(), 1, gain,
                          destinations[channel_index].data(), 1,
                          frames_to_process);
     }
