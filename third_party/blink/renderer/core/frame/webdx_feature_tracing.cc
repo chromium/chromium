@@ -142,6 +142,13 @@ void MaybeEmitWebDXFeatureTraceEvent(const UseCounterFeature& feature,
     column = source_location->ColumnNumber();
   }
 
+  // If the specific source location is unavailable we use the document's URL
+  // as a fallback.
+  if (url.empty() && source_frame && source_frame->DomWindow() &&
+      source_frame->DomWindow()->document()) {
+    url = source_frame->DomWindow()->document()->Url().GetString();
+  }
+
   TRACE_EVENT_INSTANT("blink.webdx_feature_usage", "WebDXFeatureUsage",
                       "feature", feature_name, "url", url.Utf8(), "scriptId",
                       script_id, "lineNumber", line, "columnNumber", column);
