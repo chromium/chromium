@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_ACCOUNT_MANAGER_CORE_CHROMEOS_FAKE_ACCOUNT_MANAGER_UI_H_
 #define COMPONENTS_ACCOUNT_MANAGER_CORE_CHROMEOS_FAKE_ACCOUNT_MANAGER_UI_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
@@ -41,6 +42,10 @@ class FakeAccountManagerUI : public account_manager::AccountManagerUI {
     return show_account_reauthentication_dialog_calls_;
   }
 
+  const std::optional<std::string>& last_reauth_email() const {
+    return last_reauth_email_;
+  }
+
   int show_manage_accounts_settings_calls() const {
     return show_manage_accounts_settings_calls_;
   }
@@ -60,6 +65,7 @@ class FakeAccountManagerUI : public account_manager::AccountManagerUI {
   int show_account_addition_dialog_calls_ = 0;
   int show_account_reauthentication_dialog_calls_ = 0;
   int show_manage_accounts_settings_calls_ = 0;
+  std::optional<std::string> last_reauth_email_;
 
   base::ObserverList<Observer> observers_;
 };

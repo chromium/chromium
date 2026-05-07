@@ -17,6 +17,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -43,7 +44,11 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "components/account_id/account_id.h"
+#include "components/account_manager_core/account_manager_facade.h"
+#include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
+#include "components/account_manager_core/chromeos/fake_account_manager_ui.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -61,6 +66,11 @@
 namespace ash {
 
 namespace {
+
+using testing::Optional;
+using testing::StrEq;
+
+constexpr char kReauthEmail[] = "projector-user@example.com";
 
 apps::AppServiceProxy* GetAppServiceProxy(Profile* profile) {
   return apps::AppServiceProxyFactory::GetForProfile(profile);
@@ -320,6 +330,43 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, DriveUnmountedAndRemounted) {
         /*enabled_drive=*/true, run_loop.QuitClosure());
     run_loop.Run();
   }
+}
+
+// Verifies Projector opens the reauth dialog through the existing account
+// manager UI path. The fake UI keeps the test focused on the dialog handoff and
+// UMA behavior.
+IN_PROC_BROWSER_TEST_F(ProjectorClientTest,
+                       HandleAccountReauthOpensReauthDialog) {
+  base::HistogramTester histogram_tester;
+  auto* profile = browser()->profile();
+  crosapi::AccountManagerMojoService* account_manager_mojo_service =
+      AccountManagerFactory::Get()->GetAccountManagerMojoService(
+          profile->GetPath().value());
+  ASSERT_TRUE(account_manager_mojo_service);
+
+  auto fake_account_manager_ui = std::make_unique<FakeAccountManagerUI>();
+  FakeAccountManagerUI* fake_account_manager_ui_ptr =
+      fake_account_manager_ui.get();
+  account_manager_mojo_service->SetAccountManagerUI(
+      std::move(fake_account_manager_ui));
+
+  ProjectorAppClient::Get()->HandleAccountReauth(kReauthEmail);
+
+  EXPECT_EQ(1, fake_account_manager_ui_ptr
+                   ->show_account_reauthentication_dialog_calls());
+  EXPECT_THAT(fake_account_manager_ui_ptr->last_reauth_email(),
+              Optional(StrEq(kReauthEmail)));
+  EXPECT_EQ(0,
+            fake_account_manager_ui_ptr->show_account_addition_dialog_calls());
+  EXPECT_EQ(0,
+            fake_account_manager_ui_ptr->show_manage_accounts_settings_calls());
+  histogram_tester.ExpectUniqueSample(
+      account_manager::AccountManagerFacade::kAccountAdditionSource,
+      account_manager::AccountManagerFacade::AccountAdditionSource::
+          kChromeOSProjectorAppReauth,
+      /*expected_count=*/1);
+
+  fake_account_manager_ui_ptr->CloseDialog();
 }
 
 // Tests Projector client for child and managed users.

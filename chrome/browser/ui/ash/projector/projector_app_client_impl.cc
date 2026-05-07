@@ -4,16 +4,19 @@
 
 #include "chrome/browser/ui/ash/projector/projector_app_client_impl.h"
 
+#include <optional>
 #include <string>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/webui/annotator/untrusted_annotator_page_handler_impl.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/profiles/profile.h"
@@ -22,16 +25,39 @@
 #include "chrome/browser/ui/ash/projector/projector_soda_installation_controller.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "components/account_manager_core/account_manager_facade.h"
+#include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/soda/constants.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 
 namespace {
 
 constexpr char kUsEnglishLocale[] = "en-US";
+
+// Launches account reauthentication dialog for provided `email`.
+// Note: the added/reauthenticated account may not match the account provided
+// in the `email` field if user decided to edit the email inside the dialog.
+void ShowProjectorAccountReauthDialog(content::BrowserContext* browser_context,
+                                      const std::string& email) {
+  CHECK(browser_context);
+
+  base::UmaHistogramEnumeration(
+      account_manager::AccountManagerFacade::kAccountAdditionSource,
+      account_manager::AccountManagerFacade::AccountAdditionSource::
+          kChromeOSProjectorAppReauth);
+
+  crosapi::AccountManagerMojoService* account_manager_mojo_service =
+      ash::AccountManagerFactory::Get()->GetAccountManagerMojoService(
+          browser_context->GetPath().value());
+  CHECK(account_manager_mojo_service);
+
+  account_manager_mojo_service->ShowReauthAccountDialog(email,
+                                                        base::DoNothing());
+}
 
 }  // namespace
 
@@ -179,11 +205,6 @@ void ProjectorAppClientImpl::ToggleFileSyncingNotificationForPaths(
 }
 
 void ProjectorAppClientImpl::HandleAccountReauth(const std::string& email) {
-  ash::AccountManagerFactory::Get()
-      ->GetAccountManagerFacade(
-          ProfileManager::GetActiveUserProfile()->GetPath().value())
-      ->ShowReauthAccountDialog(
-          account_manager::AccountManagerFacade::AccountAdditionSource::
-              kChromeOSProjectorAppReauth,
-          email, base::DoNothing());
+  ShowProjectorAccountReauthDialog(ProfileManager::GetActiveUserProfile(),
+                                   email);
 }

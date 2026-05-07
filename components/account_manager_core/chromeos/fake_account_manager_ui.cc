@@ -43,6 +43,7 @@ void FakeAccountManagerUI::ShowReauthAccountDialog(
     const std::string& email,
     base::OnceClosure close_dialog_closure) {
   close_dialog_closure_ = std::move(close_dialog_closure);
+  last_reauth_email_ = email;
   show_account_reauthentication_dialog_calls_++;
   is_dialog_shown_ = true;
 
