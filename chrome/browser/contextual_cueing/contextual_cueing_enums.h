@@ -68,7 +68,9 @@ enum class ContextualCueingDecision {
   kUserOptedOut = 25,
   // The cue couldn't be shown because it is disabled by enterprise policy.
   kDisabledByEnterprisePolicy = 26,
-  kMaxValue = kDisabledByEnterprisePolicy,
+  // The cue couldn't be shown because the user is subject to age restrictions.
+  kAgeRestrictionEnforced = 27,
+  kMaxValue = kAgeRestrictionEnforced,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_cueing/enums.xml:ContextualCueingDecision)
 

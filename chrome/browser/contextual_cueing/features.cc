@@ -7,6 +7,8 @@
 namespace contextual_cueing {
 
 BASE_FEATURE(kContextualCueingV2, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kContextualCueingV2EnforceAgeRestriction,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<double> kEduClassifierThreshold(
     &kContextualCueingV2,

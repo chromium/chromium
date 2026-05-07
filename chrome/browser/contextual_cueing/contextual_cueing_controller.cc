@@ -29,6 +29,7 @@
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_actions.h"
@@ -46,6 +47,9 @@
 #include "components/optimization_guide/proto/features/contextual_cueing.pb.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/sessions/content/session_tab_helper.h"
+#include "components/signin/public/identity_manager/account_capabilities.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_utils.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -143,6 +147,8 @@ ContextualCueingController::ContextualCueingController(
       sync_service_(SyncServiceFactory::GetForProfile(
           browser_window_interface_->GetProfile())),
       template_url_service_(TemplateURLServiceFactory::GetForProfile(
+          browser_window_interface_->GetProfile())),
+      identity_manager_(IdentityManagerFactory::GetForProfile(
           browser_window_interface_->GetProfile())) {
 #if !BUILDFLAG(IS_ANDROID)
   page_action_observer_ = std::make_unique<ContextualCueingPageActionObserver>(
@@ -405,6 +411,12 @@ void ContextualCueingController::OnModelExecutionResponseReceived(
     return;
   }
 
+  if (IsUserSubjectToAgeRestrictions()) {
+    RecordContextualCueingDecision(
+        ContextualCueingDecision::kAgeRestrictionEnforced);
+    return;
+  }
+
   if (!target->IsEligible()) {
     CUEING_LOG(base::StringPrintf("Not eligible for '%s' cues",
                                   GetName(*target_type)));
@@ -416,6 +428,28 @@ void ContextualCueingController::OnModelExecutionResponseReceived(
   if (IsAllowedToShowCue()) {
     ShowCue(*target_type, *target, std::move(*response));
   }
+}
+
+bool ContextualCueingController::IsUserSubjectToAgeRestrictions() {
+  if (!base::FeatureList::IsEnabled(kContextualCueingV2EnforceAgeRestriction)) {
+    return false;
+  }
+
+  // If the user is not signed in, we cannot check their age. Say that they are
+  // subject to age restrictions.
+  if (!identity_manager_) {
+    return true;
+  }
+
+  // If the user is signed in, check if they are subject to age restrictions.
+  AccountCapabilities capabilities =
+      identity_manager_
+          ->FindExtendedAccountInfo(identity_manager_->GetPrimaryAccountInfo(
+              signin::ConsentLevel::kSignin))
+          .capabilities;
+
+  return capabilities.can_use_model_execution_features() !=
+         signin::Tribool::kTrue;
 }
 
 bool ContextualCueingController::IsUrlEligibleForCue(const GURL& url) {

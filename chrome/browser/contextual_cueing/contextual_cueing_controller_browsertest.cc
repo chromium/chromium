@@ -45,6 +45,7 @@
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/optimization_guide/proto/features/contextual_cueing.pb.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/sync/test/test_sync_service.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/browser_test.h"
@@ -72,10 +73,11 @@ class TestInfoBarDelegate : public ConfirmInfoBarDelegate {
   std::u16string GetMessageText() const override { return u"Test InfoBar"; }
 };
 
-class ContextualCueingControllerBrowserTest : public SigninBrowserTestBase {
+class ContextualCueingControllerBrowserTestBase : public SigninBrowserTestBase {
  public:
-  ContextualCueingControllerBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(kContextualCueingV2);
+  void SetUp() override {
+    InitializeFeatureList();
+    SigninBrowserTestBase::SetUp();
   }
 
   void SetUpOnMainThread() override {
@@ -172,8 +174,11 @@ class ContextualCueingControllerBrowserTest : public SigninBrowserTestBase {
         ->page_action_controller();
   }
 
+  virtual void InitializeFeatureList() = 0;
+
  protected:
   raw_ptr<TestCueTarget> cue_target_ = nullptr;
+  base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
   syncer::TestSyncService* GetTestSyncService() {
@@ -188,7 +193,6 @@ class ContextualCueingControllerBrowserTest : public SigninBrowserTestBase {
         context, base::BindRepeating(&CreateTestSyncService));
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   ui::UserDataFactory::ScopedOverride user_ed_override_;
 };
 
@@ -205,6 +209,15 @@ optimization_guide::proto::ContextualCueingResponse MakeCompleteResponse() {
 
   return response;
 }
+
+class ContextualCueingControllerBrowserTest
+    : public ContextualCueingControllerBrowserTestBase {
+ public:
+  void InitializeFeatureList() override {
+    scoped_feature_list_.InitWithFeatures(
+        {kContextualCueingV2}, {kContextualCueingV2EnforceAgeRestriction});
+  }
+};
 
 IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
                        NoLongerActiveTabAfterCategoryClassification) {
@@ -839,6 +852,63 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "ContextualCueing.V2.CueInteraction.Clicked",
       base::HashMetricName("test_cuj_string"), 1);
+}
+
+class ContextualCueingControllerBrowserTestWithAgeRestriction
+    : public ContextualCueingControllerBrowserTest {
+ public:
+  void InitializeFeatureList() override {
+    scoped_feature_list_.InitWithFeatures(
+        {kContextualCueingV2, kContextualCueingV2EnforceAgeRestriction},
+        /*disabled_features=*/{});
+  }
+
+  void SetUserRestriction(bool is_restricted) {
+    auto account_info = identity_test_env()->MakePrimaryAccountAvailable(
+        "user@gmail.com", signin::ConsentLevel::kSignin);
+    AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+    mutator.set_can_use_model_execution_features(!is_restricted);
+    identity_test_env()->UpdateAccountInfoForAccount(account_info);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTestWithAgeRestriction,
+                       AgeRestrictionEnforced) {
+  SetUserRestriction(/*is_restricted=*/true);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.activetab.com/abc"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  base::HistogramTester histogram_tester;
+  SeedExecutionResult(MakeCompleteResponse());
+  SimulateFilterPassed();
+
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester, "ContextualCueing.V2.Decision", 1);
+  histogram_tester.ExpectUniqueSample(
+      "ContextualCueing.V2.Decision",
+      ContextualCueingDecision::kAgeRestrictionEnforced, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTestWithAgeRestriction,
+                       AgeRestrictionPasses) {
+  SetUserRestriction(/*is_restricted=*/false);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL("https://www.activetab.com/abc"),
+      WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  base::HistogramTester histogram_tester;
+  SeedExecutionResult(MakeCompleteResponse());
+  SimulateFilterPassed();
+
+  optimization_guide::RetryForHistogramUntilCountReached(
+      &histogram_tester, "ContextualCueing.V2.Decision", 1);
+  histogram_tester.ExpectUniqueSample("ContextualCueing.V2.Decision",
+                                      ContextualCueingDecision::kSuccess, 1);
 }
 
 }  // namespace

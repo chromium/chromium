@@ -126,6 +126,9 @@ chromium-metrics-reviews@google.com.
   <int value="26" label="Cue not shown: disabled by enterprise policy">
     Cue could not be shown because it is disabled by enterprise policy.
   </int>
+  <int value="27" label="Cue not shown: age restriction enforced">
+    Cue could not be shown because the user is subject to age restrictions.
+  </int>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/contextual_cueing/contextual_cueing_enums.h:ContextualCueingDecision) -->
