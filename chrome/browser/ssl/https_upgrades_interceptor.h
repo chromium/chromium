@@ -52,7 +52,6 @@ class HttpsUpgradesInterceptor : public content::URLLoaderRequestInterceptor,
       content::NavigationUIData* navigation_ui_data_);
 
   HttpsUpgradesInterceptor(content::FrameTreeNodeId frame_tree_node_id,
-                           bool http_interstitial_enabled,
                            content::NavigationUIData* navigation_ui_data_);
   ~HttpsUpgradesInterceptor() override;
 
@@ -118,11 +117,6 @@ class HttpsUpgradesInterceptor : public content::URLLoaderRequestInterceptor,
 
   // Used to access the WebContents for the navigation.
   content::FrameTreeNodeId frame_tree_node_id_;
-
-  // Controls whether we are upgrading and falling back with an interstitial
-  // before proceeding with the HTTP navigation. This reflects the general
-  // UI setting. Only used to set the values of interstitial_state_.
-  bool http_interstitial_enabled_by_pref_ = false;
 
   // Parameters about whether the throttle should trigger the interstitial
   // warning before navigating to the HTTP fallback URL. Can be null if the

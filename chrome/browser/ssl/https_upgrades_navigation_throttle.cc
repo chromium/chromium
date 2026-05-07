@@ -73,7 +73,7 @@ void HttpsUpgradesNavigationThrottle::MaybeCreateAndAdd(
   }
 
   bool https_upgrades_enabled =
-      interstitial_state.enabled_by_pref ||
+      IsInterstitialEnabled(interstitial_state) ||
       base::FeatureList::IsEnabled(features::kHttpsUpgrades);
   if (!https_upgrades_enabled) {
     return;

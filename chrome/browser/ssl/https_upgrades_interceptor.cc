@@ -201,20 +201,14 @@ HttpsUpgradesInterceptor::MaybeCreateInterceptor(
     return nullptr;
   }
 
-  PrefService* prefs = profile->GetPrefs();
-  bool https_first_mode_enabled =
-      prefs && prefs->GetBoolean(prefs::kHttpsOnlyModeEnabled);
-
-  return std::make_unique<HttpsUpgradesInterceptor>(
-      frame_tree_node_id, https_first_mode_enabled, navigation_ui_data);
+  return std::make_unique<HttpsUpgradesInterceptor>(frame_tree_node_id,
+                                                    navigation_ui_data);
 }
 
 HttpsUpgradesInterceptor::HttpsUpgradesInterceptor(
     content::FrameTreeNodeId frame_tree_node_id,
-    bool http_interstitial_enabled_by_pref,
     content::NavigationUIData* navigation_ui_data)
     : frame_tree_node_id_(frame_tree_node_id),
-      http_interstitial_enabled_by_pref_(http_interstitial_enabled_by_pref),
       navigation_ui_data_(navigation_ui_data) {}
 
 HttpsUpgradesInterceptor::~HttpsUpgradesInterceptor() = default;
@@ -296,26 +290,8 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
   // Set up the interstitial state before checking any exclusions to upgrades,
   // as some may depend on this being configured.
   interstitial_state_ = std::make_unique<
-      security_interstitials::https_only_mode::HttpInterstitialState>();
-  interstitial_state_->enabled_by_pref = http_interstitial_enabled_by_pref_;
-  auto* prefs = profile->GetPrefs();
-  if (base::FeatureList::IsEnabled(features::kHttpsFirstModeIncognito)) {
-    if (prefs && prefs->GetBoolean(prefs::kHttpsFirstModeIncognito) &&
-        profile->IsIncognitoProfile()) {
-      interstitial_state_->enabled_by_incognito = true;
-    }
-  }
-  // StatefulSSLHostStateDelegate can be null during tests.
-  if (state &&
-      state->IsHttpsEnforcedForUrl(tentative_resource_request.url,
-                                   storage_partition) &&
-      !MustDisableSiteEngagementHeuristic(profile)) {
-    interstitial_state_->enabled_by_engagement_heuristic = true;
-  }
-  if (IsBalancedModeEnabled(prefs) && state &&
-      !state->HttpsFirstBalancedModeSuppressedForTesting()) {
-    interstitial_state_->enabled_in_balanced_mode = true;
-  }
+      security_interstitials::https_only_mode::HttpInterstitialState>(
+      ComputeInterstitialState(web_contents, tentative_resource_request.url));
 
   // Exclude HTTPS URLs.
   if (tentative_resource_request.url.SchemeIs(url::kHttpsScheme)) {
@@ -530,7 +506,7 @@ void HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
   // silent HTTPS Upgrades for the site overall and not show an HTTPS-First Mode
   // interstitial for Engaged Sites. Strict HTTPS-First Mode ignores this
   // setting.
-  if (!interstitial_state_->enabled_by_pref &&
+  if (!IsStrictInterstitialEnabled(*interstitial_state_) &&
       DoesInsecureContentSettingDisableUpgrading(url, profile)) {
     RecordNavigationRequestSecurityLevel(
         NavigationRequestSecurityLevel::kAllowlisted);

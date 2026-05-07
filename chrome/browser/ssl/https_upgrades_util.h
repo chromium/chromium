@@ -69,12 +69,6 @@ bool ShouldExemptNonUniqueHostnames(
     const security_interstitials::https_only_mode::HttpInterstitialState&
         state);
 
-// Returns true if the given URL should be excluded from interstitials in the
-// current HFM mode. Does NOT mean that an upgrade shouldn't be attempted.
-bool ShouldExcludeUrlFromInterstitial(
-    const security_interstitials::https_only_mode::HttpInterstitialState& state,
-    const GURL& url);
-
 // Returns true if the Site Engagement heuristic for HTTPS-First Mode must be
 // disabled and not cause an interstitial. Other conditions such as relevant
 // prefs already having been set may also disable the heuristic on startup, but
