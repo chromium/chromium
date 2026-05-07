@@ -931,18 +931,6 @@ class ApiTests extends ApiTestFixtureBase {
     assertTrue(await actuationOnWebState.next());
   }
 
-  async testWebActuationSettingIsUndefinedWhenFeatureDisabled() {
-    assertTrue(this.host.getActuationOnWebSetting === undefined);
-  }
-
-  async testGetWebActuationSetting() {
-    assertDefined(this.host.getActuationOnWebSetting);
-    const webActuationSetting =
-        observeSequence(this.host.getActuationOnWebSetting());
-    assertFalse(await webActuationSetting.next() as boolean);
-    await this.advanceToNextStep();
-    assertTrue(await webActuationSetting.next() as boolean);
-  }
 
   async testGetFormFactor() {
     assertDefined(this.host.getFormFactor);

@@ -64,6 +64,19 @@ class ApiTests extends ApiTestFixtureBase {
         'Pinned tabs should remain empty when auto-pinning is disabled.');
   }
 
+  async testWebActuationSettingIsUndefinedWhenFeatureDisabled() {
+    assertTrue(this.host.getActuationOnWebSetting === undefined);
+  }
+
+  async testGetWebActuationSetting() {
+    assertDefined(this.host.getActuationOnWebSetting);
+    const webActuationSetting =
+        observeSequence(this.host.getActuationOnWebSetting());
+    assertFalse(await webActuationSetting.next() as boolean);
+    await this.advanceToNextStep();
+    assertTrue(await webActuationSetting.next() as boolean);
+  }
+
   async testInvocationSource() {
     const expectedSource = this.testParams as number;
     await observeSequence(this.client.panelOpenData)

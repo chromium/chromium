@@ -133,6 +133,8 @@ std::vector<std::string> GetTestSuiteNames() {
       "NewGlicApiMultiProfileTest",
       "NewGlicApiTestWithDefaultTabContextDisabled",
       "NewGlicApiTestWithDefaultTabContextEnabled",
+      "NewGlicApiTestWithWebActuationSettingDisabled",
+      "NewGlicApiTestWithWebActuationSettingEnabled",
 #if !BUILDFLAG(IS_ANDROID)
       "NewGlicApiTestWithSkills",
 #endif
@@ -349,6 +351,42 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithDefaultTabContextEnabled,
   GetProfile()->GetPrefs()->SetBoolean(prefs::kGlicDefaultTabContextEnabled,
                                        false);
 
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+}
+
+class NewGlicApiTestWithWebActuationSettingEnabled : public NewGlicApiTest {
+ public:
+  NewGlicApiTestWithWebActuationSettingEnabled() {
+    feature_list_.InitWithFeatures({features::kGlicWebActuationSetting}, {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithWebActuationSettingEnabled,
+                       testGetWebActuationSetting) {
+  service()->enabling().SetUserEnabledActuationOnWeb(false);
+  ASSERT_OK(OpenGlicForActiveTab());
+  ExecuteJsTest();
+
+  service()->enabling().SetUserEnabledActuationOnWeb(true);
+  ContinueJsTest();
+}
+
+class NewGlicApiTestWithWebActuationSettingDisabled : public NewGlicApiTest {
+ public:
+  NewGlicApiTestWithWebActuationSettingDisabled() {
+    feature_list_.InitWithFeatures({}, {features::kGlicWebActuationSetting});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithWebActuationSettingDisabled,
+                       testWebActuationSettingIsUndefinedWhenFeatureDisabled) {
   ASSERT_OK(OpenGlicForActiveTab());
   ExecuteJsTest();
 }
@@ -1237,6 +1275,16 @@ INSTANTIATE_TEST_SUITE_P(,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
 
+INSTANTIATE_TEST_SUITE_P(,
+                         NewGlicApiTestWithWebActuationSettingDisabled,
+                         DefaultTestParamSet(),
+                         &WithTestParams::PrintTestVariant);
+
+INSTANTIATE_TEST_SUITE_P(,
+                         NewGlicApiTestWithWebActuationSettingEnabled,
+                         DefaultTestParamSet(),
+                         &WithTestParams::PrintTestVariant);
+
 // Skills are not supported yet on Android.
 #if !BUILDFLAG(IS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(,
@@ -1256,6 +1304,10 @@ GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
     NewGlicApiTestWithDefaultTabContextDisabled);
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
     NewGlicApiTestWithDefaultTabContextEnabled);
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
+    NewGlicApiTestWithWebActuationSettingDisabled);
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
+    NewGlicApiTestWithWebActuationSettingEnabled);
 #if !BUILDFLAG(IS_ANDROID)
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(NewGlicApiTestWithSkills);
 #endif

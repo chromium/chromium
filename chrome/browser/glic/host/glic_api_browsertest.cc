@@ -184,8 +184,6 @@ std::vector<std::string> GetTestSuiteNames() {
       "GlicApiTestWithMqlsIdGetterEnabled",
       "GlicApiTestWithMqlsIdGetterDisabled",
       "GlicApiTestRuntimeFeatureOff",
-      "GlicApiTestWithWebActuationSettingDisabled",
-      "GlicApiTestWithWebActuationSettingEnabled",
       "GlicApiTestWithGeminiActOnWebPolicy",
       "GlicApiTestWithWebContentsWarming",
       "GlicApiTestHibernateAllOnMemoryPressure",
@@ -357,27 +355,6 @@ class GlicApiTestWithOneTab : public GlicApiTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-class GlicApiTestWithWebActuationSettingEnabled : public GlicApiTestWithOneTab {
- public:
-  GlicApiTestWithWebActuationSettingEnabled() {
-    feature_list_.InitWithFeatures({features::kGlicWebActuationSetting}, {});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-class GlicApiTestWithWebActuationSettingDisabled
-    : public GlicApiTestWithOneTab {
- public:
-  GlicApiTestWithWebActuationSettingDisabled() {
-    feature_list_.InitWithFeatures({}, {features::kGlicWebActuationSetting});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 class GlicApiTestWithMqlsIdGetterEnabled : public GlicApiTestWithOneTab {
@@ -723,24 +700,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab,
 #endif
 IN_PROC_BROWSER_TEST_P(GlicApiTest, MAYBE_testAllTestsAreRegistered) {
   AssertAllTestsRegistered(GetTestSuiteNames());
-}
-
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithWebActuationSettingDisabled,
-                       testWebActuationSettingIsUndefinedWhenFeatureDisabled) {
-  ExecuteJsTest();
-}
-
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithWebActuationSettingEnabled,
-                       testGetWebActuationSetting) {
-  glic::GlicKeyedService::Get(browser()->profile())
-      ->enabling()
-      .SetUserEnabledActuationOnWeb(false);
-  ExecuteJsTest();
-
-  glic::GlicKeyedService::Get(browser()->profile())
-      ->enabling()
-      .SetUserEnabledActuationOnWeb(true);
-  ContinueJsTest();
 }
 
 // TODO(crbug.com/409042450): This is a flaky on MSAN.
@@ -3688,14 +3647,6 @@ INSTANTIATE_TEST_SUITE_P(,
                          &WithTestParams::PrintTestVariant);
 INSTANTIATE_TEST_SUITE_P(,
                          MAYBE_GlicApiTestWithOneTabMoreDebounceDelay,
-                         DefaultTestParamSet(),
-                         &WithTestParams::PrintTestVariant);
-INSTANTIATE_TEST_SUITE_P(,
-                         GlicApiTestWithWebActuationSettingDisabled,
-                         DefaultTestParamSet(),
-                         &WithTestParams::PrintTestVariant);
-INSTANTIATE_TEST_SUITE_P(,
-                         GlicApiTestWithWebActuationSettingEnabled,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
 INSTANTIATE_TEST_SUITE_P(,
