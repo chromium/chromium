@@ -7499,7 +7499,7 @@
   {
       "name": "password-removal-from-delete-browsing-data",
       "owners": ["noemies@google.com", "novakovica@google.com", "bling-transactions@google.com"],
-      "expiry_milestone": 150
+      "expiry_milestone": 152
   },
   {
     "name": "password-save-in-context-error-resolution-on-desktop",
