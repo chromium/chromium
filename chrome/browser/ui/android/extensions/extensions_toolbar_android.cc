@@ -224,6 +224,7 @@ base::android::ScopedJavaLocalRef<jobject> ExtensionsToolbarAndroid::GetAction(
 
   return Java_ExtensionAction_Constructor(
       env, action_id, base::UTF16ToUTF8(action->GetActionName()),
+      base::UTF16ToUTF8(action->GetActionTitle(web_contents)),
       base::UTF16ToUTF8(action->GetAccessibleName(web_contents)),
       java_hover_card_state);
 }

@@ -188,6 +188,7 @@ public class ExtensionActionListMediatorTest {
                                     action.getId(),
                                     action.getTitle(),
                                     action.getTitle(),
+                                    action.getTitle(),
                                     action.getHoverCardState());
                         });
 

@@ -27,6 +27,7 @@ import java.util.Objects;
 public class ExtensionAction {
     private final String mId;
     private final String mName;
+    private final String mTitle;
     private final String mAccessibleName;
     private final HoverCardState mHoverCardState;
 
@@ -78,16 +79,22 @@ public class ExtensionAction {
     public ExtensionAction(
             @JniType("std::string") String id,
             @JniType("std::string") String name,
+            @JniType("std::string") String title,
             @JniType("std::string") String accessibleName,
             HoverCardState hoverCardState) {
         mId = id;
         mName = name;
+        mTitle = title;
         mAccessibleName = accessibleName;
         mHoverCardState = hoverCardState;
     }
 
     public String getName() {
         return mName;
+    }
+
+    public String getTitle() {
+        return mTitle;
     }
 
     public String getId() {
