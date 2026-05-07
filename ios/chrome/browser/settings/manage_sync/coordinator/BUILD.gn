@@ -78,6 +78,7 @@ source_set("unit_tests") {
   deps = [
     ":coordinator",
     "//base/test:test_support",
+    "//components/signin/public/identity_manager:test_support",
     "//components/sync:test_support",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/signin/reauth/coordinator",

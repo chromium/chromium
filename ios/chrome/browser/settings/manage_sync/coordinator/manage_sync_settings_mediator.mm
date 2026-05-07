@@ -1217,73 +1217,78 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   if (!self.accountStateSignedIn) {
     return;
   }
-  // Checks if the sync setup service state has changed from the saved state in
-  // the table view model.
   std::optional<SyncSettingsItemType> type = [self syncErrorItemType];
   if (![self needsErrorSectionUpdate:type]) {
     return;
   }
 
   TableViewModel* model = self.consumer.tableViewModel;
-  // There is no sync error now, but there previously was an error.
-  if (!type.has_value()) {
-    [self removeSyncErrorsSection:notifyConsumer];
-    return;
-  }
+  BOOL errorSectionPreviouslyExisted =
+      [model hasSectionForSectionIdentifier:SyncErrorsSectionIdentifier];
+  BOOL hasErrorNow = type.has_value();
 
-  // There is an error now and there might be a previous error.
-  BOOL errorSectionAlreadyExists = self.syncErrorItem;
+  // The section is only displayed for user-actionable errors. Enterprise policy
+  // errors (`SyncDisabledByAdministratorErrorItemType`) do not show an error
+  // banner section.
+  BOOL showErrorSectionNow =
+      hasErrorNow && (type.value() != SyncDisabledByAdministratorErrorItemType);
 
-  if (errorSectionAlreadyExists) {
-    // As the previous error might not have a message item in case it is
-    // SyncDisabledByAdministratorError, clear the whole section instead of
-    // updating it's items.
-    errorSectionAlreadyExists = NO;
-    [self removeSyncErrorsSection:notifyConsumer];
-  }
-
-  if (GetAccountErrorUIInfo(_syncService) == nil) {
-    // In some transient states like in SyncService::TransportState::PAUSED,
-    // GetAccountErrorUIInfo returns nil and thus will not be able to fetch the
-    // current error data. In this case, do not update/add the error item.
-    return;
-  }
-
-  // Create the new sync error item.
-  DCHECK(type.has_value());
-  if (type.value() == SyncDisabledByAdministratorErrorItemType) {
-    self.syncErrorItem = [self createSyncDisabledByAdministratorErrorItem];
-  } else {
-    // For signed in users, the sync error item will be displayed as a button.
-    self.syncErrorItem =
-        [self createSyncErrorButtonItemWithItemType:type.value()
-                                      buttonLabelID:GetAccountErrorUIInfo(
-                                                        _syncService)
-                                                        .buttonLabelID
-                                          messageID:GetAccountErrorUIInfo(
-                                                        _syncService)
-                                                        .messageID];
-  }
-
-  NSInteger syncErrorSectionIndex = 0;
-  if (!errorSectionAlreadyExists) {
-    if (type.value() != SyncDisabledByAdministratorErrorItemType) {
-      [model insertSectionWithIdentifier:SyncErrorsSectionIdentifier
-                                 atIndex:syncErrorSectionIndex];
-      // For signed in users, the sync error item will be preceded by a
-      // descriptive message item.
-      [model addItem:[self createSyncErrorMessageItem:GetAccountErrorUIInfo(
-                                                          _syncService)
-                                                          .messageID]
-          toSectionWithIdentifier:SyncErrorsSectionIdentifier];
-      [model addItem:self.syncErrorItem
-          toSectionWithIdentifier:SyncErrorsSectionIdentifier];
+  // 1. Handle cases where the error section should not be displayed or needs to
+  // be removed.
+  if (!showErrorSectionNow) {
+    if (errorSectionPreviouslyExisted) {
+      [self removeSyncErrorsSection:notifyConsumer];
     }
+
+    // Storing the item type in `syncErrorItem` serves as a state token to track
+    // that the administrator error is active, even though it isn't displayed in
+    // this section.
+    if (hasErrorNow &&
+        type.value() == SyncDisabledByAdministratorErrorItemType) {
+      // TODO(crbug.com/510642956): The item is never added into the model.
+      // Do we want to remove `createSyncDisabledByAdministratorErrorItem`?
+      // Or do we want to fix the code and show this item?
+      self.syncErrorItem = [self createSyncDisabledByAdministratorErrorItem];
+    } else {
+      self.syncErrorItem = nil;
+    }
+    return;
   }
 
+  // 2. Fetch UI configuration info for the current sync error.
+  AccountErrorUIInfo* errorUIInfo = GetAccountErrorUIInfo(_syncService);
+  if (errorUIInfo == nil) {
+    if (errorSectionPreviouslyExisted) {
+      [self removeSyncErrorsSection:notifyConsumer];
+    } else {
+      self.syncErrorItem = nil;
+    }
+    return;
+  }
+
+  // 3. Prepare the table section structure.
+  if (errorSectionPreviouslyExisted) {
+    [model deleteAllItemsFromSectionWithIdentifier:SyncErrorsSectionIdentifier];
+  } else {
+    [model insertSectionWithIdentifier:SyncErrorsSectionIdentifier atIndex:0];
+  }
+
+  // 4. Construct and populate the error message and actionable button items.
+  self.syncErrorItem =
+      [self createSyncErrorButtonItemWithItemType:type.value()
+                                    buttonLabelID:errorUIInfo.buttonLabelID
+                                        messageID:errorUIInfo.messageID];
+  [model addItem:[self createSyncErrorMessageItem:errorUIInfo.messageID]
+      toSectionWithIdentifier:SyncErrorsSectionIdentifier];
+  [model addItem:self.syncErrorItem
+      toSectionWithIdentifier:SyncErrorsSectionIdentifier];
+
+  // 5. Batch notify the consumer of the collection updates.
   if (notifyConsumer) {
-    NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:syncErrorSectionIndex];
-    if (errorSectionAlreadyExists) {
+    NSInteger sectionIndex =
+        [model sectionForSectionIdentifier:SyncErrorsSectionIdentifier];
+    NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:sectionIndex];
+    if (errorSectionPreviouslyExisted) {
       [self.consumer reloadSections:indexSet];
     } else {
       [self.consumer insertSections:indexSet rowAnimation:NO];

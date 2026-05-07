@@ -14,6 +14,7 @@
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/account_info.h"
+#import "components/signin/public/identity_manager/identity_test_utils.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/test/test_sync_service.h"
@@ -48,6 +49,7 @@
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
+#import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -481,4 +483,137 @@ TEST_F(ManageSyncSettingsMediatorTest, TestSigninDisabled) {
   GetApplicationContext()->GetLocalState()->SetBoolean(
       prefs::kSigninAllowedOnDevice, false);
   EXPECT_OCMOCK_VERIFY(mockCommandHandler);
+}
+
+// Tests that transitioning between different sync errors reloads the section
+// correctly without causing crashes.
+TEST_F(ManageSyncSettingsMediatorTest, SyncErrorTransition) {
+  CreateManageSyncSettingsMediator();
+  sync_service_->SetSignedIn(signin::ConsentLevel::kSignin);
+  sync_service_->SetPersistentAuthError();
+
+  // Loads the account settings page with first error.
+  [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
+
+  EXPECT_TRUE([mediator_.consumer.tableViewModel
+      hasSectionForSectionIdentifier:SyncSettingsSectionIdentifier::
+                                         SyncErrorsSectionIdentifier]);
+
+  // Transition to another error.
+  sync_service_->ClearAuthError();
+  sync_service_->SetPassphraseRequired();
+  [mediator_ onSyncStateChanged];
+
+  // Verify the error section still exists and contains the new error items.
+  EXPECT_TRUE([mediator_.consumer.tableViewModel
+      hasSectionForSectionIdentifier:SyncSettingsSectionIdentifier::
+                                         SyncErrorsSectionIdentifier]);
+  NSArray* error_items = [mediator_.consumer.tableViewModel
+      itemsInSectionWithIdentifier:SyncSettingsSectionIdentifier::
+                                       SyncErrorsSectionIdentifier];
+
+  EXPECT_EQ(2UL, error_items.count);
+  EXPECT_NSEQ(
+      base::apple::ObjCCastStrict<SettingsImageDetailTextItem>(error_items[0])
+          .detailText,
+      l10n_util::GetNSString(
+          IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_MESSAGE));
+}
+
+// Tests that transitioning between different sync errors reloads the section
+// correctly without causing crashes, even when the view is attached to a
+// window.
+TEST_F(ManageSyncSettingsMediatorTest, SyncErrorTransitionWithWindow) {
+  ScopedKeyWindow scoped_window;
+  CreateManageSyncSettingsMediator();
+
+  // Attach the consumer view controller as the root of the active window.
+  scoped_window.Get().rootViewController = consumer_;
+
+  sync_service_->SetSignedIn(signin::ConsentLevel::kSignin);
+  sync_service_->SetPersistentAuthError();
+  [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
+
+  // Force UIKit to perform initial layout.
+  [consumer_.view layoutIfNeeded];
+
+  EXPECT_TRUE([mediator_.consumer.tableViewModel
+      hasSectionForSectionIdentifier:SyncSettingsSectionIdentifier::
+                                         SyncErrorsSectionIdentifier]);
+
+  // Transition to another error.
+  sync_service_->ClearAuthError();
+  sync_service_->SetPassphraseRequired();
+  [mediator_ onSyncStateChanged];
+
+  // Verify the error section still exists and contains the new error items.
+  EXPECT_TRUE([mediator_.consumer.tableViewModel
+      hasSectionForSectionIdentifier:SyncSettingsSectionIdentifier::
+                                         SyncErrorsSectionIdentifier]);
+  NSArray* error_items = [mediator_.consumer.tableViewModel
+      itemsInSectionWithIdentifier:SyncSettingsSectionIdentifier::
+                                       SyncErrorsSectionIdentifier];
+
+  EXPECT_EQ(2UL, error_items.count);
+  EXPECT_NSEQ(
+      base::apple::ObjCCastStrict<SettingsImageDetailTextItem>(error_items[0])
+          .detailText,
+      l10n_util::GetNSString(
+          IDS_IOS_ACCOUNT_TABLE_ERROR_ENTER_PASSPHRASE_MESSAGE));
+}
+
+// Tests that having an auth error along with sync being disabled by an
+// administrator doesn't cause a UIKit data source inconsistency crash, related
+// to a missing section.
+// See crbug.com/472399814.
+TEST_F(ManageSyncSettingsMediatorTest,
+       SyncDisabledByAdminWithAuthErrorDoesNotCrash) {
+  CreateManageSyncSettingsMediator();
+  sync_service_->SetSignedIn(signin::ConsentLevel::kSignin);
+
+  // 1. Setup initial state with enterprise policy restriction active first.
+  sync_service_->SetAllowedByEnterprisePolicy(false);
+
+  // 2. Load the initial model layout (errors section is skipped/nil).
+  [mediator_ manageSyncSettingsTableViewControllerLoadModel:mediator_.consumer];
+
+  // 3. Dynamically trigger a persistent auth error.
+  sync_service_->SetPersistentAuthError();
+
+  // 4. Generate a notification to reload the manage sync settings.
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile_.get());
+  CoreAccountInfo primary_account =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  signin::SimulateSuccessfulFetchOfAccountInfo(
+      identity_manager, primary_account.account_id, primary_account.email,
+      primary_account.gaia, /*hosted_domain=*/"", "Mutated Full Name",
+      "GivenName", "en", "http://avatar.url");
+
+  // Expect no crash, this is a regression test for crbug.com/472399814.
+  EXPECT_EQ(3, [mediator_.consumer.tableViewModel numberOfSections]);
+
+  EXPECT_TRUE([mediator_.consumer.tableViewModel
+      hasSectionForSectionIdentifier:SyncDataTypeSectionIdentifier]);
+  EXPECT_TRUE([mediator_.consumer.tableViewModel
+      hasSectionForSectionIdentifier:ManageAndSignOutSectionIdentifier]);
+  EXPECT_TRUE([mediator_.consumer.tableViewModel
+      hasSectionForSectionIdentifier:SwitchAccountAndSignOutSectionIdentifier]);
+
+  EXPECT_FALSE([mediator_.consumer.tableViewModel
+      hasSectionForSectionIdentifier:SyncSettingsSectionIdentifier::
+                                         SyncErrorsSectionIdentifier]);
+  EXPECT_FALSE([mediator_.consumer.tableViewModel
+      hasSectionForSectionIdentifier:AdvancedSettingsSectionIdentifier]);
+
+  NSArray* data_items = [mediator_.consumer.tableViewModel
+      itemsInSectionWithIdentifier:SyncDataTypeSectionIdentifier];
+  EXPECT_GT(data_items.count, 0UL);
+  for (TableViewItem* item in data_items) {
+    EXPECT_TRUE([item isKindOfClass:[TableViewInfoButtonItem class]]);
+    TableViewInfoButtonItem* info_item =
+        base::apple::ObjCCastStrict<TableViewInfoButtonItem>(item);
+    EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_SETTING_OFF),
+                info_item.statusText);
+  }
 }
