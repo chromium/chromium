@@ -345,8 +345,6 @@ FormFieldData CreateFieldByRole(FieldType role) {
     case FieldType::CONFIRMATION_PASSWORD:
     case FieldType::AMBIGUOUS_TYPE:
     case FieldType::SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES:
-    case FieldType::NAME_LAST_PREFIX:
-    case FieldType::NAME_LAST_CORE:
     case FieldType::ADDRESS_HOME_ZIP_PREFIX:
     case FieldType::ADDRESS_HOME_ZIP_SUFFIX:
     case FieldType::ADDRESS_HOME_ZIP_AND_CITY:
@@ -494,8 +492,6 @@ FormFieldData CreateFieldByRole(FieldType role) {
     case FieldType::CONFIRMATION_PASSWORD:
     case FieldType::AMBIGUOUS_TYPE:
     case FieldType::SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES:
-    case FieldType::NAME_LAST_PREFIX:
-    case FieldType::NAME_LAST_CORE:
     case FieldType::ADDRESS_HOME_ZIP_PREFIX:
     case FieldType::ADDRESS_HOME_ZIP_SUFFIX:
     case FieldType::ADDRESS_HOME_ZIP_AND_CITY:

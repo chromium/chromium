@@ -27,8 +27,6 @@ class NameInfo : public FormGroup {
                                                      NAME_LAST_FIRST,
                                                      NAME_LAST_CONJUNCTION,
                                                      NAME_LAST_SECOND,
-                                                     NAME_LAST_PREFIX,
-                                                     NAME_LAST_CORE,
                                                      NAME_LAST,
                                                      NAME_FULL,
                                                      ALTERNATIVE_FULL_NAME,

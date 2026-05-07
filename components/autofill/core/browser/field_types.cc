@@ -111,8 +111,6 @@ static constexpr auto kTypeNameToFieldType =
          {"ADDRESS_HOME_HOUSE_NUMBER", ADDRESS_HOME_HOUSE_NUMBER},
          {"ADDRESS_HOME_SUBPREMISE", ADDRESS_HOME_SUBPREMISE},
          {"ADDRESS_HOME_OTHER_SUBUNIT", ADDRESS_HOME_OTHER_SUBUNIT},
-         {"NAME_LAST_PREFIX", NAME_LAST_PREFIX},
-         {"NAME_LAST_CORE", NAME_LAST_CORE},
          {"NAME_LAST_FIRST", NAME_LAST_FIRST},
          {"NAME_LAST_CONJUNCTION", NAME_LAST_CONJUNCTION},
          {"NAME_LAST_SECOND", NAME_LAST_SECOND},
@@ -195,8 +193,6 @@ bool IsFillableFieldType(FieldType field_type) {
     case NAME_FIRST:
     case NAME_MIDDLE:
     case NAME_LAST:
-    case NAME_LAST_CORE:
-    case NAME_LAST_PREFIX:
     case NAME_LAST_FIRST:
     case NAME_LAST_CONJUNCTION:
     case NAME_LAST_SECOND:
@@ -473,10 +469,6 @@ std::string_view FieldTypeToDeveloperRepresentationString(FieldType type) {
       return "Middle name";
     case NAME_LAST:
       return "Last name";
-    case NAME_LAST_PREFIX:
-      return "Last name prefix";
-    case NAME_LAST_CORE:
-      return "Last name core";
     case NAME_LAST_FIRST:
       return "First last name";
     case NAME_LAST_CONJUNCTION:

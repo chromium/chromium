@@ -637,17 +637,17 @@ void ApplyRationalizationEngineRules(
                     .SetCountryList({GeoIpCountryCode("JP")})
                     .SetFeature(&features::kAutofillSupportPhoneticNameForJP)
                     .Build())
-            .SetTriggerField(FieldCondition{
-                .possible_overall_types =
-                    FieldTypeSet{NAME_LAST, NAME_LAST_CORE, NAME_LAST_SECOND}})
+            .SetTriggerField(
+                FieldCondition{.possible_overall_types =
+                                   FieldTypeSet{NAME_LAST, NAME_LAST_SECOND}})
             .SetFieldsWithConditionsDoNotExist(
                 {FieldCondition{.location = FieldLocation::kAnywhere,
                                 .possible_overall_types =
                                     FieldTypeSet{ALTERNATIVE_FAMILY_NAME}}})
-            .SetOtherFieldConditions({FieldCondition{
-                .location = FieldLocation::kPredecessor,
-                .possible_overall_types =
-                    FieldTypeSet{NAME_LAST, NAME_LAST_CORE, NAME_LAST_SECOND}}})
+            .SetOtherFieldConditions(
+                {FieldCondition{.location = FieldLocation::kPredecessor,
+                                .possible_overall_types =
+                                    FieldTypeSet{NAME_LAST, NAME_LAST_SECOND}}})
             .SetActions({
                 SetTypeAction{
                     .target = FieldLocation::kTriggerField,

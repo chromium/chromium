@@ -141,8 +141,6 @@ AutofillFieldRedactionReason GetRedactionReason(FieldType field_type) {
     case autofill::ALTERNATIVE_FULL_NAME:
     case autofill::ALTERNATIVE_GIVEN_NAME:
     case autofill::ALTERNATIVE_FAMILY_NAME:
-    case autofill::NAME_LAST_PREFIX:
-    case autofill::NAME_LAST_CORE:
       return AutofillFieldRedactionReason::kNoRedactionNeeded;
 
     // Email address is not redacted.

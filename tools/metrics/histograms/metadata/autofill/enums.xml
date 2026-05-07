@@ -499,10 +499,6 @@ Called by update_autofill_enums.py.-->
   <int value="657" label="ALTERNATIVE_GIVEN_NAME: Failure"/>
   <int value="660" label="ALTERNATIVE_FAMILY_NAME: Success"/>
   <int value="661" label="ALTERNATIVE_FAMILY_NAME: Failure"/>
-  <int value="664" label="NAME_LAST_PREFIX: Success"/>
-  <int value="665" label="NAME_LAST_PREFIX: Failure"/>
-  <int value="668" label="NAME_LAST_CORE: Success"/>
-  <int value="669" label="NAME_LAST_CORE: Failure"/>
   <int value="676" label="PASSPORT_NUMBER: Success"/>
   <int value="677" label="PASSPORT_NUMBER: Failure"/>
   <int value="680" label="PASSPORT_ISSUING_COUNTRY: Success"/>
@@ -1220,12 +1216,6 @@ Called by update_autofill_enums.py.-->
              edited"/>
   <int value="10561"
       label="ALTERNATIVE_FAMILY_NAME: Autofilled value accepted"/>
-  <int value="10624"
-      label="NAME_LAST_PREFIX: Not autofilled or autofilled value edited"/>
-  <int value="10625" label="NAME_LAST_PREFIX: Autofilled value accepted"/>
-  <int value="10688"
-      label="NAME_LAST_CORE: Not autofilled or autofilled value edited"/>
-  <int value="10689" label="NAME_LAST_CORE: Autofilled value accepted"/>
   <int value="10752"
       label="PASSPORT_NAME_TAG: Not autofilled or autofilled value edited"/>
   <int value="10753" label="PASSPORT_NAME_TAG: Autofilled value accepted"/>
@@ -1605,10 +1595,6 @@ Called by update_autofill_enums.py.-->
   <int value="2625" label="ALTERNATIVE_GIVEN_NAME: accepted"/>
   <int value="2640" label="ALTERNATIVE_FAMILY_NAME: edited"/>
   <int value="2641" label="ALTERNATIVE_FAMILY_NAME: accepted"/>
-  <int value="2656" label="NAME_LAST_PREFIX: edited"/>
-  <int value="2657" label="NAME_LAST_PREFIX: accepted"/>
-  <int value="2672" label="NAME_LAST_CORE: edited"/>
-  <int value="2673" label="NAME_LAST_CORE: accepted"/>
   <int value="2688" label="PASSPORT_NAME_TAG: edited"/>
   <int value="2689" label="PASSPORT_NAME_TAG: accepted"/>
   <int value="2704" label="PASSPORT_NUMBER: edited"/>
@@ -2539,8 +2525,6 @@ Called by update_autofill_enums.py.-->
   <int value="163" label="ALTERNATIVE_FULL_NAME"/>
   <int value="164" label="ALTERNATIVE_GIVEN_NAME"/>
   <int value="165" label="ALTERNATIVE_FAMILY_NAME"/>
-  <int value="166" label="NAME_LAST_PREFIX"/>
-  <int value="167" label="NAME_LAST_CORE"/>
   <int value="168" label="PASSPORT_NAME_TAG"/>
   <int value="169" label="PASSPORT_NUMBER"/>
   <int value="170" label="PASSPORT_ISSUING_COUNTRY"/>
@@ -3601,16 +3585,6 @@ Called by update_autofill_enums.py.-->
   <int value="2642" label="ALTERNATIVE_FAMILY_NAME: kHeuristics"/>
   <int value="2643" label="ALTERNATIVE_FAMILY_NAME: kAutocomplete"/>
   <int value="2644" label="ALTERNATIVE_FAMILY_NAME: kRationalization"/>
-  <int value="2656" label="NAME_LAST_PREFIX: kServerCrowdsourcing"/>
-  <int value="2657" label="NAME_LAST_PREFIX: kServerOverride"/>
-  <int value="2658" label="NAME_LAST_PREFIX: kHeuristics"/>
-  <int value="2659" label="NAME_LAST_PREFIX: kAutocomplete"/>
-  <int value="2660" label="NAME_LAST_PREFIX: kRationalization"/>
-  <int value="2672" label="NAME_LAST_CORE: kServerCrowdsourcing"/>
-  <int value="2673" label="NAME_LAST_CORE: kServerOverride"/>
-  <int value="2674" label="NAME_LAST_CORE: kHeuristics"/>
-  <int value="2675" label="NAME_LAST_CORE: kAutocomplete"/>
-  <int value="2676" label="NAME_LAST_CORE: kRationalization"/>
   <int value="2704" label="PASSPORT_NUMBER: kServerCrowdsourcing"/>
   <int value="2705" label="PASSPORT_NUMBER: kServerOverride"/>
   <int value="2706" label="PASSPORT_NUMBER: kHeuristics"/>
@@ -5019,10 +4993,6 @@ Called by update_autofill_enums.py.-->
   <int value="657" label="ALTERNATIVE_GIVEN_NAME: Accepted"/>
   <int value="660" label="ALTERNATIVE_FAMILY_NAME: Ignored"/>
   <int value="661" label="ALTERNATIVE_FAMILY_NAME: Accepted"/>
-  <int value="664" label="NAME_LAST_PREFIX: Ignored"/>
-  <int value="665" label="NAME_LAST_PREFIX: Accepted"/>
-  <int value="668" label="NAME_LAST_CORE: Ignored"/>
-  <int value="669" label="NAME_LAST_CORE: Accepted"/>
   <int value="672" label="PASSPORT_NAME_TAG: Ignored"/>
   <int value="673" label="PASSPORT_NAME_TAG: Accepted"/>
   <int value="676" label="PASSPORT_NUMBER: Ignored"/>

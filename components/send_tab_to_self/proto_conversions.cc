@@ -29,10 +29,6 @@ std::optional<sync_pb::FormField_AutofillFieldType> AutofillFieldTypeToProto(
       return sync_pb::FormField_AutofillFieldType_NAME_MIDDLE;
     case autofill::NAME_LAST:
       return sync_pb::FormField_AutofillFieldType_NAME_LAST;
-    case autofill::NAME_LAST_CORE:
-      return sync_pb::FormField_AutofillFieldType_NAME_LAST_CORE;
-    case autofill::NAME_LAST_PREFIX:
-      return sync_pb::FormField_AutofillFieldType_NAME_LAST_PREFIX;
     case autofill::NAME_LAST_FIRST:
       return sync_pb::FormField_AutofillFieldType_NAME_LAST_FIRST;
     case autofill::NAME_LAST_CONJUNCTION:

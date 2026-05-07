@@ -462,14 +462,14 @@ enum FieldType {
 
   // Prefix of the last name, e.g. "van" in the Netherlands.
   // This is the first child of NAME_LAST.
-  NAME_LAST_PREFIX = 166,
+  // NAME_LAST_PREFIX = 166 is deprecated
 
   // Type to represent the core part of the last name.
   // More technically it contains the last name without the prefix.
   // NAME_LAST_CORE: NAME_LAST_FIRST + NAME_LAST_CONJUNCTION + NAME_LAST_SECOND.
   // Don't use this type unless there is NAME_LAST_PREFIX present in the form.
   // E.g. "Gogh" in "Vincent van Gogh".
-  NAME_LAST_CORE = 167,
+  // NAME_LAST_CORE = 167 is deprecated
 
   // Types corresponding to the "Passport" entity from
   // components/autofill/core/browser/data_model/autofill_ai/entity_schema.json.
@@ -719,7 +719,8 @@ constexpr std::optional<FieldType> ToSafeFieldType(
            (130 <= t && t <= 132) || t == 134 || (137 <= t && t <= 139) ||
            (147 <= t && t <= 149) || t == 155 || t == 159 || t == 161 ||
            // Deprecated Autofill AI types.
-           t == 162 || t == 168 || t == 175 || t == 180 ||
+           t == 162 || t == 166 || t == 167 || t == 168 || t == 175 ||
+           t == 180 ||
            // Types for the country for driver's license and vehicle are not
            // used yet, but will likely be added in the future.
            (187 <= t && t <= 188) ||
@@ -760,8 +761,6 @@ constexpr FieldTypeGroup GroupTypeOfFieldType(FieldType field_type) {
     case NAME_FIRST:
     case NAME_MIDDLE:
     case NAME_LAST:
-    case NAME_LAST_PREFIX:
-    case NAME_LAST_CORE:
     case NAME_LAST_FIRST:
     case NAME_LAST_SECOND:
     case NAME_LAST_CONJUNCTION:

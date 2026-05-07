@@ -560,9 +560,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <variant name="NAME_HONORIFIC_PREFIX"/>
   <variant name="NAME_LAST"/>
   <variant name="NAME_LAST_CONJUNCTION"/>
-  <variant name="NAME_LAST_CORE"/>
   <variant name="NAME_LAST_FIRST"/>
-  <variant name="NAME_LAST_PREFIX"/>
   <variant name="NAME_LAST_SECOND"/>
   <variant name="NAME_MIDDLE"/>
   <variant name="NAME_MIDDLE_INITIAL"/>
@@ -707,9 +705,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <variant name="NAME_FULL"/>
   <variant name="NAME_LAST"/>
   <variant name="NAME_LAST_CONJUNCTION"/>
-  <variant name="NAME_LAST_CORE"/>
   <variant name="NAME_LAST_FIRST"/>
-  <variant name="NAME_LAST_PREFIX"/>
   <variant name="NAME_LAST_SECOND"/>
   <variant name="NAME_MIDDLE"/>
   <variant name="NAME_SUFFIX"/>

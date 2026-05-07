@@ -479,8 +479,6 @@ int AutofillProfile::Compare(const AutofillProfile& profile) const {
                                 NAME_FIRST,
                                 NAME_MIDDLE,
                                 NAME_LAST,
-                                NAME_LAST_PREFIX,
-                                NAME_LAST_CORE,
                                 NAME_LAST_FIRST,
                                 NAME_LAST_SECOND,
                                 NAME_LAST_CONJUNCTION,

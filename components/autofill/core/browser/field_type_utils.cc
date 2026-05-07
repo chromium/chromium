@@ -158,8 +158,6 @@ bool IsDateFieldType(FieldType field_type) {
     case ALTERNATIVE_FULL_NAME:
     case ALTERNATIVE_GIVEN_NAME:
     case ALTERNATIVE_FAMILY_NAME:
-    case NAME_LAST_PREFIX:
-    case NAME_LAST_CORE:
     case PASSPORT_NUMBER:
     case PASSPORT_ISSUING_COUNTRY:
     case LOYALTY_MEMBERSHIP_PROGRAM:
@@ -300,8 +298,6 @@ bool IsAffixFormatStringEnabledForType(FieldType type) {
     case ALTERNATIVE_FULL_NAME:
     case ALTERNATIVE_GIVEN_NAME:
     case ALTERNATIVE_FAMILY_NAME:
-    case NAME_LAST_PREFIX:
-    case NAME_LAST_CORE:
     case PASSPORT_ISSUING_COUNTRY:
     case PASSPORT_EXPIRATION_DATE:
     case PASSPORT_ISSUE_DATE:

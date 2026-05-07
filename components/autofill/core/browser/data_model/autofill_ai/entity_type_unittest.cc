@@ -76,13 +76,13 @@ TEST_P(AutofillAttributeTypeTest_FieldTypeRelations, StorableFieldTypes) {
 TEST(AutofillAttributeTypeTest, Relationships_PassportName) {
   AttributeType a = AttributeType(AttributeTypeName::kPassportName);
   EXPECT_EQ(a.entity_type(), EntityType(EntityTypeName::kPassport));
-  EXPECT_THAT(a.field_subtypes(),
-              UnorderedElementsAre(
-                  NAME_HONORIFIC_PREFIX, NAME_FIRST, NAME_MIDDLE, NAME_LAST,
-                  NAME_LAST_PREFIX, NAME_LAST_CORE, NAME_LAST_FIRST,
-                  NAME_LAST_SECOND, NAME_LAST_CONJUNCTION, NAME_MIDDLE_INITIAL,
-                  NAME_FULL, NAME_SUFFIX, ALTERNATIVE_FAMILY_NAME,
-                  ALTERNATIVE_GIVEN_NAME, ALTERNATIVE_FULL_NAME));
+  EXPECT_THAT(
+      a.field_subtypes(),
+      UnorderedElementsAre(NAME_HONORIFIC_PREFIX, NAME_FIRST, NAME_MIDDLE,
+                           NAME_LAST, NAME_LAST_FIRST, NAME_LAST_SECOND,
+                           NAME_LAST_CONJUNCTION, NAME_MIDDLE_INITIAL,
+                           NAME_FULL, NAME_SUFFIX, ALTERNATIVE_FAMILY_NAME,
+                           ALTERNATIVE_GIVEN_NAME, ALTERNATIVE_FULL_NAME));
 }
 
 TEST(AutofillAttributeTypeTest, IsObfuscated) {
