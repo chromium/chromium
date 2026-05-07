@@ -441,6 +441,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "android-xr-immersive-player",
+    "owners": [ "gurmeetk@google.com", "mondello@google.com", "desiatyrikov@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "android-zoom-immersive",
     "owners": [
       "hitarthkothari@google.com",

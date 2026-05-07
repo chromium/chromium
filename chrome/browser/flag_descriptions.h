@@ -6150,6 +6150,12 @@ inline constexpr char kYourSavedInfoSettingsPageAndroidName[] =
 inline constexpr char kYourSavedInfoSettingsPageAndroidDescription[] =
     "Enables Autofill and passwords settings page redesign on Android.";
 
+inline constexpr char kAndroidXrImmersivePlayerName[] =
+    "3D Immersive Media Playback for Android XR";
+inline constexpr char kAndroidXrImmersivePlayerDescription[] =
+    "Enables the 3D immersive media playback on Android XR. When disabled, "
+    "existing media playback is used.";
+
 // FLAG_DESCRIPTIONS_ANDROID_END
 // Non-Android -----------------------------------------------------------------
 
