@@ -36,6 +36,10 @@ namespace {
 // the `preferredContentSize`.
 NSString* const kCustomFittingDetentIdentifier = @"kFittingDetentIdentifier";
 
+/// Top padding above the sheet. Allows the user to drag the sheet down without
+/// conflicting with system behavior.
+CGFloat const kSheetTopPadding = 40.0f;
+
 }  // namespace
 
 @interface ComposeboxMenuCoordinator () <ComposeboxMenuMediatorDelegate,
@@ -150,7 +154,9 @@ NSString* const kCustomFittingDetentIdentifier = @"kFittingDetentIdentifier";
   __weak UIViewController* weakVC = _viewController;
   auto detentResolver = ^CGFloat(
       id<UISheetPresentationControllerDetentResolutionContext> context) {
-    return weakVC.preferredContentSize.height;
+    CGFloat contentHeight = weakVC.preferredContentSize.height;
+    CGFloat maxAllowedHeight = context.maximumDetentValue - kSheetTopPadding;
+    return contentHeight < maxAllowedHeight ? contentHeight : maxAllowedHeight;
   };
   _viewController.sheetPresentationController.detents =
       @[ [UISheetPresentationControllerDetent
