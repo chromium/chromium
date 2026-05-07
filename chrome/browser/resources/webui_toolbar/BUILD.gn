@@ -68,6 +68,11 @@ build_webui("build") {
     "toolbar_divider.html.ts",
     "toolbar_divider.ts",
   ]
+
+  if (is_chrome_branded) {
+    ts_files += [ "internal/icons.html.ts" ]
+  }
+
   css_files = [
     "app.css",
     "avatar_button.css",
