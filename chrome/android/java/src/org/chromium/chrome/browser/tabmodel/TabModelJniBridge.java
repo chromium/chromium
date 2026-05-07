@@ -203,9 +203,9 @@ public abstract class TabModelJniBridge implements TabModelInternal {
                         mNativeTabModelJniBridge, tab, nativeAndroidBrowserWindow, newIndex);
     }
 
-    protected void moveTabGroupToWindowForTesting(
+    protected boolean moveTabGroupToWindowForTesting(
             Token tabGroupId, long nativeAndroidBrowserWindow, int newIndex) {
-        TabModelJniBridgeJni.get()
+        return TabModelJniBridgeJni.get()
                 .moveTabGroupToWindowForTesting( // IN-TEST
                         mNativeTabModelJniBridge, tabGroupId, nativeAndroidBrowserWindow, newIndex);
     }
@@ -652,15 +652,15 @@ public abstract class TabModelJniBridge implements TabModelInternal {
             @JniType("TabAndroid*") Tab tab, Activity activity, int newIndex);
 
     @CalledByNative
-    private void moveTabGroupToWindowInternal(
+    private boolean moveTabGroupToWindowInternal(
             @JniType("base::Token") Token tabGroupId, @Nullable Activity activity, int newIndex) {
-        if (activity == null) return;
-        moveTabGroupToWindow(tabGroupId, activity, newIndex);
+        if (activity == null) return false;
+        return moveTabGroupToWindow(tabGroupId, activity, newIndex);
     }
 
     // TODO(https://crbug.com/495795228): add `bringToFront` parameter to indicate
     // if the destination activity should be activated. See MultiInstanceOrchestrator.
-    protected abstract void moveTabGroupToWindow(
+    protected abstract boolean moveTabGroupToWindow(
             @JniType("base::Token") Token tabGroupId, Activity activity, int newIndex);
 
     @Override
@@ -757,7 +757,7 @@ public abstract class TabModelJniBridge implements TabModelInternal {
                 long nativeAndroidBrowserWindow,
                 int newIndex);
 
-        void moveTabGroupToWindowForTesting( // IN-TEST
+        boolean moveTabGroupToWindowForTesting( // IN-TEST
                 long nativeTabModelJniBridge,
                 @JniType("base::Token") Token tabGroupId,
                 long nativeAndroidBrowserWindow,

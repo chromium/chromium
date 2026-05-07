@@ -114,7 +114,7 @@ class MockTabListInterface : public TabListInterface {
               MoveTabToWindow,
               (tabs::TabHandle, SessionID, int),
               (override));
-  MOCK_METHOD(void,
+  MOCK_METHOD(bool,
               MoveTabGroupToWindow,
               (tab_groups::TabGroupId, SessionID, int),
               (override));

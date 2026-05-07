@@ -503,7 +503,7 @@ void TabListBridge::MoveTabToWindow(tabs::TabHandle tab,
       destination_index, std::move(detached_tab), AddTabTypes::ADD_NONE);
 }
 
-void TabListBridge::MoveTabGroupToWindow(tab_groups::TabGroupId group_id,
+bool TabListBridge::MoveTabGroupToWindow(tab_groups::TabGroupId group_id,
                                          SessionID destination_window_id,
                                          int destination_index) {
   BrowserWindowInterface* target_window =
@@ -517,13 +517,13 @@ void TabListBridge::MoveTabGroupToWindow(tab_groups::TabGroupId group_id,
       static_cast<TabListBridge*>(target_list_interface);
   auto target_tab_strip = target_bridge->tab_strip_;
   if (!target_tab_strip->SupportsTabGroups()) {
-    return;
+    return false;
   }
 
   // Handle the case where `destination_window_id` points to the same window.
   if (this == target_bridge) {
     MoveGroupTo(group_id, destination_index);
-    return;
+    return true;
   }
 
   TabGroup* tab_group = tab_strip_->group_model()->GetTabGroup(group_id);
@@ -562,6 +562,7 @@ void TabListBridge::MoveTabGroupToWindow(tab_groups::TabGroupId group_id,
       tab_strip_->DetachTabGroupForInsertion(group_id);
   target_tab_strip->InsertDetachedTabGroupAt(std::move(detached_group),
                                              target_index);
+  return true;
 }
 
 void TabListBridge::OnTabStripModelChanged(

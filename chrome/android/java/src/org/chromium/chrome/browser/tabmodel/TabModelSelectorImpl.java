@@ -371,15 +371,15 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
     }
 
     @Override
-    public void moveTabGroupToWindow(
+    public boolean moveTabGroupToWindow(
             Token tabGroupId, Activity activity, int newIndex, boolean isIncognito) {
         TabModel tabModel = getModel(isIncognito);
-        if (!tabModel.tabGroupExists(tabGroupId)) return;
+        if (!tabModel.tabGroupExists(tabGroupId)) return false;
 
         Tab currentTab = tabModel.getCurrentTabSupplier().get();
         assert currentTab != null;
         Activity currentActivity = ContextUtils.activityFromContext(currentTab.getContext());
-        if (currentActivity == null) return;
+        if (currentActivity == null) return false;
 
         String collaborationId = null;
         if (!isIncognito) {
@@ -395,12 +395,13 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
                         TabWindowManagerSingleton.getInstance().getIdForWindow(currentActivity),
                         currentTab.getId(),
                         TabShareUtils.isCollaborationIdValid(collaborationId));
-        if (tabGroupMetadata == null) return;
+        if (tabGroupMetadata == null) return false;
 
         int destWindowId = TabWindowManagerSingleton.getInstance().getIdForWindow(activity);
         MultiInstanceOrchestratorFactory.getInstance()
                 .moveTabGroupToWindowByIdChecked(
                         destWindowId, tabGroupMetadata, newIndex, /* bringToFront= */ false);
+        return true;
     }
 
     /**

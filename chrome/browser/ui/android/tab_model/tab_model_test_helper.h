@@ -127,7 +127,7 @@ class TestTabModel : public TabModel {
   void MoveTabToWindow(tabs::TabHandle tab,
                        SessionID destination_window_id,
                        int destination_index) override;
-  void MoveTabGroupToWindow(tab_groups::TabGroupId group_id,
+  bool MoveTabGroupToWindow(tab_groups::TabGroupId group_id,
                             SessionID destination_window_id,
                             int destination_index) override;
   bool IsThisTabListEditable() override;
@@ -268,7 +268,7 @@ class OwningTestTabModel : public TabModel {
   void MoveTabToWindow(tabs::TabHandle tab,
                        SessionID destination_window_id,
                        int destination_index) override;
-  void MoveTabGroupToWindow(tab_groups::TabGroupId group_id,
+  bool MoveTabGroupToWindow(tab_groups::TabGroupId group_id,
                             SessionID destination_window_id,
                             int destination_index) override;
   bool IsThisTabListEditable() override;

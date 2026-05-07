@@ -183,19 +183,19 @@ void TabModelJniBridge::MoveTabToWindowForTesting(
   MoveTabToWindow(tab->GetHandle(), destination_window_id, new_index);
 }
 
-void TabModelJniBridge::MoveTabGroupToWindowForTesting(
+bool TabModelJniBridge::MoveTabGroupToWindowForTesting(
     JNIEnv* env,
     const base::Token& group_id,
     long android_browser_window_ptr,
     int new_index) {
   if (!TabModel::EnableBrowserWindowInterfaceMobile()) {
-    return;
+    return false;
   }
   SessionID destination_window_id =
       reinterpret_cast<AndroidBrowserWindow*>(android_browser_window_ptr)
           ->GetSessionID();
-  MoveTabGroupToWindow(tab_groups::TabGroupId::FromRawToken(group_id),
-                       destination_window_id, new_index);
+  return MoveTabGroupToWindow(tab_groups::TabGroupId::FromRawToken(group_id),
+                              destination_window_id, new_index);
 }
 
 bool TabModelJniBridge::IsThisTabListEditable() {
@@ -857,14 +857,14 @@ void TabModelJniBridge::MoveTabToWindow(tabs::TabHandle tab,
                                                  jactivity, destination_index);
 }
 
-void TabModelJniBridge::MoveTabGroupToWindow(tab_groups::TabGroupId group_id,
+bool TabModelJniBridge::MoveTabGroupToWindow(tab_groups::TabGroupId group_id,
                                              SessionID destination_window_id,
                                              int destination_index) {
   ScopedJavaLocalRef<jobject> jactivity =
       GetActivityForWindow(destination_window_id);
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
-  Java_TabModelJniBridge_moveTabGroupToWindowInternal(
+  return Java_TabModelJniBridge_moveTabGroupToWindowInternal(
       env, jobj, group_id.token(), jactivity, destination_index);
 }
 

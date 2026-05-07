@@ -6,8 +6,10 @@ package org.chromium.chrome.browser.tabmodel;
 
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -134,9 +136,12 @@ public class TabModelMultiWindowTest {
         long nativeBrowserWindow2 = getNativeBrowserWindow(activity2);
 
         runOnUiThreadBlocking(
-                () ->
-                        mTabModelJni.moveTabGroupToWindowForTesting(
-                                groupId, nativeBrowserWindow2, 0));
+                () -> {
+                    boolean moved =
+                            mTabModelJni.moveTabGroupToWindowForTesting(
+                                    groupId, nativeBrowserWindow2, /* newIndex= */ 0);
+                    assertTrue(moved);
+                });
 
         assertEquals(initialTabCount - 2, getTabCountOnUiThread(mTabModelJni));
         TabModel model2 = activity2.getTabModelSelector().getModel(false);
@@ -145,6 +150,34 @@ public class TabModelMultiWindowTest {
         assertEquals(group.get(1), runOnUiThreadBlocking(() -> model2.getTabAt(1)));
         assertEquals(groupId, group.get(0).getTabGroupId());
         assertEquals(groupId, group.get(1).getTabGroupId());
+    }
+
+    @Test
+    @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/481443908
+    @LargeTest
+    public void testMoveTabGroupToWindowFailure() {
+        // Create a tab group.
+        ChromeTabbedActivity activity1 = mActivityTestRule.getActivity();
+        TabModel tabModel = activity1.getTabModelSelector().getModel(false);
+        createTabGroup(2, tabModel);
+
+        // Create an invalid group ID.
+        Token invalidGroupId = new Token(0, 0);
+
+        // Create a new window.
+        ChromeTabbedActivity activity2 = createNewWindow(activity1);
+        assertNotNull(activity2);
+        assertNotEquals(activity1, activity2);
+        long nativeBrowserWindow2 = getNativeBrowserWindow(activity2);
+
+        // Try to move an invalid group.
+        runOnUiThreadBlocking(
+                () -> {
+                    boolean moved =
+                            mTabModelJni.moveTabGroupToWindowForTesting(
+                                    invalidGroupId, nativeBrowserWindow2, /* newIndex= */ 0);
+                    assertFalse(moved);
+                });
     }
 
     private long getNativeBrowserWindow(ChromeTabbedActivity activity) {

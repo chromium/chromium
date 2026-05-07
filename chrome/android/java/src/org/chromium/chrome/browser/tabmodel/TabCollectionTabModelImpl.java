@@ -718,9 +718,10 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     }
 
     @Override
-    public void moveTabGroupToWindow(Token tabGroupId, Activity activity, int newIndex) {
+    public boolean moveTabGroupToWindow(Token tabGroupId, Activity activity, int newIndex) {
         try (ScopedStorageBatch ignored = mBatchFactory.get()) {
-            mModelDelegate.moveTabGroupToWindow(tabGroupId, activity, newIndex, isIncognito());
+            return mModelDelegate.moveTabGroupToWindow(
+                    tabGroupId, activity, newIndex, isIncognito());
         }
     }
 

@@ -203,8 +203,8 @@ class TabListInterface {
   // will be inserted with the first tab at `index` in the destination tab list.
   // This will no-op if the tab group is not present in this TabListInterface or
   // the destination window does not exist. `index` may be adjusted as necessary
-  // to ensure the tab group is in a valid position.
-  virtual void MoveTabGroupToWindow(tab_groups::TabGroupId group_id,
+  // to ensure the tab group is in a valid position. Returns true on success.
+  virtual bool MoveTabGroupToWindow(tab_groups::TabGroupId group_id,
                                     SessionID destination_window_id,
                                     int destination_index) = 0;
 

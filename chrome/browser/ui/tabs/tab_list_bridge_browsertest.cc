@@ -1110,8 +1110,8 @@ IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest, MoveTabGroupToWindow) {
   EXPECT_EQ("0g0 1g0 2",
             GetTabStripStateString(source_model, /*annotate_groups=*/true));
 
-  source_list_interface->MoveTabGroupToWindow(*group_id,
-                                              second_browser->session_id(), 1);
+  EXPECT_TRUE(source_list_interface->MoveTabGroupToWindow(
+      *group_id, second_browser->session_id(), 1));
 
   // Verify that the group has been moved to the destination window.
   EXPECT_EQ("2",
@@ -1159,8 +1159,8 @@ IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest,
   // Now move the group to the second window. The group should be moved to the
   // end since the closest valid index that isn't in the middle of another tab
   // group is 3.
-  source_list_interface->MoveTabGroupToWindow(*group_id,
-                                              second_browser->session_id(), 2);
+  EXPECT_TRUE(source_list_interface->MoveTabGroupToWindow(
+      *group_id, second_browser->session_id(), 2));
 
   EXPECT_EQ("2",
             GetTabStripStateString(source_model, /*annotate_groups=*/true));

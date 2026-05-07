@@ -296,10 +296,11 @@ void TestTabModel::MoveTabToWindow(tabs::TabHandle tab,
   NOTIMPLEMENTED();
 }
 
-void TestTabModel::MoveTabGroupToWindow(tab_groups::TabGroupId group_id,
+bool TestTabModel::MoveTabGroupToWindow(tab_groups::TabGroupId group_id,
                                         SessionID destination_window_id,
                                         int destination_index) {
   NOTIMPLEMENTED();
+  return false;
 }
 
 bool TestTabModel::IsThisTabListEditable() {
@@ -636,10 +637,11 @@ void OwningTestTabModel::MoveTabToWindow(tabs::TabHandle tab,
   NOTIMPLEMENTED();
 }
 
-void OwningTestTabModel::MoveTabGroupToWindow(tab_groups::TabGroupId group_id,
+bool OwningTestTabModel::MoveTabGroupToWindow(tab_groups::TabGroupId group_id,
                                               SessionID destination_window_id,
                                               int destination_index) {
   NOTIMPLEMENTED();
+  return false;
 }
 
 bool OwningTestTabModel::IsThisTabListEditable() {

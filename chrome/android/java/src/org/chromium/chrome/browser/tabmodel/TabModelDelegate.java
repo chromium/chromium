@@ -82,7 +82,10 @@ public interface TabModelDelegate {
      * @param activity The activity to move the tab group to.
      * @param newIndex The index to move the tab group to.
      * @param isIncognito Whether the tab group is in the incognito model.
+     * @return Whether the move succeeded.
      */
-    default void moveTabGroupToWindow(
-            Token tabGroupId, Activity activity, int newIndex, boolean isIncognito) {}
+    default boolean moveTabGroupToWindow(
+            Token tabGroupId, Activity activity, int newIndex, boolean isIncognito) {
+        return false;
+    }
 }

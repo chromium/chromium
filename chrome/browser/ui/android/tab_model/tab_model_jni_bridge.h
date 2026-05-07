@@ -57,7 +57,7 @@ class TabModelJniBridge : public TabModel {
                                  TabAndroid* tab,
                                  long android_browser_window_ptr,
                                  int new_index);
-  void MoveTabGroupToWindowForTesting(JNIEnv* env,
+  bool MoveTabGroupToWindowForTesting(JNIEnv* env,
                                       const base::Token& group_id,
                                       long android_browser_window_ptr,
                                       int new_index);
@@ -162,7 +162,7 @@ class TabModelJniBridge : public TabModel {
   void MoveTabToWindow(tabs::TabHandle tab,
                        SessionID destination_window_id,
                        int destination_index) override;
-  void MoveTabGroupToWindow(tab_groups::TabGroupId group_id,
+  bool MoveTabGroupToWindow(tab_groups::TabGroupId group_id,
                             SessionID destination_window_id,
                             int destination_index) override;
   bool IsThisTabListEditable() override;
