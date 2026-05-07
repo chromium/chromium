@@ -161,7 +161,8 @@ UIImage* IconForModel(ComposeboxModelOption option) {
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  self.view.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
+  self.view.backgroundColor =
+      [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
 
   [self setUpCollectionView];
   [self setUpDataSource];
@@ -288,7 +289,7 @@ UIImage* IconForModel(ComposeboxModelOption option) {
   _collectionView.translatesAutoresizingMaskIntoConstraints = NO;
   _collectionView.delegate = self;
   _collectionView.backgroundColor =
-      [UIColor colorNamed:kPrimaryBackgroundColor];
+      [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
   _collectionView.showsVerticalScrollIndicator = NO;
   _collectionView.showsHorizontalScrollIndicator = NO;
   _collectionView.contentInsetAdjustmentBehavior =
@@ -386,7 +387,8 @@ UIImage* IconForModel(ComposeboxModelOption option) {
         [[UICollectionLayoutListConfiguration alloc]
             initWithAppearance:UICollectionLayoutListAppearanceInsetGrouped];
     listConfig.headerMode = UICollectionLayoutListHeaderModeSupplementary;
-    listConfig.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
+    listConfig.backgroundColor =
+        [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
     NSCollectionLayoutSection* section = [NSCollectionLayoutSection
         sectionWithListConfiguration:listConfig
                    layoutEnvironment:layoutEnvironment];
@@ -587,25 +589,18 @@ UIImage* IconForModel(ComposeboxModelOption option) {
   configuration.text = item.title;
   configuration.image = item.image;
 
-  if (item.disabled) {
-    configuration.textProperties.color =
-        [UIColor colorNamed:kTextSecondaryColor];
-    configuration.imageProperties.tintColor =
-        [UIColor colorNamed:kTextSecondaryColor];
-    cell.userInteractionEnabled = NO;
-  } else {
-    configuration.textProperties.color = [UIColor colorNamed:kTextPrimaryColor];
-    configuration.imageProperties.tintColor =
-        [UIColor colorNamed:kTextPrimaryColor];
-    cell.userInteractionEnabled = YES;
-  }
+  configuration.textProperties.color = [UIColor
+      colorNamed:item.disabled ? kTextSecondaryColor : kTextPrimaryColor];
+  configuration.imageProperties.tintColor = [UIColor
+      colorNamed:item.disabled ? kTextSecondaryColor : kTextPrimaryColor];
+  cell.userInteractionEnabled = !item.disabled;
 
   cell.contentConfiguration = configuration;
 
   UIBackgroundConfiguration* backgroundConfiguration =
       [UIBackgroundConfiguration listCellConfiguration];
   backgroundConfiguration.backgroundColor =
-      [UIColor colorNamed:kSecondaryBackgroundColor];
+      [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
   cell.backgroundConfiguration = backgroundConfiguration;
 
   BOOL isSelected = NO;

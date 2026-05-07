@@ -67,7 +67,7 @@ const CGFloat kImageBackgroundHeight = 60.0f;
   _imageBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
   _imageBackgroundView.userInteractionEnabled = NO;
   _imageBackgroundView.backgroundColor =
-      [UIColor colorNamed:kSecondaryBackgroundColor];
+      [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
   _imageBackgroundView.layer.cornerRadius = kImageContainerCornerRadius;
   [self addSubview:_imageBackgroundView];
 
