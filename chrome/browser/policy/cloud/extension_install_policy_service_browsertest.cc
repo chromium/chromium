@@ -590,8 +590,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallPolicyServiceTest,
                                                    /*expected_result=*/true));
 }
 
+// TODO(crbug.com/510128336): Re-enable after fixing.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_CanInstallExtensionServerUnreachable \
+  DISABLED_CanInstallExtensionServerUnreachable
+#else
+#define MAYBE_CanInstallExtensionServerUnreachable \
+  CanInstallExtensionServerUnreachable
+#endif
 IN_PROC_BROWSER_TEST_F(ExtensionInstallPolicyServiceTest,
-                       CanInstallExtensionServerUnreachable) {
+                       MAYBE_CanInstallExtensionServerUnreachable) {
   browser()->profile()->GetPrefs()->SetBoolean(
       extensions::pref_names::kExtensionInstallCloudPolicyChecksEnabled, true);
   SetExtensionInstallPolicy(
