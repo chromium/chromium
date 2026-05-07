@@ -191,7 +191,7 @@ public class AppearanceSettingsFragmentTest {
 
     @Test
     @SmallTest
-    @Restriction(DeviceFormFactor.PHONE_OR_TABLET) // https://crbug.com/481444857
+    @Restriction(DeviceFormFactor.PHONE_OR_TABLET)
     public void testBookmarkBarPreferenceUpdatesSettingWhenChanged_NonDesktop() {
         BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(true);
         launchSettings();
@@ -212,7 +212,7 @@ public class AppearanceSettingsFragmentTest {
 
     @Test
     @SmallTest
-    @Restriction(DeviceFormFactor.PHONE_OR_TABLET) // https://crbug.com/481444857
+    @Restriction(DeviceFormFactor.PHONE_OR_TABLET)
     public void testBookmarkBarPreferenceIsUpdatedWhenSettingChanges_NonDesktop() {
         BookmarkBarUtils.setDeviceBookmarkBarCompatibleForTesting(true);
         launchSettings();
