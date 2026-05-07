@@ -36,7 +36,7 @@
 #include "cc/test/fake_layer_tree_host_impl.h"
 #include "cc/test/layer_test_common.h"
 #include "cc/test/layer_tree_test.h"
-#include "cc/test/stub_layer_tree_host_single_thread_client.h"
+#include "cc/test/stub_layer_tree_host_single_thread_delegate.h"
 #include "cc/test/test_layer_tree_frame_sink.h"
 #include "cc/test/test_task_graph_runner.h"
 #include "cc/trees/layer_tree_host.h"
@@ -132,11 +132,11 @@ class MockLayerTreeHost : public LayerTreeHost {
  private:
   explicit MockLayerTreeHost(LayerTreeHost::InitParams params)
       : LayerTreeHost(std::move(params), CompositorMode::SINGLE_THREADED) {
-    InitializeSingleThreaded(&single_thread_client_,
+    InitializeSingleThreaded(&single_thread_delegate_,
                              base::SingleThreadTaskRunner::GetCurrentDefault());
   }
 
-  StubLayerTreeHostSingleThreadClient single_thread_client_;
+  StubLayerTreeHostSingleThreadDelegate single_thread_delegate_;
 };
 
 class MockReleaseCallback {
@@ -270,7 +270,7 @@ TEST_F(TextureLayerTest, ShutdownWithResource) {
     bool gpu = i == 0;
     SCOPED_TRACE(gpu);
     // Make our own LayerTreeHost for this test so we can control the lifetime.
-    StubLayerTreeHostSingleThreadClient single_thread_client;
+    StubLayerTreeHostSingleThreadDelegate single_thread_delegate;
     RunOnCommitLayerTreeHostDelegate client;
     LayerTreeHost::InitParams params;
     params.client = &client;
@@ -279,7 +279,7 @@ TEST_F(TextureLayerTest, ShutdownWithResource) {
     LayerTreeSettings settings;
     params.settings = &settings;
     params.main_task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
-    auto host = LayerTreeHost::CreateSingleThreaded(&single_thread_client,
+    auto host = LayerTreeHost::CreateSingleThreaded(&single_thread_delegate,
                                                     std::move(params));
 
     client.SetLayerTreeHost(host.get());

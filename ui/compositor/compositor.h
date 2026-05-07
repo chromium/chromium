@@ -29,7 +29,7 @@
 #include "cc/paint/element_id.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/layer_tree_host_delegate.h"
-#include "cc/trees/layer_tree_host_single_thread_client.h"
+#include "cc/trees/layer_tree_host_single_thread_delegate.h"
 #include "cc/trees/paint_holding_reason.h"
 #include "cc/trees/property_tree.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
@@ -152,11 +152,12 @@ class COMPOSITOR_EXPORT ExternalBeginFrameControllerClientFactory {
 // displayable form of pixels comprising a single widget's contents. It draws an
 // appropriately transformed texture for each transformed view in the widget's
 // view hierarchy.
-class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
-                                     public cc::LayerTreeHostDelegate,
-                                     public cc::LayerTreeHostSingleThreadClient,
-                                     public viz::HostFrameSinkClient,
-                                     public CompositorMetricsTrackerHost {
+class COMPOSITOR_EXPORT Compositor
+    : public base::PowerSuspendObserver,
+      public cc::LayerTreeHostDelegate,
+      public cc::LayerTreeHostSingleThreadDelegate,
+      public viz::HostFrameSinkClient,
+      public CompositorMetricsTrackerHost {
  public:
   Compositor(const viz::FrameSinkId& frame_sink_id,
              ui::ContextFactory* context_factory,
@@ -443,7 +444,7 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
       base::TimeDelta first_scroll_delay,
       base::TimeTicks first_scroll_timestamp) override {}
 
-  // cc::LayerTreeHostSingleThreadClient implementation.
+  // cc::LayerTreeHostSingleThreadDelegate implementation.
   void DidSubmitCompositorFrame() override;
   void DidLoseLayerTreeFrameSink() override {}
   void FrameIntervalUpdated(base::TimeDelta interval) override;

@@ -25,7 +25,7 @@
 #include "cc/test/fake_layer_tree_host_delegate.h"
 #include "cc/test/fake_layer_tree_host_impl.h"
 #include "cc/test/layer_test_common.h"
-#include "cc/test/stub_layer_tree_host_single_thread_client.h"
+#include "cc/test/stub_layer_tree_host_single_thread_delegate.h"
 #include "cc/test/test_task_graph_runner.h"
 #include "cc/trees/clip_node.h"
 #include "cc/trees/layer_tree_host.h"
@@ -143,12 +143,12 @@ class MockLayerTreeHostDelegate {
 
 class FakeLayerTreeHost : public LayerTreeHost {
  public:
-  FakeLayerTreeHost(LayerTreeHostSingleThreadClient* single_thread_client,
+  FakeLayerTreeHost(LayerTreeHostSingleThreadDelegate* single_thread_delegate,
                     LayerTreeHost::InitParams params)
       : LayerTreeHost(std::move(params), CompositorMode::SINGLE_THREADED),
         mock_delegate_(
             std::make_unique<StrictMock<MockLayerTreeHostDelegate>>()) {
-    InitializeSingleThreaded(single_thread_client,
+    InitializeSingleThreaded(single_thread_delegate,
                              base::SingleThreadTaskRunner::GetCurrentDefault());
   }
 
@@ -216,7 +216,7 @@ class LayerTest : public testing::Test {
     params.mutator_host = animation_host_.get();
 
     layer_tree_host_ = std::make_unique<FakeLayerTreeHost>(
-        &single_thread_client_, std::move(params));
+        &single_thread_delegate_, std::move(params));
   }
 
   void TearDown() override {
@@ -306,7 +306,7 @@ class LayerTest : public testing::Test {
   TestTaskGraphRunner task_graph_runner_;
   FakeLayerTreeHostImpl host_impl_;
 
-  StubLayerTreeHostSingleThreadClient single_thread_client_;
+  StubLayerTreeHostSingleThreadDelegate single_thread_delegate_;
   FakeLayerTreeHostDelegate fake_client_;
   std::unique_ptr<FakeLayerTreeHost> layer_tree_host_;
   std::unique_ptr<AnimationHost> animation_host_;
@@ -1211,13 +1211,13 @@ class LayerTreeHostFactory {
     params.main_task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
     params.mutator_host = mutator_host;
 
-    return LayerTreeHost::CreateSingleThreaded(&single_thread_client_,
+    return LayerTreeHost::CreateSingleThreaded(&single_thread_delegate_,
                                                std::move(params));
   }
 
  private:
   FakeLayerTreeHostDelegate client_;
-  StubLayerTreeHostSingleThreadClient single_thread_client_;
+  StubLayerTreeHostSingleThreadDelegate single_thread_delegate_;
   TestTaskGraphRunner task_graph_runner_;
 };
 

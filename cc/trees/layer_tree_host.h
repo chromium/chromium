@@ -77,7 +77,7 @@ class PropertyTreeDelegate;
 class LayerTreeHostImpl;
 class ClientLayerTreeHostImpl;
 class LayerTreeHostImplDelegate;
-class LayerTreeHostSingleThreadClient;
+class LayerTreeHostSingleThreadDelegate;
 class LayerTreeMutator;
 class MutatorEvents;
 class MutatorHost;
@@ -182,7 +182,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // blocked, so moving work to another thread and the overhead it adds are not
   // required.
   static std::unique_ptr<LayerTreeHost> CreateSingleThreaded(
-      LayerTreeHostSingleThreadClient* single_thread_client,
+      LayerTreeHostSingleThreadDelegate* single_thread_delegate,
       InitParams params);
 
   LayerTreeHost(const LayerTreeHost&) = delete;
@@ -993,7 +993,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
       scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> impl_task_runner);
   void InitializeSingleThreaded(
-      LayerTreeHostSingleThreadClient* single_thread_client,
+      LayerTreeHostSingleThreadDelegate* single_thread_delegate,
       scoped_refptr<base::SingleThreadTaskRunner> main_task_runner);
   void InitializeForTesting(
       std::unique_ptr<TaskRunnerProvider> task_runner_provider,

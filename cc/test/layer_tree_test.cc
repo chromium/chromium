@@ -37,7 +37,7 @@
 #include "cc/trees/client_layer_tree_host_impl.h"
 #include "cc/trees/layer_tree_host_delegate.h"
 #include "cc/trees/layer_tree_host_impl.h"
-#include "cc/trees/layer_tree_host_single_thread_client.h"
+#include "cc/trees/layer_tree_host_single_thread_delegate.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/paint_holding_reason.h"
 #include "cc/trees/proxy_impl.h"
@@ -426,9 +426,10 @@ class LayerTreeHostImplForTesting : public ClientLayerTreeHostImpl {
 };
 
 // Implementation of LayerTreeHost callback interface.
-class LayerTreeHostDelegateForTesting : public LayerTreeHostDelegate,
-                                        public LayerTreeHostSchedulingDelegate,
-                                        public LayerTreeHostSingleThreadClient {
+class LayerTreeHostDelegateForTesting
+    : public LayerTreeHostDelegate,
+      public LayerTreeHostSchedulingDelegate,
+      public LayerTreeHostSingleThreadDelegate {
  public:
   static std::unique_ptr<LayerTreeHostDelegateForTesting> Create(
       TestHooks* test_hooks) {
@@ -537,7 +538,7 @@ class LayerTreeHostForTesting : public LayerTreeHost {
       CompositorMode mode,
       LayerTreeHostDelegate* client,
       LayerTreeHostSchedulingDelegate* scheduling_delegate,
-      LayerTreeHostSingleThreadClient* single_thread_client,
+      LayerTreeHostSingleThreadDelegate* single_thread_delegate,
       TaskGraphRunner* task_graph_runner,
       const LayerTreeSettings& settings,
       scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
@@ -562,7 +563,7 @@ class LayerTreeHostForTesting : public LayerTreeHost {
     switch (mode) {
       case CompositorMode::SINGLE_THREADED:
         proxy = SingleThreadProxy::Create(layer_tree_host.get(),
-                                          single_thread_client,
+                                          single_thread_delegate,
                                           task_runner_provider.get());
         break;
       case CompositorMode::THREADED:

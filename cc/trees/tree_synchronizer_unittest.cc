@@ -26,7 +26,7 @@
 #include "cc/test/fake_layer_tree_host.h"
 #include "cc/test/fake_rendering_stats_instrumentation.h"
 #include "cc/test/layer_test_common.h"
-#include "cc/test/stub_layer_tree_host_single_thread_client.h"
+#include "cc/test/stub_layer_tree_host_single_thread_delegate.h"
 #include "cc/test/test_task_graph_runner.h"
 #include "cc/trees/compositor_commit_data.h"
 #include "cc/trees/effect_node.h"
@@ -126,7 +126,7 @@ class TreeSynchronizerTest : public testing::Test {
     host_ = FakeLayerTreeHost::Create(&delegate_, &task_graph_runner_,
                                       animation_host_.get(), settings);
     host_->InitializeSingleThreaded(
-        &single_thread_client_,
+        &single_thread_delegate_,
         base::SingleThreadTaskRunner::GetCurrentDefault());
     host_->host_impl()->CreatePendingTree();
   }
@@ -169,7 +169,7 @@ class TreeSynchronizerTest : public testing::Test {
   const FakeLayerTreeHost* const_host() const { return host_.get(); }
 
   FakeLayerTreeHostDelegate delegate_;
-  StubLayerTreeHostSingleThreadClient single_thread_client_;
+  StubLayerTreeHostSingleThreadDelegate single_thread_delegate_;
   TestTaskGraphRunner task_graph_runner_;
   std::unique_ptr<AnimationHost> animation_host_;
   std::unique_ptr<FakeLayerTreeHost> host_;

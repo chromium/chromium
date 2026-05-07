@@ -10,11 +10,11 @@ namespace blink {
 
 LayerTreeHostEmbedder::LayerTreeHostEmbedder()
     : LayerTreeHostEmbedder(/*client=*/nullptr,
-                            /*single_thread_client=*/nullptr) {}
+                            /*single_thread_delegate=*/nullptr) {}
 
 LayerTreeHostEmbedder::LayerTreeHostEmbedder(
     cc::LayerTreeHostDelegate* client,
-    cc::LayerTreeHostSingleThreadClient* single_thread_client) {
+    cc::LayerTreeHostSingleThreadDelegate* single_thread_delegate) {
   cc::LayerTreeSettings settings;
   settings.single_thread_proxy_scheduler = false;
   settings.use_layer_lists = true;
@@ -27,8 +27,8 @@ LayerTreeHostEmbedder::LayerTreeHostEmbedder(
   params.mutator_host = animation_host_.get();
 
   layer_tree_host_ = cc::LayerTreeHost::CreateSingleThreaded(
-      single_thread_client ? single_thread_client
-                           : &layer_tree_host_single_thread_client_,
+      single_thread_delegate ? single_thread_delegate
+                             : &layer_tree_host_single_thread_delegate_,
       std::move(params));
 }
 

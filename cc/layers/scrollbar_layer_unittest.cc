@@ -31,7 +31,7 @@
 #include "cc/test/fake_scrollbar_layer.h"
 #include "cc/test/layer_tree_impl_test_base.h"
 #include "cc/test/layer_tree_test.h"
-#include "cc/test/stub_layer_tree_host_single_thread_client.h"
+#include "cc/test/stub_layer_tree_host_single_thread_delegate.h"
 #include "cc/test/test_task_graph_runner.h"
 #include "cc/trees/effect_node.h"
 #include "cc/trees/layer_tree_host.h"
@@ -98,10 +98,10 @@ class FakeResourceTrackingUIResourceManager : public UIResourceManager {
       std::unordered_map<UIResourceId, UIResourceBitmap>;
   UIResourceBitmapMap ui_resource_bitmap_map_;
 
-  StubLayerTreeHostSingleThreadClient single_thread_client_;
-  int next_id_;
-  int total_ui_resource_created_;
-  int total_ui_resource_deleted_;
+  StubLayerTreeHostSingleThreadDelegate single_thread_delegate_;
+  int next_id_ = 1;
+  int total_ui_resource_created_ = 0;
+  int total_ui_resource_deleted_ = 0;
 };
 
 class BaseScrollbarLayerTest : public testing::Test {
@@ -136,7 +136,7 @@ class BaseScrollbarLayerTest : public testing::Test {
     layer_tree_host_->SetUIResourceManagerForTesting(
         std::move(fake_ui_resource_manager));
     layer_tree_host_->InitializeSingleThreaded(
-        &single_thread_client_,
+        &single_thread_delegate_,
         base::SingleThreadTaskRunner::GetCurrentDefault());
     layer_tree_host_->SetVisible(true);
     fake_client_.SetLayerTreeHost(layer_tree_host_.get());
@@ -144,7 +144,7 @@ class BaseScrollbarLayerTest : public testing::Test {
 
  protected:
   FakeLayerTreeHostDelegate fake_client_;
-  StubLayerTreeHostSingleThreadClient single_thread_client_;
+  StubLayerTreeHostSingleThreadDelegate single_thread_delegate_;
   TestTaskGraphRunner task_graph_runner_;
   LayerTreeSettings layer_tree_settings_;
   std::unique_ptr<AnimationHost> animation_host_;

@@ -7,7 +7,7 @@
 
 #include "cc/animation/animation_host.h"
 #include "cc/test/stub_layer_tree_host_delegate.h"
-#include "cc/test/stub_layer_tree_host_single_thread_client.h"
+#include "cc/test/stub_layer_tree_host_single_thread_delegate.h"
 #include "cc/test/test_task_graph_runner.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/layer_tree_settings.h"
@@ -29,13 +29,14 @@ class LayerTreeHostEmbedder {
   // overrides of LayerTreeSettings.
   LayerTreeHostEmbedder(
       cc::LayerTreeHostDelegate* client,
-      cc::LayerTreeHostSingleThreadClient* single_thread_client);
+      cc::LayerTreeHostSingleThreadDelegate* single_thread_delegate);
 
   cc::LayerTreeHost* layer_tree_host() { return layer_tree_host_.get(); }
   cc::AnimationHost* animation_host() { return animation_host_.get(); }
 
  private:
-  cc::StubLayerTreeHostSingleThreadClient layer_tree_host_single_thread_client_;
+  cc::StubLayerTreeHostSingleThreadDelegate
+      layer_tree_host_single_thread_delegate_;
   cc::StubLayerTreeHostDelegate layer_tree_host_delegate_;
   cc::TestTaskGraphRunner task_graph_runner_;
   std::unique_ptr<cc::AnimationHost> animation_host_;

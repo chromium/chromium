@@ -15,7 +15,7 @@
 #include "base/time/time.h"
 #include "cc/input/browser_controls_state.h"
 #include "cc/trees/layer_tree_host_delegate.h"
-#include "cc/trees/layer_tree_host_single_thread_client.h"
+#include "cc/trees/layer_tree_host_single_thread_delegate.h"
 #include "cc/trees/paint_holding_reason.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/widget/compositing/layer_tree_view_delegate.h"
@@ -39,7 +39,7 @@ class WidgetScheduler;
 
 class PLATFORM_EXPORT LayerTreeView
     : public cc::LayerTreeHostDelegate,
-      public cc::LayerTreeHostSingleThreadClient,
+      public cc::LayerTreeHostSingleThreadDelegate,
       public cc::LayerTreeHostSchedulingDelegate {
  public:
   LayerTreeView(LayerTreeViewDelegate* delegate,
@@ -126,7 +126,7 @@ class PLATFORM_EXPORT LayerTreeView
                          cc::PaintBenchmarkResult& result) override;
   std::string GetPausedDebuggerLocalizedMessage() override;
 
-  // cc::LayerTreeHostSingleThreadClient implementation.
+  // cc::LayerTreeHostSingleThreadDelegate implementation.
   void DidSubmitCompositorFrame() override;
   void DidLoseLayerTreeFrameSink() override;
   void ScheduleAnimationForWebTests() override;

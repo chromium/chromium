@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CC_TREES_LAYER_TREE_HOST_SINGLE_THREAD_CLIENT_H_
-#define CC_TREES_LAYER_TREE_HOST_SINGLE_THREAD_CLIENT_H_
+#ifndef CC_TREES_LAYER_TREE_HOST_SINGLE_THREAD_DELEGATE_H_
+#define CC_TREES_LAYER_TREE_HOST_SINGLE_THREAD_DELEGATE_H_
 
 #include "base/containers/flat_set.h"
 #include "base/time/time.h"
@@ -11,7 +11,7 @@
 
 namespace cc {
 
-class LayerTreeHostSingleThreadClient {
+class LayerTreeHostSingleThreadDelegate {
  public:
   // Tells single-threaded web tests that a new commit needs to be scheduled.
   virtual void ScheduleAnimationForWebTests() {}
@@ -39,9 +39,9 @@ class LayerTreeHostSingleThreadClient {
       const base::flat_set<viz::FrameSinkId>& ids) {}
 
  protected:
-  virtual ~LayerTreeHostSingleThreadClient() {}
+  virtual ~LayerTreeHostSingleThreadDelegate() = default;
 };
 
 }  // namespace cc
 
-#endif  // CC_TREES_LAYER_TREE_HOST_SINGLE_THREAD_CLIENT_H_
+#endif  // CC_TREES_LAYER_TREE_HOST_SINGLE_THREAD_DELEGATE_H_

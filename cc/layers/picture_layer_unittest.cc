@@ -25,7 +25,7 @@
 #include "cc/test/layer_test_common.h"
 #include "cc/test/property_tree_test_utils.h"
 #include "cc/test/skia_common.h"
-#include "cc/test/stub_layer_tree_host_single_thread_client.h"
+#include "cc/test/stub_layer_tree_host_single_thread_delegate.h"
 #include "cc/test/test_task_graph_runner.h"
 #include "cc/trees/single_thread_proxy.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -263,7 +263,7 @@ TEST(PictureLayerTest, NonMonotonicSourceFrameNumber) {
   settings.single_thread_proxy_scheduler = false;
   settings.use_zero_copy = true;
 
-  StubLayerTreeHostSingleThreadClient single_thread_client;
+  StubLayerTreeHostSingleThreadDelegate single_thread_delegate;
   FakeLayerTreeHostDelegate host_client1;
   FakeLayerTreeHostDelegate host_client2;
   TestTaskGraphRunner task_graph_runner;
@@ -281,7 +281,7 @@ TEST(PictureLayerTest, NonMonotonicSourceFrameNumber) {
   params.main_task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
   params.mutator_host = animation_host.get();
   std::unique_ptr<LayerTreeHost> host1 = LayerTreeHost::CreateSingleThreaded(
-      &single_thread_client, std::move(params));
+      &single_thread_delegate, std::move(params));
   host1->SetVisible(true);
   host_client1.SetLayerTreeHost(host1.get());
 
@@ -295,7 +295,7 @@ TEST(PictureLayerTest, NonMonotonicSourceFrameNumber) {
   params2.client = &host_client2;
   params2.mutator_host = animation_host2.get();
   std::unique_ptr<LayerTreeHost> host2 = LayerTreeHost::CreateSingleThreaded(
-      &single_thread_client, std::move(params2));
+      &single_thread_delegate, std::move(params2));
   host2->SetVisible(true);
   host_client2.SetLayerTreeHost(host2.get());
 
@@ -338,7 +338,7 @@ TEST(PictureLayerTest, ChangingHostsWithCollidingFrames) {
   LayerTreeSettings settings = LayerTreeSettings();
   settings.single_thread_proxy_scheduler = false;
 
-  StubLayerTreeHostSingleThreadClient single_thread_client;
+  StubLayerTreeHostSingleThreadDelegate single_thread_delegate;
   FakeLayerTreeHostDelegate host_client1;
   FakeLayerTreeHostDelegate host_client2;
   TestTaskGraphRunner task_graph_runner;
@@ -356,7 +356,7 @@ TEST(PictureLayerTest, ChangingHostsWithCollidingFrames) {
   params.main_task_runner = base::SingleThreadTaskRunner::GetCurrentDefault();
   params.mutator_host = animation_host.get();
   std::unique_ptr<LayerTreeHost> host1 = LayerTreeHost::CreateSingleThreaded(
-      &single_thread_client, std::move(params));
+      &single_thread_delegate, std::move(params));
   host1->SetVisible(true);
   host_client1.SetLayerTreeHost(host1.get());
 
@@ -370,7 +370,7 @@ TEST(PictureLayerTest, ChangingHostsWithCollidingFrames) {
   params2.client = &host_client2;
   params2.mutator_host = animation_host2.get();
   std::unique_ptr<LayerTreeHost> host2 = LayerTreeHost::CreateSingleThreaded(
-      &single_thread_client, std::move(params2));
+      &single_thread_delegate, std::move(params2));
   host2->SetVisible(true);
   host_client2.SetLayerTreeHost(host2.get());
 

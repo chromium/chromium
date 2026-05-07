@@ -203,7 +203,7 @@ class CC_EXPORT LayerTreeSettings {
 
   // Enables ThrottleDecider which produces a list of FrameSinkIds that are
   // candidates for throttling.
-  // LayerTreeHostSingleThreadClient::FrameSinksToThrottleUpdated() will be
+  // LayerTreeHostSingleThreadDelegate::FrameSinksToThrottleUpdated() will be
   // called with candidates.
   bool enable_compositing_based_throttling = false;
 

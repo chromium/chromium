@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "cc/test/stub_layer_tree_host_single_thread_client.h"
+#include "cc/test/stub_layer_tree_host_single_thread_delegate.h"
 
 namespace cc {
 
-StubLayerTreeHostSingleThreadClient::~StubLayerTreeHostSingleThreadClient() =
-    default;
+StubLayerTreeHostSingleThreadDelegate::
+    ~StubLayerTreeHostSingleThreadDelegate() = default;
 
 }  // namespace cc

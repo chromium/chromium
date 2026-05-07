@@ -128,14 +128,14 @@ std::unique_ptr<LayerTreeHost> LayerTreeHost::CreateThreaded(
 }
 
 std::unique_ptr<LayerTreeHost> LayerTreeHost::CreateSingleThreaded(
-    LayerTreeHostSingleThreadClient* single_thread_client,
+    LayerTreeHostSingleThreadDelegate* single_thread_delegate,
     InitParams params) {
   DCHECK(params.settings);
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner =
       params.main_task_runner;
   auto layer_tree_host = base::WrapUnique(
       new LayerTreeHost(std::move(params), CompositorMode::SINGLE_THREADED));
-  layer_tree_host->InitializeSingleThreaded(single_thread_client,
+  layer_tree_host->InitializeSingleThreaded(single_thread_delegate,
                                             std::move(main_task_runner));
   return layer_tree_host;
 }
@@ -223,10 +223,10 @@ void LayerTreeHost::InitializeThreaded(
 }
 
 void LayerTreeHost::InitializeSingleThreaded(
-    LayerTreeHostSingleThreadClient* single_thread_client,
+    LayerTreeHostSingleThreadDelegate* single_thread_delegate,
     scoped_refptr<base::SingleThreadTaskRunner> main_task_runner) {
   task_runner_provider_ = TaskRunnerProvider::Create(main_task_runner, nullptr);
-  InitializeProxy(SingleThreadProxy::Create(this, single_thread_client,
+  InitializeProxy(SingleThreadProxy::Create(this, single_thread_delegate,
                                             task_runner_provider_.get()));
 }
 
