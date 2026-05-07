@@ -26391,6 +26391,21 @@
             ]
         }
     ],
+    "WebViewSaveStateIncludeHeaders": [
+        {
+            "platforms": [
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebViewSaveStateIncludeHeaders"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebViewSharedStorageAPI": [
         {
             "platforms": [
