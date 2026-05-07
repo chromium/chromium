@@ -255,6 +255,11 @@ public class AdaptiveToolbarButtonController
         mToolbarContainer.removeOnLayoutChangeListener(mLayoutChangeListener);
         mLifecycleDispatcher.unregister(this);
 
+        if (mPageLoadMetricsRecorder != null) {
+            mPageLoadMetricsRecorder.destroy();
+            mPageLoadMetricsRecorder = null;
+        }
+
         Iterator<Map.Entry<Integer, ButtonDataProvider>> it =
                 mButtonDataProviderMap.entrySet().iterator();
         while (it.hasNext()) {
