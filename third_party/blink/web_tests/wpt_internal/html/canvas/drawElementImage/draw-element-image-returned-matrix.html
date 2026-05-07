@@ -3,25 +3,21 @@
 <link rel="help" href="https://github.com/WICG/html-in-canvas">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/wpt_internal/resources/canvas-draw-element/waitForCanvasPaint.js"></script>
 <canvas id="canvas" style="width: 100px; height: 100px;" width="100" height="100" layoutsubtree>
   <div id="element" style="width: 10px; height: 10px;">hello</div>
 </canvas>
 <script>
-async function waitOneFrame() {
-  await new Promise(requestAnimationFrame);
-  await new Promise(setTimeout);
-}
-
 function runTest() {
   promise_test(async function() {
-    await waitOneFrame();
+    await waitForCanvasPaint(canvas);
     let draw_transform = canvas.getContext('2d').drawElementImage(element, 0, 0);
     let expected = new DOMMatrix();
     assert_array_equals(draw_transform.toFloat64Array(), expected.toFloat64Array());
   }, 'Draw transform at the origin should be an identity matrix');
 
   promise_test(async function() {
-    await waitOneFrame();
+    await waitForCanvasPaint(canvas);
     let draw_transform = canvas.getContext('2d').drawElementImage(element, 17, -9);
     let expected = new DOMMatrix().translateSelf(17, -9);
     assert_array_equals(draw_transform.toFloat64Array(), expected.toFloat64Array());
@@ -32,7 +28,7 @@ function runTest() {
       element.style.transformOrigin = '';
     });
     element.style.transformOrigin = '0 0';
-    await waitOneFrame();
+    await waitForCanvasPaint(canvas);
     let draw_transform = canvas.getContext('2d').drawElementImage(element, 0, 0, 20, 5);
     let expected = new DOMMatrix().scaleSelf(2, 0.5);
     assert_array_equals(draw_transform.toFloat64Array(), expected.toFloat64Array());
@@ -43,7 +39,7 @@ function runTest() {
       element.style.transform = '';
     });
     element.style.transform = 'rotate(45deg)';
-    await waitOneFrame();
+    await waitForCanvasPaint(canvas);
     let draw_transform = canvas.getContext('2d').drawElementImage(element, 0, 0);
     let expected = new DOMMatrix();
     assert_array_equals(draw_transform.toFloat64Array(), expected.toFloat64Array());
@@ -54,7 +50,7 @@ function runTest() {
       canvas.getContext('2d').reset();
     });
     canvas.getContext('2d').translate(42, 17);
-    await waitOneFrame();
+    await waitForCanvasPaint(canvas);
     let draw_transform = canvas.getContext('2d').drawElementImage(element, 0, 0);
     let expected = new DOMMatrix().translateSelf(42, 17);
     assert_array_equals(draw_transform.toFloat64Array(), expected.toFloat64Array());
@@ -63,10 +59,9 @@ function runTest() {
   promise_test(async function(t) {
     t.add_cleanup(async () => {
       canvas.style.zoom = '';
-      await waitOneFrame();
     });
     canvas.style.zoom = '1.5';
-    await waitOneFrame();
+    await waitForCanvasPaint(canvas);
     let draw_transform = canvas.getContext('2d').drawElementImage(element, 10, 10);
     let expected = new DOMMatrix().translateSelf(10, 10);
     assert_array_equals(draw_transform.toFloat64Array(), expected.toFloat64Array());
@@ -78,7 +73,7 @@ function runTest() {
       canvas.getContext('2d').reset();
     });
     element.style.transformOrigin = '0 0';
-    await waitOneFrame();
+    await waitForCanvasPaint(canvas);
     canvas.getContext('2d').rotate(Math.PI / 4);
     let draw_transform = canvas.getContext('2d').drawElementImage(element, 0, 0);
     let expected = new DOMMatrix().rotateSelf(45);
@@ -91,7 +86,7 @@ function runTest() {
       canvas.getContext('2d').reset();
     });
     element.style.transformOrigin = '5px 5px';
-    await waitOneFrame();
+    await waitForCanvasPaint(canvas);
     canvas.getContext('2d').rotate(Math.PI / 4);
     let draw_transform = canvas.getContext('2d').drawElementImage(element, 0, 0);
     let expected = new DOMMatrix()
@@ -108,6 +103,7 @@ function runTest() {
     });
     canvas.width = 200;
     canvas.height = 50;
+    await waitForCanvasPaint(canvas);
     let draw_transform = canvas.getContext('2d').drawElementImage(element, 0, 0);
     let expected = new DOMMatrix();
     assert_array_equals(draw_transform.toFloat64Array(), expected.toFloat64Array());
@@ -120,7 +116,6 @@ function runTest() {
       canvas.style.zoom = '';
       canvas.getContext('2d').reset();
       element.style.transformOrigin = '0 0';
-      await waitOneFrame();
     });
     canvas.width = 200;
     canvas.height = 50;
@@ -129,7 +124,7 @@ function runTest() {
     canvas.getContext('2d').rotate(Math.PI / 4);
     element.style.transformOrigin = '5px 5px';
     element.style.transformOrigin = '5px 5px';
-    await waitOneFrame();
+    await waitForCanvasPaint(canvas);
     let draw_transform = canvas.getContext('2d').drawElementImage(element, 13, -9);
     let expected = new DOMMatrix()
       .translateSelf(-5, -5)
