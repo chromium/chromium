@@ -9382,7 +9382,7 @@
   {
     "name": "use-primary-and-tonal-buttons-for-promos",
     "owners": [ "kbajkiewicz@google.com", "chrome-signin-desktop-team@google.com" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 152
   },
   {
     "name": "use-sc-content-sharing-picker",
