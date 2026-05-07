@@ -208,8 +208,10 @@ void ClipboardMac::GetAllAvailableFormats(
   NSArray* types = [GetPasteboard().types copy];
   base::flat_set<ClipboardFormatType> formats;
   for (NSString* type in types) {
-    formats.insert(
-        ClipboardFormatType::Deserialize(base::SysNSStringToUTF8(type)));
+    std::string type_utf8 = base::SysNSStringToUTF8(type);
+    if (base::IsStringASCII(type_utf8)) {
+      formats.insert(ClipboardFormatType::Deserialize(type_utf8));
+    }
   }
 
   // Safari only places RTF on the pasteboard, never HTML. We can convert RTF

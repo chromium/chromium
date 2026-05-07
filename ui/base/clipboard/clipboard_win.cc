@@ -368,7 +368,9 @@ ClipboardWin::GetAllAvailableFormatsInternal(
       if (len > 0) {
         std::string name_utf8 =
             base::WideToUTF8(std::wstring_view(format_name, len));
-        types.insert(ClipboardFormatType::CustomPlatformType(name_utf8));
+        if (base::IsStringASCII(name_utf8)) {
+          types.insert(ClipboardFormatType::CustomPlatformType(name_utf8));
+        }
       }
     }
   }
