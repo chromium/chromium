@@ -19,6 +19,7 @@
 #include "content/common/buildflags.h"
 #include "content/common/memory_coordinator/memory_consumer_group_host.h"
 #include "content/common/memory_coordinator/memory_coordinator_policy.h"
+#include "content/public/test/memory_coordinator_browsertest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -225,48 +226,86 @@ TEST_F(MemoryCoordinatorPolicyManagerTest, ReleaseMemory) {
   policy_manager().RemoveMemoryConsumerGroupHost(kChildId);
 }
 
-TEST_F(MemoryCoordinatorPolicyManagerTest, TestHelpers) {
-  MockMemoryConsumerGroupHost host1;
-  MockMemoryConsumerGroupHost host2;
+TEST_F(MemoryCoordinatorPolicyManagerTest, SetMemoryLimitOverride) {
+  MockMemoryConsumerGroupHost host;
+  const ChildProcessId kChildId(1);
+  policy_manager().AddMemoryConsumerGroupHost(kChildId, &host);
 
-  const char kConsumerName1[] = "consumer1";
-  const uint32_t kConsumerId1 = base::PersistentHash(kConsumerName1);
-  const char kConsumerName2[] = "consumer2";
-  const uint32_t kConsumerId2 = base::PersistentHash(kConsumerName2);
-  const ChildProcessId kChildId1(1);
-  const ChildProcessId kChildId2(2);
+  static constexpr char kConsumerName[] = "consumer";
+  const uint32_t kConsumerId = base::PersistentHash(kConsumerName);
 
-  policy_manager().AddMemoryConsumerGroupHost(kChildId1, &host1);
-  policy_manager().AddMemoryConsumerGroupHost(kChildId2, &host2);
-
-  policy_manager().OnConsumerGroupAdded(kConsumerId1, kConsumerName1,
+  policy_manager().OnConsumerGroupAdded(kConsumerId, kConsumerName,
                                         kTestTraits1, PROCESS_TYPE_RENDERER,
-                                        kChildId1);
-  policy_manager().OnConsumerGroupAdded(kConsumerId2, kConsumerName2,
-                                        kTestTraits1, PROCESS_TYPE_RENDERER,
-                                        kChildId2);
+                                        kChildId);
 
-  EXPECT_CALL(host1, UpdateConsumers(ElementsAre(
-                         MemoryConsumerUpdate{kConsumerId1, 42, false})));
-  EXPECT_CALL(host2, UpdateConsumers(ElementsAre(
-                         MemoryConsumerUpdate{kConsumerId2, 42, false})));
-  policy_manager().NotifyUpdateMemoryLimitForTesting(42);
-  Mock::VerifyAndClearExpectations(&host1);
-  Mock::VerifyAndClearExpectations(&host2);
+  // Add override.
+  EXPECT_CALL(host, UpdateConsumers(ElementsAre(
+                        MemoryConsumerUpdate{kConsumerId, 42, false})));
+  policy_manager().AddMemoryLimitOverrideForTesting(kConsumerName, 42);
+  Mock::VerifyAndClearExpectations(&host);
 
-  EXPECT_CALL(host1, UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
-                         kConsumerId1, std::nullopt, true})));
-  EXPECT_CALL(host2, UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
-                         kConsumerId2, std::nullopt, true})));
-  policy_manager().NotifyReleaseMemoryForTesting();
-  Mock::VerifyAndClearExpectations(&host1);
-  Mock::VerifyAndClearExpectations(&host2);
+  // Update override.
+  EXPECT_CALL(host, UpdateConsumers(ElementsAre(
+                        MemoryConsumerUpdate{kConsumerId, 24, false})));
+  policy_manager().UpdateMemoryLimitOverrideForTesting(kConsumerName, 24);
+  Mock::VerifyAndClearExpectations(&host);
+
+  // Clear override. Reverts to default (100%).
+  EXPECT_CALL(host, UpdateConsumers(ElementsAre(
+                        MemoryConsumerUpdate{kConsumerId, 100, false})));
+  policy_manager().ClearMemoryLimitOverrideForTesting(kConsumerName);
+  Mock::VerifyAndClearExpectations(&host);
 
   // Clean up.
-  policy_manager().OnConsumerGroupRemoved(kConsumerId1, kChildId1);
-  policy_manager().OnConsumerGroupRemoved(kConsumerId2, kChildId2);
-  policy_manager().RemoveMemoryConsumerGroupHost(kChildId1);
-  policy_manager().RemoveMemoryConsumerGroupHost(kChildId2);
+  policy_manager().OnConsumerGroupRemoved(kConsumerId, kChildId);
+  policy_manager().RemoveMemoryConsumerGroupHost(kChildId);
+}
+
+TEST_F(MemoryCoordinatorPolicyManagerTest, SetMemoryLimitOverride_Persistence) {
+  MockMemoryConsumerGroupHost host;
+  const ChildProcessId kChildId(1);
+  policy_manager().AddMemoryConsumerGroupHost(kChildId, &host);
+
+  static constexpr char kConsumerName[] = "consumer";
+  const uint32_t kConsumerId = base::PersistentHash(kConsumerName);
+
+  // Set override BEFORE adding consumer.
+  policy_manager().AddMemoryLimitOverrideForTesting(kConsumerName, 42);
+
+  // Adding consumer should immediately apply override.
+  EXPECT_CALL(host, UpdateConsumers(ElementsAre(
+                        MemoryConsumerUpdate{kConsumerId, 42, false})));
+  policy_manager().OnConsumerGroupAdded(kConsumerId, kConsumerName,
+                                        kTestTraits1, PROCESS_TYPE_RENDERER,
+                                        kChildId);
+  Mock::VerifyAndClearExpectations(&host);
+
+  // Clean up.
+  policy_manager().ClearMemoryLimitOverrideForTesting(kConsumerName);
+  policy_manager().OnConsumerGroupRemoved(kConsumerId, kChildId);
+  policy_manager().RemoveMemoryConsumerGroupHost(kChildId);
+}
+
+TEST_F(MemoryCoordinatorPolicyManagerTest, NotifyReleaseMemory) {
+  MockMemoryConsumerGroupHost host;
+  const ChildProcessId kChildId(1);
+  policy_manager().AddMemoryConsumerGroupHost(kChildId, &host);
+
+  static constexpr char kConsumerName[] = "consumer";
+  const uint32_t kConsumerId = base::PersistentHash(kConsumerName);
+
+  policy_manager().OnConsumerGroupAdded(kConsumerId, kConsumerName,
+                                        kTestTraits1, PROCESS_TYPE_RENDERER,
+                                        kChildId);
+
+  EXPECT_CALL(host, UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
+                        kConsumerId, std::nullopt, true})));
+  policy_manager().NotifyReleaseMemoryForTesting(kConsumerName);
+  Mock::VerifyAndClearExpectations(&host);
+
+  // Clean up.
+  policy_manager().OnConsumerGroupRemoved(kConsumerId, kChildId);
+  policy_manager().RemoveMemoryConsumerGroupHost(kChildId);
 }
 
 TEST_F(MemoryCoordinatorPolicyManagerTest, UpdateConsumers_MultipleProcesses) {

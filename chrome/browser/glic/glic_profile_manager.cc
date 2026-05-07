@@ -45,6 +45,7 @@ bool g_prewarming_enabled_for_testing_ = true;
 std::optional<Profile*> g_forced_profile_for_launch_;
 std::optional<net::NetworkChangeNotifier::ConnectionType>
     g_forced_connection_type_;
+
 }  // namespace
 
 namespace glic {
@@ -82,7 +83,7 @@ GlicProfileManager* GlicProfileManager::GetInstance() {
 
 GlicProfileManager::GlicProfileManager()
     : memory_consumer_registration_(
-          /*consumer_name=*/"GlicProfileManager",
+          /*consumer_name=*/kMemoryConsumerName,
           /*traits=*/std::nullopt,  // TODO(crbug.com/489671163): Fill traits.
           this,
           base::MemoryConsumerRegistration::CheckUnregister::kDisabled,

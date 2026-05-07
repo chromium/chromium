@@ -39,6 +39,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/memory_coordinator_browsertest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ozone_buildflags.h"
@@ -430,10 +431,12 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerPreloadingTest,
     GTEST_SKIP() << "This test only applies if prewarming is enabled.";
   }
   ResetPrewarming();
-  base::RunLoop run_loop;
-  base::MemoryPressureListener::SimulatePressureNotificationAsync(
-      base::MEMORY_PRESSURE_LEVEL_CRITICAL, run_loop.QuitClosure());
-  run_loop.Run();
+
+  content::test::ScopedMemoryLimitOverride scoped_memory_limit_override(
+      GlicProfileManager::kMemoryConsumerName);
+  scoped_memory_limit_override.SetLimit(0);
+  scoped_memory_limit_override.NotifyReleaseMemory();
+
   EXPECT_EQ(WaitForShouldPreload(),
             GlicPrewarmingChecksResult::kUnderMemoryPressure);
 }

@@ -59,10 +59,6 @@ class CONTENT_EXPORT BrowserMemoryCoordinator {
       ChildProcessId child_process_id,
       mojo::PendingReceiver<mojom::ChildMemoryConsumerRegistryHost> receiver);
 
-  // For testing only. Notifies all registered consumer groups.
-  void NotifyReleaseMemoryForTesting();
-  void NotifyUpdateMemoryLimitForTesting(int percentage);
-
  private:
   void OnHostDisconnected(ChildProcessId child_process_id);
 

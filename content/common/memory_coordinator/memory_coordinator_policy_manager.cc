@@ -62,7 +62,26 @@ MemoryCoordinatorPolicyManager::GroupState::SetMemoryLimitForPolicy(
   return new_limit;
 }
 
+std::optional<int>
+MemoryCoordinatorPolicyManager::GroupState::SetOverrideLimitForTesting(
+    std::optional<int> percentage) {
+  if (override_limit_ == percentage) {
+    return std::nullopt;
+  }
+  override_limit_ = percentage;
+  int new_limit = RecomputeMemoryLimit();
+  if (new_limit == current_limit_) {
+    return std::nullopt;
+  }
+  current_limit_ = new_limit;
+  return new_limit;
+}
+
 int MemoryCoordinatorPolicyManager::GroupState::RecomputeMemoryLimit() const {
+  if (override_limit_) {
+    return *override_limit_;
+  }
+
   // The aggregate limit is the product of all policy limits.
   // For example, if policy A requests 80% and policy B requests 50%, the
   // aggregate limit is 40% (0.8 * 0.5 = 0.4).
@@ -196,6 +215,17 @@ void MemoryCoordinatorPolicyManager::OnConsumerGroupAdded(
       std::make_unique<GroupState>(consumer_name, traits, process_type));
   CHECK(inserted);
 
+  // Apply any pending override for this consumer that was set before
+  // registration.
+  auto it = memory_limit_overrides_.find(consumer_name);
+  if (it != memory_limit_overrides_.end()) {
+    auto& group_state = host_state.groups[consumer_id];
+    if (std::optional<int> new_limit =
+            group_state->SetOverrideLimitForTesting(it->second)) {
+      host_state.host->UpdateConsumers({{consumer_id, *new_limit, false}});
+    }
+  }
+
   for (auto& observer : observers_) {
     observer.OnConsumerGroupAdded(consumer_id, consumer_name, traits,
                                   process_type, child_process_id);
@@ -311,12 +341,18 @@ void MemoryCoordinatorPolicyManager::UpdateConsumersForProcess(
   }
 }
 
-void MemoryCoordinatorPolicyManager::NotifyReleaseMemoryForTesting() {
-  for (auto const& [_, host_state] : hosts_) {
+void MemoryCoordinatorPolicyManager::ApplyMemoryLimitOverrideForTesting(
+    std::string_view consumer_name,
+    int percentage) {
+  for (auto const& [child_id, host_state] : hosts_) {
     std::vector<MemoryConsumerUpdate> updates;
-    updates.reserve(host_state->groups.size());
     for (auto const& [consumer_id, group_state] : host_state->groups) {
-      updates.push_back({consumer_id, std::nullopt, true});
+      if (group_state->consumer_name() == consumer_name) {
+        if (std::optional<int> new_limit =
+                group_state->SetOverrideLimitForTesting(percentage)) {
+          updates.push_back({consumer_id, *new_limit, false});
+        }
+      }
     }
     if (!updates.empty()) {
       host_state->host->UpdateConsumers(std::move(updates));
@@ -324,15 +360,54 @@ void MemoryCoordinatorPolicyManager::NotifyReleaseMemoryForTesting() {
   }
 }
 
-void MemoryCoordinatorPolicyManager::NotifyUpdateMemoryLimitForTesting(
+void MemoryCoordinatorPolicyManager::AddMemoryLimitOverrideForTesting(
+    std::string_view consumer_name,
     int percentage) {
-  for (auto const& [_, host_state] : hosts_) {
+  auto [it, inserted] =
+      memory_limit_overrides_.try_emplace(consumer_name, percentage);
+  CHECK(inserted);
+
+  ApplyMemoryLimitOverrideForTesting(consumer_name, percentage);
+}
+
+void MemoryCoordinatorPolicyManager::UpdateMemoryLimitOverrideForTesting(
+    std::string_view consumer_name,
+    int percentage) {
+  auto it = memory_limit_overrides_.find(consumer_name);
+  CHECK(it != memory_limit_overrides_.end());
+  it->second = percentage;
+
+  ApplyMemoryLimitOverrideForTesting(consumer_name, percentage);
+}
+
+void MemoryCoordinatorPolicyManager::ClearMemoryLimitOverrideForTesting(
+    std::string_view consumer_name) {
+  size_t removed = memory_limit_overrides_.erase(consumer_name);
+  CHECK_EQ(removed, 1u);
+
+  for (auto const& [child_id, host_state] : hosts_) {
     std::vector<MemoryConsumerUpdate> updates;
-    updates.reserve(host_state->groups.size());
     for (auto const& [consumer_id, group_state] : host_state->groups) {
-      if (percentage != group_state->current_limit()) {
-        group_state->SetCurrentLimitForTesting(percentage);
-        updates.push_back({consumer_id, percentage, false});
+      if (group_state->consumer_name() == consumer_name) {
+        if (std::optional<int> new_limit =
+                group_state->SetOverrideLimitForTesting(std::nullopt)) {
+          updates.push_back({consumer_id, *new_limit, false});
+        }
+      }
+    }
+    if (!updates.empty()) {
+      host_state->host->UpdateConsumers(std::move(updates));
+    }
+  }
+}
+
+void MemoryCoordinatorPolicyManager::NotifyReleaseMemoryForTesting(
+    std::string_view consumer_name) {
+  for (auto const& [child_id, host_state] : hosts_) {
+    std::vector<MemoryConsumerUpdate> updates;
+    for (auto const& [consumer_id, group_state] : host_state->groups) {
+      if (group_state->consumer_name() == consumer_name) {
+        updates.push_back({consumer_id, std::nullopt, true});
       }
     }
     if (!updates.empty()) {

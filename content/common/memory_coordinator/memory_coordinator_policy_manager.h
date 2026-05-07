@@ -138,9 +138,25 @@ class CONTENT_EXPORT MemoryCoordinatorPolicyManager
                        std::optional<int> percentage,
                        bool release_memory);
 
-  // For testing only. Notifies all registered consumer groups.
-  void NotifyReleaseMemoryForTesting();
-  void NotifyUpdateMemoryLimitForTesting(int percentage);
+  // Testing utilities ---------------------------------------------------------
+
+  // Adds a memory limit override for the consumer named `consumer_name`.
+  // This override takes precedence over any limits calculated by policies.
+  // Fails a CHECK if an override already exists for this consumer.
+  void AddMemoryLimitOverrideForTesting(std::string_view consumer_name,
+                                        int percentage);
+
+  // Updates an existing memory limit override for the consumer named
+  // `consumer_name`. Fails a CHECK if an override does not exist for this
+  // consumer.
+  void UpdateMemoryLimitOverrideForTesting(std::string_view consumer_name,
+                                           int percentage);
+
+  // Clears the memory limit override for the consumer named `consumer_name`.
+  void ClearMemoryLimitOverrideForTesting(std::string_view consumer_name);
+
+  // Simulates a memory release request for the consumer named `consumer_name`.
+  void NotifyReleaseMemoryForTesting(std::string_view consumer_name);
 
  private:
   class GroupState {
@@ -161,10 +177,12 @@ class CONTENT_EXPORT MemoryCoordinatorPolicyManager
     ProcessType process_type() const { return process_type_; }
     int current_limit() const { return current_limit_; }
 
-    void SetCurrentLimitForTesting(int limit) { current_limit_ = limit; }
+    // Sets a memory limit override for testing. Returns the new effective
+    // limit if it changed.
+    std::optional<int> SetOverrideLimitForTesting(
+        std::optional<int> percentage);
 
    private:
-    // Computes the memory limit based on existing policies.
     int RecomputeMemoryLimit() const;
 
     const std::string consumer_name_;
@@ -176,6 +194,9 @@ class CONTENT_EXPORT MemoryCoordinatorPolicyManager
 
     // The last memory limit that was applied to this group.
     int current_limit_ = base::MemoryConsumer::kDefaultMemoryLimit;
+
+    // The memory limit override set for testing.
+    std::optional<int> override_limit_;
   };
 
   struct HostState {
@@ -193,6 +214,11 @@ class CONTENT_EXPORT MemoryCoordinatorPolicyManager
                                  ChildProcessId child_process_id,
                                  std::vector<MemoryConsumerUpdate> updates);
 
+  // Applies the memory limit override to all registered consumers with the
+  // given name.
+  void ApplyMemoryLimitOverrideForTesting(std::string_view consumer_name,
+                                          int percentage);
+
   base::ObserverList<Observer> observers_;
 
 #if BUILDFLAG(ENABLE_MEMORY_COORDINATOR_INTERNALS)
@@ -202,6 +228,11 @@ class CONTENT_EXPORT MemoryCoordinatorPolicyManager
   base::flat_set<MemoryCoordinatorPolicy*> policies_;
 
   absl::flat_hash_map<ChildProcessId, std::unique_ptr<HostState>> hosts_;
+
+  // Overrides for specific consumers. These take precedence over limits
+  // calculated by policies.
+  base::flat_map<std::string /* consumer_name */, int, std::less<>>
+      memory_limit_overrides_;
 };
 
 }  // namespace content

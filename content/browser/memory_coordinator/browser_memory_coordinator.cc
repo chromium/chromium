@@ -92,14 +92,7 @@ void BrowserMemoryCoordinator::Bind(
 #endif
 }
 
-void BrowserMemoryCoordinator::NotifyReleaseMemoryForTesting() {
-  policy_manager_.NotifyReleaseMemoryForTesting();
-}
 
-void BrowserMemoryCoordinator::NotifyUpdateMemoryLimitForTesting(
-    int percentage) {
-  policy_manager_.NotifyUpdateMemoryLimitForTesting(percentage);
-}
 
 void BrowserMemoryCoordinator::OnHostDisconnected(
     ChildProcessId child_process_id) {

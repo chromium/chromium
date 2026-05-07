@@ -7,6 +7,7 @@
 #include "base/barrier_closure.h"
 #include "base/containers/flat_set.h"
 #include "base/hash/hash.h"
+#include "base/memory_coordinator/mock_memory_consumer.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
@@ -20,6 +21,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/memory_coordinator_browsertest_util.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/common/memory_coordinator/memory_coordinator_test.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -193,6 +195,142 @@ IN_PROC_BROWSER_TEST_F(MemoryCoordinatorBrowserTest, ChildProcessRegistration) {
         /*percentage=*/25, /*release_memory=*/false);
     run_loop.Run();
   }
+}
+
+IN_PROC_BROWSER_TEST_F(MemoryCoordinatorBrowserTest,
+                       ScopedMemoryLimitOverrideTest) {
+  MemoryCoordinatorPolicyManager& manager =
+      BrowserMemoryCoordinator::Get().policy_manager_for_testing();
+  TestPolicy policy(manager);
+  MemoryCoordinatorPolicyRegistration registration(manager, policy);
+
+  base::MemoryConsumerTraits traits(
+      base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
+      base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+      base::MemoryConsumerTraits::InformationRetention::kLossless,
+      base::MemoryConsumerTraits::ExecutionType::kSynchronous,
+      base::MemoryConsumerTraits::ReleaseGCReferences::kYes);
+
+  base::RegisteredMockMemoryConsumer consumer("Consumer", traits);
+
+  // Policy requests 50%.
+  {
+    EXPECT_CALL(consumer, OnUpdateMemoryLimit());
+    policy.UpdateConsumersWithFilter(
+        [](uint32_t consumer_id,
+           std::optional<base::MemoryConsumerTraits> traits,
+           ProcessType process_type,
+           ChildProcessId child_process_id) { return true; },
+        /*percentage=*/50, /*release_memory=*/false);
+    EXPECT_EQ(consumer.memory_limit(), 50);
+  }
+
+  // Scoped override requests 0%.
+  {
+    content::test::ScopedMemoryLimitOverride override("Consumer");
+    EXPECT_EQ(consumer.memory_limit(), 50);
+
+    EXPECT_CALL(consumer, OnUpdateMemoryLimit());
+    override.SetLimit(0);
+    EXPECT_EQ(consumer.memory_limit(), 0);
+
+    // Expect the limit to revert back to 50% upon scope exit (destruction).
+    EXPECT_CALL(consumer, OnUpdateMemoryLimit());
+  }
+  EXPECT_EQ(consumer.memory_limit(), 50);
+
+  // Test ClearLimit() and NotifyReleaseMemory() explicitly.
+  {
+    content::test::ScopedMemoryLimitOverride override("Consumer");
+    EXPECT_CALL(consumer, OnUpdateMemoryLimit());
+    override.SetLimit(10);
+    EXPECT_EQ(consumer.memory_limit(), 10);
+
+    EXPECT_CALL(consumer, OnReleaseMemory());
+    override.NotifyReleaseMemory();
+
+    EXPECT_CALL(consumer, OnUpdateMemoryLimit());
+    override.ClearLimit();
+    EXPECT_EQ(consumer.memory_limit(), 50);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(MemoryCoordinatorBrowserTest,
+                       ScopedMemoryLimitOverridePersistenceTest) {
+  MemoryCoordinatorPolicyManager& manager =
+      BrowserMemoryCoordinator::Get().policy_manager_for_testing();
+  TestPolicy policy(manager);
+  MemoryCoordinatorPolicyRegistration registration(manager, policy);
+
+  base::MemoryConsumerTraits traits(
+      base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
+      base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+      base::MemoryConsumerTraits::InformationRetention::kLossless,
+      base::MemoryConsumerTraits::ExecutionType::kSynchronous,
+      base::MemoryConsumerTraits::ReleaseGCReferences::kYes);
+
+  content::test::ScopedMemoryLimitOverride override("Consumer2");
+  override.SetLimit(20);
+
+  // Register consumer AFTER setting the override.
+  // Expect the limit to be applied immediately upon registration (during
+  // construction).
+  base::RegisteredMockMemoryConsumer consumer("Consumer2", traits);
+  EXPECT_EQ(consumer.memory_limit(), 20);
+}
+
+IN_PROC_BROWSER_TEST_F(MemoryCoordinatorBrowserTest,
+                       ScopedMemoryLimitOverrideIsolationTest) {
+  MemoryCoordinatorPolicyManager& manager =
+      BrowserMemoryCoordinator::Get().policy_manager_for_testing();
+  TestPolicy policy(manager);
+  MemoryCoordinatorPolicyRegistration registration(manager, policy);
+
+  base::MemoryConsumerTraits traits(
+      base::MemoryConsumerTraits::EstimatedMemoryUsage::kSmall,
+      base::MemoryConsumerTraits::ReleaseMemoryCost::kRequiresTraversal,
+      base::MemoryConsumerTraits::InformationRetention::kLossless,
+      base::MemoryConsumerTraits::ExecutionType::kSynchronous,
+      base::MemoryConsumerTraits::ReleaseGCReferences::kYes);
+
+  base::RegisteredMockMemoryConsumer consumer1("Consumer1", traits);
+  base::RegisteredMockMemoryConsumer consumer2("Consumer2", traits);
+
+  // Policy requests 50% for all.
+  {
+    EXPECT_CALL(consumer1, OnUpdateMemoryLimit());
+    EXPECT_CALL(consumer2, OnUpdateMemoryLimit());
+    policy.UpdateConsumersWithFilter(
+        [](uint32_t consumer_id,
+           std::optional<base::MemoryConsumerTraits> traits,
+           ProcessType process_type,
+           ChildProcessId child_process_id) { return true; },
+        /*percentage=*/50, /*release_memory=*/false);
+    EXPECT_EQ(consumer1.memory_limit(), 50);
+    EXPECT_EQ(consumer2.memory_limit(), 50);
+  }
+
+  // Override Consumer1 to 20%. Consumer2 should remain at 50%.
+  {
+    content::test::ScopedMemoryLimitOverride override("Consumer1");
+    EXPECT_EQ(consumer1.memory_limit(), 50);
+
+    EXPECT_CALL(consumer1, OnUpdateMemoryLimit());
+    EXPECT_CALL(consumer2, OnUpdateMemoryLimit()).Times(0);
+    override.SetLimit(20);
+    EXPECT_EQ(consumer1.memory_limit(), 20);
+    EXPECT_EQ(consumer2.memory_limit(), 50);
+
+    // Notify release for Consumer1. Consumer2 should not be notified.
+    EXPECT_CALL(consumer1, OnReleaseMemory());
+    EXPECT_CALL(consumer2, OnReleaseMemory()).Times(0);
+    override.NotifyReleaseMemory();
+
+    // Revert override.
+    EXPECT_CALL(consumer1, OnUpdateMemoryLimit());
+  }
+  EXPECT_EQ(consumer1.memory_limit(), 50);
+  EXPECT_EQ(consumer2.memory_limit(), 50);
 }
 
 }  // namespace content

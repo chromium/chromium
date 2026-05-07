@@ -27,6 +27,8 @@ class GlicProfileManager : public ProfileManagerObserver,
                            public ProfileObserver,
                            public base::PassiveMemoryConsumer {
  public:
+  static constexpr char kMemoryConsumerName[] = "GlicProfileManager";
+
   GlicProfileManager();
   ~GlicProfileManager() override;
 
