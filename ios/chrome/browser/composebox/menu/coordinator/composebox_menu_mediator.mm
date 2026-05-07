@@ -129,7 +129,13 @@
         if (activeWebState) {
           web::WebStateID activeWebStateID =
               activeWebState->GetUniqueIdentifier();
-          [self processWebStateIDs:{activeWebStateID} cachedWebStateIDs:{}];
+
+          std::set<web::WebStateID> webStateIDs = _preselection.tabIDs;
+          webStateIDs.insert(activeWebStateID);
+          std::set<web::WebStateID> cachedWebStateIDs =
+              _preselection.cachedWebStateIDs;
+          [self processWebStateIDs:webStateIDs
+                 cachedWebStateIDs:cachedWebStateIDs];
         }
       }
       break;
