@@ -42,13 +42,18 @@ namespace net::device_bound_sessions {
 class SessionStore;
 
 struct DeferredURLRequest {
-  explicit DeferredURLRequest(SessionService::RefreshCompleteCallback callback);
+  DeferredURLRequest(base::WeakPtr<URLRequest> request,
+                     SessionService::RefreshCompleteCallback callback);
   DeferredURLRequest(DeferredURLRequest&& other) noexcept;
 
   DeferredURLRequest& operator=(DeferredURLRequest&& other) noexcept;
 
   ~DeferredURLRequest();
 
+  // A weak pointer to the deferred request. Stored to allow resiliently
+  // selecting a new triggering request if the original triggering request is
+  // canceled during asynchronous key restoration.
+  base::WeakPtr<URLRequest> request;
   base::ElapsedTimer timer;
   SessionService::RefreshCompleteCallback callback;
   bool triggered_refresh = false;

@@ -168,8 +168,9 @@ void LogProactiveRefreshAttempt(
 }  // namespace
 
 DeferredURLRequest::DeferredURLRequest(
+    base::WeakPtr<URLRequest> request,
     SessionService::RefreshCompleteCallback callback)
-    : callback(std::move(callback)) {}
+    : request(std::move(request)), callback(std::move(callback)) {}
 
 DeferredURLRequest::DeferredURLRequest(DeferredURLRequest&& other) noexcept =
     default;
@@ -550,7 +551,7 @@ void SessionServiceImpl::DeferRequestForRefresh(
   // For the first deferring request, create a new vector and add the request.
   auto [it, inserted] = deferred_requests_.try_emplace(session_key);
   // Add the request callback to the deferred list.
-  it->second.emplace_back(std::move(callback));
+  it->second.emplace_back(request.GetWeakPtr(), std::move(callback));
 
   auto* session = GetSession(session_key);
   CHECK(session);
@@ -1258,11 +1259,33 @@ void SessionServiceImpl::RefreshSessionInternal(
     base::WeakPtr<URLRequest> maybe_request,
     const SessionKey& session_key,
     std::optional<unexportable_keys::UnexportableSigningKeyId> key_id) {
-  if (!maybe_request || !key_id) {
+  base::WeakPtr<URLRequest> active_request = std::move(maybe_request);
+  if (!active_request) {
+    // If the original request that triggered key restoration was canceled or
+    // destroyed (for example, during the asynchronous `RestoreSessionKey`
+    // delay), select the next available valid request in the deferred queue to
+    // act as the new triggering request for the DBSC refresh. This prevents
+    // waiter requests from hanging indefinitely.
+    if (auto it = deferred_requests_.find(session_key);
+        it != deferred_requests_.end()) {
+      auto req_it = std::ranges::find_if(
+          it->second, [](const auto& req) { return !!req.request; });
+      if (req_it != it->second.end()) {
+        active_request = req_it->request;
+        req_it->triggered_refresh = true;
+      }
+    }
+  }
+
+  if (!active_request || !key_id) {
+    // TODO(crbug.com/509885112): We should call UnblockDeferredRequests() here
+    // if `active_request` is null to drain the queue of deferred requests
+    // because all the requests have already been canceled. Use a new
+    // `RefreshResult::kCancelled` for this.
     return;
   }
 
-  DbscRequest request(maybe_request.get());
+  DbscRequest request(active_request.get());
 
   net::NetLogSource net_log_source_for_refresh = net::NetLogSource(
       net::NetLogSourceType::URL_REQUEST, net::NetLog::Get()->NextID());
