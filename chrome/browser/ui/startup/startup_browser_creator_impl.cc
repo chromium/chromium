@@ -324,7 +324,7 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(
 #endif
     if (command_line_->HasSwitch(switches::kWindowName)) {
       params.user_title =
-          command_line_->GetSwitchValueASCII(switches::kWindowName);
+          command_line_->GetSwitchValueUTF8(switches::kWindowName);
     }
 
     browser = Browser::Create(params);
