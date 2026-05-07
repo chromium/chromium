@@ -39767,6 +39767,7 @@ should be able to be added at any place in this file.
   <token key="ActionType">
     <variant name="" summary="aggregated"/>
     <variant name=".AvatarButton" summary="Avatar(profile) button"/>
+    <variant name=".BatterySaverButton" summary="Battery Saver button"/>
     <variant name=".ChromeLabsButton" summary="Chrome Labs button"/>
     <variant name=".DownloadButton" summary="Download button"/>
     <variant name=".ExtensionsMenuButton" summary="Extensions button"/>
