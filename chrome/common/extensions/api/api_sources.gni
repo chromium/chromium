@@ -118,7 +118,7 @@ if (enable_extensions) {
       "enterprise_platform_keys_internal.webidl",
       "enterprise_platform_keys_private.json",
       "file_manager_private.idl",
-      "file_manager_private_internal.idl",
+      "file_manager_private_internal.webidl",
       "file_system_provider.idl",
       "file_system_provider_internal.idl",
       "image_loader_private.idl",

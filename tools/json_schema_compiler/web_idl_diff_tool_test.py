@@ -52,6 +52,8 @@ _CONVERTED_SCHEMAS = [
     ('automation_internal.idl', 'automation_internal.webidl'),
     ('automation.idl', 'automation.webidl'),
     ('feedback_private.idl', 'feedback_private.webidl'),
+    ('file_manager_private_internal.idl',
+     'file_manager_private_internal.webidl'),
     ('media_perception_private.idl', 'media_perception_private.webidl'),
     ('mojo_private.idl', 'mojo_private.webidl'),
     ('networking_onc.idl', 'networking_onc.webidl'),
