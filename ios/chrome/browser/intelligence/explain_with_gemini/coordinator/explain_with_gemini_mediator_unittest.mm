@@ -315,3 +315,79 @@ TEST_F(ExplainWithGeminiMediatorTest, AddItem_InvalidSelection) {
     EXPECT_EQ(items.count, 0u);
   }
 }
+
+// Tests that no action is added when the selection length is less than
+// MinTextLength.
+TEST_F(ExplainWithGeminiMediatorTest, AddItem_BelowMinLength) {
+  @autoreleasepool {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeaturesAndParameters(
+        {{kPageActionMenu, {}},
+         {kExplainGeminiEditMenu,
+          {{"PositionForExplainGeminiEditMenu", "1"},
+           {"ExplainGeminiEditMenuMinTextLength", "20"}}}},
+        {});
+
+    id partialMock = OCMPartialMock(mediator_);
+    OCMStub(
+        [partialMock canPerformExplainWithGeminiInWebState:web_state_.get()])
+        .andReturn(YES);
+
+    WebSelectionResponse* response =
+        [[WebSelectionResponse alloc] initWithSelectedText:@"Short"
+                                                sourceView:nil
+                                                sourceRect:CGRectZero
+                                                     valid:YES];
+
+    __block BOOL completionCalled = NO;
+    __block NSArray* items = nil;
+
+    [partialMock addItemWithResponse:response
+                          completion:^(NSArray* result) {
+                            completionCalled = YES;
+                            items = result;
+                          }
+                            webState:web_state_.get()];
+
+    EXPECT_TRUE(completionCalled);
+    EXPECT_EQ(items.count, 0u);
+  }
+}
+
+// Tests that action is added when the selection length is greater than or equal
+// to MinTextLength.
+TEST_F(ExplainWithGeminiMediatorTest, AddItem_AboveMinLength) {
+  @autoreleasepool {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeaturesAndParameters(
+        {{kPageActionMenu, {}},
+         {kExplainGeminiEditMenu,
+          {{"PositionForExplainGeminiEditMenu", "1"},
+           {"ExplainGeminiEditMenuMinTextLength", "10"}}}},
+        {});
+
+    id partialMock = OCMPartialMock(mediator_);
+    OCMStub(
+        [partialMock canPerformExplainWithGeminiInWebState:web_state_.get()])
+        .andReturn(YES);
+
+    WebSelectionResponse* response =
+        [[WebSelectionResponse alloc] initWithSelectedText:@"Long enough text"
+                                                sourceView:nil
+                                                sourceRect:CGRectZero
+                                                     valid:YES];
+
+    __block BOOL completionCalled = NO;
+    __block NSArray* items = nil;
+
+    [partialMock addItemWithResponse:response
+                          completion:^(NSArray* result) {
+                            completionCalled = YES;
+                            items = result;
+                          }
+                            webState:web_state_.get()];
+
+    EXPECT_TRUE(completionCalled);
+    EXPECT_EQ(items.count, 1u);
+  }
+}

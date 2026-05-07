@@ -107,6 +107,11 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
     web::WebState* capturedWebState = weakWebState.get();
     if (weakSelf && capturedWebState && response.valid &&
         response.selectedText.length) {
+      NSUInteger minLength =
+          static_cast<NSUInteger>(ExplainGeminiEditMenuMinTextLength());
+      if (minLength > 0 && response.selectedText.length < minLength) {
+        return;
+      }
       [weakSelf triggerExplainWithGeminiForText:response.selectedText
                                        webState:capturedWebState];
     }
@@ -151,6 +156,12 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
     return;
   }
   NSString* text = response.selectedText;
+  NSUInteger minLength =
+      static_cast<NSUInteger>(ExplainGeminiEditMenuMinTextLength());
+  if (minLength > 0 && text.length < minLength) {
+    completion(@[]);
+    return;
+  }
   if ([[text
           stringByTrimmingCharactersInSet:[NSCharacterSet
                                               whitespaceAndNewlineCharacterSet]]

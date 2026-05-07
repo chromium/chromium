@@ -112,6 +112,7 @@ BASE_DECLARE_FEATURE(kBWGPromoConsent);
 BASE_DECLARE_FEATURE(kExplainGeminiEditMenu);
 
 extern const char kExplainGeminiEditMenuParams[];
+extern const char kExplainGeminiEditMenuMinTextLengthParam[];
 
 // Holds the position of Explain Gemini button in the EditMenu.
 enum class PositionForExplainGeminiEditMenu {
@@ -122,6 +123,10 @@ enum class PositionForExplainGeminiEditMenu {
 
 // Returns the position of Explain Gemini in the EditMenu.
 PositionForExplainGeminiEditMenu ExplainGeminiEditMenuPosition();
+
+// Returns the minimum text length requirement for Explain Gemini in Edit Menu
+// to be shown. If value is 0, there is no minimum length requirement.
+int ExplainGeminiEditMenuMinTextLength();
 
 // Feature flag to enable Precise Location in Gemini Settings Menu.
 BASE_DECLARE_FEATURE(kGeminiPreciseLocation);
