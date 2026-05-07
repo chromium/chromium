@@ -136,7 +136,8 @@ void LaunchQueue::DidFinishNavigation(content::NavigationHandle* handle) {
   }
 
   if (pending_navigation_) {
-    if (!delegate_->IsInScope(queue_.front(), handle->GetURL())) {
+    if (!handle->HasCommitted() || handle->IsErrorPage() ||
+        !delegate_->IsInScope(queue_.front(), handle->GetURL())) {
       Reset();
       return;
     }

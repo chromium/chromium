@@ -221,6 +221,7 @@ source_set("unit_tests") {
     "install_result_code_unittest.cc",
     "installable/installable_evaluator_unittest.cc",
     "installable/installable_task_queue_unittest.cc",
+    "launch_queue/launch_queue_unittest.cc",
     "pwa_install_path_tracker_unittest.cc",
     "web_app_url_config_unittest.cc",
     "web_contents/web_app_url_loader_unittest.cc",
