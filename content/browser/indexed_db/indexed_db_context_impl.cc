@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "base/barrier_callback.h"
+#include "base/barrier_closure.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
@@ -853,24 +854,40 @@ IndexedDBContextImpl::~IndexedDBContextImpl() {
   // other callbacks) so that `ForceClose()` below doesn't mutate
   // `bucket_contexts_` while it's being iterated.
   weak_factory_.InvalidateWeakPtrs();
+
+  base::RepeatingClosure barrier;
+  if (shutdown_timer_) {
+    barrier = base::BarrierClosure(
+        bucket_contexts_.size(), base::BindOnce(
+                                     [](base::ElapsedTimer shutdown_timer) {
+                                       base::UmaHistogramTimes(
+                                           "IndexedDB.ContextShutdownDuration2",
+                                           shutdown_timer.Elapsed());
+                                     },
+                                     *shutdown_timer_));
+  }
+
   for (auto& [_, context] : bucket_contexts_) {
-    context.AsyncCall(&BucketContext::ForceClose).WithArgs(/*doom=*/false);
+    if (barrier) {
+      context.AsyncCall(&BucketContext::ForceClose)
+          .WithArgs(/*doom=*/false)
+          .Then(barrier);
+    } else {
+      context.AsyncCall(&BucketContext::ForceClose).WithArgs(/*doom=*/false);
+    }
   }
   bucket_contexts_.clear();
   task_runner_limiters_.clear();
-
-  if (!in_memory()) {
-    base::UmaHistogramTimes("IndexedDB.ContextShutdownDuration",
-                            base::TimeTicks::Now() - shutdown_start_time_);
-  }
 }
 
 void IndexedDBContextImpl::ShutdownOnIDBSequence(
-    base::TimeTicks start_time,
+    base::ElapsedTimer shutdown_timer,
     base::OnceClosure purge_origins) {
   DCHECK(idb_task_runner()->RunsTasksInCurrentSequence());
 
-  shutdown_start_time_ = start_time;
+  if (!in_memory()) {
+    shutdown_timer_ = shutdown_timer;
+  }
 
   if (force_keep_session_state_ || origins_to_purge_on_shutdown_.empty() ||
       in_memory()) {
@@ -915,7 +932,7 @@ void IndexedDBContextImpl::Shutdown(
   context_ptr->idb_task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(&IndexedDBContextImpl::ShutdownOnIDBSequence,
-                     base::Unretained(context_ptr), base::TimeTicks::Now(),
+                     base::Unretained(context_ptr), base::ElapsedTimer(),
                      base::BindOnce(&IndexedDBContextImpl::PurgeOrigins,
                                     std::move(context))));
 }

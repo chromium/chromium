@@ -10,6 +10,8 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
@@ -185,6 +187,44 @@ TEST_F(IndexedDBContextTest, DontChokeOnBadLegacyFiles) {
   base::RunLoop run_loop;
   context()->ForceInitializeFromFilesForTesting(run_loop.QuitClosure());
   run_loop.Run();
+}
+
+TEST_F(IndexedDBContextTest, ShutdownDurationHistogramWithBucket) {
+  base::HistogramTester histogram_tester;
+  InitBucketContext();
+  IndexedDBContextImpl::Shutdown(std::move(context_));
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester.GetAllSamples("IndexedDB.ContextShutdownDuration2")
+               .size() == 1u;
+  }));
+}
+
+TEST_F(IndexedDBContextTest, ShutdownDurationHistogramWithoutBucket) {
+  base::HistogramTester histogram_tester;
+
+  // `RunPostedTasks()` doesn't work after `Shutdown()`.
+  base::RunLoop loop;
+  auto runner = context_->idb_task_runner();
+  IndexedDBContextImpl::Shutdown(std::move(context_));
+  runner->PostTask(FROM_HERE, loop.QuitClosure());
+  loop.Run();
+
+  histogram_tester.ExpectTotalCount("IndexedDB.ContextShutdownDuration2", 1);
+}
+
+TEST_F(IndexedDBContextTest, ShutdownDurationHistogramNotRecordedForInMemory) {
+  base::HistogramTester histogram_tester;
+  SetUpInMemoryContext();
+  InitBucketContext();
+
+  // `RunPostedTasks()` doesn't work after `Shutdown()`.
+  base::RunLoop loop;
+  auto runner = context_->idb_task_runner();
+  IndexedDBContextImpl::Shutdown(std::move(context_));
+  runner->PostTask(FROM_HERE, loop.QuitClosure());
+  loop.Run();
+
+  histogram_tester.ExpectTotalCount("IndexedDB.ContextShutdownDuration2", 0);
 }
 
 }  // namespace

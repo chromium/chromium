@@ -17,6 +17,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/sequence_bound.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/services/storage/privileged/mojom/indexed_db_client_state_checker.mojom.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control.mojom.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control_test.mojom.h"
@@ -185,7 +186,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
   // Always run immediately before destruction. `purge_origins` owns `this` and
   // should be run only if it's necessary to delete data for some origins before
   // destruction of `this`.
-  void ShutdownOnIDBSequence(base::TimeTicks start_time,
+  void ShutdownOnIDBSequence(base::ElapsedTimer shutdown_timer,
                              base::OnceClosure purge_origins);
   void PurgeOrigins();
 
@@ -355,9 +356,8 @@ class CONTENT_EXPORT IndexedDBContextImpl
   // add it to a pending set and actually begin once the context is created.
   std::set<storage::BucketId> pending_bucket_recording_;
 
-  // When `Shutdown()` was called, or null if it's not been called. Used for
-  // UMA.
-  base::TimeTicks shutdown_start_time_;
+  // Timer started when `Shutdown()` was called. Used for UMA.
+  std::optional<base::ElapsedTimer> shutdown_timer_;
 
   // weak_factory_->GetWeakPtr() may be used on any thread, but the resulting
   // pointer must only be checked/used on idb_task_runner_.

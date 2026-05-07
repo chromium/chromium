@@ -417,15 +417,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IndexedDB.ContextShutdownDuration" units="ms"
+<histogram name="IndexedDB.ContextShutdownDuration2" units="ms"
     expires_after="2026-10-02">
   <owner>leimy@chromium.org</owner>
   <owner>evanstade@microsoft.com</owner>
+  <owner>abhishek.shanthkumar@microsoft.com</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>
     Logs the time it takes to completely shut down `IndexedDBContextImpl`,
-    starting from when it's requested on the UI thread to when destruction is
-    completed on the IDB task runner.
+    starting from when it's requested on the UI thread to when the last bucket's
+    destruction is completed. This is only recorded for regular (not incognito)
+    profiles.
   </summary>
 </histogram>
 
