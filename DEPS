@@ -3720,7 +3720,7 @@ deps = {
 
   'src/components/accessibility_annotator/core/resources/internal': {
       'url': Var('chrome_git') + '/chrome/components/accessibility_annotator/core/resources/internal.git' + '@' +
-        'ab93daa6614e1aa4d4789423bb5a796d6727941b',
+        '93e2b65b210aecb1fa9421c52289b5194dc43e6e',
       'condition': 'checkout_src_internal',
   },
 
