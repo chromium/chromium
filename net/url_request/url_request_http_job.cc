@@ -123,6 +123,12 @@ namespace net {
 
 namespace {
 
+bool ShouldForceIgnoreSiteForCookies(const URLRequest& request) {
+  NetworkDelegate* network_delegate = request.network_delegate();
+  return network_delegate &&
+         network_delegate->ShouldForceIgnoreSiteForCookies(request);
+}
+
 base::DictValue FirstPartySetMetadataNetLogParams(
     const FirstPartySetMetadata& first_party_set_metadata,
     const int64_t* const fps_cache_filter) {
@@ -807,7 +813,7 @@ void URLRequestHttpJob::AddCookieHeaderAndStart() {
   DCHECK(cookie_store);
   DCHECK(ShouldAddCookieHeader());
   bool force_ignore_site_for_cookies =
-      request_->force_ignore_site_for_cookies();
+      ShouldForceIgnoreSiteForCookies(*request_);
   if (cookie_store->cookie_access_delegate() &&
       cookie_store->cookie_access_delegate()->ShouldIgnoreSameSiteRestrictions(
           request_->url(), request_->site_for_cookies(),
@@ -1034,7 +1040,7 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
   std::optional<base::Time> server_time = GetResponseHeaders()->GetDateValue();
 
   bool force_ignore_site_for_cookies =
-      request_->force_ignore_site_for_cookies();
+      ShouldForceIgnoreSiteForCookies(*request_);
   if (cookie_store->cookie_access_delegate() &&
       cookie_store->cookie_access_delegate()->ShouldIgnoreSameSiteRestrictions(
           request_->url(), request_->site_for_cookies(),

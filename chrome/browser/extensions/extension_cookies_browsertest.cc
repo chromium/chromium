@@ -169,7 +169,7 @@ class ExtensionCookiesTest : public ExtensionBrowserTest {
 //  2) the site_for_cookies is an extension with access to the requested URL,
 //     and the request initiator (if it exists) is same-site to the requested
 //     URL and also the extension has access to it.
-// See URLLoader::ShouldForceIgnoreSiteForCookies().
+// See url_loader_util::ShouldForceIgnoreSiteForCookies().
 //
 // The test fixture param is whether or not legacy SameSite semantics are
 // enabled (i.e, whether SameSite-by-default cookies and SameSite=None
@@ -494,7 +494,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
 // In this test, the effective extension permissions are changing at runtime
 // - the test verifies that the changing permissions are correctly propagated
 // into the SameSite cookie decisions (e.g. in
-// network::URLLoader::ShouldForceIgnoreSiteForCookies).
+// network::url_loader_util::ShouldForceIgnoreSiteForCookies).
 IN_PROC_BROWSER_TEST_P(ExtensionSameSiteCookiesTest,
                        MAYBE_ActiveTabPermissions_BackgroundPage) {
   TestExtensionDir extension_dir;

@@ -60,7 +60,7 @@ class NET_EXPORT DbscRequest {
   const NetLogWithSource& net_log() const;
   const std::optional<url::Origin>& initiator() const;
   const URLRequestContext* context() const;
-  bool force_ignore_site_for_cookies() const;
+  bool ShouldForceIgnoreSiteForCookies() const;
   const SiteForCookies& site_for_cookies() const;
   const IsolationInfo& isolation_info() const;
   bool force_main_frame_for_same_site_cookies() const;

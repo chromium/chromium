@@ -341,15 +341,6 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
     return cookie_partition_key_;
   }
 
-  // Indicate whether SameSite cookies should be attached even though the
-  // request is cross-site.
-  bool force_ignore_site_for_cookies() const {
-    return force_ignore_site_for_cookies_;
-  }
-  void set_force_ignore_site_for_cookies(bool attach) {
-    force_ignore_site_for_cookies_ = attach;
-  }
-
   // Force allow SameSite=Lax cookies, even when they normally wouldn't be
   // sent because the request method is unsafe.
   bool ignore_unsafe_method_for_same_site_lax() const {
@@ -1148,7 +1139,6 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // Unpartitioned cookies are unaffected by this field.
   std::optional<CookiePartitionKey> cookie_partition_key_ = std::nullopt;
 
-  bool force_ignore_site_for_cookies_ = false;
   bool ignore_unsafe_method_for_same_site_lax_ = false;
   bool force_main_frame_for_same_site_cookies_ = false;
   bool is_shared_resource_ = false;

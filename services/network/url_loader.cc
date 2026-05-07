@@ -2592,66 +2592,6 @@ void URLLoader::StartReading() {
   ReadMore();
 }
 
-bool URLLoader::ShouldForceIgnoreSiteForCookies(
-    const ResourceRequest& request) {
-  // Ignore site for cookies in requests from an initiator covered by the
-  // same-origin-policy exclusions in `origin_access_list_` (typically requests
-  // initiated by Chrome Extensions).
-  if (request.request_initiator.has_value() &&
-      cors::OriginAccessList::AccessState::kAllowed ==
-          origin_access_list_->CheckAccessState(
-              request.request_initiator.value(), request.url)) {
-    return true;
-  }
-
-  // Convert `site_for_cookies` into an origin (an opaque origin if
-  // `net::SiteForCookies::IsNull()` returns true).
-  //
-  // Note that `site_for_cookies` is a _site_ rather than an _origin_, but for
-  // Chrome Extensions the _site_ and _origin_ of a host are the same extension
-  // id.  Thanks to this, for Chrome Extensions, we can pass a _site_ into
-  // OriginAccessChecks (which normally expect an _origin_).
-  url::Origin site_origin =
-      url::Origin::Create(request.site_for_cookies.RepresentativeUrl());
-
-  // If `site_for_cookies` represents an origin that is granted access to the
-  // initiator and the target by `origin_access_list_` (typically such
-  // `site_for_cookies` represents a Chrome Extension), then we also should
-  // force ignoring of site for cookies if the initiator and the target are
-  // same-site.
-  //
-  // Ideally we would walk up the frame tree and check that each ancestor is
-  // first-party to the main frame (treating the `origin_access_list_`
-  // exceptions as "first-party").  But walking up the tree is not possible in
-  // //services/network and so we make do with just checking the direct
-  // initiator of the request.
-  //
-  // We also check same-siteness between the initiator and the requested URL,
-  // because setting `force_ignore_site_for_cookies` to true causes Strict
-  // cookies to be attached, and having the initiator be same-site to the
-  // request URL is a requirement for Strict cookies (see
-  // net::cookie_util::ComputeSameSiteContext).
-  if (!site_origin.opaque() && request.request_initiator.has_value()) {
-    bool site_can_access_target =
-        cors::OriginAccessList::AccessState::kAllowed ==
-        origin_access_list_->CheckAccessState(site_origin, request.url);
-    bool site_can_access_initiator =
-        cors::OriginAccessList::AccessState::kAllowed ==
-        origin_access_list_->CheckAccessState(
-            site_origin, request.request_initiator->GetURL());
-    net::SiteForCookies site_of_initiator =
-        net::SiteForCookies::FromOrigin(request.request_initiator.value());
-    bool are_initiator_and_target_same_site =
-        site_of_initiator.IsFirstParty(request.url);
-    if (site_can_access_initiator && site_can_access_target &&
-        are_initiator_and_target_same_site) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
 bool URLLoader::ShouldSendTransferSizeUpdated() const {
   return devtools_request_id() || url_request_->ad_tagged();
 }

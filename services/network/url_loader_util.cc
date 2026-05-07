@@ -473,9 +473,6 @@ void ConfigureUrlRequest(const ResourceRequest& request,
                          SharedResourceChecker& shared_resource_checker) {
   url_request.set_method(request.method);
   url_request.set_site_for_cookies(request.site_for_cookies);
-  url_request.set_force_ignore_site_for_cookies(ShouldForceIgnoreSiteForCookies(
-      request.url, request.request_initiator, request.site_for_cookies,
-      origin_access_list));
   if (!request.navigation_redirect_chain.empty()) {
     DCHECK_EQ(request.mode, mojom::RequestMode::kNavigate);
     url_request.SetURLChain(request.navigation_redirect_chain);

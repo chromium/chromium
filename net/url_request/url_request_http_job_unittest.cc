@@ -2391,6 +2391,13 @@ bool CreateAndSetCookie(CookieStore* cs,
   return callback.result().status.IsInclude();
 }
 
+class SameSiteBypassNetworkDelegate : public TestNetworkDelegate {
+ public:
+  bool OnShouldForceIgnoreSiteForCookies(const URLRequest&) override {
+    return true;
+  }
+};
+
 void RunRequest(URLRequestContext* context, const GURL& url) {
   TestDelegate delegate;
   std::unique_ptr<URLRequest> request = context->CreateRequest(
@@ -2940,6 +2947,52 @@ TEST_F(URLRequestHttpJobTest, IgnoreUnsafeMethodForSameSiteLax) {
     req->Start();
     delegate.RunUntilComplete();
     EXPECT_EQ("name=value", delegate.data_received());
+  }
+}
+
+TEST_F(URLRequestHttpJobTest, ForceIgnoreSiteForCookiesFromNetworkDelegate) {
+  EmbeddedTestServer https_test(EmbeddedTestServer::TYPE_HTTPS);
+  https_test.AddDefaultHandlers(base::FilePath());
+  ASSERT_TRUE(https_test.Start());
+
+  auto context_builder = CreateTestURLRequestContextBuilder();
+  context_builder->SetCookieStore(
+      std::make_unique<CookieMonster>(/*store=*/nullptr, /*net_log=*/nullptr));
+  context_builder->set_network_delegate(
+      std::make_unique<SameSiteBypassNetworkDelegate>());
+  auto context = context_builder->Build();
+
+  const url::Origin kCrossSiteOrigin =
+      url::Origin::Create(GURL("https://www.toplevelsite.com"));
+  auto create_cross_site_request = [&](const GURL& url,
+                                       TestDelegate& delegate) {
+    std::unique_ptr<URLRequest> req = context->CreateRequest(
+        url, DEFAULT_PRIORITY, &delegate, TRAFFIC_ANNOTATION_FOR_TESTS);
+    req->set_site_for_cookies(SiteForCookies::FromOrigin(kCrossSiteOrigin));
+    req->set_initiator(kCrossSiteOrigin);
+    return req;
+  };
+
+  {
+    TestDelegate delegate;
+    std::unique_ptr<URLRequest> req = create_cross_site_request(
+        https_test.GetURL(
+            "/set-cookie?strict=value;SameSite=Strict;Secure;Path=/"),
+        delegate);
+    req->Start();
+    delegate.RunUntilComplete();
+    EXPECT_THAT(delegate.request_status(), IsOk());
+  }
+
+  {
+    TestDelegate delegate;
+    std::unique_ptr<URLRequest> req = create_cross_site_request(
+        https_test.GetURL("/echoheader?Cookie"), delegate);
+    req->Start();
+    delegate.RunUntilComplete();
+
+    EXPECT_THAT(delegate.request_status(), IsOk());
+    EXPECT_EQ("strict=value", delegate.data_received());
   }
 }
 

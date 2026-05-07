@@ -577,8 +577,6 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
     request.set_site_for_cookies(isolation_info_.site_for_cookies());
     request.set_initiator(original_request_initiator_);
     request.set_isolation_info(isolation_info_);
-    request.set_force_ignore_site_for_cookies(
-        context_->network_delegate()->ShouldForceIgnoreSiteForCookies(request));
 
     if (IsForRefreshRequest()) {
       request.SetExtraRequestHeaderByName(
