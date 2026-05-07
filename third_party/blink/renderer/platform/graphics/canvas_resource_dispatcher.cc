@@ -184,11 +184,13 @@ bool CanvasResourceDispatcher::PrepareFrame(
   auto exported_resource =
       base::MakeRefCounted<ExportedCanvasResource>(std::move(canvas_resource));
 
-  auto next_resource_id = id_generator_.GenerateNextId();
+  // This takes another ref and sends it to the placeholder. The
+  // ExternalCanvasResource will be destroyed when both display compositor and
+  // placeholder are done with it, returning underlying memory to the owner.
+  PostImageToPlaceholderIfNotBlocked(exported_resource);
 
   // For frameless canvas, we don't get a valid frame_sink_id and should drop.
   if (!frame_sink_id_.is_valid()) {
-    PostImageToPlaceholderIfNotBlocked(std::move(exported_resource));
     return false;
   }
 
@@ -236,15 +238,10 @@ bool CanvasResourceDispatcher::PrepareFrame(
       &resource,
       /*needs_verified_synctoken=*/true);
 
-  const viz::ResourceId resource_id = next_resource_id;
+  const viz::ResourceId resource_id = id_generator_.GenerateNextId();
   resource.id = resource_id;
 
   const gfx::Size resource_size = resource.GetSize();
-
-  // This takes another ref and sends it to the placeholder. The
-  // ExternalCanvasResource will be destroyed when both display compositor and
-  // placeholder is done with it, returning underlying memory to the owner.
-  PostImageToPlaceholderIfNotBlocked(exported_resource);
 
   // Now store our ref to ensure that the resource remains valid for the
   // duration of the compositor's usage (we'll drop our ref when the compositor
