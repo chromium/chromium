@@ -202,6 +202,10 @@ next expert.
   *In-Memory Validation:* If an `EPHEMERAL` mode is active, the Orchestrator
   MUST strictly validate incoming JSON payloads against `magi_schema.json` in
   memory before proceeding, as disk-based presubmit checks will be bypassed.
+  If JSON parsing fails (e.g., malformed JSON), the Orchestrator SHOULD NOT
+  request a retry from the same sub-agent. Instead, it SHOULD discard that
+  sub-agent instance, spawn a new one with a fresh context window, and replay
+  the prompt.
 - **The Recruiter (Talent Acquisition):** If the Engineering Manager determines
   that a required expertise is lacking in the current catalog, they MUST invoke
   a "Recruiter" sub-agent. The Recruiter is responsible for dynamically
@@ -288,7 +292,8 @@ agent) performs the following in a single turn:
     only becomes `true` in `state_block.magi.json#checklist` if all reviewers
     evaluating it set it to `true`). Append any `unlisted_issues_found` to the
     historical logs. Update `state_block.magi.json` with the new iteration and
-    stall count.
+    stall count. (The stall count MUST only be incremented if the iteration
+    fails to resolve any checklist items or Actionable Constraints).
 3.  **Constraint Generation:** Save a strict list of Actionable Constraints
     (generated from all `false` checklist keys and `unlisted_issues_found`) and
     the current `review_mode` to `constraints.magi.[iteration].json`.
@@ -304,10 +309,11 @@ If `review_mode == CONSENSUS`, use the granular relay:
     `unlisted_issues_found`), `review_mode: "CONSENSUS"`, and
     `next_phase: TPM_UPDATE` to `constraints.magi.[iteration].json` on disk.
 2.  **The Technical Program Manager:** Reads `constraints.magi.[iteration].json`
-    and updates `state_block.magi.json` conforming to `magi_schema.json`. Checks
-    for "flip-flopping" (e.g., Constraint 1 violates a constraint from Round 1).
-    Set `next_phase` to `SYNTHESIS` if more work is needed, otherwise
-    `TRAINING`.
+    and updates `state_block.magi.json` conforming to `magi_schema.json`. The
+    stall count MUST only be incremented if the iteration fails to resolve
+    any checklist items or Actionable Constraints. Checks for "flip-flopping"
+    (e.g., Constraint 1 violates a constraint from Round 1). Set `next_phase`
+    to `SYNTHESIS` if more work is needed, otherwise `TRAINING`.
     **Deadlock API:** If `Stall Count` exceeds 3, the Technical Program
     Manager MUST output a valid `state_block.magi.json` with
     `next_phase: DEADLOCK` and append a structured deadlock report (Core
@@ -352,7 +358,8 @@ persona's checklist exceed 10 items. If adding a new constraint exceeds this
 limit, the Trainer MUST "fork" the persona using a nested directory structure
 representing `[category]/[domain]/[specialty].json` (e.g., split
 `core/security.json` into `core/security/memory.json` and
-`core/security/network.json`). Do not use flat files with underscores. Migrate
+`core/security/network.json`). Do not use flat files with underscores. The
+directory depth MUST NOT exceed 5 levels (counting from `/personas`). Migrate
 the relevant checks and update `PERSONAS.md`.
 The Trainer SHOULD signal `next_phase: VALIDATION`.
 
