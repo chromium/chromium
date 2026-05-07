@@ -8,9 +8,9 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/menu/menu_runner.h"
 
-TabContextMenuController::TabContextMenuController(int index,
+TabContextMenuController::TabContextMenuController(tabs::TabHandle tab_handle,
                                                    Delegate* delegate)
-    : tab_index_(index), delegate_(delegate) {}
+    : tab_handle_(tab_handle), delegate_(delegate) {}
 
 TabContextMenuController::~TabContextMenuController() = default;
 
@@ -45,8 +45,11 @@ bool TabContextMenuController::IsCommandIdChecked(int command_id) const {
 }
 
 bool TabContextMenuController::IsCommandIdEnabled(int command_id) const {
-  return delegate_->IsContextMenuCommandEnabled(
-      tab_index_, static_cast<TabStripModel::ContextMenuCommand>(command_id));
+  if (auto* tab = tab_handle_.Get()) {
+    return delegate_->IsContextMenuCommandEnabled(
+        tab, static_cast<TabStripModel::ContextMenuCommand>(command_id));
+  }
+  return false;
 }
 
 bool TabContextMenuController::IsCommandIdAlerted(int command_id) const {
@@ -55,9 +58,11 @@ bool TabContextMenuController::IsCommandIdAlerted(int command_id) const {
 }
 
 void TabContextMenuController::ExecuteCommand(int command_id, int event_flags) {
-  delegate_->ExecuteContextMenuCommand(
-      tab_index_, static_cast<TabStripModel::ContextMenuCommand>(command_id),
-      event_flags);
+  if (auto* tab = tab_handle_.Get()) {
+    delegate_->ExecuteContextMenuCommand(
+        tab, static_cast<TabStripModel::ContextMenuCommand>(command_id),
+        event_flags);
+  }
 }
 
 bool TabContextMenuController::GetAcceleratorForCommandId(

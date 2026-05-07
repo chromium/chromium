@@ -517,8 +517,8 @@ void BrowserTabStripController::ShowContextMenuForTab(
     return;
   }
 
-  context_menu_controller_ =
-      std::make_unique<TabContextMenuController>(tab_index.value(), this);
+  context_menu_controller_ = std::make_unique<TabContextMenuController>(
+      model_->GetTabAtIndex(tab_index.value())->GetHandle(), this);
 
   auto model = menu_model_factory_->Create(
       context_menu_controller_.get(),
@@ -909,9 +909,10 @@ bool BrowserTabStripController::IsContextMenuCommandChecked(
 }
 
 bool BrowserTabStripController::IsContextMenuCommandEnabled(
-    int index,
+    tabs::TabInterface* tab,
     TabStripModel::ContextMenuCommand command_id) {
-  return model_->IsContextMenuCommandEnabled(index, command_id);
+  return model_->IsContextMenuCommandEnabled(model_->GetIndexOfTab(tab),
+                                             command_id);
 }
 
 bool BrowserTabStripController::IsContextMenuCommandAlerted(
@@ -920,10 +921,10 @@ bool BrowserTabStripController::IsContextMenuCommandAlerted(
 }
 
 void BrowserTabStripController::ExecuteContextMenuCommand(
-    int index,
+    tabs::TabInterface* tab,
     TabStripModel::ContextMenuCommand command_id,
     int event_flags) {
-  model_->ExecuteContextMenuCommand(index, command_id);
+  model_->ExecuteContextMenuCommand(model_->GetIndexOfTab(tab), command_id);
 }
 
 bool BrowserTabStripController::GetContextMenuAccelerator(

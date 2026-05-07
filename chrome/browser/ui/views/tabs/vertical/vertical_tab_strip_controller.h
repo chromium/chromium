@@ -110,11 +110,11 @@ class VerticalTabStripController : public TabContextMenuController::Delegate {
   bool IsContextMenuCommandChecked(
       TabStripModel::ContextMenuCommand command_id) override;
   bool IsContextMenuCommandEnabled(
-      int index,
+      tabs::TabInterface* tab,
       TabStripModel::ContextMenuCommand command_id) override;
   bool IsContextMenuCommandAlerted(
       TabStripModel::ContextMenuCommand command_id) override;
-  void ExecuteContextMenuCommand(int index,
+  void ExecuteContextMenuCommand(tabs::TabInterface* tab,
                                  TabStripModel::ContextMenuCommand command_id,
                                  int event_flags) override;
   bool GetContextMenuAccelerator(int command_id,

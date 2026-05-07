@@ -9,6 +9,7 @@
 #include "base/functional/callback.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "components/tabs/public/mock_tab_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -33,7 +34,8 @@ class MockTabContextMenuControllerDelegate
               (override));
   MOCK_METHOD(bool,
               IsContextMenuCommandEnabled,
-              (int index, TabStripModel::ContextMenuCommand command_id),
+              (tabs::TabInterface * tab,
+               TabStripModel::ContextMenuCommand command_id),
               (override));
   MOCK_METHOD(bool,
               IsContextMenuCommandAlerted,
@@ -41,7 +43,7 @@ class MockTabContextMenuControllerDelegate
               (override));
   MOCK_METHOD(void,
               ExecuteContextMenuCommand,
-              (int index,
+              (tabs::TabInterface * tab,
                TabStripModel::ContextMenuCommand command_id,
                int event_flags),
               (override));
@@ -58,11 +60,13 @@ class TabContextMenuControllerTest : public testing::Test {
 
   void SetUp() override {
     testing::Test::SetUp();
-    controller_ =
-        std::make_unique<TabContextMenuController>(0, &mock_delegate_);
+    tab_ = std::make_unique<tabs::MockTabInterface>();
+    controller_ = std::make_unique<TabContextMenuController>(tab_->GetHandle(),
+                                                             &mock_delegate_);
   }
 
  protected:
+  std::unique_ptr<tabs::TabInterface> tab_;
   std::unique_ptr<TabContextMenuController> controller_;
   testing::StrictMock<MockTabContextMenuControllerDelegate> mock_delegate_;
 };

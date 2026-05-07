@@ -50,6 +50,7 @@ class TabMenuModel : public ui::SimpleMenuModel {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSwapSplitTabsMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAddNewTabAdjacentMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAddToNewGroupItemIdentifier);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kDuplicateMenuItem);
 
   TabMenuModel(ui::SimpleMenuModel::Delegate* delegate,
                TabMenuModelDelegate* tab_menu_model_delegate,

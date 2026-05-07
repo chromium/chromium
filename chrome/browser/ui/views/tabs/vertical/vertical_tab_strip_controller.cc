@@ -87,7 +87,7 @@ void VerticalTabStripController::ShowContextMenuForNode(
   }
 
   context_menu_controller_ =
-      std::make_unique<TabContextMenuController>(tab_index.value(), this);
+      std::make_unique<TabContextMenuController>(tab->GetHandle(), this);
 
   auto model = menu_model_factory_->Create(
       context_menu_controller_.get(),
@@ -403,9 +403,10 @@ bool VerticalTabStripController::IsContextMenuCommandChecked(
 }
 
 bool VerticalTabStripController::IsContextMenuCommandEnabled(
-    int index,
+    tabs::TabInterface* tab,
     TabStripModel::ContextMenuCommand command_id) {
-  return model_->IsContextMenuCommandEnabled(index, command_id);
+  return model_->IsContextMenuCommandEnabled(model_->GetIndexOfTab(tab),
+                                             command_id);
 }
 
 bool VerticalTabStripController::IsContextMenuCommandAlerted(
@@ -414,10 +415,10 @@ bool VerticalTabStripController::IsContextMenuCommandAlerted(
 }
 
 void VerticalTabStripController::ExecuteContextMenuCommand(
-    int index,
+    tabs::TabInterface* tab,
     TabStripModel::ContextMenuCommand command_id,
     int event_flags) {
-  model_->ExecuteContextMenuCommand(index, command_id);
+  model_->ExecuteContextMenuCommand(model_->GetIndexOfTab(tab), command_id);
 }
 
 bool VerticalTabStripController::GetContextMenuAccelerator(

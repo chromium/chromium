@@ -39,7 +39,7 @@ TabContextMenuAdapterImpl::ShowTabContextMenu(tabs::TabHandle handle,
   }
 
   context_menu_controller_ =
-      std::make_unique<TabContextMenuController>(tab_index, this);
+      std::make_unique<TabContextMenuController>(handle, this);
 
   auto menu_model = std::make_unique<TabMenuModel>(
       context_menu_controller_.get(),
@@ -61,9 +61,10 @@ bool TabContextMenuAdapterImpl::IsContextMenuCommandChecked(
 }
 
 bool TabContextMenuAdapterImpl::IsContextMenuCommandEnabled(
-    int index,
+    tabs::TabInterface* tab,
     TabStripModel::ContextMenuCommand command_id) {
-  return tab_strip_model_->IsContextMenuCommandEnabled(index, command_id);
+  return tab_strip_model_->IsContextMenuCommandEnabled(
+      tab_strip_model_->GetIndexOfTab(tab), command_id);
 }
 
 bool TabContextMenuAdapterImpl::IsContextMenuCommandAlerted(
@@ -72,10 +73,11 @@ bool TabContextMenuAdapterImpl::IsContextMenuCommandAlerted(
 }
 
 void TabContextMenuAdapterImpl::ExecuteContextMenuCommand(
-    int index,
+    tabs::TabInterface* tab,
     TabStripModel::ContextMenuCommand command_id,
     int event_flags) {
-  tab_strip_model_->ExecuteContextMenuCommand(index, command_id);
+  tab_strip_model_->ExecuteContextMenuCommand(
+      tab_strip_model_->GetIndexOfTab(tab), command_id);
 }
 
 bool TabContextMenuAdapterImpl::GetContextMenuAccelerator(

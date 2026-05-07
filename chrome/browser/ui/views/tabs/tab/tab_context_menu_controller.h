@@ -34,12 +34,12 @@ class TabContextMenuController : public ui::SimpleMenuModel::Delegate {
     virtual bool IsContextMenuCommandChecked(
         TabStripModel::ContextMenuCommand command_id) = 0;
     virtual bool IsContextMenuCommandEnabled(
-        int index,
+        tabs::TabInterface* tab,
         TabStripModel::ContextMenuCommand command_id) = 0;
     virtual bool IsContextMenuCommandAlerted(
         TabStripModel::ContextMenuCommand command_id) = 0;
     virtual void ExecuteContextMenuCommand(
-        int index,
+        tabs::TabInterface* tab,
         TabStripModel::ContextMenuCommand command_id,
         int event_flags) = 0;
     virtual bool GetContextMenuAccelerator(int command_id,
@@ -49,7 +49,8 @@ class TabContextMenuController : public ui::SimpleMenuModel::Delegate {
     virtual ~Delegate() = default;
   };
 
-  explicit TabContextMenuController(int index, Delegate* delegate);
+  explicit TabContextMenuController(tabs::TabHandle tab_handle,
+                                    Delegate* delegate);
 
   ~TabContextMenuController() override;
 
@@ -79,7 +80,7 @@ class TabContextMenuController : public ui::SimpleMenuModel::Delegate {
  private:
   std::unique_ptr<ui::SimpleMenuModel> model_;
   std::unique_ptr<views::MenuRunner> menu_runner_;
-  const int tab_index_;
+  tabs::TabHandle tab_handle_;
   raw_ptr<Delegate> delegate_;
 };
 
