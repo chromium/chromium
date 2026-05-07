@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_AWC_ADDITIONAL_WINDOWING_CONTROLS_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -15,7 +16,7 @@ class LocalDOMWindow;
 class ScriptState;
 
 // Complements LocalDOMWindow with additional windowing controls.
-class AdditionalWindowingControls {
+class MODULES_EXPORT AdditionalWindowingControls {
   STATIC_ONLY(AdditionalWindowingControls);
 
  public:

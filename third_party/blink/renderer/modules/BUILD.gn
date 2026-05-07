@@ -683,6 +683,8 @@ source_set("unit_tests") {
 
   if (!is_android && !is_ios) {
     sources += [
+      "awc/additional_windowing_controls_unittest.cc",
+
       # CaptureController is not Web-exposed on Android and iOS,
       # so most of the logic is compile-guarded away on Android and iOS,
       # preventing meaningful testing.
