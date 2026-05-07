@@ -201,6 +201,7 @@ source_set("impl") {
     "//chrome/browser/strike_database",
     "//chrome/browser/sync",
     "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/autofill/payments",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/hats",

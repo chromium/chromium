@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webauthn/context_menu_helper.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/grit/generated_resources.h"
@@ -54,6 +55,8 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/color/color_id.h"
+#include "ui/menus/simple_menu_model.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "components/plus_addresses/core/browser/resources/vector_icons.h"
@@ -467,6 +470,14 @@ void AutofillContextMenuManager::AddPasswordsManualFallbackItems(
     menu_model_->AddItemWithStringId(
         IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD,
         IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD);
+
+    if (base::FeatureList::IsEnabled(::features::kMenuSimplification)) {
+      menu_model_->SetIcon(
+          menu_model_->GetItemCount() - 1,
+          ui::ImageModel::FromVectorIcon(
+              vector_icons::kPasswordManagerIcon, ui::kColorMenuIcon,
+              ui::SimpleMenuModel::kDefaultIconSize));
+    }
   }
   if (add_password_generation_option) {
     menu_model_->AddItemWithStringId(
