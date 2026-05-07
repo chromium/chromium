@@ -41,12 +41,14 @@ class PersistentDisplayLayoutManager {
   // Reads and applies any previously stored display layouts, from
   // `display_layout_file_path`, then starts monitoring display layout changes
   // and writing them back to `display_layout_file_path`.
-  // No-op if no file exists at `display_layout_file_path`, or it fails to be
-  // read.
-  void Start();
+  //
+  // `on_done` is called when the initial layout file load attempt is complete,
+  // regardless of success.
+  void Start(base::OnceClosure on_done);
 
  private:
   void OnDisplayLayoutFileLoaded(
+      base::OnceClosure on_done,
       base::FileErrorOr<std::string> load_file_result);
   void OnDisplayInfoReceived();
   void ApplyDisplayLayout(

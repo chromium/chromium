@@ -144,6 +144,7 @@ class GnomeRemoteDesktopSession {
   void OnEiSession(std::unique_ptr<EiSenderSession> ei_session);
   void OnEiSessionDisconnected();
   void OnDisplayConfigReceived(const GnomeDisplayConfig& config);
+  void OnPersistentLayoutLoaded();
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -51,20 +51,6 @@ base::FilePath GetDisplayLayoutFilePath() {
       GetConfigDir().Append(GetHostHash() + ".display_layout.pb")));
 }
 
-std::unique_ptr<protocol::VideoLayout> CreateDefaultLayout() {
-  auto default_layout = std::make_unique<protocol::VideoLayout>();
-  default_layout->set_pixel_type(
-      protocol::VideoLayout::PixelType::VideoLayout_PixelType_LOGICAL);
-  protocol::VideoTrackLayout* track = default_layout->add_video_track();
-  track->set_position_x(0);
-  track->set_position_y(0);
-  track->set_width(1280);
-  track->set_height(960);
-  track->set_x_dpi(96);
-  track->set_y_dpi(96);
-  return default_layout;
-}
-
 }  // namespace
 
 GnomeRemoteDesktopSession::GnomeRemoteDesktopSession()
@@ -372,27 +358,36 @@ void GnomeRemoteDesktopSession::OnDisplayConfigReceived(
   // on a physical machine with physical monitors.
   // TODO: yuweih - see what to do for ME2ME on a physical machine.
   if (config.monitors.empty()) {
-    // Apply the default layout immediately to allow GNOME to initialize.
-    desktop_resizer_.SetVideoLayout(*CreateDefaultLayout());
-
-    // Block and queue up any further display changes (including those made by
-    // `persistent_display_layout_manager_`) for a short period to avoid a race
-    // condition in GNOME/Mutter during session startup.
-    // See: https://gitlab.gnome.org/GNOME/mutter/-/issues/4642
-    desktop_resizer_.BlockAndQueueDisplayChanges();
-    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&GnomeDesktopResizer::UnblockAndFlushDisplayChanges,
-                       desktop_resizer_.GetWeakPtr()),
-        base::Seconds(6));
-    persistent_display_layout_manager_.Start();
+    persistent_display_layout_manager_.Start(
+        base::BindOnce(&GnomeRemoteDesktopSession::OnPersistentLayoutLoaded,
+                       weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    initialization_state_ = InitializationState::kInitialized;
+    init_callbacks_.Notify(base::ok());
+    DCHECK(init_callbacks_.empty());
   }
+
   if (is_headless_) {
     // If the session is headless, inhibit screen saver all the time so that
     // users do not need to unlock when they reconnect CRD.
     screen_saver_inhibitor_ = std::make_unique<ScreenSaverInhibitor>(
         connection_, /*reason_for_inhibit=*/"Headless remote desktop session");
   }
+}
+
+void GnomeRemoteDesktopSession::OnPersistentLayoutLoaded() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Block and queue up any further display changes for a short period to avoid
+  // a race condition in GNOME/Mutter during session startup.
+  // See: https://gitlab.gnome.org/GNOME/mutter/-/issues/4642
+  desktop_resizer_.BlockAndQueueDisplayChanges();
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&GnomeDesktopResizer::UnblockAndFlushDisplayChanges,
+                     desktop_resizer_.GetWeakPtr()),
+      base::Seconds(6));
+
   initialization_state_ = InitializationState::kInitialized;
   init_callbacks_.Notify(base::ok());
   DCHECK(init_callbacks_.empty());
