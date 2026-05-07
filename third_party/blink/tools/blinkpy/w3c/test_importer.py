@@ -194,6 +194,7 @@ class TestImporter:
         self.expectations_updater.cleanup_test_expectations_files()
         self._generate_manifest()
         self.delete_orphaned_baselines()
+        self.regenerate_gtest_filelists()
 
         if not self.project_git.has_working_directory_changes():
             _log.info('Done: no changes to import.')
@@ -496,6 +497,41 @@ class TestImporter:
             self.fs.join(self.dest_path, '..', BASE_MANIFEST_NAME))
         self.copyfile(manifest_path, manifest_base_path)
         self.project_git.add_list([manifest_base_path])
+
+    def regenerate_gtest_filelists(self) -> None:
+        """Regenerate `.filelist`s used by Blink GTests on iOS.
+
+        Blink has experimental support for iOS, which uses checked-in
+        `.filelist`s to bundle files needed at runtime. GN hermeticity requires
+        that `.filelist`s enumerate all files explicitly. For convenience, a
+        `.globlist` can generate a `.filelist` from glob patterns, with a
+        presubmit check keeping each `.filelist` / `.globlist` pair in sync.
+
+        Some Blink GTest `.globlist`s borrow fonts from WPT, so this method
+        ensures `.filelist`s grow or shrink as fonts are added or removed.
+        """
+        _log.info(
+            'Regenerating `blink_platform_unittests_bundle_data.filelist`')
+        script_path = self.finder.path_from_chromium_base(
+            'build', 'ios', 'update_bundle_filelist.py')
+        filelist_path = self.finder.path_from_chromium_base(
+            'third_party', 'blink', 'renderer', 'platform',
+            'blink_platform_unittests_bundle_data.filelist')
+        globlist_path = self.finder.path_from_chromium_base(
+            'third_party', 'blink', 'renderer', 'platform',
+            'blink_platform_unittests_bundle_data.globlist')
+        globroot_path = self.finder.path_from_chromium_base(
+            'third_party', 'blink', 'renderer', 'platform')
+
+        cmd = [
+            'vpython3',
+            script_path,
+            filelist_path,
+            globlist_path,
+            globroot_path,
+        ]
+        self.executive.run_command(cmd)
+        self.project_git.add_list([filelist_path])
 
     def _clear_out_dest_path(self):
         """Removes all files that are synced with upstream from Chromium WPT.

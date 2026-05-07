@@ -692,6 +692,31 @@ class TestImporterTest(LoggingTestCase):
         self.assertEqual(importer.project_git.added_paths,
                          {MOCK_WEB_TESTS + 'external/' + BASE_MANIFEST_NAME})
 
+    def test_regenerate_gtest_filelists(self):
+        host = self.mock_host()
+        importer = self._get_test_importer(host)
+        importer.regenerate_gtest_filelists()
+        self.assertLog([
+            'INFO: Regenerating `blink_platform_unittests_bundle_data.filelist`\n',
+        ])
+        self.assertEqual(host.executive.calls, [
+            MANIFEST_INSTALL_CMD,
+            [
+                'vpython3',
+                '/mock-checkout/build/ios/update_bundle_filelist.py',
+                '/mock-checkout/third_party/blink/renderer/platform/'
+                'blink_platform_unittests_bundle_data.filelist',
+                '/mock-checkout/third_party/blink/renderer/platform/'
+                'blink_platform_unittests_bundle_data.globlist',
+                '/mock-checkout/third_party/blink/renderer/platform',
+            ],
+        ])
+        self.assertEqual(
+            importer.project_git.added_paths, {
+                '/mock-checkout/third_party/blink/renderer/platform/'
+                'blink_platform_unittests_bundle_data.filelist',
+            })
+
     def test_has_wpt_changes(self):
         host = self.mock_host()
         importer = self._get_test_importer(host)
