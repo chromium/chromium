@@ -203,7 +203,7 @@ export class SettingsSystemPageElement extends SettingsSystemPageElementBase
         (pref.extensionId !== rulesPref.extensionId);
   }
 
-  private onExtensionDisable_() {
+  private onDisableExtensionClick_() {
     // TODO(dbeam): this is a pretty huge bummer. It means there are things
     // (inputs) that our prefs system is not observing. And that changes from
     // other sources (i.e. disabling/enabling an extension from

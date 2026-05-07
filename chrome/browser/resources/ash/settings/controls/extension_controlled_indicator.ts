@@ -47,8 +47,8 @@ export class ExtensionControlledIndicatorElement extends PolymerElement {
     assert(this.extensionCanBeDisabled);
     ExtensionControlBrowserProxyImpl.getInstance().disableExtension(
         this.extensionId);
-    this.dispatchEvent(
-        new CustomEvent('extension-disable', {bubbles: true, composed: true}));
+    this.dispatchEvent(new CustomEvent(
+        'disable-extension-click', {bubbles: true, composed: true}));
   }
 }
 

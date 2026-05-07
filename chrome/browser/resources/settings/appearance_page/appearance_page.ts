@@ -378,7 +378,7 @@ export class SettingsAppearancePageElement extends
     Router.getInstance().navigateTo(routes.FONTS);
   }
 
-  private onDisableExtension_() {
+  private onDisableExtensionClick_() {
     this.dispatchEvent(new CustomEvent(
         'refresh-pref', {bubbles: true, composed: true, detail: 'homepage'}));
   }

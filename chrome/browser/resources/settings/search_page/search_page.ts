@@ -123,7 +123,7 @@ export class SettingsSearchPageElement extends SettingsSearchPageElementBase {
     this.addWebUiListener('search-engines-changed', updateSearchEngines);
   }
 
-  private onDisableExtension_() {
+  private onDisableExtensionClick_() {
     this.dispatchEvent(new CustomEvent('refresh-pref', {
       bubbles: true,
       composed: true,
