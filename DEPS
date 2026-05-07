@@ -536,7 +536,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling agents-internal
   # and whatever else without interference from each other.
-  'agents_internal_revision': 'eda60a5a7e6373fb28f76d984b070f92bc1d8e80',
+  'agents_internal_revision': '286bae69222fc03a4b1f2e332da2801d0037a43b',
 
   # If you change this, also update the libc++ revision in
   # //buildtools/deps_revisions.gni.
