@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/record_replay/core/browser/capabilities_database.h"
+#include "components/record_replay/core/browser/task_database.h"
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/task_environment.h"
@@ -10,7 +10,7 @@
 
 namespace record_replay {
 
-class CapabilitiesDatabaseTest : public testing::Test {
+class TaskDatabaseTest : public testing::Test {
  public:
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -20,10 +20,10 @@ class CapabilitiesDatabaseTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
-  CapabilitiesDatabase db_;
+  TaskDatabase db_;
 };
 
-TEST_F(CapabilitiesDatabaseTest, AddAndGetRecording) {
+TEST_F(TaskDatabaseTest, AddAndGetRecording) {
   Recording recording;
   recording.set_url("https://example.com");
   recording.set_name("Test Recording");
@@ -46,7 +46,7 @@ TEST_F(CapabilitiesDatabaseTest, AddAndGetRecording) {
   // SerializeAsString was called after clearing the ID.
 }
 
-TEST_F(CapabilitiesDatabaseTest, SaveAndRetrieveActivityAnnotation) {
+TEST_F(TaskDatabaseTest, SaveAndRetrieveActivityAnnotation) {
   Recording recording;
   recording.set_url("https://example.com");
   int64_t recording_id = db_.AddRecording(recording);
@@ -65,11 +65,11 @@ TEST_F(CapabilitiesDatabaseTest, SaveAndRetrieveActivityAnnotation) {
   EXPECT_EQ(retrieved[0].second.description(), "Test Description");
 }
 
-TEST_F(CapabilitiesDatabaseTest, GetActivityAnnotationForNonExistentId) {
+TEST_F(TaskDatabaseTest, GetActivityAnnotationForNonExistentId) {
   EXPECT_FALSE(db_.GetActivityAnnotation(99999).has_value());
 }
 
-TEST_F(CapabilitiesDatabaseTest, CascadeDeleteActivityData) {
+TEST_F(TaskDatabaseTest, CascadeDeleteActivityData) {
   Recording recording;
   recording.set_url("https://example.com");
   int64_t recording_id = db_.AddRecording(recording);

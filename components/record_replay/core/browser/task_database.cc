@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/record_replay/core/browser/capabilities_database.h"
+#include "components/record_replay/core/browser/task_database.h"
 
 #include "base/command_line.h"
 #include "base/debug/dump_without_crashing.h"
@@ -25,8 +25,8 @@ namespace {
 // Current version of the database schema.
 constexpr int kVersionNumber = 1;
 
-constexpr base::FilePath::StringViewType kCapabilitiesDatabaseFileName =
-    FILE_PATH_LITERAL("ReplayCapabilitiesDatabase.db");
+constexpr base::FilePath::StringViewType kTaskDatabaseFileName =
+    FILE_PATH_LITERAL("ReplayTaskDatabase.db");
 
 std::string NormalizeUrl(const std::string& url_string) {
   GURL url(url_string);
@@ -40,11 +40,10 @@ std::string NormalizeUrl(const std::string& url_string) {
 }
 }  // namespace
 
-CapabilitiesDatabase::CapabilitiesDatabase()
-    : db_(sql::Database::Tag("ReplayCapabilities")) {}
-CapabilitiesDatabase::~CapabilitiesDatabase() = default;
+TaskDatabase::TaskDatabase() : db_(sql::Database::Tag("ReplayTasks")) {}
+TaskDatabase::~TaskDatabase() = default;
 
-void CapabilitiesDatabase::Init(base::FilePath profile_path) {
+void TaskDatabase::Init(base::FilePath profile_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (db_.is_open()) {
     return;
@@ -52,16 +51,15 @@ void CapabilitiesDatabase::Init(base::FilePath profile_path) {
 
   db_.set_error_callback(base::BindRepeating([](int error,
                                                 sql::Statement* stmt) {
-    DLOG(ERROR) << "CapabilitiesDatabase SQLite Error: " << error
+    DLOG(ERROR) << "TaskDatabase SQLite Error: " << error
                 << (stmt ? base::StrCat({", SQL: ", stmt->GetSQLStatement()})
                          : "");
   }));
 
   // Open the database file. If this fails, the database remains closed
   // and subsequent AsyncCalls will fail safely/silently via error callback.
-  if (!db_.Open(profile_path.Append(kCapabilitiesDatabaseFileName))) {
-    DLOG(ERROR) << "Failed to open CapabilitiesDatabase at: "
-                << profile_path.value();
+  if (!db_.Open(profile_path.Append(kTaskDatabaseFileName))) {
+    DLOG(ERROR) << "Failed to open TaskDatabase at: " << profile_path.value();
     return;
   }
 
@@ -108,21 +106,21 @@ void CapabilitiesDatabase::Init(base::FilePath profile_path) {
   transaction.Commit();
 }
 
-int CapabilitiesDatabase::GetDatabaseVersion() {
+int TaskDatabase::GetDatabaseVersion() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   sql::Statement statement(db_.GetUniqueStatement("PRAGMA user_version"));
   return statement.Step() ? statement.ColumnInt(0) : 0;
 }
 
-bool CapabilitiesDatabase::Migrate(int version) {
+bool TaskDatabase::Migrate(int version) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   return db_.Execute(base::StrCat(
       {"PRAGMA user_version = ", base::NumberToString(kVersionNumber)}));
 }
 
-bool CapabilitiesDatabase::CreateRecordingsTable() {
+bool TaskDatabase::CreateRecordingsTable() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (db_.DoesTableExist("Recordings")) {
     return true;
@@ -143,7 +141,7 @@ bool CapabilitiesDatabase::CreateRecordingsTable() {
       "CREATE INDEX IF NOT EXISTS recordings_url ON Recordings(url)");
 }
 
-bool CapabilitiesDatabase::CreateActivityAnnotationsTable() {
+bool TaskDatabase::CreateActivityAnnotationsTable() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (db_.DoesTableExist("ActivityAnnotations")) {
     return true;
@@ -163,7 +161,7 @@ bool CapabilitiesDatabase::CreateActivityAnnotationsTable() {
       "ActivityAnnotations(target_url)");
 }
 
-bool CapabilitiesDatabase::IsActivityAnnotationsTableEmpty() {
+bool TaskDatabase::IsActivityAnnotationsTableEmpty() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   static constexpr char kSql[] =
       "SELECT EXISTS(SELECT 1 FROM ActivityAnnotations)";
@@ -172,8 +170,7 @@ bool CapabilitiesDatabase::IsActivityAnnotationsTableEmpty() {
 }
 
 base::expected<std::vector<ActivityAnnotation>, std::string>
-CapabilitiesDatabase::GetSeedAnnotationsFromJson(
-    const std::string& json_string) {
+TaskDatabase::GetSeedAnnotationsFromJson(const std::string& json_string) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!IsActivityAnnotationsTableEmpty()) {
@@ -206,7 +203,7 @@ CapabilitiesDatabase::GetSeedAnnotationsFromJson(
 }
 
 base::expected<std::vector<ActivityAnnotation>, std::string>
-CapabilitiesDatabase::SeedAnnotationsFromFile(const base::FilePath& file_path) {
+TaskDatabase::SeedAnnotationsFromFile(const base::FilePath& file_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!IsActivityAnnotationsTableEmpty()) {
@@ -222,8 +219,8 @@ CapabilitiesDatabase::SeedAnnotationsFromFile(const base::FilePath& file_path) {
   return GetSeedAnnotationsFromJson(json_string);
 }
 
-void CapabilitiesDatabase::RunSeeding(base::FilePath file_path,
-                                      std::string feature_json) {
+void TaskDatabase::RunSeeding(base::FilePath file_path,
+                              std::string feature_json) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Skip if already seeded.
@@ -271,7 +268,7 @@ void CapabilitiesDatabase::RunSeeding(base::FilePath file_path,
   }
 }
 
-bool CapabilitiesDatabase::CreateActivityDataTable() {
+bool TaskDatabase::CreateActivityDataTable() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (db_.DoesTableExist("ActivityData")) {
     return true;
@@ -287,7 +284,7 @@ bool CapabilitiesDatabase::CreateActivityDataTable() {
   return db_.Execute(kSql);
 }
 
-int64_t CapabilitiesDatabase::AddRecording(Recording recording) {
+int64_t TaskDatabase::AddRecording(Recording recording) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   static constexpr char kSql[] =
       "INSERT INTO Recordings(url, start_time, name, proto) "
@@ -307,8 +304,7 @@ int64_t CapabilitiesDatabase::AddRecording(Recording recording) {
   return -1;
 }
 
-std::vector<Recording> CapabilitiesDatabase::GetRecordingsByUrl(
-    std::string url) {
+std::vector<Recording> TaskDatabase::GetRecordingsByUrl(std::string url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   static constexpr char kSql[] =
       "SELECT id, proto FROM Recordings WHERE url=? ORDER BY start_time DESC";
@@ -328,11 +324,10 @@ std::vector<Recording> CapabilitiesDatabase::GetRecordingsByUrl(
   return recordings;
 }
 
-void CapabilitiesDatabase::SaveActivityAnnotation(
-    std::optional<int64_t> annotation_id,
-    ActivityAnnotation annotation,
-    std::string target_url,
-    std::optional<int64_t> recording_id) {
+void TaskDatabase::SaveActivityAnnotation(std::optional<int64_t> annotation_id,
+                                          ActivityAnnotation annotation,
+                                          std::string target_url,
+                                          std::optional<int64_t> recording_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::string normalized_url = NormalizeUrl(target_url);
@@ -362,7 +357,7 @@ void CapabilitiesDatabase::SaveActivityAnnotation(
   statement.Run();
 }
 
-std::optional<ActivityAnnotation> CapabilitiesDatabase::GetActivityAnnotation(
+std::optional<ActivityAnnotation> TaskDatabase::GetActivityAnnotation(
     int64_t annotation_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   static constexpr char kSql[] =
@@ -381,7 +376,7 @@ std::optional<ActivityAnnotation> CapabilitiesDatabase::GetActivityAnnotation(
 }
 
 std::vector<std::pair<int64_t, ActivityAnnotation>>
-CapabilitiesDatabase::GetActivityAnnotationsByUrl(const std::string& url) {
+TaskDatabase::GetActivityAnnotationsByUrl(const std::string& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   static constexpr char kSql[] =
       "SELECT annotation_id, proto FROM ActivityAnnotations WHERE target_url=?";
@@ -399,8 +394,8 @@ CapabilitiesDatabase::GetActivityAnnotationsByUrl(const std::string& url) {
   return annotations;
 }
 
-bool CapabilitiesDatabase::SaveActivityData(int64_t annotation_id,
-                                            const ActivityData& data) {
+bool TaskDatabase::SaveActivityData(int64_t annotation_id,
+                                    const ActivityData& data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   static constexpr char kSql[] =
       "INSERT OR REPLACE INTO ActivityData(annotation_id, proto) "
@@ -412,7 +407,7 @@ bool CapabilitiesDatabase::SaveActivityData(int64_t annotation_id,
   return statement.Run();
 }
 
-std::optional<ActivityData> CapabilitiesDatabase::GetActivityData(
+std::optional<ActivityData> TaskDatabase::GetActivityData(
     int64_t annotation_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   static constexpr char kSql[] =
@@ -430,7 +425,7 @@ std::optional<ActivityData> CapabilitiesDatabase::GetActivityData(
   return std::nullopt;
 }
 
-bool CapabilitiesDatabase::DeleteActivityData(int64_t annotation_id) {
+bool TaskDatabase::DeleteActivityData(int64_t annotation_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   static constexpr char kSql[] =
       "DELETE FROM ActivityData WHERE annotation_id=?";
@@ -440,7 +435,7 @@ bool CapabilitiesDatabase::DeleteActivityData(int64_t annotation_id) {
   return statement.Run();
 }
 
-bool CapabilitiesDatabase::DeleteActivityAnnotation(int64_t annotation_id) {
+bool TaskDatabase::DeleteActivityAnnotation(int64_t annotation_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   static constexpr char kSql[] =
       "DELETE FROM ActivityAnnotations WHERE annotation_id=?";

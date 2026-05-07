@@ -11,9 +11,9 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/threading/sequence_bound.h"
-#include "components/record_replay/core/browser/capabilities_database.h"
 #include "components/record_replay/core/browser/recording.pb.h"
 #include "components/record_replay/core/browser/recording_data_manager.h"
+#include "components/record_replay/core/browser/task_database.h"
 
 namespace record_replay {
 
@@ -22,7 +22,7 @@ namespace record_replay {
 //
 // Owned by `RecordingDataManagerFactory` as a `KeyedService`, and thus tied to
 // the lifecycle of a `Profile`.
-// It runs on the UI thread but uses `CapabilitiesDatabase` on a background
+// It runs on the UI thread but uses `TaskDatabase` on a background
 // sequence for database I/O.
 class RecordingDataManagerImpl : public RecordingDataManager {
  public:
@@ -61,7 +61,7 @@ class RecordingDataManagerImpl : public RecordingDataManager {
                           base::OnceCallback<void(bool)> callback) override;
 
  private:
-  base::SequenceBound<CapabilitiesDatabase> db_;
+  base::SequenceBound<TaskDatabase> db_;
 };
 
 }  // namespace record_replay

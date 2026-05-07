@@ -8,8 +8,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/thread_pool.h"
-#include "components/record_replay/core/browser/capabilities_database.h"
 #include "components/record_replay/core/browser/recording.pb.h"
+#include "components/record_replay/core/browser/task_database.h"
 #include "components/record_replay/core/common/record_replay_features.h"
 #include "components/record_replay/core/common/record_replay_switches.h"
 
@@ -38,11 +38,11 @@ RecordingDataManagerImpl::RecordingDataManagerImpl(base::FilePath profile_path)
   // Intent: Asynchronously initialize the database. Subsequent calls are safely
   // queued on the same sequenced task runner and will execute after Init
   // completes.
-  db_.AsyncCall(&CapabilitiesDatabase::Init).WithArgs(std::move(profile_path));
+  db_.AsyncCall(&TaskDatabase::Init).WithArgs(std::move(profile_path));
 
   // Trigger asynchronous seeding by retrieving the local file path (if
   // specified) and the Feature configuration, prioritizing the file.
-  db_.AsyncCall(&CapabilitiesDatabase::RunSeeding)
+  db_.AsyncCall(&TaskDatabase::RunSeeding)
       .WithArgs(GetSeedingFilePath(),
                 features::kRecordReplayAnnotationSeed.Get());
 }
@@ -52,7 +52,7 @@ RecordingDataManagerImpl::~RecordingDataManagerImpl() = default;
 void RecordingDataManagerImpl::AddRecording(
     Recording recording,
     base::OnceCallback<void(int64_t)> callback) {
-  db_.AsyncCall(&CapabilitiesDatabase::AddRecording)
+  db_.AsyncCall(&TaskDatabase::AddRecording)
       .WithArgs(std::move(recording))
       .Then(std::move(callback));
 }
@@ -60,7 +60,7 @@ void RecordingDataManagerImpl::AddRecording(
 void RecordingDataManagerImpl::GetRecordingsByUrl(
     std::string url,
     base::OnceCallback<void(std::vector<Recording>)> callback) {
-  db_.AsyncCall(&CapabilitiesDatabase::GetRecordingsByUrl)
+  db_.AsyncCall(&TaskDatabase::GetRecordingsByUrl)
       .WithArgs(std::move(url))
       .Then(std::move(callback));
 }
@@ -71,7 +71,7 @@ void RecordingDataManagerImpl::SaveActivityAnnotation(
     std::string target_url,
     std::optional<int64_t> recording_id,
     base::OnceClosure callback) {
-  db_.AsyncCall(&CapabilitiesDatabase::SaveActivityAnnotation)
+  db_.AsyncCall(&TaskDatabase::SaveActivityAnnotation)
       .WithArgs(annotation_id, std::move(annotation), std::move(target_url),
                 recording_id)
       .Then(std::move(callback));
@@ -80,7 +80,7 @@ void RecordingDataManagerImpl::SaveActivityAnnotation(
 void RecordingDataManagerImpl::GetActivityAnnotation(
     int64_t annotation_id,
     base::OnceCallback<void(std::optional<ActivityAnnotation>)> callback) {
-  db_.AsyncCall(&CapabilitiesDatabase::GetActivityAnnotation)
+  db_.AsyncCall(&TaskDatabase::GetActivityAnnotation)
       .WithArgs(annotation_id)
       .Then(std::move(callback));
 }
@@ -89,7 +89,7 @@ void RecordingDataManagerImpl::GetActivityAnnotationsByUrl(
     std::string url,
     base::OnceCallback<
         void(std::vector<std::pair<int64_t, ActivityAnnotation>>)> callback) {
-  db_.AsyncCall(&CapabilitiesDatabase::GetActivityAnnotationsByUrl)
+  db_.AsyncCall(&TaskDatabase::GetActivityAnnotationsByUrl)
       .WithArgs(std::move(url))
       .Then(std::move(callback));
 }
@@ -98,7 +98,7 @@ void RecordingDataManagerImpl::SaveActivityData(
     int64_t annotation_id,
     ActivityData data,
     base::OnceCallback<void(bool)> callback) {
-  db_.AsyncCall(&CapabilitiesDatabase::SaveActivityData)
+  db_.AsyncCall(&TaskDatabase::SaveActivityData)
       .WithArgs(annotation_id, std::move(data))
       .Then(std::move(callback));
 }
@@ -106,7 +106,7 @@ void RecordingDataManagerImpl::SaveActivityData(
 void RecordingDataManagerImpl::GetActivityData(
     int64_t annotation_id,
     base::OnceCallback<void(std::optional<ActivityData>)> callback) {
-  db_.AsyncCall(&CapabilitiesDatabase::GetActivityData)
+  db_.AsyncCall(&TaskDatabase::GetActivityData)
       .WithArgs(annotation_id)
       .Then(std::move(callback));
 }
@@ -114,7 +114,7 @@ void RecordingDataManagerImpl::GetActivityData(
 void RecordingDataManagerImpl::DeleteActivityData(
     int64_t annotation_id,
     base::OnceCallback<void(bool)> callback) {
-  db_.AsyncCall(&CapabilitiesDatabase::DeleteActivityData)
+  db_.AsyncCall(&TaskDatabase::DeleteActivityData)
       .WithArgs(annotation_id)
       .Then(std::move(callback));
 }

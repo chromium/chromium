@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_RECORD_REPLAY_CORE_BROWSER_CAPABILITIES_DATABASE_H_
-#define COMPONENTS_RECORD_REPLAY_CORE_BROWSER_CAPABILITIES_DATABASE_H_
+#ifndef COMPONENTS_RECORD_REPLAY_CORE_BROWSER_TASK_DATABASE_H_
+#define COMPONENTS_RECORD_REPLAY_CORE_BROWSER_TASK_DATABASE_H_
 
 #include <optional>
 #include <string>
@@ -24,12 +24,12 @@ namespace record_replay {
 //
 // SQLite allows structured queries, such as retrieving all annotations for a
 // given site or managing data overrides independently of shareable intent.
-class CapabilitiesDatabase {
+class TaskDatabase {
  public:
-  CapabilitiesDatabase();
-  CapabilitiesDatabase(const CapabilitiesDatabase&) = delete;
-  CapabilitiesDatabase& operator=(const CapabilitiesDatabase&) = delete;
-  ~CapabilitiesDatabase();
+  TaskDatabase();
+  TaskDatabase(const TaskDatabase&) = delete;
+  TaskDatabase& operator=(const TaskDatabase&) = delete;
+  ~TaskDatabase();
 
   // Initializes the database in the given profile directory. If `profile_path`
   // is empty, the database is opened in memory which suffices for testing.
@@ -107,4 +107,4 @@ class CapabilitiesDatabase {
 
 }  // namespace record_replay
 
-#endif  // COMPONENTS_RECORD_REPLAY_CORE_BROWSER_CAPABILITIES_DATABASE_H_
+#endif  // COMPONENTS_RECORD_REPLAY_CORE_BROWSER_TASK_DATABASE_H_

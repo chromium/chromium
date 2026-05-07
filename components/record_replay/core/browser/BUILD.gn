@@ -14,8 +14,6 @@ static_library("browser") {
     "activity_provider.h",
     "annotation_parsing_utils.cc",
     "annotation_parsing_utils.h",
-    "capabilities_database.cc",
-    "capabilities_database.h",
     "file_activity_provider.cc",
     "file_activity_provider.h",
     "parsing_utils.cc",
@@ -33,6 +31,8 @@ static_library("browser") {
     "recording_data_manager_impl.h",
     "replayer.cc",
     "replayer.h",
+    "task_database.cc",
+    "task_database.h",
   ]
 
   deps = [
@@ -51,9 +51,9 @@ static_library("browser") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "capabilities_database_unittest.cc",
     "file_activity_provider_unittest.cc",
     "recording_data_manager_impl_unittest.cc",
+    "task_database_unittest.cc",
   ]
   deps = [
     ":browser",

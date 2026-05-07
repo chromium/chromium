@@ -551,6 +551,7 @@ test("components_unittests") {
       "//components/policy/content:unit_tests",
       "//components/push_messaging:unit_tests",
       "//components/record_replay/content/browser:unit_tests",
+      "//components/record_replay/core/browser:unit_tests",
       "//components/reduce_accept_language/browser:unit_tests",
       "//components/reporting/resources:unit_tests",
       "//components/services/heap_profiling:unit_tests",

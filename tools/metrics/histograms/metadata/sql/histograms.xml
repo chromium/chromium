@@ -81,7 +81,7 @@ chromium-metrics-reviews@google.com.
   <variant name="Quota" summary="Quota"/>
   <variant name="RazeNullDB" summary="RazeNullDB"/>
   <variant name="Recovery" summary="Recovery"/>
-  <variant name="ReplayCapabilities" summary="ReplayCapabilities"/>
+  <variant name="ReplayTasks" summary="ReplayTasks"/>
   <variant name="ReportingAndNEL" summary="ReportingAndNEL"/>
   <variant name="ServerCertificate" summary="ServerCertificate"/>
   <variant name="SessionStorage" summary="SessionStorage, on-disk"/>

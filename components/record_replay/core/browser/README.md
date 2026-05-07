@@ -24,7 +24,7 @@ It interfaces with these layers through the `RecordReplayClient` and
   renderer to perform specific actions at the recorded times.
 - **`RecordingDataManager`**: An interface for persistent storage of recorded
   sessions.
-- **`CapabilitiesDatabase`**: A relational SQLite database that stores metadata
+- **`TaskDatabase`**: A relational SQLite database that stores metadata
   about recordings, standalone `ActivityAnnotation` intent analysis, and
   sensitive `ActivityData` values. It supports efficient lookup by site and
   handles database migrations and seeding from Finch parameters.
