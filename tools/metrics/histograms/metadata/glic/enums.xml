@@ -288,7 +288,7 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="CaptureScreenshot"/>
   <int value="17" label="ResizeWindow"/>
   <int value="18" label="EnableDragResize"/>
-  <int value="19" label="(obsolete) SetWindowDraggableAreas"/>
+  <int value="19" label="(Obsolete) SetWindowDraggableAreas"/>
   <int value="20" label="SetMinimumWidgetSize"/>
   <int value="21" label="SetMicrophonePermissionState"/>
   <int value="22" label="SetLocationPermissionState"/>

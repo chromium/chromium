@@ -69,7 +69,6 @@ chromium-metrics-reviews@google.com.
   <variant name="OnMicrophoneStatusChange"/>
   <variant name="OnModeChange"/>
   <variant name="OnReaction"/>
-  <variant name="OnRecordUseCounter"/>
   <variant name="OnResponseRated"/>
   <variant name="OnResponseStarted"/>
   <variant name="OnResponseStopped"/>
@@ -90,7 +89,7 @@ chromium-metrics-reviews@google.com.
   <variant name="ScrollTo"/>
   <variant name="SetActuationOnWebSetting"/>
   <variant name="SetAudioDucking"/>
-  <variant name="SetClosedCaptioningState"/>
+  <variant name="SetClosedCaptioningSetting"/>
   <variant name="SetContextAccessIndicator"/>
   <variant name="SetLocationPermissionState"/>
   <variant name="SetMaximumNumberOfPinnedTabs"/>
