@@ -256,8 +256,7 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
         session_mixin_(CreateSessionMixin(session_type_)) {
     scoped_feature_list_.InitWithFeatures(
         {features::kIsolatedWebAppBundleCache,
-         features::kIsolatedWebAppManagedGuestSessionInstall,
-         features::kIsolatedWebAppManagedAllowlist},
+         features::kIsolatedWebAppManagedGuestSessionInstall},
         /*disabled_features=*/{});
   }
 

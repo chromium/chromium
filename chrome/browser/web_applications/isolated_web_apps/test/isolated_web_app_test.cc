@@ -80,7 +80,6 @@ IsolatedWebAppTest::IsolatedWebAppTest(
     bool dev_mode)
     : env_(std::move(env)) {
   std::vector<base::test::FeatureRef> enabled_features = {
-      features::kIsolatedWebAppManagedAllowlist,
 #if !BUILDFLAG(IS_CHROMEOS)
       features::kIsolatedWebApps,
 #endif  // !BUILDFLAG(IS_CHROMEOS)

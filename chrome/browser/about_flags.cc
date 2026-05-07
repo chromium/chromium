@@ -5351,10 +5351,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableIsolatedWebAppUnmanagedInstallDescription,
      kOsCrOS, FEATURE_VALUE_TYPE(features::kIsolatedWebAppUnmanagedInstall)},
 #endif
-    {"enable-isolated-web-app-allowlist",
-     flag_descriptions::kEnableIsolatedWebAppAllowlistName,
-     flag_descriptions::kEnableIsolatedWebAppAllowlistDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kIsolatedWebAppManagedAllowlist)},
     {"enable-isolated-web-app-dev-mode",
      flag_descriptions::kEnableIsolatedWebAppDevModeName,
      flag_descriptions::kEnableIsolatedWebAppDevModeDescription, kOsDesktop,

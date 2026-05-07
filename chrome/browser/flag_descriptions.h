@@ -1927,12 +1927,6 @@ inline constexpr char
         "logged "
         "into a managed guest session.";
 
-inline constexpr char kEnableIsolatedWebAppAllowlistName[] =
-    "Enable an allowlist for Isolated Web Apps";
-inline constexpr char kEnableIsolatedWebAppAllowlistDescription[] =
-    "Enables an allowlist for Isolated Web Apps, restricting installation and "
-    "updates to only those apps that are allowlisted.";
-
 inline constexpr char kEnableIsolatedWebAppDevModeName[] =
     "Enable Isolated Web App Developer Mode";
 inline constexpr char kEnableIsolatedWebAppDevModeDescription[] =

@@ -7,13 +7,6 @@
 
 #include "base/features.h"
 
-namespace features {
-
-// Enables preventing installation and update of non-allowlisted IWAs.
-BASE_DECLARE_FEATURE(kIsolatedWebAppManagedAllowlist);
-
-}  // namespace features
-
 namespace web_app {
 
 // Enables the key distribution dev mode UI on chrome://web-app-internals.

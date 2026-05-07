@@ -1595,23 +1595,20 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="WebApp.Isolated.KeyDistributionComponent.ManagedInstallAllowed"
-    enum="BooleanAllowed" expires_after="2026-11-01">
+    enum="BooleanAllowed" expires_after="2027-03-01">
   <owner>rferens@google.com</owner>
   <owner>iwa-team@google.com</owner>
   <summary>
     This metric records if the checked app is present in the managed allowlist.
     The metric is recorded on
-    IwaKeyDistributionInfoProvider::IsManagedInstallPermitted() call, and is
-    collected even if IsolatedWebAppAllowlistFlag is disabled (app is then
-    installed regardless of returned value).
-
-    This is normally called when the policy is processed.
+    IwaKeyDistributionInfoProvider::IsManagedInstallPermitted() call, when the
+    policy is processed.
   </summary>
 </histogram>
 
 <histogram
     name="WebApp.Isolated.KeyDistributionComponent.ManagedInstallCheckInfoSource"
-    enum="KeyDistributionComponentSource" expires_after="2026-11-01">
+    enum="KeyDistributionComponentSource" expires_after="2027-03-01">
   <owner>rferens@google.com</owner>
   <owner>iwa-team@google.com</owner>
   <summary>
@@ -1629,23 +1626,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Isolated.KeyDistributionComponent.ManagedUpdateAllowed"
-    enum="BooleanAllowed" expires_after="2026-07-01">
+    enum="BooleanAllowed" expires_after="2027-03-01">
   <owner>rferens@google.com</owner>
   <owner>iwa-team@google.com</owner>
   <summary>
     This metric records if the checked app is present in the managed allowlist.
     The metric is recorded on
-    IwaKeyDistributionInfoProvider::IsManagedUpdatePermitted() call, and is
-    collected even if IsolatedWebAppAllowlistFlag is disabled (app is then
-    updated regardless of returned value).
-
-    This is called when the update manager check if apps require updates.
+    IwaKeyDistributionInfoProvider::IsManagedUpdatePermitted() call, when the
+    update manager checks if apps require updates.
   </summary>
 </histogram>
 
 <histogram
     name="WebApp.Isolated.KeyDistributionComponent.ManagedUpdateCheckInfoSource"
-    enum="KeyDistributionComponentSource" expires_after="2026-07-01">
+    enum="KeyDistributionComponentSource" expires_after="2027-03-01">
   <owner>rferens@google.com</owner>
   <owner>iwa-team@google.com</owner>
   <summary>

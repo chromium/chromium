@@ -3552,11 +3552,6 @@
     "expiry_milestone": 170
   },
   {
-    "name": "enable-isolated-web-app-allowlist",
-    "owners": [ "rferens@google.com", "iwa-team@google.com" ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "enable-isolated-web-app-dev-mode",
     "owners": [ "greengrape@google.com", "simonha@google.com", "iwa-team@google.com" ],
     // This flag is used by web developers to test their Isolated Web Apps.

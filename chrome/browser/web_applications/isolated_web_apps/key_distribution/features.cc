@@ -4,11 +4,6 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/key_distribution/features.h"
 
-namespace features {
-
-BASE_FEATURE(kIsolatedWebAppManagedAllowlist, base::FEATURE_ENABLED_BY_DEFAULT);
-}  // namespace features
-
 namespace web_app {
 BASE_FEATURE(kIwaKeyDistributionDevMode, base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace web_app

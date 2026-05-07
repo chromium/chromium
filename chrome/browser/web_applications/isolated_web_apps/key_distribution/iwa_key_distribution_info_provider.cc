@@ -37,11 +37,6 @@ namespace {
 // OnMaybeDownloadedComponentDataReady().
 constexpr base::TimeDelta kDownloadedComponentDataWaitTime = base::Seconds(15);
 
-bool IsIsolatedWebAppManagedAllowlistEnabled() {
-  return base::FeatureList::IsEnabled(
-      features::kIsolatedWebAppManagedAllowlist);
-}
-
 IwaKeyDistributionInfoProvider::KeyRotations& GetDevModeKeyRotationData() {
   static base::NoDestructor<IwaKeyDistributionInfoProvider::KeyRotations>
       dev_mode_kr_data;
@@ -168,7 +163,7 @@ bool IwaKeyDistributionInfoProvider::IsManagedInstallPermitted(
   base::UmaHistogramBoolean(
       kIwaKeyDistributionManagedInstallAllowedHistogramName, is_permitted);
 
-  return IsIsolatedWebAppManagedAllowlistEnabled() ? is_permitted : true;
+  return is_permitted;
 }
 
 bool IwaKeyDistributionInfoProvider::IsManagedUpdatePermitted(
@@ -187,7 +182,7 @@ bool IwaKeyDistributionInfoProvider::IsManagedUpdatePermitted(
   base::UmaHistogramBoolean(
       kIwaKeyDistributionManagedUpdateAllowedHistogramName, is_permitted);
 
-  return IsIsolatedWebAppManagedAllowlistEnabled() ? is_permitted : true;
+  return is_permitted;
 }
 
 void IwaKeyDistributionInfoProvider::SkipManagedAllowlistChecksForTesting(
