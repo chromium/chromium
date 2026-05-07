@@ -1,0 +1,27 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Implementation detail for `build/rust/std` - the path of the sysroot
+# directory is shared by:
+#
+# 1. `build/rust/std/BUILD.gn`
+# 2. `build/rust/std/BUILD.gn.hbs`
+#    (which is expanded into `build/rust/std/rules/BUILD.gn`)
+if (is_component_build) {
+  # In various scenarios a crate can initially get built as `--crate-type=rlib`
+  # and later built as `--crate-type=dylib`.  This can happen after opting in
+  # a crate into `override_crate_type_as_dylib_in_component_builds`, or after
+  # switching `is_component_build` in `args.gn`.  Without a separate directory,
+  # the presence of stale `.rlib`, `.rmeta`, and/or `.so` files can confuse
+  # `rustc`:
+  # * `error[E0464]: multiple candidates for `dylib` dependency `std` found`
+  # * `error[E0460]: found possibly newer version of crate `core` which `std`
+  #   depends on`
+  #
+  # This is covered in more detail in https://crbug.com/498216362 (among other
+  # problems).
+  local_rustc_sysroot = "$root_out_dir/local_rustc_sysroot_for_component_build"
+} else {
+  local_rustc_sysroot = "$root_out_dir/local_rustc_sysroot"
+}

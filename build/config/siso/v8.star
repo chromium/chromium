@@ -27,6 +27,15 @@ def __step_config(ctx, step_config):
         {
             "name": "v8/mksnapshot",
             "command_prefix": platform.python_bin + " ../../v8/tools/run.py ./mksnapshot",
+            "indirect_inputs": {
+                "includes": [
+                    # Working around https://crbug.com/gn/509549092 as
+                    # suggested in https://crbug.com/498216362#comment30
+                    "*.so",
+                    "*.dll",
+                    "*.dylib",
+                ],
+            },
             "remote": remote_run,
             "timeout": "2m",
             # This action may consume a lot of memory on sanitizer builders.
