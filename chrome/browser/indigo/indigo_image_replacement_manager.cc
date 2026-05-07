@@ -135,28 +135,25 @@ void IndigoImageReplacementManager::ReplacementFrameAttached(
     service->GetApiClient().Generate(
         original_image->webp_bytes,
         base::BindOnce(
-            [](base::WeakPtr<content::WebContents> web_contents,
-               base::expected<GeneratedImage, GenerateImageError> result) {
-              if (!web_contents) {
-                return;
-              }
-              if (!result.has_value()) {
-                LOG(ERROR) << "Generate image failed: "
-                           << result.error().message;
-                return;
-              }
-
-              // Open the resulting data URL in a new tab.
-              // This is temporary until we can load it into the replacement
-              // frame.
-              content::OpenURLParams open_params(
-                  result->image_url, content::Referrer(),
-                  WindowOpenDisposition::NEW_FOREGROUND_TAB,
-                  ui::PAGE_TRANSITION_LINK, /*is_renderer_initiated=*/false);
-              web_contents->OpenURL(open_params, base::NullCallback());
-            },
-            web_contents->GetWeakPtr()));
+            &IndigoImageReplacementManager::OnReplacementImageGenerated,
+            weak_ptr_factory_.GetWeakPtr(), receivers_.current_receiver()));
   }
+}
+
+void IndigoImageReplacementManager::OnReplacementImageGenerated(
+    mojo::ReceiverId receiver_id,
+    base::expected<GeneratedImage, GenerateImageError> result) {
+  if (!result.has_value()) {
+    LOG(ERROR) << "Generate image failed: " << result.error().message;
+    receivers_.Remove(receiver_id);
+    return;
+  }
+
+  IndigoImageReplacement* replacement = receivers_.GetContext(receiver_id);
+  if (!replacement) {
+    return;
+  }
+  replacement->SetReplacementImageUrl(std::move(result->image_url));
 }
 
 PAGE_USER_DATA_KEY_IMPL(IndigoImageReplacementManager);

@@ -2902,6 +2902,7 @@ Called by update_extension_histograms.py.-->
   <int value="1964" label="INDIGOPRIVATE_READYTORENDER"/>
   <int value="1965" label="MIMEHANDLER_GETSTREAMINFO"/>
   <int value="1966" label="INDIGOPRIVATE_GETORIGINALIMAGE"/>
+  <int value="1967" label="INDIGOPRIVATE_GETREPLACEMENTIMAGE"/>
 </enum>
 
 <!-- LINT.ThenChange(//extensions/browser/extension_function_histogram_value.h:HistogramValue) -->

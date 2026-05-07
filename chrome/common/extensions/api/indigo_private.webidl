@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 dictionary ImageData {
-  // Image bytes in image/webp.
-  ArrayBuffer webpBytes;
+  // The image data, either as webp bytes or a data URL.
+  (ArrayBuffer or DOMString) value;
 };
 
 // Use the <code>chrome.indigoPrivate</code> API for specific browser
@@ -17,6 +17,11 @@ interface IndigoPrivate {
   // |PromiseValue|: imageData
   [requiredCallback]
   static Promise<ImageData> getOriginalImage();
+
+  // Returns the replacement image data.
+  // |PromiseValue|: imageData
+  [requiredCallback]
+  static Promise<ImageData> getReplacementImage();
 };
 
 partial interface Browser {

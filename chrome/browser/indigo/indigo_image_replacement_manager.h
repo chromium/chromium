@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_INDIGO_INDIGO_IMAGE_REPLACEMENT_MANAGER_H_
 #define CHROME_BROWSER_INDIGO_INDIGO_IMAGE_REPLACEMENT_MANAGER_H_
 
+#include "base/types/expected.h"
+#include "chrome/browser/indigo/api_client.h"
 #include "chrome/browser/indigo/indigo_image_replacement.h"
 #include "content/public/browser/page_user_data.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -46,8 +48,13 @@ class IndigoImageReplacementManager
 
   explicit IndigoImageReplacementManager(content::Page& page);
 
+  void OnReplacementImageGenerated(
+      mojo::ReceiverId receiver_id,
+      base::expected<GeneratedImage, GenerateImageError> result);
+
   mojo::ReceiverSet<blink::mojom::ImageReplacementHost, IndigoImageReplacement>
       receivers_;
+  base::WeakPtrFactory<IndigoImageReplacementManager> weak_ptr_factory_{this};
 };
 
 }  // namespace indigo

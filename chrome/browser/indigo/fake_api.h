@@ -37,6 +37,9 @@ class FakeApi {
   // Sends a successful response with the given image URL.
   void SendSuccessResponse(const GURL& image_url);
 
+  // Sends an error response.
+  void SendErrorResponse();
+
   // Checks that the request has a valid product image.
   testing::AssertionResult RequestHasValidProductImage(
       base::span<const uint8_t> expected_image_bytes);
