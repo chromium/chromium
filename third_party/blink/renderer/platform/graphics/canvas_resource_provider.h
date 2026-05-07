@@ -404,6 +404,7 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
       base::Seconds(5);
 
   bool IsAccelerated() const override = 0;
+  virtual bool IsSoftware() const = 0;
   bool IsGpuContextLost() const override;
 
   sk_sp<SkSurface> CreateSkSurface() const override;
@@ -436,7 +437,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   scoped_refptr<CanvasResourceSharedImage> resource_;
 
   bool current_resource_has_write_access_ = false;
-  bool is_software_ = false;
 
   base::WeakPtr<CanvasResourceProviderSharedImage> CreateWeakPtr();
 
@@ -518,6 +518,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   bool IsSingleBuffered() const override;
 
   bool IsAccelerated() const override { return is_accelerated_; }
+  bool IsSoftware() const override { return is_software_; }
 
   // WebGraphicsContext3DProviderWrapper::DestructionObserver implementation.
   void OnContextDestroyed() override;
@@ -611,6 +612,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   scoped_refptr<StaticBitmapImage> cached_snapshot_;
 
   const bool is_accelerated_;
+  const bool is_software_;
   bool is_cleared_ = false;
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
@@ -698,6 +700,7 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   bool IsSingleBuffered() const override;
 
   bool IsAccelerated() const override { return is_accelerated_; }
+  bool IsSoftware() const override { return is_software_; }
 
   // WebGraphicsContext3DProviderWrapper::DestructionObserver implementation.
   void OnContextDestroyed() override;
@@ -815,6 +818,7 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   scoped_refptr<StaticBitmapImage> cached_snapshot_;
 
   const bool is_accelerated_;
+  const bool is_software_;
   bool is_cleared_ = false;
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;

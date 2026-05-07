@@ -262,16 +262,10 @@ CanvasResourceProviderSharedImage::CanvasResourceProviderSharedImage(
                              format,
                              alpha_type,
                              color_space,
-                             delegate),
-      is_software_(true) {}
+                             delegate) {}
 
-CanvasResourceProviderSharedImage::~CanvasResourceProviderSharedImage() {
-  if (is_software_) {
-    return;
-  }
-
-  GetFlushForImageListener()->RemoveObserver(this);
-}
+CanvasResourceProviderSharedImage::~CanvasResourceProviderSharedImage() =
+    default;
 
 base::WeakPtr<CanvasResourceProviderSharedImage>
 CanvasResourceProviderSharedImage::CreateWeakPtr() {
@@ -575,7 +569,7 @@ CanvasNon2DResourceProviderSharedImage::WillDrawInternal() {
 void Canvas2DResourceProviderSharedImage::WillDrawUnaccelerated() {
   CHECK(!IsAccelerated());
 
-  if (is_software_) {
+  if (IsSoftware()) {
     return;
   }
   cached_snapshot_.reset();
@@ -771,7 +765,7 @@ scoped_refptr<CanvasResource>
 Canvas2DResourceProviderSharedImage::ProduceCanvasResource(FlushReason reason) {
   TRACE_EVENT0("blink",
                "Canvas2DResourceProviderSharedImage::ProduceCanvasResource");
-  if (is_software_) {
+  if (IsSoftware()) {
     DCHECK(GetSkSurface());
     scoped_refptr<CanvasResource> output_resource = NewOrRecycledResource();
     if (!output_resource) {
@@ -826,7 +820,7 @@ scoped_refptr<CanvasResource>
 CanvasNon2DResourceProviderSharedImage::ProduceCanvasResource() {
   TRACE_EVENT0("blink",
                "CanvasNon2DResourceProviderSharedImage::ProduceCanvasResource");
-  if (is_software_) {
+  if (IsSoftware()) {
     DCHECK(GetSkSurface());
     scoped_refptr<CanvasResource> output_resource = NewOrRecycledResource();
     if (!output_resource) {
@@ -853,7 +847,7 @@ CanvasNon2DResourceProviderSharedImage::ProduceCanvasResource() {
 }
 
 bool Canvas2DResourceProviderSharedImage::IsValid() const {
-  if (is_software_) {
+  if (IsSoftware()) {
     // Software compositing (which always uses software raster).
     return shared_image_interface_provider_ &&
            shared_image_interface_provider_->SharedImageInterface() &&
@@ -870,7 +864,7 @@ bool Canvas2DResourceProviderSharedImage::IsValid() const {
 }
 
 bool CanvasNon2DResourceProviderSharedImage::IsValid() const {
-  if (is_software_) {
+  if (IsSoftware()) {
     return shared_image_interface_provider_ &&
            shared_image_interface_provider_->SharedImageInterface() &&
            GetSkSurface();
@@ -912,12 +906,12 @@ CanvasNon2DResourceProviderSharedImage::DoExternalOverdrawAndProduceResource(
     base::FunctionRef<void(cc::PaintCanvas&)> draw_callback) {
   cached_snapshot_.reset();
 
-  if (!is_software_ && IsGpuContextLost()) {
+  if (!IsSoftware() && IsGpuContextLost()) {
     return nullptr;
   }
 
   scoped_refptr<CanvasResource> software_resource;
-  if (is_software_) {
+  if (IsSoftware()) {
     software_resource = NewOrRecycledResource();
     if (!software_resource) {
       return nullptr;
@@ -929,7 +923,7 @@ CanvasNon2DResourceProviderSharedImage::DoExternalOverdrawAndProduceResource(
     FlushRecording(recorder_for_external_draws_->ReleaseMainRecording());
   }
 
-  if (is_software_) {
+  if (IsSoftware()) {
     // Note that the resource *must* be a CanvasResourceSharedImage as this
     // class creates CanvasResourceSharedImage instances exclusively.
     static_cast<CanvasResourceSharedImage*>(software_resource.get())
@@ -1239,7 +1233,7 @@ sk_sp<SkSurface> CanvasResourceProviderSharedImage::CreateSkSurface() const {
 
   CHECK(!IsAccelerated());
 
-  if (is_software_) {
+  if (IsSoftware()) {
     const auto props = GetSkSurfaceProps();
     const auto info = SkImageInfo::Make(
         size_.width(), size_.height(), viz::ToClosestSkColorType(format_),
@@ -1301,7 +1295,7 @@ void CanvasNon2DResourceProviderSharedImage::OnFlushForImage(
 
 void Canvas2DResourceProviderSharedImage::OnMemoryDump(
     base::trace_event::ProcessMemoryDump* pmd) {
-  if (is_software_) {
+  if (IsSoftware()) {
     // This class creates software SharedImages only on demand and might not
     // have one here - invoke the base class implementation of this method
     // instead.
@@ -2070,6 +2064,7 @@ Canvas2DResourceProviderSharedImage::Canvas2DResourceProviderSharedImage(
                                         color_space,
                                         delegate),
       is_accelerated_(is_accelerated),
+      is_software_(false),
       context_provider_wrapper_(std::move(context_provider_wrapper)) {
   recorder_for_canvas_2d_ =
       std::make_unique<MemoryManagedPaintRecorder>(Size(), this);
@@ -2167,6 +2162,7 @@ Canvas2DResourceProviderSharedImage::Canvas2DResourceProviderSharedImage(
                                         shared_image_interface_provider,
                                         delegate),
       is_accelerated_(false),
+      is_software_(true),
       shared_image_interface_provider_(
           shared_image_interface_provider
               ? shared_image_interface_provider->GetWeakPtr()
@@ -2196,6 +2192,10 @@ Canvas2DResourceProviderSharedImage::~Canvas2DResourceProviderSharedImage() {
   }
   if (shared_image_interface_provider_) {
     shared_image_interface_provider_->RemoveGpuChannelLostObserver(this);
+  }
+
+  if (!is_software_) {
+    GetFlushForImageListener()->RemoveObserver(this);
   }
 
   // Last chance for outstanding GPU timers to record metrics.
@@ -2245,6 +2245,7 @@ CanvasNon2DResourceProviderSharedImage::CanvasNon2DResourceProviderSharedImage(
           std::make_unique<MemoryManagedPaintRecorder>(Size(),
                                                        /*client=*/nullptr)),
       is_accelerated_(is_accelerated),
+      is_software_(false),
       context_provider_wrapper_(std::move(context_provider_wrapper)) {
   if (context_provider_wrapper_) {
     context_provider_wrapper_->AddObserver(this);
@@ -2341,6 +2342,7 @@ CanvasNon2DResourceProviderSharedImage::CanvasNon2DResourceProviderSharedImage(
           std::make_unique<MemoryManagedPaintRecorder>(Size(),
                                                        /*client=*/nullptr)),
       is_accelerated_(false),
+      is_software_(true),
       shared_image_interface_provider_(
           shared_image_interface_provider
               ? shared_image_interface_provider->GetWeakPtr()
@@ -2369,6 +2371,10 @@ CanvasNon2DResourceProviderSharedImage::
   }
   if (shared_image_interface_provider_) {
     shared_image_interface_provider_->RemoveGpuChannelLostObserver(this);
+  }
+
+  if (!is_software_) {
+    GetFlushForImageListener()->RemoveObserver(this);
   }
 
   // Last chance for outstanding GPU timers to record metrics.
@@ -2409,7 +2415,7 @@ base::ByteSize CanvasNon2DResourceProviderSharedImage::EstimatedSizeInBytes()
 
 void CanvasNon2DResourceProviderSharedImage::OnMemoryDump(
     base::trace_event::ProcessMemoryDump* pmd) {
-  if (is_software_) {
+  if (IsSoftware()) {
     // This class creates software SharedImages only on demand and might not
     // have one here - invoke the base class implementation of this method
     // instead.
