@@ -461,9 +461,11 @@ void LanguageModelCreateClient::OnResult(
   CHECK(info);
   if (GetExecutionContext() && pending_remote) {
     info->sampling_mode = sampling_mode_;
+    bool has_context =
+        options_->hasInitialPrompts() && !options_->initialPrompts().empty();
     GetResolver()->Resolve(MakeGarbageCollected<LanguageModel>(
         GetExecutionContext(), std::move(pending_remote), task_runner_,
-        std::move(info)));
+        std::move(info), has_context));
   } else {
     GetResolver()->RejectWithDOMException(
         DOMExceptionCode::kInvalidStateError,
