@@ -8,15 +8,23 @@
 #include <iosfwd>
 #include <memory>
 #include <optional>
+#include <string>
+#include <variant>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_dialog_delegate.h"
+#include "chrome/browser/ui/views/web_apps/web_app_modal_dialog_delegate.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "ui/base/identifier/unique_identifier.h"
+#include "ui/views/controls/button/button.h"
 
-namespace content {
-class WebContents;
+class PrefService;
+
+namespace feature_engagement {
+class Tracker;
 }
 
 namespace webapps {
@@ -43,11 +51,12 @@ enum class InstallOsType { kMac, kWin, kCros, kOther };
 inline constexpr int kLargeImageSize = 80;
 std::ostream& operator<<(std::ostream& os, InstallOsType type);
 
-class WebAppInstallFlowDialogDelegate : public WebAppInstallDialogDelegate {
+class WebAppInstallFlowDialogDelegate : public WebAppModalDialogDelegate {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kInstallDialogFlowViewId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kLearnMoreButtonId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCancelButtonId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kInstallButton);
 
   WebAppInstallFlowDialogDelegate(
       content::WebContents* web_contents,
@@ -85,12 +94,27 @@ class WebAppInstallFlowDialogDelegate : public WebAppInstallDialogDelegate {
 
   bool AdvanceToNextStepOrClose();
 
-  void OnAccept() override;
+  void OnAccept();
+  void OnCancel();
+  void OnClose();
+  void OnDestroyed();
+
+  void OnTextFieldChangedMaybeUpdateButton(
+      const std::u16string& text_field_contents);
+
   void OnProgress(std::optional<double> percent);
 
   base::WeakPtr<WebAppInstallFlowDialogDelegate> AsWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
+
+  // views::WidgetObserver overrides:
+  void OnWidgetBoundsChanged(views::Widget* widget,
+                             const gfx::Rect& new_bounds) override;
+  // WebAppModalDialogDelegate overrides:
+  void CloseDialogAsIgnored() override;
+
+  InstallDialogType dialog_type() const { return dialog_type_; }
 
  protected:
   InstallDialogStep current_step_ = InstallDialogStep::kInstallDialog;
@@ -104,10 +128,28 @@ class WebAppInstallFlowDialogDelegate : public WebAppInstallDialogDelegate {
   void UpdateDialogTitleAndHeader(InstallDialogStep step);
   void UpdateProgressAndMaybeAdvance();
   void OnInstallResult(bool success, base::OnceClosure reparent_closure);
-  void OnAcceptCallback(bool success,
-                        std::unique_ptr<WebAppInstallInfo> web_app_info);
 
+  void MeasureIphOnDialogClose();
+  void MeasureAcceptUserActionsForInstallDialog();
+  void MeasureCancelUserActionsForInstallDialog();
+
+  static bool IsWidgetCurrentSizeSmallerThanPreferredSize(
+      views::Widget* widget);
+
+  std::unique_ptr<WebAppInstallInfo> install_info_;
+  std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker_;
   WebAppInstallationAcceptanceCallback callback_;
+  PwaInProductHelpState iph_state_;
+  raw_ptr<PrefService> prefs_;
+  raw_ptr<feature_engagement::Tracker> tracker_;
+  InstallDialogType dialog_type_;
+  std::u16string text_field_contents_;
+  bool received_user_response_ = false;
+
+  const std::optional<std::variant<views::Button::ScopedAnchorHighlight,
+                                   page_actions::ScopedPageActionActivity>>
+      page_action_highlight_;
+
   std::unique_ptr<ProgressDelay> progress_delay_;
   bool install_success_ = false;
   std::optional<double> timer_percentage_ = 0.0;
