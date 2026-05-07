@@ -20,6 +20,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/composebox/model",
     "//ios/chrome/browser/composebox/public:focus_params",
     "//ios/chrome/browser/composebox/shared/coordinator",
+    "//ios/chrome/browser/composebox/shared/metrics",
     "//ios/chrome/browser/composebox/ui:state",
     "//ios/chrome/browser/composebox/ui:ui_util",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",

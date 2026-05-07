@@ -162,7 +162,10 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
     _query = focusParams.query;
     _URLLoader = URLLoader;
     _theme = theme;
-    _metricsRecorder = [[ComposeboxMetricsRecorder alloc] init];
+    // If there a shared metrics recorder, reuse it to maintain the same
+    // recording session.
+    _metricsRecorder =
+        focusParams.metricsRecorder ?: [[ComposeboxMetricsRecorder alloc] init];
     _modeHolder = modeHolder;
     _focusParams = focusParams;
   }
@@ -325,6 +328,7 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
   _locationBar = nullptr;
   _locationBarModel = nullptr;
   _locationBarModelDelegate = nullptr;
+  _focusParams = nullptr;
 }
 
 - (UIViewController*)inputViewController {
@@ -458,6 +462,7 @@ contextual_search::ContextualSearchSource ContextualSearchSourceFromEntrypoint(
                            browser:self.browser
             preselectedAttachments:_mediator.currentAttachmentSelection
                         inputState:state
+                   metricsRecorder:_metricsRecorder
                         entrypoint:_entrypoint];
     _menuCoorinator.inputPlateDelegate = self;
     _menuCoorinator.delegate = self;

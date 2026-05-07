@@ -13,6 +13,7 @@
 @class ComposeboxAttachmentSelection;
 @class ComposeboxMenuCoordinator;
 @class ComposeboxUIInputState;
+@class ComposeboxMetricsRecorder;
 
 // Delegate for events of `ComposeboxMenuCoordinator`.
 @protocol ComposeboxMenuCoordinatorDelegate <NSObject>
@@ -57,6 +58,8 @@
                     preselectedAttachments:
                         (ComposeboxAttachmentSelection*)preselectedAttachments
                                 inputState:(ComposeboxUIInputState*)inputState
+                           metricsRecorder:
+                               (ComposeboxMetricsRecorder*)metricsRecorder
                                 entrypoint:(ComposeboxEntrypoint)entrypoint
     NS_DESIGNATED_INITIALIZER;
 

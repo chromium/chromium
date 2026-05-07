@@ -6,6 +6,7 @@
 
 #import <memory>
 #import <set>
+#import <vector>
 
 #import "components/contextual_search/contextual_search_service.h"
 #import "components/contextual_search/contextual_search_session_handle.h"
@@ -19,6 +20,7 @@
 #import "ios/chrome/browser/composebox/public/composebox_attachment_selection.h"
 #import "ios/chrome/browser/composebox/public/composebox_focus_params.h"
 #import "ios/chrome/browser/composebox/shared/coordinator/composebox_picker_presenter.h"
+#import "ios/chrome/browser/composebox/shared/metrics/composebox_metrics_recorder.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_input_state.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -61,6 +63,9 @@ CGFloat const kSheetTopPadding = 40.0f;
   ComposeboxInputStateManager* _stateManager;
   std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
       _sessionHandle;
+
+  // Metrics recorder
+  ComposeboxMetricsRecorder* _metricsRecorder;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -68,6 +73,8 @@ CGFloat const kSheetTopPadding = 40.0f;
                     preselectedAttachments:
                         (ComposeboxAttachmentSelection*)preselectedAttachments
                                 inputState:(ComposeboxUIInputState*)inputState
+                           metricsRecorder:
+                               (ComposeboxMetricsRecorder*)metricsRecorder
                                 entrypoint:(ComposeboxEntrypoint)entrypoint {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
@@ -75,6 +82,7 @@ CGFloat const kSheetTopPadding = 40.0f;
     _preselection = preselectedAttachments;
     _inputState = inputState;
     _isStandaloneMenu = (inputState == nil);
+    _metricsRecorder = metricsRecorder;
   }
   return self;
 }
@@ -82,11 +90,13 @@ CGFloat const kSheetTopPadding = 40.0f;
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                                 entrypoint:(ComposeboxEntrypoint)entrypoint {
-  return [self initWithBaseViewController:viewController
-                                  browser:browser
-                   preselectedAttachments:nil
-                               inputState:nil
-                               entrypoint:entrypoint];
+  return
+      [self initWithBaseViewController:viewController
+                               browser:browser
+                preselectedAttachments:nil
+                            inputState:nil
+                       metricsRecorder:[[ComposeboxMetricsRecorder alloc] init]
+                            entrypoint:entrypoint];
 }
 
 - (void)start {
@@ -166,6 +176,7 @@ CGFloat const kSheetTopPadding = 40.0f;
   _viewController.mutator = _mediator;
   _mediator.consumer = _viewController;
 
+  [self recordAttachmentsMenuOpen];
   [self.baseViewController presentViewController:_viewController
                                         animated:YES
                                       completion:nil];
@@ -206,12 +217,11 @@ CGFloat const kSheetTopPadding = 40.0f;
                   toolMode:toolMode
                  modelMode:ComposeboxModelOption::kNone
             attachmentList:nil];
-    __weak id<BrowserCoordinatorCommands> commands = HandlerForProtocol(
-        self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
+    __weak __typeof(self) weakSelf = self;
     [_viewController.presentingViewController
         dismissViewControllerAnimated:YES
                            completion:^{
-                             [commands showComposeboxWithParams:focusParams];
+                             [weakSelf showComposeboxWithParams:focusParams];
                            }];
   } else {
     [self.inputPlateDelegate composeboxMenuCoordinator:self
@@ -229,12 +239,11 @@ CGFloat const kSheetTopPadding = 40.0f;
                   toolMode:ComposeboxMode::kRegularSearch
                  modelMode:modelMode
             attachmentList:nil];
-    __weak id<BrowserCoordinatorCommands> commands = HandlerForProtocol(
-        self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
+    __weak __typeof(self) weakSelf = self;
     [_viewController.presentingViewController
         dismissViewControllerAnimated:YES
                            completion:^{
-                             [commands showComposeboxWithParams:focusParams];
+                             [weakSelf showComposeboxWithParams:focusParams];
                            }];
   } else {
     [self.inputPlateDelegate composeboxMenuCoordinator:self
@@ -252,12 +261,11 @@ CGFloat const kSheetTopPadding = 40.0f;
                   toolMode:ComposeboxMode::kRegularSearch
                  modelMode:ComposeboxModelOption::kNone
             attachmentList:attachments];
-    __weak id<BrowserCoordinatorCommands> commands = HandlerForProtocol(
-        self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
+    __weak __typeof(self) weakSelf = self;
     [_viewController.presentingViewController
         dismissViewControllerAnimated:YES
                            completion:^{
-                             [commands showComposeboxWithParams:focusParams];
+                             [weakSelf showComposeboxWithParams:focusParams];
                            }];
   } else {
     [self.inputPlateDelegate composeboxMenuCoordinator:self
@@ -268,7 +276,8 @@ CGFloat const kSheetTopPadding = 40.0f;
 
 - (void)composeboxMenuMediatorDidRequestCameraSelection:
     (ComposeboxMenuMediator*)mediator {
-  // TODO(crbug.com/506955766): Unify metrics recording and record this action.
+  [_metricsRecorder
+      recordAttachmentButtonUsed:FuseboxAttachmentButtonType::kCamera];
 
   if (![_mediator canAddMoreAttachments]) {
     [self showMaxAttachmentSnackbarError];
@@ -280,7 +289,8 @@ CGFloat const kSheetTopPadding = 40.0f;
 
 - (void)composeboxMenuMediatorDidRequestGallerySelection:
     (ComposeboxMenuMediator*)mediator {
-  // TODO(crbug.com/506955766): Unify metrics recording and record this action.
+  [_metricsRecorder
+      recordAttachmentButtonUsed:FuseboxAttachmentButtonType::kGallery];
 
   if (![_mediator canAddMoreAttachments]) {
     [self showMaxAttachmentSnackbarError];
@@ -293,7 +303,8 @@ CGFloat const kSheetTopPadding = 40.0f;
 
 - (void)composeboxMenuMediatorDidRequestFileSelection:
     (ComposeboxMenuMediator*)mediator {
-  // TODO(crbug.com/506955766): Unify metrics recording and record this action.
+  [_metricsRecorder
+      recordAttachmentButtonUsed:FuseboxAttachmentButtonType::kFiles];
 
   if (![_mediator canAddMoreAttachments]) {
     [self showMaxAttachmentSnackbarError];
@@ -304,7 +315,8 @@ CGFloat const kSheetTopPadding = 40.0f;
 
 - (void)composeboxMenuMediatorDidRequestTabSelection:
     (ComposeboxMenuMediator*)mediator {
-  // TODO(crbug.com/506955766): Unify metrics recording and record this action.
+  [_metricsRecorder
+      recordAttachmentButtonUsed:FuseboxAttachmentButtonType::kTabPicker];
 
   if (![_mediator canAddMoreAttachments]) {
     [self showMaxAttachmentSnackbarError];
@@ -318,6 +330,8 @@ CGFloat const kSheetTopPadding = 40.0f;
 - (void)composeboxPickerPresenter:(ComposeboxPickerPresenter*)presenter
                     didPickImages:
                         (NSArray<ComposeboxPickerImageResult*>*)results {
+  [_metricsRecorder recordImagesAttached:results.count];
+
   [_mediator processImageItems:results];
 }
 
@@ -328,6 +342,8 @@ CGFloat const kSheetTopPadding = 40.0f;
 
 - (void)composeboxPickerPresenter:(ComposeboxPickerPresenter*)presenter
              didPickFilesWithURLs:(NSArray<NSURL*>*)urls {
+  [_metricsRecorder recordFilesAttached:urls.count];
+
   [_mediator processFileURLs:urls];
 }
 
@@ -364,6 +380,38 @@ CGFloat const kSheetTopPadding = 40.0f;
 /// been reached.
 - (void)showMaxAttachmentSnackbarError {
   // TODO(crbug.com/506956765): Implement.
+}
+
+// Records the menu open with visible buttons.
+- (void)recordAttachmentsMenuOpen {
+  using enum ComposeboxAttachmentOption;
+
+  std::vector<FuseboxAttachmentButtonType> visibleButtons;
+  if (![_inputState isAttachmentHidden:kCurrentTab]) {
+    visibleButtons.push_back(FuseboxAttachmentButtonType::kCurrentTab);
+  }
+  if (![_inputState isAttachmentHidden:kTab]) {
+    visibleButtons.push_back(FuseboxAttachmentButtonType::kTabPicker);
+  }
+  if (![_inputState isAttachmentHidden:kCamera]) {
+    visibleButtons.push_back(FuseboxAttachmentButtonType::kCamera);
+  }
+  if (![_inputState isAttachmentHidden:kGallery]) {
+    visibleButtons.push_back(FuseboxAttachmentButtonType::kGallery);
+  }
+  if (![_inputState isAttachmentHidden:kFile]) {
+    visibleButtons.push_back(FuseboxAttachmentButtonType::kFiles);
+  }
+
+  [_metricsRecorder
+      recordAttachmentsMenuOpenedWithVisibleButtons:visibleButtons];
+}
+
+- (void)showComposeboxWithParams:(ComposeboxFocusParams*)params {
+  id<BrowserCoordinatorCommands> commands = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
+  params.metricsRecorder = _metricsRecorder;
+  [commands showComposeboxWithParams:params];
 }
 
 @end
