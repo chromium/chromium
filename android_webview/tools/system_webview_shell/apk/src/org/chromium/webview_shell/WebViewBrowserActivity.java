@@ -107,6 +107,11 @@ public class WebViewBrowserActivity extends AppCompatActivity {
             menu.findItem(R.id.menu_force_dark_auto).setEnabled(false);
             menu.findItem(R.id.menu_force_dark_on).setEnabled(false);
         }
+        if (!WebViewFeature.isFeatureSupported(WebViewFeature.WEB_AUTHENTICATION)) {
+            menu.findItem(R.id.menu_webauthn_browser).setEnabled(false);
+            menu.findItem(R.id.menu_webauthn_app).setEnabled(false);
+            menu.findItem(R.id.menu_webauthn_off).setEnabled(false);
+        }
         if (!WebViewFeature.isFeatureSupported(WebViewFeature.MULTI_PROFILE)) {
             menu.findItem(R.id.menu_multi_profile).setEnabled(false);
         }
@@ -139,6 +144,21 @@ public class WebViewBrowserActivity extends AppCompatActivity {
                     break;
                 case WebSettingsCompat.FORCE_DARK_ON:
                     menu.findItem(R.id.menu_force_dark_on).setChecked(true);
+                    break;
+            }
+        }
+        if (WebViewFeature.isFeatureSupported(WebViewFeature.WEB_AUTHENTICATION)) {
+            int webAuthnSupport =
+                    WebSettingsCompat.getWebAuthenticationSupport(mWebView.getSettings());
+            switch (webAuthnSupport) {
+                case WebSettingsCompat.WEB_AUTHENTICATION_SUPPORT_FOR_BROWSER:
+                    menu.findItem(R.id.menu_webauthn_browser).setChecked(true);
+                    break;
+                case WebSettingsCompat.WEB_AUTHENTICATION_SUPPORT_FOR_APP:
+                    menu.findItem(R.id.menu_webauthn_app).setChecked(true);
+                    break;
+                case WebSettingsCompat.WEB_AUTHENTICATION_SUPPORT_NONE:
+                    menu.findItem(R.id.menu_webauthn_off).setChecked(true);
                     break;
             }
         }
@@ -226,6 +246,27 @@ public class WebViewBrowserActivity extends AppCompatActivity {
             return true;
         } else if (itemId == R.id.menu_force_dark_on) {
             WebSettingsCompat.setForceDark(mWebView.getSettings(), WebSettingsCompat.FORCE_DARK_ON);
+            item.setChecked(true);
+            return true;
+        } else if (itemId == R.id.menu_webauthn_browser) {
+            WebSettingsCompat.setWebAuthenticationSupport(
+                    mWebView.getSettings(),
+                    WebSettingsCompat.WEB_AUTHENTICATION_SUPPORT_FOR_BROWSER);
+            item.setChecked(true);
+            Toast.makeText(
+                            this,
+                            "Some password managers don't honor passkeys in this shell.",
+                            Toast.LENGTH_LONG)
+                    .show();
+            return true;
+        } else if (itemId == R.id.menu_webauthn_app) {
+            WebSettingsCompat.setWebAuthenticationSupport(
+                    mWebView.getSettings(), WebSettingsCompat.WEB_AUTHENTICATION_SUPPORT_FOR_APP);
+            item.setChecked(true);
+            return true;
+        } else if (itemId == R.id.menu_webauthn_off) {
+            WebSettingsCompat.setWebAuthenticationSupport(
+                    mWebView.getSettings(), WebSettingsCompat.WEB_AUTHENTICATION_SUPPORT_NONE);
             item.setChecked(true);
             return true;
         } else if (itemId == R.id.menu_night_mode_on) {

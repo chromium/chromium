@@ -24,6 +24,9 @@
     <string name="menu_force_dark_off">Force Dark Off</string>
     <string name="menu_force_dark_auto">Force Dark Auto</string>
     <string name="menu_force_dark_on">Force Dark On</string>
+    <string name="menu_webauthn_browser">WebAuthn Browser Mode</string>
+    <string name="menu_webauthn_app">WebAuthn App Mode</string>
+    <string name="menu_webauthn_off">WebAuthn Off</string>
     <string name="menu_algorithmic_darkening_on">Algorithmic Darkening ON</string>
     <string name="menu_enable_third_party_cookies">Enable third-party cookies</string>
     <string name="menu_night_mode_on">Night Mode ON</string>

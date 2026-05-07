@@ -25,6 +25,14 @@ found in the LICENSE file.
         <item android:id="@+id/menu_force_dark_on"
               android:title="@string/menu_force_dark_on"/>
     </group>
+    <group android:checkableBehavior="single">
+        <item android:id="@+id/menu_webauthn_browser"
+              android:title="@string/menu_webauthn_browser"/>
+        <item android:id="@+id/menu_webauthn_app"
+              android:title="@string/menu_webauthn_app"/>
+        <item android:id="@+id/menu_webauthn_off"
+              android:title="@string/menu_webauthn_off"/>
+    </group>
     <item android:id="@+id/menu_night_mode_on"
     android:checkable="true"
           android:title="@string/menu_night_mode_on"/>
