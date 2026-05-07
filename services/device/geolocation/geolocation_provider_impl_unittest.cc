@@ -21,6 +21,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/test/with_feature_override.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "components/content_settings/core/common/features.h"
@@ -246,7 +247,19 @@ TEST_F(GeolocationProviderTest, StartStop) {
   EXPECT_TRUE(provider()->IsRunning());
 }
 
-TEST_F(GeolocationProviderTest, StalePositionNotSent) {
+class GeolocationProviderTestWithApproxLocation
+    : public base::test::WithFeatureOverride,
+      public GeolocationProviderTest {
+ public:
+  GeolocationProviderTestWithApproxLocation()
+      : base::test::WithFeatureOverride(
+            content_settings::features::kApproximateGeolocationPermission) {}
+};
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    GeolocationProviderTestWithApproxLocation);
+
+TEST_P(GeolocationProviderTestWithApproxLocation, StalePositionNotSent) {
   SetFakeLocationProviderManager();
   SetSystemPermission(LocationSystemPermissionStatus::kAllowed);
 
@@ -261,7 +274,8 @@ TEST_F(GeolocationProviderTest, StalePositionNotSent) {
         });
 
     base::CallbackListSubscription subscription =
-        provider()->AddLocationUpdateCallback(mock_callback1.Get(), false);
+        provider()->AddLocationUpdateCallback(mock_callback1.Get(),
+                                              /*enable_high_accuracy=*/true);
     SendMockLocation(*position_result1_);
     EXPECT_EQ(future1.Get()->get_position(), position_result1_->get_position());
     subscription = {};
@@ -275,7 +289,8 @@ TEST_F(GeolocationProviderTest, StalePositionNotSent) {
     // is sent.
     EXPECT_CALL(mock_callback2, Run).Times(0);
     base::CallbackListSubscription subscription2 =
-        provider()->AddLocationUpdateCallback(mock_callback2.Get(), false);
+        provider()->AddLocationUpdateCallback(mock_callback2.Get(),
+                                              /*enable_high_accuracy=*/true);
     base::RunLoop().RunUntilIdle();
 
     // The second callback should receive the new position now.
