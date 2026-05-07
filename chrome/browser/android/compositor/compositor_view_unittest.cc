@@ -48,6 +48,7 @@ class MockCompositor : public content::Compositor {
   MOCK_METHOD(const gfx::Size&, GetWindowBounds, (), (override));
   MOCK_METHOD(void, SetRequiresAlphaChannel, (bool required), (override));
   MOCK_METHOD(void, SetNeedsComposite, (), (override));
+  MOCK_METHOD(void, SetDrawPaused, (bool paused), (override));
   MOCK_METHOD(base::WeakPtr<ui::UIResourceProvider>,
               GetUIResourceProvider,
               (),

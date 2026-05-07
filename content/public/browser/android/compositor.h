@@ -91,6 +91,9 @@ class CONTENT_EXPORT Compositor {
   // Composite *without* having modified the layer tree.
   virtual void SetNeedsComposite() = 0;
 
+  // Pauses frame drawing and swapping until resumed.
+  virtual void SetDrawPaused(bool paused) = 0;
+
   // Returns the UI resource provider associated with the compositor.
   virtual base::WeakPtr<ui::UIResourceProvider> GetUIResourceProvider() = 0;
 

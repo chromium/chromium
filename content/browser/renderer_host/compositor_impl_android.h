@@ -127,6 +127,7 @@ class CONTENT_EXPORT CompositorImpl : public Compositor,
   const gfx::Size& GetWindowBounds() override;
   void SetRequiresAlphaChannel(bool flag) override;
   void SetNeedsComposite() override;
+  void SetDrawPaused(bool paused) override;
   base::WeakPtr<ui::UIResourceProvider> GetUIResourceProvider() override;
   ui::ResourceManager& GetResourceManager() override;
   void CacheBackBufferForCurrentSurface() override;
@@ -247,6 +248,8 @@ class CONTENT_EXPORT CompositorImpl : public Compositor,
 
   // Whether we need to update animations on the next composite.
   bool needs_animate_;
+
+  bool draw_paused_ = false;
 
   // The number of SubmitFrame calls that have not returned and ACK'd from
   // the GPU thread.
