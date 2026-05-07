@@ -55,6 +55,7 @@ group("resources") {
       "data_sharing:resources",
       "downloads:resources",
       "drive_picker_host:resources",
+      "drive_picker_host/untrusted:resources",
       "feedback:resources",
       "gaia_auth_host:resources",
       "glic/experimental_opt_in:resources",

@@ -28,6 +28,7 @@ source_set("drive_picker_host") {
   deps = [
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/drive_picker_host:resources",
+    "//chrome/browser/signin",
     "//chrome/browser/ui/browser_window",
     "//chrome/common",
     "//components/omnibox/common",

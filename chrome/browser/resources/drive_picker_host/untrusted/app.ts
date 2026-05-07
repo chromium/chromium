@@ -3,12 +3,13 @@
 // found in the LICENSE file.
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import {assert} from '//resources/js/assert.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import {BrowserProxyImpl} from './browser_proxy.js';
-import {PageCallbackRouter} from './drive_picker_host_untrusted.mojom-webui.js';
-import type {DrivePickerUntrustedHostHandlerRemote} from './drive_picker_host_untrusted.mojom-webui.js';
+import {DrivePickerApiProxyImpl} from './drive_picker_api_proxy.js';
+import type {GooglePickerResponse} from './drive_picker_api_proxy.js';
 import type {DrivePickerResultHandlerRemote} from './drive_picker_result_handler.mojom-webui.js';
 
 export class DrivePickerHostUntrustedAppElement extends CrLitElement {
@@ -20,26 +21,51 @@ export class DrivePickerHostUntrustedAppElement extends CrLitElement {
     return getCss();
   }
 
-  private callbackRouter_: PageCallbackRouter = new PageCallbackRouter();
-  private handler_: DrivePickerUntrustedHostHandlerRemote =
-      BrowserProxyImpl.getInstance().handler;
+  private browserProxy_ = BrowserProxyImpl.getInstance();
+  private drivePickerApiProxy_ = DrivePickerApiProxyImpl.getInstance();
+  private resultHandler_: DrivePickerResultHandlerRemote|null = null;
+  private listenerIds_: number[] = [];
 
   override render() {
     return getHtml.bind(this)();
   }
 
-  override firstUpdated() {
-    this.handler_.bindPage(this.callbackRouter_.$.bindNewPipeAndPassRemote());
-
-    this.callbackRouter_.showDrivePicker.addListener(
-        (resultHandler: DrivePickerResultHandlerRemote) => {
-          this.showDrivePicker(resultHandler);
-        });
+  override connectedCallback() {
+    super.connectedCallback();
+    this.listenerIds_ = [
+      this.browserProxy_.callbackRouter.showDrivePicker.addListener(
+          this.showDrivePicker_.bind(this)),
+    ];
   }
 
-  showDrivePicker(_resultHandler: DrivePickerResultHandlerRemote) {
-    // TODO: crbug.com/497937568 - Implement the Drive Picker UI and relay
-    // results to the resultHandler.
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.listenerIds_.forEach(
+        id => assert(this.browserProxy_.callbackRouter.removeListener(id)));
+    this.listenerIds_ = [];
+  }
+
+  private async showDrivePicker_(
+      resultHandler: DrivePickerResultHandlerRemote,
+      keys: {oauthToken: string, apiKey: string, appId: string}) {
+    this.resultHandler_ = resultHandler;
+
+    try {
+      await this.drivePickerApiProxy_.showPicker(
+          keys.oauthToken, keys.apiKey, keys.appId,
+          (data: GooglePickerResponse) => this.onPickerCallback_(data));
+    } catch (e) {
+      return;
+    }
+  }
+
+  private onPickerCallback_(data: GooglePickerResponse) {
+    // TODO(crbug.com/497937568): Handle the selected files,
+    // sanitize the data, and send it to the trusted host using
+    // this.resultHandler_.
+    if (data[google.picker.Response.ACTION] === google.picker.Action.PICKED) {
+      console.info('Drive Picker result received', this.resultHandler_);
+    }
   }
 }
 
