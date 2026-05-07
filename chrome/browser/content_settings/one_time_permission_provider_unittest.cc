@@ -18,6 +18,7 @@
 #include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
 #include "components/permissions/content_setting_permission_context_base.h"
@@ -211,39 +212,46 @@ TEST_F(OneTimePermissionProviderTest,
 TEST_F(OneTimePermissionProviderTest,
        AllTabsInBackgroundExpiryRevokesGeolocation) {
   base::HistogramTester histograms;
-  EXPECT_EQ(CONTENT_SETTING_DEFAULT,
-            TestUtils::GetContentSetting(
+  EXPECT_EQ(std::nullopt,
+            TestUtils::GetPermissionSetting(
                 one_time_permission_provider_.get(), primary_url, secondary_url,
-                ContentSettingsType::GEOLOCATION, false));
+                content_settings::GeolocationContentSettingsType(), false));
+
+  const PermissionSettingsInfo* info =
+      PermissionSettingsRegistry::GetInstance()->Get(
+          content_settings::GeolocationContentSettingsType());
+  PermissionSetting allow_setting =
+      info->delegate().ToPermissionSetting(CONTENT_SETTING_ALLOW);
+  base::Value allow_value = info->delegate().ToValue(allow_setting);
 
   one_time_permission_provider_->SetWebsiteSetting(
       primary_pattern, ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::GEOLOCATION, base::Value(CONTENT_SETTING_ALLOW),
+      content_settings::GeolocationContentSettingsType(), allow_value.Clone(),
       one_time_constraints());
 
   one_time_permission_provider_->SetWebsiteSetting(
       other_pattern, ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::GEOLOCATION, base::Value(CONTENT_SETTING_ALLOW),
+      content_settings::GeolocationContentSettingsType(), allow_value.Clone(),
       one_time_constraints());
 
   one_time_permission_provider_->OnAllTabsInBackgroundTimerExpired(
       url::Origin::Create(primary_url),
       OneTimePermissionsTrackerObserver::BackgroundExpiryType::kTimeout);
 
-  EXPECT_EQ(CONTENT_SETTING_DEFAULT,
-            TestUtils::GetContentSetting(
+  EXPECT_EQ(std::nullopt,
+            TestUtils::GetPermissionSetting(
                 one_time_permission_provider_.get(), primary_url, secondary_url,
-                ContentSettingsType::GEOLOCATION, false));
+                content_settings::GeolocationContentSettingsType(), false));
 
-  EXPECT_EQ(CONTENT_SETTING_ALLOW,
-            TestUtils::GetContentSetting(
+  EXPECT_EQ(allow_setting,
+            TestUtils::GetPermissionSetting(
                 one_time_permission_provider_.get(), other_url, secondary_url,
-                ContentSettingsType::GEOLOCATION, false));
+                content_settings::GeolocationContentSettingsType(), false));
 
   // We granted to two distinct origins
   histograms.ExpectBucketCount(
       permissions::PermissionUmaUtil::GetOneTimePermissionEventHistogram(
-          ContentSettingsType::GEOLOCATION),
+          content_settings::GeolocationContentSettingsType()),
       static_cast<base::HistogramBase::Sample32>(
           permissions::OneTimePermissionEvent::GRANTED_ONE_TIME),
       2);
