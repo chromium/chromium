@@ -340,43 +340,6 @@ CanvasNon2DResourceProviderSharedImage::NewOrRecycledResource() {
   return resource;
 }
 
-scoped_refptr<gpu::ClientSharedImage> Canvas2DResourceProviderSharedImage::
-    GetBackingClientSharedImageForTransferToWebGPU(
-        gpu::SyncToken& internal_access_sync_token,
-        bool& was_copy_performed) {
-  if (!image_pool_) {
-    return nullptr;
-  }
-  // This may cause the current resource and all cached resources to become
-  // unusable. WillDrawInternal() will detect this case, drop all cached
-  // resources, and copy the current resource to a newly-created resource
-  // which will by definition be usable.
-  auto image_info = image_pool_->GetImageInfo();
-  image_info.usage.PutAll(gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
-                          gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE);
-  image_pool_->Reconfigure(image_info);
-
-  DCHECK(is_accelerated_);
-
-  if (IsGpuContextLost()) {
-    return nullptr;
-  }
-
-  // End the internal write access before calling WillDrawInternal(), which
-  // has a precondition that there should be no current write access on the
-  // resource.
-  EndWriteAccess();
-
-  const CanvasResource* const original_resource = resource_.get();
-  auto access = WillDrawInternal();
-  was_copy_performed = resource_.get() != original_resource;
-
-  // NOTE: The above invocation of WillDrawInternal() ensures that this
-  // invocation of EndAccess() will generate a new sync token.
-  resource_->EndAccess(std::move(access));
-  internal_access_sync_token = resource_->sync_token();
-  return resource_->GetSharedImage();
-}
 
 void Canvas2DResourceProviderSharedImage::SetResourceRecyclingEnabled(
     bool value) {

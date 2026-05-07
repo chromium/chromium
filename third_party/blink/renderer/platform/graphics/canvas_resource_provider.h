@@ -547,17 +547,6 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
                               int x,
                               int y) override;
 
-  // Returns the ClientSharedImage backing this CanvasResourceProvider, if one
-  // exists, after flushing the resource and signaling that an external write
-  // will occur on it. The caller should wait on `internal_access_sync_token`
-  // before writing the contents via WebGPU. A copy will be performed if either
-  // (a) the display compositor is reading the current resource or (b) the
-  // current resource does not support WebGPU usage. In these cases,
-  // `was_copy_performed` will be set to true.
-  scoped_refptr<gpu::ClientSharedImage>
-  GetBackingClientSharedImageForTransferToWebGPU(
-      gpu::SyncToken& internal_access_sync_token,
-      bool& was_copy_performed);
 
   void SetResourceRecyclingEnabled(bool value);
 

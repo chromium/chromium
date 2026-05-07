@@ -166,50 +166,6 @@ TEST_F(CanvasResourceProviderTest, BeginExternalOverwrite) {
   EXPECT_EQ(client_si_from_second_call, client_si);
 }
 
-TEST_F(CanvasResourceProviderTest,
-       GetBackingClientSharedImageForTransferToWebGPU) {
-  const gpu::SharedImageUsageSet shared_image_usage_flags =
-      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT |
-      gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
-
-  Canvas2DColorParams color_params(PredefinedColorSpace::kSRGB,
-                                   CanvasPixelFormat::kUint8,
-                                   /*has_alpha=*/true);
-  auto provider = Canvas2DResourceProviderSharedImage::CreateWithClear(
-      gfx::Size(10, 10), color_params, context_provider_wrapper_,
-      RasterMode::kGPU, shared_image_usage_flags);
-
-  // When the backing SI does not support WebGPU, a new backing SI should be
-  // created that does so.
-  gpu::SyncToken sync_token;
-  bool was_copy_performed = false;
-  auto client_si = provider->GetBackingClientSharedImageForTransferToWebGPU(
-      sync_token, was_copy_performed);
-  EXPECT_TRUE(was_copy_performed);
-  EXPECT_TRUE(client_si->usage().HasAll(shared_image_usage_flags));
-  EXPECT_TRUE(client_si->usage().HasAll(gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
-                                        gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE));
-
-  // That new backing SI should then be returned on subsequent calls.
-  auto client_si_with_no_new_usage_required =
-      provider->GetBackingClientSharedImageForTransferToWebGPU(
-          sync_token, was_copy_performed);
-  EXPECT_EQ(client_si_with_no_new_usage_required, client_si);
-  EXPECT_FALSE(was_copy_performed);
-
-  // When the CRP is created with WebGPU usages, no initial copy should be
-  // necessary.
-  auto shared_image_usages_with_webgpu = shared_image_usage_flags |
-                                         gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
-                                         gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE;
-  provider = Canvas2DResourceProviderSharedImage::CreateWithClear(
-      gfx::Size(10, 10), color_params, context_provider_wrapper_,
-      RasterMode::kGPU, shared_image_usages_with_webgpu);
-  client_si = provider->GetBackingClientSharedImageForTransferToWebGPU(
-      sync_token, was_copy_performed);
-  EXPECT_FALSE(was_copy_performed);
-  EXPECT_TRUE(client_si->usage().HasAll(shared_image_usages_with_webgpu));
-}
 
 TEST_F(CanvasResourceProviderTest, CanvasResourceProviderAcceleratedOverlay) {
   const gfx::Size kSize(10, 10);
