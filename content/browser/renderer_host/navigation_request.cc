@@ -7854,6 +7854,15 @@ NavigationRequest::CheckCSPEmbeddedEnforcement() {
   if (network::AllowsBlanketEnforcementOfRequiredCSP(
           GetParentFrame()->GetLastCommittedOrigin(), GetURL(), allow_csp_from,
           required_csp_)) {
+    if (GetURL().SchemeIsLocal() || GetURL().SchemeIsFile()) {
+      base::UmaHistogramEnumeration(
+          "Navigation.CSPEmbeddedEnforcement.Outcome",
+          NavigationCSPEmbeddedEnforcementOutcome::kAllowLocalScheme);
+    } else {
+      base::UmaHistogramEnumeration(
+          "Navigation.CSPEmbeddedEnforcement.Outcome",
+          NavigationCSPEmbeddedEnforcementOutcome::kAllowAllowCSPFromHeader);
+    }
     // Enforce the required CSPs on the frame by passing them down to blink.
     policy_container_builder_->AddContentSecurityPolicy(required_csp_->Clone());
     return CSPEmbeddedEnforcementResult::ALLOW_RESPONSE;
@@ -7868,6 +7877,9 @@ NavigationRequest::CheckCSPEmbeddedEnforcement() {
     // documents are handled through the standard code path with its own
     // URLLoaderFactory.
     CHECK(IsForMhtmlSubframe());
+    base::UmaHistogramEnumeration(
+        "Navigation.CSPEmbeddedEnforcement.Outcome",
+        NavigationCSPEmbeddedEnforcementOutcome::kAllowMHTML);
     return CSPEmbeddedEnforcementResult::ALLOW_RESPONSE;
   }
 
@@ -7884,9 +7896,15 @@ NavigationRequest::CheckCSPEmbeddedEnforcement() {
 
   if (network::Subsumes(*required_csp_,
                         response()->parsed_headers->content_security_policy)) {
+    base::UmaHistogramEnumeration(
+        "Navigation.CSPEmbeddedEnforcement.Outcome",
+        NavigationCSPEmbeddedEnforcementOutcome::kAllowSubsumes);
     return CSPEmbeddedEnforcementResult::ALLOW_RESPONSE;
   }
 
+  base::UmaHistogramEnumeration(
+      "Navigation.CSPEmbeddedEnforcement.Outcome",
+      NavigationCSPEmbeddedEnforcementOutcome::kBlock);
   AddDeferredConsoleMessage(
       blink::mojom::ConsoleMessageLevel::kError,
       base::StringPrintf(

@@ -1222,6 +1222,21 @@ class CONTENT_EXPORT NavigationRequest
   void SetFetchLaterLoaderFactoryContextForTesting(
       base::WeakPtr<KeepAliveURLLoaderService::FactoryContext> factory_context);
 
+  // Outcome of Content Security Policy Embedded Enforcement (CSPEE).
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(NavigationCSPEmbeddedEnforcementOutcome)
+  enum class NavigationCSPEmbeddedEnforcementOutcome {
+    kAllowLocalScheme = 0,
+    kAllowAllowCSPFromHeader = 1,
+    kAllowSubsumes = 2,
+    kBlock = 3,
+    kAllowMHTML = 4,
+    kMaxValue = kAllowMHTML,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/enums.xml:NavigationCSPEmbeddedEnforcementOutcome)
+
   // Helper for logging crash keys related to a NavigationRequest (e.g.
   // "navigation_request_url", "navigation_request_initiator", and
   // "navigation_request_is_same_document").  The crash keys will be logged if a
@@ -2126,6 +2141,7 @@ class CONTENT_EXPORT NavigationRequest
   // the 'csp' attribute should be installed into the child. This might also
   // block it and display an error page instead.
   void SetupCSPEmbeddedEnforcement();
+
   enum class CSPEmbeddedEnforcementResult {
     ALLOW_RESPONSE,
     BLOCK_RESPONSE,

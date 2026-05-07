@@ -21295,6 +21295,14 @@ from previous Chrome versions.
   <int value="14" label="Invalid username"/>
 </enum>
 
+<enum name="NavigationCSPEmbeddedEnforcementOutcome">
+  <int value="0" label="Allow (Local Scheme)"/>
+  <int value="1" label="Allow (Allow-CSP-From Header)"/>
+  <int value="2" label="Allow (Subsumes)"/>
+  <int value="3" label="Block"/>
+  <int value="4" label="Allow (MHTML)"/>
+</enum>
+
 <enum name="NavigationScheme">
   <int value="0" label="(Unknown)"/>
   <int value="1" label="http"/>
