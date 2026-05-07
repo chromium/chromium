@@ -1802,6 +1802,7 @@ source_set("platform_browser_tests") {
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/browser_window:create_browser_window",
+      "//chrome/browser/ui/browser_window/test:test_support",
       "//chrome/browser/ui/extensions",
       "//chrome/browser/ui/extensions:test_support",
       "//chrome/browser/ui/navigator",

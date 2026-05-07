@@ -84,8 +84,7 @@ WebAuthFlow::~WebAuthFlow() {
   DCHECK(!delegate_);
   BrowserWindowInterface* popup_browser =
       web_contents()
-          ? extensions::browser_window_util::GetBrowserForTabContents(
-                *web_contents())
+          ? browser_window_util::GetBrowserForTabContents(*web_contents())
           : nullptr;
   if (popup_browser) {
     popup_browser->GetWindow()->Close();
@@ -384,8 +383,13 @@ void WebAuthFlow::OnProfileWillBeDestroyed(Profile* profile) {
   // already observe Profile destruction, so we can just be silent here.
   delegate_ = nullptr;
 
-  // Destroy the WebContents so that they don't outlive the profile.
-  if (web_contents()) {
+  BrowserWindowInterface* popup_browser =
+      web_contents()
+          ? browser_window_util::GetBrowserForTabContents(*web_contents())
+          : nullptr;
+  if (popup_browser) {
+    popup_browser->GetWindow()->Close();
+  } else if (web_contents()) {
     web_contents()->Close();
   }
 
