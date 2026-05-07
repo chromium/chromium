@@ -125,8 +125,8 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
                         mObserver);
         mCoordinator.onProfileAvailable(mProfile);
         mCoordinator.setLayerTitleCache(mLayerTitleCache);
+        mCoordinator.onSizeChanged(1000.f, 0.f, 0.f, 0.f);
         mGlicButton = mCoordinator.getGlicButton();
-        mGlicActorButton = mCoordinator.getGlicActorButton();
         if (mGlicButton != null) mGlicDismissButton = mGlicButton.getDismissButton();
         mGlicActorButton = mCoordinator.getGlicActorButton();
     }
@@ -147,6 +147,50 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
     @Test
     public void testGlicButtonEnabled() {
         assertNotNull("Glic button should be created.", mGlicButton);
+    }
+
+    @Test
+    public void testGlicButton_HiddenInIncognito() {
+        assertTrue("Glic button should be visible initially.", mCoordinator.shouldGlicBeVisible());
+
+        mIsIncognito = true;
+
+        assertFalse(
+                "Glic button should be hidden when supplier indicates incognito window.",
+                mCoordinator.shouldGlicBeVisible());
+    }
+
+    @Test
+    public void testGlicActorButtonTextCollapsesOnSmallScreen() {
+        assertNotNull("Actor button should be created.", mGlicActorButton);
+
+        // Start with a large screen width >= 700
+        mCoordinator.onSizeChanged(
+                /* width= */ 1000f,
+                /* rightPadding= */ 0f,
+                /* leftPadding= */ 0f,
+                /* topPadding= */ 0f);
+
+        // Set text while on large screen
+        when(mLayerTitleCache.getUpdatedGlicButtonText(any(), anyBoolean())).thenReturn(123);
+        when(mLayerTitleCache.getButtonTextWidth(any())).thenReturn(100);
+        mCoordinator.setGlicButtonText("Actor Text", /* isActor= */ true);
+
+        assertEquals(
+                "Actor button text should be set on large screen.",
+                "Actor Text",
+                mGlicActorButton.getText());
+
+        // Resize to a small screen width < 700
+        mCoordinator.onSizeChanged(
+                /* width= */ 500f,
+                /* rightPadding= */ 0f,
+                /* leftPadding= */ 0f,
+                /* topPadding= */ 0f);
+
+        assertNull(
+                "Actor button text should collapse (become null) on small screen.",
+                mGlicActorButton.getText());
     }
 
     @Test
@@ -324,17 +368,6 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
                 "Glic button should not be pressed after long press menu is shown.",
                 mGlicButton.isPressed());
         assertTrue("Glic context menu should be showing", mCoordinator.isMenuShowing());
-    }
-
-    @Test
-    public void testGlicButton_HiddenInIncognito() {
-        assertTrue("Glic button should be visible initially.", mCoordinator.shouldGlicBeVisible());
-
-        mIsIncognito = true;
-
-        assertFalse(
-                "Glic button should be hidden when supplier indicates incognito window.",
-                mCoordinator.shouldGlicBeVisible());
     }
 
     @Test

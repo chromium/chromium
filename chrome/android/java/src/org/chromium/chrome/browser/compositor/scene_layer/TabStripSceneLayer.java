@@ -217,11 +217,11 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                             StripLayoutTrailingButtonsCoordinator.GLIC_ICON_TEXT_PADDING_DP
                                     * mDpToPx);
             float glicCornerRadiusOuter =
-                    StripLayoutTrailingButtonsCoordinator.GLIC_BUTTON_CORNER_RADIUS;
+                    StripLayoutTrailingButtonsCoordinator.GLIC_BUTTON_CORNER_RADIUS_DP;
             float glicCornerRadiusInner = glicCornerRadiusOuter;
             if (glicActorButton != null && glicActorButton.isVisible()) {
                 glicCornerRadiusInner =
-                        StripLayoutTrailingButtonsCoordinator.GLIC_BUTTON_INNER_CORNER_RADIUS;
+                        StripLayoutTrailingButtonsCoordinator.GLIC_BUTTON_INNER_CORNER_RADIUS_DP;
             }
 
             TabStripSceneLayerJni.get()
@@ -267,9 +267,10 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                             StripLayoutTrailingButtonsCoordinator.GLIC_ICON_TEXT_PADDING_DP
                                     * mDpToPx);
             float actorCornerRadiusOuter =
-                    StripLayoutTrailingButtonsCoordinator.GLIC_BUTTON_INNER_CORNER_RADIUS * mDpToPx;
+                    StripLayoutTrailingButtonsCoordinator.GLIC_BUTTON_INNER_CORNER_RADIUS_DP
+                            * mDpToPx;
             float actorCornerRadiusInner =
-                    StripLayoutTrailingButtonsCoordinator.GLIC_BUTTON_CORNER_RADIUS * mDpToPx;
+                    StripLayoutTrailingButtonsCoordinator.GLIC_BUTTON_CORNER_RADIUS_DP * mDpToPx;
 
             TabStripSceneLayerJni.get()
                     .updateGlicActorButton(

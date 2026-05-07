@@ -79,9 +79,10 @@ public class StripLayoutTrailingButtonsCoordinator {
     private static final float GLIC_DISMISS_BUTTON_CLICK_SLOP_DP =
             (StripLayoutHelperManager.BUTTON_DESIRED_TOUCH_TARGET_SIZE - GLIC_DISMISS_ICON_WIDTH_DP)
                     / 2;
-    public static final float GLIC_BUTTON_CORNER_RADIUS = 10.f;
-    public static final float GLIC_BUTTON_INNER_CORNER_RADIUS = 2.f;
+    public static final float GLIC_BUTTON_CORNER_RADIUS_DP = 10.f;
+    public static final float GLIC_BUTTON_INNER_CORNER_RADIUS_DP = 2.f;
     private static final float GLIC_ACTOR_BUTTON_GAP_DP = 2.f;
+    private static final float GLIC_ACTOR_TEXT_HIDE_THRESHOLD_DP = 700.f;
 
     // Default horizontal slop for Glic buttons. This value is used as a baseline and is manually
     // adjusted in #updateTouchTargetInsets to ensure a 48dp touch target for the collapsed Glic and
@@ -437,9 +438,21 @@ public class StripLayoutTrailingButtonsCoordinator {
         mRightPadding = rightPadding;
         mLeftPadding = leftPadding;
         mTopPadding = topPadding;
+
+        updateActorButtonState();
+
         updateGlicButtonPosition();
         // Dismiss Glic context menu, similar to how the app menu is dismissed on orientation change
         dismissGlicContextMenu();
+    }
+
+    private void updateActorButtonState() {
+        if (mWidth < GLIC_ACTOR_TEXT_HIDE_THRESHOLD_DP) {
+            setGlicButtonText(null, /* isActor= */ true);
+        } else {
+            // TODO(crbug.com/501156753): Once the JNI is available, query the state here to restore
+            // the text if the actor button should have text.
+        }
     }
 
     /** Sets the cache used for generating textures for the trailing buttons. */
