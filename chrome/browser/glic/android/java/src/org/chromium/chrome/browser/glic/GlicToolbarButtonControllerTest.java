@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.glic;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -75,6 +76,7 @@ public class GlicToolbarButtonControllerTest {
     @Mock private GlicKeyedServiceFactory.Natives mGlicKeyedServiceFactoryJniMock;
     @Mock private GlicKeyedService mGlicKeyedService;
     @Mock private GlicEnabling.Natives mGlicEnablingJniMock;
+    @Mock private ChromeAndroidTask mTask;
     @Captor private ArgumentCaptor<ActorKeyedService.Observer> mActorObserverCaptor;
 
     private Activity mActivity;
@@ -89,14 +91,15 @@ public class GlicToolbarButtonControllerTest {
         when(mTab.getProfile()).thenReturn(mProfile);
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
         ActorKeyedServiceFactory.setForTesting(mActorService);
+        GlicKeyedServiceFactory.setForTesting(mGlicKeyedService);
         GlicKeyedServiceFactoryJni.setInstanceForTesting(mGlicKeyedServiceFactoryJniMock);
+        when(mGlicKeyedServiceFactoryJniMock.getForProfile(any())).thenReturn(mGlicKeyedService);
         mBrowserControlsVisibilityDelegate =
                 new BrowserStateBrowserControlsVisibilityDelegate(
                         ObservableSuppliers.alwaysFalse());
         when(mBrowserControlsVisibilityManager.getBrowserVisibilityDelegate())
                 .thenReturn(mBrowserControlsVisibilityDelegate);
         GlicEnablingJni.setInstanceForTesting(mGlicEnablingJniMock);
-        when(mGlicKeyedServiceFactoryJniMock.getForProfile(mProfile)).thenReturn(mGlicKeyedService);
         when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
         mController =
                 new GlicToolbarButtonController(
@@ -104,7 +107,7 @@ public class GlicToolbarButtonControllerTest {
                         () -> mTab,
                         mToggleGlicCallback,
                         () -> mTracker,
-                        () -> null,
+                        () -> mTask,
                         mBrowserControlsVisibilityManager,
                         () -> mTabModelSelector);
     }
@@ -332,8 +335,8 @@ public class GlicToolbarButtonControllerTest {
     @Test
     public void testIsPanelOpen_Initial() {
         ChromeAndroidTask task = mock(ChromeAndroidTask.class);
-        when(task.getNativeBrowserWindowPtr(mProfile, mActivity)).thenReturn(123L);
-        when(mGlicKeyedService.isPanelShowingForBrowser(123L)).thenReturn(true);
+        when(task.getOrCreateNativeBrowserWindowPtr(any())).thenReturn(123L);
+        when(mGlicKeyedService.isPanelShowingForBrowser(anyLong())).thenReturn(true);
 
         GlicToolbarButtonController controller =
                 new GlicToolbarButtonController(
@@ -353,8 +356,8 @@ public class GlicToolbarButtonControllerTest {
     @Test
     public void testIsPanelOpen_GlobalShowHide() {
         ChromeAndroidTask task = mock(ChromeAndroidTask.class);
-        when(task.getNativeBrowserWindowPtr(mProfile, mActivity)).thenReturn(123L);
-        when(mGlicKeyedService.isPanelShowingForBrowser(123L)).thenReturn(true);
+        when(task.getOrCreateNativeBrowserWindowPtr(any())).thenReturn(123L);
+        when(mGlicKeyedService.isPanelShowingForBrowser(anyLong())).thenReturn(true);
 
         GlicToolbarButtonController controller =
                 new GlicToolbarButtonController(
@@ -368,13 +371,13 @@ public class GlicToolbarButtonControllerTest {
 
         controller.get(mTab); // Initialize observations
 
-        controller.onGlobalShowHide();
+        controller.onGlobalShowHideForTesting();
 
         ButtonData buttonData = controller.get(mTab);
         Assert.assertTrue(buttonData.getButtonSpec().isChecked());
 
         when(mGlicKeyedService.isPanelShowingForBrowser(123L)).thenReturn(false);
-        controller.onGlobalShowHide();
+        controller.onGlobalShowHideForTesting();
         buttonData = controller.get(mTab);
         Assert.assertFalse(buttonData.getButtonSpec().isChecked());
     }

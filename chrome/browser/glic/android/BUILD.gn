@@ -54,6 +54,7 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/glic/ActorLoginPermission.java",
     "java/src/org/chromium/chrome/browser/glic/GlicActorLoginBridge.java",
+    "java/src/org/chromium/chrome/browser/glic/GlicButtonStateController.java",
     "java/src/org/chromium/chrome/browser/glic/GlicExtraInfoPreference.java",
     "java/src/org/chromium/chrome/browser/glic/GlicHelper.java",
     "java/src/org/chromium/chrome/browser/glic/GlicKeyedServiceImpl.java",
@@ -148,6 +149,7 @@ source_set("android") {
 
 robolectric_library("junit") {
   sources = [
+    "java/src/org/chromium/chrome/browser/glic/GlicButtonStateControllerTest.java",
     "java/src/org/chromium/chrome/browser/glic/GlicHelperUnitTest.java",
     "java/src/org/chromium/chrome/browser/glic/GlicPromoCoordinatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/glic/GlicSettingsUnitTest.java",

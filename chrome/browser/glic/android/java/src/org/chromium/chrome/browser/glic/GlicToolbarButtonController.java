@@ -8,32 +8,18 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.LayerDrawable;
 import android.view.View;
 
-import androidx.annotation.IntDef;
 import androidx.appcompat.content.res.AppCompatResources;
-
-import com.airbnb.lottie.LottieCompositionFactory;
-import com.airbnb.lottie.LottieDrawable;
-import com.airbnb.lottie.LottieProperty;
-import com.airbnb.lottie.model.KeyPath;
-import com.airbnb.lottie.value.LottieValueCallback;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.actor.ActorKeyedService;
-import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
 import org.chromium.chrome.browser.actor.ActorTask;
-import org.chromium.chrome.browser.actor.ActorTaskState;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
-import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.glic.GlicButtonStateController.ButtonState;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -56,30 +42,17 @@ import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.util.TokenHolder;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.ViewRectProvider;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 
 /** Defines a toolbar button to open the Glic bottom sheet. */
 @NullMarked
-public class GlicToolbarButtonController extends BaseButtonDataProvider
-        implements ActorKeyedService.Observer, GlicKeyedService.GlobalShowHideObserver {
+public class GlicToolbarButtonController extends BaseButtonDataProvider {
     public static final int ACTION_CHIP_COLLAPSE_DELAY_MS = 30000;
-
-    @IntDef({ButtonState.DEFAULT, ButtonState.WORKING, ButtonState.NEEDS_REVIEW, ButtonState.DONE})
-    @Retention(RetentionPolicy.SOURCE)
-    private @interface ButtonState {
-        int DEFAULT = 0;
-        int WORKING = 1;
-        int NEEDS_REVIEW = 2;
-        int DONE = 3;
-    }
 
     /** Delegate interface for handling clicks on the Glic toolbar button. */
     @FunctionalInterface
@@ -95,21 +68,13 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
     private final Activity mActivity;
     private final GlicButtonDelegate mToggleGlicCallback;
     private final Supplier<@Nullable Tracker> mTrackerSupplier;
-    private final Supplier<@Nullable ChromeAndroidTask> mTaskSupplier;
-    private final BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
     private final Supplier<@Nullable TabModelSelector> mTabModelSelectorSupplier;
-    private @Nullable Profile mCurrentProfile;
-    private @Nullable ActorKeyedService mCurrentActorService;
-    private @Nullable GlicKeyedService mCurrentGlicService;
     private final ButtonSpec mDefaultSpec;
     private final ButtonSpec mWorkingSpec;
     private final ButtonSpec mReviewSpec;
     private final ButtonSpec mDoneSpec;
+    private final GlicButtonStateController mStateController;
 
-    private @ButtonState int mButtonState = ButtonState.DEFAULT;
-    private boolean mPersistDoneState;
-    private boolean mIsPanelOpen;
-    private int mBrowserControlsShowingToken = TokenHolder.INVALID_TOKEN;
     private @Nullable AnchoredPopupWindow mMenuWindow;
 
     /**
@@ -129,8 +94,6 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
             Supplier<@Nullable ChromeAndroidTask> taskSupplier,
             BrowserControlsVisibilityManager browserControlsVisibilityManager,
             Supplier<@Nullable TabModelSelector> tabModelSelectorSupplier) {
-        // TODO(crbug.com/482372270): Add correct styling to button including Nudge state text,
-        // active state shape change, and appropriate colors.
         super(
                 activeTabSupplier,
                 /* modalDialogManager= */ null,
@@ -144,12 +107,18 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
         mActivity = activity;
         mToggleGlicCallback = toggleGlicCallback;
         mTrackerSupplier = trackerSupplier;
-        mTaskSupplier = taskSupplier;
-        mBrowserControlsVisibilityManager = browserControlsVisibilityManager;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mDefaultSpec = mButtonData.getButtonSpec();
         Drawable collapsedDrawable =
                 AppCompatResources.getDrawable(activity, R.drawable.glic_dirty_dot_spark);
+
+        mStateController =
+                new GlicButtonStateController(
+                        activity,
+                        (state, isPanelOpen) -> notifyObservers(true),
+                        taskSupplier,
+                        browserControlsVisibilityManager);
+
         mWorkingSpec = createWorkingSpec(activity);
         mReviewSpec =
                 new ButtonSpec.Builder(createReviewSpec())
@@ -182,62 +151,9 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
     }
 
     private ButtonSpec createWorkingSpec(Context context) {
-        LottieDrawable lottieDrawable = new LottieDrawable();
-        LottieCompositionFactory.fromRawRes(context, R.raw.glic_spinner)
-                .addListener(
-                        composition -> {
-                            lottieDrawable.setComposition(composition);
-                            lottieDrawable.setRepeatCount(LottieDrawable.INFINITE);
-                            lottieDrawable.playAnimation();
-                        });
         Drawable sparkIcon = AppCompatResources.getDrawable(context, R.drawable.ic_spark_24dp);
-        LayerDrawable layerDrawable =
-                new LayerDrawable(new Drawable[] {lottieDrawable, sparkIcon}) {
-                    private @Nullable ColorStateList mTintList;
-
-                    @Override
-                    public void setTintList(@Nullable ColorStateList tint) {
-                        super.setTintList(tint);
-                        mTintList = tint;
-                        updateLottieTint();
-                    }
-
-                    @Override
-                    protected boolean onStateChange(int[] state) {
-                        boolean changed = super.onStateChange(state);
-                        if (updateLottieTint()) {
-                            changed = true;
-                        }
-                        return changed;
-                    }
-
-                    @Override
-                    public boolean isStateful() {
-                        return (mTintList != null && mTintList.isStateful()) || super.isStateful();
-                    }
-
-                    private boolean updateLottieTint() {
-                        if (mTintList != null) {
-                            int color =
-                                    mTintList.getColorForState(
-                                            getState(), mTintList.getDefaultColor());
-                            lottieDrawable.addValueCallback(
-                                    new KeyPath("**"),
-                                    LottieProperty.COLOR_FILTER,
-                                    new LottieValueCallback<>(
-                                            new PorterDuffColorFilter(
-                                                    color, PorterDuff.Mode.SRC_IN)));
-                            return true;
-                        }
-                        return false;
-                    }
-                };
-        float density = context.getResources().getDisplayMetrics().density;
-        // Adjust sizes of the spark and spinner.
-        int sparkInset = Math.round(2 * density);
-        int spinnerInset = Math.round(-10 * density);
-        layerDrawable.setLayerInset(0, spinnerInset, spinnerInset, spinnerInset, spinnerInset);
-        layerDrawable.setLayerInset(1, sparkInset, sparkInset, sparkInset, sparkInset);
+        Drawable layerDrawable =
+                GlicButtonStateController.createWorkingDrawable(context, sparkIcon);
         return new ButtonSpec.Builder(mDefaultSpec)
                 .setDrawable(layerDrawable)
                 .setShouldSuppressCpa(true)
@@ -263,13 +179,12 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
             return buttonData;
         }
 
-        // This can be assumed because shouldShowButton hides the entrypoint if there's no tab.
         assumeNonNull(tab);
-        updateObservations(tab.getProfile());
-        updateButtonState();
+        mStateController.updateObservations(tab.getProfile());
+        mStateController.updateButtonState();
 
         ButtonSpec desiredSpec = mDefaultSpec;
-        switch (mButtonState) {
+        switch (mStateController.getButtonState()) {
             case ButtonState.NEEDS_REVIEW:
                 desiredSpec = mReviewSpec;
                 break;
@@ -284,134 +199,17 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
                 desiredSpec = mDefaultSpec;
         }
         mButtonData.setButtonSpec(
-                new ButtonSpec.Builder(desiredSpec).setIsChecked(mIsPanelOpen).build());
+                new ButtonSpec.Builder(desiredSpec)
+                        .setIsChecked(mStateController.isPanelOpen())
+                        .build());
 
         mButtonData.setEnabled(true);
         return buttonData;
     }
 
-    private void updateButtonState() {
-        if (mCurrentActorService == null) {
-            updateButtonStateAndControls(ButtonState.DEFAULT);
-            return;
-        }
-
-        ActorTask task = mCurrentActorService.getCurrentActiveTask();
-        int newButtonState;
-        if (task != null) {
-            newButtonState = mapTaskStateToButtonState(task.getState());
-        } else if (mPersistDoneState) {
-            newButtonState = ButtonState.DONE;
-        } else {
-            newButtonState = ButtonState.DEFAULT;
-        }
-
-        updateButtonStateAndControls(newButtonState);
-    }
-
-    private void updateButtonStateAndControls(int newButtonState) {
-        int oldButtonState = mButtonState;
-        mButtonState = newButtonState;
-        mPersistDoneState = (mButtonState == ButtonState.DONE);
-
-        if (mButtonState != oldButtonState) {
-            if (mButtonState == ButtonState.WORKING) {
-                acquireBrowserControls();
-            } else if (oldButtonState == ButtonState.WORKING) {
-                releaseBrowserControls();
-            }
-        }
-    }
-
-    private void acquireBrowserControls() {
-        if (mBrowserControlsShowingToken == TokenHolder.INVALID_TOKEN) {
-            mBrowserControlsShowingToken =
-                    mBrowserControlsVisibilityManager
-                            .getBrowserVisibilityDelegate()
-                            .showControlsPersistent();
-        }
-    }
-
-    private void releaseBrowserControls() {
-        if (mBrowserControlsShowingToken != TokenHolder.INVALID_TOKEN) {
-            mBrowserControlsVisibilityManager
-                    .getBrowserVisibilityDelegate()
-                    .releasePersistentShowingToken(mBrowserControlsShowingToken);
-            mBrowserControlsShowingToken = TokenHolder.INVALID_TOKEN;
-        }
-    }
-
-    private void updateIsPanelOpen() {
-        if (mCurrentGlicService == null || mCurrentProfile == null) return;
-        ChromeAndroidTask task = mTaskSupplier.get();
-        if (task == null) return;
-
-        long browserWindowPtr = task.getNativeBrowserWindowPtr(mCurrentProfile, mActivity);
-        boolean isOpen = false;
-        if (browserWindowPtr != 0) {
-            isOpen = mCurrentGlicService.isPanelShowingForBrowser(browserWindowPtr);
-        }
-        if (mIsPanelOpen != isOpen) {
-            mIsPanelOpen = isOpen;
-            notifyObservers(true);
-        }
-    }
-
-    private @ButtonState int mapTaskStateToButtonState(@ActorTaskState int taskState) {
-        switch (taskState) {
-            case ActorTaskState.WAITING_ON_USER:
-            case ActorTaskState.FAILED:
-                return ButtonState.NEEDS_REVIEW;
-            case ActorTaskState.FINISHED:
-                return ButtonState.DONE;
-            case ActorTaskState.ACTING:
-            case ActorTaskState.REFLECTING:
-                return ButtonState.WORKING;
-            case ActorTaskState.CANCELLED:
-            case ActorTaskState.CREATED:
-            case ActorTaskState.PAUSED_BY_USER:
-            case ActorTaskState.PAUSED_BY_ACTOR:
-                return ButtonState.DEFAULT;
-            default:
-                throw new AssertionError("Unexpected task state: " + taskState);
-        }
-    }
-
-    private void updateObservations(Profile profile) {
-        assert !profile.isOffTheRecord();
-        if (profile.equals(mCurrentProfile)) return;
-
-        if (mCurrentActorService != null) {
-            mCurrentActorService.removeObserver(this);
-        }
-        if (mCurrentGlicService != null) {
-            mCurrentGlicService.removeGlobalShowHideObserver(this);
-        }
-
-        mCurrentProfile = profile;
-        mCurrentActorService = ActorKeyedServiceFactory.getForProfile(profile);
-        mCurrentGlicService = GlicKeyedServiceFactory.getForProfile(profile);
-
-        if (mCurrentActorService != null) {
-            mCurrentActorService.addObserver(this);
-        }
-        if (mCurrentGlicService != null) {
-            mCurrentGlicService.addGlobalShowHideObserver(this);
-            updateIsPanelOpen();
-        }
-    }
-
     @Override
     public void destroy() {
-        if (mCurrentActorService != null) {
-            mCurrentActorService.removeObserver(this);
-            mCurrentActorService = null;
-        }
-        if (mCurrentGlicService != null) {
-            mCurrentGlicService.removeGlobalShowHideObserver(this);
-            mCurrentGlicService = null;
-        }
-        mCurrentProfile = null;
+        mStateController.destroy();
         super.destroy();
     }
 
@@ -437,7 +235,8 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
                                         dismissMenu();
                                     });
 
-            if (mapTaskStateToButtonState(task.getState()) == ButtonState.NEEDS_REVIEW) {
+            if (GlicButtonStateController.mapTaskStateToButtonState(task.getState())
+                    == ButtonState.NEEDS_REVIEW) {
                 builder.withStartIconRes(R.drawable.ic_hourglass_empty_24dp)
                         .withEndIconRes(R.drawable.glic_menu_dot)
                         .withEndIconWidth(endIconWidthPx);
@@ -551,20 +350,19 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
 
     @Override
     public void onClick(View view) {
-        mPersistDoneState = false;
+        mStateController.setPersistDoneState(false);
 
         if (mMenuWindow != null && mMenuWindow.isShowing()) {
             dismissMenu();
             return;
         }
 
-        if (mCurrentActorService != null) {
-            List<ActorTask> tasks = mCurrentActorService.getActiveTasks();
+        List<ActorTask> tasks = mStateController.getActiveTasks();
+        if (tasks != null) {
             Tab currentTab = mActiveTabSupplier.get();
             boolean isOnActingTab =
                     currentTab != null
-                            && mCurrentActorService.getActiveTaskIdOnTab(currentTab.getId())
-                                    != null;
+                            && mStateController.getActiveTaskIdOnTab(currentTab.getId()) != null;
 
             if (!isOnActingTab && !tasks.isEmpty()) {
                 showTaskMenu(view, tasks);
@@ -577,25 +375,11 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
         if (tracker != null) {
             tracker.notifyEvent(EventConstants.ADAPTIVE_TOOLBAR_CUSTOMIZATION_GLIC_CLICKED);
         }
-        updateButtonState();
+        mStateController.updateButtonState();
         notifyObservers(true);
     }
 
-    @Override
-    public void onTaskStateChanged(int taskId, @ActorTaskState int newState) {
-        if (newState == ActorTaskState.FINISHED) {
-            mPersistDoneState = true;
-        }
-        int oldButtonState = mButtonState;
-        updateButtonStateAndControls(mapTaskStateToButtonState(newState));
-
-        if (mButtonState != oldButtonState) {
-            notifyObservers(true);
-        }
-    }
-
-    @Override
-    public void onGlobalShowHide() {
-        updateIsPanelOpen();
+    void onGlobalShowHideForTesting() {
+        mStateController.onGlobalShowHide();
     }
 }
