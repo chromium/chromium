@@ -469,7 +469,8 @@ export class SearchboxIconElement extends CrLitElement {
       return url;
     }
 
-    return `//image?staticEncode=true&encodeType=webp&url=${url}`;
+    return `//image?staticEncode=true&encodeType=webp&url=${
+        encodeURIComponent(url)}`;
   }
 
   private computeIconSrc_(): string {
