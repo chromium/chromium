@@ -111,6 +111,7 @@ void MockQueryController::FakeStartFileUploadFlow(
     mime_type = contextual_input->primary_content_type.value();
   }
   AddFileInfoForTesting(file_token, mime_type);
+  TriggerFetchClusterInfo();
 
   // Post a task to notify success asynchronously. This ensures that the
   // frontend receives the Mojo response containing the fileToken *before* the

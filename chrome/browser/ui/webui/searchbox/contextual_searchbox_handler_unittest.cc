@@ -191,10 +191,6 @@ class ContextualSearchboxHandlerTest
 
   void SetUp() override {
     ContextualSearchboxHandlerTestHarness::SetUp();
-    // TODO(crbug.com/503732217): Fix tests to support lazy fetching of cluster
-    // info and enable this feature by default in tests.
-    scoped_feature_list_.InitAndDisableFeature(
-        contextual_tasks::kContextualTasksLazyFetchClusterInfo);
 
     auto query_controller_config_params = std::make_unique<
         contextual_search::ContextualSearchContextController::ConfigParams>();
@@ -296,7 +292,6 @@ class ContextualSearchboxHandlerTest
   raw_ptr<MockQueryController> query_controller_;
   raw_ptr<contextual_search::ContextualSearchService> service_;
   raw_ptr<MockContextualSearchMetricsRecorder> metrics_recorder_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ContextualSearchboxHandlerTest, SessionStarted) {
@@ -575,17 +570,6 @@ TEST_F(ContextualSearchboxHandlerTest, AddFileFromBrowser_PolicyEnabled) {
 }
 
 TEST_F(ContextualSearchboxHandlerTest, SubmitQuery) {
-  // Wait until the state changes to kClusterInfoReceived.
-  base::RunLoop run_loop;
-  query_controller().set_on_query_controller_state_changed_callback(
-      base::BindLambdaForTesting(
-          [&](ComposeboxQueryController::QueryControllerState state) {
-            if (state == ComposeboxQueryController::QueryControllerState::
-                             kClusterInfoReceived) {
-              run_loop.Quit();
-            }
-          }));
-
   std::vector<SessionState> session_states;
   auto* metrics_recorder_ptr = GetMetricsRecorderPtr();
   ASSERT_THAT(metrics_recorder_ptr, testing::NotNull());
@@ -615,7 +599,6 @@ TEST_F(ContextualSearchboxHandlerTest, SubmitQuery) {
       .Times(0);
 
   handler().NotifySessionStarted();
-  run_loop.Run();
 
   SubmitQueryAndWaitForNavigation();
 
@@ -645,16 +628,6 @@ TEST_F(ContextualSearchboxHandlerTest, SubmitQuery) {
 
 TEST_F(ContextualSearchboxHandlerTest, SubmitQuery_DelayUpload) {
   // Arrange
-  // Wait until the state changes to kClusterInfoReceived.
-  base::RunLoop run_loop;
-  query_controller().set_on_query_controller_state_changed_callback(
-      base::BindLambdaForTesting(
-          [&](ComposeboxQueryController::QueryControllerState state) {
-            if (state == ComposeboxQueryController::QueryControllerState::
-                             kClusterInfoReceived) {
-              run_loop.Quit();
-            }
-          }));
 
   std::vector<SessionState> session_states;
   auto* metrics_recorder_ptr = GetMetricsRecorderPtr();
@@ -695,7 +668,6 @@ TEST_F(ContextualSearchboxHandlerTest, SubmitQuery_DelayUpload) {
       .Times(1);
 
   handler().NotifySessionStarted();
-  run_loop.Run();
 
   // Act
   SubmitQueryAndWaitForNavigation();
