@@ -458,7 +458,7 @@ void WebAppInstallFlowDialogDelegate::Show(
                                         : IDS_INSTALL_PWA_DIALOG_TITLE))
       // TODO(b/473080055): Use a translated string. Should use the correct
       // subtitle if DIY vs simple and detailed like the title above.
-      .SetSubtitle(u"Access this site on a dedicated window on your computer")
+      .SetSubtitle(l10n_util::GetStringUTF16(IDS_WEB_APP_INSTALL_FLOW_SUBTITLE))
       .AddExtraButton(
           base::BindRepeating(
               [](base::WeakPtr<WebAppInstallFlowDialogDelegate> delegate,
@@ -479,10 +479,10 @@ void WebAppInstallFlowDialogDelegate::Show(
               },
               delegate_weak_ptr),
           ui::DialogModel::Button::Params()
-              // TODO: Change hardcoded string "next" to a localized string.
               .SetLabel(os_type == InstallOsType::kOther
                             ? l10n_util::GetStringUTF16(IDS_INSTALL)
-                            : u"Next")
+                            : l10n_util::GetStringUTF16(
+                                  IDS_WEB_APP_INSTALL_FLOW_NEXT))
               .SetId(
                   WebAppInstallDialogDelegate::kPwaInstallDialogInstallButton))
       .AddCancelButton(base::BindOnce(&WebAppInstallDialogDelegate::OnCancel,
