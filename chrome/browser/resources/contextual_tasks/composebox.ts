@@ -47,7 +47,7 @@ function recordVoiceSearchAction(voiceSearchState: VoiceSearchState) {
   }
 
   chrome.histograms.recordEnumerationValue(
-      'ContextualTasks.VoiceSearch.State', voiceSearchState,
+      'ContextualTasks.VoiceSearch.StateV2', voiceSearchState,
       VoiceSearchState.MAX_VALUE + 1);
 }
 
