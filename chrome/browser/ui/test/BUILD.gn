@@ -18,6 +18,8 @@ if (!is_android) {
       "test_browser_ui.h",
     ]
 
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
     deps = [
       "//base",
       "//base/test:test_support",
