@@ -10,6 +10,7 @@
 #include <sys/ioctl.h>
 
 #include <algorithm>
+#include <string_view>
 #include <utility>
 
 #include "base/compiler_specific.h"
@@ -54,25 +55,22 @@ const char kInterfacePathTemplate[] =
     "/sys/class/video4linux/%s/device/interface";
 
 bool ReadIdFile(const std::string& path, std::string* id) {
-  char id_buf[kVidPidSize];
-  FILE* file = fopen(path.c_str(), "rb");
-  if (!file) {
+  std::string content;
+  if (!base::ReadFileToString(base::FilePath(path), &content)) {
     return false;
   }
-  const bool success = UNSAFE_TODO(fread(id_buf, kVidPidSize, 1, file)) == 1;
-  fclose(file);
-  if (!success) {
+  if (content.length() < kVidPidSize) {
     return false;
   }
-  id->append(id_buf, kVidPidSize);
+  id->append(content, 0, kVidPidSize);
   return true;
 }
 
 std::string ExtractFileNameFromDeviceId(const std::string& device_id) {
   // |unique_id| is of the form "/dev/video2".  |file_name| is "video2".
-  const char kDevDir[] = "/dev/";
+  constexpr std::string_view kDevDir = "/dev/";
   DCHECK(base::StartsWith(device_id, kDevDir, base::CompareCase::SENSITIVE));
-  return device_id.substr(UNSAFE_TODO(strlen(kDevDir)), device_id.length());
+  return device_id.substr(kDevDir.length());
 }
 
 class DevVideoFilePathsDeviceProvider
