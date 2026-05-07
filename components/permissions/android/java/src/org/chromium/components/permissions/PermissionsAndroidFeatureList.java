@@ -56,5 +56,5 @@ public abstract class PermissionsAndroidFeatureList {
             PermissionsAndroidFeatureMap.newIntCachedFeatureParam(
                     APPROXIMATE_GEOLOCATION_PERMISSION,
                     "prompt_arm",
-                    ApproximateGeolocationPromptArm.NO_ARM_SELECTED);
+                    ApproximateGeolocationPromptArm.ARM_3);
 }

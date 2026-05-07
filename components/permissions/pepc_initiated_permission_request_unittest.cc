@@ -10,6 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/permissions/content_setting_permission_context_base.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_actions_history.h"
@@ -412,16 +413,22 @@ TEST_F(PEPCInitiatedPermissionRequestTest, PEPCRequestBlockedOnInsecureOrigin) {
 
 class PEPCInitiatedPermissionRequestTestWithAutolocate
     : public PEPCInitiatedPermissionRequestTest,
-      public ::testing::WithParamInterface<bool> {};
+      public ::testing::WithParamInterface<bool> {
+ public:
+  PEPCInitiatedPermissionRequestTestWithAutolocate() {
+    scoped_feature_list_.InitWithFeatures(
+        {blink::features::kGeolocationElement,
+         permissions::features::kPermissionHeuristicAutoGrant},
+        {content_settings::features::kApproximateGeolocationPermission});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
 
 TEST_P(PEPCInitiatedPermissionRequestTestWithAutolocate,
        PEPCRequestHeuristicallyGrantedGeolocation) {
   bool autolocate = GetParam();
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      {blink::features::kGeolocationElement,
-       permissions::features::kPermissionHeuristicAutoGrant},
-      {});
 
   auto* history =
       PermissionsClient::Get()->GetPermissionActionsHistory(browser_context());

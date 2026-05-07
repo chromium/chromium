@@ -1865,19 +1865,9 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_horizontal_image_text",
-                    "params": {
-                        "probability": "1.0",
-                        "prompt_arm": "3",
-                        "prompt_disposition_reason_filter": "DefaultFallback",
-                        "request_type_filter": "Geolocation",
-                        "survey_display_time": "OnPromptResolved",
-                        "trigger_id": "ioWWWfMDk0tK1KeaPYj0VG5mEaQt"
-                    },
+                    "name": "Enabled",
                     "enable_features": [
-                        "ApproximateGeolocationPermission",
-                        "ApproximateGeolocationWebVisibleAPI",
-                        "PermissionsPromptSurvey"
+                        "ApproximateGeolocationWebVisibleAPI"
                     ]
                 }
             ]

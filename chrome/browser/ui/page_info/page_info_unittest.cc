@@ -589,9 +589,9 @@ TEST_F(PageInfoUnusedPermissionRevocationForAllSurfacesTest,
     // components/content_settings/core/browser/content_settings_utils.cc
     content_settings::SettingInfo info;
     base::Time now = base::Time::Now();
-    map_->GetWebsiteSetting(url(), url(),
-                            content_settings::GeolocationContentSettingsType(),
-                            &info);
+    map_->GetPermissionSetting(
+        url(), url(), content_settings::GeolocationContentSettingsType(),
+        &info);
     EXPECT_GE(info.metadata.last_visited(), now - base::Days(7));
     EXPECT_LE(info.metadata.last_visited(), now);
   }
@@ -603,9 +603,9 @@ TEST_F(PageInfoUnusedPermissionRevocationForAllSurfacesTest,
 
     // Verify that 'last_visited` is not recorded unless the value is ALLOW.
     content_settings::SettingInfo info;
-    map_->GetContentSetting(url(), url(),
-                            content_settings::GeolocationContentSettingsType(),
-                            &info);
+    map_->GetPermissionSetting(
+        url(), url(), content_settings::GeolocationContentSettingsType(),
+        &info);
     EXPECT_EQ(base::Time(), info.metadata.last_visited());
   }
 }

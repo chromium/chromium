@@ -18,8 +18,11 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/browser/permission_settings_info.h"
+#include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/permissions/features.h"
@@ -140,34 +143,23 @@ TEST_F(SearchPermissionsServiceTest, IsDseOrigin) {
 TEST_F(SearchPermissionsServiceTest, DSEEffectiveSettingMetric) {
   base::HistogramTester histograms;
   ClearPermissionSettings(ContentSettingsType::NOTIFICATIONS);
-  ClearPermissionSettings(ContentSettingsType::GEOLOCATION);
 
   ReinitializeService();
   histograms.ExpectBucketCount("Permissions.DSE.EffectiveSetting.Notifications",
                                CONTENT_SETTING_ASK, 1);
-  histograms.ExpectBucketCount("Permissions.DSE.EffectiveSetting.Geolocation",
-                               CONTENT_SETTING_ASK, 1);
 
   SetPermissionSetting(kGoogleURL, ContentSettingsType::NOTIFICATIONS,
                        CONTENT_SETTING_BLOCK);
-  SetPermissionSetting(kGoogleURL, ContentSettingsType::GEOLOCATION,
-                       CONTENT_SETTING_ALLOW);
 
   ReinitializeService();
   histograms.ExpectBucketCount("Permissions.DSE.EffectiveSetting.Notifications",
                                CONTENT_SETTING_ASK, 1);
   histograms.ExpectBucketCount("Permissions.DSE.EffectiveSetting.Notifications",
                                CONTENT_SETTING_BLOCK, 1);
-  histograms.ExpectBucketCount("Permissions.DSE.EffectiveSetting.Geolocation",
-                               CONTENT_SETTING_ASK, 1);
-  histograms.ExpectBucketCount("Permissions.DSE.EffectiveSetting.Geolocation",
-                               CONTENT_SETTING_ALLOW, 1);
 }
 
 TEST_F(SearchPermissionsServiceTest,
        DSEEffectiveSettingMetricApproximateGeolocation) {
-  base::test::ScopedFeatureList enable_approximate_location(
-      content_settings::features::kApproximateGeolocationPermission);
   ClearPermissionSettings(ContentSettingsType::GEOLOCATION_WITH_OPTIONS);
   {
     base::HistogramTester histograms;

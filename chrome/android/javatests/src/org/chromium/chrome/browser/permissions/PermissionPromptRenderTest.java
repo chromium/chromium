@@ -68,7 +68,7 @@ public class PermissionPromptRenderTest {
     @Rule
     public RenderTestRule mRenderTestRule =
             RenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(2)
+                    .setRevision(3)
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_MOBILE_MESSAGES)
                     .build();
 

@@ -3346,7 +3346,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, ClearPermissionPromptCounts) {
   {
     // Test REMOVE_HISTORY.
     EXPECT_FALSE(tester.RecordIgnoreAndEmbargo(
-        kOrigin1, ContentSettingsType::GEOLOCATION));
+        kOrigin1, content_settings::GeolocationContentSettingsType()));
     EXPECT_FALSE(tester.RecordIgnoreAndEmbargo(
         kOrigin1, content_settings::GeolocationContentSettingsType()));
     EXPECT_FALSE(tester.RecordIgnoreAndEmbargo(
