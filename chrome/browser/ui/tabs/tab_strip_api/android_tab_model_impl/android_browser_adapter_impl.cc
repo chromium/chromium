@@ -22,14 +22,21 @@ tabs::TabHandle AndroidBrowserAdapterImpl::AddTabAt(
     std::optional<int> index,
     std::optional<tab_groups::TabGroupId> group,
     bool pinned) {
-  if (group.has_value() || pinned || !index.has_value()) {
-    // TODO(crbug.com/494284032): to implement
-    NOTREACHED() << "not implemented yet";
+  int target_index = index.value_or(model_->GetTabCount());
+
+  auto* result = model_->OpenTab(url, target_index);
+  CHECK(result);
+  tabs::TabHandle handle = result->GetHandle();
+
+  if (pinned) {
+    model_->PinTab(handle);
   }
 
-  auto* result = model_->OpenTab(url, index.value());
-  CHECK(result);
-  return result->GetHandle();
+  if (group.has_value()) {
+    model_->AddTabsToGroup(group.value(), {handle});
+  }
+
+  return handle;
 }
 
 }  //  namespace tabs_api

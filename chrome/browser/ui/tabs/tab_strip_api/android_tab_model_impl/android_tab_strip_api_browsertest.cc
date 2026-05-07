@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/strings/string_number_conversions.h"
+#include "base/test/gtest_util.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/android_tab_model_impl/android_tab_strip_api_injector.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/android_tab_model_impl/android_tab_strip_model_adapter.h"
@@ -355,6 +356,103 @@ IN_PROC_BROWSER_TEST_F(AndroidTabStripApiBrowserTest, MoveGroup) {
   ASSERT_FALSE(handle2.Get()->GetGroup().has_value());
   ASSERT_EQ(group_id, handle0.Get()->GetGroup());
   ASSERT_EQ(group_id, handle1.Get()->GetGroup());
+}
+
+IN_PROC_BROWSER_TEST_F(AndroidTabStripApiBrowserTest, CreateAtPosition) {
+  model_->DuplicateTab(model_->GetTab(0)->GetHandle());
+  ASSERT_EQ(2, model_->GetTabCount());
+
+  auto handle0 = model_->GetTab(0)->GetHandle();
+  auto handle1 = model_->GetTab(1)->GetHandle();
+
+  auto* tab_strip_collection = model_->GetTabStripCollection(GetPassKey());
+  tabs_api::Path path(
+      {NodeId::FromWindowId(base::NumberToString(model_->GetSessionId().id())),
+       NodeId::FromTabCollectionHandle(tab_strip_collection->GetHandle()),
+       NodeId::FromTabCollectionHandle(
+           tab_strip_collection->unpinned_collection()->GetHandle())});
+  tabs_api::Position pos(1, path);
+
+  auto result = service_->CreateTabAt(pos, GURL("http://there.where"));
+  ASSERT_TRUE(result.has_value());
+  ASSERT_EQ(3, model_->GetTabCount());
+
+  ASSERT_EQ(handle0, model_->GetTab(0)->GetHandle());
+  ASSERT_EQ(handle1, model_->GetTab(2)->GetHandle());
+
+  auto new_tab_handle = model_->GetTab(1)->GetHandle();
+  ASSERT_NE(handle0, new_tab_handle);
+  ASSERT_NE(handle1, new_tab_handle);
+}
+
+IN_PROC_BROWSER_TEST_F(AndroidTabStripApiBrowserTest, CreateInGroup) {
+  model_->DuplicateTab(model_->GetTab(0)->GetHandle());
+  ASSERT_EQ(2, model_->GetTabCount());
+
+  auto handle0 = model_->GetTab(0)->GetHandle();
+
+  auto group_id = model_->CreateTabGroup({handle0}).value();
+  auto* group_collection = model_->GetTabStripCollection(GetPassKey())
+                               ->GetTabGroupCollection(group_id);
+
+  tabs_api::Path path(
+      {NodeId::FromWindowId(base::NumberToString(model_->GetSessionId().id())),
+       NodeId::FromTabCollectionHandle(
+           model_->GetTabStripCollection(GetPassKey())->GetHandle()),
+       NodeId::FromTabCollectionHandle(group_collection->GetHandle())});
+  tabs_api::Position pos(1, path);
+
+  auto result = service_->CreateTabAt(pos, GURL("http://there.where"));
+  ASSERT_TRUE(result.has_value());
+  ASSERT_EQ(3, model_->GetTabCount());
+
+  auto new_tab_handle = model_->GetTab(1)->GetHandle();
+  ASSERT_EQ(group_id, new_tab_handle.Get()->GetGroup());
+}
+
+IN_PROC_BROWSER_TEST_F(AndroidTabStripApiBrowserTest, CreatePinned) {
+  auto* tab_strip_collection = model_->GetTabStripCollection(GetPassKey());
+  auto* pinned_collection = tab_strip_collection->pinned_collection();
+
+  tabs_api::Path path(
+      {NodeId::FromWindowId(base::NumberToString(model_->GetSessionId().id())),
+       NodeId::FromTabCollectionHandle(tab_strip_collection->GetHandle()),
+       NodeId::FromTabCollectionHandle(pinned_collection->GetHandle())});
+  tabs_api::Position pos(0, path);
+
+  auto result = service_->CreateTabAt(pos, GURL("http://there.where"));
+  ASSERT_TRUE(result.has_value());
+
+  ASSERT_EQ(2, model_->GetTabCount());
+  ASSERT_TRUE(model_->GetTab(0)->IsPinned());
+}
+
+IN_PROC_BROWSER_TEST_F(AndroidTabStripApiBrowserTest, CreateWithoutPosition) {
+  auto* tab_strip_collection = model_->GetTabStripCollection(GetPassKey());
+  auto* unpinned_collection = tab_strip_collection->unpinned_collection();
+
+  tabs_api::Position pos(0, tabs_api::Path());
+
+  auto result = service_->CreateTabAt(pos, GURL("http://there.where"));
+  ASSERT_TRUE(result.has_value());
+
+  ASSERT_EQ(2, model_->GetTabCount());
+  ASSERT_EQ(2ul, unpinned_collection->ChildCount());
+}
+
+IN_PROC_BROWSER_TEST_F(AndroidTabStripApiBrowserTest, CreateUnsupported) {
+  auto* tab_strip_collection = model_->GetTabStripCollection(GetPassKey());
+
+  tabs_api::Path bad_path_with_tabstrip(
+      {NodeId::FromWindowId(base::NumberToString(model_->GetSessionId().id())),
+       NodeId::FromTabCollectionHandle(tab_strip_collection->GetHandle())});
+  EXPECT_DEATH_IF_SUPPORTED(
+      {
+        std::ignore =
+            service_->CreateTabAt(tabs_api::Position(0, bad_path_with_tabstrip),
+                                  GURL("http://there.where"));
+      },
+      "Unsupported collection type for insertion");
 }
 
 }  // namespace tabs_api

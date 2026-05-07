@@ -325,10 +325,52 @@ tabs_api::Path AndroidTabStripModelAdapter::GetPathForCollection(
 
 InsertionParams AndroidTabStripModelAdapter::CalculateInsertionParams(
     const std::optional<tabs_api::Position>& pos) const {
-  // TODO(crbug.com/494284032): hardcoded to always insert at the end for now.
-  return {.index = model_->GetTabCount(),
-          .group_id = std::nullopt,
-          .pinned = false};
+  if (!pos.has_value()) {
+    return {.index = model_->GetTabCount(),
+            .group_id = std::nullopt,
+            .pinned = false};
+  }
+
+  const auto& position = pos.value();
+  NodeId parent_id;
+  if (position.path().components().empty()) {
+    parent_id = NodeId::FromTabCollectionHandle(
+        root_->unpinned_collection()->GetHandle());
+  } else {
+    parent_id = position.path().components().back();
+  }
+
+  std::optional<tabs::TabCollectionHandle> collection_handle =
+      parent_id.ToTabCollectionHandle();
+  CHECK(collection_handle.has_value());
+  const tabs::TabCollection* collection = collection_handle.value().Get();
+
+  // Assuming that pinned tabs are always at the start of tab lists.
+  int index = 0;
+  std::optional<tab_groups::TabGroupId> group_id;
+
+  switch (collection->type()) {
+    case tabs::TabCollection::Type::PINNED:
+      index = position.index();
+      break;
+    case tabs::TabCollection::Type::UNPINNED:
+      index = root_->IndexOfFirstNonPinnedTab() + position.index();
+      break;
+
+    case tabs::TabCollection::Type::GROUP:
+      group_id = FindGroupIdFor(collection_handle.value());
+      CHECK(group_id.has_value());
+      index = model_->GetTabGroupTabIndices(group_id.value()).start() +
+              position.index();
+      break;
+
+    case tabs::TabCollection::Type::TABSTRIP:
+    case tabs::TabCollection::Type::SPLIT:
+      NOTREACHED() << "Unsupported collection type for insertion";
+  }
+
+  bool pinned = (collection->type() == tabs::TabCollection::Type::PINNED);
+  return {.index = index, .group_id = group_id, .pinned = pinned};
 }
 
 base::expected<void, mojo_base::mojom::ErrorPtr>
