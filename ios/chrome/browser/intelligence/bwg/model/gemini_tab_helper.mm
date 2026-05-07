@@ -669,8 +669,17 @@ void GeminiTabHelper::OnCanApplyContextualCueingDecision(
     return;
   }
 
-  UIImage* badge_image =
-      [GeminiUIUtils brandedGeminiSymbolWithPointSize:kBadgeSymbolPointSize];
+  UIImage* badge_image;
+  BOOL should_hide_badge_after_chip_collapse = NO;
+  if (IsChromeNextIaEnabled()) {
+    badge_image = CustomSymbolTemplateWithPointSize(kTextSparkSymbol,
+                                                    kBadgeSymbolPointSize);
+    should_hide_badge_after_chip_collapse = NO;
+  } else {
+    badge_image =
+        [GeminiUIUtils brandedGeminiSymbolWithPointSize:kBadgeSymbolPointSize];
+    should_hide_badge_after_chip_collapse = YES;
+  }
   NSString* cue_label =
       l10n_util::GetNSString(IDS_IOS_ASK_GEMINI_CHIP_CUE_LABEL);
   LocationBarBadgeConfiguration* badge_config =
@@ -680,7 +689,8 @@ void GeminiTabHelper::OnCanApplyContextualCueingDecision(
                   badgeImage:badge_image];
 
   badge_config.badgeText = cue_label;
-  badge_config.shouldHideBadgeAfterChipCollapse = true;
+  badge_config.shouldHideBadgeAfterChipCollapse =
+      should_hide_badge_after_chip_collapse;
   bool success = false;
   if ([(id)location_bar_badge_commands_handler_
           respondsToSelector:@selector(updateBadgeConfig:)]) {
