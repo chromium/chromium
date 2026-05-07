@@ -50,6 +50,7 @@ import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.IconResourceIdsProto.IconResourceIds;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
@@ -76,6 +77,7 @@ public class FuseboxViewBinderUnitTest {
 
     @Mock private AnchoredPopupWindow mPopupWindow;
     @Mock private DynamicRectProvider mDynamicRectProvider;
+    @Mock private WindowAndroid mWindowAndroid;
 
     private final PropertyModel mModel = new PropertyModel(FuseboxProperties.ALL_KEYS);
 
@@ -98,9 +100,11 @@ public class FuseboxViewBinderUnitTest {
                                 .inflate(R.layout.fusebox_context_popup, /* root= */ null);
         doReturn(popupView).when(mPopupWindow).getContentView();
 
+        doReturn(null).when(mWindowAndroid).getInsetObserver();
         mPopup =
                 new FuseboxPopup(
                         activity,
+                        mWindowAndroid,
                         mPopupWindow,
                         popupView,
                         mDynamicRectProvider,

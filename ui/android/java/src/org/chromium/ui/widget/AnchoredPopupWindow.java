@@ -903,6 +903,16 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
     }
 
     /**
+     * Sets whether the popup is allowed to be clipped by the screen edges. See {@link
+     * PopupWindow#setClippingEnabled(boolean)}.
+     *
+     * @param enabled True if clipping is enabled, false otherwise.
+     */
+    public void setClippingEnabled(boolean enabled) {
+        mPopupWindow.setClippingEnabled(enabled);
+    }
+
+    /**
      * Changes whether the popup is touch modal or if outside touches will be sent to other windows
      * behind it. See {@link PopupWindow#setTouchModal(boolean)}.
      *

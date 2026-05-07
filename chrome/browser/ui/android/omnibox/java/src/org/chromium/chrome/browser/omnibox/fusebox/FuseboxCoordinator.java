@@ -218,6 +218,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         var popup =
                 new FuseboxPopup(
                         mContext,
+                        mWindowAndroid,
                         popupWindowBuilder.build(),
                         popupView,
                         dynamicRectProvider,
@@ -277,6 +278,9 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         }
         if (mBottomSheetRectProvider != null) {
             mBottomSheetRectProvider.destroy();
+        }
+        if (mViewHolder != null) {
+            mViewHolder.popup.destroy();
         }
         mScrimManager.destroy();
     }

@@ -4,12 +4,14 @@
 
 package org.chromium.chrome.browser.omnibox.fusebox;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.os.Looper;
@@ -17,6 +19,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
+
+import androidx.core.graphics.Insets;
+import androidx.core.view.WindowInsetsCompat;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -33,6 +38,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 
 /** Unit tests for FuseboxPopup. */
@@ -44,6 +51,8 @@ public class FuseboxPopupUnitTest {
     private @Mock AnchoredPopupWindow mPopupWindow;
     private @Mock View.AccessibilityDelegate mAccessibilityDelegate;
     private @Mock DynamicRectProvider mDynamicRectProvider;
+    private @Mock WindowAndroid mWindowAndroid;
+    private @Mock InsetObserver mInsetObserver;
 
     private Activity mActivity;
     private FuseboxPopup mFuseboxPopup;
@@ -55,9 +64,13 @@ public class FuseboxPopupUnitTest {
         mActivity = Robolectric.setupActivity(TestActivity.class);
         mContentView = LayoutInflater.from(mActivity).inflate(R.layout.fusebox_context_popup, null);
         mViewGroup = mContentView.findViewById(R.id.fusebox_view_group);
+
+        when(mWindowAndroid.getInsetObserver()).thenReturn(mInsetObserver);
+
         mFuseboxPopup =
                 new FuseboxPopup(
                         mActivity,
+                        mWindowAndroid,
                         mPopupWindow,
                         mContentView,
                         mDynamicRectProvider,
@@ -158,7 +171,12 @@ public class FuseboxPopupUnitTest {
         mContentView = LayoutInflater.from(mActivity).inflate(R.layout.fusebox_context_popup, null);
         mFuseboxPopup =
                 new FuseboxPopup(
-                        mActivity, mPopupWindow, mContentView, mDynamicRectProvider, false);
+                        mActivity,
+                        mWindowAndroid,
+                        mPopupWindow,
+                        mContentView,
+                        mDynamicRectProvider,
+                        /* isBottomSheet= */ false);
 
         // Verify that we can find the elements
         assertNotNull(mFuseboxPopup.mAddCurrentTab);
@@ -178,6 +196,7 @@ public class FuseboxPopupUnitTest {
         mFuseboxPopup =
                 new FuseboxPopup(
                         mActivity,
+                        mWindowAndroid,
                         mPopupWindow,
                         mContentView,
                         mDynamicRectProvider,
@@ -205,5 +224,53 @@ public class FuseboxPopupUnitTest {
         Shadows.shadowOf(Looper.getMainLooper()).idle();
 
         verify(mPopupWindow, atLeastOnce()).updateDesiredContentSize(100, 0, true);
+    }
+
+    @Test
+    public void testUpdateInsets_ImeVisible() {
+        WindowInsetsCompat insets = org.mockito.Mockito.mock(WindowInsetsCompat.class);
+        Insets imeInsets = Insets.of(0, 0, 0, 100);
+        Insets navBarInsets = Insets.of(0, 0, 0, 50);
+        Insets statusBarsInsets = Insets.of(0, 20, 0, 0);
+
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(insets);
+        when(insets.getInsets(WindowInsetsCompat.Type.ime())).thenReturn(imeInsets);
+        when(insets.getInsets(WindowInsetsCompat.Type.navigationBars())).thenReturn(navBarInsets);
+        when(insets.getInsets(WindowInsetsCompat.Type.statusBars())).thenReturn(statusBarsInsets);
+
+        doReturn(true).when(mPopupWindow).isShowing();
+        mFuseboxPopup.setPopupState(FuseboxProperties.PopupState.FLOATING);
+
+        // First layout update.
+        mFuseboxPopup.updateLayout();
+        assertEquals(50, mFuseboxPopup.mScrollView.getPaddingBottom());
+
+        // Second layout update to test idempotency.
+        mFuseboxPopup.updateLayout();
+        assertEquals(50, mFuseboxPopup.mScrollView.getPaddingBottom());
+    }
+
+    @Test
+    public void testUpdateInsets_ImeHidden() {
+        WindowInsetsCompat insets = org.mockito.Mockito.mock(WindowInsetsCompat.class);
+        Insets imeInsets = Insets.of(0, 0, 0, 0);
+        Insets navBarInsets = Insets.of(0, 0, 0, 50);
+        Insets statusBarsInsets = Insets.of(0, 20, 0, 0);
+
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(insets);
+        when(insets.getInsets(WindowInsetsCompat.Type.ime())).thenReturn(imeInsets);
+        when(insets.getInsets(WindowInsetsCompat.Type.navigationBars())).thenReturn(navBarInsets);
+        when(insets.getInsets(WindowInsetsCompat.Type.statusBars())).thenReturn(statusBarsInsets);
+
+        doReturn(true).when(mPopupWindow).isShowing();
+        mFuseboxPopup.setPopupState(FuseboxProperties.PopupState.FLOATING);
+
+        // First layout update
+        mFuseboxPopup.updateLayout();
+        assertEquals(50, mFuseboxPopup.mScrollView.getPaddingBottom());
+
+        // Second layout update to test idempotency
+        mFuseboxPopup.updateLayout();
+        assertEquals(50, mFuseboxPopup.mScrollView.getPaddingBottom());
     }
 }
