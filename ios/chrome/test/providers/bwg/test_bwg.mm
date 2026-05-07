@@ -77,4 +77,14 @@ GeminiPageContextAttachmentState GetCurrentPageContextAttachmentState() {
   return GeminiPageContextAttachmentState::kUnknown;
 }
 
+static GeminiViewMode g_current_mode = GeminiViewMode::kUnknown;
+
+void SwitchToMode(GeminiViewMode mode, bool animated) {
+  g_current_mode = mode;
+}
+
+GeminiViewMode GetCurrentMode() {
+  return g_current_mode;
+}
+
 }  // namespace ios::provider

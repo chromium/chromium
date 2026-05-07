@@ -699,9 +699,21 @@ void GeminiBrowserAgent::OnViewStateChanged(
 void GeminiBrowserAgent::OnProcessingStatusChanged(
     ios::provider::GeminiClientMode processing_status) {
   // TODO(crbug.com/504758406): Update context on speaking state when available.
-  if (IsGeminiLiveEnabled() &&
-      processing_status == ios::provider::GeminiClientMode::kListening) {
-    UpdateGeminiPageContext();
+  if (!IsGeminiLiveEnabled() ||
+      ios::provider::GetCurrentMode() != ios::provider::GeminiViewMode::kLive) {
+    return;
+  }
+  switch (processing_status) {
+    case ios::provider::GeminiClientMode::kListening:
+      UpdateGeminiPageContext();
+      break;
+    case ios::provider::GeminiClientMode::kDormant:
+      ios::provider::SwitchToMode(ios::provider::GeminiViewMode::kFloaty,
+                                  /*animated=*/true);
+      break;
+    default:
+      // No-op.
+      break;
   }
 }
 

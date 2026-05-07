@@ -646,3 +646,27 @@ TEST_F(GeminiBrowserAgentTest, TestForceDismissedWhenTemporarilyHidden) {
   EXPECT_FALSE(IsFloatyTemporarilyHidden());
   EXPECT_TRUE(IsConversationIdPrefCleared());
 }
+
+// Tests that OnProcessingStatusChanged(kDormant) switches the view mode to
+// kFloaty (i.e., text mode) if the current mode is kLive.
+TEST_F(GeminiBrowserAgentTest,
+       TestOnProcessingStatusChangedDormantSwitchesToFloaty) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({kGeminiLive}, {});
+
+  SetIsFloatyInvoked(true);
+
+  // Set the current mode to Live.
+  ios::provider::SwitchToMode(ios::provider::GeminiViewMode::kLive,
+                              /*animated=*/false);
+  EXPECT_EQ(ios::provider::GetCurrentMode(),
+            ios::provider::GeminiViewMode::kLive);
+
+  // Call OnProcessingStatusChanged with kDormant.
+  gemini_browser_agent_->OnProcessingStatusChanged(
+      ios::provider::GeminiClientMode::kDormant);
+
+  // Verify it switched to Floaty (text mode).
+  EXPECT_EQ(ios::provider::GetCurrentMode(),
+            ios::provider::GeminiViewMode::kFloaty);
+}
