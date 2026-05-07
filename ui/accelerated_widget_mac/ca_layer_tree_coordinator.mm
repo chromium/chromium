@@ -180,8 +180,8 @@ void CALayerTreeCoordinator::CommitPresentedFrameToCA(
   }
 
   gfx::CALayerParams params;
-  if (has_resized_since_last_swap_) {
 #if BUILDFLAG(IS_MAC)
+  if (has_resized_since_last_swap_) {
     // Create a new CAContext at the new size. This allows new frame update at
     // the new size to be atomic with things like resizing the NSWindow.
     if (allow_remote_layers_) {
@@ -191,9 +191,9 @@ void CALayerTreeCoordinator::CommitPresentedFrameToCA(
       ca_context_ = nil;
       current_tree = nullptr;
     }
-#endif
     has_resized_since_last_swap_ = false;
   }
+#endif
 
   // Get the frame to be committed.
   auto& frame = presented_frames_.front();
