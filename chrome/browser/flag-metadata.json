@@ -3574,8 +3574,8 @@
   },
   {
     "name": "enable-iwa-key-distribution-component",
-    "owners": [ "greengrape@google.com", "iwa-team@google.com" ],
-    "expiry_milestone": 150
+    "owners": ["greengrape@google.com", "rferens@google.com", "iwa-team@google.com" ],
+    "expiry_milestone": 164
   },
   {
     "name": "enable-javascript-harmony",
@@ -6028,8 +6028,10 @@
   },
   {
     "name": "iwa-key-distribution-component-exp-cohort",
-    "owners": [ "greengrape@google.com", "iwa-team@google.com" ],
-    "expiry_milestone": 150
+    "owners": ["greengrape@google.com", "rferens@google.com", "iwa-team@google.com" ],
+    // This flag is used by the component developers to test component update
+    // before affecting users in the real prod release.
+    "expiry_milestone": -1
   },
   {
     "name": "jump-start-omnibox",
