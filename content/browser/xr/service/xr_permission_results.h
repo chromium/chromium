@@ -23,7 +23,7 @@ class XrPermissionResults {
  public:
   XrPermissionResults(
       const std::vector<blink::PermissionType>& permission_types,
-      const std::vector<PermissionResult>& permission_results);
+      const std::vector<blink::mojom::PermissionStatus>& permission_statuses);
   ~XrPermissionResults();
 
   // Checks if |permission_type_to_status| contains permissions necessary to
@@ -41,7 +41,7 @@ class XrPermissionResults {
       device::mojom::XRSessionFeature feature);
 
  private:
-  const base::flat_map<blink::PermissionType, PermissionResult>
+  const base::flat_map<blink::PermissionType, blink::mojom::PermissionStatus>
       permission_type_to_status_;
 
   bool HasPermissionsFor(blink::PermissionType permission_type) const;

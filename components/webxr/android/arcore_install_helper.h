@@ -44,9 +44,9 @@ class ArCoreInstallHelper : public content::XrInstallHelper {
   ArCoreInstallHelper& operator=(const ArCoreInstallHelper&) = delete;
 
   // content::XrInstallHelper implementation.
-  void EnsureInstalled(
-      const content::GlobalRenderFrameHostId& frame_id,
-      base::OnceCallback<void(bool)> install_callback) override;
+  void EnsureInstalled(const content::GlobalRenderFrameHostId& frame_id,
+                       base::OnceCallback<void(content::XrInstallResult)>
+                           install_callback) override;
 
   // Called from Java end.
   void OnRequestInstallSupportedArCoreResult(JNIEnv* env, bool success);
@@ -56,9 +56,9 @@ class ArCoreInstallHelper : public content::XrInstallHelper {
   void HandleMessagePrimaryAction(
       const content::GlobalRenderFrameHostId& frame_id);
   void HandleMessageDismissed(messages::DismissReason dismiss_reason);
-  void RunInstallFinishedCallback(bool succeeded);
+  void RunInstallFinishedCallback(content::XrInstallResult result);
 
-  base::OnceCallback<void(bool)> install_finished_callback_;
+  base::OnceCallback<void(content::XrInstallResult)> install_finished_callback_;
   base::android::ScopedJavaGlobalRef<jobject> java_install_utils_;
   std::unique_ptr<messages::MessageWrapper> message_;
 

@@ -149,7 +149,7 @@ BrowserXRRuntimeImpl::~BrowserXRRuntimeImpl() {
   }
 
   if (install_finished_callback_) {
-    std::move(install_finished_callback_).Run(false);
+    std::move(install_finished_callback_).Run(XrInstallResult::kFailed);
   }
 }
 
@@ -404,12 +404,12 @@ void BrowserXRRuntimeImpl::OnRequestSessionResult(
 
 void BrowserXRRuntimeImpl::EnsureInstalled(
     const content::GlobalRenderFrameHostId& frame_id,
-    base::OnceCallback<void(bool)> install_callback) {
+    base::OnceCallback<void(XrInstallResult)> install_callback) {
   DVLOG(2) << __func__;
 
   // If there's no install helper, then we can assume no install is needed.
   if (!install_helper_) {
-    std::move(install_callback).Run(true);
+    std::move(install_callback).Run(XrInstallResult::kSuccessAlreadyInstalled);
     return;
   }
 
@@ -417,7 +417,7 @@ void BrowserXRRuntimeImpl::EnsureInstalled(
   bool had_outstanding_callback = false;
   if (install_finished_callback_) {
     had_outstanding_callback = true;
-    std::move(install_finished_callback_).Run(false);
+    std::move(install_finished_callback_).Run(XrInstallResult::kFailed);
   }
 
   install_finished_callback_ = std::move(install_callback);
@@ -432,10 +432,10 @@ void BrowserXRRuntimeImpl::EnsureInstalled(
                                weak_ptr_factory_.GetWeakPtr()));
 }
 
-void BrowserXRRuntimeImpl::OnInstallFinished(bool succeeded) {
+void BrowserXRRuntimeImpl::OnInstallFinished(XrInstallResult result) {
   DCHECK(install_finished_callback_);
 
-  std::move(install_finished_callback_).Run(succeeded);
+  std::move(install_finished_callback_).Run(result);
 }
 
 void BrowserXRRuntimeImpl::OnImmersiveSessionError() {

@@ -12,6 +12,13 @@ namespace content {
 
 struct GlobalRenderFrameHostId;
 
+// The result of a WebXR runtime installation check.
+enum class XrInstallResult {
+  kSuccessAlreadyInstalled,
+  kSuccessInstalled,
+  kFailed,
+};
+
 // Interface class to provide the opportunity for runtimes to ensure that any
 // necessary installation steps that need to occur from within the browser
 // process are kicked off. This is acquired via the |XrInstallHelperFactory|.
@@ -33,7 +40,7 @@ class CONTENT_EXPORT XrInstallHelper {
   // successfully installed (or verified to already be installed).
   virtual void EnsureInstalled(
       const content::GlobalRenderFrameHostId& frame_id,
-      base::OnceCallback<void(bool installed)> install_callback) = 0;
+      base::OnceCallback<void(XrInstallResult)> install_callback) = 0;
 
  protected:
   XrInstallHelper() = default;

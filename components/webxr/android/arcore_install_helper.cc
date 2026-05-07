@@ -54,12 +54,12 @@ ArCoreInstallHelper::~ArCoreInstallHelper() {
                                             java_install_utils_);
   }
 
-  RunInstallFinishedCallback(false);
+  RunInstallFinishedCallback(content::XrInstallResult::kFailed);
 }
 
 void ArCoreInstallHelper::EnsureInstalled(
     const content::GlobalRenderFrameHostId& frame_id,
-    base::OnceCallback<void(bool)> install_callback) {
+    base::OnceCallback<void(content::XrInstallResult)> install_callback) {
   DVLOG(1) << __func__ << ": java_install_utils_.is_null()="
            << java_install_utils_.is_null();
 
@@ -67,7 +67,7 @@ void ArCoreInstallHelper::EnsureInstalled(
   install_finished_callback_ = std::move(install_callback);
 
   if (java_install_utils_.is_null()) {
-    RunInstallFinishedCallback(false);
+    RunInstallFinishedCallback(content::XrInstallResult::kFailed);
     return;
   }
 
@@ -78,9 +78,9 @@ void ArCoreInstallHelper::EnsureInstalled(
     return;
   }
 
-  // ARCore did not need to be installed/updated so mock out that its
-  // installation succeeded.
-  OnRequestInstallSupportedArCoreResult(nullptr, true);
+  // ARCore did not need to be installed/updated.
+  RunInstallFinishedCallback(
+      content::XrInstallResult::kSuccessAlreadyInstalled);
 }
 
 void ArCoreInstallHelper::ShowMessage(
@@ -93,7 +93,7 @@ void ArCoreInstallHelper::ShowMessage(
   int button_text = -1;
   switch (availability) {
     case ArCoreAvailability::kUnsupportedDeviceNotCapable: {
-      RunInstallFinishedCallback(false);
+      RunInstallFinishedCallback(content::XrInstallResult::kFailed);
       return;  // No need to process further
     }
     case ArCoreAvailability::kUnknownChecking:
@@ -163,12 +163,15 @@ void ArCoreInstallHelper::OnRequestInstallSupportedArCoreResult(JNIEnv* env,
   DVLOG(1) << __func__;
 
   // Nothing else to do, simply call the deferred callback.
-  RunInstallFinishedCallback(success);
+  RunInstallFinishedCallback(success
+                                 ? content::XrInstallResult::kSuccessInstalled
+                                 : content::XrInstallResult::kFailed);
 }
 
-void ArCoreInstallHelper::RunInstallFinishedCallback(bool succeeded) {
+void ArCoreInstallHelper::RunInstallFinishedCallback(
+    content::XrInstallResult result) {
   if (install_finished_callback_) {
-    std::move(install_finished_callback_).Run(succeeded);
+    std::move(install_finished_callback_).Run(result);
   }
 }
 

@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -18,6 +19,7 @@
 #include "base/trace_event/common/trace_event_common.h"
 #include "build/build_config.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
+#include "content/browser/permissions/permission_util.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/xr/metrics/session_metrics_helper.h"
 #include "content/browser/xr/service/browser_xr_runtime_impl.h"
@@ -574,11 +576,40 @@ void VRServiceImpl::RequestSession(
 
 void VRServiceImpl::DoRequestPermissions(
     const std::vector<blink::PermissionType> request_permissions,
-    base::OnceCallback<void(const std::vector<PermissionResult>&)>
-        result_callback) {
+    base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&,
+                            bool)> result_callback) {
   PermissionController* permission_controller =
       GetWebContents()->GetBrowserContext()->GetPermissionController();
   CHECK(permission_controller);
+
+  std::vector<blink::mojom::PermissionStatus> current_statuses;
+  current_statuses.reserve(request_permissions.size());
+  for (auto permission_type : request_permissions) {
+    auto descriptor =
+        PermissionDescriptorUtil::CreatePermissionDescriptorForPermissionType(
+            permission_type);
+
+    blink::mojom::PermissionStatus status;
+    if (PermissionUtil::IsDevicePermission(descriptor)) {
+      status = permission_controller->GetCombinedPermissionAndDeviceStatus(
+          std::move(descriptor), render_frame_host_);
+    } else {
+      status = permission_controller->GetPermissionStatusForCurrentDocument(
+          std::move(descriptor), render_frame_host_);
+    }
+    current_statuses.push_back(status);
+  }
+
+  bool needs_prompt =
+      std::ranges::any_of(current_statuses, [](const auto& status) {
+        return status == blink::mojom::PermissionStatus::ASK;
+      });
+
+  // If we don't need to prompt the user, just return the results now.
+  if (!needs_prompt) {
+    std::move(result_callback).Run(current_statuses, /*needs_prompt=*/false);
+    return;
+  }
 
   permission_controller->RequestPermissionsFromCurrentDocument(
       render_frame_host_,
@@ -586,7 +617,16 @@ void VRServiceImpl::DoRequestPermissions(
           PermissionDescriptorUtil::
               CreatePermissionDescriptorForPermissionTypes(request_permissions),
           /*user_gesture=*/true),
-      std::move(result_callback));
+      base::BindOnce(
+          [](base::OnceCallback<void(
+                 const std::vector<blink::mojom::PermissionStatus>&, bool)>
+                 callback,
+             bool needs_prompt, const std::vector<PermissionResult>& results) {
+            std::move(callback).Run(
+                base::ToVector(results, &PermissionResult::status),
+                needs_prompt);
+          },
+          std::move(result_callback), needs_prompt));
 }
 
 void VRServiceImpl::GetPermissionStatus(SessionRequestData request,
@@ -611,18 +651,24 @@ void VRServiceImpl::GetPermissionStatus(SessionRequestData request,
 void VRServiceImpl::OnPermissionResultsForMode(
     SessionRequestData request,
     const std::vector<blink::PermissionType>& permissions,
-    const std::vector<PermissionResult>& results) {
+    const std::vector<blink::mojom::PermissionStatus>& results,
+    bool needs_prompt) {
   DVLOG(2) << __func__ << ": permissions.size()=" << permissions.size();
   DCHECK_EQ(permissions.size(), results.size());
 
-  // Prolong the user activation since the user may have taken long enough to
-  // answer the permission prompts that the transient user activation expired.
-  // This is fine to do here, since we enforce that the activation existed prior
-  // to requesting permissions.
-  DVLOG(3) << __func__ << ": prolonging user activation, current status="
-           << render_frame_host_->HasTransientUserActivation();
-  render_frame_host_->NotifyUserActivation(
-      blink::mojom::UserActivationNotificationType::kInteraction);
+  if (needs_prompt) {
+    // Prolong the user activation since the user may have taken long enough to
+    // answer the permission prompts that the transient user activation expired.
+    // This is fine to do here, since we enforce that the activation existed
+    // prior to requesting permissions.
+    DVLOG(3) << __func__ << ": prolonging user activation, current status="
+             << render_frame_host_->HasTransientUserActivation();
+    render_frame_host_->NotifyUserActivation(
+        blink::mojom::UserActivationNotificationType::kInteraction);
+  } else {
+    DVLOG(3) << __func__
+             << ": NOT prolonging user activation (no prompt shown)";
+  }
 
   const XrPermissionResults permission_results(permissions, results);
 
@@ -646,7 +692,7 @@ void VRServiceImpl::OnPermissionResultsForMode(
                      weak_ptr_factory_.GetWeakPtr(), std::move(request),
                      permissions_for_features);
   if (permissions_for_features.empty()) {
-    std::move(result_callback).Run({});
+    std::move(result_callback).Run({}, /*needs_prompt=*/false);
     return;
   }
 
@@ -656,7 +702,22 @@ void VRServiceImpl::OnPermissionResultsForMode(
 void VRServiceImpl::OnPermissionResultsForFeatures(
     SessionRequestData request,
     const std::vector<blink::PermissionType>& permissions,
-    const std::vector<PermissionResult>& results) {
+    const std::vector<blink::mojom::PermissionStatus>& results,
+    bool needs_prompt) {
+  if (needs_prompt) {
+    // Prolong the user activation since the user may have taken long enough to
+    // answer the permission prompts that the transient user activation expired.
+    // This is fine to do here, since we enforce that the activation existed
+    // prior to requesting permissions.
+    DVLOG(3) << __func__ << ": prolonging user activation, current status="
+             << render_frame_host_->HasTransientUserActivation();
+    render_frame_host_->NotifyUserActivation(
+        blink::mojom::UserActivationNotificationType::kInteraction);
+  } else {
+    DVLOG(3) << __func__
+             << ": NOT prolonging user activation (no prompt shown)";
+  }
+
   const XrPermissionResults permission_results(permissions, results);
 
   std::unordered_set<device::mojom::XRSessionFeature> rejected_features;
@@ -736,24 +797,29 @@ void VRServiceImpl::EnsureRuntimeInstalled(SessionRequestData request,
 }
 
 void VRServiceImpl::OnInstallResult(SessionRequestData request,
-                                    bool install_succeeded) {
-  DVLOG(2) << __func__ << ": install_succeeded=" << install_succeeded;
+                                    XrInstallResult result) {
+  DVLOG(2) << __func__ << ": result=" << std::to_underlying(result);
 
-  if (!install_succeeded) {
+  if (result == XrInstallResult::kFailed) {
     RejectSession(std::move(request.callback), request.options->trace_id,
                   device::mojom::RequestSessionError::RUNTIME_INSTALL_FAILURE,
                   "Runtime installation failed.");
     return;
   }
 
-  // Prolong the user activation since the user may have taken long enough to
-  // install the runtime that the transient user activation expired. This is
-  // fine to do here, since we enforce that the activation existed prior to
-  // kicking off installation.
-  DVLOG(3) << __func__ << ": prolonging user activation, current status="
-           << render_frame_host_->HasTransientUserActivation();
-  render_frame_host_->NotifyUserActivation(
-      blink::mojom::UserActivationNotificationType::kInteraction);
+  if (result == XrInstallResult::kSuccessInstalled) {
+    // Prolong the user activation since the user may have taken long enough to
+    // install the runtime that the transient user activation expired. This is
+    // fine to do here, since we enforce that the activation existed prior to
+    // kicking off installation.
+    DVLOG(3) << __func__ << ": prolonging user activation, current status="
+             << render_frame_host_->HasTransientUserActivation();
+    render_frame_host_->NotifyUserActivation(
+        blink::mojom::UserActivationNotificationType::kInteraction);
+  } else {
+    DVLOG(3) << __func__
+             << ": NOT prolonging user activation (no install UI shown)";
+  }
 
   DoRequestSession(std::move(request));
 }

@@ -16,15 +16,15 @@ namespace {
 // on |permissions| and |permission_statuses|. Those 2 vectors must have equal
 // length, and the permission status for permission at `permissions[i]` is
 // assumed to be in `permission_statuses[i]`.
-base::flat_map<blink::PermissionType, content::PermissionResult>
+base::flat_map<blink::PermissionType, blink::mojom::PermissionStatus>
 CreatePermissionTypeToStatusMap(
     const std::vector<blink::PermissionType>& permissions,
-    const std::vector<content::PermissionResult>& permission_results) {
-  DCHECK_EQ(permissions.size(), permission_results.size());
+    const std::vector<blink::mojom::PermissionStatus>& permission_statuses) {
+  DCHECK_EQ(permissions.size(), permission_statuses.size());
 
-  base::flat_map<blink::PermissionType, content::PermissionResult> result;
+  base::flat_map<blink::PermissionType, blink::mojom::PermissionStatus> result;
   for (size_t i = 0; i < permissions.size(); ++i) {
-    result[permissions[i]] = content::PermissionResult(permission_results[i]);
+    result[permissions[i]] = permission_statuses[i];
   }
   return result;
 }
@@ -35,10 +35,10 @@ namespace content {
 
 XrPermissionResults::XrPermissionResults(
     const std::vector<blink::PermissionType>& permission_types,
-    const std::vector<PermissionResult>& permission_results)
+    const std::vector<blink::mojom::PermissionStatus>& permission_statuses)
     : permission_type_to_status_(
           CreatePermissionTypeToStatusMap(permission_types,
-                                          permission_results)) {}
+                                          permission_statuses)) {}
 
 XrPermissionResults::~XrPermissionResults() = default;
 
@@ -68,7 +68,7 @@ bool XrPermissionResults::HasPermissionsFor(
     return false;
   }
 
-  return permission_type_to_status_.at(permission_type).status ==
+  return permission_type_to_status_.at(permission_type) ==
          blink::mojom::PermissionStatus::GRANTED;
 }
 

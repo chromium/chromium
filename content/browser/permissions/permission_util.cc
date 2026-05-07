@@ -142,7 +142,10 @@ bool PermissionUtil::IsDevicePermission(
     const blink::mojom::PermissionDescriptorPtr& descriptor) {
   return descriptor->name == blink::mojom::PermissionName::VIDEO_CAPTURE ||
          descriptor->name == blink::mojom::PermissionName::AUDIO_CAPTURE ||
-         descriptor->name == blink::mojom::PermissionName::GEOLOCATION;
+         descriptor->name == blink::mojom::PermissionName::GEOLOCATION ||
+         descriptor->name == blink::mojom::PermissionName::AR ||
+         descriptor->name == blink::mojom::PermissionName::VR ||
+         descriptor->name == blink::mojom::PermissionName::HAND_TRACKING;
 }
 
 bool PermissionUtil::IsEmbeddablePermission(
