@@ -13,7 +13,7 @@ import android.webkit.WebSettings;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.content.browser.selection.SelectionPopupControllerImpl;
+import org.chromium.content_public.browser.selection.SelectionUtils;
 
 /**
  * Helper class for {@link WebActionMode} encapsulating
@@ -25,7 +25,7 @@ public abstract class ActionModeCallbackHelper {
     private static final String TAG = "ActionModeHelper";
 
     /** Google search doesn't support requests slightly larger than this. */
-    public static final int MAX_SEARCH_QUERY_LENGTH = 1000;
+    public static final int MAX_SEARCH_QUERY_LENGTH = SelectionUtils.MAX_SEARCH_QUERY_LENGTH;
 
     public static final int MENU_ITEM_SHARE = WebSettings.MENU_ITEM_SHARE;
     public static final int MENU_ITEM_WEB_SEARCH = WebSettings.MENU_ITEM_WEB_SEARCH;
@@ -40,7 +40,7 @@ public abstract class ActionModeCallbackHelper {
      * @param maxLength maximum length to which the query will be truncated.
      */
     public static String sanitizeQuery(String query, int maxLength) {
-        return SelectionPopupControllerImpl.sanitizeQuery(query, maxLength);
+        return SelectionUtils.sanitizeQuery(query, maxLength);
     }
 
     /** Empty {@link ActionMode.Callback} that does nothing. Used for {@link #EMPTY_CALLBACK}. */

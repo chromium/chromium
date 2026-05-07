@@ -437,6 +437,7 @@ android_library("content_full_java") {
     "java/src/org/chromium/content_public/browser/WebContentsStatics.java",
     "java/src/org/chromium/content_public/browser/selection/SelectionActionMenuDelegate.java",
     "java/src/org/chromium/content_public/browser/selection/SelectionDropdownMenuDelegate.java",
+    "java/src/org/chromium/content_public/browser/selection/SelectionUtils.java",
   ]
 
   if (enable_screen_capture) {
@@ -748,6 +749,7 @@ robolectric_binary("content_junit_tests") {
     "junit/src/org/chromium/content/browser/selection/SelectActionMenuHelperTest.java",
     "junit/src/org/chromium/content/browser/selection/SelectionMenuCachedResultTest.java",
     "junit/src/org/chromium/content/browser/selection/SelectionPopupControllerTest.java",
+    "junit/src/org/chromium/content/browser/selection/SelectionUtilsTest.java",
     "junit/src/org/chromium/content/browser/selection/SmartSelectionEventProcessorTest.java",
     "junit/src/org/chromium/content/browser/sms/SmsProviderGmsTest.java",
     "junit/src/org/chromium/content/browser/webcontents/WebContentsImplTest.java",

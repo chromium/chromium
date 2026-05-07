@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.pdf;
 
 import android.net.Uri;
 
+import androidx.pdf.view.PdfView;
+
 import org.chromium.build.annotations.NullMarked;
 
 /** Interface to handle actions from the PDF viewer. */
@@ -33,4 +35,11 @@ public interface PdfActionsDelegate {
      * @param zoomLevel The current zoom level.
      */
     void onViewportChanged(int pageIndex, float zoomLevel);
+
+    /**
+     * Loads the PdfSelectionCoordinator.
+     *
+     * @param pdfView The PdfView to use for the coordinator.
+     */
+    void loadPdfSelectionCoordinator(PdfView pdfView);
 }

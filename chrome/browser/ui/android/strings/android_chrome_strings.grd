@@ -7137,6 +7137,10 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Loading PDF…
       </message>
 
+      <message name="IDS_ACTIONBAR_TRANSLATE" desc="Contextual action bar item for translating the selected text.">
+        Translate
+      </message>
+
       <!-- Tab declutter -->
       <message name="IDS_ARCHIVED_TAB_CARD_TITLE" desc="Shown in the tab switcher to prompt the user to review their inactive tabs and tab groups. Indicates how many tabs and tab groups are inactive.">
         {ARCHIVED_TAB_COUNT, plural,

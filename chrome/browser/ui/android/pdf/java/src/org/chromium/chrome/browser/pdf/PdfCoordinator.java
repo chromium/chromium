@@ -98,6 +98,7 @@ public class PdfCoordinator implements PdfActionsDelegate, PdfToolbarActionsDele
     /** A unique id to identity the FragmentContainerView in the current PdfPage. */
     private final int mFragmentContainerViewId;
 
+    private @Nullable PdfSelectionCoordinator mPdfSelectionCoordinator;
     private final @Nullable PdfToolbarCoordinator mToolbarCoordinator;
 
     /** The filepath of the pdf. It is null before download complete. */
@@ -202,6 +203,7 @@ public class PdfCoordinator implements PdfActionsDelegate, PdfToolbarActionsDele
             if (!PdfUtils.isInlinePdfV2Enabled() || mDelegate == null) {
                 return;
             }
+            mDelegate.loadPdfSelectionCoordinator(pdfView);
             final PdfView capturedView = pdfView;
             final PdfActionsDelegate delegate = mDelegate;
 
@@ -339,6 +341,9 @@ public class PdfCoordinator implements PdfActionsDelegate, PdfToolbarActionsDele
     void destroy() {
         mPdfSandboxHandle.close();
         mPdfSandboxHandle = null;
+        if (mPdfSelectionCoordinator != null) {
+            mPdfSelectionCoordinator = null;
+        }
         if (mToolbarCoordinator != null) {
             mToolbarCoordinator.destroy();
         }
@@ -540,6 +545,11 @@ public class PdfCoordinator implements PdfActionsDelegate, PdfToolbarActionsDele
     }
 
     // Implementation of PdfActionsDelegate
+
+    @Override
+    public void loadPdfSelectionCoordinator(PdfView pdfView) {
+        mPdfSelectionCoordinator = new PdfSelectionCoordinator(mActivity, pdfView);
+    }
 
     @Override
     public boolean onLinkClicked(Uri uri) {
