@@ -379,9 +379,6 @@ external/wpt/css/css-transforms/ttwf-transform-skewy-001.html
 external/wpt/css/css-transitions/transition-behavior.html
 external/wpt/css/css-ui/compute-kind-widget-no-fallback-props-001.html
 external/wpt/css/css-ui/outline-020.html
-external/wpt/css/css-ui/text-overflow-027.html
-external/wpt/css/css-ui/text-overflow-028.html
-external/wpt/css/css-ui/text-overflow-029.html
 external/wpt/css/css-values/viewport-units-scrollbars*
 external/wpt/css/css-variables/variable-presentation-attribute.html
 external/wpt/css/css-will-change/will-change-fixedpos-cb-*
