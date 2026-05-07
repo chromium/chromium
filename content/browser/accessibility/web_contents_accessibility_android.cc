@@ -416,11 +416,13 @@ std::optional<int> MaybeFindRowColumn(ui::BrowserAccessibility* start_node,
   // Move in the desired direction by the element type.
   int want_row_index = cur_row_index, want_col_index = cur_col_index;
   if (want_row) {
-    want_row_index += forwards ? 1 : -1;
+    want_row_index +=
+        forwards ? cell_node->GetTableCellRowSpan().value_or(1) : -1;
   }
 
   if (want_col) {
-    want_col_index += forwards ? 1 : -1;
+    want_col_index +=
+        forwards ? cell_node->GetTableCellColSpan().value_or(1) : -1;
   }
 
   if (want_col_bounds || want_table_bounds) {

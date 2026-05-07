@@ -117,6 +117,7 @@ import android.view.View;
 
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.test.filters.LargeTest;
+import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
 import com.google.common.truth.Expect;
@@ -325,6 +326,10 @@ public class WebContentsAccessibilityTest {
 
     private void focusNode(int virtualViewId) throws Throwable {
         mActivityTestRule.focusNode(virtualViewId);
+    }
+
+    private boolean isNodeAccessibilityFocused(int virtualViewId) {
+        return createAccessibilityNodeInfo(virtualViewId).isAccessibilityFocused();
     }
 
     /**
@@ -3822,10 +3827,58 @@ public class WebContentsAccessibilityTest {
     }
 
     /**
-     * Tests that TalkBack's Browse Mode table navigation (e.g., Ctrl + Alt + Arrows)
-     * correctly delegates focus to the interactive widget inside a gridcell.
-     * This ensures the inner link receives focus and can be activated, rather
-     * than focus getting trapped on the non-interactive cell wrapper.
+     * Focuses {@code fromVirtualViewId}. Performs an action and checks that focus does not change.
+     *
+     * @param fromVirtualViewId The view to focus initially.
+     * @param action The {@link AccessibilityActionCompat} action to perform.
+     * @param htmlElementString The {@link
+     *     AccessibilityNodeInfo#ACTION_ARGUMENT_HTML_ELEMENT_STRING}.
+     */
+    private void assertAccessibilityFocusDoesNotMove(
+            int fromVirtualViewId,
+            AccessibilityNodeInfoCompat.AccessibilityActionCompat action,
+            String htmlElementString)
+            throws Throwable {
+        mActivityTestRule.focusNode(fromVirtualViewId);
+
+        Bundle bundle = new Bundle();
+        bundle.putString(ACTION_ARGUMENT_HTML_ELEMENT_STRING, htmlElementString);
+        Assert.assertFalse(performActionOnUiThread(fromVirtualViewId, action, bundle));
+    }
+
+    /**
+     * Focuses {@code fromVirtualViewId}. Performs an action and checks that the expected view is
+     * focused.
+     *
+     * @param fromVirtualViewId The view to focus initially.
+     * @param action The {@link AccessibilityActionCompat} action to perform.
+     * @param htmlElementString The {@link
+     *     AccessibilityNodeInfo#ACTION_ARGUMENT_HTML_ELEMENT_STRING}.
+     * @param expectedNewFocusedVirtualViewId The view which is expected to gain focus.
+     */
+    private void assertAccessibilityFocusMoves(
+            int fromVirtualViewId,
+            AccessibilityNodeInfoCompat.AccessibilityActionCompat action,
+            String htmlElementString,
+            int expectedNewFocusedVirtualViewId)
+            throws Throwable {
+        mActivityTestRule.focusNode(fromVirtualViewId);
+
+        Bundle bundle = new Bundle();
+        bundle.putString(ACTION_ARGUMENT_HTML_ELEMENT_STRING, htmlElementString);
+        Assert.assertTrue(
+                performActionOnUiThread(
+                        fromVirtualViewId,
+                        action,
+                        bundle,
+                        () -> isNodeAccessibilityFocused(expectedNewFocusedVirtualViewId)));
+    }
+
+    /**
+     * Tests that TalkBack's Browse Mode table navigation (e.g., Ctrl + Alt + Arrows) correctly
+     * delegates focus to the interactive widget inside a gridcell. This ensures the inner link
+     * receives focus and can be activated, rather than focus getting trapped on the non-interactive
+     * cell wrapper.
      */
     @Test
     @SmallTest
@@ -3842,38 +3895,202 @@ public class WebContentsAccessibilityTest {
         // Find the inner link nodes
         int vvid1 = waitForNodeMatching(sViewIdResourceNameMatcher, "link1");
         int vvid2 = waitForNodeMatching(sViewIdResourceNameMatcher, "link2");
-        AccessibilityNodeInfoCompat mNodeInfo1 = createAccessibilityNodeInfo(vvid1);
-        AccessibilityNodeInfoCompat mNodeInfo2 = createAccessibilityNodeInfo(vvid2);
-        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo1);
-        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo2);
-
-        // Focus the first link to act as our starting point for navigation.
-        Assert.assertTrue(
-                performActionOnUiThread(
-                        vvid1,
-                        ACTION_ACCESSIBILITY_FOCUS,
-                        null,
-                        () -> createAccessibilityNodeInfo(vvid1).isAccessibilityFocused()));
-
-        // Simulate table navigation
-        Bundle bundle = new Bundle();
-        bundle.putString(ACTION_ARGUMENT_HTML_ELEMENT_STRING, "COLUMN");
+        AccessibilityNodeInfoCompat nodeInfo1 = createAccessibilityNodeInfo(vvid1);
+        AccessibilityNodeInfoCompat nodeInfo2 = createAccessibilityNodeInfo(vvid2);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, nodeInfo1);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, nodeInfo2);
 
         // Assert that the action successfully delegates focus to the inner link of the next cell,
         // rather than the gridcell wrapper.
-        Assert.assertTrue(
-                performActionOnUiThread(
-                        vvid1,
-                        ACTION_NEXT_HTML_ELEMENT,
-                        bundle,
-                        () -> createAccessibilityNodeInfo(vvid2).isAccessibilityFocused()));
+        assertAccessibilityFocusMoves(
+                /* fromVirtualViewId= */ vvid1,
+                ACTION_NEXT_HTML_ELEMENT,
+                "COLUMN",
+                /* expectedNewFocusedVirtualViewId= */ vvid2);
 
         // Update nodes and verify results.
         mActivityTestRule.sendEndOfTestSignal();
-        mNodeInfo1 = createAccessibilityNodeInfo(vvid1);
-        mNodeInfo2 = createAccessibilityNodeInfo(vvid2);
-        Assert.assertFalse(PERFORM_ACTION_ERROR, mNodeInfo1.isAccessibilityFocused());
-        Assert.assertTrue(PERFORM_ACTION_ERROR, mNodeInfo2.isAccessibilityFocused());
+        Assert.assertFalse(PERFORM_ACTION_ERROR, isNodeAccessibilityFocused(vvid1));
+        Assert.assertTrue(PERFORM_ACTION_ERROR, isNodeAccessibilityFocused(vvid2));
+    }
+
+    @Test
+    @MediumTest
+    public void testPerformAction_nextHtmlElement_tableNavigation() throws Throwable {
+        setupTestWithHTML(
+                "<table role='table'>"
+                        + "  <tr>"
+                        + "    <td id='topleft'>topleft</td>"
+                        + "    <td id='topright'>topright</td>"
+                        + "  </tr>"
+                        + "  <tr>"
+                        + "    <td id='bottomleft' tabindex='0'>bottomleft</td>"
+                        + "    <td id='bottomright' tabindex='0'>bottomright</td>"
+                        + "  </tr>"
+                        + "</table>");
+
+        int topLeftVirtualViewId = waitForNodeMatching(sViewIdResourceNameMatcher, "topleft");
+        int topRightVirtualViewId = waitForNodeMatching(sViewIdResourceNameMatcher, "topright");
+        int bottomLeftVirtualViewId = waitForNodeMatching(sViewIdResourceNameMatcher, "bottomleft");
+        int bottomRightVirtualViewId =
+                waitForNodeMatching(sViewIdResourceNameMatcher, "bottomright");
+
+        // Check navigation where top-left cell initially has focus.
+        assertAccessibilityFocusMoves(
+                topLeftVirtualViewId, ACTION_NEXT_HTML_ELEMENT, "COLUMN", topRightVirtualViewId);
+        assertAccessibilityFocusMoves(
+                topLeftVirtualViewId, ACTION_NEXT_HTML_ELEMENT, "ROW", bottomLeftVirtualViewId);
+
+        // Check navigation where bottom-right cell initially has focus.
+        assertAccessibilityFocusDoesNotMove(
+                bottomRightVirtualViewId, ACTION_NEXT_HTML_ELEMENT, "COLUMN");
+        assertAccessibilityFocusDoesNotMove(
+                bottomRightVirtualViewId, ACTION_NEXT_HTML_ELEMENT, "ROW");
+    }
+
+    @Test
+    @MediumTest
+    public void testPerformAction_previousHtmlElement_tableNavigation() throws Throwable {
+        setupTestWithHTML(
+                "<table role='table'>"
+                        + "  <tr>"
+                        + "    <td id='topleft'>topleft</td>"
+                        + "    <td id='topright'>topright</td>"
+                        + "  </tr>"
+                        + "  <tr>"
+                        + "    <td id='bottomleft'>bottomleft</td>"
+                        + "    <td id='bottomright'>bottomright</td>"
+                        + "  </tr>"
+                        + "</table>");
+
+        int topLeftVirtualViewId = waitForNodeMatching(sViewIdResourceNameMatcher, "topleft");
+        int topRightVirtualViewId = waitForNodeMatching(sViewIdResourceNameMatcher, "topright");
+        int bottomLeftVirtualViewId = waitForNodeMatching(sViewIdResourceNameMatcher, "bottomleft");
+        int bottomRightVirtualViewId =
+                waitForNodeMatching(sViewIdResourceNameMatcher, "bottomright");
+
+        // Check navigation where top-left cell initially has focus.
+        assertAccessibilityFocusDoesNotMove(
+                topLeftVirtualViewId, ACTION_PREVIOUS_HTML_ELEMENT, "COLUMN");
+        assertAccessibilityFocusDoesNotMove(
+                topLeftVirtualViewId, ACTION_PREVIOUS_HTML_ELEMENT, "ROW");
+
+        // Check navigation where bottom-right cell initially has focus.
+        assertAccessibilityFocusMoves(
+                bottomRightVirtualViewId,
+                ACTION_PREVIOUS_HTML_ELEMENT,
+                "COLUMN",
+                bottomLeftVirtualViewId);
+        assertAccessibilityFocusMoves(
+                bottomRightVirtualViewId,
+                ACTION_PREVIOUS_HTML_ELEMENT,
+                "ROW",
+                topRightVirtualViewId);
+    }
+
+    /** Tests that navigating to the next row/column takes the column span into account. */
+    @Test
+    @MediumTest
+    public void testPerformAction_nextHtmlElement_tableNavigationWithColspan() throws Throwable {
+        // Build table with cell which spans multiple columns.
+        setupTestWithHTML(
+                "<table role='table'>"
+                        + "  <tr>"
+                        + "    <td colspan=2 id='topleft'>topleft</td>"
+                        + "    <td colspan=2 id='topright'>topright</td>"
+                        + "  </tr>"
+                        + "  <tr>"
+                        + "    <td colspan=2 id='bottomleft'>bottomleft</td>"
+                        + "    <td id='bottomcenter'>bottomcenter</td>"
+                        + "    <td id='bottomright'>bottomright</td>"
+                        + "  </tr>"
+                        + "</table>");
+
+        int topLeftVirtualViewId = waitForNodeMatching(sViewIdResourceNameMatcher, "topleft");
+        int topRightVirtualViewId = waitForNodeMatching(sViewIdResourceNameMatcher, "topright");
+        int bottomLeftVirtualViewId = waitForNodeMatching(sViewIdResourceNameMatcher, "bottomleft");
+        int bottomCenterVirtualViewId =
+                waitForNodeMatching(sViewIdResourceNameMatcher, "bottomcenter");
+
+        assertAccessibilityFocusMoves(
+                topLeftVirtualViewId, ACTION_NEXT_HTML_ELEMENT, "COLUMN", topRightVirtualViewId);
+
+        assertAccessibilityFocusDoesNotMove(
+                topRightVirtualViewId, ACTION_NEXT_HTML_ELEMENT, "COLUMN");
+        assertAccessibilityFocusMoves(
+                topRightVirtualViewId, ACTION_NEXT_HTML_ELEMENT, "ROW", bottomCenterVirtualViewId);
+
+        assertAccessibilityFocusMoves(
+                bottomLeftVirtualViewId,
+                ACTION_NEXT_HTML_ELEMENT,
+                "COLUMN",
+                bottomCenterVirtualViewId);
+    }
+
+    /** Tests that navigating to the previous row/column takes the column span into account. */
+    @Test
+    @MediumTest
+    public void testPerformAction_previousHtmlElement_tableNavigationWithColspan()
+            throws Throwable {
+        // Build table with cell which spans multiple columns.
+        setupTestWithHTML(
+                "<table role='table'>"
+                        + "  <tr>"
+                        + "    <td colspan=2 id='topleft'>topleft</td>"
+                        + "    <td colspan=2 id='topright'>topright</td>"
+                        + "  </tr>"
+                        + "  <tr>"
+                        + "    <td colspan=2 id='bottomleft'>bottomleft</td>"
+                        + "    <td id='bottomcenter'>bottomcenter</td>"
+                        + "    <td id='bottomright'>bottomright</td>"
+                        + "  </tr>"
+                        + "</table>");
+
+        int topLeftVirtualViewId = waitForNodeMatching(sViewIdResourceNameMatcher, "topleft");
+        int topRightVirtualViewId = waitForNodeMatching(sViewIdResourceNameMatcher, "topright");
+        int bottomRightVirtualViewId =
+                waitForNodeMatching(sViewIdResourceNameMatcher, "bottomright");
+
+        assertAccessibilityFocusMoves(
+                topRightVirtualViewId,
+                ACTION_PREVIOUS_HTML_ELEMENT,
+                "COLUMN",
+                topLeftVirtualViewId);
+
+        assertAccessibilityFocusMoves(
+                bottomRightVirtualViewId,
+                ACTION_PREVIOUS_HTML_ELEMENT,
+                "ROW",
+                topRightVirtualViewId);
+    }
+
+    /** Tests that navigating to the next row/column takes the row span into account. */
+    @Test
+    @MediumTest
+    public void testPerformAction_nextHtmlElement_tableNavigationWithRowspan() throws Throwable {
+        // Build table with cell which spans 2 rows.
+        setupTestWithHTML(
+                "<table role='table'>"
+                        + "  <tr>"
+                        + "    <td id='topleft'>topleft</td>"
+                        + "    <td rowspan=2 id='right'>right</td>"
+                        + "  </tr>"
+                        + "  <tr>"
+                        + "    <td id='bottomleft'>bottomleft</td>"
+                        + "  </tr>"
+                        + "</table>");
+
+        int topLeftVirtualViewId = waitForNodeMatching(sViewIdResourceNameMatcher, "topleft");
+        int bottomLeftVirtualViewId = waitForNodeMatching(sViewIdResourceNameMatcher, "bottomleft");
+        int rightVirtualViewId = waitForNodeMatching(sViewIdResourceNameMatcher, "right");
+
+        assertAccessibilityFocusMoves(
+                topLeftVirtualViewId, ACTION_NEXT_HTML_ELEMENT, "COLUMN", rightVirtualViewId);
+
+        assertAccessibilityFocusMoves(
+                bottomLeftVirtualViewId, ACTION_NEXT_HTML_ELEMENT, "COLUMN", rightVirtualViewId);
+
+        assertAccessibilityFocusDoesNotMove(rightVirtualViewId, ACTION_NEXT_HTML_ELEMENT, "ROW");
     }
 
     // ------------------ Misc tests that cannot be done as tree/event tests ------------------ //
