@@ -51,6 +51,9 @@ class SaveUpdateBubbleController
   // Returns true iff the password account store is used.
   bool IsUsingAccountStore();
 
+  // Returns true if the user dismissed the bubble a maximum number of times.
+  bool IsMaxDismissalCountReached() const;
+
   // PasswordBubbleControllerBase methods:
   std::u16string GetTitle() const override;
 

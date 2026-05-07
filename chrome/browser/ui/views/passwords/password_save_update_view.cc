@@ -416,31 +416,38 @@ PasswordSaveUpdateView::PasswordSaveUpdateView(
       SetCancelCallback(base::BindOnce(button_clicked, base::Unretained(this),
                                        &Controller::OnNoThanksClicked));
     } else if (IsSaveBubbleDropdownExperimentEnabled()) {
-      SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
+      if (controller_.IsMaxDismissalCountReached()) {
+        SetCancelCallback(
+            base::BindOnce(button_clicked, base::Unretained(this),
+                           &Controller::OnNeverForThisSiteClicked));
+      } else {
+        SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 
-      auto accept_callback = base::BindRepeating(
-          [](PasswordSaveUpdateView* dialog) { dialog->AcceptDialog(); },
-          base::Unretained(this));
+        auto accept_callback = base::BindRepeating(
+            [](PasswordSaveUpdateView* dialog) { dialog->AcceptDialog(); },
+            base::Unretained(this));
 
-      auto cancel_callback = base::BindRepeating(
-          [](PasswordSaveUpdateView* dialog) { dialog->CancelDialog(); },
-          base::Unretained(this));
+        auto cancel_callback = base::BindRepeating(
+            [](PasswordSaveUpdateView* dialog) { dialog->CancelDialog(); },
+            base::Unretained(this));
 
-      auto never_callback = base::BindRepeating(
-          [](PasswordSaveUpdateView* dialog) {
-            dialog->UpdateUsernameAndPasswordInModel();
-            dialog->controller_.OnNeverForThisSiteClicked();
-            dialog->GetWidget()->Close();
-          },
-          base::Unretained(this));
+        auto never_callback = base::BindRepeating(
+            [](PasswordSaveUpdateView* dialog) {
+              dialog->UpdateUsernameAndPasswordInModel();
+              dialog->controller_.OnNeverForThisSiteClicked();
+              dialog->GetWidget()->Close();
+            },
+            base::Unretained(this));
 
-      auto button_row = std::make_unique<PasswordSaveUpdateExperimentButtonRow>(
-          accept_callback, cancel_callback, never_callback);
-      button_row->SetID(PasswordSaveUpdateView::kCustomButtonRow);
-      custom_button_row_ = root_view->AddChildView(std::move(button_row));
+        auto button_row =
+            std::make_unique<PasswordSaveUpdateExperimentButtonRow>(
+                accept_callback, cancel_callback, never_callback);
+        button_row->SetID(PasswordSaveUpdateView::kCustomButtonRow);
+        custom_button_row_ = root_view->AddChildView(std::move(button_row));
 
-      SetCancelCallback(base::BindOnce(button_clicked, base::Unretained(this),
-                                       &Controller::OnNotNowClicked));
+        SetCancelCallback(base::BindOnce(button_clicked, base::Unretained(this),
+                                         &Controller::OnNotNowClicked));
+      }
     } else if (base::FeatureList::IsEnabled(
                    features::kThreeButtonPasswordSaveDialog)) {
       SetCancelCallback(base::BindOnce(button_clicked, base::Unretained(this),
@@ -646,16 +653,22 @@ void PasswordSaveUpdateView::UpdateBubbleUIElements() {
         ui::mojom::DialogButton::kCancel,
         l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_CANCEL_BUTTON));
   } else if (IsSaveBubbleDropdownExperimentEnabled()) {
-    SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
+    if (controller_.IsMaxDismissalCountReached()) {
+      SetButtonLabel(ui::mojom::DialogButton::kCancel,
+                     l10n_util::GetStringUTF16(
+                         IDS_PASSWORD_MANAGER_BUBBLE_BLOCKLIST_BUTTON));
+    } else {
+      SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 
-    bool is_update = controller_.IsCurrentStateUpdate();
-    std::u16string ok_text = l10n_util::GetStringUTF16(
-        is_update ? IDS_PASSWORD_MANAGER_SHORT_UPDATE_BUTTON
-                  : IDS_PASSWORD_MANAGER_SAVE_BUTTON);
-    bool ok_enabled = IsDialogButtonEnabled(ui::mojom::DialogButton::kOk);
+      bool is_update = controller_.IsCurrentStateUpdate();
+      std::u16string ok_text = l10n_util::GetStringUTF16(
+          is_update ? IDS_PASSWORD_MANAGER_SHORT_UPDATE_BUTTON
+                    : IDS_PASSWORD_MANAGER_SAVE_BUTTON);
+      bool ok_enabled = IsDialogButtonEnabled(ui::mojom::DialogButton::kOk);
 
-    if (custom_button_row_) {
-      custom_button_row_->UpdateState(is_update, ok_text, ok_enabled);
+      if (custom_button_row_) {
+        custom_button_row_->UpdateState(is_update, ok_text, ok_enabled);
+      }
     }
   } else if (extra_view_) {
     // 3-button save dialog variant.

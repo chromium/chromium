@@ -574,6 +574,29 @@ TEST_F(PasswordDropdownExperimentTest,
   CreateViewAndShow();
 }
 
+TEST_F(PasswordDropdownExperimentTest,
+       DropdownMenuExperiment_ThreeNotNowClicks) {
+  password_manager::InteractionsStats interaction_stats;
+  interaction_stats.username_value = pending_password_.username_value;
+  interaction_stats.dismissal_count = 3;
+
+  ON_CALL(*model_delegate_mock(), GetCurrentInteractionStats)
+      .WillByDefault(Return(&interaction_stats));
+
+  CreateViewAndShow();
+
+  // Verify custom buttons are bypassed completely, and primary fallback to
+  // Never is enabled.
+  views::View* split_button =
+      view()->GetViewByID(PasswordSaveUpdateView::kSplitButton);
+  EXPECT_FALSE(split_button);
+
+  views::View* cancel_button = view()->GetCancelButton();
+  ASSERT_TRUE(cancel_button);
+  EXPECT_EQ(views::AsViewClass<views::MdTextButton>(cancel_button)->GetText(),
+            NeverButtonCaption());
+}
+
 // These tests are parameterized to run in the original two-button layout,
 // and the newer three-button variant. Three-button is now the default, but
 // the original version still runs for a small percentage of users, so maintain

@@ -248,6 +248,11 @@ bool SaveUpdateBubbleController::IsUsingAccountStore() {
   return delegate_->GetPasswordFeatureManager()->IsAccountStorageActive();
 }
 
+bool SaveUpdateBubbleController::IsMaxDismissalCountReached() const {
+  const int kMaxDismissalCount = 3;
+  return interaction_stats_.dismissal_count >= kMaxDismissalCount;
+}
+
 std::u16string SaveUpdateBubbleController::GetTitle() const {
   PasswordTitleType type = IsCurrentStateUpdate()
                                ? PasswordTitleType::UPDATE_PASSWORD
