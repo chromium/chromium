@@ -609,6 +609,7 @@
 <translation id="7250468141469952378">Vybráno: <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">Oprávnění <ph name="PERMISSION_1" /> a <ph name="PERMISSION_2" /> jsou povolena</translation>
 <translation id="7276071417425470385">Když je tato možnost zapnutá, mohou weby žádat o použití zařízení pro virtuální realitu. Když je vypnutá, weby zařízení pro virtuální realitu používat nemohou.</translation>
+<translation id="7279851812866769760">Sdílení kontaktů</translation>
 <translation id="7282197670900591579">Citronový motiv</translation>
 <translation id="728412880473384942">Weby jsou rychlejší, ale méně bezpečné</translation>
 <translation id="7352902948037373520">Spravujte v <ph name="BEGIN_LINK1" />nastavení systému Android<ph name="END_LINK1" />
@@ -700,6 +701,7 @@ Pokročilá ochrana spravuje tato nastavení Chromu:</translation>
 <translation id="823874716226307142">Když je tato možnost zapnutá, mohou weby žádat o přístup k dalším zařízením v místní síti. Když je vypnutá, weby nemají přístup k dalším zařízením v místní síti.</translation>
 <translation id="8249310407154411074">Přesunout na začátek</translation>
 <translation id="8261506727792406068">Smazat</translation>
+<translation id="8273596202562472147">Další možnosti pro web <ph name="SITE_NAME" /></translation>
 <translation id="8284326494547611709">Titulky</translation>
 <translation id="8300705686683892304">Spravováno aplikací</translation>
 <translation id="8301363963630676147">Pro tentokrát povoleno • Používá se přibližná</translation>
@@ -794,6 +796,7 @@ Pokročilá ochrana spravuje tato nastavení Chromu:</translation>
 <translation id="9156722768168878035">Umožněte Chromu zobrazovat nedávno použité karty v seznamu aplikací a ve výsledcích vyhledávání v zařízení. Tuto funkci můžete v nastavení Chromu kdykoli vypnout.</translation>
 <translation id="9162462602695099906">Tato stránka je nebezpečná</translation>
 <translation id="9182556968660520230">Nepovolovat webům přehrávání chráněného obsahu</translation>
+<translation id="927148002081263046">Sdílení kontaktu</translation>
 <translation id="947156494302904893">Weby, které navštěvujete, mohou ověřit, že jste člověk, a ne robot</translation>
 <translation id="959682366969460160">Uspořádejte si položky</translation>
 <translation id="960590623979248167">Zobrazit hypertextové odkazy</translation>

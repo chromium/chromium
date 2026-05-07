@@ -92,7 +92,7 @@
 <translation id="8199524924445686405">aaaa</translation>
 <translation id="8284326494547611709">Subtítols</translation>
 <translation id="835897206747267392">Valor no vàlid.</translation>
-<translation id="839593075537728968">El valor ha d'oscil·lar entre <ph name="MINIMUM_TIME" /> i <ph name="MAXIMUM_TIME" />.</translation>
+<translation id="839593075537728968">El valor ha d'estar entre <ph name="MINIMUM_TIME" /> i <ph name="MAXIMUM_TIME" />.</translation>
 <translation id="8444882422881193423"><ph name="NUMBER_OF_FILES" /> fitxers</translation>
 <translation id="8451268428117625855">Seleccioneu un fitxer.</translation>
 <translation id="8637593834423658414">1,75</translation>

@@ -326,6 +326,9 @@
 <translation id="4348548358339558429">若要获得个性化体验，请在“网络与应用活动记录”中包含 Chrome</translation>
 <translation id="436060642166082913">Chrome 阻止了此项下载操作，因为该文件可能会危害您的个人和社交网络账号</translation>
 <translation id="4367027658822022112">您可以固定 Google 智能镜头以方便访问，点击侧边栏顶部的“固定”按钮即可</translation>
+<translation id="4380616334811859000">当您首次访问某个网站时，Chrome 会关闭 JavaScript 优化功能。
+
+如果此网页无法按预期运行，请尝试允许优化。</translation>
 <translation id="4389991535395284064">当您在无痕模式下浏览内容时，Chrome 会在使用不安全的连接加载网站前向您发出警告</translation>
 <translation id="4427306783828095590">“增强型保护”选项在防范网上诱骗和恶意软件方面更高一筹</translation>
 <translation id="4434353761996769206">安装程序错误：<ph name="INSTALLER_ERROR" /></translation>

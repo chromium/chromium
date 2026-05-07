@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">Не, благодаря</translation>
 <translation id="1531038290222364269">Показване на разделите</translation>
 <translation id="1536390784834419204">Превод на страницата</translation>
+<translation id="1539535193627863227">Няма намерени пароли или ключове за достъп за този сайт</translation>
 <translation id="1540800554400757039">Адрес 1</translation>
 <translation id="154312949627292154">Отваряйте от заключения екран разделите, получени от другите ви устройства.</translation>
 <translation id="1545749641540134597">Сканирайте код за бърза реакция</translation>
@@ -642,6 +643,7 @@
 <translation id="3245744387817103524">Промяната ви не бе запазена.</translation>
 <translation id="3254806613790954367">Последно отвореният от вас раздел на всичките ви устройства</translation>
 <translation id="325717987950204592">Докоснете „Поверителност и сигурност“.</translation>
+<translation id="3259451381796379533">Този профил няма да работи с Gemini. Влезте с друг профил в Google.</translation>
 <translation id="3265736395246760288">Влизайте по-бързо в профила си от което и да е от синхронизираните устройства.</translation>
 <translation id="3272527697863656322">Отказ</translation>
 <translation id="3273510436356991673">Персонализиране на началния екран</translation>
@@ -763,6 +765,7 @@
 <translation id="372676576864368480">Автоматично попълване на номера на картата, завършващ на <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Създадено: <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Филмова ролка</translation>
+<translation id="3746269120925354434">Информацията е запазена в Google Wallet</translation>
 <translation id="3750225824417196283">Нов раздел в режим „инкогнито“</translation>
 <translation id="3751873026576444885">Спиране на търсенето в екрана ви с Google Обектив</translation>
 <translation id="3753408171347588045">Цените се проследяват</translation>
@@ -1076,7 +1079,6 @@
 <translation id="4824480232751123840">Обем</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} и още 1}other{{domain} и още {count}}}</translation>
 <translation id="4826588772550366629">камерата и микрофона ви</translation>
-<translation id="4828431027673677473">Продукти въз основа на интересите ви</translation>
 <translation id="4829420936835028285">Редактиране на групата раздели</translation>
 <translation id="4833786495304741580">Автоматично изпраща до Google статистически данни за употребата и сигнали за сривове.</translation>
 <translation id="483689884442613745">Запазване…</translation>
@@ -1864,6 +1866,7 @@
 <translation id="7498234416455752244">Продължаване с редактирането</translation>
 <translation id="7500244509706269886">Автоматично попълване на формуляра</translation>
 <translation id="750493650310597496">Избрахте 0</translation>
+<translation id="7505402981231763928">Трябва да влезете в профила си, за да използвате Gemini</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">За да заключите разделите си в режим „инкогнито“, настройте Touch ID, Face ID или код за достъп.</translation>
 <translation id="750886945254958667">Запазете тази група, за да добавяте раздели по-късно, или я напуснете, ако вече не искате достъп до нея</translation>
@@ -2105,7 +2108,6 @@
 <translation id="828291969289324795">{count,plural, =1{Добавяне на раздела към нова група}other{Добавяне на разделите към нова група}}</translation>
 <translation id="8283172974887967105">Задаване…</translation>
 <translation id="8289930144142009940">Известията за „<ph name="FEATURE_NAME" />“ са изключени</translation>
-<translation id="8290077367744012649">Проследяване на цените от разделите ви</translation>
 <translation id="8292893224181644074">Изтеглянето завърши</translation>
 <translation id="8299417921174340354">За да използвате паролите, трябва първо да зададете код за достъп на устройството си.</translation>
 <translation id="8307481894409578819">Този файл не бе качен</translation>
@@ -2172,6 +2174,7 @@
 <translation id="8533670235862049797">Безопасно сърфиране е включено</translation>
 <translation id="8534481786647257214">Публикацията в Google+ е завършена.</translation>
 <translation id="8535368836838588657">Показване на паролата</translation>
+<translation id="8540426897269305488">Влизане с(ъс) <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8545276357312221485">Проверка на стандартните настройки на браузъра ви</translation>
 <translation id="854938212724803178">Имате 1 компрометирана парола. Коригирайте я сега, за да сте в безопасност.</translation>
 <translation id="8551311254462607218">В адресната лента докоснете иконата на камерата на Google Обектив</translation>

@@ -1881,6 +1881,25 @@ Wenn die Richtlinie nicht konfiguriert oder deaktiviert ist, ist eine Dateiüber
 <translation id="225340736558643885">Warnmeldungen für nicht sichere Formulare aktivieren</translation>
 <translation id="2258126710006312594">Nutzern mit Remote-Zugriff die Übertragung von Dateien vom/zum Host gestatten</translation>
 <translation id="225830954785359083">Verhindern, dass Seiten beim Entfernen Pop-ups anzeigen</translation>
+<translation id="2260635608598936994">Konfiguriert Filter, um auszuwählen, welche Clientzertifikate in <ph name="PRODUCT_NAME" />-Sicherheitssignalberichte aufgenommen werden. Diese Berichte senden Informationen zum Browser- und Gerätestatus an <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />. Administratoren können diese Informationen verwenden, um <ph name="GOOGLE_CONTEXT_AWARE_ACCESS" />-Regeln zu konfigurieren.
+
+Mit dieser Richtlinie kannst du Filter auf der Grundlage von Clientzertifikatattributen wie Distinguished Name von ISSUER und/oder SUBJECT definieren. <ph name="PRODUCT_NAME" /> berücksichtigt in den Signalberichten nur Zertifikate, die mindestens einem der angegebenen Filter entsprechen.
+
+     Beispiele für die Verwendung des Abschnitts <ph name="SELECTOR_PLACEHOLDER" />:
+
+      * Wenn für <ph name="SELECTOR_PLACEHOLDER" /> „<ph name="SECURITY_SIGNALS_CLIENT_CERTIFICATE_SELECTORS_FILTER_EXAMPLE" />“ festgelegt ist, werden nur Clientzertifikate ausgewählt, die über ein Zertifikat mit dem CommonName <ph name="ISSUER_CN_PLACEHOLDER" /> ausgestellt wurden.
+
+      * Wenn <ph name="SELECTOR_PLACEHOLDER" /> sowohl den Abschnitt <ph name="ISSUER_STRING_VALUE" /> als auch den Abschnitt <ph name="SUBJECT_STRING_VALUE" /> enthält, werden nur Clientzertifikate ausgewählt, die beide Bedingungen erfüllen.
+
+      * Wenn <ph name="SELECTOR_PLACEHOLDER" /> einen <ph name="SUBJECT_STRING_VALUE" />-Abschnitt mit dem Wert <ph name="FILTER_STRING_ORGANIZATION" /> enthält, muss ein Zertifikat mindestens eine Organisation haben, die mit dem angegebenen Wert übereinstimmt, um ausgewählt zu werden.
+
+      * Wenn <ph name="SELECTOR_PLACEHOLDER" /> einen <ph name="SUBJECT_STRING_VALUE" />-Abschnitt mit einem <ph name="FILTER_STRING_ORGANIZATIONAL_UNIT" />-Wert enthält, muss ein Zertifikat mindestens eine Organisationseinheit haben, die mit dem angegebenen Wert übereinstimmt, um ausgewählt zu werden.
+
+      * Wenn für <ph name="SELECTOR_PLACEHOLDER" /> „<ph name="EMPTY_DICTIONARY" />“ festgelegt ist, werden leere Details für diese Richtlinie ignoriert.
+
+      Wenn die Richtlinie nicht konfiguriert ist, werden bei der Signalberichterstellung keine Clientzertifikate ausgewählt.
+
+*Wichtig*: Diese Richtlinie ist nur wirksam, wenn die Richtlinie „<ph name="USER_SECURITY_SIGNALS_REPORTING_POLICY_NAME" />“ aktiviert ist, die die allgemeine Funktion zum Senden von Sicherheitssignalen aus Chrome steuert.</translation>
 <translation id="2261648512244797294">Veraltetes Drucken über Privet deaktivieren</translation>
 <translation id="2262701937800507517">Standardreihenfolge von <ph name="PRODUCT_OS_NAME" /> für Chiffren verwenden</translation>
 <translation id="2263881357524831360">Verwendung von Drittanbieter-Passwortmanagern in <ph name="PRODUCT_NAME" /> unter <ph name="ANDROID_NAME" /> erlauben</translation>
@@ -2688,6 +2707,15 @@ Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, können Nutzer Date
 Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer Kerberos-Konten über die Kontoeinstellungen auf der Kerberos-Einstellungsseite hinzufügen. Die Nutzer haben die vollständige Kontrolle über Konten, die sie hinzugefügt haben, und können diese ändern oder entfernen.
 
 Ist die Richtlinie deaktiviert, können Nutzer keine Kerberos-Konten hinzufügen. Konten können dann nur über die Richtlinie „Kerberos-Konten konfigurieren“ hinzugefügt werden. So lassen sich Konten effektiv sperren.</translation>
+<translation id="2771222727845689796">Mit dieser Richtlinie kannst du eine Liste von URL-Mustern festlegen. Für im Hintergrund ausgeführte Webinhalte, die mit diesen Mustern übereinstimmen, wird die Vordergrundpriorität erzwungen.
+
+Wenn die Richtlinie „<ph name="FORCE_FOREGROUND_PRIORITY_FOR_ALL_TABS_POLICY_NAME" />“ aktiviert ist, wird diese Liste ignoriert, da für alle Tabs die Vordergrundpriorität erzwungen wird.
+
+Wenn „<ph name="FORCE_FOREGROUND_PRIORITY_FOR_ALL_TABS_POLICY_NAME" />“ deaktiviert oder nicht konfiguriert ist, wird die Vordergrundpriorität nur für Inhalte erzwungen, die mit den Mustern in dieser Liste übereinstimmen.
+
+Weitere Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+Wenn diese Liste leer oder nicht konfiguriert ist, wird für keine im Hintergrund ausgeführten Inhalte die Vordergrundpriorität erzwungen.</translation>
 <translation id="2772231477628401250">HTTP für Updatedownloads verwenden</translation>
 <translation id="2772955711376920612">Wenn die Richtlinie aktiviert ist und „<ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" />“ sowie „<ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" />“ konfiguriert sind, ist das Umschalten bei Leistungsspitzen immer aktiviert, sofern die Funktion vom Gerät unterstützt wird. Die Energieverwaltung zum Umschalten bei Leistungsspitzen ist eine Richtlinie zum Energiesparen, mit der die Nutzung des Netzstroms bei Spitzenlasten minimiert wird. Für jeden Wochentag kann ein Beginn und ein Ende für den Modus zum Umschalten bei Leistungsspitzen festgelegt werden. Solange der Ladezustand des Akkus den angegebenen Schwellenwert nicht unterschreitet, wird das Gerät während dieser Zeiträume über den Akku mit Strom versorgt – auch dann, wenn das System an das Stromnetz angeschlossen ist. Nach dem angegebenen Ende wird das Gerät wieder über das Netz mit Strom versorgt (vorausgesetzt, es ist an das Stromnetz angeschlossen), der Akku jedoch nicht geladen. Das Gerät wird wieder auf den normalen Betrieb mit Netzstrom umgestellt und der Akku aufgeladen, nachdem die festgelegte Startzeit zum Laden erreicht wurde.
 
@@ -4837,6 +4865,7 @@ Mit dieser Richtlinie wurde das automatische Upgrade für gemischte Inhalte unte
       Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, können Nutzer diese Einstellung ändern.
 
       Hinweis: Nutze unter Android stattdessen die Richtlinie <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" />.</translation>
+<translation id="4261641564041253502">Clientzertifikate, die mit Filtern für <ph name="PRODUCT_NAME" />-Sicherheitssignalberichte übereinstimmen, automatisch auswählen.</translation>
 <translation id="4261820385751181068">Sprache der Anmeldeseite</translation>
 <translation id="4263788921751326798">Melden von Informationen zu Absturzberichten auf Geräten deaktivieren</translation>
 <translation id="4268586991084547853">Bessere Kompatibilität mit der Richtlinie „Microsoft IE/Edge Enterprise Mode Sitelists“.</translation>
@@ -6520,22 +6549,6 @@ Ist die Richtlinie nicht konfiguriert, wird der Standardwert von 0 Grad verwend
 <translation id="5293285950307241933">Alle lokalen Nutzerdaten löschen</translation>
 <translation id="5293619885162445352">Erlauben, dass <ph name="PEPPER_NAME" /> den neuen Videodecoder verwendet.</translation>
 <translation id="529457411593078576">Nutzungsbedingungen während der ersten Ausführung für CCT aktivieren</translation>
-<translation id="529718811410033393">Mit dieser Richtlinie wird die maximale Anzahl gleichzeitiger Verbindungen pro Proxyserver für Nicht-WebSocket-Anfragen festgelegt.
-
-Informationen zum Ändern von WebSocket-Anfragelimits findest du unter <ph name="MAX_CONNECTIONS_PER_PROXY_FOR_WEBSOCKET_POLICY_NAME" />.
-
-Wird die Richtlinie nicht konfiguriert, gilt standardmäßig ein Wert von 32.
-
-Einige Webanwendungen nutzen viele Verbindungen mit „hängenden“ GET-Anfragen. Wird ein Wert unter 32 festgelegt, kann dies zu Netzwerkblockaden im Browser führen, wenn zu viele solcher Verbindungen gleichzeitig offen sind.
-Einige Proxyserver können eine hohe Anzahl gleichzeitiger Verbindungen pro Client nicht verarbeiten. Dies lässt sich durch einen niedrigeren Wert für diese Richtlinie beheben.
-
-Der Wert sollte mindestens 6 betragen.
-Wird ein niedrigerer Wert festgelegt, wird stattdessen 6 verwendet.
-Das Reduzieren unter den Standardwert (32) erfolgt auf eigenes Risiko.
-
-Der Wert sollte höchstens 256 (99 in <ph name="PRODUCT_NAME" /> 147 und früher) betragen.
-Wird ein höherer Wert festgelegt, wird stattdessen 256 (99 in <ph name="PRODUCT_NAME" /> 147 und früher) verwendet.
-Das Erhöhen über den Standardwert (32) erfolgt auf eigenes Risiko.</translation>
 <translation id="5297873769621042075">Mit dieser Richtlinie kann eine Liste mit Hostnamen oder Hostnamenmustern (z. B. „[*.]beispiel.de“) angelegt werden, die nicht auf HTTPS umgestellt werden und für die kein Fehler-Interstitial angezeigt wird, wenn der HTTPS-First-Modus aktiviert ist. Organisationen können diese Richtlinie verwenden, um den Zugriff auf Server aufrechtzuerhalten, die HTTPS nicht unterstützen, ohne HTTPS-Umstellungen und/oder den HTTPS-First-Modus zu deaktivieren.
 
 Bereitgestellte Hostnamen müssen kanonisiert werden: Alle IDNs müssen in ihr A-Label-Format konvertiert und alle ASCII-Buchstaben kleingeschrieben werden.
@@ -8185,6 +8198,7 @@ Hinweis: Diese Richtlinie gilt nur für Plattformen, die Erweiterungen unterstü
 
       Unabhängig davon, ob die Richtlinie konfiguriert ist, kann die WPAD-Optimierung nicht von Nutzern geändert werden.</translation>
 <translation id="6363485842496031347">In der Einstellung von „Löschen“ wird die Tastenkombination verwendet, die den Alt-Modifikator enthält</translation>
+<translation id="6364336078281746235">Vordergrundpriorität für bestimmte URLs erzwingen</translation>
 <translation id="6366574325767783825">Wenn die Richtlinie auf "True" gesetzt oder nicht konfiguriert ist, werden von <ph name="PRODUCT_NAME" /> Webinhalte akzeptiert, die als Signed HTTP Exchanges implementiert sind.
 
       Wenn die Richtlinie auf "False" gesetzt ist, werden die Signed HTTP Exchanges nicht geladen.</translation>
@@ -10093,22 +10107,6 @@ Wenn die Richtlinie leer bleibt, sind keine Ausnahmen zu „<ph name="FLOATING_S
 
       Bei nicht verwalteten Geräten ist es auch wichtig, ob der jeweilige Nutzer der Geräteeigentümer ist.</translation>
 <translation id="7570291542739287032">Nur Cloud</translation>
-<translation id="7571158727244273239">Mit dieser Richtlinie wird die maximale Anzahl gleichzeitiger Verbindungen pro Proxyserver für WebSocket-Anfragen festgelegt.
-
-Informationen zum Ändern von Nicht-WebSocket-Anfragelimits findest du unter <ph name="MAX_CONNECTIONS_PER_PROXY_POLICY_NAME" />.
-
-Wird die Richtlinie nicht konfiguriert, gilt standardmäßig ein Wert von 32.
-
-Einige Webanwendungen nutzen viele Verbindungen mit „hängenden“ GET-Anfragen. Wird ein Wert unter 32 festgelegt, kann dies zu Netzwerkblockaden im Browser führen, wenn zu viele solcher Verbindungen gleichzeitig offen sind.
-Einige Proxyserver können eine hohe Anzahl gleichzeitiger Verbindungen pro Client nicht verarbeiten. Dies lässt sich durch einen niedrigeren Wert für diese Richtlinie beheben.
-
-Der Wert sollte mindestens 6 betragen.
-Wird ein niedrigerer Wert festgelegt, wird stattdessen 6 verwendet.
-Das Reduzieren unter den Standardwert (32) erfolgt auf eigenes Risiko.
-
-Der Wert sollte höchstens 256 betragen.
-Wird ein höherer Wert festgelegt, wird stattdessen 256 verwendet.
-Das Erhöhen über den Standardwert (32) erfolgt auf eigenes Risiko.</translation>
 <translation id="7572641760104970905">Keine Komplexität</translation>
 <translation id="757395965347379751">Wenn diese Einstellung aktiviert ist, werden von <ph name="PRODUCT_NAME" /> SHA-1-signierte Zertifikate genehmigt, vorausgesetzt sie werden erfolgreich überprüft und bilden eine Kette zu einem lokal installierten CA-Zertifikat.
 

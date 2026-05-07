@@ -1729,6 +1729,7 @@
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" />, మరో 1 స్విచ్</translation>
 <translation id="2165177462441582039">ప్రతి ఐటెమ్ ఎంత సమయం హైలైట్‌గా ఉండాలో ఎంచుకోండి</translation>
 <translation id="2166369534954157698">దేశ భాషలందు తెలుగు లెస్స</translation>
+<translation id="2168036794078614559">రిపోర్ట్ పంపబడింది</translation>
 <translation id="2169062631698640254">ఏదేమైనా సైన్ ఇన్ చేయండి</translation>
 <translation id="2173302385160625112">మీ ఇంటర్నెట్ కనెక్షన్‌ను చెక్ చేయండి</translation>
 <translation id="2173801458090845390">ఈ పరికరానికి రిక్వెస్ట్‌ IDని జోడించండి</translation>
@@ -2072,6 +2073,7 @@
 <translation id="2402226831639195063">టోన్‌లు</translation>
 <translation id="2405887402346713222">పరికరం, కాంపోనెంట్ సీరియల్ నంబర్‌లు</translation>
 <translation id="2406153734066939945">ఈ ప్రొఫైల్‌ను, దానిలోని డేటాను తొలగించాలా?</translation>
+<translation id="2406942743794219791">మీకు కావలసిన ఆటోమేటిక్ సెట్టింగ్ సెర్చ్ ఇంజిన్‌ను నిర్ధారించండి</translation>
 <translation id="2407671304279211586">DNS ప్రొవైడర్‌ను ఎంచుకోండి</translation>
 <translation id="2408018932941436077">కార్డ్ సేవ్ అవుతోంది</translation>
 <translation id="2408742686124047357">తర్వాతి సారి Google Lensను సులభంగా యాక్సెస్ చేయడానికి దాన్ని మీ టూల్‌బార్‌కు పిన్ చేయండి</translation>
@@ -3053,6 +3055,7 @@
 <translation id="3046892784550338476">వెర్షన్ <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">వెబ్‌పేజీ, సంపూర్ణం</translation>
 <translation id="304747341537320566">ప్రసంగ ఇంజిన్‌లు</translation>
+<translation id="3047618804758101928">"<ph name="EXTENSION_NAME" />" ఎక్స్‌టెన్షన్ మీ సెట్టింగ్‌లను మార్చింది</translation>
 <translation id="3047678109605649715">మీ పరికరంలో <ph name="LANGUAGE" /> భాష వాయిస్‌లు లేవు. మీ పరికరంలో స్పేస్‌ను క్లీన్ చేసి, మళ్లీ ట్రై చేయండి.</translation>
 <translation id="3048336643003835855">విక్రేత <ph name="VENDOR_ID" />కు చెందిన HID పరికరాలు</translation>
 <translation id="3048589239114571785">ప్లే చేయండి (k)</translation>
@@ -7292,6 +7295,7 @@
 <translation id="604388835206766544">కాన్ఫిగరేషన్ అన్వయింపు విఫలమైంది</translation>
 <translation id="6043994281159824495">ఇప్పుడే సైన్ అవుట్ చేయి</translation>
 <translation id="6045114302329202345">ప్రధాన TrackPoint బటన్</translation>
+<translation id="6045425183320109397">వీరి ద్వారా</translation>
 <translation id="6047632800149092791">సింక్ పని చేయడం లేదు. సైన్ అవుట్ చేసి, తిరిగి సైన్ ఇన్ చేయడాన్ని ట్రై చేయండి.</translation>
 <translation id="6048747414605857443">ChromeVox, 'వినడానికి ఎంచుకోండి'కి టెక్స్ట్-టు-స్పీచ్ వాయిస్‌లను ఎంచుకోండి, అనుకూలంగా మార్చండి</translation>
 <translation id="6050189528197190982">బూడిద రంగు ప్రమాణం</translation>
@@ -8697,7 +8701,6 @@
 <translation id="701020165009334820">మీరు Play Store ద్వారా Android యాప్‌లను, గేమ్‌లను డౌన్‌లోడ్ చేసుకోవచ్చు.</translation>
 <translation id="701080569351381435">సోర్స్‌ను చూడండి</translation>
 <translation id="7012430956470647760">యాప్‌ల కోసం తల్లిదండ్రుల కంట్రోల్స్</translation>
-<translation id="7013762323294215682">ఈ పాస్-కీ మీ password managerకు సేవ్ చేయబడుతుంది. దీనికి యాక్సెస్ ఉన్న ఎవరైనా ఈ పాస్-కీని ఉపయోగించగలరు.</translation>
 <translation id="7014174261166285193">వ్యవస్థాపన విఫలమైంది.</translation>
 <translation id="7014480873681694324">హైలైట్‌ను తీసివేయండి</translation>
 <translation id="7014741021609395734">జూమ్ స్థాయి</translation>
@@ -10010,6 +10013,7 @@
 <translation id="7939062555109487992">అడ్వాన్స్‌డ్ ఆప్షన్‌లు</translation>
 <translation id="793923212791838">ఈ సైట్‌తో మీ డివైజ్‌ను ఉపయోగించడం సాధ్యం కాదు</translation>
 <translation id="7939328347457537652">పరికర సర్టిఫికెట్‌లను మేనేజ్ చేయండి</translation>
+<translation id="7939918959917132075">దీనికి ఎక్స్‌టెన్షన్ మార్చింది</translation>
 <translation id="7940087892955752820">ఒక అప్లికేషన్ ఈ ఫోల్డర్‌ను ఉపయోగిస్తుంది కాబట్టి షేరింగ్‌ను తీసివేయడం సాధ్యపడలేదు. <ph name="SPECIFIC_NAME" /> మళ్లీ షట్ డౌన్ అయినప్పుడు ఫోల్డర్ షేరింగ్ తీసివేయబడుతుంది.</translation>
 <translation id="7940265372707990269"><ph name="SORT_TYPE" /> వారీగా క్రమపద్ధతిలో అమర్చండి</translation>
 <translation id="7941179291434537290">టెథరింగ్ సంసిద్ధత:</translation>
@@ -11783,7 +11787,6 @@
 <translation id="9120800848981545750">మీ ఫోన్‌లో మీ ట్యాబ్‌లను, బుక్‌మార్క్‌లను, పాస్‌వర్డ్‌లను యాక్సెస్ చేయడానికి iOS కోసం Chromeను డౌన్‌లోడ్ చేయండి.</translation>
 <translation id="9121814364785106365">పిన్ చేసిన ట్యాబ్‌ లాగా తెరువు</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{ట్యాబ్‌ను మూసివేసి, గ్రూప్‌ను తొలగించాలా?}=1{ట్యాబ్‌లను మూసివేసి, గ్రూప్‌ను తొలగించాలా?}other{ట్యాబ్‌లను మూసివేసి, గ్రూప్‌లను తొలగించాలా?}}</translation>
-<translation id="9122788874051694311">ఈ పాస్-కీని అజ్ఞాత మోడ్ వెలుపల సేవ్ చేయాలా?</translation>
 <translation id="9123287046453017203">మీ పరికరం అప్‌డేట్ అయ్యి లేదు</translation>
 <translation id="9125910124977405374">ఆటోమేటిక్‌గా అనువదించబడిన భాషల నుండి <ph name="LANGUAGE_NAME" />ని తీసివేయండి</translation>
 <translation id="9125912770834459638">సైన్ ఇన్ చేయడానికి మీ సంస్థ మిమ్మల్ని అనుమతించదు</translation>

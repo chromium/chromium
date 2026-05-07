@@ -2076,6 +2076,7 @@
 <translation id="2402226831639195063">টোন</translation>
 <translation id="2405887402346713222">ডিভাইস ও কম্পোনেন্ট সিরিয়াল নম্বর</translation>
 <translation id="2406153734066939945">এই প্রোফাইল এবং এর ডেটা মুছে ফেলতে চান?</translation>
+<translation id="2406942743794219791">আপনার পছন্দের ডিফল্ট সার্চ ইঞ্জিনটি কনফার্ম করুন</translation>
 <translation id="2407671304279211586">ডিএনএস প্রদানকারী বেছে নিন</translation>
 <translation id="2408018932941436077">কার্ড সেভ করা হচ্ছে</translation>
 <translation id="2408742686124047357">পরের বার সহজে অ্যাক্সেস করতে আপনার টুলবারে Google Lens পিন করে রাখুন</translation>
@@ -2168,6 +2169,7 @@
 <translation id="2460826998961521840">আপনার Google অ্যাকাউন্টে সেভ করা পাসকী ব্যবহার করতে পারবেন</translation>
 <translation id="2461550163693930491">সাইটগুলিকে শেয়ার করা ট্যাব স্ক্রল ও জুম করতে দেবেন না</translation>
 <translation id="2461593638794842577">আপনার পাসওয়ার্ড শুধু এই ডিভাইসে সেভ করার জন্য এই সেটিং বন্ধ করতে পারবেন</translation>
+<translation id="2462550463312552298">এই ডকুমেন্টের সংক্ষিপ্ত বিবরণ তৈরি করো</translation>
 <translation id="2462724976360937186">শংসাপত্র কর্তৃত্ব কী ID</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> যোগ করা হয়েছে</translation>
 <translation id="2464075479326723132">Microsoft SharePoint ও OneDrive-এ আপনার সবচেয়ে সাম্প্রতিক কার্যকলাপ সহজেই ফিরে পেতে আপনাকে সাজেস্ট করা ফাইল দেখানো হচ্ছে।
@@ -3056,6 +3058,7 @@
 <translation id="3046892784550338476">ভার্সন <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Webpage, Complete</translation>
 <translation id="304747341537320566">ভাষ্য ইঞ্জিন</translation>
+<translation id="3047618804758101928">"<ph name="EXTENSION_NAME" />" এক্সটেনশনটি আপনার সেটিংস পরিবর্তন করেছে</translation>
 <translation id="3047678109605649715">আপনার ডিভাইসে <ph name="LANGUAGE" /> ভাষার ভয়েস কাজ করে না। আপনার ডিভাইসে জায়গা খালি করে আবার চেষ্টা করুন।</translation>
 <translation id="3048336643003835855"><ph name="VENDOR_ID" />-এর HID ডিভাইস</translation>
 <translation id="3048589239114571785">চালু করুন (k)</translation>
@@ -4324,6 +4327,7 @@
 <translation id="3924788966103416622">একটি এক্সটার্নাল অ্যাপ এই Chrome সেশন ডিবাগ করার জন্য এতে সম্পূর্ণ কন্ট্রোল চায়। এর মধ্যে আপনার সেভ করা ডেটা, কুকি ও সাইট ডেটা অ্যাক্সেস করা এবং যেকোনও URL-এ নেভিগেট করার ক্ষমতা অন্তর্ভুক্ত।</translation>
 <translation id="3925573269917483990">ক্যামেরা:</translation>
 <translation id="3925926055063465902">এছাড়াও এই ডিভাইসের অন্যান্য ব্যবহারকারী এই নেটওয়ার্ক ব্যবহার করতে পারবেন</translation>
+<translation id="3925934852713265455">আপনার ট্যাব সম্পর্কে জিজ্ঞাসা করুন</translation>
 <translation id="3926002189479431949">Smart Lock ফোন পরিবর্তিত হয়েছে</translation>
 <translation id="3926410220776569451">ক্যামেরার অ্যাক্সেস ব্লক করা হয়েছে</translation>
 <translation id="3927932062596804919">অস্বীকার</translation>
@@ -7296,6 +7300,7 @@
 <translation id="604388835206766544">কনফিগারেশন পার্স করা যায়নি</translation>
 <translation id="6043994281159824495">এখনই সাইন-আউট করুন</translation>
 <translation id="6045114302329202345">প্রাইমারি TrackPoint বোতাম</translation>
+<translation id="6045425183320109397">দ্বারা</translation>
 <translation id="6047632800149092791">সিঙ্ক কাজ করছে না। সাইন-আউট করে আবার ফিরে এসে দেখুন।</translation>
 <translation id="6048747414605857443">ChromeVox ও 'বাছুন ও শুনুন' ফিচারের জন্য টেক্সট-টু-স্পিচ ভয়েস বেছে নিন ও কাস্টমাইজ করুন</translation>
 <translation id="6050189528197190982">গ্রেস্কেল</translation>
@@ -8703,7 +8708,6 @@
 <translation id="701020165009334820">Play Store থেকে আপনি Android অ্যাপ ও গেম ডাউনলোড করতে পারবেন।</translation>
 <translation id="701080569351381435">উৎস দেখান</translation>
 <translation id="7012430956470647760">অ্যাপের জন্য 'অভিভাবকীয় নিয়ন্ত্রণ' ফিচার</translation>
-<translation id="7013762323294215682">এই পাসকী আপনার Password Manager-এ সেভ করা থাকবে। এটিতে যার অ্যাক্সেস থাকবে, তারা এই পাসকী ব্যবহার করতে পারবেন।</translation>
 <translation id="7014174261166285193">ইনস্টলেশান ব্যর্থ হয়েছে৷</translation>
 <translation id="7014480873681694324">হাইলাইট সরিয়ে দিন</translation>
 <translation id="7014741021609395734">জুম লেভেল</translation>
@@ -10016,6 +10020,7 @@
 <translation id="7939062555109487992">উন্নত বিকল্প</translation>
 <translation id="793923212791838">এই সাইটের সাথে আপনার ডিভাইস ব্যবহার করা যাবে না</translation>
 <translation id="7939328347457537652">ডিভাইস সার্টিফিকেট ম্যানেজ করুন</translation>
+<translation id="7939918959917132075">এক্সটেনশন দ্বারা এটিতে পরিবর্তন করা হয়েছে</translation>
 <translation id="7940087892955752820">ফোল্ডারটির শেয়ারিং বন্ধ করা যাচ্ছে না, কারণ এখন একটি অ্যাপ্লিকেশন এটি ব্যবহার করছে। পরবর্তী সময়ে <ph name="SPECIFIC_NAME" /> যখন বন্ধ করা হবে, তখনই ফোল্ডারটির শেয়ারিং বন্ধ করা যাবে।</translation>
 <translation id="7940265372707990269"><ph name="SORT_TYPE" /> অনুসারে সাজান</translation>
 <translation id="7941179291434537290">টেথারিং রেডিনেস:</translation>
@@ -11793,7 +11798,6 @@
 <translation id="9120800848981545750">আপনার ফোনে iOS-এর জন্য Chrome ডাউনলোড করুন, যাতে আপনার ট্যাব, বুকমার্ক ও পাসওয়ার্ড অ্যাক্সেস করা যায়।</translation>
 <translation id="9121814364785106365">পিন করা ট্যাব হিসেবে খুলুন</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{ট্যাব বন্ধ করে গ্রুপ মুছে দেবেন?}=1{ট্যাব বন্ধ করে গ্রুপ মুছে দেবেন?}one{ট্যাব বন্ধ করে গ্রুপ মুছে দেবেন?}other{ট্যাব বন্ধ করে গ্রুপগুলি মুছে দেবেন?}}</translation>
-<translation id="9122788874051694311">ছদ্মবেশী মোডের বাইরে এই পাসকী সেভ করতে চান?</translation>
 <translation id="9123287046453017203">আপনার ডিভাইস আপ-টু-ডেট নেই</translation>
 <translation id="9125910124977405374">অটোমেটিক অনুবাদ হওয়া ভাষা থেকে <ph name="LANGUAGE_NAME" /> সরান</translation>
 <translation id="9125912770834459638">আপনার সংস্থা আপনাকে সাইন-ইন করার অনুমতি দেয়নি</translation>

@@ -457,6 +457,7 @@
 <translation id="2475783092753560388"><ph name="SEARCH_RESULT_TEXT" />-ის ჩასმა</translation>
 <translation id="2475982808118771221">შეცდომა მოხდა</translation>
 <translation id="2478076885740497414">დააინსტალირეთ პროგრამა</translation>
+<translation id="2479148705183875116">პარამეტრებზე გადასვლა</translation>
 <translation id="2482878487686419369">შეტყობინებები</translation>
 <translation id="2484513351006226581">კლავიატურის განლაგების გადასართველად გამოიყენეთ კლავიშთა კომბინაცია: <ph name="KEYBOARD_SHORTCUT" />.</translation>
 <translation id="2485422356828889247">დეინსტალაცია</translation>
@@ -1047,6 +1048,7 @@
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">მიმოხილვის რეჟიმი</translation>
 <translation id="4242533952199664413">პარამეტრების გახსნა</translation>
+<translation id="4244765461494758482">ეს პარამეტრები სინქრონიზებულია თქვენს სხვა ChromeOS მოწყობილობებთან. შეგიძლიათ შეცვალოთ ისინი აქ ან მართოთ სრული სია პარამეტრებიდან.</translation>
 <translation id="4247123849143712100">განახლება და გამორთვა</translation>
 <translation id="4249248555939881673">ქსელური კავშირის ლოდინი…</translation>
 <translation id="4250229828105606438">ეკრანის ანაბეჭდი</translation>
@@ -2327,6 +2329,7 @@
 <translation id="8051716679295756675">შაბლონი სახელად „<ph name="DESK_TEMPLATE_NAME" />“ უკვე არსებობს</translation>
 <translation id="8052898407431791827">დაკოპირდა გაცვლის ბუფერში</translation>
 <translation id="8054466585765276473">ბატარეის დროის გამოთვლა.</translation>
+<translation id="8063363226185507157">მისაწვდომობის სინქრონიზებული პარამეტრები</translation>
 <translation id="8076492880354921740">ჩანართები</translation>
 <translation id="8079538659226626406">ეკრანის გაზიარება</translation>
 <translation id="8083540854303889870">შენახულია სამომავლოდ</translation>

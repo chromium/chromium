@@ -609,6 +609,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> निवडले</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> आणि <ph name="PERMISSION_2" /> ला अनुमती दिली</translation>
 <translation id="7276071417425470385">सुरू असताना, साइट व्हर्च्युअल रीअ‍ॅलिटी डिव्हाइस वापरण्याची विनंती करू शकतात. बंद असताना, साइट व्हर्च्युअल रीअ‍ॅलिटी डिव्हाइस वापरू शकत नाहीत.</translation>
+<translation id="7279851812866769760">संपर्क शेअर करा</translation>
 <translation id="7282197670900591579">सिट्रोन थीम</translation>
 <translation id="728412880473384942">साइट अधिक जलद, पण कमी सुरक्षित आहेत</translation>
 <translation id="7352902948037373520"><ph name="BEGIN_LINK1" />Android सेटिंग्ज<ph name="END_LINK1" /> मध्ये व्यवस्थापित करा
@@ -700,6 +701,7 @@
 <translation id="823874716226307142">सुरू असताना, साइट तुमच्या स्थानिक नेटवर्कवरील इतर डिव्हाइस ॲक्सेस करण्याची विनंती करू शकतात. बंद असताना, साइट तुमच्या स्थानिक नेटवर्कवरील इतर डिव्हाइस ॲक्सेस करू शकत नाहीत.</translation>
 <translation id="8249310407154411074">वर न्या</translation>
 <translation id="8261506727792406068">हटवा</translation>
+<translation id="8273596202562472147"><ph name="SITE_NAME" /> यासाठी आणखी पर्याय</translation>
 <translation id="8284326494547611709">मथळे</translation>
 <translation id="8300705686683892304">ॲपद्वारे व्यवस्थापित</translation>
 <translation id="8301363963630676147">या वेळी अनुमती दिली आहे • अंदाजे वापरत आहे</translation>
@@ -794,6 +796,7 @@
 <translation id="9156722768168878035">Chrome ला तुमच्या डिव्हाइसच्या अ‍ॅप सूचीमध्ये आणि शोध परिणामांमध्ये तुमचे अलीकडील टॅब दाखवू द्या. तुम्ही हे Chrome सेटिंग्जमध्ये कधीही बंद करू शकता.</translation>
 <translation id="9162462602695099906">हे पेज धोकादायक आहे</translation>
 <translation id="9182556968660520230">साइटना संरक्षित आशय प्ले करण्याची अनुमती देऊ नका</translation>
+<translation id="927148002081263046">संपर्क शेअर करा</translation>
 <translation id="947156494302904893">तुम्ही खरी व्यक्ती आहात आणि बॉट नाही याची तुम्ही भेट देता त्या साइट पडताळणी करू शकतात</translation>
 <translation id="959682366969460160">व्यवस्‍थापित करा</translation>
 <translation id="960590623979248167">हायपरलिंक दाखवा</translation>

@@ -609,6 +609,7 @@
 <translation id="7250468141469952378">เลือกไว้ <ph name="ITEM_COUNT" /> รายการ</translation>
 <translation id="7260727271532453612">อนุญาตให้เข้าถึง<ph name="PERMISSION_1" />และ<ph name="PERMISSION_2" /></translation>
 <translation id="7276071417425470385">เมื่อเปิด เว็บไซต์จะขอใช้อุปกรณ์เทคโนโลยีความจริงเสมือน (VR) ได้ เมื่อปิด เว็บไซต์จะใช้อุปกรณ์เทคโนโลยีความจริงเสมือน (VR) ไม่ได้</translation>
+<translation id="7279851812866769760">แชร์รายชื่อติดต่อ</translation>
 <translation id="7282197670900591579">ธีมสีเหลืองมะนาว</translation>
 <translation id="728412880473384942">เว็บไซต์เร็วขึ้นแต่ปลอดภัยน้อยลง</translation>
 <translation id="7352902948037373520">จัดการใน<ph name="BEGIN_LINK1" />การตั้งค่า Android<ph name="END_LINK1" />
@@ -700,6 +701,7 @@
 <translation id="823874716226307142">เมื่อเปิด เว็บไซต์จะขอเข้าถึงอุปกรณ์อื่นๆ ในเครือข่ายภายในของคุณได้ เมื่อปิด เว็บไซต์จะเข้าถึงอุปกรณ์อื่นๆ ในเครือข่ายภายในของคุณไม่ได้</translation>
 <translation id="8249310407154411074">เลื่อนไปบนสุด</translation>
 <translation id="8261506727792406068">ลบ</translation>
+<translation id="8273596202562472147">ตัวเลือกเพิ่มเติมสำหรับ <ph name="SITE_NAME" /></translation>
 <translation id="8284326494547611709">คำบรรยายแทนเสียง</translation>
 <translation id="8300705686683892304">จัดการโดยแอป</translation>
 <translation id="8301363963630676147">อนุญาตในครั้งนี้ • ใช้ตำแหน่งโดยประมาณ</translation>
@@ -794,6 +796,7 @@
 <translation id="9156722768168878035">ให้ Chrome แสดงแท็บล่าสุดในรายการแอปและผลการค้นหาของอุปกรณ์ คุณปิดฟีเจอร์นี้ได้ทุกเมื่อในการตั้งค่า Chrome</translation>
 <translation id="9162462602695099906">หน้านี้อันตราย</translation>
 <translation id="9182556968660520230">ไม่อนุญาตให้เว็บไซต์เล่นเนื้อหาที่มีการคุมครอง</translation>
+<translation id="927148002081263046">แชร์รายชื่อติดต่อ</translation>
 <translation id="947156494302904893">เว็บไซต์ที่เข้าชมสามารถยืนยันได้ว่าคุณเป็นคนจริงๆ ไม่ใช่บ็อต</translation>
 <translation id="959682366969460160">จัดระเบียบ</translation>
 <translation id="960590623979248167">แสดงไฮเปอร์ลิงก์</translation>

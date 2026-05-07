@@ -2075,6 +2075,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2402226831639195063">Âm</translation>
 <translation id="2405887402346713222">Số sê-ri của thành phần và thiết bị</translation>
 <translation id="2406153734066939945">Xóa hồ sơ này và dữ liệu của hồ sơ?</translation>
+<translation id="2406942743794219791">Xác nhận công cụ tìm kiếm mặc định mà bạn muốn</translation>
 <translation id="2407671304279211586">Chọn nhà cung cấp DNS</translation>
 <translation id="2408018932941436077">Đang lưu thẻ</translation>
 <translation id="2408742686124047357">Ghim Google Ống kính vào thanh công cụ để dễ dàng truy cập vào lần tới</translation>
@@ -2167,6 +2168,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2460826998961521840">Để dùng khoá truy cập đã lưu trong Tài khoản Google của bạn</translation>
 <translation id="2461550163693930491">Không cho phép các trang web cuộn và thu phóng các thẻ được chia sẻ</translation>
 <translation id="2461593638794842577">Bạn có thể tắt chế độ cài đặt này nếu chỉ muốn lưu mật khẩu trên thiết bị này</translation>
+<translation id="2462550463312552298">Tóm tắt tài liệu này</translation>
 <translation id="2462724976360937186">ID khóa của tổ chức phát hành chứng chỉ</translation>
 <translation id="2462752602710430187">Đã thêm <ph name="PRINTER_NAME" /></translation>
 <translation id="2464075479326723132">Bạn đang xem các tệp được đề xuất giúp bạn dễ dàng quay lại hoạt động gần đây nhất trong Microsoft SharePoint và OneDrive.
@@ -3055,6 +3057,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3046892784550338476">Phiên bản <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Trang web, toàn bộ</translation>
 <translation id="304747341537320566">Công cụ chuyển văn bản sang lời nói</translation>
+<translation id="3047618804758101928">Tiện ích "<ph name="EXTENSION_NAME" />" đã thay đổi chế độ cài đặt của bạn</translation>
 <translation id="3047678109605649715">Không có giọng nói <ph name="LANGUAGE" /> nào trên thiết bị của bạn. Hãy giải phóng dung lượng trên thiết bị rồi thử lại.</translation>
 <translation id="3048336643003835855">Thiết bị HID của nhà cung cấp <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Phát (k)</translation>
@@ -4323,6 +4326,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3924788966103416622">Một ứng dụng bên ngoài muốn có toàn quyền kiểm soát phiên Chrome này để gỡ lỗi. Điều này bao gồm quyền truy cập vào dữ liệu bạn đã lưu, cookie và dữ liệu trang web của bạn, cũng như khả năng chuyển đến bất kỳ URL nào.</translation>
 <translation id="3925573269917483990">Camera:</translation>
 <translation id="3925926055063465902">Những người dùng khác trên thiết bị này cũng có thể sử dụng mạng này</translation>
+<translation id="3925934852713265455">Hỏi về các thẻ của bạn</translation>
 <translation id="3926002189479431949">Đã thay đổi điện thoại Smart Lock</translation>
 <translation id="3926410220776569451">Không cho phép truy cập vào camera</translation>
 <translation id="3927932062596804919">Từ chối</translation>
@@ -7294,6 +7298,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="604388835206766544">Không thể phân tích cú pháp cấu hình</translation>
 <translation id="6043994281159824495">Đăng xuất bây giờ</translation>
 <translation id="6045114302329202345">Nút TrackPoint chính</translation>
+<translation id="6045425183320109397">Bởi</translation>
 <translation id="6047632800149092791">Tính năng đồng bộ hóa hiện không hoạt động. Hãy thử đăng xuất rồi đăng nhập lại.</translation>
 <translation id="6048747414605857443">Chọn và tuỳ chỉnh giọng nói của tính năng chuyển văn bản sang lời nói cho ChromeVox và tính năng Chọn để nói</translation>
 <translation id="6050189528197190982">Thang độ xám</translation>
@@ -8701,7 +8706,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="701020165009334820">Bạn có thể tải ứng dụng và trò chơi Android xuống qua Cửa hàng Play.</translation>
 <translation id="701080569351381435">Xem Nguồn</translation>
 <translation id="7012430956470647760">Chế độ kiểm soát của cha mẹ đối với ứng dụng</translation>
-<translation id="7013762323294215682">Khoá truy cập này sẽ được lưu vào trình quản lý mật khẩu của bạn. Bất cứ ai có quyền truy cập vào trình quản lý mật khẩu đó đều có thể sử dụng khoá truy cập này.</translation>
 <translation id="7014174261166285193">Cài đặt không thành công.</translation>
 <translation id="7014480873681694324">Bỏ đánh dấu</translation>
 <translation id="7014741021609395734">Mức thu phóng</translation>
@@ -10014,6 +10018,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7939062555109487992">Tùy chọn nâng cao</translation>
 <translation id="793923212791838">Không thể sử dụng thiết bị của bạn với trang web này</translation>
 <translation id="7939328347457537652">Quản lý chứng chỉ thiết bị</translation>
+<translation id="7939918959917132075">Tiện ích đã thay đổi thành công cụ tìm kiếm này</translation>
 <translation id="7940087892955752820">Không thể ngừng chia sẻ vì một ứng dụng đang dùng thư mục này. Hệ thống sẽ ngừng chia sẻ thư mục này khi bạn tắt <ph name="SPECIFIC_NAME" /> vào lần tới.</translation>
 <translation id="7940265372707990269">Sắp xếp theo <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Trạng thái sẵn sàng của tính năng chia sẻ Internet:</translation>
@@ -11790,7 +11795,6 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="9120800848981545750">Tải Chrome dành cho iOS xuống để truy cập vào các thẻ, dấu trang và mật khẩu trên điện thoại.</translation>
 <translation id="9121814364785106365">Mở dưới dạng thẻ được ghim</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{Đóng thẻ và xoá nhóm?}=1{Đóng các thẻ và xoá nhóm?}other{Đóng các thẻ và xoá các nhóm?}}</translation>
-<translation id="9122788874051694311">Lưu khoá truy cập này ngoài chế độ Ẩn danh?</translation>
 <translation id="9123287046453017203">Thiết bị của bạn chưa được cập nhật</translation>
 <translation id="9125910124977405374">Xoá <ph name="LANGUAGE_NAME" /> khỏi danh sách ngôn ngữ được dịch tự động</translation>
 <translation id="9125912770834459638">Tổ chức của bạn không cho phép bạn đăng nhập</translation>

@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">Ez, eskerrik asko</translation>
 <translation id="1531038290222364269">Erakutsi fitxak</translation>
 <translation id="1536390784834419204">Itzuli orria</translation>
+<translation id="1539535193627863227">Ez da aurkitu pasahitzik edo sarbide-gakorik webgune honetarako</translation>
 <translation id="1540800554400757039">Helbidea (1)</translation>
 <translation id="154312949627292154">Ireki beste gailuetatik jasotako fitxak pantaila blokeatutik.</translation>
 <translation id="1545749641540134597">Eskaneatu QR kodea</translation>
@@ -642,6 +643,7 @@
 <translation id="3245744387817103524">Ezin izan da gorde aldaketa.</translation>
 <translation id="3254806613790954367">Gailu guztien artean azkenekoz ireki duzun fitxa</translation>
 <translation id="325717987950204592">Sakatu "Pribatutasuna eta segurtasuna".</translation>
+<translation id="3259451381796379533">Kontu honek ez du funtzionatuko Gemini-rekin. Hasi saioa Google-ko beste kontu batekin.</translation>
 <translation id="3265736395246760288">Hasi saioa bizkorrago sinkronizatutako edozein gailutatik.</translation>
 <translation id="3272527697863656322">Utzi</translation>
 <translation id="3273510436356991673">Pertsonalizatu orri nagusia</translation>
@@ -763,6 +765,7 @@
 <translation id="372676576864368480">Bete automatikoki txartela <ph name="LAST_DIGITS" /> zenbakian amaitutako txartel-zenbakiarekin</translation>
 <translation id="3738428049780661523">Sortze-data: <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Kamerako argazkiak</translation>
+<translation id="3746269120925354434">Gorde da informazioa Google Diru-zorroa zerbitzuan</translation>
 <translation id="3750225824417196283">Ezkutuko moduko fitxa berri baten orria</translation>
 <translation id="3751873026576444885">Utzi pantailako edukia bilatzeari Google Lens bidez</translation>
 <translation id="3753408171347588045">Prezioen jarraipena egiten ari zara</translation>
@@ -1076,7 +1079,6 @@
 <translation id="4824480232751123840">Bolumena</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} eta beste bat}other{{domain} eta beste {count}}}</translation>
 <translation id="4826588772550366629">kamera eta mikrofonoa</translation>
-<translation id="4828431027673677473">Zure interesetan oinarritutako produktuak</translation>
 <translation id="4829420936835028285">Editatu fitxa taldea</translation>
 <translation id="4833786495304741580">Erabilera-estatistikak eta hutsegite-txostenak automatikoki bidaltzen dizkio Google-ri.</translation>
 <translation id="483689884442613745">Gorde…</translation>
@@ -1864,6 +1866,7 @@
 <translation id="7498234416455752244">Jarraitu editatzen</translation>
 <translation id="7500244509706269886">Bete inprimakia automatikoki</translation>
 <translation id="750493650310597496">Ez da bat ere hautatu</translation>
+<translation id="7505402981231763928">Saioa hasi behar duzu Gemini erabiltzeko</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Ezkutuko moduko fitxak blokeatzeko, konfiguratu Touch ID, Face ID edo pasakode bat.</translation>
 <translation id="750886945254958667">Mantendu talde hau geroago fitxak gehitzeko. Aurrerantzean hura atzitu nahi ez baduzu, irten bertatik.</translation>
@@ -2105,7 +2108,6 @@
 <translation id="828291969289324795">{count,plural, =1{Gehitu fitxa talde berrian}other{Gehitu fitxak talde berrian}}</translation>
 <translation id="8283172974887967105">Ezarri…</translation>
 <translation id="8289930144142009940">Desaktibatu dira <ph name="FEATURE_NAME" /> eginbidearen jakinarazpenak</translation>
-<translation id="8290077367744012649">Egin fitxetako prezioen jarraipena</translation>
 <translation id="8292893224181644074">Deskarga osatu da</translation>
 <translation id="8299417921174340354">Pasahitzak erabiltzeko, lehenik, pasakode bat ezarri behar duzu gailuan.</translation>
 <translation id="8307481894409578819">Ezin izan da kargatu fitxategia</translation>
@@ -2172,6 +2174,7 @@
 <translation id="8533670235862049797">Arakatze segurua aktibatuta dago</translation>
 <translation id="8534481786647257214">Google+eko mezua argitaratu da.</translation>
 <translation id="8535368836838588657">Erakutsi pasahitza</translation>
+<translation id="8540426897269305488">Hasi saioa <ph name="CELL_ACCESSIBILITY_LABEL" /> erabilita</translation>
 <translation id="8545276357312221485">Egiaztatu zure arakatzaile lehenetsiaren ezarpenak</translation>
 <translation id="854938212724803178">Arriskuan dagoen pasahitz bat daukazu. Segurtasuna bermatzeko, alda ezazu.</translation>
 <translation id="8551311254462607218">Helbide-barran, sakatu Google Lens-en kameraren ikonoa</translation>

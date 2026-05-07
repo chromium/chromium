@@ -1733,6 +1733,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> e mais 1 interruptor</translation>
 <translation id="2165177462441582039">Escolha por quanto tempo o destaque deve permanecer em cada item</translation>
 <translation id="2166369534954157698">Jane quer LP, fax, CD, giz, TV e bom whisky.</translation>
+<translation id="2168036794078614559">Denúncia feita</translation>
 <translation id="2169062631698640254">Fazer login assim mesmo</translation>
 <translation id="2173302385160625112">Verifique sua conexão com a Internet</translation>
 <translation id="2173801458090845390">Adicionar código de requisição para este dispositivo</translation>
@@ -7300,6 +7301,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="604388835206766544">Falha ao analisar configuração</translation>
 <translation id="6043994281159824495">Sair agora</translation>
 <translation id="6045114302329202345">Botão do TrackPoint principal</translation>
+<translation id="6045425183320109397">Por</translation>
 <translation id="6047632800149092791">A sincronização não está funcionando. Tente sair e fazer login novamente.</translation>
 <translation id="6048747414605857443">Selecione e personalize as vozes da conversão de texto em voz para o ChromeVox e o recurso Selecionar para Ouvir.</translation>
 <translation id="6050189528197190982">Escala de cinza</translation>
@@ -8707,7 +8709,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="701020165009334820">É possível baixar jogos e apps Android pela Play Store.</translation>
 <translation id="701080569351381435">Exibir o código fonte</translation>
 <translation id="7012430956470647760">Controles da família para apps</translation>
-<translation id="7013762323294215682">Esta chave de acesso será salva no seu gerenciador de senhas. Qualquer pessoa com acesso a ela poderá usá-la.</translation>
 <translation id="7014174261166285193">Falha na instalação.</translation>
 <translation id="7014480873681694324">Remover destaque</translation>
 <translation id="7014741021609395734">Nível de zoom</translation>
@@ -11798,7 +11799,6 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="9120800848981545750">Baixe o Chrome para iOS e acesse suas guias, favoritos e senhas no smartphone.</translation>
 <translation id="9121814364785106365">Abrir como guia fixada</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{Fechar guia e excluir grupo?}=1{Fechar guia e excluir grupo?}one{Fechar guia e excluir grupo?}other{Fechar guias e excluir grupo?}}</translation>
-<translation id="9122788874051694311">Salvar esta chave de acesso fora da navegação anônima?</translation>
 <translation id="9123287046453017203">O dispositivo não está atualizado</translation>
 <translation id="9125910124977405374">Remover o <ph name="LANGUAGE_NAME" /> da lista "Traduzir estes idiomas automaticamente"</translation>
 <translation id="9125912770834459638">Sua organização não permite que você faça login</translation>

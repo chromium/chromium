@@ -811,7 +811,7 @@
 <translation id="1547808936554660006">ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾದ eSIM ಪ್ರೊಫೈಲ್‌ಗಳನ್ನು ಪವರ್‌ವಾಷ್‌‌ ತೆಗೆದುಹಾಕಲಾಗುವುದಿಲ್ಲ ಎಂಬುದನ್ನು ನಾನು ಅರ್ಥಮಾಡಿಕೊಂಡಿದ್ದೇನೆ</translation>
 <translation id="1547936895218027488">ಸೈಡ್ ಪ್ಯಾನೆಲ್ ಐಕಾನ್ ಅನ್ನು ಕ್ಲಿಕ್ ಮಾಡಿ, ಅದನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="1549275686094429035">ARC ಸಕ್ರಿಯಗೊಂಡಿದೆ</translation>
-<translation id="1549788673239553762"><ph name="APP_NAME" /> ಅಪ್ಲಿಕೇಶನ್ <ph name="VOLUME_NAME" /> ಅನ್ನು ಪ್ರವೇಶಿಸಲು ಬಯಸುತ್ತದೆ. ಅದು ನಿಮ್ಮ ಫೈಲ್‌ಗಳನ್ನು ಮಾರ್ಪಡಿಸಬಹುದು ಅಥವಾ ಅಳಿಸಬಹುದು.</translation>
+<translation id="1549788673239553762"><ph name="APP_NAME" /> ಆ್ಯಪ್ <ph name="VOLUME_NAME" /> ಅನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಲು ಬಯಸುತ್ತದೆ. ಅದು ನಿಮ್ಮ ಫೈಲ್‌ಗಳನ್ನು ಮಾರ್ಪಡಿಸಬಹುದು ಅಥವಾ ಅಳಿಸಬಹುದು.</translation>
 <translation id="1549966883323105187">ಸೇವ್ ಮಾಡಲಾದ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ತ್ವರಿತವಾಗಿ ಪಡೆದುಕೊಳ್ಳಿ</translation>
 <translation id="1550656959113606473">ಡೀಫಾಲ್ಟ್ Chrome</translation>
 <translation id="1552301827267621511"><ph name="SEARCH_PROVIDER_DOMAIN" /> ಅನ್ನು ಬಳಸಲು, <ph name="EXTENSION_NAME" /> ವಿಸ್ತರಣೆಯು ಹುಡುಕಾಟವನ್ನು ಬದಲಿಸಿದೆ</translation>
@@ -1725,6 +1725,7 @@
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> ಮತ್ತು ಇನ್ನೂ 1 ಸ್ವಿಚ್</translation>
 <translation id="2165177462441582039">ಪ್ರತಿ ಐಟಂನಲ್ಲಿ ಹೈಲೈಟ್‌ ಎಷ್ಟು ಕಾಲ ಉಳಿಯಬೇಕು ಎಂಬುದನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
+<translation id="2168036794078614559">ವರದಿಯನ್ನು ಕಳುಹಿಸಲಾಗಿದೆ</translation>
 <translation id="2169062631698640254">ಹೇಗಾದರೂ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="2173302385160625112">ನಿಮ್ಮ ಇಂಟರ್ನೆಟ್ ಸಂಪರ್ಕವನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="2173801458090845390">ಈ ಸಾಧನಕ್ಕೆ ನಿಯೋಜನ ಐಡಿ ಅನ್ನು ಸೇರಿಸಿ</translation>
@@ -2068,6 +2069,7 @@
 <translation id="2402226831639195063">ಟೋನ್‌ಗಳು</translation>
 <translation id="2405887402346713222">ಸಾಧನ ಮತ್ತು ಘಟಕದ ಕ್ರಮ ಸಂಖ್ಯೆಗಳು</translation>
 <translation id="2406153734066939945">ಈ ಪ್ರೊಫೈಲ್ ಮತ್ತು ಇದರ ಡೇಟಾವನ್ನು ಅಳಿಸಬೇಕೇ?</translation>
+<translation id="2406942743794219791">ನಿಮಗೆ ಬೇಕಾದ ಡೀಫಾಲ್ಟ್ ಸರ್ಚ್ ಎಂಜಿನ್ ಅನ್ನು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="2407671304279211586">DNS ಪೂರೈಕೆದಾರರನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="2408018932941436077">ಕಾರ್ಡ್ ಅನ್ನು ಸೇವ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="2408742686124047357">ಮುಂದಿನ ಬಾರಿ ಸುಲಭವಾಗಿ ಆ್ಯಕ್ಸೆಸ್‌ ಮಾಡಲು Google Lens ಅನ್ನು ನಿಮ್ಮ ಟೂಲ್‌ಬಾರ್‌ಗೆ ಪಿನ್‌ ಮಾಡಿ</translation>
@@ -2160,6 +2162,7 @@
 <translation id="2460826998961521840">ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಉಳಿಸಲಾದ ಪಾಸ್‌ಕೀಗಳನ್ನು ಬಳಸಲು</translation>
 <translation id="2461550163693930491">ಹಂಚಿಕೊಂಡ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಸ್ಕ್ರಾಲ್ ಮಾಡಲು ಮತ್ತು ಝೂಮ್ ಮಾಡಲು ಸೈಟ್‌ಗಳನ್ನು ಅನುಮತಿಸಬೇಡಿ</translation>
 <translation id="2461593638794842577">ಈ ಸಾಧನದಲ್ಲಿ ಮಾತ್ರ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಸೇವ್‌ ಮಾಡಲು ನೀವು ಈ ಸೆಟ್ಟಿಂಗ್ ಅನ್ನು ಆಫ್ ಮಾಡಬಹುದು</translation>
+<translation id="2462550463312552298">ಈ ಡಾಕ್ಯುಮೆಂಟ್ ಅನ್ನು ಸಾರಾಂಶಗೊಳಿಸಿ</translation>
 <translation id="2462724976360937186">ಪ್ರಮಾಣದಪತ್ರದ ಪ್ರಾಧಿಕಾರ ಕೀ ID</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> ಸೇರಿಸಲಾಗಿದೆ</translation>
 <translation id="2464075479326723132">Microsoft SharePoint ಮತ್ತು OneDrive ನಲ್ಲಿನ ನಿಮ್ಮ ತೀರಾ ಇತ್ತೀಚಿನ ಚಟುವಟಿಕೆಗೆ ಸುಲಭವಾಗಿ ಹಿಂತಿರುಗಲು ನಿಮಗೆ ಸಹಾಯ ಮಾಡಲು ಸೂಚಿಸಿದ ಫೈಲ್‌ಗಳನ್ನು ನೀವು ನೋಡುತ್ತಿದ್ದೀರಿ.
@@ -3048,6 +3051,7 @@
 <translation id="3046892784550338476">ಆವೃತ್ತಿ <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">ವೆಬ್‌ಪುಟ, ಪೂರ್ಣಗೊಳಿಸಿ</translation>
 <translation id="304747341537320566">ಧ್ವನಿ ಎಂಜಿನ್‌ಗಳು</translation>
+<translation id="3047618804758101928">"<ph name="EXTENSION_NAME" />" ಎಕ್ಸ್‌ಟೆನ್ಶನ್ ನಿಮ್ಮ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಬದಲಾಯಿಸಿದೆ</translation>
 <translation id="3047678109605649715">ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಯಾವುದೇ <ph name="LANGUAGE" /> ಭಾಷೆಯ ಧ್ವನಿಗಳಿಲ್ಲ. ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಸ್ಪೇಸ್ ಅನ್ನು ತೆರವುಗೊಳಿಸಿ ಮತ್ತು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="3048336643003835855"><ph name="VENDOR_ID" /> ಮಾರಾಟಗಾರರ HID ಸಾಧನಗಳು</translation>
 <translation id="3048589239114571785">ಪ್ಲೇ ಮಾಡಿ (k)</translation>
@@ -4315,6 +4319,7 @@
 <translation id="3924788966103416622">ಬಾಹ್ಯ ಆ್ಯಪ್, ಈ Chrome ಸೆಶನ್ ಅನ್ನು ಡೀಬಗ್ ಮಾಡುವುದಕ್ಕಾಗಿ ಅದರ ಮೇಲೆ ಸಂಪೂರ್ಣ ನಿಯಂತ್ರಣವನ್ನು ಬಯಸುತ್ತದೆ. ಇದು ನಿಮ್ಮ ಸೇವ್ ಮಾಡಿದ ಡೇಟಾ, ಕುಕೀಗಳು ಮತ್ತು ಸೈಟ್ ಡೇಟಾಗೆ ಇರುವ ಆ್ಯಕ್ಸೆಸ್ ಮತ್ತು ಯಾವುದೇ URL ಗೆ ನ್ಯಾವಿಗೇಟ್ ಮಾಡುವ ಸಾಮರ್ಥ್ಯವನ್ನು ಒಳಗೊಂಡಿರುತ್ತದೆ.</translation>
 <translation id="3925573269917483990">ಕ್ಯಾಮರಾ:</translation>
 <translation id="3925926055063465902">ಈ ಸಾಧನದಲ್ಲಿರುವ ಇತರ ಬಳಕೆದಾರರು ಸಹ ಈ ನೆಟ್‌ವರ್ಕ್ ಅನ್ನು ಬಳಸಬಹುದು</translation>
+<translation id="3925934852713265455">ನಿಮ್ಮ ಟ್ಯಾಬ್‌ಗಳ ಕುರಿತು ಕೇಳಿ</translation>
 <translation id="3926002189479431949">Smart Lock ಫೋನ್ ಬದಲಾಯಿಸಲಾಗಿದೆ</translation>
 <translation id="3926410220776569451">ಕ್ಯಾಮರಾ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="3927932062596804919">ನಿರಾಕರಿಸಿ</translation>
@@ -7261,7 +7266,7 @@
 <translation id="6018241313232245125">Gemini ಮೂಲಕ ಸುಧಾರಿಸಿ</translation>
 <translation id="6019169947004469866">ಕ್ರಾಪ್</translation>
 <translation id="6019851026059441029">ಅತ್ಯುತ್ತಮ - HD</translation>
-<translation id="6020431688553761150">ಈ ಸಂಪನ್ಮೂಲವನ್ನು ಪ್ರವೇಶಿಸಲು ನಿಮಗೆ ಸರ್ವರ್ ದೃಢೀಕರಿಸಿಲ್ಲ.</translation>
+<translation id="6020431688553761150">ಈ ರಿಸೋರ್ಸ್ ಅನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಲು ನಿಮಗೆ ಸರ್ವರ್ ದೃಢೀಕರಿಸಿಲ್ಲ.</translation>
 <translation id="6021293122504240352"><ph name="APPS" /> ಆ್ಯಪ್‌ಗಳು ಇನ್ನು ಮುಂದೆ ಬೆಂಬಲಿತವಾಗಿಲ್ಲ</translation>
 <translation id="6021969570711251331">ಒಂದರ ಮೇಲೆ ಮತ್ತೊಂದು</translation>
 <translation id="6022526133015258832">ಪೂರ್ಣ ಪರದೆಯನ್ನು ತೆರೆಯಿರಿ</translation>
@@ -7286,6 +7291,7 @@
 <translation id="604388835206766544">ಕಾನ್ಫಿಗರೇಶನ್ ಅನ್ನು ವಿಶ್ಲೇಷಿಸಲು ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="6043994281159824495">ಈಗ ಸೈನ್ ಔಟ್ ಮಾಡಿ</translation>
 <translation id="6045114302329202345">ಪ್ರಾಥಮಿಕ TrackPoint ಬಟನ್</translation>
+<translation id="6045425183320109397">ಮೂಲಕ</translation>
 <translation id="6047632800149092791">ಸಿಂಕ್ ಕೆಲಸ ಮಾಡುತ್ತಿಲ್ಲ. ಸೈನ್ ಔಟ್ ಮಾಡಿ ಮತ್ತು ಪುನಃ ಸೈನ್ ಇನ್ ಮಾಡಲು ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="6048747414605857443">ChromeVox ಮತ್ತು ಆಯ್ಕೆಮಾಡಿ ಮತ್ತು ಆಲಿಸಿಗಾಗಿ ಟೆಕ್ಸ್ಟ್-ಟು-ಸ್ಪೀಚ್ ಧ್ವನಿಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ ಮತ್ತು ಕಸ್ಟಮೈಸ್ ಮಾಡಿ</translation>
 <translation id="6050189528197190982">ಗ್ರೇಸ್ಕೇಲ್</translation>
@@ -8693,7 +8699,6 @@
 <translation id="701020165009334820">Play Store ಮೂಲಕ ನೀವು Android ಆ್ಯಪ್‌ಗಳು ಮತ್ತು ಗೇಮ್‌ಗಳನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಬಹುದು.</translation>
 <translation id="701080569351381435">ಮೂಲ ವೀಕ್ಷಿಸಿ</translation>
 <translation id="7012430956470647760">ಆ್ಯಪ್‌ಗಳಿಗಾಗಿ ಪೋಷಕ ನಿಯಂತ್ರಣಗಳು</translation>
-<translation id="7013762323294215682">ಈ ಪಾಸ್‌ಕೀ ಅನ್ನು ನಿಮ್ಮ Password Manager ನಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗುತ್ತದೆ. ಅದಕ್ಕೆ ಆ್ಯಕ್ಸೆಸ್ ಹೊಂದಿರುವ ಯಾರಿಗಾದರೂ ಈ ಪಾಸ್‌ಕೀ ಅನ್ನು ಬಳಸಲು ಸಾಧ್ಯವಾಗುತ್ತದೆ.</translation>
 <translation id="7014174261166285193">ಸ್ಥಾಪನೆ ವಿಫಲವಾಗಿದೆ.</translation>
 <translation id="7014480873681694324">ಹೈಲೈಟ್ ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="7014741021609395734">ಝೂಮ್ ಮಟ್ಟ</translation>
@@ -10006,6 +10011,7 @@
 <translation id="7939062555109487992">ಸುಧಾರಿತ ಆಯ್ಕೆಗಳು</translation>
 <translation id="793923212791838">ನಿಮ್ಮ ಸಾಧನವನ್ನು ಈ ಸೈಟ್ ಜೊತೆಗೆ ಬಳಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="7939328347457537652">ಸಾಧನ ಪ್ರಮಾಣೀಕರಣಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
+<translation id="7939918959917132075">ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ನಿಂದ ಇದಕ್ಕೆ ಬದಲಾಯಿಸಲಾಗಿದೆ</translation>
 <translation id="7940087892955752820">ಅಪ್ಲಿಕೇಶನ್, ಈ ಫೋಲ್ಡರ್ ಅನ್ನು ಬಳಸುತ್ತಿರುವ ಕಾರಣ, ಅದರ ಹಂಚಿಕೆಯನ್ನು ರದ್ದುಗೊಳಿಸಲಾಗಲಿಲ್ಲ. ಮುಂದಿನ ಸಲ <ph name="SPECIFIC_NAME" /> ಅನ್ನು ಶಟ್ ಡೌನ್ ಮಾಡಿದಾಗ, ಈ ಫೋಲ್ಡರ್ ಹಂಚಿಕೆಯನ್ನು ರದ್ದುಗೊಳಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="7940265372707990269"><ph name="SORT_TYPE" /> ಪ್ರಕಾರ ವಿಂಗಡಿಸಿ</translation>
 <translation id="7941179291434537290">ಟೆಥರಿಂಗ್ ಸಿದ್ಧತೆ:</translation>
@@ -11780,7 +11786,6 @@
 <translation id="9120800848981545750">ನಿಮ್ಮ ಫೋನ್‌ನಲ್ಲಿ ನಿಮ್ಮ ಟ್ಯಾಬ್‌ಗಳು, ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು ಮತ್ತು ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಲು iOS ಗಾಗಿ Chrome ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ.</translation>
 <translation id="9121814364785106365">ಪಿನ್ ಮಾಡಿದ ಟ್ಯಾಬ್ ಆಗಿ ತೆರೆ</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{ಟ್ಯಾಬ್ ಅನ್ನು ಮುಚ್ಚಿ, ಗುಂಪನ್ನು ಅಳಿಸಬೇಕೇ?}=1{ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿ, ಗುಂಪನ್ನು ಅಳಿಸಬೇಕೇ?}one{ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿ, ಗುಂಪನ್ನು ಅಳಿಸಬೇಕೇ?}other{ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿ, ಗುಂಪನ್ನು ಅಳಿಸಬೇಕೇ?}}</translation>
-<translation id="9122788874051694311">ಈ ಪಾಸ್‌ಕೀಯನ್ನು ಅಜ್ಞಾತದ ಹೊರಗೆ ಸೇವ್ ಮಾಡಬೇಕೇ?</translation>
 <translation id="9123287046453017203">ನಿಮ್ಮ ಸಾಧನ ಅಪ್ ಟು ಡೇಟ್ ಆಗಿಲ್ಲ</translation>
 <translation id="9125910124977405374">ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಅನುವಾದಿಸಿದ ಭಾಷೆಗಳ ಪಟ್ಟಿಯಿಂದ <ph name="LANGUAGE_NAME" /> ಭಾಷೆಯನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="9125912770834459638">ಸೈನ್ ಇನ್ ಮಾಡಲು ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ನಿಮಗೆ ಅನುಮತಿಸುವುದಿಲ್ಲ</translation>

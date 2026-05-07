@@ -2064,6 +2064,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2402226831639195063">Intonācijas</translation>
 <translation id="2405887402346713222">Ierīces un komponentu sērijas numuri</translation>
 <translation id="2406153734066939945">Vai dzēst šo profilu un tā datus?</translation>
+<translation id="2406942743794219791">Apstipriniet vēlamo noklusējuma meklētājprogrammu</translation>
 <translation id="2407671304279211586">Atlasiet DNS pakalpojumu sniedzēju</translation>
 <translation id="2408018932941436077">Karte tiek saglabāta.</translation>
 <translation id="2408742686124047357">Piespraudiet Google Lens rīkjoslā, lai nākamreiz varētu ērtāk piekļūt šai funkcijai.</translation>
@@ -2156,6 +2157,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2460826998961521840">Lai izmantotu piekļuves atslēgas, kas saglabātas jūsu Google kontā</translation>
 <translation id="2461550163693930491">Neatļaut vietnēm ritināšanu un tālummaiņu kopīgotajās cilnēs</translation>
 <translation id="2461593638794842577">Varat izslēgt šo iestatījumu, lai saglabātu savas paroles tikai šajā ierīcē.</translation>
+<translation id="2462550463312552298">Izveidot šī dokumenta kopsavilkumu</translation>
 <translation id="2462724976360937186">Sertifikāta izdevējiestādes atslēgas ID</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> pievienots</translation>
 <translation id="2464075479326723132">Jums tiek rādīti ieteiktie faili, lai jūs varētu ērti atgriezties pie savām pēdējām darbībām pakalpojumos Microsoft SharePoint un OneDrive.
@@ -3044,6 +3046,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3046892784550338476">Versija <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" /> (<ph name="PRODUCT_CHANNEL" />), <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Tīmekļa lapa, pabeigta</translation>
 <translation id="304747341537320566">Runas programmas</translation>
+<translation id="3047618804758101928">Paplašinājums “<ph name="EXTENSION_NAME" />” mainīja jūsu iestatījumus</translation>
 <translation id="3047678109605649715">Jūsu ierīcē nav balss <ph name="LANGUAGE" /> valodā. Atbrīvojiet nepieciešamo vietu savā ierīcē un mēģiniet vēlreiz.</translation>
 <translation id="3048336643003835855">HID ierīces, ko piedāvā pakalpojumu sniedzējs <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Atskaņot (k)</translation>
@@ -4310,6 +4313,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3924788966103416622">Kāda ārēja lietotne vēlas pilnībā kontrolēt šo Chrome sesiju, lai to atkļūdotu. Tas ietver piekļuvi jūsu saglabātajiem datiem, sīkfailiem un vietņu datiem, kā arī iespēju pāriet uz jebkuru vietrādi URL.</translation>
 <translation id="3925573269917483990">Kamera:</translation>
 <translation id="3925926055063465902">Šo tīklu var izmantot arī citi šīs ierīces lietotāji.</translation>
+<translation id="3925934852713265455">Jautāt par cilnēm</translation>
 <translation id="3926002189479431949">Ir mainījies ar Smart Lock saistītais tālrunis</translation>
 <translation id="3926410220776569451">Piekļuve kamerai ir bloķēta</translation>
 <translation id="3927932062596804919">Neatļaut</translation>
@@ -7277,6 +7281,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="604388835206766544">Neizdevās parsēt konfigurāciju</translation>
 <translation id="6043994281159824495">Izrakstīties tagad</translation>
 <translation id="6045114302329202345">Galvenā TrackPoint poga</translation>
+<translation id="6045425183320109397">Autors:</translation>
 <translation id="6047632800149092791">Sinhronizācija nedarbojas. Izrakstieties un atkārtoti pierakstieties.</translation>
 <translation id="6048747414605857443">Atlasiet un pielāgojiet balsis teksta pārvēršanai runā funkcijās ChromeVox un “Atlasīt, lai izrunātu”.</translation>
 <translation id="6050189528197190982">Pelēktoņi</translation>
@@ -8686,7 +8691,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="701020165009334820">Play veikalā varat lejupielādēt Android lietotnes un spēles.</translation>
 <translation id="701080569351381435">Skatīt avotu</translation>
 <translation id="7012430956470647760">Vecāku kontrole lietotnēm</translation>
-<translation id="7013762323294215682">Šī piekļuves atslēga tiks saglabāta jūsu paroļu pārvaldniekā. Ikviens, kas var tam piekļūt, varēs izmantot šo piekļuves atslēgu.</translation>
 <translation id="7014174261166285193">Instalēšana neizdevās.</translation>
 <translation id="7014480873681694324">Atcelt teksta atzīmēšanu</translation>
 <translation id="7014741021609395734">Tālummaiņas līmenis</translation>
@@ -9999,6 +10003,7 @@ Lai noņemtu piešķīrumu, nospiediet piešķirto slēdzi vai taustiņu.</trans
 <translation id="7939062555109487992">Papildopcijas</translation>
 <translation id="793923212791838">Jūsu ierīci nevar izmantot ar šo vietni</translation>
 <translation id="7939328347457537652">Pārvaldīt ierīces sertifikātus</translation>
+<translation id="7939918959917132075">Paplašinājums mainīja uz šo vērtību</translation>
 <translation id="7940087892955752820">Nevarēja atsaukt kopīgošanu, jo šo mapi izmanto lietojumprogramma. Mapes kopīgošana tiks atsaukta, kad nākamreiz tiks izslēgta virtuālā mašīna <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="7940265372707990269">Kārtot pēc: <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Piesaistes gatavība:</translation>
@@ -11777,7 +11782,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="9120800848981545750">Lai tālrunī piekļūtu savām cilnēm, grāmatzīmēm un parolēm, lejupielādējiet pārlūku Chrome operētājsistēmai iOS.</translation>
 <translation id="9121814364785106365">Atvērt kā piespraustu cilni</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{Vai aizvērt cilni un dzēst grupu?}=1{Vai aizvērt cilnes un dzēst grupu?}zero{Vai aizvērt cilnes un dzēst grupas?}one{Vai aizvērt cilnes un dzēst grupas?}other{Vai aizvērt cilnes un dzēst grupas?}}</translation>
-<translation id="9122788874051694311">Vai saglabāt šo piekļuves atslēgu ārpus inkognito režīma?</translation>
 <translation id="9123287046453017203">Jūsu ierīce nav atjaunināta</translation>
 <translation id="9125910124977405374">Noņemt valodu “<ph name="LANGUAGE_NAME" />” no automātiski tulkotajām valodām</translation>
 <translation id="9125912770834459638">Jūsu organizācija neatļauj jums pierakstīties</translation>

@@ -457,6 +457,7 @@
 <translation id="2475783092753560388">Sisipkan <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="2475982808118771221">Ralat berlaku</translation>
 <translation id="2478076885740497414">Pasang apl</translation>
+<translation id="2479148705183875116">Pergi ke Tetapan</translation>
 <translation id="2482878487686419369">Pemberitahuan</translation>
 <translation id="2484513351006226581">Tekan <ph name="KEYBOARD_SHORTCUT" /> untuk menukar atur letak papan kekunci.</translation>
 <translation id="2485422356828889247">Nyahpasang</translation>
@@ -1047,6 +1048,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Mod ikhtisar</translation>
 <translation id="4242533952199664413">Buka tetapan</translation>
+<translation id="4244765461494758482">Tetapan ini disegerakkan merentas peranti ChromeOS anda yang lain. Anda boleh menukar tetapan tersebut di sini atau mengurus senarai penuh dalam Tetapan.</translation>
 <translation id="4247123849143712100">Kemas kini dan matikan</translation>
 <translation id="4249248555939881673">Menunggu sambungan rangkaian...</translation>
 <translation id="4250229828105606438">Tangkapan skrin</translation>
@@ -2327,6 +2329,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8051716679295756675">Templat yang bernama <ph name="DESK_TEMPLATE_NAME" /> sudah wujud</translation>
 <translation id="8052898407431791827">Disalin ke papan keratan</translation>
 <translation id="8054466585765276473">Mengira tempoh bateri.</translation>
+<translation id="8063363226185507157">Tetapan kebolehaksesan disegerakkan</translation>
 <translation id="8076492880354921740">Tab</translation>
 <translation id="8079538659226626406">Perkongsian Skrin</translation>
 <translation id="8083540854303889870">Disimpan untuk kemudian</translation>

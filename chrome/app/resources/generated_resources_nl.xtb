@@ -2062,6 +2062,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2402226831639195063">Tonen</translation>
 <translation id="2405887402346713222">Serienummers apparaat en component</translation>
 <translation id="2406153734066939945">Dit profiel en de bijbehorende gegevens verwijderen?</translation>
+<translation id="2406942743794219791">Bevestig de gewenste standaard zoekmachine</translation>
 <translation id="2407671304279211586">DNS-provider selecteren</translation>
 <translation id="2408018932941436077">Kaart opslaan</translation>
 <translation id="2408742686124047357">Zet Google Lens vast op je werkbalk zodat je er de volgende keer snel toegang toe hebt</translation>
@@ -3043,6 +3044,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3046892784550338476">Versie <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Webpagina, compleet</translation>
 <translation id="304747341537320566">Spraakengines</translation>
+<translation id="3047618804758101928">De extensie <ph name="EXTENSION_NAME" /> heeft je instellingen gewijzigd</translation>
 <translation id="3047678109605649715">Er staan geen stemmen voor het <ph name="LANGUAGE" /> op je apparaat. Maak ruimte vrij op je apparaat en probeer het opnieuw.</translation>
 <translation id="3048336643003835855">HID-apparaten van leverancier <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Afspelen (k)</translation>
@@ -7275,6 +7277,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="604388835206766544">Parseren van configuratie mislukt</translation>
 <translation id="6043994281159824495">Nu uitloggen</translation>
 <translation id="6045114302329202345">Primaire TrackPoint-knop</translation>
+<translation id="6045425183320109397">Door</translation>
 <translation id="6047632800149092791">Synchronisatie werkt niet. Probeer uit en weer in te loggen.</translation>
 <translation id="6048747414605857443">Selecteer stemmen voor tekst-naar-spraak en pas ze aan voor ChromeVox en Selecteer om voor te lezen.</translation>
 <translation id="6050189528197190982">Grijstinten</translation>
@@ -8680,7 +8683,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="701020165009334820">Je kunt Android-apps en -games downloaden via de Play Store.</translation>
 <translation id="701080569351381435">Bekijk paginabron</translation>
 <translation id="7012430956470647760">Ouderlijk toezicht voor apps</translation>
-<translation id="7013762323294215682">Deze toegangssleutel wordt opgeslagen in je wachtwoordmanager. Iedereen met toegang kan deze toegangssleutel gebruiken.</translation>
 <translation id="7014174261166285193">Installatie mislukt.</translation>
 <translation id="7014480873681694324">Markering verwijderen</translation>
 <translation id="7014741021609395734">Zoomniveau</translation>
@@ -9992,6 +9994,7 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="7939062555109487992">Geavanceerde opties</translation>
 <translation id="793923212791838">Je apparaat kan niet worden gebruikt met deze site</translation>
 <translation id="7939328347457537652">Apparaatcertificaten beheren</translation>
+<translation id="7939918959917132075">Gewijzigd in dit door extensie</translation>
 <translation id="7940087892955752820">Kan het delen niet opheffen omdat een app deze map gebruikt. De map wordt niet meer gedeeld als <ph name="SPECIFIC_NAME" /> weer wordt uitgezet.</translation>
 <translation id="7940265372707990269">Sorteren op <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Gereedheid voor tethering:</translation>
@@ -11769,7 +11772,6 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="9120800848981545750">Download Chrome voor iOS om toegang te krijgen tot je tabbladen, bookmarks en wachtwoorden op je telefoon.</translation>
 <translation id="9121814364785106365">Openen als vastgezet tabblad</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{Tabblad sluiten en groep verwijderen?}=1{Tabblad sluiten en groep verwijderen?}other{Tabbladen sluiten en groepen verwijderen?}}</translation>
-<translation id="9122788874051694311">Deze toegangssleutel buiten de incognitomodus opslaan?</translation>
 <translation id="9123287046453017203">Je apparaat is niet up-to-date</translation>
 <translation id="9125910124977405374"><ph name="LANGUAGE_NAME" /> verwijderen uit de lijst met talen die automatisch worden vertaald</translation>
 <translation id="9125912770834459638">Je organisatie staat niet toe dat je inlogt</translation>

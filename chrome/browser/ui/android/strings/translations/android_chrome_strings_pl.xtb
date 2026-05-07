@@ -292,6 +292,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło wielowyrazow
 <translation id="230115972905494466">Nie znaleziono zgodnych urządzeń</translation>
 <translation id="2316129865977710310">Nie, dziękuję</translation>
 <translation id="2318045970523081853">Kliknij, by zadzwonić</translation>
+<translation id="232137538351753795">Aby wrócić, przesuń palcem od lewej krawędzi</translation>
 <translation id="2323763861024343754">Dane witryn:</translation>
 <translation id="2328474416100889417">Wszyscy natychmiast utracą dostęp do grupy kart „<ph name="GROUP_NAME" />”, a wszystkie linki z zaproszeniami zostaną wyłączone</translation>
 <translation id="2330186936255788117">Więcej zakładek</translation>
@@ -942,7 +943,6 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="5040262127954254034">Prywatność</translation>
 <translation id="504456571576643789">Istotne kwestie</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{Wybrane <ph name="WINDOW_COUNT_ONE" /> okno}few{Wybrane <ph name="WINDOW_COUNT_NORMAL" /> okna}many{Wybranych <ph name="WINDOW_COUNT_NORMAL" /> okien}other{Wybrane <ph name="WINDOW_COUNT_NORMAL" /> okna}}</translation>
-<translation id="5056587122125565772">Utwórz obraz</translation>
 <translation id="506254248375231072">Brak kart</translation>
 <translation id="5075939510584558547">Zapisz bez szyfrowania</translation>
 <translation id="5078638979202084724">Dodaj wszystkie karty do zakładek</translation>
@@ -1676,6 +1676,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="7977451675950311423">Ostrzega, jeśli użyjesz hasła, które zostało przejęte w wyniku naruszenia bezpieczeństwa danych.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Przeglądarka Chrome usunęła te uprawnienia, ponieważ od jakiegoś czasu nie odwiedzasz tej witryny</translation>
 <translation id="799576009106109668">Przeglądarka będzie działać szybciej dzięki proaktywnemu wczytywaniu stron na podstawie danych o bieżącej wizycie na stronie.</translation>
+<translation id="7997875520309653083">Aby wrócić, przesuń palcem od prawej krawędzi</translation>
 <translation id="7998918019931843664">Otwórz ponownie zamkniętą kartę</translation>
 <translation id="8001245658307297681">Wyświetlasz plik lokalny</translation>
 <translation id="8004582292198964060">Przeglądarka</translation>

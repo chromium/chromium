@@ -609,6 +609,7 @@
 <translation id="7250468141469952378">已选择 <ph name="ITEM_COUNT" /> 项</translation>
 <translation id="7260727271532453612">已授予“<ph name="PERMISSION_1" />”权限和“<ph name="PERMISSION_2" />”权限</translation>
 <translation id="7276071417425470385">开启此设置后，网站可以请求使用虚拟现实设备。关闭此设置后，网站无法使用虚拟现实设备。</translation>
+<translation id="7279851812866769760">分享联系人</translation>
 <translation id="7282197670900591579">香橼黄色主题</translation>
 <translation id="728412880473384942">网站速度更快，但安全性更低</translation>
 <translation id="7352902948037373520">在 <ph name="BEGIN_LINK1" />Android 设置<ph name="END_LINK1" />中管理
@@ -794,6 +795,7 @@
 <translation id="9156722768168878035">让 Chrome 在设备的应用列表和搜索结果中显示您近期打开的标签页。您可以随时在 Chrome 设置中关闭此功能。</translation>
 <translation id="9162462602695099906">这是一个危险网页</translation>
 <translation id="9182556968660520230">不允许网站播放受保护内容</translation>
+<translation id="927148002081263046">分享联系人</translation>
 <translation id="947156494302904893">您访问的网站可以验证您是真人而非机器人</translation>
 <translation id="959682366969460160">让各项内容井井有条</translation>
 <translation id="960590623979248167">显示超链接</translation>

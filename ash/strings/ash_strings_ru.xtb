@@ -457,6 +457,7 @@
 <translation id="2475783092753560388">Вставить результат "<ph name="SEARCH_RESULT_TEXT" />"</translation>
 <translation id="2475982808118771221">Произошел сбой.</translation>
 <translation id="2478076885740497414">Установить приложение</translation>
+<translation id="2479148705183875116">Открыть настройки</translation>
 <translation id="2482878487686419369">Уведомления</translation>
 <translation id="2484513351006226581">Чтобы переключить раскладку клавиатуры, нажмите клавиши <ph name="KEYBOARD_SHORTCUT" />.</translation>
 <translation id="2485422356828889247">Удалить</translation>
@@ -1047,6 +1048,7 @@
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Режим обзора</translation>
 <translation id="4242533952199664413">Открыть настройки</translation>
+<translation id="4244765461494758482">Эти настройки синхронизируются на всех ваших устройствах с ChromeOS. Вы можете изменить их здесь или посмотреть полный список в настройках.</translation>
 <translation id="4247123849143712100">Обновить и завершить работу</translation>
 <translation id="4249248555939881673">Ожидается подключение к сети...</translation>
 <translation id="4250229828105606438">Скриншот</translation>
@@ -2327,6 +2329,7 @@
 <translation id="8051716679295756675">Шаблон "<ph name="DESK_TEMPLATE_NAME" />" уже существует.</translation>
 <translation id="8052898407431791827">Скопировано в буфер обмена</translation>
 <translation id="8054466585765276473">Подсчет оставшегося времени работы от батареи…</translation>
+<translation id="8063363226185507157">Синхронизированные настройки специальных возможностей</translation>
 <translation id="8076492880354921740">Вкладки</translation>
 <translation id="8079538659226626406">Демонстрация экрана</translation>
 <translation id="8083540854303889870">Сохранено</translation>

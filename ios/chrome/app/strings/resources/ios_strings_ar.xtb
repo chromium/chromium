@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">لا، شكرًا</translation>
 <translation id="1531038290222364269">إظهار علامات التبويب</translation>
 <translation id="1536390784834419204">ترجمة الصفحة</translation>
+<translation id="1539535193627863227">لم يتم العثور على كلمات مرور أو مفاتيح مرور لهذا الموقع الإلكتروني</translation>
 <translation id="1540800554400757039">العنوان 1</translation>
 <translation id="154312949627292154">يمكنك فتح علامات التبويب المُستلمَة من أجهزتك الأخرى من خلال شاشة القفل.</translation>
 <translation id="1545749641540134597">فحص رمز الاستجابة السريعة</translation>
@@ -642,6 +643,7 @@
 <translation id="3245744387817103524">تعذَّر حفظ التغيير.</translation>
 <translation id="3254806613790954367">آخر علامة تبويب مفتوحة على جميع أجهزتك</translation>
 <translation id="325717987950204592">النقر على "الخصوصية والأمان"</translation>
+<translation id="3259451381796379533">‏لا يمكن استخدام Gemini مع هذا الحساب. يُرجى تسجيل الدخول باستخدام حساب Google مختلف.</translation>
 <translation id="3265736395246760288">يمكنك تسجيل الدخول بسرعة أكبر على أي جهاز تمت مزامنته.</translation>
 <translation id="3272527697863656322">إلغاء</translation>
 <translation id="3273510436356991673">تخصيص شاشتك الرئيسية</translation>
@@ -763,6 +765,7 @@
 <translation id="372676576864368480">الملء التلقائي لرقم البطاقة التي تنتهي بالأرقام <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">‏تاريخ الإنشاء: ‎<ph name="DATE" /></translation>
 <translation id="3742498336182910186">ألبوم الكاميرا</translation>
+<translation id="3746269120925354434">‏تم حفظ المعلومات في "محفظة Google"</translation>
 <translation id="3750225824417196283">صفحة علامة تبويب جديدة في وضع التصفّح المتخفي</translation>
 <translation id="3751873026576444885">‏إيقاف البحث عن محتوى شاشتك باستخدام "عدسة Google"</translation>
 <translation id="3753408171347588045">يتم حاليًا تتبُّع الأسعار</translation>
@@ -1076,7 +1079,6 @@
 <translation id="4824480232751123840">الصوت</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} وعلامة تبويب واحدة إضافية}two{{domain} وعلامتا تبويب ({count}) إضافيتان}few{{domain} و{count} علامات تبويب إضافية}many{{domain} و{count} علامة تبويب إضافية}other{{domain} و{count} علامة تبويب إضافية}}</translation>
 <translation id="4826588772550366629">الكاميرا والميكروفون</translation>
-<translation id="4828431027673677473">منتجات مقترَحة بناءً على اهتماماتك</translation>
 <translation id="4829420936835028285">تعديل مجموعة علامات التبويب</translation>
 <translation id="4833786495304741580">‏إرسال إحصاءات الاستخدام وتقارير الأعطال إلى Google تلقائيًا</translation>
 <translation id="483689884442613745">حفظ…</translation>
@@ -1862,6 +1864,7 @@
 <translation id="7498234416455752244">متابعة التعديل</translation>
 <translation id="7500244509706269886">الملء التلقائي للنموذج</translation>
 <translation id="750493650310597496">لم يتم اختيار أي إشارات</translation>
+<translation id="7505402981231763928">‏يجب تسجيل الدخول لاستخدام Gemini</translation>
 <translation id="7506817096924591340">‎<ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">‏لقفل علامات التبويب في وضع التصفّح المتخفي، ما عليك سوى إعداد رمز مرور أو ميزة Touch ID أو Face ID.</translation>
 <translation id="750886945254958667">يمكنك الاحتفاظ بهذه المجموعة لإضافة علامات تبويب إليها لاحقًا، أو مغادرتها إذا لم تعُد بحاجة إليها</translation>
@@ -2104,7 +2107,6 @@
 <translation id="828291969289324795">{count,plural, =1{إضافة علامة التبويب إلى مجموعة جديدة}zero{إضافة علامات التبويب إلى مجموعة جديدة}two{إضافة علامتَي التبويب إلى مجموعة جديدة}few{إضافة علامات التبويب إلى مجموعة جديدة}many{إضافة علامات التبويب إلى مجموعة جديدة}other{إضافة علامات التبويب إلى مجموعة جديدة}}</translation>
 <translation id="8283172974887967105">ضبط…</translation>
 <translation id="8289930144142009940">تم إيقاف إشعارات "<ph name="FEATURE_NAME" />"</translation>
-<translation id="8290077367744012649">تتبُّع الأسعار من علامات التبويب</translation>
 <translation id="8292893224181644074">اكتمل التنزيل</translation>
 <translation id="8299417921174340354">لاستخدام كلمات المرور، عليك أولاً إعداد رمز مرور على جهازك.</translation>
 <translation id="8307481894409578819">تعذر تحميل هذا الملف</translation>
@@ -2171,6 +2173,7 @@
 <translation id="8533670235862049797">التصفُّح الآمن مفعّل</translation>
 <translation id="8534481786647257214">‏اكتمل النشر على Google+‎.</translation>
 <translation id="8535368836838588657">الكشف عن كلمة المرور</translation>
+<translation id="8540426897269305488">تسجيل الدخول باستخدام <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8545276357312221485">التحقُّق من إعدادات المتصفِّح التلقائية</translation>
 <translation id="854938212724803178">لديك كلمة مرور واحدة محتمَل تعرّضها للاختراق. عليك تغييرها الآن للحفاظ على أمانك.</translation>
 <translation id="8551311254462607218">‏في شريط العناوين، يُرجى النقر على رمز كاميرا "عدسة Google"</translation>

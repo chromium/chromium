@@ -99,6 +99,9 @@
 <translation id="2066690553719545730">Selalu Tampilkan Mode AI</translation>
 <translation id="2086476982681781442">Chromium memblokir download ini karena file tersebut tidak jujur dan dapat menyebabkan perubahan tidak terduga di perangkat Anda</translation>
 <translation id="208726765006323911">Anda akan melihat perintah untuk mencoba <ph name="FEATURE_NAME" /> saat berikutnya Anda membuka Chromium iOS.</translation>
+<translation id="2090163042413910600">Chromium menonaktifkan pengoptimalan JavaScript saat Anda membuka suatu situs untuk pertama kalinya.
+
+Jika halaman ini tidak berfungsi seperti yang diharapkan, coba izinkan pengoptimalan.</translation>
 <translation id="2099452623287920103">Sandi dan data Chromium Anda lainnya yang disimpan di Akun Google Anda akan dihapus dari perangkat ini. Untuk menggunakannya lagi di Chromium, login kembali.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Organisasi akan otomatis menghapus data penjelajahan jika Chromium tidak digunakan selama 1 menit. Data ini dapat mencakup histori, isi otomatis, dan download. Tab Anda akan tetap terbuka.}other{Organisasi akan otomatis menghapus data penjelajahan jika Chromium tidak digunakan selama # menit. Data ini dapat mencakup histori, isi otomatis, dan download. Tab Anda akan tetap terbuka.}}</translation>
 <translation id="2126108037660393668">Verifikasi file yang didownload gagal.</translation>

@@ -2077,6 +2077,7 @@
 <translation id="2402226831639195063">신호음</translation>
 <translation id="2405887402346713222">기기 및 구성요소 일련번호</translation>
 <translation id="2406153734066939945">프로필과 데이터를 삭제하시겠습니까?</translation>
+<translation id="2406942743794219791">원하는 기본 검색엔진 확인</translation>
 <translation id="2407671304279211586">DNS 제공업체 선택</translation>
 <translation id="2408018932941436077">카드 저장 중</translation>
 <translation id="2408742686124047357">다음에 쉽게 액세스할 수 있도록 Google 렌즈를 툴바에 고정합니다.</translation>
@@ -2169,6 +2170,7 @@
 <translation id="2460826998961521840">Google 계정에 저장된 패스키를 사용하려면</translation>
 <translation id="2461550163693930491">사이트에서 공유한 탭을 스크롤 및 확대/축소하도록 허용하지 않음</translation>
 <translation id="2461593638794842577">이 설정을 사용 중지하면 비밀번호를 이 기기에만 저장할 수 있습니다</translation>
+<translation id="2462550463312552298">이 문서 요약해 줘</translation>
 <translation id="2462724976360937186">인증 기관 키 ID</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> 추가됨</translation>
 <translation id="2464075479326723132">Microsoft SharePoint 및 OneDrive에서 최근 활동을 쉽게 확인할 수 있도록 추천 파일이 표시됩니다.
@@ -3057,6 +3059,7 @@
 <translation id="3046892784550338476">버전 <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />(<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">웹페이지, 전부</translation>
 <translation id="304747341537320566">음성 엔진</translation>
+<translation id="3047618804758101928">"<ph name="EXTENSION_NAME" />" 확장 프로그램에서 설정을 변경했습니다</translation>
 <translation id="3047678109605649715">기기에 <ph name="LANGUAGE" /> 음성이 없습니다. 기기 공간을 확보한 다음 다시 시도하세요.</translation>
 <translation id="3048336643003835855">HID 기기(업체 ID: <ph name="VENDOR_ID" />)</translation>
 <translation id="3048589239114571785">재생(k)</translation>
@@ -3176,7 +3179,7 @@
 <translation id="3152356229013609796">휴대전화의 알림을 보고 닫거나 답장합니다.</translation>
 <translation id="3152545926232662879">무시됨:</translation>
 <translation id="3152596030350326139">가로로 탭 표시</translation>
-<translation id="3154754096046236400">개인별 맞춤 AI</translation>
+<translation id="3154754096046236400">개인별 컨텍스트</translation>
 <translation id="3155163173539279776">Chromium 다시 시작</translation>
 <translation id="3155394504825881014">탭 그룹을 북마크 폴더로 변환</translation>
 <translation id="3156511682997763015">10초 앞으로 이동</translation>
@@ -4325,6 +4328,7 @@
 <translation id="3924788966103416622">외부 앱에서 이 Chrome 세션을 완전히 제어하여 디버그하려고 합니다. 여기에는 저장된 데이터, 쿠키, 사이트 데이터에 대한 액세스 권한과 모든 URL로 이동할 수 있는 기능이 포함됩니다.</translation>
 <translation id="3925573269917483990">카메라:</translation>
 <translation id="3925926055063465902">이 기기의 다른 사용자도 이 네트워크를 사용할 수 있습니다.</translation>
+<translation id="3925934852713265455">탭에 관해 물어보기</translation>
 <translation id="3926002189479431949">Smart Lock 휴대전화가 변경됨</translation>
 <translation id="3926410220776569451">카메라 액세스가 차단됨</translation>
 <translation id="3927932062596804919">거부</translation>
@@ -7294,6 +7298,7 @@
 <translation id="604388835206766544">설정을 파싱할 수 없습니다.</translation>
 <translation id="6043994281159824495">지금 로그아웃</translation>
 <translation id="6045114302329202345">기본 TrackPoint 버튼</translation>
+<translation id="6045425183320109397">제작자</translation>
 <translation id="6047632800149092791">동기화가 작동하지 않습니다. 로그아웃한 뒤 다시 로그인해 보세요.</translation>
 <translation id="6048747414605857443">ChromeVox 및 텍스트 읽어주기에 사용되는 텍스트 음성 변환 기능의 음성을 선택하고 맞춤설정합니다.</translation>
 <translation id="6050189528197190982">회색조</translation>
@@ -8699,7 +8704,6 @@
 <translation id="701020165009334820">Play 스토어를 통해 Android 앱과 게임을 다운로드할 수 있습니다.</translation>
 <translation id="701080569351381435">소스 보기</translation>
 <translation id="7012430956470647760">앱의 자녀 보호 기능</translation>
-<translation id="7013762323294215682">이 패스키는 비밀번호 관리자에 저장됩니다. 패스키에 액세스할 수 있는 사용자는 모두 이 패스키를 사용할 수 있습니다.</translation>
 <translation id="7014174261166285193">설치에 실패했습니다.</translation>
 <translation id="7014480873681694324">강조표시 삭제</translation>
 <translation id="7014741021609395734">확대/축소 수준</translation>
@@ -10000,7 +10004,7 @@
 <translation id="793293630927785390">새 Wi-Fi 네트워크 대화상자</translation>
 <translation id="7932969338829957666"><ph name="BASE_DIR" />에서 Linux의 공유 폴더를 사용할 수 있습니다.</translation>
 <translation id="7932992556896556665">터치 스크린 기기를 설정하고 올바른 디스플레이에 매핑합니다</translation>
-<translation id="7933314993013528982">{NUM_TABS,plural, =1{사이트 숨기기 취소}other{사이트 숨기기 취소}}</translation>
+<translation id="7933314993013528982">{NUM_TABS,plural, =1{사이트 음소거 취소}other{사이트 음소거 취소}}</translation>
 <translation id="7933486544522242079">저장 및 공유(&amp;S)</translation>
 <translation id="7933518760693751884">페이지를 저장해 두고 나중에 보려면 북마크 아이콘을 클릭하세요.</translation>
 <translation id="7933634003144813719">공유 폴더 관리</translation>
@@ -10011,6 +10015,7 @@
 <translation id="7939062555109487992">고급 옵션</translation>
 <translation id="793923212791838">이 사이트에서 기기를 사용할 수 없음</translation>
 <translation id="7939328347457537652">기기 인증서 관리</translation>
+<translation id="7939918959917132075">확장 프로그램에서 변경됨</translation>
 <translation id="7940087892955752820">다른 애플리케이션에서 폴더를 사용 중이므로 공유를 취소할 수 없습니다. 다음번에 <ph name="SPECIFIC_NAME" />이 종료되면 폴더 공유가 취소됩니다.</translation>
 <translation id="7940265372707990269">정렬 기준: <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">테더링 준비:</translation>
@@ -10650,7 +10655,7 @@
 <translation id="8370294614544004647">노트북을 닫으면 절전 모드 시작</translation>
 <translation id="8370419414641876532">'비밀번호 및 자동 완성'을 클릭합니다.</translation>
 <translation id="8371695176452482769">말하세요</translation>
-<translation id="8371925839118813971">{NUM_TABS,plural, =1{사이트 숨기기}other{사이트 숨기기}}</translation>
+<translation id="8371925839118813971">{NUM_TABS,plural, =1{사이트 음소거}other{사이트 음소거}}</translation>
 <translation id="8372441176515901959">요청 취소</translation>
 <translation id="8372678064309688510">주소가 저장되었습니다</translation>
 <translation id="8373652277231415614">Crostini 공유 디렉터리</translation>
@@ -11787,7 +11792,6 @@
 <translation id="9120800848981545750">iOS용 Chrome을 다운로드하여 휴대전화에서 탭, 북마크, 비밀번호에 액세스하세요.</translation>
 <translation id="9121814364785106365">고정 탭으로 열기</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{탭을 닫고 그룹을 삭제하시겠습니까?}=1{탭을 닫고 그룹을 삭제하시겠습니까?}other{탭을 닫고 그룹을 삭제하시겠습니까?}}</translation>
-<translation id="9122788874051694311">시크릿 모드 외부에서 이 패스키를 저장하시겠습니까?</translation>
 <translation id="9123287046453017203">기기가 최신 상태가 아님</translation>
 <translation id="9125910124977405374">자동 번역 언어에서 <ph name="LANGUAGE_NAME" /> 삭제</translation>
 <translation id="9125912770834459638">조직에서 로그인을 허용하지 않음</translation>

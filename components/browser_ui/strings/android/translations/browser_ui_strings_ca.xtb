@@ -99,6 +99,7 @@
 <translation id="1985247341569771101">Quan aquesta opció està activada, els llocs web poden utilitzar els sensors de moviment del dispositiu. Quan aquesta opció està desactivada, els llocs web no poden utilitzar els sensors de moviment.</translation>
 <translation id="1985716030964443178">Es restabliran tots els llocs web de la llista al nivell de zoom predeterminat</translation>
 <translation id="1989112275319619282">Examina</translation>
+<translation id="1991370806334788445">Prova de permetre les galetes de tercers. Això implica menys protecció de navegació, però és més probable que les funcions del lloc web funcionin de la manera prevista.</translation>
 <translation id="1994173015038366702">URL del lloc web</translation>
 <translation id="1994558116414798016">Font Lexend</translation>
 <translation id="2004697686368036666">Pot ser que les funcions d'alguns llocs web no funcionin</translation>
@@ -608,6 +609,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> elements seleccionats</translation>
 <translation id="7260727271532453612">S'han permès <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" /></translation>
 <translation id="7276071417425470385">Quan aquesta opció està activada, els llocs web poden demanar permís per utilitzar dispositius de realitat virtual. Quan aquesta opció està desactivada, els llocs web no poden utilitzar dispositius de realitat virtual.</translation>
+<translation id="7279851812866769760">Comparteix contactes</translation>
 <translation id="7282197670900591579">Tema groc verdós</translation>
 <translation id="728412880473384942">Els llocs web són més ràpids, però menys segurs</translation>
 <translation id="7352902948037373520">Gestiona a <ph name="BEGIN_LINK1" />Configuració d'Android<ph name="END_LINK1" />
@@ -793,6 +795,7 @@ La Protecció avançada controla aquestes opcions de configuració de Chrome:</t
 <translation id="9156722768168878035">Permet que Chrome mostri les pestanyes recents als resultats de la cerca i a la llista d'aplicacions del dispositiu. Pots desactivar aquesta opció en qualsevol moment des de la configuració de Chrome.</translation>
 <translation id="9162462602695099906">Aquesta pàgina és perillosa</translation>
 <translation id="9182556968660520230">No permetis que els llocs web reprodueixin contingut protegit</translation>
+<translation id="927148002081263046">Compartició d'un contacte</translation>
 <translation id="947156494302904893">Els llocs web que visites poden verificar que ets una persona real i no un bot</translation>
 <translation id="959682366969460160">Organitza el contingut</translation>
 <translation id="960590623979248167">Mostra els enllaços</translation>

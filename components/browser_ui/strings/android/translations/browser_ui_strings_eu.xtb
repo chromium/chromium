@@ -609,6 +609,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> hautatu dira</translation>
 <translation id="7260727271532453612">Baimena eman zaie hauei: <ph name="PERMISSION_1" /> eta <ph name="PERMISSION_2" /></translation>
 <translation id="7276071417425470385">Aktibatuta dagoenean, webguneek errealitate birtualeko gailuak erabiltzeko baimena eska dezakete. Desaktibatuta dagoenean, webguneek ezin dute erabili errealitate birtualeko gailurik.</translation>
+<translation id="7279851812866769760">Partekatu kontaktuak</translation>
 <translation id="7282197670900591579">Limoi-koloreko gaia</translation>
 <translation id="728412880473384942">Webguneek bizkorrago funtzionatzen dute, baina ez dira hain seguruak</translation>
 <translation id="7352902948037373520">Kudeatu <ph name="BEGIN_LINK1" />Android-en ezarpenetan<ph name="END_LINK1" />
@@ -794,6 +795,7 @@ Babes aurreratua programak Chrome-ren ezarpen hauek kontrolatzen ditu:</translat
 <translation id="9156722768168878035">Eman azkenaldiko fitxak gailuko aplikazioen zerrendan eta bilaketa-emaitzetan erakusteko baimena Chrome-ri. Aukera hori desaktibatzeko, joan Chrome-ren ezarpenetara.</translation>
 <translation id="9162462602695099906">Orri hau arriskutsua da</translation>
 <translation id="9182556968660520230">Ez eman eduki babestua erreproduzitzeko baimena webguneei</translation>
+<translation id="927148002081263046">Partekatu kontaktua</translation>
 <translation id="947156494302904893">Bisitatzen dituzun webguneek benetako pertsona bat zarela eta robot bat ez zarela egiazta dezakete</translation>
 <translation id="959682366969460160">Antola zaitez</translation>
 <translation id="960590623979248167">Erakutsi hiperestekak</translation>

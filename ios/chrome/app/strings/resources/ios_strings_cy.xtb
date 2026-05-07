@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">Dim diolch</translation>
 <translation id="1531038290222364269">Dangos tabiau</translation>
 <translation id="1536390784834419204">Cyfieithu'r dudalen</translation>
+<translation id="1539535193627863227">Ni chanfuwyd unrhyw gyfrineiriau na chodau pas ar gyfer y wefan hon</translation>
 <translation id="1540800554400757039">Cyfeiriad 1</translation>
 <translation id="154312949627292154">Agor tabiau a dderbyniwyd gan eich dyfeisiau eraill o'r clo sgrîn.</translation>
 <translation id="1545749641540134597">Sganio Cod QR</translation>
@@ -642,6 +643,7 @@
 <translation id="3245744387817103524">Ni fu modd cadw'ch newid.</translation>
 <translation id="3254806613790954367">Eich tab agored diwethaf ar draws eich holl ddyfeisiau</translation>
 <translation id="325717987950204592">Tapiwch "Preifatrwydd a Diogelwch"</translation>
+<translation id="3259451381796379533">Ni fydd y cyfrif hwn yn gweithio gyda Gemini. Mewngofnodwch gyda Chyfrif Google gwahanol.</translation>
 <translation id="3265736395246760288">Mewngofnodwch yn gyflymach o unrhyw un o'ch dyfeisiau sydd wedi'u cysoni.</translation>
 <translation id="3272527697863656322">Canslo</translation>
 <translation id="3273510436356991673">Addasu eich sgrîn hafan</translation>
@@ -763,6 +765,7 @@
 <translation id="372676576864368480">Awtolenwi'r rhif cerdyn sy'n gorffen â <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Crëwyd <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Rhôl Camera</translation>
+<translation id="3746269120925354434">Gwybodaeth wedi'i chadw i Google Wallet</translation>
 <translation id="3750225824417196283">Tudalen tab anhysbys newydd</translation>
 <translation id="3751873026576444885">Stopio chwilio'ch sgrîn gyda Google Lens</translation>
 <translation id="3753408171347588045">Olrhain prisiau</translation>
@@ -1076,7 +1079,6 @@
 <translation id="4824480232751123840">Lefel y sain</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} ac 1 arall}two{{domain} a {count} arall}few{{domain} a {count} arall}many{{domain} a {count} arall}other{{domain} a {count} arall}}</translation>
 <translation id="4826588772550366629">camera a meicroffon</translation>
-<translation id="4828431027673677473">Cynhyrchion sy'n seiliedig ar eich diddordebau</translation>
 <translation id="4829420936835028285">Golygu Grŵp Tabiau</translation>
 <translation id="4833786495304741580">Yn anfon ystadegau defnydd ac adroddiadau damweiniau at Google yn awtomatig.</translation>
 <translation id="483689884442613745">Cadw…</translation>
@@ -1864,6 +1866,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="7498234416455752244">Parhau i olygu</translation>
 <translation id="7500244509706269886">Awtolenwi ffurflen</translation>
 <translation id="750493650310597496">Ni ddewisir yr un ohonynt</translation>
+<translation id="7505402981231763928">Mae angen i chi fewngofnodi i ddefnyddio Gemini</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">I gloi eich tabiau anhysbys, gosodwch Touch ID, Face ID, neu God Pas.</translation>
 <translation id="750886945254958667">Cadwch y grŵp hwn i ychwanegu tabiau yn ddiweddarach, neu gadewch ef os nad ydych am gael mynediad ato mwyach</translation>
@@ -2105,7 +2108,6 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="828291969289324795">{count,plural, =1{Ychwanegu'r Tab at Grŵp Newydd}zero{Ychwanegu'r Tabiau at Grŵp Newydd}two{Ychwanegu'r Tabiau at Grŵp Newydd}few{Ychwanegu'r Tabiau at Grŵp Newydd}many{Ychwanegu'r Tabiau at Grŵp Newydd}other{Ychwanegu'r Tabiau at Grŵp Newydd}}</translation>
 <translation id="8283172974887967105">Gosod…</translation>
 <translation id="8289930144142009940">Hysbysiadau <ph name="FEATURE_NAME" /> wedi'u diffodd</translation>
-<translation id="8290077367744012649">Olrhain prisiau o'ch tabiau</translation>
 <translation id="8292893224181644074">Wedi Gorffen Lawrlwytho</translation>
 <translation id="8299417921174340354">I ddefnyddio cyfrineiriau, rhaid i chi osod cod pas ar eich dyfais yn gyntaf.</translation>
 <translation id="8307481894409578819">Ni ellir lawrlwytho'r ffeil hon</translation>
@@ -2172,6 +2174,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="8533670235862049797">Mae Pori'n Ddiogel ymlaen</translation>
 <translation id="8534481786647257214">Postiad Google+ wedi'i gwblhau.</translation>
 <translation id="8535368836838588657">Datgelu'r cyfrinair</translation>
+<translation id="8540426897269305488">Mewngofnodi gyda <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8545276357312221485">Gwiriwch eich gosodiadau porwr diofyn</translation>
 <translation id="854938212724803178">Mae gennych 1 cyfrinair sydd wedi'i ddarganfod. Trwsiwch ef nawr i aros yn ddiogel.</translation>
 <translation id="8551311254462607218">Yn y bar cyfeiriad, tapiwch yr eicon camera Google Lens</translation>

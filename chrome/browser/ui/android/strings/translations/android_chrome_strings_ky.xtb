@@ -292,6 +292,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="230115972905494466">Шайкеш түзмөктөр табылган жок</translation>
 <translation id="2316129865977710310">Жок, рахмат</translation>
 <translation id="2318045970523081853">Чалуу үчүн басыңыз</translation>
+<translation id="232137538351753795">Артка кайтуу үчүн экранды солдон оңго карай сүрүңүз</translation>
 <translation id="2323763861024343754">Сайт дайындары</translation>
 <translation id="2328474416100889417">Ар бир адам дароо "<ph name="GROUP_NAME" />" өтмөктөр тобуна кирүү мүмкүнчүлүгүн жоготот жана бардык чакыруу шилтемелери өчүрүлөт</translation>
 <translation id="2330186936255788117">Дагы башка кыстармалар</translation>
@@ -942,7 +943,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="5040262127954254034">Купуялык</translation>
 <translation id="504456571576643789">Эске ала турган нерселер</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" /> терезе тандалды}other{<ph name="WINDOW_COUNT_NORMAL" /> терезе тандалды}}</translation>
-<translation id="5056587122125565772">Сүрөт түзүү</translation>
 <translation id="506254248375231072">Өтмөктөр жок</translation>
 <translation id="5075939510584558547">Шифрлебей сактоо</translation>
 <translation id="5078638979202084724">Бардык өтмөктөрдү кыстарып коюу</translation>
@@ -1676,6 +1676,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7977451675950311423">Колдонулган сызсөздү кимдир бирөө билип алган болсо, ал тууралуу эскертет.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Акыркы убакта сайтка кирбегениңизден улам, Chrome бул уруксаттарды өчүрдү</translation>
 <translation id="799576009106109668">Мазмун учурда ачылып турган веб-баракчанын негизинде жүктөлгөндүктөн, барактарды тезирээк карап чыгасыз</translation>
+<translation id="7997875520309653083">Артка кайтуу үчүн экранды оңдон солго карай сүрүңүз</translation>
 <translation id="7998918019931843664">Жабылган кыстырманы кайра ачуу</translation>
 <translation id="8001245658307297681">Жергиликтүү файлды көрүп жатасыз</translation>
 <translation id="8004582292198964060">Серепчи</translation>

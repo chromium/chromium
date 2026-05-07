@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">Ne, díky</translation>
 <translation id="1531038290222364269">Zobrazit karty</translation>
 <translation id="1536390784834419204">Přeložit stránku</translation>
+<translation id="1539535193627863227">Pro tento web nebyla nalezena žádná hesla ani přístupové klíče</translation>
 <translation id="1540800554400757039">První řádek adresy</translation>
 <translation id="154312949627292154">Otevírejte z obrazovky uzamčení karty přijaté ze svých ostatních zařízení.</translation>
 <translation id="1545749641540134597">Naskenujte QR kód</translation>
@@ -642,6 +643,7 @@
 <translation id="3245744387817103524">Změnu nebylo možné uložit.</translation>
 <translation id="3254806613790954367">Naposledy otevřená karta ze všech vašich zařízení</translation>
 <translation id="325717987950204592">Klepněte na Ochrana soukromí a zabezpečení</translation>
+<translation id="3259451381796379533">Tento účet nebude s Gemini fungovat. Přihlaste se pomocí jiného účtu Google.</translation>
 <translation id="3265736395246760288">Přihlašujte se ze svých synchronizovaných zařízení rychleji.</translation>
 <translation id="3272527697863656322">Zrušit</translation>
 <translation id="3273510436356991673">Přizpůsobení plochy</translation>
@@ -763,6 +765,7 @@
 <translation id="372676576864368480">Automaticky vyplnit číslo karty končící na <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Vytvořeno <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Album fotoaparátu</translation>
+<translation id="3746269120925354434">Informace byly uloženy do Peněženky Google</translation>
 <translation id="3750225824417196283">Nová stránka Anonymní karta</translation>
 <translation id="3751873026576444885">Přestat prohledávat obrazovku pomocí Google Lens</translation>
 <translation id="3753408171347588045">Sledování cen</translation>
@@ -1076,7 +1079,6 @@
 <translation id="4824480232751123840">Objem</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} a 1 další}few{{domain} a {count} další}many{{domain} a {count} dalšího}other{{domain} a {count} dalších}}</translation>
 <translation id="4826588772550366629">fotoaparát a mikrofon</translation>
-<translation id="4828431027673677473">Produkty na základě vašich zájmů</translation>
 <translation id="4829420936835028285">Upravit skupinu karet</translation>
 <translation id="4833786495304741580">Automaticky odesílá statistiky o využívání a zprávy o selhání do Googlu</translation>
 <translation id="483689884442613745">Uložit…</translation>
@@ -1864,6 +1866,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="7498234416455752244">Pokračovat v úpravách</translation>
 <translation id="7500244509706269886">Automaticky vyplnit formulář</translation>
 <translation id="750493650310597496">Vybráno 0</translation>
+<translation id="7505402981231763928">Pokud chcete používat Gemini, musíte se přihlásit</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Pokud chcete uzamknout anonymní karty, nastavte Touch ID, Face ID nebo heslo.</translation>
 <translation id="750886945254958667">Skupinu můžete zachovat, abyste do ní mohli přidat karty později, nebo ji můžete opustit, pokud k ní už nechcete mít přístup.</translation>
@@ -2105,7 +2108,6 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="828291969289324795">{count,plural, =1{Přidat kartu do nové skupiny}few{Přidat karty do nové skupiny}many{Přidat karty do nové skupiny}other{Přidat karty do nové skupiny}}</translation>
 <translation id="8283172974887967105">Nastavit…</translation>
 <translation id="8289930144142009940">Oznámení pro <ph name="FEATURE_NAME" /> jsou vypnutá</translation>
-<translation id="8290077367744012649">Sledujte na kartách ceny</translation>
 <translation id="8292893224181644074">Stahování dokončeno</translation>
 <translation id="8299417921174340354">Chcete-li použít hesla, musíte nejdříve na zařízení nastavit heslo.</translation>
 <translation id="8307481894409578819">Tento soubor se nepodařilo nahrát</translation>
@@ -2172,6 +2174,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="8533670235862049797">Bezpečné prohlížení je zapnuté</translation>
 <translation id="8534481786647257214">Příspěvek na Google+ byl odeslán.</translation>
 <translation id="8535368836838588657">Zobrazit heslo</translation>
+<translation id="8540426897269305488">Přihlásit se pomocí <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8545276357312221485">Zkontrolujte nastavení výchozího prohlížeče</translation>
 <translation id="854938212724803178">Máte jedno prolomené heslo. Pokud chcete být v bezpečí, ihned to vyřešte.</translation>
 <translation id="8551311254462607218">Na adresním řádku klepněte na ikonu fotoaparátu Google Lens</translation>

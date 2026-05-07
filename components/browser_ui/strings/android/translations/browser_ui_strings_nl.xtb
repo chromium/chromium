@@ -609,6 +609,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> geselecteerd</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> en <ph name="PERMISSION_2" /> toegestaan</translation>
 <translation id="7276071417425470385">Als deze optie aanstaat, kunnen sites vragen of ze virtualreality-apparaten mogen gebruiken. Staat de optie uit, dan kunnen sites geen virtualreality-apparaten gebruiken.</translation>
+<translation id="7279851812866769760">Contacten delen</translation>
 <translation id="7282197670900591579">Citroenkleurig thema</translation>
 <translation id="728412880473384942">Sites zijn sneller, maar minder goed beveiligd</translation>
 <translation id="7352902948037373520">Beheer in <ph name="BEGIN_LINK1" />Android-instellingen<ph name="END_LINK1" />
@@ -700,6 +701,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:</translation>
 <translation id="823874716226307142">Als deze optie aanstaat, kunnen sites vragen of ze toegang mogen krijgen tot andere apparaten in je lokale netwerk. Staat de optie uit, dan hebben sites geen toegang tot andere apparaten in je lokale netwerk.</translation>
 <translation id="8249310407154411074">Bovenaan zetten</translation>
 <translation id="8261506727792406068">Verwijderen</translation>
+<translation id="8273596202562472147">Meer opties voor <ph name="SITE_NAME" /></translation>
 <translation id="8284326494547611709">Ondertiteling</translation>
 <translation id="8300705686683892304">Beheerd door app</translation>
 <translation id="8301363963630676147">Deze keer toegestaan • Geschatte locatie gebruiken</translation>
@@ -794,6 +796,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:</translation>
 <translation id="9156722768168878035">Sta toe dat Chrome je recente tabbladen toont in de app-lijst en zoekresultaten van je apparaat. Je kunt dit altijd uitzetten in de Chrome-instellingen.</translation>
 <translation id="9162462602695099906">Deze pagina is gevaarlijk</translation>
 <translation id="9182556968660520230">Niet toestaan dat sites beschermde content afspelen</translation>
+<translation id="927148002081263046">Een contact delen</translation>
 <translation id="947156494302904893">Sites die je bezoekt, kunnen verifiëren dat je een echte persoon bent en geen bot</translation>
 <translation id="959682366969460160">Georganiseerd werken</translation>
 <translation id="960590623979248167">Hyperlinks tonen</translation>

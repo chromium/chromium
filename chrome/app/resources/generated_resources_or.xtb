@@ -2061,6 +2061,7 @@
 <translation id="2402226831639195063">ଟୋନ</translation>
 <translation id="2405887402346713222">ଡିଭାଇସ ଏବଂ କମ୍ପୋନେଣ୍ଟର ସିରିଏଲ ନମ୍ବରଗୁଡ଼ିକ</translation>
 <translation id="2406153734066939945">ଏହି ପ୍ରୋଫାଇଲ୍ ଏବଂ ଏହାର ଡାଟାକୁ ଡିଲିଟ୍ କରିବେ?</translation>
+<translation id="2406942743794219791">ଆପଣ ଚାହୁଁଥିବା ଡିଫଲ୍ଟ ସର୍ଚ୍ଚ ଇଞ୍ଜିନକୁ ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="2407671304279211586">DNS ପ୍ରଦାନକାରୀ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="2408018932941436077">କାର୍ଡ ସେଭ୍ କରାଯାଉଛି</translation>
 <translation id="2408742686124047357">ପରବର୍ତ୍ତୀ ସମୟରେ ସହଜ ଆକ୍ସେସ ପାଇଁ ଆପଣଙ୍କ ଟୁଲ ବାରରେ Google Lens ପିନ କରନ୍ତୁ</translation>
@@ -3042,6 +3043,7 @@
 <translation id="3046892784550338476">ଭର୍ସନ <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">ୱେବ୍‌ପୃଷ୍ଠା, ସମ୍ପୂର୍ଣ୍ଣ</translation>
 <translation id="304747341537320566">ସ୍ପିଚ୍ ଇଞ୍ଜିନ୍</translation>
+<translation id="3047618804758101928">"<ph name="EXTENSION_NAME" />" ଏକ୍ସଟେନସନ ଆପଣଙ୍କ ସେଟିଂସକୁ ପରିବର୍ତ୍ତନ କରିଛି</translation>
 <translation id="3047678109605649715">ଆପଣଙ୍କ ଡିଭାଇସରେ କୌଣସି <ph name="LANGUAGE" /> ଭଏସ ନାହିଁ। ଆପଣଙ୍କ ଡିଭାଇସରେ ସ୍ପେସ ଖାଲି କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="3048336643003835855">ଭେଣ୍ଡର <ph name="VENDOR_ID" />ରୁ HID ଡିଭାଇସଗୁଡ଼ିକ</translation>
 <translation id="3048589239114571785">ପ୍ଲେ କରନ୍ତୁ (k)</translation>
@@ -7277,6 +7279,7 @@
 <translation id="604388835206766544">କନଫିଗ୍‌ରେସନ୍ ବିଶ୍ଳେଷଣ କରିବାରେ ବିଫଳ ହେଲା</translation>
 <translation id="6043994281159824495">ବର୍ତ୍ତମାନ ସାଇନ୍ ଆଉଟ୍ କରନ୍ତୁ</translation>
 <translation id="6045114302329202345">ପ୍ରାଥମିକ TrackPoint ବଟନ୍</translation>
+<translation id="6045425183320109397">ଏହାଙ୍କ ଦ୍ୱାରା</translation>
 <translation id="6047632800149092791">ସିଙ୍କ୍ କାମ କରୁନାହିଁ। ସାଇନ୍ ଆଉଟ୍ କରି ପୁଣି ସାଇନ୍ ଇନ୍ କରିବାକୁ ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="6048747414605857443">ChromeVox ଏବଂ ସିଲେକ୍ଟ-ଟୁ-ସ୍ପିକ ପାଇଁ ଟେକ୍ସଟ-ଟୁ-ସ୍ପିଚ ଭଏସଗୁଡ଼ିକୁ ଚୟନ କରି କଷ୍ଟମାଇଜ କରନ୍ତୁ</translation>
 <translation id="6050189528197190982">ଗ୍ରେସ୍କେଲ୍</translation>
@@ -8684,7 +8687,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="701020165009334820">Play Store ମାଧ୍ୟମରେ ଆପଣ Android ଆପ୍ସ ଏବଂ ଗେମଗୁଡ଼ିକୁ ଡାଉନଲୋଡ କରିପାରିବେ।</translation>
 <translation id="701080569351381435">ଉତ୍ସ ଦେଖନ୍ତୁ</translation>
 <translation id="7012430956470647760">ଆପ୍ସ ପାଇଁ ବାପାମାଙ୍କ ନିୟନ୍ତ୍ରଣଗୁଡ଼ିକ</translation>
-<translation id="7013762323294215682">ଏହି ପାସକୀ'କୁ ଆପଣଙ୍କ Password Managerରେ ସେଭ କରାଯିବ। ଏହି ପାସକୀ'କୁ ଆକ୍ସେସ ଥିବା ଯେ କୌଣସି ବ୍ୟକ୍ତି ଏହାକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ସକ୍ଷମ ହେବେ।</translation>
 <translation id="7014174261166285193">ଇନ୍‍ଷ୍ଟଲ୍ କରିହେଲା ନାହିଁ</translation>
 <translation id="7014480873681694324">ହାଇଲାଇଟ୍ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="7014741021609395734">ଜୁମ୍ ସ୍ତର</translation>
@@ -9996,6 +9998,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7939062555109487992">ଅତ୍ୟାଧୁନିକ ବିକଳ୍ପ</translation>
 <translation id="793923212791838">ଏହି ସାଇଟ ସହ ଆପଣଙ୍କ ଡିଭାଇସକୁ ବ୍ୟବହାର କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="7939328347457537652">ଡିଭାଇସ ସାର୍ଟିଫିକେଟଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
+<translation id="7939918959917132075">ଏକ୍ସଟେନସନ ଦ୍ୱାରା ଏଥିରେ ପରିବର୍ତ୍ତନ କରାଯାଇଛି</translation>
 <translation id="7940087892955752820">ଏକ ଆପ୍ଲିକେସନ୍ ଏହି ଫୋଲ୍ଡରକୁ ବ୍ୟବହାର କରୁଥିବା ଯୋଗୁଁ ଏହାକୁ ସେୟାର୍ କରିବା ବନ୍ଦ କରାଯାଇପାରିଲା ନାହିଁ। ପରବର୍ତ୍ତୀ ସମୟରେ <ph name="SPECIFIC_NAME" /> ବନ୍ଦ ହେଲେ ଫୋଲ୍ଡରକୁ ଅନସେୟାର କରାଯିବ।</translation>
 <translation id="7940265372707990269"><ph name="SORT_TYPE" /> ଅନୁଯାୟୀ ସର୍ଟ କରନ୍ତୁ</translation>
 <translation id="7941179291434537290">ଟିଥରିଂର ରେଡିନେସ:</translation>
@@ -11771,7 +11774,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="9120800848981545750">ଆପଣଙ୍କ ଫୋନରେ ଆପଣଙ୍କ ଟାବ, ବୁକମାର୍କ ଏବଂ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଆକ୍ସେସ କରିବା ପାଇଁ iOS ପାଇଁ Chrome ଡାଉନଲୋଡ କରନ୍ତୁ।</translation>
 <translation id="9121814364785106365">ଏକ ପିନ୍‌ କରାଯାଇଥିବା ଟାବ୍‌ରୂପେ ଖୋଲନ୍ତୁ</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{ଟାବକୁ ବନ୍ଦ କରି ଗ୍ରୁପକୁ ଡିଲିଟ କରିବେ?}=1{ଟାବଗୁଡ଼ିକୁ ବନ୍ଦ କରି ଗ୍ରୁପକୁ ଡିଲିଟ କରିବେ?}other{ଟାବଗୁଡ଼ିକୁ ବନ୍ଦ କରି ଗ୍ରୁପଗୁଡ଼ିକୁ ଡିଲିଟ କରିବେ?}}</translation>
-<translation id="9122788874051694311">ଇନକଗ୍ନିଟୋ ବାହାରେ ଏହି ପାସକୀକୁ ସେଭ କରିବେ?</translation>
 <translation id="9123287046453017203">ଆପଣଙ୍କ ଡିଭାଇସ ଅପଟୁଡେଟ ନାହିଁ</translation>
 <translation id="9125910124977405374">ସ୍ୱଚାଳିତ ଭାବେ ଅନୁବାଦ ହେଉଥିବା ଭାଷାଗୁଡ଼ିକରୁ <ph name="LANGUAGE_NAME" />କୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="9125912770834459638">ଆପଣଙ୍କ ସଂସ୍ଥା ଆପଣଙ୍କୁ ସାଇନ ଇନ କରିବାକୁ ଅନୁମତି ଦିଏ ନାହିଁ</translation>

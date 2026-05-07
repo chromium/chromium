@@ -2065,6 +2065,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2402226831639195063">Tonlar</translation>
 <translation id="2405887402346713222">Cihaz və komponentin seriya nömrələri</translation>
 <translation id="2406153734066939945">Bu profil və datası silinsin?</translation>
+<translation id="2406942743794219791">İstədiyiniz defolt axtarış sistemini təsdiqləyin</translation>
 <translation id="2407671304279211586">DNS provayderini seçin</translation>
 <translation id="2408018932941436077">Kart yadda saxlanılır</translation>
 <translation id="2408742686124047357">Növbəti dəfə asan giriş üçün Google Linzanı alətlər panelinə bərkidin</translation>
@@ -2157,6 +2158,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2460826998961521840">Google Hesabında yadda saxlanmış giriş açarlarından istifadə etmək üçün</translation>
 <translation id="2461550163693930491">Saytlara paylaşılan tabları sürüşdürüb zumlamaq icazəsi verməyin</translation>
 <translation id="2461593638794842577">Parolları yalnız bu cihazda yadda saxlamaq üçün bu ayarı söndürə bilərsiniz</translation>
+<translation id="2462550463312552298">Sənədi ümumiləşdir</translation>
 <translation id="2462724976360937186">Sertifikatlaşdırma İcazəsi Açar ID</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> əlavə edildi</translation>
 <translation id="2464075479326723132">Microsoft SharePoint və OneDrive-da ən son fəaliyyətinizə asanlıqla qayıtmağınıza kömək etməsi üçün təklif olunan faylları görürsünüz.
@@ -3045,6 +3047,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3046892784550338476">Versiya <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Səhifə, Tam</translation>
 <translation id="304747341537320566">Nitq Mühərrikləri</translation>
+<translation id="3047618804758101928">"<ph name="EXTENSION_NAME" />" artırması ayarları dəyişdi</translation>
 <translation id="3047678109605649715">Cihazda <ph name="LANGUAGE" /> dilində səs yoxdur. Cihazınızda yer boşaldın və yenidən cəhd edin.</translation>
 <translation id="3048336643003835855"><ph name="VENDOR_ID" /> adlı təminatçıdan HID cihazları</translation>
 <translation id="3048589239114571785">Oxudun (k)</translation>
@@ -4313,6 +4316,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3924788966103416622">Xarici tətbiq xətaları aradan qaldırmaq üçün bu Chrome sessiyasına tam nəzarət etmək istəyir. Buraya yadda saxlanılmış dataya, kukilərə və sayt datasına giriş və istənilən URL-ə keçmək imkanı daxildir.</translation>
 <translation id="3925573269917483990">Kamera:</translation>
 <translation id="3925926055063465902">Bu cihazdakı digər istifadəçilər də bu şəbəkədən istifadə edə bilər</translation>
+<translation id="3925934852713265455">Tablarınız haqqında soruşun</translation>
 <translation id="3926002189479431949">Smart Kilid telefonu dəyişdi</translation>
 <translation id="3926410220776569451">Kameraya giriş bloklanıb</translation>
 <translation id="3927932062596804919">Rədd edin</translation>
@@ -7280,6 +7284,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="604388835206766544">Konfiqurasiyanı nəzərdən keçirmək alınmadı</translation>
 <translation id="6043994281159824495">Hesabdan çıxın</translation>
 <translation id="6045114302329202345">Əsas TrackPoint düyməsi</translation>
+<translation id="6045425183320109397">Müəllif:</translation>
 <translation id="6047632800149092791">Sinxronlaşdırma işləmir. Çıxın və yenidən daxil olun.</translation>
 <translation id="6048747414605857443">ChromeVox və Seçib danış üçün nitq sintezi səslərini seçin və fərdiləşdirin</translation>
 <translation id="6050189528197190982">Boz çalar</translation>
@@ -8685,7 +8690,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="701020165009334820">Play Marketdən Android tətbiq və oyunları endirə bilərsiniz.</translation>
 <translation id="701080569351381435">Mənbəyə baxın</translation>
 <translation id="7012430956470647760">Tətbiqlər üçün valideyn nəzarəti</translation>
-<translation id="7013762323294215682">Bu giriş açarı parol menecerində yadda saxlanacaq. Giriş imkanı olan hər kəs ondan istifadə edə biləcək.</translation>
 <translation id="7014174261166285193">Quraşdırma uğursuz oldu.</translation>
 <translation id="7014480873681694324">Vurğulamanı Silin</translation>
 <translation id="7014741021609395734">Miqyas səviyyəsi</translation>
@@ -9997,6 +10001,7 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7939062555109487992">Qabaqcıl seçimlər</translation>
 <translation id="793923212791838">Cihaz bu saytı dəstəkləmir</translation>
 <translation id="7939328347457537652">Cihaz sertifikatlarını idarə edin</translation>
+<translation id="7939918959917132075">Artırma tərəfindən buna dəyişdirildi</translation>
 <translation id="7940087892955752820">Tətbiq bu qovluğu istifadə etdiyi üçün paylaşım ləğv edilmədi. <ph name="SPECIFIC_NAME" /> növbəti dəfə söndürüldükdə qovluq paylaşımı ləğv ediləcək.</translation>
 <translation id="7940265372707990269"><ph name="SORT_TYPE" /> üzrə çeşidləyin</translation>
 <translation id="7941179291434537290">Modem Rejiminin Hazır Olub-Olmaması:</translation>
@@ -11771,7 +11776,6 @@ Buraya quraşdırılmış proqram təminatı, fayllar, brauzeriniz, cihazın əm
 <translation id="9120800848981545750">Telefonunuzdakı tablar, əlfəcinlər və parollarınıza daxil olmaq məqsədilə iOS üçün Chrome-u endirin.</translation>
 <translation id="9121814364785106365">Sancılmış tab olaraq açın</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{Tab bağlansın və qrup silinsin?}=1{Tablar bağlansın və qrup silinsin?}other{Tablar bağlansın və qruplar silinsin?}}</translation>
-<translation id="9122788874051694311">Bu giriş açarı Anonim rejimdən kənarda saxlanılsın?</translation>
 <translation id="9123287046453017203">Cihazınız güncəl deyil</translation>
 <translation id="9125910124977405374">Avtomatik tərcümə edilmiş dillərdən <ph name="LANGUAGE_NAME" /> dilini silin</translation>
 <translation id="9125912770834459638">Təşkilatınız daxil olmağınıza icazə vermir</translation>

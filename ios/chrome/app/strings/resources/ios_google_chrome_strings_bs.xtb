@@ -341,6 +341,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="840168496893712993">Neki dodaci uzrokuju pad aplikacije Chromea. Pokušajte ih deinstalirati.</translation>
 <translation id="8413500425974960807">Savjet za Chrome: premjestite Chrome na donju traku</translation>
 <translation id="8413795581997394485">Štiti od web lokacija, preuzimanja i ekstenzija za koje se zna da su opasni. Kada posjetite neku web lokaciju, Chrome šalje prikriveni dio URL-a Googleu putem servera za privatnost koji sakriva vašu IP adresu. Ako web lokacija učini nešto sumnjivo, šalju se i puni URL-ovi i dijelovi sadržaja stranice.</translation>
+<translation id="8447479329557998927">Chrome koristi Google Mape da vam daje smjernice i lokalne informacije o linkovima za mape</translation>
 <translation id="84594714173170813">Nastavite koristiti podatke Chromea na Google računu</translation>
 <translation id="8491300088149538575">Prijavljeni ste kao <ph name="EMAIL" />.
 

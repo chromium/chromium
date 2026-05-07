@@ -331,6 +331,9 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="4348548358339558429">Jei norite naudoti suasmeninimo funkciją, įtraukite „Chrome“ į Žiniatinklio ir programų veiklą</translation>
 <translation id="436060642166082913">„Chrome“ užblokavo šį atsisiuntimą, nes failas gali pakenkti asmeninėms ir socialinių tinklų paskyroms</translation>
 <translation id="4367027658822022112">Galite prisegti „Google Lens“, kad lengvai pasiektumėte; spustelėkite mygtuką „Prisegti“ šoninio skydelio viršuje</translation>
+<translation id="4380616334811859000">„Chrome“ išjungia „JavaScript“ optimizavimą, kai pirmą kartą apsilankote svetainėje.
+
+Jei šis puslapis neveikia taip, kaip tikimasi, pabandykite leisti naudoti optimizavimą.</translation>
 <translation id="4389991535395284064">Kai naršysite inkognito režimu, „Chrome“ perspės jus prieš įkeliant svetainę, kurioje naudojamas nesaugus ryšys</translation>
 <translation id="4427306783828095590">Naudojant sustiprintą apsaugą pasitelkiama papildomų priemonių sukčiavimui ir kenkėjiškoms programoms užblokuoti</translation>
 <translation id="4434353761996769206">Diegimo programos klaida: <ph name="INSTALLER_ERROR" /></translation>

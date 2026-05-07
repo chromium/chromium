@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">No, grazie</translation>
 <translation id="1531038290222364269">Mostra schede</translation>
 <translation id="1536390784834419204">Traduci pagina</translation>
+<translation id="1539535193627863227">Nessuna password o passkey trovata per questo sito</translation>
 <translation id="1540800554400757039">Indirizzo 1</translation>
 <translation id="154312949627292154">Apri le schede ricevute dagli altri dispositivi dalla schermata di blocco.</translation>
 <translation id="1545749641540134597">Scansiona codice QR</translation>
@@ -642,6 +643,7 @@
 <translation id="3245744387817103524">Impossibile salvare la modifica.</translation>
 <translation id="3254806613790954367">L'ultima scheda aperta su tutti i tuoi dispositivi</translation>
 <translation id="325717987950204592">Tocca "Privacy e sicurezza"</translation>
+<translation id="3259451381796379533">Questo account non funziona con Gemini. Accedi con un altro Account Google.</translation>
 <translation id="3265736395246760288">Accedi più velocemente da tutti i tuoi dispositivi sincronizzati.</translation>
 <translation id="3272527697863656322">Annulla</translation>
 <translation id="3273510436356991673">Personalizza la schermata Home</translation>
@@ -763,6 +765,7 @@
 <translation id="372676576864368480">Compila automaticamente il numero della carta che termina con <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Data creazione: <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Rullino</translation>
+<translation id="3746269120925354434">Informazioni salvate in Google Wallet</translation>
 <translation id="3750225824417196283">Pagina Nuova scheda Incognito</translation>
 <translation id="3751873026576444885">Interrompi la ricerca sullo schermo con Google Lens</translation>
 <translation id="3753408171347588045">Stai monitorando i prezzi</translation>
@@ -1076,7 +1079,6 @@
 <translation id="4824480232751123840">Volume</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} e 1 altra}other{{domain} e altre {count}}}</translation>
 <translation id="4826588772550366629">fotocamera e microfono</translation>
-<translation id="4828431027673677473">Prodotti basati sui tuoi interessi</translation>
 <translation id="4829420936835028285">Modifica gruppo di schede</translation>
 <translation id="4833786495304741580">Invia automaticamente a Google statistiche sull'utilizzo e report sugli arresti anomali.</translation>
 <translation id="483689884442613745">Salva…</translation>
@@ -1864,6 +1866,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="7498234416455752244">Continua modifica</translation>
 <translation id="7500244509706269886">Compila automaticamente il modulo</translation>
 <translation id="750493650310597496">0 selezionati</translation>
+<translation id="7505402981231763928">Devi accedere per usare Gemini</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Per bloccare le schede Incognito, configura Touch ID, Face ID o un passcode.</translation>
 <translation id="750886945254958667">Mantieni questo gruppo per aggiungere schede in un secondo momento o esci se non vuoi più accedervi</translation>
@@ -2105,7 +2108,6 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="828291969289324795">{count,plural, =1{Aggiungi scheda a nuovo gruppo}other{Aggiungi schede a nuovo gruppo}}</translation>
 <translation id="8283172974887967105">Imposta…</translation>
 <translation id="8289930144142009940">Notifiche di <ph name="FEATURE_NAME" /> disattivate</translation>
-<translation id="8290077367744012649">Monitora i prezzi dalle tue schede</translation>
 <translation id="8292893224181644074">Download completato</translation>
 <translation id="8299417921174340354">Per utilizzare le password, devi prima impostare un passcode sul dispositivo.</translation>
 <translation id="8307481894409578819">Impossibile caricare il file</translation>
@@ -2172,6 +2174,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="8533670235862049797">Navigazione sicura attiva</translation>
 <translation id="8534481786647257214">Pubblicazione su Google+ completata.</translation>
 <translation id="8535368836838588657">Mostra password</translation>
+<translation id="8540426897269305488">Accedi con <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8545276357312221485">Controlla le impostazioni del browser predefinito</translation>
 <translation id="854938212724803178">Hai 1 password compromessa. Sistemala subito per rimanere al sicuro.</translation>
 <translation id="8551311254462607218">Nella barra degli indirizzi, tocca l'icona della fotocamera di Google Lens</translation>
@@ -2296,7 +2299,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="8915916167043355778">Chiudi tutte</translation>
 <translation id="892185197271200809">Tutte le persone perderanno immediatamente l'accesso al gruppo di schede "<ph name="GROUP_NAME" />", che verrà eliminato da tutti i dispositivi</translation>
 <translation id="8923178205567790913">Password</translation>
-<translation id="8926498511977337209">Naviga in incognito</translation>
+<translation id="8926498511977337209">Naviga in Incognito</translation>
 <translation id="892776311701544612">Scopri di più…</translation>
 <translation id="8928133177108699615">Desktop</translation>
 <translation id="8928426232677696166"><ph name="EMAIL" />, gestito dalla tua organizzazione, attualmente selezionato. Scegli un account.</translation>

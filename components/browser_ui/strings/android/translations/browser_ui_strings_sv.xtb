@@ -609,6 +609,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> har valts</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> och <ph name="PERMISSION_2" /> tillåts</translation>
 <translation id="7276071417425470385">När detta är aktiverat kan webbplatser be om att få använda VR-enheter. När detta är inaktiverat får webbplatser inte använda VR-enheter.</translation>
+<translation id="7279851812866769760">Dela kontakter</translation>
 <translation id="7282197670900591579">Citrongult tema</translation>
 <translation id="728412880473384942">Webbplatserna är snabbare men mindre säkra</translation>
 <translation id="7352902948037373520">Hantera i <ph name="BEGIN_LINK1" />Android-inställningarna<ph name="END_LINK1" />
@@ -700,6 +701,7 @@ Avancerat skydd styr följande Chrome-inställningar:</translation>
 <translation id="823874716226307142">När detta är aktiverat kan webbplatser begära åtkomst till andra enheter i det lokala nätverket. När detta är inaktiverat får webbplatser inte komma åt andra enheter i det lokala nätverket.</translation>
 <translation id="8249310407154411074">Flytta högst upp</translation>
 <translation id="8261506727792406068">Radera</translation>
+<translation id="8273596202562472147">Fler alternativ för <ph name="SITE_NAME" /></translation>
 <translation id="8284326494547611709">Textning</translation>
 <translation id="8300705686683892304">Hanteras av app</translation>
 <translation id="8301363963630676147">Tillåts den här gången • Använder ungefärlig</translation>
@@ -794,6 +796,7 @@ Avancerat skydd styr följande Chrome-inställningar:</translation>
 <translation id="9156722768168878035">Tillåt att Chrome visar dina senaste flikar i enhetens applista och sökresultat. Du kan inaktivera detta när som helst i Chrome-inställningarna.</translation>
 <translation id="9162462602695099906">Den här sidan är farlig</translation>
 <translation id="9182556968660520230">Tillåt inte att webbplatser spelar upp skyddat innehåll</translation>
+<translation id="927148002081263046">Dela en kontakt</translation>
 <translation id="947156494302904893">Webbplatser du besöker kan verifiera att du är en riktig person och inte en bot</translation>
 <translation id="959682366969460160">Håll ordning</translation>
 <translation id="960590623979248167">Visa hyperlänkar</translation>

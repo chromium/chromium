@@ -609,6 +609,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> elem kiválasztva</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> és <ph name="PERMISSION_2" /> engedélyezve</translation>
 <translation id="7276071417425470385">Ha be van kapcsolva, a webhelyek engedélyt kérhetnek a virtuálisvalóság-eszközök használatára. Ha ki van kapcsolva, a webhelyek nem használhatnak virtuálisvalóság-eszközöket.</translation>
+<translation id="7279851812866769760">Névjegyek megosztása</translation>
 <translation id="7282197670900591579">Citromsárga téma</translation>
 <translation id="728412880473384942">A webhelyek gyorsabbak, de kevésbé biztonságosak</translation>
 <translation id="7352902948037373520">Az <ph name="BEGIN_LINK1" />Android-beállításokban<ph name="END_LINK1" /> kezelheti.
@@ -700,6 +701,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:</translati
 <translation id="823874716226307142">Ha be van kapcsolva, a webhelyek engedélyt kérhetnek a helyi hálózaton lévő más eszközökhöz való hozzáférésre. Ha ki van kapcsolva, a webhelyek nem férhetnek hozzá a helyi hálózaton lévő más eszközökhöz.</translation>
 <translation id="8249310407154411074">Mozgatás az elejére</translation>
 <translation id="8261506727792406068">Törlés</translation>
+<translation id="8273596202562472147">További lehetőségek a következőhöz: <ph name="SITE_NAME" /></translation>
 <translation id="8284326494547611709">Feliratok</translation>
 <translation id="8300705686683892304">Alkalmazás által kezelt</translation>
 <translation id="8301363963630676147">Erre az alkalomra engedélyezve van • A hozzávetőleges hely van használatban</translation>
@@ -794,6 +796,7 @@ A Speciális védelem a következő Chrome-beállításokat vezérli:</translati
 <translation id="9156722768168878035">Engedélyezze a Chrome-nak, hogy megjeleníthesse a legutóbbi lapokat az eszköz alkalmazáslistáján és a keresési találatok között. Ezt bármikor kikapcsolhatja a Chrome beállításai között.</translation>
 <translation id="9162462602695099906">Ez az oldal veszélyes</translation>
 <translation id="9182556968660520230">A webhelyek nem játszhatnak le védett tartalmakat</translation>
+<translation id="927148002081263046">Névjegy megosztása</translation>
 <translation id="947156494302904893">A felkeresett webhelyek ellenőrizni tudják, hogy Ön valódi személy, nem pedig robot</translation>
 <translation id="959682366969460160">Könnyebb rendszerezés</translation>
 <translation id="960590623979248167">Linkek megjelenítése</translation>

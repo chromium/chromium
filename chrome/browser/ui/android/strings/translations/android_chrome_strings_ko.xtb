@@ -292,6 +292,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="230115972905494466">호환되는 기기 없음</translation>
 <translation id="2316129865977710310">아니요, 괜찮습니다.</translation>
 <translation id="2318045970523081853">탭하여 전화 걸기</translation>
+<translation id="232137538351753795">왼쪽 끝에서부터 스와이프하여 뒤로 돌아가기</translation>
 <translation id="2323763861024343754">사이트 저장공간</translation>
 <translation id="2328474416100889417">모든 사용자가 '<ph name="GROUP_NAME" />' 탭 그룹에 대한 액세스 권한을 즉시 잃게 되며, 모든 초대 링크가 사용 중지됩니다.</translation>
 <translation id="2330186936255788117">북마크 더보기</translation>
@@ -942,7 +943,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5040262127954254034">개인정보 보호</translation>
 <translation id="504456571576643789">고려사항</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" />개 창 선택됨}other{<ph name="WINDOW_COUNT_NORMAL" />개 창 선택됨}}</translation>
-<translation id="5056587122125565772">이미지 만들기</translation>
 <translation id="506254248375231072">탭 없음</translation>
 <translation id="5075939510584558547">암호화 없이 저장</translation>
 <translation id="5078638979202084724">모든 탭 북마크</translation>
@@ -1676,6 +1676,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7977451675950311423">정보 유출로 인해 유출된 비밀번호를 사용하면 경고를 보냅니다.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> 최근에 방문하지 않아 Chrome에서 이러한 권한을 삭제했습니다.</translation>
 <translation id="799576009106109668">현재 웹페이지 방문을 토대로 콘텐츠가 미리 로드되므로 더 빠르게 탐색할 수 있습니다.</translation>
+<translation id="7997875520309653083">오른쪽 끝에서부터 스와이프하여 뒤로 돌아가기</translation>
 <translation id="7998918019931843664">닫은 탭 다시 열기</translation>
 <translation id="8001245658307297681">로컬 파일을 보는 중</translation>
 <translation id="8004582292198964060">브라우저</translation>

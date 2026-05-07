@@ -292,6 +292,7 @@
 <translation id="230115972905494466">উপযুক্ত ডিভাইস খুঁজে পাওয়া যায়নি</translation>
 <translation id="2316129865977710310">না, ধন্যবাদ</translation>
 <translation id="2318045970523081853">কল করতে ট্যাপ করুন</translation>
+<translation id="232137538351753795">ফিরে যেতে স্ক্রিনের বাঁদিকের প্রান্ত থেকে সোয়াইপ করুন</translation>
 <translation id="2323763861024343754">সাইটের স্টোরেজ</translation>
 <translation id="2328474416100889417">প্রত্যেক ব্যক্তি অবিলম্বে "<ph name="GROUP_NAME" />" ট্যাব গ্রুপের অ্যাক্সেস হারাবেন এবং সব আমন্ত্রণের লিঙ্ক বন্ধ করা হবে</translation>
 <translation id="2330186936255788117">আরও বুকমার্ক</translation>
@@ -942,7 +943,6 @@
 <translation id="5040262127954254034">গোপনীয়তা</translation>
 <translation id="504456571576643789">যা যা দেখে নেওয়া প্রয়োজন</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" />টি উইন্ডো বেছে নেওয়া হয়েছে}one{<ph name="WINDOW_COUNT_NORMAL" />টি উইন্ডো বেছে নেওয়া হয়েছে}other{<ph name="WINDOW_COUNT_NORMAL" />টি উইন্ডো বেছে নেওয়া হয়েছে}}</translation>
-<translation id="5056587122125565772">ছবি তৈরি করুন</translation>
 <translation id="506254248375231072">কোনও ট্যাব নেই</translation>
 <translation id="5075939510584558547">এনক্রিপশন না করে সেভ করুন</translation>
 <translation id="5078638979202084724">সকল ট্যাব বুকমার্ক করুন</translation>
@@ -1676,6 +1676,7 @@
 <translation id="7977451675950311423">আপনি যদি এমন কোনও পাসওয়ার্ড ব্যবহার করেন যা ডেটার নিরাপত্তা লঙ্ঘনের কারণে সুরক্ষিত নয়, সেক্ষেত্রে এটি আপনাকে সতর্ক করে।</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome এইসব অনুমতি সরিয়ে দিয়েছে কারণ আপনি সম্প্রতি দেখেননি</translation>
 <translation id="799576009106109668">আপনি আরও দ্রুত ব্রাউজ করবেন কারণ, আপনার বর্তমান ওয়েবপেজ দেখার উপরে ভিত্তি করে কন্টেন্ট নিজে থেকে লোড হয়</translation>
+<translation id="7997875520309653083">ফিরে যেতে স্ক্রিনের ডানদিকের প্রান্ত থেকে সোয়াইপ করুন</translation>
 <translation id="7998918019931843664">বন্ধ হওয়া ট্যাব আবার খুলুন</translation>
 <translation id="8001245658307297681">আপনি কোনও একটি স্থানীয় ফাইল দেখছেন</translation>
 <translation id="8004582292198964060">ব্রাউজার</translation>

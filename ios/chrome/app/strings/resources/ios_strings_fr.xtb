@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">Non, merci</translation>
 <translation id="1531038290222364269">Afficher les onglets</translation>
 <translation id="1536390784834419204">Traduire la page</translation>
+<translation id="1539535193627863227">Aucun mot de passe ni clé d'accès trouvé pour ce site</translation>
 <translation id="1540800554400757039">Adresse 1</translation>
 <translation id="154312949627292154">Ouvrez les onglets reçus à partir de vos autres appareils depuis l'écran de verrouillage.</translation>
 <translation id="1545749641540134597">Scanner le QR code</translation>
@@ -642,6 +643,7 @@
 <translation id="3245744387817103524">Impossible d'enregistrer votre modification.</translation>
 <translation id="3254806613790954367">Le dernier onglet ouvert sur tous vos appareils</translation>
 <translation id="325717987950204592">Appuyez sur "Confidentialité et sécurité"</translation>
+<translation id="3259451381796379533">Ce compte ne fonctionnera pas avec Gemini. Connectez-vous avec un autre compte Google.</translation>
 <translation id="3265736395246760288">Connectez-vous plus rapidement depuis n'importe lequel de vos appareils synchronisés.</translation>
 <translation id="3272527697863656322">Annuler</translation>
 <translation id="3273510436356991673">Personnaliser votre écran d'accueil</translation>
@@ -763,6 +765,7 @@
 <translation id="372676576864368480">Saisir automatiquement le numéro de carte se terminant par <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Créé le <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Pellicule</translation>
+<translation id="3746269120925354434">Infos enregistrées dans Google Wallet</translation>
 <translation id="3750225824417196283">Page du nouvel onglet de navigation privée</translation>
 <translation id="3751873026576444885">Arrêter de rechercher sur l'écran avec Google Lens</translation>
 <translation id="3753408171347588045">Suivi des prix</translation>
@@ -1076,7 +1079,6 @@
 <translation id="4824480232751123840">Volume</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} et 1 autre}one{{domain} et {count} autre}other{{domain} et {count} autres}}</translation>
 <translation id="4826588772550366629">votre caméra et votre micro</translation>
-<translation id="4828431027673677473">Produits basés sur vos centres d'intérêt</translation>
 <translation id="4829420936835028285">Modifier le groupe d'onglets</translation>
 <translation id="4833786495304741580">Envoie automatiquement des statistiques d'utilisation et des rapports d'erreur à Google.</translation>
 <translation id="483689884442613745">Enregistrer…</translation>
@@ -1864,6 +1866,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="7498234416455752244">Poursuivre les modifications</translation>
 <translation id="7500244509706269886">Compléter automatiquement le formulaire</translation>
 <translation id="750493650310597496">Aucun favori sélectionné.</translation>
+<translation id="7505402981231763928">Vous devez vous connecter pour utiliser Gemini</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Pour verrouiller vos onglets de navigation privée, configurez Touch ID, Face ID ou un code secret.</translation>
 <translation id="750886945254958667">Conservez ce groupe pour y ajouter des onglets plus tard, ou quittez-le si ne souhaitez plus y avoir accès</translation>
@@ -2105,7 +2108,6 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="828291969289324795">{count,plural, =1{Ajouter l'onglet à nouveau groupe}one{Ajouter l'onglet à nouveau groupe}other{Ajouter les onglets à nouveau groupe}}</translation>
 <translation id="8283172974887967105">Définir…</translation>
 <translation id="8289930144142009940">Notifications désactivées concernant les <ph name="FEATURE_NAME" /></translation>
-<translation id="8290077367744012649">Suivez les prix dans vos onglets</translation>
 <translation id="8292893224181644074">Téléchargement terminé</translation>
 <translation id="8299417921174340354">Pour utiliser les mots de passe, vous devez d'abord définir un code secret sur votre appareil.</translation>
 <translation id="8307481894409578819">Impossible d'importer ce fichier</translation>
@@ -2172,6 +2174,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="8533670235862049797">La navigation sécurisée est activée</translation>
 <translation id="8534481786647257214">Post Google+ publié.</translation>
 <translation id="8535368836838588657">Afficher le mot de passe</translation>
+<translation id="8540426897269305488">Se connecter avec <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8545276357312221485">Vérifier les réglages par défaut de votre navigateur</translation>
 <translation id="854938212724803178">Vous avez 1 mot de passe compromis. Modifiez-le maintenant pour vous protéger.</translation>
 <translation id="8551311254462607218">Dans la barre d'adresse, appuyez sur l'icône d'appareil photo Google Lens</translation>

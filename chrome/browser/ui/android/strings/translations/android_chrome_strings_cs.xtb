@@ -292,6 +292,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="230115972905494466">Nebyla nalezena žádná kompatibilní zařízení</translation>
 <translation id="2316129865977710310">Ne, děkuji</translation>
 <translation id="2318045970523081853">Klepnutím zahájíte hovor</translation>
+<translation id="232137538351753795">Přejetím prstem z levého okraje se vrátíte</translation>
 <translation id="2323763861024343754">Úložiště webů</translation>
 <translation id="2328474416100889417">Ke skupině karet <ph name="GROUP_NAME" /> všichni okamžitě ztratí přístup a všechny odkazy s pozvánkou se vypnou</translation>
 <translation id="2330186936255788117">Další záložky</translation>
@@ -942,7 +943,6 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="5040262127954254034">Ochrana soukromí</translation>
 <translation id="504456571576643789">Co je třeba zvážit</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{Je vybráno <ph name="WINDOW_COUNT_ONE" /> okno}few{Jsou vybrána <ph name="WINDOW_COUNT_NORMAL" /> okna}many{Je vybráno <ph name="WINDOW_COUNT_NORMAL" /> okna}other{Je vybráno <ph name="WINDOW_COUNT_NORMAL" /> oken}}</translation>
-<translation id="5056587122125565772">Vytvořit obrázek</translation>
 <translation id="506254248375231072">Žádné karty</translation>
 <translation id="5075939510584558547">Uložit bez šifrování</translation>
 <translation id="5078638979202084724">Přidat do záložek všechny karty</translation>
@@ -1676,6 +1676,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="7977451675950311423">Upozorní vás, pokud používáte heslo, které bylo prozrazeno při porušení zabezpečení dat.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome tato oprávnění odebral, protože jste tento web v poslední době nenavštívili</translation>
 <translation id="799576009106109668">Budete web moci procházet rychleji, protože se obsah bude načítat proaktivně na základě aktuálně navštívené webové stránky</translation>
+<translation id="7997875520309653083">Přejetím prstem z pravého okraje se vrátíte</translation>
 <translation id="7998918019931843664">Znovu otevřít zavřenou kartu</translation>
 <translation id="8001245658307297681">Prohlížíte si místní soubor</translation>
 <translation id="8004582292198964060">Prohlížeč</translation>

@@ -457,6 +457,7 @@
 <translation id="2475783092753560388"><ph name="SEARCH_RESULT_TEXT" /> ചേർക്കുക</translation>
 <translation id="2475982808118771221">ഒരു പിശക് സംഭവിച്ചു</translation>
 <translation id="2478076885740497414">ആപ്പ് ഇൻസ്‌റ്റാൾ ചെയ്യുക</translation>
+<translation id="2479148705183875116">ക്രമീകരണത്തിലേക്ക് പോകുക</translation>
 <translation id="2482878487686419369">അറിയിപ്പുകൾ</translation>
 <translation id="2484513351006226581">കീബോര്‍‌ഡ് ലേഔട്ട് മാറാൻ <ph name="KEYBOARD_SHORTCUT" /> അമർത്തുക.</translation>
 <translation id="2485422356828889247">അണ്‍‌ഇന്‍‌സ്റ്റാള്‍‌ ചെയ്യുക</translation>
@@ -1047,6 +1048,7 @@
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">അവലോകന മോഡ്</translation>
 <translation id="4242533952199664413">ക്രമീകരണം തുറക്കുക</translation>
+<translation id="4244765461494758482">ഈ ക്രമീകരണം നിങ്ങളുടെ മറ്റ് ChromeOS ഉപകരണങ്ങളിൽ ഉടനീളം സമന്വയിപ്പിക്കുന്നു. നിങ്ങൾക്ക് അവ ഇവിടെ മാറ്റാം, അല്ലെങ്കിൽ ക്രമീകരണത്തിൽ പൂർണ്ണ ലിസ്റ്റ് മാനേജ് ചെയ്യാം.</translation>
 <translation id="4247123849143712100">അപ്ഡേറ്റ് ചെയ്ത് ഷട്ട് ഡൗൺ ചെയ്യുക</translation>
 <translation id="4249248555939881673">നെറ്റ്‌വർക്ക് കണക്ഷനുവേണ്ടി കാത്തിരിക്കുന്നു...</translation>
 <translation id="4250229828105606438">സ്‌ക്രീൻഷോട്ട്</translation>
@@ -2328,6 +2330,7 @@
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> എന്ന പേരിലുള്ള ടെംപ്ലേറ്റ് ഇതിനകം നിലവിലുണ്ട്</translation>
 <translation id="8052898407431791827">ക്ലിപ്പ്ബോർഡിലേക്ക് പകർത്തി</translation>
 <translation id="8054466585765276473">ബാറ്ററി സമയം കണക്കാക്കുന്നു.</translation>
+<translation id="8063363226185507157">സമന്വയിപ്പിച്ച ഉപയോഗസഹായി ക്രമീകരണം</translation>
 <translation id="8076492880354921740">ടാബുകള്‍‌</translation>
 <translation id="8079538659226626406">സ്ക്രീൻ പങ്കിടൽ</translation>
 <translation id="8083540854303889870">പിന്നീട് കാണാൻ സംരക്ഷിച്ചവ</translation>

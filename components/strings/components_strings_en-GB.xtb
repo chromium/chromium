@@ -746,6 +746,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="21613918653299710">Online image galleries</translation>
 <translation id="2161656808144014275">Text</translation>
 <translation id="2162435186600002085">Primary header logo</translation>
+<translation id="2162535140284745414">Get real-time suggestions that can help you find new ways to browse with AI.</translation>
 <translation id="2162620598375156287">Now <ph name="CURRENT_PRICE" /> on <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="2164510882479075877">Check if there is a typo in <ph name="HOST_NAME" />.</translation>
 <translation id="2166049586286450108">Full Admin Access</translation>
@@ -848,7 +849,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2302571905116831849">Autofill loyalty card</translation>
 <translation id="230286397113210245">Open Incognito window button, activate to open a new Incognito window to browse privately</translation>
 <translation id="2303437270440428119">OpenDocument spreadsheet</translation>
-<translation id="2305294852062272447">Save driving licence?</translation>
 <translation id="2306124309679506798">Allow an immersive experience?</translation>
 <translation id="2310789833878085574">Save and autofill</translation>
 <translation id="2312234273148520048">Condiments and Dressings</translation>
@@ -994,6 +994,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2521385132275182522">Staple bottom right</translation>
 <translation id="2521736961081452453">Create form</translation>
 <translation id="2524461107774643265">Add More Information</translation>
+<translation id="2524962131655207565"><ph name="BEGIN_BOLD" />Content from the checkout page is shared with Google to offer these options.<ph name="END_BOLD" /> Payment plans are subject to eligibility. To hide pay later options, go to <ph name="BEGIN_LINK" />Payment settings<ph name="END_LINK" />.</translation>
 <translation id="2526062290525841862">To run this app, re-enable isolated web app developer mode</translation>
 <translation id="2526280916094749336">You can use saved addresses across Google products. This address will be saved in your Google Account, <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">Your CVC is on the front of your card. It’s the four-digit code at the top right above your card number.</translation>
@@ -1141,7 +1142,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742128390261873684">Home automation</translation>
 <translation id="2743512410823092182">DJ Resources and Equipment</translation>
-<translation id="2743934314332613923">Update driving licence?</translation>
 <translation id="2757727729385895652">Uploading <ph name="COUNT" /> files to Google Drive</translation>
 <translation id="2759299890026163685">Make sure that you have a stable Internet connection before trying again</translation>
 <translation id="2759825833388495838">fill in your password on <ph name="APP_NAME" /></translation>
@@ -1205,7 +1205,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2891963978019740012">Your search engine in Chrome</translation>
 <translation id="2893773853358652045">Fourth roll</translation>
 <translation id="2894137550885451583">These are <ph name="CURRENCY" /> prices for product <ph name="PRODUCT" /></translation>
-<translation id="2894233157216554317">Update passport?</translation>
 <translation id="2898398337339787921">Microsoft Excel</translation>
 <translation id="2900528713135656174">Create event</translation>
 <translation id="2902312830803030883">More actions</translation>
@@ -1302,7 +1301,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3024663005179499861">Wrong policy type</translation>
 <translation id="3027915437837548462">SVG image</translation>
 <translation id="3030331669969285614">These flags prevent or revert a breaking change and will only be available for a limited time.</translation>
-<translation id="3030542417256082866">Save vehicle?</translation>
 <translation id="3033200136993730761">Your home address can help you get things done across Google services, like more relevant search results and directions in Google Maps. You can edit or delete your address <ph name="BEGIN_LINK" />in your Google Account <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
 <translation id="3033777742142108756">Motion and light sensors allowed for now</translation>
 <translation id="3034526003882782781">Scroll and zoom allowed</translation>
@@ -1463,6 +1461,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="3261488570342242926">Learn about virtual cards</translation>
 <translation id="3262698603497362968">Buying options</translation>
 <translation id="3264315627780269177">This tab can't be shared</translation>
+<translation id="3264637689694266148">If you turn off suggestions, the page title and URLs of your tabs may still be processed for other Chrome features. You can manage browser access to this data in your</translation>
 <translation id="3266793032086590337">Value (conflict)</translation>
 <translation id="3268451620468152448">Open tabs</translation>
 <translation id="3270041629388773465">Check out faster when your CVCs are saved</translation>
@@ -1637,7 +1636,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="3558573058928565255">Day time</translation>
 <translation id="3559897352860026926">Ask your administrator to verify their <ph name="CLOUD_PROVIDER" /> configuration settings.</translation>
 <translation id="3560824484345057728">See related sites</translation>
-<translation id="356359327498380603">Update vehicle?</translation>
 <translation id="3566021033012934673">Your connection is not private</translation>
 <translation id="3566336457819493938">215 mm x 315 mm</translation>
 <translation id="3566649245868131295">Health and Medical Jobs</translation>
@@ -1934,7 +1932,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="4014895360827978999">Merchant Services and Payment Systems</translation>
 <translation id="4018819349042761761">Public key</translation>
 <translation id="4023431997072828269">Because this form is being submitted using a connection that’s not secure, your information will be visible to others.</translation>
-<translation id="4024673763872230929">Save your information and fill in forms more quickly. Saves to your device.</translation>
 <translation id="4025325634010721551">Policies reloaded</translation>
 <translation id="4025338605225449265">Currencies and foreign exchange</translation>
 <translation id="4025777154208238692">Reverse order</translation>
@@ -2000,6 +1997,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="4103249731201008433">Device serial number is invalid</translation>
 <translation id="4103592298805904008">Cardboard (single wall)</translation>
 <translation id="4104702906064390950">Saving IBAN info</translation>
+<translation id="4106101218644797743">sync settings</translation>
 <translation id="4106887816571530227">Embedded content not allowed</translation>
 <translation id="4107047499377819067">Installation of VPN background services has started, this may take a few minutes.</translation>
 <translation id="4110642094637545339">Google Pay, AfterPay logo</translation>
@@ -2335,6 +2333,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="4640225694041297329">Show results from the last seven days</translation>
 <translation id="4642296966515958616">To join this tab group, update Chrome</translation>
 <translation id="464342062220857295">Search features</translation>
+<translation id="4643958597583594452">Chrome processes page titles and URLs on your device or in a private space in the cloud</translation>
 <translation id="4644567637638438744">Files can only be uploaded if you are signed in to Microsoft OneDrive</translation>
 <translation id="4644670975240021822">Reverse order face down</translation>
 <translation id="4648262692072505866">Hash must be of format SHA-256.</translation>
@@ -2486,7 +2485,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="4877422487531841831"><ph name="TEXT" /> search</translation>
 <translation id="4877521229462766300">Allow embedded content?</translation>
 <translation id="4879491255372875719">Automatic (default)</translation>
-<translation id="4880328155169081699">Update identity card?</translation>
 <translation id="4880827082731008257">Search history</translation>
 <translation id="4881695831933465202">Open</translation>
 <translation id="4881808915112408168">24.0 in x 31.5 in</translation>
@@ -2583,6 +2581,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="5019293549442035120">You can use saved addresses across Google products. This address will be saved in your Google Account, <ph name="USER_EMAIL" />.</translation>
 <translation id="5019819206251569004">motion and light sensors</translation>
 <translation id="5019952743397118625"><ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> policy is set. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> will not control the availability of developer mode on the extensions page.</translation>
+<translation id="5020862932518041900">If you select or ignore a suggestion, Chrome will adapt to make sure that you only see what's relevant to you</translation>
 <translation id="5021500396464456616">Contact the person who sent this link</translation>
 <translation id="5021557570875267742">Track prices with Chrome</translation>
 <translation id="5023310440958281426">Check your administrator's policies</translation>
@@ -2691,7 +2690,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="5191315092027169558">Your profile is managed by <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> wants to download multiple files</translation>
 <translation id="519528950056409240">Allow Wallet to share data</translation>
-<translation id="5199121357983849992">Save ID card?</translation>
 <translation id="5200063972779787617">Save address in account</translation>
 <translation id="5201306358585911203">An embedded page on this page says</translation>
 <translation id="5203716867500274632">Your administrator enabled the following to be synced between your previous and current sessions across your ChromeOS devices:</translation>
@@ -2707,7 +2705,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="5217759126664161410">Invalid protocol format.</translation>
 <translation id="5221377878828867877">Password reuse is monitored by your organisation</translation>
 <translation id="5222812217790122047">Email (required)</translation>
-<translation id="5225215474235602477">Save passport?</translation>
 <translation id="5228269245420405804">Distance learning</translation>
 <translation id="5229844812197559338"><ph name="SELECT_PROVIDER_TITLE" />. <ph name="LOGO_DESCRIPTION" /></translation>
 <translation id="5230733896359313003">Delivery Address</translation>
@@ -2811,7 +2808,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">'Your clock is behind' or 'Your clock is ahead' or "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
 <translation id="5379618281582508161">To get this password on all your devices, verify that it's you</translation>
-<translation id="5380539543938195166">Update known traveller number?</translation>
 <translation id="5380953781541843508">in ascending order</translation>
 <translation id="5381318171304904246">When you continue, you'll be taken to your bank's website. After you verify, you'll automatically be returned to finish your purchase.</translation>
 <translation id="5381952079334035181"><ph name="MEMBER_FIRST_NAME" /> updated tab '<ph name="WEBSITE_TITLE" />'</translation>
@@ -3139,7 +3135,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="5887400589839399685">Card saved</translation>
 <translation id="5887687176710214216">Last visited yesterday</translation>
 <translation id="5889251770650310375">To get your history from your other devices, verify that it's you and sync your history and tabs. You can stop syncing at any time in Settings. Google may personalise Search and other services based on your history.</translation>
-<translation id="5890248301649767931">Save redress number?</translation>
 <translation id="5895138241574237353">Restart</translation>
 <translation id="5895187275912066135">Issued On</translation>
 <translation id="5895694128043506580">Google Chrome is trying to show sensitive info</translation>
@@ -3220,7 +3215,6 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="6014801569448771146">Check your passwords</translation>
 <translation id="6014851866995737824">Ignored because either the 'enable' or 'disable' list is missing.</translation>
 <translation id="6015796118275082299">Year</translation>
-<translation id="6017028474478839719">Save identity card?</translation>
 <translation id="6017514345406065928">Green</translation>
 <translation id="6018650639991193045">Delete your browsing history, cookies, cache and more in Chrome settings</translation>
 <translation id="6019118530636932154">Google Apps Script</translation>
@@ -3529,6 +3523,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="6451458296329894277">Confirm Form Resubmission</translation>
 <translation id="6452429044474066211">Diving and underwater activities</translation>
 <translation id="6452889436791091116">ISO ID-1</translation>
+<translation id="6453646205942063831">Page titles and URLs of your open tabs are used to give you relevant suggestions</translation>
 <translation id="6455632609396391811">Health insurance</translation>
 <translation id="6456955391422100996">Ad removed.</translation>
 <translation id="6457206614190510200">Saddle stitch</translation>
@@ -4175,7 +4170,6 @@ Additional details:
 <translation id="746412105358554870">JavaScript optimisation and security</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> will know that you visited <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7465963048299965912">10 in x 13 in</translation>
-<translation id="7467332121947433617">Update ID card?</translation>
 <translation id="7469935732330206581">Form is not secure</translation>
 <translation id="7470854469646445678">Provide reason for copying (required)</translation>
 <translation id="7471007961486718967">Provide reason for transferring (required)</translation>
@@ -4424,6 +4418,7 @@ Additional details:
 <translation id="7819605256207059717">Blocked by your organisation</translation>
 <translation id="7822611063308883975">Handheld Game Consoles</translation>
 <translation id="7825558994363763489">Microwaves</translation>
+<translation id="7827688884439021871">Get real-time suggestions that can help you find new ways to browse with AI</translation>
 <translation id="782886543891417279">The Wi-Fi that you are using (<ph name="WIFI_NAME" />) may require you to visit its login page.</translation>
 <translation id="7831993212387676366">What is the Shopping list?</translation>
 <translation id="7840103971441592723">Screen capture has started</translation>
@@ -4715,6 +4710,7 @@ Additional details:
 <translation id="8289355894181816810">Contact your network administrator if you're not sure what this means.</translation>
 <translation id="8291367150570302588">ID card</translation>
 <translation id="829335040383910391">sound</translation>
+<translation id="8294425747071240447">suggestions, powered by AI</translation>
 <translation id="8294431847097064396">Source</translation>
 <translation id="8297545700510100061">Cookies and other site data are used to remember you, for example, to sign you in or to personalise ads. To manage cookies for all sites, see <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">The Wi-Fi that you are using (<ph name="WIFI_NAME" />) may require you to visit <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
@@ -5000,7 +4996,6 @@ Additional details:
 <translation id="877348612833018844">{0,plural, =1{Move confidential file?}other{Move confidential files?}}</translation>
 <translation id="8775347646940100151">Paper (letterhead)</translation>
 <translation id="8775863327608679820">Buy-now, pay-later issuers available for pay over time opened at half height.</translation>
-<translation id="8776941011841875705">Save known traveller number?</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8781278378794969337">Translate page button, activate to translate this page with Google Translate</translation>
 <translation id="8785658048882205566">Motorcycles</translation>
@@ -5143,7 +5138,6 @@ Additional details:
 <translation id="9026253329950610248">Google Sites</translation>
 <translation id="9027020981272345766">Try Chrome Enterprise Core</translation>
 <translation id="9027531288681624875">To exit full screen, press and hold |<ph name="ACCELERATOR" />|</translation>
-<translation id="9031426777610376427">Update redress number?</translation>
 <translation id="9035022520814077154">Security error</translation>
 <translation id="9035824888276246493">Save security codes</translation>
 <translation id="9036306139374661733">Allow microphone?</translation>

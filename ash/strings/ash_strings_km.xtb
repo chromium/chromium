@@ -457,6 +457,7 @@
 <translation id="2475783092753560388">បញ្ចូល <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="2475982808118771221">កំហុសឆ្គងមួយបានកើតឡើង</translation>
 <translation id="2478076885740497414">តំឡើងកម្មវិធី</translation>
+<translation id="2479148705183875116">ចូលទៅកាន់ការកំណត់</translation>
 <translation id="2482878487686419369">ការជូនដំណឹង</translation>
 <translation id="2484513351006226581">ចុច <ph name="KEYBOARD_SHORTCUT" /> ដើម្បី​ប្តូរប្លង់​ក្តារ​ចុច។</translation>
 <translation id="2485422356828889247">លុប</translation>
@@ -1047,6 +1048,7 @@
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">មុខងារ​ទិដ្ឋភាពរួម</translation>
 <translation id="4242533952199664413">បើកការកំណត់</translation>
+<translation id="4244765461494758482">ការកំណត់​ទាំងនេះ​កំពុង​ធ្វើសមកាលកម្ម​នៅលើ​ឧបករណ៍ ChromeOS ផ្សេងទៀត​របស់អ្នក។ អ្នកអាច​ប្ដូរ​ការកំណត់​ទាំងនេះ​នៅទីនេះ ឬគ្រប់គ្រង​បញ្ជី​ពេញលេញ​នៅក្នុង "ការកំណត់"។</translation>
 <translation id="4247123849143712100">ដំឡើងកំណែ រួច​បិទ</translation>
 <translation id="4249248555939881673">កំពុងរង់ចាំការភ្ជាប់បណ្តាញ...</translation>
 <translation id="4250229828105606438">ថតអេក្រង់</translation>
@@ -2326,6 +2328,7 @@
 <translation id="8051716679295756675">ទម្រង់គំរូដែលមានឈ្មោះថា <ph name="DESK_TEMPLATE_NAME" /> មានរួចហើយ</translation>
 <translation id="8052898407431791827">បានចម្លង​ទៅ​ឃ្លីបបត</translation>
 <translation id="8054466585765276473">កំពុងគណនារយៈពេលថាមពលថ្ម។</translation>
+<translation id="8063363226185507157">ការកំណត់​ភាពងាយស្រួល​ដែលបាន​ធ្វើសមកាលកម្ម</translation>
 <translation id="8076492880354921740">ផ្ទាំង</translation>
 <translation id="8079538659226626406">បង្ហាញ​អេក្រង់</translation>
 <translation id="8083540854303889870">បានរក្សាទុកសម្រាប់ពេលក្រោយ</translation>

@@ -609,6 +609,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> er markeret</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> og <ph name="PERMISSION_2" /> blev tilladt</translation>
 <translation id="7276071417425470385">Når dette er slået til, kan websites anmode om tilladelse til at bruge virtual reality-enheder. Når dette er slået fra, kan websites ikke bruge virtual reality-enheder.</translation>
+<translation id="7279851812866769760">Del kontakter</translation>
 <translation id="7282197670900591579">Citrongult tema</translation>
 <translation id="728412880473384942">Websites er hurtigere, men mindre sikre</translation>
 <translation id="7352902948037373520">Administrer i <ph name="BEGIN_LINK1" />Android-indstillingerne<ph name="END_LINK1" />
@@ -700,6 +701,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:</translation>
 <translation id="823874716226307142">Når funktionen er aktiveret, kan websites anmode om adgang til andre enheder på dit lokale netværk. Når funktionen er deaktiveret, kan websites ikke tilgå andre enheder på dit lokale netværk.</translation>
 <translation id="8249310407154411074">Flyt til toppen</translation>
 <translation id="8261506727792406068">Slet</translation>
+<translation id="8273596202562472147">Flere valgmuligheder for <ph name="SITE_NAME" /></translation>
 <translation id="8284326494547611709">Undertekster</translation>
 <translation id="8300705686683892304">Administreres af en app</translation>
 <translation id="8301363963630676147">Tilladt denne gang • Bruger omtrentlig</translation>
@@ -794,6 +796,7 @@ Avanceret beskyttelse styrer disse Chrome-indstillinger:</translation>
 <translation id="9156722768168878035">Få Chrome til at vise dine seneste faner på din enheds appliste og i søgeresultaterne. Du kan til enhver tid deaktivere dette i Chrome-indstillingerne.</translation>
 <translation id="9162462602695099906">Denne side er farlig</translation>
 <translation id="9182556968660520230">Tillad ikke, at websites afspiller beskyttet indhold</translation>
+<translation id="927148002081263046">Del en kontakt</translation>
 <translation id="947156494302904893">Websites, du besøger, kan verificere, at du er en rigtig person og ikke en bot</translation>
 <translation id="959682366969460160">Bliv velorganiseret</translation>
 <translation id="960590623979248167">Vis hyperlinks</translation>

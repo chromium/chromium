@@ -2064,6 +2064,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2402226831639195063">Tóny</translation>
 <translation id="2405887402346713222">Sériové čísla zariadenia a komponentov</translation>
 <translation id="2406153734066939945">Chcete odstrániť tento profil a jeho údaje?</translation>
+<translation id="2406942743794219791">Potvrďte požadovaný predvolený vyhľadávač</translation>
 <translation id="2407671304279211586">Vybrať poskytovateľa DNS</translation>
 <translation id="2408018932941436077">Karta sa ukladá</translation>
 <translation id="2408742686124047357">Pripnite si funkciu Google Lens na panel s nástrojmi, aby ste k nej mali nabudúce jednoduchý prístup</translation>
@@ -2156,6 +2157,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2460826998961521840">Ak chcete používať prístupové kľúče uložené v účte Google</translation>
 <translation id="2461550163693930491">Nepovoliť webom posúvať a približovať zdieľané karty</translation>
 <translation id="2461593638794842577">Toto nastavenie môžete vypnúť, aby sa vaše heslá ukladali iba do tohto zariadenia</translation>
+<translation id="2462550463312552298">Vytvor zhrnutie tohto dokumentu</translation>
 <translation id="2462724976360937186">ID kľúča certifikačnej autority</translation>
 <translation id="2462752602710430187">Bolo pridané zariadenie: <ph name="PRINTER_NAME" /></translation>
 <translation id="2464075479326723132">Zobrazujú sa navrhované súbory, ktoré vám pomôžu ľahko sa vrátiť k poslednej nedávnej aktivite v aplikáciách Microsoft SharePoint a OneDrive.
@@ -3044,6 +3046,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3046892784550338476">Verzia <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Webová stránka, Úplné</translation>
 <translation id="304747341537320566">Nástroje hlasovej odozvy</translation>
+<translation id="3047618804758101928">Rozšírenie <ph name="EXTENSION_NAME" /> zmenilo vaše nastavenia</translation>
 <translation id="3047678109605649715">V zariadení nie sú žiadne hlasy v jazyku <ph name="LANGUAGE" />. Uvoľnite v ňom priestor a skúste to znova.</translation>
 <translation id="3048336643003835855">Zariadenia HID od dodávateľa <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Prehrať (k)</translation>
@@ -4312,6 +4315,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3924788966103416622">Externá aplikácia vyžaduje úplnú kontrolu nad touto reláciou Chromu, aby ju mohla ladiť. Zahŕňa to prístup k vašim uloženým údajom, súborom cookie a dátam webov, ako aj možnosť prejsť na ľubovoľnú webovú adresu.</translation>
 <translation id="3925573269917483990">Kamera:</translation>
 <translation id="3925926055063465902">Túto sieť môžu používať aj ostatní používatelia tohto zariadenia</translation>
+<translation id="3925934852713265455">Opýtajte sa na svoje karty</translation>
 <translation id="3926002189479431949">Zmenil sa telefón združený s funkciou Smart Lock</translation>
 <translation id="3926410220776569451">Prístup ku kamere je blokovaný</translation>
 <translation id="3927932062596804919">Odmietnuť</translation>
@@ -7281,6 +7285,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="604388835206766544">Konfiguráciu sa nepodarilo analyzovať</translation>
 <translation id="6043994281159824495">Odhlásiť sa</translation>
 <translation id="6045114302329202345">Primárne tlačidlo TrackPoint</translation>
+<translation id="6045425183320109397">Autor</translation>
 <translation id="6047632800149092791">Synchronizácia nefunguje. Skúste sa odhlásiť a znova prihlásiť.</translation>
 <translation id="6048747414605857443">Vyberte a prispôsobte si hlasy prevodu textu na reč pre ChromeVox a počúvanie vybraného textu</translation>
 <translation id="6050189528197190982">Odtiene sivej</translation>
@@ -8690,7 +8695,6 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="701020165009334820">Aplikácie a hry pre Android si môžete stiahnuť z Obchodu Play.</translation>
 <translation id="701080569351381435">Zobraziť zdrojový kód</translation>
 <translation id="7012430956470647760">Rodičovská kontrola pre aplikácie</translation>
-<translation id="7013762323294215682">Tento prístupový kľúč bude uložený do vášho správcu hesiel. Budú ho môcť používať všetci, ktorí k nemu majú prístup.</translation>
 <translation id="7014174261166285193">Inštalácia zlyhala.</translation>
 <translation id="7014480873681694324">Odstrániť zvýraznenie</translation>
 <translation id="7014741021609395734">Úroveň lupy</translation>
@@ -10002,6 +10006,7 @@ Odstráňte ju stlačením prideleného prepínača alebo klávesa.</translation
 <translation id="7939062555109487992">Rozšírené možnosti</translation>
 <translation id="793923212791838">Vaše zariadenie s týmto webom nedá použiť</translation>
 <translation id="7939328347457537652">Správa certifikátov zariadení</translation>
+<translation id="7939918959917132075">Zmenené na toto rozšírením</translation>
 <translation id="7940087892955752820">Zdieľanie sa nepodarilo zrušiť, pretože tento priečinok používa nejaká aplikácia. Jeho zdieľanie bude zrušené po ďalšom vypnutí virtuálneho počítača <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="7940265372707990269">Zoradiť podľa: <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Pripravenosť na zdieľanie dátového pripojenia:</translation>
@@ -11780,7 +11785,6 @@ Môže to zahŕňať informácie o nainštalovanom softvéri, súboroch, prehli
 <translation id="9120800848981545750">Stiahnite si Chrome pre iOS a získajte tak prístup ku kartám, záložkám a heslám vo svojom telefóne.</translation>
 <translation id="9121814364785106365">Otvoriť ako pevnú kartu</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{Chcete zavrieť kartu a odstrániť skupinu?}=1{Chcete zavrieť karty a odstrániť skupinu?}few{Chcete zavrieť karty a odstrániť skupiny?}many{Close Tabs and Delete Groups?}other{Chcete zavrieť karty a odstrániť skupiny?}}</translation>
-<translation id="9122788874051694311">Chcete tento prístupový kľúč uložiť mimo režimu inkognito?</translation>
 <translation id="9123287046453017203">Vaše zariadenie nie je aktuálne</translation>
 <translation id="9125910124977405374">Odstrániť jazyk <ph name="LANGUAGE_NAME" /> z automaticky prekladaných jazykov</translation>
 <translation id="9125912770834459638">Vaša organizácia vám neumožňuje prihlásiť sa</translation>

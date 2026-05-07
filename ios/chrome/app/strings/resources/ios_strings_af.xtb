@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">Nee, dankie</translation>
 <translation id="1531038290222364269">Wys oortjies</translation>
 <translation id="1536390784834419204">Vertaal bladsy</translation>
+<translation id="1539535193627863227">Geen wagwoorde of toegangsleutels is vir hierdie werf gekry nie</translation>
 <translation id="1540800554400757039">Adres 1</translation>
 <translation id="154312949627292154">Oortjies wat ontvang is vanaf jou ander toestelle van die sluitskerm af.</translation>
 <translation id="1545749641540134597">Skandeer QR-kode</translation>
@@ -642,6 +643,7 @@
 <translation id="3245744387817103524">Jou verandering kon nie gestoor word nie.</translation>
 <translation id="3254806613790954367">Jou laaste oop oortjie op al jou toestelle</translation>
 <translation id="325717987950204592">Tik op “Privaatheid en sekuriteit”</translation>
+<translation id="3259451381796379533">Hierdie rekening sal nie met Gemini werk nie. Meld aan met ’n ander Google-rekening.</translation>
 <translation id="3265736395246760288">Meld vinniger aan vanaf enige van jou gesinkroniseerde toestelle.</translation>
 <translation id="3272527697863656322">Kanselleer</translation>
 <translation id="3273510436356991673">Pasmaak jou tuisskerm</translation>
@@ -763,6 +765,7 @@
 <translation id="372676576864368480">Vul die kaartnommer wat op <ph name="LAST_DIGITS" /> eindig outomaties in</translation>
 <translation id="3738428049780661523"><ph name="DATE" /> geskep</translation>
 <translation id="3742498336182910186">Kamerarol</translation>
+<translation id="3746269120925354434">Inligting is in Google Wallet gestoor</translation>
 <translation id="3750225824417196283">Nuwe Incognito-oortjiebladsy</translation>
 <translation id="3751873026576444885">Hou op om jou skerm met Google Lens te soek</translation>
 <translation id="3753408171347588045">Spoor tans pryse na</translation>
@@ -1076,7 +1079,6 @@
 <translation id="4824480232751123840">Volume</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} en 1 ander persoon}other{{domain} en {count} ander mense}}</translation>
 <translation id="4826588772550366629">kamera en mikrofoon</translation>
-<translation id="4828431027673677473">Produkte gegrond op jou belangstellings</translation>
 <translation id="4829420936835028285">Wysig oortjiegroep</translation>
 <translation id="4833786495304741580">Stuur gebruikstatistieke en omvalverslae outomaties na Google toe.</translation>
 <translation id="483689884442613745">Stoor …</translation>
@@ -1864,6 +1866,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="7498234416455752244">Hou aan wysig</translation>
 <translation id="7500244509706269886">Outovul vorm</translation>
 <translation id="750493650310597496">0 gekies</translation>
+<translation id="7505402981231763928">Jy moet aanmeld om Gemini te gebruik</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Stel Raak-ID, Gesig-ID of 'n wagkode op om jou Incognito-oortjies te sluit.</translation>
 <translation id="750886945254958667">Hou hierdie groep om later oortjies by te voeg, of verlaat dit as jy nie meer toegang daartoe wil hê nie</translation>
@@ -2105,7 +2108,6 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="828291969289324795">{count,plural, =1{Voeg oortjie by nuwe groep}other{Voeg oortjies by nuwe groep}}</translation>
 <translation id="8283172974887967105">Stel …</translation>
 <translation id="8289930144142009940"><ph name="FEATURE_NAME" /> kennisgewings afgeskakel</translation>
-<translation id="8290077367744012649">Spoor pryse na vanaf jou oortjies</translation>
 <translation id="8292893224181644074">Aflaai is voltooi</translation>
 <translation id="8299417921174340354">Om wagwoorde te gebruik, moet jy eers 'n wagkode op jou toestel stel.</translation>
 <translation id="8307481894409578819">Hierdie lêer kon nie opgelaai word nie</translation>
@@ -2172,6 +2174,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="8533670235862049797">Veiligblaai is aan</translation>
 <translation id="8534481786647257214">Google+-plasing is voltooi.</translation>
 <translation id="8535368836838588657">Wys wagwoord</translation>
+<translation id="8540426897269305488">Meld aan met <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8545276357312221485">Gaan jou verstekblaaierinstellings na</translation>
 <translation id="854938212724803178">Jy het 1 gekompromitteerde wagwoord. Maak dit nou reg om veilig te bly.</translation>
 <translation id="8551311254462607218">Tik in die adresbalk op die Google Lens-kamera-ikoon</translation>

@@ -292,6 +292,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="230115972905494466">Nenhum dispositivo compatível encontrado</translation>
 <translation id="2316129865977710310">Não.</translation>
 <translation id="2318045970523081853">Toque para ligar</translation>
+<translation id="232137538351753795">Deslize a partir da borda esquerda para voltar</translation>
 <translation id="2323763861024343754">Armazenamento do site</translation>
 <translation id="2328474416100889417">Todos vão perder imediatamente o acesso ao grupo de guias "<ph name="GROUP_NAME" />" e todos os links de convite serão desativados</translation>
 <translation id="2330186936255788117">Mais favoritos</translation>
@@ -943,7 +944,6 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="5040262127954254034">Privacidade</translation>
 <translation id="504456571576643789">Lembre-se</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" /> janela selecionada}one{<ph name="WINDOW_COUNT_NORMAL" /> janela selecionada}other{<ph name="WINDOW_COUNT_NORMAL" /> janelas selecionadas}}</translation>
-<translation id="5056587122125565772">Criar imagem</translation>
 <translation id="506254248375231072">Nenhuma guia</translation>
 <translation id="5075939510584558547">Salvar sem criptografia</translation>
 <translation id="5078638979202084724">Adicionar todas as guias aos favoritos</translation>
@@ -1677,6 +1677,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="7977451675950311423">Avisa se você usa uma senha que foi comprometida em uma violação de dados.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> O Chrome removeu essas permissões porque você não visitou o site recentemente</translation>
 <translation id="799576009106109668">Como o conteúdo é carregado proativamente com base na página da Web acessada, você vai navegar com mais rapidez</translation>
+<translation id="7997875520309653083">Deslize a partir da borda direita para voltar</translation>
 <translation id="7998918019931843664">Reabrir guia fechada</translation>
 <translation id="8001245658307297681">Você está visualizando um arquivo local</translation>
 <translation id="8004582292198964060">Navegador</translation>
@@ -1870,6 +1871,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="8765470054473112089">Quando você digita na barra de endereço ou na caixa de pesquisa, o Chrome envia o conteúdo digitado ao mecanismo de pesquisa padrão para melhorar as sugestões. Essa opção fica desativada na navegação anônima.</translation>
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{O Chrome encontrou uma senha fraca que pode ser melhorada}one{O Chrome encontrou # senha fraca que pode ser melhorada}other{O Chrome encontrou # senhas fracas que podem ser melhoradas}}</translation>
 <translation id="8766529642647037772">Criar um link destacado como este?</translation>
+<translation id="8769783688897433958">Ver informações e permissões do site</translation>
 <translation id="8788265440806329501">O histórico de navegação está fechado</translation>
 <translation id="8790193082819560975">Toque para pesquisar opções de compra do produto em uma nova guia.</translation>
 <translation id="8798449543960971550">Lidas</translation>

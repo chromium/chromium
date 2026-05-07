@@ -609,6 +609,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> dipilih</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> dan <ph name="PERMISSION_2" /> diizinkan</translation>
 <translation id="7276071417425470385">Jika diaktifkan, situs dapat meminta untuk menggunakan perangkat virtual reality. Jika dinonaktifkan, situs tidak dapat menggunakan perangkat virtual reality.</translation>
+<translation id="7279851812866769760">Berbagi kontak</translation>
 <translation id="7282197670900591579">Tema sitrun</translation>
 <translation id="728412880473384942">Situs lebih cepat, tetapi kurang aman</translation>
 <translation id="7352902948037373520">Kelola di <ph name="BEGIN_LINK1" />setelan Android<ph name="END_LINK1" />
@@ -794,6 +795,7 @@ Perlindungan Lanjutan mengontrol setelan Chrome berikut:</translation>
 <translation id="9156722768168878035">Izinkan Chrome menampilkan tab terbaru di daftar aplikasi dan hasil penelusuran perangkat Anda. Anda dapat menonaktifkannya kapan saja di setelan Chrome.</translation>
 <translation id="9162462602695099906">Halaman ini berbahaya</translation>
 <translation id="9182556968660520230">Jangan izinkan situs memutar konten yang dilindungi</translation>
+<translation id="927148002081263046">Berbagi kontak</translation>
 <translation id="947156494302904893">Situs yang Anda buka dapat memverifikasi bahwa Anda adalah orang sungguhan dan bukan bot</translation>
 <translation id="959682366969460160">Atur dengan mudah</translation>
 <translation id="960590623979248167">Tampilkan hyperlink</translation>

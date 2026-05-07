@@ -99,6 +99,9 @@
 <translation id="2066690553719545730">Mostra sempre el mode IA</translation>
 <translation id="2086476982681781442">Chromium ha bloquejat aquesta baixada perquè el fitxer és enganyós i és possible que faci canvis inesperats al dispositiu</translation>
 <translation id="208726765006323911">Veuràs una indicació per provar <ph name="FEATURE_NAME" /> la propera vegada que obris Chromium a iOS.</translation>
+<translation id="2090163042413910600">Chromium desactiva l'optimització de JavaScript quan visites un lloc web per primera vegada.
+
+Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimització.</translation>
 <translation id="2099452623287920103">Les contrasenyes i altres dades de Chromium que hagis desat al teu Compte de Google se suprimiran d'aquest dispositiu. Per tornar-les a utilitzar a Chromium, inicia la sessió de nou.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{La teva organització suprimeix automàticament les dades de navegació quan Chromium no s'utilitza durant 1 minut. Això pot incloure l'historial, les dades d'Emplenament automàtic i les baixades. Les pestanyes continuaran obertes.}other{La teva organització suprimeix automàticament les dades de navegació quan Chromium no s'utilitza durant # minuts. Això pot incloure l'historial, les dades d'Emplenament automàtic i les baixades. Les pestanyes continuaran obertes.}}</translation>
 <translation id="2126108037660393668">La verificació del fitxer baixat ha fallat.</translation>
@@ -216,6 +219,7 @@
 
 <ph name="EXTENSION_NAME" /></translation>
 <translation id="3185330573522821672">Personalitza el teu perfil de Chromium nou</translation>
+<translation id="3189205223539394158">Pots continuar xatejant amb el mode IA sense canviar de pestanya. Per començar, inicia la sessió a Chromium. També obtindràs les contrasenyes i altres dades en tots els teus dispositius.</translation>
 <translation id="3224847870593914902">Per suprimir de Chromium el teu Compte de Google, tanca la sessió de Chromium a la pàgina Configuració</translation>
 <translation id="3234316605225071811">Més tard, Chromium et pot preguntar si vols utilitzar la informació desada per emplenar automàticament formularis per tu</translation>
 <translation id="3258596308407688501">Chromium no pot llegir ni escriure en el directori de dades:

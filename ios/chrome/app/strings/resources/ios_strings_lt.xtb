@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">Ačiū, ne</translation>
 <translation id="1531038290222364269">Rodyti skirtukus</translation>
 <translation id="1536390784834419204">Versti puslapį</translation>
+<translation id="1539535193627863227">Nerasta šios svetainės slaptažodžių ar prieigos raktų</translation>
 <translation id="1540800554400757039">1 adreso eil.</translation>
 <translation id="154312949627292154">Atidarykite užrakinimo ekrane gautus skirtukus iš kitų įrenginių.</translation>
 <translation id="1545749641540134597">Nuskaitykite QR kodą</translation>
@@ -642,6 +643,7 @@
 <translation id="3245744387817103524">Pakeitimo nepavyko išsaugoti.</translation>
 <translation id="3254806613790954367">Pastarasis atidarytas skirtukas visuose įrenginiuose</translation>
 <translation id="325717987950204592">Palieskite „Privatumas ir sauga“</translation>
+<translation id="3259451381796379533">Ši paskyra neveiks su „Gemini“. Prisijunkite naudodami kitą „Google“ paskyrą.</translation>
 <translation id="3265736395246760288">Greičiau prisijunkite iš bet kurio sinchronizuoto įrenginio.</translation>
 <translation id="3272527697863656322">Atšaukti</translation>
 <translation id="3273510436356991673">Pagrindinio ekrano tinkinimas</translation>
@@ -763,6 +765,7 @@
 <translation id="372676576864368480">Automatiškai pildyti kortelės numerį, kuris baigiasi skaitmenimis <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Sukurta: <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Fotoaparato aplankas</translation>
+<translation id="3746269120925354434">Informacija išsaugota „Google Wallet“</translation>
 <translation id="3750225824417196283">Naujas inkognito skirtuko puslapis</translation>
 <translation id="3751873026576444885">Sustabdyti paiešką ekrane naudojant „Google Lens“</translation>
 <translation id="3753408171347588045">Kainos stebimos</translation>
@@ -1076,7 +1079,6 @@
 <translation id="4824480232751123840">Garsumas</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} ir dar 1}one{{domain} ir dar {count}}few{{domain} ir dar {count}}many{{domain} ir dar {count}}other{{domain} ir dar {count}}}</translation>
 <translation id="4826588772550366629">fotoaparatas ir mikrofonas</translation>
-<translation id="4828431027673677473">Produktai pagal jūsų pomėgius</translation>
 <translation id="4829420936835028285">Redaguoti skirtukų grupę</translation>
 <translation id="4833786495304741580">Automatiškai siunčia naudojimo statistiką ir strigčių ataskaitas „Google“.</translation>
 <translation id="483689884442613745">Išsaugoti…</translation>
@@ -1864,6 +1866,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="7498234416455752244">Toliau redaguoti</translation>
 <translation id="7500244509706269886">Automatiškai užpildyti formą</translation>
 <translation id="750493650310597496">Pasirinkta: 0</translation>
+<translation id="7505402981231763928">Turite prisijungti, kad galėtumėte naudoti „Gemini“</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Norėdami užrakinti inkognito skirtukus, nustatykite „Touch ID“, „Face ID“ arba slaptažodį.</translation>
 <translation id="750886945254958667">Išsaugokite šią grupę, kad galėtumėte vėliau pridėti skirtukų, arba išeikite, jei nebenorite jos pasiekti</translation>
@@ -2105,7 +2108,6 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="828291969289324795">{count,plural, =1{Pridėti skirtuką prie naujos grupės}one{Pridėti skirtukų prie naujos grupės}few{Pridėti skirtukų prie naujos grupės}many{Pridėti skirtukų prie naujos grupės}other{Pridėti skirtukų prie naujos grupės}}</translation>
 <translation id="8283172974887967105">Nustatyti…</translation>
 <translation id="8289930144142009940"><ph name="FEATURE_NAME" /> pranešimai išjungti</translation>
-<translation id="8290077367744012649">Stebėkite kainas skirtukuose</translation>
 <translation id="8292893224181644074">Atsisiuntimas baigtas</translation>
 <translation id="8299417921174340354">Jei norite naudoti slaptažodžius, pirmiausia turite nustatyti įrenginio slaptažodį.</translation>
 <translation id="8307481894409578819">Nepavyksta įkelti šio failo</translation>
@@ -2172,6 +2174,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="8533670235862049797">Saugus naršymas įjungtas</translation>
 <translation id="8534481786647257214">„Google+“ įrašas paskelbtas.</translation>
 <translation id="8535368836838588657">Rodyti slaptažodį</translation>
+<translation id="8540426897269305488">Prisijungti naudojant <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8545276357312221485">Numatytųjų naršyklės nustatymų tikrinimas</translation>
 <translation id="854938212724803178">Turite vieną pažeistą slaptažodį. Pataisykite dabar, kad užtikrintumėte saugą.</translation>
 <translation id="8551311254462607218">Adreso juostoje palieskite „Google Lens“ fotoaparato piktogramą</translation>

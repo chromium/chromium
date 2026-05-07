@@ -1730,6 +1730,7 @@
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> আৰু অন্য ১ টা ছুইচ</translation>
 <translation id="2165177462441582039">প্ৰতিটো বস্তুত কিমান সময়ৰ বাবে হাইলাইট থাকিব বাছনি কৰক</translation>
 <translation id="2166369534954157698">অ আ ই ঈ উ ঊ ঋ এ ঐ ও ঔ ক খ গ ঘ ঙ</translation>
+<translation id="2168036794078614559">অভিযোগ পঠিওৱা হ’ল</translation>
 <translation id="2169062631698640254">যিকোনো প্ৰকাৰে ছাইন ইন কৰক</translation>
 <translation id="2173302385160625112">আপোনাৰ ইণ্টাৰনেট সংযোগ পৰীক্ষা কৰক</translation>
 <translation id="2173801458090845390">এই ডিভাইচত প্ৰয়োজনীয় ID যোগ কৰক</translation>
@@ -2073,6 +2074,7 @@
 <translation id="2402226831639195063">ট’ন</translation>
 <translation id="2405887402346713222">ডিভাইচ আৰু উপাদানৰ ক্ৰমিক নম্বৰসমূহ</translation>
 <translation id="2406153734066939945">এই প্ৰ’ফাইলটো আৰু ইয়াৰ ডেটা মচিবনে?</translation>
+<translation id="2406942743794219791">আপুনি বিচৰা ডিফ’ল্ট সন্ধান ইঞ্জিনটো নিশ্চিত কৰক</translation>
 <translation id="2407671304279211586">DNS প্ৰদানকাৰী বাছনি কৰক</translation>
 <translation id="2408018932941436077">কাৰ্ডখন ছেভ কৰি থকা হৈছে</translation>
 <translation id="2408742686124047357">পৰৱৰ্তী সময়ত সহজে এক্সেছ কৰিবলৈ আপোনাৰ টুলবাৰত Google Lens পিন কৰক</translation>
@@ -2165,6 +2167,7 @@
 <translation id="2460826998961521840">আপোনাৰ Google একাউণ্টত ছেভ হৈ থকা পাছকী ব্যৱহাৰ কৰিবলৈ</translation>
 <translation id="2461550163693930491">ছাইটকসমূহক শ্বেয়াৰ কৰা টেবসমূহ স্ক্ৰল আৰু জুম কৰিবলৈ অনুমতি নিদিব</translation>
 <translation id="2461593638794842577">আপোনাৰ পাছৱৰ্ডসমূহ কেৱল এই ডিভাইচটোতহে ছেভ কৰিবলৈ আপুনি এই ছেটিংটো অফ কৰিব পাৰে</translation>
+<translation id="2462550463312552298">এই নথিখনৰ সাৰাংশ তৈয়াৰ কৰক</translation>
 <translation id="2462724976360937186">প্ৰমাণপত্ৰ প্ৰদানকাৰী কৰ্তৃপক্ষৰ কী আইডি</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> যোগ কৰা হ’ল</translation>
 <translation id="2464075479326723132">আপুনি Microsoft SharePoint আৰু OneDriveত আপোনাৰ শেহতীয়া কাৰ্যকলাপলৈ সহজে ঘূৰি যোৱাত সহায় কৰিবলৈ পৰামৰ্শিত ফাইলসমূহ দেখিছে।
@@ -3053,6 +3056,7 @@
 <translation id="3046892784550338476">সংস্কৰণ <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">ৱেবপৃষ্ঠা, সম্পূৰ্ণ হ’ল</translation>
 <translation id="304747341537320566">কথন ইঞ্জিন</translation>
+<translation id="3047618804758101928">"<ph name="EXTENSION_NAME" />" এক্সটেনশ্বনটোৱে আপোনাৰ ছেটিং সলনি কৰিছে</translation>
 <translation id="3047678109605649715">আপোনাৰ ডিভাইচত কোনো <ph name="LANGUAGE" /> ভইচ নাই। আপোনাৰ ডিভাইচ ঠাই খালী কৰক আৰু পুনৰ চেষ্টা কৰক।</translation>
 <translation id="3048336643003835855">বিক্ৰেতাৰ <ph name="VENDOR_ID" /> পৰা HID ডিভাইচ</translation>
 <translation id="3048589239114571785">প্লে’ কৰক (k)</translation>
@@ -4321,6 +4325,7 @@
 <translation id="3924788966103416622">এটা বাহ্যিক এপে এই Chromeৰ ছেশ্বনটো ডিবাগ কৰিবলৈ ইয়াৰ ওপৰত সম্পূৰ্ণ নিয়ন্ত্ৰণ বিচাৰিছে। ইয়াত আপোনাৰ ছেভ কৰা ডেটা, কুকি আৰু ছাইটৰ ডেটাৰ এক্সেছ আৰু যিকোনো URL নেভিগে’ট কৰাৰ ক্ষমতা অন্তৰ্ভুক্ত।</translation>
 <translation id="3925573269917483990">কেমেৰা:</translation>
 <translation id="3925926055063465902">এই ডিভাইচটোৰ অন্য ব্যৱহাৰকাৰীসকলেও এই নেটৱৰ্কটো ব্যৱহাৰ কৰিব পাৰে</translation>
+<translation id="3925934852713265455">আপোনাৰ টেবসমূহৰ বিষয়ে সোধক</translation>
 <translation id="3926002189479431949">স্মার্ট লক ফ’ন সলনি কৰা হৈছে</translation>
 <translation id="3926410220776569451">কেমেৰাৰ এক্সেছ অৱৰোধ কৰা হৈছে</translation>
 <translation id="3927932062596804919">অস্বীকাৰ কৰক</translation>
@@ -7291,6 +7296,7 @@
 <translation id="604388835206766544">কনফিগাৰেশ্বন পার্ছ কৰিব পৰা নগ’ল</translation>
 <translation id="6043994281159824495">এতিয়াই ছাইন আউট কৰক</translation>
 <translation id="6045114302329202345">প্ৰাথমিক TrackPoint বুটাম</translation>
+<translation id="6045425183320109397">কিউৰেটৰ:</translation>
 <translation id="6047632800149092791">ছিংক কৰাৰ সুবিধাটোৱে কাম কৰা নাই। ছাইন আউট কৰি পুনৰ ছাইন ইন কৰি চাওক।</translation>
 <translation id="6048747414605857443">ChromeVox আৰু কথা ক’বলৈ বাছনি কৰক সুবিধাৰ বাবে পাঠৰ পৰা কথন কণ্ঠধ্বনিসমূহ বাছনি আৰু কাষ্টমাইজ কৰক</translation>
 <translation id="6050189528197190982">গ্ৰে’স্কে’ল</translation>
@@ -8698,7 +8704,6 @@
 <translation id="701020165009334820">আপুনি Play Storeৰ জৰিয়তে Android এপ্‌ আৰু গে’ম ডাউনল’ড কৰিব পাৰে।</translation>
 <translation id="701080569351381435">উৎস চাওক</translation>
 <translation id="7012430956470647760">এপৰ বাবে অভিভাৱকীয় নিয়ন্ত্ৰণ</translation>
-<translation id="7013762323294215682">এই পাছকীটো আপোনাৰ Password Managerত ছেভ কৰা হ’ব। সেইটো এক্সেছ কৰিব পৰা যিকোনো ব্যক্তিয়ে এই পাছকীটো ব্যৱহাৰ কৰিব পাৰিব।</translation>
 <translation id="7014174261166285193">ইনষ্টল কৰিব পৰা নগ’ল।</translation>
 <translation id="7014480873681694324">হাইলাইট আঁতৰাওক</translation>
 <translation id="7014741021609395734">জুমৰ স্তৰ</translation>
@@ -10010,6 +10015,7 @@
 <translation id="7939062555109487992">উচ্চখাপৰ বিকল্প</translation>
 <translation id="793923212791838">এই ছাইটোৰ জৰিয়তে আপোনাৰ ডিভাইচটো ব্যৱহাৰ কৰিব নোৱাৰি</translation>
 <translation id="7939328347457537652">ডিভাইচৰ প্ৰমাণপত্ৰ পৰিচালনা কৰক</translation>
+<translation id="7939918959917132075">এক্সটেনশ্বনে এইটোলৈ সলনি কৰিছে</translation>
 <translation id="7940087892955752820">এটা এপ্লিকেশ্বনে এই ফ’ল্ডাৰটো ব্যৱহাৰ কৰি থকা কাৰণে শ্বেয়াৰ কৰাটো বাতিল কৰিব পৰা নগ’ল। পাছৰবাৰ <ph name="SPECIFIC_NAME" /> শ্বাট ডাউন হ’লে ফ’ল্ডাৰটো শ্বেয়াৰ কৰাটো বাতিল কৰা হ’ব।</translation>
 <translation id="7940265372707990269"><ph name="SORT_TYPE" /> অনুসৰি সজাওক</translation>
 <translation id="7941179291434537290">টেডাৰিঙৰ প্ৰস্তুতি:</translation>
@@ -11787,7 +11793,6 @@
 <translation id="9120800848981545750">আপোনাৰ ফ’নত আপোনাৰ টেব, বুকমাৰ্ক আৰু পাছৱৰ্ড এক্সেছ কৰিবলৈ iOSৰ বাবে Chrome ডাউনল’ড কৰক।</translation>
 <translation id="9121814364785106365">পিন কৰি থোৱা টেব হিচাপে খোলক</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{টেবটো বন্ধ কৰি গোটটো মচিবনে?}=1{টেবসমূহ বন্ধ কৰি গোটটো মচিবনে?}one{টেবসমূহ বন্ধ কৰি গোটসমূহ মচিবনে?}other{টেবসমূহ বন্ধ কৰি গোটসমূহ মচিবনে?}}</translation>
-<translation id="9122788874051694311">ইনক’গনিট’ৰ বাহিৰত এই পাছকীটো ছেভ কৰিবনে?</translation>
 <translation id="9123287046453017203">আপোনাৰ ডিভাইচটো আপ টু ডে’ট হৈ থকা নাই</translation>
 <translation id="9125910124977405374">স্বয়ংক্ৰিয়ভাৱে অনুবাদ সেৱা প্ৰদান কৰা ভাষাৰ সূচীৰ পৰা <ph name="LANGUAGE_NAME" /> আঁতৰাওক</translation>
 <translation id="9125912770834459638">আপোনাৰ প্ৰতিষ্ঠানে আপোনাক ছাইন ইন কৰাৰ অনুমতি নিদিয়ে</translation>

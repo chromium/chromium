@@ -2062,6 +2062,7 @@
 <translation id="2402226831639195063">ระดับเสียงสูงต่ำ</translation>
 <translation id="2405887402346713222">หมายเลขซีเรียลของอุปกรณ์และคอมโพเนนต์</translation>
 <translation id="2406153734066939945">ลบโปรไฟล์นี้และข้อมูลในโปรไฟล์ใช่ไหม</translation>
+<translation id="2406942743794219791">ยืนยันเครื่องมือค้นหาเริ่มต้นที่คุณต้องการ</translation>
 <translation id="2407671304279211586">เลือกผู้ให้บริการ DNS</translation>
 <translation id="2408018932941436077">กำลังบันทึกบัตร</translation>
 <translation id="2408742686124047357">ปักหมุด Google Lens ไว้ที่แถบเครื่องมือเพื่อให้เข้าถึงได้ง่ายในครั้งถัดไป</translation>
@@ -2154,6 +2155,7 @@
 <translation id="2460826998961521840">เพื่อใช้พาสคีย์ที่บันทึกไว้ในบัญชี Google</translation>
 <translation id="2461550163693930491">ไม่อนุญาตให้เว็บไซต์เลื่อนและซูมแท็บที่แชร์</translation>
 <translation id="2461593638794842577">คุณสามารถปิดการตั้งค่านี้เพื่อบันทึกรหัสผ่านลงในอุปกรณ์นี้เท่านั้น</translation>
+<translation id="2462550463312552298">สรุปเอกสารนี้</translation>
 <translation id="2462724976360937186">รหัสคีย์ผู้ออกใบรับรอง</translation>
 <translation id="2462752602710430187">เพิ่ม <ph name="PRINTER_NAME" /> แล้ว</translation>
 <translation id="2464075479326723132">สิ่งที่เห็นนี้คือไฟล์แนะนำซึ่งช่วยให้คุณกลับไปยังกิจกรรมล่าสุดใน SharePoint และ OneDrive ของ Microsoft ได้อย่างง่ายดาย
@@ -3042,6 +3044,7 @@
 <translation id="3046892784550338476">เวอร์ชัน <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">หน้าเว็บ ทั้งหมด</translation>
 <translation id="304747341537320566">เครื่องมืออ่านออกเสียง</translation>
+<translation id="3047618804758101928">ส่วนขยาย "<ph name="EXTENSION_NAME" />" ได้เปลี่ยนการตั้งค่าของคุณ</translation>
 <translation id="3047678109605649715">ไม่มีเสียงภาษา<ph name="LANGUAGE" />บนอุปกรณ์ของคุณ ล้างพื้นที่ในอุปกรณ์แล้วลองอีกครั้ง</translation>
 <translation id="3048336643003835855">อุปกรณ์ HID จากผู้ให้บริการ <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">เล่น (k)</translation>
@@ -4308,6 +4311,7 @@
 <translation id="3924788966103416622">แอปภายนอกต้องการควบคุมเซสชัน Chrome นี้อย่างเต็มรูปแบบเพื่อแก้ไขข้อบกพร่อง ซึ่งรวมถึงการเข้าถึงข้อมูลที่บันทึกไว้ คุกกี้และข้อมูลเว็บไซต์ และความสามารถในการไปยัง URL ใดก็ได้</translation>
 <translation id="3925573269917483990">กล้อง:</translation>
 <translation id="3925926055063465902">ผู้ใช้คนอื่นๆ ในอุปกรณ์จะใช้เครือข่ายนี้ได้เช่นกัน</translation>
+<translation id="3925934852713265455">ถามเกี่ยวกับแท็บ</translation>
 <translation id="3926002189479431949">โทรศัพท์ของ Smart Lock มีการเปลี่ยนแปลง</translation>
 <translation id="3926410220776569451">การเข้าถึงกล้องถูกบล็อก</translation>
 <translation id="3927932062596804919">ปฏิเสธ</translation>
@@ -7274,6 +7278,7 @@
 <translation id="604388835206766544">แยกวิเคราะห์ค่ากำหนดไม่สำเร็จ</translation>
 <translation id="6043994281159824495">ออกจากระบบเลย</translation>
 <translation id="6045114302329202345">ปุ่ม TrackPoint หลัก</translation>
+<translation id="6045425183320109397">โดย</translation>
 <translation id="6047632800149092791">การซิงค์ไม่ทำงาน โปรดลองออกจากระบบแล้วลงชื่อเข้าใช้อีกครั้ง</translation>
 <translation id="6048747414605857443">เลือกและปรับแต่งเสียงของการอ่านออกเสียงข้อความสำหรับ ChromeVox และเลือกเพื่อให้อ่าน</translation>
 <translation id="6050189528197190982">ระดับสีเทา</translation>
@@ -8679,7 +8684,6 @@
 <translation id="701020165009334820">คุณดาวน์โหลดแอปและเกม Android ผ่าน Play Store ได้</translation>
 <translation id="701080569351381435">ดูต้นฉบับ</translation>
 <translation id="7012430956470647760">การควบคุมโดยผู้ปกครองสำหรับแอป</translation>
-<translation id="7013762323294215682">ระบบจะบันทึกพาสคีย์นี้ไว้ในเครื่องมือจัดการรหัสผ่าน ทุกคนที่มีสิทธิ์เข้าถึงจะใช้พาสคีย์นี้ได้</translation>
 <translation id="7014174261166285193">การติดตั้งล้มเหลว</translation>
 <translation id="7014480873681694324">นำไฮไลต์ออก</translation>
 <translation id="7014741021609395734">ระดับการซูม</translation>
@@ -9991,6 +9995,7 @@
 <translation id="7939062555109487992">ตัวเลือกขั้นสูง</translation>
 <translation id="793923212791838">อุปกรณ์ของคุณใช้ไม่ได้กับเว็บไซต์นี้</translation>
 <translation id="7939328347457537652">จัดการใบรับรองอุปกรณ์</translation>
+<translation id="7939918959917132075">เปลี่ยนเป็นรายการนี้โดยส่วนขยาย</translation>
 <translation id="7940087892955752820">เลิกแชร์ไม่ได้เนื่องจากมีแอปพลิเคชันใช้โฟลเดอร์นี้อยู่ จะเลิกแชร์โฟลเดอร์เมื่อมีการปิด <ph name="SPECIFIC_NAME" /> ครั้งต่อไป</translation>
 <translation id="7940265372707990269">จัดเรียงตาม <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">ความพร้อมดำเนินการของการเชื่อมต่ออินเทอร์เน็ตผ่านมือถือ:</translation>
@@ -11767,7 +11772,6 @@
 <translation id="9120800848981545750">ดาวน์โหลด Chrome สำหรับ iOS เพื่อเข้าถึงแท็บ บุ๊กมาร์ก และรหัสผ่านในโทรศัพท์</translation>
 <translation id="9121814364785106365">เปิดเป็นแท็บที่ปักหมุดไว้</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{ปิดแท็บและลบกลุ่มใช่ไหม}=1{ปิดแท็บและลบกลุ่มใช่ไหม}other{ปิดแท็บและลบกลุ่มใช่ไหม}}</translation>
-<translation id="9122788874051694311">บันทึกพาสคีย์นี้นอกโหมดไม่ระบุตัวตนไหม</translation>
 <translation id="9123287046453017203">อุปกรณ์ของคุณไม่ใช่เวอร์ชันล่าสุด</translation>
 <translation id="9125910124977405374">นําภาษา<ph name="LANGUAGE_NAME" />ออกจากภาษาที่แปลโดยอัตโนมัติ</translation>
 <translation id="9125912770834459638">องค์กรของคุณไม่อนุญาตให้ลงชื่อเข้าใช้</translation>

@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">Όχι, ευχαριστώ</translation>
 <translation id="1531038290222364269">Εμφάνιση καρτελών</translation>
 <translation id="1536390784834419204">Μετάφραση σελίδας</translation>
+<translation id="1539535193627863227">Δεν βρέθηκαν κωδικοί/κλειδιά πρόσβασης για τον ιστότοπο</translation>
 <translation id="1540800554400757039">Διεύθυνση 1</translation>
 <translation id="154312949627292154">Ανοίξτε καρτέλες που λάβατε από τις άλλες συσκευές σας από την οθόνη κλειδώματος.</translation>
 <translation id="1545749641540134597">Σάρωση κωδικού QR</translation>
@@ -642,6 +643,7 @@
 <translation id="3245744387817103524">Δεν ήταν δυνατή η αποθήκευση της αλλαγής που πραγματοποιήσατε.</translation>
 <translation id="3254806613790954367">Η τελευταία ανοιχτή καρτέλα σε όλες τις συσκευές σας</translation>
 <translation id="325717987950204592">Πατήστε Απόρρητο και ασφάλεια</translation>
+<translation id="3259451381796379533">Αυτός ο λογαριασμός δεν θα λειτουργεί με το Gemini. Συνδεθείτε με διαφορετικό Λογαριασμό Google.</translation>
 <translation id="3265736395246760288">Συνδεθείτε πιο γρήγορα από οποιαδήποτε από τις συγχρονισμένες συσκευές σας.</translation>
 <translation id="3272527697863656322">Ακύρωση</translation>
 <translation id="3273510436356991673">Προσαρμογή της αρχικής οθόνης σας</translation>
@@ -763,6 +765,7 @@
 <translation id="372676576864368480">Αυτόματη συμπλήρωση του αριθμού κάρτας που λήγει σε <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Δημιουργήθηκε στις <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Φωτογραφίες κάμερας</translation>
+<translation id="3746269120925354434">Οι πληροφορίες αποθηκεύτηκαν στο Πορτοφόλι Google</translation>
 <translation id="3750225824417196283">Νέα σελίδα καρτέλας ανώνυμης περιήγησης</translation>
 <translation id="3751873026576444885">Διακοπή αναζήτησης στην οθόνη με το Google Lens</translation>
 <translation id="3753408171347588045">Παρακολούθηση τιμών</translation>
@@ -1076,7 +1079,6 @@
 <translation id="4824480232751123840">Ένταση</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} και 1 ακόμα}other{{domain} και {count} ακόμα}}</translation>
 <translation id="4826588772550366629">κάμερα και μικρόφωνο</translation>
-<translation id="4828431027673677473">Προϊόντα με βάση τα ενδιαφέροντά σας</translation>
 <translation id="4829420936835028285">Επεξεργασία ομάδας καρτελών</translation>
 <translation id="4833786495304741580">Αποστέλλει αυτόματα στατιστικά στοιχεία χρήσης και αναφορές σφαλμάτων στην Google.</translation>
 <translation id="483689884442613745">Αποθήκευση…</translation>
@@ -1865,6 +1867,7 @@
 <translation id="7498234416455752244">Συνέχιση επεξεργασίας</translation>
 <translation id="7500244509706269886">Φόρμα αυτόματης συμπλήρωσης</translation>
 <translation id="750493650310597496">0 στοιχεία επιλεγμένα</translation>
+<translation id="7505402981231763928">Πρέπει να συνδεθείτε για να χρησιμοποιήσετε το Gemini</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Για να κλειδώσετε τις καρτέλες ανώνυμης περιήγησης, ρυθμίστε το Touch ID, το Face ID ή έναν κωδικό πρόσβασης.</translation>
 <translation id="750886945254958667">Διατηρήστε αυτή την ομάδα, για να προσθέσετε καρτέλες αργότερα, ή αποχωρήστε, αν δεν θέλετε πλέον να έχετε πρόσβαση σε αυτή</translation>
@@ -2106,7 +2109,6 @@
 <translation id="828291969289324795">{count,plural, =1{Προσθήκη καρτέλας σε νέα ομάδα}other{Προσθήκη καρτελών σε νέα ομάδα}}</translation>
 <translation id="8283172974887967105">Ορισμός…</translation>
 <translation id="8289930144142009940">Οι ειδοποιήσεις για τη λειτουργία <ph name="FEATURE_NAME" /> απενεργοποιήθηκαν</translation>
-<translation id="8290077367744012649">Παρακολούθηση τιμών από τις καρτέλες</translation>
 <translation id="8292893224181644074">Η λήψη ολοκληρώθηκε</translation>
 <translation id="8299417921174340354">Για τη χρήση κωδικών πρόσβασης, πρέπει πρώτα να ορίσετε έναν κωδικό πρόσβασης στη συσκευή σας.</translation>
 <translation id="8307481894409578819">Δεν ήταν δυνατή η μεταφόρτωση αυτού του αρχείου</translation>
@@ -2173,6 +2175,7 @@
 <translation id="8533670235862049797">Η Ασφαλής περιήγηση είναι ενεργή.</translation>
 <translation id="8534481786647257214">Η ανάρτηση Google+ ολοκληρώθηκε.</translation>
 <translation id="8535368836838588657">Αποκάλυψη κωδικού πρόσβασης</translation>
+<translation id="8540426897269305488">Σύνδεση με <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8545276357312221485">Ελέγξτε τις ρυθμίσεις προεπιλεγμένου προγράμματος περιήγησης</translation>
 <translation id="854938212724803178">Έχετε 1 παραβιασμένο κωδικό πρόσβασης. Επιδιορθώστε τον τώρα για να παραμείνετε ασφαλείς.</translation>
 <translation id="8551311254462607218">Στη γραμμή διευθύνσεων, πατήστε το εικονίδιο της κάμερας του Google Lens</translation>

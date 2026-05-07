@@ -1884,6 +1884,25 @@ Si no se establece esta política o se inhabilita, no se permitirá la transfere
 <translation id="225340736558643885">Habilitar advertencias en formularios no seguros</translation>
 <translation id="2258126710006312594">Permite que los usuarios con acceso remoto transfieran archivos al host y desde el host</translation>
 <translation id="225830954785359083">Impedir que las páginas muestren ventanas emergentes durante la descarga</translation>
+<translation id="2260635608598936994">Configura filtros para seleccionar qué certificados de cliente se incluyen en los informes de señales de seguridad de <ph name="PRODUCT_NAME" />. Estos informes envían información sobre la posición del navegador y del dispositivo a <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />, que los administradores pueden usar para configurar reglas de <ph name="GOOGLE_CONTEXT_AWARE_ACCESS" />.
+
+Esta política te permite definir filtros basados en atributos de certificados de cliente, como los nombres distinguidos de ISSUER o SUBJECT. <ph name="PRODUCT_NAME" /> solo incluirá certificados en los informes de señales si coinciden con al menos uno de los filtros especificados.
+
+     Ejemplos del uso de la sección <ph name="SELECTOR_PLACEHOLDER" />:
+
+      * Si se asigna el valor <ph name="SECURITY_SIGNALS_CLIENT_CERTIFICATE_SELECTORS_FILTER_EXAMPLE" /> a <ph name="SELECTOR_PLACEHOLDER" />, solo se seleccionarán los certificados de cliente emitidos por un certificado en el que CommonName tenga el valor <ph name="ISSUER_CN_PLACEHOLDER" />.
+
+      * Si <ph name="SELECTOR_PLACEHOLDER" /> contiene las secciones <ph name="ISSUER_STRING_VALUE" /> y <ph name="SUBJECT_STRING_VALUE" />, solo se seleccionarán los certificados de cliente que cumplan ambas condiciones.
+
+      * Si <ph name="SELECTOR_PLACEHOLDER" /> contiene una sección <ph name="SUBJECT_STRING_VALUE" /> con el valor <ph name="FILTER_STRING_ORGANIZATION" />, el certificado debe contener al menos una organización que coincida con el valor especificado para que se pueda seleccionar.
+
+      * Si <ph name="SELECTOR_PLACEHOLDER" /> contiene una sección <ph name="SUBJECT_STRING_VALUE" /> con un valor <ph name="FILTER_STRING_ORGANIZATIONAL_UNIT" />, el certificado debe contener al menos una unidad organizativa que coincida con el valor especificado para que se pueda seleccionar.
+
+      * Si se asigna el valor <ph name="EMPTY_DICTIONARY" /> a <ph name="SELECTOR_PLACEHOLDER" />, se ignorarán los detalles vacíos de esta política.
+
+      Si no se establece la política, no se seleccionarán certificados de cliente durante el envío de informes de señales.
+
+*Importante:* Esta política solo se aplicará si la política <ph name="USER_SECURITY_SIGNALS_REPORTING_POLICY_NAME" /> está habilitada, que controla la función general para enviar señales de seguridad desde Chrome.</translation>
 <translation id="2261648512244797294">Inhabilitar el protocolo Privet de impresión obsoleto</translation>
 <translation id="2262701937800507517">Usar el orden del algoritmo de cifrado predeterminado de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="2263881357524831360">Permitir el uso de gestores de contraseñas de terceros en <ph name="PRODUCT_NAME" /> para <ph name="ANDROID_NAME" /></translation>
@@ -2692,6 +2711,15 @@ Si se inhabilita esta política o no se establece, los usuarios podrán transfer
 Si se habilita esta política o no se define, los usuarios podrán añadir cuentas de Kerberos a través de la configuración de cuentas de Kerberos en la página de configuración de cuentas de Kerberos. Los usuarios tendrán control total sobre las cuentas que han añadido y podrán modificarlas o eliminarlas.
 
 Si se inhabilita esta política, los usuarios no podrán añadir cuentas de Kerberos. Solo se podrán añadir cuentas mediante la política "Configurar cuentas de Kerberos". Esta es una forma eficaz de bloquear cuentas.</translation>
+<translation id="2771222727845689796">Esta política te permite especificar una lista de patrones de URL. El contenido web en segundo plano que coincida con estos patrones se forzará a ejecutarse con prioridad de primer plano.
+
+Si se habilita la política <ph name="FORCE_FOREGROUND_PRIORITY_FOR_ALL_TABS_POLICY_NAME" />, se ignorará esta lista, ya que se forzará que todas las pestañas tengan prioridad de primer plano.
+
+Si se inhabilita <ph name="FORCE_FOREGROUND_PRIORITY_FOR_ALL_TABS_POLICY_NAME" /> o no se define, solo se forzará el contenido que coincida con los patrones de esta lista.
+
+Para obtener información detallada sobre los patrones válidos de <ph name="URL_LABEL" />, consulta https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+Si esta lista está vacía o no se define, no se forzará la prioridad de primer plano para ningún contenido en segundo plano.</translation>
 <translation id="2772231477628401250">Usar HTTP para descargar actualizaciones</translation>
 <translation id="2772955711376920612">Si se habilita la política y se establecen <ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" /> y <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" />, se mantiene activado el cambio de alimentación en picos (en caso de ser compatible con el dispositivo). La política de gestión del cambio de alimentación en picos es una política de ahorro de energía que minimiza el uso de corriente alterna durante las horas en las que más energía se utiliza del día. Para ejecutar el modo de cambio de alimentación en picos, se puede configurar una hora de inicio y de finalización para cada día de la semana. Siempre y cuando la batería se mantenga por encima del umbral especificado, el dispositivo funciona con la batería durante esas horas (aunque esté conectada la corriente alterna). Después de la hora de finalización especificada, el dispositivo funcionará con corriente alterna (si está conectada), pero no cargará la batería. El dispositivo volverá a funcionar con normalidad usando la corriente alterna y cargando la batería después de la hora de inicio de carga especificada.
 
@@ -4850,6 +4878,7 @@ Esta política se usaba para inhabilitar la actualización automática de conten
       Si se desactiva esta política o no se establece, los usuarios pueden cambiar este ajuste.
 
       Nota: En Android, usa la política <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" />.</translation>
+<translation id="4261641564041253502">Seleccionar automáticamente los certificados de cliente que coincidan con los filtros de los informes de señales de seguridad de <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4261820385751181068">Configuración regional para la pantalla de inicio de sesión del dispositivo</translation>
 <translation id="4263788921751326798">Inhabilitar los informes de datos sobre fallos del dispositivo</translation>
 <translation id="4268586991084547853">Más compatibles con las listas de sitios del modo empresarial de Microsoft IE/Edge.</translation>
@@ -6549,22 +6578,6 @@ Si no se establece, el valor predeterminado será 0 grados y los usuarios podrá
 <translation id="5293285950307241933">Borrar todos los datos de usuario locales</translation>
 <translation id="5293619885162445352">Permitir que <ph name="PEPPER_NAME" /> use el nuevo decodificador de vídeo.</translation>
 <translation id="529457411593078576">Habilitar los Términos del Servicio cuando CCT se ejecute por primera vez</translation>
-<translation id="529718811410033393">Definir esta política permite especificar el número máximo de conexiones simultáneas por servidor proxy para solicitudes que no son de WebSocket.
-
-Para modificar los límites de solicitudes de WebSocket, consulta <ph name="MAX_CONNECTIONS_PER_PROXY_FOR_WEBSOCKET_POLICY_NAME" />.
-
-Si no se establece esta política, se utilizará el valor predeterminado (32).
-
-Algunas aplicaciones web consumen muchas conexiones con las solicitudes GET pendientes, por lo que un valor inferior a 32 puede hacer que la red del navegador se bloquee si se abren muchas aplicaciones web de este tipo.
-Algunos servidores proxy no son capaces de gestionar un número elevado de conexiones simultáneas por cliente, lo que se puede solucionar definiendo un valor inferior para esta política.
-
-El valor debe ser igual o superior a 6.
-Si defines un valor inferior a ese límite, se usará 6.
-Si defines un valor inferior al predeterminado (32), lo haces bajo tu propia responsabilidad.
-
-El valor debe ser igual o inferior a 256 (99 en <ph name="PRODUCT_NAME" /> 147 y versiones anteriores).
-Si defines un valor superior a ese límite, se usará 256 (99 en <ph name="PRODUCT_NAME" /> 147 y versiones anteriores).
-Si defines un valor superior al predeterminado (32), lo haces bajo tu propia responsabilidad.</translation>
 <translation id="5297873769621042075">Si se define esta política, se especificará una lista o patrones de nombre de host (como "'[*.]example.com") que no se actualizarán a HTTPS. Si el modo Solo HTTPS está habilitado, no se mostrará un intersticial de error. Las organizaciones pueden usar esta política para mantener el acceso a los servidores que no admiten HTTPS sin necesidad de inhabilitar las actualizaciones a HTTPS ni el modo Solo HTTPS.
 
 Los nombres de host especificados deben canonicalizarse, es decir, cada IDN debe convertirse a su formato de etiqueta A, y todas las letras ASCII deben ser minúsculas.
@@ -8243,6 +8256,7 @@ Nota: Esta política solo se aplica a las plataformas compatibles con extensione
 
       Independientemente de si se establece o no esta política, los usuarios no podrán cambiar la opción de configuración de WPAD.</translation>
 <translation id="6363485842496031347">Los ajustes de Supr usan la combinación de teclas que incluye la tecla modificadora Alt</translation>
+<translation id="6364336078281746235">Forzar la prioridad de primer plano para URLs concretas</translation>
 <translation id="6366574325767783825">Si se le asigna el valor "Habilitada" a esta política o no se le asigna ninguno, <ph name="PRODUCT_NAME" /> aceptará contenidos web de tipo Signed HTTP Exchanges.
 
       Si se le asigna el valor "Inhabilitada", los Signed HTTP Exchanges no se podrán cargar.</translation>
@@ -10157,22 +10171,6 @@ Si no se define esta política, no se permitirán excepciones de <ph name="FLOAT
 
       Si el dispositivo del usuario no está administrado, la disponibilidad de esta función dependerá también de si el usuario es el propietario del dispositivo.</translation>
 <translation id="7570291542739287032">Solo en la nube</translation>
-<translation id="7571158727244273239">Definir esta política permite especificar el número máximo de conexiones simultáneas por servidor proxy para solicitudes de WebSocket.
-
-Para modificar los límites de solicitudes que no son de WebSocket, consulta <ph name="MAX_CONNECTIONS_PER_PROXY_POLICY_NAME" />.
-
-Si no se establece esta política, se utilizará el valor predeterminado (32).
-
-Algunas aplicaciones web consumen muchas conexiones con las solicitudes GET pendientes, por lo que un valor inferior a 32 puede hacer que la red del navegador se bloquee si se abren muchas aplicaciones web de este tipo.
-Algunos servidores proxy no son capaces de gestionar un número elevado de conexiones simultáneas por cliente, lo que se puede solucionar definiendo un valor inferior para esta política.
-
-El valor debe ser igual o superior a 6.
-Si defines un valor inferior a ese límite, se usará 6.
-Si defines un valor inferior al predeterminado (32), lo haces bajo tu propia responsabilidad.
-
-El valor debe ser igual o inferior a 256.
-Si defines un valor superior a ese límite, se usará 256.
-Si defines un valor superior al predeterminado (32), lo haces bajo tu propia responsabilidad.</translation>
 <translation id="7572641760104970905">Sin complejidad</translation>
 <translation id="757395965347379751">Si se habilita esta opción, <ph name="PRODUCT_NAME" /> permitirá los certificados SHA-1 firmados siempre que se validen correctamente y se vinculen a certificados AC instalados localmente.
 

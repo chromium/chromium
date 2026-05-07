@@ -457,6 +457,7 @@
 <translation id="2475783092753560388"><ph name="SEARCH_RESULT_TEXT" /> ভৰাওক</translation>
 <translation id="2475982808118771221">কোনো আসোঁৱাহ হৈছে</translation>
 <translation id="2478076885740497414">এপ্‌ ইনষ্টল কৰক</translation>
+<translation id="2479148705183875116">ছেটিংসমূহলৈ যাওক</translation>
 <translation id="2482878487686419369">জাননী</translation>
 <translation id="2484513351006226581">কীব'র্ডৰ লেইআউট সলনি কৰিবলৈ <ph name="KEYBOARD_SHORTCUT" /> টিপক।</translation>
 <translation id="2485422356828889247">আনইনষ্টল কৰক</translation>
@@ -1047,6 +1048,7 @@
 <translation id="4239069858505860023">জিপিআৰএছ</translation>
 <translation id="4240486403425279990">অৱলোকন ম’ড</translation>
 <translation id="4242533952199664413">ছেটিংসমূহ খোলক</translation>
+<translation id="4244765461494758482">এই ছেটিংসমূহ আপোনাৰ অন্য ChromeOS ডিভাইচসমূহৰ সৈতে ছিংক হৈ আছে। আপুনি সেইসমূহ ইয়াত সলনি কৰিব পাৰে বা ছেটিঙত সম্পূৰ্ণ সূচীখন পৰিচালনা কৰিব পাৰে।</translation>
 <translation id="4247123849143712100">আপডে’ট কৰি শ্বাট ডাউন কৰক</translation>
 <translation id="4249248555939881673">নেটৱৰ্ক সংযোগৰ বাবে অপেক্ষাৰত...</translation>
 <translation id="4250229828105606438">স্ক্রীণশ্বট</translation>
@@ -2327,6 +2329,7 @@
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> নামৰ টেমপ্লে’টটো ইতিমধ্যে আছে</translation>
 <translation id="8052898407431791827">প্ৰতিলিপি কৰি ক্লিপব’ৰ্ডত ৰখা হ’ল</translation>
 <translation id="8054466585765276473">বেটাৰীৰ বাকী থকা সময় গণনা কৰি থকা হৈছে</translation>
+<translation id="8063363226185507157">ছিংক কৰা সাধ্য সুবিধাৰ ছেটিং</translation>
 <translation id="8076492880354921740">টেব</translation>
 <translation id="8079538659226626406">স্ক্ৰীন শ্বেয়াৰ</translation>
 <translation id="8083540854303889870">পাছৰ বাবে ছেভ কৰি থোৱা</translation>

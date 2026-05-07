@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">Nej tack</translation>
 <translation id="1531038290222364269">Visa flikar</translation>
 <translation id="1536390784834419204">Översätt sidan</translation>
+<translation id="1539535193627863227">Inga lösenord eller nycklar hittades för den här webbplatsen</translation>
 <translation id="1540800554400757039">Adressrad 1</translation>
 <translation id="154312949627292154">Öppna flikar som du har fått från andra enheter från låsskärmen.</translation>
 <translation id="1545749641540134597">Skanna QR-kod</translation>
@@ -642,6 +643,7 @@
 <translation id="3245744387817103524">Det gick inte att spara ändringen.</translation>
 <translation id="3254806613790954367">Din senast öppna flik på alla dina enheter</translation>
 <translation id="325717987950204592">Tryck på Integritet och säkerhet</translation>
+<translation id="3259451381796379533">Det här kontot fungerar inte med Gemini. Logga in med ett annat Google-konto.</translation>
 <translation id="3265736395246760288">Logga in snabbare från alla dina synkroniserade enheter.</translation>
 <translation id="3272527697863656322">Avbryt</translation>
 <translation id="3273510436356991673">Anpassa startskärmen</translation>
@@ -763,6 +765,7 @@
 <translation id="372676576864368480">Autofyll kortnumret som slutar på <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Skapades <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Kamerabilder</translation>
+<translation id="3746269120925354434">Informationen har sparats i Google Wallet</translation>
 <translation id="3750225824417196283">Ny fliksida i inkognitoläge</translation>
 <translation id="3751873026576444885">Sluta söka på skärmen med Google Lens</translation>
 <translation id="3753408171347588045">Bevakar priser</translation>
@@ -1076,7 +1079,6 @@
 <translation id="4824480232751123840">Volym</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} och 1 till}other{{domain} och {count} till}}</translation>
 <translation id="4826588772550366629">kamera och mikrofon</translation>
-<translation id="4828431027673677473">Produkter utifrån dina intressen</translation>
 <translation id="4829420936835028285">Redigera flikgrupp</translation>
 <translation id="4833786495304741580">Skickar användningsstatistik och felrapporter till Google automatiskt.</translation>
 <translation id="483689884442613745">Spara …</translation>
@@ -1864,6 +1866,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="7498234416455752244">Fortsätt redigera</translation>
 <translation id="7500244509706269886">Autofyll formulär</translation>
 <translation id="750493650310597496">0 valda</translation>
+<translation id="7505402981231763928">Du måste logga in för att använda Gemini</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Konfigurera Touch ID, Face ID eller ett lösenord om du vill låsa flikar i inkognitoläget.</translation>
 <translation id="750886945254958667">Behåll gruppen om du vill lägga till flikar senare eller lämna den om du inte längre vill ha åtkomst till den</translation>
@@ -2105,7 +2108,6 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="828291969289324795">{count,plural, =1{Lägg till fliken i en ny grupp}other{Lägg till flikarna i en ny grupp}}</translation>
 <translation id="8283172974887967105">Ange …</translation>
 <translation id="8289930144142009940">Aviseringar för <ph name="FEATURE_NAME" /> har inaktiverats</translation>
-<translation id="8290077367744012649">Bevaka priser från dina flikar</translation>
 <translation id="8292893224181644074">Nedladdningen är klar</translation>
 <translation id="8299417921174340354">Du måste ställa in ett lösenord på enheten innan du kan använda lösenord här.</translation>
 <translation id="8307481894409578819">Det gick inte att ladda upp filen</translation>
@@ -2172,6 +2174,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="8533670235862049797">Säker webbsökning är aktiverat</translation>
 <translation id="8534481786647257214">Inlägg på Google+ klart.</translation>
 <translation id="8535368836838588657">Visa lösenord</translation>
+<translation id="8540426897269305488">Logga in med <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8545276357312221485">Kontrollera inställningarna för standardwebbläsare</translation>
 <translation id="854938212724803178">Du har 1 utsatt lösenord. Åtgärda det nu för att hålla dig säker.</translation>
 <translation id="8551311254462607218">Tryck på kameraikonen för Google Lens i adressfältet</translation>

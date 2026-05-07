@@ -609,6 +609,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" />개 선택됨</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> 및 <ph name="PERMISSION_2" /> 허용됨</translation>
 <translation id="7276071417425470385">사용 설정하면 사이트에서 가상 현실 기기 사용을 요청할 수 있습니다. 사용 중지하면 사이트에서 가상 현실 기기를 사용할 수 없습니다.</translation>
+<translation id="7279851812866769760">연락처 공유</translation>
 <translation id="7282197670900591579">시트론 테마</translation>
 <translation id="728412880473384942">사이트 속도가 빨라지지만 보안 수준이 낮아집니다.</translation>
 <translation id="7352902948037373520"><ph name="BEGIN_LINK1" />Android 설정<ph name="END_LINK1" />에서 관리
@@ -794,6 +795,7 @@
 <translation id="9156722768168878035">Chrome에서 기기의 앱 목록과 검색 결과에 최근 탭을 표시하도록 허용합니다. 이 기능은 Chrome 설정에서 언제든지 사용 중지할 수 있습니다.</translation>
 <translation id="9162462602695099906">위험한 페이지입니다.</translation>
 <translation id="9182556968660520230">사이트에서 보호된 콘텐츠를 재생하도록 허용하지 않음</translation>
+<translation id="927148002081263046">연락처 공유</translation>
 <translation id="947156494302904893">방문하는 사이트에서 내가 봇이 아니라 실제 사람인지 확인할 수 있습니다</translation>
 <translation id="959682366969460160">깔끔하게 정리하기</translation>
 <translation id="960590623979248167">하이퍼링크 표시</translation>

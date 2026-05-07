@@ -292,6 +292,7 @@
 <translation id="230115972905494466">找不到相容的裝置</translation>
 <translation id="2316129865977710310">不，謝謝</translation>
 <translation id="2318045970523081853">輕觸即可撥打電話</translation>
+<translation id="232137538351753795">從左側邊緣向內滑動即可返回</translation>
 <translation id="2323763861024343754">網站儲存資料量</translation>
 <translation id="2328474416100889417">所有共用對象都將立即無法存取「<ph name="GROUP_NAME" />」分頁群組，邀請連結也會全部失效</translation>
 <translation id="2330186936255788117">更多書籤</translation>
@@ -942,7 +943,6 @@
 <translation id="5040262127954254034">隱私權</translation>
 <translation id="504456571576643789">注意事項</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{已選取 <ph name="WINDOW_COUNT_ONE" /> 個視窗}other{已選取 <ph name="WINDOW_COUNT_NORMAL" /> 個視窗}}</translation>
-<translation id="5056587122125565772">生成圖像</translation>
 <translation id="506254248375231072">沒有任何分頁</translation>
 <translation id="5075939510584558547">不加密直接儲存</translation>
 <translation id="5078638979202084724">將所有分頁加入書籤</translation>
@@ -1676,6 +1676,7 @@
 <translation id="7977451675950311423">如果你使用的密碼因資料侵害事件而外洩，系統會顯示警告訊息。</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、<ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> 你最近未造訪這個網站，因此 Chrome 已移除這些權限</translation>
 <translation id="799576009106109668">系統會根據你目前造訪的網頁主動載入內容，幫助你加快瀏覽速度</translation>
+<translation id="7997875520309653083">從右側邊緣向內滑動即可返回</translation>
 <translation id="7998918019931843664">重新開啟先前關閉的分頁</translation>
 <translation id="8001245658307297681">目前查看的是本機檔案</translation>
 <translation id="8004582292198964060">瀏覽器</translation>

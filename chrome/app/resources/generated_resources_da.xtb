@@ -1734,6 +1734,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> og 1 anden kontakt</translation>
 <translation id="2165177462441582039">Vælg, hvor længe hvert element skal fremhæves</translation>
 <translation id="2166369534954157698">Quizdeltagerne spiste jordbær med fløde, mens cirkusklovnen Walther spillede på xylofon</translation>
+<translation id="2168036794078614559">Rapporteringen er sendt</translation>
 <translation id="2169062631698640254">Log ind alligevel</translation>
 <translation id="2173302385160625112">Tjek din internetforbindelse</translation>
 <translation id="2173801458090845390">Føj rekvisitions-id til denne enhed</translation>
@@ -2077,6 +2078,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2402226831639195063">Toner</translation>
 <translation id="2405887402346713222">Enheds- og komponentserienumre</translation>
 <translation id="2406153734066939945">Vil du slette denne profil og de tilhørende data?</translation>
+<translation id="2406942743794219791">Bekræft den standardsøgemaskine, du vil bruge</translation>
 <translation id="2407671304279211586">Vælg DNS-udbyder</translation>
 <translation id="2408018932941436077">Gemmer kort</translation>
 <translation id="2408742686124047357">Fastgør Google Lens til din værktøjslinje, så du nemt kan tilgå Lens næste gang</translation>
@@ -3058,6 +3060,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3046892784550338476">Version <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Webside, komplet</translation>
 <translation id="304747341537320566">Oplæsningsmaskiner</translation>
+<translation id="3047618804758101928">Udvidelsen "<ph name="EXTENSION_NAME" />" har ændret dine indstillinger</translation>
 <translation id="3047678109605649715">Der er ingen <ph name="LANGUAGE" /> stemmer på din enhed. Frigør plads på din enhed, og prøv igen.</translation>
 <translation id="3048336643003835855">HID-enheder fra leverandøren <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Afspil (k)</translation>
@@ -7298,6 +7301,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="604388835206766544">Konfigurationen kunne ikke parses</translation>
 <translation id="6043994281159824495">Log ud nu</translation>
 <translation id="6045114302329202345">Primær TrackPoint-knap</translation>
+<translation id="6045425183320109397">Af</translation>
 <translation id="6047632800149092791">Der kunne ikke synkroniseres. Prøv at logge ud og ind igen.</translation>
 <translation id="6048747414605857443">Vælg og tilpas oplæsningsstemmer til ChromeVox og Tekstoplæsning</translation>
 <translation id="6050189528197190982">Gråtone</translation>
@@ -8705,7 +8709,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="701020165009334820">Du kan downloade Android-apps og -spil via Play Butik.</translation>
 <translation id="701080569351381435">Vis kilde</translation>
 <translation id="7012430956470647760">Børnesikring i apps</translation>
-<translation id="7013762323294215682">Denne adgangsnøgle gemmes i Adgangs­kode­admin­istrator. Alle med adgang til Adgangs­kode­admin­istrator kan bruge denne adgangsnøgle.</translation>
 <translation id="7014174261166285193">Installationen mislykkedes.</translation>
 <translation id="7014480873681694324">Fjern fremhævning</translation>
 <translation id="7014741021609395734">Zoomniveau</translation>
@@ -10018,6 +10021,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7939062555109487992">Avancerede valgmuligheder</translation>
 <translation id="793923212791838">Din enhed kan ikke bruges på dette website</translation>
 <translation id="7939328347457537652">Administrer enhedscertifikater</translation>
+<translation id="7939918959917132075">Ændret til dette af udvidelsen</translation>
 <translation id="7940087892955752820">Delingen kunne ikke ophæves, fordi mappen stadig anvendes af en app. Delingen af mappen ophæves, næste gang <ph name="SPECIFIC_NAME" /> lukkes.</translation>
 <translation id="7940265372707990269">Sortér efter <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Parathed til netdeling</translation>
@@ -11796,7 +11800,6 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser, enhed
 <translation id="9120800848981545750">Download Chrome til iOS for at få adgang til dine faner, bogmærker og adgangskoder på din telefon.</translation>
 <translation id="9121814364785106365">Åbn som fastgjort fane</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{Vil du lukke fanen og slette gruppen?}=1{Vil du lukke fanerne og slette gruppen?}one{Vil du lukke fanerne og slette gruppen?}other{Vil du lukke fanerne og slette grupperne?}}</translation>
-<translation id="9122788874051694311">Vil du gemme denne adgangsnøgle uden for inkognito?</translation>
 <translation id="9123287046453017203">Din enhed er ikke opdateret</translation>
 <translation id="9125910124977405374">Fjern <ph name="LANGUAGE_NAME" /> fra listen over sprog, der oversættes automatisk</translation>
 <translation id="9125912770834459638">Din organisation tillader ikke, at du logger ind</translation>

@@ -1724,6 +1724,7 @@
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> ու ևս 1 փոխանջատիչ</translation>
 <translation id="2165177462441582039">Ընտրեք, թե յուրաքանչյուր տարր որքան ժամանակ պետք է նշված մնա</translation>
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
+<translation id="2168036794078614559">Բողոքն ուղարկվեց</translation>
 <translation id="2169062631698640254">Մուտք գործել</translation>
 <translation id="2173302385160625112">Ստուգեք կապը</translation>
 <translation id="2173801458090845390">Ավելացնել սարքին հայտի ID-ն</translation>
@@ -2064,6 +2065,7 @@
 <translation id="2402226831639195063">Տոնային նշաններ</translation>
 <translation id="2405887402346713222">Սարքի և բաղադրիչների սերիական համարները</translation>
 <translation id="2406153734066939945">Ջնջե՞լ այս պրոֆիլը և դրա տվյալները</translation>
+<translation id="2406942743794219791">Հաստատեք ձեր կանխադրված որոնողական համակարգը</translation>
 <translation id="2407671304279211586">Ընտրել DNS ծառայություններ մատուցող</translation>
 <translation id="2408018932941436077">Քարտը պահվում է</translation>
 <translation id="2408742686124047357">Ամրացրեք Google Տեսապակին ձեր գործիքագոտում՝ հաջորդ անգամ արագ բացելու համար</translation>
@@ -2156,6 +2158,7 @@
 <translation id="2460826998961521840">Ձեր Google հաշվում պահված մուտքի բանալիներն օգտագործելու համար</translation>
 <translation id="2461550163693930491">Թույլ չտալ կայքերին ընդհանուր ներդիրների մասշտաբը փոփոխել ոլորումով</translation>
 <translation id="2461593638794842577">Դուք կարող եք անջատել այս կարգավորումը՝ ձեր գաղտնաբառերը միայն այս սարքում պահելու համար</translation>
+<translation id="2462550463312552298">Ամփոփիր այս փաստաթուղթը</translation>
 <translation id="2462724976360937186">Հավաստագրման կենտրոնի բանալու ID</translation>
 <translation id="2462752602710430187">Ավելացվեց <ph name="PRINTER_NAME" /></translation>
 <translation id="2464075479326723132">Առաջարկվող ֆայլերը կօգնեն ձեզ հեշտությամբ վերադառնալ ձեր վերջին գործողություններին Microsoft SharePoint-ում և OneDrive-ում։
@@ -3042,6 +3045,7 @@
 <translation id="3046892784550338476">Տարբերակ՝ <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Ամբողջ վեբէջը</translation>
 <translation id="304747341537320566">Խոսքի սինթեզատորներ</translation>
+<translation id="3047618804758101928">«<ph name="EXTENSION_NAME" />» ընդլայնումը փոխել է ձեր կարգավորումները</translation>
 <translation id="3047678109605649715">Ձեր սարքում <ph name="LANGUAGE" /> լեզվով ձայներ չկան։ Ձեր սարքում տարածք ազատեք և նորից փորձեք։</translation>
 <translation id="3048336643003835855">HID սարքեր <ph name="VENDOR_ID" /> մատակարարից</translation>
 <translation id="3048589239114571785">Նվագարկել (k)</translation>
@@ -4308,6 +4312,7 @@
 <translation id="3924788966103416622">Արտաքին հավելվածը ցանկանում է ամբողջական վերահսկողություն ստանալ Chrome-ի այս աշխատաշրջանի նկատմամբ՝ այն վրիպազերծելու համար։ Դա ներառում է ձեր պահված տվյալների, քուքիների և կայքի տվյալների հասանելիությունը, ինչպես նաև ցանկացած URL-ով անցնելու հնարավորությունը։</translation>
 <translation id="3925573269917483990">Տեսախցիկ`</translation>
 <translation id="3925926055063465902">Այս ցանցը հասանելի է սարքի այլ օգտատերերին</translation>
+<translation id="3925934852713265455">Հարցեր տալ ներդիրների մասին</translation>
 <translation id="3926002189479431949">Smart Lock հեռախոսը փոխվել է</translation>
 <translation id="3926410220776569451">Տեսախցիկի օգտագործման թույլտվությունն արգելափակված է</translation>
 <translation id="3927932062596804919">Մերժել</translation>
@@ -7275,6 +7280,7 @@
 <translation id="604388835206766544">Չհաջողվեց վերլուծել կազմաձևը</translation>
 <translation id="6043994281159824495">Դուրս գրվել</translation>
 <translation id="6045114302329202345">TrackPoint-ի հիմնական կոճակ</translation>
+<translation id="6045425183320109397">Հեղինակ՝</translation>
 <translation id="6047632800149092791">Համաժամացումը չի աշխատում։ Դուրս եկեք հաշվից և նորից մտեք։</translation>
 <translation id="6048747414605857443">Ընտրեք և անհատականացրեք տեքստի հնչեցման ձայները ChromeVox-ի և «Ընտրեք և լսեք» գործառույթի համար</translation>
 <translation id="6050189528197190982">Գորշասանդղակ</translation>
@@ -8682,7 +8688,6 @@
 <translation id="701020165009334820">Դուք կարող եք Android հավելվածները և խաղերը ներբեռնել Play Խանութի միջոցով։</translation>
 <translation id="701080569351381435">View Source</translation>
 <translation id="7012430956470647760">Հավելվածների ծնողական վերահսկողություն</translation>
-<translation id="7013762323294215682">Այս մուտքի բանալին կպահվի ձեր գաղտնաբառի կառավարիչում։ Բոլորը, ովքեր թույլտվություն ունեն, կկարողանան օգտագործել այն։</translation>
 <translation id="7014174261166285193">Տեղադրումը չհաջողվեց:</translation>
 <translation id="7014480873681694324">Հեռացնել ընդգծումը</translation>
 <translation id="7014741021609395734">Մասշտաբ</translation>
@@ -9994,6 +9999,7 @@
 <translation id="7939062555109487992">Ընդլայնված ընտրանքներ</translation>
 <translation id="793923212791838">Ձեր սարքը չի կարող օգտագործվել այս կայքի հետ</translation>
 <translation id="7939328347457537652">Կառավարել սարքի հավաստագրերը</translation>
+<translation id="7939918959917132075">Փոխվել է ընդլայնման կողմից</translation>
 <translation id="7940087892955752820">Չհաջողվեց չեղարկել պանակի հասանելիությունը, քանի որ այն օգտագործվում է հավելվածի կողմից։ Պանակն անհասանելի կդառնա, երբ <ph name="SPECIFIC_NAME" />-ը հաջորդ անգամ անջատվի։</translation>
 <translation id="7940265372707990269">Դասավորել հետևյալ կարգով՝ <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Մոդեմի ռեժիմի պատրաստ լինելը՝</translation>
@@ -11771,7 +11777,6 @@
 <translation id="9120800848981545750">Ներբեռնեք Chrome-ը iOS-ի համար՝ հեռախոսում ձեր ներդիրներից, էջանիշներից և գաղտնաբառերից օգտվելու համար</translation>
 <translation id="9121814364785106365">Բացել որպես ամրացված ներդիր</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{Փակե՞լ ներդիրը և ջնջել խումբը}=1{Փակե՞լ ներդիրները և ջնջել խումբը}one{Փակե՞լ ներդիրները և ջնջել խումբը}other{Փակե՞լ ներդիրները և ջնջել խմբերը}}</translation>
-<translation id="9122788874051694311">Պահե՞լ մուտքի այս բանալին ինկոգնիտո ռեժիմից դուրս</translation>
 <translation id="9123287046453017203">Ձեր սարքը թարմացված չէ</translation>
 <translation id="9125910124977405374">Հեռացնել <ph name="LANGUAGE_NAME" /> լեզուն ավտոմատ թարգմանվող լեզուների ցանկից</translation>
 <translation id="9125912770834459638">Ձեր կազմակերպությունը թույլ չի տալիս ձեզ մուտք գործել</translation>

@@ -341,6 +341,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="840168496893712993">Some add-ons cause Chrome to crash. Please try uninstalling them.</translation>
 <translation id="8413500425974960807">Chrome tip: Move Chrome to the dock</translation>
 <translation id="8413795581997394485">Protects against sites, downloads and extensions that are known to be dangerous. When you visit a site, Chrome sends an obfuscated portion of the URL to Google through a privacy server that hides your IP address. If a site does something suspicious, full URLs and bits of page content are also sent.</translation>
+<translation id="8447479329557998927">Chrome uses Google Maps to give you directions and local info on maps links</translation>
 <translation id="84594714173170813">Keep using the Chrome data in your Google Account</translation>
 <translation id="8491300088149538575">Signed in as <ph name="EMAIL" />.
 

@@ -292,6 +292,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="230115972905494466">Nu s-au găsit dispozitive compatibile</translation>
 <translation id="2316129865977710310">Nu, mulțumesc</translation>
 <translation id="2318045970523081853">Atinge pentru a apela</translation>
+<translation id="232137538351753795">Glisează dinspre marginea stângă pentru a reveni</translation>
 <translation id="2323763861024343754">Stocarea site-urilor</translation>
 <translation id="2328474416100889417">Toți utilizatorii vor pierde imediat accesul la grupul de file <ph name="GROUP_NAME" /> și toate linkurile de invitație vor fi dezactivate</translation>
 <translation id="2330186936255788117">Mai multe marcaje</translation>
@@ -942,7 +943,6 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="5040262127954254034">Confidențialitate</translation>
 <translation id="504456571576643789">De reținut</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" /> fereastră selectată}few{<ph name="WINDOW_COUNT_NORMAL" /> ferestre selectate}other{<ph name="WINDOW_COUNT_NORMAL" /> de ferestre selectate}}</translation>
-<translation id="5056587122125565772">Creează o imagine</translation>
 <translation id="506254248375231072">Nicio filă</translation>
 <translation id="5075939510584558547">Salvează fără criptare</translation>
 <translation id="5078638979202084724">Marchează toate filele</translation>
@@ -1676,6 +1676,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="7977451675950311423">Te avertizează dacă folosești o parolă care a fost compromisă printr-o încălcare a securității datelor.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome a eliminat aceste permisiuni deoarece nu ai accesat recent site-ul</translation>
 <translation id="799576009106109668">Vei naviga mai rapid deoarece conținutul se încarcă proactiv în funcție de pagina web accesată în acel moment</translation>
+<translation id="7997875520309653083">Glisează dinspre marginea dreaptă pentru a reveni</translation>
 <translation id="7998918019931843664">Redeschideți fila închisă</translation>
 <translation id="8001245658307297681">Se afișează un fișier local</translation>
 <translation id="8004582292198964060">Browser</translation>

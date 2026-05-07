@@ -609,6 +609,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> 件選択されています</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />を許可</translation>
 <translation id="7276071417425470385">オンにすると、サイトはバーチャル リアリティ デバイスの使用を要求できます。オフにすると、サイトはバーチャル リアリティ デバイスを使用できません。</translation>
+<translation id="7279851812866769760">連絡先を共有する</translation>
 <translation id="7282197670900591579">シトロンのテーマ</translation>
 <translation id="728412880473384942">サイトは速くなりますが、安全性は低下します</translation>
 <translation id="7352902948037373520"><ph name="BEGIN_LINK1" />Android の設定<ph name="END_LINK1" />で管理します
@@ -700,6 +701,7 @@
 <translation id="823874716226307142">オンにすると、サイトはローカル ネットワーク上の他のデバイスへのアクセスを要求できます。オフにすると、サイトはローカル ネットワーク上の他のデバイスにアクセスできません。</translation>
 <translation id="8249310407154411074">一番上に移動</translation>
 <translation id="8261506727792406068">削除</translation>
+<translation id="8273596202562472147">「<ph name="SITE_NAME" />」に関するその他のオプション</translation>
 <translation id="8284326494547611709">字幕</translation>
 <translation id="8300705686683892304">アプリによる管理</translation>
 <translation id="8301363963630676147">一時的に許可 • おおよその位置情報を使用</translation>
@@ -794,6 +796,7 @@
 <translation id="9156722768168878035">Chrome で最近使ったタブをデバイスのアプリリストと検索結果に表示できます。この機能は Chrome の設定でいつでもオフにできます。</translation>
 <translation id="9162462602695099906">このページは危険です</translation>
 <translation id="9182556968660520230">サイトに保護されたコンテンツの再生を許可しない</translation>
+<translation id="927148002081263046">連絡先を共有する</translation>
 <translation id="947156494302904893">アクセスしたサイトは、あなたが bot ではなく実在のユーザーであることを確認できます</translation>
 <translation id="959682366969460160">タブを整理</translation>
 <translation id="960590623979248167">ハイパーリンクを表示</translation>

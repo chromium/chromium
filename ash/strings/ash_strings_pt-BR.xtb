@@ -457,6 +457,7 @@
 <translation id="2475783092753560388">Inserir <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="2475982808118771221">Ocorreu um erro</translation>
 <translation id="2478076885740497414">Instalar aplicativo</translation>
+<translation id="2479148705183875116">Acessar as configurações</translation>
 <translation id="2482878487686419369">Notificações</translation>
 <translation id="2484513351006226581">Pressione <ph name="KEYBOARD_SHORTCUT" /> para alterar o layout do teclado.</translation>
 <translation id="2485422356828889247">Desinstalar</translation>
@@ -1047,6 +1048,7 @@ Alguns recursos estão limitados para aumentar a duração da bateria.</translat
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Modo de visão geral</translation>
 <translation id="4242533952199664413">Abrir configurações.</translation>
+<translation id="4244765461494758482">Essas configurações estão sendo sincronizadas com outros dispositivos ChromeOS. Você pode mudar isso aqui ou gerenciar a lista completa nas Configurações.</translation>
 <translation id="4247123849143712100">Atualizar e desligar</translation>
 <translation id="4249248555939881673">Aguardando conexão da rede...</translation>
 <translation id="4250229828105606438">Captura de tela</translation>
@@ -2327,6 +2329,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8051716679295756675">Já existe um modelo com o nome "<ph name="DESK_TEMPLATE_NAME" />"</translation>
 <translation id="8052898407431791827">Copiado para a área de transferência</translation>
 <translation id="8054466585765276473">Calculando duração da bateria.</translation>
+<translation id="8063363226185507157">Configurações de acessibilidade sincronizadas</translation>
 <translation id="8076492880354921740">Guias</translation>
 <translation id="8079538659226626406">Compartilhamento de tela</translation>
 <translation id="8083540854303889870">Salvos para mais tarde</translation>

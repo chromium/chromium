@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">ไม่เป็นไร ขอบคุณ</translation>
 <translation id="1531038290222364269">แสดงแท็บ</translation>
 <translation id="1536390784834419204">แปลหน้าเว็บ</translation>
+<translation id="1539535193627863227">ไม่พบรหัสผ่านหรือพาสคีย์สำหรับเว็บไซต์นี้</translation>
 <translation id="1540800554400757039">ที่อยู่ 1</translation>
 <translation id="154312949627292154">เปิดแท็บที่ได้รับจากอุปกรณ์อื่นๆ ของคุณจากหน้าจอล็อก</translation>
 <translation id="1545749641540134597">สแกนโค้ด QR</translation>
@@ -642,6 +643,7 @@
 <translation id="3245744387817103524">บันทึกการเปลี่ยนแปลงไม่ได้</translation>
 <translation id="3254806613790954367">แท็บที่เปิดล่าสุดในอุปกรณ์ทั้งหมดของคุณ</translation>
 <translation id="325717987950204592">แตะ "ความเป็นส่วนตัวและความปลอดภัย"</translation>
+<translation id="3259451381796379533">บัญชีนี้จะใช้กับ Gemini ไม่ได้ ลงชื่อเข้าใช้ด้วยบัญชี Google บัญชีอื่น</translation>
 <translation id="3265736395246760288">ลงชื่อเข้าใช้ได้เร็วขึ้นจากอุปกรณ์ที่ซิงค์ไว้</translation>
 <translation id="3272527697863656322">ยกเลิก</translation>
 <translation id="3273510436356991673">ปรับแต่งหน้าจอหลัก</translation>
@@ -763,6 +765,7 @@
 <translation id="372676576864368480">ป้อนหมายเลขบัตรที่ลงท้ายด้วย <ph name="LAST_DIGITS" /> โดยอัตโนมัติ</translation>
 <translation id="3738428049780661523">สร้างเมื่อ <ph name="DATE" /></translation>
 <translation id="3742498336182910186">รูปภาพจากกล้อง</translation>
+<translation id="3746269120925354434">บันทึกข้อมูลลงใน Google Wallet แล้ว</translation>
 <translation id="3750225824417196283">หน้าแท็บใหม่ที่ไม่ระบุตัวตน</translation>
 <translation id="3751873026576444885">หยุดค้นหาบนหน้าจอด้วย Google Lens</translation>
 <translation id="3753408171347588045">กำลังติดตามราคา</translation>
@@ -1076,7 +1079,6 @@
 <translation id="4824480232751123840">ระดับเสียง</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} และอีก 1 แท็บ}other{{domain} และอีก {count} แท็บ}}</translation>
 <translation id="4826588772550366629">กล้องและไมโครโฟน</translation>
-<translation id="4828431027673677473">ผลิตภัณฑ์ที่อิงตามความสนใจของคุณ</translation>
 <translation id="4829420936835028285">แก้ไขกลุ่มแท็บ</translation>
 <translation id="4833786495304741580">ส่งสถิติการใช้งานและรายงานข้อขัดข้องให้กับ Google โดยอัตโนมัติ</translation>
 <translation id="483689884442613745">บันทึก…</translation>
@@ -1864,6 +1866,7 @@
 <translation id="7498234416455752244">แก้ไขต่อ</translation>
 <translation id="7500244509706269886">ป้อนข้อความอัตโนมัติในแบบฟอร์ม</translation>
 <translation id="750493650310597496">เลือก 0 รายการ</translation>
+<translation id="7505402981231763928">คุณต้องลงชื่อเข้าใช้เพื่อใช้ Gemini</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7508728395076009983">หากต้องการล็อกแท็บที่ไม่ระบุตัวตน ให้ตั้งค่า Touch ID, Face ID หรือรหัสผ่าน</translation>
 <translation id="750886945254958667">เก็บกลุ่มนี้ไว้เพื่อเพิ่มแท็บในภายหลัง หรือออกจากกลุ่มหากคุณไม่ต้องการเข้าถึงกลุ่มแล้ว</translation>
@@ -2105,7 +2108,6 @@
 <translation id="828291969289324795">{count,plural, =1{เพิ่มแท็บไปยังกลุ่มใหม่}other{เพิ่มแท็บไปยังกลุ่มใหม่}}</translation>
 <translation id="8283172974887967105">ตั้งค่า…</translation>
 <translation id="8289930144142009940">ปิดการแจ้งเตือน<ph name="FEATURE_NAME" /> แล้ว</translation>
-<translation id="8290077367744012649">ติดตามราคาจากแท็บ</translation>
 <translation id="8292893224181644074">การดาวน์โหลดเสร็จสมบูรณ์</translation>
 <translation id="8299417921174340354">หากต้องการใช้รหัสผ่าน คุณต้องตั้งรหัสผ่านในอุปกรณ์ก่อน</translation>
 <translation id="8307481894409578819">อัปโหลดไฟล์นี้ไม่ได้</translation>
@@ -2172,6 +2174,7 @@
 <translation id="8533670235862049797">Google Safe Browsing เปิดอยู่</translation>
 <translation id="8534481786647257214">โพสต์ใน Google+ แล้ว</translation>
 <translation id="8535368836838588657">แสดงรหัสผ่าน</translation>
+<translation id="8540426897269305488">ลงชื่อเข้าใช้ด้วย <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8545276357312221485">ตรวจสอบการตั้งค่าเบราว์เซอร์เริ่มต้น</translation>
 <translation id="854938212724803178">คุณมีรหัสผ่านที่ถูกละเมิด 1 รายการ แก้ไขเลยเพื่อความปลอดภัย</translation>
 <translation id="8551311254462607218">ในแถบที่อยู่ ให้แตะไอคอนกล้อง Google Lens</translation>

@@ -1722,6 +1722,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> y 1 interruptor más</translation>
 <translation id="2165177462441582039">Elige cuánto tiempo debe estar destacado cada elemento</translation>
 <translation id="2166369534954157698">Benjamín pidió una bebida de kiwi y fresa. Noé, sin vergüenza, la más exquisita champaña del menú.</translation>
+<translation id="2168036794078614559">Denuncia enviada</translation>
 <translation id="2169062631698640254">Iniciar sesión de todas formas</translation>
 <translation id="2173302385160625112">Comprueba tu conexión a Internet</translation>
 <translation id="2173801458090845390">Añadir solicitud de ID para este dispositivo</translation>
@@ -2063,6 +2064,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2402226831639195063">Tonos</translation>
 <translation id="2405887402346713222">Números de serie del dispositivo y de los componentes</translation>
 <translation id="2406153734066939945">¿Eliminar este perfil y sus datos?</translation>
+<translation id="2406942743794219791">Confirma el buscador predeterminado que quieres</translation>
 <translation id="2407671304279211586">Seleccionar proveedor de DNS</translation>
 <translation id="2408018932941436077">Guardando tarjeta</translation>
 <translation id="2408742686124047357">Fija Google Lens a tu barra de herramientas para acceder fácilmente la próxima vez</translation>
@@ -2155,6 +2157,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2460826998961521840">Para usar las llaves de acceso guardadas en tu cuenta de Google</translation>
 <translation id="2461550163693930491">No permitir que los sitios se desplacen por las pestañas compartidas y las amplíen</translation>
 <translation id="2461593638794842577">Puedes desactivar este ajuste para guardar tus contraseñas solo en este dispositivo</translation>
+<translation id="2462550463312552298">Resume este documento</translation>
 <translation id="2462724976360937186">ID de clave de la entidad emisora de certificados</translation>
 <translation id="2462752602710430187">Se ha añadido la impresora <ph name="PRINTER_NAME" /></translation>
 <translation id="2464075479326723132">Estás viendo sugerencias de archivos para ayudarte a retomar fácilmente tu actividad más reciente en Microsoft SharePoint y OneDrive.
@@ -3043,6 +3046,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3046892784550338476">Versión <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Página web (completa)</translation>
 <translation id="304747341537320566">Motores de voz</translation>
+<translation id="3047618804758101928">La extensión "<ph name="EXTENSION_NAME" />" ha cambiado tu configuración</translation>
 <translation id="3047678109605649715">No hay voces en <ph name="LANGUAGE" /> en tu dispositivo. Libera espacio en tu dispositivo y vuelve a intentarlo.</translation>
 <translation id="3048336643003835855">Dispositivos HID del proveedor <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Reproducir (K)</translation>
@@ -4311,6 +4315,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3924788966103416622">Una aplicación externa quiere tener control total sobre esta sesión de Chrome para depurarla. Esto incluye el acceso a tus datos guardados, cookies y datos de sitios, así como la posibilidad de ir a cualquier URL.</translation>
 <translation id="3925573269917483990">Cámara:</translation>
 <translation id="3925926055063465902">Los demás usuarios de este dispositivo también pueden usar esta red</translation>
+<translation id="3925934852713265455">Pregunta sobre tus pestañas</translation>
 <translation id="3926002189479431949">El teléfono de Smart Lock ha cambiado</translation>
 <translation id="3926410220776569451">El acceso a la cámara está bloqueado</translation>
 <translation id="3927932062596804919">Denegar</translation>
@@ -7279,6 +7284,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="604388835206766544">Se ha producido un error al analizar la configuración</translation>
 <translation id="6043994281159824495">Salir ahora</translation>
 <translation id="6045114302329202345">Botón principal del TrackPoint</translation>
+<translation id="6045425183320109397">De</translation>
 <translation id="6047632800149092791">No funciona la sincronización. Prueba a cerrar sesión y volver a iniciarla.</translation>
 <translation id="6048747414605857443">Selecciona y personaliza las voces de la conversión de texto a voz de ChromeVox y Enunciar selección</translation>
 <translation id="6050189528197190982">Escala de grises</translation>
@@ -8684,7 +8690,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="701020165009334820">Puedes descargar aplicaciones y juegos Android a través de Play Store.</translation>
 <translation id="701080569351381435">Ver código fuente</translation>
 <translation id="7012430956470647760">Controles parentales para aplicaciones</translation>
-<translation id="7013762323294215682">Esta llave de acceso se guardará en tu gestor de contraseñas. Cualquier persona con acceso a él podrá usar esta llave de acceso.</translation>
 <translation id="7014174261166285193">Error de instalación</translation>
 <translation id="7014480873681694324">Eliminar resaltado</translation>
 <translation id="7014741021609395734">Nivel de zoom</translation>
@@ -9997,6 +10002,7 @@ Pulsa un interruptor o una tecla con una acción asignada para quitársela.</tra
 <translation id="7939062555109487992">Opciones avanzadas</translation>
 <translation id="793923212791838">Tu dispositivo no se puede usar con este sitio</translation>
 <translation id="7939328347457537652">Gestionar los certificados del dispositivo</translation>
+<translation id="7939918959917132075">La extensión ha cambiado esto</translation>
 <translation id="7940087892955752820">No se ha podido dejar de compartir esta carpeta porque una aplicación está usándola. Se dejará de compartir la próxima vez que se apague <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="7940265372707990269">Ordenar por <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Preparación de la conexión compartida:</translation>
@@ -11773,7 +11779,6 @@ Puede tratarse de información sobre el software instalado, los archivos, el nav
 <translation id="9120800848981545750">Descarga Chrome para iOS y accede a tus pestañas, marcadores y contraseñas en tu teléfono.</translation>
 <translation id="9121814364785106365">Abrir como pestaña fija</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{¿Cerrar pestaña y eliminar grupo?}=1{¿Cerrar pestaña y eliminar grupo?}other{¿Cerrar pestañas y eliminar grupos?}}</translation>
-<translation id="9122788874051694311">¿Guardar esta llave de acceso fuera de Incógnito?</translation>
 <translation id="9123287046453017203">Tu dispositivo no está actualizado</translation>
 <translation id="9125910124977405374">Quitar <ph name="LANGUAGE_NAME" /> de la lista de idiomas que se traducen automáticamente</translation>
 <translation id="9125912770834459638">Tu organización no te permite iniciar sesión</translation>

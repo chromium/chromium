@@ -2072,6 +2072,7 @@
 <translation id="2402226831639195063">صداها</translation>
 <translation id="2405887402346713222">شماره‌های سریال دستگاه و قطعات</translation>
 <translation id="2406153734066939945">این نمایه و داده‌های آن حذف شود؟</translation>
+<translation id="2406942743794219791">موتور جستجوی پیش‌فرض موردنظرتان را تأیید کنید</translation>
 <translation id="2407671304279211586">انتخاب رساننده ساناد</translation>
 <translation id="2408018932941436077">درحال ذخیره کارت</translation>
 <translation id="2408742686124047357">‏«لنز Google» را به نوارابزار خود سنجاق کنید تا دفعه بعد به‌راحتی به آن دسترسی داشته باشید</translation>
@@ -2164,6 +2165,7 @@
 <translation id="2460826998961521840">‏برای استفاده از گذرکلیدهای ذخیره‌شده در «حساب Google»</translation>
 <translation id="2461550163693930491">به سایت‌ها اجازه پیمایش و بزرگ‌نمایی برگه‌های هم‌رسانی‌شده داده نشود</translation>
 <translation id="2461593638794842577">می‌توانید این تنظیم را خاموش کنید تا گذرواژه‌هایتان فقط در این دستگاه ذخیره شود</translation>
+<translation id="2462550463312552298">این سند را خلاصه کن</translation>
 <translation id="2462724976360937186">شناسه کلید ارائه دهنده مجوز</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> اضافه شد</translation>
 <translation id="2464075479326723132">‏درحال دیدن فایل‌های پیشنهادی هستید تا به شما کمک کند به‌راحتی به آخرین فعالیتتان در Microsoft SharePoint و OneDrive برگردید.
@@ -3052,6 +3054,7 @@
 <translation id="3046892784550338476">نسخه <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">صفحهٔ وب، کامل</translation>
 <translation id="304747341537320566">موتورهای گفتار</translation>
+<translation id="3047618804758101928">افزونه «<ph name="EXTENSION_NAME" />» تنظیمات شما را تغییر داد</translation>
 <translation id="3047678109605649715">هیچ صدایی به زبان <ph name="LANGUAGE" /> در دستگاهتان وجود ندارد. فضای دستگاهتان را آزاد کنید و دوباره امتحان کنید.</translation>
 <translation id="3048336643003835855">‏دستگاه‌های HID از فروشنده <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">‏پخش کردن (k)</translation>
@@ -4320,6 +4323,7 @@
 <translation id="3924788966103416622">‏برنامه خارجی‌ای می‌خواهد کنترل کامل این جلسه Chrome را برای اشکال‌زدایی کردن آن دراختیار بگیرد. این شامل دسترسی به داده‌های ذخیره‌شده شما، کوکی‌ها، و داده‌های سایت، و امکان پیمایش به هر نشانی وبی می‌شود.</translation>
 <translation id="3925573269917483990">دوربین:</translation>
 <translation id="3925926055063465902">دیگر کاربران این دستگاه نیز می‌توانند از این شبکه استفاده کنند</translation>
+<translation id="3925934852713265455">پرسیدن درباره زبانه‌ها</translation>
 <translation id="3926002189479431949">‏تلفن مربوط به Smart Lock تغییر کرد</translation>
 <translation id="3926410220776569451">دسترسی به دوربین مسدود شده است</translation>
 <translation id="3927932062596804919">ردکردن</translation>
@@ -7291,6 +7295,7 @@
 <translation id="604388835206766544">پیکربندی تجزیه‌وتحلیل نشد</translation>
 <translation id="6043994281159824495">خروج از سیستم هم‌اکنون</translation>
 <translation id="6045114302329202345">‏دکمه TrackPoint اصلی</translation>
+<translation id="6045425183320109397">توسط</translation>
 <translation id="6047632800149092791">همگام‌سازی کار نمی‌کند. تلاش کنید از سیستم خارج و دوباره وارد شوید.</translation>
 <translation id="6048747414605857443">‏انتخاب و سفارشی کردن صداهای نوشتار به گفتار برای ChromeVox و «انتخاب برای شنیدن»</translation>
 <translation id="6050189528197190982">سیاه‌وسفید</translation>
@@ -8698,7 +8703,6 @@
 <translation id="701020165009334820">‏می‌توانید برنامه‌ها و بازی‌های Android را ازطریق «فروشگاه Play» بارگیری کنید.</translation>
 <translation id="701080569351381435">مشاهده منبع</translation>
 <translation id="7012430956470647760">کنترل‌های والدین ویژه برنامه‌ها</translation>
-<translation id="7013762323294215682">این گذرکلید در مدیر گذرواژه‌تان ذخیره خواهد شد. هر کسی که به آن دسترسی داشته باشد می‌تواند از این گذرکلید استفاده کند.</translation>
 <translation id="7014174261166285193">نصب انجام نشد.</translation>
 <translation id="7014480873681694324">برداشتن برجسته‌سازی</translation>
 <translation id="7014741021609395734">سطح بزرگ‌نمایی</translation>
@@ -10011,6 +10015,7 @@
 <translation id="7939062555109487992">گزینه‌های پیشرفته</translation>
 <translation id="793923212791838">نمی‌توان از دستگاهتان در این سایت استفاده کرد</translation>
 <translation id="7939328347457537652">مدیریت گواهینامه‌های دستگاه</translation>
+<translation id="7939918959917132075">افزونه آن را به این تغییر داد</translation>
 <translation id="7940087892955752820">لغو هم‌رسانی امکان‌پذیر نیست زیرا برنامه‌ای از این پوشه استفاده می‌کند. دفعه بعدی که <ph name="SPECIFIC_NAME" /> را خاموش کنید، پوشه لغو هم‌رسانی خواهد شد.</translation>
 <translation id="7940265372707990269">به‌ترتیب <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">آمادگی برای اشتراک‌گذاری اینترنت:</translation>
@@ -11788,7 +11793,6 @@
 <translation id="9120800848981545750">‏برای اینکه در تلفنتان به زبانه‌ها، نشانک‌ها، و گذرواژه‌هایتان دسترسی داشته باشید، Chrome ویژه iOS را بارگیری کنید</translation>
 <translation id="9121814364785106365">باز کردن به‌عنوان برگه الصاق شده</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{زبانه بسته و گروه حذف شود؟}=1{زبانه بسته و گروه حذف شود؟}one{زبانه بسته و گروه حذف شود؟}other{زبانه‌ها بسته و گروه‌ها حذف شود؟}}</translation>
-<translation id="9122788874051694311">این گذرکلید خارج از «حالت ناشناس» ذخیره شود؟</translation>
 <translation id="9123287046453017203">دستگاهتان به‌روز نیست</translation>
 <translation id="9125910124977405374">حذف <ph name="LANGUAGE_NAME" /> از زبان‌هایی که به‌طور خودکار ترجمه می‌شود</translation>
 <translation id="9125912770834459638">سازمانتان به شما اجازه نمی‌دهد به سیستم وارد شوید</translation>

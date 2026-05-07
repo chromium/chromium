@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">വേണ്ട</translation>
 <translation id="1531038290222364269">ടാബുകൾ കാണിക്കുക</translation>
 <translation id="1536390784834419204">പേജ് വിവർത്തനം ചെയ്യുക</translation>
+<translation id="1539535193627863227">ഈ സൈറ്റിനായി പാസ്‌വേഡുകളോ പാസ്‌കീകളോ കണ്ടെത്തിയില്ല</translation>
 <translation id="1540800554400757039">വിലാസം 1</translation>
 <translation id="154312949627292154">നിങ്ങളുടെ മറ്റ് ഉപകരണങ്ങളിൽ നിന്ന് ലഭിച്ച ടാബുകൾ ലോക്ക് സ്ക്രീനിൽ തുറക്കുക.</translation>
 <translation id="1545749641540134597">QR കോഡ് സ്‌കാൻ ചെയ്യുക</translation>
@@ -642,6 +643,7 @@
 <translation id="3245744387817103524">നിങ്ങൾ വരുത്തിയ മാറ്റം സംരക്ഷിക്കാനായില്ല.</translation>
 <translation id="3254806613790954367">നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും ഉടനീളം അവസാനമായി തുറന്ന ടാബ്</translation>
 <translation id="325717987950204592">"സ്വകാര്യതയും സുരക്ഷയും" ടാപ്പ് ചെയ്യുക</translation>
+<translation id="3259451381796379533">ഈ അക്കൗണ്ട് Gemini-യിൽ പ്രവർത്തിക്കില്ല. മറ്റൊരു Google Account ഉപയോഗിച്ച് സൈൻ ഇൻ ചെയ്യുക.</translation>
 <translation id="3265736395246760288">നിങ്ങൾ സമന്വയിപ്പിച്ചിട്ടുള്ള ഏതെങ്കിലും ഉപകരണത്തിൽ നിന്ന് വേഗത്തിൽ സൈൻ ഇൻ ചെയ്യുക.</translation>
 <translation id="3272527697863656322">റദ്ദാക്കുക</translation>
 <translation id="3273510436356991673">നിങ്ങളുടെ ഹോം സ്ക്രീൻ ഇഷ്ടാനുസൃതമാക്കുക</translation>
@@ -763,6 +765,7 @@
 <translation id="372676576864368480"><ph name="LAST_DIGITS" /> എന്നതിൽ അവസാനിക്കുന്ന നിങ്ങളുടെ കാർഡ് നമ്പർ സ്വയമേവ പൂരിപ്പിക്കുക</translation>
 <translation id="3738428049780661523"><ph name="DATE" />-ന് സൃഷ്ടിച്ചത്</translation>
 <translation id="3742498336182910186">ക്യാമറ റോൾ</translation>
+<translation id="3746269120925354434">വിവരങ്ങൾ Google Wallet-ലേക്ക് സംരക്ഷിച്ചു</translation>
 <translation id="3750225824417196283">പുതിയ അദൃശ്യ ടാബ് പേജ്</translation>
 <translation id="3751873026576444885">Google Lens ഉപയോഗിച്ച് നിങ്ങളുടെ സ്ക്രീൻ തിരയുന്നത് നിർത്തുക</translation>
 <translation id="3753408171347588045">നിരക്കുകൾ ട്രാക്ക് ചെയ്യുന്നു</translation>
@@ -1076,7 +1079,6 @@
 <translation id="4824480232751123840">അളവ്‌</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} എന്നതും മറ്റൊന്നും}other{{domain} എന്നതും മറ്റ് {count} എണ്ണവും}}</translation>
 <translation id="4826588772550366629">ക്യാമറയും മൈക്രോഫോണും</translation>
-<translation id="4828431027673677473">നിങ്ങളുടെ താൽപ്പര്യങ്ങൾ അടിസ്ഥാനമാക്കിയുള്ള ഉൽപ്പന്നങ്ങൾ</translation>
 <translation id="4829420936835028285">ടാബ് ഗ്രൂപ്പ് എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="4833786495304741580">Google-ലേക്ക് സ്വയമേവ ഉപയോഗ സ്ഥിതിവിവരക്കണക്കുകളും ക്രാഷ് റിപ്പോർട്ടുകളും അയയ്ക്കുന്നു.</translation>
 <translation id="483689884442613745">സംരക്ഷിക്കുക…</translation>
@@ -1864,6 +1866,7 @@
 <translation id="7498234416455752244">എഡിറ്റ് ചെയ്യുന്നത് തുടരുക</translation>
 <translation id="7500244509706269886">ഫോം സ്വയമേവ പൂരിപ്പിക്കുക</translation>
 <translation id="750493650310597496">0 തിരഞ്ഞെടുത്തു</translation>
+<translation id="7505402981231763928">Gemini ഉപയോഗിക്കാൻ നിങ്ങൾ സൈൻ ഇൻ ചെയ്യേണ്ടതുണ്ട്</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">നിങ്ങളുടെ അദൃശ്യ ടാബുകൾ ലോക്ക് ചെയ്യാൻ, ടച്ച് ഐഡിയോ മുഖ ഐഡിയോ പാസ്‌കോഡോ സജ്ജീകരിക്കുക.</translation>
 <translation id="750886945254958667">പിന്നീട് ടാബുകൾ ചേർക്കാൻ ഈ ഗ്രൂപ്പ് നിലനിർത്തുക, അല്ലെങ്കിൽ നിങ്ങൾക്ക് അതിലേക്ക് ആക്‌സസ് വേണ്ടെങ്കിൽ അതിൽ നിന്ന് പുറത്തുകടക്കുക</translation>
@@ -2105,7 +2108,6 @@
 <translation id="828291969289324795">{count,plural, =1{പുതിയ ഗ്രൂപ്പിലേക്ക് ടാബ് ചേർക്കുക}other{പുതിയ ഗ്രൂപ്പിലേക്ക് ടാബുകൾ ചേർക്കുക}}</translation>
 <translation id="8283172974887967105">സജ്ജീകരിക്കുക…</translation>
 <translation id="8289930144142009940"><ph name="FEATURE_NAME" /> അറിയിപ്പുകൾ ഓഫാക്കി</translation>
-<translation id="8290077367744012649">നിങ്ങളുടെ ടാബുകളിൽ നിന്ന് നിരക്കുകൾ ട്രാക്ക് ചെയ്യുക</translation>
 <translation id="8292893224181644074">ഡൗൺലോഡ് പൂർത്തിയായി</translation>
 <translation id="8299417921174340354">പാസ്‍വേഡുകൾ ഉപയോഗിക്കാൻ, ആദ്യം നിങ്ങളുടെ ഉപകരണത്തിൽ പാസ്‌കോഡ് സജ്ജീകരിക്കുക.</translation>
 <translation id="8307481894409578819">ഈ ഫയൽ അപ്‌ലോഡ് ചെയ്യാനായില്ല</translation>
@@ -2172,6 +2174,7 @@
 <translation id="8533670235862049797">സുരക്ഷിത ബ്രൗസിംഗ് ഓണാണ്</translation>
 <translation id="8534481786647257214">Google+ പങ്കിടൽ പൂർത്തിയായി.</translation>
 <translation id="8535368836838588657">പാസ്‌വേഡ് വെളിപ്പെടുത്തുക</translation>
+<translation id="8540426897269305488"><ph name="CELL_ACCESSIBILITY_LABEL" /> ഉപയോഗിച്ച് സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="8545276357312221485">നിങ്ങളുടെ ഡിഫോൾട്ട് ബ്രൗസർ ക്രമീകരണങ്ങൾ പരിശോധിക്കുക</translation>
 <translation id="854938212724803178">നിങ്ങൾക്ക് അപഹരിക്കപ്പെട്ട ഒരു പാസ്‌വേഡ് ഉണ്ട്. സുരക്ഷിതരായി നിലനിൽക്കാൻ ഇപ്പോൾ അത് പരിഹരിക്കുക.</translation>
 <translation id="8551311254462607218">വിലാസ ബാറിൽ, Google Lens ക്യാമറാ ഐക്കൺ ടാപ്പ് ചെയ്യുക</translation>

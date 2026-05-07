@@ -277,6 +277,7 @@
 
           **Preguntes suggerides**: genera una llista de pics d'entre 3 i 5 preguntes que facin reflexionar i que un usuari podria fer per entendre millor la captura de pantalla. Aquestes preguntes n'han d'incloure com a mínim una que sigui específicament sobre un objecte visual, el seu disseny o el seu emplaçament.</translation>
 <translation id="386202838227397562">Tanqueu totes les finestres de Google Chrome i torneu-ho a provar.</translation>
+<translation id="3869083394918739976">Pots continuar xatejant amb el mode IA sense canviar de pestanya. Per començar, inicia la sessió a Chrome. També obtindràs les contrasenyes i altres dades en tots els teus dispositius.</translation>
 <translation id="3873044882194371212">Obre l'enllaç en una finestra d'incò&amp;gnit a Chrome</translation>
 <translation id="3885770153807205175">Selector d'idioma</translation>
 <translation id="3889417619312448367">Desinstal·la Google Chrome</translation>
@@ -326,6 +327,9 @@
 <translation id="4348548358339558429">Per obtenir personalització, inclou Chrome a Activitat al web i en aplicacions</translation>
 <translation id="436060642166082913">Chrome ha bloquejat aquesta baixada perquè el fitxer pot malmetre els teus comptes personals i de xarxes socials</translation>
 <translation id="4367027658822022112">Pots fixar Google Lens per accedir-hi fàcilment. Fes clic al botó per fixar que hi ha a la part superior del tauler lateral.</translation>
+<translation id="4380616334811859000">Chrome desactiva l'optimització de JavaScript quan visites un lloc web per primera vegada.
+
+Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimització.</translation>
 <translation id="4389991535395284064">Quan naveguis en mode d'incògnit, Chrome t'avisarà abans de carregar un lloc web amb una connexió no segura</translation>
 <translation id="4427306783828095590">La protecció millorada és més efiçaç a l'hora de bloquejar la pesca de credencials i el programari maliciós</translation>
 <translation id="4434353761996769206">Error de l'instal·lador: <ph name="INSTALLER_ERROR" /></translation>

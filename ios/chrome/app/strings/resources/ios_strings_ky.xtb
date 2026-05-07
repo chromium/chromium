@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">Жок, рахмат</translation>
 <translation id="1531038290222364269">Өтмөктөрдү көрсөтүү</translation>
 <translation id="1536390784834419204">Баракты которуу</translation>
+<translation id="1539535193627863227">Бул сайт үчүн сырсөздөр же киргизүүчү ачкычтар табылган жок</translation>
 <translation id="1540800554400757039">1-дарек</translation>
 <translation id="154312949627292154">Башка түзмөктөрдөн алынган өтмөктөрдү кулпуланган экранда ачасыз.</translation>
 <translation id="1545749641540134597">QR кодду скандоо</translation>
@@ -642,6 +643,7 @@
 <translation id="3245744387817103524">Өзгөртүүңүз сакталган жок.</translation>
 <translation id="3254806613790954367">Бардык түзмөктөрдө ачылган акыркы өтмөк</translation>
 <translation id="325717987950204592">"Купуялык жана коопсуздук" параметрин таптап коюңуз</translation>
+<translation id="3259451381796379533">Бул аккаунт Gemini менен иштебейт. Башка Google аккаунту менен кириңиз.</translation>
 <translation id="3265736395246760288">Шайкештирилген түзмөктөрүңүздөн тезирээк кириңиз.</translation>
 <translation id="3272527697863656322">Жокко чыгаруу</translation>
 <translation id="3273510436356991673">Башкы экранды ыңгайлаштырыңыз</translation>
@@ -763,6 +765,7 @@
 <translation id="372676576864368480"><ph name="LAST_DIGITS" /> менен аяктаган картаны автотолтуруу</translation>
 <translation id="3738428049780661523"><ph name="DATE" /> түзүлгөн</translation>
 <translation id="3742498336182910186">Галерея</translation>
+<translation id="3746269120925354434">Маалымат Google Капчыкка сакталды</translation>
 <translation id="3750225824417196283">Жаңы жашыруун өтмөк барагы</translation>
 <translation id="3751873026576444885">Google Lens'ти жашырып коюңуз</translation>
 <translation id="3753408171347588045">Бааларга көз салынууда</translation>
@@ -1076,7 +1079,6 @@
 <translation id="4824480232751123840">Үндүн катуулугу</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} жана дагы 1}other{{domain} жана дагы {count}}}</translation>
 <translation id="4826588772550366629">камера менен микрофонду</translation>
-<translation id="4828431027673677473">Кызыкчылыктарыңызга негизделген товарлар</translation>
 <translation id="4829420936835028285">Өтмөктөр тобун оңдоо</translation>
 <translation id="4833786495304741580">Колдонуу статистикасын жана каталар жөнүндө кабарларды Google'га автоматтык түрдө жөнөтүп турат.</translation>
 <translation id="483689884442613745">Сактоо…</translation>
@@ -1864,6 +1866,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="7498234416455752244">Оңдой берүү</translation>
 <translation id="7500244509706269886">Форманы автотолтуруу</translation>
 <translation id="750493650310597496">0 тандалды</translation>
+<translation id="7505402981231763928">Gemini'ды колдонуу үчүн аккаунтуңузга киришиңиз керек</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Жашыруун өтмөктөрдү кулпулоо үчүн Touch ID, Face ID же өткөрүүчү кодду жөндөңүз.</translation>
 <translation id="750886945254958667">Өтмөктөрдү кийинчерээк кошуу үчүн бул топту калтырып, же ага кирүүнү каалабасаңыз, андан чыгыңыз</translation>
@@ -2105,7 +2108,6 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="828291969289324795">{count,plural, =1{Өтмөктү жаңы топко кошуу}other{Өтмөктөрдү жаңы топко кошуу}}</translation>
 <translation id="8283172974887967105">Коюу…</translation>
 <translation id="8289930144142009940"><ph name="FEATURE_NAME" /> билдирмелери өчүрүлдү</translation>
-<translation id="8290077367744012649">Өтмөктөрүңүздөн бааларды көзөмөлдөңүз</translation>
 <translation id="8292893224181644074">Жүктөп алуу аяктады</translation>
 <translation id="8299417921174340354">Сырсөздөрдү колдонуу үчүн адегенде, түзмөгүңүздөгү өткөрүүчү кодду жөндөп алышыңыз керек.</translation>
 <translation id="8307481894409578819">Бул файлды жүктөп берүүгө болбойт</translation>
@@ -2172,6 +2174,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8533670235862049797">Коопсуз серептөө күйүк</translation>
 <translation id="8534481786647257214">Google+ жайгаштырылды.</translation>
 <translation id="8535368836838588657">Сырсөздү көрсөтүү</translation>
+<translation id="8540426897269305488"><ph name="CELL_ACCESSIBILITY_LABEL" /> менен кирүү</translation>
 <translation id="8545276357312221485">Демейки серепчинин параметрлерин текшериңиз</translation>
 <translation id="854938212724803178">1 уурдалган сырсөзүңүз бар. Коопсуз болуу үчүн аны азыр оңдоңуз.</translation>
 <translation id="8551311254462607218">Дарек тилкесиндеги Google Lens камерасынын сүрөтчөсүн таптап коюңуз</translation>

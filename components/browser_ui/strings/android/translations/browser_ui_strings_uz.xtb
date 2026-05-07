@@ -609,6 +609,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> ta element tanlandi</translation>
 <translation id="7260727271532453612">Ruxsat berildi: <ph name="PERMISSION_1" /> va <ph name="PERMISSION_2" /></translation>
 <translation id="7276071417425470385">Yoqilsa, saytlar virtual reallik qurilmalaridan foydalanishni soʻrashi mumkin Oʻchirilsa, bunday qurilmalardan foydalana olmaydi.</translation>
+<translation id="7279851812866769760">Kontaktlarni ulashish</translation>
 <translation id="7282197670900591579">Toʻq limon mavzu</translation>
 <translation id="728412880473384942">Saytlar tezroq ochiladi, ammo himoyasi kamroq</translation>
 <translation id="7352902948037373520"><ph name="BEGIN_LINK1" />Android sozlamalari<ph name="END_LINK1" /> orqali boshqarish
@@ -700,6 +701,7 @@ Kuchaytirilgan himoya boshqaruvida quyidagi Chrome sozlamalari mavjud:</translat
 <translation id="823874716226307142">Yoqilsa, saytlar mahalliy tarmoqdagi boshqa qurilmalarga ruxsat soʻrashi mumkin. Faolsizlantirilsa, saytlar mahalliy tarmoqdagi boshqa qurilmalarga ruxsat olmaydi.</translation>
 <translation id="8249310407154411074">Tepaga siljitish</translation>
 <translation id="8261506727792406068">O‘chirish</translation>
+<translation id="8273596202562472147"><ph name="SITE_NAME" /> uchun boshqa variantlar</translation>
 <translation id="8284326494547611709">Taglavhalar</translation>
 <translation id="8300705686683892304">Ilova boshqaruvida</translation>
 <translation id="8301363963630676147">Shu safar ruxsat berildi • Taxminiy axboroti ishlatilmoqda</translation>
@@ -794,6 +796,7 @@ Kuchaytirilgan himoya boshqaruvida quyidagi Chrome sozlamalari mavjud:</translat
 <translation id="9156722768168878035">Chrome oxirgi varaqlarni qurilmadagi ilovalar roʻyxati va qidiruv natijalarida chiqarishiga ruxsat bering. Buni istalgan vaqt Chrome sozlamalarida faolsizlantirishingiz mumkin.</translation>
 <translation id="9162462602695099906">Bu sahifa xavfli</translation>
 <translation id="9182556968660520230">Saytlarga himoyalangan kontentni ijro qilishni taqiqlash</translation>
+<translation id="927148002081263046">Kontakt ulashish</translation>
 <translation id="947156494302904893">Siz ochadigan va real odam ekaningiz haqidagi axborotni tekshirishi mumkin saytlar</translation>
 <translation id="959682366969460160">Ishni tashkillash</translation>
 <translation id="960590623979248167">Giperhavolalarni koʻrsatish</translation>

@@ -2061,6 +2061,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2402226831639195063">Tonuak</translation>
 <translation id="2405887402346713222">Gailuaren eta osagaien serie-zenbakiak</translation>
 <translation id="2406153734066939945">Profil hau eta bertako datuak ezabatu nahi dituzu?</translation>
+<translation id="2406942743794219791">Berretsi nahi duzun bilatzaile lehenetsia</translation>
 <translation id="2407671304279211586">Hautatu DNSen hornitzaile bat</translation>
 <translation id="2408018932941436077">Txartela gordetzen</translation>
 <translation id="2408742686124047357">Ainguratu Google Lens tresna-barrara, hurrengoan erraz erabil dezazun</translation>
@@ -2153,6 +2154,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2460826998961521840">Google-ko kontuan gordetako sarbide-gakoak erabiltzeko</translation>
 <translation id="2461550163693930491">Ez eman fitxa partekatuetan gora/behera egiteko eta zooma erabiltzeko baimena webguneei</translation>
 <translation id="2461593638794842577">Pasahitzak gailu honetan soilik gordetzeko, desaktibatu ezarpena</translation>
+<translation id="2462550463312552298">Egin dokumentu honen laburpena</translation>
 <translation id="2462724976360937186">Ziurtagiri-emailearen gako-identifikatzailea</translation>
 <translation id="2462752602710430187">Gehitu da <ph name="PRINTER_NAME" /></translation>
 <translation id="2464075479326723132">Iradokitako fitxategiak ikusten ari zara, azkenaldiko jardueretara itzultzea errazagoa izan dadin Microsoft SharePoint-en eta OneDrive-n.
@@ -3041,6 +3043,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3046892784550338476">Bertsioa: <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Webgune osoa</translation>
 <translation id="304747341537320566">Hizketa-motorrak</translation>
+<translation id="3047618804758101928">"<ph name="EXTENSION_NAME" />" luzapenak zure ezarpenak aldatu ditu</translation>
 <translation id="3047678109605649715">Ez dago <ph name="LANGUAGE" /> darabilen ahotsik gailuan. Egin tokia gailuan eta saiatu berriro.</translation>
 <translation id="3048336643003835855"><ph name="VENDOR_ID" /> etxeko HID bidezko gailuak</translation>
 <translation id="3048589239114571785">Erreproduzitu (k)</translation>
@@ -4307,6 +4310,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3924788966103416622">Kanpoko aplikazio batek Chrome-ko saio hau guztiz kontrolatu nahi du, hura arazteko. Gordetako datuak, cookieak eta webguneetako datuak atzitzeko baimena, eta edozein URLra nabigatzeko gaitasuna barne.</translation>
 <translation id="3925573269917483990">Kamera:</translation>
 <translation id="3925926055063465902">Gailu honen beste erabiltzaileek ere erabil dezakete sarea</translation>
+<translation id="3925934852713265455">Egin fitxei buruzko galderak</translation>
 <translation id="3926002189479431949">Aldatu da Smart Lock telefonoa</translation>
 <translation id="3926410220776569451">Kamera erabiltzeko baimena blokeatuta dago</translation>
 <translation id="3927932062596804919">Ukatu</translation>
@@ -7273,6 +7277,7 @@ Erabilerraztasun-etengailu bat baino gehiago eslei diezazkiokezu ekintza horri.<
 <translation id="604388835206766544">Ezin izan da analizatu konfigurazioa</translation>
 <translation id="6043994281159824495">Amaitu saioa</translation>
 <translation id="6045114302329202345">TrackPoint botoi nagusia</translation>
+<translation id="6045425183320109397">Egilea:</translation>
 <translation id="6047632800149092791">Sinkronizazioa ez dabil. Amaitu eta hasi berriro saioa.</translation>
 <translation id="6048747414605857443">Hautatu eta pertsonalizatu testua ahots bihurtzeko eginbidearen ahotsak ChromeVox-en eta "Hautatu ozen irakurtzeko" eginbidean</translation>
 <translation id="6050189528197190982">Gris-eskala</translation>
@@ -8678,7 +8683,6 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="701020165009334820">Google Play Store bidez, Android-erako aplikazioak eta jokoak deskarga ditzakezu.</translation>
 <translation id="701080569351381435">Ikusi iturburua</translation>
 <translation id="7012430956470647760">Aplikazioetarako guraso-murriztapenak</translation>
-<translation id="7013762323294215682">Sarbide-gakoa Pasahitz-kudeatzailea zerbitzuan gordeko da. Zerbitzu horretarako sarbidea duten guztiek erabili ahal izango dute sarbide-gakoa.</translation>
 <translation id="7014174261166285193">Ezin izan da instalatu.</translation>
 <translation id="7014480873681694324">Kendu nabarmentzea</translation>
 <translation id="7014741021609395734">Zoom-maila</translation>
@@ -9989,6 +9993,7 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <translation id="7939062555109487992">Aukera aurreratuak</translation>
 <translation id="793923212791838">Gailua ezin da erabili webgune honetan</translation>
 <translation id="7939328347457537652">Kudeatu gailuen ziurtagiriak</translation>
+<translation id="7939918959917132075">Luzapen batek aldatu du bilatzaile honetara</translation>
 <translation id="7940087892955752820">Ezin izan zaio partekatzeari utzi, aplikazio bat ari delako karpeta hau erabiltzen. <ph name="SPECIFIC_NAME" /> ixten den hurrengoan utziko zaio karpeta partekatzeari.</translation>
 <translation id="7940265372707990269">Ordenatzeko irizpidea: <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Konexioa partekatzeko aukeraren erabilgarritasuna:</translation>
@@ -11765,7 +11770,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="9120800848981545750">Deskargatu iOS-erako Chrome zure fitxa, laster-marka eta pasahitzak telefonoan atzitu ahal izateko.</translation>
 <translation id="9121814364785106365">Ireki fitxa ainguratu gisa</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{Fitxa itxi, eta taldea ezabatu nahi duzu?}=1{Fitxak itxi, eta taldea ezabatu nahi duzu?}other{Fitxak itxi, eta taldeak ezabatu nahi dituzu?}}</translation>
-<translation id="9122788874051694311">Sarbide-gakoa ezkutuko modutik kanpo gorde nahi duzu?</translation>
 <translation id="9123287046453017203">Gailua ez dago eguneratuta</translation>
 <translation id="9125910124977405374">Kendu <ph name="LANGUAGE_NAME" /> automatikoki itzultzen diren hizkuntzetatik</translation>
 <translation id="9125912770834459638">Erakundeak ez dizu uzten saioa hasten</translation>

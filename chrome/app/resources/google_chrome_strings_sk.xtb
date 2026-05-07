@@ -328,6 +328,9 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="4348548358339558429">Ak chcete mať k dispozícii prispôsobenie, zahrňte Chrome do aktivity na internete a v aplikáciách</translation>
 <translation id="436060642166082913">Chrome toto sťahovanie zablokoval, pretože daný súbor môže poškodiť vaše osobné účty aj účty sociálnych sietí</translation>
 <translation id="4367027658822022112">Funkciu Google Lens si môžete pripnúť, aby ste k nej mali jednoduchý prístup. Hore na bočnom paneli kliknite na tlačidlo Pripnúť.</translation>
+<translation id="4380616334811859000">Pri prvej návšteve webu vypína Chrome optimalizáciu JavaScriptu.
+
+Ak stránka nefunguje podľa očakávaní, skúste optimalizáciu povoliť.</translation>
 <translation id="4389991535395284064">Pri prehliadaní v režime inkognito vás bude Chrome pred načítaním webu používajúceho nezabezpečené pripojenie upozorňovať</translation>
 <translation id="4427306783828095590">Rozšírená ochrana efektívnejšie blokuje phishing aj malvér</translation>
 <translation id="4434353761996769206">Chyba inštalátora: <ph name="INSTALLER_ERROR" /></translation>

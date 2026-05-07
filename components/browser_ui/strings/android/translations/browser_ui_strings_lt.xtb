@@ -609,6 +609,7 @@
 <translation id="7250468141469952378">Pasirinkta: <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">Leidžiama: <ph name="PERMISSION_1" /> ir <ph name="PERMISSION_2" /></translation>
 <translation id="7276071417425470385">Įjungus svetainėse gali būti prašoma naudoti virtualiosios realybės įrenginius. Išjungus svetainėse negalima naudoti virtualiosios realybės įrenginių.</translation>
+<translation id="7279851812866769760">Kontaktų bendrinimas</translation>
 <translation id="7282197670900591579">Citrinų spalvos tema</translation>
 <translation id="728412880473384942">Svetainės bus spartesnės, bet mažiau saugios</translation>
 <translation id="7352902948037373520">Tvarkykite <ph name="BEGIN_LINK1" />„Android“ nustatymuose<ph name="END_LINK1" />
@@ -794,6 +795,7 @@ Naudojant Papildomą apsaugą valdomi toliau nurodyti „Chrome“ nustatymai.</
 <translation id="9156722768168878035">Leiskite „Chrome“ rodyti naujausius skirtukus įrenginio programų sąraše ir paieškos rezultatuose. Galite bet kada išjungti tai „Chrome“ nustatymuose.</translation>
 <translation id="9162462602695099906">Šis puslapis pavojingas</translation>
 <translation id="9182556968660520230">Neleisti svetainėms leisti apsaugoto turinio</translation>
+<translation id="927148002081263046">Kontakto bendrinimas</translation>
 <translation id="947156494302904893">Svetainės, kuriose lankotės, gali patvirtinti, kad esate realus asmuo, o ne robotas</translation>
 <translation id="959682366969460160">Sutvarkykite</translation>
 <translation id="960590623979248167">Rodyti hipersaitus</translation>

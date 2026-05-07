@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">पर्दैन, धन्यवाद</translation>
 <translation id="1531038290222364269">ट्याबहरू देखाउनुहोस्</translation>
 <translation id="1536390784834419204">यो पृष्ठ अनुवाद गर्नुहोस्</translation>
+<translation id="1539535193627863227">यो साइटका कुनै पनि पासवर्ड वा पासकी भेटिएन</translation>
 <translation id="1540800554400757039">ठेगाना 1</translation>
 <translation id="154312949627292154">आफ्ना अन्य डिभाइसबाट प्राप्त ट्याबहरू लक स्क्रिनबाटै खोल्नुहोस्।</translation>
 <translation id="1545749641540134597">QR कोड स्क्यान गर्नुहोस्</translation>
@@ -642,6 +643,7 @@
 <translation id="3245744387817103524">तपाईंले गरेको परिवर्तन सेभ गर्न सकिएन।</translation>
 <translation id="3254806613790954367">तपाईंका सबै डिभाइसमा खोलिएका ट्याबहरूमध्ये पछिल्लो पटक खोलिएको ट्याब</translation>
 <translation id="325717987950204592">"गोपनीयता तथा सुरक्षा" मा ट्याप गर्नुहोस्</translation>
+<translation id="3259451381796379533">यो खातामार्फत Gemini प्रयोग गर्न मिल्दैन। अर्कै Google खाता प्रयोग गरी साइन इन गर्नुहोस्।</translation>
 <translation id="3265736395246760288">सिंक गरिएका आफ्ना जुनसुकै डिभाइसबाट अझ छिटो साइन इन गर्नुहोस्।</translation>
 <translation id="3272527697863656322">रद्द गर्नुहोस्</translation>
 <translation id="3273510436356991673">आफ्नो होम स्क्रिन कस्टमाइज गर्नुहोस्</translation>
@@ -763,6 +765,7 @@
 <translation id="372676576864368480">अन्तिमका अङ्क <ph name="LAST_DIGITS" /> भएको कार्ड नम्बर स्वतः भर्नुहोस्</translation>
 <translation id="3738428049780661523">बनाइएको मिति: <ph name="DATE" /></translation>
 <translation id="3742498336182910186">क्यामेरा रोल</translation>
+<translation id="3746269120925354434">Google Wallet मा सेभ गरिएको जानकारी</translation>
 <translation id="3750225824417196283">इन्कोग्निटो ट्याबसम्बन्धी नयाँ पेज</translation>
 <translation id="3751873026576444885">Google लेन्स प्रयोग गरी आफ्नो डिभाइसको स्क्रिनमा भएका कुरा खोज्न छाड्नुहोस्</translation>
 <translation id="3753408171347588045">मूल्य ट्रयाक गरिँदै छ</translation>
@@ -1076,7 +1079,6 @@
 <translation id="4824480232751123840">आयतन</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} र अन्य १}other{{domain} र अन्य {count}}}</translation>
 <translation id="4826588772550366629">क्यामेरा र माइक्रोफोन</translation>
-<translation id="4828431027673677473">तपाईंका रुचिमा आधारित उत्पादनहरू</translation>
 <translation id="4829420936835028285">ट्याब समूह सम्पादन गर्नुहोस्</translation>
 <translation id="4833786495304741580">यसले Google मा प्रयोगसम्बन्धी तथ्याङ्क र क्र्यास रिपोर्टहरू स्वतः पठाउँछ।</translation>
 <translation id="483689884442613745">सेभ गर्नुहोस्…</translation>
@@ -1864,6 +1866,7 @@
 <translation id="7498234416455752244">सम्पादन गरिरहनुहोस्</translation>
 <translation id="7500244509706269886">अटोफिल फाराम</translation>
 <translation id="750493650310597496">0 चयन गरियो</translation>
+<translation id="7505402981231763928">Gemini प्रयोग गर्न तपाईंले साइन इन गर्नु पर्ने हुन्छ</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />)।</translation>
 <translation id="7508728395076009983">आफ्ना इन्कोग्निटो ट्याबहरू लक गर्न Touch ID, Face ID वा पासकोड सेटअप गर्नुहोस्।</translation>
 <translation id="750886945254958667">ट्याबहरू पछि हाल्न यो समूह राखिराख्नुहोस् वा तपाईं अबदेखि यो एक्सेस गर्न चाहनुहुन्न भने यसबाट बाहिरिनुहोस्</translation>
@@ -2105,7 +2108,6 @@
 <translation id="828291969289324795">{count,plural, =1{यो ट्याब नयाँ समूहमा हाल्नुहोस्}other{यी ट्याबहरू नयाँ समूहमा हाल्नुहोस्}}</translation>
 <translation id="8283172974887967105">सेट गर्नुहोस्…</translation>
 <translation id="8289930144142009940"><ph name="FEATURE_NAME" /> सम्बन्धी सूचना प्राप्त गर्ने सुविधा अफ गरिएको छ</translation>
-<translation id="8290077367744012649">आफ्ना ट्याबहरूबाटै मूल्यहरू ट्र्याक गर्नुहोस्</translation>
 <translation id="8292893224181644074">डाउनलोड पूरा भयो</translation>
 <translation id="8299417921174340354">पासवर्डहरू प्रयोग गर्न सर्वप्रथम तपाईंले आफ्नो यन्त्रमा अनिवार्य रूपमा कुनै पासकोड सेट गर्नु पर्छ।</translation>
 <translation id="8307481894409578819">यो फाइल अपलोड गर्न सकिएन</translation>
@@ -2172,6 +2174,7 @@
 <translation id="8533670235862049797">Safe Browsing अन छ</translation>
 <translation id="8534481786647257214">Google+ पोस्ट पूरा भयो।</translation>
 <translation id="8535368836838588657">पासवर्ड देखाउनुहोस्</translation>
+<translation id="8540426897269305488"><ph name="CELL_ACCESSIBILITY_LABEL" /> मार्फत साइन इन गर्नुहोस्</translation>
 <translation id="8545276357312221485">डिफल्ट ब्राउजरका सेटिङ जाँच्नुहोस्</translation>
 <translation id="854938212724803178">तपाईंको एउटा पासवर्ड ह्याक वा चोरी भएको छ। सुरक्षित रहन अहिले नै यो समस्या निवारण गर्नुहोस्।</translation>
 <translation id="8551311254462607218">एड्रेस बारमा रहेको Google लेन्सको क्यामेरा आइकनमा ट्याप गर्नुहोस्</translation>

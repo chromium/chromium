@@ -1722,6 +1722,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> e mais 1 interruptor.</translation>
 <translation id="2165177462441582039">Escolha o tempo de realce de cada item</translation>
 <translation id="2166369534954157698">A ligeira raposa marrom salta sobre o cão preguiçoso</translation>
+<translation id="2168036794078614559">Denúncia enviada</translation>
 <translation id="2169062631698640254">Continuar com o início de sessão</translation>
 <translation id="2173302385160625112">Verifique a ligação à Internet</translation>
 <translation id="2173801458090845390">Adicionar ID de requisição a este dispositivo</translation>
@@ -7287,6 +7288,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="604388835206766544">Falha ao analisar a configuração.</translation>
 <translation id="6043994281159824495">Terminar sessão agora</translation>
 <translation id="6045114302329202345">Botão do TrackPoint principal</translation>
+<translation id="6045425183320109397">De</translation>
 <translation id="6047632800149092791">A sincronização não está a funcionar. Experimente terminar e iniciar sessão novamente.</translation>
 <translation id="6048747414605857443">Selecione e personalize as vozes para a conversão de texto em voz do ChromeVox e da funcionalidade Selecionar para falar</translation>
 <translation id="6050189528197190982">Tons de cinzento</translation>
@@ -8692,7 +8694,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="701020165009334820">Pode transferir apps e jogos Android através da Play Store.</translation>
 <translation id="701080569351381435">Ver origem</translation>
 <translation id="7012430956470647760">Controlos parentais para apps</translation>
-<translation id="7013762323294215682">Esta chave de acesso vai ser guardada no seu gestor de palavras-passe. Qualquer pessoa com acesso a este gestor vai poder usar esta chave de acesso.</translation>
 <translation id="7014174261166285193">A instalação falhou.</translation>
 <translation id="7014480873681694324">Remover realce</translation>
 <translation id="7014741021609395734">Nível de zoom</translation>
@@ -11782,7 +11783,6 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="9120800848981545750">Transfira o Chrome para iOS para aceder aos seus separadores, marcadores e palavras-passe no telemóvel.</translation>
 <translation id="9121814364785106365">Abrir como separador fixo</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{Fechar o separador e eliminar o grupo?}=1{Fechar os separadores e eliminar o grupo?}other{Fechar os separadores e eliminar os grupos?}}</translation>
-<translation id="9122788874051694311">Guardar esta chave de acesso fora da Navegação anónima?</translation>
 <translation id="9123287046453017203">O dispositivo não está atualizado</translation>
 <translation id="9125910124977405374">Remover <ph name="LANGUAGE_NAME" /> dos idiomas traduzidos automaticamente</translation>
 <translation id="9125912770834459638">A sua organização não lhe permite iniciar sessão</translation>

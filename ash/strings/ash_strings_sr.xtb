@@ -457,6 +457,7 @@
 <translation id="2475783092753560388">Уметните резултат <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="2475982808118771221">Дошло је до грешке</translation>
 <translation id="2478076885740497414">Инсталирај апликацију</translation>
+<translation id="2479148705183875116">Иди у Подешавања</translation>
 <translation id="2482878487686419369">Обавештења</translation>
 <translation id="2484513351006226581">Притисните <ph name="KEYBOARD_SHORTCUT" /> да бисте променили распоред тастатуре.</translation>
 <translation id="2485422356828889247">Деинсталирај</translation>
@@ -1048,6 +1049,7 @@
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Режим прегледа</translation>
 <translation id="4242533952199664413">Отвори подешавања</translation>
+<translation id="4244765461494758482">Ова подешавања се синхронизују на другим ChromeOS уређајима. Можете да их промените овде или да управљате целом листом у Подешавањима.</translation>
 <translation id="4247123849143712100">Ажурирај и искључи</translation>
 <translation id="4249248555939881673">Чека се мрежна веза...</translation>
 <translation id="4250229828105606438">Снимак екрана</translation>
@@ -2329,6 +2331,7 @@
 <translation id="8051716679295756675">Шаблон под насловом <ph name="DESK_TEMPLATE_NAME" /> већ постоји</translation>
 <translation id="8052898407431791827">Копирано је у привремену меморију</translation>
 <translation id="8054466585765276473">Израчунавање времена трајања батерије.</translation>
+<translation id="8063363226185507157">Синхронизована подешавања приступачности</translation>
 <translation id="8076492880354921740">Картице</translation>
 <translation id="8079538659226626406">Дељење садржаја екрана</translation>
 <translation id="8083540854303889870">Сачувано за касније</translation>

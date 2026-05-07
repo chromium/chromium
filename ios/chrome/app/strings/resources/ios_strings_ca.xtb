@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">No, gràcies</translation>
 <translation id="1531038290222364269">Mostra les pestanyes</translation>
 <translation id="1536390784834419204">Tradueix la pàgina</translation>
+<translation id="1539535193627863227">No s'ha trobat cap contrasenya ni clau d'accés per a aquest lloc web</translation>
 <translation id="1540800554400757039">Adreça 1</translation>
 <translation id="154312949627292154">Obre les pestanyes rebudes dels teus altres dispositius des de la pantalla de bloqueig.</translation>
 <translation id="1545749641540134597">Escaneja el codi QR</translation>
@@ -642,6 +643,7 @@
 <translation id="3245744387817103524">No s'ha pogut desar el canvi.</translation>
 <translation id="3254806613790954367">La darrera pestanya oberta en tots els teus dispositius</translation>
 <translation id="325717987950204592">Toca Privadesa i seguretat</translation>
+<translation id="3259451381796379533">Aquest compte no funcionarà amb Gemini. Inicia la sessió amb un altre Compte de Google.</translation>
 <translation id="3265736395246760288">Inicia la sessió més ràpidament des de qualsevol dels teus dispositius sincronitzats.</translation>
 <translation id="3272527697863656322">Cancel·la</translation>
 <translation id="3273510436356991673">Personalitza la pantalla d'inici</translation>
@@ -721,6 +723,7 @@
 <translation id="3565012355885596568">No s'han pogut carregar les imatges</translation>
 <translation id="3565930036634619844">Pestanya. <ph name="TAB_INDEX" /> de <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Desa d'altra forma</translation>
+<translation id="3571703298474554279">Una manera més ràpida d'utilitzar l'aplicació</translation>
 <translation id="3572503683475187385">La pestanya actual es comparteix amb Gemini quan inicies un xat nou. Quan comparteixes una pestanya amb Gemini, el contingut i l'URL corresponents s'envien a Google. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Al teu Compte de Google</translation>
 <translation id="3575234738189584619">Cerca amb Lens</translation>
@@ -1075,7 +1078,6 @@
 <translation id="4824480232751123840">Volum</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} i 1 més}other{{domain} i {count} més}}</translation>
 <translation id="4826588772550366629">la càmera i el micròfon</translation>
-<translation id="4828431027673677473">Productes basats en els teus interessos</translation>
 <translation id="4829420936835028285">Edita el grup de pestanyes</translation>
 <translation id="4833786495304741580">Envia automàticament a Google estadístiques d'ús i informes d'error.</translation>
 <translation id="483689884442613745">Desa…</translation>
@@ -1698,6 +1700,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6871397658902960384">Comença a navegar</translation>
 <translation id="6874328931822449112">{COUNT,plural, =1{Desa la contrasenya al compte}other{Desa les contrasenyes al compte}}</translation>
 <translation id="6875166646976836138">També pots veure i gestionar aquests elements a les adreces d'interès, a la llista de lectura o al gestor de contrasenyes.</translation>
+<translation id="6878052248816456143">Accedeix als fitxers de Google Drive en qualsevol moment.</translation>
 <translation id="6882836635272038266">Protecció estàndard contra llocs web, baixades i extensions que se sap que són perillosos.</translation>
 <translation id="6884135917113737984">{COUNT,plural, =1{Desa {COUNT} contrasenya al teu Compte de Google}other{Desa {COUNT} contrasenyes al teu Compte de Google}}</translation>
 <translation id="6888009575607455378">Confirmes que vols descartar els canvis?</translation>
@@ -1811,6 +1814,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="7345061034321640811">No es permet la importació</translation>
 <translation id="7347998088283246662">Importa les contrasenyes, l'historial, les adreces d'interès i més</translation>
 <translation id="7352651011704765696">S'ha produït un error</translation>
+<translation id="7363497636543208734">Ara és més fàcil moure's per l'aplicació.</translation>
 <translation id="7364796246159120393">Tria un fitxer</translation>
 <translation id="736564850024123010">Canvia la posició de la barra d'adreces per gaudir d'una experiència personalitzada.</translation>
 <translation id="7366909168761621528">Dades de navegació</translation>
@@ -1861,6 +1865,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="7498234416455752244">Continua editant</translation>
 <translation id="7500244509706269886">Formulari d'emplenament automàtic</translation>
 <translation id="750493650310597496">No se n'ha seleccionat cap</translation>
+<translation id="7505402981231763928">Has d'iniciar la sessió per utilitzar Gemini</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Per bloquejar les pestanyes d'incògnit, configura Touch ID, Face ID o una contrasenya.</translation>
 <translation id="750886945254958667">Conserva aquest grup per afegir-hi pestanyes més endavant o surt-ne si ja no vols accedir-hi més</translation>
@@ -2102,7 +2107,6 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="828291969289324795">{count,plural, =1{Afegeix una pestanya al grup nou}other{Afegeix pestanyes al grup nou}}</translation>
 <translation id="8283172974887967105">Estableix…</translation>
 <translation id="8289930144142009940">S'han desactivat les notificacions de <ph name="FEATURE_NAME" /></translation>
-<translation id="8290077367744012649">Fes un seguiment dels preus des de les teves pestanyes</translation>
 <translation id="8292893224181644074">Baixada completada</translation>
 <translation id="8299417921174340354">Per utilitzar les contrasenyes, primer has d'establir una contrasenya al dispositiu.</translation>
 <translation id="8307481894409578819">Aquest fitxer no s'ha pogut penjar</translation>

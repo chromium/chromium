@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">Não</translation>
 <translation id="1531038290222364269">Mostrar separadores</translation>
 <translation id="1536390784834419204">Traduzir página</translation>
+<translation id="1539535193627863227">Não foram encontradas palavras-passe nem chaves de acesso para este site</translation>
 <translation id="1540800554400757039">Morada 1</translation>
 <translation id="154312949627292154">Abra os separadores recebidos dos seus outros dispositivos a partir do ecrã de bloqueio.</translation>
 <translation id="1545749641540134597">Ler código QR</translation>
@@ -642,6 +643,7 @@
 <translation id="3245744387817103524">Não foi possível guardar a alteração.</translation>
 <translation id="3254806613790954367">O último separador aberto em todos os seus dispositivos</translation>
 <translation id="325717987950204592">Toque em "Privacidade e segurança"</translation>
+<translation id="3259451381796379533">Esta conta não funciona com o Gemini. Inicie sessão com uma Conta Google diferente.</translation>
 <translation id="3265736395246760288">Inicie sessão mais rapidamente a partir de qualquer um dos seus dispositivos sincronizados.</translation>
 <translation id="3272527697863656322">Cancelar</translation>
 <translation id="3273510436356991673">Personalizar o ecrã principal</translation>
@@ -1077,7 +1079,6 @@
 <translation id="4824480232751123840">Volume</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} e mais 1}other{{domain} e mais {count}}}</translation>
 <translation id="4826588772550366629">câmara e microfone</translation>
-<translation id="4828431027673677473">Produtos com base nos seus interesses</translation>
 <translation id="4829420936835028285">Editar grupo de separadores</translation>
 <translation id="4833786495304741580">Envia automaticamente estatísticas de utilização e relatórios de falhas para a Google.</translation>
 <translation id="483689884442613745">Guardar…</translation>
@@ -1865,6 +1866,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="7498234416455752244">Continuar a editar</translation>
 <translation id="7500244509706269886">Preencher automaticamente formulário</translation>
 <translation id="750493650310597496">0 selecionados</translation>
+<translation id="7505402981231763928">Tem de iniciar sessão para usar o Gemini</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Para bloquear os separadores de navegação anónima, configure o Touch ID, o Face ID ou um código secreto.</translation>
 <translation id="750886945254958667">Mantenha este grupo para adicionar separadores mais tarde ou saia do grupo se já não quiser aceder a este</translation>
@@ -2106,7 +2108,6 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="828291969289324795">{count,plural, =1{Adicionar separador a novo grupo}other{Adicionar separadores a novo grupo}}</translation>
 <translation id="8283172974887967105">Definir…</translation>
 <translation id="8289930144142009940">Notificações de <ph name="FEATURE_NAME" /> desativadas</translation>
-<translation id="8290077367744012649">Acompanhe os preços nos seus separadores</translation>
 <translation id="8292893224181644074">Transferência concluída</translation>
 <translation id="8299417921174340354">Para utilizar palavras-passe, tem de definir primeiro um código secreto no dispositivo.</translation>
 <translation id="8307481894409578819">Não foi possível carregar este ficheiro</translation>

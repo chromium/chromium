@@ -2075,6 +2075,7 @@
 <translation id="2402226831639195063">टोन</translation>
 <translation id="2405887402346713222">डिव्हाइस आणि घटक सिरीअल नंबर</translation>
 <translation id="2406153734066939945">ही प्रोफाइल आणि तिचा डेटा हटवायचा आहे का?</translation>
+<translation id="2406942743794219791">तुम्हाला हवे आहे ते डीफॉल्ट सर्च इंजीन कन्फर्म करा</translation>
 <translation id="2407671304279211586">DNS पुरवठादार निवडा</translation>
 <translation id="2408018932941436077">कार्ड सेव्ह करत आहे</translation>
 <translation id="2408742686124047357">पुढच्या वेळी सोप्या अ‍ॅक्सेससाठी Google Lens तुमच्या टूलबारवर पिन करा</translation>
@@ -2167,6 +2168,7 @@
 <translation id="2460826998961521840">तुमच्या Google खाते मध्ये सेव्ह केलेल्या पासकी वापरण्यासाठी</translation>
 <translation id="2461550163693930491">साइटना शेअर केलेले टॅब स्क्रोल आणि झूम करण्याची अनुमती देऊ नका</translation>
 <translation id="2461593638794842577">तुमचे पासवर्ड फक्त या डिव्हाइसवर सेव्ह करण्यासाठी तुम्ही हे सेटिंग बंद करू शकता</translation>
+<translation id="2462550463312552298">या दस्तऐवजाचा सारांश लिही</translation>
 <translation id="2462724976360937186">प्रमाणन अधिकृतता की आयडी</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> जोडले</translation>
 <translation id="2464075479326723132">Microsoft SharePoint आणि OneDrive मधील तुमच्या अलीकडील अ‍ॅक्टिव्हिटीवर सहज परत जाण्यात तुम्हाला मदत करण्यासाठी तुम्हाला सुचवलेल्या फाइल दिसत आहेत.
@@ -3055,6 +3057,7 @@
 <translation id="3046892784550338476">आवृत्ती <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">वेबपेज, संपूर्ण</translation>
 <translation id="304747341537320566">स्पीच इंजीन</translation>
+<translation id="3047618804758101928">"<ph name="EXTENSION_NAME" />" या एक्स्टेंशनने तुमची सेटिंग्ज बदलली आहेत</translation>
 <translation id="3047678109605649715">तुमच्या डिव्हाइसवर कोणतेही <ph name="LANGUAGE" /> आवाज नाहीत. तुमच्या डिव्हाइसवरील जागा साफ करून पुन्हा प्रयत्न करा.</translation>
 <translation id="3048336643003835855"><ph name="VENDOR_ID" /> या विक्रेत्याकडील HID डिव्हाइस</translation>
 <translation id="3048589239114571785">प्ले करा (k)</translation>
@@ -4323,6 +4326,7 @@
 <translation id="3924788966103416622">बाह्य अ‍ॅपला हे Chrome सेशन डीबग करण्यासाठी त्यावर पूर्ण नियंत्रण हवे आहे. यामध्ये, तुमचा सेव्ह केलेला डेटा, कुकी व साइट डेटा यांचा अ‍ॅक्सेस आणि कोणत्याही URL वर नेव्हिगेट करण्याची क्षमता यांचा समावेश आहे.</translation>
 <translation id="3925573269917483990">कॅमेराः</translation>
 <translation id="3925926055063465902">या डिव्हाइसवरील इतर वापरकर्तेदेखील हे नेटवर्क वापरू शकतात</translation>
+<translation id="3925934852713265455">तुमच्या टॅबबद्दल विचारा</translation>
 <translation id="3926002189479431949">Smart Lock फोन बदलला</translation>
 <translation id="3926410220776569451">कॅमेरा अ‍ॅक्सेस ब्लॉक केला आहे</translation>
 <translation id="3927932062596804919">नकार द्या</translation>
@@ -7295,6 +7299,7 @@ I feel - विटांची इमारत</translation>
 <translation id="604388835206766544">कॉन्फिगरेशन पार्स करता आले नाही</translation>
 <translation id="6043994281159824495">आता साइन आउट करा</translation>
 <translation id="6045114302329202345">प्राथमिक TrackPoint बटण</translation>
+<translation id="6045425183320109397">व्दारा</translation>
 <translation id="6047632800149092791">सिंक काम करत नाही. साइन आउट केल्यानंतर पुन्हा साइन इन करून पहा.</translation>
 <translation id="6048747414605857443">ChromeVox आणि बोलण्यासाठी निवडा यांकरिता टेक्स्ट-टू-स्पीच आवाज निवडा व कस्टमाइझ करा.</translation>
 <translation id="6050189528197190982">ग्रेस्केल</translation>
@@ -8700,7 +8705,6 @@ I feel - विटांची इमारत</translation>
 <translation id="701020165009334820">तुम्ही Play Store वरून Android अ‍ॅप्स आणि गेम डाउनलोड करू शकता.</translation>
 <translation id="701080569351381435">स्रोत पहा</translation>
 <translation id="7012430956470647760">अ‍ॅप्ससाठी पालक नियंत्रणे</translation>
-<translation id="7013762323294215682">ही पासकी तुमच्या Password Manager मध्ये सेव्ह केली जाईल. याचा अ‍ॅक्सेस असलेले कोणीही ही पासकी वापरू शकेल.</translation>
 <translation id="7014174261166285193">स्थापना अयशस्वी.</translation>
 <translation id="7014480873681694324">हायलाइट काढून टाका</translation>
 <translation id="7014741021609395734">झूम करण्याची पातळी</translation>
@@ -10013,6 +10017,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7939062555109487992">प्रगत पर्याय</translation>
 <translation id="793923212791838">तुमचे डिव्हाइस या साइटसोबत वापरले जाऊ शकत नाही</translation>
 <translation id="7939328347457537652">डिव्हाइस सर्टिफिकेट व्यवस्थापित करा</translation>
+<translation id="7939918959917132075">एक्स्टेंशनद्वारे यामध्ये बदलले आहे</translation>
 <translation id="7940087892955752820">अ‍ॅप्लिकेशन हे फोल्डर वापरत असल्यामुळे ते अनशेअर करता आले नाही. पुढच्या वेळी <ph name="SPECIFIC_NAME" /> बंद केल्यावर फोल्डर अनशेअर केले जाईल.</translation>
 <translation id="7940265372707990269"><ph name="SORT_TYPE" /> नुसार क्रमवारी लावा</translation>
 <translation id="7941179291434537290">टेदरिंगची सज्जता:</translation>
@@ -11790,7 +11795,6 @@ I feel - विटांची इमारत</translation>
 <translation id="9120800848981545750">तुमच्या फोनवर तुमचे टॅब, बुकमार्क आणि पासवर्ड अ‍ॅक्सेस करण्यासाठी iOS साठी Chrome डाउनलोड करा.</translation>
 <translation id="9121814364785106365">पिन केलेला टॅब म्हणून उघडा</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{Close Tab and Delete Group?}=1{टॅब बंद करून गट हटवायचा आहे का?}other{टॅब बंद करून गट हटवायचे आहेत का?}}</translation>
-<translation id="9122788874051694311">ही पासकी गुप्त मोडच्या बाहेर सेव्ह करायची आहे का?</translation>
 <translation id="9123287046453017203">तुमचे डिव्हाइस अप टू डेट नाही</translation>
 <translation id="9125910124977405374">आपोआप भाषांतरित भाषांमधून <ph name="LANGUAGE_NAME" /> काढून टाका</translation>
 <translation id="9125912770834459638">तुमची संस्था तुम्हाला साइन इन करण्याची अनुमती देत नाही</translation>
@@ -11880,7 +11884,7 @@ I feel - विटांची इमारत</translation>
 <translation id="9192019773545828776">वाचिक फीडबॅक ऐका, जेणेकरून तुम्हाला स्क्रीनकडे न पाहता तुमचे डिव्हाइस वापरता येईल. कनेक्ट केलेल्या डिव्हाइससह ब्रेल फीडबॅक उपलब्ध आहे. ChromeVox सुरू आणि बंद करण्यासाठी Ctrl + Alt + Z वापरा. नेव्हिगेट करण्यासाठी Search + लेफ्ट अ‍ॅरो किंवा राइट अ‍ॅरो वापरा. निवडण्यासाठी (अ‍ॅक्टिव्हेट करण्यासाठी) Search + Space प्रेस करा.</translation>
 <translation id="9195969368671142407">तुमची संस्था ही तुमच्या Google खाते मध्ये सेव्ह करणे मर्यादित करते, तेव्हा तुम्ही टॅब गट शेअर करू शकत नाही किंवा त्यामध्ये सामील होऊ शकत नाही</translation>
 <translation id="919686179725692564">तुमच्या अ‍ॅप्सचा बॅकअप घेण्याबद्दल अधिक जाणून घ्या</translation>
-<translation id="919840898042157087">स्थिर हालचाल</translation>
+<translation id="919840898042157087">हालचाल - स्थिर</translation>
 <translation id="9199503643457729322">गोपनीयता मार्गदर्शक यामधून बाहेर पडण्यासाठी क्लिक करा.</translation>
 <translation id="9199695835892108985">सर्व सिरीअल पोर्ट परवानग्या रीसेट करायच्या का?</translation>
 <translation id="9200339982498053969"><ph name="ORIGIN" /> ला <ph name="FOLDERNAME" /> मधील फाइल संपादित करता येतील</translation>

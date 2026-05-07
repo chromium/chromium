@@ -165,7 +165,7 @@
 <translation id="257931822824936280">已展開 - 點擊即可收合。</translation>
 <translation id="2586657967955657006">剪貼簿</translation>
 <translation id="2588271083332682494">分頁群組助你保持條理</translation>
-<translation id="2592917252160773942">網站可以要求取用鏡頭</translation>
+<translation id="2592917252160773942">網站可以要求使用相機</translation>
 <translation id="2597457036804169544">不要為網站套用深色主題</translation>
 <translation id="2606760465469169465">自動驗證</translation>
 <translation id="2621115761605608342">允許特定網站執行 JavaScript。</translation>
@@ -609,6 +609,7 @@
 <translation id="7250468141469952378">揀咗 <ph name="ITEM_COUNT" /> 個</translation>
 <translation id="7260727271532453612">已允許「<ph name="PERMISSION_1" />」和「<ph name="PERMISSION_2" />」</translation>
 <translation id="7276071417425470385">開咗之後，網站可以要求使用虛擬實境裝置。閂咗之後，網站唔可以使用虛擬實境裝置。</translation>
+<translation id="7279851812866769760">分享聯絡人</translation>
 <translation id="7282197670900591579">青檸色主題</translation>
 <translation id="728412880473384942">網站更快，但安全性較低</translation>
 <translation id="7352902948037373520">前往 <ph name="BEGIN_LINK1" />Android 設定<ph name="END_LINK1" />管理
@@ -794,6 +795,7 @@
 <translation id="9156722768168878035">讓 Chrome 在裝置應用程式清單和搜尋結果中顯示你最近使用的分頁。你可隨時在 Chrome 設定中關閉此功能。</translation>
 <translation id="9162462602695099906">此頁面不安全</translation>
 <translation id="9182556968660520230">不允許網站播放受保護的內容</translation>
+<translation id="927148002081263046">分享聯絡人</translation>
 <translation id="947156494302904893">您瀏覽的網站可驗證您是真人，而不是機器人</translation>
 <translation id="959682366969460160">讓所有內容變得井井有條</translation>
 <translation id="960590623979248167">顯示連結</translation>

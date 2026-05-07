@@ -609,6 +609,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> on valitud</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> ja <ph name="PERMISSION_2" /> on lubatud</translation>
 <translation id="7276071417425470385">Kui see on sisse lülitatud, võivad saidid küsida luba VR-seadmete kasutamiseks. Kui see on välja lülitatud, ei saa saidid VR-seadmeid kasutada.</translation>
+<translation id="7279851812866769760">Kontaktide jagamine</translation>
 <translation id="7282197670900591579">Sidrunikollane teema</translation>
 <translation id="728412880473384942">Saidid on kiiremad, aga ebaturvalisemad</translation>
 <translation id="7352902948037373520">Hallake <ph name="BEGIN_LINK1" />Androidi seadetes<ph name="END_LINK1" />
@@ -794,6 +795,7 @@ Täiustatud kaitse reguleerib neid Chrome’i seadeid:</translation>
 <translation id="9156722768168878035">Laske Chrome'il kuvada teie hiljutisi vahelehti teie seadme rakenduste loendis ja otsingutulemustes. Saate selle Chrome’i seadetes igal ajal välja lülitada.</translation>
 <translation id="9162462602695099906">See leht on ohtlik</translation>
 <translation id="9182556968660520230">Ära luba saitidel kaitstud sisu esitada</translation>
+<translation id="927148002081263046">Kontakti jagamine</translation>
 <translation id="947156494302904893">Külastatavad saidid saavad kinnitada, et olete päris inimene, mitte robot</translation>
 <translation id="959682366969460160">Lööge kord majja</translation>
 <translation id="960590623979248167">Kuva hüperlingid</translation>

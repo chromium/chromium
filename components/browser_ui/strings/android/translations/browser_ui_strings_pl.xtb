@@ -609,6 +609,7 @@
 <translation id="7250468141469952378">Wybrano <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">Dozwolone: <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" /></translation>
 <translation id="7276071417425470385">Gdy ta opcja jest włączona, strony internetowe mogą prosić o zgodę na korzystanie z urządzeń rzeczywistości wirtualnej. Gdy jest wyłączona, strony nie mogą używać takich urządzeń.</translation>
+<translation id="7279851812866769760">Udostępnianie kontaktów</translation>
 <translation id="7282197670900591579">Motyw cytrynowy</translation>
 <translation id="728412880473384942">Strony są szybsze, ale mniej bezpieczne</translation>
 <translation id="7352902948037373520">Zarządzaj w <ph name="BEGIN_LINK1" />ustawieniach Androida<ph name="END_LINK1" />
@@ -700,6 +701,7 @@ Ochrona zaawansowana kontroluje te ustawienia Chrome:</translation>
 <translation id="823874716226307142">Gdy ta opcja jest włączona, strony mogą prosić o dostęp do innych urządzeń w sieci lokalnej. Gdy jest wyłączona, strony nie mogą uzyskiwać dostępu do innych urządzeń w sieci lokalnej.</translation>
 <translation id="8249310407154411074">Przenieś na początek</translation>
 <translation id="8261506727792406068">Usuń</translation>
+<translation id="8273596202562472147"><ph name="SITE_NAME" /> – więcej opcji</translation>
 <translation id="8284326494547611709">Napisy</translation>
 <translation id="8300705686683892304">Zarządzane przez aplikację</translation>
 <translation id="8301363963630676147">Przyznano jednorazowo • Używana jest przybliżona lokalizacja</translation>
@@ -794,6 +796,7 @@ Ochrona zaawansowana kontroluje te ustawienia Chrome:</translation>
 <translation id="9156722768168878035">Pozwól Chrome wyświetlać ostatnie karty na liście aplikacji i w wynikach wyszukiwania na urządzeniu. Tę funkcję możesz w każdej chwili wyłączyć w ustawieniach Chrome.</translation>
 <translation id="9162462602695099906">Ten pakiet jest niebezpieczny</translation>
 <translation id="9182556968660520230">Nie zezwalaj witrynom na odtwarzanie chronionych treści</translation>
+<translation id="927148002081263046">Udostępnianie kontaktu</translation>
 <translation id="947156494302904893">Witryny, które odwiedzasz, mogą sprawdzać, czy jesteś prawdziwą osobą, a nie botem</translation>
 <translation id="959682366969460160">Większy porządek</translation>
 <translation id="960590623979248167">Pokaż hiperlinki</translation>

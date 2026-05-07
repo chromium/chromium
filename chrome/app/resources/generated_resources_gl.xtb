@@ -2061,6 +2061,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2402226831639195063">Tons</translation>
 <translation id="2405887402346713222">Números de serie do dispositivo e dos compoñentes</translation>
 <translation id="2406153734066939945">Querer borrar este perfil e os seus datos?</translation>
+<translation id="2406942743794219791">Confirma o buscador predeterminado que queres usar</translation>
 <translation id="2407671304279211586">Seleccionar fornecedor de DNS</translation>
 <translation id="2408018932941436077">Gardando tarxeta</translation>
 <translation id="2408742686124047357">Fixa Google Lens na barra de ferramentas para acceder facilmente a próxima vez</translation>
@@ -2153,6 +2154,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2460826998961521840">Para usar as claves de acceso gardadas na túa Conta de Google</translation>
 <translation id="2461550163693930491">Non permitir que os sitios se despracen nin fagan zoom polas pestanas compartidas</translation>
 <translation id="2461593638794842577">Podes desactivar esta opción de configuración para gardar os contrasinais só neste dispositivo</translation>
+<translation id="2462550463312552298">Resume este documento</translation>
 <translation id="2462724976360937186">ID de clave de autoridade de certificación</translation>
 <translation id="2462752602710430187">Engadiuse <ph name="PRINTER_NAME" /></translation>
 <translation id="2464075479326723132">Estánseche mostrando ficheiros suxeridos para que poidas retomar rapidamente á túa actividade máis recente en Microsoft Sharepoint e OneDrive.
@@ -3041,6 +3043,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3046892784550338476">Versión <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Páxina web, completa</translation>
 <translation id="304747341537320566">Motores de fala</translation>
+<translation id="3047618804758101928">A extensión <ph name="EXTENSION_NAME" /> cambiou a túa configuración</translation>
 <translation id="3047678109605649715">Non hai ningunha voz en <ph name="LANGUAGE" /> no dispositivo. Libera espazo e téntao de novo.</translation>
 <translation id="3048336643003835855">Dispositivos HID do provedor <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Reproducir (K)</translation>
@@ -4270,7 +4273,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3898327728850887246"><ph name="SITE_NAME" /> require permisos para: <ph name="FIRST_PERMISSION" /> e <ph name="SECOND_PERMISSION" /></translation>
 <translation id="3898498281932368596">Bloquear e saír</translation>
 <translation id="3898743717925399322">O contrasinal de <ph name="WEBSITE" /> está gardado neste dispositivo e na túa Conta de Google. De onde queres eliminalo?</translation>
-<translation id="3898768766145818464">Reproducir ou pór vídeo en pausa</translation>
+<translation id="3898768766145818464">Reproducir ou pór o vídeo en pausa</translation>
 <translation id="389901847090970821">Selecciona un teclado</translation>
 <translation id="3899457911440165602">Produciuse un erro ao eliminar o certificado</translation>
 <translation id="3900966090527141178">Exportar contrasinais</translation>
@@ -4312,6 +4315,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3924788966103416622">Unha aplicación externa quere o control total sobre esta sesión de Chrome para depurala. Isto inclúe o acceso aos datos que teñas gardados, ás cookies e aos datos dos sitios, así como a posibilidade de navegar a calquera URL.</translation>
 <translation id="3925573269917483990">Cámara:</translation>
 <translation id="3925926055063465902">Outros usuarios deste dispositivo tamén poden usar esta rede</translation>
+<translation id="3925934852713265455">Facer preguntas sobre as pestanas</translation>
 <translation id="3926002189479431949">Teléfono con Smart Lock cambiado</translation>
 <translation id="3926410220776569451">O acceso á cámara está bloqueado</translation>
 <translation id="3927932062596804919">Denegar</translation>
@@ -7280,6 +7284,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="604388835206766544">Produciuse un erro ao analizar a configuración</translation>
 <translation id="6043994281159824495">Pechar sesión agora</translation>
 <translation id="6045114302329202345">Botón principal de TrackPoint</translation>
+<translation id="6045425183320109397">De</translation>
 <translation id="6047632800149092791">A sincronización non funciona. Tenta pechar sesión e iniciala de novo.</translation>
 <translation id="6048747414605857443">Selecciona e personaliza as voces para a conversión de texto a voz de ChromeVox e Escoitar selección</translation>
 <translation id="6050189528197190982">Escala de grises</translation>
@@ -8685,7 +8690,6 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="701020165009334820">Podes descargar xogos e aplicacións para Android desde Play Store.</translation>
 <translation id="701080569351381435">Ver fonte</translation>
 <translation id="7012430956470647760">Controis parentais para aplicacións</translation>
-<translation id="7013762323294215682">Esta clave de acceso gardarase no teu xestor de contrasinais. Todas as persoas que teñan acceso a el poderán usar esta clave.</translation>
 <translation id="7014174261166285193">Non se puido efectuar a instalación.</translation>
 <translation id="7014480873681694324">Deixar de salientar texto</translation>
 <translation id="7014741021609395734">Nivel de zoom</translation>
@@ -9997,6 +10001,7 @@ Para quitar unha asignación, preme un interruptor ou unha tecla que teñan unha
 <translation id="7939062555109487992">Opcións avanzadas</translation>
 <translation id="793923212791838">Non se pode utilizar o dispositivo con este sitio</translation>
 <translation id="7939328347457537652">Xestionar certificados do dispositivo</translation>
+<translation id="7939918959917132075">A extensión cambiou a esta opción</translation>
 <translation id="7940087892955752820">Non se puido deixar de compartir este cartafol porque había unha aplicación usándoo. O cartafol deixará de compartirse cando <ph name="SPECIFIC_NAME" /> se apague.</translation>
 <translation id="7940265372707990269">Ordenar por <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Preparación para conexión compartida:</translation>
@@ -11773,7 +11778,6 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="9120800848981545750">Descarga Chrome para iOS para acceder ás pestanas, marcadores e contrasinais no teu teléfono.</translation>
 <translation id="9121814364785106365">Abrir como pestana fixada</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{Queres pechar a pestana e eliminar o grupo?}=1{Queres pechar as pestanas e eliminar o grupo?}other{Queres pechar as pestanas e eliminar os grupos?}}</translation>
-<translation id="9122788874051694311">Queres gardar esta clave de acceso fóra do modo de incógnito?</translation>
 <translation id="9123287046453017203">O dispositivo non está actualizado</translation>
 <translation id="9125910124977405374">Quitar <ph name="LANGUAGE_NAME" /> dos idiomas traducidos automaticamente</translation>
 <translation id="9125912770834459638">A túa organización non permite que inicies sesión</translation>

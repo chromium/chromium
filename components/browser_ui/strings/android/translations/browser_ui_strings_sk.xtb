@@ -609,6 +609,7 @@
 <translation id="7250468141469952378">Vybrané: <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">Povolené: <ph name="PERMISSION_1" /> a <ph name="PERMISSION_2" /></translation>
 <translation id="7276071417425470385">Keď je táto možnosť zapnutá, weby môžu žiadať o používanie zariadení virtuálnej reality. Keď je táto možnosť vypnutá, weby nemôžu používať zariadenia virtuálnej reality.</translation>
+<translation id="7279851812866769760">Zdieľanie kontaktov</translation>
 <translation id="7282197670900591579">Citrónový motív</translation>
 <translation id="728412880473384942">Weby budú rýchlejšie, ale menej zabezpečené</translation>
 <translation id="7352902948037373520">Spravujte v <ph name="BEGIN_LINK1" />nastaveniach Androidu<ph name="END_LINK1" />
@@ -794,6 +795,7 @@ Rozšírená ochrana ovláda tieto nastavenia Chromu:</translation>
 <translation id="9156722768168878035">Povoľte Chromu zobrazovať vaše nedávne karty v zozname aplikácií a výsledkoch vyhľadávania v zariadení. Túto možnosť môžete kedykoľvek vypnúť v nastaveniach Chromu.</translation>
 <translation id="9162462602695099906">Táto stránka je nebezpečná</translation>
 <translation id="9182556968660520230">Nepovoliť webom prehrávať chránený obsah</translation>
+<translation id="927148002081263046">Zdieľanie kontaktu</translation>
 <translation id="947156494302904893">Weby, ktoré navštevujete môžu skontrolovať, či ste skutočná osoba a nie robot</translation>
 <translation id="959682366969460160">Usporiadanie položiek</translation>
 <translation id="960590623979248167">Zobraziť hypertextové odkazy</translation>

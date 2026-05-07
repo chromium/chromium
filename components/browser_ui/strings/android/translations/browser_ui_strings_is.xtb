@@ -609,6 +609,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> valin</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> og <ph name="PERMISSION_2" /> leyft</translation>
 <translation id="7276071417425470385">Þegar kveikt er á þessu geta vefsvæði beðið um að fá að nota sýndarveruleikatæki. Þegar slökkt er á þessu geta vefsvæði ekki notað sýndarveruleikatæki.</translation>
+<translation id="7279851812866769760">Deila tengiliðum</translation>
 <translation id="7282197670900591579">Sítrónugult þema</translation>
 <translation id="728412880473384942">Vefsvæði eru hraðari en eru síður örugg</translation>
 <translation id="7352902948037373520">Þú getur stjórnað þessu í <ph name="BEGIN_LINK1" />stillingum Android<ph name="END_LINK1" />
@@ -794,6 +795,7 @@
 <translation id="9156722768168878035">Láta Chrome sýna nýlega flipa á forritalista og í leitarniðurstöðum tækisins. Þú getur slökkt á þessu hvenær sem er í stillingum Chrome.</translation>
 <translation id="9162462602695099906">Þessi síða er hættuleg</translation>
 <translation id="9182556968660520230">Ekki leyfa vefsvæðum að spila varið efni</translation>
+<translation id="927148002081263046">Deila tengilið</translation>
 <translation id="947156494302904893">Vefsvæði geta staðfest að þú sért manneskja en ekki botti</translation>
 <translation id="959682366969460160">Skipulag</translation>
 <translation id="960590623979248167">Sýna textatengla</translation>

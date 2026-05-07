@@ -2055,6 +2055,7 @@
 <translation id="2402226831639195063">提示音</translation>
 <translation id="2405887402346713222">设备和组件序列号</translation>
 <translation id="2406153734066939945">删除这份个人资料及其数据？</translation>
+<translation id="2406942743794219791">确认要使用的默认搜索引擎</translation>
 <translation id="2407671304279211586">选择 DNS 提供商</translation>
 <translation id="2408018932941436077">正在保存信用卡信息</translation>
 <translation id="2408742686124047357">将 Google 智能镜头固定到工具栏，以便下次轻松使用</translation>
@@ -2147,6 +2148,7 @@
 <translation id="2460826998961521840">使用您 Google 账号中保存的通行密钥</translation>
 <translation id="2461550163693930491">不允许网站滚动和缩放分享的标签页</translation>
 <translation id="2461593638794842577">您可以关闭此设置，以便仅将密码保存在此设备上</translation>
+<translation id="2462550463312552298">总结此文档</translation>
 <translation id="2462724976360937186">证书授权中心密钥 ID</translation>
 <translation id="2462752602710430187">已添加<ph name="PRINTER_NAME" /></translation>
 <translation id="2464075479326723132">这里显示的是推荐的文件，方便您轻松继续最近在 Microsoft SharePoint 和 OneDrive 中进行的活动。
@@ -3034,6 +3036,7 @@
 <translation id="3046892784550338476">版本 <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />（<ph name="PRODUCT_CHANNEL" />）<ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">网页，全部</translation>
 <translation id="304747341537320566">语音引擎</translation>
+<translation id="3047618804758101928">扩展程序“<ph name="EXTENSION_NAME" />”更改了您的设置</translation>
 <translation id="3047678109605649715">您的设备上没有<ph name="LANGUAGE" />语音包。请释放出设备空间，然后重试。</translation>
 <translation id="3048336643003835855">来自供应商 <ph name="VENDOR_ID" /> 的 HID 设备</translation>
 <translation id="3048589239114571785">播放 (K)</translation>
@@ -4300,6 +4303,7 @@
 <translation id="3924788966103416622">为进行调试，一款外部应用请求完全控制此 Chrome 会话，包括访问您保存的数据、Cookie 和网站数据，以及前往任意网址。</translation>
 <translation id="3925573269917483990">摄像头：</translation>
 <translation id="3925926055063465902">此设备上的其他用户也可以使用此网络</translation>
+<translation id="3925934852713265455">询问与标签页相关的问题</translation>
 <translation id="3926002189479431949">Smart Lock 的配对手机已更改</translation>
 <translation id="3926410220776569451">已禁止使用摄像头</translation>
 <translation id="3927932062596804919">拒绝</translation>
@@ -7265,6 +7269,7 @@
 <translation id="604388835206766544">无法解析配置</translation>
 <translation id="6043994281159824495">立即退出</translation>
 <translation id="6045114302329202345">TrackPoint 主按钮</translation>
+<translation id="6045425183320109397">提供者：</translation>
 <translation id="6047632800149092791">同步功能无法正常运行。请尝试退出账号并重新登录。</translation>
 <translation id="6048747414605857443">为 ChromeVox 和“随选朗读”选择和自定义文字转语音的语音</translation>
 <translation id="6050189528197190982">灰度</translation>
@@ -8670,7 +8675,6 @@
 <translation id="701020165009334820">您可以通过 Play 商店下载 Android 应用和游戏。</translation>
 <translation id="701080569351381435">显示源代码</translation>
 <translation id="7012430956470647760">适用于应用的家长控制功能</translation>
-<translation id="7013762323294215682">此通行密钥将保存到密码管理工具。任何有权访问密码管理工具的用户都能使用此通行密钥。</translation>
 <translation id="7014174261166285193">安装失败。</translation>
 <translation id="7014480873681694324">撤消突出显示</translation>
 <translation id="7014741021609395734">缩放级别</translation>
@@ -8708,7 +8712,7 @@
 <translation id="7038632520572155338">开关控制</translation>
 <translation id="7038710352229712897">为<ph name="USER_NAME" />再添加一个 Google 账号</translation>
 <translation id="7039326228527141150">访问来自<ph name="VENDOR_NAME" />的 USB 设备</translation>
-<translation id="7039697949826432881">无法上传。文件超过了支持的大小上限 (<ph name="MAX_FILE_SIZE" /> MB)。</translation>
+<translation id="7039697949826432881">无法上传。文件大小超出了上限 (<ph name="MAX_FILE_SIZE" /> MB)。</translation>
 <translation id="7039912931802252762">Microsoft 智能卡登录</translation>
 <translation id="7039951224110875196">为孩子创建 Google 账号</translation>
 <translation id="7042116641003232070">已获授权可将数据保存到您的设备</translation>
@@ -9983,6 +9987,7 @@
 <translation id="7939062555109487992">高级选项</translation>
 <translation id="793923212791838">您的设备无法用于此网站</translation>
 <translation id="7939328347457537652">管理设备证书</translation>
+<translation id="7939918959917132075">由扩展程序更改为此设置</translation>
 <translation id="7940087892955752820">无法停止共享，因为有一款应用正在使用此文件夹。系统将会在下次关闭 <ph name="SPECIFIC_NAME" /> 时停止共享此文件夹。</translation>
 <translation id="7940265372707990269">排序依据：<ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">网络共享就绪与否：</translation>
@@ -11759,7 +11764,6 @@
 <translation id="9120800848981545750">下载 iOS 版 Chrome，即可在手机上访问您的标签页、书签和密码。</translation>
 <translation id="9121814364785106365">在固定标签页中打开</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{要关闭该标签页并删除该分组吗？}=1{要关闭这些标签页并删除该分组吗？}other{要关闭这些标签页并删除这些分组吗？}}</translation>
-<translation id="9122788874051694311">要在无痕模式以外保存此通行密钥吗？</translation>
 <translation id="9123287046453017203">您设备上的 OS 不是最新版本</translation>
 <translation id="9125910124977405374">将“<ph name="LANGUAGE_NAME" />”从自动翻译的语言的列表中移除</translation>
 <translation id="9125912770834459638">您所在的组织不允许您登录</translation>

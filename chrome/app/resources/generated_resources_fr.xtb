@@ -2063,6 +2063,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2402226831639195063">Tonalités</translation>
 <translation id="2405887402346713222">Numéros de série des appareils et composants</translation>
 <translation id="2406153734066939945">Voulez-vous supprimer ce profil et ses données associées ?</translation>
+<translation id="2406942743794219791">Confirmez le moteur de recherche par défaut que vous souhaitez</translation>
 <translation id="2407671304279211586">Sélectionner un fournisseur DNS</translation>
 <translation id="2408018932941436077">Enregistrement de la carte…</translation>
 <translation id="2408742686124047357">Épinglez Google Lens à votre barre d'outils pour y accéder facilement la prochaine fois</translation>
@@ -2155,6 +2156,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2460826998961521840">Pour utiliser les clés d'accès enregistrées dans votre compte Google</translation>
 <translation id="2461550163693930491">Ne pas autoriser les sites à faire défiler les onglets partagés ni à zoomer dessus</translation>
 <translation id="2461593638794842577">Vous pouvez désactiver ce paramètre pour enregistrer vos mots de passe uniquement sur cet appareil</translation>
+<translation id="2462550463312552298">Résume ce document</translation>
 <translation id="2462724976360937186">ID de clé de l'autorité de certification</translation>
 <translation id="2462752602710430187">L'imprimante <ph name="PRINTER_NAME" /> a bien été ajoutée.</translation>
 <translation id="2464075479326723132">Des fichiers vous sont suggérés pour vous aider à retrouver facilement votre dernière activité dans Microsoft SharePoint et OneDrive.
@@ -3043,6 +3045,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3046892784550338476">Version <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Page Web, complète</translation>
 <translation id="304747341537320566">Moteurs de synthèse vocale</translation>
+<translation id="3047618804758101928">L'extension "<ph name="EXTENSION_NAME" />" a modifié vos paramètres</translation>
 <translation id="3047678109605649715">Aucune voix en <ph name="LANGUAGE" /> n'est disponible sur votre appareil. Libérez de l'espace sur votre appareil, puis réessayez.</translation>
 <translation id="3048336643003835855">Appareils HID du fournisseur <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Lecture (k)</translation>
@@ -4309,6 +4312,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3924788966103416622">Une application externe souhaite contrôler entièrement cette session Chrome pour la déboguer. Cela inclut l'accès à vos données enregistrées, aux cookies et aux données des sites, ainsi que la possibilité d'accéder à n'importe quelle URL.</translation>
 <translation id="3925573269917483990">Caméra :</translation>
 <translation id="3925926055063465902">Les autres utilisateurs de cet appareil peuvent également utiliser ce réseau</translation>
+<translation id="3925934852713265455">Poser des questions sur vos onglets</translation>
 <translation id="3926002189479431949">Le téléphone Smart Lock a changé</translation>
 <translation id="3926410220776569451">L'accès à l'appareil photo est bloqué</translation>
 <translation id="3927932062596804919">Refuser</translation>
@@ -7279,6 +7283,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="604388835206766544">Échec de l'analyse de la configuration</translation>
 <translation id="6043994281159824495">Se déconnecter maintenant</translation>
 <translation id="6045114302329202345">Bouton TrackPoint principal</translation>
+<translation id="6045425183320109397">De</translation>
 <translation id="6047632800149092791">La synchronisation ne fonctionne pas. Essayez de vous déconnecter, puis de vous reconnecter.</translation>
 <translation id="6048747414605857443">Sélectionnez et personnalisez les voix de la synthèse vocale pour ChromeVox et Sélectionner pour écouter</translation>
 <translation id="6050189528197190982">Niveaux de gris</translation>
@@ -8686,7 +8691,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="701020165009334820">Vous pouvez télécharger des applications et des jeux Android depuis le Play Store.</translation>
 <translation id="701080569351381435">Code source</translation>
 <translation id="7012430956470647760">Contrôle parental pour les applis</translation>
-<translation id="7013762323294215682">La clé d'accès sera enregistrée dans votre gestionnaire de mots de passe. Tout utilisateur y ayant accès pourra l'utiliser.</translation>
 <translation id="7014174261166285193">Échec de l'installation</translation>
 <translation id="7014480873681694324">Supprimer la surbrillance</translation>
 <translation id="7014741021609395734">Niveau de zoom</translation>
@@ -9999,6 +10003,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7939062555109487992">Options avancées</translation>
 <translation id="793923212791838">Impossible d'utiliser votre appareil avec ce site</translation>
 <translation id="7939328347457537652">Gérer les certificats d'appareil</translation>
+<translation id="7939918959917132075">Modifié par cette extension</translation>
 <translation id="7940087892955752820">Impossible d'annuler le partage, car une appli utilise ce dossier. Le partage sera annulé au prochain arrêt de <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="7940265372707990269">Trier par <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Aptitude au partage de connexion :</translation>
@@ -11776,7 +11781,6 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="9120800848981545750">Téléchargez Chrome pour iOS pour accéder à vos onglets, favoris et mots de passe sur votre téléphone.</translation>
 <translation id="9121814364785106365">Ouvrir dans un onglet épinglé</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{Fermer l'onglet et supprimer le groupe ?}=1{Fermer les onglets et supprimer le groupe ?}one{Fermer les onglets et supprimer le groupe ?}other{Fermer les onglets et supprimer les groupes ?}}</translation>
-<translation id="9122788874051694311">Enregistrer cette clé d'accès en dehors de la navigation privée ?</translation>
 <translation id="9123287046453017203">Votre appareil n'est pas à jour</translation>
 <translation id="9125910124977405374">Supprimer "<ph name="LANGUAGE_NAME" />" des langues traduites automatiquement</translation>
 <translation id="9125912770834459638">Votre organisation ne vous autorise pas à vous connecter</translation>

@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">Үгүй, баярлалаа</translation>
 <translation id="1531038290222364269">Табуудыг харуулах</translation>
 <translation id="1536390784834419204">Хуудсыг орчуулах</translation>
+<translation id="1539535193627863227">Энэ сайтад ямар ч нууц үг, нэвтрэх түлхүүр олдсонгүй</translation>
 <translation id="1540800554400757039">Хаяг 1</translation>
 <translation id="154312949627292154">Бусад төхөөрөмжөөсөө хүлээн авсан табыг түгжээтэй дэлгэцээс нээнэ үү.</translation>
 <translation id="1545749641540134597">QR кодыг скан хийх</translation>
@@ -642,6 +643,7 @@
 <translation id="3245744387817103524">Таны өөрчлөлтийг хадгалж чадсангүй.</translation>
 <translation id="3254806613790954367">Таны бүх төхөөрөмж дээрх сүүлийн нээлттэй таб</translation>
 <translation id="325717987950204592">"Нууцлал, аюулгүй байдал" дээр товшино уу</translation>
+<translation id="3259451381796379533">Энэ бүртгэл Gemini-тай ажиллахгүй. Өөр Google Бүртгэлээр нэвтэрнэ үү.</translation>
 <translation id="3265736395246760288">Синк хийсэн дурын төхөөрөмжүүдээсээ илүү хурдан нэвтрээрэй.</translation>
 <translation id="3272527697863656322">Цуцлах</translation>
 <translation id="3273510436356991673">Үндсэн нүүрээ өөрчлөх</translation>
@@ -763,6 +765,7 @@
 <translation id="372676576864368480"><ph name="LAST_DIGITS" />-р төгссөн картын дугаарыг автоматаар бөглөх</translation>
 <translation id="3738428049780661523"><ph name="DATE" />-д үүсгэсэн</translation>
 <translation id="3742498336182910186">Камераар авсан</translation>
+<translation id="3746269120925354434">Мэдээллийг Google Wallet-д хадгалсан</translation>
 <translation id="3750225824417196283">Шинэ нууцлалтай табын хуудас</translation>
 <translation id="3751873026576444885">Дэлгэцээсээ Google Lens-р хайхаа болих</translation>
 <translation id="3753408171347588045">Үнийг мөшгөж байна</translation>
@@ -1076,7 +1079,6 @@
 <translation id="4824480232751123840">Дууны түвшин</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} болон бусад 1}other{{domain} болон бусад {count}}}</translation>
 <translation id="4826588772550366629">камер, микрофон</translation>
-<translation id="4828431027673677473">Таны сонирхолд тулгуурласан бүтээгдэхүүн</translation>
 <translation id="4829420936835028285">Табын бүлгийг засах</translation>
 <translation id="4833786495304741580">Хэрэглээний статистик мэдээ болон гэмтлийн тайланг Google-д автоматаар илгээдэг.</translation>
 <translation id="483689884442613745">Хадгалах…</translation>
@@ -1864,6 +1866,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7498234416455752244">Үргэлжлүүлэн засах</translation>
 <translation id="7500244509706269886">Маягтыг автоматаар бөглөх</translation>
 <translation id="750493650310597496">0 сонгогдсон</translation>
+<translation id="7505402981231763928">Та Gemini-г ашиглахын тулд нэвтрэх шаардлагатай</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Нууцлалтай табуудаа түгжихийн тулд Touch ID, Face ID эсвэл нууц код тохируулна уу.</translation>
 <translation id="750886945254958667">Дараа таб нэмэхийн тулд энэ бүлгийг үлдээх эсвэл та цаашид уг бүлэгт хандахыг хүсэхгүй байвал гарна уу</translation>
@@ -2105,7 +2108,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="828291969289324795">{count,plural, =1{Табыг шинэ бүлэгт нэмэх}other{Табуудыг шинэ бүлэгт нэмэх}}</translation>
 <translation id="8283172974887967105">Тохируулах…</translation>
 <translation id="8289930144142009940"><ph name="FEATURE_NAME" />-н мэдэгдлийг унтраасан</translation>
-<translation id="8290077367744012649">Табаасаа үнэ мөшгөх</translation>
 <translation id="8292893224181644074">Татаж дууссан</translation>
 <translation id="8299417921174340354">Нууц үгсийг ашиглахын тулд та эхлээд төхөөрөмж дээрээ нууц код тохируулах ёстой.</translation>
 <translation id="8307481894409578819">Энэ файлыг байршуулж чадсангүй</translation>
@@ -2172,6 +2174,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8533670235862049797">Аюулгүй үзэх үйлчилгээ асаалттай байна</translation>
 <translation id="8534481786647257214">Google+ пост дууссан.</translation>
 <translation id="8535368836838588657">Нууц үгийг ил болгох</translation>
+<translation id="8540426897269305488"><ph name="CELL_ACCESSIBILITY_LABEL" />-р нэвтрэх</translation>
 <translation id="8545276357312221485">Өгөгдмөл хөтчийн тохиргоогоо шалгах</translation>
 <translation id="854938212724803178">Танд алдагдсан 1 нууц үг байна. Аюулгүй байхын тулд үүнийг одоо засна уу.</translation>
 <translation id="8551311254462607218">Хаяг оруулах хэсэгт Google Lens-н камерын дүрс тэмдэг дээр товшино уу</translation>

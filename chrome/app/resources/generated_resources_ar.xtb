@@ -2067,6 +2067,7 @@
 <translation id="2402226831639195063">النبرات</translation>
 <translation id="2405887402346713222">الأرقام التسلسلية للأجهزة وقطعها</translation>
 <translation id="2406153734066939945">هل تريد حذف هذا الملف الشخصي وكل بياناته؟</translation>
+<translation id="2406942743794219791">يُرجى التأكُّد من محرّك البحث التلقائي المطلوب استخدامه</translation>
 <translation id="2407671304279211586">اختيار مزوِّد نظام أسماء النطاقات</translation>
 <translation id="2408018932941436077">جارٍ حفظ البطاقة</translation>
 <translation id="2408742686124047357">‏تثبيت "عدسة Google" في شريط الأدوات للوصول إليها بسهولة في المرة القادمة</translation>
@@ -3048,6 +3049,7 @@
 <translation id="3046892784550338476">الإصدار: <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">صفحة الويب، كاملة</translation>
 <translation id="304747341537320566">محركات الكلام</translation>
+<translation id="3047618804758101928">غيّرت الإضافة "<ph name="EXTENSION_NAME" />" إعداداتك</translation>
 <translation id="3047678109605649715">ما مِن أصوات باللغة <ph name="LANGUAGE" /> على جهازك. يُرجى إخلاء مساحة على جهازك وإعادة المحاولة.</translation>
 <translation id="3048336643003835855">‏أجهزة HID من المورِّد <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">‏تشغيل (k)</translation>
@@ -3167,7 +3169,7 @@
 <translation id="3152356229013609796">عرض إشعارات هاتفك وإغلاقها والردّ عليها</translation>
 <translation id="3152545926232662879">تم التجاهل:</translation>
 <translation id="3152596030350326139">عرض علامات التبويب أفقيًا</translation>
-<translation id="3154754096046236400">سياقك الذكي</translation>
+<translation id="3154754096046236400">سياقك الشخصي</translation>
 <translation id="3155163173539279776">‏إعادة تشغيل Chromium</translation>
 <translation id="3155394504825881014">تحويل مجموعة علامات التبويب إلى مجلد إشارات مرجعية</translation>
 <translation id="3156511682997763015">التقديم بمقدار 10 ثوانٍ</translation>
@@ -7286,6 +7288,7 @@
 <translation id="604388835206766544">تعذّر تحليل الضبط</translation>
 <translation id="6043994281159824495">الخروج الآن</translation>
 <translation id="6045114302329202345">‏زر TrackPoint الأساسي</translation>
+<translation id="6045425183320109397">بواسطة</translation>
 <translation id="6047632800149092791">المزامنة لا تعمل على نحو سليم جرّب الخروج وتسجيل الدخول مرة أخرى.</translation>
 <translation id="6048747414605857443">‏يمكنك اختيار الأصوات في ميزة تحويل النص إلى كلام وتخصيصها لكل من قارئ الشاشة ChromeVox وميزة "سماع الاختيار".</translation>
 <translation id="6050189528197190982">تدرج الرمادي</translation>
@@ -8699,7 +8702,6 @@
 <translation id="701020165009334820">‏يمكنك تنزيل تطبيقات وألعاب Android من "متجر Play".</translation>
 <translation id="701080569351381435">عرض المصدر</translation>
 <translation id="7012430956470647760">أدوات رقابة الأهل على التطبيقات</translation>
-<translation id="7013762323294215682">سيتم حفظ مفتاح المرور هذا في مدير كلمات المرور. سيتمكن أي شخص لديه إذن بالوصول من استخدام مفتاح المرور هذا.</translation>
 <translation id="7014174261166285193">تعذّر التثبيت.</translation>
 <translation id="7014480873681694324">إزالة التمييز</translation>
 <translation id="7014741021609395734">مستوى التكبير أو التصغير</translation>
@@ -10012,6 +10014,7 @@
 <translation id="7939062555109487992">خيارات متقدمة</translation>
 <translation id="793923212791838">جهازك غير متوافق مع هذا الموقع الإلكتروني</translation>
 <translation id="7939328347457537652">إدارة شهادات الجهاز</translation>
+<translation id="7939918959917132075">غيّرت إحدى الإضافات إعداداتك إلى هذا الخيار</translation>
 <translation id="7940087892955752820">تعذّر إلغاء المشاركة لأنّ تطبيقًا يستخدم هذا المجلد. سيتم إلغاء مشاركة الملف عند إيقاف تشغيل "<ph name="SPECIFIC_NAME" />".</translation>
 <translation id="7940265372707990269">الترتيب حسب <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">جاهزية التوصيل:</translation>
@@ -11793,7 +11796,6 @@
 <translation id="9120800848981545750">‏يمكنك تنزيل متصفّح Chrome لنظام iOS للوصول إلى علامات التبويب والإشارات المرجعية وكلمات المرور على هاتفك.</translation>
 <translation id="9121814364785106365">فتح كعلامة تبويب مثبتة</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{هل تريد إغلاق علامة التبويب وحذف المجموعة؟}=1{هل تريد إغلاق علامة التبويب وحذف المجموعة؟}two{هل تريد إغلاق علامتَي التبويب وحذف المجموعتين؟}few{هل تريد إغلاق علامات التبويب وحذف المجموعات؟}many{هل تريد إغلاق علامات التبويب وحذف المجموعات؟}other{هل تريد إغلاق علامات التبويب وحذف المجموعات؟}}</translation>
-<translation id="9122788874051694311">هل تريد حفظ مفتاح المرور هذا خارج "وضع التصفّح المتخفي"؟</translation>
 <translation id="9123287046453017203">جهازك ليس مُحدّثًا</translation>
 <translation id="9125910124977405374">إزالة <ph name="LANGUAGE_NAME" /> من قائمة اللغات التي تتم ترجمتها تلقائيًا</translation>
 <translation id="9125912770834459638">لا تسمح لك مؤسستك بتسجيل الدخول</translation>

@@ -292,6 +292,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="230115972905494466">Tiada peranti yang serasi ditemui</translation>
 <translation id="2316129865977710310">Tidak, terima kasih</translation>
 <translation id="2318045970523081853">Ketik untuk membuat panggilan</translation>
+<translation id="232137538351753795">Leret dari tepi sebelah kiri untuk kembali</translation>
 <translation id="2323763861024343754">Storan tapak</translation>
 <translation id="2328474416100889417">Semua orang akan kehilangan akses kepada kumpulan tab “<ph name="GROUP_NAME" />” dengan serta-merta dan semua pautan undangan akan dimatikan</translation>
 <translation id="2330186936255788117">Lebih banyak penanda halaman</translation>
@@ -942,7 +943,6 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="5040262127954254034">Privasi</translation>
 <translation id="504456571576643789">Perkara yang perlu dipertimbangkan</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" /> Tetingkap Dipilih}other{<ph name="WINDOW_COUNT_NORMAL" /> Tetingkap Dipilih}}</translation>
-<translation id="5056587122125565772">Buat imej</translation>
 <translation id="506254248375231072">Tiada tab</translation>
 <translation id="5075939510584558547">Simpan tanpa penyulitan</translation>
 <translation id="5078638979202084724">Tanda halaman semua tab</translation>
@@ -1676,6 +1676,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="7977451675950311423">Memberikan amaran kepada anda jika anda menggunakan kata laluan yang telah terjejas dalam pelanggaran data.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome telah mengalih keluar kebenaran ini kerana anda belum melawati laman web ini baru-baru ini</translation>
 <translation id="799576009106109668">Anda akan menyemak imbas dengan lebih pantas kerana kandungan dimuatkan secara proaktif berdasarkan lawatan halaman web semasa anda</translation>
+<translation id="7997875520309653083">Leret dari tepi sebelah kanan untuk kembali</translation>
 <translation id="7998918019931843664">Buka semula tab yang ditutup</translation>
 <translation id="8001245658307297681">Anda sedang melihat fail setempat</translation>
 <translation id="8004582292198964060">Penyemak Imbas</translation>
@@ -1869,6 +1870,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="8765470054473112089">Apabila anda menaip dalam bar alamat atau kotak carian, Chrome menghantar perkara yang anda taip ke enjin carian lalai anda untuk mendapatkan cadangan yang lebih baik. Tetapan ini dimatikan dalam Inkognito.</translation>
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome menemukan kata laluan lemah yang boleh anda tingkatkan}other{Chrome menemukan # kata laluan lemah yang boleh anda tingkatkan}}</translation>
 <translation id="8766529642647037772">Buat pautan yang diserlahkan seperti ini?</translation>
+<translation id="8769783688897433958">Lihat maklumat dan kebenaran laman</translation>
 <translation id="8788265440806329501">Sejarah navigasi ditutup</translation>
 <translation id="8790193082819560975">Ketik untuk mencari pilihan pembelian untuk produk dalam tab baharu.</translation>
 <translation id="8798449543960971550">Baca</translation>

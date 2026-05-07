@@ -2073,6 +2073,7 @@
 <translation id="2402226831639195063">မြည်သံများ</translation>
 <translation id="2405887402346713222">စက်နှင့် အစိတ်အပိုင်း၏ နံပါတ်စဉ်များ</translation>
 <translation id="2406153734066939945">ဤပရိုဖိုင်နှင့် ၎င်း၏ဒေတာကို ဖျက်မလား။</translation>
+<translation id="2406942743794219791">သင်အသုံးပြုလိုသော မူရင်းရှာဖွေရေး အင်ဂျင်ကို အတည်ပြုပါ</translation>
 <translation id="2407671304279211586">DNS ပံ့ပိုးသူ ရွေးရန်</translation>
 <translation id="2408018932941436077">ကတ်ကို သိမ်းနေသည်</translation>
 <translation id="2408742686124047357">နောက်တစ်ကြိမ်တွင် အလွယ်တကူသုံးနိုင်ရန်အတွက် သင့်ကိရိယာဘားတွင် Google Lens ကို ပင်ထိုးပါ</translation>
@@ -3055,6 +3056,7 @@
 <translation id="3046892784550338476">ဗားရှင်း <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">ဝဘ်စာမျက်နှာ၊ ပြီးပြည့်စုံ</translation>
 <translation id="304747341537320566">စကားပြော အင်ဂျင်များ</translation>
+<translation id="3047618804758101928">“<ph name="EXTENSION_NAME" />” နောက်ဆက်တွဲက သင့်ဆက်တင်များကို ပြောင်းထားသည်</translation>
 <translation id="3047678109605649715">သင့်စက်တွင် <ph name="LANGUAGE" /> စကားသံများ မရှိပါ။ သင့်စက်တွင် နေရာရှင်းပြီး ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="3048336643003835855">ရောင်းချသူ <ph name="VENDOR_ID" /> ထံမှ HID စက်ပစ္စည်းများ</translation>
 <translation id="3048589239114571785">ဖွင့်ရန် (k)</translation>
@@ -7293,6 +7295,7 @@
 <translation id="604388835206766544">စီစဉ်သတ်မှတ်မှုကို ခွဲခြမ်းစိတ်ဖြာ၍မရပါ</translation>
 <translation id="6043994281159824495">ယခု ထွက်ခွာရန်</translation>
 <translation id="6045114302329202345">ပင်မ TrackPoint ခလုတ်</translation>
+<translation id="6045425183320109397">မှ</translation>
 <translation id="6047632800149092791">စင့်ခ်လုပ်၍ မရပါ။ ထွက်ပြီး ပြန်လည်၍ လက်မှတ်ထိုးဝင်ကြည့်ပါ။</translation>
 <translation id="6048747414605857443">ChromeVox နှင့် ‘စကားပြောရွေးခြင်း’ တို့အတွက် စာမှ စကား အသံများကို ရွေးချယ်ပြီး စိတ်ကြိုက်ပြင်ဆင်နိုင်သည်</translation>
 <translation id="6050189528197190982">ဖြူမဲစကေး</translation>
@@ -8697,7 +8700,6 @@
 <translation id="701020165009334820">Android အက်ပ်နှင့် ဂိမ်းများကို Play Store မှ ဒေါင်းလုဒ်လုပ်နိုင်သည်။</translation>
 <translation id="701080569351381435">ရင်းမြစ် ကြည့်ရှုရန်</translation>
 <translation id="7012430956470647760">အက်ပ်များအတွက် မိဘအထိန်းအချုပ်များ</translation>
-<translation id="7013762323294215682">ဤလျှို့ဝှက်ကီးကို သင့် Password Manager သို့ သိမ်းပါမည်။ ၎င်းကိုသုံးနိုင်သူများသည် ဤလျှို့ဝှက်ကီးကိုလည်း သုံးနိုင်ပါမည်။</translation>
 <translation id="7014174261166285193">ထည့်သွင်းခြင်း မအောင်မြင်ပါ။</translation>
 <translation id="7014480873681694324">မြင်သာအောင်လုပ်ထားသည်ကို ဖယ်ရှားရန်</translation>
 <translation id="7014741021609395734">ဇူးမ်အဆင့်</translation>
@@ -10009,6 +10011,7 @@
 <translation id="7939062555109487992">အဆင့်မြင့် ရွေးစရာများ</translation>
 <translation id="793923212791838">သင့်စက်ကို ဤဝဘ်ဆိုက်နှင့် သုံး၍မရပါ</translation>
 <translation id="7939328347457537652">စက်အသိအမှတ်ပြုခြင်းများကို စီမံရန်</translation>
+<translation id="7939918959917132075">နောက်ဆက်တွဲက ဤသို့ ပြောင်းထားခြင်းဖြစ်သည်</translation>
 <translation id="7940087892955752820">အပလီကေးရှင်းက ဤဖိုင်တွဲကို သုံးနေသဖြင့် မျှဝေမှု မလုပ်တော့၍မရပါ။ နောင်တွင် <ph name="SPECIFIC_NAME" /> အပြီးပိတ်လိုက်သည့်အခါ ဖိုင်တွဲကို မျှဝေမှု မလုပ်တော့ပါ။</translation>
 <translation id="7940265372707990269"><ph name="SORT_TYPE" /> အလိုက်စီရန်</translation>
 <translation id="7941179291434537290">မိုဘိုင်းသုံး၍ ချိတ်ဆက်ခြင်း အသင့်ဖြစ်မှု-</translation>
@@ -11785,7 +11788,6 @@
 <translation id="9120800848981545750">တဘ်၊ လိပ်စာ၊ စကားဝှက်များကို ဖုန်းတွင်သုံးရန် iOS အတွက် Chrome ဒေါင်းလုဒ်လုပ်ပါ။</translation>
 <translation id="9121814364785106365">ပင်ထိုးထား တဘ် အဖြစ် ဖွင့်ရန်</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{တဘ်ပိတ်ပြီး အုပ်စုကို ဖျက်မလား။}=1{တဘ်များပိတ်ပြီး အုပ်စုကို ဖျက်မလား။}other{တဘ်များပိတ်ပြီး အုပ်စုများကို ဖျက်မလား။}}</translation>
-<translation id="9122788874051694311">‘ရုပ်ဖျက်မုဒ်’ ပြင်ပတွင် ဤလျှို့ဝှက်ကီးကို သိမ်းမလား။</translation>
 <translation id="9123287046453017203">သင့်စက်က အပ်ဒိတ်မဖြစ်ပါ</translation>
 <translation id="9125910124977405374"><ph name="LANGUAGE_NAME" /> ကို အလိုအလျောက် ဘာသာပြန်ထားသည့် ဘာသာစကားများမှ ဖယ်ရှားရန်</translation>
 <translation id="9125912770834459638">သင့်အဖွဲ့အစည်းသည် သင့်အား လက်မှတ်ထိုးဝင်ခွင့်မပြုပါ</translation>

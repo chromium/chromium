@@ -609,6 +609,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> ang napili</translation>
 <translation id="7260727271532453612">Pinapayagan ang <ph name="PERMISSION_1" /> at <ph name="PERMISSION_2" /></translation>
 <translation id="7276071417425470385">Kapag naka-on, puwedeng hilingin ng mga site na gumamit ng mga virtual reality device. Kapag naka-off, hindi makakagamit ang mga site ng mga virtual reality device.</translation>
+<translation id="7279851812866769760">Mag-share ng mga contact</translation>
 <translation id="7282197670900591579">Citron na tema</translation>
 <translation id="728412880473384942">Mas mabilis ang mga site pero hindi gaanong secure</translation>
 <translation id="7352902948037373520">Pamahalaan sa <ph name="BEGIN_LINK1" />mga setting ng Android<ph name="END_LINK1" />
@@ -794,6 +795,7 @@ Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:</transla
 <translation id="9156722768168878035">Hayaang ipakita ng Chrome ang iyong mga kamakailang tab sa listahan ng app at mga resulta ng paghahanap ng device mo. Puwede mo itong i-off anumang oras sa mga setting ng Chrome.</translation>
 <translation id="9162462602695099906">Mapanganib ang page na ito</translation>
 <translation id="9182556968660520230">Huwag payagan ang mga site na mag-play ng pinoprotektahang content</translation>
+<translation id="927148002081263046">Mag-share ng contact</translation>
 <translation id="947156494302904893">Magagawa ng mga site na binibisita mo na i-verify na totoong tao ka at hindi ka bot</translation>
 <translation id="959682366969460160">Maging organisado</translation>
 <translation id="960590623979248167">Ipakita ang mga hyperlink</translation>

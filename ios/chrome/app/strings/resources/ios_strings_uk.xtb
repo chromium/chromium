@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">Ні, дякую</translation>
 <translation id="1531038290222364269">Показати вкладки</translation>
 <translation id="1536390784834419204">Перекласти сторінку</translation>
+<translation id="1539535193627863227">Немає паролів або ключів доступу для цього сайту</translation>
 <translation id="1540800554400757039">Адреса 1</translation>
 <translation id="154312949627292154">Відкривайте вкладки, надіслані з інших пристроїв, на екрані блокування.</translation>
 <translation id="1545749641540134597">Сканувати QR-код</translation>
@@ -642,6 +643,7 @@
 <translation id="3245744387817103524">Не вдалося зберегти зміну.</translation>
 <translation id="3254806613790954367">Остання відкрита вкладка на будь-якому з ваших пристроїв</translation>
 <translation id="325717987950204592">Натисніть "Конфіденційність і безпека"</translation>
+<translation id="3259451381796379533">Цей обліковий запис не працюватиме з Gemini. Увійдіть за допомогою іншого облікового запису Google.</translation>
 <translation id="3265736395246760288">Швидше входьте в обліковий запис на будь-якому синхронізованому пристрої.</translation>
 <translation id="3272527697863656322">Скасувати</translation>
 <translation id="3273510436356991673">Налаштуйте головний екран</translation>
@@ -763,6 +765,7 @@
 <translation id="372676576864368480">Автоматично заповнити номер картки, що закінчується на <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Створено <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Фотоплівка</translation>
+<translation id="3746269120925354434">Інформацію збережено в Google Гаманці</translation>
 <translation id="3750225824417196283">Сторінка нової анонімної вкладки</translation>
 <translation id="3751873026576444885">Зупинити пошук на екрані за допомогою Google Об’єктива</translation>
 <translation id="3753408171347588045">Ви відстежуєте ціни</translation>
@@ -1076,7 +1079,6 @@
 <translation id="4824480232751123840">Об’єм</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} і ще 1}one{{domain} і ще {count}}few{{domain} і ще {count}}many{{domain} і ще {count}}other{{domain} і ще {count}}}</translation>
 <translation id="4826588772550366629">камеру та мікрофон</translation>
-<translation id="4828431027673677473">Товари на основі ваших інтересів</translation>
 <translation id="4829420936835028285">Змінити групу вкладок</translation>
 <translation id="4833786495304741580">Автоматично надсилає статистику використання та звіти про аварійне завершення роботи в Google.</translation>
 <translation id="483689884442613745">Зберегти…</translation>
@@ -1864,6 +1866,7 @@
 <translation id="7498234416455752244">Продовжити редагування</translation>
 <translation id="7500244509706269886">Заповнити форму автоматично</translation>
 <translation id="750493650310597496">Вибрано 0</translation>
+<translation id="7505402981231763928">Щоб використовувати Gemini, потрібно ввійти в обліковий запис</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Щоб закріпляти анонімні вкладки, налаштуйте Touch ID, Face ID або код доступу.</translation>
 <translation id="750886945254958667">Збережіть цю групу, щоб додавати вкладки пізніше, або вийдіть із неї, якщо вона вам більше не потрібна</translation>
@@ -2105,7 +2108,6 @@
 <translation id="828291969289324795">{count,plural, =1{Додати вкладку в нову групу}one{Додати вкладки в нову групу}few{Додати вкладки в нову групу}many{Додати вкладки в нову групу}other{Додати вкладки в нову групу}}</translation>
 <translation id="8283172974887967105">Так…</translation>
 <translation id="8289930144142009940">Сповіщення функції "<ph name="FEATURE_NAME" />" вимкнено</translation>
-<translation id="8290077367744012649">Відстежуйте ціни на вкладках</translation>
 <translation id="8292893224181644074">Завантаження завершено</translation>
 <translation id="8299417921174340354">Щоб використовувати паролі, спершу потрібно налаштувати код доступу на пристрої.</translation>
 <translation id="8307481894409578819">Не вдалося завантажити цей файл</translation>
@@ -2172,6 +2174,7 @@
 <translation id="8533670235862049797">Безпечний перегляд увімкнено</translation>
 <translation id="8534481786647257214">Опубліковано в Google+</translation>
 <translation id="8535368836838588657">Показати пароль</translation>
+<translation id="8540426897269305488">Увійти через <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8545276357312221485">Перевірте налаштування вебпереглядача за умовчанням</translation>
 <translation id="854938212724803178">У вас є 1 зламаний пароль. Змініть його, щоб захистити свої дані.</translation>
 <translation id="8551311254462607218">В адресному рядку натисніть значок камери Google Об’єктива</translation>

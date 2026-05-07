@@ -326,6 +326,9 @@
 <translation id="4348548358339558429">Kişiselleştirme için Chrome'u Web ve Uygulama Etkinliği'ne ekleyin</translation>
 <translation id="436060642166082913">Dosya kişisel ve sosyal ağ hesaplarınıza zarar verebileceği için Chrome bu indirme işlemini engelledi</translation>
 <translation id="4367027658822022112">Daha kolay erişmek için yan panelin üst kısmındaki Sabitle düğmesini tıklayarak Google Lens'i sabitleyebilirsiniz.</translation>
+<translation id="4380616334811859000">Chrome, bir siteyi ilk kez ziyaret ettiğinizde JavaScript optimizasyonunu devre dışı bırakır.
+
+Bu sayfa beklendiği gibi çalışmıyorsa optimizasyona izin vermeyi deneyin.</translation>
 <translation id="4389991535395284064">Chrome, Gizli modda gezinirken güvenli olmayan bağlantı kullanan bir siteyi yüklemeden önce sizi uyarır</translation>
 <translation id="4427306783828095590">Gelişmiş koruma, kimlik avını ve kötü amaçlı yazılımları engellemek için daha fazla özellik sunar</translation>
 <translation id="4434353761996769206">Yükleyici hatası: <ph name="INSTALLER_ERROR" /></translation>

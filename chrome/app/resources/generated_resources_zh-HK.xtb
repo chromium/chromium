@@ -2168,6 +2168,7 @@
 <translation id="2460826998961521840">以使用儲存在 Google 帳戶的密鑰</translation>
 <translation id="2461550163693930491">不允許網站捲動和縮放已分享的分頁</translation>
 <translation id="2461593638794842577">你可關閉此設定，只將密碼儲存在此裝置</translation>
+<translation id="2462550463312552298">撮要此文件</translation>
 <translation id="2462724976360937186">憑證授權單位金鑰識別碼</translation>
 <translation id="2462752602710430187">已新增「<ph name="PRINTER_NAME" />」</translation>
 <translation id="2464075479326723132">這裡顯示的建議檔案可助你輕鬆繼續近期的 Microsoft SharePoint 和 OneDrive 活動。
@@ -3175,7 +3176,7 @@
 <translation id="3152356229013609796">查看、關閉和回覆手機的通知</translation>
 <translation id="3152545926232662879">已略過：</translation>
 <translation id="3152596030350326139">橫向顯示分頁</translation>
-<translation id="3154754096046236400">個人畫面內容</translation>
+<translation id="3154754096046236400">個人背景</translation>
 <translation id="3155163173539279776">重新啟動 Chromium</translation>
 <translation id="3155394504825881014">將分頁群組轉換為書籤資料夾</translation>
 <translation id="3156511682997763015">快轉 10 秒</translation>
@@ -4322,6 +4323,7 @@
 <translation id="3924788966103416622">外部應用程式想完全控制這個 Chrome 工作階段以進行偵錯，包括存取已儲存的資料、Cookie 和網站資料，以及前往任何網址。</translation>
 <translation id="3925573269917483990">相機：</translation>
 <translation id="3925926055063465902">此裝置的其他使用者亦可使用此網絡</translation>
+<translation id="3925934852713265455">詢問有關分頁的問題</translation>
 <translation id="3926002189479431949">Smart Lock 配對手機已變更</translation>
 <translation id="3926410220776569451">禁止存取相機</translation>
 <translation id="3927932062596804919">拒絕</translation>
@@ -7288,6 +7290,7 @@
 <translation id="604388835206766544">無法剖析設定</translation>
 <translation id="6043994281159824495">立即登出</translation>
 <translation id="6045114302329202345">主要 TrackPoint 按鈕</translation>
+<translation id="6045425183320109397">作者：</translation>
 <translation id="6047632800149092791">同步功能無法正常運作。請嘗試登出，然後重新登入。</translation>
 <translation id="6048747414605857443">為 ChromeVox 和「揀選朗讀內容」選取及自訂文字轉語音的聲音</translation>
 <translation id="6050189528197190982">灰階</translation>
@@ -8693,7 +8696,6 @@
 <translation id="701020165009334820">你可以透過「Play 商店」下載 Android 應用程式同遊戲。</translation>
 <translation id="701080569351381435">檢視原始碼</translation>
 <translation id="7012430956470647760">應用程式家長監控設定</translation>
-<translation id="7013762323294215682">此密鑰將會儲存至密碼管理工具。任何擁有存取權的使用者都可使用此密鑰。</translation>
 <translation id="7014174261166285193">安裝失敗。</translation>
 <translation id="7014480873681694324">移除焦點內容</translation>
 <translation id="7014741021609395734">縮放比例</translation>
@@ -11776,7 +11778,6 @@
 <translation id="9120800848981545750">下載 iOS 版 Chrome，即可在手機上存取你的分頁、書籤和密碼。</translation>
 <translation id="9121814364785106365">在固定分頁中開啟</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{要關閉分頁並刪除群組嗎？}=1{要關閉分頁並刪除群組嗎？}other{要關閉分頁並刪除群組嗎？}}</translation>
-<translation id="9122788874051694311">要脫離無痕模式儲存此密鑰嗎？</translation>
 <translation id="9123287046453017203">您的裝置不是最新版本</translation>
 <translation id="9125910124977405374">將<ph name="LANGUAGE_NAME" />由自動翻譯嘅語言移除</translation>
 <translation id="9125912770834459638">你的機構不允許你登入</translation>

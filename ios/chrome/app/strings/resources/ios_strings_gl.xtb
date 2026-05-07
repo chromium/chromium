@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">Non, grazas</translation>
 <translation id="1531038290222364269">Mostrar as pestanas</translation>
 <translation id="1536390784834419204">Traducir páxina</translation>
+<translation id="1539535193627863227">Non se atopou ningún contrasinal nin clave de acceso para este sitio</translation>
 <translation id="1540800554400757039">Enderezo 1</translation>
 <translation id="154312949627292154">Abre as pestanas recibidas doutros dispositivos desde a pantalla de bloqueo.</translation>
 <translation id="1545749641540134597">Escanear código QR</translation>
@@ -642,6 +643,7 @@
 <translation id="3245744387817103524">Non se puido gardar o cambio.</translation>
 <translation id="3254806613790954367">Última pestana que abriches en todos os teus dispositivos</translation>
 <translation id="325717987950204592">Toca Privacidade e seguranza</translation>
+<translation id="3259451381796379533">Esta conta non funciona con Gemini. Inicia sesión con outra Conta de Google.</translation>
 <translation id="3265736395246760288">Inicia sesión máis rápido desde calquera dos teus dispositivos sincronizados.</translation>
 <translation id="3272527697863656322">Cancelar</translation>
 <translation id="3273510436356991673">Personalizar a pantalla de inicio</translation>
@@ -763,6 +765,7 @@
 <translation id="372676576864368480">Autocompletar o número da tarxeta que acaba en <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Data de creación: <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Carrete da cámara</translation>
+<translation id="3746269120925354434">A información gardouse en Google Wallet</translation>
 <translation id="3750225824417196283">Nova páxina de pestanas do modo de incógnito</translation>
 <translation id="3751873026576444885">Deixar de buscar o contido da túa pantalla con Google Lens</translation>
 <translation id="3753408171347588045">Seguimento de prezos</translation>
@@ -1076,7 +1079,6 @@
 <translation id="4824480232751123840">Volume</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} e 1 máis}other{{domain} e {count} máis}}</translation>
 <translation id="4826588772550366629">cámara e micrófono</translation>
-<translation id="4828431027673677473">Produtos en función dos teus intereses</translation>
 <translation id="4829420936835028285">Edita o grupo de pestanas</translation>
 <translation id="4833786495304741580">Envía estatísticas de uso e informes de fallos automaticamente a Google.</translation>
 <translation id="483689884442613745">Gardar…</translation>
@@ -1864,6 +1866,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="7498234416455752244">Seguir editando</translation>
 <translation id="7500244509706269886">Autocompletar formulario</translation>
 <translation id="750493650310597496">0 seleccionados</translation>
+<translation id="7505402981231763928">Debes iniciar sesión para usar Gemini</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Para bloquear as pestanas do modo de incógnito, configura Touch ID, Face ID ou un código de desbloqueo.</translation>
 <translation id="750886945254958667">Mantén este grupo para engadir pestanas máis adiante ou abandónao se xa non vas acceder a el</translation>
@@ -2105,7 +2108,6 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="828291969289324795">{count,plural, =1{Engadir pestana ao grupo novo}other{Engadir pestanas ao grupo novo}}</translation>
 <translation id="8283172974887967105">Definir…</translation>
 <translation id="8289930144142009940">As notificacións de <ph name="FEATURE_NAME" /> están desactivadas</translation>
-<translation id="8290077367744012649">Facer un seguimento dos prezos das túas pestanas</translation>
 <translation id="8292893224181644074">Descarga completada</translation>
 <translation id="8299417921174340354">Para usar os contrasinais, en primeiro lugar debes definir un contrasinal no teu dispositivo.</translation>
 <translation id="8307481894409578819">Non se puido cargar este ficheiro</translation>
@@ -2172,6 +2174,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="8533670235862049797">A opción Navegación segura está activada</translation>
 <translation id="8534481786647257214">Completouse a publicación en Google+.</translation>
 <translation id="8535368836838588657">Mostra o contrasinal</translation>
+<translation id="8540426897269305488">Iniciar a sesión con <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8545276357312221485">Comproba a configuración do navegador predeterminado</translation>
 <translation id="854938212724803178">Tes 1 contrasinal vulnerado. Cámbiao xa para non correr riscos.</translation>
 <translation id="8551311254462607218">Na barra de enderezos, toca a icona da cámara de Google Lens</translation>

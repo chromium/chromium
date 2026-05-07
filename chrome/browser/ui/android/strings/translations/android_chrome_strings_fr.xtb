@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr">
-<translation id="1007349221964075684">Utiliser le déverrouillage de l'écran pour voir les fenêtres de navigation privée ouvertes</translation>
+<translation id="1007349221964075684">Utilisez le déverrouillage de l'écran pour voir les fenêtres de navigation privée ouvertes</translation>
 <translation id="1010283278930414892">Aucun mot de passe enregistré sur cet appareil</translation>
 <translation id="1011749477052068769">Déplacer ici</translation>
 <translation id="1014083013111769343">Préférences du mode Lecture ouvertes à pleine hauteur</translation>
@@ -292,6 +292,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="230115972905494466">Aucun appareil compatible détecté</translation>
 <translation id="2316129865977710310">Non merci</translation>
 <translation id="2318045970523081853">Appuyer pour passer un appel</translation>
+<translation id="232137538351753795">Balayer depuis le bord gauche pour revenir en arrière</translation>
 <translation id="2323763861024343754">Données de site stockées</translation>
 <translation id="2328474416100889417">Tout le monde perdra immédiatement l'accès au groupe d'onglets "<ph name="GROUP_NAME" />", et tous les liens d'invitation seront désactivés</translation>
 <translation id="2330186936255788117">Plus de favoris</translation>
@@ -942,7 +943,6 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="5040262127954254034">Confidentialité</translation>
 <translation id="504456571576643789">Éléments à prendre en compte</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" /> fenêtre sélectionnée}one{<ph name="WINDOW_COUNT_NORMAL" /> fenêtre sélectionnée}other{<ph name="WINDOW_COUNT_NORMAL" /> fenêtres sélectionnées}}</translation>
-<translation id="5056587122125565772">Créer une image</translation>
 <translation id="506254248375231072">Aucun onglet</translation>
 <translation id="5075939510584558547">Enregistrer sans chiffrement</translation>
 <translation id="5078638979202084724">Ajouter tous les onglets aux favoris</translation>
@@ -1676,6 +1676,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7977451675950311423">Vous avertit si vous utilisez un mot de passe compromis par une violation des données.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome a supprimé ces autorisations, car vous n'avez pas consulté ce site récemment</translation>
 <translation id="799576009106109668">Vous naviguerez plus rapidement, car le contenu sera chargé de manière proactive en fonction de la page Web que vous êtes en train de consulter</translation>
+<translation id="7997875520309653083">Balayer l'écran depuis le bord droit pour revenir en arrière</translation>
 <translation id="7998918019931843664">Rouvrir un onglet fermé</translation>
 <translation id="8001245658307297681">Vous consultez un fichier local</translation>
 <translation id="8004582292198964060">Navigateur</translation>

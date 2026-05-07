@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">ບໍ່, ຂອບໃຈ</translation>
 <translation id="1531038290222364269">ສະແດງແຖບ</translation>
 <translation id="1536390784834419204">ແປໜ້າ</translation>
+<translation id="1539535193627863227">ບໍ່ພົບລະຫັດຜ່ານ ຫຼື ກະແຈຜ່ານສຳລັບເວັບໄຊນີ້</translation>
 <translation id="1540800554400757039">ທີ່ຢູ່ 1</translation>
 <translation id="154312949627292154">ເປີດແຖບທີ່ໄດ້ຮັບຈາກອຸປະກອນອື່ນໆຂອງທ່ານຈາກໜ້າຈໍລັອກ.</translation>
 <translation id="1545749641540134597">ສະແກນລະຫັດ QR</translation>
@@ -642,6 +643,7 @@
 <translation id="3245744387817103524">ບໍ່ສາມາດບັນທຶກການປ່ຽນແປງຂອງທ່ານໄດ້.</translation>
 <translation id="3254806613790954367">ແຖບທີ່ທ່ານສຸດທ້າຍໃນທົ່ວອຸປະກອນຂອງທ່ານທັງໝົດ</translation>
 <translation id="325717987950204592">ແຕະ "ຄວາມເປັນສ່ວນຕົວ ແລະ ຄວາມປອດໄພ"</translation>
+<translation id="3259451381796379533">ບັນຊີນີ້ຈະບໍ່ສາມາດໃຊ້ກັບ Gemini ໄດ້. ເຂົ້າສູ່ລະບົບດ້ວຍບັນຊີ Google ບັນຊີອື່ນ.</translation>
 <translation id="3265736395246760288">ເຂົ້າສູ່ລະບົບໄດ້ໄວຂຶ້ນຈາກອຸປະກອນໃດກໍໄດ້ທີ່ທ່ານຊິ້ງຂໍ້ມູນໄວ້.</translation>
 <translation id="3272527697863656322">ຍົກເລີກ</translation>
 <translation id="3273510436356991673">ປັບແຕ່ງໂຮມສະກຣີນຂອງທ່ານ</translation>
@@ -763,6 +765,7 @@
 <translation id="372676576864368480">ຕື່ມຂໍ້ມູນໝາຍເລກບັດທີ່ລົງທ້າຍດ້ວຍ <ph name="LAST_DIGITS" /> ໂດຍອັດຕະໂນມັດ</translation>
 <translation id="3738428049780661523">ສ້າງຂຶ້ນເມື່ອ <ph name="DATE" /></translation>
 <translation id="3742498336182910186">ຮູບຈາກອະລະບໍ້າກ້ອງ</translation>
+<translation id="3746269120925354434">ບັນທຶກຂໍ້ມູນໃສ່ໃນ Google Wallet ແລ້ວ</translation>
 <translation id="3750225824417196283">ໜ້າແຖບບໍ່ເປີດເຜີຍຕົວຕົນໃໝ່</translation>
 <translation id="3751873026576444885">ຢຸດການຊອກຫາໜ້າຈໍຂອງທ່ານດ້ວຍ Google Lens</translation>
 <translation id="3753408171347588045">ກຳລັງຕິດຕາມລາຄາ</translation>
@@ -1076,7 +1079,6 @@
 <translation id="4824480232751123840">ບໍລິມາດ</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} ແລະ ອີກ 1 ລາຍການ}other{{domain} ແລະ ອີກ {count} ລາຍການ}}</translation>
 <translation id="4826588772550366629">ກ້ອງຖ່າຍຮູບ ແລະ ໄມໂຄຣໂຟນ</translation>
-<translation id="4828431027673677473">ຜະລິດຕະພັນທີ່ອີງຕາມຄວາມສົນໃຈຂອງທ່ານ</translation>
 <translation id="4829420936835028285">ແກ້ໄຂກຸ່ມແຖບ</translation>
 <translation id="4833786495304741580">ສົ່ງສະຖິຕິການໃຊ້ ແລະ ລາຍງານການຂັດຂ້ອງໃຫ້ Google ໂດຍອັດຕະໂນມັດ.</translation>
 <translation id="483689884442613745">ບັນທຶກ…</translation>
@@ -1864,6 +1866,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="7498234416455752244">ສືບຕໍ່ແກ້ໄຂ</translation>
 <translation id="7500244509706269886">ຕື່ມຂໍ້ມູນອັດຕະໂນມັດໃນແບບຟອມ</translation>
 <translation id="750493650310597496">0 ເລືອກແລ້ວ</translation>
+<translation id="7505402981231763928">ທ່ານຕ້ອງເຂົ້າສູ່ລະບົບເພື່ອໃຊ້ Gemini</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">ເພື່ອລັອກ incognito tab ຂອງທ່ານ, ໃຫ້ຕັ້ງຄ່າ Touch ID, Face ID ຫຼື ລະຫັດກ່ອນ.</translation>
 <translation id="750886945254958667">ເກັບກຸ່ມນີ້ໄວ້ເພື່ອເພີ່ມແຖບໃນພາຍຫຼັງ ຫຼື ອອກຈາກກຸ່ມຫາກທ່ານບໍ່ຕ້ອງການເຂົ້າເຖິງກຸ່ມແລ້ວ</translation>
@@ -2105,7 +2108,6 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="828291969289324795">{count,plural, =1{ເພີ່ມແຖບໃສ່ກຸ່ມໃໝ່}other{ເພີ່ມແຖບໃສ່ກຸ່ມໃໝ່}}</translation>
 <translation id="8283172974887967105">ຕັ້ງ…</translation>
 <translation id="8289930144142009940">ການແຈ້ງເຕືອນ <ph name="FEATURE_NAME" /> ປິດແລ້ວ</translation>
-<translation id="8290077367744012649">ຕິດຕາມລາຄາຈາກແຖບຂອງທ່ານ</translation>
 <translation id="8292893224181644074">ດາວໂຫຼດສຳເລັດແລ້ວ</translation>
 <translation id="8299417921174340354">ເພື່ອໃຊ້ລະຫັດຜ່ານ, ທ່ານຕ້ອງຕັ້ງລະຫັດຜ່ານໃນອຸປະກອນຂອງທ່ານກ່ອນ.</translation>
 <translation id="8307481894409578819">ບໍ່ສາມາດອັບໂຫຼດໄຟລ໌ນີ້ໄດ້</translation>
@@ -2172,6 +2174,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8533670235862049797">Safe Browsing ເປີດຢູ່</translation>
 <translation id="8534481786647257214">ການ​ໂພ​ສ​ທ໌ Google+ ສຳ​ເລັດ.</translation>
 <translation id="8535368836838588657">ສະແດງລະຫັດຜ່ານ</translation>
+<translation id="8540426897269305488">ເຂົ້າສູ່ລະບົບດ້ວຍ <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8545276357312221485">ກວດສອບການຕັ້ງຄ່າໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນຂອງທ່ານ</translation>
 <translation id="854938212724803178">ທ່ານມີລະຫັດຜ່ານທີ່ຖືກລະເມີດ 1 ລາຍການ. ແກ້ໄຂດຽວນີ້ເພື່ອຄວາມປອດໄພ.</translation>
 <translation id="8551311254462607218">ໃນແຖບທີ່ຢູ່, ໃຫ້ແຕະໃສ່ໄອຄອນກ້ອງ Google Lens</translation>

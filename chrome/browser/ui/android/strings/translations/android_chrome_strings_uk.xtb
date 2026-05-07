@@ -292,6 +292,7 @@
 <translation id="230115972905494466">Сумісних пристроїв не знайдено</translation>
 <translation id="2316129865977710310">Ні, дякую</translation>
 <translation id="2318045970523081853">Натисніть, щоб зателефонувати</translation>
+<translation id="232137538351753795">Щоб перейти назад, проведіть пальцем від лівого краю екрана</translation>
 <translation id="2323763861024343754">Дані сайтів</translation>
 <translation id="2328474416100889417">Усі користувачі відразу втратять доступ до групи вкладок "<ph name="GROUP_NAME" />", і всі посилання для запрошення буде вимкнено</translation>
 <translation id="2330186936255788117">Більше закладок</translation>
@@ -942,7 +943,6 @@
 <translation id="5040262127954254034">Конфіденційність</translation>
 <translation id="504456571576643789">Що варто врахувати</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{Вибрано <ph name="WINDOW_COUNT_ONE" /> вікно}one{Вибрано <ph name="WINDOW_COUNT_NORMAL" /> вікно}few{Вибрано <ph name="WINDOW_COUNT_NORMAL" /> вікна}many{Вибрано <ph name="WINDOW_COUNT_NORMAL" /> вікон}other{Вибрано <ph name="WINDOW_COUNT_NORMAL" /> вікна}}</translation>
-<translation id="5056587122125565772">Створення зображень</translation>
 <translation id="506254248375231072">Немає вкладок</translation>
 <translation id="5075939510584558547">Зберегти без шифрування</translation>
 <translation id="5078638979202084724">Додати всі вкладки в закладки</translation>
@@ -1676,6 +1676,7 @@
 <translation id="7977451675950311423">Попереджає, якщо ви використовуєте пароль, який було зламано через порушення безпеки даних.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome скасував ці дозволи, оскільки останнім часом ви не відвідували сайт</translation>
 <translation id="799576009106109668">Ви будете швидше переглядати веб-сторінки, оскільки контент попередньо завантажується на основі поточної відкритої веб-сторінки</translation>
+<translation id="7997875520309653083">Щоб перейти назад, проведіть пальцем від правого краю екрана</translation>
 <translation id="7998918019931843664">Знову відкрити закриту вкладку</translation>
 <translation id="8001245658307297681">Ви переглядаєте локальний файл</translation>
 <translation id="8004582292198964060">Переглядач</translation>

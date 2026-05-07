@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">Jo, faleminderit</translation>
 <translation id="1531038290222364269">Shfaq skedat</translation>
 <translation id="1536390784834419204">Përkthe faqen</translation>
+<translation id="1539535193627863227">Nuk u gjet asnjë fjalëkalim apo çelës kalimi për këtë sajt</translation>
 <translation id="1540800554400757039">Adresa 1</translation>
 <translation id="154312949627292154">Hap skedat e marra nga pajisjet e tjera nga ekrani i kyçjes.</translation>
 <translation id="1545749641540134597">Skano kodin QR</translation>
@@ -642,6 +643,7 @@
 <translation id="3245744387817103524">Ndryshimi yt nuk mund të ruhej.</translation>
 <translation id="3254806613790954367">Skeda e fundit e hapur nëpër të gjitha pajisjet e tua</translation>
 <translation id="325717987950204592">Trokit te "Privatësia dhe siguria"</translation>
+<translation id="3259451381796379533">Kjo llogari nuk do të funksionojë me Gemini. Identifikohu me një "Llogari tjetër të Google".</translation>
 <translation id="3265736395246760288">Identifikohu më shpejt nga çdo pajisje e sinkronizuar.</translation>
 <translation id="3272527697863656322">Anulo</translation>
 <translation id="3273510436356991673">Personalizo ekranin tënd bazë</translation>
@@ -763,6 +765,7 @@
 <translation id="372676576864368480">Plotëso automatikisht numrin e kartës që mbaron me: <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Krijuar më <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Filmi i kamerës</translation>
+<translation id="3746269120925354434">Informacionet u ruajtën te "Portofoli i Google"</translation>
 <translation id="3750225824417196283">Faqja e skedës së re "të fshehtë"</translation>
 <translation id="3751873026576444885">Ndalo kërkimin në ekranin tënd me "Lenten e Google"</translation>
 <translation id="3753408171347588045">Çmimet po monitorohen</translation>
@@ -1076,7 +1079,6 @@
 <translation id="4824480232751123840">Volumi</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} dhe 1 tjetër}other{{domain} dhe {count} të tjerë}}</translation>
 <translation id="4826588772550366629">kamerën dhe mikrofonin</translation>
-<translation id="4828431027673677473">Produktet bazohen në interesat e tu</translation>
 <translation id="4829420936835028285">Modifiko grupin e skedave</translation>
 <translation id="4833786495304741580">Dërgon automatikisht te Google statistika të përdorimit dhe raportet e ndërprerjeve aksidentale.</translation>
 <translation id="483689884442613745">Ruaj…</translation>
@@ -1864,6 +1866,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="7498234416455752244">Vazhdo redaktimin</translation>
 <translation id="7500244509706269886">Plotëso automatikisht formularin</translation>
 <translation id="750493650310597496">0 të përzgjedhura</translation>
+<translation id="7505402981231763928">Duhet të identifikohesh për të përdorur Gemini</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Për të kyçur skedat e tua "e fshehta", konfiguro Touch ID, Face ID, ose Passcode.</translation>
 <translation id="750886945254958667">Mbaje këtë grup për të shtuar skeda më vonë ose largohu nga ai nëse nuk dëshiron më të kesh qasje në të</translation>
@@ -2105,7 +2108,6 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="828291969289324795">{count,plural, =1{Shto një skedë te grupi i ri}other{Shto skeda te grupi i ri}}</translation>
 <translation id="8283172974887967105">Cakto…</translation>
 <translation id="8289930144142009940">Njoftimet për "<ph name="FEATURE_NAME" />" janë çaktivizuar</translation>
-<translation id="8290077367744012649">Monitoro çmimet nga skedat e tua</translation>
 <translation id="8292893224181644074">Shkarkimi përfundoi</translation>
 <translation id="8299417921174340354">Për të përdorur fjalëkalimet, duhet të vendosësh në fillim një kod në pajisjen tënde.</translation>
 <translation id="8307481894409578819">Ky skedar nuk mund të ngarkohej</translation>
@@ -2172,6 +2174,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="8533670235862049797">"Shfletimi i sigurt" është aktiv</translation>
 <translation id="8534481786647257214">Postimi i Google+ përfundoi.</translation>
 <translation id="8535368836838588657">Zbulo fjalëkalimin</translation>
+<translation id="8540426897269305488">Identifikohu me <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8545276357312221485">Kontrollo cilësimet e shfletuesit të parazgjedhur</translation>
 <translation id="854938212724803178">Ke 1 fjalëkalim të komprometuar. Rregulloje tani për të qëndruar i sigurt.</translation>
 <translation id="8551311254462607218">Në shiritin e adresave, trokit tek ikona e kamerës së "Lentes së Google"</translation>

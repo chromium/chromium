@@ -1718,6 +1718,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> dhe 1 çelës tjetër</translation>
 <translation id="2165177462441582039">Zgjidh për sa kohë duhet të qëndrojë theksimi në secilin artikull</translation>
 <translation id="2166369534954157698">Zhapiku i gjelbër njomzak nga shporta e vjetër prej xunkthi u hodh si rrufe në qiell të pastër, pranë ca druve të çarë e xhamave të thyer</translation>
+<translation id="2168036794078614559">Raporti u dërgua</translation>
 <translation id="2169062631698640254">Identifikohu gjithsesi</translation>
 <translation id="2173302385160625112">Kontrollo lidhjen e internetit</translation>
 <translation id="2173801458090845390">Shto ID-në e kërkesës në këtë pajisje</translation>
@@ -2059,6 +2060,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2402226831639195063">Tonet</translation>
 <translation id="2405887402346713222">Numrat e serisë të pajisjes dhe komponentëve</translation>
 <translation id="2406153734066939945">Të fshihet ky profil dhe të dhënat e tij?</translation>
+<translation id="2406942743794219791">Konfirmo motorin e parazgjedhur të kërkimit që dëshiron</translation>
 <translation id="2407671304279211586">Zgjidh ofruesin e DNS-së</translation>
 <translation id="2408018932941436077">Po ruhet karta</translation>
 <translation id="2408742686124047357">Gozhdo "Lenten e Google" te shiriti i veglave për qasje me lehtësi herën tjetër</translation>
@@ -2151,6 +2153,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2460826998961521840">Për të përdorur çelësat e kalimit nga "Llogaria e Google"</translation>
 <translation id="2461550163693930491">Mos lejo sajtet të lëvizin dhe zmadhojnë skedat e ndara</translation>
 <translation id="2461593638794842577">Mund ta çaktivizosh këtë cilësim për t'i ruajtur fjalëkalimet vetëm në këtë pajisje</translation>
+<translation id="2462550463312552298">Përmblidh këtë dokument</translation>
 <translation id="2462724976360937186">ID-ja e çelësit të Autoritetit të Certifikimit</translation>
 <translation id="2462752602710430187">U shtua <ph name="PRINTER_NAME" /></translation>
 <translation id="2464075479326723132">Po shikon skedarët e sugjeruar për të të ndihmuar të kthehesh me lehtësi në aktivitetet e tua të fundit në Microsoft SharePoint dhe OneDrive.
@@ -3039,6 +3042,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3046892784550338476">Versioni <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Faqja e uebit, e plotë</translation>
 <translation id="304747341537320566">Motorët e ligjërimit</translation>
+<translation id="3047618804758101928">Shtesa "<ph name="EXTENSION_NAME" />" ndryshoi cilësimet e tua</translation>
 <translation id="3047678109605649715">Nuk ka zëra në <ph name="LANGUAGE" /> për pajisjen tënde. Pastro hapësirën në pajisjen tënde dhe provo përsëri.</translation>
 <translation id="3048336643003835855">Pajisjet HID nga shitësi <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Luaj (k)</translation>
@@ -4307,6 +4311,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3924788966103416622">Një aplikacion i jashtëm dëshiron kontroll të plotë mbi këtë seancë të Chrome për ta korrigjuar atë. Kjo përfshin qasjen te të dhënat e tua të ruajtura, kukit dhe të dhënat e sajtit, si dhe aftësinë për të naviguar në çdo URL.</translation>
 <translation id="3925573269917483990">Kamera:</translation>
 <translation id="3925926055063465902">Përdoruesit e tjerë në këtë pajisje mund ta përdorin po ashtu këtë rrjet</translation>
+<translation id="3925934852713265455">Pyet për skedat e tua</translation>
 <translation id="3926002189479431949">Telefoni i Smart Lock u ndryshua</translation>
 <translation id="3926410220776569451">Qasja te kamera është bllokuar</translation>
 <translation id="3927932062596804919">Refuzo</translation>
@@ -7276,6 +7281,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="604388835206766544">Analizimi i konfigurimit dështoi</translation>
 <translation id="6043994281159824495">Dil tani</translation>
 <translation id="6045114302329202345">Butoni kryesor i TrackPoint</translation>
+<translation id="6045425183320109397">Nga</translation>
 <translation id="6047632800149092791">Sinkronizimi nuk po punon. Provo të dalësh dhe të identifikohesh sërish.</translation>
 <translation id="6048747414605857443">Zgjidh dhe personalizo zërat e tekstit në ligjërim për ChromeVox dhe "Zgjidh që të thuhet"</translation>
 <translation id="6050189528197190982">Shkalla gri</translation>
@@ -8681,7 +8687,6 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="701020165009334820">Mund të shkarkosh lojëra dhe aplikacione për Android nëpërmjet "Dyqanit të Play".</translation>
 <translation id="701080569351381435">Shiko burimin</translation>
 <translation id="7012430956470647760">Kontrollet prindërore për aplikacionet</translation>
-<translation id="7013762323294215682">Ky çelës kalimi do të ruhet te menaxheri i fjalëkalimeve. Çdo person që ka qasje në të do të mund ta përdorë këtë çelës kalimi.</translation>
 <translation id="7014174261166285193">Instalimi dështoi.</translation>
 <translation id="7014480873681694324">Hiq theksimin</translation>
 <translation id="7014741021609395734">Niveli i zmadhimit</translation>
@@ -9993,6 +9998,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7939062555109487992">Opsionet e përparuara</translation>
 <translation id="793923212791838">Pajisja jote nuk mund të përdoret me këtë sajt</translation>
 <translation id="7939328347457537652">Menaxho certifikatat e pajisjes</translation>
+<translation id="7939918959917132075">Ndryshuar në këtë nga shtesa</translation>
 <translation id="7940087892955752820">Ndarja nuk mund të anulohej sepse kjo dosje po përdoret nga një aplikacion. Ndarja e dosjes do të anulohet kur <ph name="SPECIFIC_NAME" /> të ndalojë punën më pas.</translation>
 <translation id="7940265372707990269">Rendit sipas: <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Gatishmëria e ndarjes së internetit:</translation>
@@ -11769,7 +11775,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="9120800848981545750">Shkarko Chrome për iOS për t'u qasur te skedat, faqeshënuesit dhe fjalëkalimet në telefonin tënd.</translation>
 <translation id="9121814364785106365">Hap si skedë të gozhduar</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{Të mbyllet skeda dhe të fshihet grupi?}=1{Të mbyllen skedat dhe të fshihet grupi?}other{Të mbyllen skedat dhe të fshihen grupet?}}</translation>
-<translation id="9122788874051694311">Të ruhet ky çelës kalimi jashtë modalitetit "I fshehtë"?</translation>
 <translation id="9123287046453017203">Pajisja jote nuk është e përditësuar</translation>
 <translation id="9125910124977405374">Hiqe gjuhën <ph name="LANGUAGE_NAME" /> nga gjuhët që përkthehen automatikisht</translation>
 <translation id="9125912770834459638">Organizata jote nuk lejon që të identifikohesh</translation>

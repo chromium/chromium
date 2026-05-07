@@ -609,6 +609,7 @@
 <translation id="7250468141469952378">Elementos seleccionados: <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /> (permitidos)</translation>
 <translation id="7276071417425470385">Cando esta opción está activada, os sitios poden pedirche permiso para utilizar dispositivos de realidade virtual. Cando esta opción está desactivada, os sitios non poden utilizar dispositivos de realidade virtual.</translation>
+<translation id="7279851812866769760">Compartir contactos</translation>
 <translation id="7282197670900591579">Tema cidra</translation>
 <translation id="728412880473384942">Os sitios son máis rápidos, pero menos seguros</translation>
 <translation id="7352902948037373520">Xestiónaa na <ph name="BEGIN_LINK1" />configuración de Android<ph name="END_LINK1" />
@@ -794,6 +795,7 @@ A Protección avanzada controla estas opcións de Chrome:</translation>
 <translation id="9156722768168878035">Permite que Chrome mostre as pestanas recentes na lista de aplicacións e nos resultados de busca do teu dispositivo. Desactiva esta opción cando queiras na configuración de Chrome.</translation>
 <translation id="9162462602695099906">Esta páxina é perigosa</translation>
 <translation id="9182556968660520230">Non permitir que os sitios reproduzan contido protexido</translation>
+<translation id="927148002081263046">Compartir un contacto</translation>
 <translation id="947156494302904893">Os sitios que visites poden verificar que es unha persoa real e non un bot</translation>
 <translation id="959682366969460160">Organízate</translation>
 <translation id="960590623979248167">Mostrar as hiperligazóns</translation>

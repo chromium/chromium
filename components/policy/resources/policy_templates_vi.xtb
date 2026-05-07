@@ -1897,6 +1897,25 @@ Nếu bạn không đặt chính sách này hoặc đặt thành Tắt, người
 <translation id="225340736558643885">Bật cảnh báo đối với biểu mẫu không an toàn</translation>
 <translation id="2258126710006312594">Cho phép người dùng truy cập từ xa chuyển tệp từ/đến máy chủ</translation>
 <translation id="225830954785359083">Ngăn các trang hiển thị cửa sổ bật lên trong khi huỷ tải</translation>
+<translation id="2260635608598936994">Định cấu hình bộ lọc để chọn những chứng chỉ máy khách được đưa vào báo cáo tín hiệu bảo mật của <ph name="PRODUCT_NAME" />. Những báo cáo này sẽ gửi thông tin về trạng thái của trình duyệt và thiết bị đến <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />. Quản trị viên có thể sử dụng thông tin này để định cấu hình các quy tắc <ph name="GOOGLE_CONTEXT_AWARE_ACCESS" />.
+
+Chính sách này cho phép bạn xác định bộ lọc dựa trên các thuộc tính của chứng chỉ máy khách, chẳng hạn như tên phân biệt của ISSUER (TỔ CHỨC PHÁT HÀNH) và/hoặc SUBJECT (CHỦ THỂ). <ph name="PRODUCT_NAME" /> sẽ chỉ đưa vào báo cáo tín hiệu những chứng chỉ khớp với ít nhất một trong các bộ lọc được chỉ định.
+
+     Ví dụ về cách sử dụng mục <ph name="SELECTOR_PLACEHOLDER" />:
+
+      * Khi bạn đặt <ph name="SELECTOR_PLACEHOLDER" /> thành <ph name="SECURITY_SIGNALS_CLIENT_CERTIFICATE_SELECTORS_FILTER_EXAMPLE" />, chỉ những chứng chỉ máy khách do chứng chỉ có CommonName <ph name="ISSUER_CN_PLACEHOLDER" /> cấp mới được chọn.
+
+      * Khi <ph name="SELECTOR_PLACEHOLDER" /> chứa cả mục <ph name="ISSUER_STRING_VALUE" /> và <ph name="SUBJECT_STRING_VALUE" />, chỉ những chứng chỉ máy khách đáp ứng cả hai điều kiện mới được chọn.
+
+      * Khi <ph name="SELECTOR_PLACEHOLDER" /> chứa mục <ph name="SUBJECT_STRING_VALUE" /> với giá trị <ph name="FILTER_STRING_ORGANIZATION" />, chứng chỉ phải có ít nhất một tổ chức khớp với giá trị đã chỉ định thì mới được chọn.
+
+      * Khi <ph name="SELECTOR_PLACEHOLDER" /> chứa mục <ph name="SUBJECT_STRING_VALUE" /> với giá trị <ph name="FILTER_STRING_ORGANIZATIONAL_UNIT" />, chứng chỉ phải có ít nhất một đơn vị tổ chức khớp với giá trị đã chỉ định thì mới được chọn.
+
+      * Khi bạn đặt <ph name="SELECTOR_PLACEHOLDER" /> thành <ph name="EMPTY_DICTIONARY" />, phần thông tin trống sẽ bị bỏ qua đối với chính sách này.
+
+      Nếu bạn không đặt chính sách này thì sẽ không có chứng chỉ máy khách nào được chọn trong quá trình báo cáo tín hiệu.
+
+*Quan trọng*: Chính sách này chỉ có hiệu lực nếu bạn đã bật chính sách <ph name="USER_SECURITY_SIGNALS_REPORTING_POLICY_NAME" />, tức là chính sách kiểm soát toàn bộ tính năng cho phép gửi tín hiệu bảo mật từ Chrome.</translation>
 <translation id="2261648512244797294">Tắt tính năng in privet đã ngừng hoạt động</translation>
 <translation id="2262701937800507517">Sử dụng thứ tự thuật toán mật mã mặc định của <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="2263881357524831360">Cho phép dùng Trình quản lý mật khẩu bên thứ ba trong <ph name="PRODUCT_NAME" /> trên <ph name="ANDROID_NAME" /></translation>
@@ -2704,6 +2723,15 @@ Khi chính sách này được đặt thành false hoặc không được địn
 Nếu bạn bật hoặc không đặt chính sách này, thì người dùng có thể thêm tài khoản Kerberos thông qua phần Cài đặt tài khoản Kerberos trên trang Cài đặt Kerberos. Người dùng có toàn quyền kiểm soát các tài khoản mà họ thêm, cũng như có thể sửa đổi hoặc xoá các tài khoản này.
 
 Nếu bạn tắt chính sách này, người dùng sẽ không thể thêm tài khoản Kerberos. Người dùng chỉ có thể thêm tài khoản thông qua chính sách "Định cấu hình các tài khoản Kerberos". Đây là một cách hiệu quả để khoá các tài khoản.</translation>
+<translation id="2771222727845689796">Chính sách này cho phép bạn chỉ định danh sách các mẫu URL. Nội dung trên web chạy trong nền khớp với các mẫu này sẽ bị buộc phải chạy ở chế độ ưu tiên nền trước.
+
+Nếu bạn bật chính sách <ph name="FORCE_FOREGROUND_PRIORITY_FOR_ALL_TABS_POLICY_NAME" /> thì danh sách này sẽ bị bỏ qua vì tất cả các thẻ sẽ bị buộc phải chạy ở chế độ ưu tiên nền trước.
+
+Nếu bạn tắt hoặc không đặt chính sách <ph name="FORCE_FOREGROUND_PRIORITY_FOR_ALL_TABS_POLICY_NAME" /> thì chỉ nội dung khớp với các mẫu trong danh sách này sẽ bị buộc phải chạy ở chế độ ưu tiên nền trước.
+
+Để biết thông tin chi tiết về các mẫu <ph name="URL_LABEL" /> hợp lệ, vui lòng xem tại https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+Nếu danh sách này trống hoặc bạn không đặt danh sách này, thì không có nội dung chạy nền nào bị buộc phải chạy ở chế độ ưu tiên nền trước.</translation>
 <translation id="2772231477628401250">Sử dụng HTTP cho các lượt tải bản cập nhật xuống</translation>
 <translation id="2772955711376920612">Nếu bạn bật chính sách này, đồng thời đặt <ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" /> và <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" />, thì hệ thống sẽ luôn bật chế độ chuyển đổi nguồn điện vào giờ cao điểm nếu được hỗ trợ trên thiết bị. Chính sách quản lý nguồn điện khi chuyển đổi vào giờ cao điểm là một chính sách tiết kiệm điện năng giúp giảm thiểu việc sử dụng dòng điện xoay chiều trong những thời điểm có mức sử dụng cao điểm. Bạn có thể đặt thời gian bắt đầu và thời gian kết thúc để chạy trong chế độ chuyển đổi nguồn điện vào giờ cao điểm cho từng ngày trong tuần. Thiết bị sẽ chạy bằng pin (ngay cả khi được kết nối với dòng điện xoay chiều) trong những thời điểm này miễn là pin ở trên ngưỡng được chỉ định. Sau thời gian kết thúc chỉ định, thiết bị sẽ chạy bằng dòng điện xoay chiều (nếu được kết nối) nhưng sẽ không sạc pin. Thiết bị sẽ hoạt động bình thường trở lại bằng dòng điện xoay chiều và sạc lại pin sau thời gian bắt đầu sạc được chỉ định.
 
@@ -4430,6 +4458,22 @@ Bạn có thể kết hợp chính sách này với <ph name="POLICY_CLOUD_POLIC
           Nếu bạn không đặt chính sách này, thì ban đầu, phím cố định sẽ tắt trên màn hình đăng nhập nhưng người dùng có thể bật bất cứ lúc nào.</translation>
 <translation id="3927291637826333102">Cho phép chụp Màn hình, Cửa sổ và Thẻ theo các nguồn gốc này</translation>
 <translation id="3928726028264020458">Bật tính năng báo cáo thông tin về VPD của thiết bị</translation>
+<translation id="393516164454995927">Việc đặt chính sách này sẽ chỉ định số lượng tối đa kết nối đồng thời trên mỗi máy chủ proxy áp dụng cho yêu cầu sử dụng giao thức WebSocket.
+
+Để sửa đổi giới hạn yêu cầu không sử dụng giao thức WebSocket, vui lòng xem <ph name="MAX_CONNECTIONS_PER_PROXY_POLICY_NAME" />.
+
+Nếu bạn không đặt chính sách này, giá trị mặc định được dùng sẽ là 128.
+
+Một số ứng dụng web tiêu hao lượng lớn lượt kết nối khi có các lệnh GET bị treo. Vì vậy, việc đặt giá trị dưới 128 có thể khiến mạng của trình duyệt bị treo nếu có quá nhiều ứng dụng web (với các lượt kết nối bị treo) đang mở.
+Một số máy chủ proxy không thể xử lý lượng lớn lượt kết nối đồng thời trên mỗi máy khách. Tuy nhiên, bạn có thể giải quyết vấn đề đó bằng cách đặt chính sách này về giá trị thấp hơn.
+
+Giá trị phải bằng hoặc cao hơn 6.
+Nếu bạn đặt giá trị thấp hơn giới hạn đó, thì hệ thống sẽ sử dụng giá trị 6.
+Bạn phải tự chịu rủi ro khi đặt giá trị thấp hơn giá trị mặc định (128).
+
+Giá trị phải bằng hoặc thấp hơn 256.
+Nếu bạn đặt giá trị cao hơn giới hạn đó, thì hệ thống sẽ sử dụng giá trị 256.
+Bạn phải tự chịu rủi ro khi đặt giá trị cao hơn giá trị mặc định (128).</translation>
 <translation id="3935592079035695061">Số mili giây kể từ nửa đêm.</translation>
 <translation id="3937800910397007337">Buộc chế độ ưu tiên nền trước đối với tất cả các thẻ</translation>
 <translation id="3941289958028934630">Tắt tính năng phản hồi bằng giọng nói trên màn hình đăng nhập</translation>
@@ -4895,6 +4939,7 @@ Chính sách này dùng để tắt tính năng tự động nâng cấp nội d
       Nếu bạn tắt hoặc không đặt chính sách này, thì người dùng có thể thay đổi chế độ cài đặt của chính sách.
 
       Xin lưu ý: Đối với Android, hãy dùng chính sách <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" />.</translation>
+<translation id="4261641564041253502">Tự động chọn chứng chỉ máy khách khớp với bộ lọc cho báo cáo tín hiệu bảo mật của <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4261820385751181068">Ngôn ngữ màn hình đăng nhập thiết bị</translation>
 <translation id="4263788921751326798">Tắt tính năng báo cáo thông tin trong báo cáo sự cố của thiết bị</translation>
 <translation id="4268586991084547853">Tương thích tốt hơn với danh sách trang web ở chế độ doanh nghiệp (enterprise mode sitelists) của Microsoft IE/Edge.</translation>
@@ -6607,22 +6652,6 @@ Nếu bạn không đặt chính sách này, thì giá trị mặc định là 0
 <translation id="5293285950307241933">Xoá tất cả dữ liệu người dùng cục bộ</translation>
 <translation id="5293619885162445352">Cho phép <ph name="PEPPER_NAME" /> sử dụng bộ giải mã video mới.</translation>
 <translation id="529457411593078576">Bật Điều khoản dịch vụ trong lần chạy đầu tiên của CCT</translation>
-<translation id="529718811410033393">Việc đặt chính sách này sẽ chỉ định số lượng tối đa kết nối đồng thời trên mỗi máy chủ proxy áp dụng cho yêu cầu không sử dụng giao thức WebSocket.
-
-Để sửa đổi giới hạn yêu cầu sử dụng giao thức WebSocket, vui lòng xem <ph name="MAX_CONNECTIONS_PER_PROXY_FOR_WEBSOCKET_POLICY_NAME" />.
-
-Nếu bạn không đặt chính sách này, giá trị mặc định được dùng sẽ là 32.
-
-Một số ứng dụng web tiêu hao lượng lớn lượt kết nối khi có các lệnh GET bị treo. Vì vậy, việc đặt giá trị dưới 32 có thể khiến mạng của trình duyệt bị treo nếu có quá nhiều ứng dụng web (với các lượt kết nối bị treo) đang mở.
-Một số máy chủ proxy không thể xử lý lượng lớn lượt kết nối đồng thời trên mỗi máy khách. Tuy nhiên, bạn có thể giải quyết vấn đề đó bằng cách đặt chính sách này về giá trị thấp hơn.
-
-Giá trị phải bằng hoặc cao hơn 6.
-Nếu bạn đặt giá trị thấp hơn giới hạn đó, thì hệ thống sẽ sử dụng giá trị 6.
-Bạn phải tự chịu rủi ro khi đặt giá trị thấp hơn giá trị mặc định (32).
-
-Giá trị phải bằng hoặc thấp hơn 256 (99 trong <ph name="PRODUCT_NAME" /> 147 trở xuống).
-Nếu bạn đặt một giá trị cao hơn giới hạn đó, thì hệ thống sẽ sử dụng giá trị 256 (99 trong <ph name="PRODUCT_NAME" /> 147 trở xuống).
-Bạn phải tự chịu rủi ro khi đặt giá trị cao hơn giá trị mặc định (32).</translation>
 <translation id="5297873769621042075">Khi bạn đặt chính sách này, hệ thống sẽ chỉ định một danh sách tên máy chủ hoặc mẫu tên máy chủ (chẳng hạn như
 "[*.]vidu.com") sẽ không được nâng cấp lên HTTPS và sẽ không hiển thị
 khoảng xen kẽ lỗi nếu chế độ Ưu tiên HTTPS được bật. Các tổ chức có thể sử dụng
@@ -7826,6 +7855,22 @@ Nếu bạn đặt chính sách này thành false (sai), thì thông tin về ng
 Nếu bạn đặt giá trị này thành true hoặc không đặt, thì học viên có thể sử dụng danh sách học viên trên Google Lớp học.
 
 Nếu bạn đặt chính sách này thành false (sai), thì người dùng sẽ không thể truy cập vào tính năng này.</translation>
+<translation id="6061604539167728530">Việc đặt chính sách này sẽ chỉ định số lượng tối đa kết nối đồng thời trên mỗi máy chủ proxy áp dụng cho yêu cầu không sử dụng giao thức WebSocket.
+
+Để sửa đổi giới hạn yêu cầu sử dụng giao thức WebSocket, vui lòng xem <ph name="MAX_CONNECTIONS_PER_PROXY_FOR_WEBSOCKET_POLICY_NAME" />.
+
+Nếu bạn không đặt chính sách này, giá trị mặc định được dùng sẽ là 128.
+
+Một số ứng dụng web tiêu hao lượng lớn lượt kết nối khi có các lệnh GET bị treo. Vì vậy, việc đặt giá trị dưới 128 có thể khiến mạng của trình duyệt bị treo nếu có quá nhiều ứng dụng web (với các lượt kết nối bị treo) đang mở.
+Một số máy chủ proxy không thể xử lý lượng lớn lượt kết nối đồng thời trên mỗi máy khách. Tuy nhiên, bạn có thể giải quyết vấn đề đó bằng cách đặt chính sách này về giá trị thấp hơn.
+
+Giá trị phải bằng hoặc cao hơn 6.
+Nếu bạn đặt giá trị thấp hơn giới hạn đó, thì hệ thống sẽ sử dụng giá trị 6.
+Bạn phải tự chịu rủi ro khi đặt giá trị thấp hơn giá trị mặc định (128).
+
+Giá trị phải bằng hoặc thấp hơn 256 (99 trong <ph name="PRODUCT_NAME" /> 147 trở xuống).
+Nếu bạn đặt một giá trị cao hơn giới hạn đó, thì hệ thống sẽ sử dụng giá trị 256 (99 trong <ph name="PRODUCT_NAME" /> 147 trở xuống).
+Bạn phải tự chịu rủi ro khi đặt giá trị cao hơn giá trị mặc định (128).</translation>
 <translation id="6066761914755798079">Nếu bạn bật <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />, thì thao tác đặt <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" /> sẽ chỉ định URL của công cụ tìm kiếm sẽ đưa ra đề xuất tìm kiếm. URL phải chứa chuỗi <ph name="SEARCH_TERM_MARKER" />. Chuỗi này sẽ được thay bằng cụm từ tìm kiếm của người dùng trong truy vấn.
 
       Bạn có thể chỉ định URL tìm kiếm của Google là: <ph name="GOOGLE_SUGGEST_SEARCH_URL" />.</translation>
@@ -8344,6 +8389,7 @@ Lưu ý: Chính sách này chỉ áp dụng cho những nền tảng hỗ trợ 
 
       Cho dù bạn có đặt chính sách này hay không thì người dùng cũng không thể thay đổi tùy chọn cài đặt tối ưu hóa WPAD.</translation>
 <translation id="6363485842496031347">Chế độ cài đặt phím tắt Delete sử dụng phím tắt chứa phím bổ trợ alt</translation>
+<translation id="6364336078281746235">Buộc các URL cụ thể chạy ở chế độ ưu tiên nền trước</translation>
 <translation id="6366574325767783825">Nếu bạn không đặt hoặc đặt chính sách này thành True, thì <ph name="PRODUCT_NAME" /> sẽ chấp nhận nội dung web được phân phối dưới dạng Signed HTTP Exchanges.
 
       Nếu bạn đặt chính sách này thành False, thì Signed HTTP Exchanges sẽ không tải được.</translation>
@@ -10292,22 +10338,6 @@ Nếu bạn để trống chính sách này, <ph name="FLOATING_SSO_DOMAIN_BLOCK
 
       Nếu người dùng sử dụng thiết bị không được quản lý, thì khả năng đặt chính sách này sẽ còn phụ thuộc vào việc người dùng có phải là chủ sở hữu thiết bị hay không.</translation>
 <translation id="7570291542739287032">Chỉ trên đám mây</translation>
-<translation id="7571158727244273239">Việc đặt chính sách này sẽ chỉ định số lượng tối đa kết nối đồng thời trên mỗi máy chủ proxy áp dụng cho yêu cầu sử dụng giao thức WebSocket.
-
-Để sửa đổi giới hạn yêu cầu không sử dụng giao thức WebSocket, vui lòng xem <ph name="MAX_CONNECTIONS_PER_PROXY_POLICY_NAME" />.
-
-Nếu bạn không đặt chính sách này, giá trị mặc định được dùng sẽ là 32.
-
-Một số ứng dụng web tiêu hao lượng lớn lượt kết nối khi có các lệnh GET bị treo. Vì vậy, việc đặt giá trị dưới 32 có thể khiến mạng của trình duyệt bị treo nếu có quá nhiều ứng dụng web (với các lượt kết nối bị treo) đang mở.
-Một số máy chủ proxy không thể xử lý lượng lớn lượt kết nối đồng thời trên mỗi máy khách. Tuy nhiên, bạn có thể giải quyết vấn đề đó bằng cách đặt chính sách này về giá trị thấp hơn.
-
-Giá trị phải bằng hoặc cao hơn 6.
-Nếu bạn đặt giá trị thấp hơn giới hạn đó, thì hệ thống sẽ sử dụng giá trị 6.
-Bạn phải tự chịu rủi ro khi đặt giá trị thấp hơn giá trị mặc định (32).
-
-Giá trị phải bằng hoặc thấp hơn 256.
-Nếu bạn đặt giá trị cao hơn giới hạn đó, thì hệ thống sẽ sử dụng giá trị 256.
-Bạn phải tự chịu rủi ro khi đặt giá trị cao hơn giá trị mặc định (32).</translation>
 <translation id="7572641760104970905">Không phức tạp</translation>
 <translation id="757395965347379751">Khi bạn bật cài đặt này, <ph name="PRODUCT_NAME" /> sẽ cho phép các chứng chỉ có chữ ký SHA-1 miễn là các chứng chỉ xác thực thành công và cung cấp đến chứng chỉ CA được cài đặt cục bộ.
 

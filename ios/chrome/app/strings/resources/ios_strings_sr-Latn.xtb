@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">Ne, hvala</translation>
 <translation id="1531038290222364269">Prikažite kartice</translation>
 <translation id="1536390784834419204">Prevedi stranicu</translation>
+<translation id="1539535193627863227">Nisu pronađeni nijedna lozinka ni pristupni ključ za ovaj sajt</translation>
 <translation id="1540800554400757039">1. red za adresu</translation>
 <translation id="154312949627292154">Otvarajte kartice koje ste primili sa drugih uređaja sa zaključanog ekrana.</translation>
 <translation id="1545749641540134597">Skenirajte QR kôd</translation>
@@ -642,6 +643,7 @@
 <translation id="3245744387817103524">Čuvanje promene nije uspelo.</translation>
 <translation id="3254806613790954367">Poslednja otvorena kartica na svim uređajima</translation>
 <translation id="325717987950204592">Dodirnite Privatnost i bezbednost</translation>
+<translation id="3259451381796379533">Ovaj nalog neće raditi sa Gemini-jem. Prijavite se pomoću drugog Google naloga.</translation>
 <translation id="3265736395246760288">Brže se prijavljujte sa bilo kog sinhronizovanog uređaja.</translation>
 <translation id="3272527697863656322">Otkaži</translation>
 <translation id="3273510436356991673">Prilagodite početni ekran</translation>
@@ -763,6 +765,7 @@
 <translation id="372676576864368480">Automatski popunite broj kartice koja se završava na <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Napravljeno <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Sa uređaja</translation>
+<translation id="3746269120925354434">Informacije su sačuvane u Google novčaniku</translation>
 <translation id="3750225824417196283">Nova stranica na kartici bez arhiviranja</translation>
 <translation id="3751873026576444885">Zaustavite pretragu ekrana pomoću Google objektiva</translation>
 <translation id="3753408171347588045">Cene se prate</translation>
@@ -1076,7 +1079,6 @@
 <translation id="4824480232751123840">Zapremina</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} i još 1}one{{domain} i još {count}}few{{domain} i još {count}}other{{domain} i još {count}}}</translation>
 <translation id="4826588772550366629">kamera i mikrofon</translation>
-<translation id="4828431027673677473">Proizvodi na osnovu interesovanja</translation>
 <translation id="4829420936835028285">Izmeni grupu kartica</translation>
 <translation id="4833786495304741580">Automatski šalje Google-u statistiku korišćenja i izveštaje o otkazivanju.</translation>
 <translation id="483689884442613745">Sačuvaj…</translation>
@@ -1864,6 +1866,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="7498234416455752244">Nastavite sa izmenama</translation>
 <translation id="7500244509706269886">Automatski popuni obrazac</translation>
 <translation id="750493650310597496">Izabrano je 0 stavki</translation>
+<translation id="7505402981231763928">Treba da se prijavite da biste koristili Gemini</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Da biste zaključali kartice bez arhiviranja, podesite Touch ID, Face ID ili šifru.</translation>
 <translation id="750886945254958667">Zadržite ovu grupu da biste dodali kartice kasnije ili je napustite ako više ne želite da joj pristupate</translation>
@@ -2105,7 +2108,6 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="828291969289324795">{count,plural, =1{Dodaj karticu u novu grupu}one{Dodaj kartice u novu grupu}few{Dodaj kartice u novu grupu}other{Dodaj kartice u novu grupu}}</translation>
 <translation id="8283172974887967105">Podesi…</translation>
 <translation id="8289930144142009940">Obaveštenja za funkciju <ph name="FEATURE_NAME" /> su isključena</translation>
-<translation id="8290077367744012649">Pratite cene sa kartica</translation>
 <translation id="8292893224181644074">Preuzimanje je završeno</translation>
 <translation id="8299417921174340354">Da biste koristili lozinke, prvo morate da podesite šifru na uređaju.</translation>
 <translation id="8307481894409578819">Otpremanje ovog fajla nije uspelo</translation>
@@ -2172,6 +2174,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="8533670235862049797">Bezbedno pregledanje je uključeno</translation>
 <translation id="8534481786647257214">Google+ post je dovršen.</translation>
 <translation id="8535368836838588657">Prikažite lozinku</translation>
+<translation id="8540426897269305488">Prijavi me pomoću akreditiva <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8545276357312221485">Proverite podešavanja podrazumevanog pregledača</translation>
 <translation id="854938212724803178">Imate 1 ugroženu lozinku. Rešite problem odmah da biste bili bezbedni.</translation>
 <translation id="8551311254462607218">Na traci za adresu dodirnite ikonu kamere Google objektiva</translation>

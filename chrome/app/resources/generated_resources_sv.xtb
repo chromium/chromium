@@ -2075,6 +2075,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2402226831639195063">Toner</translation>
 <translation id="2405887402346713222">Serienummer för enhet och komponenter</translation>
 <translation id="2406153734066939945">Vill du radera den här profilen och tillhörande data?</translation>
+<translation id="2406942743794219791">Bekräfta vilken standardsökmotor du vill använda</translation>
 <translation id="2407671304279211586">Välj DNS-leverantör</translation>
 <translation id="2408018932941436077">Kortet sparas</translation>
 <translation id="2408742686124047357">Fäst Google Lens i verktygsfältet så att du enkelt kommer åt det nästa gång</translation>
@@ -3056,6 +3057,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3046892784550338476">Version <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Webbsida, komplett</translation>
 <translation id="304747341537320566">Talmotorer</translation>
+<translation id="3047618804758101928">Tillägget <ph name="EXTENSION_NAME" /> har ändrat dina inställningar</translation>
 <translation id="3047678109605649715">Det finns inga <ph name="LANGUAGE" /> röster på enheten. Frigör utrymme på enheten och försök igen.</translation>
 <translation id="3048336643003835855">HID-enheter från leverantören <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Spela upp (k)</translation>
@@ -7296,6 +7298,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="604388835206766544">Det gick inte att tolka konfigurationen</translation>
 <translation id="6043994281159824495">Logga ut nu</translation>
 <translation id="6045114302329202345">Primär TrackPoint-knapp</translation>
+<translation id="6045425183320109397">Av</translation>
 <translation id="6047632800149092791">Det går inte att synkronisera. Testa att logga ut och sedan logga in igen.</translation>
 <translation id="6048747414605857443">Välj och anpassa röster för text till tal för ChromeVox och Textuppläsning</translation>
 <translation id="6050189528197190982">Gråskala</translation>
@@ -8701,7 +8704,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="701020165009334820">Du kan ladda ned appar och spel för Android via Play Butik.</translation>
 <translation id="701080569351381435">Visa källa</translation>
 <translation id="7012430956470647760">Föräldrakontroller för appar</translation>
-<translation id="7013762323294215682">Den här nyckeln sparas i lösenordshanteraren. Alla som har åtkomst till den kan använda den här nyckeln.</translation>
 <translation id="7014174261166285193">Installationen misslyckades.</translation>
 <translation id="7014480873681694324">Ta bort markering</translation>
 <translation id="7014741021609395734">Zoomnivå</translation>
@@ -8739,7 +8741,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7038632520572155338">Brytarstyrning</translation>
 <translation id="7038710352229712897">Lägg till ett Google-konto för <ph name="USER_NAME" /></translation>
 <translation id="7039326228527141150">Komma åt USB-enheter från <ph name="VENDOR_NAME" /></translation>
-<translation id="7039697949826432881">Kan inte laddas upp. Filen överskrider den maximala storleken på <ph name="MAX_FILE_SIZE" /> MB.</translation>
+<translation id="7039697949826432881">Uppladdningen misslyckades. Filen överskrider den maximala storleken på <ph name="MAX_FILE_SIZE" /> MB.</translation>
 <translation id="7039912931802252762">Microsofts Logga in med smartkort</translation>
 <translation id="7039951224110875196">Skapa ett Google-konto åt ett barn</translation>
 <translation id="7042116641003232070">Får spara data på enheten</translation>
@@ -10014,6 +10016,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7939062555109487992">Avancerade alternativ</translation>
 <translation id="793923212791838">Den här enheten fungerar inte med den här webbplatsen</translation>
 <translation id="7939328347457537652">Hantera enhetscertifikat</translation>
+<translation id="7939918959917132075">Ändrades till detta av tillägget</translation>
 <translation id="7940087892955752820">Det gick inte att sluta dela eftersom ett program använder den här mappen. Mappen slutar delas nästa gång <ph name="SPECIFIC_NAME" /> stängs av.</translation>
 <translation id="7940265372707990269">Sortera efter <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Beredskap för internetdelning:</translation>
@@ -11790,7 +11793,6 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren, enhe
 <translation id="9120800848981545750">Ladda ned Chrome för iOS för att få åtkomst till dina flikar, bokmärken och lösenord på telefonen.</translation>
 <translation id="9121814364785106365">Öppna som en fast flik</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{Vill du stänga fliken och radera gruppen?}=1{Vill du stänga fliken och radera gruppen?}other{Vill du stänga flikarna och radera grupperna?}}</translation>
-<translation id="9122788874051694311">Vill du spara den här nyckeln utanför inkognitoläget?</translation>
 <translation id="9123287046453017203">Enheten är inte uppdaterad</translation>
 <translation id="9125910124977405374">Ta bort <ph name="LANGUAGE_NAME" /> från automatiskt översatta språk</translation>
 <translation id="9125912770834459638">Organisationen tillåter inte att du loggar in</translation>

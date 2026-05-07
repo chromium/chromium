@@ -2059,6 +2059,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2402226831639195063">Tonos</translation>
 <translation id="2405887402346713222">Números de serie del dispositivo y los componentes</translation>
 <translation id="2406153734066939945">¿Quieres borrar este perfil y sus datos?</translation>
+<translation id="2406942743794219791">Confirma el motor de búsqueda predeterminado que quieres</translation>
 <translation id="2407671304279211586">Seleccionar proveedor de DNS</translation>
 <translation id="2408018932941436077">Guardando la tarjeta</translation>
 <translation id="2408742686124047357">Fija Google Lens a la barra de herramientas para acceder fácilmente la próxima vez</translation>
@@ -2151,6 +2152,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2460826998961521840">Para usar las llaves de acceso guardadas en tu Cuenta de Google</translation>
 <translation id="2461550163693930491">No permitir que los sitios se desplacen ni hagan zoom en las pestañas compartidas</translation>
 <translation id="2461593638794842577">Puedes desactivar este parámetro de configuración para guardar tus contraseñas solo en este dispositivo</translation>
+<translation id="2462550463312552298">Resume este documento</translation>
 <translation id="2462724976360937186">ID de clave de la Entidad de certificación</translation>
 <translation id="2462752602710430187">Se agregó <ph name="PRINTER_NAME" /></translation>
 <translation id="2464075479326723132">Estás viendo archivos sugeridos para que puedas regresar a la actividad más reciente en Microsoft SharePoint y OneDrive.
@@ -3039,6 +3041,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3046892784550338476">Versión <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Página web, completa</translation>
 <translation id="304747341537320566">Motores de voz</translation>
+<translation id="3047618804758101928">La extensión "<ph name="EXTENSION_NAME" />" cambió tu configuración</translation>
 <translation id="3047678109605649715">No hay voces en <ph name="LANGUAGE" /> en tu dispositivo. Libera espacio en el dispositivo y vuelve a intentarlo.</translation>
 <translation id="3048336643003835855">Dispositivos HID del proveedor <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Reproducir (k)</translation>
@@ -4307,6 +4310,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3924788966103416622">Una app externa quiere tener control total de esta sesión de Chrome para depurarla. Esto incluye el acceso a los datos de sitios, cookies y tus datos guardados, y la capacidad de navegar a cualquier URL.</translation>
 <translation id="3925573269917483990">Cámara:</translation>
 <translation id="3925926055063465902">Otros usuarios de este dispositivo también pueden usar esta red</translation>
+<translation id="3925934852713265455">Pregunta sobre tus pestañas</translation>
 <translation id="3926002189479431949">Cambió el teléfono con Smart Lock</translation>
 <translation id="3926410220776569451">Se bloqueó el acceso a la cámara</translation>
 <translation id="3927932062596804919">Rechazar</translation>
@@ -7278,6 +7282,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="604388835206766544">No se pudo analizar la configuración</translation>
 <translation id="6043994281159824495">Salir ahora</translation>
 <translation id="6045114302329202345">Botón principal de TrackPoint</translation>
+<translation id="6045425183320109397">Por</translation>
 <translation id="6047632800149092791">La sincronización no funciona. Intenta salir y volver a acceder.</translation>
 <translation id="6048747414605857443">Selecciona y personaliza las voces de texto a voz para ChromeVox y Seleccionar para pronunciar.</translation>
 <translation id="6050189528197190982">Escala de grises</translation>
@@ -8475,7 +8480,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="686839242150793617">Pueden ingresar automáticamente al modo de pantalla en pantalla</translation>
 <translation id="6868734951249611611">Haz clic con el botón derecho aquí y selecciona “Mostrar las pestañas verticalmente”</translation>
 <translation id="6868934826811377550">Ver detalles</translation>
-<translation id="6870470066213933201">Administra la optimización y la seguridad de JavaScript</translation>
+<translation id="6870470066213933201">Administrar la optimización y la seguridad de JavaScript</translation>
 <translation id="6870953451576517204">La autoevaluación se completó correctamente</translation>
 <translation id="6871644448911473373">Respondedor de OCSP:<ph name="LOCATION" /></translation>
 <translation id="6871860225073478239">Idiomas…</translation>
@@ -8683,7 +8688,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="701020165009334820">Puedes descargar apps y juegos para Android a través de Play Store.</translation>
 <translation id="701080569351381435">Ver código fuente</translation>
 <translation id="7012430956470647760">Controles parentales para apps</translation>
-<translation id="7013762323294215682">Esta llave de acceso se guardará en el administrador de contraseñas. Cualquier persona que tenga acceso podrá usar esta llave de acceso.</translation>
 <translation id="7014174261166285193">Error de instalación</translation>
 <translation id="7014480873681694324">Dejar de destacar</translation>
 <translation id="7014741021609395734">Nivel del zoom</translation>
@@ -9996,6 +10000,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7939062555109487992">Opciones avanzadas</translation>
 <translation id="793923212791838">No se puede usar tu dispositivo con este sitio</translation>
 <translation id="7939328347457537652">Administrar certificados de dispositivos</translation>
+<translation id="7939918959917132075">La extensión seleccionó esta opción</translation>
 <translation id="7940087892955752820">No se puede dejar de compartir esta carpeta porque una app la está usando. Dejará de compartirse la próxima vez que se cierre <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="7940265372707990269">Ordenar por <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Disponibilidad de la conexión mediante dispositivo móvil:</translation>
@@ -11772,7 +11777,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="9120800848981545750">Descarga Chrome para iOS y accede a tus pestañas, favoritos y contraseñas en tu teléfono.</translation>
 <translation id="9121814364785106365">Abrir como pestaña anclada</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{¿Quieres cerrar la pestaña y borrar el grupo?}=1{¿Quieres cerrar la pestaña y borrar el grupo?}other{¿Quieres cerrar las pestañas y borrar los grupos?}}</translation>
-<translation id="9122788874051694311">¿Quieres guardar esta llave de acceso fuera de Incógnito?</translation>
 <translation id="9123287046453017203">Tu dispositivo no está actualizado</translation>
 <translation id="9125910124977405374">Quitar el idioma <ph name="LANGUAGE_NAME" /> de los idiomas que se traducen automáticamente</translation>
 <translation id="9125912770834459638">Tu organización no te permite acceder</translation>

@@ -2066,6 +2066,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2402226831639195063">Toonid</translation>
 <translation id="2405887402346713222">Seadme ja selle komponentide seerianumbrid</translation>
 <translation id="2406153734066939945">Kas kustutada see profiil ja selle andmed?</translation>
+<translation id="2406942743794219791">Soovitud vaikeotsingumootori kinnitamine</translation>
 <translation id="2407671304279211586">Valige DNS-i pakkuja</translation>
 <translation id="2408018932941436077">Kaardi salvestamine</translation>
 <translation id="2408742686124047357">Kinnitage Google Lens oma tööriistaribale, et sellele järgmine kord hõlpsasti juurde pääseda</translation>
@@ -2158,6 +2159,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2460826998961521840">Teie Google'i kontole salvestatud pääsuvõtmete kasutamiseks</translation>
 <translation id="2461550163693930491">Ära luba saitidel jagatud vahelehti kerida ega suumida</translation>
 <translation id="2461593638794842577">Saate selle seade välja lülitada, et salvestada oma paroolid ainult sellesse seadmesse</translation>
+<translation id="2462550463312552298">Koosta selle dokumendi kokkuvõte</translation>
 <translation id="2462724976360937186">Sertifitseerimisorgani võtme ID</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> on lisatud</translation>
 <translation id="2464075479326723132">Näete soovitatud faile, mis aitavad teil Microsoft SharePointis ja OneDrive'is hõlpsalt oma hiljutiste toimingute juurde naasta.
@@ -3046,6 +3048,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3046892784550338476">Versioon <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Veebileht, valmis</translation>
 <translation id="304747341537320566">Kõnesünteesimootorid</translation>
+<translation id="3047618804758101928">Laiendus „<ph name="EXTENSION_NAME" />“ muutis teie seadeid</translation>
 <translation id="3047678109605649715">Teie seadmes pole hääli, mis oleks järgmises keeles: <ph name="LANGUAGE" /> Vabastage oma seadmes ruumi ja proovige uuesti.</translation>
 <translation id="3048336643003835855">HID-seadmed teenusepakkujalt <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Esita (k)</translation>
@@ -4314,6 +4317,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3924788966103416622">Väline rakendus soovib selle Chrome'i seansi silumiseks täielikku juurdepääsu. See hõlmab juurdepääsu teie salvestatud andmetele, küpsisefailidele ja saidiandmetele ning võimalust navigeerida mis tahes URL-ile.</translation>
 <translation id="3925573269917483990">Kaamera:</translation>
 <translation id="3925926055063465902">Teised selle seadme kasutajad saavad samuti seda võrku kasutada</translation>
+<translation id="3925934852713265455">Küsige oma vahelehtede kohta</translation>
 <translation id="3926002189479431949">Funktsiooni Smart Lock telefoni muudeti</translation>
 <translation id="3926410220776569451">Kaamerale juurdepääs on blokeeritud</translation>
 <translation id="3927932062596804919">Keela</translation>
@@ -7285,6 +7289,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="604388835206766544">Seadistuse sõelumine nurjus</translation>
 <translation id="6043994281159824495">Logi nüüd välja</translation>
 <translation id="6045114302329202345">Peamine TrackPointi nupp</translation>
+<translation id="6045425183320109397">Autor:</translation>
 <translation id="6047632800149092791">Sünkroonimine ei tööta. Logige välja ja seejärel uuesti sisse.</translation>
 <translation id="6048747414605857443">Valige ChromeVoxi ja kõnesünteesi jaoks hääled ning kohandage neid</translation>
 <translation id="6050189528197190982">Hallskaala</translation>
@@ -8690,7 +8695,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="701020165009334820">Androidi rakendusi ja mänge saate alla laadida Play poe kaudu.</translation>
 <translation id="701080569351381435">Kuva Lähtekood</translation>
 <translation id="7012430956470647760">Rakenduste vanemlik järelevalve</translation>
-<translation id="7013762323294215682">See pääsuvõti salvestatakse teie paroolihaldurisse. Igaüks, kellel on sellele juurdepääs, saab seda pääsuvõtit kasutada.</translation>
 <translation id="7014174261166285193">Installimine ebaõnnestus.</translation>
 <translation id="7014480873681694324">Eemalda esiletõstmine</translation>
 <translation id="7014741021609395734">Suumi tase</translation>
@@ -10003,6 +10007,7 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="7939062555109487992">Täpsemad valikud</translation>
 <translation id="793923212791838">Teie seadet ei saa sellel saidil kasutada</translation>
 <translation id="7939328347457537652">Seadmete sertifikaatide haldamine</translation>
+<translation id="7939918959917132075">Laiendus muutis selle selleks.</translation>
 <translation id="7940087892955752820">Jagamist ei saanud lõpetada, kuna rakendus kasutab seda kausta. Kausta jagamine lõpetatakse üksuse <ph name="SPECIFIC_NAME" /> väljalülitamisel.</translation>
 <translation id="7940265372707990269">Sortimisalus: <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Jagamise valmidus:</translation>
@@ -11779,7 +11784,6 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri, seadme o
 <translation id="9120800848981545750">Laadige alla Chrome iOS-ile, et pääseda vahekaartidele, järjehoidjatele ja paroolidele juurde oma telefonis.</translation>
 <translation id="9121814364785106365">Ava kinnitatud vahelehel</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{Kas sulgeda vaheleht ja kustutada grupp?}=1{Kas sulgeda vahelehed ja kustutada grupp?}other{Kas sulgeda vahelehed ja kustutada grupid?}}</translation>
-<translation id="9122788874051694311">Kas salvestada pääsuvõti väljaspool inkognito režiimi?</translation>
 <translation id="9123287046453017203">Teie seade pole ajakohane</translation>
 <translation id="9125910124977405374"><ph name="LANGUAGE_NAME" /> keele eemaldamine automaatselt tõlgitavate keelte hulgast</translation>
 <translation id="9125912770834459638">Teie organisatsioon ei luba teil sisse logida</translation>

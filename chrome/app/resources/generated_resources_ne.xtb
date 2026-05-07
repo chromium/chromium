@@ -2062,6 +2062,7 @@
 <translation id="2402226831639195063">टोनहरू</translation>
 <translation id="2405887402346713222">डिभाइस र कम्पोनेन्टहरूको क्रम सङ्ख्या</translation>
 <translation id="2406153734066939945">यो प्रोफाइल र यसका डेटा मेटाउने हो?</translation>
+<translation id="2406942743794219791">आफूले चाहेको डिफल्ट सर्च इन्जिन पुष्टि गर्नुहोस्</translation>
 <translation id="2407671304279211586">DNS सेवा प्रदायक चयन गर्नुहोस्</translation>
 <translation id="2408018932941436077">कार्ड सेभ गरिँदै छ</translation>
 <translation id="2408742686124047357">अर्को पटक Google लेन्स सजिलैसँग एक्सेस गर्न यसलाई आफ्नो टुलबारमा पिन गर्नुहोस्</translation>
@@ -2154,6 +2155,7 @@
 <translation id="2460826998961521840">आफ्नो Google खातामा सेभ गरिएका पासकीहरू प्रयोग गर्न</translation>
 <translation id="2461550163693930491">साइटहरूलाई साझा ट्याबहरू स्क्रोल तथा जुम गर्ने अनुमति नदिनुहोस्</translation>
 <translation id="2461593638794842577">तपाईं यो सेटिङ अफ गरी यो डिभाइसमा मात्र आफ्ना पासवर्डहरू सेभ गर्न सक्नुहुन्छ</translation>
+<translation id="2462550463312552298">यो डकुमेन्टको सारांश तयार पार्नुहोस्</translation>
 <translation id="2462724976360937186">प्रमाणीकरण प्राधिकरण कुञ्जी आइडी</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> थपियो</translation>
 <translation id="2464075479326723132">तपाईं आफूले हालसालै Microsoft SharePoint र OneDrive मा गरेका क्रियाकलापमा सजिलैसँग फर्कन सक्नुहोस् भन्नाका लागि तपाईंलाई सिफारिस गरिएका फाइलहरू देखाइँदै छ।
@@ -3043,6 +3045,7 @@
 <translation id="3046892784550338476">संस्करण <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">वेबपेज, पूरा</translation>
 <translation id="304747341537320566">बोलीका इन्जिनहरू</translation>
+<translation id="3047618804758101928">"<ph name="EXTENSION_NAME" />" एक्स्टेन्सनले तपाईंका सेटिङ परिवर्तन गरेको छ</translation>
 <translation id="3047678109605649715">तपाईंको डिभाइसमा कुनै पनि <ph name="LANGUAGE" /> भ्वाइस उपलब्ध छैन। आफ्नो डिभाइसको भण्डारण खाली गर्नुहोस् र फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="3048336643003835855"><ph name="VENDOR_ID" /> विक्रेताका HID डिभाइसहरू</translation>
 <translation id="3048589239114571785">प्ले गर्नुहोस् (k)</translation>
@@ -4309,6 +4312,7 @@
 <translation id="3924788966103416622">एउटा बाह्य एपले यो Chrome सत्र डिबग गर्ने प्रयोजनका लागि यसमाथि पूर्ण नियन्त्रण गर्न चाहन्छ। यसमा तपाईंको सेभ गरिएको डेटा, कुकी र साइटको डेटा एक्सेस गर्ने र जुनसुकै URL मा नेभिगेट गर्ने अनुमति समावेश हुन्छ।</translation>
 <translation id="3925573269917483990">क्यामेरा:</translation>
 <translation id="3925926055063465902">यो डिभाइस चलाउने अन्य प्रयोगकर्ताहरू पनि यो नेटवर्क प्रयोग गर्न सक्छन्</translation>
+<translation id="3925934852713265455">आफ्ना ट्याबहरूका बारेमा सोध्नुहोस्</translation>
 <translation id="3926002189479431949">Smart Lock फोन परिवर्तन भयो</translation>
 <translation id="3926410220776569451">क्यामेरा प्रयोग गर्न रोक लगाइएको छ</translation>
 <translation id="3927932062596804919">अस्वीकार गर्नुहोस्</translation>
@@ -7278,6 +7282,7 @@
 <translation id="604388835206766544">कन्फिगुरेसन पार्स गर्न सकिएन</translation>
 <translation id="6043994281159824495">अहिले साइन आउट गर्नुहोस्</translation>
 <translation id="6045114302329202345">TrackPoint को मुख्य बटन</translation>
+<translation id="6045425183320109397">प्रदायक:</translation>
 <translation id="6047632800149092791">सिंक गर्ने सुविधाले काम गरिरहेको छैन। साइन आउट गरेर फेरि साइन इन गरी हेर्नुहोस्।</translation>
 <translation id="6048747414605857443">ChromeVox र सेलेक्ट टु स्पिकमा प्रयोग गरिने टेक्स्ट-टू-स्पिचका आवाजहरू चयन र कस्टमाइज गर्नुहोस्</translation>
 <translation id="6050189528197190982">ग्रेस्केल</translation>
@@ -8683,7 +8688,6 @@
 <translation id="701020165009334820">तपाईं Play स्टोर मार्फत Android एप तथा गेमहरू डाउनलोड गर्न सक्नुहुन्छ।</translation>
 <translation id="701080569351381435">स्रोत हेर्नुहोस्</translation>
 <translation id="7012430956470647760">एपहरूका लागि अभिभावकीय नियन्त्रणहरू</translation>
-<translation id="7013762323294215682">यो पासकी पासवर्ड म्यानेजरमा सेभ गरिने छ। यो पासकी प्रयोग गर्ने अनुमति भएका जोकोहीले यो पासकी प्रयोग गर्न सक्ने छन्।</translation>
 <translation id="7014174261166285193">स्थापना असफल भयो।</translation>
 <translation id="7014480873681694324">हाइलाइट हटाउनुहोस्</translation>
 <translation id="7014741021609395734">जुमको स्तर</translation>
@@ -9995,6 +9999,7 @@
 <translation id="7939062555109487992">उन्नत विकल्पहरू</translation>
 <translation id="793923212791838">तपाईंको डिभाइसमा यो साइटले राम्रोसँग काम गर्दैन</translation>
 <translation id="7939328347457537652">डिभाइसका प्रमाणपत्रहरू व्यवस्थापन गर्नुहोस्</translation>
+<translation id="7939918959917132075">एक्स्टेन्सनले परिवर्तन गरी यो बनाएको छ</translation>
 <translation id="7940087892955752820">कुनै एपले यो फोल्डर प्रयोग गरिरहेको हुनाले यो फोल्डर अनसेयर गर्न सकिँदैन। <ph name="SPECIFIC_NAME" /> अर्को पटक बन्द हुँदा यो फोल्डर अनसेयर गरिने छ।</translation>
 <translation id="7940265372707990269"><ph name="SORT_TYPE" /> का आधारमा क्रमबद्ध गर्नुहोस्</translation>
 <translation id="7941179291434537290">टेदरिङको उपलब्धता:</translation>
@@ -11771,7 +11776,6 @@
 <translation id="9120800848981545750">आफ्ना ट्याब, बुकमार्क तथा पासवर्डहरू आफ्नो फोनबाटै एक्सेस गर्न Chrome को iOS संस्करण डाउनलोड गर्नुहोस्।</translation>
 <translation id="9121814364785106365">छापिएको ट्याबको रूपमा खोल्नुहोस्</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{ट्याब बन्द गर्ने र समूह मेटाउने हो?}=1{ट्याबहरू बन्द गर्ने र समूह मेटाउने हो?}other{ट्याबहरू बन्द गर्ने र समूहहरू मेटाउने हो?}}</translation>
-<translation id="9122788874051694311">यो पासकी इन्कोग्निटो मोडभन्दा बाहिर सेभ गर्ने हो?</translation>
 <translation id="9123287046453017203">तपाईंको डिभाइस अप टु डेट छ</translation>
 <translation id="9125910124977405374">स्वतः अनुवाद गरिएका भाषाहरूको सूचीबाट <ph name="LANGUAGE_NAME" /> हटाउनुहोस्</translation>
 <translation id="9125912770834459638">तपाईंको सङ्गठनले तपाईंलाई साइन इन गर्ने अनुमति दिएको छैन</translation>

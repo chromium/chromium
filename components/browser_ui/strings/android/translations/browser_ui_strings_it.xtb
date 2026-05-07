@@ -609,6 +609,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> elementi selezionati</translation>
 <translation id="7260727271532453612">Autorizzazioni <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /> consentite</translation>
 <translation id="7276071417425470385">Quando l'opzione è attiva, i siti possono chiedere di usare i dispositivi per realtà virtuale. Quando l'opzione è disattivata, i siti non possono usare i dispositivi per realtà virtuale.</translation>
+<translation id="7279851812866769760">Condividi contatti</translation>
 <translation id="7282197670900591579">Tema cedro</translation>
 <translation id="728412880473384942">I siti sono più veloci, ma meno sicuri</translation>
 <translation id="7352902948037373520">Gestisci nelle <ph name="BEGIN_LINK1" />Impostazioni Android<ph name="END_LINK1" />
@@ -794,6 +795,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:</translation>
 <translation id="9156722768168878035">Consenti a Chrome di mostrare le schede recenti nell'elenco di app e nei risultati di ricerca del dispositivo. Puoi disattivare questa funzionalità in qualsiasi momento nelle impostazioni di Chrome.</translation>
 <translation id="9162462602695099906">Questa pagina è pericolosa</translation>
 <translation id="9182556968660520230">Non consentire ai siti di riprodurre contenuti protetti</translation>
+<translation id="927148002081263046">Condividi un contatto</translation>
 <translation id="947156494302904893">I siti che visiti possono verificare che sei una persona reale e non un bot</translation>
 <translation id="959682366969460160">Organizzazione</translation>
 <translation id="960590623979248167">Mostra link ipertestuali</translation>

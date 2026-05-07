@@ -457,6 +457,7 @@
 <translation id="2475783092753560388">Вмъкване на <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="2475982808118771221">Възникна грешка</translation>
 <translation id="2478076885740497414">Инсталиране на приложението</translation>
+<translation id="2479148705183875116">Към настройките</translation>
 <translation id="2482878487686419369">Известия</translation>
 <translation id="2484513351006226581">Натиснете <ph name="KEYBOARD_SHORTCUT" /> за превключване на клавиатурната подредба.</translation>
 <translation id="2485422356828889247">Деинсталиране</translation>
@@ -1047,6 +1048,7 @@
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Режим за общ преглед</translation>
 <translation id="4242533952199664413">Отваряне на настройките</translation>
+<translation id="4244765461494758482">Тези настройки се синхронизират с другите ви устройства с ChromeOS. Можете да ги промените тук или да управлявате пълния списък в настройките.</translation>
 <translation id="4247123849143712100">Актуализиране и изключване</translation>
 <translation id="4249248555939881673">Изчаква се връзка с мрежата...</translation>
 <translation id="4250229828105606438">Eкранна снимка</translation>
@@ -2327,6 +2329,7 @@
 <translation id="8051716679295756675">Вече съществува шаблон с името „<ph name="DESK_TEMPLATE_NAME" />“</translation>
 <translation id="8052898407431791827">Копирано в буферната памет</translation>
 <translation id="8054466585765276473">Издръжливостта на батерията се изчислява.</translation>
+<translation id="8063363226185507157">Синхронизирани настройки за достъпност</translation>
 <translation id="8076492880354921740">Раздели</translation>
 <translation id="8079538659226626406">Споделяне на екрана</translation>
 <translation id="8083540854303889870">Запазено за по-късно</translation>

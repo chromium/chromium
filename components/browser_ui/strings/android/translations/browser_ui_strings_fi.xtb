@@ -609,6 +609,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> valittu</translation>
 <translation id="7260727271532453612"><ph name="PERMISSION_1" /> ja <ph name="PERMISSION_2" /> sallittu</translation>
 <translation id="7276071417425470385">Kun tämä on päällä, sivustot voivat pyytää lupaa käyttää virtuaalitodellisuuslaitteita. Kun tämä on pois päältä, sivustot eivät voi käyttää virtuaalitodellisuuslaitteita.</translation>
+<translation id="7279851812866769760">Jaa yhteystiedot</translation>
 <translation id="7282197670900591579">Sitruunankeltainen teema</translation>
 <translation id="728412880473384942">Sivustot ovat nopeampia mutta vähemmän turvallisia</translation>
 <translation id="7352902948037373520">Muuta valintaa <ph name="BEGIN_LINK1" />Android-asetuksista<ph name="END_LINK1" />
@@ -700,6 +701,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:</translation>
 <translation id="823874716226307142">Kun tämä on päällä, sivustot voivat pyytää pääsyä muille paikallisessa verkossa oleville laitteille. Kun tämä on pois päältä, sivustot eivät pääse muille paikallisessa verkossa oleville laitteille.</translation>
 <translation id="8249310407154411074">Siirrä ylimmäksi</translation>
 <translation id="8261506727792406068">Poista</translation>
+<translation id="8273596202562472147">Lisää vaihtoehtoja: <ph name="SITE_NAME" /></translation>
 <translation id="8284326494547611709">Tekstitykset</translation>
 <translation id="8300705686683892304">Sovelluksen ylläpitämät</translation>
 <translation id="8301363963630676147">Sallittu tällä kertaa • Käytetään likimääräistä sijaintia</translation>
@@ -794,6 +796,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:</translation>
 <translation id="9156722768168878035">Salli Chromen näyttää viimeaikaiset välilehdet laitteen sovelluslistalla ja hakutuloksissa. Voit laittaa tämän pois päältä milloin tahansa Chromen asetuksista.</translation>
 <translation id="9162462602695099906">Tämä sivu on vaarallinen</translation>
 <translation id="9182556968660520230">Älä salli sivustojen toistaa suojattua sisältöä</translation>
+<translation id="927148002081263046">Yhteystiedon jakaminen</translation>
 <translation id="947156494302904893">Avaamasi sivustot voivat vahvistaa, että olet oikea ihminen etkä botti</translation>
 <translation id="959682366969460160">Järjestä</translation>
 <translation id="960590623979248167">Näytä linkit</translation>

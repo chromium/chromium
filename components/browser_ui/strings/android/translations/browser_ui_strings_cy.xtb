@@ -609,6 +609,7 @@
 <translation id="7250468141469952378">Mae <ph name="ITEM_COUNT" /> wedi'u dewis</translation>
 <translation id="7260727271532453612">Caniateir <ph name="PERMISSION_1" /> a <ph name="PERMISSION_2" /></translation>
 <translation id="7276071417425470385">Pan fydd wedi'i droi ymlaen, gall gwefannau ofyn am gael defnyddio dyfeisiau rhith-realiti. Pan fydd wedi'i ddiffodd, ni all gwefannau ddefnyddio dyfeisiau rhith-realiti.</translation>
+<translation id="7279851812866769760">Rhannu cysylltiadau</translation>
 <translation id="7282197670900591579">Thema sitron</translation>
 <translation id="728412880473384942">Mae gwefannau'n gyflymach ond yn llai diogel</translation>
 <translation id="7352902948037373520">Rheoli yn y <ph name="BEGIN_LINK1" />gosodiadau Android<ph name="END_LINK1" />
@@ -700,6 +701,7 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:</translation>
 <translation id="823874716226307142">Pan fydd wedi'i droi ymlaen, gall gwefannau ofyn am gael mynediad at ddyfeisiau eraill ar eich rhwydwaith lleol. Pan fydd wedi'i ddiffodd, ni all gwefannau gael mynediad at ddyfeisiau eraill ar eich rhwydwaith lleol.</translation>
 <translation id="8249310407154411074">Symud i'r brig</translation>
 <translation id="8261506727792406068">Dileu</translation>
+<translation id="8273596202562472147">Rhagor o ddewisiadau ar gyfer <ph name="SITE_NAME" /></translation>
 <translation id="8284326494547611709">Capsiynau</translation>
 <translation id="8300705686683892304">Wedi'u rheoli gan ap</translation>
 <translation id="8301363963630676147">Caniateir y tro hwn • Gan ddefnyddio lleoliad bras</translation>
@@ -794,6 +796,7 @@ Mae Advanced Protection yn rheoli'r gosodiadau Chrome hyn:</translation>
 <translation id="9156722768168878035">Gadewch i Chrome ddangos eich tabiau diweddar yn rhestr apiau a chanlyniadau chwilio eich dyfais. Gallwch ddiffodd hwn unrhyw bryd yng ngosodiadau Chrome.</translation>
 <translation id="9162462602695099906">Mae'r dudalen hon yn beryglus</translation>
 <translation id="9182556968660520230">Peidio â chaniatáu i wefannau chwarae cynnwys gwarchodedig</translation>
+<translation id="927148002081263046">Rhannu cyswllt</translation>
 <translation id="947156494302904893">Gall gwefannau rydych yn ymweld â nhw gadarnhau eich bod yn berson go iawn ac nid bot</translation>
 <translation id="959682366969460160">Byddwch yn drefnus</translation>
 <translation id="960590623979248167">Dangos hyperddolenni</translation>

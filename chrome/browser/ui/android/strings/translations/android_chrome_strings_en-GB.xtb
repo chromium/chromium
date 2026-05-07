@@ -292,6 +292,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="230115972905494466">No compatible devices found</translation>
 <translation id="2316129865977710310">No, thanks</translation>
 <translation id="2318045970523081853">Tap to make call</translation>
+<translation id="232137538351753795">Swipe from the left edge to go back</translation>
 <translation id="2323763861024343754">Site storage</translation>
 <translation id="2328474416100889417">Everyone will immediately lose access to the '<ph name="GROUP_NAME" />' tab group, and all invitation links will be turned off</translation>
 <translation id="2330186936255788117">More bookmarks</translation>
@@ -942,7 +943,6 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5040262127954254034">Privacy</translation>
 <translation id="504456571576643789">Things to consider</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" /> Window selected}other{<ph name="WINDOW_COUNT_NORMAL" /> Windows selected}}</translation>
-<translation id="5056587122125565772">Create image</translation>
 <translation id="506254248375231072">No tabs</translation>
 <translation id="5075939510584558547">Save without encryption</translation>
 <translation id="5078638979202084724">Bookmark all tabs</translation>
@@ -1676,6 +1676,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7977451675950311423">Warns you if you use a password that has been compromised in a data breach.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome removed these permissions because you haven't visited recently</translation>
 <translation id="799576009106109668">You’ll browse faster because content is proactively loaded based on your current web page visit</translation>
+<translation id="7997875520309653083">Swipe from the right edge to go back</translation>
 <translation id="7998918019931843664">Re-open closed tab</translation>
 <translation id="8001245658307297681">You're viewing a local file</translation>
 <translation id="8004582292198964060">Browser</translation>

@@ -609,6 +609,7 @@
 <translation id="7250468141469952378">Atlasīti vienumi: <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">Atļautas: <ph name="PERMISSION_1" /> un <ph name="PERMISSION_2" /></translation>
 <translation id="7276071417425470385">Kad šis slēdzis ir ieslēgts, vietnes var pieprasīt atļauju izmantot virtuālās realitātes ierīces. Kad šis slēdzis ir izslēgts, vietnes nevar izmantot virtuālās realitātes ierīces.</translation>
+<translation id="7279851812866769760">Kontaktpersonu kopīgošana</translation>
 <translation id="7282197670900591579">Citronu krāsas motīvs</translation>
 <translation id="728412880473384942">Vietnes darbojas ātrāk, taču ir mazāk drošas</translation>
 <translation id="7352902948037373520">Pārvaldiet to <ph name="BEGIN_LINK1" />Android iestatījumos<ph name="END_LINK1" />.
@@ -794,6 +795,7 @@ Papildu aizsardzība pārvalda tālāk norādītos Chrome iestatījumus.</transl
 <translation id="9156722768168878035">Ļaujiet pārlūkam Chrome rādīt jūsu nesen atvērtās cilnes ierīces lietotņu sarakstā un meklēšanas rezultātos. Chrome iestatījumos varat jebkurā laikā izslēgt šo funkciju.</translation>
 <translation id="9162462602695099906">Šī lapa ir bīstama.</translation>
 <translation id="9182556968660520230">Neļaut vietnēs atskaņot aizsargātu saturu</translation>
+<translation id="927148002081263046">Kontaktpersonas kopīgošana</translation>
 <translation id="947156494302904893">Jūsu apmeklētās vietnes var apstiprināt, ka esat īsts cilvēks, nevis robots</translation>
 <translation id="959682366969460160">Informācijas kārtošana</translation>
 <translation id="960590623979248167">Rādīt hipersaites</translation>

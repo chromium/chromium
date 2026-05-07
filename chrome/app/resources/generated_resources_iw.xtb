@@ -2073,6 +2073,7 @@
 <translation id="2402226831639195063">צלילים</translation>
 <translation id="2405887402346713222">מספרים סידוריים של מכשירים ורכיבים</translation>
 <translation id="2406153734066939945">למחוק את הפרופיל הזה ואת הנתונים שלו?</translation>
+<translation id="2406942743794219791">צריך לאשר את מנוע החיפוש שיוגדר כברירת מחדל</translation>
 <translation id="2407671304279211586">‏בחירת ספק DNS</translation>
 <translation id="2408018932941436077">שמירת הכרטיס מתבצעת</translation>
 <translation id="2408742686124047357">‏אפשר להצמיד את Google Lens לסרגל הכלים כדי לאפשר גישה נוחה בפעם הבאה</translation>
@@ -2165,6 +2166,7 @@
 <translation id="2460826998961521840">‏כדי להשתמש במפתחות הגישה ששמורים בחשבון שלך ב-Google</translation>
 <translation id="2461550163693930491">לא לאפשר לאתרים לגלול ולשנות את מרחק התצוגה של הכרטיסיות המשותפות</translation>
 <translation id="2461593638794842577">אפשר להשבית את ההגדרה הזו כדי שסיסמאות יישמרו רק במכשיר הזה</translation>
+<translation id="2462550463312552298">תסכם את המסמך הזה</translation>
 <translation id="2462724976360937186">מזהה מפתח של רשות אישורים</translation>
 <translation id="2462752602710430187">המדפסת <ph name="PRINTER_NAME" /> נוספה</translation>
 <translation id="2464075479326723132">‏מוצגות לך הצעות לקבצים כדי שיהיה לך קל לחזור לפעילות האחרונה שלך ב-Microsoft SharePoint וב-OneDrive.
@@ -2361,7 +2363,7 @@
 <translation id="2588636910004461974">מכשירים של <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">‏אין להציג קובצי Drive אף פעם</translation>
 <translation id="2593499352046705383">‏לפני שמתחילים, צריך לוודא שיש גיבוי של הנתונים. התקנת <ph name="DEVICE_OS" /> תחליף את כל הנתונים שבכונן הקשיח שלך. מידע נוסף זמין בכתובת g.co/flex/InstallGuide.</translation>
-<translation id="2595508219468433076">כבוי (ללא מיקוד בשורה)</translation>
+<translation id="2595508219468433076">מצב כבוי, ללא מיקוד בשורה, באפשרויות הסגנון</translation>
 <translation id="2597073208962000830">‏התכונה 'שיתוף בקרבת מקום' מחפשת מכשירים בקרבת מקום באמצעות Bluetooth.</translation>
 <translation id="2598136842498757793">התאמה אישית של כפתורי סרגל הכלים</translation>
 <translation id="2598710988533271874">‏יש גרסה חדשה זמינה של Chrome</translation>
@@ -3053,6 +3055,7 @@
 <translation id="3046892784550338476">גרסה <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">דף אינטרנט, שלם</translation>
 <translation id="304747341537320566">מנועי דיבור</translation>
+<translation id="3047618804758101928">התוסף "<ph name="EXTENSION_NAME" />" שינה את ההגדרות שלך</translation>
 <translation id="3047678109605649715">אין קולות ב<ph name="LANGUAGE" /> במכשיר. צריך לפנות מקום במכשיר ולנסות שוב.</translation>
 <translation id="3048336643003835855">‏מכשירי HID מהספק <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">‏הפעלה (k)</translation>
@@ -4321,6 +4324,7 @@
 <translation id="3924788966103416622">‏אפליקציה של צד שלישי רוצה לקבל שליטה מלאה בסשן הזה של Chrome כדי לבצע בו ניפוי באגים. ההרשאות האלה כוללות גישה לנתונים השמורים, לקובצי Cookie ולנתונים מאתרים, וגם את היכולת לנווט לכל כתובת URL.</translation>
 <translation id="3925573269917483990">מצלמה:</translation>
 <translation id="3925926055063465902">גם משתמשים אחרים במכשיר הזה יכולים להשתמש ברשת הזו</translation>
+<translation id="3925934852713265455">יש לך שאלות על הכרטיסיות?</translation>
 <translation id="3926002189479431949">‏הטלפון המשמש ל-Smart Lock הוחלף</translation>
 <translation id="3926410220776569451">הגישה למצלמה חסומה</translation>
 <translation id="3927932062596804919">דחייה</translation>
@@ -5290,7 +5294,7 @@
 <translation id="4623894491222334521">תעודות מזהות</translation>
 <translation id="4624054169152573743">ערכת צבעים</translation>
 <translation id="4625078469366263107">הפעלת האפליקציה</translation>
-<translation id="4625350031596795804">סגנון – מיקוד גדול</translation>
+<translation id="4625350031596795804">מיקוד גדול באפשרויות הסגנון</translation>
 <translation id="4625905218692741757">הצבע האפור בברירת המחדל</translation>
 <translation id="4627107755957573804">מתן הרשאה לאתרים ולאפליקציות לשדרג חשבונות קיימים לשימוש במפתחות גישה</translation>
 <translation id="4627442949885028695">המשך במכשיר אחר</translation>
@@ -6825,7 +6829,7 @@
 <translation id="5704875434923668958">מתבצע סנכרון עם</translation>
 <translation id="5705005699929844214">להציג תמיד אפשרויות נגישוּת</translation>
 <translation id="5705882733397021510">חזרה</translation>
-<translation id="5707079561391284762">תנועה – מעקב אחרי הסמן</translation>
+<translation id="5707079561391284762">מעקב אחרי הסמן באפשרויות התנועה</translation>
 <translation id="5707674184620508665">הארגון שלך, <ph name="ACCOUNT_MANAGER" />, לא יוכל לראות או לנהל את הנתונים הקיימים שלך. הם יישארו בפרופיל הקיים.</translation>
 <translation id="5708171344853220004">‏שם ראשי של Microsoft</translation>
 <translation id="5711010025974903573">יומני שירות</translation>
@@ -7293,6 +7297,7 @@
 <translation id="604388835206766544">ניתוח ההגדרה נכשל</translation>
 <translation id="6043994281159824495">יציאה עכשיו</translation>
 <translation id="6045114302329202345">‏כפתור TrackPoint ראשי</translation>
+<translation id="6045425183320109397">מאת</translation>
 <translation id="6047632800149092791">הסנכרון לא פועל. יש לנסות לצאת ולהיכנס שוב.</translation>
 <translation id="6048747414605857443">‏בחירה והתאמה אישית של הקולות בהמרת טקסט לדיבור בתכונות ChromeVox והקראה</translation>
 <translation id="6050189528197190982">גווני אפור</translation>
@@ -8411,7 +8416,7 @@
 <translation id="6820079682647046800">‏האימות של Kerberos נכשל</translation>
 <translation id="6820107710950761542">למידע נוסף, אפשר לפנות לאדמין או לבדוק את <ph name="BEGIN_LINK" /><ph name="LINK_TEXT" /><ph name="END_LINK" /></translation>
 <translation id="6821439254917412979">ביטול ההצמדה של <ph name="EXTENSION_NAME" /></translation>
-<translation id="6822549133264420850">סגנון – מיקוד קטן</translation>
+<translation id="6822549133264420850">מיקוד קטן באפשרויות הסגנון</translation>
 <translation id="6823174134746916417">שימוש בנגיעה קלה בלוח המגע</translation>
 <translation id="6823561724060793716">בסרגל הכתובות ניתן לפתוח את פרטי הדף כדי לראות מידע נוסף על הדף הפתוח</translation>
 <translation id="6824564591481349393">העתקת כתובת &amp;אימייל</translation>
@@ -8702,7 +8707,6 @@
 <translation id="701020165009334820">‏אפשר להוריד משחקים ואפליקציות ל-Android מחנות Play.</translation>
 <translation id="701080569351381435">הצגת המקור</translation>
 <translation id="7012430956470647760">אמצעי בקרת הורים לאפליקציות</translation>
-<translation id="7013762323294215682">מפתח הגישה הזה יישמר במנהל הסיסמאות. כל מי שיש לו גישה למנהל הסיסמאות יוכל להשתמש בו.</translation>
 <translation id="7014174261166285193">ההתקנה נכשלה.</translation>
 <translation id="7014480873681694324">הסרת ההדגשה</translation>
 <translation id="7014741021609395734">המרחק מהתצוגה</translation>
@@ -10015,6 +10019,7 @@
 <translation id="7939062555109487992">אפשרויות מתקדמות</translation>
 <translation id="793923212791838">לא ניתן להשתמש במכשיר שלך במסגרת האתר הזה</translation>
 <translation id="7939328347457537652">ניהול אישורי מכשירים</translation>
+<translation id="7939918959917132075">נבחר כברירת המחדל על ידי התוסף</translation>
 <translation id="7940087892955752820">לא ניתן לבטל את השיתוף כי יש אפליקציה שמשתמשת בתיקייה הזו. השיתוף של התיקייה הזו יבוטל בכיבוי הבא של <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="7940265372707990269">מיון לפי <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">‏המוּכנוּת לשיתוף אינטרנט (tethering):</translation>
@@ -10430,7 +10435,7 @@
 <translation id="8217399928341212914">להמשיך לחסום הורדות אוטומטיות של קבצים מרובים</translation>
 <translation id="8219785583603399823">הצגת הדירוגים של החנות הזו</translation>
 <translation id="822050276545350872">מעכשיו, לא יהיה צורך להמתין יותר</translation>
-<translation id="8221358554841691213">סגנון – מיקוד בינוני</translation>
+<translation id="8221358554841691213">מיקוד בינוני באפשרויות הסגנון</translation>
 <translation id="8221942262855134126">לפרטי הסיסמה</translation>
 <translation id="8222112516148944758">קבוצות הכרטיסיות נשמרות אוטומטית ומתעדכנות בכל המכשירים</translation>
 <translation id="8222674561049363989">הקובץ הוא לא מסמך תקין</translation>
@@ -10845,7 +10850,7 @@
 <translation id="850399339579925930">מילונים</translation>
 <translation id="850561044295157831">מידע נוסף על התכונה 'עזרה בכתיבה'</translation>
 <translation id="8505669004895429027">חיסכון של נפח קטן</translation>
-<translation id="8507052544157927817">סגנון – קו תחתון</translation>
+<translation id="8507052544157927817">קו תחתון באפשרויות הסגנון</translation>
 <translation id="8507227974644337342">רזולוציית מסך</translation>
 <translation id="850763987657366362">לא ניתן לייבא את האישור</translation>
 <translation id="8508532351844333131">‏האתר <ph name="WEBSITE_ORIGIN" /> רוצה לשמור מידע במכשיר ה-Android שלך</translation>
@@ -11793,7 +11798,6 @@
 <translation id="9120800848981545750">‏כדאי להוריד את Chrome ל-iOS כדי לגשת לכרטיסיות, לסימניות ולסיסמאות בטלפון.</translation>
 <translation id="9121814364785106365">פתיחה ככרטיסייה מוצמדת</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{לסגור את הכרטיסייה ולמחוק את הקבוצה?}=1{לסגור את הכרטיסיות ולמחוק את הקבוצה?}one{לסגור את הכרטיסיות ולמחוק את הקבוצות?}two{לסגור את הכרטיסיות ולמחוק את הקבוצות?}other{לסגור את הכרטיסיות ולמחוק את הקבוצות?}}</translation>
-<translation id="9122788874051694311">לשמור את מפתח הגישה הזה מחוץ למצב הפרטי?</translation>
 <translation id="9123287046453017203">המכשיר שלך לא מעודכן</translation>
 <translation id="9125910124977405374">הסרת השפה ה<ph name="LANGUAGE_NAME" /> מרשימת השפות שמתורגמות באופן אוטומטי</translation>
 <translation id="9125912770834459638">הארגון שלך לא מאפשר לך להיכנס</translation>
@@ -11883,7 +11887,7 @@
 <translation id="9192019773545828776">‏אפשר להאזין לקורא מסך קולי כדי להשתמש במכשיר בלי להסתכל במסך. ניתן לקבל משוב ברייל ממכשיר מחובר. כדי להפעיל או להשבית את ChromeVox, מקישים על Ctrl‏ + Alt‏ + Z. כדי לנווט, מקישים על מקש החיפוש + חץ שמאלה או חץ ימינה. כדי לבחור (להפעיל), מקישים על מקש החיפוש + מקש הרווח.</translation>
 <translation id="9195969368671142407">‏כשהארגון מגביל את האפשרות לשמור בחשבון Google, לא ניתן לשתף קבוצות של כרטיסיות או להצטרף אליהן</translation>
 <translation id="919686179725692564">מידע נוסף על גיבוי האפליקציות שלך</translation>
-<translation id="919840898042157087">תנועה – סטטית</translation>
+<translation id="919840898042157087">מצב סטטי באפשרויות התנועה</translation>
 <translation id="9199503643457729322">אפשר ללחוץ על הלחצן הזה כדי לצאת מהמדריך בנושא פרטיות.</translation>
 <translation id="9199695835892108985">לאפס את כל ההרשאות ליציאה הטורית?</translation>
 <translation id="9200339982498053969">ל-<ph name="ORIGIN" /> תהיה הרשאה לערוך את הקבצים בתיקייה <ph name="FOLDERNAME" /></translation>

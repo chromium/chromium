@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">Nu, mulțumesc</translation>
 <translation id="1531038290222364269">Afișează filele</translation>
 <translation id="1536390784834419204">Tradu pagina</translation>
+<translation id="1539535193627863227">Nu s-au găsit parole sau chei de acces pentru acest site</translation>
 <translation id="1540800554400757039">Adresă 1</translation>
 <translation id="154312949627292154">Deschide filele primite de pe alte dispozitive de pe ecranul de blocare.</translation>
 <translation id="1545749641540134597">Scanează codul QR</translation>
@@ -642,6 +643,7 @@
 <translation id="3245744387817103524">Modificarea nu a putut fi salvată.</translation>
 <translation id="3254806613790954367">Ultima filă deschisă pe toate dispozitivele</translation>
 <translation id="325717987950204592">Atinge Confidențialitate și securitate</translation>
+<translation id="3259451381796379533">Acest cont nu va funcționa cu Gemini. Conectează-te cu alt Cont Google.</translation>
 <translation id="3265736395246760288">Conectează-te mai rapid de pe oricare dintre dispozitivele tale sincronizate.</translation>
 <translation id="3272527697863656322">Anulează</translation>
 <translation id="3273510436356991673">Personalizează ecranul de pornire</translation>
@@ -763,6 +765,7 @@
 <translation id="372676576864368480">Completează automat numărul cardului care se termină în <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Creat pe <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Dosarul camerei foto</translation>
+<translation id="3746269120925354434">Informații salvate în Portofelul Google</translation>
 <translation id="3750225824417196283">Pagina Filă incognito nouă</translation>
 <translation id="3751873026576444885">Nu mai căuta pe ecran folosind Google Lens</translation>
 <translation id="3753408171347588045">Se urmăresc prețurile</translation>
@@ -1076,7 +1079,6 @@
 <translation id="4824480232751123840">Volum</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} și încă una}few{{domain} și încă {count}}other{{domain} și încă {count}}}</translation>
 <translation id="4826588772550366629">cameră și microfon</translation>
-<translation id="4828431027673677473">Produse bazate pe interesele tale</translation>
 <translation id="4829420936835028285">Editează grupul de file</translation>
 <translation id="4833786495304741580">Trimite automat statistici de utilizare și rapoarte de blocare la Google.</translation>
 <translation id="483689884442613745">Salvează…</translation>
@@ -1864,6 +1866,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="7498234416455752244">Continuați editarea</translation>
 <translation id="7500244509706269886">Completare automată a formularelor</translation>
 <translation id="750493650310597496">Niciunul selectat</translation>
+<translation id="7505402981231763928">Trebuie să te conectezi pentru a folosi Gemini</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Pentru a bloca filele incognito, configurează Touch ID, Face ID sau un cod de acces.</translation>
 <translation id="750886945254958667">Păstrează acest grup pentru a adăuga file mai târziu sau părăsește-l dacă nu mai dorești să ai acces la el</translation>
@@ -2105,7 +2108,6 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="828291969289324795">{count,plural, =1{Adaugă fila într-un grup nou}few{Adaugă filele într-un grup nou}other{Adaugă filele într-un grup nou}}</translation>
 <translation id="8283172974887967105">Setează…</translation>
 <translation id="8289930144142009940">Notificări <ph name="FEATURE_NAME" /> dezactivate</translation>
-<translation id="8290077367744012649">Urmărește prețurile din file</translation>
 <translation id="8292893224181644074">Descărcare finalizată</translation>
 <translation id="8299417921174340354">Pentru a folosi parolele, trebuie mai întâi să setezi o parolă pe dispozitiv.</translation>
 <translation id="8307481894409578819">Acest fișier nu s-a putut încărca</translation>
@@ -2172,6 +2174,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="8533670235862049797">Navigarea sigură este activată</translation>
 <translation id="8534481786647257214">S-a postat pe Google+.</translation>
 <translation id="8535368836838588657">Afișează parola</translation>
+<translation id="8540426897269305488">Conectează-te cu <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8545276357312221485">Verifică setările browserului prestabilit</translation>
 <translation id="854938212724803178">Ai o parolă compromisă. Remediază problema acum pentru a rămâne în siguranță.</translation>
 <translation id="8551311254462607218">În bara de adrese, atinge pictograma camerei Google Lens</translation>

@@ -2063,6 +2063,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2402226831639195063">Tonalités</translation>
 <translation id="2405887402346713222">Numéros de série de l'appareil et des composants</translation>
 <translation id="2406153734066939945">Supprimer ce profil et les données qui y sont associées?</translation>
+<translation id="2406942743794219791">Confirmez le moteur de recherche par défaut que vous souhaitez utiliser</translation>
 <translation id="2407671304279211586">Sélectionner le fournisseur DNS</translation>
 <translation id="2408018932941436077">Enregistrement de la carte en cours…</translation>
 <translation id="2408742686124047357">Épinglez Lentille Google sur votre barre d'outils pour un accès facile la prochaine fois</translation>
@@ -2155,6 +2156,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2460826998961521840">Pour user des clés d'accès dans votre compte</translation>
 <translation id="2461550163693930491">Ne pas autoriser les sites à faire défiler et à zoomer les onglets partagés</translation>
 <translation id="2461593638794842577">Vous pouvez désactiver ce paramètre pour enregistrer vos mots de passe uniquement sur cet appareil</translation>
+<translation id="2462550463312552298">Résume ce document</translation>
 <translation id="2462724976360937186">Identifiant de clé d'autorité de certification</translation>
 <translation id="2462752602710430187">Imprimante <ph name="PRINTER_NAME" /> ajoutée</translation>
 <translation id="2464075479326723132">Vous voyez des fichiers suggérés pour vous aider à retrouver facilement votre activité la plus récente dans SharePoint et OneDrive de Microsoft.
@@ -3045,6 +3047,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="3046892784550338476">Version <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Page Web, terminé</translation>
 <translation id="304747341537320566">Moteurs de reconnaissance vocale</translation>
+<translation id="3047618804758101928">L'extension « <ph name="EXTENSION_NAME" /> » a modifié vos paramètres</translation>
 <translation id="3047678109605649715">Il n'y a aucune voix en <ph name="LANGUAGE" /> sur votre appareil. Libérez de l'espace sur votre appareil et réessayez.</translation>
 <translation id="3048336643003835855">Appareils HID du fournisseur <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Lire (K)</translation>
@@ -4313,6 +4316,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou voir plus d'
 <translation id="3924788966103416622">Une appli externe souhaite avoir le contrôle total de cette session Chrome pour la déboguer. Cela comprend l'accès à vos données enregistrées, à vos témoins et à vos données relatives aux sites, ainsi que la possibilité d'accéder à n'importe quelle URL.</translation>
 <translation id="3925573269917483990">Appareil-photo</translation>
 <translation id="3925926055063465902">Les autres utilisateurs de cet appareil peuvent également utiliser ce réseau</translation>
+<translation id="3925934852713265455">Poser des questions sur vos onglets</translation>
 <translation id="3926002189479431949">Changement de téléphone Smart Lock</translation>
 <translation id="3926410220776569451">L'accès à la caméra est bloqué</translation>
 <translation id="3927932062596804919">Refuser</translation>
@@ -7282,6 +7286,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="604388835206766544">Impossible d'analyser la configuration</translation>
 <translation id="6043994281159824495">Se déconnecter maintenant</translation>
 <translation id="6045114302329202345">Bouton TrackPoint principal</translation>
+<translation id="6045425183320109397">Par</translation>
 <translation id="6047632800149092791">La synchronisation ne fonctionne pas. Essayez de vous déconnecter et de vous reconnecter.</translation>
 <translation id="6048747414605857443">Sélectionnez et personnalisez les voix de synthèse vocale pour ChromeVox et Sélectionner pour énoncer</translation>
 <translation id="6050189528197190982">Échelle de gris</translation>
@@ -8689,7 +8694,6 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="701020165009334820">Vous pouvez télécharger des applis et des jeux Android par le biais de la boutique Play Store.</translation>
 <translation id="701080569351381435">Afficher le code source</translation>
 <translation id="7012430956470647760">Contrôles parentaux pour les applis</translation>
-<translation id="7013762323294215682">Cette clé d'accès sera enregistrée dans votre gestionnaire de mots de passe. Toute personne y ayant accès pourra utiliser cette clé d'accès.</translation>
 <translation id="7014174261166285193">Échec de l'installation.</translation>
 <translation id="7014480873681694324">Retirer la surbrillance</translation>
 <translation id="7014741021609395734">Niveau de zoom</translation>
@@ -10001,6 +10005,7 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7939062555109487992">Options avancées</translation>
 <translation id="793923212791838">Votre appareil ne peut pas être utilisé avec ce site</translation>
 <translation id="7939328347457537652">Gérer les certificats sur l'appareil</translation>
+<translation id="7939918959917132075">Modifié ainsi par l'extension</translation>
 <translation id="7940087892955752820">Impossible d'annuler le partage parce qu'une application utilise ce dossier. Le partage sera annulé au prochain arrêt de <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="7940265372707990269">Trier par <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Préparation du partage de connexion :</translation>
@@ -11777,7 +11782,6 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="9120800848981545750">Téléchargez Chrome pour iOS pour accéder à vos onglets, à vos favoris et à vos mots de passe sur votre téléphone.</translation>
 <translation id="9121814364785106365">Ouvrir dans un onglet épinglé</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{Fermer l'onglet et supprimer le groupe?}=1{Fermer l'onglet et supprimer le groupe?}one{Fermer l'onglet et supprimer le groupe?}other{Fermer les onglets et supprimer les groupes?}}</translation>
-<translation id="9122788874051694311">Enregistrer ce mot de passe en dehors de la Navigation privée?</translation>
 <translation id="9123287046453017203">Votre appareil n'est pas à jour</translation>
 <translation id="9125910124977405374">Retirer <ph name="LANGUAGE_NAME" /> des langues traduites automatiquement</translation>
 <translation id="9125912770834459638">Votre organisation ne vous autorise pas à vous connecter</translation>

@@ -2075,6 +2075,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2402226831639195063">Tone</translation>
 <translation id="2405887402346713222">Toestel- en komponentreeksnommers</translation>
 <translation id="2406153734066939945">Vee hierdie profiel en sy data uit?</translation>
+<translation id="2406942743794219791">Bevestig die versteksoekenjin wat jy wil hê</translation>
 <translation id="2407671304279211586">Kies DNS-verskaffer</translation>
 <translation id="2408018932941436077">Stoor tans kaart</translation>
 <translation id="2408742686124047357">Speld Google Lens vas aan jou nutsbalk sodat jy volgende keer maklike toegang kan kry</translation>
@@ -2167,6 +2168,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2460826998961521840">Om toegangsleutels te gebruik wat in jou Google-rekening gestoor is</translation>
 <translation id="2461550163693930491">Moenie werwe toelaat om gedeelde oortjies te rollees en te zoem nie</translation>
 <translation id="2461593638794842577">Jy kan hierdie instelling afskakel om jou wagwoorde slegs op hierdie toestel te stoor</translation>
+<translation id="2462550463312552298">Som hierdie dokument op</translation>
 <translation id="2462724976360937186">Sertifiseringoutoriteit se Sleutel-ID</translation>
 <translation id="2462752602710430187">Het <ph name="PRINTER_NAME" /> bygevoeg</translation>
 <translation id="2464075479326723132">Jy sien tans voorgestelde lêers om jou te help om maklik terug te kom by jou mees onlangse aktiwiteit in Microsoft SharePoint en OneDrive.
@@ -3055,6 +3057,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3046892784550338476">Weergawe <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Webblad, voltooi</translation>
 <translation id="304747341537320566">Spraakenjins</translation>
+<translation id="3047618804758101928">Die uitbreiding “<ph name="EXTENSION_NAME" />” het jou instellings verander</translation>
 <translation id="3047678109605649715">Daar is geen <ph name="LANGUAGE" /> stemme op jou toestel nie. Maak spasie beskikbaar op jou toestel en probeer weer.</translation>
 <translation id="3048336643003835855">HID-toestelle vanaf verkoper <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Speel (k)</translation>
@@ -4323,6 +4326,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3924788966103416622">’n Eksterne app wil volle beheer oor hierdie Chrome-sessie hê om dit te ontfout. Dit sluit toegang tot jou gestoorde data, webkoekies en werfdata in, asook die vermoë om na enige URL te navigeer.</translation>
 <translation id="3925573269917483990">Kamera:</translation>
 <translation id="3925926055063465902">Ander gebruikers op hierdie toestel kan ook hierdie netwerk gebruik</translation>
+<translation id="3925934852713265455">Vra oor jou oortjies</translation>
 <translation id="3926002189479431949">Smart Lock-foon is verander</translation>
 <translation id="3926410220776569451">Kameratoegang is geblokkeer</translation>
 <translation id="3927932062596804919">Weier</translation>
@@ -7295,6 +7299,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="604388835206766544">Kon nie opstelling ontleed nie</translation>
 <translation id="6043994281159824495">Meld nou af</translation>
 <translation id="6045114302329202345">Primêre TrackPoint-knoppie</translation>
+<translation id="6045425183320109397">Deur</translation>
 <translation id="6047632800149092791">Sinkronisering werk nie. Probeer afmeld en weer aanmeld.</translation>
 <translation id="6048747414605857443">Kies en pasmaak teks-na-spraak-stemme vir ChromeVox en Hardoplees</translation>
 <translation id="6050189528197190982">Grysskaal</translation>
@@ -8700,7 +8705,6 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="701020165009334820">Jy kan Android-apps en -speletjies deur die Play Winkel aflaai.</translation>
 <translation id="701080569351381435">Bekyk bron</translation>
 <translation id="7012430956470647760">Ouerkontroles vir apps</translation>
-<translation id="7013762323294215682">Hierdie toegangsleutel sal in jou wagwoordbestuurder gestoor word. Enigiemand met toegang daartoe sal hierdie toegangsleutel kan gebruik.</translation>
 <translation id="7014174261166285193">Kon nie installeer nie.</translation>
 <translation id="7014480873681694324">Verwyder kleurmerk</translation>
 <translation id="7014741021609395734">Zoemvlak</translation>
@@ -10012,6 +10016,7 @@ Druk 'n toegewese skakelaar of sleutel om toewysing te verwyder.</translation>
 <translation id="7939062555109487992">Gevorderde opsies</translation>
 <translation id="793923212791838">Jou toestel kan nie met hierdie werf gebruik word nie</translation>
 <translation id="7939328347457537652">Bestuur toestelsertifikate</translation>
+<translation id="7939918959917132075">Hierna verander deur uitbreiding</translation>
 <translation id="7940087892955752820">Kon nie ontdeel nie want ’n app gebruik tans hierdie vouer. Die vouer sal ontdeel word wanneer <ph name="SPECIFIC_NAME" /> weer afgeskakel word.</translation>
 <translation id="7940265372707990269">Rankgskik volgens <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Verbindinggereedheid:</translation>
@@ -11788,7 +11793,6 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier, die toeste
 <translation id="9120800848981545750">Laai Chrome vir iOS af om toegang tot jou oortjies, boekmerke en wagwoorde op jou foon te kry.</translation>
 <translation id="9121814364785106365">Maak as 'n vasgespelde oortjie oop</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{Maak oortjie toe en vee groep uit?}=1{Maak oortjies toe en vee groep uit?}other{Maak oortjies toe en vee groepe uit?}}</translation>
-<translation id="9122788874051694311">Stoor hierdie toegangsleutel buite Incognito?</translation>
 <translation id="9123287046453017203">Jou toestel is nie bygewerk nie</translation>
 <translation id="9125910124977405374">Verwyder <ph name="LANGUAGE_NAME" /> uit tale wat outomaties vertaal word</translation>
 <translation id="9125912770834459638">Jou organisasie laat jou nie toe om aan te meld nie</translation>

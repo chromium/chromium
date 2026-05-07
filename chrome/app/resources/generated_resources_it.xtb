@@ -2061,6 +2061,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2402226831639195063">Toni</translation>
 <translation id="2405887402346713222">Numeri di serie del dispositivo e del componente</translation>
 <translation id="2406153734066939945">Vuoi eliminare questo profilo e i relativi dati?</translation>
+<translation id="2406942743794219791">Conferma il motore di ricerca predefinito che preferisci</translation>
 <translation id="2407671304279211586">Seleziona provider DNS</translation>
 <translation id="2408018932941436077">Salvataggio della carta</translation>
 <translation id="2408742686124047357">Blocca Google Lens sulla barra degli strumenti per accedervi facilmente la prossima volta</translation>
@@ -2153,6 +2154,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2460826998961521840">Per usare le passkey salvate nel tuo Account Google</translation>
 <translation id="2461550163693930491">Non consentire ai siti di scorrere e aumentare lo zoom delle schede condivise</translation>
 <translation id="2461593638794842577">Puoi disattivare questa impostazione per salvare le password solo su questo dispositivo</translation>
+<translation id="2462550463312552298">Riassumi questo documento</translation>
 <translation id="2462724976360937186">ID della chiave dell'autorità di certificazione</translation>
 <translation id="2462752602710430187">È stata aggiunta la stampante <ph name="PRINTER_NAME" /></translation>
 <translation id="2464075479326723132">Stai visualizzando i file suggeriti per aiutarti a tornare facilmente alle tue attività più recenti in Microsoft SharePoint e OneDrive.
@@ -3041,6 +3043,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3046892784550338476">Versione <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Pagina web, completa</translation>
 <translation id="304747341537320566">Motori di riconoscimento vocale</translation>
+<translation id="3047618804758101928">L'estensione "<ph name="EXTENSION_NAME" />" ha modificato le tue impostazioni</translation>
 <translation id="3047678109605649715">Non sono presenti voci in <ph name="LANGUAGE" /> sul tuo dispositivo. Libera spazio sul dispositivo e riprova.</translation>
 <translation id="3048336643003835855">Dispositivi HID del fornitore <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Riproduci (k)</translation>
@@ -3160,7 +3163,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3152356229013609796">Visualizza, ignora e rispondi alle notifiche del tuo telefono</translation>
 <translation id="3152545926232662879">Ignorata:</translation>
 <translation id="3152596030350326139">Mostra schede orizzontalmente</translation>
-<translation id="3154754096046236400">Suggerimenti su misura</translation>
+<translation id="3154754096046236400">Contesto personale</translation>
 <translation id="3155163173539279776">Riavvia Chromium</translation>
 <translation id="3155394504825881014">Converti un gruppo di schede in una cartella di preferiti</translation>
 <translation id="3156511682997763015">Avanti di 10 secondi</translation>
@@ -4309,6 +4312,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3924788966103416622">Un'app esterna richiede il controllo completo di questa sessione di Chrome per eseguire il debug. Ciò include l'accesso ai dati salvati, ai cookie e ai dati dei siti, nonché la possibilità di visitare qualsiasi URL.</translation>
 <translation id="3925573269917483990">Fotocamera:</translation>
 <translation id="3925926055063465902">Anche altri utenti di questo dispositivo possono usare questa rete</translation>
+<translation id="3925934852713265455">Chiedi informazioni sulle tue schede</translation>
 <translation id="3926002189479431949">Telefono con Smart Lock cambiato</translation>
 <translation id="3926410220776569451">Accesso alla fotocamera bloccato</translation>
 <translation id="3927932062596804919">Non consentire</translation>
@@ -7276,6 +7280,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="604388835206766544">Impossibile analizzare la configurazione</translation>
 <translation id="6043994281159824495">Esci ora</translation>
 <translation id="6045114302329202345">Pulsante principale TrackPoint</translation>
+<translation id="6045425183320109397">Di</translation>
 <translation id="6047632800149092791">La sincronizzazione non funziona. Prova a uscire e ripetere l'accesso.</translation>
 <translation id="6048747414605857443">Seleziona e personalizza le voci per la sintesi vocale per ChromeVox e Seleziona per ascoltare</translation>
 <translation id="6050189528197190982">Scala di grigi</translation>
@@ -8681,7 +8686,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="701020165009334820">Puoi scaricare giochi e app per Android dal Play Store.</translation>
 <translation id="701080569351381435">Visualizza sorgente</translation>
 <translation id="7012430956470647760">Controllo genitori per le app</translation>
-<translation id="7013762323294215682">Questa passkey verrà salvata nel tuo gestore delle password. Chiunque abbia accesso al tuo gestore delle password potrà utilizzare questa passkey.</translation>
 <translation id="7014174261166285193">Installazione non riuscita.</translation>
 <translation id="7014480873681694324">Rimuovi evidenziazione</translation>
 <translation id="7014741021609395734">Livello di zoom</translation>
@@ -9994,6 +9998,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7939062555109487992">Opzioni avanzate</translation>
 <translation id="793923212791838">Il dispositivo non può essere utilizzato con questo sito</translation>
 <translation id="7939328347457537652">Gestisci certificati dispositivo</translation>
+<translation id="7939918959917132075">Modificato dall'estensione</translation>
 <translation id="7940087892955752820">Impossibile annullare la condivisione perché questa cartella è in uso in un'applicazione. La condivisione della cartella verrà annullata al successivo arresto di <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="7940265372707990269">Ordina per <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Disponibilità tethering:</translation>
@@ -11770,7 +11775,6 @@ Potrebbero essere incluse informazioni su software installati, file, browser, si
 <translation id="9120800848981545750">Scarica Chrome per iOS per accedere a schede, preferiti e password sul tuo smartphone.</translation>
 <translation id="9121814364785106365">Apri in una scheda fissata</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{Chiudere scheda ed eliminare gruppo?}=1{Chiudere scheda ed eliminare gruppo?}other{Chiudere le schede ed eliminare i gruppi?}}</translation>
-<translation id="9122788874051694311">Salvare la passkey al di fuori della modalità Incognito?</translation>
 <translation id="9123287046453017203">Il dispositivo non è aggiornato</translation>
 <translation id="9125910124977405374">Rimuovi <ph name="LANGUAGE_NAME" /> dalle lingue tradotte automaticamente</translation>
 <translation id="9125912770834459638">La tua organizzazione non ti consente di accedere</translation>

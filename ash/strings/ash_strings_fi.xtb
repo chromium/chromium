@@ -457,6 +457,7 @@
 <translation id="2475783092753560388">Lisää <ph name="SEARCH_RESULT_TEXT" /></translation>
 <translation id="2475982808118771221">Tapahtui virhe</translation>
 <translation id="2478076885740497414">Asenna sovellus</translation>
+<translation id="2479148705183875116">Avaa Asetukset</translation>
 <translation id="2482878487686419369">Ilmoitukset</translation>
 <translation id="2484513351006226581">Paina <ph name="KEYBOARD_SHORTCUT" /> vaihtaaksesi näppäimistöasettelua.</translation>
 <translation id="2485422356828889247">Poista</translation>
@@ -1047,6 +1048,7 @@ Joitakin ominaisuuksia on rajoitettu akunkeston parantamiseksi.</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Yleiskatsaustila</translation>
 <translation id="4242533952199664413">Avaa asetukset</translation>
+<translation id="4244765461494758482">Nämä asetukset synkronoituvat muille ChromeOS-laitteille. Voit muuttaa valintoja täällä tai ylläpitää koko listaa asetuksissa.</translation>
 <translation id="4247123849143712100">Päivitä ja sammuta</translation>
 <translation id="4249248555939881673">Odotetaan verkkoyhteyttä…</translation>
 <translation id="4250229828105606438">Kuvakaappaus</translation>
@@ -2327,6 +2329,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8051716679295756675">Malli nimeltään <ph name="DESK_TEMPLATE_NAME" /> on jo olemassa</translation>
 <translation id="8052898407431791827">Kopioitu leikepöydälle</translation>
 <translation id="8054466585765276473">Lasketaan akun kesto.</translation>
+<translation id="8063363226185507157">Synkronoitavat saavutettavuusasetukset</translation>
 <translation id="8076492880354921740">Välilehdet</translation>
 <translation id="8079538659226626406">Näytön jakaminen</translation>
 <translation id="8083540854303889870">Tallennettu myöhempää käyttöä varten</translation>

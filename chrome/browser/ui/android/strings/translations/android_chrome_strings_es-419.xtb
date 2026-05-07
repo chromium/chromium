@@ -292,6 +292,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="230115972905494466">No se encontraron dispositivos compatibles</translation>
 <translation id="2316129865977710310">No, gracias</translation>
 <translation id="2318045970523081853">Presiona para realizar la llamada</translation>
+<translation id="232137538351753795">Para volver, desliza el dedo desde el borde izquierdo</translation>
 <translation id="2323763861024343754">Almacenamiento del sitio</translation>
 <translation id="2328474416100889417">Todos los usuarios perderán de inmediato el acceso al grupo de pestañas “<ph name="GROUP_NAME" />”, y se desactivarán todos los vínculos de invitación</translation>
 <translation id="2330186936255788117">Más favoritos</translation>
@@ -942,7 +943,6 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="5040262127954254034">Privacidad</translation>
 <translation id="504456571576643789">Aspectos para tener en cuenta</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{Se seleccionó <ph name="WINDOW_COUNT_ONE" /> ventana}other{Se seleccionaron <ph name="WINDOW_COUNT_NORMAL" /> ventanas}}</translation>
-<translation id="5056587122125565772">Crear imagen</translation>
 <translation id="506254248375231072">No hay pestañas</translation>
 <translation id="5075939510584558547">Guardar sin encriptación</translation>
 <translation id="5078638979202084724">Agregar a favoritos todas las pestañas</translation>
@@ -1676,6 +1676,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="7977451675950311423">Te advierte si usas una contraseña que fue hackeada en una violación de la seguridad de los datos.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome quitó estos permisos porque no visitaste el sitio recientemente</translation>
 <translation id="799576009106109668">Navegarás más rápido porque el contenido se cargará proactivamente en función de la página web que visites en el momento</translation>
+<translation id="7997875520309653083">Para volver, desliza el dedo desde el borde derecho</translation>
 <translation id="7998918019931843664">Volver a abrir la pestaña cerrada</translation>
 <translation id="8001245658307297681">Estás viendo un archivo local</translation>
 <translation id="8004582292198964060">Navegador</translation>

@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">No, thanks</translation>
 <translation id="1531038290222364269">Show tabs</translation>
 <translation id="1536390784834419204">Translate page</translation>
+<translation id="1539535193627863227">No passwords or passkeys found for this site</translation>
 <translation id="1540800554400757039">Address 1</translation>
 <translation id="154312949627292154">Open tabs received from your other devices from the lock screen.</translation>
 <translation id="1545749641540134597">Scan QR Code</translation>
@@ -642,6 +643,7 @@
 <translation id="3245744387817103524">Your change couldn't be saved.</translation>
 <translation id="3254806613790954367">Your last open tab across all your devices</translation>
 <translation id="325717987950204592">Tap 'Privacy and security'</translation>
+<translation id="3259451381796379533">This account won't work with Gemini. Sign in with a different Google Account.</translation>
 <translation id="3265736395246760288">Sign in faster from any of your synced devices.</translation>
 <translation id="3272527697863656322">Cancel</translation>
 <translation id="3273510436356991673">Customise your home screen</translation>
@@ -763,6 +765,7 @@
 <translation id="372676576864368480">Autofill the card number ending in <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Created <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Camera roll</translation>
+<translation id="3746269120925354434">Info saved to Google Wallet</translation>
 <translation id="3750225824417196283">New Incognito tab page</translation>
 <translation id="3751873026576444885">Stop searching your screen with Google Lens</translation>
 <translation id="3753408171347588045">Tracking prices</translation>
@@ -1076,7 +1079,6 @@
 <translation id="4824480232751123840">Volume</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} and 1 other}other{{domain} and {count} others}}</translation>
 <translation id="4826588772550366629">camera and microphone</translation>
-<translation id="4828431027673677473">Products based on your interests</translation>
 <translation id="4829420936835028285">Edit tab group</translation>
 <translation id="4833786495304741580">Automatically sends usage statistics and crash reports to Google.</translation>
 <translation id="483689884442613745">Save…</translation>
@@ -1864,6 +1866,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="7498234416455752244">Keep editing</translation>
 <translation id="7500244509706269886">Autofill form</translation>
 <translation id="750493650310597496">0 selected</translation>
+<translation id="7505402981231763928">You need to sign in to use Gemini</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">To lock your incognito tabs, set up touch ID, face ID or a passcode.</translation>
 <translation id="750886945254958667">Keep this group to add tabs later, or leave it if you no longer want access to it</translation>
@@ -2105,7 +2108,6 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="828291969289324795">{count,plural, =1{Add tab to new group}other{Add tabs to new group}}</translation>
 <translation id="8283172974887967105">Set…</translation>
 <translation id="8289930144142009940"><ph name="FEATURE_NAME" /> notifications turned off</translation>
-<translation id="8290077367744012649">Track prices from your tabs</translation>
 <translation id="8292893224181644074">Download completed</translation>
 <translation id="8299417921174340354">To use passwords, you must first set a passcode on your device.</translation>
 <translation id="8307481894409578819">This file could not be uploaded</translation>
@@ -2172,6 +2174,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8533670235862049797">Safe Browsing is on</translation>
 <translation id="8534481786647257214">Google+ post completed.</translation>
 <translation id="8535368836838588657">Reveal password</translation>
+<translation id="8540426897269305488">Sign in with <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8545276357312221485">Check your default browser settings</translation>
 <translation id="854938212724803178">You have one compromised password. Fix it now to stay safe.</translation>
 <translation id="8551311254462607218">In the address bar, tap on the Google Lens camera icon</translation>

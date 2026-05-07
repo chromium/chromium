@@ -609,6 +609,7 @@
 <translation id="7250468141469952378"><ph name="ITEM_COUNT" /> itens selecionados</translation>
 <translation id="7260727271532453612">Permitidas: <ph name="PERMISSION_1" /> e <ph name="PERMISSION_2" /></translation>
 <translation id="7276071417425470385">Quando essa configuração está ativada, os sites podem pedir para usar dispositivos de realidade virtual. Quando está desativada, os sites não podem usar dispositivos de realidade virtual.</translation>
+<translation id="7279851812866769760">Compartilhar contatos</translation>
 <translation id="7282197670900591579">Tema limão</translation>
 <translation id="728412880473384942">Os sites ficam mais rápidos, mas menos seguros</translation>
 <translation id="7352902948037373520">Gerencie-a nas <ph name="BEGIN_LINK1" />configurações do Android<ph name="END_LINK1" />
@@ -700,6 +701,7 @@ A Proteção Avançada controla estas configurações do Chrome:</translation>
 <translation id="823874716226307142">Quando essa configuração está ativada, os sites podem pedir para acessar outros dispositivos na sua rede local. Quando essa configuração está desativada, os sites não podem acessar outros dispositivos na sua rede local.</translation>
 <translation id="8249310407154411074">Mover para o início</translation>
 <translation id="8261506727792406068">Excluir</translation>
+<translation id="8273596202562472147">Mais opções de <ph name="SITE_NAME" /></translation>
 <translation id="8284326494547611709">Legendas</translation>
 <translation id="8300705686683892304">Gerenciados por app</translation>
 <translation id="8301363963630676147">Permitida desta vez • Usando aproximada</translation>
@@ -794,6 +796,7 @@ A Proteção Avançada controla estas configurações do Chrome:</translation>
 <translation id="9156722768168878035">Permita que o Chrome mostre suas guias recentes na lista de apps e nos resultados da pesquisa do dispositivo. É possível desativar essa opção a qualquer momento nas configurações do Chrome.</translation>
 <translation id="9162462602695099906">Esta página é perigosa</translation>
 <translation id="9182556968660520230">Não permitir que os sites reproduzam conteúdo protegido</translation>
+<translation id="927148002081263046">Compartilhar um contato</translation>
 <translation id="947156494302904893">Os sites que você visita podem verificar que você é uma pessoa real, e não um bot</translation>
 <translation id="959682366969460160">Organize-se</translation>
 <translation id="960590623979248167">Mostrar hiperlinks</translation>

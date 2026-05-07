@@ -609,6 +609,7 @@
 <translation id="7250468141469952378">已選取 <ph name="ITEM_COUNT" /> 個項目</translation>
 <translation id="7260727271532453612">已允許「<ph name="PERMISSION_1" />」和「<ph name="PERMISSION_2" />」</translation>
 <translation id="7276071417425470385">如果啟用，網站就可以要求使用虛擬實境裝置。如果停用，網站將無法使用虛擬實境裝置。</translation>
+<translation id="7279851812866769760">分享聯絡人</translation>
 <translation id="7282197670900591579">黃金柚主題</translation>
 <translation id="728412880473384942">網站速度較快，但安全性較低</translation>
 <translation id="7352902948037373520">前往 <ph name="BEGIN_LINK1" />Android 設定<ph name="END_LINK1" />管理
@@ -794,6 +795,7 @@
 <translation id="9156722768168878035">允許 Chrome 在裝置的應用程式清單和搜尋結果顯示最近開啟的分頁。你隨時可以前往 Chrome 設定頁面關閉這項功能。</translation>
 <translation id="9162462602695099906">這是危險網頁</translation>
 <translation id="9182556968660520230">禁止網站播放受保護內容</translation>
+<translation id="927148002081263046">分享聯絡人</translation>
 <translation id="947156494302904893">你造訪的網站可驗證你是真人，而不是機器人</translation>
 <translation id="959682366969460160">保持井然有序</translation>
 <translation id="960590623979248167">顯示超連結</translation>

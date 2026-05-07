@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">Nei takk</translation>
 <translation id="1531038290222364269">Vis faner</translation>
 <translation id="1536390784834419204">Oversett siden</translation>
+<translation id="1539535193627863227">Fant ingen passord eller passnøkler for dette nettstedet</translation>
 <translation id="1540800554400757039">Adresse 1</translation>
 <translation id="154312949627292154">Åpne faner du mottar fra andre enheter, fra låseskjermen.</translation>
 <translation id="1545749641540134597">Skann en QR-kode</translation>
@@ -642,6 +643,7 @@
 <translation id="3245744387817103524">Kunne ikke lagre endringen.</translation>
 <translation id="3254806613790954367">Den siste åpne fanen på alle enhetene dine</translation>
 <translation id="325717987950204592">Trykk på «Personvern og sikkerhet»</translation>
+<translation id="3259451381796379533">Denne kontoen fungerer ikke med Gemini. Logg på med en annen Google konto.</translation>
 <translation id="3265736395246760288">Logg på raskere fra alle de synkroniserte enhetene dine.</translation>
 <translation id="3272527697863656322">Avbryt</translation>
 <translation id="3273510436356991673">Tilpass startskjermen</translation>
@@ -763,6 +765,7 @@
 <translation id="372676576864368480">Autofyll kortnummeret som slutter på <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Opprettet <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Kamerarull</translation>
+<translation id="3746269120925354434">Informasjonen er lagret i Google Wallet</translation>
 <translation id="3750225824417196283">Ny side på inkognitofane</translation>
 <translation id="3751873026576444885">Slutt å søke på skjermen med Google Lens</translation>
 <translation id="3753408171347588045">Sporer priser</translation>
@@ -1076,7 +1079,6 @@
 <translation id="4824480232751123840">Volum</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} og 1 til}other{{domain} og {count} til}}</translation>
 <translation id="4826588772550366629">kamera og mikrofon</translation>
-<translation id="4828431027673677473">Produkter basert på interessene dine</translation>
 <translation id="4829420936835028285">Endre fanegruppen</translation>
 <translation id="4833786495304741580">Sender automatisk bruksstatistikk og programstopprapporter til Google.</translation>
 <translation id="483689884442613745">Lagre…</translation>
@@ -1864,6 +1866,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="7498234416455752244">Fortsett å endre</translation>
 <translation id="7500244509706269886">Autofyll skjema</translation>
 <translation id="750493650310597496">0 er valgt</translation>
+<translation id="7505402981231763928">Du må logge på for å bruke Gemini</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">For å låse inkognitofanene dine, konfigurer Touch ID, Face ID eller en sikkerhetskode.</translation>
 <translation id="750886945254958667">Behold denne gruppen for å legge til faner senere, eller forlat den hvis du ikke vil ha tilgang til den lenger</translation>
@@ -2105,7 +2108,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="828291969289324795">{count,plural, =1{Legg fanen til i en ny gruppe}other{Legg fanene til i en ny gruppe}}</translation>
 <translation id="8283172974887967105">Angi…</translation>
 <translation id="8289930144142009940">Varsler for <ph name="FEATURE_NAME" /> er slått av</translation>
-<translation id="8290077367744012649">Spor priser fra fanene dine</translation>
 <translation id="8292893224181644074">Nedlastingen er fullført</translation>
 <translation id="8299417921174340354">For å bruke passord må du først angi en adgangskode på enheten din.</translation>
 <translation id="8307481894409578819">Kunne ikke laste opp denne filen</translation>
@@ -2172,6 +2174,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="8533670235862049797">Safe Browsing er på</translation>
 <translation id="8534481786647257214">Google+-innlegget er fullført.</translation>
 <translation id="8535368836838588657">Vis passordet</translation>
+<translation id="8540426897269305488">Logg på med <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8545276357312221485">Kontroller standardinnstillingene for nettleseren</translation>
 <translation id="854938212724803178">Du har ett passord som er utsatt for sikkerhetsbrudd. Løs problemet nå for å ivareta sikkerheten.</translation>
 <translation id="8551311254462607218">Trykk på Google Lens-kameraikonet i adressefeltet.</translation>

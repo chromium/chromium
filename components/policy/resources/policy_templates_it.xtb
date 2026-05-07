@@ -1921,6 +1921,25 @@ Se questa policy non viene configurata o se viene disattivata, il trasferimento 
 <translation id="225340736558643885">Attiva avvisi per moduli non sicuri</translation>
 <translation id="2258126710006312594">Consenti l'accesso remoto agli utenti per trasferire file da/verso l'host</translation>
 <translation id="225830954785359083">Impedisci alle pagine di mostrare popup durante l'unload</translation>
+<translation id="2260635608598936994">Configura i filtri per selezionare i certificati client da includere nei report sugli indicatori di sicurezza <ph name="PRODUCT_NAME" />. Questi report inviano informazioni sul browser e sullo stato di sicurezza del dispositivo a <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />, che gli amministratori possono utilizzare per configurare le regole di <ph name="GOOGLE_CONTEXT_AWARE_ACCESS" />.
+
+Questa policy consente di definire filtri basati sugli attributi dei certificati client, ad esempio i nomi distinti dell'ISSUER e/o del SUBJECT. <ph name="PRODUCT_NAME" /> includerà nei report sugli indicatori solo i certificati che corrispondono ad almeno uno dei filtri specificati.
+
+     Esempi di utilizzo della sezione <ph name="SELECTOR_PLACEHOLDER" />:
+
+      * Quando <ph name="SELECTOR_PLACEHOLDER" /> è impostato su <ph name="SECURITY_SIGNALS_CLIENT_CERTIFICATE_SELECTORS_FILTER_EXAMPLE" />, vengono selezionati solo i certificati client emessi da un certificato con valore CommonName uguale a <ph name="ISSUER_CN_PLACEHOLDER" />.
+
+      * Quando <ph name="SELECTOR_PLACEHOLDER" /> contiene entrambe le sezioni <ph name="ISSUER_STRING_VALUE" /> e <ph name="SUBJECT_STRING_VALUE" />, vengono selezionati solo i certificati client che soddisfano entrambe le condizioni.
+
+      * Quando <ph name="SELECTOR_PLACEHOLDER" /> contiene una sezione <ph name="SUBJECT_STRING_VALUE" /> con valore <ph name="FILTER_STRING_ORGANIZATION" />, un certificato richiede almeno un'organizzazione corrispondente al valore specificato per essere selezionato.
+
+      * Quando <ph name="SELECTOR_PLACEHOLDER" /> contiene una sezione <ph name="SUBJECT_STRING_VALUE" /> con un valore <ph name="FILTER_STRING_ORGANIZATIONAL_UNIT" />, un certificato richiede almeno un'unità organizzativa corrispondente al valore specificato per essere selezionato.
+
+      * Quando <ph name="SELECTOR_PLACEHOLDER" /> è impostato su <ph name="EMPTY_DICTIONARY" />, i dettagli vuoti vengono ignorati per questa policy.
+
+      Se la policy non viene configurata, non viene eseguita la selezione dei certificati client durante la segnalazione.
+
+*Importante:* questa policy viene applicata soltanto se la policy <ph name="USER_SECURITY_SIGNALS_REPORTING_POLICY_NAME" /> è attivata, in quanto controlla la funzionalità complessiva per l'invio di indicatori di sicurezza da Chrome.</translation>
 <translation id="2261648512244797294">Disattiva stampa Privet deprecata</translation>
 <translation id="2262701937800507517">Utilizza l'ordine di crittografia predefinito di <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="2263881357524831360">Consenti l'utilizzo di gestori delle password di terze parti in <ph name="PRODUCT_NAME" /> su <ph name="ANDROID_NAME" /></translation>
@@ -2736,6 +2755,15 @@ Se la policy viene disattivata o se non viene configurata, gli utenti possono tr
 Se questa policy viene attivata o se non viene configurata, gli utenti possono aggiungere account Kerberos tramite le impostazioni relative agli account Kerberos nella pagina di impostazioni Kerberos. Gli utenti hanno il controllo completo degli account che hanno aggiunto e possono modificarli o rimuoverli.
 
 Se questa policy viene disattivata, gli utenti non possono aggiungere account Kerberos. Gli account possono essere aggiunti solo tramite la policy "Configura account Kerberos". Si tratta di una soluzione efficace per bloccare gli account.</translation>
+<translation id="2771222727845689796">Questa policy consente di specificare un elenco di pattern URL. I contenuti web in background corrispondenti a questi pattern verranno eseguiti con priorità in primo piano.
+
+Se la policy <ph name="FORCE_FOREGROUND_PRIORITY_FOR_ALL_TABS_POLICY_NAME" /> viene attivata, questo elenco viene ignorato perché tutte le schede verranno forzate con priorità in primo piano.
+
+Se <ph name="FORCE_FOREGROUND_PRIORITY_FOR_ALL_TABS_POLICY_NAME" /> è disattivato o non è impostato, verranno forzati solo i contenuti corrispondenti ai pattern in questo elenco.
+
+Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+Se questo elenco è vuoto o non viene impostato, nessun contenuto in background viene forzato con priorità in primo piano.</translation>
 <translation id="2772231477628401250">Utilizza HTTP per i download di aggiornamento</translation>
 <translation id="2772955711376920612">Se la policy viene impostata su Attivata e vengono impostate le policy <ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" /> e <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" />, la variazione dei picchi energetici rimane attiva, se supportata sul dispositivo. La policy di gestione della variazione dei picchi energetici è una policy per il risparmio energetico che riduce al minimo l'utilizzo della corrente alternata durante i momenti di picco. Puoi impostare un orario di inizio e di fine della modalità di variazione dei picchi energetici per ogni giorno feriale. Se durante questi orari il livello della batteria rimane al di sopra della soglia specificata, il dispositivo usa la batteria (anche se è collegato alla corrente alternata). Dopo l'orario di fine specificato, il dispositivo usa la corrente alternata, se è collegato, ma non ricarica la batteria. Il dispositivo funzionerà di nuovo normalmente con la corrente alternata e ricaricherà la batteria dopo l'orario di inizio della ricarica specificato.
 
@@ -4919,6 +4947,7 @@ Questa policy è stata utilizzata per disattivare l'upgrade automatico dei conte
       Se la policy viene disattivata o non viene configurata, gli utenti possono modificare questa impostazione.
 
       Nota: per Android, utilizza invece la policy <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" />.</translation>
+<translation id="4261641564041253502">Seleziona automaticamente i certificati client corrispondenti ai filtri per i report sugli indicatori di sicurezza di <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4261820385751181068">Lingua della schermata di accesso del dispositivo</translation>
 <translation id="4263788921751326798">Disattiva i report relativi alle informazioni sul report sugli arresti anomali del dispositivo</translation>
 <translation id="4268586991084547853">Più compatibilità con gli elenchi dei siti in modalità Enterprise di Microsoft IE/Edge</translation>
@@ -6615,22 +6644,6 @@ Se non viene configurata, il valore predefinito è 0 e gli utenti sono liberi di
 <translation id="5293285950307241933">Cancella tutti i dati utente locali</translation>
 <translation id="5293619885162445352">Consenti a <ph name="PEPPER_NAME" /> di usare il nuovo decodificatore video.</translation>
 <translation id="529457411593078576">Attiva i TdS alla prima esecuzione di CCT</translation>
-<translation id="529718811410033393">La configurazione della policy consente di specificare il numero massimo di connessioni contemporanee per server proxy per le richieste non WebSocket.
-
-Per modificare i limiti delle richieste WebSocket, consulta <ph name="MAX_CONNECTIONS_PER_PROXY_FOR_WEBSOCKET_POLICY_NAME" />.
-
-Se la policy non viene configurata, viene utilizzato il valore predefinito 32.
-
-Alcune app web sono note per richiedere molte connessioni con Hanging-GET, pertanto impostare un valore inferiore a 32 potrebbe causare interruzioni di rete del browser se sono aperte troppe app web di questo tipo.
-Alcuni server proxy non riescono a gestire un numero elevato di connessioni contemporanee per client, ma è sufficiente impostare la policy su un numero inferiore per risolvere questo problema.
-
-Il valore deve essere uguale o superiore a 6.
-Se imposti un valore inferiore a questo limite, verrà utilizzato 6.
-È sconsigliato utilizzare un valore inferiore a quello predefinito (32).
-
-Il valore deve essere uguale o inferiore a 256 (99 in <ph name="PRODUCT_NAME" /> 147 e versioni precedenti).
-Se imposti un valore superiore a questo limite, verrà utilizzato 256 (99 in <ph name="PRODUCT_NAME" /> 147 e versioni precedenti).
-È sconsigliato utilizzare un valore superiore a quello predefinito (32).</translation>
 <translation id="5297873769621042075">Questa policy consente di specificare un elenco di nomi host o pattern di nomi host (ad esempio "[*.]example.com") che non verranno aggiornati a HTTPS e non mostreranno un interstitial di errore se viene attivata la modalità HTTPS-First. Le organizzazioni possono utilizzare questa policy per mantenere l'accesso ai server che non supportano HTTPS, senza dover disattivare gli upgrade a HTTPS e/o la modalità HTTPS-First.
 
 I nomi host indicati devono essere canonicalizzati: ogni IDN deve essere convertito nel relativo formato A-label e tutte le lettere ASCII devono essere minuscole.
@@ -8319,6 +8332,7 @@ Nota: questa policy si applica solo alle piattaforme che supportano le estension
 
       Gli utenti non possono modificare l'impostazione dell'ottimizzazione WPAD, a prescindere dalla configurazione della policy.</translation>
 <translation id="6363485842496031347">L'impostazione della scorciatoia Elimina usa la scorciatoia che contiene il tasto di modifica Alt</translation>
+<translation id="6364336078281746235">Forza la priorità in primo piano per URL specifici</translation>
 <translation id="6366574325767783825">Se la policy viene impostata su True o non viene impostata, <ph name="PRODUCT_NAME" /> accetterà i contenuti web pubblicati con la tecnologia Signed HTTP Exchange.
 
       Se la policy viene impostata su False, i contenuti pubblicati con la tecnologia Signed HTTP Exchange non vengono caricati.</translation>
@@ -10280,22 +10294,6 @@ Se la policy viene lasciata vuota, non sono consentite eccezioni a <ph name="FLO
 
       Se il dispositivo dell'utente non è gestito, la disponibilità di questa funzionalità dipende anche dal fatto che l'utente sia o meno il proprietario del dispositivo.</translation>
 <translation id="7570291542739287032">Solo Google Cloud</translation>
-<translation id="7571158727244273239">La configurazione della policy consente di specificare il numero massimo di connessioni contemporanee per server proxy per le richieste WebSocket.
-
-Per modificare i limiti delle richieste non WebSocket, consulta <ph name="MAX_CONNECTIONS_PER_PROXY_POLICY_NAME" />.
-
-Se la policy non viene configurata, viene utilizzato il valore predefinito 32.
-
-Alcune app web sono note per richiedere molte connessioni con Hanging-GET, pertanto impostare un valore inferiore a 32 potrebbe causare interruzioni di rete del browser se sono aperte troppe app web di questo tipo.
-Alcuni server proxy non riescono a gestire un numero elevato di connessioni contemporanee per client, ma è sufficiente impostare la policy su un numero inferiore per risolvere questo problema.
-
-Il valore deve essere uguale o superiore a 6.
-Se imposti un valore inferiore a questo limite, verrà utilizzato 6.
-È sconsigliato utilizzare un valore inferiore a quello predefinito (32).
-
-Il valore deve essere uguale o inferiore a 256.
-Se imposti un valore superiore a questo limite, verrà utilizzato 256.
-È sconsigliato utilizzare un valore superiore a quello predefinito (32).</translation>
 <translation id="7572641760104970905">Nessuna complessità</translation>
 <translation id="757395965347379751">Quando questa impostazione è attivata, <ph name="PRODUCT_NAME" /> consente l'utilizzo dei certificati SHA-1 firmati che sono convalidati e concatenati a certificati CA installati localmente.
 

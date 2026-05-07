@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">Нет, спасибо</translation>
 <translation id="1531038290222364269">Показать вкладки</translation>
 <translation id="1536390784834419204">Перевести страницу</translation>
+<translation id="1539535193627863227">Нет паролей или ключей доступа для этого сайта.</translation>
 <translation id="1540800554400757039">Адрес, строка 1</translation>
 <translation id="154312949627292154">Открывать вкладки, полученные с других ваших устройств, на заблокированном экране.</translation>
 <translation id="1545749641540134597">Сканирование QR-кода</translation>
@@ -642,6 +643,7 @@
 <translation id="3245744387817103524">Не удалось сохранить изменения.</translation>
 <translation id="3254806613790954367">Последняя открытая вкладка с любого из ваших устройств</translation>
 <translation id="325717987950204592">Нажмите "Конфиденциальность и безопасность".</translation>
+<translation id="3259451381796379533">Этот аккаунт не подходит для Gemini. Войдите в другой аккаунт Google.</translation>
 <translation id="3265736395246760288">Входите в аккаунты быстрее на синхронизированных устройствах.</translation>
 <translation id="3272527697863656322">Отмена</translation>
 <translation id="3273510436356991673">Настройка главного экрана</translation>
@@ -763,6 +765,7 @@
 <translation id="372676576864368480">Автозаполнить поле номером карты, который оканчивается на <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Создано <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Медиатека</translation>
+<translation id="3746269120925354434">Информация сохранена в Google Кошельке</translation>
 <translation id="3750225824417196283">Страница "Новая вкладка инкогнито"</translation>
 <translation id="3751873026576444885">Остановить поиск по экрану через Google Объектив</translation>
 <translation id="3753408171347588045">Отслеживание цен</translation>
@@ -1076,7 +1079,6 @@
 <translation id="4824480232751123840">Громкость</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} и ещё 1 вкладка}one{{domain} и ещё {count} вкладка}few{{domain} и ещё {count} вкладки}many{{domain} и ещё {count} вкладок}other{{domain} и ещё {count} вкладки}}</translation>
 <translation id="4826588772550366629">"Камера" и "Микрофон"</translation>
-<translation id="4828431027673677473">Товары, которые могут вас заинтересовать</translation>
 <translation id="4829420936835028285">Изменить группу вкладок</translation>
 <translation id="4833786495304741580">Автоматически отправлять в Google статистику использования и отчеты о сбоях</translation>
 <translation id="483689884442613745">Сохранить</translation>
@@ -1864,6 +1866,7 @@
 <translation id="7498234416455752244">Продолжить редактирование</translation>
 <translation id="7500244509706269886">Заполнить форму</translation>
 <translation id="750493650310597496">Закладки не выбраны</translation>
+<translation id="7505402981231763928">Чтобы использовать Gemini, войдите в аккаунт.</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Чтобы закреплять вкладки инкогнито, настройте Touch ID, Face ID или код доступа.</translation>
 <translation id="750886945254958667">Вы сможете пользоваться ей в дальнейшем и добавлять вкладки. Если группа больше не нужна, выйдите из нее.</translation>
@@ -2105,7 +2108,6 @@
 <translation id="828291969289324795">{count,plural, =1{Добавить вкладку в новую группу}one{Добавить вкладки в новую группу}few{Добавить вкладки в новую группу}many{Добавить вкладки в новую группу}other{Добавить вкладки в новую группу}}</translation>
 <translation id="8283172974887967105">Да</translation>
 <translation id="8289930144142009940">Уведомления "<ph name="FEATURE_NAME" />" отключены.</translation>
-<translation id="8290077367744012649">Отслеживайте цены товаров с вкладок</translation>
 <translation id="8292893224181644074">Скачивание завершено</translation>
 <translation id="8299417921174340354">Чтобы использовать пароли, установите на устройстве код доступа.</translation>
 <translation id="8307481894409578819">Ошибка при загрузке файла</translation>
@@ -2172,6 +2174,7 @@
 <translation id="8533670235862049797">Безопасный просмотр включен</translation>
 <translation id="8534481786647257214">Опубликовано в Google+.</translation>
 <translation id="8535368836838588657">Показать пароль</translation>
+<translation id="8540426897269305488">Войти с аккаунтом <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8545276357312221485">Проверьте, какой у вас браузер по умолчанию</translation>
 <translation id="854938212724803178">У вас есть раскрытый пароль. Устраните проблему.</translation>
 <translation id="8551311254462607218">В адресной строке нажмите на значок Google Объектива.</translation>
@@ -2296,7 +2299,7 @@
 <translation id="8915916167043355778">Закрыть все</translation>
 <translation id="892185197271200809">Группа вкладок "<ph name="GROUP_NAME" />" сразу станет всем недоступна и будет удалена с каждого устройства.</translation>
 <translation id="8923178205567790913">Пароли</translation>
-<translation id="8926498511977337209">Перейдите в режим инкогнито</translation>
+<translation id="8926498511977337209">Используйте режим инкогнито</translation>
 <translation id="892776311701544612">Подробнее…</translation>
 <translation id="8928133177108699615">Версия для компьютера</translation>
 <translation id="8928426232677696166">Сейчас используется аккаунт <ph name="EMAIL" />. Им управляет ваша организация. Выбрать аккаунт.</translation>

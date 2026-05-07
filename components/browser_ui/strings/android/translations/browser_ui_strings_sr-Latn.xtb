@@ -609,6 +609,7 @@
 <translation id="7250468141469952378">Izabrali ste <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">Odobrene su dozvole <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" /></translation>
 <translation id="7276071417425470385">Kada je uključeno, sajtovi mogu da traže da koriste uređaje virtuelne realnosti. Kada je isključeno, sajtovi ne mogu da koriste uređaje virtuelne realnosti.</translation>
+<translation id="7279851812866769760">Delite kontakte</translation>
 <translation id="7282197670900591579">Limun-žuta tema</translation>
 <translation id="728412880473384942">Sajtovi su brži, ali manje bezbedni</translation>
 <translation id="7352902948037373520">Upravljajte u <ph name="BEGIN_LINK1" />Android podešavanjima<ph name="END_LINK1" />
@@ -700,6 +701,7 @@ Napredna zaštita upravlja ovim Chrome podešavanjima:</translation>
 <translation id="823874716226307142">Kada je uključeno, sajtovi mogu da zatraže pristup drugim uređajima na lokalnoj mreži. Kada je isključeno, sajtovi ne mogu da pristupaju drugim uređajima na lokalnoj mreži.</translation>
 <translation id="8249310407154411074">Premesti na vrh</translation>
 <translation id="8261506727792406068">Izbriši</translation>
+<translation id="8273596202562472147">Još opcija za: <ph name="SITE_NAME" /></translation>
 <translation id="8284326494547611709">Titl</translation>
 <translation id="8300705686683892304">Upravlja aplikacija</translation>
 <translation id="8301363963630676147">Dozvoljeno ovaj put • Koristi se približna lokacija</translation>
@@ -794,6 +796,7 @@ Napredna zaštita upravlja ovim Chrome podešavanjima:</translation>
 <translation id="9156722768168878035">Dozvolite Chrome-u da prikazuje nedavne kartice na listi aplikacija i u rezultatima pretrage uređaja. To možete da isključite u svakom trenutku u Chrome podešavanjima.</translation>
 <translation id="9162462602695099906">Ova stranica je opasna</translation>
 <translation id="9182556968660520230">Ne dozvoljavaj sajtovima da puštaju zaštićeni sadržaj</translation>
+<translation id="927148002081263046">Delite kontakt</translation>
 <translation id="947156494302904893">Sajtovi koje posećujete mogu da potvrde da ste stvarna osoba, a ne bot</translation>
 <translation id="959682366969460160">Bolja organizacija</translation>
 <translation id="960590623979248167">Prikaži hiperlinkove</translation>

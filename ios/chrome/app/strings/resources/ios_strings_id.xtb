@@ -62,7 +62,7 @@
 <translation id="1217294226280635614">Tampilan terpisah</translation>
 <translation id="1218730690561976633">Aktifkan/nonaktifkan verifikasi pengguna untuk isi otomatis yang ditingkatkan</translation>
 <translation id="1219674500290482172">Tidak dapat terhubung ke internet.</translation>
-<translation id="1223498995510244364">Ringkasan</translation>
+<translation id="1223498995510244364">Ringkas</translation>
 <translation id="1227113644794103810">Tab tidak aktif</translation>
 <translation id="1231733316453485619">Aktifkan sinkronisasi?</translation>
 <translation id="1238794841176717085">Bagikan Halaman Ini</translation>
@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">Lain Kali</translation>
 <translation id="1531038290222364269">Tampilkan tab</translation>
 <translation id="1536390784834419204">Terjemahkan halaman</translation>
+<translation id="1539535193627863227">Tidak ada sandi atau kunci sandi yang ditemukan untuk situs ini</translation>
 <translation id="1540800554400757039">Alamat 1</translation>
 <translation id="154312949627292154">Buka tab yang diterima dari perangkat Anda yang lain dari layar kunci.</translation>
 <translation id="1545749641540134597">Pindai Kode QR</translation>
@@ -642,6 +643,7 @@
 <translation id="3245744387817103524">Perubahan Anda tidak dapat disimpan.</translation>
 <translation id="3254806613790954367">Tab yang terakhir dibuka di semua perangkat Anda</translation>
 <translation id="325717987950204592">Ketuk "Privasi dan Keamanan"</translation>
+<translation id="3259451381796379533">Akun ini tidak akan berfungsi dengan Gemini. Login dengan Akun Google lain.</translation>
 <translation id="3265736395246760288">Login lebih cepat dari perangkat Anda yang disinkronkan.</translation>
 <translation id="3272527697863656322">Batal</translation>
 <translation id="3273510436356991673">Sesuaikan layar utama Anda</translation>
@@ -763,6 +765,7 @@
 <translation id="372676576864368480">Isi otomatis nomor kartu yang diakhiri dengan <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Dibuat <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Rol Kamera</translation>
+<translation id="3746269120925354434">Info disimpan ke Google Wallet</translation>
 <translation id="3750225824417196283">Halaman tab Samaran baru</translation>
 <translation id="3751873026576444885">Berhenti menelusuri layar Anda dengan Google Lens</translation>
 <translation id="3753408171347588045">Memantau harga</translation>
@@ -1076,7 +1079,6 @@
 <translation id="4824480232751123840">Volume</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} dan 1 lainnya}other{{domain} dan {count} lainnya}}</translation>
 <translation id="4826588772550366629">kamera dan mikrofon</translation>
-<translation id="4828431027673677473">Produk berdasarkan minat Anda</translation>
 <translation id="4829420936835028285">Edit Grup Tab</translation>
 <translation id="4833786495304741580">Otomatis mengirim statistik penggunaan dan laporan kerusakan ke Google.</translation>
 <translation id="483689884442613745">Simpan…</translation>
@@ -1864,6 +1866,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="7498234416455752244">Lanjut mengedit</translation>
 <translation id="7500244509706269886">Isi otomatis formulir</translation>
 <translation id="750493650310597496">Tak ada yang dipilih</translation>
+<translation id="7505402981231763928">Anda harus login untuk menggunakan Gemini</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Untuk mengunci tab Samaran, siapkan Touch ID, Face ID, atau Kode Sandi.</translation>
 <translation id="750886945254958667">Simpan grup ini untuk menambahkan tab nanti, atau keluar dari grup jika Anda tidak ingin lagi mengaksesnya</translation>
@@ -2105,7 +2108,6 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="828291969289324795">{count,plural, =1{Tambahkan Tab ke Grup Baru}other{Tambahkan Tab ke Grup Baru}}</translation>
 <translation id="8283172974887967105">Setel …</translation>
 <translation id="8289930144142009940">Notifikasi <ph name="FEATURE_NAME" /> dinonaktifkan</translation>
-<translation id="8290077367744012649">Pantau harga dari tab Anda</translation>
 <translation id="8292893224181644074">Download Selesai</translation>
 <translation id="8299417921174340354">Untuk menggunakan sandi, Anda harus menyetel kode sandi di perangkat terlebih dahulu.</translation>
 <translation id="8307481894409578819">File ini tidak dapat diupload</translation>
@@ -2172,6 +2174,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="8533670235862049797">Safe Browsing aktif</translation>
 <translation id="8534481786647257214">Kirim Google+ selesai.</translation>
 <translation id="8535368836838588657">Perlihatkan sandi</translation>
+<translation id="8540426897269305488">Login dengan <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8545276357312221485">Periksa setelan browser default Anda</translation>
 <translation id="854938212724803178">Anda memiliki 1 sandi yang telah dibobol. Perbaiki sekarang agar tetap terlindungi.</translation>
 <translation id="8551311254462607218">Di kolom URL, ketuk ikon kamera Google Lens</translation>

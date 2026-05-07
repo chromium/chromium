@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">不用了，謝謝</translation>
 <translation id="1531038290222364269">顯示分頁</translation>
 <translation id="1536390784834419204">翻譯網頁</translation>
+<translation id="1539535193627863227">找不到此網站的密碼或密鑰</translation>
 <translation id="1540800554400757039">地址行 1</translation>
 <translation id="154312949627292154">在上鎖畫面開啟其他裝置傳送的分頁。</translation>
 <translation id="1545749641540134597">掃描二維條碼</translation>
@@ -642,6 +643,7 @@
 <translation id="3245744387817103524">無法儲存您的變更。</translation>
 <translation id="3254806613790954367">在你的所有裝置上顯示最後開啟的分頁</translation>
 <translation id="325717987950204592">輕按 [私隱權和安全性]</translation>
+<translation id="3259451381796379533">此帳戶無法使用 Gemini。請以其他 Google 帳戶登入。</translation>
 <translation id="3265736395246760288">在任何已同步的裝置上更快登入。</translation>
 <translation id="3272527697863656322">取消</translation>
 <translation id="3273510436356991673">自訂主畫面</translation>
@@ -1077,7 +1079,6 @@
 <translation id="4824480232751123840">體積</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} 和另外 1 個}other{{domain} 和另外 {count} 個}}</translation>
 <translation id="4826588772550366629">相機和麥克風</translation>
-<translation id="4828431027673677473">切合你興趣的產品</translation>
 <translation id="4829420936835028285">編輯分頁群組</translation>
 <translation id="4833786495304741580">自動將使用情況統計和當機報告傳送給 Google。</translation>
 <translation id="483689884442613745">儲存…</translation>
@@ -1865,6 +1866,7 @@
 <translation id="7498234416455752244">繼續編輯</translation>
 <translation id="7500244509706269886">自動填入表格</translation>
 <translation id="750493650310597496">已選取 0 個</translation>
+<translation id="7505402981231763928">你必須登入才能使用 Gemini</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />)。</translation>
 <translation id="7508728395076009983">如要鎖定無痕式分頁，請設定 Touch ID、Face ID 或密碼。</translation>
 <translation id="750886945254958667">如果保留群組，你之後可新增分頁；如果不再使用，亦可離開群組</translation>
@@ -2106,7 +2108,6 @@
 <translation id="828291969289324795">{count,plural, =1{在新群組中加入分頁}other{在新群組中加入分頁}}</translation>
 <translation id="8283172974887967105">設定…</translation>
 <translation id="8289930144142009940">已關閉「<ph name="FEATURE_NAME" />」的通知</translation>
-<translation id="8290077367744012649">追蹤分頁上的價格</translation>
 <translation id="8292893224181644074">下載完畢</translation>
 <translation id="8299417921174340354">如要使用密碼，您必須先在裝置上設定密碼。</translation>
 <translation id="8307481894409578819">無法上載這個檔案</translation>
@@ -2298,7 +2299,7 @@
 <translation id="8915916167043355778">全部關閉</translation>
 <translation id="892185197271200809">所有人將立即無法再存取「<ph name="GROUP_NAME" />」分頁群組，此分頁群組亦會從所有裝置刪除</translation>
 <translation id="8923178205567790913">密碼</translation>
-<translation id="8926498511977337209">在無痕模式中瀏覽</translation>
+<translation id="8926498511977337209">使用無痕模式瀏覽</translation>
 <translation id="892776311701544612">瞭解詳情…</translation>
 <translation id="8928133177108699615">桌面模式</translation>
 <translation id="8928426232677696166">目前選取 <ph name="EMAIL" />，該帳戶由你的機構管理。請選擇帳戶。</translation>

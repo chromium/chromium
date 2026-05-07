@@ -609,6 +609,7 @@
 <translation id="7250468141469952378">Đã chọn <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">Đã cho phép: <ph name="PERMISSION_1" /> và <ph name="PERMISSION_2" /></translation>
 <translation id="7276071417425470385">Khi bạn bật tuỳ chọn này, các trang web có thể yêu cầu sử dụng thiết bị thực tế ảo. Khi bạn tắt tuỳ chọn này, các trang web không thể sử dụng thiết bị thực tế ảo.</translation>
+<translation id="7279851812866769760">Chia sẻ địa chỉ liên hệ</translation>
 <translation id="7282197670900591579">Giao diện màu vàng vỏ chanh</translation>
 <translation id="728412880473384942">Các trang web này nhanh hơn nhưng kém an toàn hơn</translation>
 <translation id="7352902948037373520">Quản lý trong phần <ph name="BEGIN_LINK1" />Cài đặt Android<ph name="END_LINK1" />
@@ -700,6 +701,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="823874716226307142">Khi bạn bật lựa chọn này, trang web có thể yêu cầu quyền truy cập vào các thiết bị khác trên mạng cục bộ của bạn. Khi bạn tắt lựa chọn này, trang web không thể truy cập vào các thiết bị khác trên mạng cục bộ của bạn.</translation>
 <translation id="8249310407154411074">Chuyển lên trên cùng</translation>
 <translation id="8261506727792406068">Xoá</translation>
+<translation id="8273596202562472147">Lựa chọn khác cho <ph name="SITE_NAME" /></translation>
 <translation id="8284326494547611709">Phụ đề</translation>
 <translation id="8300705686683892304">Do ứng dụng quản lý</translation>
 <translation id="8301363963630676147">Được cho phép lần này • Đang sử dụng vị trí ước chừng</translation>
@@ -794,6 +796,7 @@ Chương trình Bảo vệ nâng cao kiểm soát các chế độ cài đặt s
 <translation id="9156722768168878035">Cho phép Chrome hiển thị các thẻ gần đây trong danh sách ứng dụng và kết quả tìm kiếm trên thiết bị. Bạn có thể tắt tính năng này bất cứ lúc nào trong phần cài đặt của Chrome.</translation>
 <translation id="9162462602695099906">Đây là trang nguy hiểm</translation>
 <translation id="9182556968660520230">Không cho phép trang web phát nội dung được bảo vệ</translation>
+<translation id="927148002081263046">Chia sẻ địa chỉ liên hệ</translation>
 <translation id="947156494302904893">Các trang web bạn truy cập có thể xác minh rằng bạn là người thực chứ không phải bot</translation>
 <translation id="959682366969460160">Sắp xếp gọn gàng</translation>
 <translation id="960590623979248167">Hiển thị siêu liên kết</translation>

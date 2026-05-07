@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">එපා, ස්තූතියි</translation>
 <translation id="1531038290222364269">පටිති පෙන්වන්න</translation>
 <translation id="1536390784834419204">පිටුව පරිවර්තනය කරන්න</translation>
+<translation id="1539535193627863227">මෙම වෙබ් අඩවිය සඳහා මුරපද හෝ මුරයතුරු හමු නොවුණි</translation>
 <translation id="1540800554400757039">ලිපිනය 1</translation>
 <translation id="154312949627292154">අගුළු තිරයෙන් ඔබේ අනෙකුත් උපාංගවලින් ලැබුණු පටිති විවෘත කරන්න.</translation>
 <translation id="1545749641540134597">QR කේතය ස්කෑන් කරන්න</translation>
@@ -642,6 +643,7 @@
 <translation id="3245744387817103524">ඔබේ වෙනස සුරැකිය නොහැකි විය.</translation>
 <translation id="3254806613790954367">ඔබේ සියලු උපාංග හරහා ඔබේ අවසන් විවෘත පටිත්ත</translation>
 <translation id="325717987950204592">"පෞද්ගලිකත්වය සහ ආරක්ෂාව" තට්ටු කරන්න</translation>
+<translation id="3259451381796379533">මෙම ගිණුම Gemini සමග ක්‍රියා නොකරනු ඇත. වෙනස් Google ගිණුමක් සමග පුරන්න</translation>
 <translation id="3265736395246760288">ඔබේ ඕනෑම සමමුහුර්ත උපාංගයකින් වේගයෙන් පුරන්න.</translation>
 <translation id="3272527697863656322">අවලංගු කරන්න</translation>
 <translation id="3273510436356991673">ඔබේ මුල් තිරය අභිරුචි කරන්න</translation>
@@ -763,6 +765,7 @@
 <translation id="372676576864368480"><ph name="LAST_DIGITS" /> ලෙස අවසන් වන කාඩ්පත් අංකය ස්වයංක්‍රීයව පුරවන්න</translation>
 <translation id="3738428049780661523">තනන ලද්දේ: <ph name="DATE" /></translation>
 <translation id="3742498336182910186">කැමරා රෝල</translation>
+<translation id="3746269120925354434">Google Wallet වෙත තතු සුරකින ලදි</translation>
 <translation id="3750225824417196283">නව අප්‍රසිද්ධ ටැබ පිටුව</translation>
 <translation id="3751873026576444885">Google Lens සමග ඔබේ තිරය සෙවීම නවත්වන්න</translation>
 <translation id="3753408171347588045">මිල ගණන් හඹා යාම</translation>
@@ -1076,7 +1079,6 @@
 <translation id="4824480232751123840">හඬ පරිමාව</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} සහ තවත් 1}one{{domain} සහ තවත් {count}}other{{domain} සහ තවත් {count}}}</translation>
 <translation id="4826588772550366629">කැමරාව සහ මයික්‍රෆෝනය</translation>
-<translation id="4828431027673677473">ඔබේ රුචිකත්වයන් මත පදනම් වූ නිෂ්පාදන</translation>
 <translation id="4829420936835028285">පටිති සමූහය සංස්කරණය කරන්න</translation>
 <translation id="4833786495304741580">භාවිත සංඛ්‍යාල්ඛන සහ බිඳ වැටීම් වාර්තා ස්වයංක්‍රියව Google වෙත යවයි.</translation>
 <translation id="483689884442613745">සුරකින්න…</translation>
@@ -1864,6 +1866,7 @@
 <translation id="7498234416455752244">දිගටම සංස්කරණ කරන්න</translation>
 <translation id="7500244509706269886">පෝරමය ස්වයං පිරවුම</translation>
 <translation id="750493650310597496">0 තේරා ගන්නා ලදි</translation>
+<translation id="7505402981231763928">Gemini භාවිතා කිරීමට ඔබට පුරනය වීමට අවශ්‍ය වේ</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">ඔබගේ අප්‍රසිද්ධ ටැබ අගුලු දැමීමට, ස්පර්ශ ID, මුහුණු ID හෝ මුර කේතයක් පිහිටුවන්න.</translation>
 <translation id="750886945254958667">පසුව පටිති එක් කිරීමට මෙම කණ්ඩායම තබා ගන්න, නැතහොත් ඔබට තවදුරටත් එයට ප්‍රවේශ වීමට අවශ්‍ය නැතිනම් එයින් ඉවත් වන්න</translation>
@@ -2105,7 +2108,6 @@
 <translation id="828291969289324795">{count,plural, =1{නව සමූහයට පටිත්ත එක් කරන්න}one{නව සමූහයට පටිති එක් කරන්න}other{නව සමූහයට පටිති එක් කරන්න}}</translation>
 <translation id="8283172974887967105">සකසන්න…</translation>
 <translation id="8289930144142009940"><ph name="FEATURE_NAME" /> දැනුම්දීම් ක්‍රියාවිරහිත කර ඇත</translation>
-<translation id="8290077367744012649">ඔබේ පටිති වලින් මිල ගණන් නිරීක්ෂණය කරන්න</translation>
 <translation id="8292893224181644074">බාගැනීම සම්පූර්ණයි</translation>
 <translation id="8299417921174340354">මුරපද භාවිත කිරීමට, ඔබ පළමුව ඔබේ උපාංගයේ මුරකේතයක් සැකසිය යුතුය.</translation>
 <translation id="8307481894409578819">මෙම ගොනුව උඩුගත කළ නොහැකි විය</translation>
@@ -2172,6 +2174,7 @@
 <translation id="8533670235862049797">සුරක්ෂිත බ්‍රවුස් කිරීම ක්‍රියාත්මකයි</translation>
 <translation id="8534481786647257214">Google+ පළ කිරීම සම්පූර්ණයි.</translation>
 <translation id="8535368836838588657">මුරපදය අනාවරණය කරන්න</translation>
+<translation id="8540426897269305488"><ph name="CELL_ACCESSIBILITY_LABEL" /> සමඟ පුරන්න</translation>
 <translation id="8545276357312221485">ඔබේ පෙරනිමි බ්‍රවුසර සැකසීම් පරීක්ෂා කරන්න</translation>
 <translation id="854938212724803178">ඔබට අවදානමට පත් වූ 1 මුරපදයක් ඇත. ආරක්ෂිතව සිටීමට දැන් එය නිරාකරණය කරන්න.</translation>
 <translation id="8551311254462607218">ලිපින තීරුවේ, Google Lens කැමරා නිරූපකය මත තට්ටු කරන්න</translation>

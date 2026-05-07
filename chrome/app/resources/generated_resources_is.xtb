@@ -2076,6 +2076,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2402226831639195063">Tónar</translation>
 <translation id="2405887402346713222">Raðnúmer tækis og íhlutar</translation>
 <translation id="2406153734066939945">Eyða þessum prófíl og gögnum hans?</translation>
+<translation id="2406942743794219791">Staðfestu sjálfgefna leitarvél sem þú vilt nota</translation>
 <translation id="2407671304279211586">Veldu DNS-veitanda</translation>
 <translation id="2408018932941436077">Vistar kort</translation>
 <translation id="2408742686124047357">Festu Google-linsu við tækjastikuna til að fá auðveldan aðgang næst</translation>
@@ -2168,6 +2169,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2460826998961521840">Til að nota aðgangslykla sem eru vistaðir á Google-reikningnum þínum</translation>
 <translation id="2461550163693930491">Ekki leyfa vefsvæðum að fletta og stækka/minnka samnýtta flipa</translation>
 <translation id="2461593638794842577">Þú getur slökkt á þessari stillingu til að vista aðgangsorðið aðeins í þessu tæki</translation>
+<translation id="2462550463312552298">Búðu til samantekt úr þessu skjali</translation>
 <translation id="2462724976360937186">Lykilsauðkenni vottunarstöðvar</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> var bætt við</translation>
 <translation id="2464075479326723132">Þú sérð tillögur að skrám til að auðvelda þér að komast aftur í nýjustu virknina þína á Microsoft SharePoint og OneDrive.
@@ -3056,6 +3058,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3046892784550338476">Útgáfa <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Vefsíða, í heild</translation>
 <translation id="304747341537320566">Talgervlar</translation>
+<translation id="3047618804758101928">Viðbótin „<ph name="EXTENSION_NAME" />“ breytti stillingunum þínum</translation>
 <translation id="3047678109605649715">Það eru engar raddir á tungumálinu <ph name="LANGUAGE" /> í tækinu þínu. Losaðu um pláss í tækinu og reyndu aftur.</translation>
 <translation id="3048336643003835855">HID-tæki frá söluaðila <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Spila (k)</translation>
@@ -4324,6 +4327,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3924788966103416622">Utanaðkomandi forrit vill fá fulla stjórn á þessari Chrome-lotu til að kemba hana. Það veitir forritinu meðal annars aðgang að vistuðum gögnum, fótsporum og vefsvæðisgögnum og gerir því kleift að fara á hvaða vefslóð sem er.</translation>
 <translation id="3925573269917483990">Myndavél:</translation>
 <translation id="3925926055063465902">Aðrir notendur þessa tækis geta einnig notað þetta net</translation>
+<translation id="3925934852713265455">Spurðu um flipana þína</translation>
 <translation id="3926002189479431949">Skipt um síma Smart Lock</translation>
 <translation id="3926410220776569451">Lokað fyrir aðgang að myndavél</translation>
 <translation id="3927932062596804919">Hafna</translation>
@@ -7295,6 +7299,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="604388835206766544">Ekki tókst að þátta stillingu</translation>
 <translation id="6043994281159824495">Skrá út núna</translation>
 <translation id="6045114302329202345">Aðal TrackPoint-hnappur</translation>
+<translation id="6045425183320109397">Eftir</translation>
 <translation id="6047632800149092791">Samstilling virkar ekki. Prófaðu að skrá þig út og inn aftur.</translation>
 <translation id="6048747414605857443">Velja og sérsníða raddir talgervils fyrir ChromeVox og textaupplestur</translation>
 <translation id="6050189528197190982">Grátónar</translation>
@@ -8702,7 +8707,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="701020165009334820">Þú getur sótt Android-forrit og -leiki í gegnum Play Store.</translation>
 <translation id="701080569351381435">Skoða frumkóða</translation>
 <translation id="7012430956470647760">Barnalæsing forrita</translation>
-<translation id="7013762323294215682">Þessi aðgangslykill verður vistaður í aðgangsorðastjórnun. Þau sem hafa aðgang að henni geta notað þennan aðgangslykil.</translation>
 <translation id="7014174261166285193">Uppsetningin mistókst.</translation>
 <translation id="7014480873681694324">Fjarlægja áherslumerkingu</translation>
 <translation id="7014741021609395734">Aðdráttarstig</translation>
@@ -10014,6 +10018,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7939062555109487992">Ítarlegir valkostir</translation>
 <translation id="793923212791838">Ekki er hægt að nota tækið þitt með þessu vefsvæði</translation>
 <translation id="7939328347457537652">Stjórna tækjavottorðum</translation>
+<translation id="7939918959917132075">Breytt í þetta af viðbót</translation>
 <translation id="7940087892955752820">Ekki var hægt að hætta að deila vegna þess að forrit er að nota þessa möppu. Hætt verður að deila möppunni næst þegar slökkt er á <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="7940265372707990269">Raða eftir <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Staða tjóðrunar:</translation>
@@ -11791,7 +11796,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="9120800848981545750">Sæktu Chrome fyrir iOS til að fá aðgang að flipunum þínum, bókamerkjum og aðgangsorðum í símanum.</translation>
 <translation id="9121814364785106365">Opna sem fastan flipa</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{Loka flipa og eyða hópi?}=1{Loka flipum og eyða hópi?}one{Loka flipum og eyða hópum?}other{Loka flipum og eyða hópum?}}</translation>
-<translation id="9122788874051694311">Vista þennan aðgangslykil utan huliðsstillingar?</translation>
 <translation id="9123287046453017203">Tækið þitt er ekki uppfært</translation>
 <translation id="9125910124977405374">Fjarlægja <ph name="LANGUAGE_NAME" /> af lista yfir tungumál sem eru þýdd sjálfkrafa</translation>
 <translation id="9125912770834459638">Fyrirtækið þitt leyfir þér ekki að skrá þig inn</translation>

@@ -2059,6 +2059,7 @@
 <translation id="2402226831639195063">Сигнал дыбыстары</translation>
 <translation id="2405887402346713222">Құрылғы мен құрамдастың сериялық нөмірлері</translation>
 <translation id="2406153734066939945">Бұл профиль және оның деректері жойылсын ба?</translation>
+<translation id="2406942743794219791">Қажетті әдепкі іздеу жүйесін растаңыз</translation>
 <translation id="2407671304279211586">DNS провайдерін таңдау</translation>
 <translation id="2408018932941436077">Карта сақталуда</translation>
 <translation id="2408742686124047357">Google Lens-ге келесі жолы оңай кіру үшін оны құралдар тақтасына бекітіңіз.</translation>
@@ -3040,6 +3041,7 @@
 <translation id="3046892784550338476"><ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /> нұсқасы</translation>
 <translation id="3046910703532196514">Веб-бет, толық</translation>
 <translation id="304747341537320566">Дауыстап оқу модульдері</translation>
+<translation id="3047618804758101928">"<ph name="EXTENSION_NAME" />" кеңейтімі параметрлеріңізді өзгертті</translation>
 <translation id="3047678109605649715">Құрылғыңызда <ph name="LANGUAGE" /> тіліндегі дауыстар жоқ. Құрылғыдан орын босатып, әрекетті қайталап көріңіз.</translation>
 <translation id="3048336643003835855"><ph name="VENDOR_ID" /> жеткізушісінің HID құрылғылары</translation>
 <translation id="3048589239114571785">Ойнату (k)</translation>
@@ -6790,7 +6792,7 @@
 <translation id="5697664819730124632">Сурет қосып, оны түрлендіру</translation>
 <translation id="5697832193891326782">Эмоджи таңдағыш</translation>
 <translation id="5698136107297470317"><ph name="BRAND" /> деректерін жойғалы жатырсыз</translation>
-<translation id="5698815246352480266">Қойындыларды ауыстырмай-ақ AI режимінде сөйлесе беруге болады. Бастау үшін жеке басыңызды растаңыз. Сондай-ақ құпия сөздер мен басқа деректеріңіз барлық құрылғыңызда қолжетімді болады.</translation>
+<translation id="5698815246352480266">Қойындыларды ауыстырмай-ақ ЖИ режимінде сөйлесе беруге болады. Бастау үшін жеке басыңызды растаңыз. Құпия сөздер мен басқа деректеріңіз барлық құрылғыңызда қолжетімді болады.</translation>
 <translation id="5698878456427040674">Таңдалған аккаунтқа қолдау көрсетілетінін тексеріңіз.</translation>
 <translation id="5698900765010620315">Контрасты төмен қараңғы режим</translation>
 <translation id="5699227710146832453">Құрылғы:</translation>
@@ -7048,7 +7050,7 @@
 <translation id="5870155679953074650">Елеулі қателер</translation>
 <translation id="587234395549708302">Бетбелгілерді тазарту қажет пе?</translation>
 <translation id="5875534259258494936">Экранды көрсету аяқталды</translation>
-<translation id="5876691914815078365">Chrome Apps &gt; <ph name="APP_NAME" /></translation>
+<translation id="5876691914815078365">Chrome қолданбалары &gt; <ph name="APP_NAME" /></translation>
 <translation id="5876851302954717356">Оң жақтағы жаңа қойынды</translation>
 <translation id="5877064549588274448">Арна өзгерді. Өзгерістерді қолдану үшін құрылғыңызды қайта іске қосыңыз.</translation>
 <translation id="5877584842898320529">Таңдалған принтер жоқ немесе дұрыс реттелмеген. <ph name="BR" /> Принтерді тексеріңіз немесе басқасын таңдаңыз.</translation>
@@ -7273,6 +7275,7 @@
 <translation id="604388835206766544">Конфигурацияны талдау мүмкін болмады.</translation>
 <translation id="6043994281159824495">Қазір шығу</translation>
 <translation id="6045114302329202345">Негізгі TrackPoint түймесі</translation>
+<translation id="6045425183320109397">Ұсынған:</translation>
 <translation id="6047632800149092791">Синхрондалмай жатыр. Шығып, қайта кіріп көріңіз.</translation>
 <translation id="6048747414605857443">ChromeVox және Select to Speak үшін мәтінді дыбыстап айту дауыстарын таңдау және бейімдеу</translation>
 <translation id="6050189528197190982">Сұр шкаласы</translation>
@@ -8678,7 +8681,6 @@
 <translation id="701020165009334820">Android қолданбалары мен ойындарын Play Store-дан жүктеп алуға болады.</translation>
 <translation id="701080569351381435">Дереккөзді көру</translation>
 <translation id="7012430956470647760">Қолданбаларға арналған ата-ана бақылауы</translation>
-<translation id="7013762323294215682">Бұл кіру кілті Password Manager-ге сақталады. Оған кіре алатын кез келген адам осы кіру кілтіне де қол жеткізеді.</translation>
 <translation id="7014174261166285193">Орнату сәтсіз аяқталды.</translation>
 <translation id="7014480873681694324">Ерекшелемеу</translation>
 <translation id="7014741021609395734">Масштабтау деңгейі</translation>
@@ -9989,6 +9991,7 @@
 <translation id="7939062555109487992">Қосымша опциялар</translation>
 <translation id="793923212791838">Құрылғыңызды осы сайтпен пайдалану мүмкін емес</translation>
 <translation id="7939328347457537652">Құрылғының сертификаттарын басқару</translation>
+<translation id="7939918959917132075">Кеңейтім арқылы осы жүйеге өзгертілді.</translation>
 <translation id="7940087892955752820">Бөлісуден бас тарту мүмкін емес, себебі бұл қалтаны қолданба пайдаланып жатыр. <ph name="SPECIFIC_NAME" /> өшкеннен кейін, қалтаны бөлісуден бас тартылады.</translation>
 <translation id="7940265372707990269"><ph name="SORT_TYPE" /> бойынша сұрыптау</translation>
 <translation id="7941179291434537290">Тетеринг режимі:</translation>
@@ -11765,7 +11768,6 @@
 <translation id="9120800848981545750">Телефондағы қойындылар, бетбелгілер және құпия сөздерді пайдалану үшін iOS жүйесіне арналған Chrome-ды жүктеп алыңыз.</translation>
 <translation id="9121814364785106365">Бекітілген қойынды ретінде ашу</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{Қойындыны жауып, топты жою қажет пе?}=1{Қойындыларды жауып, топты жою қажет пе?}other{Қойындыларды жауып, топтарды жою қажет пе?}}</translation>
-<translation id="9122788874051694311">Бұл кіру кілтін инкогнито режимінен тыс сақтау қажет пе?</translation>
 <translation id="9123287046453017203">Құрылғыңыз жаңартылмаған</translation>
 <translation id="9125910124977405374">Автоматты түрде аударылатын тілдерден <ph name="LANGUAGE_NAME" /> тілін жою</translation>
 <translation id="9125912770834459638">Ұйымыңыз кіруге рұқсат бермейді</translation>

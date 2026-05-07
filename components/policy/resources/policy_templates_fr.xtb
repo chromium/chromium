@@ -1883,6 +1883,25 @@ Si cette règle est désactivée ou qu'elle n'est pas configurée, le transfert 
 <translation id="225340736558643885">Activer les avertissements pour les formulaires non sécurisés</translation>
 <translation id="2258126710006312594">Autoriser le transfert de fichiers vers et depuis l'hôte pour les utilisateurs connectés à distance</translation>
 <translation id="225830954785359083">Empêcher les pages d'afficher des pop-ups pendant le déchargement</translation>
+<translation id="2260635608598936994">Configure des filtres pour sélectionner les certificats client à inclure dans les rapports sur le signal de sécurité <ph name="PRODUCT_NAME" />. Ces rapports envoient des informations sur la stratégie du navigateur et de l'appareil à <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />, que les administrateurs peuvent utiliser pour configurer des règles <ph name="GOOGLE_CONTEXT_AWARE_ACCESS" />.
+
+Cette règle vous permet de définir des filtres basés sur les attributs du certificat client, tels que les noms distinctifs ISSUER et/ou SUBJECT. <ph name="PRODUCT_NAME" /> n'inclura les certificats dans les rapports sur le signal que s'ils correspondent à au moins un des filtres spécifiés.
+
+     Exemples pour l'utilisation de la section <ph name="SELECTOR_PLACEHOLDER" /> :
+
+      * Lorsque le filtre <ph name="SELECTOR_PLACEHOLDER" /> est défini sur <ph name="SECURITY_SIGNALS_CLIENT_CERTIFICATE_SELECTORS_FILTER_EXAMPLE" />, seuls les certificats client émis par un certificat dont la valeur CommonName est <ph name="ISSUER_CN_PLACEHOLDER" /> sont sélectionnés.
+
+      * Lorsque le filtre <ph name="SELECTOR_PLACEHOLDER" /> contient à la fois une section <ph name="ISSUER_STRING_VALUE" /> et une section <ph name="SUBJECT_STRING_VALUE" />, le certificat client doit satisfaire les deux conditions pour être sélectionné.
+
+      * Lorsque le filtre <ph name="SELECTOR_PLACEHOLDER" /> contient une section <ph name="SUBJECT_STRING_VALUE" /> avec la valeur <ph name="FILTER_STRING_ORGANIZATION" />, le certificat doit contenir au moins une organisation correspondant à la valeur spécifiée pour être sélectionné.
+
+      * Lorsque le filtre <ph name="SELECTOR_PLACEHOLDER" /> contient une section <ph name="SUBJECT_STRING_VALUE" /> avec la valeur <ph name="FILTER_STRING_ORGANIZATIONAL_UNIT" />, le certificat doit contenir au moins une unité organisationnelle correspondant à la valeur spécifiée pour être sélectionné.
+
+      * Lorsque le filtre <ph name="SELECTOR_PLACEHOLDER" /> est défini sur <ph name="EMPTY_DICTIONARY" />, les détails vides sont ignorés pour cette règle.
+
+      Si cette règle n'est pas configurée, aucun certificat client n'est sélectionné lors de la création de rapports sur le signal.
+
+*Important* : Cette règle ne s'applique que si la règle <ph name="USER_SECURITY_SIGNALS_REPORTING_POLICY_NAME" />, qui contrôle l'envoi global de signaux de sécurité depuis Chrome, est activée.</translation>
 <translation id="2261648512244797294">Désactiver l'impression Privet (obsolète)</translation>
 <translation id="2262701937800507517">Utiliser l'ordre des algorithmes de chiffrement par défaut de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="2263881357524831360">Autoriser l'utilisation de gestionnaires de mots de passe tiers dans <ph name="PRODUCT_NAME" /> sous <ph name="ANDROID_NAME" /></translation>
@@ -2690,6 +2709,15 @@ Si cette règle est désactivée ou qu'elle n'est pas configurée, les utilisate
 Si cette règle est activée ou n'est pas configurée, les utilisateurs peuvent ajouter des comptes Kerberos via les paramètres de comptes Kerberos sur la page "Paramètres Kerberos". Ils ont le plein contrôle des comptes qu'ils ont ajoutés et peuvent ainsi les modifier ou les supprimer.
 
 Si cette règle est désactivée, les utilisateurs ne peuvent pas ajouter de comptes Kerberos. Ces derniers ne peuvent être ajoutés qu'avec la règle "Configurer les comptes Kerberos". C'est un moyen efficace de verrouiller des comptes.</translation>
+<translation id="2771222727845689796">Cette règle vous permet de spécifier une liste de formats d'URL. Le contenu Web en arrière-plan correspondant à ces formats sera forcé de s'exécuter avec la priorité au premier plan.
+
+Si la règle <ph name="FORCE_FOREGROUND_PRIORITY_FOR_ALL_TABS_POLICY_NAME" /> est activée, cette liste est ignorée, car tous les onglets seront forcés en priorité au premier plan.
+
+Si <ph name="FORCE_FOREGROUND_PRIORITY_FOR_ALL_TABS_POLICY_NAME" /> est désactivée ou n'est pas définie, seul le contenu correspondant aux formats de cette liste sera forcé.
+
+Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+Si cette liste est vide ou n'est pas définie, aucun contenu en arrière-plan n'est forcé en priorité au premier plan.</translation>
 <translation id="2772231477628401250">Utiliser HTTP pour télécharger les mises à jour</translation>
 <translation id="2772955711376920612">Si cette règle est activée, et que les règles <ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" /> et <ph name="DEVICE_POWER_PEAK_SHIFT_DAY_CONFIG_POLICY_NAME" /> sont configurées, le mode d'alimentation alternée en heures pleines est activé (s'il est disponible sur l'appareil). Ce mode permet d'économiser l'énergie en faisant fonctionner autant que possible l'appareil sur batterie plutôt que sur secteur pendant les heures pleines. Vous pouvez définir l'heure de début et de fin de ce mode pour chaque jour de la semaine. Tant que le niveau de charge de la batterie reste au-dessus du seuil spécifié, l'appareil fonctionne sur batterie en heures pleines (même s'il est branché sur une prise électrique). Passée l'heure de fin définie, l'appareil repasse sur l'alimentation secteur (s'il est branché sur une prise), mais il ne recharge pas la batterie. L'appareil reprendra son fonctionnement habituel en utilisant l'alimentation secteur et en rechargeant la batterie à l'heure programmée pour le début de la charge.
 
@@ -4835,6 +4863,7 @@ Cette règle a été utilisée pour désactiver la mise à niveau automatique du
       Si cette règle est désactivée ou qu'elle n'est pas configurée, les utilisateurs peuvent modifier ce paramètre.
 
       Remarque : Sous Android, utilisez la règle <ph name="ISOLATE_ORIGINS_ANDROID_POLICY_NAME" /> à la place.</translation>
+<translation id="4261641564041253502">Sélectionner automatiquement les certificats client correspondant aux filtres pour les rapports sur le signal de sécurité <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4261820385751181068">Paramètres régionaux de l'écran de connexion de l'appareil</translation>
 <translation id="4263788921751326798">Désactiver les rapports d'erreur de l'appareil</translation>
 <translation id="4268586991084547853">Meilleure compatibilité avec les listes des sites Microsoft IE/Edge en mode Entreprise.</translation>
@@ -6522,22 +6551,6 @@ Si cette règle n'est pas configurée, la valeur par défaut est de 0 degré, e
 <translation id="5293285950307241933">Effacer toutes les données utilisateur locales</translation>
 <translation id="5293619885162445352">Autoriser <ph name="PEPPER_NAME" /> à utiliser le nouveau décodeur vidéo.</translation>
 <translation id="529457411593078576">Activer les conditions d'utilisation à la première exécution des onglets personnalisés Chrome</translation>
-<translation id="529718811410033393">Cette règle permet de préciser le nombre maximal de connexions simultanées par serveur proxy pour les requêtes non WebSocket.
-
-Pour modifier les limites de requêtes WebSocket, consultez <ph name="MAX_CONNECTIONS_PER_PROXY_FOR_WEBSOCKET_POLICY_NAME" />.
-
-Si cette règle n'est pas configurée, la valeur par défaut (32) est utilisée.
-
-Certaines applications Web sont connues pour utiliser de nombreuses connexions avec des requêtes GET en attente. Par conséquent, si vous définissez une valeur inférieure à 32, le réseau du navigateur risque de se bloquer si trop d'applications Web avec des connexions de ce type sont ouvertes.
-Toutefois, certains serveurs proxy ne peuvent pas gérer un nombre élevé de connexions simultanées par client. Pour résoudre ce problème, il suffit de définir cette règle sur une valeur inférieure.
-
-La valeur doit être supérieure ou égale à 6.
-Si vous définissez une valeur inférieure à cette limite, la valeur limite (6) sera utilisée.
-Utilisez une valeur inférieure à celle par défaut (32) à vos propres risques.
-
-La valeur doit être inférieure ou égale à 256 (99 dans <ph name="PRODUCT_NAME" /> 147 et versions antérieures).
-Si vous définissez une valeur supérieure à cette limite, la valeur limite (256, ou 99 dans <ph name="PRODUCT_NAME" /> 147 et versions antérieures) sera utilisée.
-Utilisez une valeur supérieure à celle par défaut (32) à vos propres risques.</translation>
 <translation id="5297873769621042075">Cette règle permet d'établir une liste de noms d'hôte ou de modèles de nom d'hôte (tels que "[*.]example.com") qui ne seront pas mis à niveau vers le protocole HTTPS et n'afficheront pas d'interstitiel d'erreur si le mode HTTPS-First est activé. Les organisations peuvent utiliser cette règle pour maintenir l'accès aux serveurs non compatibles avec HTTPS, sans avoir à désactiver les mises à niveau HTTPS et/ou le mode HTTPS-First.
 
 Les noms d'hôte fournis doivent être indiqués sous forme canonique : tous les noms de domaine internationalisés (IDN) doivent être convertis dans leur format d'étiquette A, et toutes les lettres ASCII doivent être en minuscules.
@@ -8197,6 +8210,7 @@ Remarque : Cette règle ne s'applique qu'aux plates-formes compatibles avec les
 
       Que cette règle soit configurée ou non, les utilisateurs ne peuvent pas modifier le paramètre d'optimisation WPAD.</translation>
 <translation id="6363485842496031347">Le paramètre de raccourci "Supprimer" utilise le raccourci qui contient la touche de modification Alt</translation>
+<translation id="6364336078281746235">Forcer la priorité au premier plan pour des URL spécifiques</translation>
 <translation id="6366574325767783825">Si cette règle est définie sur "True" ou si elle n'est pas configurée, <ph name="PRODUCT_NAME" /> accepte la diffusion de contenus Web en tant que Signed HTTP Exchanges.
 
       Si cette règle est définie sur "False", les Signed HTTP Exchanges ne peuvent pas être chargés.</translation>
@@ -10109,22 +10123,6 @@ Si cette règle est vide, aucune exception à <ph name="FLOATING_SSO_DOMAIN_BLOC
 
       Si l'appareil de l'utilisateur n'est pas géré, la disponibilité de cette règle varie également selon que l'utilisateur est le propriétaire de l'appareil ou non.</translation>
 <translation id="7570291542739287032">Google Cloud uniquement</translation>
-<translation id="7571158727244273239">Cette règle permet de préciser le nombre maximal de connexions simultanées par serveur proxy pour les requêtes non WebSocket.
-
-Pour modifier les limites des requêtes non WebSocket, consultez <ph name="MAX_CONNECTIONS_PER_PROXY_POLICY_NAME" />.
-
-Si cette règle n'est pas configurée, la valeur par défaut (32) est utilisée.
-
-Certaines applications Web sont connues pour utiliser de nombreuses connexions avec des requêtes GET en attente. Par conséquent, si vous définissez une valeur inférieure à 32, le réseau du navigateur risque de se bloquer si trop d'applications Web avec des connexions de ce type sont ouvertes.
-Toutefois, certains serveurs proxy ne peuvent pas gérer un nombre élevé de connexions simultanées par client. Pour résoudre ce problème, il suffit de définir cette règle sur une valeur inférieure.
-
-La valeur doit être supérieure ou égale à 6.
-Si vous définissez une valeur inférieure à cette limite, la valeur limite (6) sera utilisée.
-Utilisez une valeur inférieure à celle par défaut (32) à vos propres risques.
-
-La valeur doit être inférieure ou égale à 256.
-Si vous définissez une valeur supérieure à cette limite, la valeur limite (256) sera utilisée.
-Utilisez une valeur supérieure à celle par défaut (32) à vos propres risques.</translation>
 <translation id="7572641760104970905">Aucune complexité</translation>
 <translation id="757395965347379751">Lorsque ce paramètre est activé, <ph name="PRODUCT_NAME" /> autorise les certificats signés par SHA-1 tant qu'ils sont validés et que leurs chaînes renvoient à un certificat CA installé localement.
 

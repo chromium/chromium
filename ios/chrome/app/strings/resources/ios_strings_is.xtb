@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">Nei, takk</translation>
 <translation id="1531038290222364269">Sýna flipa</translation>
 <translation id="1536390784834419204">Þýða síðu</translation>
+<translation id="1539535193627863227">Engin aðgangsorð eða aðgangslyklar fundust fyrir þetta vefsvæði</translation>
 <translation id="1540800554400757039">Heimilisfang 1</translation>
 <translation id="154312949627292154">Opna flipa sem tekið var á móti úr hinum tækjunum þínum af lásskjánum.</translation>
 <translation id="1545749641540134597">Skanna QR-kóða</translation>
@@ -642,6 +643,7 @@
 <translation id="3245744387817103524">Ekki tókst að vista breytinguna.</translation>
 <translation id="3254806613790954367">Flipinn sem var síðast opinn í öllum tækjunum þínum</translation>
 <translation id="325717987950204592">Ýttu á „Persónuvernd og öryggi“</translation>
+<translation id="3259451381796379533">Þessi reikningur mun ekki virka með Gemini. Skráðu þig inn með öðrum Google-reikningi</translation>
 <translation id="3265736395246760288">Skráðu þig inn hraðar úr öllum samstilltu tækjunum þínim.</translation>
 <translation id="3272527697863656322">Hætta við</translation>
 <translation id="3273510436356991673">Sérsníddu heimaskjáinn þinn</translation>
@@ -763,6 +765,7 @@
 <translation id="372676576864368480">Fylla kortanúmerið sem endar á <ph name="LAST_DIGITS" /> sjálfkrafa út</translation>
 <translation id="3738428049780661523">Búið til <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Myndavélarmappa</translation>
+<translation id="3746269120925354434">Upplýsingar vistaðar í Google-veski</translation>
 <translation id="3750225824417196283">Síða með nýjum huliðsflipa</translation>
 <translation id="3751873026576444885">Hætta að leita á skjánum með Google-linsu</translation>
 <translation id="3753408171347588045">Vaktar verð</translation>
@@ -1076,7 +1079,6 @@
 <translation id="4824480232751123840">Hljóðstyrkur</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} og 1 í viðbót}one{{domain} og {count} í viðbót}other{{domain} og {count} í viðbót}}</translation>
 <translation id="4826588772550366629">myndavél og hljóðnema</translation>
-<translation id="4828431027673677473">Vörur sem tengjast áhugasviðunum þínum</translation>
 <translation id="4829420936835028285">Breyta flipahóp</translation>
 <translation id="4833786495304741580">Sendir sjálfkrafa talnagögn um notkun og tilkynningar um hrun til Google.</translation>
 <translation id="483689884442613745">Vista…</translation>
@@ -1864,6 +1866,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="7498234416455752244">Halda áfram að breyta</translation>
 <translation id="7500244509706269886">Fylla út eyðublað sjálfkrafa</translation>
 <translation id="750493650310597496">Ekkert valið</translation>
+<translation id="7505402981231763928">Þú þarft að skrá þig inn til að nota Gemini</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Settu upp snertiauðkenni, andlitskennsl eða aðgangskóða til að læsa huliðsflipunum þínum.</translation>
 <translation id="750886945254958667">Haltu hópnum ef þú vilt bæta flipum við síðar eða yfirgefðu hann ef þú vilt ekki hafa aðgang að honum lengur.</translation>
@@ -2105,7 +2108,6 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="828291969289324795">{count,plural, =1{Bæta flipa við nýjan hóp}one{Bæta flipum við nýjan hóp}other{Bæta flipum við nýjan hóp}}</translation>
 <translation id="8283172974887967105">Stilla…</translation>
 <translation id="8289930144142009940">Slökkt er á tilkynningum um <ph name="FEATURE_NAME" /></translation>
-<translation id="8290077367744012649">Vaktaðu verð í flipunum þínum</translation>
 <translation id="8292893224181644074">Niðurhali lokið</translation>
 <translation id="8299417921174340354">Til að nota aðgangsorð þarftu fyrst að stilla aðgangskóða í tækinu þínu.</translation>
 <translation id="8307481894409578819">Ekki tókst að hlaða þessari skrá upp</translation>
@@ -2172,6 +2174,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="8533670235862049797">Kveikt er á öruggri vefnotkun</translation>
 <translation id="8534481786647257214">Google+ færsla birt.</translation>
 <translation id="8535368836838588657">Sýna aðgangsorð</translation>
+<translation id="8540426897269305488">Skráðu þig inn með <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8545276357312221485">Athugaðu stillingar sjálfgefins vafra</translation>
 <translation id="854938212724803178">1 aðgangsorð er í hættu. Lagfærðu það núna til að gæta öryggis.</translation>
 <translation id="8551311254462607218">Ýttu á myndavélartákn Google-linsu á veffangastikunni</translation>

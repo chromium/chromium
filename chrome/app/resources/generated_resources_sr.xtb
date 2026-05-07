@@ -1720,6 +1720,7 @@
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> и још 1 прекидач</translation>
 <translation id="2165177462441582039">Изаберите колико дуго свака ставка треба да остане истакнута</translation>
 <translation id="2166369534954157698">На врх брда врба мрда</translation>
+<translation id="2168036794078614559">Пријава је послата</translation>
 <translation id="2169062631698640254">Ипак ме пријави</translation>
 <translation id="2173302385160625112">Проверите интернет везу</translation>
 <translation id="2173801458090845390">Додајте ИД захтева на овај уређај</translation>
@@ -2060,6 +2061,7 @@
 <translation id="2402226831639195063">Звуци</translation>
 <translation id="2405887402346713222">Серијски бројеви уређаја и компоненти</translation>
 <translation id="2406153734066939945">Желите ли да избришете овај профил и податке на њему?</translation>
+<translation id="2406942743794219791">Потврдите жељени подразумевани претраживач</translation>
 <translation id="2407671304279211586">Изаберите DNS добављача</translation>
 <translation id="2408018932941436077">Картица се чува</translation>
 <translation id="2408742686124047357">Закачите Google објектив на траку с алаткама ради лакшег приступа следећи пут</translation>
@@ -2152,6 +2154,7 @@
 <translation id="2460826998961521840">Да бисте користили приступне кључеве сачуване на Google налогу</translation>
 <translation id="2461550163693930491">Не дозвољавај сајтовима да скролују и зумирају дељене картице</translation>
 <translation id="2461593638794842577">Можете да искључите ово подешавање да бисте чували лозинке само на овом уређају</translation>
+<translation id="2462550463312552298">Резимирај овај документ</translation>
 <translation id="2462724976360937186">ИД кључа ауторитета за издавање сертификата</translation>
 <translation id="2462752602710430187">Додато је: <ph name="PRINTER_NAME" /></translation>
 <translation id="2464075479326723132">Приказују вам се предложени фајлови да бисте лако могли да се вратите најновијим активностима у Microsoft SharePoint-у и OneDrive-у.
@@ -3040,6 +3043,7 @@
 <translation id="3046892784550338476">Верзија <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Веб-страница, комплетна</translation>
 <translation id="304747341537320566">Механизми говора</translation>
+<translation id="3047618804758101928">Додатак <ph name="EXTENSION_NAME" /> је променио подешавања</translation>
 <translation id="3047678109605649715">Нема гласова (<ph name="LANGUAGE" />) на уређају. Ослободите простор на уређају и пробајте поново.</translation>
 <translation id="3048336643003835855">HID уређаји продавца <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Пусти (k)</translation>
@@ -4308,6 +4312,7 @@
 <translation id="3924788966103416622">Спољна апликација жели потпуну контролу над овом Chrome сесијом да би отклонила грешке из ње. То обухвата приступ сачуваним подацима, колачићима и подацима о сајтовима, као и могућност одласка на било који URL.</translation>
 <translation id="3925573269917483990">Камера:</translation>
 <translation id="3925926055063465902">И други корисници на овом уређају могу да користе ову мрежу</translation>
+<translation id="3925934852713265455">Поставите питање о картицама</translation>
 <translation id="3926002189479431949">Телефон за Smart Lock је промењен</translation>
 <translation id="3926410220776569451">Приступ камери је блокиран</translation>
 <translation id="3927932062596804919">Одбиј</translation>
@@ -7278,6 +7283,7 @@
 <translation id="604388835206766544">Рашчлањивање конфигурације није успело</translation>
 <translation id="6043994281159824495">Одјави ме одмах</translation>
 <translation id="6045114302329202345">Примарно дугме TrackPoint-а</translation>
+<translation id="6045425183320109397">Аутор:</translation>
 <translation id="6047632800149092791">Синхронизација не ради. Пробајте да се одјавите и поново пријавите.</translation>
 <translation id="6048747414605857443">Изаберите и прилагодите гласове за претварање текста у говор за функције ChromeVox и Изаберите за говор</translation>
 <translation id="6050189528197190982">Сиви тонови</translation>
@@ -8687,7 +8693,6 @@
 <translation id="701020165009334820">Можете да преузимате Android апликације и игре преко Play продавнице.</translation>
 <translation id="701080569351381435">Прикажи извор</translation>
 <translation id="7012430956470647760">Родитељски надзор за апликације</translation>
-<translation id="7013762323294215682">Овај приступни кључ ће се сачувати у менаџеру лозинки. Свако ко има приступ њему моћи ће да користи овај приступни кључ.</translation>
 <translation id="7014174261166285193">Инсталација није успела.</translation>
 <translation id="7014480873681694324">Уклони истицање</translation>
 <translation id="7014741021609395734">Ниво зумирања</translation>
@@ -10000,6 +10005,7 @@
 <translation id="7939062555109487992">Напредне опције</translation>
 <translation id="793923212791838">Уређај не може да се користи са овим сајтом</translation>
 <translation id="7939328347457537652">Управљајте сертификатима уређаја</translation>
+<translation id="7939918959917132075">Додатак је променио подешавање у ову опцију</translation>
 <translation id="7940087892955752820">Опозивање дељења није успело јер нека апликација користи овај фолдер. Дељење фолдера ће бити опозвано када се <ph name="SPECIFIC_NAME" /> следећи пут затвори.</translation>
 <translation id="7940265372707990269">Сортирај према: <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Спремност за привезивање:</translation>
@@ -11778,7 +11784,6 @@
 <translation id="9120800848981545750">Преузмите Chrome за iOS да бисте приступали картицама, обележивачима и лозинкама на телефону.</translation>
 <translation id="9121814364785106365">Отвори као закачену картицу</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{Желите да затворите картицу и избришете групу?}=1{Желите да затворите картице и избришете групу?}one{Желите да затворите картице и избришете групе?}few{Желите да затворите картице и избришете групе?}other{Желите да затворите картице и избришете групе?}}</translation>
-<translation id="9122788874051694311">Желите да сачувате овај приступни кључ ван режима без архивирања?</translation>
 <translation id="9123287046453017203">Уређај није ажуриран</translation>
 <translation id="9125910124977405374">Уклоните <ph name="LANGUAGE_NAME" /> из језика који се аутоматски преводе</translation>
 <translation id="9125912770834459638">Организација вам не дозвољава да се пријавите</translation>

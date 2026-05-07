@@ -2063,6 +2063,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2402226831639195063">Tonuri</translation>
 <translation id="2405887402346713222">Numere de serie ale dispozitivului și ale componentelor</translation>
 <translation id="2406153734066939945">Ștergi profilul și datele asociate?</translation>
+<translation id="2406942743794219791">Confirmă motorul de căutare prestabilit dorit</translation>
 <translation id="2407671304279211586">Selectează furnizorul DNS</translation>
 <translation id="2408018932941436077">Se salvează cardul</translation>
 <translation id="2408742686124047357">Fixează Google Lens în bara de instrumente pentru acces ușor data viitoare</translation>
@@ -2155,6 +2156,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2460826998961521840">Pentru a folosi cheile de acces salvate în Contul Google</translation>
 <translation id="2461550163693930491">Nu permite site-urilor să deruleze și să facă zoom în filele la care s-a permis accesul</translation>
 <translation id="2461593638794842577">Poți dezactiva această setare pentru a salva parolele numai pe acest dispozitiv</translation>
+<translation id="2462550463312552298">Rezumă acest document</translation>
 <translation id="2462724976360937186">ID-ul cheii autorității de certificare</translation>
 <translation id="2462752602710430187">S-a adăugat <ph name="PRINTER_NAME" /></translation>
 <translation id="2464075479326723132">Vezi fișierele sugerate pentru a reveni ușor la cea mai recentă activitate din Microsoft SharePoint și OneDrive.
@@ -3043,6 +3045,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3046892784550338476">Versiunea <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Pagina web, completă</translation>
 <translation id="304747341537320566">Motoare de vorbire</translation>
+<translation id="3047618804758101928">Extensia <ph name="EXTENSION_NAME" /> a modificat setările</translation>
 <translation id="3047678109605649715">Nu există voci în <ph name="LANGUAGE" /> pe dispozitiv. Eliberează spațiu pe dispozitiv și încearcă din nou.</translation>
 <translation id="3048336643003835855">Dispozitive HID de la furnizorul <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Redare (k)</translation>
@@ -4310,6 +4313,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3924788966103416622">O aplicație externă solicită control deplin asupra acestei sesiuni Chrome pentru a remedia erorile asociate. Aici este inclus accesul la datele salvate, cookie-uri și datele privind site-urile și posibilitatea de a naviga la orice adresă URL.</translation>
 <translation id="3925573269917483990">Cameră:</translation>
 <translation id="3925926055063465902">Și alți utilizatori ai dispozitivului pot folosi această rețea</translation>
+<translation id="3925934852713265455">Întreabă despre filele tale</translation>
 <translation id="3926002189479431949">Telefonul cu funcția Smart Lock s-a schimbat</translation>
 <translation id="3926410220776569451">Accesul la camera foto este blocat</translation>
 <translation id="3927932062596804919">Refuză</translation>
@@ -7279,6 +7283,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="604388835206766544">Configurația nu a fost analizată</translation>
 <translation id="6043994281159824495">Deconectați-vă acum</translation>
 <translation id="6045114302329202345">Butonul TrackPoint principal</translation>
+<translation id="6045425183320109397">De la</translation>
 <translation id="6047632800149092791">Sincronizarea nu funcționează. Deconectează-te și conectează-te din nou.</translation>
 <translation id="6048747414605857443">Selectează și personalizează vocile de redare vocală a textului pentru ChromeVox și Selectați și ascultați</translation>
 <translation id="6050189528197190982">Tonuri de gri</translation>
@@ -8686,7 +8691,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="701020165009334820">Poți descărca aplicații și jocuri Android din Magazinul Play.</translation>
 <translation id="701080569351381435">Afișează sursa</translation>
 <translation id="7012430956470647760">Control parental pentru aplicații</translation>
-<translation id="7013762323294215682">Cheia de acces se va salva în managerul de parole. Oricine are acces la el va putea să o folosească.</translation>
 <translation id="7014174261166285193">Instalarea nu a reușit.</translation>
 <translation id="7014480873681694324">Elimină evidențierea</translation>
 <translation id="7014741021609395734">Nivel de zoom</translation>
@@ -9999,6 +10003,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7939062555109487992">Opțiuni avansate</translation>
 <translation id="793923212791838">Dispozitivul nu poate fi folosit cu acest site</translation>
 <translation id="7939328347457537652">Gestionează certificatele dispozitivelor</translation>
+<translation id="7939918959917132075">Modificat de extensie</translation>
 <translation id="7940087892955752820">Trimiterea nu s-a putut anula, deoarece o aplicație folosește acest dosar. Trimiterea dosarului va fi anulată la următoarea închidere a sistemului <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="7940265372707990269">Sortează după <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Pregătirea pentru tethering:</translation>
@@ -11776,7 +11781,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="9120800848981545750">Descarcă Chrome pentru iOS pentru a accesa filele, marcajele și parolele de pe telefon.</translation>
 <translation id="9121814364785106365">Deschide ca filă fixată</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{Închizi fila și ștergi grupul?}=1{Închizi filele și ștergi grupul?}few{Închizi filele și ștergi grupurile?}other{Închizi filele și ștergi grupurile?}}</translation>
-<translation id="9122788874051694311">Salvezi cheia de acces în afara modului incognito?</translation>
 <translation id="9123287046453017203">Dispozitivul tău nu este actualizat</translation>
 <translation id="9125910124977405374">Elimină <ph name="LANGUAGE_NAME" /> dintre limbile traduse automat</translation>
 <translation id="9125912770834459638">Organizația nu îți permite să te conectezi</translation>

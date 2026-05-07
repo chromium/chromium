@@ -1720,6 +1720,7 @@
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> અને વધુ 1 સ્વિચ</translation>
 <translation id="2165177462441582039">દરેક આઇટમ પર હાઇલાઇટ કેટલીવાર સુધી રહેશે તે પસંદ કરો</translation>
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
+<translation id="2168036794078614559">રિપોર્ટ મોકલ્યો</translation>
 <translation id="2169062631698640254">કોઈપણ રીતે સાઇન ઇન કરો</translation>
 <translation id="2173302385160625112">તમારું ઇન્ટરનેટ કનેક્શન ચેક કરો</translation>
 <translation id="2173801458090845390">આ ઉપકરણમાં માગણી ID ઉમેરો</translation>
@@ -2061,6 +2062,7 @@
 <translation id="2402226831639195063">ટોન</translation>
 <translation id="2405887402346713222">ડિવાઇસ અને ઘટકના અનુક્રમ નંબર</translation>
 <translation id="2406153734066939945">આ પ્રોફાઇલ અને તેનો ડેટા ડિલીટ કરીએ?</translation>
+<translation id="2406942743794219791">તમને ડિફૉલ્ટ તરીકે જોઈતું શોધ એન્જિન કન્ફર્મ કરો</translation>
 <translation id="2407671304279211586">DNS પ્રદાતા પસંદ કરો</translation>
 <translation id="2408018932941436077">કાર્ડ સાચવી રહ્યાં છીએ</translation>
 <translation id="2408742686124047357">આગલી વખતે સરળ ઍક્સેસ માટે Google Lensને તમારા ટૂલબાર પર પિન કરો</translation>
@@ -2153,6 +2155,7 @@
 <translation id="2460826998961521840">તમારા Google એકાઉન્ટમાં સાચવવામાં આવેલી પાસકીનો ઉપયોગ કરવા માટે</translation>
 <translation id="2461550163693930491">સાઇટને શેર કરેલા ટૅબને સ્ક્રોલ અને નાનું-મોટું કરવાની મંજૂરી આપશો નહીં</translation>
 <translation id="2461593638794842577">તમે તમારા પાસવર્ડને ફક્ત આ ડિવાઇસ પર સાચવવા માટે આ સેટિંગ બંધ કરી શકો છો</translation>
+<translation id="2462550463312552298">આ દસ્તાવેજનો સારાંશ આપો</translation>
 <translation id="2462724976360937186">પ્રમાણન અધિકારી કી ID</translation>
 <translation id="2462752602710430187"><ph name="PRINTER_NAME" /> ઉમેર્યું</translation>
 <translation id="2464075479326723132">Microsoft SharePoint અને OneDriveમાં તમારી સૌથી તાજેતરની ઍક્ટિવિટી પર સરળતાથી પરત ફરવામાં તમને સહાય મળી રહે તે માટે તમને સૂચવેલી ફાઇલો જોવા મળી રહી છે.
@@ -3041,6 +3044,7 @@
 <translation id="3046892784550338476">વર્ઝન <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" />  (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">વેબપેજ, પૂર્ણ</translation>
 <translation id="304747341537320566">વાણી એન્જિનો</translation>
+<translation id="3047618804758101928">"<ph name="EXTENSION_NAME" />" એક્સ્ટેન્શન દ્વારા તમારા સેટિંગમાં ફેરફાર કરવામાં આવ્યો છે</translation>
 <translation id="3047678109605649715">તમારા ડિવાઇસમાં <ph name="LANGUAGE" />ના કોઈ વૉઇસ નથી. તમારા ડિવાઇસ પર સ્પેસ સાફ કરો અને ફરીથી પ્રયાસ કરો.</translation>
 <translation id="3048336643003835855"><ph name="VENDOR_ID" /> વિક્રેતાના HID ડિવાઇસ</translation>
 <translation id="3048589239114571785">વગાડો (k)</translation>
@@ -4309,6 +4313,7 @@
 <translation id="3924788966103416622">કોઈ બહારની ઍપ આ Chrome સત્રમાં સંપૂર્ણ નિયંત્રણ ઇચ્છે છે, જેથી તેને ડિબગ કરી શકાય. આમાં તમારો સાચવેલો ડેટા, કુકી અને સાઇટના ડેટાનો ઍક્સેસ અને કોઈપણ URL પર નૅવિગેટ કરવાની ક્ષમતા શામેલ છે.</translation>
 <translation id="3925573269917483990">કૅમેરા:</translation>
 <translation id="3925926055063465902">આ ડિવાઇસ પરના અન્ય વપરાશકર્તાઓ પણ આ નેટવર્કનો ઉપયોગ કરી શકે છે</translation>
+<translation id="3925934852713265455">તમારા ટૅબ વિશે પૂછો</translation>
 <translation id="3926002189479431949">Smart Lock ફોન બદલાવ્યો</translation>
 <translation id="3926410220776569451">કૅમેરાનો ઍક્સેસ બ્લૉક કરેલો છે</translation>
 <translation id="3927932062596804919">નકારો</translation>
@@ -7282,6 +7287,7 @@ USB ડિવાઇસ</translation>
 <translation id="604388835206766544">ગોઠવણીનું વિશ્લેષણ કરવામાં નિષ્ફળ થયાં</translation>
 <translation id="6043994281159824495">હવે સાઇન આઉટ કરો</translation>
 <translation id="6045114302329202345">પ્રાથમિક TrackPoint બટન</translation>
+<translation id="6045425183320109397">દ્વારા</translation>
 <translation id="6047632800149092791">સિંક કાર્ય કરી રહ્યું નથી. સાઇન આઉટ કરીને ફરી પાછા સાઇન ઇન કરવાનો પ્રયાસ કરો.</translation>
 <translation id="6048747414605857443">ChromeVox અને 'સાંભળવા માટે પસંદ કરો' સુવિધા માટે ટેક્સ્ટ ટૂ સ્પીચ વૉઇસ પસંદ કરો અને કસ્ટમાઇઝ કરો</translation>
 <translation id="6050189528197190982">ગ્રેસ્કેલ</translation>
@@ -8689,7 +8695,6 @@ USB ડિવાઇસ</translation>
 <translation id="701020165009334820">તમે Play Store મારફતે Android ઍપ અને ગેમ ડાઉનલોડ કરી શકો છો.</translation>
 <translation id="701080569351381435">સ્રોત જુઓ</translation>
 <translation id="7012430956470647760">ઍપ માટે માતાપિતાના યોગ્ય નિયંત્રણો</translation>
-<translation id="7013762323294215682">આ પાસકી તમારા Password Managerમાં સાચવવામાં આવશે. આ પાસકીની ઍક્સેસ ધરાવનારી કોઈપણ વ્યક્તિ તેનો ઉપયોગ કરી શકશે.</translation>
 <translation id="7014174261166285193">ઇન્સ્ટોલેશન નિષ્ફળ થયું.</translation>
 <translation id="7014480873681694324">હાઇલાઇટ કાઢી નાખો</translation>
 <translation id="7014741021609395734">ઝૂમ લેવલ</translation>
@@ -10002,6 +10007,7 @@ USB ડિવાઇસ</translation>
 <translation id="7939062555109487992">વિગતવાર વિકલ્પો</translation>
 <translation id="793923212791838">આ સાઇટ સાથે તમારા ડિવાઇસનો ઉપયોગ કરી શકાશે નહીં</translation>
 <translation id="7939328347457537652">ડિવાઇસના પ્રમાણપત્રો મેનેજ કરો</translation>
+<translation id="7939918959917132075">એક્સ્ટેન્શનને કારણે આમાં ફેરફાર થયો છે</translation>
 <translation id="7940087892955752820">કોઈ ઍપ્લિકેશન આ ફોલ્ડરનો ઉપયોગ કરી રહી હોવાને કારણે આને અનશેર કરી શકાતું નથી. જ્યારે આગલી વાર <ph name="SPECIFIC_NAME" /> શટ ડાઉન થશે, ત્યારે ફોલ્ડરને અનશેર કરવામાં આવશે.</translation>
 <translation id="7940265372707990269"><ph name="SORT_TYPE" /> પ્રમાણે સૉર્ટ કરો</translation>
 <translation id="7941179291434537290">ઇન્ટરનેટ શેર કરવાની સુવિધાની ઉપલબ્ધતા:</translation>
@@ -11774,7 +11780,6 @@ USB ડિવાઇસ</translation>
 <translation id="9120800848981545750">તમારા ફોન પર તમારા ટૅબ, બુકમાર્ક અને પાસવર્ડને ઍક્સેસ કરવા માટે iOS માટે Chrome ડાઉનલોડ કરો.</translation>
 <translation id="9121814364785106365">પિન કરેલા ટૅબ તરીકે ખોલો</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{શું ટૅબ બંધ કરીને ગ્રૂપ ડિલીટ કરીએ?}=1{શું ટૅબ બંધ કરીને ગ્રૂપ ડિલીટ કરીએ?}one{શું ટૅબ બંધ કરીને ગ્રૂપ ડિલીટ કરીએ?}other{શું ટૅબ બંધ કરીને ગ્રૂપ ડિલીટ કરીએ?}}</translation>
-<translation id="9122788874051694311">છૂપા સિવાયના મોડમાં આ પાસકી સાચવીએ?</translation>
 <translation id="9123287046453017203">તમારું ડિવાઇસ અપ ટૂ ડેટ નથી</translation>
 <translation id="9125910124977405374">ઑટોમૅટિક રીતે અનુવાદ કરાતી ભાષાઓમાંથી <ph name="LANGUAGE_NAME" /> કાઢી નાખો</translation>
 <translation id="9125912770834459638">તમારી સંસ્થા તમને સાઇન ઇન કરવાની મંજૂરી આપતી નથી</translation>

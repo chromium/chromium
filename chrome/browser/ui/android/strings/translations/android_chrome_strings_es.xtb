@@ -292,6 +292,7 @@ Solo las personas que tengan tu frase de contraseña podrán leer tus datos cifr
 <translation id="230115972905494466">No se han podido encontrar dispositivos compatibles</translation>
 <translation id="2316129865977710310">No, gracias</translation>
 <translation id="2318045970523081853">Toca para llamar</translation>
+<translation id="232137538351753795">Desliza desde el borde izquierdo para volver</translation>
 <translation id="2323763861024343754">Almacenamiento del sitio web</translation>
 <translation id="2328474416100889417">Todos los usuarios perderán inmediatamente el acceso al grupo de pestañas <ph name="GROUP_NAME" /> y se desactivarán todos los enlaces de invitación</translation>
 <translation id="2330186936255788117">Más marcadores</translation>
@@ -942,7 +943,6 @@ Es posible que tu cuenta de Google tenga otros tipos de historial de navegación
 <translation id="5040262127954254034">Privacidad</translation>
 <translation id="504456571576643789">Notas importantes</translation>
 <translation id="5052017727857614804">{WINDOW_COUNT,plural, =1{<ph name="WINDOW_COUNT_ONE" /> ventana seleccionada}other{<ph name="WINDOW_COUNT_NORMAL" /> ventanas seleccionadas}}</translation>
-<translation id="5056587122125565772">Crear imagen</translation>
 <translation id="506254248375231072">No hay pestañas</translation>
 <translation id="5075939510584558547">Guardar sin cifrado</translation>
 <translation id="5078638979202084724">Añadir todas las pestañas a marcadores</translation>
@@ -1676,6 +1676,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="7977451675950311423">Te avisa si usas una contraseña vulnerada en una brecha de seguridad de datos.</translation>
 <translation id="7987499071758862048"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome ha eliminado estos permisos porque no has visitado el sitio recientemente</translation>
 <translation id="799576009106109668">Navegarás más rápido porque el contenido se cargará de forma proactiva en función de la página web en la que estés</translation>
+<translation id="7997875520309653083">Desliza desde el borde derecho para volver</translation>
 <translation id="7998918019931843664">Volver a abrir pestaña cerrada</translation>
 <translation id="8001245658307297681">Estás viendo un archivo local</translation>
 <translation id="8004582292198964060">Navegador</translation>
@@ -1869,6 +1870,7 @@ Para cambiar este ajuste, <ph name="BEGIN_LINK" />elimina los datos de Chrome de
 <translation id="8765470054473112089">Al escribir en la barra de direcciones o en el cuadro de búsqueda, Chrome envía lo que escribes a tu buscador predeterminado para que obtengas mejores sugerencias. Esta función está desactivada en el modo Incógnito.</translation>
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome ha detectado una contraseña poco segura que podrías mejorar}other{Chrome ha encontrado # contraseñas poco seguras que podrías mejorar}}</translation>
 <translation id="8766529642647037772">¿Crear un enlace destacado como este?</translation>
+<translation id="8769783688897433958">Ver información y permisos del sitio</translation>
 <translation id="8788265440806329501">El historial de navegación está cerrado</translation>
 <translation id="8790193082819560975">Toca para buscar opciones de compra del producto en una pestaña nueva.</translation>
 <translation id="8798449543960971550">Leído</translation>

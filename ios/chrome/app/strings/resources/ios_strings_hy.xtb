@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">Ոչ</translation>
 <translation id="1531038290222364269">Ցույց տալ ներդիրները</translation>
 <translation id="1536390784834419204">Թարգմանել էջը</translation>
+<translation id="1539535193627863227">Այս կայքի համար գաղտնաբառեր կամ մուտքի բանալիներ չեն գտնվել</translation>
 <translation id="1540800554400757039">Հասցե 1</translation>
 <translation id="154312949627292154">Բացեք ձեր մյուս սարքերից ստացված ներդիրները կողպէկրանից։</translation>
 <translation id="1545749641540134597">Սկանավորեք QR-կոդը</translation>
@@ -642,6 +643,7 @@
 <translation id="3245744387817103524">Փոփոխությունը չհաջողվեց պահել։</translation>
 <translation id="3254806613790954367">Վերջին բացված ներդիրը ձեր սարքերից ցանկացածում</translation>
 <translation id="325717987950204592">Հպեք «Գաղտնիություն և անվտանգություն» քարտին</translation>
+<translation id="3259451381796379533">Այս հաշվով հնարավոր չէ օգտագործել Gemini-ը։ Մուտք գործեք այլ Google հաշիվ։</translation>
 <translation id="3265736395246760288">Ավելի արագ մուտք գործեք ձեր բոլոր համաժամացված սարքերում։</translation>
 <translation id="3272527697863656322">Չեղարկել</translation>
 <translation id="3273510436356991673">Հարմարեցրեք հիմնական էկրանը</translation>
@@ -763,6 +765,7 @@
 <translation id="372676576864368480">Ինքնալրացնել քարտի համարը, որի վերջին թվերն են <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Ստեղծվել է <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Տեսախցիկի ֆոտոալբոմ</translation>
+<translation id="3746269120925354434">Տեղեկությունները պահվեցին Google Wallet-ում</translation>
 <translation id="3750225824417196283">Նոր ինկոգնիտո ներդիրի էջ</translation>
 <translation id="3751873026576444885">Կանգնեցնել Google Տեսապակու միջոցով էկրանի բովանդակության որոնումը</translation>
 <translation id="3753408171347588045">Դուք հետևում եք գներին</translation>
@@ -1076,7 +1079,6 @@
 <translation id="4824480232751123840">Ձայնի ուժգնություն</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} ու ևս 1}one{{domain} ու ևս {count}}other{{domain} ու ևս {count}}}</translation>
 <translation id="4826588772550366629">տեսախցիկն ու խոսափողը</translation>
-<translation id="4828431027673677473">Ապրանքներ՝ հիմնված ձեր հետաքրքրությունների վրա</translation>
 <translation id="4829420936835028285">Փոփոխել ներդիրների խումբը</translation>
 <translation id="4833786495304741580">Ավտոմատ ուղարկում է Google-ին օգտագործման վիճակագրությունը և խափանումների մասին հաշվետվությունները:</translation>
 <translation id="483689884442613745">Պահել…</translation>
@@ -1864,6 +1866,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7498234416455752244">Շարունակել աշխատանքը</translation>
 <translation id="7500244509706269886">Ավտոմատ լրացնել ձևը</translation>
 <translation id="750493650310597496">Ընտրվել է 0 էջանիշ</translation>
+<translation id="7505402981231763928">Gemini-ից օգտվելու համար դուք պետք է մուտք գործեք հաշիվ</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />)։</translation>
 <translation id="7508728395076009983">Ինկոգնիտո ներդիրները կողպելու համար սահմանեք Touch ID, Face ID կամ անցակոդ։</translation>
 <translation id="750886945254958667">Պահպանեք այս խումբը՝ հետագայում ներդիրներ ավելացնելու համար, կամ լքեք այն, եթե այլևս չեք ուզում օգտվել դրանից</translation>
@@ -2105,7 +2108,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="828291969289324795">{count,plural, =1{Ավելացնել ներդիր նոր խմբում}one{Ավելացնել ներդիր նոր խմբում}other{Ավելացնել ներդիրներ նոր խմբում}}</translation>
 <translation id="8283172974887967105">Սահմանել…</translation>
 <translation id="8289930144142009940"><ph name="FEATURE_NAME" />․ ծանուցումներն անջատվեցին</translation>
-<translation id="8290077367744012649">Հետևեք գներին ձեր ներդիրներից</translation>
 <translation id="8292893224181644074">Ներբեռնումն ավարտված է</translation>
 <translation id="8299417921174340354">Գաղտնաբառերն օգտագործելու համար նախ պետք է ձեր սարքում անցակոդ սահմանեք։</translation>
 <translation id="8307481894409578819">Չհաջողվեց վերբեռնել այս ֆայլը</translation>
@@ -2172,6 +2174,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8533670235862049797">Ապահով դիտարկումը միացված է</translation>
 <translation id="8534481786647257214">Google+ ցանցում փակցնումն ավարտվեց:</translation>
 <translation id="8535368836838588657">Ցուցադրեք գաղտնաբառը</translation>
+<translation id="8540426897269305488">Մուտք գործել՝ օգտագործելով <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8545276357312221485">Ստուգեք ձեր կանխադրված դիտարկիչի կարգավորումները</translation>
 <translation id="854938212724803178">Դուք ունեք 1 կոտրված գաղտնաբառ։ Փոխեք այն՝ ձեր տվյալները պաշտպանելու համար։</translation>
 <translation id="8551311254462607218">Հասցեագոտում հպեք Google Տեսապակու տեսախցիկի պատկերակին</translation>

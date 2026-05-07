@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">Köszönöm, nem</translation>
 <translation id="1531038290222364269">Lapok megjelenítése</translation>
 <translation id="1536390784834419204">Oldal fordítása</translation>
+<translation id="1539535193627863227">Nem találhatók jelszavak vagy azonosítókulcsok ehhez a webhelyhez</translation>
 <translation id="1540800554400757039">Cím 1. sora</translation>
 <translation id="154312949627292154">A többi eszközéről kapott lapokat a zárolási képernyőn nyithatja meg.</translation>
 <translation id="1545749641540134597">QR-kód beolvasása</translation>
@@ -642,6 +643,7 @@
 <translation id="3245744387817103524">Nem sikerült menteni a módosítást.</translation>
 <translation id="3254806613790954367">A legutóbb megnyitott lap az összes eszközén</translation>
 <translation id="325717987950204592">Koppintson az „Adatvédelem és biztonság” lehetőségre.</translation>
+<translation id="3259451381796379533">Ez a fiók nem fog működni a Geminivel. Jelentkezzen be egy másik Google-fiókkal.</translation>
 <translation id="3265736395246760288">Gyorsabban jelentkezhet be bármelyik szinkronizált eszközéről.</translation>
 <translation id="3272527697863656322">Mégse</translation>
 <translation id="3273510436356991673">A kezdőképernyő személyre szabása</translation>
@@ -763,6 +765,7 @@
 <translation id="372676576864368480">A következő számsorral végződő kártyaszám automatikus kitöltése: <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Létrehozva: <ph name="DATE" /></translation>
 <translation id="3742498336182910186">Galéria</translation>
+<translation id="3746269120925354434">Információk mentve a Google Walletbe</translation>
 <translation id="3750225824417196283">Új inkognitó lap oldal</translation>
 <translation id="3751873026576444885">A képernyőn való Google Lens-keresés leállítása</translation>
 <translation id="3753408171347588045">Az árak nyomon követése elkezdődött</translation>
@@ -1076,7 +1079,6 @@
 <translation id="4824480232751123840">Térfogat</translation>
 <translation id="4824497107140370669">{count,plural, =0{{domain}}=1{{domain} és további 1}other{{domain} és további {count}}}</translation>
 <translation id="4826588772550366629">kamera és mikrofon</translation>
-<translation id="4828431027673677473">Az érdeklődési körei alapján javasolt termékek</translation>
 <translation id="4829420936835028285">Lapcsoport szerkesztése</translation>
 <translation id="4833786495304741580">Automatikusan elküldi a használati statisztikákat és a hibajelentéseket a Google-nak.</translation>
 <translation id="483689884442613745">Mentés…</translation>
@@ -1864,6 +1866,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="7498234416455752244">Szerkesztés folytatása</translation>
 <translation id="7500244509706269886">Űrlap automatikus kitöltése</translation>
 <translation id="750493650310597496">0 kiválasztva</translation>
+<translation id="7505402981231763928">A Gemini használatához be kell jelentkeznie</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">Az inkognitó lapok bezárásához állítsa be a következőket: Touch ID, Face ID vagy jelkód.</translation>
 <translation id="750886945254958667">Megtarthatja a csoportot, ha később szeretne lapokat hozzáadni, de ki is léphet belőle, ha a továbbiakban nem kíván hozzáférni.</translation>
@@ -2105,7 +2108,6 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="828291969289324795">{count,plural, =1{Lap hozzáadása új csoporthoz}other{Lapok hozzáadása új csoporthoz}}</translation>
 <translation id="8283172974887967105">Beállítás…</translation>
 <translation id="8289930144142009940">A következőhöz tartozó értesítések kikapcsolva: <ph name="FEATURE_NAME" /></translation>
-<translation id="8290077367744012649">Árkövetés az Ön lapjain</translation>
 <translation id="8292893224181644074">A letöltés befejeződött</translation>
 <translation id="8299417921174340354">A jelszavak használatához előbb be kell állítania az eszközön a biztonsági kódot.</translation>
 <translation id="8307481894409578819">Ezt a fájlt nem sikerült feltölteni</translation>
@@ -2172,6 +2174,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="8533670235862049797">A Biztonságos Böngészés be van kapcsolva</translation>
 <translation id="8534481786647257214">A Google+-bejegyzés kész.</translation>
 <translation id="8535368836838588657">Jelszó megjelenítése</translation>
+<translation id="8540426897269305488">Bejelentkezés a következővel: <ph name="CELL_ACCESSIBILITY_LABEL" /></translation>
 <translation id="8545276357312221485">Az alapértelmezett böngészőbeállítások ellenőrzése</translation>
 <translation id="854938212724803178">1 jelszavához illetéktelenül hozzáfértek. A biztonság megőrzése érdekében javítsa ki most.</translation>
 <translation id="8551311254462607218">Koppintson a címsávban a Google Lens kamera ikonjára</translation>
