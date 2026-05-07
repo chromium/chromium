@@ -33,10 +33,6 @@ BASE_DECLARE_FEATURE(kSuppressKeyboardWillShowSuggestionRefresh);
 // when the app is in the background.
 BASE_DECLARE_FEATURE(kFormInputAccessorySkipInputViewReloadInBackground);
 
-// Feature flag to apply a limit on the number of suggestions to show in the
-// Keyboard Accessory view.
-BASE_DECLARE_FEATURE(kIOSKeyboardAccessorySuggestionsCutOffLimit);
-
 // Enables the keyboard accessory view to let touches pass through blank areas.
 BASE_DECLARE_FEATURE(kFormInputAccessoryPassThroughTouches);
 

@@ -221,9 +221,7 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
                     ? FormInputAccessoryViewSubitemGroup::kExpandButton
                     : FormInputAccessoryViewSubitemGroup::kManualFillButtons];
 
-  if (suggestions.count > kKeyboardAccessorySuggestionsLimit &&
-      base::FeatureList::IsEnabled(
-          kIOSKeyboardAccessorySuggestionsCutOffLimit)) {
+  if (suggestions.count > kKeyboardAccessorySuggestionsLimit) {
     suggestions = [suggestions
         subarrayWithRange:NSMakeRange(0, kKeyboardAccessorySuggestionsLimit)];
   }

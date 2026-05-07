@@ -115,13 +115,9 @@ TEST_F(FormInputAccessoryViewControllerTest, ManualFillButtonPress) {
 }
 
 // Tests that the number of suggestions to show is capped at
-// kKeyboardAccessorySuggestionsLimit when
-// kIOSKeyboardAccessorySuggestionsCutOffLimit is enabled.
+// kKeyboardAccessorySuggestionsLimit.
 TEST_F(FormInputAccessoryViewControllerTest,
-       ShowAccessorySuggestions_CutOffLimitEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      kIOSKeyboardAccessorySuggestionsCutOffLimit);
-
+       ShowAccessorySuggestions_CappedAtLimit) {
   id mock_view_controller = OCMPartialMock(view_controller_);
 
   NSArray<FormSuggestion*>* manySuggestions =
@@ -131,30 +127,6 @@ TEST_F(FormInputAccessoryViewControllerTest,
       updateFormSuggestionView:[OCMArg checkWithBlock:^BOOL(
                                            NSArray* suggestions) {
         return suggestions.count == kKeyboardAccessorySuggestionsLimit;
-      }]]);
-
-  [mock_view_controller showAccessorySuggestions:manySuggestions];
-
-  EXPECT_OCMOCK_VERIFY(mock_view_controller);
-}
-
-// Tests that the number of suggestions shown is NOT capped when
-// kIOSKeyboardAccessorySuggestionsCutOffLimit is disabled.
-TEST_F(FormInputAccessoryViewControllerTest,
-       ShowAccessorySuggestions_CutOffLimitDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      kIOSKeyboardAccessorySuggestionsCutOffLimit);
-
-  id mock_view_controller = OCMPartialMock(view_controller_);
-
-  NSArray<FormSuggestion*>* manySuggestions =
-      SimpleFormSuggestions(kKeyboardAccessorySuggestionsLimit + 1);
-
-  OCMExpect([mock_view_controller
-      updateFormSuggestionView:[OCMArg checkWithBlock:^BOOL(
-                                           NSArray* suggestions) {
-        return suggestions.count == manySuggestions.count;
       }]]);
 
   [mock_view_controller showAccessorySuggestions:manySuggestions];
