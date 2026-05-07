@@ -328,7 +328,13 @@ bool VerticalTabDragHandlerImpl::ContinueDrag(views::View& event_source_view,
 }
 
 void VerticalTabDragHandlerImpl::EndDrag(EndDragReason reason) {
-  if (TabDragController::IsSystemDnDSessionRunning()) {
+  // Note: we avoid ending the SystemDnD if the `EndDragReason` is "capture
+  // lost" because some window managers on Wayland don't send exit events to tab
+  // strips, which would cause this to incorrectly end the SystemDnD while the
+  // drag is attaching to a new tab strip. See http://crbug.com/505023370 for an
+  // example of this.
+  if (TabDragController::IsSystemDnDSessionRunning() &&
+      reason != EndDragReason::kCaptureLost) {
     TabDragController::OnSystemDnDEnded();
     return;
   }
