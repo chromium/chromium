@@ -89,6 +89,7 @@ android_resources("java_resources") {
     "java/res/layout/facilitated_payments_sequence_view.xml",
     "java/res/layout/payment_app_item.xml",
     "java/res/layout/pix_account_linking_prompt.xml",
+    "java/res/layout/pix_account_linking_prompt_b.xml",
     "java/res/values/dimens.xml",
   ]
 }

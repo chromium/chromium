@@ -891,13 +891,13 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
 
         // Verify that the Pix account linking prompt is shown.
         assertThat(
-                containsViewWithId(
-                        (ViewGroup) mView.getContentView(), R.id.pix_account_linking_prompt),
-                is(true));
+                mView.getContentView().findViewById(R.id.pix_account_linking_prompt),
+                not(nullValue()));
     }
 
     @Test
     @MediumTest
+    @EnableFeatures({"EnablePixAccountLinkingNative:prompt_variant/VariationA"})
     public void testPixAccountLinkingPromptContents() {
         runOnUiThreadBlocking(
                 () -> {
@@ -926,6 +926,38 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
         assertThat(acceptButton.getText(), is("Enable Pix in Wallet"));
         ButtonCompat declineButton = mView.getContentView().findViewById(R.id.decline_button);
         assertThat(declineButton.getText(), is("No thanks"));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({"EnablePixAccountLinkingNative:prompt_variant/VariationB"})
+    public void testPixAccountLinkingPromptContents_VariantB() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(SCREEN, PIX_ACCOUNT_LINKING_PROMPT);
+                    mModel.set(VISIBLE_STATE, SHOWN);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        ImageView productIcon = mView.getContentView().findViewById(R.id.product_icon);
+        assertNotNull(productIcon);
+
+        TextView title = mView.getContentView().findViewById(R.id.title);
+        assertThat(title.getText(), is("Pay with Pix without switching apps"));
+
+        TextView valuePropMessage1 = mView.getContentView().findViewById(R.id.value_prop_message_1);
+        assertThat(
+                valuePropMessage1.getText(),
+                is("Pay without copying and pasting Pix code. See how it works"));
+        assertNotNull(valuePropMessage1.getCompoundDrawablesRelative()[0]);
+        TextView valuePropMessage2 = mView.getContentView().findViewById(R.id.value_prop_message_2);
+        assertThat(valuePropMessage2.getText(), is("Google encryption protects your info"));
+        assertNotNull(valuePropMessage2.getCompoundDrawablesRelative()[0]);
+
+        ButtonCompat acceptButton = mView.getContentView().findViewById(R.id.accept_button);
+        assertThat(acceptButton.getText(), is("Link your account"));
+        ButtonCompat declineButton = mView.getContentView().findViewById(R.id.decline_button);
+        assertThat(declineButton.getText(), is("Not now"));
     }
 
     @Test

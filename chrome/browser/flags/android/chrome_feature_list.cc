@@ -494,6 +494,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &paint_preview::kPaintPreviewDemo,
     &password_manager::features::kBiometricTouchToFill,
     &password_manager::features::kPasswordFormGroupedAffiliations,
+    &payments::facilitated::kEnablePixAccountLinkingNative,
     &payments::facilitated::kFacilitatedPaymentsEnableA2APayment,
     &permissions::features::kAndroidWindowManagementWebApi,
     &permissions::features::kPermissionDedicatedCpssSettingAndroid,

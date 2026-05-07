@@ -16,13 +16,11 @@
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/facilitated_payments/core/browser/device_delegate.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
+#include "components/facilitated_payments/core/features/features.h"
 #include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
 #include "url/origin.h"
 
 namespace payments::facilitated {
-
-// Delay before showing the account linking prompt.
-constexpr base::TimeDelta kShowPromptDelay = base::Seconds(3);
 
 PixAccountLinkingManager::PixAccountLinkingManager(
     FacilitatedPaymentsClient* client)
@@ -134,12 +132,14 @@ void PixAccountLinkingManager::ShowPixAccountLinkingPromptIfEligible() {
     return;
   }
 
+  base::TimeDelta delay =
+      base::Seconds(kPixAccountLinkingNativeTriggerDelaySeconds.Get());
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(
           &PixAccountLinkingManager::ShowPixAccountLinkingPromptAfterDelay,
           weak_ptr_factory_.GetWeakPtr()),
-      kShowPromptDelay);
+      delay);
 }
 
 void PixAccountLinkingManager::ShowPixAccountLinkingPromptAfterDelay() {

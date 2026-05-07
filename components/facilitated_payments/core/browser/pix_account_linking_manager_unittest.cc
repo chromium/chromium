@@ -8,6 +8,7 @@
 
 #include "base/functional/callback.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/types/strong_alias.h"
 #include "components/autofill/core/browser/data_manager/payments/test_payments_data_manager.h"
@@ -19,6 +20,7 @@
 #include "components/facilitated_payments/core/browser/mock_facilitated_payments_client.h"
 #include "components/facilitated_payments/core/browser/network_api/mock_facilitated_payments_network_interface.h"
 #include "components/facilitated_payments/core/browser/pix_account_linking_manager_test_api.h"
+#include "components/facilitated_payments/core/features/features.h"
 #include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -134,6 +136,26 @@ TEST_F(PixAccountLinkingManagerTest, SuccessPathShowsPrompt) {
 
   // Fast-forward time by 3 seconds to trigger the delayed task.
   task_environment_.FastForwardBy(kShowPromptDelay);
+}
+
+TEST_F(PixAccountLinkingManagerTest, CustomDelayShowsPrompt) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      kEnablePixAccountLinkingNative, {{"trigger_delay_seconds", "7"}});
+
+  // The prompt should not be shown synchronously.
+  EXPECT_CALL(client(), ShowPixAccountLinkingPrompt).Times(0);
+  manager()->MaybeShowPixAccountLinkingPrompt(kPixPaymentPageOrigin);
+
+  // Fast-forward time by 3 seconds (default delay). The prompt should NOT be
+  // shown yet.
+  task_environment_.FastForwardBy(base::Seconds(3));
+
+  // Expect the prompt to be shown then.
+  EXPECT_CALL(client(), ShowPixAccountLinkingPrompt);
+
+  // Fast-forward time by another 4 seconds to reach 7 seconds.
+  task_environment_.FastForwardBy(base::Seconds(4));
 }
 
 TEST_F(PixAccountLinkingManagerTest,

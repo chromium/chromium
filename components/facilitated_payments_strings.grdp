@@ -128,6 +128,21 @@
   </message>
 
   <!-- Pix account linking prompt strings -->
+  <message name="IDS_PIX_ACCOUNT_LINKING_PROMPT_B_TITLE" desc="Title for the bottom sheet showing Pix account linking prompt (Variation B)." formatter_data="android_java">
+    Pay with Pix without switching apps
+  </message>
+  <message name="IDS_PIX_ACCOUNT_LINKING_PROMPT_B_VALUE_PROP_MESSAGE_1" desc="First value prop message in the bottom sheet showing Pix account linking prompt (Variation B)." formatter_data="android_java">
+    Pay without copying and pasting Pix code. See how it works
+  </message>
+  <message name="IDS_PIX_ACCOUNT_LINKING_PROMPT_B_VALUE_PROP_MESSAGE_2" desc="Second value prop message in the bottom sheet showing Pix account linking prompt (Variation B)." formatter_data="android_java">
+    Google encryption protects your info
+  </message>
+  <message name="IDS_PIX_ACCOUNT_LINKING_PROMPT_B_ACCEPT" desc="Text for the accept button in the bottom sheet showing Pix account linking prompt (Variation B)." formatter_data="android_java">
+    Link your account
+  </message>
+  <message name="IDS_PIX_ACCOUNT_LINKING_PROMPT_DECLINE_FIRST_TWO_TIMES" desc="Text for the decline button in the bottom sheet showing Pix account linking prompt. This string is used for the first two times the prompt is shown, where we show 'Not now' instead of 'No thanks'." formatter_data="android_java">
+    Not now
+  </message>
   <message name="IDS_PIX_ACCOUNT_LINKING_PROMPT_TITLE" desc="Title for the bottom sheet showing Pix account linking prompt. It asks users to link their Pix accounts to Google Wallet so they can directly pay on Chrome." formatter_data="android_java">
     Pay with Pix directly in Chrome next time
   </message>

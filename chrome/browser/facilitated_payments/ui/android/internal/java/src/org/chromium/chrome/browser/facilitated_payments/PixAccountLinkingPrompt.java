@@ -14,6 +14,7 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -22,14 +23,25 @@ import org.chromium.ui.widget.ButtonCompat;
 /** This class is used to show the PIX account linking prompt. */
 @NullMarked
 public class PixAccountLinkingPrompt implements FacilitatedPaymentsSequenceView {
+    private static final String VARIATION_B = "VariationB";
+
     private LinearLayout mView;
 
     @Override
     public void setupView(FrameLayout viewContainer) {
+        String promptVariant =
+                ChromeFeatureList.getFieldTrialParamByFeature(
+                        ChromeFeatureList.ENABLE_PIX_ACCOUNT_LINKING_NATIVE, "prompt_variant");
+
+        int layoutId = R.layout.pix_account_linking_prompt;
+        if (VARIATION_B.equals(promptVariant)) {
+            layoutId = R.layout.pix_account_linking_prompt_b;
+        }
+
         mView =
                 (LinearLayout)
                         LayoutInflater.from(viewContainer.getContext())
-                                .inflate(R.layout.pix_account_linking_prompt, viewContainer, false);
+                                .inflate(layoutId, viewContainer, false);
     }
 
     @Override
