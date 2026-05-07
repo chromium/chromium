@@ -958,5 +958,7 @@ virtual/lna-webrtc/wpt_internal/*
 # > Requires content plugin:
 virtual/prevent-svg-filter-paint/external/wpt/svg/styling/svg-filter-render-web-plugin.tentative.https.html
 # > Requires site isolation:
-virtual/prevent-svg-filter-paint/external/wpt/svg/styling/svg-filter-render-remote-frame-in-local-frame.tentative.https.html
-virtual/prevent-svg-filter-paint/external/wpt/svg/styling/svg-filter-render-remote-frame.tentative.sub.https.html
+
+virtual/prevent-svg-filter-paint/external/wpt/svg/styling/svg-filter-render-cross-origin-frame-in-same-origin-frame.tentative.https.html
+virtual/prevent-svg-filter-paint/external/wpt/svg/styling/svg-filter-render-cross-origin-frame.tentative.sub.https.html
+virtual/prevent-svg-filter-paint/external/wpt/svg/styling/svg-filter-render-sandbox-frame.tentative.https.html

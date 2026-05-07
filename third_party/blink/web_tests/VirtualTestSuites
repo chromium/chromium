@@ -6330,17 +6330,19 @@
       "Win"
     ],
     "bases": [
-      "external/wpt/svg/styling/svg-filter-render-local-frame.tentative.https.html",
-      "external/wpt/svg/styling/svg-filter-render-remote-frame-in-local-frame.tentative.https.html",
-      "external/wpt/svg/styling/svg-filter-render-remote-frame.tentative.sub.https.html",
+      "external/wpt/svg/styling/svg-filter-render-cross-origin-frame-in-same-origin-frame.tentative.https.html",
+      "external/wpt/svg/styling/svg-filter-render-cross-origin-frame.tentative.sub.https.html",
+      "external/wpt/svg/styling/svg-filter-render-same-origin-frame.tentative.https.html",
+      "external/wpt/svg/styling/svg-filter-render-sandbox-frame.tentative.https.html",
       "external/wpt/svg/styling/svg-filter-render-web-plugin.tentative.https.html",
       "http/tests/inspector-protocol/issues/deprecation-prevent-svg-filter-paint.js",
       "wpt_internal/svg"
     ],
     "exclusive_tests": [
-      "external/wpt/svg/styling/svg-filter-render-local-frame.tentative.https.html",
-      "external/wpt/svg/styling/svg-filter-render-remote-frame-in-local-frame.tentative.https.html",
-      "external/wpt/svg/styling/svg-filter-render-remote-frame.tentative.sub.https.html",
+      "external/wpt/svg/styling/svg-filter-render-cross-origin-frame-in-same-origin-frame.tentative.https.html",
+      "external/wpt/svg/styling/svg-filter-render-cross-origin-frame.tentative.sub.https.html",
+      "external/wpt/svg/styling/svg-filter-render-same-origin-frame.tentative.https.html",
+      "external/wpt/svg/styling/svg-filter-render-sandbox-frame.tentative.https.html",
       "external/wpt/svg/styling/svg-filter-render-web-plugin.tentative.https.html",
       "http/tests/inspector-protocol/issues/deprecation-prevent-svg-filter-paint.js",
       "wpt_internal/svg/svg-filter-render.sub.https.html"
