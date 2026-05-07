@@ -78,6 +78,11 @@ function shouldHandlePasskeyRequests(isConditional: boolean): boolean {
                          shouldHandleModalPasskeyRequests();
 }
 
+// Returns whether the PublicKeyCredential interface is defined.
+function isPublicKeyCredentialDefined(): boolean {
+  return typeof PublicKeyCredential !== 'undefined';
+}
+
 // Helper to generate the standard abort error.
 function getAbortError(): DOMException {
   return new DOMException('The request has been aborted.', 'AbortError');
@@ -123,31 +128,37 @@ class PublicKeyCredentialOverrider {
   private originalIsUVPAA: (() => Promise<boolean>)|undefined;
 
   constructor() {
+    // PublicKeyCredential can be undefined.
+    if (!isPublicKeyCredentialDefined()) {
+      return;
+    }
+
     // Backup methods which may get overridden.
-    // TODO(crbug.com/483522384): PublicKeyCredential is sometimes undefined,
-    // ensure this workaround is sufficient.
-    if (typeof PublicKeyCredential !== 'undefined') {
-      if (PublicKeyCredential.isConditionalMediationAvailable) {
-        this.originalIsConditionalMediationAvailable =
-            PublicKeyCredential.isConditionalMediationAvailable.bind(
-                PublicKeyCredential);
-      }
+    if (PublicKeyCredential.isConditionalMediationAvailable) {
+      this.originalIsConditionalMediationAvailable =
+          PublicKeyCredential.isConditionalMediationAvailable.bind(
+              PublicKeyCredential);
+    }
 
-      if (PublicKeyCredential.getClientCapabilities) {
-        this.originalGetClientCapabilities =
-            PublicKeyCredential.getClientCapabilities.bind(PublicKeyCredential);
-      }
+    if (PublicKeyCredential.getClientCapabilities) {
+      this.originalGetClientCapabilities =
+          PublicKeyCredential.getClientCapabilities.bind(PublicKeyCredential);
+    }
 
-      if (PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable) {
-        this.originalIsUVPAA =
-            PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable
-                .bind(PublicKeyCredential);
-      }
+    if (PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable) {
+      this.originalIsUVPAA =
+          PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable
+              .bind(PublicKeyCredential);
     }
   }
 
   // Overrides PublicKeyCredential methods to expose the browser's capabilities.
   override(): void {
+    // PublicKeyCredential can be undefined.
+    if (!isPublicKeyCredentialDefined()) {
+      return;
+    }
+
     // Only override PublicKeyCredential's behaviour when the browser is
     // handling passkey requests.
     if (shouldHandleConditionalPasskeyRequests() ||
@@ -1045,8 +1056,4 @@ passkey.addFunction('resolveAttestationRequest', resolveAttestationRequest);
 gCrWeb.registerApi(passkey);
 
 // Override PublicKeyCredential's behaviour to expose browser capabilities.
-// TODO(crbug.com/483522384): PublicKeyCredential is sometimes undefined, ensure
-// this workaround is sufficient.
-if (typeof PublicKeyCredential !== 'undefined') {
-  publicKeyCredentialOverrider.override();
-}
+publicKeyCredentialOverrider.override();
