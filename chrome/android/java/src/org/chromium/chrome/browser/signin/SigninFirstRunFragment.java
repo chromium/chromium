@@ -92,7 +92,8 @@ public class SigninFirstRunFragment extends Fragment
                                         R.string.signin_fre_stay_signed_out_button),
                                 /* logoId= */ 0,
                                 /* shouldDisableSignin= */ DeviceInfo.isAutomotive(),
-                                /* surveyType= */ SigninSurveyController.SigninSurveyType.FRE),
+                                /* surveyType= */ SigninSurveyController.SigninSurveyType.FRE,
+                                /* selectedAccountEmail= */ null),
                         SigninAccessPoint.START_PAGE);
 
         var pageDelegate = assumeNonNull(getPageDelegate());

@@ -23,6 +23,7 @@ public final class FullscreenSigninConfig {
     public final @DrawableRes int logoId;
     public final boolean shouldDisableSignin;
     public final @Nullable @SigninSurveyController.SigninSurveyType Integer signinSurveyType;
+    public final @Nullable String selectedAccountEmail;
 
     /**
      * Constructor of FullscreenSigninConfig.
@@ -35,6 +36,8 @@ public final class FullscreenSigninConfig {
      * @param shouldDisableSignin Whether the sign-in should always be disabled for sign-in flows
      *     started by the caller. The sign-in screen will show a generic title and a continue
      *     button.
+     * @param surveyType The survey type to use for the sign-in flow.
+     * @param selectedAccountEmail the email of the account to auto-select in the sign-in flow.
      */
     public FullscreenSigninConfig(
             String title,
@@ -42,7 +45,8 @@ public final class FullscreenSigninConfig {
             String dismissText,
             @DrawableRes int logoId,
             boolean shouldDisableSignin,
-            @Nullable @SigninSurveyController.SigninSurveyType Integer surveyType) {
+            @Nullable @SigninSurveyController.SigninSurveyType Integer surveyType,
+            @Nullable String selectedAccountEmail) {
         assert !TextUtils.isEmpty(title);
         assert !TextUtils.isEmpty(subtitle);
         assert !TextUtils.isEmpty(dismissText);
@@ -52,6 +56,7 @@ public final class FullscreenSigninConfig {
         this.logoId = logoId;
         this.shouldDisableSignin = shouldDisableSignin;
         this.signinSurveyType = surveyType;
+        this.selectedAccountEmail = selectedAccountEmail;
     }
 
     @Override
@@ -66,11 +71,19 @@ public final class FullscreenSigninConfig {
                 && Objects.equals(dismissText, other.dismissText)
                 && logoId == other.logoId
                 && shouldDisableSignin == other.shouldDisableSignin
-                && Objects.equals(signinSurveyType, other.signinSurveyType);
+                && Objects.equals(signinSurveyType, other.signinSurveyType)
+                && Objects.equals(selectedAccountEmail, other.selectedAccountEmail);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(title, subtitle, dismissText, logoId, shouldDisableSignin);
+        return Objects.hash(
+                title,
+                subtitle,
+                dismissText,
+                logoId,
+                shouldDisableSignin,
+                signinSurveyType,
+                selectedAccountEmail);
     }
 }
