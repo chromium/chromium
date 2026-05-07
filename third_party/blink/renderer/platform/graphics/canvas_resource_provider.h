@@ -573,7 +573,6 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
 
   bool ShouldReplaceTargetBuffer(
       PaintImage::ContentId content_id = PaintImage::kInvalidContentId);
-  bool IsResourceUsable(CanvasResourceSharedImage* resource);
 
   CanvasImageProvider* GetOrCreateCanvasImageProvider();
   std::unique_ptr<gpu::RasterScopedAccess> WillDrawInternal();

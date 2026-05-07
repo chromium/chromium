@@ -414,19 +414,12 @@ Canvas2DResourceProviderSharedImage::WillDrawInternal() {
   // token for these writes.
   cached_snapshot_.reset();
 
-  // Determine if a copy is needed for accelerated resources. This could be
-  // for one of two reasons: (1) copy-on-write is required, or (2) the
-  // SharedImage usages with which this provider should create resources has
-  // changed since this resource was created (this can occur, for example,
-  // when a client requests the backing ClientSharedImage with a specific
-  // required set of usages for an external write). Note that for
-  // unaccelerated resources, neither of these apply: writes to the
-  // SharedImage are deferred to ProduceCanvasResource and hence
-  // copy-on-write is never needed here, and the set of SharedImage usages
-  // doesn't change over the lifetime of the provider.
+  // Determine if a copy is needed for accelerated resources. This is required
+  // if copy-on-write is required. Note that for unaccelerated resources, this
+  // does not apply: writes to the SharedImage are deferred to
+  // ProduceCanvasResource and hence copy-on-write is never needed here.
   std::unique_ptr<gpu::RasterScopedAccess> dst_access;
-  if (is_accelerated_ && (ShouldReplaceTargetBuffer(cached_content_id_) ||
-                          !IsResourceUsable(resource_.get()))) {
+  if (is_accelerated_ && ShouldReplaceTargetBuffer(cached_content_id_)) {
     cached_content_id_ = PaintImage::kInvalidContentId;
     DCHECK(!current_resource_has_write_access_)
         << "Write access must be released before sharing the resource";
@@ -435,14 +428,7 @@ Canvas2DResourceProviderSharedImage::WillDrawInternal() {
     auto* old_resource_shared_image =
         static_cast<CanvasResourceSharedImage*>(old_resource.get());
 
-    if (!IsResourceUsable(old_resource.get())) {
-      // If this resource has become unusable, all cached resources have also
-      // become unusable. Drop them to ensure that a new usable resource gets
-      // created in the below call to NewOrRecycledResource().
-      ClearUnusedResources();
-    }
     resource_ = NewOrRecycledResource();
-    DCHECK(IsResourceUsable(resource_.get()));
     dst_access = resource_->BeginAccess(/*readonly=*/false);
     if (must_preserve_content_on_copy_on_write_for_canvas_2d_) {
       auto old_mailbox = old_resource_shared_image->GetSharedImage()->mailbox();
@@ -787,15 +773,6 @@ Canvas2DResourceProviderSharedImage::ProduceCanvasResource(FlushReason reason) {
   return resource_;
 }
 
-bool Canvas2DResourceProviderSharedImage::IsResourceUsable(
-    CanvasResourceSharedImage* resource) {
-  const auto& si = resource->GetSharedImage();
-  gpu::ImageInfo image_info(si->size(), si->format(), si->usage(),
-                            si->color_space(), si->surface_origin(),
-                            si->alpha_type(), si->buffer_usage(),
-                            si->is_software());
-  return image_pool_->GetImageInfo() == image_info;
-}
 
 void CanvasNon2DResourceProviderSharedImage::OnContextDestroyed() {
   if (skia_canvas_) {
