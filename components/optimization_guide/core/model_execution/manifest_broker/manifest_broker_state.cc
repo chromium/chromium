@@ -69,6 +69,8 @@ ManifestBrokerState::ManifestBrokerState(
                           weak_ptr_factory_.GetWeakPtr()));
   manifest_monitor_.SetCallback(base::BindRepeating(
       &ManifestBrokerState::OnManifestUpdated, weak_ptr_factory_.GetWeakPtr()));
+  base::UmaHistogramBoolean(
+      "OptimizationGuide.OnDeviceModel.ManifestBrokerInstantiated", true);
 }
 
 ManifestBrokerState::~ManifestBrokerState() = default;

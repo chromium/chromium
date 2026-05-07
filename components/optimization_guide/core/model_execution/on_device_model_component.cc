@@ -191,11 +191,10 @@ BaseModel ConvertModelNameToEnum(const std::string& model_name) {
   }
 }
 
-std::string ConvertModelNameToUmaModelName(const std::string& model_name) {
-  if (model_name == "v3Nano") {
+std::string GetUmaModelNameFromState(OnDeviceModelComponentState* state) {
+  if (!state || state->GetBaseModelSpec().model_name == "v3Nano") {
     return "V3Nano";
   } else {
-    // Treat obsolete models as unknown.
     return "Unknown";
   }
 }
@@ -484,7 +483,8 @@ void OnDeviceModelComponentStateManager::InstallerRegistered(
   }
   base::UmaHistogramBoolean(
       "OptimizationGuide.ModelExecution."
-      "OnDeviceModelInstalledAtRegistrationTime",
+      "OnDeviceModelInstalledAtRegistrationTime." +
+          GetUmaModelNameFromState(state_.get()),
       state_ != nullptr);
   UpdateRegistration();
 }
@@ -661,11 +661,7 @@ void OnDeviceModelComponentStateManager::UpdateRegistration() {
   if (uninstall_reason.has_value()) {
     // If `state_` is null, the uninstallation is happening before the model is
     // ready, so `Unknown` is logged.
-    std::string uma_model_name = "Unknown";
-    if (state_) {
-      uma_model_name =
-          ConvertModelNameToUmaModelName(state_->GetBaseModelSpec().model_name);
-    }
+    std::string uma_model_name = GetUmaModelNameFromState(state_.get());
     base::UmaHistogramEnumeration(
         "OptimizationGuide.ModelExecution.OnDeviceModelUninstallReason." +
             uma_model_name,

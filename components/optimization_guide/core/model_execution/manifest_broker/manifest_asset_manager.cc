@@ -462,6 +462,14 @@ bool ManifestAssetManager::ShouldInstall(
     return true;
   }
   if (!disk_space_status_.CanSupportOnDemandInstall()) {
+    std::optional<base::ByteCount> free_space =
+        disk_space_status_.GetFreeSpace();
+    if (free_space) {
+      base::UmaHistogramCounts100(
+          "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
+          "AtRegistration.DiskSpaceWhenNotEnoughAvailable",
+          free_space->InGiB());
+    }
     return false;
   }
   if (active_assets_by_id_.contains(context.asset_id())) {
@@ -588,6 +596,11 @@ void ManifestAssetManager::InstallerRegistered(const std::string& public_key,
   } else {
     context->SetRegistered();
   }
+  base::UmaHistogramBoolean(
+      "OptimizationGuide.ModelExecution."
+      "OnDeviceModelInstalledAtRegistrationTime." +
+          ConvertComponentKeyToUmaModelName(context->asset_id()),
+      is_already_installed);
 
   const proto::OnDemandComponent* component =
       factory_->manifest().GetAssetByPublicKey(public_key);

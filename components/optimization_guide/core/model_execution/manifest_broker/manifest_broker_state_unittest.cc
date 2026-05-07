@@ -52,6 +52,7 @@ class ManifestBrokerStateTest : public testing::Test {
 // should fail, rather than hang, and the service should shut down after the
 // performance class check.
 TEST_F(ManifestBrokerStateTest, CreateSessionFailedOnDeviceIncapable) {
+  base::HistogramTester histogram_tester;
   ScenarioBuilder::MinimalTestScenario(fake_.component_state());
 
   // Ensure the device is considered incapable of using on-device models.
@@ -62,7 +63,6 @@ TEST_F(ManifestBrokerStateTest, CreateSessionFailedOnDeviceIncapable) {
       on_device_model::mojom::PerformanceClass::kVeryLow;
   fake_.Startup();
 
-  base::HistogramTester histogram_tester;
   base::test::TestFuture<ModelBrokerClient::CreateSessionResult> session_future;
   fake_.client().CreateSession(mojom::OnDeviceFeature::kTest,
                                SessionConfigParams{},
@@ -75,6 +75,8 @@ TEST_F(ManifestBrokerStateTest, CreateSessionFailedOnDeviceIncapable) {
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceModelPerformanceClass",
       OnDeviceModelPerformanceClass::kVeryLow, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.OnDeviceModel.ManifestBrokerInstantiated", true, 1);
   EXPECT_TRUE(fake_.launcher().did_launch_service());
   // Service should idle-out again after the performance class check.
   EXPECT_TRUE(base::test::RunUntil(
@@ -84,6 +86,7 @@ TEST_F(ManifestBrokerStateTest, CreateSessionFailedOnDeviceIncapable) {
 // When the device is incapable of downloading models due to low disk space,
 // session creations attempts should fail, rather than hang.
 TEST_F(ManifestBrokerStateTest, CreateSessionFailedOnNotEnoughDiskSpace) {
+  base::HistogramTester histogram_tester;
   ScenarioBuilder::MinimalTestScenario(fake_.component_state());
 
   // Ensure the device is considered incapable of using on-device models.
@@ -93,7 +96,6 @@ TEST_F(ManifestBrokerStateTest, CreateSessionFailedOnNotEnoughDiskSpace) {
   fake_.component_state().SetFreeDiskSpace(base::ByteCount(1));
   fake_.Startup();
 
-  base::HistogramTester histogram_tester;
   base::test::TestFuture<ModelBrokerClient::CreateSessionResult> session_future;
   fake_.client().CreateSession(mojom::OnDeviceFeature::kTest,
                                SessionConfigParams{},
@@ -101,6 +103,8 @@ TEST_F(ManifestBrokerStateTest, CreateSessionFailedOnNotEnoughDiskSpace) {
   // Broker should have a Manifest that supports no features, so session
   // creations should fail (kNotSupported).
   ASSERT_FALSE(session_future.Take());
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.OnDeviceModel.ManifestBrokerInstantiated", true, 1);
 }
 
 class TestOnDeviceModelAvailabilityObserver

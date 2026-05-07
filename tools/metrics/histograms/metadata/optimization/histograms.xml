@@ -1296,7 +1296,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="OptimizationGuide.ModelExecution.OnDeviceModelInstalledAtRegistrationTime"
+    name="OptimizationGuide.ModelExecution.OnDeviceModelInstalledAtRegistrationTime.{BaseModel}"
     enum="Boolean" expires_after="2027-04-14">
   <owner>holte@chromium.org</owner>
   <owner>wittman@chromium.org</owner>
@@ -1305,6 +1305,7 @@ chromium-metrics-reviews@google.com.
     on-device model installer is registered. This happens at most once per
     restart, when the device becomes eligible for on-device execution.
   </summary>
+  <token key="BaseModel" variants="BaseModel"/>
 </histogram>
 
 <histogram
@@ -1803,6 +1804,19 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the on-device model currently installed. Recorded once on each
     browser startup.
+  </summary>
+</histogram>
+
+<histogram name="OptimizationGuide.OnDeviceModel.ManifestBrokerInstantiated"
+    enum="Boolean" expires_after="2027-04-14">
+  <owner>zekunjiang@google.com</owner>
+  <owner>holte@chromium.org</owner>
+  <owner>wittman@chromium.org</owner>
+  <summary>
+    Only records `true`. Recorded once when `ManifestBrokerState` is
+    instantiated. This histogram helps compute the number of clients without an
+    installed model, by subtracting from it the clients that have logged to
+    `OptimizationGuide.OnDeviceModel.InstalledModel`.
   </summary>
 </histogram>
 

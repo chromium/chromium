@@ -260,6 +260,7 @@ class ManifestAssetManager : public UsageTracker::Observer {
     bool IsFresh() const;
     bool CanSupportOnDemandInstall() const;
     bool CanSupportProactiveDownload() const;
+    std::optional<base::ByteCount> GetFreeSpace() const { return free_space_; }
 
    private:
     std::optional<base::ByteCount> free_space_;

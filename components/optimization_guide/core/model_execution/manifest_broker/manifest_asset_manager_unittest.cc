@@ -275,18 +275,37 @@ TEST_F(ManifestAssetManagerTest, AlreadyInstalledFlow) {
   DummyAsset asset = DummyAsset::For("compose");
   usage_tracker_.OnDeviceEligibleUseCaseUsed(asset.use_case);
   MakeAssetsInstallable(DummyManifest().Add(asset));
+
+  // First startup to install the asset.
   Startup();
   EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
+  SimulateShutdown();
+
+  // Second startup. Now it is already installed.
+  base::HistogramTester histogram_tester;
+  UpdateManifest(DummyManifest().Add(asset));
+  Startup();
+  EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
+
   // Because it was already installed, it shouldn't request an on-demand update.
   EXPECT_FALSE(component_state_.WasOnDemandUpdateRequested(asset.public_key));
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution."
+      "OnDeviceModelInstalledAtRegistrationTime.Unknown",
+      true, 1);
 }
 
 TEST_F(ManifestAssetManagerTest, NotYetInstalledFlow) {
+  base::HistogramTester histogram_tester;
   DummyAsset asset = DummyAsset::For("compose");
   usage_tracker_.OnDeviceEligibleUseCaseUsed(asset.use_case);
   UpdateManifest(DummyManifest().Add(asset));
   Startup();
   EXPECT_TRUE(component_state_.WaitForRegistration(asset.ToInstallTarget()));
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution."
+      "OnDeviceModelInstalledAtRegistrationTime.Unknown",
+      false, 1);
 }
 
 TEST_F(ManifestAssetManagerTest, SimulatesAssetReady) {
@@ -612,6 +631,7 @@ TEST_F(ManifestAssetManagerTest,
 }
 
 TEST_F(ManifestAssetManagerTest, DoesNotInstallWhenNotEnoughDiskSpace) {
+  base::HistogramTester histogram_tester;
   DummyAsset asset = DummyAsset::For("compose");
   usage_tracker_.OnDeviceEligibleUseCaseUsed(asset.use_case);
   // 20gb is the default in `IsFreeDiskSpaceSufficientForOnDeviceModelInstall`.
@@ -621,6 +641,10 @@ TEST_F(ManifestAssetManagerTest, DoesNotInstallWhenNotEnoughDiskSpace) {
   Startup();
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(component_state_.IsRegistered(asset.ToInstallTarget()));
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
+      "AtRegistration.DiskSpaceWhenNotEnoughAvailable",
+      19, 1);
 }
 
 TEST_F(ManifestAssetManagerTest, DoesNotInstallWhenEligibleUseCaseUseTooOld) {
