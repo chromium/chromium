@@ -1671,8 +1671,6 @@ TEST_P(GLCopyTextureCHROMIUMTest, UninitializedSource) {
   glBindTexture(GL_TEXTURE_2D, textures_[0]);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, kWidth, kHeight, 0, GL_RGBA,
                GL_UNSIGNED_BYTE, nullptr);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
   if (copy_type == TexImage) {
     glCopyTextureCHROMIUM(textures_[0], 0, GL_TEXTURE_2D, textures_[1], 0,
@@ -1711,8 +1709,6 @@ TEST_F(GLCopyTextureCHROMIUMTest, CopySubTextureDimension) {
   glBindTexture(GL_TEXTURE_2D, textures_[0]);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 2, 2, 0, GL_RGBA, GL_UNSIGNED_BYTE,
                nullptr);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
   glBindTexture(GL_TEXTURE_2D, textures_[1]);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 3, 3, 0, GL_RGBA, GL_UNSIGNED_BYTE,
@@ -1751,8 +1747,6 @@ TEST_F(GLCopyTextureCHROMIUMTest, CopyTextureInvalidTextureIds) {
   glBindTexture(GL_TEXTURE_2D, textures_[0]);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 2, 2, 0, GL_RGBA, GL_UNSIGNED_BYTE,
                nullptr);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
   glBindTexture(GL_TEXTURE_2D, textures_[1]);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 3, 3, 0, GL_RGBA, GL_UNSIGNED_BYTE,
@@ -1783,8 +1777,6 @@ TEST_F(GLCopyTextureCHROMIUMTest, CopySubTextureInvalidTextureIds) {
   glBindTexture(GL_TEXTURE_2D, textures_[0]);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 2, 2, 0, GL_RGBA, GL_UNSIGNED_BYTE,
                nullptr);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
   glBindTexture(GL_TEXTURE_2D, textures_[1]);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 3, 3, 0, GL_RGBA, GL_UNSIGNED_BYTE,
@@ -1817,8 +1809,6 @@ TEST_F(GLCopyTextureCHROMIUMTest, CopySubTextureOffset) {
   glBindTexture(GL_TEXTURE_2D, textures_[0]);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 2, 2, 0, GL_RGBA, GL_UNSIGNED_BYTE,
                rgba_pixels);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
   uint8_t transparent_pixels[4 * 4] = {0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u,
                                        0u, 0u, 0u, 0u, 0u, 0u, 0u, 0u};
