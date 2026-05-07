@@ -591,6 +591,7 @@ if (is_android) {
     deps = [
       ":java_resources",
       "//base:base_java",
+      "//base:supplier_java",
       "//build/android:build_java",
       "//chrome/browser/android/lifecycle:java",
       "//chrome/browser/contextual_tasks/fusebox/android:java",

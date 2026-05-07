@@ -65,11 +65,12 @@ public class ContextualTasksBridgeUnitTest {
         ContextualTasksBridgeJni.setInstanceForTesting(mMockJni);
         when(mMockJni.init(any(), eq(TEST_NATIVE_BROWSER_WINDOW_INTERFACE_PTR), eq(mProfile)))
                 .thenReturn(TEST_NATIVE_BRIDGE_PTR);
+        when(mWindowAndroid.getUnownedUserDataHost()).thenReturn(mUserDataHost);
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mMockActivity));
+
         mBridge = new ContextualTasksBridge(mProfile, mWindowAndroid);
         mBridge.onAddedToTask(TEST_NATIVE_BROWSER_WINDOW_INTERFACE_PTR);
 
-        when(mWindowAndroid.getUnownedUserDataHost()).thenReturn(mUserDataHost);
-        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mMockActivity));
         HelpAndFeedbackLauncherFactory.setInstanceForTesting(mMockHelpAndFeedbackLauncher);
     }
 

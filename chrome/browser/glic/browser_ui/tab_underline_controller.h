@@ -132,6 +132,9 @@ class TabUnderlineController
   // being shared via pinning or active following.
   void UpdateUnderlineView(UpdateUnderlineReason reason);
 
+  // Helper to observe contextual tasks if enabled and not already observing.
+  void MaybeObserveContextualTasks();
+
   // Off to On. Throw away everything we have and start the animation from
   // the beginning.
   void ShowAndAnimateUnderline(bool triggered_by_glic);

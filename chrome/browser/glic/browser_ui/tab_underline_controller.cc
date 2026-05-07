@@ -56,12 +56,7 @@ void TabUnderlineController::Initialize(
                                 base::Unretained(this)));
   }
 
-  if (ShouldUseSignalsForContextualTasks()) {
-    contextual_tasks::ActiveTaskContextProvider* active_task_context_provider =
-        contextual_tasks::ActiveTaskContextProvider::From(
-            browser_window_interface_);
-    contextual_task_observation_.Observe(active_task_context_provider);
-  }
+  MaybeObserveContextualTasks();
 
   if (glic_service_) {
     // Fetch the latest context access indicator status from service. We can't
@@ -459,6 +454,17 @@ bool TabUnderlineController::ShouldUseSignalsForGlicUnderlines() {
 
 bool TabUnderlineController::ShouldUseSignalsForContextualTasks() {
   return base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks);
+}
+
+void TabUnderlineController::MaybeObserveContextualTasks() {
+  if (ShouldUseSignalsForContextualTasks() &&
+      !contextual_task_observation_.IsObserving()) {
+    if (auto* active_task_context_provider =
+            contextual_tasks::ActiveTaskContextProvider::From(
+                browser_window_interface_)) {
+      contextual_task_observation_.Observe(active_task_context_provider);
+    }
+  }
 }
 
 }  // namespace glic

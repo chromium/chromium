@@ -877,7 +877,7 @@ public class StripLayoutHelper
         if (!mIncognito
                 && (ChromeFeatureList.sGlic.isEnabled()
                         || ChromeFeatureList.sContextualTasks.isEnabled())) {
-            mStripTabUnderlineManager = new StripTabUnderlineManager(this);
+            mStripTabUnderlineManager = new StripTabUnderlineManager(this, windowAndroid);
         }
 
         mIsFirstLayoutPass = true;

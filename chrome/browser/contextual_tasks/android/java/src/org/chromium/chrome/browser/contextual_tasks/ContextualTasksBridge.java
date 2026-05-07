@@ -13,6 +13,10 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.UnownedUserDataKey;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.contextual_tasks.fusebox.ContextualTasksFuseboxManager;
@@ -26,6 +30,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.Snackbar
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManagerProvider;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 /**
@@ -35,6 +40,10 @@ import org.chromium.url.GURL;
 @JNINamespace("contextual_tasks")
 @NullMarked
 public class ContextualTasksBridge implements ChromeAndroidTaskFeature {
+    private static final UnownedUserDataKey<
+                    SettableMonotonicObservableSupplier<ContextualTasksBridge>>
+            SUPPLIER_KEY = new UnownedUserDataKey<>();
+
     private final Profile mProfile;
     private final ActivityWindowAndroid mWindowAndroid;
     private long mNativeContextualTasksBridge;
@@ -54,11 +63,31 @@ public class ContextualTasksBridge implements ChromeAndroidTaskFeature {
         mWindowAndroid = windowAndroid;
     }
 
+    /**
+     * Returns the {@link MonotonicObservableSupplier} for {@link ContextualTasksBridge} from the
+     * given {@link WindowAndroid}.
+     */
+    public static MonotonicObservableSupplier<ContextualTasksBridge> getSupplier(
+            WindowAndroid windowAndroid) {
+        SettableMonotonicObservableSupplier<ContextualTasksBridge> supplier =
+                SUPPLIER_KEY.retrieveDataFromHost(windowAndroid.getUnownedUserDataHost());
+        if (supplier == null) {
+            supplier = ObservableSuppliers.createMonotonic();
+            SUPPLIER_KEY.attachToHost(windowAndroid.getUnownedUserDataHost(), supplier);
+        }
+        return supplier;
+    }
+
     @Override
     public void onAddedToTask(long nativeBrowserWindowPtr) {
         if (nativeBrowserWindowPtr == 0) return;
         mNativeContextualTasksBridge =
                 ContextualTasksBridgeJni.get().init(this, nativeBrowserWindowPtr, mProfile);
+
+        SettableMonotonicObservableSupplier<ContextualTasksBridge> supplier =
+                (SettableMonotonicObservableSupplier<ContextualTasksBridge>)
+                        getSupplier(mWindowAndroid);
+        supplier.set(this);
     }
 
     @Override
