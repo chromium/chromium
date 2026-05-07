@@ -31,6 +31,23 @@
             ]
         }
     ],
+    "AIFuseboxIOSModelPicker": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ComposeboxAdditionalAdvancedTools",
+                        "ComposeboxDeepSearch",
+                        "ComposeboxServerSideState"
+                    ]
+                }
+            ]
+        }
+    ],
     "AIFuseboxIOSTablet": [
         {
             "platforms": [
