@@ -63,7 +63,7 @@ TEST_F(DarkModeImageClassifierTest, ValidImage) {
   bitmap.peekPixels(&pixmap);
   EXPECT_EQ(image_classifier()->Classify(
                 pixmap, SkIRect::MakeWH(image->width(), image->height())),
-            DarkModeResult::kApplyFilter);
+            DarkModeResult::kDoNotApplyFilter);
 }
 
 TEST_F(DarkModeImageClassifierTest, InvalidImage) {
@@ -153,6 +153,58 @@ TEST_F(DarkModeImageClassifierTest, ImageSpriteAlternateFragmentsSame) {
 
   EXPECT_EQ(
       image_classifier()->Classify(pixmap, SkIRect::MakeXYWH(0, 180, 95, 36)),
+      DarkModeResult::kDoNotApplyFilter);
+}
+
+TEST_F(DarkModeImageClassifierTest, ImageWithTransparentBackground) {
+  scoped_refptr<BitmapImage> image;
+  SkBitmap bitmap;
+  SkPixmap pixmap;
+  image = GetImage("/images/resources/sprite_transparent_background.png");
+  bitmap = image->AsSkBitmapForCurrentFrame(kDoNotRespectImageOrientation);
+  bitmap.peekPixels(&pixmap);
+
+  EXPECT_EQ(
+      image_classifier()->Classify(pixmap, SkIRect::MakeXYWH(0, 0, 128, 24)),
+      DarkModeResult::kApplyFilter);
+
+  EXPECT_EQ(
+      image_classifier()->Classify(pixmap, SkIRect::MakeXYWH(0, 24, 128, 24)),
+      DarkModeResult::kDoNotApplyFilter);
+}
+
+TEST_F(DarkModeImageClassifierTest, ImageWithLightBackground) {
+  scoped_refptr<BitmapImage> image;
+  SkBitmap bitmap;
+  SkPixmap pixmap;
+  image = GetImage("/images/resources/sprite_light_background.png");
+  bitmap = image->AsSkBitmapForCurrentFrame(kDoNotRespectImageOrientation);
+  bitmap.peekPixels(&pixmap);
+
+  // TODO(pnevase): Handle this case better.
+  EXPECT_EQ(
+      image_classifier()->Classify(pixmap, SkIRect::MakeXYWH(0, 0, 128, 24)),
+      DarkModeResult::kDoNotApplyFilter);
+
+  EXPECT_EQ(
+      image_classifier()->Classify(pixmap, SkIRect::MakeXYWH(0, 24, 128, 24)),
+      DarkModeResult::kApplyFilter);
+}
+
+TEST_F(DarkModeImageClassifierTest, ImageWithDarkBackground) {
+  scoped_refptr<BitmapImage> image;
+  SkBitmap bitmap;
+  SkPixmap pixmap;
+  image = GetImage("/images/resources/sprite_dark_background.png");
+  bitmap = image->AsSkBitmapForCurrentFrame(kDoNotRespectImageOrientation);
+  bitmap.peekPixels(&pixmap);
+
+  EXPECT_EQ(
+      image_classifier()->Classify(pixmap, SkIRect::MakeXYWH(0, 0, 128, 24)),
+      DarkModeResult::kApplyFilter);
+
+  EXPECT_EQ(
+      image_classifier()->Classify(pixmap, SkIRect::MakeXYWH(0, 24, 128, 24)),
       DarkModeResult::kDoNotApplyFilter);
 }
 
@@ -282,12 +334,13 @@ TEST_F(DarkModeImageClassifierTest, FeaturesAndClassification) {
   EXPECT_NEAR(0.1875f, features.color_buckets_ratio, kEpsilon);
   EXPECT_NEAR(0.0f, features.transparency_ratio, kEpsilon);
   EXPECT_NEAR(0.0f, features.background_ratio, kEpsilon);
+  EXPECT_NEAR(0.3044f, features.high_luminance_ratio, kEpsilon);
 
   // Test Case 2:
   // Grayscale
   // Color Buckets Ratio: Medium
-  // Decision Tree: Can't Decide
-  // Neural Network: Apply
+  // Decision Tree: Do Not Apply
+  // Neural Network: NA
   image = GetImage("/images/resources/apng08-ref.png");
   bitmap = image->AsSkBitmapForCurrentFrame(kDoNotRespectImageOrientation);
   bitmap.peekPixels(&pixmap);
@@ -298,16 +351,17 @@ TEST_F(DarkModeImageClassifierTest, FeaturesAndClassification) {
   EXPECT_EQ(image_classifier()->ClassifyWithFeatures(features),
             DarkModeResult::kDoNotApplyFilter);
   EXPECT_EQ(image_classifier()->ClassifyUsingDecisionTree(features),
-            DarkModeResult::kNotClassified);
+            DarkModeResult::kDoNotApplyFilter);
   EXPECT_FALSE(features.is_colorful);
   EXPECT_NEAR(0.8125f, features.color_buckets_ratio, kEpsilon);
   EXPECT_NEAR(0.446667f, features.transparency_ratio, kEpsilon);
   EXPECT_NEAR(0.03f, features.background_ratio, kEpsilon);
+  EXPECT_NEAR(0.6144578f, features.high_luminance_ratio, kEpsilon);
 
   // Test Case 3:
   // Color
   // Color Buckets Ratio: Low
-  // Decision Tree: Apply
+  // Decision Tree: Do Not Apply
   // Neural Network: NA.
   image = GetImage("/images/resources/twitter_favicon.ico");
   bitmap = image->AsSkBitmapForCurrentFrame(kDoNotRespectImageOrientation);
@@ -317,13 +371,14 @@ TEST_F(DarkModeImageClassifierTest, FeaturesAndClassification) {
                                SkIRect::MakeWH(image->width(), image->height()))
                  .value();
   EXPECT_EQ(image_classifier()->ClassifyWithFeatures(features),
-            DarkModeResult::kApplyFilter);
+            DarkModeResult::kDoNotApplyFilter);
   EXPECT_EQ(image_classifier()->ClassifyUsingDecisionTree(features),
-            DarkModeResult::kApplyFilter);
+            DarkModeResult::kDoNotApplyFilter);
   EXPECT_TRUE(features.is_colorful);
   EXPECT_NEAR(0.0002441f, features.color_buckets_ratio, kEpsilon);
   EXPECT_NEAR(0.542092f, features.transparency_ratio, kEpsilon);
   EXPECT_NEAR(0.1500000f, features.background_ratio, kEpsilon);
+  EXPECT_NEAR(1.0f, features.high_luminance_ratio, kEpsilon);
 
   // Test Case 4:
   // Color
@@ -345,6 +400,7 @@ TEST_F(DarkModeImageClassifierTest, FeaturesAndClassification) {
   EXPECT_NEAR(0.032959f, features.color_buckets_ratio, kEpsilon);
   EXPECT_NEAR(0.0f, features.transparency_ratio, kEpsilon);
   EXPECT_NEAR(0.0f, features.background_ratio, kEpsilon);
+  EXPECT_NEAR(0.33f, features.high_luminance_ratio, kEpsilon);
 
   // Test Case 5:
   // Color
@@ -366,6 +422,7 @@ TEST_F(DarkModeImageClassifierTest, FeaturesAndClassification) {
   EXPECT_NEAR(0.0151367f, features.color_buckets_ratio, kEpsilon);
   EXPECT_NEAR(0.0f, features.transparency_ratio, kEpsilon);
   EXPECT_NEAR(0.0f, features.background_ratio, kEpsilon);
+  EXPECT_NEAR(0.9255555272102356f, features.high_luminance_ratio, kEpsilon);
 }
 
 }  // namespace blink

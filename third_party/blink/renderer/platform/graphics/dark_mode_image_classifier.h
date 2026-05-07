@@ -40,6 +40,9 @@ class PLATFORM_EXPORT DarkModeImageClassifier {
     // background.
     float transparency_ratio;
     float background_ratio;
+
+    // Ratio of high luminance pixels to all sampled pixels in the image.
+    float high_luminance_ratio;
   };
 
   DarkModeResult Classify(const SkPixmap& pixmap, const SkIRect& src) const;

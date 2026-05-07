@@ -693,6 +693,9 @@
 ../../web_tests/images/resources/small-square-with-colorspin-profile.jpg
 ../../web_tests/images/resources/sprite_all_fragments_same.png
 ../../web_tests/images/resources/sprite_alternate_fragments_same.png
+../../web_tests/images/resources/sprite_dark_background.png
+../../web_tests/images/resources/sprite_light_background.png
+../../web_tests/images/resources/sprite_transparent_background.png
 ../../web_tests/images/resources/stripes-large.png
 ../../web_tests/images/resources/stripes-small.png
 ../../web_tests/images/resources/test-load.jpg
