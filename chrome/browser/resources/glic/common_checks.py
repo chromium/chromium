@@ -14,7 +14,9 @@ def GlicCommonChecks(input_api, output_api):
     _common_checks_ran = True
 
     return (_CheckGlicGeneratedApi(input_api, output_api) +
-            _CheckRuntimeFeatureChecksIfModified(input_api, output_api))
+            _CheckRuntimeFeatureChecksIfModified(input_api, output_api) +
+            _CheckManifestConsistencyIfModified(input_api, output_api))
+
 
 
 def _CheckGlicGeneratedApi(input_api, output_api):
@@ -80,3 +82,48 @@ def _CheckRuntimeFeatureChecksIfModified(input_api, output_api):
                    e.output.decode('utf-8'))
         return [output_api.PresubmitError(message)]
     return []
+
+
+def _CheckManifestConsistencyIfModified(input_api, output_api):
+    MONITORED_FILES = set((
+        'chrome/browser/resources/glic/extension/manifest.json',
+        'chrome/browser/resources/glic/presubmit/check_manifests.py',
+    ))
+
+    os_path = input_api.os_path
+    src_root = os_path.join(os.path.dirname(__file__), '../../../..')
+
+    affected_paths = set(f.LocalPath().replace('\\', '/')
+                         for f in input_api.change.AffectedFiles())
+    is_affected = (affected_paths & MONITORED_FILES)
+
+    if not is_affected:
+        return []
+
+    results = []
+    bypass_deps_check = ('Bypass-Glic-Manifest-Deps-Check'
+                         in input_api.change.GitFootersFromDescription())
+    if (not bypass_deps_check
+            and 'chrome/browser/resources/glic/extension/manifest.json'
+            in affected_paths and 'DEPS' not in affected_paths):
+        results.append(
+            output_api.PresubmitError(
+                'Manifest modified, but DEPS was not updated. ' +
+                'If you think DEPS update is unnecessary, bypass this with ' +
+                'Bypass-Glic-Manifest-Deps-Check: in the CL footers.'))
+
+    cmd = [
+        input_api.python_executable,
+        os_path.join(
+            src_root,
+            'chrome/browser/resources/glic/presubmit/check_manifests.py'),
+    ]
+
+    try:
+        input_api.subprocess.check_output(cmd,
+                                          stderr=input_api.subprocess.STDOUT)
+    except input_api.subprocess.CalledProcessError as e:
+        message = ('glic check_manifests.py failed:\n' +
+                   e.output.decode('utf-8'))
+        results.append(output_api.PresubmitError(message))
+    return results
