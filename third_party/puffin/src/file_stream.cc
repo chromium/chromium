@@ -68,6 +68,7 @@ bool FileStream::Seek(uint64_t u_offset) {
 }
 
 bool FileStream::Read(void* buffer, size_t length) {
+  TEST_AND_RETURN_FALSE(base::IsValueInRangeForNumericType<int>(length));
   base::span<uint8_t> bytes(static_cast<uint8_t*>(buffer), length);
   while (!bytes.empty()) {
     std::optional<size_t> bytes_read = file_.ReadAtCurrentPos(bytes);
@@ -78,6 +79,7 @@ bool FileStream::Read(void* buffer, size_t length) {
 }
 
 bool FileStream::Write(const void* buffer, size_t length) {
+  TEST_AND_RETURN_FALSE(base::IsValueInRangeForNumericType<int>(length));
   base::span<const uint8_t> bytes(static_cast<const uint8_t*>(buffer), length);
   while (!bytes.empty()) {
     std::optional<size_t> bytes_written = file_.WriteAtCurrentPos(bytes);
