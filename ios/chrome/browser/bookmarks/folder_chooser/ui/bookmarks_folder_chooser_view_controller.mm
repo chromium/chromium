@@ -468,14 +468,13 @@ using bookmarks::BookmarkNode;
   dispatch_after(
       dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.3 * NSEC_PER_SEC)),
       dispatch_get_main_queue(), ^{
-        BookmarksFolderChooserViewController* strongSelf = weakSelf;
-        // Early return if the controller has been deallocated.
-        if (!strongSelf) {
-          return;
-        }
-        strongSelf.view.userInteractionEnabled = YES;
-        [strongSelf done:nil];
+        [weakSelf delayedNotifyDelegateOfSelectionCallback];
       });
+}
+
+- (void)delayedNotifyDelegateOfSelectionCallback {
+  self.view.userInteractionEnabled = YES;
+  [self done:nil];
 }
 
 // Shows the scrim overlay.
@@ -520,10 +519,14 @@ using bookmarks::BookmarkNode;
         scrim.alpha = 0.0f;
       }
       completion:^(BOOL finished) {
-        [scrim removeFromSuperview];
-        weakSelf.tableView.accessibilityElementsHidden = NO;
-        weakSelf.tableView.scrollEnabled = YES;
+        [weakSelf hideScrimCallbackWithScrim:scrim];
       }];
+}
+
+- (void)hideScrimCallbackWithScrim:(UIView*)scrim {
+  [scrim removeFromSuperview];
+  self.tableView.accessibilityElementsHidden = NO;
+  self.tableView.scrollEnabled = YES;
 }
 
 // Dismiss the search controller when there's a touch event on the scrim.
