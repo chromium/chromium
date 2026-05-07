@@ -1075,7 +1075,7 @@
 <translation id="2664887757054927933">{COUNT,plural, =0{Ниједна}=1{1 лозинка (за <ph name="DOMAIN_LIST" />)}=2{2 лозинке (за <ph name="DOMAIN_LIST" />)}one{# лозинка (за <ph name="DOMAIN_LIST" />)}few{# лозинке (за <ph name="DOMAIN_LIST" />)}other{# лозинки (за <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Врх</translation>
 <translation id="2666117266261740852">Затворите друге картице или апликације</translation>
-<translation id="266935134738038806">Посети сајт</translation>
+<translation id="266935134738038806">Иди на сајт</translation>
 <translation id="2672201172023654893">Прегледачем нико не управља.</translation>
 <translation id="2673968385134502798">Игре</translation>
 <translation id="2674170444375937751">Желите ли стварно да избришете ове странице из историје?</translation>

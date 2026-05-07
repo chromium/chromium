@@ -1075,7 +1075,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2664887757054927933">{COUNT,plural, =0{Nijedna}=1{1 lozinka (za <ph name="DOMAIN_LIST" />)}=2{2 lozinke (za <ph name="DOMAIN_LIST" />)}one{# lozinka (za <ph name="DOMAIN_LIST" />)}few{# lozinke (za <ph name="DOMAIN_LIST" />)}other{# lozinki (za <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Vrh</translation>
 <translation id="2666117266261740852">Zatvorite druge kartice ili aplikacije</translation>
-<translation id="266935134738038806">Poseti sajt</translation>
+<translation id="266935134738038806">Idi na sajt</translation>
 <translation id="2672201172023654893">Pregledačem niko ne upravlja.</translation>
 <translation id="2673968385134502798">Igre</translation>
 <translation id="2674170444375937751">Želite li stvarno da izbrišete ove stranice iz istorije?</translation>

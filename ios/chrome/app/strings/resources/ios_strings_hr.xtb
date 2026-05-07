@@ -124,7 +124,7 @@
 <translation id="1426410128494586442">Da</translation>
 <translation id="1429187656584513419">Otvorite Zaporke</translation>
 <translation id="1430915738399379752">Ispis</translation>
-<translation id="1433478348197382180">Čitački način</translation>
+<translation id="1433478348197382180">Prozor za čitanje</translation>
 <translation id="1435271730600332883">Otvorite automatsko popunjavanje i zaporke</translation>
 <translation id="1436671784520050284">Nastavi s postavljanjem</translation>
 <translation id="143681031165817424">Adresa je spremljena samo na ovom uređaju</translation>
@@ -168,7 +168,7 @@
 <translation id="1554605811306591212">Primjenjuju se naši <ph name="TERMS" />, <ph name="KOREAN_LOCATION_TERMS" /> i <ph name="PRIVACY_NOTICE" />. Gemini je AI i može pogriješiti, uključujući kada daje informacije o osobama.</translation>
 <translation id="1558391695376153246">Zatvori anonimne kartice</translation>
 <translation id="1565371473877914088">Nova anonimna kartica</translation>
-<translation id="1567960978791353852">Prikaži čitački način</translation>
+<translation id="1567960978791353852">Prikaži prozor za čitanje</translation>
 <translation id="1571780780926010134">Anonimne kartice</translation>
 <translation id="1580715474678097352">Zaštitite se od opasnih web-lokacija</translation>
 <translation id="1580783302095112590">Poruka je poslana.</translation>
@@ -257,7 +257,7 @@
 <translation id="1861067954551502701">{count,plural, =1{Zaporka {position} od {count}}one{Zaporka {position} od {count}}few{Zaporka {position} od {count}}other{Zaporka {position} od {count}}}</translation>
 <translation id="1861262398884155592">Mapa je prazna</translation>
 <translation id="1864266050569350424">Na web-lokaciji na kojoj ste spremili zaporku dodirnite polje zaporke za prijavu.</translation>
-<translation id="1866700949421703765">Sakrij opciju Uključi čitački način</translation>
+<translation id="1866700949421703765">Sakrij opciju Uključi prozor za čitanje</translation>
 <translation id="1872096359983322073">Svjetlo</translation>
 <translation id="1875733418125333939"><ph name="FILENAME" />.</translation>
 <translation id="1881621406744213161">Pozovite članove obitelji</translation>
@@ -592,7 +592,7 @@
 <translation id="3087734570205094154">Donji</translation>
 <translation id="309710370695886264">Imate jednu višestruko korištenu zaporku. Riješite problem odmah da biste se zaštitili.</translation>
 <translation id="3099402981545350675">Time se brišu adrese spremljene na ovom uređaju. Uklanja i odabrane podatke iz Chromea, ali ih ne briše s vašeg Google računa.</translation>
-<translation id="3106258548858559536">Isključi čitački način</translation>
+<translation id="3106258548858559536">Isključi prozor za čitanje</translation>
 <translation id="3106690631878101882">Sakrij stavku Prevedi</translation>
 <translation id="310900540163454140">Želite li izbrisati zaporku za <ph name="WEBSITE" />?</translation>
 <translation id="3112556859945124369">Označi...</translation>
@@ -1002,7 +1002,7 @@
 <translation id="4606247758155004938">Vašim preglednikom upravlja vaša organizacija.</translation>
 <translation id="4607887340472970274">Praćenje cijene</translation>
 <translation id="4619564267100705184">Potvrdite svoj identitet</translation>
-<translation id="4621768135601674446">Otvori opcije čitačkog načina</translation>
+<translation id="4621768135601674446">Otvori opcije prozora za čitanje</translation>
 <translation id="4627107755957573804">Dopusti web-lokacijama i aplikacijama da nadograde postojeće račune tako da upotrebljavaju pristupne ključeve</translation>
 <translation id="4629065796475200039">Vaša zaporka nije uvezena</translation>
 <translation id="4630212057753624203">Ogledni oblačić</translation>
@@ -1498,7 +1498,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="6247557882553405851">Google upravitelj zaporki</translation>
 <translation id="6251835855431997163">Automatski unesite <ph name="VALUE" /></translation>
 <translation id="6254066287920239840">Otvaranje veza u aplikaciji, a ne u pregledniku.</translation>
-<translation id="6259928806013786178">Aktivacija čitačkog načina nije uspjela</translation>
+<translation id="6259928806013786178">Aktivacija prozora za čitanje nije uspjela</translation>
 <translation id="6268773951964630964">Pretražite sliku koju ste kopirali</translation>
 <translation id="6271462272606946663">Sakrij zahtjev za web-lokaciju za mobilne uređaje</translation>
 <translation id="6271556257184622612">Postavite Googleu pitanja o karticama i ostalom</translation>
@@ -1667,7 +1667,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="6782531425936234573">Izvoz podataka</translation>
 <translation id="6791425686608802741">Dodirnite Dodaj karticu novoj grupi</translation>
 <translation id="6794476726485507147">Odaberite datum i vrijeme za primanje obavijesti o podsjetniku da biste ponovno posjetili ovu stranicu</translation>
-<translation id="6797543908718012274">Uključi čitački način</translation>
+<translation id="6797543908718012274">Uključi prozor za čitanje</translation>
 <translation id="6806550742467879742">Alati za stranicu</translation>
 <translation id="6807287147325542056">Zaporke u drugim aplikacijama</translation>
 <translation id="681368974849482173">Stavka je stvorena</translation>
@@ -1933,7 +1933,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="7772032839648071052">Potvrdi zaporku</translation>
 <translation id="7772948288262733182">Dobro došli natrag</translation>
 <translation id="777637629667389858">Kad ste prijavljeni, štiti vas na svim Googleovim uslugama.</translation>
-<translation id="7776604279034196531">Pristupite čitačkom načinu s adresne trake kad je ta opcija dostupna</translation>
+<translation id="7776604279034196531">Pristupite prozoru za čitanje s adresne trake kad je ta opcija dostupna</translation>
 <translation id="7781829728241885113">Danas</translation>
 <translation id="7788868432173225918">Odbaci prošireni prikaz</translation>
 <translation id="7791543448312431591">Dodajte</translation>
@@ -1990,7 +1990,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="7952670906562503188">Spremate se izbrisati pristupne ključeve (njih {passkey_count}) i popis web-lokacija i aplikacija za koje ste odabrali da se podaci za prijavu nikad ne spremaju. Računi koje ste izradili za web-lokacije i aplikacije neće se izbrisati.</translation>
 <translation id="7958575506592576831">Informacije o sigurnosti stranice</translation>
 <translation id="7961015016161918242">Nikad</translation>
-<translation id="7971651328518569075">Sakrij opciju Isključi čitački način</translation>
+<translation id="7971651328518569075">Sakrij opciju Isključi prozor za čitanje</translation>
 <translation id="7972837668077967426">Canvas</translation>
 <translation id="7975036700432177008">Isprobajte</translation>
 <translation id="797588153137233716">Izbornik → Povijest → Brisanje podataka o pregledavanju</translation>
@@ -2245,7 +2245,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="8786100550345425552">Uredite dopuštenja</translation>
 <translation id="878871978861915380">Sakrij opciju Praćenje cijena</translation>
 <translation id="8792626944327216835">mikrofon</translation>
-<translation id="8796634520835503150">Dostupan je čitački način</translation>
+<translation id="8796634520835503150">Dostupan je prozor za čitanje</translation>
 <translation id="8803526663383843427">Kad je značajka uključena</translation>
 <translation id="8803639129939845298">Sigurno</translation>
 <translation id="8813277370772331957">Podsjeti me kasnije</translation>
@@ -2346,7 +2346,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="913036870884277353">Lako otvarajte veze u drugim aplikacijama.</translation>
 <translation id="9137013805542155359">Prikaži original</translation>
 <translation id="9140888637198815199">A</translation>
-<translation id="9144152097013965297">Uključi čitački način</translation>
+<translation id="9144152097013965297">Uključi prozor za čitanje</translation>
 <translation id="9144230693397287797">Primajte ažuriranja za podsjetnike koje ste postavili i kartice s drugih uređaja</translation>
 <translation id="914781932147356857">Označi sve…</translation>
 <translation id="9148126808321036104">Prijavite se ponovno</translation>

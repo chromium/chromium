@@ -3168,7 +3168,7 @@
 <translation id="3152356229013609796">휴대전화의 알림을 보고 닫거나 답장합니다.</translation>
 <translation id="3152545926232662879">무시됨:</translation>
 <translation id="3152596030350326139">가로로 탭 표시</translation>
-<translation id="3154754096046236400">개인별 맞춤 AI</translation>
+<translation id="3154754096046236400">개인별 컨텍스트</translation>
 <translation id="3155163173539279776">Chromium 다시 시작</translation>
 <translation id="3155394504825881014">탭 그룹을 북마크 폴더로 변환</translation>
 <translation id="3156511682997763015">10초 앞으로 이동</translation>
@@ -9973,7 +9973,7 @@
 <translation id="793293630927785390">새 Wi-Fi 네트워크 대화상자</translation>
 <translation id="7932969338829957666"><ph name="BASE_DIR" />에서 Linux의 공유 폴더를 사용할 수 있습니다.</translation>
 <translation id="7932992556896556665">터치 스크린 기기를 설정하고 올바른 디스플레이에 매핑합니다</translation>
-<translation id="7933314993013528982">{NUM_TABS,plural, =1{사이트 숨기기 취소}other{사이트 숨기기 취소}}</translation>
+<translation id="7933314993013528982">{NUM_TABS,plural, =1{사이트 음소거 취소}other{사이트 음소거 취소}}</translation>
 <translation id="7933486544522242079">저장 및 공유(&amp;S)</translation>
 <translation id="7933518760693751884">페이지를 저장해 두고 나중에 보려면 북마크 아이콘을 클릭하세요.</translation>
 <translation id="7933634003144813719">공유 폴더 관리</translation>
@@ -10623,7 +10623,7 @@
 <translation id="8370294614544004647">노트북을 닫으면 절전 모드 시작</translation>
 <translation id="8370419414641876532">'비밀번호 및 자동 완성'을 클릭합니다.</translation>
 <translation id="8371695176452482769">말하세요</translation>
-<translation id="8371925839118813971">{NUM_TABS,plural, =1{사이트 숨기기}other{사이트 숨기기}}</translation>
+<translation id="8371925839118813971">{NUM_TABS,plural, =1{사이트 음소거}other{사이트 음소거}}</translation>
 <translation id="8372441176515901959">요청 취소</translation>
 <translation id="8372678064309688510">주소가 저장되었습니다</translation>
 <translation id="8373652277231415614">Crostini 공유 디렉터리</translation>

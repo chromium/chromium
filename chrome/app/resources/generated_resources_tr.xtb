@@ -3151,7 +3151,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3152356229013609796">Telefonunuzdaki bildirimleri görün, kapatın veya yanıtlayın</translation>
 <translation id="3152545926232662879">Yoksayıldı:</translation>
 <translation id="3152596030350326139">Sekmeleri yatay olarak göster</translation>
-<translation id="3154754096046236400">Kişiye özel bağlam</translation>
+<translation id="3154754096046236400">Kişisel bağlam</translation>
 <translation id="3155163173539279776">Chromium'u Yeniden Başlat</translation>
 <translation id="3155394504825881014">Sekme Grubunu Yer İşareti Klasörüne Dönüştür</translation>
 <translation id="3156511682997763015">10 saniye ileri git</translation>
@@ -8445,7 +8445,7 @@ Sızdırılmış # şifreniz daha var. Google Şifre Yöneticisi bu şifreleri h
 <translation id="686839242150793617">Otomatik olarak pencere içinde pencere moduna girmesine izin verilenler</translation>
 <translation id="6868734951249611611">Burayı sağ tıklayıp "Sekmeleri dikey olarak göster"i seçin</translation>
 <translation id="6868934826811377550">Ayrıntılara Bakın</translation>
-<translation id="6870470066213933201">JavaScript optimizasyonunu ve güvenliği yönetin</translation>
+<translation id="6870470066213933201">JavaScript optimizasyonunu ve güvenliğini yönetin</translation>
 <translation id="6870953451576517204">Kendi kendine test başarılı</translation>
 <translation id="6871644448911473373">OCSP Yanıtlayanı: <ph name="LOCATION" /></translation>
 <translation id="6871860225073478239">Diller</translation>

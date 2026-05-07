@@ -810,7 +810,7 @@
 <translation id="1547808936554660006">ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾದ eSIM ಪ್ರೊಫೈಲ್‌ಗಳನ್ನು ಪವರ್‌ವಾಷ್‌‌ ತೆಗೆದುಹಾಕಲಾಗುವುದಿಲ್ಲ ಎಂಬುದನ್ನು ನಾನು ಅರ್ಥಮಾಡಿಕೊಂಡಿದ್ದೇನೆ</translation>
 <translation id="1547936895218027488">ಸೈಡ್ ಪ್ಯಾನೆಲ್ ಐಕಾನ್ ಅನ್ನು ಕ್ಲಿಕ್ ಮಾಡಿ, ಅದನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="1549275686094429035">ARC ಸಕ್ರಿಯಗೊಂಡಿದೆ</translation>
-<translation id="1549788673239553762"><ph name="APP_NAME" /> ಅಪ್ಲಿಕೇಶನ್ <ph name="VOLUME_NAME" /> ಅನ್ನು ಪ್ರವೇಶಿಸಲು ಬಯಸುತ್ತದೆ. ಅದು ನಿಮ್ಮ ಫೈಲ್‌ಗಳನ್ನು ಮಾರ್ಪಡಿಸಬಹುದು ಅಥವಾ ಅಳಿಸಬಹುದು.</translation>
+<translation id="1549788673239553762"><ph name="APP_NAME" /> ಆ್ಯಪ್ <ph name="VOLUME_NAME" /> ಅನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಲು ಬಯಸುತ್ತದೆ. ಅದು ನಿಮ್ಮ ಫೈಲ್‌ಗಳನ್ನು ಮಾರ್ಪಡಿಸಬಹುದು ಅಥವಾ ಅಳಿಸಬಹುದು.</translation>
 <translation id="1549966883323105187">ಸೇವ್ ಮಾಡಲಾದ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ತ್ವರಿತವಾಗಿ ಪಡೆದುಕೊಳ್ಳಿ</translation>
 <translation id="1550656959113606473">ಡೀಫಾಲ್ಟ್ Chrome</translation>
 <translation id="1552301827267621511"><ph name="SEARCH_PROVIDER_DOMAIN" /> ಅನ್ನು ಬಳಸಲು, <ph name="EXTENSION_NAME" /> ವಿಸ್ತರಣೆಯು ಹುಡುಕಾಟವನ್ನು ಬದಲಿಸಿದೆ</translation>
@@ -7240,7 +7240,7 @@
 <translation id="6018241313232245125">Gemini ಮೂಲಕ ಸುಧಾರಿಸಿ</translation>
 <translation id="6019169947004469866">ಕ್ರಾಪ್</translation>
 <translation id="6019851026059441029">ಅತ್ಯುತ್ತಮ - HD</translation>
-<translation id="6020431688553761150">ಈ ಸಂಪನ್ಮೂಲವನ್ನು ಪ್ರವೇಶಿಸಲು ನಿಮಗೆ ಸರ್ವರ್ ದೃಢೀಕರಿಸಿಲ್ಲ.</translation>
+<translation id="6020431688553761150">ಈ ರಿಸೋರ್ಸ್ ಅನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಲು ನಿಮಗೆ ಸರ್ವರ್ ದೃಢೀಕರಿಸಿಲ್ಲ.</translation>
 <translation id="6021293122504240352"><ph name="APPS" /> ಆ್ಯಪ್‌ಗಳು ಇನ್ನು ಮುಂದೆ ಬೆಂಬಲಿತವಾಗಿಲ್ಲ</translation>
 <translation id="6021969570711251331">ಒಂದರ ಮೇಲೆ ಮತ್ತೊಂದು</translation>
 <translation id="6022526133015258832">ಪೂರ್ಣ ಪರದೆಯನ್ನು ತೆರೆಯಿರಿ</translation>
