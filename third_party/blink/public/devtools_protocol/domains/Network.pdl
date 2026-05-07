@@ -2162,6 +2162,7 @@ domain Network
       Success
       KeyError
       SigningError
+      TransientSigningError
       ServerRequestedTermination
       InvalidSessionId
       InvalidChallenge
@@ -2260,13 +2261,14 @@ domain Network
       # The result of a refresh.
       enum refreshResult
         Refreshed
-        RefreshedAsWaiter
         InitializedService
         Unreachable
         ServerError
         RefreshQuotaExceeded
         FatalError
         SigningQuotaExceeded
+        RefreshedAsWaiter
+        TransientSigningError
       # If there was a fetch attempt, the result of that.
       optional DeviceBoundSessionFetchResult fetchResult
       # The session display if there was a newly created session. This is populated

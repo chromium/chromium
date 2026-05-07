@@ -204,6 +204,7 @@ enum DeviceBoundSessionError {
   kInvalidFederatedSessionProviderFailedToRestoreKey = 79,
   kFailedToUnwrapKey = 80,
   kSessionDeletedDuringRefresh = 81,
+  kTransientSigningError = 82,
 };
 
 // LINT.ThenChange(//net/device_bound_sessions/session_error.h:DeviceBoundSessionError)
@@ -218,6 +219,7 @@ enum DeviceBoundSessionRefreshResult {
   kFatalError = 5,
   kSigningQuotaExceeded = 6,
   kRefreshedAsWaiter = 7,
+  kTransientSigningError = 8,
 };
 
 // LINT.ThenChange(//net/device_bound_sessions/refresh_result.h:DeviceBoundSessionRefreshResult)

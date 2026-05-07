@@ -1902,6 +1902,10 @@ String BuildProtocolDeviceBoundSessionFetchResult(
     case net::device_bound_sessions::SessionError::ErrorType::kSigningError:
       return protocol::Network::DeviceBoundSessionFetchResultEnum::SigningError;
     case net::device_bound_sessions::SessionError::ErrorType::
+        kTransientSigningError:
+      return protocol::Network::DeviceBoundSessionFetchResultEnum::
+          TransientSigningError;
+    case net::device_bound_sessions::SessionError::ErrorType::
         kServerRequestedTermination:
       return protocol::Network::DeviceBoundSessionFetchResultEnum::
           ServerRequestedTermination;
@@ -2182,6 +2186,9 @@ String BuildProtocolDeviceBoundSessionRefreshResult(
     case net::device_bound_sessions::RefreshResult::kSigningQuotaExceeded:
       return protocol::Network::RefreshEventDetails::RefreshResultEnum::
           SigningQuotaExceeded;
+    case net::device_bound_sessions::RefreshResult::kTransientSigningError:
+      return protocol::Network::RefreshEventDetails::RefreshResultEnum::
+          TransientSigningError;
   }
 }
 

@@ -13,6 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/unexportable_keys/background_task_priority.h"
+#include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
@@ -20,6 +21,7 @@
 #include "net/device_bound_sessions/registration_request_param.h"
 #include "net/device_bound_sessions/session_binding_utils.h"
 #include "net/device_bound_sessions/session_challenge_param.h"
+#include "net/device_bound_sessions/session_error.h"
 #include "net/device_bound_sessions/session_json_utils.h"
 #include "net/device_bound_sessions/session_key.h"
 #include "net/device_bound_sessions/url_fetcher.h"
@@ -51,10 +53,13 @@ void OnDataSigned(
     unexportable_keys::UnexportableKeyService& unexportable_key_service,
     std::string header_and_payload,
     base::OnceCallback<
-        void(std::optional<RegistrationFetcher::RegistrationToken>)> callback,
+        void(SessionErrorOr<RegistrationFetcher::RegistrationToken>)> callback,
     unexportable_keys::ServiceErrorOr<std::vector<uint8_t>> result) {
   if (!result.has_value()) {
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(
+        base::unexpected(unexportable_keys::IsPersistentError(result.error())
+                             ? SessionError::kSigningError
+                             : SessionError::kTransientSigningError));
     return;
   }
 
@@ -62,7 +67,11 @@ void OnDataSigned(
   std::optional<std::string> registration_token =
       AppendSignatureToHeaderAndPayload(header_and_payload, algorithm, pubkey,
                                         signature);
-  std::move(callback).Run(std::move(registration_token));
+  if (!registration_token.has_value()) {
+    std::move(callback).Run(base::unexpected(SessionError::kSigningError));
+    return;
+  }
+  std::move(callback).Run(std::move(registration_token).value());
 }
 
 void SignChallengeWithKey(
@@ -74,18 +83,24 @@ void SignChallengeWithKey(
     std::optional<std::string> challenge,
     std::optional<std::string> authorization,
     std::optional<std::string> session_identifier,
-    base::OnceCallback<
-        void(std::optional<RegistrationFetcher::RegistrationToken>)> callback) {
+    base::OnceCallback<void(
+        SessionErrorOr<RegistrationFetcher::RegistrationToken>)> callback) {
   auto expected_algorithm = unexportable_key_service.GetAlgorithm(key_id);
   if (!expected_algorithm.has_value()) {
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(base::unexpected(
+        unexportable_keys::IsPersistentError(expected_algorithm.error())
+            ? SessionError::kSigningError
+            : SessionError::kTransientSigningError));
     return;
   }
 
   auto expected_public_key =
       unexportable_key_service.GetSubjectPublicKeyInfo(key_id);
   if (!expected_public_key.has_value()) {
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(base::unexpected(
+        unexportable_keys::IsPersistentError(expected_public_key.error())
+            ? SessionError::kSigningError
+            : SessionError::kTransientSigningError));
     return;
   }
 
@@ -100,7 +115,7 @@ void SignChallengeWithKey(
   }
 
   if (!header_and_payload.has_value()) {
-    std::move(callback).Run(std::nullopt);
+    std::move(callback).Run(base::unexpected(SessionError::kSigningError));
     return;
   }
 
@@ -468,7 +483,7 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
 
   void AttemptChallengeSigning() {
     base::OnceCallback<void(
-        std::optional<RegistrationFetcher::RegistrationToken>)>
+        SessionErrorOr<RegistrationFetcher::RegistrationToken>)>
         callback =
             base::BindOnce(&RegistrationFetcherImpl::OnRegistrationTokenCreated,
                            GetWeakPtr(), current_challenge_, *key_id_);
@@ -516,11 +531,11 @@ class RegistrationFetcherImpl : public RegistrationFetcher {
   void OnRegistrationTokenCreated(
       std::optional<std::string> challenge,
       unexportable_keys::UnexportableSigningKeyId key_id,
-      std::optional<RegistrationFetcher::RegistrationToken>
+      SessionErrorOr<RegistrationFetcher::RegistrationToken>
           registration_token) {
-    if (!registration_token) {
+    if (!registration_token.has_value()) {
       RunCallback(CreateErrorRegistrationResult(
-          SessionError(SessionError::kSigningError)));
+          SessionError(registration_token.error())));
       // `this` may be deleted.
       return;
     }
@@ -886,8 +901,8 @@ void RegistrationFetcher::CreateRegistrationTokenAsyncForTesting(
     unexportable_keys::UnexportableKeyService& unexportable_key_service,
     std::string challenge,
     std::optional<std::string> authorization,
-    base::OnceCallback<
-        void(std::optional<RegistrationFetcher::RegistrationToken>)> callback) {
+    base::OnceCallback<void(
+        SessionErrorOr<RegistrationFetcher::RegistrationToken>)> callback) {
   static constexpr crypto::SignatureVerifier::SignatureAlgorithm
       kSupportedAlgos[] = {crypto::SignatureVerifier::ECDSA_SHA256,
                            crypto::SignatureVerifier::RSA_PKCS1_SHA256};
@@ -898,12 +913,15 @@ void RegistrationFetcher::CreateRegistrationTokenAsyncForTesting(
              const std::string& challenge,
              std::optional<std::string>&& authorization,
              base::OnceCallback<void(
-                 std::optional<RegistrationFetcher::RegistrationToken>)>
+                 SessionErrorOr<RegistrationFetcher::RegistrationToken>)>
                  callback,
              unexportable_keys::ServiceErrorOr<
                  unexportable_keys::UnexportableSigningKeyId> key_result) {
             if (!key_result.has_value()) {
-              std::move(callback).Run(std::nullopt);
+              std::move(callback).Run(base::unexpected(
+                  unexportable_keys::IsPersistentError(key_result.error())
+                      ? SessionError::kSigningError
+                      : SessionError::kTransientSigningError));
               return;
             }
 

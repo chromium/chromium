@@ -4,7 +4,10 @@
 
 #include "net/device_bound_sessions/session_error.h"
 
+#include <optional>
+
 #include "base/notreached.h"
+#include "net/device_bound_sessions/refresh_result.h"
 
 namespace net::device_bound_sessions {
 
@@ -68,6 +71,7 @@ std::optional<DeletionReason> SessionError::GetDeletionReason() const {
     case kTransientHttpError:
     case kBoundCookieSetForbidden:
     case kSigningQuotaExceeded:
+    case kTransientSigningError:
       return std::nullopt;
     // Registration-only errors never trigger session deletion.
     case kSubdomainRegistrationWellKnownUnavailable:
@@ -104,6 +108,7 @@ bool SessionError::IsServerError() const {
     case kProxyError:
     case kSigningQuotaExceeded:
     case kSessionDeletedDuringRefresh:
+    case kTransientSigningError:
       return false;
     case kServerRequestedTermination:
     case kInvalidConfigJson:
@@ -147,6 +152,96 @@ bool SessionError::IsServerError() const {
     case kBoundCookieSetForbidden:
       return true;
     // Registration-only errors never get reported to the server.
+    case kSubdomainRegistrationWellKnownUnavailable:
+    case kSubdomainRegistrationUnauthorized:
+    case kSubdomainRegistrationWellKnownMalformed:
+    case kFederatedNotAuthorizedByProvider:
+    case kFederatedNotAuthorizedByRelyingParty:
+    case kSessionProviderWellKnownUnavailable:
+    case kSessionProviderWellKnownMalformed:
+    case kSessionProviderWellKnownHasProviderOrigin:
+    case kRelyingPartyWellKnownUnavailable:
+    case kRelyingPartyWellKnownMalformed:
+    case kRelyingPartyWellKnownHasRelyingOrigins:
+    case kFederatedKeyThumbprintMismatch:
+    case kInvalidFederatedSessionUrl:
+    case kInvalidFederatedSessionProviderSessionMissing:
+    case kInvalidFederatedSessionWrongProviderOrigin:
+    case kInvalidFederatedKey:
+    case kTooManyRelyingOriginLabels:
+    case kEmptySessionConfig:
+    case kRegistrationAttemptedChallenge:
+    case kInvalidFederatedSessionProviderFailedToRestoreKey:
+    case kFailedToUnwrapKey:
+      NOTREACHED();
+  }
+}
+
+std::optional<RefreshResult> SessionError::GetRefreshResult() const {
+  switch (type) {
+    case kSuccess:
+      return std::nullopt;
+    // Fatal cases
+    case kServerRequestedTermination:
+    case kKeyError:
+    case kSigningError:
+    case kPersistentHttpError:
+    case kInvalidChallenge:
+    case kTooManyChallenges:
+    case kSessionDeletedDuringRefresh:
+    case kInvalidConfigJson:
+    case kInvalidSessionId:
+    case kInvalidCredentialsConfig:
+    case kInvalidCredentialsType:
+    case kInvalidCredentialsEmptyName:
+    case kInvalidCredentialsCookie:
+    case kInvalidCredentialsCookieCreationTime:
+    case kInvalidCredentialsCookieName:
+    case kInvalidCredentialsCookieParsing:
+    case kInvalidCredentialsCookieUnpermittedAttribute:
+    case kInvalidCredentialsCookieInvalidDomain:
+    case kInvalidCredentialsCookiePrefix:
+    case kInvalidFetcherUrl:
+    case kInvalidRefreshUrl:
+    case kScopeOriginSameSiteMismatch:
+    case kRefreshUrlSameSiteMismatch:
+    case kInvalidScopeOrigin:
+    case kScopeOriginContainsPath:
+    case kMismatchedSessionId:
+    case kRefreshInitiatorNotString:
+    case kRefreshInitiatorInvalidHostPattern:
+    case kInvalidScopeRulePath:
+    case kInvalidScopeRuleHostPattern:
+    case kScopeRuleOriginScopedHostPatternMismatch:
+    case kScopeRuleSiteScopedHostPatternMismatch:
+    case kInvalidScopeSpecification:
+    case kMissingScopeSpecificationType:
+    case kEmptyScopeSpecificationDomain:
+    case kEmptyScopeSpecificationPath:
+    case kInvalidScopeSpecificationType:
+    case kMissingScope:
+    case kNoCredentials:
+    case kInvalidScopeIncludeSite:
+    case kMissingScopeIncludeSite:
+      return RefreshResult::kFatalError;
+
+    // Specific cases
+    case kSigningQuotaExceeded:
+      return RefreshResult::kSigningQuotaExceeded;
+    case kTransientSigningError:
+      return RefreshResult::kTransientSigningError;
+
+    // Server errors (non-fatal)
+    case kTransientHttpError:
+    case kBoundCookieSetForbidden:
+      return RefreshResult::kServerError;
+
+    // Unreachable/Other
+    case kNetError:
+    case kProxyError:
+      return RefreshResult::kUnreachable;
+
+    // Registration-only errors
     case kSubdomainRegistrationWellKnownUnavailable:
     case kSubdomainRegistrationUnauthorized:
     case kSubdomainRegistrationWellKnownMalformed:

@@ -558,6 +558,7 @@ void Session::InformOfRefreshResult(bool was_proactive,
     case kSigningQuotaExceeded:
       break;
     case kTransientHttpError:
+    case kTransientSigningError:
     case kBoundCookieSetForbidden:
       backoff_.InformOfRequest(/*succeeded=*/false);
       break;

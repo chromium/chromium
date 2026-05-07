@@ -386,6 +386,8 @@ EnumTraits<network::mojom::DeviceBoundSessionRefreshResult,
       return MojomRefreshResult::kFatalError;
     case RefreshResult::kSigningQuotaExceeded:
       return MojomRefreshResult::kSigningQuotaExceeded;
+    case RefreshResult::kTransientSigningError:
+      return MojomRefreshResult::kTransientSigningError;
   }
   NOTREACHED();
 }
@@ -414,6 +416,8 @@ EnumTraits<network::mojom::DeviceBoundSessionRefreshResult,
       return RefreshResult::kFatalError;
     case MojomRefreshResult::kSigningQuotaExceeded:
       return RefreshResult::kSigningQuotaExceeded;
+    case MojomRefreshResult::kTransientSigningError:
+      return RefreshResult::kTransientSigningError;
   }
   NOTREACHED();
 }

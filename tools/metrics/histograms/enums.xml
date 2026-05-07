@@ -3133,6 +3133,7 @@ Called by update_net_error_codes.py.-->
              provider key"/>
   <int value="80" label="Failed to unwrap key"/>
   <int value="81" label="Session deleted during refresh"/>
+  <int value="82" label="Transient signing error"/>
 </enum>
 
 <!-- LINT.ThenChange(//net/device_bound_sessions/session_error.h:DeviceBoundSessionError) -->
