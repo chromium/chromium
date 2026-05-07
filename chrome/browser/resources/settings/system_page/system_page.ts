@@ -18,6 +18,7 @@ import '../settings_page/settings_section.js';
 import '../settings_shared.css.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
+import {CrSettingsPrefs} from '/shared/settings/prefs/prefs_types.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -154,8 +155,10 @@ export class SettingsSystemPageElement extends SettingsSystemPageElementBase
   // <if expr="is_win">
   override connectedCallback() {
     super.connectedCallback();
-    this.processIsolationEnabledAtStartup_ =
-        this.getPref('isolation_state.enabled').value;
+    CrSettingsPrefs.initialized.then(() => {
+      this.processIsolationEnabledAtStartup_ =
+          this.getPref('isolation_state.enabled').value;
+    });
   }
   // </if>
 
