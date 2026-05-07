@@ -14,6 +14,8 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "components/feedback/features.h"
 #include "components/feedback/feedback_report.h"
 #include "components/feedback/feedback_switches.h"
@@ -42,8 +44,12 @@ enum class FeedbackReportSendingResult {
 constexpr base::FilePath::CharType kFeedbackReportPath[] =
     FILE_PATH_LITERAL("Feedback Reports");
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 constexpr char kFeedbackPostUrl[] =
     "https://www.google.com/tools/feedback/chrome/__submit";
+#else
+constexpr char kFeedbackPostUrl[] = "";
+#endif
 
 constexpr char kProtoBufMimeType[] = "application/x-protobuf";
 
@@ -343,6 +349,12 @@ void FeedbackUploader::UpdateUploadTimer() {
     upload_timer_.Start(FROM_HERE, delay, this,
                         &FeedbackUploader::UpdateUploadTimer);
   }
+}
+
+GURL FeedbackUploader::SetFeedbackGURLForTesting(GURL url) {
+  GURL previous_url = feedback_post_url_;
+  feedback_post_url_ = std::move(url);
+  return previous_url;
 }
 
 }  // namespace feedback

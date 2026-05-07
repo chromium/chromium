@@ -112,6 +112,11 @@ class FeedbackUploader : public KeyedService {
     return report_being_dispatched_;
   }
 
+  // For testing feedback upload in non-branded builds with a real URL. Returns
+  // the previous URL so that tests can restore on TearDown() to avoid leaking
+  // state.
+  GURL SetFeedbackGURLForTesting(GURL url);
+
  private:
   friend class FeedbackUploaderTest;
 
@@ -164,7 +169,7 @@ class FeedbackUploader : public KeyedService {
 
   scoped_refptr<FeedbackReport> report_being_dispatched_;
 
-  const GURL feedback_post_url_;
+  GURL feedback_post_url_;
 
   // Priority queue of reports prioritized by the time the report is supposed
   // to be uploaded at.

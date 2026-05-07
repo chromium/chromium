@@ -50,7 +50,9 @@ class TestFeedbackUploader final : public FeedbackUploader {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
       : FeedbackUploader(is_off_the_record,
                          state_path,
-                         std::move(url_loader_factory)) {}
+                         std::move(url_loader_factory)) {
+    SetFeedbackGURLForTesting(GURL(kFeedbackPostUrl));
+  }
   TestFeedbackUploader(const TestFeedbackUploader&) = delete;
   TestFeedbackUploader& operator=(const TestFeedbackUploader&) = delete;
 
