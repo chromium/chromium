@@ -9,9 +9,11 @@
 #include <memory>
 #include <optional>
 
+#include "base/containers/flat_set.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "extensions/browser/mime_handler/stream_info.h"
+#include "url/gurl.h"
 
 namespace content {
 struct GlobalRenderFrameHostId;
@@ -161,6 +163,25 @@ class MimeHandlerStreamManager
   bool DidContentFrameFinishNavigation(
       const content::RenderFrameHost* embedder_host) const;
 
+  // Aborts the stream claimed by `embedder_host` and triggers a
+  // frame-scoped re-navigation of `embedder_host` to its original URL so
+  // the response can be re-fetched and handed to a native handler. Only
+  // valid when `embedder_host` has an active extension frame and no
+  // content frame. Works for both primary-main-frame and iframe
+  // embedders -- the navigation is scoped to `embedder_host`'s
+  // `FrameTreeNode`, so sibling frames and the main frame (in the
+  // iframe case) are not disturbed.
+  void AbortAndFallbackToNativeHandler(content::RenderFrameHost* embedder_host);
+
+  // Returns true iff `frame_tree_node_id` was previously marked for
+  // native-handler fallback by `AbortAndFallbackToNativeHandler()` and
+  // the mark has not yet been cleared by navigation completion or frame
+  // deletion. Non-destructive: redirect chains invoke
+  // `WillProcessResponse` multiple times, so the mark must survive the
+  // whole chain. Cleared in `DidFinishNavigation()` / `FrameDeleted()`.
+  bool IsPendingNativeFallback(
+      content::FrameTreeNodeId frame_tree_node_id) const;
+
   // Returns whether the handler plugin should handle save events.
   bool PluginCanSave(const content::RenderFrameHost* embedder_host) const;
 
@@ -294,6 +315,14 @@ class MimeHandlerStreamManager
 
   // Stores stream info by embedder host info.
   StreamInfoMap stream_infos_;
+
+  // Embedder frames marked for native-handler fallback whose pending
+  // re-navigation has not yet completed. Keyed by `FrameTreeNodeId`
+  // (not URL) so two concurrent iframes handling the same URL are
+  // distinguished, and so the mark survives cross-process RFH swaps
+  // during the scoped re-navigation (the FTN persists across same-frame
+  // navigation; only RFHs within it are replaced).
+  base::flat_set<content::FrameTreeNodeId> pending_native_fallback_frames_;
 };
 
 }  // namespace mime_handler

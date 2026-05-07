@@ -21,6 +21,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_attach_helper.h"
 #include "extensions/browser/mime_handler/mime_handler_page.h"
+#include "extensions/browser/mime_handler/mime_handler_stream_manager.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/mime_types_handler.h"
@@ -120,8 +121,28 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
     return;
   }
 
-  std::string extension_id = PluginUtils::GetExtensionIdForMimeType(
-      web_contents->GetBrowserContext(), response_head->mime_type);
+  std::string extension_id;
+  if (response_head->mime_type == pdf::kPDFMimeType) {
+    // A generic MIME handler extension called
+    // chrome.mimeHandler.abortAndFallbackToNativeHandler() on a prior
+    // navigation for this embedder frame. Peek (not consume) at the
+    // fallback mark so the aborted extension does not re-claim its own
+    // response across the whole redirect chain -- the mark is cleared in
+    // `DidFinishNavigation()` once the re-fetch settles. Route the
+    // application/pdf response to the user agent's built-in PDF viewer.
+    auto* stream_manager =
+        extensions::mime_handler::MimeHandlerStreamManager::FromWebContents(
+            web_contents);
+    if (stream_manager &&
+        stream_manager->IsPendingNativeFallback(frame_tree_node_id_)) {
+      extension_id = extension_misc::kPdfExtensionId;
+    }
+  }
+
+  if (extension_id.empty()) {
+    extension_id = PluginUtils::GetExtensionIdForMimeType(
+        web_contents->GetBrowserContext(), response_head->mime_type);
+  }
 
   if (extension_id.empty()) {
     return;

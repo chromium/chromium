@@ -94,6 +94,7 @@ source_set("impl") {
       "//components/metrics_services_manager",
       "//components/pref_registry",
       "//extensions/browser",
+      "//extensions/browser/mime_handler",
       "//extensions/browser/mime_handler:mime_handler_page",
       "//extensions/browser/mime_handler:mime_handler_registry",
       "//extensions/common",

@@ -28,6 +28,25 @@ class MimeHandlerGetStreamInfoFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
+class MimeHandlerAbortAndFallbackToNativeHandlerFunction
+    : public ExtensionFunction {
+ public:
+  MimeHandlerAbortAndFallbackToNativeHandlerFunction();
+  MimeHandlerAbortAndFallbackToNativeHandlerFunction(
+      const MimeHandlerAbortAndFallbackToNativeHandlerFunction&) = delete;
+  MimeHandlerAbortAndFallbackToNativeHandlerFunction& operator=(
+      const MimeHandlerAbortAndFallbackToNativeHandlerFunction&) = delete;
+
+  DECLARE_EXTENSION_FUNCTION("mimeHandler.abortAndFallbackToNativeHandler",
+                             MIMEHANDLER_ABORTANDFALLBACKTONATIVEHANDLER)
+
+ protected:
+  ~MimeHandlerAbortAndFallbackToNativeHandlerFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() override;
+};
+
 }  // namespace extensions
 
 #endif  // EXTENSIONS_BROWSER_API_MIME_HANDLER_MIME_HANDLER_API_H_

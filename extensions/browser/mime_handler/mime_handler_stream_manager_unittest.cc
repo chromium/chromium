@@ -1050,4 +1050,64 @@ TEST_F(MimeHandlerStreamManagerTest,
   manager->ReadyToCommitNavigation(&extension_handle);
 }
 
+TEST_F(MimeHandlerStreamManagerTest,
+       AbortAndFallbackToNativeHandler_MarksEmbedderFrame) {
+  content::RenderFrameHost* embedder_host =
+      NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
+  const content::FrameTreeNodeId embedder_ftn =
+      embedder_host->GetFrameTreeNodeId();
+  auto* manager = mime_handler_stream_manager();
+  manager->AddStreamContainer(
+      embedder_ftn, "internal_id",
+      extensions::mime_handler::GenerateSampleStreamContainer(1),
+      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>());
+  manager->ClaimStreamInfoForTesting(embedder_host);
+
+  // Satisfy the CHECKs in `AbortAndFallbackToNativeHandler`: the
+  // extension frame must have finished navigating, and the content
+  // frame must not yet be bound.
+  auto* stream_info = manager->GetClaimedStreamInfoForTesting(embedder_host);
+  ASSERT_TRUE(stream_info);
+  stream_info->SetDidExtensionFinishNavigation();
+
+  EXPECT_FALSE(manager->IsPendingNativeFallback(embedder_ftn));
+  manager->AbortAndFallbackToNativeHandler(embedder_host);
+
+  // Peek is non-destructive -- the throttle's `WillProcessResponse`
+  // may fire multiple times in a single re-navigation (redirect chain),
+  // so the mark must survive until the navigation completes.
+  EXPECT_TRUE(manager->IsPendingNativeFallback(embedder_ftn));
+  EXPECT_TRUE(manager->IsPendingNativeFallback(embedder_ftn));
+
+  // A different frame is never marked.
+  EXPECT_FALSE(manager->IsPendingNativeFallback(content::FrameTreeNodeId()));
+}
+
+TEST_F(MimeHandlerStreamManagerTest,
+       AbortAndFallbackToNativeHandler_DidFinishNavigationClearsMark) {
+  content::RenderFrameHost* embedder_host =
+      NavigateAndCommit(main_rfh(), GURL(kOriginalUrl1));
+  const content::FrameTreeNodeId embedder_ftn =
+      embedder_host->GetFrameTreeNodeId();
+  auto* manager = mime_handler_stream_manager();
+  manager->AddStreamContainer(
+      embedder_ftn, "internal_id",
+      extensions::mime_handler::GenerateSampleStreamContainer(1),
+      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>());
+  manager->ClaimStreamInfoForTesting(embedder_host);
+  auto* stream_info = manager->GetClaimedStreamInfoForTesting(embedder_host);
+  ASSERT_TRUE(stream_info);
+  stream_info->SetDidExtensionFinishNavigation();
+
+  manager->AbortAndFallbackToNativeHandler(embedder_host);
+  ASSERT_TRUE(manager->IsPendingNativeFallback(embedder_ftn));
+
+  // `DidFinishNavigation` on the embedder FTN clears the mark --
+  // committed or errored, the re-fetch is over.
+  NiceMock<content::MockNavigationHandle> finish_handle(web_contents());
+  finish_handle.set_render_frame_host(embedder_host);
+  manager->DidFinishNavigation(&finish_handle);
+  EXPECT_FALSE(manager->IsPendingNativeFallback(embedder_ftn));
+}
+
 }  // namespace extensions::mime_handler
