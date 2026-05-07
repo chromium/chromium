@@ -813,6 +813,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="ProfilePicker.FirstProfileTime.FirstWebContentsNonEmptyPaint.AutoLaunchByOs"
+    units="ms" expires_after="2026-10-25">
+  <owner>atharvmaan@google.com</owner>
+  <owner>chrome-desktop-ui-waterloo@google.com</owner>
+  <summary>
+    Same as ProfilePicker.FirstProfileTime.FirstWebContentsNonEmptyPaint, but
+    recorded only for browser launches initiated automatically by the OS.
+  </summary>
+</histogram>
+
 <histogram name="ProfilePicker.FirstRun.DefaultBrowser"
     enum="FirstRunDefaultBrowserChoice" expires_after="2026-09-20">
   <owner>dgn@chromium.org</owner>

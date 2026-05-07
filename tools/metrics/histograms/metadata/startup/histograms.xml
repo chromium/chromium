@@ -1043,6 +1043,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Startup.FirstWebContents.NonEmptyPaint3.AutoLaunchByOs"
+    units="ms" expires_after="2026-10-25">
+  <owner>atharvmaan@google.com</owner>
+  <owner>chrome-desktop-ui-waterloo@google.com</owner>
+  <summary>
+    Similar to Startup.FirstWebContents.NonEmptyPaint3, but recorded only for
+    browser launches initiated automatically by the OS.
+  </summary>
+</histogram>
+
 <histogram name="Startup.FirstWebContents.NonEmptyPaint3{StartupTemperature}"
     units="ms" expires_after="never">
 <!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->

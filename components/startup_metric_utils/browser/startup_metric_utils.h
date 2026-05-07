@@ -113,6 +113,10 @@ class COMPONENT_EXPORT(STARTUP_METRIC_UTILS)
       base::TimeTicks now,
       base::TimeTicks render_process_host_init_time);
 
+  // Similar to `RecordFirstWebContentsNonEmptyPaint`, but only for auto
+  // launches by the OS.
+  void RecordFirstWebContentsNonEmptyPaintForOsLaunch(base::TimeTicks now);
+
   // Call this with the time when the first web contents began navigating its
   // main frame / successfully committed its navigation for the main frame.
   // These functions must be called after RecordApplicationStartTime(), because

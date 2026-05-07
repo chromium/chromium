@@ -25941,6 +25941,9 @@ Called by update_net_error_codes.py.-->
   <int value="7"
       label="Abandoned because the content was already painted before
              profiling started"/>
+  <int value="8"
+      label="Abandoned because the launch was done without user interaction
+             (eg. OS startup)"/>
 </enum>
 
 <!-- LINT.IfChange(EcheStreamStatus) -->

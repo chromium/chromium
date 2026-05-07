@@ -420,6 +420,21 @@ void BrowserStartupMetricRecorder::RecordFirstWebContentsNonEmptyPaint(
       now - message_loop_start_ticks_);
 }
 
+void BrowserStartupMetricRecorder::
+    RecordFirstWebContentsNonEmptyPaintForOsLaunch(base::TimeTicks now) {
+  const base::TimeTicks web_contents_start_ticks = GetWebContentsStartTicks();
+  DCHECK(!web_contents_start_ticks.is_null());
+  GetCommon().AssertFirstCallInSession(FROM_HERE);
+
+  if (!ShouldLogStartupHistogram()) {
+    return;
+  }
+
+  base::UmaHistogramLongTimes100(
+      "Startup.FirstWebContents.NonEmptyPaint3.AutoLaunchByOs",
+      now - web_contents_start_ticks);
+}
+
 void BrowserStartupMetricRecorder::RecordFirstWebContentsMainNavigationStart(
     base::TimeTicks ticks) {
   const base::TimeTicks web_contents_start_ticks = GetWebContentsStartTicks();
