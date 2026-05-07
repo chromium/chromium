@@ -44,12 +44,10 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -64,7 +62,6 @@ import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.SyncService;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.ViewUtils;
 
@@ -211,7 +208,6 @@ public class HistorySyncTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
     public void testPositiveButtonWithNonMinorModeAccount() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -344,7 +340,6 @@ public class HistorySyncTest {
 
     @Test
     @MediumTest
-    @Restriction(DeviceFormFactor.PHONE_OR_TABLET)
     public void testButtonsEquallyWeightedWithMinorAccount_portraitMode() {
         Activity historySyncActivity = mActivityTestRule.getActivity();
         ActivityTestUtils.rotateActivityToOrientation(
@@ -400,7 +395,6 @@ public class HistorySyncTest {
 
     @Test
     @MediumTest
-    @Restriction(DeviceFormFactor.PHONE_OR_TABLET)
     public void testButtonsUnequallyWeightedWithNonMinorAccount_portraitMode() {
         Activity historySyncActivity = mActivityTestRule.getActivity();
         ActivityTestUtils.rotateActivityToOrientation(

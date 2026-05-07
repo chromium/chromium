@@ -28,7 +28,6 @@ import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.TabTitleObserver;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.common.ContentFeatures;
-import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.concurrent.TimeoutException;
 
@@ -54,7 +53,6 @@ public class VideoTest {
     @DisableIf.Build(
             sdk_equals = Build.VERSION_CODES.Q,
             message = "crbug.com/447426928, crashing emulator with --disable-field-trial-config")
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
     public void testLoadMediaUrl() throws TimeoutException {
         Tab tab = mPage.getTab();
         TabTitleObserver titleObserver = new TabTitleObserver(tab, "ready_to_play");

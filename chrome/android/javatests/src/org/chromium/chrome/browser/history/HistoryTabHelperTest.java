@@ -37,7 +37,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.url.GURL;
 
 /** Tests for history tab helper. */
@@ -57,7 +56,6 @@ public class HistoryTabHelperTest {
     @DisableIf.Build(
             sdk_is_less_than = VERSION_CODES.UPSIDE_DOWN_CAKE,
             message = "This test is using an API introduced in Android U.")
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
     public void testAppHistory() throws Exception {
         Context context = ContextUtils.getApplicationContext();
         Intent viewIntent =
