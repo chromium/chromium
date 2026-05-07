@@ -339,6 +339,12 @@ void SimpleMenuModel::SetIcon(size_t index, const ui::ImageModel& icon) {
   MenuItemsChanged();
 }
 
+void SimpleMenuModel::SetIconForCommandId(int command_id,
+                                          const ui::ImageModel& icon) {
+  std::optional<size_t> index = GetIndexOfCommandId(command_id);
+  SetIcon(index.value(), icon);
+}
+
 void SimpleMenuModel::SetLabel(size_t index, const std::u16string& label) {
   items_[ValidateItemIndex(index)].label = label;
   MenuItemsChanged();

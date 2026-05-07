@@ -300,6 +300,22 @@ TEST(SimpleMenuModelTest, HasIconsViaVectorIcon) {
   EXPECT_FALSE(simple_menu_model.GetIconAt(1).IsEmpty());
 }
 
+TEST(SimpleMenuModelTest, SetIconForCommandId) {
+  SimpleMenuModel simple_menu_model(nullptr);
+  simple_menu_model.AddItem(/*command_id*/ 5, u"menu item 0");
+  simple_menu_model.AddItem(/*command_id*/ 6, u"menu item 1");
+
+  EXPECT_TRUE(simple_menu_model.GetIconAt(0).IsEmpty());
+  EXPECT_TRUE(simple_menu_model.GetIconAt(1).IsEmpty());
+
+  const ui::ImageModel icon =
+      ui::ImageModel::FromImage(gfx::test::CreateImage(16, 16));
+  simple_menu_model.SetIconForCommandId(5, icon);
+
+  EXPECT_FALSE(simple_menu_model.GetIconAt(0).IsEmpty());
+  EXPECT_TRUE(simple_menu_model.GetIconAt(1).IsEmpty());
+}
+
 TEST(SimpleMenuModelTest, InheritsSubMenuAlert) {
   DelegateBase delegate;
   SimpleMenuModel submenu_model(&delegate);

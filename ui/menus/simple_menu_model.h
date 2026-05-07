@@ -215,6 +215,9 @@ class COMPONENT_EXPORT(UI_MENUS) SimpleMenuModel : public MenuModel {
   // Sets the icon for the item at |index|.
   void SetIcon(size_t index, const ui::ImageModel& icon);
 
+  // Sets the icon for the item with the given |command_id|.
+  void SetIconForCommandId(int command_id, const ui::ImageModel& icon);
+
   // Sets the label for the item at |index|.
   void SetLabel(size_t index, const std::u16string& label);
 
