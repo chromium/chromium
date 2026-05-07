@@ -175,14 +175,7 @@ template("chrome_extra_paks") {
       "//chrome/browser:resources",
       "//chrome/browser/glic/resources:browser_resources",
       "//chrome/browser/resources",
-      "//chrome/browser/resources/contextual_tasks:resources",
-      "//chrome/browser/resources/glic:resources",
-      "//chrome/browser/resources/saved_tab_groups_unsupported:resources",
       "//chrome/common:resources",
-      "//components/autofill/core/browser:autofill_address_rewriter_resources",
-      "//components/autofill/core/browser:autofill_alternative_state_name_map_resources",
-      "//components/enterprise/connectors/resources",
-      "//components/metrics:server_urls_grd",
       "//components/resources",
       "//content:content_resources",
       "//content/browser/resources",
@@ -271,19 +264,6 @@ template("chrome_extra_paks") {
       deps += [
         "//chrome/browser/actor/resources:browser_resources",
         "//chrome/browser/indigo/resources:browser_resources",
-        "//chrome/browser/resources:dev_ui_paks",
-        "//chrome/browser/resources/actor_overlay:resources",
-        "//chrome/browser/resources/autofill_ml_internals:resources",
-        "//chrome/browser/resources/data_sharing:resources",
-        "//chrome/browser/resources/drive_picker_host:resources",
-        "//chrome/browser/resources/indigo:resources",
-        "//chrome/browser/resources/lens/overlay:resources",
-        "//chrome/browser/resources/lens/shared:resources",
-        "//chrome/browser/resources/search_engine_choice:resources",
-        "//chrome/browser/resources/side_panel/comments:resources",
-        "//chrome/browser/resources/tab_group_home:resources",
-        "//chrome/browser/resources/webnn_internals:resources",
-        "//chrome/browser/resources/webui_toolbar:resources",
         "//components/headless/command_handler",
         "//content/browser/tracing:resources",
       ]
@@ -293,11 +273,7 @@ template("chrome_extra_paks") {
           "$root_gen_dir/chrome/media_router_feedback_resources.pak",
           "$root_gen_dir/chrome/preinstalled_web_apps_resources.pak",
         ]
-        deps += [
-          "//chrome/browser/nearby_sharing/internal/icons",
-          "//chrome/browser/resources:preinstalled_web_apps_resources",
-          "//chrome/browser/resources/media_router/cast_feedback:resources",
-        ]
+        deps += [ "//chrome/browser/nearby_sharing/internal/icons" ]
       }
       if (!optimize_webui) {
         # Only add when optimize_webui=false, since in other cases the same
@@ -477,17 +453,6 @@ template("chrome_extra_paks") {
         "//ash/webui/vc_background_ui/resources",
         "//ash/wm/overview/birch/resources:coral_resources",
         "//chrome/browser/resources:office_web_app_resources",
-        "//chrome/browser/resources/chromeos/account_manager:resources",
-        "//chrome/browser/resources/chromeos/cryptohome:resources",
-        "//chrome/browser/resources/chromeos/dlp_internals:resources",
-        "//chrome/browser/resources/chromeos/drive_internals:resources",
-        "//chrome/browser/resources/chromeos/emulator:resources",
-        "//chrome/browser/resources/chromeos/floating_workspace:resources",
-        "//chrome/browser/resources/chromeos/kerberos:resources",
-        "//chrome/browser/resources/chromeos/power:resources",
-        "//chrome/browser/resources/chromeos/slow:resources",
-        "//chrome/browser/resources/chromeos/smb_shares:resources",
-        "//chrome/browser/resources/chromeos/sys_internals:resources",
         "//chrome/common/chromeos/extensions:resources",
         "//chromeos/ash/components/emoji:resources",
         "//chromeos/ash/experiences/arc/input_overlay/resources",

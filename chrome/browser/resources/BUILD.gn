@@ -91,6 +91,7 @@ group("resources") {
       "tab_group_home:resources",
       "tab_search:resources",
       "web_app_internals:resources",
+      "webnn_internals:resources",
       "webui_browser:resources",
       "webui_gallery:resources",
       "webui_toolbar:resources",
@@ -98,7 +99,10 @@ group("resources") {
       "//components/browser_apis/tab_strip/resources",
     ]
     if (is_chrome_branded) {
-      public_deps += [ "media_router/cast_feedback:resources" ]
+      public_deps += [
+        ":preinstalled_web_apps_resources",
+        "media_router/cast_feedback:resources",
+      ]
     }
   }
 
