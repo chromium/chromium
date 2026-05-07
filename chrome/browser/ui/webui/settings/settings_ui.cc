@@ -556,8 +556,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
 #if BUILDFLAG(IS_WIN)
   html_source->AddBoolean(
       "showProcessIsolationSetting",
-      base::FeatureList::IsEnabled(features::kProcessIsolationSettings) &&
-          install_static::IsSystemInstall());
+      install_static::IsSystemInstall() &&
+          (base::FeatureList::IsEnabled(features::kProcessIsolationSettings) ||
+           g_browser_process->local_state()->GetBoolean(
+               prefs::kProcessIsolationEnabled)));
 #endif  // BUILDFLAG(IS_WIN)
 
   html_source->AddBoolean(
