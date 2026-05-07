@@ -2276,32 +2276,6 @@ targets.bundle(
 )
 
 targets.bundle(
-    name = "chromium_web_tests_graphite_isolated_scripts",
-    targets = [
-        "graphite_enabled_blink_web_tests",
-        "graphite_enabled_blink_wpt_tests",
-        "graphite_enabled_headless_shell_wpt_tests",
-    ],
-    per_test_modifications = {
-        "graphite_enabled_blink_web_tests": targets.mixin(
-            swarming = targets.swarming(
-                shards = 2,
-            ),
-        ),
-        "graphite_enabled_blink_wpt_tests": targets.mixin(
-            swarming = targets.swarming(
-                shards = 1,
-            ),
-        ),
-        "graphite_enabled_headless_shell_wpt_tests": targets.mixin(
-            swarming = targets.swarming(
-                shards = 7,
-            ),
-        ),
-    },
-)
-
-targets.bundle(
     name = "chromium_web_tests_surface_embed_isolated_scripts",
     targets = [
         "surface_embed_chrome_wpt_tests",

@@ -11697,27 +11697,6 @@
           }
         ]
       },
-      "mac-skia-alt-arm64-rel-tests": {
-        "contact_team_email": "chrome-skia-graphite@google.com",
-        "problem_specs": [
-          {
-            "name": "Unhealthy",
-            "period_days": 7,
-            "score": 5,
-            "thresholds": {
-              "_default": "_default"
-            }
-          },
-          {
-            "name": "Low Value",
-            "period_days": 90,
-            "score": 1,
-            "thresholds": {
-              "_default": "_default"
-            }
-          }
-        ]
-      },
       "mac-swangle-chromium-x64": {
         "contact_team_email": "chrome-gpu-infra@google.com",
         "problem_specs": [

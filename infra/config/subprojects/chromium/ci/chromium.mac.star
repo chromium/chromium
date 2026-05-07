@@ -474,43 +474,6 @@ ci.thin_tester(
 )
 
 ci.thin_tester(
-    name = "mac-skia-alt-arm64-rel-tests",
-    description_html = "Runs web tests with Skia Graphite on Mac ARM machines",
-    parent = "ci/mac-arm64-rel",
-    builder_spec = builder_config.builder_spec(
-        execution_mode = builder_config.execution_mode.TEST,
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = [
-                "mb",
-            ],
-            build_config = builder_config.build_config.RELEASE,
-            target_arch = builder_config.target_arch.ARM,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.MAC,
-        ),
-    ),
-    targets = targets.bundle(
-        targets = [
-            "chromium_web_tests_graphite_isolated_scripts",
-        ],
-        mixins = [
-            "mac_default_arm64",
-        ],
-    ),
-    gardener_rotations = args.ignore_default(None),
-    tree_closing = False,
-    console_view_entry = consoles.console_view_entry(
-        category = "release|arm64",
-        short_name = "skia-alt",
-    ),
-    contact_team_email = "chrome-skia-graphite@google.com",
-)
-
-ci.thin_tester(
     name = "mac14-arm64-rel-tests",
     branch_selector = branches.selector.MAC_BRANCHES,
     description_html = "Runs MacOS 14 tests on ARM machines",

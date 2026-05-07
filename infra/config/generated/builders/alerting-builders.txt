@@ -691,7 +691,6 @@ try/mac-no-initial-webui-rel
 try/mac-official
 try/mac-rel
 try/mac-rel-cft
-try/mac-skia-alt-arm64-blink-rel
 try/mac-swangle-chromium-try-x64
 try/mac-updater-try-builder-dbg
 try/mac-updater-try-builder-rel
