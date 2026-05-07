@@ -248,7 +248,7 @@ void SystemTextfield::SetShowFocusRing(bool show) {
   // It's possible that derived classes could have removed the focus ring.
   if (auto* focus_ring = views::FocusRing::Get(this); focus_ring != nullptr) {
     focus_ring->SetOutsetFocusRingDisabled(true);
-    focus_ring->SchedulePaint();
+    focus_ring->Refresh();
   }
 }
 

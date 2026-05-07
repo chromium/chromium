@@ -75,6 +75,11 @@ class VIEWS_EXPORT FocusRing : public View, public ViewObserver {
   // encloses.
   void SetInvalid(bool invalid);
 
+  // Updates the focus ring's visibility based on the parent's focus state or
+  // the custom focus predicate. Clients should call this whenever the value
+  // of their custom focus predicate changes.
+  void Refresh();
+
   // Sets the predicate function used to tell when the parent has focus. The
   // parent is passed into this predicate; it should return whether the parent
   // should be treated as focused. This is useful when, for example, the parent
@@ -119,13 +124,17 @@ class VIEWS_EXPORT FocusRing : public View, public ViewObserver {
   SkPath GetPath() const;
   SkRRect GetRingRoundRect() const;
 
-  void RefreshLayer();
+  void RefreshLayer(bool should_paint);
 
   // Returns whether we should outset by `kFocusRingOutset` dp before drawing
   // the focus ring.
   bool ShouldSetOutsetFocusRing() const;
 
   bool ShouldPaint();
+
+  // TODO(crbug.com/507553991): Remove this function once all clients are
+  // migrated to use Refresh().
+  bool ShouldPaintDeprecated();
 
   // Translates the provided SkRect or SkRRect, which is in the parent's
   // coordinate system, into this view's coordinate system, then insets it

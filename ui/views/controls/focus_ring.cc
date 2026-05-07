@@ -142,7 +142,7 @@ void FocusRing::SetInvalid(bool invalid) {
 
 void FocusRing::SetHasFocusPredicate(const ViewPredicate& predicate) {
   has_focus_predicate_ = predicate;
-  RefreshLayer();
+  RefreshLayer(ShouldPaintDeprecated());
 }
 
 std::optional<ui::ColorId> FocusRing::GetColorId() const {
@@ -245,7 +245,7 @@ void FocusRing::ViewHierarchyChanged(
   if (details.is_add) {
     // Need to start observing the parent.
     view_observation_.Observe(details.parent);
-    RefreshLayer();
+    RefreshLayer(ShouldPaintDeprecated());
   } else if (view_observation_.IsObservingSource(details.parent)) {
     // This view is being removed from its parent. It needs to remove itself
     // from its parent's observer list in the case where the FocusView is
@@ -255,6 +255,8 @@ void FocusRing::ViewHierarchyChanged(
 }
 
 void FocusRing::OnPaint(gfx::Canvas* canvas) {
+  // TODO(crbug.com/507553991): Remove this check once all clients are migrated
+  // to use Refresh().
   if (!ShouldPaint()) {
     return;
   }
@@ -312,11 +314,11 @@ void FocusRing::OnThemeChanged() {
 }
 
 void FocusRing::OnViewFocused(View* view) {
-  RefreshLayer();
+  RefreshLayer(ShouldPaintDeprecated());
 }
 
 void FocusRing::OnViewBlurred(View* view) {
-  RefreshLayer();
+  RefreshLayer(ShouldPaintDeprecated());
 }
 
 void FocusRing::OnViewLayoutInvalidated(View* view) {
@@ -359,16 +361,11 @@ SkPath FocusRing::GetPath() const {
   return GetHighlightPathInternal(parent(), halo_thickness_);
 }
 
-void FocusRing::RefreshLayer() {
-  // TODO(pbos): This always keeps the layer alive if |has_focus_predicate_| is
-  // set. This is done because we're not notified when the predicate might
-  // return a different result and there are call sites that call SchedulePaint
-  // on FocusRings and expect that to be sufficient.
-  // The cleanup would be to always call has_focus_predicate_ here and make sure
-  // that RefreshLayer gets called somehow whenever |has_focused_predicate_|
-  // returns a new value.
-  const bool should_paint =
-      has_focus_predicate_ || (parent() && parent()->HasFocus());
+void FocusRing::Refresh() {
+  RefreshLayer(ShouldPaint());
+}
+
+void FocusRing::RefreshLayer(bool should_paint) {
   SetVisible(should_paint);
   if (should_paint) {
     // A layer is necessary to paint beyond the parent's bounds.
@@ -391,8 +388,21 @@ bool FocusRing::ShouldSetOutsetFocusRing() const {
 bool FocusRing::ShouldPaint() {
   // TODO(pbos): Reevaluate if this can turn into a DCHECK, e.g. we should
   // never paint if there's no parent focus.
-  return has_focus_predicate_ ? has_focus_predicate_.Run(parent())
-                              : parent()->HasFocus();
+  return parent() && (has_focus_predicate_ ? has_focus_predicate_.Run(parent())
+                                           : parent()->HasFocus());
+}
+
+// TODO(crbug.com/507553991): Remove this function once all clients are migrated
+// to use Refresh().
+bool FocusRing::ShouldPaintDeprecated() {
+  // TODO(pbos): This always keeps the layer alive if |has_focus_predicate_| is
+  // set. This is done because we're not notified when the predicate might
+  // return a different result and there are call sites that call SchedulePaint
+  // on FocusRings and expect that to be sufficient.
+  // The cleanup would be to always call has_focus_predicate_ here and make sure
+  // that RefreshLayer gets called somehow whenever |has_focused_predicate_|
+  // returns a new value.
+  return has_focus_predicate_ || (parent() && parent()->HasFocus());
 }
 
 SkRRect FocusRing::RingRectFromPathRect(const SkRect& rect) const {

@@ -717,7 +717,7 @@ void TabAppSelectionView::SetFocus(views::View* focus_view) {
   }
 
   if (auto* focus_ring = views::FocusRing::Get(focus_view)) {
-    focus_ring->SchedulePaint();
+    focus_ring->Refresh();
   }
 
   focus_view->GetViewAccessibility().NotifyEvent(ax::mojom::Event::kSelection,
@@ -730,7 +730,7 @@ void TabAppSelectionView::SetBlur(views::View* blur_view) {
   }
 
   if (auto* focus_ring = views::FocusRing::Get(blur_view)) {
-    focus_ring->SchedulePaint();
+    focus_ring->Refresh();
   }
 
   for (const auto& item_view : item_views_) {

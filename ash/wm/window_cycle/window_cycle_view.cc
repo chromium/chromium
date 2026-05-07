@@ -525,7 +525,7 @@ void WindowCycleView::SetFocusTabSlider(bool focus) {
   }
 
   is_tab_slider_focused_ = focus;
-  views::FocusRing::Get(tab_slider_->GetSelectorView())->SchedulePaint();
+  views::FocusRing::Get(tab_slider_->GetSelectorView())->Refresh();
 }
 
 bool WindowCycleView::IsTabSliderFocused() const {

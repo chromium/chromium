@@ -713,7 +713,7 @@ void ScrollView::SetHasFocusIndicator(bool has_focus_indicator) {
   }
   draw_focus_indicator_ = has_focus_indicator;
 
-  views::FocusRing::Get(this)->SchedulePaint();
+  views::FocusRing::Get(this)->Refresh();
   SchedulePaint();
   OnPropertyChanged(&draw_focus_indicator_, PropertyEffects::kPaint);
 }

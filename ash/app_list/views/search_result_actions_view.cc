@@ -127,7 +127,7 @@ void SearchResultActionButton::UpdateOnStateChanged() {
   // Show button if the associated result row is hovered or selected, or one
   // of the action buttons is selected.
   SetVisible(parent_->IsSearchResultHoveredOrSelected());
-  views::FocusRing::Get(this)->SchedulePaint();
+  views::FocusRing::Get(this)->Refresh();
 }
 
 int SearchResultActionButton::GetButtonRadius() const {

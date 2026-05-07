@@ -81,7 +81,7 @@ void LinkFragment::RecalculateFont() {
               fragment->font_list().DeriveWithStyle(intended_style));
           fragment->SchedulePaint();
         }
-        views::FocusRing::Get(fragment)->SchedulePaint();
+        views::FocusRing::Get(fragment)->Refresh();
         return false;
       },
       this);

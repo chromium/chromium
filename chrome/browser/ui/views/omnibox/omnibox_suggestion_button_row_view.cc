@@ -564,11 +564,11 @@ void OmniboxSuggestionButtonRowView::SelectionStateChanged() {
     return;
   }
   if (previous_active_button_) {
-    views::FocusRing::Get(previous_active_button_)->SchedulePaint();
+    views::FocusRing::Get(previous_active_button_)->Refresh();
     previous_active_button_->GetViewAccessibility().SetIsSelected(false);
   }
   if (active_button) {
-    views::FocusRing::Get(active_button)->SchedulePaint();
+    views::FocusRing::Get(active_button)->Refresh();
     active_button->GetViewAccessibility().SetIsSelected(true);
   }
   previous_active_button_ = active_button;

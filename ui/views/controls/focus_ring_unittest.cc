@@ -72,4 +72,96 @@ TEST_F(FocusRingTest, MatchesParentBounds) {
   EXPECT_EQ(expected_bounds, focus_ring->bounds());
 }
 
+TEST_F(FocusRingTest, FocusRingShouldPaintWithoutParent) {
+  const auto widget = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* const contents = widget->SetContentsView(std::make_unique<View>());
+  FocusRing::Install(contents);
+  auto* const focus_ring = FocusRing::Get(contents);
+
+  // Detach from parent (parent() becomes nullptr).
+  // The new `parent()` check should safely catch this and return false.
+  auto owned_focus_ring = contents->RemoveChildViewT(focus_ring);
+  EXPECT_FALSE(owned_focus_ring->ShouldPaintForTesting());
+}
+
+TEST_F(FocusRingTest, FocusRingLayerWithPredicate) {
+  const auto widget = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* const contents = widget->SetContentsView(std::make_unique<View>());
+  FocusRing::Install(contents);
+  auto* const focus_ring = FocusRing::Get(contents);
+
+  bool predicate_state = false;
+  focus_ring->SetHasFocusPredicate(base::BindRepeating(
+      [](bool* state, const View* view) { return *state; }, &predicate_state));
+
+  // Refresh() updates the layer state when the predicate values itself changes.
+  focus_ring->Refresh();
+
+  EXPECT_FALSE(focus_ring->layer());
+
+  predicate_state = true;
+  focus_ring->Refresh();
+  EXPECT_TRUE(focus_ring->layer());
+
+  predicate_state = false;
+  focus_ring->Refresh();
+  EXPECT_FALSE(focus_ring->layer());
+}
+
+TEST_F(FocusRingTest, FocusRingShouldPaintWithPredicate) {
+  const auto widget = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* const contents = widget->SetContentsView(std::make_unique<View>());
+  FocusRing::Install(contents);
+  auto* const focus_ring = FocusRing::Get(contents);
+
+  // By default, no predicate and no focus.
+  EXPECT_FALSE(focus_ring->ShouldPaintForTesting());
+
+  bool predicate_state = false;
+  focus_ring->SetHasFocusPredicate(base::BindRepeating(
+      [](bool* state, const View* view) { return *state; }, &predicate_state));
+
+  EXPECT_FALSE(focus_ring->ShouldPaintForTesting());
+
+  predicate_state = true;
+  EXPECT_TRUE(focus_ring->ShouldPaintForTesting());
+
+  predicate_state = false;
+  EXPECT_FALSE(focus_ring->ShouldPaintForTesting());
+}
+
+TEST_F(FocusRingTest, FocusRingLayerWithNativeFocus) {
+  const auto widget = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* const contents = widget->SetContentsView(std::make_unique<View>());
+  contents->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+  FocusRing::Install(contents);
+  auto* const focus_ring = FocusRing::Get(contents);
+
+  EXPECT_FALSE(focus_ring->layer());
+
+  // The layer exists only when the parent has focus.
+  contents->RequestFocus();
+  EXPECT_TRUE(focus_ring->layer());
+
+  contents->GetFocusManager()->ClearFocus();
+  EXPECT_FALSE(focus_ring->layer());
+}
+
+TEST_F(FocusRingTest, FocusRingShouldPaintWithNativeFocus) {
+  const auto widget = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* const contents = widget->SetContentsView(std::make_unique<View>());
+  contents->SetFocusBehavior(View::FocusBehavior::ALWAYS);
+  FocusRing::Install(contents);
+  auto* const focus_ring = FocusRing::Get(contents);
+
+  EXPECT_FALSE(focus_ring->ShouldPaintForTesting());
+
+  // Expect ShouldPaint() be true only when the parent has focus.
+  contents->RequestFocus();
+  EXPECT_TRUE(focus_ring->ShouldPaintForTesting());
+
+  contents->GetFocusManager()->ClearFocus();
+  EXPECT_FALSE(focus_ring->ShouldPaintForTesting());
+}
+
 }  // namespace views
