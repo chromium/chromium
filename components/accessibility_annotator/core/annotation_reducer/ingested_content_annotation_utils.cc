@@ -118,6 +118,7 @@ FlightReservation ConvertFlightReservation(
 }  // namespace
 
 IngestedContentAnnotation ConvertIngestedContentAnnotation(
+    history::VisitID visit_id,
     const ContentAnnotationsData& content_annotation_data) {
   if (!content_annotation_data.content_annotation.has_structured_data()) {
     return IngestedContentAnnotation();
@@ -169,8 +170,8 @@ IngestedContentAnnotation ConvertIngestedContentAnnotation(
       content_annotation_data.content_annotation.supplemental_data().end());
 
   return IngestedContentAnnotation(
-      base::NumberToString(content_annotation_data.visit_id),
-      content_annotation_data.url, content_annotation_data.navigation_timestamp,
+      base::NumberToString(visit_id), content_annotation_data.url,
+      content_annotation_data.navigation_timestamp,
       content_annotation_data.content_annotation.description(), status,
       std::move(structured_entities), std::move(supplemental_data));
 }

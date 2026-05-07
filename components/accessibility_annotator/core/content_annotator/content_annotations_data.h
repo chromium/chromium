@@ -34,7 +34,6 @@ struct ContentAnnotationsData {
   optimization_guide::proto::ContentAnnotation content_annotation;
   base::DictValue classifier_results;
   base::Time navigation_timestamp;
-  history::VisitID visit_id = history::kInvalidVisitID;
   GURL url;
   // LINT.ThenChange(//components/accessibility_annotator/core/content_annotator/content_annotations_data.cc:ContentAnnotationsDataClone)
 };

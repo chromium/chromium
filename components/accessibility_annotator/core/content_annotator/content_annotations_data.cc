@@ -24,10 +24,9 @@ ContentAnnotationsData ContentAnnotationsData::Clone() const {
   clone.content_annotation = content_annotation;
   clone.classifier_results = classifier_results.Clone();
   clone.navigation_timestamp = navigation_timestamp;
-  clone.visit_id = visit_id;
   clone.url = url;
   return clone;
 }
-// LINT.ThenChange(components/accessibility_annotator/core/content_annotator/content_annotations_data.h)
+// LINT.ThenChange(//components/accessibility_annotator/core/content_annotator/content_annotations_data.h)
 
 }  // namespace accessibility_annotator

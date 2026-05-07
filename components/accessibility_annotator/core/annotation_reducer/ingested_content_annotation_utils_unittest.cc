@@ -18,7 +18,6 @@ namespace {
 
 TEST(IngestedContentAnnotationUtilsTest, ConvertOrder) {
   ContentAnnotationsData annotation_data;
-  annotation_data.visit_id = 123;
   annotation_data.url = GURL("https://example.com");
   annotation_data.navigation_timestamp =
       base::Time::FromSecondsSinceUnixEpoch(1600000000);
@@ -45,7 +44,8 @@ TEST(IngestedContentAnnotationUtilsTest, ConvertOrder) {
   product2->set_name("Widget B");
   product2->set_quantity(2);
 
-  auto ingested_annotation = ConvertIngestedContentAnnotation(annotation_data);
+  auto ingested_annotation =
+      ConvertIngestedContentAnnotation(123, annotation_data);
 
   EXPECT_EQ(ingested_annotation.id, "123");
   EXPECT_EQ(ingested_annotation.url, GURL("https://example.com"));
@@ -76,7 +76,6 @@ TEST(IngestedContentAnnotationUtilsTest, ConvertOrder) {
 
 TEST(IngestedContentAnnotationUtilsTest, ConvertShipment) {
   ContentAnnotationsData annotation_data;
-  annotation_data.visit_id = 456;
   annotation_data.url = GURL("https://example.com/shipment");
   annotation_data.navigation_timestamp =
       base::Time::FromSecondsSinceUnixEpoch(1610000000);
@@ -93,7 +92,8 @@ TEST(IngestedContentAnnotationUtilsTest, ConvertShipment) {
   shipment->set_carrier_name("Carrier X");
   shipment->set_delivery_address("456 ABC St");
 
-  auto ingested_annotation = ConvertIngestedContentAnnotation(annotation_data);
+  auto ingested_annotation =
+      ConvertIngestedContentAnnotation(456, annotation_data);
 
   EXPECT_EQ(ingested_annotation.id, "456");
   EXPECT_EQ(ingested_annotation.url, GURL("https://example.com/shipment"));
@@ -116,7 +116,6 @@ TEST(IngestedContentAnnotationUtilsTest, ConvertShipment) {
 
 TEST(IngestedContentAnnotationUtilsTest, ConvertFlightReservation) {
   ContentAnnotationsData annotation_data;
-  annotation_data.visit_id = 789;
   annotation_data.url = GURL("https://example.com/flight");
   annotation_data.navigation_timestamp =
       base::Time::FromSecondsSinceUnixEpoch(1620000000);
@@ -139,7 +138,8 @@ TEST(IngestedContentAnnotationUtilsTest, ConvertFlightReservation) {
   dep_date->set_month(5);
   dep_date->set_day(20);
 
-  auto ingested_annotation = ConvertIngestedContentAnnotation(annotation_data);
+  auto ingested_annotation =
+      ConvertIngestedContentAnnotation(789, annotation_data);
 
   EXPECT_EQ(ingested_annotation.id, "789");
   EXPECT_EQ(ingested_annotation.url, GURL("https://example.com/flight"));
@@ -177,8 +177,8 @@ TEST(IngestedContentAnnotationUtilsTest, ConvertFlightReservation) {
 
 TEST(IngestedContentAnnotationUtilsTest, ConvertEmptyStructuredData) {
   ContentAnnotationsData annotation_data;
-  annotation_data.visit_id = 999;
-  auto ingested_annotation = ConvertIngestedContentAnnotation(annotation_data);
+  auto ingested_annotation =
+      ConvertIngestedContentAnnotation(999, annotation_data);
 
   EXPECT_TRUE(ingested_annotation.id.empty());
   EXPECT_TRUE(ingested_annotation.structured_entities.empty());
