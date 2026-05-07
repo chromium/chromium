@@ -71,7 +71,10 @@ themselves in the active VCS (`JJ` or `GIT`) and Harness (`JETSKI` or
 natively to match this environment.
 
 **THE CHECKLIST LIFECYCLE STATE MACHINE:** The session's verification
-integrity is governed by a deterministic boolean checklist state machine:
+integrity is governed by a deterministic boolean checklist state machine.
+While the MAGI protocol has 11 overall workflow phases (Phases 0–10), the
+automated checklist state itself only transitions or is modified during four
+key phases:
 *   **Phase 0 (Initialization):** Scoping Lead initializes
     `project.magi.json#checklist` as an empty object `{}`.
 *   **Phase 2 (Activation):** The Orchestrator reads all selected
