@@ -102,19 +102,28 @@ void CompressScreenshotForSync(const SkBitmap& bitmap,
   }
 
   // Compress to JPG, quality adjusted to be < 8kB.
-  // Use binary search with exactly 3 steps between 1 and 99 to find a good
+  // Use binary search with up to 4 steps between 1 and 50 to find a good
   // quality that fits in the size limit.
   int low = 1;
-  int high = 99;
+  int high = 50;
   std::optional<std::vector<uint8_t>> best_encoded_data;
 
-  for (int i = 0; i < 3; ++i) {
+  const size_t kMaxSize = 8000;
+  const size_t kMinGoodEnoughSize = 7000;
+
+  for (int i = 0; i < 4; ++i) {
     int quality = low + (high - low) / 2;
     std::optional<std::vector<uint8_t>> data =
         gfx::JPEGCodec::Encode(resized, quality);
-    if (data && data->size() <= 8000) {
+    if (data && data->size() <= kMaxSize) {
       best_encoded_data = std::move(data);
       low = quality + 1;
+
+      // Optimization: If the current attempt is close enough to the target
+      // size, stop searching.
+      if (best_encoded_data->size() > kMinGoodEnoughSize) {
+        break;
+      }
     } else {
       high = quality - 1;
     }
