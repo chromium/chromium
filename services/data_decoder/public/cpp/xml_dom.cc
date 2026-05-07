@@ -13,6 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/types/pass_key.h"
+#include "services/data_decoder/public/mojom/xml_parser.mojom.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace data_decoder::xml {
@@ -60,7 +61,7 @@ const Node* Document::FindFirstElementByTagName(Name name) const {
 }
 
 Node::Element::Element() = default;
-Node::Element::Element(std::string local_name) : name{std::move(local_name)} {}
+Node::Element::Element(OwnedName name) : name(std::move(name)) {}
 Node::Element::Element(Element&&) = default;
 Node::Element& Node::Element::operator=(Element&&) = default;
 Node::Element::~Element() = default;
@@ -82,12 +83,21 @@ const std::string& Node::GetLocalName() const {
   return GetName().local_name;
 }
 
+const std::string& Node::GetNamespacePrefix() const {
+  return GetName().prefix;
+}
+
 const absl::flat_hash_map<OwnedName, std::string>& Node::GetAttributes() const {
   return std::get<Element>(data_).attributes;
 }
 
 const std::string* Node::GetAttribute(Name name) const {
   return base::FindOrNull(GetAttributes(), name);
+}
+
+const absl::flat_hash_map<std::string, std::string>& Node::GetNamespaces()
+    const {
+  return std::get<Element>(data_).namespaces;
 }
 
 const std::vector<std::unique_ptr<Node>>& Node::GetChildren() const {
@@ -128,8 +138,10 @@ const std::string& Node::GetTextContent() const {
 // static
 std::unique_ptr<Node> Node::CreateElement(
     base::PassKey<ffi::DomBuilder> pass_key,
-    std::string local_name) {
-  return base::WrapUnique(new Node(Element(std::move(local_name))));
+    std::string local_name,
+    std::string prefix) {
+  return base::WrapUnique(
+      new Node(Element(OwnedName{std::move(local_name), std::move(prefix)})));
 }
 
 // static
@@ -148,9 +160,17 @@ std::unique_ptr<Node> Node::CreateCdataNode(
 
 void Node::SetAttribute(base::PassKey<ffi::DomBuilder>,
                         std::string local_name,
+                        std::string prefix,
                         std::string value) {
-  std::get<Element>(data_).attributes[OwnedName{std::move(local_name)}] =
+  std::get<Element>(data_)
+      .attributes[OwnedName{std::move(local_name), std::move(prefix)}] =
       std::move(value);
+}
+
+void Node::SetNamespace(base::PassKey<ffi::DomBuilder>,
+                        std::string prefix,
+                        std::string uri) {
+  std::get<Element>(data_).namespaces[std::move(prefix)] = std::move(uri);
 }
 
 void Node::AddChild(base::PassKey<ffi::DomBuilder>,

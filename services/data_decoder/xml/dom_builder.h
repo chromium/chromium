@@ -13,10 +13,14 @@ class Node;
 
 namespace ffi {
 
-std::unique_ptr<Node> create_element(rust::Str local_name);
+std::unique_ptr<Node> create_element(rust::Str local_name, rust::Str prefix);
 std::unique_ptr<Node> create_text_node(rust::Str text_content);
 std::unique_ptr<Node> create_cdata_node(rust::Str text_content);
-void set_attribute(Node& element, rust::Str local_name, rust::Str value);
+void set_attribute(Node& element,
+                   rust::Str local_name,
+                   rust::Str prefix,
+                   rust::Str value);
+void set_namespace(Node& element, rust::Str prefix, rust::Str uri);
 void add_child(Node& parent, std::unique_ptr<Node> child);
 
 }  // namespace ffi

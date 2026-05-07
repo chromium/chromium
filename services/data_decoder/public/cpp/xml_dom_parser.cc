@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <optional>
 #include <utility>
 
 #include "base/containers/span_rust.h"
@@ -12,14 +11,23 @@
 
 namespace data_decoder::xml {
 
-std::optional<Document> Document::FromBytes(base::span<const uint8_t> bytes) {
-  auto root = ffi::decode_xml_bytes(base::SpanToRustSlice(bytes));
-  return root ? std::optional(Document(std::move(root))) : std::nullopt;
+base::expected<Document, std::string> Document::FromBytes(
+    base::span<const uint8_t> bytes) {
+  std::string err;
+  auto root = ffi::decode_xml_bytes(base::SpanToRustSlice(bytes), err);
+  if (root) {
+    return Document(std::move(root));
+  }
+  return base::unexpected(err);
 }
 
-std::optional<Document> Document::FromUtf8(std::string_view str) {
-  auto root = ffi::decode_xml_str(base::StringViewToRustStrUTF8(str));
-  return root ? std::optional(Document(std::move(root))) : std::nullopt;
+base::expected<Document, std::string> Document::FromUtf8(std::string_view str) {
+  std::string err;
+  auto root = ffi::decode_xml_str(base::StringViewToRustStrUTF8(str), err);
+  if (root) {
+    return Document(std::move(root));
+  }
+  return base::unexpected(err);
 }
 
 }  // namespace data_decoder::xml

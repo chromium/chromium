@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <memory>
-#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -17,6 +16,7 @@
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
+#include "base/types/expected.h"
 #include "base/types/pass_key.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
@@ -30,30 +30,30 @@ class Node;
 
 // A qualified name in XML, as defined in https://www.w3.org/TR/xml-names/.
 // Used for both element and attribute names.
-//
-// TODO(dcheng): Implement prefix support.
 struct Name {
   std::string_view local_name;
+  std::string_view prefix;
 };
 
 // Equivalent to `Name` but owns its fields.
 struct OwnedName {
   std::string local_name;
+  std::string prefix;
 
   bool operator==(const OwnedName& other) const = default;
   bool operator==(const Name& other) const {
-    return local_name == other.local_name;
+    return local_name == other.local_name && prefix == other.prefix;
   }
 
   struct absl_container_hash {
     using is_transparent = void;
 
     size_t operator()(const OwnedName& name) const {
-      return absl::HashOf(name.local_name);
+      return absl::HashOf(name.local_name, name.prefix);
     }
 
     size_t operator()(const Name& name) const {
-      return absl::HashOf(name.local_name);
+      return absl::HashOf(name.local_name, name.prefix);
     }
   };
 };
@@ -68,8 +68,9 @@ class Document {
   Document(Document&&);
   Document& operator=(Document&&);
 
-  static std::optional<Document> FromBytes(base::span<const uint8_t> bytes);
-  static std::optional<Document> FromUtf8(std::string_view str);
+  static base::expected<Document, std::string> FromBytes(
+      base::span<const uint8_t> bytes);
+  static base::expected<Document, std::string> FromUtf8(std::string_view str);
 
   const Node* GetRoot() const;
 
@@ -102,11 +103,18 @@ class Node {
   // non-element nodes.
   const OwnedName& GetName() const;
   const std::string& GetLocalName() const;
+  // The namespace prefix of the element name, or the empty string if the
+  // element name is unprefixed. Shorthand for `GetName().prefix`.
+  //   <html:br /> -> returns "html"
+  //   <element /> -> returns ""
+  const std::string& GetNamespacePrefix() const;
 
   const absl::flat_hash_map<OwnedName, std::string>& GetAttributes() const;
   // The value of the attribute with the given `name`, or `nullptr` if the
   // element does not specify an attribute with `name`.
   const std::string* GetAttribute(Name name) const;
+
+  const absl::flat_hash_map<std::string, std::string>& GetNamespaces() const;
 
   const std::vector<std::unique_ptr<Node>>& GetChildren() const;
   std::vector<const Node*> GetChildrenByTagName(Name name) const;
@@ -118,14 +126,19 @@ class Node {
 
   // Rust FFI helpers:
   static std::unique_ptr<Node> CreateElement(base::PassKey<ffi::DomBuilder>,
-                                             std::string local_name);
+                                             std::string local_name,
+                                             std::string prefix);
   static std::unique_ptr<Node> CreateTextNode(base::PassKey<ffi::DomBuilder>,
                                               std::string text);
   static std::unique_ptr<Node> CreateCdataNode(base::PassKey<ffi::DomBuilder>,
                                                std::string text);
   void SetAttribute(base::PassKey<ffi::DomBuilder>,
                     std::string local_name,
+                    std::string prefix,
                     std::string value);
+  void SetNamespace(base::PassKey<ffi::DomBuilder>,
+                    std::string prefix,
+                    std::string uri);
   void AddChild(base::PassKey<ffi::DomBuilder>, std::unique_ptr<Node> child);
 
  private:
@@ -134,13 +147,14 @@ class Node {
 
   struct Element {
     Element();
-    explicit Element(std::string local_name);
+    explicit Element(OwnedName name);
     Element(Element&&);
     Element& operator=(Element&&);
     ~Element();
 
     OwnedName name;
     absl::flat_hash_map<OwnedName, std::string> attributes;
+    absl::flat_hash_map<std::string, std::string> namespaces;
     std::vector<std::unique_ptr<Node>> children;
   };
   struct Text {

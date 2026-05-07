@@ -17,9 +17,9 @@ class DomBuilder {
   }
 };
 
-std::unique_ptr<Node> create_element(rust::Str local_name) {
+std::unique_ptr<Node> create_element(rust::Str local_name, rust::Str prefix) {
   return Node::CreateElement(DomBuilder::CreatePassKey(),
-                             std::string(local_name));
+                             std::string(local_name), std::string(prefix));
 }
 
 std::unique_ptr<Node> create_text_node(rust::Str text_content) {
@@ -32,9 +32,17 @@ std::unique_ptr<Node> create_cdata_node(rust::Str text_content) {
                                std::string(text_content));
 }
 
-void set_attribute(Node& element, rust::Str local_name, rust::Str value) {
+void set_attribute(Node& element,
+                   rust::Str local_name,
+                   rust::Str prefix,
+                   rust::Str value) {
   element.SetAttribute(DomBuilder::CreatePassKey(), std::string(local_name),
-                       std::string(value));
+                       std::string(prefix), std::string(value));
+}
+
+void set_namespace(Node& element, rust::Str prefix, rust::Str uri) {
+  element.SetNamespace(DomBuilder::CreatePassKey(), std::string(prefix),
+                       std::string(uri));
 }
 
 void add_child(Node& parent, std::unique_ptr<Node> child) {

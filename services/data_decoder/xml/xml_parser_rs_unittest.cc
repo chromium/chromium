@@ -3,15 +3,18 @@
 // found in the LICENSE file.
 
 #include <memory>
-#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
 
+#include "base/test/gmock_expected_support.h"
+#include "base/types/expected.h"
 #include "services/data_decoder/public/cpp/xml_dom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using ::testing::Eq;
+using ::testing::IsEmpty;
 using ::testing::Pair;
 using ::testing::UnorderedElementsAre;
 
@@ -21,24 +24,24 @@ namespace {
 
 class XmlParserRsTest : public ::testing::Test {
  protected:
-  std::optional<Document> ParseXml(std::string_view s) {
+  base::expected<Document, std::string> ParseXml(std::string_view s) {
     return Document::FromUtf8(s);
   }
 };
 
 TEST_F(XmlParserRsTest, Basic) {
   auto doc = ParseXml("<root><child attr=\"value\">text</child></root>");
-  ASSERT_TRUE(doc.has_value());
+  ASSERT_OK(doc);
   const Node* root = doc->GetRoot();
 
   ASSERT_EQ(root->GetType(), Node::Type::kElement);
-  EXPECT_EQ(root->GetLocalName(), "root");
+  EXPECT_EQ(root->GetName(), Name{"root"});
 
   const auto& children = root->GetChildren();
   ASSERT_EQ(children.size(), 1u);
   const Node* child = children[0].get();
   ASSERT_EQ(child->GetType(), Node::Type::kElement);
-  EXPECT_EQ(child->GetLocalName(), "child");
+  EXPECT_EQ(child->GetName(), Name{"child"});
   const auto* attr = child->GetAttribute(Name{"attr"});
   ASSERT_NE(attr, nullptr);
   EXPECT_EQ(*attr, "value");
@@ -52,7 +55,7 @@ TEST_F(XmlParserRsTest, Basic) {
 
 TEST_F(XmlParserRsTest, MultipleAttributes) {
   auto doc = ParseXml("<root a=\"1\" b=\"\" c=\"3\"></root>");
-  ASSERT_TRUE(doc.has_value());
+  ASSERT_OK(doc);
 
   const Node* root = doc->GetRoot();
   EXPECT_THAT(root->GetAttributes(),
@@ -68,26 +71,109 @@ TEST_F(XmlParserRsTest, DuplicateAttributes) {
 
 TEST_F(XmlParserRsTest, MixedSiblingTypes) {
   auto doc = ParseXml("<root><![CDATA[cdata]]><child/>text</root>");
-  ASSERT_TRUE(doc.has_value());
+  ASSERT_OK(doc);
 
   const Node* root = doc->GetRoot();
   ASSERT_EQ(root->GetType(), Node::Type::kElement);
-  EXPECT_EQ(root->GetLocalName(), "root");
+  EXPECT_EQ(root->GetName(), Name{"root"});
   ASSERT_EQ(root->GetChildren().size(), 3u);
 
   ASSERT_EQ(root->GetChildren()[0]->GetType(), Node::Type::kCdata);
   EXPECT_EQ(root->GetChildren()[0]->GetTextContent(), "cdata");
 
   EXPECT_EQ(root->GetChildren()[1]->GetType(), Node::Type::kElement);
-  EXPECT_EQ(root->GetChildren()[1]->GetLocalName(), "child");
+  EXPECT_EQ(root->GetChildren()[1]->GetName(), Name{"child"});
 
   ASSERT_EQ(root->GetChildren()[2]->GetType(), Node::Type::kText);
   EXPECT_EQ(root->GetChildren()[2]->GetTextContent(), "text");
 }
 
+TEST_F(XmlParserRsTest, OmitUnspecifiedDefaultNamespaceOnRoot) {
+  // This is a test for backwards compatibility with the original
+  // libxml2-based parser.
+  auto doc = ParseXml("<root />");
+  ASSERT_OK(doc);
+
+  EXPECT_THAT(doc->GetRoot()->GetNamespaces(), IsEmpty());
+}
+
+TEST_F(XmlParserRsTest, BasicNamespaces) {
+  auto doc = ParseXml(
+      "<foo:root "
+      "    xmlns='https://example.com/default'"
+      "    xmlns:foo='https://example.com/foo'"
+      "    xmlns:bar='https://example.com/bar'"
+      "    bar:attr='fizz' >"
+      "  <bar:child foo:attr='buzz' />"
+      "</foo:root>");
+  ASSERT_OK(doc);
+
+  const Node* root = doc->GetRoot();
+  EXPECT_THAT(root->GetName(), Eq(Name{.local_name = "root", .prefix = "foo"}));
+  EXPECT_THAT(root->GetAttributes(),
+              UnorderedElementsAre(
+                  Pair(Name{.local_name = "attr", .prefix = "bar"}, "fizz")));
+  EXPECT_THAT(root->GetNamespaces(),
+              UnorderedElementsAre(Pair("", "https://example.com/default"),
+                                   Pair("foo", "https://example.com/foo"),
+                                   Pair("bar", "https://example.com/bar")));
+
+  ASSERT_EQ(root->GetChildren().size(), 1u);
+  EXPECT_THAT(root->GetChildren()[0]->GetName(),
+              Eq(Name{.local_name = "child", .prefix = "bar"}));
+  EXPECT_THAT(root->GetChildren()[0]->GetNamespaces(), IsEmpty());
+  EXPECT_THAT(root->GetChildren()[0]->GetAttributes(),
+              UnorderedElementsAre(
+                  Pair(Name{.local_name = "attr", .prefix = "foo"}, "buzz")));
+}
+
+TEST_F(XmlParserRsTest, OverrideNamespaceInChild) {
+  auto doc = ParseXml(
+      "<root xmlns:a='https://example.com/1'>"
+      "  <child xmlns:a='https://example.com/2'>"
+      "    <nested-child xmlns:a='https://example.com/2' />"
+      "  </child>"
+      "</root>");
+  ASSERT_OK(doc);
+
+  const Node* root = doc->GetRoot();
+  EXPECT_THAT(root->GetNamespaces(),
+              UnorderedElementsAre(Pair("a", "https://example.com/1")));
+
+  const auto& children = root->GetChildren();
+  ASSERT_EQ(children.size(), 1u);
+  EXPECT_THAT(children[0]->GetNamespaces(),
+              UnorderedElementsAre(Pair("a", "https://example.com/2")));
+
+  // Even though `nested-child` explicitly declares the namespace, the
+  // declaration is identical to the one inherited from its parent, so it will
+  // be omitted.
+  const auto& grandchildren = children[0]->GetChildren();
+  ASSERT_EQ(grandchildren.size(), 1u);
+  EXPECT_THAT(grandchildren[0]->GetNamespaces(), IsEmpty());
+}
+
+TEST_F(XmlParserRsTest, UndeclareDefaultNamespaceTest) {
+  auto doc = ParseXml(
+      "<root xmlns='https://example.com'><child xmlns=''></child></root>");
+  ASSERT_OK(doc);
+
+  const Node* root = doc->GetRoot();
+  EXPECT_THAT(root->GetNamespaces(),
+              UnorderedElementsAre(Pair("", "https://example.com")));
+
+  // While an unspecified default namespace on the root is omitted (see
+  // `OmitUnspecifiedDefaultNamespaceOnRoot` above), it should be included on a
+  // child element if it the net effect is to clear the default namespace
+  // binding.
+  ASSERT_EQ(root->GetChildren().size(), 1u);
+  EXPECT_THAT(root->GetChildren()[0]->GetNamespaces(),
+              UnorderedElementsAre(Pair("", "")));
+}
+
 TEST_F(XmlParserRsTest, CdataNode) {
   auto doc = ParseXml("<root><![CDATA[some unescaped & chars < >]]></root>");
-  ASSERT_TRUE(doc.has_value());
+  ASSERT_OK(doc);
 
   const Node* root = doc->GetRoot();
   ASSERT_EQ(root->GetChildren().size(), 1u);
@@ -99,21 +185,21 @@ TEST_F(XmlParserRsTest, CdataNode) {
 
 TEST_F(XmlParserRsTest, NestedSiblings) {
   auto doc = ParseXml("<root><a><b></b></a><c><d><e></e></d></c></root>");
-  ASSERT_TRUE(doc.has_value());
+  ASSERT_OK(doc);
 
   const Node* root = doc->GetRoot();
   ASSERT_EQ(root->GetType(), Node::Type::kElement);
-  EXPECT_EQ(root->GetLocalName(), "root");
+  EXPECT_EQ(root->GetName(), Name{"root"});
   ASSERT_EQ(root->GetChildren().size(), 2u);
 }
 
 TEST_F(XmlParserRsTest, CharacterEntities) {
   auto doc = ParseXml("<root>&lt;tag&gt; &amp; &quot;quoted&quot;</root>");
-  ASSERT_TRUE(doc.has_value());
+  ASSERT_OK(doc);
 
   const Node* root = doc->GetRoot();
   ASSERT_EQ(root->GetType(), Node::Type::kElement);
-  EXPECT_EQ(root->GetLocalName(), "root");
+  EXPECT_EQ(root->GetName(), Name{"root"});
   ASSERT_EQ(root->GetChildren().size(), 1u);
 
   EXPECT_EQ(root->GetChildren()[0]->GetType(), Node::Type::kText);
@@ -186,7 +272,7 @@ TEST_F(XmlParserRsTest, WhitespaceAroundRootElement) {
   const Node* root = doc->GetRoot();
 
   ASSERT_EQ(root->GetType(), Node::Type::kElement);
-  EXPECT_EQ(root->GetLocalName(), "root");
+  EXPECT_EQ(root->GetName(), Name{"root"});
 }
 
 TEST_F(XmlParserRsTest, MultipleRootElements) {
@@ -233,7 +319,7 @@ TEST_F(XmlParserRsTest, MismatchedTags) {
 
 TEST_F(XmlParserRsTest, DoctypeIgnored) {
   auto doc = ParseXml("<!DOCTYPE html><html><body /></html>");
-  ASSERT_TRUE(doc.has_value());
+  ASSERT_OK(doc);
 
   const Node* root = doc->GetRoot();
   ASSERT_EQ(root->GetType(), Node::Type::kElement);
@@ -249,28 +335,28 @@ TEST_F(XmlParserRsTest, ProcessingInstructionsIgnored) {
     // A top-level processing instruction should be ignored and the actual root
     // element should still be correctly set.
     auto doc = ParseXml("<?pi content?><root><child/></root>");
-    ASSERT_TRUE(doc.has_value());
+    ASSERT_OK(doc);
 
     const Node* root = doc->GetRoot();
     ASSERT_EQ(root->GetType(), Node::Type::kElement);
-    EXPECT_EQ(root->GetLocalName(), "root");
+    EXPECT_EQ(root->GetName(), Name{"root"});
     ASSERT_EQ(root->GetChildren().size(), 1u);
 
     ASSERT_EQ(root->GetChildren()[0]->GetType(), Node::Type::kElement);
-    EXPECT_EQ(root->GetChildren()[0]->GetLocalName(), "child");
+    EXPECT_EQ(root->GetChildren()[0]->GetName(), Name{"child"});
   }
 
   {
     auto doc = ParseXml("<root><?pi content?><child/></root>");
-    ASSERT_TRUE(doc.has_value());
+    ASSERT_OK(doc);
 
     const Node* root = doc->GetRoot();
     ASSERT_EQ(root->GetType(), Node::Type::kElement);
-    EXPECT_EQ(root->GetLocalName(), "root");
+    EXPECT_EQ(root->GetName(), Name{"root"});
     ASSERT_EQ(root->GetChildren().size(), 1u);
 
     ASSERT_EQ(root->GetChildren()[0]->GetType(), Node::Type::kElement);
-    EXPECT_EQ(root->GetChildren()[0]->GetLocalName(), "child");
+    EXPECT_EQ(root->GetChildren()[0]->GetName(), Name{"child"});
   }
 }
 
@@ -279,28 +365,28 @@ TEST_F(XmlParserRsTest, CommentsIgnored) {
     // A top-level comment should be ignored and the actual root element should
     // still be correctly set.
     auto doc = ParseXml("<!-- comment --><root><child/></root>");
-    ASSERT_TRUE(doc.has_value());
+    ASSERT_OK(doc);
 
     const Node* root = doc->GetRoot();
     ASSERT_EQ(root->GetType(), Node::Type::kElement);
-    EXPECT_EQ(root->GetLocalName(), "root");
+    EXPECT_EQ(root->GetName(), Name{"root"});
     ASSERT_EQ(root->GetChildren().size(), 1u);
 
     ASSERT_EQ(root->GetChildren()[0]->GetType(), Node::Type::kElement);
-    EXPECT_EQ(root->GetChildren()[0]->GetLocalName(), "child");
+    EXPECT_EQ(root->GetChildren()[0]->GetName(), Name{"child"});
   }
 
   {
     auto doc = ParseXml("<root><!-- comment --><child/></root>");
-    ASSERT_TRUE(doc.has_value());
+    ASSERT_OK(doc);
 
     const Node* root = doc->GetRoot();
     ASSERT_EQ(root->GetType(), Node::Type::kElement);
-    EXPECT_EQ(root->GetLocalName(), "root");
+    EXPECT_EQ(root->GetName(), Name{"root"});
     ASSERT_EQ(root->GetChildren().size(), 1u);
 
     ASSERT_EQ(root->GetChildren()[0]->GetType(), Node::Type::kElement);
-    EXPECT_EQ(root->GetChildren()[0]->GetLocalName(), "child");
+    EXPECT_EQ(root->GetChildren()[0]->GetName(), Name{"child"});
   }
 }
 

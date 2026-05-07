@@ -11,18 +11,19 @@ pub mod ffi {
         #[namespace = "data_decoder::xml"]
         type Node;
 
-        fn create_element(local_name: &str) -> UniquePtr<Node>;
+        fn create_element(local_name: &str, prefix: &str) -> UniquePtr<Node>;
         fn create_text_node(text_content: &str) -> UniquePtr<Node>;
         fn create_cdata_node(text_content: &str) -> UniquePtr<Node>;
-        fn set_attribute(element: Pin<&mut Node>, local_name: &str, value: &str);
+        fn set_attribute(element: Pin<&mut Node>, local_name: &str, prefix: &str, value: &str);
+        fn set_namespace(element: Pin<&mut Node>, prefix: &str, uri: &str);
         fn add_child(parent: Pin<&mut Node>, child: UniquePtr<Node>);
     }
 
     extern "Rust" {
         // TODO(dcheng): decide if we really need to handle both bytes and
         // strings and/or where the conversion should happen.
-        fn decode_xml_bytes(xml: &[u8]) -> UniquePtr<Node>;
-        fn decode_xml_str(xml: &str) -> UniquePtr<Node>;
+        fn decode_xml_bytes(xml: &[u8], err: Pin<&mut CxxString>) -> UniquePtr<Node>;
+        fn decode_xml_str(xml: &str, mut err: Pin<&mut CxxString>) -> UniquePtr<Node>;
     }
 }
 
