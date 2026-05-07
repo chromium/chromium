@@ -4128,7 +4128,7 @@ void RenderViewContextMenu::AppendSendTabToSelfItem(bool add_separator) {
   }
 
   if (base::FeatureList::IsEnabled(
-          send_tab_to_self::kSendTabToSelfShowTargetsInContextMenus)) {
+          send_tab_to_self::kSendTabToSelfEnhancedDesktopUI)) {
     send_tab_to_self_submenu_delegate_ =
         std::make_unique<send_tab_to_self::SendTabToSelfContextMenuDelegate>(
             embedder_web_contents_);

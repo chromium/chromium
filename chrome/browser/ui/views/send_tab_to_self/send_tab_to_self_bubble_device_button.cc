@@ -46,7 +46,7 @@ std::unique_ptr<views::ImageView> CreateIcon(
   static constexpr int kPrimaryIconSize = 20;
   auto icon = std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
       GetIconType(device_form_factor), ui::kColorIcon, kPrimaryIconSize));
-  if (!base::FeatureList::IsEnabled(kSendTabToSelfShowTargetsInContextMenus)) {
+  if (!base::FeatureList::IsEnabled(kSendTabToSelfEnhancedDesktopUI)) {
     constexpr auto kPrimaryIconBorder = gfx::Insets(6);
     icon->SetBorder(views::CreateEmptyBorder(kPrimaryIconBorder));
   }
@@ -56,7 +56,7 @@ std::unique_ptr<views::ImageView> CreateIcon(
 views::Button::PressedCallback GetPressedCallback(
     SendTabToSelfDevicePickerBubbleView* bubble,
     SendTabToSelfBubbleDeviceButton* button) {
-  if (base::FeatureList::IsEnabled(kSendTabToSelfShowTargetsInContextMenus)) {
+  if (base::FeatureList::IsEnabled(kSendTabToSelfEnhancedDesktopUI)) {
     return base::BindRepeating(
         &SendTabToSelfDevicePickerBubbleView::SelectTargetDevice,
         base::Unretained(bubble), base::Unretained(button));
@@ -67,7 +67,7 @@ views::Button::PressedCallback GetPressedCallback(
 }
 
 std::unique_ptr<views::ImageView> CreateCheckmarkIcon() {
-  if (!base::FeatureList::IsEnabled(kSendTabToSelfShowTargetsInContextMenus)) {
+  if (!base::FeatureList::IsEnabled(kSendTabToSelfEnhancedDesktopUI)) {
     return nullptr;
   }
   return std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
@@ -89,7 +89,7 @@ SendTabToSelfBubbleDeviceButton::SendTabToSelfBubbleDeviceButton(
   device_form_factor_ = device_info.form_factor;
   SetEnabled(true);
   SetSelected(false);
-  if (base::FeatureList::IsEnabled(kSendTabToSelfShowTargetsInContextMenus)) {
+  if (base::FeatureList::IsEnabled(kSendTabToSelfEnhancedDesktopUI)) {
     ApplyDeviceSelectionStyling();
   }
 }

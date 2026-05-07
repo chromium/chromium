@@ -38,7 +38,7 @@ BASE_FEATURE(kSendTabToSelfPropagateNavigationHistory,
 
 BASE_FEATURE(kSendTabToSelfAutoOpen, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSendTabToSelfShowTargetsInContextMenus,
+BASE_FEATURE(kSendTabToSelfEnhancedDesktopUI,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSendTabToSelfPostSendToast, base::FEATURE_DISABLED_BY_DEFAULT);

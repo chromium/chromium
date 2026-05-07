@@ -40,12 +40,10 @@ BASE_DECLARE_FEATURE(kSendTabToSelfPropagateNavigationHistory);
 // in the foreground if Chrome is currently being used.
 BASE_DECLARE_FEATURE(kSendTabToSelfAutoOpen);
 
-// If this feature is enabled, the STTS entry point in context menus will show a
-// list of devices directly.
-// TODO(crbug.com/488252159): Consider renaming this flag because it also guards
-// edge cases for the new Desktop device picker flow and the visually enhanced
-// STTS target device picker bubble.
-BASE_DECLARE_FEATURE(kSendTabToSelfShowTargetsInContextMenus);
+// If this feature is enabled, several UIs on desktop are enhanced, like showing
+// a list of devices directly in the context menu, the new Desktop device picker
+// flow, and the visually enhanced STTS target device picker bubble.
+BASE_DECLARE_FEATURE(kSendTabToSelfEnhancedDesktopUI);
 
 // If this feature is enabled, a toast will be shown after a tab is successfully
 // sent.

@@ -170,8 +170,7 @@ class SendTabToSelfDeviceSelectionInteractiveUiTest
     : public SendTabToSelfInteractiveUiTest {
  public:
   SendTabToSelfDeviceSelectionInteractiveUiTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        kSendTabToSelfShowTargetsInContextMenus);
+    scoped_feature_list_.InitAndEnableFeature(kSendTabToSelfEnhancedDesktopUI);
   }
   ~SendTabToSelfDeviceSelectionInteractiveUiTest() override = default;
 

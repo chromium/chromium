@@ -2751,7 +2751,7 @@ const FeatureEntry::Choice kSendTabToSelfEnhancedHandoffChoices[] = {
      "SendTabToSelfPropagateFormFields,"
      "SendTabToSelfPropagateNavigationHistory,"
      "SendTabToSelfPropagateScrollPosition,"
-     "SendTabToSelfShowTargetsInContextMenus,"
+     "SendTabToSelfEnhancedDesktopUI,"
      "SendTabToSelfPostSendToast"},
     {flags_ui::kGenericExperimentChoiceDisabled, switches::kDisableFeatures,
      "SendTabToSelfAutoOpen,"
@@ -2759,7 +2759,7 @@ const FeatureEntry::Choice kSendTabToSelfEnhancedHandoffChoices[] = {
      "SendTabToSelfPropagateFormFields,"
      "SendTabToSelfPropagateNavigationHistory,"
      "SendTabToSelfPropagateScrollPosition,"
-     "SendTabToSelfShowTargetsInContextMenus,"
+     "SendTabToSelfEnhancedDesktopUI,"
      "SendTabToSelfPostSendToast"},
 };
 

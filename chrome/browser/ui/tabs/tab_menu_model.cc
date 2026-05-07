@@ -330,7 +330,7 @@ void TabMenuModel::Build(int index) {
 
   if (display_send_to_self) {
     if (base::FeatureList::IsEnabled(
-            send_tab_to_self::kSendTabToSelfShowTargetsInContextMenus) &&
+            send_tab_to_self::kSendTabToSelfEnhancedDesktopUI) &&
         send_tab_to_self_reason ==
             send_tab_to_self::EntryPointDisplayReason::kOfferFeature) {
       BuildSendTabToSelfSubmenu(index);

@@ -70,7 +70,7 @@ SendTabToSelfDevicePickerBubbleView::SendTabToSelfDevicePickerBubbleView(
 // Sends the tab immediately when clicked (legacy instant-send behavior).
 void SendTabToSelfDevicePickerBubbleView::DeviceButtonPressed(
     SendTabToSelfBubbleDeviceButton* device_button) {
-  CHECK(!base::FeatureList::IsEnabled(kSendTabToSelfShowTargetsInContextMenus));
+  CHECK(!base::FeatureList::IsEnabled(kSendTabToSelfEnhancedDesktopUI));
   if (!controller_) {
     return;
   }
@@ -88,7 +88,7 @@ void SendTabToSelfDevicePickerBubbleView::DeviceButtonPressed(
 // Highlights the chosen device with a checkmark in the modernized flow.
 void SendTabToSelfDevicePickerBubbleView::SelectTargetDevice(
     SendTabToSelfBubbleDeviceButton* device_button) {
-  CHECK(base::FeatureList::IsEnabled(kSendTabToSelfShowTargetsInContextMenus));
+  CHECK(base::FeatureList::IsEnabled(kSendTabToSelfEnhancedDesktopUI));
   CHECK(device_button);
   // Skip redundant state updates and paint passes if already selected.
   if (selected_button_ == device_button) {
@@ -113,7 +113,7 @@ SendTabToSelfDevicePickerBubbleView::GetButtonContainerForTesting() const {
 // Switches between legacy and modernized bubble layouts based on the feature
 // flag.
 void SendTabToSelfDevicePickerBubbleView::Init() {
-  if (base::FeatureList::IsEnabled(kSendTabToSelfShowTargetsInContextMenus)) {
+  if (base::FeatureList::IsEnabled(kSendTabToSelfEnhancedDesktopUI)) {
     InitDeviceSelectionBubble();
   } else {
     InitInstantSendBubble();
@@ -122,7 +122,7 @@ void SendTabToSelfDevicePickerBubbleView::Init() {
 
 bool SendTabToSelfDevicePickerBubbleView::ShouldShowCloseButton() const {
   // Hide redundant close button in modernized flow (has Cancel button).
-  return !base::FeatureList::IsEnabled(kSendTabToSelfShowTargetsInContextMenus);
+  return !base::FeatureList::IsEnabled(kSendTabToSelfEnhancedDesktopUI);
 }
 
 // Initializes the legacy bubble layout (instant-send, description text, avatar
@@ -263,7 +263,7 @@ void SendTabToSelfDevicePickerBubbleView::CreateHintTextLabel() {
 void SendTabToSelfDevicePickerBubbleView::CreateDevicesScrollView() {
   scroll_view_ = AddChildView(std::make_unique<views::ScrollView>());
   const int button_height =
-      base::FeatureList::IsEnabled(kSendTabToSelfShowTargetsInContextMenus)
+      base::FeatureList::IsEnabled(kSendTabToSelfEnhancedDesktopUI)
           ? kDeviceSelectionButtonHeight
           : kDeviceButtonHeight;
   scroll_view_->ClipHeightTo(0, button_height * kMaximumButtons);
@@ -287,7 +287,7 @@ void SendTabToSelfDevicePickerBubbleView::CreateDevicesScrollView() {
   }
 
   if (first_device) {
-    if (base::FeatureList::IsEnabled(kSendTabToSelfShowTargetsInContextMenus)) {
+    if (base::FeatureList::IsEnabled(kSendTabToSelfEnhancedDesktopUI)) {
       // Auto-select the first device on launch
       SelectTargetDevice(first_device);
     } else {
