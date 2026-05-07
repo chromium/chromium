@@ -437,7 +437,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
 
   bool current_resource_has_write_access_ = false;
   bool is_software_ = false;
-  bool is_cleared_ = false;
 
   base::WeakPtr<CanvasResourceProviderSharedImage> CreateWeakPtr();
 
@@ -612,6 +611,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   scoped_refptr<StaticBitmapImage> cached_snapshot_;
 
   const bool is_accelerated_;
+  bool is_cleared_ = false;
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
   base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
@@ -815,6 +815,7 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   scoped_refptr<StaticBitmapImage> cached_snapshot_;
 
   const bool is_accelerated_;
+  bool is_cleared_ = false;
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
   base::WeakPtr<WebGraphicsSharedImageInterfaceProvider>
