@@ -16244,6 +16244,19 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
       IsInPrimaryMainFrame(), is_same_document_navigation,
       navigation_ukm_builder);
 
+  if (is_main_frame() && !is_same_document_navigation) {
+    // The previous document is already pending delete and can't change the
+    // related pages list. However, the new document may not know about all of
+    // the related pages that were created from the previous document, see
+    // crbug.com/457771782. As a result, we let the renderer know that there are
+    // other related pages.
+    bool has_other_related_pages =
+        GetSiteInstance() &&
+        GetSiteInstance()->GetRelatedActiveContentsCount() > 1;
+    GetAssociatedLocalMainFrame()->NotifyRelatedPagesFinalized(
+        has_other_related_pages);
+  }
+
   return true;
 }
 

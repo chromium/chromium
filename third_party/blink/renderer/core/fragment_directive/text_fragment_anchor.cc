@@ -83,7 +83,8 @@ bool CheckSecurityRestrictions(LocalFrame& frame) {
       return false;
     }
 
-    if (frame.GetPage()->RelatedPages().size()) {
+    if (frame.GetPage()->RelatedPages().size() ||
+        frame.GetPage()->HasOtherRelatedPagesDuringCommit()) {
       TRACE_EVENT_INSTANT("blink", "CheckSecurityRestrictions", "Result",
                           "Non-Empty Browsing Context Group");
       return false;

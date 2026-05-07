@@ -66,6 +66,11 @@ class TextFragmentAnchorTestController : public TextFragmentAnchorTestBase {
   TextFragmentAnchorTestController() = default;
 
   void BeginEmptyFrame() {
+    if (auto_finalize_) {
+      GetDocument().GetPage()->NotifyRelatedPagesFinalized(false);
+      GetDocument().GetFrame()->Loader().ProcessPendingCrossDocumentFragment();
+    }
+
     // If a test case doesn't find a match and therefore doesn't schedule the
     // beforematch event, we should still render a second frame as if we did
     // schedule the event to retain test coverage.
@@ -76,6 +81,9 @@ class TextFragmentAnchorTestController : public TextFragmentAnchorTestBase {
     Compositor().BeginFrame();
   }
 
+  void SetAutoFinalize(bool auto_finalize) { auto_finalize_ = auto_finalize; }
+
+ public:
   ScrollableArea* LayoutViewport() {
     return GetDocument().View()->LayoutViewport();
   }
@@ -170,6 +178,8 @@ class TextFragmentAnchorTestController : public TextFragmentAnchorTestBase {
                       "Implement others if new modality is needed.";
     }
   }
+
+  bool auto_finalize_ = true;
 };
 
 class TextFragmentAnchorTest : public TextFragmentAnchorTestController {
@@ -198,7 +208,7 @@ TEST_F(TextFragmentAnchorTest, BasicSmokeTest) {
   )HTML");
   RunAsyncMatchingTasks();
 
-  Compositor().BeginFrame();
+  BeginEmptyFrame();
 
   Element& p = *GetDocument().getElementById(AtomicString("text"));
 
@@ -206,6 +216,109 @@ TEST_F(TextFragmentAnchorTest, BasicSmokeTest) {
   EXPECT_TRUE(ViewportRect().Contains(BoundingRectInFrame(p)))
       << "<p> Element wasn't scrolled into view, viewport's scroll offset: "
       << LayoutViewport()->GetScrollOffset().ToString();
+}
+
+// Test that scroll to text fragment is deferred until related pages are
+// finalized.
+TEST_F(TextFragmentAnchorTest, DeferUntilRelatedPagesFinalized) {
+  SetAutoFinalize(false);
+  SimRequest::Params params;
+  params.requestor_origin =
+      WebSecurityOrigin::CreateFromString(WebString("https://example.org"));
+  SimRequest request("https://example.com/test.html#:~:text=test", "text/html",
+                     params);
+  LoadURL("https://example.com/test.html#:~:text=test");
+
+  ASSERT_FALSE(
+      GetDocument().GetPage()->RelatedPagesMutationFromPreviousPageFinalized());
+
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      body {
+        height: 1200px;
+      }
+      p {
+        position: absolute;
+        top: 1000px;
+      }
+    </style>
+    <p id="text">This is a test page</p>
+  )HTML");
+
+  ThreadScheduler::Current()
+      ->ToMainThreadScheduler()
+      ->StartIdlePeriodForTesting();
+  task_environment().FastForwardUntilNoTasksRemain();
+  BeginEmptyFrame();
+
+  ASSERT_FALSE(
+      GetDocument().GetPage()->RelatedPagesMutationFromPreviousPageFinalized());
+
+  Element& p = *GetDocument().getElementById(AtomicString("text"));
+
+  EXPECT_EQ(nullptr, GetDocument().CssTarget());
+  EXPECT_FALSE(ViewportRect().Contains(BoundingRectInFrame(p)));
+
+  GetDocument().GetPage()->NotifyRelatedPagesFinalized(
+      /* has_other_related_pages= */ false);
+  GetDocument().GetFrame()->Loader().ProcessPendingCrossDocumentFragment();
+
+  RunAsyncMatchingTasks();
+  BeginEmptyFrame();
+
+  EXPECT_EQ(p, *GetDocument().CssTarget());
+  EXPECT_TRUE(ViewportRect().Contains(BoundingRectInFrame(p)));
+}
+
+TEST_F(TextFragmentAnchorTest, AvoidScrollingIfHasOtherRelatedPages) {
+  SetAutoFinalize(false);
+  SimRequest::Params params;
+  params.requestor_origin =
+      WebSecurityOrigin::CreateFromString(WebString("https://example.org"));
+  SimRequest request("https://example.com/test.html#:~:text=test", "text/html",
+                     params);
+  LoadURL("https://example.com/test.html#:~:text=test");
+
+  ASSERT_FALSE(
+      GetDocument().GetPage()->RelatedPagesMutationFromPreviousPageFinalized());
+
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      body {
+        height: 1200px;
+      }
+      p {
+        position: absolute;
+        top: 1000px;
+      }
+    </style>
+    <p id="text">This is a test page</p>
+  )HTML");
+
+  ThreadScheduler::Current()
+      ->ToMainThreadScheduler()
+      ->StartIdlePeriodForTesting();
+  task_environment().FastForwardUntilNoTasksRemain();
+  BeginEmptyFrame();
+
+  ASSERT_FALSE(
+      GetDocument().GetPage()->RelatedPagesMutationFromPreviousPageFinalized());
+
+  Element& p = *GetDocument().getElementById(AtomicString("text"));
+
+  EXPECT_EQ(nullptr, GetDocument().CssTarget());
+  EXPECT_FALSE(ViewportRect().Contains(BoundingRectInFrame(p)));
+
+  GetDocument().GetPage()->NotifyRelatedPagesFinalized(
+      /* has_other_related_pages= */ true);
+  GetDocument().GetFrame()->Loader().ProcessPendingCrossDocumentFragment();
+
+  test::RunPendingTasks();
+
+  EXPECT_EQ(nullptr, GetDocument().CssTarget());
+  EXPECT_FALSE(ViewportRect().Contains(BoundingRectInFrame(p)));
 }
 
 // Basic test case for silent scroll directives, ensure we scroll the matching
@@ -388,7 +501,7 @@ TEST_F(TextFragmentAnchorTest, EmptyText) {
   )HTML");
   RunAsyncMatchingTasks();
 
-  Compositor().BeginFrame();
+  BeginEmptyFrame();
 
   EXPECT_EQ(nullptr, GetDocument().CssTarget());
   EXPECT_FALSE(GetDocument().View()->GetFragmentAnchor());
@@ -423,7 +536,7 @@ TEST_F(TextFragmentAnchorTest, NonMatchingString) {
   // Force a layout
   GetDocument().body()->setAttribute(html_names::kStyleAttr,
                                      AtomicString("height: 1300px"));
-  Compositor().BeginFrame();
+  BeginEmptyFrame();
 
   EXPECT_EQ(nullptr, GetDocument().CssTarget());
   EXPECT_TRUE(GetDocument().Markers().Markers().empty());
@@ -453,7 +566,7 @@ TEST_F(TextFragmentAnchorTest, MultipleMatches) {
   )HTML");
   RunAsyncMatchingTasks();
 
-  Compositor().BeginFrame();
+  BeginEmptyFrame();
 
   Element& first = *GetDocument().getElementById(AtomicString("first"));
 
@@ -488,7 +601,7 @@ TEST_F(TextFragmentAnchorTest, NestedBlocks) {
   )HTML");
   RunAsyncMatchingTasks();
 
-  Compositor().BeginFrame();
+  BeginEmptyFrame();
 
   Element& match = *GetDocument().getElementById(AtomicString("match"));
 
@@ -524,7 +637,7 @@ TEST_F(TextFragmentAnchorTest, MultipleTextFragments) {
   )HTML");
   RunAsyncMatchingTasks();
 
-  Compositor().BeginFrame();
+  BeginEmptyFrame();
 
   Element& first = *GetDocument().getElementById(AtomicString("first"));
 
@@ -561,7 +674,7 @@ TEST_F(TextFragmentAnchorTest, FirstTextFragmentNotFound) {
   )HTML");
   RunAsyncMatchingTasks();
 
-  Compositor().BeginFrame();
+  BeginEmptyFrame();
 
   Element& second = *GetDocument().getElementById(AtomicString("second"));
 
@@ -594,7 +707,7 @@ TEST_F(TextFragmentAnchorTest, OnlyFirstTextFragmentFound) {
   )HTML");
   RunAsyncMatchingTasks();
 
-  Compositor().BeginFrame();
+  BeginEmptyFrame();
 
   Element& p = *GetDocument().getElementById(AtomicString("text"));
 
@@ -637,7 +750,7 @@ TEST_F(TextFragmentAnchorTest, MultipleNonMatchingStrings) {
   // Force a layout
   GetDocument().body()->setAttribute(html_names::kStyleAttr,
                                      AtomicString("height: 1300px"));
-  Compositor().BeginFrame();
+  BeginEmptyFrame();
 
   EXPECT_EQ(nullptr, GetDocument().CssTarget());
   EXPECT_TRUE(GetDocument().Markers().Markers().empty());
@@ -1147,6 +1260,9 @@ TEST_P(TextFragmentAnchorScrollTest, ScrollCancelled) {
   )HTML");
 
   GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  GetDocument().GetPage()->NotifyRelatedPagesFinalized(false);
+  GetDocument().GetFrame()->Loader().ProcessPendingCrossDocumentFragment();
+
   mojom::blink::ScrollType scroll_type = GetParam();
   cc::ScrollSourceType source_type =
       (scroll_type == mojom::blink::ScrollType::kAnchoring ||
@@ -1161,7 +1277,7 @@ TEST_P(TextFragmentAnchorScrollTest, ScrollCancelled) {
   img_request.Complete("");
   RunAsyncMatchingTasks();
 
-  Compositor().BeginFrame();
+  BeginEmptyFrame();
 
   Element& p = *GetDocument().getElementById(AtomicString("text"));
 
@@ -1227,7 +1343,7 @@ TEST_P(TextFragmentAnchorScrollTest, DontDismissTextHighlightOnUserScroll) {
   LayoutViewport()->SetScrollOffset(ScrollOffset(0, -10), scroll_type,
                                     source_type);
 
-  Compositor().BeginFrame();
+  BeginEmptyFrame();
 
   EXPECT_EQ(2u, GetDocument().Markers().Markers().size());
 }
@@ -1256,7 +1372,7 @@ TEST_F(TextFragmentAnchorTest, DisabledInIframes) {
     </p>
   )HTML");
   RunPendingTasks();
-  Compositor().BeginFrame();
+  BeginEmptyFrame();
 
   Element* iframe = GetDocument().getElementById(AtomicString("iframe"));
   auto* child_frame =
@@ -1279,7 +1395,7 @@ TEST_F(TextFragmentAnchorTest, DisabledInWindowOpen) {
   main_request.Complete(R"HTML(
     <!DOCTYPE html>
   )HTML");
-  Compositor().BeginFrame();
+  BeginEmptyFrame();
 
   LocalDOMWindow* main_window = GetDocument().GetFrame()->DomWindow();
 
@@ -1315,6 +1431,7 @@ TEST_F(TextFragmentAnchorTest, DisabledInWindowOpen) {
 // Ensure that the text fragment anchor is not activated by same-document script
 // navigations.
 TEST_F(TextFragmentAnchorTest, DisabledInSamePageNavigation) {
+  SetAutoFinalize(false);
   SimRequest main_request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   main_request.Complete(R"HTML(
@@ -1329,7 +1446,7 @@ TEST_F(TextFragmentAnchorTest, DisabledInSamePageNavigation) {
     </p>
   )HTML");
   RunPendingTasks();
-  Compositor().BeginFrame();
+  BeginEmptyFrame();
 
   ASSERT_EQ(ScrollOffset(),
             GetDocument().View()->GetScrollableArea()->GetScrollOffset());
@@ -1339,7 +1456,10 @@ TEST_F(TextFragmentAnchorTest, DisabledInSamePageNavigation) {
   ScriptState::Scope entered_context_scope(script_state);
   GetDocument().GetFrame()->DomWindow()->location()->setHash(
       script_state->GetIsolate(), ":~:text=test", ASSERT_NO_EXCEPTION);
-  RunAsyncMatchingTasks();
+  ThreadScheduler::Current()
+      ->ToMainThreadScheduler()
+      ->StartIdlePeriodForTesting();
+  task_environment().FastForwardUntilNoTasksRemain();
 
   EXPECT_EQ(nullptr, GetDocument().CssTarget());
   EXPECT_EQ(ScrollOffset(), LayoutViewport()->GetScrollOffset());
@@ -1390,7 +1510,7 @@ TEST_F(TextFragmentAnchorTest, TargetStaysInView) {
     <p id="text">test</p>
   )HTML");
   RunAsyncMatchingTasks();
-  Compositor().BeginFrame();
+  BeginEmptyFrame();
 
   EXPECT_FALSE(GetDocument().IsLoadCompleted());
   EXPECT_TRUE(GetDocument().HasFinishedParsing());
@@ -1412,7 +1532,7 @@ TEST_F(TextFragmentAnchorTest, TargetStaysInView) {
   EXPECT_TRUE(GetDocument().IsLoadCompleted());
   EXPECT_TRUE(GetDocument().HasFinishedParsing());
 
-  Compositor().BeginFrame();
+  BeginEmptyFrame();
 
   // Ensure the target text is still in view and stayed centered
   ASSERT_NE(first_scroll_offset, LayoutViewport()->GetScrollOffset());
@@ -1865,7 +1985,7 @@ TEST_F(TextFragmentAnchorTest, KeepsTextHighlightOutOfView) {
   css_request.Complete("p { visibility: visible; top: 1001px; }");
   RunAsyncMatchingTasks();
 
-  Compositor().BeginFrame();
+  BeginEmptyFrame();
 
   EXPECT_EQ(1u, GetDocument().Markers().Markers().size());
 
@@ -1992,7 +2112,7 @@ TEST_F(TextFragmentAnchorTest, IdFragmentWithFragmentDirective) {
     <div id="element:~:id">Some text</div>
   )HTML");
   RunPendingTasks();
-  Compositor().BeginFrame();
+  BeginEmptyFrame();
 
   Element& p = *GetDocument().getElementById(AtomicString("element"));
 
@@ -2067,7 +2187,7 @@ TEST_F(TextFragmentAnchorTest, DISABLED_HighlightOnReload) {
   MainFrame().StartReload(WebFrameLoadType::kReload);
   reload_request.Complete(html);
 
-  Compositor().BeginFrame();
+  BeginEmptyFrame();
 
   EXPECT_EQ(*GetDocument().getElementById(AtomicString("text")),
             *GetDocument().CssTarget());
@@ -2670,7 +2790,7 @@ TEST_F(TextFragmentAnchorTest, InitialMatchingIsCollapsedCrash) {
   )HTML");
   // Parsing completed but load is still waiting on the <img>, this will run
   // matching and match "test".
-  Compositor().BeginFrame();
+  BeginEmptyFrame();
 
   // Ensure we've attached the annotation for the text fragment.
   auto* container = AnnotationAgentContainerImpl::CreateIfNeeded(GetDocument());
@@ -2687,7 +2807,7 @@ TEST_F(TextFragmentAnchorTest, InitialMatchingIsCollapsedCrash) {
   // Complete the <img> request (with an error). This will fire the load event
   // and perform another matching pass. Test passes if this doesn't crash.
   sub_request.Complete("");
-  Compositor().BeginFrame();
+  BeginEmptyFrame();
 }
 
 // Test the behavior of removing matched text while waiting to expand a
@@ -2715,7 +2835,7 @@ TEST_F(TextFragmentAnchorTest, InitialMatchPendingBecomesCollapsed) {
   )HTML");
   // Parsing completed but load is still waiting on the <img>, this will run
   // matching and match "test" but queue a rAF task to show the hidden <div>.
-  Compositor().BeginFrame();
+  BeginEmptyFrame();
 
   // Ensure we've queued the "DomMutation" rAF task.
   auto* container = AnnotationAgentContainerImpl::CreateIfNeeded(GetDocument());
@@ -2736,7 +2856,7 @@ TEST_F(TextFragmentAnchorTest, InitialMatchPendingBecomesCollapsed) {
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
   // This will run the "DomMutation" rAF task from the first match.
-  Compositor().BeginFrame();
+  BeginEmptyFrame();
 
   // The directive should not have scrolled or created a marker.
   EXPECT_EQ(ScrollOffset(), LayoutViewport()->GetScrollOffset());
@@ -2839,15 +2959,15 @@ TEST_F(TextFragmentAnchorPostLoadTest, PostLoadSearchEndsWithoutDomMutation) {
   )HTML");
   // Ensure the load event is run.
   test::RunPendingTasks();
-  Compositor().BeginFrame();
+  BeginEmptyFrame();
 
   ASSERT_TRUE(GetDocument().View()->GetFragmentAnchor());
 
   test::RunDelayedTasks(TextFragmentAnchor::PostLoadTaskDelay());
-  Compositor().BeginFrame();
+  BeginEmptyFrame();
 
   // Final frame for finalization.
-  Compositor().BeginFrame();
+  BeginEmptyFrame();
 
   EXPECT_FALSE(GetDocument().View()->GetFragmentAnchor());
   EXPECT_TRUE(GetDocument().Markers().Markers().empty());
@@ -2856,6 +2976,7 @@ TEST_F(TextFragmentAnchorPostLoadTest, PostLoadSearchEndsWithoutDomMutation) {
 // Ensure that the post-load text fragment search is pushed back each time DOM
 // is mutated.
 TEST_F(TextFragmentAnchorPostLoadTest, PostLoadSearchTimesOut) {
+  SetAutoFinalize(false);
   SimRequest request("https://example.com/test.html#:~:text=test", "text/html");
   LoadURL("https://example.com/test.html#:~:text=test");
   request.Complete(R"HTML(
@@ -2882,6 +3003,8 @@ TEST_F(TextFragmentAnchorPostLoadTest, PostLoadSearchTimesOut) {
       }
     </script>
   )HTML");
+  GetDocument().GetPage()->NotifyRelatedPagesFinalized(false);
+  GetDocument().GetFrame()->Loader().ProcessPendingCrossDocumentFragment();
   // Ensure the load event is run.
   test::RunPendingTasks();
 

@@ -47,6 +47,11 @@ class TextFragmentHandlerTest : public SimTest {
   void SetUp() override {
     SimTest::SetUp();
     WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+    if (WebView().GetPage()) {
+      WebView()
+          .GetPage()
+          ->related_pages_mutation_from_previous_page_finalized_ = true;
+    }
   }
 
   void RunAsyncMatchingTasks() {

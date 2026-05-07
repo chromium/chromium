@@ -1372,6 +1372,14 @@ void LocalFrameMojoHandler::SetV8CompileHints(
   page->GetV8CrowdsourcedCompileHintsConsumer().SetData(memory);
 }
 
+void LocalFrameMojoHandler::NotifyRelatedPagesFinalized(
+    bool has_other_related_pages) {
+  if (Page* page = GetPage()) {
+    page->NotifyRelatedPagesFinalized(has_other_related_pages);
+    frame_->Loader().ProcessPendingCrossDocumentFragment();
+  }
+}
+
 void LocalFrameMojoHandler::SnapshotDocumentForViewTransition(
     const blink::ViewTransitionToken& transition_token,
     mojom::blink::PageSwapEventParamsPtr params,

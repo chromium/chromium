@@ -1323,6 +1323,10 @@ interface LocalMainFrame {
   FinalizeNavigationConfidence(
     double randomized_trigger_rate,
     ConfidenceLevel confidence);
+
+  // Called when the related pages set is finalized and cannot change due to
+  // previous page's mutations. Called when this (new page) is being committed.
+  NotifyRelatedPagesFinalized(bool has_other_related_pages);
 };
 
 // Implemented in Browser, this interface defines local-main-frame-specific
