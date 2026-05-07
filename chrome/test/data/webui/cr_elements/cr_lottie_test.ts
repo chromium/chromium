@@ -285,6 +285,18 @@ suite('cr_lottie_test', function() {
     assertDeepEquals([0, 10], event.detail.segments);
   });
 
+  test('TestCompleteEvent', async () => {
+    createLottieElement(/*autoplay=*/ true);
+    crLottieElement.singleLoop = true;
+
+    const waitForCompleteEvent =
+        eventToPromise('cr-lottie-completed', crLottieElement);
+
+    await waitForInitializeEvent;
+    await waitForPlayingEvent;
+    await waitForCompleteEvent;
+  });
+
   test('TestRenderFrame', async function() {
     createLottieElement(/*autoplay=*/ true);
     await waitForInitializeEvent;

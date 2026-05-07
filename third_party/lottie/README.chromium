@@ -32,6 +32,9 @@ Added playSegments functionality to be able to play a subset of frames in the
 animation (if the animation was paused before calling playSegments,
 it would be resumed).
 
+Added a "completed" event to the worker wrapper to signal when a non-looping
+animation has finished playing.
+
 Generating Minified Version:
 Minified version automatically generated at build time via the
 //third_party/lottie:minify target.

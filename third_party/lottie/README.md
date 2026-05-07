@@ -105,7 +105,13 @@ its parent thread:
     name: 'stopped'
 }
 ```
-5. **'resized'**
+5. **'completed'**
+```javascript
+{
+    name: 'completed'
+}
+```
+6. **'resized'**
 ```javascript
 {
     name: 'resized',

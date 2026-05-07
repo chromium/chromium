@@ -13402,6 +13402,7 @@ const events = {
   PLAYING: 'playing',          // Send when the animation started playing.
   PAUSED: 'paused',            // Sent when the animation has paused.
   STOPPED: 'stopped',          // Sent when the animation has stopped.
+  COMPLETED: 'completed',      // Sent when the animation has completed.
 };
 
 /**
@@ -13450,6 +13451,13 @@ function sendStopEvent() {
 }
 
 /**
+ * Informs the parent thread that the animation has completed.
+ */
+function sendCompletedEvent() {
+  postMessage({name: events.COMPLETED});
+}
+
+/**
  * Informs the parent thread that the animation has finished initializing.
  */
 function sendInitializedEvent() {
@@ -13487,6 +13495,13 @@ function initAnimation(animationData, initParams, canvas) {
       clearCanvas: true,
     },
   });
+
+  // Listen for the 'complete' event and send it back to the parent thread.
+  // If the animation is set to loop, the 'complete' event would be sent after
+  // each loop repetition, so we only listen for it if looping is disabled.
+  if (!initParams.loop) {
+    currentAnimation.addEventListener('complete', sendCompletedEvent);
+  }
 
   sendInitializedEvent();
 

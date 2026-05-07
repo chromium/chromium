@@ -15,6 +15,7 @@
  * Fires a 'cr-lottie-playing' event when the animation starts playing.
  * Fires a 'cr-lottie-paused' event when the animation has paused.
  * Fires a 'cr-lottie-stopped' event when animation has stopped.
+ * Fires a 'cr-lottie-completed' event when animation has completed.
  * Fires a 'cr-lottie-resized' event when the canvas the animation is being
  * drawn on is resized.
  */
@@ -384,6 +385,8 @@ export class CrLottieElement extends CrLitElement {
       this.fire('cr-lottie-paused');
     } else if (event.data.name === 'stopped') {
       this.fire('cr-lottie-stopped');
+    } else if (event.data.name === 'completed') {
+      this.fire('cr-lottie-completed');
     } else if (event.data.name === 'resized') {
       this.fire('cr-lottie-resized', event.data.size);
     }
