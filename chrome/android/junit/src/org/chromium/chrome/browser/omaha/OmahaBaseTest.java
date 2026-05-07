@@ -4,10 +4,13 @@
 
 package org.chromium.chrome.browser.omaha;
 
+import static org.mockito.Mockito.mock;
+
 import android.content.SharedPreferences;
 
 import androidx.annotation.IntDef;
 
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -19,10 +22,16 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.task.AsyncTask;
+import org.chromium.base.task.PostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.omaha.MockRequestGenerator.DeviceType;
+import org.chromium.components.background_task_scheduler.BackgroundTask;
+import org.chromium.components.background_task_scheduler.TaskParameters;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -37,12 +46,15 @@ import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Tests for the {@link OmahaClient}.
- * Tests override the original OmahaClient's functions with the MockOmahaClient, which
- * provides a way to hook into functions to return values that would normally be provided by the
- * system, such as whether Chrome was installed through the system image.
+ * Tests for the {@link OmahaClient}. Tests override the original OmahaClient's functions with the
+ * MockOmahaClient, which provides a way to hook into functions to return values that would normally
+ * be provided by the system, such as whether Chrome was installed through the system image.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Batch(Batch.UNIT_TESTS)
@@ -735,6 +747,10 @@ public class OmahaBaseTest {
         private String mRequestPropertyField;
         private String mRequestPropertyValue;
 
+        private final Object mLock = new Object();
+        private boolean mShouldHang;
+        private volatile boolean mIsInterrupted;
+
         MockConnection(
                 URL url,
                 boolean usingTablet,
@@ -744,6 +760,9 @@ public class OmahaBaseTest {
                 String updateVersion) {
             super(url);
             Assert.assertEquals(MockRequestGenerator.SERVER_URL, url.toString());
+
+            mShouldHang = false;
+            mIsInterrupted = false;
 
             mUpdateVersion = updateVersion;
             String mockResponse = buildServerResponseString(usingTablet, sendInstallEvent);
@@ -809,7 +828,20 @@ public class OmahaBaseTest {
         }
 
         @Override
-        public void disconnect() {}
+        public void disconnect() {
+            synchronized (mLock) {
+                mIsInterrupted = true;
+                mLock.notifyAll();
+            }
+        }
+
+        public void setShouldHang(boolean shouldHang) {
+            mShouldHang = shouldHang;
+        }
+
+        public boolean isConnectionActive() {
+            return mShouldHang && !mIsInterrupted;
+        }
 
         @Override
         public void setDoOutput(boolean value) throws IllegalAccessError {
@@ -842,6 +874,19 @@ public class OmahaBaseTest {
         public OutputStream getOutputStream() throws IOException {
             mSentRequest = true;
             connect();
+            if (mShouldHang) {
+                synchronized (mLock) {
+                    while (!mIsInterrupted) {
+                        try {
+                            mLock.wait(100);
+                        } catch (InterruptedException e) {
+                            mIsInterrupted = true;
+                            break;
+                        }
+                    }
+                }
+                throw new IOException("Connection interrupted / closed");
+            }
             return mOutputStream;
         }
 
@@ -881,6 +926,104 @@ public class OmahaBaseTest {
 
         public String getRequestPropertyValue() {
             return mRequestPropertyValue;
+        }
+    }
+
+    @Test
+    @Feature({"Omaha"})
+    public void testOmahaService_QueueBlockedImpact() throws Exception {
+        // Use a real concurrent executor instead of Robolectric's PausedExecutorService
+        PostTask.setPrenativeThreadPoolExecutorForTesting(Executors.newSingleThreadExecutor());
+
+        OmahaBase.setIsDisabledForTesting(false);
+        URL url = new URL(mDelegate.getRequestGenerator().getServerUrl());
+        MockConnection mockConnection =
+                new MockConnection(
+                        url,
+                        /* usingTablet= */ false,
+                        /* sendValidResponse= */ true,
+                        /* sendInstallEvent= */ false,
+                        /* connectionTimesOut= */ false,
+                        /* updateVersion= */ "1.2.3.4");
+        mockConnection.setShouldHang(true);
+        MockOmahaService omahaService = new MockOmahaService(mDelegate, mockConnection);
+
+        // Trigger valid request state
+        SharedPreferences.Editor editor = OmahaPrefUtils.getSharedPreferences().edit();
+        editor.putBoolean(OmahaPrefUtils.PREF_SEND_INSTALL_EVENT, false);
+        editor.putLong(OmahaPrefUtils.PREF_TIMESTAMP_FOR_NEW_REQUEST, 20000);
+        editor.putLong(OmahaPrefUtils.PREF_TIMESTAMP_OF_REQUEST, 10000);
+        editor.putString(OmahaPrefUtils.PREF_PERSISTED_REQUEST_ID, "persisted_id");
+        editor.putLong(OmahaPrefUtils.PREF_TIMESTAMP_FOR_NEXT_POST_ATTEMPT, 0);
+        editor.apply();
+
+        BackgroundTask.TaskFinishedCallback mockCallback =
+                mock(BackgroundTask.TaskFinishedCallback.class);
+        TaskParameters mockParams = mock(TaskParameters.class);
+
+        // 1. Start the background task (spawns the AsyncTask on SERIAL_EXECUTOR)
+        omahaService.onStartTask(null, mockParams, mockCallback);
+
+        // Wait dynamically up to 1 second for the background thread to spawn using JUnit UI polling
+        CriteriaHelper.pollUiThreadForJUnit(
+                () ->
+                        Criteria.checkThat(
+                                "Omaha background thread was not spawned",
+                                omahaService.getExecutingThread(),
+                                Matchers.notNullValue()));
+
+        Thread thread = omahaService.getExecutingThread();
+
+        // 2. Stop the task (simulating OS unbind / cancellation)
+        omahaService.onStopTask(null, mockParams);
+
+        // 3. Post a healthy, simple task to the same SERIAL_EXECUTOR
+        final AtomicBoolean executed = new AtomicBoolean(false);
+        final CountDownLatch latch = new CountDownLatch(1);
+
+        AsyncTask.SERIAL_EXECUTOR.execute(
+                () -> {
+                    executed.set(true);
+                    latch.countDown();
+                });
+
+        // Wait up to 500ms for the healthy task to execute
+        boolean finished = latch.await(500, TimeUnit.MILLISECONDS);
+
+        // Verify that when the background task is cancelled/stopped, it does not permanently block
+        // subsequent tasks queued on the SerialExecutor from executing.
+        Assert.assertTrue(
+                "SerialExecutor queue remains blocked after task cancellation!",
+                finished && executed.get());
+
+        // Clean up
+        mockConnection.disconnect();
+        thread.interrupt();
+        thread.join(500);
+    }
+
+    private static class MockOmahaService extends OmahaService {
+        private final MockConnection mMockConnection;
+        private Thread mExecutingThread;
+
+        MockOmahaService(OmahaDelegate delegate, MockConnection mockConnection) {
+            super(delegate);
+            mMockConnection = mockConnection;
+        }
+
+        @Override
+        protected HttpURLConnection createConnection() {
+            mExecutingThread = Thread.currentThread();
+            return mMockConnection;
+        }
+
+        @Override
+        protected String getInstalledVersion() {
+            return "1.2.3.4";
+        }
+
+        public Thread getExecutingThread() {
+            return mExecutingThread;
         }
     }
 }
