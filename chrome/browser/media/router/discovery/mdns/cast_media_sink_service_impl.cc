@@ -72,6 +72,8 @@ std::string EnumToString(MediaRouterChannelError error) {
       return "NETWORK";
     case MediaRouterChannelError::CONNECT_TIMEOUT:
       return "CONNECT_TIMEOUT";
+    case MediaRouterChannelError::PING_TIMEOUT:
+      return "PING_TIMEOUT";
     case MediaRouterChannelError::TOTAL_COUNT:
       NOTREACHED();
   }
@@ -95,6 +97,9 @@ MediaRouterChannelError RecordError(cast_channel::ChannelError channel_error,
       break;
     case cast_channel::ChannelError::CONNECT_TIMEOUT:
       error_code = MediaRouterChannelError::CONNECT_TIMEOUT;
+      break;
+    case cast_channel::ChannelError::PING_TIMEOUT:
+      error_code = MediaRouterChannelError::PING_TIMEOUT;
       break;
     default:
       // Do nothing and let the standard launch failure issue surface.
@@ -150,6 +155,7 @@ MediaRouterChannelError RecordError(cast_channel::ChannelError channel_error,
 
 // Max allowed values
 constexpr int kMaxConnectTimeoutInSeconds = 30;
+constexpr int kMaxLivenessTimeoutInSeconds = 60;
 
 // Max failure count allowed for a Cast channel.
 constexpr int kMaxFailureCount = 100;
@@ -441,6 +447,7 @@ cast_channel::CastSocketOpenParams
 CastMediaSinkServiceImpl::CreateCastSocketOpenParams(
     const MediaSinkInternal& sink) {
   int connect_timeout_in_seconds = open_params_.connect_timeout_in_seconds;
+  int liveness_timeout_in_seconds = open_params_.liveness_timeout_in_seconds;
   int delta_in_seconds = open_params_.dynamic_timeout_delta_in_seconds;
 
   auto it = failure_count_map_.find(sink.sink().id());
@@ -449,10 +456,15 @@ CastMediaSinkServiceImpl::CreateCastSocketOpenParams(
     connect_timeout_in_seconds =
         std::min(connect_timeout_in_seconds + failure_count * delta_in_seconds,
                  kMaxConnectTimeoutInSeconds);
+    liveness_timeout_in_seconds =
+        std::min(liveness_timeout_in_seconds + failure_count * delta_in_seconds,
+                 kMaxLivenessTimeoutInSeconds);
   }
 
   return cast_channel::CastSocketOpenParams(
       sink.cast_data().ip_endpoint, base::Seconds(connect_timeout_in_seconds),
+      base::Seconds(liveness_timeout_in_seconds),
+      base::Seconds(open_params_.ping_interval_in_seconds),
       /*CastDeviceCapabilitySet*/ {});
 }
 

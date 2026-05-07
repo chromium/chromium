@@ -38,6 +38,7 @@ std::string ChannelErrorToString(ChannelError channel_error) {
     CAST_CHANNEL_TYPE_TO_STRING(ChannelError::INVALID_MESSAGE);
     CAST_CHANNEL_TYPE_TO_STRING(ChannelError::INVALID_CHANNEL_ID);
     CAST_CHANNEL_TYPE_TO_STRING(ChannelError::CONNECT_TIMEOUT);
+    CAST_CHANNEL_TYPE_TO_STRING(ChannelError::PING_TIMEOUT);
     CAST_CHANNEL_TYPE_TO_STRING(ChannelError::UNKNOWN);
   }
   NOTREACHED() << "Unknown channel_error "

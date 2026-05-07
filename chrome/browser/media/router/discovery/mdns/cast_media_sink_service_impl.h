@@ -214,9 +214,16 @@ class CastMediaSinkServiceImpl : public MediaSinkServiceBase,
     // Connect timeout value when opening a Cast socket.
     int connect_timeout_in_seconds = 10;
 
-    // Dynamic time out delta for connect timeout. If previous channel open
-    // operation fails, next channel open will have parameters
-    // (connect timeout + delta).
+    // Amount of idle time to wait before pinging the Cast device.
+    int ping_interval_in_seconds = 5;
+
+    // Amount of idle time to wait before disconnecting.
+    int liveness_timeout_in_seconds = 10;
+
+    // Dynamic time out delta for connect timeout and liveness timeout. If
+    // previous channel open operation with opening parameters (liveness
+    // timeout, connect timeout) fails, next channel open will have parameters
+    // (liveness timeout + delta, connect timeout + delta).
     int dynamic_timeout_delta_in_seconds = 0;
   };
 

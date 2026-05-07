@@ -425,7 +425,7 @@ TEST_F(MirroringActivityTest, OnInternalMessageNonlocal) {
   MakeActivity();
   ASSERT_FALSE(channel_to_service_);
   activity_->OnInternalMessage(cast_channel::InternalMessage(
-      cast_channel::CastMessageType::kConnect, kMessageSourceId,
+      cast_channel::CastMessageType::kPing, kMessageSourceId,
       kMessageDestinationId, kNamespace, base::DictValue()));
 }
 
@@ -441,7 +441,7 @@ TEST_F(MirroringActivityTest, OnInternalMessage) {
       });
 
   activity_->OnInternalMessage(cast_channel::InternalMessage(
-      cast_channel::CastMessageType::kConnect, kMessageSourceId,
+      cast_channel::CastMessageType::kPing, kMessageSourceId,
       kMessageDestinationId, kNamespace, base::test::ParseJsonDict(kPayload)));
 }
 

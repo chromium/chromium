@@ -55,7 +55,10 @@ MATCHER_P(OpenParamEq, expected, "") {
   return expected.connect_timeout_in_seconds ==
              arg.connect_timeout_in_seconds &&
          expected.dynamic_timeout_delta_in_seconds ==
-             arg.dynamic_timeout_delta_in_seconds;
+             arg.dynamic_timeout_delta_in_seconds &&
+         expected.liveness_timeout_in_seconds ==
+             arg.liveness_timeout_in_seconds &&
+         expected.ping_interval_in_seconds == arg.ping_interval_in_seconds;
 }
 
 class MockObserver : public MediaSinkServiceBase::Observer {
@@ -570,8 +573,8 @@ TEST_P(CastMediaSinkServiceImplTest, TestSuccessOnChannelErrorRetry) {
 
   EXPECT_CALL(*mock_cast_socket_service_, OpenSocket_(ip_endpoint1, _))
       .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<1>(&socket));
-  media_sink_service_impl_.OnError(
-      socket, cast_channel::ChannelError::CAST_SOCKET_ERROR);
+  media_sink_service_impl_.OnError(socket,
+                                   cast_channel::ChannelError::PING_TIMEOUT);
 
   // Retry succeeds and the sink stays around.
   EXPECT_CALL(observer_, OnSinkAddedOrUpdated(cast_sink));
@@ -597,8 +600,8 @@ TEST_P(CastMediaSinkServiceImplTest, TestFailureOnChannelErrorRetry) {
   socket.SetErrorState(ChannelError::CONNECT_ERROR);
   EXPECT_CALL(*mock_cast_socket_service_, OpenSocket_(ip_endpoint1, _))
       .WillRepeatedly(base::test::RunOnceCallbackRepeatedly<1>(&socket));
-  media_sink_service_impl_.OnError(
-      socket, cast_channel::ChannelError::CAST_SOCKET_ERROR);
+  media_sink_service_impl_.OnError(socket,
+                                   cast_channel::ChannelError::PING_TIMEOUT);
 
   // After failed attempts, the sink is removed.
   EXPECT_CALL(observer_, OnSinkRemoved(cast_sink));
@@ -1415,6 +1418,8 @@ TEST_P(CastMediaSinkServiceImplTest, TestCreateCastSocketOpenParams) {
   const MediaSink::Id& sink_id = cast_sink1.sink().id();
   int connect_timeout_in_seconds =
       media_sink_service_impl_.open_params_.connect_timeout_in_seconds;
+  int liveness_timeout_in_seconds =
+      media_sink_service_impl_.open_params_.liveness_timeout_in_seconds;
   int delta_in_seconds = 5;
   media_sink_service_impl_.open_params_.dynamic_timeout_delta_in_seconds =
       delta_in_seconds;
@@ -1424,27 +1429,38 @@ TEST_P(CastMediaSinkServiceImplTest, TestCreateCastSocketOpenParams) {
       media_sink_service_impl_.CreateCastSocketOpenParams(cast_sink1);
   EXPECT_EQ(connect_timeout_in_seconds,
             open_params.connect_timeout.InSeconds());
+  EXPECT_EQ(liveness_timeout_in_seconds,
+            open_params.liveness_timeout.InSeconds());
 
   // One error
   connect_timeout_in_seconds += delta_in_seconds;
+  liveness_timeout_in_seconds += delta_in_seconds;
   media_sink_service_impl_.failure_count_map_[sink_id] = 1;
   open_params = media_sink_service_impl_.CreateCastSocketOpenParams(cast_sink1);
   EXPECT_EQ(connect_timeout_in_seconds,
             open_params.connect_timeout.InSeconds());
+  EXPECT_EQ(liveness_timeout_in_seconds,
+            open_params.liveness_timeout.InSeconds());
 
   // Two errors
   connect_timeout_in_seconds += delta_in_seconds;
+  liveness_timeout_in_seconds += delta_in_seconds;
   media_sink_service_impl_.failure_count_map_[sink_id] = 2;
   open_params = media_sink_service_impl_.CreateCastSocketOpenParams(cast_sink1);
   EXPECT_EQ(connect_timeout_in_seconds,
             open_params.connect_timeout.InSeconds());
+  EXPECT_EQ(liveness_timeout_in_seconds,
+            open_params.liveness_timeout.InSeconds());
 
   // Ten errors
   connect_timeout_in_seconds = 30;
+  liveness_timeout_in_seconds = 60;
   media_sink_service_impl_.failure_count_map_[sink_id] = 10;
   open_params = media_sink_service_impl_.CreateCastSocketOpenParams(cast_sink1);
   EXPECT_EQ(connect_timeout_in_seconds,
             open_params.connect_timeout.InSeconds());
+  EXPECT_EQ(liveness_timeout_in_seconds,
+            open_params.liveness_timeout.InSeconds());
 }
 
 TEST_P(CastMediaSinkServiceImplTest, TestHasSink) {

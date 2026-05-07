@@ -170,6 +170,9 @@ class MockCastSocket : public CastSocket {
   CastChannelFlags flags() const override { return flags_; }
   void SetFlags(CastChannelFlags flags) { flags_ = flags; }
 
+  bool keep_alive() const override { return keep_alive_; }
+  void SetKeepAlive(bool keep_alive) { keep_alive_ = keep_alive; }
+
   bool audio_only() const override { return audio_only_; }
   void SetAudioOnly(bool audio_only) { audio_only_ = audio_only; }
 
@@ -178,10 +181,11 @@ class MockCastSocket : public CastSocket {
 
  private:
   net::IPEndPoint ip_endpoint_;
-  int channel_id_ = 0;
-  ChannelError error_state_ = ChannelError::NONE;
+  int channel_id_;
+  ChannelError error_state_;
   CastChannelFlags flags_{kCastChannelFlagsNone};
-  bool audio_only_ = false;
+  bool keep_alive_;
+  bool audio_only_;
 
   std::unique_ptr<MockCastTransport> mock_transport_;
   std::unique_ptr<Observer> observer_;

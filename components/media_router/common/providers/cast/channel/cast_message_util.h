@@ -21,6 +21,8 @@ using ::openscreen::cast::proto::DeviceAuthMessage;
 // Reserved message namespaces for internal messages.
 static constexpr char kAuthNamespace[] =
     "urn:x-cast:com.google.cast.tp.deviceauth";
+static constexpr char kHeartbeatNamespace[] =
+    "urn:x-cast:com.google.cast.tp.heartbeat";
 static constexpr char kConnectionNamespace[] =
     "urn:x-cast:com.google.cast.tp.connection";
 static constexpr char kReceiverNamespace[] =
@@ -40,6 +42,10 @@ static constexpr char kNotificationDisabledError[] =
 
 // Cast application protocol message types.
 enum class CastMessageType {
+  // Heartbeat messages.
+  kPing,
+  kPong,
+
   // RPC control/status messages used by Media Remoting. These occur at high
   // frequency, up to dozens per second at times, and should not be logged.
   kRpc,
@@ -201,6 +207,10 @@ bool IsReceiverMessage(const CastMessage& message);
 
 // Returns whether |message| is destined for the platform sender.
 bool IsPlatformSenderMessage(const CastMessage& message);
+
+// Creates a keep-alive message of either type PING or PONG.
+CastMessage CreateKeepAlivePingMessage();
+CastMessage CreateKeepAlivePongMessage();
 
 enum VirtualConnectionType {
   kStrong = 0,
