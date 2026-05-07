@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/strings/string_util.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -215,6 +216,43 @@ class MockRequestHandler {
     return response;
   }
 
+  static std::unique_ptr<HttpResponse> CreateResponseWithUrlType(
+      const std::string& url_type) {
+    auto response = std::make_unique<BasicHttpResponse>();
+    response->set_code(net::HTTP_OK);
+    response->set_content(base::ReplaceStringPlaceholders(
+        R"(
+          {
+            "sessionId": "111",
+            "duration": {
+              "seconds": "120"
+            },
+            "sessionState": "ACTIVE",
+            "studentGroupConfigs": {
+              "main": {
+                "onTaskConfig": {
+                  "activeBundle": {
+                    "contentConfigs": [
+                      {
+                        "title": "gemini",
+                        "url": "https://gemini.google.com",
+                        "urlType": "$1"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "teacher": {
+              "gaiaId": "1"
+            }
+          }
+        )",
+        {url_type}, nullptr));
+    response->set_content_type("application/json");
+    return response;
+  }
+
   static std::unique_ptr<HttpResponse> CreateEmptyResponse() {
     auto response = std::make_unique<BasicHttpResponse>();
     response->set_code(net::HTTP_OK);
@@ -240,6 +278,9 @@ namespace ash::boca {
 
 class GetSessionRequestTest : public testing::Test {
  public:
+  using SessionResult = base::expected<std::unique_ptr<::boca::Session>,
+                                       google_apis::ApiErrorCode>;
+
   GetSessionRequestTest() = default;
   void SetUp() override {
     test_shared_loader_factory_ =
@@ -262,6 +303,31 @@ class GetSessionRequestTest : public testing::Test {
   MockRequestHandler& request_handler() { return request_handler_; }
   google_apis::RequestSender* request_sender() { return request_sender_.get(); }
 
+  SessionResult ExecuteRequest(bool is_producer) {
+    base::test::TestFuture<SessionResult> future;
+    const GaiaId gaia_id("123");
+    auto request = std::make_unique<GetSessionRequest>(
+        request_sender(), "https://test", is_producer, gaia_id,
+        future.GetCallback());
+    request->OverrideURLForTesting(test_server_.base_url().spec());
+    request->set_device_id("000");
+
+    request_sender()->StartRequestWithAuthRetry(std::move(request));
+    return future.Take();
+  }
+
+  void ExpectHandleRequestCallAndReturn(
+      std::unique_ptr<net::test_server::HttpResponse> response) {
+    EXPECT_CALL(
+        request_handler(),
+        HandleRequest(AllOf(
+            Field(&HttpRequest::method, Eq(HttpMethod::METHOD_GET)),
+            Field(
+                &HttpRequest::relative_url,
+                Eq("/v1/users/123/sessions:getActive?device.device_id=000")))))
+        .WillOnce(Return(ByMove(std::move(response))));
+  }
+
  protected:
   // net::test_server::HttpRequest http_request;
   net::EmbeddedTestServer test_server_;
@@ -277,30 +343,10 @@ class GetSessionRequestTest : public testing::Test {
 };
 
 TEST_F(GetSessionRequestTest, GetSessionWithFullProducerInputAndSucceed) {
-  EXPECT_CALL(
-      request_handler(),
-      HandleRequest(AllOf(
-          Field(&HttpRequest::method, Eq(HttpMethod::METHOD_GET)),
-          Field(&HttpRequest::relative_url,
-                Eq("/v1/users/123/sessions:getActive?device.device_id=000")))))
-      .WillOnce(
-          Return(ByMove(MockRequestHandler::CreateFullProducerResponse())));
+  ExpectHandleRequestCallAndReturn(
+      MockRequestHandler::CreateFullProducerResponse());
 
-  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
-                                        google_apis::ApiErrorCode>>
-      future;
-
-  const GaiaId gaia_id("123");
-  std::unique_ptr<GetSessionRequest> request =
-      std::make_unique<GetSessionRequest>(request_sender(), "https://test",
-                                          /*is_producer=*/true, gaia_id,
-                                          future.GetCallback());
-  request->OverrideURLForTesting(test_server_.base_url().spec());
-  request->set_device_id("000");
-
-  request_sender()->StartRequestWithAuthRetry(std::move(request));
-
-  auto result = future.Take();
+  auto result = ExecuteRequest(/*is_producer=*/true);
   ASSERT_TRUE(result.has_value());
 
   std::unique_ptr<::boca::Session> session = std::move(result.value());
@@ -380,29 +426,10 @@ TEST_F(GetSessionRequestTest, GetSessionWithFullProducerInputAndSucceed) {
 }
 
 TEST_F(GetSessionRequestTest, GetSessionWithFullConsumerInputAndSucceed) {
-  EXPECT_CALL(
-      request_handler(),
-      HandleRequest(AllOf(
-          Field(&HttpRequest::method, Eq(HttpMethod::METHOD_GET)),
-          Field(&HttpRequest::relative_url,
-                Eq("/v1/users/123/sessions:getActive?device.device_id=000")))))
-      .WillOnce(Return(ByMove(MockRequestHandler::CreateConsumerResponse())));
+  ExpectHandleRequestCallAndReturn(
+      MockRequestHandler::CreateConsumerResponse());
 
-  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
-                                        google_apis::ApiErrorCode>>
-      future;
-
-  const GaiaId gaia_id("123");
-  std::unique_ptr<GetSessionRequest> request =
-      std::make_unique<GetSessionRequest>(request_sender(), "https://test",
-                                          /*is_producer=*/false, gaia_id,
-                                          future.GetCallback());
-  request->OverrideURLForTesting(test_server_.base_url().spec());
-  request->set_device_id("000");
-
-  request_sender()->StartRequestWithAuthRetry(std::move(request));
-
-  auto result = future.Take();
+  auto result = ExecuteRequest(/*is_producer=*/false);
   ASSERT_TRUE(result.has_value());
 
   std::unique_ptr<::boca::Session> session = std::move(result.value());
@@ -449,29 +476,9 @@ TEST_F(GetSessionRequestTest, GetSessionWithFullConsumerInputAndSucceed) {
 }
 
 TEST_F(GetSessionRequestTest, CreateSessionWithDefaultInputAndSucceed) {
-  net::test_server::HttpRequest http_request;
-  EXPECT_CALL(
-      request_handler(),
-      HandleRequest(AllOf(
-          Field(&HttpRequest::method, Eq(HttpMethod::METHOD_GET)),
-          Field(&HttpRequest::relative_url,
-                Eq("/v1/users/123/sessions:getActive?device.device_id=000")))))
-      .WillOnce(Return(ByMove(MockRequestHandler::CreateDefaultResponse())));
+  ExpectHandleRequestCallAndReturn(MockRequestHandler::CreateDefaultResponse());
 
-  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
-                                        google_apis::ApiErrorCode>>
-      future;
-
-  const GaiaId gaia_id("123");
-  std::unique_ptr<GetSessionRequest> request =
-      std::make_unique<GetSessionRequest>(request_sender(), "https://test",
-                                          /*is_producer=*/true, gaia_id,
-                                          future.GetCallback());
-  request->set_device_id("000");
-  request->OverrideURLForTesting(test_server_.base_url().spec());
-  request_sender()->StartRequestWithAuthRetry(std::move(request));
-
-  auto result = future.Take();
+  auto result = ExecuteRequest(/*is_producer=*/true);
   ASSERT_TRUE(result.has_value());
 
   std::unique_ptr<::boca::Session> session = std::move(result.value());
@@ -510,58 +517,67 @@ TEST_F(GetSessionRequestTest, CreateSessionWithDefaultInputAndSucceed) {
 }
 
 TEST_F(GetSessionRequestTest, CreateSessionWithEmptyInputAndSucceed) {
-  net::test_server::HttpRequest http_request;
-  EXPECT_CALL(
-      request_handler(),
-      HandleRequest(AllOf(
-          Field(&HttpRequest::method, Eq(HttpMethod::METHOD_GET)),
-          Field(&HttpRequest::relative_url,
-                Eq("/v1/users/123/sessions:getActive?device.device_id=000")))))
-      .WillOnce(Return(ByMove(MockRequestHandler::CreateEmptyResponse())));
+  ExpectHandleRequestCallAndReturn(MockRequestHandler::CreateEmptyResponse());
 
-  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
-                                        google_apis::ApiErrorCode>>
-      future;
-
-  const GaiaId gaia_id("123");
-  std::unique_ptr<GetSessionRequest> request =
-      std::make_unique<GetSessionRequest>(request_sender(), "https://test",
-                                          /*is_producer=*/true, gaia_id,
-                                          future.GetCallback());
-  request->OverrideURLForTesting(test_server_.base_url().spec());
-  request->set_device_id("000");
-
-  request_sender()->StartRequestWithAuthRetry(std::move(request));
-
-  auto result = future.Take();
+  auto result = ExecuteRequest(/*is_producer=*/true);
   ASSERT_TRUE(result.has_value());
 }
 
 TEST_F(GetSessionRequestTest, CreateSessionWithFailedResponse) {
-  net::test_server::HttpRequest http_request;
-  EXPECT_CALL(
-      request_handler(),
-      HandleRequest(AllOf(
-          Field(&HttpRequest::method, Eq(HttpMethod::METHOD_GET)),
-          Field(&HttpRequest::relative_url,
-                Eq("/v1/users/123/sessions:getActive?device.device_id=000")))))
-      .WillOnce(Return(ByMove(MockRequestHandler::CreateFailedResponse())));
+  ExpectHandleRequestCallAndReturn(MockRequestHandler::CreateFailedResponse());
 
-  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
-                                        google_apis::ApiErrorCode>>
-      future;
-
-  const GaiaId gaia_id("123");
-  std::unique_ptr<GetSessionRequest> request =
-      std::make_unique<GetSessionRequest>(request_sender(), "https://test",
-                                          /*is_producer=*/true, gaia_id,
-                                          future.GetCallback());
-  request->OverrideURLForTesting(test_server_.base_url().spec());
-  request->set_device_id("000");
-  request_sender()->StartRequestWithAuthRetry(std::move(request));
-
-  auto result = future.Take();
+  auto result = ExecuteRequest(/*is_producer=*/true);
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), google_apis::HTTP_INTERNAL_SERVER_ERROR);
 }
+
+struct GetSessionUrlTypeTestParam {
+  std::string test_name;
+  std::string url_type_str;
+  ::boca::UrlType expected_url_type;
+};
+
+class GetSessionUrlTypeTest
+    : public GetSessionRequestTest,
+      public testing::WithParamInterface<GetSessionUrlTypeTestParam> {};
+
+TEST_P(GetSessionUrlTypeTest, GetSessionWithUrlTypeAndSucceed) {
+  ExpectHandleRequestCallAndReturn(
+      MockRequestHandler::CreateResponseWithUrlType(GetParam().url_type_str));
+
+  auto result = ExecuteRequest(/*is_producer=*/true);
+  ASSERT_TRUE(result.has_value());
+
+  std::unique_ptr<::boca::Session> session = std::move(result.value());
+
+  ASSERT_TRUE(session->student_group_configs().contains(kMainStudentGroupName));
+  auto content_config = std::move(session->student_group_configs()
+                                      .at(kMainStudentGroupName)
+                                      .on_task_config()
+                                      .active_bundle()
+                                      .content_configs());
+  ASSERT_EQ(1, content_config.size());
+
+  EXPECT_EQ("gemini", content_config[0].title());
+  EXPECT_EQ("https://gemini.google.com", content_config[0].url());
+  EXPECT_EQ(GetParam().expected_url_type, content_config[0].url_type());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    GetSessionUrlTypeTests,
+    GetSessionUrlTypeTest,
+    testing::Values(
+        GetSessionUrlTypeTestParam{"GeminiRegular", "URL_TYPE_GEMINI_REGULAR",
+                                   ::boca::URL_TYPE_GEMINI_REGULAR},
+        GetSessionUrlTypeTestParam{"GeminiGuidedLearning",
+                                   "URL_TYPE_GEMINI_GUIDED_LEARNING",
+                                   ::boca::URL_TYPE_GEMINI_GUIDED_LEARNING},
+        GetSessionUrlTypeTestParam{"UrlTypeUnspecified", "URL_TYPE_UNSPECIFIED",
+                                   ::boca::URL_TYPE_UNSPECIFIED},
+        GetSessionUrlTypeTestParam{"UrlTypeInvalid", "INVALID_TYPE",
+                                   ::boca::URL_TYPE_UNSPECIFIED}),
+    [](const testing::TestParamInfo<GetSessionUrlTypeTest::ParamType>& info) {
+      return info.param.test_name;
+    });
+
 }  // namespace ash::boca

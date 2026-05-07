@@ -11,6 +11,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/strings/string_util.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -55,32 +56,69 @@ class MockRequestHandler {
   static std::unique_ptr<HttpResponse> CreateSuccessfulResponse() {
     auto response = std::make_unique<BasicHttpResponse>();
     response->set_code(net::HTTP_OK);
-    response->set_content(R"(
-     {
-    "sessionId": "111",
-    "duration": {
-        "seconds": 120
-    },
-    "studentStatuses": {},
-    "roster": {
-        "studentGroups": []
-    },
-    "sessionState": "ACTIVE",
-    "studentGroupConfigs": {
-        "main": {
-            "captionsConfig": {},
-            "onTaskConfig": {
-                "activeBundle": {
+    response->set_content(
+        R"(
+          {
+            "sessionId": "111",
+            "duration": {
+              "seconds": 120
+            },
+            "studentStatuses": {},
+            "roster": {
+              "studentGroups": []
+            },
+            "sessionState": "ACTIVE",
+            "studentGroupConfigs": {
+              "main": {
+                "captionsConfig": {},
+                "onTaskConfig": {
+                  "activeBundle": {
                     "contentConfigs": []
+                  }
                 }
+              }
+            },
+            "teacher": {
+              "gaiaId": "1"
             }
-        }
-    },
-    "teacher": {
-        "gaiaId": "1"
-    }
-}
-       )");
+          }
+    )");
+    return response;
+  }
+
+  static std::unique_ptr<HttpResponse> CreateResponseWithUrlType(
+      const std::string& url_type) {
+    auto response = std::make_unique<BasicHttpResponse>();
+    response->set_code(net::HTTP_OK);
+    response->set_content(base::ReplaceStringPlaceholders(
+        R"(
+          {
+            "sessionId": "111",
+            "duration": {
+              "seconds": 120
+            },
+            "sessionState": "ACTIVE",
+            "studentGroupConfigs": {
+              "main": {
+                "onTaskConfig": {
+                  "activeBundle": {
+                    "contentConfigs": [
+                      {
+                        "title": "gemini",
+                        "url": "https://gemini.google.com",
+                        "urlType": "$1"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "teacher": {
+              "gaiaId": "1"
+            }
+          }
+        )",
+        {url_type}, nullptr));
     return response;
   }
 
@@ -101,6 +139,9 @@ namespace ash::boca {
 
 class JoinSessionTest : public testing::Test {
  public:
+  using SessionResult = base::expected<std::unique_ptr<::boca::Session>,
+                                       google_apis::ApiErrorCode>;
+
   JoinSessionTest() = default;
   void SetUp() override {
     test_shared_loader_factory_ =
@@ -118,14 +159,28 @@ class JoinSessionTest : public testing::Test {
                             base::Unretained(&request_handler_)));
 
     ASSERT_TRUE(test_server_.Start());
+
+    student_.set_gaia_id("1");
+    student_.set_full_name("Student one");
+    student_.set_email("user@gmail.com");
+    student_.set_photo_url("http://photo");
   }
 
   MockRequestHandler& request_handler() { return request_handler_; }
   google_apis::RequestSender* request_sender() { return request_sender_.get(); }
 
+  void ExpectHandleRequestCallAndReturn(
+      net::test_server::HttpRequest* http_request,
+      std::unique_ptr<net::test_server::HttpResponse> response) {
+    EXPECT_CALL(request_handler(), HandleRequest(_))
+        .WillOnce(DoAll(SaveArg<0>(http_request),
+                        Return(ByMove(std::move(response)))));
+  }
+
  protected:
   // net::test_server::HttpRequest http_request;
   net::EmbeddedTestServer test_server_;
+  ::boca::UserIdentity student_;
 
  private:
   base::test::TaskEnvironment task_environment_{
@@ -139,23 +194,15 @@ class JoinSessionTest : public testing::Test {
 
 TEST_F(JoinSessionTest, JoinSessionWithAndSucceed) {
   net::test_server::HttpRequest http_request;
-  EXPECT_CALL(request_handler(), HandleRequest(_))
-      .WillOnce(DoAll(SaveArg<0>(&http_request),
-                      Return(MockRequestHandler::CreateSuccessfulResponse())));
-  ::boca::UserIdentity student;
-  student.set_gaia_id("1");
-  student.set_full_name("Student one");
-  student.set_email("user@gmail.com");
-  student.set_photo_url("http://photo");
+  ExpectHandleRequestCallAndReturn(
+      &http_request, MockRequestHandler::CreateSuccessfulResponse());
 
-  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
-                                        google_apis::ApiErrorCode>>
-      future;
+  base::test::TestFuture<SessionResult> future;
 
   std::unique_ptr<JoinSessionRequest> request =
       std::make_unique<JoinSessionRequest>(request_sender(), "https://test",
-                                           std::move(student), "deviceId",
-                                           "code", future.GetCallback());
+                                           student_, "deviceId", "code",
+                                           future.GetCallback());
   request->OverrideURLForTesting(test_server_.base_url().spec());
 
   request_sender()->StartRequestWithAuthRetry(std::move(request));
@@ -177,23 +224,15 @@ TEST_F(JoinSessionTest, JoinSessionWithAndSucceed) {
 
 TEST_F(JoinSessionTest, JoinSessionAndFail) {
   net::test_server::HttpRequest http_request;
-  EXPECT_CALL(request_handler(), HandleRequest(_))
-      .WillOnce(DoAll(SaveArg<0>(&http_request),
-                      Return(MockRequestHandler::CreateFailedResponse())));
-  ::boca::UserIdentity student;
-  student.set_gaia_id("1");
-  student.set_full_name("Student one");
-  student.set_email("user@gmail.com");
-  student.set_photo_url("http://photo");
+  ExpectHandleRequestCallAndReturn(&http_request,
+                                   MockRequestHandler::CreateFailedResponse());
 
-  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
-                                        google_apis::ApiErrorCode>>
-      future;
+  base::test::TestFuture<SessionResult> future;
 
   std::unique_ptr<JoinSessionRequest> request =
       std::make_unique<JoinSessionRequest>(request_sender(), "https://test",
-                                           std::move(student), "deviceId",
-                                           "code", future.GetCallback());
+                                           student_, "deviceId", "code",
+                                           future.GetCallback());
   request->OverrideURLForTesting(test_server_.base_url().spec());
 
   request_sender()->StartRequestWithAuthRetry(std::move(request));
@@ -212,5 +251,65 @@ TEST_F(JoinSessionTest, JoinSessionAndFail) {
   EXPECT_EQ(contentData, http_request.content);
   EXPECT_EQ(google_apis::HTTP_INTERNAL_SERVER_ERROR, result.error());
 }
+
+struct JoinSessionUrlTypeTestParam {
+  std::string test_name;
+  std::string url_type_str;
+  ::boca::UrlType expected_url_type;
+};
+
+class JoinSessionUrlTypeTest
+    : public JoinSessionTest,
+      public testing::WithParamInterface<JoinSessionUrlTypeTestParam> {};
+
+TEST_P(JoinSessionUrlTypeTest, JoinSessionAndVerifyUrlType) {
+  net::test_server::HttpRequest http_request;
+  ExpectHandleRequestCallAndReturn(
+      &http_request,
+      MockRequestHandler::CreateResponseWithUrlType(GetParam().url_type_str));
+
+  base::test::TestFuture<SessionResult> future;
+
+  std::unique_ptr<JoinSessionRequest> request =
+      std::make_unique<JoinSessionRequest>(request_sender(), "https://test",
+                                           student_, "deviceId", "code",
+                                           future.GetCallback());
+  request->OverrideURLForTesting(test_server_.base_url().spec());
+
+  request_sender()->StartRequestWithAuthRetry(std::move(request));
+
+  auto result = future.Take();
+  ASSERT_TRUE(result.has_value());
+  std::unique_ptr<::boca::Session> session = std::move(result.value());
+  ASSERT_TRUE(session->student_group_configs().contains(kMainStudentGroupName));
+  auto content_config = std::move(session->student_group_configs()
+                                      .at(kMainStudentGroupName)
+                                      .on_task_config()
+                                      .active_bundle()
+                                      .content_configs());
+  ASSERT_EQ(1, content_config.size());
+
+  EXPECT_EQ("gemini", content_config[0].title());
+  EXPECT_EQ("https://gemini.google.com", content_config[0].url());
+  EXPECT_EQ(GetParam().expected_url_type, content_config[0].url_type());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    JoinSessionUrlTypeTests,
+    JoinSessionUrlTypeTest,
+    testing::Values(
+        JoinSessionUrlTypeTestParam{"GeminiRegular", "URL_TYPE_GEMINI_REGULAR",
+                                    ::boca::URL_TYPE_GEMINI_REGULAR},
+        JoinSessionUrlTypeTestParam{"GeminiGuidedLearning",
+                                    "URL_TYPE_GEMINI_GUIDED_LEARNING",
+                                    ::boca::URL_TYPE_GEMINI_GUIDED_LEARNING},
+        JoinSessionUrlTypeTestParam{"UrlTypeUnspecified",
+                                    "URL_TYPE_UNSPECIFIED",
+                                    ::boca::URL_TYPE_UNSPECIFIED},
+        JoinSessionUrlTypeTestParam{"UrlTypeInvalid", "INVALID_TYPE",
+                                    ::boca::URL_TYPE_UNSPECIFIED}),
+    [](const testing::TestParamInfo<JoinSessionUrlTypeTest::ParamType>& info) {
+      return info.param.test_name;
+    });
 
 }  // namespace ash::boca

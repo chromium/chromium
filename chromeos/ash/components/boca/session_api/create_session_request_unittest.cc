@@ -84,6 +84,42 @@ class MockRequestHandler {
     return response;
   }
 
+  static std::unique_ptr<HttpResponse> CreateResponseWithUrlType(
+      const std::string& url_type) {
+    auto response = std::make_unique<BasicHttpResponse>();
+    response->set_code(net::HTTP_OK);
+    response->set_content(base::ReplaceStringPlaceholders(
+        R"(
+          {
+            "sessionId": "111",
+            "duration": {
+              "seconds": 120
+            },
+            "sessionState": "ACTIVE",
+            "studentGroupConfigs": {
+              "main": {
+                "onTaskConfig": {
+                  "activeBundle": {
+                    "contentConfigs": [
+                      {
+                        "title": "gemini",
+                        "url": "https://gemini.google.com",
+                        "urlType": "$1"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "teacher": {
+              "gaiaId": "1"
+            }
+          }
+        )",
+        {url_type}, nullptr));
+    return response;
+  }
+
   static std::unique_ptr<HttpResponse> CreateFailedResponse() {
     auto response = std::make_unique<BasicHttpResponse>();
     response->set_code(net::HTTP_INTERNAL_SERVER_ERROR);
@@ -345,6 +381,7 @@ TEST_F(SessionApiRequestsTest, CreateSessionWithTooManyStudentsAndFail) {
 struct CreateSessionUrlTypeTestParam {
   std::string test_name;
   ::boca::UrlType url_type;
+  std::string url_type_str;
 };
 
 class CreateSessionUrlTypeTest
@@ -353,7 +390,10 @@ class CreateSessionUrlTypeTest
 
 TEST_P(CreateSessionUrlTypeTest, CreateSessionWithUrlTypeAndSucceed) {
   net::test_server::HttpRequest http_request;
-  ExpectSuccessfulRequest(&http_request);
+  EXPECT_CALL(request_handler(), HandleRequest(_))
+      .WillOnce(DoAll(SaveArg<0>(&http_request),
+                      Return(MockRequestHandler::CreateResponseWithUrlType(
+                          GetParam().url_type_str))));
   base::test::TestFuture<CreateSessionResult> future;
 
   auto request = CreateRequest(future.GetCallback());
@@ -383,19 +423,31 @@ TEST_P(CreateSessionUrlTypeTest, CreateSessionWithUrlTypeAndSucceed) {
 
   request_sender()->StartRequestWithAuthRetry(std::move(request));
 
-  ASSERT_TRUE(future.Wait());
+  auto result = future.Take();
+  ASSERT_TRUE(result.has_value());
+  // Verify outgoing JSON request content mapping.
   std::optional<base::Value> actual_root =
       base::JSONReader::Read(http_request.content, base::JSON_PARSE_RFC);
   ASSERT_TRUE(actual_root.has_value() && actual_root->is_dict());
-
   auto* content_configs = actual_root->GetDict().FindListByDottedPath(
       "studentGroupConfigs.main.onTaskConfig.activeBundle.contentConfigs");
   ASSERT_TRUE(content_configs);
   ASSERT_EQ(content_configs->size(), 2u);
-
   auto url_type_val = (*content_configs)[1].GetIfDict()->FindInt("urlType");
   ASSERT_TRUE(url_type_val.has_value());
   EXPECT_EQ(url_type_val.value(), GetParam().url_type);
+  // Verify incoming response.
+  std::unique_ptr<::boca::Session> session = std::move(result.value());
+  ASSERT_TRUE(session->student_group_configs().contains(kMainStudentGroupName));
+  auto response_content_config = std::move(session->student_group_configs()
+                                               .at(kMainStudentGroupName)
+                                               .on_task_config()
+                                               .active_bundle()
+                                               .content_configs());
+  ASSERT_EQ(1, response_content_config.size());
+  EXPECT_EQ("gemini", response_content_config[0].title());
+  EXPECT_EQ("https://gemini.google.com", response_content_config[0].url());
+  EXPECT_EQ(GetParam().url_type, response_content_config[0].url_type());
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -403,9 +455,11 @@ INSTANTIATE_TEST_SUITE_P(
     CreateSessionUrlTypeTest,
     testing::Values(
         CreateSessionUrlTypeTestParam{"GeminiRegular",
-                                      ::boca::URL_TYPE_GEMINI_REGULAR},
+                                      ::boca::URL_TYPE_GEMINI_REGULAR,
+                                      "URL_TYPE_GEMINI_REGULAR"},
         CreateSessionUrlTypeTestParam{"GeminiGuidedLearning",
-                                      ::boca::URL_TYPE_GEMINI_GUIDED_LEARNING}),
+                                      ::boca::URL_TYPE_GEMINI_GUIDED_LEARNING,
+                                      "URL_TYPE_GEMINI_GUIDED_LEARNING"}),
     [](const testing::TestParamInfo<CreateSessionUrlTypeTest::ParamType>&
            info) { return info.param.test_name; });
 

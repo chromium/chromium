@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/components/boca/session_api/session_parser.h"
 
+#include <string>
+
 #include "ash/constants/ash_features.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/ash/components/boca/proto/bundle.pb.h"
@@ -132,6 +134,16 @@ namespace ash::boca {
   return ::boca::ViewScreenConfig::UNKNOWN;
 }
 
+::boca::UrlType UrlTypeJsonToProto(const std::string& url_type) {
+  if (url_type == "URL_TYPE_GEMINI_REGULAR") {
+    return ::boca::URL_TYPE_GEMINI_REGULAR;
+  }
+  if (url_type == "URL_TYPE_GEMINI_GUIDED_LEARNING") {
+    return ::boca::URL_TYPE_GEMINI_GUIDED_LEARNING;
+  }
+  return ::boca::URL_TYPE_UNSPECIFIED;
+}
+
 void ParseTeacherProtoFromJson(base::DictValue* session_dict,
                                ::boca::Session* session) {
   const auto* teacher_dict = session_dict->FindDict(kTeacher);
@@ -254,6 +266,9 @@ void ParseSessionConfigProtoFromJson(base::DictValue* session_dict,
           }
           if (auto* ptr = item_dict->FindString(kFavIcon)) {
             content_configs->set_favicon_url(*ptr);
+          }
+          if (auto* ptr = item_dict->FindString(kUrlType)) {
+            content_configs->set_url_type(UrlTypeJsonToProto(*ptr));
           }
           if (item_dict->FindDict(kLockedNavigationOptions) &&
               item_dict->FindDict(kLockedNavigationOptions)

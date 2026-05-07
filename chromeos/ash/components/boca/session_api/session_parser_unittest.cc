@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/memory/values_equivalent.h"
+#include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
@@ -464,5 +465,85 @@ TEST_F(SessionParserTest, TestParseStudentStatusProtoFromJson) {
                                    .service_account()
                                    .email());
 }
+
+constexpr char kSessionResponseWithUrlTypeTemplate[] = R"(
+          {
+            "sessionId": "111",
+            "duration": {
+              "seconds": 120
+            },
+            "sessionState": "ACTIVE",
+            "studentGroupConfigs": {
+              "main": {
+                "onTaskConfig": {
+                  "activeBundle": {
+                    "contentConfigs": [
+                      {
+                        "title": "gemini",
+                        "url": "https://gemini.google.com",
+                        "urlType": "$1"
+                      }
+                    ]
+                  }
+                }
+              }
+            },
+            "teacher": {
+              "gaiaId": "1"
+            }
+          }
+        )";
+
+struct SessionParserUrlTypeTestParam {
+  std::string test_name;
+  std::string url_type_str;
+  ::boca::UrlType expected_url_type;
+};
+
+class SessionParserUrlTypeTest
+    : public testing::TestWithParam<SessionParserUrlTypeTestParam> {};
+
+TEST_P(SessionParserUrlTypeTest, TestParseSessionConfigUrlType) {
+  std::string json = base::ReplaceStringPlaceholders(
+      kSessionResponseWithUrlTypeTemplate, {GetParam().url_type_str}, nullptr);
+  auto parsed_value = google_apis::ParseJson(json);
+  ASSERT_TRUE(parsed_value);
+
+  std::unique_ptr<::boca::Session> session =
+      std::make_unique<::boca::Session>();
+  ParseSessionConfigProtoFromJson(parsed_value->GetIfDict(), session.get(),
+                                  /*is_producer=*/true);
+
+  ASSERT_TRUE(session->student_group_configs().contains(kMainStudentGroupName));
+  auto content_config = std::move(session->student_group_configs()
+                                      .at(kMainStudentGroupName)
+                                      .on_task_config()
+                                      .active_bundle()
+                                      .content_configs());
+  ASSERT_EQ(1, content_config.size());
+
+  EXPECT_EQ("gemini", content_config[0].title());
+  EXPECT_EQ("https://gemini.google.com", content_config[0].url());
+  EXPECT_EQ(GetParam().expected_url_type, content_config[0].url_type());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    SessionParserUrlTypeTests,
+    SessionParserUrlTypeTest,
+    testing::Values(
+        SessionParserUrlTypeTestParam{"GeminiRegular",
+                                      "URL_TYPE_GEMINI_REGULAR",
+                                      ::boca::URL_TYPE_GEMINI_REGULAR},
+        SessionParserUrlTypeTestParam{"GeminiGuidedLearning",
+                                      "URL_TYPE_GEMINI_GUIDED_LEARNING",
+                                      ::boca::URL_TYPE_GEMINI_GUIDED_LEARNING},
+        SessionParserUrlTypeTestParam{"UrlTypeUnspecified",
+                                      "URL_TYPE_UNSPECIFIED",
+                                      ::boca::URL_TYPE_UNSPECIFIED},
+        SessionParserUrlTypeTestParam{"UrlTypeInvalid", "INVALID_TYPE",
+                                      ::boca::URL_TYPE_UNSPECIFIED}),
+    [](const testing::TestParamInfo<SessionParserUrlTypeTest::ParamType>&
+           info) { return info.param.test_name; });
+
 }  // namespace
 }  // namespace ash::boca
