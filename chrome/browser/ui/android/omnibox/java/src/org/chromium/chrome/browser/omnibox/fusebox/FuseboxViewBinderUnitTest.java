@@ -229,6 +229,16 @@ public class FuseboxViewBinderUnitTest {
     }
 
     @Test
+    public void updateRequestTypeButton_nonAimRequest_doesNotShowButton() {
+        mModel.set(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE, AutocompleteRequestType.SEARCH);
+        mModel.set(FuseboxProperties.SHOW_REQUEST_TYPE_BUTTON, true);
+        assertEquals(View.GONE, mViewHolder.requestType.getVisibility());
+
+        mModel.set(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE, AutocompleteRequestType.AI_MODE);
+        assertEquals(View.VISIBLE, mViewHolder.requestType.getVisibility());
+    }
+
+    @Test
     public void reanchorViewsForCompactFusebox_compactModeSearch() {
         configureFusebox(Variant.COMPACT, AutocompleteRequestType.SEARCH);
 

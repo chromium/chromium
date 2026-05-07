@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.IconResourceIdsProto.IconResourceIds;
 import org.chromium.components.omnibox.ToolModeProto.ToolMode;
+import org.chromium.components.omnibox.ToolModeUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
@@ -510,6 +511,10 @@ class FuseboxViewBinder {
 
         @AutocompleteRequestType
         int requestType = model.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE);
+        if (!ToolModeUtils.isAimRequest(requestType)) {
+            // The model is in an inconsistent state, wait for the next event.
+            return;
+        }
 
         @BrandedColorScheme int brandedColorScheme = model.get(FuseboxProperties.COLOR_SCHEME);
         Context context = view.parentView.getContext();
