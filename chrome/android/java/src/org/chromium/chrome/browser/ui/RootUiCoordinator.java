@@ -1698,7 +1698,7 @@ public class RootUiCoordinator
         } else if (id == R.id.lens_overlay_menu_id) {
             Tab tab = mActivityTabProvider.get();
             if (tab != null && tab.getWebContents() != null) {
-                new LensOverlayCoordinator(tab.getWebContents())
+                LensOverlayCoordinator.getOrCreateForTab(tab)
                         .start(LensOverlayInvocationSource.APP_MENU);
                 RecordUserAction.record("MobileMenuLensOverlay");
             }

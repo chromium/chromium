@@ -35,10 +35,13 @@ android_library("java") {
   ]
   sources = [
     "java/src/org/chromium/chrome/browser/ui/lens/LensOverlayCoordinator.java",
+    "java/src/org/chromium/chrome/browser/ui/lens/LensOverlayTabHelper.java",
   ]
   deps = [
     "//base:base_java",
+    "//base:supplier_java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/tab:java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",

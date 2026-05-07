@@ -49,6 +49,11 @@ bool LensOverlayControllerAndroid::ShowUI(JNIEnv* env,
     return false;
   }
 
+  // Invalidate any in-flight screenshot requests to ensure we only process the
+  // result of the most recent call. (The underlying GPU capture will still run,
+  // but the callback will be dropped).
+  weak_ptr_factory_.InvalidateWeakPtrs();
+
   ui::GrabWindowSnapshot(
       window, gfx::Rect(),
       base::BindOnce(&LensOverlayControllerAndroid::OnScreenshotCaptured,
@@ -61,6 +66,10 @@ void LensOverlayControllerAndroid::OnScreenshotCaptured(gfx::Image snapshot) {
     // If the capture fails, we log and return. This silently aborts the flow,
     // which is the intended behavior for the prototype.
     LOG(ERROR) << "Failed to capture window snapshot";
+    if (java_obj_) {
+      Java_LensOverlayCoordinator_onCaptureError(
+          base::android::AttachCurrentThread(), java_obj_);
+    }
     return;
   }
 

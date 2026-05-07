@@ -52,6 +52,7 @@ import org.robolectric.shadows.ShadowPackageManager;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
@@ -109,6 +110,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuItemWithSubmenuProperties;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsBuildflags;
 import org.chromium.chrome.browser.ui.extensions.FakeExtensionUiBackendRule;
+import org.chromium.chrome.browser.ui.lens.LensOverlayTabHelper;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.test.OverrideContextWrapperTestRule;
@@ -276,6 +278,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
 
         mShadowPackageManager = Shadows.shadowOf(context.getPackageManager());
+
+        when(mTab.getUserDataHost()).thenReturn(new UserDataHost());
 
         mLayoutStateProviderSupplier.set(mLayoutStateProvider);
         mIncognitoReauthControllerSupplier.set(mIncognitoReauthControllerMock);
@@ -2958,5 +2962,33 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
 
         assertFalse(isMenuVisible(modelList, R.id.lens_overlay_menu_id));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.LENS_OVERLAY_ANDROID)
+    public void lensOverlayItemDisabled_OverlayShowing() {
+        setUpMocksForPageMenu();
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
+        when(mTab.isIncognito()).thenReturn(false);
+
+        // 1. Default state: Overlay is NOT showing.
+        MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        assertTrue(isMenuVisible(modelList, R.id.lens_overlay_menu_id));
+        MVCListAdapter.ListItem item = findItemById(modelList, R.id.lens_overlay_menu_id);
+        assertTrue(item.model.get(AppMenuItemProperties.ENABLED));
+
+        // 2. State change: Overlay is NOW showing.
+        LensOverlayTabHelper.setOverlayShowing(mTab, true);
+        modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        assertTrue(isMenuVisible(modelList, R.id.lens_overlay_menu_id));
+        item = findItemById(modelList, R.id.lens_overlay_menu_id);
+        assertFalse(item.model.get(AppMenuItemProperties.ENABLED));
+
+        // 3. State reset: Overlay is NO LONGER showing.
+        LensOverlayTabHelper.setOverlayShowing(mTab, false);
+        modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
+        assertTrue(isMenuVisible(modelList, R.id.lens_overlay_menu_id));
+        item = findItemById(modelList, R.id.lens_overlay_menu_id);
+        assertTrue(item.model.get(AppMenuItemProperties.ENABLED));
     }
 }
