@@ -314,22 +314,10 @@ TEST_F(BookmarkBridgeTest, TestGetTopLevelFolderIds) {
       bookmark_bridge()->GetTopLevelFolderIdsImpl(
           /*force_visible_mask=*/BookmarkNodeMaskBit::NONE);
 
-  if (bookmarks::TestBookmarkClient::IsDesktopFormFactorByDefault()) {
-    // For desktop Android, the 4 folders should be: mobile bookmarks, bookmarks
-    // bar, other bookmarks, and reading list. Note that "Mobile bookmarks" is
-    // already populated when the bridge was created.
-    EXPECT_EQ(4u, folders.size());
-    EXPECT_EQ(u"Mobile bookmarks", folders[0]->GetTitle());
-    EXPECT_EQ(u"Bookmarks bar", folders[1]->GetTitle());
-    EXPECT_EQ(u"Other bookmarks", folders[2]->GetTitle());
-    EXPECT_EQ(u"Reading list", folders[3]->GetTitle());
-  } else {
-    // For mobile Android, the 2 folders should be: mobile bookmarks, reading
-    // list.
-    EXPECT_EQ(2u, folders.size());
-    EXPECT_EQ(u"Mobile bookmarks", folders[0]->GetTitle());
-    EXPECT_EQ(u"Reading list", folders[1]->GetTitle());
-  }
+  // The 2 folders should be: mobile bookmarks, reading list.
+  EXPECT_EQ(2u, folders.size());
+  EXPECT_EQ(u"Mobile bookmarks", folders[0]->GetTitle());
+  EXPECT_EQ(u"Reading list", folders[1]->GetTitle());
 
   // When forcing visibility, all top-level folders should be visible.
   folders = bookmark_bridge()->GetTopLevelFolderIdsImpl(
@@ -349,19 +337,10 @@ TEST_F(BookmarkBridgeTest, TestGetTopLevelFolderIds) {
          GURL("http://foo.com"));
   folders = bookmark_bridge()->GetTopLevelFolderIdsImpl(
       /*force_visible_mask=*/BookmarkNodeMaskBit::NONE);
-
-  if (bookmarks::TestBookmarkClient::IsDesktopFormFactorByDefault()) {
-    EXPECT_EQ(4u, folders.size());
-    EXPECT_EQ(u"Mobile bookmarks", folders[0]->GetTitle());
-    EXPECT_EQ(u"Bookmarks bar", folders[1]->GetTitle());
-    EXPECT_EQ(u"Other bookmarks", folders[2]->GetTitle());
-    EXPECT_EQ(u"Reading list", folders[3]->GetTitle());
-  } else {
-    EXPECT_EQ(3u, folders.size());
-    EXPECT_EQ(u"Mobile bookmarks", folders[0]->GetTitle());
-    EXPECT_EQ(u"Bookmarks bar", folders[1]->GetTitle());
-    EXPECT_EQ(u"Reading list", folders[2]->GetTitle());
-  }
+  EXPECT_EQ(3u, folders.size());
+  EXPECT_EQ(u"Mobile bookmarks", folders[0]->GetTitle());
+  EXPECT_EQ(u"Bookmarks bar", folders[1]->GetTitle());
+  EXPECT_EQ(u"Reading list", folders[2]->GetTitle());
 }
 
 TEST_F(BookmarkBridgeTest, AccountFoldersNullWhileNotEnabled) {
@@ -375,82 +354,46 @@ TEST_F(BookmarkBridgeTest, AccountFoldersNullWhileNotEnabled) {
 TEST_F(BookmarkBridgeTest, TestGetTopLevelFolderIdsAccountActive) {
   CreateBookmarkBridge(/*enable_account_bookmarks=*/true);
 
+  // There should be 3 folders: Mobile bookmarks, reading list, and the local
+  // mobile bookmarks folder (which contains partner bookmarks).
   std::vector<const BookmarkNode*> folders =
       bookmark_bridge()->GetTopLevelFolderIdsImpl(
           /*force_visible_mask=*/BookmarkNodeMaskBit::NONE);
-
-  if (bookmarks::TestBookmarkClient::IsDesktopFormFactorByDefault()) {
-    EXPECT_EQ(4u, folders.size());
-    EXPECT_EQ(u"Bookmarks bar", folders[0]->GetTitle());
-    EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[0]));
-    EXPECT_EQ(u"Other bookmarks", folders[1]->GetTitle());
-    EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[1]));
-    EXPECT_EQ(u"Reading list", folders[2]->GetTitle());
-    EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[2]));
-    EXPECT_EQ(u"Mobile bookmarks", folders[3]->GetTitle());
-    EXPECT_FALSE(bookmark_bridge()->IsAccountBookmarkImpl(folders[3]));
-  } else {
-    EXPECT_EQ(3u, folders.size());
-    EXPECT_EQ(u"Mobile bookmarks", folders[0]->GetTitle());
-    EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[0]));
-    EXPECT_EQ(u"Reading list", folders[1]->GetTitle());
-    EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[1]));
-    EXPECT_EQ(u"Mobile bookmarks", folders[2]->GetTitle());
-    EXPECT_FALSE(bookmark_bridge()->IsAccountBookmarkImpl(folders[2]));
-  }
+  EXPECT_EQ(3u, folders.size());
+  EXPECT_EQ(u"Mobile bookmarks", folders[0]->GetTitle());
+  EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[0]));
+  EXPECT_EQ(u"Reading list", folders[1]->GetTitle());
+  EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[1]));
+  EXPECT_EQ(u"Mobile bookmarks", folders[2]->GetTitle());
+  EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[0]));
 
   // When there are no partner bookmarks, the local mobile node will be hidden.
   partner_bookmarks_shim_->SetPartnerBookmarksRoot(nullptr);
   folders = bookmark_bridge()->GetTopLevelFolderIdsImpl(
       /*force_visible_mask=*/BookmarkNodeMaskBit::NONE);
-
-  if (bookmarks::TestBookmarkClient::IsDesktopFormFactorByDefault()) {
-    EXPECT_EQ(3u, folders.size());
-    EXPECT_EQ(u"Bookmarks bar", folders[0]->GetTitle());
-    EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[0]));
-    EXPECT_EQ(u"Other bookmarks", folders[1]->GetTitle());
-    EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[1]));
-    EXPECT_EQ(u"Reading list", folders[2]->GetTitle());
-    EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[2]));
-  } else {
-    EXPECT_EQ(2u, folders.size());
-    EXPECT_EQ(u"Mobile bookmarks", folders[0]->GetTitle());
-    EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[0]));
-    EXPECT_EQ(u"Reading list", folders[1]->GetTitle());
-    EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[1]));
-  }
+  EXPECT_EQ(2u, folders.size());
+  EXPECT_EQ(u"Mobile bookmarks", folders[0]->GetTitle());
+  EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[0]));
+  EXPECT_EQ(u"Reading list", folders[1]->GetTitle());
+  EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[1]));
 
   // All account and some local folders should be included when forcing
   // visibility.
   folders = bookmark_bridge()->GetTopLevelFolderIdsImpl(
       /*force_visible_mask=*/BookmarkNodeMaskBit::ALL);
-  if (bookmarks::TestBookmarkClient::IsDesktopFormFactorByDefault()) {
-    EXPECT_EQ(5u, folders.size());
-    EXPECT_EQ(u"Mobile bookmarks", folders[0]->GetTitle());
-    EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[0]));
-    EXPECT_EQ(u"Bookmarks bar", folders[1]->GetTitle());
-    EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[1]));
-    EXPECT_EQ(u"Other bookmarks", folders[2]->GetTitle());
-    EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[2]));
-    EXPECT_EQ(u"Reading list", folders[3]->GetTitle());
-    EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[3]));
-    EXPECT_EQ(u"Reading list", folders[4]->GetTitle());
-    EXPECT_FALSE(bookmark_bridge()->IsAccountBookmarkImpl(folders[4]));
-  } else {
-    EXPECT_EQ(6u, folders.size());
-    EXPECT_EQ(u"Mobile bookmarks", folders[0]->GetTitle());
-    EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[0]));
-    EXPECT_EQ(u"Bookmarks bar", folders[1]->GetTitle());
-    EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[1]));
-    EXPECT_EQ(u"Other bookmarks", folders[2]->GetTitle());
-    EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[2]));
-    EXPECT_EQ(u"Reading list", folders[3]->GetTitle());
-    EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[3]));
-    EXPECT_EQ(u"Mobile bookmarks", folders[4]->GetTitle());
-    EXPECT_FALSE(bookmark_bridge()->IsAccountBookmarkImpl(folders[4]));
-    EXPECT_EQ(u"Reading list", folders[5]->GetTitle());
-    EXPECT_FALSE(bookmark_bridge()->IsAccountBookmarkImpl(folders[5]));
-  }
+  EXPECT_EQ(6u, folders.size());
+  EXPECT_EQ(u"Mobile bookmarks", folders[0]->GetTitle());
+  EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[0]));
+  EXPECT_EQ(u"Bookmarks bar", folders[1]->GetTitle());
+  EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[1]));
+  EXPECT_EQ(u"Other bookmarks", folders[2]->GetTitle());
+  EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[2]));
+  EXPECT_EQ(u"Reading list", folders[3]->GetTitle());
+  EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[3]));
+  EXPECT_EQ(u"Mobile bookmarks", folders[4]->GetTitle());
+  EXPECT_FALSE(bookmark_bridge()->IsAccountBookmarkImpl(folders[4]));
+  EXPECT_EQ(u"Reading list", folders[5]->GetTitle());
+  EXPECT_FALSE(bookmark_bridge()->IsAccountBookmarkImpl(folders[5]));
 
   // Adding a bookmark to the bookmark bar will include it in the top level
   // folders that are returned.
@@ -465,34 +408,17 @@ TEST_F(BookmarkBridgeTest, TestGetTopLevelFolderIdsAccountActive) {
                                                 "third");
   folders = bookmark_bridge()->GetTopLevelFolderIdsImpl(
       /*force_visible_mask=*/BookmarkNodeMaskBit::NONE);
-
-  if (bookmarks::TestBookmarkClient::IsDesktopFormFactorByDefault()) {
-    EXPECT_EQ(6u, folders.size());
-    EXPECT_EQ(u"Bookmarks bar", folders[0]->GetTitle());
-    EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[0]));
-    EXPECT_EQ(u"Other bookmarks", folders[1]->GetTitle());
-    EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[1]));
-    EXPECT_EQ(u"Reading list", folders[2]->GetTitle());
-    EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[2]));
-    EXPECT_EQ(u"Mobile bookmarks", folders[3]->GetTitle());
-    EXPECT_FALSE(bookmark_bridge()->IsAccountBookmarkImpl(folders[3]));
-    EXPECT_EQ(u"Bookmarks bar", folders[4]->GetTitle());
-    EXPECT_FALSE(bookmark_bridge()->IsAccountBookmarkImpl(folders[4]));
-    EXPECT_EQ(u"Reading list", folders[5]->GetTitle());
-    EXPECT_FALSE(bookmark_bridge()->IsAccountBookmarkImpl(folders[5]));
-  } else {
-    EXPECT_EQ(5u, folders.size());
-    EXPECT_EQ(u"Mobile bookmarks", folders[0]->GetTitle());
-    EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[0]));
-    EXPECT_EQ(u"Reading list", folders[1]->GetTitle());
-    EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[1]));
-    EXPECT_EQ(u"Mobile bookmarks", folders[2]->GetTitle());
-    EXPECT_FALSE(bookmark_bridge()->IsAccountBookmarkImpl(folders[2]));
-    EXPECT_EQ(u"Bookmarks bar", folders[3]->GetTitle());
-    EXPECT_FALSE(bookmark_bridge()->IsAccountBookmarkImpl(folders[3]));
-    EXPECT_EQ(u"Reading list", folders[4]->GetTitle());
-    EXPECT_FALSE(bookmark_bridge()->IsAccountBookmarkImpl(folders[4]));
-  }
+  EXPECT_EQ(5u, folders.size());
+  EXPECT_EQ(u"Mobile bookmarks", folders[0]->GetTitle());
+  EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[0]));
+  EXPECT_EQ(u"Reading list", folders[1]->GetTitle());
+  EXPECT_TRUE(bookmark_bridge()->IsAccountBookmarkImpl(folders[1]));
+  EXPECT_EQ(u"Mobile bookmarks", folders[2]->GetTitle());
+  EXPECT_FALSE(bookmark_bridge()->IsAccountBookmarkImpl(folders[2]));
+  EXPECT_EQ(u"Bookmarks bar", folders[3]->GetTitle());
+  EXPECT_FALSE(bookmark_bridge()->IsAccountBookmarkImpl(folders[3]));
+  EXPECT_EQ(u"Reading list", folders[4]->GetTitle());
+  EXPECT_FALSE(bookmark_bridge()->IsAccountBookmarkImpl(folders[4]));
 }
 
 TEST_F(BookmarkBridgeTest, AccountFoldersNonNullWhileEnabled) {

@@ -126,10 +126,6 @@ bool BookmarkClientImpl::IsNodeManaged(const bookmarks::BookmarkNode* node) {
   return false;
 }
 
-bookmarks::BookmarkFormFactor BookmarkClientImpl::GetBookmarkFormFactor() {
-  return bookmarks::BookmarkFormFactor::kMobile;
-}
-
 std::string BookmarkClientImpl::EncodeLocalOrSyncableBookmarkSyncMetadata() {
   return local_or_syncable_bookmark_sync_service_->EncodeBookmarkSyncMetadata();
 }

@@ -45,7 +45,6 @@ class BookmarksApiUnittest : public ExtensionServiceTestBase {
 
     ExtensionServiceInitParams params;
     params.enable_bookmark_model = true;
-    params.force_desktop_bookmark_behavior = true;
     InitializeExtensionService(std::move(params));
 
     model_ = BookmarkModelFactory::GetForBrowserContext(profile());
@@ -139,11 +138,21 @@ TEST_F(BookmarksApiUnittest, Create_NoParentLocalOnly) {
       api::bookmarks::BookmarkTreeNode::FromValue(result).value();
 
   // The new folder should be added as the last child of the local other node.
+#if BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/414844449): Update this test once the default visible
+  // bookmarks behavior is clarified.
+  const bookmarks::BookmarkNode* expected_parent = model()->mobile_node();
+#else
   const bookmarks::BookmarkNode* expected_parent = model()->other_node();
+#endif
   EXPECT_EQ(result_node.parent_id,
             base::NumberToString(expected_parent->id()));
   EXPECT_EQ(result_node.index, expected_parent->children().size() - 1);
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/414844449): Port to desktop Android once default visible
+// bookmarks behavior is clarified.
 
 // Tests that attempting to create a bookmark with no parent folder specified
 // succeeds and uses the account bookmarks folder when the user is signed in
@@ -167,6 +176,7 @@ TEST_F(BookmarksApiUnittest, Create_NoParentAccount) {
   EXPECT_EQ(result_node.index,
             model()->account_other_node()->children().size() - 1);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Tests creating a bookmark with a valid parent specified.
 TEST_F(BookmarksApiUnittest, Create_ValidParent) {
@@ -261,6 +271,9 @@ TEST_F(BookmarksApiUnittest, Create_NonVisibleParentNoVisibilityEnforcement) {
   ASSERT_TRUE(model()->mobile_node()->IsVisible());
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/414844449): Port to desktop Android once default visible
+// bookmarks behavior is clarified.
 TEST_F(BookmarksApiUnittest, Create_NonVisibleParent) {
   // The mobile node is not visible, because it is empty.
   ASSERT_FALSE(model()->mobile_node()->IsVisible());
@@ -274,6 +287,7 @@ TEST_F(BookmarksApiUnittest, Create_NonVisibleParent) {
 
   EXPECT_EQ(error, bookmarks_errors::kNoParentError);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(BookmarksApiUnittest,
        Get_SucceedsForLocalPermanentFolderWhenNoAccountFolders) {
@@ -307,6 +321,9 @@ TEST_F(BookmarksApiUnittest,
   EXPECT_THAT(result.GetList(), ResultMatchesNodes(expected_nodes));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/414844449): Port to desktop Android once default visible
+// bookmarks behavior is clarified.
 TEST_F(BookmarksApiUnittest,
        Get_ReturnsEmptyForNonVisibleFolderNoVisibilityEnforcement) {
   base::test::ScopedFeatureList scoped_feature_list;
@@ -338,6 +355,7 @@ TEST_F(BookmarksApiUnittest, Get_ReturnsErrorForNonVisibleFolder) {
 
   EXPECT_EQ(error, bookmarks_errors::kNoNodeError);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(BookmarksApiUnittest, Get_FailsForNonExistentId) {
   auto get_function = base::MakeRefCounted<BookmarksGetFunction>();
@@ -347,6 +365,9 @@ TEST_F(BookmarksApiUnittest, Get_FailsForNonExistentId) {
   EXPECT_EQ(error, bookmarks_errors::kNoNodeError);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/414844449): Port to desktop Android once default visible
+// bookmarks behavior is clarified.
 TEST_F(BookmarksApiUnittest,
        GetChildren_ReturnsEmptyForNonVisibleFolderNoVisibilityEnforcement) {
   base::test::ScopedFeatureList scoped_feature_list;
@@ -378,6 +399,7 @@ TEST_F(BookmarksApiUnittest, GetChildren_ReturnsErrorForNonVisibleFolder) {
 
   EXPECT_EQ(error, bookmarks_errors::kNoNodeError);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(BookmarksApiUnittest, GetChildren_FailsForNonExistentId) {
   auto get_function = base::MakeRefCounted<BookmarksGetChildrenFunction>();
@@ -387,6 +409,9 @@ TEST_F(BookmarksApiUnittest, GetChildren_FailsForNonExistentId) {
   EXPECT_EQ(error, bookmarks_errors::kNoNodeError);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/414844449): Port to desktop Android once default visible
+// bookmarks behavior is clarified.
 TEST_F(BookmarksApiUnittest,
        GetSubTree_ReturnsEmptyForNonVisibleFolderNoVisibilityEnforcement) {
   base::test::ScopedFeatureList scoped_feature_list;
@@ -418,6 +443,7 @@ TEST_F(BookmarksApiUnittest, GetSubTree_ReturnsErrorForNonVisibleFolder) {
 
   EXPECT_EQ(error, bookmarks_errors::kNoNodeError);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(BookmarksApiUnittest, GetSubTree_FailsForNonExistentId) {
   auto get_function = base::MakeRefCounted<BookmarksGetSubTreeFunction>();
@@ -438,6 +464,9 @@ TEST_F(BookmarksApiUnittest, Search_MatchesTitle) {
   EXPECT_THAT(result.GetList(), ResultMatchesNodes(expected_nodes));
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/414844449): Port to desktop Android once default visible
+// bookmarks behavior is clarified.
 TEST_F(BookmarksApiUnittest, Search_NonVisibleFolderNotReturned) {
   // Set the title of the folder node to a fixed value.
   model()->SetTitle(model()->mobile_node(), u"Mobile Bookmarks",
@@ -549,6 +578,7 @@ TEST_F(BookmarksApiUnittest, Move_LocalToAccount) {
   EXPECT_EQ(result_node.index, 0);
   EXPECT_EQ(model()->account_other_node()->children()[0].get(), folder_node());
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Tests that attempting to move a bookmark to a non-folder parent does
 // not add the bookmark to that parent.
@@ -583,6 +613,9 @@ TEST_F(BookmarksApiUnittest, Move_NonExistentParent) {
   ASSERT_TRUE(url_node->children().empty());
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/414844449): Port to desktop Android once default visible
+// bookmarks behavior is clarified.
 TEST_F(BookmarksApiUnittest, Move_NonVisibleParentNoVisibilityEnforcement) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
@@ -623,6 +656,7 @@ TEST_F(BookmarksApiUnittest, Move_NonVisibleParent) {
 
   EXPECT_EQ(error, bookmarks_errors::kNoParentError);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Tests that attempting to move a folder to itself returns an error.
 TEST_F(BookmarksApiUnittest, Move_FolderToItself) {

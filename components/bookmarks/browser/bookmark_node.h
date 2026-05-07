@@ -15,7 +15,6 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
-#include "components/bookmarks/browser/bookmark_form_factor.h"
 #include "components/bookmarks/browser/titled_url_node.h"
 #include "ui/base/models/tree_node_model.h"
 #include "ui/gfx/image/image.h"
@@ -253,7 +252,7 @@ class BookmarkPermanentNode : public BookmarkNode {
 
   // Returns whether the permanent node of type `type` should be visible even
   // when it is empty (i.e. no children).
-  static bool IsTypeVisibleWhenEmpty(Type type, BookmarkFormFactor form_factor);
+  static bool IsTypeVisibleWhenEmpty(Type type);
 
   bool IsVisible() const override;
 

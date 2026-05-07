@@ -91,8 +91,6 @@ source_set("test_support") {
     "bookmark_test_helpers.h",
     "bookmark_test_utils.cc",
     "bookmark_test_utils.h",
-    "desktop_forcing_chrome_bookmark_test_client.cc",
-    "desktop_forcing_chrome_bookmark_test_client.h",
   ]
 
   public_deps = [
@@ -103,13 +101,9 @@ source_set("test_support") {
 
   deps = [
     "//base",
-    "//chrome/browser/sync",
-    "//chrome/browser/undo",
     "//components/bookmarks/common",
     "//components/bookmarks/managed",
-    "//components/keyed_service/content",
     "//components/sync_preferences:test_support",
-    "//components/undo",
   ]
 }
 

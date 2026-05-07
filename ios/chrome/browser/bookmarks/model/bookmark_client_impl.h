@@ -57,7 +57,6 @@ class BookmarkClientImpl : public power_bookmarks::BookmarkClientBase {
   bool CanSetPermanentNodeTitle(
       const bookmarks::BookmarkNode* permanent_node) override;
   bool IsNodeManaged(const bookmarks::BookmarkNode* node) override;
-  bookmarks::BookmarkFormFactor GetBookmarkFormFactor() override;
   std::string EncodeLocalOrSyncableBookmarkSyncMetadata() override;
   std::string EncodeAccountBookmarkSyncMetadata() override;
   void DecodeLocalOrSyncableBookmarkSyncMetadata(

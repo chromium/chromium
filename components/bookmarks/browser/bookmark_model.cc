@@ -109,10 +109,8 @@ class VisibilityComparator {
                   const std::unique_ptr<BookmarkNode>& n2) {
     DCHECK(n1->is_permanent_node());
     DCHECK(n2->is_permanent_node());
-    bool n1_visible = BookmarkPermanentNode::IsTypeVisibleWhenEmpty(
-        n1->type(), client_->GetBookmarkFormFactor());
-    bool n2_visible = BookmarkPermanentNode::IsTypeVisibleWhenEmpty(
-        n2->type(), client_->GetBookmarkFormFactor());
+    bool n1_visible = BookmarkPermanentNode::IsTypeVisibleWhenEmpty(n1->type());
+    bool n2_visible = BookmarkPermanentNode::IsTypeVisibleWhenEmpty(n2->type());
     return n1_visible != n2_visible && n1_visible;
   }
 
@@ -356,18 +354,18 @@ bool BookmarkModel::DetermineIfNodeShouldBeVisible(
     return true;
   }
 
-  if (!BookmarkPermanentNode::IsTypeVisibleWhenEmpty(
-          node.type(), client()->GetBookmarkFormFactor())) {
+  if (!BookmarkPermanentNode::IsTypeVisibleWhenEmpty(node.type())) {
     return false;
   }
 
-  if (client()->GetBookmarkFormFactor() == BookmarkFormFactor::kDesktop &&
-      IsLocalOnlyNode(node) && account_folders_exist &&
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  if (IsLocalOnlyNode(node) && account_folders_exist &&
       !local_bookmarks_exist) {
     // Prune this local empty permanent node, since the user has account
     // permanent folders.
     return false;
   }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   return true;
 }

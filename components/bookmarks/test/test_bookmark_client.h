@@ -39,9 +39,6 @@ class TestBookmarkClient : public BookmarkClient {
   // Returns a new BookmarkModel using a TestBookmarkClient.
   static std::unique_ptr<BookmarkModel> CreateModel();
 
-  // Returns true if the test environment defaults to a desktop form factor.
-  static bool IsDesktopFormFactorByDefault();
-
   // Returns a new BookmarkModel using `client`.
   static std::unique_ptr<BookmarkModel> CreateModelWithClient(
       std::unique_ptr<TestBookmarkClient> client);
@@ -99,7 +96,6 @@ class TestBookmarkClient : public BookmarkClient {
   bool IsSyncFeatureEnabledIncludingBookmarks() override;
   bool CanSetPermanentNodeTitle(const BookmarkNode* permanent_node) override;
   bool IsNodeManaged(const BookmarkNode* node) override;
-  BookmarkFormFactor GetBookmarkFormFactor() override;
   std::string EncodeLocalOrSyncableBookmarkSyncMetadata() override;
   std::string EncodeAccountBookmarkSyncMetadata() override;
   void DecodeLocalOrSyncableBookmarkSyncMetadata(
