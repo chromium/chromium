@@ -77,10 +77,15 @@ class ExtensionsMenuProperties {
     public static final WritableObjectPropertyKey<OnClickListener> RELOAD_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
 
-    public static final WritableObjectPropertyKey<String> SITE_SETTINGS_LABEL =
-            new WritableObjectPropertyKey<>();
+    /** Whether the entire site settings section is visible in the menu. */
+    public static final WritableBooleanPropertyKey SITE_SETTINGS_CONTAINER_VISIBLE =
+            new WritableBooleanPropertyKey();
 
-    public static final WritableObjectPropertyKey<String> SITE_SETTINGS_TOGGLE_TOOLTIP =
+    /**
+     * Properties for the site settings toggle that allows users to block or allow all extensions
+     * for the current site.
+     */
+    public static final WritableObjectPropertyKey<String> SITE_SETTINGS_LABEL =
             new WritableObjectPropertyKey<>();
 
     public static final WritableBooleanPropertyKey SITE_SETTINGS_TOGGLE_CHECKED =
@@ -89,10 +94,9 @@ class ExtensionsMenuProperties {
     public static final WritableObjectPropertyKey<OnCheckedChangeListener>
             SITE_SETTINGS_TOGGLE_CLICK_LISTENER = new WritableObjectPropertyKey<>();
 
-    /**
-     * Properties for the site settings toggle that allows users to block or allow all extensions
-     * for the current site.
-     */
+    public static final WritableObjectPropertyKey<String> SITE_SETTINGS_TOGGLE_TOOLTIP =
+            new WritableObjectPropertyKey<>();
+
     public static final WritableBooleanPropertyKey SITE_SETTINGS_TOGGLE_VISIBLE =
             new WritableBooleanPropertyKey();
 
@@ -111,6 +115,7 @@ class ExtensionsMenuProperties {
                 MENU_BUTTON_PINNING_CLICK_LISTENER,
                 OPTIONAL_SECTION_TYPE,
                 RELOAD_CLICK_LISTENER,
+                SITE_SETTINGS_CONTAINER_VISIBLE,
                 SITE_SETTINGS_LABEL,
                 SITE_SETTINGS_TOGGLE_CHECKED,
                 SITE_SETTINGS_TOGGLE_CLICK_LISTENER,

@@ -303,6 +303,7 @@ public class ExtensionsMenuCoordinator
         mMainPageModel.set(
                 ExtensionsMenuProperties.MENU_BUTTON_PINNED,
                 mMenuButtonPinningDelegate.isMenuButtonPinned());
+        mMainPageModel.set(ExtensionsMenuProperties.SITE_SETTINGS_CONTAINER_VISIBLE, true);
         mMainPageModel.set(ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_VISIBLE, true);
         mMainPageModel.set(ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_CHECKED, true);
         mMainPageModel.set(
