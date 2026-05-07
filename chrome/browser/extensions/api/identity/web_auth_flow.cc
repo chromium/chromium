@@ -39,11 +39,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #else
 static_assert(BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS));
-#include "base/functional/callback_forward.h"
-#include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/tab_list/tab_list_interface.h"
-#include "chrome/browser/ui/android/tab_model/tab_model.h"
-#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "base/functional/callback_helpers.h"
 #endif
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -166,19 +162,6 @@ void WebAuthFlow::CloseInfoBar() {
   }
 }
 
-#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
-void WebAuthFlow::OnBrowserWindowInterfaceInitialized(
-    BrowserWindowInterface* browser) {
-  TabModel* tab_model =
-      TabModelList::FindTabModelWithWindowSessionId(browser->GetSessionID());
-  tab_model->CreateTab(
-      TabAndroid::FromWebContents(tab_model->GetActiveWebContents()),
-      std::move(web_contents_), TabModel::kInvalidIndex,
-      TabModel::TabLaunchType::FROM_RECENT_TABS_FOREGROUND,
-      /*should_pin=*/false);
-}
-#endif
-
 bool WebAuthFlow::DisplayAuthPageInPopupWindow() {
   if (GetBrowserWindowCreationStatusForProfile(*profile_) !=
       BrowserWindowInterface::CreationStatus::kOk) {
@@ -205,13 +188,12 @@ bool WebAuthFlow::DisplayAuthPageInPopupWindow() {
   static_assert(BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS));
   BrowserWindowCreateParams params(BrowserWindowInterface::TYPE_POPUP,
                                    *profile_, user_gesture_);
+  params.web_contents = std::move(web_contents_);
   if (popup_bounds_.has_value()) {
     params.initial_bounds = popup_bounds_.value();
   }
 
-  base::OnceCallback<void(BrowserWindowInterface*)> callback =
-      base::BindOnce(&WebAuthFlow::OnBrowserWindowInterfaceInitialized,
-                     weak_factory_.GetWeakPtr());
+  auto callback = base::DoNothing();
   CreateBrowserWindow(std::move(params), std::move(callback));
 #endif
 

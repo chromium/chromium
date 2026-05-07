@@ -126,6 +126,19 @@ class WebAuthFlowBrowserTest : public PlatformBrowserTest {
 
   MockWebAuthFlowDelegate& mock() { return mock_web_auth_flow_delegate_; }
 
+  void ExpectOnAuthFlowURLChange(const GURL& auth_url) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    EXPECT_CALL(mock(), OnAuthFlowURLChange(auth_url));
+#else
+    // When a WebContents is handed off to Java it is placed into a spare tab
+    // and reparented into a new window. This process can lead to an extra
+    // navigation to the same url.
+    // TODO(crbug.com/509064159) Prevent a second call.
+    EXPECT_CALL(mock(), OnAuthFlowURLChange(auth_url))
+        .Times(testing::AtLeast(1));
+#endif
+  }
+
   scoped_refptr<base::TestMockTimeTaskRunner> timeout_task_runner() {
     return timeout_task_runner_;
   }
@@ -416,7 +429,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowFencedFrameTest,
       content::TestNavigationObserver::WaitEvent::kLoadStopped);
   navigation_observer.StartWatchingNewWebContents();
 
-  EXPECT_CALL(mock(), OnAuthFlowURLChange(auth_url));
+  ExpectOnAuthFlowURLChange(auth_url);
   StartWebAuthFlow(auth_url);
 
   navigation_observer.Wait();
@@ -443,7 +456,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowFencedFrameTest,
       content::TestNavigationObserver::WaitEvent::kLoadStopped);
   navigation_observer.StartWatchingNewWebContents();
 
-  EXPECT_CALL(mock(), OnAuthFlowURLChange(auth_url));
+  ExpectOnAuthFlowURLChange(auth_url);
   StartWebAuthFlow(auth_url);
 
   navigation_observer.Wait();
@@ -473,7 +486,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest,
   content::TestNavigationObserver navigation_observer(auth_url);
   navigation_observer.StartWatchingNewWebContents();
 
-  EXPECT_CALL(mock(), OnAuthFlowURLChange(auth_url));
+  ExpectOnAuthFlowURLChange(auth_url);
   StartWebAuthFlow(auth_url, WebAuthFlow::Mode::INTERACTIVE);
 
   const char extension_name[] = "extension_name";
@@ -520,7 +533,7 @@ IN_PROC_BROWSER_TEST_F(
   content::TestNavigationObserver navigation_observer(auth_url);
   navigation_observer.StartWatchingNewWebContents();
 
-  EXPECT_CALL(mock(), OnAuthFlowURLChange(auth_url));
+  ExpectOnAuthFlowURLChange(auth_url);
   StartWebAuthFlow(auth_url, WebAuthFlow::Mode::INTERACTIVE);
   web_auth_flow()->SetShouldShowInfoBar("extension name");
 
@@ -601,7 +614,7 @@ IN_PROC_BROWSER_TEST_F(
   content::TestNavigationObserver navigation_observer(auth_url);
   navigation_observer.StartWatchingNewWebContents();
 
-  EXPECT_CALL(mock(), OnAuthFlowURLChange(auth_url));
+  ExpectOnAuthFlowURLChange(auth_url);
   StartWebAuthFlow(auth_url, WebAuthFlow::Mode::INTERACTIVE, profile);
 
   navigation_observer.Wait();
@@ -641,7 +654,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest,
   content::TestNavigationObserver navigation_observer(auth_url);
   navigation_observer.StartWatchingNewWebContents();
 
-  EXPECT_CALL(mock(), OnAuthFlowURLChange(auth_url));
+  ExpectOnAuthFlowURLChange(auth_url);
   StartWebAuthFlow(auth_url, WebAuthFlow::Mode::INTERACTIVE, profile);
   navigation_observer.Wait();
 
@@ -692,7 +705,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest,
   content::TestNavigationObserver navigation_observer(auth_url);
   navigation_observer.StartWatchingNewWebContents();
 
-  EXPECT_CALL(mock(), OnAuthFlowURLChange(auth_url));
+  ExpectOnAuthFlowURLChange(auth_url);
   StartWebAuthFlow(auth_url, WebAuthFlow::Mode::INTERACTIVE);
 
   navigation_observer.Wait();
@@ -723,7 +736,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest,
   content::TestNavigationObserver navigation_observer(auth_url);
   navigation_observer.StartWatchingNewWebContents();
 
-  EXPECT_CALL(mock(), OnAuthFlowURLChange(auth_url));
+  ExpectOnAuthFlowURLChange(auth_url);
   StartWebAuthFlow(auth_url, WebAuthFlow::Mode::INTERACTIVE);
 
   navigation_observer.Wait();
@@ -782,7 +795,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthFlowBrowserTest, PopupWindowOpened_WithBounds) {
   content::TestNavigationObserver navigation_observer(auth_url);
   navigation_observer.StartWatchingNewWebContents();
 
-  EXPECT_CALL(mock(), OnAuthFlowURLChange(auth_url));
+  ExpectOnAuthFlowURLChange(auth_url);
   const gfx::Rect test_bounds(35, 47, 400, 400);
   StartWebAuthFlow(auth_url, WebAuthFlow::Mode::INTERACTIVE, nullptr,
                    WebAuthFlow::AbortOnLoad::kYes, std::nullopt, test_bounds);
