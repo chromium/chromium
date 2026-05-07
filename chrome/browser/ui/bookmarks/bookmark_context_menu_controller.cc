@@ -244,14 +244,25 @@ void BookmarkContextMenuController::BuildMenu() {
             l10n_util::GetPluralStringFUTF16(
                 IDS_BOOKMARK_BAR_OPEN_ALL_COUNT_NEW_WINDOW, count));
 
-    int incognito_count = bookmarks::OpenCount(selection_, profile_);
-    AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO,
-            l10n_util::GetPluralStringFUTF16(
-                IDS_BOOKMARK_BAR_OPEN_ALL_COUNT_INCOGNITO, incognito_count));
+    if (base::FeatureList::IsEnabled(features::kMenuSimplification)) {
+      AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP,
+              l10n_util::GetPluralStringFUTF16(
+                  IDS_BOOKMARK_BAR_OPEN_ALL_COUNT_NEW_TAB_GROUP, count));
 
-    AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP,
-            l10n_util::GetPluralStringFUTF16(
-                IDS_BOOKMARK_BAR_OPEN_ALL_COUNT_NEW_TAB_GROUP, count));
+      int incognito_count = bookmarks::OpenCount(selection_, profile_);
+      AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO,
+              l10n_util::GetPluralStringFUTF16(
+                  IDS_BOOKMARK_BAR_OPEN_ALL_COUNT_INCOGNITO, incognito_count));
+    } else {
+      int incognito_count = bookmarks::OpenCount(selection_, profile_);
+      AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_INCOGNITO,
+              l10n_util::GetPluralStringFUTF16(
+                  IDS_BOOKMARK_BAR_OPEN_ALL_COUNT_INCOGNITO, incognito_count));
+
+      AddItem(IDC_BOOKMARK_BAR_OPEN_ALL_NEW_TAB_GROUP,
+              l10n_util::GetPluralStringFUTF16(
+                  IDS_BOOKMARK_BAR_OPEN_ALL_COUNT_NEW_TAB_GROUP, count));
+    }
   }
 
   AddSeparator();
