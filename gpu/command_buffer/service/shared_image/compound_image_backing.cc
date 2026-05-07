@@ -1122,38 +1122,42 @@ void CompoundImageBacking::NotifyBeginAccess(SharedImageBacking* backing,
                                              RepresentationAccessMode mode,
                                              SharedImageAccessStream stream) {
   AutoLock auto_lock(this);
-  ElementHolder* access_element = GetElement(backing);
-  if (!access_element) {
-    LOG(ERROR) << "Backing (" << backing->GetName()
-               << ") not in the element list";
-    return;
-  }
 
-  // If this element already has the latest content, we're good for read access.
-  if (access_element->content_id_ == latest_content_id_) {
+  // Identify if this backing is a permanent element of the container or a
+  // transient one allocated for a specific representation.
+  ElementHolder* access_element = GetElement(backing);
+
+  // FAST PATH: If this is a permanent element and it already has the latest
+  // content, we can skip synchronization for read access.
+  if (access_element && access_element->content_id_ == latest_content_id_) {
     if (mode == RepresentationAccessMode::kWrite) {
-      // For write access, this backing is about to become the new latest.
+      // For write access, this backing will become the new "source of truth".
       ++latest_content_id_;
       access_element->content_id_ = latest_content_id_;
     }
     return;
   }
 
-  // This backing is stale. We need to find the element which has the latest
-  // content and copy from it.
+  // STALE OR TRANSIENT PATH: Either this permanent backing is out-of-date, or
+  // it's a transient backing that needs to be initialized. We must find the
+  // permanent element that currently holds the latest content and copy from it.
   ElementHolder* latest_content_element = GetElementWithLatestContent();
   bool updated_backing = false;
   bool copy_succeeded = false;
+
   if (latest_content_element) {
+    // Copy data from the latest permanent backing into the current backing
+    // (which could be another permanent backing or a transient one).
     copy_succeeded = copy_manager_->CopyImage(
         /*src_backing=*/latest_content_element->GetBacking(),
-        /*dst_backing=*/access_element->GetBacking());
+        /*dst_backing=*/backing);
+
     if (copy_succeeded) {
       updated_backing = true;
 
-      // Propagate the clear rect from the source backing to the destination
-      // backing as well as all the other child backings and
-      // CompoundImageBacking.
+      // When we sync data, we also sync the logical clear state. Propagate the
+      // clear rect from the source to the destination, all child backings, and
+      // the container itself.
       const gfx::Rect src_cleared_rect =
           latest_content_element->GetBacking()->ClearedRect();
       SetClearedRectInternal(src_cleared_rect);
@@ -1165,8 +1169,7 @@ void CompoundImageBacking::NotifyBeginAccess(SharedImageBacking* backing,
     } else {
       LOG(ERROR) << "Failed to copy from "
                  << latest_content_element->GetBacking()->GetName() << " to "
-                 << access_element->GetBacking()->GetName()
-                 << ". Backing can be using stale data";
+                 << backing->GetName() << ". Backing can be using stale data";
     }
 
     UMA_HISTOGRAM_BOOLEAN("GPU.CompoundImageBacking.ContentSync.Success",
@@ -1176,7 +1179,7 @@ void CompoundImageBacking::NotifyBeginAccess(SharedImageBacking* backing,
         latest_content_element->GetBacking()->GetType());
     UMA_HISTOGRAM_ENUMERATION(
         "GPU.CompoundImageBacking.ContentSync.DestBackingType",
-        access_element->GetBacking()->GetType());
+        backing->GetType());
     UMA_HISTOGRAM_ENUMERATION("GPU.CompoundImageBacking.ContentSync.Reason",
                               mode == RepresentationAccessMode::kRead
                                   ? ContentSyncReason::kRead
@@ -1188,16 +1191,19 @@ void CompoundImageBacking::NotifyBeginAccess(SharedImageBacking* backing,
         static_cast<int32_t>(static_cast<uint32_t>(this->usage())));
   }
 
-  // Update content IDs. In case of write, we are updating the
-  // |latest_content_id_| as well as marking the |access_element| as having
-  // latest content irrespective of above copy failures since write will likely
-  // overwrite all of the previous content. Although not necessarily true for
-  // partial writes. For read, we only mark the |access_element| as having
-  // latest content if the copy succeeded.
+  // UPDATE VERSIONING:
+  // 1. For WRITE access: Increment the global version. If this is a permanent
+  //    element, track that it now holds this latest version. Transient backings
+  //    don't track their own version locally as they are destroyed after use,
+  //    but their write will be synced back to permanent elements in EndAccess.
+  // 2. For READ access: If the copy succeeded, mark this permanent element as
+  //    being up-to-date with the latest version.
   if (mode == RepresentationAccessMode::kWrite) {
     ++latest_content_id_;
-    access_element->content_id_ = latest_content_id_;
-  } else if (updated_backing) {
+    if (access_element) {
+      access_element->content_id_ = latest_content_id_;
+    }
+  } else if (updated_backing && access_element) {
     access_element->content_id_ = latest_content_id_;
   }
 }
@@ -1207,34 +1213,31 @@ void CompoundImageBacking::NotifyEndAccess(SharedImageBacking* backing,
   AutoLock auto_lock(this);
   CHECK(backing);
 
+  bool is_transient_backing = !GetElement(backing);
+
   // If the last access was a write and an underlying backing was accessed,
   // propagate its cleared rect to the compound backing if it's different.
   if (mode == RepresentationAccessMode::kWrite) {
     auto cleared_rect = backing->ClearedRect();
     if (cleared_rect != ClearedRect()) {
-      SetClearedRectInternal(cleared_rect);
+      // For transient backings, only update if it's more cleared to avoid
+      // overwriting CSI with stale state.
+      if (!is_transient_backing || cleared_rect.Contains(ClearedRect())) {
+        SetClearedRectInternal(cleared_rect);
+      }
     }
 
     // When is_thread_safe() is true, multiple threads can access the backings.
-    // If a GL backing was written to, we proactively sync its content to all
-    // other backings. This is required to support multithreading scenarios
-    // where GL access happens on the GPU main thread and skia or other kind of
-    // access happens on a different thread. Note that this is only enabled when
-    // kUseDynamicBackingAllocations is enabled where CompoundImageBacking can
-    // dynamically allocate GL backing on a different thread during runtime.
-    // When dynamic allocations are not enabled, existing backings already
-    // handles the proactive sync where needed (eg:
-    // WrappedGraphiteTextureBacking via
-    // GLTexturePassthroughFallbackImageRepresentation). Note that this solution
-    // will not work if we start with GLTextureImageBacking and than want to
-    // reallocate on a different thread where we can't access GL texture. We
-    // will need to handle that case with another solution.
-    // Also note that we are copying back to all the backings here, even to
-    // those that will never be read. This can be a performance bottleneck when
-    // there are multiple backings.
+    // If a backing was written to, we proactively sync its content to all other
+    // backings. This is especially critical for transient backings (which are
+    // not thread-safe but used in a thread-safe container): we must copy their
+    // latest content to the permanent backings before the transient backing is
+    // destroyed. This ensures that subsequent accesses on other threads will
+    // see the updated data. Note that we are copying back to all the backings
+    // here, even to those that will never be read. This can be a performance
+    // bottleneck when there are multiple backings.
     if (base::FeatureList::IsEnabled(features::kUseDynamicBackingAllocations) &&
-        is_thread_safe() &&
-        (backing->GetType() == SharedImageBackingType::kGLTexture)) {
+        is_thread_safe() && is_transient_backing) {
       for (auto& element : elements_) {
         auto* dst_backing = element.GetBacking();
         if (dst_backing && dst_backing != backing &&
@@ -1791,7 +1794,7 @@ CompoundImageBacking::ElementHolder& CompoundImageBacking::GetShmElement() {
 CompoundImageBacking::ElementHolder* CompoundImageBacking::GetElement(
     const SharedImageBacking* backing) {
   for (auto& element : elements_) {
-    if (element.GetBacking() == backing) {
+    if (element.backing.get() == backing) {
       return &element;
     }
   }
@@ -1856,14 +1859,13 @@ SharedImageBacking* CompoundImageBacking::GetOrAllocateBacking(
     });
 
     if (gpu_backing_factory) {
-      ElementHolder element;
-      element.access_streams.Put(stream);
+      std::unique_ptr<SharedImageBacking> new_backing;
       CreateBackingFromBackingFactory(gpu_backing_factory->GetWeakPtr(),
-                                      debug_label(), usage, element.backing);
-      if (element.backing) {
+                                      debug_label(), usage, new_backing);
+      if (new_backing) {
         UMA_HISTOGRAM_ENUMERATION(
             "GPU.CompoundImageBacking.DynamicAllocation.BackingType",
-            element.backing->GetType());
+            new_backing->GetType());
         UMA_HISTOGRAM_ENUMERATION(
             "GPU.CompoundImageBacking.DynamicAllocation.AccessStream", stream);
         UMA_HISTOGRAM_SPARSE(
@@ -1871,6 +1873,23 @@ SharedImageBacking* CompoundImageBacking::GetOrAllocateBacking(
             "InitialSharedImageUsage",
             static_cast<int32_t>(static_cast<uint32_t>(this->usage())));
 
+        // If the CSI container is thread-safe, we treat newly created backings
+        // as transient if they are not thread-safe. They will be owned by the
+        // representation and destroyed after use. This ensures that a
+        // non-thread-safe backing allocated on one thread doesn't persist in
+        // the thread-safe container, which could lead to race conditions if
+        // accessed from another thread later.
+        if (is_thread_safe() && !new_backing->is_thread_safe()) {
+          out_transient_backing = std::move(new_backing);
+          return out_transient_backing.get();
+        }
+
+        // Else we treat the backing as non-transient and add it to the list of
+        // alive elements. This is done when either the container is not
+        // thread-safe or the new backing itself is thread-safe.
+        ElementHolder element;
+        element.access_streams.Put(stream);
+        element.backing = std::move(new_backing);
         elements_.push_back(std::move(element));
         if (elements_.size() > max_elements_allocated_) {
           max_elements_allocated_ = elements_.size();

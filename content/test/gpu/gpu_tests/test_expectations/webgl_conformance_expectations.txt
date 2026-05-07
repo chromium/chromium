@@ -487,29 +487,6 @@ crbug.com/498951069 [ angle-d3d9 intel-0x9bc5 passthrough win ] conformance/unif
 
 crbug.com/844311 [ angle-opengl mac ] conformance/glsl/misc/fragcolor-fragdata-invariant.html [ Failure ]
 
-## Mac Swangle ##
-# These are failing very often
-crbug.com/504989192 [ mac angle-swiftshader ] conformance/context/context-eviction-with-garbage-collection.html [ Failure ]
-crbug.com/504989192 [ mac angle-swiftshader ] conformance/context/context-release-upon-reload.html [ Failure ]
-crbug.com/504989192 [ mac angle-swiftshader ] conformance/context/premultiplyalpha-test.html [ Failure ]
-crbug.com/504989192 [ mac angle-swiftshader ] conformance/rendering/framebuffer-switch.html [ Failure ]
-crbug.com/504989192 [ mac angle-swiftshader ] conformance/state/gl-enable-enum-test.html [ Failure ]
-crbug.com/504989192 [ mac angle-swiftshader ] conformance/textures/misc/exif-orientation.html [ Failure ]
-crbug.com/504989192 [ mac angle-swiftshader ] conformance/textures/webgl_canvas/tex-2d-rgb-rgb-unsigned_short_5_6_5.html [ Failure ]
-crbug.com/504989192 [ mac angle-swiftshader ] conformance/textures/webgl_canvas/tex-2d-rgba-rgba-unsigned_byte.html [ Failure ]
-crbug.com/504989192 [ mac angle-swiftshader ] conformance/textures/webgl_canvas/tex-2d-rgba-rgba-unsigned_short_4_4_4_4.html [ Failure ]
-crbug.com/504989192 [ mac angle-swiftshader ] conformance/uniforms/gl-get-uniform-location-errors.html [ Failure ]
-crbug.com/504989192 [ mac angle-swiftshader ] conformance/uniforms/gl-uniform-arrays.html [ Failure ]
-crbug.com/504989192 [ mac angle-swiftshader ] conformance/uniforms/gl-uniform-bool.html [ Failure ]
-crbug.com/504989192 [ mac angle-swiftshader ] conformance/context/context-type-test.html [ Failure ]
-# These are failing less often
-crbug.com/504989192 [ mac angle-swiftshader ] conformance/rendering/draw-arrays-out-of-bounds.html [ RetryOnFailure ]
-crbug.com/504989192 [ mac angle-swiftshader ] conformance/textures/webgl_canvas/tex-2d-rgba-rgba-unsigned_short_5_5_5_1.html [ RetryOnFailure ]
-crbug.com/504989192 [ mac angle-swiftshader ] conformance/typedarrays/array-large-array-tests.html [ RetryOnFailure ]
-crbug.com/504989192 [ mac angle-swiftshader ] conformance/typedarrays/data-view-crash.html [ RetryOnFailure ]
-crbug.com/504989192 [ mac angle-swiftshader ] conformance/typedarrays/data-view-test.html [ RetryOnFailure ]
-crbug.com/504989192 [ mac angle-swiftshader ] conformance/typedarrays/typed-arrays-in-workers.html [ RetryOnFailure ]
-
 ## Mac AMD failures ##
 
 # TODO(kbr): uncomment the following expectation after test has

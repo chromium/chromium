@@ -135,14 +135,17 @@ using AccessStreamSet = base::EnumSet<SharedImageAccessStream,
 // |elements_| vector, from concurrent access during Produce*() calls.
 //
 // 3. Underlying Backings thread safety: The underlying backings/elements
-// currently themselves may or may not be thread-safe. Future changes will make
-// the underlying backings thread-safety needs more robust. The dynamically
-// allocated backings are currently never thread safe which is an issue and will
-// be addressed in future. Note that indiscriminately making all backings
-// thread-safe (especially for internal images like Render Passes which are
-// typically only accessed on the display compositor thread, such as Android RT
-// for WebView) could lead to performance regressions. Future refinements
-// should account for these single-threaded but high-traffic use cases.
+// themselves may or may not be thread-safe. When the container is thread-safe
+// (e.g. for DrDC or WebView), any dynamically allocated backing that is not
+// thread-safe is treated as "transient." It is owned by the representation and
+// destroyed after use, rather than being added to the container's permanent
+// elements. This ensures that non-thread-safe backings are never accessed
+// concurrently across threads. Upon completion of access, any writes to a
+// transient backing are synchronized back to the container's permanent
+// backings. Note that indiscriminately making all backings thread-safe
+// (especially for internal images like Render Passes) could lead to performance
+// regressions, so this transient approach provides safety without unnecessary
+// overhead.
 class GPU_GLES2_EXPORT CompoundImageBacking
     : public ClearTrackingSharedImageBacking {
  public:
