@@ -108,6 +108,11 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
 
   void FlushAreaForTesting(const std::string& namespace_id,
                            const blink::StorageKey& storage_key);
+  void PutValueForTesting(const std::string& namespace_id,
+                          const blink::StorageKey& storage_key,
+                          const std::vector<uint8_t>& key,
+                          const std::vector<uint8_t>& value,
+                          base::OnceCallback<void(bool)> callback);
 
   // Access the underlying `AsyncDomStorageDatabase`. May be null if the
   // database is not yet open.

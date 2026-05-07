@@ -143,6 +143,10 @@ class StorageAreaImpl : public blink::mojom::StorageArea,
     return !on_load_complete_tasks_.empty();
   }
 
+  // Returns true when `on_load_complete_tasks_` contains a callback that will
+  // modify this storage area's map with a `ReadWrite` task.
+  bool has_pending_load_read_write_tasks() const;
+
   bool has_changes_to_commit() const { return commit_batch_.get(); }
 
   AsyncDomStorageDatabase* database() { return database_; }
@@ -254,6 +258,25 @@ class StorageAreaImpl : public blink::mojom::StorageArea,
     LOADED_KEYS_AND_VALUES
   };
 
+  enum class AccessMode {
+    ReadOnly,
+    ReadWrite,
+  };
+
+  struct OnLoadCompleteTask {
+    OnLoadCompleteTask(base::OnceClosure callback, AccessMode mode);
+    OnLoadCompleteTask(OnLoadCompleteTask&& source);
+    ~OnLoadCompleteTask();
+
+    // A task to run after the storage area loads its key/value pairs from
+    // `database_`.
+    base::OnceClosure callback;
+
+    // Tasks that modify `database_` must use a `ReadWrite` mode. Data is lost
+    // when `ReadWrite` tasks fail run, for example, during shutdown.
+    AccessMode mode;
+  };
+
   // Changes the cache mode of the area. If applicable, this will change the
   // internal storage type after the next commit. The keys-only mode can only
   // be set only when there is one client binding. It automatically changes to
@@ -270,7 +293,7 @@ class StorageAreaImpl : public blink::mojom::StorageArea,
   //
   // Then if the |cache_mode_| is keys-only, it unloads the map to the
   // |keys_only_map_| and sets the |map_state_| to LOADED_KEYS_ONLY
-  void LoadMap(base::OnceClosure completion_callback);
+  void LoadMap(OnLoadCompleteTask completion_task);
   void OnMapLoaded(StatusOr<ValueMap> map_from_database);
   void CalculateStorageAndMemoryUsed();
   void OnLoadComplete();
@@ -320,8 +343,9 @@ class StorageAreaImpl : public blink::mojom::StorageArea,
   CacheMode cache_mode_;
   ValueMap keys_values_map_;
   KeysOnlyMap keys_only_map_;
+
   // These are always consumed & cleared when the map is loaded.
-  std::vector<base::OnceClosure> on_load_complete_tasks_;
+  std::vector<OnLoadCompleteTask> on_load_complete_tasks_;
 
   size_t storage_used_;
   size_t max_size_;

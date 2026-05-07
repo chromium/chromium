@@ -161,6 +161,8 @@ class LocalStorageImplTestBase : public testing::Test {
                                            /*receiver=*/mojo::NullReceiver());
   }
 
+  void ResetStorage() { storage_.reset(); }
+
   // Resets `storage_` and waits for database shutdown tasks to finish.
   void ShutDownStorage() {
     if (!storage_) {
@@ -475,6 +477,35 @@ TEST_P(LocalStorageImplTest, Basic) {
   // The Put and WaitForMapEntries each trigger a ReadMapKeyValues.
   histograms.ExpectTotalCount(
       "Storage.LocalStorage.Duration.ReadMapKeyValues.OnDisk", 2);
+
+  ShutDownStorage();
+  histograms.ExpectUniqueSample("Storage.LocalStorage.ShutdownDroppedChanges",
+                                false, 1);
+}
+
+TEST_P(LocalStorageImplTest, ShutdownDroppedChanges) {
+  base::HistogramTester histograms;
+  WaitForDatabaseOpen();
+
+  blink::StorageKey storage_key =
+      blink::StorageKey::CreateFromStringForTesting("http://foobar.com");
+
+  mojo::Remote<blink::mojom::StorageArea> area;
+  context()->BindStorageArea(storage_key, area.BindNewPipeAndPassReceiver());
+
+  auto key = StdStringToUint8Vector("key");
+  auto value = StdStringToUint8Vector("value");
+
+  // Put a value in the area, forcing the area to load and then immediately
+  // shutdown while the area is loading.
+  context()->PutValueForTesting(storage_key, key, value,
+                                /*callback=*/base::DoNothing());
+  ResetStorage();
+
+  // Shutdown discards the put, which prevents `key` and `value` from persisting
+  // to the database.
+  histograms.ExpectUniqueSample("Storage.LocalStorage.ShutdownDroppedChanges",
+                                true, 1);
 }
 
 TEST_P(LocalStorageImplTest, StorageKeysAreIndependent) {

@@ -3049,6 +3049,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Storage.{DomStorageType}.ShutdownDroppedChanges"
+    enum="Boolean" expires_after="2026-11-01">
+  <owner>leimy@chromium.org</owner>
+  <owner>stevebe@microsoft.com</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Records data loss that occurs when browser shutdown discards pending
+    changes.
+  </summary>
+</histogram>
+
 <histogram
     name="Storage.{DomStorageType}.{Operation}.{DomStorageBackingStoreLifetime}"
     enum="DomStorageDbStatusType" expires_after="2027-02-10">

@@ -387,12 +387,11 @@ void SessionStorageImpl::ShutDown() {
     // Flush any uncommitted data.
     for (const auto& it : data_maps_) {
       auto* area = it.second->storage_area();
-      LOCAL_HISTOGRAM_BOOLEAN(
-          "SessionStorageContext.ShutDown.MaybeDroppedChanges",
-          area->has_pending_load_tasks());
+      base::UmaHistogramBoolean("Storage.SessionStorage.ShutdownDroppedChanges",
+                                area->has_pending_load_read_write_tasks());
       area->ScheduleImmediateCommit();
-      // TODO(dmurph): Monitor the above histogram, and if dropping changes is
-      // common then handle that here.
+      // TODO(crbug.com/503422295): Monitor the above histogram, and if dropping
+      // changes is common then handle that here.
       area->CancelAllPendingRequests();
     }
   }
@@ -533,6 +532,24 @@ void SessionStorageImpl::FlushAreaForTesting(
   if (it == namespaces_.end())
     return;
   it->second->FlushStorageKeyForTesting(storage_key);
+}
+
+void SessionStorageImpl::PutValueForTesting(
+    const std::string& namespace_id,
+    const blink::StorageKey& storage_key,
+    const std::vector<uint8_t>& key,
+    const std::vector<uint8_t>& value,
+    base::OnceCallback<void(bool)> callback) {
+  if (connection_state_ != CONNECTION_FINISHED) {
+    return;
+  }
+
+  const auto& it = namespaces_.find(namespace_id);
+  if (it == namespaces_.end()) {
+    return;
+  }
+
+  it->second->PutValueForTesting(storage_key, key, value, std::move(callback));
 }
 
 void SessionStorageImpl::SetDatabaseOpenCallbackForTesting(

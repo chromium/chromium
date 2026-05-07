@@ -21,6 +21,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -608,6 +609,52 @@ TEST_P(StorageAreaImplTest, PutLoadsValuesAfterCacheModeUpgrade) {
   EXPECT_TRUE(PutSync(key, value2, value1));
   EXPECT_EQ(StorageAreaImpl::MapState::LOADED_KEYS_AND_VALUES,
             storage_area_impl()->map_state_);
+}
+
+TEST_P(StorageAreaImplTest, PendingLoadTasks) {
+  // `StorageAreaImpl` starts unloaded.
+  EXPECT_FALSE(storage_area_impl()->has_pending_load_tasks());
+  EXPECT_FALSE(storage_area_impl()->has_pending_load_read_write_tasks());
+
+  // `GetAll()` enqueues a readonly pending load task.
+  storage_area_impl()->GetAll(/*new_observer=*/mojo::NullRemote(),
+                              base::DoNothing());
+
+  EXPECT_TRUE(storage_area_impl()->has_pending_load_tasks());
+  EXPECT_FALSE(storage_area_impl()->has_pending_load_read_write_tasks());
+
+  // `ScheduleImmediateCommit()` must do nothing when no map key/value
+  // modifications exist.
+  storage_area_impl()->ScheduleImmediateCommit();
+
+  EXPECT_TRUE(storage_area_impl()->has_pending_load_tasks());
+  EXPECT_FALSE(storage_area_impl()->has_pending_load_read_write_tasks());
+
+  // `Put()` enqueues a readwrite pending load task.
+  storage_area_impl()->Put(test_key1_bytes_, test_value1_bytes_,
+                           test_value2_bytes_, test::MakeStorageAreaSource(),
+                           base::DoNothing());
+
+  EXPECT_TRUE(storage_area_impl()->has_pending_load_tasks());
+  EXPECT_TRUE(storage_area_impl()->has_pending_load_read_write_tasks());
+
+  // `ScheduleImmediateCommit()` now enqueues readwrite pending load task.
+  storage_area_impl()->ScheduleImmediateCommit();
+
+  EXPECT_TRUE(storage_area_impl()->has_pending_load_tasks());
+  EXPECT_TRUE(storage_area_impl()->has_pending_load_read_write_tasks());
+
+  // Use `GetSync()` to wait for operations above to complete.
+  ASSERT_OK_AND_ASSIGN(std::vector<uint8_t> actual_value1,
+                       GetSync(test_key1_bytes_));
+  EXPECT_EQ(actual_value1, test_value1_bytes_);
+
+  // The map must be loaded.
+  EXPECT_FALSE(storage_area_impl()->has_pending_load_tasks());
+  EXPECT_FALSE(storage_area_impl()->has_pending_load_read_write_tasks());
+
+  // The `Put()` must be committed.
+  EXPECT_FALSE(storage_area_impl()->has_changes_to_commit());
 }
 
 TEST_P(StorageAreaImplCacheModeTest, GetAll) {

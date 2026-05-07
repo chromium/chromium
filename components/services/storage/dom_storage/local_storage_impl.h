@@ -58,6 +58,10 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
   ~LocalStorageImpl() override;
 
   void FlushStorageKeyForTesting(const blink::StorageKey& storage_key);
+  void PutValueForTesting(const blink::StorageKey& storage_key,
+                          const std::vector<uint8_t>& key,
+                          const std::vector<uint8_t>& value,
+                          base::OnceCallback<void(bool)> callback);
 
   // Used by content settings to alter the behavior around
   // what data to keep and what data to discard at shutdown.

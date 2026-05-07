@@ -52,6 +52,16 @@ StorageAreaImpl::CommitBatch::CommitBatch() = default;
 
 StorageAreaImpl::CommitBatch::~CommitBatch() = default;
 
+StorageAreaImpl::OnLoadCompleteTask::OnLoadCompleteTask(
+    base::OnceClosure callback,
+    AccessMode mode)
+    : callback(std::move(callback)), mode(mode) {}
+
+StorageAreaImpl::OnLoadCompleteTask::OnLoadCompleteTask(
+    OnLoadCompleteTask&& source) = default;
+
+StorageAreaImpl::OnLoadCompleteTask::~OnLoadCompleteTask() = default;
+
 StorageAreaImpl::StorageAreaImpl(
     AsyncDomStorageDatabase* database,
     scoped_refptr<DomStorageDatabase::SharedMapLocator> map_locator,
@@ -121,9 +131,11 @@ std::unique_ptr<StorageAreaImpl> StorageAreaImpl::ForkToNewMap(
   if (IsMapLoaded()) {
     DoForkOperation(forked_area->weak_ptr_factory_.GetWeakPtr());
   } else {
-    LoadMap(base::BindOnce(&StorageAreaImpl::DoForkOperation,
-                           weak_ptr_factory_.GetWeakPtr(),
-                           forked_area->weak_ptr_factory_.GetWeakPtr()));
+    LoadMap(OnLoadCompleteTask(
+        base::BindOnce(&StorageAreaImpl::DoForkOperation,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       forked_area->weak_ptr_factory_.GetWeakPtr()),
+        AccessMode::ReadWrite));
   }
   return forked_area;
 }
@@ -132,14 +144,25 @@ void StorageAreaImpl::CancelAllPendingRequests() {
   on_load_complete_tasks_.clear();
 }
 
+bool StorageAreaImpl::has_pending_load_read_write_tasks() const {
+  for (const auto& task : on_load_complete_tasks_) {
+    if (task.mode == AccessMode::ReadWrite) {
+      return true;
+    }
+  }
+  return false;
+}
+
 void StorageAreaImpl::EnableAggressiveCommitDelay() {
   s_aggressive_flushing_enabled_ = true;
 }
 
 void StorageAreaImpl::ScheduleImmediateCommit() {
-  if (!on_load_complete_tasks_.empty()) {
-    LoadMap(base::BindOnce(&StorageAreaImpl::ScheduleImmediateCommit,
-                           weak_ptr_factory_.GetWeakPtr()));
+  if (has_pending_load_read_write_tasks()) {
+    LoadMap(OnLoadCompleteTask(
+        base::BindOnce(&StorageAreaImpl::ScheduleImmediateCommit,
+                       weak_ptr_factory_.GetWeakPtr()),
+        AccessMode::ReadWrite));
     return;
   }
 
@@ -221,9 +244,11 @@ void StorageAreaImpl::Put(
     blink::mojom::StorageAreaSourcePtr source,
     PutCallback callback) {
   if (!IsMapLoaded() || IsMapUpgradeNeeded()) {
-    LoadMap(base::BindOnce(
-        &StorageAreaImpl::Put, weak_ptr_factory_.GetWeakPtr(), key, value,
-        client_old_value, std::move(source), std::move(callback)));
+    LoadMap(OnLoadCompleteTask(
+        base::BindOnce(&StorageAreaImpl::Put, weak_ptr_factory_.GetWeakPtr(),
+                       key, value, client_old_value, std::move(source),
+                       std::move(callback)),
+        AccessMode::ReadWrite));
     return;
   }
 
@@ -339,9 +364,11 @@ void StorageAreaImpl::Delete(
   // |client_old_value| can race. Thus any changes require checking for an
   // upgrade.
   if (!IsMapLoaded() || IsMapUpgradeNeeded()) {
-    LoadMap(base::BindOnce(
-        &StorageAreaImpl::Delete, weak_ptr_factory_.GetWeakPtr(), key,
-        client_old_value, std::move(source), std::move(callback)));
+    LoadMap(OnLoadCompleteTask(
+        base::BindOnce(&StorageAreaImpl::Delete, weak_ptr_factory_.GetWeakPtr(),
+                       key, client_old_value, std::move(source),
+                       std::move(callback)),
+        AccessMode::ReadWrite));
     return;
   }
 
@@ -416,9 +443,11 @@ void StorageAreaImpl::DeleteAll(
   // Don't check if a map upgrade is needed here and instead just create an
   // empty map ourself.
   if (!IsMapLoaded()) {
-    LoadMap(base::BindOnce(&StorageAreaImpl::DeleteAll,
-                           weak_ptr_factory_.GetWeakPtr(), std::move(source),
-                           std::move(new_observer), std::move(callback)));
+    LoadMap(OnLoadCompleteTask(
+        base::BindOnce(&StorageAreaImpl::DeleteAll,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(source),
+                       std::move(new_observer), std::move(callback)),
+        AccessMode::ReadWrite));
     return;
   }
 
@@ -470,9 +499,10 @@ void StorageAreaImpl::GetAll(
 
   // The map must always be loaded for the KEYS_ONLY_WHEN_POSSIBLE mode.
   if (map_state_ != MapState::LOADED_KEYS_AND_VALUES) {
-    LoadMap(base::BindOnce(&StorageAreaImpl::GetAll,
-                           weak_ptr_factory_.GetWeakPtr(),
-                           std::move(new_observer), std::move(callback)));
+    LoadMap(OnLoadCompleteTask(
+        base::BindOnce(&StorageAreaImpl::GetAll, weak_ptr_factory_.GetWeakPtr(),
+                       std::move(new_observer), std::move(callback)),
+        AccessMode::ReadOnly));
     return;
   }
 
@@ -521,7 +551,7 @@ void StorageAreaImpl::OnConnectionError() {
   delegate_->OnNoBindings();
 }
 
-void StorageAreaImpl::LoadMap(base::OnceClosure completion_callback) {
+void StorageAreaImpl::LoadMap(OnLoadCompleteTask completion_task) {
   DCHECK_NE(map_state_, MapState::LOADED_KEYS_AND_VALUES);
   DCHECK(keys_values_map_.empty());
 
@@ -540,7 +570,7 @@ void StorageAreaImpl::LoadMap(base::OnceClosure completion_callback) {
     map_state_ = MapState::UNLOADED;
   }
 
-  on_load_complete_tasks_.push_back(std::move(completion_callback));
+  on_load_complete_tasks_.push_back(std::move(completion_task));
   if (map_state_ == MapState::LOADING_FROM_DATABASE ||
       map_state_ == MapState::LOADING_FROM_FORK) {
     return;
@@ -600,7 +630,7 @@ void StorageAreaImpl::CalculateStorageAndMemoryUsed() {
 void StorageAreaImpl::OnLoadComplete() {
   DCHECK(IsMapLoaded());
 
-  std::vector<base::OnceClosure> tasks;
+  std::vector<OnLoadCompleteTask> tasks;
   on_load_complete_tasks_.swap(tasks);
   for (auto it = tasks.begin(); it != tasks.end(); ++it) {
     // Some tasks (like GetAll) can require a reload if they need a different
@@ -614,7 +644,7 @@ void StorageAreaImpl::OnLoadComplete() {
       std::move(it, tasks.end(), std::back_inserter(on_load_complete_tasks_));
       return;
     }
-    std::move(*it).Run();
+    std::move(it->callback).Run();
   }
 
   // Call before |OnNoBindings| as delegate can destroy this object.

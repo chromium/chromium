@@ -270,4 +270,23 @@ void SessionStorageNamespaceImpl::FlushStorageKeyForTesting(
   it->second->data_map()->storage_area()->ScheduleImmediateCommit();
 }
 
+void SessionStorageNamespaceImpl::PutValueForTesting(
+    const blink::StorageKey& storage_key,
+    const std::vector<uint8_t>& key,
+    const std::vector<uint8_t>& value,
+    base::OnceCallback<void(bool)> callback) {
+  if (!IsPopulated()) {
+    return;
+  }
+
+  auto it = storage_key_areas_.find(storage_key);
+  if (it == storage_key_areas_.end()) {
+    return;
+  }
+
+  it->second->data_map()->storage_area()->Put(
+      key, value, /*client_old_value=*/std::nullopt,
+      /*source=*/nullptr, std::move(callback));
+}
+
 }  // namespace storage

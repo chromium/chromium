@@ -290,6 +290,24 @@ void LocalStorageImpl::FlushStorageKeyForTesting(
   it->second->storage_area()->ScheduleImmediateCommit();
 }
 
+void LocalStorageImpl::PutValueForTesting(
+    const blink::StorageKey& storage_key,
+    const std::vector<uint8_t>& key,
+    const std::vector<uint8_t>& value,
+    base::OnceCallback<void(bool)> callback) {
+  if (connection_state_ != CONNECTION_FINISHED) {
+    return;
+  }
+
+  const auto& it = areas_.find(storage_key);
+  if (it == areas_.end()) {
+    return;
+  }
+
+  it->second->storage_area()->Put(key, value, /*client_old_value=*/std::nullopt,
+                                  /*source=*/nullptr, std::move(callback));
+}
+
 base::FilePath LocalStorageImpl::GetDatabasePath() const {
   return DomStorageDatabase::GetPath(StorageType::kLocalStorage,
                                      storage_partition_directory_);
@@ -303,12 +321,11 @@ void LocalStorageImpl::ShutDown() {
     // Flush any uncommitted data.
     for (const auto& it : areas_) {
       auto* area = it.second->storage_area();
-      LOCAL_HISTOGRAM_BOOLEAN(
-          "LocalStorageContext.ShutDown.MaybeDroppedChanges",
-          area->has_pending_load_tasks());
+      base::UmaHistogramBoolean("Storage.LocalStorage.ShutdownDroppedChanges",
+                                area->has_pending_load_read_write_tasks());
       area->ScheduleImmediateCommit();
-      // TODO(dmurph): Monitor the above histogram, and if dropping changes is
-      // common then handle that here.
+      // TODO(crbug.com/503422295): Monitor the above histogram, and if dropping
+      // changes is common then handle that here.
       area->CancelAllPendingRequests();
     }
 

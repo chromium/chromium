@@ -106,6 +106,8 @@ class SessionStorageImplTestBase : public testing::Test {
     return remote_session_storage_.get();
   }
 
+  void ResetSessionStorage() { session_storage_.reset(); }
+
   void ShutDownSessionStorage() {
     remote_session_storage_.FlushForTesting();
     session_storage_.reset();
@@ -344,6 +346,63 @@ TEST_P(SessionStorageImplTest, StartupShutdownSave) {
   // PutMetadata duration fires for each BindStorageArea.
   histograms.ExpectTotalCount(
       "Storage.SessionStorage.Duration.PutMetadata.OnDisk", 2);
+
+  ShutDownSessionStorage();
+
+  histograms.ExpectUniqueSample("Storage.SessionStorage.ShutdownDroppedChanges",
+                                false, 1);
+}
+
+TEST_P(SessionStorageImplTest, ShutdownDroppedChanges) {
+  base::HistogramTester histograms;
+
+  std::string namespace_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
+  session_storage()->CreateNamespace(namespace_id);
+
+  blink::StorageKey storage_key =
+      blink::StorageKey::CreateFromStringForTesting("http://foobar.com");
+
+  mojo::Remote<blink::mojom::StorageArea> area;
+  session_storage()->BindStorageArea(storage_key, namespace_id,
+                                     area.BindNewPipeAndPassReceiver());
+
+  // Add a key/value pair to the storage area.  Next time, the area will load as
+  // non-empty, providing the test an opportunity to drop tasks on shutdown
+  // during the load.
+  EXPECT_TRUE(
+      test::PutSync(area.get(), StringViewToUint8Vector("key1"),
+                    StringViewToUint8Vector("value1"), std::nullopt,
+                    test::MakeStorageAreaSource(GURL(), kTestSourceToken)));
+
+  // Reload the database.
+  ShutDownSessionStorage();
+
+  histograms.ExpectUniqueSample("Storage.SessionStorage.ShutdownDroppedChanges",
+                                false, 1);
+
+  EnsureDatabaseOpen();
+
+  session_storage_impl()->CreateNamespace(namespace_id);
+
+  area.reset();
+  session_storage_impl()->BindStorageArea(storage_key, namespace_id,
+                                          area.BindNewPipeAndPassReceiver());
+
+  auto key2 = StringViewToUint8Vector("key2");
+  auto value2 = StringViewToUint8Vector("value2");
+
+  // Put a value in the area, forcing the area to load and then immediately
+  // shutdown while the area is loading.
+  session_storage_impl()->PutValueForTesting(
+      namespace_id, storage_key, key2, value2, /*callback=*/base::DoNothing());
+  ResetSessionStorage();
+
+  // Shutdown discards the put, which prevents `key2` and `value2` from
+  // persisting to the database.
+  histograms.ExpectBucketCount("Storage.SessionStorage.ShutdownDroppedChanges",
+                               true, 1);
+  histograms.ExpectTotalCount("Storage.SessionStorage.ShutdownDroppedChanges",
+                              2);
 }
 
 TEST_P(SessionStorageImplTest, CloneBeforeBrowserClone) {
