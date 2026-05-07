@@ -38,6 +38,8 @@ BASE_DECLARE_FEATURE_PARAM(std::string, kAccessibilityAnnotatorEligibleTiers);
 
 BASE_DECLARE_FEATURE(kAccessibilityAnnotatorFirstRun);
 
+BASE_DECLARE_FEATURE(kAccessibilityAnnotatorFirstRunPhase2);
+
 BASE_DECLARE_FEATURE(kAccessibilityAnnotatorGetEntities);
 
 BASE_DECLARE_FEATURE(kAccessibilityAnnotatorLiveTabContext);
@@ -54,6 +56,12 @@ BASE_DECLARE_FEATURE(kAccessibilityAnnotationReducerOnePResolver);
 BASE_DECLARE_FEATURE_PARAM(std::string, kAccessibilityAnnotatorOnePServiceUrl);
 
 BASE_DECLARE_FEATURE(kAccessibilityAnnotatorDatabaseStorage);
+
+// Returns true if either Phase 1 or Phase 2 of the first run experience is
+// enabled. Since Phase 2 is an extension/continuation of the first run
+// experience, checking both features ensures the whole first run feature
+// set is appropriately covered.
+bool IsAccessibilityAnnotatorFirstRunEnabled();
 
 }  // namespace accessibility_annotator::features
 

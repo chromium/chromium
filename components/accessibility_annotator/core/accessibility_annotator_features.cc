@@ -93,6 +93,9 @@ BASE_FEATURE_PARAM(std::string,
 BASE_FEATURE(kAccessibilityAnnotatorFirstRun,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAccessibilityAnnotatorFirstRunPhase2,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kAccessibilityAnnotatorGetEntities,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -129,5 +132,10 @@ BASE_FEATURE_PARAM(std::string,
 // accessibility annotator backend to create the SQLite database.
 BASE_FEATURE(kAccessibilityAnnotatorDatabaseStorage,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsAccessibilityAnnotatorFirstRunEnabled() {
+  return base::FeatureList::IsEnabled(kAccessibilityAnnotatorFirstRun) ||
+         base::FeatureList::IsEnabled(kAccessibilityAnnotatorFirstRunPhase2);
+}
 
 }  // namespace accessibility_annotator::features

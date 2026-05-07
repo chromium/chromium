@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/accessibility_annotator/accessibility_annotator_enablement_service_factory.h"
 #include "chrome/browser/accessibility_annotator/first_run/chrome_accessibility_annotator_first_run_client.h"
@@ -48,8 +47,8 @@ AccessibilityAnnotatorFirstRunServiceFactory::
 std::unique_ptr<KeyedService> AccessibilityAnnotatorFirstRunServiceFactory::
     BuildServiceInstanceForBrowserContext(
         content::BrowserContext* context) const {
-  if (!base::FeatureList::IsEnabled(
-          accessibility_annotator::features::kAccessibilityAnnotatorFirstRun)) {
+  if (!accessibility_annotator::features::
+          IsAccessibilityAnnotatorFirstRunEnabled()) {
     return nullptr;
   }
   Profile* profile = Profile::FromBrowserContext(context);
