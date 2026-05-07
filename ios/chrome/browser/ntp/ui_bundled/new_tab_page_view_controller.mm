@@ -1368,6 +1368,20 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
   [NSLayoutConstraint activateConstraints:self.fakeOmniboxConstraints];
 }
 
+// Returns YES if scroll and constraint animations should be run for the header.
+- (BOOL)shouldAnimateScrollAnimation {
+  if (self.disableScrollAnimation) {
+    return NO;
+  }
+  if (IsChromeNextIaEnabled() && !IsSplitToolbarMode(self) &&
+      !CanShowTabStrip(self)) {
+    /// TODO(crbug.com/508170459): Implement NTP toolbars for split toolbar
+    /// mode.
+    return NO;
+  }
+  return YES;
+}
+
 // Update the header for a new width size depending on if the change needs to be
 // animated.
 - (void)updateFakeOmniboxOnNewWidth:(CGFloat)width {
@@ -1383,7 +1397,7 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
         updateFakeOmniboxForOffset:[self adjustedOffset].y
                        screenWidth:width
                     safeAreaInsets:insets
-            animateScrollAnimation:!self.disableScrollAnimation];
+            animateScrollAnimation:[self shouldAnimateScrollAnimation]];
   } else {
     [self.headerViewController updateFakeOmniboxForWidth:width];
   }
@@ -1403,19 +1417,11 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
   if (self.shouldAnimateHeader) {
     UIEdgeInsets insets = self.collectionView.safeAreaInsets;
 
-    BOOL animateScrollAnimation = !self.disableScrollAnimation;
-    if (IsChromeNextIaEnabled() && !IsSplitToolbarMode(self) &&
-        !CanShowTabStrip(self)) {
-      /// TODO(crbug.com/508170459): Implement NTP toolbars for split toolbar
-      /// mode.
-      animateScrollAnimation = NO;
-    }
-
     [self.headerViewController
         updateFakeOmniboxForOffset:[self adjustedOffset].y
                        screenWidth:self.collectionView.frame.size.width
                     safeAreaInsets:insets
-            animateScrollAnimation:animateScrollAnimation];
+            animateScrollAnimation:[self shouldAnimateScrollAnimation]];
   }
 }
 

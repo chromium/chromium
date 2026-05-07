@@ -599,6 +599,8 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
       constraintEqualToAnchor:searchField.trailingAnchor];
   self.fakeLocationBarHeightConstraint = [self.fakeLocationBar.heightAnchor
       constraintEqualToConstant:content_suggestions::FakeOmniboxHeight()];
+  self.fakeLocationBar.layer.cornerRadius =
+      content_suggestions::FakeOmniboxHeight() / 2;
   [NSLayoutConstraint activateConstraints:@[
     self.fakeLocationBarTopConstraint,
     self.fakeLocationBarLeadingConstraint,
