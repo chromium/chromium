@@ -12,6 +12,8 @@ import static org.chromium.chrome.browser.toolbar.extensions.ExtensionsToolbarPr
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.appcompat.widget.TooltipCompat;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -33,7 +35,9 @@ class ExtensionAccessControlButtonViewBinder {
             text = text.replace("$1", String.valueOf(count));
             ((TextView) view).setText(text);
         } else if (key == REQUEST_ACCESS_BUTTON_CONTENT_DESCRIPTION) {
-            view.setContentDescription(model.get(REQUEST_ACCESS_BUTTON_CONTENT_DESCRIPTION));
+            String text = model.get(REQUEST_ACCESS_BUTTON_CONTENT_DESCRIPTION);
+            view.setContentDescription(text);
+            TooltipCompat.setTooltipText(view, text);
         } else if (key == REQUEST_ACCESS_BUTTON_CLICK_LISTENER) {
             View.OnClickListener listener = model.get(REQUEST_ACCESS_BUTTON_CLICK_LISTENER);
             view.setOnClickListener(listener);
