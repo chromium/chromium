@@ -440,4 +440,32 @@ suite('TrackedElementTest', function() {
         {x: rect.x, y: rect.y, width: rect.width, height: rect.height},
         lastCall[2]);
   });
+
+  test('clickElement_ waits until not disabled', async () => {
+    const button = document.createElement('button');
+    button.id = 'button';
+    document.body.appendChild(button);
+
+    let clicked = false;
+    button.addEventListener('click', () => {
+      clicked = true;
+    });
+
+    manager.startTracking(button, NATIVE_ID);
+    await waitForVisibilityEvents();
+
+    // Disable the button and try to click it.
+    button.disabled = true;
+    const clickPromise = managerRemote.clickElement(NATIVE_ID);
+
+    // Give it some time to make sure it hasn't clicked.
+    await microtasksFinished();
+    assertFalse(clicked);
+
+    // Enable the button and wait for the click to complete.
+    button.disabled = false;
+    const result = await clickPromise;
+    assertTrue(result.success);
+    assertTrue(clicked);
+  });
 });

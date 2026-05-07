@@ -464,7 +464,32 @@ export class TrackedElementManager {
     }
   }
 
-  private clickElement_(nativeId: string): {success: boolean} {
+  private async waitUntilNotDisabled_(element: HTMLElement, nativeId: string):
+      Promise<void> {
+    if (!element.hasAttribute('disabled')) {
+      return;
+    }
+
+    console.info(
+        `TrackedElementManager: Element ${nativeId} is disabled, ` +
+        `waiting...`);
+
+    return new Promise((resolve) => {
+      const observer = new MutationObserver(() => {
+        if (!element.hasAttribute('disabled')) {
+          observer.disconnect();
+          console.info(
+              `TrackedElementManager: Element ${nativeId} is no ` +
+              `longer disabled.`);
+          resolve();
+        }
+      });
+      observer.observe(
+          element, {attributes: true, attributeFilter: ['disabled']});
+    });
+  }
+
+  private async clickElement_(nativeId: string): Promise<{success: boolean}> {
     const trackedElement = this.trackedElements_.get(nativeId);
     if (!trackedElement) {
       console.error(`TrackedElementManager: Click failed, element not found: ${
@@ -485,14 +510,39 @@ export class TrackedElementManager {
       }
     }
 
+    await this.waitUntilNotDisabled_(target, nativeId);
+
     // Some components (like the reload button) listen to pointer events
-    // instead of click.
+    // instead of click. We also need to fake pointer capture for some tests.
+    const oldPointerCapture = {
+      setPointerCapture: target.setPointerCapture,
+      hasPointerCapture: target.hasPointerCapture,
+      releasePointerCapture: target.releasePointerCapture,
+    };
+    {
+      let hasCapture: number|null = null;
+      target.setPointerCapture = (id) => {
+        hasCapture = id;
+      };
+      target.hasPointerCapture = (id) => {
+        return id === hasCapture;
+      };
+      target.releasePointerCapture = (id) => {
+        if (id === hasCapture) {
+          hasCapture = null;
+        }
+      };
+    }
+    const bounds = target.getBoundingClientRect();
     target.dispatchEvent(new PointerEvent('pointerdown', {
       bubbles: true,
       composed: true,
       button: 0,  // Left
       pointerId: 1,
       isPrimary: true,
+      buttons: 1,
+      clientX: bounds.left + bounds.width / 2,
+      clientY: bounds.top + bounds.height / 2,
     }));
     target.dispatchEvent(new PointerEvent('pointerup', {
       bubbles: true,
@@ -500,13 +550,21 @@ export class TrackedElementManager {
       button: 0,  // Left
       pointerId: 1,
       isPrimary: true,
+      buttons: 0,
+      clientX: bounds.left + bounds.width / 2,
+      clientY: bounds.top + bounds.height / 2,
     }));
     target.dispatchEvent(new MouseEvent('click', {
       bubbles: true,
       composed: true,
       button: 0,  // Left
       detail: 1,  // Single click
+      clientX: bounds.left + bounds.width / 2,
+      clientY: bounds.top + bounds.height / 2,
     }));
+    target.setPointerCapture = oldPointerCapture.setPointerCapture;
+    target.hasPointerCapture = oldPointerCapture.hasPointerCapture;
+    target.releasePointerCapture = oldPointerCapture.releasePointerCapture;
     return {success: true};
   }
 
