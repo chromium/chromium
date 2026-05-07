@@ -855,28 +855,25 @@ std::unique_ptr<SharedImageBacking> CompoundImageBacking::Create(
     scoped_refptr<SharedImageCopyManager> copy_manager,
     const Mailbox& mailbox,
     gfx::GpuMemoryBufferHandle handle,
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    SharedImageUsageSet usage,
-    std::string debug_label) {
+    const SharedImageInfo& si_info) {
+  auto format = si_info.format;
+  auto size = si_info.size;
+  auto usage = si_info.usage;
   if (!IsValidSharedMemoryFormat(size, format)) {
     return nullptr;
   }
 
   auto* gpu_backing_factory = shared_image_factory->GetFactoryByUsage(
-      GetGpuSharedImageUsage(SharedImageUsageSet(usage)), format, size,
+      GetGpuSharedImageUsage(usage), format, size,
       /*pixel_data=*/{}, gfx::EMPTY_BUFFER, /*stream=*/std::nullopt,
       /*params=*/nullptr);
   if (!gpu_backing_factory) {
     return nullptr;
   }
 
-  SharedImageInfo shm_si_info(format, size, color_space, surface_origin,
-                              alpha_type, GetShmSharedImageUsage(usage),
-                              debug_label);
+  SharedImageInfo shm_si_info(
+      format, size, si_info.color_space, si_info.surface_origin,
+      si_info.alpha_type, GetShmSharedImageUsage(usage), si_info.debug_label);
   auto shm_backing = SharedMemoryImageBackingFactory().CreateSharedImage(
       mailbox, shm_si_info, /*is_thread_safe=*/false, std::move(handle));
   if (!shm_backing) {
@@ -885,8 +882,7 @@ std::unique_ptr<SharedImageBacking> CompoundImageBacking::Create(
   shm_backing->SetNotRefCounted();
 
   return base::WrapUnique(new CompoundImageBacking(
-      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      std::move(debug_label), std::move(shm_backing),
+      mailbox, si_info, std::move(shm_backing),
       shared_image_factory->GetFactoryRef(), gpu_backing_factory->GetWeakPtr(),
       std::move(copy_manager)));
 }
@@ -896,29 +892,26 @@ std::unique_ptr<SharedImageBacking> CompoundImageBacking::Create(
     SharedImageFactory* shared_image_factory,
     scoped_refptr<SharedImageCopyManager> copy_manager,
     const Mailbox& mailbox,
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    SharedImageUsageSet usage,
-    std::string debug_label,
+    const SharedImageInfo& si_info,
     gfx::BufferUsage buffer_usage) {
+  auto format = si_info.format;
+  auto size = si_info.size;
+  auto usage = si_info.usage;
   if (!IsValidSharedMemoryFormat(size, format)) {
     return nullptr;
   }
 
   auto* gpu_backing_factory = shared_image_factory->GetFactoryByUsage(
-      GetGpuSharedImageUsage(SharedImageUsageSet(usage)), format, size,
+      GetGpuSharedImageUsage(usage), format, size,
       /*pixel_data=*/{}, gfx::EMPTY_BUFFER, /*stream=*/std::nullopt,
       /*params=*/nullptr);
   if (!gpu_backing_factory) {
     return nullptr;
   }
 
-  SharedImageInfo shm_si_info(format, size, color_space, surface_origin,
-                              alpha_type, GetShmSharedImageUsage(usage),
-                              debug_label);
+  SharedImageInfo shm_si_info(
+      format, size, si_info.color_space, si_info.surface_origin,
+      si_info.alpha_type, GetShmSharedImageUsage(usage), si_info.debug_label);
   auto shm_backing = SharedMemoryImageBackingFactory().CreateSharedImage(
       mailbox, shm_si_info, kNullSurfaceHandle, /*is_thread_safe=*/false,
       buffer_usage);
@@ -928,8 +921,7 @@ std::unique_ptr<SharedImageBacking> CompoundImageBacking::Create(
   shm_backing->SetNotRefCounted();
 
   return base::WrapUnique(new CompoundImageBacking(
-      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      std::move(debug_label), std::move(shm_backing),
+      mailbox, si_info, std::move(shm_backing),
       shared_image_factory->GetFactoryRef(), gpu_backing_factory->GetWeakPtr(),
       std::move(copy_manager), std::move(buffer_usage)));
 }
@@ -961,18 +953,15 @@ CompoundImageBacking::CreateSharedMemoryForTesting(
     scoped_refptr<SharedImageCopyManager> copy_manager,
     const Mailbox& mailbox,
     gfx::GpuMemoryBufferHandle handle,
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    SharedImageUsageSet usage,
-    std::string debug_label) {
+    const SharedImageInfo& si_info) {
+  auto format = si_info.format;
+  auto size = si_info.size;
+  auto usage = si_info.usage;
   DCHECK(IsValidSharedMemoryFormat(size, format));
 
-  SharedImageInfo shm_si_info(format, size, color_space, surface_origin,
-                              alpha_type, GetShmSharedImageUsage(usage),
-                              debug_label);
+  SharedImageInfo shm_si_info(
+      format, size, si_info.color_space, si_info.surface_origin,
+      si_info.alpha_type, GetShmSharedImageUsage(usage), si_info.debug_label);
   auto shm_backing = SharedMemoryImageBackingFactory().CreateSharedImage(
       mailbox, shm_si_info, /*is_thread_safe=*/false, std::move(handle));
   if (!shm_backing) {
@@ -981,8 +970,7 @@ CompoundImageBacking::CreateSharedMemoryForTesting(
   shm_backing->SetNotRefCounted();
 
   return base::WrapUnique(new CompoundImageBacking(
-      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      std::move(debug_label), std::move(shm_backing),
+      mailbox, si_info, std::move(shm_backing),
       /*shared_image_factory=*/nullptr, gpu_backing_factory->GetWeakPtr(),
       std::move(copy_manager)));
 }
@@ -993,19 +981,16 @@ CompoundImageBacking::CreateSharedMemoryForTesting(
     SharedImageBackingFactory* gpu_backing_factory,
     scoped_refptr<SharedImageCopyManager> copy_manager,
     const Mailbox& mailbox,
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    SharedImageUsageSet usage,
-    std::string debug_label,
+    const SharedImageInfo& si_info,
     gfx::BufferUsage buffer_usage) {
+  auto format = si_info.format;
+  auto size = si_info.size;
+  auto usage = si_info.usage;
   DCHECK(IsValidSharedMemoryFormat(size, format));
 
-  SharedImageInfo shm_si_info(format, size, color_space, surface_origin,
-                              alpha_type, GetShmSharedImageUsage(usage),
-                              debug_label);
+  SharedImageInfo shm_si_info(
+      format, size, si_info.color_space, si_info.surface_origin,
+      si_info.alpha_type, GetShmSharedImageUsage(usage), si_info.debug_label);
   auto shm_backing = SharedMemoryImageBackingFactory().CreateSharedImage(
       mailbox, shm_si_info, kNullSurfaceHandle, /*is_thread_safe=*/false,
       buffer_usage);
@@ -1015,21 +1000,14 @@ CompoundImageBacking::CreateSharedMemoryForTesting(
   shm_backing->SetNotRefCounted();
 
   return base::WrapUnique(new CompoundImageBacking(
-      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      std::move(debug_label), std::move(shm_backing),
+      mailbox, si_info, std::move(shm_backing),
       /*shared_image_factory=*/nullptr, gpu_backing_factory->GetWeakPtr(),
       std::move(copy_manager), std::move(buffer_usage)));
 }
 
 CompoundImageBacking::CompoundImageBacking(
     const Mailbox& mailbox,
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    SharedImageUsageSet usage,
-    std::string debug_label,
+    const SharedImageInfo& si_info,
     std::unique_ptr<SharedImageBacking> shm_backing,
     scoped_refptr<SharedImageFactoryRef> shared_image_factory,
     base::WeakPtr<SharedImageBackingFactory> gpu_backing_factory,
@@ -1037,21 +1015,17 @@ CompoundImageBacking::CompoundImageBacking(
     std::optional<gfx::BufferUsage> buffer_usage)
     : ClearTrackingSharedImageBacking(
           mailbox,
-          format,
-          size,
-          color_space,
-          surface_origin,
-          alpha_type,
-          usage,
-          debug_label,
+          si_info,
           shm_backing->GetEstimatedSize(),
-          ComputeIsThreadSafe(shared_image_factory.get(), usage),
+          ComputeIsThreadSafe(shared_image_factory.get(), si_info.usage),
           std::move(buffer_usage)),
       shared_image_factory_(std::move(shared_image_factory)),
       copy_manager_(std::move(copy_manager)) {
   // If the backing is thread-safe, the base class enables an internal lock that
   // protects the |elements_| vector and other metadata from concurrent access.
   DCHECK(shm_backing);
+  auto size = si_info.size;
+  auto usage = si_info.usage;
   DCHECK_EQ(size, shm_backing->size());
 
   // Create shared-memory element (stream = kMemory).
@@ -1079,7 +1053,7 @@ CompoundImageBacking::CompoundImageBacking(
   gpu_element.create_callback =
       base::BindOnce(&CompoundImageBacking::CreateBackingFromBackingFactory,
                      base::Unretained(this), std::move(gpu_backing_factory),
-                     std::move(debug_label), GetGpuSharedImageUsage(usage));
+                     si_info.debug_label, GetGpuSharedImageUsage(usage));
   elements_.push_back(std::move(gpu_element));
   max_elements_allocated_ = 2;
 }
@@ -1091,13 +1065,13 @@ CompoundImageBacking::CompoundImageBacking(
     scoped_refptr<SharedImageFactoryRef> shared_image_factory)
     : ClearTrackingSharedImageBacking(
           backing->mailbox(),
-          backing->format(),
-          backing->size(),
-          backing->color_space(),
-          backing->surface_origin(),
-          backing->alpha_type(),
-          backing->usage(),
-          backing->debug_label(),
+          SharedImageInfo(backing->format(),
+                          backing->size(),
+                          backing->color_space(),
+                          backing->surface_origin(),
+                          backing->alpha_type(),
+                          backing->usage(),
+                          backing->debug_label()),
           backing->GetEstimatedSize(),
           ComputeIsThreadSafe(shared_image_factory.get(), backing->usage()),
           std::move(buffer_usage)),

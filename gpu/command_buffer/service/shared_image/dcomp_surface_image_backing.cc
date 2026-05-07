@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
+#include "gpu/command_buffer/common/shared_image_info.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/d3d_image_utils.h"
@@ -174,14 +175,8 @@ class DCompSurfaceImageBacking::D3DTextureGLSurfaceEGL
 // static
 std::unique_ptr<DCompSurfaceImageBacking> DCompSurfaceImageBacking::Create(
     const Mailbox& mailbox,
-    viz::SharedImageFormat format,
-    DXGI_FORMAT internal_format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    gpu::SharedImageUsageSet usage,
-    std::string debug_label) {
+    const SharedImageInfo& si_info,
+    DXGI_FORMAT internal_format) {
   // IDCompositionSurface only supports the following formats:
   // https://learn.microsoft.com/en-us/windows/win32/api/dcomp/nf-dcomp-idcompositiondevice2-createsurface#remarks
   DCHECK(internal_format == DXGI_FORMAT_B8G8R8A8_UNORM ||
@@ -189,6 +184,7 @@ std::unique_ptr<DCompSurfaceImageBacking> DCompSurfaceImageBacking::Create(
          internal_format == DXGI_FORMAT_R16G16B16A16_FLOAT)
       << "Incompatible DXGI_FORMAT = " << internal_format;
 
+  const auto size = si_info.size;
   TRACE_EVENT2("gpu", "DCompSurfaceImageBacking::Create", "width", size.width(),
                "height", size.height());
   // Always treat as premultiplied, because an underlay could cause it to
@@ -196,8 +192,8 @@ std::unique_ptr<DCompSurfaceImageBacking> DCompSurfaceImageBacking::Create(
   Microsoft::WRL::ComPtr<IDCompositionSurface> dcomp_surface;
   HRESULT hr = gl::GetDirectCompositionDevice()->CreateSurface(
       size.width(), size.height(), internal_format,
-      SkAlphaTypeIsOpaque(alpha_type) ? DXGI_ALPHA_MODE_IGNORE
-                                      : DXGI_ALPHA_MODE_PREMULTIPLIED,
+      SkAlphaTypeIsOpaque(si_info.alpha_type) ? DXGI_ALPHA_MODE_IGNORE
+                                              : DXGI_ALPHA_MODE_PREMULTIPLIED,
       &dcomp_surface);
 
   if (FAILED(hr)) {
@@ -206,35 +202,24 @@ std::unique_ptr<DCompSurfaceImageBacking> DCompSurfaceImageBacking::Create(
     return nullptr;
   }
 
-  return base::WrapUnique(new DCompSurfaceImageBacking(
-      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      std::move(debug_label), std::move(dcomp_surface)));
+  return base::WrapUnique(
+      new DCompSurfaceImageBacking(mailbox, si_info, std::move(dcomp_surface)));
 }
 
 DCompSurfaceImageBacking::DCompSurfaceImageBacking(
     const Mailbox& mailbox,
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    gpu::SharedImageUsageSet usage,
-    std::string debug_label,
+    const SharedImageInfo& si_info,
     Microsoft::WRL::ComPtr<IDCompositionSurface> dcomp_surface)
-    : ClearTrackingSharedImageBacking(mailbox,
-                                      format,
-                                      size,
-                                      color_space,
-                                      surface_origin,
-                                      alpha_type,
-                                      usage,
-                                      std::move(debug_label),
-                                      format.EstimatedSizeInBytes(size),
-                                      /*is_thread_safe=*/false),
+    : ClearTrackingSharedImageBacking(
+          mailbox,
+          si_info,
+          si_info.format.EstimatedSizeInBytes(si_info.size),
+          /*is_thread_safe=*/false),
       gl_surface_(scoped_refptr(
           new D3DTextureGLSurfaceEGL(gl::GLSurfaceEGL::GetGLDisplayEGL(),
-                                     size))),
+                                     si_info.size))),
       dcomp_surface_(std::move(dcomp_surface)) {
+  const auto usage = si_info.usage;
   const bool has_scanout = usage.Has(SHARED_IMAGE_USAGE_SCANOUT);
   const bool write_only = !usage.Has(SHARED_IMAGE_USAGE_DISPLAY_READ) &&
                           usage.Has(SHARED_IMAGE_USAGE_DISPLAY_WRITE);

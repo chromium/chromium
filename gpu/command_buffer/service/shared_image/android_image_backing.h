@@ -8,6 +8,7 @@
 #include "base/containers/flat_set.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/raw_ptr.h"
+#include "gpu/command_buffer/common/shared_image_info.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 
@@ -16,13 +17,7 @@ namespace gpu {
 class AndroidImageBacking : public ClearTrackingSharedImageBacking {
  public:
   AndroidImageBacking(const Mailbox& mailbox,
-                      viz::SharedImageFormat format,
-                      const gfx::Size& size,
-                      const gfx::ColorSpace& color_space,
-                      GrSurfaceOrigin surface_origin,
-                      SkAlphaType alpha_type,
-                      gpu::SharedImageUsageSet usage,
-                      std::string debug_label,
+                      const SharedImageInfo& si_info,
                       size_t estimated_size,
                       bool is_thread_safe,
                       base::ScopedFD initial_upload_fd);

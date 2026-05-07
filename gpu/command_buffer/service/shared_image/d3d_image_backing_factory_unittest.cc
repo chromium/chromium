@@ -1396,11 +1396,13 @@ D3DImageBackingFactoryTest::CreateVideoImage(const gfx::Size& size,
                                                  d3d11_texture);
     }
     shared_image_backing = D3DImageBacking::Create(
-        mailbox, viz::MultiPlaneFormat::kNV12, size, gfx::ColorSpace(),
-        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage, "TestLabel",
+        mailbox,
+        SharedImageInfo(viz::MultiPlaneFormat::kNV12, size, gfx::ColorSpace(),
+                        kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
+                        "TestLabel"),
         d3d11_texture, std::move(dxgi_shared_handle_state),
         context_state_->GetGLFormatCaps(), GL_TEXTURE_EXTERNAL_OES,
-        /*array_slice=*/0, /*plane_index=*/0u);
+        /*array_slice=*/0);
     // Need to clear the backing created with shared handle.
     shared_image_backing->SetCleared();
   }
@@ -1692,9 +1694,10 @@ void D3DImageBackingFactoryTest::RunCreateFromSharedMemoryMultiplanarTest(
   // memory support.
   auto backing = CompoundImageBacking::CreateSharedMemoryForTesting(
       shared_image_factory_.get(), copy_manager_, mailbox,
-      std::move(shm_gmb_handle), viz::MultiPlaneFormat::kNV12, size,
-      gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
-      "TestLabel");
+      std::move(shm_gmb_handle),
+      SharedImageInfo(viz::MultiPlaneFormat::kNV12, size, gfx::ColorSpace(),
+                      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
+                      "TestLabel"));
   EXPECT_NE(backing, nullptr);
 
   EXPECT_EQ(backing->mailbox(), mailbox);

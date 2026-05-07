@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "gpu/command_buffer/common/shared_image_info.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/skia_graphite_dawn_image_representation.h"
@@ -147,24 +148,14 @@ class TestDawnImageRepresentation : public DawnImageRepresentation {
 }  // namespace
 
 TestImageBacking::TestImageBacking(const Mailbox& mailbox,
-                                   viz::SharedImageFormat format,
-                                   const gfx::Size& size,
-                                   const gfx::ColorSpace& color_space,
-                                   GrSurfaceOrigin surface_origin,
-                                   SkAlphaType alpha_type,
-                                   SharedImageUsageSet usage,
+                                   const SharedImageInfo& si_info,
                                    size_t estimated_size,
                                    GLuint texture_id)
     : SharedImageBacking(mailbox,
-                         format,
-                         size,
-                         color_space,
-                         surface_origin,
-                         alpha_type,
-                         usage,
-                         "TestBacking",
+                         si_info,
                          estimated_size,
                          /*is_thread_safe=*/false) {
+  auto format = si_info.format;
   const int num_textures =
       format.PrefersExternalSampler() ? 1 : format.NumberOfPlanes();
   textures_.reserve(num_textures);
@@ -181,7 +172,7 @@ TestImageBacking::TestImageBacking(const Mailbox& mailbox,
     texture->set_wrap_s(GL_CLAMP_TO_EDGE);
     GLFormatDesc format_desc =
         GLFormatCaps().ToGLFormatDesc(format, /*plane_index=*/plane);
-    gfx::Size plane_size = format.GetPlaneSize(plane, size);
+    gfx::Size plane_size = format.GetPlaneSize(plane, si_info.size);
     texture->SetLevelInfo(GL_TEXTURE_2D, 0, format_desc.image_internal_format,
                           plane_size.width(), plane_size.height(), 1, 0,
                           format_desc.data_format, format_desc.data_type,
@@ -195,20 +186,10 @@ TestImageBacking::TestImageBacking(const Mailbox& mailbox,
 }
 
 TestImageBacking::TestImageBacking(const Mailbox& mailbox,
-                                   viz::SharedImageFormat format,
-                                   const gfx::Size& size,
-                                   const gfx::ColorSpace& color_space,
-                                   GrSurfaceOrigin surface_origin,
-                                   SkAlphaType alpha_type,
-                                   SharedImageUsageSet usage,
+                                   const SharedImageInfo& si_info,
                                    size_t estimated_size)
     : TestImageBacking(mailbox,
-                       format,
-                       size,
-                       color_space,
-                       surface_origin,
-                       alpha_type,
-                       usage,
+                       si_info,
                        estimated_size,
                        /*texture_id=*/203) {
   // Using a dummy |texture_id|, so lose our context so we don't do anything

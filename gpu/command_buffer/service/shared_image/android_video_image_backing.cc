@@ -9,6 +9,7 @@
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "components/viz/common/resources/shared_image_format.h"
+#include "gpu/command_buffer/common/shared_image_info.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/dawn_context_provider.h"
 #include "gpu/command_buffer/service/ref_counted_lock.h"
@@ -31,19 +32,15 @@ AndroidVideoImageBacking::AndroidVideoImageBacking(
     bool is_thread_safe)
     : AndroidImageBacking(
           mailbox,
-          viz::SinglePlaneFormat::kRGBA_8888,
-          size,
-          color_space,
-          surface_origin,
-          alpha_type,
-          // This SI will be used to back a VideoFrame. As such, it
-          // will potentially be sent to the display compositor and read by the
-          // GL interface for WebGL, and read by raster interface.
-          // TODO: crbug.com/354856448 - add a parameter to the constructor that
-          // allows to specify whether SCANOUT is needed.
-          {SHARED_IMAGE_USAGE_DISPLAY_READ, SHARED_IMAGE_USAGE_GLES2_READ,
-           SHARED_IMAGE_USAGE_RASTER_READ, SHARED_IMAGE_USAGE_SCANOUT},
-          std::move(debug_label),
+          SharedImageInfo(
+              viz::SinglePlaneFormat::kRGBA_8888,
+              size,
+              color_space,
+              surface_origin,
+              alpha_type,
+              {SHARED_IMAGE_USAGE_DISPLAY_READ, SHARED_IMAGE_USAGE_GLES2_READ,
+               SHARED_IMAGE_USAGE_RASTER_READ, SHARED_IMAGE_USAGE_SCANOUT},
+              std::move(debug_label)),
           viz::SinglePlaneFormat::kRGBA_8888.EstimatedSizeInBytes(size),
           is_thread_safe,
           base::ScopedFD()) {}

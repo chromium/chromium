@@ -23,19 +23,17 @@ class SharedImageRepresentationTest : public ::testing::Test {
   void SetUp() override {
     tracker_ = std::make_unique<MemoryTypeTracker>(nullptr);
     mailbox_ = Mailbox::Generate();
-    auto format = viz::SinglePlaneFormat::kRGBA_8888;
-    gfx::Size size(256, 256);
-    auto color_space = gfx::ColorSpace::CreateSRGB();
-    auto surface_origin = kTopLeft_GrSurfaceOrigin;
-    auto alpha_type = kPremul_SkAlphaType;
     // Add the usages that the tests in this file require.
-    SharedImageUsageSet usage = {
-        SHARED_IMAGE_USAGE_GLES2_READ,   SHARED_IMAGE_USAGE_GLES2_WRITE,
-        SHARED_IMAGE_USAGE_RASTER_READ,  SHARED_IMAGE_USAGE_RASTER_WRITE,
-        SHARED_IMAGE_USAGE_WEBGPU_WRITE, SHARED_IMAGE_USAGE_SCANOUT};
-    auto backing = std::make_unique<TestImageBacking>(
-        mailbox_, format, size, color_space, surface_origin, alpha_type, usage,
-        /*estimated_size=*/0);
+    SharedImageInfo si_info(
+        viz::SinglePlaneFormat::kRGBA_8888, gfx::Size(256, 256),
+        gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
+        kPremul_SkAlphaType,
+        {SHARED_IMAGE_USAGE_GLES2_READ, SHARED_IMAGE_USAGE_GLES2_WRITE,
+         SHARED_IMAGE_USAGE_RASTER_READ, SHARED_IMAGE_USAGE_RASTER_WRITE,
+         SHARED_IMAGE_USAGE_WEBGPU_WRITE, SHARED_IMAGE_USAGE_SCANOUT},
+        "TestLabel");
+    auto backing = std::make_unique<TestImageBacking>(mailbox_, si_info,
+                                                      /*estimated_size=*/0);
     factory_ref_ = manager_.Register(std::move(backing), tracker_.get());
   }
 

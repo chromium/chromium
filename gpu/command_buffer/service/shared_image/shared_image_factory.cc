@@ -544,10 +544,11 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
         // Check if CompoundImageBacking can be created. CompoundImageBacking
         // holds a shared memory buffer plus another GPU backing type to satisfy
         // the requirements.
-        backing = CompoundImageBacking::Create(
-            this, copy_manager(), mailbox, format_copy, size,
-            si_info.color_space, si_info.surface_origin, si_info.alpha_type,
-            usage, debug_label, buffer_usage);
+        SharedImageInfo si_info_copy(format_copy, size, si_info.color_space,
+                                     si_info.surface_origin, si_info.alpha_type,
+                                     usage, debug_label);
+        backing = CompoundImageBacking::Create(this, copy_manager(), mailbox,
+                                               si_info_copy, buffer_usage);
         use_compound = backing != nullptr;
       }
 
@@ -643,10 +644,8 @@ bool SharedImageFactory::CreateSharedImage(
     // Check if CompoundImageBacking can be created. CompoundImageBacking holds
     // a shared memory buffer plus another GPU backing type to satisfy the
     // requirements.
-    backing = CompoundImageBacking::Create(
-        this, copy_manager(), mailbox, buffer_handle.Clone(), format, size,
-        si_info.color_space, si_info.surface_origin, si_info.alpha_type, usage,
-        debug_label);
+    backing = CompoundImageBacking::Create(this, copy_manager(), mailbox,
+                                           buffer_handle.Clone(), si_info);
     use_compound = backing != nullptr;
   }
 

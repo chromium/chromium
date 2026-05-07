@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "gpu/command_buffer/common/shared_image_info.h"
 #include "gpu/command_buffer/service/shared_image/gl_common_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "ui/gfx/buffer_types.h"
@@ -31,15 +32,9 @@ class EGLImageBacking : public ClearTrackingSharedImageBacking {
  public:
   EGLImageBacking(
       const Mailbox& mailbox,
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      gpu::SharedImageUsageSet usage,
-      std::string debug_label,
+      const SharedImageInfo& si_info,
       size_t estimated_size,
-      const std::vector<GLCommonImageBackingFactory::FormatInfo>& format_into,
+      const std::vector<GLCommonImageBackingFactory::FormatInfo>& format_info,
       const GpuDriverBugWorkarounds& workarounds,
       bool use_passthrough,
       base::span<const uint8_t> pixel_data);

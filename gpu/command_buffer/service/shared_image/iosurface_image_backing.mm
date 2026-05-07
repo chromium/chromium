@@ -25,6 +25,7 @@
 #include "base/notimplemented.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
+#include "gpu/command_buffer/common/shared_image_info.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/dawn_context_provider.h"
@@ -973,30 +974,19 @@ bool IOSurfaceImageBacking::SkiaGraphiteDawnMetalRepresentation::
 IOSurfaceImageBacking::IOSurfaceImageBacking(
     gfx::ScopedIOSurface io_surface,
     const Mailbox& mailbox,
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    gpu::SharedImageUsageSet usage,
-    std::string debug_label,
+    const SharedImageInfo& si_info,
     GLenum gl_target,
     bool framebuffer_attachment_angle,
     bool is_cleared,
     bool is_thread_safe,
     GrContextType gr_context_type,
     std::optional<gfx::BufferUsage> buffer_usage)
-    : ClearTrackingSharedImageBacking(mailbox,
-                                      format,
-                                      size,
-                                      color_space,
-                                      surface_origin,
-                                      alpha_type,
-                                      usage,
-                                      std::move(debug_label),
-                                      format.EstimatedSizeInBytes(size),
-                                      is_thread_safe,
-                                      std::move(buffer_usage)),
+    : ClearTrackingSharedImageBacking(
+          mailbox,
+          si_info,
+          si_info.format.EstimatedSizeInBytes(si_info.size),
+          is_thread_safe,
+          std::move(buffer_usage)),
       io_surface_(std::move(io_surface)),
       io_surface_size_(IOSurfaceGetWidth(io_surface_.get()),
                        IOSurfaceGetHeight(io_surface_.get())),
@@ -1010,16 +1000,16 @@ IOSurfaceImageBacking::IOSurfaceImageBacking(
         base::FeatureList::IsEnabled(features::kIOSurfaceMultiThreading));
 
   // Set the color space for the underlying IOSurface when it's used as overlay.
-  gfx::IOSurfaceSetColorSpace(io_surface_.get(), color_space);
+  gfx::IOSurfaceSetColorSpace(io_surface_.get(), si_info.color_space);
 
   // If this will be bound to different GL backends, then make RetainGLTexture
   // and ReleaseGLTexture actually create and destroy the texture.
   // https://crbug.com/1251724
-  if (usage.Has(SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU)) {
+  if (si_info.usage.Has(SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU)) {
     return;
   }
 
-  SetClearedRectInternal((is_cleared ? gfx::Rect(size) : gfx::Rect()));
+  SetClearedRectInternal((is_cleared ? gfx::Rect(si_info.size) : gfx::Rect()));
 
   // NOTE: Mac currently retains GLTexture and reuses it. This might lead to
   // issues with context losses, but is also beneficial to performance at

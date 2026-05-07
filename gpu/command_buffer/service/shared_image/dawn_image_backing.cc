@@ -35,22 +35,10 @@ class DawnImageRepresentationImpl : public DawnImageRepresentation {
 };
 
 DawnImageBacking::DawnImageBacking(const Mailbox& mailbox,
-                                   viz::SharedImageFormat format,
-                                   const gfx::Size& size,
-                                   const gfx::ColorSpace& color_space,
-                                   GrSurfaceOrigin surface_origin,
-                                   SkAlphaType alpha_type,
-                                   SharedImageUsageSet usage,
-                                   std::string debug_label)
+                                   const SharedImageInfo& si_info)
     : SharedImageBacking(mailbox,
-                         format,
-                         size,
-                         color_space,
-                         surface_origin,
-                         alpha_type,
-                         usage,
-                         std::move(debug_label),
-                         format.EstimatedSizeInBytes(size),
+                         si_info,
+                         si_info.format.EstimatedSizeInBytes(si_info.size),
                          /*is_thread_safe=*/false) {}
 
 DawnImageBacking::~DawnImageBacking() {

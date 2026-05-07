@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/types/pass_key.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
+#include "gpu/command_buffer/common/shared_image_info.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/external_semaphore.h"
 #include "gpu/command_buffer/service/external_semaphore_pool.h"
@@ -38,13 +39,7 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
       bool enable_webgpu_on_vk_via_gl_interop,
       VulkanCommandPool* command_pool,
       const Mailbox& mailbox,
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      SharedImageUsageSet usage,
-      std::string debug_label,
+      const SharedImageInfo& si_info,
       const base::flat_map<VkFormat, VkImageUsageFlags>& image_usage_cache,
       base::span<const uint8_t> pixel_data);
 
@@ -53,14 +48,8 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
       bool enable_webgpu_on_vk_via_gl_interop,
       VulkanCommandPool* command_pool,
       const Mailbox& mailbox,
+      const SharedImageInfo& si_info,
       gfx::GpuMemoryBufferHandle handle,
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      gpu::SharedImageUsageSet usage,
-      std::string debug_label,
       std::optional<gfx::BufferUsage> buffer_usage = std::nullopt);
 
   static std::unique_ptr<ExternalVkImageBacking> CreateWithPixmap(
@@ -68,14 +57,8 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
       bool enable_webgpu_on_vk_via_gl_interop,
       VulkanCommandPool* command_pool,
       const Mailbox& mailbox,
-      viz::SharedImageFormat format,
+      const SharedImageInfo& si_info,
       SurfaceHandle surface_handle,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      SharedImageUsageSet usage,
-      std::string debug_label,
       gfx::BufferUsage buffer_usage);
 
   static bool UseSeparateGLTexture(SharedContextState* context_state,
@@ -88,13 +71,7 @@ class ExternalVkImageBacking final : public ClearTrackingSharedImageBacking {
   ExternalVkImageBacking(
       base::PassKey<ExternalVkImageBacking>,
       const Mailbox& mailbox,
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      SharedImageUsageSet usage,
-      std::string debug_label,
+      const SharedImageInfo& si_info,
       size_t estimated_size_bytes,
       scoped_refptr<SharedContextState> context_state,
       std::vector<TextureHolderVk> vk_textures,

@@ -63,14 +63,10 @@ std::unique_ptr<SharedImageBacking> DCompImageBackingFactory::CreateSharedImage(
 
   if (usage.Has(SHARED_IMAGE_USAGE_SCANOUT_DCOMP_SURFACE)) {
     DCHECK_NE(internal_format, DXGI_FORMAT_R10G10B10A2_UNORM);
-    return DCompSurfaceImageBacking::Create(
-        mailbox, si_info.format, internal_format, si_info.size, color_space,
-        si_info.surface_origin, alpha_type, usage, si_info.debug_label);
+    return DCompSurfaceImageBacking::Create(mailbox, si_info, internal_format);
   } else {
-    return DXGISwapChainImageBacking::Create(
-        context_state_->GetD3D11Device(), mailbox, si_info.format,
-        internal_format, si_info.size, color_space, si_info.surface_origin,
-        alpha_type, usage, si_info.debug_label);
+    return DXGISwapChainImageBacking::Create(context_state_->GetD3D11Device(),
+                                             mailbox, si_info, internal_format);
   }
 }
 

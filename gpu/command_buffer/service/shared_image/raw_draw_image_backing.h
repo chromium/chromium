@@ -11,6 +11,7 @@
 #include "base/thread_annotations.h"
 #include "base/threading/thread_checker.h"
 #include "cc/paint/paint_op_buffer.h"
+#include "gpu/command_buffer/common/shared_image_info.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkSurfaceProps.h"
@@ -22,14 +23,7 @@ namespace gpu {
 
 class RawDrawImageBacking : public ClearTrackingSharedImageBacking {
  public:
-  RawDrawImageBacking(const Mailbox& mailbox,
-                      viz::SharedImageFormat format,
-                      const gfx::Size& size,
-                      const gfx::ColorSpace& color_space,
-                      GrSurfaceOrigin surface_origin,
-                      SkAlphaType alpha_type,
-                      gpu::SharedImageUsageSet usage,
-                      std::string debug_label);
+  RawDrawImageBacking(const Mailbox& mailbox, const SharedImageInfo& si_info);
   ~RawDrawImageBacking() override;
 
   // SharedImageBacking implementation.

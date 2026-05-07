@@ -86,18 +86,9 @@ WrappedSkImageBackingFactory::CreateSharedImage(const Mailbox& mailbox,
                                                 const SharedImageInfo& si_info,
                                                 SurfaceHandle surface_handle,
                                                 bool is_thread_safe) {
-  const auto format = si_info.format;
-  const auto size = si_info.size;
-  const auto& color_space = si_info.color_space;
-  const auto surface_origin = si_info.surface_origin;
-  const auto alpha_type = si_info.alpha_type;
-  const auto usage = si_info.usage;
-  const auto& debug_label = si_info.debug_label;
-
   if (use_graphite_) {
     auto backing = std::make_unique<WrappedGraphiteTextureBacking>(
-        base::PassKey<WrappedSkImageBackingFactory>(), mailbox, format, size,
-        color_space, surface_origin, alpha_type, usage, debug_label,
+        base::PassKey<WrappedSkImageBackingFactory>(), mailbox, si_info,
         context_state_, is_thread_safe);
     if (!backing->Initialize()) {
       return nullptr;
@@ -106,10 +97,9 @@ WrappedSkImageBackingFactory::CreateSharedImage(const Mailbox& mailbox,
   }
   CHECK(context_state_->gr_context());
   auto backing = std::make_unique<WrappedSkImageBacking>(
-      base::PassKey<WrappedSkImageBackingFactory>(), mailbox, format, size,
-      color_space, surface_origin, alpha_type, usage, debug_label,
+      base::PassKey<WrappedSkImageBackingFactory>(), mailbox, si_info,
       context_state_, is_thread_safe);
-  if (!backing->Initialize(debug_label)) {
+  if (!backing->Initialize(si_info.debug_label)) {
     return nullptr;
   }
   return backing;
@@ -121,18 +111,9 @@ WrappedSkImageBackingFactory::CreateSharedImage(
     const SharedImageInfo& si_info,
     bool is_thread_safe,
     base::span<const uint8_t> data) {
-  const auto format = si_info.format;
-  const auto size = si_info.size;
-  const auto& color_space = si_info.color_space;
-  const auto surface_origin = si_info.surface_origin;
-  const auto alpha_type = si_info.alpha_type;
-  const auto usage = si_info.usage;
-  const auto& debug_label = si_info.debug_label;
-
   if (use_graphite_) {
     auto backing = std::make_unique<WrappedGraphiteTextureBacking>(
-        base::PassKey<WrappedSkImageBackingFactory>(), mailbox, format, size,
-        color_space, surface_origin, alpha_type, usage, debug_label,
+        base::PassKey<WrappedSkImageBackingFactory>(), mailbox, si_info,
         context_state_, is_thread_safe);
     if (!backing->InitializeWithData(data)) {
       return nullptr;
@@ -141,10 +122,9 @@ WrappedSkImageBackingFactory::CreateSharedImage(
   }
   CHECK(context_state_->gr_context());
   auto backing = std::make_unique<WrappedSkImageBacking>(
-      base::PassKey<WrappedSkImageBackingFactory>(), mailbox, format, size,
-      color_space, surface_origin, alpha_type, usage, debug_label,
+      base::PassKey<WrappedSkImageBackingFactory>(), mailbox, si_info,
       context_state_, is_thread_safe);
-  if (!backing->InitializeWithData(debug_label, data)) {
+  if (!backing->InitializeWithData(si_info.debug_label, data)) {
     return nullptr;
   }
   return backing;

@@ -159,10 +159,8 @@ class TestImageBackingFactory : public gpu::SharedImageBackingFactory {
       gpu::SurfaceHandle surface_handle,
       bool is_thread_safe) override {
     size_t estimated_size = si_info.format.EstimatedSizeInBytes(si_info.size);
-    auto backing = std::make_unique<gpu::TestImageBacking>(
-        mailbox, si_info.format, si_info.size, si_info.color_space,
-        si_info.surface_origin, si_info.alpha_type, si_info.usage,
-        estimated_size);
+    auto backing = std::make_unique<gpu::TestImageBacking>(mailbox, si_info,
+                                                           estimated_size);
     backings_[mailbox] = backing.get();
     return backing;
   }
@@ -171,10 +169,8 @@ class TestImageBackingFactory : public gpu::SharedImageBackingFactory {
       const gpu::SharedImageInfo& si_info,
       bool is_thread_safe,
       base::span<const uint8_t> pixel_data) override {
-    auto backing = std::make_unique<gpu::TestImageBacking>(
-        mailbox, si_info.format, si_info.size, si_info.color_space,
-        si_info.surface_origin, si_info.alpha_type, si_info.usage,
-        pixel_data.size());
+    auto backing = std::make_unique<gpu::TestImageBacking>(mailbox, si_info,
+                                                           pixel_data.size());
     backings_[mailbox] = backing.get();
     return backing;
   }

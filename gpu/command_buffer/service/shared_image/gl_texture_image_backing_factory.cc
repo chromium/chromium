@@ -190,10 +190,8 @@ GLTextureImageBackingFactory::CreateSharedImageInternal(
   const bool framebuffer_attachment_angle =
       for_framebuffer_attachment && texture_usage_angle_;
 
-  auto result = std::make_unique<GLTextureImageBacking>(
-      mailbox, si_info.format, si_info.size, si_info.color_space,
-      si_info.surface_origin, si_info.alpha_type, si_info.usage,
-      si_info.debug_label, use_passthrough_);
+  auto result = std::make_unique<GLTextureImageBacking>(mailbox, si_info,
+                                                        use_passthrough_);
   result->InitializeGLTexture(GetFormatInfo(si_info.format), pixel_data,
                               progress_reporter_, framebuffer_attachment_angle);
 

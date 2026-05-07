@@ -201,9 +201,7 @@ ExternalVkImageBackingFactory::CreateSharedImage(const Mailbox& mailbox,
   CHECK(!is_thread_safe);
   return ExternalVkImageBacking::Create(
       context_state_, enable_webgpu_on_vk_via_gl_interop_, command_pool_.get(),
-      mailbox, si_info.format, si_info.size, si_info.color_space,
-      si_info.surface_origin, si_info.alpha_type, si_info.usage,
-      si_info.debug_label, image_usage_cache_, base::span<const uint8_t>());
+      mailbox, si_info, image_usage_cache_, base::span<const uint8_t>());
 }
 
 std::unique_ptr<SharedImageBacking>
@@ -215,9 +213,7 @@ ExternalVkImageBackingFactory::CreateSharedImage(
   CHECK(!is_thread_safe);
   return ExternalVkImageBacking::Create(
       context_state_, enable_webgpu_on_vk_via_gl_interop_, command_pool_.get(),
-      mailbox, si_info.format, si_info.size, si_info.color_space,
-      si_info.surface_origin, si_info.alpha_type, si_info.usage,
-      si_info.debug_label, image_usage_cache_, pixel_data);
+      mailbox, si_info, image_usage_cache_, pixel_data);
 }
 
 std::unique_ptr<SharedImageBacking>
@@ -230,9 +226,7 @@ ExternalVkImageBackingFactory::CreateSharedImage(
   CHECK(CanImportGpuMemoryBuffer(handle.type));
   return ExternalVkImageBacking::CreateFromGMB(
       context_state_, enable_webgpu_on_vk_via_gl_interop_, command_pool_.get(),
-      mailbox, std::move(handle), si_info.format, si_info.size,
-      si_info.color_space, si_info.surface_origin, si_info.alpha_type,
-      si_info.usage, si_info.debug_label);
+      mailbox, si_info, std::move(handle));
 }
 
 std::unique_ptr<SharedImageBacking>
@@ -247,9 +241,7 @@ ExternalVkImageBackingFactory::CreateSharedImage(
   // Creating the backing with a native pixmap so that it can be CPU mappable.
   return ExternalVkImageBacking::CreateWithPixmap(
       context_state_, enable_webgpu_on_vk_via_gl_interop_, command_pool_.get(),
-      mailbox, si_info.format, surface_handle, si_info.size,
-      si_info.color_space, si_info.surface_origin, si_info.alpha_type,
-      si_info.usage, si_info.debug_label, buffer_usage);
+      mailbox, si_info, surface_handle, buffer_usage);
 #else
   // A CPU mappable backing of this type can only be requested for OZONE
   // platforms.

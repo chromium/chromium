@@ -6,6 +6,7 @@
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_TEST_IMAGE_BACKING_H_
 
 #include "base/memory/raw_ptr.h"
+#include "gpu/command_buffer/common/shared_image_info.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/command_buffer/service/texture_manager.h"
@@ -17,21 +18,11 @@ class TestImageBacking : public SharedImageBacking {
  public:
   // Constructor which uses a dummy GL texture ID for the backing.
   TestImageBacking(const Mailbox& mailbox,
-                   viz::SharedImageFormat format,
-                   const gfx::Size& size,
-                   const gfx::ColorSpace& color_space,
-                   GrSurfaceOrigin surface_origin,
-                   SkAlphaType alpha_type,
-                   SharedImageUsageSet usage,
+                   const SharedImageInfo& si_info,
                    size_t estimated_size);
   // Constructor which uses a provided GL texture ID for the backing.
   TestImageBacking(const Mailbox& mailbox,
-                   viz::SharedImageFormat format,
-                   const gfx::Size& size,
-                   const gfx::ColorSpace& color_space,
-                   GrSurfaceOrigin surface_origin,
-                   SkAlphaType alpha_type,
-                   SharedImageUsageSet usage,
+                   const SharedImageInfo& si_info,
                    size_t estimated_size,
                    GLuint texture_id);
   ~TestImageBacking() override;

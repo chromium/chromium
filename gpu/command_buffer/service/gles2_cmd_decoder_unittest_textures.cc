@@ -15,6 +15,7 @@
 #include "gpu/command_buffer/common/gles2_cmd_format.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/common/id_allocator.h"
+#include "gpu/command_buffer/common/shared_image_info.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/context_group.h"
 #include "gpu/command_buffer/service/context_state.h"
@@ -2923,10 +2924,12 @@ TEST_P(GLES2DecoderTest, CreateAndTexStorage2DSharedImageCHROMIUM) {
   std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
       GetSharedImageManager()->Register(
           std::make_unique<TestImageBacking>(
-              mailbox, format, gfx::Size(10, 10), gfx::ColorSpace(),
-              kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-              SharedImageUsageSet({SHARED_IMAGE_USAGE_GLES2_READ,
-                                   SHARED_IMAGE_USAGE_GLES2_WRITE}),
+              mailbox,
+              SharedImageInfo(format, gfx::Size(10, 10), gfx::ColorSpace(),
+                              kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+                              {SHARED_IMAGE_USAGE_GLES2_READ,
+                               SHARED_IMAGE_USAGE_GLES2_WRITE},
+                              "TestLabel"),
               kEstimatedSize, kNewServiceId),
           &memory_tracker);
 
@@ -2989,13 +2992,13 @@ TEST_P(GLES2DecoderTest,
   std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
       GetSharedImageManager()->Register(
           std::make_unique<TestImageBacking>(
-              mailbox, format, gfx::Size(10, 10), gfx::ColorSpace(),
-              kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-              SharedImageUsageSet({SHARED_IMAGE_USAGE_GLES2_READ,
-                                   SHARED_IMAGE_USAGE_GLES2_WRITE}),
-              kEstimatedSize,
-
-              kNewServiceId),
+              mailbox,
+              SharedImageInfo(format, gfx::Size(10, 10), gfx::ColorSpace(),
+                              kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+                              {SHARED_IMAGE_USAGE_GLES2_READ,
+                               SHARED_IMAGE_USAGE_GLES2_WRITE},
+                              "TestLabel"),
+              kEstimatedSize, kNewServiceId),
           &memory_tracker);
 
   auto& cmd = *GetImmediateAs<
@@ -3018,10 +3021,12 @@ TEST_P(GLES2DecoderTest, BeginEndSharedImageAccessCHROMIUM) {
   std::unique_ptr<SharedImageRepresentationFactoryRef> shared_image =
       GetSharedImageManager()->Register(
           std::make_unique<TestImageBacking>(
-              mailbox, format, gfx::Size(10, 10), gfx::ColorSpace(),
-              kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-              SharedImageUsageSet({SHARED_IMAGE_USAGE_GLES2_READ,
-                                   SHARED_IMAGE_USAGE_GLES2_WRITE}),
+              mailbox,
+              SharedImageInfo(format, gfx::Size(10, 10), gfx::ColorSpace(),
+                              kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+                              {SHARED_IMAGE_USAGE_GLES2_READ,
+                               SHARED_IMAGE_USAGE_GLES2_WRITE},
+                              "TestLabel"),
               0, kNewServiceId),
           &memory_tracker);
 
@@ -3080,9 +3085,10 @@ TEST_P(GLES2DecoderTest, BeginSharedImageAccessDirectCHROMIUMCantBeginAccess) {
   Mailbox mailbox = Mailbox::Generate();
   auto format = viz::SinglePlaneFormat::kRGBA_8888;
   auto shared_image_backing = std::make_unique<TestImageBacking>(
-      mailbox, format, gfx::Size(10, 10), gfx::ColorSpace(),
-      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-      SharedImageUsageSet({SHARED_IMAGE_USAGE_GLES2_READ}),
+      mailbox,
+      SharedImageInfo(format, gfx::Size(10, 10), gfx::ColorSpace(),
+                      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+                      {SHARED_IMAGE_USAGE_GLES2_READ}, "TestLabel"),
       /*estimated_size=*/0, kNewServiceId);
   // Set the shared image to fail BeginAccess.
   shared_image_backing->set_can_access(false);

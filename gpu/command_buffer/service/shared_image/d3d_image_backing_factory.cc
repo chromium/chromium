@@ -809,11 +809,12 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
   CHECK(!want_dcomp_texture || !(dxgi_shared_handle_state &&
                                  dxgi_shared_handle_state->has_keyed_mutex()));
 
+  SharedImageInfo si_info_copy(format, size, color_space,
+                               si_info.surface_origin, si_info.alpha_type,
+                               usage, debug_label);
   auto backing = D3DImageBacking::Create(
-      mailbox, format, size, color_space, si_info.surface_origin,
-      si_info.alpha_type, usage, std::move(debug_label),
-      std::move(d3d11_texture), std::move(dxgi_shared_handle_state),
-      gl_format_caps_, texture_target,
+      mailbox, si_info_copy, std::move(d3d11_texture),
+      std::move(dxgi_shared_handle_state), gl_format_caps_, texture_target,
       /*array_slice=*/0u, use_update_subresource1_, want_dcomp_texture,
       /*is_thread_safe=*/false,
       /*share_dxgi_handle_with_other_backings=*/false);
@@ -886,10 +887,9 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
   }
 
   std::unique_ptr<D3DImageBacking> backing = D3DImageBacking::Create(
-      mailbox, format, size, si_info.color_space, si_info.surface_origin,
-      si_info.alpha_type, si_info.usage, si_info.debug_label,
-      std::move(d3d11_texture), std::move(dxgi_shared_handle_state),
-      gl_format_caps_, /*texture_target=*/GL_TEXTURE_2D, /*array_slice=*/0u,
+      mailbox, si_info, std::move(d3d11_texture),
+      std::move(dxgi_shared_handle_state), gl_format_caps_,
+      /*texture_target=*/GL_TEXTURE_2D, /*array_slice=*/0u,
       use_update_subresource1_);
 
   if (backing) {

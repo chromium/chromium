@@ -9,6 +9,7 @@
 #include "base/types/optional_util.h"
 #include "cc/paint/paint_op_buffer.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
+#include "gpu/command_buffer/common/shared_image_info.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
@@ -110,21 +111,9 @@ class RawDrawImageBacking::SkiaRawDrawImageRepresentation
 };
 
 RawDrawImageBacking::RawDrawImageBacking(const Mailbox& mailbox,
-                                         viz::SharedImageFormat format,
-                                         const gfx::Size& size,
-                                         const gfx::ColorSpace& color_space,
-                                         GrSurfaceOrigin surface_origin,
-                                         SkAlphaType alpha_type,
-                                         gpu::SharedImageUsageSet usage,
-                                         std::string debug_label)
+                                         const SharedImageInfo& si_info)
     : ClearTrackingSharedImageBacking(mailbox,
-                                      format,
-                                      size,
-                                      color_space,
-                                      surface_origin,
-                                      alpha_type,
-                                      usage,
-                                      std::move(debug_label),
+                                      si_info,
                                       /*estimated_size=*/0,
                                       /*is_thread_safe=*/true) {}
 

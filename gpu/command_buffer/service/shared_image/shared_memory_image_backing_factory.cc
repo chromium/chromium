@@ -91,18 +91,13 @@ SharedMemoryImageBackingFactory::CreateSharedImage(
     const SharedImageInfo& si_info,
     bool is_thread_safe,
     gfx::GpuMemoryBufferHandle handle) {
-  const auto format = si_info.format;
-  const auto size = si_info.size;
-
   CHECK(handle.type == gfx::SHARED_MEMORY_BUFFER);
   SharedMemoryRegionWrapper shm_wrapper;
-  if (!shm_wrapper.Initialize(handle, size, format)) {
+  if (!shm_wrapper.Initialize(handle, si_info.size, si_info.format)) {
     return nullptr;
   }
-  return std::make_unique<SharedMemoryImageBacking>(
-      mailbox, format, size, si_info.color_space, si_info.surface_origin,
-      si_info.alpha_type, si_info.usage, si_info.debug_label,
-      std::move(shm_wrapper));
+  return std::make_unique<SharedMemoryImageBacking>(mailbox, si_info,
+                                                    std::move(shm_wrapper));
 }
 
 std::unique_ptr<SharedImageBacking>
@@ -124,9 +119,8 @@ SharedMemoryImageBackingFactory::CreateSharedImage(
     return nullptr;
   }
   auto backing = std::make_unique<SharedMemoryImageBacking>(
-      mailbox, format, size, si_info.color_space, si_info.surface_origin,
-      si_info.alpha_type, si_info.usage, si_info.debug_label,
-      std::move(shm_wrapper), std::move(handle), std::move(buffer_usage));
+      mailbox, si_info, std::move(shm_wrapper), std::move(handle),
+      std::move(buffer_usage));
   return backing;
 }
 

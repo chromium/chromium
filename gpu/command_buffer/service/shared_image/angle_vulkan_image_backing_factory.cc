@@ -52,10 +52,8 @@ AngleVulkanImageBackingFactory::CreateSharedImage(
     const SharedImageInfo& si_info,
     SurfaceHandle surface_handle,
     bool is_thread_safe) {
-  auto backing = std::make_unique<AngleVulkanImageBacking>(
-      context_state_, mailbox, si_info.format, si_info.size,
-      si_info.color_space, si_info.surface_origin, si_info.alpha_type,
-      si_info.usage, si_info.debug_label);
+  auto backing = std::make_unique<AngleVulkanImageBacking>(context_state_,
+                                                           mailbox, si_info);
 
   if (!backing->Initialize({}))
     return nullptr;
@@ -69,10 +67,8 @@ AngleVulkanImageBackingFactory::CreateSharedImage(
     const SharedImageInfo& si_info,
     bool is_thread_safe,
     base::span<const uint8_t> data) {
-  auto backing = std::make_unique<AngleVulkanImageBacking>(
-      context_state_, mailbox, si_info.format, si_info.size,
-      si_info.color_space, si_info.surface_origin, si_info.alpha_type,
-      si_info.usage, si_info.debug_label);
+  auto backing = std::make_unique<AngleVulkanImageBacking>(context_state_,
+                                                           mailbox, si_info);
 
   if (!backing->Initialize(data)) {
     return nullptr;
@@ -87,10 +83,8 @@ AngleVulkanImageBackingFactory::CreateSharedImage(
     const SharedImageInfo& si_info,
     bool is_thread_safe,
     gfx::GpuMemoryBufferHandle handle) {
-  auto backing = std::make_unique<AngleVulkanImageBacking>(
-      context_state_, mailbox, si_info.format, si_info.size,
-      si_info.color_space, si_info.surface_origin, si_info.alpha_type,
-      si_info.usage, si_info.debug_label);
+  auto backing = std::make_unique<AngleVulkanImageBacking>(context_state_,
+                                                           mailbox, si_info);
 
   if (!backing->InitializeWihGMB(std::move(handle))) {
     return nullptr;

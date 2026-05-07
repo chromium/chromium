@@ -21,6 +21,7 @@
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/command_buffer/common/shared_image_info.h"
 #include "gpu/command_buffer/common/shared_image_pool_id.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/gpu_gles2_export.h"
@@ -138,13 +139,7 @@ class GPU_GLES2_EXPORT SharedImageBacking {
  public:
   SharedImageBacking(
       const Mailbox& mailbox,
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      SharedImageUsageSet usage,
-      std::string debug_label,
+      const SharedImageInfo& si_info,
       size_t estimated_size,
       bool is_thread_safe,
       std::optional<gfx::BufferUsage> buffer_usage = std::nullopt);
@@ -445,13 +440,7 @@ class GPU_GLES2_EXPORT ClearTrackingSharedImageBacking
  public:
   ClearTrackingSharedImageBacking(
       const Mailbox& mailbox,
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      SharedImageUsageSet usage,
-      std::string debug_label,
+      const SharedImageInfo& si_info,
       size_t estimated_size,
       bool is_thread_safe,
       std::optional<gfx::BufferUsage> buffer_usage = std::nullopt);

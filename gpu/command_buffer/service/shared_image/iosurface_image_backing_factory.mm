@@ -346,7 +346,6 @@ IOSurfaceImageBackingFactory::CreateSharedImageInternal(
   const auto format = si_info.format;
   const auto size = si_info.size;
   const auto usage = si_info.usage;
-  const auto& color_space = si_info.color_space;
 
   if (!IsValidSize(size, max_texture_size_) ||
       !IsPixelDataValid(format, size, pixel_data)) {
@@ -379,7 +378,7 @@ IOSurfaceImageBackingFactory::CreateSharedImageInternal(
       return nullptr;
     }
   }
-  SetIOSurfaceColorSpace(io_surface.get(), color_space);
+  SetIOSurfaceColorSpace(io_surface.get(), si_info.color_space);
 
   const bool is_cleared = !pixel_data.empty() || should_clear;
   const bool framebuffer_attachment_angle =
@@ -387,8 +386,7 @@ IOSurfaceImageBackingFactory::CreateSharedImageInternal(
       feature_info_->feature_flags().angle_texture_usage;
 
   auto backing = std::make_unique<IOSurfaceImageBacking>(
-      io_surface, mailbox, format, size, color_space, si_info.surface_origin,
-      si_info.alpha_type, usage, si_info.debug_label, texture_target_,
+      io_surface, mailbox, si_info, texture_target_,
       framebuffer_attachment_angle, is_cleared, is_thread_safe,
       gr_context_type_);
   if (!pixel_data.empty()) {
@@ -407,8 +405,6 @@ IOSurfaceImageBackingFactory::CreateSharedImageGMBs(
     std::optional<gfx::BufferUsage> buffer_usage) {
   const auto format = si_info.format;
   const auto size = si_info.size;
-  const auto usage = si_info.usage;
-  const auto& color_space = si_info.color_space;
 
   if (handle.type != gfx::IO_SURFACE_BUFFER || !handle.io_surface()) {
     LOG(ERROR) << "Invalid IOSurface GpuMemoryBufferHandle.";
@@ -492,16 +488,15 @@ IOSurfaceImageBackingFactory::CreateSharedImageGMBs(
   }
 
   const bool for_framebuffer_attachment =
-      UsageWillResultInGLWrite(usage, gr_context_type_);
+      UsageWillResultInGLWrite(si_info.usage, gr_context_type_);
   const bool framebuffer_attachment_angle =
       for_framebuffer_attachment &&
       feature_info_->feature_flags().angle_texture_usage;
 
   return std::make_unique<IOSurfaceImageBacking>(
-      std::move(io_surface), mailbox, format, size, color_space,
-      si_info.surface_origin, si_info.alpha_type, usage, si_info.debug_label,
-      texture_target_, framebuffer_attachment_angle, /*is_cleared=*/true,
-      is_thread_safe, gr_context_type_, std::move(buffer_usage));
+      std::move(io_surface), mailbox, si_info, texture_target_,
+      framebuffer_attachment_angle, /*is_cleared=*/true, is_thread_safe,
+      gr_context_type_, std::move(buffer_usage));
 }
 
 SharedImageBackingType IOSurfaceImageBackingFactory::GetBackingType() {

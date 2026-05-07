@@ -123,8 +123,6 @@ OzoneImageBackingFactory::CreateSharedImageInternal(
     std::optional<gfx::BufferUsage> buffer_usage) {
   const auto format = si_info.format;
   const auto size = si_info.size;
-  const auto usage = si_info.usage;
-  const auto& color_space = si_info.color_space;
 
   VulkanDeviceQueue* device_queue = nullptr;
 #if BUILDFLAG(ENABLE_VULKAN)
@@ -141,7 +139,7 @@ OzoneImageBackingFactory::CreateSharedImageInternal(
   // should be used instead of converting |usage| to it via GetBufferUsage().
   scoped_refptr<gfx::NativePixmap> pixmap = surface_factory->CreateNativePixmap(
       surface_handle, device_queue, size, format,
-      buffer_usage.value_or(GetBufferUsage(usage)));
+      buffer_usage.value_or(GetBufferUsage(si_info.usage)));
   // Fallback to GPU_READ if cannot create pixmap with SCANOUT
   if (!pixmap) {
     pixmap = surface_factory->CreateNativePixmap(
@@ -152,9 +150,8 @@ OzoneImageBackingFactory::CreateSharedImageInternal(
     return nullptr;
   }
   return std::make_unique<OzoneImageBacking>(
-      mailbox, format, size, color_space, si_info.surface_origin,
-      si_info.alpha_type, usage, si_info.debug_label, shared_context_state_,
-      std::move(pixmap), workarounds_, std::move(buffer_usage));
+      mailbox, si_info, shared_context_state_, std::move(pixmap), workarounds_,
+      std::move(buffer_usage));
 }
 
 std::unique_ptr<SharedImageBacking> OzoneImageBackingFactory::CreateSharedImage(
@@ -220,10 +217,7 @@ std::unique_ptr<SharedImageBacking> OzoneImageBackingFactory::CreateSharedImage(
   }
 
   auto backing = std::make_unique<OzoneImageBacking>(
-      mailbox, si_info.format, si_info.size, si_info.color_space,
-      si_info.surface_origin, si_info.alpha_type, si_info.usage,
-      si_info.debug_label, shared_context_state_, std::move(pixmap),
-      workarounds_);
+      mailbox, si_info, shared_context_state_, std::move(pixmap), workarounds_);
   backing->SetCleared();
 
   return backing;

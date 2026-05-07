@@ -549,8 +549,10 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::CreateFromSwapChainBuffers(
     const GLFormatCaps& gl_format_caps) {
   DCHECK(format.is_single_plane());
   auto backing = base::WrapUnique(new D3DImageBacking(
-      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      "SwapChainBuffer", std::move(back_buffer_texture),
+      mailbox,
+      SharedImageInfo(format, size, color_space, surface_origin, alpha_type,
+                      usage, "SwapChainBuffer"),
+      std::move(back_buffer_texture),
       /*dxgi_shared_handle_state=*/nullptr, gl_format_caps, GL_TEXTURE_2D,
       /*array_slice=*/0u));
   backing->swap_chain_ = std::move(swap_chain);
@@ -577,13 +579,7 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::CreateFromD3D12Buffer(
 // static
 std::unique_ptr<D3DImageBacking> D3DImageBacking::Create(
     const Mailbox& mailbox,
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    gpu::SharedImageUsageSet usage,
-    std::string debug_label,
+    const SharedImageInfo& si_info,
     Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
     scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state,
     const GLFormatCaps& gl_format_caps,
@@ -593,13 +589,12 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::Create(
     bool want_dcomp_texture,
     bool is_thread_safe,
     bool share_dxgi_handle_with_other_backings) {
-  const bool has_webgpu_usage = usage.HasAny(SHARED_IMAGE_USAGE_WEBGPU_READ |
-                                             SHARED_IMAGE_USAGE_WEBGPU_WRITE);
+  const bool has_webgpu_usage = si_info.usage.HasAny(
+      SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE);
   // DXGI shared handle is required for WebGPU/Dawn/D3D12 interop.
   CHECK(!has_webgpu_usage || dxgi_shared_handle_state);
   auto backing = base::WrapUnique(new D3DImageBacking(
-      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      std::move(debug_label), std::move(d3d11_texture),
+      mailbox, si_info, std::move(d3d11_texture),
       std::move(dxgi_shared_handle_state), gl_format_caps, texture_target,
       array_slice, use_update_subresource1, want_dcomp_texture, is_thread_safe,
       share_dxgi_handle_with_other_backings));
@@ -608,13 +603,7 @@ std::unique_ptr<D3DImageBacking> D3DImageBacking::Create(
 
 D3DImageBacking::D3DImageBacking(
     const Mailbox& mailbox,
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    gpu::SharedImageUsageSet usage,
-    std::string debug_label,
+    const SharedImageInfo& si_info,
     Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
     scoped_refptr<DXGISharedHandleState> dxgi_shared_handle_state,
     const GLFormatCaps& gl_format_caps,
@@ -624,16 +613,11 @@ D3DImageBacking::D3DImageBacking(
     bool want_dcomp_texture,
     bool is_thread_safe,
     bool share_dxgi_handle_with_other_backings)
-    : ClearTrackingSharedImageBacking(mailbox,
-                                      format,
-                                      size,
-                                      color_space,
-                                      surface_origin,
-                                      alpha_type,
-                                      usage,
-                                      std::move(debug_label),
-                                      format.EstimatedSizeInBytes(size),
-                                      is_thread_safe),
+    : ClearTrackingSharedImageBacking(
+          mailbox,
+          si_info,
+          si_info.format.EstimatedSizeInBytes(si_info.size),
+          is_thread_safe),
       d3d11_texture_(std::move(d3d11_texture)),
       dxgi_shared_handle_state_(std::move(dxgi_shared_handle_state)),
       gl_format_caps_(gl_format_caps),
@@ -663,16 +647,17 @@ D3DImageBacking::D3DImageBacking(
     Microsoft::WRL::ComPtr<ID3D12Heap> d3d12_heap,
     std::unique_ptr<void, VirtualAllocAddressDeleter> d3d12_heap_memory,
     bool is_thread_safe)
-    : ClearTrackingSharedImageBacking(mailbox,
-                                      viz::SharedImageFormat(),
-                                      size,
-                                      gfx::ColorSpace(),
-                                      GrSurfaceOrigin::kTopLeft_GrSurfaceOrigin,
-                                      SkAlphaType::kUnknown_SkAlphaType,
-                                      usage,
-                                      std::move(debug_label),
-                                      size.width(),
-                                      is_thread_safe),
+    : ClearTrackingSharedImageBacking(
+          mailbox,
+          SharedImageInfo(viz::SharedImageFormat(),
+                          size,
+                          gfx::ColorSpace(),
+                          GrSurfaceOrigin::kTopLeft_GrSurfaceOrigin,
+                          SkAlphaType::kUnknown_SkAlphaType,
+                          usage,
+                          std::move(debug_label)),
+          size.width(),
+          is_thread_safe),
       d3d12_heap_memory_(std::move(d3d12_heap_memory)),
       d3d12_heap_(std::move(d3d12_heap)),
       d3d12_buffer_(std::move(d3d12_buffer)),

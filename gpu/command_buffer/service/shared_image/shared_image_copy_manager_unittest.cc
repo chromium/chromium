@@ -39,15 +39,23 @@ TEST_F(SharedImageCopyManagerTest, CopyUsingCpuFallbackStrategy) {
   copy_manager_->AddStrategy(std::make_unique<CPUReadbackUploadCopyStrategy>());
 
   auto src_backing = std::make_unique<TestImageBacking>(
-      Mailbox::Generate(), viz::SinglePlaneFormat::kRGBA_8888,
-      gfx::Size(100, 100), gfx::ColorSpace::CreateSRGB(),
-      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-      SHARED_IMAGE_USAGE_CPU_READ | SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, 1024);
+      Mailbox::Generate(),
+      SharedImageInfo(
+          viz::SinglePlaneFormat::kRGBA_8888, gfx::Size(100, 100),
+          gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
+          kPremul_SkAlphaType,
+          SHARED_IMAGE_USAGE_CPU_READ | SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
+          "TestLabel"),
+      1024);
   auto dst_backing = std::make_unique<TestImageBacking>(
-      Mailbox::Generate(), viz::SinglePlaneFormat::kRGBA_8888,
-      gfx::Size(100, 100), gfx::ColorSpace::CreateSRGB(),
-      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-      SHARED_IMAGE_USAGE_CPU_READ | SHARED_IMAGE_USAGE_CPU_WRITE_ONLY, 1024);
+      Mailbox::Generate(),
+      SharedImageInfo(
+          viz::SinglePlaneFormat::kRGBA_8888, gfx::Size(100, 100),
+          gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
+          kPremul_SkAlphaType,
+          SHARED_IMAGE_USAGE_CPU_READ | SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
+          "TestLabel"),
+      1024);
 
   EXPECT_TRUE(copy_manager_->CopyImage(src_backing.get(), dst_backing.get()));
 
@@ -73,8 +81,11 @@ TEST_F(SharedImageCopyManagerTest, CopyUsingSharedMemoryStrategy) {
 
   // Create a generic test backing.
   auto test_backing = std::make_unique<TestImageBacking>(
-      Mailbox::Generate(), format, size, gfx::ColorSpace::CreateSRGB(),
-      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage, 1024);
+      Mailbox::Generate(),
+      SharedImageInfo(format, size, gfx::ColorSpace::CreateSRGB(),
+                      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, usage,
+                      "TestLabel"),
+      1024);
 
   // Test copy from Shared Memory to Test backing.
   EXPECT_TRUE(copy_manager_->CopyImage(shm_backing.get(), test_backing.get()));

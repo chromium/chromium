@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
+#include "gpu/command_buffer/common/shared_image_info.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_gl_utils.h"
@@ -217,23 +218,12 @@ class AngleVulkanImageBacking::SkiaAngleVulkanImageRepresentation
 AngleVulkanImageBacking::AngleVulkanImageBacking(
     scoped_refptr<SharedContextState> context_state,
     const Mailbox& mailbox,
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    gpu::SharedImageUsageSet usage,
-    std::string debug_label)
-    : ClearTrackingSharedImageBacking(mailbox,
-                                      format,
-                                      size,
-                                      color_space,
-                                      surface_origin,
-                                      alpha_type,
-                                      usage,
-                                      std::move(debug_label),
-                                      format.EstimatedSizeInBytes(size),
-                                      /*is_thread_safe=*/false),
+    const SharedImageInfo& si_info)
+    : ClearTrackingSharedImageBacking(
+          mailbox,
+          si_info,
+          si_info.format.EstimatedSizeInBytes(si_info.size),
+          /*is_thread_safe=*/false),
       context_state_(std::move(context_state)) {}
 
 AngleVulkanImageBacking::~AngleVulkanImageBacking() {

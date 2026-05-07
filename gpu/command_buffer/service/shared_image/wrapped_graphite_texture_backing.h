@@ -11,6 +11,7 @@
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/types/pass_key.h"
+#include "gpu/command_buffer/common/shared_image_info.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
@@ -36,13 +37,7 @@ class WrappedGraphiteTextureBacking : public ClearTrackingSharedImageBacking {
  public:
   WrappedGraphiteTextureBacking(base::PassKey<WrappedSkImageBackingFactory>,
                                 const Mailbox& mailbox,
-                                viz::SharedImageFormat format,
-                                const gfx::Size& size,
-                                const gfx::ColorSpace& color_space,
-                                GrSurfaceOrigin surface_origin,
-                                SkAlphaType alpha_type,
-                                gpu::SharedImageUsageSet usage,
-                                std::string debug_label,
+                                const SharedImageInfo& si_info,
                                 scoped_refptr<SharedContextState> context_state,
                                 const bool thread_safe);
 

@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/command_buffer/common/shared_image_info.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
@@ -163,13 +164,7 @@ class GPU_GLES2_EXPORT CompoundImageBacking
       scoped_refptr<SharedImageCopyManager> copy_manager,
       const Mailbox& mailbox,
       gfx::GpuMemoryBufferHandle handle,
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      SharedImageUsageSet usage,
-      std::string debug_label);
+      const SharedImageInfo& si_info);
 
   // Creates a backing that contains a shared memory backing and GPU backing
   // provided by `shared_image_factory` based on `usage`. Eventually, instead of
@@ -184,13 +179,7 @@ class GPU_GLES2_EXPORT CompoundImageBacking
       SharedImageFactory* shared_image_factory,
       scoped_refptr<SharedImageCopyManager> copy_manager,
       const Mailbox& mailbox,
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      SharedImageUsageSet usage,
-      std::string debug_label,
+      const SharedImageInfo& si_info,
       gfx::BufferUsage buffer_usage);
 
   // Wraps a backing in a CompoundImageBacking. This is used to enable
@@ -349,13 +338,7 @@ class GPU_GLES2_EXPORT CompoundImageBacking
       scoped_refptr<SharedImageCopyManager> copy_manager,
       const Mailbox& mailbox,
       gfx::GpuMemoryBufferHandle handle,
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      SharedImageUsageSet usage,
-      std::string debug_label);
+      const SharedImageInfo& si_info);
 
   // Creates a backing that contains a shared memory backing and GPU backing
   // provided by `gpu_backing_factory`. We additionally pass a |buffer_usage|
@@ -368,24 +351,12 @@ class GPU_GLES2_EXPORT CompoundImageBacking
       SharedImageBackingFactory* gpu_backing_factory,
       scoped_refptr<SharedImageCopyManager> copy_manager,
       const Mailbox& mailbox,
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      SharedImageUsageSet usage,
-      std::string debug_label,
+      const SharedImageInfo& si_info,
       gfx::BufferUsage buffer_usage);
 
   CompoundImageBacking(
       const Mailbox& mailbox,
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      SharedImageUsageSet usage,
-      std::string debug_label,
+      const SharedImageInfo& si_info,
       std::unique_ptr<SharedImageBacking> shm_backing,
       scoped_refptr<SharedImageFactoryRef> shared_image_factory,
       base::WeakPtr<SharedImageBackingFactory> gpu_backing_factory,

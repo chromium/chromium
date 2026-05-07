@@ -119,14 +119,11 @@ std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::MakeEglImageBacking(
     const Mailbox& mailbox,
     const SharedImageInfo& si_info,
     base::span<const uint8_t> pixel_data) {
+  DCHECK(!si_info.usage.Has(SHARED_IMAGE_USAGE_SCANOUT));
+
   const auto format = si_info.format;
-  const auto size = si_info.size;
-  const auto usage = si_info.usage;
-
-  DCHECK(!usage.Has(SHARED_IMAGE_USAGE_SCANOUT));
-
   // Calculate SharedImage size in bytes.
-  auto estimated_size = format.MaybeEstimatedSizeInBytes(size);
+  auto estimated_size = format.MaybeEstimatedSizeInBytes(si_info.size);
   if (!estimated_size) {
     DLOG(ERROR) << "MakeEglImageBacking: Failed to calculate SharedImage size";
     return nullptr;
@@ -137,9 +134,8 @@ std::unique_ptr<SharedImageBacking> EGLImageBackingFactory::MakeEglImageBacking(
   CHECK_EQ(static_cast<int>(format_info.size()), format.NumberOfPlanes());
 
   return std::make_unique<EGLImageBacking>(
-      mailbox, format, size, si_info.color_space, si_info.surface_origin,
-      si_info.alpha_type, usage, si_info.debug_label, estimated_size.value(),
-      format_info, workarounds_, use_passthrough_, pixel_data);
+      mailbox, si_info, estimated_size.value(), format_info, workarounds_,
+      use_passthrough_, pixel_data);
 }
 
 SharedImageBackingType EGLImageBackingFactory::GetBackingType() {

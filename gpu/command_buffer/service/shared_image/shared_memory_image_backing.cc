@@ -11,6 +11,7 @@
 #include "base/trace_event/process_memory_dump.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/command_buffer/common/shared_image_info.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
@@ -206,33 +207,21 @@ base::trace_event::MemoryAllocatorDump* SharedMemoryImageBacking::OnMemoryDump(
 
 SharedMemoryImageBacking::SharedMemoryImageBacking(
     const Mailbox& mailbox,
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    SharedImageUsageSet usage,
-    std::string debug_label,
+    const SharedImageInfo& si_info,
     SharedMemoryRegionWrapper wrapper,
     gfx::GpuMemoryBufferHandle handle,
     std::optional<gfx::BufferUsage> buffer_usage)
     : SharedImageBacking(mailbox,
-                         format,
-                         size,
-                         color_space,
-                         surface_origin,
-                         alpha_type,
-                         usage,
-                         std::move(debug_label),
-                         format.EstimatedSizeInBytes(size),
+                         si_info,
+                         si_info.format.EstimatedSizeInBytes(si_info.size),
                          false,
                          std::move(buffer_usage)),
       shared_memory_wrapper_(std::move(wrapper)),
       handle_(std::move(handle)),
-      pixmaps_(GetSkPixmaps(format,
-                            size,
-                            color_space,
-                            alpha_type,
+      pixmaps_(GetSkPixmaps(si_info.format,
+                            si_info.size,
+                            si_info.color_space,
+                            si_info.alpha_type,
                             shared_memory_wrapper_)) {}
 
 }  // namespace gpu

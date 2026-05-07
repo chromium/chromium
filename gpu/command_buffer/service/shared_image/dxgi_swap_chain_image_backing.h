@@ -14,6 +14,7 @@
 #include <utility>
 
 #include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/command_buffer/common/shared_image_info.h"
 #include "gpu/command_buffer/service/shared_image/d3d_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
@@ -37,14 +38,8 @@ class GPU_GLES2_EXPORT DXGISwapChainImageBacking
   static std::unique_ptr<DXGISwapChainImageBacking> Create(
       Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
       const Mailbox& mailbox,
-      viz::SharedImageFormat format,
-      DXGI_FORMAT internal_format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      gpu::SharedImageUsageSet usage,
-      std::string debug_label);
+      const SharedImageInfo& si_info,
+      DXGI_FORMAT internal_format);
 
   DXGISwapChainImageBacking(const DXGISwapChainImageBacking&) = delete;
   DXGISwapChainImageBacking& operator=(const DXGISwapChainImageBacking&) =
@@ -74,13 +69,7 @@ class GPU_GLES2_EXPORT DXGISwapChainImageBacking
  private:
   DXGISwapChainImageBacking(
       const Mailbox& mailbox,
-      viz::SharedImageFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      GrSurfaceOrigin surface_origin,
-      SkAlphaType alpha_type,
-      gpu::SharedImageUsageSet usage,
-      std::string debug_label,
+      const SharedImageInfo& si_info,
       Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
       Microsoft::WRL::ComPtr<IDXGISwapChain1> dxgi_swap_chain,
       int buffers_need_alpha_initialization_count);

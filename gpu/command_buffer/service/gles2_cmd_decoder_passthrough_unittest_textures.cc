@@ -5,6 +5,7 @@
 #include <stdint.h>
 
 #include "base/compiler_specific.h"
+#include "gpu/command_buffer/common/shared_image_info.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder_unittest.h"
@@ -32,9 +33,11 @@ std::unique_ptr<TestImageBacking> AllocateTextureAndCreateSharedImage(
   glTexImage2D(GL_TEXTURE_2D, 0, format_desc.image_internal_format,
                size.width(), size.height(), 0, format_desc.data_format,
                format_desc.data_type, nullptr /* data */);
-  return std::make_unique<TestImageBacking>(mailbox, format, size, color_space,
-                                            surface_origin, alpha_type, usage,
-                                            0 /* estimated_size */, service_id);
+  return std::make_unique<TestImageBacking>(
+      mailbox,
+      SharedImageInfo(format, size, color_space, surface_origin, alpha_type,
+                      usage, "TestLabel"),
+      0 /* estimated_size */, service_id);
 }
 
 }  // namespace

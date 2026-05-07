@@ -6,29 +6,18 @@
 
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
+#include "gpu/command_buffer/common/shared_image_info.h"
 #include "ui/gl/gl_utils.h"
 
 namespace gpu {
 
 AndroidImageBacking::AndroidImageBacking(const Mailbox& mailbox,
-                                         viz::SharedImageFormat format,
-                                         const gfx::Size& size,
-                                         const gfx::ColorSpace& color_space,
-                                         GrSurfaceOrigin surface_origin,
-                                         SkAlphaType alpha_type,
-                                         gpu::SharedImageUsageSet usage,
-                                         std::string debug_label,
+                                         const SharedImageInfo& si_info,
                                          size_t estimated_size,
                                          bool is_thread_safe,
                                          base::ScopedFD initial_upload_fd)
     : ClearTrackingSharedImageBacking(mailbox,
-                                      format,
-                                      size,
-                                      color_space,
-                                      surface_origin,
-                                      alpha_type,
-                                      usage,
-                                      std::move(debug_label),
+                                      si_info,
                                       estimated_size,
                                       is_thread_safe),
       write_sync_fd_(std::move(initial_upload_fd)) {}

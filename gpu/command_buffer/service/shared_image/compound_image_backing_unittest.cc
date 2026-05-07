@@ -42,10 +42,8 @@ class TestSharedImageBackingFactory : public SharedImageBackingFactory {
     if (allocations_should_fail_)
       return nullptr;
 
-    return std::make_unique<TestImageBacking>(
-        mailbox, si_info.format, si_info.size, si_info.color_space,
-        si_info.surface_origin, si_info.alpha_type, si_info.usage,
-        kTestBackingSize);
+    return std::make_unique<TestImageBacking>(mailbox, si_info,
+                                              kTestBackingSize);
   }
   std::unique_ptr<SharedImageBacking> CreateSharedImage(
       const Mailbox& mailbox,
@@ -170,8 +168,9 @@ class CompoundImageBackingTest : public testing::Test {
 
     return CompoundImageBacking::CreateSharedMemoryForTesting(
         &test_factory_, copy_manager_, Mailbox::Generate(),
-        viz::SinglePlaneFormat::kRGBA_8888, size, gfx::ColorSpace(),
-        kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType, usage, "TestLabel",
+        SharedImageInfo(viz::SinglePlaneFormat::kRGBA_8888, size,
+                        gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
+                        kOpaque_SkAlphaType, usage, "TestLabel"),
         buffer_usage);
   }
 
@@ -182,11 +181,12 @@ class CompoundImageBackingTest : public testing::Test {
 
     return CompoundImageBacking::CreateSharedMemoryForTesting(
         &test_factory_, copy_manager_, Mailbox::Generate(),
-        viz::MultiPlaneFormat::kNV12, size, gfx::ColorSpace(),
-        kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType,
-        SharedImageUsageSet(
-            {SHARED_IMAGE_USAGE_DISPLAY_READ, SHARED_IMAGE_USAGE_SCANOUT}),
-        "TestLabel", buffer_usage);
+        SharedImageInfo(
+            viz::MultiPlaneFormat::kNV12, size, gfx::ColorSpace(),
+            kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType,
+            {SHARED_IMAGE_USAGE_DISPLAY_READ, SHARED_IMAGE_USAGE_SCANOUT},
+            "TestLabel"),
+        buffer_usage);
   }
 
  protected:
@@ -445,10 +445,12 @@ TEST_F(CompoundImageBackingTest, LazyAllocationFailsFactoryInvalidated) {
 TEST_F(CompoundImageBackingTest,
        GetSharedMemoryPixmaps_ChecksOnWrongBackingType) {
   auto tiny = std::make_unique<TestImageBacking>(
-      Mailbox::Generate(), viz::SinglePlaneFormat::kRGBA_8888,
-      gfx::Size(10, 10), gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
-      kOpaque_SkAlphaType,
-      SharedImageUsageSet({SHARED_IMAGE_USAGE_DISPLAY_READ}), kTestBackingSize);
+      Mailbox::Generate(),
+      SharedImageInfo(viz::SinglePlaneFormat::kRGBA_8888, gfx::Size(10, 10),
+                      gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
+                      kOpaque_SkAlphaType, {SHARED_IMAGE_USAGE_DISPLAY_READ},
+                      "TestLabel"),
+      kTestBackingSize);
 
   // WrapExternalBacking constructor sets elements_[0].access_streams =
   // AccessStreamSet::All(), which includes kMemory. GetSharedMemoryPixmaps()

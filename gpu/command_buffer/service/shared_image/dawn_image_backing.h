@@ -5,6 +5,7 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_DAWN_IMAGE_BACKING_H_
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_DAWN_IMAGE_BACKING_H_
 
+#include "gpu/command_buffer/common/shared_image_info.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
 
 namespace gpu {
@@ -14,14 +15,7 @@ namespace gpu {
 // in production, we do have other backings which supports Dawn representation.
 class GPU_GLES2_EXPORT DawnImageBacking : public SharedImageBacking {
  public:
-  DawnImageBacking(const Mailbox& mailbox,
-                   viz::SharedImageFormat format,
-                   const gfx::Size& size,
-                   const gfx::ColorSpace& color_space,
-                   GrSurfaceOrigin surface_origin,
-                   SkAlphaType alpha_type,
-                   SharedImageUsageSet usage,
-                   std::string debug_label);
+  DawnImageBacking(const Mailbox& mailbox, const SharedImageInfo& si_info);
   ~DawnImageBacking() override;
 
   wgpu::Device device() const { return device_; }

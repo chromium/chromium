@@ -7,6 +7,7 @@
 
 #include <array>
 
+#include "gpu/command_buffer/common/shared_image_info.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/command_buffer/service/shared_image/gl_common_image_backing_factory.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_backing.h"
@@ -24,13 +25,7 @@ class AngleVulkanImageBacking : public ClearTrackingSharedImageBacking {
  public:
   AngleVulkanImageBacking(scoped_refptr<SharedContextState> context_state,
                           const Mailbox& mailbox,
-                          viz::SharedImageFormat format,
-                          const gfx::Size& size,
-                          const gfx::ColorSpace& color_space,
-                          GrSurfaceOrigin surface_origin,
-                          SkAlphaType alpha_type,
-                          gpu::SharedImageUsageSet usage,
-                          std::string debug_label);
+                          const SharedImageInfo& si_info);
   ~AngleVulkanImageBacking() override;
 
   bool Initialize(const base::span<const uint8_t>& data);

@@ -14,6 +14,7 @@
 #include "base/notimplemented.h"
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
+#include "gpu/command_buffer/common/shared_image_info.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/gl_utils.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
@@ -165,22 +166,15 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::Create(
     bool enable_webgpu_on_vk_via_gl_interop,
     VulkanCommandPool* command_pool,
     const Mailbox& mailbox,
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    SharedImageUsageSet usage,
-    std::string debug_label,
+    const SharedImageInfo& si_info,
     const base::flat_map<VkFormat, VkImageUsageFlags>& image_usage_cache,
     base::span<const uint8_t> pixel_data) {
+  auto format = si_info.format;
+  auto usage = si_info.usage;
   bool is_external = context_state->support_vulkan_external_object();
-
   auto* device_queue = context_state->vk_context_provider()->GetDeviceQueue();
 
-  SharedImageUsageSet usages_needing_color_attachment;
-
-  usages_needing_color_attachment =
+  SharedImageUsageSet usages_needing_color_attachment =
       SHARED_IMAGE_USAGE_GLES2_WRITE | SHARED_IMAGE_USAGE_RASTER_WRITE |
       SHARED_IMAGE_USAGE_DISPLAY_WRITE | SHARED_IMAGE_USAGE_WEBGPU_WRITE;
 
@@ -212,7 +206,7 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::Create(
 
   size_t estimated_size = 0;
   for (int plane = 0; plane < format.NumberOfPlanes(); ++plane) {
-    gfx::Size plane_size = format.GetPlaneSize(plane, size);
+    gfx::Size plane_size = format.GetPlaneSize(plane, si_info.size);
     VkFormat vk_format = ToVkFormat(format, plane);
 
     auto it = image_usage_cache.find(vk_format);
@@ -242,18 +236,16 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::Create(
     }
 
     estimated_size += image->device_size();
-    textures.emplace_back(std::move(image), format, color_space);
+    textures.emplace_back(std::move(image), format, si_info.color_space);
   }
 
   bool use_separate_gl_texture =
       ExternalVkImageBacking::UseSeparateGLTexture(context_state.get(), format);
   DCHECK(!enable_webgpu_on_vk_via_gl_interop || !use_separate_gl_texture);
   auto backing = std::make_unique<ExternalVkImageBacking>(
-      base::PassKey<ExternalVkImageBacking>(), mailbox, format, size,
-      color_space, surface_origin, alpha_type, usage, std::move(debug_label),
-      estimated_size, std::move(context_state), std::move(textures),
-      command_pool, use_separate_gl_texture,
-      enable_webgpu_on_vk_via_gl_interop);
+      base::PassKey<ExternalVkImageBacking>(), mailbox, si_info, estimated_size,
+      std::move(context_state), std::move(textures), command_pool,
+      use_separate_gl_texture, enable_webgpu_on_vk_via_gl_interop);
 
   if (!pixel_data.empty()) {
     auto image_info = backing->AsSkImageInfo();
@@ -278,15 +270,12 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::CreateFromGMB(
     bool enable_webgpu_on_vk_via_gl_interop,
     VulkanCommandPool* command_pool,
     const Mailbox& mailbox,
+    const SharedImageInfo& si_info,
     gfx::GpuMemoryBufferHandle handle,
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    SharedImageUsageSet usage,
-    std::string debug_label,
     std::optional<gfx::BufferUsage> buffer_usage) {
+  auto size = si_info.size;
+  auto format = si_info.format;
+  auto& color_space = si_info.color_space;
   // TOOD(hitawala): Move this size check to IsSupported.
   if (!IsSizeForBufferHandleValid(size, format)) {
     LOG(ERROR) << "Invalid image size " << size.ToString() << " for "
@@ -322,10 +311,9 @@ std::unique_ptr<ExternalVkImageBacking> ExternalVkImageBacking::CreateFromGMB(
       ExternalVkImageBacking::UseSeparateGLTexture(context_state.get(), format);
   DCHECK(!enable_webgpu_on_vk_via_gl_interop || !use_separate_gl_texture);
   auto backing = std::make_unique<ExternalVkImageBacking>(
-      base::PassKey<ExternalVkImageBacking>(), mailbox, format, size,
-      color_space, surface_origin, alpha_type, usage, std::move(debug_label),
-      estimated_size, std::move(context_state), std::move(textures),
-      command_pool, use_separate_gl_texture, enable_webgpu_on_vk_via_gl_interop,
+      base::PassKey<ExternalVkImageBacking>(), mailbox, si_info, estimated_size,
+      std::move(context_state), std::move(textures), command_pool,
+      use_separate_gl_texture, enable_webgpu_on_vk_via_gl_interop,
       std::move(handle), std::move(buffer_usage));
   backing->SetCleared();
   return backing;
@@ -337,14 +325,8 @@ ExternalVkImageBacking::CreateWithPixmap(
     bool enable_webgpu_on_vk_via_gl_interop,
     VulkanCommandPool* command_pool,
     const Mailbox& mailbox,
-    viz::SharedImageFormat format,
+    const SharedImageInfo& si_info,
     SurfaceHandle surface_handle,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    SharedImageUsageSet usage,
-    std::string debug_label,
     gfx::BufferUsage buffer_usage) {
 #if BUILDFLAG(IS_OZONE)
   // Create a pixmap.
@@ -355,8 +337,8 @@ ExternalVkImageBacking::CreateWithPixmap(
   scoped_refptr<gfx::NativePixmap> pixmap =
       ui::OzonePlatform::GetInstance()
           ->GetSurfaceFactoryOzone()
-          ->CreateNativePixmap(surface_handle, device_queue, size, format,
-                               buffer_usage);
+          ->CreateNativePixmap(surface_handle, device_queue, si_info.size,
+                               si_info.format, buffer_usage);
   if (!pixmap) {
     DLOG(ERROR) << "Failed to create native pixmap";
     return nullptr;
@@ -366,10 +348,9 @@ ExternalVkImageBacking::CreateWithPixmap(
   gfx::GpuMemoryBufferHandle handle(pixmap->ExportHandle());
 
   // Create backing from the handle.
-  return CreateFromGMB(
-      std::move(context_state), enable_webgpu_on_vk_via_gl_interop,
-      command_pool, mailbox, std::move(handle), format, size, color_space,
-      surface_origin, alpha_type, usage, std::move(debug_label));
+  return CreateFromGMB(std::move(context_state),
+                       enable_webgpu_on_vk_via_gl_interop, command_pool,
+                       mailbox, si_info, std::move(handle));
 #else
   return nullptr;
 #endif  // BUILDFLAG(IS_OZONE)
@@ -378,13 +359,7 @@ ExternalVkImageBacking::CreateWithPixmap(
 ExternalVkImageBacking::ExternalVkImageBacking(
     base::PassKey<ExternalVkImageBacking>,
     const Mailbox& mailbox,
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    SharedImageUsageSet usage,
-    std::string debug_label,
+    const SharedImageInfo& si_info,
     size_t estimated_size_bytes,
     scoped_refptr<SharedContextState> context_state,
     std::vector<TextureHolderVk> vk_textures,
@@ -394,13 +369,7 @@ ExternalVkImageBacking::ExternalVkImageBacking(
     gfx::GpuMemoryBufferHandle handle,
     std::optional<gfx::BufferUsage> buffer_usage)
     : ClearTrackingSharedImageBacking(mailbox,
-                                      format,
-                                      size,
-                                      color_space,
-                                      surface_origin,
-                                      alpha_type,
-                                      usage,
-                                      std::move(debug_label),
+                                      si_info,
                                       estimated_size_bytes,
                                       /*is_thread_safe=*/false,
                                       std::move(buffer_usage)),
@@ -415,7 +384,7 @@ ExternalVkImageBacking::ExternalVkImageBacking(
     pixmap_ = ui::OzonePlatform::GetInstance()
                   ->GetSurfaceFactoryOzone()
                   ->CreateNativePixmapFromHandle(
-                      kNullSurfaceHandle, size, format,
+                      kNullSurfaceHandle, si_info.size, si_info.format,
                       std::move(handle).native_pixmap_handle());
   }
 #endif  // BUILDFLAG(IS_OZONE)

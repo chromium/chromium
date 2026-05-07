@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/command_buffer/common/shared_image_info.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
@@ -76,24 +77,18 @@ const char* BackingTypeToString(SharedImageBackingType type) {
 
 SharedImageBacking::SharedImageBacking(
     const Mailbox& mailbox,
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    SharedImageUsageSet usage,
-    std::string debug_label,
+    const SharedImageInfo& si_info,
     size_t estimated_size,
     bool is_thread_safe,
     std::optional<gfx::BufferUsage> buffer_usage)
     : mailbox_(mailbox),
-      format_(format),
-      size_(size),
-      color_space_(color_space),
-      surface_origin_(surface_origin),
-      alpha_type_(alpha_type),
-      usage_(usage),
-      debug_label_(std::move(debug_label)),
+      format_(si_info.format),
+      size_(si_info.size),
+      color_space_(si_info.color_space),
+      surface_origin_(si_info.surface_origin),
+      alpha_type_(si_info.alpha_type),
+      usage_(si_info.usage),
+      debug_label_(si_info.debug_label),
       estimated_size_(estimated_size),
       buffer_usage_(std::move(buffer_usage)) {
   DCHECK_CALLED_ON_VALID_THREAD(factory_thread_checker_);
@@ -423,24 +418,12 @@ base::Lock* SharedImageBacking::AutoLock::InitializeLock(
 
 ClearTrackingSharedImageBacking::ClearTrackingSharedImageBacking(
     const Mailbox& mailbox,
-    viz::SharedImageFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    GrSurfaceOrigin surface_origin,
-    SkAlphaType alpha_type,
-    gpu::SharedImageUsageSet usage,
-    std::string debug_label,
+    const SharedImageInfo& si_info,
     size_t estimated_size,
     bool is_thread_safe,
     std::optional<gfx::BufferUsage> buffer_usage)
     : SharedImageBacking(mailbox,
-                         format,
-                         size,
-                         color_space,
-                         surface_origin,
-                         alpha_type,
-                         usage,
-                         std::move(debug_label),
+                         si_info,
                          estimated_size,
                          is_thread_safe,
                          std::move(buffer_usage)) {}

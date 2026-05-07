@@ -123,10 +123,8 @@ GpuChannelSharedImageInterface::CreateSharedImageForD3D11Video(
   // it to be GL_TEXTURE_EXTERNAL_OES.
   std::unique_ptr<gpu::SharedImageBacking> backing =
       gpu::D3DImageBacking::Create(
-          mailbox, si_info.format, si_info.size, si_info.color_space,
-          si_info.surface_origin, si_info.alpha_type, si_info.usage,
-          si_info.debug_label, texture, std::move(dxgi_shared_handle_state),
-          caps, GL_TEXTURE_EXTERNAL_OES, array_slice,
+          mailbox, si_info, texture, std::move(dxgi_shared_handle_state), caps,
+          GL_TEXTURE_EXTERNAL_OES, array_slice,
           /*use_update_subresource1=*/false,
           /*want_dcomp_texture=*/false, is_thread_safe);
   if (!backing) {

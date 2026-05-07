@@ -24,16 +24,12 @@ namespace {
 
 std::unique_ptr<TestImageBacking> CreateImageBacking(size_t size_in_bytes) {
   auto mailbox = Mailbox::Generate();
-  auto format = viz::SinglePlaneFormat::kRGBA_8888;
-  gfx::Size size(256, 256);
-  auto color_space = gfx::ColorSpace::CreateSRGB();
-  auto surface_origin = kTopLeft_GrSurfaceOrigin;
-  auto alpha_type = kPremul_SkAlphaType;
-  gpu::SharedImageUsageSet usage = SHARED_IMAGE_USAGE_GLES2_READ;
+  SharedImageInfo si_info(viz::SinglePlaneFormat::kRGBA_8888,
+                          gfx::Size(256, 256), gfx::ColorSpace::CreateSRGB(),
+                          kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+                          SHARED_IMAGE_USAGE_GLES2_READ, "TestLabel");
 
-  return std::make_unique<TestImageBacking>(mailbox, format, size, color_space,
-                                            surface_origin, alpha_type, usage,
-                                            size_in_bytes);
+  return std::make_unique<TestImageBacking>(mailbox, si_info, size_in_bytes);
 }
 
 TEST(SharedImageManagerTest, BasicRefCounting) {
@@ -42,16 +38,13 @@ TEST(SharedImageManagerTest, BasicRefCounting) {
   auto tracker = std::make_unique<MemoryTypeTracker>(nullptr);
 
   auto mailbox = Mailbox::Generate();
-  auto format = viz::SinglePlaneFormat::kRGBA_8888;
-  gfx::Size size(256, 256);
-  auto color_space = gfx::ColorSpace::CreateSRGB();
-  auto surface_origin = kTopLeft_GrSurfaceOrigin;
-  auto alpha_type = kPremul_SkAlphaType;
-  gpu::SharedImageUsageSet usage = SHARED_IMAGE_USAGE_GLES2_READ;
+  SharedImageInfo si_info(viz::SinglePlaneFormat::kRGBA_8888,
+                          gfx::Size(256, 256), gfx::ColorSpace::CreateSRGB(),
+                          kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+                          SHARED_IMAGE_USAGE_GLES2_READ, "TestLabel");
 
-  auto backing = std::make_unique<TestImageBacking>(
-      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      kSizeBytes);
+  auto backing =
+      std::make_unique<TestImageBacking>(mailbox, si_info, kSizeBytes);
 
   auto factory_ref = manager.Register(std::move(backing), tracker.get());
   EXPECT_EQ(kSizeBytes, tracker->GetMemRepresented());
@@ -132,16 +125,13 @@ TEST(SharedImageManagerTest, TransferRefSameTracker) {
   auto tracker = std::make_unique<MemoryTypeTracker>(nullptr);
 
   auto mailbox = Mailbox::Generate();
-  auto format = viz::SinglePlaneFormat::kRGBA_8888;
-  gfx::Size size(256, 256);
-  auto color_space = gfx::ColorSpace::CreateSRGB();
-  auto surface_origin = kTopLeft_GrSurfaceOrigin;
-  auto alpha_type = kPremul_SkAlphaType;
-  gpu::SharedImageUsageSet usage = SHARED_IMAGE_USAGE_GLES2_READ;
+  SharedImageInfo si_info(viz::SinglePlaneFormat::kRGBA_8888,
+                          gfx::Size(256, 256), gfx::ColorSpace::CreateSRGB(),
+                          kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+                          SHARED_IMAGE_USAGE_GLES2_READ, "TestLabel");
 
-  auto backing = std::make_unique<TestImageBacking>(
-      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      kSizeBytes);
+  auto backing =
+      std::make_unique<TestImageBacking>(mailbox, si_info, kSizeBytes);
 
   auto factory_ref = manager.Register(std::move(backing), tracker.get());
   EXPECT_EQ(kSizeBytes, tracker->GetMemRepresented());
@@ -164,16 +154,13 @@ TEST(SharedImageManagerTest, TransferRefNewTracker) {
   auto tracker2 = std::make_unique<MemoryTypeTracker>(nullptr);
 
   auto mailbox = Mailbox::Generate();
-  auto format = viz::SinglePlaneFormat::kRGBA_8888;
-  gfx::Size size(256, 256);
-  auto color_space = gfx::ColorSpace::CreateSRGB();
-  auto surface_origin = kTopLeft_GrSurfaceOrigin;
-  auto alpha_type = kPremul_SkAlphaType;
-  gpu::SharedImageUsageSet usage = SHARED_IMAGE_USAGE_GLES2_READ;
+  SharedImageInfo si_info(viz::SinglePlaneFormat::kRGBA_8888,
+                          gfx::Size(256, 256), gfx::ColorSpace::CreateSRGB(),
+                          kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+                          SHARED_IMAGE_USAGE_GLES2_READ, "TestLabel");
 
-  auto backing = std::make_unique<TestImageBacking>(
-      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      kSizeBytes);
+  auto backing =
+      std::make_unique<TestImageBacking>(mailbox, si_info, kSizeBytes);
 
   auto factory_ref = manager.Register(std::move(backing), tracker.get());
   EXPECT_EQ(kSizeBytes, tracker->GetMemRepresented());
@@ -211,16 +198,13 @@ TEST(SharedImageManagerTest, TransferRefCrossThread) {
       std::make_unique<MemoryTypeTracker>(memory_tracker2);
 
   auto mailbox = Mailbox::Generate();
-  auto format = viz::SinglePlaneFormat::kRGBA_8888;
-  gfx::Size size(256, 256);
-  auto color_space = gfx::ColorSpace::CreateSRGB();
-  auto surface_origin = kTopLeft_GrSurfaceOrigin;
-  auto alpha_type = kPremul_SkAlphaType;
-  gpu::SharedImageUsageSet usage = SHARED_IMAGE_USAGE_GLES2_READ;
+  SharedImageInfo si_info(viz::SinglePlaneFormat::kRGBA_8888,
+                          gfx::Size(256, 256), gfx::ColorSpace::CreateSRGB(),
+                          kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+                          SHARED_IMAGE_USAGE_GLES2_READ, "TestLabel");
 
-  auto backing = std::make_unique<TestImageBacking>(
-      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
-      kSizeBytes);
+  auto backing =
+      std::make_unique<TestImageBacking>(mailbox, si_info, kSizeBytes);
 
   auto factory_ref =
       manager.Register(std::move(backing), memory_type_tracker1.get());

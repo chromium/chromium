@@ -28,11 +28,7 @@ RawDrawImageBackingFactory::CreateSharedImage(const Mailbox& mailbox,
                                               SurfaceHandle surface_handle,
                                               bool is_thread_safe) {
   DCHECK(is_thread_safe);
-  auto texture = std::make_unique<RawDrawImageBacking>(
-      mailbox, si_info.format, si_info.size, si_info.color_space,
-      si_info.surface_origin, si_info.alpha_type, si_info.usage,
-      si_info.debug_label);
-  return texture;
+  return std::make_unique<RawDrawImageBacking>(mailbox, si_info);
 }
 
 bool RawDrawImageBackingFactory::CanUseRawDrawImageBacking(
