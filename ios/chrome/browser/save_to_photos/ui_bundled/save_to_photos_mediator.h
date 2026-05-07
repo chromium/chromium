@@ -85,6 +85,9 @@ extern NSString* const kGooglePhotosAppURLScheme;
 - (void)accountPickerDidSelectIdentity:(id<SystemIdentity>)identity
                           askEveryTime:(BOOL)askEveryTime;
 
+// Called after the user signed in to save an image with the given `identity`.
+- (void)userSignedInToSaveImageWithIdentity:(id<SystemIdentity>)identity;
+
 // Called when the user taps "Cancel" in the account picker.
 - (void)accountPickerDidCancel;
 

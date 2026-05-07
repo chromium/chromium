@@ -147,7 +147,8 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
     _sceneHandler = sceneHandler;
     _googleOneHandler = googleOneHandler;
 
-    CHECK(_identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin),
+    CHECK(_identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin) ||
+              base::FeatureList::IsEnabled(kIOSSaveToPhotosSignedOut),
           base::NotFatalUntil::M152);
     _identityManagerObserver =
         std::make_unique<signin::IdentityManagerObserverBridge>(
@@ -216,6 +217,12 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
 
   [self.delegate startValidationSpinnerForAccountPicker];
   [self.delegate hideAccountPicker];
+  [self tryUploadImage];
+}
+
+- (void)userSignedInToSaveImageWithIdentity:(id<SystemIdentity>)identity {
+  CHECK(identity);
+  _identity = identity;
   [self tryUploadImage];
 }
 
@@ -302,9 +309,13 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
   // Although it is unlikely, the user could sign-out while the image data is
   // being fetched. Exit now if that happened.
   if (!_identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    base::UmaHistogramEnumeration(kSaveToPhotosActionsHistogram,
-                                  SaveToPhotosActions::kFailureUserSignedOut);
-    [self.delegate hideSaveToPhotos];
+    if (base::FeatureList::IsEnabled(kIOSSaveToPhotosSignedOut)) {
+      [self.delegate openSignIn];
+    } else {
+      base::UmaHistogramEnumeration(kSaveToPhotosActionsHistogram,
+                                    SaveToPhotosActions::kFailureUserSignedOut);
+      [self.delegate hideSaveToPhotos];
+    }
     return;
   }
 

@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/shared/public/commands/google_one_commands.h"
 #import "ios/chrome/browser/shared/public/commands/manage_storage_alert_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
@@ -742,4 +743,67 @@ TEST_F(SaveToPhotosMediatorTest, ReauthIfInvalidAuth) {
   task_environment_.RunUntilQuit();
 
   EXPECT_OCMOCK_VERIFY(mock_save_to_photos_mediator_delegate);
+}
+
+// Tests that the mediator calls openSignIn when started while signed out and
+// the feature is enabled.
+TEST_F(SaveToPhotosMediatorTest, OpenSignInIfSignedOutAndFeatureEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kIOSSaveToPhotosSignedOut);
+
+  // Sign out the user.
+  signin::ClearPrimaryAccount(
+      IdentityManagerFactory::GetForProfile(profile_.get()));
+
+  // Create a mediator and set up with mock delegate.
+  SaveToPhotosMediator* mediator = CreateSaveToPhotosMediator();
+  id mock_save_to_photos_mediator_delegate =
+      OCMProtocolMock(@protocol(SaveToPhotosMediatorDelegate));
+  mediator.delegate = static_cast<id<SaveToPhotosMediatorDelegate>>(
+      mock_save_to_photos_mediator_delegate);
+
+  // Expect that the mediator will call openSignIn.
+  OCMExpect([mock_save_to_photos_mediator_delegate openSignIn]);
+
+  // Start the mediator and run until the image has been fetched and
+  // processed by the mediator.
+  SetUpImageFetchTabHelperQuitClosure();
+  [mediator startWithImageURL:GURL(kFakeImageUrl)
+                     referrer:web::Referrer()
+                     webState:web_state_.get()];
+  task_environment_.RunUntilQuit();
+
+  EXPECT_OCMOCK_VERIFY(mock_save_to_photos_mediator_delegate);
+
+  // Expect that the success snackbar is shown once image is uploaded.
+  NSString* expected_message = l10n_util::GetNSStringF(
+      IDS_IOS_SAVE_TO_PHOTOS_SNACKBAR_IMAGE_SAVED_MESSAGE,
+      base::SysNSStringToUTF16(fake_identity_.userEmail));
+  NSString* expected_button_text = l10n_util::GetNSString(
+      IDS_IOS_SAVE_TO_PHOTOS_SNACKBAR_IMAGE_SAVED_OPEN_BUTTON);
+  OCMExpect([mock_save_to_photos_mediator_delegate
+      showSnackbarWithMessage:expected_message
+                   buttonText:expected_button_text
+                messageAction:[OCMArg isNotNil]
+             completionAction:[OCMArg isNotNil]]);
+
+  SetUpPhotosServiceQuitClosure();
+
+  [mediator userSignedInToSaveImageWithIdentity:fake_identity_];
+
+  // Test that the PhotosService is now unavailable and has been given an image
+  // to upload.
+  EXPECT_FALSE(GetTestPhotosService()->IsAvailable());
+  EXPECT_NSEQ(GetTestPhotosService()->GetImageName(),
+              base::SysUTF8ToNSString(GURL(kFakeImageUrl).ExtractFileName()));
+  EXPECT_NSEQ(GetTestPhotosService()->GetImageData(), GetFakeImageData());
+  EXPECT_EQ(GetTestPhotosService()->GetIdentity(), fake_identity_);
+
+  // Run until the PhotosService finishes to upload the image.
+  task_environment_.RunUntilQuit();
+
+  // Verify that the success snackbar has been shown.
+  EXPECT_OCMOCK_VERIFY(mock_save_to_photos_mediator_delegate);
+
+  [mediator disconnect];
 }

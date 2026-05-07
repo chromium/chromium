@@ -7515,6 +7515,9 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_SIGNIN_PROMO_SAVE_TO_DRIVE" desc="This string is on a promo intended to promote signing in to Chrome with the user's Google Account. It appears on the Save to Drive page when the user is not signed in.">
         Save files in your Google Drive and access them any time.
       </message>
+      <message name="IDS_IOS_SIGNIN_PROMO_SAVE_TO_PHOTOS" desc="This string is on a promo intended to promote signing in to Chrome with the user's Google Account. It appears on the Save to Photos page when the user is not signed in.">
+        Save photos in your Google Photos and access them any time.
+      </message>
       <message name="IDS_IOS_SIGNIN_PROMO_SIGNIN_WITH_UNO" desc="Button that the user can press if they want to sign-in in the browser. [iOS only]">
         Sign in
       </message>

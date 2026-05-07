@@ -92,6 +92,8 @@ NSString* GetPromoLabelString(
           IDS_IOS_NOTIFICATIONS_OPT_IN_SIGN_IN_MESSAGE_CONTENT);
     case signin_metrics::AccessPoint::kSaveToDriveIos:
       return l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_SAVE_TO_DRIVE);
+    case signin_metrics::AccessPoint::kSaveToPhotosIos:
+      return l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_SAVE_TO_PHOTOS);
     case signin_metrics::AccessPoint::kDriveFilePickerIos:
       return l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_CHOOSE_FROM_DRIVE);
     case signin_metrics::AccessPoint::kIosPageActionMenu:
@@ -124,7 +126,6 @@ NSString* GetPromoLabelString(
     case signin_metrics::AccessPoint::kReadingList:
     case signin_metrics::AccessPoint::kReauthInfoBar:
     case signin_metrics::AccessPoint::kAccountConsistencyService:
-    case signin_metrics::AccessPoint::kSaveToPhotosIos:
     case signin_metrics::AccessPoint::kChromeSigninInterceptBubble:
     case signin_metrics::AccessPoint::kRestorePrimaryAccountOnProfileLoad:
     case signin_metrics::AccessPoint::kTipsNotification:

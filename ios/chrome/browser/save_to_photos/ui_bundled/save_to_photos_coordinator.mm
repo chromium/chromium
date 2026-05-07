@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/authentication/signin/reauth/coordinator/signin_reauth_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/continuation.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/photos/model/photos_service_factory.h"
 #import "ios/chrome/browser/save_to_photos/ui_bundled/save_to_photos_mediator.h"
 #import "ios/chrome/browser/save_to_photos/ui_bundled/save_to_photos_mediator_delegate.h"
@@ -29,6 +30,7 @@
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
@@ -59,6 +61,7 @@
   StoreKitCoordinator* _storeKitCoordinator;
   AccountPickerCoordinator* _accountPickerCoordinator;
   SigninReauthCoordinator* _reauthCoordinator;
+  SigninCoordinator* _signinCoordinator;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -123,6 +126,8 @@
   [_accountPickerCoordinator stopAnimated:NO];
   _accountPickerCoordinator = nil;
   [self stopReauthCoordinator];
+  [_signinCoordinator stop];
+  _signinCoordinator = nil;
 }
 
 #pragma mark - SaveToPhotosMediatorDelegate
@@ -383,6 +388,48 @@
     return;
   }
   [_mediator userIsReauth];
+}
+
+#pragma mark - Private
+
+- (void)openSignIn {
+  CHECK(base::FeatureList::IsEnabled(kIOSSaveToPhotosSignedOut));
+  if (_signinCoordinator.viewWillPersist) {
+    return;
+  }
+  [_signinCoordinator stop];
+  _signinCoordinator = [SigninCoordinator
+      consistencyPromoSigninCoordinatorWithBaseViewController:
+          self.baseViewController
+                                                      browser:self.browser
+                                                 contextStyle:
+                                                     SigninContextStyle::
+                                                         kDefault
+                                                  accessPoint:
+                                                      signin_metrics::
+                                                          AccessPoint::
+                                                              kSaveToPhotosIos
+                                         prepareChangeProfile:nil
+                                         continuationProvider:
+                                             // TODO(crbug.com/484919846):
+                                             // Handle profile switching.
+                                             DoNothingContinuationProvider()];
+  __weak __typeof(self) weakSelf = self;
+  _signinCoordinator.signinCompletion =
+      ^(SigninCoordinator* coordinator, SigninCoordinatorResult result,
+        id<SystemIdentity> identity) {
+        [weakSelf handleSigninResult:result identity:identity];
+      };
+  [_signinCoordinator start];
+}
+
+- (void)handleSigninResult:(SigninCoordinatorResult)result
+                  identity:(id<SystemIdentity>)identity {
+  [_signinCoordinator stop];
+  _signinCoordinator = nil;
+  if (result == SigninCoordinatorResultSuccess) {
+    [_mediator userSignedInToSaveImageWithIdentity:identity];
+  }
 }
 
 @end

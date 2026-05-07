@@ -14,6 +14,7 @@ specific_include_rules = {
  "^save_to_photos_coordinator.mm": [
    "+ios/chrome/browser/authentication/ui_bundled/continuation.h",
    "+ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator.h",
+   "+ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h",
    "+ios/chrome/browser/authentication/signin/reauth/coordinator/signin_reauth_coordinator.h",
  ],
 }

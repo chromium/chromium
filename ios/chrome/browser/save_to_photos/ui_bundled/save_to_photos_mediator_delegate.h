@@ -54,6 +54,9 @@
 // Hide Save to Photos UI.
 - (void)hideSaveToPhotos;
 
+// Open Sign In UI.
+- (void)openSignIn;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SAVE_TO_PHOTOS_UI_BUNDLED_SAVE_TO_PHOTOS_MEDIATOR_DELEGATE_H_
