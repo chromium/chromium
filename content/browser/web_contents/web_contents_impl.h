@@ -619,8 +619,8 @@ class CONTENT_EXPORT WebContentsImpl
   bool IsFullscreen() override;
   bool ShouldShowStaleContentOnEviction() override;
   void ExitFullscreen(bool will_cause_resize) override;
-  [[nodiscard]] base::ScopedClosureRunner ForSecurityDropFullscreen(
-      int64_t display_id) override;
+  [[nodiscard]] std::optional<base::ScopedClosureRunner>
+  ForSecurityDropFullscreen(int64_t display_id) override;
   void ResumeLoadingCreatedWebContents() override;
   void SetIsOverlayContent(bool is_overlay_content) override;
   bool IsFocusedElementEditable() override;

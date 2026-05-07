@@ -179,6 +179,7 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
 
  public:
   using UniqueToken = base::TokenType<class WebContentsTokenTag>;
+
   struct CONTENT_EXPORT CreateParams {
     explicit CreateParams(
         BrowserContext* context,
@@ -1485,21 +1486,27 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // confusion if taken while in fullscreen. If this WebContents or any outer
   // WebContents is in fullscreen, drop it.
   //
-  // Returns a ScopedClosureRunner, and for the lifetime of that closure, this
-  // (and other related) WebContentses will not enter fullscreen. If the action
-  // should cause a one-time dropping of fullscreen (e.g. a UI element not
-  // attached to the WebContents), invoke RunAndReset() on the returned
-  // base::ScopedClosureRunner to release the fullscreen block immediately.
-  // Otherwise, if the action should cause fullscreen to be prohibited for a
-  // span of time (e.g. a UI element attached to the WebContents), keep the
-  // closure alive for that duration.
+  // Returns a ScopedClosureRunner (wrapped in std::optional), and for the
+  // lifetime of that closure, this (and other related) WebContentses will not
+  // enter fullscreen. If the action should cause a one-time dropping of
+  // fullscreen (e.g. a UI element not attached to the WebContents), the block
+  // can be released immediately by letting the returned optional go out of
+  // scope (e.g. `if (!ForSecurityDropFullscreen(...)) return;`), which
+  // automatically runs the closure upon temporary destruction. Alternatively,
+  // invoke RunAndReset() on the returned runner. Otherwise, if the action
+  // should cause fullscreen to be prohibited for a span of time (e.g. a UI
+  // element attached to the WebContents), keep the closure alive for that
+  // duration.
+  //
+  // If `this` WebContents is destroyed during the call (e.g. if exiting
+  // fullscreen triggers destruction), returns `std::nullopt`.
   //
   // If |display_id| is valid, only WebContentses on that specific screen will
   // exit fullscreen; the scoped prohibition will still apply to all displays.
   // This supports sites using cross-screen window placement capabilities to
   // retain fullscreen and open or place a window on another screen.
-  [[nodiscard]] virtual base::ScopedClosureRunner ForSecurityDropFullscreen(
-      int64_t display_id) = 0;
+  [[nodiscard]] virtual std::optional<base::ScopedClosureRunner>
+  ForSecurityDropFullscreen(int64_t display_id) = 0;
 
   // Unblocks requests from renderer for a newly created window. This is
   // used in showCreatedWindow() or sometimes later in cases where

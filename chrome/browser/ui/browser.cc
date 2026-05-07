@@ -2660,17 +2660,17 @@ void Browser::RegisterProtocolHandler(
   permissions::PermissionRequestManager* permission_request_manager =
       permissions::PermissionRequestManager::FromWebContents(web_contents);
   if (permission_request_manager) {
-    // At this point, there will be UI presented, and running a dialog causes an
-    // exit to webpage-initiated fullscreen. http://crbug.com/41322524
-    base::ScopedClosureRunner fullscreen_block =
-        web_contents->ForSecurityDropFullscreen(
-            /*display_id=*/display::kInvalidDisplayId);
+    auto blocker = web_contents->ForSecurityDropFullscreen(
+        /*display_id=*/display::kInvalidDisplayId);
+    if (!blocker) {
+      return;
+    }
 
     permission_request_manager->AddRequest(
         requesting_frame,
         std::make_unique<
             custom_handlers::RegisterProtocolHandlerPermissionRequest>(
-            registry, handler, url, std::move(fullscreen_block)));
+            registry, handler, url, std::move(*blocker)));
   }
 }
 

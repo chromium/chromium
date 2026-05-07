@@ -3693,9 +3693,10 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       // so drop fullscreen when it is shown. https://crbug.com/40054574
       // TODO(avi): Do we need to attach the fullscreen block to the emoji
       // panel?
-      source_web_contents_
-          ->ForSecurityDropFullscreen(/*display_id=*/display::kInvalidDisplayId)
-          .RunAndReset();
+      if (!source_web_contents_->ForSecurityDropFullscreen(
+              /*display_id=*/display::kInvalidDisplayId)) {
+        return;
+      }
 
       Browser* browser = GetBrowser();
       if (browser) {

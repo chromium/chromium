@@ -46,8 +46,12 @@ void PermissionPromptBubble::ShowBubble() {
                                                     ->fullscreen_controller();
   CHECK(fullscreen_controller);
   if (fullscreen_controller->IsTabFullscreen()) {
-    fullscreen_blocker_ =
+    auto blocker =
         web_contents()->ForSecurityDropFullscreen(display::kInvalidDisplayId);
+    if (!blocker) {
+      return;
+    }
+    fullscreen_blocker_ = std::move(*blocker);
   }
 
   raw_ptr<PermissionPromptBubbleBaseView> prompt_bubble =

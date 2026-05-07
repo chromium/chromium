@@ -4018,9 +4018,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest, RejectFullscreenIfBlocked) {
 
   // While the |fullscreen_block| is in scope, fullscreen should fail with an
   // error.
-  base::ScopedClosureRunner fullscreen_block =
-      web_contents->ForSecurityDropFullscreen(
-          /*display_id=*/display::kInvalidDisplayId);
+  auto blocker = web_contents->ForSecurityDropFullscreen(
+      /*display_id=*/display::kInvalidDisplayId);
+  ASSERT_TRUE(blocker.has_value());
 
   EXPECT_TRUE(ExecJs(main_frame, "document.body.requestFullscreen();",
                      EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));

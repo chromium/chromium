@@ -239,10 +239,17 @@ void ShowFilePickerOnUIThread(
   }
 #endif
 
+  auto blocker =
+      web_contents->ForSecurityDropFullscreen(display::kInvalidDisplayId);
+  if (!blocker) {
+    std::move(callback).Run(file_system_access_error::FromStatus(
+                                FileSystemAccessStatus::kOperationAborted),
+                            {});
+    return;
+  }
+
   FileSystemChooser::ScopedObjects scoped_objects(
-      // Drop fullscreen mode so that the user sees the URL bar.
-      /*fullscreen_block=*/web_contents->ForSecurityDropFullscreen(
-          display::kInvalidDisplayId),
+      /*fullscreen_block=*/std::move(*blocker),
       // Maybe tuck the pip window so that it would not block the file picker
       // UI.
       /*pip_tucker=*/GetContentClient()
