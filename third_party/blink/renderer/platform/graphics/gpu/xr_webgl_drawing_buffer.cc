@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/gpu/xr_webgl_drawing_buffer.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
@@ -276,6 +277,7 @@ void XRWebGLDrawingBuffer::UseSharedBuffer(
   shared_buffer_scoped_access_ =
       shared_buffer_texture_->BeginAccess(buffer_sync_token,
                                           /*readonly=*/false);
+  buffer_shared_image_ = buffer_shared_image;
 
   if (WantExplicitResolve()) {
     // Bind the shared texture to the destination framebuffer of
@@ -319,7 +321,8 @@ void XRWebGLDrawingBuffer::UseSharedBuffer(
   client->DrawingBufferClientRestoreFramebufferBinding();
 }
 
-void XRWebGLDrawingBuffer::DoneWithSharedBuffer() {
+std::unique_ptr<SharedImageHolder>
+XRWebGLDrawingBuffer::DoneWithSharedBuffer() {
   DVLOG(3) << __func__;
 
   ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(
@@ -344,14 +347,17 @@ void XRWebGLDrawingBuffer::DoneWithSharedBuffer() {
   // Done with the texture created by CreateAndTexStorage2DSharedImageCHROMIUM
   // finish accessing and delete it.
   DCHECK(shared_buffer_texture_);
-  gpu::SharedImageTexture::ScopedAccess::EndAccess(
+  gpu::SyncToken sync_token = gpu::SharedImageTexture::ScopedAccess::EndAccess(
       std::move(shared_buffer_scoped_access_));
   shared_buffer_texture_.reset();
 
   DrawingBuffer::Client* client = drawing_buffer_->client();
-  if (!client)
-    return;
-  client->DrawingBufferClientRestoreFramebufferBinding();
+  if (client) {
+    client->DrawingBufferClientRestoreFramebufferBinding();
+  }
+
+  return std::make_unique<SharedImageHolder>(std::move(buffer_shared_image_),
+                                             sync_token, base::DoNothing());
 }
 
 GLuint XRWebGLDrawingBuffer::GetCurrentColorBufferTextureId() {

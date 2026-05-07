@@ -48,7 +48,7 @@ class XRWebGLLayer final : public XRLayer, public XrLayerClient {
   XRSession* session() const override;
   std::unique_ptr<SharedImageHolder> TransferToSharedImageHolder() override;
   XRFrameTransportDelegate* GetTransportDelegate() override;
-  void DoneWithSharedBuffer() override;
+  std::unique_ptr<SharedImageHolder> DoneWithSharedBuffer() override;
 
   WebGLFramebuffer* framebuffer() const { return framebuffer_.Get(); }
   uint32_t framebufferWidth() const;
