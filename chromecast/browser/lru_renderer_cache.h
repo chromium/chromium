@@ -31,7 +31,7 @@ class RendererPrelauncherFactory {
 };
 
 // This class maintains a pool of prelaunched (initialized) renderers.
-class LRURendererCache : public base::MemoryConsumer {
+class LRURendererCache final : public base::MemoryConsumer {
  public:
   LRURendererCache(content::BrowserContext* browser_context,
                    size_t max_renderers);

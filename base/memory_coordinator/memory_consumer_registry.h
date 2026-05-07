@@ -25,6 +25,7 @@ class MemoryConsumerRegistration;
 class BASE_EXPORT RegisteredMemoryConsumer {
  public:
   void UpdateMemoryLimit(int percentage);
+  void UpdateMemoryLimitNoNotification(int percentage);
   void ReleaseMemory();
 
   friend bool operator==(const RegisteredMemoryConsumer& lhs,

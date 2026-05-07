@@ -40,7 +40,7 @@ class MemoryCoordinatorTestImpl : public mojom::MemoryCoordinatorTest {
       mojo::PendingRemote<mojom::MemoryCoordinatorTestClient> client) override;
 
  private:
-  class TestMemoryConsumer : public base::MemoryConsumer {
+  class TestMemoryConsumer final : public base::MemoryConsumer {
    public:
     TestMemoryConsumer(
         MemoryCoordinatorTestImpl* parent,

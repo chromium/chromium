@@ -22,10 +22,15 @@ void MemoryConsumer::ReleaseMemory() {
 
 void MemoryConsumer::UpdateMemoryLimit(int percentage) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  UpdateMemoryLimitNoNotification(percentage);
+  OnUpdateMemoryLimit();
+}
+
+void MemoryConsumer::UpdateMemoryLimitNoNotification(int percentage) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // The percentage can never be negative (but it can be higher than 100).
   CHECK_GE(percentage, 0);
   memory_limit_ = percentage;
-  OnUpdateMemoryLimit();
 }
 
 // MemoryConsumerRegistration ---------------------------------------

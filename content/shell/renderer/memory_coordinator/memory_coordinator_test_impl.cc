@@ -49,6 +49,10 @@ MemoryCoordinatorTestImpl::TestMemoryConsumer::TestMemoryConsumer(
       registration_(name, traits, this) {
   client_.set_disconnect_handler(base::BindOnce(
       &TestMemoryConsumer::OnConnectionError, base::Unretained(this)));
+  // Ensure any already assigned memory limit is honored.
+  if (memory_limit() != base::MemoryConsumer::kDefaultMemoryLimit) {
+    OnUpdateMemoryLimit();
+  }
 }
 
 MemoryCoordinatorTestImpl::TestMemoryConsumer::~TestMemoryConsumer() = default;

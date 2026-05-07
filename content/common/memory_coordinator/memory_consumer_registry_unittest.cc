@@ -133,8 +133,8 @@ TEST_F(MemoryConsumerRegistryTest, InheritMemoryLimit) {
   entries().front().host->UpdateConsumers({{kConsumerId, kNewLimit, false}});
   EXPECT_EQ(consumer1.memory_limit(), kNewLimit);
 
-  // New consumer should inherit limit
-  EXPECT_CALL(consumer2, OnUpdateMemoryLimit());
+  // New consumer should inherit limit without calling OnUpdateMemoryLimit
+  EXPECT_CALL(consumer2, OnUpdateMemoryLimit()).Times(0);
   registry().AddMemoryConsumer(kConsumerName, kTestTraits1, &consumer2);
   EXPECT_EQ(consumer2.memory_limit(), kNewLimit);
 

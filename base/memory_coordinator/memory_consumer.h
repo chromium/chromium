@@ -50,6 +50,13 @@ class MemoryConsumerRegistry;
 // a consumer should wait for a subsequent call to `OnReleaseMemory()` to free
 // any memory that exceeds that limit.
 //
+// IMPORTANT: For synchronous registrations (via `MemoryConsumerRegistration`),
+// `OnUpdateMemoryLimit()` is NOT invoked during registration to avoid
+// re-entrancy during construction. If your implementation maintains state
+// derived from the limit, you must query `memory_limit()` in your constructor
+// body to initialize it correctly. (Asynchronous registrations do not have
+// this limitation as they notify asynchronously after construction).
+//
 // Here is an example implementation for a consumer that manages a cache with a
 // LRU eviction policy.
 //
@@ -106,6 +113,10 @@ class BASE_EXPORT MemoryConsumer {
   // Instructs this consumer to update its internal memory limit. See the class
   // comment above for a detailed description of how this limit works.
   void UpdateMemoryLimit(int percentage);
+
+  // Similar to UpdateMemoryLimit, but does not invoke OnUpdateMemoryLimit
+  // callback.
+  void UpdateMemoryLimitNoNotification(int percentage);
 
   // Instructs this consumer to release memory that is above the current
   // `memory_limit()`.

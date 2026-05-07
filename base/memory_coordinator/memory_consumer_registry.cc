@@ -20,6 +20,10 @@ void RegisteredMemoryConsumer::UpdateMemoryLimit(int percentage) {
   memory_consumer_->UpdateMemoryLimit(percentage);
 }
 
+void RegisteredMemoryConsumer::UpdateMemoryLimitNoNotification(int percentage) {
+  memory_consumer_->UpdateMemoryLimitNoNotification(percentage);
+}
+
 void RegisteredMemoryConsumer::ReleaseMemory() {
   memory_consumer_->ReleaseMemory();
 }

@@ -144,14 +144,13 @@ TEST_F(LastResortGCPolicyTest, Persistence) {
   // Create the consumer AFTER the last resort GC event.
   base::MockMemoryConsumer consumer;
 
-  // It should immediately receive the limit that was set (0% limit) upon
-  // registration.
-  EXPECT_CALL(consumer, OnUpdateMemoryLimit()).WillOnce([&]() {
-    EXPECT_EQ(consumer.memory_limit(), 0);
-  });
+  // It should inherit the limit that was set (0% limit) upon registration
+  // without OnUpdateMemoryLimit notification.
+  EXPECT_CALL(consumer, OnUpdateMemoryLimit()).Times(0);
 
   base::MemoryConsumerRegistration registration(
       "Consumer", kTraitsWithReleaseGC, &consumer);
+  EXPECT_EQ(consumer.memory_limit(), 0);
 }
 
 }  // namespace content

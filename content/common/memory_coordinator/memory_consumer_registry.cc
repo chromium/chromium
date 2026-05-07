@@ -45,7 +45,7 @@ void MemoryConsumerRegistry::ConsumerGroup::AddMemoryConsumer(
   // Ensure the added consumer is up to date with the current memory limit
   // applied to this consumer group.
   if (memory_limit_ != base::MemoryConsumer::kDefaultMemoryLimit) {
-    consumer.UpdateMemoryLimit(memory_limit_);
+    consumer.UpdateMemoryLimitNoNotification(memory_limit_);
   }
 }
 

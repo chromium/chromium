@@ -37,6 +37,15 @@ class AsyncMemoryConsumerRegistration::MainThread : public MemoryConsumer {
                           check_registry_exists);
     registration_->SetAsyncHandleDestroyedFlag(
         &async_handle_destroyed_, PassKey<AsyncMemoryConsumerRegistration>());
+
+    // The memory limit could already have been set by a policy. The
+    // consumer implementation on the other sequence must be notified.
+    if (memory_limit() != base::MemoryConsumer::kDefaultMemoryLimit) {
+      consumer_task_runner_->PostTask(
+          FROM_HERE,
+          BindOnce(&AsyncMemoryConsumerRegistration::NotifyUpdateMemoryLimit,
+                   parent_, memory_limit()));
+    }
   }
 
   void NotifyAsyncHandleDestroyed() {
