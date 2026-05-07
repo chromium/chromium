@@ -19,6 +19,8 @@
 #include "base/values.h"
 #include "components/content_settings/core/browser/content_settings_uma_util.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/browser/permission_settings_info.h"
+#include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
@@ -107,9 +109,17 @@ ContentSettingsForOneType GetRevokedUnusedPermissions(
 std::unique_ptr<permissions::PermissionRequest> CreateRequest(
     permissions::RequestType type,
     const char* url) {
-  return std::make_unique<permissions::PermissionRequest>(
+  std::unique_ptr<PermissionRequestData> permission_request_data =
       std::make_unique<PermissionRequestData>(type, /*user_gesture=*/true,
-                                              GURL(url)),
+                                              GURL(url));
+  if (type == permissions::RequestType::kGeolocation &&
+      base::FeatureList::IsEnabled(
+          content_settings::features::kApproximateGeolocationPermission)) {
+    permission_request_data->WithGeolocationPromptType(
+        GeolocationPromptType::kApproximateOrPrecise);
+  }
+  return std::make_unique<permissions::PermissionRequest>(
+      std::move(permission_request_data),
       base::BindRepeating([](const PermissionPromptDecision&,
                              const PermissionRequestData&) {}));
 }
@@ -215,12 +225,21 @@ TEST_F(PermissionUmaUtilTest, ScopedRevocationReporter) {
   ContentSettingsType type = content_settings::GeolocationContentSettingsType();
   PermissionSourceUI source_ui = PermissionSourceUI::SITE_SETTINGS;
 
+  const content_settings::PermissionSettingsInfo* info =
+      content_settings::PermissionSettingsRegistry::GetInstance()->Get(type);
+  PermissionSetting allow_setting =
+      info->delegate().ToPermissionSetting(CONTENT_SETTING_ALLOW);
+  PermissionSetting block_setting =
+      info->delegate().ToPermissionSetting(CONTENT_SETTING_BLOCK);
+  PermissionSetting ask_setting =
+      info->delegate().ToPermissionSetting(CONTENT_SETTING_ASK);
+
   // Allow->Block triggers a revocation.
-  map->SetContentSettingDefaultScope(host, host, type, CONTENT_SETTING_ALLOW);
+  map->SetPermissionSettingDefaultScope(host, host, type, allow_setting);
   {
     PermissionUmaUtil::ScopedRevocationReporter scoped_revocation_reporter(
         &browser_context, host, host, type, source_ui);
-    map->SetContentSettingDefaultScope(host, host, type, CONTENT_SETTING_BLOCK);
+    map->SetPermissionSettingDefaultScope(host, host, type, block_setting);
   }
   histograms.ExpectBucketCount("Permissions.Action.Geolocation",
                                static_cast<int>(PermissionAction::REVOKED), 1);
@@ -229,54 +248,51 @@ TEST_F(PermissionUmaUtilTest, ScopedRevocationReporter) {
   {
     PermissionUmaUtil::ScopedRevocationReporter scoped_revocation_reporter(
         &browser_context, host, host, type, source_ui);
-    map->SetContentSettingDefaultScope(host, host, type, CONTENT_SETTING_ALLOW);
+    map->SetPermissionSettingDefaultScope(host, host, type, allow_setting);
   }
   histograms.ExpectBucketCount("Permissions.Action.Geolocation",
                                static_cast<int>(PermissionAction::REVOKED), 1);
 
   // Allow->Default triggers a revocation when default is 'ask'.
-  map->SetDefaultContentSetting(type, CONTENT_SETTING_ASK);
+  map->SetDefaultPermissionSetting(type, ask_setting);
   {
     PermissionUmaUtil::ScopedRevocationReporter scoped_revocation_reporter(
         &browser_context, host, host, type, source_ui);
-    map->SetContentSettingDefaultScope(host, host, type,
-                                       CONTENT_SETTING_DEFAULT);
+    map->SetPermissionSettingDefaultScope(host, host, type, std::nullopt);
   }
   histograms.ExpectBucketCount("Permissions.Action.Geolocation",
                                static_cast<int>(PermissionAction::REVOKED), 2);
 
   // Allow->Default does not trigger a revocation when default is 'allow'.
-  map->SetDefaultContentSetting(type, CONTENT_SETTING_ALLOW);
+  map->SetDefaultPermissionSetting(type, allow_setting);
   {
     PermissionUmaUtil::ScopedRevocationReporter scoped_revocation_reporter(
         &browser_context, host, host, type, source_ui);
-    map->SetContentSettingDefaultScope(host, host, type,
-                                       CONTENT_SETTING_DEFAULT);
+    map->SetPermissionSettingDefaultScope(host, host, type, std::nullopt);
   }
   histograms.ExpectBucketCount("Permissions.Action.Geolocation",
                                static_cast<int>(PermissionAction::REVOKED), 2);
 
   // Allow->Block with url pattern string triggers a revocation.
-  map->SetContentSettingDefaultScope(host, host, type, CONTENT_SETTING_ALLOW);
+  map->SetPermissionSettingDefaultScope(host, host, type, allow_setting);
   {
     PermissionUmaUtil::ScopedRevocationReporter scoped_revocation_reporter(
         &browser_context, host_pattern, host_pattern, type, source_ui);
-    map->SetContentSettingCustomScope(host_pattern,
-                                      ContentSettingsPattern::Wildcard(), type,
-                                      CONTENT_SETTING_BLOCK);
+    map->SetPermissionSettingCustomScope(
+        host_pattern, ContentSettingsPattern::Wildcard(), type, block_setting);
   }
   histograms.ExpectBucketCount("Permissions.Action.Geolocation",
                                static_cast<int>(PermissionAction::REVOKED), 3);
 
   // Allow->Block with non url pattern string does not trigger a revocation.
-  map->SetContentSettingDefaultScope(host, host, type, CONTENT_SETTING_ALLOW);
+  map->SetPermissionSettingDefaultScope(host, host, type, allow_setting);
   {
     PermissionUmaUtil::ScopedRevocationReporter scoped_revocation_reporter(
         &browser_context, host_containing_wildcards_pattern, host_pattern, type,
         source_ui);
-    map->SetContentSettingCustomScope(host_containing_wildcards_pattern,
-                                      ContentSettingsPattern::Wildcard(), type,
-                                      CONTENT_SETTING_BLOCK);
+    map->SetPermissionSettingCustomScope(host_containing_wildcards_pattern,
+                                         ContentSettingsPattern::Wildcard(),
+                                         type, block_setting);
   }
   histograms.ExpectBucketCount("Permissions.Action.Geolocation",
                                static_cast<int>(PermissionAction::REVOKED), 3);
