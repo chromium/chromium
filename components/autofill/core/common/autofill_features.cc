@@ -65,10 +65,6 @@ BASE_FEATURE(kAutofillActorSuppressImport, base::FEATURE_DISABLED_BY_DEFAULT);
 // longer depends on address-based Autofill being enabled.
 BASE_FEATURE(kAutofillAddOtherDatatypesPref, base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls whether to improve the building number regex.
-// TODO(crbug.com/376084078): Cleanup when launched.
-BASE_FEATURE(kAutofillAddressImproveBuildingNumberRegex,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Kill switch: If enabled, NameFieldParser will parse 'Last name, First name'
 // sequence.
