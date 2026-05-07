@@ -220,18 +220,20 @@ void DedicatedWorkerHost::CreateLockManager(
                                                             this);
 }
 
-void DedicatedWorkerHost::OnLockContention() {
+bool DedicatedWorkerHost::OnLockContention() {
   RenderFrameHostImpl* ancestor_render_frame_host =
       RenderFrameHostImpl::FromID(ancestor_render_frame_host_id_);
   if (!ancestor_render_frame_host) {
     // The frame may have already been closed.
-    return;
+    return false;
   }
   if (ancestor_render_frame_host->IsInBackForwardCache()) {
     // Evict the frame from the back-forward cache to avoid deadlock.
     ancestor_render_frame_host->EvictFromBackForwardCacheWithReason(
         BackForwardCacheMetrics::NotRestoredReason::kWebLocksContention);
+    return true;
   }
+  return false;
 }
 
 void DedicatedWorkerHost::OnMojoDisconnect() {

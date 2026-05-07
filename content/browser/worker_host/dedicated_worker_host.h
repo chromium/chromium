@@ -309,7 +309,7 @@ class CONTENT_EXPORT DedicatedWorkerHost final
   void RenderProcessHostDestroyed(RenderProcessHost* host) override;
 
   // LockObserver
-  void OnLockContention() override;
+  bool OnLockContention() override;
 
   // Called from `WorkerScriptFetcher`. Continues starting the dedicated worker
   // in the renderer process.

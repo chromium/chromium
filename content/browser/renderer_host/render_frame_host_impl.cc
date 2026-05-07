@@ -4520,11 +4520,13 @@ void RenderFrameHostImpl::RenderProcessGone(
   // the last block of code here.
 }
 
-void RenderFrameHostImpl::OnLockContention() {
+bool RenderFrameHostImpl::OnLockContention() {
   if (IsInBackForwardCache()) {
     EvictFromBackForwardCacheWithReason(
         BackForwardCacheMetrics::NotRestoredReason::kWebLocksContention);
+    return true;
   }
+  return false;
 }
 
 void RenderFrameHostImpl::PerformAction(const ui::AXActionData& data) {

@@ -327,7 +327,7 @@ class CONTENT_EXPORT SharedWorkerHost
   void OnWorkerConnectionLost();
 
   // LockObserver
-  void OnLockContention() override;
+  bool OnLockContention() override;
 
   void BindCacheStorageInternal(
       mojo::PendingReceiver<blink::mojom::CacheStorage> receiver,

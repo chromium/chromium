@@ -602,7 +602,7 @@ void SharedWorkerHost::CreateLockManager(
                                                             this);
 }
 
-void SharedWorkerHost::OnLockContention() {
+bool SharedWorkerHost::OnLockContention() {
   std::vector<RenderFrameHostImpl*> bf_cached_clients;
 
   for (const ClientInfo& info : clients_) {
@@ -611,7 +611,7 @@ void SharedWorkerHost::OnLockContention() {
       continue;
     }
     if (rfh->IsActive()) {
-      return;
+      return false;
     }
     if (rfh->IsInBackForwardCache()) {
       bf_cached_clients.push_back(rfh);
@@ -620,10 +620,12 @@ void SharedWorkerHost::OnLockContention() {
 
   // If we reach here, all the clients are in the back-forward cache. Evict
   // them to avoid deadlock.
+  bool evicted = !bf_cached_clients.empty();
   for (RenderFrameHostImpl* rfh_to_evict : bf_cached_clients) {
     rfh_to_evict->EvictFromBackForwardCacheWithReason(
         BackForwardCacheMetrics::NotRestoredReason::kWebLocksContention);
   }
+  return evicted;
 }
 
 void SharedWorkerHost::GetSandboxedFileSystemForBucket(

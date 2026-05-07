@@ -779,7 +779,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
                          const ChildProcessTerminationInfo& info) override;
 
   // LockObserver
-  void OnLockContention() override;
+  bool OnLockContention() override;
 
   // ui::AXActionHandlerBase:
   void PerformAction(const ui::AXActionData& data) override;
