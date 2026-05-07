@@ -1515,6 +1515,7 @@ source_set("unit_tests") {
   sources = [
     "at_memory/at_memory_data_type_unittest.cc",
     "at_memory/at_memory_funnel_metrics_unittest.cc",
+    "at_memory/at_memory_manager_unittest.cc",
     "at_memory/autofill_data_provider_impl_unittest.cc",
     "autofill_ai_form_rationalization_unittest.cc",
     "autofill_feedback_data_unittest.cc",

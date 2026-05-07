@@ -347,6 +347,9 @@ void AtMemoryManager::OnPopupHidden() {
     at_memory_funnel_metrics_->OnPopupHidden();
     at_memory_funnel_metrics_.reset();
   }
+  is_searching_ = false;
+  is_full_search_running_ = false;
+  query_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void AtMemoryManager::FillOrPreviewSearchResult(
@@ -406,16 +409,24 @@ void AtMemoryManager::ExecuteQuery(const std::u16string& filter,
     return;
   }
 
+  // If a full search is already running, block new incremental queries.
+  if (is_full_search_running_ && !full_search) {
+    return;
+  }
+
   // Cancel stale updates from previous queries.
+  // At any point in time, there can be only one pending query.
   query_weak_ptr_factory_.InvalidateWeakPtrs();
 
   if (filter.empty()) {
     is_searching_ = false;
+    is_full_search_running_ = false;
     update_callback_.Run({}, trigger_source_);
     return;
   }
 
   is_searching_ = true;
+  is_full_search_running_ = full_search;
   // Notify the UI that search has started. We repass the current suggestions
   // to prevent them from disappearing while the search is in progress.
   base::span<const Suggestion> current_suggestions =
@@ -456,7 +467,9 @@ void AtMemoryManager::OnSearchResultsReceived(
       result.status ==
       accessibility_annotator::MemorySearchStatus::kPartialResponseSuccess;
   if (!expecting_more_data) {
+    query_weak_ptr_factory_.InvalidateWeakPtrs();
     is_searching_ = false;
+    is_full_search_running_ = false;
   }
 
   // For incremental search or if there are results, just return the results

@@ -108,8 +108,14 @@ class AtMemoryManager {
 
   std::unique_ptr<AtMemoryFunnelMetrics> at_memory_funnel_metrics_;
 
+  // Flag indicating that a search query is in progress.
   bool is_searching_ = false;
+  // Flag to distinguish if the ongoing query is a full search (explicit submit)
+  // or an incremental one (as-you-type).
+  bool is_full_search_running_ = false;
 
+  // Factory for search queries, used to identify currently active query and
+  // discard the old ones.
   base::WeakPtrFactory<AtMemoryManager> query_weak_ptr_factory_{this};
   base::WeakPtrFactory<AtMemoryManager> fill_weak_ptr_factory_{this};
 };
