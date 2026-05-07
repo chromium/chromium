@@ -57,6 +57,7 @@ public class BottomBarMediatorUnitTest {
 
     private SettableNullableObservableSupplier<Tab> mTabSupplier;
     private SettableNonNullObservableSupplier<Boolean> mHomepageEnabledSupplier;
+    private SettableNonNullObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
     private PropertyModel mModel;
     private @Nullable BottomBarMediator mMediator;
 
@@ -64,6 +65,7 @@ public class BottomBarMediatorUnitTest {
     public void setUp() {
         mTabSupplier = ObservableSuppliers.createNullable();
         mHomepageEnabledSupplier = ObservableSuppliers.createNonNull(true);
+        mOmniboxFocusStateSupplier = ObservableSuppliers.createNonNull(false);
         mProfileSupplier = ObservableSuppliers.createNullable();
         mProfileSupplier.set(mProfile);
         mModel = new PropertyModel(BottomBarProperties.ALL_KEYS);
@@ -88,7 +90,8 @@ public class BottomBarMediatorUnitTest {
                         mHomepageEnabledSupplier,
                         mVisibilityDelegate,
                         true,
-                        mProfileSupplier);
+                        mProfileSupplier,
+                        mOmniboxFocusStateSupplier);
 
         assertTrue(mModel.get(BottomBarProperties.IS_VISIBLE));
         verify(mVisibilityDelegate, times(1)).onVisibilityChanged(true);
@@ -106,7 +109,8 @@ public class BottomBarMediatorUnitTest {
                         mHomepageEnabledSupplier,
                         mVisibilityDelegate,
                         true,
-                        mProfileSupplier);
+                        mProfileSupplier,
+                        mOmniboxFocusStateSupplier);
 
         verify(mTab).addObserver(mTabObserverCaptor.capture());
 
@@ -129,7 +133,8 @@ public class BottomBarMediatorUnitTest {
                         mHomepageEnabledSupplier,
                         mVisibilityDelegate,
                         true,
-                        mProfileSupplier);
+                        mProfileSupplier,
+                        mOmniboxFocusStateSupplier);
 
         verify(mTab).addObserver(mTabObserverCaptor.capture());
         mTabObserverCaptor.getValue().onUrlUpdated(mTab);
@@ -151,7 +156,8 @@ public class BottomBarMediatorUnitTest {
                         mHomepageEnabledSupplier,
                         mVisibilityDelegate,
                         true,
-                        mProfileSupplier);
+                        mProfileSupplier,
+                        mOmniboxFocusStateSupplier);
 
         verify(mTab).addObserver(mTabObserverCaptor.capture());
         verify(mVisibilityDelegate, times(1)).onVisibilityChanged(true);
@@ -176,7 +182,8 @@ public class BottomBarMediatorUnitTest {
                         mHomepageEnabledSupplier,
                         mVisibilityDelegate,
                         true,
-                        mProfileSupplier);
+                        mProfileSupplier,
+                        mOmniboxFocusStateSupplier);
 
         verify(mTab).addObserver(mTabObserverCaptor.capture());
         verify(mVisibilityDelegate, times(1)).onVisibilityChanged(true);
@@ -202,7 +209,8 @@ public class BottomBarMediatorUnitTest {
                         mHomepageEnabledSupplier,
                         mVisibilityDelegate,
                         true,
-                        mProfileSupplier);
+                        mProfileSupplier,
+                        mOmniboxFocusStateSupplier);
 
         verify(mTab).addObserver(mTabObserverCaptor.capture());
         verify(mVisibilityDelegate, times(1)).onVisibilityChanged(true);
@@ -228,7 +236,8 @@ public class BottomBarMediatorUnitTest {
                         mHomepageEnabledSupplier,
                         mVisibilityDelegate,
                         true,
-                        mProfileSupplier);
+                        mProfileSupplier,
+                        mOmniboxFocusStateSupplier);
 
         verify(mTab).addObserver(mTabObserverCaptor.capture());
         assertFalse(mModel.get(BottomBarProperties.IS_VISIBLE));
@@ -257,7 +266,8 @@ public class BottomBarMediatorUnitTest {
                         mHomepageEnabledSupplier,
                         mVisibilityDelegate,
                         true,
-                        mProfileSupplier);
+                        mProfileSupplier,
+                        mOmniboxFocusStateSupplier);
 
         verify(mTab).addObserver(mTabObserverCaptor.capture());
         assertTrue(mModel.get(BottomBarProperties.IS_VISIBLE));
@@ -286,7 +296,8 @@ public class BottomBarMediatorUnitTest {
                         mHomepageEnabledSupplier,
                         mVisibilityDelegate,
                         true,
-                        mProfileSupplier);
+                        mProfileSupplier,
+                        mOmniboxFocusStateSupplier);
 
         verify(mTab).addObserver(mTabObserverCaptor.capture());
         assertTrue(mModel.get(BottomBarProperties.IS_VISIBLE));
@@ -315,7 +326,8 @@ public class BottomBarMediatorUnitTest {
                         mHomepageEnabledSupplier,
                         mVisibilityDelegate,
                         true,
-                        mProfileSupplier);
+                        mProfileSupplier,
+                        mOmniboxFocusStateSupplier);
 
         verify(mTab).addObserver(mTabObserverCaptor.capture());
         assertTrue(mModel.get(BottomBarProperties.IS_VISIBLE));
@@ -340,7 +352,8 @@ public class BottomBarMediatorUnitTest {
                         mHomepageEnabledSupplier,
                         mVisibilityDelegate,
                         true,
-                        mProfileSupplier);
+                        mProfileSupplier,
+                        mOmniboxFocusStateSupplier);
 
         assertTrue(mModel.get(BottomBarProperties.IS_HOME_BUTTON_VISIBLE));
     }
@@ -356,7 +369,8 @@ public class BottomBarMediatorUnitTest {
                         mHomepageEnabledSupplier,
                         mVisibilityDelegate,
                         true,
-                        mProfileSupplier);
+                        mProfileSupplier,
+                        mOmniboxFocusStateSupplier);
 
         assertFalse(mModel.get(BottomBarProperties.IS_HOME_BUTTON_VISIBLE));
     }
@@ -372,7 +386,8 @@ public class BottomBarMediatorUnitTest {
                         mHomepageEnabledSupplier,
                         mVisibilityDelegate,
                         true,
-                        mProfileSupplier);
+                        mProfileSupplier,
+                        mOmniboxFocusStateSupplier);
 
         assertTrue(mModel.get(BottomBarProperties.IS_HOME_BUTTON_VISIBLE));
 
@@ -393,7 +408,8 @@ public class BottomBarMediatorUnitTest {
                         mHomepageEnabledSupplier,
                         mVisibilityDelegate,
                         true,
-                        mProfileSupplier);
+                        mProfileSupplier,
+                        mOmniboxFocusStateSupplier);
 
         mMediator.onTintChanged(null, null, BrandedColorScheme.INCOGNITO);
         assertTrue(mModel.get(BottomBarProperties.COLOR_SCHEME) == BrandedColorScheme.INCOGNITO);
@@ -414,7 +430,8 @@ public class BottomBarMediatorUnitTest {
                         mHomepageEnabledSupplier,
                         mVisibilityDelegate,
                         true,
-                        mProfileSupplier);
+                        mProfileSupplier,
+                        mOmniboxFocusStateSupplier);
 
         // When home button is visible and app menu is included, visibleLeft = 1, visibleRight = 2,
         // so background should be hidden.
@@ -436,7 +453,8 @@ public class BottomBarMediatorUnitTest {
                         mHomepageEnabledSupplier,
                         mVisibilityDelegate,
                         true,
-                        mProfileSupplier);
+                        mProfileSupplier,
+                        mOmniboxFocusStateSupplier);
 
         // When home button is visible and app menu is NOT included, visibleLeft = 1, visibleRight =
         // 1, so background should be visible.
@@ -458,7 +476,8 @@ public class BottomBarMediatorUnitTest {
                         mHomepageEnabledSupplier,
                         mVisibilityDelegate,
                         true,
-                        mProfileSupplier);
+                        mProfileSupplier,
+                        mOmniboxFocusStateSupplier);
 
         assertFalse(mModel.get(BottomBarProperties.IS_GLIC_BUTTON_VISIBLE));
     }
@@ -478,7 +497,8 @@ public class BottomBarMediatorUnitTest {
                         mHomepageEnabledSupplier,
                         mVisibilityDelegate,
                         true,
-                        mProfileSupplier);
+                        mProfileSupplier,
+                        mOmniboxFocusStateSupplier);
 
         assertFalse(mModel.get(BottomBarProperties.IS_GLIC_BUTTON_VISIBLE));
     }
@@ -498,8 +518,37 @@ public class BottomBarMediatorUnitTest {
                         mHomepageEnabledSupplier,
                         mVisibilityDelegate,
                         true,
-                        mProfileSupplier);
+                        mProfileSupplier,
+                        mOmniboxFocusStateSupplier);
 
         assertFalse(mModel.get(BottomBarProperties.IS_GLIC_BUTTON_VISIBLE));
+    }
+
+    @Test
+    public void testVisibilityChange_OmniboxFocus() {
+        mMediator =
+                new BottomBarMediator(
+                        mModel,
+                        mThemeColorProvider,
+                        mTabSupplier,
+                        mHomepageEnabledSupplier,
+                        mVisibilityDelegate,
+                        true,
+                        mProfileSupplier,
+                        mOmniboxFocusStateSupplier);
+
+        // Initially visible.
+        assertTrue(mModel.get(BottomBarProperties.IS_VISIBLE));
+        verify(mVisibilityDelegate, times(1)).onVisibilityChanged(true);
+
+        // Focus omnibox.
+        mOmniboxFocusStateSupplier.set(true);
+        assertFalse(mModel.get(BottomBarProperties.IS_VISIBLE));
+        verify(mVisibilityDelegate, times(1)).onVisibilityChanged(false);
+
+        // Unfocus omnibox.
+        mOmniboxFocusStateSupplier.set(false);
+        assertTrue(mModel.get(BottomBarProperties.IS_VISIBLE));
+        verify(mVisibilityDelegate, times(2)).onVisibilityChanged(true);
     }
 }

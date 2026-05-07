@@ -2436,7 +2436,8 @@ public class ToolbarManager
                         mCurrentTabSupplier,
                         mAppThemeColorProvider,
                         mHomepageEnabledSupplier,
-                        mProfileSupplier);
+                        mProfileSupplier,
+                        mOmniboxFocusStateSupplier);
         bottomBarContainerOneshotSupplier.set(bottomBarContainerCoordinator);
 
         if (mBottomBarHostManager != null) {

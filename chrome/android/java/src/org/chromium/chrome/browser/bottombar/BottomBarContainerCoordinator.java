@@ -55,7 +55,8 @@ public class BottomBarContainerCoordinator
             NullableObservableSupplier<Tab> tabSupplier,
             ThemeColorProvider themeColorProvider,
             NonNullObservableSupplier<Boolean> homepageEnabledSupplier,
-            NullableObservableSupplier<Profile> profileSupplier) {
+            NullableObservableSupplier<Profile> profileSupplier,
+            NonNullObservableSupplier<Boolean> omniboxFocusStateSupplier) {
         mBottomBarContainer = bottomBarContainer;
         mRequestLayerUpdateCallback = requestLayerUpdateCallback;
 
@@ -67,7 +68,8 @@ public class BottomBarContainerCoordinator
                         tabSupplier,
                         homepageEnabledSupplier,
                         this,
-                        profileSupplier);
+                        profileSupplier,
+                        omniboxFocusStateSupplier);
     }
 
     @Override

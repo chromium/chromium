@@ -61,7 +61,8 @@ public class BottomBarCoordinator implements BottomBar {
             NullableObservableSupplier<Tab> tabSupplier,
             NonNullObservableSupplier<Boolean> homepageEnabledSupplier,
             BottomBarMediator.VisibilityDelegate visibilityDelegate,
-            NullableObservableSupplier<Profile> profileSupplier) {
+            NullableObservableSupplier<Profile> profileSupplier,
+            NonNullObservableSupplier<Boolean> omniboxFocusStateSupplier) {
         mActionRegistry = actionRegistry;
         mView =
                 (BottomBarView)
@@ -79,7 +80,8 @@ public class BottomBarCoordinator implements BottomBar {
                         homepageEnabledSupplier,
                         visibilityDelegate,
                         shouldIncludeHomeButton,
-                        profileSupplier);
+                        profileSupplier,
+                        omniboxFocusStateSupplier);
 
         mMcp = PropertyModelChangeProcessor.create(mModel, mView, BottomBarViewBinder::bind);
 

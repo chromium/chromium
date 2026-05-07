@@ -40,8 +40,10 @@ public class BottomBarMediator implements ThemeColorProvider.TintObserver {
     private final TabObserver mTabObserver;
     private final VisibilityDelegate mVisibilityDelegate;
     private final NonNullObservableSupplier<Boolean> mHomepageEnabledSupplier;
+    private final NonNullObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
     private final Callback<@Nullable Tab> mTabSupplierObserver = this::onTabChanged;
     private final Callback<Boolean> mHomepageEnabledObserver = this::onHomepageEnabledChanged;
+    private final Callback<Boolean> mOmniboxFocusObserver = this::onOmniboxFocusChanged;
     private final boolean mShouldIncludeHomeButton;
     private final NullableObservableSupplier<Profile> mProfileSupplier;
     private final Callback<@Nullable Profile> mProfileObserver = this::updateGlicVisibility;
@@ -62,7 +64,8 @@ public class BottomBarMediator implements ThemeColorProvider.TintObserver {
             NonNullObservableSupplier<Boolean> homepageEnabledSupplier,
             VisibilityDelegate visibilityDelegate,
             boolean shouldIncludeHomeButton,
-            NullableObservableSupplier<Profile> profileSupplier) {
+            NullableObservableSupplier<Profile> profileSupplier,
+            NonNullObservableSupplier<Boolean> omniboxFocusStateSupplier) {
         mModel = model;
         mThemeColorProvider = themeColorProvider;
         mTabSupplier = tabSupplier;
@@ -70,8 +73,10 @@ public class BottomBarMediator implements ThemeColorProvider.TintObserver {
         mVisibilityDelegate = visibilityDelegate;
         mShouldIncludeHomeButton = shouldIncludeHomeButton;
         mProfileSupplier = profileSupplier;
+        mOmniboxFocusStateSupplier = omniboxFocusStateSupplier;
 
         mProfileSupplier.addSyncObserverAndCallIfNonNull(mProfileObserver);
+        mOmniboxFocusStateSupplier.addSyncObserver(mOmniboxFocusObserver);
         mTabObserver =
                 new EmptyTabObserver() {
                     @Override
@@ -101,12 +106,19 @@ public class BottomBarMediator implements ThemeColorProvider.TintObserver {
         updateVisibility();
     }
 
+    private void onOmniboxFocusChanged(Boolean focused) {
+        updateVisibility();
+    }
+
     private void updateVisibility() {
         boolean currentTabIsRegularNtp =
                 mCurrentTab != null
                         && UrlUtilities.isNtpUrl(mCurrentTab.getUrl())
                         && !mCurrentTab.isOffTheRecord();
-        boolean isVisible = !(BottomBarConfigUtils.shouldDisableOnNtp() && currentTabIsRegularNtp);
+        boolean isOmniboxFocused = mOmniboxFocusStateSupplier.get();
+        boolean isVisible =
+                !(BottomBarConfigUtils.shouldDisableOnNtp() && currentTabIsRegularNtp)
+                        && !isOmniboxFocused;
 
         if (mIsVisible != null && mIsVisible == isVisible) return;
         mIsVisible = isVisible;
@@ -151,6 +163,7 @@ public class BottomBarMediator implements ThemeColorProvider.TintObserver {
             mHomepageEnabledSupplier.removeObserver(mHomepageEnabledObserver);
         }
         mProfileSupplier.removeObserver(mProfileObserver);
+        mOmniboxFocusStateSupplier.removeObserver(mOmniboxFocusObserver);
     }
 
     @Override

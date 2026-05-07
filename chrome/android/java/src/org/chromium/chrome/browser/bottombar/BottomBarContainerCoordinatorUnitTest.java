@@ -74,6 +74,7 @@ public class BottomBarContainerCoordinatorUnitTest {
     private Activity mActivity;
     private FrameLayout mBottomBarContainer;
     private SettableNonNullObservableSupplier<Boolean> mHomepageEnabledSupplier;
+    private SettableNonNullObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
     private BottomBarContainerCoordinator mCoordinator;
 
     @Before
@@ -87,6 +88,7 @@ public class BottomBarContainerCoordinatorUnitTest {
                             mActivity = activity;
                             mBottomBarContainer = new FrameLayout(mActivity);
                             mHomepageEnabledSupplier = ObservableSuppliers.createNonNull(true);
+                            mOmniboxFocusStateSupplier = ObservableSuppliers.createNonNull(false);
                             mProfileSupplier.set(mProfile);
                             mCoordinator =
                                     new BottomBarContainerCoordinator(
@@ -96,7 +98,8 @@ public class BottomBarContainerCoordinatorUnitTest {
                                             mTabSupplier,
                                             mThemeColorProvider,
                                             mHomepageEnabledSupplier,
-                                            mProfileSupplier);
+                                            mProfileSupplier,
+                                            mOmniboxFocusStateSupplier);
                         });
     }
 

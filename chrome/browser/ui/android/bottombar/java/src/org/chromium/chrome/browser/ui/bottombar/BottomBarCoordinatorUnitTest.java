@@ -81,6 +81,7 @@ public class BottomBarCoordinatorUnitTest {
     private Activity mActivity;
     private FrameLayout mParent;
     private SettableNonNullObservableSupplier<Boolean> mHomepageEnabledSupplier;
+    private SettableNonNullObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
     private BottomBarCoordinator mCoordinator;
 
     @Before
@@ -98,6 +99,7 @@ public class BottomBarCoordinatorUnitTest {
         mActivity = activity;
         mParent = new FrameLayout(mActivity);
         mHomepageEnabledSupplier = ObservableSuppliers.createNonNull(true);
+        mOmniboxFocusStateSupplier = ObservableSuppliers.createNonNull(false);
         mProfileSupplier.set(mProfile);
         mCoordinator =
                 new BottomBarCoordinator(
@@ -107,7 +109,8 @@ public class BottomBarCoordinatorUnitTest {
                         mTabSupplier,
                         mHomepageEnabledSupplier,
                         mVisibilityDelegate,
-                        mProfileSupplier);
+                        mProfileSupplier,
+                        mOmniboxFocusStateSupplier);
     }
 
     @Test
@@ -205,7 +208,8 @@ public class BottomBarCoordinatorUnitTest {
                         mTabSupplier,
                         mHomepageEnabledSupplier,
                         mVisibilityDelegate,
-                        mProfileSupplier);
+                        mProfileSupplier,
+                        mOmniboxFocusStateSupplier);
 
         ColorStateList expectedTint =
                 BottomBarUtils.getIconColorStateList(mActivity, BrandedColorScheme.APP_DEFAULT);
@@ -213,5 +217,19 @@ public class BottomBarCoordinatorUnitTest {
         assertEquals(
                 String.valueOf(expectedTint),
                 String.valueOf(actionModel.get(ActionProperties.ICON_TINT)));
+    }
+
+    @Test
+    public void testOmniboxFocusHidesBottomBar() {
+        // Initially not focused, should be visible.
+        verify(mVisibilityDelegate).onVisibilityChanged(true);
+
+        // Focus omnibox, should hide.
+        mOmniboxFocusStateSupplier.set(true);
+        verify(mVisibilityDelegate).onVisibilityChanged(false);
+
+        // Unfocus omnibox, should show again.
+        mOmniboxFocusStateSupplier.set(false);
+        verify(mVisibilityDelegate, times(2)).onVisibilityChanged(true);
     }
 }
