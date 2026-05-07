@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.glic;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.PorterDuff;
@@ -61,6 +62,7 @@ public class GlicButtonStateController
         void onStateChanged(@ButtonState int state, boolean isPanelOpen);
     }
 
+    private final Activity mActivity;
     private final Listener mListener;
     private final Supplier<@Nullable ChromeAndroidTask> mTaskSupplier;
     private final BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
@@ -83,11 +85,11 @@ public class GlicButtonStateController
      * @param browserControlsVisibilityManager Manager for browser controls visibility.
      */
     public GlicButtonStateController(
-            Context context,
+            Activity activity,
             Listener listener,
             Supplier<@Nullable ChromeAndroidTask> taskSupplier,
             BrowserControlsVisibilityManager browserControlsVisibilityManager) {
-
+        mActivity = activity;
         mListener = listener;
         mTaskSupplier = taskSupplier;
         mBrowserControlsVisibilityManager = browserControlsVisibilityManager;
@@ -182,8 +184,11 @@ public class GlicButtonStateController
         ChromeAndroidTask task = mTaskSupplier.get();
         if (task == null) return;
 
-        long browserWindowPtr = task.getOrCreateNativeBrowserWindowPtr(mCurrentProfile);
-        boolean isOpen = mCurrentGlicService.isPanelShowingForBrowser(browserWindowPtr);
+        long browserWindowPtr = task.getNativeBrowserWindowPtr(mCurrentProfile, mActivity);
+        boolean isOpen = false;
+        if (browserWindowPtr != 0) {
+            isOpen = mCurrentGlicService.isPanelShowingForBrowser(browserWindowPtr);
+        }
         if (mIsPanelOpen != isOpen) {
             mIsPanelOpen = isOpen;
             mListener.onStateChanged(mButtonState, mIsPanelOpen);

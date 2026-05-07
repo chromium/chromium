@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.glic;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -335,8 +334,8 @@ public class GlicToolbarButtonControllerTest {
     @Test
     public void testIsPanelOpen_Initial() {
         ChromeAndroidTask task = mock(ChromeAndroidTask.class);
-        when(task.getOrCreateNativeBrowserWindowPtr(any())).thenReturn(123L);
-        when(mGlicKeyedService.isPanelShowingForBrowser(anyLong())).thenReturn(true);
+        when(task.getNativeBrowserWindowPtr(mProfile, mActivity)).thenReturn(123L);
+        when(mGlicKeyedService.isPanelShowingForBrowser(123L)).thenReturn(true);
 
         GlicToolbarButtonController controller =
                 new GlicToolbarButtonController(
@@ -356,8 +355,8 @@ public class GlicToolbarButtonControllerTest {
     @Test
     public void testIsPanelOpen_GlobalShowHide() {
         ChromeAndroidTask task = mock(ChromeAndroidTask.class);
-        when(task.getOrCreateNativeBrowserWindowPtr(any())).thenReturn(123L);
-        when(mGlicKeyedService.isPanelShowingForBrowser(anyLong())).thenReturn(true);
+        when(task.getNativeBrowserWindowPtr(mProfile, mActivity)).thenReturn(123L);
+        when(mGlicKeyedService.isPanelShowingForBrowser(123L)).thenReturn(true);
 
         GlicToolbarButtonController controller =
                 new GlicToolbarButtonController(

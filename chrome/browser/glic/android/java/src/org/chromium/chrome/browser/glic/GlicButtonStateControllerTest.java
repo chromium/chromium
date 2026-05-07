@@ -10,7 +10,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.content.Context;
+import android.app.Activity;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -20,8 +20,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.actor.ActorKeyedService;
 import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
@@ -47,12 +47,12 @@ public class GlicButtonStateControllerTest {
     @Mock private GlicButtonStateController.Listener mListener;
     @Mock private GlicKeyedServiceFactory.Natives mGlicKeyedServiceFactoryJniMock;
 
-    private Context mContext;
     private GlicButtonStateController mController;
+    private Activity mActivity;
 
     @Before
     public void setUp() {
-        mContext = ContextUtils.getApplicationContext();
+        mActivity = Robolectric.setupActivity(Activity.class);
         ActorKeyedServiceFactory.setForTesting(mActorService);
         GlicKeyedServiceFactoryJni.setInstanceForTesting(mGlicKeyedServiceFactoryJniMock);
         when(mGlicKeyedServiceFactoryJniMock.getForProfile(mProfile)).thenReturn(mGlicKeyedService);
@@ -65,7 +65,7 @@ public class GlicButtonStateControllerTest {
 
         mController =
                 new GlicButtonStateController(
-                        mContext, mListener, () -> mTask, mBrowserControlsVisibilityManager);
+                        mActivity, mListener, () -> mTask, mBrowserControlsVisibilityManager);
     }
 
     @Test
@@ -103,7 +103,7 @@ public class GlicButtonStateControllerTest {
     public void testOnGlobalShowHide() {
         mController.updateObservations(mProfile);
 
-        when(mTask.getOrCreateNativeBrowserWindowPtr(mProfile)).thenReturn(123L);
+        when(mTask.getNativeBrowserWindowPtr(mProfile, mActivity)).thenReturn(123L);
         when(mGlicKeyedService.isPanelShowingForBrowser(123L)).thenReturn(true);
 
         mController.onGlobalShowHide();
