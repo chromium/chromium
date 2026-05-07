@@ -6861,6 +6861,84 @@ TEST_F(RenderWidgetHostViewAuraInputMethodTest,
   GetInputMethod()->RemoveObserver(this);
 }
 
+// Mock InputMethod that runs a closure when OnCaretBoundsChanged is invoked.
+// Simulates a Windows TSF IME whose ITextStoreACPSink::OnLayoutChange handler
+// pumps the thread message queue, allowing a queued task to synchronously
+// destroy the RenderWidgetHostViewAura while it is still inside
+// OnBoundsChanged().
+class DestroyingMockInputMethod : public ui::MockInputMethod {
+ public:
+  DestroyingMockInputMethod() : ui::MockInputMethod(nullptr) {}
+
+  void OnCaretBoundsChanged(const ui::TextInputClient* client) override {
+    ui::MockInputMethod::OnCaretBoundsChanged(client);
+    if (on_caret_bounds_changed_) {
+      std::move(on_caret_bounds_changed_).Run();
+    }
+  }
+
+  void set_on_caret_bounds_changed(base::OnceClosure closure) {
+    on_caret_bounds_changed_ = std::move(closure);
+  }
+
+ private:
+  base::OnceClosure on_caret_bounds_changed_;
+};
+
+class RenderWidgetHostViewAuraOnBoundsChangedUAFTest
+    : public RenderWidgetHostViewAuraTest {
+ public:
+  void SetUp() override {
+    input_method_ = new DestroyingMockInputMethod();
+    // Ownership is transferred to the WindowTreeHost via the InputMethod
+    // factory; see SetUpInputMethodForTesting().
+    ui::SetUpInputMethodForTesting(input_method_);
+    SetUpEnvironment();
+  }
+
+  void TearDown() override {
+    input_method_ = nullptr;
+    RenderWidgetHostViewAuraTest::TearDown();
+  }
+
+ protected:
+  raw_ptr<DestroyingMockInputMethod> input_method_ = nullptr;
+};
+
+// RWHVA::OnBoundsChanged() constructs a base::AutoReset<bool> holding
+// &in_bounds_changed_, then calls GetInputMethod()->OnCaretBoundsChanged(this).
+// On Windows that reaches TSFTextStore::SendOnLayoutChange ->
+// text_store_acp_sink_->OnLayoutChange(), a synchronous COM call into the
+// active third-party IME. If the IME pumps messages and the view is destroyed
+// re-entrantly, on unwind UpdateInsetsWithVirtualKeyboardEnabled() and
+// ~AutoReset both touch freed memory. AutoReset::scoped_variable_ is
+// RAW_PTR_EXCLUSION, so it is not MiraclePtr-protected: the ~AutoReset write
+// lands in a freed (un-quarantined) slot.
+TEST_F(RenderWidgetHostViewAuraOnBoundsChangedUAFTest,
+       DestroyDuringOnCaretBoundsChanged) {
+  InitViewForFrame(nullptr);
+  ParentHostView(view_, parent_view_);
+  // `view_` shares the root window (and thus the InputMethod) with
+  // `parent_view_`.
+  ASSERT_EQ(static_cast<ui::InputMethod*>(input_method_.get()),
+            GetInputMethod());
+
+  // Arrange for the view to be synchronously destroyed inside
+  // OnCaretBoundsChanged, simulating re-entrant destruction triggered by a
+  // TSF IME callout that pumps a queued window.close() / renderer-gone task.
+  FakeRenderWidgetHostViewAura* raw_view = view_.get();
+  input_method_->set_on_caret_bounds_changed(base::BindLambdaForTesting([&]() {
+    widget_host_ = nullptr;
+    view_.ExtractAsDangling()->Destroy();
+  }));
+
+  // Under ASAN this triggers heap-use-after-free in
+  // UpdateInsetsWithVirtualKeyboardEnabled() (read of freed
+  // keyboard_occluded_bounds_) followed by a write-after-free in
+  // ~AutoReset<bool> to the freed in_bounds_changed_ slot.
+  raw_view->OnBoundsChanged(gfx::Rect(), gfx::Rect(0, 0, 100, 100));
+}
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 class MockVirtualKeyboardController final
     : public ui::VirtualKeyboardController {
