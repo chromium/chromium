@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -128,6 +129,11 @@ class WebAuthFlow : public content::WebContentsObserver,
   // Returns nullptr if the InfoBar is not displayed.
   base::WeakPtr<WebAuthFlowInfoBarDelegate> GetInfoBarDelegateForTesting();
 
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+  void SetWindowCreatedCallbackForTesting(
+      base::OnceCallback<void(BrowserWindowInterface*)> callback);
+#endif
+
  private:
   // WebContentsObserver implementation.
   void DidStopLoading() override;
@@ -191,6 +197,10 @@ class WebAuthFlow : public content::WebContentsObserver,
   // the error code when the flow times out.
   bool initial_url_loaded_ = false;
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+  base::OnceCallback<void(BrowserWindowInterface*)>
+      window_created_callback_for_testing_;
+#endif
 };
 
 }  // namespace extensions

@@ -162,6 +162,13 @@ void WebAuthFlow::CloseInfoBar() {
   }
 }
 
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+void WebAuthFlow::SetWindowCreatedCallbackForTesting(
+    base::OnceCallback<void(BrowserWindowInterface*)> callback) {
+  window_created_callback_for_testing_ = std::move(callback);
+}
+#endif
+
 bool WebAuthFlow::DisplayAuthPageInPopupWindow() {
   if (GetBrowserWindowCreationStatusForProfile(*profile_) !=
       BrowserWindowInterface::CreationStatus::kOk) {
@@ -193,7 +200,9 @@ bool WebAuthFlow::DisplayAuthPageInPopupWindow() {
     params.initial_bounds = popup_bounds_.value();
   }
 
-  auto callback = base::DoNothing();
+  auto callback = window_created_callback_for_testing_
+                      ? std::move(window_created_callback_for_testing_)
+                      : base::DoNothing();
   CreateBrowserWindow(std::move(params), std::move(callback));
 #endif
 
