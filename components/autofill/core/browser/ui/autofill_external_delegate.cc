@@ -31,7 +31,7 @@
 #include "base/types/zip.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/at_memory/at_memory_controller.h"
+#include "components/autofill/core/browser/at_memory/at_memory_manager.h"
 #include "components/autofill/core/browser/autofill_ai_form_rationalization.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/autofill_type.h"
@@ -509,20 +509,20 @@ void AutofillExternalDelegate::OnSuggestionsShown(
 
 void AutofillExternalDelegate::OnSuggestionsHidden(
     SuggestionHidingReason reason) {
-  manager_->GetAtMemoryController().OnPopupHidden();
+  manager_->GetAtMemoryManager().OnPopupHidden();
   manager_->OnSuggestionsHidden(reason);
 }
 
 bool AutofillExternalDelegate::OnFilterChanged(const std::u16string& filter) {
-  return manager_->GetAtMemoryController().OnFilterChanged(filter);
+  return manager_->GetAtMemoryManager().OnFilterChanged(filter);
 }
 
 bool AutofillExternalDelegate::OnSearchSubmitted(const std::u16string& filter) {
-  return manager_->GetAtMemoryController().OnSearchSubmitted(filter);
+  return manager_->GetAtMemoryManager().OnSearchSubmitted(filter);
 }
 
 bool AutofillExternalDelegate::IsSearching() const {
-  return manager_->GetAtMemoryController().IsSearching();
+  return manager_->GetAtMemoryManager().IsSearching();
 }
 
 void AutofillExternalDelegate::DidSelectSuggestion(
@@ -609,7 +609,7 @@ void AutofillExternalDelegate::DidSelectSuggestion(
           LOYALTY_MEMBERSHIP_ID);
       break;
     case SuggestionType::kAtMemorySearchResult:
-      manager_->GetAtMemoryController().FillOrPreviewSearchResult(
+      manager_->GetAtMemoryManager().FillOrPreviewSearchResult(
           mojom::ActionPersistence::kPreview, query_form_, query_field_,
           suggestion);
       break;
@@ -843,7 +843,7 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
           query_field_.global_id(), AutofillSuggestionTriggerSource::kAtMemory);
       break;
     case SuggestionType::kAtMemorySearchResult:
-      manager_->GetAtMemoryController().FillOrPreviewSearchResult(
+      manager_->GetAtMemoryManager().FillOrPreviewSearchResult(
           mojom::ActionPersistence::kFill, query_form_, query_field_,
           suggestion);
       break;

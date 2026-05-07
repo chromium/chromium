@@ -20,7 +20,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/at_memory/at_memory_controller.h"
+#include "components/autofill/core/browser/at_memory/at_memory_manager.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
 #include "components/autofill/core/browser/crowdsourcing/votes_uploader.h"
 #include "components/autofill/core/browser/data_manager/addresses/account_name_email_strike_manager.h"
@@ -236,9 +236,9 @@ class BrowserAutofillManager : public AutofillManager {
   CreditCardAccessManager* GetCreditCardAccessManager() override;
   const CreditCardAccessManager* GetCreditCardAccessManager() const override;
 
-  // Gets the `AtMemoryController` owned by `this`. This will be used to handle
+  // Gets the `AtMemoryManager` owned by `this`. This will be used to handle
   // queries to the `AccessibilityQueryService`.
-  AtMemoryController& GetAtMemoryController();
+  AtMemoryManager& GetAtMemoryManager();
 
   // Gets the payments BNPL manager owned by `this`. This will be used to
   // handle BNPL flows. May return nullptr if BNPL is not supported on the
@@ -667,9 +667,9 @@ class BrowserAutofillManager : public AutofillManager {
 
   std::unique_ptr<OtpManager> otp_manager_;
 
-  // The `AtMemoryController`, used to handle queries to the
+  // The `AtMemoryManager`, used to handle queries to the
   // `AccessibilityQueryService` and manage session-based metrics.
-  AtMemoryController at_memory_controller_{this};
+  AtMemoryManager at_memory_manager_{this};
 
   std::unique_ptr<AccountNameEmailStrikeManager>
       account_name_email_strike_manager_;

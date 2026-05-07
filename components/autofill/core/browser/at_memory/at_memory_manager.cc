@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/autofill/core/browser/at_memory/at_memory_controller.h"
+#include "components/autofill/core/browser/at_memory/at_memory_manager.h"
 
 #include <memory>
 #include <string>
@@ -303,12 +303,12 @@ Suggestion CreateNoDataSuggestion() {
 
 }  // namespace
 
-AtMemoryController::AtMemoryController(BrowserAutofillManager* manager)
+AtMemoryManager::AtMemoryManager(BrowserAutofillManager* manager)
     : owner_(manager) {}
 
-AtMemoryController::~AtMemoryController() = default;
+AtMemoryManager::~AtMemoryManager() = default;
 
-void AtMemoryController::OnPopupShown(
+void AtMemoryManager::OnPopupShown(
     AutofillSuggestionTriggerSource trigger_source,
     UpdateSuggestionsCallback update_callback) {
   if (at_memory_funnel_metrics_ || !IsAtMemoryTriggerSource(trigger_source)) {
@@ -321,7 +321,7 @@ void AtMemoryController::OnPopupShown(
   at_memory_funnel_metrics_->OnPopupShown(trigger_source);
 }
 
-bool AtMemoryController::OnFilterChanged(const std::u16string& filter) {
+bool AtMemoryManager::OnFilterChanged(const std::u16string& filter) {
   if (!IsAtMemoryTriggerSource(trigger_source_)) {
     return false;
   }
@@ -329,7 +329,7 @@ bool AtMemoryController::OnFilterChanged(const std::u16string& filter) {
   return true;
 }
 
-bool AtMemoryController::OnSearchSubmitted(const std::u16string& filter) {
+bool AtMemoryManager::OnSearchSubmitted(const std::u16string& filter) {
   if (!IsAtMemoryTriggerSource(trigger_source_)) {
     return false;
   }
@@ -340,7 +340,7 @@ bool AtMemoryController::OnSearchSubmitted(const std::u16string& filter) {
   return true;
 }
 
-void AtMemoryController::OnPopupHidden() {
+void AtMemoryManager::OnPopupHidden() {
   trigger_source_ = AutofillSuggestionTriggerSource::kUnspecified;
   update_callback_.Reset();
   if (at_memory_funnel_metrics_) {
@@ -349,7 +349,7 @@ void AtMemoryController::OnPopupHidden() {
   }
 }
 
-void AtMemoryController::FillOrPreviewSearchResult(
+void AtMemoryManager::FillOrPreviewSearchResult(
     mojom::ActionPersistence action_persistence,
     const FormData& form,
     const FormFieldData& field,
@@ -393,12 +393,12 @@ void AtMemoryController::FillOrPreviewSearchResult(
   }
 }
 
-bool AtMemoryController::IsSearching() const {
+bool AtMemoryManager::IsSearching() const {
   return is_searching_;
 }
 
-void AtMemoryController::ExecuteQuery(const std::u16string& filter,
-                                      bool full_search) {
+void AtMemoryManager::ExecuteQuery(const std::u16string& filter,
+                                   bool full_search) {
   accessibility_annotator::AccessibilityQueryService* query_service =
       owner_->client().GetAccessibilityQueryService();
   if (!query_service || !IsAtMemoryTriggerSource(trigger_source_) ||
@@ -423,14 +423,14 @@ void AtMemoryController::ExecuteQuery(const std::u16string& filter,
   update_callback_.Run(base::ToVector(current_suggestions), trigger_source_);
   query_service->Query(
       filter, full_search,
-      base::BindRepeating(&AtMemoryController::OnSearchResultsReceived,
+      base::BindRepeating(&AtMemoryManager::OnSearchResultsReceived,
                           query_weak_ptr_factory_.GetWeakPtr(), filter,
                           full_search));
 }
 
 // Creates a suggestion to offer to open Gemini in the sidebar when the query is
 // unsupported.
-Suggestion AtMemoryController::CreateUnsupportedQuerySuggestion(
+Suggestion AtMemoryManager::CreateUnsupportedQuerySuggestion(
     const std::u16string& query) {
   Suggestion suggestion(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_AT_MEMORY_UNSUPPORTED_QUERY_TITLE),
@@ -443,7 +443,7 @@ Suggestion AtMemoryController::CreateUnsupportedQuerySuggestion(
   return suggestion;
 }
 
-void AtMemoryController::OnSearchResultsReceived(
+void AtMemoryManager::OnSearchResultsReceived(
     const std::u16string& query,
     bool full_search,
     accessibility_annotator::MemorySearchResults result) {
@@ -487,7 +487,7 @@ void AtMemoryController::OnSearchResultsReceived(
   update_callback_.Run(std::move(suggestions), trigger_source_);
 }
 
-void AtMemoryController::FillIban(
+void AtMemoryManager::FillIban(
     const Suggestion::AtMemoryPayload::Identifier& identifier,
     const FormData& form,
     const FormFieldData& field,
@@ -510,16 +510,16 @@ void AtMemoryController::FillIban(
   iban_access_manager->FetchValue(
       iban_payload,
       base::BindOnce(
-          [](base::WeakPtr<AtMemoryController> controller, const FormData& form,
+          [](base::WeakPtr<AtMemoryManager> manager, const FormData& form,
              const FormFieldData& field, const Suggestion& suggestion,
              const std::u16string& unmasked_value) {
-            if (!controller) {
+            if (!manager) {
               return;
             }
-            if (controller->at_memory_funnel_metrics_) {
-              controller->at_memory_funnel_metrics_->OnSuggestionAccepted();
+            if (manager->at_memory_funnel_metrics_) {
+              manager->at_memory_funnel_metrics_->OnSuggestionAccepted();
             }
-            controller->owner_->FillOrPreviewField(
+            manager->owner_->FillOrPreviewField(
                 mojom::ActionPersistence::kFill,
                 mojom::FieldActionType::kReplaceAtMemoryTrigger, form, field,
                 unmasked_value, FillingProduct::kAtMemory,
@@ -528,7 +528,7 @@ void AtMemoryController::FillIban(
           fill_weak_ptr_factory_.GetWeakPtr(), form, field, suggestion));
 }
 
-void AtMemoryController::FillCreditCard(
+void AtMemoryManager::FillCreditCard(
     const Suggestion::AtMemoryPayload::Identifier& identifier,
     const FormData& form,
     const FormFieldData& field,
@@ -553,14 +553,14 @@ void AtMemoryController::FillCreditCard(
   credit_card_access_manager->FetchCreditCard(
       credit_card,
       base::BindOnce(
-          [](base::WeakPtr<AtMemoryController> controller, const FormData& form,
+          [](base::WeakPtr<AtMemoryManager> manager, const FormData& form,
              const FormFieldData& field, const Suggestion& suggestion,
              const CreditCard& fetched_card) {
-            if (!controller) {
+            if (!manager) {
               return;
             }
-            if (controller->at_memory_funnel_metrics_) {
-              controller->at_memory_funnel_metrics_->OnSuggestionAccepted();
+            if (manager->at_memory_funnel_metrics_) {
+              manager->at_memory_funnel_metrics_->OnSuggestionAccepted();
             }
             const Suggestion::AtMemoryPayload& payload =
                 suggestion.GetPayload<Suggestion::AtMemoryPayload>();
@@ -576,7 +576,7 @@ void AtMemoryController::FillCreditCard(
                 NOTREACHED();
             }
 
-            controller->owner_->FillOrPreviewField(
+            manager->owner_->FillOrPreviewField(
                 mojom::ActionPersistence::kFill,
                 mojom::FieldActionType::kReplaceAtMemoryTrigger, form, field,
                 fill_value, FillingProduct::kAtMemory,

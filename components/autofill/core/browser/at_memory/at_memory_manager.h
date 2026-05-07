@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AT_MEMORY_AT_MEMORY_CONTROLLER_H_
-#define COMPONENTS_AUTOFILL_CORE_BROWSER_AT_MEMORY_AT_MEMORY_CONTROLLER_H_
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AT_MEMORY_AT_MEMORY_MANAGER_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_AT_MEMORY_AT_MEMORY_MANAGER_H_
 
 #include <memory>
 #include <optional>
@@ -28,35 +28,34 @@ class BrowserAutofillManager;
 class FormData;
 class FormFieldData;
 
-// Controller for the accessibility annotator search feature. It handles queries
+// Manager for the accessibility annotator search feature. It handles queries
 // to the AccessibilityQueryService and manages session-based metrics.
-//
 // Owned by `BrowserAutofillManager`, its lifetime is tied to it.
-// TODO(crbug.com/507770024): Rename to AtMemoryManager.
-class AtMemoryController {
+class AtMemoryManager {
  public:
   using UpdateSuggestionsCallback =
       base::RepeatingCallback<void(std::vector<Suggestion>,
                                    AutofillSuggestionTriggerSource)>;
 
-  explicit AtMemoryController(BrowserAutofillManager* manager);
-  ~AtMemoryController();
+  explicit AtMemoryManager(BrowserAutofillManager* manager);
 
-  AtMemoryController(const AtMemoryController&) = delete;
-  AtMemoryController& operator=(const AtMemoryController&) = delete;
+  AtMemoryManager(const AtMemoryManager&) = delete;
+  AtMemoryManager& operator=(const AtMemoryManager&) = delete;
 
-  // Called when suggestions are shown. The controller initiates an @memory
+  ~AtMemoryManager();
+
+  // Called when suggestions are shown. The manager initiates an @memory
   // session if the `trigger_source` is an @memory one.
   // TODO(crbug.com/507770024): Rename to OnSuggestionsShown.
   void OnPopupShown(AutofillSuggestionTriggerSource trigger_source,
                     UpdateSuggestionsCallback update_callback);
 
   // Called when the user types in the filter/search bar. Returns true if
-  // handled by the controller (i.e., the current session is an @memory one).
+  // handled by the manager (i.e., the current session is an @memory one).
   bool OnFilterChanged(const std::u16string& filter);
 
   // Called when the user has explicitly submitted the search. Returns true if
-  // handled by the controller (i.e., the current session is an @memory one).
+  // handled by the manager (i.e., the current session is an @memory one).
   bool OnSearchSubmitted(const std::u16string& filter);
 
   // Called when suggestions are hidden.
@@ -111,10 +110,10 @@ class AtMemoryController {
 
   bool is_searching_ = false;
 
-  base::WeakPtrFactory<AtMemoryController> query_weak_ptr_factory_{this};
-  base::WeakPtrFactory<AtMemoryController> fill_weak_ptr_factory_{this};
+  base::WeakPtrFactory<AtMemoryManager> query_weak_ptr_factory_{this};
+  base::WeakPtrFactory<AtMemoryManager> fill_weak_ptr_factory_{this};
 };
 
 }  // namespace autofill
 
-#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_AT_MEMORY_AT_MEMORY_CONTROLLER_H_
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_AT_MEMORY_AT_MEMORY_MANAGER_H_

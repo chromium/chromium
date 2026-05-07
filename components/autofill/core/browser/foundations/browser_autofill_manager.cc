@@ -60,7 +60,7 @@
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_types.h"
-#include "components/autofill/core/browser/at_memory/at_memory_controller.h"
+#include "components/autofill/core/browser/at_memory/at_memory_manager.h"
 #include "components/autofill/core/browser/autofill_browser_util.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_trigger_source.h"
@@ -846,8 +846,8 @@ BrowserAutofillManager::GetCreditCardAccessManager() const {
       ->GetCreditCardAccessManager();
 }
 
-AtMemoryController& BrowserAutofillManager::GetAtMemoryController() {
-  return at_memory_controller_;
+AtMemoryManager& BrowserAutofillManager::GetAtMemoryManager() {
+  return at_memory_manager_;
 }
 
 payments::AmountExtractionManager&
@@ -2207,8 +2207,8 @@ void BrowserAutofillManager::DidShowSuggestions(
     AutofillSuggestionTriggerSource trigger_source) {
   NotifyObservers(&Observer::OnSuggestionsShown, suggestions);
 
-  GetAtMemoryController().OnPopupShown(trigger_source,
-                                       update_suggestions_callback);
+  GetAtMemoryManager().OnPopupShown(trigger_source,
+                                    update_suggestions_callback);
 
   const DenseSet<SuggestionType> shown_suggestion_types(suggestions,
                                                         &Suggestion::type);
