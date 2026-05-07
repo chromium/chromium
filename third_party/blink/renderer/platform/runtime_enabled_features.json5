@@ -5686,6 +5686,10 @@
       status: "stable",
     },
     {
+      name: "SvgUseNestedResourceDocuments",
+      status: "stable",
+    },
+    {
       name: "SynthesizedKeyboardEventsForAccessibilityActions",
       status: "experimental",
     },

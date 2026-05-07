@@ -209,7 +209,13 @@ void SVGUseElement::UpdateDocumentContent(
 
 void SVGUseElement::UpdateTargetReference() {
   const String& url_string = HrefString();
-  element_url_ = GetDocument().CompleteURL(url_string);
+  // Resolve the URL using the originating document, which can be different if
+  // this element was sourced from a resource document.
+  Document& document =
+      RuntimeEnabledFeatures::SvgUseNestedResourceDocumentsEnabled()
+          ? OriginatingTreeScope().GetDocument()
+          : GetDocument();
+  element_url_ = document.CompleteURL(url_string);
   element_url_is_local_ = url_string.starts_with('#');
   if (!IsStructurallyExternal() || !GetDocument().IsActive() ||
       !element_url_.IsValid()) {

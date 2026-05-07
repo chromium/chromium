@@ -39,6 +39,7 @@ namespace blink {
 class AgentGroupScheduler;
 struct ColorProviderColorMaps;
 class IsolatedSVGChromeClient;
+class KURL;
 class LocalFrame;
 class Page;
 class SVGSVGElement;
@@ -54,9 +55,13 @@ class IsolatedSVGDocumentHost final
     kStatic,    // Corresponds to "secure static mode".
     kAnimated,  // Corresponds to "secure animated mode".
   };
+
+  // `base_url` is used as the base URL of the document for resolving relative
+  // references. If no URL resolution is needed, `NullUrl()` can be passed.
   IsolatedSVGDocumentHost(IsolatedSVGChromeClient&,
                           AgentGroupScheduler&,
                           scoped_refptr<const SharedBuffer>,
+                          const KURL& base_url,
                           base::OnceClosure async_load_callback,
                           const Settings* inherited_settings,
                           const ColorProviderColorMaps* inherited_color_maps,

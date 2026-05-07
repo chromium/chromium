@@ -84,6 +84,7 @@ IsolatedSVGDocumentHost::IsolatedSVGDocumentHost(
     IsolatedSVGChromeClient& chrome_client,
     AgentGroupScheduler& agent_group_scheduler,
     scoped_refptr<const SharedBuffer> data,
+    const KURL& base_url,
     base::OnceClosure async_load_callback,
     const Settings* inherited_settings,
     const ColorProviderColorMaps* inherited_color_maps,
@@ -149,8 +150,8 @@ IsolatedSVGDocumentHost::IsolatedSVGDocumentHost(
   {
     TRACE_EVENT("blink",
                 "IsolatedSVGDocumentHost::IsolatedSVGDocumentHost::load");
-    frame->ForceSynchronousDocumentInstall(AtomicString("image/svg+xml"),
-                                           *data);
+    frame->ForceSynchronousDocumentInstall(AtomicString("image/svg+xml"), *data,
+                                           base_url);
   }
 
   // Set up our Page reference after installing our document. This avoids

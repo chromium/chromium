@@ -134,6 +134,9 @@ SVGResourceDocumentContent::UpdateDocument(scoped_refptr<SharedBuffer> data,
   auto* chrome_client = MakeGarbageCollected<ChromeClient>(this);
   document_host_ = MakeGarbageCollected<IsolatedSVGDocumentHost>(
       *chrome_client, *agent_group_scheduler_, std::move(data),
+      RuntimeEnabledFeatures::SvgUseNestedResourceDocumentsEnabled()
+          ? request_url
+          : NullUrl(),
       BindOnce(&SVGResourceDocumentContent::AsyncLoadingFinished,
                WrapWeakPersistent(this)),
       /* inherited_settings */ nullptr, /* inherited_color_maps */ nullptr,

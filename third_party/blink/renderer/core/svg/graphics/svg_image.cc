@@ -721,7 +721,7 @@ Image::SizeAvailability SVGImage::DataChanged(bool all_data_received) {
   // SVGImage objects, but we're safe now, because SVGImage can only be
   // loaded by a top-level document.
   document_host_ = MakeGarbageCollected<IsolatedSVGDocumentHost>(
-      *chrome_client_, *agent_group_scheduler_, Data(),
+      *chrome_client_, *agent_group_scheduler_, Data(), NullUrl(),
       blink::BindOnce(&SVGImage::NotifyAsyncLoadCompleted,
                       weak_ptr_factory_.GetWeakPtr()),
       settings_to_use, color_maps,

@@ -592,10 +592,15 @@ class CORE_EXPORT LocalFrame final
   bool NeedsOcclusionTracking() const;
 
   // Replaces the initial empty document with a Document suitable for
-  // |mime_type| and populated with the contents of |data|. Only intended for
-  // use in internal-implementation LocalFrames that aren't in the frame tree.
+  // `mime_type` and populated with the contents of `data`. Optionally set the
+  // URL of the document to `url`. Pass `NullUrl()` if no URL is necessary.
+  // These functions are only intended for use in internal-implementation
+  // LocalFrames that aren't in the frame tree.
   void ForceSynchronousDocumentInstall(const AtomicString& mime_type,
                                        const SegmentedBuffer& data);
+  void ForceSynchronousDocumentInstall(const AtomicString& mime_type,
+                                       const SegmentedBuffer& data,
+                                       const KURL& url);
 
   // Called when certain event listeners are added for the first time/last time,
   // making it possible/not possible to terminate the frame suddenly.

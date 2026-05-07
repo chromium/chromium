@@ -2608,6 +2608,12 @@ bool LocalFrame::NeedsOcclusionTracking() const {
 
 void LocalFrame::ForceSynchronousDocumentInstall(const AtomicString& mime_type,
                                                  const SegmentedBuffer& data) {
+  ForceSynchronousDocumentInstall(mime_type, data, NullUrl());
+}
+
+void LocalFrame::ForceSynchronousDocumentInstall(const AtomicString& mime_type,
+                                                 const SegmentedBuffer& data,
+                                                 const KURL& url) {
   CHECK(GetDocument()->IsInitialEmptyDocument());
   DCHECK(!Client()->IsLocalFrameClientImpl());
   DCHECK(GetPage());
@@ -2621,6 +2627,7 @@ void LocalFrame::ForceSynchronousDocumentInstall(const AtomicString& mime_type,
       DocumentInit::Create()
           .WithWindow(DomWindow(), nullptr)
           .WithTypeFrom(mime_type)
+          .WithURL(url)
           .ForPrerendering(GetPage()->IsPrerendering()));
   DCHECK_EQ(document, GetDocument());
   DocumentParser* parser = document->OpenForNavigation(
