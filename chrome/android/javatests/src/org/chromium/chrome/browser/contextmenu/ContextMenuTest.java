@@ -115,7 +115,6 @@ import org.chromium.ui.hierarchicalmenu.FlyoutController;
 import org.chromium.ui.listmenu.MenuModelBridge;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.mojom.MenuSourceType;
-import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.url.GURL;
 
 import java.io.IOException;
@@ -738,10 +737,7 @@ public class ContextMenuTest {
 
     @Test
     @LargeTest
-    @Restriction({
-        DeviceFormFactor.DESKTOP, // Re-enable on tablets once the crbug.com/500650152 is fixed.
-        DeviceRestriction.RESTRICTION_TYPE_NON_AUTO // crbug.com/502983881
-    })
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_EMPTY_SPACE})
     @DisableFeatures({UiAndroidFeatures.ANDROID_WINDOW_OCCLUSION})
     public void testSavePageLongPress() throws TimeoutException {
@@ -1317,10 +1313,7 @@ public class ContextMenuTest {
 
     @Test
     @SmallTest
-    @Restriction({
-        DeviceFormFactor.DESKTOP, // Re-enable on tablets once the crbug.com/500650152 is fixed.
-        DeviceRestriction.RESTRICTION_TYPE_NON_AUTO // crbug.com/502983881
-    })
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_EMPTY_SPACE})
     @DisableFeatures({UiAndroidFeatures.ANDROID_WINDOW_OCCLUSION})
     public void testSharePageLongPress() throws Exception {
@@ -1401,11 +1394,7 @@ public class ContextMenuTest {
 
     @Test
     @MediumTest
-    @Restriction({
-        DeviceFormFactor.DESKTOP, // Re-enable on tablets once the crbug.com/500650152 is fixed.
-        // Re-enable on automotive once crbug.com/504680967 is fixed
-        DeviceRestriction.RESTRICTION_TYPE_NON_AUTO
-    })
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @EnableFeatures({ChromeFeatureList.CONTEXT_MENU_EMPTY_SPACE})
     @DisableFeatures({UiAndroidFeatures.ANDROID_WINDOW_OCCLUSION})
     public void testPrintPageLongPress() throws Exception {
@@ -1464,9 +1453,21 @@ public class ContextMenuTest {
     }
 
     private void switchToDesktopUserAgent(Tab tab) {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> TabUtils.switchUserAgent(tab, /* switchToDesktop= */ true));
-        ChromeTabUtils.waitForTabPageLoaded(tab, mTestUrl);
+        boolean needsSwitch =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> !TabUtils.isUsingDesktopUserAgent(tab.getWebContents()));
+
+        if (needsSwitch) {
+            ChromeTabUtils.waitForTabPageLoaded(
+                    tab,
+                    mTestUrl,
+                    () ->
+                            ThreadUtils.runOnUiThreadBlocking(
+                                    () ->
+                                            TabUtils.switchUserAgent(
+                                                    tab, /* switchToDesktop= */ true)));
+        }
+        ChromeTabUtils.waitForInteractable(tab);
         mActivityTestRule.assertWaitForPageScaleFactorMatch(PAGE_SCALE_FACTOR);
     }
 
