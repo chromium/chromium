@@ -21,6 +21,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.asynclayoutinflater.view.AsyncLayoutInflater;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
@@ -110,6 +111,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
     private @Nullable FuseboxMediator mMediator;
     private @Nullable @BrandedColorScheme Integer mLastBrandedColorScheme;
     private boolean mDestroyed;
+    private @Nullable Callback<Boolean> mOnInteractionCompletedCallback;
 
     /**
      * Creates a new instance of {@link FuseboxCoordinator}.
@@ -133,9 +135,10 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         mContext = context;
         mWindowAndroid = windowAndroid;
         mParent = parent;
-        mScrimManager =
-                new ScrimManager(
-                        context, (ViewGroup) parent.getRootView(), ScrimClient.FUSEBOX_POPUP);
+        Activity activity = assumeNonNull(ContextUtils.activityFromContext(context));
+        ViewGroup contentView = activity.findViewById(android.R.id.content);
+        // TODO(crbug.com/509962912): Consider using RootUiCoordinator's ScrimManager.
+        mScrimManager = new ScrimManager(context, contentView, ScrimClient.FUSEBOX_POPUP);
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mSnackbarManager = snackbarManager;
         mScrimAnchorViewSupplier = scrimAnchorViewSupplier;
@@ -390,6 +393,10 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         if (mViewHolder == null || mViewHolder.addButton == null) return;
         mViewHolder.addButton.requestFocus();
         mViewHolder.addButton.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+        if (mOnInteractionCompletedCallback != null) {
+            mOnInteractionCompletedCallback.onResult(
+                    mMediator != null && mMediator.wasActionTaken());
+        }
     }
 
     @Initializer
@@ -442,6 +449,11 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
     /** Registers a callback notified when the layout mode of the fusebox changes. */
     public NonNullObservableSupplier<@FuseboxLayoutMode Integer> getFuseboxLayoutModeSupplier() {
         return mFuseboxLayoutModeSupplier;
+    }
+
+    /** Set callback to be invoked when the popup is dismissed. */
+    public void setOnInteractionCompletedCallback(Callback<Boolean> callback) {
+        mOnInteractionCompletedCallback = callback;
     }
 
     /**

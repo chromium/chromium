@@ -115,6 +115,8 @@ import java.util.function.Supplier;
     private @Nullable ComposeboxQueryControllerBridge mComposeboxQueryControllerBridge;
     private @Nullable FuseboxMetrics mMetrics;
     private @Nullable PropertyModel mScrimModel;
+    private boolean mActionTaken;
+
     private final ListObserver<Void> mListObserver =
             new ListObserver<>() {
                 @Override
@@ -192,6 +194,10 @@ import java.util.function.Supplier;
 
     /* package */ void destroy() {
         endInput();
+    }
+
+    public boolean wasActionTaken() {
+        return mActionTaken;
     }
 
     @EnsuresNonNullIf(
@@ -278,6 +284,7 @@ import java.util.function.Supplier;
      *     through the endInput() (valid -> valid). This is the case for tab switching.
      */
     /* package */ void beginInput(FuseboxSessionState session) {
+        mActionTaken = false;
         mMetrics = session.getMetrics();
         mProfile = assertNonNull(session.getProfile());
         setController(session.getComposeboxQueryControllerBridge());
@@ -592,6 +599,7 @@ import java.util.function.Supplier;
     private void onTabPickerClicked() {
         if (!isInInputSession()) return;
 
+        mActionTaken = true;
         hidePopup();
         mMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.TAB_PICKER);
         if (isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_TAB)) return;
@@ -717,6 +725,7 @@ import java.util.function.Supplier;
     private void onCameraClicked() {
         if (!isInInputSession()) return;
 
+        mActionTaken = true;
         hidePopup();
         mMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.CAMERA);
         if (isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_IMAGE)) return;
@@ -845,6 +854,7 @@ import java.util.function.Supplier;
     private void onImagePickerClicked() {
         if (!isInInputSession()) return;
 
+        mActionTaken = true;
         hidePopup();
         mMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.GALLERY);
         if (isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_IMAGE)) return;
@@ -890,6 +900,7 @@ import java.util.function.Supplier;
     private void onFilePickerClicked() {
         if (!isInInputSession()) return;
 
+        mActionTaken = true;
         hidePopup();
         mMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.FILES);
         if (isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_FILE)) return;
@@ -929,6 +940,7 @@ import java.util.function.Supplier;
     private void onClipboardClicked() {
         if (!isInInputSession()) return;
 
+        mActionTaken = true;
         hidePopup();
         mMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.CLIPBOARD);
         if (isMaxAttachmentCountReached(FuseboxAttachmentType.ATTACHMENT_IMAGE)) return;
@@ -1131,6 +1143,7 @@ import java.util.function.Supplier;
     }
 
     private void onDynamicButtonClicked(PopupButtonData data) {
+        mActionTaken = true;
         if (data.type == PopupButtonType.MODEL) {
             FuseboxMetrics.notifyModelButtonSelected(data.protoId);
             setModelMode(data.protoId);

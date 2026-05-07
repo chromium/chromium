@@ -366,6 +366,7 @@ class LocationBarMediator
                 .getFuseboxStateSupplier()
                 .addSyncObserverAndPostIfNonNull(
                         mCallbackController.makeCancelable(this::onFuseboxStateChanged));
+        mFuseboxCoordinator.setOnInteractionCompletedCallback(this::onFuseboxInteractionCompleted);
         mOmniboxChipManager = omniboxChipManager;
     }
 
@@ -1769,6 +1770,25 @@ class LocationBarMediator
         mLocationBarLayout.onFuseboxStateChanged(state);
     }
 
+    private void onFuseboxInteractionCompleted(boolean actionTaken) {
+        AutocompleteInput currentInput = mCurrentInput;
+        if (currentInput == null
+                || currentInput.getAutocompleteState() != AutocompleteState.STANDBY_NO_FOCUS) {
+            return;
+        }
+
+        if (actionTaken) {
+            currentInput.setAutocompleteState(AutocompleteState.ENABLED);
+            currentInput.setFocusReason(OmniboxFocusReason.FAKE_BOX_TAP);
+            beginOrResumeInput(/* activateNewSession= */ false);
+            requestUrlFocus();
+        } else {
+            // When no action is taken, just end the input session since the omnibox won't be
+            // focused.
+            endInput();
+        }
+    }
+
     private void updateNavigateButtonVisibility() {
         // TODO(crbug.com/464003589): Update the hasTextOrAttachments to include
         // getAttachmentsPresentSupplier check.
@@ -2257,7 +2277,7 @@ class LocationBarMediator
 
         if (mUrlHasFocus && mUrlFocusedWithoutAnimations) {
             handleUrlFocusAnimation(true);
-        } else {
+        } else if (input.getAutocompleteState() != AutocompleteState.STANDBY_NO_FOCUS) {
             requestUrlFocus();
         }
 
@@ -2271,7 +2291,9 @@ class LocationBarMediator
     @Override
     public void endInput() {
         endInputInternal();
-        mUrlCoordinator.clearFocus();
+        if (mUrlHasFocus) {
+            mUrlCoordinator.clearFocus();
+        }
     }
 
     @Override

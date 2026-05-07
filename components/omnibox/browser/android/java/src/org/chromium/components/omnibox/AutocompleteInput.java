@@ -53,7 +53,12 @@ public class AutocompleteInput implements UserData {
         int COUNT = 4;
     }
 
-    @IntDef({AutocompleteState.DISABLED, AutocompleteState.STANDBY, AutocompleteState.ENABLED})
+    @IntDef({
+        AutocompleteState.DISABLED,
+        AutocompleteState.STANDBY,
+        AutocompleteState.ENABLED,
+        AutocompleteState.STANDBY_NO_FOCUS
+    })
     @Retention(RetentionPolicy.SOURCE)
     public @interface AutocompleteState {
         /** Fully disabled autocompletion. */
@@ -64,6 +69,9 @@ public class AutocompleteInput implements UserData {
 
         /** Fully enabled autocompletion, including zero-state suggestions. */
         int ENABLED = 2;
+
+        /** Autocompletion disabled until user starts typing, and does not focus edittext. */
+        int STANDBY_NO_FOCUS = 3;
     }
 
     /** Data class representing the active site search mode state in the Omnibox. */
@@ -520,7 +528,8 @@ public class AutocompleteInput implements UserData {
      * reflect typing started.
      */
     public @AutocompleteState int getAutocompleteState() {
-        if (mAutocompleteState == AutocompleteState.STANDBY
+        if ((mAutocompleteState == AutocompleteState.STANDBY
+                        || mAutocompleteState == AutocompleteState.STANDBY_NO_FOCUS)
                 && !TextUtils.equals(mUserText.get(), mInitialUserText)) {
             mAutocompleteState = AutocompleteState.ENABLED;
         }

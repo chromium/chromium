@@ -69,7 +69,7 @@ public class NewTabPageCreationState implements UserData {
                     .focusSearchBox(
                             /* beginVoiceSearch= */ false,
                             /* requestType= */ AutocompleteRequestType.SEARCH,
-                            /* showFuseboxPopup= */ true,
+                            /* showFuseboxPopup= */ false,
                             /* pastedText= */ null);
         }
     }

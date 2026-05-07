@@ -101,6 +101,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.omnibox.AutocompleteInput;
+import org.chromium.components.omnibox.AutocompleteInput.AutocompleteState;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxFocusReason;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -288,17 +289,20 @@ public class NewTabPage
                         pastedText == null
                                 ? OmniboxFocusReason.FAKE_BOX_TAP
                                 : OmniboxFocusReason.FAKE_BOX_LONG_PRESS;
+                @AutocompleteState int autocompleteState = AutocompleteState.ENABLED;
                 if (requestType == AutocompleteRequestType.AI_MODE) {
                     focusReason = OmniboxFocusReason.NTP_AI_MODE;
                 } else if (showFuseboxPopup) {
                     focusReason = OmniboxFocusReason.FAKE_BOX_PLUS_BUTTON_TAP;
+                    autocompleteState = AutocompleteState.STANDBY_NO_FOCUS;
                 }
 
                 mOmniboxStub.beginInput(
                         new AutocompleteInput()
                                 .setUserText(pastedText)
                                 .setFocusReason(focusReason)
-                                .setRequestType(requestType));
+                                .setRequestType(requestType)
+                                .setAutocompleteState(autocompleteState));
             }
         }
 
