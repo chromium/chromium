@@ -96,7 +96,7 @@ public class AutofillDropdownAdapter extends ArrayAdapter<DropdownItem> {
         // so we have to adjust the height of this LinearLayout that wraps the TextViews
         // instead. If you need to modify this layout, don't forget to test it with TalkBack and
         // make sure it doesn't regress. http://crbug.com/429364
-        LinearLayout wrapper = (LinearLayout) layout.findViewById(R.id.dropdown_label_wrapper);
+        LinearLayout wrapper = layout.findViewById(R.id.dropdown_label_wrapper);
         wrapper.setOrientation(LinearLayout.VERTICAL);
         wrapper.setLayoutParams(new LinearLayout.LayoutParams(0, height, 1));
 
