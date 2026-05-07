@@ -1301,6 +1301,12 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
+    public void testUploadAndAddAttachment_nullAttachment_showsSnackbar() {
+        mMediator.uploadAndAddAttachment(/* attachment= */ null);
+        verify(mSnackbarManager).showSnackbar(any());
+    }
+
+    @Test
     public void testAddAttachment_disablesCreateImage() {
         doReturn("token-tab1").when(mComposeboxQueryControllerBridge).addTabContext(mTab1, false);
         doReturn(mTab1).when(mTabModelSelector).getCurrentTab();

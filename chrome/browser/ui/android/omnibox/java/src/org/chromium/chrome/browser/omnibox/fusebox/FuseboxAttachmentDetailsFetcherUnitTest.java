@@ -37,6 +37,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
 
@@ -50,7 +51,7 @@ public class FuseboxAttachmentDetailsFetcherUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private ContentResolver mContentResolver;
-    @Mock private Callback<FuseboxAttachment> mCallback;
+    @Mock private Callback<@Nullable FuseboxAttachment> mCallback;
 
     @Captor private ArgumentCaptor<FuseboxAttachment> mAttachmentCaptor;
 
@@ -73,8 +74,9 @@ public class FuseboxAttachmentDetailsFetcherUnitTest {
         when(mContentResolver.openInputStream(attachmentUri))
                 .thenReturn(new ByteArrayInputStream(expectedData));
 
-        MatrixCursor cursor = new MatrixCursor(new String[] {OpenableColumns.DISPLAY_NAME});
-        cursor.addRow(new Object[] {expectedTitle});
+        MatrixCursor cursor =
+                new MatrixCursor(new String[] {OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE});
+        cursor.addRow(new Object[] {expectedTitle, 1L});
         when(mContentResolver.query(eq(attachmentUri), isNull(), isNull(), isNull(), isNull()))
                 .thenReturn(cursor);
 
@@ -116,8 +118,9 @@ public class FuseboxAttachmentDetailsFetcherUnitTest {
         when(mContentResolver.openInputStream(attachmentUri))
                 .thenReturn(new ByteArrayInputStream(excpectedData));
 
-        MatrixCursor cursor = new MatrixCursor(new String[] {OpenableColumns.DISPLAY_NAME});
-        cursor.addRow(new Object[] {expectedTitle});
+        MatrixCursor cursor =
+                new MatrixCursor(new String[] {OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE});
+        cursor.addRow(new Object[] {expectedTitle, 1L});
         when(mContentResolver.query(eq(attachmentUri), isNull(), isNull(), isNull(), isNull()))
                 .thenReturn(cursor);
 
@@ -154,8 +157,9 @@ public class FuseboxAttachmentDetailsFetcherUnitTest {
         when(mContentResolver.openInputStream(attachmentUri))
                 .thenReturn(new ByteArrayInputStream(expectedData));
 
-        MatrixCursor cursor = new MatrixCursor(new String[] {OpenableColumns.DISPLAY_NAME});
-        cursor.addRow(new Object[] {expectedTitle});
+        MatrixCursor cursor =
+                new MatrixCursor(new String[] {OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE});
+        cursor.addRow(new Object[] {expectedTitle, 1L});
         when(mContentResolver.query(eq(attachmentUri), isNull(), isNull(), isNull(), isNull()))
                 .thenReturn(cursor);
 
@@ -192,8 +196,9 @@ public class FuseboxAttachmentDetailsFetcherUnitTest {
         when(mContentResolver.openInputStream(attachmentUri))
                 .thenReturn(new ByteArrayInputStream(expectedData));
 
-        MatrixCursor cursor = new MatrixCursor(new String[] {OpenableColumns.DISPLAY_NAME});
-        cursor.addRow(new Object[] {expectedTitle});
+        MatrixCursor cursor =
+                new MatrixCursor(new String[] {OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE});
+        cursor.addRow(new Object[] {expectedTitle, 1L});
         when(mContentResolver.query(eq(attachmentUri), isNull(), isNull(), isNull(), isNull()))
                 .thenReturn(cursor);
 
@@ -219,5 +224,36 @@ public class FuseboxAttachmentDetailsFetcherUnitTest {
         assertEquals(expectedMimeType, attachment.mimeType);
         assertArrayEquals(expectedData, attachment.data);
         assertEquals(FuseboxAttachmentButtonType.GALLERY, attachment.buttonType);
+    }
+
+    @Test
+    public void testFetchAttachmentDetails_fileTooLarge() throws FileNotFoundException {
+        Uri attachmentUri = Uri.parse("content://media/external/1");
+        String expectedTitle = "large_file.txt";
+        String expectedMimeType = "text/plain";
+
+        when(mContentResolver.getType(attachmentUri)).thenReturn(expectedMimeType);
+
+        MatrixCursor cursor =
+                new MatrixCursor(new String[] {OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE});
+        cursor.addRow(
+                new Object[] {
+                    expectedTitle, FuseboxAttachmentDetailsFetcher.MAX_ATTACHMENT_SIZE_BYTES + 1
+                });
+        when(mContentResolver.query(eq(attachmentUri), isNull(), isNull(), isNull(), isNull()))
+                .thenReturn(cursor);
+
+        FuseboxAttachmentDetailsFetcher fetcher =
+                new FuseboxAttachmentDetailsFetcher(
+                        mContext,
+                        mContentResolver,
+                        attachmentUri,
+                        mCallback,
+                        FuseboxAttachmentButtonType.FILES);
+
+        fetcher.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mCallback).onResult(null);
     }
 }

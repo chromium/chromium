@@ -997,7 +997,7 @@ import java.util.function.Supplier;
     @VisibleForTesting
     /* package */ void fetchAttachmentDetails(
             Uri uri,
-            Callback<FuseboxAttachment> callback,
+            Callback<@Nullable FuseboxAttachment> callback,
             @FuseboxAttachmentButtonType int buttonType) {
         new FuseboxAttachmentDetailsFetcher(
                         mContext, mContext.getContentResolver(), uri, callback, buttonType)
@@ -1009,7 +1009,11 @@ import java.util.function.Supplier;
      *
      * @param attachment Contains information about the input that will be added as context.
      */
-    /* package */ void uploadAndAddAttachment(FuseboxAttachment attachment) {
+    /* package */ void uploadAndAddAttachment(@Nullable FuseboxAttachment attachment) {
+        if (attachment == null) {
+            onAttachmentUploadFailed();
+            return;
+        }
         if (!isInInputSession()) return;
 
         // Image generation is only allowed to have a single piece of context.

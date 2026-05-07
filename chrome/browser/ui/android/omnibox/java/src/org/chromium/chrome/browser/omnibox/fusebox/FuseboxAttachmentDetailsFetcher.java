@@ -17,6 +17,8 @@ import android.provider.OpenableColumns;
 import android.text.TextUtils;
 import android.util.Size;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.Callback;
 import org.chromium.base.FileUtils;
 import org.chromium.base.task.AsyncTask;
@@ -39,10 +41,14 @@ import java.io.InputStream;
 class FuseboxAttachmentDetailsFetcher extends AsyncTask<Boolean> {
 
     private static final int THUMBNAIL_BITMAP_EDGE_SIZE = 256;
+
+    @VisibleForTesting
+    static final long MAX_ATTACHMENT_SIZE_BYTES = 100 * 1000 * 1000L; /* 100 MB */
+
     private final Context mContext;
     private final ContentResolver mContentResolver;
     private final Uri mUri;
-    private final Callback<FuseboxAttachment> mCallback;
+    private final Callback<@Nullable FuseboxAttachment> mCallback;
     private final long mStartTime = SystemClock.elapsedRealtime();
     private final @FuseboxAttachmentButtonType int mButtonType;
     private @Nullable Drawable mThumbnail;
@@ -54,7 +60,7 @@ class FuseboxAttachmentDetailsFetcher extends AsyncTask<Boolean> {
             Context context,
             ContentResolver contentResolver,
             Uri uri,
-            Callback<FuseboxAttachment> callback,
+            Callback<@Nullable FuseboxAttachment> callback,
             @FuseboxAttachmentButtonType int buttonType) {
         mContext = context;
         mContentResolver = contentResolver;
@@ -80,6 +86,7 @@ class FuseboxAttachmentDetailsFetcher extends AsyncTask<Boolean> {
         }
 
         String title = null;
+        Long size = null;
         Cursor cursor =
                 mContentResolver.query(
                         mUri,
@@ -89,9 +96,13 @@ class FuseboxAttachmentDetailsFetcher extends AsyncTask<Boolean> {
                         /* sortOrder= */ null);
         if (cursor != null) {
             int nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+            int sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE);
             cursor.moveToFirst();
             if (!cursor.isAfterLast()) {
                 title = cursor.getString(nameIndex);
+                if (sizeIndex != -1 && !cursor.isNull(sizeIndex)) {
+                    size = cursor.getLong(sizeIndex);
+                }
             }
             cursor.close();
         }
@@ -106,6 +117,10 @@ class FuseboxAttachmentDetailsFetcher extends AsyncTask<Boolean> {
         assert !TextUtils.isEmpty(title);
         assert !TextUtils.isEmpty(mimeType);
         if (title == null || mimeType == null) return false;
+
+        /* Only exempt images from size limits, as they should be downscaled */
+        if (MimeTypeUtils.getTypeFromMimeType(mimeType) != MimeTypeUtils.Type.IMAGE
+                && (size == null || size > MAX_ATTACHMENT_SIZE_BYTES)) return false;
 
         byte[] data;
 
@@ -126,7 +141,10 @@ class FuseboxAttachmentDetailsFetcher extends AsyncTask<Boolean> {
 
     @Override
     protected void onPostExecute(Boolean result) {
-        if (result == null || !result) return;
+        if (result == null || !result) {
+            mCallback.onResult(/* result= */ null);
+            return;
+        }
 
         String mimeType = assumeNonNull(mMimeType);
 
