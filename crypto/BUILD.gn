@@ -240,7 +240,10 @@ test("crypto_unittests") {
 
   if (is_apple) {
     if (!(is_ios && target_platform == "tvos")) {
-      sources += [ "apple/unexportable_key_apple_unittest.mm" ]
+      sources += [
+        "apple/keychain_util_unittest.mm",
+        "apple/unexportable_key_apple_unittest.mm",
+      ]
     }
   }
 
@@ -255,10 +258,7 @@ test("crypto_unittests") {
   }
 
   if (is_mac) {
-    sources += [
-      "apple/keychain_util_unittest.mm",
-      "user_verifying_key_mac_unittest.mm",
-    ]
+    sources += [ "user_verifying_key_mac_unittest.mm" ]
   }
 
   # Some files are built when NSS is used for the platform certificate library.

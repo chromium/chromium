@@ -563,6 +563,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Security.iOS.KeychainMigration.Result"
+    enum="IOSKeychainMigrationResult" expires_after="2026-10-20">
+  <owner>marq@chromium.org</owner>
+  <owner>bling-flags@google.com</owner>
+  <summary>
+    Tracks whether a keychain item required accessibility migration and if the
+    migration attempt succeeded. Migration is needed if the item currently has
+    kSecAttrAccessibleWhenUnlocked but should have
+    kSecAttrAccessibleAfterFirstUnlock. Recorded on iOS only, after a migration
+    attempt has finished.
+  </summary>
+</histogram>
+
+<histogram name="Security.iOS.KeychainMigration.UserStatus"
+    enum="IOSKeychainMigrationUserStatus" expires_after="2026-10-20">
+  <owner>marq@chromium.org</owner>
+  <owner>bling-flags@google.com</owner>
+  <summary>
+    Tracks the overall migration status of the keychain for a user. Recorded
+    once per cold start on iOS.
+  </summary>
+</histogram>
+
 <histogram name="Security.NavigationRequestSecurityLevel"
     enum="NavigationRequestSecurityLevel" expires_after="2026-09-06">
   <owner>jdeblasio@chromium.org</owner>

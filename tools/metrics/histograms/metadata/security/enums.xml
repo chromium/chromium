@@ -194,6 +194,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/chrome/browser/ssl/https_first_mode_settings_tracker.h) -->
 
+<enum name="IOSKeychainMigrationResult">
+  <int value="0" label="Not needed"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Failure"/>
+</enum>
+
+<enum name="IOSKeychainMigrationUserStatus">
+  <int value="0" label="No items"/>
+  <int value="1" label="Migrated"/>
+  <int value="2" label="Pending migration"/>
+</enum>
+
 <enum name="LandlockState">
   <int value="0" label="Enabled"/>
   <int value="1" label="Disabled"/>
