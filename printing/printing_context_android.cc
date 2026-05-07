@@ -14,6 +14,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/check_op.h"
+#include "base/file_descriptor_posix.h"
 #include "base/files/file.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -130,13 +131,20 @@ void PrintingContextAndroid::AskUserForSettingsReply(JNIEnv* env,
     return;
   }
 
+  // Take a duplicated file descriptor from Java to pass ownership to C++.
+  // This prevents Use-After-Close as C++ holds its own reference.
+  int raw_fd = Java_PrintingContext_takeDuplicatedFileDescriptor(
+      env, j_printing_context_);
+  if (raw_fd < 0) {
+    std::move(callback_).Run(mojom::ResultCode::kFailed);
+    return;
+  }
+  scoped_fd_.reset(raw_fd);
   // We use device name variable to store the file descriptor.  This is hacky
   // but necessary. Since device name is not necessary for the upstream
   // printing code for Android, this is harmless.
   // TODO(thestig): See if the call to set_device_name() can be removed.
-  fd_ = Java_PrintingContext_getFileDescriptor(env, j_printing_context_);
-  DCHECK(is_file_descriptor_valid());
-  settings_->set_device_name(base::NumberToString16(fd_));
+  settings_->set_device_name(base::NumberToString16(raw_fd));
 
   ScopedJavaLocalRef<jintArray> intArr =
       Java_PrintingContext_getPages(env, j_printing_context_);
@@ -223,10 +231,15 @@ mojom::ResultCode PrintingContextAndroid::PrintDocument(
   if (abort_printing_)
     return mojom::ResultCode::kCanceled;
   DCHECK(in_print_job_);
-  DCHECK(is_file_descriptor_valid());
 
-  return metafile.SaveToFileDescriptor(fd_) ? mojom::ResultCode::kSuccess
-                                            : mojom::ResultCode::kFailed;
+  if (!scoped_fd_.is_valid()) {
+    LOG(ERROR) << "Invalid file descriptor for printing.";
+    return mojom::ResultCode::kFailed;
+  }
+
+  return metafile.SaveToFileDescriptor(scoped_fd_.get())
+             ? mojom::ResultCode::kSuccess
+             : mojom::ResultCode::kFailed;
 }
 
 mojom::ResultCode PrintingContextAndroid::DocumentDone() {
@@ -241,10 +254,11 @@ mojom::ResultCode PrintingContextAndroid::DocumentDone() {
 void PrintingContextAndroid::Cancel() {
   abort_printing_ = true;
   in_print_job_ = false;
+  ReleaseContext();
 }
 
 void PrintingContextAndroid::ReleaseContext() {
-  // Intentional No-op.
+  scoped_fd_.reset();
 }
 
 printing::NativeDrawingContext PrintingContextAndroid::context() const {

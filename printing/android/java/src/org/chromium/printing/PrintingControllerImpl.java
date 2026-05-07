@@ -82,6 +82,9 @@ public class PrintingControllerImpl
 
     private static final int BUFFER_SIZE = 8 * 1024; // 8 KB
 
+    /** Constant for invalid file descriptor- equivalent to base::kInvalidFd (-1) in C++. */
+    public static final int INVALID_FD = -1;
+
     private @Nullable String mErrorMessage;
 
     private int mRenderProcessId;
@@ -205,8 +208,8 @@ public class PrintingControllerImpl
     }
 
     @Override
-    public int getFileDescriptor() {
-        return assumeNonNull(mFileDescriptor).getFd();
+    public @Nullable ParcelFileDescriptor getParcelFileDescriptor() {
+        return mFileDescriptor;
     }
 
     @Override
@@ -347,6 +350,11 @@ public class PrintingControllerImpl
         // TODO(cimamoglu): Make use of CancellationSignal.
         if (ranges == null || ranges.length == 0) {
             callback.onWriteFailed(null);
+            try {
+                destination.close();
+            } catch (IOException e) {
+                /* ignore */
+            }
             return;
         }
 
@@ -360,6 +368,12 @@ public class PrintingControllerImpl
             mOnWriteCallback.onWriteFailed("ParcelFileDescriptor.dup() failed: " + e.toString());
             resetCallbacks();
             return;
+        } finally {
+            try {
+                destination.close();
+            } catch (IOException e) {
+                /* ignore */
+            }
         }
         mPages = convertPageRangesToIntegerArray(ranges);
         InputStream pdfInputStream = assumeNonNull(mPrintable).getPdfInputStream();

@@ -390,6 +390,38 @@ public class PrintingControllerTest {
     @Test
     @SmallTest
     @Feature({"Printing"})
+    public void testGetFileDescriptorAfterFinish() throws Exception {
+        WebPageStation page = mActivityTestRule.startOnUrl(URL);
+        final PrintingControllerImpl controller = createControllerOnUiThread();
+
+        startControllerOnUiThread(controller, page.getTab());
+
+        try (TemporaryFileHandler handler = new TemporaryFileHandler()) {
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> {
+                        Assert.assertNull(controller.getParcelFileDescriptor());
+                        controller.onStart();
+
+                        // Simulate onWrite to set the file descriptor
+                        controller.onWrite(
+                                new PageRange[] {PageRange.ALL_PAGES},
+                                handler.getFileDescriptor(),
+                                new CancellationSignal(),
+                                new WriteResultCallbackWrapperMock());
+
+                        // Check that it is now a valid FD (non-null ParcelFileDescriptor)
+                        Assert.assertNotNull(controller.getParcelFileDescriptor());
+
+                        controller.onFinish();
+                        // Verify it goes back to invalid after finish
+                        Assert.assertNull(controller.getParcelFileDescriptor());
+                    });
+        }
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Printing"})
     public void testTabPrinterCanPrintHiddenTab() {
         WebPageStation page = mActivityTestRule.startOnUrl(URL);
         ChromeTabbedActivity cta = page.getActivity();
