@@ -69,8 +69,6 @@ source_set("common") {
     "background_fetch/background_fetch_types.cc",
     "background_fetch/background_fetch_types.h",
     "color_parser.cc",
-    "common_param_traits.cc",
-    "common_param_traits.h",
     "content_constants_internal.h",
     "content_export.h",
     "content_navigation_policy.cc",
@@ -534,8 +532,6 @@ mojom("mojo_bindings") {
       ]
 
       traits_public_deps = [
-        # NOTE: These dependencies are here to satisfy gn check because
-        # common_param_traits_macros.h include their headers.
         # Although the mojo bindings target is configured to allow direct circular
         # includes from //content/common and //content/public/common, this isn't a
         # transitive allowance, so those targets' own public_deps aren't included in
