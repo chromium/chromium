@@ -1030,8 +1030,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorActorTaskTest,
   instance->OnTabAddedToTask(task_id, tab2->GetHandle());
 
   EXPECT_TRUE(instance->IsShowing());
-  EXPECT_OK(
-      WaitForSidePanelState(tab2, GlicSidePanelCoordinator::State::kShown));
+  EXPECT_OK(WaitForEmbedderActivationOrPeek(instance, tab2));
 }
 
 class GlicInstanceCoordinatorHibernationTest

@@ -1610,6 +1610,7 @@ void GlicInstanceImpl::OnTabAddedToTask(
   }
   SidePanelShowOptions side_panel_options{*tab};
   side_panel_options.suppress_opening_animation = true;
+  side_panel_options.prefer_peek = true;
 
   if (base::FeatureList::IsEnabled(
           kGlicActorDaisyChainingFromFloatingUiDoesntClose) &&
