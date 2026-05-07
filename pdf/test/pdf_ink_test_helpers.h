@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <iosfwd>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -109,11 +110,17 @@ MATCHER_P5(InkTextInfoEq,
            glyph_positions,
            location,
            is_horizontal,
-           "matches InkTextInfo") {
+           testing::PrintToString(InkTextInfo(font_id,
+                                              glyphs,
+                                              glyph_positions,
+                                              location,
+                                              is_horizontal))) {
   return arg.font_id == font_id && arg.glyphs == glyphs &&
          arg.glyph_positions == glyph_positions && arg.location == location &&
          arg.is_horizontal == is_horizontal;
 }
+
+void PrintTo(const InkTextInfo& info, std::ostream* os);
 
 // Generate the path for test files specific to Ink.
 base::FilePath GetInkTestDataFilePath(base::FilePath::StringViewType filename);

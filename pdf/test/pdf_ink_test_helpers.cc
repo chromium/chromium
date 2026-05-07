@@ -5,12 +5,15 @@
 #include "pdf/test/pdf_ink_test_helpers.h"
 
 #include <array>
+#include <ostream>
 #include <string_view>
 #include <utility>
 
 #include "base/notreached.h"
+#include "base/strings/to_string.h"
 #include "base/values.h"
 #include "pdf/pdf_ink_conversions.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace chrome_pdf {
 
@@ -99,6 +102,15 @@ base::FilePath GetInkTestDataFilePath(base::FilePath::StringViewType filename) {
 
 base::span<const InkTestVariation> GetAllInkTestVariations() {
   return kInkTestVariations;
+}
+
+void PrintTo(const InkTextInfo& info, std::ostream* os) {
+  *os << "{\n  font_id=" << info.font_id
+      << ", is_horizontal=" << base::ToString(info.is_horizontal)
+      << ",\n  location=" << info.location.ToString()
+      << ",\n  glyphs=" << testing::PrintToString(info.glyphs)
+      << ",\n  glyph_positions=" << testing::PrintToString(info.glyph_positions)
+      << "\n}";
 }
 
 }  // namespace chrome_pdf
