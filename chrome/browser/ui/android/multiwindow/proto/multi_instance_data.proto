@@ -58,6 +58,9 @@ message MultiInstanceData {
 
   // Per-windowing mode data, keyed by mode index.
   map<int32, WindowModeData> window_modes = 12;
+
+  // State to track pending crash recovery.
+  optional bool is_crash_recovery_pending = 13;
 }
 
 // Data representing the state of a single Chrome instance.
@@ -95,20 +98,20 @@ message InstanceData {
 
   optional bool marked_for_deletion = 13;
 
-  // Data for recovery from crash.
-  message CrashRecoveryData {
-    optional int32 display_id = 1;
-    optional bool is_foreground = 2;
-
-    message Rect {
-      optional int32 left = 1;
-      optional int32 top = 2;
-      optional int32 right = 3;
-      optional int32 bottom = 4;
-    }
-    optional Rect bounds = 3;
+  // Data to track active window state.
+  optional bool is_visible = 14;
+  message Rect {
+    optional int32 left = 1;
+    optional int32 top = 2;
+    optional int32 right = 3;
+    optional int32 bottom = 4;
   }
-  optional CrashRecoveryData crash_recovery_data = 14;
+  optional Rect bounds = 15;
+
+  // Determine whether this instance should be considered for recovery on
+  // browser process startup. For example, after a crash or based on user
+  // preferences.
+  optional bool is_recoverable = 16;
 }
 
 // Data representing the state of a specific windowing mode.

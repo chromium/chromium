@@ -11,32 +11,26 @@ import org.chromium.build.annotations.Nullable;
 
 import java.util.Locale;
 
-/**
- * Data holder for information relevant to windows requiring recovery on a specific display after an
- * app crash.
- */
+/** Data holder for information relevant to windows requiring recovery after an app crash. */
 @NullMarked
-class CrashRecoveryWindowInfo {
+final class CrashRecoveryWindowInfo {
     public final int windowId;
-    public final int displayId;
     public final @Nullable Rect bounds;
-    public final boolean isForeground;
+    public final boolean isVisible;
 
-    CrashRecoveryWindowInfo(
-            int windowId, int displayId, @Nullable Rect bounds, boolean isForeground) {
+    CrashRecoveryWindowInfo(int windowId, @Nullable Rect bounds, boolean isVisible) {
         this.windowId = windowId;
-        this.displayId = displayId;
         this.bounds = bounds;
-        this.isForeground = isForeground;
+        this.isVisible = isVisible;
     }
 
     @Override
     public String toString() {
         return String.format(
                 Locale.ENGLISH,
-                "CrashRecoveryWindowInfo(displayId=%d, isForeground=%b, bounds=%s)",
-                displayId,
-                isForeground,
+                "CrashRecoveryWindowInfo(windowId=%d, isVisible=%b, bounds=%s)",
+                windowId,
+                isVisible,
                 bounds == null ? "null" : bounds.toShortString());
     }
 }

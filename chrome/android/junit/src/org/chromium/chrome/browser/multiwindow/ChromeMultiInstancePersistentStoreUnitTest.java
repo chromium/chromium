@@ -11,11 +11,14 @@ import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.browser.multiwindow.MultiInstanceManager.INVALID_WINDOW_ID;
 
+import android.graphics.Rect;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -23,6 +26,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 
+import java.time.Duration;
 import java.util.Set;
 
 /**
@@ -269,5 +273,82 @@ public class ChromeMultiInstancePersistentStoreUnitTest {
 
         ChromeMultiInstancePersistentStore.writeMarkedForDeletion(INSTANCE_ID_0, false);
         assertFalse(ChromeMultiInstancePersistentStore.readMarkedForDeletion(INSTANCE_ID_0));
+    }
+
+    @Test
+    public void testCrashRecoveryData() {
+        // Initially, no crash recovery data.
+        assertTrue(ChromeMultiInstancePersistentStore.readCrashRecoveryData().isEmpty());
+
+        ChromeMultiInstancePersistentStore.writeIsVisible(INSTANCE_ID_0, true);
+        ChromeMultiInstancePersistentStore.writeIsRecoverable(INSTANCE_ID_0, true);
+
+        var recoveryData = ChromeMultiInstancePersistentStore.readCrashRecoveryData();
+        assertEquals(1, recoveryData.size());
+        assertEquals(INSTANCE_ID_0, recoveryData.get(0).windowId);
+        assertTrue(recoveryData.get(0).isVisible);
+        assertNull(recoveryData.get(0).bounds);
+    }
+
+    @Test
+    public void testCrashRecoveryBounds() {
+        Rect bounds = new Rect(10, 20, 100, 200);
+        ChromeMultiInstancePersistentStore.writeIsRecoverable(INSTANCE_ID_0, true);
+        ChromeMultiInstancePersistentStore.writeBounds(INSTANCE_ID_0, bounds);
+
+        var recoveryData = ChromeMultiInstancePersistentStore.readCrashRecoveryData();
+        assertEquals(1, recoveryData.size());
+        assertEquals(bounds, recoveryData.get(0).bounds);
+    }
+
+    @Test
+    public void testReadCrashRecoveryData_Filtering() {
+        ChromeMultiInstancePersistentStore.writeIsRecoverable(INSTANCE_ID_0, true);
+        ChromeMultiInstancePersistentStore.writeIsRecoverable(INSTANCE_ID_1, false);
+
+        var recoveryData = ChromeMultiInstancePersistentStore.readCrashRecoveryData();
+        assertEquals(1, recoveryData.size());
+        assertEquals(INSTANCE_ID_0, recoveryData.get(0).windowId);
+    }
+
+    @Test
+    public void testReadCrashRecoveryData_Sorting() {
+        // Write data for three instances in non-sequential order of IDs and access times.
+        // Order of access: Instance 2 (oldest), Instance 0, Instance 1 (newest).
+
+        // 1. Instance 2 accessed first.
+        ChromeMultiInstancePersistentStore.writeIsRecoverable(INSTANCE_ID_2, true);
+        ChromeMultiInstancePersistentStore.writeLastAccessedTime(INSTANCE_ID_2);
+        ShadowSystemClock.advanceBy(Duration.ofMillis(100));
+
+        // 2. Instance 0 accessed second.
+        ChromeMultiInstancePersistentStore.writeIsRecoverable(INSTANCE_ID_0, true);
+        ChromeMultiInstancePersistentStore.writeLastAccessedTime(INSTANCE_ID_0);
+        ShadowSystemClock.advanceBy(Duration.ofMillis(100));
+
+        // 3. Instance 1 accessed last.
+        ChromeMultiInstancePersistentStore.writeIsRecoverable(INSTANCE_ID_1, true);
+        ChromeMultiInstancePersistentStore.writeLastAccessedTime(INSTANCE_ID_1);
+
+        var recoveryData = ChromeMultiInstancePersistentStore.readCrashRecoveryData();
+        assertEquals(3, recoveryData.size());
+
+        // Sorted by increasing order of last_accessed_time.
+        assertEquals(INSTANCE_ID_2, recoveryData.get(0).windowId);
+        assertEquals(INSTANCE_ID_0, recoveryData.get(1).windowId);
+        assertEquals(INSTANCE_ID_1, recoveryData.get(2).windowId);
+    }
+
+    @Test
+    public void testIsCrashRecoveryPending() {
+        // Verify default value.
+        assertFalse(ChromeMultiInstancePersistentStore.readIsCrashRecoveryPending());
+
+        // Verify that the value is successfully written to the store.
+        ChromeMultiInstancePersistentStore.writeIsCrashRecoveryPending(true);
+        assertTrue(ChromeMultiInstancePersistentStore.readIsCrashRecoveryPending());
+
+        ChromeMultiInstancePersistentStore.writeIsCrashRecoveryPending(false);
+        assertFalse(ChromeMultiInstancePersistentStore.readIsCrashRecoveryPending());
     }
 }

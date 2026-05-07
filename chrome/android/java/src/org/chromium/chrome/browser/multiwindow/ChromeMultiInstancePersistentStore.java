@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.multiwindow;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.multiwindow.MultiInstanceManager.INVALID_WINDOW_ID;
 
+import android.graphics.Rect;
+
 import org.chromium.base.TimeUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.NullMarked;
@@ -16,8 +18,11 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceDataProto.InstanceDa
 import org.chromium.chrome.browser.preferences.MultiInstancePreferenceKeys;
 import org.chromium.chrome.browser.tabmodel.SupportedProfileType;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -30,6 +35,15 @@ import java.util.regex.Pattern;
  */
 @NullMarked
 class ChromeMultiInstancePersistentStore extends MultiInstancePersistentStore {
+    private static class InstanceDataWithId {
+        private final int mId;
+        private final InstanceData mInstanceData;
+
+        private InstanceDataWithId(int id, InstanceData instanceData) {
+            mId = id;
+            mInstanceData = instanceData;
+        }
+    }
 
     static Set<Integer> readAllInstanceIds() {
         // We arbitrarily choose to use the lastAccessedTime map to extract persisted instance ids
@@ -360,6 +374,84 @@ class ChromeMultiInstancePersistentStore extends MultiInstancePersistentStore {
         } else {
             getManager().writeBoolean(markedForDeletionKey(instanceId), markedForDeletion);
         }
+    }
+
+    static void writeIsVisible(int instanceId, boolean isVisible) {
+        if (sData != null) {
+            putInstance(instanceId, getInstanceFromProto(instanceId).setIsVisible(isVisible));
+        }
+    }
+
+    static void writeBounds(int instanceId, Rect bounds) {
+        if (sData != null) {
+            InstanceData.Rect protoRect =
+                    InstanceData.Rect.newBuilder()
+                            .setLeft(bounds.left)
+                            .setTop(bounds.top)
+                            .setRight(bounds.right)
+                            .setBottom(bounds.bottom)
+                            .build();
+            putInstance(instanceId, getInstanceFromProto(instanceId).setBounds(protoRect));
+        }
+    }
+
+    static void writeIsRecoverable(int instanceId, boolean isRecoverable) {
+        if (sData != null) {
+            putInstance(
+                    instanceId, getInstanceFromProto(instanceId).setIsRecoverable(isRecoverable));
+        }
+    }
+
+    static boolean readIsCrashRecoveryPending() {
+        return sData != null && sData.getIsCrashRecoveryPending();
+    }
+
+    static void writeIsCrashRecoveryPending(boolean isCrashRecoveryPending) {
+        if (sData != null) {
+            sData = sData.toBuilder().setIsCrashRecoveryPending(isCrashRecoveryPending).build();
+            saveProto();
+        }
+    }
+
+    static List<CrashRecoveryWindowInfo> readCrashRecoveryData() {
+        if (sData == null) return Collections.emptyList();
+
+        List<InstanceDataWithId> crashedInstances = new ArrayList<>();
+        for (Map.Entry<Integer, InstanceData> entry : sData.getInstancesMap().entrySet()) {
+            InstanceData data = entry.getValue();
+            if (data.getIsRecoverable()) {
+                crashedInstances.add(new InstanceDataWithId(entry.getKey(), data));
+            }
+        }
+
+        if (crashedInstances.isEmpty()) return Collections.emptyList();
+
+        // Sort in increasing order of last_accessed_time. This helps restore windows in the
+        // required z-order (most recently accessed window is on the top) during post-crash
+        // recovery.
+        crashedInstances.sort(
+                (i1, i2) ->
+                        Long.compare(
+                                i1.mInstanceData.getLastAccessedTime(),
+                                i2.mInstanceData.getLastAccessedTime()));
+
+        List<CrashRecoveryWindowInfo> windows = new ArrayList<>();
+        for (InstanceDataWithId item : crashedInstances) {
+            Rect bounds = null;
+            if (item.mInstanceData.hasBounds()) {
+                InstanceData.Rect protoBounds = item.mInstanceData.getBounds();
+                bounds =
+                        new Rect(
+                                protoBounds.getLeft(),
+                                protoBounds.getTop(),
+                                protoBounds.getRight(),
+                                protoBounds.getBottom());
+            }
+            windows.add(
+                    new CrashRecoveryWindowInfo(
+                            item.mId, bounds, item.mInstanceData.getIsVisible()));
+        }
+        return windows;
     }
 
     private static String lastAccessedTimeKey(int instanceId) {
