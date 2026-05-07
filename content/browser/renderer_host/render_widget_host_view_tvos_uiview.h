@@ -22,6 +22,9 @@
   // but doing so on a UITextField instance does, so we use this text field to
   // show/hide the system keyboard and plumb its value to |_view| and Blink.
   UITextField* _textFieldForAllTextInput;
+  // Set on pressesBegan for kSelect when an input field is focused, cleared and
+  // used on pressesEnded to show the keyboard.
+  BOOL _selectWillShowKeyboard;
 }
 
 - (instancetype)initWithWidget:

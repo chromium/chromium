@@ -26,6 +26,7 @@ typedef NS_ENUM(NSInteger, RemoteButton) {
   kLeft,
   kRight,
   kMediaPlayPause,
+  kSelect,
   kMenu,
   kNone
 };
@@ -72,6 +73,9 @@ RemoteButton remoteButtonFromPressType(UIPressType type) {
     case UIPressTypePlayPause:
       button = kMediaPlayPause;
       break;
+    case UIPressTypeSelect:
+      button = kSelect;
+      break;
     case UIPressTypeMenu:
       button = kMenu;
       break;
@@ -98,11 +102,6 @@ RemoteButton remoteButtonFromPressType(UIPressType type) {
     // tvOS supports multiple types of input events from the Remote, including
     // the clickpad (touch surface), the clickpad ring (directional control),
     // and various physical buttons.
-    // Add a tap gesture recognizer to handle center-clickpad press events.
-    UITapGestureRecognizer* tapGesture =
-        [[UITapGestureRecognizer alloc] initWithTarget:self
-                                                action:@selector(tapGesture:)];
-    [self addGestureRecognizer:tapGesture];
 
     // Create and add swipe gesture recognizers for all directions originating
     // from the clickpad buttons.
@@ -194,44 +193,6 @@ RemoteButton remoteButtonFromPressType(UIPressType type) {
   [self addGestureRecognizer:swipeGesture];
 }
 
-- (void)tapGesture:(UIGestureRecognizer*)gestureRecognizer {
-  if ([gestureRecognizer state] != UIGestureRecognizerStateEnded) {
-    return;
-  }
-
-  const ui::mojom::TextInputState* state = [self editState];
-  if (state && state->mode != ui::TextInputMode::TEXT_INPUT_MODE_NONE &&
-      state->type != ui::TextInputType::TEXT_INPUT_TYPE_NONE) {
-    [self showKeyboard:*state];
-    return;
-  }
-
-  blink::WebKeyboardEvent event(blink::WebInputEvent::Type::kKeyDown,
-                                blink::WebInputEvent::kNoModifiers,
-                                ui::EventTimeForNow());
-  event.native_key_code = UIKeyboardHIDUsageKeyboardReturnOrEnter;
-  event.dom_code = static_cast<int>(ui::DomCode::ENTER);
-  event.dom_key = ui::DomKey::ENTER;
-  event.windows_key_code = ui::VKEY_RETURN;
-
-  // Copied from components/input/web_input_event_builders_mac.mm's
-  // WebKeyboardEventBuilder::Build().
-  // This is necessary due to way some HTML elements process keyboard activation
-  // (e.g. blink::HTMLElement::HandleKeyboardActivation()).
-  event.text[0] = '\r';
-  event.unmodified_text[0] = '\r';
-
-  _view->SendKeyEvent(
-      input::NativeWebKeyboardEvent(event, _view->GetNativeView()));
-
-  // We also need to send a keyup event so that e.g. checkboxes are properly
-  // activated/deactivated with the keyboard.
-  event.SetType(blink::WebInputEvent::Type::kKeyUp);
-  event.SetTimeStamp(ui::EventTimeForNow());
-  _view->SendKeyEvent(
-      input::NativeWebKeyboardEvent(event, _view->GetNativeView()));
-}
-
 - (void)swipeGesture:(UISwipeGestureRecognizer*)gestureRecognizer {
   if ([gestureRecognizer state] != UIGestureRecognizerStateEnded) {
     return;
@@ -281,6 +242,28 @@ RemoteButton remoteButtonFromPressType(UIPressType type) {
   }
 }
 
+// Handles keyboard-show logic for UIPressTypeSelect. Returns YES if the key
+// event should be suppressed (keyboard was shown or will be shown).
+- (BOOL)handleSelectPressWithType:(blink::WebInputEvent::Type)type {
+  const ui::mojom::TextInputState* state = [self editState];
+  if (type == blink::WebInputEvent::Type::kKeyDown) {
+    if (state && state->mode != ui::TextInputMode::TEXT_INPUT_MODE_NONE &&
+        state->type != ui::TextInputType::TEXT_INPUT_TYPE_NONE) {
+      _selectWillShowKeyboard = YES;
+      return YES;
+    }
+  } else if (type == blink::WebInputEvent::Type::kKeyUp) {
+    if (_selectWillShowKeyboard) {
+      _selectWillShowKeyboard = NO;
+      if (state) {
+        [self showKeyboard:*state];
+      }
+      return YES;
+    }
+  }
+  return NO;
+}
+
 // Returns the set of unhanlded UIPress events to propagate to `super`.
 - (NSSet<UIPress*>*)handlePresses:(NSSet<UIPress*>*)presses
                          withType:(blink::WebInputEvent::Type)type {
@@ -295,6 +278,9 @@ RemoteButton remoteButtonFromPressType(UIPressType type) {
       if (![self sendKeyboardEvent:press eventType:type]) {
         [unhandled addObject:press];
       }
+      continue;
+    }
+    if (button == kSelect && [self handleSelectPressWithType:type]) {
       continue;
     }
     if (![self sendKeyEventWithRemoteButton:button eventType:type]) {
@@ -379,6 +365,18 @@ RemoteButton remoteButtonFromPressType(UIPressType type) {
       event.dom_code = static_cast<int>(ui::DomCode::MEDIA_PLAY_PAUSE);
       event.dom_key = ui::DomKey::MEDIA_PLAY_PAUSE;
       event.windows_key_code = ui::VKEY_MEDIA_PLAY_PAUSE;
+      break;
+    case kSelect:
+      event.native_key_code = UIKeyboardHIDUsageKeyboardReturnOrEnter;
+      event.dom_code = static_cast<int>(ui::DomCode::ENTER);
+      event.dom_key = ui::DomKey::ENTER;
+      event.windows_key_code = ui::VKEY_RETURN;
+      // Copied from components/input/web_input_event_builders_mac.mm's
+      // WebKeyboardEventBuilder::Build().
+      // This is necessary due to way some HTML elements process keyboard
+      // activation (e.g. blink::HTMLElement::HandleKeyboardActivation()).
+      event.text[0] = '\r';
+      event.unmodified_text[0] = '\r';
       break;
     case kMenu:
       // Refer to https://support.apple.com/en-us/102337.
