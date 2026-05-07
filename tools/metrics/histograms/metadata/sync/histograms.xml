@@ -1847,40 +1847,6 @@ chromium-metrics-reviews@google.com.
   <summary>The active sync passphrase type at sync startup.</summary>
 </histogram>
 
-<histogram name="Sync.PassphraseType2" enum="PassphraseTypeForMetrics"
-    expires_after="2026-11-01">
-  <owner>mmoskvitin@google.com</owner>
-  <owner>mastiz@chromium.org</owner>
-  <summary>
-    TODO(crbug.com/347711860): Remove this on 02/2026, once Sync.PassphraseType5
-    has been available for a year. That one relies on a pref that caches the
-    passphrase type and thus can record the correct value before sync engine
-    initialization.
-
-    Sync passphrase type collected at each metrics upload. Also used for the
-    &quot;Sync passphrase type&quot; filter in the dashboard.
-  </summary>
-</histogram>
-
-<histogram name="Sync.PassphraseType4" enum="PassphraseTypeForMetrics"
-    expires_after="never">
-<!-- expires-never: important for UMA filtering. -->
-
-  <owner>treib@chromium.org</owner>
-  <owner>src/components/sync/OWNERS</owner>
-  <summary>
-    TODO(crbug.com/347711860): Remove this on 02/2026, once Sync.PassphraseType5
-    has been available for a year. That one correctly records
-    &quot;kUnknown&quot; for signed-out users.
-
-    Sync passphrase type collected at each metrics upload. The implementation
-    relies on the kSyncCachedPassphraseType pref, and thus can record the
-    correct value before sync engine initialization. Signed-out users are
-    counted in the &quot;implicit passphrase&quot; bucket. Recorded only after
-    profile initialization.
-  </summary>
-</histogram>
-
 <histogram name="Sync.PassphraseType5" enum="PassphraseTypeForMetrics"
     expires_after="never">
 <!-- expires-never: important for UMA filtering. -->
