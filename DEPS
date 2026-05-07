@@ -4919,8 +4919,4 @@ recursedeps = [
   'src/clank',
   'src/components/optimization_guide/internal',
   'src/ios_internal',
-  # TODO(crbug.com/430571901): Fix telemetry_unittests to use
-  # third_party/webpagereplay instead of the copy inside catapult and remove
-  # this.
-  'src/third_party/catapult',
 ]

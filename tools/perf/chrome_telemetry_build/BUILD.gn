@@ -189,6 +189,7 @@ group("telemetry_chrome_test_without_chrome") {
   data = [
     "//build/android/pylib/",  # chromium_config.py uses pylib to look for Java
     "//components/crash/content/tools/generate_breakpad_symbols.py",
+    "//third_party/webpagereplay/",
     "//tools/perf/chrome_telemetry_build/",
     "//tools/perf/core/",  # chrome_telemetry_build/ depends on core/
   ]
