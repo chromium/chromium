@@ -42,12 +42,17 @@
 #pragma mark - Public
 
 - (void)processImageItems:(NSArray<ComposeboxPickerImageResult*>*)imageItems {
-  std::set<web::WebStateID> emptySet;
+  NSMutableArray<ComposeboxPickerImageResult*>* updatedImageResults =
+      [_preselection.images mutableCopy];
+  [updatedImageResults addObjectsFromArray:imageItems];
+
   ComposeboxAttachmentSelection* selection =
-      [[ComposeboxAttachmentSelection alloc] initWithTabIDs:emptySet
-                                          cachedWebStateIDs:emptySet
-                                                     images:imageItems
-                                                      files:nil];
+      [[ComposeboxAttachmentSelection alloc]
+             initWithTabIDs:_preselection.tabIDs
+          cachedWebStateIDs:_preselection.cachedWebStateIDs
+                     images:updatedImageResults
+                      files:_preselection.files];
+
   [self.delegate composeboxMenuMediator:self didUpdateAttachments:selection];
 }
 
@@ -62,22 +67,29 @@
 }
 
 - (void)processFileURLs:(NSArray<NSURL*>*)urls {
-  std::set<web::WebStateID> emptySet;
+  NSMutableSet<NSURL*>* updatedURLs = [NSMutableSet setWithArray:urls];
+  [updatedURLs addObjectsFromArray:_preselection.files];
+
   ComposeboxAttachmentSelection* selection =
-      [[ComposeboxAttachmentSelection alloc] initWithTabIDs:emptySet
-                                          cachedWebStateIDs:emptySet
-                                                     images:nil
-                                                      files:urls];
+      [[ComposeboxAttachmentSelection alloc]
+             initWithTabIDs:_preselection.tabIDs
+          cachedWebStateIDs:_preselection.cachedWebStateIDs
+                     images:_preselection.images
+                      files:[updatedURLs allObjects]];
   [self.delegate composeboxMenuMediator:self didUpdateAttachments:selection];
 }
 
 - (void)processWebStateIDs:(std::set<web::WebStateID>)selectedWebStateIDs
          cachedWebStateIDs:(std::set<web::WebStateID>)cachedWebStateIDs {
+  // As the tab picker is prepopulated, there's no need to handle the set
+  // difference, as the web state IDs already take into account the
+  // preselection.
   ComposeboxAttachmentSelection* selection =
-      [[ComposeboxAttachmentSelection alloc] initWithTabIDs:selectedWebStateIDs
-                                          cachedWebStateIDs:cachedWebStateIDs
-                                                     images:nil
-                                                      files:nil];
+      [[ComposeboxAttachmentSelection alloc]
+             initWithTabIDs:selectedWebStateIDs
+          cachedWebStateIDs:cachedWebStateIDs
+                     images:_preselection.images
+                      files:_preselection.files];
   [self.delegate composeboxMenuMediator:self didUpdateAttachments:selection];
 }
 
@@ -124,20 +136,7 @@
                                 didTapModel:ComposeboxModelOption::kThinking];
       break;
     case ComposeboxMenuItemType::kCurrentTab: {
-      if (_webStateList) {
-        web::WebState* activeWebState = _webStateList->GetActiveWebState();
-        if (activeWebState) {
-          web::WebStateID activeWebStateID =
-              activeWebState->GetUniqueIdentifier();
-
-          std::set<web::WebStateID> webStateIDs = _preselection.tabIDs;
-          webStateIDs.insert(activeWebStateID);
-          std::set<web::WebStateID> cachedWebStateIDs =
-              _preselection.cachedWebStateIDs;
-          [self processWebStateIDs:webStateIDs
-                 cachedWebStateIDs:cachedWebStateIDs];
-        }
-      }
+      [self processCurrentTab];
       break;
     }
     case ComposeboxMenuItemType::kModelThinkingNoGenUI:
@@ -191,6 +190,28 @@
     }
   }
   return webStateIDs;
+}
+
+#pragma mark - Private
+
+// Processes the current tab selection.
+- (void)processCurrentTab {
+  if (!_webStateList) {
+    return;
+  }
+
+  web::WebState* activeWebState = _webStateList->GetActiveWebState();
+  if (!activeWebState) {
+    return;
+  }
+
+  web::WebStateID activeWebStateID = activeWebState->GetUniqueIdentifier();
+
+  std::set<web::WebStateID> webStateIDs = _preselection.tabIDs;
+  webStateIDs.insert(activeWebStateID);
+
+  [self processWebStateIDs:webStateIDs
+         cachedWebStateIDs:_preselection.cachedWebStateIDs];
 }
 
 @end

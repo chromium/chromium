@@ -539,10 +539,8 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
               completion:stopAccessScopedResourcesIfNeeded];
   }
 
-  if (!attachments.tabIDs.empty()) {
-    [self attachSelectedTabsWithWebStateIDs:attachments.tabIDs
-                          cachedWebStateIDs:attachments.cachedWebStateIDs];
-  }
+  [self attachSelectedTabsWithWebStateIDs:attachments.tabIDs
+                        cachedWebStateIDs:attachments.cachedWebStateIDs];
 }
 
 #pragma mark - ComposeboxInputPlateMutator
