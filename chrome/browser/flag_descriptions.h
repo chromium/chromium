@@ -6996,7 +6996,8 @@ inline constexpr char kDisableBruschettaInstallChecksDescription[] =
 inline constexpr char kCrostiniContainerInstallName[] =
     "Debian version for new Crostini containers";
 inline constexpr char kCrostiniContainerInstallDescription[] =
-    "New Crostini containers will use this Debian version";
+    "New Crostini containers will use this Debian version (does not affect "
+    "baguette installs)";
 
 inline constexpr char kCrostiniGpuSupportName[] = "Crostini GPU Support";
 inline constexpr char kCrostiniGpuSupportDescription[] =
