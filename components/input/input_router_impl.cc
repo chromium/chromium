@@ -505,7 +505,11 @@ void InputRouterImpl::OnTouchEventAck(
   if (event.event.IsTouchSequenceStart()) {
     touch_action_filter_.IncreaseActiveTouches();
   }
+  auto weak_this = weak_ptr_factory_.GetWeakPtr();
   disposition_handler_->OnTouchEventAck(event, ack_source, ack_result);
+  if (!weak_this) {
+    return;
+  }
 
   if (event.event.IsTouchSequenceEnd()) {
     touch_action_filter_.DecreaseActiveTouches();
