@@ -193,6 +193,7 @@ if (!is_android) {
     sources = [
       "context_sharing_border_view_interactive_uitest.cc",
       "glic_iph_controller_interactive_uitest.cc",
+      "glic_nudge_controller_interactive_uitest.cc",
       "glic_tab_indicator_helper_interactive_uitest.cc",
       "tab_underline_view_interactive_uitest.cc",
     ]
