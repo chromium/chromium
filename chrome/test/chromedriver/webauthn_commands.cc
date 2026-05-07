@@ -96,6 +96,8 @@ Status ExecuteWebAuthnCommand(const WebAuthnCommand& command,
   if (status.IsError())
     return status;
 
+  std::unique_ptr<WebViewHolder> scoped_web_view_lock = web_view->GetHolder();
+
   status = web_view->SendCommand("WebAuthn.enable", base::DictValue());
   if (status.IsError())
     return status;
