@@ -49,10 +49,10 @@ using in_place_t ABSL_DEPRECATE_AND_INLINE() = std::in_place_t;
 using std::in_place_type;
 
 template <class T>
-using in_place_type_t ABSL_REFACTOR_INLINE = std::in_place_type_t<T>;
+using in_place_type_t ABSL_DEPRECATE_AND_INLINE() = std::in_place_type_t<T>;
 
 template <size_t... I>
-using index_sequence ABSL_REFACTOR_INLINE = std::index_sequence<I...>;
+using index_sequence ABSL_DEPRECATE_AND_INLINE() = std::index_sequence<I...>;
 
 template <class T, T... I>
 using integer_sequence ABSL_DEPRECATE_AND_INLINE() =
@@ -65,7 +65,7 @@ using index_sequence_for ABSL_DEPRECATE_AND_INLINE() =
 using std::make_from_tuple;
 
 template <size_t N>
-using make_index_sequence ABSL_REFACTOR_INLINE =
+using make_index_sequence ABSL_DEPRECATE_AND_INLINE() =
     std::make_index_sequence<N>;
 
 template <class T, T N>

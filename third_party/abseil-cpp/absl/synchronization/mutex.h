@@ -191,6 +191,7 @@ class ABSL_LOCKABLE ABSL_ATTRIBUTE_WARN_UNUSED Mutex {
   // then acquires it exclusively. (This lock is also known as a "write lock.")
   void lock() ABSL_EXCLUSIVE_LOCK_FUNCTION();
 
+  ABSL_DEPRECATE_AND_INLINE()
   inline void Lock() ABSL_EXCLUSIVE_LOCK_FUNCTION() { lock(); }
 
   // Mutex::unlock()
@@ -199,6 +200,7 @@ class ABSL_LOCKABLE ABSL_ATTRIBUTE_WARN_UNUSED Mutex {
   // free state. Calling thread must hold the `Mutex` exclusively.
   void unlock() ABSL_UNLOCK_FUNCTION();
 
+  ABSL_DEPRECATE_AND_INLINE()
   inline void Unlock() ABSL_UNLOCK_FUNCTION() { unlock(); }
 
   // Mutex::try_lock()
@@ -208,6 +210,7 @@ class ABSL_LOCKABLE ABSL_ATTRIBUTE_WARN_UNUSED Mutex {
   // probability if the `Mutex` was free.
   [[nodiscard]] bool try_lock() ABSL_EXCLUSIVE_TRYLOCK_FUNCTION(true);
 
+  ABSL_DEPRECATE_AND_INLINE()
   [[nodiscard]] bool TryLock() ABSL_EXCLUSIVE_TRYLOCK_FUNCTION(true) {
     return try_lock();
   }
@@ -262,6 +265,7 @@ class ABSL_LOCKABLE ABSL_ATTRIBUTE_WARN_UNUSED Mutex {
   // lock on the mutex.
   void lock_shared() ABSL_SHARED_LOCK_FUNCTION();
 
+  ABSL_DEPRECATE_AND_INLINE()
   void ReaderLock() ABSL_SHARED_LOCK_FUNCTION() { lock_shared(); }
 
   // Mutex::unlock_shared()
@@ -271,6 +275,7 @@ class ABSL_LOCKABLE ABSL_ATTRIBUTE_WARN_UNUSED Mutex {
   // Note that you cannot call `unlock_shared()` on a mutex held in write mode.
   void unlock_shared() ABSL_UNLOCK_FUNCTION();
 
+  ABSL_DEPRECATE_AND_INLINE()
   void ReaderUnlock() ABSL_UNLOCK_FUNCTION() { unlock_shared(); }
 
   // Mutex::try_lock_shared()
@@ -280,6 +285,7 @@ class ABSL_LOCKABLE ABSL_ATTRIBUTE_WARN_UNUSED Mutex {
   // `true` with high probability if the `Mutex` was free or shared.
   [[nodiscard]] bool try_lock_shared() ABSL_SHARED_TRYLOCK_FUNCTION(true);
 
+  ABSL_DEPRECATE_AND_INLINE()
   [[nodiscard]] bool ReaderTryLock() ABSL_SHARED_TRYLOCK_FUNCTION(true) {
     return try_lock_shared();
   }
@@ -304,10 +310,13 @@ class ABSL_LOCKABLE ABSL_ATTRIBUTE_WARN_UNUSED Mutex {
   // These methods may be used (along with the complementary `Reader*()`
   // methods) to distinguish simple exclusive `Mutex` usage (`Lock()`,
   // etc.) from reader/writer lock usage.
+  ABSL_DEPRECATE_AND_INLINE()
   void WriterLock() ABSL_EXCLUSIVE_LOCK_FUNCTION() { lock(); }
 
+  ABSL_DEPRECATE_AND_INLINE()
   void WriterUnlock() ABSL_UNLOCK_FUNCTION() { unlock(); }
 
+  ABSL_DEPRECATE_AND_INLINE()
   [[nodiscard]] bool WriterTryLock() ABSL_EXCLUSIVE_TRYLOCK_FUNCTION(true) {
     return try_lock();
   }
@@ -634,6 +643,7 @@ class ABSL_SCOPED_LOCKABLE MutexLock {
     this->mu_.LockWhen(cond);
   }
 
+  [[deprecated("Use the constructor that takes a reference instead")]]
   ABSL_REFACTOR_INLINE
   explicit MutexLock(Mutex* absl_nonnull mu, const Condition& cond)
       ABSL_EXCLUSIVE_LOCK_FUNCTION(mu)
@@ -672,6 +682,7 @@ class ABSL_SCOPED_LOCKABLE ReaderMutexLock {
     mu.ReaderLockWhen(cond);
   }
 
+  [[deprecated("Use the constructor that takes a reference instead")]]
   ABSL_REFACTOR_INLINE
   explicit ReaderMutexLock(Mutex* absl_nonnull mu, const Condition& cond)
       ABSL_SHARED_LOCK_FUNCTION(mu)
@@ -712,6 +723,7 @@ class ABSL_SCOPED_LOCKABLE WriterMutexLock {
     mu.WriterLockWhen(cond);
   }
 
+  [[deprecated("Use the constructor that takes a reference instead")]]
   ABSL_REFACTOR_INLINE
   explicit WriterMutexLock(Mutex* absl_nonnull mu, const Condition& cond)
       ABSL_EXCLUSIVE_LOCK_FUNCTION(mu)
@@ -1145,6 +1157,7 @@ class ABSL_SCOPED_LOCKABLE ReleasableMutexLock {
     this->mu_->LockWhen(cond);
   }
 
+  [[deprecated("Use the constructor that takes a reference instead")]]
   ABSL_REFACTOR_INLINE
   explicit ReleasableMutexLock(Mutex* absl_nonnull mu, const Condition& cond)
       ABSL_EXCLUSIVE_LOCK_FUNCTION(mu)

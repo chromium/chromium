@@ -230,7 +230,10 @@ ABSL_NAMESPACE_END
 // `ABSL_REFACTOR_INLINE` is preferred because it provides a more informative
 // deprecation message to developers, especially those that do not have access
 // to the automated refactoring capabilities of go/cpp-inliner.
-#define ABSL_DEPRECATE_AND_INLINE() [[deprecated]] ABSL_REFACTOR_INLINE
+// In chromium this macro doesn't add [[deprecated]] attribute as chromium disallows to
+// use deprecated code. By removing this attribute other third party libraries get more
+// time to migrate from deprecated api to something newer.
+#define ABSL_DEPRECATE_AND_INLINE() ABSL_REFACTOR_INLINE
 
 // Requires the compiler to prove that the size of the given object is at least
 // the expected amount.
