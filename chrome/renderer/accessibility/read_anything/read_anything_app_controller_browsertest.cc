@@ -5180,8 +5180,8 @@ TEST_F(ReadAnythingAppControllerReadabilitySelectTextTest,
 
 TEST_F(ReadAnythingAppControllerReadabilitySelectTextTest,
        OnRenderedTextBlocksAvailable_UpdatesModel) {
-  std::vector<std::string> blocks = {"The quick brown fox", "jumps over",
-                                     "the lazy dog"};
+  std::vector<std::u16string> blocks = {u"The quick brown fox", u"jumps over",
+                                        u"the lazy dog"};
 
   // Simulate the call from the WebUI.
   controller().OnRenderedTextBlocksAvailable(blocks);
@@ -5193,7 +5193,7 @@ TEST_F(ReadAnythingAppControllerReadabilitySelectTextTest,
 TEST_F(ReadAnythingAppControllerReadabilitySelectTextTest,
        UpdateContent_ResetsReadabilitySelectTextState) {
   // Dirty the model state with data from a previous distillation.
-  model().set_readability_text_blocks({"stale block 1", "stale block 2"});
+  model().set_readability_text_blocks({u"stale block 1", u"stale block 2"});
   model().set_should_map_rendered_text_to_tree_for_readability(true);
 
   // 3. Call UpdateContent
@@ -5220,7 +5220,7 @@ TEST_F(ReadAnythingAppControllerReadabilitySelectTextTest,
   controller().OnReadabilityDistillationStateChanged(
       read_anything::mojom::ReadAnythingDistillationState::
           kDistillationWithContent);
-  controller().OnRenderedTextBlocksAvailable({"block1", "block2"});
+  controller().OnRenderedTextBlocksAvailable({u"block1", u"block2"});
 
   // Verify that the flag is set to true (waiting for the tree).
   // The mapping couldn't run because the tree is missing.
@@ -5267,7 +5267,7 @@ TEST_F(ReadAnythingAppControllerReadabilitySelectTextTest,
   controller().OnReadabilityDistillationStateChanged(
       read_anything::mojom::ReadAnythingDistillationState::
           kDistillationWithContent);
-  controller().OnRenderedTextBlocksAvailable({"block1", "block2"});
+  controller().OnRenderedTextBlocksAvailable({u"block1", u"block2"});
 
   // Verify that the mapping was triggered and the flag was reset to false.
   EXPECT_FALSE(model().should_map_rendered_text_to_tree_for_readability());

@@ -70,6 +70,7 @@ ui::AXNodeData ImageNode(ui::AXNodeID id, const std::string& src) {
 ui::AXNodeData LinkNode(ui::AXNodeID id, const std::string& url) {
   ui::AXNodeData node;
   node.id = id;
+  node.role = ax::mojom::Role::kLink;
   node.AddStringAttribute(ax::mojom::StringAttribute::kUrl, url);
   return node;
 }

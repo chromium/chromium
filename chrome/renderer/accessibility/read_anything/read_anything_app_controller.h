@@ -311,7 +311,7 @@ class ReadAnythingAppController
                          int focus_offset);
   void OnCollapseSelection();
   void OnDistilled(int word_count);
-  void OnRenderedTextBlocksAvailable(const std::vector<std::string>& blocks);
+  void OnRenderedTextBlocksAvailable(const std::vector<std::u16string>& blocks);
   bool IsGoogleDocs() const;
   bool IsImmersiveEnabled() const;
   bool IsImprovedReadAloudEnabled() const;

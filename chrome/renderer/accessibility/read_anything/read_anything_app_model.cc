@@ -6,11 +6,14 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <numeric>
 #include <stack>
 #include <string>
+#include <type_traits>
 #include <utility>
 
 #include "base/check.h"
+#include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
@@ -76,6 +79,9 @@ ReadAnythingAppModel::AnchorData::AnchorData(const AnchorData& other) = default;
 ReadAnythingAppModel::AnchorData& ReadAnythingAppModel::AnchorData::operator=(
     const AnchorData& other) = default;
 ReadAnythingAppModel::AnchorData::~AnchorData() = default;
+
+ReadAnythingAppModel::SuffixArray::SuffixArray() = default;
+ReadAnythingAppModel::SuffixArray::~SuffixArray() = default;
 
 ReadAnythingAppModel::SelectionEndpoint::SelectionEndpoint(
     const ui::AXSelection& selection,
@@ -1368,8 +1374,44 @@ void ReadAnythingAppModel::ResetAXTreeAnchors() {
   ax_tree_anchors_.clear();
 }
 
+void ReadAnythingAppModel::SuffixArray::Build(std::u16string_view t) {
+  this->text = t;
+  this->suffix_array.resize(this->text.size());
+
+  // Fill the suffix array with the starting index of every possible suffix in
+  // the text: [0, 1, 2, ... N-1].
+  std::iota(this->suffix_array.begin(), this->suffix_array.end(), 0);
+
+  // Sort these indices lexicographically based on the text starting at each
+  // index to  the suffix array.
+  std::sort(this->suffix_array.begin(), this->suffix_array.end(),
+            [this](uint32_t i, uint32_t j) {
+              return this->text.substr(i) < this->text.substr(j);
+            });
+}
+
+std::pair<std::vector<uint32_t>::const_iterator,
+          std::vector<uint32_t>::const_iterator>
+ReadAnythingAppModel::SuffixArray::FindRange(std::u16string_view query) const {
+  // Find the range of suffixes that start with the query string. Since the
+  // suffixes are sorted, all occurrences of the same prefix will be adjacent in
+  // the array.
+  return std::equal_range(
+      this->suffix_array.begin(), this->suffix_array.end(), query,
+      [this](const auto& element, const auto& value) {
+        if constexpr (std::is_same_v<std::decay_t<decltype(element)>,
+                                     uint32_t>) {
+          // Comparing a suffix in the array against the query string.
+          return this->text.substr(element, value.size()) < value;
+        } else {
+          // Comparing the query string against a suffix in the array.
+          return element < this->text.substr(value, element.size());
+        }
+      });
+}
+
 bool ReadAnythingAppModel::MapRenderedTextToTree(
-    const std::vector<std::string>& blocks) {
+    const std::vector<std::u16string>& blocks) {
   if (!should_map_rendered_text_to_tree_for_readability()) {
     return false;
   }
@@ -1386,12 +1428,62 @@ bool ReadAnythingAppModel::MapRenderedTextToTree(
 
   FlattenAXTree(tree);
 
-  // TODO: crbug.com/507448617 - Implement mapping algorithm
-  // The mapping algorithm results are populated into |text_to_ax_map_|, where
-  // text_to_ax_map_[i] contains the segments for blocks[i].
+  // If the AXTree is empty, there is no text to map back to.
+  if (global_ax_tree_text_.empty()) {
+    return false;
+  }
+
+  // TODO: crbug.com/507453378 - Create Mapping algorithm execution time metric.
+
+  // Build a Suffix Array index of the original page's text. Finding a text
+  // block can then be done in O(log N) time.
+  SuffixArray index;
+  index.Build(global_ax_tree_text_);
+
+  // Build a frequency map of the distilled blocks.
+  base::flat_map<std::u16string_view, int> readability_block_counts;
+  for (const auto& block : blocks) {
+    if (!block.empty()) {
+      readability_block_counts[block]++;
+    }
+  }
+
+  FindGloballyUniqueBlocks(blocks, index, readability_block_counts);
+
+  // TODO: crbug.com/507461126 - Implement part2 of the algorithm. Gap substring
+  // alignment.
+
+  // TODO: crbug.com/507461287 - Implement part3 of the algorithm. Relative
+  // order alignment.
+
   return true;
 }
 
+void ReadAnythingAppModel::FindGloballyUniqueBlocks(
+    const std::vector<std::u16string>& blocks,
+    const SuffixArray& index,
+    const base::flat_map<std::u16string_view, int>& block_counts) {
+  for (size_t i = 0; i < blocks.size(); ++i) {
+    const std::u16string& block = blocks[i];
+
+    if (block.empty()) {
+      continue;
+    }
+
+    // Binary search the Suffix Array to find all occurrences of this block.
+    auto range = index.FindRange(block);
+
+    // If the block exists exactly once in the source page and in the distilled
+    // output, set the AXNode segments for this block in [text_to_ax_map_|.
+    auto it = block_counts.find(block);
+    if (std::distance(range.first, range.second) == 1 &&
+        it != block_counts.end() && it->second == 1) {
+      size_t ax_start_offset = *range.first;
+      text_to_ax_map_[i] = CreateSegmentsForMatch(
+          ax_start_offset, ax_start_offset + block.size(), 0);
+    }
+  }
+}
 // TODO: crbug.com/509578412 - Evaluate consolidating logic with existing text
 // traversal methods.
 void ReadAnythingAppModel::FlattenAXTree(ui::AXSerializableTree* tree) {
@@ -1410,10 +1502,10 @@ void ReadAnythingAppModel::FlattenAXTree(ui::AXSerializableTree* tree) {
     stack.pop();
 
     // Check if current node should be added to |global_ax_tree_text_|.
-    // We use IsLeaf() because it identifies nodes that the accessibility engine
-    // considers semantic units (like StaticText). This automatically skips
-    // "virtual" internal layout nodes like kInlineTextBox (negative IDs)
-    // while keeping structural nodes that contain text.
+    // We use IsLeaf() because it identifies nodes that the accessibility
+    // engine considers semantic units (like StaticText). This automatically
+    // skips "virtual" internal layout nodes like kInlineTextBox (negative
+    // IDs) while keeping structural nodes that contain text.
     if (node->IsLeaf()) {
       // Only process nodes that actually contribute readable
       // text. This helper (from read_anything_node_utils.cc) filters out
@@ -1445,6 +1537,50 @@ void ReadAnythingAppModel::FlattenAXTree(ui::AXSerializableTree* tree) {
       stack.push(child);
     }
   }
+}
+
+std::vector<ReadAnythingAppModel::MappingSegment>
+ReadAnythingAppModel::CreateSegmentsForMatch(size_t ax_start,
+                                             size_t ax_end,
+                                             size_t block_internal_offset) {
+  std::vector<MappingSegment> segments;
+
+  // Find the first node starting after ax_start and backtrack to land on the
+  // segment containing it. This approach is used for binary search ranges,
+  // as it identifies the node starting at or before the target offset.
+  auto it = std::upper_bound(flattened_ax_tree_nodes_.begin(),
+                             flattened_ax_tree_nodes_.end(), ax_start,
+                             [](size_t value, const AXNodeSegment& segment) {
+                               return value < segment.start_offset;
+                             });
+  if (it != flattened_ax_tree_nodes_.begin()) {
+    --it;
+  }
+
+  // Find all AXNodes that overlap the [ax_start, ax_end) range.
+  for (; it != flattened_ax_tree_nodes_.end(); ++it) {
+    const auto& ax_segment = *it;
+    size_t seg_start = ax_segment.start_offset;
+    size_t seg_end = seg_start + ax_segment.text.length();
+
+    if (seg_end <= ax_start) {
+      continue;
+    }
+    if (seg_start >= ax_end) {
+      break;
+    }
+
+    MappingSegment ms;
+    ms.id = ax_segment.id;
+
+    // Convert global AXTree offsets to block-relative offsets for the WebUI.
+    ms.start = static_cast<int>(std::max(ax_start, seg_start) - ax_start +
+                                block_internal_offset);
+    ms.end = static_cast<int>(std::min(ax_end, seg_end) - ax_start +
+                              block_internal_offset);
+    segments.push_back(ms);
+  }
+  return segments;
 }
 
 std::vector<ReadAnythingAppModel::MappingSegment>
