@@ -192,8 +192,6 @@ if (!is_android && !is_mac) {
         "app/delay_load_failure_hook_win.h",
         "app/main_dll_loader_win.cc",
         "app/main_dll_loader_win.h",
-        "common/crash_keys.cc",
-        "common/crash_keys.h",
       ]
 
       deps += [
@@ -219,20 +217,12 @@ if (!is_android && !is_mac) {
         "//components/activity_reporter:buildflags",
         "//components/crash/core/app",
         "//components/crash/core/app:run_as_crashpad_handler",
-        "//components/crash/core/common",
-        "//components/crash/win:chrome_wer",
-        "//components/webui/flags:switches",
         "//content:sandbox_helper_win",
         "//content/public/common:static_switches",
-        "//crypto",
-        "//gpu/command_buffer/service",
         "//sandbox",
         "//sandbox/policy",
         "//sandbox/policy/mojom",
-        "//third_party/breakpad:breakpad_handler",
-        "//third_party/breakpad:breakpad_sender",
         "//third_party/crashpad/crashpad/util",
-        "//ui/gl",
       ]
 
       data_deps += [
@@ -242,6 +232,7 @@ if (!is_android && !is_mac) {
         "//chrome/elevation_service",
         "//chrome/notification_helper",
         "//chrome/windows_services/elevated_tracing_service",
+        "//components/crash/win:chrome_wer",
       ]
 
       if (enable_platform_experience) {
