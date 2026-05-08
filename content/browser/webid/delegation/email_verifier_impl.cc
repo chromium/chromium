@@ -60,4 +60,12 @@ EmailVerifier* EmailVerifier::GetOrCreateForFrame(
   return static_cast<EmailVerifier*>(rfh->GetUserData(kEmailVerifierKey));
 }
 
+// static
+void EmailVerifier::SetForFrameForTest(  // IN-TEST
+    content::RenderFrameHost* render_frame_host,
+    std::unique_ptr<EmailVerifier> verifier) {
+  auto* rfh = static_cast<RenderFrameHostImpl*>(render_frame_host);
+  rfh->SetUserData(kEmailVerifierKey, std::move(verifier));
+}
+
 }  // namespace content::webid

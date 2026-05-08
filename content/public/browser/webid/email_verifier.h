@@ -38,6 +38,11 @@ class EmailVerifier : public base::SupportsUserData::Data {
   // The RenderFrameHost must outlive it.
   CONTENT_EXPORT static EmailVerifier* GetOrCreateForFrame(
       content::RenderFrameHost* render_frame_host);
+
+  // Enforces `GetOrCreateForFrame(render_frame_host) == verifier.get()`.
+  CONTENT_EXPORT static void SetForFrameForTest(
+      content::RenderFrameHost* render_frame_host,
+      std::unique_ptr<EmailVerifier> verifier);
 };
 
 }  // namespace content::webid

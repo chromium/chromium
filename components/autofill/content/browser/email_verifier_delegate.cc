@@ -20,21 +20,20 @@
 
 namespace autofill {
 
-EmailVerifierDelegate::EmailVerifierDelegate(AutofillClient* client)
-    : EmailVerifierDelegate(
-          client,
-          base::BindRepeating([](AutofillClient& client,
-                                 const LocalFrameToken& frame_token) {
-            content::RenderFrameHost* rfh = FindRenderFrameHostByToken(
-                *static_cast<ContentAutofillClient&>(client).web_contents(),
-                frame_token);
-            return rfh ? content::webid::EmailVerifier::GetOrCreateForFrame(rfh)
-                       : nullptr;
-          })) {}
+namespace {
 
-EmailVerifierDelegate::EmailVerifierDelegate(AutofillClient* client,
-                                             EmailVerifierBuilder builder)
-    : email_verifier_builder_(std::move(builder)) {
+content::webid::EmailVerifier* GetOrCreateEmailVerifier(
+    AutofillClient& client,
+    const LocalFrameToken& frame_token) {
+  content::RenderFrameHost* rfh = FindRenderFrameHostByToken(
+      *static_cast<ContentAutofillClient&>(client).web_contents(), frame_token);
+  return rfh ? content::webid::EmailVerifier::GetOrCreateForFrame(rfh)
+             : nullptr;
+}
+
+}  // namespace
+
+EmailVerifierDelegate::EmailVerifierDelegate(AutofillClient* client) {
   observation_.Observe(client);
 }
 
@@ -85,7 +84,7 @@ void EmailVerifierDelegate::OnFillOrPreviewForm(
   std::u16string email = (*profile)->GetRawInfo(EMAIL_ADDRESS);
 
   content::webid::EmailVerifier* verifier =
-      email_verifier_builder_.Run(manager.client(), email_field.host_frame());
+      GetOrCreateEmailVerifier(manager.client(), email_field.host_frame());
   if (!verifier) {
     return;
   }

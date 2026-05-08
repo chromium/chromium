@@ -7,6 +7,11 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/autofill/content/browser/test_autofill_client_injector.h"
+#include "components/autofill/content/browser/test_autofill_driver_injector.h"
+#include "components/autofill/content/browser/test_autofill_manager_injector.h"
+#include "components/autofill/content/browser/test_content_autofill_client.h"
+#include "components/autofill/content/browser/test_content_autofill_driver.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/foundations/autofill_driver_test_api.h"
@@ -38,68 +43,77 @@ class MockEmailVerifier : public content::webid::EmailVerifier {
               (override));
 };
 
-class MockAutofillDriver : public TestAutofillDriver {
+class MockAutofillDriver : public TestContentAutofillDriver {
  public:
-  using TestAutofillDriver::TestAutofillDriver;
+  using TestContentAutofillDriver::TestContentAutofillDriver;
   MOCK_METHOD(void,
               DispatchEmailVerifiedEvent,
               (FieldGlobalId field_id, const std::string& presentation_token),
               (override));
 };
 
-FormData ValidForm() {
-  return test::GetFormData(
-      {.fields = {
-           {.label = u"Email",
-            .name = u"email",
-            .nonce = u"test_nonce",
-            .value = u"Triggering field (filled)",
-            .form_control_type = FormControlType::kInputEmail},
-       }});
-}
-
 }  // namespace
 
-class MockAutofillClient : public TestAutofillClient {
+class MockAutofillClient : public TestContentAutofillClient {
  public:
-  MockAutofillClient() = default;
-  ~MockAutofillClient() override = default;
-
+  using TestContentAutofillClient::TestContentAutofillClient;
   MOCK_METHOD(void, ShowEmailVerifiedToast, (), (override));
+
+  EmailVerifierDelegate& delegate() { return *delegate_; }
+
+ private:
+  std::unique_ptr<EmailVerifierDelegate> delegate_ =
+      std::make_unique<EmailVerifierDelegate>(this);
 };
 
-class EmailVerifierDelegateTest : public testing::Test {
+class EmailVerifierDelegateTest : public content::RenderViewHostTestHarness {
  public:
   void SetUp() override {
-    driver_ = std::make_unique<NiceMock<MockAutofillDriver>>(&client_);
-    manager_ = std::make_unique<TestBrowserAutofillManager>(driver_.get());
-    email_verifier_ = std::make_unique<NiceMock<MockEmailVerifier>>();
-    delegate_ = std::make_unique<EmailVerifierDelegate>(
-        &client_,
-        base::BindRepeating(
-            [](content::webid::EmailVerifier* verifier, AutofillClient&,
-               const LocalFrameToken&) { return verifier; },
-            email_verifier_.get()));
+    content::RenderViewHostTestHarness::SetUp();
+    NavigateAndCommit(GURL("https://a.test/"));
+    driver().SetLocalFrameToken(LocalFrameToken(*main_rfh()->GetFrameToken()));
+    content::webid::EmailVerifier::SetForFrameForTest(
+        main_rfh(), std::make_unique<NiceMock<MockEmailVerifier>>());
   }
 
-  void TearDown() override {
-    delegate_.reset();
-    email_verifier_.reset();
-    manager_.reset();
-    AutofillDriverTestApi(driver_.get())
-        .SetLifecycleState(AutofillDriver::LifecycleState::kPendingDeletion);
-    driver_.reset();
+  MockAutofillClient& client() {
+    return *autofill_client_injector_[web_contents()];
   }
 
- protected:
-  base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  EmailVerifierDelegate& delegate() { return client().delegate(); }
+
+  MockAutofillDriver& driver(content::RenderFrameHost* rfh = nullptr) {
+    return *autofill_driver_injector_[rfh ? rfh : main_rfh()];
+  }
+
+  TestBrowserAutofillManager& manager(content::RenderFrameHost* rfh = nullptr) {
+    return *autofill_manager_injector_[rfh ? rfh : main_rfh()];
+  }
+
+  MockEmailVerifier& email_verifier() {
+    return static_cast<MockEmailVerifier&>(
+        *content::webid::EmailVerifier::GetOrCreateForFrame(main_rfh()));
+  }
+
+  FormData ValidForm() {
+    return test::GetFormData(
+        {.fields =
+             {
+                 {.label = u"Email",
+                  .name = u"email",
+                  .nonce = u"test_nonce",
+                  .value = u"Triggering field (filled)",
+                  .form_control_type = FormControlType::kInputEmail},
+             },
+         .host_frame = driver().GetFrameToken()});
+  }
+
+ private:
   test::AutofillUnitTestEnvironment autofill_test_environment_;
-
-  MockAutofillClient client_;
-  std::unique_ptr<MockAutofillDriver> driver_;
-  std::unique_ptr<TestBrowserAutofillManager> manager_;
-  std::unique_ptr<MockEmailVerifier> email_verifier_;
+  TestAutofillClientInjector<MockAutofillClient> autofill_client_injector_;
+  TestAutofillDriverInjector<MockAutofillDriver> autofill_driver_injector_;
+  TestAutofillManagerInjector<TestBrowserAutofillManager>
+      autofill_manager_injector_;
   std::unique_ptr<EmailVerifierDelegate> delegate_;
 };
 
@@ -112,25 +126,25 @@ TEST_F(EmailVerifierDelegateTest, VerificationTriggered) {
 
   FormData form_data = ValidForm();
 
-  manager_->AddSeenForm(form_data, {EMAIL_ADDRESS});
+  manager().AddSeenForm(form_data, {EMAIL_ADDRESS});
   FormStructure* form =
-      test_api(*manager_).FindCachedFormById(form_data.global_id());
+      test_api(manager()).FindCachedFormById(form_data.global_id());
   ASSERT_TRUE(form);
   form->field(0)->set_autofilled_type(EMAIL_ADDRESS);
 
-  EXPECT_CALL(*email_verifier_, Verify("test@example.com", "test_nonce", _))
+  EXPECT_CALL(email_verifier(), Verify("test@example.com", "test_nonce", _))
       .WillOnce(RunOnceCallback<2>("test_token"));
 
-  EXPECT_CALL(*driver_, DispatchEmailVerifiedEvent(form->field(0)->global_id(),
+  EXPECT_CALL(driver(), DispatchEmailVerifiedEvent(form->field(0)->global_id(),
                                                    "test_token"));
-  EXPECT_CALL(client_, ShowEmailVerifiedToast);
+  EXPECT_CALL(client(), ShowEmailVerifiedToast);
 
   AutofillProfile profile = test::GetFullProfile();
   profile.SetRawInfo(EMAIL_ADDRESS, u"test@example.com");
 
   base::flat_set<FieldGlobalId> filled_field_ids = {
       form->field(0)->global_id()};
-  delegate_->OnFillOrPreviewForm(*manager_, form->global_id(),
+  delegate().OnFillOrPreviewForm(manager(), form->global_id(),
                                  mojom::ActionPersistence::kFill,
                                  filled_field_ids, &profile);
 }
@@ -142,18 +156,18 @@ TEST_F(EmailVerifierDelegateTest, FeatureDisabled) {
 
   FormData form_data = ValidForm();
 
-  manager_->AddSeenForm(form_data, {EMAIL_ADDRESS});
+  manager().AddSeenForm(form_data, {EMAIL_ADDRESS});
   const FormStructure* form =
-      manager_->FindCachedFormById(form_data.global_id());
+      manager().FindCachedFormById(form_data.global_id());
   ASSERT_TRUE(form);
 
-  EXPECT_CALL(*email_verifier_, Verify).Times(0);
-  EXPECT_CALL(*driver_, DispatchEmailVerifiedEvent).Times(0);
-  EXPECT_CALL(client_, ShowEmailVerifiedToast).Times(0);
+  EXPECT_CALL(email_verifier(), Verify).Times(0);
+  EXPECT_CALL(driver(), DispatchEmailVerifiedEvent).Times(0);
+  EXPECT_CALL(client(), ShowEmailVerifiedToast).Times(0);
   base::flat_set<FieldGlobalId> filled_field_ids = {
       form->field(0)->global_id()};
   AutofillProfile profile = test::GetFullProfile();
-  delegate_->OnFillOrPreviewForm(*manager_, form->global_id(),
+  delegate().OnFillOrPreviewForm(manager(), form->global_id(),
                                  mojom::ActionPersistence::kFill,
                                  filled_field_ids, &profile);
 }
@@ -165,19 +179,19 @@ TEST_F(EmailVerifierDelegateTest, NotFillAction) {
 
   FormData form_data = ValidForm();
 
-  manager_->AddSeenForm(form_data, {EMAIL_ADDRESS});
+  manager().AddSeenForm(form_data, {EMAIL_ADDRESS});
   const FormStructure* form =
-      manager_->FindCachedFormById(form_data.global_id());
+      manager().FindCachedFormById(form_data.global_id());
   ASSERT_TRUE(form);
 
-  EXPECT_CALL(*email_verifier_, Verify).Times(0);
-  EXPECT_CALL(*driver_, DispatchEmailVerifiedEvent).Times(0);
-  EXPECT_CALL(client_, ShowEmailVerifiedToast).Times(0);
+  EXPECT_CALL(email_verifier(), Verify).Times(0);
+  EXPECT_CALL(driver(), DispatchEmailVerifiedEvent).Times(0);
+  EXPECT_CALL(client(), ShowEmailVerifiedToast).Times(0);
 
   AutofillProfile profile = test::GetFullProfile();
   base::flat_set<FieldGlobalId> filled_field_ids = {
       form->field(0)->global_id()};
-  delegate_->OnFillOrPreviewForm(*manager_, form->global_id(),
+  delegate().OnFillOrPreviewForm(manager(), form->global_id(),
                                  mojom::ActionPersistence::kPreview,
                                  filled_field_ids, &profile);
 }
@@ -197,20 +211,20 @@ TEST_F(EmailVerifierDelegateTest, NoNonce) {
             .form_control_type = FormControlType::kInputEmail},
        }});
 
-  manager_->AddSeenForm(form_data, {EMAIL_ADDRESS});
+  manager().AddSeenForm(form_data, {EMAIL_ADDRESS});
   const FormStructure* form =
-      manager_->FindCachedFormById(form_data.global_id());
+      manager().FindCachedFormById(form_data.global_id());
   ASSERT_TRUE(form);
 
-  EXPECT_CALL(*email_verifier_, Verify).Times(0);
+  EXPECT_CALL(email_verifier(), Verify).Times(0);
 
-  EXPECT_CALL(*driver_, DispatchEmailVerifiedEvent).Times(0);
-  EXPECT_CALL(client_, ShowEmailVerifiedToast).Times(0);
+  EXPECT_CALL(driver(), DispatchEmailVerifiedEvent).Times(0);
+  EXPECT_CALL(client(), ShowEmailVerifiedToast).Times(0);
 
   AutofillProfile profile = test::GetFullProfile();
   base::flat_set<FieldGlobalId> filled_field_ids = {
       form->field(0)->global_id()};
-  delegate_->OnFillOrPreviewForm(*manager_, form->global_id(),
+  delegate().OnFillOrPreviewForm(manager(), form->global_id(),
                                  mojom::ActionPersistence::kFill,
                                  filled_field_ids, &profile);
 }
@@ -229,20 +243,20 @@ TEST_F(EmailVerifierDelegateTest, NotEmailField) {
                               .value = u"Triggering field (filled)"},
                          }});
 
-  manager_->AddSeenForm(form_data, {NAME_FULL});
+  manager().AddSeenForm(form_data, {NAME_FULL});
   const FormStructure* form =
-      manager_->FindCachedFormById(form_data.global_id());
+      manager().FindCachedFormById(form_data.global_id());
   ASSERT_TRUE(form);
 
-  EXPECT_CALL(*email_verifier_, Verify).Times(0);
+  EXPECT_CALL(email_verifier(), Verify).Times(0);
 
-  EXPECT_CALL(*driver_, DispatchEmailVerifiedEvent).Times(0);
-  EXPECT_CALL(client_, ShowEmailVerifiedToast).Times(0);
+  EXPECT_CALL(driver(), DispatchEmailVerifiedEvent).Times(0);
+  EXPECT_CALL(client(), ShowEmailVerifiedToast).Times(0);
 
   AutofillProfile profile = test::GetFullProfile();
   base::flat_set<FieldGlobalId> filled_field_ids = {
       form->field(0)->global_id()};
-  delegate_->OnFillOrPreviewForm(*manager_, form->global_id(),
+  delegate().OnFillOrPreviewForm(manager(), form->global_id(),
                                  mojom::ActionPersistence::kFill,
                                  filled_field_ids, &profile);
 }
@@ -255,23 +269,23 @@ TEST_F(EmailVerifierDelegateTest, VerificationFails) {
 
   FormData form_data = ValidForm();
 
-  manager_->AddSeenForm(form_data, {EMAIL_ADDRESS});
+  manager().AddSeenForm(form_data, {EMAIL_ADDRESS});
   FormStructure* form =
-      test_api(*manager_).FindCachedFormById(form_data.global_id());
+      test_api(manager()).FindCachedFormById(form_data.global_id());
   ASSERT_TRUE(form);
   form->field(0)->set_autofilled_type(EMAIL_ADDRESS);
 
-  EXPECT_CALL(*email_verifier_, Verify)
+  EXPECT_CALL(email_verifier(), Verify)
       .WillOnce(RunOnceCallback<2>(std::nullopt));
 
   // When the verification fails, the event is not dispatched.
-  EXPECT_CALL(*driver_, DispatchEmailVerifiedEvent).Times(0);
-  EXPECT_CALL(client_, ShowEmailVerifiedToast).Times(0);
+  EXPECT_CALL(driver(), DispatchEmailVerifiedEvent).Times(0);
+  EXPECT_CALL(client(), ShowEmailVerifiedToast).Times(0);
 
   AutofillProfile profile = test::GetFullProfile();
   base::flat_set<FieldGlobalId> filled_field_ids = {
       form->field(0)->global_id()};
-  delegate_->OnFillOrPreviewForm(*manager_, form->global_id(),
+  delegate().OnFillOrPreviewForm(manager(), form->global_id(),
                                  mojom::ActionPersistence::kFill,
                                  filled_field_ids, &profile);
 }

@@ -10,10 +10,6 @@
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
 
-namespace content::webid {
-class EmailVerifier;
-}  // namespace content::webid
-
 namespace autofill {
 
 class AutofillClient;
@@ -27,11 +23,7 @@ class AutofillClient;
 // https://github.com/dickhardt/email-verification-protocol
 class EmailVerifierDelegate : public AutofillManager::Observer {
  public:
-  using EmailVerifierBuilder = base::RepeatingCallback<
-      content::webid::EmailVerifier*(AutofillClient&, const LocalFrameToken&)>;
-
   explicit EmailVerifierDelegate(AutofillClient* client);
-  EmailVerifierDelegate(AutofillClient* client, EmailVerifierBuilder builder);
   EmailVerifierDelegate(const EmailVerifierDelegate&) = delete;
   EmailVerifierDelegate& operator=(const EmailVerifierDelegate&) = delete;
 
@@ -46,8 +38,6 @@ class EmailVerifierDelegate : public AutofillManager::Observer {
       const FillingPayload& filling_payload) override;
 
  private:
-  EmailVerifierBuilder email_verifier_builder_;
-
   ScopedAutofillManagersObservation observation_{this};
 };
 
