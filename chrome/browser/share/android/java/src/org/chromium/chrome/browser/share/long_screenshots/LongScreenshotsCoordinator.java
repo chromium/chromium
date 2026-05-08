@@ -120,7 +120,7 @@ public class LongScreenshotsCoordinator extends ScreenshotCoordinator {
                 () -> {
                     mScreenshot = mMediator.getScreenshot();
                     if (mScreenshot == null) {
-                        LongScreenshotErrorUtils.showErrorMessage(mActivity);
+                        LongScreenshotsUtils.showErrorMessage(mActivity);
                     } else {
                         super.handleScreenshot();
                     }

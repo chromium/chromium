@@ -18,21 +18,21 @@ import org.robolectric.shadows.ShadowToast;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
 
-/** Unit tests for {@link LongScreenshotErrorUtils}. */
+/** Unit tests for {@link LongScreenshotsUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
         manifest = Config.NONE,
         shadows = {ShadowToast.class})
-public class LongScreenshotErrorUtilsTest {
+public class LongScreenshotsUtilsTest {
     private final Activity mActivity;
 
-    public LongScreenshotErrorUtilsTest() {
+    public LongScreenshotsUtilsTest() {
         mActivity = Robolectric.buildActivity(Activity.class).get();
     }
 
     @Test
     public void testShowErrorMessage() {
-        LongScreenshotErrorUtils.showErrorMessage(mActivity);
+        LongScreenshotsUtils.showErrorMessage(mActivity);
 
         ShadowLooper.idleMainLooper();
 

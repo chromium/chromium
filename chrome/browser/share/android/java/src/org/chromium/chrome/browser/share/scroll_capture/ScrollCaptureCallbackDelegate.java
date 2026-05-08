@@ -17,8 +17,6 @@ import android.util.Size;
 import android.view.Surface;
 import android.view.View;
 
-import androidx.annotation.IntDef;
-
 import org.chromium.base.Callback;
 import org.chromium.base.MemoryPressureLevel;
 import org.chromium.base.memory.MemoryPressureMonitor;
@@ -26,7 +24,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.paint_preview.PaintPreviewCompositorUtils;
-import org.chromium.chrome.browser.share.long_screenshots.LongScreenshotErrorUtils;
+import org.chromium.chrome.browser.share.long_screenshots.LongScreenshotsUtils;
+import org.chromium.chrome.browser.share.long_screenshots.LongScreenshotsUtils.BitmapGeneratorStatus;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.EntryManager;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.EntryManager.BitmapGeneratorObserver;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.LongScreenshotsEntry;
@@ -39,20 +38,6 @@ import org.chromium.content_public.browser.WebContents;
 @NullMarked
 public class ScrollCaptureCallbackDelegate {
     private static final int BITMAP_HEIGHT_THRESHOLD = 20;
-
-    // These values are persisted to logs. Entries should not be renumbered and
-    // numeric values should never be reused.
-    @IntDef({
-        BitmapGeneratorStatus.CAPTURE_COMPLETE,
-        BitmapGeneratorStatus.INSUFFICIENT_MEMORY,
-        BitmapGeneratorStatus.GENERATION_ERROR
-    })
-    private @interface BitmapGeneratorStatus {
-        int CAPTURE_COMPLETE = 0;
-        int INSUFFICIENT_MEMORY = 1;
-        int GENERATION_ERROR = 2;
-        int COUNT = 3;
-    }
 
     /** Wrapper class for {@link EntryManager}. */
     public static class EntryManagerWrapper {
@@ -224,7 +209,7 @@ public class ScrollCaptureCallbackDelegate {
             mEntryManager.destroy();
             mEntryManager = null;
         }
-        LongScreenshotErrorUtils.showErrorMessage(assumeNonNull(mCurrentTab).getContext());
+        LongScreenshotsUtils.showErrorMessage(assumeNonNull(mCurrentTab).getContext());
         onReady.run();
         PaintPreviewCompositorUtils.stopWarmCompositor();
         logBitmapGeneratorStatus(status);
