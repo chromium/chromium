@@ -968,6 +968,10 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
 // animation block.
 - (void)setNeedsUpdateConfiguration:(UIButton*)button
                   animationDuration:(NSTimeInterval)duration {
+  if (!button) {
+    // Do nothing if -viewDidLoad has not been called yet.
+    return;
+  }
   if (duration > 0) {
     // Cross-fade to the new color along with the current animation.
     [UIView transitionWithView:button
