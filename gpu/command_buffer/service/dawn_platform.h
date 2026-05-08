@@ -96,7 +96,7 @@ class GPU_GLES2_EXPORT DawnPlatform : public dawn::platform::Platform {
   };
 
  private:
-  void HistogramCacheCountHelper(std::string name,
+  void HistogramCacheCountHelper(std::string_view name,
                                  int sample,
                                  int min,
                                  int max,

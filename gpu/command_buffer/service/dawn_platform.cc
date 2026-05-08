@@ -12,6 +12,7 @@
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/post_job.h"
@@ -275,23 +276,23 @@ uint64_t DawnPlatform::AddTraceEvent(
       return 0;
 }
 
-void DawnPlatform::HistogramCacheCountHelper(std::string name,
+void DawnPlatform::HistogramCacheCountHelper(std::string_view name,
                                              int sample,
                                              int min,
                                              int max,
                                              int bucketCount) {
-  if (name.find("Cache") != std::string::npos) {
+  if (name.find("Cache") != std::string_view::npos) {
     base::AutoLock autolock(cache_map_->lock);
-    std::string base_name = name;
+    std::string_view base_name = name;
     bool is_hit = false;
     size_t pos = base_name.find("CacheHit");
-    if (pos != std::string::npos) {
-      base_name.erase(pos);
+    if (pos != std::string_view::npos) {
+      base_name = base_name.substr(0, pos);
       is_hit = true;
     } else {
       pos = base_name.find("CacheMiss");
-      if (pos != std::string::npos) {
-        base_name.erase(pos);
+      if (pos != std::string_view::npos) {
+        base_name = base_name.substr(0, pos);
       }
     }
 
@@ -304,8 +305,8 @@ void DawnPlatform::HistogramCacheCountHelper(std::string name,
 
     if (base::TimeTicks::Now() - startup_time_ <= base::Seconds(90)) {
       base::UmaHistogramCustomCounts(
-          uma_prefix_ + name + ".90SecondsPostStartup", sample, min, max,
-          bucketCount);
+          base::StrCat({uma_prefix_, name, ".90SecondsPostStartup"}), sample,
+          min, max, bucketCount);
     }
   }
 }
