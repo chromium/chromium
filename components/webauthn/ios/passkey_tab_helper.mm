@@ -203,6 +203,12 @@ void PasskeyTabHelper::HandleGetRequestedEvent(web::WebFrame* web_frame,
                                                AssertionRequestParams params) {
   const std::string& passkey_request_id = params.RequestId();
   const PasskeyRequestParams::RequestType request_type = params.Type();
+  if (OriginAllowedToMakeWebAuthnRequests(web_frame->GetSecurityOrigin()) !=
+      ValidationStatus::kSuccess) {
+    DeferToRenderer(web_frame, passkey_request_id, request_type);
+    return;
+  }
+
   CHECK(!passkey_request_id.empty());
   CHECK(web_frame);
   CHECK(request_type == PasskeyRequestParams::RequestType::kConditionalGet ||
@@ -323,6 +329,12 @@ void PasskeyTabHelper::HandleCreateRequestedEvent(
     RegistrationRequestParams params) {
   const std::string& passkey_request_id = params.RequestId();
   const PasskeyRequestParams::RequestType request_type = params.Type();
+  if (OriginAllowedToMakeWebAuthnRequests(web_frame->GetSecurityOrigin()) !=
+      ValidationStatus::kSuccess) {
+    DeferToRenderer(web_frame, passkey_request_id, request_type);
+    return;
+  }
+
   CHECK(!passkey_request_id.empty());
   CHECK(web_frame);
   CHECK(request_type == PasskeyRequestParams::RequestType::kConditionalCreate ||

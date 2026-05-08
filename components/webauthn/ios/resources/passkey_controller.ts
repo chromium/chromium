@@ -948,7 +948,10 @@ const credentialsContainer: CredentialsContainer = {
 // Override the existing value of `navigator.credentials` with our own. The use
 // of Object.defineProperty (versus just doing `navigator.credentials = ...`) is
 // a workaround for the fact that `navigator.credentials` is readonly.
-Object.defineProperty(navigator, 'credentials', {value: credentialsContainer});
+if (window.isSecureContext) {
+  Object.defineProperty(
+      navigator, 'credentials', {value: credentialsContainer});
+}
 
 // Function called from C++ to yield the passkey request back to the OS.
 function deferToRenderer(requestId: string, requestType: number): void {
@@ -995,7 +998,9 @@ function deferToRenderer(requestId: string, requestType: number): void {
 
 // Function called from C++ to reject a passkey request.
 function rejectPasskeyRequest(requestId: string): void {
-  DeferredPublicKeyCredentialPromise.reject(requestId);
+  const reason =
+      new DOMException('The operation is not allowed.', 'NotAllowedError');
+  DeferredPublicKeyCredentialPromise.reject(requestId, reason);
 }
 
 
@@ -1042,14 +1047,16 @@ function resolveAttestationRequest(
   resolveCredentialPromise(requestId, id64, response, extensions);
 }
 
-const passkey = new CrWebApi('passkey');
+if (window.isSecureContext) {
+  const passkey = new CrWebApi('passkey');
 
-passkey.addFunction('deferToRenderer', deferToRenderer);
-passkey.addFunction('rejectPasskeyRequest', rejectPasskeyRequest);
-passkey.addFunction('resolveAssertionRequest', resolveAssertionRequest);
-passkey.addFunction('resolveAttestationRequest', resolveAttestationRequest);
+  passkey.addFunction('deferToRenderer', deferToRenderer);
+  passkey.addFunction('rejectPasskeyRequest', rejectPasskeyRequest);
+  passkey.addFunction('resolveAssertionRequest', resolveAssertionRequest);
+  passkey.addFunction('resolveAttestationRequest', resolveAttestationRequest);
 
-gCrWeb.registerApi(passkey);
+  gCrWeb.registerApi(passkey);
 
-// Override PublicKeyCredential's behaviour to expose browser capabilities.
-publicKeyCredentialOverrider.override();
+  // Override PublicKeyCredential's behaviour to expose browser capabilities.
+  publicKeyCredentialOverrider.override();
+}
