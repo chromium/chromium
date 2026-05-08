@@ -104,9 +104,8 @@ AudioBus::AudioBus(unsigned number_of_channels, uint32_t length, bool allocate)
 void AudioBus::SetChannelMemory(unsigned channel_index,
                                 base::span<float> storage) {
   if (channel_index < channels_.size()) {
-    const uint32_t length = base::checked_cast<uint32_t>(storage.size());
-    Channel(channel_index)->Set(storage, length);
-    length_ = length;
+    Channel(channel_index)->Set(storage);
+    length_ = base::checked_cast<uint32_t>(storage.size());
   }
 }
 
@@ -576,19 +575,16 @@ void AudioBus::CopyWithGainFrom(const AudioBus& source_bus, float gain) {
 
 void AudioBus::CopyWithSampleAccurateGainValuesFrom(
     const AudioBus& source_bus,
-    float* gain_values,
-    unsigned number_of_gain_values) {
+    base::span<const float> gain_values) {
   // Make sure we're processing from the same type of bus.
   // We *are* able to process from mono -> stereo
   if (source_bus.NumberOfChannels() != 1 && !TopologyMatches(source_bus)) {
     NOTREACHED();
   }
 
-  if (!gain_values || number_of_gain_values > source_bus.length()) {
-    NOTREACHED();
-  }
+  CHECK_LE(gain_values.size(), source_bus.length());
 
-  if (source_bus.length() == number_of_gain_values &&
+  if (source_bus.length() == gain_values.size() &&
       source_bus.length() == length() && source_bus.IsSilent()) {
     Zero();
     return;
@@ -602,8 +598,8 @@ void AudioBus::CopyWithSampleAccurateGainValuesFrom(
       source = source_bus.Channel(channel_index)->Data();
     }
     float* destination = Channel(channel_index)->MutableData();
-    vector_math::Vmul(source, 1, gain_values, 1, destination, 1,
-                      number_of_gain_values);
+    vector_math::Vmul(source, 1, gain_values.data(), 1, destination, 1,
+                      gain_values.size());
   }
 }
 

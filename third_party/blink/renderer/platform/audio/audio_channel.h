@@ -59,9 +59,9 @@ class PLATFORM_EXPORT AudioChannel final {
   // Methods for internal allocation.
   bool TryAllocate(uint32_t length);
 
-  void Set(base::span<float> storage, uint32_t length) {
+  void Set(base::span<float> storage) {
     mem_buffer_.reset();  // cleanup managed storage
-    data_span_ = storage.first(length);
+    data_span_ = storage;
     silent_ = false;
   }
 

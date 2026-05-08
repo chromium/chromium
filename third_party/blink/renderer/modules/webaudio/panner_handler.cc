@@ -297,7 +297,7 @@ void PannerHandler::ProcessSampleAccurateValues(AudioBus* destination,
       elevation_values_.as_span().first(frames_to_process), source, destination,
       frames_to_process, InternalChannelInterpretation());
   destination->CopyWithSampleAccurateGainValuesFrom(
-      *destination, total_gain_values_.Data(), frames_to_process);
+      *destination, total_gain_values_.as_span().first(frames_to_process));
 }
 
 void PannerHandler::ProcessOnlyAudioParams(uint32_t frames_to_process) {

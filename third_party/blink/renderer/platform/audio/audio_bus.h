@@ -172,9 +172,9 @@ class PLATFORM_EXPORT AudioBus final : public ThreadSafeRefCounted<AudioBus> {
   void CopyWithGainFrom(const AudioBus& source_bus, float gain);
 
   // Copies the sourceBus by scaling with sample-accurate gain values.
-  void CopyWithSampleAccurateGainValuesFrom(const AudioBus& source_bus,
-                                            float* gain_values,
-                                            unsigned number_of_gain_values);
+  void CopyWithSampleAccurateGainValuesFrom(
+      const AudioBus& source_bus,
+      base::span<const float> gain_values);
 
   // Returns maximum absolute value across all channels (useful for
   // normalization).
