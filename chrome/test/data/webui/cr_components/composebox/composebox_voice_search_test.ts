@@ -317,6 +317,81 @@ suite('ComposeboxVoiceSearch', () => {
   });
 
   test(
+      'does not hide cancel button in voice search if flag is false',
+      async () => {
+        loadTimeData.overrideValues({
+          voiceSearchCoherenceComposeboxesEnabled: false,
+        });
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        composeboxElement = document.createElement('cr-composebox');
+        composeboxElement.showVoiceSearch = true;
+        document.body.appendChild(composeboxElement);
+        await microtasksFinished();
+
+        const voiceSearchElement = await openVoiceSearchUI();
+        let closeButton =
+            voiceSearchElement.shadowRoot.querySelector('#closeButton');
+        assertTrue(!!closeButton, 'close button should be shown');
+
+        mockSpeechRecognition.onerror!
+            ({error: 'network'} as SpeechRecognitionErrorEvent);
+        await microtasksFinished();
+        await voiceSearchElement.updateComplete;
+
+        const errorContainer = $$(voiceSearchElement, '#error-container');
+        assertTrue(!!errorContainer, 'Error container should exist');
+        assertFalse(errorContainer.hidden, 'Error container should be visible');
+
+        closeButton =
+            voiceSearchElement.shadowRoot.querySelector('#closeButton');
+        assertTrue(!!closeButton, 'close button should be shown');
+      });
+
+  test(
+      'hides cancel button when there is no error in voice search',
+      async () => {
+        loadTimeData.overrideValues({
+          voiceSearchCoherenceComposeboxesEnabled: true,
+        });
+        document.body.innerHTML = window.trustedTypes!.emptyHTML;
+        composeboxElement = document.createElement('cr-composebox');
+        composeboxElement.showVoiceSearch = true;
+        document.body.appendChild(composeboxElement);
+        await microtasksFinished();
+
+        const voiceSearchElement = await openVoiceSearchUI();
+        const closeButton =
+            voiceSearchElement.shadowRoot.querySelector('#closeButton');
+        assertFalse(!!closeButton, 'close button should be hidden');
+      });
+
+  test('shows cancel button when error scrim is shown', async () => {
+    loadTimeData.overrideValues({
+      voiceSearchCoherenceComposeboxesEnabled: true,
+    });
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    composeboxElement = document.createElement('cr-composebox');
+    composeboxElement.showVoiceSearch = true;
+    document.body.appendChild(composeboxElement);
+    await microtasksFinished();
+
+    const voiceSearchElement = await openVoiceSearchUI();
+
+    mockSpeechRecognition.onerror!
+        ({error: 'network'} as SpeechRecognitionErrorEvent);
+    await microtasksFinished();
+    await voiceSearchElement.updateComplete;
+
+    const errorContainer = $$(voiceSearchElement, '#error-container');
+    assertTrue(!!errorContainer, 'Error container should exist');
+    assertFalse(errorContainer.hidden, 'Error container should be visible');
+
+    const closeButton =
+        voiceSearchElement.shadowRoot.querySelector('#closeButton');
+    assertTrue(!!closeButton, 'close button should be shown during error');
+  });
+
+  test(
       'NO_MATCH error auto-closes immediately when hasErrorTimer is false',
       async () => {
         const voiceSearchElement = await openVoiceSearchUI();

@@ -31,9 +31,15 @@ export function getHtml(this: ComposeboxVoiceSearchElement) {
               ?hidden="${this.shouldShowErrorScrim_()}" disabled>
           </textarea>` :
       ''}
-      <cr-icon-button id="closeButton" class="icon-clear"
-          part="voice-close-button"
-          title="${this.i18n('voiceClose')}" @click="${this.onCloseClick_}">
+      ${
+  !(this.voiceSearchCoherenceSearchboxEnabled_ ||
+    this.voiceSearchCoherenceComposeboxesEnabled_) ||
+          this.shouldShowErrorScrim_() ?
+      html`<cr-icon-button id="closeButton" class="icon-clear"
+              part="voice-close-button"
+              title="${this.i18n('voiceClose')}" @click="${this.onCloseClick_}"
+              >` :
+      ''}
       </cr-icon-button>
       ${
       this.voiceSearchCoherenceSearchboxEnabled_ ||
