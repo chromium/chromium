@@ -344,39 +344,4 @@ IN_PROC_BROWSER_TEST_P(OtpManagerWithWebOtpApiBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(OtpManagerBrowserTest, GmailOtpAutofillIntegrationTest) {
-  GURL url = embedded_test_server()->GetURL("/autofill/sms_otp_form.html");
-
-  // Navigate to page and wait for form to be classified
-  ASSERT_TRUE(chrome_test_utils::NavigateToURL(web_contents(), url));
-  ASSERT_TRUE(autofill_manager().WaitForFormsSeen(1));
-
-  // Immediately when a form field is classified as an OTP field, a subscription
-  // for OTPs should be started if a Gmail OTP backend exists.
-  ASSERT_EQ(autofill_client().gmail_otp_backend().num_callbacks(), 1u);
-
-  // Simulate an OTP arriving.
-  autofill_client().gmail_otp_backend().ProcessCallbacks(
-      one_time_tokens::OneTimeToken(one_time_tokens::OneTimeTokenType::kGmail,
-                                    "654321", base::TimeTicks::Now()));
-  // Simulate click on field.
-  std::vector<const FormStructure*> forms =
-      test_api(autofill_manager()).form_structures();
-  ASSERT_EQ(forms.size(), 1u);
-  const FormStructure& form = *forms.front();
-  const AutofillField& first_field = *form.fields().front();
-  autofill_manager().OnAskForValuesToFill(
-      form.ToFormData(), first_field.global_id(), gfx::Rect(),
-      AutofillSuggestionTriggerSource::kFormControlElementClicked,
-      /*password_request=*/std::nullopt);
-  ASSERT_TRUE(autofill_manager().WaitForSuggestionsShown(1));
-
-  // Verify expectations: The OTP should be suggested by autofill.
-  const TestAutofillExternalDelegate& external_delegate =
-      autofill_manager().external_delegate();
-  const std::vector<Suggestion>& suggestions = external_delegate.suggestions();
-  ASSERT_EQ(suggestions.size(), 1u);
-  EXPECT_EQ(suggestions[0].main_text.value, u"654321");
-}
-
 }  // namespace autofill

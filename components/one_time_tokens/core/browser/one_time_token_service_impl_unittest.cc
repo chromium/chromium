@@ -176,7 +176,7 @@ TEST_F(OneTimeTokenServiceImplTest, NoBackend) {
 
   // Subscribe should not trigger any backend calls.
   auto subscription = service.Subscribe(
-      base::Time::Now() + base::Minutes(5),
+      OneTimeTokenSource::kOnDeviceSms, base::Time::Now() + base::Minutes(5),
       base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
                           base::Unretained(&observer)));
   EXPECT_TRUE(observer.results().empty());
@@ -190,7 +190,7 @@ TEST_F(OneTimeTokenServiceImplTest, SubscriptionTriggersFetch) {
   EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtpCalled).Times(1);
 
   auto subscription = service.Subscribe(
-      base::Time::Now() + base::Minutes(5),
+      OneTimeTokenSource::kOnDeviceSms, base::Time::Now() + base::Minutes(5),
       base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
                           base::Unretained(&observer)));
 
@@ -203,7 +203,7 @@ TEST_F(OneTimeTokenServiceImplTest, SuccessfulFetchNotifiesSubscribers) {
   OneTimeTokenServiceTestObserver observer;
 
   auto subscription = service.Subscribe(
-      base::Time::Now() + base::Minutes(5),
+      OneTimeTokenSource::kOnDeviceSms, base::Time::Now() + base::Minutes(5),
       base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
                           base::Unretained(&observer)));
   sms_otp_backend_.SimulateOtpArrived(OneTimeToken(
@@ -221,7 +221,7 @@ TEST_F(OneTimeTokenServiceImplTest, BackendIsQueriedForFreshTokens) {
 
   EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtpCalled).Times(1);
   auto subscription = service.Subscribe(
-      base::Time::Now() + base::Minutes(5),
+      OneTimeTokenSource::kOnDeviceSms, base::Time::Now() + base::Minutes(5),
       base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
                           base::Unretained(&observer)));
   sms_otp_backend_.SimulateOtpArrived(
@@ -250,13 +250,13 @@ TEST_F(OneTimeTokenServiceImplTest, MultipleSubscriptionsOneFetch) {
   EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtpCalled).Times(1);
 
   auto subscription1 = service.Subscribe(
-      base::Time::Now() + base::Minutes(5),
+      OneTimeTokenSource::kOnDeviceSms, base::Time::Now() + base::Minutes(5),
       base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
                           base::Unretained(&observer1)));
   // While the first request is in progress, a second subscription should not
   // trigger a new request.
   auto subscription2 = service.Subscribe(
-      base::Time::Now() + base::Minutes(5),
+      OneTimeTokenSource::kOnDeviceSms, base::Time::Now() + base::Minutes(5),
       base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
                           base::Unretained(&observer2)));
 
@@ -276,7 +276,7 @@ TEST_F(OneTimeTokenServiceImplTest, ExpiredSubscription) {
   EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtpCalled).Times(1);
 
   auto subscription = service.Subscribe(
-      base::Time::Now() + base::Minutes(5),
+      OneTimeTokenSource::kOnDeviceSms, base::Time::Now() + base::Minutes(5),
       base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
                           base::Unretained(&observer)));
 
@@ -296,7 +296,7 @@ TEST_F(OneTimeTokenServiceImplTest, NewSubscriptionAfterAllExpired) {
 
   OneTimeTokenServiceTestObserver observer1;
   auto subscription1 = service.Subscribe(
-      base::Time::Now() + base::Minutes(5),
+      OneTimeTokenSource::kOnDeviceSms, base::Time::Now() + base::Minutes(5),
       base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
                           base::Unretained(&observer1)));
   sms_otp_backend_.SimulateOtpArrived(
@@ -315,7 +315,7 @@ TEST_F(OneTimeTokenServiceImplTest, NewSubscriptionAfterAllExpired) {
 
   OneTimeTokenServiceTestObserver observer2;
   auto subscription2 = service.Subscribe(
-      base::Time::Now() + base::Minutes(5),
+      OneTimeTokenSource::kOnDeviceSms, base::Time::Now() + base::Minutes(5),
       base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
                           base::Unretained(&observer2)));
   EXPECT_TRUE(sms_otp_backend_.HasPendingRetrieveSmsOtpCallbacks());
@@ -334,7 +334,7 @@ TEST_F(OneTimeTokenServiceImplTest, GetRecentOneTimeTokens) {
   EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtpCalled).Times(1);
 
   auto subscription = service.Subscribe(
-      base::Time::Now() + base::Minutes(5),
+      OneTimeTokenSource::kOnDeviceSms, base::Time::Now() + base::Minutes(5),
       base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
                           base::Unretained(&subscriber_observer)));
 
@@ -362,7 +362,7 @@ TEST_F(OneTimeTokenServiceImplTest, GetRecentOneTimeTokens_Expired) {
   OneTimeTokenServiceTestObserver subscriber_observer;
 
   auto subscription = service.Subscribe(
-      base::Time::Now() + base::Minutes(5),
+      OneTimeTokenSource::kOnDeviceSms, base::Time::Now() + base::Minutes(5),
       base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
                           base::Unretained(&subscriber_observer)));
 
@@ -392,7 +392,7 @@ TEST_F(OneTimeTokenServiceImplTest, NewFetchAfterCompletion) {
   EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtpCalled).Times(1);
 
   auto subscription = service.Subscribe(
-      base::Time::Now() + base::Minutes(5),
+      OneTimeTokenSource::kOnDeviceSms, base::Time::Now() + base::Minutes(5),
       base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
                           base::Unretained(&observer)));
 
@@ -414,7 +414,7 @@ TEST_F(OneTimeTokenServiceImplTest,
   OneTimeTokenServiceTestObserver subscriber_observer;
 
   auto subscription = service.Subscribe(
-      base::Time::Now() + base::Minutes(5),
+      OneTimeTokenSource::kOnDeviceSms, base::Time::Now() + base::Minutes(5),
       base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
                           base::Unretained(&subscriber_observer)));
 
@@ -448,7 +448,7 @@ TEST_F(OneTimeTokenServiceImplTest, GmailSubscriptionTriggersFetch) {
       });
 
   auto subscription = service.Subscribe(
-      base::Time::Now() + base::Minutes(5),
+      OneTimeTokenSource::kGmail, base::Time::Now() + base::Minutes(5),
       base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
                           base::Unretained(&observer)));
 
@@ -468,7 +468,7 @@ TEST_F(OneTimeTokenServiceImplTest, GmailSuccessfulFetchNotifiesSubscribers) {
       });
 
   auto subscription = service.Subscribe(
-      base::Time::Now() + base::Minutes(5),
+      OneTimeTokenSource::kGmail, base::Time::Now() + base::Minutes(5),
       base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
                           base::Unretained(&observer)));
   gmail_otp_backend_->SimulateOtpArrived(
@@ -492,13 +492,13 @@ TEST_F(OneTimeTokenServiceImplTest, GmailMultipleSubscriptionsOneFetch) {
       });
 
   auto subscription1 = service.Subscribe(
-      base::Time::Now() + base::Minutes(5),
+      OneTimeTokenSource::kGmail, base::Time::Now() + base::Minutes(5),
       base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
                           base::Unretained(&observer1)));
   // While the first request is in progress, a second subscription should not
   // trigger a new request.
   auto subscription2 = service.Subscribe(
-      base::Time::Now() + base::Minutes(5),
+      OneTimeTokenSource::kGmail, base::Time::Now() + base::Minutes(5),
       base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
                           base::Unretained(&observer2)));
 
@@ -523,7 +523,7 @@ TEST_F(OneTimeTokenServiceImplTest, GmailExpiredSubscription) {
       });
 
   auto subscription = service.Subscribe(
-      base::Time::Now() + base::Minutes(5),
+      OneTimeTokenSource::kGmail, base::Time::Now() + base::Minutes(5),
       base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
                           base::Unretained(&observer)));
 
@@ -550,7 +550,7 @@ TEST_F(OneTimeTokenServiceImplTest, GmailNewSubscriptionAfterAllExpired) {
 
   OneTimeTokenServiceTestObserver observer1(OneTimeTokenSource::kGmail);
   auto subscription1 = service.Subscribe(
-      base::Time::Now() + base::Minutes(5),
+      OneTimeTokenSource::kGmail, base::Time::Now() + base::Minutes(5),
       base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
                           base::Unretained(&observer1)));
   gmail_otp_backend_->SimulateOtpArrived(
@@ -570,7 +570,7 @@ TEST_F(OneTimeTokenServiceImplTest, GmailNewSubscriptionAfterAllExpired) {
   // the backend subscription is still active.
   OneTimeTokenServiceTestObserver observer2(OneTimeTokenSource::kGmail);
   auto subscription2 = service.Subscribe(
-      base::Time::Now() + base::Minutes(5),
+      OneTimeTokenSource::kGmail, base::Time::Now() + base::Minutes(5),
       base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
                           base::Unretained(&observer2)));
   gmail_otp_backend_->SimulateOtpArrived(
@@ -597,7 +597,7 @@ TEST_F(OneTimeTokenServiceImplTest, GmailGetRecentOneTimeTokens) {
       });
 
   auto subscription = service.Subscribe(
-      base::Time::Now() + base::Minutes(5),
+      OneTimeTokenSource::kGmail, base::Time::Now() + base::Minutes(5),
       base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
                           base::Unretained(&subscriber_observer)));
 
@@ -633,7 +633,7 @@ TEST_F(OneTimeTokenServiceImplTest, GmailGetRecentOneTimeTokens_Expired) {
       });
 
   auto subscription = service.Subscribe(
-      base::Time::Now() + base::Minutes(5),
+      OneTimeTokenSource::kGmail, base::Time::Now() + base::Minutes(5),
       base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
                           base::Unretained(&subscriber_observer)));
 
@@ -668,7 +668,7 @@ TEST_F(OneTimeTokenServiceImplTest, GmailNewFetchAfterCompletion) {
       });
 
   auto subscription = service.Subscribe(
-      base::Time::Now() + base::Minutes(5),
+      OneTimeTokenSource::kGmail, base::Time::Now() + base::Minutes(5),
       base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
                           base::Unretained(&observer)));
 
@@ -700,7 +700,7 @@ TEST_F(OneTimeTokenServiceImplTest,
       });
 
   auto subscription = service.Subscribe(
-      base::Time::Now() + base::Minutes(5),
+      OneTimeTokenSource::kGmail, base::Time::Now() + base::Minutes(5),
       base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
                           base::Unretained(&subscriber_observer)));
 
@@ -737,11 +737,11 @@ TEST_F(OneTimeTokenServiceImplTest,
       });
 
   auto subscription_sms = service.Subscribe(
-      base::Time::Now() + base::Minutes(5),
+      OneTimeTokenSource::kOnDeviceSms, base::Time::Now() + base::Minutes(5),
       base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
                           base::Unretained(&observer_sms)));
   auto subscription_gmail = service.Subscribe(
-      base::Time::Now() + base::Minutes(5),
+      OneTimeTokenSource::kGmail, base::Time::Now() + base::Minutes(5),
       base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
                           base::Unretained(&observer_gmail)));
 
@@ -828,6 +828,58 @@ TEST_F(OneTimeTokenServiceImplTest, RequestOneTimeToken_LateResponse) {
   // This should not call the callback again and should not crash.
   sms_otp_backend_.SimulateOtpArrived(OneTimeToken(
       OneTimeTokenType::kSmsOtp, "123456", base::TimeTicks::Now()));
+}
+
+// Test that both Gmail and SMS subscriptions are isolated.
+TEST_F(OneTimeTokenServiceImplTest, SourceIsolation) {
+  OneTimeTokenServiceImpl service(&sms_otp_backend_, gmail_otp_backend_.get());
+
+  OneTimeTokenServiceTestObserver observer_sms;    // Unfiltered
+  OneTimeTokenServiceTestObserver observer_gmail;  // Unfiltered
+
+  EXPECT_CALL(sms_otp_backend_, RetrieveSmsOtpCalled).Times(1);
+  EXPECT_CALL(*gmail_otp_backend_, Subscribe)
+      .WillOnce([&](base::Time expiration, GmailOtpBackend::Callback callback) {
+        gmail_otp_backend_->AddMockSubscription(std::move(callback));
+        return ExpiringSubscription();
+      });
+
+  auto sub_sms = service.Subscribe(
+      OneTimeTokenSource::kOnDeviceSms, base::Time::Now() + base::Minutes(5),
+      base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
+                          base::Unretained(&observer_sms)));
+  auto sub_gmail = service.Subscribe(
+      OneTimeTokenSource::kGmail, base::Time::Now() + base::Minutes(5),
+      base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
+                          base::Unretained(&observer_gmail)));
+
+  sms_otp_backend_.SimulateOtpArrived(OneTimeToken(
+      OneTimeTokenType::kSmsOtp, "SMS_OTP", base::TimeTicks::Now()));
+  gmail_otp_backend_->SimulateOtpArrived(OneTimeToken(
+      OneTimeTokenType::kGmail, "GMAIL_OTP", base::TimeTicks::Now()));
+
+  // observer_sms should ONLY have received the SMS OTP.
+  EXPECT_THAT(observer_sms.results(),
+              ElementsAre(Pair(OneTimeTokenSource::kOnDeviceSms,
+                               OneTimeTokenValueEq("SMS_OTP"))));
+  // observer_gmail should ONLY have received the Gmail OTP.
+  EXPECT_THAT(observer_gmail.results(),
+              ElementsAre(Pair(OneTimeTokenSource::kGmail,
+                               OneTimeTokenValueEq("GMAIL_OTP"))));
+}
+
+// Test that subscribing with an unknown source crashes.
+TEST_F(OneTimeTokenServiceImplTest, SubscribeWithUnknownSourceCrashes) {
+  OneTimeTokenServiceImpl service(nullptr, nullptr);
+  OneTimeTokenServiceTestObserver observer;
+
+  EXPECT_DEATH_IF_SUPPORTED(
+      (void)service.Subscribe(
+          static_cast<OneTimeTokenSource>(999),
+          base::Time::Now() + base::Minutes(5),
+          base::BindRepeating(&OneTimeTokenServiceTestObserver::OnTokenReceived,
+                              base::Unretained(&observer))),
+      "OneTimeTokenServiceImpl::Subscribe: Unsupported source 999");
 }
 
 }  // namespace one_time_tokens

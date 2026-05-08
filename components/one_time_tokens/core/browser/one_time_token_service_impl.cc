@@ -46,13 +46,27 @@ void OneTimeTokenServiceImpl::GetRecentOneTimeTokens(Callback callback) {
   }
 }
 
-ExpiringSubscription OneTimeTokenServiceImpl::Subscribe(base::Time expiration,
-                                                        Callback callback) {
-  ExpiringSubscription subscription =
-      subscription_manager_.Subscribe(expiration, std::move(callback));
-  RetrieveSmsOtpIfNeeded();
-  RetrieveGmailOtpIfNeeded();
-  return subscription;
+ExpiringSubscription OneTimeTokenServiceImpl::Subscribe(
+    OneTimeTokenSource source,
+    base::Time expiration,
+    Callback callback) {
+  switch (source) {
+    case OneTimeTokenSource::kOnDeviceSms: {
+      ExpiringSubscription subscription =
+          sms_subscription_manager_.Subscribe(expiration, std::move(callback));
+      RetrieveSmsOtpIfNeeded();
+      return subscription;
+    }
+    case OneTimeTokenSource::kGmail: {
+      ExpiringSubscription subscription = gmail_subscription_manager_.Subscribe(
+          expiration, std::move(callback));
+      RetrieveGmailOtpIfNeeded();
+      return subscription;
+    }
+    default:
+      NOTREACHED() << "OneTimeTokenServiceImpl::Subscribe: Unsupported source "
+                   << static_cast<int>(source);
+  }
 }
 
 std::vector<OneTimeToken> OneTimeTokenServiceImpl::GetCachedOneTimeTokens()
@@ -89,7 +103,7 @@ void OneTimeTokenServiceImpl::RequestOneTimeToken(
 
 void OneTimeTokenServiceImpl::RetrieveSmsOtpIfNeeded() {
   if (!sms_.backend || sms_.has_pending_request ||
-      !subscription_manager_.GetNumberSubscribers()) {
+      !sms_subscription_manager_.GetNumberSubscribers()) {
     return;
   }
   sms_.backend->RetrieveSmsOtp(
@@ -106,8 +120,8 @@ void OneTimeTokenServiceImpl::OnResponseFromSmsOtpBackend(
     // TODO(crbug.com/415273270) Do proper error handling:
     // - In case of timeout, schedule a refetch if appropriate.
     // - In case of a permission error or API error, report the problems.
-    subscription_manager_.Notify(OneTimeTokenSource::kOnDeviceSms,
-                                 base::unexpected(reply.error()));
+    sms_subscription_manager_.Notify(OneTimeTokenSource::kOnDeviceSms,
+                                     base::unexpected(reply.error()));
     return;
   }
 
@@ -116,8 +130,8 @@ void OneTimeTokenServiceImpl::OnResponseFromSmsOtpBackend(
   // Instead of notifying subscribers only if the OTP is actually new,
   // subscribers are always notified. This ensures that newly added subscribers
   // who missed notifications from before their subscription are informed.
-  subscription_manager_.Notify(OneTimeTokenSource::kOnDeviceSms,
-                               base::ok(token));
+  sms_subscription_manager_.Notify(OneTimeTokenSource::kOnDeviceSms,
+                                   base::ok(token));
 
   // It's possible that the SMS OTP backend responded with a stale OTP.
   // Therefore, schedule a new retrieval to see if a new OTP arrives.
@@ -130,7 +144,7 @@ void OneTimeTokenServiceImpl::OnResponseFromSmsOtpBackend(
 
 void OneTimeTokenServiceImpl::RetrieveGmailOtpIfNeeded() {
   if (!gmail_.backend || gmail_.has_pending_request ||
-      !subscription_manager_.GetNumberSubscribers()) {
+      !gmail_subscription_manager_.GetNumberSubscribers()) {
     return;
   }
   gmail_subscription_ = gmail_.backend->Subscribe(
@@ -147,7 +161,8 @@ void OneTimeTokenServiceImpl::OnResponseFromGmailOtpBackend(
   if (reply.has_value()) {
     cache_.PurgeExpiredAndAdd(*reply);
   }
-  subscription_manager_.Notify(OneTimeTokenSource::kGmail, std::move(reply));
+  gmail_subscription_manager_.Notify(OneTimeTokenSource::kGmail,
+                                     std::move(reply));
 }
 
 }  // namespace one_time_tokens

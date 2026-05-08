@@ -44,7 +44,8 @@ class OneTimeTokenServiceImpl : public OneTimeTokenService,
 
   // OneTimeTokenService:
   void GetRecentOneTimeTokens(Callback callback) override;
-  [[nodiscard]] ExpiringSubscription Subscribe(base::Time expiration,
+  [[nodiscard]] ExpiringSubscription Subscribe(OneTimeTokenSource source,
+                                               base::Time expiration,
                                                Callback callback) override;
   std::vector<OneTimeToken> GetCachedOneTimeTokens() const override;
   void RequestOneTimeToken(
@@ -62,7 +63,8 @@ class OneTimeTokenServiceImpl : public OneTimeTokenService,
       base::expected<OneTimeToken, OneTimeTokenRetrievalError> reply);
 
   // Handles subscriptions to the `OneTimeTokenService`.
-  ExpiringSubscriptionManager<CallbackSignature> subscription_manager_;
+  ExpiringSubscriptionManager<CallbackSignature> sms_subscription_manager_;
+  ExpiringSubscriptionManager<CallbackSignature> gmail_subscription_manager_;
 
   // Handles requests of the `OneTimeTokenService` to the `SmsOtpBackend`.
   struct {

@@ -52,8 +52,10 @@ class OneTimeTokenService {
   // Creates a subscription for new incoming one time tokens. It's possible that
   // the same one time token is reported many times while a subscription is
   // active. It's the responsibility of the caller to deduplicate those.
-  [[nodiscard]] virtual ExpiringSubscription Subscribe(base::Time expiration,
-                                                       Callback callback) = 0;
+  [[nodiscard]] virtual ExpiringSubscription Subscribe(
+      OneTimeTokenSource source,
+      base::Time expiration,
+      Callback callback) = 0;
 
   // Requests one time tokens from the underlying backend. `callback` is called
   // exactly once when the request is complete, with the fetched token if
