@@ -1251,7 +1251,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram name="Extensions.DeclarativeNetRequest.RedirectAction"
     enum="DeclarativeNetRequestRedirectType" expires_after="2026-12-31">
-  <owner>marwant@chromium.org</owner>
+  <owner>quarz@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>
     Logs the type of redirect action when a request is redirected by the
@@ -4611,6 +4611,20 @@ This is emitted for two scenarios when a worker may be unregistered:
     Warning: This histogram was expired from 2023-08-08 to 2023-10-16; data may
     be missing.
   </summary>
+</histogram>
+
+<histogram name="Extensions.Tabs.RemoveAction" enum="TabsRemoveActionType"
+    expires_after="2026-12-31">
+  <owner>quarz@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>Tracks Tabs API remove actions.</summary>
+</histogram>
+
+<histogram name="Extensions.Tabs.UpdateAction" enum="TabsUpdateActionType"
+    expires_after="2026-12-31">
+  <owner>quarz@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>Tracks Tabs API update actions.</summary>
 </histogram>
 
 <histogram name="Extensions.Toolbar.ExtensionsActivatedFromRequestAccessButton"
