@@ -120,6 +120,13 @@ if (concurrent_links == -1) {
   concurrent_links = _command_dict.primary_pool_size
   concurrent_links_logs = _command_dict.explanation
 
+  # Mold is fast by using up all available resources. Can run out of file
+  # descriptors if trying to run too many mold links concurrently.
+  if (use_mold && concurrent_links > 2) {
+    concurrent_links_logs += [ "Capped at 2 for use_mold" ]
+    concurrent_links = 2
+  }
+
   if (_command_dict.secondary_pool_size >= concurrent_links) {
     # Have R8 / Lint share the link pool unless we would safely get more
     # concurrency out of using a separate one.
