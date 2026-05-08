@@ -533,6 +533,28 @@ TEST_P(ChangePasswordFormFillingSubmissionHelperTest, FailedFilling) {
                 .request_latency_ms());
 }
 
+TEST_P(ChangePasswordFormFillingSubmissionHelperTest,
+       FailedFillingFormWaiterTimeout) {
+  auto* form_manager = CreateFormManager(/*credentials_to_seed=*/{});
+
+  base::test::TestFuture<SubmissionResult> completion_future;
+  auto verifier = CreateVerifier(form_manager, completion_future.GetCallback());
+
+  CompleteFormFilling(form_manager, verifier.get(), std::nullopt);
+
+  ASSERT_TRUE(verifier->form_waiter());
+
+  task_environment()->AdvanceClock(base::Seconds(10));
+
+  EXPECT_EQ(completion_future.Get().error(),
+            SubmissionError::kFailedToFillForm);
+
+  CheckSubmitFormStatus(
+      logs_uploader()->GetFinalLog(),
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_FORM_FILLING_FAILED);
+}
+
 TEST_P(ChangePasswordFormFillingSubmissionHelperTest, ProvisionallySaveFailed) {
   auto* form_manager =
       CreateFormManager(/*credentials_to_seed=*/{*existing_credential()});
