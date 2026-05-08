@@ -28,6 +28,8 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <string_view>
+
 #include "base/compiler_specific.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -51,12 +53,12 @@ namespace {
 const v8::HeapGraphNode* GetProperty(v8::Isolate* isolate,
                                      const v8::HeapGraphNode* node,
                                      v8::HeapGraphEdge::Type type,
-                                     const char* name) {
+                                     std::string_view name) {
   for (int i = 0, count = node->GetChildrenCount(); i < count; ++i) {
     const v8::HeapGraphEdge* prop = node->GetChild(i);
     if (prop->GetType() == type) {
       v8::String::Utf8Value prop_name(isolate, prop->GetName());
-      if (!UNSAFE_TODO(strcmp(name, *prop_name))) {
+      if (*prop_name && name == prop_name.as_view()) {
         return prop->GetToNode();
       }
     }
@@ -64,7 +66,7 @@ const v8::HeapGraphNode* GetProperty(v8::Isolate* isolate,
   return nullptr;
 }
 
-int GetNumObjects(v8::Isolate* isolate, const char* constructor) {
+int GetNumObjects(v8::Isolate* isolate, std::string_view constructor) {
   v8::HandleScope scope(isolate);
   v8::HeapProfiler* profiler = isolate->GetHeapProfiler();
   const v8::HeapSnapshot* snapshot = profiler->TakeHeapSnapshot();
@@ -76,14 +78,14 @@ int GetNumObjects(v8::Isolate* isolate, const char* constructor) {
     if (node->GetType() != v8::HeapGraphNode::kObject)
       continue;
     v8::String::Utf8Value node_name(isolate, node->GetName());
-    if (!UNSAFE_TODO(strcmp(constructor, *node_name))) {
+    if (*node_name && constructor == node_name.as_view()) {
       const v8::HeapGraphNode* constructor_prop = GetProperty(
           isolate, node, v8::HeapGraphEdge::kProperty, "constructor");
       // Skip an Object instance named after the constructor.
       if (constructor_prop) {
         v8::String::Utf8Value constructor_name(isolate,
                                                constructor_prop->GetName());
-        if (!UNSAFE_TODO(strcmp(constructor, *constructor_name))) {
+        if (*constructor_name && constructor == constructor_name.as_view()) {
           continue;
         }
       }
