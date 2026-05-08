@@ -168,15 +168,19 @@ void UserSecuritySignalsService::TriggerReport(SecurityReportTrigger trigger) {
 }
 
 void UserSecuritySignalsService::StartPolicyObservation() {
-  if (enterprise_signals::features::IsPolicyDataCollectionEnabled()) {
+  if (enterprise_signals::features::IsPolicyDataCollectionEnabled() &&
+      !is_observing_policy_service_) {
     policy_service_->AddObserver(policy::POLICY_DOMAIN_CHROME, this);
+    is_observing_policy_service_ = true;
   }
 }
 
 void UserSecuritySignalsService::StopPolicyObservation() {
   if (policy_service_ &&
-      enterprise_signals::features::IsPolicyDataCollectionEnabled()) {
+      enterprise_signals::features::IsPolicyDataCollectionEnabled() &&
+      is_observing_policy_service_) {
     policy_service_->RemoveObserver(policy::POLICY_DOMAIN_CHROME, this);
+    is_observing_policy_service_ = false;
   }
 }
 
