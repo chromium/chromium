@@ -4,5 +4,7 @@
 
 module cc.mojom;
 
-[Native]
-enum TouchAction;
+// This is a bitmask of cc::TouchAction wrapped in a struct for validation.
+struct TouchAction {
+  uint32 value;
+};

@@ -77,7 +77,6 @@ component("common") {
     "//third_party/blink/public/mojom:web_bluetooth_mojo_bindings",
   ]
   deps = [
-    "//cc/ipc",
     "//third_party/blink/common",
     "//ui/events/ipc",
   ]

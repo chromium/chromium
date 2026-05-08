@@ -201,7 +201,6 @@ source_set("common") {
   public_deps = [
     ":mojo_bindings",
     "//cc",
-    "//cc/ipc",
     "//content/public/common:memory_consumer_update",
     "//content/public/common:switches",
     "//gpu/command_buffer/common",

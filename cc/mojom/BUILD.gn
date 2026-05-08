@@ -49,28 +49,30 @@ mojom("mojom") {
           cpp = "::cc::BrowserControlsState"
         },
       ]
-      traits_headers = [ "//cc/ipc/cc_param_traits_macros.h" ]
-      traits_public_deps = [ "//cc/ipc" ]
+      traits_headers = [ "browser_controls_state_mojom_traits.h" ]
     },
     {
       types = [
         {
           mojom = "cc.mojom.TouchAction"
           cpp = "::cc::TouchAction"
+          copyable_pass_by_value = true
         },
       ]
-      traits_headers = [ "//cc/ipc/cc_param_traits_macros.h" ]
-      traits_public_deps = [ "//cc/ipc" ]
+      traits_headers = [ "touch_action_mojom_traits.h" ]
     },
     {
       types = [
+        {
+          mojom = "cc.mojom.OverscrollBehaviorType"
+          cpp = "::cc::OverscrollBehavior::Type"
+        },
         {
           mojom = "cc.mojom.OverscrollBehavior"
           cpp = "::cc::OverscrollBehavior"
         },
       ]
-      traits_headers = [ "//cc/ipc/cc_param_traits_macros.h" ]
-      traits_public_deps = [ "//cc/ipc" ]
+      traits_headers = [ "overscroll_behavior_mojom_traits.h" ]
     },
     {
       types = [

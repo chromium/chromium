@@ -4,5 +4,14 @@
 
 module cc.mojom;
 
-[Native]
-struct OverscrollBehavior;
+enum OverscrollBehaviorType {
+  kNone,
+  kAuto,
+  kContain,
+  kChain,
+};
+
+struct OverscrollBehavior {
+  OverscrollBehaviorType x;
+  OverscrollBehaviorType y;
+};

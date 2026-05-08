@@ -152,6 +152,7 @@ component("input") {
 mojom_component("mojom") {
   sources = [ "render_input_router.mojom" ]
   public_deps = [
+    "//cc/mojom",
     "//services/viz/public/mojom",
     "//third_party/blink/public/mojom:mojom_platform",
     "//ui/events/mojom",

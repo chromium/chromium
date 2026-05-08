@@ -1808,7 +1808,6 @@ component("platform") {
     "//base/allocator:buildflags",
     "//build:chromecast_buildflags",
     "//cc",
-    "//cc/ipc",
     "//cc/mojo_embedder",
     "//components/input",
     "//components/language_detection/content/common",

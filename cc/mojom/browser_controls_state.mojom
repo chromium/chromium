@@ -4,5 +4,8 @@
 
 module cc.mojom;
 
-[Native]
-enum BrowserControlsState;
+enum BrowserControlsState {
+  kShown = 1,
+  kHidden = 2,
+  kBoth = 3,
+};
