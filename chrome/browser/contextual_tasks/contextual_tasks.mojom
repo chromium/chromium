@@ -9,6 +9,18 @@ import "mojo/public/mojom/base/unguessable_token.mojom";
 import "url/mojom/url.mojom";
 import "ui/base/mojom/window_open_disposition.mojom";
 
+// Struct representing an injected input which can be text only,
+// contain a modality chip, or both, and allows immediate submission.
+struct InjectedInput {
+  string? title;
+  string? thumbnail;
+  IconType icon_id;
+  mojo_base.mojom.UnguessableToken? file_token;
+  bool supports_unimodal;
+  string? query_text;
+  bool submit_after_injection;
+};
+
 // Represents the the visual information needed to display a single context row
 // of a tab where title and url will be displayed in the sources menu.
 struct TabContext {
@@ -222,22 +234,7 @@ interface Page {
   // a thumbnail source. `file_token` is an identifier for the input generated
   // by ContextualSearchSessionHandle. `supports_unimodal` specifies whether the
   // input may be submitted as a query without any accompanying text query.
-  InjectInput(
-    string title,
-    string thumbnail,
-    mojo_base.mojom.UnguessableToken file_token,
-    bool supports_unimodal);
-
-  // Called by the browser process (C++) when the AIM server sends an
-  // InjectInput command to inject an input into the compose box and specifies
-  // an icon type. `file_token` is an identifier for the input generated
-  // by ContextualSearchSessionHandle. `supports_unimodal` specifies whether the
-  // input may be submitted as a query without any accompanying text query.
-  InjectInputWithIcon(
-    string title,
-    IconType icon_id,
-    mojo_base.mojom.UnguessableToken file_token,
-    bool supports_unimodal);
+  InjectInput(InjectedInput input);
 
   // Called by the browser process (C++) when the AIM server sends a
   // RemoveInjectedInput command to remove an injected input from the compose

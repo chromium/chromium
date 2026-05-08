@@ -219,6 +219,15 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     return this.searchboxNextEnabled && this.submitEnabled;
   }
 
+  override computeSubmitEnabled(): boolean {
+    // `submitEnabled` controls the visibility of the submit button.
+    // Since files can be added but technically not be submittable (like
+    // injected inputs), this needs to check if any files are present to show
+    // the submit button. The button will still appear disabled because that is
+    // controlled by `canSubmitFilesAndInput`.
+    return this.hasValidQuery() || this.files.size > 0;
+  }
+
   override getDropdownElement(): ComposeboxDropdownElement {
     return this.$.matches;
   }
@@ -358,11 +367,26 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       this.showFileCarousel = this.files.size > 0;
       this.showDropdown = this.computeShowDropdown_();
     }
-    if (changedPrivateProperties.has('submitEnabled') ||
+    if (changedPrivateProperties.has('input') ||
+        changedPrivateProperties.has('selectedMatchIndex') ||
+        changedPrivateProperties.has('inputState') ||
+        changedPrivateProperties.has('isFollowupQuery') ||
+        changedPrivateProperties.has('files') ||
+        changedPrivateProperties.has('submitEnabled') ||
         changedPrivateProperties.has('fileUploadsComplete')) {
+      this.submitEnabled = this.computeSubmitEnabled();
       this.uploadButtonDisabled = !this.fileUploadsComplete;
+      // `canSubmitFilesAndInput` checks if there is a valid query rather than
+      // if submit is enabled, as `submitEnabled` only defines if the submit
+      // button should be shown rather than its actual active state.
       this.canSubmitFilesAndInput =
-          this.submitEnabled && this.fileUploadsComplete;
+          this.hasValidQuery() && this.fileUploadsComplete;
+    }
+
+    if (changedPrivateProperties.has('canSubmitFilesAndInput')) {
+      this.fire('can-submit-files-and-input-changed', {
+        canSubmitFilesAndInput: this.canSubmitFilesAndInput,
+      });
     }
 
     if (changedPrivateProperties.has('inputState') && this.inputState) {
@@ -421,14 +445,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       }
     }
 
-    if (changedPrivateProperties.has('selectedMatchIndex') ||
-        changedPrivateProperties.has('inputState') ||
-        changedPrivateProperties.has('isFollowupQuery') ||
-        changedPrivateProperties.has('files')) {
-      this.submitEnabled = this.computeSubmitEnabled();
-      this.canSubmitFilesAndInput =
-          this.submitEnabled && this.fileUploadsComplete;
-    }
     if (changedPrivateProperties.has('smartComposeInlineHint')) {
       if (this.smartComposeInlineHint) {
         // TODO(crbug.com/452619068): Investigate why screenreader is
@@ -753,6 +769,33 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     attachment.supportsUnimodal = supportsUnimodal;
 
     this.onFileContextAdded(attachment);
+  }
+
+  setInputProgrammatically(
+      queryText: string, willSubmitAfterInjection: boolean) {
+    this.input = queryText;
+
+    if (!willSubmitAfterInjection) {
+      // If not submitting immediately, suggestions for the new input might be
+      // desired.
+      this.queryAutocomplete(/*clearMatches=*/ true);
+      return;
+    }
+
+    // Stop any in-flight autocomplete queries to prevent them from returning
+    // and triggering an automatic selection that would overwrite the injected
+    // input. This also prevents unnecessary backend work for a query that is
+    // about to be submitted.
+    this.getSearchboxHandler().stopAutocomplete(/*clearResult=*/ true);
+
+    // Clear lastQueriedInput to ensure that if any autocomplete results still
+    // arrive (e.g., if stopAutocomplete didn't stop them in time), they will
+    // be ignored because result.input won't match lastQueriedInput.
+    this.lastQueriedInput = '';
+
+    // Clear any existing matches to ensure the dropdown is hidden and no stale
+    // matches are displayed or interactable while waiting for submission.
+    this.clearAutocompleteMatches();
   }
 
   // TODO(crbug.com/486707842): Move this to contextual tasks composebox.

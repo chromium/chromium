@@ -253,6 +253,69 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
         'Input should be cleared, but input = ' + inputElement.value);
   });
 
+  test('InjectInputSubmitAfterInjectionTrue', async () => {
+    const TEST_QUERY = 'injected query';
+
+    // Call `injectInput` with query text and submit_after_injection = true.
+    contextualTasksApp.$.composebox.injectInput({
+      title: null,
+      thumbnail: null,
+      iconId: 0,
+      fileToken: null,
+      supportsUnimodal: false,
+      queryText: TEST_QUERY,
+      submitAfterInjection: true,
+    });
+
+    // Verify `submitQuery` is called with the injected text.
+    const [query] = await mockSearchboxPageHandler.whenCalled('submitQuery');
+    assertEquals(TEST_QUERY, query);
+  });
+
+  test('InjectInputSubmitAfterInjectionTrueWithFile', async () => {
+    const TEST_QUERY = 'injected query';
+
+    contextualTasksApp.$.composebox.injectInput({
+      title: 'title',
+      thumbnail: 'thumbnail',
+      iconId: 0,
+      fileToken: FAKE_TOKEN_STRING,
+      supportsUnimodal: true,
+      queryText: TEST_QUERY,
+      submitAfterInjection: true,
+    });
+
+    await composebox.updateComplete;
+
+    // Since the file is injected as already successful, it should submit
+    // immediately.
+    const [query] = await mockSearchboxPageHandler.whenCalled('submitQuery');
+    assertEquals(TEST_QUERY, query);
+  });
+
+  test('InjectInputSubmitAfterInjectionFalse', async () => {
+    const TEST_QUERY = 'injected query';
+
+    // Call `injectInput` with query text and submit_after_injection = false.
+    contextualTasksApp.$.composebox.injectInput({
+      title: null,
+      thumbnail: null,
+      iconId: 0,
+      fileToken: null,
+      supportsUnimodal: false,
+      queryText: TEST_QUERY,
+      submitAfterInjection: false,
+    });
+    await composebox.updateComplete;
+
+    // Verify input is set.
+    assertEquals(TEST_QUERY, composebox.input);
+    assertEquals(TEST_QUERY, composebox.getInputElement().$.input.value);
+
+    // Verify `submitQuery` was not called.
+    assertEquals(mockSearchboxPageHandler.getCallCount('submitQuery'), 0);
+  });
+
   test('LensButtonTriggersOverlay', async () => {
     testProxy.handler.setIsShownInTab(false);
 
@@ -1137,6 +1200,13 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
     await searchboxCallbackRouterRemote.$.flushForTesting();
     await composebox.updateComplete;
 
+    assertEquals(
+        0, composebox.pendingUploads.size, 'pendingUploads should be 0');
+    assertTrue(composebox.submitEnabled, 'submitEnabled should be true');
+    assertFalse(
+        composebox.canSubmitFilesAndInput,
+        'canSubmitFilesAndInput should be false');
+
     const submitButton: HTMLButtonElement|null = getSubmitButton(composebox);
     assertTrue(!!submitButton, 'Submit button should exist');
     assertTrue(submitButton?.disabled, 'Button should be disabled');
@@ -1168,6 +1238,13 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
 
     await searchboxCallbackRouterRemote.$.flushForTesting();
     await composebox.updateComplete;
+
+    assertEquals(
+        0, composebox.pendingUploads.size, 'pendingUploads should be 0');
+    assertTrue(composebox.submitEnabled, 'submitEnabled should be true');
+    assertTrue(
+        composebox.canSubmitFilesAndInput,
+        'canSubmitFilesAndInput should be true');
 
     const submitButton: HTMLButtonElement|null = getSubmitButton(composebox);
     assertTrue(!!submitButton, 'Submit button should exist');

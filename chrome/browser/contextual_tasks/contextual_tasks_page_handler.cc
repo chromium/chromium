@@ -396,8 +396,7 @@ void ContextualTasksPageHandler::OnWebviewMessage(
         aim_to_client_message.notify_zero_state_rendered()
             .is_zero_state_rendered());
   } else if (aim_to_client_message.has_inject_input()) {
-    OnReceivedInjectInput(std::make_unique<lens::ModalityChipProps>(
-        aim_to_client_message.inject_input().modality()));
+    OnReceivedInjectInput(aim_to_client_message.inject_input());
   } else if (aim_to_client_message.has_remove_injected_input()) {
     OnReceivedRemoveInjectedInput(
         std::string(aim_to_client_message.remove_injected_input().id()));
@@ -548,22 +547,42 @@ void ContextualTasksPageHandler::OnReceivedUpdatedThreadContextLibrary(
 }
 
 void ContextualTasksPageHandler::OnReceivedInjectInput(
-    std::unique_ptr<lens::ModalityChipProps> modality) {
-  contextual_search::ContextualSearchSessionHandle* handle =
-      web_ui_controller_->GetOrCreateContextualSessionHandle();
-  auto token = handle->CreateContextToken();
-  if (modality->has_icon_id()) {
-    web_ui_controller_->GetPageRemote()->InjectInputWithIcon(
-        std::string(modality->title()), IconTypeToMojom(modality->icon_id()),
-        token, modality->is_unimodal());
-  } else {
-    web_ui_controller_->GetPageRemote()->InjectInput(
-        std::string(modality->title()), std::string(modality->thumbnail_src()),
-        token, modality->is_unimodal());
+    const lens::InjectInput& inject_input) {
+  contextual_tasks::mojom::InjectedInputPtr mojo_input =
+      contextual_tasks::mojom::InjectedInput::New();
+  mojo_input->submit_after_injection = inject_input.submit_after_injection();
+  mojo_input->query_text = inject_input.query_text();
+
+  if (inject_input.has_modality()) {
+    // If the message contains a modality chip, process the chip metadata and
+    // register it with the ContextualSearchSessionHandle.
+    auto modality =
+        std::make_unique<lens::ModalityChipProps>(inject_input.modality());
+    contextual_search::ContextualSearchSessionHandle* handle =
+        web_ui_controller_->GetOrCreateContextualSessionHandle();
+    if (!handle) {
+      return;
+    }
+    auto token = handle->CreateContextToken();
+
+    mojo_input->title = std::string(modality->title());
+    mojo_input->file_token = token;
+    mojo_input->supports_unimodal = modality->is_unimodal();
+
+    // Notify the front-end UI via Mojo to render the modality chip in the UI
+    // carousel, using an icon if provided or otherwise a thumbnail image.
+    if (modality->has_icon_id()) {
+      mojo_input->icon_id = IconTypeToMojom(modality->icon_id());
+    } else {
+      mojo_input->thumbnail = std::string(modality->thumbnail_src());
+    }
+
+    // Start the chip upload flow. This registers the metadata without executing
+    // an actual network upload since the chip data is supplied by the server.
+    handle->StartModalityChipUploadFlow(token, std::move(modality));
   }
-  // This does not actually upload anything, but allows the injected input to be
-  // shown in the chip carousel in the UI.
-  handle->StartModalityChipUploadFlow(token, std::move(modality));
+
+  web_ui_controller_->GetPageRemote()->InjectInput(std::move(mojo_input));
 }
 
 void ContextualTasksPageHandler::OnReceivedRemoveInjectedInput(

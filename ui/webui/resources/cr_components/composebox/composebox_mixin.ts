@@ -242,7 +242,9 @@ export const ComposeboxEmbedderMixin =
           const newFiles = new Map(this.files);
           newFiles.set(file.uuid, file);
           this.files = newFiles;
-          this.addToPendingUploads(file.uuid);
+          if (file.status !== ContextUploadStatus.kUploadSuccessful) {
+            this.addToPendingUploads(file.uuid);
+          }
         }
 
         onTranscriptUpdate(e: CustomEvent<string>) {
@@ -740,13 +742,18 @@ export const ComposeboxEmbedderMixin =
           }
         }
 
-        submitQuery(e: KeyboardEvent|MouseEvent) {
-          // If we're unable to submit (e.g., still uploading files) or the
-          // query synchronously evaluates to invalid (e.g. state hasn't updated
-          // in Lit due to synchronous eventing), do nothing.
+        submitQuery(e?: KeyboardEvent|MouseEvent) {
           if (!this.canSubmitFilesAndInput || !this.hasValidQuery()) {
             return;
           }
+          // Submissions do not need a mouse or keyboard event to be submitted.
+          // For example, inputs that are injected into the composebox can be
+          // set to submit immediately after injection.
+          const mouseButton = (e as MouseEvent)?.button ?? 0;
+          const altKey = e?.altKey ?? false;
+          const ctrlKey = e?.ctrlKey ?? false;
+          const metaKey = e?.metaKey ?? false;
+          const shiftKey = e?.shiftKey ?? false;
 
           // If there is a match that is selected, open that match, else follow
           // the non-autocomplete submission flow. The non-autocomplete
@@ -756,19 +763,19 @@ export const ComposeboxEmbedderMixin =
             assert(match);
             this.getSearchboxHandler().openAutocompleteMatch(
                 this.selectedMatchIndex, match.destinationUrl,
-                /* are_matches_showing */ true, (e as MouseEvent).button || 0,
-                e.altKey, e.ctrlKey, e.metaKey, e.shiftKey);
+                /* are_matches_showing */ true, mouseButton, altKey, ctrlKey,
+                metaKey, shiftKey);
           } else {
             this.getSearchboxHandler().submitQuery(
-                this.input.trim(), (e as MouseEvent).button || 0, e.altKey,
-                e.ctrlKey, e.metaKey, e.shiftKey);
+                this.input.trim(), mouseButton, altKey, ctrlKey, metaKey,
+                shiftKey);
           }
 
           this.submitCleanup();
-          // We only close the composebox when opening in a new tab because
+          // Only close the composebox when opening in a new tab because
           // doing so in the current tab causes a visual jitter where the
           // composebox closes before the new results page finishes loading.
-          if (e.ctrlKey || e.metaKey || e.shiftKey) {
+          if (ctrlKey || metaKey || shiftKey) {
             this.closeComposebox();
           }
         }
@@ -1252,7 +1259,7 @@ export interface ComposeboxEmbedderMixinInterface extends
   deleteFile(uuidToDelete: UnguessableToken, fromUserAction?: boolean): void;
   closeMenu(): void;
   closeComposebox(): void;
-  submitQuery(e: KeyboardEvent|MouseEvent): void;
+  submitQuery(e?: KeyboardEvent|MouseEvent): void;
   submitCleanup(): void;
   getInputElement(): ComposeboxInputElement;
   getDropdownElement(): ComposeboxDropdownElement;

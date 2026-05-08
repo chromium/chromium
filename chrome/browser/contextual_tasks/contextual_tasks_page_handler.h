@@ -94,7 +94,7 @@ class ContextualTasksPageHandler
   void UpdateContextForTask(const base::Uuid& task_id);
   void OnReceivedUpdatedThreadContextLibrary(
       const lens::UpdateThreadContextLibrary& message);
-  void OnReceivedInjectInput(std::unique_ptr<lens::ModalityChipProps> modality);
+  void OnReceivedInjectInput(const lens::InjectInput& inject_input);
   void OnReceivedRemoveInjectedInput(const std::string& id);
   void OnPinStateChanged(bool is_pinned);
   void OnPrefChanged();
