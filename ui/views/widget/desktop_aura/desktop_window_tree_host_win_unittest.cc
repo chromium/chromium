@@ -39,6 +39,29 @@ TEST_F(DesktopWindowTreeHostWinTest, DebuggingId) {
                 ->debugging_id());
 }
 
+TEST_F(DesktopWindowTreeHostWinTest, RedundantSetCapture) {
+  Widget widget;
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  widget.Init(std::move(params));
+  widget.Show();
+
+  HWNDMessageHandler* handler =
+      DesktopWindowTreeHostWinTestApi(static_cast<DesktopWindowTreeHostWin*>(
+                                          widget.GetNativeWindow()->GetHost()))
+          .GetHwndMessageHandler();
+
+  handler->SetCapture();
+  EXPECT_TRUE(handler->HasCapture());
+
+  // Second set capture should no-op. Should not crash.
+  handler->SetCapture();
+  EXPECT_TRUE(handler->HasCapture());
+
+  handler->ReleaseCapture();
+  EXPECT_FALSE(handler->HasCapture());
+}
+
 TEST_F(DesktopWindowTreeHostWinTest, SetAllowScreenshots) {
   Widget widget;
   Widget::InitParams params = CreateParams(

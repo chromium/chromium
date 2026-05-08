@@ -925,13 +925,12 @@ void HWNDMessageHandler::ClearNativeFocus() {
 }
 
 void HWNDMessageHandler::SetCapture() {
-  // We may need to change this to !HasCapture() || release_capture_errno_ to
-  // avoid checking when the call to `::ReleaseCapture` below fails.
-  // Logging release_capture_errno_ will tell us if the DCHECK below is caused
-  // by ::ReleaseCapture failing.
-  DCHECK(!HasCapture()) << " release capture error = "
-                        << logging::SystemErrorCodeToString(
-                               release_capture_errno_);
+  if (HasCapture()) {
+    DCHECK_EQ(release_capture_errno_, 0u)
+        << " release capture error = "
+        << logging::SystemErrorCodeToString(release_capture_errno_);
+    return;
+  }
   ::SetCapture(hwnd());
 }
 
