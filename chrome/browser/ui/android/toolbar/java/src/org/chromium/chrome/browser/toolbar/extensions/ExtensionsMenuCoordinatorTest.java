@@ -4,8 +4,10 @@
 package org.chromium.chrome.browser.toolbar.extensions;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -67,6 +69,8 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.listmenu.ListMenuHost;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -91,6 +95,7 @@ public class ExtensionsMenuCoordinatorTest {
     @Mock private MenuButtonPinningDelegate mMenuButtonPinningDelegate;
     @Mock private Tracker mTracker;
     @Mock private WindowAndroid mWindowAndroid;
+    @Mock private ModalDialogManager mModalDialogManager;
 
     @Captor private ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
 
@@ -157,7 +162,8 @@ public class ExtensionsMenuCoordinatorTest {
                         mCurrentTabSupplier,
                         mTabCreator,
                         mExtensionsToolbarBridge,
-                        mMenuButtonPinningDelegate);
+                        mMenuButtonPinningDelegate,
+                        mModalDialogManager);
 
         // Clear invocations from initialization to ensure tests start fresh.
         clearInvocations(mExtensionsMenuBridgeJniMock);
@@ -388,6 +394,24 @@ public class ExtensionsMenuCoordinatorTest {
 
         // Verify that the menu is closed.
         verify(shownListener).onPopupMenuDismissed();
+    }
+
+    @Test
+    public void testDismissMenuOnDialogAdded() {
+        ArgumentCaptor<ModalDialogManager.ModalDialogManagerObserver> observerCaptor =
+                ArgumentCaptor.forClass(ModalDialogManager.ModalDialogManagerObserver.class);
+        verify(mModalDialogManager).addObserver(observerCaptor.capture());
+
+        ListMenuHost.PopupMenuShownListener popupListener =
+                mock(ListMenuHost.PopupMenuShownListener.class);
+        mExtensionsMenuButton.addPopupListener(popupListener);
+
+        mExtensionsMenuButton.performClick();
+        triggerOnMediatorReady();
+        assertTrue(mExtensionsMenuCoordinator.isExtensionsMenuOpen());
+
+        observerCaptor.getValue().onDialogAdded(new PropertyModel());
+        assertFalse(mExtensionsMenuCoordinator.isExtensionsMenuOpen());
     }
 
     private ExtensionsMenuTypes.SiteSettingsState createSiteSettingsState(

@@ -1099,4 +1099,25 @@ public class ExtensionsToolbarTest {
                 () -> ExtensionTestUtils.getRenderFrameHostCount(mProfile, extensionId) == 1,
                 "Popup did not open");
     }
+
+    @Test
+    @LargeTest
+    public void testNewDialogDismissesExtensionsMenu() throws IOException {
+        loadBasicExtension("extension1", "Test Extension", "Test Action");
+
+        // Open the extensions menu.
+        ViewUtils.onViewWaiting(withId(R.id.extensions_menu_button))
+                .check(matches(isDisplayed()))
+                .perform(click());
+
+        // Show "Remove extension" dialog.
+        ViewUtils.onViewWaiting(withId(R.id.extensions_menu_item_context_menu)).perform(click());
+        ViewUtils.onViewWaiting(withText("Remove from Chromium")).perform(click());
+
+        // The dialog should trigger dismiss on the extensions menu.
+        onView(isRoot())
+                .check(
+                        withEventualExpectedViewState(
+                                withId(R.id.extensions_menu_close_button), VIEW_GONE | VIEW_NULL));
+    }
 }

@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.ui.extensions.ExtensionUi;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /**
  * The coordinator of the extension-related toolbar UI.
@@ -55,7 +56,8 @@ public interface ExtensionsToolbarCoordinator extends Destroyable {
             ViewGroup rootView,
             @Nullable ContextMenuPopulatorFactory contextMenuPopulatorFactory,
             @Nullable SelectionDropdownMenuDelegate selectionDropdownMenuDelegate,
-            TabModelSelector tabModelSelector) {
+            TabModelSelector tabModelSelector,
+            ModalDialogManager modalDialogManager) {
         // Check if the extension UI is enabled first.
         if (!ExtensionUi.isEnabled(profile)) {
             return null;
@@ -78,7 +80,8 @@ public interface ExtensionsToolbarCoordinator extends Destroyable {
                 rootView,
                 contextMenuPopulatorFactory,
                 selectionDropdownMenuDelegate,
-                tabModelSelector);
+                tabModelSelector,
+                modalDialogManager);
         return coordinator;
     }
 
@@ -101,7 +104,8 @@ public interface ExtensionsToolbarCoordinator extends Destroyable {
             ViewGroup rootView,
             @Nullable ContextMenuPopulatorFactory contextMenuPopulatorFactory,
             @Nullable SelectionDropdownMenuDelegate selectionDropdownMenuDelegate,
-            TabModelSelector tabModelSelector);
+            TabModelSelector tabModelSelector,
+            ModalDialogManager modalDialogManager);
 
     /**
      * Dispatches the key event to trigger the corresponding extension action if any.

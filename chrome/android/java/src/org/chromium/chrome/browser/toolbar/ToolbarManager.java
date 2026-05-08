@@ -2565,7 +2565,8 @@ public class ToolbarManager
                                 (ToolbarTablet) mToolbarLayout,
                                 contextMenuPopulatorFactory,
                                 selectionDropdownMenuDelegate,
-                                mTabModelSelector);
+                                mTabModelSelector,
+                                mModalDialogManagerSupplier.get());
                 if (mExtensionsToolbarCoordinator != null) {
                     mToolbar.setExtensionsToolbarCoordinator(mExtensionsToolbarCoordinator);
                 }

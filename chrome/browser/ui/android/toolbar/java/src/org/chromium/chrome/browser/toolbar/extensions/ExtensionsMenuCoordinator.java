@@ -45,6 +45,8 @@ import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.listmenu.ListMenuDelegate;
 import org.chromium.ui.listmenu.ListMenuHost;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -82,6 +84,14 @@ public class ExtensionsMenuCoordinator
     private final ExtensionsToolbarBridge mExtensionsToolbarBridge;
     private final MenuButtonPinningDelegate mMenuButtonPinningDelegate;
     private final ThemeColorProvider.TintObserver mTintObserver = this::onTintChanged;
+    private final ModalDialogManagerObserver mModalDialogManagerObserver =
+            new ModalDialogManagerObserver() {
+                @Override
+                public void onDialogAdded(PropertyModel model) {
+                    mExtensionsMenuButton.dismiss();
+                }
+            };
+    private final ModalDialogManager mModalDialogManager;
 
     @Nullable @VisibleForTesting ExtensionsMenuMediator mMediator;
 
@@ -99,6 +109,7 @@ public class ExtensionsMenuCoordinator
      * @param extensionsToolbarBridge {@link ExtensionsToolbarBridge} to use.
      * @param MenuButtonPinningDelegate The {@link MenuButtonPinningDelegate} to handle pinning the
      *     icon.
+     * @param modalDialogManager The {@link ModalDialogManager}.
      */
     public ExtensionsMenuCoordinator(
             Context context,
@@ -110,7 +121,8 @@ public class ExtensionsMenuCoordinator
             NullableObservableSupplier<Tab> currentTabSupplier,
             TabCreator tabCreator,
             ExtensionsToolbarBridge extensionsToolbarBridge,
-            MenuButtonPinningDelegate menuButtonPinningDelegate) {
+            MenuButtonPinningDelegate menuButtonPinningDelegate,
+            ModalDialogManager modalDialogManager) {
         mContext = context;
         mCurrentTabSupplier = currentTabSupplier;
         mProfile = profile;
@@ -119,6 +131,7 @@ public class ExtensionsMenuCoordinator
         mWindowAndroid = windowAndroid;
         mExtensionsToolbarBridge = extensionsToolbarBridge;
         mMenuButtonPinningDelegate = menuButtonPinningDelegate;
+        mModalDialogManager = modalDialogManager;
 
         mExtensionsToolbarBridge.setMenuDelegate(this);
 
@@ -205,6 +218,8 @@ public class ExtensionsMenuCoordinator
         mExtensionModels = new ModelList();
         setUpExtensionsRecyclerView(mContentView, mContext, mExtensionModels);
         updateButtonState();
+
+        mModalDialogManager.addObserver(mModalDialogManagerObserver);
     }
 
     /**
@@ -471,6 +486,7 @@ public class ExtensionsMenuCoordinator
     @Override
     public void destroy() {
         destroyMediator();
+        mModalDialogManager.removeObserver(mModalDialogManagerObserver);
         mExtensionsMenuButton.setOnClickListener(null);
         mThemeColorProvider.removeTintObserver(mTintObserver);
         mMainPageChangeProcessor.destroy();

@@ -46,6 +46,7 @@ import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelega
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.ListMenuButton;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.widget.AnchoredPopupWindow.HorizontalOrientation;
@@ -109,7 +110,8 @@ public class ExtensionsToolbarCoordinatorImpl
             ViewGroup rootView,
             @Nullable ContextMenuPopulatorFactory contextMenuPopulatorFactory,
             @Nullable SelectionDropdownMenuDelegate selectionDropdownMenuDelegate,
-            TabModelSelector tabModelSelector) {
+            TabModelSelector tabModelSelector,
+            ModalDialogManager modalDialogManager) {
         mBridge = new ExtensionActionsBridge(task, profile);
         mWindowAndroid = windowAndroid;
         mProfile = profile;
@@ -153,7 +155,8 @@ public class ExtensionsToolbarCoordinatorImpl
                         currentTabSupplier,
                         tabCreator,
                         mExtensionsToolbarBridge,
-                        mMenuButtonPinningDelegate);
+                        mMenuButtonPinningDelegate,
+                        modalDialogManager);
 
         mExtensionAccessControlButtonCoordinator =
                 new ExtensionAccessControlButtonCoordinator(
