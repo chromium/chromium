@@ -7,16 +7,19 @@ package org.chromium.chrome.browser.pdf;
 import android.app.Activity;
 import android.net.Uri;
 import android.os.SystemClock;
+import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.modules.on_demand.OnDemandModule;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
+import org.chromium.chrome.modules.on_demand.OnDemandModule;
 import org.chromium.components.embedder_support.util.UrlConstants;
+
+import java.util.List;
 
 /** Native page that displays pdf file. */
 @NullMarked
@@ -38,6 +41,8 @@ public class PdfPage extends BasicNativePage {
      * @param pdfInfo Information of the pdf.
      * @param defaultTitle Default title of the pdf page.
      * @param tabId The id of the tab.
+     * @param pdfFragmentViews List of PdfFragmentView objects used in PdfPage to be relocated to
+     *     the right Tab.
      */
     public PdfPage(
             NativePageHost host,
@@ -47,7 +52,8 @@ public class PdfPage extends BasicNativePage {
             String url,
             PdfInfo pdfInfo,
             String defaultTitle,
-            int tabId) {
+            int tabId,
+            List<View> pdfFragmentViews) {
         super(host);
 
         mIsDownloadSafe = pdfInfo.isDownloadSafe;
@@ -62,10 +68,17 @@ public class PdfPage extends BasicNativePage {
                 : pdfInfo.filename;
         mUrl = url;
         mPdfCoordinator =
-            OnDemandModule.getImpl()
-                .getPdfEntryPoint()
-                .createPdfCoordinator(
-                    host, profile, activity, url, filepath, mTitle, tabId);
+                OnDemandModule.getImpl()
+                        .getPdfEntryPoint()
+                        .createPdfCoordinator(
+                                host,
+                                profile,
+                                activity,
+                                url,
+                                filepath,
+                                mTitle,
+                                tabId,
+                                pdfFragmentViews);
         mIsIncognito = isIncognito;
         initWithView(mPdfCoordinator.getView());
         // PDF is downloading when the filepath is null.

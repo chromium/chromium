@@ -9,10 +9,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import androidx.annotation.VisibleForTesting;
@@ -47,6 +49,7 @@ import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -104,7 +107,14 @@ public class PdfCoordinator
 
     @SuppressWarnings("UnusedVariable")
     private @Nullable PdfSelectionCoordinator mPdfSelectionCoordinator;
+
     private final @Nullable PdfToolbarCoordinator mToolbarCoordinator;
+
+    /**
+     * Temporarily holds PdfViewerFragment's Views object that were added to current Tab's PdfPage
+     * Views.
+     */
+    private final List<View> mPdfFragmentViews;
 
     /** The filepath of the pdf. It is null before download complete. */
     private @Nullable String mPdfFilePath;
@@ -113,7 +123,7 @@ public class PdfCoordinator
     private @Nullable Uri mUri;
 
     /** A PdfSandboxHandle representing the active pdf session. */
-    private PdfSandboxHandle mPdfSandboxHandle;
+    private @Nullable PdfSandboxHandle mPdfSandboxHandle;
 
     /**
      * Whether the pdf has been loaded, despite of success or failure. This is used to ensure we
@@ -143,7 +153,8 @@ public class PdfCoordinator
             @Nullable String filepath,
             String title,
             int tabId,
-            String url) {
+            String url,
+            List<View> pdfFragmentViews) {
         mActivity = activity;
         mTabId = String.valueOf(tabId);
         mNativePageHost = host;
@@ -153,6 +164,7 @@ public class PdfCoordinator
         Context contextForInflation =
                 BundleUtils.createContextForInflation(activity, OnDemandModule.SPLIT_NAME);
         mView = LayoutInflater.from(contextForInflation).inflate(R.layout.pdf_page, null);
+        mPdfFragmentViews = pdfFragmentViews;
         mProgressBar = mView.findViewById(R.id.progress_bar);
         mView.setBackgroundColor(
                 ChromeColors.getPrimaryBackgroundColor(activity, profile.isOffTheRecord()));
@@ -160,42 +172,70 @@ public class PdfCoordinator
                 new View.OnAttachStateChangeListener() {
                     @Override
                     public void onViewAttachedToWindow(View view) {
+                        relocatePdfPageViews();
                         loadPdfFile();
                     }
 
                     @Override
                     public void onViewDetachedFromWindow(View view) {}
                 });
-        View fragmentContainerView = mView.findViewById(R.id.pdf_fragment_container);
-        mFragmentContainerViewId = View.generateViewId();
-        fragmentContainerView.setId(mFragmentContainerViewId);
+        mFragmentContainerViewId = R.id.pdf_fragment_container;
         mFragmentManager = ((FragmentActivity) activity).getSupportFragmentManager();
-        // TODO(crbug.com/360717802): Reuse fragment from savedInstance.
         Fragment fragment = mFragmentManager.findFragmentByTag(mTabId);
         if (fragment != null) {
-            mFragmentManager.beginTransaction().remove(fragment).commitAllowingStateLoss();
-        }
-        // Create PdfViewerFragment to start showing the loading spinner.
-        mChromePdfViewerFragment = new ChromePdfViewerFragment(this);
-        // Start pdf library initialization. This prepares pdf resources ahead of time, so that pdf
-        // could be loaded faster when documentUri is set.
-        mPdfSandboxHandle = SandboxedPdfLoader.startInitialization(activity);
-        // PDF is downloading when the filepath is null.
-        if (filepath == null) {
-            mProgressBar.setVisibility(View.VISIBLE);
+            mChromePdfViewerFragment = (ChromePdfViewerFragment) fragment;
+        } else {
+            mChromePdfViewerFragment = new ChromePdfViewerFragment(this);
+            mChromePdfViewerFragment.setViewTag(mTabId);
+            // Start pdf library initialization. This prepares pdf resources ahead of time, so that
+            // pdf could be loaded faster when documentUri is set.
+            mPdfSandboxHandle = SandboxedPdfLoader.startInitialization(activity);
+            // PDF is downloading when the filepath is null.
+            if (filepath == null) {
+                mProgressBar.setVisibility(View.VISIBLE);
+            }
+            loadPdfFile(filepath);
         }
         mToolbarCoordinator =
                 PdfUtils.isInlinePdfV2Enabled() ? new PdfToolbarCoordinator(mView, this) : null;
-        // TODO(crbug.com/496635305): Remove this log after mToolbarCoordinator is used elsewhere.
+        // TODO(crbug.com/496635305): Remove this log after mToolbarCoordinator is used
+        // elsewhere.
         Log.d(TAG, "Toolbar coordinator is null: " + (mToolbarCoordinator == null));
-        loadPdfFile(filepath);
+    }
+
+    /**
+     * Move the PdfViewerFragment's views wrongly added to the current PdfPage view to the right one
+     * using the Tab ID as unique identifier.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    void relocatePdfPageViews() {
+        ViewGroup fcv = mView.findViewById(R.id.pdf_fragment_container);
+        if (fcv.getChildCount() == 1) return;
+
+        for (int i = fcv.getChildCount() - 1; i >= 0; i--) {
+            View child = fcv.getChildAt(i);
+            if (!mTabId.equals(child.getTag())) {
+                fcv.removeView(child);
+                mPdfFragmentViews.add(child);
+            }
+        }
+        for (int i = mPdfFragmentViews.size() - 1; i >= 0; i--) {
+            View child = mPdfFragmentViews.get(i);
+            if (mTabId.equals(child.getTag())) {
+                fcv.addView(child);
+                mPdfFragmentViews.remove(child);
+            }
+        }
     }
 
     /** The class responsible for rendering pdf document. */
     public static class ChromePdfViewerFragment extends PdfViewerFragment {
 
+        private static final String KEY_VIEW_TAG = "view_tag";
         private @Nullable PdfActionsDelegate mDelegate;
         private @Nullable PdfView mPdfView;
+
+        @Nullable private String mViewTag;
 
         public void setPdfViewForTesting(PdfView pdfView) {
             this.mPdfView = pdfView;
@@ -206,6 +246,7 @@ public class PdfCoordinator
             super.onPdfViewCreated(pdfView);
             mPdfView = pdfView;
 
+            if (getView() != null && mViewTag != null) getView().setTag(mViewTag);
             // TODO(crbug.com/498644542): call getPageCount() within onLoadDocumentSuccess()
             if (!PdfUtils.isInlinePdfV2Enabled() || mDelegate == null) {
                 return;
@@ -257,6 +298,24 @@ public class PdfCoordinator
 
         /** The timestamp when the pdf document starts to load. */
         long mDocumentLoadStartTimestamp;
+
+        public void setViewTag(String tag) {
+            mViewTag = tag;
+        }
+
+        @Override
+        public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+            super.onViewCreated(view, savedInstanceState);
+            if (savedInstanceState != null) {
+                mViewTag = savedInstanceState.getString(KEY_VIEW_TAG, null);
+                if (getView() != null) getView().setTag(mViewTag);
+            }
+        }
+
+        @Override
+        public void onSaveInstanceState(Bundle outState) {
+            outState.putString(KEY_VIEW_TAG, mViewTag);
+        }
 
         @Override
         public boolean onLinkClicked(ExternalLink externalLink) {
@@ -348,8 +407,10 @@ public class PdfCoordinator
     @Override
     @SuppressWarnings({"NullAway"})
     public void destroy() {
-        mPdfSandboxHandle.close();
-        mPdfSandboxHandle = null;
+        if (mPdfSandboxHandle != null) {
+            mPdfSandboxHandle.close();
+            mPdfSandboxHandle = null;
+        }
         if (mToolbarCoordinator != null) {
             mToolbarCoordinator.destroy();
         }
@@ -435,8 +496,6 @@ public class PdfCoordinator
             if (sSkipLoadPdfForTesting) {
                 mIsPdfLoaded = true;
             } else {
-                // Committing the fragment
-                // TODO(crbug.com/360717802): Reuse fragment from savedInstance.
                 FragmentTransaction transaction = mFragmentManager.beginTransaction();
                 transaction.add(mFragmentContainerViewId, mChromePdfViewerFragment, mTabId);
                 transaction.commitAllowingStateLoss();

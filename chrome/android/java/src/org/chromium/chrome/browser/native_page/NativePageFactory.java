@@ -74,6 +74,8 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
 
 /**
@@ -105,6 +107,7 @@ public class NativePageFactory {
     private static @Nullable NativePage sTestPage;
     private final BackPressManager mBackPressManager;
     private final RecentlyClosedEntriesManager mRecentlyClosedEntriesManager;
+    private @Nullable List<View> mPdfFragmentViews;
 
     public NativePageFactory(
             Activity activity,
@@ -395,9 +398,16 @@ public class NativePageFactory {
                     tab.getProfile());
         }
 
-        protected NativePage buildPdfPage(Tab tab, String url, PdfInfo pdfInfo) {
+        protected NativePage buildPdfPage(
+                Tab tab, String url, PdfInfo pdfInfo, List<View> pdfFragmentViews) {
             return NativePageFactory.buildPdfPage(
-                    url, tab, pdfInfo, mBrowserControlsManager, mTabModelSelector, mActivity);
+                    url,
+                    tab,
+                    pdfInfo,
+                    mBrowserControlsManager,
+                    mTabModelSelector,
+                    mActivity,
+                    pdfFragmentViews);
         }
 
         private @Nullable IncognitoNtpMetrics createIncognitoNtpMetrics() {
@@ -467,7 +477,8 @@ public class NativePageFactory {
                 break;
             case NativePageType.PDF:
                 assumeNonNull(pdfInfo);
-                page = getBuilder().buildPdfPage(tab, url, pdfInfo);
+                if (mPdfFragmentViews == null) mPdfFragmentViews = new ArrayList<>();
+                page = getBuilder().buildPdfPage(tab, url, pdfInfo, mPdfFragmentViews);
                 break;
             default:
                 assert false;
@@ -544,7 +555,8 @@ public class NativePageFactory {
                             assumeNonNull(pdfInfo),
                             browserControlsManager,
                             tabModelSelector,
-                            activity);
+                            activity,
+                            new ArrayList<View>());
         }
         page.updateForUrl(url);
         return page;
@@ -556,7 +568,8 @@ public class NativePageFactory {
             PdfInfo pdfInfo,
             BrowserControlsManager browserControlsManager,
             TabModelSelector tabModelSelector,
-            Activity activity) {
+            Activity activity,
+            List<View> pdfFragmentViews) {
         if (sTestPage != null) {
             return sTestPage;
         }
@@ -568,7 +581,8 @@ public class NativePageFactory {
                 url,
                 pdfInfo,
                 activity.getString(R.string.pdf_transient_tab_title),
-                tab.getId());
+                tab.getId(),
+                pdfFragmentViews);
     }
 
     /** Simple implementation of NativePageHost backed by a {@link Tab} */
@@ -642,6 +656,10 @@ public class NativePageFactory {
     /** Destroy and unhook objects at destruction. */
     public void destroy() {
         if (mNewTabPageCreationTracker != null) mNewTabPageCreationTracker.destroy();
+        if (mPdfFragmentViews != null) {
+            mPdfFragmentViews.clear();
+            mPdfFragmentViews = null;
+        }
     }
 
     public static void setPdfPageForTesting(NativePage pdfPage) {

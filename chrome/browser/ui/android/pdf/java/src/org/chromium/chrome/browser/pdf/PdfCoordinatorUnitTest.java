@@ -17,7 +17,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.net.Uri;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import androidx.fragment.app.FragmentActivity;
 import androidx.pdf.PdfPoint;
@@ -31,6 +33,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -50,6 +53,9 @@ import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class PdfCoordinatorUnitTest {
@@ -73,6 +79,7 @@ public class PdfCoordinatorUnitTest {
             "/data/user/10/com.google.android.apps.chrome/cache/pdfs/fw4.pdf";
     private static final int TAB_ID = 123;
     private static final int PDF_CONTENT_HEIGHT = 1000;
+    private final List<View> mPdfFragmentViews = new ArrayList<>();
 
     @Before
     public void setUp() {
@@ -98,7 +105,8 @@ public class PdfCoordinatorUnitTest {
                         FILE_PATH,
                         PDF_TITLE,
                         TAB_ID,
-                        PDF_URL);
+                        PDF_URL,
+                        mPdfFragmentViews);
         mPdfView = new PdfView(mActivity);
         mPdfView.layout(0, 0, /* width= */ 500, /* height= */ PDF_CONTENT_HEIGHT);
         mPdfCoordinator.mChromePdfViewerFragment.setPdfViewForTesting(mPdfView);
@@ -270,12 +278,58 @@ public class PdfCoordinatorUnitTest {
         // int tabId, String url
         mPdfCoordinator =
                 new PdfCoordinator(
-                        mNativePageHost, mProfile, mActivity, null, PDF_TITLE, TAB_ID, PDF_URL);
+                        mNativePageHost,
+                        mProfile,
+                        mActivity,
+                        null,
+                        PDF_TITLE,
+                        TAB_ID,
+                        PDF_URL,
+                        mPdfFragmentViews);
 
         Uri uri =
                 mPdfCoordinator.getFileUri(
                         /* isWorkProfile= */ false, "com.google.android.googlequicksearchbox");
         assertEquals(null, uri);
+    }
+
+    @Test
+    public void testRelocateFragmentViews_removeWrongPdfFragmentViews() {
+        createPdfCoordinator();
+        String tabId1 = String.valueOf(TAB_ID);
+        String tabId2 = String.valueOf(TAB_ID + 1);
+        String tabId3 = String.valueOf(TAB_ID + 2);
+        var fragment = new PdfCoordinator.ChromePdfViewerFragment();
+        var fragmentTagKey = R.id.fragment_container_view_tag;
+        var lp =
+                new FrameLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+
+        View pdfViewerFragmentView1 = Mockito.mock(View.class);
+        View pdfViewerFragmentView2 = Mockito.mock(View.class);
+        View pdfViewerFragmentView3 = Mockito.mock(View.class);
+        when(pdfViewerFragmentView1.getTag()).thenReturn(tabId1);
+        when(pdfViewerFragmentView2.getTag()).thenReturn(tabId2);
+        when(pdfViewerFragmentView3.getTag()).thenReturn(tabId3);
+        when(pdfViewerFragmentView1.getTag(eq(fragmentTagKey))).thenReturn(fragment);
+        when(pdfViewerFragmentView2.getTag(eq(fragmentTagKey))).thenReturn(fragment);
+        when(pdfViewerFragmentView3.getTag(eq(fragmentTagKey))).thenReturn(fragment);
+        when(pdfViewerFragmentView1.getLayoutParams()).thenReturn(lp);
+        when(pdfViewerFragmentView2.getLayoutParams()).thenReturn(lp);
+        when(pdfViewerFragmentView3.getLayoutParams()).thenReturn(lp);
+
+        ViewGroup pfc = mPdfCoordinator.getView().findViewById(R.id.pdf_fragment_container);
+
+        pfc.addView(pdfViewerFragmentView1);
+        pfc.addView(pdfViewerFragmentView2);
+        pfc.addView(pdfViewerFragmentView3);
+        assertEquals(3, pfc.getChildCount());
+        assertEquals(0, mPdfFragmentViews.size());
+
+        mPdfCoordinator.relocatePdfPageViews();
+        assertEquals(1, pfc.getChildCount());
+        assertEquals(String.valueOf(TAB_ID), pfc.getChildAt(0).getTag());
+        assertEquals(2, mPdfFragmentViews.size());
     }
 
     @Implements(PdfView.class)

@@ -5,9 +5,13 @@
 package org.chromium.chrome.browser.pdf;
 
 import android.app.Activity;
+import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.module_installer.builder.ModuleInterface;
+
+import java.util.List;
 
 /** Interface for the PDF viewer module. */
 @ModuleInterface(module = "on_demand", impl = "org.chromium.chrome.browser.pdf.PdfEntryPointImpl")
@@ -18,7 +22,8 @@ public interface PdfEntryPoint {
             Object profile,
             Activity activity,
             String url,
-            @org.chromium.build.annotations.Nullable String filepath,
+            @Nullable String filepath,
             String title,
-            int tabId);
+            int tabId,
+            List<View> pdfFragmentViews);
 }

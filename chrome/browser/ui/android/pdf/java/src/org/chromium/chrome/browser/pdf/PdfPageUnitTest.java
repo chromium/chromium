@@ -37,6 +37,8 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.TestActivity;
 
+import java.util.List;
+
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
 public class PdfPageUnitTest {
@@ -49,6 +51,8 @@ public class PdfPageUnitTest {
     @Mock private NativePageHost mMockNativePageHost;
     @Mock private Profile mMockProfile;
     @Mock private Destroyable mMarginSupplier;
+    @Mock private List<View> mPdfFragmentViews;
+
     private Activity mActivity;
     private PdfInfo mPdfInfo;
     private String mPdfPageUrl;
@@ -103,7 +107,8 @@ public class PdfPageUnitTest {
                         encodedUrl,
                         mPdfInfo,
                         DEFAULT_TAB_TITLE,
-                        TAB_ID);
+                        TAB_ID,
+                        mPdfFragmentViews);
         Assert.assertNotNull(pdfPage);
         Assert.assertEquals(
                 "Pdf page host should match.", UrlConstants.PDF_HOST, pdfPage.getHost());
@@ -167,7 +172,8 @@ public class PdfPageUnitTest {
                         encodedUrl,
                         mPdfInfo,
                         DEFAULT_TAB_TITLE,
-                        TAB_ID);
+                        TAB_ID,
+                        mPdfFragmentViews);
         Assert.assertNotNull(pdfPage);
 
         // Simulate tab brought from background to foreground to load PDF
@@ -205,7 +211,8 @@ public class PdfPageUnitTest {
                         encodedUrl,
                         mPdfInfo,
                         DEFAULT_TAB_TITLE,
-                        TAB_ID);
+                        TAB_ID,
+                        mPdfFragmentViews);
         Assert.assertNotNull(pdfPage);
         Assert.assertEquals("Pdf page title should match.", FILE_NAME, pdfPage.getTitle());
         Assert.assertEquals(
@@ -249,7 +256,8 @@ public class PdfPageUnitTest {
                         pdfPageUrl,
                         mPdfInfo,
                         DEFAULT_TAB_TITLE,
-                        TAB_ID);
+                        TAB_ID,
+                        mPdfFragmentViews);
         Assert.assertNotNull(pdfPage);
         Assert.assertFalse(
                 "Pdf should not be loaded when the download is not completed.",
