@@ -52,8 +52,6 @@ class InsecureRandomGenerator;
 BASE_EXPORT uint64_t RandUint64();
 
 // Returns a random number between min and max (inclusive). Thread-safe.
-//
-// Returns a random number between min and max (inclusive). Thread-safe.
 BASE_EXPORT int RandIntInclusive(int min, int max);
 
 // Returns a random number in range [0, range).  Thread-safe.
