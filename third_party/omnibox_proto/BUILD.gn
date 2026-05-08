@@ -2,6 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# This file was exported from google3, do not edit manually.
+# See README.chromium for details.
+
+import("//components/proto_extras/proto_extras.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 if (is_android) {
@@ -16,10 +20,12 @@ _proto_files = [
   "chrome_aim_entry_point.proto",
   "chrome_searchbox_stats.proto",
   "entity_info.proto",
+  "feature_gate_constraints.proto",
   "groups.proto",
   "icon.proto",
   "icon_resource_ids.proto",
   "input_constraints.proto",
+  "input_source.proto",
   "input_type.proto",
   "input_type_config.proto",
   "input_type_rule.proto",
@@ -36,6 +42,7 @@ _proto_files = [
   "searchbox_config.proto",
   "section_config.proto",
   "smart_compose_stats.proto",
+  "suggest_inventory.proto",
   "suggest_template_info.proto",
   "tool_config.proto",
   "tool_mode.proto",

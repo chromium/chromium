@@ -13,13 +13,14 @@ option java_outer_classname = 'ModelConfigProto';
 
 package omnibox;
 
+import "feature_gate_constraints.proto";
 import "icon.proto";
 import "model_mode.proto";
 import "model_rule.proto";
 import "url_param.proto";
 
 // Configuration for a model mode.
-// Next ID: 7
+// Next ID: 8
 // LINT.IfChange(ModelConfig)
 message ModelConfig {
   // The model mode.
@@ -34,5 +35,7 @@ message ModelConfig {
   repeated UrlParam aim_url_params = 5;
   // The icon for the model.
   optional Icon icon = 6;
+  // DO NOT USE in Chrome. Feature gate configs for the model.
+  repeated FeatureGateConfig feature_gate_configs = 7;
 }
 // LINT.ThenChange(//components/omnibox/composebox/composebox_query.mojom:ModelConfig)
