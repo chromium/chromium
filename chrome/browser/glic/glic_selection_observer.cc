@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
@@ -370,11 +371,26 @@ void GlicSelectionObserver::OnTextSelectionChanged(
 
   bounds_retry_count_ = 0;
 
-  if (selected_text.length() < kMinSelectionLength ||
-      selected_text.length() > kMaxSelectionLength) {
+  std::u16string_view trimmed_text =
+      base::TrimWhitespace(selected_text, base::TRIM_ALL);
+
+  size_t non_whitespace_count = 0;
+  bool exceeds_minimum_selection_length = false;
+  for (char16_t c : trimmed_text) {
+    if (!base::IsUnicodeWhitespace(c)) {
+      non_whitespace_count++;
+    }
+    if (non_whitespace_count == kMinSelectionLength) {
+      exceeds_minimum_selection_length = true;
+      break;
+    }
+  }
+
+  if (!exceeds_minimum_selection_length ||
+      trimmed_text.length() > kMaxSelectionLength) {
     pending_selection_text_ = std::u16string();
   } else {
-    pending_selection_text_ = std::u16string(selected_text);
+    pending_selection_text_ = std::u16string(trimmed_text);
   }
   if (render_frame_host) {
     last_selection_frame_token_ = render_frame_host->GetGlobalFrameToken();
