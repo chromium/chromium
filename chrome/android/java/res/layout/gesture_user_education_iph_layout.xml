@@ -8,6 +8,7 @@ found in the LICENSE file.
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:accessibilityPaneTitle="@string/iph_gesture_user_education_layout_description"
     xmlns:tools="http://schemas.android.com/tools">
 
     <LinearLayout

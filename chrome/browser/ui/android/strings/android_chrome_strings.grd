@@ -5927,6 +5927,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_IPH_TAB_TEARING_XR" desc="The in-product-help message to notify the user about the new tab switcher on an XR device.">
         Pinch, hold, and drag to open tabs in a new window
       </message>
+      <message name="IDS_IPH_GESTURE_USER_EDUCATION_LAYOUT_DESCRIPTION" desc="The in-product-help message to notify the user about edge swipe for navigation." translateable="false">
+        Gesture navigation in-product help
+      </message>
       <message name="IDS_IPH_GESTURE_USER_EDUCATION_TEXT_BUBBLE_LEFT" desc="The in-product-help message to notify the user about edge swipe for navigation.">
         Swipe from left edge to go back
       </message>
