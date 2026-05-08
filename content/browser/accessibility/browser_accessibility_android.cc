@@ -849,6 +849,11 @@ bool BrowserAccessibilityAndroid::IsLeaf() const {
     // is a leaf. For nodes with relevant children, we will return false here
     // and allow the child nodes to be set as a leaf.
 
+    if (GetRole() == ax::mojom::Role::kComboBoxSelect) {
+      GetLeafMap()[this] = true;
+      return true;
+    }
+
     // Headings with text can drop their children (with exceptions).
     std::u16string name = GetSubstringTextContentUTF16(1);
     if (GetRole() == ax::mojom::Role::kHeading && !name.empty()) {
@@ -885,14 +890,13 @@ bool BrowserAccessibilityAndroid::IsLeafConsideringChildren() const {
   //
   // If a node has a child that meets any of these criteria, it is NOT a leaf:
   //
-  //   * child is focusable, and NOT a menu option
+  //   * child is focusable
   //   * child is a table, cell, or row
   //
   for (auto it = InternalChildrenBegin(); it != InternalChildrenEnd(); ++it) {
     BrowserAccessibility* child = it.get();
 
-    if (child->HasState(ax::mojom::State::kFocusable) &&
-        child->GetRole() != ax::mojom::Role::kMenuListOption) {
+    if (child->HasState(ax::mojom::State::kFocusable)) {
       return false;
     }
 

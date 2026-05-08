@@ -3758,6 +3758,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySelect) {
   RunHtmlTest(FILE_PATH_LITERAL("select.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySelectDisabled) {
+  RunHtmlTest(FILE_PATH_LITERAL("select-disabled.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityAriaAttributeRemoval) {
   RunHtmlTest(FILE_PATH_LITERAL("aria-attribute-removal.html"));

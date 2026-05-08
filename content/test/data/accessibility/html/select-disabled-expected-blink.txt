@@ -1,0 +1,7 @@
+rootWebArea focusable
+++genericContainer ignored
+++++genericContainer
+++++++comboBoxSelect collapsed value='Option 1' restriction=disabled setSize=2 posInSet=1 haspopup=menu
+++++++++menuListPopup invisible setSize=2 ispopup=auto
+++++++++++menuListOption focusable invisible name='Option 1' restriction=disabled setSize=2 posInSet=1
+++++++++++menuListOption focusable invisible name='Option 2' restriction=disabled setSize=2 posInSet=2

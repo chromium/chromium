@@ -5541,6 +5541,9 @@ data/accessibility/html/section-expected-mac.txt
 data/accessibility/html/section-expected-uia-win.txt
 data/accessibility/html/section-expected-win.txt
 data/accessibility/html/section.html
+data/accessibility/html/select-disabled-expected-android.txt
+data/accessibility/html/select-disabled-expected-blink.txt
+data/accessibility/html/select-disabled.html
 data/accessibility/html/select-expected-android-assist-data.txt
 data/accessibility/html/select-expected-android-external.txt
 data/accessibility/html/select-expected-android.txt
