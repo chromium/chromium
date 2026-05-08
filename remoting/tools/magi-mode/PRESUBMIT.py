@@ -410,12 +410,24 @@ def CheckJsonFiles(input_api, output_api):
                   f"File {f.LocalPath()} key '{key}' should be boolean."
               )
           )
-        elif expected_type == 'array' and not isinstance(value, list):
-          results.append(
-              output_api.PresubmitError(
-                  f"File {f.LocalPath()} key '{key}' should be array."
-              )
-          )
+        elif expected_type == 'array':
+          if not isinstance(value, list):
+            results.append(
+                output_api.PresubmitError(
+                    f"File {f.LocalPath()} key '{key}' should be array."
+                )
+            )
+          else:
+            items_schema = properties[key].get('items', {})
+            if isinstance(items_schema, dict) and items_schema.get('type') == 'string':
+              for item in value:
+                if not isinstance(item, str):
+                  results.append(
+                      output_api.PresubmitError(
+                          f"File {f.LocalPath()} key '{key}' list contains a "
+                          f"non-string element: {item}"
+                      )
+                  )
         elif expected_type == 'string' and not isinstance(value, str):
           results.append(
               output_api.PresubmitError(

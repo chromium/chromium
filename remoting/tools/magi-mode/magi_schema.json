@@ -82,6 +82,7 @@
         "target_files": { "type": "array", "items": { "type": "string" } },
         "anti_goals": { "type": "array", "items": { "type": "string" } },
         "edge_cases": { "type": "array", "items": { "type": "string" } },
+        "build_targets": { "type": "array", "items": { "type": "string" } },
         "next_phase": { "type": "string" },
         "paranoia_mode": { "type": "boolean" },
         "auditability_level": {

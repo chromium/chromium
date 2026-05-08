@@ -697,5 +697,46 @@ class MagiPresubmitTest(unittest.TestCase):
                 'exceeds maximum persona directory depth of 5' in r for r in results))
 
 
+    def testJsonProjectSpecBuildTargets(self):
+        # Invalid build_targets type (string instead of array)
+        invalid_type_json = (
+            '{"checklist": {}, "goal": "Test", "target_files": [], '
+            '"anti_goals": [], "edge_cases": [], "paranoia_mode": false, '
+            '"auditability_level": "NORMAL", "next_phase": "SCAFFOLDING", '
+            '"build_targets": "//remoting/host:host"}')
+        self.mock_input.affected_files = [
+            MockAffectedFile('remoting/tools/magi-mode/project.magi.json')
+        ]
+        self.mock_input.files_content = {
+            'remoting/tools/magi-mode/project.magi.json': invalid_type_json
+        }
+        schema_json = (
+            '{"definitions": {"ProjectSpec": {"required": [], '
+            '"properties": {"build_targets": {"type": "array", '
+            '"items": {"type": "string"}}}}}}')
+        with patch('builtins.open',
+                   unittest.mock.mock_open(read_data=schema_json)):
+            results = PRESUBMIT.CheckJsonFiles(
+                self.mock_input, self.mock_output)
+            self.assertTrue(any(
+                "key 'build_targets' should be array" in r for r in results))
+
+        # Invalid element in build_targets (integer instead of string)
+        invalid_elem_json = (
+            '{"checklist": {}, "goal": "Test", "target_files": [], '
+            '"anti_goals": [], "edge_cases": [], "paranoia_mode": false, '
+            '"auditability_level": "NORMAL", "next_phase": "SCAFFOLDING", '
+            '"build_targets": [123]}')
+        self.mock_input.files_content = {
+            'remoting/tools/magi-mode/project.magi.json': invalid_elem_json
+        }
+        with patch('builtins.open',
+                   unittest.mock.mock_open(read_data=schema_json)):
+            results = PRESUBMIT.CheckJsonFiles(
+                self.mock_input, self.mock_output)
+            self.assertTrue(any(
+                "list contains a non-string element" in r for r in results))
+
+
 if __name__ == '__main__':
     unittest.main()
