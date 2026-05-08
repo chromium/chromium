@@ -50,7 +50,8 @@ constexpr char kAriaRoleKey[] = "ariaRole";
 constexpr char kLayoutSizeKey[] = "layoutSize";
 constexpr char kWidthKey[] = "width";
 constexpr char kHeightKey[] = "height";
-constexpr char kFrameTokenKey[] = "frameToken";
+constexpr char kRemoteFrameTokenKey[] = "remoteFrameToken";
+constexpr char kLocalFrameTokenKey[] = "localFrameToken";
 constexpr char kTokenValueKey[] = "value";
 constexpr char kContentKey[] = "content";
 constexpr char kLocalFrameDataKey[] = "localFrameData";
@@ -59,6 +60,7 @@ constexpr char kTitleKey[] = "title";
 constexpr char kContainsPaidContentKey[] = "containsPaidContent";
 constexpr char kChildrenNodesKey[] = "childrenNodes";
 constexpr char kDomNodeIdKey[] = "domNodeId";
+constexpr char kAutofillNodeIdKey[] = "autofillNodeId";
 constexpr char kLabelForDomNodeIdKey[] = "labelForDomNodeId";
 constexpr char kFrameInteractionInfoKey[] = "frameInteractionInfo";
 constexpr char kSelectionKey[] = "selection";
@@ -125,6 +127,21 @@ std::optional<int> ReadJsNumber(const base::DictValue& dict, const char* key) {
 std::optional<int> ReadJsNumber(const base::Value& value) {
   if (std::optional<double> double_value = value.GetIfDouble()) {
     return static_cast<int>(*double_value);
+  }
+  return std::nullopt;
+}
+
+// Reads a token value from the `iframe_data` dictionary under the specified
+// `key`. Returns an optional string that is only set if the token is found and
+// is not empty.
+std::optional<std::string> GetTokenValueFromIframeData(
+    const base::DictValue& iframe_data,
+    std::string_view key) {
+  if (const base::DictValue* token_dict = iframe_data.FindDict(key)) {
+    if (const std::string* token_string =
+            token_dict->FindString(kTokenValueKey)) {
+      return *token_string;
+    }
   }
   return std::nullopt;
 }
@@ -413,10 +430,65 @@ void PopulateTableRowData(
   }
 }
 
+// Populates the Autofill data associated with the `form_control_data`.
+void PopulateAutofillData(
+    const base::DictValue& form_control_data,
+    AutofillExtractionContext* autofill_context,
+    optimization_guide::proto::FormControlData* proto_form_control_data) {
+  if (!autofill_context) {
+    return;
+  }
+
+  std::optional<int> autofill_node_id =
+      ReadJsNumber(form_control_data, kAutofillNodeIdKey);
+  if (!autofill_node_id) {
+    return;
+  }
+
+  std::optional<AutofillFieldMetadata> autofill_metadata =
+      GetAutofillFieldData(*autofill_node_id, *autofill_context);
+  if (!autofill_metadata) {
+    return;
+  }
+
+  proto_form_control_data->set_autofill_section_id(
+      autofill_metadata->section_id);
+  proto_form_control_data->add_coarse_autofill_field_type(
+      autofill_metadata->coarse_field_type);
+
+  if (!autofill_context->extract_autofill_credit_card_redactions) {
+    return;
+  }
+
+  // Prioritize existing redaction decisions (e.g., from JS) over Autofill.
+  if (proto_form_control_data->redaction_decision() !=
+      optimization_guide::proto::REDACTION_DECISION_NO_REDACTION_NECESSARY) {
+    return;
+  }
+
+  optimization_guide::proto::RedactionDecision autofill_redaction_decision =
+      ConvertAutofillFieldRedactionReason(*proto_form_control_data,
+                                          autofill_metadata->redaction_reason);
+
+  if (autofill_redaction_decision ==
+      optimization_guide::proto::REDACTION_DECISION_NO_REDACTION_NECESSARY) {
+    return;
+  }
+
+  proto_form_control_data->set_redaction_decision(autofill_redaction_decision);
+
+  if (ShouldRedactContent(proto_form_control_data->redaction_decision(),
+                          *autofill_context)) {
+    proto_form_control_data->clear_field_value();
+  }
+}
+
 // Populates the form control data of the `destination_node` from the
-// `form_control_data` content.
+// `form_control_data` content. `autofill_context` is optional and, if provided,
+// used to populate Autofill form data and apply redaction.
 void PopulateFormControlData(
     const base::DictValue& form_control_data,
+    AutofillExtractionContext* autofill_context,
     optimization_guide::proto::ContentNode* destination_node) {
   optimization_guide::proto::FormControlData* proto_form_control_data =
       destination_node->mutable_content_attributes()
@@ -494,6 +566,9 @@ void PopulateFormControlData(
       }
     }
   }
+
+  PopulateAutofillData(form_control_data, autofill_context,
+                       proto_form_control_data);
 }
 
 // Populates the form data of the `destination_node` from the `form_data`
@@ -666,6 +741,7 @@ void PopulateAPCNodeFromContentTree(
     const base::DictValue& node_content,
     const url::Origin& origin,
     FrameGrafter& grafter,
+    AutofillExtractionContext* autofill_context,
     optimization_guide::proto::ContentNode* destination_node,
     const base::RepeatingCallback<void(bool is_focused,
                                        const std::string& document_id)>&
@@ -673,6 +749,8 @@ void PopulateAPCNodeFromContentTree(
   if (!destination_node) {
     return;
   }
+
+  std::optional<AutofillExtractionContext> child_autofill_context;
 
   const base::DictValue* content_attributes =
       node_content.FindDict(kContentAttributesKey);
@@ -757,22 +835,39 @@ void PopulateAPCNodeFromContentTree(
         // and children for an iframe node (which has content attribute of type
         // iframe and a number of children nodes > 0); those 2 should be
         // mutally exclusive.
-        if (const base::DictValue* frame_token =
-                iframe_data->FindDict(kFrameTokenKey)) {
-          if (const std::string* token_string =
-                  frame_token->FindString(kTokenValueKey)) {
-            // If we have a remote token, it means the content is in another
-            // frame (likely cross-origin) and we should register a placeholder.
-            // We do not populate children or other data in this case.
-            if (!token_string->empty()) {
-              if (std::optional<autofill::RemoteFrameToken> remote =
-                      DeserializeFrameIdAsRemoteFrameToken(*token_string)) {
-                grafter.RegisterPlaceholder(*remote, destination_node);
-              }
-              return;
+        if (std::optional<std::string> token_string =
+                GetTokenValueFromIframeData(*iframe_data,
+                                            kRemoteFrameTokenKey)) {
+          // If we have a remote token, it means the content is in another
+          // frame (likely cross-origin) and we should register a placeholder.
+          // We do not populate children or other data in this case which will
+          // be populated later on via the frame grafter.
+          if (std::optional<autofill::RemoteFrameToken> remote =
+                  DeserializeFrameIdAsRemoteFrameToken(*token_string)) {
+            grafter.RegisterPlaceholder(*remote, destination_node);
+            return;
+          }
+        }
+
+        if (autofill_context) {
+          if (std::optional<std::string> token_string =
+                  GetTokenValueFromIframeData(*iframe_data,
+                                              kLocalFrameTokenKey)) {
+            if (std::optional<autofill::LocalFrameToken> local_token =
+                    DeserializeFrameIdAsLocalFrameToken(*token_string)) {
+              child_autofill_context.emplace(
+                  autofill_context->web_state, local_token,
+                  autofill_context->extract_autofill_credit_card_redactions,
+                  autofill_context->section_numbers);
             }
           }
         }
+
+        // We do not skip populating the proto data for the frame even if we
+        // failed to extract the child context (e.g. missing local token).
+        // This matches Blink's behavior where availability of content is
+        // prioritized over strict guarantee of redaction when Autofill data
+        // is missing while required.
         PopulateIframeData(*iframe_data, destination_node, origin,
                            on_frame_extracted);
       }
@@ -806,7 +901,8 @@ void PopulateAPCNodeFromContentTree(
       const base::DictValue* form_control_data =
           content_attributes->FindDict(kFormControlDataKey);
       if (form_control_data) {
-        PopulateFormControlData(*form_control_data, destination_node);
+        PopulateFormControlData(*form_control_data, autofill_context,
+                                destination_node);
       }
       break;
     }
@@ -859,9 +955,11 @@ void PopulateAPCNodeFromContentTree(
           node_content.FindList(kChildrenNodesKey)) {
     for (const base::Value& child_value : *children_nodes) {
       if (child_value.is_dict()) {
-        PopulateAPCNodeFromContentTree(child_value.GetDict(), origin, grafter,
-                                       destination_node->add_children_nodes(),
-                                       on_frame_extracted);
+        PopulateAPCNodeFromContentTree(
+            child_value.GetDict(), origin, grafter,
+            child_autofill_context ? &*child_autofill_context
+                                   : autofill_context,
+            destination_node->add_children_nodes(), on_frame_extracted);
       }
     }
   }

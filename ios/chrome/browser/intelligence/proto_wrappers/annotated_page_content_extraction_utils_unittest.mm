@@ -51,8 +51,10 @@ TEST_F(AnnotatedPageContentExtractionUtilsTest, IncompleteRectangleIgnored) {
   )");
 
   ASSERT_TRUE(node_content.is_dict());
+  base::flat_map<std::string, uint32_t> section_numbers;
+  AutofillExtractionContext context(nullptr, std::nullopt, false, &section_numbers);
   PopulateAPCNodeFromContentTree(
-      node_content.GetDict(), origin, grafter, &node,
+      node_content.GetDict(), origin, grafter, &context, &node,
       base::BindRepeating(
           [](bool is_focused, const std::string& document_id) {}));
 
@@ -88,8 +90,10 @@ TEST_F(AnnotatedPageContentExtractionUtilsTest, EmptyGeometryIgnored) {
   )");
 
   ASSERT_TRUE(node_content.is_dict());
+  base::flat_map<std::string, uint32_t> section_numbers;
+  AutofillExtractionContext context(nullptr, std::nullopt, false, &section_numbers);
   PopulateAPCNodeFromContentTree(
-      node_content.GetDict(), origin, grafter, &node,
+      node_content.GetDict(), origin, grafter, &context, &node,
       base::BindRepeating(
           [](bool is_focused, const std::string& document_id) {}));
 

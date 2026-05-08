@@ -10,6 +10,7 @@
 #import <vector>
 
 #import "base/base64.h"
+#import "base/containers/extend.h"
 #import "base/containers/span.h"
 #import "base/files/scoped_temp_dir.h"
 #import "base/no_destructor.h"
@@ -29,14 +30,29 @@
 #import "base/test/test_future.h"
 #import "base/test/values_test_util.h"
 #import "base/time/time.h"
+#import "components/autofill/core/browser/foundations/browser_autofill_manager.h"
+#import "components/autofill/core/browser/foundations/test_autofill_client.h"
+#import "components/autofill/core/browser/foundations/test_autofill_manager_waiter.h"
+#import "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #import "components/autofill/core/common/autofill_features.h"
+#import "components/autofill/core/common/form_data.h"
+#import "components/autofill/core/common/form_field_data.h"
 #import "components/autofill/core/common/unique_ids.h"
+#import "components/autofill/ios/browser/autofill_agent.h"
+#import "components/autofill/ios/browser/autofill_driver_ios.h"
+#import "components/autofill/ios/browser/autofill_java_script_feature.h"
+#import "components/autofill/ios/browser/autofill_util.h"
 #import "components/autofill/ios/browser/test_autofill_client_ios.h"
+#import "components/autofill/ios/browser/test_autofill_manager_injector.h"
 #import "components/autofill/ios/common/features.h"
+#import "components/autofill/ios/form_util/autofill_form_features_java_script_feature.h"
 #import "components/autofill/ios/form_util/child_frame_registrar.h"
+#import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
 #import "components/autofill/ios/form_util/remote_frame_registration_java_script_feature.h"
+#import "components/optimization_guide/core/optimization_guide_features.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#import "components/prefs/testing_pref_service.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_extractor_java_script_feature.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_utils.h"
@@ -158,6 +174,39 @@ testing::AssertionResult VerifyGeometry(
 }
 @end
 
+// Version of AutofillManager that caches the FormData it receives so we can
+// examine them. The public API deals with FormStructure, the post-parsing
+// data structure, but we want to intercept the FormData and ensure we're
+// providing the right inputs to the parsing process.
+class TestAutofillManager : public autofill::TestBrowserAutofillManager {
+ public:
+  explicit TestAutofillManager(autofill::AutofillDriverIOS* driver)
+      : autofill::TestBrowserAutofillManager(driver) {}
+
+  [[nodiscard]] testing::AssertionResult WaitForFormsSeen(
+      int min_num_awaited_calls) {
+    return forms_seen_waiter_.Wait(min_num_awaited_calls);
+  }
+
+  void OnFormsSeen(
+      const std::vector<autofill::FormData>& updated_forms,
+      const std::vector<autofill::FormGlobalId>& removed_forms) override {
+    base::Extend(seen_forms_, updated_forms);
+    autofill::BrowserAutofillManager::OnFormsSeen(updated_forms, removed_forms);
+  }
+
+  const std::vector<autofill::FormData>& seen_forms() { return seen_forms_; }
+
+  void ResetTestState() { seen_forms_.clear(); }
+
+ private:
+  std::vector<autofill::FormData> seen_forms_;
+
+  autofill::TestAutofillManagerWaiter forms_seen_waiter_{
+      *this,
+      {autofill::AutofillManagerEvent::kFormsSeen}};
+};
+
 struct PrintToStringParamName {
   std::string operator()(const testing::TestParamInfo<bool>& info) const {
     return info.param ? "NewRefactoredVersion" : "OldVersion";
@@ -180,8 +229,10 @@ class PageContextWrapperTest : public PlatformTest,
   void SetUp() override {
     PlatformTest::SetUp();
 
-    std::vector<base::test::FeatureRef> enabled_features;
+    // Set up standard Chrome Autofill preferences.
+    prefs_ = autofill::test::PrefServiceForTesting();
     std::vector<base::test::FeatureRef> disabled_features;
+    std::vector<base::test::FeatureRef> enabled_features;
     enabled_features.push_back(kPageActionMenu);
     enabled_features.push_back(autofill::features::kAutofillAcrossIframesIos);
     if (IsRefactored()) {
@@ -219,7 +270,22 @@ class PageContextWrapperTest : public PlatformTest,
         web::FindInPageJavaScriptFeature::GetInstance(),
         extractor_feature(),
         PageContextWrapperTestJavaScriptFeature::GetInstance(),
+        autofill::AutofillFormFeaturesJavaScriptFeature::GetInstance(),
+        autofill::AutofillJavaScriptFeature::GetInstance(),
+        autofill::FormHandlersJavaScriptFeature::GetInstance(),
     });
+
+    // We need an AutofillAgent to exist or else the form will never get parsed.
+    autofill_agent_ =
+        [[AutofillAgent alloc] initWithPrefService:prefs_.get()
+                                          webState:web_state_.get()];
+
+    autofill_client_ = std::make_unique<autofill::TestAutofillClientIOS>(
+        web_state_.get(), autofill_agent_);
+
+    autofill_manager_injector_ = std::make_unique<
+        autofill::TestAutofillManagerInjector<TestAutofillManager>>(
+        web_state_.get());
 
     // Set the fake env used for testing errors.
     profile2_ = TestProfileIOS::Builder().Build();
@@ -314,6 +380,11 @@ class PageContextWrapperTest : public PlatformTest,
   TestProfileIOS* profile2() { return profile2_.get(); }
   web::FakeWebState* fake_web_state() { return fake_web_state_.get(); }
 
+  void TearDown() override {
+    autofill_manager_injector_.reset();
+    PlatformTest::TearDown();
+  }
+
   web::WebTaskEnvironment task_environment_;
   ScopedKeyWindow scoped_window_;
   web::ScopedTestingWebClient web_client_;
@@ -330,6 +401,11 @@ class PageContextWrapperTest : public PlatformTest,
   std::unique_ptr<TestProfileIOS> profile2_;
   std::unique_ptr<web::FakeWebState> fake_web_state_;
   std::unique_ptr<PageContext> page_helper_;
+  std::unique_ptr<PrefService> prefs_;
+  std::unique_ptr<autofill::TestAutofillClientIOS> autofill_client_;
+  AutofillAgent* autofill_agent_;
+  std::unique_ptr<autofill::TestAutofillManagerInjector<TestAutofillManager>>
+      autofill_manager_injector_;
 };
 
 // TODO(crbug.com/485298671): Remove PopulatePageContext prefixes from test
@@ -1157,8 +1233,8 @@ TEST_P(PageContextWrapperTest,
   web::test::LoadHtml(@"<html></html>", GURL("http://example.com/"),
                       web_state());
 
-  // Capture pointer to web_state_ to allow binding in the block.
   auto* web_state_ptr = &web_state_;
+  auto* autofill_injector_ptr = &autofill_manager_injector_;
   PageContextWrapperCallbackResponse captured_response =
       RunPageContextWrapper(web_state(), ^(PageContextWrapper* wrapper) {
         wrapper.shouldGetSnapshot = YES;
@@ -1174,11 +1250,15 @@ TEST_P(PageContextWrapperTest,
         // Destroy the web state immediately after the async work has started
         // (by posting a task to run after the wrapper's method returns).
         base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE, base::BindOnce(
-                           [](std::unique_ptr<web::WebState>* web_state) {
-                             web_state->reset();
-                           },
-                           web_state_ptr));
+            FROM_HERE,
+            base::BindOnce(
+                [](std::unique_ptr<autofill::TestAutofillManagerInjector<
+                       TestAutofillManager>>* injector,
+                   std::unique_ptr<web::WebState>* web_state) {
+                  injector->reset();
+                  web_state->reset();
+                },
+                autofill_injector_ptr, web_state_ptr));
       });
 
   // Verify that the callback was called with a generic error because the
@@ -1189,6 +1269,7 @@ TEST_P(PageContextWrapperTest,
 
 // Tests that the wrapper correctly handles a destroyed WebState.
 TEST_P(PageContextWrapperTest, PopulatePageContext_WebStateDestroyed) {
+  auto* autofill_injector_ptr = &autofill_manager_injector_;
   PageContextWrapperCallbackResponse captured_response =
       RunPageContextWrapper(web_state(), ^(PageContextWrapper* wrapper) {
         wrapper.shouldGetSnapshot = YES;
@@ -1197,6 +1278,7 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_WebStateDestroyed) {
         wrapper.shouldGetFullPagePDF = YES;
 
         // Destroy the web state after initializing the wrapper.
+        autofill_injector_ptr->reset();
         web_state_.reset();
       });
 
@@ -4319,6 +4401,232 @@ TEST_P(PageContextWrapperTest,
   EXPECT_EQ(form_control_data.field_value(), "");
 }
 
+// Tests that Autofill metadata is correctly identified and populated in the
+// FormControlData when an APC extraction occurs on a page with a recognized
+// Autofill form.
+TEST_P(PageContextWrapperTest,
+       PopulatePageContext_RichExtraction_FormControlData_Autofill) {
+  if (!IsRefactored()) {
+    GTEST_SKIP() << "ApcV2 not supported for the non-refactored APC wrapper";
+  }
+
+  auto page_structure = HtmlPage(
+      "Forms",
+      RawHtml(
+          "<html><body><form name=\"f1\" action='/submit'>"
+          "  <input type=\"text\" name=\"t1\" value=\"v1\" "
+          "required placeholder=\"p1\">"
+          "  <input type=\"text\" name=\"t2\" value=\"v2\" "
+          "readonly>"
+          "  <input type=\"checkbox\" checked>"
+          "  <select name=\"s1\">"
+          "    <option value=\"o1\" selected>O1</option>"
+          "    <option disabled>O2</option>"
+          "  </select>"
+          "  <button type=\"submit\">Submit</button>"
+          "  <textarea name=\"texta\">text contents</textarea>"
+          "  <input type=\"text\" name=\"cc\" "
+          "autocomplete=\"cc-number\" value=\"1234\">"  // Field intended for
+                                                        // Autofill testing
+          "</form></body></html>"));
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  PageContextWrapperConfigBuilder builder;
+  builder.SetUseRichExtraction(true);
+  builder.SetExtractAutofill(true);
+  builder.SetExtractAutofillCreditCardRedactions(true);
+  PageContextWrapperConfig config = builder.Build();
+
+  web::WebFrame* main_frame =
+      autofill::GetWebFramesManagerForAutofill(web_state())->GetMainWebFrame();
+  autofill::AutofillDriverIOS* driver =
+      autofill::AutofillDriverIOS::FromWebStateAndWebFrame(web_state(),
+                                                           main_frame);
+  TestAutofillManager* test_autofill_manager =
+      static_cast<TestAutofillManager*>(&driver->GetAutofillManager());
+
+  ASSERT_TRUE(test_autofill_manager->WaitForFormsSeen(1));
+  ASSERT_EQ(test_autofill_manager->seen_forms().size(), 1u);
+
+  const autofill::FormData& form = test_autofill_manager->seen_forms()[0];
+  autofill::FormStructure* form_structure =
+      const_cast<autofill::FormStructure*>(
+          test_autofill_manager->FindCachedFormById(form.global_id()));
+  ASSERT_TRUE(form_structure);
+
+  // Manually set the field type of 'cc' to CREDIT_CARD_NUMBER to trigger
+  // redaction.
+  for (auto& field : *form_structure) {
+    if (field->name() == u"cc") {
+      field->SetTypeTo(autofill::AutofillType(autofill::CREDIT_CARD_NUMBER),
+                       /*source=*/std::nullopt);
+    }
+  }
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
+      std::move(response.value());
+
+  ASSERT_TRUE(page_context);
+  ASSERT_TRUE(page_context->has_annotated_page_content());
+
+  const auto& annotated_page_content = page_context->annotated_page_content();
+  const auto& root_node = annotated_page_content.root_node();
+
+  ASSERT_EQ(root_node.children_nodes_size(), 1);
+  const auto& form_node = root_node.children_nodes(0);
+
+  EXPECT_TRUE(form_node.content_attributes().has_form_data());
+  EXPECT_EQ(form_node.content_attributes().form_data().form_name(), "f1");
+  EXPECT_TRUE(base::EndsWith(
+      form_node.content_attributes().form_data().action_url(), "/submit"));
+
+  ASSERT_EQ(form_node.children_nodes_size(), 7);
+  const auto* input_cc_node = &form_node.children_nodes(6);
+  ASSERT_TRUE(input_cc_node);
+
+  const auto& fc_cc = input_cc_node->content_attributes().form_control_data();
+  EXPECT_EQ(fc_cc.field_name(), "cc");
+
+  // Verify Autofill metadata is populated.
+  EXPECT_TRUE(fc_cc.has_autofill_section_id());
+  EXPECT_EQ(fc_cc.autofill_section_id(), 2u);
+  ASSERT_EQ(fc_cc.coarse_autofill_field_type_size(), 1);
+  EXPECT_EQ(fc_cc.coarse_autofill_field_type(0),
+            optimization_guide::proto::COARSE_AUTOFILL_FIELD_TYPE_CREDIT_CARD);
+
+  // The field value should be cleared because it is a CREDIT_CARD field and
+  // SetExtractAutofillCreditCardRedactions evaluates to true.
+  EXPECT_FALSE(fc_cc.has_field_value());
+
+  EXPECT_TRUE(fc_cc.has_redaction_decision());
+  EXPECT_EQ(fc_cc.redaction_decision(),
+            optimization_guide::proto::
+                REDACTION_DECISION_REDACTED_IS_SENSITIVE_PAYMENT_FIELD);
+}
+
+// Tests that Autofill section mapping is shared across frames, resulting in
+// consistent and sequential section IDs.
+TEST_P(
+    PageContextWrapperTest,
+    PopulatePageContext_RichExtraction_FormControlData_Autofill_SharedSectionMap) {
+  if (!IsRefactored()) {
+    GTEST_SKIP() << "ApcV2 not supported for the non-refactored APC wrapper";
+  }
+
+  auto page_structure = HtmlPage(
+      "Forms",
+      RawHtml("<html><body>"
+              "  <form name=\"f1\">"
+              "    <input type=\"text\" name=\"t1\" value=\"v1\" "
+              "autocomplete=\"address-line1\">"
+              "  </form>"
+              "  <iframe id=\"child_frame\" srcdoc=\""
+              "    <html><body>"
+              "      <form name=&quot;f2&quot;>"
+              "        <input type=&quot;text&quot; name=&quot;t2&quot; "
+              "value=&quot;v2&quot; autocomplete=&quot;address-line2&quot;>"
+              "      </form>"
+              "    </body></html>\">"
+              "  </iframe>"
+              "</body></html>"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  // Wait for frames to be registered.
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(10), ^{
+    return autofill::GetWebFramesManagerForAutofill(web_state())
+               ->GetAllWebFrames()
+               .size() == 2;
+  }));
+
+  PageContextWrapperConfigBuilder builder;
+  builder.SetUseRichExtraction(true);
+  builder.SetExtractAutofill(true);
+  PageContextWrapperConfig config = builder.Build();
+
+  // Mock Autofill data for both frames.
+  web::WebFramesManager* frames_manager =
+      autofill::GetWebFramesManagerForAutofill(web_state());
+
+  for (web::WebFrame* frame : frames_manager->GetAllWebFrames()) {
+    autofill::AutofillDriverIOS* driver =
+        autofill::AutofillDriverIOS::FromWebStateAndWebFrame(web_state(),
+                                                             frame);
+    TestAutofillManager* test_autofill_manager =
+        static_cast<TestAutofillManager*>(&driver->GetAutofillManager());
+
+    ASSERT_TRUE(test_autofill_manager->WaitForFormsSeen(1));
+    const autofill::FormData& form = test_autofill_manager->seen_forms()[0];
+    autofill::FormStructure* form_structure =
+        const_cast<autofill::FormStructure*>(
+            test_autofill_manager->FindCachedFormById(form.global_id()));
+    ASSERT_TRUE(form_structure);
+
+    // Assign a section to the field.
+    for (auto& field : *form_structure) {
+      std::string section_name =
+          frame->IsMainFrame() ? "main-section" : "child-section";
+      field->set_section(
+          autofill::Section::FromAutocomplete({.section = section_name}));
+      field->SetTypeTo(autofill::AutofillType(autofill::ADDRESS_HOME_LINE1),
+                       /*source=*/std::nullopt);
+    }
+  }
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  const auto& page_context = *response.value();
+  const auto& root_node = page_context.annotated_page_content().root_node();
+
+  // Root should have form (f1) and iframe (child_frame).
+  ASSERT_GE(root_node.children_nodes_size(), 2);
+
+  const auto& form_node = root_node.children_nodes(0);
+
+  ASSERT_GE(form_node.children_nodes_size(), 1);
+  const auto& fc_main =
+      form_node.children_nodes(0).content_attributes().form_control_data();
+
+  // Verify section ID for main frame field.
+  EXPECT_TRUE(fc_main.has_autofill_section_id());
+  uint32_t main_section_id = fc_main.autofill_section_id();
+
+  // Access the child frame's input field directly by index.
+  // Root (0) -> Form f1
+  // Root (1) -> Iframe child_frame
+  const auto& iframe_node = root_node.children_nodes(1);
+  ASSERT_GE(iframe_node.children_nodes_size(), 1);
+  const auto& child_root = iframe_node.children_nodes(0);
+  ASSERT_GE(child_root.children_nodes_size(), 1);
+  const auto& child_form = child_root.children_nodes(0);
+  ASSERT_GE(child_form.children_nodes_size(), 1);
+  const auto& child_input = child_form.children_nodes(0);
+
+  const auto& fc_child = child_input.content_attributes().form_control_data();
+  EXPECT_EQ(fc_child.field_name(), "t2");
+  EXPECT_TRUE(fc_child.has_autofill_section_id());
+  uint32_t child_section_id = fc_child.autofill_section_id();
+
+  // Verify that the section IDs are sequential across frames, proving the map
+  // is shared.
+  EXPECT_EQ(main_section_id, 0u);
+  EXPECT_EQ(child_section_id, 1u);
+}
+
 // Tests that Canvas Metadata is extracted correctly.
 TEST_P(PageContextWrapperTest, PopulatePageContext_RichExtraction_Canvas) {
   if (!IsRefactored()) {
@@ -4679,12 +4987,9 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_AutofillInformation) {
   web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
                       test_server_.GetURL(kMainPagePath), web_state());
 
-  // Setup the TestAutofillClientIOS.
-  autofill::TestAutofillClientIOS autofill_client(web_state(), /*bridge=*/nil);
-
   autofill::TestPersonalDataManager& pdm =
       static_cast<autofill::TestPersonalDataManager&>(
-          autofill_client.GetPersonalDataManager());
+          autofill_client_->GetPersonalDataManager());
 
   // Add an address profile to the AddressDataManager.
   autofill::AutofillProfile profile = autofill::test::GetFullProfile();
@@ -4741,9 +5046,6 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_AutofillInformation_Empty) {
   std::string main_html = page_helper_->Build(page_structure);
   web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
                       test_server_.GetURL(kMainPagePath), web_state());
-
-  // Setup the TestAutofillClientIOS.
-  autofill::TestAutofillClientIOS autofill_client(web_state(), /*bridge=*/nil);
 
   // Note: We deliberately do NOT add any profiles or credit cards to the
   // PersonalDataManager.

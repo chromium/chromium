@@ -96,6 +96,21 @@ source_set("page_context_extractor_feature") {
   ]
 }
 
+source_set("autofill_data_extraction_utils") {
+  sources = [
+    "autofill_data_extraction_utils.h",
+    "autofill_data_extraction_utils.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/common",
+    "//components/autofill/ios/browser",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//ios/chrome/browser/intelligence/features",
+  ]
+}
+
 source_set("proto_wrappers") {
   sources = [
     "annotated_page_content_extraction_utils.h",
@@ -111,6 +126,7 @@ source_set("proto_wrappers") {
   ]
 
   deps = [
+    ":autofill_data_extraction_utils",
     ":metrics_constants",
     ":page_context_extractor_feature",
     ":page_context_metrics",
@@ -195,6 +211,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "annotated_page_content_extraction_utils_unittest.mm",
+    "autofill_data_extraction_utils_unittest.mm",
     "dom_node_ids_js_unittest.mm",
     "frame_grafter_unittest.mm",
     "ios_smart_tab_grouping_request_wrapper_unittest.mm",
@@ -205,6 +222,7 @@ source_set("unit_tests") {
     "page_context_wrapper_unittest.mm",
   ]
   deps = [
+    ":autofill_data_extraction_utils",
     ":dom_node_ids_test_ts",
     ":ios_smart_tab_grouping_proto_wrapper",
     ":metrics_constants",
@@ -217,12 +235,17 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/autofill/core/browser:test_support",
     "//components/autofill/core/common",
+    "//components/autofill/ios/browser",
     "//components/autofill/ios/browser:test_support",
     "//components/autofill/ios/browser:util",
     "//components/autofill/ios/common",
+    "//components/autofill/ios/form_util:autofill_form_features",
     "//components/autofill/ios/form_util:child_frame_registrar",
+    "//components/autofill/ios/form_util:form_handler_feature",
     "//components/autofill/ios/form_util:frame_registration_feature",
+    "//components/autofill/ios/form_util:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/prefs:test_support",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/intelligence/persist_tab_context/model",
     "//ios/chrome/browser/shared/model/browser/test:test_support",

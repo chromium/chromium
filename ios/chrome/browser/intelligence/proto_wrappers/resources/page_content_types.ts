@@ -319,7 +319,11 @@ export interface PageContentIframeContent {
 }
 
 export interface PageContentIframeData {
-  frameToken: FrameToken;
+  // The token used by the browser to identify and graft this child frame.
+  remoteFrameToken: FrameToken;
+  // The frame's local and private token in the renderer context.
+  localFrameToken?: FrameToken;
+  // The grafted iframe content if same-origin.
   content?: PageContentIframeContent;
 }
 
@@ -369,6 +373,8 @@ export interface PageContentFormControlData {
   isRequired: boolean;
   isReadonly?: boolean;
   redactionDecision: PageContentRedactionDecision;
+  // Node ID assigned by Autofill if the node is handled by Autofill.
+  autofillNodeId?: number;
 }
 
 export interface PageContentAttributes {

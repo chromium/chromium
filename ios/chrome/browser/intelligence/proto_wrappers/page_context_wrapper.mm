@@ -249,6 +249,10 @@ result.links = linksArray;
   // The identifiers of the traversed frames that reported being focused.
   std::vector<FrameFocusInfo> _focusedFrameInfos;
 
+  // Caches string representations of autofill sections to integers during
+  // extraction to ensure consistency across the APC proto.
+  base::flat_map<std::string, uint32_t> _autofillSectionNumbers;
+
   // Whether the registration wait has completed or timed out.
   BOOL _registrationCompletedOrTimedOut;
 
@@ -1027,9 +1031,17 @@ result.links = linksArray;
             [weakSelf addFrameFocusInfo:isFocusedChild documentId:documentId];
           });
 
-  // Populate the APC node from the tree walker output.
-  PopulateAPCNodeFromContentTree(*rootNodeValue, securityOrigin, _grafter,
-                                 destinationContentNode, on_frame_extracted);
+  std::optional<AutofillExtractionContext> autofill_context;
+  if (_config->extract_autofill()) {
+    autofill_context.emplace(_webState, localFrameToken,
+                             _config->extract_autofill_credit_card_redactions(),
+                             &_autofillSectionNumbers);
+  }
+
+  PopulateAPCNodeFromContentTree(
+      *rootNodeValue, securityOrigin, _grafter,
+      autofill_context ? &*autofill_context : nullptr, destinationContentNode,
+      on_frame_extracted);
 
   // Populate the frame data for this frame and determine whether it is focused.
   bool isFocused = false;

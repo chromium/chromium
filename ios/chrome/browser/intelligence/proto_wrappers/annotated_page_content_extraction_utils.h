@@ -11,8 +11,8 @@
 
 #import "base/functional/callback_forward.h"
 #import "base/values.h"
-#import "components/autofill/core/common/unique_ids.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/autofill_data_extraction_utils.h"
 #import "url/origin.h"
 
 namespace web {
@@ -36,6 +36,11 @@ struct FrameFocusInfo {
   std::optional<autofill::LocalFrameToken> local_token;
 };
 
+// Result of populating frame data, containing status information like focus.
+struct FrameDataNodeResult {
+  bool is_focused = false;
+};
+
 // Util functions to populate the APC proto nodes out of the annotated page
 // content objects extracted from the renderer. Basically, maps from JSON to
 // proto.
@@ -50,17 +55,11 @@ void PopulateAPCNodeFromContentTree(
     const base::DictValue& node_content,
     const url::Origin& origin,
     FrameGrafter& grafter,
+    AutofillExtractionContext* context,
     optimization_guide::proto::ContentNode* destination_node,
     const base::RepeatingCallback<void(bool is_focused,
                                        const std::string& document_id)>&
         on_frame_extracted);
-
-// Result of populating a frame data node.
-struct FrameDataNodeResult {
-  // Whether the document inside this frame is the deepest focused document
-  // on the page.
-  bool is_focused = false;
-};
 
 // Populates `destination_frame_data_node` from the
 // `frame_data_content` (JSON dict) representing the frame data extracted

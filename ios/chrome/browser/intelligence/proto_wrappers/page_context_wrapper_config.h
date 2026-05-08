@@ -46,16 +46,25 @@ class PageContextWrapperConfig {
   // ("InnerTextOnly", "Rich", and "RichAndActionable").
   std::string GetApcConfigVariant() const;
 
+  // True to extract autofill metadata.
+  bool extract_autofill() const;
+
+  // True to apply redacting metadata for credit card numbers.
+  bool extract_autofill_credit_card_redactions() const;
+
  private:
   friend class PageContextWrapperConfigBuilder;
 
   // Private constructor forces usage of the Builder.
-  explicit PageContextWrapperConfig(bool use_refactored_extractor,
-                                    bool graft_cross_origin_frame_content,
-                                    bool use_rich_extraction,
-                                    bool use_rich_extraction_with_actionable,
-                                    bool extract_paid_content,
-                                    bool attempt_paid_content_json_fixing);
+  explicit PageContextWrapperConfig(
+      bool use_refactored_extractor,
+      bool graft_cross_origin_frame_content,
+      bool use_rich_extraction,
+      bool use_rich_extraction_with_actionable,
+      bool extract_paid_content,
+      bool attempt_paid_content_json_fixing,
+      bool extract_autofill,
+      bool extract_autofill_credit_card_redactions);
 
   // Bit to use the refactored PageContextExtractor.
   bool use_refactored_extractor_;
@@ -74,6 +83,12 @@ class PageContextWrapperConfig {
 
   // Bit to attempt to fix malformed paid content JSON.
   bool attempt_paid_content_json_fixing_;
+
+  // Bit to extract autofill metadata.
+  bool extract_autofill_;
+
+  // Bit to apply Autofill credit card redaction policies.
+  bool extract_autofill_credit_card_redactions_;
 };
 
 // Builder for PageContextWrapperConfig.
@@ -109,6 +124,20 @@ class PageContextWrapperConfigBuilder {
   PageContextWrapperConfigBuilder& SetAttemptPaidContentJsonFixing(
       bool attempt_paid_content_json_fixing);
 
+  // Sets whether to extract autofill metadata. Does the equivalent of the
+  // kAnnotatedPageContentWithAutofillAnnotations kill switch in
+  // components/optimization_guide/content/browser/page_content_proto_util.cc
+  // for blink.
+  PageContextWrapperConfigBuilder& SetExtractAutofill(bool extract_autofill);
+
+  // Sets whether to apply Autofill credit card redaction to field values. Does
+  // the equivalent of the kAnnotatedPageContentAutofillCreditCardRedactions
+  // feature switch in
+  // components/optimization_guide/content/browser/page_content_proto_util.cc
+  // for blink.
+  PageContextWrapperConfigBuilder& SetExtractAutofillCreditCardRedactions(
+      bool extract_autofill_credit_card_redactions);
+
   // Returns the PageContextWrapperConfig.
   PageContextWrapperConfig Build() const;
 
@@ -119,6 +148,8 @@ class PageContextWrapperConfigBuilder {
   bool use_rich_extraction_with_actionable_;
   bool extract_paid_content_;
   bool attempt_paid_content_json_fixing_;
+  bool extract_autofill_;
+  bool extract_autofill_credit_card_redactions_;
 };
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_PROTO_WRAPPERS_PAGE_CONTEXT_WRAPPER_CONFIG_H_
