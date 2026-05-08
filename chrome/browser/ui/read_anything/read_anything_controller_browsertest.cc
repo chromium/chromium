@@ -13,8 +13,10 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/read_anything/read_anything_entry_point_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_immersive_web_view.h"
 #include "chrome/browser/ui/read_anything/read_anything_lifecycle_observer.h"
+#include "chrome/browser/ui/read_anything/read_anything_prefs.h"
 #include "chrome/browser/ui/read_anything/read_anything_service.h"
 #include "chrome/browser/ui/read_anything/read_anything_service_factory.h"
 #include "chrome/browser/ui/side_panel/side_panel_action_callback.h"
@@ -34,6 +36,7 @@
 #include "components/input/native_web_keyboard_event.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
@@ -86,6 +89,8 @@ class ReadAnythingControllerBrowserTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
+    browser()->profile()->GetPrefs()->ClearPref(
+        prefs::kAccessibilityReadAnythingLastOpenedPresentationState);
     embedded_test_server()->ServeFilesFromSourceDirectory("chrome/test/data");
     ASSERT_TRUE(embedded_test_server()->Start());
   }
@@ -176,6 +181,12 @@ class ReadAnythingControllerBrowserTest : public InProcessBrowserTest {
         ASSERT_FALSE(web_view->GetWebContents());
       }
     }
+  }
+
+  void ShowUI(
+      ReadAnythingController* controller,
+      ReadAnythingOpenTrigger trigger = ReadAnythingOpenTrigger::kOmniboxChip) {
+    controller->ShowInPreferredUI(trigger);
   }
 
  private:
@@ -2260,4 +2271,172 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   AwaitAndAssertOverlayVisibility(/*visible=*/false);
   EXPECT_EQ(controller->GetPresentationState(),
             ReadAnythingController::PresentationState::kInactive);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       RemembersLastOpenedPresentation) {
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  auto* controller = ReadAnythingController::From(tab);
+  PrefService* prefs = browser()->profile()->GetPrefs();
+
+  // 1. Initial state should be immersive (default).
+  EXPECT_EQ(
+      prefs->GetInteger(
+          prefs::kAccessibilityReadAnythingLastOpenedPresentationState),
+      static_cast<int>(read_anything::mojom::ReadAnythingPresentationState::
+                           kInImmersiveOverlay));
+
+  // 2. Open IRM.
+  ShowUI(controller);
+  EXPECT_EQ(
+      controller->GetPresentationState(),
+      read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
+
+  // 3. Toggle to Side Panel.
+  controller->TogglePresentation();
+  EXPECT_EQ(controller->GetPresentationState(),
+            read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
+
+  // 4. Preference should now be Side Panel.
+  EXPECT_EQ(
+      prefs->GetInteger(
+          prefs::kAccessibilityReadAnythingLastOpenedPresentationState),
+      static_cast<int>(
+          read_anything::mojom::ReadAnythingPresentationState::kInSidePanel));
+
+  // 5. Close Reading Mode.
+  controller->CloseSidePanelUI(ReadAnythingCloseReason::kClosedByUser);
+
+  // 6. Open Reading Mode again using ShowUI.
+  ShowUI(controller);
+
+  // 7. It should open in Side Panel.
+  EXPECT_EQ(controller->GetPresentationState(),
+            read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
+
+  // 8. Toggle back to Immersive.
+  controller->TogglePresentation();
+  EXPECT_EQ(
+      controller->GetPresentationState(),
+      read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
+
+  // 9. Preference should now be Immersive.
+  EXPECT_EQ(
+      prefs->GetInteger(
+          prefs::kAccessibilityReadAnythingLastOpenedPresentationState),
+      static_cast<int>(read_anything::mojom::ReadAnythingPresentationState::
+                           kInImmersiveOverlay));
+
+  // 10. Close and reopen.
+  controller->CloseImmersiveUI(ReadAnythingCloseReason::kClosedByUser);
+  ShowUI(controller);
+
+  // 11. It should open in Immersive.
+  EXPECT_EQ(
+      controller->GetPresentationState(),
+      read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       AutomaticToggleDoesNotUpdatePreference) {
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  auto* controller = ReadAnythingController::From(tab);
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  controller->UnlockDistillationStateForTesting();
+
+  // 1. Initial state should be immersive.
+  EXPECT_EQ(
+      prefs->GetInteger(
+          prefs::kAccessibilityReadAnythingLastOpenedPresentationState),
+      static_cast<int>(read_anything::mojom::ReadAnythingPresentationState::
+                           kInImmersiveOverlay));
+
+  // 2. Open IRM.
+  ShowUI(controller);
+  EXPECT_EQ(
+      controller->GetPresentationState(),
+      read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
+
+  // 3. Trigger automatic toggle due to empty distillation.
+  controller->OnDistillationStateChanged(
+      ReadAnythingController::DistillationState::kDistillationEmpty);
+
+  // 4. Should be in Side Panel now.
+  EXPECT_EQ(controller->GetPresentationState(),
+            read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
+
+  // 5. Preference should STILL be Immersive.
+  EXPECT_EQ(
+      prefs->GetInteger(
+          prefs::kAccessibilityReadAnythingLastOpenedPresentationState),
+      static_cast<int>(read_anything::mojom::ReadAnythingPresentationState::
+                           kInImmersiveOverlay));
+
+  // 6. Close and reopen.
+  controller->CloseSidePanelUI(ReadAnythingCloseReason::kClosedByUser);
+  controller->OnDistillationStateChanged(
+      ReadAnythingController::DistillationState::kDistillationWithContent);
+  ShowUI(controller);
+
+  // 7. Should try to open in Immersive again (though it might redirect again
+  // if distillation is still empty, but the choice was Immersive).
+  EXPECT_EQ(
+      controller->GetPresentationState(),
+      read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       ToggleUI_RespectsPreference) {
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  auto* controller = ReadAnythingController::From(tab);
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
+
+  // Set preference to Side Panel.
+  prefs->SetInteger(
+      prefs::kAccessibilityReadAnythingLastOpenedPresentationState,
+      static_cast<int>(
+          read_anything::mojom::ReadAnythingPresentationState::kInSidePanel));
+
+  // Toggle UI.
+  controller->ToggleUI(ReadAnythingOpenTrigger::kOmniboxChip);
+
+  // Wait for Side Panel to show.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return side_panel_ui->IsSidePanelEntryShowing(
+        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
+  }));
+
+  // Should open in Side Panel.
+  EXPECT_EQ(controller->GetPresentationState(),
+            read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
+
+  // Toggle UI again (closes it).
+  controller->ToggleUI(ReadAnythingOpenTrigger::kOmniboxChip);
+
+  // Wait for Side Panel to hide.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !side_panel_ui->IsSidePanelEntryShowing(
+        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
+  }));
+
+  EXPECT_EQ(controller->GetPresentationState(),
+            read_anything::mojom::ReadAnythingPresentationState::kInactive);
+
+  // Set preference to Immersive.
+  prefs->SetInteger(
+      prefs::kAccessibilityReadAnythingLastOpenedPresentationState,
+      static_cast<int>(read_anything::mojom::ReadAnythingPresentationState::
+                           kInImmersiveOverlay));
+
+  // Toggle UI.
+  controller->ToggleUI(ReadAnythingOpenTrigger::kOmniboxChip);
+
+  // Wait for Immersive Overlay to show.
+  AwaitAndAssertOverlayVisibility(/*visible=*/true);
+
+  // Should open in Immersive.
+  EXPECT_EQ(
+      controller->GetPresentationState(),
+      read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
 }

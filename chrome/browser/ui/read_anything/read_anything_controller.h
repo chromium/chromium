@@ -135,11 +135,17 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
   // Closes the Immersive Reading Mode UI.
   void CloseImmersiveUI(ReadAnythingCloseReason reason);
 
+  // Closes the Reading mode side panel UI.
+  void CloseSidePanelUI(ReadAnythingCloseReason reason);
+
+  // Shows Reading Mode using the user's preferred presentation mode.
+  void ShowInPreferredUI(ReadAnythingOpenTrigger trigger);
+
   // Toggles the Immersive Reading Mode UI.
   void ToggleUI(ReadAnythingOpenTrigger trigger);
 
   // Toggles between the Immersive Reading Mode UI and the Side Panel UI.
-  void TogglePresentation();
+  void TogglePresentation(bool is_user_initiated = true);
 
   // Returns the current presentation_state_ of the Reading Mode feature. This
   // refers to the current host of the WebUI, but does not guarantee that the
@@ -199,6 +205,8 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
   // Called when the tab will detach.
   void TabWillDetach(tabs::TabInterface* tab,
                      tabs::TabInterface::DetachReason reason);
+  // Saves the presentation state to the user's preferences.
+  void SavePresentationPreference(PresentationState state);
 
   std::unique_ptr<WebContentsObserverInstance> ra_web_ui_observer_;
   std::unique_ptr<ReadAnythingOmniboxController> omnibox_controller_;
@@ -219,9 +227,6 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
   // Returns the SidePanelUI for the active tab if it can be shown.
   // Otherwise, returns nullptr.
   SidePanelUI* GetSidePanelUI();
-
-  // Closes the Reading mode side panel UI.
-  void CloseSidePanelUI(ReadAnythingCloseReason reason);
 
   raw_ptr<tabs::TabInterface> tab_ = nullptr;
   raw_ptr<SidePanelRegistry> side_panel_registry_ = nullptr;

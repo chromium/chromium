@@ -89,6 +89,12 @@ inline constexpr char kAccessibilityReadAnythingTTSEngineReinstalled[] =
 inline constexpr char kAccessibilityReadAnythingOmniboxChipIgnoredCount[] =
     "settings.a11y.read_anything.omnibox_chip_ignored_count";
 
+// The last opened presentation state of reading mode. This is used to
+// determine whether to reopen reading mode in full-screen or side panel
+// view.
+inline constexpr char kAccessibilityReadAnythingLastOpenedPresentationState[] =
+    "settings.a11y.read_anything.last_opened_presentation_state";
+
 }  // namespace prefs
 
 void RegisterReadAnythingProfilePrefs(

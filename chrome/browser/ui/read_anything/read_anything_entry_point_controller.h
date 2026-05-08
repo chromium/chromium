@@ -10,6 +10,8 @@
 #include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "ui/actions/actions.h"
 
+class ReadAnythingController;
+
 namespace read_anything {
 
 // Maintains and handles entry points for the ReadAnythingController.
