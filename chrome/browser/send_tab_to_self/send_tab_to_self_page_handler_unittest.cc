@@ -209,7 +209,7 @@ TEST_F(SendTabToSelfPageHandlerTest,
 
   // Initiate the send to device action. This will trigger an asynchronous
   // Mojo call to the renderer to generate the scroll position context.
-  handler->SendTabToDevice(device_id, url, title);
+  handler->SendTabToDevice(device_id, url, title, base::DoNothing());
 
   // Wait for the asynchronous Mojo request to reach our mock renderer.
   mock_receiver_.WaitForRequestSelector();
@@ -238,7 +238,7 @@ TEST_F(SendTabToSelfPageHandlerTest,
   model()->SetSendEntryCallback(future.GetRepeatingCallback());
 
   // Initiate the send to device action.
-  handler->SendTabToDevice(device_id, url, title);
+  handler->SendTabToDevice(device_id, url, title, base::DoNothing());
 
   // Wait for the asynchronous Mojo request to reach our mock renderer.
   mock_receiver_.WaitForRequestSelector();
@@ -269,7 +269,7 @@ TEST_F(SendTabToSelfPageHandlerTest,
   model()->SetSendEntryCallback(future.GetRepeatingCallback());
 
   // Initiate the send to device action.
-  handler->SendTabToDevice(device_id, url, title);
+  handler->SendTabToDevice(device_id, url, title, base::DoNothing());
 
   // Wait for the asynchronous Mojo request to reach our mock renderer.
   mock_receiver_.WaitForRequestSelector();
@@ -300,7 +300,7 @@ TEST_F(SendTabToSelfPageHandlerTest,
   model()->SetSendEntryCallback(future.GetRepeatingCallback());
 
   // Initiate the send to device action.
-  handler->SendTabToDevice(device_id, url, title);
+  handler->SendTabToDevice(device_id, url, title, base::DoNothing());
 
   // Wait for the asynchronous Mojo request to reach our mock renderer.
   mock_receiver_.WaitForRequestSelector();
@@ -335,7 +335,7 @@ TEST_F(SendTabToSelfPageHandlerTest,
   model()->SetSendEntryCallback(future.GetRepeatingCallback());
 
   // Initiate the send to device action.
-  handler->SendTabToDevice(device_id, url, title);
+  handler->SendTabToDevice(device_id, url, title, base::DoNothing());
 
   // Wait for the asynchronous Mojo request to reach our mock renderer.
   mock_receiver_.WaitForRequestSelector();
@@ -374,7 +374,7 @@ TEST_F(SendTabToSelfPageHandlerWithNavigationHistoryTest,
   TestFuture<const SendTabToSelfEntry*> future;
   model()->SetSendEntryCallback(future.GetRepeatingCallback());
 
-  handler->SendTabToDevice(device_id, url, title);
+  handler->SendTabToDevice(device_id, url, title, base::DoNothing());
 
   EXPECT_THAT(future.Get()->GetNavigationHistory(), IsValidNavigationHistory());
 }
@@ -446,7 +446,7 @@ TEST_F(SendTabToSelfPageHandlerTest,
 
   // Initiate the send to device action for a DIFFERENT URL than the current
   // page (which is `kExampleUrl`).
-  handler->SendTabToDevice(device_id, link_url, title);
+  handler->SendTabToDevice(device_id, link_url, title, base::DoNothing());
 
   // Verify the model received the entry but without any context.
   EXPECT_TRUE(future.Get()

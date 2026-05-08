@@ -47,13 +47,11 @@ class SendTabToSelfPageHandler
 
   // Sends the tab to the target device, potentially after capturing page
   // context (like scroll position).
-  void SendTabToDevice(const std::string& target_device_guid,
-                       const GURL& url,
-                       const std::string& title,
-                       // TODO(crbug.com/492072882): Remove default parameter
-                       // once all usages are migrated.
-                       base::OnceCallback<void(SendTabToSelfResult)>
-                           commit_confirmation = base::DoNothing());
+   void SendTabToDevice(
+       const std::string& target_device_guid,
+       const GURL& url,
+       const std::string& title,
+       base::OnceCallback<void(SendTabToSelfResult)> commit_confirmation);
 
   void SetSelectorGenerationTimeoutForTesting(base::TimeDelta timeout);
 
