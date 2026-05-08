@@ -9654,6 +9654,9 @@ test("unit_tests") {
       "//chrome/renderer/extensions:unit_tests",
       "//chrome/utility/image_writer:unit_tests",
       "//components/services/unzip:in_process",
+      "//extensions/browser/mime_handler",
+      "//extensions/browser/mime_handler:stream_container",
+      "//extensions/browser/mime_handler:test_helpers",
       "//extensions/renderer:unit_test_support",
 
       # This will add all of the unit tests for the schema compiler to this
@@ -10132,9 +10135,6 @@ test("unit_tests") {
       "//chrome/browser/extensions/api/pdf_viewer_private",
       "//chrome/browser/pdf",
       "//extensions/browser",
-      "//extensions/browser/mime_handler",
-      "//extensions/browser/mime_handler:stream_container",
-      "//extensions/browser/mime_handler:test_helpers",
       "//net",
       "//pdf:content_restriction",
       "//pdf:features",

@@ -36,8 +36,10 @@
 #include "content/browser/file_system_access/file_system_access_transfer_token_impl.h"
 #include "content/browser/file_system_access/fixed_file_system_access_permission_grant.h"
 #include "content/browser/file_system_access/mock_file_system_access_permission_context.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
+#include "content/public/test/test_utils.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_web_contents.h"
@@ -134,6 +136,24 @@ std::string ReadStringFromFileRemote(
 }
 
 constexpr char kTestMountPoint[] = "testfs";
+
+// A ContentBrowserClient that denies every cross-origin file picker request
+// and records whether it was consulted, used by tests that exercise the
+// browser-side deny path.
+class DenyingFilePickerContentBrowserClient : public ContentBrowserClient {
+ public:
+  bool IsCrossOriginSubframeAllowedToShowFilePicker(
+      RenderFrameHost* render_frame_host,
+      const url::Origin& requesting_origin) override {
+    was_checked_ = true;
+    return false;
+  }
+
+  bool was_checked() const { return was_checked_; }
+
+ private:
+  bool was_checked_ = false;
+};
 
 }  // namespace
 
@@ -1586,6 +1606,52 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_OpenFile) {
   manager_remote->ChooseEntries(std::move(picker_options),
                                 future.GetCallback());
   ASSERT_TRUE(future.Wait());
+}
+
+TEST_F(FileSystemAccessManagerImplTest,
+       ChooseEntries_CrossOriginDenialDoesNotConsumeActivation) {
+  auto* rfh =
+      static_cast<TestRenderFrameHost*>(web_contents_->GetPrimaryMainFrame());
+  rfh->SimulateUserActivation();
+
+  DenyingFilePickerContentBrowserClient browser_client;
+  ScopedContentBrowserClientSetting browser_client_setting(&browser_client);
+
+  const blink::StorageKey cross_origin_storage_key =
+      blink::StorageKey::CreateFromStringForTesting("https://other.example");
+  mojo::Remote<blink::mojom::FileSystemAccessManager> manager_remote;
+  FileSystemAccessManagerImpl::BindingContext binding_context = {
+      cross_origin_storage_key, GURL("https://other.example/test"),
+      rfh->GetGlobalId()};
+  manager_->BindReceiver(binding_context,
+                         manager_remote.BindNewPipeAndPassReceiver());
+
+  EXPECT_CALL(permission_context_,
+              CanObtainReadPermission(cross_origin_storage_key.origin()))
+      .WillOnce(testing::Return(true));
+
+  auto open_file_picker_options = blink::mojom::OpenFilePickerOptions::New(
+      blink::mojom::AcceptsTypesInfo::New(
+          std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr>(),
+          /*include_accepts_all=*/true),
+      /*can_select_multiple_files=*/false);
+  auto picker_options = blink::mojom::FilePickerOptions::New(
+      blink::mojom::TypeSpecificFilePickerOptionsUnion::
+          NewOpenFilePickerOptions(std::move(open_file_picker_options)),
+      /*starting_directory_id=*/std::string(),
+      blink::mojom::FilePickerStartInOptionsUnionPtr());
+
+  base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
+                         std::vector<blink::mojom::FileSystemAccessEntryPtr>>
+      future;
+  manager_remote->ChooseEntries(std::move(picker_options),
+                                future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  EXPECT_EQ(blink::mojom::FileSystemAccessStatus::kPermissionDenied,
+            future.Get<0>()->status);
+  EXPECT_TRUE(browser_client.was_checked());
+  EXPECT_TRUE(rfh->HasTransientUserActivation());
 }
 
 TEST_F(FileSystemAccessManagerImplTest,

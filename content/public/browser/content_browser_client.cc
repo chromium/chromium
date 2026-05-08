@@ -1788,6 +1788,12 @@ RenderFrameHost* ContentBrowserClient::GetEffectiveTopFrameForPartitioning(
   return nullptr;
 }
 
+bool ContentBrowserClient::IsCrossOriginSubframeAllowedToShowFilePicker(
+    RenderFrameHost* render_frame_host,
+    const url::Origin& requesting_origin) {
+  return false;
+}
+
 bool ContentBrowserClient::ShouldSkipBeforeUnloadDialog(
     content::RenderFrameHost* rfh) {
   return false;

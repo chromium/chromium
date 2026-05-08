@@ -3058,6 +3058,17 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual RenderFrameHost* GetEffectiveTopFrameForPartitioning(
       RenderFrameHost* render_frame_host);
 
+  // Browser-side authoritative permission check, allowing embedders to grant
+  // a file picker exemption to a known-trusted cross-origin subframe.
+  // Called only when `render_frame_host`'s `requesting_origin` differs from
+  // the outermost main frame's origin; the same-origin case is allowed by
+  // default and never reaches this hook. Returns true if the embedder
+  // considers `render_frame_host` exempt (e.g., a MIME handler extension
+  // frame). Default: false.
+  virtual bool IsCrossOriginSubframeAllowedToShowFilePicker(
+      RenderFrameHost* render_frame_host,
+      const url::Origin& requesting_origin);
+
   // Checks if the BeforeUnload Dialog event should be skipped.
   virtual bool ShouldSkipBeforeUnloadDialog(content::RenderFrameHost* rfh);
 

@@ -93,6 +93,9 @@ using HandleType = FileSystemAccessPermissionContext::HandleType;
 
 namespace {
 
+constexpr char kThirdPartyIframesNotAllowedToShowFilePicker[] =
+    "Third party iframes are not allowed to show a file picker.";
+
 #if BUILDFLAG(IS_ANDROID)
 // Adaptor between FileSystemChooser::ResultCallback and FileSelectListener
 // used when delegating file choosing to WebContentsDelegate.
@@ -179,16 +182,19 @@ void ShowFilePickerOnUIThread(
     return;
   }
 
-  url::Origin embedding_origin = outermost_rfh->GetLastCommittedOrigin();
+  // Third party iframes are not allowed to show a file picker, unless the
+  // embedder explicitly grants this cross-origin subframe an exemption (e.g.,
+  // a MIME handler extension frame).
+  const url::Origin embedding_origin = outermost_rfh->GetLastCommittedOrigin();
   if (embedding_origin != requesting_origin &&
-      !GetContentClient()->IsFilePickerAllowedForCrossOriginSubframe(
-          requesting_origin)) {
-    // Third party iframes are not allowed to show a file picker.
-    std::move(callback).Run(
-        file_system_access_error::FromStatus(
-            FileSystemAccessStatus::kPermissionDenied,
-            "Third party iframes are not allowed to show a file picker."),
-        {});
+      !GetContentClient()
+           ->browser()
+           ->IsCrossOriginSubframeAllowedToShowFilePicker(rfh,
+                                                          requesting_origin)) {
+    std::move(callback).Run(file_system_access_error::FromStatus(
+                                FileSystemAccessStatus::kPermissionDenied,
+                                kThirdPartyIframesNotAllowedToShowFilePicker),
+                            {});
     return;
   }
 
@@ -584,6 +590,25 @@ void FileSystemAccessManagerImpl::ChooseEntries(
     std::move(callback).Run(
         file_system_access_error::FromStatus(
             FileSystemAccessStatus::kOperationAborted),
+        std::vector<blink::mojom::FileSystemAccessEntryPtr>());
+    return;
+  }
+
+  // Preflight the cross-origin subframe deny path so a denial does not burn
+  // the user gesture below. The full set of picker preconditions (active
+  // outer frame, fenced-frame check, etc.) is enforced again in
+  // `ShowFilePickerOnUIThread()`.
+  RenderFrameHost* outermost_rfh = rfh->GetOutermostMainFrame();
+  if (outermost_rfh && outermost_rfh->IsActive() &&
+      outermost_rfh->GetLastCommittedOrigin() != context.storage_key.origin() &&
+      !GetContentClient()
+           ->browser()
+           ->IsCrossOriginSubframeAllowedToShowFilePicker(
+               rfh, context.storage_key.origin())) {
+    std::move(callback).Run(
+        file_system_access_error::FromStatus(
+            FileSystemAccessStatus::kPermissionDenied,
+            kThirdPartyIframesNotAllowedToShowFilePicker),
         std::vector<blink::mojom::FileSystemAccessEntryPtr>());
     return;
   }

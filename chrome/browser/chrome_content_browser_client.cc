@@ -8604,6 +8604,42 @@ ChromeContentBrowserClient::GetEffectiveTopFrameForPartitioning(
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS) && !BUILDFLAG(IS_ANDROID)
 }
 
+bool ChromeContentBrowserClient::IsCrossOriginSubframeAllowedToShowFilePicker(
+    content::RenderFrameHost* render_frame_host,
+    const url::Origin& requesting_origin) {
+#if BUILDFLAG(ENABLE_EXTENSIONS) && !BUILDFLAG(IS_ANDROID)
+  // Fast path: the PDF viewer extension is always allowed, regardless of
+  // whether its stream is plumbed via the OOPIF MimeHandlerStreamManager
+  // or the legacy GuestView path.
+#if BUILDFLAG(ENABLE_PDF)
+  if (IsPdfExtensionOrigin(requesting_origin)) {
+    return true;
+  }
+#endif  // BUILDFLAG(ENABLE_PDF)
+
+  if (!render_frame_host) {
+    return false;
+  }
+
+  // Otherwise verify the requesting frame is, or descends from, a MIME
+  // handler extension host registered with the stream manager and that
+  // the host's origin matches the requesting one.
+  auto* manager =
+      extensions::mime_handler::MimeHandlerStreamManager::FromRenderFrameHost(
+          render_frame_host);
+  if (!manager) {
+    return false;
+  }
+
+  for (auto* rfh = render_frame_host; rfh; rfh = rfh->GetParent()) {
+    if (manager->IsExtensionHost(rfh)) {
+      return rfh->GetLastCommittedOrigin() == requesting_origin;
+    }
+  }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS) && !BUILDFLAG(IS_ANDROID)
+  return false;
+}
+
 std::unique_ptr<content::ResponsivenessCalculatorDelegate>
 ChromeContentBrowserClient::CreateResponsivenessCalculatorDelegate() {
 #if !BUILDFLAG(IS_ANDROID)

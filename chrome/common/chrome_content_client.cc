@@ -85,7 +85,6 @@
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "components/pdf/common/constants.h"
-#include "components/pdf/common/pdf_util.h"
 #endif
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
@@ -371,8 +370,13 @@ void ChromeContentClient::ExposeInterfacesToBrowser(
 
 bool ChromeContentClient::IsFilePickerAllowedForCrossOriginSubframe(
     const url::Origin& origin) {
-#if BUILDFLAG(ENABLE_PDF)
-  return IsPdfExtensionOrigin(origin);
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  // Permissive renderer-side gate: any extension-scheme origin is allowed
+  // past the synchronous SecurityError. The authoritative check lives in the
+  // browser via
+  // ContentBrowserClient::IsCrossOriginSubframeAllowedToShowFilePicker(),
+  // which verifies the frame is actually a MIME handler extension subframe.
+  return origin.scheme() == extensions::kExtensionScheme;
 #else
   return false;
 #endif

@@ -1067,6 +1067,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool ShouldUseFirstPartyStorageKey(const url::Origin& origin) override;
   content::RenderFrameHost* GetEffectiveTopFrameForPartitioning(
       content::RenderFrameHost* render_frame_host) override;
+  bool IsCrossOriginSubframeAllowedToShowFilePicker(
+      content::RenderFrameHost* render_frame_host,
+      const url::Origin& requesting_origin) override;
 
   bool ShouldSkipBeforeUnloadDialog(content::RenderFrameHost* rfh) override;
 
