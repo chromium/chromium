@@ -172,6 +172,8 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
   // Spacers to for button layout in landscape.
   UIView* _leadingSpacer;
   UIView* _trailingSpacer;
+  // The button currently being previewed by a context menu.
+  __weak UIButton* _previewedButton;
 }
 
 - (void)dealloc {
@@ -690,9 +692,11 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
 
 // Updates the title configuration for buttons.
 - (void)updateButtonTitleConfiguration:(UIButtonConfiguration*)config
-                        highlightAlpha:(CGFloat)highlightAlpha {
+                        highlightAlpha:(CGFloat)highlightAlpha
+                                button:(UIButton*)button {
   // Text fades on highlight/disabled AND scroll.
-  CGFloat textAlpha = highlightAlpha * _buttonsTitleAlpha;
+  CGFloat targetAlpha = (button == _previewedButton) ? 1.0 : _buttonsTitleAlpha;
+  CGFloat textAlpha = highlightAlpha * targetAlpha;
 
   config.titleTextAttributesTransformer =
       ^NSDictionary<NSAttributedStringKey, id>*(
@@ -723,7 +727,9 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
     return [baseColor colorWithAlphaComponent:activeAlpha];
   };
 
-  [self updateButtonTitleConfiguration:config highlightAlpha:activeAlpha];
+  [self updateButtonTitleConfiguration:config
+                        highlightAlpha:activeAlpha
+                                button:button];
 
   button.configuration = config;
 }
@@ -740,7 +746,9 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
 
   CGFloat highlightAlpha = ButtonHighlightAlpha(button);
 
-  [self updateButtonTitleConfiguration:config highlightAlpha:highlightAlpha];
+  [self updateButtonTitleConfiguration:config
+                        highlightAlpha:highlightAlpha
+                                button:button];
 
   UIColor* symbolColor = ButtonsForegroundColor();
   UIColor* baseLabelColor =
@@ -1042,6 +1050,12 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
     return nil;
   }
 
+  if ([view isKindOfClass:[UIButton class]]) {
+    _previewedButton = (UIButton*)view;
+    [_previewedButton setNeedsUpdateConfiguration];
+    [_previewedButton layoutIfNeeded];
+  }
+
   return [UIContextMenuConfiguration
       configurationWithIdentifier:nil
                   previewProvider:nil
@@ -1082,6 +1096,21 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
     return [[UITargetedPreview alloc] initWithView:view parameters:parameters];
   }
   return nil;
+}
+
+- (void)contextMenuInteraction:(UIContextMenuInteraction*)interaction
+       willEndForConfiguration:(UIContextMenuConfiguration*)configuration
+                      animator:(id<UIContextMenuInteractionAnimating>)animator {
+  if (interaction.view == _previewedButton) {
+    __weak __typeof(self) weakSelf = self;
+    [animator addAnimations:^{
+      __strong __typeof(weakSelf) strongSelf = weakSelf;
+      if (strongSelf) {
+        strongSelf->_previewedButton = nil;
+        [interaction.view setNeedsUpdateConfiguration];
+      }
+    }];
+  }
 }
 
 @end

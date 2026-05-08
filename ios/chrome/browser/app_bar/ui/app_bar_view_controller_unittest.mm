@@ -9,6 +9,31 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 
+@interface AppBarViewController (Testing) <UIContextMenuInteractionDelegate>
+- (void)setButtonsTitleAlpha:(CGFloat)buttonsTitleAlpha
+           animationDuration:(NSTimeInterval)duration;
+@end
+
+// A test implementation of UIContextMenuInteractionAnimating to simulate
+// dismissal animations.
+@interface TestContextMenuInteractionAnimating
+    : NSObject <UIContextMenuInteractionAnimating>
+@property(nonatomic, copy) void (^animations)(void);
+@property(nonatomic, copy) void (^completion)(void);
+@end
+
+@implementation TestContextMenuInteractionAnimating
+- (void)addAnimations:(void (^)(void))animations {
+  self.animations = animations;
+}
+- (void)addCompletion:(void (^)(void))completion {
+  self.completion = completion;
+}
+- (UIViewController*)previewViewController {
+  return nil;
+}
+@end
+
 namespace {
 
 // Tests for the AppBarViewController state.
@@ -226,6 +251,85 @@ TEST_F(AppBarViewControllerTest, TestAssistantButtonHighlightState) {
   [button layoutIfNeeded];
 
   EXPECT_TRUE(highlightView.hidden);
+}
+
+// Tests that long-pressing a button temporarily unhides its title text when
+// the global title alpha is 0 (fullscreen/shrunk state), and fades it back out
+// upon dismissal.
+TEST_F(AppBarViewControllerTest, TestTitleVisibilityDuringContextMenu) {
+  // Set titles hidden (simulating fullscreen/shrunk state).
+  [view_controller_ setButtonsTitleAlpha:0.0 animationDuration:0];
+
+  UIButton* button = tabGridButton();
+  ASSERT_NE(button, nil);
+
+  // Verify title is hidden initially (alpha = 0).
+  [button setNeedsUpdateConfiguration];
+  [button layoutIfNeeded];
+  UIButtonConfiguration* config = button.configuration;
+  __block CGFloat titleAlpha = -1.0;
+  if (config.titleTextAttributesTransformer) {
+    NSDictionary* attrs = config.titleTextAttributesTransformer(@{});
+    UIColor* color = attrs[NSForegroundColorAttributeName];
+    [color getRed:nil green:nil blue:nil alpha:&titleAlpha];
+  }
+  EXPECT_EQ(titleAlpha, 0.0);
+
+  // Simulate long-press gesture triggering context menu configuration.
+  UIMenu* dummyMenu = [UIMenu menuWithTitle:@"Test" children:@[]];
+  [view_controller_ setMenu:dummyMenu forButtonType:AppBarButtonTypeTabGrid];
+
+  UIContextMenuInteraction* interaction =
+      [[UIContextMenuInteraction alloc] initWithDelegate:view_controller_];
+  [button addInteraction:interaction];
+
+  UIContextMenuConfiguration* menuConfig =
+      [view_controller_ contextMenuInteraction:interaction
+                configurationForMenuAtLocation:CGPointZero];
+  EXPECT_NE(menuConfig, nil);
+
+  // Verify that the button currently being previewed is set, and its title is
+  // now visible (alpha = 1).
+  UIButton* previewedButton = [view_controller_ valueForKey:@"previewedButton"];
+  EXPECT_EQ(previewedButton, button);
+
+  [button setNeedsUpdateConfiguration];
+  [button layoutIfNeeded];
+  config = button.configuration;
+  titleAlpha = -1.0;
+  if (config.titleTextAttributesTransformer) {
+    NSDictionary* attrs = config.titleTextAttributesTransformer(@{});
+    UIColor* color = attrs[NSForegroundColorAttributeName];
+    [color getRed:nil green:nil blue:nil alpha:&titleAlpha];
+  }
+  EXPECT_EQ(titleAlpha, 1.0);
+
+  // Simulate dismissal.
+  TestContextMenuInteractionAnimating* animator =
+      [[TestContextMenuInteractionAnimating alloc] init];
+  [view_controller_ contextMenuInteraction:interaction
+                   willEndForConfiguration:menuConfig
+                                  animator:animator];
+
+  // Execute the animation block.
+  ASSERT_NE(animator.animations, nil);
+  animator.animations();
+
+  // Verify that previewedButton is cleared, and title is hidden again (alpha =
+  // 0).
+  previewedButton = [view_controller_ valueForKey:@"previewedButton"];
+  EXPECT_EQ(previewedButton, nil);
+
+  [button setNeedsUpdateConfiguration];
+  [button layoutIfNeeded];
+  config = button.configuration;
+  titleAlpha = -1.0;
+  if (config.titleTextAttributesTransformer) {
+    NSDictionary* attrs = config.titleTextAttributesTransformer(@{});
+    UIColor* color = attrs[NSForegroundColorAttributeName];
+    [color getRed:nil green:nil blue:nil alpha:&titleAlpha];
+  }
+  EXPECT_EQ(titleAlpha, 0.0);
 }
 
 }  // namespace
