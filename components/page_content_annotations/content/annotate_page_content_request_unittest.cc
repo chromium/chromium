@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <variant>
 #include <vector>
@@ -20,6 +21,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -100,24 +102,47 @@ class TestPageContentExtractionService : public PageContentExtractionService {
 
 class AnnotatePageContentRequestTest
     : public content::RenderViewHostTestHarness,
-      public testing::WithParamInterface<bool> {
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
-  static std::string DescribeParams(const testing::TestParamInfo<bool>& info) {
-    return info.param ? "PDFTextExtractionEnabled"
-                      : "PDFTextExtractionDisabled";
+  static std::string DescribeParams(
+      const testing::TestParamInfo<std::tuple<bool, bool>>& info) {
+    auto [is_pdf_text_extraction_enabled, is_page_settled_monitor_enabled] =
+        info.param;
+    return base::StrCat({
+        is_pdf_text_extraction_enabled ? "PDFTextExtractionEnabled"
+                                       : "PDFTextExtractionDisabled",
+        "_",
+        is_page_settled_monitor_enabled ? "PageSettledMonitorEnabled"
+                                        : "PageSettledMonitorDisabled",
+    });
   }
 
   AnnotatePageContentRequestTest()
       : content::RenderViewHostTestHarness(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
     if (IsPDFTextExtractionEnabled()) {
-      pdf_extraction_feature_list_.InitAndEnableFeatureWithParameters(
+      enabled_features.emplace_back(
           features::kAnnotatedPageContentPDFTextExtraction,
-          {{"max_text_byte_size", "100"}});
+          base::FieldTrialParams{{"max_text_byte_size", "100"}});
     } else {
-      pdf_extraction_feature_list_.InitAndDisableFeature(
+      disabled_features.emplace_back(
           features::kAnnotatedPageContentPDFTextExtraction);
     }
+
+    if (IsPageSettledMonitorEnabled()) {
+      enabled_features.emplace_back(
+          features::kPageContentExtractionUsingPageSettledMonitor,
+          base::FieldTrialParams{});
+    } else {
+      disabled_features.emplace_back(
+          features::kPageContentExtractionUsingPageSettledMonitor);
+    }
+
+    feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                disabled_features);
   }
 
   void SetUp() override {
@@ -138,7 +163,7 @@ class AnnotatePageContentRequestTest
     content::RenderViewHostTestHarness::TearDown();
   }
 
-  bool IsPDFTextExtractionEnabled() const { return GetParam(); }
+  bool IsPDFTextExtractionEnabled() const { return std::get<0>(GetParam()); }
 
   // Tests exercise `AnnotatedPageContentRequest::StartExtraction` are only
   // supported on platforms that enable `ENABLE_PDF` build flag.
@@ -149,6 +174,8 @@ class AnnotatePageContentRequestTest
     return false;
 #endif  // BUILDFLAG(ENABLE_PDF)
   }
+
+  bool IsPageSettledMonitorEnabled() const { return std::get<1>(GetParam()); }
 
   void SetTriggeringMode(const std::string& mode,
                          const std::string& capture_delay = "0s") {
@@ -219,9 +246,24 @@ class AnnotatePageContentRequestTest
     navigation->Commit();
   }
 
+  void WaitForPageSettled() {
+    if (!IsPageSettledMonitorEnabled()) {
+      return;
+    }
+
+    base::RunLoop run_loop;
+    request_->SetPageSettledCallbackForTesting(run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  void SimulatePageStablization() {
+    request_->OnFirstContentfulPaintInPrimaryMainFrame();
+    WaitForPageSettled();
+  }
+
   void SimulatePageLoad(const GURL& url = GURL("https://example.com/")) {
     SimulateNavigation(url);
-    TriggerOnFirstContentfulPaintInPrimaryMainFrame();
+    SimulatePageStablization();
   }
 
   void SimulatePDFLoad(const GURL& url) {
@@ -230,6 +272,7 @@ class AnnotatePageContentRequestTest
     navigation->Start();
     navigation->SetContentsMimeType("application/pdf");
     navigation->Commit();
+    WaitForPageSettled();
   }
 
   // Wait until either APC or PDF text is extracted.
@@ -245,10 +288,6 @@ class AnnotatePageContentRequestTest
 
   void TriggerDidStopLoading() { request_->DidStopLoading(); }
 
-  void TriggerOnFirstContentfulPaintInPrimaryMainFrame() {
-    request_->OnFirstContentfulPaintInPrimaryMainFrame();
-  }
-
   TestPageContentExtractionService& extraction_service() {
     return extraction_service_.value();
   }
@@ -258,7 +297,7 @@ class AnnotatePageContentRequestTest
   }
 
  protected:
-  base::test::ScopedFeatureList pdf_extraction_feature_list_;
+  base::test::ScopedFeatureList feature_list_;
   base::test::ScopedFeatureList triggering_mode_feature_list_;
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
   std::optional<TestPageContentExtractionService> extraction_service_;
@@ -306,22 +345,24 @@ TEST_P(AnnotatePageContentRequestTest, OnHiddenTrigger) {
 
 TEST_P(AnnotatePageContentRequestTest,
        OnHiddenTrigger_NoDuplicateScheduledExtractions) {
-  SetTriggeringMode("on_hidden", /*capture_delay=*/"5s");
+  SetTriggeringMode("on_hidden");
 
   SimulatePageLoad();
 
-  // Hide the tab. Extraction should be scheduled (but delayed 5s).
+  // Hide the tab. Extraction should be scheduled.
   web_contents()->WasHidden();
 
-  // At this point, no extraction has happened because of the 5s delay.
+  // At this point, no extraction has happened because the posted task is not
+  // run yet.
   EXPECT_EQ(extraction_service().extraction_count(), 0);
 
-  // Hide the tab again before the 5s delay finishes.
-  // This should be a no-op because it's already kScheduled.
+  web_contents()->WasShown();
+
+  // Hide the tab again. This should be a no-op because it's already kScheduled.
   web_contents()->WasHidden();
 
-  // Now speed up time to trigger the extraction scheduled tasks.
-  task_environment()->FastForwardBy(base::Seconds(5));
+  // Now run the posted task to start extraction.
+  task_environment()->FastForwardBy(base::TimeDelta());
 
   // Should only have extracted once despite multiple hide events.
   EXPECT_EQ(extraction_service().extraction_count(), 1);
@@ -882,14 +923,14 @@ TEST_P(AnnotatePageContentRequestTest, Metrics_OnLoadTrigger) {
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PageContentExtraction.AutomaticOnLoad."
       "ExtractionLatency",
-      1);
+      IsPageSettledMonitorEnabled() ? 0 : 1);
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PageContentExtraction.AutomaticOnLoad."
       "StabilityLatency",
-      1);
+      IsPageSettledMonitorEnabled() ? 0 : 1);
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PageContentExtraction.AutomaticOnLoad.OverallLatency",
-      1);
+      IsPageSettledMonitorEnabled() ? 0 : 1);
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.PageContentExtraction.TriggerSource",
       AnnotatedPageContentRequest::TriggerSource::kOnLoad, 1);
@@ -1032,10 +1073,10 @@ TEST_P(AnnotatePageContentRequestTest,
   navigation->Start();
   navigation->Commit();
 
-  // Hide the tab after loading stopped, but before FCP.
+  // Hide the tab before page stabilized.
   TriggerDidStopLoading();
   web_contents()->WasHidden();
-  TriggerOnFirstContentfulPaintInPrimaryMainFrame();
+  SimulatePageStablization();
 
   WaitForExtraction();
 
@@ -1062,14 +1103,14 @@ TEST_P(AnnotatePageContentRequestTest,
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PageContentExtraction.AutomaticOnLoad."
       "StabilityLatency",
-      1);
+      IsPageSettledMonitorEnabled() ? 0 : 1);
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PageContentExtraction.AutomaticOnLoad."
       "ExtractionLatency",
-      1);
+      IsPageSettledMonitorEnabled() ? 0 : 1);
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PageContentExtraction.AutomaticOnLoad.OverallLatency",
-      1);
+      IsPageSettledMonitorEnabled() ? 0 : 1);
 
   // Simulate a same-document navigation.
   auto same_doc_nav = content::NavigationSimulator::CreateRendererInitiated(
@@ -1091,14 +1132,14 @@ TEST_P(AnnotatePageContentRequestTest,
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PageContentExtraction.AutomaticOnLoad."
       "StabilityLatency",
-      1);
+      IsPageSettledMonitorEnabled() ? 0 : 1);
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PageContentExtraction.AutomaticOnLoad."
       "ExtractionLatency",
-      1);
+      IsPageSettledMonitorEnabled() ? 0 : 1);
   histogram_tester.ExpectTotalCount(
       "OptimizationGuide.PageContentExtraction.AutomaticOnLoad.OverallLatency",
-      1);
+      IsPageSettledMonitorEnabled() ? 0 : 1);
 }
 
 TEST_P(AnnotatePageContentRequestTest, OnLoadTriggerPDFExtraction) {
@@ -1176,9 +1217,105 @@ TEST_P(AnnotatePageContentRequestTest,
   }
 }
 
+TEST_P(AnnotatePageContentRequestTest, InterleavedNavigations) {
+  SetTriggeringMode("on_load");
+
+  auto nav_1 = content::NavigationSimulator::CreateBrowserInitiated(
+      GURL("https://example.com/"), web_contents());
+  nav_1->Start();
+  nav_1->ReadyToCommit();
+
+  // The second navigation fails before the first one commits.
+  auto nav_2 = content::NavigationSimulator::CreateBrowserInitiated(
+      GURL("https://example.com/$"), web_contents());
+  nav_2->Start();
+  nav_2->Fail(net::ERR_TIMED_OUT);
+  nav_2->AbortCommit();
+
+  // The first navigation commits and triggers the extraction.
+  nav_1->Commit();
+  SimulatePageStablization();
+
+  WaitForExtraction();
+
+  EXPECT_EQ(extraction_service().extraction_count(), 1);
+  EXPECT_TRUE(extraction_service().last_extracted_content().has_value());
+}
+
+TEST_P(AnnotatePageContentRequestTest, NavigationToReadyLatency) {
+  base::HistogramTester histogram_tester;
+  SetTriggeringMode("on_load");
+
+  SimulatePageLoad();
+
+  histogram_tester.ExpectTotalCount(
+      IsPageSettledMonitorEnabled()
+          ? "OptimizationGuide.PageContentExtraction.NavigationToReadyLatency."
+            "CrossDocument.PageSettledMonitor"
+          : "OptimizationGuide.PageContentExtraction.NavigationToReadyLatency."
+            "CrossDocument.Legacy",
+      1);
+}
+
+TEST_P(AnnotatePageContentRequestTest, NavigationToReadyLatency_OnHidden) {
+  base::HistogramTester histogram_tester;
+  SetTriggeringMode("on_hidden");
+
+  SimulatePageLoad();
+
+  // Metric should be recorded even if extraction is not yet scheduled.
+  histogram_tester.ExpectTotalCount(
+      IsPageSettledMonitorEnabled()
+          ? "OptimizationGuide.PageContentExtraction.NavigationToReadyLatency."
+            "CrossDocument.PageSettledMonitor"
+          : "OptimizationGuide.PageContentExtraction.NavigationToReadyLatency."
+            "CrossDocument.Legacy",
+      1);
+
+  // Hiding should trigger extraction, but not record the metric again.
+  web_contents()->WasHidden();
+
+  histogram_tester.ExpectTotalCount(
+      IsPageSettledMonitorEnabled()
+          ? "OptimizationGuide.PageContentExtraction.NavigationToReadyLatency."
+            "CrossDocument.PageSettledMonitor"
+          : "OptimizationGuide.PageContentExtraction.NavigationToReadyLatency."
+            "CrossDocument.Legacy",
+      1);
+}
+
+TEST_P(AnnotatePageContentRequestTest, NavigationToReadyLatency_SameDocument) {
+  base::HistogramTester histogram_tester;
+  SetTriggeringMode("on_load");
+
+  SimulatePageLoad();
+  histogram_tester.ExpectTotalCount(
+      IsPageSettledMonitorEnabled()
+          ? "OptimizationGuide.PageContentExtraction.NavigationToReadyLatency."
+            "CrossDocument.PageSettledMonitor"
+          : "OptimizationGuide.PageContentExtraction.NavigationToReadyLatency."
+            "CrossDocument.Legacy",
+      1);
+
+  // Perform same-document navigation.
+  auto navigation = content::NavigationSimulator::CreateRendererInitiated(
+      GURL("https://example.com/#ref"), main_rfh());
+  navigation->CommitSameDocument();
+  SimulatePageStablization();
+
+  histogram_tester.ExpectTotalCount(
+      IsPageSettledMonitorEnabled()
+          ? "OptimizationGuide.PageContentExtraction.NavigationToReadyLatency."
+            "SameDocument.PageSettledMonitor"
+          : "OptimizationGuide.PageContentExtraction.NavigationToReadyLatency."
+            "SameDocument.Legacy",
+      1);
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          AnnotatePageContentRequestTest,
-                         ::testing::Bool(),
+                         ::testing::Combine(::testing::Bool(),
+                                            ::testing::Bool()),
                          &AnnotatePageContentRequestTest::DescribeParams);
 
 }  // namespace page_content_annotations

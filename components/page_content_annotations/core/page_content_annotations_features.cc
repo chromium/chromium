@@ -149,6 +149,9 @@ const base::FeatureParam<bool> kPageContentCacheUseUserEngagement{
 
 BASE_FEATURE(kPageSettledMonitor, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPageContentExtractionUsingPageSettledMonitor,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<base::TimeDelta> kPageStabilityTimeout{
     &kPageSettledMonitor, "page-stability-timeout", base::Seconds(4)};
 

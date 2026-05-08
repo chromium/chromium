@@ -68,6 +68,12 @@ extern const base::FeatureParam<bool> kPageContentCacheUseUserEngagement;
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 BASE_DECLARE_FEATURE(kPageSettledMonitor);
 
+// Enables the use of PageSettledMonitor for PCES extractions to better
+// determine when a page is stable enough for content extraction. This replaces
+// the legacy load/FCP plus a fixed-delay.
+COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
+BASE_DECLARE_FEATURE(kPageContentExtractionUsingPageSettledMonitor);
+
 // The overall observation timeout when waiting on a renderer tool to complete.
 COMPONENT_EXPORT(PAGE_CONTENT_ANNOTATIONS_FEATURES)
 extern const base::FeatureParam<base::TimeDelta> kPageStabilityTimeout;
