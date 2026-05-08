@@ -183,7 +183,7 @@ void GlicSidePanelUi::SidePanelStateChanged(
             ? EmbedderCloseReason::kBackgrounded
             : EmbedderCloseReason::kExplicitlyClosed;
     // NOTE: `this` will be destroyed after this call.
-    delegate_->WillCloseFor(tab_.get(), close_reason);
+    delegate_->DidCloseFor(tab_.get(), close_reason);
   }
 }
 

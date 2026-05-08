@@ -950,6 +950,12 @@ void GlicInstanceImpl::DeactivateCurrentEmbedder() {
   host_.SetDelegate(&empty_embedder_delegate_);
   it->second.embedder = old_embedder->CreateInactiveEmbedder();
   ClearActiveEmbedderAndNotifyStateChange();
+
+  // Special case: call back to DidCloseFor if the embedder was closed by
+  // deletion (eg. floating embedder).
+  if (!it->second.embedder) {
+    DidCloseFor(key, EmbedderCloseReason::kExplicitlyClosed);
+  }
 }
 
 GlicUiEmbedder* GlicInstanceImpl::CreateActiveEmbedder(
@@ -1222,8 +1228,8 @@ void GlicInstanceImpl::MaybeInitializeHiddenClient(
   NotifyPanelWillOpen(invocation_source, std::nullopt, fre_override);
 }
 
-void GlicInstanceImpl::WillCloseFor(EmbedderKey key,
-                                    EmbedderCloseReason reason) {
+void GlicInstanceImpl::DidCloseFor(EmbedderKey key,
+                                   EmbedderCloseReason reason) {
   MaybeDeactivateEmbedder(key);
 
   auto* entry = GetEmbedderEntry(key);

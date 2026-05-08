@@ -356,8 +356,8 @@ void GlicFloatingUi::Close(const CloseOptions& options) {
   glic_delegate_.reset();
   user_resizable_ = false;
   // NOTE: `this` will be destroyed after this call.
-  delegate_->WillCloseFor(FloatingEmbedderKey{},
-                          EmbedderCloseReason::kExplicitlyClosed);
+  delegate_->DidCloseFor(FloatingEmbedderKey{},
+                         EmbedderCloseReason::kExplicitlyClosed);
 }
 
 void GlicFloatingUi::ClearWebContentsDelegate() {

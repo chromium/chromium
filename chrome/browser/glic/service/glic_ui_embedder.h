@@ -36,9 +36,10 @@ class GlicUiEmbedder {
         const ShowOptions& options,
         glic::mojom::ConversationInfoPtr info,
         mojom::WebClientHandler::SwitchConversationCallback callback) = 0;
-    // Called by the embedder when it is about to close. Embedders must
-    // guarantee this is called for all close sources.
-    virtual void WillCloseFor(EmbedderKey key, EmbedderCloseReason reason) = 0;
+    // Called by the embedder after it closes. This method will by called by
+    // GlicInstanceImpl on behalf of embedders closed by being destroyed when
+    // the become inactive.
+    virtual void DidCloseFor(EmbedderKey key, EmbedderCloseReason reason) = 0;
     virtual Host& host() = 0;
     virtual void Show(const ShowOptions& options) = 0;
     // Closes the side panel UI and opens the floating UI for this instance.

@@ -223,7 +223,7 @@ void GlicSidePanelUi::SidePanelStateChanged(
     delegate_->NotifyPanelStateChanged();
 
     // NOTE: `this` will be destroyed after this call.
-    delegate_->WillCloseFor(tab_.get(), MapStateToCloseReason(state));
+    delegate_->DidCloseFor(tab_.get(), MapStateToCloseReason(state));
   }
 }
 

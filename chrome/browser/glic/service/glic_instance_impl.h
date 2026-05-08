@@ -240,9 +240,9 @@ class GlicInstanceImpl : public GlicInstance,
       const ShowOptions& options,
       glic::mojom::ConversationInfoPtr info,
       mojom::WebClientHandler::SwitchConversationCallback callback) override;
-  // Notifies that the embedder is about to close. Guaranteed to be called by
-  // the embedder for all close sources.
-  void WillCloseFor(EmbedderKey key, EmbedderCloseReason reason) override;
+  // Notifies that the embedder has closed. Guaranteed to be called for all
+  // close sources.
+  void DidCloseFor(EmbedderKey key, EmbedderCloseReason reason) override;
   void NotifyPanelStateChanged() override;
   // Opens the floating UI for this instance
   void Detach(tabs::TabInterface& tab) override;
