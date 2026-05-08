@@ -117,6 +117,8 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
   FRIEND_TEST_ALL_PREFIXES(FileSelectHelperTest, GetFileTypesFromAcceptType);
   FRIEND_TEST_ALL_PREFIXES(FileSelectHelperTest, MultipleFileExtensionsForMime);
   FRIEND_TEST_ALL_PREFIXES(FileSelectHelperTest, ConfirmationDialog);
+  FRIEND_TEST_ALL_PREFIXES(FileSelectHelperTest,
+                           WebContentsDestroyedDuringAsyncFileProcessing);
   FRIEND_TEST_ALL_PREFIXES(policy::DlpFilesControllerAshBrowserTest,
                            FilesUploadCallerPassed);
 
@@ -324,6 +326,10 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
   // these files when they are no longer needed.
   std::vector<base::FilePath> temporary_files_;
 
+  // Tracks whether the initial reference (added in RunFileChooser or
+  // EnumerateDirectoryImpl) has been released.
+  scoped_refptr<FileSelectHelper> self_ptr_;
+
   // Set to false in unit tests since there is no WebContents.
   bool abort_on_missing_web_contents_in_tests_ = true;
 
@@ -338,9 +344,7 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
   std::unique_ptr<ScopedTuckPictureInPicture> scoped_tuck_picture_in_picture_;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS)
   base::WeakPtrFactory<FileSelectHelper> weak_ptr_factory_{this};
-#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 #endif  // CHROME_BROWSER_FILE_SELECT_HELPER_H_

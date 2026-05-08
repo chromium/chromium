@@ -43,17 +43,7 @@ IN_PROC_BROWSER_TEST_F(IFrameTest, InEmptyFrame) {
 // Test for https://crbug.com/41259523. It ensures that file chooser triggered
 // by an iframe, which is destroyed before the chooser is closed, does not
 // result in a use-after-free condition.
-//
-// Note: This test is disabled temporarily to track down a memory leak reported
-// by the ASan bots. It will be enabled once the root cause is found.
-// TODO(crbug.com/40904458): Re-enable this test
-#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
-#define MAYBE_FileChooserInDestroyedSubframe \
-  DISABLED_FileChooserInDestroyedSubframe
-#else
-#define MAYBE_FileChooserInDestroyedSubframe FileChooserInDestroyedSubframe
-#endif
-IN_PROC_BROWSER_TEST_F(IFrameTest, MAYBE_FileChooserInDestroyedSubframe) {
+IN_PROC_BROWSER_TEST_F(IFrameTest, FileChooserInDestroyedSubframe) {
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
   GURL file_input_url(embedded_test_server()->GetURL("/file_input.html"));

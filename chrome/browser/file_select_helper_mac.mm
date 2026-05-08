@@ -125,8 +125,8 @@ void FileSelectHelper::ProcessSelectedFilesMac(
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
-      base::BindOnce(&FileSelectHelper::ProcessSelectedFilesMacOnUIThread,
-                     base::Unretained(this), files_out, temporary_files));
+      base::BindOnce(&FileSelectHelper::ProcessSelectedFilesMacOnUIThread, this,
+                     files_out, temporary_files));
 }
 
 void FileSelectHelper::ProcessSelectedFilesMacOnUIThread(

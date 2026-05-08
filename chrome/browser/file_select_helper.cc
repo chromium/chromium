@@ -417,7 +417,7 @@ void FileSelectHelper::CleanUp() {
 
     // Now that the temporary files have been scheduled for deletion, there
     // is no longer any reason to keep this instance around.
-    Release();
+    self_ptr_.reset();
   }
 }
 
@@ -585,10 +585,10 @@ void FileSelectHelper::RunFileChooser(
 
   // Because this class returns notifications to the RenderViewHost, it is
   // difficult for callers to know how long to keep a reference to this
-  // instance. We AddRef() here to keep the instance alive after we return
-  // to the caller, until the last callback is received from the file dialog.
-  // At that point, we must call RunFileChooserEnd().
-  AddRef();
+  // instance. We keep a reference to ourself to keep the instance alive after
+  // we return to the caller, until the last callback is received from the
+  // file dialog. At that point, we must call RunFileChooserEnd().
+  self_ptr_ = this;
 }
 
 void FileSelectHelper::GetFileTypesInThreadPool(FileChooserParamsPtr params) {
@@ -693,8 +693,10 @@ void FileSelectHelper::RunFileChooserEnd() {
   if (!temporary_files_.empty())
     return;
 
-  if (listener_)
+  if (listener_) {
     listener_->FileSelectionCanceled();
+    listener_.reset();
+  }
   render_frame_host_ = nullptr;
   web_contents_ = nullptr;
   // If the dialog was actually opened, dispose of our reference.
@@ -703,7 +705,7 @@ void FileSelectHelper::RunFileChooserEnd() {
     select_file_dialog_.reset();
   }
 
-  Release();
+  self_ptr_.reset();
 }
 
 void FileSelectHelper::EnumerateDirectoryImpl(
@@ -717,10 +719,10 @@ void FileSelectHelper::EnumerateDirectoryImpl(
   listener_ = std::move(listener);
   // Because this class returns notifications to the RenderViewHost, it is
   // difficult for callers to know how long to keep a reference to this
-  // instance. We AddRef() here to keep the instance alive after we return
-  // to the caller, until the last callback is received from the enumeration
-  // code. At that point, we must call EnumerateDirectoryEnd().
-  AddRef();
+  // instance. We keep a reference to ourself to keep the instance alive after
+  // we return to the caller, until the last callback is received from the
+  // enumeration code. At that point, we must call EnumerateDirectoryEnd().
+  self_ptr_ = this;
 #if BUILDFLAG(IS_ANDROID)
   if (path.IsContentUri()) {
     base::ThreadPool::PostTaskAndReplyWithResult(
@@ -736,7 +738,7 @@ void FileSelectHelper::EnumerateDirectoryImpl(
 // code. Perform any cleanup and release the reference we added in
 // EnumerateDirectoryImpl().
 void FileSelectHelper::EnumerateDirectoryEnd() {
-  Release();
+  self_ptr_.reset();
 }
 
 void FileSelectHelper::RenderFrameHostChanged(
