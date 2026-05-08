@@ -556,15 +556,7 @@ void FileSelectHelper::RunFileChooser(
   render_frame_host_ = render_frame_host;
   web_contents_ = WebContents::FromRenderFrameHost(render_frame_host);
   listener_ = std::move(listener);
-  content::WebContentsObserver::Observe(web_contents_);
-
-  tabs::TabInterface* tab_interface =
-      tabs::TabInterface::MaybeGetFromContents(web_contents_);
-  if (tab_interface) {
-    tab_deactivated_subscription_ =
-        tab_interface->RegisterWillDeactivate(base::BindRepeating(
-            &FileSelectHelper::OnTabDeactivated, base::Unretained(this)));
-  }
+  InitLifecycleObserver(web_contents_);
 
 #if !BUILDFLAG(IS_ANDROID)
   if (PictureInPictureWindowManager::GetInstance()
@@ -686,12 +678,14 @@ void FileSelectHelper::RunFileChooserEnd() {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   tab_deactivated_subscription_ = {};
+  directory_enumeration_.reset();
 
   // If there are temporary files, then this instance needs to stick around
   // until web_contents_ is destroyed, so that this instance can delete the
   // temporary files.
-  if (!temporary_files_.empty())
+  if (!temporary_files_.empty()) {
     return;
+  }
 
   if (listener_) {
     listener_->FileSelectionCanceled();
@@ -717,6 +711,7 @@ void FileSelectHelper::EnumerateDirectoryImpl(
   dialog_type_ = ui::SelectFileDialog::SELECT_NONE;
   web_contents_ = tab;
   listener_ = std::move(listener);
+  InitLifecycleObserver(web_contents_);
   // Because this class returns notifications to the RenderViewHost, it is
   // difficult for callers to know how long to keep a reference to this
   // instance. We keep a reference to ourself to keep the instance alive after
@@ -738,7 +733,7 @@ void FileSelectHelper::EnumerateDirectoryImpl(
 // code. Perform any cleanup and release the reference we added in
 // EnumerateDirectoryImpl().
 void FileSelectHelper::EnumerateDirectoryEnd() {
-  self_ptr_.reset();
+  RunFileChooserEnd();
 }
 
 void FileSelectHelper::RenderFrameHostChanged(
@@ -766,6 +761,20 @@ void FileSelectHelper::WebContentsDestroyed() {
   web_contents_ = nullptr;
   profile_ = nullptr;
   CleanUp();
+}
+
+void FileSelectHelper::InitLifecycleObserver(
+    content::WebContents* web_contents) {
+  DCHECK(web_contents);
+  content::WebContentsObserver::Observe(web_contents);
+
+  tabs::TabInterface* tab_interface =
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
+  if (tab_interface) {
+    tab_deactivated_subscription_ =
+        tab_interface->RegisterWillDeactivate(base::BindRepeating(
+            &FileSelectHelper::OnTabDeactivated, base::Unretained(this)));
+  }
 }
 
 void FileSelectHelper::OnTabDeactivated(tabs::TabInterface* tab) {

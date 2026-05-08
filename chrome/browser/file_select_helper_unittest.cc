@@ -22,8 +22,12 @@
 #include "build/build_config.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/browser/file_select_listener.h"
+#include "content/public/browser/web_contents_user_data.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_web_contents_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/test/test_dialog_model_host.h"
@@ -42,17 +46,22 @@ class TestFileSelectListener : public content::FileSelectListener {
       std::vector<blink::mojom::FileChooserFileInfoPtr>* files)
       : files_(files) {}
 
+  bool canceled() const { return canceled_; }
+
  private:
   ~TestFileSelectListener() override = default;
   // content::FileSelectListener overrides.
   void FileSelected(std::vector<blink::mojom::FileChooserFileInfoPtr> files,
                     const base::FilePath& base_dir,
                     blink::mojom::FileChooserParams::Mode mode) override {
-    *files_ = std::move(files);
+    if (files_) {
+      *files_ = std::move(files);
+    }
   }
-  void FileSelectionCanceled() override {}
+  void FileSelectionCanceled() override { canceled_ = true; }
 
   raw_ptr<std::vector<blink::mojom::FileChooserFileInfoPtr>> files_;
+  bool canceled_ = false;
 };
 
 // Fill in the arguments to be passed to the ContentAnalysisCompletionCallback()
@@ -585,6 +594,37 @@ TEST_F(FileSelectHelperTest, WebContentsDestroyedDuringAsyncFileProcessing) {
   file_select_helper = nullptr;
   task_environment.RunUntilIdle();
   EXPECT_FALSE(weak_ptr);
+}
+
+TEST_F(FileSelectHelperTest, EnumerateDirectory_TabDeactivated) {
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  content::TestWebContentsFactory web_contents_factory;
+  content::WebContents* web_contents =
+      web_contents_factory.CreateWebContents(&profile);
+
+  tabs::MockTabInterface mock_tab;
+  EXPECT_CALL(mock_tab, GetContents())
+      .WillRepeatedly(testing::Return(web_contents));
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents, &mock_tab);
+
+  base::RepeatingCallback<void(tabs::TabInterface*)> deactivation_callback;
+  EXPECT_CALL(mock_tab, RegisterWillDeactivate(testing::_))
+      .WillOnce([&](base::RepeatingCallback<void(tabs::TabInterface*)> cb) {
+        deactivation_callback = std::move(cb);
+        return base::CallbackListSubscription();
+      });
+
+  std::vector<blink::mojom::FileChooserFileInfoPtr> files;
+  auto listener = base::MakeRefCounted<TestFileSelectListener>(&files);
+
+  FileSelectHelper::EnumerateDirectory(web_contents, listener,
+                                       base::FilePath(FILE_PATH_LITERAL("/")));
+
+  ASSERT_FALSE(deactivation_callback.is_null());
+  deactivation_callback.Run(&mock_tab);
+
+  EXPECT_TRUE(listener->canceled());
 }
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 

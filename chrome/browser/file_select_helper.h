@@ -119,6 +119,8 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
   FRIEND_TEST_ALL_PREFIXES(FileSelectHelperTest, ConfirmationDialog);
   FRIEND_TEST_ALL_PREFIXES(FileSelectHelperTest,
                            WebContentsDestroyedDuringAsyncFileProcessing);
+  FRIEND_TEST_ALL_PREFIXES(FileSelectHelperTest,
+                           EnumerateDirectory_TabDeactivated);
   FRIEND_TEST_ALL_PREFIXES(policy::DlpFilesControllerAshBrowserTest,
                            FilesUploadCallerPassed);
 
@@ -150,6 +152,7 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
   void WebContentsDestroyed() override;
 
+  void InitLifecycleObserver(content::WebContents* web_contents);
   void OnTabDeactivated(tabs::TabInterface* tab);
 
   void EnumerateDirectoryImpl(
