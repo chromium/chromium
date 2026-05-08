@@ -474,6 +474,12 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   void RecordVoiceIsolationPreferredEffectChange(
       audio_config::mojom::AudioEffectType preferred_effect);
 
+  // Gets the pref state of input krisp noise cancellation.
+  bool GetKrispNoiseCancellationState() const;
+
+  // Refreshes the input krisp noise cancellation state in CrasAudioClient.
+  void RefreshKrispNoiseCancellationState();
+
   // Returns noise cancellation supported if:
   // - Overall board/device supports noise cancellation
   // - Audio device has bit for Noise Cancellation set in `audio_effect`.

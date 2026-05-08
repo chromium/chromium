@@ -271,6 +271,15 @@ uint32_t FakeCrasAudioClient::GetVoiceIsolationUIPreferredEffect() {
   return voice_isolation_preferred_effect_;
 }
 
+void FakeCrasAudioClient::SetKrispNoiseCancellationEnabled(
+    bool krisp_noise_cancellation_on) {
+  krisp_noise_cancellation_enabled_ = krisp_noise_cancellation_on;
+}
+
+bool FakeCrasAudioClient::GetKrispNoiseCancellationEnabled() {
+  return krisp_noise_cancellation_enabled_;
+}
+
 void FakeCrasAudioClient::SetNoiseCancellationSupported(
     bool noise_cancellation_supported) {
   noise_cancellation_supported_ = noise_cancellation_supported;

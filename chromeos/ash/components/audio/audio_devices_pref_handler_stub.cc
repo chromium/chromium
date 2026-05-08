@@ -136,6 +136,15 @@ void AudioDevicesPrefHandlerStub::SetVoiceIsolationPreferredEffect(
   voice_isolation_preferred_effect_ = effect;
 }
 
+bool AudioDevicesPrefHandlerStub::GetKrispNoiseCancellationState() {
+  return krisp_noise_cancellation_state_;
+}
+
+void AudioDevicesPrefHandlerStub::SetKrispNoiseCancellationState(
+    bool krisp_noise_cancellation_state) {
+  krisp_noise_cancellation_state_ = krisp_noise_cancellation_state;
+}
+
 bool AudioDevicesPrefHandlerStub::GetNoiseCancellationState() {
   return GetVoiceIsolationState();
 }

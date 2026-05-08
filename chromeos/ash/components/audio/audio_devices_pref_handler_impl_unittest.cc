@@ -556,6 +556,14 @@ TEST_P(AudioDevicesPrefHandlerTest, InputNoiseCancellationPrefRegistered) {
   EXPECT_TRUE(audio_pref_handler_->GetNoiseCancellationState());
 }
 
+TEST_P(AudioDevicesPrefHandlerTest, InputKrispNoiseCancellationPrefRegistered) {
+  EXPECT_FALSE(audio_pref_handler_->GetKrispNoiseCancellationState());
+  audio_pref_handler_->SetKrispNoiseCancellationState(true);
+  EXPECT_TRUE(audio_pref_handler_->GetKrispNoiseCancellationState());
+  audio_pref_handler_->SetKrispNoiseCancellationState(false);
+  EXPECT_FALSE(audio_pref_handler_->GetKrispNoiseCancellationState());
+}
+
 TEST_P(AudioDevicesPrefHandlerTest, InputStyleTransferPrefRegistered) {
   EXPECT_FALSE(audio_pref_handler_->GetStyleTransferState());
   audio_pref_handler_->SetStyleTransferState(true);

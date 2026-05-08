@@ -1772,6 +1772,22 @@ TEST_P(CrasAudioHandlerTest, RefreshVoiceIsolationState) {
   EXPECT_FALSE(audio_pref_handler_->GetVoiceIsolationState());
 }
 
+TEST_P(CrasAudioHandlerTest, RefreshKrispNoiseCancellationState) {
+  SetUpCrasAudioHandlerWithVoiceIsolationState(false);
+  EXPECT_FALSE(fake_cras_audio_client()->GetKrispNoiseCancellationEnabled());
+  EXPECT_FALSE(audio_pref_handler_->GetKrispNoiseCancellationState());
+
+  audio_pref_handler_->SetKrispNoiseCancellationState(true);
+  cras_audio_handler_->RefreshKrispNoiseCancellationState();
+  EXPECT_TRUE(fake_cras_audio_client()->GetKrispNoiseCancellationEnabled());
+  EXPECT_TRUE(audio_pref_handler_->GetKrispNoiseCancellationState());
+
+  audio_pref_handler_->SetKrispNoiseCancellationState(false);
+  cras_audio_handler_->RefreshKrispNoiseCancellationState();
+  EXPECT_FALSE(fake_cras_audio_client()->GetKrispNoiseCancellationEnabled());
+  EXPECT_FALSE(audio_pref_handler_->GetKrispNoiseCancellationState());
+}
+
 TEST_P(CrasAudioHandlerTest, RecordVoiceIsolationEnabledChangeSource) {
   SetUpCrasAudioHandlerWithVoiceIsolationState(false);
   const int kMaxValue =

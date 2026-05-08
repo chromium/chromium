@@ -643,6 +643,17 @@ void CrasAudioHandler::RecordVoiceIsolationPreferredEffectChange(
       kVoiceIsolationPreferredEffectChangeHistogramName, preferred_effect);
 }
 
+bool CrasAudioHandler::GetKrispNoiseCancellationState() const {
+  return audio_pref_handler_->GetKrispNoiseCancellationState();
+}
+
+void CrasAudioHandler::RefreshKrispNoiseCancellationState() {
+  // Refresh should only update the state in CRAS and leave the preference
+  // as-is.
+  CrasAudioClient::Get()->SetKrispNoiseCancellationEnabled(
+      GetKrispNoiseCancellationState());
+}
+
 bool CrasAudioHandler::IsNoiseCancellationSupportedForDevice(
     uint64_t device_id) {
   if (!noise_cancellation_supported()) {
@@ -1734,6 +1745,7 @@ void CrasAudioHandler::OnAudioPolicyPrefChanged() {
 void CrasAudioHandler::OnVoiceIsolationPrefChanged() {
   RefreshVoiceIsolationState();
   RefreshVoiceIsolationPreferredEffect();
+  RefreshKrispNoiseCancellationState();
 }
 
 const AudioDevice* CrasAudioHandler::GetDeviceFromId(uint64_t device_id) const {
@@ -1903,7 +1915,7 @@ void CrasAudioHandler::InitializeAudioAfterCrasServiceAvailable(
   }
 
   // Refreshes voice isolation state in CRAS, in case CRAS restarts.
-  RefreshVoiceIsolationState();
+  OnVoiceIsolationPrefChanged();
 
   // Sets speak-on-mute detection enabled based on local variable, it re-applies
   // the previous state if CRAS restarts.

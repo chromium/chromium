@@ -458,6 +458,16 @@ void AudioDevicesPrefHandlerImpl::SetVoiceIsolationPreferredEffect(
                            static_cast<int>(effect));
 }
 
+bool AudioDevicesPrefHandlerImpl::GetKrispNoiseCancellationState() {
+  return local_state_->GetBoolean(prefs::kInputKrispNoiseCancellationEnabled);
+}
+
+void AudioDevicesPrefHandlerImpl::SetKrispNoiseCancellationState(
+    bool krisp_noise_cancellation_state) {
+  local_state_->SetBoolean(prefs::kInputKrispNoiseCancellationEnabled,
+                           krisp_noise_cancellation_state);
+}
+
 bool AudioDevicesPrefHandlerImpl::GetNoiseCancellationState() {
   return local_state_->GetBoolean(prefs::kInputVoiceIsolationEnabled);
 }
@@ -539,6 +549,8 @@ void AudioDevicesPrefHandlerImpl::InitializePrefObservers() {
   pref_change_registrar_.Add(prefs::kInputVoiceIsolationEnabled,
                              callbackVoiceIsolation);
   pref_change_registrar_.Add(prefs::kInputVoiceIsolationPreferredEffect,
+                             callbackVoiceIsolation);
+  pref_change_registrar_.Add(prefs::kInputKrispNoiseCancellationEnabled,
                              callbackVoiceIsolation);
 }
 

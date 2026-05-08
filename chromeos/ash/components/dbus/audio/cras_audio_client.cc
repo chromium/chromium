@@ -422,6 +422,19 @@ class CrasAudioClientImpl : public CrasAudioClient {
                             base::DoNothing());
   }
 
+  void SetKrispNoiseCancellationEnabled(
+      bool krisp_noise_cancellation_on) override {
+    VLOG(1) << "cras_audio_client: Setting krisp noise cancellation state: "
+            << krisp_noise_cancellation_on;
+    dbus::MethodCall method_call(cras::kCrasControlInterface,
+                                 "SetKrispNoiseCancellationEnabled");
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendBool(krisp_noise_cancellation_on);
+    cras_proxy_->CallMethod(&method_call,
+                            dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+                            base::DoNothing());
+  }
+
   void SetNoiseCancellationEnabled(bool noise_cancellation_on) override {
     VLOG(1) << "cras_audio_client: Setting noise cancellation state: "
             << noise_cancellation_on;

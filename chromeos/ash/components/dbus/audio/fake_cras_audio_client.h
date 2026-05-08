@@ -35,6 +35,7 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
   void SetVoiceIsolationUIAppearance(VoiceIsolationUIAppearance appearance);
   bool GetVoiceIsolationUIEnabled();
   uint32_t GetVoiceIsolationUIPreferredEffect();
+  bool GetKrispNoiseCancellationEnabled();
   void SetNoiseCancellationSupported(bool noise_cancellation_supported);
   uint32_t GetNoiseCancellationEnabledCount();
   void SetStyleTransferSupported(bool style_transfer_supported);
@@ -79,6 +80,8 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
       override;
   void SetVoiceIsolationUIEnabled(bool voice_isolation_on) override;
   void SetVoiceIsolationUIPreferredEffect(uint32_t effect_mode) override;
+  void SetKrispNoiseCancellationEnabled(
+      bool krisp_noise_cancellation_on) override;
   void SetNoiseCancellationEnabled(bool noise_cancellation_on) override;
   void GetNoiseCancellationSupported(
       chromeos::DBusMethodCallback<bool> callback) override;
@@ -231,6 +234,7 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
   int32_t number_non_chrome_output_streams_ = 0;
   bool voice_isolation_ui_enabled_ = false;
   uint32_t voice_isolation_preferred_effect_ = 0;
+  bool krisp_noise_cancellation_enabled_ = false;
   bool speak_on_mute_detection_enabled_ = false;
   bool ewma_power_report_enabled_ = false;
   bool sidetone_enabled_ = false;

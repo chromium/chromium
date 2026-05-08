@@ -202,6 +202,11 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
   // Sets the preferred effect mode of voice isolation.
   virtual void SetVoiceIsolationUIPreferredEffect(uint32_t effect_mode) = 0;
 
+  // Sets input krisp noise cancellation state to |krisp_noise_cancellation_on|
+  // value.
+  virtual void SetKrispNoiseCancellationEnabled(
+      bool krisp_noise_cancellation_on) = 0;
+
   // Sets input noise cancellation state to |noise_cancellation_on| value.
   virtual void SetNoiseCancellationEnabled(bool noise_cancellation_on) = 0;
 
