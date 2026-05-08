@@ -116,11 +116,6 @@ struct AX_BASE_EXPORT AXNodeData final {
     return stringlist_attributes.Get(attribute);
   }
 
-  bool HasHtmlAttribute(const char* attribute) const;
-  const std::string& GetHtmlAttribute(const char* attribute) const;
-  std::u16string GetHtmlAttributeUTF16(const char* attribute) const;
-  const std::string* FindHtmlAttribute(const char* attribute) const;
-
   //
   // Setting accessibility attributes.
   //
