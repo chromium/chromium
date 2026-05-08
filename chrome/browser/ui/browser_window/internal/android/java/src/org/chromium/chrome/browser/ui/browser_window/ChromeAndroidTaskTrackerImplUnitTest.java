@@ -125,10 +125,9 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         assertNotNull(
                 mChromeAndroidTaskTracker.getPendingTaskForTesting(pendingTaskInfo.mPendingTaskId));
         assertEquals(
-                // Creating a pending Task of "NORMAL" type requires an existing ChromeAndroidTask.
-                // Therefore, getAllNativeBrowserWindowPtrs().length should be 2:
-                // one pointer is the existing Task and the other is the pending Task.
-                2, mChromeAndroidTaskTracker.getAllNativeBrowserWindowPtrs().length);
+                // Creating a pending Task requires an existing ChromeAndroidTask.
+                // The pending task will not appear in this list.
+                1, mChromeAndroidTaskTracker.getAllNativeBrowserWindowPtrs().length);
         assertNull(task.getId());
         assertEquals(mockParams.getWindowType(), pendingTaskInfo.mCreateParams.getWindowType());
     }
@@ -148,10 +147,9 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         assertNotNull(
                 mChromeAndroidTaskTracker.getPendingTaskForTesting(pendingTaskInfo.mPendingTaskId));
         assertEquals(
-                // Creating a pending Task of "POPUP" type requires an existing ChromeAndroidTask.
-                // Therefore, getAllNativeBrowserWindowPtrs().length should be 2:
-                // one pointer is the existing Task and the other is the pending Task.
-                2, mChromeAndroidTaskTracker.getAllNativeBrowserWindowPtrs().length);
+                // Creating a pending Task requires an existing ChromeAndroidTask.
+                // The pending task will not appear in this list.
+                1, mChromeAndroidTaskTracker.getAllNativeBrowserWindowPtrs().length);
         assertNull(task.getId());
         assertEquals(mockParams.getWindowType(), pendingTaskInfo.mCreateParams.getWindowType());
 
@@ -376,10 +374,9 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
                         assertNonNull(createPendingTaskWithExistingTask(mockParams));
         int pendingId = assertNonNull(pendingTask.getPendingTaskInfo()).mPendingTaskId;
         assertEquals(
-                // Creating a pending Task of "NORMAL" type requires an existing ChromeAndroidTask.
-                // Therefore, getAllNativeBrowserWindowPtrs().length should be 2:
-                // one pointer is the existing Task and the other is the pending Task.
-                2, mChromeAndroidTaskTracker.getAllNativeBrowserWindowPtrs().length);
+                // Creating a pending Task requires an existing ChromeAndroidTask.
+                // The pending task will not appear in this list.
+                1, mChromeAndroidTaskTracker.getAllNativeBrowserWindowPtrs().length);
 
         int taskId = IdSequencer.next();
         var newActivityScopedObjects =
@@ -396,8 +393,7 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         // Assert.
         assertNull(mChromeAndroidTaskTracker.getPendingTaskForTesting(pendingId));
         assertEquals(
-                // As above, only two native browser window pointers are expected despite the new
-                // ActivityScopedObjects.
+                // Now that the task is no longer pending, there will be 2 pointers.
                 2, mChromeAndroidTaskTracker.getAllNativeBrowserWindowPtrs().length);
         assertEquals(
                 newActivityScopedObjects.mActivityWindowAndroid,
@@ -839,10 +835,7 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         long[] ptrs = mChromeAndroidTaskTracker.getNativeBrowserWindowPtrsOrderedByActivation();
 
         // Assert.
-        assertEquals(
-                "The pointer array should contain both the alive and the pending task.",
-                2,
-                ptrs.length);
+        assertEquals("The pointer array should only contain the alive task.", 1, ptrs.length);
     }
 
     @Test

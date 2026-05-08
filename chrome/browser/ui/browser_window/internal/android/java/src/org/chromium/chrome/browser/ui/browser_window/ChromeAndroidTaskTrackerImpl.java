@@ -236,11 +236,9 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
         return getAllTasks().size();
     }
 
-    /** Returns all PENDING and ALIVE Tasks. */
+    /** Returns all ALIVE Tasks. */
     /*package*/ List<ChromeAndroidTask> getAllTasks() {
-        List<ChromeAndroidTask> tasks = new ArrayList<>(mTasks.values());
-        tasks.addAll(mPendingTasks.values());
-        return tasks;
+        return new ArrayList<>(mTasks.values());
     }
 
     /**
@@ -252,7 +250,7 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
      * <p>This method must be called on the UI thread.
      */
     void removeAllForTesting() {
-        List<ChromeAndroidTask> tasks = new ArrayList<>(mTasks.values());
+        List<ChromeAndroidTask> tasks = getAllTasks();
         mTasks.clear();
         for (var task : tasks) {
             task.destroy();
