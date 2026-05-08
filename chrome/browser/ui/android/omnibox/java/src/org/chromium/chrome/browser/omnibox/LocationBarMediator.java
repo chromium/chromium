@@ -742,7 +742,7 @@ class LocationBarMediator
             return false;
         }
 
-        if (textBeforeSpace.trim().contains(" ")) {
+        if (textBeforeSpace.contains(" ")) {
             // Multiple words before space. We only trigger site search if the user typed a space
             // after a single word (e.g. keywords + space). If there are multiple words, it is
             // likely a normal query.

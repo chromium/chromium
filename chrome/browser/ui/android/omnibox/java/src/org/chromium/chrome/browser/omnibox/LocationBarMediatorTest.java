@@ -703,6 +703,11 @@ public class LocationBarMediatorTest {
         // Scenario 9: Leading space -> False
         UrlBarTextChangeInfo leadingSpaceInfo = new UrlBarTextChangeInfo(" keyword ", 8, 0, 1);
         assertFalse(mMediator.shouldTriggerSiteSearch(leadingSpaceInfo));
+
+        // Scenario 10: Space after a trailing space -> False
+        UrlBarTextChangeInfo spaceAfterTrailingSpaceInfo =
+                new UrlBarTextChangeInfo("word1  ", 6, 0, 1);
+        assertFalse(mMediator.shouldTriggerSiteSearch(spaceAfterTrailingSpaceInfo));
     }
 
     public void testLoadUrl_base() {
