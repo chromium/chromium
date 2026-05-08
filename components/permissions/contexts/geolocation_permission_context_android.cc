@@ -208,8 +208,6 @@ void GeolocationPermissionContextAndroid::NotifyPermissionSet(
     bool persist,
     const content::PermissionResult* permission_result,
     const permissions::PermissionPromptDecision& decision) {
-  DCHECK(decision.is_final);
-
   bool is_default_search =
       IsRequestingOriginDSE(request_data.requesting_origin);
   if (decision.overall_decision == PermissionDecision::kAllow &&
