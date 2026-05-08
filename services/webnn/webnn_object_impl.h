@@ -46,6 +46,14 @@ class WebNNObjectBase : public MojoInterface {
 
   const WebNNTokenType& handle() const { return handle_; }
 
+  // Sequence task runner used for Mojo dispatch (scheduler runner when
+  // present). Note: treat this as a posting/binding target; under
+  // gpu::Scheduler, runner identity checks may not match execution context
+  // exactly. Sequence correctness is enforced via `sequence_checker_`.
+  const scoped_refptr<base::SequencedTaskRunner>& mojo_task_runner() const {
+    return task_runner_;
+  }
+
   // Closes the pipe to the renderer process and cancels pending callbacks
   // responses.
   void ResetMojoReceiver() {
@@ -82,8 +90,6 @@ class WebNNObjectBase : public MojoInterface {
   // Returns the AssociatedReceiver bound to this implementation.
   MojoReceiverType& GetMojoReceiver() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    DCHECK(task_runner_);
-    DCHECK(task_runner_->RunsTasksInCurrentSequence());
     return mojo_receiver_;
   }
 

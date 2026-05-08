@@ -26,7 +26,7 @@ WebNNTensorImpl::WebNNTensorImpl(
                       blink::WebNNTensorToken,
                       mojo::AssociatedReceiver<mojom::WebNNTensor>>(
           std::move(receiver),
-          context.task_runner(),
+          context.mojo_task_runner(),
           context.owning_task_runner()),
       context_(context),
       descriptor_(std::move(tensor_info->descriptor)),
@@ -41,7 +41,7 @@ WebNNTensorImpl::WebNNTensorImpl(
                       blink::WebNNTensorToken,
                       mojo::AssociatedReceiver<mojom::WebNNTensor>>(
           std::move(receiver),
-          context.task_runner(),
+          context.mojo_task_runner(),
           context.owning_task_runner()),
       context_(context),
       representation_(std::move(representation)),
@@ -67,7 +67,7 @@ void WebNNTensorImpl::ReadTensor(ReadTensorCallback callback) {
   // it directly on the GPU sequence can violate Mojo's sequence checks,
   // even if executing on the same thread.
   auto mojo_callback_wrapper =
-      base::BindPostTask(context_->task_runner(), std::move(callback));
+      base::BindPostTask(context_->mojo_task_runner(), std::move(callback));
 
   // Call ReadTensorImpl() implemented by a backend.
   context_->RunOrScheduleTask(base::BindOnce(

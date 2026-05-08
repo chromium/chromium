@@ -55,7 +55,7 @@ WebNNGraphImpl::WebNNGraphImpl(
                       blink::WebNNGraphToken,
                       mojo::AssociatedReceiver<mojom::WebNNGraph>>(
           std::move(receiver),
-          context.task_runner(),
+          context.mojo_task_runner(),
           context.owning_task_runner()),
       context_(context),
       compute_resource_info_(std::move(compute_resource_info)),

@@ -386,13 +386,6 @@ void WebNNContextImpl::CreateTensor(
   tensor_impls_.emplace(*std::move(result));
 }
 
-scoped_refptr<base::SequencedTaskRunner> WebNNContextImpl::task_runner() const {
-  if (gpu_sequence_) {
-    return gpu_sequence_->scheduler_task_runner();
-  }
-  return owning_task_runner_;
-}
-
 ScopedGpuSequence* WebNNContextImpl::gpu_sequence() const {
   return gpu_sequence_.get();
 }
@@ -475,7 +468,7 @@ void WebNNContextImpl::CreateTensorFromMailbox(mojom::TensorInfoPtr tensor_info,
   // it directly on the GPU sequence can violate Mojo's sequence checks,
   // even if executing on the same thread.
   auto mojo_callback_wrapper =
-      base::BindPostTask(task_runner(), std::move(callback));
+      base::BindPostTask(mojo_task_runner(), std::move(callback));
 
   // Must be a scheduled task since this depends on shared image creation task.
   RunOrScheduleTaskWithThisContext(
@@ -648,7 +641,7 @@ const mojom::CreateContextOptions& WebNNContextImpl::options() const {
 }
 
 void WebNNContextImpl::OnLost(const std::string& reason) {
-  DCHECK(task_runner()->RunsTasksInCurrentSequence());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ResetMojoReceiver(reason);
   OnDisconnect();
 }

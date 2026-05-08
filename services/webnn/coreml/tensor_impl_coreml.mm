@@ -401,7 +401,7 @@ void TensorImplCoreml::ExportTensorSync(uint64_t flow_id,
   // it directly on the GPU sequence can violate Mojo's sequence checks,
   // even if executing on the same thread.
   auto mojo_callback_wrapper = base::BindPostTask(
-      context_->task_runner(),
+      context_->mojo_task_runner(),
       base::BindOnce(
           [](ExportTensorSyncCallback callback, ScopedTrace scoped_trace,
              uint64_t flow_id) {
