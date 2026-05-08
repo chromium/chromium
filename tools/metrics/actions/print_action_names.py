@@ -14,6 +14,7 @@ import sys
 import setup_modules  # pylint: disable=unused-import
 
 import chromium_src.tools.metrics.actions.action_utils as action_utils
+import chromium_src.tools.metrics.common.path_util as path_util
 
 
 def _get_actions(xml_content):
@@ -49,8 +50,8 @@ def get_modified_action_names(current_actions_dict, prev_actions_dict,
   return modified_names
 
 
-def _get_actions_xml_path():
-  return os.path.join(os.path.dirname(__file__), 'actions.xml')
+def _get_actions_xml_path() -> str:
+  return str(path_util.METRICS_TOOLS_PATH / 'actions' / 'actions.xml')
 
 
 def get_action_diff(prev_content, current_content):

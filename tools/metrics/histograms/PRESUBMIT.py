@@ -31,6 +31,7 @@ import chromium_src.tools.metrics.histograms.histograms_allowlist_check as histo
 import chromium_src.components.segmentation_platform.tools.generate_histogram_list as generate_histogram_list
 import chromium_src.tools.metrics.histograms.presubmit_caching_support as presubmit_caching_support
 import chromium_src.tools.metrics.histograms.print_histogram_names as print_histogram_names
+from chromium_src.tools.metrics.common.path_util import CHROMIUM_SRC_PATH
 
 # Cannot be called CheckType because by convention PRESUBMIT will try to call
 # anything with a Check prefix as a function.
@@ -307,10 +308,8 @@ def ExecuteCheckWebViewHistogramsAllowlistOnUpload(input_api, output_api,
     xml_files_paths = xml_paths_override
 
   xml_files = [open(f, encoding='utf-8') for f in xml_files_paths]
-  src_path = os.path.join(input_api.PresubmitLocalPath(), '..', '..', '..')
-
   allowlist_path = os.path.join(
-      src_path,
+      CHROMIUM_SRC_PATH,
       histograms_allowlist_check.WellKnownAllowlistPath.ANDROID_WEBVIEW.
       relative_path())
 

@@ -11,12 +11,9 @@ import tempfile
 
 import setup_modules  # pylint: disable=unused-import
 import chromium_src.tools.metrics.python_support.dependency_solver as dependency_solver
+from chromium_src.tools.metrics.common.path_util import CHROMIUM_SRC_PATH, METRICS_TOOLS_PATH
 
-_THIS_DIR = os.path.abspath(os.path.dirname(__file__))
-_CHROMIUM_SRC_DIR = os.path.dirname(os.path.dirname(os.path.dirname(_THIS_DIR)))
-_TOOLS_METRICS_RELATIVE_PATH = os.path.join('tools', 'metrics')
-_TOOLS_METRICS_DIR = os.path.join(_CHROMIUM_SRC_DIR,
-                                  _TOOLS_METRICS_RELATIVE_PATH)
+_THIS_DIR = os.path.join(METRICS_TOOLS_PATH, 'python_support')
 
 # Paths relative to src/ that we want to run the test from
 _TEST_DIRECTORIES_TO_SCAN = [
@@ -27,7 +24,7 @@ _TEST_DIRECTORIES_TO_SCAN = [
 # Lists a directories that contain test files relevant for Chrome Metrics
 # tooling as path relative to src/.
 TEST_DIRECTORIES_RELATIVE_TO_SRC = [
-    os.path.join(_CHROMIUM_SRC_DIR, d) for d in _TEST_DIRECTORIES_TO_SCAN
+    os.path.join(CHROMIUM_SRC_PATH, d) for d in _TEST_DIRECTORIES_TO_SCAN
 ]
 
 _EXPECTED_TEST_FILES_SUFFIXES = ['test.py', 'tests.py']
@@ -179,7 +176,7 @@ def validate_gn_sources(target_group: str) -> set[str]:
   listed_files = {Path(f.replace('//', '')) for f in listed_files}
 
   actual_files = {
-      Path(f).relative_to(_CHROMIUM_SRC_DIR)
+      Path(f).relative_to(CHROMIUM_SRC_PATH)
       for f in find_all_tests()
   }
 
@@ -191,8 +188,10 @@ def validate_gn_sources(target_group: str) -> set[str]:
 def _is_script_affected_by(testable_script: TestableScript,
                            modified_files: Set[Path],
                            deps_graph: Dict[str, List[str]]) -> bool:
-  modified_files = set(
-      [p.relative_to(_CHROMIUM_SRC_DIR) for p in modified_files])
+  modified_files = set([
+      p.resolve().relative_to(CHROMIUM_SRC_PATH)
+      for p in modified_files
+  ])
   if testable_script.file_path in modified_files:
     return True
   all_dependencies = dependency_solver.get_all_dependencies(
@@ -221,11 +220,11 @@ def get_affected_tests(
     deps_graph: Dict[str, List[str]]) -> Iterable[TestableScript]:
   """Finds all python tests that could be affected by the changes."""
   all_tests = [
-      TestableScript.CreatePythonScript(Path(t).relative_to(_CHROMIUM_SRC_DIR))
+      TestableScript.CreatePythonScript(Path(t).relative_to(CHROMIUM_SRC_PATH))
       for t in find_all_tests()
       # We cannot detect dependencies for tools outside of tools/metrics
       # at the moment.
-      if Path(t).resolve().is_relative_to(_TOOLS_METRICS_DIR)
+      if Path(t).resolve().is_relative_to(METRICS_TOOLS_PATH)
   ]
 
   affected_tests = [

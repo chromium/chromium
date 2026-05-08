@@ -38,6 +38,9 @@ import setup_modules  # pylint: disable=unused-import
 import chromium_src.tools.metrics.actions.action_utils as action_utils
 import chromium_src.tools.metrics.actions.actions_model as actions_model
 import chromium_src.tools.metrics.common.presubmit_util as presubmit_util
+from chromium_src.tools.metrics.common.path_util import CHROMIUM_SRC_PATH
+
+_CHROMIUM_SRC_PATH_STR = str(CHROMIUM_SRC_PATH)
 
 
 USER_METRICS_ACTION_RE = re.compile(
@@ -121,9 +124,6 @@ KNOWN_COMPUTED_USERS = (
     'toast_metrics.cc',
     'whats_new_handler.cc',
 )
-
-# The path to the root of the repository.
-REPOSITORY_ROOT = os.path.join(os.path.dirname(__file__), '..', '..', '..')
 
 number_of_files_total = 0
 
@@ -503,26 +503,27 @@ def AddLiteralActions(actions):
   EXTENSIONS = ('.cc', '.cpp', '.mm', '.c', '.m', '.java', '.swift')
 
   # Walk the source tree to process all files.
-  ash_root = os.path.normpath(os.path.join(REPOSITORY_ROOT, 'ash'))
+  ash_root = os.path.normpath(os.path.join(_CHROMIUM_SRC_PATH_STR, 'ash'))
   WalkDirectory(ash_root, actions, EXTENSIONS, GrepForActions)
-  chrome_root = os.path.normpath(os.path.join(REPOSITORY_ROOT, 'chrome'))
+  chrome_root = os.path.normpath(os.path.join(_CHROMIUM_SRC_PATH_STR, 'chrome'))
   WalkDirectory(chrome_root, actions, EXTENSIONS, GrepForActions)
-  content_root = os.path.normpath(os.path.join(REPOSITORY_ROOT, 'content'))
+  content_root = os.path.normpath(
+      os.path.join(_CHROMIUM_SRC_PATH_STR, 'content'))
   WalkDirectory(content_root, actions, EXTENSIONS, GrepForActions)
-  components_root = os.path.normpath(os.path.join(REPOSITORY_ROOT,
-                                                  'components'))
+  components_root = os.path.normpath(
+      os.path.join(_CHROMIUM_SRC_PATH_STR, 'components'))
   WalkDirectory(components_root, actions, EXTENSIONS, GrepForActions)
-  net_root = os.path.normpath(os.path.join(REPOSITORY_ROOT, 'net'))
+  net_root = os.path.normpath(os.path.join(_CHROMIUM_SRC_PATH_STR, 'net'))
   WalkDirectory(net_root, actions, EXTENSIONS, GrepForActions)
-  webkit_root = os.path.normpath(os.path.join(REPOSITORY_ROOT, 'webkit'))
+  webkit_root = os.path.normpath(os.path.join(_CHROMIUM_SRC_PATH_STR, 'webkit'))
   WalkDirectory(os.path.join(webkit_root, 'glue'), actions, EXTENSIONS,
                 GrepForActions)
   WalkDirectory(os.path.join(webkit_root, 'port'), actions, EXTENSIONS,
                 GrepForActions)
   webkit_core_root = os.path.normpath(
-      os.path.join(REPOSITORY_ROOT, 'third_party/blink/renderer/core'))
+      os.path.join(_CHROMIUM_SRC_PATH_STR, 'third_party/blink/renderer/core'))
   WalkDirectory(webkit_core_root, actions, EXTENSIONS, GrepForActions)
-  ios_root = os.path.normpath(os.path.join(REPOSITORY_ROOT, 'ios'))
+  ios_root = os.path.normpath(os.path.join(_CHROMIUM_SRC_PATH_STR, 'ios'))
   WalkDirectory(ios_root, actions, EXTENSIONS, GrepForActions)
 
 
@@ -532,7 +533,7 @@ def AddWebUIActions(actions):
   Arguments:
     actions: set of actions to add to.
   """
-  resources_root = os.path.join(REPOSITORY_ROOT, 'chrome', 'browser',
+  resources_root = os.path.join(_CHROMIUM_SRC_PATH_STR, 'chrome', 'browser',
                                 'resources')
   WalkDirectory(resources_root, actions, ('.html'), GrepForWebUIActions)
   WalkDirectory(resources_root, actions, ('.js'), GrepForActions)
@@ -544,7 +545,7 @@ def AddDevToolsActions(actions):
   Arguments:
     actions: set of actions to add to.
   """
-  resources_root = os.path.join(REPOSITORY_ROOT, 'third_party', 'blink',
+  resources_root = os.path.join(_CHROMIUM_SRC_PATH_STR, 'third_party', 'blink',
                                 'renderer', 'devtools', 'front_end')
   WalkDirectory(resources_root, actions, ('.js'), GrepForDevToolsActions)
 

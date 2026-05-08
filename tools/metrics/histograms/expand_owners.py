@@ -9,9 +9,11 @@ import os
 import re
 import subprocess
 import sys
+from pathlib import Path
 
 import setup_modules  # pylint: disable=unused-import
 
+from chromium_src.tools.metrics.common.path_util import CHROMIUM_SRC_PATH
 import chromium_src.tools.metrics.common.xml_utils as xml_utils
 
 _EMAIL_PATTERN = r'^[\w\-\+\%\.]+\@[\w\-\+\%\.]+$'
@@ -20,7 +22,6 @@ _OWNERS = 'OWNERS'
 # module's directory, histograms, and the directory above tools, which may or
 # may not be src depending on the machine running the code, is up three
 # directory levels from the histograms directory.
-DIR_ABOVE_TOOLS = [os.path.dirname(__file__), '..', '..', '..']
 SRC = 'src/'
 
 
@@ -111,7 +112,7 @@ def _GetHigherLevelOwnersFilePath(path):
   # The highest directory that is searched for component information is one
   # directory lower than the directory above tools. Depending on the machine
   # running this code, the directory above tools may or may not be src.
-  path_to_limiting_dir = os.path.abspath(os.path.join(*DIR_ABOVE_TOOLS))
+  path_to_limiting_dir = str(CHROMIUM_SRC_PATH)
   limiting_dir = path_to_limiting_dir.split(os.sep)[-1]
   owners_file_limit = (os.sep).join([limiting_dir, _OWNERS])
   if path.endswith(owners_file_limit):
@@ -140,8 +141,7 @@ def _GetOwnersFilePath(path):
     # may not have a(n) src directory.
     path_without_src = path[len(SRC):]
 
-    return os.path.abspath(
-        os.path.join(*(DIR_ABOVE_TOOLS + path_without_src.split(os.sep))))
+    return os.path.abspath(CHROMIUM_SRC_PATH / path_without_src)
 
   raise Error(
       'The given path {} is not well-formatted. Well-formatted paths begin '
@@ -304,7 +304,7 @@ def ExtractComponentViaDirmd(path):
   """
   # Verify that the paths are absolute and the root is a parent of the
   # passed in path.
-  root_path = os.path.abspath(os.path.join(*DIR_ABOVE_TOOLS))
+  root_path = str(CHROMIUM_SRC_PATH)
   path = os.path.abspath(path)
   if not path.startswith(root_path):
     raise Error('Path {} is not a subpath of the root path {}.'.format(
@@ -313,8 +313,8 @@ def ExtractComponentViaDirmd(path):
   dirmd_exe = 'dirmd'
   if sys.platform == 'win32':
     dirmd_exe = 'dirmd.bat'
-  dirmd_path = os.path.join(*(DIR_ABOVE_TOOLS +
-                              ['third_party', 'depot_tools', dirmd_exe]))
+  dirmd_path = str(CHROMIUM_SRC_PATH / 'third_party' / 'depot_tools' /
+                   dirmd_exe)
   dirmd_command = [dirmd_path, 'read', '-form', 'sparse', root_path, path]
   dirmd = subprocess.Popen(dirmd_command,
                            stdout=subprocess.PIPE,

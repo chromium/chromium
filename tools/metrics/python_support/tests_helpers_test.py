@@ -10,13 +10,14 @@ from unittest.mock import patch, mock_open
 import setup_modules  # pylint: disable=unused-import
 import chromium_src.tools.metrics.python_support.tests_helpers as tests_helpers
 import chromium_src.tools.metrics.python_support.script_checker as script_checker
+from chromium_src.tools.metrics.common.path_util import CHROMIUM_SRC_PATH, METRICS_TOOLS_PATH
 
 
 class TestableScriptListTest(unittest.TestCase):
 
   def testAllTestableScriptsCanBeRun(self):
     script_issues = script_checker.check_scripts(
-        tests_helpers._TESTABLE_SCRIPTS, cwd=tests_helpers._CHROMIUM_SRC_DIR)
+        tests_helpers._TESTABLE_SCRIPTS, cwd=CHROMIUM_SRC_PATH)
     for issue in script_issues:
       print(issue.error_message())
     self.assertEqual(len(script_issues), 0)
@@ -79,10 +80,8 @@ class BuildGnValidationTest(unittest.TestCase):
     mock_is_file.return_value = True
 
     mock_find_tests.return_value = [
-        os.path.join(tests_helpers._CHROMIUM_SRC_DIR, 'tools', 'metrics',
-                     'test1_test.py'),
-        os.path.join(tests_helpers._CHROMIUM_SRC_DIR, 'tools', 'metrics',
-                     'test2_test.py'),
+        os.path.join(CHROMIUM_SRC_PATH, 'tools', 'metrics', 'test1_test.py'),
+        os.path.join(CHROMIUM_SRC_PATH, 'tools', 'metrics', 'test2_test.py'),
     ]
 
     fake_gn_content = """
@@ -122,18 +121,15 @@ group("wrong_group") {
 class AffectedFileDetectionTest(unittest.TestCase):
 
   def testScriptIsAffectedBy(self):
-    script_path = Path(
-        tests_helpers._TOOLS_METRICS_DIR).joinpath('my_script.py')
-    relative_script_path = script_path.relative_to(
-        tests_helpers._CHROMIUM_SRC_DIR)
-    dep_file_path = Path(tests_helpers._TOOLS_METRICS_DIR).joinpath('dep.py')
-    unrelated_file_path = Path(
-        tests_helpers._TOOLS_METRICS_DIR).joinpath('unrelated.py')
+    script_path = Path(METRICS_TOOLS_PATH).joinpath('my_script.py')
+    relative_script_path = script_path.relative_to(CHROMIUM_SRC_PATH)
+    dep_file_path = Path(METRICS_TOOLS_PATH).joinpath('dep.py')
+    unrelated_file_path = Path(METRICS_TOOLS_PATH).joinpath('unrelated.py')
     script = tests_helpers.TestableScript.CreatePythonScript(
         relative_script_path)
     deps = {
-        str(script_path.relative_to(tests_helpers._CHROMIUM_SRC_DIR)):
-        [dep_file_path.relative_to(tests_helpers._CHROMIUM_SRC_DIR)]
+        str(script_path.relative_to(CHROMIUM_SRC_PATH)):
+        [dep_file_path.relative_to(CHROMIUM_SRC_PATH)]
     }
 
     # Direct modification of the script
@@ -171,8 +167,8 @@ class AffectedFileDetectionTest(unittest.TestCase):
          '_is_script_affected_by')
   def testGetAffectedTests(self, mock_is_affected, mock_find_tests):
     mock_find_tests.return_value = [
-        os.path.join(tests_helpers._TOOLS_METRICS_DIR, 'test_a.py'),
-        os.path.join(tests_helpers._TOOLS_METRICS_DIR, 'test_b.py'),
+        os.path.join(METRICS_TOOLS_PATH, 'test_a.py'),
+        os.path.join(METRICS_TOOLS_PATH, 'test_b.py'),
         os.path.join('/some/outside/dir', 'test_c.py'),
     ]
 

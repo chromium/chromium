@@ -7,6 +7,7 @@ import argparse
 import datetime
 import hashlib
 import os
+from pathlib import Path
 import re
 import sys
 
@@ -260,8 +261,8 @@ def _GenerateFile(arguments):
       descriptions, branch_file_content, mstone_file_content,
       arguments.header_filename, arguments.namespace)
 
-  with open(os.path.join(arguments.output_dir, arguments.header_filename),
-            "w") as generated_file:
+  output_path = Path(arguments.output_dir) / arguments.header_filename
+  with open(output_path, "w") as generated_file:
     generated_file.write(header_file_content)
 
 

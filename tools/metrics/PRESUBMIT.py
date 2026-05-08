@@ -22,6 +22,8 @@ import setup_modules  # pylint: disable=unused-import
 
 sys.path.remove('.')
 
+from chromium_src.tools.metrics.common.path_util import CHROMIUM_SRC_PATH, METRICS_TOOLS_PATH
+
 import chromium_src.tools.metrics.python_support.tests_helpers as tests_helpers
 import chromium_src.tools.metrics.python_support.mypy_helpers as mypy_helpers
 import chromium_src.tools.metrics.python_support.script_checker as script_checker
@@ -39,12 +41,7 @@ Please add the missing files to BUILD.gn:
 """
 
 
-def _ThisDirPath(input_api: Type) -> Path:
-  return Path(input_api.PresubmitLocalPath())
 
-
-def _ChromiumSrcPath(input_api: Type) -> Path:
-  return _ThisDirPath(input_api).joinpath('..').joinpath('..').resolve()
 
 
 def _RunSelectedTests(
@@ -57,7 +54,7 @@ def _RunSelectedTests(
   return input_api.RunTests([
       input_api.Command(name=t.file_path,
                         cmd=t.cmd,
-                        kwargs={'cwd': _ChromiumSrcPath(input_api)},
+                        kwargs={'cwd': CHROMIUM_SRC_PATH},
                         message=output_api.PresubmitError) for t in test_scripts
   ])
 
@@ -78,7 +75,7 @@ def _ReportMissingBuildFileReferences(output_api: Type) -> Iterable[Any]:
 
 def _ReportMyPyErrors(input_api: Type, output_api: Type) -> Iterable[Any]:
   my_py_issues = mypy_helpers.run_mypy_and_filter_irrelevant(
-      input_api.PresubmitLocalPath())
+      str(METRICS_TOOLS_PATH))
   return [output_api.PresubmitError(i) for i in my_py_issues]
 
 
@@ -92,8 +89,8 @@ def _ReportIssuesWithScripts(input_api: Type, output_api: Type,
     return []
 
   print(f"Running {len(scripts_to_test)} affected scripts to check them.")
-  commands_failed = script_checker.check_scripts(
-      scripts_to_test, cwd=str(_ChromiumSrcPath(input_api)))
+  commands_failed = script_checker.check_scripts(scripts_to_test,
+                                                 cwd=str(CHROMIUM_SRC_PATH))
   return [
       output_api.PresubmitError(res.error_message()) for res in commands_failed
   ]
@@ -124,8 +121,7 @@ def _ReportPythonIssues(input_api: Type, output_api: Type) -> Iterable[Any]:
     return
 
   deps_graph = dependency_solver.scan_directory_dependencies(
-      input_api.PresubmitLocalPath(),
-      report_relative_to=str(_ChromiumSrcPath(input_api)))
+      str(METRICS_TOOLS_PATH), report_relative_to=str(CHROMIUM_SRC_PATH))
 
   yield from _ReportMissingBuildFileReferences(output_api)
   yield from _ReportMyPyErrors(input_api, output_api)
@@ -147,8 +143,8 @@ def _ReportEnumXmlIssues(input_api: Type, output_api: Type,
 
   testable_script = tests_helpers.TestableScript.CreatePythonScript(
       Path('tools/metrics/ukm/validate_format.py'), ['--presubmit'])
-  commands_failed = script_checker.check_scripts(
-      [testable_script], cwd=str(_ChromiumSrcPath(input_api)))
+  commands_failed = script_checker.check_scripts([testable_script],
+                                                 cwd=str(CHROMIUM_SRC_PATH))
 
   if not commands_failed:
     return

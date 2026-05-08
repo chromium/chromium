@@ -7,6 +7,7 @@ import argparse
 import os
 import sys
 import xml.dom.minidom
+from pathlib import Path
 
 import setup_modules  # pylint: disable=unused-import
 
@@ -108,8 +109,8 @@ def _GenerateFile(arguments):
 
   static_check_header_file_content = _GenerateStaticFile(
       arguments.file, arguments.namespace, values, arguments.allow_list_name)
-  with open(os.path.join(arguments.output_dir, arguments.file),
-            "w") as generated_file:
+  output_path = Path(arguments.output_dir) / arguments.file
+  with open(output_path, "w") as generated_file:
     generated_file.write(static_check_header_file_content)
 
 

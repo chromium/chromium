@@ -5,17 +5,20 @@
 import os.path
 import tempfile
 import unittest
+from pathlib import Path
 from typing import Tuple
 
 import setup_modules  # pylint: disable=unused-import
 
 import chromium_src.tools.metrics.histograms.PRESUBMIT as PRESUBMIT
+from chromium_src.tools.metrics.common.path_util import METRICS_TOOLS_PATH
 from chromium_src.tools.metrics.histograms.presubmit_caching_support import PresubmitCache
 
 from chromium_src.PRESUBMIT_test_mocks import MockAffectedFile, MockInputApi, MockOutputApi
 
-_BASE_DIR = os.path.dirname(__file__)
-_TOP_LEVEL_ENUMS_PATH = (f'{os.path.dirname(__file__)}/enums.xml')
+_BASE_DIR = str(METRICS_TOOLS_PATH / 'histograms')
+_TOP_LEVEL_ENUMS_PATH = str(
+    METRICS_TOOLS_PATH / 'histograms' / 'enums.xml')
 
 
 _INITIAL_HISTOGRAMS_CONTENT = '<histogram name="Foo" enum="Boolean" />'
@@ -45,7 +48,8 @@ def _MockInputFromTestFile(relative_path: str) -> Tuple[MockInputApi, str]:
     A MockInputApi that lists the provided file as only one changed and full
     path to that file.
   """
-  full_path = f'{os.path.dirname(__file__)}/test_data/{relative_path}'
+  full_path = str(
+      Path(METRICS_TOOLS_PATH) / 'histograms' / 'test_data' / relative_path)
   with open(full_path, 'r') as f:
     contents = f.read()
 
@@ -106,12 +110,8 @@ class MetricsPresubmitTest(unittest.TestCase):
         ' fix the reported errors.')
 
   def testCheckWebViewHistogramsAllowlistOnUploadFailureIsDetected(self):
-    valid_enums_path = (f'{os.path.dirname(__file__)}'
-                        '/test_data'
-                        '/example_valid_enums.xml')
-    example_allowlist_path = (f'{os.path.dirname(__file__)}'
-                              '/test_data'
-                              '/AllowlistExample.java')
+    valid_enums_path = _BASE_DIR + '/test_data/example_valid_enums.xml'
+    example_allowlist_path = _BASE_DIR + '/test_data/AllowlistExample.java'
 
     (mock_input_api, missing_allow_list_entries_histograms_path
      ) = _MockInputFromTestFile('no_allowlist_entries_histograms.xml')
@@ -145,9 +145,7 @@ class MetricsPresubmitTest(unittest.TestCase):
     self.assertEqual(results[0].type, 'promptOrNotify')
 
   def testCheckHistogramFormattingPasses(self):
-    valid_enums_path = (f'{os.path.dirname(__file__)}'
-                        '/test_data'
-                        '/example_valid_enums.xml')
+    valid_enums_path = _BASE_DIR + '/test_data/example_valid_enums.xml'
 
     (mock_input_api, valid_histograms_path
      ) = _MockInputFromTestFile('example_valid_histograms.xml')
@@ -163,12 +161,8 @@ class MetricsPresubmitTest(unittest.TestCase):
     self.assertEqual(len(results), 0)
 
   def testCheckWebViewHistogramsAllowlistOnUploadPasses(self):
-    valid_enums_path = (f'{os.path.dirname(__file__)}'
-                        '/test_data'
-                        '/example_valid_enums.xml')
-    example_allowlist_path = (f'{os.path.dirname(__file__)}'
-                              '/test_data'
-                              '/AllowlistExample.java')
+    valid_enums_path = _BASE_DIR + '/test_data/example_valid_enums.xml'
+    example_allowlist_path = _BASE_DIR + '/test_data/AllowlistExample.java'
 
     (mock_input_api, valid_histograms_path
      ) = _MockInputFromTestFile('example_valid_histograms.xml')
@@ -356,8 +350,7 @@ class MetricsPresubmitTest(unittest.TestCase):
     self.assertEqual(len(results), 0)
 
   def testDeletedFileIsIgnoredByHistogramFormattingCheck(self):
-    full_path = (f'{os.path.dirname(__file__)}'
-                 '/test_data/non_existing_histograms.xml')
+    full_path = _BASE_DIR + '/test_data/non_existing_histograms.xml'
 
     mock_input_api = MockInputApi()
     mock_input_api.presubmit_local_path = _BASE_DIR
@@ -375,17 +368,10 @@ class MetricsPresubmitTest(unittest.TestCase):
     self.assertEqual(len(results), 0)
 
   def testDeletedFileIsIgnoredByAllowlistCheck(self):
-    non_existing_histograms_path = (f'{os.path.dirname(__file__)}'
-                                    '/test_data/non_existing_histograms.xml')
-    valid_histograms_path = (f'{os.path.dirname(__file__)}'
-                             '/test_data'
-                             '/example_valid_histograms.xml')
-    valid_enums_path = (f'{os.path.dirname(__file__)}'
-                        '/test_data'
-                        '/example_valid_enums.xml')
-    example_allowlist_path = (f'{os.path.dirname(__file__)}'
-                              '/test_data'
-                              '/AllowlistExample.java')
+    non_existing_histograms_path = _BASE_DIR + '/test_data/non_existing_histograms.xml'
+    valid_histograms_path = _BASE_DIR + '/test_data/example_valid_histograms.xml'
+    valid_enums_path = _BASE_DIR + '/test_data/example_valid_enums.xml'
+    example_allowlist_path = _BASE_DIR + '/test_data/AllowlistExample.java'
 
     with open(valid_histograms_path, 'r') as f:
       valid_histograms_contents = f.read()

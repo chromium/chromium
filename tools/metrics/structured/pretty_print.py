@@ -10,6 +10,8 @@ import sys
 
 import setup_modules  # pylint: disable=unused-import
 
+import chromium_src.tools.metrics.common.path_util as path_util
+
 import chromium_src.tools.metrics.structured.sync.model as model
 import chromium_src.tools.metrics.common.presubmit_util as presubmit_util
 
@@ -36,9 +38,9 @@ def main():
                       action="store_true",
                       help="Remove the backup file after a successful run.")
 
-  dirname = os.path.dirname(os.path.realpath(__file__))
-  xml = dirname + '/sync/structured.xml'
-  old_xml = dirname + '/sync/structured.old.xml'
+  structured_dir = path_util.METRICS_TOOLS_PATH / 'structured'
+  xml = str(structured_dir / 'sync' / 'structured.xml')
+  old_xml = str(structured_dir / 'sync' / 'structured.old.xml')
 
   presubmit_util.DoPresubmitMain(sys.argv, xml, old_xml,
                                  lambda x: repr(model.Model(x, 'chrome')))
