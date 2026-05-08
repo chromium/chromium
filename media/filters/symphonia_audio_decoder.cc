@@ -50,12 +50,13 @@ constexpr int kDefaultMaxFramesPerPcmPacket = 4096;
 // We sample 1% of Symphonia related errors for dumping.
 static constexpr double kSampleRate = 0.01;
 
-void MaybeDumpError(const DecoderStatus& status) {
+DecoderStatus MaybeDumpError(DecoderStatus&& status) {
   // TODO(crbug.com/491162892): remove temporary DUMP_WILL_BE_CHECK once
   // Symphonia is sufficiently stable.
   if (base::RandDouble() < kSampleRate) {
     DUMP_WILL_BE_CHECK(false) << status << ": " << status.message();
   }
+  return std::move(status);
 }
 
 SymphoniaAudioCodec ToSymphoniaCodec(AudioCodec codec,
@@ -189,74 +190,82 @@ SampleFormat ToSampleFormat(SymphoniaSampleFormat value) {
   NOTREACHED();
 }
 
-constexpr DecoderStatus::Codes ToStatusCode(SymphoniaInitStatus status) {
-  switch (status) {
+DecoderStatus ToDecoderStatus(SymphoniaInitResult& result) {
+  switch (result.status) {
     case SymphoniaInitStatus::Ok:
-      return DecoderStatus::Codes::kOk;
+      return OkStatus();
     case SymphoniaInitStatus::InvalidConfig:
-      return DecoderStatus::Codes::kUnsupportedConfig;
-    case SymphoniaInitStatus::DecoderError:
-      return DecoderStatus::Codes::kFailedToCreateDecoder;
-    case SymphoniaInitStatus::UnsupportedCodec:
-      return DecoderStatus::Codes::kUnsupportedCodec;
     case SymphoniaInitStatus::XiphVorbisUnpackError:
-      return DecoderStatus::Codes::kUnsupportedConfig;
+      return MaybeDumpError(
+          {DecoderStatus::Codes::kUnsupportedConfig, result.error_str.c_str()});
+    case SymphoniaInitStatus::UnsupportedCodec:
     case SymphoniaInitStatus::SymphoniaUnsupported:
-      return DecoderStatus::Codes::kUnsupportedCodec;
+      return MaybeDumpError({
+          DecoderStatus::Codes::kUnsupportedCodec,
+          result.error_str.c_str(),
+      });
+    case SymphoniaInitStatus::DecoderError:
+      return MaybeDumpError({
+          DecoderStatus::Codes::kFailedToCreateDecoder,
+          result.error_str.c_str(),
+      });
     case SymphoniaInitStatus::SymphoniaDecodeError:
-      return DecoderStatus::Codes::kMalformedBitstream;
+      return MaybeDumpError({
+          DecoderStatus::Codes::kMalformedBitstream,
+          result.error_str.c_str(),
+      });
     case SymphoniaInitStatus::SymphoniaIoError:
-      return DecoderStatus::Codes::kDecoderStreamDemuxerError;
+      return MaybeDumpError({
+          DecoderStatus::Codes::kDecoderStreamDemuxerError,
+          result.error_str.c_str(),
+      });
     case SymphoniaInitStatus::SymphoniaLimitError:
-      return DecoderStatus::Codes::kFailed;
+      return MaybeDumpError({
+          DecoderStatus::Codes::kFailed,
+          result.error_str.c_str(),
+      });
     case SymphoniaInitStatus::kMaxValue:
       NOTREACHED();
   }
 }
 
-DecoderStatus ToDecoderStatus(SymphoniaInitResult& result) {
-  DecoderStatus status(ToStatusCode(result.status), result.error_str.c_str());
-  if (result.status != SymphoniaInitStatus::Ok) {
-    MaybeDumpError(status);
-  }
-  return status;
-}
-
-constexpr DecoderStatus::Codes ToStatusCode(SymphoniaDecodeStatus status) {
-  switch (status) {
+DecoderStatus ToDecoderStatus(SymphoniaDecodeResult& result) {
+  switch (result.status) {
     case SymphoniaDecodeStatus::Ok:
-      return DecoderStatus::Codes::kOk;
-    case SymphoniaDecodeStatus::UnexpectedEndOfStream:
-      return DecoderStatus::Codes::kFailed;
+      return OkStatus();
     case SymphoniaDecodeStatus::InvalidDecoderState:
-      return DecoderStatus::Codes::kNotInitialized;
-    case SymphoniaDecodeStatus::Error:
-      return DecoderStatus::Codes::kFailed;
+      return MaybeDumpError({
+          DecoderStatus::Codes::kNotInitialized,
+          result.error_str.c_str(),
+      });
     case SymphoniaDecodeStatus::DecodeError:
-      return DecoderStatus::Codes::kMalformedBitstream;
+      return MaybeDumpError({
+          DecoderStatus::Codes::kMalformedBitstream,
+          result.error_str.c_str(),
+      });
     case SymphoniaDecodeStatus::IoError:
-      return DecoderStatus::Codes::kDecoderStreamDemuxerError;
-    case SymphoniaDecodeStatus::ResetRequired:
-      return DecoderStatus::Codes::kFailed;
-    case SymphoniaDecodeStatus::SeekError:
-      return DecoderStatus::Codes::kFailed;
+      return MaybeDumpError({
+          DecoderStatus::Codes::kDecoderStreamDemuxerError,
+          result.error_str.c_str(),
+      });
     case SymphoniaDecodeStatus::Unsupported:
-      return DecoderStatus::Codes::kUnsupportedCodec;
+      return MaybeDumpError({
+          DecoderStatus::Codes::kUnsupportedCodec,
+          result.error_str.c_str(),
+      });
     case SymphoniaDecodeStatus::InsufficentData:
-      return DecoderStatus::Codes::kFailed;
     case SymphoniaDecodeStatus::InvalidDecodedBufferSampleFormat:
-      return DecoderStatus::Codes::kFailed;
+    case SymphoniaDecodeStatus::UnexpectedEndOfStream:
+    case SymphoniaDecodeStatus::ResetRequired:
+    case SymphoniaDecodeStatus::SeekError:
+    case SymphoniaDecodeStatus::Error:
+      return MaybeDumpError({
+          DecoderStatus::Codes::kFailed,
+          result.error_str.c_str(),
+      });
     case SymphoniaDecodeStatus::kMaxValue:
       NOTREACHED();
   }
-}
-
-DecoderStatus ToDecoderStatus(SymphoniaDecodeResult& result) {
-  DecoderStatus status(ToStatusCode(result.status), result.error_str.c_str());
-  if (result.status != SymphoniaDecodeStatus::Ok) {
-    MaybeDumpError(status);
-  }
-  return status;
 }
 
 // A templated ExternalMemory implementation that wraps and owns a rust::Box<T>,
