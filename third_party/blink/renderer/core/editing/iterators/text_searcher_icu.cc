@@ -130,8 +130,9 @@ static bool IsWholeWordMatch(base::span<const UChar> text,
   // Chinese and Japanese lack word boundary marks, and there is no clear
   // agreement on what constitutes a word, so treat the position before any CJK
   // character as a word start.
-  if (Character::IsCJKIdeographOrSymbol(first_character))
+  if (Character::IsCjkIdeographOrSymbol(first_character)) {
     return true;
+  }
 
   wtf_size_t word_break_search_start = result_end;
   while (word_break_search_start > result.start) {

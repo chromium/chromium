@@ -88,7 +88,7 @@ class CharacterPropertyValues {
 
  private:
   void Initialize() {
-    SetIsCJKIdeographOrSymbolForEmoji();
+    SetIsCjkIdeographOrSymbolForEmoji();
 
 #define SET(name, field_name)                                        \
   const auto field_name##_setter = [](CharacterProperty& property) { \
@@ -97,7 +97,7 @@ class CharacterPropertyValues {
   SetForRanges(name##Ranges, field_name##_setter);                   \
   SetForValues(name##Array, field_name##_setter);
 
-    SET(kIsCJKIdeographOrSymbol, is_cjk_ideograph_or_symbol);
+    SET(kIsCjkIdeographOrSymbol, is_cjk_ideograph_or_symbol);
     SET(kIsPotentialCustomElementNameChar,
         is_potential_custom_element_name_char);
     SET(kIsBidiControl, is_bidi_control);
@@ -114,7 +114,7 @@ class CharacterPropertyValues {
   // sequences, as CJK symbol characters. This ensures the word segmenter
   // enters the emoji code path for text-default emoji in multi-codepoint
   // sequences.
-  void SetIsCJKIdeographOrSymbolForEmoji() {
+  void SetIsCjkIdeographOrSymbolForEmoji() {
     SetForUnicodePattern("[:Emoji_Presentation:]",
                          [](CharacterProperty& property) {
                            property.is_cjk_ideograph_or_symbol = true;

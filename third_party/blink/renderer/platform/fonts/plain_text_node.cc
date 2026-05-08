@@ -115,11 +115,11 @@ unsigned NextWordEndIndex(StringView text, unsigned start_index) {
   // Non-CJK/Emoji words end at IsWordDelimiter() or CJK/Emoji characters.
   unsigned end = start_index;
   UChar32 ch = UNSAFE_TODO(text.CodePointAtAndNext(end));
-  if (!Character::IsCJKIdeographOrSymbol(ch)) {
+  if (!Character::IsCjkIdeographOrSymbol(ch)) {
     for (unsigned next_end = end; end < length; end = next_end) {
       ch = UNSAFE_TODO(text.CodePointAtAndNext(next_end));
       if (IsWordDelimiter<true>(ch) ||
-          Character::IsCJKIdeographOrSymbolBase(ch)) {
+          Character::IsCjkIdeographOrSymbolBase(ch)) {
         return end;
       }
     }
@@ -140,7 +140,7 @@ unsigned NextWordEndIndex(StringView text, unsigned start_index) {
     }
     // Avoid delimiting COMMON/INHERITED alone, which makes harder to
     // identify the script.
-    if (Character::IsCJKIdeographOrSymbol(ch)) {
+    if (Character::IsCjkIdeographOrSymbol(ch)) {
       if (Character::IsCommonOrInheritedScript(ch)) {
         continue;
       }

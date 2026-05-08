@@ -94,12 +94,12 @@ class PLATFORM_EXPORT Character {
            character == 0xFE0F;  // VARIATION SELECTOR-15 to 16
   }
 
-  static bool IsCJKIdeographOrSymbol(UChar32 c) {
+  static bool IsCjkIdeographOrSymbol(UChar32 c) {
     // Below U+02C7 is likely a common case.
-    return c < 0x2C7 ? false : IsCJKIdeographOrSymbolSlow(c);
+    return c < 0x2C7 ? false : IsCjkIdeographOrSymbolSlow(c);
   }
-  static bool IsCJKIdeographOrSymbolBase(UChar32 c) {
-    return IsCJKIdeographOrSymbol(c) &&
+  static bool IsCjkIdeographOrSymbolBase(UChar32 c) {
+    return IsCjkIdeographOrSymbol(c) &&
            !(U_GET_GC_MASK(c) & (U_GC_M_MASK | U_GC_LM_MASK | U_GC_SK_MASK));
   }
 
@@ -273,7 +273,7 @@ class PLATFORM_EXPORT Character {
  private:
   FRIEND_TEST_ALL_PREFIXES(CharacterTest, Derived);
 
-  static bool IsCJKIdeographOrSymbolSlow(UChar32);
+  static bool IsCjkIdeographOrSymbolSlow(UChar32);
   static bool IsHangulSlow(UChar32);
   static bool MaybeHanKerningOpenSlow(UChar32);
   static bool MaybeHanKerningCloseSlow(UChar32);

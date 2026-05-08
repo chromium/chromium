@@ -106,10 +106,10 @@ std::pair<bool, bool> JustificationContext::CheckOpportunity(TextJustify method,
     return {false, false};
   }
 
-  // IsCJKIdeographOrSymbol() has opportunities both before and after
+  // IsCjkIdeographOrSymbol() has opportunities both before and after
   // each character.
   // http://www.w3.org/TR/jlreq/#line_adjustment
-  if (!Character::IsCJKIdeographOrSymbol(ch)) {
+  if (!Character::IsCjkIdeographOrSymbol(ch)) {
     is_after_opportunity_ = false;
     return {false, false};
   }

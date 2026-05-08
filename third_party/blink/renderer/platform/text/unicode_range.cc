@@ -188,13 +188,13 @@ constexpr std::array<std::array<unsigned char, kCSubTableSize>, kCNumSubTables>
             kCRangeTableBase + 1,  // u0xxx
             kCRangeTableBase + 2,  // u1xxx
             kCRangeTableBase + 3,  // u2xxx
-            kCRangeSetCJK,         // u3xxx
-            kCRangeSetCJK,         // u4xxx
-            kCRangeSetCJK,         // u5xxx
-            kCRangeSetCJK,         // u6xxx
-            kCRangeSetCJK,         // u7xxx
-            kCRangeSetCJK,         // u8xxx
-            kCRangeSetCJK,         // u9xxx
+            kCRangeSetCjk,         // u3xxx
+            kCRangeSetCjk,         // u4xxx
+            kCRangeSetCjk,         // u5xxx
+            kCRangeSetCjk,         // u6xxx
+            kCRangeSetCjk,         // u7xxx
+            kCRangeSetCjk,         // u8xxx
+            kCRangeSetCjk,         // u9xxx
             kCRangeTableBase + 4,  // uaxxx
             kCRangeKorean,         // ubxxx
             kCRangeKorean,         // ucxxx
@@ -258,8 +258,8 @@ constexpr std::array<std::array<unsigned char, kCSubTableSize>, kCNumSubTables>
             kCRangeUnassigned,             // u2bxx
             kCRangeUnassigned,             // u2cxx
             kCRangeUnassigned,             // u2dxx
-            kCRangeSetCJK,                 // u2exx
-            kCRangeSetCJK,                 // u2fxx
+            kCRangeSetCjk,                 // u2exx
+            kCRangeSetCjk,                 // u2fxx
         },
         {
             // table for ax--
@@ -310,8 +310,8 @@ constexpr std::array<std::array<unsigned char, kCSubTableSize>, kCNumSubTables>
             kCRangePrivate,  // uf6xx
             kCRangePrivate,  // uf7xx
             kCRangePrivate,  // uf8xx
-            kCRangeSetCJK,   // uf9xx
-            kCRangeSetCJK,   // ufaxx
+            kCRangeSetCjk,   // uf9xx
+            kCRangeSetCjk,   // ufaxx
             kCRangeArabic,   // ufbxx, includes alphabic presentation form
             kCRangeArabic,   // ufcxx
             kCRangeArabic,   // ufdxx
@@ -343,21 +343,21 @@ constexpr std::array<std::array<unsigned char, kCSubTableSize>, kCNumSubTables>
         },
         {
             // table for 0xff00 - 0xffff
-            kCRangeSetCJK,    // uff0x, fullwidth latin
-            kCRangeSetCJK,    // uff1x, fullwidth latin
-            kCRangeSetCJK,    // uff2x, fullwidth latin
-            kCRangeSetCJK,    // uff3x, fullwidth latin
-            kCRangeSetCJK,    // uff4x, fullwidth latin
-            kCRangeSetCJK,    // uff5x, fullwidth latin
-            kCRangeSetCJK,    // uff6x, halfwidth katakana
-            kCRangeSetCJK,    // uff7x, halfwidth katakana
-            kCRangeSetCJK,    // uff8x, halfwidth katakana
-            kCRangeSetCJK,    // uff9x, halfwidth katakana
-            kCRangeSetCJK,    // uffax, halfwidth hangul jamo
-            kCRangeSetCJK,    // uffbx, halfwidth hangul jamo
-            kCRangeSetCJK,    // uffcx, halfwidth hangul jamo
-            kCRangeSetCJK,    // uffdx, halfwidth hangul jamo
-            kCRangeSetCJK,    // uffex, fullwidth symbols
+            kCRangeSetCjk,    // uff0x, fullwidth latin
+            kCRangeSetCjk,    // uff1x, fullwidth latin
+            kCRangeSetCjk,    // uff2x, fullwidth latin
+            kCRangeSetCjk,    // uff3x, fullwidth latin
+            kCRangeSetCjk,    // uff4x, fullwidth latin
+            kCRangeSetCjk,    // uff5x, fullwidth latin
+            kCRangeSetCjk,    // uff6x, halfwidth katakana
+            kCRangeSetCjk,    // uff7x, halfwidth katakana
+            kCRangeSetCjk,    // uff8x, halfwidth katakana
+            kCRangeSetCjk,    // uff9x, halfwidth katakana
+            kCRangeSetCjk,    // uffax, halfwidth hangul jamo
+            kCRangeSetCjk,    // uffbx, halfwidth hangul jamo
+            kCRangeSetCjk,    // uffcx, halfwidth hangul jamo
+            kCRangeSetCjk,    // uffdx, halfwidth hangul jamo
+            kCRangeSetCjk,    // uffex, fullwidth symbols
             kCRangeSpecials,  // ufffx, Specials
         },
     }};

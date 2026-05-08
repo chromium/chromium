@@ -76,7 +76,7 @@ const unsigned char kCRangeSpecificItemNum = 22;
 const unsigned char kCRangeSetStart =
     30;  // range set definition starts from here
 const unsigned char kCRangeSetLatin = 30;
-const unsigned char kCRangeSetCJK = 31;
+const unsigned char kCRangeSetCjk = 31;
 const unsigned char kCRangeSetEnd = 31;  // range set definition ends here
 
 // less frequently used range definition

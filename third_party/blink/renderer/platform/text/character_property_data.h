@@ -14,7 +14,7 @@ namespace blink {
 // clang-format off
 // Do not add entries to this array that are already covered by
 // the logic in character_property_data_generator.cc for emoji sequences.
-static constexpr auto kIsCJKIdeographOrSymbolArray = std::to_array<UChar32>({
+static constexpr auto kIsCjkIdeographOrSymbolArray = std::to_array<UChar32>({
     // 0x2C7 Caron, Mandarin Chinese 3rd Tone
     0x2C7,
     // 0x2CA Modifier Letter Acute Accent, Mandarin Chinese 2nd Tone
@@ -37,7 +37,7 @@ static constexpr auto kIsCJKIdeographOrSymbolArray = std::to_array<UChar32>({
 
 // Do not add entries to this array that are already covered by
 // the logic in character_property_data_generator.cc for emoji sequences.
-static constexpr auto kIsCJKIdeographOrSymbolRanges = std::to_array<UChar32>({
+static constexpr auto kIsCjkIdeographOrSymbolRanges = std::to_array<UChar32>({
     // cjkIdeographRanges
     // CJK Radicals Supplement and Kangxi Radicals.
     0x2E80, 0x2FDF,

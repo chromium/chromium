@@ -96,7 +96,7 @@ bool Character::IsUprightInMixedVertical(UChar32 character) {
          UVerticalOrientation::U_VO_ROTATED;
 }
 
-bool Character::IsCJKIdeographOrSymbolSlow(UChar32 c) {
+bool Character::IsCjkIdeographOrSymbolSlow(UChar32 c) {
   return GetProperty(c).is_cjk_ideograph_or_symbol;
 }
 
@@ -138,13 +138,14 @@ bool Character::CanTextDecorationSkipInk(UChar32 codepoint) {
     return false;
   }
 
-  if (Character::IsCJKIdeographOrSymbol(codepoint))
+  if (Character::IsCjkIdeographOrSymbol(codepoint)) {
     return false;
+  }
 
   UBlockCode block = ublock_getCode(codepoint);
   switch (block) {
     // These blocks contain CJK characters we don't want to skip ink, but are
-    // not ideograph that IsCJKIdeographOrSymbol() does not cover.
+    // not ideograph that IsCjkIdeographOrSymbol() does not cover.
     case UBLOCK_HANGUL_JAMO:
     case UBLOCK_HANGUL_COMPATIBILITY_JAMO:
     case UBLOCK_HANGUL_SYLLABLES:
