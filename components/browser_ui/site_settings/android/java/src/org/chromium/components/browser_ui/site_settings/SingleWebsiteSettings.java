@@ -199,8 +199,6 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                 return "clipboard_permission_list";
             case ContentSettingsType.FILE_SYSTEM_WRITE_GUARD:
                 return "file_system_write_guard_permission_list";
-            case ContentSettingsType.LOCAL_NETWORK_ACCESS:
-                return "local_network_access";
             case ContentSettingsType.LOCAL_NETWORK:
                 return "local_network";
             case ContentSettingsType.LOOPBACK_NETWORK:
