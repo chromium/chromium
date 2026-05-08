@@ -158,6 +158,32 @@ TEST_F(FocusControllerTest, FindFocusableAfterElement) {
             FindFocusableElementAfter(*first, mojom::blink::FocusType::kNone));
 }
 
+TEST_F(FocusControllerTest, FocusablePopoverOwnedByInvokerIsReachableForward) {
+  SetBodyInnerHTML(R"HTML(
+    <button id="before" tabindex="0">before</button>
+    <div id="popover" popover tabindex="0"></div>
+    <button id="invoker" tabindex="0" popovertarget="popover">invoker</button>
+    <button id="after" tabindex="0">after</button>
+  )HTML");
+
+  auto* popover = To<HTMLElement>(GetElementById("popover"));
+  Element* invoker = GetElementById("invoker");
+  Element* after = GetElementById("after");
+  ASSERT_TRUE(popover);
+  ASSERT_TRUE(invoker);
+  ASSERT_TRUE(after);
+
+  popover->ShowPopoverInternal(invoker, /*exception_state=*/nullptr);
+  ASSERT_TRUE(popover->popoverOpen());
+
+  EXPECT_EQ(popover, FindFocusableElementAfter(
+                         *invoker, mojom::blink::FocusType::kForward));
+  EXPECT_EQ(invoker, FindFocusableElementAfter(
+                         *popover, mojom::blink::FocusType::kBackward));
+  EXPECT_EQ(after, FindFocusableElementAfter(
+                       *popover, mojom::blink::FocusType::kForward));
+}
+
 TEST_F(FocusControllerTest, NextFocusableElementForIme) {
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
       "<form>"

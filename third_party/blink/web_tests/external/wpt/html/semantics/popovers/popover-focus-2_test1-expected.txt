@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Popover focus navigation with popovertarget invocation
-  assert_equals: Focus should move to popover0 since it is focusable expected Element node <div popover="" id="popover0" tabindex="0" style="top:300... but got Element node <button id="invoker1" tabindex="0" popovertarget="popover...
-Harness: the test ran to completion.
-

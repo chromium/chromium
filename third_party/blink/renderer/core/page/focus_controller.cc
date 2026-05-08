@@ -575,6 +575,10 @@ class FocusNavigation final {
     if (reading_flow_first_element_) {
       return reading_flow_first_element_;
     }
+    if (Element* root_element = DynamicTo<Element>(root_);
+        root_element && IsOwnedByRoot(*root_element)) {
+      return root_element;
+    }
     Element* first = ElementTraversal::FirstChild(*root_);
     while (first && !IsOwnedByRoot(*first))
       first = ElementTraversal::Next(*first, root_);
