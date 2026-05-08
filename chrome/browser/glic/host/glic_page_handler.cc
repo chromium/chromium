@@ -412,209 +412,6 @@ class DebouncerDeduper {
   glic::mojom::FocusedTabDataPtr next_data_candidate_;
 };
 
-const char kGlicActorJournalLog[] = "glic-actor-journal";
-// Class that encapsulates interacting with the actor journal.
-class JournalHandler {
- public:
-  explicit JournalHandler(Profile* profile)
-      : actor_keyed_service_(actor::ActorKeyedService::Get(profile)) {
-    base::FilePath path =
-        base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
-            kGlicActorJournalLog);
-    if (!path.empty()) {
-      GetUniquePath(path, base::BindOnce(&JournalHandler::OnUniquePathReceived,
-                                         base::Unretained(this)));
-    }
-  }
-
-  void LogBeginAsyncEvent(uint64_t event_async_id,
-                          int32_t task_id,
-                          const std::string& event,
-                          const std::string& details) {
-    // If there is a matching ID make sure it terminates before the new event
-    // is created.
-    auto it = active_journal_events_.find(event_async_id);
-    if (it != active_journal_events_.end()) {
-      active_journal_events_.erase(it);
-    }
-
-    auto actor_task_id = actor::TaskId(task_id);
-    active_journal_events_[event_async_id] =
-        actor_keyed_service_->GetJournal().CreatePendingAsyncEntry(
-            /*url=*/GURL::EmptyGURL(), actor_task_id,
-            actor::MakeFrontEndTrackUUID(actor_task_id), event,
-            actor::JournalDetailsBuilder()
-                .Add("begin_details", details)
-                .Build());
-  }
-
-  void LogEndAsyncEvent(uint64_t event_async_id, const std::string& details) {
-    auto it = active_journal_events_.find(event_async_id);
-    if (it != active_journal_events_.end()) {
-      it->second->EndEntry(
-          actor::JournalDetailsBuilder().Add("end_details", details).Build());
-
-      if (!it->second->GetTaskId().is_null()) {
-        // Log a histogram for each async event.
-        std::string histogram_name;
-        // The event name may have whitespaces and that won't work as a
-        // histogram name.
-        base::RemoveChars(it->second->event_name(), " ", &histogram_name);
-
-        base::UmaHistogramLongTimes100(
-            "Glic.Actor.JournalEvent." + histogram_name,
-            base::TimeTicks::Now() - it->second->begin_time());
-      }
-
-      active_journal_events_.erase(it);
-    }
-  }
-
-  void LogInstantEvent(int32_t task_id,
-                       const std::string& event,
-                       const std::string& details) {
-    auto actor_task_id = actor::TaskId(task_id);
-    actor_keyed_service_->GetJournal().Log(
-        /*url=*/GURL::EmptyGURL(), actor_task_id,
-        actor::MakeFrontEndTrackUUID(actor_task_id), event,
-        actor::JournalDetailsBuilder().Add("details", details).Build());
-  }
-
-  void Clear() {
-    if (journal_serializer_) {
-      journal_serializer_->Clear();
-    }
-  }
-
-  void Snapshot(
-      bool clear_journal,
-      glic::mojom::WebClientHandler::JournalSnapshotCallback callback) {
-    if (!journal_serializer_) {
-      std::move(callback).Run(glic::mojom::Journal::New());
-      return;
-    }
-    std::move(callback).Run(
-        glic::mojom::Journal::New(journal_serializer_->Snapshot()));
-    if (clear_journal) {
-      journal_serializer_->Clear();
-    }
-  }
-
-  std::vector<uint8_t> GetSnapshot(bool clear_journal) {
-    std::vector<uint8_t> result_buffer;
-    if (journal_serializer_) {
-      result_buffer = journal_serializer_->Snapshot();
-      if (clear_journal) {
-        journal_serializer_->Clear();
-      }
-    }
-    return result_buffer;
-  }
-
-  void Start(uint64_t max_bytes, bool capture_screenshots) {
-    journal_serializer_ =
-        std::make_unique<actor::AggregatedJournalInMemorySerializer>(
-            actor_keyed_service_->GetJournal(), max_bytes);
-    journal_serializer_->Init();
-  }
-
-  void Stop() { journal_serializer_.reset(); }
-
-  void RecordFeedback(bool positive, const std::string& reason) {
-    if (base::FeatureList::IsEnabled(features::kGlicRecordActorJournal) &&
-        !positive) {
-      SendResponseFeedback(reason);
-    }
-  }
-
- private:
-  void SendResponseFeedback(const std::string& reason) {
-    base::WeakPtr<feedback::FeedbackUploader> uploader =
-        feedback::FeedbackUploaderFactoryChrome::GetForBrowserContext(
-            actor_keyed_service_->GetProfile())
-            ->AsWeakPtr();
-    scoped_refptr<::feedback::FeedbackData> feedback_data =
-        base::MakeRefCounted<feedback::FeedbackData>(
-            std::move(uploader), ContentTracingManager::Get());
-    auto journal = GetSnapshot(false);
-
-    // TODO(b/430054430): Fetch and include system data to the feedback.
-    feedback_data->set_description(
-        reason + " - " + base::Uuid::GenerateRandomV4().AsLowercaseString());
-    feedback_data->set_product_id(
-        features::kGlicRecordActorJournalFeedbackProductId.Get());
-    feedback_data->set_category_tag(
-        features::kGlicRecordActorJournalFeedbackCategoryTag.Get());
-    feedback_data->set_is_offensive_or_unsafe(false);
-    feedback_data->AddFile("actor-journal", journal);
-
-    signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForProfile(
-            actor_keyed_service_->GetProfile());
-    if (identity_manager &&
-        identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-      feedback_data->set_user_email(
-          identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-              .email);
-    }
-
-// NEEDS_ANDROID_IMPL: ChromeSystemLogsFetcher
-#if BUILDFLAG(IS_ANDROID)
-    feedback_data->CompressSystemInfo();
-    feedback_data->OnFeedbackPageDataComplete();
-#else
-    system_logs::BuildChromeSystemLogsFetcher(
-        actor_keyed_service_->GetProfile(), /*scrub_data=*/false)
-        ->Fetch(base::BindOnce(
-            [](scoped_refptr<::feedback::FeedbackData> feedback_data,
-               std::unique_ptr<system_logs::SystemLogsResponse>
-                   system_logs_response) {
-              if (system_logs_response) {
-                feedback_data->AddLogs(*system_logs_response);
-              }
-              feedback_data->CompressSystemInfo();
-              feedback_data->OnFeedbackPageDataComplete();
-            },
-            std::move(feedback_data)));
-#endif
-  }
-
-  void GetUniquePath(const base::FilePath& file_path,
-                     base::OnceCallback<void(const base::FilePath&)> callback) {
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-        base::BindOnce(&base::GetUniquePathWithSuffixFormat, file_path,
-                       base::cstring_view("_%d")),
-        std::move(callback));
-  }
-
-  void OnUniquePathReceived(const base::FilePath& unique_path) {
-    LOG(ERROR) << "Glic Journal: " << unique_path;
-    file_journal_serializer_ =
-        std::make_unique<actor::AggregatedJournalFileSerializer>(
-            actor_keyed_service_->GetJournal());
-    file_journal_serializer_->Init(
-        unique_path,
-        base::BindOnce(&JournalHandler::FileInitDone, base::Unretained(this)));
-  }
-
-  void FileInitDone(bool success) {
-    if (!success) {
-      file_journal_serializer_.reset();
-    }
-  }
-
-  absl::flat_hash_map<
-      uint64_t,
-      std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry>>
-      active_journal_events_;
-  std::unique_ptr<actor::AggregatedJournalInMemorySerializer>
-      journal_serializer_;
-  std::unique_ptr<actor::AggregatedJournalFileSerializer>
-      file_journal_serializer_;
-  raw_ptr<actor::ActorKeyedService> actor_keyed_service_;
-};
-
 }  // namespace
 
 // WARNING: One instance of this class is created per WebUI navigated to
@@ -646,9 +443,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         annotation_manager_(
             std::make_unique<GlicAnnotationManager>(glic_service_)) {
     VLOG(1) << "Glic [WebClientHandler] Constructor";
-    if (base::FeatureList::IsEnabled(features::kGlicActor)) {
-      journal_handler_ = std::make_unique<JournalHandler>(profile_);
-    }
     active_state_calculator_.AddObserver(this);
   }
 
@@ -1588,56 +1382,57 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
                           int32_t task_id,
                           const std::string& event,
                           const std::string& details) override {
-    if (journal_handler_) {
-      journal_handler_->LogBeginAsyncEvent(event_async_id, task_id, event,
-                                           details);
+    if (actor_client_session_) {
+      actor_client_session_->LogBeginAsyncEvent(event_async_id, task_id, event,
+                                                details);
     }
   }
 
   void LogEndAsyncEvent(uint64_t event_async_id,
                         const std::string& details) override {
-    if (journal_handler_) {
-      journal_handler_->LogEndAsyncEvent(event_async_id, details);
+    if (actor_client_session_) {
+      actor_client_session_->LogEndAsyncEvent(event_async_id, details);
     }
   }
 
   void LogInstantEvent(int32_t task_id,
                        const std::string& event,
                        const std::string& details) override {
-    if (journal_handler_) {
-      journal_handler_->LogInstantEvent(task_id, event, details);
+    if (actor_client_session_) {
+      actor_client_session_->LogInstantEvent(task_id, event, details);
     }
   }
 
   void JournalClear() override {
-    if (journal_handler_) {
-      journal_handler_->Clear();
+    if (actor_client_session_) {
+      actor_client_session_->JournalClear();
     }
   }
 
   void JournalSnapshot(bool clear_journal,
                        JournalSnapshotCallback callback) override {
-    if (journal_handler_) {
-      journal_handler_->Snapshot(clear_journal, std::move(callback));
+    if (actor_client_session_) {
+      actor_client_session_->JournalSnapshot(clear_journal,
+                                             std::move(callback));
     }
   }
 
   void JournalStart(uint64_t max_bytes, bool capture_screenshots) override {
-    if (journal_handler_) {
-      journal_handler_->Start(max_bytes, capture_screenshots);
+    if (actor_client_session_) {
+      actor_client_session_->JournalStart(max_bytes, capture_screenshots);
     }
   }
 
   void JournalStop() override {
-    if (journal_handler_) {
-      journal_handler_->Stop();
+    if (actor_client_session_) {
+      actor_client_session_->JournalStop();
     }
   }
 
   void JournalRecordFeedback(bool positive,
                              const std::string& reason) override {
-    if (journal_handler_) {
-      journal_handler_->RecordFeedback(positive, reason);
+    if (actor_client_session_) {
+      actor_client_session_->JournalRecordFeedback(positive, reason);
     }
   }
 
@@ -2419,7 +2214,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   const std::unique_ptr<GlicAnnotationManager> annotation_manager_;
   std::unique_ptr<system_permission_settings::ScopedObservation>
       system_permission_settings_observation_;
-  std::unique_ptr<JournalHandler> journal_handler_;
   std::unique_ptr<DebouncerDeduper> debouncer_deduper_;
   std::unique_ptr<PageMetadataManager> page_metadata_manager_;
   raw_ptr<skills::SkillsService> skills_service_;

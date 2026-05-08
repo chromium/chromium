@@ -4,6 +4,8 @@
 
 source_set("actor") {
   sources = [
+    "glic_actor_journal_handler.cc",
+    "glic_actor_journal_handler.h",
     "glic_actor_policy_checker.cc",
     "glic_actor_policy_checker.h",
     "glic_actor_task_manager.cc",
@@ -15,6 +17,7 @@ source_set("actor") {
     "//chrome/browser:browser_process",
     "//chrome/browser/actor",
     "//chrome/browser/actor/ui",
+    "//chrome/browser/feedback",
     "//chrome/browser/glic",
     "//chrome/browser/glic:glic_metrics",
     "//chrome/browser/glic:mojo_bindings",
@@ -23,6 +26,7 @@ source_set("actor") {
     "//components/actor/public/mojom:mojo_bindings",
     "//components/enterprise/buildflags",
     "//components/enterprise/connectors/core",
+    "//components/feedback/content",
     "//components/tabs:public",
     "//components/variations/service",
     "//mojo/public/mojom/base:protobuf_support",

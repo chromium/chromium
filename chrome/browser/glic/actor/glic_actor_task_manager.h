@@ -37,6 +37,7 @@ class TabObservationController;
 namespace glic {
 class GlicActorClientSession;
 class GlicInstanceMetrics;
+class GlicActorJournalHandler;
 
 // Manages actor-related tasks for GlicKeyedService.
 class GlicActorTaskManager {
@@ -68,6 +69,7 @@ class GlicActorTaskManager {
   void UnbindSession();
 
   base::WeakPtr<GlicActorTaskManager> GetWeakPtr();
+  Profile* profile() const { return profile_; }
 
   GlicActorClientSession* GetClientSessionForTesting();
 
@@ -117,6 +119,22 @@ class GlicActorClientSession {
       const std::optional<int32_t>& initiator_window_id,
       glic::mojom::WebClientHandler::CreateActorTabCallback callback);
   void CancelTask();
+
+  void LogBeginAsyncEvent(uint64_t event_async_id,
+                          int32_t task_id,
+                          const std::string& event,
+                          const std::string& details);
+  void LogEndAsyncEvent(uint64_t event_async_id, const std::string& details);
+  void LogInstantEvent(int32_t task_id,
+                       const std::string& event,
+                       const std::string& details);
+  void JournalClear();
+  void JournalSnapshot(
+      bool clear_journal,
+      glic::mojom::WebClientHandler::JournalSnapshotCallback callback);
+  void JournalStart(uint64_t max_bytes, bool capture_screenshots);
+  void JournalStop();
+  void JournalRecordFeedback(bool positive, const std::string& reason);
 
   base::WeakPtr<GlicActorClientSession> GetWeakPtr();
 
@@ -184,6 +202,7 @@ class GlicActorClientSession {
       actor_task_state_changed_subscription_;
   base::CallbackListSubscription can_act_on_web_changed_subscription_;
   raw_ref<GlicActorTaskManager> manager_;
+  std::unique_ptr<GlicActorJournalHandler> journal_handler_;
   base::WeakPtrFactory<GlicActorClientSession> weak_ptr_factory_{this};
 };
 

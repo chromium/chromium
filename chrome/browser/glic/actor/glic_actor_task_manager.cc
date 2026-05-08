@@ -6,7 +6,9 @@
 
 #include "base/base64.h"
 #include "base/check.h"
+#include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/to_string.h"
@@ -23,6 +25,7 @@
 #include "chrome/browser/actor/tab_observation_controller.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
+#include "chrome/browser/glic/actor/glic_actor_journal_handler.h"
 #include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic_mojom_traits.h"
@@ -30,6 +33,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/service/metrics/glic_instance_metrics.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/common/actor.mojom-shared.h"
 #include "chrome/common/actor.mojom.h"
@@ -42,6 +46,7 @@
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/page_content_annotations/content/page_context_fetcher.h"
 #include "components/sessions/core/session_id.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "ui/gfx/geometry/point.h"
@@ -88,7 +93,9 @@ tabs::TabInterface* GetCrashedTab(actor::ActorTask& task) {
 }  // namespace
 
 GlicActorClientSession::GlicActorClientSession(GlicActorTaskManager* manager)
-    : manager_(*manager) {
+    : manager_(*manager),
+      journal_handler_(
+          std::make_unique<GlicActorJournalHandler>(manager->profile())) {
   // Unretained is safe because the subscription cancels the callback when
   // this is destroyed.
   can_act_on_web_changed_subscription_ =
@@ -99,6 +106,48 @@ GlicActorClientSession::GlicActorClientSession(GlicActorTaskManager* manager)
 
 GlicActorClientSession::~GlicActorClientSession() {
   CancelTask();
+}
+
+void GlicActorClientSession::LogBeginAsyncEvent(uint64_t event_async_id,
+                                                int32_t task_id,
+                                                const std::string& event,
+                                                const std::string& details) {
+  journal_handler_->LogBeginAsyncEvent(event_async_id, task_id, event, details);
+}
+
+void GlicActorClientSession::LogEndAsyncEvent(uint64_t event_async_id,
+                                              const std::string& details) {
+  journal_handler_->LogEndAsyncEvent(event_async_id, details);
+}
+
+void GlicActorClientSession::LogInstantEvent(int32_t task_id,
+                                             const std::string& event,
+                                             const std::string& details) {
+  journal_handler_->LogInstantEvent(task_id, event, details);
+}
+
+void GlicActorClientSession::JournalClear() {
+  journal_handler_->Clear();
+}
+
+void GlicActorClientSession::JournalSnapshot(
+    bool clear_journal,
+    glic::mojom::WebClientHandler::JournalSnapshotCallback callback) {
+  journal_handler_->Snapshot(clear_journal, std::move(callback));
+}
+
+void GlicActorClientSession::JournalStart(uint64_t max_bytes,
+                                          bool capture_screenshots) {
+  journal_handler_->Start(max_bytes, capture_screenshots);
+}
+
+void GlicActorClientSession::JournalStop() {
+  journal_handler_->Stop();
+}
+
+void GlicActorClientSession::JournalRecordFeedback(bool positive,
+                                                   const std::string& reason) {
+  journal_handler_->RecordFeedback(positive, reason);
 }
 
 GlicActorTaskManager::GlicActorTaskManager(
