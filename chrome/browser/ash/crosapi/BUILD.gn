@@ -19,10 +19,6 @@ static_library("crosapi") {
     "crosapi_id.h",
     "crosapi_manager.cc",
     "crosapi_manager.h",
-    "document_scan_ash.cc",
-    "document_scan_ash.h",
-    "document_scan_ash_type_converters.cc",
-    "document_scan_ash_type_converters.h",
     "local_printer_ash.cc",
     "local_printer_ash.h",
   ]
@@ -279,11 +275,7 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "document_scan_ash_type_converters_unittest.cc",
-    "document_scan_ash_unittest.cc",
-    "local_printer_ash_unittest.cc",
-  ]
+  sources = [ "local_printer_ash_unittest.cc" ]
 
   deps = [
     ":crosapi",

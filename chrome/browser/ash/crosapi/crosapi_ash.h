@@ -32,7 +32,6 @@ class InSessionAuth;
 
 namespace crosapi {
 
-class DocumentScanAsh;
 class LocalPrinterAsh;
 
 // Implementation of Crosapi in Ash. It provides a set of APIs that
@@ -55,8 +54,6 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindCfmServiceContext(
       mojo::PendingReceiver<chromeos::cfm::mojom::CfmServiceContext> receiver)
       override;
-  void BindDocumentScan(
-      mojo::PendingReceiver<mojom::DocumentScan> receiver) override;
   void BindHidManager(
       mojo::PendingReceiver<device::mojom::HidManager> receiver) override;
   void BindInSessionAuth(
@@ -89,8 +86,6 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindTelemetryProbeService(
       mojo::PendingReceiver<mojom::TelemetryProbeService> receiver) override;
 
-  DocumentScanAsh* document_scan_ash() { return document_scan_ash_.get(); }
-
   LocalPrinterAsh* local_printer_ash() { return local_printer_ash_.get(); }
 
   ash::ProbeServiceAsh* probe_service_ash() { return probe_service_ash_.get(); }
@@ -99,7 +94,6 @@ class CrosapiAsh : public mojom::Crosapi {
   // Called when a connection is lost.
   void OnDisconnected();
 
-  std::unique_ptr<DocumentScanAsh> document_scan_ash_;
   std::unique_ptr<LocalPrinterAsh> local_printer_ash_;
   std::unique_ptr<ash::TelemetryDiagnosticsRoutineServiceAsh>
       telemetry_diagnostic_routine_service_ash_;
