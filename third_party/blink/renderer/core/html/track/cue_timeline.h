@@ -7,7 +7,9 @@
 
 #include <optional>
 
+#include "base/gtest_prod_util.h"
 #include "base/types/pass_key.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/track/text_track_cue.h"
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_cue.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -32,7 +34,7 @@ typedef Vector<CueInterval> CueList;
 
 // This class manages the timeline and rendering updates of cues associated
 // with TextTracks. Owned by a HTMLMediaElement.
-class CueTimeline final : public GarbageCollected<CueTimeline> {
+class CORE_EXPORT CueTimeline final : public GarbageCollected<CueTimeline> {
  public:
   class IgnoreUpdateScope {
     STACK_ALLOCATED();
@@ -78,6 +80,9 @@ class CueTimeline final : public GarbageCollected<CueTimeline> {
   void Trace(Visitor*) const;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(CueTimelineTest,
+                           CueEventTimerFiredWithPosterFlagSet);
+
   HTMLMediaElement& MediaElement() const { return *media_element_; }
 
   void AddCueInternal(TextTrackCue*);

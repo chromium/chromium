@@ -500,7 +500,9 @@ void CueTimeline::CancelCueEventTimer() {
 }
 
 void CueTimeline::CueEventTimerFired(TimerBase*) {
-  InvokeTimeMarchesOn();
+  if (!MediaElement().IsShowPosterFlagSet()) {
+    InvokeTimeMarchesOn();
+  }
 }
 
 void CueTimeline::CueTimestampEventTimerFired(TimerBase*) {

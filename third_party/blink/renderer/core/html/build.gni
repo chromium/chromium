@@ -802,6 +802,7 @@ blink_core_tests_html = [
   "parser/text_resource_decoder_test.cc",
   "shadow/progress_shadow_element_test.cc",
   "time_ranges_test.cc",
+  "track/cue_timeline_test.cc",
   "track/text_track_list_test.cc",
   "track/vtt/buffered_line_reader_test.cc",
   "track/vtt/vtt_scanner_test.cc",
