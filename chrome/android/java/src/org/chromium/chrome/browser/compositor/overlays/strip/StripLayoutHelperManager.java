@@ -491,7 +491,7 @@ public class StripLayoutHelperManager
      *     space mode, false otherwise.
      * @param backPressManager The {@link BackPressManager} for handling back press.
      * @param snackbarManager The {@link SnackbarManager} used to show snackbar UI.
-     * @param glicClickHandler The click handler for the Glic button.
+     * @param glicClickHandler The {@link Callback<Boolean>} for the Glic button.
      */
     // TODO(crbug.com/484116872): Suppressing to observe SharedPreferences, which is discouraged;
     // should use another messaging channel instead.
@@ -522,7 +522,7 @@ public class StripLayoutHelperManager
             @Nullable NonNullObservableSupplier<Boolean> xrSpaceModeObservableSupplier,
             BackPressManager backPressManager,
             SnackbarManager snackbarManager,
-            Runnable glicClickHandler,
+            Callback<Boolean> glicClickHandler,
             @Nullable GlicKeyedService glicKeyedService) {
         mContext = context;
         mWindowAndroid = windowAndroid;
@@ -609,6 +609,7 @@ public class StripLayoutHelperManager
                         glicKeyedService,
                         ChromeAndroidTaskTrackerFactory.getInstance(),
                         () -> mIsIncognito,
+                        () -> mTabModelSelector,
                         this::updateButtonMargins);
 
         if (!IncognitoUtils.shouldOpenIncognitoAsWindow()) {
@@ -658,7 +659,7 @@ public class StripLayoutHelperManager
 
                     @Override
                     public void dismissContextMenu() {
-                        mTrailingButtonsCoordinator.dismissGlicContextMenu();
+                        mTrailingButtonsCoordinator.dismissTrailingButtonsMenu();
                     }
 
                     @Override

@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 
+import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -96,7 +97,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
      *     space modes on XR.
      * @param backPressManager The {@link BackPressManager} for handling back press.
      * @param snackbarManager The {@link SnackbarManager} used to show snackbar UI.
-     * @param glicClickHandler The click handler for the tab strip Glic button.
+     * @param glicClickHandler The {@link Callback<Boolean>} for the tab strip Glic button.
      */
     public LayoutManagerChromeTablet(
             LayoutManagerHost host,
@@ -123,7 +124,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
             @Nullable XrSceneCoreSessionManager xrSceneCoreSessionManager,
             BackPressManager backPressManager,
             SnackbarManager snackbarManager,
-            Runnable glicClickHandler,
+            Callback<Boolean> glicClickHandler,
             @Nullable GlicKeyedService glicKeyedService) {
         super(
                 host,

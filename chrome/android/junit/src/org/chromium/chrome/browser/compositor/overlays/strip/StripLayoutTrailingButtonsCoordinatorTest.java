@@ -31,11 +31,14 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
+import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.actor.ActorKeyedService;
+import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
@@ -68,7 +71,7 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
     @Mock private LayoutRenderHost mRenderHost;
     @Mock private LayerTitleCache mLayerTitleCache;
     @Mock private GlicKeyedService mGlicKeyedService;
-    @Mock private Runnable mGlicClickHandler;
+    @Mock private Callback<Boolean> mGlicClickHandler;
     @Mock private View mToolbarContainerView;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private Profile mProfile;
@@ -78,6 +81,7 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
     @Mock private StripLayoutTrailingButtonsObserver mObserver;
     @Mock private ChromeAndroidTaskTracker mTaskTracker;
     @Mock private ChromeAndroidTask mTask;
+    @Mock private ActorKeyedService mActorKeyedService;
 
     private Activity mActivity;
     private StripLayoutTrailingButtonsCoordinator mCoordinator;
@@ -94,8 +98,12 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
         when(mPrefService.getBoolean(GlicPrefNames.GLIC_PINNED_TO_TABSTRIP)).thenReturn(true);
 
+        ActorKeyedServiceFactory.setForTesting(mActorKeyedService);
+        when(mActorKeyedService.getActiveTasks()).thenReturn(java.util.Collections.emptyList());
+
         mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
 
         when(mTaskTracker.get(anyInt())).thenReturn(mTask);
         when(mTask.getNativeBrowserWindowPtr(any(), any())).thenReturn(mBwiPtr);
@@ -122,6 +130,7 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
                         mGlicKeyedService,
                         mTaskTracker,
                         () -> mIsIncognito,
+                        () -> null,
                         mObserver);
         mCoordinator.onProfileAvailable(mProfile);
         mCoordinator.setLayerTitleCache(mLayerTitleCache);
@@ -355,8 +364,6 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
                 /* leftPadding= */ 10f,
                 /* topPadding= */ 10f);
 
-        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
-
         float x = mGlicButton.getDrawX() + mGlicButton.getWidth() / 2;
         float y = mGlicButton.getDrawY() + mGlicButton.getHeight() / 2;
 
@@ -380,7 +387,7 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
         float glicY = mGlicButton.getDrawY() + mGlicButton.getHeight() / 2;
         boolean glicHandled = mCoordinator.click(0L, glicX, glicY, 0, 0, /* tabWidthDp= */ 100f);
         assertTrue("Click on Glic coordinates should be handled.", glicHandled);
-        verify(mGlicClickHandler, Mockito.times(1)).run();
+        verify(mGlicClickHandler, Mockito.times(1)).onResult(/* result= */ false);
 
         // 2. Test click routing on Glic Actor Button coordinates
         float actorX = mGlicActorButton.getDrawX() + mGlicActorButton.getWidth() / 2;

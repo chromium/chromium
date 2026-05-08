@@ -61,6 +61,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/glic/GlicNavigationUtils.java",
     "java/src/org/chromium/chrome/browser/glic/GlicPromoCoordinator.java",
     "java/src/org/chromium/chrome/browser/glic/GlicSettings.java",
+    "java/src/org/chromium/chrome/browser/glic/GlicTaskMenuCoordinator.java",
     "java/src/org/chromium/chrome/browser/glic/GlicToolbarButtonController.java",
     "java/src/org/chromium/chrome/browser/glic/GlicUtils.java",
   ]
@@ -153,6 +154,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/glic/GlicHelperUnitTest.java",
     "java/src/org/chromium/chrome/browser/glic/GlicPromoCoordinatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/glic/GlicSettingsUnitTest.java",
+    "java/src/org/chromium/chrome/browser/glic/GlicTaskMenuCoordinatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/glic/GlicToolbarButtonControllerTest.java",
   ]
   deps = [

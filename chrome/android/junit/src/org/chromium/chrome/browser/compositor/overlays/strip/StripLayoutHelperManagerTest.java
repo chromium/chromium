@@ -281,7 +281,7 @@ public class StripLayoutHelperManagerTest {
                         /* xrSpaceModeObservableSupplier= */ null,
                         mBackPressManager,
                         mSnackbarManager,
-                        () -> {},
+                        CallbackUtils.emptyCallback(),
                         mGlicKeyedService);
         mStripLayoutHelperManager.setTabStripTreeProviderForTesting(mTabStripTreeProvider);
         mStripLayoutHelperManager.setTabModelSelector(mTabModelSelector, mTabCreatorManager);

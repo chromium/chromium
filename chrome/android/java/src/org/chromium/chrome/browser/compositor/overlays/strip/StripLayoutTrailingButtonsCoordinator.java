@@ -13,12 +13,15 @@ import android.view.View;
 import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.EnsuresNonNullIf;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
+import org.chromium.chrome.browser.actor.ActorTask;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
@@ -32,10 +35,12 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicKeyedService;
 import org.chromium.chrome.browser.glic.GlicKeyedService.GlobalShowHideObserver;
 import org.chromium.chrome.browser.glic.GlicPrefNames;
+import org.chromium.chrome.browser.glic.GlicTaskMenuCoordinator;
 import org.chromium.chrome.browser.glic.GlicUtils;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTaskTracker;
 import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -118,11 +123,12 @@ public class StripLayoutTrailingButtonsCoordinator {
     private final StripLayoutTrailingButtonsObserver mObserver;
     private final float mDensity;
     private final float mStripEndPadding;
-    private final Runnable mGlicClickHandler;
+    private final Callback<Boolean> mGlicClickHandler;
     private final @Nullable GlicKeyedService mGlicKeyedService;
     private final @Nullable GlobalShowHideObserver mGlicUiObserver;
     private final @Nullable ChromeAndroidTaskTracker mTaskTracker;
     private final Supplier<Boolean> mIsIncognitoSupplier;
+    private final Supplier<@Nullable TabModelSelector> mTabModelSelectorSupplier;
 
     // Lifecycle & Caching Objects
     private @Nullable Profile mProfile;
@@ -134,6 +140,7 @@ public class StripLayoutTrailingButtonsCoordinator {
     private @Nullable TintedCompositorButton mGlicDismissNudgeButton;
     private @Nullable TintedCompositorTextButton mGlicActorButton;
     private @Nullable GlicButtonContextMenuCoordinator mGlicButtonContextMenuCoordinator;
+    private @Nullable GlicTaskMenuCoordinator mGlicTaskMenuCoordinator;
     private final View mToolbarControlContainer;
 
     // Layout & State Parameters
@@ -151,7 +158,7 @@ public class StripLayoutTrailingButtonsCoordinator {
      * @param updateHost The {@link LayoutUpdateHost} for requesting handles layout.
      * @param renderHost The {@link LayoutRenderHost} for requesting renders.
      * @param windowAndroid The {@link WindowAndroid} for the activity.
-     * @param glicClickHandler The {@link Runnable} to execute on Glic button click.
+     * @param glicClickHandler The {@link Callback<Boolean>} to execute on Glic button click.
      * @param density The display density.
      * @param stripEndPadding The end padding of the tab strip.
      * @param toolbarControlContainer The view containing toolbar controls.
@@ -167,7 +174,7 @@ public class StripLayoutTrailingButtonsCoordinator {
             LayoutUpdateHost updateHost,
             LayoutRenderHost renderHost,
             WindowAndroid windowAndroid,
-            Runnable glicClickHandler,
+            Callback<Boolean> glicClickHandler,
             float density,
             float stripEndPadding,
             View toolbarControlContainer,
@@ -177,6 +184,7 @@ public class StripLayoutTrailingButtonsCoordinator {
             @Nullable GlicKeyedService glicKeyedService,
             @Nullable ChromeAndroidTaskTracker taskTracker,
             Supplier<Boolean> isIncognitoSupplier,
+            Supplier<@Nullable TabModelSelector> tabModelSelectorSupplier,
             StripLayoutTrailingButtonsObserver observer) {
         mContext = context;
         mUpdateHost = updateHost;
@@ -187,6 +195,7 @@ public class StripLayoutTrailingButtonsCoordinator {
         mGlicKeyedService = glicKeyedService;
         mTaskTracker = taskTracker;
         mIsIncognitoSupplier = isIncognitoSupplier;
+        mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mObserver = observer;
         mWindowAndroid = windowAndroid;
         mToolbarControlContainer = toolbarControlContainer;
@@ -199,7 +208,8 @@ public class StripLayoutTrailingButtonsCoordinator {
         }
 
         StripLayoutViewOnClickHandler glicClickHandlerOnButton =
-                (time, view, motionEventButtonState, modifiers) -> mGlicClickHandler.run();
+                (time, view, motionEventButtonState, modifiers) ->
+                        mGlicClickHandler.onResult(/* result= */ false);
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.GLIC)
                 && AndroidSidePanelEnabledFn.isEnabled()) {
@@ -292,7 +302,8 @@ public class StripLayoutTrailingButtonsCoordinator {
                             GLIC_BUTTON_BACKGROUND_WIDTH_DP,
                             GLIC_BUTTON_BACKGROUND_HEIGHT_DP,
                             /* tooltipHandler= */ null,
-                            (time, view, motionEventButtonState, modifiers) -> {},
+                            (time, view, motionEventButtonState, modifiers) ->
+                                    toggleActorTaskMenu(),
                             keyboardFocusHandler,
                             R.drawable.ic_arrow_selector_spark_16dp,
                             GLIC_BUTTON_CLICK_SLOP_DP,
@@ -328,6 +339,10 @@ public class StripLayoutTrailingButtonsCoordinator {
         if (mGlicButtonContextMenuCoordinator != null) {
             mGlicButtonContextMenuCoordinator.dismiss();
             mGlicButtonContextMenuCoordinator = null;
+        }
+        if (mGlicTaskMenuCoordinator != null) {
+            mGlicTaskMenuCoordinator.dismiss();
+            mGlicTaskMenuCoordinator = null;
         }
     }
 
@@ -442,8 +457,9 @@ public class StripLayoutTrailingButtonsCoordinator {
         updateActorButtonState();
 
         updateGlicButtonPosition();
-        // Dismiss Glic context menu, similar to how the app menu is dismissed on orientation change
-        dismissGlicContextMenu();
+        // Dismiss trailing buttons' menus, similar to how the app menu is dismissed on
+        // orientation change
+        dismissTrailingButtonsMenu();
     }
 
     private void updateActorButtonState() {
@@ -466,17 +482,54 @@ public class StripLayoutTrailingButtonsCoordinator {
         }
     }
 
-    /** Returns true if the trailing button context menu is showing. */
+    /** Returns true if the trailing buttons' menus are showing. */
     public boolean isMenuShowing() {
-        return mGlicButtonContextMenuCoordinator != null
-                && mGlicButtonContextMenuCoordinator.isShowing();
+        return (mGlicButtonContextMenuCoordinator != null
+                        && mGlicButtonContextMenuCoordinator.isShowing())
+                || (mGlicTaskMenuCoordinator != null && mGlicTaskMenuCoordinator.isShowing());
     }
 
-    /** Dismisses the trailing button context menu if it is showing. */
-    public void dismissGlicContextMenu() {
+    /** Dismisses the trailing buttons' menus if they are showing. */
+    public void dismissTrailingButtonsMenu() {
         if (mGlicButtonContextMenuCoordinator != null) {
             mGlicButtonContextMenuCoordinator.dismiss();
         }
+        if (mGlicTaskMenuCoordinator != null) {
+            mGlicTaskMenuCoordinator.dismiss();
+        }
+    }
+
+    private void toggleActorTaskMenu() {
+        if (mGlicTaskMenuCoordinator != null && mGlicTaskMenuCoordinator.isShowing()) {
+            mGlicTaskMenuCoordinator.dismiss();
+            return;
+        }
+
+        if (mProfile == null || mGlicActorButton == null) return;
+        var actorService = ActorKeyedServiceFactory.getForProfile(mProfile);
+        if (actorService == null) return;
+
+        List<ActorTask> tasks = actorService.getActiveTasks();
+        if (tasks.isEmpty()) return;
+
+        RectProvider anchorRectProvider = new RectProvider();
+        mGlicActorButton.getAnchorRect(anchorRectProvider.getRect());
+        StripLayoutUtils.getAdjustedAnchorRect(
+                mContext,
+                mToolbarControlContainer,
+                mProfile.isOffTheRecord(),
+                mTopPadding,
+                anchorRectProvider);
+
+        // TabModelSelector is pulled lazily via supplier. This is safe from race conditions because
+        // Glic buttons require an initialized profile to be displayed/interacted with.
+        if (mGlicTaskMenuCoordinator == null) {
+            mGlicTaskMenuCoordinator =
+                    new GlicTaskMenuCoordinator(
+                            mContext, mTabModelSelectorSupplier, mGlicClickHandler::onResult);
+        }
+        mGlicTaskMenuCoordinator.show(
+                anchorRectProvider, mToolbarControlContainer.getRootView(), tasks);
     }
 
     /**
@@ -816,7 +869,7 @@ public class StripLayoutTrailingButtonsCoordinator {
      */
     public boolean onUpOrCancel() {
         if (mGlicButton != null && mGlicButton.onUpOrCancel()) {
-            mGlicClickHandler.run();
+            mGlicClickHandler.onResult(/* result= */ false);
             return true;
         } else if (mGlicActorButton != null && mGlicActorButton.onUpOrCancel()) {
             return true;

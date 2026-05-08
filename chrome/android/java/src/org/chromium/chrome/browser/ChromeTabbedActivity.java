@@ -1117,6 +1117,10 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                             this,
                             getModalDialogManagerSupplier().get());
 
+            Callback<Boolean> glicClickHandler =
+                    (preventClose) ->
+                            ((TabbedRootUiCoordinator) mRootUiCoordinator).toggleGlic(preventClose);
+
             mLayoutManager =
                     new LayoutManagerChromeTablet(
                             compositorViewHolder,
@@ -1143,9 +1147,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                             mXrSceneCoreSessionManagerSupplier.get(),
                             mBackPressManager,
                             getSnackbarManager(),
-                            /* glicClickHandler= */ () ->
-                                    ((TabbedRootUiCoordinator) mRootUiCoordinator)
-                                            .toggleGlic(false),
+                            glicClickHandler,
                             GlicKeyedServiceFactory.getForProfile(mTabModelProfileSupplier.get()));
             mLayoutStateProviderSupplier.set(mLayoutManager);
         }
