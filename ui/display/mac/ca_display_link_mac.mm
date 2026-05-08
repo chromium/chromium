@@ -129,12 +129,9 @@ void CADisplayLinkMac::TryRecordDisplayLinkCreation(
     CGDirectDisplayID display_id,
     bool success,
     bool in_gpu_process) {
-  // Only record CADisplayLink creation status from one process to avoid
-  // duplicate logging as they cannot be tracked across multiple processes using
-  // a single |recorded_displays| set. If kCADisplayLinkInGpuThenInBrowser
-  // (disabled by default) is enabled, it should record the ones in_gpu_process
-  // instead.
-  if (in_gpu_process) {
+  // Only record the one from the GPU process as we cannot track the status from
+  // multi-process in one |globals.recorded_displays|.
+  if (!in_gpu_process) {
     return;
   }
   auto& globals = CADisplayLinkGlobals::Get();
