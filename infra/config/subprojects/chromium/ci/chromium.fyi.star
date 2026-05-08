@@ -1365,7 +1365,20 @@ ci.builder(
             "very_limited_capacity_bot",
         ],
         per_test_modifications = {
+            "browser_tests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/linux-arm64-rel-fyi.browser_tests.filter",
+                ],
+            ),
+            "content_browsertests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/linux-arm64-rel-fyi.content_browsertests.filter",
+                ],
+            ),
             "interactive_ui_tests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/linux-arm64-rel-fyi.interactive_ui_tests.filter",
+                ],
                 swarming = targets.swarming(
                     shards = 5,
                 ),
@@ -1435,7 +1448,7 @@ ci.builder(
             "browser_tests": targets.mixin(
                 args = [
                     "--mutter-display=1280x800",
-                    "--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.browser_tests_mutter.filter",
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.browser_tests_mutter.filter;../../testing/buildbot/filters/linux-arm64-wayland-rel-fyi.browser_tests.filter",
                 ],
                 retry_only_failed_tests = True,
                 swarming = targets.swarming(
@@ -1447,7 +1460,7 @@ ci.builder(
             ),
             "interactive_ui_tests": targets.mixin(
                 args = [
-                    "--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.interactive_ui_tests_mutter.filter",
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.interactive_ui_tests_mutter.filter;../../testing/buildbot/filters/linux-arm64-wayland-rel-fyi.interactive_ui_tests.filter",
                 ],
                 swarming = targets.swarming(
                     shards = 5,

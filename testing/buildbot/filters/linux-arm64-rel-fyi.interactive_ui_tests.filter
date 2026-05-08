@@ -1,0 +1,5 @@
+# TODO(https://crbug.com/493612000): Tests are flaky on linux-arm64-rel-fyi.
+-TabDragging/DetachToBrowserTabDragControllerTest.DragToSeparateWindowDuringDragEnd/*
+-All/ForwardButtonAccessibilityTest.ContextMenu/*
+-All/MultiContentsViewTabDragEntrypointsUiParamTest.DragAndDrop/*
+-SidePanelBookmarksTest.ShoppingList

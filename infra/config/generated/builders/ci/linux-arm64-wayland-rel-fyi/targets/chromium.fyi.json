@@ -7,7 +7,7 @@
           "--use-mutter",
           "--ozone-platform=wayland",
           "--mutter-display=1280x800",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.browser_tests_mutter.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.browser_tests_mutter.filter;../../testing/buildbot/filters/linux-arm64-wayland-rel-fyi.browser_tests.filter"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -60,7 +60,7 @@
           "--no-xvfb",
           "--use-mutter",
           "--ozone-platform=wayland",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.interactive_ui_tests_mutter.filter"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/ozone-linux.interactive_ui_tests_mutter.filter;../../testing/buildbot/filters/linux-arm64-wayland-rel-fyi.interactive_ui_tests.filter"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
