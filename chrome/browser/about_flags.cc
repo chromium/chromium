@@ -7496,11 +7496,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kReadAnythingDocsLoadMoreButton)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-    {"enable-auto-disable-accessibility",
-     flag_descriptions::kEnableAutoDisableAccessibilityName,
-     flag_descriptions::kEnableAutoDisableAccessibilityDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kAutoDisableAccessibility)},
-
     {"image-descriptions-alternative-routing",
      flag_descriptions::kImageDescriptionsAlternateRoutingName,
      flag_descriptions::kImageDescriptionsAlternateRoutingDescription, kOsAll,

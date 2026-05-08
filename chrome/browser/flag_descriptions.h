@@ -1651,14 +1651,6 @@ inline constexpr char kEnableAudioMonitoringOnAndroidDescription[] =
     "#media-indicators-android flag to achieve a more responsive UI "
     "update when audio starts or stops.";
 
-inline constexpr char kEnableAutoDisableAccessibilityName[] =
-    "Auto-disable Accessibility";
-inline constexpr char kEnableAutoDisableAccessibilityDescription[] =
-    "When accessibility APIs are no longer being requested, automatically "
-    "disables accessibility. This might happen if an assistive technology is "
-    "turned off or if an extension which uses accessibility APIs no longer "
-    "needs them.";
-
 inline constexpr char kImageDescriptionsAlternateRoutingName[] =
     "Use alternative route for image descriptions.";
 inline constexpr char kImageDescriptionsAlternateRoutingDescription[] =

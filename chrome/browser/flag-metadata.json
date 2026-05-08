@@ -2974,11 +2974,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "enable-auto-disable-accessibility",
-    "owners": [ "abigailbklein@google.com", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "enable-auto-minted-twa",
     "owners": [ "fx-twa-eng@google.com" ],
     "expiry_milestone": 160
