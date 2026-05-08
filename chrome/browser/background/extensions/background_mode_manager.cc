@@ -189,8 +189,8 @@ void BackgroundModeManager::BackgroundModeData::BuildProfileMenu(
           base::RetainedRef(application)));
       menu->AddItem(command_id, base::UTF8ToUTF16(name));
       if (!icon.isNull()) {
-        menu->SetIcon(menu->GetItemCount() - 1,
-                      ui::ImageModel::FromImageSkia(icon));
+        menu->SetIconForCommandId(command_id,
+                                  ui::ImageModel::FromImageSkia(icon));
       }
 
       // Component extensions with background that do not have an options page

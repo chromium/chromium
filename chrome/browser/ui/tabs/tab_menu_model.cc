@@ -277,18 +277,25 @@ void TabMenuModel::Build(int index) {
                l10n_util::GetPluralStringFUTF16(IDS_TAB_CXMENU_ADD_TAB_TO_GROUP,
                                                 num_tabs),
                add_to_existing_group_submenu_.get());
+    if (base::FeatureList::IsEnabled(features::kMenuSimplification)) {
+      SetIconForCommandId(
+          TabStripModel::CommandAddToExistingGroup,
+          ui::ImageModel::FromVectorIcon(
+              kSavedTabGroupBarEverythingIcon, ui::kColorMenuIcon,
+              ui::SimpleMenuModel::kDefaultIconSize));
+    }
   } else {
     AddItem(TabStripModel::CommandAddToNewGroup,
             l10n_util::GetPluralStringFUTF16(
                 IDS_TAB_CXMENU_ADD_TAB_TO_NEW_GROUP, num_tabs));
     SetElementIdentifierAt(GetItemCount() - 1, kAddToNewGroupItemIdentifier);
-  }
-
-  if (base::FeatureList::IsEnabled(features::kMenuSimplification)) {
-    SetIcon(GetItemCount() - 1,
-            ui::ImageModel::FromVectorIcon(
-                kSavedTabGroupBarEverythingIcon, ui::kColorMenuIcon,
-                ui::SimpleMenuModel::kDefaultIconSize));
+    if (base::FeatureList::IsEnabled(features::kMenuSimplification)) {
+      SetIconForCommandId(
+          TabStripModel::CommandAddToNewGroup,
+          ui::ImageModel::FromVectorIcon(
+              kSavedTabGroupBarEverythingIcon, ui::kColorMenuIcon,
+              ui::SimpleMenuModel::kDefaultIconSize));
+    }
   }
 
   for (const auto& selection : indices) {
@@ -307,16 +314,22 @@ void TabMenuModel::Build(int index) {
                l10n_util::GetPluralStringFUTF16(
                    IDS_TAB_CXMENU_MOVETOANOTHERWINDOW, num_tabs),
                add_to_existing_window_submenu_.get());
+    if (base::FeatureList::IsEnabled(features::kMenuSimplification)) {
+      SetIconForCommandId(TabStripModel::CommandMoveToExistingWindow,
+                          ui::ImageModel::FromVectorIcon(
+                              kOpenInNewIcon, ui::kColorMenuIcon,
+                              ui::SimpleMenuModel::kDefaultIconSize));
+    }
   } else {
     AddItem(TabStripModel::CommandMoveTabsToNewWindow,
             l10n_util::GetPluralStringFUTF16(
                 IDS_TAB_CXMENU_MOVE_TABS_TO_NEW_WINDOW, num_tabs));
-  }
-
-  if (base::FeatureList::IsEnabled(features::kMenuSimplification)) {
-    SetIcon(GetItemCount() - 1, ui::ImageModel::FromVectorIcon(
-                                    kOpenInNewIcon, ui::kColorMenuIcon,
-                                    ui::SimpleMenuModel::kDefaultIconSize));
+    if (base::FeatureList::IsEnabled(features::kMenuSimplification)) {
+      SetIconForCommandId(TabStripModel::CommandMoveTabsToNewWindow,
+                          ui::ImageModel::FromVectorIcon(
+                              kOpenInNewIcon, ui::kColorMenuIcon,
+                              ui::SimpleMenuModel::kDefaultIconSize));
+    }
   }
 
   AddSeparator(ui::NORMAL_SEPARATOR);
@@ -332,10 +345,11 @@ void TabMenuModel::Build(int index) {
       will_pin ? IDS_TAB_CXMENU_PIN_TAB : IDS_TAB_CXMENU_UNPIN_TAB);
 
   if (base::FeatureList::IsEnabled(features::kMenuSimplification)) {
-    SetIcon(GetItemCount() - 1,
-            ui::ImageModel::FromVectorIcon(
-                will_pin ? views::kPinIcon : views::kUnpinIcon,
-                ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize));
+    SetIconForCommandId(
+        TabStripModel::CommandTogglePinned,
+        ui::ImageModel::FromVectorIcon(
+            will_pin ? views::kPinIcon : views::kUnpinIcon, ui::kColorMenuIcon,
+            ui::SimpleMenuModel::kDefaultIconSize));
   }
 
   const bool will_mute = !AreAllSitesMuted(*tab_strip_, indices);
@@ -346,11 +360,12 @@ void TabMenuModel::Build(int index) {
                           IDS_TAB_CXMENU_SOUND_UNMUTE_SITE, num_tabs));
 
   if (base::FeatureList::IsEnabled(features::kMenuSimplification)) {
-    SetIcon(GetItemCount() - 1,
-            ui::ImageModel::FromVectorIcon(
-                will_mute ? vector_icons::kVolumeOffChromeRefreshIcon
-                          : vector_icons::kVolumeUpChromeRefreshIcon,
-                ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize));
+    SetIconForCommandId(
+        TabStripModel::CommandToggleSiteMuted,
+        ui::ImageModel::FromVectorIcon(
+            will_mute ? vector_icons::kVolumeOffChromeRefreshIcon
+                      : vector_icons::kVolumeUpChromeRefreshIcon,
+            ui::kColorMenuIcon, ui::SimpleMenuModel::kDefaultIconSize));
   }
 
   const bool show_glic_items =

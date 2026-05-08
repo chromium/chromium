@@ -947,8 +947,9 @@ void HelpMenuModel::Build(Browser* browser) {
     AddItemWithStringId(IDC_HELP_PAGE_VIA_MENU, help_string_id);
     if (browser_defaults::kShowHelpMenuItemIcon) {
       ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-      SetIcon(GetIndexOfCommandId(IDC_HELP_PAGE_VIA_MENU).value(),
-              ui::ImageModel::FromImage(rb.GetNativeImageNamed(IDR_HELP_MENU)));
+      SetIconForCommandId(
+          IDC_HELP_PAGE_VIA_MENU,
+          ui::ImageModel::FromImage(rb.GetNativeImageNamed(IDR_HELP_MENU)));
     } else {
       SetCommandIcon(this, IDC_HELP_PAGE_VIA_MENU, kHelpMenuIcon);
     }
@@ -1989,8 +1990,8 @@ void AppMenuModel::Build() {
       static_cast<ProfileSubMenuModel*>(sub_menus_.back().get());
   AddSubMenu(IDC_PROFILE_MENU_IN_APP_MENU,
              profile_submenu_model->profile_name(), profile_submenu_model);
-  SetIcon(GetIndexOfCommandId(IDC_PROFILE_MENU_IN_APP_MENU).value(),
-          profile_submenu_model->avatar_image_model());
+  SetIconForCommandId(IDC_PROFILE_MENU_IN_APP_MENU,
+                      profile_submenu_model->avatar_image_model());
   SetElementIdentifierAt(
       GetIndexOfCommandId(IDC_PROFILE_MENU_IN_APP_MENU).value(),
       kProfileMenuItem);
@@ -2226,8 +2227,7 @@ bool AppMenuModel::AddGlobalErrorMenuItems() {
     DCHECK(error);
     if (error->HasMenuItem()) {
       AddItem(error->MenuItemCommandID(), error->MenuItemLabel());
-      SetIcon(GetIndexOfCommandId(error->MenuItemCommandID()).value(),
-              error->MenuItemIcon());
+      SetIconForCommandId(error->MenuItemCommandID(), error->MenuItemIcon());
       menu_items_added = true;
     }
   }
