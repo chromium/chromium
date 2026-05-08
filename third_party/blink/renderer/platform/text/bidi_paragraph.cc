@@ -13,6 +13,12 @@ namespace blink {
 
 bool BidiParagraph::SetParagraph(const String& text,
                                  std::optional<TextDirection> base_direction) {
+  // A workaround for integer overflow in ICU. See crbug.com/504629701.
+  // We can remove this after fixing the ICU issue, and rolling out the ICU
+  // update.
+  constexpr size_t kIcuRunSize = sizeof(int32_t) * 3;
+  CHECK_LE(text.length(), std::numeric_limits<int32_t>::max() / kIcuRunSize);
+
   DCHECK(!text.IsNull());
   if (!ubidi_) {
     ubidi_ = UBidiPtr(ubidi_open());
