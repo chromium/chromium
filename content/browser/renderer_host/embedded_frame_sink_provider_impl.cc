@@ -31,13 +31,12 @@ void EmbeddedFrameSinkProviderImpl::RegisterEmbeddedFrameSink(
     const viz::FrameSinkId& parent_frame_sink_id,
     const viz::FrameSinkId& frame_sink_id,
     mojo::PendingRemote<blink::mojom::EmbeddedFrameSinkClient> client) {
-  // TODO(kylechar): Kill the renderer too.
   if (parent_frame_sink_id.client_id() != renderer_client_id_) {
-    DLOG(ERROR) << "Invalid parent client id " << parent_frame_sink_id;
+    receivers_.ReportBadMessage("Invalid parent client id");
     return;
   }
   if (frame_sink_id.client_id() != renderer_client_id_) {
-    DLOG(ERROR) << "Invalid client id " << frame_sink_id;
+    receivers_.ReportBadMessage("Invalid client id");
     return;
   }
 
@@ -145,9 +144,8 @@ void EmbeddedFrameSinkProviderImpl::ConnectToEmbedder(
     const viz::FrameSinkId& child_frame_sink_id,
     mojo::PendingReceiver<blink::mojom::SurfaceEmbedder>
         surface_embedder_receiver) {
-  // TODO(kylechar): Kill the renderer too.
   if (child_frame_sink_id.client_id() != renderer_client_id_) {
-    DLOG(ERROR) << "Invalid client id " << child_frame_sink_id;
+    receivers_.ReportBadMessage("Invalid client id");
     return;
   }
 

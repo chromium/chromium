@@ -299,15 +299,19 @@ TEST_F(EmbeddedFrameSinkProviderImplTest, ParentNotRegistered) {
   WaitForConnectionError(&compositor_frame_sink);
 }
 
-// Check that trying to create an EmbeddedFrameSinkImpl with a client id
-// that doesn't match the renderer fails.
+// Check that trying to create an EmbeddedFrameSinkImpl with a frame sink client
+// id that doesn't match the renderer fails.
 TEST_F(EmbeddedFrameSinkProviderImplTest, InvalidClientId) {
+  mojo::Remote<blink::mojom::EmbeddedFrameSinkProvider> remote;
+  provider()->Add(remote.BindNewPipeAndPassReceiver());
+  EXPECT_TRUE(remote.is_connected());
+
   const viz::FrameSinkId invalid_frame_sink_id(4, 3);
   EXPECT_NE(kRendererClientId, invalid_frame_sink_id.client_id());
 
   StubEmbeddedFrameSinkClient efs_client;
-  provider()->RegisterEmbeddedFrameSink(kFrameSinkParent, invalid_frame_sink_id,
-                                        efs_client.GetInterfaceRemote());
+  remote->RegisterEmbeddedFrameSink(kFrameSinkParent, invalid_frame_sink_id,
+                                    efs_client.GetInterfaceRemote());
 
   RunUntilIdle();
 
@@ -317,6 +321,9 @@ TEST_F(EmbeddedFrameSinkProviderImplTest, InvalidClientId) {
   // The connection for |efs_client| will have failed and triggered a
   // connection error.
   EXPECT_TRUE(efs_client.connection_error());
+
+  // Remote should be disconnected after the bad message.
+  EXPECT_FALSE(remote.is_connected());
 }
 
 // Mimic renderer with two offscreen canvases.
