@@ -136,6 +136,11 @@ class CORE_EXPORT FocusgroupControllerUtils {
   // focusable content act as barriers in the tab order).
   static bool ContainsKeyboardFocusableContent(const Element& element);
 
+  // Returns true if |element| or any of its flat-tree descendants is the
+  // document's focused element. Used to detect segment barriers when a
+  // focused element is nested inside an opted-out subtree wrapper.
+  static bool ContainsFocusedElement(const Element& element);
+
   // Returns the first/last item in the segment containing |item|, or nullptr
   // if |item| is not a focusgroup item. See class comment for segment
   // definition.
