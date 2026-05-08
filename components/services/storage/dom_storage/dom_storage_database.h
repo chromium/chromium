@@ -29,8 +29,13 @@ namespace base {
 class FilePath;
 namespace trace_event {
 class MemoryAllocatorDumpGuid;
+class ProcessMemoryDump;
 }  // namespace trace_event
 }  // namespace base
+
+namespace sql {
+class Database;
+}  // namespace sql
 
 namespace storage {
 enum class StorageType;
@@ -391,6 +396,16 @@ class DomStorageDatabaseFactory {
 // will be empty for in memory databases.
 scoped_refptr<base::SequencedTaskRunner> GetTaskRunnerForDb(
     const base::FilePath& database_path);
+
+// Reports the memory usage of `database` into `pmd`. Creates an allocator
+// dump named `dump_name` and links it to the shared global dump identified by
+// `memory_dump_id`. Returns true always.
+bool ReportDatabaseMemoryUsage(
+    sql::Database* database,
+    const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
+        memory_dump_id,
+    base::trace_event::ProcessMemoryDump* pmd,
+    std::string dump_name);
 
 // A shared implementation of `DomStorageDatabase::PurgeOrigins()` from above.
 // Both LevelDB and SQLite implementations use this helper function.

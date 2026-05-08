@@ -6,6 +6,9 @@
 
 #include "base/byte_size.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/trace_event/memory_dump_manager.h"
 #include "base/types/expected_macros.h"
 #include "components/services/storage/dom_storage/sqlite/map_entries_table.h"
 #include "components/services/storage/dom_storage/sqlite/sqlite_database_macros.h"
@@ -98,6 +101,8 @@ void BindOptionalByteSize(sql::Statement& statement,
 LocalStorageSqlite::LocalStorageSqlite(PassKey) {}
 
 LocalStorageSqlite::~LocalStorageSqlite() {
+  base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
+      this);
   if (destruction_callback_for_testing_) {
     std::move(destruction_callback_for_testing_).Run();
   }
@@ -109,6 +114,9 @@ DbStatus LocalStorageSqlite::Open(
         memory_dump_id) {
   CHECK(!database_);
   CHECK(!meta_table_);
+  CHECK(!memory_dump_id_);
+
+  memory_dump_id_ = memory_dump_id;
 
   ASSIGN_OR_RETURN(
       std::tie(database_, meta_table_),
@@ -119,6 +127,13 @@ DbStatus LocalStorageSqlite::Open(
           base::BindOnce(&CreateSchema)));
 
   map_entries_table_ = std::make_unique<MapEntriesTable>(*database_);
+
+  base::trace_event::MemoryDumpManager::GetInstance()
+      ->RegisterDumpProviderWithSequencedTaskRunner(
+          this, "LocalStorageSqlite",
+          base::SequencedTaskRunner::GetCurrentDefault(),
+          base::trace_event::MemoryDumpProvider::Options());
+
   return DbStatus::OK();
 }
 
@@ -415,6 +430,15 @@ DbStatus LocalStorageSqlite::DeleteMapMetadata(
 
   RETURN_STATUS_ON_ERROR(delete_statement.Run());
   return DbStatus::OK();
+}
+
+bool LocalStorageSqlite::OnMemoryDump(
+    const base::trace_event::MemoryDumpArgs& args,
+    base::trace_event::ProcessMemoryDump* pmd) {
+  return ReportDatabaseMemoryUsage(
+      database_.get(), memory_dump_id_, pmd,
+      base::StringPrintf("site_storage/localstorage/sqlite/db_0x%" PRIXPTR,
+                         reinterpret_cast<uintptr_t>(this)));
 }
 
 }  // namespace storage

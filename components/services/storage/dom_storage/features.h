@@ -24,6 +24,12 @@ COMPONENT_EXPORT(STORAGE_FEATURES) BASE_DECLARE_FEATURE(kDomStorageSqlite);
 COMPONENT_EXPORT(STORAGE_FEATURES)
 BASE_DECLARE_FEATURE(kDomStorageSqliteInMemory);
 
+// Returns true if the SQLite backend should be used for DOMStorage.
+// `kDomStorageSqlite` enables SQLite for both in-memory and on-disk databases.
+// `kDomStorageSqliteInMemory` enables SQLite only for in-memory databases.
+COMPONENT_EXPORT(STORAGE_FEATURES)
+bool ShouldUseSqliteBackend(bool is_in_memory);
+
 }  // namespace storage
 
 #endif  // COMPONENTS_SERVICES_STORAGE_DOM_STORAGE_FEATURES_H_

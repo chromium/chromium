@@ -13,6 +13,8 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/thread_pool.h"
+#include "base/trace_event/memory_allocator_dump.h"
+#include "base/trace_event/process_memory_dump.h"
 #include "base/types/expected_macros.h"
 #include "components/services/storage/dom_storage/dom_storage_constants.h"
 #include "components/services/storage/dom_storage/features.h"
@@ -23,22 +25,10 @@
 #include "components/services/storage/dom_storage/sqlite/session_storage_sqlite.h"
 #include "components/services/storage/dom_storage/sqlite/sqlite_database_utils.h"
 #include "components/services/storage/public/cpp/constants.h"
+#include "sql/database.h"
 
 namespace storage {
 namespace {
-
-// Returns true if the SQLite backend should be used for DOMStorage.
-// `kDomStorageSqlite` enables SQLite for both in-memory and on-disk databases.
-// `kDomStorageSqliteInMemory` enables SQLite only for in-memory databases.
-bool ShouldUseSqliteBackend(bool is_in_memory) {
-  if (base::FeatureList::IsEnabled(kDomStorageSqlite)) {
-    return true;
-  }
-  if (is_in_memory) {
-    return base::FeatureList::IsEnabled(kDomStorageSqliteInMemory);
-  }
-  return false;
-}
 
 // Constructs an absolute path to the session storage database using
 // `storage_partition_dir`.  For LevelDB, the path is a directory:
@@ -288,6 +278,33 @@ scoped_refptr<base::SequencedTaskRunner> GetTaskRunnerForDb(
       {base::MayBlock(), base::WithBaseSyncPrimitives(),
        base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
       database_path);
+}
+
+bool ReportDatabaseMemoryUsage(
+    sql::Database* database,
+    const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
+        memory_dump_id,
+    base::trace_event::ProcessMemoryDump* pmd,
+    std::string dump_name) {
+  if (!database || !memory_dump_id) {
+    return true;
+  }
+
+  int memory_usage = database->GetMemoryUsage();
+  if (memory_usage == 0) {
+    return true;
+  }
+
+  auto* db_dump = pmd->CreateAllocatorDump(dump_name);
+  db_dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
+                     base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+                     memory_usage);
+  auto* global_dump = pmd->CreateSharedGlobalAllocatorDump(*memory_dump_id);
+  pmd->AddOwnershipEdge(global_dump->guid(), db_dump->guid());
+  global_dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
+                         base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+                         memory_usage);
+  return true;
 }
 
 DbStatus PurgeOrigins(DomStorageDatabase& database,

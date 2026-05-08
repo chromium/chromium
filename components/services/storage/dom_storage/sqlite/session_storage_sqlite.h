@@ -6,6 +6,7 @@
 #define COMPONENTS_SERVICES_STORAGE_DOM_STORAGE_SQLITE_SESSION_STORAGE_SQLITE_H_
 
 #include "base/trace_event/memory_allocator_dump_guid.h"
+#include "base/trace_event/memory_dump_provider.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
 
 namespace sql {
@@ -45,7 +46,8 @@ class MapEntriesTable;
 // Also, in this example, the `meta_table_` contains the key/value pair:
 //
 // "next_map_id" = 4 (where 4 is an integer)
-class SessionStorageSqlite : public DomStorageDatabase {
+class SessionStorageSqlite : public DomStorageDatabase,
+                             private base::trace_event::MemoryDumpProvider {
  private:
   using PassKey = base::PassKey<DomStorageDatabaseFactory>;
 
@@ -92,10 +94,16 @@ class SessionStorageSqlite : public DomStorageDatabase {
   StatusOr<std::vector<DomStorageDatabase::MapMetadata>> ReadAllMapMetadata()
       const;
 
+  // base::trace_event::MemoryDumpProvider implementation:
+  bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
+                    base::trace_event::ProcessMemoryDump* pmd) override;
+
   // `Open()` creates `database_`, `meta_table_` and `map_entries_table_`.
   std::unique_ptr<sql::Database> database_;
   std::unique_ptr<sql::MetaTable> meta_table_;
   std::unique_ptr<MapEntriesTable> map_entries_table_;
+
+  std::optional<base::trace_event::MemoryAllocatorDumpGuid> memory_dump_id_;
 
   // Simulates I/O failure in `PutMetadata()` and `UpdateMaps()` by force
   // returning an IOError. Set to true by `MakeAllCommitsFailForTesting()`.
