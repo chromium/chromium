@@ -248,6 +248,11 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
   source->AddInteger("maxEnterpriseShortcuts",
                      ntp_features::GetMaxEnterpriseShortcuts());
 
+  source->AddBoolean("energyEffectEnabled",
+                     base::FeatureList::IsEnabled(ntp_features::kEnergyEffect));
+  source->AddBoolean(
+      "energyEffectAnimationEnabled",
+      base::FeatureList::IsEnabled(ntp_features::kEnergyEffectAnimation));
   source->AddBoolean(
       "ntpNextFeaturesEnabled",
       ntp_realbox::IsNtpRealboxNextEnabled(profile) &&

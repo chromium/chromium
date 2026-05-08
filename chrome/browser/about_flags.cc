@@ -13080,6 +13080,15 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(safe_browsing::kMigrateEnhancedSbUserToEnhancedBundle)},
 
+
+    {"energy-effect", flag_descriptions::kEnergyEffectName,
+     flag_descriptions::kEnergyEffectDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kEnergyEffect)},
+
+    {"energy-effect-animation", flag_descriptions::kEnergyEffectAnimationName,
+     flag_descriptions::kEnergyEffectAnimationDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kEnergyEffectAnimation)},
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

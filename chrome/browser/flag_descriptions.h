@@ -578,6 +578,14 @@ inline constexpr char kEnableActivitylessSigninAllEntryPointDescription[] =
     "When enabled, activityless sign-in will be used for all entry points on "
     "Android.";
 
+inline constexpr char kEnergyEffectName[] = "Energy Effect";
+inline constexpr char kEnergyEffectDescription[] =
+    "Enables the Energy Effect for the Realbox.";
+
+inline constexpr char kEnergyEffectAnimationName[] = "Energy Effect Animation";
+inline constexpr char kEnergyEffectAnimationDescription[] =
+    "Enables animations for the Energy Effect for the Realbox.";
+
 inline constexpr char kForceHistoryOptInScreenName[] =
     "Force history opt-in screen";
 inline constexpr char kForceHistoryOptInScreenDescription[] =

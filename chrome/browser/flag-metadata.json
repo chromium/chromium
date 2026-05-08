@@ -4326,6 +4326,22 @@
     "expiry_milestone": -1
   },
   {
+    "name": "energy-effect",
+    "owners": [
+      "ruoxih@google.com",
+      "shomizoe@google.com"
+    ],
+    "expiry_milestone": 154
+  },
+  {
+    "name": "energy-effect-animation",
+    "owners": [
+      "ruoxih@google.com",
+      "shomizoe@google.com"
+    ],
+    "expiry_milestone": 154
+  },
+  {
     "name": "enforce-incognito-isolation",
     "owners": [ "shuyng@google.com", "clank-large-form-factors@google.com" ],
     "expiry_milestone": 152

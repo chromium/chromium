@@ -8595,6 +8595,7 @@ from previous Chrome versions.
   <int value="-1827136280" label="AndroidComposeplate:disabled"/>
   <int value="-1826649921" label="ContextualSuggestionsButton:disabled"/>
   <int value="-1825184776" label="TangibleSync:disabled"/>
+  <int value="-1825136517" label="EnergyEffect:enabled"/>
   <int value="-1824913297" label="UserValueDefaultBrowserStrings:enabled"/>
   <int value="-1824647193" label="HelpAppOnboardingRevamp:disabled"/>
   <int value="-1824540307" label="NotificationWidthIncrease:enabled"/>
@@ -17821,6 +17822,7 @@ from previous Chrome versions.
       label="ForceSupervisedUserReauthenticationForYouTube:disabled"/>
   <int value="1262757386" label="OmniboxDebugLogs:disabled"/>
   <int value="1264183726" label="kOmniboxCR23SteadyStateIcons:enabled"/>
+  <int value="1264295789" label="EnergyEffectAnimation:disabled"/>
   <int value="1264635129" label="autofill-ai-reauth-required:disabled"/>
   <int value="1265411197" label="EdgeToEdgeBottomChin:disabled"/>
   <int value="1265457230" label="MultiZoneRgbKeyboard:disabled"/>
@@ -20121,6 +20123,7 @@ from previous Chrome versions.
   <int value="2006876222" label="TotallyEdgeToEdge:enabled"/>
   <int value="2007213924" label="VSyncDecoding:enabled"/>
   <int value="2007421572" label="EapGtcWifiAuthentication:disabled"/>
+  <int value="2007425998" label="EnergyEffectAnimation:enabled"/>
   <int value="2008599705" label="EnableFeedbackPanel:enabled"/>
   <int value="2008878342" label="TouchToFillAndroid:disabled"/>
   <int value="2009097351" label="memlog-sampling-rate"/>
@@ -20132,6 +20135,7 @@ from previous Chrome versions.
       label="ProfileCreationFrictionReductionExperimentRemoveSigninStep:disabled"/>
   <int value="2011785323" label="EnableSchemeBoundCookies:enabled"/>
   <int value="2011873998" label="LiveCaptionMultiLanguage:enabled"/>
+  <int value="2012757088" label="EnergyEffect:disabled"/>
   <int value="2013589943" label="CrOSLateBootCrOSSOUL:disabled"/>
   <int value="2013593624"
       label="HappinessTrackingSurveysForDesktopDemo:enabled"/>

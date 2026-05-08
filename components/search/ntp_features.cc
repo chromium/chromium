@@ -46,6 +46,12 @@ BASE_FEATURE(kCustomizeChromeWallpaperSearchButton,
 BASE_FEATURE(kCustomizeChromeWallpaperSearchInspirationCard,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// If enabled, the EnergyEffect for Realbox will be shown.
+BASE_FEATURE(kEnergyEffect, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// If enabled, the EnergyEffect animation for Realbox will be shown.
+BASE_FEATURE(kEnergyEffectAnimation, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, NTP "realbox" will be themed for CR23. Includes realbox
 // matching omnibox theme and increased realbox shadow.
 BASE_FEATURE(kRealboxCr23Theming,
