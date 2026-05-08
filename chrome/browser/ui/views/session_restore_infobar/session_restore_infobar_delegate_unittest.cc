@@ -7,6 +7,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_manager.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
@@ -35,6 +36,12 @@ class SessionRestoreInfoBarDelegateTest
 
   void SetUp() override {
     infobars::ContentInfoBarManager::CreateForWebContents(web_contents_.get());
+
+    // Reset the singleton state to avoid state bleed across tests.
+    auto* manager = SessionRestoreInfoBarManager::GetInstance();
+    manager->set_shown_metric_recorded_for_session(false);
+    manager->set_ignored_metric_recorded_for_session(false);
+    manager->set_action_taken_for_session(false);
   }
 
   infobars::InfoBar* CreateDelegate() {
