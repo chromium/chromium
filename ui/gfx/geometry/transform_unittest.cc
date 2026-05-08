@@ -13,7 +13,6 @@
 #include <optional>
 #include <ostream>
 
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/numerics/angle_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -3905,7 +3904,7 @@ TEST(XFormTest, PostConcatAxisTransform2d) {
 }
 
 TEST(XFormTest, ClampOutput) {
-  double entries[][2] = {
+  std::array<std::array<double, 2>, 6> entries = {{
       // The first entry is used to initialize the transform.
       // The second entry is used to initialize the object to be mapped.
       {std::numeric_limits<float>::max(),
@@ -3921,11 +3920,11 @@ TEST(XFormTest, ClampOutput) {
           std::numeric_limits<float>::lowest(),
           -std::numeric_limits<float>::infinity(),
       },
-  };
+  }};
 
-  for (double* entry : entries) {
+  for (const auto& entry : entries) {
     const float mv = entry[0];
-    const float factor = UNSAFE_TODO(entry[1]);
+    const float factor = entry[1];
 
     auto is_valid_point = [&](const PointF& p) -> bool {
       return std::isfinite(p.x()) && std::isfinite(p.y());
