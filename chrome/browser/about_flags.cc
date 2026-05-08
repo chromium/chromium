@@ -12973,12 +12973,15 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLongScreenshotsLenientMemoryCheckDescription,
      kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kLongScreenshotsLenientMemoryCheck)},
-#endif
-    // Add new entries above this line.
-    // NOTE: Adding a new flag requires adding a corresponding entry to enum
-    // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
-    // Histograms" in tools/metrics/histograms/README.md (run the
-    // AboutFlagsHistogramTest unit test to verify this process).
+    {"send-tab-to-self-gesture", flag_descriptions::kSendTabToSelfGestureName,
+     flag_descriptions::kSendTabToSelfGestureDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(send_tab_to_self::kSendTabToSelfGesture)},
+#endif  // BUILDFLAG(IS_ANDROID)
+        // Add new entries above this line.
+        // NOTE: Adding a new flag requires adding a corresponding entry to enum
+        // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
+        // Histograms" in tools/metrics/histograms/README.md (run the
+        // AboutFlagsHistogramTest unit test to verify this process).
 };
 
 class FlagsStateSingleton : public flags_ui::FlagsState::Delegate {

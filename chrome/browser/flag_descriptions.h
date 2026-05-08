@@ -4008,6 +4008,11 @@ inline constexpr char kSendTabToSelfEnhancedHandoffDescription[] =
     "Enables an enhanced version of Send Tab To Self that propagates more "
     "information, such as form fields and scroll position.";
 
+inline constexpr char kSendTabToSelfGestureName[] = "Send Tab To Self Gesture";
+inline constexpr char kSendTabToSelfGestureDescription[] =
+    "Enables detecting physical double-tap gestures to trigger Send Tab To "
+    "Self on Android.";
+
 inline constexpr char kSensitiveContentName[] =
     "Redact sensitive content during screen sharing, screen recording, "
     "and similar actions";

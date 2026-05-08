@@ -10283,6 +10283,7 @@ from previous Chrome versions.
   <int value="-1258793847" label="MagicStackAndroid:disabled"/>
   <int value="-1258141852" label="ScrollUnification:enabled"/>
   <int value="-1257822114" label="ContextMenuPopupForAllScreenSizes:disabled"/>
+  <int value="-1257077876" label="SendTabToSelfGesture:disabled"/>
   <int value="-1256823053" label="WebRtcHWVP9Encoding:enabled"/>
   <int value="-1256747007"
       label="OminboxUIExperimentUseGenericSearchEngineIcon:disabled"/>
@@ -17751,6 +17752,7 @@ from previous Chrome versions.
   <int value="1226676061" label="PageInfoV2Desktop:enabled"/>
   <int value="1226782541"
       label="SharedHighlightingRefinedMaxContextWords:enabled"/>
+  <int value="1226962257" label="SendTabToSelfGesture:enabled"/>
   <int value="1227397136" label="MahiSummarizeSelected:enabled"/>
   <int value="1227633129" label="NtpChromeCartModule:disabled"/>
   <int value="1228054141"
