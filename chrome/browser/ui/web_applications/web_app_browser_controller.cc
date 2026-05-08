@@ -348,6 +348,22 @@ void WebAppBrowserController::CreateMetadataAndTriggerAppMigrationDialog(
           weak_ptr_factory_.GetWeakPtr(), start_time));
 }
 
+bool WebAppBrowserController::IsWindowCaptureHandleAllowed() const {
+// TODO(crbug.com/510716187): Enable for other platforms once macOS native
+// window ID translation is implemented.
+#if BUILDFLAG(IS_CHROMEOS)
+  // Drop PWAs that are actively rendering with a tab strip.
+  if (has_tab_strip()) {
+    return false;
+  }
+
+  return registrar().AppMatches(
+      app_id(), web_app::WebAppFilter::IsWindowCaptureHandleAllowed());
+#else
+  return false;
+#endif
+}
+
 #if !BUILDFLAG(IS_CHROMEOS)
 bool WebAppBrowserController::HasProfileMenuButton() const {
 #if BUILDFLAG(IS_MAC)

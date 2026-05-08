@@ -142,6 +142,13 @@ WebAppFilter WebAppFilter::IsAppEligibleForManifestUpdate() {
 }
 
 // static
+WebAppFilter WebAppFilter::IsWindowCaptureHandleAllowed() {
+  return !HasSource(WebAppManagement::kSystem) &
+         !IsTrue(SimpleCondition::kIsPlaceholder) &
+         !IsTrue(SimpleCondition::kIsDiy);
+}
+
+// static
 WebAppFilter WebAppFilter::HasSource(WebAppManagement::Type source) {
   return WebAppFilter(
       ManagementRequirement{ManagementRequirement::Type::kHasAny, {source}});
