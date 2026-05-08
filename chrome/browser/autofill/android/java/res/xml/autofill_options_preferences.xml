@@ -31,13 +31,12 @@ found in the LICENSE file.
         android:order="3"
         android:title="@string/settings_autofill_ai_page_title"
         app:isPreferenceVisible="false">
-        <!-- TODO(crbug.com/494480111): Replace with specific strings once implemented -->
         <org.chromium.components.browser_ui.settings.ChromeBasePreference
             android:id="@+id/autofill_ai_accessibility_annotator"
             android:key="autofill_ai_accessibility_annotator"
             android:order="0"
-            android:title="@string/settings_autofill_ai_authentication_toggle_title"
-            android:summary="@string/settings_autofill_ai_authentication_toggle_subtitle"
+            android:title="@string/accessibility_annotator_settings_title"
+            android:summary="@string/accessibility_annotator_settings_description_android"
             android:widgetLayout="@layout/preference_widget_open_in_new"
             app:isPreferenceVisible="false" />
         <org.chromium.chrome.browser.autofill.options.AutofillAiPreference

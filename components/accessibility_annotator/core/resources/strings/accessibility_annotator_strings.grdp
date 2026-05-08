@@ -16,22 +16,34 @@
   <message name="IDS_ACCESSIBILITY_ANNOTATOR_INFO_CARD_2_ANDROID" desc="" formatter_data="android_java" translateable="false">
     Lorem ipsum dolor sit amet.
   </message>
+  <message name="IDS_ACCESSIBILITY_ANNOTATOR_INFO_LEARN_MORE_ANDROID" desc="" formatter_data="android_java" translateable="false">
+    Lorem ipsum dolor <ph name="BEGIN_LINK">&lt;link&gt;</ph>sit amet<ph name="END_LINK">&lt;/link&gt;</ph>.
+  </message>
   <message name="IDS_ACCESSIBILITY_ANNOTATOR_INFO_DESCRIPTION_DESKTOP" desc="" translateable="false">
     Lorem ipsum dolor sit amet.
   </message>
   <message name="IDS_ACCESSIBILITY_ANNOTATOR_INFO_CARD_1_DESKTOP" desc="" translateable="false">
-    Lorem ipsum dolor sit amet.
+    Lorem <ph name="TRIGGER_TEXT">$1<ex>@@</ex></ph> ipsum dolor sit amet.
   </message>
   <message name="IDS_ACCESSIBILITY_ANNOTATOR_INFO_CARD_2_DESKTOP" desc="" translateable="false">
     Lorem ipsum dolor sit amet.
   </message>
-  <message name="IDS_ACCESSIBILITY_ANNOTATOR_INFO_LEARN_MORE" desc="" formatter_data="android_java" translateable="false">
-    Lorem ipsum dolor <ph name="BEGIN_LINK">&lt;link&gt;</ph>sit amet<ph name="END_LINK">&lt;/link&gt;</ph>.
+  <message name="IDS_ACCESSIBILITY_ANNOTATOR_INFO_LEARN_MORE_DESKTOP" desc="" translateable="false">
+    Lorem ipsum dolor <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>sit amet<ph name="END_LINK">&lt;/a&gt;</ph>.
   </message>
   <message name="IDS_ACCESSIBILITY_ANNOTATOR_INFO_PRIMARY_BUTTON" desc="" formatter_data="android_java" translateable="false">
     Lorem
   </message>
   <message name="IDS_ACCESSIBILITY_ANNOTATOR_INFO_SECONDARY_BUTTON" desc="" formatter_data="android_java" translateable="false">
     Ipsum
+  </message>
+  <message name="IDS_ACCESSIBILITY_ANNOTATOR_SETTINGS_TITLE" desc="" formatter_data="android_java" translateable="false">
+    Lorem ipsum dolor sit amet
+  </message>
+  <message name="IDS_ACCESSIBILITY_ANNOTATOR_SETTINGS_DESCRIPTION_ANDROID" desc="" formatter_data="android_java" translateable="false">
+    Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet.
+  </message>
+  <message name="IDS_ACCESSIBILITY_ANNOTATOR_SETTINGS_DESCRIPTION_DESKTOP" desc="" translateable="false">
+    Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet.
   </message>
 </grit-part>
