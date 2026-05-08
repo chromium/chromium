@@ -100,11 +100,8 @@ class AbsoluteUtilsTest : public RenderingTest {
     GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
     GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kStyleClean);
     GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInPerformLayout);
-    WritingDirectionMode self_writing_direction =
-        node.Style().GetWritingDirection();
-    const LogicalOofInsets insets =
-        ComputeOutOfFlowInsets(node.Style(), space.AvailableSize(),
-                               LogicalAlignment(), self_writing_direction);
+    const LogicalOofInsets insets = ComputeOutOfFlowInsets(
+        node.Style(), space.AvailableSize(), LogicalAlignment());
     const InsetModifiedContainingBlock imcb =
         ComputeInsetModifiedContainingBlock(
             node, space.AvailableSize(), LogicalAlignment(), insets,
@@ -131,11 +128,8 @@ class AbsoluteUtilsTest : public RenderingTest {
     GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
     GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kStyleClean);
     GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInPerformLayout);
-    WritingDirectionMode self_writing_direction =
-        node.Style().GetWritingDirection();
-    const LogicalOofInsets insets =
-        ComputeOutOfFlowInsets(node.Style(), space.AvailableSize(),
-                               LogicalAlignment(), self_writing_direction);
+    const LogicalOofInsets insets = ComputeOutOfFlowInsets(
+        node.Style(), space.AvailableSize(), LogicalAlignment());
     const InsetModifiedContainingBlock imcb =
         ComputeInsetModifiedContainingBlock(
             node, space.AvailableSize(), LogicalAlignment(), insets,

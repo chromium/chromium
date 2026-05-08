@@ -453,66 +453,43 @@ bool CanComputeBlockSizeWithoutLayout(
 
 }  // namespace
 
-LogicalOofInsets ComputeOutOfFlowInsets(
-    const ComputedStyle& style,
-    const LogicalSize& available_logical_size,
-    const LogicalAlignment& alignment,
-    WritingDirectionMode self_writing_direction) {
-  bool force_x_insets_to_zero = false;
-  bool force_y_insets_to_zero = false;
-  if (style.PositionAreaOffsets()) {
-    force_x_insets_to_zero = force_y_insets_to_zero = true;
-  }
-  if (alignment.inline_alignment.GetPosition() == ItemPosition::kAnchorCenter) {
-    if (self_writing_direction.IsHorizontal()) {
-      force_x_insets_to_zero = true;
-    } else {
-      force_y_insets_to_zero = true;
+LogicalOofInsets ComputeOutOfFlowInsets(const ComputedStyle& style,
+                                        const LogicalSize& available_size,
+                                        const LogicalAlignment& alignment) {
+  auto force_insets_to_zero = [&](ItemPosition position) -> bool {
+    return style.PositionAreaOffsets() ||
+           (style.AnchorCenterOffset() &&
+            position == ItemPosition::kAnchorCenter);
+  };
+  const bool force_inline_insets_to_zero =
+      force_insets_to_zero(alignment.inline_alignment.GetPosition());
+  const bool force_block_insets_to_zero =
+      force_insets_to_zero(alignment.block_alignment.GetPosition());
+
+  auto resolve_inset =
+      [](const Length& length, LayoutUnit available_size,
+         bool force_inset_to_zero) -> std::optional<LayoutUnit> {
+    if (!length.IsAuto()) {
+      return MinimumValueForLength(length, available_size);
     }
-  }
-  if (alignment.block_alignment.GetPosition() == ItemPosition::kAnchorCenter) {
-    if (self_writing_direction.IsHorizontal()) {
-      force_y_insets_to_zero = true;
-    } else {
-      force_x_insets_to_zero = true;
+    if (force_inset_to_zero) {
+      return LayoutUnit();
     }
-  }
+    return std::nullopt;
+  };
 
-  // Compute in physical, because anchors may be in different `writing-mode` or
-  // `direction`.
-  const PhysicalSize available_size = ToPhysicalSize(
-      available_logical_size, self_writing_direction.GetWritingMode());
-  std::optional<LayoutUnit> left;
-  if (const Length& left_length = style.Left(); !left_length.IsAuto()) {
-    left = MinimumValueForLength(left_length, available_size.width);
-  } else if (force_x_insets_to_zero) {
-    left = LayoutUnit();
-  }
-  std::optional<LayoutUnit> right;
-  if (const Length& right_length = style.Right(); !right_length.IsAuto()) {
-    right = MinimumValueForLength(right_length, available_size.width);
-  } else if (force_x_insets_to_zero) {
-    right = LayoutUnit();
-  }
+  PhysicalToLogical<const Length&> insets(style.GetWritingDirection(),
+                                          style.Top(), style.Right(),
+                                          style.Bottom(), style.Left());
 
-  std::optional<LayoutUnit> top;
-  if (const Length& top_length = style.Top(); !top_length.IsAuto()) {
-    top = MinimumValueForLength(top_length, available_size.height);
-  } else if (force_y_insets_to_zero) {
-    top = LayoutUnit();
-  }
-  std::optional<LayoutUnit> bottom;
-  if (const Length& bottom_length = style.Bottom(); !bottom_length.IsAuto()) {
-    bottom = MinimumValueForLength(bottom_length, available_size.height);
-  } else if (force_y_insets_to_zero) {
-    bottom = LayoutUnit();
-  }
-
-  // Convert the physical insets to logical.
-  PhysicalToLogical<std::optional<LayoutUnit>&> insets(
-      self_writing_direction, top, right, bottom, left);
-  return {insets.InlineStart(), insets.InlineEnd(), insets.BlockStart(),
-          insets.BlockEnd()};
+  return {resolve_inset(insets.InlineStart(), available_size.inline_size,
+                        force_inline_insets_to_zero),
+          resolve_inset(insets.InlineEnd(), available_size.inline_size,
+                        force_inline_insets_to_zero),
+          resolve_inset(insets.BlockStart(), available_size.block_size,
+                        force_block_insets_to_zero),
+          resolve_inset(insets.BlockEnd(), available_size.block_size,
+                        force_block_insets_to_zero)};
 }
 
 LogicalAlignment ComputeAlignment(
@@ -586,18 +563,14 @@ LogicalAnchorCenterPosition ComputeAnchorCenterPosition(
   std::optional<LayoutUnit> top;
   std::optional<LayoutUnit> right;
   std::optional<LayoutUnit> bottom;
-  if (style.AnchorCenterOffset().has_value()) {
+  if (const auto& offset = style.AnchorCenterOffset()) {
     if (has_anchor_center_in_x) {
-      left = style.AnchorCenterOffset()->left;
-      if (left) {
-        right = available_size.width - *left;
-      }
+      left = offset->left;
+      right = available_size.width - offset->left;
     }
     if (has_anchor_center_in_y) {
-      top = style.AnchorCenterOffset()->top;
-      if (top) {
-        bottom = available_size.height - *top;
-      }
+      top = offset->top;
+      bottom = available_size.height - offset->top;
     }
   }
 

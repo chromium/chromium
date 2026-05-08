@@ -2415,8 +2415,7 @@ OutOfFlowLayoutPart::TryCalculateOffset(
                        candidate_writing_direction);
 
   const LogicalOofInsets insets =
-      ComputeOutOfFlowInsets(candidate_style, space.AvailableSize(), alignment,
-                             candidate_writing_direction);
+      ComputeOutOfFlowInsets(candidate_style, space.AvailableSize(), alignment);
 
   // Adjust the |static_position| (which is currently relative to the default
   // container's border-box) to be relative to the padding-box.

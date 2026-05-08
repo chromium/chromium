@@ -79,8 +79,7 @@ LogicalAnchorCenterPosition ComputeAnchorCenterPosition(
 CORE_EXPORT LogicalOofInsets
 ComputeOutOfFlowInsets(const ComputedStyle& style,
                        const LogicalSize& available_size,
-                       const LogicalAlignment&,
-                       WritingDirectionMode self_writing_direction);
+                       const LogicalAlignment&);
 
 struct CORE_EXPORT InsetModifiedContainingBlock {
   // The original containing block size that the insets refer to.

@@ -2880,11 +2880,6 @@ class ComputedStyle final : public ComputedStyleBase {
         BorderBottomStyle(), BorderLeftStyle());
   }
 
-  PhysicalToLogical<const Length&> PhysicalBoundsToLogical() const {
-    return PhysicalToLogical<const Length&>(GetWritingDirection(), Top(),
-                                            Right(), Bottom(), Left());
-  }
-
   static Difference ComputeDifferenceIgnoringInheritedFirstLineStyle(
       const ComputedStyle& old_style,
       const ComputedStyle& new_style);
