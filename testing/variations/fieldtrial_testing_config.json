@@ -15505,26 +15505,6 @@
             ]
         }
     ],
-    "LocationBarBadge": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "AskGeminiChipAllowNonconsentedUsers": "true",
-                        "PopupBlocker": "false"
-                    },
-                    "enable_features": [
-                        "AskGeminiChip",
-                        "ProactiveSuggestionsFramework"
-                    ]
-                }
-            ]
-        }
-    ],
     "LockTopControlsOnLargeTabletsV2": [
         {
             "platforms": [
