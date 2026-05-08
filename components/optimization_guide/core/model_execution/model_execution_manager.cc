@@ -164,7 +164,7 @@ void ModelExecutionManager::ExecuteModel(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (test_execution_results_.find(feature) != test_execution_results_.end()) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
                        std::move(test_execution_results_[feature]), nullptr));
@@ -226,7 +226,19 @@ void ModelExecutionManager::ExecuteModel(
       << feature;
   base::TimeTicks start_time = base::TimeTicks::Now();
   auto fetcher = CreateModelExecutionFetcher(service_type);
-  CHECK(fetcher);
+  if (!fetcher) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            std::move(callback),
+            OptimizationGuideModelExecutionResult(
+                base::unexpected(OptimizationGuideModelExecutionError::
+                                     FromModelExecutionError(
+                                         ModelExecutionError::kGenericFailure)),
+                nullptr),
+            nullptr));
+    return;
+  }
   auto fetcher_it =
       fetchers_for_feature.emplace(fetcher_id, std::move(fetcher));
   fetcher_it.first->second->ExecuteModel(
@@ -246,7 +258,9 @@ ModelExecutionManager::CreateModelExecutionFetcher(
           url_loader_factory_, model_execution_service_url_,
           optimization_guide_logger_);
     case ModelExecutionServiceType::kPrivateAi:
-      CHECK(delegate_);
+      if (!delegate_) {
+        return nullptr;
+      }
       return delegate_->CreatePrivateAiFetcher();
   }
 }

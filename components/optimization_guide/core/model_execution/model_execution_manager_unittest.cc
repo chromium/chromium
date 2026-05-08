@@ -370,6 +370,24 @@ TEST_F(ModelExecutionManagerDelegateTest, CreatesDefaultFetcher) {
       response_holder.GetCallback());
 }
 
+TEST_F(ModelExecutionManagerDelegateTest, HandlesNullFetcher) {
+  RemoteResponseHolder response_holder;
+  SetAutomaticIssueOfAccessTokens();
+  EXPECT_CALL(*delegate(), CreatePrivateAiFetcher)
+      .WillOnce(testing::Return(testing::ByMove(nullptr)));
+
+  model_execution_manager()->ExecuteModel(
+      ModelBasedCapabilityKey::kZeroStateSuggestions, TestMessage(),
+      /*timeout=*/std::nullopt,
+      /*log_ai_data_request=*/nullptr, ModelExecutionServiceType::kPrivateAi,
+      response_holder.GetCallback());
+
+  EXPECT_FALSE(response_holder.GetFinalStatus());
+  EXPECT_EQ(OptimizationGuideModelExecutionError::ModelExecutionError::
+                kGenericFailure,
+            response_holder.error());
+}
+
 }  // namespace
 
 }  // namespace optimization_guide

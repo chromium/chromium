@@ -14,6 +14,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "chrome/browser/private_ai/private_ai_service.h"
 #include "chrome/browser/ui/webui/private_ai_internals/private_ai_internals.mojom.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
@@ -63,8 +64,9 @@ void PrivateAiInternalsPageHandler::Connect(const std::string& url,
                                             ConnectCallback callback) {
   std::string effective_api_key = api_key;
   if (effective_api_key == kApiKeyPlaceholder) {
-    effective_api_key = private_ai::kPrivateAiApiKey.Get();
+    effective_api_key = PrivateAiService::GetApiKey();
   }
+
   webui_client_ =
       Client::Create(url, effective_api_key, proxy_url, use_token_attestation,
                      network_context_, token_manager_, &webui_logger_);

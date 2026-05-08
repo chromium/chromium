@@ -58,6 +58,9 @@ class PrivateAiService : public KeyedService,
 
   static bool CanPrivateAiBeEnabled();
 
+  // Returns the API key for the Private AI feature.
+  static std::string GetApiKey();
+
   // Returns `nullptr` if `PrivateAiService` is shutting down.
   phosphor::TokenManager* GetTokenManager();
 

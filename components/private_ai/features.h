@@ -20,7 +20,7 @@ BASE_DECLARE_FEATURE(kPrivateAiServerAttestation);
 // Feature flag to enable token attestation.
 BASE_DECLARE_FEATURE(kPrivateAiUseTokenAttestation);
 
-// The API key for Private AI.
+// The API key for Private AI. Uses Chrome's default API key when not set.
 extern const base::FeatureParam<std::string> kPrivateAiApiKey;
 
 // Endpoint for Private AI

@@ -4,11 +4,12 @@
 
 #include "components/private_ai/features.h"
 
+#include "base/feature.h"
 #include "base/feature_list.h"
 
 namespace private_ai {
 
-BASE_FEATURE(kPrivateAi, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPrivateAi, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPrivateAiServerAttestation, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -20,7 +21,7 @@ const base::FeatureParam<std::string> kPrivateAiApiKey{
 const base::FeatureParam<std::string> kPrivateAiUrl{
     &kPrivateAi, /*name=*/"url",
     /*default_value=*/
-    "privatearatea-pa.googleapis.com/ws/"
+    "privatearatea.pa.googleapis.com/ws/"
     "mdi.privatearatea.PrivateArateaService.StartNoiseSession"};
 
 const base::FeatureParam<std::string> kPrivateAiProxyServerUrl{
