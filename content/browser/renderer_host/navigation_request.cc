@@ -3609,10 +3609,6 @@ void NavigationRequest::OnRequestRedirected(
   // for the redirected one.
   commit_params_->not_restored_reasons = nullptr;
 
-  // Reset the LCPP hint as the hint is for the original page and not for the
-  // redirected one.
-  commit_params_->lcpp_hint = nullptr;
-
   // Reset the tentative origin_to_commit, as the redirected one is different.
   tentative_data_origin_to_commit_ = std::nullopt;
 
@@ -3765,6 +3761,12 @@ void NavigationRequest::OnRequestRedirected(
           .IsSameOriginWith(redirect_info.new_url);
 
   did_encounter_cross_origin_redirect_ |= !is_same_origin_redirect;
+
+  // Reset the LCPP hint as the hint is for the original page and not for the
+  // redirected one. Only for cross-origin redirects.
+  if (!is_same_origin_redirect) {
+    commit_params_->lcpp_hint = nullptr;
+  }
 
   // Only same-origin navigations without cross-origin redirects can
   // expose response details (status-code / mime-type).

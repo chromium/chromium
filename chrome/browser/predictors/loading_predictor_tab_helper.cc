@@ -200,7 +200,6 @@ GetLCPPHint(content::NavigationHandle& navigation_handle,
 void MaybeSetLCPPNavigationHint(content::NavigationHandle& navigation_handle,
                                 LoadingPredictor& predictor) {
   TRACE_EVENT("navigation", "MaybeSetLCPPNavigationHint");
-  navigation_handle.SetLCPPNavigationHint(nullptr);
   base::ElapsedTimer timer;
   if (!blink::LcppEnabled() || !navigation_handle.IsInOutermostMainFrame() ||
       navigation_handle.IsSameDocument()) {
