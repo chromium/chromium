@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_TAB_GROUP_HEADER_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_TAB_GROUP_HEADER_VIEW_H_
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
@@ -21,11 +22,8 @@
 class TabGroup;
 
 namespace tabs {
+struct TabGroupData;
 class VerticalTabStripStateController;
-}
-
-namespace tab_groups {
-class TabGroupVisualData;
 }
 
 namespace views {
@@ -107,18 +105,13 @@ class VerticalTabGroupHeaderView : public views::FlexLayoutView,
   views::BubbleAnchor GetAnchor() override;
   views::BubbleBorder::Arrow GetAnchorPosition() const override;
 
-  void OnDataChanged(
-      const tab_groups::TabGroupVisualData* tab_group_visual_data,
-      bool is_shared);
-
-  void OnAttentionStateChanged(bool needs_attention);
+  void OnDataChanged(const tabs::TabGroupData& tab_group_data);
 
   views::LabelButton* editor_bubble_button() { return editor_bubble_button_; }
   views::ImageView* collapse_icon_for_testing() { return collapse_icon_; }
   views::ImageView* attention_indicator_for_testing() {
     return attention_indicator_;
   }
-  void SetHoverCardDataForTesting();
 
  private:
   void UpdateEditorBubbleButtonVisibility();
@@ -131,6 +124,7 @@ class VerticalTabGroupHeaderView : public views::FlexLayoutView,
   void UpdateAccessibleName();
   void UpdateTooltipText();
   void UpdateIsCollapsed();
+  void UpdateAttentionState(bool needs_attention);
 
   SkColor GetForegroundColor() const;
 
@@ -157,7 +151,7 @@ class VerticalTabGroupHeaderView : public views::FlexLayoutView,
   TabGroupEditorBubbleTracker editor_bubble_tracker_;
   base::CallbackListSubscription editor_bubble_opened_subscription_;
   base::CallbackListSubscription editor_bubble_closed_subscription_;
-
+  base::CallbackListSubscription tab_group_data_changed_subscription_;
   base::WeakPtrFactory<VerticalTabGroupHeaderView> weak_ptr_factory_{this};
 };
 

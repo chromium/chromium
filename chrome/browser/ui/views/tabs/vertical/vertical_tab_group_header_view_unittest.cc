@@ -9,6 +9,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ui/tabs/tab_group_data.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -102,7 +103,9 @@ TEST_P(VerticalTabGroupHeaderViewTest, MAYBE_TooltipText) {
       .WillRepeatedly(testing::ReturnRef(mock_tab_group));
 
   // Initialize with data
-  header->OnDataChanged(&visual_data, false);
+  tabs::TabGroupData data;
+  data.visual_data = visual_data;
+  header->OnDataChanged(data);
 
   // Empty tool tip if hover cards are enabled.
   std::u16string expected_tooltip =
@@ -116,7 +119,8 @@ TEST_P(VerticalTabGroupHeaderViewTest, MAYBE_TooltipText) {
   // Test unnamed group
   tab_groups::TabGroupVisualData unnamed_visual_data(
       u"", tab_groups::TabGroupColorId::kRed, false);
-  header->OnDataChanged(&unnamed_visual_data, false);
+  data.visual_data = unnamed_visual_data;
+  header->OnDataChanged(data);
 
   // Empty tool tip if hover cards are enabled.
   expected_tooltip = UseGroupHeaderHoverCards()
@@ -145,12 +149,7 @@ TEST_P(VerticalTabGroupHeaderViewTest, MAYBE_ShowHoverCardOnMouseEnter) {
           delegate, nullptr, &visual_data));
   widget->Show();
 
-  tab_groups::TabGroupId group_id = tab_groups::TabGroupId::GenerateNew();
-  tabs::MockTabGroup mock_tab_group(nullptr, group_id, visual_data);
-
   if (UseGroupHeaderHoverCards()) {
-    EXPECT_CALL(delegate, GetTabGroup())
-        .WillOnce(testing::ReturnRef(mock_tab_group));
     EXPECT_CALL(delegate, UpdateHoverCard(testing::_));
   } else {
     EXPECT_CALL(delegate, UpdateHoverCard(testing::_)).Times(0);
@@ -182,13 +181,6 @@ TEST_P(VerticalTabGroupHeaderViewTest,
   widget->Show();
 
   ui::test::EventGenerator generator(GetContext(), widget->GetNativeWindow());
-  tab_groups::TabGroupId group_id = tab_groups::TabGroupId::GenerateNew();
-  tabs::MockTabGroup mock_tab_group(nullptr, group_id, visual_data);
-
-  if (UseGroupHeaderHoverCards()) {
-    EXPECT_CALL(delegate, GetTabGroup())
-        .WillOnce(testing::ReturnRef(mock_tab_group));
-  }
 
   auto move_mouse_to = [&](bool inside_view) {
     if (inside_view) {

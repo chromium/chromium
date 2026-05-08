@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/tab_group_data.h"
 #include "chrome/browser/ui/tabs/tab_group_features.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
@@ -27,7 +28,6 @@
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_view.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/data_sharing/public/features.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/tabs/public/tab_collection_storage.h"
 #include "components/tabs/public/tab_group.h"
@@ -64,11 +64,6 @@ const TabGroup* GetTabGroupFromNode(TabCollectionNode* node) {
              std::get<const tabs::TabCollection*>(node->GetNodeData()))
       ->GetTabGroup();
 }
-
-bool SupportsDataSharing() {
-  return data_sharing::features::IsDataSharingFunctionalityEnabled();
-}
-
 }  // namespace
 
 VerticalTabGroupView::VerticalTabGroupView(TabCollectionNode* collection_node)
@@ -100,13 +95,15 @@ VerticalTabGroupView::VerticalTabGroupView(TabCollectionNode* collection_node)
       collection_node_->RegisterWillDestroyCallback(base::BindOnce(
           &VerticalTabGroupView::ResetCollectionNode, base::Unretained(this)));
 
-  data_changed_subscription_ =
-      collection_node_->RegisterDataChangedCallback(base::BindRepeating(
-          &VerticalTabGroupView::OnDataChanged, base::Unretained(this)));
+  TabGroup* const tab_group =
+      const_cast<TabGroup*>(GetTabGroupFromNode(collection_node_));
 
-  attention_indicator_observation_.Observe(GetTabGroupFromNode(collection_node_)
-                                               ->GetTabGroupFeatures()
-                                               ->attention_indicator());
+  tab_group_data_observer_ =
+      std::make_unique<tabs::TabGroupDataObserver>(tab_group);
+  tab_group_data_changed_subscription_ =
+      tab_group_data_observer_->RegisterTabGroupDataChangedCallback(
+          base::BindRepeating(&VerticalTabGroupView::OnDataChanged,
+                              base::Unretained(this)));
   OnDataChanged();
 }
 
@@ -219,18 +216,6 @@ views::ProposedLayout VerticalTabGroupView::CalculateProposedLayout(
   return layouts;
 }
 
-void VerticalTabGroupView::OnAttentionStateChanged() {
-  if (!collection_node_) {
-    return;
-  }
-
-  const TabGroup* group = GetTabGroupFromNode(collection_node_);
-  const bool has_attention =
-      SupportsDataSharing() &&
-      group->GetTabGroupFeatures()->attention_indicator()->GetHasAttention();
-  group_header_->OnAttentionStateChanged(has_attention);
-}
-
 void VerticalTabGroupView::ToggleCollapsedState(
     ToggleTabGroupCollapsedStateOrigin origin) {
   // If the group is in the process of being closed, then ignore updates.
@@ -337,9 +322,9 @@ std::unique_ptr<views::View> VerticalTabGroupView::DetachChildView(
 
 void VerticalTabGroupView::ResetCollectionNode() {
   HideHoverCard(TabSlotController::HoverCardUpdateType::kTabRemoved);
-  attention_indicator_observation_.Reset();
   node_destroyed_subscription_ = {};
-  data_changed_subscription_ = {};
+  tab_group_data_changed_subscription_ = {};
+  tab_group_data_observer_.reset();
   collection_node_ = nullptr;
 }
 
@@ -349,9 +334,10 @@ void VerticalTabGroupView::OnDataChanged() {
     return;
   }
 
-  const TabGroup* group = GetTabGroupFromNode(collection_node_);
-  tab_group_visual_data_ = *group->visual_data();
-  group_header_->OnDataChanged(&tab_group_visual_data_, GetIsShared());
+  const tabs::TabGroupData& tab_group_data =
+      tab_group_data_observer_->tab_group_data();
+  tab_group_visual_data_ = tab_group_data.visual_data;
+  group_header_->OnDataChanged(tab_group_data);
 
   // If the tab group is not collapsed update child visibility immediately. This
   // allows tabs to be visible as they are animated in.
@@ -397,24 +383,6 @@ void VerticalTabGroupView::UpdateTargetLayoutForDrag(
 
 const views::ProposedLayout& VerticalTabGroupView::GetLayoutForDrag() const {
   return layout_manager_->target_layout();
-}
-
-bool VerticalTabGroupView::GetIsShared() {
-  CHECK(collection_node_);
-  if (!SupportsDataSharing()) {
-    return false;
-  }
-
-  tab_groups::TabGroupSyncService* tab_group_service =
-      collection_node_->GetController()->GetTabGroupSyncService();
-  if (!tab_group_service) {
-    return false;
-  }
-
-  std::optional<tab_groups::SavedTabGroup> saved_group =
-      tab_group_service->GetGroup(GetTabGroupFromNode(collection_node_)->id());
-
-  return saved_group && saved_group->is_shared_tab_group();
 }
 
 const TabCollectionNode* VerticalTabGroupView::GetCollectionNodeFromView(

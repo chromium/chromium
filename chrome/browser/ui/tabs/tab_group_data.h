@@ -44,8 +44,6 @@ struct TabGroupTabData {
 
 // Holds the data for a tab group that is used by the tab group hover card.
 struct TabGroupData {
-  static TabGroupData FromTabGroup(const TabGroup* group);
-
   TabGroupData();
   ~TabGroupData();
   TabGroupData(const TabGroupData&);

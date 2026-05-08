@@ -7,7 +7,6 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/tabs/tab_group_attention_indicator.h"
 #include "chrome/browser/ui/views/frame/browser_root_view.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_types.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_animating_layout_manager.h"
@@ -21,13 +20,16 @@
 class TabCollectionNode;
 class VerticalTabGroupHeaderView;
 
+namespace tabs {
+class TabGroupDataObserver;
+}
+
 // The view class for vertical tab group container. It manages layout
 // of the group header, underline and all the tabs within the group. It also
 // handles serves as the drag target for tab dragging.
 class VerticalTabGroupView
     : public views::View,
       public views::LayoutDelegate,
-      public TabGroupAttentionIndicator::Observer,
       public VerticalTabGroupHeaderView::Delegate,
       public VerticalDraggedTabsContainer,
       public TabCollectionAnimatingLayoutManager::Delegate {
@@ -48,9 +50,6 @@ class VerticalTabGroupView
   // views::LayoutDelegate:
   views::ProposedLayout CalculateProposedLayout(
       const views::SizeBounds& size_bounds) const override;
-
-  // TabGroupAttentionIndicator::Observer:
-  void OnAttentionStateChanged() override;
 
   // VerticalTabGroupHeaderView::Delegate:
   void ToggleCollapsedState(ToggleTabGroupCollapsedStateOrigin origin) override;
@@ -105,12 +104,10 @@ class VerticalTabGroupView
   void ResetCollectionNode();
   void OnDataChanged();
   void UpdateChildVisibilityForCollapseState(bool collapsed);
-  bool GetIsShared();
 
   raw_ptr<TabCollectionNode> collection_node_ = nullptr;
 
   base::CallbackListSubscription node_destroyed_subscription_;
-  base::CallbackListSubscription data_changed_subscription_;
 
   tab_groups::TabGroupVisualData tab_group_visual_data_;
   const raw_ptr<VerticalTabGroupHeaderView> group_header_ = nullptr;
@@ -118,9 +115,8 @@ class VerticalTabGroupView
 
   const raw_ref<TabCollectionAnimatingLayoutManager> layout_manager_;
 
-  base::ScopedObservation<TabGroupAttentionIndicator,
-                          TabGroupAttentionIndicator::Observer>
-      attention_indicator_observation_{this};
+  std::unique_ptr<tabs::TabGroupDataObserver> tab_group_data_observer_;
+  base::CallbackListSubscription tab_group_data_changed_subscription_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_TAB_GROUP_VIEW_H_

@@ -140,11 +140,11 @@ TabGroupHeader::TabGroupHeader(TabSlotController& tab_slot_controller,
           base::BindRepeating(&TabSlotController::NotifyTabstripBubbleClosed,
                               base::Unretained(tab_slot_controller_)));
 
-  TabGroup* tab_group = tab_slot_controller_->GetTabGroup(group);
+  TabGroup* const tab_group = tab_slot_controller_->GetTabGroup(group);
   if (tab_group) {
-    SetHoverCardDataFrom(tabs::TabGroupData::FromTabGroup(tab_group));
     tab_group_data_observer_ =
         std::make_unique<tabs::TabGroupDataObserver>(tab_group);
+    SetHoverCardDataFrom(tab_group_data_observer_->tab_group_data());
     tab_group_data_observer_subscription_ =
         tab_group_data_observer_->RegisterTabGroupDataChangedCallback(
             base::BindRepeating(&TabGroupHeader::OnTabGroupDataChanged,

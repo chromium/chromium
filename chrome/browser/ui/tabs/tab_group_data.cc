@@ -35,30 +35,6 @@ tabs::TabGroupTabData GetTabData(tabs::TabInterface* tab_interface) {
   tab_group_tab_data.title = tab_ui_helper->GetTitle();
   return tab_group_tab_data;
 }
-
-std::vector<tabs::TabGroupTabData> GetTabGroupTabData(const TabGroup* group) {
-  std::vector<tabs::TabInterface*> tabs;
-  tabs::TabInterface* const first_tab_in_group = group->GetFirstTab();
-  if (first_tab_in_group) {
-    TabStripModel* const tab_strip_model =
-        first_tab_in_group->GetBrowserWindowInterface()->GetTabStripModel();
-    tabs = tab_strip_model->GetTabsAtIndices(group->ListTabs().ToIntVector());
-  }
-
-  std::vector<tabs::TabGroupTabData> tab_data;
-  const size_t min_tab_count =
-      std::min(static_cast<size_t>(group->tab_count()), tabs.size());
-  const size_t num_tabs_to_show =
-      std::min(min_tab_count, tabs::TabGroupData::kMaxTabs);
-  CHECK_LE(num_tabs_to_show, tabs.size());
-  for (size_t i = 0; i < num_tabs_to_show; i++) {
-    tabs::TabInterface* const tab = tabs[i];
-    tab_data.push_back(GetTabData(tab));
-  }
-
-  return tab_data;
-}
-
 }  // namespace
 
 namespace tabs {
@@ -78,14 +54,6 @@ TabGroupData::TabGroupData(const TabGroupData&) = default;
 TabGroupData& TabGroupData::operator=(const TabGroupData&) = default;
 TabGroupData::TabGroupData(TabGroupData&&) = default;
 TabGroupData& TabGroupData::operator=(TabGroupData&&) = default;
-
-TabGroupData TabGroupData::FromTabGroup(const TabGroup* group) {
-  TabGroupData tab_group_data;
-  tab_group_data.visual_data = *group->visual_data();
-  tab_group_data.num_tabs_in_group = group->tab_count();
-  tab_group_data.tab_data = GetTabGroupTabData(group);
-  return tab_group_data;
-}
 
 class TabGroupDataObserver::TabDataObserver {
  public:

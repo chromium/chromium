@@ -233,9 +233,7 @@ void RootTabCollectionNode::OnTabGroupChanged(const TabGroupChange& change) {
     return;
   }
 
-  if (change.type == TabGroupChange::kVisualsChanged) {
-    group_node->NotifyDataChanged();
-  } else if (change.type == TabGroupChange::kEditorOpened) {
+  if (change.type == TabGroupChange::kEditorOpened) {
     group_node->GetController()->ShowGroupEditorBubble(group_node);
   }
 }

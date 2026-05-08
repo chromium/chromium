@@ -246,7 +246,6 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupHoverCardTest,
       views::AsViewClass<VerticalTabGroupView>(group_node->view());
 
   VerticalTabGroupHeaderView* header_view = group_view->group_header();
-  header_view->SetHoverCardDataForTesting();
 
   // Trigger the hover card.
   hover_card_controller()->UpdateHoverCard(
@@ -279,10 +278,12 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupHoverCardTest,
   AppendTab();
   TabStripModel* model = browser()->tab_strip_model();
   tab_groups::TabGroupId group_id = model->AddToNewGroup({1, 2});
-  TabGroup* group = model->group_model()->GetTabGroup(group_id);
   std::u16string group_title = u"My Group";
-  group->SetVisualData(tab_groups::TabGroupVisualData(
-      group_title, tab_groups::TabGroupColorId::kBlue));
+  model->ChangeTabGroupVisuals(
+      group_id,
+      tab_groups::TabGroupVisualData(group_title,
+                                     tab_groups::TabGroupColorId::kBlue),
+      false);
 
   // Get the VerticalTabGroupHeaderView.
   TabCollectionNode* group_node =
@@ -292,7 +293,6 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupHoverCardTest,
   VerticalTabGroupView* group_view =
       views::AsViewClass<VerticalTabGroupView>(group_node->view());
   VerticalTabGroupHeaderView* header_view = group_view->group_header();
-  header_view->SetHoverCardDataForTesting();
 
   // Trigger the hover card.
   hover_card_controller()->UpdateHoverCard(
@@ -327,7 +327,6 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupHoverCardTest,
   VerticalTabGroupView* group_view =
       views::AsViewClass<VerticalTabGroupView>(group_node->view());
   VerticalTabGroupHeaderView* header_view = group_view->group_header();
-  header_view->SetHoverCardDataForTesting();
 
   // Trigger the hover card.
   hover_card_controller()->UpdateHoverCard(

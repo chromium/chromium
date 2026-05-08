@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/views/tabs/groups/tab_group_editor_bubble_tracker.h"
 #include "chrome/browser/ui/views/tabs/hovercard/tab_hover_card_controller.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/data_sharing/public/features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -313,8 +314,6 @@ void VerticalTabGroupHeaderView::OnMouseMoved(const ui::MouseEvent& event) {
 
 void VerticalTabGroupHeaderView::OnMouseEntered(const ui::MouseEvent& event) {
   if (features::IsTabGroupHoverCardsEnabled()) {
-    SetHoverCardDataFrom(
-        tabs::TabGroupData::FromTabGroup(&delegate_->GetTabGroup()));
     delegate_->UpdateHoverCard(TabSlotController::HoverCardUpdateType::kHover);
   } else {
     delegate_->HideHoverCard(TabSlotController::HoverCardUpdateType::kHover);
@@ -335,8 +334,6 @@ void VerticalTabGroupHeaderView::OnMouseExited(const ui::MouseEvent& event) {
 void VerticalTabGroupHeaderView::OnFocus() {
   UpdateEditorBubbleButtonVisibility();
   if (features::IsTabGroupHoverCardsEnabled()) {
-    SetHoverCardDataFrom(
-        tabs::TabGroupData::FromTabGroup(&delegate_->GetTabGroup()));
     delegate_->UpdateHoverCard(TabSlotController::HoverCardUpdateType::kFocus);
   }
 }
@@ -448,10 +445,9 @@ views::BubbleBorder::Arrow VerticalTabGroupHeaderView::GetAnchorPosition()
 }
 
 void VerticalTabGroupHeaderView::OnDataChanged(
-    const tab_groups::TabGroupVisualData* tab_group_visual_data,
-    bool is_shared) {
-  tab_group_visual_data_ = *tab_group_visual_data;
-  is_shared_ = is_shared;
+    const tabs::TabGroupData& tab_group_data) {
+  tab_group_visual_data_ = tab_group_data.visual_data;
+  is_shared_ = tab_group_data.is_sharing_group;
 
   group_header_label_->SetText(tab_group_visual_data_.title());
   if (GetColorProvider()) {
@@ -492,40 +488,19 @@ void VerticalTabGroupHeaderView::OnDataChanged(
     // Update background.
     SetBackground(views::CreateRoundedRectBackground(background_color,
                                                      kGroupHeaderCornerRadius));
+    UpdateAttentionState(
+        data_sharing::features::IsDataSharingFunctionalityEnabled() &&
+        tab_group_data.needs_attention);
   }
 
   UpdateIsCollapsed();
   UpdateAccessibleName();
 
   if (features::IsTabGroupHoverCardsEnabled()) {
-    SetHoverCardDataFrom(
-        tabs::TabGroupData::FromTabGroup(&delegate_->GetTabGroup()));
+    SetHoverCardDataFrom(tab_group_data);
   } else {
     UpdateTooltipText();
   }
-}
-
-void VerticalTabGroupHeaderView::OnAttentionStateChanged(bool needs_attention) {
-  if (needs_attention_ == needs_attention) {
-    return;
-  }
-  needs_attention_ = needs_attention;
-
-  if (tab_group_visual_data_.is_collapsed() && needs_attention_) {
-    attention_indicator_->SetVisible(true);
-    attention_indicator_->SetImage(ui::ImageModel::FromVectorIcon(
-        kDefaultTouchFaviconMaskIcon, GetForegroundColor(),
-        kAttentionIndicatorWidth));
-  } else {
-    attention_indicator_->SetVisible(false);
-  }
-
-  UpdateAccessibleName();
-}
-
-void VerticalTabGroupHeaderView::SetHoverCardDataForTesting() {
-  SetHoverCardDataFrom(
-      tabs::TabGroupData::FromTabGroup(&delegate_->GetTabGroup()));
 }
 
 void VerticalTabGroupHeaderView::UpdateTooltipText() {
@@ -548,6 +523,24 @@ void VerticalTabGroupHeaderView::UpdateIsCollapsed() {
   } else {
     GetViewAccessibility().SetIsExpanded();
   }
+}
+
+void VerticalTabGroupHeaderView::UpdateAttentionState(bool needs_attention) {
+  if (needs_attention_ == needs_attention) {
+    return;
+  }
+  needs_attention_ = needs_attention;
+
+  if (tab_group_visual_data_.is_collapsed() && needs_attention_) {
+    attention_indicator_->SetVisible(true);
+    attention_indicator_->SetImage(ui::ImageModel::FromVectorIcon(
+        kDefaultTouchFaviconMaskIcon, GetForegroundColor(),
+        kAttentionIndicatorWidth));
+  } else {
+    attention_indicator_->SetVisible(false);
+  }
+
+  UpdateAccessibleName();
 }
 
 void VerticalTabGroupHeaderView::UpdateAccessibleName() {
