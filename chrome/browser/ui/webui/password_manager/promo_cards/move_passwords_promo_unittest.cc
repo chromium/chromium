@@ -13,6 +13,7 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store/stored_credential.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -62,12 +63,12 @@ class PromoCardMovePasswordsTest : public ChromeRenderViewHostTestHarness {
 
   void SavePassword(password_manager::PasswordForm::Store store_type =
                         password_manager::PasswordForm::Store::kProfileStore) {
-    password_manager::PasswordForm form;
-    form.signon_realm = "https://example.com/";
-    form.username_value = u"username";
-    form.password_value = u"password";
-    form.in_store = store_type;
-    profile_store_->AddLogin(form);
+    password_manager::StoredCredential cred;
+    cred.signon_realm = "https://example.com/";
+    cred.username_value = u"username";
+    cred.password_value = u"password";
+    cred.in_store = store_type;
+    profile_store_->AddLogin(std::move(cred));
     task_environment()->RunUntilIdle();
   }
 
