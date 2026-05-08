@@ -112,13 +112,13 @@ extra_input_roots = [
   '../../portable-simd/crates/std_float/src',
   '../../stdarch/crates/core_arch/src/core_arch_docs.md',
 ]
+
 # Remove this from std. It will be depended on directly when needed.
 exclude_deps_in_gn = ['profiler_builtins']
 
 [crate.std.extra_kv]
-cpp_api_from_rust = { deps = [ "alloc", "core" ] }
 immediate_abort = true
-override_crate_type_as_dylib_in_component_builds = true
+cpp_api_from_rust = { deps = [ "alloc", "core" ] }
 
 [crate.test]
 # test only depends on proc_macro as an internal detail of the Rust build, so

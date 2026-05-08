@@ -4,8 +4,8 @@
 
 # @generated from build/rust/std/BUILD.gn.hbs by tools/crates/gnrt. Do not edit!
 
+import("//build/config/rust.gni")
 import("//build/rust/cargo_crate.gni")
-import("//build/rust/std/local_rustc_sysroot.gni")
 
 config("max_codegen_units") {
   # Force one CGU per module (it won't actually be 10,000). This is useful for
@@ -191,7 +191,7 @@ cargo_crate("{{../name}}") {
     "-Zlink-directives=false",
     {{/if}}
   ]
-  output_dir = "$local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
+  output_dir = "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
 {{/with}}
 {{/each}}

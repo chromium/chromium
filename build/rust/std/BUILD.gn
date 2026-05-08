@@ -19,7 +19,6 @@ import("//build/config/compiler/compiler.gni")
 import("//build/config/coverage/coverage.gni")
 import("//build/config/rust.gni")
 import("//build/config/sanitizers/sanitizers.gni")
-import("//build/rust/std/local_rustc_sysroot.gni")
 
 if (toolchain_has_rust) {
   # List of Rust stdlib rlibs which are present in the official Rust toolchain
@@ -125,12 +124,7 @@ if (toolchain_has_rust) {
       ]
     }
 
-    # `#[link...]` directives from `rust/library/std/src/sys/pal/...` [1] are
-    # applied when linking is driven by `rustc` (e.g. when `std` is built as
-    # `--crate-type=dylib` if `is_component_build`).  When `rustc` is not
-    # participating in the final linking (such as when `std` is linked
-    # statically into the shipping browser), then these `#[link...]` directives
-    # need to be replicated as GN's `libs = ...` directives.
+    # From rust/library/std/src/sys/unix/mod.rs.
     #
     # libs = [ "System" ] (meaning /usr/lib/libSystem.B.dylib) is intentionally
     # omitted here on Apple platforms, because the linker driver is responsible
@@ -141,33 +135,29 @@ if (toolchain_has_rust) {
     #
     # TODO(danakj): We should generate this list somehow when building or
     # rolling the Rust toolchain?
-    #
-    # [1] https://github.com/rust-lang/rust/blob/f5eca4fcfa908d1e038afd19c6e746f075859130/library/std/src/sys/pal/unix/mod.rs#L308-L315
-    if (!is_component_build) {
-      if (is_android) {
-        libs = [ "dl" ]
-      } else if (target_os == "freebsd") {
-        libs = [
-          "execinfo",
-          "pthread",
-        ]
-      } else if (target_os == "netbsd") {
-        libs = [
-          "rt",
-          "pthread",
-        ]
-      } else if (is_ios) {
-        libs = [ "objc" ]
-        frameworks = [
-          "Security.framework",
-          "Foundation.framework",
-        ]
-      } else if (is_fuchsia) {
-        libs = [
-          "zircon",
-          "fdio",
-        ]
-      }
+    if (is_android) {
+      libs = [ "dl" ]
+    } else if (target_os == "freebsd") {
+      libs = [
+        "execinfo",
+        "pthread",
+      ]
+    } else if (target_os == "netbsd") {
+      libs = [
+        "rt",
+        "pthread",
+      ]
+    } else if (is_ios) {
+      libs = [ "objc" ]
+      frameworks = [
+        "Security.framework",
+        "Foundation.framework",
+      ]
+    } else if (is_fuchsia) {
+      libs = [
+        "zircon",
+        "fdio",
+      ]
     }
   }
 
@@ -179,6 +169,8 @@ if (toolchain_has_rust) {
   sysroot_lib_subdir = "lib/rustlib/$rust_abi_target/lib"
 
   if (!rust_prebuilt_stdlib) {
+    local_rustc_sysroot = "$root_out_dir/local_rustc_sysroot"
+
     # All std targets starting with core build with our sysroot. It starts empty
     # and is incrementally built. The directory must exist at the start.
     generated_file("empty_sysroot_for_std_build") {

@@ -538,9 +538,6 @@ extra_kv = { allow_unsafe = true }
 
 [crate.log.extra_kv]
 allow_unsafe = true
-# TODO(https://crbug.com/374023535): Set
-# `override_crate_type_as_dylib_in_component_builds` if the upstream
-# https://crrev.com/c/7757704 "lands" and "sticks".
 
 [crate.memchr.extra_kv]
 allow_unsafe = true
@@ -664,10 +661,7 @@ allow_unsafe = false
 
 [crate.read-fonts]
 extra_input_roots = ['../generated', '../data/generated']
-
-[crate.read-fonts.extra_kv]
-allow_unsafe = false
-override_crate_type_as_dylib_in_component_builds = true
+extra_kv = { allow_unsafe = false }
 
 [crate.regex-automata.extra_kv]
 allow_unsafe = true
@@ -708,10 +702,7 @@ extra_kv = { allow_unsafe = false }
 
 [crate.serde_core]
 build_script_outputs = [ "private.rs" ]
-
-[crate.serde_core.extra_kv]
-allow_unsafe = true
-override_crate_type_as_dylib_in_component_builds = true
+extra_kv = { allow_unsafe = true }
 
 [crate.serde_derive.extra_kv]
 allow_unsafe = false

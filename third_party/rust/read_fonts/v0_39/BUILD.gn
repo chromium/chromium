@@ -12,7 +12,6 @@ cargo_crate("lib") {
   crate_name = "read_fonts"
   epoch = "0.39"
   crate_type = "rlib"
-  override_crate_type_as_dylib_in_component_builds = true
   crate_root =
       "//third_party/rust/chromium_crates_io/vendor/read-fonts-v0_39/src/lib.rs"
   sources = [

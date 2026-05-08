@@ -6,7 +6,6 @@
 
 import("//build/config/rust.gni")
 import("//build/rust/cargo_crate.gni")
-import("//build/rust/std/local_rustc_sysroot.gni")
 
 config("max_codegen_units") {
   # Force one CGU per module (it won't actually be 10,000). This is useful for
@@ -80,7 +79,8 @@ cargo_crate("addr2line") {
     "-Zforce-unstable-if-unmarked",
     "--cap-lints=allow",  # Suppress all warnings in stdlib crates
   ]
-  output_dir = "$local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
+  output_dir =
+      "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
 cargo_crate("adler2") {
   crate_type = "rlib"
@@ -135,7 +135,8 @@ cargo_crate("adler2") {
     "-Zforce-unstable-if-unmarked",
     "--cap-lints=allow",  # Suppress all warnings in stdlib crates
   ]
-  output_dir = "$local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
+  output_dir =
+      "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
 cargo_crate("alloc") {
   crate_type = "rlib"
@@ -259,7 +260,8 @@ cargo_crate("alloc") {
     "-Zforce-unstable-if-unmarked",
     "--cap-lints=allow",  # Suppress all warnings in stdlib crates
   ]
-  output_dir = "$local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
+  output_dir =
+      "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
 cargo_crate("cfg_if") {
   crate_type = "rlib"
@@ -307,7 +309,8 @@ cargo_crate("cfg_if") {
     "-Zforce-unstable-if-unmarked",
     "--cap-lints=allow",  # Suppress all warnings in stdlib crates
   ]
-  output_dir = "$local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
+  output_dir =
+      "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
 cargo_crate("compiler_builtins") {
   crate_type = "rlib"
@@ -560,7 +563,8 @@ cargo_crate("compiler_builtins") {
     "-Zforce-unstable-if-unmarked",
     "--cap-lints=allow",  # Suppress all warnings in stdlib crates
   ]
-  output_dir = "$local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
+  output_dir =
+      "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
 cargo_crate("core") {
   crate_type = "rlib"
@@ -1081,7 +1085,8 @@ cargo_crate("core") {
     "-Zforce-unstable-if-unmarked",
     "--cap-lints=allow",  # Suppress all warnings in stdlib crates
   ]
-  output_dir = "$local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
+  output_dir =
+      "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
 cargo_crate("getopts") {
   crate_type = "rlib"
@@ -1135,7 +1140,8 @@ cargo_crate("getopts") {
     "-Zforce-unstable-if-unmarked",
     "--cap-lints=allow",  # Suppress all warnings in stdlib crates
   ]
-  output_dir = "$local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
+  output_dir =
+      "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
 cargo_crate("gimli") {
   crate_type = "rlib"
@@ -1237,7 +1243,8 @@ cargo_crate("gimli") {
     "-Zforce-unstable-if-unmarked",
     "--cap-lints=allow",  # Suppress all warnings in stdlib crates
   ]
-  output_dir = "$local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
+  output_dir =
+      "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
 cargo_crate("hashbrown") {
   crate_type = "rlib"
@@ -1319,7 +1326,8 @@ cargo_crate("hashbrown") {
     "-Zforce-unstable-if-unmarked",
     "--cap-lints=allow",  # Suppress all warnings in stdlib crates
   ]
-  output_dir = "$local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
+  output_dir =
+      "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
 cargo_crate("libc") {
   crate_type = "rlib"
@@ -1710,7 +1718,8 @@ cargo_crate("libc") {
     "-Zforce-unstable-if-unmarked",
     "--cap-lints=allow",  # Suppress all warnings in stdlib crates
   ]
-  output_dir = "$local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
+  output_dir =
+      "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
 cargo_crate("memchr") {
   crate_type = "rlib"
@@ -1807,7 +1816,8 @@ cargo_crate("memchr") {
     "-Zforce-unstable-if-unmarked",
     "--cap-lints=allow",  # Suppress all warnings in stdlib crates
   ]
-  output_dir = "$local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
+  output_dir =
+      "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
 cargo_crate("miniz_oxide") {
   crate_type = "rlib"
@@ -1880,7 +1890,8 @@ cargo_crate("miniz_oxide") {
     "-Zforce-unstable-if-unmarked",
     "--cap-lints=allow",  # Suppress all warnings in stdlib crates
   ]
-  output_dir = "$local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
+  output_dir =
+      "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
 cargo_crate("object") {
   crate_type = "rlib"
@@ -2028,7 +2039,8 @@ cargo_crate("object") {
     "-Zforce-unstable-if-unmarked",
     "--cap-lints=allow",  # Suppress all warnings in stdlib crates
   ]
-  output_dir = "$local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
+  output_dir =
+      "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
 cargo_crate("panic_abort") {
   crate_type = "rlib"
@@ -2081,7 +2093,8 @@ cargo_crate("panic_abort") {
     "-Zforce-unstable-if-unmarked",
     "--cap-lints=allow",  # Suppress all warnings in stdlib crates
   ]
-  output_dir = "$local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
+  output_dir =
+      "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
 cargo_crate("proc_macro") {
   crate_type = "rlib"
@@ -2142,7 +2155,8 @@ cargo_crate("proc_macro") {
     "-Zforce-unstable-if-unmarked",
     "--cap-lints=allow",  # Suppress all warnings in stdlib crates
   ]
-  output_dir = "$local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
+  output_dir =
+      "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
 cargo_crate("profiler_builtins") {
   crate_type = "rlib"
@@ -2177,7 +2191,8 @@ cargo_crate("profiler_builtins") {
     "-Zforce-unstable-if-unmarked",
     "--cap-lints=allow",  # Suppress all warnings in stdlib crates
   ]
-  output_dir = "$local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
+  output_dir =
+      "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
 cargo_crate("rustc_demangle") {
   crate_type = "rlib"
@@ -2229,7 +2244,8 @@ cargo_crate("rustc_demangle") {
     "-Zforce-unstable-if-unmarked",
     "--cap-lints=allow",  # Suppress all warnings in stdlib crates
   ]
-  output_dir = "$local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
+  output_dir =
+      "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
 cargo_crate("rustc_literal_escaper") {
   crate_type = "rlib"
@@ -2273,7 +2289,8 @@ cargo_crate("rustc_literal_escaper") {
     "-Zforce-unstable-if-unmarked",
     "--cap-lints=allow",  # Suppress all warnings in stdlib crates
   ]
-  output_dir = "$local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
+  output_dir =
+      "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
 cargo_crate("rustc_std_workspace_alloc") {
   crate_type = "rlib"
@@ -2312,7 +2329,8 @@ cargo_crate("rustc_std_workspace_alloc") {
     "-Zforce-unstable-if-unmarked",
     "--cap-lints=allow",  # Suppress all warnings in stdlib crates
   ]
-  output_dir = "$local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
+  output_dir =
+      "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
 cargo_crate("rustc_std_workspace_core") {
   crate_type = "rlib"
@@ -2352,7 +2370,8 @@ cargo_crate("rustc_std_workspace_core") {
     "-Zforce-unstable-if-unmarked",
     "--cap-lints=allow",  # Suppress all warnings in stdlib crates
   ]
-  output_dir = "$local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
+  output_dir =
+      "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
 cargo_crate("rustc_std_workspace_std") {
   crate_type = "rlib"
@@ -2391,11 +2410,11 @@ cargo_crate("rustc_std_workspace_std") {
     "-Zforce-unstable-if-unmarked",
     "--cap-lints=allow",  # Suppress all warnings in stdlib crates
   ]
-  output_dir = "$local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
+  output_dir =
+      "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
 cargo_crate("std") {
   crate_type = "rlib"
-  override_crate_type_as_dylib_in_component_builds = true
   crate_root =
       "//third_party/rust-toolchain/lib/rustlib/src/rust/library/std/src/lib.rs"
   sources = [
@@ -3210,7 +3229,8 @@ cargo_crate("std") {
     "-Zforce-unstable-if-unmarked",
     "--cap-lints=allow",  # Suppress all warnings in stdlib crates
   ]
-  output_dir = "$local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
+  output_dir =
+      "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
 cargo_crate("std_detect") {
   crate_type = "rlib"
@@ -3303,7 +3323,8 @@ cargo_crate("std_detect") {
     "-Zforce-unstable-if-unmarked",
     "--cap-lints=allow",  # Suppress all warnings in stdlib crates
   ]
-  output_dir = "$local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
+  output_dir =
+      "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
 cargo_crate("sysroot") {
   crate_type = "rlib"
@@ -3348,7 +3369,8 @@ cargo_crate("sysroot") {
     "-Zforce-unstable-if-unmarked",
     "--cap-lints=allow",  # Suppress all warnings in stdlib crates
   ]
-  output_dir = "$local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
+  output_dir =
+      "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
 cargo_crate("test") {
   crate_type = "rlib"
@@ -3427,7 +3449,8 @@ cargo_crate("test") {
     "-Zforce-unstable-if-unmarked",
     "--cap-lints=allow",  # Suppress all warnings in stdlib crates
   ]
-  output_dir = "$local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
+  output_dir =
+      "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
 cargo_crate("unwind") {
   crate_type = "rlib"
@@ -3478,7 +3501,8 @@ cargo_crate("unwind") {
     "--cap-lints=allow",  # Suppress all warnings in stdlib crates
     "-Zlink-directives=false",
   ]
-  output_dir = "$local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
+  output_dir =
+      "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
 cargo_crate("windows_link") {
   crate_type = "rlib"
@@ -3517,5 +3541,6 @@ cargo_crate("windows_link") {
     "-Zforce-unstable-if-unmarked",
     "--cap-lints=allow",  # Suppress all warnings in stdlib crates
   ]
-  output_dir = "$local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
+  output_dir =
+      "$root_out_dir/local_rustc_sysroot/lib/rustlib/$rust_abi_target/lib/"
 }
