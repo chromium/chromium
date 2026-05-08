@@ -2840,6 +2840,18 @@ class WebUIPinnedToolbarActionsBrowserTest
                                  : actions::ActionPinnableState::kNotPinnable));
   }
 
+  views::View* GetLocationBarView() {
+    return BrowserView::GetBrowserViewForBrowser(browser())
+        ->toolbar()
+        ->location_bar_view();
+  }
+
+  views::BubbleAnchor GetToolbarBubbleAnchor(actions::ActionId action_id) {
+    return BrowserView::GetBrowserViewForBrowser(browser())
+        ->toolbar_button_provider()
+        ->GetBubbleAnchor(action_id);
+  }
+
   void PinAction(actions::ActionId action_id,
                  toolbar_ui_api::mojom::PinnedToolbarAction mojom_action) {
     auto* webui_toolbar_view = GetWebUIToolbarWebView(browser());
@@ -2866,6 +2878,8 @@ class WebUIPinnedToolbarActionsBrowserTest
                          missing_anchor = true;
                        }));
     EXPECT_TRUE(missing_anchor);
+    EXPECT_EQ(GetToolbarBubbleAnchor(action_id).GetIfView(),
+              GetLocationBarView());
 
     model_->UpdatePinnedState(action_id, true);
     // Test async anchor fetching.
@@ -2881,6 +2895,7 @@ class WebUIPinnedToolbarActionsBrowserTest
     run_loop.Run();
     // Test sync anchor fetching.
     EXPECT_FALSE(pinned_actions->GetBubbleAnchor(action_id).IsNull());
+    EXPECT_TRUE(GetToolbarBubbleAnchor(action_id).GetIfElement());
     bool found_anchor = false;
     pinned_actions->GetBubbleAnchorAsync(
         action_id, base::BindLambdaForTesting(
@@ -2927,6 +2942,8 @@ class WebUIPinnedToolbarActionsBrowserTest
       }));
     }
     EXPECT_TRUE(pinned_actions->GetBubbleAnchor(action_id).IsNull());
+    EXPECT_EQ(GetToolbarBubbleAnchor(action_id).GetIfView(),
+              GetLocationBarView());
   }
 
   void VerifyPinnedToolbarWidth() {

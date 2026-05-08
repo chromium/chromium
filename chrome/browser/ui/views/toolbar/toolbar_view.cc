@@ -1697,31 +1697,38 @@ views::AccessiblePaneView* ToolbarView::GetAsAccessiblePaneView() {
   return this;
 }
 
-views::View* ToolbarView::GetAnchorView(
+views::BubbleAnchor ToolbarView::FindBubbleAnchor(
     std::optional<actions::ActionId> action_id) {
-  if (pinned_toolbar_actions_container_ && action_id.has_value() &&
-      pinned_toolbar_actions_container_->IsActionPinnedOrPoppedOut(
-          action_id.value())) {
-    return pinned_toolbar_actions_container_->GetButtonFor(action_id.value());
+  if (pinned_toolbar_actions_ && action_id.has_value() &&
+      pinned_toolbar_actions_->IsActionPinnedOrPoppedOut(action_id.value())) {
+    return pinned_toolbar_actions_->GetBubbleAnchor(action_id.value());
   }
 
-  return location_bar_view_;
+  return features::IsWebUILocationBarEnabled()
+             ? views::BubbleAnchor(location_bar_->GetAnchorOrNull())
+             : views::BubbleAnchor(location_bar_view_);
 }
 
 views::BubbleAnchor ToolbarView::GetBubbleAnchor(
     std::optional<actions::ActionId> action_id) {
-  if (views::View* view = GetAnchorView(action_id)) {
-    // In app windows the location bar view may exist but not be drawn. Avoid
-    // anchoring bubbles to a non-drawn view (e.g. on Ozone/Wayland) and always
-    // return a valid view anchor by falling back to the contents view.
-    if (!view->IsDrawn() && browser_view_) {
-      auto* top_container = browser_view_->top_container();
-      CHECK(top_container);
-      return views::BubbleAnchor(top_container);
-    }
-    return views::BubbleAnchor(view);
+  auto anchor = FindBubbleAnchor(action_id);
+  bool anchor_not_drawn;
+  if (views::View* view = anchor.GetIfView()) {
+    anchor_not_drawn = !view->IsDrawn();
+  } else {
+    anchor_not_drawn = (features::IsWebUILocationBarEnabled() ||
+                        features::IsWebUIPinnedToolbarActionsEnabled()) &&
+                       anchor.IsNull();
   }
-  return views::BubbleAnchor();
+  // In app windows the location bar view may exist but not be drawn. Avoid
+  // anchoring bubbles to a non-drawn view (e.g. on Ozone/Wayland) and always
+  // return a valid view anchor by falling back to the contents view.
+  if (anchor_not_drawn && browser_view_) {
+    auto* top_container = browser_view_->top_container();
+    CHECK(top_container);
+    return views::BubbleAnchor(top_container);
+  }
+  return anchor;
 }
 
 void ToolbarView::ZoomChangedForActiveTab(bool can_show_bubble) {

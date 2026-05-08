@@ -288,7 +288,6 @@ class ToolbarView : public views::AccessiblePaneView,
   gfx::Rect GetFindBarBoundingBox(int contents_bottom) override;
   void FocusToolbar() override;
   views::AccessiblePaneView* GetAsAccessiblePaneView() override;
-  views::View* GetAnchorView(std::optional<actions::ActionId> action_id);
   views::BubbleAnchor GetBubbleAnchor(
       std::optional<actions::ActionId> action_id) override;
   void ZoomChangedForActiveTab(bool can_show_bubble) override;
@@ -312,6 +311,10 @@ class ToolbarView : public views::AccessiblePaneView,
 
   // views::MouseWatcherListener:
   void MouseMovedOutOfHost() override;
+
+  // May return a View that is not drawn; prefer using GetBubbleAnchor().
+  views::BubbleAnchor FindBubbleAnchor(
+      std::optional<actions::ActionId> action_id);
 
   // Changes the visibility of the Chrome Labs entry point based on prefs.
   void OnChromeLabsPrefChanged();
