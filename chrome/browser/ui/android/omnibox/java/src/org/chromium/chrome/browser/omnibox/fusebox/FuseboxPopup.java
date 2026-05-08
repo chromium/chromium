@@ -191,7 +191,7 @@ class FuseboxPopup {
      */
     void setPopupState(@PopupState int state) {
         mCurrentState = state;
-        if (state == FuseboxProperties.PopupState.BOTTOM) {
+        if (state == PopupState.BOTTOM) {
             mPopupWindow.setAnimationStyle(R.style.FuseboxBottomSheetAnimation);
         } else {
             mPopupWindow.setAnimationStyle(0);
@@ -278,7 +278,7 @@ class FuseboxPopup {
     }
 
     private void updateInsets() {
-        if (mInsetObserver == null) return;
+        if (mInsetObserver == null || mCurrentState != PopupState.BOTTOM) return;
 
         WindowInsetsCompat insets = mInsetObserver.getLastRawWindowInsets();
         if (insets == null) return;

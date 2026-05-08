@@ -53,6 +53,7 @@ public class FuseboxPopupUnitTest {
     private @Mock DynamicRectProvider mDynamicRectProvider;
     private @Mock WindowAndroid mWindowAndroid;
     private @Mock InsetObserver mInsetObserver;
+    private @Mock WindowInsetsCompat mWindowInsets;
 
     private Activity mActivity;
     private FuseboxPopup mFuseboxPopup;
@@ -228,49 +229,65 @@ public class FuseboxPopupUnitTest {
 
     @Test
     public void testUpdateInsets_ImeVisible() {
-        WindowInsetsCompat insets = org.mockito.Mockito.mock(WindowInsetsCompat.class);
         Insets imeInsets = Insets.of(0, 0, 0, 100);
         Insets navBarInsets = Insets.of(0, 0, 0, 50);
         Insets statusBarsInsets = Insets.of(0, 20, 0, 0);
 
-        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(insets);
-        when(insets.getInsets(WindowInsetsCompat.Type.ime())).thenReturn(imeInsets);
-        when(insets.getInsets(WindowInsetsCompat.Type.navigationBars())).thenReturn(navBarInsets);
-        when(insets.getInsets(WindowInsetsCompat.Type.statusBars())).thenReturn(statusBarsInsets);
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(mWindowInsets);
+        when(mWindowInsets.getInsets(WindowInsetsCompat.Type.ime())).thenReturn(imeInsets);
+        when(mWindowInsets.getInsets(WindowInsetsCompat.Type.navigationBars()))
+                .thenReturn(navBarInsets);
+        when(mWindowInsets.getInsets(WindowInsetsCompat.Type.statusBars()))
+                .thenReturn(statusBarsInsets);
 
         doReturn(true).when(mPopupWindow).isShowing();
         mFuseboxPopup.setPopupState(FuseboxProperties.PopupState.FLOATING);
 
         // First layout update.
         mFuseboxPopup.updateLayout();
-        assertEquals(50, mFuseboxPopup.mScrollView.getPaddingBottom());
+        assertEquals(0, mFuseboxPopup.mScrollView.getPaddingBottom());
 
         // Second layout update to test idempotency.
         mFuseboxPopup.updateLayout();
-        assertEquals(50, mFuseboxPopup.mScrollView.getPaddingBottom());
+        assertEquals(0, mFuseboxPopup.mScrollView.getPaddingBottom());
     }
 
     @Test
     public void testUpdateInsets_ImeHidden() {
-        WindowInsetsCompat insets = org.mockito.Mockito.mock(WindowInsetsCompat.class);
         Insets imeInsets = Insets.of(0, 0, 0, 0);
         Insets navBarInsets = Insets.of(0, 0, 0, 50);
         Insets statusBarsInsets = Insets.of(0, 20, 0, 0);
 
-        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(insets);
-        when(insets.getInsets(WindowInsetsCompat.Type.ime())).thenReturn(imeInsets);
-        when(insets.getInsets(WindowInsetsCompat.Type.navigationBars())).thenReturn(navBarInsets);
-        when(insets.getInsets(WindowInsetsCompat.Type.statusBars())).thenReturn(statusBarsInsets);
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(mWindowInsets);
+        when(mWindowInsets.getInsets(WindowInsetsCompat.Type.ime())).thenReturn(imeInsets);
+        when(mWindowInsets.getInsets(WindowInsetsCompat.Type.navigationBars()))
+                .thenReturn(navBarInsets);
+        when(mWindowInsets.getInsets(WindowInsetsCompat.Type.statusBars()))
+                .thenReturn(statusBarsInsets);
 
         doReturn(true).when(mPopupWindow).isShowing();
         mFuseboxPopup.setPopupState(FuseboxProperties.PopupState.FLOATING);
 
         // First layout update
         mFuseboxPopup.updateLayout();
-        assertEquals(50, mFuseboxPopup.mScrollView.getPaddingBottom());
+        assertEquals(0, mFuseboxPopup.mScrollView.getPaddingBottom());
 
         // Second layout update to test idempotency
         mFuseboxPopup.updateLayout();
+        assertEquals(0, mFuseboxPopup.mScrollView.getPaddingBottom());
+    }
+
+    @Test
+    public void testUpdateInsets_BottomSheet() {
+        Insets navBarInsets = Insets.of(0, 0, 0, 50);
+        when(mInsetObserver.getLastRawWindowInsets()).thenReturn(mWindowInsets);
+        when(mWindowInsets.getInsets(WindowInsetsCompat.Type.navigationBars()))
+                .thenReturn(navBarInsets);
+        doReturn(true).when(mPopupWindow).isShowing();
+
+        mFuseboxPopup.setPopupState(FuseboxProperties.PopupState.BOTTOM);
+        mFuseboxPopup.updateLayout();
+
         assertEquals(50, mFuseboxPopup.mScrollView.getPaddingBottom());
     }
 }
