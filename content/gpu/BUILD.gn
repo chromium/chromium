@@ -78,7 +78,6 @@ target(link_target_type, "gpu_sources") {
     "//ui/gfx/ipc",
     "//ui/gl",
     "//ui/gl/init",
-    "//ui/latency/ipc",
   ]
 
   if (!is_chromeos || !is_chrome_branded) {

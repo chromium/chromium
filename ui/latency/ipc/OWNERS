@@ -1,8 +1,0 @@
-set noparent
-file://ipc/SECURITY_OWNERS
-
-per-file BUILD.gn=*
-
-# The following lines are redundant, they're just to silence the presubmit
-per-file *_param_traits*.*=set noparent
-per-file *_param_traits*.*=file://ipc/SECURITY_OWNERS

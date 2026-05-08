@@ -44,14 +44,10 @@ test("latency_unittests") {
   ]
 
   if (!is_ios) {
-    sources += [
-      "ipc/latency_info_param_traits_unittest.cc",
-      "mojom/mojom_traits_unittest.cc",
-    ]
+    sources += [ "mojom/mojom_traits_unittest.cc" ]
     deps += [
       "//mojo/public/cpp/bindings",
       "//ui/gfx/ipc/geometry",
-      "//ui/latency/ipc",
       "//ui/latency/mojom:test_interfaces",
     ]
   }
