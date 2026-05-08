@@ -50,6 +50,17 @@ from utils.builders import display_utr_help, run_utr_tests
 sys.path.append(str(const.SRC_DIR / 'build' / 'android'))
 from pylib import constants
 
+import logging
+from colorama import init, Fore, Style
+
+
+def configure_logging():
+  init()
+  prefix = f"[{Fore.RED}MAIN{Style.RESET_ALL}] "
+  handler = logging.StreamHandler(sys.stdout)
+  handler.setFormatter(logging.Formatter(f'{prefix}%(message)s'))
+  level = logging.DEBUG if const.DEBUG else logging.INFO
+  logging.basicConfig(level=level, handlers=[handler])
 
 @click.command(cls=Formatter,
                help=__doc__,
@@ -61,6 +72,7 @@ from pylib import constants
 @click.pass_context
 @telemetry.tracer.start_as_current_span('chromium.tools.autotest.main')
 def main(ctx, **kwargs) -> int:
+  configure_logging()
 
   files_to_test = []
   extras = []
@@ -116,15 +128,14 @@ def main(ctx, **kwargs) -> int:
   use_remote_search: bool = config.remote_search
   if not use_remote_search and const.SRC_DIR.parts[:3] == ('/', 'google',
                                                            'cog'):
-    if const.DEBUG:
-      click.echo('Detected cog, turning on remote-search.')
+    logging.debug('Detected cog, turning on remote-search.')
     use_remote_search = True
 
   # Don't try to search if rg is not installed, and use the old behavior.
   if not use_remote_search and not shutil.which('rg'):
     if not config.quiet:
-      click.echo('rg command not found. '
-                 'Install ripgrep to enable running tests by name.')
+      logging.info('rg command not found. '
+                   'Install ripgrep to enable running tests by name.')
     files_to_test = list(config.files)
     test_names = []
   else:
@@ -206,7 +217,7 @@ def main(ctx, **kwargs) -> int:
           or config.run_related, config.target_index)
       if targets != new_targets:
         # Note that this can happen, for example, if you rename a test target.
-        click.echo('gn config was changed, trying to build again', err=True)
+        logging.warning('gn config was changed, trying to build again')
         targets = new_targets
         build_ok = test_executor.BuildTestTargets(out_dir, targets,
                                                   config.dry_run, config.quiet,
@@ -239,5 +250,5 @@ if __name__ == '__main__':
   try:
     sys.exit(main(prog_name='tools/autotest.py'))
   except (AutotestError, CommandError) as e:
-    print(e, file=sys.stderr)
+    logging.error(e)
     sys.exit(1)

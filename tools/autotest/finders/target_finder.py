@@ -8,6 +8,7 @@ import os
 import sys
 import tempfile
 import contextlib
+import logging
 
 import utils.command_util as command
 import utils.constants as const
@@ -154,15 +155,16 @@ def FindTestTargets(
 
   if len(test_targets) > 1:
     if run_all:
-      print(f'Warning, found {len(test_targets)} test targets.',
-            file=sys.stderr)
+      logging.warning(f'Found {len(test_targets)} test targets.')
       if len(test_targets) > 10 and not run_changed:
         if len(test_targets) < 50:
-          print('Targets found:', '\n'.join(test_targets), file=sys.stderr)
+          logging.info('Targets found:')
+          for t in test_targets:
+            logging.info(f'  {t}')
         command.ExitWithMessage(
             'Your query may involve non-test sources. Use --target to choose'
             ' one explicitly.')
-      print('Trying to run all of them!', file=sys.stderr)
+      logging.info('Trying to run all of them!')
     elif target_index is not None and 0 <= target_index < len(test_targets):
       test_targets = [test_targets[target_index]]
     else:

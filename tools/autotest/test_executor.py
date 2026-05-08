@@ -7,6 +7,8 @@ import shlex
 import shutil
 import subprocess
 import sys
+import logging
+from colorama import Fore, Style
 
 import utils.command_util as command
 import utils.constants as const
@@ -24,26 +26,42 @@ def BuildTestTargets(out_dir: str, targets: list[str], dry_run: bool,
                      quiet: bool, is_retry: bool) -> bool:
   """Builds the specified targets with ninja"""
   cmd: list[str] = gn_helpers.CreateBuildCommand(out_dir) + targets
-  print('Building: ' + shlex.join(cmd))
+  build_tool = os.path.basename(cmd[0])
+  prefix = f"[{Fore.CYAN}{build_tool}{Style.RESET_ALL}] "
+  logging.info('Building: ' + shlex.join(cmd))
   if (dry_run):
     return True
 
-  completed_process: subprocess.CompletedProcess[str] = subprocess.run(
-      cmd, capture_output=quiet, encoding='utf-8')
-
-  telemetry.RecordBuildAttributes(is_retry, completed_process.returncode == 0)
-
-  if completed_process.returncode != 0:
-    if quiet:
-      before, _, after = completed_process.stdout.partition('stderr:')
-      if not after:
-        before, _, after = completed_process.stdout.partition('stdout:')
-      if after:
-        print(after)
+  process = subprocess.Popen(cmd,
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.STDOUT,
+                             text=True,
+                             bufsize=1)
+  output_buffer = []
+  if process.stdout:
+    for line in process.stdout:
+      if not quiet:
+        sys.stdout.write(f'{prefix}{line}')
+        sys.stdout.flush()
       else:
-        print(before)
-    return False
-  return True
+        output_buffer.append(line)
+
+  process.wait()
+  is_successful = process.returncode == 0
+  telemetry.RecordBuildAttributes(is_retry, is_successful)
+
+  if not is_successful:
+    if quiet:
+      full_output = "".join(output_buffer)
+      before, _, after = full_output.partition('stderr:')
+      if not after:
+        before, _, after = full_output.partition('stdout:')
+      output = after if after else before
+      for line in output.splitlines():
+        sys.stdout.write(f'{prefix}{line}\n')
+      sys.stdout.flush()
+
+  return is_successful
 
 
 def RunTestTargets(out_dir: str,
@@ -85,11 +103,13 @@ def RunTestTargets(out_dir: str,
 
     cmd.extend(extra_args)
 
-    print('Running test: ' + shlex.join(cmd))
+    logging.info('Command: ' + shlex.join(cmd))
     if dry_run:
       continue
 
-    return_code, summary = command.RunTestCommandWithSummary(cmd)
+    target_prefix = f"[{Fore.GREEN}{target_binary}{Style.RESET_ALL}] "
+    return_code, summary = command.RunTestCommandWithSummary(
+        cmd, output_prefix=target_prefix)
 
     if not is_suite:
       if return_code != 0:
@@ -99,8 +119,8 @@ def RunTestTargets(out_dir: str,
       continue
 
     if summary.parse_error:
-      print(
-          f"Warning: Could not parse test summary JSON for {target_binary}. {summary.parse_error}"
+      logging.warning(
+          f"Could not parse test summary JSON for {target_binary}. {summary.parse_error}"
       )
     else:
       total_passed += len(summary.passed_tests)
@@ -116,24 +136,24 @@ def RunTestTargets(out_dir: str,
   if dry_run or not is_suite:
     return 0
 
-  print('\n' + '=' * 40)
-  print('SUITE EXECUTION SUMMARY')
-  print('=' * 40)
-  print(f'Total Tests Passed/Skipped: {total_passed}')
-  print(f'Total Tests Failed:         {total_failed}')
-  print('=' * 40)
+  logging.info('=' * 40)
+  logging.info('SUITE EXECUTION SUMMARY')
+  logging.info('=' * 40)
+  logging.info(f'Total Tests Passed/Skipped: {total_passed}')
+  logging.info(f'Total Tests Failed:         {total_failed}')
+  logging.info('=' * 40)
 
   if failed_test_names:
-    print('\nFAILED TESTS:')
+    logging.info('FAILED TESTS:')
     for test in failed_test_names:
-      print(f'  - {test}')
+      logging.info(f'  - {test}')
 
   return 1 if any_failed else 0
 
 
 def _RunGeminiDiagnostic(cmd: list[str],
                          test_summary: command.TestSummary) -> None:
-  print('\n=== Diagnosis and Suggested Fix ===\n')
+  logging.info('\n=== Diagnosis and Suggested Fix ===\n')
 
   command_str = shlex.join(cmd)
 
@@ -160,7 +180,7 @@ def _RunGeminiDiagnostic(cmd: list[str],
       f"3.  **Ask for Confirmation:** Before writing any code or modifying any files, explicitly ask the user for confirmation to go ahead and implement the proposed fix."
   )
 
-  print(
+  logging.info(
       "Launching Gemini CLI to analyze the failure (this may take a moment)...")
   try:
     gemini_cmd = gemini_helpers.get_gemini_command(use_alias=True)
@@ -168,14 +188,14 @@ def _RunGeminiDiagnostic(cmd: list[str],
     # Do not capture output so the user can interact.
     subprocess.run(gemini_cmd + ['-i', prompt], check=True)
   except FileNotFoundError:
-    print(
-        "Error: Gemini CLI ('gemini') is not installed or not in system PATH.")
-    print(
+    logging.error(
+        "Gemini CLI ('gemini') is not installed or not in system PATH.")
+    logging.error(
         "\nNote: If 'gemini' is configured as a shell alias, Python cannot execute it."
     )
-    print(
+    logging.error(
         "Please add the gemini executable directory to your PATH, or create a symlink:"
     )
-    print("  ln -s /path/to/actual/gemini ~/.local/bin/gemini")
+    logging.error("  ln -s /path/to/actual/gemini ~/.local/bin/gemini")
   except subprocess.CalledProcessError as e:
-    print(f"Error: Gemini CLI failed with exit status {e.returncode}.")
+    logging.error(f"Gemini CLI failed with exit status {e.returncode}.")

@@ -8,6 +8,7 @@ import shlex
 import subprocess
 import sys
 import tempfile
+import logging
 
 from . import constants as const
 from . import telemetry
@@ -23,6 +24,7 @@ def ExitWithMessage(*args: list[str]):
 
 @telemetry.tracer.start_as_current_span('chromium.tools.autotest.run_target')
 def RunTestCommandWithSummary(cmd: list[str],
+                              output_prefix: str = '',
                               **kwargs: int) -> tuple[int, TestSummary]:
   user_provided_path: str = None
   for i, arg in enumerate(cmd):
@@ -40,15 +42,24 @@ def RunTestCommandWithSummary(cmd: list[str],
       break
 
   def _run_and_parse_tests(cmd: list[str], path: str):
-    result: subprocess.CompletedProcess[str] = subprocess.run(cmd,
-                                                              check=False,
-                                                              **kwargs)
+    process = subprocess.Popen(cmd,
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.STDOUT,
+                               text=True,
+                               bufsize=1,
+                               **kwargs)
+    if process.stdout:
+      for line in process.stdout:
+        sys.stdout.write(f'{output_prefix}{line}')
+        sys.stdout.flush()
+    process.wait()
+
     test_summary: TestSummary = ParseTests(path)
-    is_successful: bool = result.returncode == 0
+    is_successful: bool = process.returncode == 0
 
     telemetry.RecordRunAttributes(cmd, is_successful, test_summary)
 
-    return result.returncode, test_summary
+    return process.returncode, test_summary
 
   if user_provided_path:
     return _run_and_parse_tests(cmd, user_provided_path)
@@ -62,10 +73,9 @@ def RunTestCommandWithSummary(cmd: list[str],
 
 
 def RunCommand(cmd: list[str], **kwargs: int) -> str:
-  if const.DEBUG:
-    # `shlex` does not support `pathlib.Path`, which `RunCommand` is sometimes
-    # called with. We explicitly convert the args into a `str` to be safe.
-    print(f"Run command: {shlex.join([str(c) for c in cmd])}")
+  # `shlex` does not support `pathlib.Path`, which `RunCommand` is sometimes
+  # called with. We explicitly convert the args into a `str` to be safe.
+  logging.debug(f"Run command: {shlex.join([str(c) for c in cmd])}")
 
   try:
     # Set an encoding to convert the binary output to a string.
@@ -93,7 +103,7 @@ def HaveUserPickFile(paths: list[str]) -> str:
   paths = sorted(paths, key=lambda p: (len(p), p))[:20]
   path_list: str = '\n'.join(f'{i}. {t}' for i, t in enumerate(paths))
 
-  print(f"""\
+  logging.info(f"""\
 Found multiple paths with that name.
 Hint: Avoid this in subsequent runs using --target=$TARGET_NAME, or --run-all.l
 
@@ -123,7 +133,7 @@ Hint: To avoid this in subsequent runs:
     else:
       hint += ' * Use full paths (not just base names)\n'
 
-  print(f"""\
+  logging.info(f"""\
 Path(s) belong to multiple test targets.
 
 {target_list}

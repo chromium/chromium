@@ -7,6 +7,7 @@ import pathlib
 import re
 import sys
 import shutil
+import logging
 
 import utils.command_util as command
 import utils.constants as const
@@ -96,29 +97,27 @@ def _RecursiveMatchFilename(folder: str,
             exact += matches[0]
             close += matches[1]
           except FileNotFoundError:
-            if const.DEBUG:
-              print(f'Failed to scan directory "{entry}" - junction?')
+            logging.debug(f'Failed to scan directory "{entry}" - junction?')
             pass
   except PermissionError:
-    print(f'Permission error while scanning {folder}')
+    logging.warning(f'Permission error while scanning {folder}')
 
   return (exact, close)
 
 
 def _FindTestFilesInDirectory(directory: str) -> list[str]:
   test_files: list[str] = []
-  if const.DEBUG:
-    print('Test files:')
+  logging.debug('Test files:')
   for root, _, files in os.walk(directory):
     for f in files:
       path: str = os.path.join(root, f)
       file_validity: const.TestValidity = IsTestFile(path)
       if file_validity is const.TestValidity.VALID_TEST:
-        if const.DEBUG:
-          print(path)
+        logging.debug(path)
         test_files.append(path)
-      elif const.DEBUG and file_validity is const.TestValidity.MAYBE_A_TEST:
-        print(path + ' matched but doesn\'t include gtest files, skipping.')
+      elif file_validity is const.TestValidity.MAYBE_A_TEST:
+        logging.debug(path +
+                      ' matched but doesn\'t include gtest files, skipping.')
   return test_files
 
 
@@ -176,8 +175,7 @@ def SearchForTestsByName(terms: list[str], quiet: bool,
       else:
         # Exit status 2: error (regex syntax error, unable to read file).
         raise
-    if const.DEBUG:
-      print(f'rg found: {files}')
+    logging.debug(f'rg found: {files}')
   else:
     # Use code search.
     files = _CodeSearchFiles(['pcre:true', pattern])
@@ -185,12 +183,12 @@ def SearchForTestsByName(terms: list[str], quiet: bool,
   gtest_filter: str = ':'.join(GetFilterForTerm(t) for t in terms)
 
   if files and not quiet:
-    print('Found tests in files:')
+    logging.info('Found tests in files:')
     limit = 50
-    print('\n'.join([f'  {f}' for f in files[:limit]]))
+    for f in files[:limit]:
+      logging.info(f'  {f}')
     if len(files) > limit:
-      print(f'... ({len(files)} total)')
-
+      logging.info(f'... ({len(files)} total)')
   return files, gtest_filter
 
 
@@ -250,30 +248,27 @@ def FindMatchingTestFiles(target: str,
 
   if sys.platform.startswith('win32') and os.path.altsep in target:
     # Use backslash as the path separator on Windows to match os.scandir().
-    if const.DEBUG:
-      print('Replacing ' + os.path.altsep + ' with ' + os.path.sep + ' in: ' +
-            target)
+    logging.debug('Replacing ' + os.path.altsep + ' with ' + os.path.sep +
+                  ' in: ' + target)
     target = target.replace(os.path.altsep, os.path.sep)
-  if const.DEBUG:
-    print('Finding files with full path containing: ' + target)
+  logging.debug('Finding files with full path containing: ' + target)
 
   if remote_search:
     exact, close = _FindRemoteCandidates(target)
     if not exact and not close:
-      print('Failed to find remote candidates; searching recursively')
+      logging.info('Failed to find remote candidates; searching recursively')
       exact, close = _RecursiveMatchFilename(str(const.SRC_DIR), target)
   else:
-    print(f'Warning: Doing a slow local search for {target}. '
-          f'Consider installing `cs` or using -r.')
+    logging.warning(f'Doing a slow local search for {target}. '
+                    f'Consider installing `cs` or using -r.')
     exact, close = _RecursiveMatchFilename(str(const.SRC_DIR), target)
 
-  if const.DEBUG:
-    if exact:
-      print('Found exact matching file(s):')
-      print('\n'.join(exact))
-    if close:
-      print('Found possible matching file(s):')
-      print('\n'.join(close))
+  if exact:
+    logging.debug('Found exact matching file(s):')
+    logging.debug('\n'.join(exact))
+  if close:
+    logging.debug('Found possible matching file(s):')
+    logging.debug('\n'.join(close))
 
   if len(exact) >= 1:
     # Given "Foo", don't ask to disambiguate ModFoo.java vs Foo.java.
