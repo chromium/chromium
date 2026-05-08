@@ -17,6 +17,7 @@
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/sessions/core/tab_restore_service_client.h"
 #include "components/sessions/core/tab_restore_service_helper.h"
+#include "components/split_tabs/split_tab_id.h"
 
 class PrefService;
 class TabRestoreServiceImplTest;
@@ -46,8 +47,12 @@ class SESSIONS_EXPORT TabRestoreServiceImpl : public TabRestoreService {
   void BrowserClosed(LiveTabContext* context) override;
   void CreateHistoricalGroup(LiveTabContext* context,
                              const tab_groups::TabGroupId& id) override;
+  void CreateHistoricalSplit(LiveTabContext* context,
+                             const split_tabs::SplitTabId& id) override;
   void GroupClosed(const tab_groups::TabGroupId& group) override;
   void GroupCloseStopped(const tab_groups::TabGroupId& group) override;
+  void SplitClosed(const split_tabs::SplitTabId& id) override;
+  void SplitCloseStopped(const split_tabs::SplitTabId& id) override;
   void ClearEntries() override;
   void DeleteNavigationEntries(const DeletionPredicate& predicate) override;
   const Entries& entries() const override;

@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "components/sessions/core/tab_restore_service.h"
+#include "components/split_tabs/split_tab_id.h"
 #include "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 // A Fake restore service that just store and returns tabs.
@@ -31,8 +32,12 @@ class FakeTabRestoreService : public sessions::TabRestoreService {
   void BrowserClosed(sessions::LiveTabContext* context) override;
   void CreateHistoricalGroup(sessions::LiveTabContext* context,
                              const tab_groups::TabGroupId& group) override;
+  void CreateHistoricalSplit(sessions::LiveTabContext* context,
+                             const split_tabs::SplitTabId& id) override;
   void GroupClosed(const tab_groups::TabGroupId& group) override;
   void GroupCloseStopped(const tab_groups::TabGroupId& group) override;
+  void SplitClosed(const split_tabs::SplitTabId& id) override;
+  void SplitCloseStopped(const split_tabs::SplitTabId& id) override;
   void ClearEntries() override;
   void DeleteNavigationEntries(const DeletionPredicate& predicate) override;
   const Entries& entries() const override;

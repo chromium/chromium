@@ -46,6 +46,7 @@
 #include "components/sessions/core/live_tab_context.h"
 #include "components/sessions/core/session_types.h"
 #include "components/sessions/core/tab_restore_service.h"
+#include "components/split_tabs/split_tab_visual_data.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/tab_group.h"
@@ -180,6 +181,11 @@ BrowserLiveTabContext::GetExtraDataForWindow() const {
 std::optional<tab_groups::TabGroupId> BrowserLiveTabContext::GetTabGroupForTab(
     int index) const {
   return tab_strip_model_->GetTabGroupForTab(index);
+}
+
+std::optional<split_tabs::SplitTabId> BrowserLiveTabContext::GetSplitForTab(
+    int index) const {
+  return tab_strip_model_->GetSplitForTab(index);
 }
 
 const tab_groups::TabGroupVisualData*
@@ -376,6 +382,27 @@ sessions::LiveTab* BrowserLiveTabContext::ReplaceRestoredTab(
       storage_namespace, tab.user_agent_override, tab.extra_data,
       false /* from_session_restore */);
   return sessions::ContentLiveTab::GetOrCreateForWebContents(web_contents);
+}
+
+void BrowserLiveTabContext::ReconstructSplit(sessions::LiveTab* leading_tab,
+                                             sessions::LiveTab* trailing_tab,
+                                             split_tabs::SplitTabId split_id) {
+  auto* leading_content_tab =
+      static_cast<sessions::ContentLiveTab*>(leading_tab);
+  auto* trailing_content_tab =
+      static_cast<sessions::ContentLiveTab*>(trailing_tab);
+
+  const int leading_index = tab_strip_model_->GetIndexOfWebContents(
+      &leading_content_tab->GetWebContents());
+  const int trailing_index = tab_strip_model_->GetIndexOfWebContents(
+      &trailing_content_tab->GetWebContents());
+
+  if (leading_index != TabStripModel::kNoTab &&
+      trailing_index != TabStripModel::kNoTab) {
+    // TODO(crbug.com/510787267): Supply Split Tab Visual Data here.
+    tab_strip_model_->RestoreSplit(split_id, {leading_index, trailing_index},
+                                   split_tabs::SplitTabVisualData());
+  }
 }
 
 void BrowserLiveTabContext::CloseTab() {

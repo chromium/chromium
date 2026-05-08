@@ -6,6 +6,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "ios/web/public/navigation/navigation_manager.h"
+#include "ios/web/public/web_state_id.h"
 
 namespace {
 const char kIOSWebStateLiveTabWebStateUserDataKey[] = "ios_live_tab";
@@ -29,6 +30,10 @@ IOSWebStateLiveTab::IOSWebStateLiveTab(web::WebState* web_state)
     : web_state_(web_state) {}
 
 IOSWebStateLiveTab::~IOSWebStateLiveTab() = default;
+
+SessionID IOSWebStateLiveTab::GetSessionID() const {
+  return web_state_->GetUniqueIdentifier().ToSessionID();
+}
 
 bool IOSWebStateLiveTab::IsInitialBlankNavigation() {
   return navigation_manager()->GetItemCount() == 0;

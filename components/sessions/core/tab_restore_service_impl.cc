@@ -22,6 +22,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/pickle.h"
 #include "base/time/time.h"
@@ -35,6 +36,7 @@
 #include "components/sessions/core/session_constants.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sessions/core/tab_restore_types.h"
+#include "components/split_tabs/split_tab_id.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -1591,6 +1593,13 @@ void TabRestoreServiceImpl::CreateHistoricalGroup(
   helper_.CreateHistoricalGroup(context, id);
 }
 
+void TabRestoreServiceImpl::CreateHistoricalSplit(
+    LiveTabContext* context,
+    const split_tabs::SplitTabId& id) {
+  // TODO(crbug.com/508275923): Add Support for Split View Restoration.
+  NOTIMPLEMENTED();
+}
+
 void TabRestoreServiceImpl::GroupClosed(const tab_groups::TabGroupId& group) {
   helper_.GroupClosed(group);
 }
@@ -1598,6 +1607,17 @@ void TabRestoreServiceImpl::GroupClosed(const tab_groups::TabGroupId& group) {
 void TabRestoreServiceImpl::GroupCloseStopped(
     const tab_groups::TabGroupId& group) {
   helper_.GroupCloseStopped(group);
+}
+
+void TabRestoreServiceImpl::SplitClosed(const split_tabs::SplitTabId& id) {
+  // TODO(crbug.com/508275923): Add Support for Split View Restoration.
+  NOTIMPLEMENTED();
+}
+
+void TabRestoreServiceImpl::SplitCloseStopped(
+    const split_tabs::SplitTabId& id) {
+  // TODO(crbug.com/508275923): Add Support for Split View Restoration.
+  NOTIMPLEMENTED();
 }
 
 void TabRestoreServiceImpl::ClearEntries() {

@@ -13,6 +13,10 @@ RestoreIOSLiveTab::RestoreIOSLiveTab(web::proto::NavigationStorage storage)
 
 RestoreIOSLiveTab::~RestoreIOSLiveTab() = default;
 
+SessionID RestoreIOSLiveTab::GetSessionID() const {
+  return SessionID::InvalidValue();
+}
+
 bool RestoreIOSLiveTab::IsInitialBlankNavigation() {
   return false;
 }

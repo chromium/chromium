@@ -14,6 +14,7 @@
 #include "components/sessions/core/session_types.h"
 #include "components/sessions/core/sessions_export.h"
 #include "components/sessions/core/tab_restore_types.h"
+#include "components/split_tabs/split_tab_id.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -51,6 +52,8 @@ class SESSIONS_EXPORT LiveTabContext {
       int index) const = 0;
   virtual std::map<std::string, std::string> GetExtraDataForWindow() const = 0;
   virtual std::optional<tab_groups::TabGroupId> GetTabGroupForTab(
+      int index) const = 0;
+  virtual std::optional<split_tabs::SplitTabId> GetSplitForTab(
       int index) const = 0;
   // Should not be called for |group| unless GetTabGroupForTab() returned
   // |group|.
@@ -90,6 +93,12 @@ class SESSIONS_EXPORT LiveTabContext {
   // as this data is not persisted, or if the platform does not provide
   // platform-specific data).
   virtual LiveTab* ReplaceRestoredTab(const tab_restore::Tab& tab) = 0;
+
+  // Reconstructs a split view by merging |leading_tab| and |trailing_tab|
+  // back into a coupled state defined by |split_id|.
+  virtual void ReconstructSplit(LiveTab* leading_tab,
+                                LiveTab* trailing_tab,
+                                split_tabs::SplitTabId split_id) = 0;
   virtual void CloseTab() = 0;
 
  protected:

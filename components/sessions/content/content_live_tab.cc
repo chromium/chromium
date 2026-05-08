@@ -8,6 +8,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "components/sessions/content/content_platform_specific_tab_data.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/navigation_controller.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 
@@ -17,6 +18,11 @@ ContentLiveTab::ContentLiveTab(content::WebContents* contents)
     : content::WebContentsUserData<ContentLiveTab>(*contents) {}
 
 ContentLiveTab::~ContentLiveTab() = default;
+
+SessionID ContentLiveTab::GetSessionID() const {
+  return sessions::SessionTabHelper::FromWebContents(&GetWebContents())
+      ->session_id();
+}
 
 bool ContentLiveTab::IsInitialBlankNavigation() {
   return navigation_controller().IsInitialBlankNavigation();

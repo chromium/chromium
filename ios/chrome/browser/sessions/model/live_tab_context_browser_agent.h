@@ -14,6 +14,7 @@
 #import "components/keyed_service/core/keyed_service.h"
 #import "components/sessions/core/live_tab_context.h"
 #include "components/sessions/core/tab_restore_types.h"
+#include "components/split_tabs/split_tab_id.h"
 #import "ios/chrome/browser/shared/model/browser/browser_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
@@ -51,6 +52,8 @@ class LiveTabContextBrowserAgent
   std::map<std::string, std::string> GetExtraDataForWindow() const override;
   std::optional<tab_groups::TabGroupId> GetTabGroupForTab(
       int index) const override;
+  std::optional<split_tabs::SplitTabId> GetSplitForTab(
+      int index) const override;
   const tab_groups::TabGroupVisualData* GetVisualDataForGroup(
       const tab_groups::TabGroupId& group) const override;
   const std::optional<base::Uuid> GetSavedTabGroupIdForGroup(
@@ -72,6 +75,9 @@ class LiveTabContextBrowserAgent
       sessions::tab_restore::Type original_session_type) override;
   sessions::LiveTab* ReplaceRestoredTab(
       const sessions::tab_restore::Tab& tab) override;
+  void ReconstructSplit(sessions::LiveTab* leading_tab,
+                        sessions::LiveTab* trailing_tab,
+                        split_tabs::SplitTabId split_id) override;
   void CloseTab() override;
 
  private:

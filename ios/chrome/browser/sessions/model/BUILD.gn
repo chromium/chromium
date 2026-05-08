@@ -23,6 +23,7 @@ source_set("model") {
     ":session_restoration_service_factory",
     ":session_util",
     "//base",
+    "//components/split_tabs",
     "//components/tab_groups",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
@@ -244,6 +245,7 @@ source_set("fake") {
   deps = [
     "//base",
     "//components/sessions",
+    "//components/split_tabs",
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
   ]
 }

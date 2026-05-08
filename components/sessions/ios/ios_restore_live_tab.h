@@ -24,6 +24,7 @@ class SESSIONS_EXPORT RestoreIOSLiveTab : public IOSLiveTab {
   RestoreIOSLiveTab& operator=(const RestoreIOSLiveTab&) = delete;
 
   // LiveTab:
+  SessionID GetSessionID() const override;
   bool IsInitialBlankNavigation() override;
   int GetCurrentEntryIndex() override;
   int GetPendingEntryIndex() override;

@@ -7,6 +7,7 @@
 
 #include "components/sessions/core/serialized_navigation_entry.h"
 #include "components/sessions/core/serialized_user_agent_override.h"
+#include "components/sessions/core/session_id.h"
 #include "components/sessions/core/sessions_export.h"
 #include "components/sessions/core/tab_restore_service.h"
 
@@ -19,6 +20,9 @@ namespace sessions {
 class SESSIONS_EXPORT LiveTab {
  public:
   virtual ~LiveTab();
+
+  // Returns the unique SessionID of the tab.
+  virtual SessionID GetSessionID() const = 0;
 
   // Methods that return information about the navigation state of the tab.
   virtual bool IsInitialBlankNavigation() = 0;

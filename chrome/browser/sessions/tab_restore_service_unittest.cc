@@ -41,6 +41,7 @@
 #include "components/sessions/core/tab_restore_service_client.h"
 #include "components/sessions/core/tab_restore_service_impl.h"
 #include "components/sessions/core/tab_restore_service_observer.h"
+#include "components/split_tabs/split_tab_id.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "content/public/browser/browser_thread.h"
@@ -75,6 +76,7 @@ class MockLiveTab : public sessions::LiveTab {
   ~MockLiveTab() override = default;
 
   MOCK_METHOD0(IsInitialBlankNavigation, bool());
+  MOCK_CONST_METHOD0(GetSessionID, SessionID());
   MOCK_METHOD0(GetCurrentEntryIndex, int());
   MOCK_METHOD0(GetPendingEntryIndex, int());
   MOCK_METHOD1(GetEntryAtIndex, sessions::SerializedNavigationEntry(int index));
@@ -106,6 +108,8 @@ class MockLiveTabContext : public sessions::LiveTabContext {
                      std::map<std::string, std::string>());
   MOCK_CONST_METHOD1(GetTabGroupForTab,
                      std::optional<tab_groups::TabGroupId>(int index));
+  MOCK_CONST_METHOD1(GetSplitForTab,
+                     std::optional<split_tabs::SplitTabId>(int index));
   MOCK_CONST_METHOD1(GetVisualDataForGroup,
                      const tab_groups::TabGroupVisualData*(
                          const tab_groups::TabGroupId& group));
@@ -134,6 +138,10 @@ class MockLiveTabContext : public sessions::LiveTabContext {
               ReplaceRestoredTab,
               ((const sessions::tab_restore::Tab&)),
               (override));
+  MOCK_METHOD3(ReconstructSplit,
+               void(sessions::LiveTab* leading_tab,
+                    sessions::LiveTab* trailing_tab,
+                    split_tabs::SplitTabId split_id));
   MOCK_METHOD0(CloseTab, void());
 };
 
@@ -465,6 +473,8 @@ TEST_F(TabRestoreServiceImplWithMockClientTest, WindowRestore) {
   SerializedNavigationEntry navigation_entry =
       SerializedNavigationEntryTestHelper::CreateNavigationForTest();
   testing::NiceMock<MockLiveTab> mock_live_tab;
+  ON_CALL(mock_live_tab, GetSessionID)
+      .WillByDefault(Return(SessionID::NewUnique()));
   ON_CALL(mock_live_tab, GetEntryCount).WillByDefault(Return(1));
   ON_CALL(mock_live_tab, GetEntryAtIndex)
       .WillByDefault(Return(navigation_entry));

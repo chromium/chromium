@@ -23,6 +23,10 @@ namespace tab_groups {
 class TabGroupId;
 }  // namespace tab_groups
 
+namespace split_tabs {
+class SplitTabId;
+}  // namespace split_tabs
+
 class MockTabRestoreService : public sessions::TabRestoreService {
  public:
   MockTabRestoreService();
@@ -49,6 +53,12 @@ class MockTabRestoreService : public sessions::TabRestoreService {
               (override));
 
   MOCK_METHOD(void,
+              CreateHistoricalSplit,
+              (sessions::LiveTabContext * context,
+               const split_tabs::SplitTabId& id),
+              (override));
+
+  MOCK_METHOD(void,
               GroupClosed,
               (const tab_groups::TabGroupId& group),
               (override));
@@ -56,6 +66,16 @@ class MockTabRestoreService : public sessions::TabRestoreService {
   MOCK_METHOD(void,
               GroupCloseStopped,
               (const tab_groups::TabGroupId& group),
+              (override));
+
+  MOCK_METHOD(void,
+              SplitClosed,
+              (const split_tabs::SplitTabId& id),
+              (override));
+
+  MOCK_METHOD(void,
+              SplitCloseStopped,
+              (const split_tabs::SplitTabId& id),
               (override));
 
   MOCK_METHOD(void,

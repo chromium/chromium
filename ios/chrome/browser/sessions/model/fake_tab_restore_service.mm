@@ -9,6 +9,7 @@
 #import "base/run_loop.h"
 #import "components/sessions/core/live_tab.h"
 #import "components/sessions/core/tab_restore_types.h"
+#import "components/split_tabs/split_tab_id.h"
 
 FakeTabRestoreService::FakeTabRestoreService() = default;
 
@@ -57,12 +58,27 @@ void FakeTabRestoreService::CreateHistoricalGroup(
   NOTREACHED();
 }
 
+void FakeTabRestoreService::CreateHistoricalSplit(
+    sessions::LiveTabContext* context,
+    const split_tabs::SplitTabId& id) {
+  NOTREACHED();
+}
+
 void FakeTabRestoreService::GroupClosed(const tab_groups::TabGroupId& group) {
   NOTREACHED();
 }
 
 void FakeTabRestoreService::GroupCloseStopped(
     const tab_groups::TabGroupId& group) {
+  NOTREACHED();
+}
+
+void FakeTabRestoreService::SplitClosed(const split_tabs::SplitTabId& id) {
+  NOTREACHED();
+}
+
+void FakeTabRestoreService::SplitCloseStopped(
+    const split_tabs::SplitTabId& id) {
   NOTREACHED();
 }
 

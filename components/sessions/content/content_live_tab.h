@@ -33,6 +33,7 @@ class SESSIONS_EXPORT ContentLiveTab
   ~ContentLiveTab() override;
 
   // LiveTab:
+  SessionID GetSessionID() const override;
   bool IsInitialBlankNavigation() override;
   int GetCurrentEntryIndex() override;
   int GetPendingEntryIndex() override;

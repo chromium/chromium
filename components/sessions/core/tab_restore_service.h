@@ -23,6 +23,7 @@
 #include "components/sessions/core/session_types.h"
 #include "components/sessions/core/sessions_export.h"
 #include "components/sessions/core/tab_restore_types.h"
+#include "components/split_tabs/split_tab_id.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "ui/base/ui_base_types.h"
@@ -70,12 +71,23 @@ class SESSIONS_EXPORT TabRestoreService : public KeyedService {
   virtual void CreateHistoricalGroup(LiveTabContext* context,
                                      const tab_groups::TabGroupId& id) = 0;
 
+  // Creates a Split to represent a split view with ID |id|, containing
+  // the two tabs within the split.
+  virtual void CreateHistoricalSplit(LiveTabContext* context,
+                                     const split_tabs::SplitTabId& id) = 0;
+
   // Invoked when the group is done closing.
   virtual void GroupClosed(const tab_groups::TabGroupId& group) = 0;
 
   // Invoked when the group is did not fully close, e.g. because one of the tabs
   // had a beforeunload handler.
   virtual void GroupCloseStopped(const tab_groups::TabGroupId& group) = 0;
+
+  // Invoked when the split is done closing.
+  virtual void SplitClosed(const split_tabs::SplitTabId& id) = 0;
+
+  // Invoked when the split did not fully close.
+  virtual void SplitCloseStopped(const split_tabs::SplitTabId& id) = 0;
 
   // TODO(blundell): Rename and fix comment.
   // Invoked when a browser is closing. If |context| is a tabbed browser with
