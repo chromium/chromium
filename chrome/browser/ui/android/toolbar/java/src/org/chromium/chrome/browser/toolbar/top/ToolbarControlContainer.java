@@ -781,7 +781,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         }
 
         private boolean shouldCaptureWhileHidden() {
-            return ChromeFeatureList.sToolbarStaleCaptureBugFix.isEnabled()
+            return ChromeFeatureList.sToolbarCaptureFixForSPAs.isEnabled()
                     && !mIsDestroyed
                     && mBrowserControlsStateProvider != null
                     && mBrowserControlsStateProvider.getBrowserControlHiddenRatio() >= 1f;
@@ -975,8 +975,13 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                     mControlsToken = TokenHolder.INVALID_TOKEN;
                 }
             } else if (Boolean.TRUE.equals(compositorInMotion) && super.isDirty()) {
+                // For SPAs, the toolbar will stay fully hidden if navigating to another page in the
+                // same origin. But since the toolbar is hidden, we won't capture, which results in
+                // the toolbar animating back into view every time on the first scroll after a
+                // navigation in the SPA. This is a bad user experience. If ToolbarCaptureFixForSPAs
+                // is enabled, we won't animate the controls back into view for this case.
                 boolean controlsPartiallyVisible =
-                        ChromeFeatureList.sToolbarStaleCaptureBugFix.isEnabled()
+                        ChromeFeatureList.sToolbarCaptureFixForSPAs.isEnabled()
                                 && mBrowserControlsStateProvider != null
                                 && mBrowserControlsStateProvider.getBrowserControlHiddenRatio()
                                         < 1f;

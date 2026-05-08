@@ -9015,6 +9015,7 @@ from previous Chrome versions.
   <int value="-1691552534" label="OverlayScrollbarsOSSetting:enabled"/>
   <int value="-1691281364" label="enable-notification-action-icons"/>
   <int value="-1690359116" label="ShortcutCustomizationJelly:enabled"/>
+  <int value="-1689845303" label="ToolbarCaptureFixForSPAs:disabled"/>
   <int value="-1689444567"
       label="AutofillUpdateChromeSettingsLinkToGPayWeb:disabled"/>
   <int value="-1689416978" label="AccessibilityDeprecateTypeAnnounce:enabled"/>
@@ -16367,6 +16368,7 @@ from previous Chrome versions.
   <int value="738770668" label="AndroidEntraSSO:enabled"/>
   <int value="738868972" label="GdiTextPrinting:disabled"/>
   <int value="738962107" label="ExoOrdinalMotion:disabled"/>
+  <int value="739153932" label="ToolbarCaptureFixForSPAs:enabled"/>
   <int value="739906838" label="CrOSLateBootAudioFlexibleLoopback:disabled"/>
   <int value="739938466"
       label="WebPaymentsPerMethodCanMakePaymentQuota:disabled"/>

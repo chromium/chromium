@@ -5835,6 +5835,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kRefactorMinWidthContextOverrideDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(ui::kRefactorMinWidthContextOverride)},
 
+    {"toolbar-capture-fix-for-spas",
+     flag_descriptions::kToolbarCaptureFixForSPAsName,
+     flag_descriptions::kToolbarCaptureFixForSPAsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kToolbarCaptureFixForSPAs)},
+
     {"toolbar-stale-capture-bug-fix",
      flag_descriptions::kToolbarStaleCaptureBugFixName,
      flag_descriptions::kToolbarStaleCaptureBugFixDescription, kOsAndroid,
