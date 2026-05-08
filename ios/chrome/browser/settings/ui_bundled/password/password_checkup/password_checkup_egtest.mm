@@ -714,7 +714,8 @@ NSString* LeakedPasswordDescription() {
 
 // Tests resolving the last reused passwords issue by editing a password through
 // Password Checkup.
-- (void)testResolveLastIssueByEditingPassword {
+// TODO(crbug.com/511159692): Mark it as flaky and re-enable it once fixed.
+- (void)FLAKY_testResolveLastIssueByEditingPassword {
   SaveReusedPasswordFormsToProfileStore();
 
   OpenPasswordCheckupHomepage(
