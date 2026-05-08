@@ -11705,8 +11705,6 @@ from previous Chrome versions.
   <int value="-785528415" label="FedCm:disabled"/>
   <int value="-784584916" label="SyncEnableHistoryDataType:enabled"/>
   <int value="-784199026" label="EnableFilesAppCopyImage:enabled"/>
-  <int value="-784165332"
-      label="CaptureHandleForStandalonePwasAndIwas:enabled"/>
   <int value="-783999903" label="FilesTrashDrive:disabled"/>
   <int value="-783890018" label="LacrosProfileMigrationForAnyUser:disabled"/>
   <int value="-783308028" label="WebRequestSecurityInfo:disabled"/>
@@ -17963,8 +17961,6 @@ from previous Chrome versions.
   <int value="1287687934" label="ResetAudioSelectionImprovementPref:disabled"/>
   <int value="1287947083" label="WebAssemblyCodeProtectionPku:enabled"/>
   <int value="1288155322" label="SendTabToSelfIOSPushNotifications:disabled"/>
-  <int value="1288591882"
-      label="CaptureHandleForStandalonePwasAndIwas:disabled"/>
   <int value="1288612648" label="PluginVmFullscreen:enabled"/>
   <int value="1288762279"
       label="AutofillEnableTravelCategoryAndMerchantBenefitsFromCurinos:enabled"/>

@@ -1025,11 +1025,6 @@ bool WebAppRegistrar::AppMatches(const webapps::AppId& app_id,
                 return display_mode != DisplayMode::kBrowser &&
                        display_mode != DisplayMode::kUndefined;
               }
-              case WebAppFilter::SimpleCondition::kIsPlaceholder:
-                return IsPlaceholderApp(
-                           app_id, web_app::WebAppManagement::Type::kKiosk) ||
-                       IsPlaceholderApp(
-                           app_id, web_app::WebAppManagement::Type::kPolicy);
             }
           },
           [&](const WebAppFilter::ManagementRequirement& requirement) {

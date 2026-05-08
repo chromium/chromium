@@ -5507,11 +5507,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"cast-message-logging", flag_descriptions::kCastMessageLoggingName,
      flag_descriptions::kCastMessageLoggingDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(media_router::kCastMessageLogging)},
-    {"capture-handle-for-standalone-pwas-and-iwas",
-     flag_descriptions::kCaptureHandleForStandalonePwasAndIwasName,
-     flag_descriptions::kCaptureHandleForStandalonePwasAndIwasDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kCaptureHandleForStandalonePwasAndIwas)},
+
     {"cast-streaming-exponential-video-bitrate-algorithm",
      flag_descriptions::kCastStreamingExponentialVideoBitrateAlgorithmName,
      flag_descriptions::

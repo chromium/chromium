@@ -102,10 +102,6 @@ class WebAppFilter {
   // suggested from sync) as long as they are not marked for uninstallation.
   static WebAppFilter IsAppEligibleForManifestUpdate();
 
-  // Only consider web apps that are eligible for exposing window capture
-  // handle. This includes IWAs and standalone PWAs.
-  static WebAppFilter IsWindowCaptureHandleAllowed();
-
   WebAppFilter(const WebAppFilter&);
   WebAppFilter(WebAppFilter&&) noexcept;
   WebAppFilter& operator=(WebAppFilter&&) noexcept;
@@ -133,8 +129,7 @@ class WebAppFilter {
     kIsolatedApp,
     kIsolatedAppDevMode,
     kIsolatedSubApp,
-    kOpensInDedicatedWindow,
-    kIsPlaceholder
+    kOpensInDedicatedWindow
   };
 
   using InstallStateSet = base::EnumSet<proto::InstallState,
