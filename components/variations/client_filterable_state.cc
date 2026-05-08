@@ -15,14 +15,25 @@ namespace variations {
 
 ClientFilterableState::ClientFilterableState(
     IsEnterpriseFunction is_enterprise_function,
-    GoogleGroupsFunction google_groups_function)
+    GoogleGroupsFunction google_groups_function,
+    EnterpriseGroupsFunction enterprise_groups_function)
     : is_enterprise_function_(std::move(is_enterprise_function)),
-      google_groups_function_(std::move(google_groups_function)) {
+      google_groups_function_(std::move(google_groups_function)),
+      enterprise_groups_function_(std::move(enterprise_groups_function)) {
   // The callback is only used when processing a study that uses the
   // is_enterprise filter. If you're building a client that isn't expecting that
   // filter, you should use a callback that always returns false.
   DCHECK(is_enterprise_function_);
 }
+
+ClientFilterableState::ClientFilterableState(
+    IsEnterpriseFunction is_enterprise_function,
+    GoogleGroupsFunction google_groups_function)
+    : ClientFilterableState(
+          std::move(is_enterprise_function),
+          std::move(google_groups_function),
+          base::BindOnce([] { return base::flat_set<std::string>(); })) {}
+
 ClientFilterableState::~ClientFilterableState() = default;
 
 bool ClientFilterableState::IsEnterprise() const {
@@ -37,6 +48,13 @@ base::flat_set<uint64_t> ClientFilterableState::GoogleGroups() const {
     google_groups_ = std::move(google_groups_function_).Run();
   }
   return google_groups_.value();
+}
+
+base::flat_set<std::string> ClientFilterableState::EnterpriseGroups() const {
+  if (!enterprise_groups_.has_value()) {
+    enterprise_groups_ = std::move(enterprise_groups_function_).Run();
+  }
+  return enterprise_groups_.value();
 }
 
 // static

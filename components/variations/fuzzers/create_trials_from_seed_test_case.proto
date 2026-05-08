@@ -40,6 +40,7 @@ message CreateTrialsFromSeedTestCase {
     optional string permanent_consistency_country = 12;
     optional RestrictionPolicy policy_restriction = 13;
     repeated int64 google_groups = 14;
+    repeated string enterprise_groups = 15;
   }
   optional ClientFilterableState client_filterable_state = 2;
 

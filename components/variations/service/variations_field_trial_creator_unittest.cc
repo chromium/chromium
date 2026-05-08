@@ -40,6 +40,7 @@
 #include "base/version_info/channel.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "components/enterprise/browser/groups/groups_prefs.h"
 #include "components/metrics/clean_exit_beacon.h"
 #include "components/metrics/client_info.h"
 #include "components/metrics/field_trials_provider.h"
@@ -335,6 +336,10 @@ class MockVariationsServiceClient : public TestVariationsServiceClient {
               RemoveGoogleGroupsFromPrefsForDeletedProfiles,
               (PrefService*),
               (override));
+  MOCK_METHOD(void,
+              RemoveEnterpriseGroupsFromPrefsForDeletedProfiles,
+              (PrefService*),
+              (override));
   MOCK_METHOD(Study::FormFactor, GetCurrentFormFactor, (), (override));
 };
 
@@ -436,6 +441,10 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
     return VariationsFieldTrialCreator::GetGoogleGroupsFromPrefs();
   }
 
+  base::flat_set<std::string> GetEnterpriseGroupsFromPrefs() {
+    return VariationsFieldTrialCreator::GetEnterpriseGroupsFromPrefs();
+  }
+
   TestVariationsSeedStore* seed_store() { return &seed_store_; }
 
  protected:
@@ -469,6 +478,7 @@ class FieldTrialCreatorTest : public ::testing::Test {
     // Register the prefs used by the metrics and variations services.
     metrics::MetricsService::RegisterPrefs(local_state_.registry());
     VariationsService::RegisterPrefs(local_state_.registry());
+    enterprise_groups::RegisterLocalStatePrefs(local_state_.registry());
 
     // Create a new temp dir for each test, to avoid cross test contamination.
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -1677,6 +1687,118 @@ TEST_F(FieldTrialCreatorTest, GetGoogleGroupsFromPrefsClearsDeletedProfiles) {
   EXPECT_CALL(variations_service_client,
               RemoveGoogleGroupsFromPrefsForDeletedProfiles(local_state()));
   field_trial_creator.GetGoogleGroupsFromPrefs();
+}
+
+TEST_F(FieldTrialCreatorTest, GetEnterpriseGroupsFromPrefsWhenPrefNotPresent) {
+  TestVariationsServiceClient variations_service_client;
+  NiceMock<MockSafeSeedManager> safe_seed_manager(local_state());
+  TestVariationsFieldTrialCreator field_trial_creator(
+      local_state(), &variations_service_client, &safe_seed_manager,
+      user_data_dir_path());
+
+  ASSERT_EQ(field_trial_creator.GetEnterpriseGroupsFromPrefs(),
+            base::flat_set<std::string>());
+}
+
+TEST_F(FieldTrialCreatorTest, GetEnterpriseGroupsFromPrefsWhenEmptyDict) {
+  TestVariationsServiceClient variations_service_client;
+  NiceMock<MockSafeSeedManager> safe_seed_manager(local_state());
+  TestVariationsFieldTrialCreator field_trial_creator(
+      local_state(), &variations_service_client, &safe_seed_manager,
+      user_data_dir_path());
+
+  base::DictValue enterprise_groups_dict;
+  local_state()->SetDict(enterprise_groups::kEnterpriseGroupsProfilePref,
+                         std::move(enterprise_groups_dict));
+
+  ASSERT_EQ(field_trial_creator.GetEnterpriseGroupsFromPrefs(),
+            base::flat_set<std::string>());
+}
+
+TEST_F(FieldTrialCreatorTest, GetEnterpriseGroupsFromPrefsWhenEmptyLists) {
+  TestVariationsServiceClient variations_service_client;
+  NiceMock<MockSafeSeedManager> safe_seed_manager(local_state());
+  TestVariationsFieldTrialCreator field_trial_creator(
+      local_state(), &variations_service_client, &safe_seed_manager,
+      user_data_dir_path());
+
+  base::DictValue enterprise_groups_dict;
+  enterprise_groups_dict.Set("Profile 1", base::ListValue());
+  local_state()->SetDict(enterprise_groups::kEnterpriseGroupsProfilePref,
+                         std::move(enterprise_groups_dict));
+  local_state()->SetList(enterprise_groups::kEnterpriseGroupsBrowserPref,
+                         base::ListValue());
+
+  ASSERT_EQ(field_trial_creator.GetEnterpriseGroupsFromPrefs(),
+            base::flat_set<std::string>());
+}
+
+TEST_F(FieldTrialCreatorTest,
+       GetEnterpriseGroupsFromPrefsWhenProfileWithNonEmptyList) {
+  TestVariationsServiceClient variations_service_client;
+  NiceMock<MockSafeSeedManager> safe_seed_manager(local_state());
+  TestVariationsFieldTrialCreator field_trial_creator(
+      local_state(), &variations_service_client, &safe_seed_manager,
+      user_data_dir_path());
+
+  base::DictValue enterprise_groups_dict;
+  enterprise_groups_dict.Set(
+      "Profile 1", base::ListValue().Append("123").Append("experiment"));
+  local_state()->SetDict(enterprise_groups::kEnterpriseGroupsProfilePref,
+                         std::move(enterprise_groups_dict));
+
+  ASSERT_EQ(field_trial_creator.GetEnterpriseGroupsFromPrefs(),
+            base::flat_set<std::string>({"123", "experiment"}));
+}
+
+TEST_F(FieldTrialCreatorTest,
+       GetEnterpriseGroupsFromPrefsWhenBrowserWithNonEmptyList) {
+  TestVariationsServiceClient variations_service_client;
+  NiceMock<MockSafeSeedManager> safe_seed_manager(local_state());
+  TestVariationsFieldTrialCreator field_trial_creator(
+      local_state(), &variations_service_client, &safe_seed_manager,
+      user_data_dir_path());
+
+  local_state()->SetList(enterprise_groups::kEnterpriseGroupsBrowserPref,
+                         base::ListValue().Append("123").Append("experiment"));
+
+  ASSERT_EQ(field_trial_creator.GetEnterpriseGroupsFromPrefs(),
+            base::flat_set<std::string>({"123", "experiment"}));
+}
+
+TEST_F(FieldTrialCreatorTest,
+       GetEnterpriseGroupsFromPrefsCombinesProfileAndBrowserPrefs) {
+  TestVariationsServiceClient variations_service_client;
+  NiceMock<MockSafeSeedManager> safe_seed_manager(local_state());
+  TestVariationsFieldTrialCreator field_trial_creator(
+      local_state(), &variations_service_client, &safe_seed_manager,
+      user_data_dir_path());
+
+  base::DictValue enterprise_groups_dict;
+  enterprise_groups_dict.Set(
+      "Profile 1", base::ListValue().Append("123").Append("profiles"));
+  enterprise_groups_dict.Set(
+      "Profile 2", base::ListValue().Append("456").Append("profiles"));
+  local_state()->SetDict(enterprise_groups::kEnterpriseGroupsProfilePref,
+                         std::move(enterprise_groups_dict));
+  local_state()->SetList(enterprise_groups::kEnterpriseGroupsBrowserPref,
+                         base::ListValue().Append("456").Append("browser"));
+
+  ASSERT_EQ(field_trial_creator.GetEnterpriseGroupsFromPrefs(),
+            base::flat_set<std::string>({"123", "456", "browser", "profiles"}));
+}
+
+TEST_F(FieldTrialCreatorTest,
+       GetEnterpriseGroupsFromPrefsClearsDeletedProfiles) {
+  NiceMock<MockVariationsServiceClient> variations_service_client;
+  NiceMock<MockSafeSeedManager> safe_seed_manager(local_state());
+  TestVariationsFieldTrialCreator field_trial_creator(
+      local_state(), &variations_service_client, &safe_seed_manager,
+      user_data_dir_path());
+
+  EXPECT_CALL(variations_service_client,
+              RemoveEnterpriseGroupsFromPrefsForDeletedProfiles(local_state()));
+  field_trial_creator.GetEnterpriseGroupsFromPrefs();
 }
 
 struct SeedWithLimitedLayerTestParams {

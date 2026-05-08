@@ -265,6 +265,10 @@ class VariationsFieldTrialCreator {
   // Protected for testing.
   base::flat_set<uint64_t> GetGoogleGroupsFromPrefs();
 
+  // Read the enterprise group memberships from local-state prefs.
+  // Protected for testing.
+  base::flat_set<std::string> GetEnterpriseGroupsFromPrefs();
+
  private:
   // Returns true if the loaded VariationsSeed has expired. An expired seed is
   // one that (a) was fetched over |kMaxSeedAgeDays| ago and (b) is older than

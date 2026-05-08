@@ -8,6 +8,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/base64.h"
@@ -31,6 +32,7 @@
 #include "base/version.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "components/enterprise/browser/groups/groups_prefs.h"
 #include "components/language/core/browser/locale_util.h"
 #include "components/metrics/field_trials_provider.h"
 #include "components/metrics/metrics_state_manager.h"
@@ -185,6 +187,17 @@ Study::Channel ConvertProductChannelToStudyChannel(
       return Study::UNKNOWN;
   }
   NOTREACHED();
+}
+
+void AddGroupsFromList(const base::ListValue& input_groups,
+                       base::flat_set<std::string>& output_groups) {
+  for (const auto& group_value : input_groups) {
+    const std::string* group = group_value.GetIfString();
+    if (!group || group->empty()) {
+      continue;
+    }
+    output_groups.insert(*group);
+  }
 }
 
 // No-op feature used to test sticky activation functionality.
@@ -386,9 +399,12 @@ VariationsFieldTrialCreator::GetClientFilterableStateForVersion(
   auto GoogleGroupsCallback = base::BindRepeating(
       &VariationsFieldTrialCreator::GetGoogleGroupsFromPrefs,
       base::Unretained(this));
+  auto EnterpriseGroupsCallback = base::BindRepeating(
+      &VariationsFieldTrialCreator::GetEnterpriseGroupsFromPrefs,
+      base::Unretained(this));
   std::unique_ptr<ClientFilterableState> state =
-      std::make_unique<ClientFilterableState>(IsEnterpriseCallback,
-                                              GoogleGroupsCallback);
+      std::make_unique<ClientFilterableState>(
+          IsEnterpriseCallback, GoogleGroupsCallback, EnterpriseGroupsCallback);
   state->locale = application_locale_;
   state->reference_date = GetSeedStore()->GetTimeForStudyDateChecks(
       /*is_safe_seed=*/false);
@@ -604,8 +620,7 @@ bool VariationsFieldTrialCreator::HasSeedExpired() {
   return has_seed_expired;
 }
 
-bool VariationsFieldTrialCreator::IsSeedForFutureMilestone(
-    bool is_safe_seed) {
+bool VariationsFieldTrialCreator::IsSeedForFutureMilestone(bool is_safe_seed) {
   int seed_milestone = is_safe_seed ? GetSeedStore()->GetSafeSeedMilestone()
                                     : GetSeedStore()->GetLatestMilestone();
 
@@ -617,6 +632,23 @@ bool VariationsFieldTrialCreator::IsSeedForFutureMilestone(
 
   int client_milestone = version_info::GetMajorVersionNumberAsInt();
   return seed_milestone > client_milestone;
+}
+
+base::flat_set<std::string>
+VariationsFieldTrialCreator::GetEnterpriseGroupsFromPrefs() {
+  client_->RemoveEnterpriseGroupsFromPrefsForDeletedProfiles(local_state());
+
+  base::flat_set<std::string> groups = base::flat_set<std::string>();
+  AddGroupsFromList(
+      local_state()->GetList(enterprise_groups::kEnterpriseGroupsBrowserPref),
+      groups);
+
+  const base::DictValue& profiles_dict =
+      local_state()->GetDict(enterprise_groups::kEnterpriseGroupsProfilePref);
+  for (const auto profile : profiles_dict) {
+    AddGroupsFromList(profile.second.GetList(), groups);
+  }
+  return groups;
 }
 
 base::flat_set<uint64_t>

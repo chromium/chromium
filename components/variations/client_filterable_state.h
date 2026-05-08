@@ -31,6 +31,8 @@ enum class RestrictionPolicy {
 
 using IsEnterpriseFunction = base::OnceCallback<bool()>;
 using GoogleGroupsFunction = base::OnceCallback<base::flat_set<uint64_t>()>;
+using EnterpriseGroupsFunction =
+    base::OnceCallback<base::flat_set<std::string>()>;
 
 // A container for all of the client state which is used for filtering studies.
 struct COMPONENT_EXPORT(VARIATIONS) ClientFilterableState {
@@ -76,8 +78,12 @@ struct COMPONENT_EXPORT(VARIATIONS) ClientFilterableState {
   // The restriction applied to Chrome through the "ChromeVariations" policy.
   RestrictionPolicy policy_restriction = RestrictionPolicy::NO_RESTRICTIONS;
 
-  explicit ClientFilterableState(IsEnterpriseFunction is_enterprise_function,
-                                 GoogleGroupsFunction google_groups_function);
+  ClientFilterableState(IsEnterpriseFunction is_enterprise_function,
+                        GoogleGroupsFunction google_groups_function);
+
+  ClientFilterableState(IsEnterpriseFunction is_enterprise_function,
+                        GoogleGroupsFunction google_groups_function,
+                        EnterpriseGroupsFunction enterprise_groups_function);
 
   ClientFilterableState(const ClientFilterableState&) = delete;
   ClientFilterableState& operator=(const ClientFilterableState&) = delete;
@@ -92,6 +98,10 @@ struct COMPONENT_EXPORT(VARIATIONS) ClientFilterableState {
   // The list of Google groups that one or more signed-in syncing users are a
   // a member of. Each value is the Gaia ID of the Google group.
   base::flat_set<uint64_t> GoogleGroups() const;
+
+  // The list of enterprise groups that browser or one or more profiles are a
+  // member of.
+  base::flat_set<std::string> EnterpriseGroups() const;
 
   static Study::Platform GetCurrentPlatform();
 
@@ -113,6 +123,12 @@ struct COMPONENT_EXPORT(VARIATIONS) ClientFilterableState {
   // inspecting group memberships (and for efficiency we do it only once.)
   mutable GoogleGroupsFunction google_groups_function_;
   mutable std::optional<base::flat_set<uint64_t>> google_groups_;
+
+  // Evaluating enterprise groups memberships involves parsing data received
+  // from DM Server. For safe rollout we do this only for studies that require
+  // inspecting enterprise group memberships.
+  mutable EnterpriseGroupsFunction enterprise_groups_function_;
+  mutable std::optional<base::flat_set<std::string>> enterprise_groups_;
 };
 
 }  // namespace variations

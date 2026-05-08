@@ -40,5 +40,17 @@ TEST(ClientFilterableStateTest, GoogleGroups) {
   EXPECT_EQ(client.GoogleGroups(), expected_google_groups);
 }
 
+TEST(ClientFilterableStateTest, EnterpriseGroups) {
+  // Test that enterprise_groups_function_ is called once.
+  base::flat_set<std::string> expected_enterprise_groups({"abcd", "efgh"});
+  ClientFilterableState client(
+      base::BindOnce([] { return false; }),
+      base::BindOnce([] { return base::flat_set<uint64_t>(); }),
+      base::BindOnce(
+          [] { return base::flat_set<std::string>({"abcd", "efgh"}); }));
+  EXPECT_EQ(client.EnterpriseGroups(), expected_enterprise_groups);
+  EXPECT_EQ(client.EnterpriseGroups(), expected_enterprise_groups);
+}
+
 }  // namespace
 }  // namespace variations

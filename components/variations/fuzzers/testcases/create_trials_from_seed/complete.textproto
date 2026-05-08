@@ -39,6 +39,7 @@ seed {
             policy_restriction: CRITICAL
             exclude_cpu_architecture: "ARM64"
             google_groups: [1]
+            include_enterprise_group_ids: "enterprise-group-id"
         }
         experiment {
             name: "GroupA"
@@ -76,6 +77,7 @@ client_filterable_state {
     permanent_consistency_country: "JP"
     policy_restriction: CRITICAL_ONLY
     google_group: [1]
+    enterprise_groups: "enterprise-group-id"
 }
 entropy_values {
     client_id: "client_id"

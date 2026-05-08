@@ -47,6 +47,10 @@ std::unique_ptr<ClientFilterableState> CreateClientFilterableState(
       base::BindLambdaForTesting([spec]() {
         return base::flat_set<uint64_t>(spec.google_groups().begin(),
                                         spec.google_groups().end());
+      }),
+      base::BindLambdaForTesting([spec]() {
+        return base::flat_set<std::string>(spec.enterprise_groups().begin(),
+                                           spec.enterprise_groups().end());
       }));
 
   if (spec.has_locale()) {
