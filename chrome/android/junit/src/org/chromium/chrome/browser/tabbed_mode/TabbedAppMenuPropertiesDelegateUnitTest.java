@@ -636,7 +636,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 item(R.id.info_menu_id),
                                 item(R.id.page_info_divider_line_id),
                                 item(R.id.downloads_menu_id),
-                                item(R.id.all_bookmarks_menu_id)));
+                                item(
+                                        R.id.bookmarks_parent_menu_id,
+                                        item(R.id.all_bookmarks_menu_id),
+                                        item(R.id.bookmark_this_page_menu_id))));
 
         if (ExtensionsBuildflags.ENABLE_DESKTOP_ANDROID_EXTENSIONS) {
             expectedItems.add(
@@ -689,7 +692,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 item(R.id.info_menu_id),
                                 item(R.id.page_info_divider_line_id),
                                 item(R.id.downloads_menu_id),
-                                item(R.id.all_bookmarks_menu_id)));
+                                item(
+                                        R.id.bookmarks_parent_menu_id,
+                                        item(R.id.all_bookmarks_menu_id),
+                                        item(R.id.bookmark_this_page_menu_id))));
 
         if (ExtensionsBuildflags.ENABLE_DESKTOP_ANDROID_EXTENSIONS) {
             expectedItems.add(
@@ -769,8 +775,16 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         expectedItems.add(item(R.id.downloads_menu_id));
         expectedTitles.add(item(R.string.menu_downloads));
 
-        expectedItems.add(item(R.id.all_bookmarks_menu_id));
-        expectedTitles.add(item(R.string.menu_bookmarks));
+        expectedItems.add(
+                item(
+                        R.id.bookmarks_parent_menu_id,
+                        item(R.id.all_bookmarks_menu_id),
+                        item(R.id.bookmark_this_page_menu_id)));
+        expectedTitles.add(
+                item(
+                        R.string.menu_bookmarks,
+                        item(R.string.menu_bookmarks),
+                        item(R.string.menu_bookmark_this_page)));
 
         if (ExtensionsBuildflags.ENABLE_DESKTOP_ANDROID_EXTENSIONS) {
             expectedItems.add(
@@ -900,8 +914,16 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         expectedItems.add(item(R.id.downloads_menu_id));
         expectedTitles.add(item(R.string.menu_downloads));
 
-        expectedItems.add(item(R.id.all_bookmarks_menu_id));
-        expectedTitles.add(item(R.string.menu_bookmarks));
+        expectedItems.add(
+                item(
+                        R.id.bookmarks_parent_menu_id,
+                        item(R.id.all_bookmarks_menu_id),
+                        item(R.id.bookmark_this_page_menu_id)));
+        expectedTitles.add(
+                item(
+                        R.string.menu_bookmarks,
+                        item(R.string.menu_bookmarks),
+                        item(R.string.menu_bookmark_this_page)));
 
         if (ExtensionsBuildflags.ENABLE_DESKTOP_ANDROID_EXTENSIONS) {
             expectedItems.add(
@@ -1035,8 +1057,16 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         expectedItems.add(item(R.id.downloads_menu_id));
         expectedTitles.add(item(R.string.menu_downloads));
 
-        expectedItems.add(item(R.id.all_bookmarks_menu_id));
-        expectedTitles.add(item(R.string.menu_bookmarks));
+        expectedItems.add(
+                item(
+                        R.id.bookmarks_parent_menu_id,
+                        item(R.id.all_bookmarks_menu_id),
+                        item(R.id.bookmark_this_page_menu_id)));
+        expectedTitles.add(
+                item(
+                        R.string.menu_bookmarks,
+                        item(R.string.menu_bookmarks),
+                        item(R.string.menu_bookmark_this_page)));
 
         if (ExtensionsBuildflags.ENABLE_DESKTOP_ANDROID_EXTENSIONS) {
             expectedItems.add(
@@ -1139,7 +1169,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 item(R.id.info_menu_id),
                                 item(R.id.page_info_divider_line_id),
                                 item(R.id.downloads_menu_id),
-                                item(R.id.all_bookmarks_menu_id)));
+                                item(
+                                        R.id.bookmarks_parent_menu_id,
+                                        item(R.id.all_bookmarks_menu_id),
+                                        item(R.id.bookmark_this_page_menu_id))));
 
         if (ExtensionsBuildflags.ENABLE_DESKTOP_ANDROID_EXTENSIONS) {
             expectedItems.add(
@@ -1213,7 +1246,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 item(R.id.info_menu_id),
                                 item(R.id.page_info_divider_line_id),
                                 item(R.id.downloads_menu_id),
-                                item(R.id.all_bookmarks_menu_id)));
+                                item(
+                                        R.id.bookmarks_parent_menu_id,
+                                        item(R.id.all_bookmarks_menu_id),
+                                        item(R.id.bookmark_this_page_menu_id))));
 
         if (ExtensionsBuildflags.ENABLE_DESKTOP_ANDROID_EXTENSIONS) {
             expectedItems.add(
@@ -1519,7 +1555,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 item(R.id.info_menu_id),
                                 item(R.id.page_info_divider_line_id),
                                 item(R.id.downloads_menu_id),
-                                item(R.id.all_bookmarks_menu_id)));
+                                item(
+                                        R.id.bookmarks_parent_menu_id,
+                                        item(R.id.all_bookmarks_menu_id),
+                                        item(R.id.bookmark_this_page_menu_id))));
 
         if (ExtensionsBuildflags.ENABLE_DESKTOP_ANDROID_EXTENSIONS) {
             expectedItems.add(
@@ -1612,7 +1651,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 item(R.id.info_menu_id),
                                 item(R.id.page_info_divider_line_id),
                                 item(R.id.downloads_menu_id),
-                                item(R.id.all_bookmarks_menu_id)));
+                                item(
+                                        R.id.bookmarks_parent_menu_id,
+                                        item(R.id.all_bookmarks_menu_id),
+                                        item(R.id.bookmark_this_page_menu_id))));
 
         if (ExtensionsBuildflags.ENABLE_DESKTOP_ANDROID_EXTENSIONS) {
             expectedItems.add(
@@ -1679,7 +1721,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 item(R.id.info_menu_id),
                                 item(R.id.page_info_divider_line_id),
                                 item(R.id.downloads_menu_id),
-                                item(R.id.all_bookmarks_menu_id)));
+                                item(
+                                        R.id.bookmarks_parent_menu_id,
+                                        item(R.id.all_bookmarks_menu_id),
+                                        item(R.id.bookmark_this_page_menu_id))));
 
         if (ExtensionsBuildflags.ENABLE_DESKTOP_ANDROID_EXTENSIONS) {
             expectedItems.add(

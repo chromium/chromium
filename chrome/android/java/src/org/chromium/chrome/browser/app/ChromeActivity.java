@@ -2869,11 +2869,15 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             return false;
         }
 
-        if (id == R.id.bookmark_this_page_id) {
+        if (id == R.id.bookmark_this_page_id || id == R.id.bookmark_this_page_menu_id) {
             mTabBookmarkerSupplier.get().addOrEditBookmark(currentTab);
             TrackerFactory.getTrackerForProfile(currentTab.getProfile())
                     .notifyEvent(EventConstants.APP_MENU_BOOKMARK_STAR_ICON_PRESSED);
-            RecordUserAction.record("MobileMenuAddToBookmarks");
+            if (id == R.id.bookmark_this_page_id) {
+                RecordUserAction.record("MobileMenuAddToBookmarks");
+            } else {
+                RecordUserAction.record("MobileMenuBookmarkThisPage");
+            }
             return true;
         }
 

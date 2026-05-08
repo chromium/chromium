@@ -313,7 +313,11 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         modelList.add(buildDownloadsItem());
 
         // Bookmarks
-        modelList.add(buildBookmarksItem());
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_IN_APP_MENU)) {
+            modelList.add(buildBookmarksParentItem());
+        } else {
+            modelList.add(buildBookmarksItem());
+        }
 
         // Recent Tabs
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_IN_APP_MENU)
@@ -741,12 +745,43 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                         shouldShowIconBeforeItem() ? R.drawable.ic_download_done_24dp : 0));
     }
 
+    private boolean shouldShowBookmarksParentItem() {
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.SUBMENUS_IN_APP_MENU);
+    }
+
+    private ListItem buildBookmarksParentItem() {
+        assert shouldShowBookmarksParentItem();
+
+        List<ListItem> submenuItems = new ArrayList<>();
+        submenuItems.add(buildBookmarksItem());
+        submenuItems.add(buildBookmarkThisPageItem());
+
+        return new ListItem(
+                AppMenuHandler.AppMenuItemType.MENU_ITEM_WITH_SUBMENU,
+                buildModelForMenuItemWithSubmenu(
+                        R.id.bookmarks_parent_menu_id,
+                        R.string.menu_bookmarks,
+                        shouldShowIconBeforeItem()
+                                ? R.drawable.ic_star_filled_24dp
+                                : Resources.ID_NULL,
+                        submenuItems));
+    }
+
     private ListItem buildBookmarksItem() {
         return new ListItem(
                 AppMenuHandler.AppMenuItemType.STANDARD,
                 buildModelForStandardMenuItem(
                         R.id.all_bookmarks_menu_id,
                         R.string.menu_bookmarks,
+                        shouldShowIconBeforeItem() ? R.drawable.ic_star_filled_24dp : 0));
+    }
+
+    private ListItem buildBookmarkThisPageItem() {
+        return new ListItem(
+                AppMenuHandler.AppMenuItemType.STANDARD,
+                buildModelForStandardMenuItem(
+                        R.id.bookmark_this_page_menu_id,
+                        R.string.menu_bookmark_this_page,
                         shouldShowIconBeforeItem() ? R.drawable.ic_star_filled_24dp : 0));
     }
 
