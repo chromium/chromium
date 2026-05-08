@@ -81,7 +81,8 @@ void TabBottomSheetBridge::SetWebContents(content::WebContents* web_contents) {
         << "Tab is offscreen rendering, current_window is set to null.";
   }
 
-  if (!co_browse_views_ || current_window != window_android_) {
+  if (!co_browse_views_ || (current_window != window_android_ &&
+                            !tab_android->IsOffscreenRendering())) {
     CreateCoBrowseViews(web_contents);
     return;
   }
