@@ -9,8 +9,8 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
-#include "chrome/browser/ui/waap/initial_web_ui_manager.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/browser_accessibility_state.h"
@@ -30,10 +30,7 @@ void ToolbarAccessibilityTest::WaitForInitialWebUI(Browser* browser) {
   if (!browser) {
     browser = this->browser();
   }
-  ASSERT_TRUE(base::test::RunUntil([browser]() {
-    InitialWebUIManager* manager = InitialWebUIManager::From(browser);
-    return !manager || !manager->RequestDeferShow(base::DoNothing());
-  }));
+  WaitForInitialWebUIToolbar(browser);
 }
 
 void ToolbarAccessibilityTest::ConfigureAccessibilityForWebUITest(

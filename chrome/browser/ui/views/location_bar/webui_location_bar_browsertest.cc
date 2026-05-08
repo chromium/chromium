@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/browser/ui/waap/initial_web_ui_manager.h"
 #include "chrome/common/chrome_features.h"
@@ -52,13 +53,6 @@ class WebUILocationBarBrowserTest : public InProcessBrowserTest {
         {});
   }
 
-  bool WaitForInitialLoad() {
-    return base::test::RunUntil([browser = browser()]() {
-      InitialWebUIManager* manager = InitialWebUIManager::From(browser);
-      return !manager || !manager->RequestDeferShow(base::DoNothing());
-    });
-  }
-
   LocationBar* GetLocationBar() {
     return BrowserView::GetBrowserViewForBrowser(browser())->GetLocationBar();
   }
@@ -68,7 +62,7 @@ class WebUILocationBarBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest, GetAnchor) {
-  ASSERT_TRUE(WaitForInitialLoad());
+  WaitForInitialWebUIToolbar(browser());
 
   auto* location_bar = GetLocationBar();
 
@@ -103,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest, Bounds) {
   auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   auto* location_bar = GetLocationBar();
 
-  ASSERT_TRUE(WaitForInitialLoad());
+  WaitForInitialWebUIToolbar(browser());
 
   // Wait until visible.
   ASSERT_TRUE(
@@ -140,7 +134,7 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest, Bounds) {
 // Test that basic state management of the omnibox works --- e.g. it gets
 // the URL as its state when navigating and switching tabs.
 IN_PROC_BROWSER_TEST_F(WebUILocationBarBrowserTest, BasicOmniboxState) {
-  ASSERT_TRUE(WaitForInitialLoad());
+  WaitForInitialWebUIToolbar(browser());
   LocationBar* location_bar = GetLocationBar();
   auto* tab_strip_model = browser()->tab_strip_model();
 

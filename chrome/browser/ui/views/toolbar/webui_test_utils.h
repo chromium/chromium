@@ -25,6 +25,9 @@ class Widget;
 void WaitUntilInitialWebUIPaintAndFlushMetricsForTesting(
     BrowserWindowInterface* browser);
 
+// Waits until the InitialWebUIManager says the toolbar is ready.
+void WaitForInitialWebUIToolbar(BrowserWindowInterface* browser);
+
 class AvatarToolbarButtonTestAccessor {
  public:
   explicit AvatarToolbarButtonTestAccessor(BrowserWindowInterface* browser);

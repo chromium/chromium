@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
+#include "chrome/browser/ui/waap/initial_web_ui_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "content/public/test/browser_test_utils.h"
@@ -54,6 +55,15 @@ void WaitUntilInitialWebUIPaintAndFlushMetricsForTesting(
 
   content::FetchHistogramsFromChildProcesses();
   metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+}
+
+void WaitForInitialWebUIToolbar(BrowserWindowInterface* browser) {
+  base::RunLoop run_loop;
+  InitialWebUIManager* manager = InitialWebUIManager::From(browser);
+  if (!manager || !manager->RequestDeferShow(run_loop.QuitClosure())) {
+    return;
+  }
+  run_loop.Run();
 }
 
 AvatarToolbarButtonTestAccessor::AvatarToolbarButtonTestAccessor(
