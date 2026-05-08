@@ -519,6 +519,12 @@ class PDFiumEngine : public DocumentLoader::Client,
   edited_pages_unload_preventers_for_testing() const {
     return edited_pages_unload_preventers_;
   }
+
+  void set_next_textbox_id_for_testing(int id) { next_textbox_id_ = id; }
+
+  void set_existing_textbox_ids_for_testing(std::set<int> ids) {
+    existing_textbox_ids_ = std::move(ids);
+  }
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
   // DocumentLoader::Client:
@@ -1135,6 +1141,11 @@ class PDFiumEngine : public DocumentLoader::Client,
   std::vector<FPDF_PAGEOBJECT> GetActiveInkPageObjectsForPage(
       int page_index) const;
 
+  // Returns the next available textbox ID, avoiding collisions with
+  // `existing_textbox_ids_` and handling integer overflow. Adds the returned
+  // ID to `existing_textbox_ids_`.
+  int GetNextTextboxId();
+
   bool PageStillHasEdits(int page_index) const;
 #endif
 
@@ -1435,9 +1446,17 @@ class PDFiumEngine : public DocumentLoader::Client,
   // Value: The associated PDFium font objects.
   std::map<FontId, ScopedFPDFFont> font_map_;
 
-  // The next available ID for a textbox for writing into the PDF.
-  // TODO(crbug.com/408926609): Implement ID collision avoidance.
-  int next_textbox_id_ = 0;
+  // The next available ID for a textbox for writing into the PDF. Initialized
+  // to a random value to make collisions rare.
+  int next_textbox_id_;
+
+  // The set of textbox IDs currently in use in the document. Used to prevent
+  // collisions when generating new textbox IDs. Note that the textbox IDs in
+  // the PDF are ONLY used for grouping multiple text objects belonging to the
+  // same textbox in the PDF on a per-page basis (and not for global tracking).
+  // Generating globally unique IDs is a simple and safe way to prevent
+  // collisions on all pages.
+  std::set<int> existing_textbox_ids_;
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
   base::WeakPtrFactory<PDFiumEngine> weak_factory_{this};

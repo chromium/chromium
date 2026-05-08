@@ -3084,6 +3084,35 @@ class PDFiumEngineInkDrawTextTest : public PDFiumTestBase {
         /*is_italic=*/false,
         /*text=*/"Hello!");
   }
+
+  void DrawAndVerifyTextboxId(PDFiumEngine* engine,
+                              PDFiumPage& page,
+                              FontId font_id,
+                              const GlyphsAndPositions& text_data,
+                              InkTextId ink_text_id,
+                              int expected_textbox_id) {
+    int initial_obj_count = FPDFPage_CountObjects(page.GetPage());
+
+    engine->DrawText(
+        page.index(), ink_text_id,
+        {InkTextInfo(font_id, text_data.glyphs, text_data.glyph_positions,
+                     /*location=*/gfx::RectF(0.0f, 0.0f, 100.0f, 20.0f),
+                     /*is_horizontal=*/true)},
+        /*pdf_zoom=*/1.0, SampleInkTextBoxAttributes());
+
+    int new_obj_count = FPDFPage_CountObjects(page.GetPage());
+    ASSERT_EQ(new_obj_count, initial_obj_count + 1);
+
+    // The new object should be at the end.
+    FPDF_PAGEOBJECT new_obj =
+        FPDFPage_GetObject(page.GetPage(), new_obj_count - 1);
+    ASSERT_EQ(1, FPDFPageObj_CountMarks(new_obj));
+    FPDF_PAGEOBJECTMARK mark = FPDFPageObj_GetMark(new_obj, 0);
+    ASSERT_EQ(kInkTextAnnotationIdentifierKey,
+              base::UTF16ToUTF8(GetPageObjectMarkName(mark)));
+    EXPECT_THAT(GetPageObjectMarkIntParam(mark, "TextboxId"),
+                testing::Optional(expected_textbox_id));
+  }
 };
 
 TEST_P(PDFiumEngineInkDrawTextTest, DrawText) {
@@ -3184,6 +3213,7 @@ TEST_P(PDFiumEngineInkDrawTextTest, DrawTextSavesMetadata) {
   InkTextBoxAttributes attribute = SampleInkTextBoxAttributes();
   attribute.is_bold = true;
   attribute.text = kExpectedText;
+  engine->set_next_textbox_id_for_testing(1);
   engine->DrawText(
       kPageIndex, InkTextId(1),
       {InkTextInfo(font_id, text_data1.glyphs, text_data1.glyph_positions,
@@ -3206,7 +3236,7 @@ TEST_P(PDFiumEngineInkDrawTextTest, DrawTextSavesMetadata) {
     EXPECT_EQ(kInkTextAnnotationIdentifierKey,
               base::UTF16ToUTF8(GetPageObjectMarkName(mark)));
     EXPECT_THAT(GetPageObjectMarkIntParam(mark, "TextboxId"),
-                testing::Optional(0));
+                testing::Optional(1));
 
     if (i == 0) {
       // Verify the first text object contains the full textbox metadata.
@@ -3289,6 +3319,68 @@ TEST_P(PDFiumEngineInkDrawTextTest, LoadTextAnnotationsFromPdfMultiPages) {
   ASSERT_EQ(1u, page2_boxes.size());
   EXPECT_EQ(42, page2_boxes[0].id);
   EXPECT_EQ("Hello Page 2", page2_boxes[0].attributes.text);
+}
+
+TEST_P(PDFiumEngineInkDrawTextTest, DrawTextAvoidsTextboxIdCollisions) {
+  NiceMock<TestClient> client(/*use_skia_renderer=*/GetParam());
+  std::unique_ptr<PDFiumEngine> engine = InitializeEngine(
+      &client, FILE_PATH_LITERAL("ink_text_multi_textboxes.pdf"));
+  ASSERT_TRUE(engine);
+
+  // Load existing annotations to populate `existing_textbox_ids_`.
+  // ink_text_multi_textboxes.pdf has textbox IDs 0 and 42.
+  engine->LoadTextAnnotationsFromPdf();
+
+  constexpr int kPageIndex = 0;
+  PDFiumPage& page = GetPDFiumPage(*engine, kPageIndex);
+
+  FontId font_id = AddDefaultFont(engine.get());
+  constexpr std::string_view kTextToDraw = "New!";
+  GlyphsAndPositions text_data =
+      GetGlyphsForText(kTextToDraw, /*font_size=*/10.0f);
+  ASSERT_FALSE(text_data.glyphs.empty());
+
+  engine->set_next_textbox_id_for_testing(0);
+
+  // Draw text. The next ID should be 1, because 0 is already taken.
+  DrawAndVerifyTextboxId(engine.get(), page, font_id, text_data, InkTextId(100),
+                         /*expected_textbox_id=*/1);
+
+  // Draw text again. The next ID should be 2.
+  DrawAndVerifyTextboxId(engine.get(), page, font_id, text_data, InkTextId(101),
+                         /*expected_textbox_id=*/2);
+}
+
+TEST_P(PDFiumEngineInkDrawTextTest, DrawTextWrapsTextboxId) {
+  NiceMock<TestClient> client(/*use_skia_renderer=*/GetParam());
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("blank.pdf"));
+  ASSERT_TRUE(engine);
+
+  constexpr int kPageIndex = 0;
+  PDFiumPage& page = GetPDFiumPage(*engine, kPageIndex);
+
+  FontId font_id = AddDefaultFont(engine.get());
+  constexpr std::string_view kTextToDraw = "Test";
+  GlyphsAndPositions text_data =
+      GetGlyphsForText(kTextToDraw, /*font_size=*/10.0f);
+  ASSERT_FALSE(text_data.glyphs.empty());
+
+  constexpr int kMaxId = std::numeric_limits<int>::max();
+  engine->set_next_textbox_id_for_testing(kMaxId - 1);
+  engine->set_existing_textbox_ids_for_testing({kMaxId - 1});
+
+  // First draw: Should skip `kMaxId` - 1, wrap to 0, and use `kMaxId`.
+  DrawAndVerifyTextboxId(engine.get(), page, font_id, text_data, InkTextId(100),
+                         /*expected_textbox_id=*/kMaxId);
+
+  // Second draw: Should use 0.
+  DrawAndVerifyTextboxId(engine.get(), page, font_id, text_data, InkTextId(101),
+                         /*expected_textbox_id=*/0);
+
+  // Third draw: Should use 1.
+  DrawAndVerifyTextboxId(engine.get(), page, font_id, text_data, InkTextId(102),
+                         /*expected_textbox_id=*/1);
 }
 
 // Don't be concerned about any slight rendering differences in AGG vs. Skia,

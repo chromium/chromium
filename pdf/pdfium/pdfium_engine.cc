@@ -109,6 +109,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
+#include "base/rand_util.h"
 #include "pdf/pdf_ink_metrics_handler.h"
 #include "pdf/pdf_ink_transform.h"
 #include "pdf/pdfium/pdfium_ink_reader.h"
@@ -158,6 +159,10 @@ constexpr int kMaxPasswordTries = 3;
 
 constexpr base::TimeDelta kTouchLongPressTimeout = base::Milliseconds(300);
 
+#if BUILDFLAG(ENABLE_PDF_INK2)
+constexpr int kMinTextboxId = 0;
+constexpr int kMaxTextboxId = std::numeric_limits<int>::max();
+
 // Saves the provided `attributes` as parameters on the `mark` of the
 // `text_object`. Used to reload text objects in future PDF sessions.
 void AddMetadataToTextObject(FPDF_DOCUMENT doc,
@@ -191,6 +196,7 @@ void AddMetadataToTextObject(FPDF_DOCUMENT doc,
   CHECK(FPDFPageObjMark_SetStringParam(doc, text_object, mark, "Text",
                                        attributes.text.c_str()));
 }
+#endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
 // Windows has native panning capabilities. No need to use our own.
 #if BUILDFLAG(IS_WIN)
@@ -763,6 +769,10 @@ PDFiumEngine::PDFiumEngine(PDFiumEngineClient* client,
   IFSDK_PAUSE::version = 1;
   IFSDK_PAUSE::user = nullptr;
   IFSDK_PAUSE::NeedToPauseNow = Pause_NeedToPauseNow;
+
+#if BUILDFLAG(ENABLE_PDF_INK2)
+  next_textbox_id_ = base::RandIntInclusive(kMinTextboxId, kMaxTextboxId);
+#endif
 }
 
 PDFiumEngine::~PDFiumEngine() {
@@ -5140,7 +5150,7 @@ void PDFiumEngine::DrawText(int page_index,
   const SkColor color = attributes.color;
   const float pdf_font_size =
       CSSFontSizeToPdfFontSize(attributes.css_font_size);
-  const int textbox_id = next_textbox_id_++;
+  const int textbox_id = GetNextTextboxId();
 
   for (const InkTextInfo& item : text_info) {
     FPDF_FONT font = GetAddedFont(item.font_id);
@@ -5328,12 +5338,18 @@ DocumentInkTextBoxesMap PDFiumEngine::LoadTextAnnotationsFromPdf() {
     if (page_textboxes.empty()) {
       continue;
     }
+
+    // Note that the textbox IDs in the PDF are ONLY used for grouping multiple
+    // text objects belonging to the same textbox in the PDF on a per-page
+    // basis (and not for global tracking). Generating globally unique IDs
+    // prevents collisions across all pages.
+    for (const auto& textbox : page_textboxes) {
+      existing_textbox_ids_.insert(textbox.id);
+    }
     document_textboxes[i] = std::move(page_textboxes);
   }
 
   // TODO(crbug.com/504697272): Track the textboxes.
-
-  // TODO(crbug.com/408926609): Implement ID collision prevention.
   return document_textboxes;
 }
 
@@ -5423,6 +5439,23 @@ std::vector<FPDF_PAGEOBJECT> PDFiumEngine::GetActiveInkPageObjectsForPage(
     }
   }
   return active_page_objects;
+}
+
+int PDFiumEngine::GetNextTextboxId() {
+  while (true) {
+    int candidate = next_textbox_id_;
+
+    if (next_textbox_id_ == kMaxTextboxId) {
+      next_textbox_id_ = kMinTextboxId;
+    } else {
+      ++next_textbox_id_;
+    }
+
+    bool inserted = existing_textbox_ids_.insert(candidate).second;
+    if (inserted) {
+      return candidate;
+    }
+  }
 }
 
 bool PDFiumEngine::PageStillHasEdits(int page_index) const {
