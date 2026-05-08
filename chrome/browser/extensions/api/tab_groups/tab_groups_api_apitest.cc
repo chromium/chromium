@@ -29,13 +29,6 @@
 #include "extensions/common/extension_builder.h"
 #include "extensions/test/extension_test_message_listener.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_tabstrip.h"
-#include "chrome/browser/ui/tabs/tab_group_model.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#endif
-
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
@@ -183,9 +176,6 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiTest, TestTabGroupEventsAcrossProfiles) {
   EXPECT_EQ(incognito_event->restrict_to_browser_context, incognito_profile);
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-// Not supported on Android because DetachTabGroup is not available in the
-// Android tab groups API.
 IN_PROC_BROWSER_TEST_F(TabGroupsApiTest, TestGroupDetachedAndReInserted) {
   // Open 3 tabs.
   NavigateToURLInNewTab(GURL("about:blank"));
@@ -200,19 +190,31 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiTest, TestGroupDetachedAndReInserted) {
   std::optional<tab_groups::TabGroupId> group = tab_list->CreateTabGroup(tabs);
   ASSERT_TRUE(group.has_value());
 
+  // Create a second browser.
+  BrowserWindowInterface* second_browser =
+      CreateBrowserWindowWithType(BrowserWindowInterface::TYPE_NORMAL);
+  ASSERT_TRUE(second_browser);
+  TabListInterface* destination_tab_list =
+      TabListInterface::From(second_browser);
+  ASSERT_TRUE(destination_tab_list);
+  destination_tab_list->OpenTab(GURL("about:blank"), /*index=*/-1);
+
   TestEventRouterObserver event_observer(EventRouter::Get(profile()));
 
-  std::unique_ptr<DetachedTabCollection> detached_group =
-      browser()->tab_strip_model()->DetachTabGroupForInsertion(*group);
+  // Android does not have separate methods to detach and insert a tab group,
+  // so we move the group from one window to another, generating events for
+  // both removed and created.
+  ASSERT_TRUE(tab_list->MoveTabGroupToWindow(*group,
+                                             second_browser->GetSessionID(),
+                                             /*destination_index=*/0));
 
+  // TODO(crbug.com/511186385): Android does not generate tab group removed
+  // notifications for tab moves across windows.
+#if !BUILDFLAG(IS_ANDROID)
   event_observer.WaitForEventWithName(api::tab_groups::OnRemoved::kEventName);
   EXPECT_TRUE(
       event_observer.events().contains(api::tab_groups::OnRemoved::kEventName));
-
-  event_observer.ClearEvents();
-
-  browser()->tab_strip_model()->InsertDetachedTabGroupAt(
-      std::move(detached_group), 1);
+#endif
 
   // Group added as well as the tab's group changed event should be sent.
   event_observer.WaitForEventWithName(api::tab_groups::OnCreated::kEventName);
@@ -223,7 +225,6 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiTest, TestGroupDetachedAndReInserted) {
   EXPECT_TRUE(
       event_observer.events().contains(api::tab_groups::OnUpdated::kEventName));
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(TabGroupsApiTest, SetGroupTitleToEmoji) {
   ASSERT_TRUE(RunExtensionTest("tab_groups/emoji",
