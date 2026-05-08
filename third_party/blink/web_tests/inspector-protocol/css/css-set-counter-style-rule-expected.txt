@@ -80,9 +80,51 @@ Edit result:
         styles : [
             [0] : {
                 cssProperties : [
+                    [0] : {
+                        disabled : false
+                        implicit : false
+                        name : system
+                        range : {
+                            endColumn : 18
+                            endLine : 6
+                            startColumn : 4
+                            startLine : 6
+                        }
+                        text : system: fixed;
+                        value : fixed
+                    }
+                    [1] : {
+                        disabled : false
+                        implicit : false
+                        name : symbols
+                        range : {
+                            endColumn : 25
+                            endLine : 7
+                            startColumn : 4
+                            startLine : 7
+                        }
+                        text : symbols: 'x' 'y' 'z';
+                        value : 'x' 'y' 'z'
+                    }
+                    [2] : {
+                        name : system
+                        value : fixed 1
+                    }
+                    [3] : {
+                        name : symbols
+                        value : "x" "y" "z"
+                    }
                 ]
+                cssText :      system: fixed;     symbols: 'x' 'y' 'z'; 
+                range : {
+                    endColumn : 0
+                    endLine : 8
+                    startColumn : 29
+                    startLine : 5
+                }
                 shorthandEntries : [
                 ]
+                styleSheetId : <string>
             }
         ]
     }

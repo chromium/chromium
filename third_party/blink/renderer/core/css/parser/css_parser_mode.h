@@ -61,6 +61,9 @@ enum CSSParserMode : uint8_t {
   // (i.e. "custom properties") are allowed.
   // https://drafts.csswg.org/css-mixins-1/#the-function-declarations-interface
   kCSSFunctionDescriptorsMode,
+  // @counter-style rules are specially tagged so modifications through
+  // the inspector don't treat them as style rules.
+  kCSSCounterStyleRuleMode,
   // User agent stylesheets are parsed in standards mode but also allows
   // internal properties and values.
   kUASheetMode,

@@ -169,6 +169,8 @@ StyleRule::RuleType RuleTypeForMutableDeclaration(
       return StyleRule::kPositionTry;
     case kCSSFunctionDescriptorsMode:
       return StyleRule::kFunction;
+    case kCSSCounterStyleRuleMode:
+      return StyleRule::kCounterStyle;
     default:
       return StyleRule::kStyle;
   }
@@ -2081,8 +2083,9 @@ StyleRuleCounterStyle* CSSParserImpl::ConsumeCounterStyleRule(
   }
 
   return MakeGarbageCollected<StyleRuleCounterStyle>(
-      name, CreateCSSPropertyValueSet(parsed_properties_, context_->Mode(),
-                                      context_->GetDocument()));
+      name,
+      CreateCSSPropertyValueSet(parsed_properties_, kCSSCounterStyleRuleMode,
+                                context_->GetDocument()));
 }
 
 StyleRuleFontPaletteValues* CSSParserImpl::ConsumeFontPaletteValuesRule(

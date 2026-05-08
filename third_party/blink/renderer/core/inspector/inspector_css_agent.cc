@@ -2150,12 +2150,12 @@ InspectorCSSAgent::CounterAtRulesForElement(Element* element) {
     return nullptr;
   }
 
-  if (!style->ListStyleType()) {
+  const ListStyleTypeData* list_style_type_data = style->ListStyleType();
+  if (!list_style_type_data || !list_style_type_data->IsCounterStyle()) {
     return nullptr;
   }
 
-  AtomicString counter_style_name =
-      style->ListStyleType()->GetCounterStyleName();
+  AtomicString counter_style_name = list_style_type_data->GetCounterStyleName();
 
   Document& document = element->GetDocument();
   auto style_sheets = document_to_css_style_sheets_.find(&document);

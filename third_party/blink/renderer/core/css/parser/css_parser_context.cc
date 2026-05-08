@@ -263,6 +263,7 @@ bool CSSParserContext::InElementContext() const {
     case kCSSFontFaceRuleMode:
     case kCSSPropertyRuleMode:
     case kCSSFontPaletteValuesRuleMode:
+    case kCSSCounterStyleRuleMode:
       return false;
     case kHTMLStandardMode:
     case kHTMLQuirksMode:
