@@ -23,10 +23,14 @@ import androidx.appcompat.content.res.AppCompatResources;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.R;
+import org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorCoordinator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.autofill.autofill_ai.EntityInstance;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -42,23 +46,27 @@ import java.util.List;
 
 /** Prompt that asks users to confirm saving an entity imported from a form submission. */
 @NullMarked
-public class AutofillAiSaveUpdateEntityPrompt {
+public class AutofillAiSaveUpdateEntityPrompt implements EntityEditorCoordinator.Delegate {
     private final AutofillAiSaveUpdateEntityPromptController mController;
     private final ModalDialogManager mModalDialogManager;
     private final Context mContext;
     private final PropertyModel mDialogModel;
     private final View mDialogView;
+    private EntityEditorCoordinator mEntityEditor;
+    private boolean mEditorClosingPending;
 
     /** Save prompt to confirm saving an entity imported from a form submission. */
     public AutofillAiSaveUpdateEntityPrompt(
             AutofillAiSaveUpdateEntityPromptController controller,
             ModalDialogManager modalDialogManager,
-            Context context) {
+            Activity activity,
+            Profile profile,
+            EntityInstance entityInstance) {
         mController = controller;
         mModalDialogManager = modalDialogManager;
-        mContext = context;
+        mContext = activity;
 
-        LayoutInflater inflater = LayoutInflater.from(mContext);
+        LayoutInflater inflater = LayoutInflater.from(activity);
         mDialogView = inflater.inflate(R.layout.autofill_ai_save_entity_prompt, null);
 
         PropertyModel.Builder builder =
@@ -72,6 +80,14 @@ public class AutofillAiSaveUpdateEntityPrompt {
                                 ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE)
                         .with(ModalDialogProperties.CUSTOM_VIEW, mDialogView);
         mDialogModel = builder.build();
+        mEntityEditor = new EntityEditorCoordinator(activity, this, profile, entityInstance);
+    }
+
+    @Override
+    public void onDone(
+            EntityInstance entityInstance, int descriptionStringId, int acceptButtonStringId) {
+        // TODO: crbug.com/509798874 - Send the updated entity instance to C++.
+        mEditorClosingPending = true;
     }
 
     /** Shows the dialog for saving an address. */
@@ -90,12 +106,16 @@ public class AutofillAiSaveUpdateEntityPrompt {
      */
     @CalledByNative
     private static @Nullable AutofillAiSaveUpdateEntityPrompt create(
-            WindowAndroid windowAndroid, AutofillAiSaveUpdateEntityPromptController controller) {
+            WindowAndroid windowAndroid,
+            AutofillAiSaveUpdateEntityPromptController controller,
+            Profile browserProfile,
+            @JniType("autofill::EntityInstanceAndroid") EntityInstance entityInstance) {
         @Nullable Activity activity = windowAndroid.getActivity().get();
         @Nullable ModalDialogManager modalDialogManager = windowAndroid.getModalDialogManager();
         if (activity == null || modalDialogManager == null) return null;
 
-        return new AutofillAiSaveUpdateEntityPrompt(controller, modalDialogManager, activity);
+        return new AutofillAiSaveUpdateEntityPrompt(
+                controller, modalDialogManager, activity, browserProfile, entityInstance);
     }
 
     /**
@@ -147,6 +167,14 @@ public class AutofillAiSaveUpdateEntityPrompt {
             attributeList.addView(attributeInfoWithEditButton);
             setAttributeDetails(
                     attributeInfoWithEditButton, updateDetailsList.get(0), isUpdatePrompt);
+
+            attributeInfoWithEditButton
+                    .findViewById(R.id.edit_button)
+                    .setOnClickListener(
+                            v -> {
+                                mEditorClosingPending = false;
+                                mEntityEditor.showEditorDialog();
+                            });
         }
 
         for (int i = startIndex; i < updateDetailsList.size(); i++) {
@@ -282,6 +310,13 @@ public class AutofillAiSaveUpdateEntityPrompt {
     @CalledByNative
     @VisibleForTesting
     void dismiss() {
+        // The user can close the editor by clicking the "Cancel" or back button. This starts an
+        // exit animation which dismissed the editor. The prompt stays displayed during this period.
+        // The native side can try to dismiss the prompt during the time frame. Do not dismiss the
+        // editor again in this case.
+        if (!mEditorClosingPending && mEntityEditor.isShowing()) {
+            mEntityEditor.dismiss();
+        }
         mModalDialogManager.dismissDialog(mDialogModel, DialogDismissalCause.DISMISSED_BY_NATIVE);
     }
 
@@ -299,6 +334,12 @@ public class AutofillAiSaveUpdateEntityPrompt {
                 break;
         }
         mController.onPromptDismissed();
+    }
+
+    void setEntityEditorForTesting(EntityEditorCoordinator entityEditor) {
+        EntityEditorCoordinator oldValue = mEntityEditor;
+        mEntityEditor = entityEditor;
+        ResettersForTesting.register(() -> mEntityEditor = oldValue);
     }
 
     View getDialogViewForTesting() {

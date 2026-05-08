@@ -13,7 +13,9 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+import android.app.Activity;
 import android.graphics.Paint;
 import android.text.SpannableString;
 import android.text.style.ClickableSpan;
@@ -21,6 +23,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
@@ -37,40 +40,73 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.autofill.PersonalDataManager;
+import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
+import org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorCoordinator;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.components.autofill.autofill_ai.EntityInstance;
+import org.chromium.components.autofill.autofill_ai.RecordType;
+import org.chromium.components.autofill.autofill_ai.utils.TestUtils;
+import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 
 /** Unit tests for {@link AutofillAiSaveUpdateEntityPrompt}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures(ChromeFeatureList.AUTOFILL_AI_EDIT_ENTITIES_FROM_SAVE_UPDATE_PROMPT)
+@EnableFeatures({
+    ChromeFeatureList.AUTOFILL_AI_EDIT_ENTITIES_FROM_SAVE_UPDATE_PROMPT,
+    ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA
+})
 public class AutofillAiSaveUpdateEntityPromptTest {
     private static final long NATIVE_AUTOFILL_AI_SAVE_UPDATE_ENTITY_PROMPT_CONTROLLER = 100L;
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private AutofillAiSaveUpdateEntityPromptController.Natives mPromptControllerJni;
+    @Rule
+    public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
+            new ActivityScenarioRule<>(TestActivity.class);
 
+    @Mock private AutofillAiSaveUpdateEntityPromptController.Natives mPromptControllerJni;
+    @Mock private Profile mProfile;
+    @Mock private IdentityManager mIdentityManager;
+    @Mock private PersonalDataManager mPersonalDataManager;
+    @Mock private EntityEditorCoordinator mEntityEditor;
+
+    private Activity mActivity;
     private AutofillAiSaveUpdateEntityPromptController mPromptController;
     private AutofillAiSaveUpdateEntityPrompt mPrompt;
     private FakeModalDialogManager mModalDialogManager;
 
     @Before
     public void setUp() {
-        RuntimeEnvironment.application.setTheme(R.style.Theme_BrowserUI_DayNight);
+        mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
+        IdentityServicesProvider.setIdentityManagerForTesting(mIdentityManager);
+        PersonalDataManagerFactory.setInstanceForTesting(mPersonalDataManager);
         AutofillAiSaveUpdateEntityPromptControllerJni.setInstanceForTesting(mPromptControllerJni);
         mPromptController =
                 AutofillAiSaveUpdateEntityPromptController.create(
                         NATIVE_AUTOFILL_AI_SAVE_UPDATE_ENTITY_PROMPT_CONTROLLER);
         mModalDialogManager = new FakeModalDialogManager(ModalDialogType.APP);
+        EntityInstance entity =
+                new EntityInstance.Builder(TestUtils.getVehicleEntityType())
+                        .setGUID("")
+                        .setRecordType(RecordType.LOCAL)
+                        .setModifiedDate(LocalDate.of(2026, 2, 15))
+                        .setUseCount(0)
+                        .build();
         mPrompt =
                 new AutofillAiSaveUpdateEntityPrompt(
-                        mPromptController, mModalDialogManager, RuntimeEnvironment.application);
+                        mPromptController, mModalDialogManager, mActivity, mProfile, entity);
+        mPrompt.setEntityEditorForTesting(mEntityEditor);
     }
 
     @Test
@@ -344,6 +380,89 @@ public class AutofillAiSaveUpdateEntityPromptTest {
                 /* oldAttributeValue= */ "");
         // The edit button should not be shown if the feature is disabled.
         assertNull(attributeList.getChildAt(0).findViewById(R.id.edit_button));
+    }
+
+    @Test
+    @SmallTest
+    public void clickEditButton() {
+        final EntityAttributeUpdateDetails passportNumber =
+                new EntityAttributeUpdateDetails(
+                        /* attributeName= */ "Passport number",
+                        /* attributeValue= */ "AA1111",
+                        /* oldAttributeValue= */ "",
+                        /* updateType= */ EntityAttributeUpdateType.NEW_ENTITY_ATTRIBUTE_ADDED);
+        List<EntityAttributeUpdateDetails> updateDetailsList = List.of(passportNumber);
+
+        mPrompt.setEntityUpdateDetails(updateDetailsList, /* isUpdatePrompt= */ true);
+        mPrompt.show();
+
+        View dialogView = mPrompt.getDialogViewForTesting();
+        LinearLayout attributeList = dialogView.findViewById(R.id.autofill_ai_attribute_infos);
+        assertEquals(1, attributeList.getChildCount());
+
+        // Click the edit button and make sure the editor is shown.
+        attributeList.getChildAt(0).findViewById(R.id.edit_button).performClick();
+        verify(mEntityEditor).showEditorDialog();
+
+        // Simulate the user finishing the interaction with the editor.
+        EntityInstance updatedEntity =
+                new EntityInstance.Builder(TestUtils.getVehicleEntityType())
+                        .setGUID("")
+                        .setRecordType(RecordType.LOCAL)
+                        .setModifiedDate(LocalDate.of(2026, 2, 15))
+                        .setUseCount(0)
+                        .build();
+        mPrompt.onDone(updatedEntity, /* descriptionStringId= */ 0, /* acceptButtonStringId= */ 0);
+
+        // Try to dismiss the prompt from the native side. The editor should not be dismissed when
+        // the exit animation is running.
+        when(mEntityEditor.isShowing()).thenReturn(true);
+        mPrompt.dismiss();
+        verify(mEntityEditor, times(0)).dismiss();
+    }
+
+    @Test
+    @SmallTest
+    public void openEditorTwice() {
+        final EntityAttributeUpdateDetails passportNumber =
+                new EntityAttributeUpdateDetails(
+                        /* attributeName= */ "Passport number",
+                        /* attributeValue= */ "AA1111",
+                        /* oldAttributeValue= */ "",
+                        /* updateType= */ EntityAttributeUpdateType.NEW_ENTITY_ATTRIBUTE_ADDED);
+        List<EntityAttributeUpdateDetails> updateDetailsList = List.of(passportNumber);
+
+        mPrompt.setEntityUpdateDetails(updateDetailsList, /* isUpdatePrompt= */ true);
+        mPrompt.show();
+
+        View dialogView = mPrompt.getDialogViewForTesting();
+        LinearLayout attributeList = dialogView.findViewById(R.id.autofill_ai_attribute_infos);
+        assertEquals(1, attributeList.getChildCount());
+
+        // Click the edit button and make sure the editor is shown.
+        attributeList.getChildAt(0).findViewById(R.id.edit_button).performClick();
+        verify(mEntityEditor).showEditorDialog();
+        when(mEntityEditor.isShowing()).thenReturn(true);
+
+        // Simulate the user finishing the interaction with the editor.
+        EntityInstance updatedEntity =
+                new EntityInstance.Builder(TestUtils.getVehicleEntityType())
+                        .setGUID("")
+                        .setRecordType(RecordType.LOCAL)
+                        .setModifiedDate(LocalDate.of(2026, 2, 15))
+                        .setUseCount(0)
+                        .build();
+        mPrompt.onDone(updatedEntity, /* descriptionStringId= */ 0, /* acceptButtonStringId= */ 0);
+        when(mEntityEditor.isShowing()).thenReturn(false);
+
+        // Open the editor again and dismiss the prompt from native. The editor should be dismissed
+        // because it was shown again.
+        attributeList.getChildAt(0).findViewById(R.id.edit_button).performClick();
+        verify(mEntityEditor, times(2)).showEditorDialog();
+
+        when(mEntityEditor.isShowing()).thenReturn(true);
+        mPrompt.dismiss();
+        verify(mEntityEditor).dismiss();
     }
 
     private void assertAttributeNameAndValue(

@@ -88,6 +88,20 @@ public class EntityEditorCoordinator {
         mEditorModel.set(VISIBLE, true);
     }
 
+    /**
+     * Check if current editor dialog is visible to the user.
+     *
+     * @return true if this editor is visible to the user, false otherwise.
+     */
+    public boolean isShowing() {
+        return mEditorView.isShowing();
+    }
+
+    /** Dismiss currently visible editor dialog. */
+    public void dismiss() {
+        mEditorView.dismiss();
+    }
+
     EntityEditorView getEntityEditorViewForTest() {
         return mEditorView;
     }

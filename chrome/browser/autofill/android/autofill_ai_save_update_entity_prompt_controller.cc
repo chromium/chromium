@@ -126,6 +126,11 @@ bool AutofillAiSaveUpdateEntityPromptController::IsUpdatePrompt() const {
   return old_entity_instance_.has_value();
 }
 
+const EntityInstance&
+AutofillAiSaveUpdateEntityPromptController::entity_instance() const {
+  return entity_instance_;
+}
+
 base::android::ScopedJavaLocalRef<jobject>
 AutofillAiSaveUpdateEntityPromptController::GetJavaObject() const {
   return base::android::ScopedJavaLocalRef<jobject>(java_object_);

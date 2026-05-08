@@ -57,6 +57,8 @@ class AutofillAiSaveUpdateEntityPromptController {
   bool IsWalletableEntity() const;
   bool IsUpdatePrompt() const;
 
+  const EntityInstance& entity_instance() const;
+
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject() const;
   // Called by AutofillAiSaveUpdateEntityPromptController.java
   void OnWalletLinkClicked(JNIEnv* env);
