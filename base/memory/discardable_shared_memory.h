@@ -194,9 +194,6 @@ class BASE_EXPORT DiscardableSharedMemory {
                           size_t offset,
                           size_t length);
 
-  // Virtual for tests.
-  virtual Time Now() const;
-
   UnsafeSharedMemoryRegion shared_memory_region_;
   WritableSharedMemoryMapping shared_memory_mapping_;
   size_t locked_page_count_ = 0u;

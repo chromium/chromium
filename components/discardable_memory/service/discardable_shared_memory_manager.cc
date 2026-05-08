@@ -562,7 +562,7 @@ void DiscardableSharedMemoryManager::ReduceMemoryUsageUntilWithinBytes(
   // Usage time of currently locked segments are updated to this time and
   // we stop eviction attempts as soon as we come across a segment that we've
   // previously tried to evict but was locked.
-  base::Time current_time = Now();
+  base::Time current_time = base::Time::Now();
 
   lock_.AssertAcquired();
   size_t bytes_allocated_before_purging = bytes_allocated_;
@@ -624,10 +624,6 @@ void DiscardableSharedMemoryManager::BytesAllocatedChanged(
   static crash_reporter::CrashKeyString<24> total_discardable_memory(
       "total-discardable-memory-allocated");
   total_discardable_memory.Set(base::NumberToString(new_bytes_allocated));
-}
-
-base::Time DiscardableSharedMemoryManager::Now() const {
-  return base::Time::Now();
 }
 
 void DiscardableSharedMemoryManager::ScheduleEnforceMemoryPolicy() {

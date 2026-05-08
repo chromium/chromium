@@ -22,28 +22,10 @@ namespace {
 
 constexpr int kInvalidUniqueID = -1;
 
-class TestDiscardableSharedMemory : public base::DiscardableSharedMemory {
- public:
-  TestDiscardableSharedMemory() = default;
-
-  explicit TestDiscardableSharedMemory(base::UnsafeSharedMemoryRegion region)
-      : DiscardableSharedMemory(std::move(region)) {}
-
-  void SetNow(base::Time now) { now_ = now; }
-
- private:
-  // Overriden from base::DiscardableSharedMemory:
-  base::Time Now() const override { return now_; }
-
-  base::Time now_;
-};
-
 class TestDiscardableSharedMemoryManager
     : public DiscardableSharedMemoryManager {
  public:
   TestDiscardableSharedMemoryManager() = default;
-
-  void SetNow(base::Time now) { now_ = now; }
 
   void set_enforce_memory_policy_pending(bool enforce_memory_policy_pending) {
     enforce_memory_policy_pending_ = enforce_memory_policy_pending;
@@ -63,12 +45,10 @@ class TestDiscardableSharedMemoryManager
     DiscardableSharedMemoryManager::OnMemoryPressure(memory_pressure_level);
     ++on_memory_pressure_call_count_;
   }
-  base::Time Now() const override { return now_; }
   void ScheduleEnforceMemoryPolicy() override {
     enforce_memory_policy_pending_ = true;
   }
 
-  base::Time now_;
   bool enforce_memory_policy_pending_ = false;
   size_t on_memory_pressure_call_count_ = 0;
 };
@@ -82,7 +62,8 @@ class DiscardableSharedMemoryManagerTest : public testing::Test {
 
   base::MemoryPressureListenerRegistry memory_pressure_listener_registry_;
   // DiscardableSharedMemoryManager requires a message loop and a worker thread.
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestDiscardableSharedMemoryManager> manager_;
 };
 
@@ -96,12 +77,12 @@ TEST_F(DiscardableSharedMemoryManagerTest, AllocateForClient) {
       kInvalidUniqueID, kDataSize, 0, &shared_region);
   ASSERT_TRUE(shared_region.IsValid());
 
-  TestDiscardableSharedMemory memory(std::move(shared_region));
+  base::DiscardableSharedMemory memory(std::move(shared_region));
   bool rv = memory.Map(kDataSize);
   ASSERT_TRUE(rv);
 
   memory.memory().copy_from(data);
-  memory.SetNow(base::Time::FromSecondsSinceUnixEpoch(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
   memory.Unlock(0, 0);
 
   ASSERT_EQ(base::DiscardableSharedMemory::SUCCESS, memory.Lock(0, 0));
@@ -117,7 +98,7 @@ TEST_F(DiscardableSharedMemoryManagerTest, Purge) {
       kInvalidUniqueID, kDataSize, 1, &shared_region1);
   ASSERT_TRUE(shared_region1.IsValid());
 
-  TestDiscardableSharedMemory memory1(std::move(shared_region1));
+  base::DiscardableSharedMemory memory1(std::move(shared_region1));
   bool rv = memory1.Map(kDataSize);
   ASSERT_TRUE(rv);
 
@@ -126,21 +107,20 @@ TEST_F(DiscardableSharedMemoryManagerTest, Purge) {
       kInvalidUniqueID, kDataSize, 2, &shared_region2);
   ASSERT_TRUE(shared_region2.IsValid());
 
-  TestDiscardableSharedMemory memory2(std::move(shared_region2));
+  base::DiscardableSharedMemory memory2(std::move(shared_region2));
   rv = memory2.Map(kDataSize);
   ASSERT_TRUE(rv);
 
   // Enough memory for both allocations.
-  manager_->SetNow(base::Time::FromSecondsSinceUnixEpoch(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
   manager_->SetMaxBytes(memory1.mapped_size() + memory2.mapped_size());
 
-  memory1.SetNow(base::Time::FromSecondsSinceUnixEpoch(2));
+  task_environment_.FastForwardBy(base::Seconds(1));
   memory1.Unlock(0, 0);
-  memory2.SetNow(base::Time::FromSecondsSinceUnixEpoch(2));
   memory2.Unlock(0, 0);
 
   // Manager should not have to schedule another call to EnforceMemoryPolicy().
-  manager_->SetNow(base::Time::FromSecondsSinceUnixEpoch(3));
+  task_environment_.FastForwardBy(base::Seconds(1));
   manager_->EnforceMemoryPolicy();
   EXPECT_FALSE(manager_->enforce_memory_policy_pending());
 
@@ -153,13 +133,13 @@ TEST_F(DiscardableSharedMemoryManagerTest, Purge) {
   lock_rv = memory2.Lock(0, 0);
   EXPECT_EQ(base::DiscardableSharedMemory::SUCCESS, lock_rv);
 
-  memory1.SetNow(base::Time::FromSecondsSinceUnixEpoch(4));
+  task_environment_.FastForwardBy(base::Seconds(1));
   memory1.Unlock(0, 0);
-  memory2.SetNow(base::Time::FromSecondsSinceUnixEpoch(5));
+  task_environment_.FastForwardBy(base::Seconds(1));
   memory2.Unlock(0, 0);
 
   // Just enough memory for one allocation.
-  manager_->SetNow(base::Time::FromSecondsSinceUnixEpoch(6));
+  task_environment_.FastForwardBy(base::Seconds(1));
   manager_->SetMaxBytes(memory2.mapped_size());
   EXPECT_FALSE(manager_->enforce_memory_policy_pending());
 
@@ -181,28 +161,28 @@ TEST_F(DiscardableSharedMemoryManagerTest, EnforceMemoryPolicy) {
       kInvalidUniqueID, kDataSize, 0, &shared_region);
   ASSERT_TRUE(shared_region.IsValid());
 
-  TestDiscardableSharedMemory memory(std::move(shared_region));
+  base::DiscardableSharedMemory memory(std::move(shared_region));
   bool rv = memory.Map(kDataSize);
   ASSERT_TRUE(rv);
 
   // Not enough memory for one allocation.
-  manager_->SetNow(base::Time::FromSecondsSinceUnixEpoch(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
   manager_->SetMaxBytes(memory.mapped_size() - 1);
   // We need to enforce memory policy as our memory usage is currently above
   // the limit.
   EXPECT_TRUE(manager_->enforce_memory_policy_pending());
 
   manager_->set_enforce_memory_policy_pending(false);
-  manager_->SetNow(base::Time::FromSecondsSinceUnixEpoch(2));
+  task_environment_.FastForwardBy(base::Seconds(1));
   manager_->EnforceMemoryPolicy();
   // Still need to enforce memory policy as nothing can be purged.
   EXPECT_TRUE(manager_->enforce_memory_policy_pending());
 
-  memory.SetNow(base::Time::FromSecondsSinceUnixEpoch(3));
+  task_environment_.FastForwardBy(base::Seconds(1));
   memory.Unlock(0, 0);
 
   manager_->set_enforce_memory_policy_pending(false);
-  manager_->SetNow(base::Time::FromSecondsSinceUnixEpoch(4));
+  task_environment_.FastForwardBy(base::Seconds(1));
   manager_->EnforceMemoryPolicy();
   // Memory policy should have successfully been enforced.
   EXPECT_FALSE(manager_->enforce_memory_policy_pending());
@@ -219,7 +199,7 @@ TEST_F(DiscardableSharedMemoryManagerTest,
       kInvalidUniqueID, kDataSize, 1, &shared_region1);
   ASSERT_TRUE(shared_region1.IsValid());
 
-  TestDiscardableSharedMemory memory1(std::move(shared_region1));
+  base::DiscardableSharedMemory memory1(std::move(shared_region1));
   bool rv = memory1.Map(kDataSize);
   ASSERT_TRUE(rv);
 
@@ -228,12 +208,12 @@ TEST_F(DiscardableSharedMemoryManagerTest,
       kInvalidUniqueID, kDataSize, 2, &shared_region2);
   ASSERT_TRUE(shared_region2.IsValid());
 
-  TestDiscardableSharedMemory memory2(std::move(shared_region2));
+  base::DiscardableSharedMemory memory2(std::move(shared_region2));
   rv = memory2.Map(kDataSize);
   ASSERT_TRUE(rv);
 
   // Unlock and delete segment 1.
-  memory1.SetNow(base::Time::FromSecondsSinceUnixEpoch(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
   memory1.Unlock(0, 0);
   memory1.Unmap();
   memory1.Close();
@@ -241,11 +221,11 @@ TEST_F(DiscardableSharedMemoryManagerTest,
 
   // Make sure the manager is able to reduce memory after the segment 1 was
   // deleted.
-  manager_->SetNow(base::Time::FromSecondsSinceUnixEpoch(2));
+  task_environment_.FastForwardBy(base::Seconds(1));
   manager_->SetMaxBytes(0);
 
   // Unlock segment 2.
-  memory2.SetNow(base::Time::FromSecondsSinceUnixEpoch(3));
+  task_environment_.FastForwardBy(base::Seconds(1));
   memory2.Unlock(0, 0);
 }
 
@@ -256,25 +236,25 @@ TEST_F(DiscardableSharedMemoryManagerTest, OnModerateMemoryPressure) {
   manager_->AllocateLockedDiscardableSharedMemoryForClient(
       kInvalidUniqueID, kDataSize, 1, &shared_region1);
   ASSERT_TRUE(shared_region1.IsValid());
-  TestDiscardableSharedMemory memory1(std::move(shared_region1));
+  base::DiscardableSharedMemory memory1(std::move(shared_region1));
   ASSERT_TRUE(memory1.Map(kDataSize));
 
   base::UnsafeSharedMemoryRegion shared_region2;
   manager_->AllocateLockedDiscardableSharedMemoryForClient(
       kInvalidUniqueID, kDataSize, 2, &shared_region2);
   ASSERT_TRUE(shared_region2.IsValid());
-  TestDiscardableSharedMemory memory2(std::move(shared_region2));
+  base::DiscardableSharedMemory memory2(std::move(shared_region2));
   ASSERT_TRUE(memory2.Map(kDataSize));
 
   // Allow two segments to be resident so moderate pressure should trim to one.
-  manager_->SetNow(base::Time::FromSecondsSinceUnixEpoch(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
   manager_->SetMaxBytes(memory1.mapped_size() + memory2.mapped_size());
-  memory1.SetNow(base::Time::FromSecondsSinceUnixEpoch(2));
+  task_environment_.FastForwardBy(base::Seconds(1));
   memory1.Unlock(0, 0);
-  memory2.SetNow(base::Time::FromSecondsSinceUnixEpoch(3));
+  task_environment_.FastForwardBy(base::Seconds(1));
   memory2.Unlock(0, 0);
   // Manager time must be after all segment unlock times for eviction to work.
-  manager_->SetNow(base::Time::FromSecondsSinceUnixEpoch(4));
+  task_environment_.FastForwardBy(base::Seconds(1));
 
   base::MemoryPressureListenerRegistry::NotifyMemoryPressure(
       base::MEMORY_PRESSURE_LEVEL_MODERATE);
@@ -299,24 +279,24 @@ TEST_F(DiscardableSharedMemoryManagerTest, OnCriticalMemoryPressure) {
   manager_->AllocateLockedDiscardableSharedMemoryForClient(
       kInvalidUniqueID, kDataSize, 1, &shared_region1);
   ASSERT_TRUE(shared_region1.IsValid());
-  TestDiscardableSharedMemory memory1(std::move(shared_region1));
+  base::DiscardableSharedMemory memory1(std::move(shared_region1));
   ASSERT_TRUE(memory1.Map(kDataSize));
 
   base::UnsafeSharedMemoryRegion shared_region2;
   manager_->AllocateLockedDiscardableSharedMemoryForClient(
       kInvalidUniqueID, kDataSize, 2, &shared_region2);
   ASSERT_TRUE(shared_region2.IsValid());
-  TestDiscardableSharedMemory memory2(std::move(shared_region2));
+  base::DiscardableSharedMemory memory2(std::move(shared_region2));
   ASSERT_TRUE(memory2.Map(kDataSize));
 
-  manager_->SetNow(base::Time::FromSecondsSinceUnixEpoch(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
   manager_->SetMaxBytes(memory1.mapped_size() + memory2.mapped_size());
-  memory1.SetNow(base::Time::FromSecondsSinceUnixEpoch(2));
+  task_environment_.FastForwardBy(base::Seconds(1));
   memory1.Unlock(0, 0);
-  memory2.SetNow(base::Time::FromSecondsSinceUnixEpoch(3));
+  task_environment_.FastForwardBy(base::Seconds(1));
   memory2.Unlock(0, 0);
   // Manager time must be after all segment unlock times for eviction to work.
-  manager_->SetNow(base::Time::FromSecondsSinceUnixEpoch(4));
+  task_environment_.FastForwardBy(base::Seconds(1));
 
   base::MemoryPressureListenerRegistry::NotifyMemoryPressure(
       base::MEMORY_PRESSURE_LEVEL_CRITICAL);
@@ -343,7 +323,8 @@ class DiscardableSharedMemoryManagerScheduleEnforceMemoryPolicyTest
   }
 
   // DiscardableSharedMemoryManager requires a message loop and a worker thread.
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<DiscardableSharedMemoryManager> manager_;
 };
 

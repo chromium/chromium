@@ -151,8 +151,6 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryManager
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
   void BytesAllocatedChanged(size_t new_bytes_allocated) const;
 
-  // Virtual for tests.
-  virtual base::Time Now() const;
   virtual void ScheduleEnforceMemoryPolicy() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Invalidate weak pointers for the mojo thread.
