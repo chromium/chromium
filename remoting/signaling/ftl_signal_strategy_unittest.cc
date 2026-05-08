@@ -178,7 +178,10 @@ class FakeMessagingClient : public FtlMessagingClient {
 
   MOCK_METHOD(void,
               SendMessage,
-              (const SignalingAddress&, ftl::ChromotingMessage&&, DoneCallback),
+              (const SignalingAddress&,
+               ftl::ChromotingMessage&&,
+               DoneCallback,
+               scoped_refptr<const ProtobufHttpRequestConfig::RetryPolicy>),
               (override));
 
   void OnMessage(const ftl::Id& sender_id,
@@ -478,7 +481,7 @@ TEST_F(FtlSignalStrategyTest, DISABLED_SendMessage_XmlElement_Success) {
   EXPECT_CALL(
       *messaging_client_,
       SendMessage(Property(&SignalingAddress::id, kFakeRemoteFtlId),
-                  SignalingMessageMatches(kFakeRemoteFtlId, kFakeLocalFtlId),
+                  SignalingMessageMatches(kFakeRemoteFtlId, kFakeLocalFtlId), _,
                   _))
       .WillOnce(base::test::RunOnceCallback<2>(HttpStatus::OK()));
   signal_strategy_->SendMessage(std::move(jingle_message));
@@ -500,7 +503,7 @@ TEST_F(FtlSignalStrategyTest, SendMessage_XmlElement_AuthError) {
   EXPECT_CALL(*token_getter_, InvalidateCache()).WillOnce(Return());
   EXPECT_CALL(
       *messaging_client_,
-      SendMessage(Property(&SignalingAddress::id, kFakeRemoteFtlId), _, _))
+      SendMessage(Property(&SignalingAddress::id, kFakeRemoteFtlId), _, _, _))
       .WillOnce(base::test::RunOnceCallback<2>(
           HttpStatus(HttpStatus::Code::UNAUTHENTICATED, "unauthenticated")));
   signal_strategy_->SendMessage(std::move(jingle_message));
@@ -530,7 +533,7 @@ TEST_F(FtlSignalStrategyTest, SendMessage_XmlElement_NetworkError) {
 
   EXPECT_CALL(
       *messaging_client_,
-      SendMessage(Property(&SignalingAddress::id, kFakeRemoteFtlId), _, _))
+      SendMessage(Property(&SignalingAddress::id, kFakeRemoteFtlId), _, _, _))
       .WillOnce(base::test::RunOnceCallback<2>(
           HttpStatus(HttpStatus::Code::UNAVAILABLE, "unavailable")));
   signal_strategy_->SendMessage(std::move(jingle_message));
@@ -655,7 +658,7 @@ TEST_F(FtlSignalStrategyTest, SendMessage_Success) {
                            SignalingAddress::CreateFtlSignalingAddress(
                                kFakeRemoteUsername, kFakeRemoteRegistrationId)
                                .id()),
-                  SignalingMessageMatches(message_payload), _))
+                  SignalingMessageMatches(message_payload), _, _))
       .WillOnce(base::test::RunOnceCallback<2>(HttpStatus::OK()));
 
   signal_strategy_->SendFtlMessage(
@@ -677,7 +680,7 @@ TEST_F(FtlSignalStrategyTest, SendMessage_AuthError) {
                            SignalingAddress::CreateFtlSignalingAddress(
                                kFakeRemoteUsername, kFakeRemoteRegistrationId)
                                .id()),
-                  _, _))
+                  _, _, _))
       .WillOnce(base::test::RunOnceCallback<2>(
           HttpStatus(HttpStatus::Code::UNAUTHENTICATED, "unauthenticated")));
 
@@ -712,7 +715,7 @@ TEST_F(FtlSignalStrategyTest, SendMessage_NetworkError) {
                            SignalingAddress::CreateFtlSignalingAddress(
                                kFakeRemoteUsername, kFakeRemoteRegistrationId)
                                .id()),
-                  _, _))
+                  _, _, _))
       .WillOnce(base::test::RunOnceCallback<2>(
           HttpStatus(HttpStatus::Code::UNAVAILABLE, "unavailable")));
 
@@ -870,11 +873,82 @@ TEST_F(FtlSignalStrategyTest,
   EXPECT_CALL(
       *messaging_client_,
       SendMessage(Property(&SignalingAddress::id, kFakeRemoteFtlId),
-                  SignalingMessageMatches(kFakeRemoteFtlId, kFakeLocalFtlId),
+                  SignalingMessageMatches(kFakeRemoteFtlId, kFakeLocalFtlId), _,
                   _))
       .WillOnce(base::test::RunOnceCallback<2>(HttpStatus::OK()));
 
   signal_strategy_->SendReply(std::move(reply));
+}
+
+TEST_F(FtlSignalStrategyTest, SendMessage_SessionAcceptRequestsNotFoundRetry) {
+  ExpectGetOAuthTokenSucceedsWithFakeCreds();
+  registration_manager_->ExpectSignInGaiaSucceeds();
+  signal_strategy_->Connect();
+  messaging_client_->AcceptReceivingMessages();
+
+  JingleMessage message(SignalingAddress(kFakeRemoteFtlId), SessionAccept(),
+                        "sid");
+  message.message_id = "id";
+
+  EXPECT_CALL(*messaging_client_, SendMessage(_, _, _, _))
+      .WillOnce([&](const SignalingAddress&, ftl::ChromotingMessage&&,
+                    FtlMessagingClient::DoneCallback callback,
+                    scoped_refptr<const ProtobufHttpRequestConfig::RetryPolicy>
+                        retry_policy) {
+        ASSERT_TRUE(retry_policy);
+        EXPECT_TRUE(retry_policy->retriable_error_codes.contains(
+            HttpStatus::Code::NOT_FOUND));
+        std::move(callback).Run(HttpStatus::OK());
+      });
+
+  signal_strategy_->SendMessage(std::move(message));
+}
+
+TEST_F(FtlSignalStrategyTest, SendReply_RequestsNotFoundRetry) {
+  ExpectGetOAuthTokenSucceedsWithFakeCreds();
+  registration_manager_->ExpectSignInGaiaSucceeds();
+  signal_strategy_->Connect();
+  messaging_client_->AcceptReceivingMessages();
+
+  JingleMessageReply reply;
+  reply.to = SignalingAddress(kFakeRemoteFtlId);
+  reply.message_id = "id";
+
+  EXPECT_CALL(*messaging_client_, SendMessage(_, _, _, _))
+      .WillOnce([&](const SignalingAddress&, ftl::ChromotingMessage&&,
+                    FtlMessagingClient::DoneCallback callback,
+                    scoped_refptr<const ProtobufHttpRequestConfig::RetryPolicy>
+                        retry_policy) {
+        ASSERT_TRUE(retry_policy);
+        EXPECT_TRUE(retry_policy->retriable_error_codes.contains(
+            HttpStatus::Code::NOT_FOUND));
+        std::move(callback).Run(HttpStatus::OK());
+      });
+
+  signal_strategy_->SendReply(std::move(reply));
+}
+
+TEST_F(FtlSignalStrategyTest,
+       SendMessage_OtherMessagesDoNotRequestNotFoundRetry) {
+  ExpectGetOAuthTokenSucceedsWithFakeCreds();
+  registration_manager_->ExpectSignInGaiaSucceeds();
+  signal_strategy_->Connect();
+  messaging_client_->AcceptReceivingMessages();
+
+  JingleMessage message(SignalingAddress(kFakeRemoteFtlId), SessionInfo(),
+                        "sid");
+  message.message_id = "id";
+
+  EXPECT_CALL(*messaging_client_, SendMessage(_, _, _, _))
+      .WillOnce([&](const SignalingAddress&, ftl::ChromotingMessage&&,
+                    FtlMessagingClient::DoneCallback callback,
+                    scoped_refptr<const ProtobufHttpRequestConfig::RetryPolicy>
+                        retry_policy) {
+        ASSERT_FALSE(retry_policy);
+        std::move(callback).Run(HttpStatus::OK());
+      });
+
+  signal_strategy_->SendMessage(std::move(message));
 }
 
 }  // namespace remoting

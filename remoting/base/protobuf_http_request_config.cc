@@ -36,6 +36,8 @@ ProtobufHttpRequestConfig::GetSimpleRetryPolicy() {
   return *policy;
 }
 
+ProtobufHttpRequestConfig::RetryPolicy::~RetryPolicy() = default;
+
 ProtobufHttpRequestConfig::ProtobufHttpRequestConfig(
     const net::NetworkTrafficAnnotationTag& traffic_annotation)
     : traffic_annotation(traffic_annotation) {}

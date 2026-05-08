@@ -209,7 +209,8 @@ base::CallbackListSubscription FtlMessagingClient::RegisterMessageCallback(
 void FtlMessagingClient::SendMessage(
     const SignalingAddress& destination_address,
     ftl::ChromotingMessage&& message,
-    DoneCallback on_done) {
+    DoneCallback on_done,
+    scoped_refptr<const ProtobufHttpRequestConfig::RetryPolicy> retry_policy) {
   std::string user_email;
   std::string registration_id;
   if (!destination_address.GetFtlInfo(&user_email, &registration_id)) {
@@ -240,12 +241,17 @@ void FtlMessagingClient::SendMessage(
     request->add_dest_registration_ids(registration_id);
   }
 
-  // SendMessage is non-idempotent (potentially duplicate messages will be
-  // sent), so retries may not be safe.
   ExecuteRequest(kSendMessageTrafficAnnotation, kSendMessagePath,
-                 /*enable_retries=*/false, std::move(request),
-                 &FtlMessagingClient::OnSendMessageResponse,
-                 std::move(on_done));
+                 std::move(request), &FtlMessagingClient::OnSendMessageResponse,
+                 std::move(on_done), std::move(retry_policy));
+}
+
+void FtlMessagingClient::SendMessage(
+    const SignalingAddress& destination_address,
+    ftl::ChromotingMessage&& message,
+    DoneCallback on_done) {
+  SendMessage(destination_address, std::move(message), std::move(on_done),
+              nullptr);
 }
 
 void FtlMessagingClient::StartReceivingMessages(base::OnceClosure on_ready,
@@ -266,15 +272,15 @@ template <typename CallbackFunctor>
 void FtlMessagingClient::ExecuteRequest(
     const net::NetworkTrafficAnnotationTag& tag,
     const std::string& path,
-    bool enable_retries,
     std::unique_ptr<google::protobuf::MessageLite> request,
     CallbackFunctor callback_functor,
-    DoneCallback on_done) {
+    DoneCallback on_done,
+    scoped_refptr<const ProtobufHttpRequestConfig::RetryPolicy> retry_policy) {
   auto config = std::make_unique<ProtobufHttpRequestConfig>(tag);
   config->request_message = std::move(request);
   config->path = path;
-  if (enable_retries) {
-    config->UseSimpleRetryPolicy();
+  if (retry_policy) {
+    config->retry_policy = std::move(retry_policy);
   }
   auto http_request = std::make_unique<ProtobufHttpRequest>(std::move(config));
   http_request->SetResponseCallback(base::BindOnce(
@@ -298,10 +304,10 @@ void FtlMessagingClient::BatchAckMessages(
   VLOG(1) << "Acking " << request.message_ids_size() << " messages";
 
   ExecuteRequest(kAckMessagesTrafficAnnotation, kBatchAckMessagesPath,
-                 /*enable_retries=*/true,
                  std::make_unique<ftl::BatchAckMessagesRequest>(request),
                  &FtlMessagingClient::OnBatchAckMessagesResponse,
-                 std::move(on_done));
+                 std::move(on_done),
+                 ProtobufHttpRequestConfig::GetSimpleRetryPolicy());
 }
 
 void FtlMessagingClient::OnBatchAckMessagesResponse(
