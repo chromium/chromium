@@ -11492,6 +11492,7 @@ from previous Chrome versions.
   <int value="-857507314" label="ArcExternalStorageAccess:disabled"/>
   <int value="-856919680" label="RemotePlaybackBackend:disabled"/>
   <int value="-856915246" label="enable-new-audio-rendering-mixing-strategy"/>
+  <int value="-856899937" label="contextual-tasks-java-fusebox:enabled"/>
   <int value="-856407187" label="OnDeviceGrammarCheck:disabled"/>
   <int value="-856146376"
       label="disable_idle_sockets_close_on_memory_pressure:disabled"/>
@@ -12443,6 +12444,7 @@ from previous Chrome versions.
       label="AutofillEnableMerchantOptOutErrorDialog:disabled"/>
   <int value="-545419529" label="LauncherAppSort:disabled"/>
   <int value="-544906308" label="WebAuthenticationScreenReaderMode:enabled"/>
+  <int value="-544726812" label="ContextualTasksJavaFusebox:enabled"/>
   <int value="-544685871" label="NewOsSettingsSearch:enabled"/>
   <int value="-544629557" label="CSSBackdropFilter:enabled"/>
   <int value="-544301617"
@@ -12643,6 +12645,7 @@ from previous Chrome versions.
   <int value="-479065716" label="CloudGamingDevice:disabled"/>
   <int value="-478462945" label="enable-ephemeral-apps"/>
   <int value="-478404134" label="CCTPageInsightsHub:enabled"/>
+  <int value="-477830187" label="contextual-tasks-java-fusebox:disabled"/>
   <int value="-477101783" label="HandwritingGesture:disabled"/>
   <int value="-476573220" label="ShowFrozenUpdateNotification:enabled"/>
   <int value="-476171840" label="EnableFamilyInfoFeedback:enabled"/>
@@ -18774,6 +18777,7 @@ from previous Chrome versions.
   <int value="1544561349" label="PdfUseSkiaRenderer:disabled"/>
   <int value="1544887706" label="IPH_ExtensionsRequestAccessButton:enabled"/>
   <int value="1546652609" label="SharingHubDesktopOmnibox:disabled"/>
+  <int value="1546678904" label="ContextualTasksJavaFusebox:disabled"/>
   <int value="1547049944" label="ScalableIph:enabled"/>
   <int value="1547184359" label="MacCatapLoopbackAudioForScreenShare:disabled"/>
   <int value="1548680958" label="PdfCr23:disabled"/>

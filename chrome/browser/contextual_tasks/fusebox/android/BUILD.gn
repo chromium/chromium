@@ -18,6 +18,7 @@ android_library("java") {
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/back_press/android:java",
     "//chrome/browser/browser_controls/android:java",
+    "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",

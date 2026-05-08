@@ -95,6 +95,10 @@ BASE_DECLARE_FEATURE(kContextualTasksLazyFetchClusterInfo);
 // flow.
 BASE_DECLARE_FEATURE(kContextualTasksWebpageApcComparison);
 
+// Enables the Java implementation of the Contextual Tasks Fusebox. Android
+// only.
+BASE_DECLARE_FEATURE(kContextualTasksJavaFusebox);
+
 bool GetIsContextualTasksUpdateModeOnNavigationEnabled();
 
 bool GetIsContextualTasksPdfCitationsEnabled();
@@ -326,6 +330,8 @@ extern const char kContextualTasksContextName[];
 extern const char kContextualTasksContextDescription[];
 extern const char kContextualTasksSuggestionsEnabledName[];
 extern const char kContextualTasksSuggestionsEnabledDescription[];
+extern const char kContextualTasksJavaFuseboxName[];
+extern const char kContextualTasksJavaFuseboxDescription[];
 extern const char kContextualTasksBackButtonExpandsSidePanelName[];
 extern const char kContextualTasksBackButtonExpandsSidePanelDescription[];
 

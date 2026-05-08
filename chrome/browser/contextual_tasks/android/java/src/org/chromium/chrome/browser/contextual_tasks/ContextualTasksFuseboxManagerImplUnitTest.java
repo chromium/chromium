@@ -33,7 +33,9 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.contextual_tasks.fusebox.ContextualTasksFusebox;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBridge;
@@ -48,6 +50,7 @@ import org.chromium.url.JUnitTestGURLs;
 /** Unit tests for {@link ContextualTasksFuseboxManagerImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@Features.EnableFeatures(ChromeFeatureList.CONTEXTUAL_TASKS_JAVA_FUSEBOX)
 public class ContextualTasksFuseboxManagerImplUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

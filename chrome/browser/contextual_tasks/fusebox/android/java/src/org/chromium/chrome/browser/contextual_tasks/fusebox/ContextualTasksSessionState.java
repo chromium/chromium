@@ -9,6 +9,7 @@ import android.content.Context;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.WebContents;
@@ -33,6 +34,7 @@ public class ContextualTasksSessionState extends FuseboxSessionState {
             @Nullable WebContents webContents,
             MonotonicObservableSupplier<Profile> profileSupplier,
             @Nullable Runnable onFullyActivated) {
+        assert ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_TASKS_JAVA_FUSEBOX);
         assert webContents != null
                 : "WebContents must not be null for Contextual Tasks activation.";
         @Nullable WebContents current = getContextualTasksWebContents();

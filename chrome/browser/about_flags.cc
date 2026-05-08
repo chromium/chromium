@@ -11880,10 +11880,17 @@ const FeatureEntry kFeatureEntries[] = {
     {"contextual-tasks",
      contextual_tasks::flag_descriptions::kContextualTasksName,
      contextual_tasks::flag_descriptions::kContextualTasksDescription,
-     kOsDesktop,
+     kOsDesktop | kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(contextual_tasks::kContextualTasks,
                                     kContextualTasksVariations,
                                     "ContextualTasks")},
+
+    {"contextual-tasks-java-fusebox",
+     contextual_tasks::flag_descriptions::kContextualTasksJavaFuseboxName,
+     contextual_tasks::flag_descriptions::
+         kContextualTasksJavaFuseboxDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(contextual_tasks::kContextualTasksJavaFusebox)},
 
     {"omnibox-debug-logs", omnibox::flag_descriptions::kOmniboxDebugLogsName,
      omnibox::flag_descriptions::kOmniboxDebugLogsDescription, kOsDesktop,
@@ -11898,7 +11905,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"contextual-tasks-context",
      contextual_tasks::flag_descriptions::kContextualTasksContextName,
      contextual_tasks::flag_descriptions::kContextualTasksContextDescription,
-     kOsDesktop,
+     kOsDesktop | kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(contextual_tasks::kContextualTasksContext,
                                     kContextualTaskContextVariations,
                                     "ContextualTasks")},
@@ -11908,14 +11915,14 @@ const FeatureEntry kFeatureEntries[] = {
          kContextualTasksSuggestionsEnabledName,
      contextual_tasks::flag_descriptions::
          kContextualTasksSuggestionsEnabledDescription,
-     kOsDesktop,
+     kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(contextual_tasks::kContextualTasksSuggestionsEnabled)},
 
     {"contextual-tasks-context-library",
      contextual_tasks::flag_descriptions::kContextualTasksContextLibraryName,
      contextual_tasks::flag_descriptions::
          kContextualTasksContextLibraryDescription,
-     kOsDesktop,
+     kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(contextual_tasks::kContextualTasksContextLibrary)},
 
     {"contextual-tasks-back-button-expands-side-panel",
@@ -11923,7 +11930,7 @@ const FeatureEntry kFeatureEntries[] = {
          kContextualTasksBackButtonExpandsSidePanelName,
      contextual_tasks::flag_descriptions::
          kContextualTasksBackButtonExpandsSidePanelDescription,
-     kOsDesktop,
+     kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(
          contextual_tasks::kContextualTasksBackButtonExpandsSidePanel)},
 

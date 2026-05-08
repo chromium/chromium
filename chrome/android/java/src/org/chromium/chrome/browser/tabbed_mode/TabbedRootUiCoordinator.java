@@ -1336,19 +1336,22 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                 () -> mContextualTasksBridge);
             }
 
-            mContextualTasksFuseboxManager =
-                    new ContextualTasksFuseboxManagerImpl(
-                            mActivity,
-                            () -> {
-                                ViewStub stub =
-                                        mActivity.findViewById(R.id.contextual_tasks_fusebox_stub);
-                                return createContextualTasksFuseboxConfig(stub.inflate());
-                            },
-                            mActivityTabProvider.asObservable(),
-                            mWindowAndroid,
-                            mActivityLifecycleDispatcher,
-                            mProfileSupplier,
-                            mSnackbarManagerSupplier);
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_TASKS_JAVA_FUSEBOX)) {
+                mContextualTasksFuseboxManager =
+                        new ContextualTasksFuseboxManagerImpl(
+                                mActivity,
+                                () -> {
+                                    ViewStub stub =
+                                            mActivity.findViewById(
+                                                    R.id.contextual_tasks_fusebox_stub);
+                                    return createContextualTasksFuseboxConfig(stub.inflate());
+                                },
+                                mActivityTabProvider.asObservable(),
+                                mWindowAndroid,
+                                mActivityLifecycleDispatcher,
+                                mProfileSupplier,
+                                mSnackbarManagerSupplier);
+            }
         }
     }
 

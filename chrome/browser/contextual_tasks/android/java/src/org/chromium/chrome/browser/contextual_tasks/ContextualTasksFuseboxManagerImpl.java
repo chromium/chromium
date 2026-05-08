@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.contextual_tasks.fusebox.ContextualTasksFuseb
 import org.chromium.chrome.browser.contextual_tasks.fusebox.ContextualTasksFuseboxDataProvider;
 import org.chromium.chrome.browser.contextual_tasks.fusebox.ContextualTasksFuseboxManager;
 import org.chromium.chrome.browser.contextual_tasks.fusebox.ContextualTasksSessionState;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBridge;
@@ -69,6 +70,7 @@ public class ContextualTasksFuseboxManagerImpl implements ContextualTasksFusebox
             ActivityLifecycleDispatcher lifecycleDispatcher,
             MonotonicObservableSupplier<Profile> profileSupplier,
             MonotonicObservableSupplier<SnackbarManager> snackbarManagerSupplier) {
+        assert ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_TASKS_JAVA_FUSEBOX);
         mActivity = activity;
         mFuseboxConfigSupplier = fuseboxConfigSupplier;
         mWindowAndroid = windowAndroid;

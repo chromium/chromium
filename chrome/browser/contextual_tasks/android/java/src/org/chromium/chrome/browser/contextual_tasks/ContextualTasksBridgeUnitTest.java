@@ -25,9 +25,11 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.contextual_tasks.fusebox.ContextualTasksFuseboxManager;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -40,6 +42,7 @@ import java.lang.ref.WeakReference;
 /** Unit tests for {@link ContextualTasksBridge}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@Features.EnableFeatures(ChromeFeatureList.CONTEXTUAL_TASKS_JAVA_FUSEBOX)
 public class ContextualTasksBridgeUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

@@ -384,6 +384,7 @@ public abstract class ChromeFeatureList {
     public static final String CONTEXTUAL_SEARCH_SUPPRESS_SHORT_VIEW =
             "ContextualSearchSuppressShortView";
     public static final String CONTEXTUAL_TASKS = "ContextualTasks";
+    public static final String CONTEXTUAL_TASKS_JAVA_FUSEBOX = "ContextualTasksJavaFusebox";
     public static final String CONTEXT_MENU_COPY_VIDEO_FRAME_ANDROID = "ContextMenuCopyVideoFrame";
     public static final String CONTEXT_MENU_DOWNLOAD_VIDEO_FRAME_ANDROID =
             "ContextMenuSaveVideoFrameAs";

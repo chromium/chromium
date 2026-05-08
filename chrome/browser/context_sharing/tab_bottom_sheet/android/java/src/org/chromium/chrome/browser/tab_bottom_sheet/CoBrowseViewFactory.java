@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.context_sharing.R;
 import org.chromium.chrome.browser.contextual_tasks.fusebox.ContextualTasksFusebox;
 import org.chromium.chrome.browser.contextual_tasks.fusebox.ContextualTasksFusebox.ContextualTasksFuseboxConfig;
 import org.chromium.chrome.browser.contextual_tasks.fusebox.ContextualTasksFuseboxManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -106,7 +107,8 @@ public class CoBrowseViewFactory {
                         backgroundColor,
                         mZoomControl);
         ContextualTasksFusebox fusebox = null;
-        if (clientType == TabBottomSheetClientType.CONTEXTUAL_TASKS) {
+        if (clientType == TabBottomSheetClientType.CONTEXTUAL_TASKS
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_TASKS_JAVA_FUSEBOX)) {
             // TaskState retrieval from Manager.
             ContextualTasksFuseboxManager manager =
                     ContextualTasksFuseboxManager.from(mWindowAndroid);
