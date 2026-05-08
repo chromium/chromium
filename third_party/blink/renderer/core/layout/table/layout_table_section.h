@@ -78,6 +78,9 @@ class CORE_EXPORT LayoutTableSection : public LayoutBlock {
   unsigned NumRows() const;
 
  private:
+  void AddChildBeforeDescendant(LayoutObject* new_child,
+                                LayoutObject* before_descendant);
+
   bool IsTableSection() const final {
     NOT_DESTROYED();
     return true;
