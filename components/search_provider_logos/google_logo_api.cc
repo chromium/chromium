@@ -212,12 +212,19 @@ std::unique_ptr<EncodedLogo> ParseDoodleLogoResponse(const GURL& base_url,
 
   auto logo = std::make_unique<EncodedLogo>();
 
+  // Doodle server team recommends to not rely on the doodle_type metadata
+  // field as they are trying to deprecate it. Instead, we should check
+  // large_image.is_animated_gif for animated doodles.
   const std::string* doodle_type = ddljson->FindString("doodle_type");
+  const bool is_animated_gif =
+      ddljson->FindBoolByDottedPath("large_image.is_animated_gif")
+          .value_or(false);
+
   logo->metadata.type = LogoType::SIMPLE;
-  if (doodle_type) {
-    if (*doodle_type == "ANIMATED") {
-      logo->metadata.type = LogoType::ANIMATED;
-    } else if (*doodle_type == "INTERACTIVE") {
+  if (is_animated_gif) {
+    logo->metadata.type = LogoType::ANIMATED;
+  } else if (doodle_type) {
+    if (*doodle_type == "INTERACTIVE") {
       logo->metadata.type = LogoType::INTERACTIVE;
     } else if (*doodle_type == "VIDEO") {
       logo->metadata.type = LogoType::INTERACTIVE;

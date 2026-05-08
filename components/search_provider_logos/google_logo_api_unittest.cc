@@ -339,6 +339,59 @@ TEST(GoogleNewLogoApiTest, ParsesAnimatedImage) {
   EXPECT_EQ(LogoType::ANIMATED, logo->metadata.type);
 }
 
+TEST(GoogleNewLogoApiTest, ParsesAnimatedImageWhenIsAnimatedGifIsTrue) {
+  const GURL base_url("https://base.doo/");
+  const std::string json = R"json()]}'
+  {
+    "ddljson": {
+      "doodle_type": "SIMPLE",
+      "target_url": "/target",
+      "large_image": {
+        "is_animated_gif": true,
+        "url": "https://www.doodle.com/image.gif"
+      },
+      "cta_data_uri": "data:image/png;base64,YWJj"
+    }
+  })json";
+
+  bool failed = false;
+  std::unique_ptr<EncodedLogo> logo =
+      ParseDoodleLogoResponse(base_url, json, base::Time(), &failed);
+
+  ASSERT_FALSE(failed);
+  ASSERT_TRUE(logo);
+  EXPECT_EQ(GURL("https://www.doodle.com/image.gif"),
+            logo->metadata.animated_url);
+  EXPECT_EQ("abc", logo->encoded_image->as_string());
+  EXPECT_EQ(LogoType::ANIMATED, logo->metadata.type);
+}
+
+TEST(GoogleNewLogoApiTest, ParsesAnimatedImageWithoutDoodleType) {
+  const GURL base_url("https://base.doo/");
+  const std::string json = R"json()]}'
+{
+  "ddljson": {
+    "target_url": "/target",
+    "large_image": {
+      "is_animated_gif": true,
+      "url": "https://www.doodle.com/image.gif"
+    },
+    "cta_data_uri": "data:image/png;base64,YWJj"
+  }
+})json";
+
+  bool failed = false;
+  std::unique_ptr<EncodedLogo> logo =
+      ParseDoodleLogoResponse(base_url, json, base::Time(), &failed);
+
+  ASSERT_FALSE(failed);
+  ASSERT_TRUE(logo);
+  EXPECT_EQ(GURL("https://www.doodle.com/image.gif"),
+            logo->metadata.animated_url);
+  EXPECT_EQ("abc", logo->encoded_image->as_string());
+  EXPECT_EQ(LogoType::ANIMATED, logo->metadata.type);
+}
+
 TEST(GoogleNewLogoApiTest, ParsesMuralDoodle) {
   const GURL base_url("https://base.doo/");
   const std::string json = R"json()]}'
