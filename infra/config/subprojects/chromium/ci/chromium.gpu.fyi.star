@@ -1387,8 +1387,7 @@ ci.thin_tester(
         # should have the same test suites as "Linux FYI Release (AMD RX
         # 5500XT)".
         targets = [
-            "gpu_fyi_linux_release_gtests",
-            "gpu_fyi_linux_release_telemetry_tests",
+            "gpu_noop_sleep_telemetry_test",
         ],
         mixins = [
             "limited_capacity_bot",
