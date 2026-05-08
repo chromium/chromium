@@ -16,6 +16,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 
 namespace glic {
@@ -46,6 +47,7 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, OpensDialog) {
 
   views::Widget* widget = service->opt_in_controller().ShowDialog(web_contents);
   ASSERT_TRUE(widget);
+  views::test::WidgetVisibleWaiter(widget).Wait();
   EXPECT_TRUE(widget->IsVisible());
 
   observer.Wait();
@@ -63,6 +65,7 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, TabModality) {
 
   views::Widget* widget = service->opt_in_controller().ShowDialog(tab1);
   ASSERT_TRUE(widget);
+  views::test::WidgetVisibleWaiter(widget).Wait();
   EXPECT_TRUE(widget->IsVisible());
 
   // Open a new tab.
@@ -73,6 +76,7 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, TabModality) {
   EXPECT_NE(tab1, tab2);
 
   // The dialog should be hidden.
+  views::test::WidgetVisibleWaiter(widget).WaitUntilInvisible();
   EXPECT_FALSE(widget->IsVisible());
 
   // Switch back to tab1.
@@ -80,6 +84,7 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, TabModality) {
   EXPECT_EQ(tab1, browser()->tab_strip_model()->GetActiveWebContents());
 
   // The dialog should be visible again.
+  views::test::WidgetVisibleWaiter(widget).Wait();
   EXPECT_TRUE(widget->IsVisible());
 
   // Cleanup.
