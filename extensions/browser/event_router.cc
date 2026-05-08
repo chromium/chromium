@@ -38,6 +38,7 @@
 #include "extensions/browser/events/event_dispatch_helper.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_user_activation_service.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/process_manager.h"
@@ -188,6 +189,12 @@ void EventRouter::RouteDispatchEvent(
     base::ListValue event_args,
     mojom::EventDispatcher::DispatchEventCallback callback) {
   CHECK(observed_process_set_.contains(rph));
+
+  if (params->is_user_gesture &&
+      params->host_id->type == mojom::HostID::HostType::kExtensions) {
+    ExtensionUserActivationService::Get(browser_context_)
+        ->NotifyUserActivation(params->host_id->id);
+  }
   int worker_thread_id = params->worker_thread_id;
   mojo::AssociatedRemote<mojom::EventDispatcher>& dispatcher =
       rph_dispatcher_map_[rph][worker_thread_id];
@@ -1247,8 +1254,9 @@ void EventRouter::DispatchEventImpl(const std::string& restrict_to_extension_id,
     return;
   }
 
-  for (TestObserver& observer : test_observers_)
+  for (TestObserver& observer : test_observers_) {
     observer.OnWillDispatchEvent(*event);
+  }
 
   EventDispatchHelper::DispatchEvent(
       *browser_context_, listeners_,
@@ -1259,23 +1267,22 @@ void EventRouter::DispatchEventImpl(const std::string& restrict_to_extension_id,
       restrict_to_extension_id, restrict_to_url, std::move(event));
 }
 
-void EventRouter::DispatchEventToProcess(
-    const ExtensionId& extension_id,
-    const GURL& listener_url,
-    RenderProcessHost* process,
-    int64_t service_worker_version_id,
-    int worker_thread_id,
-    std::unique_ptr<Event> event,
-    bool did_enqueue) {
+void EventRouter::DispatchEventToProcess(const ExtensionId& extension_id,
+                                         const GURL& listener_url,
+                                         RenderProcessHost* process,
+                                         int64_t service_worker_version_id,
+                                         int worker_thread_id,
+                                         std::unique_ptr<Event> event,
+                                         bool did_enqueue) {
   BrowserContext* listener_context = process->GetBrowserContext();
   ProcessMap* process_map = ProcessMap::Get(listener_context);
 
   // NOTE: |extension| being NULL does not necessarily imply that this event
   // shouldn't be dispatched. Events can be dispatched to WebUI and webviews as
   // well.  It all depends on what GetMostLikelyContextType returns.
-  const Extension* extension =
-      ExtensionRegistry::Get(browser_context_)->enabled_extensions().GetByID(
-          extension_id);
+  const Extension* extension = ExtensionRegistry::Get(browser_context_)
+                                   ->enabled_extensions()
+                                   .GetByID(extension_id);
 
   if (!extension && !extension_id.empty()) {
     // Trying to dispatch an event to an extension that doesn't exist. The
@@ -1489,9 +1496,10 @@ void EventRouter::OnEventAck(BrowserContext* context,
   // TODO(mpcomplete): We should never get this message unless
   // HasLazyBackgroundPage is true. Find out why we're getting it anyway.
   if (host->extension() &&
-      BackgroundInfo::HasLazyBackgroundPage(host->extension()))
+      BackgroundInfo::HasLazyBackgroundPage(host->extension())) {
     pm->DecrementLazyKeepaliveCount(host->extension(), Activity::EVENT,
                                     event_name);
+  }
 }
 
 bool EventRouter::HasRegisteredEvents(const ExtensionId& extension_id) const {
