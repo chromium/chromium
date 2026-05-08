@@ -269,6 +269,17 @@ cr-icon-button {
   --cr-composebox-entrypoint-background-color: var(--color-composebox-context-entrypoint-background);
 }
 
+/* TODO: (crbug.com/510905121) - Move this override to css variables
+ if needed once the design is finalized. */
+:host([apply-context-button-background]) #entrypoint:hover {
+  /* Override the background-color directly to avoid overrides to other
+     components that share the compose box entrypoint button */
+  background-color: color-mix(
+      in srgb,
+      var(--color-composebox-context-entrypoint-hover-background),
+      var(--color-searchbox-results-foreground) 10%);
+}
+
 :host([has-popup-focus]) #entrypoint {
   box-shadow: inset 0 0 0 2px var(--cr-focus-outline-color);
 }

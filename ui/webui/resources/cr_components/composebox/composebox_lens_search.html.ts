@@ -10,11 +10,10 @@ export function getHtml(this: ComposeboxLensSearchElement) {
   // clang-format off
   return html`
   <cr-button id="lensSearch"
-      aria-label="${this.i18n('lensSearchLabel')}" title="${this.i18n('lensSearchLabel')}"
+      aria-label="${this.i18n('lensSearchHint')}" title="${this.i18n('lensSearchHint')}"
       @click="${this.onLensSearchClick_}">
     <div id="content">
-      <cr-icon id="icon" icon="composebox:google-lens-2"></cr-icon>
-      <div>${this.i18n('lensSearchLabel')}</div>
+      <div>${this.i18n('lensSearchHint')}</div>
     </div>
   </cr-button>`;
   // clang-format on

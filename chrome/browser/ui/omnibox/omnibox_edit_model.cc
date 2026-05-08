@@ -2158,9 +2158,12 @@ std::u16string OmniboxEditModel::GetSuggestionGroupHeaderText(
     // Show contextual search suggestion group header if the Lens action has
     // been moved to the Omnibox toolbelt OR the "Omnibox Next" Lens search chip
     // is currently active.
+    // TODO (crbug.com/510907230) - Clean up this logic once it's confirmed that
+    // a header is not needed for the omnibox contextual search results.
     if (suggestion_group_id.value() == omnibox::GROUP_CONTEXTUAL_SEARCH &&
         (has_toolbelt_lens_action || has_lens_search_chip)) {
-      if (base::FeatureList::IsEnabled(omnibox::kHideContextualGroupHeaders)) {
+      if (base::FeatureList::IsEnabled(omnibox::kHideContextualGroupHeaders) ||
+          has_lens_search_chip) {
         return u"";
       }
       // TODO(khalidpeer): Make direct use of `header_text` once we start
