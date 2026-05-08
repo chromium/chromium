@@ -1,0 +1,9 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Part of the Android System SDK, so ProGuard won't be able to resolve it if
+# running against the standard SDK.
+-dontwarn android.util.StatsEvent
+-dontwarn android.util.StatsEvent$*
+-dontwarn android.util.StatsLog

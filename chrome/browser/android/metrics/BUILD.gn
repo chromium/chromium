@@ -9,6 +9,7 @@ if (is_android) {
   _jni_sources = [
     "java/src/org/chromium/chrome/browser/metrics/AndroidSessionDurationsServiceState.java",
     "java/src/org/chromium/chrome/browser/metrics/AppUpdateInfoUtils.java",
+    "java/src/org/chromium/chrome/browser/metrics/ChromeStatsLogHelper.java",
   ]
 
   _test_jni_sources = [ "javatests/src/org/chromium/chrome/browser/metrics/util/UkmUtilsForTest.java" ]
@@ -22,6 +23,7 @@ if (is_android) {
     sources += _jni_sources
 
     deps = [
+      ":chrome_stats_log_java",
       "//base:base_java",
       "//base:service_loader_java",
       "//chrome/browser/browsing_data/android:java",
@@ -42,6 +44,15 @@ if (is_android) {
     sources = [
       "java/src/org/chromium/chrome/browser/metrics/AppUpdateInfoDelegate.java",
     ]
+  }
+
+  android_library("chrome_stats_log_java") {
+    sources =
+        [ "java/src/org/chromium/chrome/browser/metrics/ChromeStatsLog.java" ]
+    alternative_android_sdk_dep =
+        "//third_party/android_sdk:public_framework_system_java"
+    proguard_configs = [ "chrome_stats_log_proguard.flags" ]
+    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
   }
 
   static_library("ukm_utils_for_test") {
