@@ -142,6 +142,7 @@ TabGroupHeader::TabGroupHeader(TabSlotController& tab_slot_controller,
 
   TabGroup* tab_group = tab_slot_controller_->GetTabGroup(group);
   if (tab_group) {
+    SetHoverCardDataFrom(tabs::TabGroupData::FromTabGroup(tab_group));
     tab_group_data_observer_ =
         std::make_unique<tabs::TabGroupDataObserver>(tab_group);
     tab_group_data_observer_subscription_ =
