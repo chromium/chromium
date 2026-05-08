@@ -198,7 +198,9 @@ std::optional<PendingFileSet> MakePendingFileSet(
     //   automatically deleted once all handles are closed. Since this file is
     //   mapped into the address spaces of all processes connection to a
     //   database with the generated file set, it is not reliable to delete the
-    //   file via DeleteFile.
+    //   file via DeleteFile. Additionally, FLAG_WIN_TEMPORARY is used as a hint
+    //   to the OS that the data does not need to be written to disk. This will
+    //   avoid I/O provided that there is sufficient cache to hold the index.
     //
     // - On POSIX systems, a second read-only handle to the file is opened
     //   immediately and then the file is unlinked. The read-only handle is kept
@@ -209,6 +211,7 @@ std::optional<PendingFileSet> MakePendingFileSet(
                                  base::File::FLAG_CREATE_ALWAYS |
                                  base::File::FLAG_WIN_EXCLUSIVE_READ |
                                  base::File::FLAG_WIN_EXCLUSIVE_WRITE |
+                                 base::File::FLAG_WIN_TEMPORARY |
                                  base::File::FLAG_DELETE_ON_CLOSE);
 #else
     pending_file_set.wal_index_file = base::File(
