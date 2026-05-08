@@ -66,6 +66,7 @@ source_set("error_reporting") {
     "//build:branding_buildflags",
     "//components/variations",
     "//ios/web/public",
+    "//net",
     "//services/network/public/cpp",
   ]
 }

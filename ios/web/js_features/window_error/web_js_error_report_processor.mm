@@ -11,7 +11,6 @@
 #import "base/apple/foundation_util.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/no_destructor.h"
-#import "base/strings/escape.h"
 #import "base/strings/strcat.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/string_split.h"
@@ -23,6 +22,7 @@
 #import "ios/web/js_features/window_error/ios_javascript_error_report.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/web_client.h"
+#import "net/base/url_util.h"
 #import "services/network/public/cpp/resource_request.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "services/network/public/cpp/simple_url_loader.h"
@@ -83,17 +83,6 @@ void AddExperimentIds(ParameterMap& params) {
   params[variations::kNumExperimentsKey] =
       base::NumberToString(experiment_info.num_experiments);
   params[variations::kExperimentListKey] = experiment_info.experiment_list;
-}
-
-// Returns a query string for the crash report upload given `params`.
-std::string BuildPostRequestQueryString(const ParameterMap& params) {
-  std::vector<std::string> query_parts;
-  for (const auto& kv : params) {
-    query_parts.push_back(base::StrCat(
-        {kv.first, "=",
-         base::EscapeQueryParamValue(kv.second, /*use_plus=*/false)}));
-  }
-  return base::JoinString(query_parts, "&");
 }
 
 // Adds the report parameters which remain consistent for this application run
@@ -322,8 +311,11 @@ void WebJsErrorReportProcessor::SendErrorReport(
 
   AddExperimentIds(params);
 
-  const GURL url(base::StrCat(
-      {kCrashEndpointUrl, "?", BuildPostRequestQueryString(params)}));
+  GURL url(kCrashEndpointUrl);
+  for (const auto& [key, value] : params) {
+    url = net::AppendQueryParameter(url, key, value);
+  }
+
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->method = "POST";
   resource_request->url = url;

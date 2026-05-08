@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/error_reporting/chrome_js_error_report_processor.h"
-
 #include <optional>
 #include <string>
 #include <utility>
@@ -13,15 +11,16 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
 #include "base/path_service.h"
-#include "base/strings/escape.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/error_reporting/chrome_js_error_report_processor.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/upload_list/crash_upload_list.h"
+#include "net/base/url_util.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -53,17 +52,6 @@ void ChromeJsErrorReportProcessor::OnRequestComplete(
   }
   // callback_runner may implicitly run the callback when we reach this line if
   // we didn't add a task to update the report database.
-}
-
-std::string ChromeJsErrorReportProcessor::BuildPostRequestQueryString(
-    const ParameterMap& params) {
-  std::vector<std::string> query_parts;
-  for (const auto& kv : params) {
-    query_parts.push_back(base::StrCat(
-        {kv.first, "=",
-         base::EscapeQueryParamValue(kv.second, /*use_plus=*/false)}));
-  }
-  return base::JoinString(query_parts, "&");
 }
 
 void ChromeJsErrorReportProcessor::UpdateReportDatabase(
@@ -113,8 +101,11 @@ void ChromeJsErrorReportProcessor::SendReport(
                                           ? GetCrashEndpoint()
                                           : GetCrashEndpointStaging();
 
-  const GURL url(base::StrCat(
-      {crash_endpoint_string, "?", BuildPostRequestQueryString(params)}));
+  GURL url(crash_endpoint_string);
+  for (const auto& [key, value] : params) {
+    url = net::AppendQueryParameter(url, key, value);
+  }
+
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->method = "POST";
   resource_request->url = url;

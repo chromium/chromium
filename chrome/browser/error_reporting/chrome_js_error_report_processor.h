@@ -179,15 +179,10 @@ class ChromeJsErrorReportProcessor : public JsErrorReportProcessor {
   // anyways.
   base::TimeDelta maximium_wait_for_crash_reporter_;
 #else
-  // Turn the parameter key/value pairs into a list of parameters suitable for
-  // being the query part of a URL. Does URL escaping and such.
-  static std::string BuildPostRequestQueryString(const ParameterMap& params);
-
   void OnRequestComplete(std::unique_ptr<network::SimpleURLLoader> url_loader,
                          base::ScopedClosureRunner callback_runner,
                          base::Time report_time,
                          std::optional<std::string> response_body);
-
 #endif
 
   // For JavaScript error reports, a mapping of message+product+line+column to
