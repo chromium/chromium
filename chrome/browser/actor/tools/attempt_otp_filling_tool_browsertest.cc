@@ -15,6 +15,7 @@
 #include "base/strings/strcat.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_expected_support.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/types/expected_macros.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
@@ -32,6 +33,8 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
+
+using ::base::test::TestFuture;
 
 namespace actor {
 
@@ -124,6 +127,26 @@ class AttemptOtpFillingToolBrowserTest : public ActorToolsTest {
             context, base::BindOnce(&CreateMockOtpService));
   }
 
+  // Waits for the background page analysis (AnnotatedPageContent) to be
+  // completed and indexed for the current tab. This is required before
+  // attempting to resolve PageTargets to stable identifiers like
+  // FieldGlobalIds, ensuring the tool acts on a fully analyzed state.
+  void WaitForTabObservation() {
+    ASSERT_TRUE(content::WaitForLoadStop(web_contents()));
+    content::WaitForCopyableViewInWebContents(web_contents());
+    TestFuture<ActorKeyedService::TabObservationResult> tab_observation_future;
+    actor_keyed_service().RequestTabObservation(
+        *active_tab(), actor_task().id(), std::nullopt,
+        tab_observation_future.GetCallback());
+    const ActorKeyedService::TabObservationResult& result =
+        tab_observation_future.Get();
+    std::optional<std::string> error_message =
+        ActorKeyedService::ExtractErrorMessageIfFailed(result);
+    ASSERT_FALSE(error_message)
+        << "Waiting for tab observation failed: " << *error_message;
+    ASSERT_TRUE(result.value());
+  }
+
  protected:
   void SetExpectedOtp(std::optional<std::string> otp) {
     Profile* profile =
@@ -165,13 +188,10 @@ std::optional<DomNode> GetDomNodeOnPage(content::RenderFrameHost& rfh,
 // The tool can be created with one field and the task returns OK.
 IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
                        ToolGetsCreatedWithOneFieldAndTaskReturnsOk) {
-  // Just navigating to the page might not be enough, if we want to convert
-  // PageTargets back to OneTimeToken services's input later on (in the tool or
-  // actor service). Something like
-  // AttemptFormFillingToolTest::WaitForTabObservation might be needed.
   const GURL url = embedded_https_test_server().GetURL("example.com",
                                                        "/actor/otp_page.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  ASSERT_NO_FATAL_FAILURE(WaitForTabObservation());
   ASSERT_OK_AND_ASSIGN(DomNode otp_field,
                        GetDomNodeOnPage(*main_frame(), "#otp"));
   std::unique_ptr<ToolRequest> request =
@@ -202,6 +222,7 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
   const GURL url = embedded_https_test_server().GetURL("example.com",
                                                        "/actor/otp_page.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  ASSERT_NO_FATAL_FAILURE(WaitForTabObservation());
   ASSERT_OK_AND_ASSIGN(DomNode otp_field,
                        GetDomNodeOnPage(*main_frame(), "#otp"));
   std::unique_ptr<ToolRequest> request =
@@ -224,13 +245,10 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
 // task returns OK.
 IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
                        ToolGetsCreatedWithMultipleFieldsAndTaskReturnsOk) {
-  // Just navigating to the page might not be enough, if we want to convert
-  // PageTargets back to OneTimeToken services's input later on (in the tool or
-  // actor service). Something like
-  // AttemptFormFillingToolTest::WaitForTabObservation might be needed.
   const GURL url = embedded_https_test_server().GetURL("example.com",
                                                        "/actor/otp_page.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  ASSERT_NO_FATAL_FAILURE(WaitForTabObservation());
   ASSERT_OK_AND_ASSIGN(DomNode otp_field_1,
                        GetDomNodeOnPage(*main_frame(), "#otp_digit_1"));
   ASSERT_OK_AND_ASSIGN(DomNode otp_field_2,
@@ -262,6 +280,7 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
   const GURL url = embedded_https_test_server().GetURL("example.com",
                                                        "/actor/otp_page.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  ASSERT_NO_FATAL_FAILURE(WaitForTabObservation());
   ASSERT_OK_AND_ASSIGN(DomNode otp_field,
                        GetDomNodeOnPage(*main_frame(), "#otp"));
   std::unique_ptr<ToolRequest> request =
