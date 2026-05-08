@@ -834,6 +834,14 @@
     "expiry_milestone": 150
   },
   {
+    "name": "autofill-at-memory",
+    "owners": [
+      "ireneuszszulc@google.com",
+      "piotrkotynia@google.com"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "autofill-bottom-sheet-new-blur",
     "owners": [ "vincb@google.com", "bling-transactions@google.com" ],
     "expiry_milestone": 146
