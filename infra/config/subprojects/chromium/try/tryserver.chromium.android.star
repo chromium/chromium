@@ -388,6 +388,22 @@ try_.builder(
 )
 
 try_.builder(
+    name = "android-16-x64-leakcanary-fyi-rel",
+    description_html = "FYI try builder mirroring android-16-x64-leakcanary-fyi-rel CI builder.",
+    mirrors = [
+        "ci/android-16-x64-leakcanary-fyi-rel",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/android-16-x64-leakcanary-fyi-rel",
+            "release_try_builder",
+        ],
+    ),
+    contact_team_email = "clank-engprod@google.com",
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
     name = "android-17-x64-fyi-rel",
     mirrors = [
         "ci/android-17-x64-fyi-rel",

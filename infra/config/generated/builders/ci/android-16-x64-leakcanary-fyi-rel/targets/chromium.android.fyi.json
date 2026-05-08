@@ -1,0 +1,54 @@
+{
+  "android-16-x64-leakcanary-fyi-rel": {
+    "gtest_tests": [
+      {
+        "args": [
+          "--git-revision=${got_revision}",
+          "--enable-leak-checks",
+          "--avd-config=../../tools/android/avd/proto/android_36_google_apis_x64.textpb"
+        ],
+        "description": "Run with android_36_google_apis_x64",
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "module_name": "//chrome/android:chrome_public_test_apk",
+        "module_scheme": "junit",
+        "name": "chrome_public_test_apk",
+        "precommit_args": [
+          "--gerrit-issue=${patch_issue}",
+          "--gerrit-patchset=${patch_set}",
+          "--buildbucket-id=${buildbucket_build_id}"
+        ],
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cores": "8",
+            "cpu": "x86-64",
+            "device_os": null,
+            "device_type": null,
+            "os": "Ubuntu-22.04",
+            "pool": "chromium.tests.avd"
+          },
+          "named_caches": [
+            {
+              "name": "android_36_google_apis_x64",
+              "path": ".android_emulator/android_36_google_apis_x64"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "android_36_google_apis_x64"
+            }
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 75
+        },
+        "test": "chrome_public_test_apk",
+        "test_id_prefix": "ninja://chrome/android:chrome_public_test_apk/"
+      }
+    ]
+  }
+}

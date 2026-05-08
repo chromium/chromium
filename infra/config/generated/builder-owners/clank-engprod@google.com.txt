@@ -25,6 +25,7 @@ ci/android-15-tablet-x64-rel
 ci/android-15-x64-rel
 ci/android-16-x64-dbg-tests
 ci/android-16-x64-fyi-rel
+ci/android-16-x64-leakcanary-fyi-rel
 ci/android-16-x64-rel
 ci/android-17-x64-fyi-rel
 ci/android-archive-rel
@@ -68,6 +69,7 @@ try/android-15-tablet-x64-rel
 try/android-15-x64-rel
 try/android-16-x64-dbg
 try/android-16-x64-fyi-rel
+try/android-16-x64-leakcanary-fyi-rel
 try/android-16-x64-rel
 try/android-17-x64-fyi-rel
 try/android-arm-compile-dbg

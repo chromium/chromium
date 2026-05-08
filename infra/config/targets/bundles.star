@@ -647,6 +647,23 @@ targets.bundle(
     },
 )
 
+targets.bundle(
+    name = "android_leakcanary_tests",
+    targets = [
+        "chrome_public_test_apk",
+    ],
+    per_test_modifications = {
+        "chrome_public_test_apk": targets.mixin(
+            args = [
+                "--enable-leak-checks",
+            ],
+            swarming = targets.swarming(
+                shards = 75,
+            ),
+        ),
+    },
+)
+
 # For Android large form factor.
 targets.bundle(
     name = "android_lff_emulator_gtests",
