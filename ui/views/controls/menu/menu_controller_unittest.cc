@@ -3934,6 +3934,43 @@ TEST_F(MenuControllerTest, ActiveDescendantChangedEventOnHotButton) {
             count_before_clear);
 }
 
+// Test that hot-tracking in-menu buttons continues to send selection events in
+// addition to updating the active descendant. Windows screen readers use the
+// native event mapped from kSelection to announce button-like menu controls.
+TEST_F(MenuControllerTest, HotButtonSendsSelectionEvent) {
+  const test::AXEventCounter ax_counter(views::AXUpdateNotifier::Get());
+  AddButtonMenuItems(/*single_child=*/false);
+  SubmenuView* const submenu = menu_item()->GetSubmenu();
+
+  const View* const buttons_view = submenu->children()[4];
+  ASSERT_NE(nullptr, buttons_view);
+  GET_CHILD_BUTTON(button1, buttons_view, 0);
+  GET_CHILD_BUTTON(button2, buttons_view, 1);
+
+  SelectByChar('f');
+  EXPECT_EQ(4, pending_state_item()->GetCommand());
+
+  const int selection_count_before_hot_button =
+      ax_counter.GetCount(ax::mojom::Event::kSelection);
+  IncrementSelection();
+  EXPECT_EQ(button1, hot_button());
+  EXPECT_GT(ax_counter.GetCount(ax::mojom::Event::kSelection),
+            selection_count_before_hot_button);
+
+  const int selection_count_before_next_hot_button =
+      ax_counter.GetCount(ax::mojom::Event::kSelection);
+  IncrementSelection();
+  EXPECT_EQ(button2, hot_button());
+  EXPECT_GT(ax_counter.GetCount(ax::mojom::Event::kSelection),
+            selection_count_before_next_hot_button);
+
+  ui::AXNodeData submenu_data;
+  submenu->GetViewAccessibility().GetAccessibleNodeData(&submenu_data);
+  EXPECT_EQ(submenu_data.GetIntAttribute(
+                ax::mojom::IntAttribute::kActivedescendantId),
+            button2->GetViewAccessibility().GetUniqueId());
+}
+
 // Regression test for crbug.com/487373990. Verifies that drop target pointers
 // are cleared when the target MenuItemView is destroyed.
 TEST_F(MenuControllerTest, DropTargetClearedWhenEmptyMenuItemDestroyed) {
