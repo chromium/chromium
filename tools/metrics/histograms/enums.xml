@@ -21931,22 +21931,6 @@ Called by update_net_error_codes.py.-->
   <int value="8" label="H2 pings"/>
 </enum>
 
-<enum name="NSURLScheme">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Other"/>
-  <int value="2" label="about"/>
-  <int value="3" label="blob"/>
-  <int value="4" label="content"/>
-  <int value="5" label="data"/>
-  <int value="6" label="file"/>
-  <int value="7" label="filesystem"/>
-  <int value="8" label="ftp"/>
-  <int value="9" label="http"/>
-  <int value="10" label="https"/>
-  <int value="11" label="mailto"/>
-  <int value="12" label="tel"/>
-</enum>
-
 <enum name="NTPHistoryClustersModuleDisplayLayout">
   <int value="0" label="Not displayed"/>
   <int value="1" label="Layout 1"/>

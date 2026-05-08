@@ -1561,29 +1561,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.Apple.NSURL.DataMismatch" enum="Boolean"
-    expires_after="2026-06-01">
-  <owner>justincohen@chromium.org</owner>
-  <owner>bling-fundamentals@google.com</owner>
-  <summary>
-    Records whether [NSURL dataRepresentation] and absoluteString give different
-    results during GURL conversion. Recorded each time the helper GURLWithNSURL
-    is called. This helps evaluate if switching to dataRepresentation is safe.
-  </summary>
-</histogram>
-
-<histogram name="Net.Apple.NSURL.DataMismatch.Scheme" enum="NSURLScheme"
-    expires_after="2026-06-01">
-  <owner>justincohen@chromium.org</owner>
-  <owner>bling-fundamentals@google.com</owner>
-  <summary>
-    Records the scheme of the URL when there is a mismatch between
-    absoluteString and dataRepresentation. Each time a ‘true’ value is recorded
-    for the Net.Apple.NSURL.DataMismatch histogram, one instance of this
-    histogram is recorded.
-  </summary>
-</histogram>
-
 <histogram name="Net.BlobFetch.ResponseNetErrorCode" enum="NetErrorCodes"
     expires_after="2026-06-28">
   <owner>leimy@chromium.org</owner>
