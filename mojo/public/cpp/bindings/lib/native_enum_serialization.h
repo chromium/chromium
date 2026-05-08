@@ -12,6 +12,7 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/pickle.h"
 #include "ipc/param_traits.h"
 #include "mojo/public/cpp/bindings/lib/serialization_forward.h"
@@ -29,18 +30,17 @@ struct NativeEnumSerializerImpl {
   // mojo native-only enum.
   static_assert(sizeof(NativeEnum) >= sizeof(int),
                 "Cannot store the serialization result in NativeEnum.");
-
   static void Serialize(UserType input, int32_t* output) {
     base::Pickle pickle;
     Traits::Write(&pickle, input);
 
-    CHECK_GE(sizeof(int32_t), pickle.payload_size());
     *output = 0;
-    UNSAFE_TODO(memcpy(reinterpret_cast<char*>(output),
-                       pickle.payload_bytes().data(),
-                       pickle.payload_bytes().size()));
+    auto payload = pickle.payload_bytes();
+    static_assert(sizeof(int32_t) == sizeof(*output),
+                  "Sizes of int32_t and *output must be the same.");
+    CHECK_LE(payload.size(), sizeof(int32_t));
+    base::byte_span_from_ref(*output).first(payload.size()).copy_from(payload);
   }
-
   struct PickleData {
     uint32_t payload_size;
     int32_t value;
