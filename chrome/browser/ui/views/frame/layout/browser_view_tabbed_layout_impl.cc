@@ -1384,16 +1384,23 @@ void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
   CustomCornersBackground::Corners toolbar_corners;
   switch (tab_strip_type) {
     case TabStripType::kHorizontal: {
-      // Trailing curve is always shown for normal horizontal tabstrip.
-      toolbar_corners.upper_trailing.type =
-          CustomCornersBackground::CornerType::kRoundedWithBackground;
-
-      // If there is anything on the leading side or the first tab is not
-      // selected, then the corner radius is shown, otherwise we hide the
-      // corner radius.
-      if (!delegate().IsActiveTabAtLeadingWindowEdge()) {
-        toolbar_corners.upper_leading.type =
+      const gfx::Rect toolbar_bounds = views().toolbar->GetBoundsInScreen();
+      const gfx::Rect tabstrip_bounds =
+          views().horizontal_tab_strip_region_view->GetBoundsInScreen();
+      if (toolbar_bounds.y() <= tabstrip_bounds.bottom()) {
+        // Trailing curve is always shown for normal horizontal tabstrip when
+        // the two are vertically adjacent.
+        toolbar_corners.upper_trailing.type =
             CustomCornersBackground::CornerType::kRoundedWithBackground;
+
+        // If there is anything on the leading side or the first tab is not
+        // selected, then the corner radius is shown, otherwise we hide the
+        // corner radius. (Don't show if the left edges don't line up.)
+        if (!delegate().IsActiveTabAtLeadingWindowEdge() &&
+            toolbar_bounds.x() <= tabstrip_bounds.x()) {
+          toolbar_corners.upper_leading.type =
+              CustomCornersBackground::CornerType::kRoundedWithBackground;
+        }
       }
       break;
     }
