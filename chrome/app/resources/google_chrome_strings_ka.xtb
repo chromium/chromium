@@ -123,7 +123,6 @@
 <translation id="2174917724755363426">ინსტალაცია არ დასრულებულა. ნამდვილად გსურთ გაუქმება?</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2190166659037789668">შეცდომა განახლების შემოწმებისასr: <ph name="UPDATE_CHECK_ERROR" />.</translation>
-<translation id="2199691482078155239">Chrome გაძლევთ მეტ კონტროლს თქვენთვის ხილულ რეკლამაზე. ის, ასევე, ზღუდავს იმას, თუ რომელ საიტებს შეუძლია თქვენ შესახებ ინფორმაციის მიღება, როცა მათ მიერ თქვენთვის ნაჩვენებია პერსონალიზებული რეკლამა.</translation>
 <translation id="2216543877350048334">Chrome-იდან Google ანგარიში რომ ამოშალოთ, საჭიროა სისტემიდან გასვლა</translation>
 <translation id="2236949375853147973">ჩემი აქტივობა</translation>
 <translation id="22791603784558743">Gemini Chrome Dev-ში დახურვა</translation>
@@ -150,6 +149,9 @@
 <translation id="2569974318947988067">Chrome შეეცდება, გადაიტანოს ნავიგაცია HTTPS-ზე</translation>
 <translation id="2571392474191184472">თქვენი ორგანიზაცია მართავს Chrome-ს</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> უკვე შესულია ამ Chrome პროფილში. თქვენი დათვალიერების მონაცემები რომ განაცალკევოთ, Chrome-ს შეუძლია თქვენთვის პერსონალური პროფილის შექმნა.</translation>
+<translation id="2575799939951057838">უსაფრთხოების მიზნით, Chrome თიშავს JavaScript-ის ოპტიმიზაციას, როდესაც პირველად სტუმრობთ საიტს.
+
+თუ ეს გვერდი სათანადოდ არ მუშაობს, ცადეთ ოპტიმიზაციის დაშვება.</translation>
 <translation id="2580411288591421699">შეუძლებელია იმავე Google Chrome-ის ვერსიის დაყენება, რომელიც ამჟამად გაშვებულია. დახურეთ Google Chrome და ხელახლა სცადეთ.</translation>
 <translation id="2586406160782125153">ეს მოქმედება წაშლის თქვენს დათვალიერების მონაცემებს ამ მოწყობილობიდან. თქვენი მონაცემების მოგვიანებით მისაღებად, შედით Chrome-ში, როგორც <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">ჩამოტვირთული ინსტალატორის ქეშირება ვერ მოხერხდა. შეცდომა: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
@@ -660,7 +662,6 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="7655472416356262023">ანგარიშის ამოშლა Chrome-იდან</translation>
 <translation id="7658239707568436148">გაუქმება</translation>
 <translation id="7670287553302121848">Chrome ანგარიში საჭიროებს ხელახლა ავტორიზაციას</translation>
-<translation id="7675756456029023637">ჰკითხეთ Chrome-ს</translation>
 <translation id="769538538642757151">Chrome გაცნობებთ, თუ რაიმეს შემოწმება დაგჭირდებათ</translation>
 <translation id="769906121737764913">Gemini Chrome Beta-ში დახურვა</translation>
 <translation id="7716950018788545737">ამოცანა(ები) დასრულდა.</translation>

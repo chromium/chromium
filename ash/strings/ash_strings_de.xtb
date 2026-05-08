@@ -1048,6 +1048,7 @@ Einige Funktionen sind eingeschränkt, um die Akkulaufzeit zu verlängern.</tran
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Übersichtsmodus</translation>
 <translation id="4242533952199664413">Einstellungen öffnen</translation>
+<translation id="4244765461494758482">Diese Einstellungen werden auf deinen anderen ChromeOS-Geräten synchronisiert. Du kannst sie hier ändern oder die vollständige Liste in den Einstellungen verwalten.</translation>
 <translation id="4247123849143712100">Aktualisieren und herunterfahren</translation>
 <translation id="4249248555939881673">Auf Netzwerkverbindung warten...</translation>
 <translation id="4250229828105606438">Screenshot</translation>
@@ -2328,6 +2329,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8051716679295756675">Eine Vorlage namens „<ph name="DESK_TEMPLATE_NAME" />“ ist bereits vorhanden</translation>
 <translation id="8052898407431791827">In Zwischenablage kopiert</translation>
 <translation id="8054466585765276473">Akku-Laufzeit wird berechnet.</translation>
+<translation id="8063363226185507157">Synchronisierte Einstellungen für Bedienungshilfen</translation>
 <translation id="8076492880354921740">Tabs</translation>
 <translation id="8079538659226626406">Bildschirmfreigabe</translation>
 <translation id="8083540854303889870">Für später gespeichert</translation>

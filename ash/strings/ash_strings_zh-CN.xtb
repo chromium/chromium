@@ -1047,6 +1047,7 @@
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">概览模式</translation>
 <translation id="4242533952199664413">打开“设置”</translation>
+<translation id="4244765461494758482">这些设置正在您的其他 ChromeOS 设备之间同步。您可以在此处更改这些设置，也可以在“设置”中管理所有设置。</translation>
 <translation id="4247123849143712100">更新并关机</translation>
 <translation id="4249248555939881673">正在等待建立网络连接…</translation>
 <translation id="4250229828105606438">屏幕截图</translation>
@@ -2326,6 +2327,7 @@
 <translation id="8051716679295756675">名为“<ph name="DESK_TEMPLATE_NAME" />”的模板已存在</translation>
 <translation id="8052898407431791827">已复制到剪贴板</translation>
 <translation id="8054466585765276473">正在计算续航时间。</translation>
+<translation id="8063363226185507157">已同步无障碍设置</translation>
 <translation id="8076492880354921740">标签页</translation>
 <translation id="8079538659226626406">屏幕共享</translation>
 <translation id="8083540854303889870">已保存供日后使用</translation>

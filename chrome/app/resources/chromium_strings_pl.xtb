@@ -354,7 +354,6 @@
 <translation id="4724676981607797757">Instalacja się nie udała z powodu błędu nieobsługiwanego protokołu.</translation>
 <translation id="4746050847053251315">Zamknąć Chromium mimo to?</translation>
 <translation id="4748217263233248895">Właśnie została zastosowana specjalna aktualizacja zabezpieczeń Chromium. Uruchom ponownie Chromium teraz. Karty zostaną przywrócone.</translation>
-<translation id="4759645701210484457">Zapytaj Chromium</translation>
 <translation id="4771701986670315895">Od jakiegoś czasu nie odwiedzasz tej witryny. Przeglądarka Chromium usunęła te uprawnienia: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="COUNT" />.</translation>
 <translation id="4788777615168560705">Chromium nie może sprawdzić Twoich haseł. Spróbuj ponownie za 24 godziny lub <ph name="BEGIN_LINK" />sprawdź hasła na koncie Google<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">Będzie stosowany ten sam mechanizm sprawdzania pisowni, który jest używany w wyszukiwarce Google. Tekst wpisywany w przeglądarce jest wysyłany do Google. Zawsze możesz to zmienić w ustawieniach.</translation>
@@ -521,7 +520,6 @@
 <translation id="6676384891291319759">Skorzystaj z internetu</translation>
 <translation id="668175097507315160">System operacyjny Chromium nie może zsynchronizować danych z powodu błędu podczas logowania.</translation>
 <translation id="6691132793308828750">Usuń dane tej aplikacji z Chromium</translation>
-<translation id="6692797197837897398">Chromium daje Ci większą kontrolę nad wyświetlanymi reklamami i ogranicza ilość informacji o Tobie, jakie są dostępne dla witryn wyświetlających Ci reklamy spersonalizowane</translation>
 <translation id="6709350901466051922">Ta strona musi mieć w Chromium dostęp do mikrofonu</translation>
 <translation id="6712881677154121168">Błąd pobierania: <ph name="DOWNLOAD_ERROR" /></translation>
 <translation id="6717134281241384636">Nie można użyć Twojego profilu, ponieważ pochodzi on z nowszej wersji Chromium.

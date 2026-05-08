@@ -1723,6 +1723,7 @@
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />، <ph name="SECOND_SWITCH" />، <ph name="THIRD_SWITCH" /> اور 1 مزید سوئچ</translation>
 <translation id="2165177462441582039">منتخب کریں کہ ہائی لائٹ کو ہر آئٹم پر کتنی دیر رہنا چاہیے</translation>
 <translation id="2166369534954157698">ایک ٹیلے پر واقع مزار خواجہ فرید الدین گنج شکر کے احاطۂ صحن میں ذرا سی ژالہ باری چاندی کے ڈھیروں کی مثل بڑے غضب کا نظارہ دیتی ہے۔</translation>
+<translation id="2168036794078614559">رپورٹ بھیج دی گئی</translation>
 <translation id="2169062631698640254">بہر صورت سائن ان کریں</translation>
 <translation id="2173302385160625112">اپنا انٹرنیٹ کنکشن چیک کریں</translation>
 <translation id="2173801458090845390">‏اس آلہ میں درخواست ID شامل کریں</translation>
@@ -3434,7 +3435,6 @@
 <translation id="3347086966102161372">تصویر کا پتہ کا&amp;پی کریں</translation>
 <translation id="3348038390189153836">ہٹانے لائق آلہ کا پتا چلا</translation>
 <translation id="3348973040180736882">ڈی کمپریس کیا جا رہا ہے</translation>
-<translation id="3349610303043713601">‏‫AI کے ساتھ براؤز کریں</translation>
 <translation id="3349933790966648062">میموری فوٹ پرنٹ</translation>
 <translation id="3351472127384196879">اپنے پین پر بٹنز شامل کریں یا تلاش کریں</translation>
 <translation id="3353786022389205125">سلیپ وضع سے بیدار وضع میں جاتے وقت "مقفل اسکرین دکھائیں" آن کریں اور دوبارہ کوشش کریں</translation>
@@ -6821,6 +6821,7 @@
 <translation id="5712153969432126546">‏سائٹس کبھی کبھار دستاویزات، معاہدوں اور فارمز جیسی PDFs شائع کرتی ہیں</translation>
 <translation id="571222594670061844">سائٹس شناختی سروسز سے سائن ان پرامپٹس دکھا سکتی ہیں</translation>
 <translation id="5713158217420111469"><ph name="DEVICE" /> سے منسلک ہے</translation>
+<translation id="5713988532993992900">معکوس</translation>
 <translation id="5714100381896040477">اسکرین پر حرکت کو محدود کریں</translation>
 <translation id="5719854774000914513">‏سائٹس HID آلات سے منسلک ہونے کے لیے پوچھ سکتی ہیں</translation>
 <translation id="5720729194423017301">سائٹس اور سرچ انجنز کے لیے شارٹ کٹس</translation>
@@ -8734,6 +8735,7 @@
 <translation id="7044606776288350625">ڈیٹا سنک کریں</translation>
 <translation id="7050037487872780845">ہاٹ اسپاٹ کا غلط کنفیگریشن</translation>
 <translation id="7051222203795962489">{COUNT,plural, =1{‏آپ کے Google اکاؤنٹ <ph name="USER_EMAIL" /> میں پاس ورڈ محفوظ کیا گیا ہے}other{‏آپ کے Google اکاؤنٹ <ph name="USER_EMAIL" /> میں پاس ورڈز محفوظ کیے گئے ہیں}}</translation>
+<translation id="7051728324516005763">‏‫Chrome میں AI</translation>
 <translation id="7052762602787632571">براؤزنگ ڈیٹا &amp;حذف کریں...</translation>
 <translation id="705352103640172578">واٹر فال</translation>
 <translation id="7053983685419859001">مسدود کریں</translation>

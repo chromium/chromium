@@ -1048,6 +1048,7 @@
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">מצב סקירה כללית</translation>
 <translation id="4242533952199664413">פתיחת ההגדרות</translation>
+<translation id="4244765461494758482">‏ההגדרות האלה מסונכרנות בכל מכשירי ChromeOS שלך. אפשר לשנות אותן כאן או לערוך את הרשימה המלאה בהגדרות.</translation>
 <translation id="4247123849143712100">עדכון וכיבוי</translation>
 <translation id="4249248555939881673">תיכף נתחבר לרשת…</translation>
 <translation id="4250229828105606438">צילום מסך</translation>
@@ -2330,6 +2331,7 @@
 <translation id="8051716679295756675">קיימת כבר תבנית בשם <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="8052898407431791827">הועתק ללוח</translation>
 <translation id="8054466585765276473">מחשב זמן סוללה</translation>
+<translation id="8063363226185507157">הגדרות מסונכרנות בנושא נגישות</translation>
 <translation id="8076492880354921740">כרטיסיות</translation>
 <translation id="8079538659226626406">שיתוף המסך</translation>
 <translation id="8083540854303889870">שולחן העבודה נשמר למועד מאוחר יותר</translation>

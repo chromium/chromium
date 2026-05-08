@@ -1676,6 +1676,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="8030852056903932865">Goedkeuren</translation>
 <translation id="8032569120109842252">Je volgt</translation>
 <translation id="8035522026858423976"><ph name="TAB_TITLE" />, geselecteerd incognitotabblad met geluid uit</translation>
+<translation id="8036587585440959897">Met sommige extensies kun je zoekmachines aan Chrome toevoegen.</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> dagen resterend</translation>
 <translation id="8037801708772278989">Zojuist gecheckt</translation>
 <translation id="804335162455518893">SD-kaart niet gevonden</translation>
@@ -1858,6 +1859,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="8765470054473112089">Als je in de adresbalk of het zoekvak typt, stuurt Chrome wat je typt naar je standaard zoekmachine om betere suggesties te krijgen. Dit staat uit in de incognitomodus.</translation>
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome heeft een zwak wachtwoord gevonden dat je kunt verbeteren}other{Chrome heeft # zwakke wachtwoorden gevonden die je kunt verbeteren}}</translation>
 <translation id="8766529642647037772">Wil je een gemarkeerde link zoals deze maken?</translation>
+<translation id="8769783688897433958">Sitegegevens en -rechten bekijken</translation>
 <translation id="8788265440806329501">Navigatiegeschiedenis is gesloten</translation>
 <translation id="8790193082819560975">Tik om in een nieuw tabblad te zoeken naar koopopties voor het product.</translation>
 <translation id="8798449543960971550">Gelezen</translation>
@@ -1961,6 +1963,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="9169507124922466868">Navigatiegeschiedenis is half geopend</translation>
 <translation id="9189607089796819144">Wil je <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) toch downloaden?</translation>
 <translation id="9190276265094487094">Je krijgt je geschiedenis op al je gesynchroniseerde apparaten, zodat je kunt doorgaan met waar je mee bezig was</translation>
+<translation id="9190355771000652811">Je kunt in de adresbalk deze sneltoetsen met snelkoppelingen voor zoekmachines en het doorzoeken van sites gebruiken.</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" />, vastgezet geselecteerd incognitotabblad</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 minuut geleden gecheckt}other{# minuten geleden gecheckt}}</translation>
 <translation id="9204836675896933765">1 bestand over</translation>

@@ -478,6 +478,7 @@
 <translation id="1727613060316725209">সার্টিফিকেটটি সঠিক</translation>
 <translation id="1728677426644403582">আপনি একটি ওয়েব পৃষ্ঠার উৎস কোড দেখছেন</translation>
 <translation id="173080396488393970">এখানে এই ধরনের কার্ড কাজ করে না</translation>
+<translation id="1731563515262205847">ML-DSA-65</translation>
 <translation id="1732445923934584865">পরিবর্তে উপস্থিত থেকে জিজ্ঞাসা করুন</translation>
 <translation id="1733064249834771892">ফন্ট</translation>
 <translation id="1733631169686303142">অডিও সরঞ্জাম</translation>
@@ -1597,6 +1598,7 @@
 <translation id="350069200438440499">ফাইলের নাম:</translation>
 <translation id="3501300228850242680">মেটাল (মিউজিক)</translation>
 <translation id="350421688684366066">লেবেল (হাই-গ্লসি)</translation>
+<translation id="3507062913298382727">আইডি কার্ড সেভ করুন</translation>
 <translation id="350763432931695541">পরবর্তী কয়েকটি পৃষ্ঠা থেকে টেক্সট এক্সট্র্যাক্ট করা হচ্ছে</translation>
 <translation id="3507869775212388416">আইন সংক্রান্ত চাকরি</translation>
 <translation id="3507936815618196901">আপনার আশেপাশের এলাকার একটি 3D ম্যাপ তৈরি করতে এবং ক্যামেরার অবস্থান ট্র্যাক করতে চায়</translation>
@@ -1990,6 +1992,7 @@
 <translation id="4098306082496067348">ভার্চুয়াল কার্ডের তথ্যে ট্যাপ করে সেটি চেক-আউট প্রসেসে যোগ করুন।</translation>
 <translation id="4099048595830172239">গোপনীয় কন্টেন্ট দেখা গেলে, অ্যাডমিনিস্ট্রেটরের নীতি <ph name="APPLICATION_TITLE" />-এর সাথে আপনার স্ক্রিন শেয়ার করার জন্য সাজেস্ট করবে না:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-এ ফন্ট সাইজ এবং টাইপফেস কাস্টমাইজ করতে Tab প্রেস করার পর Enter প্রেস করুন</translation>
+<translation id="4100421230355095925">ML-DSA-44</translation>
 <translation id="4101413244023615925">টেক্সট ও গ্রাফিক</translation>
 <translation id="4101917550061398111">বেছে নেওয়া আইটেম মুছুন</translation>
 <translation id="4102567721634170493">স্থানীয় সংবাদ</translation>
@@ -2217,6 +2220,7 @@
 <translation id="4415156962929755728">প্লাস্টিক (হাই গ্লস)</translation>
 <translation id="4415426530740016218">পিক-আপের ঠিকানা</translation>
 <translation id="4415748029120993980">SECG এলিপ্টিক কার্ভ secp384r1 (ওরফে NIST P-384)</translation>
+<translation id="4418150423720608641">ML-DSA-87</translation>
 <translation id="4419287616181386201">পাসওয়ার্ড তাদের ম্যানেজমেন্ট সেটিংস থেকে মুছে যেতে পারে</translation>
 <translation id="4424024547088906515">এই সার্ভার প্রমাণ করতে পারেনি যে এটি <ph name="DOMAIN" />; এর নিরাপত্তা সার্টিফিকেট Chrome এর নিকট বিশ্বাসযোগ্য নয়। কোনো ভুল কনফিগারেশনের কারণে অথবা কোনো আক্রমণকারী আপনার সংযোগ মাঝপথে আটকে দিচ্ছে বলে এমনটা হতে পারে।</translation>
 <translation id="4425750422187370446">অ্যাথলিট পোশাক</translation>
@@ -2956,6 +2960,7 @@
 <translation id="5573641252776268565">পাসপোর্ট সম্পর্কিত তথ্য এডিট করুন</translation>
 <translation id="5578606540385219379">পরিষেবা প্রদানকারী</translation>
 <translation id="5580958916614886209">আপনার মেয়াদ শেষের মাস পরীক্ষা করে আবার চেষ্টা করুন</translation>
+<translation id="5582453333200265572">আইডি কার্ড আপডেট করুন</translation>
 <translation id="5583442610070676234">'তুলনা' করার টেবিল<ph name="COMPARE_SET_NAME" />-এর জন্য আরও অ্যাকশন</translation>
 <translation id="55841966151154662">এই IBAN Google Wallet-এ সেভ করা যায়নি। পরিবর্তে এই ডিভাইসের Chrome-এ সেটি সেভ করা হয়েছে।</translation>
 <translation id="558420943003240152">পাসওয়ার্ড ও পাসকী ম্যানেজ করুন…</translation>
@@ -3089,6 +3094,7 @@
 <translation id="5808435672482059465">আপনার Chrome ইতিহাস দেখুন</translation>
 <translation id="5810442152076338065"><ph name="DOMAIN" />-এ আপনার সংযোগ একটি অপ্রচলিত সাইফার স্যুট ব্যবহার করে এনক্রিপ্ট করা হয়েছে৷</translation>
 <translation id="5813119285467412249">&amp;যোগ করাকে পুনরায় করুন</translation>
+<translation id="5813274153495000141">আপনার তথ্য সেভ করে আরও দ্রুত ফর্ম পূরণ করুন। এটি আপনার ডিভাইসে সেভ হয়।</translation>
 <translation id="5813753398265398978">পদার্থবিদ্যা</translation>
 <translation id="5817918615728894473">যুক্ত করুন</translation>
 <translation id="5820625124144807242">অর্ডার পর্যালোচনা করার পরে, আপনাকে সাইন-ইন করতে হবে অথবা একটি <ph name="BNPL_ISSUER_NAME" /> অ্যাকাউন্ট তৈরি করতে হবে। এই অ্যাকাউন্টটি Google Pay-এর সাথে অটোমেটিক লিঙ্ক হয়ে যাবে।</translation>
@@ -5231,6 +5237,7 @@
 <translation id="9169664750068251925">এই সাইটে সর্বদা অবরোধ করুন</translation>
 <translation id="9169931577761441333"><ph name="APP_NAME" /> অ্যাপটি হোম স্ক্রিনে যোগ করুন</translation>
 <translation id="9170848237812810038">&amp;পূর্বাবস্থায় ফিরুন</translation>
+<translation id="9170906125144697215">অ্যাপ পরিবর্তন না করে Pix-এর মাধ্যমে পেমেন্ট করুন</translation>
 <translation id="9171296965991013597">অ্যাপ থেকে বেরিয়ে আসতে চান?</translation>
 <translation id="9173282814238175921">একক ডকুমেন্ট/নতুন শিট</translation>
 <translation id="9173995187295789444">ব্লুটুথ ডিভাইসগুলির জন্য স্ক্যান করা হচ্ছে...</translation>
@@ -5247,7 +5254,6 @@
 <translation id="9186371298532546532">একাধিক জায়গায় এই ঠিকানাটি ব্যবহার করুন</translation>
 <translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> এই ট্যাব পরিবর্তন করেছেন</translation>
 <translation id="9189789270972826888">কার্ডের বিবরণ পূরণ করা না হলে, কপি ও পেস্ট করতে নিচে দেওয়া কার্ডের বিবরণে ক্লিক করুন। <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
-<translation id="9190557999028587593">৪ সপ্তাহের বেশি পুরনো বিষয় অটোমেটিক মুছে দেওয়া হয়</translation>
 <translation id="9191834167571392248">নিচে বাঁদিকে পাঞ্চ করুন</translation>
 <translation id="9192361865877479444">মেটাল (ম্যাট)</translation>
 <translation id="9192947025498305328">ক্লিন বিউটি</translation>

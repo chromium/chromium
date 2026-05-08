@@ -1858,6 +1858,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="8765470054473112089">Gdy piszesz na pasku adresu lub w polu wyszukiwania, Chrome wysyła to, co piszesz, do domyślnej wyszukiwarki, aby podawać Ci lepsze sugestie. Ta funkcja jest wyłączona w trybie incognito.</translation>
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Przeglądarka Chrome znalazła słabe hasło, które możesz ulepszyć}few{Przeglądarka Chrome znalazła # słabe hasła, które możesz ulepszyć}many{Przeglądarka Chrome znalazła # słabych haseł, które możesz ulepszyć}other{Przeglądarka Chrome znalazła # słabego hasła, które możesz ulepszyć}}</translation>
 <translation id="8766529642647037772">Utworzyć wyróżniony link, taki jak ten?</translation>
+<translation id="8769783688897433958">Wyświetl informacje o witrynie i uprawnienia</translation>
 <translation id="8788265440806329501">Historia nawigacji jest zamknięta</translation>
 <translation id="8790193082819560975">Kliknij, aby wyszukać opcje zakupu produktu w nowej karcie.</translation>
 <translation id="8798449543960971550">Przeczytane</translation>

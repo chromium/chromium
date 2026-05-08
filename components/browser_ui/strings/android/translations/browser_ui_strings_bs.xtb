@@ -694,7 +694,7 @@ Napredna zaštita upravlja ovim postavkama Chromea:</translation>
 <translation id="823874716226307142">Kada je ova funkcija uključena, web lokacije mogu zatražiti pristup drugim uređajima na lokalnoj mreži. Kada je isključena, web lokacije ne mogu pristupati drugim uređajima na lokalnoj mreži.</translation>
 <translation id="8249310407154411074">Premjesti na vrh</translation>
 <translation id="8261506727792406068">Izbriši</translation>
-<translation id="8273596202562472147">Više opcija za web-lokaciju <ph name="SITE_NAME" /></translation>
+<translation id="8273596202562472147">Više opcija za <ph name="SITE_NAME" /></translation>
 <translation id="8284326494547611709">Titlovi</translation>
 <translation id="8300705686683892304">Upravlja aplikacija</translation>
 <translation id="8301363963630676147">Dozvoljeno je ovaj put • Korištenje približne lokacije</translation>

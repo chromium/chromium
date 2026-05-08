@@ -271,6 +271,7 @@
 <translation id="2226826835915474236">નિષ્ક્રિય શૉર્ટકટ</translation>
 <translation id="2227179592712503583">સૂચન દૂર કરો</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" /> તરીકે ચાલુ રાખો</translation>
+<translation id="2230411774874187555">તમારી સાચવેલી બધી માહિતી મેળવો</translation>
 <translation id="2230777942707397948">ખાલી વિન્ડો</translation>
 <translation id="223356358902285214">વેબ અને ઍપ પ્રવૃત્તિ</translation>
 <translation id="2233735624724508540">સમયમર્યાદા પસંદ કરો અને પછી 'ડેટા ડિલીટ કરો' પર ટૅપ કરો</translation>
@@ -483,6 +484,7 @@
 <translation id="3057938290530993634">આગલી વખતે સરળ ઍક્સેસ માટે, તમારી સૌથી વધુ મુલાકાત લેવાયેલી વેબસાઇટને પિન કરવા ટૅપ કરીને દબાવી રાખો</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> બુકમાર્ક}one{<ph name="BOOKMARKS_COUNT_MANY" /> બુકમાર્ક}other{<ph name="BOOKMARKS_COUNT_MANY" /> બુકમાર્ક}}</translation>
 <translation id="3062802207422175757">Chrome પર તમારી રુચિ વિશેના લેખ</translation>
+<translation id="3066107845790462226">વીડિયો ફ્રેમ ડાઉનલોડ કરો</translation>
 <translation id="3066573403916685335">નીચે ખસેડો</translation>
 <translation id="3067505415088964188">કિંમત ઓછી છે</translation>
 <translation id="3070005020161560471">ઑટોમૅટિક રીતે અનુવાદ કરો</translation>
@@ -1216,6 +1218,7 @@
 <translation id="6264485186158353794">સુરક્ષા પર પાછા</translation>
 <translation id="6267106249090587268">નોટિફિકેશન <ph name="SEPARATOR" /> સ્પામ અથવા છેતરામણા કન્ટેન્ટને કારણે Chrome દ્વારા આ પરવાનગીઓ કાઢી નાખવામાં આવી છે</translation>
 <translation id="6276708887952587684">પેજનો સૉર્સ જુઓ</translation>
+<translation id="62768169905160414">વીડિયો ફ્રેમ કૉપિ કરો</translation>
 <translation id="6277522088822131679">પેજને પ્રિન્ટ કરવામાં સમસ્યા હતી. કૃપા કરીને ફરીથી પ્રયાસ કરો.</translation>
 <translation id="6278428485366576908">થીમ</translation>
 <translation id="6291294824436685757">બ્રાઉઝિંગ ડેટા ડિલીટ કરો; ડિલીટ કરવા માટેનો ડેટા પસંદ કરો</translation>
@@ -1676,6 +1679,7 @@
 <translation id="8030852056903932865">મંજૂર કરો</translation>
 <translation id="8032569120109842252">ફૉલો કરી રહ્યાં છો</translation>
 <translation id="8035522026858423976"><ph name="TAB_TITLE" />, પસંદ કરેલું, મ્યૂટ કરેલું છૂપું ટૅબ</translation>
+<translation id="8036587585440959897">કેટલાક એક્સ્ટેન્શન Chromeમાં શોધ એન્જિન ઉમેરી શકે છે.</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> દિવસ બાકી</translation>
 <translation id="8037801708772278989">હમણાં જ ચેક કર્યું</translation>
 <translation id="804335162455518893">SD કાર્ડ મળ્યું નથી</translation>
@@ -1962,6 +1966,7 @@
 <translation id="9169507124922466868">નૅવિગેશન ઇતિહાસ અડધા ભાગમાં ખુલ્લો છે</translation>
 <translation id="9189607089796819144">શું તેમ છતાં તમે "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) ડાઉનલોડ કરવા માગો છો?</translation>
 <translation id="9190276265094487094">તમને તમારા સિંક કરેલા તમામ ડિવાઇસ પર તમારો ઇતિહાસ મળશે, જેથી તમે જે કરતા હતા તે ચાલુ રાખી શકો</translation>
+<translation id="9190355771000652811">શોધ એન્જિન અને સાઇટમાં શોધવા માટે, ઍડ્રેસ બારમાં આ કીબોર્ડ શૉર્ટકટ વડે શૉર્ટકટનો ઉપયોગ કરો.</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" />, પિન કરેલું પસંદગીનું છૂપું ટૅબ</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 મિનિટ પહેલાં ચેક કર્યું}one{# મિનિટ પહેલાં ચેક કર્યું}other{# મિનિટ પહેલાં ચેક કર્યું}}</translation>
 <translation id="9204836675896933765">1 ફાઇલ બાકી છે</translation>

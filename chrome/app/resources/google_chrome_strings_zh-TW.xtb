@@ -119,7 +119,6 @@
 <translation id="2174917724755363426">安裝作業尚未完成，確定要取消安裝嗎？</translation>
 <translation id="2186206192313702726">Google 智慧鏡頭</translation>
 <translation id="2190166659037789668">更新檢查錯誤：<ph name="UPDATE_CHECK_ERROR" />。</translation>
-<translation id="2199691482078155239">在 Chrome 中，你可以進一步控管系統顯示的廣告，並限制網站能根據哪些個人資訊放送個人化廣告</translation>
 <translation id="2216543877350048334">如要從 Chrome 中移除 Google 帳戶，請登出 Chrome</translation>
 <translation id="2236949375853147973">我的活動</translation>
 <translation id="22791603784558743">關閉 Chrome 內建 Gemini (開發人員版)</translation>
@@ -146,6 +145,7 @@
 <translation id="2569974318947988067">Chrome 會嘗試將瀏覽方式升級為 HTTPS</translation>
 <translation id="2571392474191184472">Chrome 是由貴機構管理</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" />已登入這個 Chrome 設定檔。如要分開保存你的瀏覽資料，建議在 Chrome 中建立專屬設定檔。</translation>
+<translation id="2575799939951057838">你首次造訪個別網站時，Chrome 會關閉 JavaScript 最佳化，以策安全。如果網頁無法正常運作，建議允許最佳化。</translation>
 <translation id="2580411288591421699">你無法安裝這個版本的 Google Chrome，因為相同的版本目前正在執行中。請關閉 Google Chrome 然後再試一次。</translation>
 <translation id="2586406160782125153">登出後，系統會將你的瀏覽資料從這個裝置上刪除。日後如要重新取得你的資料，請以 <ph name="USER_EMAIL" /> 身分登入 Chrome。</translation>
 <translation id="259935314519650377">無法快取下載的安裝程式，錯誤碼：<ph name="UNPACK_CACHING_ERROR_CODE" />。</translation>
@@ -653,7 +653,6 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="7655472416356262023">從 Chrome 中移除帳戶</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7670287553302121848">Chrome 帳戶需要重新驗證</translation>
-<translation id="7675756456029023637">問問 Chrome</translation>
 <translation id="769538538642757151">如有任何需要檢查的事項，Chrome 會通知你</translation>
 <translation id="769906121737764913">關閉 Chrome 內建 Gemini (Beta 版)</translation>
 <translation id="7716950018788545737">工作已結束。</translation>

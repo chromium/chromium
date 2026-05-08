@@ -478,6 +478,7 @@
 <translation id="1727613060316725209">सर्टिफिकेट योग्य आहे</translation>
 <translation id="1728677426644403582">तुम्ही वेब पेजचा स्रोत पाहत आहात</translation>
 <translation id="173080396488393970">या प्रकारच्या कार्डला सहाय्य नाही</translation>
+<translation id="1731563515262205847">ML-DSA-65</translation>
 <translation id="1732445923934584865">त्याऐवजी प्रत्यक्ष विचारा</translation>
 <translation id="1733064249834771892">फॉंट</translation>
 <translation id="1733631169686303142">ऑडिओ उपकरणे</translation>
@@ -1595,6 +1596,7 @@
 <translation id="350069200438440499">फाइल नाव:</translation>
 <translation id="3501300228850242680">मेटल (संगीत)</translation>
 <translation id="350421688684366066">लेबल (हाय-ग्लॉस)</translation>
+<translation id="3507062913298382727">ओळखपत्र सेव्ह करा</translation>
 <translation id="350763432931695541">पुढील काही पानांमधील मजकूर काढत आहे</translation>
 <translation id="3507869775212388416">कायदेविषयक नोकर्‍या</translation>
 <translation id="3507936815618196901">तुमच्या आसपासच्या परिसराचा 3D नकाशा तयार करा आणि कॅमेर्‍याचे स्थान ट्रॅक करा</translation>
@@ -1988,6 +1990,7 @@
 <translation id="4098306082496067348">चेकआउटमध्ये व्हर्च्युअल कार्डचे तपशील जोडण्यासाठी त्यांवर टॅप करा.</translation>
 <translation id="4099048595830172239">गोपनीय आशय दृश्यमान असताना, अ‍ॅडमिनिस्ट्रेटर धोरण हे तुमची स्क्रीन <ph name="APPLICATION_TITLE" /> सोबत शेअर करण्याची शिफारस करत नाही:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome मधील फॉंटचे आकार आणि टाइपफेस कस्टमाइझ करण्यासाठी, टॅब प्रेस करून एंटर प्रेस करा</translation>
+<translation id="4100421230355095925">ML-DSA-44</translation>
 <translation id="4101413244023615925">मजकूर आणि ग्राफिक</translation>
 <translation id="4101917550061398111">निवडलेले आयटम हटवा</translation>
 <translation id="4102567721634170493">स्थानिक बातम्या</translation>
@@ -2215,6 +2218,7 @@
 <translation id="4415156962929755728">प्लॅस्टिक (हाय ग्लॉस)</translation>
 <translation id="4415426530740016218">घेण्याचा पत्ता</translation>
 <translation id="4415748029120993980">SECG एल्लिपटिक कर्व्ह secp384r1 (aka NIST P-384)</translation>
+<translation id="4418150423720608641">ML-DSA-87</translation>
 <translation id="4419287616181386201">पासवर्ड त्यांच्या व्यवस्थापन सेटिंग्जमधून हटवता येऊ शकतात</translation>
 <translation id="4424024547088906515">हा सर्व्हर हे <ph name="DOMAIN" /> असल्याचे सिद्ध करू शकला नाही; त्याचे सुरक्षितता सर्टिफिकेट Chrome द्वारे विश्वसनीय नाही. हे कदाचित एका चुकीच्या कॉंफिगरेशनमुळे किंवा हल्लेखोराने तुमचे कनेक्शन इंटरसेप्ट केल्यामुळे झाले असू शकते.</translation>
 <translation id="4425750422187370446">ॲथलेटिक पोशाख</translation>
@@ -2954,6 +2958,7 @@
 <translation id="5573641252776268565">पासपोर्टसंबंधित माहिती संपादित करा</translation>
 <translation id="5578606540385219379">सेवा पुरवठादार</translation>
 <translation id="5580958916614886209">तुमचा कालबाह्यता महिना तपासा आणि पुन्हा प्रयत्न करा</translation>
+<translation id="5582453333200265572">ओळखपत्र अपडेट करा</translation>
 <translation id="5583442610070676234"><ph name="COMPARE_SET_NAME" /> या तुलना सारणीसाठी आणखी कृती</translation>
 <translation id="55841966151154662">Google Wallet मध्ये हा IBAN सेव्ह करता आला नाही. त्याऐवजी तो या डिव्हाइसवरील Chrome मध्ये सेव्ह केला आहे.</translation>
 <translation id="558420943003240152">पासवर्ड आणि पासकी व्यवस्थापित करा…</translation>
@@ -3087,6 +3092,7 @@
 <translation id="5808435672482059465">तुमचा Chrome इतिहास पहा</translation>
 <translation id="5810442152076338065">तुमचे <ph name="DOMAIN" /> वरील कनेक्शन ऑब्सोलीट सायफर सूट वापरून एंक्रिप्ट केलेले आहे.</translation>
 <translation id="5813119285467412249">&amp;जोडा पुन्हा करा</translation>
+<translation id="5813274153495000141">तुमची माहिती सेव्ह करा आणि फॉर्म अधिक जलद भरा. ही माहिती तुमच्या डिव्हाइसवर सेव्ह होते.</translation>
 <translation id="5813753398265398978">भौतिकशास्त्र</translation>
 <translation id="5817918615728894473">जोडा</translation>
 <translation id="5820625124144807242">तुम्ही तुमच्या ऑर्डरचे पुनरावलोकन केल्यानंतर, तुम्ही<ph name="BNPL_ISSUER_NAME" /> खात्यामध्ये साइन इन करणे किंवा ते तयार करणे आवश्यक आहे. हे खाते Google Pay शी आपोआप लिंक केले जाईल.</translation>
@@ -5231,6 +5237,7 @@
 <translation id="9169664750068251925">या साइटवर नेहमी ब्लॉक करा</translation>
 <translation id="9169931577761441333"><ph name="APP_NAME" /> ला होम स्क्रीनवर जोडा</translation>
 <translation id="9170848237812810038">&amp;पूर्ववत करा</translation>
+<translation id="9170906125144697215">अ‍ॅप्स स्विच न करता Pix वापरून पेमेंट करा</translation>
 <translation id="9171296965991013597">ॲप सोडायचे?</translation>
 <translation id="9173282814238175921">एक दस्तऐवज/नवीन शीट</translation>
 <translation id="9173995187295789444">ब्लूटूथ डिव्हाइससाठी स्कॅन करत आहे...</translation>
@@ -5247,7 +5254,6 @@
 <translation id="9186371298532546532">तुमचा पत्ता आणखी ठिकाणी वापरा</translation>
 <translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> यांनी हा टॅब बदलला आहे</translation>
 <translation id="9189789270972826888">कार्ड भरले नसल्यास कॉपी आणि पेस्ट करण्यासाठी खालील कार्ड तपशिलांवर क्लिक करा. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
-<translation id="9190557999028587593">४ आठवड्यांहून जुने विषय ऑटो-डिलीट केले जातात</translation>
 <translation id="9191834167571392248">पंच बॉटम लेफ्ट</translation>
 <translation id="9192361865877479444">मेटल (मॅट)</translation>
 <translation id="9192947025498305328">आरोग्याला अनुकूल अशा सौंदर्याबाबत आशय</translation>

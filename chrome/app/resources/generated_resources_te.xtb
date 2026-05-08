@@ -3445,7 +3445,6 @@
 <translation id="3347086966102161372">చిత్రం అడ్రస్‌ను కా&amp;పీ చేయి</translation>
 <translation id="3348038390189153836">తొలగించగల పరికరం కనుగొనబడింది</translation>
 <translation id="3348973040180736882">డీకంప్రెసింగ్</translation>
-<translation id="3349610303043713601">AIతో బ్రౌజ్ చేయండి</translation>
 <translation id="3349933790966648062">మెమరీ ఫుట్‌ప్రింట్</translation>
 <translation id="3351472127384196879">మీ పెన్‌పై బటన్‌లను జోడించండి లేదా గుర్తించండి</translation>
 <translation id="3353786022389205125">"స్లీప్ నుండి మేల్కొన్నప్పుడు లాక్ స్క్రీన్‌ను చూడండి" ఆప్షన్‌ను ఆన్ చేసి, మళ్లీ ట్రై చేయండి</translation>
@@ -6834,6 +6833,7 @@
 <translation id="5712153969432126546">సైట్‌లు కొన్నిసార్లు డాక్యుమెంట్‌లు, కాంట్రాక్ట్‌లు, ఫారమ్‌లు వంటి PDFలను పబ్లిష్ చేస్తాయి</translation>
 <translation id="571222594670061844">గుర్తింపు సర్వీస్‌ల నుండి సైన్-ఇన్ ప్రాంప్ట్‌లను సైట్‌లు చూపగలవు</translation>
 <translation id="5713158217420111469"><ph name="DEVICE" />కు కనెక్ట్ చేయబడింది</translation>
+<translation id="5713988532993992900">ఇన్వర్టెడ్</translation>
 <translation id="5714100381896040477">స్క్రీన్‌పై కదలికలను పరిమితం చేయండి</translation>
 <translation id="5719854774000914513">MIDI పరికరాలకు కనెక్ట్ చేయడానికి సైట్‌లు అడగగలవు</translation>
 <translation id="5720729194423017301">సైట్‌లు, సెర్చ్ ఇంజిన్‌ల కోసం షార్ట్‌కట్‌లు</translation>
@@ -8748,6 +8748,7 @@
 <translation id="7044606776288350625">డేటా సింక్</translation>
 <translation id="7050037487872780845">చెల్లని హాట్‌స్పాట్ కాన్ఫిగరేషన్</translation>
 <translation id="7051222203795962489">{COUNT,plural, =1{మీ Google ఖాతా, <ph name="USER_EMAIL" />‌లో పాస్‌వర్డ్ సేవ్ అయింది}other{మీ Google ఖాతా, <ph name="USER_EMAIL" />‌లో పాస్‌వర్డ్‌లు సేవ్ అయ్యాయి}}</translation>
+<translation id="7051728324516005763">Chromeలో AI</translation>
 <translation id="7052762602787632571">&amp;బ్రౌజింగ్ డేటాను తొలగించండి...</translation>
 <translation id="705352103640172578">వాటర్‌ఫాల్</translation>
 <translation id="7053983685419859001">నిరోధించు</translation>

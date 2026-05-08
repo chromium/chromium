@@ -1858,6 +1858,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="8765470054473112089">Kad rakstāt adreses joslā vai meklēšanas lodziņā, pārlūks Chrome nosūta ierakstīto tekstu jūsu noklusējuma meklētājprogrammai, lai iegūtu labākus ieteikumus. Inkognito režīmā šis iestatījums ir izslēgts.</translation>
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Pārlūkā Chrome tika konstatēta nedroša parole, ko jūs varētu uzlabot.}zero{Pārlūkā Chrome tika konstatētas # nedrošas paroles, ko jūs varētu uzlabot.}one{Pārlūkā Chrome tika konstatēta # nedroša parole, ko jūs varētu uzlabot.}other{Pārlūkā Chrome tika konstatētas # nedrošas paroles, ko jūs varētu uzlabot.}}</translation>
 <translation id="8766529642647037772">Vai izveidot līdzīgu izceltu saiti?</translation>
+<translation id="8769783688897433958">Skatiet vietnes informāciju un atļaujas</translation>
 <translation id="8788265440806329501">Navigācijas vēsture ir aizvērta</translation>
 <translation id="8790193082819560975">Lai meklētu produkta iegādes iespējas, pieskarieties šeit (saite tiks atvērta jaunā cilnē).</translation>
 <translation id="8798449543960971550">Lasītas</translation>

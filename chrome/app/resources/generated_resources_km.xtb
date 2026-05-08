@@ -3446,7 +3446,6 @@
 <translation id="3347086966102161372">ថតចម្លងអាសយដ្ឋានរូបភាព</translation>
 <translation id="3348038390189153836">ឧបករណ៍ផ្ទុកដែលអាចដកចេញត្រូវបានបានរកឃើញ</translation>
 <translation id="3348973040180736882">កំពុង​ពន្លា</translation>
-<translation id="3349610303043713601">រុករក​ដោយប្រើ AI</translation>
 <translation id="3349933790966648062">បរិមាណអង្គចងចាំដែលកំពុងដំណើរការ</translation>
 <translation id="3351472127384196879">បញ្ចូល ឬ​កំណត់ទីតាំង​ប៊ូតុង​នៅលើ​ប៊ិករបស់អ្នក</translation>
 <translation id="3353786022389205125">បើក "បង្ហាញ​អេក្រង់​ចាក់សោ​នៅពេល​ដាស់ពីការដេក" រួច​ព្យាយាម​ម្ដងទៀត</translation>
@@ -6835,6 +6834,7 @@
 <translation id="5712153969432126546">ជួលកាល គេហទំព័របោះផ្សាយឯកសារ PDF ផ្សេងៗដូចជា ឯកសារ កិច្ចសន្យា និងទម្រង់បែបបទជាដើម</translation>
 <translation id="571222594670061844">គេហទំព័រអាចបង្ហាញសារចូលគណនីពីសេវាកម្មដែលសួររកអត្តសញ្ញាណ</translation>
 <translation id="5713158217420111469">បានភ្ជាប់​ជាមួយ <ph name="DEVICE" /></translation>
+<translation id="5713988532993992900">បញ្ច្រាស</translation>
 <translation id="5714100381896040477">ដាក់កំហិតលើ​ចលនា​នៅលើ​អេក្រង់</translation>
 <translation id="5719854774000914513">គេហទំព័រ​អាចស្នើសុំ​ភ្ជាប់ជាមួយ​ឧបករណ៍ HID</translation>
 <translation id="5720729194423017301">ផ្លូវកាត់សម្រាប់គេហទំព័រ និងម៉ាស៊ីន​ស្វែងរក</translation>
@@ -8748,6 +8748,7 @@
 <translation id="7044606776288350625">ទិន្នន័យសមកាលកម្ម​</translation>
 <translation id="7050037487872780845">ការកំណត់រចនាសម្ព័ន្ធ​ហតស្ប៉តមិន​ត្រឹមត្រូវ</translation>
 <translation id="7051222203795962489">{COUNT,plural, =1{បាន​រក្សាទុក​ពាក្យសម្ងាត់នៅ​ក្នុងគណនី Google របស់​អ្នក <ph name="USER_EMAIL" />}other{បាន​រក្សាទុក​ពាក្យសម្ងាត់នៅ​ក្នុងគណនី Google របស់​អ្នក <ph name="USER_EMAIL" />}}</translation>
+<translation id="7051728324516005763">AI ក្នុង Chrome</translation>
 <translation id="7052762602787632571">&amp;លុប​ទិន្នន័យរុករក...</translation>
 <translation id="705352103640172578">ទឹកជ្រោះ</translation>
 <translation id="7053983685419859001">ទប់ស្កាត់</translation>

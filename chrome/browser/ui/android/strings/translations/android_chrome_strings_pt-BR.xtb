@@ -271,6 +271,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="2226826835915474236">Atalhos inativos</translation>
 <translation id="2227179592712503583">Remover sugestão</translation>
 <translation id="2227444325776770048">Continuar como <ph name="USER_FULL_NAME" /></translation>
+<translation id="2230411774874187555">Acesse todas as suas informações salvas</translation>
 <translation id="2230777942707397948">Janela vazia</translation>
 <translation id="223356358902285214">Atividade na Web e de apps</translation>
 <translation id="2233735624724508540">Escolha um período e toque em Excluir Dados</translation>
@@ -483,6 +484,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="3057938290530993634">Toque e segure para fixar os sites mais visitados e acessar com facilidade na próxima vez</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> favorito}one{<ph name="BOOKMARKS_COUNT_MANY" /> favorito}other{<ph name="BOOKMARKS_COUNT_MANY" /> favoritos}}</translation>
 <translation id="3062802207422175757">Artigos sobre seus interesses no Chrome</translation>
+<translation id="3066107845790462226">Baixar frame do vídeo</translation>
 <translation id="3066573403916685335">Mover para baixo</translation>
 <translation id="3067505415088964188">Preço baixo</translation>
 <translation id="3070005020161560471">Traduzir automaticamente</translation>
@@ -1217,6 +1219,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6264485186158353794">Voltar à segurança</translation>
 <translation id="6267106249090587268">Notificações <ph name="SEPARATOR" /> O Chrome removeu essas permissões devido a spam ou conteúdo enganoso</translation>
 <translation id="6276708887952587684">Ver código-fonte da página</translation>
+<translation id="62768169905160414">Copiar frame do vídeo</translation>
 <translation id="6277522088822131679">Ocorreu um problema ao imprimir a página. Tente novamente.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6291294824436685757">Excluir dados de navegação; selecione os dados que quer excluir</translation>

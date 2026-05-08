@@ -123,7 +123,6 @@
 <translation id="2174917724755363426">ਸਥਾਪਨਾ ਪੂਰੀ ਨਹੀਂ ਹੋਈ। ਕੀ ਤੁਸੀਂ ਪੱਕਾ ਰੱਦ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2190166659037789668">ਅੱਪਡੇਟ ਦੀ ਜਾਂਚ ਸੰਬੰਧੀ ਗੜਬੜੀ: <ph name="UPDATE_CHECK_ERROR" />.</translation>
-<translation id="2199691482078155239">Chrome ਤੁਹਾਨੂੰ ਦਿਖਣ ਵਾਲੇ ਵਿਗਿਆਪਨਾਂ 'ਤੇ ਤੁਹਾਨੂੰ ਜ਼ਿਆਦਾ ਕੰਟਰੋਲ ਦਿੰਦਾ ਹੈ ਅਤੇ ਇਹ ਸੀਮਤ ਕਰਦਾ ਹੈ ਕਿ ਤੁਹਾਨੂੰ ਵਿਅਕਤੀਗਤ ਵਿਗਿਆਪਨ ਦਿਖਾਉਣ ਵੇਲੇ ਸਾਈਟਾਂ ਤੁਹਾਡੇ ਬਾਰੇ ਕੀ ਜਾਣ ਸਕਦੀਆਂ ਹਨ</translation>
 <translation id="2216543877350048334">Chrome ਤੋਂ ਆਪਣਾ Google ਖਾਤਾ ਹਟਾਉਣ ਲਈ, ਸਾਈਨ-ਆਊਟ ਕਰੋ</translation>
 <translation id="2236949375853147973">ਮੇਰੀ ਸਰਗਰਮੀ</translation>
 <translation id="22791603784558743">Chrome Dev ਵਿੱਚ Gemini ਨੂੰ ਬੰਦ ਕਰੋ</translation>
@@ -150,6 +149,9 @@
 <translation id="2569974318947988067">Chrome ਨੈਵੀਗੇਸ਼ਨਾਂ ਨੂੰ HTTPS 'ਤੇ ਅੱਪਗ੍ਰੇਡ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੇਗਾ</translation>
 <translation id="2571392474191184472">Chrome ਦਾ ਪ੍ਰਬੰਧਨ ਤੁਹਾਡੀ ਸੰਸਥਾ ਕਰਦੀ ਹੈ</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> ਪਹਿਲਾਂ ਤੋਂ ਹੀ ਇਸ Chrome ਪ੍ਰੋਫਾਈਲ ਵਿੱਚ ਸਾਈਨ-ਇਨ ਹੈ। ਤੁਹਾਡੀ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ ਵੱਖਰਾ ਰੱਖਣ ਲਈ, Chrome ਤੁਹਾਡੇ ਲਈ ਤੁਹਾਡਾ ਖੁਦ ਦਾ ਪ੍ਰੋਫਾਈਲ ਬਣਾ ਸਕਦਾ ਹੈ।</translation>
+<translation id="2575799939951057838">ਸੁਰੱਖਿਆ ਲਈ, ਜਦੋਂ ਤੁਸੀਂ ਪਹਿਲੀ ਵਾਰ ਕਿਸੇ ਸਾਈਟ 'ਤੇ ਜਾਂਦੇ ਹੋ, ਤਾਂ Chrome JavaScript ਸੁਯੋਗਕਰਨ ਨੂੰ ਬੰਦ ਕਰ ਦਿੰਦਾ ਹੈ।
+
+ਜੇ ਇਹ ਪੰਨਾ ਉਮੀਦ ਮੁਤਾਬਕ ਕੰਮ ਨਹੀਂ ਕਰ ਰਿਹਾ ਹੈ, ਤਾਂ ਸੁਯੋਗਕਰਨ ਦੀ ਆਗਿਆ ਦੇ ਕੇ ਦੇਖੋ।</translation>
 <translation id="2580411288591421699">ਉਹ Google Chrome ਵਰਜਨ ਸਥਾਪਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ ਜੋ ਇਸ ਵੇਲੇ ਚੱਲ ਰਿਹਾ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ Google Chrome ਬੰਦ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="2586406160782125153">ਇਸ ਨਾਲ ਇਸ ਡੀਵਾਈਸ ਤੋਂ ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਡਾਟੇ ਨੂੰ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ। ਬਾਅਦ ਵਿੱਚ ਆਪਣੇ ਡਾਟੇ ਨੂੰ ਮੁੜ-ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, Chrome 'ਤੇ <ph name="USER_EMAIL" /> ਵਜੋਂ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
 <translation id="259935314519650377">ਡਾਊਨਲੋਡ ਕੀਤੇ ਸਥਾਪਨਾਕਾਰ ਨੂੰ ਕੈਸ਼ੇ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ। ਗੜਬੜ: <ph name="UNPACK_CACHING_ERROR_CODE" />।</translation>
@@ -660,7 +662,6 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="7655472416356262023">Chrome ਤੋਂ ਖਾਤਾ ਹਟਾਓ</translation>
 <translation id="7658239707568436148">ਰੱਦ ਕਰੋ</translation>
 <translation id="7670287553302121848">Chrome ਖਾਤੇ ਨੂੰ ਮੁੜ-ਪ੍ਰਮਾਣੀਕਰਨ ਦੀ ਲੋੜ ਹੈ</translation>
-<translation id="7675756456029023637">Chrome ਤੋਂ ਪੁੱਛੋ</translation>
 <translation id="769538538642757151">ਜੇ ਕਿਸੇ ਚੀਜ਼ ਨੂੰ ਤੁਹਾਡੀ ਸਮੀਖਿਆ ਦੀ ਲੋੜ ਹੁੰਦੀ ਹੈ, ਤਾਂ Chrome ਤੁਹਾਨੂੰ ਦੱਸੇਗਾ</translation>
 <translation id="769906121737764913">Chrome ਬੀਟਾ ਵਿੱਚ Gemini ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="7716950018788545737">ਕਾਰਜ ਖਤਮ ਹੋ ਗਿਆ।</translation>

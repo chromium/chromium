@@ -442,7 +442,6 @@
 <translation id="2493269659028026145"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> વડે તાત્કાલિક લૉક કરો</translation>
 <translation id="2496180316473517155">બ્રાઉઝિંગ ઇતિહાસ</translation>
 <translation id="2496626742194544812">પહેલી ટૅબ પર જાઓ</translation>
-<translation id="2497852260688568942">સમન્વયન, તમારા વ્યવસ્થાપક દ્વારા અક્ષમ કરવામાં આવ્યું છે</translation>
 <translation id="2499505845365628575">તમે <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />માં જઈને તમારો તમામ બ્રાઉઝિંગ ઇતિહાસ શોધી શકો છો.</translation>
 <translation id="2511117522375201202">તમારા <ph name="NUMBER_OF_PASSWORDS" /> પાસવર્ડમાં ચેડાં કરવામાં આવ્યા છે, જે તમારી સુરક્ષાને જોખમમાં મૂકી શકે છે.</translation>
 <translation id="2513103768503127042">અહીં તમને તમારા ટૅબના ગ્રૂપ જોવા મળશે</translation>
@@ -567,6 +566,7 @@
 <translation id="2969979262385602596">સાઇન ઇન કરવામાં નિષ્ફળ. કૃપા કરીને પછીથી ફરી પ્રયાસ કરો.</translation>
 <translation id="2975761176769946178">URL જરૂરી છે</translation>
 <translation id="297667759942911166">ટૅબના ગ્રૂપમાં સહયોગ કરો</translation>
+<translation id="298696743524648170">Chromeમાં Geminiનો ઉપયોગ કરવા માટે, તમારા Google એકાઉન્ટ વડે Chromeમાં સાઇન ઇન કરો</translation>
 <translation id="2987670534697681860">આ ડિવાઇસ પર તમારા બધા પાસવર્ડ ઍક્સેસ કરવા માટે ખાતરી કરો કે તે તમે જ છો.</translation>
 <translation id="2989523299700148168">તાજેતરમાં મુલાકાત લીધેલ</translation>
 <translation id="2989805286512600854">નવા ટૅબમાં ખોલો</translation>
@@ -621,6 +621,7 @@
 <translation id="31652791196570636">છોડી દો</translation>
 <translation id="3167868116600277716">Discover ફીડ</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3172755898799085680">આ પેજ પર Gemini ઉપલબ્ધ નથી</translation>
 <translation id="3174662312949010067">તમે તમારા અન્ય ડિવાઇસ પર પણ સાચવેલા પાસવર્ડનો ઉપયોગ કરી શકો છો.</translation>
 <translation id="3177338796769255211">તમારા બધા ડિવાઇસ પર બુકમાર્ક અને બીજું ઘણું મેળવવા માટે, સાઇન ઇન કરો</translation>
 <translation id="3181954750937456830">Safe Browsing (તમારું અને તમારા ડિવાઇસનું જોખમી સાઇટથી રક્ષણ કરે છે)</translation>
@@ -996,6 +997,7 @@
 <translation id="4552042254369397518">કૉપિ કરી રહ્યાં છીએ…</translation>
 <translation id="4553044860350038560">વધુ પાસકી</translation>
 <translation id="4564893319561643483">"<ph name="TITLE" />" છુપાવો</translation>
+<translation id="456502772933839252"><ph name="PAGE_TITLE" /> શેર કરી રહ્યાં છીએ</translation>
 <translation id="4565377596337484307">પાસવર્ડ છુપાવો</translation>
 <translation id="4568230126482344545">તાજેતરના ટૅબ છુપાવો</translation>
 <translation id="4578835633387306383">ચાલુ કરો…</translation>
@@ -2001,6 +2003,7 @@
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939856641500914040">બ્રાઉઝિંગ ડેટા ડિલીટ કરો…</translation>
 <translation id="7941578031639087549">{count,plural, =1{તમારા એકાઉન્ટ, {email}માં તમારી વાંચન સૂચિમાં પેજ ઉમેરવામાં આવ્યું}one{તમારા એકાઉન્ટ, {email}માં તમારી વાંચન સૂચિમાં {count} પેજ ઉમેરવામાં આવ્યું}other{તમારા એકાઉન્ટ, {email}માં તમારી વાંચન સૂચિમાં {count} પેજ ઉમેરવામાં આવ્યા}}</translation>
+<translation id="7948579849190819732">વર્તમાન ટૅબ</translation>
 <translation id="7952353944614086413">તમારા ખુલ્લા ટૅબ અને ગ્રૂપ</translation>
 <translation id="7952670906562503188">તમે {passkey_count} પાસકી અને જેના માટે તમે સાઇન-ઇન માહિતી ક્યારેય ન સાચવવાનો વિકલ્પ પસંદ કર્યો છે તેવી સાઇટ અને ઍપની સૂચિ ડિલીટ કરવા જઈ રહ્યાં છો. સાઇટ અને ઍપ માટે તમે બનાવેલું કોઈપણ એકાઉન્ટ ડિલીટ કરવામાં આવશે નહીં.</translation>
 <translation id="7958575506592576831">પેજની સુરક્ષા સંબંધિત માહિતી</translation>

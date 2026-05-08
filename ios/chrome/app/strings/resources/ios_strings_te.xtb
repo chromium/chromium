@@ -442,7 +442,6 @@
 <translation id="2493269659028026145"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> సహాయంతో వెంటనే లాక్ చేయండి</translation>
 <translation id="2496180316473517155">బ్రౌజింగ్ హిస్టరీ</translation>
 <translation id="2496626742194544812">మొదటి ట్యాబ్‌కు వెళ్లండి</translation>
-<translation id="2497852260688568942">సింక్‌ను మీ నిర్వాహకులు నిలిపివేశారు</translation>
 <translation id="2499505845365628575">మీరు <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />‌లో మీ మొత్తం బ్రౌజింగ్ హిస్టరీని కనుగొనవచ్చు.</translation>
 <translation id="2511117522375201202">మీ సెక్యూరిటీని ప్రమాదంలో ఉంచే <ph name="NUMBER_OF_PASSWORDS" /> చోరీకి గురైన పాస్‌వర్డ్‌లు మీ వద్ద ఉన్నాయి.</translation>
 <translation id="2513103768503127042">మీ ట్యాబ్ గ్రూప్‌లు ఇక్కడ ఉంటాయి</translation>
@@ -2001,6 +2000,7 @@
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939856641500914040">బ్రౌజింగ్ డేటాను తొలగించండి…</translation>
 <translation id="7941578031639087549">{count,plural, =1{మీ ఖాతా, {email}‌లోని చదవాల్సిన లిస్ట్‌కు పేజీ జోడించబడింది}other{మీ ఖాతా, {email}లోని చదవాల్సిన లిస్ట్‌కు {count} పేజీలు జోడించబడ్డాయి}}</translation>
+<translation id="7948579849190819732">ప్రస్తుత ట్యాబ్</translation>
 <translation id="7952353944614086413">తెరిచి ఉన్న మీ ట్యాబ్‌లు, గ్రూప్‌లు</translation>
 <translation id="7952670906562503188">మీరు {passkey_count} పాస్-కీలను, ఇంకా సైన్ ఇన్ చేసేటప్పుడు సేవ్ చేయకూడదని మీరు ఎంచుకున్న సైట్‌లు, యాప్‌ల లిస్ట్‌ను తొలగించబోతున్నారు. మీరు సైట్‌లు లేదా యాప్‌ల కోసం క్రియేట్ చేసిన ఏ ఖాతా కూడా తొలగించబడదు.</translation>
 <translation id="7958575506592576831">పేజీ సెక్యూరిటీ సమాచారం</translation>

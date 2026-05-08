@@ -477,6 +477,7 @@
 <translation id="1727613060316725209">憑證有效</translation>
 <translation id="1728677426644403582">目前顯示的是網頁原始碼</translation>
 <translation id="173080396488393970">不支援這種信用卡類型</translation>
+<translation id="1731563515262205847">ML-DSA-65</translation>
 <translation id="1732445923934584865">改為當面要求</translation>
 <translation id="1733064249834771892">字型</translation>
 <translation id="1733631169686303142">音訊設備</translation>
@@ -1094,6 +1095,7 @@
 <translation id="2677748264148917807">離開</translation>
 <translation id="2679216653373462289">使用動作和光度感應器</translation>
 <translation id="2679659833697380">你的資訊會儲存到裝置</translation>
+<translation id="2680837394649649718">已傳送到「<ph name="DEVICE_NAME" />」上的 Chrome。</translation>
 <translation id="2683195745483370038">找到其他結果</translation>
 <translation id="2686919536310834199">提供你對「幫我寫」功能的意見。</translation>
 <translation id="2687555958734450033">最適配置</translation>
@@ -1594,6 +1596,7 @@
 <translation id="350069200438440499">檔案名稱：</translation>
 <translation id="3501300228850242680">金屬 (音樂)</translation>
 <translation id="350421688684366066">標籤 (高光面)</translation>
+<translation id="3507062913298382727">儲存身分證</translation>
 <translation id="350763432931695541">正在擷取接下來幾頁中的文字</translation>
 <translation id="3507869775212388416">法律相關工作</translation>
 <translation id="3507936815618196901">根據你的周遭環境建立 3D 地圖並追蹤攝影機位置</translation>
@@ -1987,6 +1990,7 @@
 <translation id="4098306082496067348">輕觸虛擬卡片資料即可用於結帳。</translation>
 <translation id="4099048595830172239">根據管理員政策，當畫面上有機密內容時，不建議你與「<ph name="APPLICATION_TITLE" />」分享螢幕畫面：</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />；按下 Tab 鍵再按下 Enter 鍵即可自訂 Chrome 中的字型大小和字體</translation>
+<translation id="4100421230355095925">ML-DSA-44</translation>
 <translation id="4101413244023615925">文字和圖片</translation>
 <translation id="4101917550061398111">刪除選取的項目</translation>
 <translation id="4102567721634170493">地方新聞</translation>
@@ -2214,6 +2218,7 @@
 <translation id="4415156962929755728">塑膠 (高光面)</translation>
 <translation id="4415426530740016218">取件地址</translation>
 <translation id="4415748029120993980">SECG 橢圓曲線 secp384r1 (亦稱為 NIST P-384)</translation>
+<translation id="4418150423720608641">ML-DSA-87</translation>
 <translation id="4419287616181386201">前往相關管理設定即可刪除密碼</translation>
 <translation id="4424024547088906515">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全憑證未取得 Chrome 的信任。這可能是因為設定錯誤，或有攻擊者攔截你的連線所致。</translation>
 <translation id="4425750422187370446">運動服飾</translation>
@@ -2953,6 +2958,7 @@
 <translation id="5573641252776268565">編輯護照</translation>
 <translation id="5578606540385219379">服務供應商</translation>
 <translation id="5580958916614886209">請檢查信用卡到期月份，然後再試一次</translation>
+<translation id="5582453333200265572">更新身分證</translation>
 <translation id="5583442610070676234">「<ph name="COMPARE_SET_NAME" />」比較表的其他動作</translation>
 <translation id="55841966151154662">無法將這張卡片儲存到 Google 錢包，因此改存到這部裝置的 Chrome。</translation>
 <translation id="558420943003240152">管理密碼和密碼金鑰…</translation>
@@ -3079,6 +3085,7 @@
 <translation id="5787146423283493983">金鑰協議</translation>
 <translation id="5793317771769868848">這個付款方式將從這部裝置上刪除</translation>
 <translation id="5794065675298686371">開啟價格追蹤通知</translation>
+<translation id="5797984091151707075">已遭管理員政策封鎖</translation>
 <translation id="5800727402210090597">手機維修與服務</translation>
 <translation id="580241730938216256">開始更新</translation>
 <translation id="5804241973901381774">權限</translation>
@@ -3086,6 +3093,7 @@
 <translation id="5808435672482059465">查看 Chrome 歷史記錄</translation>
 <translation id="5810442152076338065">您的 <ph name="DOMAIN" /> 連線使用過舊的加密套件進行加密。</translation>
 <translation id="5813119285467412249">重做新增(&amp;R)</translation>
+<translation id="5813274153495000141">儲存資訊後，填寫表單更快速。資訊會儲存在裝置。</translation>
 <translation id="5813753398265398978">物理學</translation>
 <translation id="5817918615728894473">配對</translation>
 <translation id="5820625124144807242">確認訂單後，你必須登入「<ph name="BNPL_ISSUER_NAME" />」或建立帳戶。這個帳戶會自動連結至 Google Pay。</translation>
@@ -5228,6 +5236,7 @@
 <translation id="9169664750068251925">永遠禁止在這個網站執行</translation>
 <translation id="9169931577761441333">將 <ph name="APP_NAME" /> 新增至主畫面</translation>
 <translation id="9170848237812810038">取消(&amp;U)</translation>
+<translation id="9170906125144697215">透過 Pix 付款，不必切換應用程式</translation>
 <translation id="9171296965991013597">要離開應用程式嗎？</translation>
 <translation id="9173282814238175921">單一文件/新工作表</translation>
 <translation id="9173995187295789444">正在掃描藍牙裝置…</translation>
@@ -5244,7 +5253,6 @@
 <translation id="9186371298532546532">在更多地方使用這個地址</translation>
 <translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" />已變更這個分頁</translation>
 <translation id="9189789270972826888">點選下方的卡片資料，即可複製及貼上 (如果系統未自動填入)。<ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
-<translation id="9190557999028587593">系統會自動刪除 4 週前的主題</translation>
 <translation id="9191834167571392248">打孔 (左下方)</translation>
 <translation id="9192361865877479444">金屬 (霧面)</translation>
 <translation id="9192947025498305328">純淨美妝</translation>

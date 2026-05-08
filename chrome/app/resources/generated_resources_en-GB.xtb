@@ -1732,6 +1732,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> and 1 more switch</translation>
 <translation id="2165177462441582039">Choose how long the highlight should stay on each item</translation>
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
+<translation id="2168036794078614559">Report sent</translation>
 <translation id="2169062631698640254">Sign in anyway</translation>
 <translation id="2173302385160625112">Check your Internet connection</translation>
 <translation id="2173801458090845390">Add requisition ID to this device</translation>
@@ -3447,7 +3448,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3347086966102161372">C&amp;opy image address</translation>
 <translation id="3348038390189153836">Removable device detected</translation>
 <translation id="3348973040180736882">Decompressing</translation>
-<translation id="3349610303043713601">Browse with AI</translation>
 <translation id="3349933790966648062">Memory footprint</translation>
 <translation id="3351472127384196879">Add or locate buttons on your pen</translation>
 <translation id="3353786022389205125">Turn on 'Show lock screen when waking from sleep' and try again</translation>
@@ -6419,7 +6419,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="5417312524372586921">Browser themes</translation>
 <translation id="541737483547792035">Magnify screen</translation>
 <translation id="541822678830750798">Requesting to read and change this site</translation>
-<translation id="5419405654816502573">Voice match</translation>
+<translation id="5419405654816502573">Voice Match</translation>
 <translation id="5420274697768050645">Require password to unlock device for added security</translation>
 <translation id="5420438158931847627">Determines sharpness of text and images</translation>
 <translation id="542073632571549028"><ph name="MEMBER_FULL_NAME" /> (<ph name="EMAIL" />) will immediately lose access to the '<ph name="GROUP_NAME" />' tab group</translation>

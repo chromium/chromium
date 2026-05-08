@@ -123,7 +123,6 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="2174917724755363426">Instalacija nije dovršena. Želite stvarno da je otkažete?</translation>
 <translation id="2186206192313702726">Google objektiv</translation>
 <translation id="2190166659037789668">Greška sa proverom ažuriranja: <ph name="UPDATE_CHECK_ERROR" />.</translation>
-<translation id="2199691482078155239">Chrome vam pruža veću kontrolu nad oglasima koje vidite i ograničava informacije koje sajtovi mogu da saznaju o vama kada prikazuju personalizovane oglase</translation>
 <translation id="2216543877350048334">Da biste uklonili Google nalog iz Chrome-a, odjavite se</translation>
 <translation id="2236949375853147973">Moje aktivnosti</translation>
 <translation id="22791603784558743">Zatvorite Gemini u Chrome Dev-u</translation>
@@ -150,6 +149,9 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="2569974318947988067">Chrome će probati da nadogradi navigacije na HTTPS</translation>
 <translation id="2571392474191184472">Organizacija upravlja Chrome-om</translation>
 <translation id="2574930892358684005">Korisnik <ph name="EXISTING_USER" /> je već prijavljen na ovaj Chrome profil. Da bi vam pregledanje bilo razdvojeno, Chrome može da napravi zaseban profil za vas.</translation>
+<translation id="2575799939951057838">Iz bezbednosnih razloga, Chrome isključuje optimizaciju JavaScript-a kad prvi put posetite sajt.
+
+Ako ova stranica ne radi na očekivani način, dozvolite optimizaciju.</translation>
 <translation id="2580411288591421699">Nije moguće instalirati verziju Google Chrome pregledača koja je ista kao trenutno pokrenuta verzija. Zatvorite Google Chrome i pokušajte ponovo.</translation>
 <translation id="2586406160782125153">Ovim ćete izbrisati podatke pregledanja sa uređaja. Da biste kasnije vratili podatke, prijavite se u Chrome kao <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">Keširanje preuzetog instalacionog programa nije uspelo. Greška: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
@@ -660,7 +662,6 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="7655472416356262023">Ukloni nalog iz Chrome-a</translation>
 <translation id="7658239707568436148">Otkaži</translation>
 <translation id="7670287553302121848">Chrome nalog zahteva ponovnu potvrdu identiteta</translation>
-<translation id="7675756456029023637">Pitaj Chrome</translation>
 <translation id="769538538642757151">Chrome će vas obavestiti ako treba da pregledate nešto</translation>
 <translation id="769906121737764913">Zatvorite Gemini u Chrome beta verziji</translation>
 <translation id="7716950018788545737">Zadaci su završeni.</translation>

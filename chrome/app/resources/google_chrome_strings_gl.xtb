@@ -123,7 +123,6 @@
 <translation id="2174917724755363426">A instalación non finalizou. Seguro que queres cancelala?</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2190166659037789668">Produciuse un erro durante a comprobación de actualizacións: <ph name="UPDATE_CHECK_ERROR" />.</translation>
-<translation id="2199691482078155239">Chrome ofréceche máis control sobre os anuncios que ves e limita a información que os sitios poden obter sobre ti cando che mostran anuncios personalizados</translation>
 <translation id="2216543877350048334">Para quitar a túa Conta de Google de Chrome, pecha a sesión</translation>
 <translation id="2236949375853147973">A miña actividade</translation>
 <translation id="22791603784558743">Pechar Gemini en Chrome Dev</translation>
@@ -150,6 +149,9 @@
 <translation id="2569974318947988067">Chrome tentará actualizar as navegacións ao protocolo HTTPS</translation>
 <translation id="2571392474191184472">A túa organización xestiona Chrome</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> xa ten a sesión iniciada neste perfil de Chrome. Se queres xestionar a túa navegación cun perfil independente e de teu, Chrome pode crearche un.</translation>
+<translation id="2575799939951057838">Por seguranza, Chrome desactiva a optimización de JavaScript cando visitas un sitio por primeira vez.
+
+Proba a permitila se esta páxina non funciona como debería.</translation>
 <translation id="2580411288591421699">Non se pode instalar a mesma versión de Google Chrome que se está executando actualmente. Pecha Google Chrome e téntao de novo.</translation>
 <translation id="2586406160782125153">Esta acción eliminará os teus datos de navegación deste dispositivo. Para recuperar os teus datos máis tarde, inicia sesión en Chrome como <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">Produciuse un erro ao almacenar na memoria caché o instalador descargado. Código de erro: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
@@ -660,7 +662,6 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="7655472416356262023">Quitar conta de Chrome</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7670287553302121848">Para poder usar a conta de Chrome, é necesario volver autenticarse</translation>
-<translation id="7675756456029023637">Preguntarlle a Chrome</translation>
 <translation id="769538538642757151">Chrome informarate se atopa algo que necesites revisar</translation>
 <translation id="769906121737764913">Pechar Gemini en Chrome Beta</translation>
 <translation id="7716950018788545737">Tarefas finalizadas.</translation>

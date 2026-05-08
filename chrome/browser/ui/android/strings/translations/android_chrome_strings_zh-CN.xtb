@@ -1856,6 +1856,7 @@
 <translation id="8765470054473112089">当您在地址栏或搜索框中输入内容时，Chrome 会将您输入的内容发送给默认搜索引擎，以便为您提供更好的建议。在无痕模式下，此设置处于关闭状态。</translation>
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome 发现了 1 个安全系数低的密码，建议您改进}other{Chrome 发现了 # 个安全系数低的密码，建议您改进}}</translation>
 <translation id="8766529642647037772">创建一个像这样指向突出显示的文本的链接？</translation>
+<translation id="8769783688897433958">查看网站信息和权限</translation>
 <translation id="8788265440806329501">导航历史记录已关闭</translation>
 <translation id="8790193082819560975">点按即可在新标签页中搜索该商品的购买选项。</translation>
 <translation id="8798449543960971550">已读</translation>

@@ -478,6 +478,7 @@
 <translation id="1727613060316725209">සහතිකය වලංගුය</translation>
 <translation id="1728677426644403582">ඔබ වෙබ් පිටුවක මූලාශ්‍රය බලමින් සිටී</translation>
 <translation id="173080396488393970">මෙම කාඩ්පත් වර්ගය සහාය නොදක්වයි</translation>
+<translation id="1731563515262205847">ML-DSA-65</translation>
 <translation id="1732445923934584865">ඒ වෙනුවට පුද්ගලිකව විමසන්න</translation>
 <translation id="1733064249834771892">ෆොන්ට</translation>
 <translation id="1733631169686303142">ශ්‍රව්‍ය උපකරණ</translation>
@@ -1596,6 +1597,7 @@
 <translation id="350069200438440499">ගොනුවේ නම:</translation>
 <translation id="3501300228850242680">මෙටල් (සංගීතය)</translation>
 <translation id="350421688684366066">ලේබල් (ඉහළ දීප්තිය)</translation>
+<translation id="3507062913298382727">ID කාඩ්පත සුරකින්න</translation>
 <translation id="350763432931695541">මීළඟ පිටු කිහිපය තුළ පෙළ උපුටා ගැනීම</translation>
 <translation id="3507869775212388416">නීතිමය රැකියා</translation>
 <translation id="3507936815618196901">ඔබේ වටපිටාවේ ත්‍රිමාන සිතියමක් සාදන්න සහ කැමරා ස්ථානය හඹා යන්න</translation>
@@ -1989,6 +1991,7 @@
 <translation id="4098306082496067348">ඒවා ගෙවා පිටවීමට එක් කිරීමට අතථ්‍ය කාඩ්පත් විස්තර තට්ටු කරන්න.</translation>
 <translation id="4099048595830172239">රහසිගත අන්තර්ගතය දෘශ්‍යමාන වන විට <ph name="APPLICATION_TITLE" /> සමග ඔබගේ තිරය බෙදා ගැනීමට පරිපාලක ප්‍රතිපත්තිය නිර්දේශ නොකරයි:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome තුළ අකුරු වර්ග තරම සහ මුහුණත අභිරුචිකරණය කිරීමට Tab ඔබා අනතුරුව Enter ඔබන්න</translation>
+<translation id="4100421230355095925">ML-DSA-44</translation>
 <translation id="4101413244023615925">පාඨය සහ චිත්‍රකය</translation>
 <translation id="4101917550061398111">තෝරාගත් අයිතම මකන්න</translation>
 <translation id="4102567721634170493">දේශීය පුවත්</translation>
@@ -2216,6 +2219,7 @@
 <translation id="4415156962929755728">ප්ලාස්ටික් (ඉහළ දීප්තිය)</translation>
 <translation id="4415426530740016218">නංවා ගැනීමේ ලිපිනය</translation>
 <translation id="4415748029120993980">SECG ඉලිප්සාකාර වක්‍ර secp384r1 (එනම් NIST P-384)</translation>
+<translation id="4418150423720608641">ML-DSA-87</translation>
 <translation id="4419287616181386201">මුරපද ඒවායේ කළමනාකරණ සැකසීම් තුළ මකා දැමිය හැක</translation>
 <translation id="4424024547088906515">මෙම සේවාදායකයට එය <ph name="DOMAIN" /> බව සනාථ කිරීමට නොහැකි විය; එහි ආරක්ෂණ සහතිකය Chrome මගින් විශ්වාස නොකරයි. මෙය වැරදි වින්‍යාස කිරීමක් හෝ ප්‍රහාරකයකු ඔබගේ සබැඳුමට බාධා කිරීමක් නිසා විය හැකිය.</translation>
 <translation id="4425750422187370446">ක්‍රීඩා ඇඟලුම්</translation>
@@ -2955,6 +2959,7 @@
 <translation id="5573641252776268565">ගමන් බලපත්‍රය සංස්කරණය කරන්න</translation>
 <translation id="5578606540385219379">සේවා සපයන්නන්</translation>
 <translation id="5580958916614886209">ඔබේ කල් ඉකුත් වීමේ මාසය පරික්ෂා කර නැවත උත්සාහ කරන්න</translation>
+<translation id="5582453333200265572">ID කාඩ්පත යාවත්කාලීන කරන්න</translation>
 <translation id="5583442610070676234">සංසන්දනාත්මක වගුව <ph name="COMPARE_SET_NAME" /> සඳහා තවත් ක්‍රියා</translation>
 <translation id="55841966151154662">මෙම IBAN එක Google Wallet හි සුරැකිය නොහැකි විය. එය වෙනුවට මෙම උපාංගයෙහි Chrome වෙත සුරැකී ඇත.</translation>
 <translation id="558420943003240152">මුරපද සහ මුරයතුරු කළමනාකරණය කරන්න…</translation>
@@ -3088,6 +3093,7 @@
 <translation id="5808435672482059465">ඔබගේ Chrome ඉතිහාසය බලන්න</translation>
 <translation id="5810442152076338065"><ph name="DOMAIN" /> වෙත ඔබේ සබැඳුම සංකේතනය කර ඇත්තේ පැරණි cipher suite භාවිතයෙනි.</translation>
 <translation id="5813119285467412249">එක් කිරීම &amp;යළි කරන්න</translation>
+<translation id="5813274153495000141">ඔබේ තොරතුරු සුරකින්න සහ පෝරම වේගයෙන් පුරවන්න. ඔබේ උපාංගයට සුරකියි.</translation>
 <translation id="5813753398265398978">භෞතික විද්‍යාව</translation>
 <translation id="5817918615728894473">යුගල කරන්න</translation>
 <translation id="5820625124144807242">ඔබේ ඇණවුම සමාලෝචනය කිරීමෙන් පසු, ඔබ <ph name="BNPL_ISSUER_NAME" /> සමග පුරනය විය යුතු හෝ ගිණුමක් නිර්මාණය කළ යුතු යි. මෙම ගිණුම Google Pay වෙත ස්වයංක්‍රීයව සම්බන්ධ වනු ඇත.</translation>
@@ -5229,6 +5235,7 @@
 <translation id="9169664750068251925">සැමවිටම මෙම අඩවිය බාධා කරන්න</translation>
 <translation id="9169931577761441333">මුල් තිරය වෙත <ph name="APP_NAME" /> එක් කරන්න</translation>
 <translation id="9170848237812810038">&amp;පසුගමනය</translation>
+<translation id="9170906125144697215">යෙදුම් මාරු නොකර Pix සමග ගෙවන්න</translation>
 <translation id="9171296965991013597">යෙදුම හැර යන්න ද?</translation>
 <translation id="9173282814238175921">තනි ලේඛනය/නව පත්‍රය</translation>
 <translation id="9173995187295789444">බ්ලූටූත් උපාංග සඳහා ස්කෑන් කරමින්...</translation>
@@ -5245,7 +5252,6 @@
 <translation id="9186371298532546532">මෙම ලිපිනය තවත් ස්ථානවල භාවිතා කරන්න</translation>
 <translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> මෙම පටිත්ත වෙනස් කරන ලදි</translation>
 <translation id="9189789270972826888">කාඩ්පත පුරවා නොමැති නම් පිටපත් කර ඇලවීමට පහත කාඩ්පත් විස්තර ක්ලික් කරන්න. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
-<translation id="9190557999028587593">සති 4කට වඩා පැරණි මාතෘකා ස්වයං-මකනු ඇත</translation>
 <translation id="9191834167571392248">පහළ වමට අනින්න</translation>
 <translation id="9192361865877479444">ලෝහ (මැට්)</translation>
 <translation id="9192947025498305328">පිරිසිදු අලංකාරය</translation>

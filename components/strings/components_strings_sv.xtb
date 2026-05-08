@@ -478,6 +478,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1727613060316725209">Certifikatet är giltigt</translation>
 <translation id="1728677426644403582">Du visar källkoden till en webbsida</translation>
 <translation id="173080396488393970">Denna korttyp stöds inte</translation>
+<translation id="1731563515262205847">ML-DSA-65</translation>
 <translation id="1732445923934584865">Fråga själv</translation>
 <translation id="1733064249834771892">fonter</translation>
 <translation id="1733631169686303142">Ljudutrustning</translation>
@@ -1095,6 +1096,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2677748264148917807">Lämna</translation>
 <translation id="2679216653373462289">Använd rörelse- och ljussensorer</translation>
 <translation id="2679659833697380">Din information sparas på enheten</translation>
+<translation id="2680837394649649718">Skickades till Chrome på din <ph name="DEVICE_NAME" />.</translation>
 <translation id="2683195745483370038">Andra resultat hittades</translation>
 <translation id="2686919536310834199">Skicka feedback för Hjälp mig skriva.</translation>
 <translation id="2687555958734450033">Bästa passning</translation>
@@ -1596,6 +1598,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="350069200438440499">Filnamn:</translation>
 <translation id="3501300228850242680">Metal (musik)</translation>
 <translation id="350421688684366066">Etiketter (högblanka)</translation>
+<translation id="3507062913298382727">Spara id-kort</translation>
 <translation id="350763432931695541">Extraherar text på följande sidor</translation>
 <translation id="3507869775212388416">Jobb inom juridik</translation>
 <translation id="3507936815618196901">Skapa en 3D-karta över dina omgivningar och registrera kamerans position</translation>
@@ -1989,6 +1992,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="4098306082496067348">Tryck på de virtuella kortuppgifterna för att lägga till dem i kassan.</translation>
 <translation id="4099048595830172239">Enligt administratörspolicyn är det inte rekommenderat att dela skärmen med <ph name="APPLICATION_TITLE" /> när konfidentiellt innehåll är synligt:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />: tryck på Tabb och sedan på Retur om du vill anpassa fontstorlekar och typsnitt i Chrome</translation>
+<translation id="4100421230355095925">ML-DSA-44</translation>
 <translation id="4101413244023615925">Text och bild</translation>
 <translation id="4101917550061398111">Radera markerade varor</translation>
 <translation id="4102567721634170493">Lokala nyheter</translation>
@@ -2216,6 +2220,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="4415156962929755728">Plast (högblank)</translation>
 <translation id="4415426530740016218">Hämtningsadress</translation>
 <translation id="4415748029120993980">SECG med elliptisk kurva secp384r1 (kallas även NIST P-384)</translation>
+<translation id="4418150423720608641">ML-DSA-87</translation>
 <translation id="4419287616181386201">Lösenord kan raderas i hanteringsinställningarna</translation>
 <translation id="4424024547088906515">Servern kunde inte bevisa att den är <ph name="DOMAIN" /> eftersom Chrome inte litar på dess säkerhetscertifikat. Detta kan orsakas av en felaktig konfigurering eller att någon spärrar anslutningen.</translation>
 <translation id="4425750422187370446">Sportkläder</translation>
@@ -2955,6 +2960,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="5573641252776268565">Redigera pass</translation>
 <translation id="5578606540385219379">Tjänsteleverantörer</translation>
 <translation id="5580958916614886209">Kontrollera utgångsmånad och försök igen</translation>
+<translation id="5582453333200265572">Uppdatera id-kort</translation>
 <translation id="5583442610070676234">Fler åtgärder för jämförelsetabellen <ph name="COMPARE_SET_NAME" /></translation>
 <translation id="55841966151154662">Det gick inte att spara IBAN-numret i Google Wallet. Det har sparats i Chrome på den här enheten i stället.</translation>
 <translation id="558420943003240152">Hantera lösenord och nycklar …</translation>
@@ -3081,6 +3087,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="5787146423283493983">Nyckelavtal</translation>
 <translation id="5793317771769868848">Den här betalningsmetoden raderas från enheten</translation>
 <translation id="5794065675298686371">Aktivera aviseringar om prisbevakning</translation>
+<translation id="5797984091151707075">Blockeras av administratörspolicyn</translation>
 <translation id="5800727402210090597">Mobiltelefonreparationer och -tjänster</translation>
 <translation id="580241730938216256">Starta uppdatering</translation>
 <translation id="5804241973901381774">Behörigheter</translation>
@@ -3088,6 +3095,7 @@ Gå till <ph name="BEGIN_LINK" />betalningsinställningarna<ph name="END_LINK" /
 <translation id="5808435672482059465">Visa Chrome-historiken</translation>
 <translation id="5810442152076338065">Anslutningen till <ph name="DOMAIN" /> är krypterad med en gammal krypteringssvit.</translation>
 <translation id="5813119285467412249">&amp;Gör om Lägg till</translation>
+<translation id="5813274153495000141">Spara dina uppgifter och fyll i formulär snabbare. Spara på enheten.</translation>
 <translation id="5813753398265398978">Fysik</translation>
 <translation id="5817918615728894473">Koppla</translation>
 <translation id="5820625124144807242">När du har granskat beställningen måste du logga in på eller skapa ett konto hos <ph name="BNPL_ISSUER_NAME" />. Kontot länkas automatiskt till Google Pay.</translation>
@@ -5232,6 +5240,7 @@ Mer information:
 <translation id="9169664750068251925">Blockera alltid den här webbplatsen</translation>
 <translation id="9169931577761441333">Lägg till <ph name="APP_NAME" /> på startskärmen</translation>
 <translation id="9170848237812810038">&amp;Ångra</translation>
+<translation id="9170906125144697215">Betala med Pix utan att byta app</translation>
 <translation id="9171296965991013597">Vill du lämna appen?</translation>
 <translation id="9173282814238175921">Enkelt dokument/nytt ark</translation>
 <translation id="9173995187295789444">Söker efter Bluetooth-enheter …</translation>
@@ -5248,7 +5257,6 @@ Mer information:
 <translation id="9186371298532546532">Använd den här adressen på fler ställen</translation>
 <translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> ändrade den här fliken</translation>
 <translation id="9189789270972826888">Klicka på kortuppgifterna nedan om du vill kopiera och klistra in dem om kortet inte har fyllts i. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
-<translation id="9190557999028587593">Ämnen som är äldre än fyra veckor raderas automatiskt</translation>
 <translation id="9191834167571392248">Hål nere till vänster</translation>
 <translation id="9192361865877479444">Metall (matt)</translation>
 <translation id="9192947025498305328">Naturlig skönhetsvård</translation>

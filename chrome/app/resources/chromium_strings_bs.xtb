@@ -359,7 +359,6 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="4724676981607797757">Instalacija nije uspjela zbog greške s nepodržanim protokolom.</translation>
 <translation id="4746050847053251315">Ipak napustiti Chromium?</translation>
 <translation id="4748217263233248895">Posebno sigurnosno ažuriranje za Chromium je upravo primijenjeno. Sada ga ponovo pokrenite i vratićemo vaše kartice.</translation>
-<translation id="4759645701210484457">Pitajte Chromium</translation>
 <translation id="4771701986670315895">Niste je posjetili već neko vrijeme. Chromium je uklonio odobrenja "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" i još <ph name="COUNT" />.</translation>
 <translation id="4788777615168560705">Chromium ne može provjeravati vaše lozinke. Pokušajte ponovo za 24 sata ili <ph name="BEGIN_LINK" />provjerite lozinke na Google računu<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">Ova usluga koristi isti alat za provjeru pravopisa koji se koristi u Google Pretraživanju. Tekst koji pišete u pregledniku šalje se Googleu. Ovo ponašanje možete uvijek promijeniti u postavkama.</translation>
@@ -526,7 +525,6 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="6676384891291319759">Pristupite internetu</translation>
 <translation id="668175097507315160">ChromiumOS nije sinhronizirao vaše podatke zbog greške prilikom prijave.</translation>
 <translation id="6691132793308828750">Ukloni podatke aplikacije iz Chromiuma</translation>
-<translation id="6692797197837897398">Chromium vam daje veću kontrolu nad oglasima koji vam se prikazuju i ograničava koje web lokacije mogu saznati informacije o vama kada vam prikažu personalizirane oglase</translation>
 <translation id="6709350901466051922">Chromiumu je za ovu web lokaciju potrebno odobrenje za mikrofon</translation>
 <translation id="6712881677154121168">Greška prilikom preuzimanja: <ph name="DOWNLOAD_ERROR" /></translation>
 <translation id="6717134281241384636">Ne možete koristiti profil jer pripada novijoj verziji Chromiuma.

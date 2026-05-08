@@ -1858,6 +1858,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8765470054473112089">Lorsque vous saisissez du texte dans la barre d'adresse ou le champ de recherche, Chrome envoie le contenu saisi à votre moteur de recherche par défaut pour obtenir de meilleures suggestions. Ce paramètre est désactivé en navigation privée.</translation>
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome a trouvé un mot de passe peu sécurisé que vous pourriez améliorer}one{Chrome a trouvé # mot de passe peu sécurisé que vous pourriez améliorer}other{Chrome a trouvé # mots de passe peu sécurisés que vous pourriez améliorer}}</translation>
 <translation id="8766529642647037772">Créer un lien en surbrillance comme celui-ci ?</translation>
+<translation id="8769783688897433958">Afficher les informations et les autorisations du site</translation>
 <translation id="8788265440806329501">Historique de navigation fermé</translation>
 <translation id="8790193082819560975">Appuyer pour rechercher des options d'achat pour le produit dans un nouvel onglet.</translation>
 <translation id="8798449543960971550">Lu</translation>

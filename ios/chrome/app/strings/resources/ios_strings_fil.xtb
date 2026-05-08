@@ -442,7 +442,6 @@
 <translation id="2493269659028026145">I-lock kaagad gamit ang <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="2496180316473517155">History ng Pag-browse</translation>
 <translation id="2496626742194544812">Pumunta sa Unang Tab</translation>
-<translation id="2497852260688568942">Na-disable ng iyong administrator ang pag-sync</translation>
 <translation id="2499505845365628575">Makikita mo ang lahat ng iyong history ng pag-browse sa <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="2511117522375201202">Mayroon kang <ph name="NUMBER_OF_PASSWORDS" /> (na) nakompromisong password na puwedeng maglagay ng iyong seguridad sa panganib.</translation>
 <translation id="2513103768503127042">Makikita mo rito ang iyong mga grupo ng tab</translation>
@@ -2001,6 +2000,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939856641500914040">I-delete ang Data mula sa Pag-browse…</translation>
 <translation id="7941578031639087549">{count,plural, =1{Naidagdag ang page sa iyong listahan ng babasahin sa account mo na {email}}one{Naidagdag ang {count} page sa iyong listahan ng babasahin sa account mo na {email}}other{Naidagdag ang {count} na page sa iyong listahan ng babasahin sa account mo na {email}}}</translation>
+<translation id="7948579849190819732">Kasalukuyang tab</translation>
 <translation id="7952353944614086413">Ang iyong mga nakabukas na tab at grupo</translation>
 <translation id="7952670906562503188">Ide-delete mo ang {passkey_count} (na) passkey at ang listahan ng mga site at app na pinili mong hinding-hindi magse-save ng impormasyon sa pag-sign in. Hindi made-delete ang anumang account na ginawa mo para sa mga site at app.</translation>
 <translation id="7958575506592576831">Impormasyon sa seguridad ng page</translation>

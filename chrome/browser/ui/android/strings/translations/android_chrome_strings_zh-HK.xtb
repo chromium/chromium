@@ -1676,6 +1676,7 @@
 <translation id="8030852056903932865">核准</translation>
 <translation id="8032569120109842252">追蹤中</translation>
 <translation id="8035522026858423976"><ph name="TAB_TITLE" />，揀咗已經靜音嘅無痕式分頁</translation>
+<translation id="8036587585440959897">部分擴充程式可以將搜尋引擎新增至 Chrome。</translation>
 <translation id="8037750541064988519">尚餘 <ph name="DAYS" /> 天</translation>
 <translation id="8037801708772278989">剛檢查過</translation>
 <translation id="804335162455518893">找不到 SD 卡</translation>
@@ -1858,6 +1859,7 @@
 <translation id="8765470054473112089">在網址列或搜尋框中輸入內容時，Chrome 會將輸入的內容傳送至預設搜尋引擎，以便取得更切合需求的建議。此功能不會在無痕模式下啟用。</translation>
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome 發現 1 個安全度低的密碼，建議改用其他密碼}other{Chrome 發現 # 個安全度低的密碼，建議改用其他密碼}}</translation>
 <translation id="8766529642647037772">要建立類似的突顯連結嗎？</translation>
+<translation id="8769783688897433958">查看網站資料和權限</translation>
 <translation id="8788265440806329501">導覽記錄閂咗</translation>
 <translation id="8790193082819560975">㩒一下就可以喺新分頁度搵產品嘅購買選項。</translation>
 <translation id="8798449543960971550">已讀</translation>
@@ -1961,6 +1963,7 @@
 <translation id="9169507124922466868">導覽記錄喺畫面下半部分顯示</translation>
 <translation id="9189607089796819144">確定要下載「<ph name="FILE_NAME" />」(<ph name="FILE_SIZE" />) 嗎？</translation>
 <translation id="9190276265094487094">您可在所有已同步的裝置上查看記錄，繼續執行先前的任何工作</translation>
+<translation id="9190355771000652811">在網址列中，將此鍵盤快速鍵與搜尋引擎和站內搜尋捷徑配合使用。</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" />，已固定及選取的無痕式分頁</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{曾在 1 分鐘前檢查}other{曾在 # 分鐘前檢查}}</translation>
 <translation id="9204836675896933765">尚餘 1 個檔案</translation>

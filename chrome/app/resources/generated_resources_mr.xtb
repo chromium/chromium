@@ -1732,6 +1732,7 @@
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> आणि आणखी एक स्विच</translation>
 <translation id="2165177462441582039">प्रत्येक आयटमवर किती वेळ हायलाइट रहावे ते निवडा</translation>
 <translation id="2166369534954157698">चपळ तपकिरी कोल्ह्याने आळशी कुत्र्यावर उडी मारली</translation>
+<translation id="2168036794078614559">अहवाल पाठवला</translation>
 <translation id="2169062631698640254">तरीही साइन इन करा</translation>
 <translation id="2173302385160625112">तुमचे इंटरनेट कनेक्शन तपासा</translation>
 <translation id="2173801458090845390">या डीव्हाइसवर मागणी आयडी जोडा</translation>
@@ -3447,7 +3448,6 @@
 <translation id="3347086966102161372">इमेज पत्ता कॉपी करा</translation>
 <translation id="3348038390189153836">काढण्यायोग्य डिव्हाइस आढळले</translation>
 <translation id="3348973040180736882">डीकाँप्रेस करत आहे</translation>
-<translation id="3349610303043713601">AI वापरून ब्राउझ करा</translation>
 <translation id="3349933790966648062">मेमरी फुटप्रिंट</translation>
 <translation id="3351472127384196879">तुमच्या पेनवर बटणे जोडा किंवा शोधा</translation>
 <translation id="3353786022389205125">"झोपेतून उठल्यावर लॉक स्क्रीन दाखवा" हे सुरू करून पुन्हा प्रयत्न करा</translation>
@@ -6835,6 +6835,7 @@
 <translation id="5712153969432126546">साइट काहीवेळा दस्तऐवज, करार आणि फॉर्म यांसारख्या PDF प्रकाशित करतात</translation>
 <translation id="571222594670061844">साइट या ओळखीच्या सेवांकडून मिळणाऱ्या साइन-इन सूचना दाखवू शकतात</translation>
 <translation id="5713158217420111469"><ph name="DEVICE" /> शी कनेक्ट केले आहे</translation>
+<translation id="5713988532993992900">इन्व्हर्ट केलेले</translation>
 <translation id="5714100381896040477">स्क्रीनवरील हालचाल मर्यादित करा</translation>
 <translation id="5719854774000914513">साइट HID डिव्हाइसशी कनेक्ट करण्यासाठी विचारू शकतात</translation>
 <translation id="5720729194423017301">साइट आणि सर्च इंजीनसाठी शॉर्टकट</translation>
@@ -8752,6 +8753,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7044606776288350625">डेटा सिंक करा</translation>
 <translation id="7050037487872780845">चुकीचे हॉटस्पॉट कॉन्फिगरेशन</translation>
 <translation id="7051222203795962489">{COUNT,plural, =1{तुमच्या <ph name="USER_EMAIL" /> या Google खाते मध्ये पासवर्ड सेव्ह केला आहे}other{तुमच्या <ph name="USER_EMAIL" /> या Google खाते मध्ये पासवर्ड सेव्ह केले आहेत}}</translation>
+<translation id="7051728324516005763">Chrome मधील AI</translation>
 <translation id="7052762602787632571">&amp;ब्राउझिंग डेटा हटवा...</translation>
 <translation id="705352103640172578">धबधबा</translation>
 <translation id="7053983685419859001">ब्लॉक करा</translation>

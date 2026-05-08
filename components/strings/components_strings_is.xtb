@@ -478,6 +478,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1727613060316725209">Vottorðið er gilt</translation>
 <translation id="1728677426644403582">Þú ert að skoða uppruna vefsíðu</translation>
 <translation id="173080396488393970">Þessi kortategund er ekki studd</translation>
+<translation id="1731563515262205847">ML-DSA-65</translation>
 <translation id="1732445923934584865">Spyrja frekar í eigin persónu</translation>
 <translation id="1733064249834771892">leturgerðir</translation>
 <translation id="1733631169686303142">Hljóðkerfisbúnaður</translation>
@@ -1596,6 +1597,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="350069200438440499">Skráarheiti:</translation>
 <translation id="3501300228850242680">Þungarokk</translation>
 <translation id="350421688684366066">Merkimiðar (háglans)</translation>
+<translation id="3507062913298382727">Vista skilríki</translation>
 <translation id="350763432931695541">Dregur út texta á næstu síðum</translation>
 <translation id="3507869775212388416">Störf innan lögfræði</translation>
 <translation id="3507936815618196901">Búa til þrívíddarkort af umhverfinu og rekja staðsetningu myndavélarinnar</translation>
@@ -1989,6 +1991,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="4098306082496067348">Ýttu á upplýsingar um sýndarkort til að bæta þeim við greiðsluupplýsingar.</translation>
 <translation id="4099048595830172239">Regla kerfisstjóra ræður gegn því að deila skjánum þínum með <ph name="APPLICATION_TITLE" /> þegar trúnaðarupplýsingar eru sýnlegar:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á dálkalykilinn (Tab) og svo á Enter til að sérsníða leturstæðir og leturgerðir í Chrome</translation>
+<translation id="4100421230355095925">ML-DSA-44</translation>
 <translation id="4101413244023615925">Texti og grafík</translation>
 <translation id="4101917550061398111">Eyða völdum atriðum</translation>
 <translation id="4102567721634170493">Staðbundnar fréttir</translation>
@@ -2216,6 +2219,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="4415156962929755728">Plast (háglans)</translation>
 <translation id="4415426530740016218">Heimilisfang afhendingar</translation>
 <translation id="4415748029120993980">SECG sporger ferill secp384r1 (e.þ.s. NIST P-384)</translation>
+<translation id="4418150423720608641">ML-DSA-87</translation>
 <translation id="4419287616181386201">Hægt er að eyða aðgangsorðum í umsjónarstillingum þeirra</translation>
 <translation id="4424024547088906515">Þessi þjónn gat ekki sannað að hann væri <ph name="DOMAIN" />; Chrome treystir ekki öryggisvottorðinu hans. Þetta kann að orsakast af vanstillingu eða tölvuþrjóti sem komist hefur inn í tenginguna.</translation>
 <translation id="4425750422187370446">Íþróttafatnaður</translation>
@@ -2955,6 +2959,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="5573641252776268565">Breyttu upplýsingum um vegabréfið</translation>
 <translation id="5578606540385219379">Þjónustuaðilar</translation>
 <translation id="5580958916614886209">Athugaðu mánuð gildistímans og reyndu aftur</translation>
+<translation id="5582453333200265572">Uppfæra skilríki</translation>
 <translation id="5583442610070676234">Fleiri aðgerðir fyrir samanburðartöflu <ph name="COMPARE_SET_NAME" /></translation>
 <translation id="55841966151154662">Ekki var hægt að vista þetta kort í Google-veski. Í staðinn var það vistað í Chrome í þessu tæki.</translation>
 <translation id="558420943003240152">Stjórna aðgangsorðum og aðgangslyklum…</translation>
@@ -3088,6 +3093,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="5808435672482059465">Skoða Chrome ferilinn þinn</translation>
 <translation id="5810442152076338065">Tengingin við <ph name="DOMAIN" /> er dulkóðuð með úreltu dulkóðunarsafni.</translation>
 <translation id="5813119285467412249">Endu&amp;rtaka nýtt bókamerki</translation>
+<translation id="5813274153495000141">Vistaðu upplýsingarnar þínar og fylltu eyðublöð út á fljótlegri hátt. Vistar í tækinu þínu.</translation>
 <translation id="5813753398265398978">Eðlisfræði</translation>
 <translation id="5817918615728894473">Para</translation>
 <translation id="5820625124144807242">Þegar þú hefur farið yfir pöntunina þína þarftu að skrá þig inn á eða stofna reikning hjá <ph name="BNPL_ISSUER_NAME" />. Þessi reikningur verður sjálfkrafa tengdur við Google Pay.</translation>
@@ -5230,6 +5236,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="9169664750068251925">Útiloka alltaf á þessu vefsvæði</translation>
 <translation id="9169931577761441333">Bæta <ph name="APP_NAME" /> á heimaskjá</translation>
 <translation id="9170848237812810038">Aft&amp;urkalla</translation>
+<translation id="9170906125144697215">Greiddu með Pix án þess að þurfa að skipta á milli forrita</translation>
 <translation id="9171296965991013597">Loka forriti?</translation>
 <translation id="9173282814238175921">Stakt skjal / nýtt blað</translation>
 <translation id="9173995187295789444">Leitar að Bluetooth-tækjum...</translation>
@@ -5246,7 +5253,6 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="9186371298532546532">Notaðu þetta heimilisfang á fleiri stöðum</translation>
 <translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> breytti þessum flipa</translation>
 <translation id="9189789270972826888">Smelltu á upplýsingarnar á spjaldinu hér að neðan til að afrita og líma þær ef spjaldið var ekki útfyllt. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
-<translation id="9190557999028587593">Umfjöllunarefnum sem eru eldri en 4 vikna verður sjálfkrafa eytt</translation>
 <translation id="9191834167571392248">Gat neðst til vinstri</translation>
 <translation id="9192361865877479444">Málmur (matt)</translation>
 <translation id="9192947025498305328">Hrein fegurð</translation>

@@ -1715,6 +1715,7 @@
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" />、<ph name="THIRD_SWITCH" /> 和另外 1 个开关键</translation>
 <translation id="2165177462441582039">选择系统应将每项内容突出显示多久</translation>
 <translation id="2166369534954157698">The quick brown fox jumps over the lazy dog</translation>
+<translation id="2168036794078614559">举报信息已发送</translation>
 <translation id="2169062631698640254">仍然登录</translation>
 <translation id="2173302385160625112">请检查您的互联网连接是否正常</translation>
 <translation id="2173801458090845390">向此设备添加申请 ID</translation>
@@ -3424,7 +3425,6 @@
 <translation id="3347086966102161372">复制图片地址(&amp;O)</translation>
 <translation id="3348038390189153836">检测到可移除的设备</translation>
 <translation id="3348973040180736882">正在解压缩</translation>
-<translation id="3349610303043713601">使用 AI 浏览</translation>
 <translation id="3349933790966648062">内存占用</translation>
 <translation id="3351472127384196879">添加或寻找触控笔按钮</translation>
 <translation id="3353786022389205125">开启“从休眠状态唤醒时显示锁定屏幕”，然后重试</translation>

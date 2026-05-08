@@ -1096,6 +1096,7 @@
 <translation id="2677748264148917807">Αποχώρηση</translation>
 <translation id="2679216653373462289">Χρήση αισθητήρων κίνησης και φωτός</translation>
 <translation id="2679659833697380">Οι πληροφορίες σας αποθηκεύονται στη συσκευή σας</translation>
+<translation id="2680837394649649718">Στάλθηκε στο Chrome στη συσκευή <ph name="DEVICE_NAME" />.</translation>
 <translation id="2683195745483370038">Βρέθηκαν άλλα αποτελέσματα</translation>
 <translation id="2686919536310834199">Αποστολή σχολίων για την επιλογή Βοήθησέ με να γράψω.</translation>
 <translation id="2687555958734450033">Βέλτιστη προσαρμογή</translation>
@@ -3087,6 +3088,7 @@
 <translation id="5787146423283493983">Βασική συμφωνία</translation>
 <translation id="5793317771769868848">Αυτός ο τρόπος πληρωμής θα διαγραφεί από αυτήν τη συσκευή</translation>
 <translation id="5794065675298686371">Ενεργοποίηση ειδοποιήσεων παρακολούθησης τιμών</translation>
+<translation id="5797984091151707075">Αποκλείστηκε από την πολιτική διαχειριστή</translation>
 <translation id="5800727402210090597">Υπηρεσίες επισκευής κινητών τηλεφώνων</translation>
 <translation id="580241730938216256">Έναρξη ενημέρωσης</translation>
 <translation id="5804241973901381774">Άδειες</translation>
@@ -5240,6 +5242,7 @@
 <translation id="9169664750068251925">Να γίνεται πάντα αποκλεισμός σε αυτόν τον ιστότοπο</translation>
 <translation id="9169931577761441333">Προσθήκη του <ph name="APP_NAME" /> στην Αρχική οθόνη</translation>
 <translation id="9170848237812810038">Αναί&amp;ρεση</translation>
+<translation id="9170906125144697215">Πληρώστε με Pix χωρίς να αλλάξετε εφαρμογή</translation>
 <translation id="9171296965991013597">Αποχώρηση από την εφαρμογή;</translation>
 <translation id="9173282814238175921">Ένα έγγραφο/Νέο φύλλο</translation>
 <translation id="9173995187295789444">Σάρωση για συσκευές Bluetooth…</translation>
@@ -5256,7 +5259,6 @@
 <translation id="9186371298532546532">Χρησιμοποιήστε αυτή τη διεύθυνση σε περισσότερα μέρη</translation>
 <translation id="9189468832660648522">Ο χρήστης <ph name="MEMBER_FIRST_NAME" /> άλλαξε αυτή την καρτέλα</translation>
 <translation id="9189789270972826888">Κάντε κλικ στις λεπτομέρειες της κάρτας παρακάτω για αντιγραφή και επικόλληση, εάν η κάρτα δεν έχει συμπληρωθεί. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
-<translation id="9190557999028587593">Τα θέματα που είναι παλαιότερα των 4 εβδομάδων διαγράφονται αυτόματα</translation>
 <translation id="9191834167571392248">Τρύπημα κάτω αριστερά</translation>
 <translation id="9192361865877479444">Μέταλλο (Ματ)</translation>
 <translation id="9192947025498305328">Καθαρή ομορφιά</translation>

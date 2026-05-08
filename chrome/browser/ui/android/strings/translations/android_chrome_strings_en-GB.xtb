@@ -271,6 +271,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2226826835915474236">Inactive shortcuts</translation>
 <translation id="2227179592712503583">Remove suggestion</translation>
 <translation id="2227444325776770048">Continue as <ph name="USER_FULL_NAME" /></translation>
+<translation id="2230411774874187555">Get all your saved info</translation>
 <translation id="2230777942707397948">Empty window</translation>
 <translation id="223356358902285214">Web &amp; App Activity</translation>
 <translation id="2233735624724508540">Choose a time frame and then tap Delete data</translation>
@@ -483,6 +484,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3057938290530993634">Tap and hold to pin your most visited websites for easy access next time</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> bookmark}other{<ph name="BOOKMARKS_COUNT_MANY" /> bookmarks}}</translation>
 <translation id="3062802207422175757">Articles on your interests on Chrome</translation>
+<translation id="3066107845790462226">Download video frame</translation>
 <translation id="3066573403916685335">Move Down</translation>
 <translation id="3067505415088964188">Price is low</translation>
 <translation id="3070005020161560471">Automatically translate</translation>
@@ -1216,6 +1218,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6264485186158353794">Back to safety</translation>
 <translation id="6267106249090587268">Notifications <ph name="SEPARATOR" /> Chrome removed these permissions because of spam or deceptive contents</translation>
 <translation id="6276708887952587684">View page source</translation>
+<translation id="62768169905160414">Copy video frame</translation>
 <translation id="6277522088822131679">There was a problem printing the page. Please try again.</translation>
 <translation id="6278428485366576908">Theme</translation>
 <translation id="6291294824436685757">Delete browsing data; select data to delete</translation>
@@ -1676,6 +1679,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8030852056903932865">Approve</translation>
 <translation id="8032569120109842252">Following</translation>
 <translation id="8035522026858423976"><ph name="TAB_TITLE" />, selected muted Incognito tab</translation>
+<translation id="8036587585440959897">Some extensions can add search engines to Chrome.</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> days left</translation>
 <translation id="8037801708772278989">Checked just now</translation>
 <translation id="804335162455518893">SD card not found</translation>
@@ -1858,6 +1862,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8765470054473112089">When you type in the address bar or search box, Chrome sends what you type to your default search engine to get better suggestions. This is off in Incognito.</translation>
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome found a weak password that you could improve}other{Chrome found # weak passwords that you could improve}}</translation>
 <translation id="8766529642647037772">Create a highlighted link like this one?</translation>
+<translation id="8769783688897433958">View site information and permissions</translation>
 <translation id="8788265440806329501">Navigation history is closed</translation>
 <translation id="8790193082819560975">Tap to search buying options for the product in a new tab.</translation>
 <translation id="8798449543960971550">Read</translation>
@@ -1961,6 +1966,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="9169507124922466868">Navigation history is half-opened</translation>
 <translation id="9189607089796819144">Do you want to download '<ph name="FILE_NAME" />' (<ph name="FILE_SIZE" />) anyway?</translation>
 <translation id="9190276265094487094">You’ll have your history on all your synced devices so that you can continue what you were doing</translation>
+<translation id="9190355771000652811">In the address bar, use this keyboard shortcut with shortcuts for search engines and site search.</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" />, pinned selected Incognito tab</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Checked 1 minute ago}other{Checked # minutes ago}}</translation>
 <translation id="9204836675896933765">1 file left</translation>

@@ -1722,6 +1722,7 @@
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> และสวิตช์อีก 1 รายการ</translation>
 <translation id="2165177462441582039">เลือกระยะเวลาที่ไฮไลต์ควรแสดงอยู่ที่แต่ละรายการ</translation>
 <translation id="2166369534954157698">สุนัขจิ้งจอกที่ปราดเปรียวกระโดดข้ามสุนัขเกียจคร้าน</translation>
+<translation id="2168036794078614559">ส่งรายงานแล้ว</translation>
 <translation id="2169062631698640254">ลงชื่อเข้าใช้ต่อไป</translation>
 <translation id="2173302385160625112">ตรวจสอบการเชื่อมต่ออินเทอร์เน็ต</translation>
 <translation id="2173801458090845390">เพิ่มรหัสข้อกำหนดลงในอุปกรณ์นี้</translation>
@@ -3432,7 +3433,6 @@
 <translation id="3347086966102161372">คัด&amp;ลอกที่อยู่รูปภาพ</translation>
 <translation id="3348038390189153836">พบอุปกรณ์แบบถอดออกได้</translation>
 <translation id="3348973040180736882">กำลังแตกไฟล์</translation>
-<translation id="3349610303043713601">ท่องเว็บด้วย AI</translation>
 <translation id="3349933790966648062">หน่วยความจำที่ใช้</translation>
 <translation id="3351472127384196879">เพิ่มหรือค้นหาปุ่มบนปากกา</translation>
 <translation id="3353786022389205125">เปิด "แสดงหน้าจอล็อกเมื่อปลุกให้ทำงานจากโหมดสลีป" แล้วลองอีกครั้ง</translation>
@@ -6818,6 +6818,7 @@
 <translation id="5712153969432126546">บางครั้งเว็บไซต์จะเผยแพร่ PDF เช่น เอกสาร สัญญา แบบฟอร์ม</translation>
 <translation id="571222594670061844">เว็บไซต์สามารถแสดงข้อความแจ้งให้ลงชื่อเข้าใช้จากบริการระบุตัวตนได้</translation>
 <translation id="5713158217420111469">เชื่อมต่อกับ <ph name="DEVICE" /> แล้ว</translation>
+<translation id="5713988532993992900">กลับสี</translation>
 <translation id="5714100381896040477">จำกัดการเคลื่อนไหวบนหน้าจอ</translation>
 <translation id="5719854774000914513">เว็บไซต์สามารถขอเชื่อมต่อกับอุปกรณ์ HID ได้</translation>
 <translation id="5720729194423017301">ทางลัดสำหรับเว็บไซต์และเครื่องมือค้นหา</translation>
@@ -8731,6 +8732,7 @@
 <translation id="7044606776288350625">ซิงค์ข้อมูล</translation>
 <translation id="7050037487872780845">การกำหนดค่าฮอตสปอตไม่ถูกต้อง</translation>
 <translation id="7051222203795962489">{COUNT,plural, =1{บันทึกรหัสผ่านไว้ในบัญชี Google <ph name="USER_EMAIL" /> แล้ว}other{บันทึกรหัสผ่านไว้ในบัญชี Google <ph name="USER_EMAIL" /> แล้ว}}</translation>
+<translation id="7051728324516005763">AI ใน Chrome</translation>
 <translation id="7052762602787632571">&amp;ลบข้อมูลการท่องเว็บ...</translation>
 <translation id="705352103640172578">น้ำตก</translation>
 <translation id="7053983685419859001">บล็อก</translation>

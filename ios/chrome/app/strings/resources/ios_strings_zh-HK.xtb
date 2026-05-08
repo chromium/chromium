@@ -442,7 +442,6 @@
 <translation id="2493269659028026145">使用<ph name="BIOMETRIC_AUTHENITCATION_TYPE" />立即鎖定</translation>
 <translation id="2496180316473517155">瀏覽記錄</translation>
 <translation id="2496626742194544812">前往第一個分頁</translation>
-<translation id="2497852260688568942">您的管理員已停用同步功能</translation>
 <translation id="2499505845365628575">你可以喺「<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />」度睇到所有瀏覽記錄。</translation>
 <translation id="2511117522375201202">你有 <ph name="NUMBER_OF_PASSWORDS" /> 個密碼被盜用，可能導致安全風險。</translation>
 <translation id="2513103768503127042">你可在這裡找到分頁群組</translation>
@@ -2001,6 +2000,7 @@
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939856641500914040">刪除瀏覽資料…</translation>
 <translation id="7941578031639087549">{count,plural, =1{已將頁面新增至帳戶 ({email}) 的閱讀清單}other{已將 {count} 個頁面新增至帳戶 ({email}) 的閱讀清單}}</translation>
+<translation id="7948579849190819732">目前分頁</translation>
 <translation id="7952353944614086413">你開啟的分頁和群組</translation>
 <translation id="7952670906562503188">你將會刪除 {passkey_count} 個密鑰，以及你選擇一律不儲存登入資料的網站和應用程式清單。系統不會刪除任何你為網站和應用程式建立的帳戶。</translation>
 <translation id="7958575506592576831">網頁安全性資料</translation>

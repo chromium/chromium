@@ -442,7 +442,6 @@
 <translation id="2493269659028026145">Lukitse heti tällä: <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="2496180316473517155">Selaushistoria</translation>
 <translation id="2496626742194544812">Siirry ensimmäiselle välilehdelle</translation>
-<translation id="2497852260688568942">Järjestelmänvalvoja on poistanut synkronoinnin käytöstä.</translation>
 <translation id="2499505845365628575">Näet koko selaushistoriasi täältä: <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="2511117522375201202">Sinulla on <ph name="NUMBER_OF_PASSWORDS" /> vaarantunutta salasanaa, jotka voivat vaarantaa turvallisuutesi.</translation>
 <translation id="2513103768503127042">Näet välilehtiryhmäsi täällä</translation>
@@ -2001,6 +2000,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939856641500914040">Poista selausdata…</translation>
 <translation id="7941578031639087549">{count,plural, =1{Sivu lisätty lukulistalle tililläsi: {email}}other{{count} sivua lisätty lukulistalle tililläsi: {email}}}</translation>
+<translation id="7948579849190819732">Nykyinen välilehti</translation>
 <translation id="7952353944614086413">Avoimet välilehdet ja ryhmät</translation>
 <translation id="7952670906562503188">Olet poistamassa {passkey_count} avainkoodia ja listan sivustoista ja sovelluksista, joiden sisäänkirjautumistietoja et halua tallentaa. Sivustoille ja sovelluksille luomiasi tilejä ei poisteta.</translation>
 <translation id="7958575506592576831">Sivun suojaustiedot</translation>

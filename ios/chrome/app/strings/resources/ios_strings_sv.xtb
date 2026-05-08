@@ -442,7 +442,6 @@
 <translation id="2493269659028026145">Lås omedelbart med <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="2496180316473517155">Webbhistorik</translation>
 <translation id="2496626742194544812">Öppna första fliken</translation>
-<translation id="2497852260688568942">Synkronisering har inaktiverats av administratören</translation>
 <translation id="2499505845365628575">Du hittar all webbhistorik från <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="2511117522375201202">Du har <ph name="NUMBER_OF_PASSWORDS" /> utsatta lösenord som kan innebära en säkerhetsrisk.</translation>
 <translation id="2513103768503127042">Du hittar dina flikgrupper här</translation>
@@ -2001,6 +2000,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939856641500914040">Radera webbinformation …</translation>
 <translation id="7941578031639087549">{count,plural, =1{Sidan har lagts till i läslistan i ditt konto, {email}}other{{count} sidor har lagts till i läslistan i ditt konto, {email}}}</translation>
+<translation id="7948579849190819732">Aktuell flik</translation>
 <translation id="7952353944614086413">Dina öppna flikar och grupper</translation>
 <translation id="7952670906562503188">Du håller på att radera {passkey_count} nycklar och listan över webbplatser och appar där du valt att aldrig spara inloggningsuppgifter. Konton som du har skapat för webbplatser och appar raderas inte.</translation>
 <translation id="7958575506592576831">Sidans säkerhetsinfo</translation>

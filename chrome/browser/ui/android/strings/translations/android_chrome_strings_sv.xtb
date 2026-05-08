@@ -1677,6 +1677,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8030852056903932865">Godkänn</translation>
 <translation id="8032569120109842252">Följer</translation>
 <translation id="8035522026858423976"><ph name="TAB_TITLE" />, vald inkognitoflik med ljud av</translation>
+<translation id="8036587585440959897">Vissa tillägg kan lägga till sökmotorer i Chrome.</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> dagar kvar</translation>
 <translation id="8037801708772278989">Genomsöktes alldeles nyss</translation>
 <translation id="804335162455518893">Det gick inte att hitta SD-kortet</translation>
@@ -1859,6 +1860,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8765470054473112089">När du skriver i adressfältet eller sökrutan skickar Chrome det du skriver till standardsökmotorn för att du ska få bättre förslag. Detta är inaktiverat i inkognitoläge.</translation>
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome har hittat ett svagt lösenord som du kan förbättra}other{Chrome har hittat # svaga lösenord som du kan förbättra}}</translation>
 <translation id="8766529642647037772">Vill du skapa en markerad länk som denna?</translation>
+<translation id="8769783688897433958">Visa webbplatsinformation och behörigheter</translation>
 <translation id="8788265440806329501">Navigeringshistoriken har stängts</translation>
 <translation id="8790193082819560975">Tryck för att söka efter köpalternativ för produkten på en ny flik.</translation>
 <translation id="8798449543960971550">Lästa</translation>
@@ -1962,6 +1964,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="9169507124922466868">Navigeringshistoriken visas på halva skärmen</translation>
 <translation id="9189607089796819144">Vill du ladda ned <ph name="FILE_NAME" /> (<ph name="FILE_SIZE" />) ändå?</translation>
 <translation id="9190276265094487094">Historiken visas på alla synkroniserade enheter, så att du kan fortsätta där du slutade</translation>
+<translation id="9190355771000652811">Använd det här kortkommandot för sökmotorer och webbplatssökning i adressfältet.</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" />: vald fäst inkognitoflik</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Genomsöktes för 1 minut sedan}other{Genomsöktes för # minuter sedan}}</translation>
 <translation id="9204836675896933765">1 fil återstår</translation>

@@ -754,6 +754,7 @@
 <translation id="2168151236314517198">વ્યવસ્થાપક પૉલિસીને કારણે આ કન્ટેન્ટ પ્રિન્ટ કરવાની સુવિધા બ્લૉક કરવામાં આવી છે</translation>
 <translation id="2171244127100824330"><ph name="ACCOUNT" /> માટે <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />માં</translation>
 <translation id="2172089022819052306">વાહનનું સમારકામ અને તેની જાળવણી</translation>
+<translation id="217231402430591139">તમારું એકાઉન્ટ લિંક કરો</translation>
 <translation id="2173302385160625112">તમારું ઇન્ટરનેટ કનેક્શન ચેક કરો</translation>
 <translation id="2174875517416416684">તમારો વ્યવહાર પૂર્ણ થયો ન હતો. તમારા એકાઉન્ટમાંથી ફંડ લેવામાં આવ્યું નથી.</translation>
 <translation id="2175630235841878061">100MB કરતા વધારે કદની ફાઇલો ડાઉનલોડ કરવા માટે ઉપલબ્ધ નથી</translation>
@@ -1096,6 +1097,7 @@
 <translation id="2677748264148917807">છોડો</translation>
 <translation id="2679216653373462289">તમારા મોશન અને લાઇટ સેન્સરનો ઉપયોગ કરો</translation>
 <translation id="2679659833697380">તમારી માહિતી તમારા ડિવાઇસમાં સાચવવામાં આવી છે</translation>
+<translation id="2680837394649649718">તમારા <ph name="DEVICE_NAME" /> પર Chromeને મોકલવામાં આવ્યું.</translation>
 <translation id="2683195745483370038">અન્ય પરિણામો મળ્યા</translation>
 <translation id="2686919536310834199">લખવામાં મારી મદદ કરો સુવિધા માટે પ્રતિસાદ મોકલો.</translation>
 <translation id="2687555958734450033">શ્રેષ્ઠ ફિટ</translation>
@@ -3086,6 +3088,7 @@
 <translation id="5787146423283493983">કી એગ્રીમેન્ટ</translation>
 <translation id="5793317771769868848">આ ડિવાઇસમાંથી આ ચુકવણી પદ્ધતિ ડિલીટ કરવામાં આવશે</translation>
 <translation id="5794065675298686371">કિંમતને ટ્રૅક કરવા સંબંધિત નોટિફિકેશન ચાલુ કરો</translation>
+<translation id="5797984091151707075">ઍડમિન પૉલિસી દ્વારા બ્લૉક કરવામાં આવ્યું છે</translation>
 <translation id="5800727402210090597">મોબાઇલ ફોન રિપૅર અને સેવાઓ</translation>
 <translation id="580241730938216256">અપડેટ શરૂ કરો</translation>
 <translation id="5804241973901381774">પરવાનગીઓ</translation>
@@ -3215,6 +3218,7 @@
 <translation id="6006365096047131769">3 x 5 ઇંચ</translation>
 <translation id="6008122969617370890">N-થી-1 સુધીનો ક્રમ</translation>
 <translation id="6008256403891681546">JCB</translation>
+<translation id="6012135807160718387">Google એન્ક્રિપ્શન તમારી માહિતીનું રક્ષણ કરે છે</translation>
 <translation id="6014801569448771146">તમારા પાસવર્ડ તપાસો</translation>
 <translation id="6014851866995737824">અવગણવામાં આવ્યું કારણ કે "ચાલુ કરો" અથવા તો "બંધ કરો" સૂચિમાંથી કોઈ એક ખૂટે છે.</translation>
 <translation id="6015796118275082299">વર્ષ</translation>
@@ -5237,6 +5241,7 @@
 <translation id="9169664750068251925">હંમેશા આ સાઇટ પર અવરોધિત કરો</translation>
 <translation id="9169931577761441333"><ph name="APP_NAME" />ને હોમ સ્ક્રીનમાં ઉમેરો</translation>
 <translation id="9170848237812810038">&amp;પૂર્વવત્ કરો</translation>
+<translation id="9170906125144697215">ઍપ સ્વિચ કર્યા વિના Pix વડે ચુકવણી કરો</translation>
 <translation id="9171296965991013597">ઍપ છોડીએ?</translation>
 <translation id="9173282814238175921">માત્ર એક દસ્તાવેજ/નવી શીટ</translation>
 <translation id="9173995187295789444">બ્લૂટૂથ ડિવાઇસ માટે સ્કૅન કરી રહ્યા છીએ...</translation>
@@ -5253,7 +5258,6 @@
 <translation id="9186371298532546532">વધુ જગ્યાએ આ ઍડ્રેસનો ઉપયોગ કરો</translation>
 <translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> દ્વારા આ ટૅબમાં ફેરફાર કરવામાં આવ્યો</translation>
 <translation id="9189789270972826888">જો કાર્ડ ઑટોમૅટિક રીતે ભરવામાં આવ્યું ન હોય, તો કાર્ડની વિગતો કૉપિ પેસ્ટ કરવા માટે, તેના પર ક્લિક કરો. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
-<translation id="9190557999028587593">4 અઠવાડિયાથી જૂના વિષયોને ઑટોમૅટિક રીતે ડિલીટ કરવામાં આવે છે</translation>
 <translation id="9191834167571392248">નીચે ડાબી બાજુએ કાણું પાડો</translation>
 <translation id="9192361865877479444">ધાતુ (મૅટ)</translation>
 <translation id="9192947025498305328">પ્રાકૃતિક સૌંદર્ય પ્રોડક્ટ</translation>

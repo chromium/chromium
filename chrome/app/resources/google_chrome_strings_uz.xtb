@@ -120,7 +120,6 @@
 <translation id="2174917724755363426">Oʻrnatish yakunlanmadi. Haqiqatan ham bekor qilmoqchimisiz?</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2190166659037789668">Yangilanishni tekshirishda xato: <ph name="UPDATE_CHECK_ERROR" />.</translation>
-<translation id="2199691482078155239">Chrome sizga koʻrsatiladigan reklamalar ustidan koʻproq nazorat beradi va saytlar sizga moslangan reklama chiqarganida siz haqingizda nimani bilishini cheklaydi</translation>
 <translation id="2216543877350048334">Chromedan Google hisobini olib tashlash uchun hisobdan chiqing</translation>
 <translation id="2236949375853147973">Harakatlarim</translation>
 <translation id="22791603784558743">Chrome Dev ichida Gemini oynasini yopish</translation>
@@ -147,6 +146,9 @@
 <translation id="2569974318947988067">Chrome navigatsiyalarni HTTPS protokoliga oʻzgartirishga urinadi.</translation>
 <translation id="2571392474191184472">Chrome tashkilotingiz boshqaruvida</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> allaqachon ushbu Chrome profiliga kirgan. Internetni alohida kezish uchun Chrome siz uchun alohida profil yaratadi.</translation>
+<translation id="2575799939951057838">Xavfsizlik maqsadida Chrome saytga birinchi marta tashrif buyurganingizda JavaScript optimizatsiyasini faolsizlantiradi.
+
+Bu sahifa kutilganidek ishlamasa, optimallashga ruxsat bering.</translation>
 <translation id="2580411288591421699">Hozir ishlab turgan versiyadagi Google Chrome brauzerini o‘rnatib bo‘lmaydi. Google Chrome brauzeringizni yoping va qaytadan urinib ko‘ring.</translation>
 <translation id="2586406160782125153">Bu qurilmadagi brauzer tarixini tozalaydi. Ma’lumotlaringizni keyinroq olish uchun Chrome brauzeriga <ph name="USER_EMAIL" /> sifatida kiring.</translation>
 <translation id="259935314519650377">Yuklab olingan oʻrnatish vositasi keshlanmadi. Xato: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
@@ -656,7 +658,6 @@ Google Chrome sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="7655472416356262023">Hisobni Chromedan chiqarish</translation>
 <translation id="7658239707568436148">Bekor qilish</translation>
 <translation id="7670287553302121848">Chrome hisobi uchun qayta autentifikatsiya kerak</translation>
-<translation id="7675756456029023637">Chromedan soʻrash</translation>
 <translation id="769538538642757151">Chrome biror sozlamaga diqqat qilish kerak boʻlganda sizga xabar qiladi.</translation>
 <translation id="769906121737764913">Chrome Beta ichida Gemini oynasini yopish</translation>
 <translation id="7716950018788545737">Vazifalar yakunlandi.</translation>

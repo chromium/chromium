@@ -1096,6 +1096,7 @@
 <translation id="2677748264148917807">வெளியேறு</translation>
 <translation id="2679216653373462289">மோஷன் மற்றும் லைட் சென்சார்களைப் பயன்படுத்துதல்</translation>
 <translation id="2679659833697380">உங்கள் தகவல் உங்கள் சாதனத்தில் சேமிக்கப்பட்டது</translation>
+<translation id="2680837394649649718"><ph name="DEVICE_NAME" /> இல் உள்ள Chromeமிற்கு அனுப்பப்பட்டது.</translation>
 <translation id="2683195745483370038">பிற முடிவுகள் உள்ளன</translation>
 <translation id="2686919536310834199">'எழுத எனக்கு உதவு' அம்சம் குறித்து கருத்து வழங்குங்கள்.</translation>
 <translation id="2687555958734450033">கச்சிதமாகப் பொருந்தும் அளவு</translation>
@@ -3082,6 +3083,7 @@
 <translation id="5787146423283493983">விசை ஒப்பந்தம்</translation>
 <translation id="5793317771769868848">இந்தச் சாதனத்திலிருந்து இந்தப் பேமெண்ட் முறை நீக்கப்படும்</translation>
 <translation id="5794065675298686371">விலைக் கண்காணிப்பு அறிவிப்புகளை இயக்குதல்</translation>
+<translation id="5797984091151707075">நிர்வாகிக் கொள்கையால் தடுக்கப்பட்டுள்ளது</translation>
 <translation id="5800727402210090597">மொபைல் பழுதுபார்த்தல் &amp; சேவைகள்</translation>
 <translation id="580241730938216256">புதுப்பிப்பைத் தொடங்கு</translation>
 <translation id="5804241973901381774">அனுமதிகள்</translation>
@@ -5233,6 +5235,7 @@
 <translation id="9169664750068251925">இந்தத் தளத்தில் எப்போதும் தடு</translation>
 <translation id="9169931577761441333"><ph name="APP_NAME" />ஐ முகப்புத் திரையில் சேர்க்கவும்</translation>
 <translation id="9170848237812810038">&amp;செயல்தவிர்</translation>
+<translation id="9170906125144697215">Pix மூலம் பணம் செலுத்துங்கள் - ஆப்ஸிற்கிடையே மாற வேண்டியதில்லை</translation>
 <translation id="9171296965991013597">ஆப்ஸிலிருந்து வெளியேறவா?</translation>
 <translation id="9173282814238175921">ஒற்றை ஆவணம்/புதிய தாள்</translation>
 <translation id="9173995187295789444">புளூடூத் சாதனங்களை ஸ்கேன் செய்கிறது...</translation>
@@ -5249,7 +5252,6 @@
 <translation id="9186371298532546532">இந்த முகவரியை மேலும் பல இடங்களில் பயன்படுத்துங்கள்</translation>
 <translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> இந்தப் பக்கத்தை மாற்றியுள்ளார்</translation>
 <translation id="9189789270972826888">கார்டு நிரப்பப்படவில்லை என்றால் நகலெடுத்து ஒட்ட கீழே உள்ள கார்டு விவரங்களைக் கிளிக் செய்யவும். <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
-<translation id="9190557999028587593">4 வாரங்களுக்கு முந்தைய தலைப்புகள் தானாக நீக்கப்படும்</translation>
 <translation id="9191834167571392248">பஞ்ச் பாட்டம் லெஃப்ட்</translation>
 <translation id="9192361865877479444">மேட் மெட்டல்</translation>
 <translation id="9192947025498305328">தீங்கற்ற அழகுப் பொருட்கள்</translation>

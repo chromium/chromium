@@ -1858,6 +1858,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="8765470054473112089">Kai įvedate tekstą adreso juostoje ar paieškos laukelyje, „Chrome“ siunčia tai, ką įvedate, į numatytąjį paieškos variklį, kad gautų geresnių pasiūlymų. Ši funkcija inkognito režimu išjungta.</translation>
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{„Chrome“ aptiko nesudėtingą slaptažodį, kurį galėtumėte patobulinti}one{„Chrome“ aptiko # nesudėtingą slaptažodį, kurį galėtumėte patobulinti}few{„Chrome“ aptiko # nesudėtingus slaptažodžius, kuriuos galėtumėte patobulinti}many{„Chrome“ aptiko # nesudėtingo slaptažodžio, kuriuos galėtumėte patobulinti}other{„Chrome“ aptiko # nesudėtingų slaptažodžių, kuriuos galėtumėte patobulinti}}</translation>
 <translation id="8766529642647037772">Sukurti tokią kaip ši paryškintą nuorodą?</translation>
+<translation id="8769783688897433958">Peržiūrėkite svetainės informaciją ir leidimus</translation>
 <translation id="8788265440806329501">Naršymo istorija uždaryta</translation>
 <translation id="8790193082819560975">Palieskite ir ieškokite produkto pirkimo parinkčių naujame skirtuke.</translation>
 <translation id="8798449543960971550">Skaityta</translation>

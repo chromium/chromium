@@ -1718,6 +1718,7 @@
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" />、<ph name="THIRD_SWITCH" />、他 1 個のスイッチ</translation>
 <translation id="2165177462441582039">各項目のハイライト表示の長さを選択します</translation>
 <translation id="2166369534954157698">あいうえおアイウエオABCabc123漢字</translation>
+<translation id="2168036794078614559">報告を送信しました</translation>
 <translation id="2169062631698640254">このままログインする</translation>
 <translation id="2173302385160625112">インターネット接続を確認してください</translation>
 <translation id="2173801458090845390">登録 ID をこのデバイスに追加します</translation>
@@ -3426,7 +3427,6 @@
 <translation id="3347086966102161372">画像アドレスをコピー(&amp;C)</translation>
 <translation id="3348038390189153836">リムーバブル デバイスが検出されました</translation>
 <translation id="3348973040180736882">解凍中</translation>
-<translation id="3349610303043713601">AI を活用してブラウジング</translation>
 <translation id="3349933790966648062">メモリ使用量</translation>
 <translation id="3351472127384196879">ペンのボタンを追加または指定する</translation>
 <translation id="3353786022389205125">[スリープから復帰するときにロック画面を表示する] をオンにしてから、もう一度お試しください</translation>
@@ -10611,7 +10611,7 @@
 <translation id="8357388086258943206">Linux のインストール中にエラーが発生しました</translation>
 <translation id="8357883857705092796">認識できないサイト</translation>
 <translation id="8358685469073206162">ページを復元しますか？</translation>
-<translation id="835927394551949760">Google で調べる</translation>
+<translation id="835927394551949760">Google に質問する</translation>
 <translation id="835951711479681002">Google アカウントに保存</translation>
 <translation id="8360140320636871023">ディスプレイのテーマをカスタマイズ</translation>
 <translation id="8360267485906769442">フィードバックの送信ボタン</translation>

@@ -479,6 +479,7 @@
 <translation id="1727613060316725209">प्रमाणपत्र मान्य है</translation>
 <translation id="1728677426644403582">एक वेब पेज का सोर्स देखा जा रहा है</translation>
 <translation id="173080396488393970">इस तरह का कार्ड काम नहीं करता</translation>
+<translation id="1731563515262205847">ML-DSA-65</translation>
 <translation id="1732445923934584865">इसके बजाय, व्यक्तिगत तौर पर ऐक्सेस मांगें</translation>
 <translation id="1733064249834771892">फ़ॉन्ट</translation>
 <translation id="1733631169686303142">ऑडियो इक्विपमेंट</translation>
@@ -1096,6 +1097,7 @@
 <translation id="2677748264148917807">छोड़ें</translation>
 <translation id="2679216653373462289">मोशन और लाइट सेंसर का इस्तेमाल करें</translation>
 <translation id="2679659833697380">आपकी जानकारी आपके डिवाइस में सेव हो गई है</translation>
+<translation id="2680837394649649718">आपके <ph name="DEVICE_NAME" /> पर Chrome भेजा गया.</translation>
 <translation id="2683195745483370038">अन्य नतीजे मिले</translation>
 <translation id="2686919536310834199">'लिखने में मेरी मदद करें' सुविधा के लिए सुझाव/राय भेजें या शिकायत करें.</translation>
 <translation id="2687555958734450033">सबसे बढ़िया फ़िटिंग</translation>
@@ -1596,6 +1598,7 @@
 <translation id="350069200438440499">फ़ाइल नाम:</translation>
 <translation id="3501300228850242680">मेटल (संगीत)</translation>
 <translation id="350421688684366066">लेबल (हाई-ग्लॉस)</translation>
+<translation id="3507062913298382727">आईडी कार्ड सेव करें</translation>
 <translation id="350763432931695541">अगले कुछ पेजों से टेक्स्ट निकाला जा रहा है</translation>
 <translation id="3507869775212388416">कानूनी क्षेत्र की नौकरियां</translation>
 <translation id="3507936815618196901">आपके आस-पास की जगह का 3D मैप बनाना और कैमरे की स्थिति ट्रैक करना चाहती है</translation>
@@ -1989,6 +1992,7 @@
 <translation id="4098306082496067348">वर्चुअल कार्ड की जानकारी पर टैप करके उसे चेकआउट में जोड़ें.</translation>
 <translation id="4099048595830172239">जब गोपनीय कॉन्टेंट दिख रहा हो, तो एडमिन नीति आपको <ph name="APPLICATION_TITLE" /> के साथ अपनी स्क्रीन शेयर करने का सुझाव नहीं देती है:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome में फ़ॉन्ट साइज़ और टाइपफ़ेस को पसंद के मुताबिक बनाने के लिए, पहले Tab और फिर Enter दबाएं</translation>
+<translation id="4100421230355095925">ML-DSA-44</translation>
 <translation id="4101413244023615925">टेक्स्ट और ग्राफ़िक</translation>
 <translation id="4101917550061398111">चुने हुए आइटम मिटाएं</translation>
 <translation id="4102567721634170493">स्थानीय समाचार</translation>
@@ -2216,6 +2220,7 @@
 <translation id="4415156962929755728">प्लास्टिक (हाई ग्लॉस)</translation>
 <translation id="4415426530740016218">पिकअप का पता</translation>
 <translation id="4415748029120993980">SECG अंडाकार वक्र secp384r1 (अर्थात NIST P-384)</translation>
+<translation id="4418150423720608641">ML-DSA-87</translation>
 <translation id="4419287616181386201">मैनेजमेंट सेटिंग में जाकर, पासवर्ड मिटाए जा सकते हैं</translation>
 <translation id="4424024547088906515">यह सर्वर यह नहीं प्रमाणित कर सका कि यह <ph name="DOMAIN" /> है; इसका सुरक्षा प्रमाणपत्र Chrome द्वारा विश्वसनीय नहीं है. ऐसा गलत कॉन्फ़िगरेशन या किसी आक्रमणकर्ता द्वारा आपके कनेक्शन में अवरोध डालने के कारण हो सकता है.</translation>
 <translation id="4425750422187370446">ऐथलेटिक कपड़े</translation>
@@ -2955,6 +2960,7 @@
 <translation id="5573641252776268565">पासपोर्ट की जानकारी में बदलाव करें</translation>
 <translation id="5578606540385219379">सेवा देने वाली कंपनी</translation>
 <translation id="5580958916614886209">अपने क्रेडिट कार्ड की समय सीमा खत्म होने का महीना जांचें और फिर से कोशिश करें</translation>
+<translation id="5582453333200265572">आईडी कार्ड अपडेट करें</translation>
 <translation id="5583442610070676234">तुलना करने वाली टेबल <ph name="COMPARE_SET_NAME" /> के लिए अन्य कार्रवाइयां</translation>
 <translation id="55841966151154662">इस आईबीएएन को आपके Google Wallet में सेव नहीं किया जा सका. इसके बजाय, इसे इस डिवाइस पर Chrome में सेव किया गया है.</translation>
 <translation id="558420943003240152">Manage passwords and passkeys…</translation>
@@ -3081,6 +3087,7 @@
 <translation id="5787146423283493983">मुख्य अनुबंध</translation>
 <translation id="5793317771769868848">इस डिवाइस से, पेमेंट का यह तरीका मिटा दिया जाएगा</translation>
 <translation id="5794065675298686371">कीमत ट्रैक करने से जुड़ी सूचनाएं पाने की सुविधा चालू करें</translation>
+<translation id="5797984091151707075">एडमिन की नीति के तहत ब्लॉक किया गया</translation>
 <translation id="5800727402210090597">मोबाइल फ़ोन ठीक करने की और इससे जुड़ी सेवाएं</translation>
 <translation id="580241730938216256">अपडेट करना शुरू करें</translation>
 <translation id="5804241973901381774">अनुमतियां</translation>
@@ -3088,6 +3095,7 @@
 <translation id="5808435672482059465">अपना 'Chrome इतिहास' देखें</translation>
 <translation id="5810442152076338065"><ph name="DOMAIN" /> से आपके कनेक्शन को किसी आधुनिक साइफ़र सुइट का इस्तेमाल करके सुरक्षित किया गया है.</translation>
 <translation id="5813119285467412249">&amp;जोड़ना फिर से करें</translation>
+<translation id="5813274153495000141">अपनी जानकारी सेव करें और फ़ॉर्म को ज़्यादा तेज़ी से भरें. यह जानकारी आपके डिवाइस में सेव होती है.</translation>
 <translation id="5813753398265398978">भौतिक विज्ञान</translation>
 <translation id="5817918615728894473">युग्‍मित करें</translation>
 <translation id="5820625124144807242">ऑर्डर की समीक्षा करने के बाद, आपको अपने <ph name="BNPL_ISSUER_NAME" /> खाते से साइन इन करना होगा या एक नया खाता बनाना होगा. यह खाता, Google Pay से अपने-आप लिंक हो जाएगा.</translation>
@@ -5232,6 +5240,7 @@
 <translation id="9169664750068251925">इस साइट पर हमेशा अवरोधित करें</translation>
 <translation id="9169931577761441333">होम स्क्रीन पर <ph name="APP_NAME" /> जोड़ें</translation>
 <translation id="9170848237812810038">&amp;पूर्ववत् करें</translation>
+<translation id="9170906125144697215">ऐप्लिकेशन स्विच किए बिना, Pix से पेमेंट करें</translation>
 <translation id="9171296965991013597">ऐप्लिकेशन बंद करें?</translation>
 <translation id="9173282814238175921">एक दस्तावेज़/नई शीट</translation>
 <translation id="9173995187295789444">ब्लूटूथ डिवाइस के लिए स्कैन किया जा रहा है...</translation>
@@ -5248,7 +5257,6 @@
 <translation id="9186371298532546532">इस पते का इस्तेमाल अन्य जगहों पर भी करें</translation>
 <translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> ने यह टैब बदला है</translation>
 <translation id="9189789270972826888">अगर कार्ड की जानकारी नहीं भरी गई है, तो कार्ड की यहां दी गई जानकारी को कॉपी करके चिपकाने के लिए, उस पर क्लिक करें. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
-<translation id="9190557999028587593">चार हफ़्तों से ज़्यादा पुराने विषय अपने-आप मिट जाते हैं</translation>
 <translation id="9191834167571392248">नीचे बाईं ओर पंच</translation>
 <translation id="9192361865877479444">मेटल (मैट)</translation>
 <translation id="9192947025498305328">पर्यावरण और स्वास्थ्य को ध्यान में रखकर बनाए गए प्रॉडक्ट</translation>

@@ -358,7 +358,6 @@
 <translation id="4724676981607797757">지원되지 않는 프로토콜 오류로 인해 설치할 수 없습니다.</translation>
 <translation id="4746050847053251315">Chromium을 종료하시겠습니까?</translation>
 <translation id="4748217263233248895">Chromium 특별 보안 업데이트를 방금 적용했습니다. 다시 시작하면 탭이 복원됩니다.</translation>
-<translation id="4759645701210484457">Chromium에 질문하기</translation>
 <translation id="4771701986670315895">최근에 사이트를 방문하지 않았습니다. Chromium에서 <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> 외 권한 <ph name="COUNT" />개를 삭제했습니다.</translation>
 <translation id="4788777615168560705">Chromium에서 비밀번호를 확인할 수 없습니다. 24시간 후에 다시 시도해 보거나 <ph name="BEGIN_LINK" />Google 계정에서 비밀번호를 확인<ph name="END_LINK" />하세요.</translation>
 <translation id="479167709087336770">Google 검색과 동일한 맞춤법 검사기가 사용됩니다. 브라우저에 입력되는 텍스트는 Google로 전송됩니다. 설정에서 언제든지 이 동작을 변경할 수 있습니다.</translation>
@@ -525,7 +524,6 @@
 <translation id="6676384891291319759">인터넷 연결</translation>
 <translation id="668175097507315160">로그인 중 오류가 발생하여 ChromiumOS에서 데이터를 동기화할 수 없습니다.</translation>
 <translation id="6691132793308828750">Chromium에서 이 앱 데이터 삭제</translation>
-<translation id="6692797197837897398">Chromium을 나에게 표시되는 광고를 보다 세부적으로 관리할 뿐만 아니라 사이트가 개인 맞춤 광고를 표시할 때 나에 관해 얻을 수 있는 정보를 제한할 수 있습니다.</translation>
 <translation id="6709350901466051922">Chromium에서 사이트에 대한 마이크 권한이 필요합니다.</translation>
 <translation id="6712881677154121168">다운로드 오류(<ph name="DOWNLOAD_ERROR" />)가 발생했습니다.</translation>
 <translation id="6717134281241384636">Chromium의 최신 버전을 사용하기 때문에 프로필을 사용할 수 없습니다.

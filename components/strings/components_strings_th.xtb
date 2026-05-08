@@ -478,6 +478,7 @@
 <translation id="1727613060316725209">ใบรับรองถูกต้อง</translation>
 <translation id="1728677426644403582">คุณกำลังดูซอร์สโค้ดของหน้าเว็บ</translation>
 <translation id="173080396488393970">ไม่รองรับบัตรประเภทนี้</translation>
+<translation id="1731563515262205847">ML-DSA-65</translation>
 <translation id="1732445923934584865">ถามด้วยตนเองแทน</translation>
 <translation id="1733064249834771892">แบบอักษร</translation>
 <translation id="1733631169686303142">อุปกรณ์เครื่องเสียง</translation>
@@ -1095,6 +1096,7 @@
 <translation id="2677748264148917807">ออก</translation>
 <translation id="2679216653373462289">ใช้เซ็นเซอร์ตรวจจับการเคลื่อนไหวและเซ็นเซอร์แสง</translation>
 <translation id="2679659833697380">ระบบจะบันทึกข้อมูลของคุณลงในอุปกรณ์</translation>
+<translation id="2680837394649649718">ส่งไปยัง Chrome ใน <ph name="DEVICE_NAME" /> แล้ว</translation>
 <translation id="2683195745483370038">พบผลการค้นหาอื่นๆ</translation>
 <translation id="2686919536310834199">ส่งความคิดเห็นเกี่ยวกับฟีเจอร์ "ช่วยฉันเขียน"</translation>
 <translation id="2687555958734450033">ปรับพอดี</translation>
@@ -1595,6 +1597,7 @@
 <translation id="350069200438440499">ชื่อไฟล์:</translation>
 <translation id="3501300228850242680">เมทัล (เพลง)</translation>
 <translation id="350421688684366066">ป้าย (เงามาก)</translation>
+<translation id="3507062913298382727">บันทึกบัตรประชาชน</translation>
 <translation id="350763432931695541">กําลังดึงข้อความใน 2-3 หน้าถัดไป</translation>
 <translation id="3507869775212388416">งานด้านกฎหมาย</translation>
 <translation id="3507936815618196901">สร้างแผนที่ 3 มิติของสิ่งที่อยู่รอบตัวคุณและติดตามตำแหน่งของกล้อง</translation>
@@ -1988,6 +1991,7 @@
 <translation id="4098306082496067348">แตะรายละเอียดบัตรเสมือน (Virtual Card) เพื่อเพิ่มลงในการชำระเงิน</translation>
 <translation id="4099048595830172239">นโยบายของผู้ดูแลระบบไม่แนะนำให้แชร์หน้าจอกับ <ph name="APPLICATION_TITLE" /> เมื่อมีเนื้อหาที่เป็นความลับแสดงอยู่</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อปรับแต่งขนาดแบบอักษรและลักษณะแบบอักษรใน Chrome</translation>
+<translation id="4100421230355095925">ML-DSA-44</translation>
 <translation id="4101413244023615925">ข้อความและกราฟิก</translation>
 <translation id="4101917550061398111">ลบรายการที่เลือก</translation>
 <translation id="4102567721634170493">ข่าวท้องถิ่น</translation>
@@ -2215,6 +2219,7 @@
 <translation id="4415156962929755728">พลาสติก (เงามาก)</translation>
 <translation id="4415426530740016218">ที่อยู่ในการรับ</translation>
 <translation id="4415748029120993980">SECG elliptic curve secp384r1 (เรียกอีกอย่างว่า NIST P-384)</translation>
+<translation id="4418150423720608641">ML-DSA-87</translation>
 <translation id="4419287616181386201">คุณลบรหัสผ่านได้ในการตั้งค่าการจัดการ</translation>
 <translation id="4424024547088906515">เซิร์ฟเวอร์นี้ไม่สามารถพิสูจน์ได้ว่าเป็น <ph name="DOMAIN" /> เพราะ Chrome ไม่เชื่อถือใบรับรองความปลอดภัย โดยอาจเกิดจากการกำหนดค่าผิดหรือผู้บุกรุกที่ขัดขวางการเชื่อมต่อของคุณ</translation>
 <translation id="4425750422187370446">ชุดกีฬา</translation>
@@ -2954,6 +2959,7 @@
 <translation id="5573641252776268565">แก้ไขหนังสือเดินทาง</translation>
 <translation id="5578606540385219379">ผู้ให้บริการ</translation>
 <translation id="5580958916614886209">ตรวจสอบเดือนหมดอายุแล้วลองอีกครั้ง</translation>
+<translation id="5582453333200265572">อัปเดตบัตรประชาชน</translation>
 <translation id="5583442610070676234">การดำเนินการเพิ่มเติมสำหรับตารางเปรียบเทียบ<ph name="COMPARE_SET_NAME" /></translation>
 <translation id="55841966151154662">บันทึก IBAN นี้ใน Google Wallet ไม่ได้ แต่บันทึกลงใน Chrome บนอุปกรณ์นี้แทน</translation>
 <translation id="558420943003240152">จัดการรหัสผ่านและพาสคีย์…</translation>
@@ -3080,6 +3086,7 @@
 <translation id="5787146423283493983">ข้อตกลงเกี่ยวกับคีย์</translation>
 <translation id="5793317771769868848">ระบบจะลบวิธีการชำระเงินนี้ออกจากอุปกรณ์</translation>
 <translation id="5794065675298686371">เปิดการแจ้งเตือนการติดตามราคา</translation>
+<translation id="5797984091151707075">ถูกบล็อกโดยนโยบายผู้ดูแลระบบ</translation>
 <translation id="5800727402210090597">บริการรับซ่อมโทรศัพท์มือถือ</translation>
 <translation id="580241730938216256">เริ่มอัปเดต</translation>
 <translation id="5804241973901381774">สิทธิ์</translation>
@@ -3087,6 +3094,7 @@
 <translation id="5808435672482059465">ดูประวัติการเข้าชมใน Chrome</translation>
 <translation id="5810442152076338065">มีการเข้ารหัสการเชื่อมต่อของคุณกับ <ph name="DOMAIN" /> ด้วยชุดการเข้ารหัสที่ล้าสมัยแล้ว</translation>
 <translation id="5813119285467412249">&amp;ทำซ้ำการเพิ่ม</translation>
+<translation id="5813274153495000141">บันทึกข้อมูลและกรอกแบบฟอร์มได้รวดเร็วยิ่งขึ้น บันทึกลงในอุปกรณ์</translation>
 <translation id="5813753398265398978">ฟิสิกส์</translation>
 <translation id="5817918615728894473">จับคู่</translation>
 <translation id="5820625124144807242">หลังจากที่ตรวจสอบคำสั่งซื้อแล้ว คุณต้องลงชื่อเข้าใช้หรือสร้างบัญชีกับ <ph name="BNPL_ISSUER_NAME" /> ระบบจะลิงก์บัญชีนี้กับ Google Pay โดยอัตโนมัติ</translation>
@@ -5230,6 +5238,7 @@
 <translation id="9169664750068251925">บล็อกบนไซต์นี้เสมอ</translation>
 <translation id="9169931577761441333">เพิ่ม <ph name="APP_NAME" /> ในหน้าจอหลัก</translation>
 <translation id="9170848237812810038">เ&amp;ลิกทำ</translation>
+<translation id="9170906125144697215">ชำระเงินด้วย Pix โดยไม่ต้องเปลี่ยนแอป</translation>
 <translation id="9171296965991013597">ออกจากแอปไหม</translation>
 <translation id="9173282814238175921">เอกสารเดียว/แผ่นงานใหม่</translation>
 <translation id="9173995187295789444">กำลังสแกนหาอุปกรณ์บลูทูธ...</translation>
@@ -5246,7 +5255,6 @@
 <translation id="9186371298532546532">ใช้ที่อยู่นี้ในที่อื่นๆ</translation>
 <translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> เปลี่ยนแท็บนี้แล้ว</translation>
 <translation id="9189789270972826888">คลิกรายละเอียดบัตรด้านล่างเพื่อคัดลอกและวางหากไม่ได้กรอกข้อมูลบัตร <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
-<translation id="9190557999028587593">หัวข้อที่เก่ากว่า 4 สัปดาห์จะถูกลบโดยอัตโนมัติ</translation>
 <translation id="9191834167571392248">เจาะรูด้านซ้ายล่าง</translation>
 <translation id="9192361865877479444">โลหะ (ด้าน)</translation>
 <translation id="9192947025498305328">ผลิตภัณฑ์เสริมความงามจากธรรมชาติ</translation>

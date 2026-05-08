@@ -1858,6 +1858,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="8765470054473112089">Quan escrius a la barra d'adreces o al quadre de cerca, Chrome envia el que escrius al teu motor de cerca predeterminat per obtenir millors suggeriments. Aquesta opció està desactivada en el mode d'incògnit.</translation>
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome ha trobat una contrasenya poc segura que podries millorar}other{Chrome ha trobat # contrasenyes poc segures que podries millorar}}</translation>
 <translation id="8766529642647037772">Vols crear un enllaç destacat com aquest?</translation>
+<translation id="8769783688897433958">Mostra la informació i els permisos del lloc web</translation>
 <translation id="8788265440806329501">L'historial de navegació està tancat</translation>
 <translation id="8790193082819560975">Toca per cercar opcions de compra del producte en una pestanya nova.</translation>
 <translation id="8798449543960971550">Llegits</translation>

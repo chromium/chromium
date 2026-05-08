@@ -1676,6 +1676,7 @@
 <translation id="8030852056903932865">অনুমোদন জনাওক</translation>
 <translation id="8032569120109842252">ফ’ল’ কৰি থকা হৈছে</translation>
 <translation id="8035522026858423976"><ph name="TAB_TITLE" />, বাছনি কৰা মিউট কৰা ইনক’গ্নিট’ টেব</translation>
+<translation id="8036587585440959897">কিছুমান এক্সটেনশ্বনে Chromeত সন্ধান ইঞ্জিন যোগ দিব পাৰে।</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> দিন বাকী আছে</translation>
 <translation id="8037801708772278989">এইমাত্ৰ পৰীক্ষা কৰা হৈছে</translation>
 <translation id="804335162455518893">SD কাৰ্ড বিচাৰি পোৱা নগ’ল</translation>
@@ -1962,6 +1963,7 @@
 <translation id="9169507124922466868">নেভিগেশ্বন ইতিহাস আধা খোলা আছে</translation>
 <translation id="9189607089796819144">আপুনি যিহ’লেও "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) ডাউনল’ড কৰিব বিচাৰে নেকি?</translation>
 <translation id="9190276265094487094">আপোনাৰ আটাইবোৰ ছিংক কৰা ডিভাইচত আপোনাৰ ইতিহাস থাকিব যাতে আপুনি যি কৰি আছিল সেয়া অব্যাহত ৰাখিব পাৰে</translation>
+<translation id="9190355771000652811">ঠিকনাৰ বাৰডালত সন্ধান ইঞ্জিন আৰু ছাইটৰ সন্ধানৰ শ্বৰ্টকাটৰ সৈতে কীব’ৰ্ডৰ এই শ্বৰ্টকাটটো ব্যৱহাৰ কৰক।</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" />, পিন কৰি থোৱা বাছনিকৃত ইনক’গনিট’ টেব</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{১ মিনিটৰ আগত পৰীক্ষা কৰা হৈছে}one{# মিনিটৰ আগত পৰীক্ষা কৰা হৈছে}other{# মিনিটৰ আগত পৰীক্ষা কৰা হৈছে}}</translation>
 <translation id="9204836675896933765">১টা ফাইল বাকী আছে</translation>

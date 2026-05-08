@@ -1858,6 +1858,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="8765470054473112089">Wenn du etwas in die Adressleiste oder das Suchfeld eingibst, sendet Chrome deine Eingabe an deine Standardsuchmaschine, damit du bessere Vorschläge erhältst. Im Inkognitomodus ist diese Funktion deaktiviert.</translation>
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome hat ein schwaches Passwort gefunden, dessen Sicherheit du verbessern kannst}other{Chrome hat # schwache Passwörter gefunden, deren Sicherheit du verbessern kannst}}</translation>
 <translation id="8766529642647037772">Möchtest du einen hervorgehobenen Link wie diesen erstellen?</translation>
+<translation id="8769783688897433958">Website-Informationen und -Berechtigungen ansehen</translation>
 <translation id="8788265440806329501">Der Navigationsverlauf wurde geschlossen</translation>
 <translation id="8790193082819560975">Tippen, um auf einem neuen Tab nach Kaufoptionen für das Produkt zu suchen.</translation>
 <translation id="8798449543960971550">Gelesen</translation>

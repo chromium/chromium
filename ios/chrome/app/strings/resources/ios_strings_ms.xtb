@@ -442,7 +442,6 @@
 <translation id="2493269659028026145">Kunci dengan serta-merta menggunakan <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="2496180316473517155">Sejarah penyemakan imbas</translation>
 <translation id="2496626742194544812">Pergi ke Tab Pertama</translation>
-<translation id="2497852260688568942">Penyegerakan dilumpuhkan oleh pentadbir anda</translation>
 <translation id="2499505845365628575">Anda boleh menemukan semua sejarah penyemakan imbas anda daripada <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="2511117522375201202">Anda mempunyai <ph name="NUMBER_OF_PASSWORDS" /> kata laluan yang terjejas yang boleh mendedahkan keselamatan anda kepada risiko.</translation>
 <translation id="2513103768503127042">Anda akan menemukan kumpulan tab anda di sini</translation>
@@ -567,6 +566,7 @@
 <translation id="2969979262385602596">Gagal melog masuk. Sila cuba sebentar lagi.</translation>
 <translation id="2975761176769946178">URL diperlukan</translation>
 <translation id="297667759942911166">Bekerjasama dalam kumpulan tab</translation>
+<translation id="298696743524648170">Untuk menggunakan Gemini dalam Chrome, log masuk ke Chrome dengan Google Account anda</translation>
 <translation id="2987670534697681860">Sahkan identiti anda untuk mengakses semua kata laluan anda pada peranti ini.</translation>
 <translation id="2989523299700148168">Dilawati baru-baru ini</translation>
 <translation id="2989805286512600854">Buka dalam Tab Baharu</translation>
@@ -621,6 +621,7 @@
 <translation id="31652791196570636">Ketepikan</translation>
 <translation id="3167868116600277716">Temukan suapan</translation>
 <translation id="3169472444629675720">Temui</translation>
+<translation id="3172755898799085680">Gemini tidak tersedia pada halaman ini</translation>
 <translation id="3174662312949010067">Anda juga boleh menggunakan kata laluan yang disimpan pada peranti anda yang lain.</translation>
 <translation id="3177338796769255211">Log masuk untuk mendapatkan penanda halaman dan pelbagai lagi pada semua peranti anda</translation>
 <translation id="3181954750937456830">Penyemakan Imbas Selamat (melindungi anda dan peranti anda daripada tapak yang berbahaya)</translation>
@@ -996,6 +997,7 @@
 <translation id="4552042254369397518">Menyalin…</translation>
 <translation id="4553044860350038560">Lagi kunci laluan</translation>
 <translation id="4564893319561643483">Sembunyikan "<ph name="TITLE" />"</translation>
+<translation id="456502772933839252">Berkongsi <ph name="PAGE_TITLE" /></translation>
 <translation id="4565377596337484307">Sembunyikan kata laluan</translation>
 <translation id="4568230126482344545">Sembunyikan tab Terbaharu</translation>
 <translation id="4578835633387306383">Hidupkan…</translation>
@@ -2001,6 +2003,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939856641500914040">Padamkan Data Semakan Imbas…</translation>
 <translation id="7941578031639087549">{count,plural, =1{Halaman ditambahkan pada senarai bacaan dalam akaun anda, {email}}other{{count} halaman ditambahkan pada senarai bacaan dalam akaun anda, {email}}}</translation>
+<translation id="7948579849190819732">Tab semasa</translation>
 <translation id="7952353944614086413">Tab dan kumpulan terbuka anda</translation>
 <translation id="7952670906562503188">Anda akan memadamkan {passkey_count} kunci laluan serta senarai laman &amp; apl yang anda pilih untuk tidak sekali-kali menyimpan log masuk. Mana-mana akaun yang anda buat untuk laman dan apl tidak akan dipadamkan.</translation>
 <translation id="7958575506592576831">Maklumat keselamatan halaman</translation>

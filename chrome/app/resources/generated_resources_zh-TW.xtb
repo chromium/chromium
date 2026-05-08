@@ -1722,6 +1722,7 @@
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />、<ph name="SECOND_SWITCH" />、<ph name="THIRD_SWITCH" />，以及另外 1 個按鍵</translation>
 <translation id="2165177462441582039">選擇醒目顯示範圍停留在每個項目上的時間長度</translation>
 <translation id="2166369534954157698">狐狗大戰</translation>
+<translation id="2168036794078614559">已回報</translation>
 <translation id="2169062631698640254">繼續登入</translation>
 <translation id="2173302385160625112">檢查你的網際網路連線</translation>
 <translation id="2173801458090845390">新增這部裝置的申請 ID</translation>
@@ -3431,7 +3432,6 @@
 <translation id="3347086966102161372">複製圖片網址(&amp;O)</translation>
 <translation id="3348038390189153836">偵測到卸除式裝置</translation>
 <translation id="3348973040180736882">解壓縮</translation>
-<translation id="3349610303043713601">使用 AI 瀏覽</translation>
 <translation id="3349933790966648062">記憶體使用量</translation>
 <translation id="3351472127384196879">新增或點選觸控筆按鈕</translation>
 <translation id="3353786022389205125">請開啟「從休眠狀態喚醒時顯示螢幕鎖定」功能，然後再試一次</translation>
@@ -11678,7 +11678,7 @@
         如要瞭解 Google 會收集哪些資料，以及收集這些資料的原因，請前往 <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" />。</translation>
 <translation id="9066782832737749352">文字轉語音</translation>
 <translation id="9068298336633421551">允許具有位置存取權的 Android 應用程式和服務使用這個裝置的位置資訊。Google 可能會定期蒐集位置資料，並以匿名方式使用這類資料，藉此提高定位精確度及改善適地性服務。</translation>
-<translation id="9068598199622656904">透過一次按下一個按鍵的方式使用鍵盤快速鍵，而不是同時按住多個按鍵</translation>
+<translation id="9068598199622656904">依序按下單一按鍵，即可進行快速操作，不必同時按住</translation>
 <translation id="9068878141610261315">不支援的檔案類型</translation>
 <translation id="9069417381769492963">找不到與搜尋字詞相符的書籤</translation>
 <translation id="9070342919388027491">分頁已移動到左側</translation>

@@ -1043,6 +1043,7 @@
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">โหมดภาพรวม</translation>
 <translation id="4242533952199664413">เปิดการตั้งค่า</translation>
+<translation id="4244765461494758482">การตั้งค่าเหล่านี้กำลังซิงค์กับอุปกรณ์ ChromeOS อื่นๆ ของคุณ คุณสามารถเปลี่ยนการตั้งค่าเหล่านี้ได้ที่นี่ หรือจัดการรายการทั้งหมดในการตั้งค่า</translation>
 <translation id="4247123849143712100">อัปเดตและปิด</translation>
 <translation id="4249248555939881673">กำลังรอการเชื่อมต่อเครือข่าย...</translation>
 <translation id="4250229828105606438">ภาพหน้าจอ</translation>
@@ -2323,6 +2324,7 @@
 <translation id="8051716679295756675">มีเทมเพลตชื่อ <ph name="DESK_TEMPLATE_NAME" /> อยู่แล้ว</translation>
 <translation id="8052898407431791827">คัดลอกไปยังคลิปบอร์ดแล้ว</translation>
 <translation id="8054466585765276473">กำลังคำนวณเวลาใช้งานแบตเตอรี่</translation>
+<translation id="8063363226185507157">การตั้งค่าการช่วยเหลือพิเศษที่ซิงค์แล้ว</translation>
 <translation id="8076492880354921740">แท็บ</translation>
 <translation id="8079538659226626406">การแชร์หน้าจอ</translation>
 <translation id="8083540854303889870">บันทึกไว้ใช้ภายหลัง</translation>

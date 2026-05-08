@@ -1674,6 +1674,7 @@
 <translation id="8030852056903932865">ఆమోదించు</translation>
 <translation id="8032569120109842252">ఫాలో చేస్తున్నారు</translation>
 <translation id="8035522026858423976">ఎంచుకున్న <ph name="TAB_TITLE" /> ట్యాబ్, అజ్ఞాత మోడ్‌లో మ్యూట్ చేసి ఉంది</translation>
+<translation id="8036587585440959897">కొన్ని ఎక్స్‌టెన్షన్‌లు, సెర్చ్ ఇంజిన్‌లను Chromeకు జోడించగలవు.</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> రోజులు మిగిలి ఉంది</translation>
 <translation id="8037801708772278989">ఇప్పుడే చెక్ చేసింది</translation>
 <translation id="804335162455518893">SD కార్డ్ కనుగొనబడలేదు</translation>
@@ -1960,6 +1961,7 @@
 <translation id="9169507124922466868">నావిగేషన్ హిస్టరీ సగం తెరిచి ఉంది</translation>
 <translation id="9189607089796819144">అయినా సరే మీరు "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />)ను డౌన్‌లోడ్ చేసుకోవాలనుకుంటున్నారా?</translation>
 <translation id="9190276265094487094">సింక్ చేసిన మీ పరికరాలన్నింటిలో మీ హిస్టరీ ఉంటుంది, కాబట్టి మీరు ఏదైతే చేస్తున్నారో, దానిని కొనసాగించవచ్చు</translation>
+<translation id="9190355771000652811">అడ్రస్ బార్‌లో, సెర్చ్ ఇంజిన్‌లు, సైట్ సెర్చ్ షార్ట్‌కట్‌లతో ఈ కీబోర్డ్ షార్ట్‌కట్‌ను ఉపయోగించండి.</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" />, పిన్ చేసి ఎంపిక చేసిన అజ్ఞాత ట్యాబ్</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 నిమిషం క్రితం చెక్ చేసింది}other{# నిమిషాల క్రితం చెక్ చేసింది}}</translation>
 <translation id="9204836675896933765">1 ఫైల్ మిగిలి ఉంది</translation>

@@ -442,7 +442,6 @@
 <translation id="2493269659028026145">قفل علامات التبويب على الفور باستخدام "<ph name="BIOMETRIC_AUTHENITCATION_TYPE" />"</translation>
 <translation id="2496180316473517155">سجلّ التصفّح</translation>
 <translation id="2496626742194544812">الانتقال إلى علامة التبويب الأولى</translation>
-<translation id="2497852260688568942">تم إيقاف المزامنة من قِبل المشرف</translation>
 <translation id="2499505845365628575">يمكنك العثور على سجلّ التصفُّح بالكامل من <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="2511117522375201202">لديك <ph name="NUMBER_OF_PASSWORDS" /> كلمة مرور محتمَل تعرّضها للاختراق، وقد تسبِّب مشاكل أمنية.</translation>
 <translation id="2513103768503127042">ستظهر لك مجموعات علامات التبويب هنا</translation>
@@ -1999,6 +1998,7 @@
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939856641500914040">حذف بيانات التصفّح…</translation>
 <translation id="7941578031639087549">{count,plural, =1{تمّت إضافة صفحة واحدة إلى "قائمة القراءة" في عنوان حسابك {email}}zero{تمّت إضافة {count} صفحة إلى "قائمة القراءة" في عنوان حسابك {email}}two{تمّت إضافة صفحتَين ({count}) إلى "قائمة القراءة" في عنوان حسابك {email}}few{تمّت إضافة {count} صفحات إلى "قائمة القراءة" في عنوان حسابك {email}}many{تمّت إضافة {count} صفحةً إلى "قائمة القراءة" في عنوان حسابك {email}}other{تمّت إضافة {count} صفحة إلى "قائمة القراءة" في عنوان حسابك {email}}}</translation>
+<translation id="7948579849190819732">علامة التبويب الحالية</translation>
 <translation id="7952353944614086413">علامات التبويب والمجموعات المفتوحة</translation>
 <translation id="7952670906562503188">‏أنت على وشك حذف {passkey_count} من مفاتيح المرور وقائمة المواقع الإلكترونية والتطبيقات التي اخترت عدم حفظ معلومات تسجيل الدخول إليها، ولن يتم حذف أي حساب أنشأته للمواقع الإلكترونية والتطبيقات.</translation>
 <translation id="7958575506592576831">معلومات أمان الصفحة</translation>

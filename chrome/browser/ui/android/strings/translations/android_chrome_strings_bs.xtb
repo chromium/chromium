@@ -1858,6 +1858,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="8765470054473112089">Kad pišete u traci za adresu ili u okviru za pretraživanje, Chrome šalje ono što upišete zadanom pretraživaču radi dobijanja boljih prijedloga. Ovo je isključeno u anonimnom načinu rada.</translation>
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome je pronašao slabu lozinku koju možete poboljšati}one{Chrome je pronašao # slabu lozinku koje možete poboljšati}few{Chrome je pronašao # slabe lozinke koje možete poboljšati}other{Chrome je pronašao # slabih lozinki koje možete poboljšati}}</translation>
 <translation id="8766529642647037772">Kreirati istaknuti link poput ovoga?</translation>
+<translation id="8769783688897433958">Pregledajte informacije o web lokaciji i odobrenja za nju</translation>
 <translation id="8788265440806329501">Historija navigacije je zatvorena</translation>
 <translation id="8790193082819560975">Pretraživanje opcija kupovine za proizvod na novoj kartici dodirom.</translation>
 <translation id="8798449543960971550">Pročitano</translation>

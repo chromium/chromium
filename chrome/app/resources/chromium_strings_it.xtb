@@ -356,7 +356,6 @@
 <translation id="4724676981607797757">Installazione non riuscita a causa di un errore di protocollo non supportato.</translation>
 <translation id="4746050847053251315">Vuoi chiudere comunque Chromium?</translation>
 <translation id="4748217263233248895">È stato appena applicato un aggiornamento di sicurezza speciale per Chromium. Riavvia ora e le schede verranno ripristinate.</translation>
-<translation id="4759645701210484457">Chiedi a Chromium</translation>
 <translation id="4771701986670315895">Non hai visitato il sito di recente. Chromium ha rimosso <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e altre <ph name="COUNT" /> autorizzazioni.</translation>
 <translation id="4788777615168560705">Chromium non può controllare le tue password. Riprova tra 24 ore oppure <ph name="BEGIN_LINK" />controlla le password nel tuo Account Google<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">Viene usato lo stesso controllo ortografico utilizzato nella Ricerca Google. Il testo che digiti nel browser viene inviato a Google. Puoi modificare questo comportamento in qualsiasi momento nelle impostazioni.</translation>
@@ -523,7 +522,6 @@
 <translation id="6676384891291319759">Accesso a Internet</translation>
 <translation id="668175097507315160">Impossibile sincronizzare i dati in Chromium OS a causa di un errore durante l'accesso.</translation>
 <translation id="6691132793308828750">Rimuovi i dati di questa app da Chromium</translation>
-<translation id="6692797197837897398">Chromium ti offre un maggiore controllo sugli annunci che vedi e limita ciò che i siti possono imparare su di te quando ti mostrano annunci personalizzati</translation>
 <translation id="6709350901466051922">Chromium deve avere l'autorizzazione di accesso al microfono per questo sito</translation>
 <translation id="6712881677154121168">Errore di download: <ph name="DOWNLOAD_ERROR" /></translation>
 <translation id="6717134281241384636">Impossibile utilizzare il tuo profilo perché proviene da una versione più recente di Chromium.

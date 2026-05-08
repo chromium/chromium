@@ -119,7 +119,6 @@
 <translation id="2174917724755363426">Installasjonen er ikke fullført. Er du sikker på at du vil avbryte?</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2190166659037789668">Feil ved oppdateringssjekk: <ph name="UPDATE_CHECK_ERROR" />.</translation>
-<translation id="2199691482078155239">Med Chrome får du mer kontroll over annonsene du ser, og du begrenser hvilke ting nettsteder kan finne ut om deg når de viser deg personlig tilpassede annonser</translation>
 <translation id="2216543877350048334">For å fjerne Google-kontoen din fra Chrome, logg av</translation>
 <translation id="2236949375853147973">Min aktivitet</translation>
 <translation id="22791603784558743">Lukk Gemini i Chrome Dev</translation>
@@ -146,6 +145,9 @@
 <translation id="2569974318947988067">Chrome prøver å oppgradere navigeringer til HTTPS</translation>
 <translation id="2571392474191184472">Organisasjonen din administrerer Chrome</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> er allerede logget på denne Chrome-profilen. For å holde surfingen din atskilt kan Chrome opprette en egen profil til deg.</translation>
+<translation id="2575799939951057838">Av sikkerhetsgrunner slår Chrome av JavaScript-optimalisering når du besøker et nettsted for første gang.
+
+Hvis denne siden ikke fungerer som forventet, kan du prøve å tillate optimalisering.</translation>
 <translation id="2580411288591421699">Google Chrome-versjonen du prøver å installere, kjører allerede. Lukk Google Chrome og forsøk å installere på nytt.</translation>
 <translation id="2586406160782125153">Dette sletter nettlesingsdataene dine fra denne enheten. For å hente dataene igjen senere må du logge på Chrome som <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">Kunne ikke bufre det nedlastede installasjonsprogrammet. Feil: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
@@ -652,7 +654,6 @@
 <translation id="7655472416356262023">Fjern kontoen fra Chrome</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7670287553302121848">Chrome-kontoen krever ny autentisering</translation>
-<translation id="7675756456029023637">Spør Chrome</translation>
 <translation id="769538538642757151">Chrome gir deg beskjed hvis noe må gjennomgås</translation>
 <translation id="769906121737764913">Lukk Gemini i Chrome Beta</translation>
 <translation id="7716950018788545737">Oppgaven(e) er avsluttet.</translation>

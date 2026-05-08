@@ -442,7 +442,6 @@
 <translation id="2493269659028026145">ล็อกทันทีด้วย <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="2496180316473517155">ประวัติการท่องเว็บ</translation>
 <translation id="2496626742194544812">ไปที่แท็บแรก</translation>
-<translation id="2497852260688568942">ผู้ดูแลระบบปิดใช้การซิงค์</translation>
 <translation id="2499505845365628575">คุณดูประวัติการท่องเว็บทั้งหมดได้จาก "<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />"</translation>
 <translation id="2511117522375201202">คุณมี <ph name="NUMBER_OF_PASSWORDS" /> รหัสผ่านที่ถูกละเมิดซึ่งอาจทําให้การรักษาความปลอดภัยตกอยู่ในความเสี่ยง</translation>
 <translation id="2513103768503127042">คุณจะเห็นกลุ่มแท็บที่นี่</translation>
@@ -2001,6 +2000,7 @@
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939856641500914040">ลบข้อมูลการท่องเว็บ…</translation>
 <translation id="7941578031639087549">{count,plural, =1{เพิ่มหน้าลงในเรื่องรออ่านในบัญชี {email} ของคุณแล้ว}other{เพิ่ม {count} หน้าลงในเรื่องรออ่านในบัญชี {email} ของคุณแล้ว}}</translation>
+<translation id="7948579849190819732">แท็บปัจจุบัน</translation>
 <translation id="7952353944614086413">แท็บและกลุ่มที่เปิดอยู่</translation>
 <translation id="7952670906562503188">คุณกำลังจะลบพาสคีย์ {passkey_count} รายการ รวมถึงรายการเว็บไซต์และแอปที่คุณเลือกที่จะไม่บันทึกข้อมูลการลงชื่อเข้าใช้ ระบบจะไม่ลบบัญชีใดๆ ที่คุณสร้างไว้สำหรับเว็บไซต์และแอป</translation>
 <translation id="7958575506592576831">ข้อมูลเกี่ยวกับการรักษาความปลอดภัยของหน้าเว็บ</translation>

@@ -478,6 +478,7 @@
 <translation id="1727613060316725209">အသိအမှတ်ပြုလက်မှတ် မှန်ကန်သည်</translation>
 <translation id="1728677426644403582">ဝဘ်စာမျက်နှာ၏ အရင်းအမြစ်တစ်ခုကို သင်ကြည့်ရှုနေခြင်းဖြစ်သည်</translation>
 <translation id="173080396488393970">ဤကဒ်အမျိုးအစားကို လက်မခံပါ</translation>
+<translation id="1731563515262205847">ML-DSA-65</translation>
 <translation id="1732445923934584865">လူကိုယ်တိုင် မေးရန်</translation>
 <translation id="1733064249834771892">ဖောင့်များ</translation>
 <translation id="1733631169686303142">အသံဆိုင်ရာ ကိရိယာ</translation>
@@ -1597,6 +1598,7 @@
 <translation id="350069200438440499">ဖိုင်အမည်-</translation>
 <translation id="3501300228850242680">မက်တယ် (‌တေးဂီတ)</translation>
 <translation id="350421688684366066">လေဘယ်လ် (အလွန်တောက်ပြောင်)</translation>
+<translation id="3507062913298382727">ID ကတ်ကို သိမ်းပါ</translation>
 <translation id="350763432931695541">နောက်ထပ် စာမျက်နှာအနည်းငယ်ရှိ စာသားများကို ထုတ်ယူနေသည်</translation>
 <translation id="3507869775212388416">ဥပဒေရေးရာ အလုပ်</translation>
 <translation id="3507936815618196901">သင့်ပတ်ဝန်းကျင်၏ 3D မြေပုံဆွဲခြင်း သို့မဟုတ် ကင်မရာအနေအထား ခြေရာခံခြင်း</translation>
@@ -1989,6 +1991,7 @@
 <translation id="4098306082496067348">ပကတိအသွင်ကတ် အသေးစိတ်ကို ငွေရှင်းခြင်းတွင်ထည့်ရန် တို့ပါ။</translation>
 <translation id="4099048595830172239">လျှို့ဝှက်အကြောင်းအရာ မြင်ရချိန်တွင် သင်၏ဖန်သားပြင်အား <ph name="APPLICATION_TITLE" /> နှင့် မျှဝေခြင်းကို စီမံခန့်ခွဲသူမူဝါဒက အကြံပြုမထားပါ-</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Chrome တွင် ဖောင့် အရွယ်အစားများနှင့် စာလုံးပုံစံများကို စိတ်ကြိုက်လုပ်ရန် ‘တဘ်ခလုတ်’ ပြီးနောက် Enter နှိပ်ပါ</translation>
+<translation id="4100421230355095925">ML-DSA-44</translation>
 <translation id="4101413244023615925">စာသားနှင့် ဂရပ်ဖစ်</translation>
 <translation id="4101917550061398111">ရွေးထားသောအရာများ ဖျက်ရန်</translation>
 <translation id="4102567721634170493">ဒေသန္တရသတင်း</translation>
@@ -2217,6 +2220,7 @@
 <translation id="4415156962929755728">ပလတ်စတစ် (အလွန်တောက်ပြောင်)</translation>
 <translation id="4415426530740016218">လာယူရန် လိပ်စာ</translation>
 <translation id="4415748029120993980">SECG elliptic curve secp384r1 (aka NIST P-384)</translation>
+<translation id="4418150423720608641">ML-DSA-87</translation>
 <translation id="4419287616181386201">စကားဝှက်များကို ၎င်းတို့၏စီမံခန့်ခွဲမှုဆက်တင်များတွင် ဖျက်နိုင်သည်</translation>
 <translation id="4424024547088906515">ဒီဆာဗာက <ph name="DOMAIN" /> ဖြစ်တာကို သက်သေထူ မပြနိုင်ခဲ့ပါ၊ ၎င်း၏ လုံခြုံရေး လက်မှတ်ကို Chrome ဘက်မှ မယုံကြည်ပါ။ ဖွဲ့စည်းစီစဉ်မှု အမှားကြောင့် သို့မဟုတ် တိုက်ခိုက်လိုသူက သင်၏ ချိတ်ဆက်မှုကို ကြားဖြတ်ယူနေ၍ ထိုသို့ ဖြစ်လာနိုင်ခဲ့ပါသည်။</translation>
 <translation id="4425750422187370446">အားကစား ဝတ်စုံ</translation>
@@ -2956,6 +2960,7 @@
 <translation id="5573641252776268565">နိုင်ငံကူးလက်မှတ် တည်းဖြတ်ခြင်း</translation>
 <translation id="5578606540385219379">ဝန်ဆောင်မှုပေးသူ</translation>
 <translation id="5580958916614886209">သင့်ကုန်ဆုံးမည့်လကို ကြည့်ပြီး ပြန်စမ်းကြည့်ပါ</translation>
+<translation id="5582453333200265572">ID ကတ်ကို အပ်ဒိတ်လုပ်ပါ</translation>
 <translation id="5583442610070676234">နှိုင်းယှဉ်မှုဇယား <ph name="COMPARE_SET_NAME" /> အတွက် နောက်ထပ်လုပ်ဆောင်ချက်များ</translation>
 <translation id="55841966151154662">ဤ အိုင်ဘီအေအန် (IBAN) ကို Google Wallet တွင် သိမ်း၍မရလိုက်ပါ။ ယင်းအစား ဤစက်ပေါ်ရှိ Chrome တွင် ၎င်းကို သိမ်းလိုက်သည်။</translation>
 <translation id="558420943003240152">စကားဝှက်နှင့် လျှို့ဝှက်ကီးများ စီမံရန်…</translation>
@@ -3089,6 +3094,7 @@
 <translation id="5808435672482059465">သင့် ‘Chrome မှတ်တမ်း’ ကို ကြည့်ရန်</translation>
 <translation id="5810442152076338065"><ph name="DOMAIN" /> သို့ ချိတ်ဆက်မှုအား obsolete cipher suite တစ်ခု သုံး၍ လျှို့ဝှက်အသွင်ပြောင်းခဲ့၏။</translation>
 <translation id="5813119285467412249">&amp;ထည့်ပေးမှု ပြန်လုပ်ရန်</translation>
+<translation id="5813274153495000141">သင့်အချက်အလက်ကို သိမ်းပြီး ဖောင်များကို ပိုမိုမြန်ဆန်စွာ ဖြည့်သည်။ သင့်စက်တွင် သိမ်းသည်။</translation>
 <translation id="5813753398265398978">ရူပဗေဒ</translation>
 <translation id="5817918615728894473">တွဲချိတ်ပါ</translation>
 <translation id="5820625124144807242">သင့်မှာယူမှုကို စစ်ပြီးပါက <ph name="BNPL_ISSUER_NAME" /> ဖြင့် အကောင့်သို့ လက်မှတ်ထိုးဝင်ရမည် (သို့) အကောင့်ဖွင့်ရမည်။ ဤအကောင့်ကို Google Pay နှင့် အလိုအလျောက် လင့်ခ်ချိတ်ပါမည်။</translation>
@@ -5232,6 +5238,7 @@
 <translation id="9169664750068251925">ဒီဆိုက် ပေါ်မှာ အမြဲတမ်း ပိတ်ဆို့ရန်</translation>
 <translation id="9169931577761441333"><ph name="APP_NAME" /> ကို ပင်မစာမျက်နှာသို့ ထည့်ရန်</translation>
 <translation id="9170848237812810038">&amp;တစ်ဆင့်နောက်ပြန်ရန်</translation>
+<translation id="9170906125144697215">အက်ပ်များမပြောင်းဘဲ Pix ဖြင့် ပေးချေပါ</translation>
 <translation id="9171296965991013597">အက်ပ်မှ ထွက်လိုပါသလား။</translation>
 <translation id="9173282814238175921">စာရွက်စာတမ်းတစ်ခုတည်း/စာမျက်နှာ အသစ်</translation>
 <translation id="9173995187295789444">ဘလူးတုသ် စက်များ ရှာနေသည်…</translation>
@@ -5248,7 +5255,6 @@
 <translation id="9186371298532546532">ဤလိပ်စာကို နောက်ထပ်နေရာများတွင် သုံးပါ</translation>
 <translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> က ဤတဘ်ကို ပြောင်းလိုက်သည်</translation>
 <translation id="9189789270972826888">ကတ်ကို ဖြည့်မထားပါက မိတ္တူကူးပြီး ထည့်ရန် အောက်ရှိ ကတ်အသေးစိတ်ကို နှိပ်ပါ။ <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
-<translation id="9190557999028587593">၄ ပတ်ထက်ပိုကြာသည့် အကြောင်းအရာများကို အလိုအလျောက်ဖျက်သည်</translation>
 <translation id="9191834167571392248">ဘယ်ဘက်အောက်ခြေတွင် ဖောက်ရန်</translation>
 <translation id="9192361865877479444">သတ္တု (မှိုင်းပျပျ)</translation>
 <translation id="9192947025498305328">သဘာဝ အလှကုန်</translation>

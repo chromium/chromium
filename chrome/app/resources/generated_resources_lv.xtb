@@ -1724,6 +1724,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> un vēl 1 slēdža taustiņš</translation>
 <translation id="2165177462441582039">Izvēlieties, cik ilgi katram vienumam jābūt izceltam</translation>
 <translation id="2166369534954157698">Muļķa hipiji turpat brīvi mēģina nogaršot celofāna žņaudzējčūsku</translation>
+<translation id="2168036794078614559">Ziņojums ir nosūtīts</translation>
 <translation id="2169062631698640254">Tik un tā pierakstīties</translation>
 <translation id="2173302385160625112">Pārbaudiet interneta savienojumu</translation>
 <translation id="2173801458090845390">Pievienot pieprasījuma ID šai ierīcei</translation>
@@ -3434,7 +3435,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="3347086966102161372">Kopēt attēla adresi</translation>
 <translation id="3348038390189153836">Konstatēta noņemama ierīce</translation>
 <translation id="3348973040180736882">Notiek atspiešana…</translation>
-<translation id="3349610303043713601">Pārlūkot, izmantojot MI</translation>
 <translation id="3349933790966648062">Atmiņas pēdas nospiedums</translation>
 <translation id="3351472127384196879">Pievienojiet vai atrodiet pildspalvas pogas</translation>
 <translation id="3353786022389205125">Ieslēdziet iestatījumu “Rādīt bloķēšanas ekrānu, kad tiek izslēgts miega režīms” un mēģiniet vēlreiz</translation>

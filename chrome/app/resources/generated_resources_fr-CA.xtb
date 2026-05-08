@@ -1723,6 +1723,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> et 1 autre commutateur</translation>
 <translation id="2165177462441582039">Sélectionnez la durée d'affichage de l'élément en surbrillance</translation>
 <translation id="2166369534954157698">Voici à quoi ressemblera votre texte.</translation>
+<translation id="2168036794078614559">Rapport envoyé</translation>
 <translation id="2169062631698640254">Se connecter quand même</translation>
 <translation id="2173302385160625112">Vérifiez votre connexion Internet</translation>
 <translation id="2173801458090845390">Ajouter un identifiant de réquisition à cet appareil</translation>
@@ -3437,7 +3438,6 @@ l‘<ph name="BEGIN_LINK" />
 <translation id="3347086966102161372">C&amp;opier l'adresse de l'image</translation>
 <translation id="3348038390189153836">Appareil amovible détecté</translation>
 <translation id="3348973040180736882">Décompression en cours…</translation>
-<translation id="3349610303043713601">Naviguer avec l'IA</translation>
 <translation id="3349933790966648062">Empreinte mémoire</translation>
 <translation id="3351472127384196879">Ajoutez ou localisez des boutons sur votre stylet</translation>
 <translation id="3353786022389205125">Activez « Afficher l'écran de verrouillage à l'activation » et réessayez</translation>

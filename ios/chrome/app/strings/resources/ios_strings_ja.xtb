@@ -442,7 +442,6 @@
 <translation id="2493269659028026145"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ですぐにロックする</translation>
 <translation id="2496180316473517155">閲覧履歴</translation>
 <translation id="2496626742194544812">最初のタブに移動</translation>
-<translation id="2497852260688568942">同期は管理者により無効にされています</translation>
 <translation id="2499505845365628575"><ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" /> からすべての閲覧履歴を確認できます。</translation>
 <translation id="2511117522375201202">不正使用されたパスワード <ph name="NUMBER_OF_PASSWORDS" /> 件: セキュリティが危険にさらされる可能性があります。</translation>
 <translation id="2513103768503127042">タブグループがここに表示されます</translation>
@@ -2001,6 +2000,7 @@
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939856641500914040">閲覧履歴データを削除...</translation>
 <translation id="7941578031639087549">{count,plural, =1{アカウント「{email}」のリーディング リストにページを追加しました}other{アカウント「{email}」のリーディング リストに {count} 件のページを追加しました}}</translation>
+<translation id="7948579849190819732">現在のタブ</translation>
 <translation id="7952353944614086413">開いているタブとグループ</translation>
 <translation id="7952670906562503188">{passkey_count} 件のパスキーと、ログイン情報を保存しない設定にしたサイトとアプリの一覧を削除しようとしています。サイトやアプリで作成したアカウントは削除されません。</translation>
 <translation id="7958575506592576831">ページのセキュリティ情報</translation>

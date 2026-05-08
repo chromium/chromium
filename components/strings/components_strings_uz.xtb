@@ -753,6 +753,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2168151236314517198">Bu kontentni chop etishni administrator taqiqlagan</translation>
 <translation id="2171244127100824330"><ph name="ACCOUNT" /> uchun <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> xizmatida</translation>
 <translation id="2172089022819052306">Avtomobilni tuzatish va taʼmirlash</translation>
+<translation id="217231402430591139">Hisobingizni ulang</translation>
 <translation id="2173302385160625112">Internet aloqasini tekshiring</translation>
 <translation id="2174875517416416684">Tranzaksiya amalga oshmadi. Hisobingizdan hech qanday summa yechilmadi.</translation>
 <translation id="2175630235841878061">100MB dan katta fayllar yuklab olinmaydi</translation>
@@ -3212,6 +3213,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="6006365096047131769">3 x 5 in</translation>
 <translation id="6008122969617370890">N dan 1 gacha tartibda</translation>
 <translation id="6008256403891681546">JCB</translation>
+<translation id="6012135807160718387">Maʼlumotlaringiz Google shifrlash tizimi bilan himoyalangan</translation>
 <translation id="6014801569448771146">Parollarni tekshiring</translation>
 <translation id="6014851866995737824">Eʼtiborga olinmadi, chunki “yoqish” yoki “oʻchirish” roʻyxati topilmadi.</translation>
 <translation id="6015796118275082299">Yil</translation>
@@ -5232,6 +5234,7 @@ Batafsil axborot:
 <translation id="9169664750068251925">Bu saytda doim bloklansin</translation>
 <translation id="9169931577761441333"><ph name="APP_NAME" /> ilovasini bosh ekranga joylash</translation>
 <translation id="9170848237812810038">&amp;Bekor qilish</translation>
+<translation id="9170906125144697215">Ilova almashtirmasdan Pix orqali toʻlash</translation>
 <translation id="9171296965991013597">Ilovadan chiqilsinmi?</translation>
 <translation id="9173282814238175921">Bitta hujjat/Yangi varaq</translation>
 <translation id="9173995187295789444">Bluetooth qurilmalar qidirilmoqda...</translation>
@@ -5248,7 +5251,6 @@ Batafsil axborot:
 <translation id="9186371298532546532">Boshqa joylarda ham shu manzildan foydalanish</translation>
 <translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> bu varaqni oʻzgartirdi</translation>
 <translation id="9189789270972826888">Karta maʼlumotlari kiritilmagan boʻlsa, nusxa olib joylash uchun karta tafsilotini bosing. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
-<translation id="9190557999028587593">Mavzular 4 haftadan keyin avtomatik oʻchib ketadi</translation>
 <translation id="9191834167571392248">Quyi chapdan teshik ochish</translation>
 <translation id="9192361865877479444">Metall (jilosiz)</translation>
 <translation id="9192947025498305328">Pardozsiz goʻzallik</translation>

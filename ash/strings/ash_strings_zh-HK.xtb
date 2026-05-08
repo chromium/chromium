@@ -1048,6 +1048,7 @@
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">概覽模式</translation>
 <translation id="4242533952199664413">開啟設定</translation>
+<translation id="4244765461494758482">這些設定會與其他 ChromeOS 裝置保持同步。你可以在這裡變更，或在「設定」中管理完整清單。</translation>
 <translation id="4247123849143712100">更新並關機</translation>
 <translation id="4249248555939881673">正在等待網絡連線…</translation>
 <translation id="4250229828105606438">螢幕截圖</translation>
@@ -2326,6 +2327,7 @@
 <translation id="8051716679295756675">名為「<ph name="DESK_TEMPLATE_NAME" />」的範本已存在</translation>
 <translation id="8052898407431791827">已複製到剪貼簿</translation>
 <translation id="8054466585765276473">正在計算電池使用時間。</translation>
+<translation id="8063363226185507157">同步的無障礙設定</translation>
 <translation id="8076492880354921740">分頁</translation>
 <translation id="8079538659226626406">分享螢幕畫面</translation>
 <translation id="8083540854303889870">已儲存以供日後使用</translation>

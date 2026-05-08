@@ -1676,6 +1676,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8030852056903932865">Aprubahan</translation>
 <translation id="8032569120109842252">Sinusubaybayan</translation>
 <translation id="8035522026858423976"><ph name="TAB_TITLE" />, Piniling Naka-mute na Tab na Incognito</translation>
+<translation id="8036587585440959897">Puwedeng magdagdag ang ilang extension ng mga search engine sa Chrome.</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> (na) araw na lang ang natitira</translation>
 <translation id="8037801708772278989">Kakasuri lang</translation>
 <translation id="804335162455518893">Hindi nakita ang SD card</translation>
@@ -1858,6 +1859,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8765470054473112089">Kapag nag-type ka sa address bar o sa box para sa paghahanap, ipapadala ng Chrome kung ano ang tina-type mo sa iyong default na search engine para makakuha ng mas magagandang suhestyon. Naka-off ito sa Incognito.</translation>
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Nakakita ang Chrome ng mahinang password na puwede mo pang palakasin}one{Nakakita ang Chrome ng # mahinang password na puwede mo pang palakasin}other{Nakakita ang Chrome ng # na mahinang password na puwede mo pang palakasin}}</translation>
 <translation id="8766529642647037772">Gumawa ng naka-highlight na link gaya nito?</translation>
+<translation id="8769783688897433958">Tingnan ang impormasyon at mga pahintulot ng site</translation>
 <translation id="8788265440806329501">Nakasara ang history ng pag-navigate</translation>
 <translation id="8790193082819560975">I-tap para maghanap ng mga opsyon sa pagbili para sa produkto sa bagong tab.</translation>
 <translation id="8798449543960971550">Nabasa na</translation>
@@ -1961,6 +1963,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="9169507124922466868">Nakabukas nang kalahati ang history ng pag-navigate</translation>
 <translation id="9189607089796819144">Gusto mo bang i-download pa rin ang "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />)?</translation>
 <translation id="9190276265094487094">Makikita mo ang iyong history sa lahat ng naka-sync mong device, para maipagpatuloy mo ang iyong ginagawa</translation>
+<translation id="9190355771000652811">Sa address bar, gamitin ang keyboard shortcut na ito kasama ng mga shortcut para sa mga search engine at paghahanap sa site.</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" />, Naka-pin na Napiling Tab na Incognito</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Nagsuri 1 minuto ang nakalipas}one{Nagsuri # minuto ang nakalipas}other{Nagsuri # na minuto ang nakalipas}}</translation>
 <translation id="9204836675896933765">1 file ang natitira</translation>

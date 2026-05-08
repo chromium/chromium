@@ -442,7 +442,6 @@
 <translation id="2493269659028026145">Bloquear imediatamente com o <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="2496180316473517155">Histórico de navegação</translation>
 <translation id="2496626742194544812">Ir para o primeiro separador</translation>
-<translation id="2497852260688568942">A sincronização foi desativada pelo gestor</translation>
 <translation id="2499505845365628575">Pode encontrar todo o seu histórico de navegação através do botão <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="2511117522375201202">Tem <ph name="NUMBER_OF_PASSWORDS" /> palavras-passe comprometidas que podem pôr a sua segurança em risco.</translation>
 <translation id="2513103768503127042">Os seus grupos de separadores vão ser apresentados aqui</translation>
@@ -2001,6 +2000,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939856641500914040">Eliminar dados de navegação…</translation>
 <translation id="7941578031639087549">{count,plural, =1{Página adicionada à Lista de leitura na sua conta, {email}}other{{count} páginas adicionadas à Lista de leitura na sua conta {email}}}</translation>
+<translation id="7948579849190819732">Separador atual</translation>
 <translation id="7952353944614086413">Os seus separadores e grupos abertos</translation>
 <translation id="7952670906562503188">Está prestes a eliminar {passkey_count} chaves de acesso e a lista de sites e apps para os quais optou por nunca guardar as informações de início de sessão. As contas que criou para sites e apps não são eliminadas.</translation>
 <translation id="7958575506592576831">Informações de segurança da página</translation>

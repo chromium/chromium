@@ -1676,6 +1676,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="8030852056903932865">Hyväksy</translation>
 <translation id="8032569120109842252">Seurataan</translation>
 <translation id="8035522026858423976"><ph name="TAB_TITLE" />, valittu mykistetty incognito-välilehti</translation>
+<translation id="8036587585440959897">Jotkin laajennukset voivat lisätä Chromeen hakukoneita.</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> päivää jäljellä</translation>
 <translation id="8037801708772278989">Tarkistettu juuri äsken</translation>
 <translation id="804335162455518893">SD-korttia ei löydy</translation>
@@ -1962,6 +1963,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="9169507124922466868">Navigointihistoria on puoliksi auki</translation>
 <translation id="9189607089796819144">Ladataanko "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) silti?</translation>
 <translation id="9190276265094487094">Historia löytyy kaikilta synkronoiduilta laitteilta, joten voit jatkaa samasta kohdasta</translation>
+<translation id="9190355771000652811">Käytä tätä pikanäppäintä osoitepalkissa hakukoneiden ja sivustohaun pikakomentojen kanssa.</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" />, kiinnitetty valittu incognito-välilehti</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Tarkistettu 1 minuutti sitten}other{Tarkistettu # minuuttia sitten}}</translation>
 <translation id="9204836675896933765">1 tiedosto jäljellä</translation>

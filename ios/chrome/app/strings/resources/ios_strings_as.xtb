@@ -442,7 +442,6 @@
 <translation id="2493269659028026145"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" />ৰ জৰিয়তে তৎক্ষণাৎ লক কৰক</translation>
 <translation id="2496180316473517155">ব্ৰাউজিঙৰ ইতিহাস</translation>
 <translation id="2496626742194544812">প্ৰথম টেবলৈ যাওক</translation>
-<translation id="2497852260688568942">আপোনাৰ প্ৰশাসকে ছিংক অক্ষম কৰিছে</translation>
 <translation id="2499505845365628575">আপুনি <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />ৰ পৰা আপোনাৰ আটাইবোৰ ব্ৰাউজিঙৰ ইতিহাস বিচাৰি পাব পাৰে।</translation>
 <translation id="2511117522375201202">আপোনাৰ <ph name="NUMBER_OF_PASSWORDS" /> টা হেক কৰা পাছৱৰ্ড আছে যিয়ে আপোনাৰ সুৰক্ষা বিপদাপন্ন কৰিব পাৰে।</translation>
 <translation id="2513103768503127042">আপুনি আপোনাৰ টেবৰ গোটসমূহ ইয়াত বিচাৰি পাব</translation>
@@ -2001,6 +2000,7 @@
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939856641500914040">ব্ৰাউজিঙৰ ডেটা মচক…</translation>
 <translation id="7941578031639087549">{count,plural, =1{আপোনাৰ একাউণ্ট, {email}ত আপোনাৰ পঢ়াৰ সূচীত পৃষ্ঠা যোগ দিয়া হৈছে}one{আপোনাৰ একাউণ্ট, {email}ত আপোনাৰ পঢ়াৰ সূচীত {count} খন পৃষ্ঠা যোগ দিয়া হৈছে}other{আপোনাৰ একাউণ্ট, {email}ত আপোনাৰ পঢ়াৰ সূচীত {count} খন পৃষ্ঠা যোগ দিয়া হৈছে}}</translation>
+<translation id="7948579849190819732">বৰ্তমান টেব</translation>
 <translation id="7952353944614086413">আপোনাৰ খোল খাই থকা টেব আৰু গোটসমূহ</translation>
 <translation id="7952670906562503188">আপুনি {passkey_count} টা পাছকী আৰু আপুনি কেতিয়াও ছাইন-ইনৰ তথ্য ছেভ নকৰিবলৈ বাছনি কৰা ছাইট আৰু এপ্‌সমূহৰ সূচী মচিব ওলাইছে। আপুনি ছাইট বা এপ্‌সমূহৰ বাবে সৃষ্টি কৰা কোনো একাউণ্ট মচি পেলোৱা নহ’ব।</translation>
 <translation id="7958575506592576831">পৃষ্ঠাৰ সুৰক্ষাৰ তথ্য</translation>

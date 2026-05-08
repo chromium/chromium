@@ -1676,6 +1676,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="8030852056903932865">Aprovar</translation>
 <translation id="8032569120109842252">A seguir</translation>
 <translation id="8035522026858423976"><ph name="TAB_TITLE" />, separador de navegação anónima com som desativado selecionado</translation>
+<translation id="8036587585440959897">Algumas extensões podem adicionar motores de pesquisa ao Chrome.</translation>
 <translation id="8037750541064988519">Faltam <ph name="DAYS" /> dias</translation>
 <translation id="8037801708772278989">Última verificação agora mesmo</translation>
 <translation id="804335162455518893">Cartão SD não encontrado.</translation>
@@ -1962,6 +1963,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="9169507124922466868">O histórico de navegação está aberto até meio.</translation>
 <translation id="9189607089796819144">Quer transferir "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) mesmo assim?</translation>
 <translation id="9190276265094487094">Terá o seu histórico em todos os dispositivos sincronizados para que possa continuar o que estava a fazer</translation>
+<translation id="9190355771000652811">Na barra de endereço, use este atalho de teclado com atalhos para motores de pesquisa e pesquisa no site.</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" />, separador de navegação anónima selecionado e fixo</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Última verificação há 1 minuto}other{Última verificação há # minutos}}</translation>
 <translation id="9204836675896933765">Falta 1 ficheiro</translation>
