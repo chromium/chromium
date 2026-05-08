@@ -37,7 +37,13 @@ class ExtensionUserActivationServiceTest : public ExtensionsTest {
   std::unique_ptr<ExtensionUserActivationService> service_;
 };
 
-TEST_F(ExtensionUserActivationServiceTest, TransientActivation) {
+// TODO(crbug.com/511260483): Flaky on MSAN.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_TransientActivation DISABLED_TransientActivation
+#else
+#define MAYBE_TransientActivation TransientActivation
+#endif
+TEST_F(ExtensionUserActivationServiceTest, MAYBE_TransientActivation) {
   const ExtensionId kExtensionId = std::string("foo");
 
   EXPECT_FALSE(service()->HasTransientActivation(kExtensionId));
@@ -80,8 +86,16 @@ TEST_F(ExtensionUserActivationServiceTest,
   EXPECT_TRUE(service()->HasTransientActivation(kExtensionId));
 }
 
+// TODO(crbug.com/511260483): Flaky on MSAN.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_TransientActivation_MultipleExtensions \
+  DISABLED_TransientActivation_MultipleExtensions
+#else
+#define MAYBE_TransientActivation_MultipleExtensions \
+  TransientActivation_MultipleExtensions
+#endif
 TEST_F(ExtensionUserActivationServiceTest,
-       TransientActivation_MultipleExtensions) {
+       MAYBE_TransientActivation_MultipleExtensions) {
   const ExtensionId kExtensionId1 = std::string("foo");
   const ExtensionId kExtensionId2 = std::string("bar");
 
