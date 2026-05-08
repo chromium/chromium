@@ -16,6 +16,43 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
  */
 @NullMarked
 public interface ChromeAndroidTaskFeature {
+    /**
+     * Contains data for a {@link ChromeAndroidTaskFeature} to initialize itself after it's added to
+     * a {@link ChromeAndroidTask}.
+     *
+     * @see #onAddedToTask
+     */
+    final class InitInfo {
+        /**
+         * The native {@code BrowserWindowInterface} matching the feature's {@link
+         * ChromeAndroidTaskFeatureKey}. The native pointer will be 0 if there is no matching {@code
+         * BrowserWindowInterface}. For a {@code BrowserWindowInterface} to match the {@link
+         * ChromeAndroidTaskFeatureKey}, the {@code BrowserWindowInterface} must be associated with
+         * the same {@code Profile} and {@code ActivityWindowAndroid} in the {@link
+         * ChromeAndroidTaskFeatureKey}.
+         */
+        public final long nativeBrowserWindowPtr;
+
+        /** Whether the Task is visible. */
+        public final boolean isVisible;
+
+        /** The Task bounds, in px. */
+        public final Rect boundsInPx;
+
+        /**
+         * The logical display ID of the display in which the Task is running. See {@code
+         * DisplayAndroid#getDisplayId()}.
+         */
+        public final int displayId;
+
+        public InitInfo(
+                long nativeBrowserWindowPtr, boolean isVisible, Rect boundsInPx, int displayId) {
+            this.nativeBrowserWindowPtr = nativeBrowserWindowPtr;
+            this.isVisible = isVisible;
+            this.boundsInPx = boundsInPx;
+            this.displayId = displayId;
+        }
+    }
 
     /**
      * Called by a {@link ChromeAndroidTask} when this feature is added to it.
@@ -35,7 +72,21 @@ public interface ChromeAndroidTaskFeature {
      *     ChromeAndroidTaskFeatureKey}.
      * @see ChromeAndroidTask#addFeature
      */
-    void onAddedToTask(long nativeBrowserWindowPtr);
+    // TODO (crbug.com/510525529): Remove API once #onAddedToTask(InitInfo) is made non-default.
+    default void onAddedToTask(long nativeBrowserWindowPtr) {}
+
+    /**
+     * Called by a {@link ChromeAndroidTask} when this feature is added to it.
+     *
+     * <p>This is the start of the feature's lifecycle. Usually a feature would initialize objects
+     * it owns in this method.
+     *
+     * @param initInfo The {@link InitInfo} encapsulating the state of the Task when the feature is
+     *     added to it.
+     * @see ChromeAndroidTask#addFeature
+     */
+    // TODO (crbug.com/510525529): Make non-default after downstream is updated.
+    default void onAddedToTask(InitInfo initInfo) {}
 
     /**
      * Called by a {@link ChromeAndroidTask} when the feature is being removed.
