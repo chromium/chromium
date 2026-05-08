@@ -15,11 +15,13 @@
 #include "chrome/browser/contextual_tasks/site_exclusion_detail.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/contextual_tasks/public/prefs.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "content/public/common/url_constants.h"
 #include "third_party/lens_server_proto/aim_communication.pb.h"
 
 namespace contextual_tasks {
@@ -74,12 +76,24 @@ ContextualTasksUIInterface* GetWebUiInterface(
     return nullptr;
   }
 
+  // Ensure the WebUI is actually hosting the contextual tasks page before
+  // casting.
+  const GURL& url = web_contents->GetLastCommittedURL();
+  if (!IsContextualTasksUrl(url)) {
+    return nullptr;
+  }
+
   content::WebUIController* controller = web_ui->GetController();
   if (!controller || !controller->GetType()) {
     return nullptr;
   }
 
   return controller->GetAs<ContextualTasksUI>();
+}
+
+bool IsContextualTasksUrl(const GURL& url) {
+  return url.scheme() == content::kChromeUIScheme &&
+         url.host() == chrome::kChromeUIContextualTasksHost;
 }
 
 bool IsValidUrlForSuggestedTab(const GURL& url,

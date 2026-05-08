@@ -60,13 +60,11 @@ std::optional<base::WeakPtr<content::WebContents>> GetInitiatorWebContents(
                          : std::nullopt;
 }
 
-bool HasValidContextualTaskUrl(
-    content::WebContents* web_contents,
-    ContextualTasksUiService* contextual_tasks_ui_service) {
-  GURL contextual_task_url = GURL(chrome::kChromeUIContextualTasksURL);
-  return web_contents && contextual_tasks_ui_service->IsContextualTasksUrl(
-                             web_contents->GetLastCommittedURL());
+bool HasValidContextualTaskUrl(content::WebContents* web_contents) {
+  return web_contents &&
+         IsContextualTasksUrl(web_contents->GetLastCommittedURL());
 }
+
 }  // namespace
 
 // A WebContentsObserver that waits for a navigation to the contextual tasks
@@ -99,16 +97,14 @@ class ContextualTaskNavigationObserver
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
                      const GURL& validated_url) override {
     if (!render_frame_host->IsInPrimaryMainFrame() ||
-        !HasValidContextualTaskUrl(web_contents(),
-                                   contextual_tasks_ui_service_.get())) {
+        !HasValidContextualTaskUrl(web_contents())) {
       return;
     }
     MaybeNavigateToTargetUrl();
   }
 
   void MaybeNavigateToTargetUrl() {
-    if (!HasValidContextualTaskUrl(web_contents(),
-                                   contextual_tasks_ui_service_.get())) {
+    if (!HasValidContextualTaskUrl(web_contents())) {
       return;
     }
     ContextualTasksUIInterface* web_ui_interface =

@@ -41,6 +41,9 @@ CreateQueryControllerConfigParams();
 ContextualTasksUIInterface* GetWebUiInterface(
     content::WebContents* web_contents);
 
+// Returns whether the provided URL is to a contextual tasks WebUI page.
+bool IsContextualTasksUrl(const GURL& url);
+
 // Shows the error page on the given page and records the error page shown
 // metric for the given source.
 void ShowAndRecordErrorPage(mojo::Remote<contextual_tasks::mojom::Page>& page,

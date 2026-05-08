@@ -369,7 +369,7 @@ void ContextualTasksSidePanelCoordinator::DidStartNavigation(
        ui::PageTransition::PAGE_TRANSITION_FORWARD_BACK) &&
       !navigation_handle->IsRendererInitiated() &&
       IsPanelOpenForContextualTask() &&
-      ui_service_->IsContextualTasksUrl(navigation_handle->GetURL())) {
+      IsContextualTasksUrl(navigation_handle->GetURL())) {
     RecordUserActionAndHistogram(
         "ContextualTasks.BackButton.UserAction."
         "NavigatedFromSidePanelToFullTab");
@@ -395,7 +395,7 @@ void ContextualTasksSidePanelCoordinator::PrimaryPageChanged(
     content::Page& page) {
   // Hide panel if contextual tasks pages is loaded on tab.
   GURL url = page.GetMainDocument().GetLastCommittedURL();
-  if (ui_service_->IsContextualTasksUrl(url)) {
+  if (IsContextualTasksUrl(url)) {
     UpdateOpenState(/*is_open=*/false);
     Hide();
   }
@@ -870,8 +870,7 @@ ContextualTasksSidePanelCoordinator::GetSessionHandleForActiveTabOrPanel() {
         TabListInterface::From(browser_window_)->GetActiveTab();
     if (active_tab_interface) {
       web_contents = active_tab_interface->GetContents();
-      if (web_contents &&
-          !ui_service_->IsContextualTasksUrl(web_contents->GetURL())) {
+      if (web_contents && !IsContextualTasksUrl(web_contents->GetURL())) {
         web_contents = nullptr;
       }
     }

@@ -12,6 +12,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -160,7 +161,7 @@ static std::string JNI_ContextualTasksBridge_GetTaskIdForTab(
 
   // 2. If no task in map, check the URL (for the AIM tab itself).
   const GURL& url = web_contents->GetLastCommittedURL();
-  if (contextual_tasks::ContextualTasksUiService::IsContextualTasksUrl(url)) {
+  if (contextual_tasks::IsContextualTasksUrl(url)) {
     base::Uuid task_id =
         contextual_tasks::ContextualTasksUiService::GetTaskIdFromUrl(url);
     if (task_id.is_valid()) {
