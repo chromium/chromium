@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="help" href="https://crbug.com/508921849">
+  </head>
+  <body>
+    <style>
+      #wrapper {
+        scroll-target-group: auto;
+        overflow: scroll;
+        width: 50px;
+      }
+    </style>
+    <div id="wrapper">
+      <a href="#target1"><h1>This test passes if it doesn't crash</h1></a>
+      <a href="#target2"><h1>Need a second scroll marker to avoid single
+                             marker shortcut that masks the repro</h1></a>
+      <details><div id="target1"></div></details>
+      <details><div id="target2"></div></details>
+    </div>
+  </body>
+</html>

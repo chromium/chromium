@@ -167,8 +167,8 @@ HeapVector<Member<Element>> ScrollMarkerChooser::ComputeTargetPositions(
     candidates.push_back(candidate);
   }
 
-  if (!min_candidate_position || !max_candidate_position) {
-    return candidates_;
+  if (candidates.empty()) {
+    return candidates;
   }
 
   // Update the target positions to account for unreachable targets.
