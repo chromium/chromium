@@ -4,13 +4,21 @@
 
 package org.chromium.chrome.browser.ui.side_ui;
 
+import static java.util.Collections.emptySet;
+
 import android.transition.ChangeBounds;
 import android.transition.Transition;
+import android.transition.TransitionSet;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.ui.base.ViewUtils;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Set;
 
 /**
  * Observer for side UI changes for containers that account for the side UI by using margins. This
@@ -39,9 +47,28 @@ public class ViewMarginAdjusterForSideUi implements SideUiObserver {
         mBaseEndMargin = layoutParams.getMarginEnd();
     }
 
+    /**
+     * Returns a list of Transitions that should target the view and all of its descendants. If not
+     * specified, only {@link ChangeBounds} will be applied.
+     */
+    public Set<Transition> createTransitions() {
+        return Set.of(new ChangeBounds());
+    }
+
     @Override
     public @Nullable Transition onPreSideUiSpecsChange(SideUiCoordinator.SideUiSpecs sideUiSpecs) {
-        return new ChangeBounds().addTarget(mView);
+        TransitionSet transitionSet = new TransitionSet();
+        Collection<View> descendants = new ArrayList<>();
+        ViewUtils.getAllDescendants(mView, descendants, emptySet());
+
+        for (Transition transition : createTransitions()) {
+            transition.addTarget(mView);
+            for (View view : descendants) {
+                transition.addTarget(view);
+            }
+            transitionSet.addTransition(transition);
+        }
+        return transitionSet;
     }
 
     @Override
@@ -50,5 +77,13 @@ public class ViewMarginAdjusterForSideUi implements SideUiObserver {
         params.setMarginStart(mBaseStartMargin + sideUiSpecs.mStartContainerWidth);
         params.setMarginEnd(mBaseEndMargin + sideUiSpecs.mEndContainerWidth);
         mView.setLayoutParams(params);
+    }
+
+    /**
+     * Trigger a synchronous measure and layout pass for the View to ensure the layout is properly
+     * updated for any pre-transition changes.
+     */
+    public void triggerSynchronousMeasureAndLayout() {
+        ViewUtils.triggerSynchronousMeasureAndLayout(mView);
     }
 }

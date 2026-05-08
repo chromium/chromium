@@ -18,6 +18,10 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.os.Looper;
+import android.transition.ChangeBounds;
+import android.transition.ChangeTransform;
+import android.transition.Fade;
+import android.transition.Transition;
 import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
@@ -207,6 +211,7 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
 import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
 import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.chrome.browser.ui.side_ui.ViewMarginAdjusterForSideUi;
@@ -245,6 +250,7 @@ import org.chromium.content_public.browser.back_forward_transition.AnimationStag
 import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
 import org.chromium.net.NetError;
 import org.chromium.ui.UiUtils;
+import org.chromium.ui.animation.transition.ShrinkTransition;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.BackGestureEventSwipeEdge;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -262,6 +268,7 @@ import org.chromium.ui.widget.ViewRectProvider;
 import org.chromium.url.GURL;
 
 import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 
 /**
@@ -1800,9 +1807,7 @@ public class ToolbarManager
     }
 
     private void setSideUiStateProvider(SideUiStateProvider sideUiStateProvider) {
-        if (mSideUiStateProvider != null && mSideUiObserver != null) {
-            mSideUiStateProvider.removeObserver(mSideUiObserver);
-        }
+        removeSideUiObservers();
 
         mSideUiStateProvider = sideUiStateProvider;
 
@@ -1815,8 +1820,31 @@ public class ToolbarManager
                     }
                 };
         mSideUiStateProvider.addObserver(mSideUiObserver);
-        mControlContainerSideUiObserver = new ViewMarginAdjusterForSideUi(mControlContainer);
+
+        mControlContainerSideUiObserver = new ToolbarMarginAdjusterForSideUi(mControlContainer);
         mSideUiStateProvider.addObserver(mControlContainerSideUiObserver);
+    }
+
+    private static class ToolbarMarginAdjusterForSideUi extends ViewMarginAdjusterForSideUi {
+        ToolbarMarginAdjusterForSideUi(View view) {
+            super(view);
+        }
+
+        @Override
+        public Set<Transition> createTransitions() {
+            return Set.of(
+                    new ChangeBounds(),
+                    new Fade(),
+                    new ChangeTransform(),
+                    new ShrinkTransition(/* goneScale= */ 0.6f, /* visibleScale= */ 1.0f));
+        }
+
+        @Override
+        public @Nullable Transition onPreSideUiSpecsChange(SideUiSpecs sideUiSpecs) {
+            Transition transition = super.onPreSideUiSpecsChange(sideUiSpecs);
+            super.triggerSynchronousMeasureAndLayout();
+            return transition;
+        }
     }
 
     private boolean shouldSuppressToolbarLongPress() {
@@ -2879,14 +2907,7 @@ public class ToolbarManager
             mOverridableTabCount = null;
         }
 
-        if (mSideUiStateProvider != null) {
-            if (mSideUiObserver != null) {
-                mSideUiStateProvider.removeObserver(mSideUiObserver);
-            }
-            if (mControlContainerSideUiObserver != null) {
-                mSideUiStateProvider.removeObserver(mControlContainerSideUiObserver);
-            }
-        }
+        removeSideUiObservers();
 
         mTabObscuringHandler.removeObserver(this);
 
@@ -2900,6 +2921,17 @@ public class ToolbarManager
         mWindowAndroid.setProgressBarConfigProvider(null);
 
         mXrSpaceModeObservableSupplier.removeObserver(mOnXrSpaceModeChanged);
+    }
+
+    private void removeSideUiObservers() {
+        if (mSideUiStateProvider != null) {
+            if (mSideUiObserver != null) {
+                mSideUiStateProvider.removeObserver(mSideUiObserver);
+            }
+            if (mControlContainerSideUiObserver != null) {
+                mSideUiStateProvider.removeObserver(mControlContainerSideUiObserver);
+            }
+        }
     }
 
     /** Called when the orientation of the activity has changed. */
