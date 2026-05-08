@@ -110,13 +110,8 @@ class ChildProcessSecurityPolicyTest
   ChildProcessSecurityPolicyTest()
       : task_environment_(BrowserTaskEnvironment::REAL_IO_THREAD),
         old_browser_client_(nullptr) {
-    // Force committed origin tracking to always be performed, and enable the
-    // enforcements based on that tracking.
     std::vector<base::test::FeatureRefAndParams> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
-
-    enabled_features.push_back({features::kCommittedOriginEnforcements, {}});
-    enabled_features.push_back({features::kCommittedOriginTracking, {}});
 
     // Apply test params to run in three modes: kCppOnly, kRustOnly, and
     // kRustAndCpp. kCppOnly should turn off kChildProcessSecurityPolicyRust,
@@ -1485,9 +1480,9 @@ TEST_P(ChildProcessSecurityPolicyTest, CanAccessDataForOrigin_Origin) {
   }
   auto foo_origin = url::Origin::Create(GURL("http://foo.com"));
 
-  // TODO(crbug.com/40148776): kCommittedOriginEnforcements should stop allowing
-  // a non-opaque committed origin to match an opaque origin, even if the
-  // latter's precursor matches. See TODO in
+  // TODO(crbug.com/40148776): Committed origin enforcements should stop
+  // allowing a non-opaque committed origin to match an opaque origin, even if
+  // the latter's precursor matches. See TODO in
   // SecurityState::MatchesCommittedOrigin().
   auto opaque_with_foo_precursor = foo_origin.DeriveNewOpaqueOrigin();
   foo_origins.push_back(opaque_with_foo_precursor);

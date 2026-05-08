@@ -2626,7 +2626,7 @@ bool ChildProcessSecurityPolicyImpl::CanAccessMaybeOpaqueOrigin(
     } else {
       // For checking kHostsOrigin or kCanAccessDataForOrigin access types, we
       // can use a simpler check based on tracking the list of committed
-      // origins (when that tracking is enabled).
+      // origins.
       //
       // Note that it's important to perform this check *after* the PDF and
       // sandboxing restrictions above, since those checks may deny access even
@@ -2634,10 +2634,8 @@ bool ChildProcessSecurityPolicyImpl::CanAccessMaybeOpaqueOrigin(
       // words, PDF and sandboxed processes should never be allowed to access
       // data, even to their own committed origins.
       bool can_use_committed_origin_checks =
-          (access_type == AccessType::kHostsOrigin ||
-           access_type == AccessType::kCanAccessDataForCommittedOrigin) &&
-          base::FeatureList::IsEnabled(features::kCommittedOriginTracking) &&
-          base::FeatureList::IsEnabled(features::kCommittedOriginEnforcements);
+          access_type == AccessType::kHostsOrigin ||
+          access_type == AccessType::kCanAccessDataForCommittedOrigin;
       if (can_use_committed_origin_checks) {
         if (security_state->MatchesCommittedOrigin(
                 url, url_is_precursor_of_opaque_origin)) {
@@ -2645,12 +2643,11 @@ bool ChildProcessSecurityPolicyImpl::CanAccessMaybeOpaqueOrigin(
         }
         failure_reason = "no_matching_committed_origin";
       } else {
-        // If the committed origin enforcements are off, or if we couldn't use
-        // them (i.e., for kCanCommitNewOrigin checks), Jail and Citadel
-        // checks are the source of truth. If they don't pass, collect crash
-        // keys below before returning false. Unlike committed origin
-        // enforcements, these checks require BrowserContext to still exist
-        // in the SecurityState.
+        // If we couldn't use committed origin enforcements (i.e., for
+        // kCanCommitNewOrigin checks), Jail and Citadel checks are the source
+        // of truth. If they don't pass, collect crash keys below before
+        // returning false. Unlike committed origin enforcements, these checks
+        // require BrowserContext to still exist in the SecurityState.
         if (!security_state->browser_context()) {
           failure_reason = "no_browser_context";
         } else if (PerformJailAndCitadelChecks(
@@ -3721,10 +3718,6 @@ void ChildProcessSecurityPolicyImpl::SecurityStateMaps::
 void ChildProcessSecurityPolicyImpl::AddCommittedOrigin(
     int child_id,
     const url::Origin& origin) {
-  if (!base::FeatureList::IsEnabled(features::kCommittedOriginTracking)) {
-    return;
-  }
-
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   base::AutoLock lock(lock_);
   // TODO(crbug.com/379869738) Remove FromUnsafeValue.

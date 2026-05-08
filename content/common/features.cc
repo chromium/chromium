@@ -153,23 +153,6 @@ BASE_FEATURE(kCDPScreenshotNewSurface, base::FEATURE_DISABLED_BY_DEFAULT);
 // When enabled, code cache does not use a browsing_data filter for deletions.
 BASE_FEATURE(kCodeCacheDeletionWithoutFilter, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Turn on enforcements based on tracking the list of committed origins in
-// ChildProcessSecurityPolicy::CanAccessMaybeOpaqueOrigin(). Note that this only
-// controls whether or not the new security checks take effect; when this is
-// off, the security check is still performed and compared to the legacy jail
-// and citadel check to collect data about possible mismatches. Requires
-// CommittedOriginTracking to also be turned on to take effect. See
-// https://crbug.com/40148776.
-//
-// TODO(alexmos): Remove this feature flag once committed origin enforcements
-// are fully launched. For now, the feature is kept as a kill switch.
-BASE_FEATURE(kCommittedOriginEnforcements, base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Turn on the tracking of origins committed in each renderer process in
-// ChildProcessSecurityPolicy. This is required for committed origin
-// enforcements, which is gated behind kCommittedOriginEnforcements.
-BASE_FEATURE(kCommittedOriginTracking, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Turn on a bug fix for crbug.com/456537756, ensuring that the callback passed
 // to RenderWidgetHostView::CopyFromSurface() is always called.
 BASE_FEATURE(kCopyFromSurfaceAlwaysCallCallback,
