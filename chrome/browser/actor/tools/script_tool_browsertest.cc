@@ -536,9 +536,15 @@ IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptTool,
   actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
 
   // Wait for the task to be paused. The Act() call has not returned yet.
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return actor_task().GetState() == ActorTask::State::kPausedByActor;
-  }));
+  if (base::FeatureList::IsEnabled(kActorFormScriptToolInterrupt)) {
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return actor_task().GetState() == ActorTask::State::kWaitingOnUser;
+    }));
+  } else {
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return actor_task().GetState() == ActorTask::State::kPausedByActor;
+    }));
+  }
 
   // Trigger the submission manually.
   content::ExecuteScriptAsync(web_contents(),
@@ -624,9 +630,15 @@ IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptToolNoTimeout,
   actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
 
   // Wait for the task to be paused. The Act() call has not returned yet.
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return actor_task().GetState() == ActorTask::State::kPausedByActor;
-  }));
+  if (base::FeatureList::IsEnabled(kActorFormScriptToolInterrupt)) {
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return actor_task().GetState() == ActorTask::State::kWaitingOnUser;
+    }));
+  } else {
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return actor_task().GetState() == ActorTask::State::kPausedByActor;
+    }));
+  }
 
   // Wait for more than the timeout (1s).
   base::RunLoop run_loop;
@@ -635,7 +647,12 @@ IN_PROC_BROWSER_TEST_P(ActorToolsTestScriptToolNoTimeout,
   run_loop.Run();
 
   // Verify that the task is still paused and has not timed out.
-  EXPECT_EQ(actor_task().GetState(), ActorTask::State::kPausedByActor);
+  if (base::FeatureList::IsEnabled(kActorFormScriptToolInterrupt)) {
+    EXPECT_EQ(actor_task().GetState(), ActorTask::State::kWaitingOnUser);
+  } else {
+    EXPECT_EQ(actor_task().GetState(), ActorTask::State::kPausedByActor);
+  }
+
   EXPECT_FALSE(result.IsReady());
 
   // Trigger the submission manually.
@@ -1010,9 +1027,15 @@ IN_PROC_BROWSER_TEST_P(
                                       declarative_input);
   ActResultFuture result;
   actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return actor_task().GetState() == ActorTask::State::kPausedByActor;
-  }));
+  if (base::FeatureList::IsEnabled(kActorFormScriptToolInterrupt)) {
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return actor_task().GetState() == ActorTask::State::kWaitingOnUser;
+    }));
+  } else {
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return actor_task().GetState() == ActorTask::State::kPausedByActor;
+    }));
+  }
 
   content::TestNavigationObserver nav_observer(web_contents());
   web_contents()->GetController().GoBack();

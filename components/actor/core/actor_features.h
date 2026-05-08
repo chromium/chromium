@@ -125,6 +125,10 @@ extern const base::FeatureParam<base::TimeDelta>
 BASE_DECLARE_FEATURE(kActorScriptToolDelayObservation);
 extern const base::FeatureParam<int> kActorScriptToolDelayObservationMillis;
 
+// TODO(crbug.com/484367299): Implement a proper actor task state for
+// interrupt-with-user-control.
+BASE_DECLARE_FEATURE(kActorFormScriptToolInterrupt);
+
 BASE_DECLARE_FEATURE(kGlicActorTabObservationController);
 
 }  // namespace actor

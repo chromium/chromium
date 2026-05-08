@@ -189,8 +189,11 @@ class ActorTask : public base::SupportsUserData {
   void Resume();
 
   // Indicate the task is blocked waiting for user input. The task remains in an
-  // actor-controlled state and user interaction is still prevented.
-  void Interrupt();
+  // actor-controlled state. User interaction is prevented unless
+  // retain_user_control is set to `true`.
+  // TODO(crbug.com/484367299): Implement a proper actor task state for
+  // interrupt-with-user-control.
+  void Interrupt(bool retain_user_control = false);
 
   // Uninterrupt from waiting on user input.
   void Uninterrupt(State resumed_state);
@@ -402,6 +405,9 @@ class ActorTask : public base::SupportsUserData {
   size_t total_number_of_actions_ = 0;
   // Number of interruptions
   size_t total_number_of_interruptions_ = 0;
+
+  // Whether the user should retain control of tabs while a task is interrupted.
+  bool interrupted_task_needs_user_control_ = false;
 
   // Once a task is stopped what the reason was.
   std::optional<StoppedReason> stopped_reason_;
