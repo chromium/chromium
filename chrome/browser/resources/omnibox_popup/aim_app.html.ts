@@ -16,7 +16,8 @@ export function getHtml(this: OmniboxAimAppElement) {
 <div id="content">
   ${this.composeboxForkEnabled_ ? html`
   <cr-omnibox-composebox searchbox-next-enabled id="composebox"
-      searchbox-layout-mode="${this.getSearchboxLayoutMode_()}">
+      searchbox-layout-mode="${this.getSearchboxLayoutMode_()}"
+      @context-menu-entrypoint-click="${this.onContextMenuEntrypointClick_}">
   </cr-omnibox-composebox>` : html`
   <cr-composebox id="composebox" searchbox-next-enabled
       .submitButtonIconType="${SubmitButtonIconType.FORWARD}"
