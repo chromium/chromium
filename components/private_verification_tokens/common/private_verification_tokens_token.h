@@ -13,11 +13,13 @@
 
 namespace private_verification_tokens {
 
+using SerializedToken = std::vector<uint8_t>;
+
 // Type to store a single token.
 class PrivateVerificationTokensToken {
  public:
   PrivateVerificationTokensToken(std::string etld_plus_one,
-                                 std::vector<uint8_t> token,
+                                 SerializedToken token,
                                  uint32_t key_id,
                                  base::Time expiration,
                                  uint32_t version);
@@ -40,7 +42,7 @@ class PrivateVerificationTokensToken {
   //   uint8 P_enc[Ne];
   //   uint8 Q_enc[Ne];
   // } Token;
-  const std::vector<uint8_t>& token() const;
+  const SerializedToken& token() const;
   // ID of the associated public key used. This lets the issuer server
   // determine the right key to use.
   uint32_t key_id() const;
@@ -54,7 +56,7 @@ class PrivateVerificationTokensToken {
 
  private:
   std::string etld_plus_one_;
-  std::vector<uint8_t> token_;
+  SerializedToken token_;
   uint32_t key_id_;
   base::Time expiration_;
   uint32_t version_;

@@ -15,7 +15,7 @@ namespace private_verification_tokens {
 
 PrivateVerificationTokensToken::PrivateVerificationTokensToken(
     std::string etld_plus_one,
-    std::vector<uint8_t> token,
+    SerializedToken token,
     uint32_t key_id,
     base::Time expiration,
     uint32_t version)
@@ -43,7 +43,7 @@ const std::string& PrivateVerificationTokensToken::etld_plus_one() const {
   return etld_plus_one_;
 }
 
-const std::vector<uint8_t>& PrivateVerificationTokensToken::token() const {
+const SerializedToken& PrivateVerificationTokensToken::token() const {
   return token_;
 }
 

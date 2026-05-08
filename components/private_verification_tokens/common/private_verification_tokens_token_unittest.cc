@@ -17,7 +17,7 @@ namespace {
 
 TEST(PrivateVerificationTokensToken, Create) {
   std::string etld_plus_one = "a.example";
-  std::vector<uint8_t> serialized_token = {3, 5, 7, 42};
+  SerializedToken serialized_token = {3, 5, 7, 42};
   uint32_t key_id = 7;
   base::Time expiration = base::Time::FromMillisecondsSinceUnixEpoch(27);
   uint32_t version = 3;
