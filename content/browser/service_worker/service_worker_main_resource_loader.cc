@@ -1270,7 +1270,7 @@ void ServiceWorkerMainResourceLoader::StartResponse(
         fetch_event_timing_->respond_with_settled_time;
   }
 
-  if (resource_request_.request_initiator &&
+  if (resource_request_.request_initiator && response_head_->parsed_headers &&
       (resource_request_.request_initiator->IsSameOriginWith(
            resource_request_.url) ||
        network::TimingAllowOriginCheck(
