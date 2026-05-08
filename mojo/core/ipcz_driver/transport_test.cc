@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cstring>
 #include <queue>
+#include <ranges>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -14,6 +15,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ref.h"
@@ -49,9 +51,7 @@ struct TestMessage {
       : bytes(str.begin(), str.end()),
         handles(handles.begin(), handles.end()) {}
 
-  std::string as_string() const {
-    return {reinterpret_cast<const char*>(bytes.data()), bytes.size()};
-  }
+  std::string as_string() const { return std::string(std::from_range, bytes); }
 
   void Transmit(Transport& transmitter) {
     transmitter.Transmit(base::span(bytes), base::span(handles));
@@ -199,10 +199,13 @@ class TransportListener {
                                IpczTransportActivityFlags flags,
                                const struct IpczTransportActivityOptions*) {
     auto* listener = reinterpret_cast<TransportListener*>(transport);
-    auto bytes =
-        UNSAFE_TODO(base::span(static_cast<const uint8_t*>(data), num_bytes));
-    listener->HandleActivity(
-        bytes, UNSAFE_TODO(base::span(handles, num_handles)), flags);
+    // SAFETY: `data` and `handles` originate from the Ipcz driver callback,
+    // which guarantees they point to at least `num_bytes` and `num_handles`
+    // elements, respectively.
+    UNSAFE_BUFFERS({
+      auto bytes = base::span(static_cast<const uint8_t*>(data), num_bytes);
+      listener->HandleActivity(bytes, base::span(handles, num_handles), flags);
+    });
     return IPCZ_RESULT_OK;
   }
 
@@ -220,10 +223,8 @@ class TransportListener {
     }
 
     TestMessage message;
-    message.bytes.resize(bytes.size());
-    message.handles.resize(handles.size());
-    std::ranges::copy(bytes, message.bytes.begin());
-    std::ranges::copy(handles, message.handles.begin());
+    message.bytes = base::ToVector(bytes);
+    message.handles = base::ToVector(handles);
 
     base::AutoLock lock(lock_);
     messages_.push(std::move(message));
@@ -481,8 +482,8 @@ TEST_F(MojoIpczTransportTest, TransmitHandle) {
         MakeHandleFromEndpoint(channel2.TakeRemoteEndpoint());
     {
       TransportListener listener(*transport);
-      TestMessage("!", UNSAFE_TODO({&handle1, 1u})).Transmit(*transport);
-      TestMessage("!", UNSAFE_TODO({&handle2, 1u})).Transmit(*transport);
+      TestMessage("!", base::span_from_ref(handle1)).Transmit(*transport);
+      TestMessage("!", base::span_from_ref(handle2)).Transmit(*transport);
       listener.WaitForDisconnect();
     }
 
@@ -651,8 +652,8 @@ TEST_F(MojoIpczTransportTest, TransmitMemory) {
 
     auto region = base::UnsafeSharedMemoryRegion::Create(kMemoryMessage.size());
     auto mapping = region.Map();
-    UNSAFE_TODO(
-        memcpy(mapping.memory(), kMemoryMessage.data(), kMemoryMessage.size()));
+    mapping.GetMemoryAsSpan<char>(kMemoryMessage.size())
+        .copy_from(kMemoryMessage);
     auto buffer = SharedBuffer::MakeForRegion(std::move(region));
 
     TransportListener listener(*transport);
@@ -724,12 +725,11 @@ TEST_F(MojoIpczTransportTest, InvalidHandle) {
                                            &num_bytes, message.handles.data(),
                                            &num_handles));
       // Nerf the handle to a value that could be a handle.
-      uint8_t* handle_ptr =
-          base::span(message.bytes)
-              .subspan(Transport::FirstHandleOffsetForTesting(),
-                       sizeof(uint32_t))
-              .data();
-      *reinterpret_cast<uint32_t*>(handle_ptr) = 0x12345678u;
+      uint32_t fake_handle = 0x12345678u;
+      base::span(message.bytes)
+          .subspan(Transport::FirstHandleOffsetForTesting())
+          .first<sizeof(uint32_t)>()
+          .copy_from(base::byte_span_from_ref(fake_handle));
       // Also close the region in the parent.
       ::CloseHandle(fake_buffer->region().GetPlatformHandle());
       message.Transmit(*transport);
@@ -743,12 +743,11 @@ TEST_F(MojoIpczTransportTest, InvalidHandle) {
           PlatformHandle(std::move(handle)));
       TestMessage message = SerializeObjectFor(*transport, std::move(wrapper));
       // Nerf to nullptr.
-      uint8_t* handle_ptr =
-          base::span(message.bytes)
-              .subspan(Transport::FirstHandleOffsetForTesting(),
-                       sizeof(uint64_t))
-              .data();
-      *reinterpret_cast<uint64_t*>(handle_ptr) = 0;
+      uint64_t fake_handle = 0;
+      base::span(message.bytes)
+          .subspan(Transport::FirstHandleOffsetForTesting())
+          .first<sizeof(uint64_t)>()
+          .copy_from(base::byte_span_from_ref(fake_handle));
       message.Transmit(*transport);
       EXPECT_EQ(kGotInvalid, listener.WaitForNextMessage().as_string());
     }
@@ -760,12 +759,11 @@ TEST_F(MojoIpczTransportTest, InvalidHandle) {
           PlatformHandle(std::move(handle)));
       TestMessage message = SerializeObjectFor(*transport, std::move(wrapper));
       // Nerf to nullptr.
-      uint8_t* handle_ptr =
-          base::span(message.bytes)
-              .subspan(Transport::FirstHandleOffsetForTesting(),
-                       sizeof(uint64_t))
-              .data();
-      *reinterpret_cast<uint64_t*>(handle_ptr) = 0xfffffffffffffffe;
+      uint64_t fake_handle = 0xfffffffffffffffe;
+      base::span(message.bytes)
+          .subspan(Transport::FirstHandleOffsetForTesting())
+          .first<sizeof(uint64_t)>()
+          .copy_from(base::byte_span_from_ref(fake_handle));
       message.Transmit(*transport);
       EXPECT_EQ(kGotInvalid, listener.WaitForNextMessage().as_string());
     }
@@ -792,11 +790,11 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(InvalidHandleUntrustedClient,
         PlatformHandle(std::move(handle)));
     TestMessage message = SerializeObjectFor(*transport, std::move(wrapper));
     // Nerf to nullptr.
-    uint8_t* handle_ptr =
-        base::span(message.bytes)
-            .subspan(Transport::FirstHandleOffsetForTesting(), sizeof(uint64_t))
-            .data();
-    *reinterpret_cast<uint64_t*>(handle_ptr) = 0xfffffffffffffffe;
+    uint64_t fake_handle = 0xfffffffffffffffe;
+    base::span(message.bytes)
+        .subspan(Transport::FirstHandleOffsetForTesting())
+        .first<sizeof(uint64_t)>()
+        .copy_from(base::as_bytes(base::span_from_ref(fake_handle)));
     message.Transmit(*transport);
   }
 
