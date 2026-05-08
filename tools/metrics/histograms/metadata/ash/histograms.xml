@@ -8970,27 +8970,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.Wallpaper.MigrationFailureReason"
-    enum="WallpaperMigrationFailureReason" expires_after="2025-05-30">
-  <owner>jasontt@chromium.org</owner>
-  <owner>cros-p13n-eng@google.com</owner>
-  <summary>
-    Tracks the reason for the versioned wallpaper migration failure. Recorded
-    when the migration fails on user's login.
-  </summary>
-</histogram>
-
-<histogram name="Ash.Wallpaper.Online.Result" enum="SetWallpaperResult"
-    expires_after="2023-08-31">
-  <owner>jasontt@chromium.org</owner>
-  <owner>cros-p13n-eng@google.com</owner>
-  <summary>
-    Tracks the result of user's attempt to set a wallpaper. Recorded when a user
-    selects a wallpaper from the personalization hub. b/285387348: Add more
-    variants and fix incorrect metric recording for online wallpapers.
-  </summary>
-</histogram>
-
 <histogram name="Ash.Wallpaper.Preview.Show" enum="BooleanHit"
     expires_after="2024-12-30">
   <owner>jasontt@chromium.org</owner>

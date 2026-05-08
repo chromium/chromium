@@ -3294,11 +3294,6 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="3" label="Tile"/>
 </enum>
 
-<enum name="WallpaperMigrationFailureReason">
-  <int value="0" label="Failed to fetch online variants"/>
-  <int value="1" label="Failed to find a valid online variant"/>
-</enum>
-
 <enum name="WallpaperMigrationStatus">
   <int value="0" label="Succeeded"/>
   <int value="1" label="Failed"/>
