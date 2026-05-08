@@ -2501,7 +2501,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 }
 
 // TODO(crbug.com/477806564): Test is flaky.
-- (void)DISABLED_testRemovingMultiplePasswords {
+- (void)testRemovingMultiplePasswords {
   constexpr int kPasswordsCount = 4;
 
   // Send the passwords to the queue to be added to the ProfilePasswordStore.
@@ -2533,13 +2533,18 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   [ChromeEarlGreyUI waitForAppToIdle];
 
   // Check that saved forms header is removed.
-  [[EarlGrey selectElementWithMatcher:SavedPasswordsPasskeysHeaderMatcher()]
-      assertWithMatcher:grey_nil()];
+  [ChromeEarlGrey waitForNotSufficientlyVisibleElementWithMatcher:
+                      SavedPasswordsPasskeysHeaderMatcher()];
 
   // Verify that the deletion was propagated to the ProfilePasswordStore.
-  GREYAssertEqual(
-      0, [PasswordSettingsAppInterface passwordProfileStoreResultsCount],
-      @"Stored password was not removed from ProfilePasswordStore.");
+  bool success =
+      base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(5), ^bool {
+        return
+            [PasswordSettingsAppInterface passwordProfileStoreResultsCount] ==
+            0;
+      });
+  GREYAssertTrue(success,
+                 @"Stored password was not removed from ProfilePasswordStore.");
 
   // Finally, verify that the Add button is visible and enabled, because there
   // are no other password entries left for deletion via the "Edit" mode.
