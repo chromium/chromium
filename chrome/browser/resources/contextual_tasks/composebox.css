@@ -178,9 +178,6 @@
 
 #composebox {
   --cr-composebox-font-size: 16px;
-  --cr-composebox-submit-height: 36px;
-  --cr-composebox-submit-width: 48px;
-  --cr-composebox-submit-border-radius: 100px;
   --expanded-border-radius: var(--composebox-border-radius);
   --input-bottom-spacing: 16px;
   --text-input-inline-start-spacing: 20px;
@@ -198,6 +195,12 @@
   transition: box-shadow 600ms cubic-bezier(0.4, 0.0, 0.2, 1);
   width: 100%;
   z-index: 1;
+}
+
+:host([energy-effect-enabled_]) #composebox {
+  --cr-composebox-submit-height: 36px;
+  --cr-composebox-submit-width: 48px;
+  --cr-composebox-submit-border-radius: 100px;
 }
 
 :host([is-zero-state]) #composebox {
@@ -454,27 +457,33 @@
    */
   --cr-composebox-submit-container-size:
       var(--composebox-submit-container-size);
+  --cr-icon-button-icon-size: 18px;
+}
+
+:host([energy-effect-enabled_]) #composebox::part(submit) {
   --cr-icon-button-icon-size: 24px;
 }
 
 #composebox::part(submit-icon),
 #composebox::part(submit-overlay) {
   /* Inline-end to center the button (+ its overlay)
-   * (icon size: 24px; button size: 48px width, 36px height.
-   * Bottom 2px to align with other icons (like voice). This,
+   * (icon size: 40px; button size: 48px. 4px on each side.
+   * Bottom 0px since wrapper is aligned at the
+   * bottom with other icons (like voice). This,
    * to be aligned, must also be at the bottom.)
    * Position absolute is also from action-icon.
    */
-  bottom: 2px;
-  inset-inline-end: 0;
+  bottom: 0;
+  inset-inline-end: 4px;
   inset-inline-start: auto;
   position: absolute;
   top: auto;
+  --cr-icon-button-size: 40px;
 }
 
 :host([energy-effect-enabled_]) #composebox::part(submit-icon),
 :host([energy-effect-enabled_]) #composebox::part(submit-overlay) {
-  bottom: 0;
+  inset-inline-end: 0;
 }
 
 :host([energy-effect-enabled_]) #composebox:not([submit-enabled])::part(submit) {
