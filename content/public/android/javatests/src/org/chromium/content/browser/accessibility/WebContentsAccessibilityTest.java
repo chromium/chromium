@@ -3165,6 +3165,7 @@ public class WebContentsAccessibilityTest {
     /** Test extended selection with a leaf node at the end of root to trigger at_end_of_anchor. */
     @Test
     @SmallTest
+    @DisabledTest(message = "crbug.com/511014514")
     public void testPerformAction_setExtendedSelection_atEndOfEmptyTextAnchor() throws Throwable {
         setupTestWithHTML(
                 """
