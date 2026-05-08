@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<title>getCTM() returns expected SVG-space transforms at default zoom</title>
+<!--
+  Chromium-internal regression guard for the SVG internal-coordinate
+  migration (crbug.com/469958423). TODO(vinaysingh): Move to WPTs once
+  the migration stabilizes and cross-engine behavior converges.
+
+  Sibling CL covers actual zoom/DPR variations; this file pins the
+  expected getCTM() values at the default (1.0) zoom level so any
+  unintended zoom-factor leakage from the migration is caught.
+-->
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/svg-matrix-helpers.js"></script>
+<style>
+body { margin: 0; padding: 0; }
+/* CSS transform on an SVG root should NOT leak into getCTM() of a
+   descendant — getCTM() is purely SVG-space. */
+#svg-css-transform { transform: translate(20px, 20px); }
+</style>
+<svg id="svg-plain" width="200" height="200">
+  <rect id="r1" x="10" y="10" width="50" height="50"/>
+  <g transform="translate(30,40)">
+    <rect id="r2" x="0" y="0" width="20" height="20"/>
+  </g>
+  <g transform="scale(2)">
+    <rect id="r3" x="5" y="5" width="10" height="10"/>
+  </g>
+  <g transform="rotate(30) translate(10,0)">
+    <rect id="r7" x="0" y="0" width="10" height="10"/>
+  </g>
+</svg>
+<svg id="svg-vb" width="100" height="100" viewBox="0 0 200 200">
+  <rect id="r4" x="10" y="10" width="50" height="50"/>
+  <g transform="translate(30,40)">
+    <rect id="r5" x="0" y="0" width="20" height="20"/>
+  </g>
+</svg>
+<svg id="svg-nested-outer" width="200" height="200">
+  <svg id="svg-nested-inner" x="50" y="50" width="100" height="100">
+    <rect id="r6" x="0" y="0" width="30" height="30"/>
+  </svg>
+</svg>
+<svg id="svg-css-transform" width="200" height="200">
+  <rect id="r8" x="10" y="10" width="50" height="50"/>
+</svg>
+<script>
+const EPSILON = 1e-5;
+
+// Direct child of an SVG without viewBox: identity.
+test(() => {
+  assertMatrixApproxEquals(
+    document.getElementById('r1').getCTM(),
+    { a: 1, b: 0, c: 0, d: 1, e: 0, f: 0 }, EPSILON);
+}, 'getCTM() is identity for direct child of plain SVG');
+
+// Translate group reflects only the translate.
+test(() => {
+  assertMatrixApproxEquals(
+    document.getElementById('r2').getCTM(),
+    { a: 1, b: 0, c: 0, d: 1, e: 30, f: 40 }, EPSILON);
+}, 'getCTM() reflects parent translate(30,40)');
+
+// Scale group.
+test(() => {
+  assertMatrixApproxEquals(
+    document.getElementById('r3').getCTM(),
+    { a: 2, b: 0, c: 0, d: 2, e: 0, f: 0 }, EPSILON);
+}, 'getCTM() reflects parent scale(2)');
+
+// Rotate(30) translate(10,0):
+//   rotate(30) = [cos30 sin30 -sin30 cos30 0 0] ~ [0.8660 0.5 -0.5 0.8660 0 0]
+//   translate(10,0) contributes e = 0.8660*10, f = 0.5*10 in the composed
+//   matrix because translate is applied after rotate when composing left-
+//   to-right. SVG transform="rotate(30) translate(10,0)" means
+//   M = rotate(30) * translate(10,0):
+//     a=cos30,  b=sin30,  c=-sin30,  d=cos30
+//     e=cos30*10 + (-sin30)*0 = cos30*10 ~ 8.6603
+//     f=sin30*10 + cos30*0    = sin30*10 = 5
+const COS30 = Math.cos(Math.PI / 6);
+const SIN30 = Math.sin(Math.PI / 6);
+test(() => {
+  assertMatrixApproxEquals(
+    document.getElementById('r7').getCTM(),
+    { a: COS30, b: SIN30, c: -SIN30, d: COS30,
+      e: COS30 * 10, f: SIN30 * 10 }, EPSILON);
+}, 'getCTM() reflects parent rotate(30) translate(10,0)');
+
+// viewBox scaling (200 -> 100 = 0.5x).
+test(() => {
+  assertMatrixApproxEquals(
+    document.getElementById('r4').getCTM(),
+    { a: 0.5, b: 0, c: 0, d: 0.5, e: 0, f: 0 }, EPSILON);
+}, 'getCTM() reflects viewBox scaling (200->100 = 0.5x)');
+
+test(() => {
+  assertMatrixApproxEquals(
+    document.getElementById('r5').getCTM(),
+    { a: 0.5, b: 0, c: 0, d: 0.5, e: 15, f: 20 }, EPSILON);
+}, 'getCTM() combines viewBox scaling with translate');
+
+// getCTM() for an element in a nested SVG includes the inner SVG's x/y
+// positioning per SVG 2 §5.5.
+test(() => {
+  assertMatrixApproxEquals(
+    document.getElementById('r6').getCTM(),
+    { a: 1, b: 0, c: 0, d: 1, e: 50, f: 50 }, EPSILON);
+}, 'getCTM() for element in nested SVG includes inner SVG x/y offset');
+
+// CSS transform on the SVG root must NOT leak into getCTM(): per SVG 2,
+// getCTM() reports the SVG-space transform from the element to its
+// nearest viewport's parent coordinate system, exclusive of CSS transform
+// applied to that viewport.
+test(() => {
+  assertMatrixApproxEquals(
+    document.getElementById('r8').getCTM(),
+    { a: 1, b: 0, c: 0, d: 1, e: 0, f: 0 }, EPSILON);
+}, 'CSS transform on <svg> does not leak into getCTM()');
+</script>

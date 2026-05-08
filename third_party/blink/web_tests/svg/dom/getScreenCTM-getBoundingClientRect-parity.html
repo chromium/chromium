@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<title>getBoundingClientRect() matches getScreenCTM()-mapped getBBox()</title>
+<!--
+  Chromium-internal regression guard for the SVG internal-coordinate
+  migration (crbug.com/469958423). TODO(vinaysingh): Move to WPTs once
+  the migration stabilizes and cross-engine behavior converges.
+-->
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="resources/svg-matrix-helpers.js"></script>
+<style>
+body { margin: 0; padding: 0; }
+#container { margin: 50px; }
+</style>
+<div id="container">
+  <svg id="svg" width="200" height="200">
+    <rect id="r1" x="0" y="0" width="10" height="10"/>
+    <rect id="r2" x="50" y="75" width="20" height="30"/>
+    <g transform="translate(100,50)">
+      <rect id="r3" x="0" y="0" width="15" height="15"/>
+    </g>
+    <g transform="scale(2)">
+      <rect id="r4" x="10" y="10" width="5" height="5"/>
+    </g>
+    <g transform="rotate(30)">
+      <rect id="r7" x="40" y="40" width="20" height="20"/>
+    </g>
+  </svg>
+  <svg id="svg-vb" width="100" height="100" viewBox="0 0 200 200">
+    <rect id="r5" x="40" y="60" width="20" height="20"/>
+  </svg>
+  <svg id="svg-outer" width="200" height="200">
+    <svg id="svg-nested" x="50" y="50" width="100" height="100"
+         viewBox="0 0 200 200">
+      <rect id="r6" x="0" y="0" width="40" height="40"/>
+    </svg>
+  </svg>
+</div>
+<script>
+// 0.0005 matches getScreenCTM-ancestor-transform.html. Sub-CSS-pixel
+// slack accounts for getBoundingClientRect's rounding; anything looser
+// would mask sub-pixel regressions during the coordinate migration.
+const EPSILON = 0.0005;
+
+// Asserts that the gBCR-equivalent computed from getScreenCTM() and
+// getBBox() matches the actual getBoundingClientRect() value. Works for
+// axis-aligned and rotated transforms uniformly: in the rotated case,
+// gBCR returns the axis-aligned envelope of the rotated rectangle, which
+// is exactly what bboxToClientRect() computes.
+function assertGBCRMatchesBBox(elementId, description) {
+  test(() => {
+    const el = document.getElementById(elementId);
+    const derived = bboxToClientRect(el);
+    const clientRect = el.getBoundingClientRect();
+    assert_approx_equals(derived.left,   clientRect.left,   EPSILON,
+                         'left');
+    assert_approx_equals(derived.top,    clientRect.top,    EPSILON,
+                         'top');
+    assert_approx_equals(derived.width,  clientRect.width,  EPSILON,
+                         'width');
+    assert_approx_equals(derived.height, clientRect.height, EPSILON,
+                         'height');
+  }, description);
+}
+
+assertGBCRMatchesBBox('r1', 'rect at SVG origin (0,0)');
+assertGBCRMatchesBBox('r2', 'rect offset to (50,75) in SVG space');
+assertGBCRMatchesBBox('r3', 'rect inside translated group');
+assertGBCRMatchesBBox('r4', 'rect inside scaled group');
+assertGBCRMatchesBBox('r5',
+    'rect inside SVG with viewBox (coordinate scaling)');
+assertGBCRMatchesBBox('r6', 'rect inside nested SVG with viewBox');
+assertGBCRMatchesBBox('r7',
+    'rotate(30): gBCR equals AABB envelope of rotated bbox');
+</script>
