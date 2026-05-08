@@ -3184,8 +3184,8 @@
   },
   {
     "name": "enable-desktop-pwas-additional-windowing-controls",
-    "owners": [ "giovax@google.com", "pwa-commercial@google.com", "pwa-team@google.com" ],
-    "expiry_milestone": 150
+    "owners": [ "pchodur@google.com", "pwa-commercial@google.com", "pwa-team@google.com" ],
+    "expiry_milestone": 170
   },
   {
     "name": "enable-desktop-pwas-app-title",
