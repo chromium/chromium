@@ -36,6 +36,7 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/task_manager/providers/web_contents/web_contents_tag.h"
 #include "chrome/browser/task_manager/providers/web_contents/web_contents_tags_manager.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/ui/browser.h"
@@ -807,15 +808,28 @@ void GetCookies(const GURL& url,
   }
 }
 
-const std::vector<raw_ptr<task_manager::WebContentsTag, VectorExperimental>>&
-GetAllTrackedTags() {
-  return task_manager::WebContentsTagsManager::GetInstance()->tracked_tags();
+const std::vector<raw_ptr<task_manager::WebContentsTag, VectorExperimental>>
+GetAllTrackedTags(bool exclude_web_ui) {
+  auto all_tags =
+      task_manager::WebContentsTagsManager::GetInstance()->tracked_tags();
+  if (!exclude_web_ui) {
+    return all_tags;
+  }
+
+  std::vector<raw_ptr<task_manager::WebContentsTag, VectorExperimental>>
+      filtered_tags;
+  std::ranges::copy_if(
+      all_tags, std::back_inserter(filtered_tags),
+      [](const auto& tag) { return !tag->web_contents()->GetWebUI(); });
+  return filtered_tags;
 }
 
-const std::vector<std::string> GetAllTrackedTagWebContentTitles() {
+const std::vector<std::string> GetAllTrackedTagWebContentTitles(
+    bool exclude_web_ui) {
   std::vector<std::string> titles;
   std::ranges::transform(
-      GetAllTrackedTags(), std::back_inserter(titles), [&](const auto& tag) {
+      GetAllTrackedTags(exclude_web_ui), std::back_inserter(titles),
+      [&](const auto& tag) {
         return base::UTF16ToUTF8(tag->web_contents()->GetTitle());
       });
   return titles;

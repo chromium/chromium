@@ -5,14 +5,12 @@
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/background/background_contents_test_waiter.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/task_manager/mock_web_contents_task_manager.h"
 #include "chrome/browser/task_manager/providers/web_contents/web_contents_tags_manager.h"
-#include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -32,12 +30,7 @@ namespace task_manager {
 // BackgroundContentsTask.
 class BackgroundContentsTagTest : public extensions::ExtensionBrowserTest {
  public:
-  BackgroundContentsTagTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features*/ {omnibox::internal::kWebUIOmniboxPopup,
-                              omnibox::internal::kWebUIOmniboxAimPopup},
-        /*disabled_features*/ {});
-  }
+  BackgroundContentsTagTest() = default;
   BackgroundContentsTagTest(const BackgroundContentsTagTest&) = delete;
   BackgroundContentsTagTest& operator=(const BackgroundContentsTagTest&) =
       delete;
@@ -80,28 +73,24 @@ class BackgroundContentsTagTest : public extensions::ExtensionBrowserTest {
   // existing tests run with the prewarm feature enabled.
   test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_{
       test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests that loading an extension that has a background contents will result in
 // the tags manager recording a WebContentsTag.
 IN_PROC_BROWSER_TEST_F(BackgroundContentsTagTest, TagsManagerRecordsATag) {
-  // Browser tests start with only one tab available & two omnibox tags.
-  EXPECT_THAT(
-      ui_test_utils::GetAllTrackedTagWebContentTitles(),
-      testing::ElementsAre("Omnibox Popup", "Omnibox Popup", "about:blank"));
+  // Browser tests start with only one tab available.
+  EXPECT_THAT(ui_test_utils::GetAllTrackedTagWebContentTitles(true),
+              testing::ElementsAre("about:blank"));
   auto* extension = LoadBackgroundExtension();
   ASSERT_NE(extension, nullptr);
   EXPECT_THAT(
-      ui_test_utils::GetAllTrackedTagWebContentTitles(),
-      testing::ElementsAre("Omnibox Popup", "Omnibox Popup", "about:blank",
-                           testing::Not(testing::IsEmpty())));
+      ui_test_utils::GetAllTrackedTagWebContentTitles(true),
+      testing::ElementsAre("about:blank", testing::Not(testing::IsEmpty())));
 
   // Unload the extension.
   UnloadExtension(extension->id());
-  EXPECT_THAT(
-      ui_test_utils::GetAllTrackedTagWebContentTitles(),
-      testing::ElementsAre("Omnibox Popup", "Omnibox Popup", "about:blank"));
+  EXPECT_THAT(ui_test_utils::GetAllTrackedTagWebContentTitles(true),
+              testing::ElementsAre("about:blank"));
 }
 
 // Tests that background contents creation while the provider is being observed
@@ -109,63 +98,58 @@ IN_PROC_BROWSER_TEST_F(BackgroundContentsTagTest, TagsManagerRecordsATag) {
 IN_PROC_BROWSER_TEST_F(BackgroundContentsTagTest, TasksProvidedWhileObserving) {
   MockWebContentsTaskManager task_manager;
   EXPECT_TRUE(task_manager.tasks().empty());
-  // Browser tests start with only one tab available & two omnibox tags.
-  EXPECT_THAT(
-      ui_test_utils::GetAllTrackedTagWebContentTitles(),
-      testing::ElementsAre("Omnibox Popup", "Omnibox Popup", "about:blank"));
+  // Browser tests start with only one tab available.
+  EXPECT_THAT(ui_test_utils::GetAllTrackedTagWebContentTitles(true),
+              testing::ElementsAre("about:blank"));
 
   task_manager.StartObserving();
 
   // The pre-existing tab is provided.
-  EXPECT_THAT(task_manager.TaskTitles(),
-              testing::ElementsAre("Tool: Omnibox", "Tool: Omnibox",
-                                   "Tab: about:blank"));
+  EXPECT_THAT(
+      MockWebContentsTaskManager::TaskTitles(task_manager.NonToolTasks()),
+      testing::ElementsAre("Tab: about:blank"));
 
   auto* extension = LoadBackgroundExtension();
   ASSERT_NE(extension, nullptr);
   EXPECT_THAT(
-      ui_test_utils::GetAllTrackedTagWebContentTitles(),
-      testing::ElementsAre("Omnibox Popup", "Omnibox Popup", "about:blank",
-                           testing::Not(testing::IsEmpty())));
+      ui_test_utils::GetAllTrackedTagWebContentTitles(true),
+      testing::ElementsAre("about:blank", testing::Not(testing::IsEmpty())));
   ASSERT_THAT(
-      task_manager.TaskTitles(),
-      testing::ElementsAre("Tool: Omnibox", "Tool: Omnibox", "Tab: about:blank",
+      MockWebContentsTaskManager::TaskTitles(task_manager.NonToolTasks()),
+      testing::ElementsAre("Tab: about:blank",
                            GetBackgroundTaskExpectedName(extension)));
 
   // Now check the newly provided task.
-  EXPECT_EQ(task_manager.tasks()[2]->GetType(), Task::RENDERER);
+  EXPECT_EQ(task_manager.NonToolTasks()[0]->GetType(), Task::RENDERER);
 
   // Unload the extension.
   UnloadExtension(extension->id());
-  EXPECT_THAT(task_manager.TaskTitles(),
-              testing::ElementsAre("Tool: Omnibox", "Tool: Omnibox",
-                                   "Tab: about:blank"));
   EXPECT_THAT(
-      ui_test_utils::GetAllTrackedTagWebContentTitles(),
-      testing::ElementsAre("Omnibox Popup", "Omnibox Popup", "about:blank"));
+      MockWebContentsTaskManager::TaskTitles(task_manager.NonToolTasks()),
+      testing::ElementsAre("Tab: about:blank"));
+  EXPECT_THAT(ui_test_utils::GetAllTrackedTagWebContentTitles(true),
+              testing::ElementsAre("about:blank"));
 }
 
 // Tests providing a pre-existing background task to the observing operation.
 IN_PROC_BROWSER_TEST_F(BackgroundContentsTagTest, PreExistingTasksAreProvided) {
   MockWebContentsTaskManager task_manager;
   EXPECT_TRUE(task_manager.tasks().empty());
-  // Browser tests start with only one tab available & 2 omnibox tags.
-  EXPECT_THAT(
-      ui_test_utils::GetAllTrackedTagWebContentTitles(),
-      testing::ElementsAre("Omnibox Popup", "Omnibox Popup", "about:blank"));
+  // Browser tests start with only one tab available.
+  EXPECT_THAT(ui_test_utils::GetAllTrackedTagWebContentTitles(true),
+              testing::ElementsAre("about:blank"));
   auto* extension = LoadBackgroundExtension();
   ASSERT_NE(nullptr, extension);
   EXPECT_THAT(
-      ui_test_utils::GetAllTrackedTagWebContentTitles(),
-      testing::ElementsAre("Omnibox Popup", "Omnibox Popup", "about:blank",
-                           testing::Not(testing::IsEmpty())));
+      ui_test_utils::GetAllTrackedTagWebContentTitles(true),
+      testing::ElementsAre("about:blank", testing::Not(testing::IsEmpty())));
 
   task_manager.StartObserving();
 
   // Pre-existing task will be provided to us.
   ASSERT_THAT(
-      task_manager.TaskTitles(),
-      testing::ElementsAre("Tool: Omnibox", "Tool: Omnibox", "Tab: about:blank",
+      MockWebContentsTaskManager::TaskTitles(task_manager.NonToolTasks()),
+      testing::ElementsAre("Tab: about:blank",
                            GetBackgroundTaskExpectedName(extension)));
 
   // Now check the provided task.
@@ -173,12 +157,11 @@ IN_PROC_BROWSER_TEST_F(BackgroundContentsTagTest, PreExistingTasksAreProvided) {
 
   // Unload the extension.
   UnloadExtension(extension->id());
-  EXPECT_THAT(task_manager.TaskTitles(),
-              testing::ElementsAre("Tool: Omnibox", "Tool: Omnibox",
-                                   "Tab: about:blank"));
   EXPECT_THAT(
-      ui_test_utils::GetAllTrackedTagWebContentTitles(),
-      testing::ElementsAre("Omnibox Popup", "Omnibox Popup", "about:blank"));
+      MockWebContentsTaskManager::TaskTitles(task_manager.NonToolTasks()),
+      testing::ElementsAre("Tab: about:blank"));
+  EXPECT_THAT(ui_test_utils::GetAllTrackedTagWebContentTitles(true),
+              testing::ElementsAre("about:blank"));
 }
 
 }  // namespace task_manager

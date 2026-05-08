@@ -396,12 +396,15 @@ void GetCookies(const GURL& url,
                 std::string* value);
 
 // Get all tags from the `WebContentsTagsManager`.
-const std::vector<raw_ptr<task_manager::WebContentsTag, VectorExperimental>>&
-GetAllTrackedTags();
+// `exclude_web_ui` determines whether to exclude tags of web UI web contents.
+const std::vector<raw_ptr<task_manager::WebContentsTag, VectorExperimental>>
+GetAllTrackedTags(bool exclude_web_ui);
 
 // Helper to get the titles of all tags. Can be used with
 // `EXPECT_THAT(GetAllTrackedTagWebContentTitles(), ElementsAre(...))`.
-const std::vector<std::string> GetAllTrackedTagWebContentTitles();
+// `exclude_web_ui` determines whether to exclude tags of web UI web contents.
+const std::vector<std::string> GetAllTrackedTagWebContentTitles(
+    bool exclude_web_ui);
 
 // Utility class to watch all existing and added tabs, until some interesting
 // thing has happened.  Subclasses get to decide what they consider to be
