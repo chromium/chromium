@@ -50,7 +50,7 @@ bool ScrollJankV4DecisionQueue::ProcessFrameWithScrollUpdates(
   // If the frame contains only synthetic inputs, defer the decision until we
   // receive a frame with at least one real input.
   if (!updates.real().has_value()) {
-    deferred_synthetic_frames_.emplace_back(*updates.synthetic(), damage, args);
+    deferred_synthetic_frames_.emplace_back(updates, damage, args);
     return true;
   }
 
@@ -113,10 +113,8 @@ bool ScrollJankV4DecisionQueue::AcceptFrameIfValidAndChronological(
 
 void ScrollJankV4DecisionQueue::FlushDeferredSyntheticFrames(
     bool future_real_frame_is_fast_scroll_or_sufficiently_fast_fling) {
-  for (const auto& [synthetic_updates, damage, args] :
-       deferred_synthetic_frames_) {
-    ScrollUpdates updates =
-        ScrollUpdates(/* real= */ std::nullopt, synthetic_updates);
+  for (const auto& [updates, damage, args] : deferred_synthetic_frames_) {
+    CHECK(!updates.real().has_value());
     auto result = decider_.DecideJankForFrameWithSyntheticScrollUpdatesOnly(
         updates, damage, args,
         future_real_frame_is_fast_scroll_or_sufficiently_fast_fling);

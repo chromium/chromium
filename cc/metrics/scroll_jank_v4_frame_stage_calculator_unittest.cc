@@ -577,7 +577,7 @@ TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest, RegularScrolls) {
                      .abs_total_raw_delta_pixels = 10,
                      .max_abs_inertial_raw_delta_pixels = 0,
                      .first_input_trace_id = TraceId(1)},
-                /* synthetic= */ std::nullopt)}));
+                /* synthetic= */ std::nullopt, scroll1_id)}));
     EXPECT_THAT(events_metrics, AllHaveResultId(1001));
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.FrameStageScrollIdBasedCalculationIssues",
@@ -607,7 +607,7 @@ TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest, RegularScrolls) {
                          .abs_total_raw_delta_pixels = 20,
                          .max_abs_inertial_raw_delta_pixels = 0,
                          .first_input_trace_id = TraceId(2)},
-                    /* synthetic= */ std::nullopt)}));
+                    /* synthetic= */ std::nullopt, scroll1_id)}));
     EXPECT_THAT(events_metrics, AllHaveResultId(1002));
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.FrameStageScrollIdBasedCalculationIssues",
@@ -647,7 +647,7 @@ TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest, RegularScrolls) {
                             .max_abs_inertial_raw_delta_pixels = 0,
                             .first_input_trace_id = TraceId(3),
                         },
-                        /* synthetic= */ std::nullopt)}));
+                        /* synthetic= */ std::nullopt, scroll2_id)}));
     EXPECT_THAT(events_metrics, AllHaveResultId(1003));
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.FrameStageScrollIdBasedCalculationIssues",
@@ -699,7 +699,7 @@ TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest, RegularScrolls) {
                          .abs_total_raw_delta_pixels = 90,
                          .max_abs_inertial_raw_delta_pixels = 0,
                          .first_input_trace_id = TraceId(4)},
-                    /* synthetic= */ std::nullopt)}));
+                    /* synthetic= */ std::nullopt, scroll2_id)}));
     EXPECT_THAT(events_metrics, AllHaveResultId(1005));
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.FrameStageScrollIdBasedCalculationIssues",
@@ -736,7 +736,7 @@ TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest, RegularScrolls) {
                             .max_abs_inertial_raw_delta_pixels = 0,
                             .first_input_trace_id = TraceId(6),
                         },
-                        /* synthetic= */ std::nullopt)},
+                        /* synthetic= */ std::nullopt, scroll2_id)},
                     ScrollJankV4Frame::Stage{ScrollEnd{}}));
     EXPECT_THAT(events_metrics, AllHaveResultId(1006));
     histogram_tester.ExpectUniqueSample(
@@ -786,7 +786,7 @@ TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest, RegularScrolls) {
                      .abs_total_raw_delta_pixels = 70,
                      .max_abs_inertial_raw_delta_pixels = 0,
                      .first_input_trace_id = TraceId(7)},
-                /* synthetic= */ std::nullopt)}));
+                /* synthetic= */ std::nullopt, scroll3_id)}));
     EXPECT_THAT(events_metrics, AllHaveResultId(1008));
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.FrameStageScrollIdBasedCalculationIssues",
@@ -816,7 +816,7 @@ TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest, RegularScrolls) {
                          .abs_total_raw_delta_pixels = 80,
                          .max_abs_inertial_raw_delta_pixels = 0,
                          .first_input_trace_id = TraceId(8)},
-                    /* synthetic= */ std::nullopt)}));
+                    /* synthetic= */ std::nullopt, scroll3_id)}));
     EXPECT_THAT(events_metrics, AllHaveResultId(1009));
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.FrameStageScrollIdBasedCalculationIssues",
@@ -868,7 +868,7 @@ TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest, OverlappingScrolls) {
                      .abs_total_raw_delta_pixels = 100,
                      .max_abs_inertial_raw_delta_pixels = 0,
                      .first_input_trace_id = TraceId(1)},
-                /* synthetic= */ std::nullopt)}));
+                /* synthetic= */ std::nullopt, scroll1_id)}));
     EXPECT_THAT(events_metrics, AllHaveResultId(1001));
     histogram_tester.ExpectBucketCount(
         "Event.ScrollJank.FrameStageScrollIdBasedCalculationIssues",
@@ -910,7 +910,7 @@ TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest, OverlappingScrolls) {
                             .max_abs_inertial_raw_delta_pixels = 0,
                             .first_input_trace_id = TraceId(3),
                         },
-                        /* synthetic= */ std::nullopt)},
+                        /* synthetic= */ std::nullopt, scroll1_id)},
                     ScrollJankV4Frame::Stage{ScrollEnd{}}));
     EXPECT_THAT(events_metrics, AllHaveResultId(1002));
     histogram_tester.ExpectBucketCount(
@@ -945,7 +945,7 @@ TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest, OverlappingScrolls) {
                      .abs_total_raw_delta_pixels = 300,
                      .max_abs_inertial_raw_delta_pixels = 0,
                      .first_input_trace_id = TraceId(4)},
-                /* synthetic= */ std::nullopt)}));
+                /* synthetic= */ std::nullopt, scroll2_id)}));
     EXPECT_THAT(events_metrics, AllHaveResultId(1003));
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.FrameStageScrollIdBasedCalculationIssues",
@@ -986,7 +986,7 @@ TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest,
                      .abs_total_raw_delta_pixels = 100,
                      .max_abs_inertial_raw_delta_pixels = 0,
                      .first_input_trace_id = TraceId(1)},
-                /* synthetic= */ std::nullopt)},
+                /* synthetic= */ std::nullopt, scroll1_id)},
             ScrollJankV4Frame::Stage{ScrollEnd{}}));
     EXPECT_THAT(events_metrics, AllHaveResultId(1001));
     histogram_tester.ExpectBucketCount(
@@ -1047,7 +1047,7 @@ TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest,
                      .abs_total_raw_delta_pixels = 100,
                      .max_abs_inertial_raw_delta_pixels = 0,
                      .first_input_trace_id = TraceId(1)},
-                /* synthetic= */ std::nullopt)}));
+                /* synthetic= */ std::nullopt, scroll1_id)}));
     EXPECT_THAT(events_metrics, AllHaveResultId(1001));
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.FrameStageScrollIdBasedCalculationIssues",
@@ -1082,7 +1082,7 @@ TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest,
                      .abs_total_raw_delta_pixels = 200,
                      .max_abs_inertial_raw_delta_pixels = 0,
                      .first_input_trace_id = TraceId(2)},
-                /* synthetic= */ std::nullopt)}));
+                /* synthetic= */ std::nullopt, scroll2_id)}));
     EXPECT_THAT(events_metrics, AllHaveResultId(1002));
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.FrameStageScrollIdBasedCalculationIssues",
@@ -1136,7 +1136,7 @@ TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest,
                          .abs_total_raw_delta_pixels = 400,
                          .max_abs_inertial_raw_delta_pixels = 0,
                          .first_input_trace_id = TraceId(4)},
-                    /* synthetic= */ std::nullopt)}));
+                    /* synthetic= */ std::nullopt, scroll2_id)}));
     EXPECT_THAT(events_metrics, AllHaveResultId(1004));
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.FrameStageScrollIdBasedCalculationIssues",
@@ -1173,7 +1173,7 @@ TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest,
                      .abs_total_raw_delta_pixels = 100,
                      .max_abs_inertial_raw_delta_pixels = 0,
                      .first_input_trace_id = TraceId(1)},
-                /* synthetic= */ std::nullopt)}));
+                /* synthetic= */ std::nullopt, scroll1_id)}));
     EXPECT_THAT(events_metrics, AllHaveResultId(1001));
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.FrameStageScrollIdBasedCalculationIssues",
@@ -1208,7 +1208,7 @@ TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest,
                      .abs_total_raw_delta_pixels = 200,
                      .max_abs_inertial_raw_delta_pixels = 0,
                      .first_input_trace_id = TraceId(2)},
-                /* synthetic= */ std::nullopt)}));
+                /* synthetic= */ std::nullopt, scroll2_id)}));
     EXPECT_THAT(events_metrics, AllHaveResultId(1002));
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.FrameStageScrollIdBasedCalculationIssues",
@@ -1256,7 +1256,7 @@ TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest,
                          .abs_total_raw_delta_pixels = 400,
                          .max_abs_inertial_raw_delta_pixels = 0,
                          .first_input_trace_id = TraceId(4)},
-                    /* synthetic= */ std::nullopt)}));
+                    /* synthetic= */ std::nullopt, scroll2_id)}));
     EXPECT_THAT(events_metrics, AllHaveResultId(1004));
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.FrameStageScrollIdBasedCalculationIssues",
@@ -1293,7 +1293,7 @@ TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest,
                      .abs_total_raw_delta_pixels = 10,
                      .max_abs_inertial_raw_delta_pixels = 0,
                      .first_input_trace_id = TraceId(1)},
-                /* synthetic= */ std::nullopt)}));
+                /* synthetic= */ std::nullopt, scroll1_id)}));
     EXPECT_THAT(events_metrics, AllHaveResultId(1001));
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.FrameStageScrollIdBasedCalculationIssues",
@@ -1328,7 +1328,7 @@ TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest,
                      .abs_total_raw_delta_pixels = 20,
                      .max_abs_inertial_raw_delta_pixels = 0,
                      .first_input_trace_id = TraceId(2)},
-                /* synthetic= */ std::nullopt)}));
+                /* synthetic= */ std::nullopt, scroll2_id)}));
     EXPECT_THAT(events_metrics, AllHaveResultId(1002));
     histogram_tester.ExpectUniqueSample(
         "Event.ScrollJank.FrameStageScrollIdBasedCalculationIssues",
@@ -1375,7 +1375,7 @@ TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest,
                      .abs_total_raw_delta_pixels = 40,
                      .max_abs_inertial_raw_delta_pixels = 0,
                      .first_input_trace_id = TraceId(4)},
-                /* synthetic= */ std::nullopt)},
+                /* synthetic= */ std::nullopt, scroll2_id)},
             ScrollJankV4Frame::Stage{ScrollEnd{}}));
     EXPECT_THAT(events_metrics, AllHaveResultId(1003));
     histogram_tester.ExpectBucketCount(
@@ -1418,7 +1418,7 @@ TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest, RealUpdatesOnly) {
                           .max_abs_inertial_raw_delta_pixels = 0,
                           .first_input_trace_id = TraceId(2),
                       },
-                      /* synthetic= */ std::nullopt)}));
+                      /* synthetic= */ std::nullopt, scroll1_id)}));
 }
 
 TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest,
@@ -1454,7 +1454,7 @@ TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest,
                           .max_abs_inertial_raw_delta_pixels = 30,
                           .first_input_trace_id = TraceId(3),
                       },
-                      /* synthetic= */ std::nullopt)}));
+                      /* synthetic= */ std::nullopt, scroll1_id)}));
 }
 
 TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest,
@@ -1489,7 +1489,8 @@ TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest,
                           .first_input_begin_frame_ts = MillisecondsTicks(110),
                           .has_inertial_input = false,
                           .first_input_trace_id = TraceId(2),
-                      })}));
+                      },
+                      scroll1_id)}));
 }
 
 TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest,
@@ -1524,7 +1525,8 @@ TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest,
                           .first_input_begin_frame_ts = MillisecondsTicks(110),
                           .has_inertial_input = true,
                           .first_input_trace_id = TraceId(3),
-                      })}));
+                      },
+                      scroll1_id)}));
 }
 
 TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest,
@@ -1568,7 +1570,8 @@ TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest,
                           .first_input_begin_frame_ts = MillisecondsTicks(125),
                           .has_inertial_input = false,
                           .first_input_trace_id = TraceId(3),
-                      })}));
+                      },
+                      scroll1_id)}));
 }
 
 }  // namespace

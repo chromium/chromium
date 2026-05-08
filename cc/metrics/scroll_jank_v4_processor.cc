@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "cc/base/features.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/metrics/scroll_jank_v4_decision_queue.h"
@@ -84,7 +85,15 @@ void ScrollJankV4Processor::HandleFrame(
                              updates, damage, args)) {
                        TRACE_EVENT(
                            "input.scrolling",
-                           "ScrollJankV4Processor::HandleFrame: Invalid frame");
+                           "ScrollJankV4Processor::HandleFrame: Invalid frame",
+                           [&](perfetto::EventContext context) {
+                             auto* scroll_jank_v4 =
+                                 context
+                                     .event<perfetto::protos::pbzero::
+                                                ChromeTrackEvent>()
+                                     ->set_scroll_jank_v4();
+                             scroll_jank_v4->set_result_id(args.result_id);
+                           });
                      }
                    },
                    [&](const ScrollJankV4Frame::Stage::ScrollEnd& end) {
