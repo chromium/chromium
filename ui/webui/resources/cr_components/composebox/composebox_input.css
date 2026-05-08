@@ -273,7 +273,7 @@
   --cr-icon-button-icon-size: 20px;
   position: absolute;
   top: var(--composebox-cancel-button-top);
-  inset-inline-end: 12px;
+  inset-inline-end: var(--composebox-cancel-button-inline-end, 12px);
   /* Uses the same transitions as the submit button so they are in sync. */
   transition: var(--submit-enabled-transition);
 }

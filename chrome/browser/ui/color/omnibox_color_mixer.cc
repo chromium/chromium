@@ -213,7 +213,7 @@ void ApplyComposeboxBaselineColors(ui::ColorMixer& mixer,
   constexpr SkColor kComposeboxSubmitButtonBackgroundDark =
       SkColorSetRGB(0xA8, 0xC7, 0xFA);
   constexpr SkColor kComposeboxSubmitButtonBackgroundLight =
-      SkColorSetRGB(0x34, 0x6B, 0xF1);
+      SkColorSetRGB(0x33, 0x6E, 0xF3);
   constexpr SkColor kComposeboxSubmitButtonIconDark =
       SkColorSetRGB(0x06, 0x2E, 0x6F);
   constexpr SkColor kComposeboxSubmitButtonEnergy =
