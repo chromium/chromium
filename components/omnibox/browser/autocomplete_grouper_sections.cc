@@ -676,7 +676,7 @@ DesktopComposeboxZpsSection::DesktopComposeboxZpsSection(
     size_t max_suggestions,
     size_t max_aim_suggestions,
     size_t max_contextual_suggestions)
-    : ZpsSection(max_suggestions,
+    : ZpsSectionWithLocalHistory(max_suggestions,
                  {
                      Group(max_suggestions,
                            {
