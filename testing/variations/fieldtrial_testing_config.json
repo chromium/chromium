@@ -2413,25 +2413,6 @@
             ]
         }
     ],
-    "AutoDisableAccessibility": [
-        {
-            "platforms": [
-                "android",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutoDisableAccessibility"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutoDownloadTranslateLanguagePacks": [
         {
             "platforms": [
