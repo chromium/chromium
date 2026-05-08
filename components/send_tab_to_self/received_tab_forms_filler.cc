@@ -23,8 +23,12 @@
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/signatures.h"
+#include "components/send_tab_to_self/proto_conversions.h"
 
 namespace send_tab_to_self {
+
+using AutofillTypeSet = ReceivedTabFormsFiller::AutofillTypeSet;
+
 namespace {
 
 // TODO(crbug.com/485145029): Consider making this configurable.
@@ -56,6 +60,8 @@ base::flat_set<PageContext::FormFieldAutofillSignature> ComputeUniqueSignatures(
 }
 
 // Returns the set of field signatures that are unique within `form`.
+// TODO(crbug.com/485145029): Consider honoring origin-based filtering here
+// as well, similar to GetUniqueTypesInForm.
 base::flat_set<autofill::FieldSignature> GetUniqueSignaturesInForm(
     const autofill::FormStructure& form) {
   if (form.form_signature().value() == 0) {
@@ -79,6 +85,63 @@ base::flat_set<autofill::FieldSignature> GetUniqueSignaturesInForm(
   }
   return base::flat_set<autofill::FieldSignature>(base::sorted_unique,
                                                   std::move(unique_signatures));
+}
+
+// Helper to extract the AutofillTypeSet for a given AutofillField.
+AutofillTypeSet GetFieldProtoTypes(const autofill::AutofillField& field) {
+  AutofillTypeSet proto_types;
+  for (autofill::FieldType type : field.Type().GetTypes()) {
+    if (std::optional<sync_pb::FormField_AutofillFieldType> proto_type =
+            AutofillFieldTypeToProto(type)) {
+      proto_types.insert(*proto_type);
+    }
+  }
+  return proto_types;
+}
+
+// Returns the set of Autofill type sets that appear exactly once among the
+// same-origin fields in the form.
+base::flat_set<AutofillTypeSet> GetUniqueTypeSetsInForm(
+    const autofill::FormStructure& form,
+    const url::Origin& origin) {
+  base::flat_map<AutofillTypeSet, size_t> counts;
+  for (const std::unique_ptr<autofill::AutofillField>& field : form.fields()) {
+    if (field->origin() != origin) {
+      continue;
+    }
+    AutofillTypeSet type_set = GetFieldProtoTypes(*field);
+    if (!type_set.empty()) {
+      ++counts[type_set];
+    }
+  }
+  std::vector<AutofillTypeSet> unique_type_sets;
+  for (const auto& [type_set, count] : counts) {
+    if (count == 1) {
+      unique_type_sets.push_back(type_set);
+    }
+  }
+  return base::flat_set<AutofillTypeSet>(base::sorted_unique,
+                                         std::move(unique_type_sets));
+}
+
+// Returns the set of Autofill type sets that appear exactly once in the
+// incoming tab's fields.
+base::flat_set<AutofillTypeSet> ComputeUniqueTypeSets(
+    const std::vector<PageContext::FormField>& fields) {
+  base::flat_map<AutofillTypeSet, size_t> counts;
+  for (const PageContext::FormField& field : fields) {
+    if (!field.autofill_types.empty()) {
+      ++counts[field.autofill_types];
+    }
+  }
+  std::vector<AutofillTypeSet> unique_type_sets;
+  for (const auto& [type_set, count] : counts) {
+    if (count == 1) {
+      unique_type_sets.push_back(type_set);
+    }
+  }
+  return base::flat_set<AutofillTypeSet>(base::sorted_unique,
+                                         std::move(unique_type_sets));
 }
 
 }  // namespace
@@ -107,6 +170,7 @@ ReceivedTabFormsFiller::ReceivedTabFormsFiller(
     : origin_(origin),
       received_unique_signatures_(
           ComputeUniqueSignatures(form_field_info.fields)),
+      received_unique_type_sets_(ComputeUniqueTypeSets(form_field_info.fields)),
       pending_fields_(form_field_info.fields),
       on_completion_callback_for_test_(std::move(on_completion_callback)) {
   // Start a timer to self-destruct if filling takes too long. Using
@@ -185,21 +249,32 @@ void ReceivedTabFormsFiller::OnAutofillManagerStateChanged(
   }
 }
 
+// TODO(crbug.com/485145029): Add a metric to see which matching method is used.
+// This helps decide if we can clean up the code later.
+// TODO(crbug.com/485145029): Check if we really need all these matching methods
+// by looking at the metrics. If fallbacks are not used, we can remove them to
+// simplify the code and the proto.
 const PageContext::FormField* ReceivedTabFormsFiller::FindPendingFieldMatching(
     const autofill::FormStructure& form,
     const autofill::AutofillField& field,
-    const base::flat_set<autofill::FieldSignature>& form_unique_signatures) {
+    const base::flat_set<autofill::FieldSignature>& form_unique_signatures,
+    const base::flat_set<AutofillTypeSet>& form_unique_type_sets) {
   // 1. Try strict match based on ID, Name, and Type.
   if (const PageContext::FormField* match =
           FindPendingFieldByIdNameAndType(field)) {
     return match;
   }
 
-  // 2. Try fallback match using unique Autofill signatures. Return nullptr if
-  // no match is found or the signature is not unique in the receiver form.
+  // 2. Try fallback match using unique Autofill signatures.
   const PageContext::FormFieldAutofillSignature signature{
       form.form_signature(), field.GetFieldSignature()};
-  return FindPendingFieldBySignature(signature, form_unique_signatures);
+  if (const PageContext::FormField* match =
+          FindPendingFieldBySignature(signature, form_unique_signatures)) {
+    return match;
+  }
+
+  // 3. Try fallback match using Autofill types (exact set match).
+  return FindPendingFieldByExactTypeSet(field, form_unique_type_sets);
 }
 
 const PageContext::FormField*
@@ -234,10 +309,39 @@ ReceivedTabFormsFiller::FindPendingFieldBySignature(
   return find_it != pending_fields_.end() ? &*find_it : nullptr;
 }
 
+const PageContext::FormField*
+ReceivedTabFormsFiller::FindPendingFieldByExactTypeSet(
+    const autofill::AutofillField& field,
+    const base::flat_set<AutofillTypeSet>& form_unique_type_sets) {
+  AutofillTypeSet local_type_set = GetFieldProtoTypes(field);
+  if (local_type_set.empty()) {
+    return nullptr;
+  }
+
+  // Check if the type set is unique in the receiver form.
+  if (!form_unique_type_sets.contains(local_type_set)) {
+    return nullptr;
+  }
+
+  // Check if the type set was unique in the pending fields.
+  if (!received_unique_type_sets_.contains(local_type_set)) {
+    return nullptr;
+  }
+
+  // Find the unique pending field that has this exact type set.
+  auto find_it = std::find_if(pending_fields_.begin(), pending_fields_.end(),
+                              [&](const PageContext::FormField& pending) {
+                                return pending.autofill_types == local_type_set;
+                              });
+  return find_it != pending_fields_.end() ? &*find_it : nullptr;
+}
+
 void ReceivedTabFormsFiller::FillForms(autofill::AutofillManager& manager) {
   manager.ForEachCachedForm([&](const autofill::FormStructure& form) {
     const base::flat_set<autofill::FieldSignature> form_unique_signatures =
         GetUniqueSignaturesInForm(form);
+    const base::flat_set<AutofillTypeSet> form_unique_type_sets =
+        GetUniqueTypeSetsInForm(form, origin_);
 
     for (const std::unique_ptr<autofill::AutofillField>& field :
          form.fields()) {
@@ -246,8 +350,8 @@ void ReceivedTabFormsFiller::FillForms(autofill::AutofillManager& manager) {
         continue;
       }
 
-      const PageContext::FormField* pending_field =
-          FindPendingFieldMatching(form, *field, form_unique_signatures);
+      const PageContext::FormField* pending_field = FindPendingFieldMatching(
+          form, *field, form_unique_signatures, form_unique_type_sets);
       if (!pending_field) {
         continue;
       }

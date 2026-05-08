@@ -33,6 +33,7 @@ namespace send_tab_to_self {
 // timeout.
 class ReceivedTabFormsFiller : public autofill::AutofillManager::Observer {
  public:
+  using AutofillTypeSet = base::flat_set<sync_pb::FormField_AutofillFieldType>;
   static void Start(
       autofill::AutofillClient& client,
       const url::Origin& origin,
@@ -79,11 +80,12 @@ class ReceivedTabFormsFiller : public autofill::AutofillManager::Observer {
 
   // Finds a matching field in `pending_fields_` for the given `field` in
   // `form`. Tries strict match first, then falls back to signature match if
-  // unique.
+  // unique, and finally to exact type set match if unique.
   const PageContext::FormField* FindPendingFieldMatching(
       const autofill::FormStructure& form,
       const autofill::AutofillField& field,
-      const base::flat_set<autofill::FieldSignature>& form_unique_signatures);
+      const base::flat_set<autofill::FieldSignature>& form_unique_signatures,
+      const base::flat_set<AutofillTypeSet>& form_unique_type_sets);
 
   // Tries to find a match based on strict ID, Name, and Type equality.
   const PageContext::FormField* FindPendingFieldByIdNameAndType(
@@ -96,10 +98,24 @@ class ReceivedTabFormsFiller : public autofill::AutofillManager::Observer {
       const PageContext::FormFieldAutofillSignature& signature,
       const base::flat_set<autofill::FieldSignature>& form_unique_signatures);
 
+  // Tries to find a match using Autofill types (sync enums) as a fallback.
+  // The match is performed by comparing the exact set of types.
+  // Restrictions to prevent false positives:
+  // - Only valid, fillable types (that can be converted to the sync proto enum
+  //   via AutofillFieldTypeToProto) are considered.
+  // - The exact set of types must appear exactly once (unique) in both the
+  //   incoming pending fields and the receiver form (filtered by origin).
+  // - Partial matches (e.g. overlapping subsets of types) are not allowed.
+  const PageContext::FormField* FindPendingFieldByExactTypeSet(
+      const autofill::AutofillField& field,
+      const base::flat_set<AutofillTypeSet>& form_unique_type_sets);
+
   const url::Origin origin_;
   // Signatures that appeared exactly once in the incoming tab's fields.
   const base::flat_set<PageContext::FormFieldAutofillSignature>
       received_unique_signatures_;
+  // Type sets that appeared exactly once in the incoming tab's fields.
+  const base::flat_set<AutofillTypeSet> received_unique_type_sets_;
 
   base::flat_set<PageContext::FormField, FieldUniquenessKeyComparator>
       pending_fields_;

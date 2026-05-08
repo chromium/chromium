@@ -252,6 +252,278 @@ TEST_F(ReceivedTabFormsFillerTest,
 
   run_loop.Run();
 }
+// Tests that fallback matching via semantic type works when names and IDs do
+// not match but there is a unique type match.
+TEST_F(ReceivedTabFormsFillerTest, ShouldFillFieldsBySemanticMatchFallback) {
+  const url::Origin kOrigin = url::Origin::Create(GURL("https://example.com"));
+
+  PageContext::FormFieldInfo form_field_info;
+  PageContext::FormField pending_field =
+      MakeFormField(u"id1", u"name1", "text", u"shared_value");
+  pending_field.autofill_types = {
+      sync_pb::FormField_AutofillFieldType_USERNAME};
+  form_field_info.fields.push_back(pending_field);
+
+  const FormData form_receiver = autofill::test::GetFormData(
+      {.fields = {{.renderer_id = autofill::FieldRendererId(2),
+                   .name_attribute = u"name_diff",
+                   .id_attribute = u"id_diff",
+                   .origin = kOrigin}},
+       .url = "https://example.com"});
+
+  ActivateAutofillDriver(autofill_driver());
+
+  auto form_structure =
+      std::make_unique<autofill::FormStructure>(form_receiver);
+  form_structure->field(0)->SetTypeTo(
+      autofill::AutofillType(autofill::FieldType::USERNAME), std::nullopt);
+  autofill::test_api(autofill_manager())
+      .AddSeenFormStructure(std::move(form_structure));
+
+  const autofill::FieldGlobalId field_id =
+      form_receiver.fields()[0].global_id();
+  EXPECT_CALL(autofill_driver(),
+              ApplyFieldAction(autofill::mojom::FieldActionType::kReplaceAll,
+                               autofill::mojom::ActionPersistence::kFill,
+                               Eq(field_id), Eq(u"shared_value")));
+
+  base::RunLoop run_loop;
+  ReceivedTabFormsFiller::Start(autofill_client(), kOrigin, form_field_info,
+                                run_loop.QuitClosure());
+
+  run_loop.Run();
+}
+
+// Tests that matching is skipped if multiple pending fields share the same
+// semantic type.
+TEST_F(ReceivedTabFormsFillerTest,
+       ShouldNotFillFieldsByAmbiguousSemanticMatchFallback) {
+  const url::Origin kOrigin = url::Origin::Create(GURL("https://example.com"));
+
+  PageContext::FormFieldInfo form_field_info;
+  PageContext::FormField pending_field1 =
+      MakeFormField(u"id1", u"name1", "text", u"val1");
+  pending_field1.autofill_types = {
+      sync_pb::FormField_AutofillFieldType_USERNAME};
+  form_field_info.fields.push_back(pending_field1);
+
+  PageContext::FormField pending_field2 =
+      MakeFormField(u"id2", u"name2", "text", u"val2");
+  pending_field2.autofill_types = {
+      sync_pb::FormField_AutofillFieldType_USERNAME};
+  form_field_info.fields.push_back(pending_field2);
+
+  const FormData form_receiver = autofill::test::GetFormData(
+      {.fields = {{.renderer_id = autofill::FieldRendererId(2),
+                   .name_attribute = u"name_diff",
+                   .id_attribute = u"id_diff",
+                   .origin = kOrigin}},
+       .url = "https://example.com"});
+
+  ActivateAutofillDriver(autofill_driver());
+
+  auto form_structure =
+      std::make_unique<autofill::FormStructure>(form_receiver);
+  form_structure->field(0)->SetTypeTo(
+      autofill::AutofillType(autofill::FieldType::USERNAME), std::nullopt);
+  autofill::test_api(autofill_manager())
+      .AddSeenFormStructure(std::move(form_structure));
+
+  EXPECT_CALL(autofill_driver(), ApplyFieldAction).Times(0);
+
+  base::RunLoop run_loop;
+  ReceivedTabFormsFiller::Start(autofill_client(), kOrigin, form_field_info,
+                                run_loop.QuitClosure());
+
+  run_loop.Run();
+}
+
+// Tests that matching is skipped if the semantic type is not unique within
+// the receiver form.
+TEST_F(ReceivedTabFormsFillerTest,
+       ShouldNotFillFieldsByDuplicateTypesInReceiverForm) {
+  const url::Origin kOrigin = url::Origin::Create(GURL("https://example.com"));
+
+  PageContext::FormFieldInfo form_field_info;
+  PageContext::FormField pending_field =
+      MakeFormField(u"id1", u"name1", "text", u"shared_value");
+  pending_field.autofill_types = {
+      sync_pb::FormField_AutofillFieldType_USERNAME};
+  form_field_info.fields.push_back(pending_field);
+
+  const FormData form_receiver = autofill::test::GetFormData(
+      {.fields = {{.renderer_id = autofill::FieldRendererId(2),
+                   .name_attribute = u"name_diff1",
+                   .id_attribute = u"id_diff1",
+                   .origin = kOrigin},
+                  {.renderer_id = autofill::FieldRendererId(3),
+                   .name_attribute = u"name_diff2",
+                   .id_attribute = u"id_diff2",
+                   .origin = kOrigin}},
+       .url = "https://example.com"});
+
+  ActivateAutofillDriver(autofill_driver());
+
+  auto form_structure =
+      std::make_unique<autofill::FormStructure>(form_receiver);
+  form_structure->field(0)->SetTypeTo(
+      autofill::AutofillType(autofill::FieldType::USERNAME), std::nullopt);
+  form_structure->field(1)->SetTypeTo(
+      autofill::AutofillType(autofill::FieldType::USERNAME), std::nullopt);
+  autofill::test_api(autofill_manager())
+      .AddSeenFormStructure(std::move(form_structure));
+
+  EXPECT_CALL(autofill_driver(), ApplyFieldAction).Times(0);
+
+  base::RunLoop run_loop;
+  ReceivedTabFormsFiller::Start(autofill_client(), kOrigin, form_field_info,
+                                run_loop.QuitClosure());
+
+  run_loop.Run();
+}
+
+// Tests that fallback semantic matching works when both the pending field and
+// receiver field have the same multiple semantic types (exact match).
+TEST_F(ReceivedTabFormsFillerTest,
+       ShouldFillFieldsBySemanticMatchWithMultipleTypes) {
+  const url::Origin kOrigin = url::Origin::Create(GURL("https://example.com"));
+
+  PageContext::FormFieldInfo form_field_info;
+  PageContext::FormField pending_field =
+      MakeFormField(u"id1", u"name1", "text", u"shared_value");
+  pending_field.autofill_types = {
+      sync_pb::FormField_AutofillFieldType_EMAIL_ADDRESS,
+      sync_pb::FormField_AutofillFieldType_USERNAME};
+  form_field_info.fields.push_back(pending_field);
+
+  const FormData form_receiver = autofill::test::GetFormData(
+      {.fields = {{.renderer_id = autofill::FieldRendererId(2),
+                   .name_attribute = u"name_diff",
+                   .id_attribute = u"id_diff",
+                   .origin = kOrigin}},
+       .url = "https://example.com"});
+
+  ActivateAutofillDriver(autofill_driver());
+
+  auto form_structure =
+      std::make_unique<autofill::FormStructure>(form_receiver);
+  autofill::FieldTypeSet types = {autofill::FieldType::USERNAME,
+                                  autofill::FieldType::EMAIL_ADDRESS};
+  form_structure->field(0)->SetTypeTo(autofill::AutofillType(types),
+                                      std::nullopt);
+  autofill::test_api(autofill_manager())
+      .AddSeenFormStructure(std::move(form_structure));
+
+  const autofill::FieldGlobalId field_id =
+      form_receiver.fields()[0].global_id();
+  EXPECT_CALL(autofill_driver(),
+              ApplyFieldAction(autofill::mojom::FieldActionType::kReplaceAll,
+                               autofill::mojom::ActionPersistence::kFill,
+                               Eq(field_id), Eq(u"shared_value")));
+
+  base::RunLoop run_loop;
+  ReceivedTabFormsFiller::Start(autofill_client(), kOrigin, form_field_info,
+                                run_loop.QuitClosure());
+
+  run_loop.Run();
+}
+
+// Tests that matching is skipped if a semantic type is not unique within
+// the incoming fields, even if they match separate fields in the receiver form.
+TEST_F(ReceivedTabFormsFillerTest,
+       ShouldNotFillFieldsByDuplicateTypesInIncomingFields) {
+  const url::Origin kOrigin = url::Origin::Create(GURL("https://example.com"));
+
+  PageContext::FormFieldInfo form_field_info;
+  // Field 1 and Field 2 in the incoming fields share the same type (USERNAME).
+  PageContext::FormField pending_field1 =
+      MakeFormField(u"id1", u"name1", "text", u"val1");
+  pending_field1.autofill_types = {
+      sync_pb::FormField_AutofillFieldType_USERNAME};
+  form_field_info.fields.push_back(pending_field1);
+
+  PageContext::FormField pending_field2 =
+      MakeFormField(u"id2", u"name2", "text", u"val2");
+  pending_field2.autofill_types = {
+      sync_pb::FormField_AutofillFieldType_USERNAME};
+  form_field_info.fields.push_back(pending_field2);
+
+  // The receiver form has two distinct fields, both matching the USERNAME type.
+  const FormData form_receiver = autofill::test::GetFormData(
+      {.fields = {{.renderer_id = autofill::FieldRendererId(2),
+                   .name_attribute = u"name_diff1",
+                   .id_attribute = u"id_diff1",
+                   .origin = kOrigin},
+                  {.renderer_id = autofill::FieldRendererId(3),
+                   .name_attribute = u"name_diff2",
+                   .id_attribute = u"id_diff2",
+                   .origin = kOrigin}},
+       .url = "https://example.com"});
+
+  ActivateAutofillDriver(autofill_driver());
+
+  auto form_structure =
+      std::make_unique<autofill::FormStructure>(form_receiver);
+  form_structure->field(0)->SetTypeTo(
+      autofill::AutofillType(autofill::FieldType::USERNAME), std::nullopt);
+  form_structure->field(1)->SetTypeTo(
+      autofill::AutofillType(autofill::FieldType::USERNAME), std::nullopt);
+  autofill::test_api(autofill_manager())
+      .AddSeenFormStructure(std::move(form_structure));
+
+  // Since the type is not unique in incoming fields, no autofill action should
+  // be applied.
+  EXPECT_CALL(autofill_driver(), ApplyFieldAction).Times(0);
+
+  base::RunLoop run_loop;
+  ReceivedTabFormsFiller::Start(autofill_client(), kOrigin, form_field_info,
+                                run_loop.QuitClosure());
+
+  run_loop.Run();
+}
+
+// Tests that a single pending field does not match multiple fields in the
+// receiver form due to deferred erasure.
+TEST_F(ReceivedTabFormsFillerTest,
+       ShouldNotFillSameFieldMultipleTimesDueToDeferredErasure) {
+  const url::Origin kOrigin = url::Origin::Create(GURL("https://example.com"));
+
+  PageContext::FormFieldInfo form_field_info;
+  form_field_info.fields.push_back(
+      MakeFormField(u"id1", u"name1", "text", u"shared_value"));
+
+  // Create a receiver form with TWO identical fields.
+  const FormData form_receiver = autofill::test::GetFormData(
+      {.fields = {{.renderer_id = autofill::FieldRendererId(2),
+                   .name_attribute = u"name1",
+                   .id_attribute = u"id1",
+                   .origin = kOrigin},
+                  {.renderer_id = autofill::FieldRendererId(3),
+                   .name_attribute = u"name1",
+                   .id_attribute = u"id1",
+                   .origin = kOrigin}},
+       .url = "https://example.com"});
+
+  ActivateAutofillDriver(autofill_driver());
+
+  const autofill::FieldGlobalId first_field_id =
+      form_receiver.fields()[0].global_id();
+
+  // Should only apply action for the first matching field.
+  EXPECT_CALL(autofill_driver(),
+              ApplyFieldAction(autofill::mojom::FieldActionType::kReplaceAll,
+                               autofill::mojom::ActionPersistence::kFill,
+                               Eq(first_field_id), Eq(u"shared_value")))
+      .Times(1);
+
+  base::RunLoop run_loop;
+  ReceivedTabFormsFiller::Start(autofill_client(), kOrigin, form_field_info,
+                                run_loop.QuitClosure());
+
+  autofill_manager().OnFormsSeen({form_receiver}, {});
+
+  run_loop.Run();
+}
 
 TEST_F(ReceivedTabFormsFillerTest, ShouldStopOnManagerDestruction) {
   PageContext::FormFieldInfo form_field_info;
