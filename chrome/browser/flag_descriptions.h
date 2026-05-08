@@ -449,6 +449,12 @@ inline constexpr char kDataControlsDragEnforcementName[] =
 inline constexpr char kDataControlsDragEnforcementDescription[] =
     "Enables Data Controls drag-and-drop enforcement.";
 
+inline constexpr char kEnableCancelUploadOnContentAnalysisName[] =
+    "Cancel file uploads on content analysis";
+inline constexpr char kEnableCancelUploadOnContentAnalysisDescription[] =
+    "Allows users to cancel file uploads while content analysis is in "
+    "progress.";
+
 inline constexpr char kDataControlsSearchWithName[] =
     "Data Controls enforcement for search context menu item";
 inline constexpr char kDataControlsSearchWithDescription[] =
