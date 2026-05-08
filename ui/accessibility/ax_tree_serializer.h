@@ -726,9 +726,9 @@ bool AXTreeSerializer<AXSourceNode,
       // subtrees for both the old and new parent.
       if (!lca) {
         // TODO(442619489) Fix the root cause of this issue, replacing the
-        // DUMP_WILL_BE_NOTREACHED with a CHECK once we have ensured this
+        // DCHECK with a CHECK once we have ensured this
         // can no longer occur.
-        DUMP_WILL_BE_NOTREACHED()
+        DCHECK(false)
             << "We should not have a null LCA when ComputeReparentingLCA "
                "returns with 'true'.";
         // In this path, our assumptions in the rest of this method are no
