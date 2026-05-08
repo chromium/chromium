@@ -2278,6 +2278,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
   auto* controller = ReadAnythingController::From(tab);
   PrefService* prefs = browser()->profile()->GetPrefs();
+  auto* side_panel_ui = browser()->GetFeatures().side_panel_ui();
 
   // 1. Initial state should be immersive (default).
   EXPECT_EQ(
@@ -2288,12 +2289,17 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
 
   // 2. Open IRM.
   ShowUI(controller);
+  AwaitAndAssertOverlayVisibility(/*visible=*/true);
   EXPECT_EQ(
       controller->GetPresentationState(),
       read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
 
   // 3. Toggle to Side Panel.
   controller->TogglePresentation();
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return side_panel_ui->IsSidePanelEntryShowing(
+        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
+  }));
   EXPECT_EQ(controller->GetPresentationState(),
             read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
 
@@ -2306,16 +2312,25 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
 
   // 5. Close Reading Mode.
   controller->CloseSidePanelUI(ReadAnythingCloseReason::kClosedByUser);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return !side_panel_ui->IsSidePanelEntryShowing(
+        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
+  }));
 
   // 6. Open Reading Mode again using ShowUI.
   ShowUI(controller);
 
   // 7. It should open in Side Panel.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return side_panel_ui->IsSidePanelEntryShowing(
+        SidePanelEntryKey(SidePanelEntryId::kReadAnything));
+  }));
   EXPECT_EQ(controller->GetPresentationState(),
             read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
 
   // 8. Toggle back to Immersive.
   controller->TogglePresentation();
+  AwaitAndAssertOverlayVisibility(/*visible=*/true);
   EXPECT_EQ(
       controller->GetPresentationState(),
       read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
@@ -2329,9 +2344,11 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
 
   // 10. Close and reopen.
   controller->CloseImmersiveUI(ReadAnythingCloseReason::kClosedByUser);
+  AwaitAndAssertOverlayVisibility(/*visible=*/false);
   ShowUI(controller);
 
   // 11. It should open in Immersive.
+  AwaitAndAssertOverlayVisibility(/*visible=*/true);
   EXPECT_EQ(
       controller->GetPresentationState(),
       read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
