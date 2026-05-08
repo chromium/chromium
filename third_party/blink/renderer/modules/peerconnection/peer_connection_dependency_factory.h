@@ -217,9 +217,9 @@ class MODULES_EXPORT PeerConnectionDependencyFactory
       base::WaitableEvent* event);
   void CleanupPeerConnectionFactory();
 
-  void DoGetDevtoolsToken(
+  void DoGetDevtoolsThrottlingToken(
       base::OnceCallback<void(std::optional<base::UnguessableToken>)> then);
-  std::optional<base::UnguessableToken> GetDevtoolsToken();
+  std::optional<base::UnguessableToken> GetDevtoolsThrottlingToken();
   scoped_refptr<base::SequencedTaskRunner> context_task_runner_;
 
   // network_manager_ must be deleted on the network thread. The network manager

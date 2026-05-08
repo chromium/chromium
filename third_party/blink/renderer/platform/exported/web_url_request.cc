@@ -401,9 +401,9 @@ bool WebURLRequest::IsRevalidating() const {
   return resource_request_->IsRevalidating();
 }
 
-const std::optional<base::UnguessableToken>& WebURLRequest::GetDevToolsToken()
-    const {
-  return resource_request_->GetDevToolsToken();
+const std::optional<base::UnguessableToken>&
+WebURLRequest::GetDevToolsThrottlingToken() const {
+  return resource_request_->GetDevToolsThrottlingToken();
 }
 
 const WebString WebURLRequest::GetRequestedWithHeader() const {

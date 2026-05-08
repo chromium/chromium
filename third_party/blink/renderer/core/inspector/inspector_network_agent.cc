@@ -1512,7 +1512,7 @@ void InspectorNetworkAgent::SetDevToolsIds(
   if (initiator_info.name == fetch_initiator_type_names::kInternal) {
     return;
   }
-  request.SetDevToolsToken(devtools_token_);
+  request.SetDevToolsThrottlingToken(devtools_throttling_token_);
 
   // The loader parameter is for generating a browser generated ID for a browser
   // initiated request. We pass it null here because we are reporting a renderer
@@ -2024,8 +2024,8 @@ String InspectorNetworkAgent::GetProtocolAsString(
 }
 
 void InspectorNetworkAgent::WillCreateP2PSocketUdp(
-    std::optional<base::UnguessableToken>* devtools_token) {
-  *devtools_token = devtools_token_;
+    std::optional<base::UnguessableToken>* devtools_throttling_token) {
+  *devtools_throttling_token = devtools_throttling_token_;
 }
 
 void InspectorNetworkAgent::WillCreateWebSocket(
@@ -2033,8 +2033,8 @@ void InspectorNetworkAgent::WillCreateWebSocket(
     uint64_t identifier,
     const KURL& request_url,
     const String&,
-    std::optional<base::UnguessableToken>* devtools_token) {
-  *devtools_token = devtools_token_;
+    std::optional<base::UnguessableToken>* devtools_throttling_token) {
+  *devtools_throttling_token = devtools_throttling_token_;
   std::unique_ptr<v8_inspector::protocol::Runtime::API::StackTrace>
       current_stack_trace =
           CaptureSourceLocation(execution_context)->BuildInspectorObject();
@@ -2869,7 +2869,7 @@ InspectorNetworkAgent::InspectorNetworkAgent(
       resources_data_(MakeGarbageCollected<NetworkResourcesData>(
           kDefaultTotalBufferSize,
           kDefaultResourceBufferSize)),
-      devtools_token_(
+      devtools_throttling_token_(
           worker_or_worklet_global_scope_
               ? worker_or_worklet_global_scope_->GetParentDevToolsToken()
               : inspected_frames->Root()->GetDevToolsFrameToken()),

@@ -475,12 +475,13 @@ class PLATFORM_EXPORT ResourceRequestHead {
   void SetAllowStaleResponse(bool value) { allow_stale_response_ = value; }
   bool AllowsStaleResponse() const { return allow_stale_response_; }
 
-  const std::optional<base::UnguessableToken>& GetDevToolsToken() const {
-    return devtools_token_;
+  const std::optional<base::UnguessableToken>& GetDevToolsThrottlingToken()
+      const {
+    return devtools_throttling_token_;
   }
-  void SetDevToolsToken(
+  void SetDevToolsThrottlingToken(
       const std::optional<base::UnguessableToken>& devtools_token) {
-    devtools_token_ = devtools_token;
+    devtools_throttling_token_ = devtools_token;
   }
 
   const scoped_refptr<
@@ -797,7 +798,7 @@ class PLATFORM_EXPORT ResourceRequestHead {
 
   static const base::TimeDelta default_timeout_interval_;
 
-  std::optional<base::UnguessableToken> devtools_token_;
+  std::optional<base::UnguessableToken> devtools_throttling_token_;
   String devtools_id_;
   String requested_with_header_;
   String client_data_header_;

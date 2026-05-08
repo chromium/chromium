@@ -361,16 +361,16 @@ bool WebSocketChannelImpl::Connect(const KURL& url, const String& protocol) {
       connector.BindNewPipeAndPassReceiver(
           execution_context_->GetTaskRunner(TaskType::kWebSocket)));
 
-  std::optional<base::UnguessableToken> devtools_token;
+  std::optional<base::UnguessableToken> devtools_throttling_token;
   probe::WillCreateWebSocket(execution_context_, identifier_, url, protocol,
-                             &devtools_token);
+                             &devtools_throttling_token);
 
   connector->Connect(
       url, protocols, execution_context_->UserAgent(),
       execution_context_->GetStorageAccessApiStatus(),
       handshake_client_receiver_.BindNewPipeAndPassRemote(
           execution_context_->GetTaskRunner(TaskType::kWebSocket)),
-      /*throttling_profile_id=*/devtools_token);
+      /*throttling_profile_id=*/devtools_throttling_token);
   handshake_client_receiver_.set_disconnect_with_reason_handler(
       blink::BindOnce(&WebSocketChannelImpl::OnConnectionError,
                       WrapWeakPersistent(this), FROM_HERE));
