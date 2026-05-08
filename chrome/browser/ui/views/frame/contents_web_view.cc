@@ -84,9 +84,15 @@ void ContentsWebView::SetIsAnimatingBounds(bool is_animating) {
     if (status_bubble_) {
       status_bubble_->Hide();
     }
-  } else {
-    if (status_bubble_) {
-      status_bubble_->Reposition();
+
+    if (use_default_deadline_when_animating_ && web_contents()) {
+      // Update the render widget host view to set to use default deadline when
+      // animating. This is a best effort synchronization between browser and
+      // web contents.
+      if (content::RenderWidgetHostView* rwhv =
+              web_contents()->GetRenderWidgetHostView()) {
+        rwhv->SetShouldUseDefaultDeadlineOnResize(true);
+      }
     }
   }
 }
@@ -96,8 +102,20 @@ bool ContentsWebView::GetNeedsNotificationWhenVisibleBoundsChange() const {
 }
 
 void ContentsWebView::OnVisibleBoundsChanged() {
+  // If we are animating, the status bubble is hidden and avoid reposition the
+  // bubble as an optimization since it's expensive on some platform.
   if (!is_animating_bounds_ && status_bubble_) {
     status_bubble_->Reposition();
+  }
+
+  // Reset using default deadline once animation is completed after the final
+  // bounds changes are made.
+  if (!is_animating_bounds_ && use_default_deadline_when_animating_ &&
+      web_contents()) {
+    if (content::RenderWidgetHostView* rwhv =
+            web_contents()->GetRenderWidgetHostView()) {
+      rwhv->SetShouldUseDefaultDeadlineOnResize(false);
+    }
   }
 }
 

@@ -145,6 +145,7 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   void TakeFallbackContentFrom(RenderWidgetHostView* view) override;
   bool IsHTMLFormPopup() const override;
   uint64_t GetNSViewId() const override;
+  void SetShouldUseDefaultDeadlineOnResize(bool enable) override;
 
   // Implementation of RenderWidgetHostViewBase.
   void InitAsPopup(RenderWidgetHostView* parent_host_view,
@@ -447,7 +448,7 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   std::vector<viz::SurfaceId> CollectSurfaceIdsForEviction() override;
   display::ScreenInfo GetCurrentScreenInfo() const override;
   void SetCurrentDeviceScaleFactor(float device_scale_factor) override;
-  bool ShouldWaitRemoteCompositorFrameOnResize() const override;
+  bool ShouldUseDefaultDeadlineOnResize() const override;
 
   // AcceleratedWidgetMacNSView implementation.
   void AcceleratedWidgetCALayerParamsUpdated(
@@ -731,6 +732,8 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   std::optional<DisplayFeature> display_feature_;
 
   const uint64_t ns_view_id_;
+
+  bool use_default_deadline_on_resize_ = false;
 
   // See description of `kDelayUpdateWindowsAfterTextInputStateChanged` for
   // details.

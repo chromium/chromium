@@ -67,4 +67,12 @@ bool DelegatedFrameHostClientAura::ShouldShowStaleContentOnEviction() {
   return render_widget_host_view_->ShouldShowStaleContentOnEviction();
 }
 
+cc::DeadlinePolicy DelegatedFrameHostClientAura::GetResizeDeadlinePolicy()
+    const {
+  if (render_widget_host_view_->ShouldUseDefaultDeadlineOnResize()) {
+    return cc::DeadlinePolicy::UseDefaultDeadline();
+  }
+  return DelegatedFrameHostClient::GetResizeDeadlinePolicy();
+}
+
 }  // namespace content

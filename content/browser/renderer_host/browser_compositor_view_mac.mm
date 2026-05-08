@@ -337,7 +337,7 @@ cc::DeadlinePolicy BrowserCompositorMac::GetResizeDeadlinePolicy() const {
   //
   // For in-process windows (regular browser tabs, content shell, popups),
   // use deadline=0 to produce new content as quickly as possible.
-  if (client_->ShouldWaitRemoteCompositorFrameOnResize()) {
+  if (client_->ShouldUseDefaultDeadlineOnResize()) {
     return cc::DeadlinePolicy::UseDefaultDeadline();
   }
   return cc::DeadlinePolicy::UseSpecifiedDeadline(0u);

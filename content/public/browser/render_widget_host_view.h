@@ -339,6 +339,9 @@ class CONTENT_EXPORT RenderWidgetHostView {
 
   // Returns true if this view has a saved compositor frame.
   virtual bool HasSavedCompositorFrame() const = 0;
+
+  // Tells the View if it should use default deadline policy when resizing.
+  virtual void SetShouldUseDefaultDeadlineOnResize(bool enable) = 0;
 };
 
 }  // namespace content

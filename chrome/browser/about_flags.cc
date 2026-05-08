@@ -2267,11 +2267,14 @@ const FeatureEntry::FeatureVariation kTabGroupsFocusingVariations[] = {
 
 #if !BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kSidePanelFlyoverAnimationDuration250Ms[] = {
-    {"flyover_animation_duration_ms", "250"}};
+    {"flyover_animation_duration_ms", "250"},
+    {"flyover_animation_use_default_deadline", "false"}};
 const FeatureEntry::FeatureParam kSidePanelFlyoverAnimationDuration300Ms[] = {
-    {"flyover_animation_duration_ms", "300"}};
+    {"flyover_animation_duration_ms", "300"},
+    {"flyover_animation_use_default_deadline", "false"}};
 const FeatureEntry::FeatureParam kSidePanelFlyoverAnimationDuration350Ms[] = {
-    {"flyover_animation_duration_ms", "350"}};
+    {"flyover_animation_duration_ms", "350"},
+    {"flyover_animation_use_default_deadline", "true"}};
 
 const FeatureEntry::FeatureVariation kSidePanelFlyoverAnimationVariations[] = {
     {"- 250ms Duration", kSidePanelFlyoverAnimationDuration250Ms},

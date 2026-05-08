@@ -43,6 +43,7 @@ class CONTENT_EXPORT DelegatedFrameHostClientAura
   void InvalidateLocalSurfaceIdOnEviction() override;
   viz::FrameEvictorClient::EvictIds CollectSurfaceIdsForEviction() override;
   bool ShouldShowStaleContentOnEviction() override;
+  cc::DeadlinePolicy GetResizeDeadlinePolicy() const override;
 
  private:
   raw_ptr<RenderWidgetHostViewAura> render_widget_host_view_;

@@ -39,7 +39,7 @@ class BrowserCompositorMacClient {
   virtual std::vector<viz::SurfaceId> CollectSurfaceIdsForEviction() = 0;
   virtual display::ScreenInfo GetCurrentScreenInfo() const = 0;
   virtual void SetCurrentDeviceScaleFactor(float device_scale_factor) = 0;
-  virtual bool ShouldWaitRemoteCompositorFrameOnResize() const = 0;
+  virtual bool ShouldUseDefaultDeadlineOnResize() const = 0;
 };
 
 // This class owns a DelegatedFrameHost, and will dynamically attach and

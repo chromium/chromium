@@ -153,8 +153,8 @@ void RenderWidgetHostViewMac::SetCurrentDeviceScaleFactor(
   screen_infos_.mutable_current().device_scale_factor = device_scale_factor;
 }
 
-bool RenderWidgetHostViewMac::ShouldWaitRemoteCompositorFrameOnResize() const {
-  return remote_ns_view_.is_bound();
+bool RenderWidgetHostViewMac::ShouldUseDefaultDeadlineOnResize() const {
+  return use_default_deadline_on_resize_ || remote_ns_view_.is_bound();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1150,6 +1150,10 @@ bool RenderWidgetHostViewMac::IsHTMLFormPopup() const {
 
 uint64_t RenderWidgetHostViewMac::GetNSViewId() const {
   return ns_view_id_;
+}
+
+void RenderWidgetHostViewMac::SetShouldUseDefaultDeadlineOnResize(bool enable) {
+  use_default_deadline_on_resize_ = enable;
 }
 
 bool RenderWidgetHostViewMac::GetLineBreakIndex(

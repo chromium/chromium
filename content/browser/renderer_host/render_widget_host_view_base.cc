@@ -628,6 +628,11 @@ display::ScreenInfos RenderWidgetHostViewBase::GetScreenInfos() const {
 
 void RenderWidgetHostViewBase::ResetGestureDetection() {}
 
+void RenderWidgetHostViewBase::SetShouldUseDefaultDeadlineOnResize(
+    bool enable) {
+  NOTIMPLEMENTED() << "Not supported on platform";
+}
+
 float RenderWidgetHostViewBase::GetDeviceScaleFactor() const {
   return GetScreenInfos().current().device_scale_factor;
 }
