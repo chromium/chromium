@@ -400,8 +400,6 @@ public class AutofillIdentityDocsFragmentTest {
                 });
     }
 
-    // TODO(crbug.com/482994257): Sorting test
-
     @Test
     @MediumTest
     public void testAutofillAiEntities_rebuildsOnEntityChange() throws Exception {
