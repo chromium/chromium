@@ -2731,15 +2731,11 @@ const FeatureEntry::Choice kWebOtpBackendChoices[] = {
      switches::kWebOtpBackendAuto},
 };
 
-const FeatureEntry::FeatureParam kEnableAndroidSidePanel_Enabled[] = {
-    {"disable_animations", "false"}};
 const FeatureEntry::FeatureParam kEnableAndroidSidePanel_NoAnimations[] = {
     {"disable_animations", "true"}};
 
 const FeatureEntry::FeatureVariation kEnableAndroidSidePanelVariations[] = {
-    {"Enabled", kEnableAndroidSidePanel_Enabled, nullptr},
-    {"Enabled without animations", kEnableAndroidSidePanel_NoAnimations,
-     nullptr}};
+    {"Without Animations", kEnableAndroidSidePanel_NoAnimations, nullptr}};
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // The choices for the Send Tab To Self enhanced handoff experiment.
