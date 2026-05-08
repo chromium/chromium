@@ -43,6 +43,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 #include "v8/include/v8-context.h"
+#include "v8/include/v8-microtask-queue.h"
 
 namespace {
 
@@ -5271,4 +5272,30 @@ TEST_F(ReadAnythingAppControllerReadabilitySelectTextTest,
 
   // Verify that the mapping was triggered and the flag was reset to false.
   EXPECT_FALSE(model().should_map_rendered_text_to_tree_for_readability());
+}
+
+TEST_F(ReadAnythingAppControllerReadabilitySelectTextTest,
+       GetAXMapping_ValidIndex) {
+  ui::AXNodeData node;
+  node.id = 2;
+  node.role = ax::mojom::Role::kStaticText;
+  node.SetName("Hello world");
+  SendUpdateWithNodes({std::move(node)});
+
+  controller().OnRenderedTextBlocksAvailable({u"Hello world"});
+
+  v8::Isolate* isolate = GetMainFrame()->GetAgentGroupScheduler()->Isolate();
+  v8::HandleScope handle_scope(isolate);
+  v8::Local<v8::Context> context = GetMainFrame()->MainWorldScriptContext();
+  v8::Context::Scope context_scope(context);
+
+  v8::MicrotasksScope microtasks_scope(
+      isolate, context->GetMicrotaskQueue(),
+      v8::MicrotasksScope::kDoNotRunMicrotasks);
+
+  v8::Local<v8::Value> result = controller().GetAXMapping(0);
+
+  ASSERT_TRUE(result->IsArray());
+  v8::Local<v8::Array> array = result.As<v8::Array>();
+  EXPECT_EQ(array->Length(), 1u);
 }

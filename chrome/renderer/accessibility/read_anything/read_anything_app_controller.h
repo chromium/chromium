@@ -312,6 +312,7 @@ class ReadAnythingAppController
   void OnCollapseSelection();
   void OnDistilled(int word_count);
   void OnRenderedTextBlocksAvailable(const std::vector<std::u16string>& blocks);
+  v8::Local<v8::Value> GetAXMapping(int index);
   bool IsGoogleDocs() const;
   bool IsImmersiveEnabled() const;
   bool IsImprovedReadAloudEnabled() const;

@@ -642,7 +642,7 @@ void ReadAnythingAppController::AccessibilityEventReceived(
 
   // Trigger model updates for Screen2x or for Readability when the select text
   // feature is enabled.
-  if (features::IsReadAnythingReadabilitySelectTextEnabled() ||
+  if (IsReadabilitySelectTextEnabled() ||
       !model_.is_readability_next_distillation_method()) {
     ProcessModelUpdates();
     return;
@@ -653,7 +653,7 @@ void ReadAnythingAppController::ProcessModelUpdates() {
   // When the Readability feature is enabled as standalone, treat readability
   // distilation as static and ignore model updates.
   if (model_.is_readability_next_distillation_method() &&
-      !features::IsReadAnythingReadabilitySelectTextEnabled()) {
+      !IsReadabilitySelectTextEnabled()) {
     return;
   }
 
@@ -1526,7 +1526,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("onSpeechEngineStalled",
                  &ReadAnythingAppController::OnSpeechEngineStalled)
       .SetMethod("onRenderedTextBlocksAvailable",
-                 &ReadAnythingAppController::OnRenderedTextBlocksAvailable);
+                 &ReadAnythingAppController::OnRenderedTextBlocksAvailable)
+      .SetMethod("getAXMapping", &ReadAnythingAppController::GetAXMapping);
 }
 
 ui::AXNodeID ReadAnythingAppController::RootId() const {
@@ -3072,6 +3073,44 @@ void ReadAnythingAppController::MaybeMapRenderedTextToTree() {
   if (model_.MapRenderedTextToTree(model_.readability_text_blocks())) {
     ExecuteJavaScript("chrome.readingMode.onRenderedTextMappingReady();");
   }
+}
+
+v8::Local<v8::Value> ReadAnythingAppController::GetAXMapping(int index) {
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
+  if (!IsReadabilitySelectTextEnabled() || !isolate) {
+    return v8::Undefined(isolate);
+  }
+
+  v8::EscapableHandleScope handle_scope(isolate);
+  v8::Local<v8::Context> context = isolate->GetCurrentContext();
+  if (context.IsEmpty()) {
+    return v8::Undefined(isolate);
+  }
+
+  // Retrieve the mapping segments from the model for the given block index.
+  // A single Readability block can map to multiple AXNodes (e.g. if it contains
+  // inline links).
+  std::vector<ReadAnythingAppModel::MappingSegment> segments =
+      model_.GetAXMapping(static_cast<size_t>(index));
+
+  v8::Local<v8::Array> v8_segments =
+      v8::Array::New(isolate, static_cast<int>(segments.size()));
+
+  for (size_t i = 0; i < segments.size(); ++i) {
+    const auto& segment = segments[i];
+
+    // Create a V8 object for this segment and populate it with the source
+    // AXNode ID and the start/end character offsets within the distilled block.
+    v8::Local<v8::Object> segment_obj = v8::Object::New(isolate);
+    gin::Dictionary segment_dict(isolate, segment_obj);
+    segment_dict.Set("axNodeId", segment.id);
+    segment_dict.Set("start", segment.start);
+    segment_dict.Set("end", segment.end);
+
+    v8_segments->Set(context, static_cast<uint32_t>(i), segment_obj).Check();
+  }
+
+  return handle_scope.Escape(v8_segments);
 }
 
 bool ReadAnythingAppController::IsHidden() const {
