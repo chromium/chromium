@@ -91,6 +91,13 @@ class LOCKABLE BASE_EXPORT Lock {
 #endif
   }
 
+#if BUILDFLAG(IS_POSIX)
+  // Applies features configured by field trials to base::Lock. Must be called
+  // on the main thread only after the feature list has been initialized and
+  // only once.
+  static void InitializeFeatures();
+#endif  // BUILDFLAG(IS_POSIX)
+
   // Both Windows and POSIX implementations of ConditionVariable need to be
   // able to see our lock and tweak our debugging counters, as they release and
   // acquire locks inside of their condition variable APIs.

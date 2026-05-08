@@ -26,6 +26,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/profiler/thread_delegate.h"
 #include "base/rand_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/synchronization/lock_impl.h"
 #include "base/synchronization/lock_metrics_recorder.h"
 #include "base/synchronization/lock_subtle.h"
@@ -37,6 +38,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -654,9 +656,27 @@ class LockTrySpinTest : public testing::Test {
 #endif  // BUILDFLAG(IS_APPLE)
 
 TEST_F(LockTrySpinTest, MAYBE_TrySpinAvoidsSyscall) {
+#if !defined(ARCH_CPU_X86_FAMILY) && !defined(ARCH_CPU_ARM_FAMILY)
+  GTEST_SKIP() << "Skipping test on platforms that don't support spinning in "
+                  "base::Lock.";
+#endif
+
   // Set the try-spin count to an absurdly large value to ensure that the
   // thread never waits for the lock in the kernel.
-  internal::LockImpl::SetTrySpinCount(std::numeric_limits<int>::max());
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      base::features::kBaseLockTrySpin,
+      {
+#if defined(ARCH_CPU_X86_FAMILY)
+          {base::features::kSpinCountX86.name,
+           base::NumberToString(std::numeric_limits<int>::max())}
+#elif defined(ARCH_CPU_ARM_FAMILY)
+          {base::features::kSpinCountArm.name,
+           base::NumberToString(std::numeric_limits<int>::max())}
+#endif
+      });
+  base::Lock::InitializeFeatures();
+
   ClearLockMetricsSamples();
   {
     TestThread thread;

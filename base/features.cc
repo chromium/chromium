@@ -8,6 +8,7 @@
 
 #include "base/debug/stack_trace.h"
 #include "base/files/file_path.h"
+#include "base/synchronization/lock.h"
 #include "base/task/sequence_manager/sequence_manager_impl.h"
 #include "base/task/thread_pool/job_task_source.h"
 #include "base/threading/platform_thread.h"
@@ -216,20 +217,7 @@ BASE_FEATURE(kBaseLockTrySpin, FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(int, kSpinCountX86, &kBaseLockTrySpin, "spin_count_x86", 0);
 #elif defined(ARCH_CPU_ARM_FAMILY)
 BASE_FEATURE_PARAM(int, kSpinCountArm, &kBaseLockTrySpin, "spin_count_arm", 0);
-#endif
-
-namespace {
-int GetBaseLockSpinCount() {
-#if defined(ARCH_CPU_X86_FAMILY)
-  return kSpinCountX86.Get();
-#elif defined(ARCH_CPU_ARM_FAMILY)
-  return kSpinCountArm.Get();
-#else
-    return 0;
 #endif  // defined(ARCH_CPU_X86_FAMILY)
-}
-}  // namespace
-
 #endif  // BUILDFLAG(IS_POSIX)
 
 bool IsReducePPMsEnabled() {
@@ -240,9 +228,7 @@ void Init() {
   g_is_reduce_ppms_enabled.store(FeatureList::IsEnabled(kReducePPMs),
                                  std::memory_order_relaxed);
 #if BUILDFLAG(IS_POSIX)
-  if (FeatureList::IsEnabled(kBaseLockTrySpin)) {
-    base::internal::LockImpl::SetTrySpinCount(GetBaseLockSpinCount());
-  }
+  base::Lock::InitializeFeatures();
 #endif  // BUILDFLAG(IS_POSIX)
 
   sequence_manager::internal::SequenceManagerImpl::InitializeFeatures();

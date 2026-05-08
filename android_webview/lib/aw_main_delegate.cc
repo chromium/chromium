@@ -37,6 +37,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/synchronization/lock.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/default_clock.h"
 #include "base/trace_event/trace_log.h"
@@ -327,6 +328,7 @@ std::optional<int> AwMainDelegate::PostEarlyInitialization(
   }
 
   InitializeMemorySystem(is_browser_process);
+  base::Lock::InitializeFeatures();
 
   return std::nullopt;
 }
