@@ -127,8 +127,6 @@ class TrustTokenRequestIssuanceHelper : public TrustTokenRequestHelper {
       SuitableTrustTokenOrigin top_level_origin,
       TrustTokenStore* token_store,
       const TrustTokenKeyCommitmentGetter* key_commitment_getter,
-      std::optional<std::string> custom_key_commitment,
-      std::optional<url::Origin> custom_issuer,
       std::unique_ptr<Cryptographer> cryptographer,
       net::NetLogWithSource net_log = net::NetLogWithSource());
   ~TrustTokenRequestIssuanceHelper() override;
@@ -234,8 +232,6 @@ class TrustTokenRequestIssuanceHelper : public TrustTokenRequestHelper {
   const SuitableTrustTokenOrigin top_level_origin_;
   const raw_ptr<TrustTokenStore> token_store_;
   const raw_ptr<const TrustTokenKeyCommitmentGetter> key_commitment_getter_;
-  const std::optional<std::string> custom_key_commitment_;
-  const std::optional<url::Origin> custom_issuer_;
 
   mojom::TrustTokenProtocolVersion protocol_version_;
 
