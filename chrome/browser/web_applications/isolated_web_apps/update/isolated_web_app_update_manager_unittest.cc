@@ -86,6 +86,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
+
 namespace web_app {
 namespace {
 
@@ -546,6 +550,13 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
 
 TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
        DiscoversAndPreparesUpdateOfPolicyInstalledAppsToPinnedVersion) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/434660312): Re-enable on macOS 26 once issues with
+  // unexpected test timeout failures are resolved.
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
   InitialIwaBundleForceInstall(CreateIwa1Bundle(kInitialIwaVersion));
 
   // Pins the IWA to v2.0.0.
@@ -617,6 +628,13 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
 
 TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
        DoesNotDiscoverUpdateOfPolicyInstalledAppsWhenPinnedToIncorrectVersion) {
+#if BUILDFLAG(IS_MAC)
+  // TODO(crbug.com/434660312): Re-enable on macOS 26 once issues with
+  // unexpected test timeout failures are resolved.
+  if (base::mac::MacOSMajorVersion() == 26) {
+    GTEST_SKIP() << "Disabled on macOS Tahoe.";
+  }
+#endif
   InitialIwaBundleForceInstall(CreateIwa1Bundle(kInitialIwaVersion));
 
   // Pin IWA to a version that is higher than the latest version.
@@ -773,17 +791,16 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest, KeyRotationUpdateRetry) {
     return future.Take();
   };
 
-  ASSERT_THAT(
-      capture_discovery_task_result([&] {
-        // Rotate the signing key from ed25519 to ecdsaP256. This will
-        // trigger an unsuccessful update.
-        data_provider_.Update([&](auto& update) {
-          update.AddToKeyRotations(
-              GetIwa1WebBundleId(),
-              test::GetDefaultEcdsaP256KeyPair().public_key.bytes());
-        });
-      }),
-      ErrorIs(_));
+  ASSERT_THAT(capture_discovery_task_result([&] {
+                // Rotate the signing key from ed25519 to ecdsaP256. This will
+                // trigger an unsuccessful update.
+                data_provider_.Update([&](auto& update) {
+                  update.AddToKeyRotations(
+                      GetIwa1WebBundleId(),
+                      test::GetDefaultEcdsaP256KeyPair().public_key.bytes());
+                });
+              }),
+              ErrorIs(_));
 
   ASSERT_THAT(capture_discovery_task_result([&] {
                 // Fast forward by a minute -- this will trigger the first
