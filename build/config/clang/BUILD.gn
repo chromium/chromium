@@ -93,6 +93,7 @@ clang_plugin("find_bad_constructs") {
     plugin_arguments = [
       "check-stack-allocated",
       "check-std-ranges-pipe-operator",
+      "relax-ctor-checks-for-aggregates",
     ]
 
     if (is_linux || is_chromeos || is_android || is_fuchsia) {
