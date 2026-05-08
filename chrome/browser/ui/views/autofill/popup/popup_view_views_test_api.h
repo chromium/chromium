@@ -50,6 +50,10 @@ class PopupViewViewsTestApi {
     return view_->rows_;
   }
 
+  PopupBnplFootnoteView* GetBnplFootnoteView() const&& {
+    return view_->GetBnplFootnoteView();
+  }
+
   void SetSearchQuery(const std::u16string& query) {
     view_->search_bar_->SetInputTextForTesting(query);
   }
