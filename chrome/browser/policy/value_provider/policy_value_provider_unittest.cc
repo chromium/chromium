@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/types/expected.h"
 #include "base/values.h"
@@ -28,19 +29,24 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/pref_service_syncable.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/extension_management_test_util.h"
 #include "chrome/browser/policy/cloud/mock_extension_install_policy_service.h"
 #include "chrome/browser/policy/value_provider/extension_install_policies_value_provider.h"
 #include "chrome/browser/policy/value_provider/extension_policies_value_provider.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "components/strings/grit/components_strings.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/manifest_constants.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
+#include "ui/base/l10n/l10n_util.h"
 #endif
 
 using testing::_;
@@ -243,6 +249,43 @@ TEST_F(ExtensionInstallPoliciesValueProviderTest, GetNames) {
                                                  &mock_service_);
   VerifyProviderNames(provider.GetNames(), kExtensionInstallPoliciesId,
                       kExtensionInstallPoliciesName, {});
+}
+
+TEST_F(ExtensionInstallPoliciesValueProviderTest,
+       GetValues_IgnoredByInstallationMode) {
+  SetPolicy(policy_map_, kExtensionId,
+            base::Value(base::DictValue().Set(
+                "1.2.3",
+                base::DictValue()
+                    .Set("action", em::ExtensionInstallPolicy::ACTION_BLOCK)
+                    .Set("reasons",
+                         base::ListValue().Append(
+                             em::ExtensionInstallPolicy::REASON_RISK_SCORE)))));
+
+  EXPECT_CALL(*policy_service_,
+              GetPolicies(PolicyNamespace(POLICY_DOMAIN_EXTENSION_INSTALL,
+                                          std::string())))
+      .WillRepeatedly(ReturnRef(policy_map_));
+
+  // Explicitly allow the extension.
+  {
+    extensions::ExtensionManagementPrefUpdater<
+        sync_preferences::TestingPrefServiceSyncable>
+        pref_updater(profile_->GetTestingPrefService());
+    pref_updater.SetIndividualExtensionInstallationAllowed(kExtensionId, true);
+  }
+
+  ExtensionInstallPoliciesValueProvider provider(profile_.get(),
+                                                 &mock_service_);
+  base::DictValue values = provider.GetValues();
+  const base::DictValue* policy =
+      GetPolicyDict(values, kExtensionInstallPoliciesId,
+                    absl::StrFormat("%s@1.2.3", kExtensionId));
+  ASSERT_TRUE(policy);
+  EXPECT_TRUE(policy->FindBool("ignored").value_or(false));
+  EXPECT_EQ(base::UTF8ToUTF16(*policy->FindString("info")),
+            l10n_util::GetStringUTF16(
+                IDS_POLICY_EXTENSION_INSTALL_IGNORED_BY_INSTALLATION_MODE));
 }
 #endif  // BUIDLFLAG(ENABLE_EXTENSIONS) && !BUILDFLAG(IS_CHROMEOS)
 

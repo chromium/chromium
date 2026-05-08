@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/policy/cloud/extension_install_policy_service.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/policy/value_provider/value_provider_util.h"
@@ -18,9 +19,11 @@
 #include "components/policy/core/common/features.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
+#include "components/strings/grit/components_strings.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/pref_names.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace em = enterprise_management;
 
@@ -246,6 +249,11 @@ base::DictValue ExtensionInstallPoliciesValueProvider::GetValues() {
       extensions::ExtensionRegistry::Get(&profile_.get());
   CHECK(registry);
 
+  auto* extension_management =
+      extensions::ExtensionManagementFactory::GetForBrowserContext(
+          &profile_.get());
+  CHECK(extension_management);
+
   // Create a `dict` value like this:
   // {
   //   "Extension Name (aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@1.2.3)": {
@@ -270,9 +278,21 @@ base::DictValue ExtensionInstallPoliciesValueProvider::GetValues() {
       continue;
     }
 
+    bool is_ignored =
+        extension_management->IsInstallationExplicitlyAllowed(extension_id) ||
+        extension_management->IsInstallationExplicitlyBlocked(extension_id);
+
     for (const auto [extension_version, value] : policy_value->GetDict()) {
       base::DictValue policy_dict =
           GetAggregatedPolicyValueForExtension(extension_version, entry);
+
+      if (is_ignored) {
+        policy_dict.Set("ignored", true);
+        policy_dict.Set(
+            "info",
+            l10n_util::GetStringUTF16(
+                IDS_POLICY_EXTENSION_INSTALL_IGNORED_BY_INSTALLATION_MODE));
+      }
 
       if (const auto* extension =
               registry->GetInstalledExtension(extension_id)) {

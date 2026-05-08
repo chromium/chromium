@@ -798,6 +798,9 @@ Additional details:
   <message name="IDS_POLICY_IGNORED_EXTENSION" desc="Text explaining that extension policies are likely ignored by the extension.">
     Likely ignored by the extension.
   </message>
+  <message name="IDS_POLICY_EXTENSION_INSTALL_IGNORED_BY_INSTALLATION_MODE" desc="Message on chrome://policy page for extensions that are explicitly allowed or blocked by the admin, indicating that their risk-score/category-based blocking is ignored.">
+    The risk score and categories are ignored because the extension is explicitly allowed or blocked by the administrator.
+  </message>
   <message name="IDS_POLICY_PRECEDENCE_PLATFORM_MACHINE" desc="Text describing the platform machine precedence value.">
     Platform machine
   </message>
