@@ -873,6 +873,11 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener {
   virtual service_manager::InterfaceProvider* GetJavaInterfaces() = 0;
 #endif  // BUILDFLAG(IS_ANDROID)
 
+  // Returns true if this frame has a beforeunload handler and has received
+  // a user activation, which would allow it to display a beforeunload dialog
+  // if the user attempted to close the page or navigate away.
+  virtual bool CouldDisplayBeforeUnloadDialog() const = 0;
+
   // Stops and disables the hang monitor for beforeunload. This avoids flakiness
   // in tests that need to observe beforeunload dialogs, which could fail if the
   // timeout skips the dialog.

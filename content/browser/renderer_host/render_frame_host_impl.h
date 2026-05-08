@@ -564,6 +564,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   BindingsPolicySet GetEnabledBindings() override;
   void SetWebUIProperty(const std::string& name,
                         const std::string& value) override;
+  bool CouldDisplayBeforeUnloadDialog() const override;
   void DisableBeforeUnloadHangMonitorForTesting() override;
   bool IsBeforeUnloadHangMonitorDisabledForTesting() override;
   bool GetSuddenTerminationDisablerState(

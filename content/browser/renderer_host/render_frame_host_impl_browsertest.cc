@@ -928,6 +928,57 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   web_contents()->SetDelegate(nullptr);
 }
 
+// Tests that CouldDisplayBeforeUnloadDialog() correctly tracks both the
+// presence of a beforeunload handler and sticky user activation.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       CouldDisplayBeforeUnloadDialog) {
+  EXPECT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+  RenderFrameHostImpl* rfh = root_frame_host();
+
+  // Disable the hang monitor to avoid races, but do not trigger user activation
+  // yet as we need to test the state without activation first.
+  PrepContentsForBeforeUnloadTest(web_contents(),
+                                  /*trigger_user_activation=*/false);
+
+  // 1. Initially false (no handler, no activation).
+  EXPECT_FALSE(rfh->CouldDisplayBeforeUnloadDialog());
+
+  // 2. Add handler without user gesture, still false (no activation).
+  ASSERT_TRUE(ExecJs(rfh, "window.onbeforeunload = () => 'x';",
+                     EXECUTE_SCRIPT_NO_USER_GESTURE));
+  EXPECT_FALSE(rfh->CouldDisplayBeforeUnloadDialog());
+
+  // 3. Provide user activation, should be true.
+  rfh->ActivateUserActivation(
+      blink::mojom::UserActivationNotificationType::kTest);
+  EXPECT_TRUE(rfh->CouldDisplayBeforeUnloadDialog());
+
+  // 4. Remove handler, should be false again.
+  ASSERT_TRUE(ExecJs(rfh, "window.onbeforeunload = null;",
+                     EXECUTE_SCRIPT_NO_USER_GESTURE));
+  EXPECT_FALSE(rfh->CouldDisplayBeforeUnloadDialog());
+
+  // 5. Re-add handler, should be true (activation is sticky).
+  ASSERT_TRUE(ExecJs(rfh, "window.onbeforeunload = () => 'x';",
+                     EXECUTE_SCRIPT_NO_USER_GESTURE));
+  EXPECT_TRUE(rfh->CouldDisplayBeforeUnloadDialog());
+
+  // 6. Cleanup: Remove handler to allow navigation without a dialog.
+  ASSERT_TRUE(ExecJs(rfh, "window.onbeforeunload = null;",
+                     EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  // 7. Navigate away, should be false (activation reset for new document).
+  EXPECT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title2.html")));
+  rfh = root_frame_host();
+
+  // Disable the hang monitor for the new document as well.
+  PrepContentsForBeforeUnloadTest(web_contents(),
+                                  /*trigger_user_activation=*/false);
+  EXPECT_FALSE(rfh->CouldDisplayBeforeUnloadDialog());
+}
+
 // Test that beforeunload handlers registered in out-of-process iframes can
 // display dialogs, even during renderer-initiated navigations in a process that
 // does not have a beforeunload handler. Also verifies that the correct metrics

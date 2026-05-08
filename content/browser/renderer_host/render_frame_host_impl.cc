@@ -8137,6 +8137,10 @@ void RenderFrameHostImpl::SetWebUIProperty(const std::string& name,
   }
 }
 
+bool RenderFrameHostImpl::CouldDisplayBeforeUnloadDialog() const {
+  return has_before_unload_handler_ && HasStickyUserActivation();
+}
+
 void RenderFrameHostImpl::DisableBeforeUnloadHangMonitorForTesting() {
   beforeunload_timeout_.reset();
 }
@@ -12221,7 +12225,7 @@ bool RenderFrameHostImpl::ShouldRunBeforeUnloadAsynchronously(
           return FrameIterationAction::kContinue;
         }
 
-        if (rfh->has_before_unload_handler_ && rfh->HasStickyUserActivation()) {
+        if (rfh->CouldDisplayBeforeUnloadDialog()) {
           should_run_before_unload_asynchronously = false;
           return FrameIterationAction::kStop;
         }
