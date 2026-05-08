@@ -27,9 +27,15 @@ public interface CompositorView {
     void requestRender();
 
     /**
-     * /**
-     * Sets opacity for the view. {@link ThinWebViewConstraints#supportsOpacity} must be true for
-     * using this method.
+     * Registers a callback that is run when the next frame successfully makes it to the screen.
+     *
+     * @param runnable The runnable to be run.
+     */
+    void runOnNextFrame(Runnable runnable);
+
+    /**
+     * /** Sets opacity for the view. {@link ThinWebViewConstraints#supportsOpacity} must be true
+     * for using this method.
      */
     void setAlpha(float alpha);
 }

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "cc/slim/layer.h"
 #include "cc/slim/solid_color_layer.h"
@@ -112,6 +113,15 @@ void CompositorViewImpl::SurfaceChanged(JNIEnv* env,
 
 void CompositorViewImpl::SetNeedsComposite(JNIEnv* env) {
   compositor_->SetNeedsComposite();
+}
+
+void CompositorViewImpl::RunOnNextFrame(JNIEnv* env,
+                                        base::OnceClosure callback) {
+  compositor_->RequestSuccessfulPresentationTimeForNextFrame(base::BindOnce(
+      [](base::OnceClosure cb, const viz::FrameTimingDetails& details) {
+        std::move(cb).Run();
+      },
+      std::move(callback)));
 }
 
 void CompositorViewImpl::SetRootLayer(scoped_refptr<cc::slim::Layer> layer) {

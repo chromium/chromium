@@ -36,6 +36,16 @@ public interface ThinWebView {
      */
     void setAlpha(float alpha);
 
+    /**
+     * Registers a callback that is run when the next frame successfully makes it to the screen.
+     *
+     * <p>This may be useful for operations that should be synchronized to renders that occur after
+     * a layout change.
+     *
+     * @param runnable The runnable to be run.
+     */
+    void runOnNextFrame(Runnable runnable);
+
     /** Should be called for cleanup when the CompositorView instance is no longer used. */
     void destroy();
 }

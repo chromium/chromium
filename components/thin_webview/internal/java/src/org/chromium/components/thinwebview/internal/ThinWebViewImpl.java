@@ -196,6 +196,11 @@ public class ThinWebViewImpl extends FrameLayout implements ThinWebView {
     }
 
     @Override
+    public void runOnNextFrame(Runnable runnable) {
+        mCompositorView.runOnNextFrame(runnable);
+    }
+
+    @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         if (mNativeThinWebViewImpl == 0) return;
         if (w != oldw || h != oldh) {
