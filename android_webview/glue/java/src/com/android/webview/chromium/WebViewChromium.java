@@ -144,6 +144,7 @@ class WebViewChromium
     private static boolean sRecordWholeDocumentEnabledByApi;
 
     private boolean mEvaluateJavaScriptCalled;
+    private boolean mGetAccessibilityNodeProviderCalledWhenAwContentsNull;
 
     static void enableSlowWholeDocumentDraw() {
         sRecordWholeDocumentEnabledByApi = true;
@@ -1468,6 +1469,12 @@ class WebViewChromium
             mAwContents.getViewMethods().setLayerType(mWebView.getLayerType(), null);
 
             mSharedWebViewChromium.initForReal(mAwContents);
+
+            // Send this event so that `getAccessibilityNodeProvider` is called again after
+            // AwContents is created.
+            if (mGetAccessibilityNodeProviderCalledWhenAwContentsNull) {
+                mWebView.sendAccessibilityEvent(AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
+            }
         }
     }
 
@@ -3533,11 +3540,16 @@ class WebViewChromium
         return true;
     }
 
+    // This method could be called from the framework during AwContents construction.
     @Override
     public AccessibilityNodeProvider getAccessibilityNodeProvider() {
-        mAwInit.triggerAndWaitForChromiumStarted(
-                CallSite.WEBVIEW_INSTANCE_GET_ACCESSIBILITY_NODE_PROVIDER);
-        if (checkNeedsPost()) {
+        if (mAwContents == null) {
+            mGetAccessibilityNodeProviderCalledWhenAwContentsNull = true;
+            return null;
+        }
+        // Startup is guaranteed to have completed here since AwContents can be non-null only
+        // after Chromium has started.
+        if (!ThreadUtils.runningOnUiThread()) {
             AccessibilityNodeProvider ret =
                     mFactory.runOnUiThreadBlocking(
                             new Callable<AccessibilityNodeProvider>() {
