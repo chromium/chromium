@@ -8,6 +8,7 @@
 
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -87,7 +88,7 @@ TEST_F(OldGoogleCredentialCleanerTest, TestOldGooglePasswordsAreDeleted) {
 
   ExpectPasswords(forms);
   for (const auto& form : forms) {
-    EXPECT_CALL(*store(), RemoveLogin(testing::_, form));
+    EXPECT_CALL(*store(), RemoveLogin(testing::_, EqStoredCredential(form)));
   }
 
   EXPECT_CALL(observer, CleaningCompleted);
@@ -112,7 +113,7 @@ TEST_F(OldGoogleCredentialCleanerTest, TestNewerGooglePasswordsAreNotDeleted) {
   ASSERT_TRUE(cleaner.NeedsCleaning());
 
   ExpectPasswords({old_form, new_form, CreateForm("http://test.com/")});
-  EXPECT_CALL(*store(), RemoveLogin(testing::_, old_form));
+  EXPECT_CALL(*store(), RemoveLogin(testing::_, EqStoredCredential(old_form)));
   EXPECT_CALL(observer, CleaningCompleted);
   cleaner.StartCleaning(&observer);
 

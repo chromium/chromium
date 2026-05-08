@@ -11,6 +11,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/mock_callback.h"
@@ -514,9 +515,9 @@ TEST_P(HttpAuthManagerTest, UpdateLastUsedTimeWhenSubmittingSavedCredentials) {
   // Emulate that http auth credentials submitted.
   httpauth_manager()->OnPasswordFormSubmitted(stored_form);
   httpauth_manager()->OnPasswordFormDismissed();
-  PasswordForm expected_updated_form;
+  StoredCredential expected_updated_form;
   EXPECT_CALL(*store_, UpdateLogin)
-      .WillOnce(SaveArg<0>(&expected_updated_form));
+      .WillOnce(MoveArg<0>(&expected_updated_form));
   httpauth_manager()->OnDidFinishMainFrameNavigation();
   // `date_last_used` should have been updated to a more recent value.
   EXPECT_GT(expected_updated_form.date_last_used, stored_form.date_last_used);

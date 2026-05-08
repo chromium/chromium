@@ -10,6 +10,7 @@
 #import "components/affiliations/core/browser/fake_affiliation_service.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
+#import "components/password_manager/core/browser/password_store/password_form_converters.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
@@ -185,15 +186,15 @@ class PasswordSettingsMediatorTest : public PlatformTest {
   void AddPassword(std::string url,
                    std::u16string password,
                    PasswordForm::Store store) {
-    auto form = std::make_unique<PasswordForm>();
-    form->username_value = u"user@gmail.com";
-    form->password_value = password;
-    form->url = GURL(url);
-    form->signon_realm = "https://www.example.com/";
-    form->in_store = store;
+    password_manager::StoredCredential cred;
+    cred.username_value = u"user@gmail.com";
+    cred.password_value = password;
+    cred.url = GURL(url);
+    cred.signon_realm = "https://www.example.com/";
+    cred.in_store = store;
 
     base::RunLoop run_loop;
-    profile_store_->AddLogin(*form, run_loop.QuitClosure());
+    profile_store_->AddLogin(std::move(cred), run_loop.QuitClosure());
     run_loop.Run();
   }
 

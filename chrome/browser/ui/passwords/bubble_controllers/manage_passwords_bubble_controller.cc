@@ -25,6 +25,7 @@
 #include "components/password_manager/core/browser/password_feature_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_metrics_recorder.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
@@ -238,7 +239,8 @@ void ManagePasswordsBubbleController::
 
   if (details_bubble_credential_.value().username_value ==
       updated_form.username_value) {
-    password_store->UpdateLogin(updated_form);
+    password_store->UpdateLogin(
+        password_manager::FromPasswordForm(updated_form));
     details_bubble_credential_ = updated_form;
     return;
   }
@@ -254,8 +256,9 @@ void ManagePasswordsBubbleController::
   // Weak and reused issues are still relevant.
   updated_form.password_issues.erase(password_manager::InsecureType::kPhished);
   updated_form.password_issues.erase(password_manager::InsecureType::kLeaked);
-  password_store->UpdateLoginWithPrimaryKey(updated_form,
-                                            details_bubble_credential_.value());
+  password_store->UpdateLoginWithPrimaryKey(
+      password_manager::FromPasswordForm(updated_form),
+      password_manager::FromPasswordForm(details_bubble_credential_.value()));
   details_bubble_credential_ = updated_form;
 
   metrics_util::LogUserInteractionsInPasswordManagementBubble(

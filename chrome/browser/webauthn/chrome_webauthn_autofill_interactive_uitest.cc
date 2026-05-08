@@ -35,6 +35,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/features.h"
@@ -220,7 +221,8 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
     signin_form.username_value = u"remilia";
     signin_form.password_value = u"shouldbeusingapasskeyinstead";
     base::RunLoop run_loop;
-    password_store->AddLogin(signin_form, run_loop.QuitClosure());
+    password_store->AddLogin(password_manager::FromPasswordForm(signin_form),
+                             run_loop.QuitClosure());
 
     // Mock bluetooth support to allow discovery of fake hybrid devices.
     mock_bluetooth_adapter_ =

@@ -247,7 +247,8 @@ TEST_F(ManagePasswordsBubbleControllerTest, OnUpdatePasswordNote) {
 
   password_manager::PasswordForm expected_updated_form = updated_form;
 
-  EXPECT_CALL(*GetStore(), UpdateLogin(expected_updated_form, _));
+  EXPECT_CALL(*GetStore(),
+              UpdateLogin(EqStoredCredential(expected_updated_form), _));
   controller()->set_details_bubble_credential(original_form);
   controller()->UpdateDetailsBubbleCredentialInPasswordStore(updated_form);
   EXPECT_EQ(controller()->get_details_bubble_credential(), updated_form);
@@ -275,8 +276,9 @@ TEST_F(ManagePasswordsBubbleControllerTest, OnUpdateUsername) {
       password_manager::InsecureType::kLeaked);
 
   EXPECT_CALL(*GetStore(), UpdateLogin).Times(0);
-  EXPECT_CALL(*GetStore(), UpdateLoginWithPrimaryKey(expected_updated_form,
-                                                     original_form, _));
+  EXPECT_CALL(*GetStore(), UpdateLoginWithPrimaryKey(
+                               EqStoredCredential(expected_updated_form),
+                               EqStoredCredential(original_form), _));
   controller()->set_details_bubble_credential(original_form);
   controller()->UpdateDetailsBubbleCredentialInPasswordStore(updated_form);
 }
@@ -295,8 +297,9 @@ TEST_F(ManagePasswordsBubbleControllerTest, OnUpdateUsernameAndPasswordNote) {
   password_manager::PasswordForm expected_updated_form = updated_form;
 
   EXPECT_CALL(*GetStore(), UpdateLogin).Times(0);
-  EXPECT_CALL(*GetStore(), UpdateLoginWithPrimaryKey(expected_updated_form,
-                                                     original_form, _));
+  EXPECT_CALL(*GetStore(), UpdateLoginWithPrimaryKey(
+                               EqStoredCredential(expected_updated_form),
+                               EqStoredCredential(original_form), _));
   controller()->set_details_bubble_credential(original_form);
   controller()->UpdateDetailsBubbleCredentialInPasswordStore(updated_form);
 }

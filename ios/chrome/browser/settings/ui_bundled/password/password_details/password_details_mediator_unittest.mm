@@ -10,6 +10,7 @@
 #import "components/affiliations/core/browser/fake_affiliation_service.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/password_form.h"
+#import "components/password_manager/core/browser/password_store/password_form_converters.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/sync/test/mock_sync_service.h"
@@ -235,9 +236,9 @@ class PasswordDetailsMediatorTest : public PlatformTest {
   void AddPasswordForm(std::unique_ptr<PasswordForm> form,
                        bool add_to_account_store = false) {
     if (add_to_account_store) {
-      GetTestAccountStore().AddLogin(*form);
+      GetTestAccountStore().AddLogin(password_manager::FromPasswordForm(*form));
     } else {
-      GetTestProfileStore().AddLogin(*form);
+      GetTestProfileStore().AddLogin(password_manager::FromPasswordForm(*form));
     }
     RunUntilIdle();
   }

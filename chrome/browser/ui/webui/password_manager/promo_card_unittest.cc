@@ -29,6 +29,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry.h"
@@ -222,7 +223,7 @@ class PromoCardCheckupTest : public PromoCardBaseTest {
     form.signon_realm = "https://example.com";
     form.username_value = u"username";
     form.in_store = PasswordForm::Store::kProfileStore;
-    store()->AddLogin(form);
+    store()->AddLogin(password_manager::FromPasswordForm(std::move(form)));
     task_environment()->RunUntilIdle();
   }
 

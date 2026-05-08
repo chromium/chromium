@@ -12,6 +12,7 @@
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/fake_form_fetcher.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
+#import "components/password_manager/core/browser/password_store/password_form_converters.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
@@ -38,14 +39,14 @@ using password_manager::TestPasswordStore;
 
 namespace {
 
-// Creates a password form.
-PasswordForm CreatePasswordForm() {
-  PasswordForm form;
-  form.username_value = u"test@gmail.com";
-  form.password_value = u"strongPa55w0rd";
-  form.signon_realm = "http://www.example.com/";
-  form.in_store = PasswordForm::Store::kProfileStore;
-  return form;
+// Creates a saved stored credential.
+password_manager::StoredCredential CreateStoredCredential() {
+  password_manager::StoredCredential cred;
+  cred.username_value = u"test@gmail.com";
+  cred.password_value = u"strongPa55w0rd";
+  cred.signon_realm = "http://www.example.com/";
+  cred.in_store = PasswordForm::Store::kProfileStore;
+  return cred;
 }
 
 }  // namespace
@@ -161,8 +162,8 @@ TEST_F(ManualFillCredentialsMediatorTest, NotifiesConsumerOnFetchAllPasswords) {
 
   // Add password form to store so we get a result when getting the passwords
   // from the saved passwords presenter.
-  PasswordForm form = CreatePasswordForm();
-  GetTestStore().AddLogin(form);
+  password_manager::StoredCredential cred = CreateStoredCredential();
+  GetTestStore().AddLogin(std::move(cred));
   WaitUntilPasswordIsSavedToStore();
 
   OCMExpect([consumer()
@@ -191,9 +192,11 @@ TEST_F(ManualFillCredentialsMediatorTest,
       static_cast<id<SavedPasswordsPresenterObserver>>(mediator());
 
   // Add a password form with a backup password to the store.
-  PasswordForm form = CreatePasswordForm();
-  form.SetPasswordBackupNote(u"backup password");
-  GetTestStore().AddLogin(form);
+  password_manager::StoredCredential cred = CreateStoredCredential();
+  cred.notes.emplace_back(
+      password_manager::PasswordNote::kPasswordChangeBackupNoteName,
+      u"backup password", base::Time::Now(), false);
+  GetTestStore().AddLogin(std::move(cred));
   WaitUntilPasswordIsSavedToStore();
 
   auto check_credentials = ^(NSUInteger expected_count) {

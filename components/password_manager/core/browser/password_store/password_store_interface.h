@@ -87,41 +87,42 @@ class PasswordStoreInterface : public RefcountedKeyedService {
   // Necessary condition to offer saving passwords.
   virtual ActionableError GetError() const = 0;
 
-  // Adds the given PasswordForm to the secure password store asynchronously.
-  // `completion` will be run after the form is added.
-  virtual void AddLogin(const PasswordForm& form,
+  // Adds the given StoredCredential to the secure password store
+  // asynchronously. `completion` will be run after the form is added.
+  virtual void AddLogin(StoredCredential form,
                         base::OnceClosure completion = base::DoNothing()) = 0;
 
-  // Adds all forms in the given vector of PasswordForm to the secure password
-  // store asynchronously. `completion` will be run after the forms are added.
-  virtual void AddLogins(const std::vector<PasswordForm>& forms,
+  // Adds all forms in the given vector of StoredCredential to the secure
+  // password store asynchronously. `completion` will be run after the forms are
+  // added.
+  virtual void AddLogins(std::vector<StoredCredential> forms,
                          base::OnceClosure completion = base::DoNothing()) = 0;
 
-  // Updates the matching PasswordForm in the secure password store (async).
+  // Updates the matching StoredCredential in the secure password store (async).
   // If any of the primary key fields (signon_realm, url, username_element,
   // username_value, password_element) are updated, then the second version of
   // the method must be used that takes `old_primary_key`, i.e., the old values
   // for the primary key fields (the rest of the fields are ignored).
   // completion will be run after the form is updated.
   virtual void UpdateLogin(
-      const PasswordForm& form,
+      StoredCredential form,
       base::OnceClosure completion = base::DoNothing()) = 0;
 
-  // Updates all matching forms in the given vector of PasswordForm in the
+  // Updates all matching forms in the given vector of StoredCredential in the
   // secure password store (async). Completion will be run after the forms are
   // updated.
-  virtual void UpdateLogins(const std::vector<PasswordForm>& forms,
+  virtual void UpdateLogins(std::vector<StoredCredential> forms,
                             base::OnceClosure completion) = 0;
 
   virtual void UpdateLoginWithPrimaryKey(
-      const PasswordForm& new_form,
-      const PasswordForm& old_primary_key,
+      StoredCredential new_form,
+      const StoredCredential& old_primary_key,
       base::OnceClosure completion = base::DoNothing()) = 0;
 
-  // Removes the matching PasswordForm from the secure password store (async).
-  // `location` is used for logging purposes and investigations.
+  // Removes the matching StoredCredential from the secure password store
+  // (async). `location` is used for logging purposes and investigations.
   virtual void RemoveLogin(const base::Location& location,
-                           const PasswordForm& form) = 0;
+                           const StoredCredential& form) = 0;
 
   // Removes all logins created in the given date range. `completion` is run
   // after deletions have been completed and notifications have been sent out.

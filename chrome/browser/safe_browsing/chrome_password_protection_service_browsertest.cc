@@ -34,6 +34,7 @@
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_reuse_manager.h"
 #include "components/password_manager/core/browser/password_store/fake_password_store_backend.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/ui/password_check_referrer.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -94,7 +95,7 @@ PasswordForm CreatePasswordFormWithPhishedEntry(std::string signon_realm,
 
 void AddFormToStore(PasswordStoreInterface* password_store,
                     const PasswordForm& form) {
-  password_store->AddLogin(form);
+  password_store->AddLogin(password_manager::FromPasswordForm(form));
   base::RunLoop().RunUntilIdle();
   auto passwords_map = GetAllLoginsSync(password_store);
   ASSERT_THAT(passwords_map.at(form.signon_realm), ElementsAre(form));

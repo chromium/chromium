@@ -25,6 +25,7 @@
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/password_change_service_interface.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
@@ -662,7 +663,7 @@ TEST_F(LeakDetectionDelegateTest, LeakHistoryAddCredentials) {
       InsecurityMetadata(base::Time::Now(), IsMuted(false),
                          TriggerBackendNotification(false)));
   form.in_store = PasswordForm::Store::kProfileStore;
-  EXPECT_CALL(*profile_store(), UpdateLogin(form, _));
+  EXPECT_CALL(*profile_store(), UpdateLogin(EqStoredCredential(form), _));
   WaitForPasswordStore();
 }
 

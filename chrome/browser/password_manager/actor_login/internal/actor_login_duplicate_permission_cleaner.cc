@@ -137,8 +137,8 @@ void ActorLoginDuplicatePermissionCleaner::OnGetPasswordStoreResultsOrErrorFrom(
 }
 
 void ActorLoginDuplicatePermissionCleaner::ClearPasswordPermissions() {
-  std::vector<PasswordForm> account_updates;
-  std::vector<PasswordForm> profile_updates;
+  std::vector<password_manager::StoredCredential> account_updates;
+  std::vector<password_manager::StoredCredential> profile_updates;
 
   bool federated_exact_match_exists =
       credential_.type == CredentialType::kFederated &&
@@ -156,9 +156,11 @@ void ActorLoginDuplicatePermissionCleaner::ClearPasswordPermissions() {
     PasswordForm updated_form = match;
     updated_form.actor_login_approved = false;
     if (updated_form.IsUsingAccountStore()) {
-      account_updates.push_back(std::move(updated_form));
+      account_updates.push_back(
+          password_manager::FromPasswordForm(std::move(updated_form)));
     } else {
-      profile_updates.push_back(std::move(updated_form));
+      profile_updates.push_back(
+          password_manager::FromPasswordForm(std::move(updated_form)));
     }
   }
 
@@ -178,14 +180,14 @@ void ActorLoginDuplicatePermissionCleaner::ClearPasswordPermissions() {
 
   if (!account_updates.empty()) {
     account_store_->UpdateLogins(
-        account_updates,
+        std::move(account_updates),
         base::BindOnce([](base::RepeatingClosure closure) { closure.Run(); },
                        barrier));
   }
 
   if (!profile_updates.empty()) {
     profile_store_->UpdateLogins(
-        profile_updates,
+        std::move(profile_updates),
         base::BindOnce([](base::RepeatingClosure closure) { closure.Run(); },
                        barrier));
   }

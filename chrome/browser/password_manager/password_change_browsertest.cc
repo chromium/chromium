@@ -61,6 +61,7 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
@@ -562,7 +563,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, OldPasswordIsUpdated) {
       GetDefaultPasswordStore(browser()->profile());
   password_manager::PasswordForm form = CreatePasswordForm(
       WebContents()->GetLastCommittedURL(), u"test", u"pa$$word");
-  password_store->AddLogin(form);
+  password_store->AddLogin(password_manager::FromPasswordForm(form));
   WaitForPasswordStore();
 
   SetChangePasswordUrl("/password/update_form_empty_fields.html");
@@ -1604,7 +1605,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestUserInterventionEnabled,
       GetDefaultPasswordStore(browser()->profile());
   password_manager::PasswordForm form = CreatePasswordForm(
       WebContents()->GetLastCommittedURL(), u"test", u"old_pa$$word");
-  password_store->AddLogin(form);
+  password_store->AddLogin(password_manager::FromPasswordForm(form));
   WaitForPasswordStore();
 
   // Start the Password Change Flow.

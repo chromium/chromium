@@ -36,8 +36,6 @@ class DataTypeControllerDelegate;
 
 namespace password_manager {
 
-struct PasswordForm;
-
 using metrics_util::GaiaPasswordHashChange;
 
 class PasswordStoreConsumer;
@@ -63,20 +61,20 @@ class PasswordStore : public PasswordStoreInterface {
 
   // PasswordStoreInterface:
   ActionableError GetError() const override;
-  void AddLogin(const PasswordForm& form,
+  void AddLogin(StoredCredential form,
                 base::OnceClosure completion = base::DoNothing()) override;
-  void AddLogins(const std::vector<PasswordForm>& forms,
+  void AddLogins(std::vector<StoredCredential> forms,
                  base::OnceClosure completion = base::DoNothing()) override;
-  void UpdateLogin(const PasswordForm& form,
+  void UpdateLogin(StoredCredential form,
                    base::OnceClosure completion = base::DoNothing()) override;
-  void UpdateLogins(const std::vector<PasswordForm>& forms,
+  void UpdateLogins(std::vector<StoredCredential> forms,
                     base::OnceClosure completion = base::DoNothing()) override;
   void UpdateLoginWithPrimaryKey(
-      const PasswordForm& new_form,
-      const PasswordForm& old_primary_key,
+      StoredCredential new_form,
+      const StoredCredential& old_primary_key,
       base::OnceClosure completion = base::DoNothing()) override;
   void RemoveLogin(const base::Location& location,
-                   const PasswordForm& form) override;
+                   const StoredCredential& form) override;
   void RemoveLoginsCreatedBetween(const base::Location& location,
                                   base::Time delete_begin,
                                   base::Time delete_end,

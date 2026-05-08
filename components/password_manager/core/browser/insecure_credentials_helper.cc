@@ -100,7 +100,7 @@ void InsecureCredentialsHelper::AddPhishedCredentialsInternal(
             {InsecureType::kPhished,
              InsecurityMetadata(base::Time::Now(), IsMuted(false),
                                 TriggerBackendNotification(false))});
-        store_->UpdateLogin(ToPasswordForm(form));
+        store_->UpdateLogin(std::move(form));
       }
     }
   }
@@ -115,7 +115,7 @@ void InsecureCredentialsHelper::RemovePhishedCredentialsInternal(
       if (form.password_issues.find(InsecureType::kPhished) !=
           form.password_issues.end()) {
         form.password_issues.erase(InsecureType::kPhished);
-        store_->UpdateLogin(ToPasswordForm(form));
+        store_->UpdateLogin(std::move(form));
       }
     }
   }

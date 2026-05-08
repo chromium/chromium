@@ -38,6 +38,7 @@
 #include "components/browser_sync/browser_sync_switches.h"
 #include "components/metrics/metrics_service.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -690,7 +691,8 @@ IN_PROC_BROWSER_TEST_P(
   // Add local passwords.
   const password_manager::PasswordForm password_form2 =
       passwords_helper::CreateTestPasswordForm(2, GetPasswordStoreType());
-  GetPasswordStore()->AddLogin(password_form2);
+  GetPasswordStore()->AddLogin(
+      password_manager::FromPasswordForm(password_form2));
 
   // Mimic server-side keystore migration:
   // 1. Issue CLIENT_DATA_OBSOLETE.
@@ -761,7 +763,8 @@ IN_PROC_BROWSER_TEST_P(
   // Add local passwords.
   const password_manager::PasswordForm password_form2 =
       passwords_helper::CreateTestPasswordForm(2, GetPasswordStoreType());
-  GetPasswordStore()->AddLogin(password_form2);
+  GetPasswordStore()->AddLogin(
+      password_manager::FromPasswordForm(password_form2));
 
   // Mimic server-side keystore migration:
   // 1. Issue CLIENT_DATA_OBSOLETE.
@@ -795,7 +798,8 @@ IN_PROC_BROWSER_TEST_P(
     // newly-created passwords should be uploaded using the keystore key.
     const password_manager::PasswordForm password_form3 =
         passwords_helper::CreateTestPasswordForm(3, GetPasswordStoreType());
-    GetPasswordStore()->AddLogin(password_form3);
+    GetPasswordStore()->AddLogin(
+        password_manager::FromPasswordForm(password_form3));
     EXPECT_TRUE(ServerPasswordsEqualityChecker(
                     {password_form3}, kKeystoreKeyParams.password,
                     kKeystoreKeyParams.derivation_params)
@@ -950,7 +954,8 @@ IN_PROC_BROWSER_TEST_P(
   // Verify that newly saved passwords are encrypted with keystore passphrase.
   const password_manager::PasswordForm password_form =
       passwords_helper::CreateTestPasswordForm(0, GetPasswordStoreType());
-  GetPasswordStore()->AddLogin(password_form);
+  GetPasswordStore()->AddLogin(
+      password_manager::FromPasswordForm(password_form));
   EXPECT_TRUE(ServerPasswordsEqualityChecker(
                   {password_form}, kKeystoreKeyParams.password,
                   kKeystoreKeyParams.derivation_params)

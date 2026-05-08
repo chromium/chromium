@@ -24,6 +24,7 @@
 #include "components/password_manager/core/browser/leak_detection/leak_detection_request_utils.h"
 #include "components/password_manager/core/browser/leak_detection/mock_leak_detection_check_factory.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -60,23 +61,14 @@ MATCHER_P(CredentialsAre, credentials, "") {
                             });
 }
 
-MATCHER_P(SavedPasswordsAre, passwords, "") {
-  return std::ranges::equal(
-      arg, passwords, [](const auto& lhs, const auto& rhs) {
-        return lhs.signon_realm == rhs.signon_realm &&
-               lhs.username_value == rhs.username_value &&
-               lhs.password_value == rhs.password_value;
-      });
-}
-
-PasswordForm MakeSavedPassword(std::string_view signon_realm,
-                               std::u16string_view username,
-                               std::u16string_view password) {
-  PasswordForm form;
-  form.signon_realm = std::string(signon_realm);
-  form.username_value = std::u16string(username);
-  form.password_value = std::u16string(password);
-  return form;
+StoredCredential MakeSavedPassword(std::string_view signon_realm,
+                                   std::u16string_view username,
+                                   std::u16string_view password) {
+  StoredCredential cred;
+  cred.signon_realm = std::string(signon_realm);
+  cred.username_value = std::u16string(username);
+  cred.password_value = std::u16string(password);
+  return cred;
 }
 
 LeakCheckCredential MakeLeakCheckCredential(std::u16string_view username,
@@ -152,11 +144,11 @@ TEST_F(BulkLeakCheckServiceAdapterTest, OnCreation) {
 // passwords into LeakCheckCredentials and attaches the underlying password
 // forms as user data.
 TEST_F(BulkLeakCheckServiceAdapterTest, StartBulkLeakCheck) {
-  std::vector<PasswordForm> passwords = {
-      MakeSavedPassword(kExampleCom, kUsername1, kPassword1),
-      MakeSavedPassword(kExampleOrg, kUsername2, kPassword2)};
-  store().AddLogin(passwords[0]);
-  store().AddLogin(passwords[1]);
+  std::vector<password_manager::StoredCredential> passwords;
+  passwords.push_back(MakeSavedPassword(kExampleCom, kUsername1, kPassword1));
+  passwords.push_back(MakeSavedPassword(kExampleOrg, kUsername2, kPassword2));
+  store().AddLogin(std::move(passwords[0]));
+  store().AddLogin(std::move(passwords[1]));
   RunUntilIdle();
 
   auto leak_check = std::make_unique<NiceMockBulkLeakCheck>();
@@ -184,9 +176,9 @@ TEST_F(BulkLeakCheckServiceAdapterTest, StartBulkLeakCheckAttachesData) {
     std::unique_ptr<Data> Clone() override { return std::make_unique<Data>(); }
   } data;
 
-  std::vector<PasswordForm> passwords = {
-      MakeSavedPassword(kExampleCom, kUsername1, kPassword1)};
-  store().AddLogin(passwords[0]);
+  std::vector<password_manager::StoredCredential> passwords;
+  passwords.push_back(MakeSavedPassword(kExampleCom, kUsername1, kPassword1));
+  store().AddLogin(std::move(passwords[0]));
   RunUntilIdle();
 
   auto leak_check = std::make_unique<NiceMockBulkLeakCheck>();
@@ -206,14 +198,15 @@ TEST_F(BulkLeakCheckServiceAdapterTest, StartBulkLeakCheckAttachesData) {
 // Tests that multiple credentials with effectively the same username are
 // correctly deduped before starting the leak check.
 TEST_F(BulkLeakCheckServiceAdapterTest, StartBulkLeakCheckDedupes) {
-  std::vector<PasswordForm> passwords = {
-      MakeSavedPassword(kExampleCom, u"alice", kPassword1),
-      MakeSavedPassword(kExampleCom, u"ALICE", kPassword1),
-      MakeSavedPassword(kExampleCom, u"Alice@example.com", kPassword1)};
+  std::vector<password_manager::StoredCredential> passwords;
+  passwords.push_back(MakeSavedPassword(kExampleCom, u"alice", kPassword1));
+  passwords.push_back(MakeSavedPassword(kExampleCom, u"ALICE", kPassword1));
+  passwords.push_back(
+      MakeSavedPassword(kExampleCom, u"Alice@example.com", kPassword1));
 
-  store().AddLogin(passwords[0]);
-  store().AddLogin(passwords[1]);
-  store().AddLogin(passwords[2]);
+  store().AddLogin(std::move(passwords[0]));
+  store().AddLogin(std::move(passwords[1]));
+  store().AddLogin(std::move(passwords[2]));
   RunUntilIdle();
 
   auto leak_check = std::make_unique<NiceMockBulkLeakCheck>();
@@ -279,14 +272,15 @@ TEST_F(BulkLeakCheckServiceAdapterTest, OnEditedNoPrefs) {
   prefs().SetBoolean(prefs::kPasswordLeakDetectionEnabled, false);
   prefs().SetBoolean(::prefs::kSafeBrowsingEnabled, false);
 
-  PasswordForm password =
+  StoredCredential password =
       MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
   password.in_store = PasswordForm::Store::kProfileStore;
-  store().AddLogin(password);
+  store().AddLogin(password_manager::CloneStoredCredential(password));
   RunUntilIdle();
 
   EXPECT_CALL(factory(), TryCreateBulkLeakCheck).Times(0);
-  CredentialUIEntry original_credential(password),
+  CredentialUIEntry original_credential(
+      password_manager::ToPasswordForm(password)),
       updated_credential = original_credential;
   updated_credential.password = kPassword2;
   presenter().EditSavedCredentials(original_credential, updated_credential);
@@ -297,10 +291,10 @@ TEST_F(BulkLeakCheckServiceAdapterTest, OnEditedNoPrefs) {
 // call to CheckCredentials with a corresponding change to the checked password
 // if the corresponding prefs are set.
 TEST_F(BulkLeakCheckServiceAdapterTest, OnEditedWithPrefs) {
-  PasswordForm password =
+  StoredCredential password =
       MakeSavedPassword(kExampleCom, kUsername1, kPassword1);
   password.in_store = PasswordForm::Store::kProfileStore;
-  store().AddLogin(password);
+  store().AddLogin(password_manager::CloneStoredCredential(password));
   RunUntilIdle();
 
   std::vector<LeakCheckCredential> expected;
@@ -312,7 +306,8 @@ TEST_F(BulkLeakCheckServiceAdapterTest, OnEditedWithPrefs) {
                                CredentialsAre(std::cref(expected))));
   EXPECT_CALL(factory(), TryCreateBulkLeakCheck)
       .WillOnce(Return(ByMove(std::move(leak_check))));
-  CredentialUIEntry original_credential(password),
+  CredentialUIEntry original_credential(
+      password_manager::ToPasswordForm(password)),
       updated_credential = original_credential;
   updated_credential.password = kPassword2;
   presenter().EditSavedCredentials(original_credential, updated_credential);

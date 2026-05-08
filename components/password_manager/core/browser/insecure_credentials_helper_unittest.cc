@@ -88,7 +88,7 @@ TEST_F(InsecureCredentialsHelperTest, UpdateLoginCalledForTheRightFormAdd) {
   ExpectGetLogins("http://example.com");
   AddPhishedCredentials(store(),
                         MakeCredential("http://example.com", u"username1"));
-  EXPECT_CALL(*store(), UpdateLogin(expected_form, _));
+  EXPECT_CALL(*store(), UpdateLogin(EqStoredCredential(expected_form), _));
   SimulateStoreRepliedWithResults(forms);
 }
 
@@ -104,8 +104,9 @@ TEST_F(InsecureCredentialsHelperTest, UpdateLoginCalledForTheRightFormRemove) {
   ExpectGetLogins("http://example.com");
   RemovePhishedCredentials(store(),
                            MakeCredential("http://example.com", u"username1"));
-  EXPECT_CALL(*store(),
-              UpdateLogin(CreateForm("http://example.com", u"username1"), _));
+  EXPECT_CALL(*store(), UpdateLogin(EqStoredCredential(CreateForm(
+                                        "http://example.com", u"username1")),
+                                    _));
   SimulateStoreRepliedWithResults(forms);
 }
 
@@ -122,8 +123,8 @@ TEST_F(InsecureCredentialsHelperTest, UpdateLoginCalledForAllMatchingFormsAdd) {
       base::Time::Now(), IsMuted(false), TriggerBackendNotification(false));
   forms.at(1).password_issues[InsecureType::kPhished] = InsecurityMetadata(
       base::Time::Now(), IsMuted(false), TriggerBackendNotification(false));
-  EXPECT_CALL(*store(), UpdateLogin(forms[1], _));
-  EXPECT_CALL(*store(), UpdateLogin(forms[0], _));
+  EXPECT_CALL(*store(), UpdateLogin(EqStoredCredential(forms[1]), _));
+  EXPECT_CALL(*store(), UpdateLogin(EqStoredCredential(forms[0]), _));
   SimulateStoreRepliedWithResults(
       {CreateForm("http://example.com", u"username", u"password1"),
        CreateForm("http://example.com", u"username", u"password2")});
@@ -142,12 +143,14 @@ TEST_F(InsecureCredentialsHelperTest,
                            MakeCredential("http://example.com", u"username"));
   forms.at(0).password_issues[InsecureType::kPhished] = InsecurityMetadata();
   forms.at(1).password_issues[InsecureType::kPhished] = InsecurityMetadata();
-  EXPECT_CALL(*store(), UpdateLogin(CreateForm("http://example.com",
-                                               u"username", u"password2"),
-                                    _));
-  EXPECT_CALL(*store(), UpdateLogin(CreateForm("http://example.com",
-                                               u"username", u"password1"),
-                                    _));
+  EXPECT_CALL(*store(),
+              UpdateLogin(EqStoredCredential(CreateForm(
+                              "http://example.com", u"username", u"password2")),
+                          _));
+  EXPECT_CALL(*store(),
+              UpdateLogin(EqStoredCredential(CreateForm(
+                              "http://example.com", u"username", u"password1")),
+                          _));
   SimulateStoreRepliedWithResults(forms);
 }
 

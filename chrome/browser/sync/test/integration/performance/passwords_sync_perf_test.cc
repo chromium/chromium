@@ -9,6 +9,7 @@
 #include "chrome/browser/sync/test/integration/passwords_helper.h"
 #include "chrome/browser/sync/test/integration/performance/sync_timing_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "content/public/test/browser_test.h"
 #include "testing/perf/perf_result_reporter.h"
@@ -70,7 +71,8 @@ class PasswordsSyncPerfTest : public SyncTest {
 
 void PasswordsSyncPerfTest::AddLogins(int profile, int num_logins) {
   for (int i = 0; i < num_logins; ++i) {
-    GetAccountPasswordStoreInterface(profile)->AddLogin(NextLogin());
+    GetAccountPasswordStoreInterface(profile)->AddLogin(
+        password_manager::FromPasswordForm(NextLogin()));
   }
   // Don't proceed before all additions happen on the background thread.
   // Call GetPasswordCount() because it blocks on the background thread.
@@ -82,7 +84,8 @@ void PasswordsSyncPerfTest::UpdateLogins(int profile) {
       passwords_helper::GetLogins(GetAccountPasswordStoreInterface(profile));
   for (std::unique_ptr<PasswordForm>& login : logins) {
     login->password_value = base::ASCIIToUTF16(NextPassword());
-    GetAccountPasswordStoreInterface(profile)->UpdateLogin(*login);
+    GetAccountPasswordStoreInterface(profile)->UpdateLogin(
+        password_manager::FromPasswordForm(std::move(*login)));
   }
   // Don't proceed before all updates happen on the background thread.
   // Call GetPasswordCount() because it blocks on the background thread.

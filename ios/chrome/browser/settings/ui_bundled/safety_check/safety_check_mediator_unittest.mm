@@ -19,6 +19,7 @@
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
+#import "components/password_manager/core/browser/password_store/password_form_converters.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
 #import "components/prefs/pref_service.h"
@@ -177,7 +178,7 @@ class SafetyCheckMediatorTest : public PlatformTest {
   void RunUntilIdle() { environment_.RunUntilIdle(); }
 
   void AddPasswordForm(std::unique_ptr<password_manager::PasswordForm> form) {
-    GetTestStore().AddLogin(*form);
+    GetTestStore().AddLogin(password_manager::FromPasswordForm(*form));
     RunUntilIdle();
   }
 

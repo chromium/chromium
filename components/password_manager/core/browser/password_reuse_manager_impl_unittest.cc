@@ -18,6 +18,7 @@
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/password_manager/core/browser/password_reuse_detector_impl.h"
 #include "components/password_manager/core/browser/password_reuse_manager_signin_notifier.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/stored_credential.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/stub_credentials_filter.h"
@@ -270,7 +271,7 @@ TEST_F(PasswordReuseManagerImplTest, CheckPasswordReuse) {
       CreateForm("https://facebook.com", u"username2", u"topsecret")};
 
   for (const auto& form : forms) {
-    profile_store()->AddLogin(form);
+    profile_store()->AddLogin(password_manager::FromPasswordForm(form));
   }
 
   struct {
@@ -553,9 +554,9 @@ TEST_F(PasswordReuseManagerImplTest,
                  PasswordForm::Store::kAccountStore);
 
   for (const auto& form : profile_forms) {
-    profile_store()->AddLogin(form);
+    profile_store()->AddLogin(password_manager::FromPasswordForm(form));
   }
-  account_store()->AddLogin(account_form);
+  account_store()->AddLogin(password_manager::FromPasswordForm(account_form));
 
   RunUntilIdle();
 
@@ -581,7 +582,7 @@ TEST_F(PasswordReuseManagerImplTest, NoReuseFoundAfterClearingAccountStorage) {
                  PasswordForm::Store::kAccountStore)};
 
   for (const auto& form : account_forms) {
-    account_store()->AddLogin(form);
+    account_store()->AddLogin(password_manager::FromPasswordForm(form));
   }
 
   RunUntilIdle();

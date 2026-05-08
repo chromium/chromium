@@ -56,6 +56,7 @@
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
 #include "components/password_manager/core/browser/webauthn_credentials_delegate.h"
 #include "components/plus_addresses/core/browser/grit/plus_addresses_strings.h"
@@ -760,7 +761,7 @@ void PasswordAccessoryControllerImpl::ChangeCurrentOriginSavePasswordsStatus(
         password_manager_util::MakeNormalizedBlocklistedForm(
             std::move(form_digest));
     form.date_created = base::Time::Now();
-    store->AddLogin(form);
+    store->AddLogin(password_manager::FromPasswordForm(std::move(form)));
   }
   password_client_->UpdateFormManagers();
 }

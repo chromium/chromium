@@ -4,7 +4,11 @@
 
 #include "components/password_manager/core/browser/password_change_backup_password_cleaner.h"
 
+#include <algorithm>
+#include <ranges>
+
 #include "base/time/time.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -49,15 +53,14 @@ void PasswordChangeBackupPasswordCleaner::OnGetPasswordStoreResultsOrErrorFrom(
   }
 
   base::Time cleaning_time = base::Time::Now();
-  for (const PasswordForm& form :
-       ToPasswordForms(std::get<LoginsResult>(std::move(results_or_error)))) {
-    std::optional<base::Time> note_created_time =
-        form.GetPasswordBackupDateCreated();
-    if (note_created_time.has_value() &&
-        cleaning_time - *note_created_time >= kBackupPasswordTTL) {
-      PasswordForm updated_form = form;
-      updated_form.DeletePasswordBackupNote();
-      store_->UpdateLogin(std::move(updated_form));
+  for (auto& cred : std::get<LoginsResult>(std::move(results_or_error))) {
+    auto note_itr = std::ranges::find(
+        cred.notes, PasswordNote::kPasswordChangeBackupNoteName,
+        &PasswordNote::unique_display_name);
+    if (note_itr != cred.notes.end() && !note_itr->value.empty() &&
+        cleaning_time - note_itr->date_created >= kBackupPasswordTTL) {
+      cred.notes.erase(note_itr);
+      store_->UpdateLogin(std::move(cred));
     }
   }
 

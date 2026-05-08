@@ -13,6 +13,7 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
 #include "components/password_manager/core/browser/password_form_digest.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -82,14 +83,14 @@ void PasswordCredentialFetcher::UpdateDateLastUsed(
            password_manager::PasswordForm::Store::kProfileStore) !=
           password_manager::PasswordForm::Store::kNotSet) {
         if (auto* store = client->GetProfilePasswordStore()) {
-          store->UpdateLogin(updated_form);
+          store->UpdateLogin(password_manager::FromPasswordForm(updated_form));
         }
       }
       if ((updated_form.in_store &
            password_manager::PasswordForm::Store::kAccountStore) !=
           password_manager::PasswordForm::Store::kNotSet) {
         if (auto* store = client->GetAccountPasswordStore()) {
-          store->UpdateLogin(updated_form);
+          store->UpdateLogin(password_manager::FromPasswordForm(updated_form));
         }
       }
     }

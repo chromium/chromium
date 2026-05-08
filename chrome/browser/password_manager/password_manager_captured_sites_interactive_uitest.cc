@@ -32,6 +32,7 @@
 #include "components/password_manager/core/browser/password_manager_switches.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/fake_password_store_backend.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -135,7 +136,7 @@ class CapturedSitesPasswordManagerBrowserTest
     signin_form.signon_realm = origin;
     signin_form.password_value = base::ASCIIToUTF16(password);
     signin_form.username_value = base::ASCIIToUTF16(username);
-    password_store->AddLogin(signin_form);
+    password_store->AddLogin(password_manager::FromPasswordForm(signin_form));
     return true;
   }
 

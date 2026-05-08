@@ -10,6 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/mock_smart_bubble_stats_store.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
@@ -191,10 +192,12 @@ void HttpPasswordStoreMigratorTest::TestFullStore(bool is_hsts) {
   expected_federated_form.url = GURL("https://localhost");
   expected_federated_form.action = GURL("https://localhost");
 
-  EXPECT_CALL(store(), AddLogin(expected_form, _));
-  EXPECT_CALL(store(), AddLogin(expected_federated_form, _));
-  EXPECT_CALL(store(), RemoveLogin(_, form)).Times(is_hsts);
-  EXPECT_CALL(store(), RemoveLogin(_, federated_form)).Times(is_hsts);
+  EXPECT_CALL(store(), AddLogin(EqStoredCredential(expected_form), _));
+  EXPECT_CALL(store(),
+              AddLogin(EqStoredCredential(expected_federated_form), _));
+  EXPECT_CALL(store(), RemoveLogin(_, EqStoredCredential(form))).Times(is_hsts);
+  EXPECT_CALL(store(), RemoveLogin(_, EqStoredCredential(federated_form)))
+      .Times(is_hsts);
   EXPECT_CALL(consumer(), ProcessMigratedForms(ElementsAre(
                               expected_form, expected_federated_form)));
   std::vector<PasswordForm> results;

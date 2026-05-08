@@ -17,6 +17,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/ui/actor_login_permission.h"
@@ -138,7 +139,7 @@ class PasswordManagerUIHandlerUnitTest : public testing::Test {
     form.in_store = PasswordForm::Store::kProfileStore;
 
     SavedPasswordsChangedWaiter waiter(presenter_);
-    password_store_->AddLogin(form);
+    password_store_->AddLogin(password_manager::FromPasswordForm(form));
     waiter.Wait();
   }
 

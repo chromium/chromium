@@ -217,15 +217,18 @@ void PasswordLocalDataBatchUploader::OnGotAllPasswordsForMigration(
         std::ranges::lower_bound(account_passwords, local_password, comparator);
     if (it == account_passwords.end() ||
         !ArePasswordFormUniqueKeysEqual(*it, local_password)) {
-      account_store_->AddLogin(local_password);
+      account_store_->AddLogin(
+          password_manager::FromPasswordForm(local_password));
       ++moved_passwords_counter;
     } else if (it->password_value != local_password.password_value &&
                GetLatestOfTimeLastUsedOrModifiedOrCreated(*it) <
                    GetLatestOfTimeLastUsedOrModifiedOrCreated(local_password)) {
-      account_store_->UpdateLogin(local_password);
+      account_store_->UpdateLogin(
+          password_manager::FromPasswordForm(local_password));
       ++moved_passwords_counter;
     }
-    profile_store_->RemoveLogin(FROM_HERE, local_password);
+    profile_store_->RemoveLogin(
+        FROM_HERE, password_manager::FromPasswordForm(local_password));
   }
 
   base::UmaHistogramCounts1M("Sync.PasswordsBatchUpload.Count",

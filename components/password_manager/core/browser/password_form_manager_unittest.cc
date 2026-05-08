@@ -14,6 +14,8 @@
 #include "base/containers/lru_cache.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gmock_callback_support.h"
+#include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -2188,9 +2190,9 @@ TEST_P(PasswordFormManagerTest, PresaveGeneratedPasswordAsBackup) {
   input_form.password_value = primary_password;
   PasswordForm expected_form(input_form);
   expected_form.SetPasswordBackupNote(backup_password);
-  PasswordForm saved_form;
+  password_manager::StoredCredential saved_form;
 
-  EXPECT_CALL(*mock_store.get(), AddLogin).WillOnce(SaveArg<0>(&saved_form));
+  EXPECT_CALL(*mock_store.get(), AddLogin).WillOnce(MoveArg<0>(&saved_form));
   PasswordFormManager::PresaveGeneratedPasswordAsBackup(
       form_manager, input_form, backup_password);
 

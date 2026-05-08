@@ -13,6 +13,7 @@
 #include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -168,7 +169,7 @@ TEST_F(CredentialManagerPendingPreventSilentAccessTaskTest,
 
   PasswordForm form = CreateEntry("username", "password", GURL(kUrl),
                                   PasswordForm::MatchType::kExact);
-  profile_store_->AddLogin(form);
+  profile_store_->AddLogin(password_manager::FromPasswordForm(form));
   ProcessPasswordStoreUpdates();
 
   CredentialManagerPendingPreventSilentAccessTask task(&delegate_mock_);
@@ -192,7 +193,7 @@ TEST_F(CredentialManagerPendingPreventSilentAccessTaskTest,
 
   PasswordForm form = CreateEntry("username", "password", GURL(kUrl),
                                   PasswordForm::MatchType::kExact);
-  profile_store_->AddLogin(form);
+  profile_store_->AddLogin(password_manager::FromPasswordForm(form));
   ProcessPasswordStoreUpdates();
 
   const GURL kDifferentDomainUrl = GURL(kUnrelatedUrl);
@@ -218,7 +219,7 @@ TEST_F(CredentialManagerPendingPreventSilentAccessTaskTest,
   PasswordForm form =
       CreateEntry("username", "password", GURL(kGroupedMatchUrl),
                   PasswordForm::MatchType::kExact);
-  profile_store_->AddLogin(form);
+  profile_store_->AddLogin(password_manager::FromPasswordForm(form));
   ProcessPasswordStoreUpdates();
 
   const PasswordFormDigest kDigest(PasswordForm::Scheme::kHtml,
@@ -252,7 +253,7 @@ TEST_F(CredentialManagerPendingPreventSilentAccessTaskTest,
   form.url = GURL(kUrl);
   form.blocked_by_user = true;
 
-  profile_store_->AddLogin(form);
+  profile_store_->AddLogin(password_manager::FromPasswordForm(form));
   ProcessPasswordStoreUpdates();
 
   const PasswordFormDigest kDigest(PasswordForm::Scheme::kHtml,

@@ -13,6 +13,7 @@
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
+#import "components/password_manager/core/browser/password_store/password_form_converters.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/testing_pref_service.h"
@@ -279,30 +280,30 @@ TEST_F(PasswordCheckupUtilsTest, CheckPasswordsForWarningType) {
   PasswordForm muted_form = MakeSavedPassword(kExampleCom1, kPassword116);
   AddIssueToForm(&muted_form, InsecureType::kLeaked, base::Minutes(1),
                  /*is_muted=*/true);
-  store().AddLogin(muted_form);
+  store().AddLogin(password_manager::FromPasswordForm(muted_form));
 
   // Add a weak password.
   PasswordForm weak_form = MakeSavedPassword(kExampleCom2, kPassword216);
   AddIssueToForm(&weak_form, InsecureType::kWeak, base::Minutes(1));
-  store().AddLogin(weak_form);
+  store().AddLogin(password_manager::FromPasswordForm(weak_form));
 
   // Add 2 reused passwords.
   PasswordForm reused_form1 = MakeSavedPassword(kExampleCom3, kPassword316);
   AddIssueToForm(&reused_form1, InsecureType::kReused, base::Minutes(1));
-  store().AddLogin(reused_form1);
+  store().AddLogin(password_manager::FromPasswordForm(reused_form1));
 
   PasswordForm reused_form2 = MakeSavedPassword(kExampleCom4, kPassword416);
   AddIssueToForm(&reused_form2, InsecureType::kReused, base::Minutes(1));
-  store().AddLogin(reused_form2);
+  store().AddLogin(password_manager::FromPasswordForm(reused_form2));
 
   // Add two unmuted compromised passwords, a leaked one and a phished one.
   PasswordForm leaked_form = MakeSavedPassword(kExampleCom5, kPassword516);
   AddIssueToForm(&leaked_form, InsecureType::kLeaked, base::Minutes(1));
-  store().AddLogin(leaked_form);
+  store().AddLogin(password_manager::FromPasswordForm(leaked_form));
 
   PasswordForm phished_form = MakeSavedPassword(kExampleCom6, kPassword616);
   AddIssueToForm(&phished_form, InsecureType::kPhished, base::Minutes(1));
-  store().AddLogin(phished_form);
+  store().AddLogin(password_manager::FromPasswordForm(phished_form));
 
   RunUntilIdle();
 
@@ -346,8 +347,8 @@ TEST_F(PasswordCheckupUtilsTest,
   // Add reused passwords.
   PasswordForm reused_form1 = MakeSavedPassword(kExampleCom1, kPassword116);
   PasswordForm reused_form2 = MakeSavedPassword(kExampleCom2, kPassword116);
-  store().AddLogin(reused_form1);
-  store().AddLogin(reused_form2);
+  store().AddLogin(password_manager::FromPasswordForm(reused_form1));
+  store().AddLogin(password_manager::FromPasswordForm(reused_form2));
   RunUntilIdle();
 
   // Run password check.
@@ -356,7 +357,8 @@ TEST_F(PasswordCheckupUtilsTest,
   RunUntilIdle();
 
   // Remove one of the reused passwords.
-  store().RemoveLogin(FROM_HERE, reused_form1);
+  store().RemoveLogin(FROM_HERE,
+                      password_manager::FromPasswordForm(reused_form1));
   RunUntilIdle();
 
   std::vector<CredentialUIEntry> insecure_credentials =

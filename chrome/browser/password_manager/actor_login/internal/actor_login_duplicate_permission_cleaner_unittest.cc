@@ -22,6 +22,7 @@
 #include "components/password_manager/core/browser/actor_login/test/mock_actor_login_permission_service.h"
 #include "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
@@ -119,7 +120,7 @@ TEST_F(ActorLoginDuplicatePermissionCleanerTest,
   form1.password_value = u"pass1";
   form1.actor_login_approved = true;
   form1.match_type = password_manager::PasswordForm::MatchType::kExact;
-  store()->AddLogin(form1);
+  store()->AddLogin(password_manager::FromPasswordForm(form1));
 
   password_manager::PasswordForm form2;
   form2.url = kUrl;
@@ -128,7 +129,7 @@ TEST_F(ActorLoginDuplicatePermissionCleanerTest,
   form2.password_value = u"pass2";
   form2.actor_login_approved = true;
   form2.match_type = password_manager::PasswordForm::MatchType::kExact;
-  store()->AddLogin(form2);
+  store()->AddLogin(password_manager::FromPasswordForm(form2));
 
   // Wait for store to add logins.
   ASSERT_TRUE(base::test::RunUntil([&]() {
@@ -218,7 +219,7 @@ TEST_F(ActorLoginDuplicatePermissionCleanerTest,
   form1.password_value = u"pass1";
   form1.actor_login_approved = true;
   form1.match_type = password_manager::PasswordForm::MatchType::kExact;
-  store()->AddLogin(form1);
+  store()->AddLogin(password_manager::FromPasswordForm(form1));
 
   password_manager::PasswordForm form2;
   form2.url = kAffiliatedUrl;
@@ -227,7 +228,7 @@ TEST_F(ActorLoginDuplicatePermissionCleanerTest,
   form2.password_value = u"pass2";
   form2.actor_login_approved = true;
   form2.match_type = password_manager::PasswordForm::MatchType::kAffiliated;
-  store()->AddLogin(form2);
+  store()->AddLogin(password_manager::FromPasswordForm(form2));
 
   // Wait for store to add login.
   ASSERT_TRUE(base::test::RunUntil([&]() {
@@ -315,7 +316,7 @@ TEST_F(ActorLoginDuplicatePermissionCleanerTest,
   form1.password_value = u"pass1";
   form1.actor_login_approved = true;
   form1.match_type = password_manager::PasswordForm::MatchType::kAffiliated;
-  store()->AddLogin(form1);
+  store()->AddLogin(password_manager::FromPasswordForm(form1));
 
   // Wait for store to add login.
   ASSERT_TRUE(base::test::RunUntil(
@@ -388,7 +389,7 @@ TEST_F(ActorLoginDuplicatePermissionCleanerTest,
   form1.username_value = kExcludeUser;
   form1.actor_login_approved = true;
   form1.match_type = password_manager::PasswordForm::MatchType::kExact;
-  store()->AddLogin(form1);
+  store()->AddLogin(password_manager::FromPasswordForm(form1));
 
   password_manager::PasswordForm form2;
   form2.url = GURL("https://affiliated.com/login");
@@ -397,7 +398,7 @@ TEST_F(ActorLoginDuplicatePermissionCleanerTest,
   form2.password_value = u"pass2";
   form2.actor_login_approved = true;
   form2.match_type = password_manager::PasswordForm::MatchType::kAffiliated;
-  store()->AddLogin(form2);
+  store()->AddLogin(password_manager::FromPasswordForm(form2));
 
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return GetAllLoginsSync(store()).count(kExcludedSignonRealm) > 0 &&
@@ -453,7 +454,7 @@ TEST_F(ActorLoginDuplicatePermissionCleanerTest,
   psl_form.username_value = u"user2";
   psl_form.actor_login_approved = true;
   psl_form.match_type = password_manager::PasswordForm::MatchType::kPSL;
-  store()->AddLogin(psl_form);
+  store()->AddLogin(password_manager::FromPasswordForm(psl_form));
 
   password_manager::PasswordForm grouped_form;
   grouped_form.url = GURL("https://grouped.com/login");
@@ -461,7 +462,7 @@ TEST_F(ActorLoginDuplicatePermissionCleanerTest,
   grouped_form.username_value = u"user2";
   grouped_form.actor_login_approved = true;
   grouped_form.match_type = password_manager::PasswordForm::MatchType::kGrouped;
-  store()->AddLogin(grouped_form);
+  store()->AddLogin(password_manager::FromPasswordForm(grouped_form));
 
   // Wait for store to add logins.
   ASSERT_TRUE(base::test::RunUntil([&]() {

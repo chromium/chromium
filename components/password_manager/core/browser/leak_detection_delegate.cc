@@ -24,6 +24,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -157,10 +158,10 @@ void LeakDetectionDelegate::OnLeakDetectionDone(
 
   if (base::FeatureList::IsEnabled(features::kMarkAllCredentialsAsLeaked)) {
     GURL url = credentials.url;
-    auto leak_details =
-        PrepareLeakDetails(PasswordForm::Store::kNotSet, IsReused(false),
-                           IsSavedAsBackup(false), std::move(credentials),
-                           /*all_urls_with_leaked_credentials=*/{url});
+    auto leak_details = PrepareLeakDetails(
+        PasswordForm::Store::kNotSet, IsReused(false), IsSavedAsBackup(false),
+        password_manager::FromPasswordForm(std::move(credentials)),
+        /*all_urls_with_leaked_credentials=*/{url});
     barrier_callback.Run(std::move(leak_details));
   } else {
     // Query the helper to asynchronously determine the `CredentialLeakType`.
@@ -169,7 +170,8 @@ void LeakDetectionDelegate::OnLeakDetectionDone(
         base::BindOnce(&LeakDetectionDelegate::PrepareLeakDetails,
                        base::Unretained(this))
             .Then(barrier_callback));
-    helper_->ProcessLeakedPassword(std::move(credentials));
+    helper_->ProcessLeakedPassword(
+        password_manager::FromPasswordForm(std::move(credentials)));
   }
 }
 
@@ -177,7 +179,7 @@ LeakedPasswordDetails LeakDetectionDelegate::PrepareLeakDetails(
     PasswordForm::Store in_stores,
     IsReused is_reused,
     IsSavedAsBackup is_saved_as_backup,
-    PasswordForm credentials,
+    StoredCredential credentials,
     std::vector<GURL> all_urls_with_leaked_credentials) {
   std::vector<std::pair<GURL, std::u16string>> identities;
   for (const auto& u : all_urls_with_leaked_credentials) {
@@ -215,8 +217,9 @@ LeakedPasswordDetails LeakDetectionDelegate::PrepareLeakDetails(
   CredentialLeakType leak_type = CreateLeakType(
       IsSaved(in_stores != PasswordForm::Store::kNotSet), is_reused, is_syncing,
       HasChangePasswordUrl(false), is_saved_as_backup);
-  return LeakedPasswordDetails(leak_type, std::move(credentials),
-                               in_account_store);
+  return LeakedPasswordDetails(
+      leak_type, password_manager::ToPasswordForm(std::move(credentials)),
+      in_account_store);
 }
 
 void LeakDetectionDelegate::NotifyUserCredentialsWereLeaked(

@@ -10,6 +10,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "components/password_manager/core/browser/password_form.h"
+#import "components/password_manager/core/browser/password_store/password_form_converters.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #import "components/webauthn/core/browser/passkey_model.h"
@@ -190,7 +191,8 @@ static constexpr char kPasskeysIOSMigration[] = "Passkeys.IOSMigration";
 
       password_manager::PasswordForm form =
           PasswordFormFromCredential(credential);
-      self.passwordStore->AddLogin(form);
+      self.passwordStore->AddLogin(
+          password_manager::FromPasswordForm(std::move(form)));
     }
     [self.temporalStore
         removeCredentialWithRecordIdentifier:credential.recordIdentifier];

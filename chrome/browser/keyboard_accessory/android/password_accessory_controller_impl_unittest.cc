@@ -51,6 +51,7 @@
 #include "components/password_manager/core/browser/password_generation_frame_helper.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
@@ -1333,7 +1334,8 @@ TEST_F(PasswordAccessoryControllerTest,
   expected_form.signon_realm = kExampleSignonRealm;
   expected_form.url = GURL(kExampleSite);
   expected_form.date_created = base::Time::Now();
-  EXPECT_CALL(*mock_account_password_store_, AddLogin(Eq(expected_form), _));
+  EXPECT_CALL(*mock_account_password_store_,
+              AddLogin(password_manager::EqStoredCredential(expected_form), _));
   controller()->OnToggleChanged(
       autofill::AccessoryAction::TOGGLE_SAVE_PASSWORDS, false);
 }
@@ -1347,7 +1349,8 @@ TEST_F(PasswordAccessoryControllerTest,
   expected_form.signon_realm = kExampleSignonRealm;
   expected_form.url = GURL(kExampleSite);
   expected_form.date_created = base::Time::Now();
-  EXPECT_CALL(*mock_profile_password_store_, AddLogin(Eq(expected_form), _));
+  EXPECT_CALL(*mock_profile_password_store_,
+              AddLogin(password_manager::EqStoredCredential(expected_form), _));
   controller()->OnToggleChanged(
       autofill::AccessoryAction::TOGGLE_SAVE_PASSWORDS, false);
 }
@@ -2093,9 +2096,11 @@ class PasswordAccessoryControllerWithTestStoreTest
 TEST_P(PasswordAccessoryControllerWithTestStoreTest,
        AddsShowOtherPasswordsForPasswordField) {
   if (GetParam()) {
-    test_account_store().AddLogin(MakeSavedPassword());
+    test_account_store().AddLogin(
+        password_manager::FromPasswordForm(MakeSavedPassword()));
   } else {
-    test_profile_store().AddLogin(MakeSavedPassword());
+    test_profile_store().AddLogin(
+        password_manager::FromPasswordForm(MakeSavedPassword()));
   }
   task_environment()->RunUntilIdle();
   CreateSheetController();
@@ -2122,9 +2127,11 @@ TEST_P(PasswordAccessoryControllerWithTestStoreTest,
 TEST_P(PasswordAccessoryControllerWithTestStoreTest,
        AddsShowOtherPasswordsForUsernameField) {
   if (GetParam()) {
-    test_account_store().AddLogin(MakeSavedPassword());
+    test_account_store().AddLogin(
+        password_manager::FromPasswordForm(MakeSavedPassword()));
   } else {
-    test_profile_store().AddLogin(MakeSavedPassword());
+    test_profile_store().AddLogin(
+        password_manager::FromPasswordForm(MakeSavedPassword()));
   }
   task_environment()->RunUntilIdle();
   CreateSheetController();
@@ -2151,9 +2158,11 @@ TEST_P(PasswordAccessoryControllerWithTestStoreTest,
 TEST_P(PasswordAccessoryControllerWithTestStoreTest,
        AddsShowOtherPasswordForOnlyCryptographicSchemeSites) {
   if (GetParam()) {
-    test_account_store().AddLogin(MakeSavedPassword());
+    test_account_store().AddLogin(
+        password_manager::FromPasswordForm(MakeSavedPassword()));
   } else {
-    test_profile_store().AddLogin(MakeSavedPassword());
+    test_profile_store().AddLogin(
+        password_manager::FromPasswordForm(MakeSavedPassword()));
   }
   task_environment()->RunUntilIdle();
   CreateSheetController();
@@ -2179,9 +2188,11 @@ TEST_P(PasswordAccessoryControllerWithTestStoreTest,
 TEST_P(PasswordAccessoryControllerWithTestStoreTest,
        HideShowOtherPasswordForLowSecurityLevelSites) {
   if (GetParam()) {
-    test_account_store().AddLogin(MakeSavedPassword());
+    test_account_store().AddLogin(
+        password_manager::FromPasswordForm(MakeSavedPassword()));
   } else {
-    test_profile_store().AddLogin(MakeSavedPassword());
+    test_profile_store().AddLogin(
+        password_manager::FromPasswordForm(MakeSavedPassword()));
   }
   task_environment()->RunUntilIdle();
   CreateSheetController(security_state::WARNING);

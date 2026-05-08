@@ -19,6 +19,7 @@
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/sharing/incoming_password_sharing_invitation_sync_bridge.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -132,7 +133,7 @@ class PasswordReceiverServiceImplTest : public testing::Test {
 
   void AddLoginAndWait(const PasswordForm& form,
                        TestPasswordStore& password_store) {
-    password_store.AddLogin(form);
+    password_store.AddLogin(password_manager::FromPasswordForm(form));
     RunUntilIdle();
   }
 

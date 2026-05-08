@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "components/undo/undo_operation.h"
@@ -64,10 +65,10 @@ class PasswordOperation : public UndoOperation {
             PasswordOperation<PasswordOperationType::kRemoveOperation>>(
             profile_store_, account_store_, undo_manager_, form_));
     if (form.IsUsingAccountStore()) {
-      account_store_->AddLogin(form);
+      account_store_->AddLogin(password_manager::FromPasswordForm(form));
     }
     if (form.IsUsingProfileStore()) {
-      profile_store_->AddLogin(form);
+      profile_store_->AddLogin(password_manager::FromPasswordForm(form));
     }
   }
 
@@ -80,10 +81,10 @@ class PasswordOperation : public UndoOperation {
             PasswordOperation<PasswordOperationType::kUpdateOperation>>(
             profile_store_, account_store_, undo_manager_, form_));
     if (new_form.IsUsingAccountStore()) {
-      account_store_->UpdateLogin(new_form);
+      account_store_->UpdateLogin(password_manager::FromPasswordForm(new_form));
     }
     if (new_form.IsUsingProfileStore()) {
-      profile_store_->UpdateLogin(new_form);
+      profile_store_->UpdateLogin(password_manager::FromPasswordForm(new_form));
     }
   }
 
@@ -94,10 +95,12 @@ class PasswordOperation : public UndoOperation {
             PasswordOperation<PasswordOperationType::kAddOperation>>(
             profile_store_, account_store_, undo_manager_, form_));
     if (form.IsUsingAccountStore()) {
-      account_store_->RemoveLogin(FROM_HERE, form);
+      account_store_->RemoveLogin(FROM_HERE,
+                                  password_manager::FromPasswordForm(form));
     }
     if (form.IsUsingProfileStore()) {
-      profile_store_->RemoveLogin(FROM_HERE, form);
+      profile_store_->RemoveLogin(FROM_HERE,
+                                  password_manager::FromPasswordForm(form));
     }
   }
 

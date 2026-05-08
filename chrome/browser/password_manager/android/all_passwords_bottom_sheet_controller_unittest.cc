@@ -20,6 +20,7 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
@@ -224,13 +225,15 @@ TEST_F(AllPasswordsBottomSheetControllerTest, Show) {
   auto form3 = MakeSavedPassword(kExampleOrg, kUsername1);
   auto form4 = MakeSavedPassword(kExampleOrg, kUsername2);
 
-  profile_store().AddLogin(form1);
-  profile_store().AddLogin(form2);
-  profile_store().AddLogin(form3);
-  profile_store().AddLogin(form4);
+  profile_store().AddLogin(password_manager::FromPasswordForm(form1));
+  profile_store().AddLogin(password_manager::FromPasswordForm(form2));
+  profile_store().AddLogin(password_manager::FromPasswordForm(form3));
+  profile_store().AddLogin(password_manager::FromPasswordForm(form4));
   // Exceptions are not shown. Sites where saving is disabled still show pwds.
-  profile_store().AddLogin(MakePasswordException(kExampleDe));
-  profile_store().AddLogin(MakePasswordException(kExampleCom));
+  profile_store().AddLogin(
+      password_manager::FromPasswordForm(MakePasswordException(kExampleDe)));
+  profile_store().AddLogin(
+      password_manager::FromPasswordForm(MakePasswordException(kExampleCom)));
 
   EXPECT_CALL(view(), Show(UnorderedElementsAre(Eq(form1), Eq(form2), Eq(form3),
                                                 Eq(form4)),
@@ -246,8 +249,8 @@ TEST_F(AllPasswordsBottomSheetControllerTest,
   auto form1 = MakeSavedPassword(kExampleCom, kUsername1);
   auto form2 = MakeSavedPassword(kExampleCom, kUsername2);
 
-  profile_store().AddLogin(form1);
-  profile_store().AddLogin(form2);
+  profile_store().AddLogin(password_manager::FromPasswordForm(form1));
+  profile_store().AddLogin(password_manager::FromPasswordForm(form2));
 
   EXPECT_CALL(view(), Show(UnorderedElementsAre(Eq(form1), Eq(form2)),
                            FocusedFieldType::kFillablePasswordField))
@@ -434,13 +437,15 @@ TEST_F(AllPasswordsBottomSheetControllerAccountStoreTest,
   auto form3 = MakeSavedPassword(kExampleOrg, kUsername1);
   auto form4 = MakeSavedPassword(kExampleOrg, kUsername2);
 
-  profile_store().AddLogin(form1);
-  account_store().AddLogin(form2);
-  account_store().AddLogin(form3);
-  profile_store().AddLogin(form4);
+  profile_store().AddLogin(password_manager::FromPasswordForm(form1));
+  account_store().AddLogin(password_manager::FromPasswordForm(form2));
+  account_store().AddLogin(password_manager::FromPasswordForm(form3));
+  profile_store().AddLogin(password_manager::FromPasswordForm(form4));
   // Exceptions are not shown.
-  profile_store().AddLogin(MakePasswordException(kExampleCom));
-  account_store().AddLogin(MakePasswordException(kExampleCom));
+  profile_store().AddLogin(
+      password_manager::FromPasswordForm(MakePasswordException(kExampleCom)));
+  account_store().AddLogin(
+      password_manager::FromPasswordForm(MakePasswordException(kExampleCom)));
 
   form2.in_store = password_manager::PasswordForm::Store::kAccountStore;
   form3.in_store = password_manager::PasswordForm::Store::kAccountStore;
@@ -459,10 +464,11 @@ TEST_F(AllPasswordsBottomSheetControllerAccountStoreTest,
   auto form1 = MakeSavedPassword(kExampleCom, kUsername1);
   auto form2 = MakeSavedPassword(kExampleCom, kUsername2);
 
-  account_store().AddLogin(form1);
-  account_store().AddLogin(form2);
+  account_store().AddLogin(password_manager::FromPasswordForm(form1));
+  account_store().AddLogin(password_manager::FromPasswordForm(form2));
   // Exceptions are not shown.
-  account_store().AddLogin(MakePasswordException(kExampleCom));
+  account_store().AddLogin(
+      password_manager::FromPasswordForm(MakePasswordException(kExampleCom)));
 
   form1.in_store = password_manager::PasswordForm::Store::kAccountStore;
   form2.in_store = password_manager::PasswordForm::Store::kAccountStore;

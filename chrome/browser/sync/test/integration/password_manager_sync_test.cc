@@ -325,7 +325,7 @@ class PasswordManagerSyncTest : public SyncTest {
   void AddLocalCredential(const password_manager::PasswordForm& form) {
     scoped_refptr<password_manager::PasswordStoreInterface> password_store =
         passwords_helper::GetProfilePasswordStoreInterface(0);
-    password_store->AddLogin(form);
+    password_store->AddLogin(password_manager::FromPasswordForm(form));
     // Do a roundtrip to the DB thread, to make sure the new password is stored
     // before doing anything else that might depend on it.
     GetAllLoginsFromProfilePasswordStore();

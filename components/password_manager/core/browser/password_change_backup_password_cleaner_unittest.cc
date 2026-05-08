@@ -8,6 +8,7 @@
 
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -32,28 +33,29 @@ std::string_view GetStorePref(IsAccountStore is_account_store) {
              : prefs::kProfileStoreBackupPasswordCleaningLastTimestamp;
 }
 
-PasswordForm CreatePasswordForm(bool with_backup) {
-  PasswordForm form;
-  form.signon_realm = "https://example.com";
-  form.username_value = u"username";
-  form.password_value = u"password";
+StoredCredential CreateStoredCredential(bool with_backup) {
+  StoredCredential cred;
+  cred.signon_realm = "https://example.com";
+  cred.username_value = u"username";
+  cred.password_value = u"password";
   if (with_backup) {
-    form.SetPasswordBackupNote(u"backup");
+    cred.notes.emplace_back(PasswordNote::kPasswordChangeBackupNoteName,
+                            u"backup", base::Time::Now(), false);
   }
-  return form;
+  return cred;
 }
 
-void ExpectPasswordStoreReturns(const std::vector<PasswordForm>& forms,
+void ExpectPasswordStoreReturns(std::vector<StoredCredential> credentials,
                                 MockPasswordStoreInterface* store) {
   EXPECT_CALL(*store, GetAutofillableLogins)
-      .WillOnce(WithArg<0>([forms, store](
-                               base::WeakPtr<PasswordStoreConsumer> consumer) {
+      .WillOnce(WithArg<0>([credentials = std::move(credentials),
+                            store](base::WeakPtr<PasswordStoreConsumer>
+                                       consumer) mutable {
         base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
             FROM_HERE,
             base::BindOnce(
                 &PasswordStoreConsumer::OnGetPasswordStoreResultsOrErrorFrom,
-                consumer, base::Unretained(store),
-                password_manager::FromPasswordForms(std::move(forms))));
+                consumer, base::Unretained(store), std::move(credentials)));
       }));
 }
 
@@ -113,13 +115,16 @@ TEST_P(PasswordChangeBackupPasswordCleanerTest,
   PasswordChangeBackupPasswordCleaner cleaner(GetParam(), std::move(store),
                                               prefs());
 
-  ExpectPasswordStoreReturns({CreatePasswordForm(/*with_backup=*/true)},
-                             store_ptr);
+  std::vector<password_manager::StoredCredential> forms;
+  forms.push_back(CreateStoredCredential(/*with_backup=*/true));
+  ExpectPasswordStoreReturns(std::move(forms), store_ptr);
 
   // Advance the clock to ensure backup password's TTL passed.
   AdvanceClock(kBackupPasswordTTL);
   EXPECT_CALL(*store_ptr,
-              UpdateLogin(CreatePasswordForm(/*with_backup=*/false), _));
+              UpdateLogin(EqStoredCredential(password_manager::ToPasswordForm(
+                              CreateStoredCredential(/*with_backup=*/false))),
+                          _));
   MockCredentialsCleanerObserver observer;
   EXPECT_CALL(observer, CleaningCompleted);
   cleaner.StartCleaning(&observer);
@@ -136,8 +141,9 @@ TEST_P(PasswordChangeBackupPasswordCleanerTest,
   PasswordChangeBackupPasswordCleaner cleaner(GetParam(), std::move(store),
                                               prefs());
 
-  ExpectPasswordStoreReturns({CreatePasswordForm(/*with_backup=*/false)},
-                             store_ptr);
+  std::vector<password_manager::StoredCredential> forms;
+  forms.push_back(CreateStoredCredential(/*with_backup=*/false));
+  ExpectPasswordStoreReturns(std::move(forms), store_ptr);
 
   // Advance the clock to ensure backup password's TTL passed.
   AdvanceClock(kBackupPasswordTTL);
@@ -158,8 +164,9 @@ TEST_P(PasswordChangeBackupPasswordCleanerTest,
   PasswordChangeBackupPasswordCleaner cleaner(GetParam(), std::move(store),
                                               prefs());
 
-  ExpectPasswordStoreReturns({CreatePasswordForm(/*with_backup=*/true)},
-                             store_ptr);
+  std::vector<password_manager::StoredCredential> forms;
+  forms.push_back(CreateStoredCredential(/*with_backup=*/true));
+  ExpectPasswordStoreReturns(std::move(forms), store_ptr);
 
   // Advance time to right before hitting the TTL.
   AdvanceClock(kBackupPasswordTTL - base::Minutes(5));

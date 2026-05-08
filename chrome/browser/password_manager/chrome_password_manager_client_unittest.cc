@@ -67,6 +67,7 @@
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -1973,8 +1974,12 @@ TEST_F(ChromePasswordManagerClientAndroidTest,
 
   shared_not_notified_profile.sharing_notification_displayed = true;
   shared_not_notified_account.sharing_notification_displayed = true;
-  EXPECT_CALL(*profile_store, UpdateLogin(shared_not_notified_profile, _));
-  EXPECT_CALL(*account_store, UpdateLogin(shared_not_notified_account, _));
+  EXPECT_CALL(*profile_store, UpdateLogin(password_manager::EqStoredCredential(
+                                              shared_not_notified_profile),
+                                          _));
+  EXPECT_CALL(*account_store, UpdateLogin(password_manager::EqStoredCredential(
+                                              shared_not_notified_account),
+                                          _));
   GetClient()->MarkSharedCredentialsAsNotified(kURL);
 }
 

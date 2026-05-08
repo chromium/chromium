@@ -27,6 +27,7 @@
 #include "components/password_manager/core/browser/password_form_digest.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_manual_fallback_metrics_recorder.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
@@ -208,9 +209,9 @@ class PasswordManualFallbackFlowTest : public Test {
     Test::SetUp();
 
     // Add 1 password form to the password store.
-    profile_password_store().AddLogin(
+    profile_password_store().AddLogin(password_manager::FromPasswordForm(
         CreateEntry("username@example.com", "password", GURL(kUrl),
-                    PasswordForm::MatchType::kExact));
+                    PasswordForm::MatchType::kExact)));
   }
 
   PasswordManualFallbackFlow& flow() { return *flow_; }
@@ -1267,7 +1268,8 @@ TEST_F(PasswordManualFallbackFlowTest, ShowPasswordDetails) {
   PasswordForm form_de =
       CreateEntry("username@google.com", "password", GURL("https://google.de/"),
                   PasswordForm::MatchType::kExact);
-  profile_password_store().AddLogins({form_com, form_de});
+  profile_password_store().AddLogins(
+      password_manager::FromPasswordForms({form_com, form_de}));
 
   InitializeFlow();
   ProcessPasswordStoreUpdates();

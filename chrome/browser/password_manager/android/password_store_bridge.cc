@@ -16,6 +16,7 @@
 #include "base/location.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "url/android/gurl_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -87,21 +88,23 @@ PasswordStoreBridge::~PasswordStoreBridge() = default;
 void PasswordStoreBridge::InsertPasswordCredentialInProfileStoreForTesting(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& credential) {
-  profile_store_->AddLogin(ConvertJavaObjectToPasswordForm(env, credential));
+  profile_store_->AddLogin(password_manager::FromPasswordForm(
+      ConvertJavaObjectToPasswordForm(env, credential)));
 }
 
 void PasswordStoreBridge::InsertPasswordCredentialInAccountStoreForTesting(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& credential) {
   CHECK(account_store_);
-  account_store_->AddLogin(ConvertJavaObjectToPasswordForm(env, credential));
+  account_store_->AddLogin(password_manager::FromPasswordForm(
+      ConvertJavaObjectToPasswordForm(env, credential)));
 }
 
 void PasswordStoreBridge::BlocklistForTesting(
     JNIEnv* env,
     const base::android::JavaRef<jstring>& jurl) {
-  profile_store_->AddLogin(
-      Blocklist(env, base::android::ConvertJavaStringToUTF8(env, jurl)));
+  profile_store_->AddLogin(password_manager::FromPasswordForm(
+      Blocklist(env, base::android::ConvertJavaStringToUTF8(env, jurl))));
 }
 
 bool PasswordStoreBridge::EditPassword(

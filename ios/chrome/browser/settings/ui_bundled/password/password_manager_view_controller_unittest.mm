@@ -23,6 +23,7 @@
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager_constants.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
+#import "components/password_manager/core/browser/password_store/password_form_converters.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
@@ -207,72 +208,72 @@ class PasswordManagerViewControllerTest
                            insecurePasswordsCount:insecure_count];
   }
 
-  // Adds a form to PasswordManagerViewController.
-  void AddPasswordForm(std::unique_ptr<password_manager::PasswordForm> form) {
-    form->in_store = password_manager::PasswordForm::Store::kProfileStore;
-    GetTestStore().AddLogin(*form);
+  // Adds a credential to PasswordManagerViewController.
+  void AddStoredCredential(password_manager::StoredCredential cred) {
+    cred.in_store = password_manager::PasswordForm::Store::kProfileStore;
+    GetTestStore().AddLogin(std::move(cred));
     RunUntilIdle();
   }
 
-  // Creates a form.
-  std::unique_ptr<password_manager::PasswordForm> CreateForm(
+  // Creates a credential.
+  password_manager::StoredCredential CreateCredential(
       std::u16string username_value) {
-    auto form = std::make_unique<password_manager::PasswordForm>();
-    form->url = GURL("http://www.example.com/accounts/LoginAuth");
-    form->action = GURL("http://www.example.com/accounts/Login");
-    form->username_element = u"Email";
-    form->username_value = username_value;
-    form->password_element = u"Passwd";
-    form->password_value = u"test";
-    form->submit_element = u"signIn";
-    form->signon_realm = "http://www.example.com/";
-    form->scheme = password_manager::PasswordForm::Scheme::kHtml;
-    form->blocked_by_user = false;
-    return form;
+    password_manager::StoredCredential cred;
+    cred.url = GURL("http://www.example.com/accounts/LoginAuth");
+    cred.action = GURL("http://www.example.com/accounts/Login");
+    cred.username_element = u"Email";
+    cred.username_value = username_value;
+    cred.password_element = u"Passwd";
+    cred.password_value = u"test";
+    cred.submit_element = u"signIn";
+    cred.signon_realm = "http://www.example.com/";
+    cred.scheme = password_manager::PasswordForm::Scheme::kHtml;
+    cred.blocked_by_user = false;
+    return cred;
   }
 
   // Created and adds a saved password form.
   void AddSavedForm1(std::u16string username_value = u"test@egmail.com") {
-    auto form = CreateForm(username_value);
-    AddPasswordForm(std::move(form));
+    auto cred = CreateCredential(username_value);
+    AddStoredCredential(std::move(cred));
   }
 
   // Creates and adds a saved password form.
   void AddSavedForm2() {
-    auto form = std::make_unique<password_manager::PasswordForm>();
-    form->url = GURL("http://www.example2.com/accounts/LoginAuth");
-    form->action = GURL("http://www.example2.com/accounts/Login");
-    form->username_element = u"Email";
-    form->username_value = u"test@egmail.com";
-    form->password_element = u"Passwd";
-    form->password_value = u"test";
-    form->submit_element = u"signIn";
-    form->signon_realm = "http://www.example2.com/";
-    form->scheme = password_manager::PasswordForm::Scheme::kHtml;
-    form->blocked_by_user = false;
-    AddPasswordForm(std::move(form));
+    password_manager::StoredCredential cred;
+    cred.url = GURL("http://www.example2.com/accounts/LoginAuth");
+    cred.action = GURL("http://www.example2.com/accounts/Login");
+    cred.username_element = u"Email";
+    cred.username_value = u"test@egmail.com";
+    cred.password_element = u"Passwd";
+    cred.password_value = u"test";
+    cred.submit_element = u"signIn";
+    cred.signon_realm = "http://www.example2.com/";
+    cred.scheme = password_manager::PasswordForm::Scheme::kHtml;
+    cred.blocked_by_user = false;
+    AddStoredCredential(std::move(cred));
   }
 
   // Creates and adds a blocked site form to never offer to save
   // user's password to those sites.
   void AddBlockedForm1() {
-    auto form = std::make_unique<password_manager::PasswordForm>();
-    form->url = GURL("http://www.secret.com/login");
-    form->signon_realm = "http://www.secret.com/";
-    form->scheme = password_manager::PasswordForm::Scheme::kHtml;
-    form->blocked_by_user = true;
-    AddPasswordForm(std::move(form));
+    password_manager::StoredCredential cred;
+    cred.url = GURL("http://www.secret.com/login");
+    cred.signon_realm = "http://www.secret.com/";
+    cred.scheme = password_manager::PasswordForm::Scheme::kHtml;
+    cred.blocked_by_user = true;
+    AddStoredCredential(std::move(cred));
   }
 
   // Creates and adds another blocked site form to never offer to save
   // user's password to those sites.
   void AddBlockedForm2() {
-    auto form = std::make_unique<password_manager::PasswordForm>();
-    form->url = GURL("http://www.secret2.com/login");
-    form->signon_realm = "http://www.secret2.com/";
-    form->scheme = password_manager::PasswordForm::Scheme::kHtml;
-    form->blocked_by_user = true;
-    AddPasswordForm(std::move(form));
+    password_manager::StoredCredential cred;
+    cred.url = GURL("http://www.secret2.com/login");
+    cred.signon_realm = "http://www.secret2.com/";
+    cred.scheme = password_manager::PasswordForm::Scheme::kHtml;
+    cred.blocked_by_user = true;
+    AddStoredCredential(std::move(cred));
   }
 
   // Creates and adds a saved insecure password form.
@@ -280,13 +281,13 @@ class PasswordManagerViewControllerTest
       InsecureType insecure_type,
       bool is_muted = false,
       std::u16string username_value = u"test@egmail.com") {
-    auto form = CreateForm(username_value);
-    form->password_issues = {
+    auto cred = CreateCredential(username_value);
+    cred.password_issues = {
         {insecure_type,
          password_manager::InsecurityMetadata(
              base::Time::Now(), password_manager::IsMuted(is_muted),
              password_manager::TriggerBackendNotification(false))}};
-    AddPasswordForm(std::move(form));
+    AddStoredCredential(std::move(cred));
   }
 
   // Deletes the item at (row, section) and wait util idle.
@@ -787,18 +788,18 @@ TEST_F(PasswordManagerViewControllerTest, FilterGroupsOfPasswords) {
   GURL mUrl = GURL("http://www.m.me");
   GURL facebookUrl = GURL("http://www.facebook.com");
   {
-    auto form = CreateForm(u"username1");
-    form->url = mUrl;
-    form->action = facebookUrl;
-    form->signon_realm = "http://www.facebook.com";
-    AddPasswordForm(std::move(form));
+    auto cred = CreateCredential(u"username1");
+    cred.url = mUrl;
+    cred.action = facebookUrl;
+    cred.signon_realm = "http://www.facebook.com";
+    AddStoredCredential(std::move(cred));
   }
   {
-    auto form = CreateForm(u"username2");
-    form->url = facebookUrl;
-    form->action = facebookUrl;
-    form->signon_realm = "http://www.facebook.com";
-    AddPasswordForm(std::move(form));
+    auto cred = CreateCredential(u"username2");
+    cred.url = facebookUrl;
+    cred.action = facebookUrl;
+    cred.signon_realm = "http://www.facebook.com";
+    AddStoredCredential(std::move(cred));
   }
 
   EXPECT_EQ(5, NumberOfSections());
@@ -1196,8 +1197,10 @@ TEST_F(PasswordManagerViewControllerTest, PasswordStoreListener) {
   EXPECT_EQ(2, NumberOfItemsInSection(
                    GetSectionIndex(SectionIdentifierSavedPasswords)));
 
-  PasswordForm password =
-      GetAllLoginsSync(&GetTestStore()).at("http://www.example.com/").at(0);
+  password_manager::StoredCredential password =
+      password_manager::FromPasswordForm(GetAllLoginsSync(&GetTestStore())
+                                             .at("http://www.example.com/")
+                                             .at(0));
   GetTestStore().RemoveLogin(FROM_HERE, password);
   RunUntilIdle();
   EXPECT_EQ(1, NumberOfItemsInSection(

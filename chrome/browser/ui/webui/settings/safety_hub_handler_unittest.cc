@@ -55,6 +55,7 @@
 #include "components/content_settings/core/common/features.h"
 #include "components/crx_file/id_util.h"
 #include "components/desktop_to_mobile_promos/features.h"
+#include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/permissions/constants.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -245,8 +246,8 @@ class SafetyHubHandlerTest : public testing::Test {
   }
 
   void CreateLeakedCredential() {
-    profile_store().AddLogin(
-        MakeForm(kUsername, kCompromisedPassword, kUsedTestSite, true));
+    profile_store().AddLogin(password_manager::FromPasswordForm(
+        MakeForm(kUsername, kCompromisedPassword, kUsedTestSite, true)));
     PasswordStatusCheckService* password_service =
         PasswordStatusCheckServiceFactory::GetForProfile(profile());
     safety_hub_test_util::UpdatePasswordCheckServiceAsync(password_service);
@@ -254,8 +255,8 @@ class SafetyHubHandlerTest : public testing::Test {
   }
 
   void FixLeakedCredential() {
-    profile_store().UpdateLogin(
-        MakeForm(kUsername, u"new_fnlsr4@cm^mls@fkspnsg3d"));
+    profile_store().UpdateLogin(password_manager::FromPasswordForm(
+        MakeForm(kUsername, u"new_fnlsr4@cm^mls@fkspnsg3d")));
     PasswordStatusCheckService* password_service =
         PasswordStatusCheckServiceFactory::GetForProfile(profile());
     safety_hub_test_util::UpdatePasswordCheckServiceAsync(password_service);

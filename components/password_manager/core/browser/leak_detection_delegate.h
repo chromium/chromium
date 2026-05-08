@@ -15,6 +15,7 @@
 #include "components/password_manager/core/browser/leak_detection/leak_detection_types.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store/stored_credential.h"
 
 namespace password_manager {
 
@@ -61,7 +62,7 @@ class LeakDetectionDelegate {
       PasswordForm::Store in_stores,
       IsReused is_reused,
       IsSavedAsBackup is_saved_as_backup,
-      PasswordForm credentials,
+      StoredCredential credentials,
       std::vector<GURL> all_urls_with_leaked_credentials);
 
   // Notifies `client_` about leaked credentials.

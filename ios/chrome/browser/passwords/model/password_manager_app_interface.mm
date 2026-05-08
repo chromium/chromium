@@ -120,7 +120,8 @@ class PasswordStoreConsumerHelper : public PasswordStoreConsumer {
     passwordCredentialForm.type = PasswordForm::Type::kReceivedViaSharing;
     passwordCredentialForm.sender_name = u"sender";
   }
-  passwordStore->AddLogin(passwordCredentialForm);
+  passwordStore->AddLogin(
+      password_manager::FromPasswordForm(std::move(passwordCredentialForm)));
 
   return nil;
 }

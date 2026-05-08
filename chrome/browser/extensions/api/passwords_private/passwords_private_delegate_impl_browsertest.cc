@@ -74,6 +74,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/sharing/mock_password_sender_service.h"
 #include "components/password_manager/core/browser/sharing/password_sharing_recipients_downloader.h"
@@ -469,9 +470,9 @@ void PasswordsPrivateDelegateImplTest::SetUpPasswordStores(
     std::vector<PasswordForm> forms) {
   for (const PasswordForm& form : forms) {
     if (form.IsUsingAccountStore()) {
-      account_store_->AddLogin(form);
+      account_store_->AddLogin(password_manager::FromPasswordForm(form));
     } else if (form.IsUsingProfileStore()) {
-      profile_store_->AddLogin(form);
+      profile_store_->AddLogin(password_manager::FromPasswordForm(form));
     } else {
       NOTREACHED() << "Store not set";
     }

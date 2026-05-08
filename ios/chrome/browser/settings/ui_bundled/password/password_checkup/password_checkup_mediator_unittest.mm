@@ -11,6 +11,7 @@
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
+#import "components/password_manager/core/browser/password_store/password_form_converters.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
@@ -37,20 +38,20 @@ using password_manager::InsecureType;
 using password_manager::PasswordForm;
 using password_manager::TestPasswordStore;
 
-// Creates a saved password form.
-PasswordForm CreatePasswordForm() {
-  PasswordForm form;
-  form.username_value = u"test@egmail.com";
-  form.password_value = u"strongPa55w0rd";
-  form.signon_realm = "http://www.example.com/";
-  form.in_store = PasswordForm::Store::kProfileStore;
-  return form;
+// Creates a saved stored credential.
+password_manager::StoredCredential CreateStoredCredential() {
+  password_manager::StoredCredential cred;
+  cred.username_value = u"test@egmail.com";
+  cred.password_value = u"strongPa55w0rd";
+  cred.signon_realm = "http://www.example.com/";
+  cred.in_store = PasswordForm::Store::kProfileStore;
+  return cred;
 }
 
-void AddIssueToForm(PasswordForm* form,
-                    InsecureType insecure_type = InsecureType::kLeaked,
-                    bool is_muted = false) {
-  form->password_issues.insert_or_assign(
+void AddIssueToCredential(password_manager::StoredCredential* cred,
+                          InsecureType insecure_type = InsecureType::kLeaked,
+                          bool is_muted = false) {
+  cred->password_issues.insert_or_assign(
       insecure_type, password_manager::InsecurityMetadata(
                          base::Time::Now(), password_manager::IsMuted(is_muted),
                          password_manager::TriggerBackendNotification(false)));
@@ -171,10 +172,10 @@ TEST_F(PasswordCheckupMediatorTest, NotifiesConsumerOnInsecurePasswordChange) {
   [password_check_observer
       passwordCheckStateDidChange:PasswordCheckState::kIdle];
 
-  PasswordForm form = CreatePasswordForm();
-  AddIssueToForm(&form, InsecureType::kLeaked);
-  AddIssueToForm(&form, InsecureType::kWeak);
-  GetTestStore().AddLogin(form);
+  password_manager::StoredCredential cred = CreateStoredCredential();
+  AddIssueToCredential(&cred, InsecureType::kLeaked);
+  AddIssueToCredential(&cred, InsecureType::kWeak);
+  GetTestStore().AddLogin(std::move(cred));
   RunUntilIdle();
 
   EXPECT_OCMOCK_VERIFY(consumer());
@@ -192,9 +193,9 @@ TEST_F(PasswordCheckupMediatorTest,
 
   // Add a leaked password. This password should be taken into account in the
   // `insecurePasswordCounts` passed to the conusmer.
-  PasswordForm form1 = CreatePasswordForm();
-  AddIssueToForm(&form1, InsecureType::kLeaked);
-  GetTestStore().AddLogin(form1);
+  password_manager::StoredCredential cred1 = CreateStoredCredential();
+  AddIssueToCredential(&cred1, InsecureType::kLeaked);
+  GetTestStore().AddLogin(std::move(cred1));
   RunUntilIdle();
 
   InsecurePasswordCounts counts = {1, 0, 0, 0};
@@ -212,9 +213,9 @@ TEST_F(PasswordCheckupMediatorTest,
 
   // Add a weak password. This password shouldn't be taken into account in the
   // `insecurePasswordCounts` passed to the conusmer since an error occurred.
-  PasswordForm form2 = CreatePasswordForm();
-  AddIssueToForm(&form2, InsecureType::kWeak);
-  GetTestStore().AddLogin(form2);
+  password_manager::StoredCredential cred2 = CreateStoredCredential();
+  AddIssueToCredential(&cred2, InsecureType::kWeak);
+  GetTestStore().AddLogin(std::move(cred2));
   RunUntilIdle();
 
   EXPECT_OCMOCK_VERIFY(consumer());

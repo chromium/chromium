@@ -755,7 +755,7 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, DeletePasswords) {
           .get();
   ASSERT_TRUE(password_store.get());
 
-  password_store->AddLogin(form);
+  password_store->AddLogin(password_manager::FromPasswordForm(form));
   PasswordStoreConsumerVerifier verify_add;
   password_store->GetAutofillableLogins(verify_add.GetWeakPtr());
   verify_add.Wait();

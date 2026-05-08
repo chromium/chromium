@@ -357,10 +357,10 @@ TEST_P(ChangePasswordFormFillingSubmissionHelperTest,
   task_environment()->AdvanceClock(base::Milliseconds(1534));
 
   // Presave generated password as backup
-  password_manager::PasswordForm presaved_generated_password_form;
+  password_manager::StoredCredential presaved_generated_password_form;
   password_manager::PasswordForm saved_generated_password_form;
   EXPECT_CALL(*profile_password_store(), UpdateLogin)
-      .WillOnce(testing::SaveArg<0>(&presaved_generated_password_form));
+      .WillOnce(MoveArg<0>(&presaved_generated_password_form));
 
   WaitForFillingAndSuccessfulSubmission(form_manager, verifier.get());
   verifier->click_helper()->SimulateClickResult(true);
@@ -394,10 +394,10 @@ TEST_P(ChangePasswordFormFillingSubmissionHelperTest, SucceededNewCredential) {
   base::test::TestFuture<SubmissionResult> completion_future;
   auto verifier = CreateVerifier(form_manager, completion_future.GetCallback());
 
-  password_manager::PasswordForm presaved_generated_password_form;
+  password_manager::StoredCredential presaved_generated_password_form;
   // Presave generated password as backup
   EXPECT_CALL(*profile_password_store(), AddLogin)
-      .WillOnce(testing::SaveArg<0>(&presaved_generated_password_form));
+      .WillOnce(MoveArg<0>(&presaved_generated_password_form));
   WaitForFillingAndSuccessfulSubmission(form_manager, verifier.get());
   verifier->click_helper()->SimulateClickResult(true);
 
@@ -419,12 +419,12 @@ TEST_P(ChangePasswordFormFillingSubmissionHelperTest,
       CreateFormManager(/*credentials_to_seed=*/{*stored_form});
   auto verifier = CreateVerifier(form_manager, base::DoNothing());
 
-  password_manager::PasswordForm presaved_generated_password_form;
+  password_manager::StoredCredential presaved_generated_password_form;
   base::RunLoop run_loop;
   // Presave generated password.
   EXPECT_CALL(*profile_password_store(), UpdateLogin)
       .WillOnce(DoAll(Invoke(&run_loop, &base::RunLoop::Quit),
-                      testing::SaveArg<0>(&presaved_generated_password_form)));
+                      MoveArg<0>(&presaved_generated_password_form)));
   CompleteFormFilling(form_manager, verifier.get(),
                       CreateFilledTestPasswordFormData());
   ASSERT_TRUE(verifier->capturer());
@@ -499,10 +499,10 @@ TEST_P(ChangePasswordFormFillingSubmissionHelperTest, FailedFilling) {
 
   // Expect a call to FillChangePasswordForm, although don't invoke completion
   // callback.
-  password_manager::PasswordForm presaved_generated_password_form;
+  password_manager::StoredCredential presaved_generated_password_form;
   // Presave generated password as backup
   EXPECT_CALL(*profile_password_store(), UpdateLogin)
-      .WillOnce(testing::SaveArg<0>(&presaved_generated_password_form));
+      .WillOnce(MoveArg<0>(&presaved_generated_password_form));
   // Password change isn't verified.
   EXPECT_CALL(*optimization_service(), ExecuteModel).Times(0);
 

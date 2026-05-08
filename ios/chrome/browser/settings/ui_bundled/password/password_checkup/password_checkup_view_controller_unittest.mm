@@ -131,45 +131,45 @@ class PasswordCheckupViewControllerTest
                       [mediator_ formattedElapsedTimeSinceLastCheck]];
   }
 
-  // Adds a form to the test password store.
-  void AddPasswordForm(std::unique_ptr<password_manager::PasswordForm> form) {
-    GetTestStore().AddLogin(*form);
+  // Adds a credential to the test password store.
+  void AddStoredCredential(password_manager::StoredCredential cred) {
+    GetTestStore().AddLogin(std::move(cred));
     RunUntilIdle();
   }
 
   // Creates and adds a saved password form.
   void AddSavedForm(std::string url = "http://www.example1.com/") {
-    auto form = std::make_unique<password_manager::PasswordForm>();
-    form->url = GURL(url);
-    form->username_element = u"Email";
-    form->username_value = u"test@egmail.com";
-    form->password_element = u"Passwd";
-    form->password_value = u"test";
-    form->signon_realm = url;
-    form->scheme = password_manager::PasswordForm::Scheme::kHtml;
-    form->in_store = password_manager::PasswordForm::Store::kProfileStore;
-    AddPasswordForm(std::move(form));
+    password_manager::StoredCredential cred;
+    cred.url = GURL(url);
+    cred.username_element = u"Email";
+    cred.username_value = u"test@egmail.com";
+    cred.password_element = u"Passwd";
+    cred.password_value = u"test";
+    cred.signon_realm = url;
+    cred.scheme = password_manager::PasswordForm::Scheme::kHtml;
+    cred.in_store = password_manager::PasswordForm::Store::kProfileStore;
+    AddStoredCredential(std::move(cred));
   }
 
   // Creates and adds a saved insecure password form.
   void AddSavedInsecureForm(InsecureType insecure_type,
                             bool is_muted = false,
                             std::string url = "http://www.example2.com/") {
-    auto form = std::make_unique<password_manager::PasswordForm>();
-    form->url = GURL(url);
-    form->username_element = u"Email";
-    form->username_value = u"test@egmail.com";
-    form->password_element = u"Passwd";
-    form->password_value = u"test";
-    form->signon_realm = url;
-    form->scheme = password_manager::PasswordForm::Scheme::kHtml;
-    form->in_store = password_manager::PasswordForm::Store::kProfileStore;
-    form->password_issues = {
+    password_manager::StoredCredential cred;
+    cred.url = GURL(url);
+    cred.username_element = u"Email";
+    cred.username_value = u"test@egmail.com";
+    cred.password_element = u"Passwd";
+    cred.password_value = u"test";
+    cred.signon_realm = url;
+    cred.scheme = password_manager::PasswordForm::Scheme::kHtml;
+    cred.in_store = password_manager::PasswordForm::Store::kProfileStore;
+    cred.password_issues = {
         {insecure_type,
          password_manager::InsecurityMetadata(
              base::Time::Now(), password_manager::IsMuted(is_muted),
              password_manager::TriggerBackendNotification(false))}};
-    AddPasswordForm(std::move(form));
+    AddStoredCredential(std::move(cred));
   }
 
   // Checks if the header image of the table view is as expected.

@@ -896,7 +896,8 @@ TEST_P(FormFetcherImplTest, TryToMigrateHTTPPasswordsOnHTTPSSites) {
     ASSERT_TRUE(account_store_migrator);
   }
   // Now perform the actual migration.
-  EXPECT_CALL(*profile_mock_store_, AddLogin(https_form, _));
+  EXPECT_CALL(*profile_mock_store_,
+              AddLogin(EqStoredCredential(https_form), _));
   EXPECT_CALL(consumer_, OnFetchCompleted);
   profile_store_migrator->OnGetPasswordStoreResultsOrErrorFrom(
       profile_mock_store_.get(),
@@ -1008,7 +1009,8 @@ TEST_P(FormFetcherImplTest, StateIsWaitingDuringMigration) {
   EXPECT_EQ(FormFetcher::State::WAITING, form_fetcher_->GetState());
 
   // Now perform the actual migration.
-  EXPECT_CALL(*profile_mock_store_, AddLogin(https_form, _));
+  EXPECT_CALL(*profile_mock_store_,
+              AddLogin(EqStoredCredential(https_form), _));
   profile_store_migrator->OnGetPasswordStoreResultsOrErrorFrom(
       profile_mock_store_.get(),
       password_manager::FromPasswordForms({http_form}));

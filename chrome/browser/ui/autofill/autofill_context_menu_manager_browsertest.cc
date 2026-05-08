@@ -48,6 +48,7 @@
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/plus_addresses/core/browser/grit/plus_addresses_strings.h"
@@ -507,7 +508,7 @@ IN_PROC_BROWSER_TEST_P(PasswordManualFallbackTest,
   existing_form.password_value = u"password";
   existing_form.signon_realm = "http://test.com";
   existing_form.url = GURL(existing_form.signon_realm);
-  password_store->AddLogin(existing_form);
+  password_store->AddLogin(password_manager::FromPasswordForm(existing_form));
   add_waiter.WaitOrReturn();
 
   autofill_context_menu_manager()->AppendItems();
@@ -677,7 +678,7 @@ class PasswordsFallbackWithPasswordDatabaseEntriesTest
     }
 
     password_manager::PasswordStoreWaiter add_waiter(password_store);
-    password_store->AddLogin(password_form);
+    password_store->AddLogin(password_manager::FromPasswordForm(password_form));
     add_waiter.WaitOrReturn();
   }
 
@@ -833,7 +834,7 @@ class SelectPasswordFallbackMetricsTest
     form.password_value = u"password";
     form.signon_realm = "http://example.com";
     form.url = GURL(form.signon_realm);
-    password_store->AddLogin(form);
+    password_store->AddLogin(password_manager::FromPasswordForm(form));
     add_waiter.WaitOrReturn();
   }
 

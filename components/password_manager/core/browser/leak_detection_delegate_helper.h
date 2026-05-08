@@ -30,7 +30,7 @@ class LeakDetectionDelegateHelper : public PasswordStoreConsumer {
   using LeakTypeReply = base::OnceCallback<void(PasswordForm::Store,
                                                 IsReused,
                                                 IsSavedAsBackup,
-                                                PasswordForm,
+                                                StoredCredential,
                                                 std::vector<GURL>)>;
 
   LeakDetectionDelegateHelper(
@@ -46,7 +46,7 @@ class LeakDetectionDelegateHelper : public PasswordStoreConsumer {
 
   // Request all credentials with `password` from the store.
   // Results are passed to `OnGetPasswordStoreResults`.
-  void ProcessLeakedPassword(PasswordForm credentials);
+  void ProcessLeakedPassword(StoredCredential credentials);
 
  private:
   // PasswordStoreConsumer:
@@ -63,10 +63,10 @@ class LeakDetectionDelegateHelper : public PasswordStoreConsumer {
   scoped_refptr<PasswordStoreInterface> profile_store_;
   scoped_refptr<PasswordStoreInterface> account_store_;
   LeakTypeReply callback_;
-  PasswordForm credentials_;
+  StoredCredential credentials_;
 
   base::RepeatingClosure barrier_closure_;
-  std::vector<PasswordForm> partial_results_;
+  std::vector<StoredCredential> partial_results_;
 
   base::WeakPtrFactory<LeakDetectionDelegateHelper> weak_ptr_factory_{this};
 };

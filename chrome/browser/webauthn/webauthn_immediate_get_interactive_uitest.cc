@@ -20,6 +20,7 @@
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/webauthn/core/browser/passkey_model.h"
@@ -119,7 +120,7 @@ class WebAuthnImmediateGetTest : public Fixture {
     scoped_refptr<password_manager::PasswordStoreInterface> password_store =
         ProfilePasswordStoreFactory::GetForProfile(
             browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS);
-    password_store->AddLogin(form);
+    password_store->AddLogin(password_manager::FromPasswordForm(form));
   }
 
  private:

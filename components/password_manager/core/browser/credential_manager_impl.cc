@@ -26,6 +26,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_interface.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -253,7 +254,8 @@ void CredentialManagerImpl::SendPasswordForm(
       if (form->skip_zero_click && IsZeroClickAllowed()) {
         PasswordForm update_form = *form;
         update_form.skip_zero_click = false;
-        store->UpdateLogin(update_form);
+        store->UpdateLogin(
+            password_manager::FromPasswordForm(std::move(update_form)));
       }
     }
     base::RecordAction(

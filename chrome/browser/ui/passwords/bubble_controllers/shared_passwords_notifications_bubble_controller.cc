@@ -11,6 +11,7 @@
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/url_formatter/elide_url.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -115,6 +116,7 @@ void SharedPasswordsNotificationBubbleController::
     PasswordForm updated_credential = *credential;
     updated_credential.sharing_notification_displayed = true;
 
-    password_store->UpdateLogin(std::move(updated_credential));
+    password_store->UpdateLogin(
+        password_manager::FromPasswordForm(std::move(updated_credential)));
   }
 }

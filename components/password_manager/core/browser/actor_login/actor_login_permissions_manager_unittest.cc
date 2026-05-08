@@ -16,6 +16,7 @@
 #include "components/password_manager/core/browser/actor_login/test/actor_login_test_util.h"
 #include "components/password_manager/core/browser/actor_login/test/mock_actor_login_permission_service.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -40,14 +41,14 @@ class MockObserver : public ActorLoginPermissionsManager::Observer {
   MOCK_METHOD(void, OnPermissionsChanged, (), (override));
 };
 
-
-PasswordForm CreateApprovedForm(const std::string& signon_realm,
-                                const std::u16string& username) {
-  PasswordForm form =
-      CreateSavedPasswordForm(GURL(signon_realm), username, u"password");
-  form.actor_login_approved = true;
-  form.in_store = PasswordForm::Store::kProfileStore;
-  return form;
+password_manager::StoredCredential CreateApprovedForm(
+    const std::string& signon_realm,
+    const std::u16string& username) {
+  password_manager::StoredCredential cred = password_manager::FromPasswordForm(
+      CreateSavedPasswordForm(GURL(signon_realm), username, u"password"));
+  cred.actor_login_approved = true;
+  cred.in_store = PasswordForm::Store::kProfileStore;
+  return cred;
 }
 
 }  // namespace

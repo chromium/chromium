@@ -340,14 +340,18 @@ class WebViewPasswordStoreObserver
     auto oldPasswordForm = *passwordForm;
     passwordForm->username_value = base::SysNSStringToUTF16(newUsername);
     auto newPasswordForm = *passwordForm;
-    _passwordStore->UpdateLoginWithPrimaryKey(newPasswordForm, oldPasswordForm);
+    _passwordStore->UpdateLoginWithPrimaryKey(
+        password_manager::FromPasswordForm(std::move(newPasswordForm)),
+        password_manager::FromPasswordForm(std::move(oldPasswordForm)));
   } else {
-    _passwordStore->UpdateLogin(*passwordForm);
+    _passwordStore->UpdateLogin(
+        password_manager::FromPasswordForm(*passwordForm));
   }
 }
 
 - (void)deletePassword:(CWVPassword*)password {
-  _passwordStore->RemoveLogin(FROM_HERE, *[password internalPasswordForm]);
+  _passwordStore->RemoveLogin(FROM_HERE, password_manager::FromPasswordForm(
+                                             *[password internalPasswordForm]));
 }
 
 - (void)addNewPasswordForUsername:(NSString*)username
@@ -367,7 +371,7 @@ class WebViewPasswordStoreObserver
   form.password_value = base::SysNSStringToUTF16(password);
   form.date_created = base::Time::FromNSDate(timestamp);
 
-  _passwordStore->AddLogin(form);
+  _passwordStore->AddLogin(password_manager::FromPasswordForm(std::move(form)));
 }
 
 - (void)addNewPasswordForUsername:(NSString*)username
@@ -385,7 +389,7 @@ class WebViewPasswordStoreObserver
   form.keychain_identifier = base::SysNSStringToUTF8(keychainIdentifier);
   form.date_created = base::Time::FromNSDate(timestamp);
 
-  _passwordStore->AddLogin(form);
+  _passwordStore->AddLogin(password_manager::FromPasswordForm(std::move(form)));
 }
 
 #pragma mark - Private Methods

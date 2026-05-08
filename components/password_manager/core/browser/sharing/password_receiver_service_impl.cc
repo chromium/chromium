@@ -204,7 +204,7 @@ void ProcessIncomingSharingInvitationTask::OnGetPasswordStoreResultsOrErrorFrom(
         ProcessIncomingPasswordSharingInvitationResult::
             kInvitationAutoApproved);
     password_store_->AddLogin(
-        incoming_credentials_,
+        password_manager::FromPasswordForm(std::move(incoming_credentials_)),
         base::BindOnce(std::move(done_processing_invitation_callback_), this));
     return;
   }
@@ -222,7 +222,7 @@ void ProcessIncomingSharingInvitationTask::OnGetPasswordStoreResultsOrErrorFrom(
       base::FeatureList::IsEnabled(
           features::kAutoApproveSharedPasswordUpdatesFromSameSender)) {
     password_store_->UpdateLogin(
-        incoming_credentials_,
+        password_manager::FromPasswordForm(std::move(incoming_credentials_)),
         base::BindOnce(std::move(done_processing_invitation_callback_), this));
     return;
   }

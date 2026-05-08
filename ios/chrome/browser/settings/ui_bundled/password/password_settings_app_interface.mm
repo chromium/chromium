@@ -136,7 +136,7 @@ class FakeStoreConsumer : public password_manager::PasswordStoreConsumer {
 // Saves `form` to the password store and waits until the async processing is
 // done.
 bool SaveToPasswordProfileStore(const PasswordForm& form) {
-  GetPasswordProfileStore()->AddLogin(form);
+  GetPasswordProfileStore()->AddLogin(password_manager::FromPasswordForm(form));
   // When we retrieve the form from the store, `in_store` should be set.
   password_manager::PasswordForm expected_form = form;
   expected_form.in_store = password_manager::PasswordForm::Store::kProfileStore;
@@ -159,7 +159,7 @@ bool SaveToPasswordProfileStore(const PasswordForm& form) {
 // processing is done.
 // Returns true if `form` is saved successfully, otherwise returns false.
 bool SaveToPasswordAccountStore(const PasswordForm& form) {
-  GetPasswordAccountStore()->AddLogin(form);
+  GetPasswordAccountStore()->AddLogin(password_manager::FromPasswordForm(form));
   // When we retrieve the form from the store, `in_store` should be set.
   password_manager::PasswordForm expected_form = form;
   expected_form.in_store = password_manager::PasswordForm::Store::kAccountStore;
@@ -240,7 +240,8 @@ bool ClearPasswordStores() {
 
 + (void)saveExamplePasswordToProfileWithCount:(NSInteger)count {
   for (int i = 1; i <= count; ++i) {
-    GetPasswordProfileStore()->AddLogin(CreateSampleFormWithIndex(i));
+    GetPasswordProfileStore()->AddLogin(
+        password_manager::FromPasswordForm(CreateSampleFormWithIndex(i)));
   }
 }
 

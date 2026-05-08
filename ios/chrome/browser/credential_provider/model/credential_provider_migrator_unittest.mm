@@ -10,7 +10,9 @@
 #import "base/test/task_environment.h"
 #import "base/test/test_future.h"
 #import "components/password_manager/core/browser/password_form.h"
+#import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
+#import "components/password_manager/core/browser/password_store/password_form_converters.h"
 #import "components/webauthn/core/browser/test_passkey_model.h"
 #import "ios/chrome/browser/credential_provider/model/archivable_credential+password_form.h"
 #import "ios/chrome/browser/credential_provider/model/features.h"
@@ -124,7 +126,7 @@ TEST_F(CredentialProviderMigratorTest, Migration) {
 
   // Start migration.
   PasswordForm expected = PasswordFormFromCredential(credential);
-  EXPECT_CALL(*mock_store_, AddLogin(expected, _));
+  EXPECT_CALL(*mock_store_, AddLogin(EqStoredCredential(expected), _));
   base::test::TestFuture<BOOL, NSError*> future;
   auto* future_ptr = &future;
   [migrator startMigrationWithCompletion:^(BOOL success, NSError* error) {
@@ -537,7 +539,7 @@ TEST_F(CredentialProviderMigratorTest, MigrationFiltersByGaiaID) {
 
   // Start migration. Only the matching one should be migrated.
   PasswordForm expected = PasswordFormFromCredential(matchingCredential);
-  EXPECT_CALL(*mock_store_, AddLogin(expected, _));
+  EXPECT_CALL(*mock_store_, AddLogin(EqStoredCredential(expected), _));
   base::test::TestFuture<BOOL, NSError*> future;
   auto* future_ptr = &future;
   [migrator startMigrationWithCompletion:^(BOOL success, NSError* error) {
@@ -576,7 +578,7 @@ TEST_F(CredentialProviderMigratorTest, MigrationAllowsNilGaiaID) {
                                                   passkeyStore:nil];
 
   PasswordForm expected = PasswordFormFromCredential(credential);
-  EXPECT_CALL(*mock_store_, AddLogin(expected, _));
+  EXPECT_CALL(*mock_store_, AddLogin(EqStoredCredential(expected), _));
   base::test::TestFuture<BOOL, NSError*> future;
   auto* future_ptr = &future;
   [migrator startMigrationWithCompletion:^(BOOL success, NSError* error) {

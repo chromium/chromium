@@ -21,6 +21,7 @@
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
@@ -51,7 +52,8 @@ class PasswordsCounterTest : public InProcessBrowserTest {
                 bool blocked_by_user) {
     // Add login and wait until the password store actually changes.
     // on the database thread.
-    store_->AddLogin(CreateCredentials(origin, username, blocked_by_user));
+    store_->AddLogin(password_manager::FromPasswordForm(
+        CreateCredentials(origin, username, blocked_by_user)));
     // GetLogins() blocks until reading on the background thread is finished.
     passwords_helper::GetLogins(store_);
   }
@@ -61,8 +63,9 @@ class PasswordsCounterTest : public InProcessBrowserTest {
                    bool blocked_by_user) {
     // Remove login and wait until the password store actually changes
     // on the database thread.
-    store_->RemoveLogin(FROM_HERE,
-                        CreateCredentials(origin, username, blocked_by_user));
+    store_->RemoveLogin(
+        FROM_HERE, password_manager::FromPasswordForm(
+                       CreateCredentials(origin, username, blocked_by_user)));
     // GetLogins() blocks until reading on the background thread is finished.
     passwords_helper::GetLogins(store_);
   }

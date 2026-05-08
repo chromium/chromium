@@ -19,27 +19,27 @@ class MockPasswordStoreInterface : public PasswordStoreInterface {
   MOCK_METHOD(ActionableError, GetError, (), (const, override));
   MOCK_METHOD(void,
               AddLogin,
-              (const PasswordForm&, base::OnceClosure),
+              (StoredCredential, base::OnceClosure),
               (override));
   MOCK_METHOD(void,
               UpdateLogin,
-              (const PasswordForm&, base::OnceClosure),
+              (StoredCredential, base::OnceClosure),
               (override));
   MOCK_METHOD(void,
               UpdateLogins,
-              (const std::vector<PasswordForm>&, base::OnceClosure),
+              (std::vector<StoredCredential>, base::OnceClosure),
               (override));
   MOCK_METHOD(void,
               AddLogins,
-              (const std::vector<PasswordForm>&, base::OnceClosure),
+              (std::vector<StoredCredential>, base::OnceClosure),
               (override));
   MOCK_METHOD(void,
               UpdateLoginWithPrimaryKey,
-              (const PasswordForm&, const PasswordForm&, base::OnceClosure),
+              (StoredCredential, const StoredCredential&, base::OnceClosure),
               (override));
   MOCK_METHOD(void,
               RemoveLogin,
-              (const base::Location&, const PasswordForm&),
+              (const base::Location&, const StoredCredential&),
               (override));
   MOCK_METHOD(void,
               RemoveLoginsCreatedBetween,

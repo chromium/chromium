@@ -17,6 +17,7 @@
 #import "components/image_fetcher/ios/ios_image_decoder_impl.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager.h"
+#import "components/password_manager/core/browser/password_store/password_form_converters.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/ios/features.h"
@@ -530,9 +531,11 @@ NSArray<FormSuggestion*>* SetParamsAndProviderInSuggestions(
   for (password_manager::PasswordForm& form : _sharedUnnotifiedForms) {
     form.sharing_notification_displayed = true;
     if (form.IsUsingAccountStore()) {
-      _accountPasswordStore->UpdateLogin(std::move(form));
+      _accountPasswordStore->UpdateLogin(
+          password_manager::FromPasswordForm(std::move(form)));
     } else {
-      _profilePasswordStore->UpdateLogin(std::move(form));
+      _profilePasswordStore->UpdateLogin(
+          password_manager::FromPasswordForm(std::move(form)));
     }
   }
   _sharedUnnotifiedForms.clear();

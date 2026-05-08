@@ -9,6 +9,7 @@
 #include "base/test/task_environment.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
@@ -142,7 +143,7 @@ TEST_F(CredentialManagerPendingRequestTaskTest, OnlyProfileStore) {
   ON_CALL(*client(), GetAccountPasswordStore).WillByDefault(Return(nullptr));
 
   form_.in_store = PasswordForm::Store::kProfileStore;
-  profile_store_->AddLogin(form_);
+  profile_store_->AddLogin(password_manager::FromPasswordForm(form_));
   RunAllPendingTasks();
 
   std::vector<std::unique_ptr<PasswordForm>> expected_forms;
@@ -165,12 +166,12 @@ TEST_F(CredentialManagerPendingRequestTaskTest,
   PasswordForm profile_form = form_;
   profile_form.in_store = PasswordForm::Store::kProfileStore;
   profile_form.password_value = u"ProfilePassword";
-  profile_store_->AddLogin(profile_form);
+  profile_store_->AddLogin(password_manager::FromPasswordForm(profile_form));
 
   PasswordForm account_form = form_;
   account_form.in_store = PasswordForm::Store::kAccountStore;
   account_form.password_value = u"AccountPassword";
-  account_store_->AddLogin(account_form);
+  account_store_->AddLogin(password_manager::FromPasswordForm(account_form));
   RunAllPendingTasks();
 
   std::vector<std::unique_ptr<PasswordForm>> expected_forms;
@@ -193,11 +194,11 @@ TEST_F(CredentialManagerPendingRequestTaskTest,
   // passwords from two store, the account store version is passed to the UI.
   PasswordForm profile_form = form_;
   profile_form.in_store = PasswordForm::Store::kProfileStore;
-  profile_store_->AddLogin(profile_form);
+  profile_store_->AddLogin(password_manager::FromPasswordForm(profile_form));
 
   PasswordForm account_form = form_;
   account_form.in_store = PasswordForm::Store::kAccountStore;
-  account_store_->AddLogin(account_form);
+  account_store_->AddLogin(password_manager::FromPasswordForm(account_form));
   RunAllPendingTasks();
 
   std::vector<std::unique_ptr<PasswordForm>> expected_forms;
@@ -227,11 +228,11 @@ TEST_F(CredentialManagerPendingRequestTaskTest,
 
   PasswordForm profile_form = form_;
   profile_form.in_store = PasswordForm::Store::kProfileStore;
-  profile_store_->AddLogin(profile_form);
+  profile_store_->AddLogin(password_manager::FromPasswordForm(profile_form));
 
   PasswordForm account_form = form_;
   account_form.in_store = PasswordForm::Store::kAccountStore;
-  account_store_->AddLogin(account_form);
+  account_store_->AddLogin(password_manager::FromPasswordForm(account_form));
   RunAllPendingTasks();
 
   std::vector<std::unique_ptr<PasswordForm>> expected_forms;
@@ -249,7 +250,7 @@ TEST_F(CredentialManagerPendingRequestTaskTest,
 
 TEST_F(CredentialManagerPendingRequestTaskTest,
        AutosigninForExactlyMatchingForm) {
-  profile_store_->AddLogin(form_);
+  profile_store_->AddLogin(password_manager::FromPasswordForm(form_));
   RunAllPendingTasks();
 
   std::vector<std::unique_ptr<PasswordForm>> expected_forms;
@@ -275,7 +276,7 @@ TEST_F(CredentialManagerPendingRequestTaskTest, NoAutosigninForPSLMatches) {
   PasswordForm psl_form = form_;
   psl_form.signon_realm = "http://m.example.com/";
 
-  profile_store_->AddLogin(psl_form);
+  profile_store_->AddLogin(password_manager::FromPasswordForm(psl_form));
   RunAllPendingTasks();
 
   std::vector<std::unique_ptr<PasswordForm>> expected_forms;
@@ -301,8 +302,8 @@ TEST_F(CredentialManagerPendingRequestTaskTest,
   psl_form.username_value = u"admin";
   psl_form.signon_realm = "http://m.example.com/";
 
-  profile_store_->AddLogin(form_);
-  profile_store_->AddLogin(psl_form);
+  profile_store_->AddLogin(password_manager::FromPasswordForm(form_));
+  profile_store_->AddLogin(password_manager::FromPasswordForm(psl_form));
   RunAllPendingTasks();
 
   std::vector<std::unique_ptr<PasswordForm>> expected_forms;
@@ -331,7 +332,7 @@ TEST_F(CredentialManagerPendingRequestTaskTest,
       .WillByDefault(Return(true));
 
   form_.in_store = PasswordForm::Store::kProfileStore;
-  profile_store_->AddLogin(form_);
+  profile_store_->AddLogin(password_manager::FromPasswordForm(form_));
   RunAllPendingTasks();
 
   EXPECT_CALL(*client(), NotifyUserAutoSignin).Times(0);
@@ -355,7 +356,7 @@ TEST_F(CredentialManagerPendingRequestTaskTest,
           IsBiometricAuthenticationBeforeFillingEnabled)
       .WillByDefault(Return(true));
 
-  profile_store_->AddLogin(form_);
+  profile_store_->AddLogin(password_manager::FromPasswordForm(form_));
   RunAllPendingTasks();
 
   std::vector<std::unique_ptr<PasswordForm>> expected_forms;

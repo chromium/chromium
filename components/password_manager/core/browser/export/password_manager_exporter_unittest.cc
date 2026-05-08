@@ -19,6 +19,7 @@
 #include "components/password_manager/core/browser/export/export_progress_status.h"
 #include "components/password_manager/core/browser/export/password_csv_writer.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
@@ -115,7 +116,7 @@ class PasswordManagerExporterTest : public testing::Test {
 
   void SetPasswordList(const std::vector<PasswordForm>& forms) {
     for (const auto& form : forms) {
-      store_->AddLogin(form);
+      store_->AddLogin(password_manager::FromPasswordForm(form));
     }
     task_environment_.RunUntilIdle();
   }

@@ -19,4 +19,14 @@ bool AreStoredCredentialUniqueKeysEqual(const StoredCredential& left,
   return StoredCredentialUniqueKey(left) == StoredCredentialUniqueKey(right);
 }
 
+std::optional<std::u16string> StoredCredential::GetPasswordBackup() const {
+  for (const auto& note : notes) {
+    if (note.unique_display_name ==
+        PasswordNote::kPasswordChangeBackupNoteName) {
+      return note.value;
+    }
+  }
+  return std::nullopt;
+}
+
 }  // namespace password_manager

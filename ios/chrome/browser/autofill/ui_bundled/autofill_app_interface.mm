@@ -124,7 +124,7 @@ class TestStoreConsumer : public password_manager::PasswordStoreConsumer {
 // Saves `form` to the profile password store and waits until the async
 // processing is done.
 void SaveToPasswordProfileStore(const password_manager::PasswordForm& form) {
-  GetPasswordProfileStore()->AddLogin(form);
+  GetPasswordProfileStore()->AddLogin(password_manager::FromPasswordForm(form));
   // When we retrieve the form from the store, `in_store` should be set.
   password_manager::PasswordForm expected_form = form;
   expected_form.in_store = password_manager::PasswordForm::Store::kProfileStore;

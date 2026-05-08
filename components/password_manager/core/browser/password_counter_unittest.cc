@@ -17,23 +17,24 @@
 namespace password_manager {
 namespace {
 
-password_manager::PasswordForm CreateTestPasswordForm(
+password_manager::StoredCredential CreateTestPasswordForm(
     std::string_view username,
     std::string_view password) {
-  password_manager::PasswordForm form;
-  form.url = GURL("https://example.com/login");
-  form.signon_realm = form.url.GetWithEmptyPath().spec();
-  form.username_value = base::UTF8ToUTF16(username);
-  form.password_value = base::UTF8ToUTF16(password);
-  return form;
+  password_manager::StoredCredential cred;
+  cred.url = GURL("https://example.com/login");
+  cred.signon_realm = cred.url.GetWithEmptyPath().spec();
+  cred.username_value = base::UTF8ToUTF16(username);
+  cred.password_value = base::UTF8ToUTF16(password);
+  return cred;
 }
 
-password_manager::PasswordForm CreateBlocklistedForm(std::string_view site) {
-  password_manager::PasswordForm form;
-  form.url = GURL(site);
-  form.signon_realm = form.url.GetWithEmptyPath().spec();
-  form.blocked_by_user = true;
-  return form;
+password_manager::StoredCredential CreateBlocklistedForm(
+    std::string_view site) {
+  password_manager::StoredCredential cred;
+  cred.url = GURL(site);
+  cred.signon_realm = cred.url.GetWithEmptyPath().spec();
+  cred.blocked_by_user = true;
+  return cred;
 }
 
 class MockObserver : public PasswordCounter::Observer {
@@ -76,8 +77,10 @@ TEST_F(PasswordCounterTest, Empty) {
 }
 
 TEST_F(PasswordCounterTest, PreexistingPasswords) {
-  profile_store()->AddLogins({CreateTestPasswordForm("user1", "123"),
-                              CreateTestPasswordForm("user2", "12325")});
+  std::vector<password_manager::StoredCredential> creds;
+  creds.push_back(CreateTestPasswordForm("user1", "123"));
+  creds.push_back(CreateTestPasswordForm("user2", "12325"));
+  profile_store()->AddLogins(std::move(creds));
   account_store()->AddLogin(CreateTestPasswordForm("user3", "123256"));
   RunUntilIdle();
   PasswordCounter counter(profile_store(), account_store());

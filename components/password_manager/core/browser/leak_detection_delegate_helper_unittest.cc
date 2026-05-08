@@ -17,6 +17,7 @@
 #include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
@@ -69,8 +70,8 @@ class LeakDetectionDelegateHelperTestBase {
  protected:
   // Initiates determining the credential leak type.
   void InitiateGetCredentialLeakType() {
-    delegate_helper_->ProcessLeakedPassword(
-        CreateForm(kLeakedOrigin, kLeakedUsername, kLeakedPassword));
+    delegate_helper_->ProcessLeakedPassword(password_manager::FromPasswordForm(
+        CreateForm(kLeakedOrigin, kLeakedUsername, kLeakedPassword)));
     task_environment_.RunUntilIdle();
   }
 
@@ -82,8 +83,9 @@ class LeakDetectionDelegateHelperTestBase {
       std::vector<GURL> all_urls_with_leaked_credentials = {}) {
     PasswordForm form =
         CreateForm(kLeakedOrigin, kLeakedUsername, kLeakedPassword);
-    EXPECT_CALL(callback_, Run(in_stores, is_reused, is_saved_as_backup, form,
-                               all_urls_with_leaked_credentials))
+    EXPECT_CALL(callback_,
+                Run(in_stores, is_reused, is_saved_as_backup,
+                    EqStoredCredential(form), all_urls_with_leaked_credentials))
         .Times(1);
   }
 
@@ -257,8 +259,9 @@ TEST_F(LeakDetectionDelegateHelperTest, SaveLeakedCredentials) {
       InsecureType::kLeaked,
       InsecurityMetadata(base::Time::Now(), IsMuted(false),
                          TriggerBackendNotification(false)));
-  EXPECT_CALL(*store_, UpdateLogin(leaked_origin, _));
-  EXPECT_CALL(*store_, UpdateLogin(other_origin_same_credential, _));
+  EXPECT_CALL(*store_, UpdateLogin(EqStoredCredential(leaked_origin), _));
+  EXPECT_CALL(*store_,
+              UpdateLogin(EqStoredCredential(other_origin_same_credential), _));
   InitiateGetCredentialLeakType();
 }
 
@@ -276,7 +279,8 @@ TEST_F(LeakDetectionDelegateHelperTest, SaveLeakedCredentialsCanonicalized) {
       InsecureType::kLeaked,
       InsecurityMetadata(base::Time::Now(), IsMuted(false),
                          TriggerBackendNotification(false)));
-  EXPECT_CALL(*store_, UpdateLogin(non_canonicalized_username, _));
+  EXPECT_CALL(*store_,
+              UpdateLogin(EqStoredCredential(non_canonicalized_username), _));
   InitiateGetCredentialLeakType();
 }
 
@@ -329,8 +333,10 @@ TEST_F(LeakDetectionDelegateHelperWithTwoStoreTest, SavedLeakedCredentials) {
   PasswordForm profile_store_form = CreateForm(kLeakedOrigin, kLeakedUsername);
   PasswordForm account_store_form = CreateForm(kOtherOrigin, kLeakedUsername);
 
-  profile_store_->AddLogin(profile_store_form);
-  account_store_->AddLogin(account_store_form);
+  profile_store_->AddLogin(
+      password_manager::FromPasswordForm(profile_store_form));
+  account_store_->AddLogin(
+      password_manager::FromPasswordForm(account_store_form));
 
   SetOnShowLeakDetectionNotificationExpectation(
       PasswordForm::Store::kProfileStore, IsReused(true),
@@ -353,8 +359,10 @@ TEST_F(LeakDetectionDelegateHelperWithTwoStoreTest,
   PasswordForm profile_store_form = CreateForm(kLeakedOrigin, kLeakedUsername);
   PasswordForm account_store_form = CreateForm(kLeakedOrigin, kLeakedUsername);
 
-  profile_store_->AddLogin(profile_store_form);
-  account_store_->AddLogin(account_store_form);
+  profile_store_->AddLogin(
+      password_manager::FromPasswordForm(profile_store_form));
+  account_store_->AddLogin(
+      password_manager::FromPasswordForm(account_store_form));
 
   SetOnShowLeakDetectionNotificationExpectation(
       PasswordForm::Store::kProfileStore | PasswordForm::Store::kAccountStore,

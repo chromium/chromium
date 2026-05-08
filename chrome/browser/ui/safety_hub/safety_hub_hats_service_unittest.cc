@@ -30,6 +30,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check_service.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/permissions/constants.h"
@@ -152,8 +153,8 @@ class SafetyHubHatsServiceTest : public testing::Test {
     password_manager::PasswordForm form =
         safety_hub_test_util::MakeForm(u"username", password, origin, leaked);
 
-    profile_store().AddLogin(form);
-    account_store().AddLogin(form);
+    profile_store().AddLogin(password_manager::FromPasswordForm(form));
+    account_store().AddLogin(password_manager::FromPasswordForm(form));
     RunUntilIdle();
   }
 

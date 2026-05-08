@@ -11,6 +11,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -160,7 +161,7 @@ TEST_P(HttpCredentialCleanerTest, ReportHttpMigrationMetrics) {
   http_form.scheme = test.http_form_scheme;
   http_form.username_value = username[1];
   http_form.password_value = password[1];
-  store_->AddLogin(http_form);
+  store_->AddLogin(password_manager::FromPasswordForm(http_form));
 
   PasswordForm https_form;
   https_form.url = GURL("https://example.org/");
@@ -173,7 +174,7 @@ TEST_P(HttpCredentialCleanerTest, ReportHttpMigrationMetrics) {
                              ? PasswordForm::Scheme::kHtml
                              : PasswordForm::Scheme::kBasic);
   }
-  store_->AddLogin(https_form);
+  store_->AddLogin(password_manager::FromPasswordForm(https_form));
 
   auto request_context = net::CreateTestURLRequestContextBuilder()->Build();
   mojo::Remote<network::mojom::NetworkContext> network_context_remote;

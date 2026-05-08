@@ -32,6 +32,7 @@
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/interactions_stats.h"
 #include "components/password_manager/core/browser/password_store/mock_smart_bubble_stats_store.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
@@ -487,7 +488,7 @@ TEST_F(SaveUpdateBubbleControllerTest, ClickSaveWhenCredentialsExisted) {
   form.password_value = u"password";
   form.signon_realm = "https://google.com";
   form.url = GURL(form.signon_realm);
-  GetStore()->AddLogin(form);
+  GetStore()->AddLogin(password_manager::FromPasswordForm(form));
   add_waiter.WaitOrReturn();
 
   base::HistogramTester histogram_tester;

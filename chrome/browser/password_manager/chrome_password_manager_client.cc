@@ -94,6 +94,7 @@
 #include "components/password_manager/core/browser/password_manager_settings_service.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_requirements_service.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend_error.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
@@ -1412,9 +1413,11 @@ void ChromePasswordManagerClient::MarkSharedCredentialsAsNotified(
     password_manager::PasswordForm updatedForm = form;
     updatedForm.sharing_notification_displayed = true;
     if (updatedForm.IsUsingAccountStore()) {
-      GetAccountPasswordStore()->UpdateLogin(std::move(updatedForm));
+      GetAccountPasswordStore()->UpdateLogin(
+          password_manager::FromPasswordForm(std::move(updatedForm)));
     } else {
-      GetProfilePasswordStore()->UpdateLogin(std::move(updatedForm));
+      GetProfilePasswordStore()->UpdateLogin(
+          password_manager::FromPasswordForm(std::move(updatedForm)));
     }
   }
 }

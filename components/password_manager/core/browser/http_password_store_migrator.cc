@@ -139,10 +139,10 @@ void HttpPasswordStoreMigrator::ProcessPasswordStoreResults() {
   for (auto& form : results_) {
     PasswordForm new_form =
         HttpPasswordStoreMigrator::MigrateHttpFormToHttps(form);
-    store_->AddLogin(new_form);
+    store_->AddLogin(password_manager::FromPasswordForm(new_form));
 
     if (mode_ == HttpPasswordMigrationMode::kMove) {
-      store_->RemoveLogin(FROM_HERE, form);
+      store_->RemoveLogin(FROM_HERE, password_manager::FromPasswordForm(form));
     }
     form = std::move(new_form);
   }

@@ -43,7 +43,7 @@ void CredentialManagerPendingPreventSilentAccessTask::
     }
     if (!form.skip_zero_click) {
       form.skip_zero_click = true;
-      store->UpdateLogin(ToPasswordForm(form));
+      store->UpdateLogin(std::move(form));
     }
   }
   pending_requests_--;

@@ -15,6 +15,7 @@
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
+#import "components/password_manager/core/browser/password_store/password_form_converters.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
@@ -47,14 +48,14 @@ using ::password_manager::PasswordForm;
 using ::password_manager::TestPasswordStore;
 using ::testing::Return;
 
-// Creates a saved password form.
-PasswordForm CreatePasswordForm() {
-  PasswordForm form;
-  form.username_value = u"test@egmail.com";
-  form.password_value = u"test";
-  form.signon_realm = "http://www.example.com/";
-  form.in_store = PasswordForm::Store::kProfileStore;
-  return form;
+// Creates a saved stored credential.
+password_manager::StoredCredential CreateStoredCredential() {
+  password_manager::StoredCredential cred;
+  cred.username_value = u"test@egmail.com";
+  cred.password_value = u"test";
+  cred.signon_realm = "http://www.example.com/";
+  cred.in_store = PasswordForm::Store::kProfileStore;
+  return cred;
 }
 
 // Create the Feature Engagement Mock Tracker.
@@ -201,10 +202,11 @@ class PasswordsMediatorTest : public BlockCleanupTest {
 
 // Consumer should be notified when passwords are changed.
 TEST_F(PasswordsMediatorTest, NotifiesConsumerOnPasswordChange) {
-  PasswordForm form = CreatePasswordForm();
-  store()->AddLogin(form);
+  password_manager::StoredCredential form = CreateStoredCredential();
+  store()->AddLogin(password_manager::CloneStoredCredential(form));
   RunUntilIdle();
-  password_manager::CredentialUIEntry credential(form);
+  password_manager::CredentialUIEntry credential(
+      password_manager::ToPasswordForm(form));
   std::vector<password_manager::AffiliatedGroup> affiliatedGroups =
       [consumer() affiliatedGroups];
   EXPECT_EQ(1u, affiliatedGroups.size());

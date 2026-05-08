@@ -96,8 +96,9 @@ void HttpCredentialCleaner::OnHSTSQueryResult(PasswordForm form,
                 : HttpCredentialType::kHasNoMatchingHttpsWithoutHsts);
     if (is_hsts) {
       // Migrate credentials to HTTPS, by moving them.
-      store_->AddLogin(HttpPasswordStoreMigrator::MigrateHttpFormToHttps(form));
-      store_->RemoveLogin(FROM_HERE, form);
+      store_->AddLogin(password_manager::FromPasswordForm(
+          HttpPasswordStoreMigrator::MigrateHttpFormToHttps(form)));
+      store_->RemoveLogin(FROM_HERE, password_manager::FromPasswordForm(form));
     }
     return;
   }
@@ -111,7 +112,7 @@ void HttpCredentialCleaner::OnHSTSQueryResult(PasswordForm form,
                 : HttpCredentialType::kHasEquivalentHttpsWithoutHsts);
     if (is_hsts) {
       // This HTTP credential is no more used.
-      store_->RemoveLogin(FROM_HERE, form);
+      store_->RemoveLogin(FROM_HERE, password_manager::FromPasswordForm(form));
     }
   } else {
     base::UmaHistogramEnumeration(

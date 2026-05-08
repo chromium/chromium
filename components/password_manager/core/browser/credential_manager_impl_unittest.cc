@@ -520,7 +520,7 @@ TEST_P(CredentialManagerImplTest, CredentialManagerOnStoreFederated) {
 
 TEST_P(CredentialManagerImplTest, StoreFederatedAfterPassword) {
   // Populate the PasswordStore with a form.
-  store_->AddLogin(form_);
+  store_->AddLogin(password_manager::FromPasswordForm(form_));
 
   PasswordForm federated = form_;
   federated.password_value.clear();
@@ -561,11 +561,11 @@ TEST_P(CredentialManagerImplTest, StoreFederatedAfterPassword) {
 
 TEST_P(CredentialManagerImplTest, CredentialManagerStoreOverwrite) {
   // Add an unrelated form to complicate the task.
-  store_->AddLogin(origin_path_form_);
+  store_->AddLogin(password_manager::FromPasswordForm(origin_path_form_));
   // Populate the PasswordStore with a form.
   form_.display_name = u"Old Name";
   form_.icon_url = GURL();
-  store_->AddLogin(form_);
+  store_->AddLogin(password_manager::FromPasswordForm(form_));
   RunAllPendingTasks();
 
   // Calling 'Store' with a credential that matches |form_| should update
@@ -602,7 +602,7 @@ TEST_P(CredentialManagerImplTest,
   PasswordForm psl_form = subdomain_form_;
   psl_form.username_value = form_.username_value;
   psl_form.password_value = form_.password_value;
-  store_->AddLogin(psl_form);
+  store_->AddLogin(password_manager::FromPasswordForm(psl_form));
 
   // Calling 'Store' with a new credential that is a PSL match for an existing
   // credential with identical username and password should result in a silent
@@ -632,7 +632,7 @@ TEST_P(CredentialManagerImplTest,
   grouped_form.match_type = PasswordForm::MatchType::kGrouped;
   grouped_form.username_value = form_.username_value;
   grouped_form.password_value = form_.password_value;
-  store_->AddLogin(grouped_form);
+  store_->AddLogin(password_manager::FromPasswordForm(grouped_form));
 
   // Calling 'Store' with a new credential that is a grouped match for an
   // existing credential with identical username and password should result in a
@@ -661,7 +661,7 @@ TEST_P(CredentialManagerImplTest,
   PasswordForm psl_form = subdomain_form_;
   psl_form.username_value = form_.username_value + delta;
   psl_form.password_value = form_.password_value;
-  store_->AddLogin(psl_form);
+  store_->AddLogin(password_manager::FromPasswordForm(psl_form));
 
   // Calling 'Store' with a new credential that is a PSL match for an existing
   // credential but has a different username should prompt the user and not
@@ -693,7 +693,7 @@ TEST_P(CredentialManagerImplTest,
   PasswordForm psl_form = subdomain_form_;
   psl_form.username_value = form_.username_value;
   psl_form.password_value = form_.password_value + delta;
-  store_->AddLogin(psl_form);
+  store_->AddLogin(password_manager::FromPasswordForm(psl_form));
 
   // Calling 'Store' with a new credential that is a PSL match for an existing
   // credential but has a different password should prompt the user and not
@@ -721,7 +721,7 @@ TEST_P(CredentialManagerImplTest,
 
 TEST_P(CredentialManagerImplTest, CredentialManagerStoreOverwriteZeroClick) {
   form_.skip_zero_click = true;
-  store_->AddLogin(form_);
+  store_->AddLogin(password_manager::FromPasswordForm(form_));
   RunAllPendingTasks();
 
   // Calling 'Store' with a credential that matches |form_| should update
@@ -747,7 +747,7 @@ TEST_P(CredentialManagerImplTest,
   form_.skip_zero_click = true;
   form_.signon_realm = "federation://example.com/example.com";
   form_.match_type = PasswordForm::MatchType::kExact;
-  store_->AddLogin(form_);
+  store_->AddLogin(password_manager::FromPasswordForm(form_));
   RunAllPendingTasks();
 
   // Calling 'Store' with a credential that matches |form_| should update
@@ -775,7 +775,7 @@ TEST_P(CredentialManagerImplTest, CredentialManagerGetOverwriteZeroClick) {
   form_.username_element = u"username-element";
   form_.password_element = u"password-element";
   form_.url = GURL("https://example.com/old_form.html");
-  store_->AddLogin(form_);
+  store_->AddLogin(password_manager::FromPasswordForm(form_));
   RunAllPendingTasks();
 
   std::vector<GURL> federations;
@@ -815,9 +815,9 @@ TEST_P(CredentialManagerImplTest,
 }
 
 TEST_P(CredentialManagerImplTest, CredentialManagerOnPreventSilentAccess) {
-  store_->AddLogin(form_);
-  store_->AddLogin(subdomain_form_);
-  store_->AddLogin(cross_origin_form_);
+  store_->AddLogin(password_manager::FromPasswordForm(form_));
+  store_->AddLogin(password_manager::FromPasswordForm(subdomain_form_));
+  store_->AddLogin(password_manager::FromPasswordForm(cross_origin_form_));
   RunAllPendingTasks();
 
   TestPasswordStore::PasswordMap passwords = GetAllLoginsSync(store_.get());
@@ -850,7 +850,7 @@ TEST_P(CredentialManagerImplTest,
        CredentialManagerOnPreventSilentAccessIncognito) {
   EXPECT_CALL(*client_, IsSavingAndFillingEnabled)
       .WillRepeatedly(Return(false));
-  store_->AddLogin(form_);
+  store_->AddLogin(password_manager::FromPasswordForm(form_));
   RunAllPendingTasks();
 
   TestPasswordStore::PasswordMap passwords = GetAllLoginsSync(store_.get());
@@ -874,7 +874,7 @@ TEST_P(CredentialManagerImplTest,
        CredentialManagerOnPreventMediatedAccessIncognito) {
   EXPECT_CALL(*client_, IsOffTheRecord()).WillRepeatedly(Return(true));
   EXPECT_CALL(*client_, PromptUserToChooseCredentialsPtr).Times(0);
-  store_->AddLogin(form_);
+  store_->AddLogin(password_manager::FromPasswordForm(form_));
   RunAllPendingTasks();
 
   TestPasswordStore::PasswordMap passwords = GetAllLoginsSync(store_.get());
@@ -898,10 +898,10 @@ TEST_P(CredentialManagerImplTest,
 
 TEST_P(CredentialManagerImplTest,
        CredentialManagerOnPreventSilentAccessWithAffiliation) {
-  store_->AddLogin(form_);
-  store_->AddLogin(cross_origin_form_);
-  store_->AddLogin(affiliated_form1_);
-  store_->AddLogin(affiliated_form2_);
+  store_->AddLogin(password_manager::FromPasswordForm(form_));
+  store_->AddLogin(password_manager::FromPasswordForm(cross_origin_form_));
+  store_->AddLogin(password_manager::FromPasswordForm(affiliated_form1_));
+  store_->AddLogin(password_manager::FromPasswordForm(affiliated_form2_));
 
   std::vector<GURL> federations;
   std::vector<std::string> affiliated_realms;
@@ -943,7 +943,7 @@ TEST_P(CredentialManagerImplTest,
 TEST_P(CredentialManagerImplTest,
        CredentialManagerOnRequestCredentialWithEmptyUsernames) {
   form_.username_value.clear();
-  store_->AddLogin(form_);
+  store_->AddLogin(password_manager::FromPasswordForm(form_));
   EXPECT_CALL(*client_, PromptUserToChooseCredentialsPtr).Times(0);
   EXPECT_CALL(*client_, NotifyUserAutoSigninPtr).Times(0);
 
@@ -954,7 +954,7 @@ TEST_P(CredentialManagerImplTest,
 
 TEST_P(CredentialManagerImplTest,
        CredentialManagerOnRequestCredentialWithPSLCredential) {
-  store_->AddLogin(subdomain_form_);
+  store_->AddLogin(password_manager::FromPasswordForm(subdomain_form_));
   subdomain_form_.match_type = PasswordForm::MatchType::kPSL;
   EXPECT_CALL(*client_, PromptUserToChooseCredentialsPtr(
                             UnorderedElementsAre(Pointee(
@@ -969,9 +969,9 @@ TEST_P(CredentialManagerImplTest,
 
 TEST_P(CredentialManagerImplTest,
        CredentialManagerOnRequestCredentialWithPSLAndNormalCredentials) {
-  store_->AddLogin(form_);
-  store_->AddLogin(origin_path_form_);
-  store_->AddLogin(subdomain_form_);
+  store_->AddLogin(password_manager::FromPasswordForm(form_));
+  store_->AddLogin(password_manager::FromPasswordForm(origin_path_form_));
+  store_->AddLogin(password_manager::FromPasswordForm(subdomain_form_));
 
   form_.match_type = PasswordForm::MatchType::kExact;
   origin_path_form_.match_type = PasswordForm::MatchType::kExact;
@@ -990,13 +990,13 @@ TEST_P(CredentialManagerImplTest,
 
 TEST_P(CredentialManagerImplTest,
        CredentialManagerOnRequestCredentialWithEmptyAndNonemptyUsernames) {
-  store_->AddLogin(form_);
+  store_->AddLogin(password_manager::FromPasswordForm(form_));
   PasswordForm empty = form_;
   empty.username_value.clear();
-  store_->AddLogin(empty);
+  store_->AddLogin(password_manager::FromPasswordForm(empty));
   PasswordForm duplicate = form_;
   duplicate.username_element = u"different_username_element";
-  store_->AddLogin(duplicate);
+  store_->AddLogin(password_manager::FromPasswordForm(duplicate));
 
   std::vector<GURL> federations;
   ExpectZeroClickSignInSuccess(CredentialMediationRequirement::kOptional, true,
@@ -1009,25 +1009,25 @@ TEST_P(CredentialManagerImplTest,
   // Add 6 credentials. Two buckets of duplicates, one empty username and one
   // federated one. There should be just 3 in the account chooser.
   form_.username_element = u"username_element";
-  store_->AddLogin(form_);
+  store_->AddLogin(password_manager::FromPasswordForm(form_));
   PasswordForm empty = form_;
   empty.username_value.clear();
-  store_->AddLogin(empty);
+  store_->AddLogin(password_manager::FromPasswordForm(empty));
   PasswordForm duplicate = form_;
   duplicate.username_element = u"username_element2";
-  store_->AddLogin(duplicate);
+  store_->AddLogin(password_manager::FromPasswordForm(duplicate));
 
-  store_->AddLogin(origin_path_form_);
+  store_->AddLogin(password_manager::FromPasswordForm(origin_path_form_));
   duplicate = origin_path_form_;
   duplicate.username_element = u"username_element4";
-  store_->AddLogin(duplicate);
+  store_->AddLogin(password_manager::FromPasswordForm(duplicate));
   PasswordForm federated = origin_path_form_;
   federated.password_value.clear();
   federated.federation_origin =
       url::SchemeHostPort(GURL("https://google.com/"));
   federated.signon_realm =
       "federation://" + federated.url.GetHost() + "/google.com";
-  store_->AddLogin(federated);
+  store_->AddLogin(password_manager::FromPasswordForm(federated));
 
   form_.match_type = PasswordForm::MatchType::kExact;
   origin_path_form_.match_type = PasswordForm::MatchType::kExact;
@@ -1054,7 +1054,7 @@ TEST_P(CredentialManagerImplTest,
 
 TEST_P(CredentialManagerImplTest,
        CredentialManagerOnRequestCredentialWithCrossOriginPasswordStore) {
-  store_->AddLogin(cross_origin_form_);
+  store_->AddLogin(password_manager::FromPasswordForm(cross_origin_form_));
 
   std::vector<GURL> federations;
   EXPECT_CALL(*client_, PromptUserToSaveOrUpdatePassword).Times(0);
@@ -1068,7 +1068,7 @@ TEST_P(CredentialManagerImplTest,
 TEST_P(CredentialManagerImplTest,
        CredentialManagerOnRequestCredentialWithFullPasswordStore) {
   client_->set_zero_click_enabled(false);
-  store_->AddLogin(form_);
+  store_->AddLogin(password_manager::FromPasswordForm(form_));
 
   std::vector<GURL> federations;
   EXPECT_CALL(*client_, PromptUserToChooseCredentialsPtr);
@@ -1099,7 +1099,7 @@ TEST_P(
 
 TEST_P(CredentialManagerImplTest,
        CredentialManagerOnRequestCredentialWithZeroClickOnlyFullPasswordStore) {
-  store_->AddLogin(form_);
+  store_->AddLogin(password_manager::FromPasswordForm(form_));
   client_->set_first_run_seen(true);
 
   std::vector<GURL> federations;
@@ -1113,7 +1113,7 @@ TEST_P(CredentialManagerImplTest,
 
 TEST_P(CredentialManagerImplTest,
        CredentialManagerOnRequestCredentialWithoutPasswords) {
-  store_->AddLogin(form_);
+  store_->AddLogin(password_manager::FromPasswordForm(form_));
   client_->set_first_run_seen(true);
 
   std::vector<GURL> federations;
@@ -1127,7 +1127,7 @@ TEST_P(CredentialManagerImplTest,
        CredentialManagerOnRequestCredentialFederatedMatch) {
   form_.federation_origin = url::SchemeHostPort(GURL("https://example.com/"));
   form_.password_value = std::u16string();
-  store_->AddLogin(form_);
+  store_->AddLogin(password_manager::FromPasswordForm(form_));
   client_->set_first_run_seen(true);
 
   std::vector<GURL> federations;
@@ -1144,7 +1144,7 @@ TEST_P(CredentialManagerImplTest,
        CredentialManagerOnRequestCredentialFederatedNoMatch) {
   form_.federation_origin = url::SchemeHostPort(GURL("https://example.com/"));
   form_.password_value = std::u16string();
-  store_->AddLogin(form_);
+  store_->AddLogin(password_manager::FromPasswordForm(form_));
   client_->set_first_run_seen(true);
 
   std::vector<GURL> federations;
@@ -1158,7 +1158,7 @@ TEST_P(CredentialManagerImplTest,
 
 TEST_P(CredentialManagerImplTest,
        CredentialManagerOnRequestCredentialAffiliatedPasswordMatch) {
-  store_->AddLogin(affiliated_form1_);
+  store_->AddLogin(password_manager::FromPasswordForm(affiliated_form1_));
   client_->set_first_run_seen(true);
 
   std::vector<GURL> federations;
@@ -1176,7 +1176,7 @@ TEST_P(CredentialManagerImplTest,
 
 TEST_P(CredentialManagerImplTest,
        CredentialManagerOnRequestCredentialAffiliatedPasswordNoMatch) {
-  store_->AddLogin(affiliated_form1_);
+  store_->AddLogin(password_manager::FromPasswordForm(affiliated_form1_));
   client_->set_first_run_seen(true);
 
   std::vector<GURL> federations;
@@ -1196,7 +1196,7 @@ TEST_P(CredentialManagerImplTest,
   affiliated_form1_.federation_origin =
       url::SchemeHostPort(GURL("https://example.com/"));
   affiliated_form1_.password_value = std::u16string();
-  store_->AddLogin(affiliated_form1_);
+  store_->AddLogin(password_manager::FromPasswordForm(affiliated_form1_));
   client_->set_first_run_seen(true);
 
   std::vector<GURL> federations;
@@ -1217,7 +1217,7 @@ TEST_P(CredentialManagerImplTest,
   affiliated_form1_.federation_origin =
       url::SchemeHostPort(GURL("https://example.com/"));
   affiliated_form1_.password_value = std::u16string();
-  store_->AddLogin(affiliated_form1_);
+  store_->AddLogin(password_manager::FromPasswordForm(affiliated_form1_));
   client_->set_first_run_seen(true);
 
   std::vector<GURL> federations;
@@ -1234,7 +1234,7 @@ TEST_P(CredentialManagerImplTest,
 
 TEST_P(CredentialManagerImplTest, RequestCredentialWithoutFirstRun) {
   client_->set_first_run_seen(false);
-  store_->AddLogin(form_);
+  store_->AddLogin(password_manager::FromPasswordForm(form_));
   form_.match_type = PasswordForm::MatchType::kExact;
 
   std::vector<GURL> federations;
@@ -1248,7 +1248,7 @@ TEST_P(CredentialManagerImplTest, RequestCredentialWithoutFirstRun) {
 TEST_P(CredentialManagerImplTest, RequestCredentialWithFirstRunAndSkip) {
   client_->set_first_run_seen(true);
   form_.skip_zero_click = true;
-  store_->AddLogin(form_);
+  store_->AddLogin(password_manager::FromPasswordForm(form_));
   form_.match_type = PasswordForm::MatchType::kExact;
 
   std::vector<GURL> federations;
@@ -1263,7 +1263,7 @@ TEST_P(CredentialManagerImplTest, RequestCredentialWithTLSErrors) {
   // If we encounter TLS errors, we won't return credentials.
   EXPECT_CALL(*client_, IsFillingEnabled).WillRepeatedly(Return(false));
 
-  store_->AddLogin(form_);
+  store_->AddLogin(password_manager::FromPasswordForm(form_));
   std::vector<GURL> federations;
 
   ExpectZeroClickSignInFailure(CredentialMediationRequirement::kSilent, true,
@@ -1272,8 +1272,8 @@ TEST_P(CredentialManagerImplTest, RequestCredentialWithTLSErrors) {
 
 TEST_P(CredentialManagerImplTest,
        CredentialManagerOnRequestCredentialWithZeroClickOnlyTwoPasswordStore) {
-  store_->AddLogin(form_);
-  store_->AddLogin(origin_path_form_);
+  store_->AddLogin(password_manager::FromPasswordForm(form_));
+  store_->AddLogin(password_manager::FromPasswordForm(origin_path_form_));
 
   std::vector<GURL> federations;
   EXPECT_CALL(*client_, PromptUserToChooseCredentialsPtr).Times(0);
@@ -1287,8 +1287,8 @@ TEST_P(CredentialManagerImplTest,
 TEST_P(CredentialManagerImplTest,
        OnRequestCredentialWithZeroClickOnlyAndSkipZeroClickPasswordStore) {
   form_.skip_zero_click = true;
-  store_->AddLogin(form_);
-  store_->AddLogin(origin_path_form_);
+  store_->AddLogin(password_manager::FromPasswordForm(form_));
+  store_->AddLogin(password_manager::FromPasswordForm(origin_path_form_));
 
   std::vector<GURL> federations;
   EXPECT_CALL(*client_, PromptUserToChooseCredentialsPtr).Times(0);
@@ -1302,10 +1302,10 @@ TEST_P(CredentialManagerImplTest,
 
 TEST_P(CredentialManagerImplTest,
        OnRequestCredentialWithZeroClickOnlyCrossOriginPasswordStore) {
-  store_->AddLogin(cross_origin_form_);
+  store_->AddLogin(password_manager::FromPasswordForm(cross_origin_form_));
 
   form_.skip_zero_click = true;
-  store_->AddLogin(form_);
+  store_->AddLogin(password_manager::FromPasswordForm(form_));
 
   std::vector<GURL> federations;
   EXPECT_CALL(*client_, PromptUserToChooseCredentialsPtr).Times(0);
@@ -1320,7 +1320,7 @@ TEST_P(CredentialManagerImplTest,
 TEST_P(CredentialManagerImplTest,
        CredentialManagerOnRequestCredentialWhileRequestPending) {
   client_->set_zero_click_enabled(false);
-  store_->AddLogin(form_);
+  store_->AddLogin(password_manager::FromPasswordForm(form_));
 
   std::vector<GURL> federations;
   EXPECT_CALL(*client_, PromptUserToChooseCredentialsPtr).Times(0);
@@ -1359,7 +1359,7 @@ TEST_P(CredentialManagerImplTest,
 }
 
 TEST_P(CredentialManagerImplTest, CredentialManagerRequestWhenActorIsActive) {
-  store_->AddLogin(form_);
+  store_->AddLogin(password_manager::FromPasswordForm(form_));
 
   std::vector<GURL> federations;
   EXPECT_CALL(*client_, PromptUserToChooseCredentialsPtr).Times(0);
@@ -1380,7 +1380,7 @@ TEST_P(CredentialManagerImplTest, CredentialManagerRequestWhenActorIsActive) {
 
 TEST_P(CredentialManagerImplTest,
        CredentialManagerSucceedsWhenActorIsNotActive) {
-  store_->AddLogin(form_);
+  store_->AddLogin(password_manager::FromPasswordForm(form_));
 
   std::vector<GURL> federations;
   EXPECT_CALL(*client_, PromptUserToChooseCredentialsPtr).Times(0);
@@ -1404,9 +1404,9 @@ TEST_P(CredentialManagerImplTest, ResetSkipZeroClickInProfileStoreAfterPrompt) {
   // origins, both set to skip zero-click.
   client_->set_zero_click_enabled(true);
   form_.skip_zero_click = true;
-  store_->AddLogin(form_);
+  store_->AddLogin(password_manager::FromPasswordForm(form_));
   cross_origin_form_.skip_zero_click = true;
-  store_->AddLogin(cross_origin_form_);
+  store_->AddLogin(password_manager::FromPasswordForm(cross_origin_form_));
 
   // Execute the PasswordStore asynchronousness to ensure everything is
   // written before proceeding.
@@ -1459,7 +1459,7 @@ TEST_P(CredentialManagerImplTest, ResetSkipZeroClickInAccountStoreAfterPrompt) {
   // |kTestWebOrigin| and set to skip zero-click.
   client_->set_zero_click_enabled(true);
   form_.skip_zero_click = true;
-  account_store_->AddLogin(form_);
+  account_store_->AddLogin(password_manager::FromPasswordForm(form_));
 
   // Trigger a request which should return the credential found in |form_|, and
   // wait for it to process.
@@ -1501,8 +1501,8 @@ TEST_P(CredentialManagerImplTest,
   // |kTestWebOrigin| , both set to skip zero-click on both stores.
   client_->set_zero_click_enabled(true);
   form_.skip_zero_click = true;
-  account_store_->AddLogin(form_);
-  store_->AddLogin(form_);
+  account_store_->AddLogin(password_manager::FromPasswordForm(form_));
+  store_->AddLogin(password_manager::FromPasswordForm(form_));
 
   // Trigger a request which should return the credential found in |form_|, and
   // wait for it to process.
@@ -1536,7 +1536,7 @@ TEST_P(CredentialManagerImplTest,
 
 TEST_P(CredentialManagerImplTest, IncognitoZeroClickRequestCredential) {
   EXPECT_CALL(*client_, IsOffTheRecord()).WillRepeatedly(Return(true));
-  store_->AddLogin(form_);
+  store_->AddLogin(password_manager::FromPasswordForm(form_));
 
   std::vector<GURL> federations;
   EXPECT_CALL(*client_, PromptUserToChooseCredentialsPtr).Times(0);
@@ -1550,7 +1550,7 @@ TEST_P(CredentialManagerImplTest, ZeroClickWithAffiliatedFormInPasswordStore) {
   // Insert the affiliated form into the store, and mock out the association
   // with the current origin. As it's the only form matching the origin, it
   // ought to be returned automagically.
-  store_->AddLogin(affiliated_form1_);
+  store_->AddLogin(password_manager::FromPasswordForm(affiliated_form1_));
 
   std::vector<GURL> federations;
   std::vector<std::string> affiliated_realms = {kTestAndroidRealm1};
@@ -1566,8 +1566,8 @@ TEST_P(CredentialManagerImplTest,
        ZeroClickWithTwoAffiliatedFormsInPasswordStore) {
   // Insert two affiliated forms into the store, and mock out the association
   // with the current origin. Multiple forms === no zero-click sign in.
-  store_->AddLogin(affiliated_form1_);
-  store_->AddLogin(affiliated_form2_);
+  store_->AddLogin(password_manager::FromPasswordForm(affiliated_form1_));
+  store_->AddLogin(password_manager::FromPasswordForm(affiliated_form2_));
 
   std::vector<GURL> federations;
   std::vector<std::string> affiliated_realms;
@@ -1585,7 +1585,7 @@ TEST_P(CredentialManagerImplTest,
   // Insert the affiliated form into the store, but don't mock out the
   // association with the current origin. No association === no zero-click sign
   // in.
-  store_->AddLogin(affiliated_form1_);
+  store_->AddLogin(password_manager::FromPasswordForm(affiliated_form1_));
 
   std::vector<std::string> affiliated_realms;
   PasswordFormDigest digest = cm_service_impl_->GetSynthesizedFormForOrigin();
@@ -1609,8 +1609,8 @@ TEST_P(CredentialManagerImplTest,
   // Insert the affiliated form into the store, along with a real form for the
   // origin, and don't mock out the association with the current origin. No
   // association + existing form === zero-click sign in.
-  store_->AddLogin(form_);
-  store_->AddLogin(affiliated_form1_);
+  store_->AddLogin(password_manager::FromPasswordForm(form_));
+  store_->AddLogin(password_manager::FromPasswordForm(affiliated_form1_));
 
   std::vector<GURL> federations;
   std::vector<std::string> affiliated_realms;
@@ -1624,7 +1624,7 @@ TEST_P(CredentialManagerImplTest,
 
 TEST_P(CredentialManagerImplTest, ZeroClickWithPSLCredential) {
   subdomain_form_.skip_zero_click = false;
-  store_->AddLogin(subdomain_form_);
+  store_->AddLogin(password_manager::FromPasswordForm(subdomain_form_));
 
   ExpectZeroClickSignInFailure(CredentialMediationRequirement::kSilent, true,
                                std::vector<GURL>());
@@ -1635,8 +1635,8 @@ TEST_P(CredentialManagerImplTest, ZeroClickWithPSLAndNormalCredentials) {
   form_.federation_origin = url::SchemeHostPort(GURL("https://google.com/"));
   form_.signon_realm = "federation://" + form_.url.GetHost() + "/google.com";
   form_.skip_zero_click = false;
-  store_->AddLogin(form_);
-  store_->AddLogin(subdomain_form_);
+  store_->AddLogin(password_manager::FromPasswordForm(form_));
+  store_->AddLogin(password_manager::FromPasswordForm(subdomain_form_));
 
   std::vector<GURL> federations = {GURL("https://google.com/")};
   ExpectZeroClickSignInFailure(CredentialMediationRequirement::kSilent, true,
@@ -1650,7 +1650,7 @@ TEST_P(CredentialManagerImplTest, ZeroClickAfterMigratingHttpCredential) {
   form_.signon_realm = form_.url.DeprecatedGetOriginAsURL().spec();
   // That is the default value for old credentials.
   form_.skip_zero_click = true;
-  store_->AddLogin(form_);
+  store_->AddLogin(password_manager::FromPasswordForm(form_));
 
   std::vector<GURL> federations;
   ExpectZeroClickSignInSuccess(CredentialMediationRequirement::kSilent, true,
@@ -1669,7 +1669,7 @@ TEST_P(CredentialManagerImplTest, ZeroClickOnLocalhost) {
 
 TEST_P(CredentialManagerImplTest, MediationRequiredPreventsAutoSignIn) {
   form_.skip_zero_click = false;
-  store_->AddLogin(form_);
+  store_->AddLogin(password_manager::FromPasswordForm(form_));
 
   std::vector<GURL> federations;
   bool called = false;
@@ -1760,7 +1760,7 @@ TEST_P(CredentialManagerImplTest, RespecBlockedPasswordCredential) {
   blocked_form.blocked_by_user = true;
   blocked_form.url = form_.url;
   blocked_form.signon_realm = blocked_form.url.spec();
-  store_->AddLogin(blocked_form);
+  store_->AddLogin(password_manager::FromPasswordForm(blocked_form));
 
   auto info = PasswordFormToCredentialInfo(form_);
   bool called = false;
@@ -1780,7 +1780,7 @@ TEST_P(CredentialManagerImplTest, RespectBlockedFederatedCredential) {
   blocked_form.blocked_by_user = true;
   blocked_form.url = form_.url;
   blocked_form.signon_realm = blocked_form.url.spec();
-  store_->AddLogin(blocked_form);
+  store_->AddLogin(password_manager::FromPasswordForm(blocked_form));
 
   form_.federation_origin = url::SchemeHostPort(GURL("https://example.com/"));
   form_.password_value = std::u16string();
@@ -1805,10 +1805,10 @@ TEST_P(CredentialManagerImplTest,
       url::SchemeHostPort(GURL("https://google.com/"));
   federated.signon_realm =
       "federation://" + federated.url.GetHost() + "/google.com";
-  store_->AddLogin(federated);
+  store_->AddLogin(password_manager::FromPasswordForm(federated));
 
   form_.username_value = u"username_value";
-  store_->AddLogin(form_);
+  store_->AddLogin(password_manager::FromPasswordForm(form_));
 
   form_.match_type = PasswordForm::MatchType::kExact;
   federated.match_type = PasswordForm::MatchType::kExact;
@@ -2030,7 +2030,7 @@ TEST_P(CredentialManagerImplTest, ReauthAfterAccountSelection) {
           IsBiometricAuthenticationBeforeFillingEnabled)
       .WillByDefault(Return(true));
 
-  store_->AddLogin(form_);
+  store_->AddLogin(password_manager::FromPasswordForm(form_));
   RunAllPendingTasks();
 
   EXPECT_CALL(*client_, PromptUserToChooseCredentialsPtr).Times(1);

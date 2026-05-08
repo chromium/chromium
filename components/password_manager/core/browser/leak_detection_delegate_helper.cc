@@ -32,7 +32,7 @@ LeakDetectionDelegateHelper::LeakDetectionDelegateHelper(
 LeakDetectionDelegateHelper::~LeakDetectionDelegateHelper() = default;
 
 void LeakDetectionDelegateHelper::ProcessLeakedPassword(
-    PasswordForm credentials) {
+    StoredCredential credentials) {
   credentials_ = std::move(credentials);
 
   int wait_counter = 1 + (account_store_ ? 1 : 0);
@@ -55,8 +55,7 @@ void LeakDetectionDelegateHelper::OnGetPasswordStoreResultsOrErrorFrom(
     return;
   }
   auto results = std::get<LoginsResult>(std::move(results_or_error));
-  std::ranges::move(ToPasswordForms(std::move(results)),
-                    std::back_inserter(partial_results_));
+  std::ranges::move(std::move(results), std::back_inserter(partial_results_));
   barrier_closure_.Run();
 }
 
@@ -80,12 +79,12 @@ void LeakDetectionDelegateHelper::ProcessResults() {
       // passwords. It overwrites the date and leads to performance problems as
       // called in the loop.
       if (!form.password_issues.contains(InsecureType::kLeaked)) {
-        PasswordForm form_to_update = form;
+        StoredCredential form_to_update = CloneStoredCredential(form);
         form_to_update.password_issues.insert_or_assign(
             InsecureType::kLeaked,
             InsecurityMetadata(base::Time::Now(), IsMuted(false),
                                TriggerBackendNotification(false)));
-        store.UpdateLogin(form_to_update);
+        store.UpdateLogin(std::move(form_to_update));
       }
       all_urls_with_leaked_credentials.push_back(form.url);
 

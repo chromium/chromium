@@ -42,6 +42,7 @@
 #include "components/offline_pages/core/stub_offline_page_model.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/split_stores_and_local_upm.h"
 #include "components/prefs/pref_service.h"
@@ -204,9 +205,11 @@ TEST_F(SigninManagerAndroidTest, WipeLocalPasswords) {
   profile_store_form.signon_realm = "https://local.com";
   password_manager::PasswordForm account_store_form = profile_store_form;
   account_store_form.signon_realm = "htts://account.com";
-  profile_password_store()->AddLogin(profile_store_form);
+  profile_password_store()->AddLogin(
+      password_manager::FromPasswordForm(profile_store_form));
   ASSERT_TRUE(account_password_store());
-  account_password_store()->AddLogin(account_store_form);
+  account_password_store()->AddLogin(
+      password_manager::FromPasswordForm(account_store_form));
 
   WipeData(ClearedTypes::kAllData);
 

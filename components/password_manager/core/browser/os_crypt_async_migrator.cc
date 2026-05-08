@@ -59,7 +59,7 @@ void OSCryptAsyncMigrator::OnGetPasswordStoreResultsOrErrorFrom(
   }
 
   store->UpdateLogins(
-      ToPasswordForms(std::move(logins)),
+      std::move(logins),
       base::BindOnce(&OSCryptAsyncMigrator::MarkMigrationComplete,
                      weak_ptr_factory_.GetWeakPtr()));
 }

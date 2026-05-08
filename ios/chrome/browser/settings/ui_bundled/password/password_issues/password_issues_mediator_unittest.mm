@@ -13,6 +13,7 @@
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
+#import "components/password_manager/core/browser/password_store/password_form_converters.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
@@ -166,20 +167,20 @@ class PasswordIssuesMediatorTest : public BlockCleanupTest {
                              std::string password = kPassword,
                              InsecureType insecure_type = InsecureType::kLeaked,
                              bool muted = false) {
-    PasswordForm form;
-    form.signon_realm = website;
-    form.username_value = base::ASCIIToUTF16(username);
-    form.password_value = base::ASCIIToUTF16(password);
-    form.url = GURL(website + "/login");
-    form.action = GURL(website + "/action");
-    form.username_element = u"email";
-    form.password_issues = {
+    password_manager::StoredCredential cred;
+    cred.signon_realm = website;
+    cred.username_value = base::ASCIIToUTF16(username);
+    cred.password_value = base::ASCIIToUTF16(password);
+    cred.url = GURL(website + "/login");
+    cred.action = GURL(website + "/action");
+    cred.username_element = u"email";
+    cred.password_issues = {
         {insecure_type,
          password_manager::InsecurityMetadata(
              base::Time::Now(), password_manager::IsMuted(muted),
              password_manager::TriggerBackendNotification(false))}};
-    form.in_store = PasswordForm::Store::kProfileStore;
-    store()->AddLogin(form);
+    cred.in_store = PasswordForm::Store::kProfileStore;
+    store()->AddLogin(std::move(cred));
   }
 
   void CheckIssue(NSUInteger group = 0,

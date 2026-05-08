@@ -225,6 +225,10 @@ MATCHER_P(EqualsIgnorePrimaryKey, expected_form, "") {
                             result_listener);
 }
 
+MATCHER_P(EqStoredCredential, expected_form, "") {
+  return arg == password_manager::FromPasswordForm(expected_form);
+}
+
 // Matcher for `forms` that ignores PasswordForm::primary_key and
 // PasswordForm::keychain_identifier.
 std::vector<::testing::Matcher<PasswordForm>> FormsIgnoringPrimaryKey(
