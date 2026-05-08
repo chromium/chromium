@@ -306,6 +306,11 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
         return mBrowserControlsSizer;
     }
 
+    /** Returns the current background color of the bottom controls. */
+    public @ColorInt int getBackgroundColor() {
+        return mCurrentBackgroundColor;
+    }
+
     /**
      * @see BrowserControlsSizer#notifyBackgroundColor(int).
      * @deprecated {@link BottomControlsLayer} should provide the background color to the {@link
