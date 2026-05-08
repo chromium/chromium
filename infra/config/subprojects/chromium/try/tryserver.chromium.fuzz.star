@@ -204,7 +204,7 @@ try_.builder(
 def _test_builder(**kwargs):
     _mirror_builder(
         cq_settings = try_.cq_settings(
-            location_filters = ["third_party/fuzztest"],
+            location_filters = ["third_party/fuzztest", "testing/libfuzzer"],
         ),
         **kwargs
     )
