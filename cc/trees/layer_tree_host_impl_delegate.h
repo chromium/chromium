@@ -27,7 +27,7 @@ namespace cc {
 enum class AnimationWorkletMutationState;
 enum class ElementListType;
 
-// LayerTreeHost->Proxy callback interface.
+// LayerTreeHostImpl->Proxy callback interface.
 class LayerTreeHostImplDelegate {
  public:
   virtual void DidLoseLayerTreeFrameSinkOnImplThread() = 0;
