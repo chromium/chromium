@@ -85,4 +85,63 @@ TEST_F(PendingInvalidationsTest, DescendantInvalidationOnDisplayNone) {
   EXPECT_FALSE(GetDocument().NeedsLayoutTreeUpdate());
 }
 
+// Regression test for https://crbug.com/40257823.
+// With a style rule using :not() and the subsequent-sibling combinator (~),
+// adding and removing an element should not leave an orphaned entry in the
+// pending invalidation map.
+TEST_F(PendingInvalidationsTest, NoLeakForNotWithSubsequentSibling) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>:not(.x) ~ * { color: red; }</style>
+    <div id="container"></div>
+  )HTML");
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  Element* container = GetDocument().getElementById(AtomicString("container"));
+  ASSERT_TRUE(container);
+
+  // Add a button as the only child (no nextSibling).
+  Element* button = GetDocument().CreateRawElement(html_names::kButtonTag);
+  container->AppendChild(button);
+
+  // The pending invalidation map may have entries for the container (from
+  // sibling invalidation being rescheduled as descendant invalidation). Flush
+  // style to clear all pending state.
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  // Remove the button.
+  container->RemoveChild(button);
+
+  // After removal, the button should not remain in the pending invalidation
+  // map.
+  EXPECT_TRUE(
+      GetPendingNodeInvalidations().GetPendingInvalidationMap().find(button) ==
+      GetPendingNodeInvalidations().GetPendingInvalidationMap().end());
+}
+
+// Verify that Nth sibling invalidation sets are still scheduled on a last child
+// even when it has no nextSibling.
+TEST_F(PendingInvalidationsTest, NthSetsScheduledOnLastSibling) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(
+      "<div id='parent'><div id='only'></div></div>");
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  Element* only = GetDocument().getElementById(AtomicString("only"));
+  ASSERT_TRUE(only);
+  ASSERT_FALSE(only->nextSibling());
+
+  // Create an NthSiblingInvalidationSet.
+  scoped_refptr<NthSiblingInvalidationSet> nth_set =
+      NthSiblingInvalidationSet::Create();
+
+  InvalidationLists lists;
+  lists.siblings.push_back(nth_set);
+  GetPendingNodeInvalidations().ScheduleInvalidationSetsForNode(lists, *only);
+
+  // The Nth set should have been scheduled and the node should be in the map.
+  EXPECT_TRUE(only->NeedsStyleInvalidation());
+  EXPECT_TRUE(
+      GetPendingNodeInvalidations().GetPendingInvalidationMap().find(only) !=
+      GetPendingNodeInvalidations().GetPendingInvalidationMap().end());
+}
+
 }  // namespace blink
