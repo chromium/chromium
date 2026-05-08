@@ -23,6 +23,7 @@
 #include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/optional_util.h"
 #include "base/types/variant_util.h"
@@ -384,8 +385,10 @@ void ClipboardOzone::OnGetAllAvailableFormats(
              const std::vector<std::string>& available_types) {
             base::flat_set<ClipboardFormatType> formats;
             for (const auto& mime_type : available_types) {
-              formats.insert(
-                  ClipboardFormatType::CustomPlatformType(mime_type));
+              if (base::IsStringASCII(mime_type)) {
+                formats.insert(
+                    ClipboardFormatType::CustomPlatformType(mime_type));
+              }
             }
             std::move(callback).Run(std::move(formats));
           },

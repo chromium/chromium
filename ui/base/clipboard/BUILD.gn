@@ -260,7 +260,7 @@ source_set("clipboard_test_support") {
 source_set("clipboard_test") {
   testonly = true
 
-  sources = []
+  sources = [ "clipboard_format_type_unittest.cc" ]
   output_name = "ui_base_clipboard_test"
 
   if (is_ios) {
