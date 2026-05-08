@@ -278,6 +278,8 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
 
   void OnSelectionAreasChanged(int count);
 
+  void OnZoomLevelChange();
+
   // Records the number of tabs attached as context for a Glic response.
   void RecordAttachedContextTabCount(int tab_count);
 
@@ -407,6 +409,10 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
 
   // Whether region selection is active.
   int selection_areas_count_ = 0;
+
+  // The number of zoom change attempts (tracked per instance and reset when
+  // the instance is destroyed).
+  int zoom_change_count_ = 0;
 };
 
 }  // namespace glic

@@ -698,4 +698,16 @@ TEST_F(GlicInstanceMetricsTest, RecordSkillsWebClientEvent_IsNoOpWhenUnknown) {
   EXPECT_TRUE(histogram_tester_.GetTotalCountsForPrefix("Skills.").empty());
 }
 
+TEST_F(GlicInstanceMetricsTest, ZoomChangeCount) {
+  {
+    GlicInstanceMetrics metrics;
+    metrics.OnZoomLevelChange();
+    metrics.OnZoomLevelChange();
+    metrics.OnZoomLevelChange();
+    metrics.OnClose();
+  }  // Destructor calls OnInstanceDestroyed
+
+  histogram_tester_.ExpectUniqueSample("Glic.Instance.ZoomChangeCount", 3, 1);
+}
+
 }  // namespace glic

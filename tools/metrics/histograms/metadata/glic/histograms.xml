@@ -1496,6 +1496,17 @@ chromium-metrics-reviews@google.com.
   <token key="Visibility" variants="Visibility"/>
 </histogram>
 
+<histogram name="Glic.Instance.ZoomChangeCount" units="count"
+    expires_after="2026-09-20">
+  <owner>cuianthony@chromium.org</owner>
+  <owner>glic-dev@google.com</owner>
+  <summary>
+    Records the number of times the zoom level of the Glic panel was changed
+    throughout the lifetime of a single Glic instance. Recorded when the
+    instance is destroyed.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Interaction.SwitchConversationTarget"
     enum="GlicSwitchConversationTarget" expires_after="2026-08-02">
   <owner>birnie@google.com</owner>

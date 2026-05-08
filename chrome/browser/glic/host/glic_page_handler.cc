@@ -2608,11 +2608,15 @@ void GlicPageHandler::OnZoomLevelChange(double zoom_factor) {
     return;
   }
   int zoom_percent = std::round(zoom_factor * 100);
-  // Note that zoom level is already persisted in the glic webview partition -
-  // this pref is only used for metrics.
-  Profile::FromBrowserContext(browser_context_)
-      ->GetPrefs()
-      ->SetInteger(prefs::kGlicZoomLevel, zoom_percent);
+  auto* pref_service =
+      Profile::FromBrowserContext(browser_context_)->GetPrefs();
+  // The webui sends a zoom level change on initialization. Skip these.
+  if (pref_service->GetInteger(prefs::kGlicZoomLevel) != zoom_percent) {
+    // Note that zoom level is already persisted in the glic webview partition -
+    // this pref is only used for metrics.
+    pref_service->SetInteger(prefs::kGlicZoomLevel, zoom_percent);
+    host().instance_metrics()->OnZoomLevelChange();
+  }
 }
 
 void GlicPageHandler::NotifyWindowIntentToShow() {

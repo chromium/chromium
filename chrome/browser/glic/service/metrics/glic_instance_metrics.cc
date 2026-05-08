@@ -211,6 +211,10 @@ void GlicInstanceMetrics::OnInstanceDestroyed() {
     modes_used = InputModesUsed::kOnlyText;
   }
   base::UmaHistogramEnumeration("Glic.Instance.InputModesUsed", modes_used);
+
+  base::UmaHistogramCounts100("Glic.Instance.ZoomChangeCount",
+                              zoom_change_count_);
+  zoom_change_count_ = 0;
 }
 
 void GlicInstanceMetrics::OnActivationChanged(bool is_active) {
@@ -1063,6 +1067,10 @@ void GlicInstanceMetrics::OnSessionFinished() {
     scroll_attempt_count_ = 0;
   }
   last_session_end_time_ = base::TimeTicks::Now();
+}
+
+void GlicInstanceMetrics::OnZoomLevelChange() {
+  ++zoom_change_count_;
 }
 
 void GlicInstanceMetrics::RecordAttachedContextTabCount(int tab_count) {
