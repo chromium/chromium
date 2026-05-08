@@ -34,6 +34,7 @@
 #include <variant>
 
 #include "base/notreached.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
@@ -44,9 +45,15 @@
 #include "third_party/blink/renderer/core/clipboard/paste_mode.h"
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/fileapi/file_reader_client.h"
+#include "third_party/blink/renderer/core/fileapi/file_reader_data.h"
+#include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/file_metadata.h"
+#include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 
 namespace blink {
@@ -438,7 +445,59 @@ DataObject* DataObject::Create(const WebDragData& data) {
   return Create(/*context=*/nullptr, data);
 }
 
-WebDragData DataObject::ToWebDragData() {
+namespace {
+
+// Synchronously reads all bytes from a BlobDataHandle into a SharedBuffer.
+// Used to populate file contents for JS-constructed File objects
+// (e.g. new File([bytes], 'photo.jpg')) during drag start.
+// 256MB matches the upper limit used for synchronous reads in the Clipboard
+// API.
+constexpr size_t kMaxSyncReadSize = 256 * 1024 * 1024;
+scoped_refptr<SharedBuffer> SyncReadBlobDataHandle(
+    scoped_refptr<BlobDataHandle> handle,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+  if (!handle || !task_runner) {
+    return nullptr;
+  }
+
+  uint64_t size = handle->size();
+  if (size == 0 || size > kMaxSyncReadSize) {
+    VLOG(1) << "Blob empty or too large for synchronous DND read: " << size;
+    return nullptr;
+  }
+
+  auto [error_code, data] = SyncedFileReaderAccumulator::Load(
+      std::move(handle), std::move(task_runner));
+
+  if (error_code != FileErrorCode::kOK) {
+    return nullptr;
+  }
+
+  ArrayBufferContents contents = std::move(data).AsArrayBufferContents();
+  if (!contents.IsValid() || contents.DataLength() == 0) {
+    return nullptr;
+  }
+
+  return SharedBuffer::Create(contents.ByteSpan());
+}
+
+// Returns true if |buf| begins with magic bytes recognized by ImageDecoder
+// (JPEG, PNG, GIF, WebP, BMP, ICO, etc.). This guards against disguised
+// executables such as new File([exeBytes], 'photo.jpg') — ImageDecoder::Create
+// returns nullptr when the magic bytes do not match any supported image format.
+// No full decode is performed; only the file signature is checked.
+bool IsImageDataValid(scoped_refptr<SharedBuffer> buf) {
+  std::unique_ptr<ImageDecoder> decoder = ImageDecoder::Create(
+      SegmentReader::CreateFromSharedBuffer(buf),
+      /*data_complete=*/true, ImageDecoder::kAlphaPremultiplied,
+      ImageDecoder::kDefaultBitDepth, ColorBehavior::kTag,
+      cc::AuxImage::kDefault, Platform::GetMaxDecodedImageBytes());
+  return decoder != nullptr;
+}
+
+}  // namespace
+
+WebDragData DataObject::ToWebDragData(ExecutionContext* context) {
   WebDragData data;
   std::vector<WebDragData::Item> item_list(length());
 
@@ -479,11 +538,51 @@ WebDragData DataObject::ToWebDragData() {
             file_system_file_item.file_system_id =
                 original_item->FileSystemId();
           } else {
-            // TODO(http://crbug.com/394955): support dragging constructed
-            // Files across renderers.
-            auto& string_item = item_list[i].emplace<WebDragData::StringItem>();
-            string_item.type = "text/plain";
-            string_item.data = file->name();
+            scoped_refptr<SharedBuffer> buf;
+            if (context &&
+                RuntimeEnabledFeatures::DragAndDropJSFileObjectsEnabled(
+                    context)) {
+              scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+                  context->GetTaskRunner(TaskType::kFileReading);
+              buf = SyncReadBlobDataHandle(file->GetBlobDataHandle(),
+                                           std::move(task_runner));
+            }
+            // TODO(crbug.com/510410319): Gate this path on an image MIME type
+            // (e.g. image/*) in addition to magic-byte validation.
+            if (buf && buf->size() > 0 && IsImageDataValid(buf)) {
+              auto& binary_item =
+                  item_list[i].emplace<WebDragData::BinaryDataItem>();
+              binary_item.data = buf;
+              // The image data has been validated, so it is safe to allow the
+              // browser process to access it as file contents. Mark it
+              // accessible so that drops onto frames within the same
+              // WebContents (e.g. a parent frame dropping onto an iframe)
+              // pass the browser-side IsImageAccessibleFromFrame() check.
+              binary_item.image_accessible = true;
+              // Encode the original filename into the source URL path so that
+              // GetAsFile() can recover it via base_url_.LastPathComponent()
+              // at the drop target.
+              if (!file->name().empty()) {
+                String source_url =
+                    StrCat({"https://local/",
+                            EncodeWithUrlEscapeSequences(file->name())});
+                binary_item.source_url = KURL(source_url);
+              }
+
+              const String& name = file->name();
+              size_t dot_index = name.rfind('.');
+
+              if (dot_index != kNotFound && dot_index + 1 < name.length()) {
+                String ext = name.substr(dot_index + 1);
+                binary_item.filename_extension = ext;
+              }
+            } else {
+              // Fallback: only set the file name as text/plain.
+              auto& string_item =
+                  item_list[i].emplace<WebDragData::StringItem>();
+              string_item.type = "text/plain";
+              string_item.data = file->name();
+            }
           }
         } else {
           NOTREACHED();

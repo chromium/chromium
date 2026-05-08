@@ -377,7 +377,7 @@ void SystemClipboard::WriteDataObject(DataObject* data_object) {
   // allow receiving side to extract the data required.
   // TODO(crbug.com/332571415): Properly support text/uri-list here.
   HashMap<String, String> custom_data;
-  WebDragData data = data_object->ToWebDragData();
+  WebDragData data = data_object->ToWebDragData(nullptr);
   for (const WebDragData::Item& item : data.Items()) {
     if (const auto* string_item = std::get_if<WebDragData::StringItem>(&item)) {
       if (string_item->type == ui::kMimeTypePlainText) {

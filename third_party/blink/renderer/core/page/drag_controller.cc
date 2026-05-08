@@ -1430,7 +1430,8 @@ void DragController::DoSystemDrag(DragImage* image,
   gfx::Point adjusted_event_pos =
       frame->View()->FrameToViewport(drag_initiation_location);
   gfx::Vector2d cursor_offset = adjusted_event_pos - adjusted_drag_obj_location;
-  WebDragData drag_data = data_transfer->GetDataObject()->ToWebDragData();
+  WebDragData drag_data =
+      data_transfer->GetDataObject()->ToWebDragData(frame->DomWindow());
   if (drag_data.SourceEffectAllowed().IsNull()) {
     drag_data.SetSourceEffectAllowed(data_transfer->effectAllowed());
   }

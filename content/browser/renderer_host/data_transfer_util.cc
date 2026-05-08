@@ -389,7 +389,11 @@ DropData DragDataToDropData(const blink::mojom::DragData& drag_data) {
         break;
       }
       case blink::mojom::DragItemDataView::Tag::kBinary: {
-        DCHECK(result.file_contents.empty());
+        // DropData only supports a single file_contents entry.
+        // Skip additional binary items until multi-file support is added.
+        if (!result.file_contents.empty()) {
+          break;
+        }
 
         const blink::mojom::DragItemBinaryPtr& binary_item = item->get_binary();
         base::span<const uint8_t> contents(binary_item->data);

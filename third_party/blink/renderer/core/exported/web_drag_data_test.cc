@@ -68,7 +68,7 @@ TEST(WebDragDataTest, items) {
         url, metadata, File::kIsNotUserVisible, BlobDataHandle::Create()));
   }
 
-  WebDragData data = data_object->ToWebDragData();
+  WebDragData data = data_object->ToWebDragData(&context.GetExecutionContext());
   std::vector<WebDragData::Item> items = data.Items();
   ASSERT_EQ(6u, items.size());
 

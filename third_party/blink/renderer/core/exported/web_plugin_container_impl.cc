@@ -868,7 +868,8 @@ void WebPluginContainerImpl::HandleDragEvent(MouseEvent& event) {
     return;
 
   DataTransfer* data_transfer = event.dataTransfer();
-  WebDragData drag_data = data_transfer->GetDataObject()->ToWebDragData();
+  WebDragData drag_data =
+      data_transfer->GetDataObject()->ToWebDragData(nullptr);
   DragOperationsMask drag_operation_mask = data_transfer->SourceOperation();
   gfx::PointF drag_screen_location(event.screenX(), event.screenY());
   gfx::Point location(Location());

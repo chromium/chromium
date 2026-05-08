@@ -6368,6 +6368,18 @@
     ]
   },
   {
+    "prefix": "disable-drag-drop-js-file-objects",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/html/editing/dnd/js-file-fallback-text-only.html"
+    ],
+    "args": [
+      "--disable-blink-features=DragAndDropJSFileObjects"
+    ],
+    "owners": ["joonehur@microsoft.com"],
+    "expires": "Dec 1, 2026"
+  },
+  {
     "prefix": "webmcp-kill-switch",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [

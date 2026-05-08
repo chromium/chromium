@@ -53,6 +53,12 @@ external/wpt/infrastructure/reftest/reftest_ref_timeout.html [ Timeout ]
 external/wpt/infrastructure/reftest/reftest_timeout.html [ Timeout ]
 wpt_internal/infrastructure/fail-before-timeout.html [ Timeout ]
 
+# Fallback-only test should fail in default runs (feature enabled).
+crbug.com/510410319 external/wpt/html/editing/dnd/js-file-fallback-text-only.html [ Failure ]
+
+# Drag-and-drop for JS-constructed files is currently unsupported.
+crbug.com/40183464 [ Mac ] external/wpt/html/editing/dnd/js-file-image-drag.html [ Failure ]
+
 # Temporary until we roll a newer jxl-rs version with updated decoder output.
 [ Linux ] virtual/jxl-enabled/external/wpt/jpegxl/jxl-art-basic-reftest.html [ Failure ]
 

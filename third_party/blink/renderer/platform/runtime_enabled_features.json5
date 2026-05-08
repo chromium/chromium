@@ -2429,6 +2429,13 @@
       status: "stable",
     },
     {
+      // Enables JS-constructed File objects (e.g. new File([bytes], 'photo.jpg'))
+      // to carry their blob contents through the drag-and-drop pipeline.
+      // When disabled, only the filename is sent as text/plain (legacy behavior).
+      name: "DragAndDropJSFileObjects",
+      status: "test",
+    },
+    {
       // See https://crbug.com/443612843
       name: "EditContextAssignmentAsPerSpec",
       status: "test"
