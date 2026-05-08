@@ -112,10 +112,8 @@ bool IsNavigationCapturingSettingOffByDefault(
   }
 
   switch (features::kNavigationCapturingDefaultState.Get()) {
-    case features::CapturingState::kDefaultOff:
     case features::CapturingState::kReimplDefaultOff:
       return true;
-    case features::CapturingState::kDefaultOn:
     case features::CapturingState::kReimplDefaultOn:
       return false;
     case features::CapturingState::kReimplOnViaClientMode:

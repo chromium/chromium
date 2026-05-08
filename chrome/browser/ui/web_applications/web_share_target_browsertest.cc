@@ -376,8 +376,7 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     WebShareTargetBrowserTest,
     // Ensure share target still works with navigation capturing v2.
-    testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff,
-                    apps::test::LinkCapturingFeatureVersion::kV2DefaultOff,
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV2DefaultOff,
                     apps::test::LinkCapturingFeatureVersion::
                         kV2DefaultOffCaptureExistingFrames),
     apps::test::LinkCapturingVersionToString);

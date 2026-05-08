@@ -79,10 +79,6 @@ class WebAppLinkCapturingBrowserTest
   }
   ~WebAppLinkCapturingBrowserTest() override = default;
 
-  bool IsV1() const { return apps::test::IsV1(GetParam()); }
-
-  bool IsV2() const { return apps::test::IsV2(GetParam()); }
-
   bool ShouldLinksWithExistingFrameTargetsCapture() const {
     return apps::test::ShouldLinksWithExistingFrameTargetsCapture(GetParam());
   }
@@ -160,7 +156,7 @@ class WebAppLinkCapturingBrowserTest
   }
 
   void NavigateCapturable(Browser* browser, const GURL& url) {
-    LinkTarget target = (IsV1() ? LinkTarget::SELF : LinkTarget::BLANK);
+    LinkTarget target = LinkTarget::BLANK;
     ClickLinkAndWait(browser->tab_strip_model()->GetActiveWebContents(), url,
                      target, "");
   }
@@ -340,12 +336,8 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTest,
   BrowserCreatedObserver browser_created_observer;
   NavigateBlank(browser(), in_scope_1);
   ExpectTabs(browser(), {out_of_scope_});
-  if (IsV1()) {
-    ExpectTabs(app_browser, {in_scope_1});
-  } else {
-    Browser* other_app_browser = browser_created_observer.Wait();
-    ExpectTabs(other_app_browser, {in_scope_1});
-  }
+  Browser* other_app_browser = browser_created_observer.Wait();
+  ExpectTabs(other_app_browser, {in_scope_1});
 }
 
 // TODO(crbug.com/447228160): Re-enable this test
@@ -504,9 +496,6 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTest,
     ASSERT_EQ(apps::test::EnableLinkCapturingByUser(profile(), parent_app_id),
               base::ok());
   }
-  if (!IsV2()) {
-    AddTab(browser(), about_blank_);
-  }
 
   BrowserCreatedObserver browser_created_observer;
 
@@ -656,8 +645,7 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingBrowserTest,
 
     BrowserCreatedObserver browser_created_observer;
     ClickLinkAndWait(popup_browser->GetTabStripModel()->GetActiveWebContents(),
-                     GetNestedAppUrl(),
-                     IsV2() ? LinkTarget::BLANK : LinkTarget::SELF,
+                     GetNestedAppUrl(), LinkTarget::BLANK,
                      /*rel=*/"");
     EXPECT_TRUE(AppBrowserController::IsForWebApp(
         browser_created_observer.Wait(), nested_app_id));
@@ -815,8 +803,7 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     WebAppLinkCapturingBrowserTest,
 #if BUILDFLAG(IS_CHROMEOS)
-    testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff,
-                    apps::test::LinkCapturingFeatureVersion::kV2DefaultOff,
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV2DefaultOff,
                     apps::test::LinkCapturingFeatureVersion::
                         kV2DefaultOffCaptureExistingFrames),
 #else
@@ -903,13 +890,11 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     WebAppTabStripLinkCapturingBrowserTest,
 #if BUILDFLAG(IS_CHROMEOS)
-    testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff,
-                    apps::test::LinkCapturingFeatureVersion::kV2DefaultOff,
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV2DefaultOff,
                     apps::test::LinkCapturingFeatureVersion::
                         kV2DefaultOffCaptureExistingFrames),
 #else
-    testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff,
-                    apps::test::LinkCapturingFeatureVersion::kV2DefaultOff),
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV2DefaultOff),
 #endif  // BUILDFLAG(IS_CHROMEOS)
     apps::test::LinkCapturingVersionToString);
 #endif

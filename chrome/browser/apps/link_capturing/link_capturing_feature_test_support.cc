@@ -46,7 +46,6 @@ std::optional<std::string> WaitForNextMessage(
 
 std::vector<base::test::FeatureRefAndParams> GetFeaturesToEnableLinkCapturingUX(
     std::optional<bool> override_captures_by_default,
-    bool use_v2,
     bool capture_existing_frame_navigations) {
 #if BUILDFLAG(IS_CHROMEOS)
   CHECK(!override_captures_by_default || !override_captures_by_default.value());
@@ -55,8 +54,8 @@ std::vector<base::test::FeatureRefAndParams> GetFeaturesToEnableLinkCapturingUX(
   std::vector<base::test::FeatureRefAndParams> features_to_enable = {
       {::features::kPwaNavigationCapturing,
        {{::features::kNavigationCapturingDefaultState.name,
-         use_v2 ? "reimpl_default_off" : "off_by_default"}}}};
-  if (capture_existing_frame_navigations && use_v2) {
+         "reimpl_default_off"}}}};
+  if (capture_existing_frame_navigations) {
     features_to_enable.push_back(
         {features::kNavigationCapturingOnExistingFrames, {}});
   }
@@ -66,16 +65,12 @@ std::vector<base::test::FeatureRefAndParams> GetFeaturesToEnableLinkCapturingUX(
   CHECK(!capture_existing_frame_navigations);
   // TODO(crbug.com/351775835): Integrate testing for all enum states of
   // `CapturingState`.
-  std::string on_by_default_label =
-      use_v2 ? "reimpl_default_on" : "on_by_default";
-  std::string off_by_default_label =
-      use_v2 ? "reimpl_default_off" : "off_by_default";
+  std::string on_by_default_label = "reimpl_default_on";
+  std::string off_by_default_label = "reimpl_default_off";
 
   bool should_override_by_default = override_captures_by_default.value_or(
       ::features::kNavigationCapturingDefaultState.default_value ==
-          ::features::CapturingState::kDefaultOn ||
-      ::features::kNavigationCapturingDefaultState.default_value ==
-          ::features::CapturingState::kReimplDefaultOn);
+      ::features::CapturingState::kReimplDefaultOn);
 
   return {{::features::kPwaNavigationCapturing,
            {{::features::kNavigationCapturingDefaultState.name,
@@ -89,8 +84,6 @@ std::vector<base::test::FeatureRefAndParams> GetFeaturesToEnableLinkCapturingUX(
 bool ShouldLinksWithExistingFrameTargetsCapture(
     LinkCapturingFeatureVersion version) {
   switch (version) {
-    case LinkCapturingFeatureVersion::kV1DefaultOff:
-      return true;
     case LinkCapturingFeatureVersion::kV2DefaultOff:
       return false;
     case LinkCapturingFeatureVersion::kV2DefaultOffCaptureExistingFrames:
@@ -100,30 +93,10 @@ bool ShouldLinksWithExistingFrameTargetsCapture(
       return false;
 #endif
   }
-}
-bool IsV1(LinkCapturingFeatureVersion version) {
-  switch (version) {
-    case LinkCapturingFeatureVersion::kV1DefaultOff:
-      return true;
-    case LinkCapturingFeatureVersion::kV2DefaultOff:
-      return false;
-    case LinkCapturingFeatureVersion::kV2DefaultOffCaptureExistingFrames:
-      return false;
-#if !BUILDFLAG(IS_CHROMEOS)
-    case LinkCapturingFeatureVersion::kV2DefaultOn:
-      return false;
-#endif
-  }
-}
-
-bool IsV2(LinkCapturingFeatureVersion version) {
-  return !IsV1(version);
 }
 
 std::string ToString(LinkCapturingFeatureVersion version) {
   switch (version) {
-    case LinkCapturingFeatureVersion::kV1DefaultOff:
-      return "V1DefaultOff";
     case LinkCapturingFeatureVersion::kV2DefaultOff:
       return "V2DefaultOff";
     case LinkCapturingFeatureVersion::kV2DefaultOffCaptureExistingFrames:
@@ -144,23 +117,19 @@ std::vector<base::test::FeatureRefAndParams> GetFeaturesToEnableLinkCapturingUX(
     LinkCapturingFeatureVersion version) {
   CHECK_IS_TEST();
   switch (version) {
-    case LinkCapturingFeatureVersion::kV1DefaultOff:
-      return GetFeaturesToEnableLinkCapturingUX(
-          /*override_captures_by_default=*/false,
-          /*use_v2=*/false, /*capture_existing_frame_navigations=*/false);
     case LinkCapturingFeatureVersion::kV2DefaultOff:
       return GetFeaturesToEnableLinkCapturingUX(
           /*override_captures_by_default=*/false,
-          /*use_v2=*/true, /*capture_existing_frame_navigations=*/false);
+          /*capture_existing_frame_navigations=*/false);
     case LinkCapturingFeatureVersion::kV2DefaultOffCaptureExistingFrames:
       return GetFeaturesToEnableLinkCapturingUX(
           /*override_captures_by_default=*/false,
-          /*use_v2=*/true, /*capture_existing_frame_navigations=*/true);
+          /*capture_existing_frame_navigations=*/true);
 #if !BUILDFLAG(IS_CHROMEOS)
     case LinkCapturingFeatureVersion::kV2DefaultOn:
       return GetFeaturesToEnableLinkCapturingUX(
           /*override_captures_by_default=*/true,
-          /*use_v2=*/true, /*capture_existing_frame_navigations=*/false);
+          /*capture_existing_frame_navigations=*/false);
 #endif
   }
 }

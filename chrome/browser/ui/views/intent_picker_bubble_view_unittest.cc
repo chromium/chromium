@@ -552,8 +552,7 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     IntentPickerBubbleViewLayoutTest,
 #if BUILDFLAG(IS_CHROMEOS)
-    testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff,
-                    apps::test::LinkCapturingFeatureVersion::kV2DefaultOff)
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV2DefaultOff)
 #else
     testing::Values(apps::test::LinkCapturingFeatureVersion::kV2DefaultOff,
                     apps::test::LinkCapturingFeatureVersion::kV2DefaultOn)
@@ -647,9 +646,9 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     IntentPickerBubbleViewGridLayoutTest,
 #if BUILDFLAG(IS_CHROMEOS)
-    // BUG(370548596): Enable test coverage for kV2DefaultOff once we figure
-    // out the test failures (listed in the bug).
-    testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff)
+    // TODO(crbug.com/370548596): Verify if this still fails on ChromeOS with
+    // V2.
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV2DefaultOff)
 #else
     testing::Values(apps::test::LinkCapturingFeatureVersion::kV2DefaultOff,
                     apps::test::LinkCapturingFeatureVersion::kV2DefaultOn)

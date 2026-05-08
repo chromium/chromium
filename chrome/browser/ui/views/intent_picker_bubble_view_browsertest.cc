@@ -430,8 +430,7 @@ INSTANTIATE_TEST_SUITE_P(
     IntentPickerIconBrowserTest,
     testing::Combine(testing::Values("", "noopener", "noreferrer", "nofollow"),
 #if BUILDFLAG(IS_CHROMEOS)
-                     testing::Values(LinkCapturingFeatureVersion::kV1DefaultOff,
-                                     LinkCapturingFeatureVersion::kV2DefaultOff)
+                     testing::Values(LinkCapturingFeatureVersion::kV2DefaultOff)
 #else
                      testing::Values(LinkCapturingFeatureVersion::kV2DefaultOn,
                                      LinkCapturingFeatureVersion::kV2DefaultOff)
@@ -575,8 +574,7 @@ INSTANTIATE_TEST_SUITE_P(
     IntentPickerIconBrowserBubbleTest,
     testing::Combine(testing::Values("", "noopener", "noreferrer", "nofollow"),
 #if BUILDFLAG(IS_CHROMEOS)
-                     testing::Values(LinkCapturingFeatureVersion::kV1DefaultOff,
-                                     LinkCapturingFeatureVersion::kV2DefaultOff)
+                     testing::Values(LinkCapturingFeatureVersion::kV2DefaultOff)
 #else
                      testing::Values(LinkCapturingFeatureVersion::kV2DefaultOn,
                                      LinkCapturingFeatureVersion::kV2DefaultOff)
@@ -664,15 +662,10 @@ IN_PROC_BROWSER_TEST_P(IntentPickerIconPrerenderingBrowserTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     IntentPickerIconPrerenderingBrowserTest,
-    testing::Combine(testing::Values("", "noopener", "noreferrer", "nofollow"),
-#if BUILDFLAG(IS_CHROMEOS)
-                     testing::Values(LinkCapturingFeatureVersion::kV1DefaultOff,
-                                     LinkCapturingFeatureVersion::kV2DefaultOff)
-#else
-                     testing::Values(LinkCapturingFeatureVersion::kV2DefaultOff)
-#endif  // BUILDFLAG(IS_CHROMEOS)
-                         ,
-                     testing::Bool()),
+    testing::Combine(
+        testing::Values("", "noopener", "noreferrer", "nofollow"),
+        testing::Values(LinkCapturingFeatureVersion::kV2DefaultOff),
+        testing::Bool()),
     GetLinkCapturingTestName);
 
 class IntentPickerIconFencedFrameBrowserTest
@@ -723,8 +716,7 @@ INSTANTIATE_TEST_SUITE_P(
     IntentPickerIconFencedFrameBrowserTest,
     testing::Combine(testing::Values("", "noopener", "noreferrer", "nofollow"),
 #if BUILDFLAG(IS_CHROMEOS)
-                     testing::Values(LinkCapturingFeatureVersion::kV1DefaultOff,
-                                     LinkCapturingFeatureVersion::kV2DefaultOff)
+                     testing::Values(LinkCapturingFeatureVersion::kV2DefaultOff)
 #else
                      testing::Values(LinkCapturingFeatureVersion::kV2DefaultOn,
                                      LinkCapturingFeatureVersion::kV2DefaultOff)

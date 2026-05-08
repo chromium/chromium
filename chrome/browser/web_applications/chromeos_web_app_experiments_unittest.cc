@@ -256,8 +256,7 @@ TEST_P(ChromeOsWebAppExperimentsTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     ChromeOsWebAppExperimentsTest,
-    testing::Values(apps::test::LinkCapturingFeatureVersion::kV1DefaultOff,
-                    apps::test::LinkCapturingFeatureVersion::kV2DefaultOff),
+    testing::Values(apps::test::LinkCapturingFeatureVersion::kV2DefaultOff),
     apps::test::LinkCapturingVersionToString);
 
 }  // namespace web_app

@@ -1439,9 +1439,7 @@ const base::FeatureParam<int> kNavigationCapturingIPHGuardrailStorageDuration{
 BASE_FEATURE(kPwaNavigationCapturing, base::FEATURE_ENABLED_BY_DEFAULT);
 
 const base::FeatureParam<CapturingState>::Option kNavigationCapturingParams[] =
-    {{CapturingState::kDefaultOn, "on_by_default"},
-     {CapturingState::kDefaultOff, "off_by_default"},
-     {CapturingState::kReimplDefaultOn, "reimpl_default_on"},
+    {{CapturingState::kReimplDefaultOn, "reimpl_default_on"},
      {CapturingState::kReimplDefaultOff, "reimpl_default_off"},
      {CapturingState::kReimplOnViaClientMode, "reimpl_on_via_client_mode"}};
 

@@ -409,8 +409,6 @@ CONTENT_EXPORT extern const base::FeatureParam<int>
 // Enables user link capturing on all desktop platforms.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPwaNavigationCapturing);
 enum class CapturingState {
-  kDefaultOn = 0,
-  kDefaultOff = 1,
   kReimplDefaultOn = 2,
   kReimplDefaultOff = 3,
   kReimplOnViaClientMode = 4,
