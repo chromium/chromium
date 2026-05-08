@@ -819,6 +819,40 @@ TEST_F(TracingScenarioTest, NestedStopUpload) {
   }
 }
 
+TEST_F(TracingScenarioTest, NestedStopWhileStarting) {
+  TracingScenarioForTesting tracing_scenario(
+      ParseScenarioConfigFromText(kDefaultConfig), &delegate);
+
+  tracing_scenario.Enable();
+  EXPECT_CALL(delegate, OnScenarioActive(&tracing_scenario))
+      .WillOnce(testing::Return(true));
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("setup_trigger"));
+  EXPECT_EQ(TracingScenario::State::kSetup, tracing_scenario.current_state());
+
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("nested_start_trigger"));
+  EXPECT_EQ(TracingScenario::State::kStarting,
+            tracing_scenario.current_state());
+
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("nested_stop_trigger"));
+
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  // Clean up scenario state by aborting.
+  base::RunLoop run_loop_abort;
+  EXPECT_CALL(delegate, OnScenarioIdle(&tracing_scenario))
+      .WillOnce([&run_loop_abort]() {
+        run_loop_abort.Quit();
+        return true;
+      });
+  tracing_scenario.Abort();
+  run_loop_abort.Run();
+  EXPECT_EQ(TracingScenario::State::kDisabled,
+            tracing_scenario.current_state());
+}
+
 TEST_F(NestedTracingScenarioTest, Disabled) {
   NestedTracingScenarioForTesting tracing_scenario(
       ParseNestedScenarioConfigFromText(kDefaultNestedConfig), &delegate);

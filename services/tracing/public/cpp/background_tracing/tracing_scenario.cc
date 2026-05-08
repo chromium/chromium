@@ -381,7 +381,9 @@ void TracingScenario::OnNestedScenarioStop(
       [](TracingScenario* self, NestedTracingScenario* nested_scenario) {
         CHECK_EQ(nested_scenario->current_state(),
                  NestedTracingScenario::State::kStopping);
-        CHECK_EQ(self->current_state_, State::kRecording);
+        CHECK(self->current_state_ == State::kRecording ||
+              self->current_state_ == State::kStarting)
+            << static_cast<int>(self->current_state_);
         CHECK_EQ(self->active_scenario_, nested_scenario);
         nested_scenario->Disable();
         self->active_scenario_ = nullptr;
