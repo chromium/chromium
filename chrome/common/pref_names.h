@@ -1700,8 +1700,10 @@ inline constexpr char kDisableExtensions[] = "extensions.disabled";
 inline constexpr char kNtpCollapsedForeignSessions[] =
     "ntp.collapsed_foreign_sessions";
 
+// LINT.IfChange
 inline constexpr char kNtpCustomBackgroundDict[] =
     "ntp.custom_background_dict2";
+// LINT.ThenChange(//components/segmentation_platform/embedder/home_modules/ntp_theme_promo.cc)
 inline constexpr char kNtpCustomBackgroundLocalToDevice[] =
     "ntp.custom_background_local_to_device";
 inline constexpr char kNtpCustomBackgroundLocalToDeviceId[] =

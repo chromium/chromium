@@ -2528,6 +2528,14 @@ const FeatureEntry::FeatureParam kQuickDeletePromoHideArm[] = {
     {segmentation_platform::features::kEphemeralCardRankerForceHideCardParam,
      segmentation_platform::kQuickDeletePromo},
 };
+const FeatureEntry::FeatureParam kNtpThemePromoShowArm[] = {
+    {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
+     segmentation_platform::kNtpThemePromo},
+};
+const FeatureEntry::FeatureParam kNtpThemePromoHideArm[] = {
+    {segmentation_platform::features::kEphemeralCardRankerForceHideCardParam,
+     segmentation_platform::kNtpThemePromo},
+};
 
 const FeatureEntry::FeatureVariation kEphemeralCardRankerCardOverrideOptions[] =
     {
@@ -2543,6 +2551,8 @@ const FeatureEntry::FeatureVariation kEphemeralCardRankerCardOverrideOptions[] =
          nullptr},
         {"- Force show quick delete promo", kQuickDeletePromoShowArm, nullptr},
         {"- Force hide quick delete promo", kQuickDeletePromoHideArm, nullptr},
+        {"- Force show ntp theme promo", kNtpThemePromoShowArm, nullptr},
+        {"- Force hide ntp theme promo", kNtpThemePromoHideArm, nullptr},
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_ANDROID)

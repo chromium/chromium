@@ -14,6 +14,7 @@
 #include "components/segmentation_platform/embedder/home_modules/constants.h"
 #include "components/segmentation_platform/embedder/home_modules/default_browser_promo.h"
 #include "components/segmentation_platform/embedder/home_modules/history_sync_promo.h"
+#include "components/segmentation_platform/embedder/home_modules/ntp_theme_promo.h"
 #include "components/segmentation_platform/embedder/home_modules/quick_delete_promo.h"
 #include "components/segmentation_platform/embedder/home_modules/tab_group_promo.h"
 #include "components/segmentation_platform/embedder/home_modules/tab_group_sync_promo.h"
@@ -32,6 +33,11 @@ HomeModulesCardRegistryAndroid::HomeModulesCardRegistryAndroid(
   }
 
   // TODO(crbug.com/420897397): Move the forced card check out from each card.
+  if (NtpThemePromo::IsEnabled(profile_prefs_)) {
+    all_cards_by_priority_.push_back(
+        std::make_unique<NtpThemePromo>(profile_prefs_));
+  }
+
   if (DefaultBrowserPromo::IsEnabled(profile_prefs_)) {
     all_cards_by_priority_.push_back(
         std::make_unique<DefaultBrowserPromo>(profile_prefs_));
@@ -81,6 +87,7 @@ void HomeModulesCardRegistryAndroid::RegisterProfilePrefs(
   TabGroupPromo::RegisterProfilePrefs(registry);
   TabGroupSyncPromo::RegisterProfilePrefs(registry);
   QuickDeletePromo::RegisterProfilePrefs(registry);
+  NtpThemePromo::RegisterProfilePrefs(registry);
   AuxiliarySearchPromo::RegisterProfilePrefs(registry);
   HistorySyncPromo::RegisterProfilePrefs(registry);
 

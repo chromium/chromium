@@ -19,7 +19,9 @@
 #include "components/commerce/core/mock_shopping_service.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/segmentation_platform/embedder/default_model/chrome_user_engagement.h"
 #include "components/segmentation_platform/embedder/default_model/contextual_page_actions_model.h"
 #include "components/segmentation_platform/embedder/default_model/metrics_clustering.h"
@@ -123,7 +125,8 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
          {features::kSegmentationPlatformEphemeralCardRanker, {}},
          {features::kSegmentationSurveyPage, {}},
          {features::kSegmentationPlatformFedCmUser, {}},
-         {features::kAndroidTipsNotifications, {}}},
+         {features::kAndroidTipsNotifications, {}},
+         {features::kNewTabPageCustomizationV2, {{"show_promo", "true"}}}},
         {});
 
     // Creating profile and initialising segmentation service.
@@ -637,7 +640,7 @@ TEST_F(SegmentationPlatformServiceFactoryTest, EphemeralHomeModuleBackend) {
   // Update this test when adding new cards with inputs.
   // Each card's feature flag should be enabled by test framework for this
   // integration test.
-  ASSERT_EQ(6u, registry->get_all_cards_by_priority().size());
+  ASSERT_EQ(7u, registry->get_all_cards_by_priority().size());
 
   PredictionOptions prediction_options;
   prediction_options.on_demand_execution = true;
@@ -645,6 +648,9 @@ TEST_F(SegmentationPlatformServiceFactoryTest, EphemeralHomeModuleBackend) {
   auto input_context = base::MakeRefCounted<InputContext>();
   input_context->metadata_args.emplace(
       "auxiliary_search_available", processing::ProcessedValue::FromFloat(0));
+  input_context->metadata_args.emplace(
+      "support_customized_ntp_theme",
+      processing::ProcessedValue::FromFloat(1.0));
   input_context->metadata_args.emplace(
       "is_user_signed_in", processing::ProcessedValue::FromFloat(0));
   input_context->metadata_args.emplace(

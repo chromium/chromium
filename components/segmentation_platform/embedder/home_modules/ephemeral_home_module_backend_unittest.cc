@@ -113,9 +113,12 @@ TEST_F(EphemeralHomeModuleBackendTest, ExecuteModelWithInput) {
                            /*expected_error=*/false,
                            /*expected_result=*/expected_result);
 #elif BUILDFLAG(IS_ANDROID)
+  size_t input_size = registry_->all_cards_input_size();
+  size_t output_size = registry_->all_output_labels().size();
   ExpectExecutionWithInput(
-      std::vector<float>(22, 0), /*expected_error=*/false,
-      /*expected_result=*/std::vector<float>(7, kNotShownResultValue));
+      std::vector<float>(input_size, 0), /*expected_error=*/false,
+      /*expected_result=*/
+      std::vector<float>(output_size, kNotShownResultValue));
 #else
   ExpectExecutionWithInput(/*inputs=*/{}, /*expected_error=*/false,
                            /*expected_result=*/{kNotShownResultValue});
