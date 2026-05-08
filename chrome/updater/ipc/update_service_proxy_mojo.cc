@@ -394,6 +394,13 @@ void UpdateServiceProxyMojoImpl::OnConnected(
 #endif  // BUILDFLAG(IS_WIN)
   VLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Verify remote_ has not been reset in the meantime.
+  if (!remote_.is_bound()) {
+    LOG(ERROR) << "Remote was reset during connection initialization.";
+    return;
+  }
+
   if (!endpoint) {
     remote_.reset();
     return;
