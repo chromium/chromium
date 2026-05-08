@@ -68,7 +68,8 @@ enum class GlicAutoOpenResult {
   kFailedUnknown = 4,
   kPreventedFromWindowTooNarrow = 5,
   kPreventedFromButtonNotVisible = 6,
-  kMaxValue = kPreventedFromButtonNotVisible,
+  kPreventedFromPdfPageCountBelowThreshold = 7,
+  kMaxValue = kPreventedFromPdfPageCountBelowThreshold,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/contextual_cueing/enums.xml:GlicAutoOpenResult)
 

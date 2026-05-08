@@ -68,6 +68,9 @@ extern const base::FeatureParam<base::TimeDelta> kPdfPageCountCaptureDelay;
 // The minimum window width for auto-opening Glic for a PDF document.
 extern const base::FeatureParam<int> kMinWindowWidthForPdfAutoOpen;
 
+// The minimum page count for auto-opening Glic for a PDF document.
+extern const base::FeatureParam<int> kMinPageCountForPdfAutoOpen;
+
 // Whether to enable page content extraction which is needed for processing the
 // count of words client signal.
 extern const base::FeatureParam<bool> kEnablePageContentExtraction;

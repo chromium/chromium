@@ -105,6 +105,11 @@ const base::FeatureParam<int> kMinWindowWidthForPdfAutoOpen(
     "MinWindowWidthForPdfAutoOpen",
     1000);
 
+const base::FeatureParam<int> kMinPageCountForPdfAutoOpen(
+    &kEnableAutoOpenGlicSidePanel,
+    "MinPageCountForPdfAutoOpen",
+    5);
+
 const base::FeatureParam<bool> kEnablePageContentExtraction(
     &kContextualCueing,
     "EnablePageContentExtraction",

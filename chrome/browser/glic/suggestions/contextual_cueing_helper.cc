@@ -496,6 +496,11 @@ ContextualCueingHelper::AutoOpenGlicSidePanel(
       return RecordAutoOpenResult(
           GlicAutoOpenResult::kPreventedFromWindowTooNarrow);
     }
+    if (decision_result.pdf_page_count.value_or(0) <
+        static_cast<size_t>(glic::kMinPageCountForPdfAutoOpen.Get())) {
+      return RecordAutoOpenResult(
+          GlicAutoOpenResult::kPreventedFromPdfPageCountBelowThreshold);
+    }
   }
 
   // Handle side panel auto-open case: bypass nudge and open panel directly.
