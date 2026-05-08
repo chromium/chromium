@@ -17,23 +17,25 @@
 namespace blink {
 namespace {
 
-// Decision tree lower and upper thresholds for grayscale and color images.
-constexpr std::array<float, 2> kLowColorCountThreshold = {0.8125, 0.015137};
-constexpr std::array<float, 2> kHighColorCountThreshold = {1, 0.025635};
-
-// Color is considered light if its luma is above this threshold.
-constexpr int kHighLightnessThreshold = 96;
-
-// Luminance ratio threshold above which the image is classified as light.
-constexpr float kHighLuminanceThreshold = 0.5f;
-
-// Transparency ratio threshold above which the image is classified as
-// transparent, meaning most of the background pixels are transparent.
-constexpr float kTransparencyRatioThreshold = 0.4f;
-
 const int kMaxSampledPixels = 1000;
 const int kMaxBlocks = 10;
 const float kMinOpaquePixelPercentageForForeground = 0.2;
+// Color is considered light if its luma is above this threshold.
+constexpr int kHighLightnessThreshold = 96;
+
+// Decision tree thresholds for classifying images
+
+// Lower and upper color thresholds for grayscale and color images.
+constexpr std::array<float, 2> kFeatureLowColorCountThreshold = {0.8125,
+                                                                 0.015137};
+constexpr std::array<float, 2> kFeatureHighColorCountThreshold = {1, 0.025635};
+
+// Transparency ratio threshold above which the image is classified as
+// transparent, meaning most of the background pixels are transparent.
+constexpr float kFeatureTransparencyRatioThreshold = 0.4f;
+
+// Luminance ratio threshold above which the image is classified as light.
+constexpr float kFeatureHighLuminanceThreshold = 0.5f;
 
 bool IsColorGray(const SkColor& color) {
   return abs(static_cast<int>(SkColorGetR(color)) -
@@ -288,20 +290,20 @@ DarkModeResult DarkModeImageClassifier::ClassifyUsingDecisionTree(
   // foreground is predominantly light. Inverting such images would make
   // visible pixels darker, causing them to merge with dark background, so do
   // not apply filter.
-  if (features.transparency_ratio > kTransparencyRatioThreshold &&
-      features.high_luminance_ratio > kHighLuminanceThreshold) {
+  if (features.transparency_ratio > kFeatureTransparencyRatioThreshold &&
+      features.high_luminance_ratio > kFeatureHighLuminanceThreshold) {
     return DarkModeResult::kDoNotApplyFilter;
   }
 
   // Very few colors means it's not a photo, apply the filter.
   if (features.color_buckets_ratio <
-      kLowColorCountThreshold[features.is_colorful]) {
+      kFeatureLowColorCountThreshold[features.is_colorful]) {
     return DarkModeResult::kApplyFilter;
   }
 
   // Too many colors means it's probably photorealistic, do not apply it.
   if (features.color_buckets_ratio >
-      kHighColorCountThreshold[features.is_colorful]) {
+      kFeatureHighColorCountThreshold[features.is_colorful]) {
     return DarkModeResult::kDoNotApplyFilter;
   }
 
