@@ -100,13 +100,22 @@ std::vector<DriveFileData> GetMockDriveFiles() {
   file1.resource_key = "mock_resource_key_1";
   selected_files.push_back(std::move(file1));
 
+  // Should be filtered out due to size.
   DriveFileData file2;
   file2.drive_id = "mock_drive_id_2";
   file2.mime_type = "image/png";
   file2.file_name = "Mock Image.png";
-  file2.size_bytes = 1000000;
+  file2.size_bytes = 1000000000;
   file2.resource_key = "mock_resource_key_2";
   selected_files.push_back(std::move(file2));
+
+  DriveFileData file3;
+  file3.drive_id = "mock_drive_id_3";
+  file3.mime_type = "application/vnd.google-apps.spreadsheet";
+  file3.file_name = "Mock Google Sheet.gsheet";
+  file3.size_bytes = 10000000;
+  file3.resource_key = "mock_resource_key_3";
+  selected_files.push_back(std::move(file3));
 
   return selected_files;
 }
@@ -606,9 +615,13 @@ void ContextualSearchboxHandler::OnDriveUploadClicked(
   // Picker.
   std::vector<DriveFileData> selected_files = GetMockDriveFiles();
 
+  auto* contextual_session_handle = GetContextualSessionHandle();
+  size_t valid_files_count =
+      contextual_session_handle
+          ? contextual_session_handle->GetUploadedContextFileInfos().size()
+          : 0;
   bool count_limit_hit = false;
   bool size_limit_hit = false;
-  size_t valid_files_count = 0;
   size_t max_files = GetInputState().max_total_inputs;
 
   for (const auto& file : selected_files) {
@@ -622,8 +635,6 @@ void ContextualSearchboxHandler::OnDriveUploadClicked(
       continue;
     }
 
-    // --- Valid File ---
-    auto* contextual_session_handle = GetContextualSessionHandle();
     if (!contextual_session_handle) {
       continue;
     }
