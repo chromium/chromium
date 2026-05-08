@@ -2495,7 +2495,6 @@ OutOfFlowLayoutPart::TryCalculateOffset(
 
   const LogicalAnchorCenterPosition anchor_center_position =
       ComputeAnchorCenterPosition(candidate_style, alignment,
-                                  candidate_writing_direction,
                                   space.AvailableSize());
 
   OffsetInfo offset_info;

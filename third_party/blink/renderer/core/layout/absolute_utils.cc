@@ -542,42 +542,25 @@ LogicalAlignment ComputeAlignment(
 LogicalAnchorCenterPosition ComputeAnchorCenterPosition(
     const ComputedStyle& style,
     const LogicalAlignment& alignment,
-    WritingDirectionMode writing_direction,
-    LogicalSize available_logical_size) {
-  // Compute in physical, because anchors may be in different writing-mode.
-  const ItemPosition inline_position = alignment.inline_alignment.GetPosition();
-  const ItemPosition block_position = alignment.block_alignment.GetPosition();
-
-  const bool has_anchor_center_in_x =
-      writing_direction.IsHorizontal()
-          ? inline_position == ItemPosition::kAnchorCenter
-          : block_position == ItemPosition::kAnchorCenter;
-  const bool has_anchor_center_in_y =
-      writing_direction.IsHorizontal()
-          ? block_position == ItemPosition::kAnchorCenter
-          : inline_position == ItemPosition::kAnchorCenter;
-
-  const PhysicalSize available_size = ToPhysicalSize(
-      available_logical_size, writing_direction.GetWritingMode());
-  std::optional<LayoutUnit> left;
-  std::optional<LayoutUnit> top;
-  std::optional<LayoutUnit> right;
-  std::optional<LayoutUnit> bottom;
-  if (const auto& offset = style.AnchorCenterOffset()) {
-    if (has_anchor_center_in_x) {
-      left = offset->left;
-      right = available_size.width - offset->left;
-    }
-    if (has_anchor_center_in_y) {
-      top = offset->top;
-      bottom = available_size.height - offset->top;
-    }
+    LogicalSize available_size) {
+  const std::optional<PhysicalOffset>& physical_offset =
+      style.AnchorCenterOffset();
+  if (!physical_offset) {
+    return {std::nullopt, std::nullopt};
   }
 
-  // Convert result back to logical against `writing_direction`.
-  PhysicalToLogical converter(writing_direction, top, right, bottom, left);
-  return LogicalAnchorCenterPosition{converter.InlineStart(),
-                                     converter.BlockStart()};
+  // Convert the anchor-center point, to our logical coordinate space. Use a
+  // 0x0 inner_size as we are converting a point.
+  WritingModeConverter converter(style.GetWritingDirection(), available_size);
+  const LogicalOffset offset =
+      converter.ToLogical(*physical_offset, /*inner_size=*/PhysicalSize());
+  return {
+      alignment.inline_alignment.GetPosition() == ItemPosition::kAnchorCenter
+          ? std::make_optional(offset.inline_offset)
+          : std::nullopt,
+      alignment.block_alignment.GetPosition() == ItemPosition::kAnchorCenter
+          ? std::make_optional(offset.block_offset)
+          : std::nullopt};
 }
 
 InsetModifiedContainingBlock ComputeInsetModifiedContainingBlock(

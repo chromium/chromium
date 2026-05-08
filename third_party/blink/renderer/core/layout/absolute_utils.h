@@ -73,7 +73,6 @@ struct LogicalAnchorCenterPosition {
 LogicalAnchorCenterPosition ComputeAnchorCenterPosition(
     const ComputedStyle& style,
     const LogicalAlignment& alignment,
-    WritingDirectionMode writing_direction,
     LogicalSize available_size);
 
 CORE_EXPORT LogicalOofInsets
