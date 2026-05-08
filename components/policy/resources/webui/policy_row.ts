@@ -55,8 +55,10 @@ export class PolicyRowElement extends CustomElement {
     const toggle = this.shadowRoot!.querySelector('.policy.row .toggle');
     toggle!.addEventListener('click', () => this.toggleExpanded());
 
-    const copy = this.shadowRoot!.querySelector('.copy-value');
-    copy!.addEventListener('click', () => this.copyValue_());
+    const copyButton = this.shadowRoot!.querySelector('.copy-value');
+    if (copyButton) {
+      copyButton.addEventListener('click', () => this.copyValue_());
+    }
 
     this.setAttribute('role', 'rowgroup');
     this.classList.add('policy-data');
@@ -104,6 +106,12 @@ export class PolicyRowElement extends CustomElement {
       const messagesDisplay = this.shadowRoot!.querySelector('.messages');
       messagesDisplay!.textContent = notice;
 
+      // Remove the copy button since there is no value to copy.
+      const copyButton = this.shadowRoot!.querySelector('.copy .link');
+      if (copyButton) {
+        copyButton.remove();
+      }
+
       // On space constraint devices, status is displayed as a row.
       // <if expr="is_android or is_ios">
       const messagesRowContentDisplay =
@@ -139,8 +147,11 @@ export class PolicyRowElement extends CustomElement {
     const valueDisplay = this.shadowRoot!.querySelector('.value');
     valueDisplay!.textContent = truncatedValue;
 
-    const copyLink = this.getRequiredElement('.copy .link');
-    setCopyButtonAccessibilityAttributes(copyLink, policy.name);
+    // Set the label for the copy button.
+    const copyLink = this.shadowRoot!.querySelector('.copy .link');
+    if (copyLink) {
+      setCopyButtonAccessibilityAttributes(copyLink, policy.name);
+    }
 
     const valueRowContentDisplay =
         this.shadowRoot!.querySelector('.value.row .value');
