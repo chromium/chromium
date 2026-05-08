@@ -642,6 +642,7 @@
 
 #composebox::part(voice-icon) {
   --cr-icon-button-fill-color: var(--color-composebox-voice-lens-button);
+  --cr-icon-button-hover-background-color: var(--color-composebox-voice-button-hover-background);
   --cr-icon-button-icon-size: var(--icon-menu-icon-size);
   --cr-icon-button-size: var(--icon-menu-button-size);
   bottom: var(--composebox-icon-menu-bottom);

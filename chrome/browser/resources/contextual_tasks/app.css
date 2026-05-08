@@ -43,6 +43,7 @@
   --color-composebox-type-ahead: rgba(117, 117, 117, 1);
   --color-composebox-type-ahead-chip: rgba(117, 117, 117, 1);
   --color-composebox-voice-lens-button: rgba(10, 10, 10, 1);
+  --color-composebox-voice-button-hover-background: rgba(31, 31, 31, 0.06);
   --color-composebox-lens-active-background: rgba(225, 227, 232, 1);
   --color-composebox-zero-state-suggestions-background-hovered:
       rgba(247, 248, 250, 1);
