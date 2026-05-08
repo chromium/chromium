@@ -5634,7 +5634,7 @@
     },
     {
       name: "SvgEnableTextDecorationCssStyling",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "SvgFallBackToContainerSize",
