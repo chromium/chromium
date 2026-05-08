@@ -166,12 +166,6 @@ void Transaction::BindReceiver(
     mojo::PendingAssociatedReceiver<blink::mojom::IDBTransaction>
         mojo_receiver) {
   receiver_.Bind(std::move(mojo_receiver));
-  if (receiver_.is_bound()) {
-    // `receiver_` might not be bound in tests that pass an invalid pending
-    // receiver.
-    receiver_.set_disconnect_handler(base::BindOnce(
-        &Transaction::OnMojoReceiverDisconnected, ptr_factory_.GetWeakPtr()));
-  }
 }
 
 void Transaction::SetCommitFlag() {
@@ -1141,7 +1135,6 @@ void Transaction::NotifyOfIdbInternalsRelevantChange() {
 void Transaction::OnInactivityTimeout() {
   // The timeout timer should only be running when these conditions are met:
   CHECK(used_, base::NotFatalUntil::M145);
-  CHECK(!diagnostics_.mojo_receiver_disconnected, base::NotFatalUntil::M145);
   CHECK(task_queue_.empty(), base::NotFatalUntil::M145);
   CHECK(preemptive_task_queue_.empty(), base::NotFatalUntil::M145);
 
@@ -1243,10 +1236,6 @@ IndexedDBKey Transaction::GenerateAutoIncrementKey(int64_t object_store_id) {
   }
 
   return IndexedDBKey(current_number, blink::mojom::IDBKeyType::Number);
-}
-
-void Transaction::OnMojoReceiverDisconnected() {
-  diagnostics_.mojo_receiver_disconnected = true;
 }
 
 blink::mojom::IDBValuePtr Transaction::BuildMojoValue(IndexedDBValue value) {
