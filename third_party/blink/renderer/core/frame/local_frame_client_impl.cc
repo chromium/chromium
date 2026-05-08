@@ -439,7 +439,8 @@ void LocalFrameClientImpl::DidFinishSameDocumentNavigation(
     bool is_client_redirect,
     bool is_browser_initiated,
     bool should_skip_screenshot,
-    base::UnguessableToken same_document_metrics_token) {
+    base::UnguessableToken same_document_metrics_token,
+    bool caused_by_ad) {
   bool should_create_history_entry = commit_type == kWebStandardCommit;
   // TODO(dglazkov): Does this need to be called for subframes?
   web_frame_->ViewImpl()->DidCommitLoad(should_create_history_entry, true);
@@ -512,7 +513,7 @@ void LocalFrameClientImpl::DidFinishSameDocumentNavigation(
     }
     web_frame_->Client()->DidFinishSameDocumentNavigation(
         commit_type, is_synchronously_committed, same_document_navigation_type,
-        is_client_redirect, token, same_document_metrics_token);
+        is_client_redirect, token, same_document_metrics_token, caused_by_ad);
   }
 
   // Set the layout shift exclusion window for the browser initiated same

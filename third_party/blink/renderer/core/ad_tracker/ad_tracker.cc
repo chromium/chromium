@@ -46,6 +46,10 @@ base::span<const char* const> GetApiPropertyPath(
       static const char* const kPath[] = {"history", "pushState"};
       return kPath;
     }
+    case AdTracker::MonkeyPatchableApi::kHistoryReplaceState: {
+      static const char* const kPath[] = {"history", "replaceState"};
+      return kPath;
+    }
     case AdTracker::MonkeyPatchableApi::kNodeAppendChild: {
       static const char* const kPath[] = {"Node", "prototype", "appendChild"};
       return kPath;

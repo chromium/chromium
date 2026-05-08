@@ -4161,7 +4161,8 @@ void RenderFrameImpl::DidFinishSameDocumentNavigation(
     bool is_client_redirect,
     const std::optional<blink::SameDocNavigationScreenshotDestinationToken>&
         screenshot_destination,
-    base::UnguessableToken same_document_metrics_token) {
+    base::UnguessableToken same_document_metrics_token,
+    bool caused_by_ad) {
   TRACE_EVENT1("navigation,rail",
                "RenderFrameImpl::didFinishSameDocumentNavigation",
                "frame_token", frame_token_);
@@ -4192,12 +4193,7 @@ void RenderFrameImpl::DidFinishSameDocumentNavigation(
       screenshot_destination;
   same_document_params->same_document_metrics_token =
       same_document_metrics_token;
-
-  // `IsAdScriptInStack()` is the primary check. The IsAdFrame() check really
-  // only covers an edge scenario of a genuine user click (e.g., <a> tag) within
-  // an ad frame triggering a fragment navigation.
-  same_document_params->caused_by_ad =
-      GetWebFrame()->IsAdFrame() || GetWebFrame()->IsAdScriptInStack();
+  same_document_params->caused_by_ad = caused_by_ad;
 
   DidCommitNavigationInternal(
       commit_type, transition, navigation_state.get(),

@@ -83,6 +83,7 @@
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/web_navigation_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
+#include "third_party/blink/renderer/core/ad_tracker/ad_tracker.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
@@ -1123,10 +1124,45 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
   // soft navigation as well. To make this work, we also pass this token to
   // heuristics->SameDocumentNavigationCommitted (see below).
   auto same_document_metrics_token = base::UnguessableToken::Create();
+
+  bool caused_by_ad = false;
+  if (frame_->IsAdFrame()) {
+    caused_by_ad = true;
+  } else if (auto* ad_tracker = frame_->GetAdTracker()) {
+    // Apply a heuristic to mitigate inaccurate stack tagging caused by common
+    // API monkey patches (e.g., pushState or replaceState). This ensures the
+    // execution is attributed to the true originator of the call.
+    AdTracker::MonkeyPatchableApi monkey_patchable_api =
+        AdTracker::MonkeyPatchableApi::kNone;
+    if (same_document_navigation_type ==
+        mojom::blink::SameDocumentNavigationType::kHistoryApi) {
+      if (type == WebFrameLoadType::kStandard) {
+        monkey_patchable_api = AdTracker::MonkeyPatchableApi::kHistoryPushState;
+      } else if (type == WebFrameLoadType::kReplaceCurrentItem) {
+        monkey_patchable_api =
+            AdTracker::MonkeyPatchableApi::kHistoryReplaceState;
+      }
+    }
+
+    caused_by_ad = ad_tracker->IsAdScriptInStack(
+        AdTracker::StackType::kTopOnly,
+        /*ignore_monkey_patch=*/monkey_patchable_api);
+  }
+
+  if (frame_->DomWindow() &&
+      same_document_navigation_type ==
+          mojom::blink::SameDocumentNavigationType::kHistoryApi &&
+      type == WebFrameLoadType::kStandard) {
+    ukm::builders::HistoryApi_PushState(frame_->DomWindow()->UkmSourceID())
+        .SetHasStickyUserActivation(frame_->HasStickyUserActivation())
+        .SetFromAd(caused_by_ad)
+        .Record(frame_->DomWindow()->UkmRecorder());
+  }
+
   GetLocalFrameClient().DidFinishSameDocumentNavigation(
       commit_type, is_synchronously_committed, same_document_navigation_type,
       is_client_redirect_, is_browser_initiated, should_skip_screenshot,
-      same_document_metrics_token);
+      same_document_metrics_token, caused_by_ad);
   probe::DidNavigateWithinDocument(frame_, same_document_navigation_type);
 
   // If intercept() was called during this same-document navigation's

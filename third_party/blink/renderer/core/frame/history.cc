@@ -28,7 +28,6 @@
 #include <optional>
 
 #include "base/time/time.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/scheduler/task_attribution_id.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
@@ -56,36 +55,6 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 
 namespace blink {
-
-namespace {
-
-void MaybeRecordHistoryPushStateUkm(LocalDOMWindow* window) {
-  if (!window || !window->GetFrame()) {
-    return;
-  }
-
-  AdTracker* ad_tracker = window->GetFrame()->GetAdTracker();
-  if (!ad_tracker) {
-    return;
-  }
-
-  bool has_sticky_user_activation =
-      window->GetFrame()->HasStickyUserActivation();
-
-  bool from_ad = window->GetFrame()->IsAdFrame() ||
-                 ad_tracker->IsAdScriptInStack(
-                     AdTracker::StackType::kTopOnly,
-                     /*ignore_monkey_patch=*/
-                     AdTracker::MonkeyPatchableApi::kHistoryPushState,
-                     /*out_ad_script_ancestry=*/nullptr);
-
-  ukm::builders::HistoryApi_PushState(window->UkmSourceID())
-      .SetHasStickyUserActivation(has_sticky_user_activation)
-      .SetFromAd(from_ad)
-      .Record(window->UkmRecorder());
-}
-
-}  // namespace
 
 History::History(LocalDOMWindow* window)
     : ExecutionContextClient(window), last_state_object_requested_(nullptr) {}
@@ -275,8 +244,6 @@ void History::pushState(ScriptState* script_state,
                         const String& title,
                         const String& url,
                         ExceptionState& exception_state) {
-  MaybeRecordHistoryPushStateUkm(DomWindow());
-
   v8::Isolate* isolate = script_state->GetIsolate();
   WebFrameLoadType load_type = WebFrameLoadType::kStandard;
   if (LocalDOMWindow* window = DomWindow()) {

@@ -458,6 +458,8 @@ class BLINK_EXPORT WebLocalFrameClient {
   // navigation stack.
   // `screenshot_destination`, if non-empty, tags the destination of the
   // viewport screenshot.
+  // `caused_by_ad` is true if the navigation was was triggered by an ad iframe,
+  // or if an ad script was on the v8 stack at the time of the navigation.
   virtual void DidFinishSameDocumentNavigation(
       WebHistoryCommitType,
       bool is_synchronously_committed,
@@ -465,7 +467,8 @@ class BLINK_EXPORT WebLocalFrameClient {
       bool is_client_redirect,
       const std::optional<blink::SameDocNavigationScreenshotDestinationToken>&
           screenshot_destination,
-      base::UnguessableToken same_document_metrics_token) {}
+      base::UnguessableToken same_document_metrics_token,
+      bool caused_by_ad) {}
 
   // Called when an async same-document navigation fails before commit. This is
   // used in the case where a same-document navigation was instructed to commit

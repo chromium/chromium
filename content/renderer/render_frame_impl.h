@@ -553,7 +553,8 @@ class CONTENT_EXPORT RenderFrameImpl
       bool is_client_redirect,
       const std::optional<blink::SameDocNavigationScreenshotDestinationToken>&
           screenshot_destination,
-      base::UnguessableToken same_document_metrics_token) override;
+      base::UnguessableToken same_document_metrics_token,
+      bool caused_by_ad) override;
   void DidFailAsyncSameDocumentCommit() override;
   void WillFreezePage() override;
   void DidOpenDocumentInputStream(const blink::WebURL& url) override;

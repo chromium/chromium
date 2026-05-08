@@ -690,6 +690,48 @@ IN_PROC_BROWSER_TEST_F(AdNavigationEntryBrowserTest,
   EXPECT_EQ(GetWebContents()->GetLastCommittedURL(), GURL(url::kAboutBlankURL));
 }
 
+// Regression test ensuring the navigation entry ad tagging heuristic ignores
+// common monkey patches (replaceState/pushState) and successfully traces back
+// to the true originator of the API call.
+IN_PROC_BROWSER_TEST_F(
+    AdNavigationEntryBrowserTest,
+    AdReplaceStateFollowedByAdPushState_AdScriptCallsNonAdPatch) {
+  // Monkey patch history.replaceState and history.pushState. This simulates
+  // a non-ad script (e.g., a publisher script) proxying the history API calls.
+  ASSERT_TRUE(content::ExecJs(GetWebContents(), R"(
+    const originalReplaceState = window.history.replaceState;
+    window.history.replaceState = function(...args) {
+      originalReplaceState.apply(window.history, args);
+    };
+    const originalPushState = window.history.pushState;
+    window.history.pushState = function(...args) {
+      originalPushState.apply(window.history, args);
+    };
+  )"));
+
+  // Call the monkey-patched APIs from an ad script.
+  ASSERT_TRUE(content::ExecJs(GetWebContents(), R"(
+    executeHistoryReplaceStateFromAdScript('replaced_state');
+    executeHistoryPushStateFromAdScript('new_state');
+  )"));
+
+  EXPECT_THAT(
+      GetNavigationUrls(),
+      ::testing::ElementsAre(GURL(url::kAboutBlankURL),
+                             GetURL("replaced_state"), GetURL("new_state")));
+
+  // Verify that the entry is correctly tagged and skipped by the Back-To-Ad
+  // intervention.
+  // Back from 'new_state'. The previous entry `replaced_state` should be
+  // skipped, even though it was directly called via a non-ad monkey patch.
+  GoBack();
+  EXPECT_EQ(GetWebContents()->GetLastCommittedURL(), GURL(url::kAboutBlankURL));
+
+  // Forward from `kAboutBlankURL` should also skip `replaced_state`.
+  GoForward();
+  EXPECT_EQ(GetWebContents()->GetLastCommittedURL(), GetURL("new_state"));
+}
+
 IN_PROC_BROWSER_TEST_F(AdNavigationEntryBrowserTest,
                        OriginalSkippableEntriesFollowedByAdEntries) {
   ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(

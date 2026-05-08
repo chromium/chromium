@@ -7952,7 +7952,8 @@ class TestDidNavigateCommitTypeWebFrameClient
       bool is_client_redirect,
       const std::optional<blink::SameDocNavigationScreenshotDestinationToken>&
           screenshot_destination,
-      base::UnguessableToken same_document_metrics_token) override {
+      base::UnguessableToken same_document_metrics_token,
+      bool caused_by_ad) override {
     last_commit_type_ = type;
   }
 

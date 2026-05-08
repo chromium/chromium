@@ -1363,7 +1363,8 @@ TEST_F(RenderFrameImplTest, ContentSettingsSameDocumentNavigation) {
       blink::mojom::SameDocumentNavigationType::kFragment,
       /*is_client_redirect=*/false,
       /*screenshot_destination=*/std::nullopt,
-      /*same_document_metrics_token=*/base::UnguessableToken::Create());
+      /*same_document_metrics_token=*/base::UnguessableToken::Create(),
+      /*caused_by_ad=*/false);
 
   // Verify that the script was not blocked.
   EXPECT_FALSE(HasText(GetMainFrame(), "JS_DISABLED"));
