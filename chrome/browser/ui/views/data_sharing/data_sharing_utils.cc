@@ -81,11 +81,12 @@ GURL CreateJoinUrl(const GURL& url,
   return updated_url;
 }
 
-GURL CreateManageUrl(const GURL& url,
-                     const std::variant<tab_groups::LocalTabGroupID,
-                                        data_sharing::GroupToken>& group_id,
-                     const std::optional<tab_groups::SavedTabGroup> saved_group,
-                     bool is_disabled_for_policy) {
+GURL CreateManageUrl(
+    const GURL& url,
+    const std::variant<tab_groups::LocalTabGroupID, data_sharing::GroupToken>&
+        group_id,
+    const std::optional<tab_groups::SavedTabGroup>& saved_group,
+    bool is_disabled_for_policy) {
   GURL updated_url = url;
   CHECK(saved_group->is_shared_tab_group());
   if (std::holds_alternative<tab_groups::LocalTabGroupID>(group_id)) {
@@ -138,7 +139,7 @@ GURL CreateLeaveUrl(const GURL& url,
 
 GURL CreateDeleteUrl(
     const GURL& url,
-    const std::optional<tab_groups::SavedTabGroup> saved_group) {
+    const std::optional<tab_groups::SavedTabGroup>& saved_group) {
   CHECK(saved_group);
   CHECK(saved_group->collaboration_id());
 
@@ -156,7 +157,7 @@ GURL CreateDeleteUrl(
 
 GURL CreateCloseUrl(
     const GURL& url,
-    const std::optional<tab_groups::SavedTabGroup> saved_group) {
+    const std::optional<tab_groups::SavedTabGroup>& saved_group) {
   CHECK(saved_group);
   CHECK(saved_group->collaboration_id());
 
