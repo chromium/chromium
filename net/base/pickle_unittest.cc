@@ -25,10 +25,12 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/pickle.h"
 #include "net/base/pickle_traits.h"
+#include "net/base/pickle_url_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "third_party/fuzztest/src/fuzztest/fuzztest.h"
+#include "url/origin.h"
 
 namespace net {
 
@@ -305,6 +307,33 @@ TEST(PickleTraitsTest, MyHeaders) {
 TEST(PickleTraitsTest, MyHttpVersion) {
   MyHttpVersion version = {1, 2};
   PerformRoundTripTest(version);
+}
+
+TEST(PickleTraitsTest, UrlOrigin) {
+  url::Origin origin1 = url::Origin::Create(GURL("https://example.com:443"));
+  PerformRoundTripTest(origin1);
+
+  base::Pickle pickle1;
+  WriteToPickle(pickle1, origin1);
+  EXPECT_EQ(pickle1.payload_size(), EstimatePickleSize(origin1));
+
+  url::Origin origin2 = url::Origin::Create(GURL("http://example.org"));
+  PerformRoundTripTest(origin2);
+
+  base::Pickle pickle2;
+  WriteToPickle(pickle2, origin2);
+  EXPECT_EQ(pickle2.payload_size(), EstimatePickleSize(origin2));
+
+  // Test opaque origin.
+  url::Origin opaque_origin;
+  base::Pickle pickle3;
+  WriteToPickle(pickle3, opaque_origin);
+  EXPECT_EQ(pickle3.payload_size(), EstimatePickleSize(opaque_origin));
+
+  base::PickleIterator iter(pickle3);
+  auto deserialized = ReadValueFromPickle<url::Origin>(iter);
+  ASSERT_TRUE(deserialized.has_value());
+  EXPECT_TRUE(deserialized->opaque());
 }
 
 }  // namespace
