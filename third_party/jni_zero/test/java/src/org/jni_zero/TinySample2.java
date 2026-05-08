@@ -5,7 +5,7 @@
 package org.jni_zero;
 
 class TinySample2 {
-    @NativeMethods()
+    @NativeMethods
     interface Natives {
         void test(Object a, int b);
 

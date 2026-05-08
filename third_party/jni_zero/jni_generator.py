@@ -553,22 +553,6 @@ def _RemoveStaleHeaders(path, shared_header_names, unshared_header_names):
           os.remove(file_path)
 
 
-def _CheckSameModule(jni_objs):
-  files_by_module = collections.defaultdict(list)
-  for jni_obj in jni_objs:
-    if jni_obj.proxy_natives:
-      files_by_module[jni_obj.module_name].append(jni_obj.filename)
-  if len(files_by_module) > 1:
-    sys.stderr.write(
-        'Multiple values for @NativeMethods(moduleName) is not supported.\n')
-    for module_name, filenames in files_by_module.items():
-      sys.stderr.write(f'module_name={module_name}\n')
-      for filename in filenames:
-        sys.stderr.write(f'  {filename}\n')
-    sys.exit(1)
-  return next(iter(files_by_module)) if files_by_module else None
-
-
 def _CheckNotEmpty(jni_objs):
   has_empty = False
   for jni_obj in jni_objs:
@@ -739,14 +723,13 @@ def GenerateFromSource(parser, args, jni_mode):
                   module_name=args.module_name) for x in parsed_files
     ]
     _CheckNotEmpty(jni_objs)
-    module_name = _CheckSameModule(jni_objs)
   except parse.ParseError as e:
     sys.stderr.write(f'{e}\n')
     sys.exit(1)
 
   gen_jni_class = proxy.get_gen_jni_class(
       short=jni_mode.is_hashing or jni_mode.is_muxing,
-      name_prefix=args.module_name or module_name,
+      name_prefix=args.module_name,
       package_prefix=args.package_prefix,
       package_prefix_filter=args.package_prefix_filter)
 

@@ -423,15 +423,15 @@ public class AnimationFrameTimeHistogramTest {
 }
 ```
 
-### Special case: APK Splits
-Each APK split with its own native library has its own generated `GEN_JNI`, which is
-`<module_name>_GEN_JNI`. In order to get your split's JNI to use the `<module_name>` prefix, you
-must add your module name into the argument of the `@NativeMethods` annotation.
+### Namespacing GEN_JNI (for APK Splits, or apk_under_test)
 
-So, for example, say your module was named `test_module`. You would annotate
-your `Natives` interface with `@NativeMethods("test_module")`, and this would
-result in `test_module_GEN_JNI`.
+Each `generate_jni_registration` target results in a single `GEN_JNI` class. If
+you use JNI Zero in both and `Test.apk` and an `ApkUnderTest.apk`, or with
+isolated splits, then each APK should have its own `GEN_JNI`.
 
+To accomplish this, set `module_name = "name"` in all `generate_jni` targets,
+as well as the final `generate_jni_registration` target. This will result in
+`<module_name>_GEN_JNI`.
 
 ### How to Know if Native is Loaded?
 

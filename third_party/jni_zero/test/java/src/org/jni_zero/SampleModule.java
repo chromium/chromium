@@ -12,7 +12,7 @@ class SampleModule {
         }
     }
 
-    @NativeMethods("module")
+    @NativeMethods
     interface Natives {
         void foo();
 

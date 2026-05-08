@@ -4,9 +4,8 @@
 
 package org.jni_zero;
 
-
 public class TinySample {
-    @NativeMethods()
+    @NativeMethods
     interface Natives {
         void foo(Object a, int b);
 

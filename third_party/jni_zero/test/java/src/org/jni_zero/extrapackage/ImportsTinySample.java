@@ -6,7 +6,7 @@ import org.jni_zero.TinySample;
 public class ImportsTinySample {
     TinySample a;
 
-    @NativeMethods()
+    @NativeMethods
     interface Natives {
         void asdf();
     }

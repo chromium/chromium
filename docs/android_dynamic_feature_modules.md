@@ -419,9 +419,6 @@ There are some subtleties to how JNI registration works with DFMs:
 * The class containing the actual native definitions,
   `<module_name>_GEN_JNI.java`, is currently stored in the base module, but
   could be moved out
-* The `Natives` interface you provide will need to be annotated with your module
-  name as an argument to `NativeMethods`, eg. `@NativeMethods("foo")`, resulting
-  in a uniquely named `foo_GEN_JNI.java`
 * The DFM will need to provide a `generate_jni_registration` target
   that will generate all of the native registration functions
 
@@ -543,6 +540,7 @@ source_set("native") {
 }
 
 generate_jni("jni_headers") {
+  module_name = "foo"
   sources = [
     "android/java/src/org/chromium/chrome/browser/foo/FooImpl.java",
   ]
@@ -555,7 +553,7 @@ With a declaration of the native method on the Java side:
 public class FooImpl implements Foo {
     ...
 
-    @NativeMethods("foo")
+    @NativeMethods
     interface Natives {
         int execute();
     }
