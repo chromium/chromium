@@ -591,10 +591,12 @@ void WebContentsViewAndroid::OnDragEntered(const gfx::PointF& location,
                                            const gfx::PointF& screen_location) {
   // Android does not pass a valid location for ACTION_DRAG_STARTED, so do not
   // try to find GetRenderWidgetHostAtPointAsynchronously().
-  DragEnteredCallback(location, screen_location,
-                      static_cast<RenderWidgetHostViewBase*>(
-                          web_contents_->GetRenderWidgetHostView())
-                          ->GetWeakPtr());
+  auto* rwhv = web_contents_->GetRenderWidgetHostView();
+  if (rwhv) {
+    DragEnteredCallback(
+        location, screen_location,
+        static_cast<RenderWidgetHostViewBase*>(rwhv)->GetWeakPtr());
+  }
 }
 
 void WebContentsViewAndroid::DragEnteredCallback(
@@ -646,13 +648,14 @@ void WebContentsViewAndroid::OnDragUpdated(const gfx::PointF& location,
     }
   }
 
-  web_contents_->GetRenderWidgetHostAtPointAsynchronously(
-      static_cast<RenderWidgetHostViewBase*>(
-          web_contents_->GetRenderWidgetHostView()),
-      location,
-      base::BindOnce(&WebContentsViewAndroid::DragUpdatedCallback,
-                     weak_ptr_factory_.GetWeakPtr(), location,
-                     screen_location));
+  auto* rwhv = web_contents_->GetRenderWidgetHostView();
+  if (rwhv) {
+    web_contents_->GetRenderWidgetHostAtPointAsynchronously(
+        static_cast<RenderWidgetHostViewBase*>(rwhv), location,
+        base::BindOnce(&WebContentsViewAndroid::DragUpdatedCallback,
+                       weak_ptr_factory_.GetWeakPtr(), location,
+                       screen_location));
+  }
 }
 
 void WebContentsViewAndroid::DragUpdatedCallback(
@@ -672,8 +675,11 @@ void WebContentsViewAndroid::DragUpdatedCallback(
   if (target_rwh != current_target_rwh_for_drag_.get()) {
     if (current_target_rwh_for_drag_) {
       gfx::PointF transformed_leave_point = location;
-      static_cast<RenderWidgetHostViewBase*>(
-          web_contents_->GetRenderWidgetHostView())
+      auto* rwhv = web_contents_->GetRenderWidgetHostView();
+      if (!rwhv) {
+        return;
+      }
+      static_cast<RenderWidgetHostViewBase*>(rwhv)
           ->TransformPointToCoordSpaceForView(
               location,
               static_cast<RenderWidgetHostViewBase*>(
@@ -701,13 +707,14 @@ void WebContentsViewAndroid::OnDragExited() {
 
 void WebContentsViewAndroid::OnPerformDrop(const gfx::PointF& location,
                                            const gfx::PointF& screen_location) {
-  web_contents_->GetRenderWidgetHostAtPointAsynchronously(
-      static_cast<RenderWidgetHostViewBase*>(
-          web_contents_->GetRenderWidgetHostView()),
-      location,
-      base::BindOnce(&WebContentsViewAndroid::PerformDropCallback,
-                     weak_ptr_factory_.GetWeakPtr(), location,
-                     screen_location));
+  auto* rwhv = web_contents_->GetRenderWidgetHostView();
+  if (rwhv) {
+    web_contents_->GetRenderWidgetHostAtPointAsynchronously(
+        static_cast<RenderWidgetHostViewBase*>(rwhv), location,
+        base::BindOnce(&WebContentsViewAndroid::PerformDropCallback,
+                       weak_ptr_factory_.GetWeakPtr(), location,
+                       screen_location));
+  }
 }
 
 void WebContentsViewAndroid::PerformDropCallback(
@@ -788,7 +795,10 @@ void WebContentsViewAndroid::TakeFocus(bool reverse) {
       web_contents_->GetDelegate()->TakeFocus(web_contents_, reverse)) {
     return;
   }
-  web_contents_->GetRenderWidgetHostView()->Focus();
+  auto* rwhv = web_contents_->GetRenderWidgetHostView();
+  if (rwhv) {
+    rwhv->Focus();
+  }
 }
 
 int WebContentsViewAndroid::GetTopControlsHeight() const {
