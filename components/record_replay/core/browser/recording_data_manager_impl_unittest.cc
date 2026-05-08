@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
@@ -68,7 +69,10 @@ class RecordingDataManagerImplTest : public ::testing::Test {
     ASSERT_TRUE(temp_dir_.Delete());
   }
 
-  void WaitForDatabaseOperations() { task_environment_.RunUntilIdle(); }
+  void WaitForDatabaseOperations() {
+    task_environment_.RunUntilIdle();
+    base::ThreadPoolInstance::Get()->FlushForTesting();
+  }
 
   RecordingDataManagerImpl& data_manager() { return *data_manager_; }
 

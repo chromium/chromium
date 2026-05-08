@@ -59,6 +59,7 @@ source_set("unit_tests") {
     ":browser",
     "//base/test:test_support",
     "//components/record_replay/core/common",
+    "//sql",
     "//testing/gmock",
     "//testing/gtest",
   ]

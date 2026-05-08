@@ -56,8 +56,7 @@ void TaskDatabase::Init(base::FilePath profile_path) {
                          : "");
   }));
 
-  // Open the database file. If this fails, the database remains closed
-  // and subsequent AsyncCalls will fail safely/silently via error callback.
+  // Open the database file. If this fails, abort immediately.
   if (!db_.Open(profile_path.Append(kTaskDatabaseFileName))) {
     DLOG(ERROR) << "Failed to open TaskDatabase at: " << profile_path.value();
     return;
@@ -76,9 +75,12 @@ void TaskDatabase::Init(base::FilePath profile_path) {
   }
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch("wipe-recordings")) {
-    std::ignore = db_.Execute("DROP TABLE IF EXISTS Recordings");
-    std::ignore = db_.Execute("DROP TABLE IF EXISTS ActivityAnnotations");
+    // Drop tables in the reverse order of dependencies (leaf to root).
+    // Since foreign key constraints are active, SQLite would reject dropping
+    // parent tables (like Recordings) if their children are still active.
     std::ignore = db_.Execute("DROP TABLE IF EXISTS ActivityData");
+    std::ignore = db_.Execute("DROP TABLE IF EXISTS ActivityAnnotations");
+    std::ignore = db_.Execute("DROP TABLE IF EXISTS Recordings");
   }
 
   if (!CreateRecordingsTable()) {
@@ -96,8 +98,6 @@ void TaskDatabase::Init(base::FilePath profile_path) {
     return;
   }
 
-  // Intent: Apply any necessary migrations to align schema with code
-  // expectations.
   if (!Migrate(GetDatabaseVersion())) {
     DLOG(ERROR) << "Failed to migrate database.";
     return;
@@ -128,7 +128,7 @@ bool TaskDatabase::CreateRecordingsTable() {
 
   static constexpr char kSql[] =
       "CREATE TABLE Recordings("
-      "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+      "id INTEGER PRIMARY KEY,"
       "url TEXT,"
       "start_time INTEGER,"
       "name TEXT,"
@@ -137,8 +137,11 @@ bool TaskDatabase::CreateRecordingsTable() {
     return false;
   }
 
+  // Optimize GetRecordingsByUrl queries, which filter by URL and retrieve in
+  // descending chronological order. Avoids SQLite in-memory filesorts.
   return db_.Execute(
-      "CREATE INDEX IF NOT EXISTS recordings_url ON Recordings(url)");
+      "CREATE INDEX IF NOT EXISTS recordings_url_timestamp "
+      "ON Recordings(url, start_time DESC)");
 }
 
 bool TaskDatabase::CreateActivityAnnotationsTable() {
@@ -235,11 +238,7 @@ void TaskDatabase::RunSeeding(base::FilePath file_path,
     if (base::expected<std::vector<ActivityAnnotation>, std::string> result =
             SeedAnnotationsFromFile(file_path);
         result.has_value()) {
-      for (ActivityAnnotation& annotation : result.value()) {
-        std::string url = annotation.url();
-        SaveActivityAnnotation(std::nullopt, std::move(annotation),
-                               std::move(url), std::nullopt);
-      }
+      SaveSeededAnnotations(std::move(result.value()));
       return;
     } else {
       first_error = std::move(result.error());
@@ -251,11 +250,7 @@ void TaskDatabase::RunSeeding(base::FilePath file_path,
     if (base::expected<std::vector<ActivityAnnotation>, std::string> result =
             GetSeedAnnotationsFromJson(feature_json);
         result.has_value()) {
-      for (ActivityAnnotation& annotation : result.value()) {
-        std::string url = annotation.url();
-        SaveActivityAnnotation(std::nullopt, std::move(annotation),
-                               std::move(url), std::nullopt);
-      }
+      SaveSeededAnnotations(std::move(result.value()));
       return;
     } else if (first_error.empty()) {
       first_error = std::move(result.error());
@@ -264,7 +259,6 @@ void TaskDatabase::RunSeeding(base::FilePath file_path,
 
   if (!first_error.empty()) {
     DLOG(ERROR) << first_error;
-    base::debug::DumpWithoutCrashing();
   }
 }
 
@@ -286,22 +280,22 @@ bool TaskDatabase::CreateActivityDataTable() {
 
 int64_t TaskDatabase::AddRecording(Recording recording) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Serialize the proto to destructively move its fields afterwards.
+  recording.clear_id();
+  std::string serialized_proto = recording.SerializeAsString();
+
   static constexpr char kSql[] =
       "INSERT INTO Recordings(url, start_time, name, proto) "
       "VALUES(?, ?, ?, ?)";
   sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSql));
-  statement.BindString(0, std::move(recording.url()));
+
+  statement.BindString(0, std::move(*recording.mutable_url()));
   statement.BindInt64(1, recording.start_time());
-  statement.BindString(2, std::move(recording.name()));
+  statement.BindString(2, std::move(*recording.mutable_name()));
+  statement.BindBlob(3, std::move(serialized_proto));
 
-  // The ID should not be serialized to the database.
-  recording.clear_id();
-  statement.BindBlob(3, recording.SerializeAsString());
-
-  if (statement.Run()) {
-    return db_.GetLastInsertRowId();
-  }
-  return -1;
+  return statement.Run() ? db_.GetLastInsertRowId() : -1;
 }
 
 std::vector<Recording> TaskDatabase::GetRecordingsByUrl(std::string url) {
@@ -443,6 +437,20 @@ bool TaskDatabase::DeleteActivityAnnotation(int64_t annotation_id) {
   statement.BindInt64(0, annotation_id);
 
   return statement.Run();
+}
+
+void TaskDatabase::SaveSeededAnnotations(
+    std::vector<ActivityAnnotation> annotations) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  sql::Transaction transaction(&db_);
+  if (transaction.Begin()) {
+    for (ActivityAnnotation& annotation : annotations) {
+      std::string url = annotation.url();
+      SaveActivityAnnotation(std::nullopt, std::move(annotation),
+                             std::move(url), std::nullopt);
+    }
+    std::ignore = transaction.Commit();
+  }
 }
 
 }  // namespace record_replay

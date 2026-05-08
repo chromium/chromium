@@ -100,6 +100,9 @@ class TaskDatabase {
   base::expected<std::vector<ActivityAnnotation>, std::string>
   GetSeedAnnotationsFromJson(const std::string& json_string);
 
+  // Saves a batch of seeded annotations within an atomic transaction.
+  void SaveSeededAnnotations(std::vector<ActivityAnnotation> annotations);
+
   sql::Database db_;
 
   SEQUENCE_CHECKER(sequence_checker_);

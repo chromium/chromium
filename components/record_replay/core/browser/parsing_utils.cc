@@ -17,9 +17,10 @@ std::vector<base::Value> ParseJSONListOfDicts(std::string_view json_string) {
     return dicts;
   }
 
-  for (const auto& item : value->GetList()) {
+  base::ListValue list = std::move(*value).TakeList();
+  for (base::Value& item : list) {
     if (item.is_dict()) {
-      dicts.push_back(item.Clone());
+      dicts.push_back(std::move(item));
     }
   }
   return dicts;
