@@ -6,9 +6,7 @@
 
 #include "base/metrics/metrics_hashes.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "components/payments/core/features.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source.h"
@@ -551,8 +549,6 @@ TEST(JourneyLoggerTest, RecordJourneyStatsHistograms_TwoPaymentRequests) {
 // the Payment Request.
 TEST(JourneyLoggerTest,
      RecordJourneyStatsHistograms_CheckoutFunnelUkm_UserAborted) {
-  base::test::ScopedFeatureList feature_list(
-      features::kPaymentRequestRejectTooSmallWindows);
   base::test::TaskEnvironment task_environment_;
   using UkmEntry = ukm::builders::PaymentRequest_CheckoutEvents;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
@@ -587,16 +583,12 @@ TEST(JourneyLoggerTest,
   EXPECT_EQ(1u, entries.size());
   for (const ukm::mojom::UkmEntry* const entry : entries) {
     ukm_recorder.ExpectEntrySourceHasUrl(entry, GURL(test_url));
-    EXPECT_EQ(3U, entry->metrics.size());
+    EXPECT_EQ(2U, entry->metrics.size());
     ukm_recorder.ExpectEntryMetric(
         entry, UkmEntry::kCompletionStatusName,
         JourneyLogger::COMPLETION_STATUS_USER_ABORTED);
     ukm_recorder.ExpectEntryMetric(entry, UkmEntry::kEvents2Name,
                                    expected_step_metric);
-    ukm_recorder.ExpectEntryMetric(
-        entry, UkmEntry::kWindowSizeCheckRejectionReasonName,
-        static_cast<int64_t>(JourneyLogger::WindowSizeCheckRejectionReason::
-                                 kNotRejectedOrNotShown));
   }
 }
 
@@ -604,8 +596,6 @@ TEST(JourneyLoggerTest,
 // completes the Payment Request.
 TEST(JourneyLoggerTest,
      RecordJourneyStatsHistograms_CheckoutFunnelUkm_Completed) {
-  base::test::ScopedFeatureList feature_list(
-      features::kPaymentRequestRejectTooSmallWindows);
   base::test::TaskEnvironment task_environment_;
   using UkmEntry = ukm::builders::PaymentRequest_CheckoutEvents;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
@@ -641,23 +631,17 @@ TEST(JourneyLoggerTest,
   EXPECT_EQ(1u, entries.size());
   for (const ukm::mojom::UkmEntry* const entry : entries) {
     ukm_recorder.ExpectEntrySourceHasUrl(entry, GURL(test_url));
-    EXPECT_EQ(3U, entry->metrics.size());
+    EXPECT_EQ(2U, entry->metrics.size());
     ukm_recorder.ExpectEntryMetric(entry, UkmEntry::kCompletionStatusName,
                                    JourneyLogger::COMPLETION_STATUS_COMPLETED);
     ukm_recorder.ExpectEntryMetric(entry, UkmEntry::kEvents2Name,
                                    expected_step_metric);
-    ukm_recorder.ExpectEntryMetric(
-        entry, UkmEntry::kWindowSizeCheckRejectionReasonName,
-        static_cast<int64_t>(JourneyLogger::WindowSizeCheckRejectionReason::
-                                 kNotRejectedOrNotShown));
   }
 }
 
 // Tests that the Payment Request UKMs and UMAs are logged correctly when the
 // user selects the play billing method.
 TEST(JourneyLoggerTest, RecordJourneyStatsHistograms_SelectedPlayBilling) {
-  base::test::ScopedFeatureList feature_list(
-      features::kPaymentRequestRejectTooSmallWindows);
   base::test::TaskEnvironment task_environment_;
   using UkmEntry = ukm::builders::PaymentRequest_CheckoutEvents;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
@@ -685,15 +669,11 @@ TEST(JourneyLoggerTest, RecordJourneyStatsHistograms_SelectedPlayBilling) {
   EXPECT_EQ(1u, entries.size());
   for (const ukm::mojom::UkmEntry* const entry : entries) {
     ukm_recorder.ExpectEntrySourceHasUrl(entry, GURL(test_url));
-    EXPECT_EQ(3U, entry->metrics.size());
+    EXPECT_EQ(2U, entry->metrics.size());
     ukm_recorder.ExpectEntryMetric(entry, UkmEntry::kCompletionStatusName,
                                    JourneyLogger::COMPLETION_STATUS_COMPLETED);
     ukm_recorder.ExpectEntryMetric(entry, UkmEntry::kEvents2Name,
                                    expected_events);
-    ukm_recorder.ExpectEntryMetric(
-        entry, UkmEntry::kWindowSizeCheckRejectionReasonName,
-        static_cast<int64_t>(JourneyLogger::WindowSizeCheckRejectionReason::
-                                 kNotRejectedOrNotShown));
   }
 
   std::vector<base::Bucket> buckets =
@@ -710,8 +690,6 @@ TEST(JourneyLoggerTest, RecordJourneyStatsHistograms_SelectedPlayBilling) {
 
 TEST(JourneyLoggerTest,
      RecordJourneyStatsHistograms_MethodGooglePayAuthentication) {
-  base::test::ScopedFeatureList feature_list(
-      features::kPaymentRequestRejectTooSmallWindows);
   base::test::TaskEnvironment task_environment_;
   using UkmEntry = ukm::builders::PaymentRequest_CheckoutEvents;
   ukm::TestAutoSetUkmRecorder ukm_recorder;
@@ -740,15 +718,11 @@ TEST(JourneyLoggerTest,
   EXPECT_EQ(1u, entries.size());
   for (const ukm::mojom::UkmEntry* const entry : entries) {
     ukm_recorder.ExpectEntrySourceHasUrl(entry, GURL(test_url));
-    EXPECT_EQ(3U, entry->metrics.size());
+    EXPECT_EQ(2U, entry->metrics.size());
     ukm_recorder.ExpectEntryMetric(entry, UkmEntry::kCompletionStatusName,
                                    JourneyLogger::COMPLETION_STATUS_COMPLETED);
     ukm_recorder.ExpectEntryMetric(entry, UkmEntry::kEvents2Name,
                                    expected_events);
-    ukm_recorder.ExpectEntryMetric(
-        entry, UkmEntry::kWindowSizeCheckRejectionReasonName,
-        static_cast<int64_t>(JourneyLogger::WindowSizeCheckRejectionReason::
-                                 kNotRejectedOrNotShown));
   }
 
   std::vector<base::Bucket> buckets =
@@ -756,79 +730,6 @@ TEST(JourneyLoggerTest,
   EXPECT_TRUE(buckets[0].min &
               toInt(Event2::kRequestMethodGooglePayAuthentication));
   EXPECT_TRUE(buckets[0].min & toInt(Event2::kSelectedOther));
-}
-
-// Tests that the browser window size check rejection reason is logged to UMA
-// and UKM when the checkout is aborted.
-TEST(JourneyLoggerTest, RecordJourneyStatsHistograms_WindowSizeCheckRejection) {
-  base::test::ScopedFeatureList feature_list(
-      features::kPaymentRequestRejectTooSmallWindows);
-  base::test::TaskEnvironment task_environment_;
-  using UkmEntry = ukm::builders::PaymentRequest_CheckoutEvents;
-  ukm::TestAutoSetUkmRecorder ukm_recorder;
-  char test_url[] = "http://www.google.com/";
-
-  ukm::SourceId source_id = ukm::UkmRecorder::GetNewSourceID();
-  ukm_recorder.UpdateSourceURL(source_id, GURL(test_url));
-  JourneyLogger logger(source_id);
-
-  // Simulate that a window size check rejection occurs during resize.
-  logger.SetWindowSizeCheckRejectionReason(
-      JourneyLogger::WindowSizeCheckRejectionReason::kRejectedAtResize);
-  logger.SetAborted(JourneyLogger::ABORT_REASON_INTERNAL_ERROR);
-
-  // Make sure the UKM was logged correctly.
-  auto entries = ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
-  EXPECT_EQ(1u, entries.size());
-  for (const ukm::mojom::UkmEntry* const entry : entries) {
-    ukm_recorder.ExpectEntrySourceHasUrl(entry, GURL(test_url));
-    // The entry should have 3 metrics: CompletionStatus, Events2, and
-    // WindowSizeCheckRejectionReason.
-    EXPECT_EQ(3U, entry->metrics.size());
-    ukm_recorder.ExpectEntryMetric(
-        entry, UkmEntry::kCompletionStatusName,
-        JourneyLogger::COMPLETION_STATUS_OTHER_ABORTED);
-    ukm_recorder.ExpectEntryMetric(
-        entry, UkmEntry::kWindowSizeCheckRejectionReasonName,
-        static_cast<int64_t>(
-            JourneyLogger::WindowSizeCheckRejectionReason::kRejectedAtResize));
-  }
-}
-
-// Tests that the browser window size check rejection reason is NOT logged to
-// UKM when the feature flag is disabled.
-TEST(JourneyLoggerTest,
-     RecordJourneyStatsHistograms_WindowSizeCheckRejection_FlagDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kPaymentRequestRejectTooSmallWindows);
-  base::test::TaskEnvironment task_environment_;
-
-  base::HistogramTester histogram_tester;
-  using UkmEntry = ukm::builders::PaymentRequest_CheckoutEvents;
-  ukm::TestAutoSetUkmRecorder ukm_recorder;
-  char test_url[] = "http://www.google.com/";
-
-  ukm::SourceId source_id = ukm::UkmRecorder::GetNewSourceID();
-  ukm_recorder.UpdateSourceURL(source_id, GURL(test_url));
-  JourneyLogger logger(source_id);
-
-  logger.SetAborted(JourneyLogger::ABORT_REASON_INTERNAL_ERROR);
-
-  // Make sure the UKM was logged correctly.
-  auto entries = ukm_recorder.GetEntriesByName(UkmEntry::kEntryName);
-  EXPECT_EQ(1u, entries.size());
-  for (const ukm::mojom::UkmEntry* const entry : entries) {
-    ukm_recorder.ExpectEntrySourceHasUrl(entry, GURL(test_url));
-    // The entry should ONLY have 2 metrics: CompletionStatus and Events2.
-    // It should NOT have the WindowSizeCheckRejectionReason metric.
-    EXPECT_EQ(2U, entry->metrics.size());
-    EXPECT_FALSE(ukm_recorder.EntryHasMetric(
-        entry, UkmEntry::kWindowSizeCheckRejectionReasonName));
-  }
-
-  histogram_tester.ExpectTotalCount(
-      "PaymentRequest.WindowSizeCheckRejectionReason", 0);
 }
 
 }  // namespace payments

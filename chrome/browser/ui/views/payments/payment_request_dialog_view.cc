@@ -31,7 +31,6 @@
 #include "components/payments/content/payment_request.h"
 #include "components/payments/core/error_strings.h"
 #include "components/payments/core/features.h"
-#include "components/payments/core/journey_logger.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/browser_thread.h"
@@ -134,8 +133,9 @@ bool PaymentRequestDialogView::ShouldShowCloseButton() const {
 
 void PaymentRequestDialogView::ShowDialog() {
   if (!DialogFitsInBrowserWindow()) {
-    request_->SetWindowSizeCheckRejectionReason(
-        JourneyLogger::WindowSizeCheckRejectionReason::kRejectedAtShow);
+    base::UmaHistogramEnumeration(
+        "PaymentRequest.WindowSizeCheckRejectionReason",
+        WindowSizeCheckRejectionReason::kRejectedAtShow);
 
     // To avoid tearing down the PaymentRequest class in the middle of showing
     // the dialog, we post this call asynchronously.
@@ -226,9 +226,9 @@ void PaymentRequestDialogView::ShowPaymentHandlerScreen(
   // Once we have resized the dialog, re-check that it still fits in the
   // available window space.
   if (!DialogFitsInBrowserWindow()) {
-    request_->SetWindowSizeCheckRejectionReason(
-        JourneyLogger::WindowSizeCheckRejectionReason::
-            kRejectedAtPaymentHandlerTransition);
+    base::UmaHistogramEnumeration(
+        "PaymentRequest.WindowSizeCheckRejectionReason",
+        WindowSizeCheckRejectionReason::kRejectedAtPaymentHandlerTransition);
     std::move(callback).Run(false, 0, 0);
     request_->OnInternalError(errors::kBrowserWindowTooSmall);
     return;
@@ -756,8 +756,9 @@ void PaymentRequestDialogView::ResizeDialogWindow() {
 void PaymentRequestDialogView::CheckIfDialogFitsInBrowserWindow() {
   last_check_for_too_small_window_time_ = base::TimeTicks::Now();
   if (!DialogFitsInBrowserWindow()) {
-    request_->SetWindowSizeCheckRejectionReason(
-        JourneyLogger::WindowSizeCheckRejectionReason::kRejectedAtResize);
+    base::UmaHistogramEnumeration(
+        "PaymentRequest.WindowSizeCheckRejectionReason",
+        WindowSizeCheckRejectionReason::kRejectedAtResize);
     request_->OnInternalError(errors::kBrowserWindowTooSmall);
   }
 }

@@ -150,10 +150,6 @@ class PaymentRequest : public content::DocumentService<mojom::PaymentRequest>,
   // window.
   void OnPaymentHandlerOpenWindowCalled();
 
-  // Sets the reason why the browser window size check failed.
-  void SetWindowSizeCheckRejectionReason(
-      JourneyLogger::WindowSizeCheckRejectionReason reason);
-
   bool skipped_payment_request_ui() { return skipped_payment_request_ui_; }
   SPCTransactionMode spc_transaction_mode() const {
     return spc_transaction_mode_;

@@ -861,11 +861,6 @@ void PaymentRequest::OnInternalError(const std::string& error_message) {
   ResetAndDeleteThis();
 }
 
-void PaymentRequest::SetWindowSizeCheckRejectionReason(
-    JourneyLogger::WindowSizeCheckRejectionReason reason) {
-  journey_logger_.SetWindowSizeCheckRejectionReason(reason);
-}
-
 void PaymentRequest::OnUserAuthAnotherWay() {
   // If |client_| is not bound, then the object is already being destroyed as
   // a result of a renderer event.

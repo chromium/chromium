@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+
 #include "components/payments/core/journey_logger.h"
 
 #include <algorithm>
@@ -9,9 +10,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
-#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
-#include "components/payments/core/features.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -290,21 +289,10 @@ void JourneyLogger::RecordEventsMetric(CompletionStatus completion_status) {
     return;
 
   // Record the events in UKM.
-  ukm::builders::PaymentRequest_CheckoutEvents ukm_builder(
-      payment_request_source_id_);
-  ukm_builder.SetCompletionStatus(completion_status).SetEvents2(events2_);
-
-  if (base::FeatureList::IsEnabled(
-          features::kPaymentRequestRejectTooSmallWindows)) {
-    base::UmaHistogramEnumeration(
-        "PaymentRequest.WindowSizeCheckRejectionReason",
-        window_size_check_rejection_reason_);
-
-    ukm_builder.SetWindowSizeCheckRejectionReason(
-        base::checked_cast<int64_t>(window_size_check_rejection_reason_));
-  }
-
-  ukm_builder.Record(ukm::UkmRecorder::Get());
+  ukm::builders::PaymentRequest_CheckoutEvents(payment_request_source_id_)
+      .SetCompletionStatus(completion_status)
+      .SetEvents2(events2_)
+      .Record(ukm::UkmRecorder::Get());
 
   if (payment_app_source_id_ == ukm::kInvalidSourceId)
     return;
@@ -394,11 +382,6 @@ bool JourneyLogger::WasPaymentRequestTriggered() {
 void JourneyLogger::SetPaymentAppUkmSourceId(
     ukm::SourceId payment_app_source_id) {
   payment_app_source_id_ = payment_app_source_id;
-}
-
-void JourneyLogger::SetWindowSizeCheckRejectionReason(
-    WindowSizeCheckRejectionReason reason) {
-  window_size_check_rejection_reason_ = reason;
 }
 
 base::WeakPtr<JourneyLogger> JourneyLogger::GetWeakPtr() {

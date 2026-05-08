@@ -18489,13 +18489,6 @@ be describing additional metrics about the same event.
       components/payments/core/journey_logger.h.
     </summary>
   </metric>
-  <metric name="WindowSizeCheckRejectionReason"
-      enum="PaymentRequestWindowSizeCheckRejectionReason">
-    <summary>
-      The reason why the browser window size check failed and the Payment
-      Request or Payment Handler dialog was rejected.
-    </summary>
-  </metric>
 </event>
 
 <event name="PaymentRequest.TransactionAmount">
