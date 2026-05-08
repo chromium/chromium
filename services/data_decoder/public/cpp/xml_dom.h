@@ -18,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/types/expected.h"
 #include "base/types/pass_key.h"
+#include "base/values.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace data_decoder::xml {
@@ -78,6 +79,10 @@ class Document {
   // `nullptr` if there is no such element.
   const Node* FindFirstElementByTagName(Name name) const;
 
+  // Returns a base::Value representation of the document compatible with
+  // the legacy safe_xml_parser.h.
+  base::Value ToValueForTesting() const;
+
  private:
   std::unique_ptr<Node> root_;
 };
@@ -123,6 +128,10 @@ class Node {
   // These methods are only usable on text or cdata nodes and will crash if
   // called on non-text and non-cdata nodes.
   const std::string& GetTextContent() const;
+
+  // Returns a base::Value representation of the document compatible with
+  // the legacy safe_xml_parser.h.
+  base::Value ToValueForTesting() const;
 
   // Rust FFI helpers:
   static std::unique_ptr<Node> CreateElement(base::PassKey<ffi::DomBuilder>,

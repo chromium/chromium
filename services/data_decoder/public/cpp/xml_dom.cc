@@ -60,6 +60,10 @@ const Node* Document::FindFirstElementByTagName(Name name) const {
   });
 }
 
+base::Value Document::ToValueForTesting() const {
+  return root_->ToValueForTesting();  // IN-TEST
+}
+
 Node::Element::Element() = default;
 Node::Element::Element(OwnedName name) : name(std::move(name)) {}
 Node::Element::Element(Element&&) = default;
@@ -133,6 +137,59 @@ const std::string& Node::GetTextContent() const {
           [](const auto& node) -> const std::string& { return node.text; },
       },
       data_);
+}
+
+base::Value Node::ToValueForTesting() const {
+  base::DictValue dict;
+  switch (GetType()) {
+    case Type::kElement: {
+      dict.Set(mojom::XmlParser::kTypeKey, mojom::XmlParser::kElementType);
+      const std::string& prefix = GetNamespacePrefix();
+      const std::string& local_name = GetLocalName();
+      dict.Set(mojom::XmlParser::kTagKey,
+               prefix.empty() ? local_name : prefix + ":" + local_name);
+
+      const auto& attributes = GetAttributes();
+      if (!attributes.empty()) {
+        base::DictValue attr_dict;
+        for (const auto& [name, value] : attributes) {
+          std::string key = name.prefix.empty()
+                                ? name.local_name
+                                : name.prefix + ":" + name.local_name;
+          attr_dict.Set(key, value);
+        }
+        dict.Set(mojom::XmlParser::kAttributesKey, std::move(attr_dict));
+      }
+
+      const auto& namespaces = GetNamespaces();
+      if (!namespaces.empty()) {
+        base::DictValue ns_dict;
+        for (const auto& [ns_prefix, uri] : namespaces) {
+          ns_dict.Set(ns_prefix, uri);
+        }
+        dict.Set(mojom::XmlParser::kNamespacesKey, std::move(ns_dict));
+      }
+
+      const auto& children = GetChildren();
+      if (!children.empty()) {
+        base::ListValue children_list;
+        for (const auto& child : children) {
+          children_list.Append(child->ToValueForTesting());  // IN-TEST
+        }
+        dict.Set(mojom::XmlParser::kChildrenKey, std::move(children_list));
+      }
+      break;
+    }
+    case Type::kText:
+      dict.Set(mojom::XmlParser::kTypeKey, mojom::XmlParser::kTextNodeType);
+      dict.Set(mojom::XmlParser::kTextKey, GetTextContent());
+      break;
+    case Type::kCdata:
+      dict.Set(mojom::XmlParser::kTypeKey, mojom::XmlParser::kCDataNodeType);
+      dict.Set(mojom::XmlParser::kTextKey, GetTextContent());
+      break;
+  }
+  return base::Value(std::move(dict));
 }
 
 // static
