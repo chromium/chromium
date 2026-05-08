@@ -27,9 +27,6 @@ PRETTY_XML_RIGHT_ENUM_ORDER = """
 </enum>
 
 <enum name="Enum3">
-  <obsolete>
-    Obsolete text
-  </obsolete>
   <summary>Summary text</summary>
   <int value="0" label="Label1">Int text</int>
   <int value="1" label="Label2"/>
@@ -46,9 +43,6 @@ PRETTY_XML = """
 <enums>
 
 <enum name="Enum1">
-  <obsolete>
-    Obsolete text
-  </obsolete>
   <summary>Summary text</summary>
   <int value="0" label="Label1">Int text</int>
   <int value="1" label="Label2"/>
@@ -67,9 +61,6 @@ PRETTY_XML_COMMENTS = """
 <enum name="Enum1">
 <!-- Comment 1 -->
 
-  <obsolete>
-    Obsolete text
-  </obsolete>
   <summary>Summary text</summary>
   <int value="0" label="Label1">Int text</int>
   <int value="1" label="Label2"/>
@@ -94,9 +85,6 @@ XML_WRONG_ATTRIBUTE_ORDER = """
 <enums>
 
 <enum name="Enum1">
-  <obsolete>
-    Obsolete text
-  </obsolete>
   <summary>Summary text</summary>
   <int label="Label1" value="0" >Int text</int>
   <int value="1" label="Label2"/>
@@ -113,9 +101,6 @@ XML_WRONG_INDENT = """
 <enums>
 
   <enum name="Enum1">
-    <obsolete>
-      Obsolete text
-    </obsolete>
     <summary>Summary text</summary>
       <int value="0" label="Label1">Int text</int>
       <int value="1" label="Label2"/>
@@ -132,7 +117,6 @@ XML_WRONG_SINGLELINE = """
 <enums>
 
 <enum name="Enum1">
-  <obsolete>Obsolete text</obsolete>
   <summary>
     Summary text
   </summary>
@@ -149,9 +133,6 @@ XML_WRONG_LINEBREAK = """
 <histogram-configuration>
 <enums>
 <enum name="Enum1">
-  <obsolete>
-    Obsolete text
-  </obsolete>
   <summary>Summary text</summary>
 
   <int value="0" label="Label1">Int text</int>
@@ -176,9 +157,6 @@ XML_WRONG_ENUM_ORDER = """
 </enum>
 
 <enum name="Enum3">
-  <obsolete>
-    Obsolete text
-  </obsolete>
   <summary>Summary text</summary>
   <int value="0" label="Label1">Int text</int>
   <int value="1" label="Label2"/>
@@ -200,9 +178,6 @@ XML_WRONG_INT_ORDER = """
 <enums>
 
 <enum name="Enum1">
-  <obsolete>
-    Obsolete text
-  </obsolete>
   <summary>Summary text</summary>
   <int value="1" label="Label2"/>
   <int value="0" label="Label1">Int text</int>
@@ -222,9 +197,6 @@ XML_WRONG_CHILDREN_ORDER = """
   <int value="0" label="Label1">Int text</int>
   <int value="1" label="Label2"/>
   <summary>Summary text</summary>
-  <obsolete>
-    Obsolete text
-  </obsolete>
 </enum>
 
 </enums>
@@ -575,7 +547,7 @@ class EnumXmlTest(unittest.TestCase):
       ('LineBreak', XML_WRONG_LINEBREAK, PRETTY_XML),
       # <int> tags of enums should be sorted by the integer value
       ('IntOrder', XML_WRONG_INT_ORDER, PRETTY_XML),
-      # The children of enums should be sorted in the order of <obsolete>,
+      # The children of enums should be sorted in the order of
       # <summary> and <int>
       ('ChildrenOrder', XML_WRONG_CHILDREN_ORDER, PRETTY_XML),
 

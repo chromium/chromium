@@ -120,7 +120,7 @@ group("metrics_python_tests") {
     "//tools/metrics/histograms/generate_flag_enums_test.py",
     "//tools/metrics/histograms/histogram_ownership.py",
     "//tools/metrics/histograms/histogram_configuration_model.py",
-    "//tools/metrics/histograms/histogram_configuration_model_test_enums.py",
+    "//tools/metrics/histograms/histogram_configuration_model_enums_test.py",
     "//tools/metrics/histograms/histogram_configuration_model_histograms_test.py",
     "//tools/metrics/histograms/histogram_paths.py",
     "//tools/metrics/histograms/merge_xml.py",
