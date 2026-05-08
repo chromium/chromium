@@ -208,6 +208,10 @@ BASE_FEATURE(kOmniboxAimDetachWebContentsOnHide, ENABLED);
 // hidden.
 BASE_FEATURE(kOmniboxWebUIDetachWebContentsOnHide, ENABLED);
 
+// When enabled, the Omnibox WebUI popup will mark its web contents as hidden
+// when hidden, to unlock frames from compositor cache.
+BASE_FEATURE(kOmniboxWebUIPopupMarkAsHidden, DISABLED);
+
 // Feature used to default typed navigations to use HTTPS instead of HTTP.
 // This only applies to navigations that don't have a scheme such as
 // "example.com". Presently, typing "example.com" in a clean browsing profile

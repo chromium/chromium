@@ -217,6 +217,9 @@ void OmniboxPopupWebUIBaseContent::LoadContent() {
   permissions::PermissionRequestManager::CreateForWebContents(GetWebContents());
 
   OnLocationBarBoundsChanged();
+  if (base::FeatureList::IsEnabled(omnibox::kOmniboxWebUIPopupMarkAsHidden)) {
+    GetWebContents()->WasHidden();
+  }
 }
 
 void OmniboxPopupWebUIBaseContent::Detach() {
