@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/webauthn/model/ios_passkey_model_factory.h"
 #import "ui/base/device_form_factor.h"
 
 @interface ManualFillPasswordCoordinator () <PasswordListNavigator>
@@ -77,6 +78,7 @@
         invokedOnObfuscatedField:invokedOnObfuscatedField
             profilePasswordStore:profilePasswordStore
             accountPasswordStore:accountPasswordStore
+                    passkeyModel:IOSPasskeyModelFactory::GetForProfile(profile)
           showAutofillFormButton:showAutofillFormButton];
     [_credentialsMediator fetchPasswordsForOrigin];
     _credentialsMediator.actionSectionEnabled = YES;

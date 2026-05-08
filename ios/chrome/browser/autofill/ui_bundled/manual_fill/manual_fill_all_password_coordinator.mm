@@ -95,6 +95,7 @@
       invokedOnObfuscatedField:NO
           profilePasswordStore:nil
           accountPasswordStore:nil
+                  passkeyModel:nullptr
         showAutofillFormButton:[self.injectionHandler
                                        isActiveFormAPasswordForm]];
   [self.credentialsMediator

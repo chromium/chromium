@@ -95,6 +95,7 @@ class ManualFillCredentialsMediatorTest : public PlatformTest {
         invokedOnObfuscatedField:NO
             profilePasswordStore:store_
             accountPasswordStore:nil
+                    passkeyModel:nullptr
           showAutofillFormButton:NO];
 
     consumer_ = OCMProtocolMock(@protocol(ManualFillPasswordConsumer));

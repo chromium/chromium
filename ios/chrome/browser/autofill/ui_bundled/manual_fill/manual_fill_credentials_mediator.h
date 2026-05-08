@@ -29,6 +29,10 @@ namespace web {
 class WebState;
 }  // namespace web
 
+namespace webauthn {
+class PasskeyModel;
+}  // namespace webauthn
+
 class FaviconLoader;
 class GURL;
 
@@ -86,6 +90,7 @@ class GURL;
                  accountPasswordStore:
                      (scoped_refptr<password_manager::PasswordStoreInterface>)
                          accountPasswordStore
+                         passkeyModel:(webauthn::PasskeyModel*)passkeyModel
                showAutofillFormButton:(BOOL)showAutofillFormButton
     NS_DESIGNATED_INITIALIZER;
 

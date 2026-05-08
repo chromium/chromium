@@ -20,6 +20,8 @@
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "components/sync/base/data_type.h"
 #import "components/sync/service/sync_service.h"
+#import "components/webauthn/core/browser/passkey_model.h"
+#import "components/webauthn/ios/features.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/form_fetcher_consumer_bridge.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_action_cell.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
@@ -38,6 +40,7 @@
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/credential_provider/passkey_model_observer_bridge.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -82,13 +85,14 @@ std::vector<ManualFillCredentialAndPasswordForm> GetFilteredCredentials(
                                              FormFetcherConsumer,
                                              ManualFillContentInjector,
                                              PasswordCounterObserver,
-                                             SavedPasswordsPresenterObserver>
+                                             SavedPasswordsPresenterObserver,
+                                             PasskeyModelObserverDelegate>
 
 // The favicon loader used in TableViewFaviconDataSource.
 @property(nonatomic, assign) FaviconLoader* faviconLoader;
 
-// YES if passwords were fetched at least once.
-@property(nonatomic, assign) BOOL passwordsWereFetched;
+// YES if credentials were fetched at least once.
+@property(nonatomic, assign) BOOL credentialsWereFetched;
 
 // YES if the active field is obfuscated.
 @property(nonatomic, assign) BOOL activeFieldIsObfuscated;
@@ -141,6 +145,12 @@ std::vector<ManualFillCredentialAndPasswordForm> GetFilteredCredentials(
 
   // Indicates whether to show the autofill button for the items.
   BOOL _showAutofillFormButton;
+
+  // Bridge to observe passkey model changes.
+  std::unique_ptr<PasskeyModelObserverBridge> _passkeyModelObserver;
+
+  // Provides access to passkeys stored in user's account.
+  raw_ptr<webauthn::PasskeyModel> _passkeyModel;
 }
 
 - (instancetype)initWithFaviconLoader:(FaviconLoader*)faviconLoader
@@ -154,6 +164,7 @@ std::vector<ManualFillCredentialAndPasswordForm> GetFilteredCredentials(
                  accountPasswordStore:
                      (scoped_refptr<password_manager::PasswordStoreInterface>)
                          accountPasswordStore
+                         passkeyModel:(webauthn::PasskeyModel*)passkeyModel
                showAutofillFormButton:(BOOL)showAutofillFormButton {
   self = [super init];
   if (self) {
@@ -175,6 +186,14 @@ std::vector<ManualFillCredentialAndPasswordForm> GetFilteredCredentials(
       _passwordCounter = std::make_unique<PasswordCounterDelegateBridge>(
           self, profilePasswordStore.get(), accountPasswordStore.get());
     }
+
+    if (IsConditionalPasskeyLoginEnabled()) {
+      _passkeyModel = passkeyModel;
+      if (_passkeyModel) {
+        _passkeyModelObserver =
+            std::make_unique<PasskeyModelObserverBridge>(self, _passkeyModel);
+      }
+    }
   }
   return self;
 }
@@ -184,6 +203,7 @@ std::vector<ManualFillCredentialAndPasswordForm> GetFilteredCredentials(
 }
 
 - (void)disconnect {
+  [self removePasskeyModelObserver];
   if (_webState) {
     [self webStateDestroyed:_webState];
   }
@@ -220,7 +240,7 @@ std::vector<ManualFillCredentialAndPasswordForm> GetFilteredCredentials(
       [self passwordFormsFromCredentials:savedCredentials];
   _credentials = [self
       createManualFillCredentialsFromPasswordForms:std::move(passwordForms)];
-  self.passwordsWereFetched = YES;
+  self.credentialsWereFetched = YES;
   [self postDataToConsumer];
 }
 
@@ -254,7 +274,7 @@ std::vector<ManualFillCredentialAndPasswordForm> GetFilteredCredentials(
   // consumer, only post credentials if at least the first fetch is done. Or
   // else there will be spam metrics with 0 passwords everytime the screen is
   // open.
-  if (self.passwordsWereFetched) {
+  if (self.credentialsWereFetched) {
     [self postCredentialsToConsumer];
     [self postActionsToConsumer];
     [self.navigator passwordsFetched];
@@ -502,6 +522,13 @@ std::vector<ManualFillCredentialAndPasswordForm> GetFilteredCredentials(
   return !self.isActionSectionEnabled;
 }
 
+- (void)removePasskeyModelObserver {
+  if (_passkeyModelObserver) {
+    _passkeyModelObserver.reset();
+    _passkeyModel = nullptr;
+  }
+}
+
 #pragma mark - Setters
 
 - (void)setConsumer:(id<ManualFillPasswordConsumer>)consumer {
@@ -601,6 +628,7 @@ std::vector<ManualFillCredentialAndPasswordForm> GetFilteredCredentials(
     }
     _webState = nullptr;
   }
+  [self removePasskeyModelObserver];
   _webStateObserverBridge.reset();
   _formActivityObserverBridge.reset();
 }
@@ -635,9 +663,25 @@ std::vector<ManualFillCredentialAndPasswordForm> GetFilteredCredentials(
       createManualFillCredentialsFromPasswordForms:std::move(
                                                        passwordFormVector)];
 
-  // Pass the passwords to the consumer.
-  self.passwordsWereFetched = YES;
+  // Pass the credentials to the consumer.
+  self.credentialsWereFetched = YES;
   [self postDataToConsumer];
+}
+
+#pragma mark - PasskeyModelObserverDelegate
+
+- (void)passkeyModelDidChange {
+  // TODO(crbug.com/511161545): Determine if we need to refresh all data or just
+  // credentials.
+}
+
+- (void)passkeyModelIsReady:(webauthn::PasskeyModel*)passkeyModel {
+  // TODO(crbug.com/511161545): Determine if we need to refresh all data or just
+  // credentials.
+}
+
+- (void)passKeyModelShuttingDown:(webauthn::PasskeyModel*)passkeyModel {
+  [self removePasskeyModelObserver];
 }
 
 @end
