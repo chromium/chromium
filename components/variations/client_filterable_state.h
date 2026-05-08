@@ -65,6 +65,9 @@ struct COMPONENT_EXPORT(VARIATIONS) ClientFilterableState {
   // identify models of devices.
   std::string hardware_class;
 
+  // The hardware manufacturer of the device.
+  std::string hardware_manufacturer;
+
   // Whether this is a low-end device. Currently only supported on Android.
   // Based on base::SysInfo::IsLowEndDevice().
   bool is_low_end_device = false;
@@ -110,6 +113,10 @@ struct COMPONENT_EXPORT(VARIATIONS) ClientFilterableState {
 
   // Returns the hardware class string used for hardware_class filtering.
   static std::string GetHardwareClass();
+
+  // Returns the hardware manufacturer string used for hardware_manufacturer
+  // filtering. Currently only implemented on Android.
+  static std::string GetHardwareManufacturer();
 
  private:
   // Evaluating enterprise status negatively affects performance, so we only

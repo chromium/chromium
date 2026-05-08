@@ -108,4 +108,12 @@ std::string ClientFilterableState::GetHardwareClass() {
 #endif
 }
 
+std::string ClientFilterableState::GetHardwareManufacturer() {
+#if BUILDFLAG(IS_ANDROID)
+  return base::SysInfo::HardwareManufacturer();
+#else
+  return "";
+#endif
+}
+
 }  // namespace variations

@@ -113,6 +113,25 @@ bool CheckStudyHardwareClass(const Study::Filter& filter,
                                         hardware_class);
 }
 
+bool CheckStudyHardwareManufacturer(const Study::Filter& filter,
+                                    const std::string& hardware_manufacturer) {
+  // If both filters are empty, match all values.
+  if (filter.hardware_manufacturer_size() == 0 &&
+      filter.exclude_hardware_manufacturer_size() == 0) {
+    return true;
+  }
+
+  // Allow the |hardware_manufacturer| if it's in the allowlist.
+  if (filter.hardware_manufacturer_size() > 0) {
+    return ContainsStringIgnoreCaseASCII(filter.hardware_manufacturer(),
+                                         hardware_manufacturer);
+  }
+
+  // Omit if there is a matching excludelist entry.
+  return !ContainsStringIgnoreCaseASCII(filter.exclude_hardware_manufacturer(),
+                                        hardware_manufacturer);
+}
+
 bool CheckStudyLocale(const Study::Filter& filter, const std::string& locale) {
   // If both filters are empty, match all values.
   if (filter.locale_size() == 0 && filter.exclude_locale_size() == 0) {
@@ -375,6 +394,13 @@ bool ShouldAddStudy(const ProcessedStudy& processed_study,
     if (!CheckStudyHardwareClass(study.filter(), client_state.hardware_class)) {
       DVLOG(1) << "Filtered out study " << study.name() <<
                   " due to hardware_class.";
+      return false;
+    }
+
+    if (!CheckStudyHardwareManufacturer(study.filter(),
+                                        client_state.hardware_manufacturer)) {
+      DVLOG(1) << "Filtered out study " << study.name()
+               << " due to hardware_manufacturer.";
       return false;
     }
 

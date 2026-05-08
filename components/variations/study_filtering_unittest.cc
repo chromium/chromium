@@ -645,6 +645,50 @@ TEST(VariationsStudyFilteringTest, CheckStudyHardwareClass) {
   }
 }
 
+TEST(VariationsStudyFilteringTest, CheckStudyHardwareManufacturer) {
+  struct {
+    const char* hardware_manufacturer;
+    const char* exclude_hardware_manufacturer;
+    const char* actual_hardware_manufacturer;
+    bool expected_result;
+  } test_cases[] = {
+      // Neither filtered nor excluded set:
+      // True since empty is always a match.
+      {"", "", "Google", true},
+      {"", "", "", true},
+
+      // Filtered set:
+      {"google,lenovo,dell", "", "google", true},
+      {"google,lenovo,dell", "", "GoOgLe", true},
+      {"google,lenovo,dell", "", "apple", false},
+      {"google,lenovo,dell", "", "", false},
+
+      // Excluded set:
+      {"", "google,lenovo,dell", "google", false},
+      {"", "google,lenovo,dell", "apple", true},
+      {"", "google,lenovo,dell", "", true},
+  };
+
+  for (const auto& test : test_cases) {
+    Study::Filter filter;
+    for (const auto& hw_man : SplitFilterString(test.hardware_manufacturer)) {
+      filter.add_hardware_manufacturer(hw_man);
+    }
+    for (const auto& hw_man :
+         SplitFilterString(test.exclude_hardware_manufacturer)) {
+      filter.add_exclude_hardware_manufacturer(hw_man);
+    }
+
+    EXPECT_EQ(test.expected_result,
+              internal::CheckStudyHardwareManufacturer(
+                  filter, test.actual_hardware_manufacturer))
+        << "hardware_manufacturer=" << test.hardware_manufacturer << " "
+        << "exclude_hardware_manufacturer="
+        << test.exclude_hardware_manufacturer << " "
+        << "actual_hardware_manufacturer=" << test.actual_hardware_manufacturer;
+  }
+}
+
 TEST(VariationsStudyFilteringTest, CheckStudyCountry) {
   struct {
     const char* country;

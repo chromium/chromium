@@ -416,6 +416,8 @@ VariationsFieldTrialCreator::GetClientFilterableStateForVersion(
   state->cpu_architecture = GetCurrentCpuArchitecture();
   state->platform = GetPlatform();
   state->hardware_class = ClientFilterableState::GetHardwareClass();
+  state->hardware_manufacturer =
+      ClientFilterableState::GetHardwareManufacturer();
 #if BUILDFLAG(IS_ANDROID)
   // This is set on Android only currently, because the IsLowEndDevice() API
   // on other platforms has no intrinsic meaning outside of a field trial that

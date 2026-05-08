@@ -1125,6 +1125,23 @@ TEST_F(FieldTrialCreatorTest, LoadPermanentConsistencyCountry) {
   }
 }
 
+TEST_F(FieldTrialCreatorTest, GetClientFilterableState_HardwareManufacturer) {
+  NiceMock<MockSafeSeedManager> safe_seed_manager(local_state());
+
+  TestVariationsServiceClient variations_service_client;
+  TestVariationsFieldTrialCreator field_trial_creator(
+      local_state(), &variations_service_client, &safe_seed_manager,
+      user_data_dir_path());
+
+  const base::Version& current_version = version_info::GetVersion();
+  EXPECT_TRUE(current_version.IsValid());
+
+  std::unique_ptr<ClientFilterableState> client_filterable_state =
+      field_trial_creator.GetClientFilterableStateForVersion(current_version);
+  EXPECT_EQ(client_filterable_state->hardware_manufacturer,
+            ClientFilterableState::GetHardwareManufacturer());
+}
+
 #if BUILDFLAG(IS_ANDROID)
 // This is a regression test for crbug/829527.
 TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_LoadsCountryOnFirstRun) {

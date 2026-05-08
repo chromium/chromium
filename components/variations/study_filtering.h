@@ -41,6 +41,12 @@ COMPONENT_EXPORT(VARIATIONS)
 bool CheckStudyHardwareClass(const Study::Filter& filter,
                              const std::string& hardware_class);
 
+// Checks whether a study is applicable for the given |hardware_manufacturer|
+// per |filter|.
+COMPONENT_EXPORT(VARIATIONS)
+bool CheckStudyHardwareManufacturer(const Study::Filter& filter,
+                                    const std::string& hardware_manufacturer);
+
 // Checks whether a study is applicable for the given |locale| per |filter|.
 COMPONENT_EXPORT(VARIATIONS)
 bool CheckStudyLocale(const Study::Filter& filter, const std::string& locale);

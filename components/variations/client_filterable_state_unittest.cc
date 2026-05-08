@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/variations_seed_store.h"
@@ -38,6 +39,17 @@ TEST(ClientFilterableStateTest, GoogleGroups) {
       base::BindOnce([] { return base::flat_set<uint64_t>({1234, 5678}); }));
   EXPECT_EQ(client.GoogleGroups(), expected_google_groups);
   EXPECT_EQ(client.GoogleGroups(), expected_google_groups);
+}
+
+TEST(ClientFilterableStateTest, GetHardwareManufacturer) {
+  std::string manufacturer = ClientFilterableState::GetHardwareManufacturer();
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, the value is not hardcoded, but it should not be empty.
+  EXPECT_FALSE(manufacturer.empty());
+#else
+  // For all other platforms, we expect the empty string fallback.
+  EXPECT_TRUE(manufacturer.empty());
+#endif
 }
 
 TEST(ClientFilterableStateTest, EnterpriseGroups) {
