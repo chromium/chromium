@@ -197,6 +197,7 @@ _HISTOGRAMS_TYPE = models.ObjectNodeType(
 
 _SUFFIX_TYPE = models.ObjectNodeType('suffix',
                                      attributes=[
+                                         ('base', str, r'^$|^true$|^false$'),
                                          ('name', str, None),
                                          ('label', str, None),
                                      ],
