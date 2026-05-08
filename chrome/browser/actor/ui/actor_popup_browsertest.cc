@@ -70,13 +70,6 @@ class ActorPopupBrowserTest : public InProcessBrowserTest {
     return ActorKeyedService::Get(browser()->profile());
   }
 
-  void AddTabToTask(tabs::TabHandle tab_handle, ActorTask* actor_task) {
-    base::test::TestFuture<mojom::ActionResultPtr> add_tab_future;
-    actor_task->AddTab(tab_handle, /*stop_task_on_detach=*/true,
-                       add_tab_future.GetCallback());
-    ASSERT_TRUE(add_tab_future.Get());
-  }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -94,7 +87,7 @@ IN_PROC_BROWSER_TEST_F(ActorPopupBrowserTest,
   ActorTask* task = actor_keyed_service()->GetTask(task_id);
   tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
   ASSERT_TRUE(tab);
-  AddTabToTask(tab->GetHandle(), task);
+  actor::AddTabToTask(*tab, *task);
 
   auto test_request = std::make_unique<TestToolRequest>(
       /*requires_opening_web_contents=*/false);

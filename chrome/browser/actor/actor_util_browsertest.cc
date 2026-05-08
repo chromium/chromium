@@ -84,13 +84,6 @@ class ActorUtilBrowserTest : public PlatformBrowserTest {
 
   Profile* GetProfile() { return chrome_test_utils::GetProfile(this); }
 
-  void AddTabToTask(tabs::TabHandle tab_handle, ActorTask* actor_task) {
-    base::test::TestFuture<mojom::ActionResultPtr> add_tab_future;
-    actor_task->AddTab(tab_handle, /*stop_task_on_detach=*/true,
-                       add_tab_future.GetCallback());
-    ASSERT_TRUE(add_tab_future.Get());
-  }
-
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -105,7 +98,7 @@ IN_PROC_BROWSER_TEST_F(ActorUtilBrowserTest, PreventsNewWebContents) {
       web_contents(), embedded_test_server()->GetURL("/title1.html")));
 
   ActorTask* task = actor_keyed_service()->GetTask(task_id);
-  AddTabToTask(active_tab()->GetHandle(), task);
+  actor::AddTabToTask(*active_tab(), *task);
 
   auto test_request = std::make_unique<TestToolRequest>(
       /*requires_opening_web_contents=*/false);
@@ -146,7 +139,7 @@ IN_PROC_BROWSER_TEST_F(ActorUtilBrowserTest, AllowsNewWebContents) {
       TestTaskSourceInfo(), NoEnterprisePolicyChecker());
 
   ActorTask* task = actor_keyed_service()->GetTask(task_id);
-  AddTabToTask(active_tab()->GetHandle(), task);
+  actor::AddTabToTask(*active_tab(), *task);
 
   auto test_request = std::make_unique<TestToolRequest>(
       /*requires_opening_web_contents=*/true);

@@ -108,14 +108,6 @@ class ActorKeyedServiceBrowserTest : public PlatformBrowserTest {
     return ActorKeyedService::Get(GetProfile());
   }
 
-  void AddTabToTask(tabs::TabHandle tab_handle, ActorTask* actor_task) {
-    TestFuture<mojom::ActionResultPtr> add_tab_future;
-    actor_task->AddTab(tab_handle, /*stop_task_on_detach=*/true,
-                       add_tab_future.GetCallback());
-    auto add_tab_result = add_tab_future.Take();
-    ASSERT_TRUE(add_tab_result);
-  }
-
  private:
   base::HistogramTester histogram_tester_for_init_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -242,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
       embedded_https_test_server().GetURL("/actor/blank.html")));
 
   actor::ActorTask* task = actor_keyed_service()->GetTask(task_id);
-  AddTabToTask(active_tab()->GetHandle(), task);
+  actor::AddTabToTask(*active_tab(), *task);
 
   TestFuture<tabs::TabInterface*> future;
   SessionID initiator_window_id =
@@ -281,7 +273,7 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
       embedded_https_test_server().GetURL("/actor/blank.html")));
 
   actor::ActorTask* task = actor_keyed_service()->GetTask(task_id);
-  AddTabToTask(active_tab()->GetHandle(), task);
+  actor::AddTabToTask(*active_tab(), *task);
 
   TestFuture<base::TimeTicks /*start_time*/,
              std::vector<actor::ActionResultWithLatencyInfo>, actor::TaskId,
@@ -315,7 +307,7 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest, StopPausedTask) {
 
   {
     actor::ActorTask* task = actor_keyed_service()->GetTask(task_id);
-    AddTabToTask(active_tab()->GetHandle(), task);
+    actor::AddTabToTask(*active_tab(), *task);
 
     task->Pause(/*from_actor=*/false);
     CHECK(!task->IsCompleted());

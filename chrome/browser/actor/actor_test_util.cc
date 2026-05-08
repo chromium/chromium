@@ -876,6 +876,13 @@ const TaskSourceInfo& TestTaskSourceInfo() {
   return *task_source_info.get();
 }
 
+void AddTabToTask(tabs::TabInterface& tab, ActorTask& actor_task) {
+  base::test::TestFuture<mojom::ActionResultPtr> add_tab_future;
+  actor_task.AddTab(tab.GetHandle(), /*stop_task_on_detach=*/true,
+                    add_tab_future.GetCallback());
+  ExpectOkResult(add_tab_future);
+}
+
 ScopedMockTabObservationResult::ScopedMockTabObservationResult(
     TabObservationResultOverrideCallback callback) {
   SetTabObservationResultOverrideForTesting(std::move(callback));

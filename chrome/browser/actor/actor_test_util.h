@@ -359,6 +359,9 @@ const EnterprisePolicyChecker* NoEnterprisePolicyChecker();
 // Returns a common mock TaskSourceInfo used by actor tests.
 const TaskSourceInfo& TestTaskSourceInfo();
 
+// Adds a tab to a task and waits for the operation to complete.
+void AddTabToTask(tabs::TabInterface& tab, ActorTask& actor_task);
+
 // Helper to mock the result returned on a TabObservation built using
 // actor::BuildActionsResultWithObservations. While live, use the provided
 // function to set TabObservationResults. Unset on destruction.

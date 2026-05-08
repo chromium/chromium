@@ -46,13 +46,6 @@ class TabObservationControllerBrowserTest : public InProcessBrowserTest {
                                        NoEnterprisePolicyChecker());
   }
 
-  void AddTabToTask(TaskId task_id, tabs::TabInterface* tab) {
-    base::test::TestFuture<mojom::ActionResultPtr> future;
-    actor_service()->GetTask(task_id)->AddTab(
-        tab->GetHandle(), true /*stop_task_on_detach*/, future.GetCallback());
-    ASSERT_TRUE(IsOk(*future.Get()));
-  }
-
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -62,7 +55,7 @@ IN_PROC_BROWSER_TEST_F(TabObservationControllerBrowserTest, ObserveSingleTab) {
   GURL url = embedded_test_server()->GetURL("/title1.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   tabs::TabInterface* tab = browser()->GetActiveTabInterface();
-  AddTabToTask(task_id, tab);
+  actor::AddTabToTask(*tab, *actor_service()->GetTask(task_id));
 
   base::test::TestFuture<TabObservationController*,
                          std::unique_ptr<ObservationResult>>
@@ -86,13 +79,13 @@ IN_PROC_BROWSER_TEST_F(TabObservationControllerBrowserTest,
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   tabs::TabInterface* tab1 = browser()->GetActiveTabInterface();
-  AddTabToTask(task_id, tab1);
+  actor::AddTabToTask(*tab1, *actor_service()->GetTask(task_id));
 
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   tabs::TabInterface* tab2 = browser()->GetActiveTabInterface();
-  AddTabToTask(task_id, tab2);
+  actor::AddTabToTask(*tab2, *actor_service()->GetTask(task_id));
 
   base::test::TestFuture<TabObservationController*,
                          std::unique_ptr<ObservationResult>>
@@ -127,7 +120,7 @@ IN_PROC_BROWSER_TEST_F(TabObservationControllerBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   tabs::TabInterface* tab = browser()->GetActiveTabInterface();
-  AddTabToTask(task_id, tab);
+  actor::AddTabToTask(*tab, *actor_service()->GetTask(task_id));
 
   // Crash the tab.
   content::RenderProcessHost* process =
@@ -172,7 +165,7 @@ IN_PROC_BROWSER_TEST_F(TabObservationControllerWithoutScreenshotBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   tabs::TabInterface* tab = browser()->GetActiveTabInterface();
-  AddTabToTask(task_id, tab);
+  actor::AddTabToTask(*tab, *actor_service()->GetTask(task_id));
 
   base::test::TestFuture<TabObservationController*,
                          std::unique_ptr<ObservationResult>>
