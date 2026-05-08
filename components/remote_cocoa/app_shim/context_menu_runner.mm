@@ -60,6 +60,7 @@ void ContextMenuRunner::ShowMenu(mojom::ContextMenuPtr menu,
       initWithParams:std::move(menu->params)];
   menu_controller_ =
       [[MenuControllerCocoa alloc] initWithModel:menu_model_.get()
+                                   isContextMenu:YES
                                         delegate:menu_delegate_];
 
   if (!target_view) {

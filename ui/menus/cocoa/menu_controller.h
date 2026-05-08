@@ -33,11 +33,26 @@ COMPONENT_EXPORT(UI_MENUS)
 @interface MenuControllerCocoa
     : NSObject <NSMenuDelegate, NSUserInterfaceValidations>
 
+// Initializes MenuControllerCocoa, specifying icon behavior for context menus.
+//
+// If `newScheme` is false, then
+//   1. Only bitmap icons are shown
+//   2. No indentation is used
+//
+// If `newScheme` is true, then
+//   1. All icons are shown, but only on macOS 26+
+//   2. Symbol-style indentation (a la macOS 26 symbol action images) is used
+//
+// TODO(http://b/500043276): Finish the migration to the new scheme and remove
+// this method.
++ (void)initializeWithNewMenuIconScheme:(BOOL)newScheme;
+
 - (instancetype)init NS_UNAVAILABLE;
 
 // Builds a NSMenu from the model which must not be null. Changes made to the
 // contents of the model after calling this will not be noticed.
 - (instancetype)initWithModel:(ui::MenuModel*)model
+                isContextMenu:(BOOL)contextMenu
                      delegate:(id<MenuControllerCocoaDelegate>)delegate;
 
 // Programmatically close the constructed menu.

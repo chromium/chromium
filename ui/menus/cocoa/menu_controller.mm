@@ -5,12 +5,17 @@
 #import "ui/menus/cocoa/menu_controller.h"
 
 #include <AppKit/AppKit.h>
+#include <Foundation/Foundation.h>
+#include <objc/runtime.h>
 
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/apple/owned_objc.h"
+#include "base/apple/scoped_objc_class_swizzler.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
+#include "base/mac/mac_util.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -19,13 +24,25 @@
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_model.h"
+#include "ui/base/themed_vector_icon.h"
 #import "ui/events/event_utils.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/menus/simple_menu_model.h"
 #include "ui/strings/grit/ui_strings.h"
 
 namespace {
+
+// The pointer to the swizzler of the "should menu items share the image width"
+// method, as well as key used for the associated object used to tag the images
+// to be treated as symbols.
+base::apple::ScopedObjCClassSwizzler* g_image_width_sharing_swizzler = nullptr;
+static const char kTreatAsSymbolKey = 0;
+
+// Whether MenuControllerCocoa uses the new menu icon scheme. See the method
+// comment on +initializeWithNewMenuIconScheme: for more details.
+static bool g_use_new_menu_icon_scheme = false;
 
 // Called when an empty submenu is created. This inserts a menu item labeled
 // "(empty)" into the submenu. Matches Windows behavior.
@@ -50,29 +67,69 @@ bool MenuHasVisibleItems(const ui::MenuModel* model) {
   return false;
 }
 
-// Sets an icon on a menu item.
-//
-// This function is intentionally incomplete. The style of GM3 icons that are
-// currently in use do not quite fit in with the SF Symbols icons that AppKit
-// automatically adds to menus. These icons are being revised to fit in better,
-// and there is an ongoing UX redesign of context menus. Until those changes are
-// complete, only allow the icons that were a historical part of the menus (the
-// bitmap icons) to be be set.
-//
-// TODO(https://crbug.com/423632863): Come up with a consistent way to handle
-// icons, and return icons to menus when and where appropriate.
-void SetMenuItemIcon(NSMenuItem* menu_item, ui::ImageModel icon) {
+void SetMenuItemIcon(NSMenuItem* menu_item,
+                     ui::ImageModel icon,
+                     BOOL is_context_menu) {
+  bool should_use_icons = [is_context_menu] {
+    // The question of whether icons should be used is a question of context
+    // menus.
+    if (!is_context_menu) {
+      return true;
+    }
+
+    // For new-scheme menu icons, macOS 26+ gets icons; earlier versions don't.
+    if (g_use_new_menu_icon_scheme) {
+      return base::mac::MacOSMajorVersion() >= 26;
+    }
+
+    // For old-scheme menu icons, icons are always shown, though not all icons
+    // (as per `should_use_vector_icons`).
+    return true;
+  }();
+
+  if (!should_use_icons) {
+    return;
+  }
+
+  bool should_use_vector_icons = [is_context_menu] {
+    // The question of whether icons should be used is a question of context
+    // menus.
+    if (!is_context_menu) {
+      return true;
+    }
+
+    // Vector icons are only shown with the new icon scheme.
+    return g_use_new_menu_icon_scheme;
+  }();
+
+  NSImage* menu_item_image;
+
   if (icon.IsImage()) {
-    menu_item.image = icon.GetImage().ToNSImage();
+    menu_item_image = icon.GetImage().ToNSImage();
   } else if (icon.IsVectorIcon()) {
-    // Intentionally not set; see class comment above.
-    menu_item.image = nil;
+    if (should_use_vector_icons) {
+      ui::ThemedVectorIcon themed_icon(icon.GetVectorIcon());
+      menu_item_image =
+          gfx::Image(themed_icon.GetImageSkia(SK_ColorBLACK)).ToNSImage();
+      [menu_item_image setTemplate:YES];
+    } else {
+      menu_item_image = nil;
+    }
   } else if (icon.IsEmpty()) {
-    menu_item.image = nil;
+    menu_item_image = nil;
   } else {
+    // A non-empty ui::ImageModel can be one of three types. The "image
+    // generator" type isn't currently used for any menu items shown on the Mac,
+    // so die if it is encountered. Implement handling it if that changes.
     CHECK(icon.IsImageGenerator());
     NOTREACHED();
   }
+
+  if (menu_item_image) {
+    objc_setAssociatedObject(menu_item_image, &kTreatAsSymbolKey, @YES,
+                             OBJC_ASSOCIATION_RETAIN);
+  }
+  menu_item.image = menu_item_image;
 }
 
 }  // namespace
@@ -143,7 +200,72 @@ void SetMenuItemIcon(NSMenuItem* menu_item, ui::ImageModel icon) {
   base::WeakPtr<ui::MenuModel> _model;
   NSMenu* __strong _menu;
   BOOL _isMenuOpen;
+  BOOL _isContextMenu;
   id<MenuControllerCocoaDelegate> __weak _delegate;
+}
+
++ (unsigned char)_imageWidthSharingForItem:(NSMenuItem*)item {
+  // The implementation of +[NSContextMenuItemView _imageWidthSharingForItem:]
+  // is effectively:
+  //
+  // + (unsigned char)_imageWidthSharingForItem:(NSMenuItem*)item {
+  //   return [[item applicableImage] _isSymbolImage] ? 3 : 1;
+  // }
+  //
+  // The significance of 3 and 1 is unclear, but if 3 means "share the width"
+  // then so be it.
+
+  NSImage* image = item.image;
+  if (image && objc_getAssociatedObject(image, &kTreatAsSymbolKey)) {
+    return 3;
+  }
+
+  return g_image_width_sharing_swizzler
+      ->InvokeOriginal<unsigned char, NSMenuItem*>(self, _cmd, item);
+}
+
++ (void)initializeWithNewMenuIconScheme:(BOOL)newScheme {
+  g_use_new_menu_icon_scheme = newScheme;
+
+  // If the new scheme is not set, then there is no need to adjust the menu
+  // indentation. On macOS releases earlier than 26, also don't adjust the
+  // menus; -_imageWidthSharingForItem: is present in earlier versions, so the
+  // -respondsToSelector: won't help.
+  if (!newScheme || base::mac::MacOSMajorVersion() < 26) {
+    return;
+  }
+
+  // In macOS 26+ menus, if a symbol icon is set as the image for a menu item,
+  // then all menu items in that section will be indented to match.
+  //
+  // However, this only happens when the image is a symbol. If a non-symbol
+  // NSImage is set as the image, then the shared indentation doesn't happen.
+  // See +[NSContextMenuItemView _imageWidthSharingForItem:].
+  //
+  // This indentation behavior is desired for icons set by this code, even
+  // though they are not actually symbols.
+  //
+  // An approach that doesn't work is to wrap the image in a class that returns
+  // YES from -_isSymbolImage but otherwise behaves as the image. If indentation
+  // is attempted in that manner, then other symbol machinery gets activated,
+  // and things get crashy when various parts of AppKit believe they're dealing
+  // with a symbol and send messages like -_symbolName to the image that isn't a
+  // symbol yet pretends to be one.
+  //
+  // The most targeted fix, therefore, is to swizzle the class method in
+  // question.
+
+  Class menuItemViewClass = NSClassFromString(@"NSContextMenuItemView");
+  SEL imageWidthSharingSelector = @selector(_imageWidthSharingForItem:);
+  if ([menuItemViewClass respondsToSelector:imageWidthSharingSelector]) {
+    // Metaclasses because this is a class method being swizzled.
+    Class targetMetaclass = object_getClass(menuItemViewClass);
+    Class donorMetaclass = object_getClass([MenuControllerCocoa class]);
+    static base::NoDestructor<base::apple::ScopedObjCClassSwizzler>
+        widthSharingSwizzler(targetMetaclass, donorMetaclass,
+                             imageWidthSharingSelector);
+    g_image_width_sharing_swizzler = widthSharingSwizzler.get();
+  }
 }
 
 - (ui::MenuModel*)model {
@@ -155,9 +277,11 @@ void SetMenuItemIcon(NSMenuItem* menu_item, ui::ImageModel icon) {
 }
 
 - (instancetype)initWithModel:(ui::MenuModel*)model
+                isContextMenu:(BOOL)contextMenu
                      delegate:(id<MenuControllerCocoaDelegate>)delegate {
   if ((self = [super init])) {
     _model = model->AsWeakPtr();
+    _isContextMenu = contextMenu;
     _delegate = delegate;
     [self buildMenu];
   }
@@ -214,7 +338,7 @@ void SetMenuItemIcon(NSMenuItem* menu_item, ui::ImageModel icon) {
                                                 action:@selector(itemSelected:)
                                          keyEquivalent:@""];
 
-  SetMenuItemIcon(item, model->GetIconAt(index));
+  SetMenuItemIcon(item, model->GetIconAt(index), _isContextMenu);
 
   ui::MenuModel::ItemType type = model->GetTypeAt(index);
   const NSInteger modelIndex = base::checked_cast<NSInteger>(index);
@@ -293,7 +417,7 @@ void SetMenuItemIcon(NSMenuItem* menu_item, ui::ImageModel icon) {
         l10n_util::FixUpWindowsStyleLabel(model->GetLabelAt(modelIndex));
     menuItem.title = label;
 
-    SetMenuItemIcon(menuItem, model->GetIconAt(modelIndex));
+    SetMenuItemIcon(menuItem, model->GetIconAt(modelIndex), _isContextMenu);
   }
 
   const gfx::FontList* font_list = model->GetLabelFontListAt(modelIndex);

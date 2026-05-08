@@ -20,6 +20,7 @@
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/mac/mac_util.h"
@@ -140,6 +141,7 @@
 #include "ui/color/color_provider_manager.h"
 #include "ui/color/color_provider_source.h"
 #include "ui/gfx/native_ui_types.h"
+#include "ui/menus/cocoa/menu_controller.h"
 #include "ui/native_theme/native_theme.h"
 #include "url/gurl.h"
 
@@ -1314,6 +1316,10 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
 
   ASWebAuthenticationSessionWebBrowserSessionManager.sharedManager
       .sessionHandler = self;
+
+  [MenuControllerCocoa
+      initializeWithNewMenuIconScheme:base::FeatureList::IsEnabled(
+                                          features::kMenuSimplification)];
 }
 
 - (void)observeValueForKeyPath:(NSString*)keyPath

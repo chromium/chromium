@@ -80,8 +80,10 @@ void MenuRunnerImplCocoa::RunMenuAt(
 
   menu_delegate_ = [[MenuControllerCocoaDelegateImpl alloc]
       initWithParams:MenuControllerParamsForWidget(parent)];
-  menu_controller_ = [[MenuControllerCocoa alloc] initWithModel:menu_model_
-                                                       delegate:menu_delegate_];
+  menu_controller_ = [[MenuControllerCocoa alloc]
+      initWithModel:menu_model_
+      isContextMenu:(run_types & MenuRunner::CONTEXT_MENU) ? YES : NO
+           delegate:menu_delegate_];
 
   closing_event_time_ = base::TimeTicks();
   running_ = true;

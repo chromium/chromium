@@ -171,6 +171,7 @@ class OwningDelegate : public Delegate {
       : did_delete_(did_delete), model_(this) {
     model_.AddItem(1, u"foo");
     controller_ = [[WatchedLifetimeMenuController alloc] initWithModel:&model_
+                                                         isContextMenu:YES
                                                               delegate:nil];
     [controller_ setDeallocCalled:did_dealloc];
   }
@@ -226,6 +227,7 @@ TEST_F(MenuControllerTest, EmptyMenu) {
   Delegate delegate;
   SimpleMenuModel model(&delegate);
   MenuControllerCocoa* menu = [[MenuControllerCocoa alloc] initWithModel:&model
+                                                           isContextMenu:YES
                                                                 delegate:nil];
   EXPECT_EQ(0, menu.menu.numberOfItems);
 }
@@ -241,6 +243,7 @@ TEST_F(MenuControllerTest, BasicCreation) {
   model.AddItem(5, u"five");
 
   MenuControllerCocoa* menu = [[MenuControllerCocoa alloc] initWithModel:&model
+                                                           isContextMenu:YES
                                                                 delegate:nil];
   EXPECT_EQ(6, menu.menu.numberOfItems);
 
@@ -266,6 +269,7 @@ TEST_F(MenuControllerTest, Submenus) {
   model.AddItem(6, u"three");
 
   MenuControllerCocoa* menu = [[MenuControllerCocoa alloc] initWithModel:&model
+                                                           isContextMenu:YES
                                                                 delegate:nil];
   EXPECT_EQ(3, menu.menu.numberOfItems);
 
@@ -299,6 +303,7 @@ TEST_F(MenuControllerTest, EmptySubmenu) {
   model.AddSubMenuWithStringId(2, kTestLabelResourceId, &submodel);
 
   MenuControllerCocoa* menu = [[MenuControllerCocoa alloc] initWithModel:&model
+                                                           isContextMenu:YES
                                                                 delegate:nil];
   EXPECT_EQ(2, menu.menu.numberOfItems);
 
@@ -325,6 +330,7 @@ TEST_F(MenuControllerTest, EmptySubmenuWhenAllChildItemsAreHidden) {
   model.AddSubMenuWithStringId(4, kTestLabelResourceId, &submodel);
 
   MenuControllerCocoa* menu = [[MenuControllerCocoa alloc] initWithModel:&model
+                                                           isContextMenu:YES
                                                                 delegate:nil];
   EXPECT_EQ(2, menu.menu.numberOfItems);
 
@@ -357,7 +363,9 @@ TEST_F(MenuControllerTest, HiddenSubmenu) {
 
   // Create the controller.
   MenuControllerCocoa* menu_controller =
-      [[MenuControllerCocoa alloc] initWithModel:&model delegate:nil];
+      [[MenuControllerCocoa alloc] initWithModel:&model
+                                   isContextMenu:YES
+                                        delegate:nil];
   EXPECT_EQ(2, menu_controller.menu.numberOfItems);
   delegate.menu_to_close_ = menu_controller.menu;
 
@@ -407,7 +415,9 @@ TEST_F(MenuControllerTest, DisabledSubmenu) {
 
   // Create the controller.
   MenuControllerCocoa* menu_controller =
-      [[MenuControllerCocoa alloc] initWithModel:&model delegate:nil];
+      [[MenuControllerCocoa alloc] initWithModel:&model
+                                   isContextMenu:YES
+                                        delegate:nil];
   delegate.menu_to_close_ = menu_controller.menu;
 
   // Show the menu.
@@ -446,6 +456,7 @@ TEST_F(MenuControllerTest, Execute) {
   SimpleMenuModel model(&delegate);
   model.AddItem(1, u"one");
   MenuControllerCocoa* menu = [[MenuControllerCocoa alloc] initWithModel:&model
+                                                           isContextMenu:YES
                                                                 delegate:nil];
   EXPECT_EQ(1, menu.menu.numberOfItems);
 
@@ -475,6 +486,7 @@ TEST_F(MenuControllerTest, Validate) {
   model.AddSubMenuWithStringId(3, kTestLabelResourceId, &submodel);
 
   MenuControllerCocoa* menu = [[MenuControllerCocoa alloc] initWithModel:&model
+                                                           isContextMenu:YES
                                                                 delegate:nil];
   EXPECT_EQ(3, menu.menu.numberOfItems);
 
@@ -493,6 +505,7 @@ TEST_F(MenuControllerTest, LabelFontList) {
   model.AddItem(2, u"two");
 
   MenuControllerCocoa* menu = [[MenuControllerCocoa alloc] initWithModel:&model
+                                                           isContextMenu:YES
                                                                 delegate:nil];
   EXPECT_EQ(2, menu.menu.numberOfItems);
 
@@ -513,6 +526,7 @@ TEST_F(MenuControllerTest, Dynamic) {
   SimpleMenuModel model(&delegate);
   model.AddItem(1, u"foo");
   MenuControllerCocoa* menu = [[MenuControllerCocoa alloc] initWithModel:&model
+                                                           isContextMenu:YES
                                                                 delegate:nil];
   EXPECT_EQ(1, menu.menu.numberOfItems);
   // Validate() simulates opening the menu - the item label/icon should be
@@ -554,6 +568,7 @@ TEST_F(MenuControllerTest, OpenClose) {
 
   // Create the controller.
   MenuControllerCocoa* menu = [[MenuControllerCocoa alloc] initWithModel:&model
+                                                           isContextMenu:YES
                                                                 delegate:nil];
   delegate.menu_to_close_ = menu.menu;
 
@@ -643,6 +658,7 @@ TEST_F(MenuControllerTest, Ampersands) {
   model.SetMayHaveMnemonicsAt(1, false);
 
   MenuControllerCocoa* menu = [[MenuControllerCocoa alloc] initWithModel:&model
+                                                           isContextMenu:YES
                                                                 delegate:nil];
 
   EXPECT_NSEQ([menu.menu itemAtIndex:0].title, @"New");
