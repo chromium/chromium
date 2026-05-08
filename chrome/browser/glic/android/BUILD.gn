@@ -50,11 +50,33 @@ android_library("helper_java") {
   resources_package = "org.chromium.chrome.browser.glic"
 }
 
+android_library("common_java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/glic/GlicButtonStateController.java",
+  ]
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//chrome/android:chrome_app_java_resources",
+    "//chrome/browser/actor/android:java",
+    "//chrome/browser/browser_controls/android:java",
+    "//chrome/browser/glic:public_java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
+    "//chrome/browser/ui/browser_window/public/android:java",
+    "//components/browser_ui/widget/android:java",
+    "//third_party/android_deps:com_airbnb_android_lottie_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+  resources_package = "org.chromium.chrome.browser.glic"
+}
+
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/glic/ActorLoginPermission.java",
     "java/src/org/chromium/chrome/browser/glic/GlicActorLoginBridge.java",
-    "java/src/org/chromium/chrome/browser/glic/GlicButtonStateController.java",
     "java/src/org/chromium/chrome/browser/glic/GlicExtraInfoPreference.java",
     "java/src/org/chromium/chrome/browser/glic/GlicHelper.java",
     "java/src/org/chromium/chrome/browser/glic/GlicKeyedServiceImpl.java",
@@ -68,6 +90,7 @@ android_library("java") {
   resources_package = "org.chromium.chrome.browser.glic"
 
   deps = [
+    ":common_java",
     ":helper_java",
     ":java_resources",
     ":jni_headers_java",
@@ -77,7 +100,6 @@ android_library("java") {
     "//chrome/android:chrome_app_java_resources",
     "//chrome/browser/actor/android:java",
     "//chrome/browser/browser_controls/android:java",
-    "//chrome/browser/educational_tip:java",
     "//chrome/browser/feature_engagement:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/glic:public_java",
@@ -87,6 +109,7 @@ android_library("java") {
     "//chrome/browser/settings:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
+    "//chrome/browser/ui/android/actions:java",
     "//chrome/browser/ui/android/bottombar:java",
     "//chrome/browser/ui/android/signin:java",
     "//chrome/browser/ui/android/toolbar:adaptive_features_java",
@@ -158,6 +181,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/glic/GlicToolbarButtonControllerTest.java",
   ]
   deps = [
+    ":common_java",
     ":java",
     ":java_resources",
     ":jni_headers_java",

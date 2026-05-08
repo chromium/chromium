@@ -138,8 +138,7 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider {
 
     private ButtonSpec createWorkingSpec(Context context) {
         Drawable sparkIcon = AppCompatResources.getDrawable(context, R.drawable.ic_spark_24dp);
-        Drawable layerDrawable =
-                GlicButtonStateController.createWorkingDrawable(context, sparkIcon);
+        Drawable layerDrawable = GlicUiHelper.createWorkingDrawable(context, sparkIcon);
         return new ButtonSpec.Builder(mDefaultSpec)
                 .setDrawable(layerDrawable)
                 .setShouldSuppressCpa(true)

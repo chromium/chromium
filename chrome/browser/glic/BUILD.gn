@@ -167,22 +167,26 @@ if (is_android) {
   }
 
   android_library("public_java") {
+    resources_package = "org.chromium.chrome.browser.glic"
     sources = [
       "public/android/java/src/org/chromium/chrome/browser/glic/GlicEnabling.java",
       "public/android/java/src/org/chromium/chrome/browser/glic/GlicKeyedService.java",
       "public/android/java/src/org/chromium/chrome/browser/glic/GlicKeyedServiceFactory.java",
       "public/android/java/src/org/chromium/chrome/browser/glic/GlicKeyedServiceHandler.java",
+      "public/android/java/src/org/chromium/chrome/browser/glic/GlicUiHelper.java",
     ]
     deps = [
       "//base:log_java",
       "//base:resetters_java",
       "//base:supplier_java",
       "//chrome/browser/flags:java",
+      "//chrome/browser/glic/android:java_resources",
       "//chrome/browser/glic/android:jni_headers_java",
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/tab:java",
       "//chrome/browser/ui/browser_window/public/android:java",
       "//components/cached_flags:java",
+      "//third_party/android_deps:com_airbnb_android_lottie_java",
       "//third_party/jni_zero:jni_zero_java",
     ]
     srcjar_deps = [ ":glic_pref_names_srcjar" ]
