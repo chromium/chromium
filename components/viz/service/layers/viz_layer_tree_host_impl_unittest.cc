@@ -23,6 +23,9 @@ namespace {
 
 class VizLayerTreeHostImplTest : public LayerTreeHostImplTest {
  public:
+  static constexpr gfx::Size kDefaultSize{10, 10};
+  static constexpr gfx::Rect kDefaultViewport{10, 10};
+
   LayerTreeSettings DefaultSettings() override {
     LayerTreeSettings settings = LayerTreeHostImplTest::DefaultSettings();
     settings.trees_in_viz_in_viz_process = true;
@@ -46,11 +49,21 @@ class VizLayerTreeHostImplTest : public LayerTreeHostImplTest {
     layer_tree_frame_sink_ = std::move(layer_tree_frame_sink);
     host_impl_->SetVisible(true);
     bool init = host_impl_->InitializeFrameSink(layer_tree_frame_sink_.get());
-    host_impl_->active_tree()->SetDeviceViewportRect(gfx::Rect(10, 10));
+    host_impl_->active_tree()->SetDeviceViewportRect(kDefaultViewport);
     host_impl_->active_tree()->PushPageScaleFromMainThread(1, 1, 1);
     host_impl_->active_tree()->SetLocalSurfaceIdFromParent(viz::LocalSurfaceId(
         1, base::UnguessableToken::CreateForTesting(2u, 3u)));
     return init;
+  }
+
+ protected:
+  viz::VizLayerTreeHostImpl* viz_host_impl() {
+    return static_cast<viz::VizLayerTreeHostImpl*>(host_impl_.get());
+  }
+
+  FakeLayerTreeFrameSink* fake_frame_sink() {
+    return static_cast<FakeLayerTreeFrameSink*>(
+        host_impl_->layer_tree_frame_sink());
   }
 };
 
@@ -58,11 +71,11 @@ INSTANTIATE_COMMIT_TO_TREE_TEST_P(VizLayerTreeHostImplTest);
 
 TEST_P(VizLayerTreeHostImplTest, FrameDataTimestampsGetSetInCFMetadata) {
   auto* root = SetupRootLayer<DidDrawCheckLayer>(host_impl_->active_tree(),
-                                                 gfx::Size(10, 10));
+                                                 kDefaultSize);
 
   // Make a child layer that draws.
   auto* layer = AddLayer<SolidColorLayerImpl>(host_impl_->active_tree());
-  layer->SetBounds(gfx::Size(10, 10));
+  layer->SetBounds(kDefaultSize);
   layer->SetDrawsContent(true);
   layer->SetBackgroundColor(SkColors::kRed);
   CopyProperties(root, layer);
@@ -79,17 +92,14 @@ TEST_P(VizLayerTreeHostImplTest, FrameDataTimestampsGetSetInCFMetadata) {
   host_impl_->WillBeginImplFrame(args);
   // This would be set by LayerContextImpl as part of UpdateDisplayTree, set
   // manually to avoid DCHECK failure.
-  static_cast<viz::VizLayerTreeHostImpl*>(host_impl_.get())
-      ->set_next_frame_token_from_client(frame.frame_token + 1);
+  viz_host_impl()->set_next_frame_token_from_client(frame.frame_token + 1);
   EXPECT_EQ(DrawResult::kSuccess, host_impl_->PrepareToDraw(&frame));
 
   // This function sets the metadata timestamps from FrameData.
   std::optional<SubmitInfo> submit_info = host_impl_->DrawLayers(&frame);
 
-  auto* fake_layer_tree_frame_sink =
-      static_cast<FakeLayerTreeFrameSink*>(host_impl_->layer_tree_frame_sink());
   const viz::CompositorFrameMetadata& metadata =
-      fake_layer_tree_frame_sink->last_sent_frame()->metadata;
+      fake_frame_sink()->last_sent_frame()->metadata;
 
   // Asset that the timestamps are assigned as expected.
   EXPECT_EQ(frame.trees_in_viz_timing_details->start_update_display_tree,
@@ -125,9 +135,8 @@ TEST_P(VizLayerTreeHostImplTest, CreateUIResourceFromImportedResource) {
   viz::ResourceId resource_id = host_impl_->resource_provider()->ImportResource(
       transfer_resource, base::DoNothing());
 
-  static_cast<viz::VizLayerTreeHostImpl*>(host_impl_.get())
-      ->CreateUIResourceFromImportedResource(ui_resource_id, resource_id, size,
-                                             true);
+  viz_host_impl()->CreateUIResourceFromImportedResource(
+      ui_resource_id, resource_id, size, true);
 
   EXPECT_EQ(resource_id, host_impl_->ResourceIdForUIResource(ui_resource_id));
   EXPECT_EQ(size, host_impl_->GetUIResourceSize(ui_resource_id));
