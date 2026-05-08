@@ -19,7 +19,6 @@
 #include "chrome/browser/password_manager/actor_login/actor_login_permission_cleaning_service_factory.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_permission_service_factory.h"
 #include "chrome/browser/password_manager/actor_login/internal/actor_login_metrics_helper.h"
-#include "chrome/browser/password_manager/actor_login/internal/actor_login_permission_cleaning_service.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -27,6 +26,7 @@
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
+#include "components/password_manager/core/browser/actor_login/internal/actor_login_permission_cleaning_service.h"
 #include "components/password_manager/core/browser/actor_login/test/actor_login_test_util.h"
 #include "components/password_manager/core/browser/actor_login/test/mock_actor_login_permission_service.h"
 #include "components/password_manager/core/browser/actor_login/test/mock_actor_login_quality_logger.h"
@@ -138,6 +138,7 @@ class MockActorLoginPermissionCleaningService
   MOCK_METHOD(void,
               ClearConflictingPermissions,
               (const Credential& credential,
+               bool check_federated_credentials,
                base::OnceClosure done_callback),
               (override));
 };
@@ -962,7 +963,7 @@ TEST_F(ActorLoginDelegateImplTest,
                   })));
 
   EXPECT_CALL(*cleaning_service,
-              ClearConflictingPermissions(Eq(credential), _));
+              ClearConflictingPermissions(Eq(credential), _, _));
   delegate_->OnLoginSuccessful(form);
 }
 
@@ -1510,7 +1511,7 @@ TEST_F(ActorLoginDelegateImplTest,
       content::webid::FederatedLoginResult::kContinuation);
 
   EXPECT_CALL(*mock_cleaning_service,
-              ClearConflictingPermissions(Eq(credential), _));
+              ClearConflictingPermissions(Eq(credential), _, _));
 
   static_cast<content::WebContentsObserver*>(delegate_->siwg_controller())
       ->OnFedCmFederatedLogin(true);

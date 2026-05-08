@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/password_manager/actor_login/internal/actor_login_duplicate_permission_cleaner.h"
+#include "components/password_manager/core/browser/actor_login/internal/actor_login_duplicate_permission_cleaner.h"
 
 #include <memory>
 #include <string>
@@ -12,20 +12,17 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "chrome/browser/password_manager/actor_login/internal/actor_login_permission_cleaning_service.h"
-#include "chrome/browser/password_manager/actor_login/internal/actor_login_permission_cleaning_service_impl.h"
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_permission_service.h"
+#include "components/password_manager/core/browser/actor_login/internal/actor_login_permission_cleaning_service.h"
+#include "components/password_manager/core/browser/actor_login/internal/actor_login_permission_cleaning_service_impl.h"
 #include "components/password_manager/core/browser/actor_login/test/mock_actor_login_permission_service.h"
 #include "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
-#include "content/public/common/content_features.h"
-#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -46,7 +43,6 @@ using testing::UnorderedElementsAre;
 class ActorLoginDuplicatePermissionCleanerTest : public testing::Test {
  public:
   ActorLoginDuplicatePermissionCleanerTest() {
-    feature_list_.InitAndEnableFeature(features::kFedCmEmbedderInitiatedLogin);
     auto match_helper =
         std::make_unique<password_manager::AffiliatedMatchHelper>(
             &mock_affiliation_service_);
@@ -86,13 +82,10 @@ class ActorLoginDuplicatePermissionCleanerTest : public testing::Test {
     return service_.get();
   }
 
-  content::BrowserTaskEnvironment& task_environment() {
-    return task_environment_;
-  }
+  base::test::TaskEnvironment& task_environment() { return task_environment_; }
 
  private:
-  content::BrowserTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList feature_list_;
+  base::test::TaskEnvironment task_environment_;
   testing::NiceMock<affiliations::MockAffiliationService>
       mock_affiliation_service_;
   raw_ptr<password_manager::AffiliatedMatchHelper> match_helper_ = nullptr;
@@ -171,8 +164,8 @@ TEST_F(ActorLoginDuplicatePermissionCleanerTest,
 
   base::test::TestFuture<void> future;
 
-  cleaning_service()->ClearConflictingPermissions(credential,
-                                                  future.GetCallback());
+  cleaning_service()->ClearConflictingPermissions(
+      credential, /*check_federated_credentials=*/true, future.GetCallback());
   EXPECT_TRUE(future.Wait());
 
   // All updates are guaranteed to be finished here.
@@ -279,8 +272,8 @@ TEST_F(ActorLoginDuplicatePermissionCleanerTest,
       });
 
   base::test::TestFuture<void> future;
-  cleaning_service()->ClearConflictingPermissions(credential,
-                                                  future.GetCallback());
+  cleaning_service()->ClearConflictingPermissions(
+      credential, /*check_federated_credentials=*/true, future.GetCallback());
   EXPECT_TRUE(future.Wait());
 
   // All updates are guaranteed to be finished here.
@@ -363,8 +356,8 @@ TEST_F(ActorLoginDuplicatePermissionCleanerTest,
       });
 
   base::test::TestFuture<void> future;
-  cleaning_service()->ClearConflictingPermissions(credential,
-                                                  future.GetCallback());
+  cleaning_service()->ClearConflictingPermissions(
+      credential, /*check_federated_credentials=*/true, future.GetCallback());
   EXPECT_TRUE(future.Wait());
 
   // All updates are guaranteed to be finished here.
@@ -424,8 +417,8 @@ TEST_F(ActorLoginDuplicatePermissionCleanerTest,
   credential.signon_realm = kExcludedSignonRealm;
 
   base::test::TestFuture<void> future;
-  cleaning_service()->ClearConflictingPermissions(credential,
-                                                  future.GetCallback());
+  cleaning_service()->ClearConflictingPermissions(
+      credential, /*check_federated_credentials=*/true, future.GetCallback());
   EXPECT_TRUE(future.Wait());
 
   EXPECT_TRUE(GetAllLoginsSync(store())
@@ -491,8 +484,8 @@ TEST_F(ActorLoginDuplicatePermissionCleanerTest,
   credential.signon_realm = kSignonRealm;
 
   base::test::TestFuture<void> future;
-  cleaning_service()->ClearConflictingPermissions(credential,
-                                                  future.GetCallback());
+  cleaning_service()->ClearConflictingPermissions(
+      credential, /*check_federated_credentials=*/true, future.GetCallback());
   EXPECT_TRUE(future.Wait());
 
   // PSL and grouped matches should NOT be touched.

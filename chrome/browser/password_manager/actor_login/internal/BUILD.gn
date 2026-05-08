@@ -21,7 +21,6 @@ source_set("internal") {
   ]
 
   deps = [
-    ":permission_cleaner",
     "//base",
     "//chrome/browser/actor",
     "//chrome/browser/glic",
@@ -35,6 +34,7 @@ source_set("internal") {
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser/actor_login:common",
     "//components/password_manager/core/browser/actor_login/internal:delegate",
+    "//components/password_manager/core/browser/actor_login/internal:permission_cleaner",
     "//components/password_manager/core/browser/features:password_features",
     "//components/tabs:public",
     "//components/url_formatter",
@@ -45,36 +45,16 @@ source_set("internal") {
   ]
 }
 
-source_set("permission_cleaner") {
-  sources = [
-    "actor_login_duplicate_permission_cleaner.cc",
-    "actor_login_duplicate_permission_cleaner.h",
-    "actor_login_permission_cleaning_service.h",
-    "actor_login_permission_cleaning_service_impl.cc",
-    "actor_login_permission_cleaning_service_impl.h",
-  ]
-
-  deps = [
-    "//base",
-    "//chrome/browser/profiles:profile",
-    "//components/password_manager/core/browser",
-    "//components/password_manager/core/browser/actor_login:common",
-    "//components/password_manager/core/browser/features:password_features",
-    "//content/public/browser",
-  ]
-}
 source_set("unit_tests") {
   testonly = true
   sources = [
     "actor_login_delegate_impl_unittest.cc",
-    "actor_login_duplicate_permission_cleaner_unittest.cc",
     "actor_login_federated_credentials_fetcher_unittest.cc",
     "actor_login_siwg_controller_unittest.cc",
   ]
 
   deps = [
     ":internal",
-    ":permission_cleaner",
     "//base/test:test_support",
     "//chrome/browser/actor:test_support",
     "//chrome/browser/password_manager/actor_login:factories",
@@ -87,8 +67,8 @@ source_set("unit_tests") {
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/password_manager/core/browser/actor_login:common",
     "//components/password_manager/core/browser/actor_login/internal:delegate",
+    "//components/password_manager/core/browser/actor_login/internal:permission_cleaner",
     "//components/password_manager/core/browser/actor_login/test:test_support",
-    "//components/password_manager/core/browser/affiliation:affiliation_match_helper",
     "//components/password_manager/core/browser/features:password_features",
     "//components/tabs:test_support",
     "//components/ukm:test_support",

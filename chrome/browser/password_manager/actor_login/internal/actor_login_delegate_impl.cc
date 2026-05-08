@@ -20,7 +20,6 @@
 #include "chrome/browser/password_manager/actor_login/actor_login_permission_service_factory.h"
 #include "chrome/browser/password_manager/actor_login/internal/actor_login_federated_credentials_fetcher.h"
 #include "chrome/browser/password_manager/actor_login/internal/actor_login_metrics_helper.h"
-#include "chrome/browser/password_manager/actor_login/internal/actor_login_permission_cleaning_service.h"
 #include "chrome/browser/password_manager/actor_login/internal/actor_login_siwg_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
@@ -33,6 +32,7 @@
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_credentials_fetcher.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_get_credentials_helper.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_password_credentials_fetcher.h"
+#include "components/password_manager/core/browser/actor_login/internal/actor_login_permission_cleaning_service.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager.h"
@@ -43,6 +43,7 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "content/public/browser/webid/federated_embedder_login_request.h"
 #include "content/public/browser/webid/identity_credential_source.h"
+#include "content/public/common/content_features.h"
 #include "url/origin.h"
 
 using password_manager::ContentPasswordManagerDriver;
@@ -489,8 +490,10 @@ void ActorLoginDelegateImpl::ClearConflictingPermissions() {
   auto* cleaning_service =
       ActorLoginPermissionCleaningServiceFactory::GetForProfile(
           Profile::FromBrowserContext(GetWebContents().GetBrowserContext()));
-  cleaning_service->ClearConflictingPermissions(*last_attempted_credential_,
-                                                base::DoNothing());
+  cleaning_service->ClearConflictingPermissions(
+      *last_attempted_credential_,
+      base::FeatureList::IsEnabled(features::kFedCmEmbedderInitiatedLogin),
+      base::DoNothing());
 }
 
 void ActorLoginDelegateImpl::ResetState() {

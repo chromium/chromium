@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/password_manager/actor_login/internal/actor_login_duplicate_permission_cleaner.h"
+#include "components/password_manager/core/browser/actor_login/internal/actor_login_duplicate_permission_cleaner.h"
 
 #include <utility>
 
 #include "base/barrier_closure.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/functional/concurrent_callbacks.h"
@@ -17,7 +16,6 @@
 #include "components/password_manager/core/browser/password_form_digest.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_store/password_form_converters.h"
-#include "content/public/common/content_features.h"
 
 using password_manager::PasswordForm;
 using password_manager_util::GetLoginMatchType;
@@ -78,6 +76,7 @@ ActorLoginDuplicatePermissionCleaner::~ActorLoginDuplicatePermissionCleaner() =
     default;
 
 void ActorLoginDuplicatePermissionCleaner::Start(
+    bool check_federated_credentials,
     base::OnceClosure done_callback) {
   base::UmaHistogramBoolean(
       "PasswordManager.ActorLogin.DuplicatePermissionCleaner.Invocations",
@@ -107,7 +106,7 @@ void ActorLoginDuplicatePermissionCleaner::Start(
     passwords_done_callback_.Run();
   }
 
-  if (base::FeatureList::IsEnabled(features::kFedCmEmbedderInitiatedLogin)) {
+  if (check_federated_credentials) {
     permission_service_->ListPermissions(
         credential_.request_origin,
         base::BindOnce(

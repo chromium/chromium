@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PASSWORD_MANAGER_ACTOR_LOGIN_INTERNAL_ACTOR_LOGIN_DUPLICATE_PERMISSION_CLEANER_H_
-#define CHROME_BROWSER_PASSWORD_MANAGER_ACTOR_LOGIN_INTERNAL_ACTOR_LOGIN_DUPLICATE_PERMISSION_CLEANER_H_
+#ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_ACTOR_LOGIN_INTERNAL_ACTOR_LOGIN_DUPLICATE_PERMISSION_CLEANER_H_
+#define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_ACTOR_LOGIN_INTERNAL_ACTOR_LOGIN_DUPLICATE_PERMISSION_CLEANER_H_
 
 #include <memory>
 #include <string>
@@ -31,7 +31,7 @@ class ActorLoginDuplicatePermissionCleaner
 
   ~ActorLoginDuplicatePermissionCleaner() override;
 
-  void Start(base::OnceClosure done_callback);
+  void Start(bool check_federated_credentials, base::OnceClosure done_callback);
 
   // password_manager::PasswordStoreConsumer:
   void OnGetPasswordStoreResultsOrErrorFrom(
@@ -67,4 +67,4 @@ class ActorLoginDuplicatePermissionCleaner
 
 }  // namespace actor_login
 
-#endif  // CHROME_BROWSER_PASSWORD_MANAGER_ACTOR_LOGIN_INTERNAL_ACTOR_LOGIN_DUPLICATE_PERMISSION_CLEANER_H_
+#endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_ACTOR_LOGIN_INTERNAL_ACTOR_LOGIN_DUPLICATE_PERMISSION_CLEANER_H_

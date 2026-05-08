@@ -55,11 +55,11 @@ source_set("factories") {
 
   deps = [
     "//base",
-    "//chrome/browser/password_manager/actor_login/internal:permission_cleaner",
     "//chrome/browser/password_manager/factories",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/signin",
     "//components/password_manager/core/browser/actor_login:common",
+    "//components/password_manager/core/browser/actor_login/internal:permission_cleaner",
     "//components/password_manager/core/browser/actor_login/internal:permission_service_impl",
     "//components/signin/public/identity_manager",
   ]

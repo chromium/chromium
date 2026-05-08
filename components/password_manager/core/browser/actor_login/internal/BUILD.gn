@@ -71,10 +71,35 @@ source_set("permission_service_impl") {
   ]
 }
 
+source_set("permission_cleaner") {
+  sources = [
+    "actor_login_duplicate_permission_cleaner.cc",
+    "actor_login_duplicate_permission_cleaner.h",
+    "actor_login_permission_cleaning_service.h",
+    "actor_login_permission_cleaning_service_impl.cc",
+    "actor_login_permission_cleaning_service_impl.h",
+  ]
+
+  visibility = [
+    ":unit_tests",
+    "//chrome/browser/password_manager/actor_login:*",
+    "//chrome/browser/password_manager/actor_login/internal:*",
+    "//components/password_manager/core/browser/actor_login:*",
+  ]
+
+  deps = [
+    "//base",
+    "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser/actor_login:common",
+    "//components/password_manager/core/browser/features:password_features",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
     "actor_login_credential_filler_unittest.cc",
+    "actor_login_duplicate_permission_cleaner_unittest.cc",
     "actor_login_get_credentials_helper_unittest.cc",
     "actor_login_password_credentials_fetcher_unittest.cc",
     "actor_login_permission_service_impl_unittest.cc",
@@ -82,6 +107,7 @@ source_set("unit_tests") {
 
   deps = [
     ":delegate",
+    ":permission_cleaner",
     ":permission_service_impl",
     "//components/affiliations/core/browser:test_support",
     "//components/device_reauth",
@@ -89,6 +115,7 @@ source_set("unit_tests") {
     "//components/password_manager/core/browser:test_support",
     "//components/password_manager/core/browser/actor_login:common",
     "//components/password_manager/core/browser/actor_login/test:test_support",
+    "//components/password_manager/core/browser/affiliation:affiliation_match_helper",
     "//components/password_manager/core/browser/features:password_features",
     "//components/proto_extras:proto_matchers",
     "//google_apis/common",

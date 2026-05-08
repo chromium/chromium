@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PASSWORD_MANAGER_ACTOR_LOGIN_INTERNAL_ACTOR_LOGIN_PERMISSION_CLEANING_SERVICE_IMPL_H_
-#define CHROME_BROWSER_PASSWORD_MANAGER_ACTOR_LOGIN_INTERNAL_ACTOR_LOGIN_PERMISSION_CLEANING_SERVICE_IMPL_H_
+#ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_ACTOR_LOGIN_INTERNAL_ACTOR_LOGIN_PERMISSION_CLEANING_SERVICE_IMPL_H_
+#define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_ACTOR_LOGIN_INTERNAL_ACTOR_LOGIN_PERMISSION_CLEANING_SERVICE_IMPL_H_
 
 #include <memory>
 #include <set>
@@ -13,7 +13,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "chrome/browser/password_manager/actor_login/internal/actor_login_permission_cleaning_service.h"
+#include "components/password_manager/core/browser/actor_login/internal/actor_login_permission_cleaning_service.h"
 #include "url/origin.h"
 
 namespace password_manager {
@@ -45,6 +45,7 @@ class ActorLoginPermissionCleaningServiceImpl
 
   // ActorLoginPermissionCleaningService:
   void ClearConflictingPermissions(const Credential& credential,
+                                   bool check_federated_credentials,
                                    base::OnceClosure done_callback) override;
 
  private:
@@ -61,4 +62,4 @@ class ActorLoginPermissionCleaningServiceImpl
 
 }  // namespace actor_login
 
-#endif  // CHROME_BROWSER_PASSWORD_MANAGER_ACTOR_LOGIN_INTERNAL_ACTOR_LOGIN_PERMISSION_CLEANING_SERVICE_IMPL_H_
+#endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_ACTOR_LOGIN_INTERNAL_ACTOR_LOGIN_PERMISSION_CLEANING_SERVICE_IMPL_H_

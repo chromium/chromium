@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/password_manager/actor_login/internal/actor_login_permission_cleaning_service_impl.h"
+#include "components/password_manager/core/browser/actor_login/internal/actor_login_permission_cleaning_service_impl.h"
 
 #include <utility>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "chrome/browser/password_manager/actor_login/internal/actor_login_duplicate_permission_cleaner.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_permission_service.h"
+#include "components/password_manager/core/browser/actor_login/internal/actor_login_duplicate_permission_cleaner.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 
 namespace actor_login {
@@ -35,6 +35,7 @@ void ActorLoginPermissionCleaningServiceImpl::Shutdown() {
 
 void ActorLoginPermissionCleaningServiceImpl::ClearConflictingPermissions(
     const Credential& credential,
+    bool check_federated_credentials,
     base::OnceClosure done_callback) {
   auto cleaner = std::make_unique<ActorLoginDuplicatePermissionCleaner>(
       credential, profile_store_, account_store_, permission_service_);
@@ -48,6 +49,7 @@ void ActorLoginPermissionCleaningServiceImpl::ClearConflictingPermissions(
   active_cleaners_.insert(std::move(cleaner));
 
   raw_cleaner->Start(
+      check_federated_credentials,
       std::move(done_callback).Then(std::move(removal_callback)));
 }
 
