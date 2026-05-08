@@ -657,7 +657,9 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
 
         // No tab for that app, we'll have to create a new one.
         Tab tab = createNewTab(loadUrlParams, TabLaunchType.FROM_EXTERNAL_APP, null, intent);
-        assert tab != null;
+        // #createNewTab could return null if the tab is created in another window due to profile
+        // restriction.
+        if (tab == null) return null;
         TabAssociatedApp.from(tab).setAppId(appId);
         return tab;
     }
