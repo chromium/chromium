@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/digital_credentials/digital_identity_interstitial_closed_reason.h"
+#include "chrome/browser/ui/views/extensions/security_dialog_tracker.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/url_formatter/elide_url.h"
@@ -168,6 +169,8 @@ void DigitalIdentitySafetyInterstitialControllerDesktop::ShowInterstitialImpl(
   }
   dialog_widget_ = constrained_window::ShowWebModal(
       dialog_model_builder.Build(), &web_contents);
+  extensions::SecurityDialogTracker::GetInstance()->AddSecurityDialog(
+      dialog_widget_);
 
   close_on_navigation_observer_ = std::make_unique<CloseOnNavigationObserver>();
   close_on_navigation_observer_->Observe(web_contents);

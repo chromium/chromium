@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/callback_helpers.h"
+#include "chrome/browser/ui/views/extensions/security_dialog_tracker.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-shared.h"
@@ -276,6 +277,8 @@ void DigitalIdentityMultiStepDialog::TryShow(
     dialog_ = constrained_window::ShowWebModalDialogViews(
                   new_dialog_delegate.release(), web_contents_.get())
                   ->GetWeakPtr();
+    extensions::SecurityDialogTracker::GetInstance()->AddSecurityDialog(
+        dialog_.get());
   }
   if (dialog_title.empty()) {
     // Adding a top margin is necessary only when there is no title in which
