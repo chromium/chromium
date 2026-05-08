@@ -382,17 +382,10 @@ using segmentation_platform::TipIdentifier;
       optimizationGuideService:OptimizationGuideServiceFactory::GetForProfile(
                                    profile)
                shoppingService:commerce::ShoppingServiceFactory::GetForProfile(
-                                   profile)
-                 bookmarkModel:ios::BookmarkModelFactory::GetForProfile(profile)
-       pushNotificationService:GetApplicationContext()
-                                   ->GetPushNotificationService()
-         authenticationService:self.authService];
+                                   profile)];
   _tabResumptionMediator.NTPActionsDelegate = self.NTPActionsDelegate;
   _tabResumptionMediator.contentSuggestionsMetricsRecorder =
       self.contentSuggestionsMetricsRecorder;
-  _tabResumptionMediator.dispatcher = static_cast<
-      id<SceneCommands, PriceTrackedItemsCommands, SnackbarCommands>>(
-      self.browser->GetCommandDispatcher());
 
   [moduleMediators addObject:_tabResumptionMediator];
   if (IsPriceTrackingPromoCardEnabled(shoppingService, self.authService,

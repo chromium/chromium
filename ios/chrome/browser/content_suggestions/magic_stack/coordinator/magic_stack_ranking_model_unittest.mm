@@ -316,10 +316,7 @@ class MagicStackRankingModelTest : public PlatformTest {
                  identityManager:identityManager
                          browser:browser_.get()
         optimizationGuideService:nil
-                 shoppingService:nil
-                   bookmarkModel:nil
-         pushNotificationService:nil
-           authenticationService:nil];
+                 shoppingService:nil];
     history::HistoryService* history_service =
         ios::HistoryServiceFactory::GetForProfile(
             GetProfile(), ServiceAccessType::EXPLICIT_ACCESS);

@@ -16,13 +16,9 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/application_locale_storage/application_locale_storage.h"
-#import "components/bookmarks/browser/bookmark_model.h"
-#import "components/bookmarks/browser/bookmark_node.h"
 #import "components/commerce/core/commerce_constants.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/commerce/core/commerce_types.h"
-#import "components/commerce/core/commerce_utils.h"
-#import "components/commerce/core/price_tracking_utils.h"
 #import "components/commerce/core/proto/price_tracking.pb.h"
 #import "components/commerce/core/shopping_service.h"
 #import "components/ntp_tiles/pref_names.h"
@@ -41,10 +37,8 @@
 #import "components/sync_sessions/open_tabs_ui_delegate.h"
 #import "components/sync_sessions/session_sync_service.h"
 #import "components/url_formatter/elide_url.h"
-#import "ios/chrome/browser/content_suggestions/impression_limits/model/impression_limit_service.h"
 #import "ios/chrome/browser/content_suggestions/model/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/content_suggestions/public/content_suggestions_constants.h"
-#import "ios/chrome/browser/content_suggestions/shop_card/public/shop_card_constants.h"
 #import "ios/chrome/browser/content_suggestions/shop_card/ui/shop_card_data.h"
 #import "ios/chrome/browser/content_suggestions/tab_resumption/coordinator/tab_resumption_mediator_delegate.h"
 #import "ios/chrome/browser/content_suggestions/tab_resumption/public/tab_resumption_constants.h"
@@ -59,29 +53,15 @@
 #import "ios/chrome/browser/ntp_tiles/model/tab_resumption/tab_resumption_prefs.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/page_image/model/page_image_service_factory.h"
-#import "ios/chrome/browser/push_notification/model/push_notification_service.h"
-#import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 #import "ios/chrome/browser/sessions/model/session_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
-#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/utils/observable_boolean.h"
-#import "ios/chrome/browser/shared/model/web_state_list/tab_utils.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
-#import "ios/chrome/browser/shared/public/commands/price_tracked_items_commands.h"
-#import "ios/chrome/browser/shared/public/commands/scene_commands.h"
-#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/public/features/system_flags.h"
-#import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
-#import "ios/chrome/browser/shared/public/snackbar/snackbar_message_action.h"
-#import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_id.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_features.h"
@@ -129,12 +109,6 @@ bool ShouldShowItemImmediately() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       kTabResumptionShowItemImmediately);
 }
-
-enum class ShopCardTrackItemResult {
-  kTrackSuccess,
-  kTrackSuccesNoNotification,
-  kTrackError,
-};
 
 // Salient images should come from gstatic.com.
 const char kGStatic[] = ".gstatic.com";
@@ -319,9 +293,6 @@ class TabResumptionMediatorProxy {
   raw_ptr<OptimizationGuideService> _optimizationGuideService;
 
   raw_ptr<commerce::ShoppingService> _shoppingService;
-  raw_ptr<bookmarks::BookmarkModel> _bookmarkModel;
-  raw_ptr<PushNotificationService> _pushNotificationService;
-  raw_ptr<AuthenticationService> _authenticationService;
   // LINT.ThenChange(//ios/chrome/browser/content_suggestions/tab_resumption/coordinator/tab_resumption_mediator.mm:ClearDependencies)
 
   // Observer bridge for mediator to listen to
@@ -341,16 +312,13 @@ class TabResumptionMediatorProxy {
   PrefBackedBoolean* _tabResumptionDisabled;
 }
 
-- (instancetype)
-          initWithLocalState:(PrefService*)localState
-                 prefService:(PrefService*)prefService
-             identityManager:(signin::IdentityManager*)identityManager
-                     browser:(Browser*)browser
-    optimizationGuideService:(OptimizationGuideService*)optimizationGuideService
-             shoppingService:(commerce::ShoppingService*)shoppingService
-               bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
-     pushNotificationService:(PushNotificationService*)pushNotificationService
-       authenticationService:(AuthenticationService*)authenticationService {
+- (instancetype)initWithLocalState:(PrefService*)localState
+                       prefService:(PrefService*)prefService
+                   identityManager:(signin::IdentityManager*)identityManager
+                           browser:(Browser*)browser
+          optimizationGuideService:
+              (OptimizationGuideService*)optimizationGuideService
+                   shoppingService:(commerce::ShoppingService*)shoppingService {
   self = [super init];
   if (self) {
     _profilePrefs = prefService;
@@ -395,9 +363,6 @@ class TabResumptionMediatorProxy {
     }
 
     _shoppingService = shoppingService;
-    _bookmarkModel = bookmarkModel;
-    _pushNotificationService = pushNotificationService;
-    _authenticationService = authenticationService;
   }
   return self;
 }
@@ -428,9 +393,6 @@ class TabResumptionMediatorProxy {
   _optimizationGuideService = nullptr;
 
   _shoppingService = nullptr;
-  _bookmarkModel = nullptr;
-  _pushNotificationService = nullptr;
-  _authenticationService = nullptr;
   // LINT.ThenChange(//ios/chrome/browser/content_suggestions/tab_resumption/coordinator/tab_resumption_mediator.mm:Dependencies)
 }
 
@@ -479,129 +441,7 @@ class TabResumptionMediatorProxy {
   [self.delegate removeTabResumptionModule];
 }
 
-- (void)trackShopCardItem:(TabResumptionConfig*)config {
-  __weak TabResumptionMediator* weakSelf = self;
 
-  [PushNotificationUtil requestPushNotificationPermission:^(
-                            BOOL granted, BOOL promptShown, NSError* error) {
-    web::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](__typeof(self) strongSelf,
-               TabResumptionConfig* tabResumptionConfig, BOOL granted,
-               BOOL promptShown, NSError* error) {
-              if (error) {
-                [strongSelf onTracked:ShopCardTrackItemResult::kTrackError
-                                 item:tabResumptionConfig];
-                return;
-              }
-              [strongSelf
-                  onNotificationPermissionVerifiedOrGranted:tabResumptionConfig
-                                                    granted:granted];
-            },
-            weakSelf, config, granted, promptShown, error));
-  }];
-  [self.delegate removeTabResumptionModule];
-}
-
-- (void)onNotificationPermissionVerifiedOrGranted:(TabResumptionConfig*)config
-                                          granted:(BOOL)granted {
-  id<SystemIdentity> identity = _authenticationService->GetPrimaryIdentity();
-  _pushNotificationService->SetPreference(
-      identity.gaiaId, PushNotificationClientId::kCommerce, true);
-
-  const bookmarks::BookmarkNode* bookmark =
-      _bookmarkModel->GetMostRecentlyAddedUserNodeForURL(config.tabURL);
-  bool isNewBookmark = bookmark == nullptr;
-  __weak TabResumptionMediator* weakSelf = self;
-
-  auto completionHandler = ^(TabResumptionConfig* tabResumptionConfig,
-                             bool success) {
-    if (success) {
-      [weakSelf
-          onTracked:granted
-                        ? ShopCardTrackItemResult::kTrackSuccess
-                        : ShopCardTrackItemResult::kTrackSuccesNoNotification
-               item:tabResumptionConfig];
-    } else {
-      [weakSelf onTracked:ShopCardTrackItemResult::kTrackError
-                     item:tabResumptionConfig];
-    }
-  };
-
-  if (!bookmark) {
-    const bookmarks::BookmarkNode* defaultFolder =
-        _bookmarkModel->account_mobile_node();
-    if (!defaultFolder) {
-      [self onTracked:ShopCardTrackItemResult::kTrackError item:config];
-      return;
-    }
-    bookmark = _bookmarkModel->AddURL(
-        defaultFolder, defaultFolder->children().size(),
-        base::SysNSStringToUTF16(config.tabTitle), config.tabURL);
-  }
-
-  commerce::SetPriceTrackingStateForBookmark(
-      _shoppingService, _bookmarkModel, bookmark, true,
-      base::BindOnce(completionHandler, config), isNewBookmark,
-      config.shopCardData.productInfo);
-}
-
-- (void)onTracked:(ShopCardTrackItemResult)result
-             item:(TabResumptionConfig*)config {
-  [self.dispatcher showSnackbarMessage:[self snackbarMessage:result
-                                                        item:config]];
-}
-
-- (SnackbarMessage*)snackbarMessage:(ShopCardTrackItemResult)result
-                               item:(TabResumptionConfig*)config {
-  SnackbarMessageAction* action = [[SnackbarMessageAction alloc] init];
-
-  if (result != ShopCardTrackItemResult::kTrackError) {
-    // Tracking was successful. Give option to go to price tracking menu.
-    action.handler = ^{
-      [self.dispatcher showPriceTrackedItems];
-    };
-  } else {
-    // Failed to track - try again.
-    action.handler = ^{
-      [self trackShopCardItem:config];
-    };
-  }
-
-  if (result != ShopCardTrackItemResult::kTrackError) {
-    action.title = l10n_util::GetNSString(
-        IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_SUCCESS_SNACKBAR_ACTION);
-    action.accessibilityLabel = l10n_util::GetNSString(
-        IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_SUCCESS_SNACKBAR_ACTION);
-  } else {
-    action.title = l10n_util::GetNSString(
-        IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_FAILURE_SNACKBAR_ACTION);
-    action.accessibilityLabel = l10n_util::GetNSString(
-        IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_FAILURE_SNACKBAR_ACTION);
-  }
-
-  SnackbarMessage* message;
-  if (result == ShopCardTrackItemResult::kTrackSuccess) {
-    message = [[SnackbarMessage alloc]
-        initWithTitle:
-            l10n_util::GetNSString(
-                IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_SUCCESS_SNACKBAR)];
-  } else if (result == ShopCardTrackItemResult::kTrackSuccesNoNotification) {
-    message = [[SnackbarMessage alloc]
-        initWithTitle:
-            l10n_util::GetNSString(
-                IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_NO_PUSH_PERMISSION_SNACKBAR)];
-  } else {
-    message = [[SnackbarMessage alloc]
-        initWithTitle:
-            l10n_util::GetNSString(
-                IDS_IOS_CONTENT_SUGGESTIONS_SHOPCARD_TRACK_PRICE_FAILURE_SNACKBAR)];
-  }
-
-  message.action = action;
-  return message;
-}
 
 - (void)openDistantTab:(TabResumptionConfig*)config {
   ProfileIOS* profile = _browser->GetProfile();
@@ -783,66 +623,6 @@ class TabResumptionMediatorProxy {
                                   openedTime:mostRecentTabOpenedTime.value_or(
                                                  base::Time::UnixEpoch())];
   }
-}
-
-- (void)fetchShopCardDataForItemIfApplicable:(TabResumptionConfig*)item
-                                         url:(const GURL&)resumptionURL {
-  if (commerce::kShopCardVariation.Get().contains(commerce::kShopCardArm3)) {
-    GURL url = resumptionURL;
-    __weak __typeof(self) weakSelf = self;
-    _shoppingService->GetAllPriceTrackedBookmarks(base::BindOnce(
-        ^(std::vector<const bookmarks::BookmarkNode*> subscriptions) {
-          TabResumptionMediator* strongSelf = weakSelf;
-          if (!strongSelf || !strongSelf.delegate) {
-            return;
-          }
-          if (subscriptions.empty()) {
-            [strongSelf fetchImageForItem:item];
-          } else {
-            [strongSelf onPriceTrackedBookmarksReceived:subscriptions
-                                                    url:url
-                                                   item:item];
-          }
-        }));
-  } else {
-    // Fetch the favicon.
-    [self fetchImageForItem:item];
-  }
-}
-
-- (void)onPriceTrackedBookmarksReceived:
-            (std::vector<const bookmarks::BookmarkNode*>)subscriptions
-                                    url:(const GURL&)resumptionUrl
-                                   item:(TabResumptionConfig*)config {
-  if (!resumptionUrl.is_valid()) {
-    return;
-  }
-  // Remove module if already tracking the product.
-  if (std::ranges::any_of(subscriptions, [&](const auto& bookmark) {
-        return bookmark->url() == resumptionUrl;
-      })) {
-    [self.delegate removeTabResumptionModule];
-    return;
-  }
-
-  __weak __typeof(self) weakSelf = self;
-  TabResumptionMediatorProxy::CanApplyOptimizationOnDemand(
-      _optimizationGuideService, resumptionUrl,
-      optimization_guide::proto::PRICE_TRACKING,
-      optimization_guide::proto::RequestContext::CONTEXT_SHOP_CARD,
-      base::BindRepeating(
-          ^(const GURL& url,
-            const base::flat_map<
-                optimization_guide::proto::OptimizationType,
-                optimization_guide::OptimizationGuideDecisionWithMetadata>&
-                decisions) {
-            ConfigureTabResumptionItemForShopCard(decisions, config, url);
-            // Fetch the favicon.
-            web::GetUIThreadTaskRunner({})->PostTask(
-                FROM_HERE, base::BindOnce(^{
-                  [weakSelf fetchImageForItem:config];
-                }));
-          }));
 }
 
 // Fetches a relevant image for the `config` to display.
@@ -1056,8 +836,7 @@ class TabResumptionMediatorProxy {
   config.commandHandler = self;
   config.delegate = self;
   config.shouldShowSeeMore = YES;
-
-  [self fetchShopCardDataForItemIfApplicable:config url:tab->virtual_url];
+  [self fetchImageForItem:config];
 }
 
 // Creates a TabResumptionConfig corresponding to the `webState`.
@@ -1073,8 +852,7 @@ class TabResumptionMediatorProxy {
   config.delegate = self;
   config.shouldShowSeeMore = YES;
 
-  [self fetchShopCardDataForItemIfApplicable:config
-                                         url:webState->GetLastCommittedURL()];
+  [self fetchImageForItem:config];
 }
 
 // Compares `config` and `_pendingItem` on tabURL and tabTitle field.

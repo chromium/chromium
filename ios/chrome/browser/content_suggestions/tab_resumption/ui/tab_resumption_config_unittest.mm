@@ -23,9 +23,6 @@
 - (void)openTabResumptionItem:(TabResumptionConfig*)config {
 }
 
-- (void)trackShopCardItem:(TabResumptionConfig*)config {
-}
-
 @end
 
 using TabResumptionConfigTest = PlatformTest;

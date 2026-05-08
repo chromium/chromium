@@ -7,23 +7,14 @@
 
 #import <UIKit/UIKit.h>
 
-class AuthenticationService;
 class Browser;
 @class ContentSuggestionsMetricsRecorder;
 
 @protocol NewTabPageActionsDelegate;
 class OptimizationGuideService;
 class PrefService;
-@protocol PriceTrackedItemsCommands;
-class PushNotificationService;
-@protocol SceneCommands;
-@protocol SnackbarCommands;
 @class TabResumptionConfig;
 @protocol TabResumptionMediatorDelegate;
-
-namespace bookmarks {
-class BookmarkModel;
-}  // namespace bookmarks
 
 namespace commerce {
 class ShoppingService;
@@ -49,11 +40,6 @@ class IdentityManager;
 @property(nonatomic, weak)
     ContentSuggestionsMetricsRecorder* contentSuggestionsMetricsRecorder;
 
-// Dispatcher.
-@property(nonatomic, weak)
-    id<SceneCommands, PriceTrackedItemsCommands, SnackbarCommands>
-        dispatcher;
-
 // Default initializer.
 - (instancetype)
           initWithLocalState:(PrefService*)localState
@@ -62,9 +48,6 @@ class IdentityManager;
                      browser:(Browser*)browser
     optimizationGuideService:(OptimizationGuideService*)optimizationGuideService
              shoppingService:(commerce::ShoppingService*)shoppingService
-               bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
-     pushNotificationService:(PushNotificationService*)pushNotificationService
-       authenticationService:(AuthenticationService*)authenticationService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
