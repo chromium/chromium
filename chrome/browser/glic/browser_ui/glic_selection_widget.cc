@@ -5,7 +5,6 @@
 #include "chrome/browser/glic/browser_ui/glic_selection_widget.h"
 
 #include "base/strings/strcat.h"
-#include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/platform_util.h"
@@ -31,7 +30,6 @@
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
-#include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/box_layout.h"
@@ -42,15 +40,12 @@ namespace glic {
 namespace {
 
 constexpr size_t kMaxSelectionLengthForTooltip = 50;
-constexpr int kIconSize = 20;
+constexpr int kIconSize = 14;
 
-constexpr int kButtonCornerRadius = 14;
-
+constexpr int kCornerRadius = 12;
 // The two pills are visually grouped together by having a smaller border radius
-// on the sides where they meet. The outer radius is roughly 50% of the expected
-// height to create a fully rounded pill shape.
-constexpr int kPillCornerRadiusOuter = 16;
-constexpr int kPillCornerRadiusInner = 8;
+// on the sides where they meet.
+constexpr int kCornerRadiusInner = 4;
 
 class GlicSelectionContentsView : public views::View {
   METADATA_HEADER(GlicSelectionContentsView, views::View)
@@ -67,10 +62,8 @@ class GlicSelectionContentsView : public views::View {
 
     auto border1 = std::make_unique<views::BubbleBorder>(
         views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW);
-    border1->SetColor(ui::kColorSysBase);
-    border1->set_rounded_corners(
-        gfx::RoundedCornersF(kPillCornerRadiusOuter, kPillCornerRadiusInner,
-                             kPillCornerRadiusInner, kPillCornerRadiusOuter));
+    border1->SetColor(ui::kColorSysSurface);
+    border1->set_rounded_corners(gfx::RoundedCornersF(kCornerRadius));
 
     // BubbleBorders add a shadow inset on all sides. We use a negative
     // spacing here so the visible backgrounds of the pills are closer together
@@ -85,15 +78,15 @@ class GlicSelectionContentsView : public views::View {
         views::BoxLayout::CrossAxisAlignment::kCenter);
     SetLayoutManager(std::move(layout));
 
-    auto* ask_pill = AddChildView(std::make_unique<views::BoxLayoutView>());
-    ask_pill->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
-    ask_pill->SetInsideBorderInsets(gfx::Insets::VH(4, 4));
-    ask_pill->SetBetweenChildSpacing(4);
-    ask_pill->SetCrossAxisAlignment(
+    ask_pill_ = AddChildView(std::make_unique<views::BoxLayoutView>());
+    ask_pill_->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
+    ask_pill_->SetInsideBorderInsets(gfx::Insets::VH(4, 4));
+    ask_pill_->SetBetweenChildSpacing(4);
+    ask_pill_->SetCrossAxisAlignment(
         views::BoxLayout::CrossAxisAlignment::kCenter);
-    ask_pill->SetBackground(
+    ask_pill_->SetBackground(
         std::make_unique<views::BubbleBackground>(border1.get()));
-    ask_pill->SetBorder(std::move(border1));
+    ask_pill_->SetBorder(std::move(border1));
 
     // Ask Gemini Button
     std::u16string truncated_text;
@@ -110,19 +103,18 @@ class GlicSelectionContentsView : public views::View {
         IDS_GLIC_SELECTION_ASK_ABOUT,
         base::StrCat({u"\"", truncated_text, u"\""}));
     auto* ask_gemini_btn =
-        ask_pill->AddChildView(std::make_unique<views::MdTextButton>(
+        ask_pill_->AddChildView(std::make_unique<views::MdTextButton>(
             std::move(on_ask_gemini),
             l10n_util::GetStringUTF16(
                 IDS_GLIC_BUTTON_ENTRYPOINT_ASK_GEMINI_LABEL)));
     ask_gemini_btn->SetStyle(ui::ButtonStyle::kText);
     ask_gemini_btn->SetTooltipText(ask_gemini_tooltip);
     ask_gemini_btn->SetImageLabelSpacing(4);
-    ask_gemini_btn->SetEnabledTextColors(ui::kColorSysOnSurface);
+    ask_gemini_btn->SetEnabledTextColors(ui::kColorSysOnSurfaceVariant);
     ask_gemini_btn->SetTextColor(views::Button::STATE_DISABLED,
                                  ui::kColorLabelForegroundDisabled);
-    ask_gemini_btn->SetCustomPadding(
-        views::LayoutProvider::Get()->GetInsetsMetric(
-            views::INSETS_ICON_BUTTON));
+    ask_gemini_btn->SetLabelStyle(views::style::STYLE_BODY_5);
+    ask_gemini_btn->SetCustomPadding(gfx::Insets::TLBR(0, 2, 0, 6));
 
     gfx::ImageSkia* icon_skia =
         ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
@@ -130,7 +122,21 @@ class GlicSelectionContentsView : public views::View {
     gfx::ImageSkia resized_icon = gfx::ImageSkiaOperations::CreateResizedImage(
         *icon_skia, skia::ImageOperations::RESIZE_BEST,
         gfx::Size(kIconSize, kIconSize));
-    auto icon_model = ui::ImageModel::FromImageSkia(resized_icon);
+
+    auto generator = base::BindRepeating(
+        [](gfx::ImageSkia icon, const ui::ColorProvider* color_provider) {
+          if (!color_provider) {
+            return icon;
+          }
+          SkColor circle_bg_color =
+              color_provider->GetColor(ui::kColorSysBaseContainer);
+          return gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
+              10, circle_bg_color, icon);
+        },
+        resized_icon);
+
+    auto icon_model = ui::ImageModel::FromImageGenerator(std::move(generator),
+                                                         gfx::Size(20, 20));
 
     ask_gemini_btn->SetImageModel(views::Button::STATE_NORMAL, icon_model);
     ask_gemini_btn->SetImageModel(views::Button::STATE_HOVERED, icon_model);
@@ -142,7 +148,7 @@ class GlicSelectionContentsView : public views::View {
     ask_gemini_btn->SetHasInkDropActionOnClick(true);
     ask_gemini_btn->SetShowInkDropWhenHotTracked(true);
     views::InstallRoundRectHighlightPathGenerator(ask_gemini_btn, gfx::Insets(),
-                                                  kButtonCornerRadius);
+                                                  kCornerRadius);
     views::InkDrop::Get(ask_gemini_btn)
         ->SetBaseColorCallback(base::BindRepeating(
             [](views::View* host) {
@@ -156,18 +162,18 @@ class GlicSelectionContentsView : public views::View {
     auto copy_tooltip = gfx::LocateAndRemoveAcceleratorChar(
         l10n_util::GetStringUTF16(IDS_APP_COPY), nullptr, nullptr);
     auto* copy_btn =
-        ask_pill->AddChildView(views::ImageButton::CreateIconButton(
+        ask_pill_->AddChildView(views::ImageButton::CreateIconButton(
             std::move(on_copy), vector_icons::kContentCopyIcon, copy_tooltip));
     copy_btn->SetTooltipText(copy_tooltip);
     copy_btn->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
     copy_btn->SetBorder(
         views::CreateEmptyBorder(views::LayoutProvider::Get()->GetInsetsMetric(
-            views::INSETS_ICON_BUTTON)));
+            views::INSETS_VECTOR_IMAGE_BUTTON)));
     views::SetImageFromVectorIconWithColor(
         copy_btn, vector_icons::kContentCopyIcon, kIconSize,
-        views::IconColors(ui::kColorSysOnSurface,
+        views::IconColors(ui::kColorSysOnSurfaceVariant,
                           ui::kColorLabelForegroundDisabled,
-                          ui::kColorSysOnSurface));
+                          ui::kColorSysOnSurfaceVariant));
     CreateToolbarInkdropCallbacks(copy_btn, kColorToolbarInkDropHover,
                                   kColorToolbarInkDropRipple);
 
@@ -175,19 +181,19 @@ class GlicSelectionContentsView : public views::View {
     auto copy_link_tooltip =
         l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_COPYLINKTOTEXT);
     copy_link_btn_ =
-        ask_pill->AddChildView(views::ImageButton::CreateIconButton(
+        ask_pill_->AddChildView(views::ImageButton::CreateIconButton(
             std::move(on_copy_link), vector_icons::kLinkIcon,
             copy_link_tooltip));
     copy_link_btn_->SetTooltipText(copy_link_tooltip);
     copy_link_btn_->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
     copy_link_btn_->SetBorder(
         views::CreateEmptyBorder(views::LayoutProvider::Get()->GetInsetsMetric(
-            views::INSETS_ICON_BUTTON)));
+            views::INSETS_VECTOR_IMAGE_BUTTON)));
     views::SetImageFromVectorIconWithColor(
         copy_link_btn_, vector_icons::kLinkIcon, kIconSize,
-        views::IconColors(ui::kColorSysOnSurface,
+        views::IconColors(ui::kColorSysOnSurfaceVariant,
                           ui::kColorLabelForegroundDisabled,
-                          ui::kColorSysOnSurface));
+                          ui::kColorSysOnSurfaceVariant));
     CreateToolbarInkdropCallbacks(copy_link_btn_, kColorToolbarInkDropHover,
                                   kColorToolbarInkDropRipple);
     copy_link_btn_->SetEnabled(false);
@@ -200,10 +206,9 @@ class GlicSelectionContentsView : public views::View {
         views::BoxLayout::CrossAxisAlignment::kCenter);
     auto border2 = std::make_unique<views::BubbleBorder>(
         views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW);
-    border2->SetColor(ui::kColorSysBase);
-    border2->set_rounded_corners(
-        gfx::RoundedCornersF(kPillCornerRadiusInner, kPillCornerRadiusOuter,
-                             kPillCornerRadiusOuter, kPillCornerRadiusInner));
+    border2->SetColor(ui::kColorSysSurface);
+    border2->set_rounded_corners(gfx::RoundedCornersF(
+        kCornerRadiusInner, kCornerRadius, kCornerRadius, kCornerRadiusInner));
     dismiss_pill_->SetBackground(
         std::make_unique<views::BubbleBackground>(border2.get()));
     dismiss_pill_->SetBorder(std::move(border2));
@@ -234,9 +239,9 @@ class GlicSelectionContentsView : public views::View {
               views::INSETS_VECTOR_IMAGE_BUTTON)));
       views::SetImageFromVectorIconWithColor(
           dismiss_btn_, vector_icons::kCloseIcon, kIconSize,
-          views::IconColors(ui::kColorSysOnSurfaceSubtle,
+          views::IconColors(ui::kColorSysOnSurfaceVariant,
                             ui::kColorLabelForegroundDisabled,
-                            ui::kColorSysOnSurface));
+                            ui::kColorSysOnSurfaceVariant));
       CreateToolbarInkdropCallbacks(dismiss_btn_, kColorToolbarInkDropHover,
                                     kColorToolbarInkDropRipple);
     }
@@ -250,11 +255,29 @@ class GlicSelectionContentsView : public views::View {
     if (dismiss_pill_) {
       dismiss_pill_->layer()->SetOpacity(1.0f);
     }
+    if (ask_pill_) {
+      auto* bubble_border =
+          static_cast<views::BubbleBorder*>(ask_pill_->GetBorder());
+      if (bubble_border) {
+        bubble_border->set_rounded_corners(
+            gfx::RoundedCornersF(kCornerRadius, kCornerRadiusInner,
+                                 kCornerRadiusInner, kCornerRadius));
+        ask_pill_->SchedulePaint();
+      }
+    }
   }
 
   void OnMouseExited(const ui::MouseEvent& event) override {
     if (dismiss_pill_) {
       dismiss_pill_->layer()->SetOpacity(0.0f);
+    }
+    if (ask_pill_) {
+      auto* bubble_border =
+          static_cast<views::BubbleBorder*>(ask_pill_->GetBorder());
+      if (bubble_border) {
+        bubble_border->set_rounded_corners(gfx::RoundedCornersF(kCornerRadius));
+        ask_pill_->SchedulePaint();
+      }
     }
   }
 
@@ -270,9 +293,9 @@ class GlicSelectionContentsView : public views::View {
           is_pinned ? vector_icons::kCaretDownIcon : vector_icons::kCaretUpIcon;
       views::SetImageFromVectorIconWithColor(
           pin_btn_, icon, kIconSize,
-          views::IconColors(ui::kColorSysOnSurfaceSubtle,
+          views::IconColors(ui::kColorSysOnSurfaceVariant,
                             ui::kColorLabelForegroundDisabled,
-                            ui::kColorSysOnSurface));
+                            ui::kColorSysOnSurfaceVariant));
       pin_btn_->SetTooltipText(l10n_util::GetStringUTF16(
           is_pinned ? IDS_TAB_SEARCH_BUTTON_CXMENU_UNPIN
                     : IDS_TAB_SEARCH_BUTTON_CXMENU_PIN));
@@ -296,6 +319,7 @@ class GlicSelectionContentsView : public views::View {
   raw_ptr<views::ImageButton> copy_link_btn_ = nullptr;
   raw_ptr<views::ImageButton> pin_btn_ = nullptr;
   raw_ptr<views::ImageButton> dismiss_btn_ = nullptr;
+  raw_ptr<views::BoxLayoutView> ask_pill_ = nullptr;
   raw_ptr<views::BoxLayoutView> dismiss_pill_ = nullptr;
 };
 
@@ -383,7 +407,7 @@ GlicSelectionWidgetDelegate::GlicSelectionWidgetDelegate(
   SetShowCloseButton(false);
   // Remove default dialog margins so the custom button fills the entire bubble.
   set_margins(gfx::Insets(0));
-  set_corner_radius(16);
+  set_corner_radius(kCornerRadius);
   SetBackgroundColor(ui::ColorVariant(SK_ColorTRANSPARENT));
   set_shadow(views::BubbleBorder::NO_SHADOW);
   SetCanActivate(false);
