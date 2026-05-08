@@ -100,6 +100,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpenerImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkUtils;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
+import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
@@ -2847,6 +2848,13 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         // All the code below assumes currentTab is not null, so return early if it is null.
         if (currentTab == null) {
             return false;
+        }
+
+        if (id == R.id.toggle_bookmarks_bar_menu_id) {
+            BookmarkBarUtils.toggleUserPrefsShowBookmarksBar(
+                    currentTab.getProfile(), /* fromKeyboardShortcut= */ false);
+            RecordUserAction.record("MobileMenuToggleBookmarksBar");
+            return true;
         }
 
         if (id == R.id.back_menu_id) {

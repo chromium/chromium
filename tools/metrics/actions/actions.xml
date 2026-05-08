@@ -29096,6 +29096,13 @@ should be able to be added at any place in this file.
   <description>User pressed 'Zoom Text' in the app menu</description>
 </action>
 
+<action name="MobileMenuToggleBookmarksBar">
+  <owner>massan@google.com</owner>
+  <description>
+    User pressed 'Show / Hide bookmarks bar' in the app menu.
+  </description>
+</action>
+
 <action name="MobileMenuToolbarMenuTriggered">
   <owner>gambard@chromium.org</owner>
   <owner>rkgibson@google.com</owner>

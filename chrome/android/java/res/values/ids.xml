@@ -163,6 +163,7 @@ found in the LICENSE file.
     <item type="id" name="page_info_divider_line_id" />
     <item type="id" name="downloads_menu_id" />
     <item type="id" name="all_bookmarks_menu_id" />
+    <item type="id" name="toggle_bookmarks_bar_menu_id" />
     <item type="id" name="bookmarks_parent_menu_id" />
     <item type="id" name="bookmark_this_page_menu_id" />
     <item type="id" name="recent_tabs_menu_id" />

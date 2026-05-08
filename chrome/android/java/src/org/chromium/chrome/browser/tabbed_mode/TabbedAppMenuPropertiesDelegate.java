@@ -32,6 +32,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
+import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.devtools.DevToolsWindowAndroid;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
@@ -755,6 +756,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         List<ListItem> submenuItems = new ArrayList<>();
         submenuItems.add(buildBookmarksItem());
         submenuItems.add(buildBookmarkThisPageItem());
+        submenuItems.add(buildToggleBookmarksBarItem());
 
         return new ListItem(
                 AppMenuHandler.AppMenuItemType.MENU_ITEM_WITH_SUBMENU,
@@ -765,6 +767,18 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                                 ? R.drawable.ic_star_filled_24dp
                                 : Resources.ID_NULL,
                         submenuItems));
+    }
+
+    private ListItem buildToggleBookmarksBarItem() {
+        return new ListItem(
+                AppMenuHandler.AppMenuItemType.STANDARD,
+                buildModelForStandardMenuItem(
+                        R.id.toggle_bookmarks_bar_menu_id,
+                        BookmarkBarUtils.isUserPrefsShowBookmarksBarEnabled(
+                                        mTabModelSelector.getCurrentModel().getProfile())
+                                ? R.string.menu_hide_bookmarks_bar
+                                : R.string.menu_show_bookmarks_bar,
+                        shouldShowIconBeforeItem() ? R.drawable.ic_toolbar_24dp : 0));
     }
 
     private ListItem buildBookmarksItem() {
