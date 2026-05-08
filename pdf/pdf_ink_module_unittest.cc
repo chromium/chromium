@@ -1119,6 +1119,7 @@ TEST_F(PdfInkModuleTextTest, HandleFinishTextAnnotationMessage) {
   typefaces.Append(SampleSerializedTypeface(kFontId, kTypefaceBlob));
   data.Set("newTypefaces", std::move(typefaces));
 
+  InSequence seq;
   EXPECT_CALL(client(), AddFont(kFontId, ElementsAreArray(kTypefaceBlob)));
   EXPECT_CALL(client(),
               DrawText(kPageIndex, kTextId,
