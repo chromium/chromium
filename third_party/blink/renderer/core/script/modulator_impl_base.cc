@@ -198,6 +198,11 @@ void ModulatorImplBase::ResolveDynamically(
         GetScriptState()->GetIsolate(), reason));
     return;
   }
+  if (!GetExecutionContext()) {
+    resolver->Reject(V8ThrowException::CreateTypeError(
+        GetScriptState()->GetIsolate(), "No execution context"));
+    return;
+  }
   UseCounter::Count(GetExecutionContext(),
                     WebFeature::kDynamicImportModuleScript);
   dynamic_module_resolver_->ResolveDynamically(module_request, referrer_info,
