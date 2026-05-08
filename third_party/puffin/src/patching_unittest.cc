@@ -3,9 +3,12 @@
 // found in the LICENSE file.
 
 #include <string>
+#include <string_view>
 #include <vector>
 
+#include "base/base_paths.h"
 #include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "gtest/gtest.h"
 
@@ -27,11 +30,25 @@ namespace puffin {
 
 namespace {
 
-base::FilePath out_test_file(const char* file) {
-  base::FilePath path;
-  base::PathService::Get(base::DIR_OUT_TEST_DATA_ROOT, &path);
-  return path.AppendASCII(file);
+base::FilePath GetSrcTestFilePath(const char* file_name) {
+  base::FilePath test_data_root;
+  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_root));
+  return test_data_root.Append(FILE_PATH_LITERAL("components"))
+      .Append(FILE_PATH_LITERAL(
+          "components/test/data/update_client/puffin_patch_test"))
+      .AppendASCII(file_name);
 }
+
+class PatchingTest : public ::testing::Test {
+ protected:
+  void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
+
+  base::FilePath GetTempPath(std::string_view file_name) {
+    return temp_dir_.GetPath().AppendASCII(file_name);
+  }
+
+  base::ScopedTempDir temp_dir_;
+};
 
 #if PRINT_SAMPLE
 // Print an array into hex-format to the output. This can be used to create
@@ -131,32 +148,32 @@ void TestPatching(const Buffer& src_buf,
   EXPECT_EQ(dst_buf_out, dst_buf);
 }
 
-TEST(PatchingTest, Patching1To2Test) {
+TEST_F(PatchingTest, Patching1To2Test) {
   TestPatching(kDeflatesSample1, kDeflatesSample2,
                kSubblockDeflateExtentsSample1, kSubblockDeflateExtentsSample2,
                kPatch1To2);
 }
 
-TEST(PatchingTest, Patching2To1Test) {
+TEST_F(PatchingTest, Patching2To1Test) {
   TestPatching(kDeflatesSample2, kDeflatesSample1,
                kSubblockDeflateExtentsSample2, kSubblockDeflateExtentsSample1,
                kPatch2To1);
 }
 
-TEST(PatchingTest, Patching1ToNoDeflateTest) {
+TEST_F(PatchingTest, Patching1ToNoDeflateTest) {
   TestPatching(kDeflatesSample1, {11, 22, 33, 44},
                kSubblockDeflateExtentsSample1, {}, kPatch1ToNoDeflate);
 }
 
-TEST(PatchingTest, ApplyPuffPatchTest) {
-  base::FilePath app_v1_crx = out_test_file("puffin_app_v1.crx3");
-  base::FilePath app_v2_crx = out_test_file("puffin_app_v2.crx3");
+TEST_F(PatchingTest, ApplyPuffPatchTest) {
+  base::FilePath app_v1_crx = GetSrcTestFilePath("puffin_app_v1.crx3");
+  base::FilePath app_v2_crx = GetSrcTestFilePath("puffin_app_v2.crx3");
   base::FilePath patch_v1_to_v2_puff =
-      out_test_file("puffin_app_v1_to_v2.puff");
+      GetSrcTestFilePath("puffin_app_v1_to_v2.puff");
   base::FilePath patch_v2_to_v1_puff =
-      out_test_file("puffin_app_v2_to_v1.puff");
-  base::FilePath app_v1_to_v2_crx = out_test_file("puffin_app_v1_to_v2.crx3");
-  base::FilePath app_v2_to_v1_crx = out_test_file("puffin_app_v2_to_v1.crx3");
+      GetSrcTestFilePath("puffin_app_v2_to_v1.puff");
+  base::FilePath app_v1_to_v2_crx = GetTempPath("puffin_app_v1_to_v2.crx3");
+  base::FilePath app_v2_to_v1_crx = GetTempPath("puffin_app_v2_to_v1.crx3");
 
   // Test patching v1 to v2:
   ASSERT_TRUE(base::DeleteFile(app_v1_to_v2_crx));
@@ -171,17 +188,17 @@ TEST(PatchingTest, ApplyPuffPatchTest) {
   EXPECT_TRUE(base::ContentsEqual(app_v1_crx, app_v2_to_v1_crx));
 }
 
-TEST(PatchingTest, PuffDiffTest) {
-  base::FilePath app_v1_crx = out_test_file("puffin_app_v1.crx3");
-  base::FilePath app_v2_crx = out_test_file("puffin_app_v2.crx3");
+TEST_F(PatchingTest, PuffDiffTest) {
+  base::FilePath app_v1_crx = GetSrcTestFilePath("puffin_app_v1.crx3");
+  base::FilePath app_v2_crx = GetSrcTestFilePath("puffin_app_v2.crx3");
   base::FilePath expected_patch_v1_to_v2_puff =
-      out_test_file("puffin_app_v1_to_v2.puff");
+      GetSrcTestFilePath("puffin_app_v1_to_v2.puff");
   base::FilePath expected_patch_v2_to_v1_puff =
-      out_test_file("puffin_app_v2_to_v1.puff");
+      GetSrcTestFilePath("puffin_app_v2_to_v1.puff");
   base::FilePath actual_patch_v1_to_v2_puff =
-      out_test_file("actual_puffin_app_v1_to_v2.puff");
+      GetTempPath("actual_puffin_app_v1_to_v2.puff");
   base::FilePath actual_patch_v2_to_v1_puff =
-      out_test_file("actual_puffin_app_v2_to_v1.puff");
+      GetTempPath("actual_puffin_app_v2_to_v1.puff");
   // Test patching v1 to v2:
   ASSERT_TRUE(base::DeleteFile(actual_patch_v1_to_v2_puff));
   ASSERT_EQ(PuffDiff(app_v1_crx.MaybeAsASCII(), app_v2_crx.MaybeAsASCII(),

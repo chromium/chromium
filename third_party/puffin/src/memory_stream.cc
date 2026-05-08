@@ -51,7 +51,7 @@ bool MemoryStream::Seek(uint64_t offset) {
 bool MemoryStream::Read(void* buffer, size_t length) {
   TEST_AND_RETURN_FALSE(open_);
   TEST_AND_RETURN_FALSE(read_memory_ != nullptr);
-  TEST_AND_RETURN_FALSE(base::IsValueInRangeForNumericType<int64_t>(length));
+  TEST_AND_RETURN_FALSE(base::IsValueInRangeForNumericType<int>(length));
   TEST_AND_RETURN_FALSE(offset_ + length <= read_memory_->size());
   memcpy(buffer, read_memory_->data() + offset_, length);
   offset_ += length;
@@ -62,7 +62,7 @@ bool MemoryStream::Write(const void* buffer, size_t length) {
   // TODO(ahassani): Add a maximum size limit to prevent malicious attacks.
   TEST_AND_RETURN_FALSE(open_);
   TEST_AND_RETURN_FALSE(write_memory_ != nullptr);
-  TEST_AND_RETURN_FALSE(base::IsValueInRangeForNumericType<int64_t>(length));
+  TEST_AND_RETURN_FALSE(base::IsValueInRangeForNumericType<int>(length));
   if (offset_ + length > write_memory_->size()) {
     write_memory_->resize(offset_ + length);
   }

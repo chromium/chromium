@@ -115,7 +115,7 @@ executable("puffin_unittest") {
     "src/unittest_common.cc",
     "src/utils_unittest.cc",
   ]
-  data_deps = [ "//components/test/data/update_client/puffin_patch_test:puffin_patch_test_files" ]
+  data = [ "//components/test/data/update_client/puffin_patch_test/" ]
   deps = [
     ":libpuffdiff",
     ":libpuffpatch",
