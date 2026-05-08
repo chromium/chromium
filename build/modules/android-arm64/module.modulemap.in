@@ -120,20 +120,8 @@ module sys_stage1 [system] {
     header "$sysroot/bits/bionic_multibyte_result.h"
     export *
   }
-  module bits_fcntl_h {
-    header "$sysroot/bits/fcntl.h"
-    export *
-  }
   module bits_flock64_h {
     header "$sysroot/bits/flock64.h"
-    export *
-  }
-  module bits_getopt_h {
-    header "$sysroot/bits/getopt.h"
-    export *
-  }
-  module bits_ioctl_h {
-    header "$sysroot/bits/ioctl.h"
     export *
   }
   module bits_mbstate_t_h {
@@ -154,6 +142,10 @@ module sys_stage1 [system] {
   }
   module bits_wchar_limits_h {
     header "$sysroot/bits/wchar_limits.h"
+    export *
+  }
+  module ctype_h {
+    header "$sysroot/ctype.h"
     export *
   }
   module features_h {
@@ -202,6 +194,10 @@ module sys_stage1 [system] {
   }
   module linux_sched_h {
     header "$sysroot/linux/sched.h"
+    export *
+  }
+  module linux_sched_types_h {
+    header "$sysroot/linux/sched/types.h"
     export *
   }
   module linux_signal_h {
@@ -279,10 +275,6 @@ module sys_stage2 [system] {
     header "$sysroot/bits/flock.h"
     export *
   }
-  module bits_lockf_h {
-    header "$sysroot/bits/lockf.h"
-    export *
-  }
   module bits_pthread_types_h {
     header "$sysroot/bits/pthread_types.h"
     header "$sysroot/sys/types.h"
@@ -302,6 +294,10 @@ module sys_stage2 [system] {
   }
   module fcntl_h {
     header "$sysroot/fcntl.h"
+    export *
+  }
+  module fenv_h {
+    header "$sysroot/fenv.h"
     export *
   }
   module linux_fcntl_h {
@@ -360,10 +356,6 @@ module sys_stage2 [system] {
   }
   module time_h {
     header "$sysroot/time.h"
-    export *
-  }
-  module unistd_h {
-    header "$sysroot/unistd.h"
     export *
   }
   module wchar_h {

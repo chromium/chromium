@@ -79,12 +79,20 @@ module sys_stage1 [system] {
     header "$msvc/crtdefs.h"
     export *
   }
+  module ctype_h {
+    header "$windows_kits/ucrt/ctype.h"
+    export *
+  }
   module eh_h {
     header "$msvc/eh.h"
     export *
   }
   module fcntl_h {
     header "$windows_kits/ucrt/fcntl.h"
+    export *
+  }
+  module fenv_h {
+    header "$windows_kits/ucrt/fenv.h"
     export *
   }
   module float_h {
