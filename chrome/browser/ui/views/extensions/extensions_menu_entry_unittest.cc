@@ -137,16 +137,36 @@ TEST_F(ExtensionsMenuEntryViewTest, UpdatesToDisplayCorrectActionText) {
   EXPECT_EQ(action_button()->GetRenderedTooltipText(gfx::Point()), new_tooltip);
 }
 
-TEST_F(ExtensionsMenuEntryViewTest, ButtonMatchesEnabledStateOfExtension) {
-  EXPECT_TRUE(action_button()->GetEnabled());
-
+TEST_F(ExtensionsMenuEntryViewTest, AccessibilityStateForDisabledExtension) {
+  // When the extension is disabled, the action button should remain enabled
+  // in the view system so that it can be focused by screen readers. However, it
+  // should report as disabled in the accessibility tree.
   menu_entry_->Update(GenerateState(initial_extension_name_, initial_tooltip_,
                                     /*is_enabled=*/false));
-  EXPECT_FALSE(action_button()->GetEnabled());
+  EXPECT_TRUE(action_button()->GetEnabled());
+  EXPECT_FALSE(action_button()->GetViewAccessibility().GetIsEnabled());
 
+  // When the extension is enabled, it should be enabled in both the view system
+  // and the accessibility tree.
   menu_entry_->Update(GenerateState(initial_extension_name_, initial_tooltip_,
                                     /*is_enabled=*/true));
   EXPECT_TRUE(action_button()->GetEnabled());
+  EXPECT_TRUE(action_button()->GetViewAccessibility().GetIsEnabled());
+}
+
+TEST_F(ExtensionsMenuEntryViewTest, ButtonStateMatchesEnabledStateOfExtension) {
+  // Initially enabled.
+  EXPECT_EQ(action_button()->GetState(), views::Button::STATE_NORMAL);
+
+  // Disable the extension.
+  menu_entry_->Update(GenerateState(initial_extension_name_, initial_tooltip_,
+                                    /*is_enabled=*/false));
+  EXPECT_EQ(action_button()->GetState(), views::Button::STATE_DISABLED);
+
+  // Re-enable the extension.
+  menu_entry_->Update(GenerateState(initial_extension_name_, initial_tooltip_,
+                                    /*is_enabled=*/true));
+  EXPECT_EQ(action_button()->GetState(), views::Button::STATE_NORMAL);
 }
 
 TEST_F(ExtensionsMenuEntryViewTest, NotifyClickExecutesAction) {

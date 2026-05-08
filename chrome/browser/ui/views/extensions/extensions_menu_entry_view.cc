@@ -218,9 +218,15 @@ void ExtensionsMenuEntryView::Update(
   site_permissions_button_->SetVisible(
       entry_state.site_permissions_button.status !=
       ExtensionsMenuViewModel::ControlState::Status::kHidden);
-  site_permissions_button_->SetEnabled(
+  bool is_permissions_enabled =
       entry_state.site_permissions_button.status ==
-      ExtensionsMenuViewModel::ControlState::Status::kEnabled);
+      ExtensionsMenuViewModel::ControlState::Status::kEnabled;
+  site_permissions_button_->SetEnabled(true);
+  site_permissions_button_->SetState(is_permissions_enabled
+                                         ? views::Button::STATE_NORMAL
+                                         : views::Button::STATE_DISABLED);
+  site_permissions_button_->GetViewAccessibility().SetIsEnabled(
+      is_permissions_enabled);
   site_permissions_button_->SetText(entry_state.site_permissions_button.text);
   site_permissions_button_->SetTooltipText(
       entry_state.site_permissions_button.tooltip_text);
@@ -241,9 +247,13 @@ void ExtensionsMenuEntryView::UpdateActionButton(
   action_button_->SetText(button_state.text);
   action_button_->SetTooltipText(button_state.tooltip_text);
   action_button_->SetAccessibleName(button_state.accessible_name);
-  action_button_->SetEnabled(
+  bool is_action_enabled =
       button_state.status ==
-      ExtensionsMenuViewModel::ControlState::Status::kEnabled);
+      ExtensionsMenuViewModel::ControlState::Status::kEnabled;
+  action_button_->SetEnabled(true);
+  action_button_->SetState(is_action_enabled ? views::Button::STATE_NORMAL
+                                             : views::Button::STATE_DISABLED);
+  action_button_->GetViewAccessibility().SetIsEnabled(is_action_enabled);
 }
 
 void ExtensionsMenuEntryView::UpdateContextMenuButton(
