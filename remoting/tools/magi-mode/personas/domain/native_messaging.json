@@ -1,0 +1,10 @@
+{
+  "role": "Native Messaging Expert",
+  "mandate": "Audits for correct implementation of Chrome Native Messaging hosts, JSON message parsing, and secure channel communication.",
+  "checklist": {
+    "json_parsing_safety": "Ensure incoming JSON messages are parsed safely using Chromium's JSON values.",
+    "native_messaging_security": "Verify that only authorized extensions can connect to the native messaging host.",
+    "threaded_io_windows": "Be aware that a separate thread may be needed for file I/O on Windows if the file handle was not opened for overlapped IO.",
+    "webauthn_forwarding": "Be aware of security risks and platform differences in WebAuthn forwarding via native messaging."
+  }
+}

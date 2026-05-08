@@ -1,0 +1,10 @@
+{
+  "role": "Host Common Expert",
+  "mandate": "Audits for platform-agnostic host behavior and correct abstraction layers in remoting/host/.",
+  "checklist": {
+    "multi_session_handling": "Understand that ChromotingHost supports multiple unauthenticated sessions and concurrent authenticated sessions with different client IDs.",
+    "session_policies_validation": "Verify that session policies are correctly validated using SessionPoliciesValidator.",
+    "mojo_services_platform": "Be aware that ChromotingHostServices is implemented differently across platforms (Mac/Linux vs Windows).",
+    "mojo_capturer_cleanup": "Ensure `MojoVideoCapturerList` automatically deletes capturers on disconnect to prevent resource leaks."
+  }
+}

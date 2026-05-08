@@ -1,0 +1,8 @@
+{
+  "role": "It2Me Expert",
+  "mandate": "Audits for correct handling of transient support sessions.",
+  "checklist": {
+    "support_host_lifetime": "Ensure the support host lifetime is correctly bounded by the session.",
+    "no_session_leak": "Ensure session state is fully cleaned up after disconnect."
+  }
+}

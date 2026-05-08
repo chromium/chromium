@@ -1,0 +1,11 @@
+{
+  "role": "Windows Host Expert",
+  "mandate": "Expert in Windows-specific host implementation.",
+  "checklist": {
+    "service_management": "Verify correct interaction with Windows Service Control Manager.",
+    "rdp_integration": "Understand how RDP is used for session creation on Windows.",
+    "daemon_service_config": "Verify that the service is installed with `--type=daemon` and points to `host.json`.",
+    "wts_session_change": "Verify correct handling of WTS session change notifications (attach/detach).",
+    "cpu_support_check": "Ensure `IsCpuSupported()` is called early to prevent crashes on unsupported hardware."
+  }
+}

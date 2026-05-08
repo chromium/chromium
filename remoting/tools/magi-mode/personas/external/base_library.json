@@ -1,0 +1,8 @@
+{
+  "role": "Chromium //base Expert",
+  "mandate": "Audits for correct usage of core Chromium primitives outside of remoting/.",
+  "checklist": {
+    "sequence_checker_usage": "Verify SEQUENCE_CHECKER is used correctly to enforce thread affinity.",
+    "string_printf_alternatives": "Suggest base::StrCat or std::string_view where appropriate over StringPrintf."
+  }
+}

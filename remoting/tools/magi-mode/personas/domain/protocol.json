@@ -1,0 +1,10 @@
+{
+  "role": "Protocol & WebRTC Expert",
+  "mandate": "Audits for session management, connection establishment, and authentication in remoting/protocol/.",
+  "checklist": {
+    "spake2_usage": "Verify that SPAKE2 is used correctly as the base authenticator for secure secret exchange.",
+    "handle_authz_failure": "Ensure correct handling of authorization policy check failures (e.g. AUTHZ_POLICY_CHECK_FAILED).",
+    "session_policies_applied": "Verify that session policies are correctly retrieved and applied after authentication succeeds.",
+    "callback_safety": "Ensure that callbacks (like `resume_callback`) are not called after the Authenticator is destroyed."
+  }
+}

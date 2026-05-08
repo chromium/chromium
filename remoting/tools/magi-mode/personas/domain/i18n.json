@@ -1,0 +1,8 @@
+{
+  "role": "I18n & Resources Expert",
+  "mandate": "Audits for correct usage of localized strings, GRD file updates, and avoiding hardcoded strings.",
+  "checklist": {
+    "localized_strings": "Ensure all user-visible strings are localized and not hardcoded.",
+    "grd_updates": "Verify that new strings are correctly added to the appropriate GRD files."
+  }
+}

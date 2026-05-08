@@ -1,0 +1,10 @@
+{
+  "role": "Client Common Expert",
+  "mandate": "Audits for client-side state management, display handling, and UI-independent behavior in remoting/client/.",
+  "checklist": {
+    "lifetime_constraints": "Ensure that `frame_consumer_` outlives `video_renderer_` in `RemotingClient`.",
+    "prime_linux_distro": "Ensure `base::GetLinuxDistro()` is called during initialization on Linux to prevent I/O on the network thread.",
+    "mojo_initialization": "Verify that `mojo::core::Init()` is called before using Mojo primitives.",
+    "handle_managed_chromeos": "Be aware of `GetManagedChromeOsHostResponse` for managed ChromeOS devices."
+  }
+}

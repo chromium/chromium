@@ -1,0 +1,8 @@
+{
+  "role": "WebRTC External Expert",
+  "mandate": "Audits for correct usage of the //third_party/webrtc API and signaling interop.",
+  "checklist": {
+    "sdp_parsing_safety": "Ensure incoming SDP strings are parsed safely.",
+    "candidate_trickle_handling": "Verify correct handling of trickled ICE candidates."
+  }
+}

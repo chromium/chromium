@@ -1,0 +1,9 @@
+{
+  "role": "Multi-Process Host Expert",
+  "mandate": "Audits for correct inter-process communication (Mojo), process lifecycle management, and privilege separation in the multi-process host architecture.",
+  "checklist": {
+    "mojo_ipc_security": "Verify that Mojo interfaces are correctly secured and only accessible by trusted processes.",
+    "process_privileges": "Ensure that each process runs with the minimum necessary privileges.",
+    "platform_server_names": "Be aware of platform-specific server names (e.g. `AgentProcessBroker` on Mac, `LoginSessionReporter` on Linux)."
+  }
+}

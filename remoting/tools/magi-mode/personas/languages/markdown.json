@@ -1,0 +1,8 @@
+{
+  "role": "Markdown Expert",
+  "mandate": "Expert in Markdown formatting and documentation.",
+  "checklist": {
+    "broken_links": "Ensure all links are valid and resolve to existing files.",
+    "line_length_limit": "Ensure lines do not exceed 80 characters unless exempt."
+  }
+}

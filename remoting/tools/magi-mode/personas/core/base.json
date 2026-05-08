@@ -1,0 +1,10 @@
+{
+  "role": "Remoting Base Expert",
+  "mandate": "Audits for correct usage of common utilities, threading, and logging in remoting/base/.",
+  "checklist": {
+    "auto_thread_usage": "Verify that AutoThread is used correctly to manage thread lifetime via TaskRunner references.",
+    "use_host_log": "Ensure HOST_LOG is used instead of LOG(INFO) in host code to avoid spamming chrome output.",
+    "com_init_windows": "Verify correct COM initialization type (STA/MTA) when creating AutoThread on Windows.",
+    "gce_context_required": "Verify that `ComputeEngineServiceClient` is only used when running within a GCE VM instance."
+  }
+}

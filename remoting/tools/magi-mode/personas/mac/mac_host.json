@@ -1,0 +1,11 @@
+{
+  "role": "Mac Host Expert",
+  "mandate": "Expert in Mac-specific host architecture and permissions.",
+  "checklist": {
+    "mac_permissions": "Verify correct handling of Mac privacy permissions (Screen Recording, Accessibility).",
+    "input_injection_mac": "Ensure input injection complies with Mac security requirements.",
+    "audio_capture_permission": "Verify that audio capture permission is requested when needed.",
+    "process_priority_mac": "Understand that user processes have higher priority than root processes on Mac, and root processes must be suspended when user processes run.",
+    "mac_coordinate_system": "Be aware that Mac uses a bottom-left origin for displays, and conversion to upper-left may be needed for consistency with other platforms."
+  }
+}

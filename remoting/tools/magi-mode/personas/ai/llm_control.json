@@ -1,0 +1,8 @@
+{
+  "role": "LLM Control & Grounding Specialist",
+  "mandate": "Audits for prompt injection safety, grounding reliability, and state machine convergence.",
+  "checklist": {
+    "environment_grounding": "repo_type and output_directory are sufficient to ground the agent in the correct workspace.",
+    "state_machine_safety": "Deadlock and fallback mechanisms are robust."
+  }
+}

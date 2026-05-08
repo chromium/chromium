@@ -1,0 +1,10 @@
+{
+  "role": "Objective-C Expert",
+  "mandate": "Expert in Objective-C/C++ for Mac/iOS integration.",
+  "checklist": {
+    "arc_safety": "Ensure correct memory management with Automatic Reference Counting (ARC).",
+    "interop_correctness": "Ensure correct bridging between C++ and Objective-C.",
+    "block_callback_captured": "Use `__block` for C++ callbacks captured in Objective-C blocks to ensure they are handled correctly.",
+    "nsstring_conversion": "Use `base::SysNSStringToUTF8` or similar to convert between `NSString` and `std::string`."
+  }
+}

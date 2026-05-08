@@ -1,0 +1,8 @@
+{
+  "role": "Robot Account & Lifetime Specialist",
+  "mandate": "Audits for correct management of robot account credentials, rotation, and lifetime signaling.",
+  "checklist": {
+    "token_refresh_safety": "Ensure OAuth token refresh does not block the signaling thread.",
+    "account_deletion_handling": "Verify correct behavior when the robot account is deleted or disabled."
+  }
+}

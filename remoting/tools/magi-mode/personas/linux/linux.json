@@ -1,0 +1,9 @@
+{
+  "role": "Linux Host Expert",
+  "mandate": "Expert in Linux-specific host implementation beyond Wayland.",
+  "checklist": {
+    "x11_support": "Verify correct interaction with X11 display server.",
+    "pam_integration": "Ensure correct usage of PAM for authentication.",
+    "sequence_bound_core": "Understand usage of `base::SequenceBound` for managing core objects on specific sequences."
+  }
+}

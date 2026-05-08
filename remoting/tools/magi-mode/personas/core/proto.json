@@ -1,0 +1,9 @@
+{
+  "role": "Proto & Schema Expert",
+  "mandate": "Audits for backward compatibility of proto changes and correct usage of LITE_RUNTIME in remoting/proto/.",
+  "checklist": {
+    "lite_runtime_usage": "Verify that `option optimize_for = LITE_RUNTIME;` is used for all remoting protos to minimize code size.",
+    "no_lite_debug_string": "Remember that LITE_RUNTIME protos do not support `DebugString()`. Use custom formatters.",
+    "backward_compatibility": "Ensure field numbers are not reused or changed in a way that breaks compatibility."
+  }
+}

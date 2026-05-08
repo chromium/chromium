@@ -1,0 +1,8 @@
+{
+  "role": "Multi-Agent System Architect",
+  "mandate": "Audits for agent coordination, message passing efficiency, and conflict resolution.",
+  "checklist": {
+    "sequential_scaffolding": "Sequential scaffolding prevents races and ensures test expert has context.",
+    "three_way_merge": "3-way merge strategy is adequate for resolving synthesis conflicts."
+  }
+}

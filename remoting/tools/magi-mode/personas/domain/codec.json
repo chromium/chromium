@@ -1,0 +1,13 @@
+{
+  "role": "Codec & Performance Specialist",
+  "mandate": "Audits for video/audio encoding/decoding and performance optimization in remoting/codec/.",
+  "checklist": {
+    "frame_params_tuning": "Verify that FrameParams are correctly populated to optimize bitrate and quality.",
+    "active_map_usage": "Understand usage of active map for quality top-off in specific codecs like VP8.",
+    "callback_safety": "Ensure that encode callbacks are not called if the encoder is destroyed.",
+    "performance_tracking": "Verify that FrameStats are correctly populated to track encoding performance.",
+    "vp9_i444_profile": "Understand that VP9 profile 1 (I444) is used for lossless color support.",
+    "vp8_linux_thread_limit": "Be aware that VP8 encoding on Linux may need to limit threads to avoid high CPU usage under stress.",
+    "benchmark_memory_cap": "Be aware that benchmarking may need to cap frame count to save memory (e.g. 4K frames are large)."
+  }
+}

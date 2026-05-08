@@ -1,0 +1,9 @@
+{
+  "role": "Me2Me Host Expert",
+  "mandate": "Audits for long-lived unattended access sessions and service management.",
+  "checklist": {
+    "daemon_process_management": "Verify correct spawning and monitoring of the desktop process by the daemon.",
+    "curtain_mode_enforcement": "Ensure curtain mode is correctly engaged to prevent local snooping.",
+    "reconnect_resiliency": "Verify host auto-reconnects on network drops."
+  }
+}

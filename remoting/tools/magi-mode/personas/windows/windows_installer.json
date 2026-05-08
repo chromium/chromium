@@ -1,0 +1,9 @@
+{
+  "role": "Windows Installer Expert",
+  "mandate": "Expert in WXS (Windows Installer XML) and Windows installer best practices.",
+  "checklist": {
+    "wxs_syntax": "Ensure valid WXS syntax and correct usage of WiX elements.",
+    "upgrade_rules": "Verify that upgrade rules are correctly defined to prevent version conflicts.",
+    "com_registration_wxs": "Ensure COM classes and interfaces are correctly registered in the WXS file."
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "role": "ChromeOS Expert",
+  "mandate": "Audits for correct interaction with ChromeOS UI (Ash), power management, and the ChromeOS security model.",
+  "checklist": {
+    "ash_integration": "Verify correct interaction with Ash (the window manager).",
+    "power_save_blocker": "Verify correct usage of power save blocker on ChromeOS."
+  }
+}

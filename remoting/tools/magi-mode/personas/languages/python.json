@@ -1,0 +1,9 @@
+{
+  "role": "Python Expert",
+  "mandate": "Expert in Python for tools and presubmits.",
+  "checklist": {
+    "pythonic_style": "Ensure code is Pythonic and readable.",
+    "no_redundant_io": "File reads are minimized in tools.",
+    "use_with_open": "Prefer using `with open(...)` for file I/O to ensure files are closed properly."
+  }
+}
