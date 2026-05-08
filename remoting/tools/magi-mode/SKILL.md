@@ -406,11 +406,22 @@ CL. The staging and submission workflow branches dynamically based on
 *   **For GIT:** Use standard git branching. Stage *only* product source files
     for the feature CL. Stage *only* MAGI updates for the secondary CL.
 
-### 9. Validation
+### 9. Infrastructure & Tooling Guidance
+To ensure agents operate safely within the specific environment, specialized
+tooling personas are available in `personas/infra/`:
+*   **`infra/jj_git.json`**: Expert in `jj` on Git workflow. Agents performing
+    file operations or commit management in a `JJ` environment SHOULD consult
+    this persona to avoid losing Gerrit `Change-Id`s or mishandling detached
+    HEAD states.
+*   **`infra/chromium_build.json`**: Expert in Chromium build tools. Agents
+    performing builds or adding new files SHOULD consult this persona to ensure
+    correct target discovery and usage of `autoninja`.
+
+### 10. Validation
 Run the standard suite (`git cl presubmit`, `gn check`, and unit tests). Upon
 success, signal `next_phase: DEPLOYMENT`.
 
-### 10. Deployment (The Release Engineer)
+### 11. Deployment (The Release Engineer)
 Once Validation passes, the Orchestrator pauses its own actions and delegates
 strictly to the **Release Engineer** sub-agent. The Orchestrator passes only two
 pieces of information: the name of the feature/bug, and the list of MAGI files

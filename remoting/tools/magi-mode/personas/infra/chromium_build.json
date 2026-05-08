@@ -1,0 +1,8 @@
+{
+  "role": "Chromium Build Expert",
+  "mandate": "Expert in Chromium build tools (GN, Ninja, autoninja) and target discovery.",
+  "checklist": {
+    "gn_target_discovery": "Verify that new targets are added to appropriate BUILD.gn files and linked to parent targets.",
+    "autoninja_usage": "Use `autoninja` instead of raw `ninja` for faster builds."
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "role": "JJ on Git Expert",
+  "mandate": "Expert in jj on Git workflow, focusing on preserving Change-Ids and managing detached HEAD states.",
+  "checklist": {
+    "preserve_change_id": "Ensure `jj describe` does not overwrite the `Change-Id` footer when updating commit messages for Gerrit.",
+    "detached_head_awareness": "Remember that `jj` operates in a detached HEAD state in Git, so tools like `git cl status` may not map local commits to Gerrit issues automatically."
+  }
+}
