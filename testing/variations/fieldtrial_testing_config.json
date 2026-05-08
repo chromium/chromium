@@ -5823,7 +5823,7 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "gesture-user-education-page-load-delay": "4000"
+                        "gesture-user-education-page-delay": "4000"
                     },
                     "enable_features": [
                         "GestureUserEducationBackSwipe",
@@ -5862,7 +5862,7 @@
                 {
                     "name": "GestureUserEducation",
                     "params": {
-                        "gesture-user-education-page-load-delay": "4000"
+                        "gesture-user-education-page-delay": "4000"
                     },
                     "enable_features": [
                         "GestureUserEducationBackSwipe",
