@@ -1085,16 +1085,9 @@ std::unique_ptr<net::test_server::HttpResponse> TestPageResponse(
 
 // Tests that the `accept` attribute for video correctly disables non-matching
 // files.
-// TODO(crbug.com/464179603): Marked flaky on simulator because of an iOS bug,
+// TODO(crbug.com/464179603): Marked flaky because of an iOS bug,
 // re-enable test when it has been fixed.
-#if TARGET_IPHONE_SIMULATOR
-#define MAYBE_testFilePickerAcceptAttributeVideo \
-  FLAKY_testFilePickerAcceptAttributeVideo
-#else
-#define MAYBE_testFilePickerAcceptAttributeVideo \
-  testFilePickerAcceptAttributeVideo
-#endif
-- (void)MAYBE_testFilePickerAcceptAttributeVideo {
+- (void)FLAKY_testFilePickerAcceptAttributeVideo {
   // The file upload panel is only available on iOS 18.4+.
   if (!base::ios::IsRunningOnOrLater(18, 4, 0)) {
     EARL_GREY_TEST_SKIPPED(@"Test is only available for iOS 18.4+, skipping.");
