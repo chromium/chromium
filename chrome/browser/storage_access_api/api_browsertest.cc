@@ -54,6 +54,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/test/browser_test.h"
@@ -4026,15 +4027,17 @@ IN_PROC_BROWSER_TEST_P(StorageAccessAPIWindowOpenMainFrameTest,
                        PopupRSAMainFrameTest) {
   // Navigate to site a and open popup of site b.
   NavigateToPage(kHostA, "/empty.html");
-  content::WebContentsAddedObserver new_tab_observer;
-  content::TestNavigationObserver nav_observer(nullptr);
-  nav_observer.StartWatchingNewWebContents();
+  // Wait for the page to load; ignoring any webUI web contents that are being
+  // created with the browser.!
+  content::CreateAndLoadWebContentsObserver new_tab_observer(
+      1, base::BindRepeating([](content::WebContents* web_contents) {
+        return !web_contents->GetWebUI();
+      }));
   EXPECT_TRUE(content::ExecJs(
       browser()->tab_strip_model()->GetActiveWebContents(),
       content::JsReplace("window.open($1, '_blank', 'popup')",
                          EchoCookiesURL(MainFrameHost()).spec())));
-  content::WebContents* popup_web_contents = new_tab_observer.GetWebContents();
-  nav_observer.Wait();
+  content::WebContents* popup_web_contents = new_tab_observer.Wait();
   SetupPromptFactoryForNewWebContents(popup_web_contents);
 
   // Expect first-party data for popup.
