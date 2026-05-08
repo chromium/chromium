@@ -1055,5 +1055,73 @@ TEST_F(GlicEnablingProfileReadyStateTestBase,
   EXPECT_TRUE(enabling.GetExperimentalTriggeringEnabled());
 }
 
+class GlicEnablingCombinedObserverTest
+    : public GlicEnablingProfileEligibilityTest {
+ public:
+  GlicEnablingCombinedObserverTest() {
+    scoped_feature_list_combined_.InitAndEnableFeature(
+        features::kGlicExperimentalTriggering);
+  }
+  ~GlicEnablingCombinedObserverTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_combined_;
+};
+
+TEST_F(GlicEnablingCombinedObserverTest,
+       ExperimentalTriggeringStateChangedCallback) {
+  bool callback_called = false;
+  auto& enabling = glic::GlicKeyedService::Get(profile())->enabling();
+
+  auto subscription = enabling.RegisterOnExperimentalTriggeringStateChanged(
+      base::BindLambdaForTesting([&]() { callback_called = true; }));
+
+  // 1. Toggle user_enabled_actuation_on_web -> should not trigger (still
+  // NeedsOptIn).
+  callback_called = false;
+  enabling.SetUserEnabledActuationOnWeb(true);
+  EXPECT_FALSE(callback_called);
+
+  // 2. Toggle completed_fre to completed -> should not trigger (still
+  // NeedsOptIn, experimental triggering is still false).
+  callback_called = false;
+  enabling.SetCompletedFre(prefs::FreStatus::kCompleted);
+  EXPECT_FALSE(callback_called);
+
+  // 3. Toggle experimental_triggering_enabled to true -> should trigger (Ready,
+  // all three are now true/completed).
+  callback_called = false;
+  enabling.SetExperimentalTriggeringEnabled(true);
+  EXPECT_TRUE(callback_called);
+
+  // 4. Toggle experimental_triggering_enabled back to false -> should trigger
+  // (NeedsOptIn).
+  callback_called = false;
+  enabling.SetExperimentalTriggeringEnabled(false);
+  EXPECT_TRUE(callback_called);
+
+  // Toggle back to ready.
+  enabling.SetExperimentalTriggeringEnabled(true);
+
+  // 5. Toggle user_enabled_actuation_on_web to false -> should trigger
+  // (NeedsOptIn).
+  callback_called = false;
+  enabling.SetUserEnabledActuationOnWeb(false);
+  EXPECT_TRUE(callback_called);
+
+  // Toggle back to ready.
+  enabling.SetUserEnabledActuationOnWeb(true);
+
+  // 6. Toggle consent to incomplete -> should trigger (NeedsOptIn).
+  callback_called = false;
+  enabling.SetCompletedFre(prefs::FreStatus::kIncomplete);
+  EXPECT_TRUE(callback_called);
+
+  // 7. Toggle consent to completed -> should trigger (Ready).
+  callback_called = false;
+  enabling.SetCompletedFre(prefs::FreStatus::kCompleted);
+  EXPECT_TRUE(callback_called);
+}
+
 }  // namespace
 }  // namespace glic

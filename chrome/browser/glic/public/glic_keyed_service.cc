@@ -59,6 +59,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
@@ -71,6 +72,7 @@
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync_device_info/device_info_sync_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -208,6 +210,12 @@ GlicKeyedService::GlicKeyedService(
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&GlicKeyedService::InitializeAfterConstruction,
                                 GetWeakPtr()));
+
+  experimental_triggering_state_subscription_ =
+      enabling_->RegisterOnExperimentalTriggeringStateChanged(
+          base::BindRepeating(
+              &GlicKeyedService::OnExperimentalTriggeringStateChanged,
+              base::Unretained(this)));
 }
 
 void GlicKeyedService::InitializeAfterConstruction() {
@@ -610,6 +618,14 @@ GlicKeyedService::AddActOnWebCapabilityChangedCallback(
 
 GlicActorPolicyChecker& GlicKeyedService::actor_policy_checker() {
   return *actor_policy_checker_;
+}
+
+void GlicKeyedService::OnExperimentalTriggeringStateChanged() {
+  syncer::DeviceInfoSyncService* device_info_sync_service =
+      DeviceInfoSyncServiceFactory::GetForProfile(profile_);
+  if (device_info_sync_service) {
+    device_info_sync_service->RefreshLocalDeviceInfo();
+  }
 }
 
 }  // namespace glic
