@@ -3,6 +3,6 @@ mdjones@chromium.org
 skym@chromium.org
 twellington@chromium.org
 wylieb@google.com
+mschillaci@google.com
 
-per-file .../bar/*=mschillaci@google.com
 per-file .../bar/*=eleanorlee@google.com
