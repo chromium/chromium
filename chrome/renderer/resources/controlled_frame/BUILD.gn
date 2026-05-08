@@ -1,0 +1,25 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(enable_extensions_core)
+
+generate_grd("build_grdp") {
+  grd_prefix = "renderer_resources_controlled_frame"
+  out_grd = "$target_gen_dir/resources.grdp"
+  input_files_base_dir = rebase_path(".", "//")
+
+  input_files = [
+    "controlled_frame_api_methods.js",
+    "controlled_frame_context_menus.js",
+    "controlled_frame_events.js",
+    "controlled_frame_impl.js",
+    "controlled_frame_internal_custom_bindings.js",
+    "controlled_frame_url_patterns_helper.js",
+    "controlled_frame_web_request.js",
+    "html_controlled_frame_element.js",
+  ]
+}

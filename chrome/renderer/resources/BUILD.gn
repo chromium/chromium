@@ -1,0 +1,74 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//tools/grit/grit_rule.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(enable_extensions_core)
+
+if (is_chromeos) {
+  generate_grd("build_mojo_grdp") {
+    grd_prefix = "renderer_resources_mojo"
+    out_grd = "$target_gen_dir/mojo_resources.grdp"
+    input_files_base_dir = rebase_path(root_gen_dir, root_build_dir) + "/"
+
+    input_files = [
+      "chromeos/components/remote_apps/mojom/remote_apps.mojom-lite.js",
+      "url/mojom/url.mojom-lite.js",
+
+      # ChromeOS IME Mojo service and bindings.
+      "chromeos/ash/services/ime/public/mojom/ime_service.mojom.js",
+      "chromeos/ash/services/ime/public/mojom/input_engine.mojom.js",
+      "chromeos/ash/services/ime/public/mojom/input_method.mojom.js",
+      "chromeos/ash/services/ime/public/mojom/input_method_host.mojom.js",
+
+      "chromeos/services/tts/public/mojom/tts_service.mojom.js",
+
+      # Enhanced Network Tts bindings.
+      "chromeos/ash/components/enhanced_network_tts/mojom/enhanced_network_tts.mojom-lite.js",
+    ]
+
+    deps = [
+      "//chromeos/ash/components/enhanced_network_tts/mojom:mojom_js",
+      "//chromeos/ash/services/ime/public/mojom:mojom_js",
+      "//chromeos/components/remote_apps/mojom:mojom_js",
+      "//chromeos/services/tts/public/mojom:mojom_js",
+      "//url/mojom:url_mojom_gurl_js",
+    ]
+  }
+}
+
+generate_grd("build_grd") {
+  grd_prefix = "renderer_resources"
+  out_grd = "$target_gen_dir/resources.grd"
+
+  grdp_files = [
+    "${target_gen_dir}/extensions/resources.grdp",
+    "${target_gen_dir}/controlled_frame/resources.grdp",
+  ]
+  deps = [
+    "./controlled_frame:build_grdp",
+    "./extensions:build_grdp",
+  ]
+
+  if (is_chromeos) {
+    grdp_files += [ "${target_gen_dir}/mojo_resources.grdp" ]
+    deps += [ ":build_mojo_grdp" ]
+  }
+}
+
+grit("resources") {
+  defines = chrome_grit_defines
+  enable_input_discovery_for_gn_analyze = false
+  source = "$target_gen_dir/resources.grd"
+  deps = [ ":build_grd" ]
+  outputs = [
+    "grit/renderer_resources_resources.h",
+    "grit/renderer_resources_resources_map.cc",
+    "grit/renderer_resources_resources_map.h",
+    "renderer_resources_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+}

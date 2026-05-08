@@ -1,0 +1,70 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(enable_extensions_core)
+
+generate_grd("build_grdp") {
+  grd_prefix = "renderer_resources_extensions"
+  out_grd = "$target_gen_dir/resources.grdp"
+  input_files_base_dir = rebase_path(".", "//")
+
+  input_files = [
+    "action_custom_bindings.js",
+    "browser_action_custom_bindings.js",
+    "declarative_content_custom_bindings.js",
+    "desktop_capture_custom_bindings.js",
+    "developer_private_custom_bindings.js",
+    "downloads_custom_bindings.js",
+    "gcm_custom_bindings.js",
+    "identity_custom_bindings.js",
+    "image_writer_private_custom_bindings.js",
+    "input.ime_custom_bindings.js",
+    "media_galleries_custom_bindings.js",
+    "notifications_custom_bindings.js",
+    "omnibox_custom_bindings.js",
+    "page_action_custom_bindings.js",
+    "page_capture_custom_bindings.js",
+    "sync_file_system_custom_bindings.js",
+    "system_indicator_custom_bindings.js",
+    "tab_capture_custom_bindings.js",
+    "tts_custom_bindings.js",
+    "tts_engine_custom_bindings.js",
+    "webrtc_desktop_capture_private_custom_bindings.js",
+    "webrtc_logging_private_custom_bindings.js",
+    "web_view/chrome_web_view_context_menus_api_methods.js",
+    "web_view/chrome_web_view_element.js",
+    "web_view/chrome_web_view_internal_custom_bindings.js",
+    "web_view/chrome_web_view.js",
+  ]
+
+  if (enable_pdf_ink2) {
+    input_files += [ "pdf_viewer_private_custom_bindings.js" ]
+  }
+
+  if (is_chromeos) {
+    input_files += [
+      "certificate_provider_custom_bindings.js",
+      "chromeos_google_tts_stream_bindings.js",
+      "chromeos_ime_service_bindings.js",
+      "enhanced_network_tts/enhanced_network_tts_custom_bindings.js",
+      "enterprise_platform_keys/crypto_key.js",
+      "enterprise_platform_keys/subtle_crypto.js",
+      "enterprise_platform_keys/token.js",
+      "enterprise_platform_keys_custom_bindings.js",
+      "file_browser_handler_custom_bindings.js",
+      "file_manager_private_custom_bindings.js",
+      "file_system_provider_custom_bindings.js",
+      "platform_keys_custom_bindings.js",
+      "platform_keys/get_crypto_key_util.js",
+      "platform_keys/key.js",
+      "platform_keys/subtle_crypto.js",
+      "platform_keys/utils.js",
+      "remote_apps/remote_apps_bindings.js",
+      "terminal_private_custom_bindings.js",
+    ]
+  }
+}

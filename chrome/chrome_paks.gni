@@ -195,8 +195,14 @@ template("chrome_extra_paks") {
     }
 
     if (enable_extensions_core) {
-      sources += [ "$root_gen_dir/chrome/component_extension_resources.pak" ]
-      deps += [ "//chrome/browser/resources:component_extension_resources" ]
+      sources += [
+        "$root_gen_dir/chrome/component_extension_resources.pak",
+        "$root_gen_dir/chrome/renderer_resources_resources.pak",
+      ]
+      deps += [
+        "//chrome/browser/resources:component_extension_resources",
+        "//chrome/renderer/resources",
+      ]
     }
 
     if (!is_android) {

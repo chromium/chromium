@@ -903,6 +903,10 @@
     "includes": [5540],
     "messages": [5560],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/renderer/resources/resources.grd": {
+    "META": {"sizes": {"includes": [100]}},
+    "includes": [5570],
+  },
   "chrome/renderer/resources/renderer_resources.grd": {
     "includes": [5580],
     "structures": [5600],
