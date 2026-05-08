@@ -5709,13 +5709,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.SelectionMenu.TimeToShowMenu" units="ms"
+<histogram name="Android.SelectionMenu.TimeToShowMenu.ActionMode" units="ms"
     expires_after="2026-11-01">
   <owner>jhimawan@google.com</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
     Records the time taken to show the text selection popup menu. Recorded when
-    the menu is shown.
+    the menu is shown. This metric is only recorded for the floating (action
+    mode) selection menu.
+  </summary>
+</histogram>
+
+<histogram name="Android.SelectionMenu.TimeToShowMenu.Dropdown" units="ms"
+    expires_after="2026-11-01">
+  <owner>jhimawan@google.com</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Records the time taken to show the text selection popup menu. Recorded when
+    the menu is shown. This metric is only recorded for the dropdown selection
+    menu.
   </summary>
 </histogram>
 

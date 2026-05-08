@@ -603,21 +603,31 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         switch (menuType) {
             case SelectionMenuType.ACTION_MODE:
                 showActionModeOrClearOnFailure();
+                if (mShowMenuStartTimeMs > 0) {
+                    long duration = SystemClock.elapsedRealtime() - mShowMenuStartTimeMs;
+                    recordShowMenuTimeActionMode(duration);
+                    mShowMenuStartTimeMs = 0;
+                }
                 break;
             case SelectionMenuType.DROPDOWN:
                 createAndShowDropdownMenu();
+                if (mShowMenuStartTimeMs > 0) {
+                    long duration = SystemClock.elapsedRealtime() - mShowMenuStartTimeMs;
+                    recordShowMenuTimeDropdown(duration);
+                    mShowMenuStartTimeMs = 0;
+                }
                 break;
-        }
-        if (mShowMenuStartTimeMs > 0) {
-            long duration = SystemClock.elapsedRealtime() - mShowMenuStartTimeMs;
-            recordShowMenuTime(duration);
-            mShowMenuStartTimeMs = 0;
         }
     }
 
-    private void recordShowMenuTime(long durationMs) {
+    private void recordShowMenuTimeActionMode(long durationMs) {
         RecordHistogram.recordCustomTimesHistogram(
-                "Android.SelectionMenu.TimeToShowMenu", durationMs, 1, 2000, 50);
+                "Android.SelectionMenu.TimeToShowMenu.ActionMode", durationMs, 1, 2000, 50);
+    }
+
+    private void recordShowMenuTimeDropdown(long durationMs) {
+        RecordHistogram.recordCustomTimesHistogram(
+                "Android.SelectionMenu.TimeToShowMenu.Dropdown", durationMs, 1, 2000, 50);
     }
 
     /**
