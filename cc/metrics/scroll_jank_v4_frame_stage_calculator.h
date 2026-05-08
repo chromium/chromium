@@ -25,8 +25,7 @@ class CC_EXPORT ScrollJankV4FrameStageCalculator {
   // associated with a frame.
   //
   // Sets `ScrollEventMetrics::scroll_jank_v4_result_id()` to `result_id` for
-  // all scroll updates and ends which this method uses to calculate the stages.
-  // Otherwise doesn't modify `event_metrics`.
+  // all scroll events in `event_metrics`.
   virtual ScrollJankV4Frame::StageList CalculateStages(
       EventMetrics::List& events_metrics,
       uint64_t result_id) = 0;
