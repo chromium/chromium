@@ -25,5 +25,10 @@ BASE_DECLARE_FEATURE(
 COMPONENT_EXPORT(UNEXPORTABLE_KEYS)
 BASE_DECLARE_FEATURE(kUnexportableKeyDeletion);
 
+// Enables in-memory spare key pooling for unexportable keys to reduce
+// latency.
+COMPONENT_EXPORT(UNEXPORTABLE_KEYS)
+BASE_DECLARE_FEATURE(kEnableUnexportableKeysSpareKeyPool);
+
 }  // namespace unexportable_keys
 #endif  // COMPONENTS_UNEXPORTABLE_KEYS_FEATURES_H_

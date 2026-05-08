@@ -694,6 +694,12 @@ inline constexpr char kUseUnexportableKeyServiceInBrowserProcessDescription[] =
     "enables DBSC in platforms where access to TPM-like features is "
     "privileged.";
 
+inline constexpr char kEnableUnexportableKeysSpareKeyPoolName[] =
+    "Enable Unexportable Keys Spare Key Pool";
+inline constexpr char kEnableUnexportableKeysSpareKeyPoolDescription[] =
+    "Enables in-memory spare key pooling for unexportable keys to reduce "
+    "latency.";
+
 inline constexpr char kEnableCrossDevicePrefTrackerName[] =
     "Enable Cross-Device Pref Tracker";
 inline constexpr char kEnableCrossDevicePrefTrackerDescription[] =

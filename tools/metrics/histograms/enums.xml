@@ -7997,6 +7997,7 @@ from previous Chrome versions.
   <int value="-2009624021" label="RemoveUPMUnenrollment:disabled"/>
   <int value="-2009622663" label="WebRtcHWH264Encoding:enabled"/>
   <int value="-2009172938" label="DragToPinTabs:disabled"/>
+  <int value="-2008559217" label="EnableUnexportableKeysSpareKeyPool:disabled"/>
   <int value="-2008476454" label="DefaultBrowserFramework:disabled"/>
   <int value="-2007947679" label="OmniboxMostVisitedTilesOnSrp:disabled"/>
   <int value="-2007377632" label="DiscoverFeedMultiColumn:enabled"/>
@@ -11977,6 +11978,7 @@ from previous Chrome versions.
   <int value="-703851482" label="AudioPeripheralVolumeGranularity:enabled"/>
   <int value="-703552662" label="PrefetchAndroidFonts:disabled"/>
   <int value="-703519655" label="SystemLiveCaption:enabled"/>
+  <int value="-703236931" label="EnableUnexportableKeysSpareKeyPool:enabled"/>
   <int value="-702783087" label="ReaderModeDistillInApp:enabled"/>
   <int value="-702477233" label="ContentFullscreen:enabled"/>
   <int value="-701652734" label="UnoPhase2FollowUp:enabled"/>

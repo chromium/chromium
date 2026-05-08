@@ -9738,6 +9738,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          unexportable_keys::
              kEnableBoundSessionCredentialsSoftwareKeysForManualTesting)},
+    {"enable-unexportable-keys-spare-key-pool",
+     flag_descriptions::kEnableUnexportableKeysSpareKeyPoolName,
+     flag_descriptions::kEnableUnexportableKeysSpareKeyPoolDescription, kOsWin,
+     FEATURE_VALUE_TYPE(
+         unexportable_keys::kEnableUnexportableKeysSpareKeyPool)},
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
 #if BUILDFLAG(ENABLE_COMPOSE)
