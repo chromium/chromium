@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/time/time.h"
 #include "ios/web/public/js_messaging/java_script_feature.h"
 
 class InputEventObserver;
@@ -22,8 +23,8 @@ class PasswordProtectionJavaScriptFeature : public web::JavaScriptFeature {
   PasswordProtectionJavaScriptFeature();
   ~PasswordProtectionJavaScriptFeature() override;
 
-  // This feature holds no state, so only a single static instance is ever
-  // needed.
+  // This feature is a singleton that manages per-WebState state for
+  // observers and rate limiting.
   static PasswordProtectionJavaScriptFeature* GetInstance();
 
   // JavaScriptFeature:
@@ -45,6 +46,9 @@ class PasswordProtectionJavaScriptFeature : public web::JavaScriptFeature {
   // one observer is notified per event.
   std::map<web::WebState*, InputEventObserver*> lookup_by_web_state_;
   std::map<InputEventObserver*, web::WebState*> lookup_by_observer_;
+
+  // Maps WebStates to the timestamp of the last allowed paste event.
+  std::map<web::WebState*, base::TimeTicks> last_paste_timestamps_;
 };
 
 #endif  // IOS_CHROME_BROWSER_SAFE_BROWSING_MODEL_PASSWORD_PROTECTION_JAVA_SCRIPT_FEATURE_H_
