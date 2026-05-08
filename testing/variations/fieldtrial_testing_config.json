@@ -20864,7 +20864,7 @@
             ]
         }
     ],
-    "SafetyHubIncreasePasswordCheckFrequency": [
+    "SafetyHubIncreasePasswordCheckFrequencyV2": [
         {
             "platforms": [
                 "chromeos",
