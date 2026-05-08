@@ -294,7 +294,8 @@ bool IsValidContextUploadStatusForMultimodalRequest(
 bool RequestIdHasImage(const lens::LensOverlayRequestId& request_id) {
   lens::LensOverlayRequestId::MediaType media_type = request_id.media_type();
   if (media_type == lens::LensOverlayRequestId::MEDIA_TYPE_RAW_FILE) {
-    return request_id.mime_type().starts_with("image/");
+    return request_id.mime_type().starts_with("image/") &&
+           request_id.mime_type() != "image/svg+xml";
   }
   return media_type == lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE ||
          media_type ==
