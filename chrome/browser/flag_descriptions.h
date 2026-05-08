@@ -5759,6 +5759,12 @@ inline constexpr char kLogoViewRefactorName[] = "Logo View Refactor";
 inline constexpr char kLogoViewRefactorDescription[] =
     "Enables the Logo View Refactor feature.";
 
+inline constexpr char kLongScreenshotsLenientMemoryCheckName[] =
+    "Long Screenshots Lenient Memory Check";
+inline constexpr char kLongScreenshotsLenientMemoryCheckDescription[] =
+    "Use more lenient memory checks (CRITICAL instead of MODERATE) for long "
+    "screenshots.";
+
 inline constexpr char kMaliciousApkDownloadCheckName[] =
     "Malicious APK download check";
 inline constexpr char kMaliciousApkDownloadCheckDescription[] =

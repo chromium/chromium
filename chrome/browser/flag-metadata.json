@@ -6369,6 +6369,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "long-screenshots-lenient-memory-check",
+    "owners": ["jhimawan@google.com", "jhimawan@chromium.org"],
+    "expiry_milestone": 150
+  },
+  {
     "name": "mac-address-randomization",
     "owners": [ "chadduffin@chromium.org", "cros-device-enablement@google.com"],
     "expiry_milestone": 135
