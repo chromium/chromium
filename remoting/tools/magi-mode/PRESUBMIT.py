@@ -285,11 +285,14 @@ def CheckJsonFiles(input_api, output_api):
   magi_dir = input_api.PresubmitLocalPath()
   schema_path = input_api.os_path.join(magi_dir, 'magi_schema.json')
 
+  affected_files_map = {
+      af.AbsoluteLocalPath(): af
+      for af in input_api.AffectedFiles(include_deletes=False)
+  }
+
   schema_content_str = None
-  for f in input_api.AffectedFiles(include_deletes=False):
-    if f.AbsoluteLocalPath() == schema_path:
-      schema_content_str = input_api.ReadFile(f)
-      break
+  if schema_path in affected_files_map:
+    schema_content_str = input_api.ReadFile(affected_files_map[schema_path])
 
   if schema_content_str is None:
     try:
@@ -488,10 +491,8 @@ def CheckJsonFiles(input_api, output_api):
             'project.magi.json',
         )
         proj_content_str = None
-        for af in input_api.AffectedFiles(include_deletes=False):
-          if af.AbsoluteLocalPath() == project_file_path:
-            proj_content_str = input_api.ReadFile(af)
-            break
+        if project_file_path in affected_files_map:
+          proj_content_str = input_api.ReadFile(affected_files_map[project_file_path])
 
         if not proj_content_str and input_api.os_path.exists(project_file_path):
           try:
@@ -531,6 +532,7 @@ def CheckJsonFiles(input_api, output_api):
       if isinstance(personas, list) and isinstance(state_checklist, dict):
         repo_root = input_api.change.RepositoryRoot()
         union_checklist_keys = set()
+
         for persona_path in personas:
           if not isinstance(persona_path, str):
             results.append(
@@ -551,11 +553,10 @@ def CheckJsonFiles(input_api, output_api):
 
           persona_content_str = None
           is_present = False
-          for af in input_api.AffectedFiles(include_deletes=False):
-            if af.AbsoluteLocalPath() == abs_persona_path:
-              persona_content_str = input_api.ReadFile(af)
-              is_present = True
-              break
+
+          if abs_persona_path in affected_files_map:
+            persona_content_str = input_api.ReadFile(affected_files_map[abs_persona_path])
+            is_present = True
 
           if not is_present:
             if input_api.os_path.exists(abs_persona_path):

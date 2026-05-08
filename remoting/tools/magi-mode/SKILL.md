@@ -196,7 +196,10 @@ next expert.
         drafts, reviews, and state updates are written to `.magi.*.json` files.
     *   **EPHEMERAL_WITH_LOGS:** Use if `auditability_level == "VERBOSE"`.
         Structured data is passed natively in JSON payloads to the Orchestrator,
-        but also teed to `.magi.*.json` files on disk for auditing.
+        but also teed to `.magi.*.json` files on disk for auditing. (These files
+        MUST be stored in a dedicated directory, e.g., `.magi_logs/`, which
+        MUST be explicitly added to the repository's `.gitignore` file to
+        prevent data leaks).
     *   **EPHEMERAL:** Default. C++ Drafts go to disk, but reviews, constraints,
         and state updates are passed exclusively in JSON payloads.
   *In-Memory Validation:* If an `EPHEMERAL` mode is active, the Orchestrator
@@ -314,9 +317,12 @@ If `review_mode == CONSENSUS`, use the granular relay:
     any checklist items or Actionable Constraints. Checks for "flip-flopping"
     (e.g., Constraint 1 violates a constraint from Round 1). Set `next_phase`
     to `SYNTHESIS` if more work is needed, otherwise `TRAINING`.
-    **Deadlock API:** If `Stall Count` exceeds 3, the Technical Program
-    Manager MUST output a valid `state_block.magi.json` with
-    `next_phase: DEADLOCK` and append a structured deadlock report (Core
+    **Deadlock API:** If Stall Count reaches 3, the Technical Program Manager
+    SHOULD attempt an automated fallback (e.g., reducing strictness or
+    switching to `SUPERVISOR` mode) before declaring deadlock. If Stall Count
+    exceeds 3, the Technical Program Manager MUST output a valid
+    `state_block.magi.json` with `next_phase: DEADLOCK` and append a
+    structured deadlock report (Core
     Conflict, Blocked Personas, Human Decision Needed) to the
     `active_constraints` array.
 
