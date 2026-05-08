@@ -36,7 +36,9 @@ public class RecyclerViewSelectionController extends SelectionController
     @Override
     public void reset() {
         super.reset();
-        mLastSelectedItemIndex = RecyclerView.NO_POSITION;
+        if (isParkedAtSentinel()) {
+            mLastSelectedItemIndex = RecyclerView.NO_POSITION;
+        }
     }
 
     @Override
