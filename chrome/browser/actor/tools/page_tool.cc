@@ -566,13 +566,12 @@ void PageTool::Invoke(ToolCallback callback) {
   // taken).
   // The observer also listens to the process exit signal from the renderer
   // (i.e., crashed). The invoke is finished with an error in this case.
-  // `this` Unretained because the observer is owned by this class and thus
-  // removed on destruction.
   frame_change_observer_ = std::make_unique<RenderFrameChangeObserver>(
       frame,
       base::BindOnce(&PageTool::OnRenderFrameHostChanged,
-                     base::Unretained(this)),
-      base::BindOnce(&PageTool::OnRenderFrameGone, base::Unretained(this)));
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&PageTool::OnRenderFrameGone,
+                     weak_ptr_factory_.GetWeakPtr()));
 
   timeout_timer_.Start(
       FROM_HERE, features::kGlicActorPageToolTimeout.Get(),
