@@ -85,8 +85,8 @@ class VIZ_COMMON_EXPORT BeginFrameObserver {
 // Users of this class should;
 //  - Implement the OnBeginFrameDerivedImpl function.
 //  - Recommended (but not required) to call
-//    BeginFrameObserverBase::OnValueInto in their overridden OnValueInto
-//    function.
+//    BeginFrameObserverBase::AsProtozeroInto in their overridden
+//    AsProtozeroInto function.
 class VIZ_COMMON_EXPORT BeginFrameObserverBase : public BeginFrameObserver {
  public:
   BeginFrameObserverBase();
