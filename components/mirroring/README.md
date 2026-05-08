@@ -1,26 +1,43 @@
-# //components/mirroring
+# Cast Mirroring Component (`//components/mirroring`)
 
-Service implementation and browser integration for Cast Mirroring.
+This component provides the service implementation and browser integration for
+Cast Mirroring.
 
-The Mirroring Service is run in its own sandboxed process. It uses mojo
-message pipes between its process and the privileged browser process to:
+The Mirroring Service runs in its own sandboxed utility process. It uses Mojo
+message pipes to communicate with the privileged browser process to:
 
- * acquire inputs, such as screen capture video or tab audio capture.
- * communicate with remote Cast devices using Cast Channel messaging. See `../cast_channel/`.
- * open UDP network sockets for Cast Streaming packets.
- * switch between screen mirroring and content remoting modes.
+* Acquire media inputs, such as screen capture video or tab audio capture.
+* Communicate with remote Cast devices using Cast Channel messaging (see
+  [`//components/cast_channel`](../cast_channel/)).
+* Open UDP network sockets for Cast Streaming packets.
+* Switch between screen mirroring and content remoting modes.
 
-The Service contains all session-management logic, and also interfaces with
-`../../media/cast/` to encode and packetize media in realtime.
+The Service encapsulates all session-management logic and interfaces with
+[`//media/cast`](../../media/cast/) to encode and packetize media in real-time.
+Through the [`ResourceProvider`](mojom/resource_provider.mojom) Mojo interface,
+it requests necessary resources (like GPU access, video/audio capture streams,
+and network contexts) from the browser process.
 
-Specification: *TODO(jophba): Link to Cast Spec markdown.*
+*** note
+For details on the Cast Streaming session protocol, see the
+[Cast Streaming Specification](../../third_party/openscreen/src/cast/streaming/README.md)
+in the Open Screen library.
+***
 
-# Directory Breakdown
+## Directory Breakdown
 
-* browser/ - Browser-side implementation. Also, more can be found in
-  `../../chrome/browser/media/cast_mirroring_service_host.h` and
-  `../../chrome/browser/media/router/providers/cast/`.
+* `browser/`: Browser-side implementation and integration. Additional browser
+  integration code can be found in
+  [`//chrome/browser/media/cast_mirroring_service_host.h`](../../chrome/browser/media/cast_mirroring_service_host.h)
+  and [`//chrome/browser/media/router/providers/cast/`](../../chrome/browser/media/router/providers/cast/).
 
-* mojom/ - Mojo interfaces.
+* `mojom/`: Mojo interfaces for communication between the Mirroring Service and
+  the browser process (e.g.,
+  [`MirroringService`](mojom/mirroring_service.mojom),
+  [`ResourceProvider`](mojom/resource_provider.mojom),
+  [`SessionObserver`](mojom/session_observer.mojom)).
 
-* service/ - Mirroring Service implementation, as described above.
+* `service/`: The core Mirroring Service implementation. This directory contains
+  all logic for session management, media capturing, content remoting, and
+  packetization. See the [**Service README**](service/README.md) for detailed
+  information on internal data flow, session negotiation, and core classes.
