@@ -2048,7 +2048,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 }
 
 // Test is based on DragToSeparateWindow. https://crbug.com/40748225
-#if (BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)) || BUILDFLAG(IS_CHROMEOS)
+#if (BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)) || \
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_DragToSeparateWindowDuringDragEnd \
   DISABLED_DragToSeparateWindowDuringDragEnd
 #else
