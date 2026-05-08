@@ -13,7 +13,6 @@
 
 #include "base/containers/span.h"
 #include "services/device/public/cpp/hid/hid_collection.h"
-#include "services/device/public/cpp/hid/hid_report_descriptor_item.h"
 #include "services/device/public/mojom/hid.mojom.h"
 
 namespace device {
@@ -24,10 +23,6 @@ class HidReportDescriptor {
  public:
   explicit HidReportDescriptor(base::span<const uint8_t> bytes);
   ~HidReportDescriptor();
-
-  const std::vector<std::unique_ptr<HidReportDescriptorItem>>& items() const {
-    return items_;
-  }
 
   const std::vector<std::unique_ptr<HidCollection>>& collections() const {
     return collections_;
@@ -43,10 +38,6 @@ class HidReportDescriptor {
       size_t* max_feature_report_bytes) const;
 
  private:
-  // An ordered sequence of HidReportDescriptorItem objects representing the
-  // items that make up a HID report descriptor.
-  std::vector<std::unique_ptr<HidReportDescriptorItem>> items_;
-
   // A hierarchichal representation of the collections and reports described by
   // the HID report descriptor.
   std::vector<std::unique_ptr<HidCollection>> collections_;
