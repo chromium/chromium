@@ -122,15 +122,49 @@ CGPoint RectCenter(CGRect rect) {
   return CGPointMake(CGRectGetMidX(rect), CGRectGetMidY(rect));
 }
 
-// Returns an UIImageView for the given `symbol_name` and `selected` state.
-UIImageView* ImageViewForSymbol(NSString* symbol_name,
-                                bool selected,
-                                bool is_system_symbol = false) {
+// Returns the symbol image for the given `page` and `selected` state.
+UIImage* SymbolForTabGridPage(TabGridPage page, bool selected) {
+  NSString* symbol_name;
+  bool is_system_symbol = false;
+  switch (page) {
+    case TabGridPageRegularTabs:
+      symbol_name = kSquareNumberSymbol;
+      break;
+    case TabGridPageIncognitoTabs:
+      symbol_name = kIncognitoSymbol;
+      break;
+    case TabGridPageTabGroups:
+      symbol_name = kTabGroupsSymbol;
+      is_system_symbol = true;
+      break;
+  }
   CGFloat size = selected ? kSelectedSymbolSize : kUnselectedSymbolSize;
-  UIImage* image = is_system_symbol
-                       ? DefaultSymbolTemplateWithPointSize(symbol_name, size)
-                       : CustomSymbolTemplateWithPointSize(symbol_name, size);
-  return [[UIImageView alloc] initWithImage:image];
+  return is_system_symbol
+             ? DefaultSymbolTemplateWithPointSize(symbol_name, size)
+             : CustomSymbolTemplateWithPointSize(symbol_name, size);
+}
+
+// Returns the view for an unselected icon with the given `image`.
+UIView* UnselectedIconForImage(UIImage* image) {
+  if (@available(iOS 26, *)) {
+    // Use a UIButton with plain configuration to enable automatic contrast
+    // adjustment over variable background content that shows through the
+    // LiquidGlass container.
+    UIButtonConfiguration* config =
+        [UIButtonConfiguration plainButtonConfiguration];
+    config.image = image;
+    config.contentInsets = NSDirectionalEdgeInsetsZero;
+    UIButton* button = [UIButton buttonWithConfiguration:config
+                                           primaryAction:nil];
+    button.userInteractionEnabled = NO;
+    button.isAccessibilityElement = NO;
+    button.frame = CGRectMake(0, 0, kSegmentWidth, kSegmentHeight);
+    return button;
+  } else {
+    UIImageView* imageView = [[UIImageView alloc] initWithImage:image];
+    imageView.tintColor = [UIColor colorNamed:kStaticGrey300Color];
+    return imageView;
+  }
 }
 
 }  // namespace
@@ -589,46 +623,28 @@ UIImageView* ImageViewForSymbol(NSString* symbol_name,
 
 // Configures and Adds icon to the tab grid page control for the given tab.
 - (void)addTabsIcon:(TabGridPage)tab {
-  UIImageView* iconSelected;
-  UIImageView* iconNotSelected;
+  UIImage* imageSelected = SymbolForTabGridPage(tab, /*selected=*/true);
+  UIImageView* iconSelected = [[UIImageView alloc] initWithImage:imageSelected];
+  iconSelected.tintColor = UIColor.blackColor;
+  [self.selectedImageView addSubview:iconSelected];
+
+  UIImage* imageNotSelected = SymbolForTabGridPage(tab, /*selected=*/false);
+  UIView* iconNotSelected = UnselectedIconForImage(imageNotSelected);
   switch (tab) {
-    case TabGridPageRegularTabs: {
-      iconSelected = ImageViewForSymbol(kSquareNumberSymbol, /*selected=*/true);
-      iconNotSelected =
-          ImageViewForSymbol(kSquareNumberSymbol, /*selected=*/false);
+    case TabGridPageRegularTabs:
       self.regularSelectedIcon = iconSelected;
       self.regularNotSelectedIcon = iconNotSelected;
       break;
-    }
-    case TabGridPageIncognitoTabs: {
-      iconSelected = ImageViewForSymbol(kIncognitoSymbol, /*selected=*/true);
-      iconNotSelected =
-          ImageViewForSymbol(kIncognitoSymbol, /*selected=*/false);
+    case TabGridPageIncognitoTabs:
       self.incognitoSelectedIcon = iconSelected;
       self.incognitoNotSelectedIcon = iconNotSelected;
       break;
-    }
-    case TabGridPageTabGroups: {
-      iconSelected = ImageViewForSymbol(kTabGroupsSymbol, /*selected=*/true,
-                                        /*is_system_symbol=*/true);
-      iconNotSelected = ImageViewForSymbol(kTabGroupsSymbol, /*selected=*/false,
-                                           /*is_system_symbol=*/true);
+    case TabGridPageTabGroups:
       self.tabGroupsSelectedIcon = iconSelected;
       self.tabGroupsNotSelectedIcon = iconNotSelected;
       break;
-    }
   }
-
-  if (@available(iOS 26, *)) {
-    iconNotSelected.tintColor = UIColor.whiteColor;
-  } else {
-    iconNotSelected.tintColor = [UIColor colorNamed:kStaticGrey300Color];
-  }
-
-  iconSelected.tintColor = UIColor.blackColor;
-
   [self.contentView insertSubview:iconNotSelected belowSubview:self.sliderView];
-  [self.selectedImageView addSubview:iconSelected];
 }
 
 // Sets up all of the subviews for this control, as well as the layout guides
