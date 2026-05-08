@@ -48,10 +48,10 @@ bool CompareWebuiUrlInfos(const chrome_urls::mojom::WebuiUrlInfoPtr& info1,
         info2->url.SchemeIs(content::kChromeUIUntrustedScheme));
   // Sort chrome:// before chrome-untrusted://. If the schemes are not equal,
   // given the check above one must be chrome:// and one chrome-untrusted://.
-  if (info1->url.GetScheme() != info2->url.GetScheme()) {
+  if (info1->url.scheme() != info2->url.scheme()) {
     return info1->url.SchemeIs(content::kChromeUIScheme);
   }
-  return info1->url.GetHost() < info2->url.GetHost();
+  return info1->url.host() < info2->url.host();
 }
 
 }  // namespace
