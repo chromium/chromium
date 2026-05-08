@@ -7,10 +7,13 @@
 
 #import <Foundation/Foundation.h>
 
+@class TableViewItem;
+
 // Consumer protocol for the Travel Info settings page.
 @protocol TravelInfoConsumer <NSObject>
 
-// For now, empty page requires no methods.
+// Sets the list of travel info items.
+- (void)setTravelInfoItems:(NSArray<TableViewItem*>*)travelInfoItems;
 
 @end
 

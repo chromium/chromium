@@ -7,13 +7,39 @@
 
 #import <Foundation/Foundation.h>
 
+#import <optional>
+
+#import "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#import "ios/chrome/browser/settings/autofill/autofill_and_passwords/ui/travel_info_table_view_controller.h"
+
+namespace autofill {
+class EntityDataManager;
+}
+
 @protocol TravelInfoConsumer;
+@class TravelInfoMediator;
+
+@protocol TravelInfoMediatorDelegate <NSObject>
+
+// Requests the coordinator to open the editor for the specified entity ID.
+- (void)travelInfoMediator:(TravelInfoMediator*)mediator
+    didRequestToOpenEntityWithID:(autofill::EntityInstance::EntityId)entityID;
+
+@end
 
 // Mediator for the Travel Info settings page.
-@interface TravelInfoMediator : NSObject
+@interface TravelInfoMediator : NSObject <TravelInfoMutator>
+
+// Delegate for navigation requests.
+@property(nonatomic, weak) id<TravelInfoMediatorDelegate> delegate;
 
 // Consumer for this mediator.
 @property(nonatomic, weak) id<TravelInfoConsumer> consumer;
+
+- (instancetype)initWithEntityDataManager:
+    (autofill::EntityDataManager*)entityDataManager NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
 
 // Disconnects the mediator.
 - (void)disconnect;

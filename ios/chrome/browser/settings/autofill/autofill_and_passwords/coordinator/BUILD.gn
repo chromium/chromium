@@ -51,6 +51,7 @@ source_set("unit_tests") {
   sources = [
     "autofill_and_passwords_mediator_unittest.mm",
     "identity_docs_mediator_unittest.mm",
+    "travel_info_mediator_unittest.mm",
   ]
   deps = [
     ":coordinator",

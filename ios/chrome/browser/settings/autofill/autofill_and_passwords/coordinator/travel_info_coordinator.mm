@@ -5,9 +5,11 @@
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/travel_info_coordinator.h"
 
 #import "base/check_op.h"
+#import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/travel_info_mediator.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/ui/travel_info_table_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 
 @interface TravelInfoCoordinator () <TravelInfoTableViewControllerDelegate>
@@ -36,8 +38,17 @@
       initWithStyle:ChromeTableViewStyle()];
   _viewController.delegate = self;
 
-  _mediator = [[TravelInfoMediator alloc] init];
+  autofill::EntityDataManager* entityDataManager =
+      IOSAutofillEntityDataManagerFactory::GetForProfile(
+          self.browser->GetProfile());
+  // The Travel Info setting page is only accessible if entityDataManager is
+  // present.
+  CHECK(entityDataManager);
+
+  _mediator =
+      [[TravelInfoMediator alloc] initWithEntityDataManager:entityDataManager];
   _mediator.consumer = _viewController;
+  _viewController.mutator = _mediator;
 
   [self.baseNavigationController pushViewController:_viewController
                                            animated:YES];
