@@ -16,6 +16,7 @@
 #include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
@@ -72,6 +73,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/common/url_constants.h"
@@ -520,10 +522,12 @@ void GlicKeyedService::TryPreload() {
         profile_,
         base::BindOnce(&GlicKeyedService::FinishPreload, GetWeakPtr()));
   } else {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&GlicKeyedService::TryPreloadAfterDelay, GetWeakPtr()),
-        delay);
+    content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
+        ->PostDelayedTask(
+            FROM_HERE,
+            base::BindOnce(&GlicKeyedService::TryPreloadAfterDelay,
+                           GetWeakPtr()),
+            delay);
   }
 }
 
