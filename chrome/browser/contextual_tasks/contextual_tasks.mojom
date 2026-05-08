@@ -174,6 +174,9 @@ interface PageHandler {
 
   // Unpins the side panel from the toolbar.
   UnpinSidePanel();
+
+  // Called when the user opens the composebox contextual action menu dialog.
+  OnContextMenuOpened();
 };
 
 // WebUI-side handler for requests from the browser.
@@ -294,6 +297,9 @@ interface Page {
   // Called by the browser process (C++) to notify the UI whether the expand
   // button should be enabled.
   SetExpandButtonEnabled(bool enabled);
+
+  // Called by the browser process to turn on smart tab sharing in the WebUI.
+  TurnOnSmartTabSharing();
 };
 
 // Used to bootstrip bi-directional communication between the browser and webui.

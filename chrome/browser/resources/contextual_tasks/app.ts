@@ -5,6 +5,11 @@
 // <if expr="not is_android">
 import './composebox.js';
 import './onboarding_tooltip.js';
+import '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
+
+import type {ContextualActionMenuElement} from '//resources/cr_components/composebox/contextual_action_menu.js';
+import type {ContextualEntrypointAndMenuElement} from '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
+import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 
 import type {ContextualTasksComposeboxElement} from './composebox.js';
 import type {ContextualTasksOnboardingTooltipElement} from './onboarding_tooltip.js';
@@ -149,7 +154,14 @@ function hasExitCobrowseParam(url: URL): boolean {
   return debParam.indexOf('nocobrowse1') > -1;
 }
 
-export class ContextualTasksAppElement extends CrLitElement {
+// <if expr="is_android">
+const ContextualTasksAppElementBase = CrLitElement;
+// </if>
+// <if expr="not is_android">
+const ContextualTasksAppElementBase = HelpBubbleMixinLit(CrLitElement);
+// </if>
+
+export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
   static get is() {
     return 'contextual-tasks-app';
   }
@@ -370,6 +382,13 @@ export class ContextualTasksAppElement extends CrLitElement {
     super.connectedCallback();
     this.updateBackgroundColor_();
 
+    // <if expr="not is_android">
+    this.shadowRoot.addEventListener('context-menu-closed', () => {
+      this.hideHelpBubble(
+          'ContextualTasksUI::kSmartTabSharingMenuItemElementId');
+    });
+    // </if>
+
     // Record the WebUI URL in case one of the events below fires and changes
     // it.
     const webUiUrlOnLoad = new URL(window.location.href);
@@ -383,6 +402,14 @@ export class ContextualTasksAppElement extends CrLitElement {
     this.listenerIds_ = [
       callbackRouter.onSidePanelStateChanged.addListener(
           () => this.updateSidePanelState()),
+      callbackRouter.turnOnSmartTabSharing.addListener(() => {
+        // <if expr="not is_android">
+        const menu = this.getContextualActionMenu();
+        if (menu) {
+          menu.setSmartTabSharingToggle(true);
+        }
+        // </if>
+      }),
       callbackRouter.setThreadTitle.addListener(title => {
         this.threadTitle_ = title;
         document.title = title || loadTimeData.getString('title');
@@ -390,6 +417,7 @@ export class ContextualTasksAppElement extends CrLitElement {
       callbackRouter.onAiPageStatusChanged.addListener(isAiPage => {
         this.isAiPage_ = isAiPage;
       }),
+
       callbackRouter.postMessageToWebview.addListener(
           this.postMessageToWebview.bind(this)),
       callbackRouter.onHandshakeComplete.addListener(
@@ -626,6 +654,10 @@ export class ContextualTasksAppElement extends CrLitElement {
         this.onInputPlateBoundsUpdate_.bind(this));
 
     this.eventTracker_.add(
+        composebox, 'context-menu-opened',
+        () => this.onComposeboxContextMenuOpened_());
+
+    this.eventTracker_.add(
         composebox, 'composebox-height-update',
         (e: CustomEvent<{height: number}>) => {
           // TODO(crbug.com/483737358): Sending an object instead of a proto
@@ -661,6 +693,31 @@ export class ContextualTasksAppElement extends CrLitElement {
       this.updateCommonSearchParams();
     }
   }
+
+  // <if expr="not is_android">
+  private getContextualActionMenu(): ContextualActionMenuElement|null {
+    const wrapper =
+        this.shadowRoot?.querySelector<ContextualTasksComposeboxElement>(
+            'contextual-tasks-composebox');
+    if (!wrapper) {
+      return null;
+    }
+    const innerComposebox =
+        wrapper.shadowRoot?.querySelector<HTMLElement>('#composebox');
+    if (!innerComposebox) {
+      return null;
+    }
+    const entrypoint = innerComposebox.shadowRoot
+                           ?.querySelector<ContextualEntrypointAndMenuElement>(
+                               '#contextEntrypoint');
+    if (!entrypoint) {
+      return null;
+    }
+    return entrypoint.shadowRoot?.querySelector<ContextualActionMenuElement>(
+               '#menu') ||
+        null;
+  }
+  // </if>
 
   private updateTooltipVisibility_() {
     // Tooltip not supported on Android. Therefore, make calls to this method
@@ -699,6 +756,36 @@ export class ContextualTasksAppElement extends CrLitElement {
     if (nameShimmer) {
       restartAnimations(nameShimmer);
     }
+  }
+
+  protected onComposeboxContextMenuOpened_() {
+    // <if expr="not is_android">
+    setTimeout(() => {
+      const menu = this.getContextualActionMenu();
+      if (menu) {
+        const menuItem = menu.shadowRoot?.querySelector('#smartTabSharingItem');
+        if (menuItem) {
+          const rect = menuItem.getBoundingClientRect();
+          const floatingAnchor = this.shadowRoot.querySelector<HTMLElement>(
+              '#iphMenuSmartTabSharingAnchor');
+          if (floatingAnchor) {
+            floatingAnchor.style.left = `${rect.left}px`;
+            floatingAnchor.style.top = `${rect.top}px`;
+            floatingAnchor.style.width = `${rect.width}px`;
+            floatingAnchor.style.height = `${rect.height}px`;
+
+            this.registerHelpBubble(
+                'ContextualTasksUI::kSmartTabSharingMenuItemElementId',
+                '#iphMenuSmartTabSharingAnchor', {
+                  fixed: true,
+                  containerElement: menu.getDialog(),
+                });
+            this.browserProxy_.handler.onContextMenuOpened();
+          }
+        }
+      }
+    }, 200);
+    // </if>
   }
 
   private setStyleVariable(variable: string, value: string) {

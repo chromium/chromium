@@ -839,6 +839,11 @@ error-page {
   pointer-events: all;
 }
 
+#iphMenuSmartTabSharingAnchor {
+  position: fixed;
+  visibility: hidden;
+}
+
 :host([dark-mode_]) .name-shimmer {
   --bg-gradient: linear-gradient(
     to bottom,

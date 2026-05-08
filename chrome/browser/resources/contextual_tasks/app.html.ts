@@ -67,6 +67,7 @@ export function getHtml(this: ContextualTasksAppElement) {
 </if>
   </div>
   <error-page id="errorPage"></error-page>
+  <div id="iphMenuSmartTabSharingAnchor"></div>
   <!--_html_template_end_-->`;
 }
 // clang-format on

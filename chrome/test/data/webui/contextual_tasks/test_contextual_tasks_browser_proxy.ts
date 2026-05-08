@@ -44,6 +44,7 @@ class MockPage extends TestBrowserProxy implements PageInterface {
       'onSidePanelPinStateChanged',
       'setInNlm',
       'setExpandButtonEnabled',
+      'turnOnSmartTabSharing',
     ]);
   }
 
@@ -165,6 +166,10 @@ class MockPage extends TestBrowserProxy implements PageInterface {
   setExpandButtonEnabled(enabled: boolean) {
     this.methodCalled('setExpandButtonEnabled', enabled);
   }
+
+  turnOnSmartTabSharing() {
+    this.methodCalled('turnOnSmartTabSharing');
+  }
 }
 
 /**
@@ -197,6 +202,7 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
       'isZeroState',
       'moveTaskUiToNewTab',
       'onboardingTooltipDismissed',
+      'onContextMenuOpened',
       'onFileClickedFromSourcesMenu',
       'onImageClickedFromSourcesMenu',
       'onTabClickedFromSourcesMenu',
@@ -405,6 +411,10 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
   isSidePanelPinned() {
     this.methodCalled('isSidePanelPinned');
     return Promise.resolve({isPinned: false});
+  }
+
+  onContextMenuOpened() {
+    this.methodCalled('onContextMenuOpened');
   }
 }
 

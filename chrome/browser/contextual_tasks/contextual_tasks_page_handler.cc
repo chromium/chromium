@@ -51,6 +51,12 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "components/feature_engagement/public/feature_constants.h"
+#endif
+
 namespace {
 constexpr char kMyActivityUrl[] = "https://myactivity.google.com/myactivity";
 
@@ -668,6 +674,20 @@ void ContextualTasksPageHandler::PinSidePanel() {
   }
   web_ui_controller_->GetProfile()->GetPrefs()->SetBoolean(
       prefs::kPinContextualTaskButton, true);
+}
+
+void ContextualTasksPageHandler::OnContextMenuOpened() {
+#if !BUILDFLAG(IS_ANDROID)
+  if (!contextual_tasks::GetIsSmartTabSharingEnabled()) {
+    return;
+  }
+  if (auto* interface =
+          BrowserUserEducationInterface::From(webui::GetBrowserWindowInterface(
+              web_ui_controller_->GetWebUIWebContents()))) {
+    interface->MaybeShowFeaturePromo(
+        feature_engagement::kIPHSmartTabSharingFeature);
+  }
+#endif
 }
 
 void ContextualTasksPageHandler::UnpinSidePanel() {

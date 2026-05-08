@@ -40,6 +40,7 @@
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
@@ -171,6 +172,9 @@ void UpdateDarkModePreferenceFromUrl(content::WebContents* wc,
   }
 }
 }  // namespace
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ContextualTasksUI,
+                                      kSmartTabSharingMenuItemElementId);
 
 void AddDefaultZeroStateStrings(content::WebUIDataSource* source) {
   source->AddString("friendlyZeroStateTitle",
@@ -803,6 +807,23 @@ void ContextualTasksUI::BindInterface(
   contextual_tasks_page_handler_factory_receiver_.Bind(
       std::move(pending_receiver));
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+void ContextualTasksUI::BindInterface(
+    mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandlerFactory>
+        pending_receiver) {
+  help_bubble_factory_receiver_.reset();
+  help_bubble_factory_receiver_.Bind(std::move(pending_receiver));
+}
+
+void ContextualTasksUI::CreateHelpBubbleHandler(
+    mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> client,
+    mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler> handler) {
+  help_bubble_handler_ = std::make_unique<user_education::HelpBubbleHandler>(
+      std::move(handler), std::move(client), this,
+      std::vector<ui::ElementIdentifier>{kSmartTabSharingMenuItemElementId});
+}
+#endif
 
 bool ContextualTasksUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {

@@ -784,6 +784,8 @@ should be able to be added at any place in this file.
   <variant name="_SignInBenefitsNewSignin"
       summary="For sign-in benefits IPH feature."/>
   <variant name="_SiteControls" summary="For SiteControls IPH feature."/>
+  <variant name="_SmartTabSharingFeature"
+      summary="For Smart Tab Sharing feature."/>
   <variant name="_SupervisedUserProfileSignin"
       summary="For displaying the supervised user sign-in IPH."/>
   <variant name="_TabAudioMuting" summary="For TabAudioMuting feature."/>

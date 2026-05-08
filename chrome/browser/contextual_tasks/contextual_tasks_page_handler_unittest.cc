@@ -39,6 +39,7 @@
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/lens/lens_url_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -1054,6 +1055,10 @@ TEST_F(ContextualTasksPageHandlerTest,
 
   page_handler_->OnWebviewMessage(serialized);
   run_loop.Run();
+}
+
+TEST_F(ContextualTasksPageHandlerTest, OnContextMenuOpened) {
+  page_handler_->OnContextMenuOpened();
 }
 
 }  // namespace contextual_tasks

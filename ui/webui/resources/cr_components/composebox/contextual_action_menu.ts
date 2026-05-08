@@ -178,6 +178,10 @@ export class ContextualActionMenuElement extends
     this.$.menu.close();
   }
 
+  getDialog(): HTMLDialogElement {
+    return this.$.menu.getDialog();
+  }
+
   private onWindowBlur_ = this.close.bind(this);
 
   showAt(anchor: HTMLElement) {
@@ -393,7 +397,13 @@ export class ContextualActionMenuElement extends
   private toggleSmartTabSharing_() {
     const toggle = this.shadowRoot.querySelector<CrToggleElement>(
         '#smartTabSharingToggle')!;
-    toggle.checked = !toggle.checked;
+    this.setSmartTabSharingToggle(!toggle.checked);
+  }
+
+  setSmartTabSharingToggle(active: boolean) {
+    const toggle = this.shadowRoot.querySelector<CrToggleElement>(
+        '#smartTabSharingToggle')!;
+    toggle.checked = active;
     this.fire('smart-tab-sharing-active-changed', {active: toggle.checked});
   }
 

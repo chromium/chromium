@@ -1492,6 +1492,37 @@ void ContextualTasksUiService::OnWebUIDestroyed(
   }
 }
 
+void ContextualTasksUiService::TurnOnSmartTabSharing(
+    BrowserWindowInterface* browser) {
+  if (!browser || browser->GetProfile() != profile_) {
+    return;
+  }
+
+  // Check side panel.
+  auto* controller = ContextualTasksPanelController::From(browser);
+  if (controller && controller->IsPanelOpenForContextualTask()) {
+    content::WebContents* web_contents = controller->GetActiveWebContents();
+    if (auto* web_ui_interface = GetWebUiInterface(web_contents)) {
+      if (web_ui_interface->GetPageRemote().is_bound()) {
+        web_ui_interface->GetPageRemote()->TurnOnSmartTabSharing();
+      }
+    }
+  }
+
+  // Check all tabs.
+  TabListInterface* tab_list = TabListInterface::From(browser);
+  if (tab_list) {
+    for (int i = 0; i < tab_list->GetTabCount(); ++i) {
+      content::WebContents* web_contents = tab_list->GetTab(i)->GetContents();
+      if (auto* web_ui_interface = GetWebUiInterface(web_contents)) {
+        if (web_ui_interface->GetPageRemote().is_bound()) {
+          web_ui_interface->GetPageRemote()->TurnOnSmartTabSharing();
+        }
+      }
+    }
+  }
+}
+
 void ContextualTasksUiService::MoveTaskUiToNewTab(
     const base::Uuid& task_id,
     BrowserWindowInterface* browser,

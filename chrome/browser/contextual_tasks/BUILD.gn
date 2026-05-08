@@ -207,6 +207,7 @@ source_set("ui") {
     "//extensions/buildflags",
     "//third_party/lens_server_proto:lens_overlay_proto",
     "//third_party/omnibox_proto",
+    "//ui/base/interaction",
     "//ui/base/unowned_user_data",
     "//ui/shell_dialogs",
     "//ui/webui",
@@ -245,6 +246,7 @@ source_set("ui") {
       "//chrome/browser/ui/tabs:glic",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/views/side_panel",
+      "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
     ]
   }
 
@@ -359,6 +361,7 @@ source_set("ui_impl") {
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/omnibox",
       "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/user_education",
       "//chrome/browser/ui/views/interaction",
       "//chrome/browser/ui/webui",
       "//components/contextual_tasks/public:feature_list",

@@ -120,6 +120,7 @@ build_webui("build") {
   if (!is_android) {
     ts_deps += [
       "//ui/webui/resources/cr_components/composebox:build_ts",
+      "//ui/webui/resources/cr_components/help_bubble:build_ts",
       "//ui/webui/resources/cr_components/localized_link:build_ts",
       "//ui/webui/resources/cr_components/search:build_ts",
     ]

@@ -59,6 +59,7 @@ class MockContextualTasksPage : public mojom::Page {
   MOCK_METHOD(void, UnlockInput, (), (override));
   MOCK_METHOD(void, SetShowReopenTabs, (bool show), (override));
   MOCK_METHOD(void, SetExpandButtonEnabled, (bool enabled), (override));
+  MOCK_METHOD(void, TurnOnSmartTabSharing, (), (override));
   MOCK_METHOD(void, InjectInput, (mojom::InjectedInputPtr input), (override));
   MOCK_METHOD(void,
               RemoveInjectedInput,

@@ -195,6 +195,9 @@ class ContextualTasksUiService : public KeyedService {
       BrowserWindowInterface* browser_window_interface,
       const std::optional<base::Uuid>& task_id);
 
+  // Turns on smart tab sharing in the specified browser window's active WebUI.
+  virtual void TurnOnSmartTabSharing(BrowserWindowInterface* browser);
+
   // Opens the contextual tasks side panel and creates a new task with the given
   // URL as its initial thread URL.
   virtual void StartTaskUiInSidePanel(

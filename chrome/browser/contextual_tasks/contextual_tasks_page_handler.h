@@ -78,6 +78,7 @@ class ContextualTasksPageHandler
   void ReopenTabs() override;
   void PinSidePanel() override;
   void UnpinSidePanel() override;
+  void OnContextMenuOpened() override;
   void PostMessageToWebview(const lens::ClientToAimMessage& message);
 
   // contextual_tasks::ContextualTasksService::Observer:

@@ -302,6 +302,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHSidePanelLensOverlayPinnableFollowupFeature,
     &kIPHSideSearchAutoTriggeringFeature,
     &kIPHSideSearchPageActionLabelFeature,
+    &kIPHSmartTabSharingFeature,
     &kIPHTabAudioMutingFeature,
     &kIPHTabGroupsSaveV2CloseGroupFeature,
     &kIPHTabGroupsSaveV2IntroFeature,
