@@ -7,6 +7,7 @@
 #import <QuartzCore/QuartzCore.h>
 
 #import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 namespace {
@@ -45,6 +46,7 @@ void AddCutoutToPath(UIBezierPath* path, CGRect bounds) {
   UIBezierPath* _maskPath;
   CGRect _lastBounds;
   CAShapeLayer* _shadowLayer;
+  UIVisualEffectView* _blurView;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -53,6 +55,13 @@ void AddCutoutToPath(UIBezierPath* path, CGRect bounds) {
     _maskLayer = [CAShapeLayer layer];
     _maskLayer.fillRule = kCAFillRuleEvenOdd;
     self.layer.mask = _maskLayer;
+
+    if (IsFullscreenRefactoringEnabled()) {
+      UIBlurEffect* blurEffect =
+          [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemMaterialDark];
+      _blurView = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
+      [self addSubview:_blurView];
+    }
 
     _shadowLayer = [CAShapeLayer layer];
     [self.layer addSublayer:_shadowLayer];
@@ -65,6 +74,9 @@ void AddCutoutToPath(UIBezierPath* path, CGRect bounds) {
 
 - (void)layoutSubviews {
   [super layoutSubviews];
+  if (_blurView) {
+    _blurView.frame = self.bounds;
+  }
   [self updateMask];
 }
 
@@ -92,12 +104,26 @@ void AddCutoutToPath(UIBezierPath* path, CGRect bounds) {
     return;
   }
   CAShapeLayer* shadowLayer = _shadowLayer;
+  UIVisualEffectView* blurView = _blurView;
   _hideColorBackground = hideColorBackground;
+
+  if (!hideColorBackground && blurView) {
+    blurView.hidden = NO;
+  }
+
   [UIView animateWithDuration:kColorTransitionDuration
-                   animations:^{
-                     [self updateBackgroundColor];
-                     shadowLayer.opacity = hideColorBackground ? 0 : 1;
-                   }];
+      animations:^{
+        [self updateBackgroundColor];
+        shadowLayer.opacity = hideColorBackground ? 0 : 1;
+        if (blurView) {
+          blurView.alpha = hideColorBackground ? 0 : 1;
+        }
+      }
+      completion:^(BOOL finished) {
+        if (hideColorBackground && blurView) {
+          blurView.hidden = YES;
+        }
+      }];
 }
 
 #pragma mark - Private
@@ -110,6 +136,10 @@ void AddCutoutToPath(UIBezierPath* path, CGRect bounds) {
   }
   if (self.incognito) {
     self.backgroundColor = [UIColor colorNamed:kAppBarIncognitoColor];
+    return;
+  }
+  if (IsFullscreenRefactoringEnabled()) {
+    self.backgroundColor = [UIColor clearColor];
     return;
   }
 
