@@ -2090,38 +2090,45 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DiscardSavedTabGroupTabAllowed) {
   EXPECT_TRUE(tab_list->GetTab(index)->GetContents()->WasDiscarded());
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, TestGroupDetachedAndReInserted) {
   // Create the `TabsEventRouter`, which is required to get a tab update event.
   TabsWindowsAPI::Get(profile())->InitTabsEventRouter();
 
-  chrome::AddTabAt(browser(), GURL(), -1, true);
-  chrome::AddTabAt(browser(), GURL(), -1, true);
-  chrome::AddTabAt(browser(), GURL(), -1, true);
+  GURL about_blank("about:blank");
+  ASSERT_TRUE(NavigateToURLInNewTab(about_blank));
+  ASSERT_TRUE(NavigateToURLInNewTab(about_blank));
+  ASSERT_TRUE(NavigateToURLInNewTab(about_blank));
 
-  tab_groups::TabGroupId group =
-      browser()->tab_strip_model()->AddToNewGroup({0, 1});
+  TabListInterface* tab_list =
+      TabListInterface::From(browser_window_interface());
+  std::optional<tab_groups::TabGroupId> group = tab_list->CreateTabGroup({
+      tab_list->GetTab(0)->GetHandle(),
+      tab_list->GetTab(1)->GetHandle(),
+  });
+  ASSERT_TRUE(group);
+
+  BrowserWindowInterface* second_browser =
+      CreateBrowserWindowWithType(BrowserWindowInterface::TYPE_NORMAL);
+  ASSERT_TRUE(second_browser);
+  TabListInterface* destination_tab_list =
+      TabListInterface::From(second_browser);
+  ASSERT_TRUE(destination_tab_list);
+  destination_tab_list->OpenTab(about_blank, -1);
 
   TestEventRouterObserver event_observer(EventRouter::Get(profile()));
 
-  std::unique_ptr<DetachedTabCollection> detached_group =
-      browser()->tab_strip_model()->DetachTabGroupForInsertion(group);
+  tab_list->MoveTabGroupToWindow(*group, second_browser->GetSessionID(), 0);
 
-  event_observer.WaitForEventWithName(api::tabs::OnUpdated::kEventName);
-  EXPECT_TRUE(
-      event_observer.events().contains(api::tabs::OnUpdated::kEventName));
-
-  event_observer.ClearEvents();
-
-  browser()->tab_strip_model()->InsertDetachedTabGroupAt(
-      std::move(detached_group), 1);
-
-  // Group added as well as the tab's group changed event should be sent.
+  // Verify a tabs.onUpdated event was sent. In practice, more than one is
+  // dispatched (multiple tabs and they are added / removed from a group).
+  // The exact events are tested more thoroughly in a similar test in the
+  // API test `ExtensionApiTabTest.MovingAGroupToANewWindow`.
   event_observer.WaitForEventWithName(api::tabs::OnUpdated::kEventName);
   EXPECT_TRUE(
       event_observer.events().contains(api::tabs::OnUpdated::kEventName));
 }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, Freezing) {
   // Create a background tab.
