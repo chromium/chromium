@@ -242,10 +242,7 @@ IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, ShowHidePopup) {
 }
 
 // Use arrow keys to select between various suggestions.
-//
-// TODO(crbug.com/508402801): This test is flaky on multiple platforms.
-IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest,
-                       DISABLED_NavigateSuggestions) {
+IN_PROC_BROWSER_TEST_F(WebUILocationBarInteractiveUiTest, NavigateSuggestions) {
   RunTestSequence(
       InstrumentTab(kTabId), WaitForWebContentsReady(kTabId),
       InstrumentNonTabWebView(kWebUIToolbarId, GetToolbarWebView()),
