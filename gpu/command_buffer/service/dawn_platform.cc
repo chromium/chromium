@@ -360,6 +360,8 @@ bool DawnPlatform::IsFeatureEnabled(dawn::platform::Features feature) {
     case dawn::platform::Features::kWebGPUDecomposeUniformBuffers:
       return base::FeatureList::IsEnabled(
           features::kWebGPUDecomposeUniformBuffers);
+    case dawn::platform::Features::kWebGPUUseHLSL2021:
+      return base::FeatureList::IsEnabled(features::kWebGPUUseHLSL2021);
     default:
       return false;
   }

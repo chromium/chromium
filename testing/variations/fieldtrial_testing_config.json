@@ -25192,6 +25192,21 @@
             ]
         }
     ],
+    "WebGPUUseHLSL2021": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "WebGPUUseHLSL2021"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebGPUUseSpirv14": [
         {
             "platforms": [
