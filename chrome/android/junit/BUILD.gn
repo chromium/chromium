@@ -448,7 +448,7 @@ if (is_android) {
 
   robolectric_library(
       "chrome_junit_tests_org.chromium.chrome.browser.accessibility_annotator") {
-    sources = [ "src/org/chromium/chrome/browser/accessibility_annotator/first_run/AccessibilityAnnotatorFirstRunBottomSheetMediatorTest.java" ]
+    sources = [ "src/org/chromium/chrome/browser/accessibility_annotator/first_run/AccessibilityAnnotatorFirstRunBottomSheetUnitTest.java" ]
     deps = [ ":chrome_junit_tests_helper" ]
   }
 
