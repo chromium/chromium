@@ -329,8 +329,9 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // TODO(crbug.com/417138763): Remove this once the migration is complete.
   bool ReadOldSeedFile();
 
-  // Reads the seed data from local state.
-  void ReadSeedFromLocalState();
+  // Migrates the seed data from local state to a seed file. Returns true if the
+  // migration is successful.
+  bool MigrateFromLocalStateToSeedFile();
 
   // Reads the seed data and signature from the seed file and calls
   // `done_callback` with the result.

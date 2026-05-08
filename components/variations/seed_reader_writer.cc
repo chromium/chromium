@@ -314,6 +314,29 @@ void ClearSeedDataField(StoredSeedInfo& stored_seed_info) {
   std::unique_ptr<std::string> data(stored_seed_info.release_data());
 }
 
+std::string GetSeedDataFromLocalStatePref(PrefService* local_state,
+                                          std::string_view seed_data_pref) {
+  CHECK(local_state);
+  std::string_view stored_seed_data = local_state->GetString(seed_data_pref);
+  // If the seed is empty or the sentinel value, we don't need to decode it.
+  if (stored_seed_data == kIdenticalToSafeSeedSentinel ||
+      stored_seed_data.empty()) {
+    return std::string(stored_seed_data);
+  }
+  std::string decoded_data;
+  std::string uncompressed_data;
+  bool decoded_successfully =
+      base::Base64Decode(stored_seed_data, &decoded_data);
+  // If the seed is empty, compression::GzipUncompress() will return false.
+  // However, we still want to write an empty seed to the file.
+  if (decoded_successfully &&
+      (decoded_data.empty() ||
+       compression::GzipUncompress(decoded_data, &uncompressed_data))) {
+    return uncompressed_data;
+  }
+  return "";
+}
+
 }  // namespace
 
 const SeedFieldsPrefs kRegularSeedFieldsPrefs = {
@@ -834,7 +857,7 @@ void SeedReaderWriter::ReadSeedFile() {
 
     // Record that the seed file was read successfully.
     seed_source = SeedSource::kOldSeedFile;
-  } else {
+  } else if (MigrateFromLocalStateToSeedFile()) {
     // Export seed data from Local State to a seed file in the following cases.
     // 1. Seed file does not exist because this is the first run. For Windows,
     // the first run seed may be stored in Local State, see
@@ -842,36 +865,7 @@ void SeedReaderWriter::ReadSeedFile() {
     // 2. Seed file does not exist because this is the first time a client is
     // in the seed file experiment's treatment group.
     // 3. Seed file exists and read failed.
-    std::string decoded_data;
-    std::string uncompressed_data;
-    bool decoded_successfully = base::Base64Decode(
-        local_state_->GetString(fields_prefs_->seed), &decoded_data);
-    // If the seed is empty, compression::GzipUncompress() will return false.
-    // However, we still want to write an empty seed to the file.
-    if (decoded_successfully &&
-        (decoded_data.empty() ||
-         compression::GzipUncompress(decoded_data, &uncompressed_data))) {
-      PermanentCountryVersion permanent_country_version =
-          GetPermanentCountryVersion(
-              local_state_, fields_prefs_->permanent_country_code_version);
-      ScheduleSeedFileWrite(ValidatedSeedInfo{
-          .seed_data = uncompressed_data,
-          .signature = local_state_->GetString(fields_prefs_->signature),
-          .milestone = local_state_->GetInteger(fields_prefs_->milestone),
-          .seed_date = local_state_->GetTime(fields_prefs_->seed_date),
-          .client_fetch_time =
-              local_state_->GetTime(fields_prefs_->client_fetch_time),
-          .session_country_code =
-              local_state_->GetString(fields_prefs_->session_country_code),
-          .session_geo_level1 = GetGeoLevel1Pref(*fields_prefs_, *local_state_),
-          .permanent_country_code = permanent_country_version.country,
-          .permanent_country_version = permanent_country_version.version,
-      });
-
-      if (!decoded_data.empty()) {
-        seed_source = SeedSource::kLocalState;
-      }
-    }
+    seed_source = SeedSource::kLocalState;
   }
 
   base::UmaHistogramEnumeration(
@@ -929,6 +923,36 @@ bool SeedReaderWriter::ReadOldSeedFile() {
   seed_writer_->ScheduleWriteWithBackgroundDataSerializer(this);
 
   return success;
+}
+
+bool SeedReaderWriter::MigrateFromLocalStateToSeedFile() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  std::string seed_data =
+      GetSeedDataFromLocalStatePref(local_state_, fields_prefs_->seed);
+
+  PermanentCountryVersion permanent_country_version =
+      GetPermanentCountryVersion(local_state_,
+                                 fields_prefs_->permanent_country_code_version);
+  // Schedule a write to the new seed file. If `seed_data` is empty, either
+  // because the Local State pref was empty or because it was corrupt and
+  // failed to decode/uncompress, this will result in an empty seed being
+  // written to the seed file, effectively resetting the seed file.
+  ScheduleSeedFileWrite(ValidatedSeedInfo{
+      .seed_data = seed_data,
+      .signature = local_state_->GetString(fields_prefs_->signature),
+      .milestone = local_state_->GetInteger(fields_prefs_->milestone),
+      .seed_date = local_state_->GetTime(fields_prefs_->seed_date),
+      .client_fetch_time =
+          local_state_->GetTime(fields_prefs_->client_fetch_time),
+      .session_country_code =
+          local_state_->GetString(fields_prefs_->session_country_code),
+      .session_geo_level1 = GetGeoLevel1Pref(*fields_prefs_, *local_state_),
+      .permanent_country_code = permanent_country_version.country,
+      .permanent_country_version = permanent_country_version.version,
+  });
+  seed_writer_->DoScheduledWrite();
+  return !seed_data.empty();
 }
 
 StoreSeedResult SeedReaderWriter::ScheduleLocalStateWrite(
