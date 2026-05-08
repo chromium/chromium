@@ -493,11 +493,7 @@ void GlicInstanceImpl::Close(EmbedderKey key, const CloseOptions& options) {
     return;
   }
 
-  if (ShouldUnbindOnClose(key, *entry)) {
-    UnbindEmbedder(key);
-    return;
-  }
-
+  // May delete this.
   CloseInternal(key, *entry, options);
 }
 
@@ -507,6 +503,7 @@ void GlicInstanceImpl::CloseInternal(EmbedderKey key,
   service_->metrics()->OnInstanceClosed();
   instance_metrics_.OnClose();
   if (entry.embedder) {
+    // May delete this.
     entry.embedder->Close(options);
   }
 }
@@ -530,9 +527,6 @@ bool GlicInstanceImpl::ShouldUnbindOnClose(EmbedderKey key,
           features::kGlicDefaultToLastActiveConversation)) {
     return false;
   }
-  if (entry.user_input_submitted_while_bound) {
-    return false;
-  }
   const auto* tab_key = std::get_if<tabs::TabInterface*>(&key);
   if (!tab_key) {
     return false;
@@ -541,7 +535,9 @@ bool GlicInstanceImpl::ShouldUnbindOnClose(EmbedderKey key,
   // This is the pin trigger used for entrypoint clicks.
   // TODO(b/501090068): Figure out how to separate this from invoke pin
   // triggers.
-  return usage && usage->pin_event.trigger == GlicPinTrigger::kInstanceCreation;
+  return usage &&
+         (usage->pin_event.trigger == GlicPinTrigger::kInstanceCreation &&
+          !entry.user_input_submitted_while_bound);
 }
 
 bool GlicInstanceImpl::Toggle(ShowOptions&& options,
@@ -1229,6 +1225,12 @@ void GlicInstanceImpl::MaybeInitializeHiddenClient(
 void GlicInstanceImpl::WillCloseFor(EmbedderKey key,
                                     EmbedderCloseReason reason) {
   MaybeDeactivateEmbedder(key);
+
+  auto* entry = GetEmbedderEntry(key);
+  if (reason == EmbedderCloseReason::kExplicitlyClosed && entry &&
+      ShouldUnbindOnClose(key, *entry)) {
+    UnbindEmbedder(key);
+  }
 }
 
 void GlicInstanceImpl::ClientReadyToShow(

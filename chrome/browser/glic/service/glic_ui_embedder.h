@@ -36,6 +36,8 @@ class GlicUiEmbedder {
         const ShowOptions& options,
         glic::mojom::ConversationInfoPtr info,
         mojom::WebClientHandler::SwitchConversationCallback callback) = 0;
+    // Called by the embedder when it is about to close. Embedders must
+    // guarantee this is called for all close sources.
     virtual void WillCloseFor(EmbedderKey key, EmbedderCloseReason reason) = 0;
     virtual Host& host() = 0;
     virtual void Show(const ShowOptions& options) = 0;

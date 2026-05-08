@@ -5,6 +5,7 @@
 #include "chrome/browser/glic/widget/glic_side_panel_ui_android.h"
 
 #include "base/notimplemented.h"
+#include "base/notreached.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -193,6 +194,23 @@ void GlicSidePanelUi::OnBrowserDeactivated(BrowserWindowInterface* browser) {
   }
 }
 
+namespace {
+EmbedderCloseReason MapStateToCloseReason(
+    GlicSidePanelCoordinator::State state) {
+  switch (state) {
+    case GlicSidePanelCoordinator::State::kBackgrounded:
+      return EmbedderCloseReason::kBackgrounded;
+    case GlicSidePanelCoordinator::State::kPeek:
+      return EmbedderCloseReason::kPeek;
+    case GlicSidePanelCoordinator::State::kClosed:
+      return EmbedderCloseReason::kExplicitlyClosed;
+    case GlicSidePanelCoordinator::State::kShown:
+      NOTREACHED()
+          << "This mapping is only called when the state is not kShown";
+  }
+}
+}  // namespace
+
 void GlicSidePanelUi::SidePanelStateChanged(
     GlicSidePanelCoordinator::State state) {
   if (state != GlicSidePanelCoordinator::State::kShown && tab_) {
@@ -203,12 +221,9 @@ void GlicSidePanelUi::SidePanelStateChanged(
     instance_metrics_->OnSidePanelClosed(tab_.get(), reason);
     panel_state_.kind = mojom::PanelStateKind::kHidden;
     delegate_->NotifyPanelStateChanged();
-    EmbedderCloseReason close_reason =
-        state == GlicSidePanelCoordinator::State::kBackgrounded
-            ? EmbedderCloseReason::kBackgrounded
-            : EmbedderCloseReason::kExplicitlyClosed;
+
     // NOTE: `this` will be destroyed after this call.
-    delegate_->WillCloseFor(tab_.get(), close_reason);
+    delegate_->WillCloseFor(tab_.get(), MapStateToCloseReason(state));
   }
 }
 

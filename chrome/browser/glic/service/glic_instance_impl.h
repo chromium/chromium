@@ -165,6 +165,8 @@ class GlicInstanceImpl : public GlicInstance,
   void MaybeDaisyChainToTab(tabs::TabInterface* source_tab,
                             tabs::TabInterface* target_tab);
 
+  // Closes the embedder identified by `key`.
+  // NOTE: This method may result in the deletion of `this`.
   void Close(EmbedderKey key, const CloseOptions& options = {});
   // Returns true when toggle shows the instance and false when it is closed.
   bool Toggle(ShowOptions&& options,
@@ -172,6 +174,7 @@ class GlicInstanceImpl : public GlicInstance,
               glic::mojom::InvocationSource source,
               std::optional<std::string> prompt_suggestion);
 
+  // NOTE: This method may result in the deletion of `this`.
   void UnbindEmbedder(EmbedderKey key);
   GlicUiEmbedder* GetEmbedderForTab(tabs::TabInterface* tab);
   bool ContextAccessIndicatorEnabled();
@@ -237,6 +240,8 @@ class GlicInstanceImpl : public GlicInstance,
       const ShowOptions& options,
       glic::mojom::ConversationInfoPtr info,
       mojom::WebClientHandler::SwitchConversationCallback callback) override;
+  // Notifies that the embedder is about to close. Guaranteed to be called by
+  // the embedder for all close sources.
   void WillCloseFor(EmbedderKey key, EmbedderCloseReason reason) override;
   void NotifyPanelStateChanged() override;
   // Opens the floating UI for this instance
@@ -365,7 +370,6 @@ class GlicInstanceImpl : public GlicInstance,
       mojom::InvocationSource invocation_source,
       std::optional<std::string> prompt_suggestion,
       mojom::FreOverride fre_override = mojom::FreOverride::kUnspecified);
-
 
   void MaybeShowShortcutSnoozePromo();
 

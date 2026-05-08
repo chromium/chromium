@@ -33,6 +33,7 @@ std::string DescribeEmbedderKeyForTesting(const EmbedderKey& key);
 enum class EmbedderCloseReason {
   kExplicitlyClosed,
   kBackgrounded,
+  kPeek,
 };
 
 struct SidePanelShowOptions {
