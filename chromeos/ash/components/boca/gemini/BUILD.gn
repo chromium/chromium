@@ -6,6 +6,27 @@ assert(is_chromeos)
 
 static_library("gemini") {
   sources = [
+    "gemini_status_fetcher.cc",
+    "gemini_status_fetcher.h",
+  ]
+
+  deps = [
+    ":gemini_internal",
+    "//base",
+    "//chromeos/ash/components/boca:boca_request",
+    "//chromeos/ash/components/boca/session_api",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/signin/public/identity_manager",
+    "//google_apis",
+    "//google_apis/common",
+  ]
+}
+
+source_set("gemini_internal") {
+  visibility = [ ":*" ]
+
+  sources = [
     "get_gemini_status_request.cc",
     "get_gemini_status_request.h",
   ]
@@ -22,14 +43,21 @@ static_library("gemini") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "get_gemini_status_request_unittest.cc" ]
+  sources = [
+    "gemini_status_fetcher_unittest.cc",
+    "get_gemini_status_request_unittest.cc",
+  ]
 
   deps = [
     ":gemini",
+    ":gemini_internal",
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/components/boca:boca_request",
     "//chromeos/ash/components/boca/session_api",
+    "//components/prefs:test_support",
+    "//components/signin/public/identity_manager:test_support",
+    "//services/network:test_support",
     "//testing/gtest",
   ]
 }

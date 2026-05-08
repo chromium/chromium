@@ -295,6 +295,7 @@ source_set("impl") {
       "//chrome/browser/ui/webui/signin/ash",
       "//chromeos/ash/components/audio",
       "//chromeos/ash/components/boca/babelorca",
+      "//chromeos/ash/components/boca/gemini",
       "//chromeos/ash/components/boca/on_task",
       "//chromeos/ash/components/carrier_lock",
       "//chromeos/ash/components/demo_mode",
