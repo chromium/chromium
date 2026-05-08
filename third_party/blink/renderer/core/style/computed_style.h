@@ -986,7 +986,7 @@ class ComputedStyle final : public ComputedStyleBase {
   }
   // Returns the resolved the second value of caret-color for the color of
   // the text that under block caret shape or nullopt if the value is 'auto'.
-  std::optional<blink::Color> ResolvedCaretTextColor() const;
+  CORE_EXPORT std::optional<blink::Color> ResolvedCaretTextColor() const;
 
   // accent-color
   // An empty optional means the accent-color is 'auto'

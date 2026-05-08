@@ -26,6 +26,9 @@
 #include "third_party/blink/renderer/core/css/resolver/style_cascade.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
+#include "third_party/blink/renderer/core/css/style_auto_color.h"
+#include "third_party/blink/renderer/core/css/style_caret_color.h"
+#include "third_party/blink/renderer/core/css/style_color.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -2573,6 +2576,44 @@ TEST_F(ComputedStyleTest, ApplyTextTransformUpdateOffsetMap) {
     EXPECT_EQ(String(u"SS\u3053"), result);
     EXPECT_EQ(offset_map.Entries(), Vector<Entry>({{1, 2}, {3, 3}}));
   }
+}
+
+TEST_F(ComputedStyleTest, ResolvedCaretTextColorAuto) {
+  ComputedStyleBuilder builder = CreateComputedStyleBuilder();
+  builder.SetCaretColor(StyleCaretColor(
+      StyleAutoColor(StyleColor(Color::kBlack)), StyleAutoColor::AutoColor()));
+  const ComputedStyle* style = builder.TakeStyle();
+
+  EXPECT_FALSE(style->ResolvedCaretTextColor().has_value());
+}
+
+TEST_F(ComputedStyleTest, ResolvedCaretTextColorNonAuto) {
+  ComputedStyleBuilder builder = CreateComputedStyleBuilder();
+  const Color red = Color::FromRGB(255, 0, 0);
+  builder.SetCaretColor(
+      StyleCaretColor(StyleAutoColor(StyleColor(Color::kBlack)),
+                      StyleAutoColor(StyleColor(red))));
+  const ComputedStyle* style = builder.TakeStyle();
+
+  std::optional<Color> resolved = style->ResolvedCaretTextColor();
+  ASSERT_TRUE(resolved.has_value());
+  EXPECT_EQ(*resolved, red);
+}
+
+TEST_F(ComputedStyleTest, ResolvedCaretTextColorCurrentcolor) {
+  ComputedStyleBuilder builder = CreateComputedStyleBuilder();
+  // The element's `color` is green; the caret-color second value is
+  // currentcolor — ResolvedCaretTextColor() must resolve to green.
+  const Color green = Color::FromRGB(0, 128, 0);
+  builder.SetColor(StyleColor(green));
+  builder.SetCaretColor(
+      StyleCaretColor(StyleAutoColor(StyleColor(Color::kBlack)),
+                      StyleAutoColor(StyleColor::CurrentColor())));
+  const ComputedStyle* style = builder.TakeStyle();
+
+  std::optional<Color> resolved = style->ResolvedCaretTextColor();
+  ASSERT_TRUE(resolved.has_value());
+  EXPECT_EQ(*resolved, green);
 }
 
 }  // namespace blink
