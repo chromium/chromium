@@ -135,6 +135,8 @@ public class TabArchiverImpl implements TabArchiver {
 
         if (tabsToArchive.size() > 0) {
             archiveAndRemoveTabs(model, tabsToArchive);
+        } else {
+            broadcastPersistedTabDataCreated();
         }
 
         if (tabsToClose.size() > 0) {

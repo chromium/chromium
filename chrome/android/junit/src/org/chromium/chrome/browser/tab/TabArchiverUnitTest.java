@@ -11,10 +11,14 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
+
+import android.os.Looper;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -185,5 +189,23 @@ public class TabArchiverUnitTest {
 
         verify(mArchivedTabCreator, times(1))
                 .createFrozenTab(any(), not(eq(tab.getId())), anyInt());
+    }
+
+    @Test
+    public void testDoArchivePass_NoTabsArchived_TriggersPersistedTabDataCreated() {
+        // Setup tabs so that none are eligible for archive.
+        TabList regularTabs =
+                mTabModelSelector.getModel(/* incognito= */ false).getComprehensiveModel();
+        for (int i = 0; i < regularTabs.getCount(); i++) {
+            TabImpl tab = (TabImpl) regularTabs.getTabAt(i);
+            tab.setTimestampMillis(TimeUnit.HOURS.toMillis(2)); // Same as clock
+        }
+
+        TabArchiver.Observer observer = mock(TabArchiver.Observer.class);
+        mTabArchiver.addObserver(observer);
+
+        mTabArchiver.doArchivePass(mTabModelSelector);
+        shadowOf(Looper.getMainLooper()).idle();
+        verify(observer).onArchivePersistedTabDataCreated();
     }
 }
