@@ -35,6 +35,8 @@ namespace extensions {
 namespace {
 
 #if !BUILDFLAG(IS_ANDROID)
+// This variant is only available on non-Android platforms. On Android, window
+// creation / initialization is an async process.
 BrowserWindowInterface* CreateAndShowBrowser(Profile* profile,
                                              bool user_gesture) {
   if (Browser::GetCreationStatusForProfile(profile) !=
@@ -45,8 +47,6 @@ BrowserWindowInterface* CreateAndShowBrowser(Profile* profile,
   BrowserWindowCreateParams params(BrowserWindowInterface::TYPE_NORMAL,
                                    *profile, user_gesture);
 
-  // TODO(https://crbug.com/430344931): When this is ported to android
-  // platforms, this window isn't guaranteed to be fully initialized.
   BrowserWindowInterface* browser = CreateBrowserWindow(std::move(params));
   if (!browser) {
     return nullptr;
