@@ -51,7 +51,8 @@ class HomeButtonAccessibilityTest : public ToolbarAccessibilityTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(HomeButtonAccessibilityTest, LeftClickHome) {
+// TODO(crbug.com/506481721): Flaky time out
+IN_PROC_BROWSER_TEST_P(HomeButtonAccessibilityTest, DISABLED_LeftClickHome) {
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(
       ui::test::PollingElementStateObserver<bool>, kHomeButtonAXNodeExists);
 
