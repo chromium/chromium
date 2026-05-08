@@ -584,6 +584,7 @@ public class SettingsSearchCoordinator
                                     @Override
                                     public void onTransitionEnd(Transition transition) {
                                         searchBox.setOnClickListener(v -> onClickSearchBox(v));
+                                        updateSearchUiWidth();
                                     }
                                 });
         var parentView = (ViewGroup) mActivity.findViewById(R.id.settings_activity);
