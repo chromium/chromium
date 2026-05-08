@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800" height="240"
+     xmlns="http://www.w3.org/2000/svg"
+     xmlns:h="http://www.w3.org/1999/xhtml">
+  <title>SVG Text CSS Decoration: linearGradient fill on wavy underline</title>
+  <h:link rel="help" href="https://drafts.csswg.org/css-text-decor-3/#text-decoration-style-property"/>
+  <h:link rel="help" href="https://svgwg.org/svg2-draft/text.html#TextDecorationProperties"/>
+
+  <!--
+    A userSpaceOnUse gradient on a wavy underline must line up with the
+    underline horizontally. The text starts at x=20, so if the painter
+    translates the canvas instead of the path the gradient slides off
+    and the colors don't match the stops you'd expect under each part
+    of the underline.
+  -->
+  <defs>
+    <linearGradient id="g" gradientUnits="userSpaceOnUse"
+                    x1="20" y1="0" x2="780" y2="0">
+      <stop offset="0"   stop-color="red"/>
+      <stop offset="0.5" stop-color="green"/>
+      <stop offset="1"   stop-color="blue"/>
+    </linearGradient>
+  </defs>
+
+  <text x="20" y="170" font-size="120"
+        fill="url(#g)"
+        style="text-decoration: underline wavy;">
+    lorem ipsum
+  </text>
+</svg>

@@ -8,6 +8,7 @@
 #include "cc/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/geometry/path_builder.h"
 #include "third_party/blink/renderer/platform/geometry/stroke_data.h"
+#include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_shader.h"
@@ -19,6 +20,21 @@ namespace {
 
 float RoundDownThickness(float stroke_thickness) {
   return std::max(floorf(stroke_thickness), 1.0f);
+}
+
+// True when `flags` describes a flat solid-color fill (no shader, no
+// color/image filter, no draw looper, no path effect, default blend mode)
+// that the cached per-color tile-shader path can render faithfully. SVG
+// fill setup may attach a `DrawLooper` (text-shadow) or `ColorFilter`
+// (color-interpolation: linearRGB on a mask) on top of a non-shader paint;
+// guarding against those keeps such effects on the slower full-width
+// outline path where they're honored.
+bool IsSimpleSolidFillPaint(const cc::PaintFlags& flags) {
+  return flags.getStyle() == cc::PaintFlags::kFill_Style &&
+         !flags.HasShader() && !flags.getColorFilter() &&
+         !flags.getImageFilter() && !flags.getLooper() &&
+         !flags.getPathEffect() &&
+         flags.getBlendMode() == SkBlendMode::kSrcOver;
 }
 
 gfx::RectF SnapYAxis(const gfx::RectF& decoration_rect) {
@@ -109,17 +125,20 @@ void DrawLineAsRect(GraphicsContext& context,
 
 // Builds a path of cubic Bezier curves (one per wavelength) along the
 // horizontal axis, spanning `total_width` plus one wavelength of overhang
-// on each side. Midpoints sit at y=0.5.
-Path WavyCenterlinePath(const WaveDefinition& wave, float total_width) {
+// on each side. Midpoints sit at `start.y()` (default 0.5, which keeps
+// midpoints at half-pixels for better antialiasing -- see `MakeWave`).
+Path WavyCenterlinePath(const WaveDefinition& wave,
+                        float total_width,
+                        gfx::PointF start = {0.f, 0.5f}) {
   PathBuilder result;
-  float x = wave.phase;
-  result.MoveTo({x, 0.5f});
-  const float end_x = total_width + wave.wavelength;
+  float x = start.x() + wave.phase;
+  result.MoveTo({x, start.y()});
+  const float end_x = start.x() + total_width + wave.wavelength;
   while (x < end_x) {
     result.CubicTo(
-        {x + wave.wavelength * 0.5f, 0.5f + wave.control_point_distance},
-        {x + wave.wavelength * 0.5f, 0.5f - wave.control_point_distance},
-        {x + wave.wavelength, 0.5f});
+        {x + wave.wavelength * 0.5f, start.y() + wave.control_point_distance},
+        {x + wave.wavelength * 0.5f, start.y() - wave.control_point_distance},
+        {x + wave.wavelength, start.y()});
     x += wave.wavelength;
   }
   return result.Finalize();
@@ -219,13 +238,19 @@ class WavyGeometry {
   }
 
   // Paints the wavy ribbon as a single full-width path drawn with
-  // `paint_flags`, skipping the tile shader so any `PathEffect` (e.g.
-  // `stroke-dasharray`) lays out continuously across the whole decoration
-  // instead of restarting at each wavelength.
+  // `paint_flags`. For SVG callers, this skips the tile shader so any
+  // `PathEffect` (e.g. `stroke-dasharray`) lays out continuously across
+  // the whole decoration instead of restarting at each wavelength, and
+  // paint servers (gradients, patterns) on the SVG text apply to the
+  // decoration too.
   void PaintStroke(GraphicsContext& context,
                    const DecorationGeometry& geometry,
                    const cc::PaintFlags& paint_flags,
                    const AutoDarkMode& auto_dark_mode) const;
+  void PaintFill(GraphicsContext& context,
+                 const DecorationGeometry& geometry,
+                 const cc::PaintFlags& paint_flags,
+                 const AutoDarkMode& auto_dark_mode) const;
 
  private:
   // `PaintRect` expanded vertically by half of `stroke_width` so a stroke of
@@ -236,7 +261,15 @@ class WavyGeometry {
 
   // Origin to translate the wavy ribbon path to so that its centerline (y=0
   // in path-local space) lands on the ribbon centerline.
-  gfx::PointF StrokePathOrigin(const DecorationGeometry& geometry) const;
+  gfx::PointF PathOrigin(const DecorationGeometry& geometry) const;
+
+  // Shared body of `PaintStroke` / `PaintFill`: builds the full-width wavy
+  // outline, clips to `clip_rect`, and draws it with `paint_flags`.
+  void PaintRibbon(GraphicsContext& context,
+                   const DecorationGeometry& geometry,
+                   const gfx::RectF& clip_rect,
+                   const cc::PaintFlags& paint_flags,
+                   const AutoDarkMode& auto_dark_mode) const;
 
   Path path_;
   gfx::RectF bounds_;
@@ -262,8 +295,7 @@ gfx::RectF WavyGeometry::StrokeClipRect(const DecorationGeometry& geometry,
   return rect;
 }
 
-gfx::PointF WavyGeometry::StrokePathOrigin(
-    const DecorationGeometry& geometry) const {
+gfx::PointF WavyGeometry::PathOrigin(const DecorationGeometry& geometry) const {
   // Equivalent to `PaintRect(geometry).origin() - (0, bounds_.y())`: the path
   // is translated so its centerline (path-local y=0) lands on the ribbon
   // centerline, without exposing the `bounds_.y()` adjustment to the caller.
@@ -290,28 +322,51 @@ const cc::PaintRecord& WavyGeometry::TileRecord(const Color& color) const {
   return tile_record_;
 }
 
-void WavyGeometry::PaintStroke(GraphicsContext& context,
+void WavyGeometry::PaintRibbon(GraphicsContext& context,
                                const DecorationGeometry& geometry,
+                               const gfx::RectF& clip_rect,
                                const cc::PaintFlags& paint_flags,
                                const AutoDarkMode& auto_dark_mode) const {
-  const Path centerline =
-      WavyCenterlinePath(geometry.wavy_wave, geometry.line.width());
+  // Generate the centerline directly at its final user-space coordinates,
+  // so any user-space paint server (gradient, pattern) carried by
+  // `paint_flags` resolves against the original coordinate system instead
+  // of a translated one.
+  const gfx::PointF path_origin = PathOrigin(geometry);
+  const Path centerline = WavyCenterlinePath(
+      geometry.wavy_wave, geometry.line.width(),
+      {path_origin.x(), path_origin.y() + 0.5f});
 
   StrokeData ribbon;
   ribbon.SetThickness(thickness_);
   const SkPath outline = centerline.StrokePath(ribbon, AffineTransform());
 
-  // Clip horizontally to the underline width to hide the centerline's
-  // one-wavelength overhang on each side. The vertical clip extends past
-  // the ribbon by the SVG stroke's half-width so the stroked outline
-  // boundary isn't cut off at peaks/troughs.
-  const gfx::RectF clip_rect =
-      StrokeClipRect(geometry, paint_flags.getStrokeWidth());
-  const gfx::PointF path_origin = StrokePathOrigin(geometry);
+  // `clip_rect` clips horizontally to the underline width to hide the
+  // centerline's one-wavelength overhang on each side; vertical extent is
+  // up to the caller (see `StrokeClipRect` vs `PaintRect`).
   GraphicsContextStateSaver state_saver(context);
   context.Clip(clip_rect);
-  context.Translate(path_origin.x(), path_origin.y());
   context.DrawPath(outline, paint_flags, auto_dark_mode);
+}
+
+void WavyGeometry::PaintStroke(GraphicsContext& context,
+                               const DecorationGeometry& geometry,
+                               const cc::PaintFlags& paint_flags,
+                               const AutoDarkMode& auto_dark_mode) const {
+  // Extend the clip vertically by the SVG stroke's half-width so the
+  // stroked outline boundary isn't cut off at peaks/troughs.
+  PaintRibbon(context, geometry,
+              StrokeClipRect(geometry, paint_flags.getStrokeWidth()),
+              paint_flags, auto_dark_mode);
+}
+
+void WavyGeometry::PaintFill(GraphicsContext& context,
+                             const DecorationGeometry& geometry,
+                             const cc::PaintFlags& paint_flags,
+                             const AutoDarkMode& auto_dark_mode) const {
+  // Fill stays inside the ribbon outline, so clipping to `PaintRect` is
+  // sufficient (no vertical outset needed).
+  PaintRibbon(context, geometry, PaintRect(geometry), paint_flags,
+              auto_dark_mode);
 }
 
 const WavyGeometry& GetWavyGeometry(const DecorationGeometry& line_geometry) {
@@ -421,21 +476,39 @@ void DecorationLinePainter::Paint(const DecorationGeometry& geometry,
 
 void DecorationLinePainter::PaintWavyTextDecoration(
     const DecorationGeometry& geometry,
-    const Color& color,
+    const Color& decoration_color,
     const AutoDarkMode& auto_dark_mode,
     const cc::PaintFlags* paint_flags) {
   const WavyGeometry& wavy_geometry = GetWavyGeometry(geometry);
 
-  // SVG stroke pass: draw the full-width wavy outline with the caller's flags
-  // so any `PathEffect` (e.g. dasharray) lays out across the whole decoration
-  // instead of restarting per tile.
+  // SVG stroke pass: full-width path so PathEffects (e.g. `stroke-dasharray`)
+  // lay out continuously across the whole decoration instead of restarting
+  // at each wavelength.
   if (paint_flags && paint_flags->getStyle() == cc::PaintFlags::kStroke_Style) {
-    wavy_geometry.PaintStroke(context_, geometry, *paint_flags,
-                              auto_dark_mode);
+    wavy_geometry.PaintStroke(context_, geometry, *paint_flags, auto_dark_mode);
     return;
   }
 
-  // Fill pass / non-SVG callers: cached per-color tile shader.
+  // SVG fill pass with a paint server / shadow / color filter / blend mode:
+  // full-width outline so the paint server applies continuously and any
+  // effects attached to the paint flags (looper, color filter, ...) are
+  // honored. Solid-color fills fall through to the cached per-color tile
+  // path below.
+  if (paint_flags && !IsSimpleSolidFillPaint(*paint_flags)) {
+    wavy_geometry.PaintFill(context_, geometry, *paint_flags, auto_dark_mode);
+    return;
+  }
+
+  // Per the SVG text-decoration spec [1], the decoration paint is the text's
+  // fill -- not `text-decoration-color` -- so for solid SVG fills the cached
+  // tile path uses the paint's own color.
+  // [1] https://svgwg.org/svg2-draft/text.html#TextDecorationProperties
+  const Color color = paint_flags
+                          ? Color::FromSkColor4f(paint_flags->getColor4f())
+                          : decoration_color;
+
+  // Non-SVG (HTML) callers and solid-color SVG fills: cached per-color tile
+  // shader.
   const gfx::RectF paint_rect = wavy_geometry.PaintRect(geometry);
   const gfx::RectF tile_rect = wavy_geometry.TileRect();
 
