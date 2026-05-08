@@ -6,6 +6,7 @@
 
 #import "base/ios/block_types.h"
 #import "base/notreached.h"
+#import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/animated_scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/scoped_fullscreen_disabler.h"
@@ -24,6 +25,7 @@
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_ui_controller_delegate.h"
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_util.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/public/side_swipe_toolbar_interacting.h"
+#import "ios/chrome/browser/toolbar/ui/toolbar_constants.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/device_form_factor.h"
 
@@ -72,6 +74,9 @@ const CGFloat kIpadTabSwipeDistance = 100;
   std::unique_ptr<AnimatedScopedFullscreenDisabler>
       _legacyAnimatedFullscreenDisabler;
 
+  // The fullscreen browser agent.
+  raw_ptr<FullscreenBrowserAgent> _fullscreenBrowserAgent;
+
   // The webStateList owned by the current browser.
   raw_ptr<WebStateList> _webStateList;
 
@@ -81,11 +86,13 @@ const CGFloat kIpadTabSwipeDistance = 100;
 
 - (instancetype)
     initWithFullscreenController:(FullscreenController*)fullscreenController
+          fullscreenBrowserAgent:(FullscreenBrowserAgent*)fullscreenBrowserAgent
                     webStateList:(WebStateList*)webStateList
             snapshotBrowserAgent:(SnapshotBrowserAgent*)snapshotBrowserAgent {
   self = [super init];
   if (self) {
     _fullscreenController = fullscreenController;
+    _fullscreenBrowserAgent = fullscreenBrowserAgent;
     _snapshotBrowserAgent = snapshotBrowserAgent;
     _webStateList = webStateList;
   }
@@ -97,6 +104,7 @@ const CGFloat kIpadTabSwipeDistance = 100;
   [self removeHorizontalGestureRecognizers];
   _snapshotBrowserAgent = nullptr;
   _fullscreenController = nullptr;
+  _fullscreenBrowserAgent = nullptr;
   _webStateList = nullptr;
 }
 
@@ -592,15 +600,25 @@ const CGFloat kIpadTabSwipeDistance = 100;
 
     // Add horizontal stack view controller.
     CGFloat headerHeight =
-        self.fullscreenController->GetMaxViewportInsets().top;
+        IsFullscreenRefactoringEnabled()
+            ? _fullscreenBrowserAgent->max_insets().top
+            : self.fullscreenController->GetMaxViewportInsets().top;
+
+    CGFloat bottomMargin = 0;
+    if (IsChromeNextIaEnabled() && IsFullscreenRefactoringEnabled()) {
+      CGFloat totalBottomInset = _fullscreenBrowserAgent->max_insets().bottom;
+      bottomMargin = std::max(0.0, totalBottomInset - kToolbarHeight);
+    }
 
     if (_tabSideSwipeView) {
       [_tabSideSwipeView setFrame:frame];
       [_tabSideSwipeView setTopMargin:headerHeight];
+      [_tabSideSwipeView setBottomMargin:bottomMargin];
     } else {
       _tabSideSwipeView =
           [[CardSideSwipeView alloc] initWithFrame:frame
                                          topMargin:headerHeight
+                                      bottomMargin:bottomMargin
                                       webStateList:_webStateList
                               snapshotBrowserAgent:_snapshotBrowserAgent];
       _tabSideSwipeView.toolbarSnapshotProvider = self.toolbarSnapshotProvider;

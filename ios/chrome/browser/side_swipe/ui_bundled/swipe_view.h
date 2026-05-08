@@ -12,7 +12,12 @@
 // Space reserved at the top for the toolbar.
 @property(nonatomic, assign) CGFloat topMargin;
 
-- (instancetype)initWithFrame:(CGRect)frame topMargin:(CGFloat)topMargin;
+// Space reserved at the bottom for the App Bar.
+@property(nonatomic, assign) CGFloat bottomMargin;
+
+- (instancetype)initWithFrame:(CGRect)frame
+                    topMargin:(CGFloat)topMargin
+                 bottomMargin:(CGFloat)bottomMargin;
 
 - (void)setTopToolbarImage:(UIImage*)image;
 - (void)setImage:(UIImage*)image;

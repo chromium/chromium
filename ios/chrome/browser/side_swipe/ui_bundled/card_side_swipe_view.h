@@ -24,9 +24,13 @@ class WebStateList;
 // Space reserved at the top for the toolbar.
 @property(nonatomic, assign) CGFloat topMargin;
 
+// Space reserved at the bottom for the App Bar.
+@property(nonatomic, assign) CGFloat bottomMargin;
+
 // Inits with the view `frame`, top `margin` and `webStateList`.
 - (instancetype)initWithFrame:(CGRect)frame
                     topMargin:(CGFloat)margin
+                 bottomMargin:(CGFloat)bottomMargin
                  webStateList:(WebStateList*)webStateList
          snapshotBrowserAgent:(SnapshotBrowserAgent*)snapshotBrowserAgent;
 

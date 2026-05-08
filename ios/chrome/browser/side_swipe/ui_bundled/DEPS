@@ -1,6 +1,7 @@
 include_rules = [
   # keep-sorted start
   "+ios/chrome/browser/feature_engagement/model/tracker_factory.h",
+  "+ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h",
   "+ios/chrome/browser/fullscreen/ui_bundled",
   "+ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h",
   "+ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h",
@@ -12,6 +13,7 @@ include_rules = [
   "+ios/chrome/browser/snapshots/model/snapshot_tab_helper.h",
   "+ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_constants.h",
   "+ios/chrome/browser/toolbar/legacy/ui_bundled/public",
+  "+ios/chrome/browser/toolbar/ui/toolbar_constants.h",
   "+ios/chrome/browser/web/model/page_placeholder_tab_helper.h",
   "+ios/chrome/browser/web/model/web_navigation_util.h",
   # keep-sorted end

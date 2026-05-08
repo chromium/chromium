@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/side_swipe/ui_bundled/side_swipe_consumer.h"
 
 @protocol CardSwipeViewDelegate;
+class FullscreenBrowserAgent;
 class FullscreenController;
 @protocol FullscreenCommands;
 @class LayoutGuideCenter;
@@ -65,12 +66,14 @@ class WebStateList;
 // Handler for the fullscreen commands.
 @property(nonatomic, weak) id<FullscreenCommands> fullscreenHandler;
 
-/// Fullscreen controller used for collapsing the view above the keyboard.
+/// Fullscreen controller used for collapsing the view above the keyboard. Used
+/// for the legacy fullscreen implementation.
 @property(nonatomic, assign) FullscreenController* fullscreenController;
 
 // Initializer.
 - (instancetype)
     initWithFullscreenController:(FullscreenController*)fullscreenController
+          fullscreenBrowserAgent:(FullscreenBrowserAgent*)fullscreenBrowserAgent
                     webStateList:(WebStateList*)webStateList
             snapshotBrowserAgent:(SnapshotBrowserAgent*)snapshotBrowserAgent;
 

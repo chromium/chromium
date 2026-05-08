@@ -7,6 +7,7 @@
 #import "base/memory/raw_ptr.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
+#import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
@@ -53,6 +54,7 @@
 
   _sideSwipeUIController = [[SideSwipeUIController alloc]
       initWithFullscreenController:_fullscreenController
+            fullscreenBrowserAgent:FullscreenBrowserAgent::FromBrowser(browser)
                       webStateList:webStateList
               snapshotBrowserAgent:SnapshotBrowserAgent::FromBrowser(browser)];
 

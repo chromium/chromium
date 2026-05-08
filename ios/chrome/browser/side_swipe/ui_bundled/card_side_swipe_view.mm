@@ -76,6 +76,7 @@ const CGFloat kResizeFactor = 4;
 
 - (instancetype)initWithFrame:(CGRect)frame
                     topMargin:(CGFloat)topMargin
+                 bottomMargin:(CGFloat)bottomMargin
                  webStateList:(WebStateList*)webStateList
          snapshotBrowserAgent:(SnapshotBrowserAgent*)snapshotBrowserAgent {
   self = [super initWithFrame:frame];
@@ -84,6 +85,7 @@ const CGFloat kResizeFactor = 4;
     _snapshotBrowserAgent = snapshotBrowserAgent;
     _currentPoint = CGPointZero;
     _topMargin = topMargin;
+    _bottomMargin = bottomMargin;
 
     UIView* background = [[UIView alloc] initWithFrame:CGRectZero];
     [self addSubview:background];
@@ -103,11 +105,13 @@ const CGFloat kResizeFactor = 4;
     background.backgroundColor = [UIColor colorNamed:kGridBackgroundColor];
 
     _rightCard = [[SwipeView alloc] initWithFrame:CGRectZero
-                                        topMargin:topMargin];
+                                        topMargin:topMargin
+                                     bottomMargin:bottomMargin];
     _rightCard.layer.cornerRadius = kCardCornerRadius;
     _rightCard.layer.masksToBounds = YES;
     _leftCard = [[SwipeView alloc] initWithFrame:CGRectZero
-                                       topMargin:topMargin];
+                                       topMargin:topMargin
+                                    bottomMargin:bottomMargin];
     _leftCard.layer.cornerRadius = kCardCornerRadius;
     _leftCard.layer.masksToBounds = YES;
     [_rightCard setTranslatesAutoresizingMaskIntoConstraints:NO];
@@ -178,6 +182,12 @@ const CGFloat kResizeFactor = 4;
   _topMargin = topMargin;
   _leftCard.topMargin = topMargin;
   _rightCard.topMargin = topMargin;
+}
+
+- (void)setBottomMargin:(CGFloat)bottomMargin {
+  _bottomMargin = bottomMargin;
+  _leftCard.bottomMargin = bottomMargin;
+  _rightCard.bottomMargin = bottomMargin;
 }
 
 #pragma mark - UIView

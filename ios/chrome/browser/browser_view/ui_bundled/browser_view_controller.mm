@@ -2472,7 +2472,8 @@ bool IsFullscreenNextIAEnabled() {
 
   SwipeView* swipeView = [[SwipeView alloc]
       initWithFrame:self.contentArea.frame
-          topMargin:[self snapshotEdgeInsetsForWebState:webState].top];
+          topMargin:[self snapshotEdgeInsetsForWebState:webState].top
+       bottomMargin:[self snapshotEdgeInsetsForWebState:webState].bottom];
 
   [swipeView setTopToolbarImage:topToolbarImage];
   [swipeView setBottomToolbarImage:bottomToolbarImage];
