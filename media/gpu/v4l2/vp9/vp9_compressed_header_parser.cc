@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/v4l2/vp9/vp9_compressed_header_parser.h"
 
 #include <array>
@@ -51,27 +46,23 @@ Vp9CompressedHeaderParser::Vp9CompressedHeaderParser() = default;
 
 // 6.3 Compressed header syntax
 bool Vp9CompressedHeaderParser::ParseNoContext(
-    const uint8_t* stream,
-    off_t frame_size,
+    base::span<const uint8_t> stream,
     const Vp9FrameHeader& frame_hdr,
     Vp9V4L2CompressedParseResult* result) {
   DCHECK(result);
-  Vp9FrameHeader* mutable_frame_hdr = const_cast<Vp9FrameHeader*>(&frame_hdr);
-  memset(&mutable_frame_hdr->frame_context, 0,
-         sizeof(mutable_frame_hdr->frame_context));
-  if (!ParseInternal(stream, frame_size, mutable_frame_hdr)) {
+  *result = Vp9V4L2CompressedParseResult{};
+  if (!ParseInternal(stream, frame_hdr, &result->frame_context)) {
     return false;
   }
   result->compressed_header.tx_mode = tx_mode_;
   result->compressed_header.reference_mode = reference_mode_;
-  result->frame_context = mutable_frame_hdr->frame_context;
   return true;
 }
 
 // 6.3.1 Tx mode syntax
-void Vp9CompressedHeaderParser::ReadTxMode(Vp9FrameHeader* fhdr) {
+void Vp9CompressedHeaderParser::ReadTxMode(const Vp9FrameHeader& fhdr) {
   int tx_mode;
-  if (fhdr->quant_params.IsLossless()) {
+  if (fhdr.quant_params.IsLossless()) {
     tx_mode = Vp9CompressedHeader::ONLY_4X4;
   } else {
     tx_mode = reader_.ReadLiteral(2);
@@ -136,23 +127,26 @@ void Vp9CompressedHeaderParser::ReadTxModeProbs(
 }
 
 // 6.3.7 Coef probs syntax
-void Vp9CompressedHeaderParser::ReadCoefProbs(Vp9FrameHeader* fhdr) {
+void Vp9CompressedHeaderParser::ReadCoefProbs(Vp9FrameContext* frame_context) {
   const std::array<int, Vp9CompressedHeader::TX_MODES>
       tx_mode_to_biggest_tx_size = {
           0, 1, 2, 3, 3,
       };
   const int max_tx_size = tx_mode_to_biggest_tx_size[tx_mode_];
-  for (int tx_size = 0; tx_size <= max_tx_size; tx_size++) {
+  const size_t num_tx_sizes = base::checked_cast<size_t>(max_tx_size + 1);
+  auto coef_probs = base::span(frame_context->coef_probs).first(num_tx_sizes);
+  for (auto& tx_size_coef_probs : coef_probs) {
     if (reader_.ReadLiteral(1) == 0) {
       continue;
     }
 
-    for (auto& ai : fhdr->frame_context.coef_probs[tx_size]) {
+    for (auto& ai : tx_size_coef_probs) {
       for (auto& aj : ai) {
         for (auto& ak : aj) {
-          int max_l = (+ak == +aj[0]) ? 3 : 6;
-          for (int l = 0; l < max_l; l++) {
-            DiffUpdateProbArray(ak[l]);
+          const int max_l = (+ak == +aj[0]) ? 3 : 6;
+          auto probs = base::span(ak).first(base::checked_cast<size_t>(max_l));
+          for (auto& prob : probs) {
+            DiffUpdateProbArray(prob);
           }
         }
       }
@@ -188,10 +182,11 @@ void Vp9CompressedHeaderParser::ReadIsInterProbs(
 }
 
 // 6.3.12 Frame reference mode syntax
-void Vp9CompressedHeaderParser::ReadFrameReferenceMode(Vp9FrameHeader* fhdr) {
+void Vp9CompressedHeaderParser::ReadFrameReferenceMode(
+    const Vp9FrameHeader& fhdr) {
   bool compound_reference_allowed = false;
   for (int i = VP9_FRAME_LAST + 1; i < VP9_FRAME_MAX; i++) {
-    if (fhdr->ref_frame_sign_bias[i] != fhdr->ref_frame_sign_bias[1]) {
+    if (fhdr.ref_frame_sign_bias[i] != fhdr.ref_frame_sign_bias[1]) {
       compound_reference_allowed = true;
     }
   }
@@ -206,8 +201,7 @@ void Vp9CompressedHeaderParser::ReadFrameReferenceMode(Vp9FrameHeader* fhdr) {
 
 // 6.3.13 Frame reference mode probs syntax
 void Vp9CompressedHeaderParser::ReadFrameReferenceModeProbs(
-    Vp9FrameHeader* fhdr) {
-  Vp9FrameContext* frame_context = &fhdr->frame_context;
+    Vp9FrameContext* frame_context) {
   if (reference_mode_ == REFERENCE_MODE_SELECT) {
     DiffUpdateProbArray(frame_context->comp_mode_prob);
   }
@@ -243,24 +237,33 @@ void Vp9CompressedHeaderParser::ReadMvProbs(bool allow_high_precision_mv,
                                             Vp9FrameContext* frame_context) {
   UpdateMvProbArray(frame_context->mv_joint_probs);
 
-  for (int i = 0; i < 2; i++) {
-    UpdateMvProb(&frame_context->mv_sign_prob[i]);
-    UpdateMvProbArray(frame_context->mv_class_probs[i]);
-    UpdateMvProb(&frame_context->mv_class0_bit_prob[i]);
-    UpdateMvProbArray(frame_context->mv_bits_prob[i]);
+  auto mv_sign_prob = base::span(frame_context->mv_sign_prob);
+  auto mv_class_probs = base::span(frame_context->mv_class_probs);
+  auto mv_class0_bit_prob = base::span(frame_context->mv_class0_bit_prob);
+  auto mv_bits_prob = base::span(frame_context->mv_bits_prob);
+  auto mv_class0_fr_probs = base::span(frame_context->mv_class0_fr_probs);
+  auto mv_fr_probs = base::span(frame_context->mv_fr_probs);
+  auto mv_class0_hp_prob = base::span(frame_context->mv_class0_hp_prob);
+  auto mv_hp_prob = base::span(frame_context->mv_hp_prob);
+
+  for (size_t i = 0; i < mv_sign_prob.size(); ++i) {
+    UpdateMvProb(&mv_sign_prob.at(i));
+    UpdateMvProbArray(mv_class_probs.at(i));
+    UpdateMvProb(&mv_class0_bit_prob.at(i));
+    UpdateMvProbArray(mv_bits_prob.at(i));
   }
 
-  for (int i = 0; i < 2; i++) {
-    for (auto& a : frame_context->mv_class0_fr_probs[i]) {
+  for (size_t i = 0; i < mv_class0_fr_probs.size(); ++i) {
+    for (auto& a : mv_class0_fr_probs.at(i)) {
       UpdateMvProbArray(a);
     }
-    UpdateMvProbArray(frame_context->mv_fr_probs[i]);
+    UpdateMvProbArray(mv_fr_probs.at(i));
   }
 
   if (allow_high_precision_mv) {
-    for (int i = 0; i < 2; i++) {
-      UpdateMvProb(&frame_context->mv_class0_hp_prob[i]);
-      UpdateMvProb(&frame_context->mv_hp_prob[i]);
+    for (size_t i = 0; i < mv_class0_hp_prob.size(); ++i) {
+      UpdateMvProb(&mv_class0_hp_prob.at(i));
+      UpdateMvProb(&mv_hp_prob.at(i));
     }
   }
 }
@@ -281,33 +284,35 @@ void Vp9CompressedHeaderParser::UpdateMvProbArray(Vp9Prob (&prob_array)[N]) {
 }
 
 // 6.3 Compressed header syntax
-bool Vp9CompressedHeaderParser::ParseInternal(const uint8_t* stream,
-                                              off_t frame_size,
-                                              Vp9FrameHeader* fhdr) {
+bool Vp9CompressedHeaderParser::ParseInternal(base::span<const uint8_t> stream,
+                                              const Vp9FrameHeader& fhdr,
+                                              Vp9FrameContext* frame_context) {
+  DCHECK(frame_context);
+
   DVLOG(2) << "Vp9CompressedHeaderParser::Parse";
-  if (!reader_.Initialize(stream, frame_size)) {
+  if (!reader_.Initialize(stream)) {
     return false;
   }
 
   ReadTxMode(fhdr);
   if (tx_mode_ == Vp9CompressedHeader::TX_MODE_SELECT) {
-    ReadTxModeProbs(&fhdr->frame_context);
+    ReadTxModeProbs(frame_context);
   }
 
-  ReadCoefProbs(fhdr);
-  ReadSkipProb(&fhdr->frame_context);
+  ReadCoefProbs(frame_context);
+  ReadSkipProb(frame_context);
 
-  if (!fhdr->IsIntra()) {
-    ReadInterModeProbs(&fhdr->frame_context);
-    if (fhdr->interpolation_filter == SWITCHABLE) {
-      ReadInterpFilterProbs(&fhdr->frame_context);
+  if (!fhdr.IsIntra()) {
+    ReadInterModeProbs(frame_context);
+    if (fhdr.interpolation_filter == SWITCHABLE) {
+      ReadInterpFilterProbs(frame_context);
     }
-    ReadIsInterProbs(&fhdr->frame_context);
+    ReadIsInterProbs(frame_context);
     ReadFrameReferenceMode(fhdr);
-    ReadFrameReferenceModeProbs(fhdr);
-    ReadYModeProbs(&fhdr->frame_context);
-    ReadPartitionProbs(&fhdr->frame_context);
-    ReadMvProbs(fhdr->allow_high_precision_mv, &fhdr->frame_context);
+    ReadFrameReferenceModeProbs(frame_context);
+    ReadYModeProbs(frame_context);
+    ReadPartitionProbs(frame_context);
+    ReadMvProbs(fhdr.allow_high_precision_mv, frame_context);
   }
 
   if (!reader_.IsValid()) {

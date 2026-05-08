@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/gpu/v4l2/vp9/v4l2_vp9_compressed_header.h"
 
 #include "base/check.h"
@@ -39,10 +34,9 @@ std::optional<Vp9V4L2CompressedParseResult> ParseVp9CompressedHeaderForV4L2(
 
   Vp9V4L2CompressedParseResult result{};
   Vp9CompressedHeaderParser parser;
-  if (!parser.ParseNoContext(
-          frame_hdr.data.data() + frame_hdr.uncompressed_header_size,
-          base::checked_cast<off_t>(frame_hdr.header_size_in_bytes), frame_hdr,
-          &result)) {
+  auto compressed_header_data = frame_hdr.data.subspan(
+      frame_hdr.uncompressed_header_size, frame_hdr.header_size_in_bytes);
+  if (!parser.ParseNoContext(compressed_header_data, frame_hdr, &result)) {
     return std::nullopt;
   }
 

@@ -5,6 +5,7 @@
 #ifndef MEDIA_GPU_V4L2_VP9_VP9_COMPRESSED_HEADER_PARSER_H_
 #define MEDIA_GPU_V4L2_VP9_VP9_COMPRESSED_HEADER_PARSER_H_
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "media/gpu/media_gpu_export.h"
 #include "media/gpu/v4l2/vp9/vp9_bool_decoder.h"
@@ -26,29 +27,28 @@ class MEDIA_GPU_EXPORT Vp9CompressedHeaderParser {
   // deltaProb in |result->frame_context| instead of updating existing
   // probabilities (see 6.3.3 Diff update prob syntax). Returns true if no
   // error.
-  bool ParseNoContext(const uint8_t* stream,
-                      off_t frame_size,
+  bool ParseNoContext(base::span<const uint8_t> stream,
                       const Vp9FrameHeader& frame_hdr,
                       Vp9V4L2CompressedParseResult* result);
 
  private:
-  bool ParseInternal(const uint8_t* stream,
-                     off_t frame_size,
-                     Vp9FrameHeader* fhdr);
+  bool ParseInternal(base::span<const uint8_t> stream,
+                     const Vp9FrameHeader& fhdr,
+                     Vp9FrameContext* frame_context);
 
-  void ReadTxMode(Vp9FrameHeader* fhdr);
+  void ReadTxMode(const Vp9FrameHeader& fhdr);
   uint8_t DecodeTermSubexp();
   void DiffUpdateProb(Vp9Prob* prob);
   template <int N>
   void DiffUpdateProbArray(Vp9Prob (&prob_array)[N]);
   void ReadTxModeProbs(Vp9FrameContext* frame_context);
-  void ReadCoefProbs(Vp9FrameHeader* fhdr);
+  void ReadCoefProbs(Vp9FrameContext* frame_context);
   void ReadSkipProb(Vp9FrameContext* frame_context);
   void ReadInterModeProbs(Vp9FrameContext* frame_context);
   void ReadInterpFilterProbs(Vp9FrameContext* frame_context);
   void ReadIsInterProbs(Vp9FrameContext* frame_context);
-  void ReadFrameReferenceMode(Vp9FrameHeader* fhdr);
-  void ReadFrameReferenceModeProbs(Vp9FrameHeader* fhdr);
+  void ReadFrameReferenceMode(const Vp9FrameHeader& fhdr);
+  void ReadFrameReferenceModeProbs(Vp9FrameContext* frame_context);
   void ReadYModeProbs(Vp9FrameContext* frame_context);
   void ReadPartitionProbs(Vp9FrameContext* frame_context);
   void ReadMvProbs(bool allow_high_precision_mv,

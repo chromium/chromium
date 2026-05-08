@@ -10,6 +10,7 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "media/gpu/media_gpu_export.h"
 
 namespace media {
@@ -27,7 +28,7 @@ class MEDIA_GPU_EXPORT Vp9BoolDecoder {
 
   // |data| is the input buffer with |size| bytes.
   // Returns true if read first marker bit successfully.
-  bool Initialize(const uint8_t* data, size_t size);
+  bool Initialize(base::span<const uint8_t> data);
 
   // Returns true if none of the reads since the last Initialize() call has
   // gone beyond the end of available data.

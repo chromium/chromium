@@ -43,15 +43,14 @@ Vp9BoolDecoder::Vp9BoolDecoder() = default;
 Vp9BoolDecoder::~Vp9BoolDecoder() = default;
 
 // 9.2.1 Initialization process for Boolean decoder
-bool Vp9BoolDecoder::Initialize(const uint8_t* data, size_t size) {
-  DCHECK(data);
-  if (size < 1) {
+bool Vp9BoolDecoder::Initialize(base::span<const uint8_t> data) {
+  if (data.empty()) {
     DVLOG(1) << "input size of bool decoder shall be at least 1";
     valid_ = false;
     return false;
   }
 
-  reader_ = std::make_unique<BitReader>(data, size);
+  reader_ = std::make_unique<BitReader>(data.data(), data.size());
   valid_ = true;
 
   bool_value_ = 0;
