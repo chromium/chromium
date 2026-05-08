@@ -188,12 +188,6 @@ BASE_FEATURE(kVSyncAlignedPresentationForScrolling,
 BASE_FEATURE(kVSyncAlignedPresentation, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// Sends a CopyOutputRequest completion Ack early for view transitions so it can
-// proceed with navigation. ViewTransition Animate still waits though for
-// CopyOutputRequests to be actually fulfilled.
-BASE_FEATURE(kAckCopyOutputRequestEarlyForViewTransition,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // If enabled, other frame sinks are throttled when a frame sink is handling
 // user interaction.
 BASE_FEATURE(kThrottleFrameSinksOnInteraction,
@@ -561,10 +555,5 @@ bool ShouldUseAdpfForSoc(std::string_view soc_allowlist,
   return std::ranges::contains(allowlist, soc);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
-
-bool ShouldAckCOREarlyForViewTransition() {
-  return base::FeatureList::IsEnabled(
-      features::kAckCopyOutputRequestEarlyForViewTransition);
-}
 
 }  // namespace features

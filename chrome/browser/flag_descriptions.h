@@ -2394,13 +2394,6 @@ inline constexpr char kFileHandlingIconsDescription[] =
     "icons. See https://github.com/WICG/file-handling/blob/main/explainer.md "
     "for more information.";
 
-inline constexpr char kAckCopyOutputRequestEarlyForViewTransitionName[] =
-    "Ack CopyOutputRequest early for View Transition";
-inline constexpr char kAckCopyOutputRequestEarlyForViewTransitionDescription[] =
-    "If enabled, send acks for CopyOutputRequest completion immediately to "
-    "unblock navigation for ViewTransitions while CopyOutputRequests are in "
-    "progress. This is a fast-path for ViewTransitions.";
-
 inline constexpr char kFillOnAccountSelectName[] =
     "Fill passwords on account selection";
 inline constexpr char kFillOnAccountSelectDescription[] =

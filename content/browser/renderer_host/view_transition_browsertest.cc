@@ -534,8 +534,7 @@ class ViewTransitionProcessShutdownTest : public ViewTransitionBrowserTest {
     EnablePixelOutput(1.f);
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
-        {::features::kAckCopyOutputRequestEarlyForViewTransition,
-         blink::features::kDelayLayerTreeViewDeletionOnLocalSwap,
+        {blink::features::kDelayLayerTreeViewDeletionOnLocalSwap,
          ::features::kRenderDocument},
         /*disabled_features=*/{});
   }

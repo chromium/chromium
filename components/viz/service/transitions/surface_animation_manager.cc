@@ -389,16 +389,14 @@ void SurfaceAnimationManager::ReplaceSharedElementResources(
     resolved_frame.render_pass_list.push_back(std::move(pass_copy));
   }
 
-  if (features::ShouldAckCOREarlyForViewTransition()) {
-    // Add back the surface for old frame as reference surfaces to new
-    // `resolved_frame` metadata.
-    for (auto original_surface : original_surfaces) {
-      // For same document transitions, we can copy elements from same surface,
-      // but don't need to add itself to `referenced_surfaces`.
-      if (original_surface != surface->surface_id()) {
-        resolved_frame.metadata.referenced_surfaces.push_back(
-            SurfaceRange(original_surface));
-      }
+  // Add back the surface for old frame as reference surfaces to new
+  // `resolved_frame` metadata.
+  for (auto original_surface : original_surfaces) {
+    // For same document transitions, we can copy elements from same surface,
+    // but don't need to add itself to `referenced_surfaces`.
+    if (original_surface != surface->surface_id()) {
+      resolved_frame.metadata.referenced_surfaces.push_back(
+          SurfaceRange(original_surface));
     }
   }
 

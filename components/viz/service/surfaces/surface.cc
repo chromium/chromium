@@ -316,24 +316,22 @@ Surface::QueueFrameResult Surface::CommitFrame(FrameData frame) {
   pending_frame_data_.reset();
   view_transition_dependencies_.clear();
 
-  if (features::ShouldAckCOREarlyForViewTransition()) {
-    for (const auto& directive : frame.frame.metadata.transition_directives) {
-      const auto& token = directive.transition_token();
-      // If there is no SurfaceAnimationManager for the `token` and an Animate
-      // directive has been issued, then previous frame is held up and has not
-      // performed Save directive yet for it's view transition. So add this
-      // token as dependency for new document's surface which needs to be
-      // resolved for activation.
-      if (directive.type() ==
-              CompositorFrameTransitionDirective::Type::kAnimateRenderer &&
-          !surface_manager_->FrameSinkManagerHasViewTransitionToken(token) &&
-          directive.delay_layer_tree_view_deletion()) {
-        // Observe FrameSinkManager if we're not already observing.
-        if (!frame_sink_manager_observation_.IsObserving()) {
-          frame_sink_manager_observation_.Observe(surface_manager_);
-        }
-        view_transition_dependencies_.insert(token);
+  for (const auto& directive : frame.frame.metadata.transition_directives) {
+    const auto& token = directive.transition_token();
+    // If there is no SurfaceAnimationManager for the `token` and an Animate
+    // directive has been issued, then previous frame is held up and has not
+    // performed Save directive yet for it's view transition. So add this
+    // token as dependency for new document's surface which needs to be
+    // resolved for activation.
+    if (directive.type() ==
+            CompositorFrameTransitionDirective::Type::kAnimateRenderer &&
+        !surface_manager_->FrameSinkManagerHasViewTransitionToken(token) &&
+        directive.delay_layer_tree_view_deletion()) {
+      // Observe FrameSinkManager if we're not already observing.
+      if (!frame_sink_manager_observation_.IsObserving()) {
+        frame_sink_manager_observation_.Observe(surface_manager_);
       }
+      view_transition_dependencies_.insert(token);
     }
   }
 
@@ -873,11 +871,9 @@ void Surface::SetActiveFrameForViewTransition(CompositorFrame frame) {
 
   active_frame_data_->frame = std::move(frame);
 
-  if (features::ShouldAckCOREarlyForViewTransition()) {
-    // We need to recompute these as there can be undrawn surfaces as referenced
-    // surfaces for cross-doc view transitions on shared element replacement.
-    RecomputeActiveReferencedSurfaces();
-  }
+  // We need to recompute these as there can be undrawn surfaces as referenced
+  // surfaces for cross-doc view transitions on shared element replacement.
+  RecomputeActiveReferencedSurfaces();
 }
 
 const CompositorFrame& Surface::GetPendingFrame() {

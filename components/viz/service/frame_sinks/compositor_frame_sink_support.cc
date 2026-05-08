@@ -1622,8 +1622,7 @@ void CompositorFrameSinkSupport::ProcessCompositorFrameTransitionDirective(
         return;
       }
 
-      if (features::ShouldAckCOREarlyForViewTransition() &&
-          !directive.maybe_cross_frame_sink() &&
+      if (!directive.maybe_cross_frame_sink() &&
           directive.delay_layer_tree_view_deletion()) {
         // Register the token for same-doc transitions to ensure
         // CopyOutputRequest can complete.

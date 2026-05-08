@@ -2958,8 +2958,7 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
         metadata.transition_directives.push_back(request->ConstructDirective(
             view_transition_element_map, display_color_spaces,
             request->delay_layer_tree_view_deletion()));
-        if (features::ShouldAckCOREarlyForViewTransition() &&
-            request->delay_layer_tree_view_deletion()) {
+        if (request->delay_layer_tree_view_deletion()) {
           OnCompositorFrameTransitionDirectiveProcessed(request->sequence_id());
           if (request->type() ==
               ViewTransitionRequest::Type::kAnimateRenderer) {
@@ -2978,16 +2977,13 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
     if (active_tree_->HasViewTransitionRequests()) {
       active_tree_->set_needs_update_draw_properties();
     }
-    if (features::ShouldAckCOREarlyForViewTransition()) {
-      for (auto& request : active_tree_->view_transition_requests()) {
-        if (request->delay_layer_tree_view_deletion()) {
-          OnCompositorFrameTransitionDirectiveProcessed(request->sequence_id());
-          if (request->type() ==
-              ViewTransitionRequest::Type::kAnimateRenderer) {
-            has_view_transition_with_animate = true;
-          }
-          delay_layer_tree_view_deletion = true;
+    for (auto& request : active_tree_->view_transition_requests()) {
+      if (request->delay_layer_tree_view_deletion()) {
+        OnCompositorFrameTransitionDirectiveProcessed(request->sequence_id());
+        if (request->type() == ViewTransitionRequest::Type::kAnimateRenderer) {
+          has_view_transition_with_animate = true;
         }
+        delay_layer_tree_view_deletion = true;
       }
     }
   }
@@ -3002,8 +2998,7 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
   //
   // Use the cached values because `TakeViewTransitionRequests()` clears the
   // requests from the tree.
-  if (features::ShouldAckCOREarlyForViewTransition() &&
-      delay_layer_tree_view_deletion && has_view_transition_with_animate) {
+  if (delay_layer_tree_view_deletion && has_view_transition_with_animate) {
     frame_deadline = 240;
   }
   metadata.deadline =

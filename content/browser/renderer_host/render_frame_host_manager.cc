@@ -1482,8 +1482,7 @@ void RenderFrameHostManager::UnloadOldFrame(
   //
   // This is well under the required shutdown time of the renderer process
   // which has security implications if exceeded (https://crbug.com/1177674).
-  if (features::ShouldAckCOREarlyForViewTransition() &&
-      !old_render_frame_host->GetParentOrOuterDocument() &&
+  if (!old_render_frame_host->GetParentOrOuterDocument() &&
       view_transition_commit_info.HasViewTransitionResources() &&
       view_transition_commit_info.delay_layer_tree_view_deletion) {
     view_transition_commit_info.view_transition_resources

@@ -1050,8 +1050,7 @@ void LayerTreeHost::AddViewTransitionRequest(
   if (auto callback = request->TakeFinishedCallback()) {
     view_transition_callbacks_[request->sequence_id()] = std::move(callback);
   }
-  if (request->maybe_cross_frame_sink() &&
-      features::ShouldAckCOREarlyForViewTransition()) {
+  if (request->maybe_cross_frame_sink()) {
     auto request_token = request->token();
     auto request_type = request->type();
     if (request_type == viz::CompositorFrameTransitionDirective::Type::kSave &&

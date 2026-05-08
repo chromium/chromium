@@ -177,9 +177,7 @@ void SurfaceSavedFrame::RequestCopyOfOutput(
   }
 
   // DispatchCopyDoneCallback early if that feature is enabled.
-  if ((features::ShouldAckCOREarlyForViewTransition() &&
-       directive_.delay_layer_tree_view_deletion()) ||
-      copy_request_count_ == 0) {
+  if (directive_.delay_layer_tree_view_deletion() || copy_request_count_ == 0) {
     DispatchCopyDoneCallback();
   }
 
@@ -187,15 +185,13 @@ void SurfaceSavedFrame::RequestCopyOfOutput(
   // captured, as we will never receive a signal back from
   // NotifyCopyOfOutputComplete.
   //
-  // TODO(crbug.com/464502666): Refactor completion signals once
-  // ShouldAckCOREarlyForViewTransition becomes the default.
+  // TODO(crbug.com/464502666): Refactor completion signals.
   //
   // This will remove a benign race between DispatchCopyDoneCallback and
   // DispatchViewTransitionResourcesCaptured, which are sent on separate Mojo
   // pipes.
   //
-  // It will also resolve confusing behavior when
-  // kAckCopyOutputRequestEarlyForViewTransition is enabled, where
+  // It will also resolve confusing behavior, where
   // DispatchCopyDoneCallback is invoked at the start of the request rather than
   // at actual completion.
   if (copy_request_count_ == 0) {
@@ -302,9 +298,7 @@ void SurfaceSavedFrame::NotifyCopyOfOutputComplete(
   // Even if we early out, we update the count since we are no longer waiting
   // for this result.
   --copy_request_count_;
-  // Callback is run already when ShouldAckCOREarlyForViewTransition is enabled
-  if (!(features::ShouldAckCOREarlyForViewTransition() &&
-        directive_.delay_layer_tree_view_deletion()) &&
+  if (!directive_.delay_layer_tree_view_deletion() &&
       copy_request_count_ == 0) {
     DispatchCopyDoneCallback();
   }
