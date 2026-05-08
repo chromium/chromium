@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/platform/testing/find_cc_layer.h"
 #include "third_party/blink/renderer/platform/testing/picture_matchers.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -76,6 +77,11 @@ class CaretDisplayItemClientTest : public PaintAndRasterInvalidationTest {
 
   const PhysicalBoxFragment* CaretBoxFragment() {
     return GetCaretDisplayItemClient().box_fragment_.Get();
+  }
+
+  // The text node tracked as the block-caret anchor.
+  Node* BlockCaretAnchor() {
+    return GetCaretDisplayItemClient().block_caret_anchor_.Get();
   }
 
   bool ShouldPaintCursorCaret(const LayoutBlock& block) {
@@ -749,6 +755,132 @@ TEST_F(ComputeCaretRectTest, CaretRectAvoidNonEditable) {
   const PhysicalRect& rect2 =
       ComputeCaretRect(caret_position2, CaretShape::kBar);
   EXPECT_EQ(PhysicalRect(69, 0, 1, 10), rect2);
+}
+
+// caret-color with the second value and caret-shape: block on a focused
+// editable make block_caret_anchor_ to be set to the editable's text node.
+TEST_P(CaretDisplayItemClientTest, BlockCaretAnchorSetForTwoValueCaretColor) {
+  ScopedCSSCaretColorWithOptionalSecondValueForTest scoped(true);
+  GetFocusController().SetActive(true);
+  GetFocusController().SetFocused(true);
+  SetBodyInnerHTML(R"HTML(
+    <div id='target' contenteditable
+         style='font: 16px monospace; caret-color: black white;
+                caret-shape: block; caret-animation: manual'>abc</div>
+  )HTML");
+  auto* target = GetElementById("target");
+  target->Focus();
+  UpdateAllLifecyclePhasesForCaretTest();
+
+  EXPECT_EQ(BlockCaretAnchor(), target->firstChild());
+}
+
+// When runtime flag is OFF, block_caret_anchor_ stays null.
+TEST_P(CaretDisplayItemClientTest, BlockCaretAnchorNotSetWhenFlagDisabled) {
+  ScopedCSSCaretColorWithOptionalSecondValueForTest scoped(false);
+  GetFocusController().SetActive(true);
+  GetFocusController().SetFocused(true);
+  SetBodyInnerHTML(R"HTML(
+    <div id='target' contenteditable
+         style='font: 16px monospace; caret-color: black;
+                caret-shape: block; caret-animation: manual'>abc</div>
+  )HTML");
+  auto* target = GetElementById("target");
+  target->Focus();
+  UpdateAllLifecyclePhasesForCaretTest();
+
+  EXPECT_EQ(BlockCaretAnchor(), nullptr);
+}
+
+// When caret-shape is not block, block_caret_anchor_ stays null.
+TEST_P(CaretDisplayItemClientTest, BlockCaretAnchorNotSetForBarShape) {
+  ScopedCSSCaretColorWithOptionalSecondValueForTest scoped(true);
+  GetFocusController().SetActive(true);
+  GetFocusController().SetFocused(true);
+  SetBodyInnerHTML(R"HTML(
+    <div id='target' contenteditable
+         style='font: 16px monospace; caret-color: black white;
+                caret-shape: bar; caret-animation: manual'>abc</div>
+  )HTML");
+  GetElementById("target")->Focus();
+  UpdateAllLifecyclePhasesForCaretTest();
+
+  EXPECT_EQ(BlockCaretAnchor(), nullptr);
+}
+
+// When the second value of caret-color is auto, block_caret_anchor_ stays null.
+TEST_P(CaretDisplayItemClientTest, BlockCaretAnchorNotSetForAutoSecondValue) {
+  ScopedCSSCaretColorWithOptionalSecondValueForTest scoped(true);
+  GetFocusController().SetActive(true);
+  GetFocusController().SetFocused(true);
+  SetBodyInnerHTML(R"HTML(
+    <div id='target' contenteditable
+         style='font: 16px monospace; caret-color: black auto;
+                caret-shape: block; caret-animation: manual'>abc</div>
+  )HTML");
+  GetElementById("target")->Focus();
+  UpdateAllLifecyclePhasesForCaretTest();
+
+  EXPECT_EQ(BlockCaretAnchor(), nullptr);
+}
+
+// Switching from caret-shape:block to other caret shape (e.g. caret-shape:bar)
+// at runtime clears block_caret_anchor_ .
+TEST_P(CaretDisplayItemClientTest, BlockCaretAnchorClearsOnShapeChange) {
+  ScopedCSSCaretColorWithOptionalSecondValueForTest scoped(true);
+  GetFocusController().SetActive(true);
+  GetFocusController().SetFocused(true);
+  SetBodyInnerHTML(R"HTML(
+    <div id='target' contenteditable
+         style='font: 16px monospace; caret-color: black white;
+                caret-shape: block; caret-animation: manual'>abc</div>
+  )HTML");
+  auto* target = GetElementById("target");
+  target->Focus();
+  UpdateAllLifecyclePhasesForCaretTest();
+  ASSERT_EQ(BlockCaretAnchor(), target->firstChild());
+
+  target->setAttribute(
+      html_names::kStyleAttr,
+      AtomicString("font: 16px monospace; caret-color: black white; "
+                   "caret-shape: bar; caret-animation: manual"));
+  UpdateAllLifecyclePhasesForCaretTest();
+
+  EXPECT_EQ(BlockCaretAnchor(), nullptr);
+}
+
+// Anchor follows the caret's move.
+TEST_P(CaretDisplayItemClientTest, BlockCaretAnchorFollowsCaretAcrossNodes) {
+  ScopedCSSCaretColorWithOptionalSecondValueForTest scoped(true);
+  GetFocusController().SetActive(true);
+  GetFocusController().SetFocused(true);
+  SetBodyInnerHTML(R"HTML(
+    <div id='target' contenteditable
+         style='font: 16px monospace; caret-color: black white;
+                caret-shape: block; caret-animation: manual'
+       ><span id='a'>ab</span><span id='b'>cd</span></div>
+  )HTML");
+  auto* target = GetElementById("target");
+  target->Focus();
+  Element* span_a = GetElementById("a");
+  Element* span_b = GetElementById("b");
+  Text* text_a = To<Text>(span_a->firstChild());
+  Text* text_b = To<Text>(span_b->firstChild());
+
+  // Place the caret in span 'a' first.
+  Selection().SetSelection(
+      SelectionInDOMTree::Builder().Collapse(Position(text_a, 0)).Build(),
+      SetSelectionOptions());
+  UpdateAllLifecyclePhasesForCaretTest();
+  ASSERT_EQ(BlockCaretAnchor(), text_a);
+
+  // Move it into span 'b' at offset 1.
+  Selection().SetSelection(
+      SelectionInDOMTree::Builder().Collapse(Position(text_b, 1)).Build(),
+      SetSelectionOptions());
+  UpdateAllLifecyclePhasesForCaretTest();
+
+  EXPECT_EQ(BlockCaretAnchor(), text_b);
 }
 
 }  // namespace blink
