@@ -27,14 +27,15 @@ class ExpiringCacheTest : public ::testing::Test {
 
 // Ensure that a new item can be added.
 TEST_F(ExpiringCacheTest, PurgeExpiredAndAdd_AddNewItem) {
-  OneTimeToken item(OneTimeTokenType::kSmsOtp, "token1", base::Time::Now());
+  OneTimeToken item(OneTimeTokenType::kSmsOtp, "token1",
+                    base::TimeTicks::Now());
   EXPECT_TRUE(cache_.PurgeExpiredAndAdd(item));
   EXPECT_THAT(cache_.PurgeExpiredAndGetItems(), testing::ElementsAre(item));
 }
 
 // Ensure that an item is not added a second time.
 TEST_F(ExpiringCacheTest, PurgeExpiredAndAdd_AddExistingItem) {
-  base::Time now = base::Time::Now();
+  base::TimeTicks now = base::TimeTicks::Now();
   OneTimeToken item(OneTimeTokenType::kSmsOtp, "token1", now);
   EXPECT_TRUE(cache_.PurgeExpiredAndAdd(item));
   EXPECT_FALSE(cache_.PurgeExpiredAndAdd(item));
@@ -45,13 +46,13 @@ TEST_F(ExpiringCacheTest, PurgeExpiredAndAdd_AddExistingItem) {
 // timestamp exists in the cache already.
 TEST_F(ExpiringCacheTest,
        PurgeExpiredAndAdd_AddExistingItemWithDifferentTimestamp) {
-  base::Time first_time = base::Time::Now();
+  base::TimeTicks first_time = base::TimeTicks::Now();
   OneTimeToken item(OneTimeTokenType::kSmsOtp, "token1", first_time);
   EXPECT_TRUE(cache_.PurgeExpiredAndAdd(item));
 
   task_environment_.FastForwardBy(base::Seconds(1));
 
-  base::Time second_time = base::Time::Now();
+  base::TimeTicks second_time = base::TimeTicks::Now();
   OneTimeToken item2(OneTimeTokenType::kSmsOtp, "token1", second_time);
   EXPECT_FALSE(cache_.PurgeExpiredAndAdd(item2));
   const auto& items = cache_.PurgeExpiredAndGetItems();
@@ -63,12 +64,14 @@ TEST_F(ExpiringCacheTest,
 
 // Ensure that PurgeExpiredAndAdd expires outdated items.
 TEST_F(ExpiringCacheTest, PurgeExpiredAndAdd_AddItemAfterExpired) {
-  OneTimeToken item1(OneTimeTokenType::kSmsOtp, "token1", base::Time::Now());
+  OneTimeToken item1(OneTimeTokenType::kSmsOtp, "token1",
+                     base::TimeTicks::Now());
   EXPECT_TRUE(cache_.PurgeExpiredAndAdd(item1));
 
   task_environment_.FastForwardBy(kMaxAge + base::Seconds(1));
 
-  OneTimeToken item2(OneTimeTokenType::kSmsOtp, "token2", base::Time::Now());
+  OneTimeToken item2(OneTimeTokenType::kSmsOtp, "token2",
+                     base::TimeTicks::Now());
   EXPECT_TRUE(cache_.PurgeExpiredAndAdd(item2));
   EXPECT_THAT(cache_.PurgeExpiredAndGetItems(), testing::ElementsAre(item2));
 }
@@ -81,12 +84,14 @@ TEST_F(ExpiringCacheTest, PurgeExpiredAndGetItems_Empty) {
 
 // Ensure that PurgeExpiredAndGetItems can return multiple items.
 TEST_F(ExpiringCacheTest, PurgeExpiredAndGetItems_WithItems) {
-  OneTimeToken item1(OneTimeTokenType::kSmsOtp, "token1", base::Time::Now());
+  OneTimeToken item1(OneTimeTokenType::kSmsOtp, "token1",
+                     base::TimeTicks::Now());
   cache_.PurgeExpiredAndAdd(item1);
 
   task_environment_.FastForwardBy(base::Seconds(1));
 
-  OneTimeToken item2(OneTimeTokenType::kSmsOtp, "token2", base::Time::Now());
+  OneTimeToken item2(OneTimeTokenType::kSmsOtp, "token2",
+                     base::TimeTicks::Now());
   cache_.PurgeExpiredAndAdd(item2);
 
   EXPECT_THAT(cache_.PurgeExpiredAndGetItems(),
@@ -95,11 +100,13 @@ TEST_F(ExpiringCacheTest, PurgeExpiredAndGetItems_WithItems) {
 
 // Ensure that PurgeExpiredAndGetItems purges expired items.
 TEST_F(ExpiringCacheTest, PurgeExpiredAndGetItems_WithExpiredItems) {
-  OneTimeToken item1(OneTimeTokenType::kSmsOtp, "token1", base::Time::Now());
+  OneTimeToken item1(OneTimeTokenType::kSmsOtp, "token1",
+                     base::TimeTicks::Now());
   cache_.PurgeExpiredAndAdd(item1);
 
   task_environment_.FastForwardBy(base::Seconds(5));
-  OneTimeToken item2(OneTimeTokenType::kSmsOtp, "token2", base::Time::Now());
+  OneTimeToken item2(OneTimeTokenType::kSmsOtp, "token2",
+                     base::TimeTicks::Now());
   cache_.PurgeExpiredAndAdd(item2);
 
   task_environment_.FastForwardBy(base::Seconds(6));
@@ -109,7 +116,7 @@ TEST_F(ExpiringCacheTest, PurgeExpiredAndGetItems_WithExpiredItems) {
 
 // Ensure that items are sorted by time.
 TEST_F(ExpiringCacheTest, ItemsAreSortedByTime) {
-  base::Time now = base::Time::Now();
+  base::TimeTicks now = base::TimeTicks::Now();
   OneTimeToken item2(OneTimeTokenType::kSmsOtp, "token2", now);
   OneTimeToken item3(OneTimeTokenType::kSmsOtp, "token3",
                      now + base::Seconds(1));
@@ -126,11 +133,13 @@ TEST_F(ExpiringCacheTest, ItemsAreSortedByTime) {
 
 // Ensure that GetItems() does not purge expired items.
 TEST_F(ExpiringCacheTest, Items_DoesNotPurgeExpiredItems) {
-  OneTimeToken item1(OneTimeTokenType::kSmsOtp, "token1", base::Time::Now());
+  OneTimeToken item1(OneTimeTokenType::kSmsOtp, "token1",
+                     base::TimeTicks::Now());
   cache_.PurgeExpiredAndAdd(item1);
 
   task_environment_.FastForwardBy(base::Seconds(2));
-  OneTimeToken item2(OneTimeTokenType::kSmsOtp, "token2", base::Time::Now());
+  OneTimeToken item2(OneTimeTokenType::kSmsOtp, "token2",
+                     base::TimeTicks::Now());
   cache_.PurgeExpiredAndAdd(item2);
 
   // Fast forward so item1 is expired, but item2 is not expired
@@ -155,11 +164,13 @@ TEST_F(ExpiringCacheTest, Items_DoesNotPurgeExpiredItems) {
 // Ensure that TakeItems() returns only non-expired items and clears the
 // cache.
 TEST_F(ExpiringCacheTest, TakeItems) {
-  OneTimeToken item1(OneTimeTokenType::kSmsOtp, "token1", base::Time::Now());
+  OneTimeToken item1(OneTimeTokenType::kSmsOtp, "token1",
+                     base::TimeTicks::Now());
   cache_.PurgeExpiredAndAdd(item1);
 
   task_environment_.FastForwardBy(base::Seconds(2));
-  OneTimeToken item2(OneTimeTokenType::kSmsOtp, "token2", base::Time::Now());
+  OneTimeToken item2(OneTimeTokenType::kSmsOtp, "token2",
+                     base::TimeTicks::Now());
   cache_.PurgeExpiredAndAdd(item2);
 
   // Fast forward so item1 is expired, but item2 is not expired.

@@ -712,7 +712,7 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest, CrowdsourceOtpField) {
       ConstructFormStructureFromFormData(form);
 
   std::vector<OneTimeToken> recent_otps = {
-      OneTimeToken(OneTimeTokenType::kSmsOtp, kOtp, base::Time::Now())};
+      OneTimeToken(OneTimeTokenType::kSmsOtp, kOtp, base::TimeTicks::Now())};
   std::vector<PossibleTypes> possible_types_otp =
       DeterminePossibleFieldTypesForUpload(
           std::vector<AutofillProfile>(), std::vector<CreditCard>(),

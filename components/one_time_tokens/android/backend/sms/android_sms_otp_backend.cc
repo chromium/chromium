@@ -72,7 +72,7 @@ void AndroidSmsOtpBackend::OnOtpValueRetrieved(std::string value) {
   if (!pending_callbacks_.empty()) {
     std::move(pending_callbacks_.front())
         .Run(OneTimeToken(OneTimeTokenType::kSmsOtp, std::move(value),
-                          base::Time::Now()));
+                          base::TimeTicks::Now()));
     pending_callbacks_.pop();
   }
 }

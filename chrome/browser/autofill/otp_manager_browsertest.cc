@@ -317,7 +317,7 @@ IN_PROC_BROWSER_TEST_P(OtpManagerWithWebOtpApiBrowserTest,
   // Simulate an OTP arriving.
   autofill_client().sms_otp_backend().NotifyCallbacks(
       one_time_tokens::OneTimeToken(one_time_tokens::OneTimeTokenType::kSmsOtp,
-                                    "123456", base::Time::Now()));
+                                    "123456", base::TimeTicks::Now()));
 
   // Simulate click on field.
   std::vector<const FormStructure*> forms =
@@ -358,7 +358,7 @@ IN_PROC_BROWSER_TEST_F(OtpManagerBrowserTest, GmailOtpAutofillIntegrationTest) {
   // Simulate an OTP arriving.
   autofill_client().gmail_otp_backend().ProcessCallbacks(
       one_time_tokens::OneTimeToken(one_time_tokens::OneTimeTokenType::kGmail,
-                                    "654321", base::Time::Now()));
+                                    "654321", base::TimeTicks::Now()));
   // Simulate click on field.
   std::vector<const FormStructure*> forms =
       test_api(autofill_manager()).form_structures();

@@ -19,7 +19,7 @@ bool OneTimeToken::IsPotentialOtp(std::u16string_view value) {
 
 OneTimeToken::OneTimeToken(OneTimeTokenType type,
                            const std::string& value,
-                           base::Time on_device_arrival_time)
+                           base::TimeTicks on_device_arrival_time)
     : type_(type),
       value_(value),
       on_device_arrival_time_(on_device_arrival_time) {}

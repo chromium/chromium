@@ -180,7 +180,7 @@ EmailOneTimeTokenFetcher::ExtractOneTimeTokenValueFromResponse(
   }
   return base::ok(OneTimeToken(OneTimeTokenType::kGmail,
                                response.one_time_password().one_time_password(),
-                               base::Time::Now()));
+                               base::TimeTicks::Now()));
 }
 
 }  // namespace one_time_tokens

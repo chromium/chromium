@@ -106,7 +106,7 @@ class GmailOtpBackendImpl : public GmailOtpBackend,
   ExpiringCache<
       OneTimeTokenBackendNotification,
       decltype(&OneTimeTokenBackendNotification::
-                   notification_received_timestamp),
+                   notification_received_timeticks),
       OneTimeTokenBackendNotification::EncryptedMessageReferenceProjection>
       notification_cache_;
 

@@ -160,7 +160,7 @@ class AttemptOtpFillingToolBrowserTest : public ActorToolsTest {
       EXPECT_CALL(*mock_otp_service, GetCachedOneTimeTokens())
           .WillOnce(testing::Return(std::vector<one_time_tokens::OneTimeToken>{
               {one_time_tokens::OneTimeTokenType::kGmail, *otp,
-               base::Time::Now()}}));
+               base::TimeTicks::Now()}}));
     } else {
       EXPECT_CALL(*mock_otp_service, GetCachedOneTimeTokens())
           .WillOnce(

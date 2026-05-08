@@ -33,7 +33,7 @@ GmailOtpBackendImpl::GmailOtpBackendImpl(
       coordinator_(std::make_unique<EmailOneTimeTokenFetchCoordinator>(*this)),
       notification_cache_(
           kNotificationExpirationDuration,
-          &OneTimeTokenBackendNotification::notification_received_timestamp) {}
+          &OneTimeTokenBackendNotification::notification_received_timeticks) {}
 
 GmailOtpBackendImpl::~GmailOtpBackendImpl() = default;
 

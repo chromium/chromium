@@ -25,7 +25,7 @@ class OneTimeToken {
 
   OneTimeToken(OneTimeTokenType type,
                const std::string& value,
-               base::Time on_device_arrival_time);
+               base::TimeTicks on_device_arrival_time);
   OneTimeToken(const OneTimeToken&);
   OneTimeToken& operator=(const OneTimeToken&);
   OneTimeToken(OneTimeToken&&);
@@ -34,7 +34,7 @@ class OneTimeToken {
 
   [[nodiscard]] OneTimeTokenType type() const { return type_; }
   [[nodiscard]] const std::string& value() const { return value_; }
-  [[nodiscard]] base::Time on_device_arrival_time() const {
+  [[nodiscard]] base::TimeTicks on_device_arrival_time() const {
     return on_device_arrival_time_;
   }
 
@@ -46,7 +46,7 @@ class OneTimeToken {
  private:
   OneTimeTokenType type_;
   std::string value_;
-  base::Time on_device_arrival_time_;
+  base::TimeTicks on_device_arrival_time_;
 };
 
 }  // namespace one_time_tokens

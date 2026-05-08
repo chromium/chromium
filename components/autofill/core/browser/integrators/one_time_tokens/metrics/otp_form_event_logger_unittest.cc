@@ -153,7 +153,7 @@ class OtpFormEventLoggerIntegrationTest
     if (returns_otp) {
       return one_time_tokens::OneTimeToken(
           one_time_tokens::OneTimeTokenType::kSmsOtp, "123456",
-          base::Time::Now());
+          base::TimeTicks::Now());
     }
     return base::unexpected(one_time_tokens::OneTimeTokenRetrievalError());
   }

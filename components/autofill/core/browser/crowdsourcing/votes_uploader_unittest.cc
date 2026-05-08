@@ -206,8 +206,8 @@ TEST_F(AutofillVotesUploaderTest, CreditCardFormUpload) {
 TEST_F(AutofillVotesUploaderTest, OtpFormUpload) {
   constexpr char kOtp[] = "123456";
   EXPECT_CALL(GetMockOneTimeTokenService(), GetCachedOneTimeTokens())
-      .WillOnce(Return(std::vector<OneTimeToken>{
-          OneTimeToken(OneTimeTokenType::kSmsOtp, kOtp, base::Time::Now())}));
+      .WillOnce(Return(std::vector<OneTimeToken>{OneTimeToken(
+          OneTimeTokenType::kSmsOtp, kOtp, base::TimeTicks::Now())}));
 
   base::RunLoop run_loop;
   EXPECT_CALL(GetCrowdsourcingManager(), StartUploadRequest)
@@ -242,7 +242,7 @@ TEST_F(AutofillVotesUploaderTest, OtpFormUpload_RequestSucceedsBeforeTimeout) {
       .WillOnce(Return(std::vector<OneTimeToken>{}));
   EXPECT_CALL(GetMockOneTimeTokenService(), RequestOneTimeToken(_, _))
       .WillOnce(base::test::RunOnceCallback<1>(OneTimeToken(
-          OneTimeTokenType::kSmsOtp, "654321", base::Time::Now())));
+          OneTimeTokenType::kSmsOtp, "654321", base::TimeTicks::Now())));
 
   base::RunLoop run_loop;
   EXPECT_CALL(GetCrowdsourcingManager(), StartUploadRequest)

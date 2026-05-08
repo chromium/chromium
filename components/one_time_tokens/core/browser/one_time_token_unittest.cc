@@ -9,7 +9,7 @@
 namespace one_time_tokens {
 
 TEST(OneTimeToken, Constructor) {
-  base::Time now = base::Time::Now();
+  base::TimeTicks now = base::TimeTicks::Now();
   OneTimeToken token(OneTimeTokenType::kSmsOtp, "value", now);
   EXPECT_EQ(token.type(), OneTimeTokenType::kSmsOtp);
   EXPECT_EQ(token.value(), "value");

@@ -18,7 +18,7 @@ namespace one_time_tokens {
 template <typename T, typename GetTimestampFn = std::identity>
 concept HasCreationTimestampFn =
     requires(GetTimestampFn getter, const T& item) {
-      { std::invoke(getter, item) } -> std::convertible_to<base::Time>;
+      { std::invoke(getter, item) } -> std::convertible_to<base::TimeTicks>;
     };
 
 template <typename T, typename ProjectionFn = std::identity>
@@ -82,7 +82,7 @@ class ExpiringCache {
  private:
   // Removes expired items from the cache.
   void PurgeExpired() {
-    base::Time now = base::Time::Now();
+    base::TimeTicks now = base::TimeTicks::Now();
     items_.remove_if([&](const T& item) {
       return now - std::invoke(get_timestamp_fn_, item) > max_age_;
     });
