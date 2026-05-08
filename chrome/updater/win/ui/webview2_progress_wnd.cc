@@ -125,6 +125,15 @@ LRESULT WebView2ProgressWnd::OnCreate(UINT msg,
                                       WPARAM wparam,
                                       LPARAM lparam,
                                       BOOL& handled) {
+  // WebView2 requires COM to be initialized on the calling thread.
+  // Initialize COM as single-threaded apartment (STA).
+  if (!com_initializer_.Succeeded()) {
+    LOG(ERROR) << "Thread apartment failed to initialize as STA. "
+               << "WebView2 may fail to display.";
+    handled = TRUE;
+    return -1;
+  }
+
   RECT client_rect = {0};
   ::GetClientRect(m_hWnd, &client_rect);
 
@@ -147,12 +156,13 @@ void WebView2ProgressWnd::OnWebViewCreated(bool success) {
     LOG(ERROR) << "WebView2 creation callback reported failure.";
     return;
   }
+  is_webview_ready_ = true;
 
   browser_->SetWebMessageHandler(
       base::BindRepeating(&WebView2ProgressWnd::OnWebMessageReceived,
                           weak_ptr_factory_.GetWeakPtr()));
 
-  browser_->Navigate(base::StrCat({L"data:text/html,", std::wstring(LR"DDDD(
+  browser_->NavigateToString(std::wstring(LR"DDDD(
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -261,7 +271,7 @@ void WebView2ProgressWnd::OnWebViewCreated(bool success) {
     </script>
 </body>
 </html>
-)DDDD")}));
+)DDDD"));
 }
 
 void WebView2ProgressWnd::OnWebMessageReceived(const std::wstring& message) {

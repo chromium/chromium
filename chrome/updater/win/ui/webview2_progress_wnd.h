@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/win/atl.h"
+#include "base/win/scoped_com_initializer.h"
 #include "chrome/updater/win/ui/progress_wnd.h"
 #include "chrome/updater/win/ui/webview2ui.h"
 
@@ -100,6 +101,7 @@ class WebView2ProgressWnd : public CWindowImpl<WebView2ProgressWnd>,
   raw_ptr<ProgressWndEvents> events_ = nullptr;
 
   bool is_webview_ready_ = false;
+  base::win::ScopedCOMInitializer com_initializer_;
 
   base::WeakPtrFactory<WebView2ProgressWnd> weak_ptr_factory_{this};
 };

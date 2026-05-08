@@ -30,6 +30,10 @@ class WebView2UI {
   // Navigates to the specified URL.
   HRESULT Navigate(const std::wstring& url);
 
+  // Navigates to the specified HTML content string. This is more reliable
+  // than using data:text/html URLs for complex HTML content.
+  HRESULT NavigateToString(const std::wstring& html_content);
+
   // Resize the WebView. Typically called from the parent window `WM_SIZE`
   // handler.
   void Resize(const RECT& rect);

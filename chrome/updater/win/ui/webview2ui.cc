@@ -131,6 +131,13 @@ HRESULT WebView2UI::Navigate(const std::wstring& url) {
   return webview_->Navigate(url.c_str());
 }
 
+HRESULT WebView2UI::NavigateToString(const std::wstring& html_content) {
+  if (!webview_) {
+    return E_POINTER;
+  }
+  return webview_->NavigateToString(html_content.c_str());
+}
+
 void WebView2UI::Resize(const RECT& rect) {
   if (webview_controller_) {
     webview_controller_->put_Bounds(rect);
