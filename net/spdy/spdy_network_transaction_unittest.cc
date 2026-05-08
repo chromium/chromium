@@ -6877,6 +6877,108 @@ TEST_P(SpdyNetworkTransactionTest, ResponseAndRstStreamBeforePostDataSent) {
   EXPECT_EQ("hello!", out.response_data);
 }
 
+TEST_P(SpdyNetworkTransactionTest, RstStreamCancelAfterSuccessResponse) {
+  spdy::SpdySerializedFrame req(spdy_util_.ConstructChunkedSpdyPost(
+      base::span<const std::string_view>()));
+  MockWrite writes[] = {CreateMockWrite(req, 0)};
+
+  spdy::SpdySerializedFrame resp(
+      spdy_util_.ConstructSpdyPostReply(base::span<const std::string_view>()));
+  spdy::SpdySerializedFrame body(spdy_util_.ConstructSpdyDataFrame(1, true));
+  spdy::SpdySerializedFrame rst(
+      spdy_util_.ConstructSpdyRstStream(1, spdy::ERROR_CODE_CANCEL));
+  MockRead reads[] = {CreateMockRead(resp, 1), CreateMockRead(body, 2),
+                      CreateMockRead(rst, 3), MockRead(ASYNC, 0, 4)};
+
+  SequencedSocketData data(reads, writes);
+  UseChunkedPostRequest();
+  NormalSpdyTransactionHelper helper(request_, DEFAULT_PRIORITY, log_, nullptr);
+
+  helper.RunPreTestSetup();
+  helper.AddData(&data);
+  helper.StartDefaultTest();
+  helper.FinishDefaultTestWithoutVerification();
+  helper.VerifyDataConsumed();
+
+  EXPECT_THAT(helper.output().rv, IsError(ERR_HTTP2_PROTOCOL_ERROR));
+}
+
+// Regression test for https://crbug.com/40663561.
+// Server responds with a final non-2xx status (409 in this test) and closes
+// its side of the stream before the client finishes uploading, then sends
+// RST_STREAM with CANCEL. This should return the response, not
+// ERR_HTTP2_PROTOCOL_ERROR.
+TEST_P(SpdyNetworkTransactionTest, RstStreamCancelAfterResponse) {
+  spdy::SpdySerializedFrame req(spdy_util_.ConstructChunkedSpdyPost(
+      base::span<const std::string_view>()));
+  MockWrite writes[] = {CreateMockWrite(req, 0)};
+
+  spdy::SpdySerializedFrame resp(spdy_util_.ConstructSpdyReplyError(
+      "409", base::span<const std::string_view>(), 1));
+  spdy::SpdySerializedFrame body(spdy_util_.ConstructSpdyDataFrame(1, true));
+  spdy::SpdySerializedFrame rst(
+      spdy_util_.ConstructSpdyRstStream(1, spdy::ERROR_CODE_CANCEL));
+  MockRead reads[] = {CreateMockRead(resp, 1), CreateMockRead(body, 2),
+                      CreateMockRead(rst, 3), MockRead(ASYNC, 0, 4)};
+
+  SequencedSocketData data(reads, writes);
+  UseChunkedPostRequest();
+  NormalSpdyTransactionHelper helper(request_, DEFAULT_PRIORITY, log_, nullptr);
+
+  helper.RunPreTestSetup();
+  helper.AddData(&data);
+  helper.StartDefaultTest();
+  helper.FinishDefaultTestWithoutVerification();
+  helper.VerifyDataConsumed();
+
+  EXPECT_THAT(helper.output().rv, IsOk());
+  const HttpResponseInfo* response = helper.trans()->GetResponseInfo();
+  ASSERT_TRUE(response);
+  ASSERT_TRUE(response->headers);
+  EXPECT_EQ("HTTP/1.1 409", response->headers->GetStatusLine());
+
+  std::string response_data;
+  ASSERT_THAT(ReadTransaction(helper.trans(), &response_data), IsOk());
+  EXPECT_EQ("hello!", response_data);
+}
+
+// Regression test for https://crbug.com/40663561.
+// Same as above but with ERROR_CODE_STREAM_CLOSED, which haproxy sends for
+// subsequent in-flight DATA frames after the initial CANCEL.
+TEST_P(SpdyNetworkTransactionTest, RstStreamClosedAfterResponse) {
+  spdy::SpdySerializedFrame req(spdy_util_.ConstructChunkedSpdyPost(
+      base::span<const std::string_view>()));
+  MockWrite writes[] = {CreateMockWrite(req, 0)};
+
+  spdy::SpdySerializedFrame resp(spdy_util_.ConstructSpdyReplyError(
+      "409", base::span<const std::string_view>(), 1));
+  spdy::SpdySerializedFrame body(spdy_util_.ConstructSpdyDataFrame(1, true));
+  spdy::SpdySerializedFrame rst(
+      spdy_util_.ConstructSpdyRstStream(1, spdy::ERROR_CODE_STREAM_CLOSED));
+  MockRead reads[] = {CreateMockRead(resp, 1), CreateMockRead(body, 2),
+                      CreateMockRead(rst, 3), MockRead(ASYNC, 0, 4)};
+
+  SequencedSocketData data(reads, writes);
+  UseChunkedPostRequest();
+  NormalSpdyTransactionHelper helper(request_, DEFAULT_PRIORITY, log_, nullptr);
+
+  helper.RunPreTestSetup();
+  helper.AddData(&data);
+  helper.StartDefaultTest();
+  helper.FinishDefaultTestWithoutVerification();
+  helper.VerifyDataConsumed();
+
+  EXPECT_THAT(helper.output().rv, IsOk());
+  const HttpResponseInfo* response = helper.trans()->GetResponseInfo();
+  ASSERT_TRUE(response);
+  ASSERT_TRUE(response->headers);
+  EXPECT_EQ("HTTP/1.1 409", response->headers->GetStatusLine());
+
+  std::string response_data;
+  ASSERT_THAT(ReadTransaction(helper.trans(), &response_data), IsOk());
+  EXPECT_EQ("hello!", response_data);
+}
+
 // Unsupported frames must be ignored.  This is especially important for frame
 // type 0xb, which used to be the BLOCKED frame in previous versions of SPDY,
 // but is going to be used for the ORIGIN frame.

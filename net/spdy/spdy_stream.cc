@@ -688,6 +688,10 @@ bool SpdyStream::IsLocallyClosed() const {
   return io_state_ == STATE_HALF_CLOSED_LOCAL || io_state_ == STATE_CLOSED;
 }
 
+bool SpdyStream::IsRemoteClosed() const {
+  return io_state_ == STATE_HALF_CLOSED_REMOTE;
+}
+
 bool SpdyStream::IsIdle() const {
   return io_state_ == STATE_IDLE;
 }

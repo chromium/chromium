@@ -364,6 +364,10 @@ class NET_EXPORT_PRIVATE SpdyStream {
   // The remote endpoint may still be active.
   bool IsLocallyClosed() const;
 
+  // Returns whether the remote endpoint has closed its side of the stream
+  // (i.e. a complete response has been received, including END_STREAM).
+  bool IsRemoteClosed() const;
+
   // Returns whether this stream is IDLE: request and response headers
   // have neither been sent nor receieved.
   bool IsIdle() const;
