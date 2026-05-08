@@ -86,10 +86,12 @@ import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tab.TabViewManager;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabModelDotInfo;
+import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.AdjustedTopUiThemeColorProvider;
+import org.chromium.chrome.browser.theme.BottomUiThemeColorProvider;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator.VisibilityDelegate;
 import org.chromium.chrome.browser.toolbar.top.ToolbarActionModeCallback;
@@ -200,6 +202,8 @@ public class ToolbarManagerUnitTest {
     @Mock private OmniboxChipManager mOmniboxChipManager;
     @Mock private BottomBarHostManager mBottomBarHostManager;
     @Mock private ModalDialogManager mModalDialogManager;
+    @Mock private BottomUiThemeColorProvider mBottomUiThemeColorProvider;
+    @Mock private IncognitoStateProvider mIncognitoStateProvider;
     @Mock private DisplayAndroid mDisplayAndroid;
     @Mock private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
     @Mock private InsetObserver mInsetObserver;
@@ -368,6 +372,8 @@ public class ToolbarManagerUnitTest {
                         mUrlFocusChangedCallback,
                         mTopUiThemeColorProvider,
                         mAdjustedTopUiThemeColorProvider,
+                        mBottomUiThemeColorProvider,
+                        mIncognitoStateProvider,
                         mTabObscuringHandler,
                         shareDelegateSupplier,
                         /* buttonDataProviders= */ new ArrayList<>(),

@@ -281,10 +281,11 @@ public class ToolbarManager
                 TabObscuringHandler.Observer {
     private final IncognitoStateProvider mIncognitoStateProvider;
     private final TopUiThemeColorProvider mTopUiThemeColorProvider;
-    private @Nullable final AdjustedTopUiThemeColorProvider mAdjustedTopUiThemeColorProvider;
+    private final @Nullable AdjustedTopUiThemeColorProvider mAdjustedTopUiThemeColorProvider;
     private final MonotonicObservableSupplier<EphemeralTabCoordinator>
             mEphemeralTabCoordinatorSupplier;
     private AppThemeColorProvider mAppThemeColorProvider;
+    private final BottomUiThemeColorProvider mBottomUiThemeColorProvider;
     private final @Nullable ActionRegistry mActionRegistry;
     private final SettableThemeColorProvider mCustomTabThemeColorProvider;
     private final TopToolbarCoordinator mToolbar;
@@ -816,6 +817,8 @@ public class ToolbarManager
             Callback<Boolean> urlFocusChangedCallback,
             TopUiThemeColorProvider topUiThemeColorProvider,
             @Nullable AdjustedTopUiThemeColorProvider adjustedTopUiThemeColorProvider,
+            BottomUiThemeColorProvider bottomUiThemeColorProvider,
+            IncognitoStateProvider incognitoStateProvider,
             TabObscuringHandler tabObscuringHandler,
             MonotonicObservableSupplier<ShareDelegate> shareDelegateSupplier,
             List<ButtonDataProvider> buttonDataProviders,
@@ -959,7 +962,8 @@ public class ToolbarManager
                 };
         mActivity.registerComponentCallbacks(mComponentCallbacks);
 
-        mIncognitoStateProvider = new IncognitoStateProvider();
+        mIncognitoStateProvider = incognitoStateProvider;
+        mBottomUiThemeColorProvider = bottomUiThemeColorProvider;
         mTopUiThemeColorProvider = topUiThemeColorProvider;
         mTopUiThemeColorProvider.addThemeColorObserver(this);
         mAdjustedTopUiThemeColorProvider = adjustedTopUiThemeColorProvider;
@@ -2375,13 +2379,7 @@ public class ToolbarManager
         assert mLayoutManager != null;
         assert mTabModelSelector != null;
         assert mDataSharingTabManager != null;
-        ThemeColorProvider bottomUiThemeColorProvider =
-                new BottomUiThemeColorProvider(
-                        mTopUiThemeColorProvider,
-                        mBrowserControlsSizer,
-                        mBottomControlsStacker,
-                        mIncognitoStateProvider,
-                        mActivity);
+        assert mBottomUiThemeColorProvider != null : "BottomUiThemeColorProvider should be set";
         mTabGroupUiOneshotSupplier =
                 new TabGroupUiOneshotSupplier(
                         mActivityTabProvider,
@@ -2397,7 +2395,7 @@ public class ToolbarManager
                         mTabCreatorManager,
                         mLayoutStateProviderSupplier,
                         mModalDialogManagerSupplier.get(),
-                        bottomUiThemeColorProvider,
+                        mBottomUiThemeColorProvider,
                         mUndoBarThrottle,
                         mTabBookmarkerSupplier,
                         mShareDelegateSupplier);
@@ -2686,7 +2684,6 @@ public class ToolbarManager
                 .addSyncObserverAndPostIfNonNull(mCurrentTabModelObserver);
         refreshSelectedTab(mActivityTabProvider.get());
         maybeShowUrlBarCursorIfHardwareKeyboardAvailable();
-        mIncognitoStateProvider.setTabModelSelector(tabModelSelector);
         mAppThemeColorProvider.setIncognitoStateProvider(mIncognitoStateProvider);
 
         BottomControlsCoordinator tabGroupUiBottomControlsCoordinator =
@@ -2857,9 +2854,6 @@ public class ToolbarManager
         mTabStripTopControlLayer.destroy();
         mToolbar.destroy();
         mToolbarLongPressMenuHandler.destroy();
-
-        mIncognitoStateProvider.destroy();
-
         mLocationBarModel.destroy();
         mHandler.removeCallbacksAndMessages(null); // Cancel delayed tasks.
         mBrowserControlsSizer.removeObserver(mBrowserControlsObserver);

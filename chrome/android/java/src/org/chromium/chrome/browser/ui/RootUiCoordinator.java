@@ -167,6 +167,7 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
+import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -176,6 +177,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabstrip.StripVisibilityState;
 import org.chromium.chrome.browser.tabwindow.TabWindowInfo;
 import org.chromium.chrome.browser.theme.AdjustedTopUiThemeColorProvider;
+import org.chromium.chrome.browser.theme.BottomUiThemeColorProvider;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
@@ -341,6 +343,9 @@ public class RootUiCoordinator
 
     /** A subclass of TopUiThemeColorProvider to provide adjusted tint color. */
     private @Nullable AdjustedTopUiThemeColorProvider mAdjustedTopUiThemeColorProvider;
+
+    private BottomUiThemeColorProvider mBottomUiThemeColorProvider;
+    private IncognitoStateProvider mIncognitoStateProvider;
 
     private final @Nullable Callback<Boolean> mOnOmniboxFocusChangedListener;
     protected @Nullable ToolbarManager mToolbarManager;
@@ -790,6 +795,14 @@ public class RootUiCoordinator
         mTopControlsStacker =
                 new TopControlsStacker(
                         mBrowserControlsManager, getAppBrowserControlsVisibilityDelegate());
+        mIncognitoStateProvider = new IncognitoStateProvider();
+        mBottomUiThemeColorProvider =
+                new BottomUiThemeColorProvider(
+                        mTopUiThemeColorProvider,
+                        mBrowserControlsManager,
+                        mBottomControlsStacker,
+                        mIncognitoStateProvider,
+                        mActivity);
 
         if (BrowserControlsUtils.doSyncMinHeightWithTotalHeightV2(mActivity)) {
             mTopControlsLockCoordinator =
@@ -924,6 +937,16 @@ public class RootUiCoordinator
         if (mAdjustedTopUiThemeColorProvider != null) {
             mAdjustedTopUiThemeColorProvider.destroy();
             mAdjustedTopUiThemeColorProvider = null;
+        }
+
+        if (mBottomUiThemeColorProvider != null) {
+            mBottomUiThemeColorProvider.destroy();
+            mBottomUiThemeColorProvider = null;
+        }
+
+        if (mIncognitoStateProvider != null) {
+            mIncognitoStateProvider.destroy();
+            mIncognitoStateProvider = null;
         }
 
         if (mFindToolbarManager != null) mFindToolbarManager.removeObserver(mFindToolbarObserver);
@@ -1176,6 +1199,7 @@ public class RootUiCoordinator
     @CallSuper
     public void onFinishNativeInitialization() {
         TabModelSelector tabModelSelector = mTabModelSelectorSupplier.asNonNull().get();
+        mIncognitoStateProvider.setTabModelSelector(tabModelSelector);
         Profile profile = mProfileSupplier.get();
         if (profile != null) {
             initProfileDependentFeatures(profile);
@@ -1965,6 +1989,8 @@ public class RootUiCoordinator
                             urlFocusChangedCallback,
                             mTopUiThemeColorProvider,
                             mAdjustedTopUiThemeColorProvider,
+                            mBottomUiThemeColorProvider,
+                            mIncognitoStateProvider,
                             mTabObscuringHandlerSupplier.get(),
                             mShareDelegateSupplier,
                             mAdaptiveToolbarUiCoordinator.getButtonDataProviders(),
