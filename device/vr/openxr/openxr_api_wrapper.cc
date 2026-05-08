@@ -12,7 +12,6 @@
 #include <type_traits>
 
 #include "base/check.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
@@ -1779,19 +1778,6 @@ std::optional<gfx::Transform> OpenXrApiWrapper::GetBaseSpaceFromSpace(
   gfx::Transform base_space_from_space =
       gfx::Transform::Compose(base_space_from_space_decomp);
 
-  // TODO(crbug.com/41495208): Check for crash dumps.
-  std::array<float, 16> transform_data;
-  base_space_from_space.GetColMajorF(transform_data);
-  bool contains_nan = std::ranges::any_of(
-      transform_data, [](const float f) { return std::isnan(f); });
-
-  if (contains_nan) {
-    // It's unclear if this could be tripping on every frame, but reporting once
-    // per day per user (the default throttling) should be sufficient for future
-    // investigation.
-    base::debug::DumpWithoutCrashing();
-    return std::nullopt;
-  }
   return base_space_from_space;
 }
 
