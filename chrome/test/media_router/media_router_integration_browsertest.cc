@@ -20,7 +20,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/media/router/mojo/media_router_desktop.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/media_router/media_cast_mode.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"

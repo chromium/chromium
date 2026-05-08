@@ -82,7 +82,6 @@ specific_include_rules = {
   ],
 
   ".*_(browser|unit)test\\.cc": [
-    "+chrome/browser/ui/browser_finder.h",
     "+chrome/browser/ui/browser_window.h",
     "+chrome/test/base",
     "+chrome/test/views",

@@ -12,7 +12,6 @@
 #include "base/test/run_until.h"
 #include "chrome/browser/ssl/https_upgrades_interceptor.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/login/login_handler.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/views/chrome_test_widget.h"

@@ -32,7 +32,6 @@
 #include "chrome/browser/resource_coordinator/utils.h"
 #include "chrome/browser/tab_contents/form_interaction_tab_helper.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "components/device_event_log/device_event_log.h"

@@ -17,7 +17,6 @@
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"

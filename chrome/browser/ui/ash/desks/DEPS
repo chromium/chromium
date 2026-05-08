@@ -24,7 +24,6 @@ include_rules = [
   "+chrome/browser/ui/ash/multi_user",
   "+chrome/browser/ui/ash/shelf",
   "+chrome/browser/ui/ash/system_web_apps",
-  "+chrome/browser/ui/browser_finder.h",
   "+chrome/browser/ui/browser.h",
   "+chrome/browser/ui/browser_tabstrip.h",
   "+chrome/browser/ui/browser_window.h",

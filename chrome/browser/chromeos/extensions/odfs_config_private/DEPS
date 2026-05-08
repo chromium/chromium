@@ -30,7 +30,6 @@ specific_include_rules = {
   "odfs_config_private_api_browsertest\.cc": [
     "+chrome/browser/ui/browser.h",
     "+chrome/browser/ui/browser_commands.h",
-    "+chrome/browser/ui/browser_finder.h",
     "+chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h",
     "+chrome/browser/ui/browser_window/public/global_browser_collection.h",
     "+chrome/browser/ui/web_applications/app_browser_controller.h",

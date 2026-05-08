@@ -31,7 +31,6 @@
 #include "base/unguessable_token.h"
 #include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"

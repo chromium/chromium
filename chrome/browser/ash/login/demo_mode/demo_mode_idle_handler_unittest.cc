@@ -26,7 +26,6 @@
 #include "chrome/browser/ash/login/demo_mode/demo_mode_window_closer.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_ash_test_base.h"

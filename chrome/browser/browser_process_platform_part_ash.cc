@@ -47,7 +47,6 @@
 #include "chrome/browser/sessions/session_service_utils.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"

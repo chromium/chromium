@@ -15,7 +15,6 @@
 #include "chrome/browser/hid/hid_connection_tracker.h"
 #include "chrome/browser/hid/hid_connection_tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/hid/hid_chooser.h"
 #include "chrome/browser/ui/hid/hid_chooser_controller.h"

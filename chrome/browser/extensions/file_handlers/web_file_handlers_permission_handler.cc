@@ -18,7 +18,6 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/grit/generated_resources.h"

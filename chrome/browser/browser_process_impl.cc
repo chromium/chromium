@@ -209,7 +209,6 @@ void OnLocalStatePrefsLoaded();
 #include "chrome/browser/intranet_redirect_detector.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/usb/usb_system_tray_icon.h"
 #include "chrome/browser/web_applications/isolated_web_apps/runtime_init.h"
 #include "chrome/browser/webapps/webapps_client_desktop.h"

@@ -9,7 +9,6 @@ include_rules = [
   "+chrome/browser/sharing/click_to_call/click_to_call_utils.h",
   "+chrome/browser/shell_integration.h",
   "+chrome/browser/ui/browser.h",
-  "+chrome/browser/ui/browser_finder.h",
   "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
   "+chrome/browser/ui/browser_window/public/global_browser_collection.h",
   "+chrome/browser/ui/tabs/tab_strip_model.h",

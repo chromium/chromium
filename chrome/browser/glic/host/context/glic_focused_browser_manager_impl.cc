@@ -7,7 +7,6 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/glic/common/future_browser_features.h"
 #include "chrome/browser/glic/host/context/glic_sharing_utils.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"

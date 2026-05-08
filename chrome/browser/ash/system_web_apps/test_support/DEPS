@@ -19,7 +19,6 @@ include_rules = [
   "+chrome/browser/global_features.h",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/system_web_apps",
-  "+chrome/browser/ui/browser_finder.h",
   "+chrome/browser/ui/browser.h",
   "+chrome/browser/ui/browser_window.h",
   "+chrome/browser/ui/browser_window/public/global_browser_collection.h",

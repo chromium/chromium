@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_side_panel_controller.h"
 
 namespace side_panel::history_clusters {

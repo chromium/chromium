@@ -28,7 +28,6 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "components/commerce/core/proto/cart_db_content.pb.h"  // nogncheck
 #include "components/commerce/core/proto/discounts_db_content.pb.h"  // nogncheck
 #endif

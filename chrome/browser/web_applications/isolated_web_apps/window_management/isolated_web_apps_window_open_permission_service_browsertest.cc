@@ -16,7 +16,6 @@
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/notifications/stub_notification_display_service.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"

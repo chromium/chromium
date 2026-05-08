@@ -21,7 +21,6 @@
 #include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/browser/ui/android/hats/survey_client_android.h"
 #include "chrome/browser/ui/android/hats/survey_ui_delegate_android.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/messages/android/message_wrapper.h"
 #include "components/resources/android/theme_resources.h"

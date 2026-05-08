@@ -44,7 +44,7 @@
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/download/download_display.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/page_action/page_action_properties_provider.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"

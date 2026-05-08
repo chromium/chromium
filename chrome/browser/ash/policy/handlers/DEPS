@@ -63,7 +63,6 @@ specific_include_rules = {
     "+chrome/browser/browser_process.h",
     "+chrome/browser/browser_process_platform_part.h",
     "+chrome/browser/ui/browser.h",
-    "+chrome/browser/ui/browser_finder.h",
     "+chrome/browser/ui/browser_window/public",
     "+chrome/browser/ui/tabs",
     "+chrome/test/base",

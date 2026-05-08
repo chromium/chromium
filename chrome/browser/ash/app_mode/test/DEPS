@@ -12,7 +12,6 @@ include_rules = [
   "+chrome/browser/ash/accessibility/accessibility_test_utils.h",
   "+chrome/browser/ash/accessibility/chromevox_test_utils.h",
   "+chrome/browser/device_identity",
-  "+chrome/browser/ui/browser_finder.h",
   "+chrome/browser/ui/browser_window/public",
   "+chrome/browser/ui/exclusive_access/exclusive_access_context.h",
   "+chrome/browser/ui/navigator/browser_navigator.h",

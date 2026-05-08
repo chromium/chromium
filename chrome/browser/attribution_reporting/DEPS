@@ -3,6 +3,5 @@ include_rules = [
   "+chrome/browser/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_mixin.h",
   "+chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h",
   "+chrome/browser/ui/browser.h",
-  "+chrome/browser/ui/browser_finder.h",
   "+chrome/browser/ui/browser_window/public/global_browser_collection.h",
 ]

@@ -15,7 +15,6 @@
 #include "chrome/browser/resource_coordinator/tab_load_tracker_test_support.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "chrome/browser/ui/search/ntp_test_utils.h"

@@ -14,7 +14,6 @@
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_page_handler.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_util.h"

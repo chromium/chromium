@@ -15,7 +15,6 @@
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"

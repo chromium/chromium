@@ -9,7 +9,6 @@
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/user_education/custom_webui_help_bubble_controller.h"
 #include "chrome/browser/ui/views/user_education/impl/browser_user_education_context.h"

@@ -38,7 +38,6 @@ specific_include_rules = {
     "+chrome/browser/prefs",
     "+chrome/browser/ui/ash/shelf",
     "+chrome/browser/ui/browser.h",
-    "+chrome/browser/ui/browser_finder.h",
     "+chrome/browser/web_applications/test",
     "+chrome/browser/web_applications/web_app_command_scheduler.h",
     "+chrome/browser/web_applications/web_app_constants.h",

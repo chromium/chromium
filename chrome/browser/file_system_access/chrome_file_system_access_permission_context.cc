@@ -44,7 +44,6 @@
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/file_system_access/file_system_access_dialogs.h"
 #include "chrome/browser/ui/file_system_access/file_system_access_restricted_directory_dialog.h"
 #include "chrome/common/chrome_paths.h"
@@ -70,6 +69,7 @@
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/display/types/display_constants.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 

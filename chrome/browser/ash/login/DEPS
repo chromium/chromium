@@ -108,7 +108,6 @@ specific_include_rules = {
     "+chrome/browser/extensions/test_extension_system.h",
     "+chrome/browser/lifetime/termination_notification.h",
     "+chrome/browser/ui/browser_dialogs.h",
-    "+chrome/browser/ui/browser_finder.h",
     "+chrome/browser/ui/browser.h",
     "+chrome/browser/ui/browser_tabstrip.h",
     "+chrome/browser/ui/browser_window.h",

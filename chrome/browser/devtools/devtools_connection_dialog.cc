@@ -8,7 +8,6 @@
 #include "base/functional/callback_helpers.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"

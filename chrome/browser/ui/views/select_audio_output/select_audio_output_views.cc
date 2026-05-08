@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/select_audio_output/select_audio_output_views.h"
 
 #include "base/functional/callback.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/views/media_picker_utils.h"

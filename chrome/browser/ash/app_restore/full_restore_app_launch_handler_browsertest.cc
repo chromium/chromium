@@ -57,7 +57,6 @@
 #include "chrome/browser/ui/ash/desks/desks_client.h"
 #include "chrome/browser/ui/ash/device_scheduled_reboot/reboot_notification_controller.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"

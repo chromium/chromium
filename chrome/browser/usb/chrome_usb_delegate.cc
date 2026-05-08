@@ -12,7 +12,6 @@
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/usb/usb_blocklist.h"
 #include "chrome/browser/usb/usb_chooser_context.h"

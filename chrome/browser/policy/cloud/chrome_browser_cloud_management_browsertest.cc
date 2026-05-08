@@ -71,7 +71,6 @@
 #include "chrome/browser/policy/cloud/extension_install_policy_service.h"
 #include "chrome/browser/policy/cloud/extension_install_policy_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "components/policy/core/common/features.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/pref_names.h"

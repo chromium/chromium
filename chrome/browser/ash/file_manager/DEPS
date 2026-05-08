@@ -89,7 +89,6 @@ specific_include_rules = {
     "+chrome/browser/extensions/extension_apitest.h",
     "+chrome/browser/extensions/mixin_based_extension_apitest.h",
     "+chrome/browser/extensions/test_extension_system.h",
-    "+chrome/browser/ui/browser_finder.h",
     "+chrome/browser/ui/browser.h",
     "+chrome/browser/ui/browser_window.h",
     "+chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h",

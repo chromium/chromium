@@ -13,7 +13,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_controller.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"

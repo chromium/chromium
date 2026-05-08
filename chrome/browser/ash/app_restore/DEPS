@@ -59,7 +59,6 @@ specific_include_rules = {
   ".*test\\.cc": [
     "+chrome/browser/browser_process.h",
     "+chrome/browser/ui/browser.h",
-    "+chrome/browser/ui/browser_finder.h",
     "+chrome/browser/ui/browser_tabstrip.h",
     "+chrome/browser/ui/browser_window.h",
     "+chrome/browser/ui/browser_window/public",

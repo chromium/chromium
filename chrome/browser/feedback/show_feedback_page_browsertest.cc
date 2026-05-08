@@ -16,7 +16,6 @@
 #include "chrome/browser/feedback/feedback_dialog_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/webui/feedback/feedback_dialog.h"
 #include "chrome/common/pref_names.h"

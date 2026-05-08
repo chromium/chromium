@@ -72,7 +72,6 @@
 #else
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/ui/browser.h"                             // nogncheck
-#include "chrome/browser/ui/browser_finder.h"                      // nogncheck
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"  // nogncheck
 #include "chrome/browser/ui/recently_audible_helper.h"             // nogncheck
 #include "chrome/browser/ui/tabs/tab_enums.h"                      // nogncheck

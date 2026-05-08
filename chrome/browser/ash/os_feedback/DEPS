@@ -23,7 +23,6 @@ include_rules = [
 
 specific_include_rules = {
   "chrome_os_feedback_delegate_browsertest\\.cc": [
-    "+chrome/browser/ui/browser_finder.h",
     "+chrome/browser/ui/browser.h",
     "+chrome/browser/ui/browser_window.h",
     "+chrome/browser/ui/browser_window/public/global_browser_collection.h",

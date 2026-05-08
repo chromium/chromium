@@ -42,7 +42,6 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/web_signin_interceptor.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/signin/dice_web_signin_interceptor_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"

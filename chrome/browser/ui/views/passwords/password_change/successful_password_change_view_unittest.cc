@@ -9,7 +9,6 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/passwords/bubble_controllers/password_change/successful_password_change_bubble_controller.h"
 #include "chrome/browser/ui/views/passwords/manage_passwords_view_ids.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_test_base.h"

@@ -121,7 +121,6 @@
 #endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 

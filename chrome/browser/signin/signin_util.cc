@@ -50,7 +50,6 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/interaction/element_identifier.h"

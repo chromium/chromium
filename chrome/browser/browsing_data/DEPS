@@ -143,7 +143,6 @@ include_rules = [
   "+chrome/browser/ui/android/tab_model/tab_model_test_helper.h",
   "+chrome/browser/ui/browser.h",
   "+chrome/browser/ui/browser_commands.h",
-  "+chrome/browser/ui/browser_finder.h",
   "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
   "+chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h",
   "+chrome/browser/ui/browser_window/public/global_browser_collection.h",

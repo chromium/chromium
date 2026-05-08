@@ -32,7 +32,6 @@ specific_include_rules = {
   ".*test\.cc": [
     "+chrome/browser/ash/profiles/profile_helper.h",
     "+chrome/browser/ui/browser.h",
-    "+chrome/browser/ui/browser_finder.h",
     "+chrome/browser/ui/browser_window/public/global_browser_collection.h",
   ],
 

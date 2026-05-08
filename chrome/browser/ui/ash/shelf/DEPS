@@ -72,7 +72,6 @@ specific_include_rules = {
     "+chrome/browser/extensions/extension_browsertest.h",
     "+chrome/browser/extensions/test_extension_system.h",
     "+chrome/browser/ui/browser_commands.h",
-    "+chrome/browser/ui/browser_finder.h",
     "+chrome/browser/ui/browser_tabstrip.h",
     "+chrome/browser/ui/browser_window.h",
     "+chrome/browser/ui/settings_window_manager_chromeos.h",

@@ -9,7 +9,6 @@
 #include "base/logging.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/extensions/api/url_handlers/url_handlers_parser.h"
 #include "components/navigation_interception/intercept_navigation_throttle.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"

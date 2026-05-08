@@ -18,7 +18,6 @@
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/sessions/session_common_utils.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sessions/content/session_tab_helper_delegate.h"

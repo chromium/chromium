@@ -16,7 +16,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/devtools/global_confirm_info_bar.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/grit/generated_resources.h"
