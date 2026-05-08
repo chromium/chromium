@@ -1508,7 +1508,7 @@
       // Two-value caret-color: <color> [<color>]?
       // https://github.com/w3c/csswg-drafts/issues/13723
       name: "CSSCaretColorWithOptionalSecondValue",
-      status: "test",
+      status: "experimental",
     },
     {
       // https://chromestatus.com/feature/6106160780017664
