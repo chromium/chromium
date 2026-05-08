@@ -1636,6 +1636,16 @@ enum ActuationTarget {
   kNewTab = 3,
 };
 
+struct UniversalCartPayload {
+  // This metadata is received from the same Google endpoint we receive the
+  // actual invocation prompt from. Opaque to the browser.
+  array<uint8> serialized_metadata;
+};
+
+union InvocationPayload {
+  UniversalCartPayload universal_cart;
+};
+
 // @generate glic_api
 // Options for the Invoke method.
 struct InvokeOptions {
@@ -1667,6 +1677,9 @@ struct InvokeOptions {
 
   // Configuration to override the default ZSS behavior for the invocation.
   ZssConfig? zss_config;
+
+  // Source-specific payload for the invocation.
+  InvocationPayload? payload;
 };
 
 // @generate glic_api

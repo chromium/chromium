@@ -183,7 +183,7 @@ TEST_F(GlicCueTargetTest, OnClick_AutoSubmitEnabled) {
         EXPECT_EQ(1u, options.prompts.size());
         EXPECT_EQ("test prompt", options.prompts[0]);
         EXPECT_EQ(glic::mojom::InvocationSource::kAutoOpenedByContextualCue,
-                  options.invocation_source);
+                  options.GetInvocationSource());
         EXPECT_TRUE(std::holds_alternative<glic::NewConversation>(
             options.target.conversation));
         // Two tabs plus the active tab.
@@ -221,7 +221,7 @@ TEST_F(GlicCueTargetTest, OnClick_AutoSubmitDisabled) {
         EXPECT_EQ(1u, options.prompts.size());
         EXPECT_EQ("test prompt", options.prompts[0]);
         EXPECT_EQ(glic::mojom::InvocationSource::kAutoOpenedByContextualCue,
-                  options.invocation_source);
+                  options.GetInvocationSource());
         EXPECT_TRUE(std::holds_alternative<glic::NewConversation>(
             options.target.conversation));
         // Two tabs plus the active tab.
@@ -256,7 +256,7 @@ TEST_F(GlicCueTargetTest, OnEditPrompt) {
             EXPECT_EQ(1u, options.prompts.size());
             EXPECT_EQ("test prompt", options.prompts[0]);
             EXPECT_EQ(glic::mojom::InvocationSource::kAutoOpenedByContextualCue,
-                      options.invocation_source);
+                      options.GetInvocationSource());
             EXPECT_TRUE(std::holds_alternative<glic::NewConversation>(
                 options.target.conversation));
             // Two tabs plus the active tab.

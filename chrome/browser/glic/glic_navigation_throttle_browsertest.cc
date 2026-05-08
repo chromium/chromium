@@ -38,6 +38,7 @@ using ::testing::_;
 using ::testing::AllOf;
 using ::testing::Eq;
 using ::testing::Field;
+using ::testing::Property;
 using ::testing::VariantWith;
 
 namespace glic {
@@ -177,10 +178,11 @@ IN_PROC_BROWSER_TEST_F(GlicNavigationThrottleBrowserTest,
 
   EXPECT_CALL(
       *mock_service,
-      Invoke(AllOf(Field(&GlicInvokeOptions::invocation_source,
+      Invoke(
+          AllOf(Property(&GlicInvokeOptions::GetInvocationSource,
                          Eq(glic::mojom::InvocationSource::kNavigationCapture)),
-                   Field(&GlicInvokeOptions::target,
-                         Field(&Target::conversation, conversation_matcher)))))
+                Field(&GlicInvokeOptions::target,
+                      Field(&Target::conversation, conversation_matcher)))))
       .Times(1);
 
   NavigateToURL(browser(), continue_url);
@@ -431,10 +433,11 @@ IN_PROC_BROWSER_TEST_F(GlicNavigationThrottleBrowserTestWithPref,
 
   EXPECT_CALL(
       *mock_service,
-      Invoke(AllOf(Field(&GlicInvokeOptions::invocation_source,
+      Invoke(
+          AllOf(Property(&GlicInvokeOptions::GetInvocationSource,
                          Eq(glic::mojom::InvocationSource::kNavigationCapture)),
-                   Field(&GlicInvokeOptions::target,
-                         Field(&Target::conversation, conversation_matcher)))))
+                Field(&GlicInvokeOptions::target,
+                      Field(&Target::conversation, conversation_matcher)))))
       .Times(1);
 
   content::TestNavigationObserver observer(

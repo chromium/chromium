@@ -89,6 +89,16 @@ export declare interface AdditionalContextPart {
   pendingRegion?: PendingCapturedRegion;
 }
 
+/** Payload for Universal Cart invocation. */
+export declare interface UniversalCartPayload {
+  serializedMetadata: ArrayBuffer;
+}
+
+/** Union representing source-specific payloads. */
+export declare interface InvocationPayload {
+  universalCart?: UniversalCartPayload;
+}
+
 /** Configuration to override the default ZSS behavior for the invocation. */
 export declare interface ZssConfig {
   /** Additional content to inject into the body of the ZSS message. */
@@ -115,6 +125,8 @@ export declare interface InvokeOptions {
   skillId?: string;
   /** Configuration to override the default ZSS behavior for the invocation. */
   zssConfig?: ZssConfig;
+  /** Source-specific payload for the invocation. */
+  payload?: InvocationPayload;
 }
 
 /** An update sent from the web client to the host. */

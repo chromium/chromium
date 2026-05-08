@@ -4,6 +4,9 @@
 
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 
+#include "base/notreached.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
+
 namespace glic {
 
 ConversationId::ConversationId(std::string conversation_id)
@@ -78,12 +81,32 @@ TabSharingOptions::~TabSharingOptions() = default;
 
 GlicInvokeOptions::GlicInvokeOptions(
     glic::mojom::InvocationSource invocation_source)
-    : invocation_source(invocation_source) {}
+    : source_or_payload(invocation_source) {}
 
 GlicInvokeOptions::GlicInvokeOptions(
     Target target,
     glic::mojom::InvocationSource invocation_source)
-    : invocation_source(invocation_source), target(std::move(target)) {}
+    : source_or_payload(invocation_source), target(std::move(target)) {}
+
+GlicInvokeOptions::GlicInvokeOptions(glic::mojom::InvocationPayloadPtr payload)
+    : source_or_payload(std::move(payload)) {}
+
+GlicInvokeOptions::GlicInvokeOptions(Target target,
+                                     glic::mojom::InvocationPayloadPtr payload)
+    : source_or_payload(std::move(payload)), target(std::move(target)) {}
+
+glic::mojom::InvocationSource GlicInvokeOptions::GetInvocationSource() const {
+  return std::visit(
+      absl::Overload{
+          [](glic::mojom::InvocationSource source) { return source; },
+          [](const glic::mojom::InvocationPayloadPtr& payload) {
+            if (payload->is_universal_cart()) {
+              return glic::mojom::InvocationSource::kUniversalCart;
+            }
+            NOTREACHED();
+          }},
+      source_or_payload);
+}
 
 GlicInvokeOptions::~GlicInvokeOptions() = default;
 

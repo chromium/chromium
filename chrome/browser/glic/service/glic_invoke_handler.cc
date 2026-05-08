@@ -189,7 +189,7 @@ void GlicInvokeHandler::Invoke() {
   }
 
   auto show_options = ShowOptions::ForSidePanel(
-      *tab_, GlicPinTrigger::kInstanceCreation, options_.invocation_source);
+      *tab_, GlicPinTrigger::kInstanceCreation, options_.GetInvocationSource());
 
   if (options_.fre_override != mojom::FreOverride::kUnspecified) {
     show_options.fre_override = options_.fre_override;
@@ -202,7 +202,7 @@ void GlicInvokeHandler::Invoke() {
     tasks.push_back(std::make_unique<SetupHiddenPanelTask>(&*instance_, tab_));
   }
   tasks.push_back(std::make_unique<MaybeInitializeHiddenClientTask>(
-      &*instance_, options_.invocation_source, options_.fre_override));
+      &*instance_, options_.GetInvocationSource(), options_.fre_override));
   tasks.push_back(
       std::make_unique<WaitForClientConnectedTask>(&instance_->host()));
   if (options_.on_client_connected) {
@@ -326,7 +326,12 @@ bool GlicInvokeHandler::IsActuatingFeatureMode() const {
 
 mojom::InvokeOptionsPtr GlicInvokeHandler::CreateMojoOptions() {
   auto mojo_options = mojom::InvokeOptions::New();
-  mojo_options->invocation_source = options_.invocation_source;
+  mojo_options->invocation_source = options_.GetInvocationSource();
+
+  if (auto* payload = std::get_if<glic::mojom::InvocationPayloadPtr>(
+          &options_.source_or_payload)) {
+    mojo_options->payload = (*payload).Clone();
+  }
 
   if (!options_.prompts.empty()) {
     mojo_options->prompts = options_.prompts;

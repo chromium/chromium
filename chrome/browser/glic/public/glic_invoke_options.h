@@ -185,13 +185,19 @@ struct GlicInvokeOptions {
   explicit GlicInvokeOptions(glic::mojom::InvocationSource invocation_source);
   GlicInvokeOptions(Target target,
                     glic::mojom::InvocationSource invocation_source);
+  explicit GlicInvokeOptions(glic::mojom::InvocationPayloadPtr payload);
+  GlicInvokeOptions(Target target, glic::mojom::InvocationPayloadPtr payload);
   GlicInvokeOptions(GlicInvokeOptions&&);
   GlicInvokeOptions& operator=(GlicInvokeOptions&&);
   ~GlicInvokeOptions();
 
-  // A unique identifier for the invocation source. Primarily used for
-  // logging, metrics collection, and special-case client routing.
-  glic::mojom::InvocationSource invocation_source;
+  // Helper to get the source enum, regardless of whether it's a simple source
+  // or a payload.
+  glic::mojom::InvocationSource GetInvocationSource() const;
+
+  // The invocation source or a specific payload.
+  std::variant<glic::mojom::InvocationSource, glic::mojom::InvocationPayloadPtr>
+      source_or_payload;
 
   // One or more pre-determined prompts to offer or submit. Providing multiple
   // prompts can facilitate a chip-style UI on the client.

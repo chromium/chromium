@@ -106,6 +106,7 @@ using ::testing::Ge;
 using ::testing::InSequence;
 using ::testing::Le;
 using ::testing::Pair;
+using ::testing::Property;
 using ::testing::Ref;
 using ::testing::Return;
 using ::testing::ReturnRef;
@@ -726,11 +727,12 @@ TEST_F(ChromeAutofillClientTestWithWindow, OpenGeminiInSidebar) {
 
   // We expect that the glic service is invoked with kAutofill as the invocation
   // source and containing the correct prompt.
-  EXPECT_CALL(*mock_glic_service,
-              Invoke(AllOf(Field(&glic::GlicInvokeOptions::invocation_source,
-                                 glic::mojom::InvocationSource::kAutofill),
-                           Field(&glic::GlicInvokeOptions::prompts,
-                                 testing::ElementsAre("test prompt")))))
+  EXPECT_CALL(
+      *mock_glic_service,
+      Invoke(AllOf(Property(&glic::GlicInvokeOptions::GetInvocationSource,
+                            glic::mojom::InvocationSource::kAutofill),
+                   Field(&glic::GlicInvokeOptions::prompts,
+                         testing::ElementsAre("test prompt")))))
       .WillOnce(testing::Return(base::WeakPtr<glic::GlicInstance>()));
 
   client()->OpenGeminiInSidebar(u"test prompt");
