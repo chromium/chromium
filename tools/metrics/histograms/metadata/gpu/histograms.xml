@@ -1815,8 +1815,20 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
   <summary>
     Duration of vkCreateGraphicsPipelines call. Recorded every time
-    Ganesh-Vulkan or Graphite-Dawn on Skia context creates graphics pipeline.
-    Only reported for platforms supporting high resolution clocks.
+    Ganesh-Vulkan or Graphite-Dawn-Vulkan on Skia context creates graphics
+    pipeline. Only reported for platforms supporting high resolution clocks.
+  </summary>
+</histogram>
+
+<histogram name="GPU.Vulkan.SkiaContext.vkQueueSubmitUS" units="microseconds"
+    expires_after="2027-05-06">
+  <owner>hitawala@chromium.org</owner>
+  <owner>kylechar@chromium.org</owner>
+  <owner>chrome-gpu-metric-alerts@chromium.org</owner>
+  <summary>
+    Duration of vkQueueSubmit call. Recorded every time Ganesh-Vulkan or
+    Graphite-Dawn-Vulkan on Skia context submits to vulkan queue. Only reported
+    for platforms supporting high resolution clocks.
   </summary>
 </histogram>
 
@@ -1985,6 +1997,19 @@ chromium-metrics-reviews@google.com.
     least one adapter of that type was available. Blocklisted means all adapters
     of that type were blocklisted. None means that no adapters of that type were
     available. Software adapters are considered as None in this metric.
+  </summary>
+  <token key="GraphiteDawnOrWebGPU" variants="GraphiteDawnOrWebGPU"/>
+</histogram>
+
+<histogram name="GPU.{GraphiteDawnOrWebGPU}.Vulkan.VkQueueSubmitUS"
+    units="microseconds" expires_after="2027-05-06">
+  <owner>hitawala@chromium.org</owner>
+  <owner>kylechar@chromium.org</owner>
+  <owner>mdb.webgpu-dev-team@google.com</owner>
+  <summary>
+    Tracks the amount of time in microseconds it takes for a call to
+    vkQueueSubmit to complete. Recorded only for clients that support
+    high-resolution clocks.
   </summary>
   <token key="GraphiteDawnOrWebGPU" variants="GraphiteDawnOrWebGPU"/>
 </histogram>

@@ -10,6 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/rand_util.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -226,6 +227,11 @@ VkResult VulkanQueueSubmitHook(VkQueue queue,
                                uint32_t submitCount,
                                const VkSubmitInfo* pSubmits,
                                VkFence fence) {
+  absl::Cleanup uma_runner = [start_time = base::TimeTicks::Now()] {
+    base::TimeDelta elapsed = base::TimeTicks::Now() - start_time;
+    // Also emitted from DawnPlatform.
+    EmitVkQueueSubmitUMA(elapsed);
+  };
   TRACE_EVENT0("gpu", "VulkanQueueSubmitHook");
   return vkQueueSubmit(queue, submitCount, pSubmits, fence);
 }
@@ -550,6 +556,16 @@ void EmitVkCreateGraphicsPipelinesUMA(base::TimeDelta sample) {
   UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
       "GPU.Vulkan.SkiaContext.vkCreateGraphicsPipelinesUS", sample,
       base::Microseconds(50), base::Microseconds(1'000'000), 50);
+}
+
+void EmitVkQueueSubmitUMA(base::TimeDelta sample) {
+  // Subsample this metric as it is on critical path and can be called a lot per
+  // frame.
+  if (base::ShouldRecordSubsampledMetric(0.01)) {
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "GPU.Vulkan.SkiaContext.vkQueueSubmitUS", sample,
+        base::Microseconds(50), base::Microseconds(1'000'000), 50);
+  }
 }
 
 }  // namespace gpu

@@ -166,6 +166,9 @@ QueryVkDrmFormatModifierPropertiesEXT(VkPhysicalDevice physical_device,
 COMPONENT_EXPORT(VULKAN)
 void EmitVkCreateGraphicsPipelinesUMA(base::TimeDelta sample);
 
+COMPONENT_EXPORT(VULKAN)
+void EmitVkQueueSubmitUMA(base::TimeDelta sample);
+
 }  // namespace gpu
 
 #endif  // GPU_VULKAN_VULKAN_UTIL_H_
