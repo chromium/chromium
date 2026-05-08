@@ -36,6 +36,7 @@ void TrimVehicleRegistration(sync_pb::VehicleRegistration& vehicle) {
   vehicle.clear_issue_date_unix_epoch_micros();
   vehicle.clear_expiration_date_unix_epoch_micros();
   vehicle.clear_logo_url();
+  vehicle.clear_owner_address();
 }
 
 void TrimFlightReservation(sync_pb::FlightReservation& flight_reservation) {
@@ -52,6 +53,7 @@ void TrimFlightReservation(sync_pb::FlightReservation& flight_reservation) {
   flight_reservation.clear_departure_airport_utc_offset_seconds();
   flight_reservation.clear_arrival_airport_utc_offset_seconds();
   flight_reservation.clear_issuer_name();
+  flight_reservation.clear_issuer_domains();
 }
 
 void TrimPassport(sync_pb::Passport& passport) {

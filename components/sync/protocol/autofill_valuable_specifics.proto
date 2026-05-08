@@ -94,6 +94,10 @@ message VehicleRegistration {
   // The logo URL of the vehicle registration.
   // Note that this field is currently used on Android, not in Chrome.
   optional string logo_url = 12;
+
+  // The address of the owner of the vehicle registration
+  // Note that this field is currently used on Android, not in Chrome.
+  optional string owner_address = 13;
 }
 
 // Represents a flight reservation from Google Wallet.
@@ -139,6 +143,10 @@ message FlightReservation {
   // The name of the issuer of the flight reservation, e.g. "United Airlines".
   // Note that this field is currently used on Android, not in Chrome.
   optional string issuer_name = 13;
+
+  // Domains associated with the flight reservation issuer.
+  // Note that this field is currently used on Android, not in Chrome.
+  repeated string issuer_domains = 14;
 }
 
 // Represents a passport information from Google Wallet.
@@ -242,7 +250,7 @@ message KnownTravelerNumber {
   optional NaiveDate expiration_date = 4;
 }
 
-// Represents an event ticket from Google Wallet. Note that this field is
+// Represents an event ticket from Google Wallet. Note that this proto is
 // currently used by Android but not used in Chrome.
 message EventTicket {
   // Name of the person assigned to the event ticket. Not necessarily the person
@@ -271,11 +279,13 @@ message EventTicket {
   optional int64 event_end_time_windows_epoch_micros = 8;
 
   // The logo URL of the event ticket.
-  // Note that this field is currently used on Android, not in Chrome.
   optional string logo_url = 9;
+
+  // Domains associated with the event ticket issuer.
+  repeated string issuer_domains = 10;
 }
 
-// Represents a transit pass from Google Wallet. Note that this field is
+// Represents a transit pass from Google Wallet. Note that this proto is
 // currently used by Android but not used in Chrome.
 message TransitPass {
   // The transit agency that the transit pass is for.
@@ -289,6 +299,9 @@ message TransitPass {
 
   // The url of the logo of the transit agency.
   optional string agency_logo_url = 4;
+
+  // Domains associated with the transit pass agency.
+  repeated string agency_domains = 5;
 }
 
 // Valuables coming from Google Wallet.
@@ -308,9 +321,9 @@ message AutofillValuableSpecifics {
     NationalIdCard national_id_card = 9;
     RedressNumber redress_number = 10;
     KnownTravelerNumber known_traveler_number = 11;
-    // Note that EventTicket is not used in Chrome.
+    // Note that EventTicket is used by Android but not by Chrome.
     EventTicket event_ticket = 12;
-    // Note that TransitPass is not used in Chrome.
+    // Note that TransitPass is used by Android but not by Chrome.
     TransitPass transit_pass = 13;
     // add other valuable types here.
   }
