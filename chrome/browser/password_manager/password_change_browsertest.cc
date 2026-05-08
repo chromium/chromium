@@ -1576,8 +1576,6 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestUserInterventionEnabled,
   EXPECT_TRUE(base::test::RunUntil(
       [&delegate_weak_ptr]() { return !delegate_weak_ptr; }));
 
-  // TODO(crbug.com/474035152): Update the enum for user intervention when the
-  // proto is synced.
   VerifyUniqueQualityLog(
       /*login_check_status=*/QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS,
@@ -1589,7 +1587,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestUserInterventionEnabled,
           PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS,
       /*verify_submission_status=*/
       QualityStatus::
-          PasswordChangeQuality_StepQuality_SubmissionStatus_FAILURE_STATUS,
+          PasswordChangeQuality_StepQuality_SubmissionStatus_USER_INTERVENTION_NEEDED,
       /*final_status=*/
       FinalModelStatus::FINAL_MODEL_STATUS_FAILURE);
 }
@@ -1651,7 +1649,7 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTestUserInterventionEnabled,
           PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS,
       /*verify_submission_status=*/
       QualityStatus::
-          PasswordChangeQuality_StepQuality_SubmissionStatus_FAILURE_STATUS,
+          PasswordChangeQuality_StepQuality_SubmissionStatus_USER_INTERVENTION_NEEDED,
       /*final_status=*/
       FinalModelStatus::FINAL_MODEL_STATUS_FAILURE);
 }

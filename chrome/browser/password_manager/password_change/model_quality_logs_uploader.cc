@@ -92,7 +92,12 @@ ModelQualityLogsUploader::QualityStatus GetVerifySubmissionQualityStatus(
 
   PasswordChangeOutcome outcome =
       response.value().outcome_data().submission_outcome();
-  // TODO(crbug.com/474035152): Extend MQLS for handling user intervention.
+  if (outcome ==
+      PasswordChangeOutcome::
+          PasswordChangeSubmissionData_PasswordChangeOutcome_USER_INTERVENTION_NEEDED) {
+    return ModelQualityLogsUploader::QualityStatus::
+        PasswordChangeQuality_StepQuality_SubmissionStatus_USER_INTERVENTION_NEEDED;
+  }
   if (outcome !=
           PasswordChangeOutcome::
               PasswordChangeSubmissionData_PasswordChangeOutcome_SUCCESSFUL_OUTCOME &&
@@ -317,20 +322,28 @@ void ModelQualityLogsUploader::SetOpenFormQuality(
   if (response.has_value()) {
     open_form_quality->mutable_response()->CopyFrom(*response);
     PageType open_form = response->open_form_data().page_type();
-    if (open_form == PageType::OpenFormResponseData_PageType_SETTINGS_PAGE) {
-      if (response->open_form_data().dom_node_id_to_click()) {
-        // Assume success at this point. If it fails to actuate on it the state
-        // will be changed to ELEMENT_NOT_FOUND if the element does not exist
-        // or FORM_NOT_FOUND if after clicking a form was not seen.
+    switch (open_form) {
+      case PageType::OpenFormResponseData_PageType_SETTINGS_PAGE:
+        if (response->open_form_data().dom_node_id_to_click()) {
+          // Assume success at this point. If it fails to actuate on it the
+          // state will be changed to ELEMENT_NOT_FOUND if the element does not
+          // exist or FORM_NOT_FOUND if after clicking a form was not seen.
+          quality_status = QualityStatus::
+              PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS;
+        } else {
+          quality_status = QualityStatus::
+              PasswordChangeQuality_StepQuality_SubmissionStatus_ELEMENT_NOT_FOUND;
+        }
+        break;
+      case PageType::
+          OpenFormResponseData_PageType_USER_INTERVENTION_NEEDED_PAGE:
         quality_status = QualityStatus::
-            PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS;
-      } else {
+            PasswordChangeQuality_StepQuality_SubmissionStatus_USER_INTERVENTION_NEEDED;
+        break;
+      default:
         quality_status = QualityStatus::
-            PasswordChangeQuality_StepQuality_SubmissionStatus_ELEMENT_NOT_FOUND;
-      }
-    } else {
-      quality_status = QualityStatus::
-          PasswordChangeQuality_StepQuality_SubmissionStatus_UNEXPECTED_STATE;
+            PasswordChangeQuality_StepQuality_SubmissionStatus_UNEXPECTED_STATE;
+        break;
     }
   }
 
@@ -362,7 +375,10 @@ void ModelQualityLogsUploader::SetSubmitFormQuality(
       PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS;
   if (response.has_value()) {
     submit_form_quality->mutable_response()->CopyFrom(*response);
-    if (response.value().submit_form_data().dom_node_id_to_click()) {
+    if (response.value().submit_form_data().is_user_intervention_needed()) {
+      quality_status = QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_USER_INTERVENTION_NEEDED;
+    } else if (response.value().submit_form_data().dom_node_id_to_click()) {
       quality_status = QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS;
     } else {

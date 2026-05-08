@@ -390,6 +390,20 @@ TEST_F(ModelQualityLogsUploaderTest, OpenFormUnexpectedStateLog) {
           PasswordChangeQuality_StepQuality_SubmissionStatus_UNEXPECTED_STATE);
 }
 
+TEST_F(ModelQualityLogsUploaderTest, OpenFormUserInterventionNeededLog) {
+  ModelQualityLogsUploader logs_uploader(web_contents(),
+                                         GURL(kChangePasswordURL));
+  optimization_guide::proto::PasswordChangeResponse response;
+  response.mutable_open_form_data()->set_page_type(
+      PageType::OpenFormResponseData_PageType_USER_INTERVENTION_NEEDED_PAGE);
+  logs_uploader.SetOpenFormQuality(std::optional(response),
+                                   CreateLoggingData(open_form_request_));
+  CheckOpenFormStatus(
+      logs_uploader.GetFinalLog(), open_form_request_, response,
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_USER_INTERVENTION_NEEDED);
+}
+
 TEST_F(ModelQualityLogsUploaderTest, SubmitFormSuccessLog) {
   ModelQualityLogsUploader logs_uploader(web_contents(),
                                          GURL(kChangePasswordURL));
@@ -413,6 +427,19 @@ TEST_F(ModelQualityLogsUploaderTest, SubmitFormElementNotFoundLog) {
       logs_uploader.GetFinalLog(), submit_form_request_, response,
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_ELEMENT_NOT_FOUND);
+}
+
+TEST_F(ModelQualityLogsUploaderTest, SubmitFormUserInterventionNeededLog) {
+  ModelQualityLogsUploader logs_uploader(web_contents(),
+                                         GURL(kChangePasswordURL));
+  optimization_guide::proto::PasswordChangeResponse response;
+  response.mutable_submit_form_data()->set_is_user_intervention_needed(true);
+  logs_uploader.SetSubmitFormQuality(std::optional(response),
+                                     CreateLoggingData(submit_form_request_));
+  CheckSubmitFormStatus(
+      logs_uploader.GetFinalLog(), submit_form_request_, response,
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_USER_INTERVENTION_NEEDED);
 }
 
 TEST_F(ModelQualityLogsUploaderTest, MergeLogsDoesNotOverwrite) {
