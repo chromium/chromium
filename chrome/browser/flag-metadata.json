@@ -2339,12 +2339,12 @@
   {
     "name": "direct-sockets-in-service-workers",
     "owners": [ "//content/browser/direct_sockets/OWNERS" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 170
   },
   {
     "name": "direct-sockets-in-shared-workers",
     "owners": [ "//content/browser/direct_sockets/OWNERS" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 170
   },
   {
     "name": "disable-accelerated-2d-canvas",
