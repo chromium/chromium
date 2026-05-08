@@ -152,6 +152,7 @@ chromium/try/mac-asan-media-rel
 chromium/try/mac-asan-rel
 chromium/try/mac-clobber-rel
 chromium/try/mac-libfuzzer-asan-rel
+chromium/try/mac-no-initial-webui-rel
 chromium/try/mac-official
 chromium/try/mac-rel
 chromium/try/mac-x64-compile-dbg

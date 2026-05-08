@@ -1135,8 +1135,6 @@ ci.thin_tester(
             ),
         },
     ),
-    # TODO(crbug.com/505579819): Enable gardening once the bot is stable.
-    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "mac",
         short_name = "no-webui",

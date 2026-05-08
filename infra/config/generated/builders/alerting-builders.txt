@@ -400,6 +400,7 @@ ci/mac-arm64-dbg
 ci/mac-arm64-libfuzzer-asan-rel-tests
 ci/mac-arm64-on-arm64-rel
 ci/mac-arm64-rel
+ci/mac-no-initial-webui-rel
 ci/mac-official
 ci/mac-rel-cft
 ci/mac-swangle-chromium-x64
