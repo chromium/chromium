@@ -103,6 +103,9 @@ class WebUIToolbarUI : public TopChromeWebUIController,
       mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler> handler)
       override;
 
+  content::WebUIController::DisplayDisposition GetDisplayDisposition()
+      const override;
+
   // Returns the list of known element identifiers. These elements are HTML
   // elements tracked by ui/webui/tracked_element. Used for anchoring secondary
   // UIs.

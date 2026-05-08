@@ -236,6 +236,11 @@ void WebUIToolbarUI::WebUIRenderFrameCreated(
   }
 }
 
+content::WebUIController::DisplayDisposition
+WebUIToolbarUI::GetDisplayDisposition() const {
+  return content::WebUIController::DisplayDisposition::kUIElement;
+}
+
 void WebUIToolbarUI::PopulateLocalResourceLoaderConfig(
     blink::mojom::LocalResourceLoaderConfig* config,
     const url::Origin& requesting_origin) {
