@@ -2771,8 +2771,25 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
   if ([self titleUIElement])
     return @"";
 
-  if (![self isNameFromLabel])
+  // For web dialogs whose name comes from aria-labelledby
+  // (NameFrom::kRelatedElement), additionally expose the name as
+  // AXDescription. accessibilityTitle still publishes it as AXTitle, so
+  // the dialog ends up with both attributes populated, matching Safari.
+  // Without AXDescription, VoiceOver does not announce the AXTitle of
+  // AXApplicationDialog or AXApplicationAlertDialog subroles, leaving
+  // dialogs labelled via aria-labelledby silent on focus. See
+  // https://issues.chromium.org/issues/41487406 and
+  // https://github.com/w3c/core-aam/issues/213.
+  ax::mojom::Role role = _node->GetRole();
+  bool isWebDialogLabelledBy =
+      (role == ax::mojom::Role::kDialog ||
+       role == ax::mojom::Role::kAlertDialog) &&
+      _node->IsWebContent() &&
+      _node->GetNameFrom() == ax::mojom::NameFrom::kRelatedElement;
+
+  if (![self isNameFromLabel] && !isWebDialogLabelledBy) {
     return @"";
+  }
 
   std::string name = _node->GetName();
 
