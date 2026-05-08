@@ -3140,13 +3140,9 @@ class WebAppFrameToolbarBrowserTest_OriginText
 };
 
 // TODO(crbug.com/381106937): Re-enable this test on linux and ChromeOS.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_InScopeNavigation DISABLED_InScopeNavigation
-#else
-#define MAYBE_InScopeNavigation InScopeNavigation
-#endif
+// TODO(crbug.com/361839153): Causing time out.
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_OriginText,
-                       MAYBE_InScopeNavigation) {
+                       DISABLED_InScopeNavigation) {
   ASSERT_TRUE(embedded_https_test_server().Started());
   InstallAndLaunchWebApp();
   // Origin text should not show if navigating to a URL in scope and with the
@@ -3161,14 +3157,9 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_OriginText,
   ExpectLastCommittedUrl(nav_url);
 }
 
-// TODO(https://crbug.com/361839153): This test fails on ChromeOS builds.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_OutOfScopeBarShown DISABLED_OutOfScopeBarShown
-#else
-#define MAYBE_OutOfScopeBarShown OutOfScopeBarShown
-#endif
+// TODO(crbug.com/361839153): Causing time out.
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_OriginText,
-                       MAYBE_OutOfScopeBarShown) {
+                       DISABLED_OutOfScopeBarShown) {
   ASSERT_TRUE(embedded_https_test_server().Started());
   InstallAndLaunchWebApp();
   // Origin text should not show if out-of-scope bar is shown after navigation.
@@ -3190,14 +3181,10 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_OriginText,
   ExpectLastCommittedUrl(app_url());
 }
 
+// TODO(crbug.com/361839153): Causing time out.
 // TODO(crbug.com/376592844): Re-enable this test
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_ThemeColorChange DISABLED_ThemeColorChange
-#else
-#define MAYBE_ThemeColorChange ThemeColorChange
-#endif
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_OriginText,
-                       MAYBE_ThemeColorChange) {
+                       DISABLED_ThemeColorChange) {
   ASSERT_TRUE(embedded_https_test_server().Started());
   InstallAndLaunchWebApp();
   content::WebContents* web_contents =
@@ -3219,16 +3206,9 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_OriginText,
   ExpectLastCommittedUrl(nav_url);
 }
 
-// TODO(https://crbug.com/361839153): This test fails on ChromeOS builds.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_OutOfScopeBarWithThemeColorChange \
-  DISABLED_OutOfScopeBarWithThemeColorChange
-#else
-#define MAYBE_OutOfScopeBarWithThemeColorChange \
-  OutOfScopeBarWithThemeColorChange
-#endif
+// TODO(crbug.com/361839153): Causing time out.
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_OriginText,
-                       MAYBE_OutOfScopeBarWithThemeColorChange) {
+                       DISABLED_OutOfScopeBarWithThemeColorChange) {
   ASSERT_TRUE(embedded_https_test_server().Started());
   InstallAndLaunchWebApp();
   content::WebContents* web_contents =
@@ -3265,16 +3245,9 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_OriginText,
   ExpectLastCommittedUrl(app_url());
 }
 
-// TODO(https://crbug.com/361839153): This test fails on ChromeOS builds.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_WebAppOriginTextAccessibleProperties \
-  DISABLED_WebAppOriginTextAccessibleProperties
-#else
-#define MAYBE_WebAppOriginTextAccessibleProperties \
-  WebAppOriginTextAccessibleProperties
-#endif
+// TODO(crbug.com/361839153): Causing time out.
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_OriginText,
-                       MAYBE_WebAppOriginTextAccessibleProperties) {
+                       DISABLED_WebAppOriginTextAccessibleProperties) {
   InstallAndLaunchWebApp();
   auto* origin_text = helper()->origin_text_view();
   ui::AXNodeData data;
