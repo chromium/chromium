@@ -10,6 +10,7 @@
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/group_constants.h"
+#include "components/segmentation_platform/public/features.h"
 
 #if BUILDFLAG(IS_IOS)
 #include "base/metrics/field_trial_params.h"
@@ -1181,21 +1182,30 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
 
   if (kIPHNewTabPageThemeCustomizationFeature.name == feature->name) {
     // Allows an IPH for the theme customization entry point.
-    // * Once per 14 days. 3 times as maximum for lifetime.
+    // Once per kNewTabPageCustomizationV2IphDisplayIntervalDays days.
+    // kNewTabPageCustomizationV2IphMaxImpression times as maximum for lifetime.
     FeatureConfig config;
     config.valid = true;
     config.availability = Comparator(ANY, 0);
     config.session_rate = Comparator(EQUAL, 0);
-    config.trigger =
-        EventConfig("ntp_theme_customization_iph_triggered",
-                    Comparator(LESS_THAN, 3), k10YearsInDays, k10YearsInDays);
+    // TODO(https://crbug.com/423579377): Clean up these feature params and use
+    // the default values after the feature NewTabPageCustomizationV2 is fully
+    // launched.
+    config.trigger = EventConfig(
+        "ntp_theme_customization_iph_triggered",
+        Comparator(LESS_THAN,
+                   segmentation_platform::features::
+                       kNewTabPageCustomizationV2IphMaxImpression.Get()),
+        k10YearsInDays, k10YearsInDays);
     config.used =
         EventConfig("ntp_theme_customization_iph_used", Comparator(EQUAL, 0),
                     k10YearsInDays, k10YearsInDays);
 
-    config.event_configs.insert(
-        EventConfig("ntp_theme_customization_iph_triggered",
-                    Comparator(LESS_THAN, 1), 14, k10YearsInDays));
+    config.event_configs.insert(EventConfig(
+        "ntp_theme_customization_iph_triggered", Comparator(LESS_THAN, 1),
+        segmentation_platform::features::
+            kNewTabPageCustomizationV2IphDisplayIntervalDays.Get(),
+        k10YearsInDays));
     return config;
   }
   if (kIPHPageSummaryWebMenuFeature.name == feature->name) {

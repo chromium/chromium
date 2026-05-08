@@ -16557,6 +16557,8 @@
                 {
                     "name": "Enabled",
                     "params": {
+                        "iph_display_interval_days": "2",
+                        "iph_max_impression": "10",
                         "show_logo_and_search_box": "true"
                     },
                     "enable_features": [
