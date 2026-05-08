@@ -74,6 +74,7 @@ export interface ComposeboxElement {
   };
 }
 
+// LINT.IfChange
 export class ComposeboxElement extends ComposeboxEmbedderMixin
 (CrLitElement) implements DragAndDropHost {
   static get is() {
@@ -1060,6 +1061,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     this.updateAutoSuggestedTabContext_(tab);
   }
 }
+// LINT.ThenChange(//ui/webui/resources/cr_components/composebox/Componentization.md)
 
 declare global {
   interface HTMLElementTagNameMap {
