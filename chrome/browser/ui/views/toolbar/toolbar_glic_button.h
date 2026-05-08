@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_glic_constants.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/layout/layout_types.h"
 
 class BrowserFrameView;
 
@@ -28,6 +29,9 @@ class ToolbarGlicButton : public GlicButton<ToolbarButton> {
   ToolbarGlicButton(const ToolbarGlicButton&) = delete;
   ToolbarGlicButton& operator=(const ToolbarGlicButton&) = delete;
   ~ToolbarGlicButton() override;
+
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
   void SetCloseButtonFocusBehavior(
       views::View::FocusBehavior focus_behavior) override;
