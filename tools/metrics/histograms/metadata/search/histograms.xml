@@ -1162,6 +1162,22 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
   </summary>
 </histogram>
 
+<histogram name="Search.Integrity.Enterprise.IsDefaultEnforcedWithoutPolicy"
+    enum="Boolean" expires_after="2026-10-20">
+  <owner>musalmaan@chromium.org</owner>
+  <owner>iclelland@chromium.org</owner>
+  <owner>chrome-desktop-ui-waterloo@google.com</owner>
+  <summary>
+    Records whether the default search engine has the enforced_by_policy flag
+    set to True, but the DefaultSearchProviderEnabled policy is not active for a
+    managed profile. This helps detect cases where search settings might be
+    incorrectly claiming policy enforcement.
+
+    Recorded once per profile at startup when the search engine allowlist is
+    initialized and the configuration is checked.
+  </summary>
+</histogram>
+
 <histogram name="Search.Integrity.Enterprise.Referral.ParameterFound"
     enum="SearchReferralParam" expires_after="2026-10-20">
   <owner>musalmaan@chromium.org</owner>
@@ -1215,6 +1231,22 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
     Recorded once per profile at startup when the search engine allowlist is
     initialized and the configuration is checked. Only recorded if a custom
     engine is set as the default.
+  </summary>
+</histogram>
+
+<histogram name="Search.Integrity.IsDefaultEnforcedWithoutPolicy"
+    enum="Boolean" expires_after="2026-10-20">
+  <owner>musalmaan@chromium.org</owner>
+  <owner>iclelland@chromium.org</owner>
+  <owner>chrome-desktop-ui-waterloo@google.com</owner>
+  <summary>
+    Records whether the default search engine has the enforced_by_policy flag
+    set to True, but the DefaultSearchProviderEnabled policy is not active. This
+    helps detect cases where search settings might be incorrectly claiming
+    policy enforcement.
+
+    Recorded once per profile at startup when the search engine allowlist is
+    initialized and the configuration is checked.
   </summary>
 </histogram>
 
