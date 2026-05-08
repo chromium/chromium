@@ -47,6 +47,7 @@ class ContextualCueingHelper
   void PrimaryMainDocumentElementAvailable() override;
   void OnFirstContentfulPaintInPrimaryMainFrame() override;
   void DocumentOnLoadCompletedInPrimaryMainFrame() override;
+  void WebContentsDestroyed() override;
 
   // Returns when the last primary main frame navigation was committed if the
   // navigation was a same document navigation.
