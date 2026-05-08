@@ -361,6 +361,29 @@ public class TabBottomSheetCoordinatorTest {
     }
 
     @Test
+    public void testOnlyUpdateAlphaWhenScrolling() {
+        BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
+
+        when(mMockBottomSheetController.getSheetState()).thenReturn(SheetState.PEEK);
+
+        float sentinelAlpha = 0.7f;
+        mCoordinatorModel.set(TabBottomSheetProperties.PEEK_STATE_ALPHA, sentinelAlpha);
+
+        observer.onSheetOffsetChanged(0.5f, 500f);
+
+        assertEquals(
+                sentinelAlpha,
+                mCoordinatorModel.get(TabBottomSheetProperties.PEEK_STATE_ALPHA),
+                EPSILON);
+
+        when(mMockBottomSheetController.getSheetState()).thenReturn(SheetState.SCROLLING);
+
+        observer.onSheetOffsetChanged(0.5f, 600f);
+        assertTrue(
+                sentinelAlpha != mCoordinatorModel.get(TabBottomSheetProperties.PEEK_STATE_ALPHA));
+    }
+
+    @Test
     public void testTouchEventObserver_OnInterceptTouchEvent() {
         BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
 

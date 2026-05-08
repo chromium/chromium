@@ -419,7 +419,9 @@ public class TabBottomSheetCoordinator {
 
             @Override
             public void onSheetOffsetChanged(float heightFraction, float offsetPx) {
-                mMediator.updateCrossFadeAlpha(offsetPx);
+                if (mBottomSheetController.getSheetState() == SheetState.SCROLLING) {
+                    mMediator.updateCrossFadeAlpha(offsetPx);
+                }
             }
 
             // Called before onSheetStateChanged.
