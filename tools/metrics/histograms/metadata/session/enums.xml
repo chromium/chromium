@@ -92,7 +92,7 @@ chromium-metrics-reviews@google.com.
 <enum name="SmartRestartability">
   <int value="0" label="None"/>
   <int value="1" label="Incognito"/>
-  <int value="2" label="Unsaved form data"/>
+  <int value="2" label="Unsaved form data (BeforeUnload)"/>
   <int value="3" label="Incognito, Unsaved form data"/>
   <int value="4" label="Active download"/>
   <int value="5" label="Incognito, Active download"/>

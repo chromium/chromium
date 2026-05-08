@@ -125,7 +125,7 @@ TEST_F(SmartRestartMetricsObserverTest, RecordZeroWindowDurationWithUpdate) {
   histogram_tester.ExpectUniqueTimeSample(
       "Session.ZeroWindowDuration.WithUpdate", base::Minutes(5), 1);
   histogram_tester.ExpectUniqueSample(
-      "Session.ZeroWindowDuration.Restartability.5To10Min",
+      "Session.ZeroWindowDuration.RestartabilityV2.5To10Min",
       32 /* kTotalBrowserCountZero */, 1);
 }
 
@@ -215,7 +215,7 @@ TEST_F(SmartRestartMetricsObserverTest, RecordLockedDurationWithUpdate) {
   histogram_tester.ExpectUniqueTimeSample("Session.LockedDuration.WithUpdate",
                                           base::Minutes(30), 1);
   histogram_tester.ExpectUniqueSample(
-      "Session.LockedDuration.Restartability.Over10Min",
+      "Session.LockedDuration.RestartabilityV2.Over10Min",
       32 /* kTotalBrowserCountZero */, 1);
 }
 

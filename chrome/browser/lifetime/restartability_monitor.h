@@ -20,7 +20,7 @@ struct RestartabilityState {
   enum SmartRestartStateFactor {
     kNone = 0,
     kIncognito = 1 << 0,
-    kUnloadHandler = 1 << 1,
+    kBeforeUnloadHandler = 1 << 1,
     kDownload = 1 << 2,
     kMedia = 1 << 3,
     kAppWindow = 1 << 4,

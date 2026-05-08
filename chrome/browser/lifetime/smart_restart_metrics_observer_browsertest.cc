@@ -5,6 +5,7 @@
 #include "chrome/browser/lifetime/smart_restart_metrics_observer.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
@@ -115,7 +116,7 @@ IN_PROC_BROWSER_TEST_P(SmartRestartMetricsObserverBrowserTest,
                                     TestUpdateAvailable() ? 1 : 0);
   if (TestUpdateAvailable()) {
     histogram_tester.ExpectUniqueSample(
-        "Session.ZeroWindowDuration.Restartability.Under1Min",
+        "Session.ZeroWindowDuration.RestartabilityV2.Under1Min",
         RestartabilityState::SmartRestartStateFactor::kTotalBrowserCountZero,
         1);
   }
@@ -146,13 +147,26 @@ IN_PROC_BROWSER_TEST_P(SmartRestartMetricsObserverBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SmartRestartMetricsObserverBrowserTest,
-                       RecordsLockedDuration_UnloadHandler) {
+                       RecordsLockedDuration_BeforeUnloadHandler) {
   base::HistogramTester histogram_tester;
 
-  // Navigate to a page with a beforeunload handler.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(),
-      GURL("data:text/html,<script>window.onbeforeunload=()=>'';</script>")));
+  // Navigate to a blank page and set up the handler via script.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Set up the handler.
+  ASSERT_TRUE(
+      content::ExecJs(web_contents, "window.onbeforeunload = () => 'draft';"));
+  // Disable hang monitor and trigger user activation.
+  PrepContentsForBeforeUnloadTest(web_contents,
+                                  /*trigger_user_activation=*/true);
+
+  // Wait for the activation and handler to propagate to the browser process.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return web_contents->GetPrimaryMainFrame()
+        ->CouldDisplayBeforeUnloadDialog();
+  }));
 
   // Simulate an upgrade.
   fake_upgrade_detector_.SetUpgradeAvailableToRegular();
@@ -163,10 +177,14 @@ IN_PROC_BROWSER_TEST_F(SmartRestartMetricsObserverBrowserTest,
   // Simulate unlocking the screen.
   observer_->SetLockedStateForTesting(false);
 
-  // Verify the Restartability mask recorded the kUnloadHandler bit.
+  // Verify the Restartability mask recorded the kBeforeUnloadHandler bit.
   histogram_tester.ExpectUniqueSample(
-      "Session.LockedDuration.Restartability.Under1Min",
-      RestartabilityState::SmartRestartStateFactor::kUnloadHandler, 1);
+      "Session.LockedDuration.RestartabilityV2.Under1Min",
+      RestartabilityState::SmartRestartStateFactor::kBeforeUnloadHandler, 1);
+
+  // Cleanup: Remove the handler to allow peaceful navigation away.
+  ASSERT_TRUE(content::ExecJs(web_contents, "window.onbeforeunload = null;"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 }
 
 IN_PROC_BROWSER_TEST_F(SmartRestartMetricsObserverBrowserTest,
@@ -187,7 +205,7 @@ IN_PROC_BROWSER_TEST_F(SmartRestartMetricsObserverBrowserTest,
 
   // Verify the Restartability mask recorded the kTotalBrowserCountZero bit.
   histogram_tester.ExpectUniqueSample(
-      "Session.LockedDuration.Restartability.Under1Min",
+      "Session.LockedDuration.RestartabilityV2.Under1Min",
       RestartabilityState::SmartRestartStateFactor::kTotalBrowserCountZero, 1);
 }
 

@@ -40,10 +40,10 @@ TEST_F(RestartabilityMonitorTest, BlockedByAppWindow) {
             state.GetRestartabilityStateFactor());
 }
 
-TEST_F(RestartabilityMonitorTest, BlockedByUnloadHandler) {
+TEST_F(RestartabilityMonitorTest, BlockedByBeforeUnloadHandler) {
   RestartabilityState state;
   state.has_dirty_tabs = true;
-  EXPECT_EQ(RestartabilityState::SmartRestartStateFactor::kUnloadHandler,
+  EXPECT_EQ(RestartabilityState::SmartRestartStateFactor::kBeforeUnloadHandler,
             state.GetRestartabilityStateFactor());
 }
 

@@ -148,7 +148,7 @@ void SmartRestartMetricsObserver::RecordLockedDurationMetrics() {
     RecordDuration("Session.LockedDuration.WithUpdate", update_duration);
 
     // Record the restartability state segmented by duration buckets.
-    RecordRestartabilitySnapshot("Session.LockedDuration.Restartability",
+    RecordRestartabilitySnapshot("Session.LockedDuration.RestartabilityV2",
                                  update_duration, locked_snapshot_);
   }
   locked_timer_.reset();
@@ -192,7 +192,7 @@ void SmartRestartMetricsObserver::RecordZeroWindowMetrics() {
     RecordDuration("Session.ZeroWindowDuration.WithUpdate", update_duration);
 
     // Record the restartability state segmented by duration buckets.
-    RecordRestartabilitySnapshot("Session.ZeroWindowDuration.Restartability",
+    RecordRestartabilitySnapshot("Session.ZeroWindowDuration.RestartabilityV2",
                                  update_duration, zero_window_snapshot_);
   }
   zero_window_timer_.reset();

@@ -223,7 +223,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Session.LockedDuration.Restartability.{SmartRestartDuration}"
+<histogram
+    name="Session.LockedDuration.RestartabilityV2.{SmartRestartDuration}"
     enum="SmartRestartability" expires_after="2026-10-01">
   <owner>victortan@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
@@ -234,6 +235,9 @@ chromium-metrics-reviews@google.com.
 
     The value is recorded as a bitmask of SmartRestartBlockReason flags. This
     histogram is sliced by the duration the OS was in the Locked state.
+
+    V2: Uses refined logic for 'Unsaved form data' requiring both user
+    interaction and a beforeunload handler.
   </summary>
   <token key="SmartRestartDuration">
     <variant name="1To5Min"/>
@@ -1085,7 +1089,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Session.ZeroWindowDuration.Restartability.{SmartRestartDuration}"
+    name="Session.ZeroWindowDuration.RestartabilityV2.{SmartRestartDuration}"
     enum="SmartRestartability" expires_after="2026-10-01">
   <owner>victortan@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
@@ -1097,6 +1101,9 @@ chromium-metrics-reviews@google.com.
     The value is recorded as a bitmask of SmartRestartBlockReason flags. This
     histogram is sliced by the duration the browser was in the Zero Window
     state.
+
+    V2: Uses refined logic for 'Unsaved form data' requiring both user
+    interaction and a beforeunload handler.
   </summary>
   <token key="SmartRestartDuration">
     <variant name="1To5Min"/>
