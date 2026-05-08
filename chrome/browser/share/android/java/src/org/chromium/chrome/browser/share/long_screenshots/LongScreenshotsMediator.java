@@ -26,10 +26,12 @@ import android.widget.ScrollView;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.share.long_screenshots.LongScreenshotsUtils.BitmapGeneratorStatus;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.EntryManager;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.LongScreenshotsEntry;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.LongScreenshotsEntry.EntryStatus;
@@ -95,6 +97,13 @@ public class LongScreenshotsMediator
         mDisplayDensity = activity.getResources().getDisplayMetrics().density;
     }
 
+    private void logBitmapGeneratorStatus(@BitmapGeneratorStatus int status) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Sharing.ShareSheetLongScreenshots.BitmapGeneratorStatus",
+                status,
+                BitmapGeneratorStatus.COUNT);
+    }
+
     @VisibleForTesting
     void displayInitialScreenshot() {
         mDidScaleForTesting = false;
@@ -108,6 +117,11 @@ public class LongScreenshotsMediator
                             // If we got a status other than "in progress" or "complete", it means
                             // we encountered some kind of failure.
                             mEntryManager.removeBitmapGeneratorObserver(this);
+                            int bitmapGeneratorStatus =
+                                    (status == EntryStatus.INSUFFICIENT_MEMORY)
+                                            ? BitmapGeneratorStatus.INSUFFICIENT_MEMORY
+                                            : BitmapGeneratorStatus.GENERATION_ERROR;
+                            logBitmapGeneratorStatus(bitmapGeneratorStatus);
                             // We need to call mDoneCallback to return to the normal browsing mode
                             // instead of getting stuck.
                             finishCapture();
@@ -117,6 +131,7 @@ public class LongScreenshotsMediator
                     @Override
                     public void onCompositorReady(Size size, Point offset) {
                         mEntryManager.removeBitmapGeneratorObserver(this);
+                        logBitmapGeneratorStatus(BitmapGeneratorStatus.CAPTURE_COMPLETE);
                         LongScreenshotsEntry entry = mEntryManager.generateFullpageEntry();
                         entry.setListener((status) -> onEntry(entry, status));
                     }

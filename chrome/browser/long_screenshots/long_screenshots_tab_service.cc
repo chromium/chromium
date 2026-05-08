@@ -10,9 +10,12 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory_coordinator/utils.h"
+#include "base/metrics/histogram_functions.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "components/google/core/common/google_util.h"
 #include "components/paint_preview/browser/file_manager.h"
 #include "components/paint_preview/common/mojom/paint_preview_types.mojom.h"
@@ -102,8 +105,17 @@ void LongScreenshotsTabService::CaptureTab(
     bool in_memory,
     paint_preview::mojom::ClipCoordOverride clip_x_coord_override,
     paint_preview::mojom::ClipCoordOverride clip_y_coord_override) {
+  base::UmaHistogramPercentage("Sharing.LongScreenshots.MemoryLimitOnCapture",
+                               memory_limit());
+
+  int memory_threshold =
+      base::FeatureList::IsEnabled(
+          chrome::android::kLongScreenshotsLenientMemoryCheck)
+          ? base::kCriticalMemoryPressureThreshold
+          : base::kModerateMemoryPressureThreshold;
+
   // If the system is under memory pressure don't try to capture.
-  if (memory_limit() <= base::kModerateMemoryPressureThreshold) {
+  if (memory_limit() <= memory_threshold) {
     JNIEnv* env = base::android::AttachCurrentThread();
     Java_LongScreenshotsTabService_processCaptureTabStatus(
         env, java_ref_, Status::kLowMemoryDetected);

@@ -18,11 +18,13 @@ import android.view.Surface;
 import android.view.View;
 
 import org.chromium.base.Callback;
+import org.chromium.base.FeatureList;
 import org.chromium.base.MemoryPressureLevel;
 import org.chromium.base.memory.MemoryPressureMonitor;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.paint_preview.PaintPreviewCompositorUtils;
 import org.chromium.chrome.browser.share.long_screenshots.LongScreenshotsUtils;
 import org.chromium.chrome.browser.share.long_screenshots.LongScreenshotsUtils.BitmapGeneratorStatus;
@@ -67,10 +69,22 @@ public class ScrollCaptureCallbackDelegate {
     public Rect onScrollCaptureSearch(CancellationSignal cancellationSignal) {
         assert mCurrentTab != null;
 
-        // If the system is under moderate memory pressure, don't give the user the option to create
+        int pressure = MemoryPressureMonitor.INSTANCE.getLastReportedPressure();
+        RecordHistogram.recordEnumeratedHistogram(
+                "Sharing.ScrollCapture.MemoryPressureOnSearch",
+                pressure,
+                MemoryPressureLevel.CRITICAL + 1);
+
+        int threshold =
+                (FeatureList.isNativeInitialized()
+                                && ChromeFeatureList.isEnabled(
+                                        ChromeFeatureList.LONG_SCREENSHOTS_LENIENT_MEMORY_CHECK))
+                        ? MemoryPressureLevel.CRITICAL
+                        : MemoryPressureLevel.MODERATE;
+
+        // If the system is under memory pressure, don't give the user the option to create
         // a long screenshot.
-        if (MemoryPressureMonitor.INSTANCE.getLastReportedPressure()
-                >= MemoryPressureLevel.MODERATE) {
+        if (pressure >= threshold) {
             return new Rect();
         }
 

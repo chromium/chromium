@@ -234,6 +234,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sharing.LongScreenshots.MemoryLimitOnCapture" units="%"
+    expires_after="2026-10-01">
+  <owner>jhimawan@google.com</owner>
+  <owner>src/components/paint_preview/OWNERS</owner>
+  <summary>
+    Records the memory limit percentage when a long screenshot capture is
+    initiated. Recorded for both the system (scroll capture) and share sheet
+    (compositor) paths. Android only.
+  </summary>
+</histogram>
+
 <histogram name="Sharing.MessageReceivedType" enum="SharingMessageType"
     expires_after="2026-09-27">
   <owner>mvanouwerkerk@chromium.org</owner>
@@ -287,6 +298,16 @@ chromium-metrics-reviews@google.com.
     long screenshot. Recorded after the page capture request is sent to the
     paint_preview capture service and compositor, when the service is no longer
     busy. This metric is only emitted on Android S+.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.ScrollCapture.MemoryPressureOnSearch"
+    enum="MemoryPressureLevel" expires_after="2026-10-01">
+  <owner>jhimawan@google.com</owner>
+  <owner>src/components/paint_preview/OWNERS</owner>
+  <summary>
+    Records the memory pressure level when a scroll capture search is initiated.
+    Recorded when the system requests scroll capture support. Android only.
   </summary>
 </histogram>
 
@@ -477,6 +498,18 @@ chromium-metrics-reviews@google.com.
     was first received by the target device's sync bridge. This involves clocks
     on two different devices so the value may be skewed. Recorded when the entry
     is received.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.ShareSheetLongScreenshots.BitmapGeneratorStatus"
+    enum="SharingShareSheetLongScreenshotsBitmapGenerationStatus"
+    expires_after="2026-10-01">
+  <owner>jhimawan@google.com</owner>
+  <owner>src/components/paint_preview/OWNERS</owner>
+  <summary>
+    Records the status of the Bitmap Generator when capturing long screenshot
+    from the share sheet (3-dot menu path). Recorded when the capture completes
+    or fails due to insufficient memory or other errors. Android only.
   </summary>
 </histogram>
 

@@ -22,6 +22,7 @@ import java.lang.annotation.Target;
 /** Utility class for long screenshots across different flows. */
 @NullMarked
 public class LongScreenshotsUtils {
+    // LINT.IfChange(BitmapGeneratorStatus)
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
     @IntDef({
@@ -37,6 +38,8 @@ public class LongScreenshotsUtils {
         int GENERATION_ERROR = 2;
         int COUNT = 3;
     }
+
+    // LINT.ThenChange(/tools/metrics/histograms/metadata/sharing/enums.xml:SharingShareSheetLongScreenshotsBitmapGenerationStatus)
 
     /**
      * Shows a generic error Toast for long screenshot failures.
