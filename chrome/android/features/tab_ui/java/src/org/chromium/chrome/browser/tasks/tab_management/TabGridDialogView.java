@@ -95,11 +95,13 @@ public class TabGridDialogView extends FrameLayout {
     private final Context mContext;
     private final float mTabGridCardPadding;
     private final Map<View, Integer> mAccessibilityImportanceMap = new HashMap<>();
+    private final Map<ViewGroup, Integer> mDescendantFocusabilityMap = new HashMap<>();
     private FrameLayout mAnimationClip;
     private FrameLayout mToolbarContainer;
     private FrameLayout mRecyclerViewContainer;
     private RoundedCornerImageView mBackgroundFrame;
     private View mAnimationCardView;
+    private @Nullable View mBackButton;
     private @Nullable View mItemView;
     private View mUngroupBar;
     private TextView mUngroupBarTextView;
@@ -296,7 +298,9 @@ public class TabGridDialogView extends FrameLayout {
                     @Override
                     public void onAnimationEnd(Animator animation) {
                         mCurrentDialogAnimator = null;
-                        mDialogContainerView.requestFocus();
+                        if (mBackButton != null) {
+                            mBackButton.requestFocus();
+                        }
                         mDialogContainerView.sendAccessibilityEvent(
                                 AccessibilityEvent.TYPE_VIEW_FOCUSED);
                         // TODO(crbug.com/40138401): Move clear/restore accessibility importance
@@ -317,7 +321,9 @@ public class TabGridDialogView extends FrameLayout {
                     public void onAnimationEnd(Animator animation) {
                         setVisibility(View.GONE);
                         mCurrentDialogAnimator = null;
-                        mDialogContainerView.clearFocus();
+                        if (mBackButton != null) {
+                            mBackButton.clearFocus();
+                        }
                         restoreBackgroundViewAccessibilityImportance();
                         notifyVisibilityListenerOnHide();
                     }
@@ -373,6 +379,7 @@ public class TabGridDialogView extends FrameLayout {
 
     private void clearBackgroundViewAccessibilityImportance() {
         assert mAccessibilityImportanceMap.isEmpty();
+        assert mDescendantFocusabilityMap.isEmpty();
         ViewGroup parent = (ViewGroup) getParent();
         ViewGroup grandparent = parent == null ? null : (ViewGroup) parent.getParent();
         // Fix for crbug.com/424865865, this can happen if the animation is forced to finish before
@@ -389,6 +396,11 @@ public class TabGridDialogView extends FrameLayout {
             }
             mAccessibilityImportanceMap.put(view, view.getImportantForAccessibility());
             view.setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
+
+            if (view instanceof ViewGroup viewGroup) {
+                mDescendantFocusabilityMap.put(viewGroup, viewGroup.getDescendantFocusability());
+                viewGroup.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
+            }
         }
     }
 
@@ -401,15 +413,25 @@ public class TabGridDialogView extends FrameLayout {
             for (View view : mAccessibilityImportanceMap.keySet()) {
                 view.setImportantForAccessibility(mAccessibilityImportanceMap.get(view));
             }
+            for (ViewGroup viewGroup : mDescendantFocusabilityMap.keySet()) {
+                viewGroup.setDescendantFocusability(mDescendantFocusabilityMap.get(viewGroup));
+            }
         } else {
             for (int i = 0; i < grandparent.getChildCount(); i++) {
                 View view = grandparent.getChildAt(i);
                 if (view == parent) break;
 
                 setImportance(view, mAccessibilityImportanceMap.get(view));
+                if (view instanceof ViewGroup viewGroup) {
+                    Integer focusability = mDescendantFocusabilityMap.get(viewGroup);
+                    if (focusability != null) {
+                        viewGroup.setDescendantFocusability(focusability);
+                    }
+                }
             }
         }
         mAccessibilityImportanceMap.clear();
+        mDescendantFocusabilityMap.clear();
     }
 
     private static void setImportance(View view, @Nullable Integer importance) {
@@ -1038,6 +1060,9 @@ public class TabGridDialogView extends FrameLayout {
         mRecyclerViewContainer.removeAllViews();
         mRecyclerViewContainer.addView(recyclerView);
 
+        mBackButton = toolbarView.findViewById(R.id.toolbar_back_button);
+        assumeNonNull(mBackButton);
+
         recyclerView.setVisibility(View.VISIBLE);
     }
 
@@ -1196,6 +1221,10 @@ public class TabGridDialogView extends FrameLayout {
 
                     r.run();
                 });
+    }
+
+    @Nullable View getBackButtonForTesting() {
+        return mBackButton;
     }
 
     @Nullable Animator getCurrentDialogAnimatorForTesting() {

@@ -119,6 +119,12 @@ public class TabGridDialogViewTest {
                             sActivity
                                     .getResources()
                                     .getDimensionPixelSize(R.dimen.tab_grid_dialog_max_margin);
+
+                    View toolbarView =
+                            LayoutInflater.from(sActivity)
+                                    .inflate(R.layout.tab_grid_dialog_toolbar, null);
+                    View recyclerView = new View(sActivity);
+                    mTabGridDialogView.resetDialog(toolbarView, recyclerView);
                 });
     }
 
@@ -195,7 +201,8 @@ public class TabGridDialogViewTest {
     @SmallTest
     @UiThreadTest
     public void testResetDialog() {
-        View toolbarView = new View(sActivity);
+        View toolbarView =
+                LayoutInflater.from(sActivity).inflate(R.layout.tab_grid_dialog_toolbar, null);
         View recyclerView = new View(sActivity);
         recyclerView.setVisibility(View.GONE);
 
@@ -364,7 +371,8 @@ public class TabGridDialogViewTest {
                 () -> {
                     mTabGridDialogView.setupDialogAnimation(mSourceView);
                     parentViewReference.set((ViewGroup) mTabGridDialogContainer.getParent());
-                    assertFalse(mTabGridDialogContainer.isFocused());
+                    assertFalse(mTabGridDialogContainer.isFocusable());
+                    assertFalse(mTabGridDialogView.getBackButtonForTesting().isFocused());
                 });
         ViewGroup parent = parentViewReference.get();
 
@@ -394,7 +402,7 @@ public class TabGridDialogViewTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertEquals(0f, mBackgroundFrameView.getAlpha(), 0.0);
-                    assertTrue(mTabGridDialogContainer.isFocused());
+                    assertTrue(mTabGridDialogView.getBackButtonForTesting().isFocused());
                 });
 
         // Hide the dialog with zoom-in animation.
@@ -433,7 +441,8 @@ public class TabGridDialogViewTest {
                     assertEquals(0f, mTabGridDialogContainer.getTranslationY(), 0.0);
                     assertEquals(1f, mTabGridDialogContainer.getScaleX(), 0.0);
                     assertEquals(1f, mTabGridDialogContainer.getScaleY(), 0.0);
-                    assertFalse(mTabGridDialogContainer.isFocused());
+                    assertFalse(mTabGridDialogContainer.isFocusable());
+                    assertFalse(mTabGridDialogView.getBackButtonForTesting().isFocused());
                 });
     }
 
@@ -450,7 +459,8 @@ public class TabGridDialogViewTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mTabGridDialogView.setupDialogAnimation(mSourceView);
-                    assertFalse(mTabGridDialogContainer.isFocused());
+                    assertFalse(mTabGridDialogContainer.isFocusable());
+                    assertFalse(mTabGridDialogView.getBackButtonForTesting().isFocused());
                 });
         // Show the dialog.
         ThreadUtils.runOnUiThreadBlocking(() -> mTabGridDialogView.showDialog());
@@ -464,7 +474,7 @@ public class TabGridDialogViewTest {
                 () -> {
                     assertEquals(0f, mAnimationCardView.getAlpha(), 0.0);
                     assertEquals(0f, mBackgroundFrameView.getAlpha(), 0.0);
-                    assertTrue(mTabGridDialogContainer.isFocused());
+                    assertTrue(mTabGridDialogView.getBackButtonForTesting().isFocused());
                 });
 
         // Hide the dialog with basic fade-out animation.
@@ -490,7 +500,8 @@ public class TabGridDialogViewTest {
                     assertEquals(View.GONE, mTabGridDialogView.getVisibility());
                     assertEquals(0f, mAnimationCardView.getAlpha(), 0.0);
                     assertEquals(0f, mBackgroundFrameView.getAlpha(), 0.0);
-                    assertFalse(mTabGridDialogContainer.isFocused());
+                    assertFalse(mTabGridDialogContainer.isFocusable());
+                    assertFalse(mTabGridDialogView.getBackButtonForTesting().isFocused());
                 });
     }
 
@@ -504,7 +515,8 @@ public class TabGridDialogViewTest {
                     // Initially alpha of animation related views should be 0.
                     assertEquals(0f, mAnimationCardView.getAlpha(), 0.0);
                     assertEquals(0f, mBackgroundFrameView.getAlpha(), 0.0);
-                    assertFalse(mTabGridDialogContainer.isFocused());
+                    assertFalse(mTabGridDialogContainer.isFocusable());
+                    assertFalse(mTabGridDialogView.getBackButtonForTesting().isFocused());
                 });
 
         // Show the dialog with basic fade-in animation.
@@ -525,7 +537,7 @@ public class TabGridDialogViewTest {
                 () -> {
                     assertEquals(0f, mAnimationCardView.getAlpha(), 0.0);
                     assertEquals(0f, mBackgroundFrameView.getAlpha(), 0.0);
-                    assertTrue(mTabGridDialogContainer.isFocused());
+                    assertTrue(mTabGridDialogView.getBackButtonForTesting().isFocused());
                 });
 
         // Hide the dialog with basic fade-out animation.
@@ -553,7 +565,8 @@ public class TabGridDialogViewTest {
                     assertEquals(View.GONE, mTabGridDialogView.getVisibility());
                     assertEquals(0f, mAnimationCardView.getAlpha(), 0.0);
                     assertEquals(0f, mBackgroundFrameView.getAlpha(), 0.0);
-                    assertFalse(mTabGridDialogContainer.isFocused());
+                    assertFalse(mTabGridDialogContainer.isFocusable());
+                    assertFalse(mTabGridDialogView.getBackButtonForTesting().isFocused());
                 });
     }
 
@@ -629,7 +642,7 @@ public class TabGridDialogViewTest {
                                 }
                             };
                     textView.setId(R.id.title);
-                    mTabGridDialogView.addView(textView);
+                    mTabGridDialogView.addView(textView, 0);
                 });
 
         long time = SystemClock.uptimeMillis();
