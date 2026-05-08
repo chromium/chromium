@@ -19,6 +19,7 @@
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/bookmarks/desktop_forcing_chrome_bookmark_test_client.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_garbage_collector_factory.h"
@@ -188,9 +189,15 @@ std::unique_ptr<TestingProfile> BuildTestingProfile(
   }
 
   if (params.enable_bookmark_model) {
-    profile_builder.AddTestingFactory(
-        BookmarkModelFactory::GetInstance(),
-        BookmarkModelFactory::GetDefaultFactory());
+    if (params.force_desktop_bookmark_behavior) {
+      profile_builder.AddTestingFactory(
+          BookmarkModelFactory::GetInstance(),
+          DesktopForcingChromeBookmarkTestClient::GetTestingFactory());
+    } else {
+      profile_builder.AddTestingFactory(
+          BookmarkModelFactory::GetInstance(),
+          BookmarkModelFactory::GetDefaultFactory());
+    }
     profile_builder.AddTestingFactory(
         ManagedBookmarkServiceFactory::GetInstance(),
         ManagedBookmarkServiceFactory::GetDefaultFactory());

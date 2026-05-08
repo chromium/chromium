@@ -40,10 +40,12 @@
 #include "chrome/browser/offline_pages/offline_page_bookmark_observer.h"
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#else
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace {
 
@@ -211,6 +213,16 @@ bool ChromeBookmarkClient::CanSetPermanentNodeTitle(
 bool ChromeBookmarkClient::IsNodeManaged(const bookmarks::BookmarkNode* node) {
   return managed_bookmark_service_ &&
          managed_bookmark_service_->IsNodeManaged(node);
+}
+
+bookmarks::BookmarkFormFactor ChromeBookmarkClient::GetBookmarkFormFactor() {
+#if BUILDFLAG(IS_ANDROID)
+  return base::android::device_info::is_desktop()
+             ? bookmarks::BookmarkFormFactor::kDesktop
+             : bookmarks::BookmarkFormFactor::kMobile;
+#else
+  return bookmarks::BookmarkFormFactor::kDesktop;
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 std::string ChromeBookmarkClient::EncodeLocalOrSyncableBookmarkSyncMetadata() {

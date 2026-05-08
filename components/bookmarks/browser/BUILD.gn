@@ -15,6 +15,7 @@ static_library("browser") {
     "base_bookmark_model_observer.h",
     "bookmark_client.h",
     "bookmark_codec.h",
+    "bookmark_form_factor.h",
     "bookmark_model.h",
     "bookmark_model_load_waiter.h",
     "bookmark_model_observer.h",
@@ -63,6 +64,7 @@ static_library("browser") {
   deps = [
     "//base",
     "//base:i18n",
+    "//build:android_buildflags",
     "//components/favicon_base",
     "//components/keyed_service/core",
     "//components/omnibox/common",
@@ -156,6 +158,7 @@ source_set("unit_tests") {
     ":browser",
     ":unit_tests_bundle_data",
     "//base/test:test_support",
+    "//build:android_buildflags",
     "//components/bookmarks/common",
     "//components/bookmarks/test",
     "//components/favicon_base",

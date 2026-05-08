@@ -13,6 +13,8 @@
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
+#include "build/android_buildflags.h"
+#include "build/build_config.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_storage.h"
@@ -119,6 +121,25 @@ bool TestBookmarkClient::CanSetPermanentNodeTitle(
 
 bool TestBookmarkClient::IsNodeManaged(const BookmarkNode* node) {
   return node && node->HasAncestor(unowned_managed_node_.get());
+}
+
+// static
+bool TestBookmarkClient::IsDesktopFormFactorByDefault() {
+// TODO(crbug.com/509156770): Replace this ifdef with a call to
+// DeviceInfo::is_desktop() once it returns the correct value for desktop
+// Android tests.
+#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_DESKTOP_ANDROID)
+  return false;
+#elif BUILDFLAG(IS_IOS)
+  return false;
+#else
+  return true;
+#endif
+}
+
+BookmarkFormFactor TestBookmarkClient::GetBookmarkFormFactor() {
+  return IsDesktopFormFactorByDefault() ? BookmarkFormFactor::kDesktop
+                                        : BookmarkFormFactor::kMobile;
 }
 
 std::string TestBookmarkClient::EncodeLocalOrSyncableBookmarkSyncMetadata() {

@@ -73,6 +73,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
@@ -1435,7 +1436,13 @@ public class BookmarkTest {
         // NOTE: Hide promos to ensure top level-folders will fit the viewport.
         SigninPromoCoordinator.disablePromoForTesting();
         openBookmarkManager();
-        onViewWaiting(allOf(withText("Mobile bookmarks"), isDisplayed()));
+
+        // An empty mobile bookmarks folder is hidden on desktop devices.
+        if (DeviceInfo.isDesktop()) {
+            onView(withText("Mobile bookmarks")).check(doesNotExist());
+        } else {
+            onViewWaiting(allOf(withText("Mobile bookmarks"), isDisplayed()));
+        }
         onViewWaiting(allOf(withText("Reading list"), isDisplayed()));
         onView(withText("Bookmarks bar"))
                 .check(
@@ -1469,7 +1476,12 @@ public class BookmarkTest {
         runOnUiThreadBlocking(getTestingDelegate()::simulateSignInForTesting);
 
         final List<String> expectedTopLevelFolders =
-                new ArrayList<>(List.of("Mobile bookmarks", "Other bookmarks", "Reading list"));
+                new ArrayList<>(List.of("Other bookmarks", "Reading list"));
+
+        // An empty mobile bookmarks folder is hidden on desktop devices.
+        if (!DeviceInfo.isDesktop()) {
+            expectedTopLevelFolders.add(0, "Mobile bookmarks");
+        }
 
         if (BookmarkBarUtils.isDeviceBookmarkBarCompatible(mActivityTestRule.getActivity())) {
             expectedTopLevelFolders.add(1, "Bookmarks bar");

@@ -82,6 +82,12 @@ class ExtensionServiceTestBase : public testing::Test {
     bool profile_is_supervised = false;
     bool profile_is_guest = false;
     bool enable_bookmark_model = false;
+
+    // If true, force desktop bookmarks behavior. This is currently only used
+    // for desktop Android.
+    // TODO(crbug.com/509156770): Remove this once DeviceInfo returns the
+    // correct value for is_desktop on desktop Android for tests.
+    bool force_desktop_bookmark_behavior = false;
     bool enable_install_limiter = false;
     // If true, a TestSyncService is created and used instead of a
     // default SyncService.

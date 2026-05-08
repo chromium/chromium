@@ -30,6 +30,7 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
+#include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "components/bookmarks/browser/bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_node.h"
@@ -1358,11 +1359,10 @@ TEST_F(BookmarkModelTest, MoveWithUuidCollisionInDescendant) {
 
 // Tests the default node if no bookmarks have been added yet
 TEST_F(BookmarkModelTest, ParentForNewNodesWithEmptyModel) {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  EXPECT_EQ(model()->mobile_node(), GetParentForNewNodes(model()));
-#else
-  EXPECT_EQ(model()->other_node(), GetParentForNewNodes(model()));
-#endif
+  EXPECT_EQ(TestBookmarkClient::IsDesktopFormFactorByDefault()
+                ? model()->other_node()
+                : model()->mobile_node(),
+            GetParentForNewNodes(model()));
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -1654,15 +1654,15 @@ TEST_F(BookmarkModelTest, ReorderCallWithSizeMismatch) {
 }
 
 TEST_F(BookmarkModelTest, NodeVisibility) {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  EXPECT_FALSE(model()->bookmark_bar_node()->IsVisible());
-  EXPECT_FALSE(model()->other_node()->IsVisible());
-  EXPECT_TRUE(model()->mobile_node()->IsVisible());
-#else
-  EXPECT_TRUE(model()->bookmark_bar_node()->IsVisible());
-  EXPECT_TRUE(model()->other_node()->IsVisible());
-  EXPECT_FALSE(model()->mobile_node()->IsVisible());
-#endif
+  if (TestBookmarkClient::IsDesktopFormFactorByDefault()) {
+    EXPECT_TRUE(model()->bookmark_bar_node()->IsVisible());
+    EXPECT_TRUE(model()->other_node()->IsVisible());
+    EXPECT_FALSE(model()->mobile_node()->IsVisible());
+  } else {
+    EXPECT_FALSE(model()->bookmark_bar_node()->IsVisible());
+    EXPECT_FALSE(model()->other_node()->IsVisible());
+    EXPECT_TRUE(model()->mobile_node()->IsVisible());
+  }
 
   // Arbitrary node should be visible
   TestNode bbn;
@@ -1681,11 +1681,10 @@ TEST_F(BookmarkModelTest, NodeVisibility) {
 }
 
 TEST_F(BookmarkModelTest, NodeVisibility_AddBookmarkToNonVisibleFolder) {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  const BookmarkPermanentNode* permanent_folder = model()->other_node();
-#else
-  const BookmarkPermanentNode* permanent_folder = model()->mobile_node();
-#endif
+  const BookmarkPermanentNode* permanent_folder =
+      TestBookmarkClient::IsDesktopFormFactorByDefault()
+          ? model()->mobile_node()
+          : model()->other_node();
 
   // This permanent folder is not visible when empty.
   ASSERT_FALSE(permanent_folder->IsVisible());
@@ -1714,7 +1713,8 @@ TEST_F(BookmarkModelTest, NodeVisibility_AddBookmarkToNonVisibleFolder) {
   EXPECT_TRUE(permanent_folder->IsVisible());
 }
 
-#if !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))
+#if !((BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_DESKTOP_ANDROID)) || \
+      BUILDFLAG(IS_IOS))
 TEST_F(BookmarkModelTest, NodeVisibility_AddFirstLocalBookmarkToOtherFolder) {
   model()->CreateAccountPermanentFolders();
 
@@ -1827,14 +1827,14 @@ TEST_F(BookmarkModelTest, NodeVisibility_AddFirstLocalBookmarkToMobileFolder) {
                   model()->mobile_node(), model()->account_bookmark_bar_node(),
                   model()->account_other_node()));
 }
-#endif  // !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))
+#endif  // !((BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_DESKTOP_ANDROID)) ||
+        // BUILDFLAG(IS_IOS))
 
 TEST_F(BookmarkModelTest, NodeVisibility_RemoveLastBookmarkFromVisibleFolder) {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  const BookmarkPermanentNode* permanent_folder = model()->other_node();
-#else
-  const BookmarkPermanentNode* permanent_folder = model()->mobile_node();
-#endif
+  const BookmarkPermanentNode* permanent_folder =
+      TestBookmarkClient::IsDesktopFormFactorByDefault()
+          ? model()->mobile_node()
+          : model()->other_node();
 
   // This permanent folder is not visible when empty; visible when non-empty.
   ASSERT_FALSE(permanent_folder->IsVisible());
@@ -1866,7 +1866,8 @@ TEST_F(BookmarkModelTest, NodeVisibility_RemoveLastBookmarkFromVisibleFolder) {
   EXPECT_FALSE(permanent_folder->IsVisible());
 }
 
-#if !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))
+#if !((BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_DESKTOP_ANDROID)) || \
+      BUILDFLAG(IS_IOS))
 TEST_F(BookmarkModelTest,
        NodeVisibility_MoveBookmarkChangesVisibilityOfSourceFolder) {
   const BookmarkPermanentNode* source_folder = model()->mobile_node();
@@ -2131,18 +2132,19 @@ TEST_F(BookmarkModelTest, NodeVisibility_RemoveAccountPermanentFolders) {
   model()->RemoveAccountPermanentFolders();
   EXPECT_THAT(GetVisiblePermanentNodes(), ElementsAre(local_bb, local_other));
 }
-#endif  // !(BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS))
+#endif  // !((BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_DESKTOP_ANDROID)) ||
+        // BUILDFLAG(IS_IOS))
 
 TEST_F(BookmarkModelTest, NodeVisibility_AllBookmarksPhase0) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       bookmarks::kAllBookmarksBaselineFolderVisibility);
   ResetModelWithClient(std::make_unique<TestBookmarkClientWithUndo>());
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  EXPECT_FALSE(model()->bookmark_bar_node()->IsVisible());
-#else
-  EXPECT_TRUE(model()->bookmark_bar_node()->IsVisible());
-#endif
+  if (TestBookmarkClient::IsDesktopFormFactorByDefault()) {
+    EXPECT_TRUE(model()->bookmark_bar_node()->IsVisible());
+  } else {
+    EXPECT_FALSE(model()->bookmark_bar_node()->IsVisible());
+  }
 
   EXPECT_TRUE(model()->other_node()->IsVisible());
   // EXPECT_FALSE(model()->mobile_node()->IsVisible());
@@ -3828,16 +3830,15 @@ TEST_F(BookmarkModelTest, IsVisible) {
   EXPECT_TRUE(model()->root_node()->IsVisible());
 
   // Check per-platform visibility of empty permanent nodes.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  EXPECT_FALSE(model()->bookmark_bar_node()->IsVisible());
-  EXPECT_FALSE(model()->other_node()->IsVisible());
-  EXPECT_TRUE(model()->mobile_node()->IsVisible());
-#else
-  EXPECT_TRUE(model()->bookmark_bar_node()->IsVisible());
-  EXPECT_TRUE(model()->other_node()->IsVisible());
-  EXPECT_FALSE(model()->mobile_node()->IsVisible());
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-
+  if (TestBookmarkClient::IsDesktopFormFactorByDefault()) {
+    EXPECT_TRUE(model()->bookmark_bar_node()->IsVisible());
+    EXPECT_TRUE(model()->other_node()->IsVisible());
+    EXPECT_FALSE(model()->mobile_node()->IsVisible());
+  } else {
+    EXPECT_FALSE(model()->bookmark_bar_node()->IsVisible());
+    EXPECT_FALSE(model()->other_node()->IsVisible());
+    EXPECT_TRUE(model()->mobile_node()->IsVisible());
+  }
   // Create empty account folders.
   model()->CreateAccountPermanentFolders();
 
@@ -3847,38 +3848,38 @@ TEST_F(BookmarkModelTest, IsVisible) {
   EXPECT_FALSE(model()->bookmark_bar_node()->IsVisible());
   EXPECT_FALSE(model()->other_node()->IsVisible());
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  EXPECT_TRUE(model()->mobile_node()->IsVisible());
-#else
-  EXPECT_FALSE(model()->mobile_node()->IsVisible());
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  if (TestBookmarkClient::IsDesktopFormFactorByDefault()) {
+    EXPECT_FALSE(model()->mobile_node()->IsVisible());
+  } else {
+    EXPECT_TRUE(model()->mobile_node()->IsVisible());
+  }
 
   // Check per-platform visibility of empty account permanent nodes.
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  EXPECT_FALSE(model()->account_bookmark_bar_node()->IsVisible());
-  EXPECT_FALSE(model()->account_other_node()->IsVisible());
-  EXPECT_TRUE(model()->account_mobile_node()->IsVisible());
-#else
-  EXPECT_TRUE(model()->account_bookmark_bar_node()->IsVisible());
-  EXPECT_TRUE(model()->account_other_node()->IsVisible());
-  EXPECT_FALSE(model()->account_mobile_node()->IsVisible());
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  if (TestBookmarkClient::IsDesktopFormFactorByDefault()) {
+    EXPECT_TRUE(model()->account_bookmark_bar_node()->IsVisible());
+    EXPECT_TRUE(model()->account_other_node()->IsVisible());
+    EXPECT_FALSE(model()->account_mobile_node()->IsVisible());
+  } else {
+    EXPECT_FALSE(model()->account_bookmark_bar_node()->IsVisible());
+    EXPECT_FALSE(model()->account_other_node()->IsVisible());
+    EXPECT_TRUE(model()->account_mobile_node()->IsVisible());
+  }
 
   // Make the local bookmark bar node non-empty. Nodes that were previously
   // hidden because there were no local bookmarks are now visible.
   model()->AddURL(model()->bookmark_bar_node(), 0, u"Chromium",
                   GURL("http://www.chromium.org"));
   EXPECT_TRUE(model()->bookmark_bar_node()->IsVisible());
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  // On mobile, the other node is always hidden when empty and the mobile node
-  // is always visible (so there is no change as a result of the bookmark bar
-  // becoming non-empty).
-  EXPECT_FALSE(model()->other_node()->IsVisible());
-  EXPECT_TRUE(model()->mobile_node()->IsVisible());
-#else
-  // On desktop, the other node was previously hidden and is now visible.
-  EXPECT_TRUE(model()->other_node()->IsVisible());
-#endif
+  if (TestBookmarkClient::IsDesktopFormFactorByDefault()) {
+    // On desktop, the other node was previously hidden and is now visible.
+    EXPECT_TRUE(model()->other_node()->IsVisible());
+  } else {
+    // On mobile, the other node is always hidden when empty and the mobile node
+    // is always visible (so there is no change as a result of the bookmark bar
+    // becoming non-empty).
+    EXPECT_FALSE(model()->other_node()->IsVisible());
+    EXPECT_TRUE(model()->mobile_node()->IsVisible());
+  }
 
   // Make the account mobile node folder non-empty. It is now visible.
   model()->AddURL(model()->account_mobile_node(), 0, u"Chromium",

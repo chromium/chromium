@@ -21,6 +21,7 @@ source_set("test") {
   deps = [
     "//base",
     "//base/test:test_support",
+    "//build:android_buildflags",
     "//components/bookmarks/browser",
     "//components/favicon_base",
     "//components/os_crypt/async/browser",

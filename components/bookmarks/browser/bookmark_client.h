@@ -13,6 +13,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "components/bookmarks/browser/bookmark_form_factor.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/favicon_base/favicon_callback.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -95,6 +96,10 @@ class BookmarkClient {
 
   // Returns true if `node` is considered a managed node.
   virtual bool IsNodeManaged(const BookmarkNode* node) = 0;
+
+  // Returns the form factor of the current device, which determines the
+  // behavior of UI features like permanent folder visibility.
+  virtual BookmarkFormFactor GetBookmarkFormFactor() = 0;
 
   // Encodes the bookmark sync data into a string blob. It's used by the
   // bookmark model to persist the sync metadata together with the bookmark
