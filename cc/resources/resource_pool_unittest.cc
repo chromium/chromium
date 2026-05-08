@@ -13,8 +13,10 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
+#include "cc/base/features.h"
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
@@ -524,6 +526,117 @@ TEST_F(ResourcePoolTest, ReuseResource) {
   EXPECT_EQ(nullptr, resource_pool_->ReuseResource(gfx::Size(100, 100), format,
                                                    color_space));
   CheckAndReturnResource(std::move(resource));
+}
+
+TEST_F(ResourcePoolTest, ReuseResourceExactMatchFirstEnabled) {
+  if (!resource_pool_->AllowsNonExactReUseForTesting()) {
+    GTEST_SKIP();
+  }
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kResourcePoolPreferExactSizeReuse);
+
+  viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
+  gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
+
+  // Create a resource with size 70x70.
+  ResourcePool::InUsePoolResource larger_resource =
+      resource_pool_->AcquireResource(gfx::Size(70, 70), format, color_space);
+  auto larger_id = larger_resource.unique_id_for_testing();
+
+  // Create a resource with size 50x50.
+  ResourcePool::InUsePoolResource exact_resource =
+      resource_pool_->AcquireResource(gfx::Size(50, 50), format, color_space);
+  auto exact_id = exact_resource.unique_id_for_testing();
+
+  // Return both resources to the pool.
+  // We return the 50x50 one first, so it is further from the front (LRU
+  // compared to 70x70).
+  CheckAndReturnResource(std::move(exact_resource));
+  CheckAndReturnResource(std::move(larger_resource));
+
+  // Request a 50x50 resource.
+  // 70x70 is MRU and fits (area ratio 1.96 < 2.0).
+  // 50x50 is LRU and is an exact match.
+  // We should get the 50x50 one because exact matches are prioritized when
+  // the feature is enabled.
+  ResourcePool::InUsePoolResource reused =
+      resource_pool_->AcquireResource(gfx::Size(50, 50), format, color_space);
+  EXPECT_EQ(exact_id, reused.unique_id_for_testing());
+  EXPECT_NE(larger_id, reused.unique_id_for_testing());
+  CheckAndReturnResource(std::move(reused));
+}
+
+TEST_F(ResourcePoolTest, ReuseResourceExactMatchFirstDisabled) {
+  if (!resource_pool_->AllowsNonExactReUseForTesting()) {
+    GTEST_SKIP();
+  }
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kResourcePoolPreferExactSizeReuse);
+
+  viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
+  gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
+
+  // Create a resource with size 70x70.
+  ResourcePool::InUsePoolResource larger_resource =
+      resource_pool_->AcquireResource(gfx::Size(70, 70), format, color_space);
+  auto larger_id = larger_resource.unique_id_for_testing();
+
+  // Create a resource with size 50x50.
+  ResourcePool::InUsePoolResource exact_resource =
+      resource_pool_->AcquireResource(gfx::Size(50, 50), format, color_space);
+  auto exact_id = exact_resource.unique_id_for_testing();
+
+  // Return both resources to the pool.
+  // We return the 50x50 one first, so it is further from the front (LRU
+  // compared to 70x70).
+  CheckAndReturnResource(std::move(exact_resource));
+  CheckAndReturnResource(std::move(larger_resource));
+
+  // Request a 50x50 resource.
+  // 70x70 is MRU and fits (area ratio 1.96 < 2.0).
+  // 50x50 is LRU and is an exact match.
+  // When the feature is disabled, we should get the MRU one (70x70), NOT the
+  // exact match.
+  ResourcePool::InUsePoolResource reused =
+      resource_pool_->AcquireResource(gfx::Size(50, 50), format, color_space);
+  EXPECT_EQ(larger_id, reused.unique_id_for_testing());
+  EXPECT_NE(exact_id, reused.unique_id_for_testing());
+  CheckAndReturnResource(std::move(reused));
+}
+
+TEST_F(ResourcePoolTest, ReuseResourceNoExactMatchMRU) {
+  if (!resource_pool_->AllowsNonExactReUseForTesting()) {
+    GTEST_SKIP();
+  }
+
+  viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
+  gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
+
+  // Create two resources that fit a 50x50 request but are not exact matches.
+  // R1: 60x60 (3600), R2: 70x70 (4900). Both fit 50x50 (2500) because ratio <=
+  // 2.0.
+  ResourcePool::InUsePoolResource r1 =
+      resource_pool_->AcquireResource(gfx::Size(60, 60), format, color_space);
+  auto r1_id = r1.unique_id_for_testing();
+
+  ResourcePool::InUsePoolResource r2 =
+      resource_pool_->AcquireResource(gfx::Size(70, 70), format, color_space);
+  auto r2_id = r2.unique_id_for_testing();
+
+  // Return R1 then R2. R2 is MRU.
+  CheckAndReturnResource(std::move(r1));
+  CheckAndReturnResource(std::move(r2));
+
+  // Request 50x50. Should get R2 (MRU).
+  ResourcePool::InUsePoolResource reused =
+      resource_pool_->AcquireResource(gfx::Size(50, 50), format, color_space);
+  EXPECT_EQ(r2_id, reused.unique_id_for_testing());
+  EXPECT_NE(r1_id, reused.unique_id_for_testing());
+  CheckAndReturnResource(std::move(reused));
 }
 
 TEST_F(ResourcePoolTest, InvalidateResources) {

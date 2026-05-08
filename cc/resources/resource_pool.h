@@ -46,6 +46,15 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
   class PoolResource;
 
  public:
+  struct SizeComparator {
+    bool operator()(const gfx::Size& a, const gfx::Size& b) const {
+      if (a.width() != b.width()) {
+        return a.width() < b.width();
+      }
+      return a.height() < b.height();
+    }
+  };
+
   // Delay before a resource is considered expired.
   static constexpr base::TimeDelta kDefaultExpirationDelay = base::Seconds(5);
   // Max delay before an evicted resource is flushed.
@@ -440,6 +449,10 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
                                viz::SharedImageFormat format,
                                const gfx::ColorSpace& color_space);
 
+  static void DecrementSizeCount(
+      std::map<gfx::Size, size_t, SizeComparator>& unused_resources_by_size,
+      const gfx::Size& size);
+
   void DidFinishUsingResource(std::unique_ptr<PoolResource> resource);
   void DeleteResource(std::unique_ptr<PoolResource> resource);
   static void UpdateResourceContentIdAndInvalidation(
@@ -474,6 +487,9 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
   // Holds most recently used resources at the front of the queue.
   base::circular_deque<std::unique_ptr<PoolResource>> unused_resources_;
   base::circular_deque<std::unique_ptr<PoolResource>> busy_resources_;
+
+  // A lookup table for |unused_resources_| by size.
+  std::map<gfx::Size, size_t, SizeComparator> unused_resources_by_size_;
 
   // Map from the PoolResource |unique_id| to the PoolResource.
   std::map<size_t, std::unique_ptr<PoolResource>> in_use_resources_;

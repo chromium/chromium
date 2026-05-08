@@ -285,6 +285,10 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kBrowserControlsScrollSnapAnimation);
 // crbug.com/451833352.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kSelectionEdgeVisibilityUsesFullEdge);
 
+// When enabled, ResourcePool will prioritize exact size matches when reusing
+// resources.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kResourcePoolPreferExactSizeReuse);
+
 }  // namespace features
 
 #endif  // CC_BASE_FEATURES_H_
