@@ -43,10 +43,10 @@
 #include "third_party/lens_server_proto/aim_communication.pb.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/webui/mojo_web_ui_controller.h"
+#include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/host_zoom_map.h"
-#include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 #endif
 
 #if !BUILDFLAG(ENABLE_EXTENSIONS_CORE)
@@ -84,9 +84,7 @@ class ContextualTasksUI
       public guest_view::SlimWebViewPageHandlerFactory,
 #endif
       public contextual_tasks::mojom::PageHandlerFactory,
-#if !BUILDFLAG(IS_ANDROID)
       public composebox::mojom::PageHandlerFactory,
-#endif
       public contextual_tasks_internals::mojom::
           ContextualTasksInternalsPageHandlerFactory,
       public signin::IdentityManager::Observer,
@@ -129,7 +127,6 @@ class ContextualTasksUI
   using SlimWebViewPageHandlerFactory::BindInterface;
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
   // composebox::mojom::PageHandlerFactory:
   void CreatePageHandler(
       mojo::PendingRemote<composebox::mojom::Page> pending_page,
@@ -144,7 +141,6 @@ class ContextualTasksUI
   // pending receiver that will be internally bound.
   void BindInterface(
       mojo::PendingReceiver<composebox::mojom::PageHandlerFactory> receiver);
-#endif
 
   // contextual_tasks::mojom::PageHandlerFactory:
   void CreatePageHandler(
@@ -259,11 +255,9 @@ class ContextualTasksUI
   void OnRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info) override;
 
-#if !BUILDFLAG(IS_ANDROID)
   void SetComposeboxHandlerForTesting(  // IN-TEST
       std::unique_ptr<
           contextual_tasks::ContextualTasksComposeboxHandlerInterface> handler);
-#endif
 
   // Shows an OAuth error dialog.
   void ShowOauthErrorDialog();
@@ -348,8 +342,6 @@ class ContextualTasksUI
   raw_ptr<contextual_tasks::ContextualTasksComposeboxHandlerInterface>
       composebox_handler_ = nullptr;
 
-#if !BUILDFLAG(IS_ANDROID)
-  // Desktop only. The composebox handler.
   std::unique_ptr<contextual_tasks::ContextualTasksComposeboxHandlerInterface>
       owned_composebox_handler_;
 
@@ -357,7 +349,6 @@ class ContextualTasksUI
       composebox_page_handler_factory_receiver_{this};
 
   mojo::Remote<composebox::mojom::Page> page_remote_;
-#endif
 
   std::unique_ptr<InnerFrameCreationObvserver>
       inner_web_contents_creation_observer_;

@@ -24,7 +24,7 @@ namespace contextual_tasks {
 
 class ContextualTasksContextService;
 
-// A shared implementation of QueryContextualizer::Delegate for Desktop.
+// A shared implementation of QueryContextualizer::Delegate.
 // It uses tabs::TabHandle to interact with tabs and delegates page context
 // fetching to TabContextualizationController.
 class DesktopQueryContextualizerDelegate

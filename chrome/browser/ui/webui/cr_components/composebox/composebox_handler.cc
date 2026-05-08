@@ -13,7 +13,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
-#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/contextual_searchbox_handler.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_utils.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
@@ -30,6 +29,10 @@
 #include "third_party/omnibox_proto/chrome_aim_entry_point.pb.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/base/window_open_disposition.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
+#endif
 
 namespace {
 
@@ -197,6 +200,7 @@ void ComposeboxHandler::OnContextMenuOpened() {
 }
 
 void ComposeboxHandler::NotifyComposeboxQuerySubmittedWithContext() {
+#if !BUILDFLAG(IS_ANDROID)
   if (!web_contents_) {
     return;
   }
@@ -213,6 +217,7 @@ void ComposeboxHandler::NotifyComposeboxQuerySubmittedWithContext() {
   user_education_interface->NotifyFeaturePromoFeatureUsed(
       feature_engagement::kIPHDesktopRealboxContextualSearchFeature,
       FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+#endif
 }
 
 void ComposeboxHandler::NavigateUrl(const GURL& url) {

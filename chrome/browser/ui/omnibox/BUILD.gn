@@ -9,18 +9,17 @@ assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 
 # The public interface has no circular dependencies.
 source_set("omnibox") {
-  public = [ "omnibox_pedal_implementations.h" ]
+  public = [
+    "omnibox_controller.h",
+    "omnibox_pedal_implementations.h",
+  ]
   sources = []
   deps = []
   public_deps = [
     "//base",
     "//components/omnibox/browser",
+    "//components/search_engines",
   ]
-
-  if (!is_android || enable_webui_ntp) {
-    public += [ "omnibox_controller.h" ]
-    public_deps += [ "//components/search_engines" ]
-  }
   if (!is_android) {
     public += [
       "ai_mode_page_action_controller.h",
@@ -68,7 +67,10 @@ source_set("omnibox") {
 # interface. This does have circular dependencies with //chrome/browser and
 # //chrome/browser/ui.
 source_set("impl") {
-  sources = [ "omnibox_pedal_implementations.cc" ]
+  sources = [
+    "omnibox_controller.cc",
+    "omnibox_pedal_implementations.cc",
+  ]
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
     ":omnibox",
@@ -79,6 +81,7 @@ source_set("impl") {
     "//chrome/browser/bookmarks",
     "//chrome/browser/feedback",
     "//chrome/browser/feedback:feedback_enum",
+    "//chrome/browser/preloading",
     "//chrome/browser/preloading/prefetch/search_prefetch",
     "//chrome/browser/preloading/prerender",
     "//chrome/common",
@@ -94,10 +97,7 @@ source_set("impl") {
     "//components/strings:components_strings_grit",
     "//components/vector_icons",
   ]
-  if (!is_android || enable_webui_ntp) {
-    sources += [ "omnibox_controller.cc" ]
-    deps += [ "//chrome/browser/preloading" ]
-  }
+
   if (!is_android) {
     sources += [
       "ai_mode_page_action_controller.cc",

@@ -343,8 +343,6 @@ ContextualSearchboxHandler::ContextualSearchboxHandler(
   contextual_tasks_service_ =
       contextual_tasks::ContextualTasksServiceFactory::GetForProfile(profile);
   if (contextual_tasks_service_) {
-// TODO(b/502297163): Implement for Android.
-#if !BUILDFLAG(IS_ANDROID)
     // It is safe to use base::Unretained(this) here because `desktop_delegate_`
     // is owned by `this` and will be destroyed when `this` is destroyed,
     // cancelling any pending callbacks.
@@ -360,7 +358,6 @@ ContextualSearchboxHandler::ContextualSearchboxHandler(
     query_contextualizer_ =
         std::make_unique<contextual_tasks::QueryContextualizer>(
             contextual_tasks_service_, desktop_delegate_.get());
-#endif  // !BUILDFLAG(IS_ANDROID)
   }
 }
 
@@ -422,10 +419,7 @@ ContextualSearchboxHandler::GetContextualSessionHandle() {
 }
 
 ContextualSearchboxHandler::~ContextualSearchboxHandler() {
-// TODO(b/502297163): Implement for Android.
-#if !BUILDFLAG(IS_ANDROID)
   query_contextualizer_.reset();
-#endif
   if (context_controller_) {
     context_controller_->RemoveObserver(this);
   }
@@ -841,6 +835,7 @@ void ContextualSearchboxHandler::RecordTabAddedMetric(
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 bool ContextualSearchboxHandler::ShouldOpenInLensSidePanel(
     content::WebContents* active_web_contents,
     contextual_search::ContextualSearchSessionHandle* session_handle) {
@@ -860,12 +855,10 @@ bool ContextualSearchboxHandler::ShouldOpenInLensSidePanel(
           : nullptr;
 
   bool lens_overlay_enabled = false;
-#if !BUILDFLAG(IS_ANDROID)
   auto* entry_point_controller =
       lens::LensOverlayEntryPointController::From(browser_window_interface);
   lens_overlay_enabled =
       entry_point_controller && entry_point_controller->IsEnabled();
-#endif
 
   return active_web_contents &&
          (!eligibility_manager ||
@@ -875,6 +868,7 @@ bool ContextualSearchboxHandler::ShouldOpenInLensSidePanel(
          session_handle->IsTabInContext(
              sessions::SessionTabHelper::IdForTab(active_web_contents));
 }
+#endif
 
 void ContextualSearchboxHandler::DeleteContext(
     const base::UnguessableToken& context_token,
@@ -1079,8 +1073,6 @@ void ContextualSearchboxHandler::ContextualizeQueryAndOpenUrl(
     std::map<std::string, std::string> additional_params) {
   MaybeTriggerSmartTabSharingPromo(query_text, web_contents_);
 
-// TODO(b/502297163): Implement for Android.
-#if !BUILDFLAG(IS_ANDROID)
   if (query_contextualizer_) {
     query_contextualizer_->Contextualize(
         GetTaskId(), query_text, /*tabs_to_recontextualize=*/{},
@@ -1102,7 +1094,6 @@ void ContextualSearchboxHandler::ContextualizeQueryAndOpenUrl(
         /*enable_smart_tab_selection=*/IsSmartTabSharingActive());
     return;
   }
-#endif
 
   ComputeAndOpenQueryUrl(query_text, disposition, aim_entry_point,
                          std::move(additional_params));

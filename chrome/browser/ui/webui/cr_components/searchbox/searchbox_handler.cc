@@ -17,7 +17,6 @@
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/preloading/autocomplete_dictionary_preload_service.h"
 #include "chrome/browser/preloading/autocomplete_dictionary_preload_service_factory.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
@@ -67,6 +66,7 @@
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -545,10 +545,16 @@ base::DictValue SearchboxHandler::GetWebUIDataSourceDict(
            options.session_allows_drag_and_drop);
 
   auto composebox_config = ntp_composebox::FeatureConfig::Get().config;
+#if !BUILDFLAG(IS_ANDROID)
   dict.Set("searchboxShowComposeAnimation",
            profile->GetPrefs()->GetInteger(
                prefs::kNtpComposeButtonShownCountPrefName) <
                composebox_config.entry_point().num_page_load_animations());
+#else
+  // TODO(b/509722915): Implement NTP compose button shown count pref on
+  // Android.
+  dict.Set("searchboxShowComposeAnimation", false);
+#endif
   dict.Set("contextualMenuUsePecApi",
            base::FeatureList::IsEnabled(omnibox::kAimUsePecApi));
   dict.Set("ShowContextMenuHeaders",

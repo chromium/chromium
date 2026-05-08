@@ -64,7 +64,7 @@ if (is_ios) {
   mojo_ts_files += [ "ui/base/mojom/ui_base_types.mojom-webui.ts" ]
 }
 
-if ((!is_ios && !is_android) || enable_webui_ntp) {
+if (!is_ios) {
   mojo_ts_files += [
     "components/omnibox/browser/searchbox.mojom-webui.ts",
     "components/omnibox/composebox/composebox_query.mojom-webui.ts",

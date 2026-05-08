@@ -1041,7 +1041,7 @@ fuzzer_test("search_suggestion_parser_fuzzer") {
 
 mojom("mojo_bindings") {
   sources = [ "omnibox.mojom" ]
-  if ((!is_android && !is_ios) || enable_webui_ntp) {
+  if (!is_ios) {
     sources += [ "searchbox.mojom" ]
   }
 

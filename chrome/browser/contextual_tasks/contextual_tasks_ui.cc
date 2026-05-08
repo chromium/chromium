@@ -20,6 +20,7 @@
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
 #include "chrome/browser/contextual_tasks/contextual_search_session_finder.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_auto_suggestion_manager.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_composebox_handler.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_composebox_handler_interface.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_internals_page_handler.h"
@@ -41,6 +42,7 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/sanitized_image/sanitized_image_source.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
@@ -90,11 +92,9 @@
 #include "ui/webui/webui_util.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/contextual_tasks/contextual_tasks_composebox_handler.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_handler.h"
 #include "components/omnibox/browser/searchbox.mojom-forward.h"
 #include "components/zoom/zoom_controller.h"  // nogncheck
 #endif
@@ -822,7 +822,6 @@ ContextualTasksUIConfig::CreateWebUIController(content::WebUI* web_ui,
   return std::make_unique<ContextualTasksUI>(web_ui);
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 void ContextualTasksUI::BindInterface(
     mojo::PendingReceiver<composebox::mojom::PageHandlerFactory>
         pending_receiver) {
@@ -854,7 +853,6 @@ void ContextualTasksUI::CreatePageHandler(
   composebox_handler_->UpdateSuggestedTabContext(
       auto_suggestion_manager_->GetCurrentSuggestion());
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 contextual_search::ContextualSearchSessionHandle*
 ContextualTasksUI::GetOrCreateContextualSessionHandle() {
@@ -937,14 +935,12 @@ void ContextualTasksUI::SetComposeboxHandler(
   composebox_handler_ = handler;
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 void ContextualTasksUI::SetComposeboxHandlerForTesting(  // IN-TEST
     std::unique_ptr<contextual_tasks::ContextualTasksComposeboxHandlerInterface>
         handler) {
   owned_composebox_handler_ = std::move(handler);
   SetComposeboxHandler(owned_composebox_handler_.get());
 }
-#endif
 
 void ContextualTasksUI::MoveTaskUiToNewTab() {
   auto* browser = GetBrowser();

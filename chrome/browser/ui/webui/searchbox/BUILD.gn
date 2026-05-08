@@ -4,7 +4,7 @@
 
 import("//ui/webui/webui_features.gni")
 
-assert(enable_webui_ntp)
+assert(!is_ios)
 
 source_set("searchbox") {
   sources = [
@@ -44,8 +44,6 @@ source_set("searchbox") {
     "//chrome/browser/omnibox",
     "//chrome/browser/preloading/search_preload",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/resources/new_tab_page:resources",
-    "//chrome/browser/resources/new_tab_page:resources_grit",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/search_engines",
     "//chrome/browser/ui/browser_window",
@@ -91,6 +89,8 @@ source_set("searchbox") {
     public_deps += [ "//chrome/browser/ui/webui/top_chrome" ]
     deps += [
       "//chrome/browser/contextual_tasks",
+      "//chrome/browser/resources/new_tab_page:resources",
+      "//chrome/browser/resources/new_tab_page:resources_grit",
       "//chrome/browser/ui/bookmarks",
       "//chrome/browser/ui/search",
       "//chrome/browser/ui/tabs:tab_strip",

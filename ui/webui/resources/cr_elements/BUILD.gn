@@ -87,7 +87,7 @@ build_webui("build") {
     ]
   }
 
-  if ((!is_android && !is_ios) || enable_webui_ntp || is_desktop_android) {
+  if (!is_ios) {
     ts_files += [
       "cr_radio_button/cr_radio_button_mixin_lit.ts",
       "cr_search_field/cr_search_field_mixin_lit.ts",

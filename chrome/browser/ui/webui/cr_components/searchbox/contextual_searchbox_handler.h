@@ -282,10 +282,12 @@ class ContextualSearchboxHandler
   void RecordTabAddedMetric(tabs::TabInterface* const tab,
                             bool is_tab_suggestion_chip);
 
+#if !BUILDFLAG(IS_ANDROID)
   // Returns true if the query should be opened in the Lens side panel.
   bool ShouldOpenInLensSidePanel(
       content::WebContents* active_web_contents,
       contextual_search::ContextualSearchSessionHandle* session_handle);
+#endif
 
   virtual void InitializeInputStateModel();
 
@@ -329,13 +331,9 @@ class ContextualSearchboxHandler
                           std::unique_ptr<lens::ContextualInputData>>>
       tab_context_snapshot_;
 
-  // TODO(b/502297163): Implement for Android.
-#if !BUILDFLAG(IS_ANDROID)
-  // Delegate handling desktop-specific operations for QueryContextualizer.
   std::unique_ptr<contextual_tasks::DesktopQueryContextualizerDelegate>
       desktop_delegate_;
   std::unique_ptr<contextual_tasks::QueryContextualizer> query_contextualizer_;
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   raw_ptr<contextual_tasks::ContextualTasksContextService>
       contextual_tasks_context_service_;

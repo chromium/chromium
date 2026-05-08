@@ -5,7 +5,7 @@
 import("//ui/webui/resources/tools/build_webui.gni")
 import("//ui/webui/webui_features.gni")
 
-assert((!is_android && !is_ios) || enable_webui_ntp)
+assert(!is_ios)
 
 build_webui("build") {
   grd_prefix = "cr_components_search"

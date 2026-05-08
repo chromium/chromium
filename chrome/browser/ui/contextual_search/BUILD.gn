@@ -8,14 +8,15 @@ assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 
 source_set("contextual_search") {
   sources = [
+    # TODO(b/502297163): Rename to query_contextualizer_delegate.cc/h since it now builds for Android.
+    "desktop_query_contextualizer_delegate.cc",
+    "desktop_query_contextualizer_delegate.h",
     "tab_contextualization_controller.cc",
     "tab_contextualization_controller.h",
   ]
 
   if (!is_android) {
     sources += [
-      "desktop_query_contextualizer_delegate.cc",
-      "desktop_query_contextualizer_delegate.h",
       "searchbox_context_data.cc",
       "searchbox_context_data.h",
     ]
@@ -50,6 +51,10 @@ source_set("contextual_search") {
       "//components/pdf/browser",
       "//pdf/mojom",
     ]
+  }
+
+  if (is_android) {
+    deps += [ "//chrome/browser/android:tabs_public" ]
   }
 }
 
