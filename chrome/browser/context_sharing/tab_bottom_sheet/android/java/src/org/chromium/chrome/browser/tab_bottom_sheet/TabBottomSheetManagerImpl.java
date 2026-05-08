@@ -18,30 +18,13 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
-import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.widget.TouchEventProvider;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Implementation of {@link TabBottomSheetManager}. */
 @NullMarked
 public class TabBottomSheetManagerImpl implements TabBottomSheetManager {
-    // Used to crash any other implementation that is using the temporary priority created for this
-    // bottom sheet.
-    public static final BottomSheetObserver BOTTOM_SHEET_OBSERVER =
-            new EmptyBottomSheetObserver() {
-                @Override
-                public void onSheetContentChanged(@Nullable BottomSheetContent newContent) {
-                    if (newContent == null) return;
-                    if (newContent.getPriority() == BottomSheetContent.ContentPriority.COBROWSE
-                            && !(newContent instanceof TabBottomSheetContent)) {
-                        assert false : "DO NOT USE THIS PRIORITY";
-                    }
-                }
-            };
-
     private final TabBottomSheetCoordinator.SheetEventsCallback mSheetEventsCallback =
             new TabBottomSheetCoordinator.SheetEventsCallback() {
                 @Override
