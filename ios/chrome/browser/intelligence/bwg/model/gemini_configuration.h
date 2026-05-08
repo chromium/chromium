@@ -106,12 +106,6 @@ class PageContext;
 // The entry point where the floaty was triggered from.
 @property(nonatomic, assign) gemini::EntryPoint entryPoint;
 
-// TODO(crbug.com/481733906): Remove once ios_internal has migrated to
-// GeminiStartupConfiguration.
-// Whether image remix is enabled. This is not equivalent to a feature flag
-// because it has additional eligibility checks.
-@property(nonatomic, assign) BOOL imageRemixEnabled;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_CONFIGURATION_H_
