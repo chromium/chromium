@@ -146,11 +146,6 @@ class WebUILocationBar : public LocationBar,
   ui::ElementTracker::Subscription moved_subscription_;
   ui::ElementTracker::Subscription shown_subscription_;
 
-  // Must be declared before `permission_dashboard_controller_` because the
-  // `permission_dashboard_controller_` depends on models owned by
-  // `content_setting_image_control_` during teardown.
-  WebUIContentSettingImageControl content_setting_image_control_;
-
   std::unique_ptr<WebUIPermissionDashboard> permission_dashboard_;
   std::unique_ptr<PermissionDashboardController>
       permission_dashboard_controller_;
@@ -158,6 +153,8 @@ class WebUILocationBar : public LocationBar,
   std::unique_ptr<OmniboxController> omnibox_controller_;
   std::unique_ptr<WebUIReadOnlyOmnibox> omnibox_view_;
   std::unique_ptr<OmniboxPopupViewWebUI> omnibox_popup_view_;
+
+  WebUIContentSettingImageControl content_setting_image_control_;
 
   bool is_initialized_ = false;
 

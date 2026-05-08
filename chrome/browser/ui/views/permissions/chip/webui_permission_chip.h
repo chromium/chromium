@@ -86,10 +86,10 @@ class WebUIPermissionChip : public PermissionChipInterface {
   PermissionPromptStyle prompt_style_ = PermissionPromptStyle::kChip;
 
   // True only when the chip has fully finished its collapse animation.
-  bool is_fully_collapsed_ = true;
+  bool is_fully_collapsed_ = false;
   // Collapse request sent over Mojo to the WebUI, which instantly triggers CSS
   // animations on the frontend.
-  bool should_collapse_ = true;
+  bool should_collapse_ = false;
 
   bool is_animating_ = false;
   std::u16string accessibility_name_;
@@ -98,7 +98,6 @@ class WebUIPermissionChip : public PermissionChipInterface {
   raw_ptr<BubbleOwnerDelegate> bubble_owner_ = nullptr;
 
   base::RepeatingClosure pressed_callback_;
-
   base::ObserverList<Observer> observers_;
   base::RepeatingClosureList visibility_callbacks_;
 };

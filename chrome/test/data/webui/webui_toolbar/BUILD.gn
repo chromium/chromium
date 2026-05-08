@@ -15,7 +15,6 @@ build_webui_tests("build") {
     "location_bar_focus_test.ts",
     "location_bar_high_contrast_focus_test.ts",
     "location_icon_test.ts",
-    "permission_chip_test.ts",
     "readonly_omnibox_test.ts",
     "readonly_omnibox_focus_test.ts",
     "pinned_toolbar_action_test.ts",

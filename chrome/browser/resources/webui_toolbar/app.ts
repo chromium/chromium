@@ -30,16 +30,12 @@ import {SplitTabActiveLocation} from './toolbar_ui_api_data_model.mojom-webui.js
 import {
   LhsChipIdentifier,
   OmniboxTextColor,
-  PermissionAction,
-  PermissionChipTheme,
-  PermissionPromptStyle,
   SecurityChipIcon,
 } from './toolbar_ui_api_data_model.mojom-webui.js';
-import type {OmniboxAction, LocationBarState, PermissionChipState} from './toolbar_ui_api_data_model.mojom-webui.js';
+import type {OmniboxAction, LocationBarState} from './toolbar_ui_api_data_model.mojom-webui.js';
 import {ReadonlyOmniboxElement} from './readonly_omnibox.js';
 import {LocationBarElement} from './location_bar.js';
 import {LocationIconElement} from './location_icon.js';
-import {PermissionChipElement} from './permission_chip.js';
 
 export {
   BrowserProxyImpl,
@@ -47,10 +43,6 @@ export {
   LocationBarElement,
   LocationIconElement,
   OmniboxTextColor,
-  PermissionAction,
-  PermissionChipElement,
-  PermissionChipTheme,
-  PermissionPromptStyle,
   ReadonlyOmniboxElement,
   SecurityChipIcon,
   TrackedElementManager,
@@ -58,7 +50,6 @@ export {
 export type {
   LocationBarState,
   OmniboxAction,
-  PermissionChipState,
 };
 // clang-format on
 

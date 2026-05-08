@@ -11,14 +11,11 @@ export function getHtml(this: PermissionChipElement) {
   return (!this.chipState || !this.chipState.isVisible) ? nothing :
       html`<!--_html_template_start_-->
 <div id="chip"
-    ?collapsed="${this.chipState.isFullyCollapsed}"
     aria-label="${this.chipState.accessibilityName}"
     title="${this.chipState.tooltip}"
     @pointerenter="${this.onPointerenter_}"
     @pointerleave="${this.onPointerleave_}"
-    @pointercancel="${this.onPointercancel_}"
-    @pointerdown="${this.onPointerdown_}"
-    @click="${this.onClick_}">
+    @pointercancel="${this.onPointercancel_}">
   ${this.getIconUrl_() ? html`
     <div id="icon"
         style="mask-image: ${this.getIconUrl_()};">

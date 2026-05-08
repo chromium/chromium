@@ -48,9 +48,6 @@ class WebUIContentSettingImageControl {
   std::vector<toolbar_ui_api::mojom::ContentSettingImageStatePtr>
   ProcessContentSettingState(content::WebContents* web_contents);
 
-  ContentSettingImageModel* GetModel(
-      toolbar_ui_api::mojom::ContentSettingImageType type) const;
-
   // Creates and shows a bubble for the given `type`.
   void ShowContentSettingsBubble(
       toolbar_ui_api::mojom::ContentSettingImageType type,

@@ -9,7 +9,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/location_bar/content_setting_image_view.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_interface.h"
@@ -115,8 +114,6 @@ class PermissionDashboardController : public PermissionChipInterface::Observer {
   // again. This flag is necessary because the bubble gets dismissed before the
   // button handles the mouse release event.
   bool should_suppress_reopening_page_info_ = false;
-
-  base::TimeTicks last_page_info_bubble_close_time_;
 
   base::ScopedObservation<PermissionChipInterface,
                           PermissionChipInterface::Observer>

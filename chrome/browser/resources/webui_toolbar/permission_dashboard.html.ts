@@ -10,14 +10,14 @@ export function getHtml(this: PermissionDashboardElement) {
   // clang-format off
   return (!this.dashboardState) ? nothing : html`<!--_html_template_start_-->
 <div id="container">
-  ${this.dashboardState.indicatorChip?.isVisible ? html`
+  ${this.dashboardState.indicatorChip ? html`
     <permission-chip
         id="indicator-chip"
         .chipState="${this.dashboardState.indicatorChip}">
     </permission-chip>
   ` : nothing}
 
-  ${this.dashboardState.requestChip?.isVisible ? html`
+  ${this.dashboardState.requestChip ? html`
     <permission-chip
         id="request-chip"
         .chipState="${this.dashboardState.requestChip}">

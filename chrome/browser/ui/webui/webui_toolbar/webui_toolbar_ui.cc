@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
-#include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
 #include "chrome/browser/ui/webui/theme_colors_source_manager.h"
@@ -269,9 +268,7 @@ WebUIToolbarUI::GetKnownElementIdentifiers() {
        kPinnedToolbarActionShowSidePanelLensOverlayResultsElementId,
        kPinnedToolbarActionShowSidePanelBookmarksElementId,
        kPinnedToolbarActionSendTabToSelfElementId,
-       kToolbarAvatarButtonElementId,
-       PermissionChipView::kPermissionRequestChipElementId,
-       PermissionChipView::kIndicatorChipElementId});
+       kToolbarAvatarButtonElementId});
   auto pinned_ids = webui_toolbar::GetPinnedToolbarActionElementIds();
   pinned_ids.reserve(pinned_ids.size() + ids->size());
   pinned_ids.insert(pinned_ids.end(), ids->begin(), ids->end());

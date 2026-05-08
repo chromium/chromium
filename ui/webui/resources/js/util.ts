@@ -74,7 +74,7 @@ export function appendParam(url: string, key: string, value: string): string {
  *     transitionDuration style value.
  */
 export function ensureTransitionEndEvent(
-    el: HTMLElement, timeOut?: number): void {
+    el: HTMLElement, timeOut: number): void {
   if (timeOut === undefined) {
     const style = getComputedStyle(el);
     timeOut = parseFloat(style.transitionDuration) * 1000;

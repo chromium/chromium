@@ -43,7 +43,3 @@ IN_PROC_BROWSER_TEST_F(WebUiToolbarJsTest, LocationBar) {
 IN_PROC_BROWSER_TEST_F(WebUiToolbarJsTest, LocationIcon) {
   RunTest("webui_toolbar/location_icon_test.js", "mocha.run();");
 }
-
-IN_PROC_BROWSER_TEST_F(WebUiToolbarJsTest, PermissionChip) {
-  RunTest("webui_toolbar/permission_chip_test.js", "mocha.run();");
-}

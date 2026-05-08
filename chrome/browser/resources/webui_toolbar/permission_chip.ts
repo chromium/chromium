@@ -3,14 +3,12 @@
 // found in the LICENSE file.
 
 import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
-import {ensureTransitionEndEvent} from '//resources/js/util.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
 import {getCss} from './permission_chip.css.js';
 import {getHtml} from './permission_chip.html.js';
-import {BUTTON_LEFT} from './toolbar_button.js';
 import {LhsChipIdentifier, PermissionAction, PermissionChipTheme, PermissionPromptStyle} from './toolbar_ui_api_data_model.mojom-webui.js';
 import type {PermissionChipState} from './toolbar_ui_api_data_model.mojom-webui.js';
 
@@ -35,7 +33,6 @@ export class PermissionChipElement extends CrLitElement {
 
   accessor chipState: PermissionChipState|null = null;
 
-  private isFullyCollapsed_: boolean = true;
   private trackedElementManager_: TrackedElementManager;
 
   constructor() {
@@ -48,16 +45,7 @@ export class PermissionChipElement extends CrLitElement {
     const id = this.id === 'request-chip' ?
         'PermissionChipView::kPermissionRequestChipElementId' :
         'PermissionChipView::kIndicatorChipElementId';
-    this.trackedElementManager_.startTracking(this, id, {
-      onHighlightChanged: (highlighted: boolean) => {
-        // Manually toggle the DOM attribute to bypass Lit's asynchronous update
-        // batching, ensuring the style updates synchronously.
-        // TODO(crbug.com/502598627): Re-evaluate how big the visual flash
-        // problem is, and whether we really need to manually toggle it or if we
-        // can use a reflected Lit property.
-        this.toggleAttribute('anchor-highlighted', highlighted);
-      },
-    });
+    this.trackedElementManager_.startTracking(this, id);
   }
 
   override disconnectedCallback() {
@@ -69,48 +57,6 @@ export class PermissionChipElement extends CrLitElement {
     super.updated(changedProperties);
     if (changedProperties.has('chipState')) {
       this.updateColors_();
-      this.onChipStateChanged_();
-    }
-  }
-
-  private onChipStateChanged_() {
-    if (!this.chipState) {
-      return;
-    }
-
-    if (this.chipState.isFullyCollapsed === this.isFullyCollapsed_) {
-      return;
-    }
-
-    this.isFullyCollapsed_ = this.chipState.isFullyCollapsed;
-    const isCollapsed = this.isFullyCollapsed_;
-
-    // In Native Views, animation state transitions are perfectly
-    // synchronized. In WebUI, the state change updates the DOM, which
-    // triggers a CSS transition. We must wait for this transition to
-    // complete before telling C++ the animation is over. If we fire this
-    // Mojo IPC synchronously, C++ will instantly hide the element and
-    // kill the animation prematurely.
-    const fireIpc = () => {
-      if (isCollapsed) {
-        BrowserProxyImpl.getInstance()
-            .toolbarUIHandler.onLhsChipCollapseAnimationEnded(
-                this.getIdentifier_());
-      } else {
-        BrowserProxyImpl.getInstance()
-            .toolbarUIHandler.onLhsChipExpandAnimationEnded(
-                this.getIdentifier_());
-      }
-    };
-
-    const chipEl = this.shadowRoot.querySelector<HTMLElement>('#chip');
-    if (chipEl) {
-      chipEl.addEventListener('transitionend', fireIpc, {once: true});
-      // Fallback in case there is no CSS transition (e.g., hidden
-      // element) or the tab is backgrounded, which might delay or
-      // suppress transitionend. `ensureTransitionEndEvent` fetches the
-      // duration from the CSS.
-      ensureTransitionEndEvent(chipEl);
     }
   }
 
@@ -131,23 +77,6 @@ export class PermissionChipElement extends CrLitElement {
 
   protected onPointercancel_() {
     this.onPointerleave_();
-  }
-
-  protected onPointerdown_(e: PointerEvent) {
-    if (e.button !== BUTTON_LEFT) {
-      return;
-    }
-    BrowserProxyImpl.getInstance().toolbarUIHandler.onLhsChipMousePressed(
-        this.getIdentifier_());
-  }
-
-  protected onClick_(e: PointerEvent) {
-    // Note:'click' event dispatches using PointerEvents. Keyboard clicks
-    // (Enter/Space) also dispatch PointerEvents, but they have an empty
-    // pointerType (""). We only want to suppress true pointer interactions
-    // (mouse, touch, pen).
-    BrowserProxyImpl.getInstance().toolbarUIHandler.onLhsChipClicked(
-        this.getIdentifier_(), e.pointerType !== '');
   }
 
   // Computes the foreground and background colors for the chip based on its
