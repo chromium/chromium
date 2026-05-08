@@ -622,6 +622,16 @@ void DeepScanningRequest::OnGetPackageFileRequestData(
   file_metadata_.insert({current_path, enterprise_connectors::FileMetadata(
                                            final_path.AsUTF8Unsafe(), data.hash,
                                            data.mime_type, data.size)});
+
+  // If block large files is enabled, then the file is too large if it exceeds
+  // the max upload size limit which is currently 50MB.
+  if (result == enterprise_connectors::ScanRequestUploadResult::kSuccess &&
+      analysis_settings_.block_large_files &&
+      data.size >
+          enterprise_connectors::BinaryUploadService::kMaxUploadSizeBytes) {
+    result = enterprise_connectors::ScanRequestUploadResult::kFileTooLarge;
+  }
+
   if (ShouldTerminateEarly(result)) {
     // We record the scan here because the request is terminated early and won't
     // be uploaded to CloudBinaryUploadService.
@@ -641,6 +651,13 @@ void DeepScanningRequest::OnGetFileRequestData(
     std::unique_ptr<FileAnalysisRequest> request,
     enterprise_connectors::ScanRequestUploadResult result,
     BinaryUploadRequest::Data data) {
+  if (result == enterprise_connectors::ScanRequestUploadResult::kSuccess &&
+      analysis_settings_.block_large_files &&
+      data.size >
+          enterprise_connectors::BinaryUploadService::kMaxUploadSizeBytes) {
+    result = enterprise_connectors::ScanRequestUploadResult::kFileTooLarge;
+  }
+
   if (ShouldTerminateEarly(result)) {
     // We record the scan here because the request is terminated early and won't
     // be uploaded to CloudBinaryUploadService.

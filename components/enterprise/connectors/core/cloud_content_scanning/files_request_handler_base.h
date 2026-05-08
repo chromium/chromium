@@ -171,6 +171,10 @@ class FilesRequestHandlerBase : public RequestHandlerBase {
   FRIEND_TEST_ALL_PREFIXES(FilesRequestHandlerBaseTest,
                            OnGotFileInfo_EmptyFile);
   FRIEND_TEST_ALL_PREFIXES(FilesRequestHandlerBaseTest, OnGotFileInfo_Failure);
+  FRIEND_TEST_ALL_PREFIXES(FilesRequestHandlerBaseTest,
+                           OnGotFileInfo_FileTooLarge_Blocked);
+  FRIEND_TEST_ALL_PREFIXES(FilesRequestHandlerBaseTest,
+                           OnGotFileInfo_FileTooLarge_NotBlocked);
   FRIEND_TEST_ALL_PREFIXES(FilesRequestHandlerBaseTest, FileRequestCallback);
   FRIEND_TEST_ALL_PREFIXES(FilesRequestHandlerBaseTest,
                            Destructor_ReportsCancellation);

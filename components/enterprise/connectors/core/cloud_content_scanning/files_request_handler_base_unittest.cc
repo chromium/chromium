@@ -265,6 +265,89 @@ TEST_F(FilesRequestHandlerBaseTest, OnGotFileInfo_EmptyFile) {
   EXPECT_TRUE(callback_called);
 }
 
+// Tests that OnGotFileInfo finishes the request early if the file size is
+// larger than the 50MB limit and block_large_files is true.
+TEST_F(FilesRequestHandlerBaseTest, OnGotFileInfo_FileTooLarge_Blocked) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      enterprise_connectors::kEnableNewUploadSizeLimit,
+      {{"max_file_size_mb", "2048"}});
+
+  auto delegate_ptr = std::make_unique<MockFilesRequestHandlerBaseDelegate>();
+  auto* delegate = delegate_ptr.get();
+
+  EXPECT_CALL(*delegate, GetFileCount()).WillRepeatedly(testing::Return(1));
+  EXPECT_CALL(*delegate, SetHandler(testing::_)).Times(1);
+  FilesRequestHandlerBase handler(&content_analysis_info_, &upload_service_,
+                                  url_, "content_transfer_method",
+                                  DeepScanAccessPoint::UPLOAD,
+                                  std::move(delegate_ptr));
+
+  FilesRequestHandlerBase::FileInfo file_info;
+  EXPECT_CALL(*delegate, GetMutableFileInfo(0))
+      .WillRepeatedly(testing::ReturnRef(file_info));
+  settings_.block_large_files = true;
+  EXPECT_CALL(content_analysis_info_, settings())
+      .WillRepeatedly(testing::ReturnRef(settings_));
+  EXPECT_CALL(upload_service_, MaybeUploadForDeepScanning(testing::_)).Times(0);
+
+  base::RunLoop run_loop;
+  bool callback_called = false;
+  auto request = std::make_unique<FakeBinaryUploadRequest>(
+      base::BindLambdaForTesting(
+          [&callback_called, &run_loop](ScanRequestUploadResult result,
+                                        ContentAnalysisResponse response) {
+            EXPECT_EQ(result, ScanRequestUploadResult::kFileTooLarge);
+            callback_called = true;
+            run_loop.Quit();
+          }),
+      CloudOrLocalAnalysisSettings(CloudAnalysisSettings()));
+
+  BinaryUploadRequest::Data data;
+  data.size = BinaryUploadService::kMaxUploadSizeBytes + 1;
+  handler.OnGotFileInfo(std::move(request), 0,
+                        ScanRequestUploadResult::kSuccess, std::move(data));
+  run_loop.Run();
+  EXPECT_TRUE(callback_called);
+}
+
+// Tests that OnGotFileInfo does not block if the file size is larger than
+// 50MB but block_large_files is false.
+TEST_F(FilesRequestHandlerBaseTest, OnGotFileInfo_FileTooLarge_NotBlocked) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      enterprise_connectors::kEnableNewUploadSizeLimit,
+      {{"max_file_size_mb", "2048"}});
+
+  auto delegate_ptr = std::make_unique<MockFilesRequestHandlerBaseDelegate>();
+  auto* delegate = delegate_ptr.get();
+
+  EXPECT_CALL(*delegate, GetFileCount()).WillRepeatedly(testing::Return(1));
+  EXPECT_CALL(*delegate, SetHandler(testing::_)).Times(1);
+  EXPECT_CALL(*delegate, GetPath(testing::_))
+      .WillRepeatedly(testing::ReturnRef(path_));
+  FilesRequestHandlerBase handler(&content_analysis_info_, &upload_service_,
+                                  url_, "content_transfer_method",
+                                  DeepScanAccessPoint::UPLOAD,
+                                  std::move(delegate_ptr));
+
+  FilesRequestHandlerBase::FileInfo file_info;
+  EXPECT_CALL(*delegate, GetMutableFileInfo(0))
+      .WillRepeatedly(testing::ReturnRef(file_info));
+  settings_.block_large_files = false;
+  EXPECT_CALL(content_analysis_info_, settings())
+      .WillRepeatedly(testing::ReturnRef(settings_));
+  EXPECT_CALL(upload_service_, MaybeUploadForDeepScanning(testing::_)).Times(1);
+
+  auto request = std::make_unique<FakeBinaryUploadRequest>(
+      base::DoNothing(), CloudOrLocalAnalysisSettings(CloudAnalysisSettings()));
+
+  BinaryUploadRequest::Data data;
+  data.size = BinaryUploadService::kMaxUploadSizeBytes + 1;
+  handler.OnGotFileInfo(std::move(request), 0,
+                        ScanRequestUploadResult::kSuccess, std::move(data));
+}
+
 // Tests that OnGotFileInfo finishes the request early if there's an upload
 // failure.
 TEST_F(FilesRequestHandlerBaseTest, OnGotFileInfo_Failure) {
