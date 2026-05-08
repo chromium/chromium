@@ -85,7 +85,8 @@ class ActorServiceTest : public PlatformTest {
 
  protected:
   web::ScopedTestingWebClient web_client_;
-  web::WebTaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestProfileIOS> profile_;
 };
 
@@ -343,6 +344,153 @@ TEST_F(ActorServiceTest, GetWebStateForID_TaskNotFound) {
   web::WebState* resolved_web_state =
       service->GetWebStateForID(web_state_id, invalid_task_id);
   EXPECT_EQ(nullptr, resolved_web_state);
+}
+
+// Tests that PerformActions completes immediately when the WebState is not
+// loading.
+TEST_F(ActorServiceTest, PerformActions_NoLoading_InstantCompletion) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kActorTools);
+
+  ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
+  ASSERT_NE(nullptr, service);
+
+  ActorTaskId task_id =
+      service->CreateTask("Test Task", /*allow_incognito_web_states=*/false);
+
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_.get());
+  auto test_browser = std::make_unique<TestBrowser>(profile_.get());
+  browser_list->AddBrowser(test_browser.get());
+
+  auto fake_web_state = std::make_unique<web::FakeWebState>();
+  auto* fake_web_state_ptr = fake_web_state.get();
+  test_browser->GetWebStateList()->InsertWebState(std::move(fake_web_state));
+
+  std::vector<std::unique_ptr<ActorTool>> actions;
+  actions.push_back(
+      std::make_unique<TestTool>(fake_web_state_ptr->GetWeakPtr()));
+
+  bool callback_called = false;
+  service->PerformActions(
+      task_id, std::move(actions), "Update",
+      base::BindOnce(
+          [](bool* called, PerformActionsResult result) { *called = true; },
+          base::Unretained(&callback_called)));
+
+  // Run the queued tasks (tool execution and completion) deterministically.
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_TRUE(callback_called);
+
+  browser_list->RemoveBrowser(test_browser.get());
+}
+
+// Tests that PerformActions is deferred when the WebState is loading, and only
+// resolves when loading completes.
+TEST_F(ActorServiceTest, PerformActions_Loading_DeferredUntilStopLoading) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kActorTools);
+
+  ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
+  ASSERT_NE(nullptr, service);
+
+  ActorTaskId task_id =
+      service->CreateTask("Test Task", /*allow_incognito_web_states=*/false);
+
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_.get());
+  auto test_browser = std::make_unique<TestBrowser>(profile_.get());
+  browser_list->AddBrowser(test_browser.get());
+
+  auto fake_web_state = std::make_unique<web::FakeWebState>();
+  auto* fake_web_state_ptr = fake_web_state.get();
+  test_browser->GetWebStateList()->InsertWebState(std::move(fake_web_state));
+
+  // Set the WebState to a loading state.
+  fake_web_state_ptr->SetLoading(true);
+
+  std::vector<std::unique_ptr<ActorTool>> actions;
+  actions.push_back(
+      std::make_unique<TestTool>(fake_web_state_ptr->GetWeakPtr()));
+
+  bool callback_called = false;
+  service->PerformActions(
+      task_id, std::move(actions), "Update",
+      base::BindOnce(
+          [](bool* called, PerformActionsResult result) { *called = true; },
+          base::Unretained(&callback_called)));
+
+  // Run the queued execution tasks.
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  // Gating: The callback should not be executed yet because the page is
+  // loading.
+  EXPECT_FALSE(callback_called);
+
+  // Stop the load.
+  fake_web_state_ptr->SetLoading(false);
+
+  // Now the callback should execute successfully.
+  EXPECT_TRUE(callback_called);
+
+  browser_list->RemoveBrowser(test_browser.get());
+}
+
+// Tests that a loading WebState times out after 5 seconds, forcing the
+// deferred PerformActions callback to run to prevent hanging.
+TEST_F(ActorServiceTest, PerformActions_Loading_TimeoutResolvesCallback) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kActorTools);
+
+  ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
+  ASSERT_NE(nullptr, service);
+
+  ActorTaskId task_id =
+      service->CreateTask("Test Task", /*allow_incognito_web_states=*/false);
+
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_.get());
+  auto test_browser = std::make_unique<TestBrowser>(profile_.get());
+  browser_list->AddBrowser(test_browser.get());
+
+  auto fake_web_state = std::make_unique<web::FakeWebState>();
+  auto* fake_web_state_ptr = fake_web_state.get();
+  test_browser->GetWebStateList()->InsertWebState(std::move(fake_web_state));
+
+  // Set the WebState to a loading state.
+  fake_web_state_ptr->SetLoading(true);
+
+  std::vector<std::unique_ptr<ActorTool>> actions;
+  actions.push_back(
+      std::make_unique<TestTool>(fake_web_state_ptr->GetWeakPtr()));
+
+  bool callback_called = false;
+  service->PerformActions(
+      task_id, std::move(actions), "Update",
+      base::BindOnce(
+          [](bool* called, PerformActionsResult result) { *called = true; },
+          base::Unretained(&callback_called)));
+
+  // Run the queued execution tasks.
+  base::RunLoop run_loop;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  // Callback should be deferred.
+  EXPECT_FALSE(callback_called);
+
+  // Fast forward the environment by 7 seconds to trigger the load timeout.
+  task_environment_.FastForwardBy(base::Seconds(7));
+
+  // The callback must be resolved now due to the timeout.
+  EXPECT_TRUE(callback_called);
+
+  browser_list->RemoveBrowser(test_browser.get());
 }
 
 }  // namespace actor

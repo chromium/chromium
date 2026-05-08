@@ -12,7 +12,10 @@
 #import "base/functional/callback.h"
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
+#import "base/scoped_multi_source_observation.h"
+#import "base/timer/timer.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
+#import "ios/web/public/web_state_observer.h"
 
 namespace web {
 class WebState;
@@ -27,13 +30,13 @@ class AggregatedJournal;
 // A class representing a task managed by `ActorService`. A task should live for
 // a whole Actor journey and be passed multiple sets of actions to execute
 // sequentially.
-class ActorTask {
+class ActorTask : public web::WebStateObserver {
  public:
   ActorTask(ActorTaskId task_id,
             const std::string& title,
             bool allow_incognito_web_states,
             AggregatedJournal* journal);
-  ~ActorTask();
+  ~ActorTask() override;
 
   ActorTask(const ActorTask&) = delete;
   ActorTask& operator=(const ActorTask&) = delete;
@@ -73,6 +76,10 @@ class ActorTask {
   // Returns whether this task allows actuating on incognito WebStates.
   bool allow_incognito_web_states() const;
 
+  // web::WebStateObserver overrides.
+  void DidStopLoading(web::WebState* web_state) override;
+  void WebStateDestroyed(web::WebState* web_state) override;
+
  private:
   friend class ActorTaskTest;
 
@@ -86,6 +93,23 @@ class ActorTask {
   // WebStates set.
   void AddControlledWebStates(
       const std::vector<std::unique_ptr<ActorTool>>& actions);
+
+  // Starts observing controlled WebStates that are loading. Returns true if any
+  // observations are active, and false otherwise.
+  bool ObserveLoadingWebStates();
+
+  // Defers the `Act()` completion callback and registers the safety timeout
+  // timer.
+  void DeferActCompletion(ActCallback callback,
+                          std::vector<ActionResult> results);
+
+  // Handles observation removal when a WebState finishes loading or is
+  // destroyed. Also resolves the deferred callback if no more WebStates are
+  // loading.
+  void OnWebStateFinishedLoading(web::WebState* web_state);
+
+  // Handles the page load timeout.
+  void OnPageLoadedTimeout();
 
   // The task state.
   ActorTaskState state_ = ActorTaskState::kInit;
@@ -107,6 +131,19 @@ class ActorTask {
   // Set of web states actively controlled (observed and/or being actuated on)
   // by this task.
   std::vector<base::WeakPtr<web::WebState>> controlled_web_states_;
+
+  // Scoped observation to safely observe events of controlled WebStates.
+  base::ScopedMultiSourceObservation<web::WebState, web::WebStateObserver>
+      scoped_web_state_observations_{this};
+
+  // Deferred Act callback. The `Act()` callback can be deferred if any of the
+  // controlled WebStates are loading when Act is done executing actions.
+  base::OnceClosure deferred_act_callback_;
+
+  // Timer to enforce the page load timeout. The timeout exists to limit the
+  // amount of time ActorTask can wait for a page to finish loading before
+  // executing the Act callback.
+  base::OneShotTimer load_timeout_timer_;
 
   // Weak pointer factory.
   base::WeakPtrFactory<ActorTask> weak_ptr_factory_{this};
