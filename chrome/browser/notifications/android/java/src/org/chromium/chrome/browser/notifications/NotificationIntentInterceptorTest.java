@@ -157,7 +157,7 @@ public class NotificationIntentInterceptorTest {
         Assert.assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
-                        "Mobile.SystemNotification.Content.Click",
+                        "Mobile.SystemNotification.Content.Click2",
                         NotificationUmaTracker.SystemNotificationType.DOWNLOAD_FILES));
     }
 
@@ -183,7 +183,7 @@ public class NotificationIntentInterceptorTest {
         Assert.assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
-                        "Mobile.SystemNotification.Dismiss",
+                        "Mobile.SystemNotification.Dismiss2",
                         NotificationUmaTracker.SystemNotificationType.DOWNLOAD_FILES));
         Assert.assertNull(mReceiver.intentReceived());
     }

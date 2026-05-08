@@ -221,7 +221,7 @@ public class ReengagementNotificationControllerTest {
         Assert.assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
-                        "Mobile.SystemNotification.Shown", getNotificationType(feature)));
+                        "Mobile.SystemNotification.Shown2", getNotificationType(feature)));
 
         verify(mTracker, times(1)).shouldTriggerHelpUi(feature);
         verify(mTracker, times(1)).dismissed(feature);

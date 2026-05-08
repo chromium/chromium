@@ -584,53 +584,61 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Mobile.SystemNotification.Blocked"
-    enum="SystemNotificationType" expires_after="never">
+<histogram name="Mobile.SystemNotification.AnyButton.Click"
+    enum="SystemNotificationType2" expires_after="never">
 <!-- expires-never: Core Android notification metrics. Used by multiple teams. -->
 
   <owner>dtrainor@chromium.org</owner>
   <summary>
+    Records the type of notification when the user clicks any button in an
+    Android notification. Recorded when a user taps any button in a
+    notification, for any Chrome-generated notification on Android that includes
+    a button tap-target.
+  </summary>
+</histogram>
+
+<histogram name="Mobile.SystemNotification.Blocked2"
+    enum="SystemNotificationType2" expires_after="never">
+<!-- expires-never: Core Android notification metrics. Used by multiple teams. -->
+
+  <owner>dtrainor@chromium.org</owner>
+  <summary>
+    Updated from Mobile.SystemNotification.Blocked in May 2026.
+
     Android: Represents the number of system notifications that were blocked and
     could not be shown by type.
   </summary>
 </histogram>
 
-<histogram name="Mobile.SystemNotification.BlockedAfterShown"
-    enum="SystemNotificationType" expires_after="never">
+<histogram name="Mobile.SystemNotification.BlockedAfterShown2"
+    enum="SystemNotificationType2" expires_after="never">
 <!-- expires-never: Core Android notification metrics. Used by multiple teams. -->
 
   <owner>dtrainor@chromium.org</owner>
   <summary>
+    Updated from Mobile.SystemNotification.BlockedAfterShown in May 2026.
+
+    Note: Data may be incorrect during the transition period to V2, as old pref
+    values are not migrated until new ones are recorded, which should happen
+    frequently on notification shown.
+
     Android: Represents the type of notification that was last shown before the
     user disabled notification permissions on Chrome. This is only logged the
     first time we attempt to show a notification and fail.
   </summary>
 </histogram>
 
-<histogram name="Mobile.SystemNotification.ChannelBlocked"
-    enum="SystemNotificationType" expires_after="never">
+<histogram name="Mobile.SystemNotification.ChannelBlocked2"
+    enum="SystemNotificationType2" expires_after="never">
 <!-- expires-never: Core Android notification metrics. Used by multiple teams. -->
 
   <owner>peter@chromium.org</owner>
   <summary>
+    Updated from Mobile.SystemNotification.ChannelBlocked in May 2026.
+
     Android: Represents the number of system notifications by type that we
     attempted to show but were blocked, due to their notification channel being
     blocked. Only applies to devices on Android O and above.
-  </summary>
-</histogram>
-
-<histogram name="Mobile.SystemNotification.Content.Click"
-    enum="SystemNotificationType" expires_after="never">
-<!-- expires-never: part of top-line metric (internal: go/chrome-browser-nsm) -->
-
-  <owner>dtrainor@chromium.org</owner>
-  <owner>chrome-analysis-team@google.com</owner>
-  <summary>
-    Records the type of notification when the user clicks the body of Android
-    notification. This does not include clicks on notification action buttons.
-
-    This histogram is of special interest to the chrome-analysis-team@. Do not
-    change its semantics or retire it without talking to them first.
   </summary>
 </histogram>
 
@@ -650,14 +658,20 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Mobile.SystemNotification.Dismiss"
-    enum="SystemNotificationType" expires_after="never">
-<!-- expires-never: Core Android notification metrics. Used by multiple teams. -->
+<histogram name="Mobile.SystemNotification.Content.Click2"
+    enum="SystemNotificationType2" expires_after="never">
+<!-- expires-never: part of top-line metric (internal: go/chrome-browser-nsm) -->
 
   <owner>dtrainor@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
   <summary>
-    Records the type of notification when the user dismisses the Android
-    notification.
+    Updated from Mobile.SystemNotification.Content.Click in May 2026.
+
+    Records the type of notification when the user clicks the body of Android
+    notification. This does not include clicks on notification action buttons.
+
+    This histogram is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
   </summary>
 </histogram>
 
@@ -675,6 +689,19 @@ chromium-metrics-reviews@google.com.
   <token key="SystemNotificationAgeType" variants="SystemNotificationAgeType">
     <variant name=""/>
   </token>
+</histogram>
+
+<histogram name="Mobile.SystemNotification.Dismiss2"
+    enum="SystemNotificationType2" expires_after="never">
+<!-- expires-never: Core Android notification metrics. Used by multiple teams. -->
+
+  <owner>dtrainor@chromium.org</owner>
+  <summary>
+    Updated from Mobile.SystemNotification.Dismiss in May 2026.
+
+    Records the type of notification when the user dismisses the Android
+    notification.
+  </summary>
 </histogram>
 
 <histogram name="Mobile.SystemNotification.Permission.Change"
@@ -879,12 +906,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Mobile.SystemNotification.Shown" enum="SystemNotificationType"
-    expires_after="never">
+<histogram name="Mobile.SystemNotification.Shown2"
+    enum="SystemNotificationType2" expires_after="never">
 <!-- expires-never: Core Android notification metrics. Used by multiple teams. -->
 
   <owner>dtrainor@chromium.org</owner>
   <summary>
+    Updated from Mobile.SystemNotification.Shown in May 2026.
+
     Android: Represents the number of system notifications that will be
     successfully shown to the user by type.
   </summary>
