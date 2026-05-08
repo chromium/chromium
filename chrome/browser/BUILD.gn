@@ -988,11 +988,14 @@ source_set("core") {
   }
 
   if (is_linux) {
-    deps += [
-      "//components/os_crypt/async/browser:freedesktop_secret_key_provider",
-      "//components/os_crypt/async/browser:posix_key_provider",
-      "//components/os_crypt/async/browser:secret_portal_key_provider",
-    ]
+    deps += [ "//components/os_crypt/async/browser:posix_key_provider" ]
+
+    if (use_dbus) {
+      deps += [
+        "//components/os_crypt/async/browser:freedesktop_secret_key_provider",
+        "//components/os_crypt/async/browser:secret_portal_key_provider",
+      ]
+    }
   }
 
   if (is_android) {
@@ -1458,7 +1461,8 @@ static_library("browser") {
     "//chrome/browser/image_fetcher",
     "//chrome/browser/profiling_host",
 
-    # TODO(crbug.com/40110173): Remove this circular dependency whe the following headers get
+    # TODO(crbug.com/40110173): Remove this circular dependency whe the
+    # following headers get
     # componentized:
     # - c/b/media/cast_mirroring_service_host_factory.h
     # - c/b/media/cast_mirroring_service_host.h
@@ -1468,14 +1472,14 @@ static_library("browser") {
     # TODO(crbug.com/344921703): Remove circular dependencies.
     "//chrome/browser/sync",
 
-    # TODO(crbug.com/360599255): Remove this circular dependency when //c/b/content_settings
-    # gets modularized.
+    # TODO(crbug.com/360599255): Remove this circular dependency when
+    # //c/b/content_settings gets modularized.
     "//chrome/browser/ui/blocked_content:impl",
 
     "//chrome/browser/ui/exclusive_access",
 
-    # TODO(crbug.com/373646571): Remove this circular dependency when the following
-    # directories get modularized:
+    # TODO(crbug.com/373646571): Remove this circular dependency when the
+    # following directories get modularized:
     # - c/b/password_manager/
     # - c/b/tab_contents/
     "//chrome/browser/ui/login:impl",
@@ -1491,8 +1495,8 @@ static_library("browser") {
     # and c/b/translate/chrome_translate_client.h.
     "//chrome/browser/ui/tab_contents:impl",
 
-    # TODO(crbug.com/413572035): Remove once c/b/{metrics,signin,webdata_services}
-    # get fully modularized.
+    # TODO(crbug.com/413572035): Remove once
+    # c/b/{metrics,signin,webdata_services} get fully modularized.
     "//chrome/browser/plus_addresses:impl",
 
     # TODO(crbug.com/364667551): includes //c/b/about_flags.h and other sources
@@ -1504,8 +1508,9 @@ static_library("browser") {
     # - c/b/signin/signin_util.h
     "//chrome/browser/ui/profiles:impl",
 
-    # TODO(crbug.com/432061436): Remove this circular dependency when c/b/password_manager gets
-    # componentized. Particularly, the following headers are included from //c/b/ui/webauthn::impl:
+    # TODO(crbug.com/432061436): Remove this circular dependency when
+    # c/b/password_manager gets componentized. Particularly, the following
+    # headers are included from //c/b/ui/webauthn::impl:
     # - chrome_webauthn_credentials_delegate_factory.h"
     # - account_password_store_factory.h"
     # - profile_password_store_factory.h"
@@ -1516,11 +1521,12 @@ static_library("browser") {
     "//chrome/browser/webauthn:impl",
 
     # TODO(crbug.com/432421124): Remove this circular dependency when
-    # task_tab_helper.h and supervised_user_navigation_observer.h get componentized.
+    # task_tab_helper.h and supervised_user_navigation_observer.h get
+    # componentized.
     "//chrome/browser/ui/sync:impl",
 
-    # TODO(crbug.com/437811373): Remove this circular dependency when the following
-    # headers get componentized:
+    # TODO(crbug.com/437811373): Remove this circular dependency when the
+    # following headers get componentized:
     # - c/b/password_manager/chrome_password_manager_client.h
     "//chrome/browser/ui/passwords:impl",
 
@@ -1532,8 +1538,8 @@ static_library("browser") {
     # c/b/metrics/profile_metrics_service_factory.h gets componentized.
     "//chrome/browser/regional_capabilities:metrics_provider_impl",
 
-    # TODO(crbug.com/353332589): Remove this circular dependency once the following
-    # headers get componentized:
+    # TODO(crbug.com/353332589): Remove this circular dependency once the
+    # following headers get componentized:
     # c/b/custom_handlers/protocol_handler_registry_factory.h
     # c/b/profiles/profile_io_data.h
     # c/b/history/top_sites_factory.h
@@ -1558,26 +1564,26 @@ static_library("browser") {
     # c/b/translate/translate_service.h
     "//chrome/browser/renderer_context_menu:impl",
 
-    # TODO(crbug.com/353332589): Remove this circular dependencies when the following
-    # headers get componentized:
+    # TODO(crbug.com/353332589): Remove this circular dependencies when the
+    # following headers get componentized:
     # - c/b/net/referrer.h"
     # - c/b/notifications/system_notification_helper.h"
     "//chrome/browser/usb:impl",
     "//chrome/browser/notifications:system_notification_helper_impl",
 
-    # TODO(crbug.com/353332589): Remove this circular dependencies when the following
-    # headers are componentized:
+    # TODO(crbug.com/353332589): Remove this circular dependencies when the
+    # following headers are componentized:
     # - c/b/download/download_request_limiter.h
     # - c/b/download/background_download_service_factory.h
     "//chrome/browser/background_fetch:impl",
 
-    # TODO(crbug.com/353332589): Remove this circular dependencies when the following
-    # headers get componentized:
+    # TODO(crbug.com/353332589): Remove this circular dependencies when the
+    # following headers get componentized:
     # - c/b/webapps/installable/installable_utils.h
     "//chrome/browser/background_sync:impl",
 
-    # TODO(crbug.com/353332589): Remove this circular dependencies when the following
-    # headers get componentized:
+    # TODO(crbug.com/353332589): Remove this circular dependencies when the
+    # following headers get componentized:
     # - c/b/chrome_content_browser_client.h
     "//chrome/browser/btm:impl",
 
@@ -1587,8 +1593,8 @@ static_library("browser") {
     "//chrome/browser/background/glic:impl",
     "//chrome/browser/page_load_metrics:impl",
 
-    # //chrome/browser/download:impl sources include headers from //chrome/browser
-    # and //chrome/browser/ui.
+    # //chrome/browser/download:impl sources include headers from
+    # //chrome/browser and //chrome/browser/ui.
     "//chrome/browser/download:impl",
 
     # TODO(crbug.com/353332589): Remove this circular dependency when
@@ -2072,8 +2078,8 @@ static_library("browser") {
     # c/b/policy/configuration_policy_handler_list_factory.cc gets modularized.
     "//chrome/browser/ui/toolbar/chrome_labs",
 
-    # TODO(crbug.com/417228688): Remove this dependency when c/b/profiles/profile_manager.h gets
-    # modularized.
+    # TODO(crbug.com/417228688): Remove this dependency when
+    # c/b/profiles/profile_manager.h gets modularized.
     "//chrome/browser/actor",
     "//chrome/browser/actor:impl",
     "//chrome/browser/assist_ranker",
@@ -2636,8 +2642,8 @@ static_library("browser") {
     # - c/b/signin/signin_util.h
     "//chrome/browser/ui/profiles:impl",
 
-    # TODO(crbug.com/432061436): Remove this dependency when c/b/password_manager gets
-    # componentized.
+    # TODO(crbug.com/432061436): Remove this dependency when
+    # c/b/password_manager gets componentized.
     "//chrome/browser/page_load_metrics",
     "//chrome/browser/page_load_metrics:impl",
     "//chrome/browser/sharing/glic_experimental_triggering",
@@ -3345,13 +3351,15 @@ static_library("browser") {
       "//url",
     ]
     deps += [
-      # TODO(crbug.com/372647115): When c/b/android/oom_intervention gets modularized, consider
-      # moving the whole directory to it, since it is its only user.
+      # TODO(crbug.com/372647115): When c/b/android/oom_intervention gets
+      # modularized, consider moving the whole directory to it, since it is its
+      # only user.
       "//chrome/browser/ui/interventions",
     ]
 
     deps += [
-      # TODO(crbug.com/413572035): Remove once c/b/tab_android* sources get modularized.
+      # TODO(crbug.com/413572035): Remove once c/b/tab_android* sources get
+      # modularized.
       "//chrome/browser/glic/common",
       "//chrome/browser/ui/android/tab_model",
       "//chrome/browser/ui/android/tab_model:impl",
@@ -3394,31 +3402,32 @@ static_library("browser") {
       "//chrome/browser/webapps:android_impl",
       "//chrome/browser/webapps/installable:impl",
 
-      # TODO(crbug.com/413572035): Remove once c/b/tab_android* sources get modularized.
+      # TODO(crbug.com/413572035): Remove once c/b/tab_android* sources get
+      # modularized.
       "//chrome/browser/ui/android/tab_model:impl",
       "//chrome/browser/glic/common",
 
       "//chrome/browser/ui/webui/notifications_internals:impl",
 
-      # TODO(crbug.com/441537619): Remove this circular dependency when the following
-      # headers get componentized:
+      # TODO(crbug.com/441537619): Remove this circular dependency when the
+      # following headers get componentized:
       # - c/b/android/persisted_tab_data/sensitivity_persisted_tab_data_android.h
       # - c/b/android/tab_android.h
       # - c/b/ntp_tiles/chrome_most_visited_sites_factory.h
       "//chrome/browser/auxiliary_search:impl",
 
-      # TODO(crbug.com/353332589): Remove this circular dependency when the following
-      # headers get componentized:
+      # TODO(crbug.com/353332589): Remove this circular dependency when the
+      # following headers get componentized:
       # - c/b/android/tab_android.h
       "//chrome/browser/dom_distiller:impl",
 
-      # TODO(crbug.com/353332589): Remove this circular dependency when the following
-      # headers get componentized:
+      # TODO(crbug.com/353332589): Remove this circular dependency when the
+      # following headers get componentized:
       # - c/b/android/tab_android.h
       "//chrome/browser/complex_tasks:impl",
 
-      # TODO(crbug.com/353332589): Remove this circular dependencies when the following
-      # headers get componentized:
+      # TODO(crbug.com/353332589): Remove this circular dependencies when the
+      # following headers get componentized:
       # - c/b/android/service_tab_launcher.h
       "//chrome/browser/content_index:impl",
 
@@ -3775,7 +3784,8 @@ static_library("browser") {
       # TODO(crbug.com/40251079): Remove circular dependencies.
       "//chrome/browser/apps/app_service",
 
-      # TODO(crbug.com/441649482): Remove this circular dependency with cleaning up
+      # TODO(crbug.com/441649482): Remove this circular dependency with cleaning
+      # up
       # - c/b/apps/app_service/publishers.
       "//chrome/browser/apps/app_service/publishers",
 
@@ -3813,11 +3823,12 @@ static_library("browser") {
       # - //c/b/app_mode/app_mode_utils.h,
       # - //c/b/lifetime/termination_notification.h,
       # - //c/b/file_system_access/file_system_access_permission_request_manager.h
-      # ... and more. Remove circular include entry when these directories get modularized.
+      # ... and more. Remove circular include entry when these directories get
+      # modularized.
       "//chrome/browser/ui/apps:impl",
 
-      # TODO(crbug.com/369756821): Remove this circular dependency when //c/b/feature_engagement
-      # gets modularized.
+      # TODO(crbug.com/369756821): Remove this circular dependency when
+      # //c/b/feature_engagement gets modularized.
       "//chrome/browser/ui/global_media_controls:impl",
 
       # TODO(crbug.com/418180294): Remove this circular dependency when:
@@ -3827,7 +3838,8 @@ static_library("browser") {
       # ... get componentized.
       "//chrome/browser/ui/search:impl",
 
-      # TODO(crbug.com/364501603): Remove this circular dependency when the following files get
+      # TODO(crbug.com/364501603): Remove this circular dependency when the
+      # following files get
       # componentized:
       # - c/b/resource_coordinator/tab_lifecycle_unit_source.h"
       # - c/b/resource_coordinator/tab_manager.h"
@@ -3837,7 +3849,8 @@ static_library("browser") {
 
       "//chrome/browser/ui/browser_window/internal",
 
-      # TODO(crbug.com/434882143): Remove this circular dependency when the following files get
+      # TODO(crbug.com/434882143): Remove this circular dependency when the
+      # following files get
       # componentized:
       # - c/b/lifetime/browser_close_manager.h
       # - c/b/command_observer.h
@@ -3885,20 +3898,23 @@ static_library("browser") {
       # ... get componentized.
       "//chrome/browser/ui/web_applications:impl",
 
-      # TODO(crbug.com/434882143): Remove this circular dependency when the following headers get
+      # TODO(crbug.com/434882143): Remove this circular dependency when the
+      # following headers get
       # componentized:
       # - c/b/history_embeddings/history_embeddings_utils.h
       # - c/b/defaults.h"
       # - c/b/translate/translate_service.h
       "//chrome/browser/ui/views/location_bar:impl",
 
-      # TODO(crbug.com/434882143): Remove this circular dependency when the following headers get
+      # TODO(crbug.com/434882143): Remove this circular dependency when the
+      # following headers get
       # componentized:
       # - c/b/sharing/click_to_call/click_to_call_ui_controller.h
       # - c/b/sharing/sms/sms_remote_fetcher_ui_controller.h
       "//chrome/browser/ui/views/page_action:impl",
 
-      # TODO(crbug.com/441020158): Remove this circular dependency when the following headers get
+      # TODO(crbug.com/441020158): Remove this circular dependency when the
+      # following headers get
       # componentized:
       # - c/b/enterprise/browser_management/management_service_factory.h
       # - c/b/lifetime/application_lifetime.h
@@ -3961,8 +3977,8 @@ static_library("browser") {
         "//chrome/browser/ui/download:impl",
         "//chrome/browser/ui/webui/default_browser:default_browser_modal",
 
-        # TODO(crbug.com/369883710): Remove this dependency when profiles/profile_manager.h
-        # gets componentized.
+        # TODO(crbug.com/369883710): Remove this dependency when
+        # profiles/profile_manager.h gets componentized.
         "//chrome/browser/ui/startup/default_browser_prompt:impl",
         "//chrome/browser/ui/webui/app_home",
         "//chrome/browser/ui/webui/app_home:impl",
@@ -3974,7 +3990,8 @@ static_library("browser") {
         # Any circular includes must depend on the target
         # "browser_public_dependencies".
         allow_circular_includes_from += [
-          # TODO(crbug.com/335727004): Split out linux dependencies into separate targets.
+          # TODO(crbug.com/335727004): Split out linux dependencies into
+          # separate targets.
           "//chrome/browser/shortcuts",
         ]
       }
@@ -3985,13 +4002,14 @@ static_library("browser") {
       allow_circular_includes_from += [
         "//chrome/browser/ui/webui/signin:profile_impl",
 
-        # TODO(crbug.com/368831367): //c/b/ui/download/download_bubble_security_view_info.cc includes
+        # TODO(crbug.com/368831367):
+        # //c/b/ui/download/download_bubble_security_view_info.cc includes
         # //c/b/signin/identity_manager_factory.h.
         # Remove circular include entry when this directory gets modularized.
         "//chrome/browser/ui/download:impl",
 
-        # TODO(crbug.com/369883710): Remove this circular dependency when profiles/profile_manager.h
-        # gets componentized.
+        # TODO(crbug.com/369883710): Remove this circular dependency when
+        # profiles/profile_manager.h gets componentized.
         "//chrome/browser/ui/startup/default_browser_prompt:impl",
       ]
     }
@@ -5680,7 +5698,8 @@ static_library("browser") {
       "//media/cast:sender",
     ]
     deps += [
-      # TODO(crbug.com/41410773): mirroring shouldn't depend on enable_extensions.
+      # TODO(crbug.com/41410773): mirroring shouldn't depend on
+      # enable_extensions.
       "//components/mirroring/browser",
       "//components/mirroring/mojom:service",
       "//components/mirroring/service:mirroring_service",
