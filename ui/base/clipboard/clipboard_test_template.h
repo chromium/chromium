@@ -999,6 +999,26 @@ TYPED_TEST(ClipboardTest, PlatformSpecificDataTest) {
 }
 #endif
 
+#if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_WIN)
+TYPED_TEST(ClipboardTest, NonAsciiFormatTest) {
+  ClipboardFormatType non_ascii_format =
+      ClipboardFormatType::Deserialize("non-ascii-\xff");
+  base::Pickle pickle;
+  pickle.WriteString("test data");
+  {
+    ScopedClipboardWriter writer(ClipboardBuffer::kCopyPaste);
+    writer.WritePickledData(pickle, non_ascii_format);
+  }
+
+  base::test::TestFuture<base::flat_set<ClipboardFormatType>> future;
+  this->clipboard().GetAllAvailableFormats(ClipboardBuffer::kCopyPaste,
+                                           /*data_dst=*/std::nullopt,
+                                           future.GetCallback());
+  // This should not crash.
+  std::ignore = future.Take();
+}
+#endif
+
 #if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_ANDROID)
 TYPED_TEST(ClipboardTest, HyperlinkTest) {
   const std::string kTitle("The <Example> Company's \"home page\"");
