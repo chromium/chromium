@@ -33,9 +33,9 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
-import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.PayloadCallbackHelper;
 import org.chromium.base.test.util.Restriction;
@@ -54,11 +54,9 @@ import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DeviceRestriction;
 
-/**
- * Integration test for accessing credential manager.
- */
+/** Integration test for accessing credential manager. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@DoNotBatch(reason = "TODO(crbug.com/344665935): Failing when batched, batch this again.")
+@Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "show-autofill-signatures"})
 @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
 public class CredentialManagerIntegrationTest {
@@ -100,6 +98,11 @@ public class CredentialManagerIntegrationTest {
                         PendingIntent.FLAG_IMMUTABLE));
 
         mSyncTestRule.getSigninTestRule().addAccountThenSignin(mAccount);
+    }
+
+    @org.junit.After
+    public void tearDown() {
+        mSyncTestRule.signOut();
     }
 
     // Tests that accessing password settings in Chrome successfully launches the Credential Manager
