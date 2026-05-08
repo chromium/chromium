@@ -219,7 +219,7 @@ public class AwContentsStatics {
         return sDefaultTrafficStatsUid;
     }
 
-    public static void forceVariationIdsForTesting( // IN-TEST
+    public static void forceVariationIdsForTesting(
             List<String> variationIds, String commandLineVariationIds) {
         AwContentsStaticsJni.get()
                 .forceVariationIdsForTesting(variationIds, commandLineVariationIds); // IN-TEST

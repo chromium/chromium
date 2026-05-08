@@ -332,7 +332,7 @@ public class PlatformAuthEntraTokensReader {
     }
 
     @CalledByNativeForTesting
-    public static void setResultOverrideForTesting( // IN-TEST
+    public static void setResultOverrideForTesting(
             @JniType("int") Integer status, @JniType("std::string") String result) {
         Preconditions.checkState(
                 PlatformAuthEntraTokensReader.sReadTokensOverride == null,

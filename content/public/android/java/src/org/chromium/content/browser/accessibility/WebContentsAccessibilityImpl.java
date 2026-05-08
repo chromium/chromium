@@ -743,7 +743,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         return new Object[] {startNode, startOffset, endNode, endOffset};
     }
 
-    public boolean setExtendedSelectionForTesting( // IN-TEST
+    public boolean setExtendedSelectionForTesting(
             int id, int startNodeId, int startNodeOffset, int endNodeId, int endNodeOffset) {
         return WebContentsAccessibilityImplJni.get()
                 .setExtendedSelection(

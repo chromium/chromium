@@ -1084,7 +1084,7 @@ class LocationBarMediator
         mPageZoomIndicatorCoordinator.show(webContents);
     }
 
-    /* package */ void setAddToHomescreenCoordinatorForTesting( // IN-TEST
+    /* package */ void setAddToHomescreenCoordinatorForTesting(
             AddToHomescreenCoordinator addToHomescreenCoordinator) {
         mAddToHomescreenCoordinatorForTesting = addToHomescreenCoordinator;
     }

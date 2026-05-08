@@ -56,7 +56,7 @@ final class ExtensionWindowControllerBridgeImpl implements ExtensionWindowContro
     }
 
     @CalledByNative
-    private static void recordExtensionInternalEventForTesting( // IN-TEST
+    private static void recordExtensionInternalEventForTesting(
             int extensionWindowId, @ExtensionInternalWindowEventForTesting int event) {
         List<@ExtensionInternalWindowEventForTesting Integer> events =
                 sExtensionInternalEventsForTesting.get(extensionWindowId);
