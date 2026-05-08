@@ -4,6 +4,8 @@
 
 import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import {InvocationSource} from '../glic.mojom-webui.js';
+
 import type {GlicInternalsAppElement} from './glic_internals_app.js';
 
 export function getHtml(this: GlicInternalsAppElement) {
@@ -128,6 +130,24 @@ export function getHtml(this: GlicInternalsAppElement) {
               <option value="${option.value}">${option.name}</option>
             `)}
           </select>
+          ${this.invokeInvocationSource_ ===
+              InvocationSource.kUniversalCart
+              ? html`
+            <div class="payload-container" style="
+                display: flex;
+                flex-direction: column;
+                gap: 4px;
+                margin-top: 8px;">
+              <h4>Universal Cart Payload</h4>
+              <label for="payloadUniversalCartMetadataInput">
+                Serialized Metadata
+              </label>
+              <input id="payloadUniversalCartMetadataInput"
+                  .value="${this.invokePayloadUniversalCartMetadata_}"
+                  @input="${this.onPayloadUniversalCartMetadataInput_}">
+              </input>
+            </div>
+          ` : html``}
           <label for="invokeFreOverrideSelect">FRE Override</label>
           <select id="invokeFreOverrideSelect"
               .value="${this.invokeFreOverride_.toString()}"

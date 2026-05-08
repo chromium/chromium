@@ -45,6 +45,7 @@ export class GlicInternalsAppElement extends CrLitElement {
       invokeActuationTarget_: {type: Number},
       actuationTargetEnumValues_: {type: Array},
       invokeShowPanel_: {type: Boolean},
+      invokePayloadUniversalCartMetadata_: {type: String},
 
       selectedTabIndex_: {type: Number},
       tabNames_: {type: Array},
@@ -68,6 +69,7 @@ export class GlicInternalsAppElement extends CrLitElement {
   protected accessor invokeActuationTarget_: ActuationTarget =
       ActuationTarget.kAgentDecides;
   protected accessor invokeShowPanel_: boolean = true;
+  protected accessor invokePayloadUniversalCartMetadata_: string = '';
 
   protected accessor selectedTabIndex_: number = 0;
   protected accessor tabNames_: string[] = ['General', 'Debug Controls'];
@@ -274,6 +276,11 @@ export class GlicInternalsAppElement extends CrLitElement {
     this.invokeWaitForPanelOpen_ = (e.target as HTMLInputElement).checked;
   }
 
+  protected onPayloadUniversalCartMetadataInput_(e: Event) {
+    this.invokePayloadUniversalCartMetadata_ =
+        (e.target as HTMLInputElement).value;
+  }
+
   protected onInvokeSurfaceTypeChange_(e: Event) {
     this.invokeSurfaceType_ = (e.target as HTMLSelectElement).value;
   }
@@ -306,6 +313,20 @@ export class GlicInternalsAppElement extends CrLitElement {
         {newTab: {openInForeground: this.invokeOpenInForeground_}} :
         {defaultSurface: {}};
 
+    let payload = null;
+    if (this.invokeInvocationSource_ === InvocationSource.kUniversalCart) {
+      const bytes = this.invokePayloadUniversalCartMetadata_ ?
+          Array.from(
+              atob(this.invokePayloadUniversalCartMetadata_),
+              c => c.charCodeAt(0)) :
+          [];
+      payload = {
+        universalCart: {
+          serializedMetadata: bytes,
+        },
+      };
+    }
+
     const options: TriggerInvokeFromInternalsOptions = {
       invocationSource: this.invokeInvocationSource_,
       prompts: this.invokePrompt_ ? [this.invokePrompt_] : [],
@@ -325,6 +346,7 @@ export class GlicInternalsAppElement extends CrLitElement {
       surface: surface,
       actuationTarget: this.invokeActuationTarget_,
       showPanel: this.invokeAutoSubmit_ ? this.invokeShowPanel_ : null,
+      payload: payload,
     };
 
     this.pageHandler_.triggerInvokeFromInternalsAction(options).then(

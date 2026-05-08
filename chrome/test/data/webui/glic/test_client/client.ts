@@ -8,6 +8,16 @@ import {Subject} from '/glic/observable.js';
 
 import {$} from './page_element_types.js';
 
+const replacer = (_key: string, value: any) => {
+  if (value instanceof ArrayBuffer) {
+    return `ArrayBuffer(${value.byteLength})`;
+  }
+  if (ArrayBuffer.isView(value)) {
+    return `${value.constructor.name}(${value.byteLength})`;
+  }
+  return value;
+};
+
 export function logMessage(message: string) {
   const d = new Date();
   const hh = String(d.getHours()).padStart(2, '0');
@@ -207,13 +217,14 @@ class WebClient implements GlicWebClient {
     // Deleting backwards-compatible members coming from PanelState.
     delete (panelOpeningData as Partial<PanelState>).kind;
     delete (panelOpeningData as Partial<PanelState>).windowId;
-    logMessage(`notifyPanelWillOpen(${JSON.stringify(panelOpeningData)})`);
+    logMessage(
+        `notifyPanelWillOpen(${JSON.stringify(panelOpeningData, replacer)})`);
 
     const entry = document.createElement('div');
     entry.style.borderBottom = '1px solid #ccc';
     entry.style.padding = '4px';
     entry.textContent =
-        `notifyPanelWillOpen(${JSON.stringify(panelOpeningData, null, 2)})`;
+        `notifyPanelWillOpen(${JSON.stringify(panelOpeningData, replacer, 2)})`;
     $.invocationLog.prepend(entry);
     this.browser!.setContextAccessIndicator!($.contextAccessIndicator.checked);
 
@@ -281,11 +292,11 @@ class WebClient implements GlicWebClient {
   }
 
   async invoke(options: InvokeOptions): Promise<void> {
-    logMessage(`invoke(${JSON.stringify(options)})`);
+    logMessage(`invoke(${JSON.stringify(options, replacer)})`);
     const entry = document.createElement('div');
     entry.style.borderBottom = '1px solid #ccc';
     entry.style.padding = '4px';
-    entry.textContent = `invoke(${JSON.stringify(options, null, 2)})`;
+    entry.textContent = `invoke(${JSON.stringify(options, replacer, 2)})`;
     $.invocationLog.prepend(entry);
 
     if (options.invocationSource === InvocationSource.CAPTURE_REGION_HOTKEY) {

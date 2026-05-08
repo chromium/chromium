@@ -446,6 +446,12 @@ function toDebugJson(v: unknown): string {
     if (typeof value === 'bigint') {
       return value.toString();
     }
+    if (value instanceof ArrayBuffer) {
+      return `ArrayBuffer(${value.byteLength})`;
+    }
+    if (ArrayBuffer.isView(value)) {
+      return `${value.constructor.name}(${value.byteLength})`;
+    }
     return value;
   });
 }

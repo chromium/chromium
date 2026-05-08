@@ -188,7 +188,10 @@ void GlicInternalsPageHandler::TriggerInvokeFromInternalsAction(
     return;
   }
 
-  GlicInvokeOptions options{mojo_options->invocation_source};
+  GlicInvokeOptions options =
+      mojo_options->payload
+          ? GlicInvokeOptions(std::move(mojo_options->payload))
+          : GlicInvokeOptions(mojo_options->invocation_source);
   options.prompts = std::move(mojo_options->prompts);
 
   if (mojo_options->additional_context) {

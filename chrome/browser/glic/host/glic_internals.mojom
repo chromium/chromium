@@ -34,6 +34,8 @@ struct TriggerInvokeFromInternalsOptions {
   bool? show_panel;
   InvokeTargetSurface surface;
   ActuationTarget actuation_target;
+  // Source-specific payload for the invocation.
+  InvocationPayload? payload;
 };
 
 // Page handler for the glic internals WebUI.
