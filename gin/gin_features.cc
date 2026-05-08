@@ -78,6 +78,8 @@ BASE_FEATURE(kV8Maglev, kFeatureDefaultStateControlledByV8);
 BASE_FEATURE(kV8ConcurrentMaglevHighPriorityThreads,
              kFeatureDefaultStateControlledByV8);
 
+BASE_FEATURE(kV8MaxValidPolymorphicMapCount, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kV8HighEndAndroid, kFeatureDefaultStateControlledByV8);
 
 const base::FeatureParam<int> kV8HighEndAndroidMemoryThreshold{

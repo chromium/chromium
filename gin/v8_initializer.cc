@@ -392,6 +392,9 @@ void SetFeatureFlags() {
   SetV8FlagsIfOverridden(features::kV8ConcurrentMaglevHighPriorityThreads,
                          "--concurrent-maglev-high-priority-threads",
                          "--no-concurrent-maglev-high-priority-threads");
+  if (base::FeatureList::IsEnabled(features::kV8MaxValidPolymorphicMapCount)) {
+    SetV8FlagsFormatted("--max-valid-polymorphic-map-count=10");
+  }
   if (base::FeatureList::IsEnabled(features::kV8MemoryReducer)) {
     SetV8FlagsFormatted("--memory-reducer-gc-count=%i",
                         features::kV8MemoryReducerGCCount.Get());

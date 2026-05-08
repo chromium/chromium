@@ -24542,6 +24542,26 @@
             ]
         }
     ],
+    "V8MaxValidPolymorphicMapCount": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "V8MaxValidPolymorphicMapCount"
+                    ]
+                }
+            ]
+        }
+    ],
     "V8MemoryPoolReleaseOnMallocFailures": [
         {
             "platforms": [
