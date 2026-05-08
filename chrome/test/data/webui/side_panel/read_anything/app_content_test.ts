@@ -428,19 +428,27 @@ suite('AppContent', () => {
               'updateContentForReadability() should have been called');
         });
 
-    test('calls contentController to send rendered blocks', async () => {
-      chrome.readingMode.isReadabilitySelectTextEnabled = true;
-      let blocksCalled = false;
-      contentController.onRenderedTextBlocksAvailable = (container) => {
-        assertEquals(app.$.container, container);
-        blocksCalled = true;
-      };
+    test(
+        'sends rendered blocks after layout for readability selection',
+        async () => {
+          chrome.readingMode.isReadabilitySelectTextEnabled = true;
+          let blocksCalled = false;
+          contentController.onRenderedTextBlocksAvailable = (container) => {
+            assertEquals(app.$.container, container);
+            blocksCalled = true;
+          };
 
-      app.updateContent();
-      await microtasksFinished();
+          app.updateContent();
 
-      assertTrue(blocksCalled);
-    });
+          // Should NOT be called immediately because it's wrapped in
+          // requestAnimationFrame
+          assertFalse(blocksCalled, 'Should wait for requestAnimationFrame');
+
+          // Wait for the animation frame to ensure layout is done.
+          await new Promise(resolve => requestAnimationFrame(resolve));
+
+          assertTrue(blocksCalled, 'Should be called after layout');
+        });
   });
 
   suite('on links toggle', () => {
