@@ -574,7 +574,7 @@ void KcerFactoryAsh::InitializeDeviceKcerWithoutNss(
   }
 
   ExtraInstances::Get()->InitializeDeviceKcer(
-      content::GetIOThreadTaskRunner({}), std::move(device_token));
+      content::GetUIThreadTaskRunner({}), std::move(device_token));
 }
 
 void KcerFactoryAsh::StartInitializingDeviceKcerForNss() {
