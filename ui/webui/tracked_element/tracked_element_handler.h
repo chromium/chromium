@@ -15,6 +15,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/webui/resources/js/tracked_element/tracked_element.mojom.h"
@@ -76,7 +77,7 @@ class TrackedElementHandler
   TrackedElementWebUI* GetElement(const std::string& identifier_name);
 
   const ui::ElementContext context_;
-  std::map<ui::ElementIdentifier, std::unique_ptr<TrackedElementWebUI>>
+  absl::flat_hash_map<std::string, std::unique_ptr<TrackedElementWebUI>>
       elements_;
 
   const raw_ptr<content::WebContents> web_contents_;

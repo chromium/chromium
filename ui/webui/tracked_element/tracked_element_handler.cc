@@ -31,7 +31,8 @@ TrackedElementHandler::TrackedElementHandler(
       ->MaybeRegisterBackend<ElementHighlighterWebUI>();
 
   for (const ui::ElementIdentifier& id : identifiers) {
-    elements_[id] = std::make_unique<TrackedElementWebUI>(this, id, context);
+    elements_[id.GetName()] =
+        std::make_unique<TrackedElementWebUI>(this, id, context);
   }
 }
 
@@ -237,16 +238,14 @@ void TrackedElementHandler::TrackedElementCanHighlightChanged(
 
 TrackedElementWebUI* TrackedElementHandler::GetElement(
     const std::string& identifier_name) {
-  for (const auto& [id, element] : elements_) {
-    if (id.GetName() == identifier_name) {
-      return element.get();
-    }
+  auto it = elements_.find(identifier_name);
+  if (it == elements_.end()) {
+    LOG(ERROR) << "TrackedElement message received for element \""
+               << identifier_name
+               << "\" but element was not known to the handler.";
+    return nullptr;
   }
-
-  LOG(ERROR) << "TrackedElement message received for element \""
-             << identifier_name
-             << "\" but element was not known to the handler.";
-  return nullptr;
+  return it->second.get();
 }
 
 }  // namespace ui
