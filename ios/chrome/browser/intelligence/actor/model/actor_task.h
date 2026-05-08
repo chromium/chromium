@@ -14,6 +14,7 @@
 #import "base/memory/weak_ptr.h"
 #import "base/scoped_multi_source_observation.h"
 #import "base/timer/timer.h"
+#import "ios/chrome/browser/intelligence/actor/model/actor_engine.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/web/public/web_state_observer.h"
 
@@ -23,14 +24,14 @@ class WebState;
 
 namespace actor {
 
-class ActorEngine;
 class ActorTool;
 class AggregatedJournal;
 
 // A class representing a task managed by `ActorService`. A task should live for
 // a whole Actor journey and be passed multiple sets of actions to execute
 // sequentially.
-class ActorTask : public web::WebStateObserver {
+class ActorTask : public web::WebStateObserver,
+                  public ActorEngine::ExecutionUpdatesDelegate {
  public:
   ActorTask(ActorTaskId task_id,
             const std::string& title,
@@ -110,6 +111,11 @@ class ActorTask : public web::WebStateObserver {
 
   // Handles the page load timeout.
   void OnPageLoadedTimeout();
+
+  // ActorEngine::ExecutionUpdatesDelegate.
+  void OnWillExecuteTool(
+      optimization_guide::proto::Action::ActionCase tool_case,
+      web::WebStateID web_state_id) override;
 
   // The task state.
   ActorTaskState state_ = ActorTaskState::kInit;

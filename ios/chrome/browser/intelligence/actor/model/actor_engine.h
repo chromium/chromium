@@ -10,10 +10,13 @@
 #import <vector>
 
 #import "base/functional/callback.h"
+#import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
+#import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/model/aggregated_journal.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/observation_delay_controller.h"
+#import "ios/web/public/web_state_id.h"
 
 namespace actor {
 
@@ -29,6 +32,21 @@ class ActorTool;
 // the tool invocation.
 class ActorEngine {
  public:
+  // Delegate interface to receive granular tool execution progress updates
+  // from the engine. This allows the owning `ActorTask` to track which specific
+  // tool is currently being executed.
+  class ExecutionUpdatesDelegate {
+   public:
+    virtual ~ExecutionUpdatesDelegate() = default;
+
+    // Called immediately before a tool is executed.
+    // `tool_case` is the proto representation of the tool to be executed,
+    // and `web_state_id` is the identifier of the target WebState.
+    virtual void OnWillExecuteTool(
+        optimization_guide::proto::Action::ActionCase tool_case,
+        web::WebStateID web_state_id) = 0;
+  };
+
   // Represents the current execution stage of the engine for the active
   // actions.
   enum class State {
@@ -67,7 +85,9 @@ class ActorEngine {
     kCancelled,
   };
 
-  ActorEngine(ActorTaskId task_id, AggregatedJournal* journal);
+  ActorEngine(ActorTaskId task_id,
+              AggregatedJournal* journal,
+              ExecutionUpdatesDelegate* execution_updates_delegate);
   ~ActorEngine();
   ActorEngine(const ActorEngine&) = delete;
   ActorEngine& operator=(const ActorEngine&) = delete;
@@ -85,6 +105,9 @@ class ActorEngine {
 
   // Executes the next action.
   void ExecuteNextAction();
+
+  // Triggers the UI pre-invoke phase.
+  void UiPreInvoke();
 
   // Sets the engine state and logs the transition.
   void SetState(State new_state);
@@ -150,6 +173,9 @@ class ActorEngine {
   //
   // TODO(crbug.com/504625981): Replace this with a ToolController once setup.
   raw_ptr<ObservationDelayController> observation_delay_controller_;
+
+  // The delegate to notify of execution milestones.
+  raw_ptr<ExecutionUpdatesDelegate> execution_updates_delegate_;
 
   // Weak pointer factory.
   base::WeakPtrFactory<ActorEngine> weak_ptr_factory_{this};

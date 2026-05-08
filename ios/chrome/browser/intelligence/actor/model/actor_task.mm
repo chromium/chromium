@@ -74,7 +74,7 @@ ActorTask::ActorTask(ActorTaskId task_id,
   // TODO(crbug.com/504704411): Allow incognito WebStates.
   CHECK(!allow_incognito_web_states_);
 
-  engine_ = std::make_unique<ActorEngine>(task_id_, journal_);
+  engine_ = std::make_unique<ActorEngine>(task_id_, journal_, this);
 }
 
 ActorTask::~ActorTask() {
@@ -219,6 +219,12 @@ bool ActorTask::allow_incognito_web_states() const {
 void ActorTask::SetState(ActorTaskState new_state) {
   LogTaskStateTransition(journal_, task_id_, state_, new_state);
   state_ = new_state;
+}
+
+void ActorTask::OnWillExecuteTool(
+    optimization_guide::proto::Action::ActionCase tool_case,
+    web::WebStateID web_state_id) {
+  // TODO(crbug.com/507910485): Propagate to updates observer.
 }
 
 }  // namespace actor

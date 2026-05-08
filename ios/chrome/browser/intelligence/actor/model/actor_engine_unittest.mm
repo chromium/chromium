@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/intelligence/actor/model/actor_task.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
@@ -19,7 +20,11 @@ namespace {
 // A mock tool for testing.
 class MockTool : public ActorTool {
  public:
-  MockTool(bool success) : success_(success) {}
+  MockTool(bool success,
+           optimization_guide::proto::Action::ActionCase action_case =
+               optimization_guide::proto::Action::ACTION_NOT_SET,
+           base::WeakPtr<web::WebState> web_state = nullptr)
+      : success_(success), action_case_(action_case), web_state_(web_state) {}
   ~MockTool() override = default;
 
   void Execute(ToolExecutionCallback callback) override {
@@ -32,16 +37,42 @@ class MockTool : public ActorTool {
   }
 
   base::WeakPtr<web::WebState> GetTargetWebState() const override {
-    return nullptr;
+    return web_state_;
   }
 
   optimization_guide::proto::Action::ActionCase GetActionCase() const override {
-    return optimization_guide::proto::Action::ACTION_NOT_SET;
+    return action_case_;
   }
 
  private:
   bool success_;
+  optimization_guide::proto::Action::ActionCase action_case_;
+  base::WeakPtr<web::WebState> web_state_;
 };
+
+struct DelegateCall {
+  optimization_guide::proto::Action::ActionCase tool_case;
+  web::WebStateID web_state_id;
+};
+
+// A mock ActorEngine::ExecutionUpdatesDelegate for testing.
+class MockActorEngineExecutionUpdatesDelegate
+    : public ActorEngine::ExecutionUpdatesDelegate {
+ public:
+  MockActorEngineExecutionUpdatesDelegate() = default;
+  ~MockActorEngineExecutionUpdatesDelegate() override = default;
+
+  void OnWillExecuteTool(
+      optimization_guide::proto::Action::ActionCase tool_case,
+      web::WebStateID web_state_id) override {
+    calls_.push_back({tool_case, web_state_id});
+    on_will_execute_called_ = true;
+  }
+
+  std::vector<DelegateCall> calls_;
+  bool on_will_execute_called_ = false;
+};
+
 }  // namespace
 
 // Test fixture for ActorEngine.
@@ -53,7 +84,7 @@ class ActorEngineTest : public PlatformTest {
               "Test Task",
               /*allow_incognito_web_states=*/false,
               journal_.get()),
-        engine_(ActorTaskId(), journal_.get()) {}
+        engine_(ActorTaskId(), journal_.get(), &mock_delegate_) {}
 
   // Wrapper methods to access private members of ActorEngine for testing.
 
@@ -79,6 +110,7 @@ class ActorEngineTest : public PlatformTest {
 
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<AggregatedJournal> journal_;
+  MockActorEngineExecutionUpdatesDelegate mock_delegate_;
   ActorTask task_;
   ActorEngine engine_;
 };
@@ -106,7 +138,7 @@ TEST_F(ActorEngineTest, ActSuccess) {
   run_loop.Run();
 
   EXPECT_TRUE(callback_called);
-  EXPECT_EQ(results.size(), 1ul);
+  EXPECT_EQ(results.size(), 1U);
   EXPECT_TRUE(results[0].tool_result.IsOk());
 }
 
@@ -133,7 +165,7 @@ TEST_F(ActorEngineTest, ActFailure) {
   run_loop.Run();
 
   EXPECT_TRUE(callback_called);
-  EXPECT_EQ(results.size(), 1ul);
+  EXPECT_EQ(results.size(), 1U);
   EXPECT_FALSE(results[0].tool_result.IsOk());
 }
 
@@ -161,7 +193,7 @@ TEST_F(ActorEngineTest, ActSequenceSuccessFailure) {
   run_loop.Run();
 
   EXPECT_TRUE(callback_called);
-  EXPECT_EQ(results.size(), 2ul);
+  EXPECT_EQ(results.size(), 2U);
   EXPECT_TRUE(results[0].tool_result.IsOk());
   EXPECT_FALSE(results[1].tool_result.IsOk());
 }
@@ -215,7 +247,7 @@ TEST_F(ActorEngineTest, ActMultipleSuccess) {
   run_loop.Run();
 
   EXPECT_TRUE(callback_called);
-  EXPECT_EQ(results.size(), 2ul);
+  EXPECT_EQ(results.size(), 2U);
   EXPECT_TRUE(results[0].tool_result.IsOk());
   EXPECT_TRUE(results[1].tool_result.IsOk());
 }
@@ -224,10 +256,10 @@ TEST_F(ActorEngineTest, ActMultipleSuccess) {
 // 0-based current action index.
 TEST_F(ActorEngineTest, InProgressActionIndex) {
   SetNextActionIndex(1);
-  EXPECT_EQ(InProgressActionIndex(), 0ul);
+  EXPECT_EQ(InProgressActionIndex(), 0U);
 
   SetNextActionIndex(2);
-  EXPECT_EQ(InProgressActionIndex(), 1ul);
+  EXPECT_EQ(InProgressActionIndex(), 1U);
 }
 
 // Tests the specific codepath in `CompleteActions` where a failure result
@@ -240,9 +272,76 @@ TEST_F(ActorEngineTest, CompleteActionsOverwrite) {
   CompleteActions(ActionResult(
       ToolExecutionResult(mojom::ActionResultCode::kArgumentsInvalid)));
 
-  EXPECT_EQ(GetActionResults().size(), 1ul);
+  EXPECT_EQ(GetActionResults().size(), 1U);
   EXPECT_FALSE(GetActionResults()[0].tool_result.IsOk());
   EXPECT_EQ(GetState(), ActorEngine::State::kFailed);
+}
+
+// Tests that the delegate's OnWillExecuteTool callback is fired
+// just before tool execution with correct, unique parameters for every tool in
+// the sequence.
+TEST_F(ActorEngineTest, OnWillExecuteToolCalled) {
+  web::FakeWebState web_state1;
+  web::FakeWebState web_state2;
+
+  std::vector<std::unique_ptr<ActorTool>> actions;
+  actions.push_back(std::make_unique<MockTool>(
+      true, optimization_guide::proto::Action::kClick,
+      web_state1.GetWeakPtr()));
+  actions.push_back(std::make_unique<MockTool>(
+      true, optimization_guide::proto::Action::kNavigate,
+      web_state2.GetWeakPtr()));
+
+  base::RunLoop run_loop;
+  engine_.Act(
+      std::move(actions),
+      base::BindOnce([](base::RunLoop* loop,
+                        std::vector<ActionResult> res) { loop->Quit(); },
+                     &run_loop));
+
+  run_loop.Run();
+
+  EXPECT_TRUE(mock_delegate_.on_will_execute_called_);
+  ASSERT_EQ(mock_delegate_.calls_.size(), 2U);
+
+  EXPECT_EQ(mock_delegate_.calls_[0].tool_case,
+            optimization_guide::proto::Action::kClick);
+  EXPECT_EQ(mock_delegate_.calls_[0].web_state_id,
+            web_state1.GetUniqueIdentifier());
+
+  EXPECT_EQ(mock_delegate_.calls_[1].tool_case,
+            optimization_guide::proto::Action::kNavigate);
+  EXPECT_EQ(mock_delegate_.calls_[1].web_state_id,
+            web_state2.GetUniqueIdentifier());
+}
+
+// Tests that executing a sequence containing a null tool completes
+// with a failure result code (kToolUnknown) instead of crashing.
+TEST_F(ActorEngineTest, ActWithNullTool) {
+  std::vector<std::unique_ptr<ActorTool>> actions;
+  actions.push_back(nullptr);
+
+  base::RunLoop run_loop;
+  std::vector<ActionResult> results;
+  bool callback_called = false;
+
+  engine_.Act(std::move(actions),
+              base::BindOnce(
+                  [](bool* called, std::vector<ActionResult>* res_out,
+                     base::RunLoop* loop, std::vector<ActionResult> res) {
+                    *called = true;
+                    res_out->swap(res);
+                    loop->Quit();
+                  },
+                  &callback_called, &results, &run_loop));
+
+  run_loop.Run();
+
+  EXPECT_TRUE(callback_called);
+  EXPECT_EQ(results.size(), 1U);
+  EXPECT_FALSE(results[0].tool_result.IsOk());
+  EXPECT_EQ(results[0].tool_result.code(),
+            mojom::ActionResultCode::kToolUnknown);
 }
 
 }  // namespace actor

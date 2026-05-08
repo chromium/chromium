@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/observation_delay_controller.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
+#import "ios/web/public/web_state.h"
 
 namespace actor {
 
@@ -138,14 +139,30 @@ void EndAsyncEntry(AggregatedJournal::PendingAsyncEntry* entry,
   entry->EndEntry(std::move(details));
 }
 
+// Returns the WebStateID for the target WebState of `tool`, or an invalid
+// WebStateID if `tool` is null or has no target WebState.
+web::WebStateID GetWebStateIDForTool(ActorTool* tool) {
+  if (!tool) {
+    return web::WebStateID();
+  }
+  base::WeakPtr<web::WebState> target_web_state = tool->GetTargetWebState();
+  return target_web_state ? target_web_state->GetUniqueIdentifier()
+                          : web::WebStateID();
+}
+
 }  // namespace
 
-ActorEngine::ActorEngine(ActorTaskId task_id, AggregatedJournal* journal)
+ActorEngine::ActorEngine(ActorTaskId task_id,
+                         AggregatedJournal* journal,
+                         ExecutionUpdatesDelegate* execution_updates_delegate)
     : state_(State::kInit),
       task_id_(task_id),
       journal_(journal),
       observation_delay_controller_(
-          new ObservationDelayController(task_id, journal)) {}
+          new ObservationDelayController(task_id, journal)),
+      execution_updates_delegate_(execution_updates_delegate) {
+  CHECK(execution_updates_delegate_);
+}
 
 ActorEngine::~ActorEngine() = default;
 
@@ -204,7 +221,22 @@ void ActorEngine::ExecuteNextAction() {
   SetState(State::kToolVerify);
 
   // TODO(crbug.com/496195979): Add UI pre-invoke.
+  UiPreInvoke();
+}
+
+void ActorEngine::UiPreInvoke() {
   SetState(State::kUiPreInvoke);
+
+  ActorTool* tool = action_sequence_[InProgressActionIndex()].get();
+  if (!tool) {
+    FinishedUiPreInvoke(ActionResult(
+        ToolExecutionResult(mojom::ActionResultCode::kToolUnknown)));
+    return;
+  }
+
+  execution_updates_delegate_->OnWillExecuteTool(tool->GetActionCase(),
+                                                 GetWebStateIDForTool(tool));
+
   FinishedUiPreInvoke(ActionResult(ToolExecutionResult::Ok()));
 }
 
