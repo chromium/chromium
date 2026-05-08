@@ -7,16 +7,9 @@
 #include "base/feature_list.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/isolated_web_apps/window_management/isolated_web_apps_window_open_permission_service.h"
-#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
-#include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/browser/web_applications/web_app_utils.h"
 #include "components/webapps/isolated_web_apps/service/isolated_web_app_browser_context_service_factory.h"
-#include "content/public/browser/isolated_web_apps_policy.h"
-#include "content/public/common/content_features.h"
 
 namespace web_app {
 
