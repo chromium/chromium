@@ -1932,6 +1932,11 @@ void NativeWidgetNSWindowBridge::SetCALayerParams(
     live_resize_.pending_window_frame =
         std::exchange(live_resize_.queued_pending_window_frame, std::nullopt);
     if (live_resize_.pending_window_frame.has_value()) {
+      // The pending size must be different from the current size (otherwise we
+      // will never un-set `live_resize_.pending_window_frame`) and hang the
+      // resize.
+      DCHECK_NE(gfx::Size(live_resize_.pending_window_frame->size),
+                content_dip_size_);
       SendWindowFrameChangeToHost(live_resize_.pending_window_frame.value());
     }
   }
@@ -2106,6 +2111,14 @@ void NativeWidgetNSWindowBridge::OnLiveResizeToFrame(NSRect new_window_frame) {
     } else {
       live_resize_.queued_pending_window_frame = new_window_frame;
     }
+    return;
+  }
+
+  // If we already have a compositor frame of the expected size, then we will
+  // not get re-notified of frames of the current size, which will cause us to
+  // never un-set `live_resize_.pending_window_frame` and hang the resize.
+  // http://crbug.com/510621306
+  if (gfx::Size(new_window_frame.size) == content_dip_size_) {
     return;
   }
 
