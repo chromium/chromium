@@ -153,7 +153,7 @@ export class CrViewManagerElement extends CrLitElement {
       promises.push(this.enter_(
           view,
           enterAnimation ||
-              (previousViews.size === 0 ? 'no-animation' : 'fade-out')));
+              (previousViews.size === 0 ? 'no-animation' : 'fade-in')));
     }
 
     return Promise.all(promises).then(() => {});

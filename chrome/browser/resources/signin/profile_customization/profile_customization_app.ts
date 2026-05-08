@@ -169,7 +169,7 @@ export class ProfileCustomizationAppElement extends
 
   protected onCustomizeAvatarClick_() {
     assert(this.isLocalProfileCreation_);
-    this.$.viewManager.switchView('selectAvatarDialog', 'fade-in', 'fade-out');
+    this.$.viewManager.switchView('selectAvatarDialog');
   }
 
   private setAvailableIcons_(icons: AvatarIcon[]) {
@@ -205,7 +205,7 @@ export class ProfileCustomizationAppElement extends
   }
 
   private closeSelectAvatar_() {
-    this.$.viewManager.switchView('customizeDialog', 'fade-in', 'fade-out');
+    this.$.viewManager.switchView('customizeDialog');
   }
 
   protected onNameInputBlur_() {
