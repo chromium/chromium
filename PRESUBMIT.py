@@ -2815,6 +2815,10 @@ def CheckNoProductionCodeUsingTestOnlyFunctionsJava(input_api, output_api):
     # Ignore definitions. (Comments are ignored separately.)
     exclusion_re = input_api.re.compile(r'(%s)[^;]+\{' % name_pattern)
     allowlist_re = input_api.re.compile(r'// IN-TEST$')
+    # exclusion_re misses the closing ''''} when it wraps to the next line, support an on demand
+    # multi-line check as a last step.
+    multi_line_exclusion_re = input_api.re.compile(
+            r'(%s)[^;]+\{' % name_pattern, input_api.re.DOTALL)
 
     problems = []
     sources = lambda x: input_api.FilterSourceFile(
@@ -2826,6 +2830,7 @@ def CheckNoProductionCodeUsingTestOnlyFunctionsJava(input_api, output_api):
                                      file_filter=sources):
         local_path = f.LocalPath()
         is_inside_javadoc = False
+        cached_file_lines = None
         for line_number, line in f.ChangedContents():
             if is_inside_javadoc and javadoc_end_re.search(line):
                 is_inside_javadoc = False
@@ -2837,8 +2842,14 @@ def CheckNoProductionCodeUsingTestOnlyFunctionsJava(input_api, output_api):
                     and not annotation_re.search(line)
                     and not allowlist_re.search(line)
                     and not exclusion_re.search(line)):
-                problems.append('%s:%d\n    %s' %
-                                (local_path, line_number, line.strip()))
+
+                if cached_file_lines is None:
+                    cached_file_lines = input_api.ReadFile(f).splitlines()
+                full_text_from_line = '\n'.join(cached_file_lines[line_number - 1:])
+                match = multi_line_exclusion_re.search(full_text_from_line)
+                if not match or match.start() >= len(line):
+                    problems.append('%s:%d\n    %s' %
+                                    (local_path, line_number, line.strip()))
 
     if problems:
         return [

@@ -3464,6 +3464,10 @@ class NoProductionJavaCodeUsingTestOnlyFunctionsTest(unittest.TestCase):
                  ' */']),
             MockFile('dir/java/src/bar6.java',
                      ['FooForTesting(); // IN-TEST']),
+            MockFile('dir/java/src/bar7.java', [
+                'public static void setReallyLongObjectNameSoThisMethodWrapsForTesting(',
+                '        ThisParamIsOnTheNextLine thisParamIsOnTheNextLine) {'
+            ]),
         ]
 
         results = PRESUBMIT.CheckNoProductionCodeUsingTestOnlyFunctionsJava(
