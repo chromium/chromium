@@ -75,6 +75,7 @@ source_set("mime_handler_page") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "mime_handler_body_cache_unittest.cc",
     "mime_handler_registry_unittest.cc",
     "mime_handler_stream_delegate_unittest.cc",
     "mime_handler_stream_manager_unittest.cc",
@@ -92,6 +93,7 @@ source_set("unit_tests") {
     "//extensions:test_support",
     "//extensions/browser",
     "//extensions/common",
+    "//mojo/public/cpp/system",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/blink/public/mojom:mojom_platform_headers",
@@ -109,6 +111,7 @@ source_set("test_helpers") {
   ]
   public_deps = [
     ":mime_handler",
+    "//mojo/public/cpp/system",
     "//testing/gmock",
   ]
   deps = [
@@ -122,6 +125,8 @@ source_set("test_helpers") {
 
 source_set("stream_container") {
   sources = [
+    "mime_handler_body_cache.cc",
+    "mime_handler_body_cache.h",
     "stream_container.cc",
     "stream_container.h",
   ]
@@ -129,6 +134,7 @@ source_set("stream_container") {
     "//base",
     "//extensions/common",
     "//extensions/common/api",
+    "//mojo/public/cpp/system",
     "//third_party/blink/public/mojom:mojom_platform_headers",
     "//url",
   ]
