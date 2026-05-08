@@ -10,7 +10,6 @@
 
 #import <memory>
 
-#import "ios/web/security/cert_verification_error.h"
 #import "ios/web/web_state/ui/crw_web_view_handler.h"
 #import "ios/web/web_state/ui/crw_web_view_handler_delegate.h"
 #include "ui/base/page_transition_types.h"

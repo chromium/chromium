@@ -40,6 +40,7 @@
 #import "ios/web/public/download/download_controller.h"
 #import "ios/web/public/navigation/form_warning_type.h"
 #import "ios/web/public/web_client.h"
+#import "ios/web/security/cert_verification_error.h"
 #import "ios/web/security/crw_cert_verification_controller.h"
 #import "ios/web/security/wk_web_view_security_util.h"
 #import "ios/web/session/session_certificate_policy_cache_impl.h"
