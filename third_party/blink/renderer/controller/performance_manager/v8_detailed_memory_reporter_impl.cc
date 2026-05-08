@@ -72,10 +72,17 @@ class FrameAssociatedMeasurementDelegate : public v8::MeasureMemoryDelegate {
         continue;
       }
       v8::Isolate* isolate = v8::Isolate::GetCurrent();
-      if (DOMWrapperWorld::World(isolate, context).GetWorldId() !=
-          DOMWrapperWorld::kMainWorldId) {
-        // TODO(crbug.com/1085129): Handle extension contexts once they get
-        // their own V8ContextToken.
+      DOMWrapperWorld& world = DOMWrapperWorld::World(isolate, context);
+      if (world.GetWorldId() != DOMWrapperWorld::kMainWorldId) {
+        // Non-main-world: report with stable ID if available.
+        String stable_id = world.NonMainWorldStableId();
+        if (!stable_id.IsNull() && !stable_id.empty()) {
+          auto nmw_usage = mojom::blink::PerContextV8MemoryUsage::New();
+          nmw_usage->token = frame->DomWindow()->GetExecutionContextToken();
+          nmw_usage->memory_used = size;
+          nmw_usage->world_stable_id = stable_id;
+          isolate_memory_usage->contexts.push_back(std::move(nmw_usage));
+        }
         continue;
       }
       auto context_memory_usage = mojom::blink::PerContextV8MemoryUsage::New();

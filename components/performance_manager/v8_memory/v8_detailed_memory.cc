@@ -286,6 +286,10 @@ V8DetailedMemoryExecutionContextData::CreateForTesting(const WorkerNode* node) {
 ////////////////////////////////////////////////////////////////////////////////
 // V8DetailedMemoryProcessData
 
+V8DetailedMemoryProcessData::V8DetailedMemoryProcessData() = default;
+
+V8DetailedMemoryProcessData::~V8DetailedMemoryProcessData() = default;
+
 const V8DetailedMemoryProcessData* V8DetailedMemoryProcessData::ForProcessNode(
     const ProcessNode* node) {
   return V8DetailedMemoryDecorator::GetProcessData(node);
