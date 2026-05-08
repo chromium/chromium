@@ -15,9 +15,217 @@
 namespace extensions::api::document_scan {
 
 namespace {
-ScannerOption ConvertLorgnetteScannerOption(
-    const lorgnette::ScannerOption& input);
+
+OptionType ConvertLorgnetteOptionType(const lorgnette::OptionType& input) {
+  switch (input) {
+    case lorgnette::TYPE_UNKNOWN:
+      return OptionType::kUnknown;
+    case lorgnette::TYPE_BOOL:
+      return OptionType::kBool;
+    case lorgnette::TYPE_INT:
+      return OptionType::kInt;
+    case lorgnette::TYPE_FIXED:
+      return OptionType::kFixed;
+    case lorgnette::TYPE_STRING:
+      return OptionType::kString;
+    case lorgnette::TYPE_BUTTON:
+      return OptionType::kButton;
+    case lorgnette::TYPE_GROUP:
+      return OptionType::kGroup;
+    case lorgnette::OptionType_INT_MIN_SENTINEL_DO_NOT_USE_:
+    case lorgnette::OptionType_INT_MAX_SENTINEL_DO_NOT_USE_:
+      break;
+  }
+  NOTREACHED();
 }
+
+OptionUnit ConvertLorgnetteOptionUnit(const lorgnette::OptionUnit& input) {
+  switch (input) {
+    case lorgnette::UNIT_NONE:
+      return OptionUnit::kUnitless;
+    case lorgnette::UNIT_PIXEL:
+      return OptionUnit::kPixel;
+    case lorgnette::UNIT_BIT:
+      return OptionUnit::kBit;
+    case lorgnette::UNIT_MM:
+      return OptionUnit::kMm;
+    case lorgnette::UNIT_DPI:
+      return OptionUnit::kDpi;
+    case lorgnette::UNIT_PERCENT:
+      return OptionUnit::kPercent;
+    case lorgnette::UNIT_MICROSECOND:
+      return OptionUnit::kMicrosecond;
+    case lorgnette::OptionUnit_INT_MIN_SENTINEL_DO_NOT_USE_:
+    case lorgnette::OptionUnit_INT_MAX_SENTINEL_DO_NOT_USE_:
+      break;
+  }
+  NOTREACHED();
+}
+
+ConstraintType ConvertLorgnetteOptionConstraintType(
+    const lorgnette::OptionConstraint_ConstraintType& input) {
+  switch (input) {
+    case lorgnette::OptionConstraint::CONSTRAINT_NONE:
+      return ConstraintType::kNone;
+    case lorgnette::OptionConstraint::CONSTRAINT_INT_RANGE:
+      return ConstraintType::kIntRange;
+    case lorgnette::OptionConstraint::CONSTRAINT_FIXED_RANGE:
+      return ConstraintType::kFixedRange;
+    case lorgnette::OptionConstraint::CONSTRAINT_INT_LIST:
+      return ConstraintType::kIntList;
+    case lorgnette::OptionConstraint::CONSTRAINT_FIXED_LIST:
+      return ConstraintType::kFixedList;
+    case lorgnette::OptionConstraint::CONSTRAINT_STRING_LIST:
+      return ConstraintType::kStringList;
+    case lorgnette::
+        OptionConstraint_ConstraintType_OptionConstraint_ConstraintType_INT_MIN_SENTINEL_DO_NOT_USE_:
+    case lorgnette::
+        OptionConstraint_ConstraintType_OptionConstraint_ConstraintType_INT_MAX_SENTINEL_DO_NOT_USE_:
+      break;
+  }
+  NOTREACHED();
+}
+
+OptionConstraint ConvertLorgnetteOptionConstraint(
+    const lorgnette::OptionConstraint& input) {
+  document_scan::OptionConstraint output;
+  output.type = ConvertLorgnetteOptionConstraintType(input.constraint_type());
+  switch (output.type) {
+    case ConstraintType::kNone:
+      break;
+    case ConstraintType::kIntRange: {
+      if (!input.has_int_range()) {
+        LOG(WARNING) << "OptionConstraint has type INT_RANGE but does not "
+                        "contain a valid int_range";
+      }
+      auto& input_range = input.int_range();
+      output.min.emplace();
+      output.min->as_integer = input_range.min();
+      output.max.emplace();
+      output.max->as_integer = input_range.max();
+      output.quant.emplace();
+      output.quant->as_integer = input_range.quant();
+      break;
+    }
+    case ConstraintType::kFixedRange: {
+      if (!input.has_fixed_range()) {
+        LOG(WARNING) << "OptionConstraint has type FIXED_RANGE but does not "
+                        "contain a valid fixed_range";
+      }
+      auto& input_range = input.fixed_range();
+      output.min.emplace();
+      output.min->as_number = input_range.min();
+      output.max.emplace();
+      output.max->as_number = input_range.max();
+      output.quant.emplace();
+      output.quant->as_number = input_range.quant();
+      break;
+    }
+    case ConstraintType::kIntList:
+      if (input.valid_int().empty()) {
+        LOG(WARNING) << "OptionConstraint has type INT_LIST but does not "
+                        "contain a valid valid_int";
+      }
+      output.list.emplace();
+      output.list->as_integers.emplace(input.valid_int().begin(),
+                                       input.valid_int().end());
+      break;
+    case ConstraintType::kFixedList:
+      if (input.valid_fixed().empty()) {
+        LOG(WARNING) << "OptionConstraint has type FIXED_LIST but does not "
+                        "contain a valid valid_fixed";
+      }
+      output.list.emplace();
+      output.list->as_numbers.emplace(input.valid_fixed().begin(),
+                                      input.valid_fixed().end());
+      break;
+    case ConstraintType::kStringList:
+      if (input.valid_string().empty()) {
+        LOG(WARNING) << "OptionConstraint has type STRING_LIST but does not "
+                        "contain a valid valid_string";
+      }
+      output.list.emplace();
+      output.list->as_strings.emplace(input.valid_string().begin(),
+                                      input.valid_string().end());
+      break;
+  }
+  return output;
+}
+
+std::optional<ScannerOption::Value> GetLorgnetteOptionValue(
+    const lorgnette::ScannerOption& option) {
+  std::optional<ScannerOption::Value> result;
+  switch (ConvertLorgnetteOptionType(option.option_type())) {
+    case OptionType::kNone:
+    case OptionType::kUnknown:
+    case OptionType::kButton:
+    case OptionType::kGroup:
+      break;
+    case OptionType::kBool:
+      if (option.has_bool_value()) {
+        result.emplace();
+        result->as_boolean.emplace(option.bool_value());
+      }
+      break;
+    case OptionType::kInt:
+      if (option.has_int_value()) {
+        result.emplace();
+        if (option.int_value().value_size() == 1) {
+          result->as_integer.emplace(option.int_value().value(0));
+        } else {
+          result->as_integers.emplace(option.int_value().value().begin(),
+                                      option.int_value().value().end());
+        }
+      }
+      break;
+    case OptionType::kFixed:
+      if (option.has_fixed_value()) {
+        result.emplace();
+        if (option.fixed_value().value_size() == 1) {
+          result->as_number.emplace(option.fixed_value().value(0));
+        } else {
+          result->as_numbers.emplace(option.fixed_value().value().begin(),
+                                     option.fixed_value().value().end());
+        }
+      }
+      break;
+    case OptionType::kString:
+      if (option.has_string_value()) {
+        result.emplace();
+        result->as_string.emplace(option.string_value());
+      }
+      break;
+  }
+  return result;
+}
+
+ScannerOption ConvertLorgnetteScannerOption(
+    const lorgnette::ScannerOption& input) {
+  ScannerOption output;
+  output.name = input.name();
+  output.title = input.title();
+  output.description = input.description();
+  output.type = ConvertLorgnetteOptionType(input.option_type());
+  output.unit = ConvertLorgnetteOptionUnit(input.unit());
+  output.value = GetLorgnetteOptionValue(input);
+  output.constraint =
+      input.has_constraint()
+          ? std::optional(ConvertLorgnetteOptionConstraint(input.constraint()))
+          : std::nullopt;
+  output.is_detectable = input.detectable();
+  output.configurability =
+      input.sw_settable()   ? Configurability::kSoftwareConfigurable
+      : input.hw_settable() ? Configurability::kHardwareConfigurable
+                            : Configurability::kNotConfigurable;
+  output.is_auto_settable = input.auto_settable();
+  output.is_emulated = input.emulated();
+  output.is_active = input.active();
+  output.is_advanced = input.advanced();
+  output.is_internal = false;
+  return output;
+}
+
+}  // namespace
 
 OperationResult ConvertLorgnetteOperationResult(
     lorgnette::OperationResult input) {
@@ -253,287 +461,6 @@ TransformOptionSettingToLorgnetteScannerOption(const OptionSetting& setting) {
   return option;
 }
 
-}  // namespace extensions::api::document_scan
-
-namespace mojo {
-
-namespace document_scan = extensions::api::document_scan;
-namespace mojom = crosapi::mojom;
-
-document_scan::OperationResult
-TypeConverter<document_scan::OperationResult, mojom::ScannerOperationResult>::
-    Convert(mojom::ScannerOperationResult input) {
-  switch (input) {
-    case mojom::ScannerOperationResult::kUnknown:
-      return document_scan::OperationResult::kUnknown;
-    case mojom::ScannerOperationResult::kSuccess:
-      return document_scan::OperationResult::kSuccess;
-    case mojom::ScannerOperationResult::kUnsupported:
-      return document_scan::OperationResult::kUnsupported;
-    case mojom::ScannerOperationResult::kCancelled:
-      return document_scan::OperationResult::kCancelled;
-    case mojom::ScannerOperationResult::kDeviceBusy:
-      return document_scan::OperationResult::kDeviceBusy;
-    case mojom::ScannerOperationResult::kInvalid:
-      return document_scan::OperationResult::kInvalid;
-    case mojom::ScannerOperationResult::kWrongType:
-      return document_scan::OperationResult::kWrongType;
-    case mojom::ScannerOperationResult::kEndOfData:
-      return document_scan::OperationResult::kEof;
-    case mojom::ScannerOperationResult::kAdfJammed:
-      return document_scan::OperationResult::kAdfJammed;
-    case mojom::ScannerOperationResult::kAdfEmpty:
-      return document_scan::OperationResult::kAdfEmpty;
-    case mojom::ScannerOperationResult::kCoverOpen:
-      return document_scan::OperationResult::kCoverOpen;
-    case mojom::ScannerOperationResult::kIoError:
-      return document_scan::OperationResult::kIoError;
-    case mojom::ScannerOperationResult::kAccessDenied:
-      return document_scan::OperationResult::kAccessDenied;
-    case mojom::ScannerOperationResult::kNoMemory:
-      return document_scan::OperationResult::kNoMemory;
-    case mojom::ScannerOperationResult::kDeviceUnreachable:
-      return document_scan::OperationResult::kUnreachable;
-    case mojom::ScannerOperationResult::kDeviceMissing:
-      return document_scan::OperationResult::kMissing;
-    case mojom::ScannerOperationResult::kInternalError:
-      return document_scan::OperationResult::kInternalError;
-  }
-}
-
-template <>
-struct TypeConverter<document_scan::ConnectionType,
-                     mojom::ScannerInfo_ConnectionType> {
-  static document_scan::ConnectionType Convert(
-      mojom::ScannerInfo_ConnectionType input) {
-    switch (input) {
-      case mojom::ScannerInfo_ConnectionType::kUnspecified:
-        return document_scan::ConnectionType::kUnspecified;
-      case mojom::ScannerInfo_ConnectionType::kUsb:
-        return document_scan::ConnectionType::kUsb;
-      case mojom::ScannerInfo_ConnectionType::kNetwork:
-        return document_scan::ConnectionType::kNetwork;
-    }
-  }
-};
-
-}  // namespace mojo
-
-namespace extensions::api::document_scan {
-
-namespace {
-
-OptionType ConvertLorgnetteOptionType(const lorgnette::OptionType& input) {
-  switch (input) {
-    case lorgnette::TYPE_UNKNOWN:
-      return OptionType::kUnknown;
-    case lorgnette::TYPE_BOOL:
-      return OptionType::kBool;
-    case lorgnette::TYPE_INT:
-      return OptionType::kInt;
-    case lorgnette::TYPE_FIXED:
-      return OptionType::kFixed;
-    case lorgnette::TYPE_STRING:
-      return OptionType::kString;
-    case lorgnette::TYPE_BUTTON:
-      return OptionType::kButton;
-    case lorgnette::TYPE_GROUP:
-      return OptionType::kGroup;
-    case lorgnette::OptionType_INT_MIN_SENTINEL_DO_NOT_USE_:
-    case lorgnette::OptionType_INT_MAX_SENTINEL_DO_NOT_USE_:
-      break;
-  }
-  NOTREACHED();
-}
-
-OptionUnit ConvertLorgnetteOptionUnit(const lorgnette::OptionUnit& input) {
-  switch (input) {
-    case lorgnette::UNIT_NONE:
-      return OptionUnit::kUnitless;
-    case lorgnette::UNIT_PIXEL:
-      return OptionUnit::kPixel;
-    case lorgnette::UNIT_BIT:
-      return OptionUnit::kBit;
-    case lorgnette::UNIT_MM:
-      return OptionUnit::kMm;
-    case lorgnette::UNIT_DPI:
-      return OptionUnit::kDpi;
-    case lorgnette::UNIT_PERCENT:
-      return OptionUnit::kPercent;
-    case lorgnette::UNIT_MICROSECOND:
-      return OptionUnit::kMicrosecond;
-    case lorgnette::OptionUnit_INT_MIN_SENTINEL_DO_NOT_USE_:
-    case lorgnette::OptionUnit_INT_MAX_SENTINEL_DO_NOT_USE_:
-      break;
-  }
-  NOTREACHED();
-}
-
-ConstraintType ConvertLorgnetteOptionConstraintType(
-    const lorgnette::OptionConstraint_ConstraintType& input) {
-  switch (input) {
-    case lorgnette::OptionConstraint::CONSTRAINT_NONE:
-      return ConstraintType::kNone;
-    case lorgnette::OptionConstraint::CONSTRAINT_INT_RANGE:
-      return ConstraintType::kIntRange;
-    case lorgnette::OptionConstraint::CONSTRAINT_FIXED_RANGE:
-      return ConstraintType::kFixedRange;
-    case lorgnette::OptionConstraint::CONSTRAINT_INT_LIST:
-      return ConstraintType::kIntList;
-    case lorgnette::OptionConstraint::CONSTRAINT_FIXED_LIST:
-      return ConstraintType::kFixedList;
-    case lorgnette::OptionConstraint::CONSTRAINT_STRING_LIST:
-      return ConstraintType::kStringList;
-    case lorgnette::
-        OptionConstraint_ConstraintType_OptionConstraint_ConstraintType_INT_MIN_SENTINEL_DO_NOT_USE_:
-    case lorgnette::
-        OptionConstraint_ConstraintType_OptionConstraint_ConstraintType_INT_MAX_SENTINEL_DO_NOT_USE_:
-      break;
-  }
-  NOTREACHED();
-}
-
-OptionConstraint ConvertLorgnetteOptionConstraint(
-    const lorgnette::OptionConstraint& input) {
-  document_scan::OptionConstraint output;
-  output.type = ConvertLorgnetteOptionConstraintType(input.constraint_type());
-  switch (output.type) {
-    case ConstraintType::kNone:
-      break;
-    case ConstraintType::kIntRange: {
-      if (!input.has_int_range()) {
-        LOG(WARNING) << "OptionConstraint has type INT_RANGE but does not "
-                        "contain a valid int_range";
-      }
-      auto& input_range = input.int_range();
-      output.min.emplace();
-      output.min->as_integer = input_range.min();
-      output.max.emplace();
-      output.max->as_integer = input_range.max();
-      output.quant.emplace();
-      output.quant->as_integer = input_range.quant();
-      break;
-    }
-    case ConstraintType::kFixedRange: {
-      if (!input.has_fixed_range()) {
-        LOG(WARNING) << "OptionConstraint has type FIXED_RANGE but does not "
-                        "contain a valid fixed_range";
-      }
-      auto& input_range = input.fixed_range();
-      output.min.emplace();
-      output.min->as_number = input_range.min();
-      output.max.emplace();
-      output.max->as_number = input_range.max();
-      output.quant.emplace();
-      output.quant->as_number = input_range.quant();
-      break;
-    }
-    case ConstraintType::kIntList:
-      if (input.valid_int().empty()) {
-        LOG(WARNING) << "OptionConstraint has type INT_LIST but does not "
-                        "contain a valid valid_int";
-      }
-      output.list.emplace();
-      output.list->as_integers.emplace(input.valid_int().begin(),
-                                       input.valid_int().end());
-      break;
-    case ConstraintType::kFixedList:
-      if (input.valid_fixed().empty()) {
-        LOG(WARNING) << "OptionConstraint has type FIXED_LIST but does not "
-                        "contain a valid valid_fixed";
-      }
-      output.list.emplace();
-      output.list->as_numbers.emplace(input.valid_fixed().begin(),
-                                      input.valid_fixed().end());
-      break;
-    case ConstraintType::kStringList:
-      if (input.valid_string().empty()) {
-        LOG(WARNING) << "OptionConstraint has type STRING_LIST but does not "
-                        "contain a valid valid_string";
-      }
-      output.list.emplace();
-      output.list->as_strings.emplace(input.valid_string().begin(),
-                                      input.valid_string().end());
-      break;
-  }
-  return output;
-}
-
-std::optional<ScannerOption::Value> GetLorgnetteOptionValue(
-    const lorgnette::ScannerOption& option) {
-  std::optional<ScannerOption::Value> result;
-  switch (ConvertLorgnetteOptionType(option.option_type())) {
-    case OptionType::kNone:
-    case OptionType::kUnknown:
-    case OptionType::kButton:
-    case OptionType::kGroup:
-      break;
-    case OptionType::kBool:
-      if (option.has_bool_value()) {
-        result.emplace();
-        result->as_boolean.emplace(option.bool_value());
-      }
-      break;
-    case OptionType::kInt:
-      if (option.has_int_value()) {
-        result.emplace();
-        if (option.int_value().value_size() == 1) {
-          result->as_integer.emplace(option.int_value().value(0));
-        } else {
-          result->as_integers.emplace(option.int_value().value().begin(),
-                                      option.int_value().value().end());
-        }
-      }
-      break;
-    case OptionType::kFixed:
-      if (option.has_fixed_value()) {
-        result.emplace();
-        if (option.fixed_value().value_size() == 1) {
-          result->as_number.emplace(option.fixed_value().value(0));
-        } else {
-          result->as_numbers.emplace(option.fixed_value().value().begin(),
-                                     option.fixed_value().value().end());
-        }
-      }
-      break;
-    case OptionType::kString:
-      if (option.has_string_value()) {
-        result.emplace();
-        result->as_string.emplace(option.string_value());
-      }
-      break;
-  }
-  return result;
-}
-
-ScannerOption ConvertLorgnetteScannerOption(
-    const lorgnette::ScannerOption& input) {
-  ScannerOption output;
-  output.name = input.name();
-  output.title = input.title();
-  output.description = input.description();
-  output.type = ConvertLorgnetteOptionType(input.option_type());
-  output.unit = ConvertLorgnetteOptionUnit(input.unit());
-  output.value = GetLorgnetteOptionValue(input);
-  output.constraint =
-      input.has_constraint()
-          ? std::optional(ConvertLorgnetteOptionConstraint(input.constraint()))
-          : std::nullopt;
-  output.is_detectable = input.detectable();
-  output.configurability =
-      input.sw_settable()   ? Configurability::kSoftwareConfigurable
-      : input.hw_settable() ? Configurability::kHardwareConfigurable
-                            : Configurability::kNotConfigurable;
-  output.is_auto_settable = input.auto_settable();
-  output.is_emulated = input.emulated();
-  output.is_active = input.active();
-  output.is_advanced = input.advanced();
-  output.is_internal = false;
-  return output;
-}
-
-}  // namespace
-
 OpenScannerResponse ConvertLorgnetteOpenScannerResponse(
     const lorgnette::OpenScannerResponse& input) {
   OpenScannerResponse output;
@@ -587,61 +514,3 @@ std::optional<ScannerOption::Value> GetLorgnetteOptionValueForTesting(
 }
 
 }  // namespace extensions::api::document_scan
-
-namespace mojo {
-
-crosapi::mojom::ScannerEnumFilterPtr
-TypeConverter<crosapi::mojom::ScannerEnumFilterPtr,
-              extensions::api::document_scan::DeviceFilter>::
-    Convert(const extensions::api::document_scan::DeviceFilter& input) {
-  auto output = crosapi::mojom::ScannerEnumFilter::New();
-  output->local = input.local.value_or(false);
-  output->secure = input.secure.value_or(false);
-  return output;
-}
-
-extensions::api::document_scan::GetScannerListResponse
-TypeConverter<extensions::api::document_scan::GetScannerListResponse,
-              crosapi::mojom::GetScannerListResponsePtr>::
-    Convert(const crosapi::mojom::GetScannerListResponsePtr& input) {
-  document_scan::GetScannerListResponse output;
-  output.result = ConvertTo<document_scan::OperationResult>(input->result);
-  for (const mojom::ScannerInfoPtr& scanner_in : input->scanners) {
-    document_scan::ScannerInfo& scanner_out = output.scanners.emplace_back();
-    scanner_out.scanner_id = scanner_in->id;
-    scanner_out.name = scanner_in->display_name;
-    scanner_out.manufacturer = scanner_in->manufacturer;
-    scanner_out.model = scanner_in->model;
-    scanner_out.device_uuid = scanner_in->device_uuid;
-    scanner_out.connection_type =
-        ConvertTo<document_scan::ConnectionType>(scanner_in->connection_type);
-    scanner_out.secure = scanner_in->secure;
-    scanner_out.image_formats = scanner_in->image_formats;
-    scanner_out.protocol_type = scanner_in->protocol_type.value_or("");
-  }
-  return output;
-}
-
-extensions::api::document_scan::GetOptionGroupsResponse
-TypeConverter<extensions::api::document_scan::GetOptionGroupsResponse,
-              crosapi::mojom::GetOptionGroupsResponsePtr>::
-    Convert(const crosapi::mojom::GetOptionGroupsResponsePtr& input) {
-  document_scan::GetOptionGroupsResponse output;
-  output.scanner_handle = input->scanner_handle;
-  output.result = ConvertTo<document_scan::OperationResult>(input->result);
-  if (!input->groups.has_value()) {
-    return output;
-  }
-
-  output.groups.emplace();
-  output.groups->reserve(input->groups.value().size());
-  for (const mojom::OptionGroupPtr& group_in : input->groups.value()) {
-    document_scan::OptionGroup& group_out = output.groups->emplace_back();
-    group_out.title = group_in->title;
-    group_out.members = std::vector<std::string>(group_in->members.begin(),
-                                                 group_in->members.end());
-  }
-  return output;
-}
-
-}  // namespace mojo

@@ -7,10 +7,8 @@
 
 #include <optional>
 
-#include "chrome/browser/ash/crosapi/document_scan_ash_type_converters.h"
 #include "chrome/common/extensions/api/document_scan.h"
-#include "chromeos/crosapi/mojom/document_scan.mojom.h"
-#include "mojo/public/cpp/bindings/type_converter.h"
+#include "chromeos/ash/components/dbus/lorgnette/lorgnette_service.pb.h"
 
 namespace lorgnette {
 class CancelScanResponse;
@@ -80,37 +78,5 @@ ScannerOption ConvertLorgnetteScannerOptionForTesting(
     const lorgnette::ScannerOption& input);
 
 }  // namespace extensions::api::document_scan
-
-namespace mojo {
-
-template <>
-struct TypeConverter<extensions::api::document_scan::OperationResult,
-                     crosapi::mojom::ScannerOperationResult> {
-  static extensions::api::document_scan::OperationResult Convert(
-      crosapi::mojom::ScannerOperationResult input);
-};
-
-template <>
-struct TypeConverter<crosapi::mojom::ScannerEnumFilterPtr,
-                     extensions::api::document_scan::DeviceFilter> {
-  static crosapi::mojom::ScannerEnumFilterPtr Convert(
-      const extensions::api::document_scan::DeviceFilter& input);
-};
-
-template <>
-struct TypeConverter<extensions::api::document_scan::GetScannerListResponse,
-                     crosapi::mojom::GetScannerListResponsePtr> {
-  static extensions::api::document_scan::GetScannerListResponse Convert(
-      const crosapi::mojom::GetScannerListResponsePtr& input);
-};
-
-template <>
-struct TypeConverter<extensions::api::document_scan::GetOptionGroupsResponse,
-                     crosapi::mojom::GetOptionGroupsResponsePtr> {
-  static extensions::api::document_scan::GetOptionGroupsResponse Convert(
-      const crosapi::mojom::GetOptionGroupsResponsePtr& input);
-};
-
-}  // namespace mojo
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_DOCUMENT_SCAN_DOCUMENT_SCAN_TYPE_CONVERTERS_H_
