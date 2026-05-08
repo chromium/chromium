@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
+#include "third_party/blink/renderer/core/dom/focusgroup_flags.h"
 #include "third_party/blink/renderer/core/dom/popover_data.h"
 #include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
@@ -787,6 +788,12 @@ class ScopedFocusNavigation {
   // sequential focus navigation.
   bool IsNonEntryFocusgroupItem(const Element& element);
 
+  // Returns true if the element should be skipped by sequential focus
+  // navigation due to focusgroup logic. This is like IsNonEntryFocusgroupItem
+  // but allows scope owners (shadow hosts, slots) through when they are
+  // non-entry focusgroup items — their scopes may contain the entry element.
+  bool ShouldSkipForFocusgroup(const Element& element);
+
   void SetCurrentElement(const Element* element) { current_ = element; }
   void MoveToNext();
   void MoveToPrevious();
@@ -905,6 +912,21 @@ bool ScopedFocusNavigation::IsNonEntryFocusgroupItem(const Element& element) {
 
   // Return whether the current element is NOT the entry element.
   return segment_entry != &element;
+}
+
+bool ScopedFocusNavigation::ShouldSkipForFocusgroup(const Element& element) {
+  if (!IsNonEntryFocusgroupItem(element)) {
+    return false;
+  }
+  // Non-entry focusgroup items are normally skipped. But if the element is a
+  // scope owner (shadow host with author shadow root, or slot), its scope may
+  // contain the actual entry element. Let it through so
+  // FindFocusableElementRecursively can enter the scope. UA shadow roots
+  // (e.g., <input>) are excluded — they don't contain focusgroup items.
+  if (element.AuthorShadowRoot() || IsA<HTMLSlotElement>(element)) {
+    return false;
+  }
+  return true;
 }
 
 void ScopedFocusNavigation::MoveToNext() {
@@ -1160,8 +1182,20 @@ inline bool IsNonKeyboardFocusableShadowHost(const Element& element) {
   // This host supports focus, but cannot be keyboard focused. For example:
   // - Tabindex is negative
   // - It is a scroller with focusable children
-  // When tabindex is negative, we should not visit the host.
-  return !(element.GetIntegralAttribute(html_names::kTabindexAttr, 0) < 0);
+  // When tabindex is negative, we normally should not visit the host. But if
+  // the host is inside a focusgroup, focusgroup semantics override the
+  // shadow-host tabindex barrier so that focusgroup items inside the host
+  // (slotted or in the shadow tree) remain reachable via Tab. See the Open UI
+  // scoped focusgroup explainer, "Shadow DOM boundaries".
+  if (element.GetIntegralAttribute(html_names::kTabindexAttr, 0) < 0) {
+    if (RuntimeEnabledFeatures::FocusgroupEnabled(
+            element.GetExecutionContext()) &&
+        focusgroup::FindFocusgroupOwner(&element)) {
+      return true;
+    }
+    return false;
+  }
+  return true;
 }
 
 inline bool IsNonKeyboardFocusableReadingFlowOwner(const Element& element) {
@@ -1231,7 +1265,7 @@ Element* ScopedFocusNavigation::FindElementWithExactTabIndex(
     Element* current = CurrentElement();
     if (ShouldVisit(*current) &&
         ReadingFlowAdjustedTabIndex(*current) == tab_index &&
-        !IsNonEntryFocusgroupItem(*current)) {
+        !ShouldSkipForFocusgroup(*current)) {
       return current;
     }
   }
@@ -1246,7 +1280,7 @@ Element* ScopedFocusNavigation::NextElementWithGreaterTabIndex(int tab_index) {
     Element* current = CurrentElement();
     int current_tab_index = ReadingFlowAdjustedTabIndex(*current);
     if (ShouldVisit(*current) && current_tab_index > tab_index &&
-        !IsNonEntryFocusgroupItem(*current)) {
+        !ShouldSkipForFocusgroup(*current)) {
       if (!winner || current_tab_index < winning_tab_index) {
         winner = current;
         winning_tab_index = current_tab_index;
@@ -1267,7 +1301,7 @@ Element* ScopedFocusNavigation::PreviousElementWithLowerTabIndex(
     int current_tab_index = ReadingFlowAdjustedTabIndex(*current);
     if (ShouldVisit(*current) && current_tab_index < tab_index &&
         current_tab_index > winning_tab_index &&
-        !IsNonEntryFocusgroupItem(*current)) {
+        !ShouldSkipForFocusgroup(*current)) {
       winner = current;
       winning_tab_index = current_tab_index;
     }
@@ -1300,7 +1334,7 @@ Element* ScopedFocusNavigation::NextFocusableElement() {
         current = CurrentElement();
         if (ShouldVisit(*current) &&
             ReadingFlowAdjustedTabIndex(*current) >= 0 &&
-            !IsNonEntryFocusgroupItem(*current)) {
+            !ShouldSkipForFocusgroup(*current)) {
           return current;
         }
       }
@@ -1367,7 +1401,7 @@ Element* ScopedFocusNavigation::PreviousFocusableElement() {
     for (; CurrentElement(); MoveToPrevious()) {
       current = CurrentElement();
       if (ShouldVisit(*current) && ReadingFlowAdjustedTabIndex(*current) >= 0 &&
-          !IsNonEntryFocusgroupItem(*current)) {
+          !ShouldSkipForFocusgroup(*current)) {
         return current;
       }
     }
@@ -1410,8 +1444,29 @@ Element* FindFocusableElementRecursivelyForward(
       // Skip to the next element in the same scope.
       continue;
     }
-    if (!IsNonFocusableFocusScopeOwner(*found))
+    if (!IsNonFocusableFocusScopeOwner(*found)) {
+      if (found->AuthorShadowRoot()) {
+        Element* fg_owner =
+            FocusgroupControllerUtils::GetFocusgroupOwnerOfItem(found);
+        if (fg_owner &&
+            !FocusgroupControllerUtils::IsEntryElementForFocusgroupSegment(
+                *found, *fg_owner)) {
+          // Keyboard-focusable shadow host that is a non-entry focusgroup
+          // item: enter its scope to find the entry element inside (e.g., a
+          // slotted child with focusgroupstart). If nothing is found inside,
+          // skip this host and continue searching.
+          ScopedFocusNavigation inner_scope =
+              ScopedFocusNavigation::OwnedByShadowHost(*found, owner_map);
+          if (Element* found_in_inner_focus_scope =
+                  FindFocusableElementRecursivelyForward(inner_scope,
+                                                         owner_map)) {
+            return found_in_inner_focus_scope;
+          }
+          continue;
+        }
+      }
       return found;
+    }
 
     // Now |found| is on a non focusable scope owner (either shadow host or
     // slot) Find inside the inward scope and return it if found. Otherwise
@@ -1444,6 +1499,18 @@ Element* FindFocusableElementRecursivelyBackward(
         return found_in_inner_focus_scope;
       if (found->IsShadowHostWithDelegatesFocus()) {
         continue;
+      }
+      // The inner scope search above found nothing. If this shadow host is
+      // also a non-entry focusgroup item, skip it — it should not receive
+      // focus during sequential navigation into a focusgroup.
+      if (found->AuthorShadowRoot()) {
+        Element* fg_owner =
+            FocusgroupControllerUtils::GetFocusgroupOwnerOfItem(found);
+        if (fg_owner &&
+            !FocusgroupControllerUtils::IsEntryElementForFocusgroupSegment(
+                *found, *fg_owner)) {
+          continue;
+        }
       }
       return found;
     }
