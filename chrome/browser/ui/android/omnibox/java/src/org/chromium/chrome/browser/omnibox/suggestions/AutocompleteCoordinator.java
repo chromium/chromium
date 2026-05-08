@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
-import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.animation.Animator;
@@ -74,7 +73,6 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
     private @Nullable OmniboxSuggestionsDropdown mDropdown;
     private final ObserverList<OmniboxSuggestionsDropdownScrollListener> mScrollListenerList =
             new ObserverList<>();
-    private final SuggestionListViewHolderProvider mViewProvider;
 
     /** An observer watching for changes to the visual state of the omnibox suggestions. */
     public interface OmniboxSuggestionsVisualStateObserver {
@@ -159,8 +157,8 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
                 SuggestionListProperties.DROPDOWN_SCROLL_OFFSET_LISTENER,
                 this::dropdownScrollOffsetChanged);
 
-        mViewProvider = new SuggestionListViewHolderProvider();
-        mViewProvider.whenLoaded(
+        ViewProvider<SuggestionListViewHolder> viewProvider = createViewProvider();
+        viewProvider.whenLoaded(
                 (holder) -> {
                     mContainer = holder.container;
                     mDropdown = holder.dropdown;
@@ -168,7 +166,7 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
         LazyConstructionPropertyMcp.create(
                 listModel,
                 SuggestionListProperties.OMNIBOX_SESSION_ACTIVE,
-                mViewProvider,
+                viewProvider,
                 SuggestionListViewBinder::bind);
 
         BaseSuggestionViewBinder.resetCachedResources();
@@ -213,61 +211,50 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
         mMediator.setOmniboxSuggestionsVisualStateObserver(omniboxSuggestionsVisualStateObserver);
     }
 
-    public OmniboxSuggestionsContainer getSuggestionsContainer() {
-        if (mContainer == null) {
-            mViewProvider.setForceSyncInflate(true);
-            mViewProvider.inflate();
-        }
-        return assertNonNull(mContainer);
-    }
+    private ViewProvider<SuggestionListViewHolder> createViewProvider() {
+        return new ViewProvider<>() {
+            private AsyncViewProvider<ViewGroup> mAsyncProvider;
+            private final List<Callback<SuggestionListViewHolder>> mCallbacks = new ArrayList<>();
+            private @Nullable SuggestionListViewHolder mHolder;
 
-    class SuggestionListViewHolderProvider implements ViewProvider<SuggestionListViewHolder> {
-        private AsyncViewProvider<ViewGroup> mAsyncProvider;
-        private final List<Callback<SuggestionListViewHolder>> mCallbacks = new ArrayList<>();
-        private @Nullable SuggestionListViewHolder mHolder;
-        private boolean mForceSyncInflate;
-
-        @Override
-        @Initializer
-        public void inflate() {
-            AsyncViewStub stub =
-                    mParent.getRootView().findViewById(R.id.omnibox_results_container_stub);
-            stub.setShouldInflateOnBackgroundThread(
-                    !mForceSyncInflate && OmniboxFeatures.sAsyncViewInflation.isEnabled());
-            mAsyncProvider = AsyncViewProvider.of(stub, R.id.omnibox_results_container);
-            mAsyncProvider.whenLoaded(this::onAsyncInflationComplete);
-            mAsyncProvider.inflate();
-        }
-
-        void setForceSyncInflate(boolean forceSyncInflate) {
-            mForceSyncInflate = forceSyncInflate;
-        }
-
-        private void onAsyncInflationComplete(ViewGroup container) {
-            OmniboxSuggestionsContainer suggestionsContainer =
-                    (OmniboxSuggestionsContainer) container;
-            OmniboxSuggestionsDropdown dropdown =
-                    container.findViewById(R.id.omnibox_suggestions_dropdown);
-
-            dropdown.setAdapter(mAdapter);
-            if (mRecycledViewPool != null) {
-                dropdown.setRecycledViewPool(mRecycledViewPool);
+            @Override
+            @Initializer
+            public void inflate() {
+                AsyncViewStub stub =
+                        mParent.getRootView().findViewById(R.id.omnibox_results_container_stub);
+                stub.setShouldInflateOnBackgroundThread(
+                        OmniboxFeatures.sAsyncViewInflation.isEnabled());
+                mAsyncProvider = AsyncViewProvider.of(stub, R.id.omnibox_results_container);
+                mAsyncProvider.whenLoaded(this::onAsyncInflationComplete);
+                mAsyncProvider.inflate();
             }
-            mHolder = new SuggestionListViewHolder(suggestionsContainer, dropdown);
-            for (int i = 0; i < mCallbacks.size(); i++) {
-                mCallbacks.get(i).onResult(mHolder);
-            }
-            mCallbacks.clear();
-        }
 
-        @Override
-        public void whenLoaded(Callback<SuggestionListViewHolder> callback) {
-            if (mHolder != null) {
-                callback.onResult(mHolder);
-                return;
+            private void onAsyncInflationComplete(ViewGroup container) {
+                OmniboxSuggestionsContainer suggestionsContainer =
+                        (OmniboxSuggestionsContainer) container;
+                OmniboxSuggestionsDropdown dropdown =
+                        container.findViewById(R.id.omnibox_suggestions_dropdown);
+
+                dropdown.setAdapter(mAdapter);
+                if (mRecycledViewPool != null) {
+                    dropdown.setRecycledViewPool(mRecycledViewPool);
+                }
+                mHolder = new SuggestionListViewHolder(suggestionsContainer, dropdown);
+                for (int i = 0; i < mCallbacks.size(); i++) {
+                    mCallbacks.get(i).onResult(mHolder);
+                }
+                mCallbacks.clear();
             }
-            mCallbacks.add(callback);
-        }
+
+            @Override
+            public void whenLoaded(Callback<SuggestionListViewHolder> callback) {
+                if (mHolder != null) {
+                    callback.onResult(mHolder);
+                    return;
+                }
+                mCallbacks.add(callback);
+            }
+        };
     }
 
     /**

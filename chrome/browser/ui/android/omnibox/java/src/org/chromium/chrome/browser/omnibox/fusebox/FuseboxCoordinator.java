@@ -74,14 +74,14 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         int EXPANDED = 2;
     }
 
-    @IntDef({FuseboxLayoutMode.TOOLBAR, FuseboxLayoutMode.SUGGESTIONS_POPOVER})
+    @IntDef({FuseboxLayoutMode.SEPARATED, FuseboxLayoutMode.POPOVER})
     @Retention(RetentionPolicy.SOURCE)
     @Target(ElementType.TYPE_USE)
     public @interface FuseboxLayoutMode {
-        // The Fusebox UI is embedded in the toolbar, separate from associated suggestions.
-        int TOOLBAR = 1;
+        // The Fusebox UI is separated from associated suggestions.
+        int SEPARATED = 1;
         // The Fusebox UI is intermingled with associated suggestions in a single popover window.
-        int SUGGESTIONS_POPOVER = 2;
+        int POPOVER = 2;
     }
 
     private @Nullable FuseboxViewHolder mViewHolder;
@@ -99,7 +99,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
             ObservableSuppliers.createNonNull(FuseboxState.DISABLED);
     private final SettableNonNullObservableSupplier<@FuseboxLayoutMode Integer>
             mFuseboxLayoutModeSupplier =
-                    ObservableSuppliers.createNonNull(FuseboxLayoutMode.TOOLBAR);
+                    ObservableSuppliers.createNonNull(FuseboxLayoutMode.SEPARATED);
     private final SnackbarManager mSnackbarManager;
     private @Nullable ViewportRectProvider mViewportRectProvider;
     private @Nullable FuseboxMetrics mMetrics;
@@ -143,7 +143,6 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mSnackbarManager = snackbarManager;
         mScrimAnchorViewSupplier = scrimAnchorViewSupplier;
-        mFuseboxLayoutModeSupplier.set(getFuseboxLayoutMode());
 
         if (!OmniboxFeatures.isMultimodalInputEnabled(context)
                 || parent.findViewById(R.id.fusebox_request_type) == null) {
@@ -253,6 +252,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
                         assumeNonNull(mViewHolder),
                         mTabModelSelectorSupplier,
                         mFuseboxStateSupplier,
+                        mFuseboxLayoutModeSupplier,
                         mSnackbarManager,
                         Clipboard.getInstance(),
                         mScrimManager,
@@ -472,12 +472,6 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
     /** Set callback to be invoked when the popup is dismissed. */
     public void setOnInteractionCompletedCallback(Callback<Boolean> callback) {
         mOnInteractionCompletedCallback = callback;
-    }
-
-    private @FuseboxLayoutMode int getFuseboxLayoutMode() {
-        return OmniboxFeatures.isDesktopPlatform()
-                ? FuseboxLayoutMode.SUGGESTIONS_POPOVER
-                : FuseboxLayoutMode.TOOLBAR;
     }
 
     /**
