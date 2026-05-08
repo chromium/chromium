@@ -1048,6 +1048,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Overview mode</translation>
 <translation id="4242533952199664413">Buksan ang mga setting</translation>
+<translation id="4244765461494758482">Nagsi-sync ang mga setting na ito sa iba mo pang ChromeOS device. Puwede mong baguhin ang mga ito rito, o pamahalaan ang buong listahan sa Mga Setting.</translation>
 <translation id="4247123849143712100">I-update at i-shut down</translation>
 <translation id="4249248555939881673">Naghihintay ng koneksyon sa network...</translation>
 <translation id="4250229828105606438">Screenshot</translation>
@@ -2327,6 +2328,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8051716679295756675">May template nang may pangalang <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="8052898407431791827">Kinopya sa clipboard</translation>
 <translation id="8054466585765276473">Kinakalkula ang oras ng baterya.</translation>
+<translation id="8063363226185507157">Mga naka-sync na setting ng accessibility</translation>
 <translation id="8076492880354921740">Mga Tab</translation>
 <translation id="8079538659226626406">Pag-share ng Screen</translation>
 <translation id="8083540854303889870">Naka-save para sa ibang pagkakataon</translation>

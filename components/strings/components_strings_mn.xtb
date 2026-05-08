@@ -479,6 +479,7 @@
 <translation id="1727613060316725209">Гэрчилгээ хүчинтэй байна</translation>
 <translation id="1728677426644403582">Та веб хуудасны эх сурвалжийг харж байна.</translation>
 <translation id="173080396488393970">Энэ төрлийн аппыг дэмждэггүй</translation>
+<translation id="1731563515262205847">ML-DSA-65</translation>
 <translation id="1732445923934584865">Оронд нь биечлэн асуух</translation>
 <translation id="1733064249834771892">фонт</translation>
 <translation id="1733631169686303142">Аудио тоног төхөөрөмж</translation>
@@ -1598,6 +1599,7 @@
 <translation id="350069200438440499">Файлын нэр:</translation>
 <translation id="3501300228850242680">Металл (Хөгжим)</translation>
 <translation id="350421688684366066">Шошго (маш гялгар)</translation>
+<translation id="3507062913298382727">Иргэний үнэмлэхийг хадгалах</translation>
 <translation id="350763432931695541">Дараагийн цөөн хэдэн хуудсанд текстийг задалж байна</translation>
 <translation id="3507869775212388416">Хууль зүйн ажлын байрууд</translation>
 <translation id="3507936815618196901">Таны эргэн тойрны 3D газрын зургийг үүсгэж, камерын хөдөлгөөнийг хянах</translation>
@@ -1992,6 +1994,7 @@
 <translation id="4098306082496067348">Виртуал картын дэлгэрэнгүй мэдээллийг тооцоо хийхэд нэмэхийн тулд түүнийг товшино уу</translation>
 <translation id="4099048595830172239">Администраторын бодлого нь нууцлалтай контент харагдаж байх үед дэлгэцээ <ph name="APPLICATION_TITLE" />-тай хуваалцахыг санал болгодоггүй:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-д фонтын хэмжээ болон үсгийн хэлбэр өөрчлөхийн тулд эхлээд tab, дараа нь Enter дээр дарна уу</translation>
+<translation id="4100421230355095925">ML-DSA-44</translation>
 <translation id="4101413244023615925">Текст болон график</translation>
 <translation id="4101917550061398111">Сонгосон зүйлсийг устгах</translation>
 <translation id="4102567721634170493">Орон нутгийн мэдээ</translation>
@@ -2219,6 +2222,7 @@
 <translation id="4415156962929755728">Хуванцар (маш гялгар)</translation>
 <translation id="4415426530740016218">Авах хаяг</translation>
 <translation id="4415748029120993980">SECG зууван муруй secp384r1 (aka NIST P-384)</translation>
+<translation id="4418150423720608641">ML-DSA-87</translation>
 <translation id="4419287616181386201">Нууц үгийг удирдлагын тохиргооноос нь устгаж болно</translation>
 <translation id="4424024547088906515">Энэ сервер нь <ph name="DOMAIN" />-аа баталж чадсангүй; учир нь энэхүү сертификатыг Chrome хүлээн зөвшөөрдөггүй. Энэ нь тохиргоо буруу хийгдсэнээс эсвэл халдагч таны холболтонд саад учруулж байгаагаас шалтгаалж болох юм.</translation>
 <translation id="4425750422187370446">Биеийн тамирын хувцас</translation>
@@ -2958,6 +2962,7 @@
 <translation id="5573641252776268565">Паспортыг засах</translation>
 <translation id="5578606540385219379">Үйлчилгээ үзүүлэгчид</translation>
 <translation id="5580958916614886209">Хүчингүй болох сарыг шалгаад дахин оролдоно уу</translation>
+<translation id="5582453333200265572">Иргэний үнэмлэхийг шинэчлэх</translation>
 <translation id="5583442610070676234"><ph name="COMPARE_SET_NAME" /> харьцуулалтын хүснэгтэд зориулсан бусад үйлдэл</translation>
 <translation id="55841966151154662">Энэ IBAN-г Google Wallet-д хадгалж чадсангүй. Оронд нь үүнийг энэ төхөөрөмж дээрх Chrome-д хадгалсан.</translation>
 <translation id="558420943003240152">Нууц үг болон passkey-г удирдах…</translation>
@@ -3092,6 +3097,7 @@
 <translation id="5808435672482059465">Chrome-н түүхээ үзэх</translation>
 <translation id="5810442152076338065">Таны <ph name="DOMAIN" />-тай холбогдох холболтыг хоцрогдсон шифр ашиглан шифрлэсэн байна.</translation>
 <translation id="5813119285467412249">&amp; Нэмэх үйлдлийг дахин хийх</translation>
+<translation id="5813274153495000141">Мэдээллээ хадгалж, маягтуудыг илүү хурдан бөглөөрэй. Таны төхөөрөмжид хадгална.</translation>
 <translation id="5813753398265398978">Физик</translation>
 <translation id="5817918615728894473">Холбох</translation>
 <translation id="5820625124144807242">Та захиалгаа хянасны дараа <ph name="BNPL_ISSUER_NAME" /> бүртгэлд нэвтрэх эсвэл тухайн бүртгэлийг үүсгэх ёстой. Энэ бүртгэлийг Google Pay-д автоматаар холбоно.</translation>

@@ -479,6 +479,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1727613060316725209">Zertifikat ist gültig</translation>
 <translation id="1728677426644403582">Dies ist die Quelle einer Webseite</translation>
 <translation id="173080396488393970">Dieser Kartentyp wird nicht unterstützt</translation>
+<translation id="1731563515262205847">ML-DSA-65</translation>
 <translation id="1732445923934584865">Stattdessen persönlich fragen</translation>
 <translation id="1733064249834771892">Schriftarten</translation>
 <translation id="1733631169686303142">Audiogeräte</translation>
@@ -1596,6 +1597,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="350069200438440499">Dateiname:</translation>
 <translation id="3501300228850242680">Metal (Musik)</translation>
 <translation id="350421688684366066">Etiketten (hochglanz)</translation>
+<translation id="3507062913298382727">Ausweisdaten speichern</translation>
 <translation id="350763432931695541">Text auf den nächsten Seiten wird extrahiert</translation>
 <translation id="3507869775212388416">Stellen im Rechtswesen</translation>
 <translation id="3507936815618196901">Eine 3D-Karte deiner Umgebung erstellen und die Kameraposition verfolgen</translation>
@@ -1989,6 +1991,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4098306082496067348">Tippe auf die Details der virtuellen Karte, um sie während des Bezahlvorgangs hinzuzufügen.</translation>
 <translation id="4099048595830172239">Gemäß Administratorrichtlinie wird nicht empfohlen, deinen Bildschirm mit <ph name="APPLICATION_TITLE" /> zu teilen, wenn vertrauliche Inhalte zu sehen sind:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um Schriftgrößen und Schriftarten in Chrome anzupassen</translation>
+<translation id="4100421230355095925">ML-DSA-44</translation>
 <translation id="4101413244023615925">Text und Grafik</translation>
 <translation id="4101917550061398111">Ausgewählte Elemente löschen</translation>
 <translation id="4102567721634170493">Lokale Nachrichten</translation>
@@ -2216,6 +2219,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4415156962929755728">Kunststoff (hochglanz)</translation>
 <translation id="4415426530740016218">Abholadresse</translation>
 <translation id="4415748029120993980">Elliptische SECG-Kurve secp384r1 (NIST P-384)</translation>
+<translation id="4418150423720608641">ML-DSA-87</translation>
 <translation id="4419287616181386201">Passwörter können in den jeweiligen Verwaltungseinstellungen gelöscht werden</translation>
 <translation id="4424024547088906515">Dieser Server konnte nicht beweisen, dass er <ph name="DOMAIN" /> ist. Sein Sicherheitszertifikat wird von Chrome als nicht vertrauenswürdig eingestuft. Mögliche Gründe sind eine fehlerhafte Konfiguration oder ein Angreifer, der deine Verbindung abfängt.</translation>
 <translation id="4425750422187370446">Sportbekleidung</translation>
@@ -2955,6 +2959,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5573641252776268565">Reisepass bearbeiten</translation>
 <translation id="5578606540385219379">Internetanbieter</translation>
 <translation id="5580958916614886209">Prüfe den Ablaufmonat und versuche es dann erneut</translation>
+<translation id="5582453333200265572">Ausweisdaten aktualisieren</translation>
 <translation id="5583442610070676234">Weitere Aktionen für Vergleichstabelle „<ph name="COMPARE_SET_NAME" />“</translation>
 <translation id="55841966151154662">Diese IBAN konnte nicht in Google Wallet gespeichert werden. Sie wurde stattdessen in Chrome auf diesem Gerät gespeichert.</translation>
 <translation id="558420943003240152">Passwörter und Passkeys verwalten</translation>
@@ -3089,6 +3094,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="5808435672482059465">Chrome-Verlauf ansehen</translation>
 <translation id="5810442152076338065">Deine Verbindung zu <ph name="DOMAIN" /> ist mit einer veralteten Codier-Suite verschlüsselt.</translation>
 <translation id="5813119285467412249">&amp;Hinzufügen wiederholen</translation>
+<translation id="5813274153495000141">Du kannst deine Informationen speichern, um entsprechende Formulare in Zukunft schneller auszufüllen. Die Informationen werden auf deinem Gerät gespeichert.</translation>
 <translation id="5813753398265398978">Physik</translation>
 <translation id="5817918615728894473">Koppeln</translation>
 <translation id="5820625124144807242">Nachdem du deine Bestellung geprüft hast, musst du dich mit <ph name="BNPL_ISSUER_NAME" /> in deinem Konto anmelden oder ein neues erstellen. Dieses Konto wird automatisch mit Google Pay verknüpft.</translation>

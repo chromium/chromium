@@ -1048,6 +1048,7 @@
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">複数画面モード</translation>
 <translation id="4242533952199664413">設定を開く</translation>
+<translation id="4244765461494758482">これらの設定は、他の ChromeOS デバイスと同期されています。ここで変更することも、[設定] でリスト全体を管理することもできます。</translation>
 <translation id="4247123849143712100">更新してシャットダウン</translation>
 <translation id="4249248555939881673">ネットワークに接続しています...</translation>
 <translation id="4250229828105606438">スクリーンショット</translation>
@@ -2329,6 +2330,7 @@
 <translation id="8051716679295756675">「<ph name="DESK_TEMPLATE_NAME" />」という名前のテンプレートはすでに存在しています</translation>
 <translation id="8052898407431791827">クリップボードにコピーしました</translation>
 <translation id="8054466585765276473">バッテリーの残り時間を計算しています。</translation>
+<translation id="8063363226185507157">同期されたユーザー補助設定</translation>
 <translation id="8076492880354921740">タブ</translation>
 <translation id="8079538659226626406">画面共有</translation>
 <translation id="8083540854303889870">後で実行するために保存</translation>

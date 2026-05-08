@@ -1871,6 +1871,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8765470054473112089">När du skriver i adressfältet eller sökrutan skickar Chrome det du skriver till standardsökmotorn för att du ska få bättre förslag. Detta är inaktiverat i inkognitoläge.</translation>
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome har hittat ett svagt lösenord som du kan förbättra}other{Chrome har hittat # svaga lösenord som du kan förbättra}}</translation>
 <translation id="8766529642647037772">Vill du skapa en markerad länk som denna?</translation>
+<translation id="8769783688897433958">Visa webbplatsinformation och behörigheter</translation>
 <translation id="8788265440806329501">Navigeringshistoriken har stängts</translation>
 <translation id="8790193082819560975">Tryck för att söka efter köpalternativ för produkten på en ny flik.</translation>
 <translation id="8798449543960971550">Lästa</translation>

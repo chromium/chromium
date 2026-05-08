@@ -4418,6 +4418,22 @@ Die Richtlinie kann mit <ph name="POLICY_CLOUD_POLICY_OVERRIDES_PLATFORM_POLICY_
           Wird sie nicht konfiguriert, ist die Einfingerbedienung auf dem Anmeldebildschirm anfangs deaktiviert, kann jedoch vom Nutzer jederzeit aktiviert werden.</translation>
 <translation id="3927291637826333102">Desktop-, Fenster- und Tabaufnahme für diese Ursprünge zulassen</translation>
 <translation id="3928726028264020458">Melden der VPD-Informationen auf Geräten aktivieren</translation>
+<translation id="393516164454995927">Mit dieser Richtlinie wird die maximale Anzahl gleichzeitiger Verbindungen pro Proxyserver für WebSocket-Anfragen festgelegt.
+
+Informationen zum Ändern von Nicht-WebSocket-Anfragelimits findest du unter <ph name="MAX_CONNECTIONS_PER_PROXY_POLICY_NAME" />.
+
+Ist diese Richtlinie nicht konfiguriert, so kommt der Standardwert von 128 zum Einsatz.
+
+Einige Webanwendungen nutzen viele Verbindungen mit „hängenden“ GET-Anfragen. Wird ein Wert unter 128 festgelegt, kann dies zu Netzwerkblockaden im Browser führen, wenn zu viele solcher Verbindungen gleichzeitig offen sind.
+Einige Proxyserver können eine hohe Anzahl gleichzeitiger Verbindungen pro Client nicht verarbeiten. Dieses Problem kann umgangen werden, indem für diese Richtlinie ein niedrigerer Wert festgelegt wird.
+
+Der Wert sollte mindestens 6 betragen.
+Wird ein niedrigerer Wert festgelegt, wird stattdessen 6 verwendet.
+Wenn Sie einen Wert unter dem Standardwert (128) festlegen, geschieht dies auf eigenes Risiko.
+
+Der Wert sollte höchstens 256 betragen.
+Wird ein höherer Wert festgelegt, wird stattdessen 256 verwendet.
+Das Erhöhen über den Standardwert (128) erfolgt auf eigenes Risiko.</translation>
 <translation id="3935592079035695061">Millisekunden seit Mitternacht.</translation>
 <translation id="3937800910397007337">Vordergrundpriorität für alle Tabs erzwingen</translation>
 <translation id="3941289958028934630">Gesprochenes Feedback auf dem Anmeldebildschirm deaktivieren</translation>
@@ -7720,6 +7736,22 @@ Ist die Richtlinie auf „false“ gesetzt, wird keine Namensnennung für die Er
 Wenn der Wert auf „true“ gesetzt oder nicht konfiguriert ist, können sie die Teilnehmerliste von Google Classroom verwenden.
 
 Ist er auf „false“ gesetzt, können sie nicht auf die Funktion zugreifen.</translation>
+<translation id="6061604539167728530">Mit dieser Richtlinie wird die maximale Anzahl gleichzeitiger Verbindungen pro Proxyserver für Nicht-WebSocket-Anfragen festgelegt.
+
+Informationen zum Ändern von WebSocket-Anfragelimits findest du unter <ph name="MAX_CONNECTIONS_PER_PROXY_FOR_WEBSOCKET_POLICY_NAME" />.
+
+Ist diese Richtlinie nicht konfiguriert, so kommt der Standardwert von 128 zum Einsatz.
+
+Einige Webanwendungen nutzen viele Verbindungen mit „hängenden“ GET-Anfragen. Wird ein Wert unter 128 festgelegt, kann dies zu Netzwerkblockaden im Browser führen, wenn zu viele solcher Verbindungen gleichzeitig offen sind.
+Einige Proxyserver können eine hohe Anzahl gleichzeitiger Verbindungen pro Client nicht verarbeiten. Dieses Problem kann umgangen werden, indem für diese Richtlinie ein niedrigerer Wert festgelegt wird.
+
+Der Wert sollte mindestens 6 betragen.
+Wird ein niedrigerer Wert festgelegt, wird stattdessen 6 verwendet.
+Wenn Sie einen Wert unter dem Standardwert (128) festlegen, geschieht dies auf eigenes Risiko.
+
+Der Wert sollte höchstens 256 (99 in <ph name="PRODUCT_NAME" /> 147 und früher) betragen.
+Wird ein höherer Wert festgelegt, wird stattdessen 256 (99 in <ph name="PRODUCT_NAME" /> 147 und früher) verwendet.
+Das Erhöhen über den Standardwert (128) erfolgt auf eigenes Risiko.</translation>
 <translation id="6066761914755798079">Wenn "<ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />" aktiviert ist, gibt "<ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" />" die URL der Suchmaschine für Suchvorschläge an. Die URL sollte den String <ph name="SEARCH_TERM_MARKER" /> enthalten, der während des Suchvorgangs durch die Suchbegriffe des Nutzers ersetzt wird.
 
       Du kannst die Such-URL von Google so angeben: <ph name="GOOGLE_SUGGEST_SEARCH_URL" />.</translation>

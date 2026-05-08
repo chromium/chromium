@@ -479,6 +479,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="1727613060316725209">Cheti ni sahihi</translation>
 <translation id="1728677426644403582">Unaangalia chanzo cha ukurasa wa wavuti</translation>
 <translation id="173080396488393970">Aina hii ya kadi haitumiki</translation>
+<translation id="1731563515262205847">ML-DSA-65</translation>
 <translation id="1732445923934584865">Badala yake waulize ana kwa ana</translation>
 <translation id="1733064249834771892">fonti</translation>
 <translation id="1733631169686303142">Vifaa vya Sauti</translation>
@@ -1597,6 +1598,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="350069200438440499">Jina la faili:</translation>
 <translation id="3501300228850242680">Metal (Muziki)</translation>
 <translation id="350421688684366066">Lebo (Mng'ao Zaidi)</translation>
+<translation id="3507062913298382727">Hifadhi kitambulisho</translation>
 <translation id="350763432931695541">Inadondoa maandishi kwenye kurasa chache zinazofuata</translation>
 <translation id="3507869775212388416">Kazi za Sheria</translation>
 <translation id="3507936815618196901">Kubuni ramani ya 3D ya mazingira yako na kufuatilia mkao wa kamera</translation>
@@ -1991,6 +1993,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="4098306082496067348">Gusa maelezo ya kadi pepe ili uyaweke kwenye sehemu ya kulipa.</translation>
 <translation id="4099048595830172239">Sera ya msimamizi haipendekezi kushiriki skrini yako na <ph name="APPLICATION_TITLE" /> wakati maudhui ya siri yanaonekana:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Bonyeza 'tab' kisha 'Enter' ili uweke mapendeleo ya ukubwa wa fonti na miundo ya maandishi katika Chrome</translation>
+<translation id="4100421230355095925">ML-DSA-44</translation>
 <translation id="4101413244023615925">Maandishi na picha</translation>
 <translation id="4101917550061398111">Futa vipengee ulivyovichagua</translation>
 <translation id="4102567721634170493">Habari za Mahali Ulipo</translation>
@@ -2218,6 +2221,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="4415156962929755728">Plastiki (Iliyong'aa Zaidi)</translation>
 <translation id="4415426530740016218">Anwani ya Mahali pa Kuchukulia Bidhaa</translation>
 <translation id="4415748029120993980">SECG kizingo cha mviringo secp384r1 (pia inayojuliakana kama NIST P-384)</translation>
+<translation id="4418150423720608641">ML-DSA-87</translation>
 <translation id="4419287616181386201">Manenosiri yanaweza kufutwa katika mipangilio ya udhibiti</translation>
 <translation id="4424024547088906515">Seva hii haikuweza kuthibitisha kuwa ni <ph name="DOMAIN" />; cheti chake cha usalama hakiaminiwi na Chrome. Hii inaweza kusababishwa na usanidi usiofaa au mvamizi kuingilia muunganisho wako.</translation>
 <translation id="4425750422187370446">Mavazi ya Michezo</translation>
@@ -2957,6 +2961,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="5573641252776268565">Badilisha maelezo ya pasipoti</translation>
 <translation id="5578606540385219379">Watoa Huduma</translation>
 <translation id="5580958916614886209">Angalia mwezi kuisha kwa muda wa matumizi halafu ujajibu tena</translation>
+<translation id="5582453333200265572">Sasisha taarifa za kitambulisho</translation>
 <translation id="5583442610070676234">Chaguo zaidi za jedwali la ulinganishaji <ph name="COMPARE_SET_NAME" /></translation>
 <translation id="55841966151154662">Imeshindwa kuhifadhi IBAN hii kwenye Pochi ya Google. Imehifadhiwa kwenye Chrome katika kifaa hiki badala yake.</translation>
 <translation id="558420943003240152">Dhibiti manenosiri na funguo za siri…</translation>
@@ -3091,6 +3096,7 @@ Ili ufiche chaguo za kulipa baadaye, nenda kwenye <ph name="BEGIN_LINK" />mipang
 <translation id="5808435672482059465">Angalia Historia Yako ya Chrome</translation>
 <translation id="5810442152076338065">Muunganisho wako kwenye <ph name="DOMAIN" /> umesimbwa kwa njia fiche kwa kutumia mipangilio ya kriptografia ya zamani.</translation>
 <translation id="5813119285467412249">Rudia Kuongeza</translation>
+<translation id="5813274153495000141">Hifadhi maelezo yako ili ujaze fomu kwa haraka zaidi. Huhifadhi kwenye kifaa chako.</translation>
 <translation id="5813753398265398978">Fizikia</translation>
 <translation id="5817918615728894473">Unganisha</translation>
 <translation id="5820625124144807242">Baada ya kukagua oda yako, ni lazima uingie katika akaunti au ufungue akaunti ya <ph name="BNPL_ISSUER_NAME" />. Akaunti hii itaunganishwa kiotomatiki na Google Pay.</translation>

@@ -1048,6 +1048,7 @@
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Рэжым агляду</translation>
 <translation id="4242533952199664413">Адкрыць налады</translation>
+<translation id="4244765461494758482">Гэтыя налады сінхранізуюцца з іншымі прыладамі з ChromeOS. Вы можаце змяніць іх тут або кіраваць іх поўным спісам у Наладах.</translation>
 <translation id="4247123849143712100">Абнавіць і завяршыць працу</translation>
 <translation id="4249248555939881673">Чакаецца падключэнне да сеткі...</translation>
 <translation id="4250229828105606438">Здымак экрана</translation>
@@ -2328,6 +2329,7 @@
 <translation id="8051716679295756675">Ужо існуе шаблон з назвай "<ph name="DESK_TEMPLATE_NAME" />"</translation>
 <translation id="8052898407431791827">Скапіравана ў буфер абмену</translation>
 <translation id="8054466585765276473">Разлічваецца час да разрадкі акумулятара.</translation>
+<translation id="8063363226185507157">Сінхранізаваныя налады спецыяльных магчымасцей</translation>
 <translation id="8076492880354921740">Укладкі</translation>
 <translation id="8079538659226626406">Абагуліць экран</translation>
 <translation id="8083540854303889870">Захавана на будучыню</translation>

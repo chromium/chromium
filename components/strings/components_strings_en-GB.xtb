@@ -479,6 +479,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1727613060316725209">Certificate is valid</translation>
 <translation id="1728677426644403582">You're viewing the source of a web page</translation>
 <translation id="173080396488393970">This type of card isn’t supported</translation>
+<translation id="1731563515262205847">ML-DSA-65</translation>
 <translation id="1732445923934584865">Ask in-person instead</translation>
 <translation id="1733064249834771892">fonts</translation>
 <translation id="1733631169686303142">Audio Equipment</translation>
@@ -1597,6 +1598,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="350069200438440499">File name:</translation>
 <translation id="3501300228850242680">Metal (Music)</translation>
 <translation id="350421688684366066">Labels (high gloss)</translation>
+<translation id="3507062913298382727">Save ID card</translation>
 <translation id="350763432931695541">Extracting text in next few pages</translation>
 <translation id="3507869775212388416">Legal Jobs</translation>
 <translation id="3507936815618196901">Create a 3D map of your surroundings and track camera position</translation>
@@ -1991,6 +1993,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="4098306082496067348">Tap virtual card details to add them to checkout.</translation>
 <translation id="4099048595830172239">Administrator policy doesn’t recommend sharing your screen with <ph name="APPLICATION_TITLE" /> when confidential content is visible:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to customise font sizes and typefaces in Chrome</translation>
+<translation id="4100421230355095925">ML-DSA-44</translation>
 <translation id="4101413244023615925">Text and graphic</translation>
 <translation id="4101917550061398111">Delete selected items</translation>
 <translation id="4102567721634170493">Local news</translation>
@@ -2218,6 +2221,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="4415156962929755728">Plastic (high gloss)</translation>
 <translation id="4415426530740016218">Pickup Address</translation>
 <translation id="4415748029120993980">SECG elliptic curve secp384r1 (aka NIST P-384)</translation>
+<translation id="4418150423720608641">ML-DSA-87</translation>
 <translation id="4419287616181386201">Passwords can be deleted in their management settings</translation>
 <translation id="4424024547088906515">This server could not prove that it is <ph name="DOMAIN" />; its security certificate is not trusted by Chrome. This may be caused by a misconfiguration or an attacker intercepting your connection.</translation>
 <translation id="4425750422187370446">Athletic Apparel</translation>
@@ -2957,6 +2961,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="5573641252776268565">Edit passport</translation>
 <translation id="5578606540385219379">Service Providers</translation>
 <translation id="5580958916614886209">Check your expiry month and try again</translation>
+<translation id="5582453333200265572">Update ID card</translation>
 <translation id="5583442610070676234">More actions for comparison table <ph name="COMPARE_SET_NAME" /></translation>
 <translation id="55841966151154662">This IBAN couldn't be saved in Google Wallet. It's been saved to Chrome on this device instead.</translation>
 <translation id="558420943003240152">Manage passwords and passkeys…</translation>
@@ -3091,6 +3096,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="5808435672482059465">View Your Chrome History</translation>
 <translation id="5810442152076338065">Your connection to <ph name="DOMAIN" /> is encrypted using an obsolete cipher suite.</translation>
 <translation id="5813119285467412249">&amp;Redo Add</translation>
+<translation id="5813274153495000141">Save your information and fill in forms faster. Saves to your device.</translation>
 <translation id="5813753398265398978">Physics</translation>
 <translation id="5817918615728894473">Pair</translation>
 <translation id="5820625124144807242">Once you review your order, you must sign in to or create an account with <ph name="BNPL_ISSUER_NAME" />. This account will be automatically linked to Google Pay.</translation>

@@ -479,6 +479,7 @@
 <translation id="1727613060316725209">Сертыфікат з’яўляецца сапраўдным</translation>
 <translation id="1728677426644403582">Вы праглядаеце крыніцу вэб-старонкі</translation>
 <translation id="173080396488393970">Карткі гэтага тыпу не падтрымліваюцца</translation>
+<translation id="1731563515262205847">ML-DSA-65</translation>
 <translation id="1732445923934584865">Папрасіць асабіста</translation>
 <translation id="1733064249834771892">шрыфты</translation>
 <translation id="1733631169686303142">Аўдыятэхніка</translation>
@@ -1597,6 +1598,7 @@
 <translation id="350069200438440499">Назва файла:</translation>
 <translation id="3501300228850242680">Метал (музыка)</translation>
 <translation id="350421688684366066">Высакаглянцавы этыкетачны матэрыял</translation>
+<translation id="3507062913298382727">Захавайце пасведчанне асобы</translation>
 <translation id="350763432931695541">Вымаецца тэкст наступных некалькіх старонак</translation>
 <translation id="3507869775212388416">Вакансіі ў сферы юрыспрудэнцыі</translation>
 <translation id="3507936815618196901">стварыць 3D-карту вашага асяроддзя і адсочваць становішча камеры</translation>
@@ -1991,6 +1993,7 @@
 <translation id="4098306082496067348">Націсніце на рэквізіты віртуальнай карткі, каб дадаць іх для аплаты.</translation>
 <translation id="4099048595830172239">Палітыка адміністратара не рэкамендуе абагульваць экран з праграмай <ph name="APPLICATION_TITLE" />, калі паказваецца канфідэнцыяльнае змесціва:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб наладзіць памеры і тыпы шрыфтоў у Chrome, націсніце Tab, затым Enter</translation>
+<translation id="4100421230355095925">ML-DSA-44</translation>
 <translation id="4101413244023615925">Тэкст і графіка</translation>
 <translation id="4101917550061398111">Выдаліць выбраныя элементы</translation>
 <translation id="4102567721634170493">Мясцовыя навіны</translation>
@@ -2218,6 +2221,7 @@
 <translation id="4415156962929755728">Высакаглянцавы пластык</translation>
 <translation id="4415426530740016218">Адрас атрымання</translation>
 <translation id="4415748029120993980">SECG эліптычны secp384r1 (іншая назва – NIST P-384)</translation>
+<translation id="4418150423720608641">ML-DSA-87</translation>
 <translation id="4419287616181386201">Паролі можна выдаліць у наладах кіравання імі</translation>
 <translation id="4424024547088906515">Серверу не ўдалося даказаць, што гэта <ph name="DOMAIN" />; Chrome не давярае яго сертыфікату бяспекі. Прычынай могуць быць няправільныя налады або зламыснік, які спрабуе перахапіць падключэнне.</translation>
 <translation id="4425750422187370446">Спартыўнае адзенне і абутак</translation>
@@ -2956,6 +2960,7 @@
 <translation id="5573641252776268565">Змяніць пашпартныя даныя</translation>
 <translation id="5578606540385219379">Пастаўшчыкі паслуг</translation>
 <translation id="5580958916614886209">Праверце месяц заканчэння тэрміну дзеяння і паўтарыце спробу</translation>
+<translation id="5582453333200265572">Абнавіце пасведчанне асобы</translation>
 <translation id="5583442610070676234">Іншыя дзеянні для табліцы параўнання "<ph name="COMPARE_SET_NAME" />"</translation>
 <translation id="55841966151154662">Не ўдалося захаваць IBAN у Google Кашальку. Нумар захаваны ў Chrome на гэтай прыладзе.</translation>
 <translation id="558420943003240152">Кіраваць паролямі і ключамі доступу…</translation>
@@ -3090,6 +3095,7 @@
 <translation id="5808435672482059465">Праглядзець гісторыю Chrome</translation>
 <translation id="5810442152076338065">Падключэнне да дамена <ph name="DOMAIN" /> зашыфравана з дапамогай састарэлага алгарытму шыфравання.</translation>
 <translation id="5813119285467412249">&amp;Узнавіць дадаванне</translation>
+<translation id="5813274153495000141">Захавайце звесткі і запаўняйце формы хутчэй. Звесткі захоўваюцца на прыладзе.</translation>
 <translation id="5813753398265398978">Фізіка</translation>
 <translation id="5817918615728894473">Спалучыць</translation>
 <translation id="5820625124144807242">Пасля таго як вы прагледзіце заказ, трэба будзе ўвайсці ва ўліковы запіс сэрвісу "<ph name="BNPL_ISSUER_NAME" />" або стварыць новы, калі ў вас яго няма. Гэты ўліковы запіс будзе аўтаматычна звязаны з Google Pay.</translation>

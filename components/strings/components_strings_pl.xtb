@@ -479,6 +479,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1727613060316725209">Certyfikat jest ważny</translation>
 <translation id="1728677426644403582">Przeglądasz źródło strony internetowej</translation>
 <translation id="173080396488393970">Ten typ karty nie jest obsługiwany</translation>
+<translation id="1731563515262205847">ML-DSA-65</translation>
 <translation id="1732445923934584865">Poproś osobiście</translation>
 <translation id="1733064249834771892">czcionki</translation>
 <translation id="1733631169686303142">Sprzęt audio</translation>
@@ -1597,6 +1598,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="350069200438440499">Nazwa pliku:</translation>
 <translation id="3501300228850242680">Muzyka metalowa</translation>
 <translation id="350421688684366066">Etykiety (wysoki połysk)</translation>
+<translation id="3507062913298382727">Zapisz dowód tożsamości</translation>
 <translation id="350763432931695541">Wyodrębniam tekst na kilku kolejnych stronach</translation>
 <translation id="3507869775212388416">Praca w sektorze prawnym</translation>
 <translation id="3507936815618196901">Tworzyć mapę 3D Twojego otoczenia i śledzić pozycję kamery.</translation>
@@ -1991,6 +1993,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4098306082496067348">Kliknij dane karty wirtualnej, aby dodać je podczas płatności.</translation>
 <translation id="4099048595830172239">Zgodnie z zasadą administratora nie zaleca się udostępniania ekranu za pomocą aplikacji <ph name="APPLICATION_TITLE" />, gdy są widoczne treści poufne:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />; aby dostosować rozmiary i kroje czcionek w Chrome, naciśnij Tab, a potem Enter</translation>
+<translation id="4100421230355095925">ML-DSA-44</translation>
 <translation id="4101413244023615925">Tekst i grafika</translation>
 <translation id="4101917550061398111">Usuń zaznaczone produkty</translation>
 <translation id="4102567721634170493">Wiadomości lokalne</translation>
@@ -2218,6 +2221,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4415156962929755728">Plastik (wysoki połysk)</translation>
 <translation id="4415426530740016218">Adres odbioru</translation>
 <translation id="4415748029120993980">Kryptografia krzywych eliptycznych SECG secp384r1 (inna nazwa: NIST P-384)</translation>
+<translation id="4418150423720608641">ML-DSA-87</translation>
 <translation id="4419287616181386201">Hasła można usunąć w ustawieniach zarządzania nimi</translation>
 <translation id="4424024547088906515">Ten serwer nie mógł udowodnić, że należy do <ph name="DOMAIN" />. Jego certyfikat bezpieczeństwa nie jest zaufany w Chrome. Może to być spowodowane błędną konfiguracją lub przechwyceniem połączenia przez atakującego.</translation>
 <translation id="4425750422187370446">Odzież sportowa</translation>
@@ -2957,6 +2961,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5573641252776268565">Edytuj paszport</translation>
 <translation id="5578606540385219379">Dostawcy usług</translation>
 <translation id="5580958916614886209">Sprawdź miesiąc ważności i spróbuj ponownie</translation>
+<translation id="5582453333200265572">Zaktualizować dowód tożsamości?</translation>
 <translation id="5583442610070676234">Więcej działań dotyczących tabeli porównawczej <ph name="COMPARE_SET_NAME" /></translation>
 <translation id="55841966151154662">Nie udało się zapisać numeru IBAN w Portfelu Google. Zamiast tego został on zapisany w Chrome na tym urządzeniu.</translation>
 <translation id="558420943003240152">Zarządzaj hasłami i kluczami dostępu…</translation>
@@ -3091,6 +3096,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5808435672482059465">Wyświetl historię Chrome</translation>
 <translation id="5810442152076338065">Połączenie z <ph name="DOMAIN" /> jest szyfrowane przy użyciu przestarzałego zestawu szyfrów.</translation>
 <translation id="5813119285467412249">&amp;Ponów dodanie</translation>
+<translation id="5813274153495000141">Zapisz swoje dane i szybciej wypełniaj formularze. Zapisuje informacje na urządzeniu.</translation>
 <translation id="5813753398265398978">Fizyka</translation>
 <translation id="5817918615728894473">Sparuj</translation>
 <translation id="5820625124144807242">Po sprawdzeniu zamówienia musisz zalogować się na konto <ph name="BNPL_ISSUER_NAME" /> lub je utworzyć. To konto zostanie automatycznie połączone z Google Pay.</translation>

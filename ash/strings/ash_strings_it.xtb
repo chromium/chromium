@@ -1045,6 +1045,7 @@ Alcune funzionalità sono limitate per aumentare la durata della batteria.</tran
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Modalità panoramica</translation>
 <translation id="4242533952199664413">Apri le impostazioni</translation>
+<translation id="4244765461494758482">Queste impostazioni vengono sincronizzate su tutti gli altri dispositivi ChromeOS. Puoi modificarle qui o gestire l'elenco completo nelle Impostazioni.</translation>
 <translation id="4247123849143712100">Aggiorna e spegni</translation>
 <translation id="4249248555939881673">In attesa della connessione di rete...</translation>
 <translation id="4250229828105606438">Screenshot</translation>
@@ -2325,6 +2326,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8051716679295756675">Esiste già un modello con il nome <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="8052898407431791827">Copiato negli appunti</translation>
 <translation id="8054466585765276473">Calcolo della durata della batteria.</translation>
+<translation id="8063363226185507157">Impostazioni di accessibilità sincronizzate</translation>
 <translation id="8076492880354921740">Schede</translation>
 <translation id="8079538659226626406">Condivisione schermo</translation>
 <translation id="8083540854303889870">Elementi salvati per dopo</translation>

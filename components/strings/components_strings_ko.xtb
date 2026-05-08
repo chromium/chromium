@@ -479,6 +479,7 @@
 <translation id="1727613060316725209">인증서가 유효함</translation>
 <translation id="1728677426644403582">웹페이지 소스를 보는 중</translation>
 <translation id="173080396488393970">이 유형의 카드는 지원되지 않습니다.</translation>
+<translation id="1731563515262205847">ML-DSA-65</translation>
 <translation id="1732445923934584865">직접 요청하기</translation>
 <translation id="1733064249834771892">글꼴</translation>
 <translation id="1733631169686303142">오디오 기기</translation>
@@ -1597,6 +1598,7 @@
 <translation id="350069200438440499">파일 이름:</translation>
 <translation id="3501300228850242680">메탈(음악)</translation>
 <translation id="350421688684366066">라벨(고광택)</translation>
+<translation id="3507062913298382727">신분증을 저장하시겠습니까?</translation>
 <translation id="350763432931695541">다음 몇 페이지에서 텍스트 추출</translation>
 <translation id="3507869775212388416">법률직</translation>
 <translation id="3507936815618196901">주변 환경의 3D 지도를 생성하고 카메라 위치를 추적</translation>
@@ -1991,6 +1993,7 @@
 <translation id="4098306082496067348">가상 카드 세부정보를 탭하여 결제에 추가합니다.</translation>
 <translation id="4099048595830172239">관리자 정책에 따라 기밀 콘텐츠가 화면에 표시되어 있을 때 <ph name="APPLICATION_TITLE" /> 앱과 화면을 공유하지 않는 것이 좋습니다.</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 Chrome의 글꼴 크기와 서체 맞춤설정</translation>
+<translation id="4100421230355095925">ML-DSA-44</translation>
 <translation id="4101413244023615925">텍스트 및 그래픽</translation>
 <translation id="4101917550061398111">선택한 항목 삭제</translation>
 <translation id="4102567721634170493">지역 뉴스</translation>
@@ -2218,6 +2221,7 @@
 <translation id="4415156962929755728">플라스틱(고광택)</translation>
 <translation id="4415426530740016218">픽업 주소</translation>
 <translation id="4415748029120993980">SECG 타원 곡선 secp384r1(또는 NIST P-384)</translation>
+<translation id="4418150423720608641">ML-DSA-87</translation>
 <translation id="4419287616181386201">관리 설정에서 비밀번호를 삭제할 수 있습니다.</translation>
 <translation id="4424024547088906515">이 서버가 <ph name="DOMAIN" />임을 입증할 수 없으며 Chrome에서 신뢰하는 보안 인증서가 아닙니다. 서버를 잘못 설정했거나 불법 사용자가 연결을 가로채고 있기 때문일 수 있습니다.</translation>
 <translation id="4425750422187370446">운동복</translation>
@@ -2957,6 +2961,7 @@
 <translation id="5573641252776268565">여권 수정</translation>
 <translation id="5578606540385219379">서비스 제공업체</translation>
 <translation id="5580958916614886209">유효기간 월을 확인한 후 다시 시도해 주세요.</translation>
+<translation id="5582453333200265572">신분증을 업데이트하시겠습니까?</translation>
 <translation id="5583442610070676234">비교 테이블 <ph name="COMPARE_SET_NAME" />에 관한 추가 작업</translation>
 <translation id="55841966151154662">이 IBAN은 Google 월렛에 저장할 수 없습니다. 대신 이 기기의 Chrome에 저장됩니다.</translation>
 <translation id="558420943003240152">비밀번호 및 패스키 관리…</translation>
@@ -3091,6 +3096,7 @@
 <translation id="5808435672482059465">Chrome 방문 기록 보기</translation>
 <translation id="5810442152076338065"><ph name="DOMAIN" />에 대한 연결이 더 이상 사용되지 않는 암호화 기술을 사용하여 암호화됩니다.</translation>
 <translation id="5813119285467412249">추가 다시 실행(&amp;R)</translation>
+<translation id="5813274153495000141">정보를 저장하고 양식을 더 빠르게 작성하세요. 정보는 기기에 저장됩니다.</translation>
 <translation id="5813753398265398978">물리학</translation>
 <translation id="5817918615728894473">페어링</translation>
 <translation id="5820625124144807242">주문을 검토한 후에는 <ph name="BNPL_ISSUER_NAME" />에 로그인하거나 계정을 만들어야 합니다. 이 계정은 Google Pay에 자동으로 연결됩니다.</translation>

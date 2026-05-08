@@ -1870,6 +1870,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="8765470054473112089">Adres çubuğuna veya arama kutusuna yazdığınızda Chrome, yazdıklarınızı varsayılan arama motorunuza göndererek daha iyi öneriler görmenizi sağlar. Bu ayar Gizli modda kapalıdır.</translation>
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome, iyileştirilebilecek zayıf bir şifre tespit etti}other{Chrome, iyileştirilebilecek # zayıf şifre tespit etti}}</translation>
 <translation id="8766529642647037772">Bunun gibi vurgulanmış bir bağlantı oluşturmak ister misiniz?</translation>
+<translation id="8769783688897433958">Site bilgilerini ve izinleri göster</translation>
 <translation id="8788265440806329501">Gezinme geçmişi kapalı</translation>
 <translation id="8790193082819560975">Ürünle ilgili satın alma seçeneklerini yeni sekmede aramak için dokunun.</translation>
 <translation id="8798449543960971550">Okunanlar</translation>

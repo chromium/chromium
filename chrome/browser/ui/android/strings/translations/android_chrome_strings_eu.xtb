@@ -1870,6 +1870,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="8765470054473112089">Helbide-barran edo bilaketa-koadroan zerbait idazten duzunean, Chrome-k bilatzaile lehenetsira bidaltzen du, iradokizun hobeak lortzeko. Ezkutuko moduan, aukera hori desaktibatuta dago.</translation>
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Hobe dezakezun pasahitz ez-seguru bat aurkitu du Chrome-k}other{Hobe ditzakezun # pasahitz ez-seguru aurkitu ditu Chrome-k}}</translation>
 <translation id="8766529642647037772">Honelako esteka nabarmendu bat sortu nahi duzu?</translation>
+<translation id="8769783688897433958">Ikusi webgunearen informazioa eta baimenak</translation>
 <translation id="8788265440806329501">Nabigazio-historia itxita dago</translation>
 <translation id="8790193082819560975">Produktua erosteko aukerak beste fitxa batean bilatzeko, sakatu hau.</translation>
 <translation id="8798449543960971550">Irakurrita</translation>

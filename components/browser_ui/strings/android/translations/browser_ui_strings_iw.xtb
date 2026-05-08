@@ -610,6 +610,7 @@
 <translation id="7250468141469952378">נבחרו <ph name="ITEM_COUNT" /></translation>
 <translation id="7260727271532453612">פועלות: <ph name="PERMISSION_1" /> וגם <ph name="PERMISSION_2" /></translation>
 <translation id="7276071417425470385">כשהאפשרות מופעלת, אתרים יכולים לבקש הרשאה להשתמש במכשירי מציאות מדומה. כשהאפשרות מושבתת, אתרים לא יכולים להשתמש במכשירי מציאות מדומה.</translation>
+<translation id="7279851812866769760">רוצה לשתף אנשי קשר?</translation>
 <translation id="7282197670900591579">עיצוב צהוב</translation>
 <translation id="728412880473384942">האתרים מהירים יותר אבל פחות מאובטחים</translation>
 <translation id="7352902948037373520">‏ניהול ב<ph name="BEGIN_LINK1" />הגדרות Android<ph name="END_LINK1" />
@@ -796,6 +797,7 @@
 <translation id="9156722768168878035">‏‫Chrome יכול להציג את הכרטיסיות האחרונות ברשימת האפליקציות במכשיר ובתוצאות החיפוש. אפשר להשבית את האפשרות הזו בכל שלב בהגדרות Chrome.</translation>
 <translation id="9162462602695099906">הדף הזה מסוכן</translation>
 <translation id="9182556968660520230">לא לאפשר לאתרים להפעיל תוכן מוגן</translation>
+<translation id="927148002081263046">רוצה לשתף איש קשר?</translation>
 <translation id="947156494302904893">אתרים שמבקרים בהם יכולים לאמת שמדובר באדם אמיתי ולא בבוט</translation>
 <translation id="959682366969460160">ארגון הפריטים</translation>
 <translation id="960590623979248167">הצגת היפר-קישורים</translation>

@@ -479,6 +479,7 @@
 <translation id="1727613060316725209">ਪ੍ਰਮਾਣ-ਪੱਤਰ ਵੈਧ ਹੈ</translation>
 <translation id="1728677426644403582">ਤੁਸੀਂ ਕਿਸੇ ਵੈੱਬ ਪੰਨੇ ਦੇ ਸਰੋਤ ਨੂੰ ਵੇਖ ਰਹੇ ਹੋ</translation>
 <translation id="173080396488393970">ਇਸ ਤਰ੍ਹਾਂ ਦਾ ਕਾਰਡ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ</translation>
+<translation id="1731563515262205847">ML-DSA-65</translation>
 <translation id="1732445923934584865">ਇਸਦੀ ਬਜਾਏ ਵਿਅਕਤੀਗਤ ਤੌਰ 'ਤੇ ਪੁੱਛੋ</translation>
 <translation id="1733064249834771892">ਫ਼ੌਂਟ</translation>
 <translation id="1733631169686303142">ਆਡੀਓ ਉਪਕਰਨ</translation>
@@ -1595,6 +1596,7 @@
 <translation id="350069200438440499">ਫ਼ਾਈਲ ਦਾ ਨਾਮ:</translation>
 <translation id="3501300228850242680">ਮੈਟਲ (ਸੰਗੀਤ)</translation>
 <translation id="350421688684366066">ਲੇਬਲ (ਹਾਈ-ਗਲੋਸ)</translation>
+<translation id="3507062913298382727">ਆਈਡੀ ਕਾਰਡ ਨੂੰ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="350763432931695541">ਅਗਲੇ ਕੁਝ ਪੰਨਿਆਂ ਵਿੱਚ ਲਿਖਤ ਨੂੰ ਐਕਸਟ੍ਰੈਕਟ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="3507869775212388416">ਕਨੂੰਨੀ ਖੇਤਰ ਦੀਆਂ ਨੌਕਰੀਆਂ</translation>
 <translation id="3507936815618196901">ਆਪਣੇ ਆਲੇ-ਦੁਆਲੇ ਦਾ 3D ਨਕਸ਼ਾ ਬਣਾਓ ਅਤੇ ਕੈਮਰਾ ਸਥਿਤੀ ਨੂੰ ਟਰੈਕ ਕਰੋ</translation>
@@ -1988,6 +1990,7 @@
 <translation id="4098306082496067348">ਆਭਾਸੀ ਕਾਰਡ ਦੇ ਵੇਰਵਿਆਂ ਨੂੰ ਚੈੱਕ-ਆਊਟ ਵਿੱਚ ਸ਼ਾਮਲ ਕਰਨ ਲਈ ਉਸ 'ਤੇ ਟੈਪ ਕਰੋ।</translation>
 <translation id="4099048595830172239">ਗੁਪਤ ਸਮੱਗਰੀ ਦੇ ਦਿਸਣਯੋਗ ਹੋਣ 'ਤੇ ਪ੍ਰਸ਼ਾਸਕ ਨੀਤੀ ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ਨੂੰ <ph name="APPLICATION_TITLE" /> ਨਾਲ ਸਾਂਝਾ ਕਰਨ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਨਹੀਂ ਕਰਦੀ:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ਵਿੱਚ ਫ਼ੌਂਟ ਦੇ ਆਕਾਰਾਂ ਅਤੇ ਟਾਈਪਫੇਸਾਂ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰਨ ਲਈ Tab ਅਤੇ ਫਿਰ Enter ਦਬਾਓ</translation>
+<translation id="4100421230355095925">ML-DSA-44</translation>
 <translation id="4101413244023615925">ਲਿਖਤ ਅਤੇ ਗ੍ਰਾਫ਼ਿਕ</translation>
 <translation id="4101917550061398111">ਚੁਣੀਆਂ ਹੋਈਆਂ ਆਈਟਮਾਂ ਨੂੰ ਮਿਟਾਓ</translation>
 <translation id="4102567721634170493">ਸਥਾਨਕ ਖਬਰਾਂ</translation>
@@ -2215,6 +2218,7 @@
 <translation id="4415156962929755728">ਪਲਾਸਟਿਕ (ਹਾਈ ਗਲੋਸ)</translation>
 <translation id="4415426530740016218">ਪਿਕਅੱਪ ਪਤਾ</translation>
 <translation id="4415748029120993980">SECG ਅੰਡਾਕਾਰ ਘੁਮਾਓ secp384r1 (aka NIST P-384)</translation>
+<translation id="4418150423720608641">ML-DSA-87</translation>
 <translation id="4419287616181386201">ਪਾਸਵਰਡਾਂ ਨੂੰ ਉਨ੍ਹਾਂ ਦੀਆਂ ਪ੍ਰਬੰਧਨ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਮਿਟਾਇਆ ਜਾ ਸਕਦਾ ਹੈ</translation>
 <translation id="4424024547088906515">ਇਹ ਸਰਵਰ ਇਹ ਸਾਬਤ ਨਹੀਂ ਕਰ ਸਕਿਆ ਕਿ ਇਹ <ph name="DOMAIN" /> ਹੈ; ਇਸਦਾ ਸੁਰੱਖਿਆ ਪ੍ਰਮਾਣ-ਪੱਤਰ Chrome ਵੱਲੋਂ ਭਰੋਸੇਯੋਗ ਨਹੀਂ ਹੈ। ਇਹ ਇੱਕ ਗਲਤ ਸੰਰੂਪਣ ਕਾਰਨ ਹੋ ਸਕਦਾ ਹੈ ਜਾਂ ਕੋਈ ਹਮਲਾਵਰ ਤੁਹਾਡੇ ਕਨੈਕਸ਼ਨ ਨੂੰ ਰਾਹ ਵਿੱਚ ਰੋਕ ਰਿਹਾ ਹੈ।</translation>
 <translation id="4425750422187370446">ਅਥਲੈਟਿਕ ਲਿਬਾਸ</translation>
@@ -2954,6 +2958,7 @@
 <translation id="5573641252776268565">ਪਾਸਪੋਰਟ ਸੰਬੰਧੀ ਜਾਣਕਾਰੀ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
 <translation id="5578606540385219379">ਸੇਵਾ ਪ੍ਰਦਾਨਕ</translation>
 <translation id="5580958916614886209">ਆਪਣੀ ਮਿਆਦ ਸਮਾਪਤੀ ਦੇ ਮਹੀਨੇ ਦੀ ਜਾਂਚ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
+<translation id="5582453333200265572">ਆਈਡੀ ਕਾਰਡ ਨੂੰ ਅੱਪਡੇਟ ਕਰੋ</translation>
 <translation id="5583442610070676234">ਤੁਲਨਾ ਸਾਰਨੀ <ph name="COMPARE_SET_NAME" /> ਲਈ ਹੋਰ ਕਾਰਵਾਈਆਂ</translation>
 <translation id="55841966151154662">ਇਸ IBAN ਨੂੰ Google Wallet ਵਿੱਚ ਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ। ਇਸਦੀ ਬਜਾਏ ਇਸਨੂੰ ਇਸ ਡੀਵਾਈਸ 'ਤੇ Chrome ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="558420943003240152">ਪਾਸਵਰਡਾਂ ਅਤੇ ਪਾਸਕੀਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ…</translation>
@@ -3088,6 +3093,7 @@
 <translation id="5808435672482059465">ਆਪਣਾ Chrome ਇਤਿਹਾਸ ਦੇਖੋ</translation>
 <translation id="5810442152076338065"><ph name="DOMAIN" /> ਵਿੱਚ ਤੁਹਾਡਾ ਕਨੈਕਸ਼ਨ ਕਿਸੇ ਪੁਰਾਣਾ ਸਿਫ਼ਰ ਸੂਟ ਦਾ ਉਪਯੋਗ ਕਰਕੇ ਏਨਕ੍ਰਿਪਟ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="5813119285467412249">&amp;ਜੋੜੋ ਨੂੰ ਰੀਡੂ ਕਰੋ</translation>
+<translation id="5813274153495000141">ਆਪਣੀ ਜਾਣਕਾਰੀ ਨੂੰ ਰੱਖਿਅਤ ਕਰੋ ਅਤੇ ਫ਼ਾਰਮਾਂ ਨੂੰ ਤੇਜ਼ੀ ਨਾਲ ਭਰੋ। ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਵਿੱਚ ਰੱਖਿਅਤ ਹੁੰਦੀ ਹੈ।</translation>
 <translation id="5813753398265398978">ਭੌਤਿਕ ਵਿਗਿਆਨ</translation>
 <translation id="5817918615728894473">ਜੋੜਾ</translation>
 <translation id="5820625124144807242">ਆਪਣੇ ਆਰਡਰ ਦੀ ਸਮੀਖਿਆ ਕਰਨ ਤੋਂ ਬਾਅਦ, ਤੁਹਾਡਾ <ph name="BNPL_ISSUER_NAME" /> ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰਨਾ ਜਾਂ ਇਸ ਨਾਲ ਖਾਤਾ ਬਣਾਉਣਾ ਲਾਜ਼ਮੀ ਹੈ। ਇਹ ਖਾਤਾ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ Google Pay ਨਾਲ ਲਿੰਕ ਹੋ ਜਾਵੇਗਾ।</translation>

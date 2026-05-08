@@ -1870,6 +1870,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8765470054473112089">When you type in the address bar or search box, Chrome sends what you type to your default search engine to get better suggestions. This is off in Incognito.</translation>
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome found a weak password that you could improve}other{Chrome found # weak passwords that you could improve}}</translation>
 <translation id="8766529642647037772">Create a highlighted link like this one?</translation>
+<translation id="8769783688897433958">View site information and permissions</translation>
 <translation id="8788265440806329501">Navigation history is closed</translation>
 <translation id="8790193082819560975">Tap to search buying options for the product in a new tab.</translation>
 <translation id="8798449543960971550">Read</translation>

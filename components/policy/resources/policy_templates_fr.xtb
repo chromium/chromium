@@ -4416,6 +4416,22 @@ Cette règle peut être combinée avec <ph name="POLICY_CLOUD_POLICY_OVERRIDES_P
           Si cette règle n'est pas configurée, les touches rémanentes sont initialement désactivées sur l'écran de connexion, mais les utilisateurs peuvent les activer à tout moment.</translation>
 <translation id="3927291637826333102">Autoriser les captures d'écran, de fenêtre et d'onglet selon ces origines</translation>
 <translation id="3928726028264020458">Activer les rapports sur les données VPD de l'appareil</translation>
+<translation id="393516164454995927">Cette règle permet de préciser le nombre maximal de connexions simultanées par serveur proxy pour les requêtes non WebSocket.
+
+Pour modifier les limites des requêtes non WebSocket, consultez <ph name="MAX_CONNECTIONS_PER_PROXY_POLICY_NAME" />.
+
+Si cette règle n'est pas configurée, la valeur par défaut (128) est utilisée.
+
+Certaines applications Web sont connues pour utiliser de nombreuses connexions avec des requêtes GET en attente. Par conséquent, si vous définissez une valeur inférieure à 128, le réseau du navigateur pourrait se bloquer si trop d'applications Web avec des connexions de ce type sont ouvertes.
+Toutefois, certains serveurs proxy ne peuvent pas gérer un nombre élevé de connexions simultanées par client. Pour résoudre ce problème, il suffit de définir cette règle sur une valeur inférieure.
+
+La valeur doit être supérieure ou égale à 6.
+Si vous définissez une valeur inférieure à cette limite, la valeur limite (6) sera utilisée.
+Toute diminution de la valeur par défaut (128) est effectuée à vos propres risques.
+
+La valeur doit être inférieure ou égale à 256.
+Si vous définissez une valeur supérieure à cette limite, la valeur limite (256) sera utilisée.
+Toute augmentation de la valeur par défaut (128) est effectuée à vos propres risques.</translation>
 <translation id="3935592079035695061">Millisecondes depuis minuit.</translation>
 <translation id="3937800910397007337">Forcer la priorité au premier plan pour tous les onglets</translation>
 <translation id="3941289958028934630">Désactiver la lecture vocale sur l'écran de connexion</translation>
@@ -7732,6 +7748,22 @@ Si cette règle est définie sur "False", l'attribution à l'extension dans le p
 Si la règle est définie sur "True" ou n'est pas configurée, les enseignants peuvent utiliser une liste d'élèves de Google Classroom.
 
 Si la règle est définie sur "False", les enseignants ne peuvent pas accéder à cette fonctionnalité.</translation>
+<translation id="6061604539167728530">Cette règle permet de préciser le nombre maximal de connexions simultanées par serveur proxy pour les requêtes non-WebSocket.
+
+Pour modifier les limites de requêtes WebSocket, consultez <ph name="MAX_CONNECTIONS_PER_PROXY_FOR_WEBSOCKET_POLICY_NAME" />.
+
+Si cette règle n'est pas configurée, la valeur par défaut (128) est utilisée.
+
+Certaines applications Web sont connues pour utiliser de nombreuses connexions avec des requêtes GET en attente. Par conséquent, si vous définissez une valeur inférieure à 128, le réseau du navigateur pourrait se bloquer si trop d'applications Web avec des connexions de ce type sont ouvertes.
+Toutefois, certains serveurs proxy ne peuvent pas gérer un nombre élevé de connexions simultanées par client. Pour résoudre ce problème, il suffit de définir cette règle sur une valeur inférieure.
+
+La valeur doit être supérieure ou égale à 6.
+Si vous définissez une valeur inférieure à cette limite, la valeur limite (6) sera utilisée.
+Toute diminution de la valeur par défaut (128) est effectuée à vos propres risques.
+
+La valeur doit être inférieure ou égale à 256 (99 dans <ph name="PRODUCT_NAME" /> 147 et versions antérieures).
+Si vous définissez une valeur supérieure à cette limite, la valeur limite (256, ou 99 dans <ph name="PRODUCT_NAME" /> 147 et versions antérieures) sera utilisée.
+Toute augmentation de la valeur par défaut (128) est effectuée à vos propres risques.</translation>
 <translation id="6066761914755798079">Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> est activée, la règle <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" /> vous permet de spécifier l'URL du moteur de recherche pour fournir des suggestions de recherche. L'URL doit inclure la chaîne <ph name="SEARCH_TERM_MARKER" />, qui sera remplacée dans la requête par les termes de recherche de l'utilisateur.
 
       Vous pouvez spécifier cette URL comme suit : <ph name="GOOGLE_SUGGEST_SEARCH_URL" />.</translation>

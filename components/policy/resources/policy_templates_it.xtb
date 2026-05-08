@@ -4487,6 +4487,22 @@ La policy può essere combinata con <ph name="POLICY_CLOUD_POLICY_OVERRIDES_PLAT
           Se questa policy non viene impostata, inizialmente i tasti permanenti sono disattivati nella schermata di accesso, ma l'utente può attivarli in qualsiasi momento.</translation>
 <translation id="3927291637826333102">Consenti acquisizione schermate desktop, schede e finestre in base a queste origini</translation>
 <translation id="3928726028264020458">Attiva i report sulle informazioni VPD del dispositivo</translation>
+<translation id="393516164454995927">La configurazione della policy consente di specificare il numero massimo di connessioni contemporanee per server proxy per le richieste WebSocket.
+
+Per modificare i limiti delle richieste non-WebSocket, consulta <ph name="MAX_CONNECTIONS_PER_PROXY_POLICY_NAME" />.
+
+Se la policy non viene configurata, viene utilizzato il valore predefinito 128.
+
+Alcune app web sono note per richiedere molte connessioni con Hanging-GET, pertanto impostare un valore inferiore a 128 potrebbe causare interruzioni di rete del browser se sono aperte troppe app web di questo tipo.
+Alcuni server proxy non riescono a gestire un numero elevato di connessioni contemporanee per client, ma è sufficiente impostare la policy su un numero inferiore per risolvere questo problema.
+
+Il valore deve essere uguale o superiore a 6.
+Se imposti un valore inferiore a questo limite, verrà utilizzato 6.
+È sconsigliato utilizzare un valore inferiore a quello predefinito (128).
+
+Il valore deve essere uguale o inferiore a 256.
+Se imposti un valore superiore a questo limite, verrà utilizzato 256.
+È sconsigliato utilizzare un valore superiore a quello predefinito (128).</translation>
 <translation id="3935592079035695061">Millisecondi dalla mezzanotte.</translation>
 <translation id="3937800910397007337">Forza la priorità in primo piano per tutte le schede</translation>
 <translation id="3941289958028934630">Disattiva la funzione di lettura vocale nella schermata di accesso</translation>
@@ -7833,6 +7849,22 @@ Se questa policy viene impostata su false, l'attribuzione dell'estensione nel pi
 Se il valore viene impostato su true o se la policy non viene configurata, potranno utilizzare l'elenco degli studenti di Google Classroom.
 
 Se il valore viene impostato su false, non potranno accedere alla funzionalità.</translation>
+<translation id="6061604539167728530">La configurazione della policy consente di specificare il numero massimo di connessioni contemporanee per server proxy per le richieste non WebSocket.
+
+Per modificare i limiti delle richieste WebSocket, consulta <ph name="MAX_CONNECTIONS_PER_PROXY_FOR_WEBSOCKET_POLICY_NAME" />.
+
+Se la policy non viene configurata, viene utilizzato il valore predefinito 128.
+
+Alcune app web sono note per richiedere molte connessioni con Hanging-GET, pertanto impostare un valore inferiore a 128 potrebbe causare interruzioni di rete del browser se sono aperte troppe app web di questo tipo.
+Alcuni server proxy non riescono a gestire un numero elevato di connessioni contemporanee per client, ma è sufficiente impostare la policy su un numero inferiore per risolvere questo problema.
+
+Il valore deve essere uguale o superiore a 6.
+Se imposti un valore inferiore a questo limite, verrà utilizzato 6.
+È sconsigliato utilizzare un valore inferiore a quello predefinito (128).
+
+Il valore deve essere uguale o inferiore a 256 (99 in <ph name="PRODUCT_NAME" /> 147 e versioni precedenti).
+Se imposti un valore superiore a questo limite, verrà utilizzato 256 (99 in <ph name="PRODUCT_NAME" /> 147 e versioni precedenti).
+È sconsigliato utilizzare un valore superiore a quello predefinito (128).</translation>
 <translation id="6066761914755798079">Se la policy <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> è attiva, l'assegnazione di un valore alla policy <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" /> consente di specificare l'URL del motore di ricerca per fornire suggerimenti per le ricerche. L'URL dovrebbe includere la stringa <ph name="SEARCH_TERM_MARKER" />, sostituita nella query dai termini di ricerca degli utenti.
 
       Puoi specificare l'URL di ricerca di Google come: <ph name="GOOGLE_SUGGEST_SEARCH_URL" />.</translation>

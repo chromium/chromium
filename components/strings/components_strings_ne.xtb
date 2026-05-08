@@ -479,6 +479,7 @@
 <translation id="1727613060316725209">प्रमाणपत्र वैध छ</translation>
 <translation id="1728677426644403582">तपाईं एउटा वेब पृष्ठको स्रोत हेर्दै हुनुहुन्छ</translation>
 <translation id="173080396488393970">यस प्रकारको कार्डलाई समर्थन छैन</translation>
+<translation id="1731563515262205847">ML-DSA-65</translation>
 <translation id="1732445923934584865">यसको साटो व्यक्तिगत रूपमा अनुमति माग्नुहोस्</translation>
 <translation id="1733064249834771892">फन्टहरू</translation>
 <translation id="1733631169686303142">अडियो उपकरण</translation>
@@ -1594,6 +1595,7 @@
 <translation id="350069200438440499">फाइलको नाम:</translation>
 <translation id="3501300228850242680">मेटल (सङ्गीत)</translation>
 <translation id="350421688684366066">लेबल (हाई-ग्लस)</translation>
+<translation id="3507062913298382727">परिचयपत्र सेभ गर्नुहोस्</translation>
 <translation id="350763432931695541">अर्को केही पेजहरूबाट टेक्स्ट निकालिँदै छ</translation>
 <translation id="3507869775212388416">कानुन व्यवसायसम्बन्धी रोजगारीहरू</translation>
 <translation id="3507936815618196901">तपाईं वरपरको ठाउँको 3D नक्सा बनाउन र क्यामेराको अवस्था पत्ता लगाउन</translation>
@@ -1989,6 +1991,7 @@
 <translation id="4098306082496067348">भर्चुअल कार्डमार्फत चेकआउट गर्न भर्चुअल कार्डको विवरणमा ट्याप गर्नुहोस्।</translation>
 <translation id="4099048595830172239">तपाईंका एड्मिनले तोकेको नीतिबमोजिम गोप्य सामग्री देखिएका बेला <ph name="APPLICATION_TITLE" /> सँग स्क्रिन सेयर गर्न सिफारिस गरिँदैन:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome मा फन्टका आकार तथा टाइपफेसहरू कस्टमाइज गर्न Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
+<translation id="4100421230355095925">ML-DSA-44</translation>
 <translation id="4101413244023615925">पाठ र ग्राफिक</translation>
 <translation id="4101917550061398111">चयन गरिएका वस्तुहरू मेटाउनुहोस्</translation>
 <translation id="4102567721634170493">स्थानीय समाचार</translation>
@@ -2216,6 +2219,7 @@
 <translation id="4415156962929755728">प्लास्टिक (हाई ग्लस)</translation>
 <translation id="4415426530740016218">पिकअप गर्ने ठेगाना</translation>
 <translation id="4415748029120993980">SECG अण्डाकार कर्भ secp384r1 (NIST P-521 पनि भनिन्छ)</translation>
+<translation id="4418150423720608641">ML-DSA-87</translation>
 <translation id="4419287616181386201">सम्बन्धित सेवाको व्यवस्थापनसम्बन्धी सेटिङमा गई पासवर्डहरू मेटाउन सकिन्छ</translation>
 <translation id="4424024547088906515">यो सर्भरले यो <ph name="DOMAIN" /> को भनि प्रमाणित गर्न सकेन; यसको सुरक्षा प्रमाणपत्रलाई Chrome ले विश्वास गर्दैन। यो कुनै एउटा मिसकन्फिगरेसन वा कुनै आक्रमणकारीले तपाईंको जडानमा गरेको हस्तक्षेपको कारणले गर्दा भएको हुन सक्छ।</translation>
 <translation id="4425750422187370446">एथलेटिक वस्त्र</translation>
@@ -2955,6 +2959,7 @@
 <translation id="5573641252776268565">राहदानीसम्बन्धी जानकारी सम्पादन गर्नुहोस्</translation>
 <translation id="5578606540385219379">सेवा प्रदायक</translation>
 <translation id="5580958916614886209">आफ्नो म्याद सकिने महिनाको जाँच गरी फेरि प्रयास गर्नुहोस्</translation>
+<translation id="5582453333200265572">परिचयपत्र अपडेट गर्नुहोस्</translation>
 <translation id="5583442610070676234">तुलनात्मक जानकारी भएको तालिकाका सम्बन्धमा गर्न सकिने थप कारबाहीहरू <ph name="COMPARE_SET_NAME" /></translation>
 <translation id="55841966151154662">यो IBAN तपाईंको Google Wallet मा सेभ गर्न सकिएन। यसलाई बरु यो डिभाइसको Chrome मा सेभ गरिएको छ।</translation>
 <translation id="558420943003240152">पासवर्ड तथा पासकीहरू व्यवस्थापन गर्नुहोस्…</translation>
@@ -3089,6 +3094,7 @@
 <translation id="5808435672482059465">Chrome को ब्राउजिङ इतिहास हेर्नुहोस्</translation>
 <translation id="5810442152076338065">तपाईँको <ph name="DOMAIN" />सँगको जडान पुरानो साइफर सुट प्रयोग गरेर इन्क्रिप्ट गरिएको छ।</translation>
 <translation id="5813119285467412249">थप्ने कार्य &amp;पुन: गर्नुहोस्</translation>
+<translation id="5813274153495000141">आफ्नो जानकारी सेभ गर्नुहोस् र फारामहरू अझ छिटो भर्नुहोस्। तपाईंको डिभाइसमा सेभ गरिन्छ।</translation>
 <translation id="5813753398265398978">भौतिक विज्ञान</translation>
 <translation id="5817918615728894473">जोडा  बनाउनुहोस्</translation>
 <translation id="5820625124144807242">तपाईंले आफ्नो अर्डरको समीक्षा गरेपछि तपाईंले अनिवार्य रूपमा <ph name="BNPL_ISSUER_NAME" /> खातामा साइन इन गर्नु पर्ने हुन्छ वा यो खाता छैन भने नयाँ खाता बनाउनु पर्ने हुन्छ। यो खाता Google Pay मा स्वतः लिंक गरिने छ।</translation>

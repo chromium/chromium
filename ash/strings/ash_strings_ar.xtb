@@ -1046,6 +1046,7 @@
 <translation id="4239069858505860023">‏شبكة GPRS</translation>
 <translation id="4240486403425279990">وضع "النظرة العامة"</translation>
 <translation id="4242533952199664413">فتح الإعدادات</translation>
+<translation id="4244765461494758482">‏تتم مزامنة هذه الإعدادات على أجهزة ChromeOS الأخرى. ويمكنك تعديلها من هنا أو إدارة القائمة الكاملة في "الإعدادات".</translation>
 <translation id="4247123849143712100">تحديث وإيقاف التشغيل</translation>
 <translation id="4249248555939881673">في انتظار الاتصال بالشبكة...</translation>
 <translation id="4250229828105606438">لقطة شاشة</translation>
@@ -2327,6 +2328,7 @@
 <translation id="8051716679295756675">سبق وأن تم إدخال نموذج باسم <ph name="DESK_TEMPLATE_NAME" />.</translation>
 <translation id="8052898407431791827">تمّ النسخ إلى الحافظة.</translation>
 <translation id="8054466585765276473">يجري حساب وقت البطارية.</translation>
+<translation id="8063363226185507157">إعدادات تسهيل الاستخدام التي تمت مزامنتها</translation>
 <translation id="8076492880354921740">علامات التبويب</translation>
 <translation id="8079538659226626406">مشاركة الشاشة</translation>
 <translation id="8083540854303889870">محفوظة لوقت لاحق</translation>

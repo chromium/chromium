@@ -1870,6 +1870,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="8765470054473112089">Când introduci text în bara de adrese sau în caseta de căutare, Chrome trimite ceea ce introduci la motorul de căutare prestabilit, pentru a primi sugestii mai bune. Această opțiune este dezactivată în modul incognito.</translation>
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome a găsit o parolă slabă pe care o poți face mai sigură}few{Chrome a găsit # parole slabe pe care le poți face mai sigure}other{Chrome a găsit # de parole slabe pe care le poți face mai sigure}}</translation>
 <translation id="8766529642647037772">Creezi un link evidențiat ca acesta?</translation>
+<translation id="8769783688897433958">Vezi informațiile și permisiunile privind site-urile</translation>
 <translation id="8788265440806329501">Istoricul de navigare este închis</translation>
 <translation id="8790193082819560975">Atinge pentru a căuta opțiuni de cumpărare pentru produs într-o filă nouă.</translation>
 <translation id="8798449543960971550">Citite</translation>

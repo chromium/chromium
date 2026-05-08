@@ -479,6 +479,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="1727613060316725209">Sertifika geçerli</translation>
 <translation id="1728677426644403582">Bir web sayfasının kaynak kodunu görüntülüyorsunuz</translation>
 <translation id="173080396488393970">Bu kart türü desteklenmiyor</translation>
+<translation id="1731563515262205847">ML-DSA-65</translation>
 <translation id="1732445923934584865">Bunun yerine yüz yüze sor</translation>
 <translation id="1733064249834771892">yazı tipleri</translation>
 <translation id="1733631169686303142">Ses Donanımı</translation>
@@ -1597,6 +1598,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="350069200438440499">Dosya adı:</translation>
 <translation id="3501300228850242680">Metal (Müzik)</translation>
 <translation id="350421688684366066">Etiketler (Çok Parlak)</translation>
+<translation id="3507062913298382727">Kimlik kartını kaydet</translation>
 <translation id="350763432931695541">Sonraki birkaç sayfadaki metin çıkarılıyor</translation>
 <translation id="3507869775212388416">Hukuk İşleri</translation>
 <translation id="3507936815618196901">Çevrenizin 3D haritasını oluşturma ve kamera konumunu takip etme</translation>
@@ -1991,6 +1993,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="4098306082496067348">Ödeme sırasında kullanılmak üzere eklemek için sanal kart ayrıntılarına dokunun.</translation>
 <translation id="4099048595830172239">Yönetici politikası, gizli içerik görünür durumdayken ekranınızı <ph name="APPLICATION_TITLE" /> ile paylaşmanızı önermez:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome'daki yazı tipi boyutlarını ve yazı tiplerini özelleştirmek için Sekme'ye, ardından Enter'a basın</translation>
+<translation id="4100421230355095925">ML-DSA-44</translation>
 <translation id="4101413244023615925">Metin ve grafik</translation>
 <translation id="4101917550061398111">Seçili öğeleri sil</translation>
 <translation id="4102567721634170493">Yerel Haberler</translation>
@@ -2218,6 +2221,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="4415156962929755728">Plastik (Çok Parlak)</translation>
 <translation id="4415426530740016218">Alınacağı Adres</translation>
 <translation id="4415748029120993980">SECG eliptik eğri secp384r1 (önceki adı NIST P-384)</translation>
+<translation id="4418150423720608641">ML-DSA-87</translation>
 <translation id="4419287616181386201">Şifreler, kendi yönetim ayarlarından silinebilir</translation>
 <translation id="4424024547088906515">Bu sunucu <ph name="DOMAIN" /> olduğunu kanıtlayamadı. Chrome, sunucunun güvenlik sertifikasına güvenmiyor. Bu durum, bir yanlış yapılandırmadan veya bağlantıya müdahale eden bir saldırgandan kaynaklanıyor olabilir.</translation>
 <translation id="4425750422187370446">Spor Kıyafetleri</translation>
@@ -2957,6 +2961,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="5573641252776268565">Pasaportu düzenleyin</translation>
 <translation id="5578606540385219379">Servis Sağlayıcılar</translation>
 <translation id="5580958916614886209">Son kullanma tarihinin ayını kontrol edip tekrar deneyin</translation>
+<translation id="5582453333200265572">Kimlik kartını güncelle</translation>
 <translation id="5583442610070676234"><ph name="COMPARE_SET_NAME" /> karşılaştırma tablosuyla ilgili diğer işlemler</translation>
 <translation id="55841966151154662">Bu IBAN, Google Cüzdan'a kaydedilemedi. Bunun yerine bu cihazdaki Chrome'a kaydedildi.</translation>
 <translation id="558420943003240152">Şifreleri ve şifre anahtarlarını yönetin…</translation>
@@ -3091,6 +3096,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="5808435672482059465">Chrome Geçmişimi Göster</translation>
 <translation id="5810442152076338065"><ph name="DOMAIN" /> ile olan bağlantınız eski bir şifre seti kullanılarak şifrelendi.</translation>
 <translation id="5813119285467412249">Eklemeyi &amp;Yeniden Yap</translation>
+<translation id="5813274153495000141">Bilgilerinizi kaydederek formları daha hızlı doldurun. Cihazınıza kaydedilir.</translation>
 <translation id="5813753398265398978">Fizik</translation>
 <translation id="5817918615728894473">Eşle</translation>
 <translation id="5820625124144807242">Siparişinizi inceledikten sonra bir <ph name="BNPL_ISSUER_NAME" /> hesabında oturum açmanız veya hesap oluşturmanız gerekir. Bu hesap, Google Pay'e otomatik olarak bağlanır.</translation>

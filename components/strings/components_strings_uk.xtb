@@ -479,6 +479,7 @@
 <translation id="1727613060316725209">Сертифікат дійсний</translation>
 <translation id="1728677426644403582">Ви переглядаєте джерело веб-сторінки</translation>
 <translation id="173080396488393970">Цей тип картки не підтримується</translation>
+<translation id="1731563515262205847">ML-DSA-65</translation>
 <translation id="1732445923934584865">Запитати особисто</translation>
 <translation id="1733064249834771892">шрифти</translation>
 <translation id="1733631169686303142">Аудіотехніка</translation>
@@ -1597,6 +1598,7 @@
 <translation id="350069200438440499">Ім'я файлу:</translation>
 <translation id="3501300228850242680">Метал (музика)</translation>
 <translation id="350421688684366066">Етикетки (високоглянцеві)</translation>
+<translation id="3507062913298382727">Зберегти дані посвідчення особи</translation>
 <translation id="350763432931695541">Текст видобувається з кількох наступних сторінок</translation>
 <translation id="3507869775212388416">Вакансії в галузі юриспруденції</translation>
 <translation id="3507936815618196901">Створити 3D-карту вашого оточення та відстежувати положення камери</translation>
@@ -1991,6 +1993,7 @@
 <translation id="4098306082496067348">Натисніть дані віртуальної картки, щоб додати їх для оплати.</translation>
 <translation id="4099048595830172239">Згідно з правилом адміністратора не рекомендовано ділитися з додатком <ph name="APPLICATION_TITLE" /> екраном, коли на ньому видно конфіденційний контент:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб налаштувати розміри та гарнітури шрифтів у Chrome</translation>
+<translation id="4100421230355095925">ML-DSA-44</translation>
 <translation id="4101413244023615925">Текст і графіка</translation>
 <translation id="4101917550061398111">Видалити вибрані записи</translation>
 <translation id="4102567721634170493">Місцеві новини</translation>
@@ -2218,6 +2221,7 @@
 <translation id="4415156962929755728">Пластик (високоглянцевий)</translation>
 <translation id="4415426530740016218">Адреса отримання</translation>
 <translation id="4415748029120993980">Еліптична крива SECG secp384r1 (також відома як NIST P-384)</translation>
+<translation id="4418150423720608641">ML-DSA-87</translation>
 <translation id="4419287616181386201">Ви можете видаляти паролі у відповідному розділі налаштувань</translation>
 <translation id="4424024547088906515">Цей сервер не зміг довести, що він – домен <ph name="DOMAIN" />. Chrome не вважає його сертифікат безпеки надійним. Імовірні причини: неправильна конфігурація або хтось намагається перехопити ваше з’єднання.</translation>
 <translation id="4425750422187370446">Спортивний одяг</translation>
@@ -2957,6 +2961,7 @@
 <translation id="5573641252776268565">Змінити паспортні дані</translation>
 <translation id="5578606540385219379">Постачальники послуг</translation>
 <translation id="5580958916614886209">Перевірте місяць закінчення терміну дії та повторіть спробу</translation>
+<translation id="5582453333200265572">Оновити дані посвідчення особи</translation>
 <translation id="5583442610070676234">Інші дії для порівняльної таблиці "<ph name="COMPARE_SET_NAME" />"</translation>
 <translation id="55841966151154662">Не вдалося зберегти цей номер IBAN у Google Гаманці. Натомість його збережено в Chrome на цьому пристрої.</translation>
 <translation id="558420943003240152">Керувати паролями та ключами доступу…</translation>
@@ -3091,6 +3096,7 @@
 <translation id="5808435672482059465">Переглянути історію Chrome</translation>
 <translation id="5810442152076338065">З’єднання з доменом <ph name="DOMAIN" /> шифрується за допомогою застарілого набору шифрів.</translation>
 <translation id="5813119285467412249">&amp;Повторити додавання</translation>
+<translation id="5813274153495000141">Зберігайте інформацію, щоб швидше заповнювати форми. Дані зберігаються на вашому пристрої.</translation>
 <translation id="5813753398265398978">Фізика</translation>
 <translation id="5817918615728894473">Підключити</translation>
 <translation id="5820625124144807242">Переглянувши замовлення, увійдіть в обліковий запис <ph name="BNPL_ISSUER_NAME" /> або створіть новий. Цей обліковий запис буде автоматично зв’язано з Google Pay.</translation>

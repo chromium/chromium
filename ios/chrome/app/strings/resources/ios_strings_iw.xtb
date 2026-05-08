@@ -160,6 +160,7 @@
 <translation id="1524563461097350801">לא, תודה</translation>
 <translation id="1531038290222364269">הצגת כרטיסיות</translation>
 <translation id="1536390784834419204">תרגום הדף</translation>
+<translation id="1539535193627863227">לא נמצאו סיסמאות או מפתחות גישה לאתר הזה</translation>
 <translation id="1540800554400757039">כתובת, שורה 1</translation>
 <translation id="154312949627292154">פתיחת כרטיסיות שהתקבלו מהמכשירים האחרים שלך ממסך הנעילה.</translation>
 <translation id="1545749641540134597">‏סריקת קוד QR</translation>
@@ -642,6 +643,7 @@
 <translation id="3245744387817103524">לא ניתן היה לשמור את השינוי.</translation>
 <translation id="3254806613790954367">הכרטיסייה האחרונה שפתחת בכל המכשירים</translation>
 <translation id="325717987950204592">לוחצים על "פרטיות ואבטחה"</translation>
+<translation id="3259451381796379533">‏אי אפשר להשתמש ב-Gemini בחשבון הזה. אפשר להיכנס עם חשבון Google אחר.</translation>
 <translation id="3265736395246760288">אפשר להיכנס לחשבון מהר יותר מכל מכשיר מסונכרן.</translation>
 <translation id="3272527697863656322">ביטול</translation>
 <translation id="3273510436356991673">התאמה אישית של מסך הבית</translation>
@@ -1864,6 +1866,7 @@
 <translation id="7498234416455752244">המשך העריכה</translation>
 <translation id="7500244509706269886">מילוי אוטומטי של טופס</translation>
 <translation id="750493650310597496">0 נבחרו</translation>
+<translation id="7505402981231763928">‏כדי להשתמש ב-Gemini, צריך להיכנס לחשבון</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> ‏(<ph name="FILESIZE" />).</translation>
 <translation id="7508728395076009983">‏כדי לנעול את כרטיסיות המצב האנונימי, יש להגדיר Touch ID,‏ Face ID או קוד גישה.</translation>
 <translation id="750886945254958667">אפשר לשמור את הקבוצה הזו כדי להוסיף כרטיסיות מאוחר יותר, או לעזוב אותה אם אין לך יותר צורך בה</translation>

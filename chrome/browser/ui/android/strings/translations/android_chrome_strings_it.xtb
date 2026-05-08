@@ -1870,6 +1870,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="8765470054473112089">Quando digiti nella barra degli indirizzi o nella casella di ricerca, Chrome invia ciò che digiti al tuo motore di ricerca predefinito per ricevere suggerimenti migliori. Questa opzione è disattivata nella modalità Incognito</translation>
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome ha rilevato una password inefficace che potresti migliorare}other{Chrome ha rilevato # password inefficaci che potresti migliorare}}</translation>
 <translation id="8766529642647037772">Vuoi creare un link evidenziato come questo?</translation>
+<translation id="8769783688897433958">Visualizza informazioni e autorizzazioni del sito</translation>
 <translation id="8788265440806329501">La cronologia di navigazione è chiusa</translation>
 <translation id="8790193082819560975">Tocca per cercare le opzioni di acquisto del prodotto in una nuova scheda.</translation>
 <translation id="8798449543960971550">Letti</translation>

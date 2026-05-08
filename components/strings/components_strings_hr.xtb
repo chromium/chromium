@@ -479,6 +479,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1727613060316725209">Certifikat je važeći</translation>
 <translation id="1728677426644403582">Gledate izvor web-stranice</translation>
 <translation id="173080396488393970">Ova vrsta kartice nije podržana</translation>
+<translation id="1731563515262205847">ML-DSA-65</translation>
 <translation id="1732445923934584865">Zamoli osobno</translation>
 <translation id="1733064249834771892">fontovi</translation>
 <translation id="1733631169686303142">Audiooprema</translation>
@@ -1597,6 +1598,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="350069200438440499">Naziv:</translation>
 <translation id="3501300228850242680">Metal (glazba)</translation>
 <translation id="350421688684366066">Naljepnice (visoki sjaj)</translation>
+<translation id="3507062913298382727">Spremite identifikacijski dokument</translation>
 <translation id="350763432931695541">Izdvajanje teksta na sljedećih nekoliko stranica</translation>
 <translation id="3507869775212388416">Pravni poslovi</translation>
 <translation id="3507936815618196901">Izradite 3D kartu svojeg okruženja i pratite položaj kamere</translation>
@@ -1990,6 +1992,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="4098306082496067348">Dodirnite pojedinosti o virtualnoj kartici da biste ih dodali pri naplati.</translation>
 <translation id="4099048595830172239">Prema pravilima administratora ne preporučuje se dijeljenje zaslona s aplikacijom <ph name="APPLICATION_TITLE" /> kad je vidljiv povjerljivi sadržaj:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da biste u Chromeu prilagodili veličine i vrste fontova</translation>
+<translation id="4100421230355095925">ML-DSA-44</translation>
 <translation id="4101413244023615925">Tekst i grafika</translation>
 <translation id="4101917550061398111">Izbrišite odabrane stavke</translation>
 <translation id="4102567721634170493">Lokalne vijesti</translation>
@@ -2217,6 +2220,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="4415156962929755728">Plastika (visoki sjaj)</translation>
 <translation id="4415426530740016218">Adresa preuzimanja</translation>
 <translation id="4415748029120993980">SECG eliptična krivulja secp384r1 (poznata i kao NIST P-384)</translation>
+<translation id="4418150423720608641">ML-DSA-87</translation>
 <translation id="4419287616181386201">Zaporke se mogu izbrisati u postavkama za upravljanje</translation>
 <translation id="4424024547088906515">Poslužitelj nije mogao dokazati da je <ph name="DOMAIN" />; Chrome smatra da njegov sigurnosni certifikat nije pouzdan. To može biti uzrokovano pogrešnom konfiguracijom ili napadom na vašu vezu.</translation>
 <translation id="4425750422187370446">Odjeća za sport</translation>
@@ -2956,6 +2960,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="5573641252776268565">Uredite putovnicu</translation>
 <translation id="5578606540385219379">Davatelji usluga</translation>
 <translation id="5580958916614886209">Provjerite mjesec isteka, pa pokušajte ponovo</translation>
+<translation id="5582453333200265572">Ažurirajte identifikacijski dokument</translation>
 <translation id="5583442610070676234">Više radnji za tablicu za usporedbu kategorije <ph name="COMPARE_SET_NAME" /></translation>
 <translation id="55841966151154662">Spremanje IBAN-a u Google Wallet nije uspjelo. Spremljen je u Chrome na ovom uređaju.</translation>
 <translation id="558420943003240152">Upravljanje zaporkama i pristupnim ključevima...</translation>
@@ -3090,6 +3095,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="5808435672482059465">Pregledaj povijest na Chromeu</translation>
 <translation id="5810442152076338065">Vaša veza s domenom <ph name="DOMAIN" /> kriptirana je zastarjelim kriptografskim paketom.</translation>
 <translation id="5813119285467412249">&amp;Ponovi dodavanje</translation>
+<translation id="5813274153495000141">Spremite podatke da biste brže ispunjavali obrasce. Sprema se na vaš uređaj.</translation>
 <translation id="5813753398265398978">Fizika</translation>
 <translation id="5817918615728894473">Upari</translation>
 <translation id="5820625124144807242">Nakon što pregledate narudžbu, morate se prijaviti na <ph name="BNPL_ISSUER_NAME" /> račun ili ga izraditi. Taj će se račun automatski povezati s Google Payom.</translation>

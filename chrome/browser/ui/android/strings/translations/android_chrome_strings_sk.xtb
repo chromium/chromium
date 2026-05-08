@@ -1870,6 +1870,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="8765470054473112089">Keď zadávate v paneli s adresou alebo vyhľadávacom poli, Chrome odosiela zadaný text do vášho predvoleného vyhľadávača, aby dostal lepšie návrhy. Táto možnosť je v režime inkognito vypnutá.</translation>
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome našiel slabé heslo, ktoré môžete zlepšiť}few{Chrome našiel # slabé heslá, ktoré môžete zlepšiť}many{Chrome found # weak passwords that you could improve}other{Chrome našiel # slabých hesiel, ktoré môžete zlepšiť}}</translation>
 <translation id="8766529642647037772">Chcete vytvoriť zvýraznený odkaz ako tento?</translation>
+<translation id="8769783688897433958">Zobraziť informácie a povolenia webu</translation>
 <translation id="8788265440806329501">História navigácie je zatvorená</translation>
 <translation id="8790193082819560975">Klepnutím vyhľadáte možnosti zakúpenia výrobku na novej karte.</translation>
 <translation id="8798449543960971550">Prečítané</translation>

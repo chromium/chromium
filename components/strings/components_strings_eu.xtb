@@ -479,6 +479,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1727613060316725209">Ziurtagiriak balio du</translation>
 <translation id="1728677426644403582">Web-orri baten iturburua ari zara ikusten</translation>
 <translation id="173080396488393970">Ez dira onartzen mota horretako txartelak</translation>
+<translation id="1731563515262205847">ML-DSA-65</translation>
 <translation id="1732445923934584865">Galdetu aurrez aurre</translation>
 <translation id="1733064249834771892">letrak</translation>
 <translation id="1733631169686303142">Audio-ekipamendua</translation>
@@ -1593,6 +1594,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="350069200438440499">Fitxategiaren izena:</translation>
 <translation id="3501300228850242680">Metala (musika)</translation>
 <translation id="350421688684366066">Etiketak (oso distiratsua)</translation>
+<translation id="3507062913298382727">Gorde nortasun-agiria</translation>
 <translation id="350763432931695541">Hurrengo orrialdeetako testua ateratzen</translation>
 <translation id="3507869775212388416">Lege arloko lanpostuak</translation>
 <translation id="3507936815618196901">Inguruaren 3D-ko mapa bat sortu eta kameraren posizioaren jarraipena egin.</translation>
@@ -1987,6 +1989,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="4098306082496067348">Txartel birtualaren xehetasunak ordainketa-prozesuan gehitzeko, saka itzazu.</translation>
 <translation id="4099048595830172239">Administratzailearen gidalerroek ez dute gomendatzen pantaila <ph name="APPLICATION_TITLE" /> aplikazioarekin partekatzea isilpeko edukia ikusgai dagoenean:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />: sakatu tabuladorea eta, ondoren, sakatu "Sartu" letra-tamaina eta -tipoa pertsonalizatzeko Chrome-n</translation>
+<translation id="4100421230355095925">ML-DSA-44</translation>
 <translation id="4101413244023615925">Testua eta grafikoa</translation>
 <translation id="4101917550061398111">Ezabatu hautatutakoak</translation>
 <translation id="4102567721634170493">Tokiko albisteak</translation>
@@ -2214,6 +2217,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="4415156962929755728">Plastikoa (oso distiratsua)</translation>
 <translation id="4415426530740016218">Jasotzeko helbidea</translation>
 <translation id="4415748029120993980">SECG kurba eliptikoko secp384r1 (edo, bestela esanda: NIST P-384)</translation>
+<translation id="4418150423720608641">ML-DSA-87</translation>
 <translation id="4419287616181386201">Pasahitzak haiek kudeatzeko ezarpenetan ezaba daitezke</translation>
 <translation id="4424024547088906515">Zerbitzari honek ezin izan du egiaztatu <ph name="DOMAIN" /> domeinua denik. Chrome ez da bere segurtasun-ziurtagiriaz fidatzen. Baliteke gaizki konfiguratuta dagoelako izatea edo erasotzaile batek zure konexioa atzeman duelako izatea.</translation>
 <translation id="4425750422187370446">Arropa atletikoa</translation>
@@ -2953,6 +2957,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="5573641252776268565">Editatu pasaportea</translation>
 <translation id="5578606540385219379">Zerbitzu-hornitzaileak</translation>
 <translation id="5580958916614886209">Egiaztatu iraungitze-hilabetea eta saiatu berriro</translation>
+<translation id="5582453333200265572">Eguneratu nortasun-agiria</translation>
 <translation id="5583442610070676234"><ph name="COMPARE_SET_NAME" /> konparazio-taularen ekintza gehiago</translation>
 <translation id="55841966151154662">Ezin izan da gorde IBANa Google Diru-zorroa zerbitzuan. Horren ordez, gailu honetako Chrome-n gorde da.</translation>
 <translation id="558420943003240152">Kudeatu pasahitzak eta sarbide-gakoak…</translation>
@@ -3087,6 +3092,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="5808435672482059465">Ikusi Chrome-ko historia</translation>
 <translation id="5810442152076338065"><ph name="DOMAIN" /> domeinurako konexioa enkriptatze multzo zaharkitu bat erabilita enkriptatu da.</translation>
 <translation id="5813119285467412249">&amp;Berregin gehitzea</translation>
+<translation id="5813274153495000141">Gorde informazioa eta bete inprimakiak bizkorrago. Gailuan gordeko da.</translation>
 <translation id="5813753398265398978">Fisika</translation>
 <translation id="5817918615728894473">Parekatu</translation>
 <translation id="5820625124144807242">Eskaera berrikusi ondoren, saioa hasi beharko duzu, edo <ph name="BNPL_ISSUER_NAME" /> zerbitzuan kontu bat sortu. Kontu hori automatikoki lotuko da Google Pay-rekin.</translation>

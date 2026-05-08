@@ -1870,6 +1870,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8765470054473112089">주소 표시줄이나 검색창에 검색어를 입력하면 Chrome은 더 나은 추천을 위해 사용자가 입력한 내용을 기본 검색엔진에 전송합니다. 시크릿 모드에서는 이 기능이 사용 중지되어 있습니다.</translation>
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome에서 개선이 가능한 취약한 비밀번호를 찾았습니다.}other{Chrome에서 개선이 가능한 취약한 비밀번호 #개를 찾았습니다.}}</translation>
 <translation id="8766529642647037772">다음과 같은 강조표시된 링크를 만들까요?</translation>
+<translation id="8769783688897433958">사이트 정보 및 권한 보기</translation>
 <translation id="8788265440806329501">탐색 기록 닫힘</translation>
 <translation id="8790193082819560975">탭하여 새 탭에서 제품의 구매 옵션을 검색하세요.</translation>
 <translation id="8798449543960971550">읽음</translation>

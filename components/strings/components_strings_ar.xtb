@@ -479,6 +479,7 @@
 <translation id="1727613060316725209">الشهادة صالحة</translation>
 <translation id="1728677426644403582">أنت تعرض مصدر صفحة ويب</translation>
 <translation id="173080396488393970">لا يتم دعم هذا النوع من البطاقات</translation>
+<translation id="1731563515262205847">ML-DSA-65</translation>
 <translation id="1732445923934584865">طلب الموافقة شخصيًا بدلاً من ذلك</translation>
 <translation id="1733064249834771892">الخطوط</translation>
 <translation id="1733631169686303142">معدّات صوتية</translation>
@@ -1597,6 +1598,7 @@
 <translation id="350069200438440499">اسم الملفّ:</translation>
 <translation id="3501300228850242680">ميتال (موسيقى)</translation>
 <translation id="350421688684366066">تصنيفات (شديدة اللمعان)</translation>
+<translation id="3507062913298382727">حفظ بطاقة التعريف</translation>
 <translation id="350763432931695541">جارٍ استخراج النص في الصفحات القليلة التالية</translation>
 <translation id="3507869775212388416">وظائف قانونية</translation>
 <translation id="3507936815618196901">إنشاء خريطة ثلاثية الأبعاد للبيئة المحيطة بك وتتبُّع موضع الكاميرا</translation>
@@ -1991,6 +1993,7 @@
 <translation id="4098306082496067348">يمكنك النقر على تفاصيل البطاقة الافتراضية لإضافتها إلى بيانات الدفع.</translation>
 <translation id="4099048595830172239">تحظر سياسة المشرف مشاركة الشاشة مع تطبيق <ph name="APPLICATION_TITLE" /> عند عرض محتوى سري:</translation>
 <translation id="4099391883283080991">‏<ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح Tab ثم مفتاح Enter لتخصيص أحجام الخطوط وأنماطها في Chrome.</translation>
+<translation id="4100421230355095925">ML-DSA-44</translation>
 <translation id="4101413244023615925">النص والرسم</translation>
 <translation id="4101917550061398111">حذف العناصر المحدَّدة</translation>
 <translation id="4102567721634170493">أخبار محلّية</translation>
@@ -2218,6 +2221,7 @@
 <translation id="4415156962929755728">بلاستيك (شديد اللمعان)</translation>
 <translation id="4415426530740016218">عنوان الاستلام</translation>
 <translation id="4415748029120993980">‏منحنى SECG ناقص المقطع secp384r1‏ (aka NIST P-384)</translation>
+<translation id="4418150423720608641">ML-DSA-87</translation>
 <translation id="4419287616181386201">يمكنك حذف كلمات المرور في إعدادات الإدارة</translation>
 <translation id="4424024547088906515">‏هذا الخادم لم يتمكن من إثبات أن ذلك <ph name="DOMAIN" />؛ بل إنه شهادة أمان غير موثوقة من قبل Chrome. وربما يكون السبب في ذلك خطأ في التكوين أو مهاجمًا يعترض الاتصال.</translation>
 <translation id="4425750422187370446">ملابس رياضية</translation>
@@ -2957,6 +2961,7 @@
 <translation id="5573641252776268565">تعديل بيانات جواز السفر</translation>
 <translation id="5578606540385219379">مقدِّمو خدمات</translation>
 <translation id="5580958916614886209">تحقق من شهر انتهاء الصلاحية وأعِد المحاولة مرة أخرى</translation>
+<translation id="5582453333200265572">تعديل بطاقة التعريف</translation>
 <translation id="5583442610070676234">مزيد من الإجراءات لجدول المقارنة "<ph name="COMPARE_SET_NAME" />"</translation>
 <translation id="55841966151154662">‏تعذَّر حفظ رقم الحساب بصيغة IBAN هذا في "محفظة Google"، وتم حفظه في Chrome على هذا الجهاز بدلاً من ذلك.</translation>
 <translation id="558420943003240152">إدارة كلمات المرور ومفاتيح المرور…</translation>
@@ -3091,6 +3096,7 @@
 <translation id="5808435672482059465">‏عرض سجلّ Chrome</translation>
 <translation id="5810442152076338065">يتم ترميز اتصالك بالنطاق <ph name="DOMAIN" /> باستخدام مجموعة ترميز قديمة.</translation>
 <translation id="5813119285467412249">إعا&amp;دة الإضافة</translation>
+<translation id="5813274153495000141">يمكنك حفظ معلوماتك وملء النماذج بشكل أسرع. يتم الحفظ على جهازك.</translation>
 <translation id="5813753398265398978">فيزياء</translation>
 <translation id="5817918615728894473">إقران</translation>
 <translation id="5820625124144807242">‏بعد مراجعة طلبك، عليك تسجيل الدخول أو إنشاء حساب باستخدام <ph name="BNPL_ISSUER_NAME" />. وسيتم ربط هذا الحساب تلقائيًا بخدمة Google Pay.</translation>

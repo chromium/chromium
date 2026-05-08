@@ -1870,6 +1870,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="8765470054473112089">Kui sisestate teksti aadressiribale või otsingukasti, saadab Chrome teie sisestatud teksti teie vaikeotsingumootorisse, et saada paremaid soovitusi. See on inkognito režiimis välja lülitatud.</translation>
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome leidis nõrga parooli, mida saaksite tugevdada}other{Chrome leidis # nõrka parooli, mida saaksite tugevdada}}</translation>
 <translation id="8766529642647037772">Kas luua esiletõstetud link, nagu see?</translation>
+<translation id="8769783688897433958">Vaadake saidi teavet ja lubasid.</translation>
 <translation id="8788265440806329501">Navigeerimisajalugu on suletud</translation>
 <translation id="8790193082819560975">Puudutage, et otsida toote ostuvõimalusi uuel vahekaardil.</translation>
 <translation id="8798449543960971550">Loetud</translation>

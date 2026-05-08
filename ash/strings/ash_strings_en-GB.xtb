@@ -1048,6 +1048,7 @@ Some features are limited to increase battery life.</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Overview mode</translation>
 <translation id="4242533952199664413">Open settings</translation>
+<translation id="4244765461494758482">These settings are syncing across your other ChromeOS devices. You can change them here, or manage the full list in Settings.</translation>
 <translation id="4247123849143712100">Update and shut down</translation>
 <translation id="4249248555939881673">Waiting for network connection...</translation>
 <translation id="4250229828105606438">Screenshot</translation>
@@ -2328,6 +2329,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8051716679295756675">Template named <ph name="DESK_TEMPLATE_NAME" /> already exists</translation>
 <translation id="8052898407431791827">Copied to clipboard</translation>
 <translation id="8054466585765276473">Calculating battery time.</translation>
+<translation id="8063363226185507157">Synced accessibility settings</translation>
 <translation id="8076492880354921740">Tabs</translation>
 <translation id="8079538659226626406">Screen Share</translation>
 <translation id="8083540854303889870">Saved for later</translation>

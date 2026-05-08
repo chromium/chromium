@@ -479,6 +479,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="1727613060316725209">Mae'r dystysgrif yn ddilys</translation>
 <translation id="1728677426644403582">Rydych yn edrych ar ffynhonnell tudalen we</translation>
 <translation id="173080396488393970">Ni chefnogir y math hwn o gerdyn</translation>
+<translation id="1731563515262205847">ML-DSA-65</translation>
 <translation id="1732445923934584865">Gofyn yn bersonol yn lle hynny</translation>
 <translation id="1733064249834771892">ffontiau</translation>
 <translation id="1733631169686303142">Offer Sain</translation>
@@ -1597,6 +1598,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="350069200438440499">Enw'r ffeil:</translation>
 <translation id="3501300228850242680">Metel (Cerddoriaeth)</translation>
 <translation id="350421688684366066">Labeli (Sglein Uchel)</translation>
+<translation id="3507062913298382727">Cadw cerdyn adnabod</translation>
 <translation id="350763432931695541">Wrthi'n echdynnu testun yn yr ychydig dudalennau nesaf</translation>
 <translation id="3507869775212388416">Swyddi Cyfreithiol</translation>
 <translation id="3507936815618196901">Creu map 3D o'ch amgylchoedd ac olrhain safle'r camera</translation>
@@ -1991,6 +1993,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="4098306082496067348">Tapiwch fanylion cerdyn rhithwir i'w hychwanegu wrth dalu.</translation>
 <translation id="4099048595830172239">Nid yw'r polisi gweinyddwr yn argymell rhannu eich sgrîn â <ph name="APPLICATION_TITLE" /> pan fydd cynnwys cyfrinachol yn weladwy:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Pwyswch Tab yna Enter i addasu meintiau ffont a theipiau yn Chrome</translation>
+<translation id="4100421230355095925">ML-DSA-44</translation>
 <translation id="4101413244023615925">Testun a graffig</translation>
 <translation id="4101917550061398111">Dileu'r eitemau sydd wedi'u dewis</translation>
 <translation id="4102567721634170493">Newyddion Lleol</translation>
@@ -2218,6 +2221,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="4415156962929755728">Plastig (Sglein Uchel)</translation>
 <translation id="4415426530740016218">Cyfeiriad Casglu</translation>
 <translation id="4415748029120993980">Cromlin eliptig SECG secp384r1 (aka NIST P-384)</translation>
+<translation id="4418150423720608641">ML-DSA-87</translation>
 <translation id="4419287616181386201">Gellir dileu cyfrineiriau yn eu gosodiadau rheoli</translation>
 <translation id="4424024547088906515">Ni allai'r gweinydd hwn brofi ei fod yn <ph name="DOMAIN" />; nid yw Chrome yn ymddiried yn ei dystysgrif ddiogelwch. Gall hyn gael ei achosi gan gamffurfweddiad neu ymosodwr yn rhyng-gipio'ch cysylltiad.</translation>
 <translation id="4425750422187370446">Dillad Athletaidd</translation>
@@ -2957,6 +2961,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="5573641252776268565">Golygu'r pasbort</translation>
 <translation id="5578606540385219379">Darparwyr Gwasanaeth</translation>
 <translation id="5580958916614886209">Gwiriwch eich mis darfod a rhowch gynnig arall arni</translation>
+<translation id="5582453333200265572">Diweddaru cerdyn adnabod</translation>
 <translation id="5583442610070676234">Rhagor o weithredoedd ar gyfer tabl cymharu <ph name="COMPARE_SET_NAME" /></translation>
 <translation id="55841966151154662">Ni fu modd cadw'r IBAN hwn yn Google Wallet. Mae wedi'i gadw i Chrome ar y ddyfais hon yn lle hynny.</translation>
 <translation id="558420943003240152">Rheoli cyfrineiriau a chodau pas…</translation>
@@ -3091,6 +3096,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="5808435672482059465">Gweld Eich Hanes Chrome</translation>
 <translation id="5810442152076338065">Mae eich cysylltiad ag <ph name="DOMAIN" /> wedi'i amgryptio gan ddefnyddio cyfres seiffrau sydd wedi darfod.</translation>
 <translation id="5813119285467412249">&amp;Ailwneud Ychwanegu</translation>
+<translation id="5813274153495000141">Cadwch eich gwybodaeth a llenwch ffurflenni yn gyflymach. Yn cadw i'ch dyfais.</translation>
 <translation id="5813753398265398978">Ffiseg</translation>
 <translation id="5817918615728894473">Paru</translation>
 <translation id="5820625124144807242">Ar ôl i chi adolygu'ch archeb, rhaid i chi fewngofnodi neu greu cyfrif gyda <ph name="BNPL_ISSUER_NAME" />. Bydd y cyfrif hwn yn gysylltiedig â Google Pay yn awtomatig.</translation>

@@ -479,6 +479,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1727613060316725209">Sertifikat valid</translation>
 <translation id="1728677426644403582">Anda melihat sumber halaman web</translation>
 <translation id="173080396488393970">Jenis kartu tidak didukung</translation>
+<translation id="1731563515262205847">ML-DSA-65</translation>
 <translation id="1732445923934584865">Tanya secara langsung</translation>
 <translation id="1733064249834771892">font</translation>
 <translation id="1733631169686303142">Perlengkapan Audio</translation>
@@ -1597,6 +1598,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="350069200438440499">Nama file:</translation>
 <translation id="3501300228850242680">Metal (Musik)</translation>
 <translation id="350421688684366066">Label (Kilap Tinggi)</translation>
+<translation id="3507062913298382727">Simpan kartu tanda pengenal</translation>
 <translation id="350763432931695541">Mengekstrak teks di beberapa halaman berikutnya</translation>
 <translation id="3507869775212388416">Pekerjaan di Bidang Hukum</translation>
 <translation id="3507936815618196901">Membuat peta 3D untuk area di sekeliling Anda dan melacak posisi kamera</translation>
@@ -1991,6 +1993,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="4098306082496067348">Ketuk detail kartu virtual untuk menambahkannya ke checkout.</translation>
 <translation id="4099048595830172239">Kebijakan administrator tidak merekomendasikan berbagi layar dengan <ph name="APPLICATION_TITLE" /> saat konten rahasia terlihat:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tekan tab lalu Enter untuk menyesuaikan ukuran font dan rupa huruf di Chrome</translation>
+<translation id="4100421230355095925">ML-DSA-44</translation>
 <translation id="4101413244023615925">Teks dan grafis</translation>
 <translation id="4101917550061398111">Hapus item yang dipilih</translation>
 <translation id="4102567721634170493">Berita Lokal</translation>
@@ -2218,6 +2221,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="4415156962929755728">Plastik (Kilap Tinggi)</translation>
 <translation id="4415426530740016218">Alamat Pengambilan</translation>
 <translation id="4415748029120993980">Kurva eliptis SECG secp384r1 (alias NIST P-384)</translation>
+<translation id="4418150423720608641">ML-DSA-87</translation>
 <translation id="4419287616181386201">Sandi dapat dihapus di setelan pengelolaannya</translation>
 <translation id="4424024547088906515">Server ini tidak dapat membuktikan bahwa ini adalah <ph name="DOMAIN" />; sertifikat keamanannya tidak dipercaya oleh Chrome. Hal ini dapat disebabkan oleh kesalahan konfigurasi atau penyerang memotong sambungan Anda.</translation>
 <translation id="4425750422187370446">Pakaian Atletik</translation>
@@ -2957,6 +2961,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="5573641252776268565">Edit paspor</translation>
 <translation id="5578606540385219379">Penyedia Layanan</translation>
 <translation id="5580958916614886209">Periksa bulan kedaluwarsa dan coba lagi</translation>
+<translation id="5582453333200265572">Perbarui kartu tanda pengenal</translation>
 <translation id="5583442610070676234">Tindakan lainnya untuk tabel perbandingan <ph name="COMPARE_SET_NAME" /></translation>
 <translation id="55841966151154662">IBAN ini tidak dapat disimpan di Google Wallet. Sebaliknya, IBAN tersebut disimpan ke Chrome di perangkat ini.</translation>
 <translation id="558420943003240152">Kelola sandi dan kunci sandi …</translation>
@@ -3091,6 +3096,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="5808435672482059465">Lihat Histori Chrome Anda</translation>
 <translation id="5810442152076338065">Sambungan Anda ke <ph name="DOMAIN" /> dienkripsi menggunakan cipher suite yang sudah usang.</translation>
 <translation id="5813119285467412249">&amp;Ulangi Penambahan</translation>
+<translation id="5813274153495000141">Simpan informasi Anda dan isi formulir lebih cepat. Disimpan ke perangkat Anda.</translation>
 <translation id="5813753398265398978">Fisika</translation>
 <translation id="5817918615728894473">Sandingkan</translation>
 <translation id="5820625124144807242">Setelah meninjau pesanan, Anda harus login atau membuat akun dengan<ph name="BNPL_ISSUER_NAME" />. Akun ini akan otomatis ditautkan ke Google Pay.</translation>

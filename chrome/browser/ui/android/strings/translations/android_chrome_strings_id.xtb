@@ -1870,6 +1870,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="8765470054473112089">Saat Anda mengetik di kolom URL atau kotak penelusuran, Chrome akan mengirimkan hal yang Anda ketik ke mesin telusur default untuk mendapatkan saran yang lebih baik. Fitur ini nonaktif dalam mode Samaran.</translation>
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome menemukan sandi lemah yang dapat Anda perkuat}other{Chrome menemukan # sandi lemah yang dapat Anda perkuat}}</translation>
 <translation id="8766529642647037772">Buat link yang ditandai seperti ini?</translation>
+<translation id="8769783688897433958">Lihat informasi dan izin situs</translation>
 <translation id="8788265440806329501">Histori navigasi tertutup</translation>
 <translation id="8790193082819560975">Ketuk untuk menelusuri opsi pembelian produk di tab baru.</translation>
 <translation id="8798449543960971550">Telah dibaca</translation>

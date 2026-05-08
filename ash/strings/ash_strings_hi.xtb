@@ -1049,6 +1049,7 @@
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">खास जानकारी मोड</translation>
 <translation id="4242533952199664413">सेटिंग खोलें</translation>
+<translation id="4244765461494758482">ये सेटिंग, आपके अन्य ChromeOS डिवाइसों पर सिंक हो रही हैं. इन्हें यहां से बदला जा सकता है या सेटिंग में जाकर, पूरी सूची को मैनेज किया जा सकता है.</translation>
 <translation id="4247123849143712100">अपडेट करके शट डाउन करें</translation>
 <translation id="4249248555939881673">नेटवर्क कनेक्शन के लिए प्रतीक्षारत...</translation>
 <translation id="4250229828105606438">स्क्रीनशॉट</translation>
@@ -2329,6 +2330,7 @@
 <translation id="8051716679295756675"><ph name="DESK_TEMPLATE_NAME" /> नाम का टेंप्लेट पहले से मौजूद है</translation>
 <translation id="8052898407431791827">स्क्रीनशॉट को क्लिपबोर्ड पर कॉपी किया गया</translation>
 <translation id="8054466585765276473">बैटरी समय की गणना की जा रही है.</translation>
+<translation id="8063363226185507157">सुलभता सेटिंग सिंक की गई हैं</translation>
 <translation id="8076492880354921740">टैब</translation>
 <translation id="8079538659226626406">स्क्रीन शेयर करें</translation>
 <translation id="8083540854303889870">बाद के लिए सेव किया गया</translation>

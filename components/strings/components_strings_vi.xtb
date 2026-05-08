@@ -479,6 +479,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1727613060316725209">Chứng chỉ hợp lệ</translation>
 <translation id="1728677426644403582">Bạn đang xem nguồn của trang web</translation>
 <translation id="173080396488393970">Loại thẻ này không được hỗ trợ</translation>
+<translation id="1731563515262205847">ML-DSA-65</translation>
 <translation id="1732445923934584865">Hỏi trực tiếp</translation>
 <translation id="1733064249834771892">phông chữ</translation>
 <translation id="1733631169686303142">Thiết bị âm thanh</translation>
@@ -1597,6 +1598,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="350069200438440499">Tên tệp:</translation>
 <translation id="3501300228850242680">(Nhạc) Metal</translation>
 <translation id="350421688684366066">Nhãn (Độ bóng cao)</translation>
+<translation id="3507062913298382727">Lưu thẻ căn cước</translation>
 <translation id="350763432931695541">Đang trích xuất văn bản trong vài trang tiếp theo</translation>
 <translation id="3507869775212388416">Công việc pháp lý</translation>
 <translation id="3507936815618196901">Tạo bản đồ 3D khu vực xung quanh bạn và theo dõi thông tin vị trí của camera</translation>
@@ -1991,6 +1993,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4098306082496067348">Nhấn vào thông tin thẻ ảo để thêm thông tin đó vào quy trình thanh toán.</translation>
 <translation id="4099048595830172239">Chính sách của quản trị viên không khuyến khích chia sẻ màn hình của bạn với <ph name="APPLICATION_TITLE" /> khi đang có nội dung bảo mật trên màn hình:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Nhấn phím Tab rồi nhấn phím Enter để tùy chỉnh cỡ chữ và kiểu chữ trong Chrome</translation>
+<translation id="4100421230355095925">ML-DSA-44</translation>
 <translation id="4101413244023615925">Văn bản và đồ họa</translation>
 <translation id="4101917550061398111">Xoá các mục đã chọn</translation>
 <translation id="4102567721634170493">Tin tức địa phương</translation>
@@ -2218,6 +2221,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4415156962929755728">Nhựa (Độ bóng cao)</translation>
 <translation id="4415426530740016218">Địa chỉ nhận hàng</translation>
 <translation id="4415748029120993980">Đường cong elip SECG secp384r1 (aka NIST P-384)</translation>
+<translation id="4418150423720608641">ML-DSA-87</translation>
 <translation id="4419287616181386201">Bạn có thể xoá mật khẩu trong phần cài đặt quản lý tương ứng</translation>
 <translation id="4424024547088906515">Máy chủ này không chứng minh được rằng đó là <ph name="DOMAIN" />; chứng chỉ bảo mật của máy chủ này không được Chrome tin cậy. Điều này có thể do định cấu hình sai hoặc có kẻ tấn công chặn kết nối của bạn.</translation>
 <translation id="4425750422187370446">Trang phục điền kinh</translation>
@@ -2957,6 +2961,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5573641252776268565">Chỉnh sửa thông tin hộ chiếu</translation>
 <translation id="5578606540385219379">Nhà cung cấp dịch vụ</translation>
 <translation id="5580958916614886209">Kiểm tra tháng hết hạn của bạn và thử lại</translation>
+<translation id="5582453333200265572">Cập nhật thẻ căn cước</translation>
 <translation id="5583442610070676234">Các thao tác khác trong bảng so sánh <ph name="COMPARE_SET_NAME" /></translation>
 <translation id="55841966151154662">Không lưu được IBAN này vào Google Wallet. Thay vào đó, IBAN sẽ được lưu vào Chrome trên thiết bị này.</translation>
 <translation id="558420943003240152">Quản lý mật khẩu và khoá đăng nhập…</translation>
@@ -3091,6 +3096,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5808435672482059465">Xem nhật ký duyệt web trên Chrome</translation>
 <translation id="5810442152076338065">Kết nối của bạn tới <ph name="DOMAIN" /> được mã hóa bằng bộ số 0 đã lỗi thời.</translation>
 <translation id="5813119285467412249">&amp;Làm lại thêm</translation>
+<translation id="5813274153495000141">Lưu thông tin của bạn và điền vào biểu mẫu nhanh hơn. Lưu vào thiết bị của bạn.</translation>
 <translation id="5813753398265398978">Vật lý</translation>
 <translation id="5817918615728894473">Ghép nối</translation>
 <translation id="5820625124144807242">Sau khi xem lại đơn đặt hàng, bạn phải đăng nhập hoặc tạo một tài khoản <ph name="BNPL_ISSUER_NAME" />. Tài khoản này sẽ tự động liên kết với Google Pay.</translation>

@@ -1047,6 +1047,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Mode Aperçu</translation>
 <translation id="4242533952199664413">Ouvrir les paramètres</translation>
+<translation id="4244765461494758482">Ces paramètres sont synchronisés sur vos autres appareils ChromeOS. Vous pouvez les modifier ici ou gérer la liste complète dans Paramètres.</translation>
 <translation id="4247123849143712100">Mettre à jour et éteindre</translation>
 <translation id="4249248555939881673">En attente de la connexion réseau...</translation>
 <translation id="4250229828105606438">Saisie d'écran</translation>
@@ -2327,6 +2328,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="8051716679295756675">Le modèle intitulé <ph name="DESK_TEMPLATE_NAME" /> existe déjà</translation>
 <translation id="8052898407431791827">Copiée dans le presse-papiers</translation>
 <translation id="8054466585765276473">Calcul de l'autonomie de la batterie en cours…</translation>
+<translation id="8063363226185507157">Paramètres d'accessibilité synchronisés</translation>
 <translation id="8076492880354921740">Onglets</translation>
 <translation id="8079538659226626406">Partage d'écran</translation>
 <translation id="8083540854303889870">Enregistré pour plus tard</translation>

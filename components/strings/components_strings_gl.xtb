@@ -479,6 +479,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1727613060316725209">O certificado é válido</translation>
 <translation id="1728677426644403582">Estas vendo a fonte dunha páxina web</translation>
 <translation id="173080396488393970">Este tipo de tarxeta non é compatible</translation>
+<translation id="1731563515262205847">ML-DSA-65</translation>
 <translation id="1732445923934584865">Pedir en persoa</translation>
 <translation id="1733064249834771892">tipos de letra</translation>
 <translation id="1733631169686303142">Equipos de audio</translation>
@@ -1597,6 +1598,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="350069200438440499">Nome do ficheiro:</translation>
 <translation id="3501300228850242680">Metal (Música)</translation>
 <translation id="350421688684366066">Etiquetas (alto brillo)</translation>
+<translation id="3507062913298382727">Garda o carné de identidade</translation>
 <translation id="350763432931695541">Extraendo texto das páxinas seguintes</translation>
 <translation id="3507869775212388416">Postos no sector xurídico</translation>
 <translation id="3507936815618196901">Crear un mapa 3D do que te rodea e facer un seguimento da posición da cámara</translation>
@@ -1991,6 +1993,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="4098306082496067348">Toca os detalles da tarxeta virtual para engadilos á tramitación da compra.</translation>
 <translation id="4099048595830172239">Na política do administrador non se recomenda compartir a pantalla con <ph name="APPLICATION_TITLE" /> cando nela se mostra contido confidencial:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Para personalizar os tamaños e os tipos de letra en Chrome, preme Tabulador e, a continuación, Introducir</translation>
+<translation id="4100421230355095925">ML-DSA-44</translation>
 <translation id="4101413244023615925">Texto e gráficos</translation>
 <translation id="4101917550061398111">Eliminar elementos seleccionados</translation>
 <translation id="4102567721634170493">Noticias locais</translation>
@@ -2218,6 +2221,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="4415156962929755728">Plástico (brillo intenso)</translation>
 <translation id="4415426530740016218">Enderezo de recollida</translation>
 <translation id="4415748029120993980">SECG Elliptic Curve secp384r1 (tamén se denomina NIST P-384)</translation>
+<translation id="4418150423720608641">ML-DSA-87</translation>
 <translation id="4419287616181386201">Os contrasinais poden eliminarse na configuración de xestión correspondente</translation>
 <translation id="4424024547088906515">Este servidor non puido demostrar que é <ph name="DOMAIN" /> porque Chrome non confía no seu certificado de seguranza. É posible que isto se deba a un erro de configuración ou a que un atacante interceptase a túa conexión.</translation>
 <translation id="4425750422187370446">Roupa deportiva</translation>
@@ -2957,6 +2961,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="5573641252776268565">Editar o pasaporte</translation>
 <translation id="5578606540385219379">Provedores de servizos</translation>
 <translation id="5580958916614886209">Comproba o mes de caducidade e téntao de novo</translation>
+<translation id="5582453333200265572">Actualiza o carné de identidade</translation>
 <translation id="5583442610070676234">Máis accións aplicables á táboa de comparación <ph name="COMPARE_SET_NAME" /></translation>
 <translation id="55841966151154662">Este IBAN non se puido gardar en Google Wallet. En lugar diso, gardouse en Chrome neste dispositivo.</translation>
 <translation id="558420943003240152">Xestionar contrasinais e claves de acceso…</translation>
@@ -3091,6 +3096,7 @@ Para ocultar as opcións de pago aprazado, vai á <ph name="BEGIN_LINK" />config
 <translation id="5808435672482059465">Ver historial de Chrome</translation>
 <translation id="5810442152076338065">A túa conexión a <ph name="DOMAIN" /> está encriptada cun paquete de cifraxe obsoleto.</translation>
 <translation id="5813119285467412249">&amp;Refacer adición</translation>
+<translation id="5813274153495000141">Garda a túa información e completa os formularios máis rápido. Os datos gárdanse no teu dispositivo.</translation>
 <translation id="5813753398265398978">Física</translation>
 <translation id="5817918615728894473">Sincronizar</translation>
 <translation id="5820625124144807242">Unha vez que revises o pedido, debes iniciar sesión ou crear unha conta de <ph name="BNPL_ISSUER_NAME" />. Esta conta vincularase automaticamente a Google Pay.</translation>

@@ -1870,6 +1870,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="8765470054473112089">Når du skriver i adressefeltet eller søkefeltet, sender Chrome det du skriver til standardsøkemotoren din, for å gi deg bedre forslag. Dette er av i Inkognito.</translation>
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome fant et svakt passord du kan forbedre}other{Chrome fant # svake passord du kan forbedre}}</translation>
 <translation id="8766529642647037772">Vil du opprette en fremhevet link som denne?</translation>
+<translation id="8769783688897433958">Se nettstedsinformasjon og -tillatelser</translation>
 <translation id="8788265440806329501">Navigasjonsloggen er lukket</translation>
 <translation id="8790193082819560975">Trykk for å søke etter kjøpsalternativer for produktet på en ny fane.</translation>
 <translation id="8798449543960971550">Lest</translation>

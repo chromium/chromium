@@ -292,6 +292,7 @@
 <translation id="230115972905494466">לא נמצאו מכשירים תואמים</translation>
 <translation id="2316129865977710310">לא, תודה</translation>
 <translation id="2318045970523081853">יש ללחוץ כדי להתקשר</translation>
+<translation id="232137538351753795">כדי לחזור למסך הקודם, מחליקים מהקצה השמאלי</translation>
 <translation id="2323763861024343754">נתוני אתר מאוחסנים</translation>
 <translation id="2328474416100889417">כולם יאבדו באופן מיידי את הגישה לקבוצת הכרטיסיות '<ph name="GROUP_NAME" />' וכל הקישורים להזמנה יושבתו</translation>
 <translation id="2330186936255788117">עוד סימניות</translation>
@@ -1675,6 +1676,7 @@
 <translation id="7977451675950311423">מקבלים אזהרה אם משתמשים בסיסמה שנחשפה בפרצה באבטחת מידע.</translation>
 <translation id="7987499071758862048">‏‫<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> <ph name="SEPARATOR" /> Chrome הסיר את ההרשאות האלה כי לא נכנסת לאחרונה</translation>
 <translation id="799576009106109668">מהירות הגלישה תגבר כי התוכן ייטען באופן יזום, על סמך הביקור הנוכחי שלך בדף האינטרנט</translation>
+<translation id="7997875520309653083">כדי לחזור למסך הקודם, מחליקים מהקצה הימני</translation>
 <translation id="7998918019931843664">פתיחה מחדש של כרטיסייה שנסגרה</translation>
 <translation id="8001245658307297681">מוצג לך קובץ מקומי</translation>
 <translation id="8004582292198964060">דפדפן</translation>
@@ -1868,6 +1870,7 @@
 <translation id="8765470054473112089">‏כשמקלידים טקסט בסרגל הכתובות או בתיבת החיפוש, Chrome שולח את הטקסט הזה למנוע החיפוש שמוגדר כברירת מחדל כדי לקבל הצעות טובות יותר. האפשרות הזו מושבתת במצב הפרטי.</translation>
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{‏‫Chrome זיהה סיסמה חלשה שאפשר לשפר}one{‏‫Chrome זיהה # סיסמאות חלשות שאפשר לשפר}two{‏‫Chrome זיהה # סיסמאות חלשות שאפשר לשפר}other{‏‫Chrome זיהה # סיסמאות חלשות שאפשר לשפר}}</translation>
 <translation id="8766529642647037772">רוצה ליצור קישור מודגש כמו זה שמופיע כאן?</translation>
+<translation id="8769783688897433958">אל פרטי האתר וההרשאות</translation>
 <translation id="8788265440806329501">היסטוריית הניווט סגורה</translation>
 <translation id="8790193082819560975">צריך ללחוץ כדי לחפש אפשרויות קנייה של המוצר בכרטיסייה חדשה.</translation>
 <translation id="8798449543960971550">נקראו</translation>

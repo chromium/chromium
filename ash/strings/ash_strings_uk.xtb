@@ -1048,6 +1048,7 @@
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Режим огляду</translation>
 <translation id="4242533952199664413">Відкрити налаштування</translation>
+<translation id="4244765461494758482">Ці налаштування синхронізуються на інших ваших пристроях із ChromeOS. Ви можете змінити їх тут або переглянути повний список у налаштуваннях.</translation>
 <translation id="4247123849143712100">Оновити й завершити роботу</translation>
 <translation id="4249248555939881673">Очікування на з’єднання з мережею…</translation>
 <translation id="4250229828105606438">Знімок екрана</translation>
@@ -2328,6 +2329,7 @@
 <translation id="8051716679295756675">Шаблон <ph name="DESK_TEMPLATE_NAME" /> вже існує</translation>
 <translation id="8052898407431791827">Скопійовано в буфер обміну</translation>
 <translation id="8054466585765276473">Обчислення часу роботи акумулятора.</translation>
+<translation id="8063363226185507157">Синхронізовані налаштування функцій доступності</translation>
 <translation id="8076492880354921740">Вкладки</translation>
 <translation id="8079538659226626406">Показ екрана</translation>
 <translation id="8083540854303889870">Збережено на потім</translation>

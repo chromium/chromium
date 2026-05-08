@@ -1048,6 +1048,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Tryb przeglądu</translation>
 <translation id="4242533952199664413">Otwórz ustawienia</translation>
+<translation id="4244765461494758482">Te ustawienia są synchronizowane na innych urządzeniach z ChromeOS. Możesz je zmienić tutaj lub zarządzać pełną listą w Ustawieniach.</translation>
 <translation id="4247123849143712100">Zaktualizuj i wyłącz</translation>
 <translation id="4249248555939881673">Czekam na połączenie z siecią...</translation>
 <translation id="4250229828105606438">Zrzut ekranu</translation>
@@ -2327,6 +2328,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8051716679295756675">Szablon o nazwie <ph name="DESK_TEMPLATE_NAME" /> już istnieje</translation>
 <translation id="8052898407431791827">Skopiowano do schowka</translation>
 <translation id="8054466585765276473">Obliczanie czasu pracy na baterii.</translation>
+<translation id="8063363226185507157">Zsynchronizowane ustawienia ułatwień dostępu</translation>
 <translation id="8076492880354921740">Karty</translation>
 <translation id="8079538659226626406">Udostępnianie ekranu</translation>
 <translation id="8083540854303889870">Zapisane na później</translation>

@@ -479,6 +479,7 @@
 <translation id="1727613060316725209">証明書は有効です</translation>
 <translation id="1728677426644403582">ウェブページのソースを表示しています</translation>
 <translation id="173080396488393970">この種類のカードはご利用いただけません</translation>
+<translation id="1731563515262205847">ML-DSA-65</translation>
 <translation id="1732445923934584865">直接リクエストする</translation>
 <translation id="1733064249834771892">フォント</translation>
 <translation id="1733631169686303142">オーディオ機器</translation>
@@ -1597,6 +1598,7 @@
 <translation id="350069200438440499">ファイル名:</translation>
 <translation id="3501300228850242680">ヘビーメタル</translation>
 <translation id="350421688684366066">ラベル（高光沢）</translation>
+<translation id="3507062913298382727">ID カードを保存</translation>
 <translation id="350763432931695541">次の数ページのテキストを抽出しています</translation>
 <translation id="3507869775212388416">法律系の求人情報</translation>
 <translation id="3507936815618196901">周囲の 3D マップの作成とカメラ位置の追跡</translation>
@@ -1991,6 +1993,7 @@
 <translation id="4098306082496067348">購入時に使うカードとして追加するには、仮想カード情報をタップします。</translation>
 <translation id="4099048595830172239">機密コンテンツが表示されているときに <ph name="APPLICATION_TITLE" /> で画面を共有することは、管理者が設定したポリシーで推奨されていません。</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、Chrome のフォントサイズと書体をカスタマイズします</translation>
+<translation id="4100421230355095925">ML-DSA-44</translation>
 <translation id="4101413244023615925">テキストとグラフィック</translation>
 <translation id="4101917550061398111">選択したアイテムを削除</translation>
 <translation id="4102567721634170493">ローカル ニュース</translation>
@@ -2218,6 +2221,7 @@
 <translation id="4415156962929755728">プラスチック（高光沢）</translation>
 <translation id="4415426530740016218">受け取り場所の住所</translation>
 <translation id="4415748029120993980">SECG 楕円曲線 secp384r1（別名 NIST P-384）</translation>
+<translation id="4418150423720608641">ML-DSA-87</translation>
 <translation id="4419287616181386201">パスワードは管理設定で削除できます</translation>
 <translation id="4424024547088906515">このサーバーが <ph name="DOMAIN" /> であることを確認できませんでした。このサーバーのセキュリティ証明書は Chrome によって信頼されているものではありません。原因としては、不適切な設定や、悪意のあるユーザーによる接続妨害が考えられます。</translation>
 <translation id="4425750422187370446">スポーツ衣料</translation>
@@ -2957,6 +2961,7 @@
 <translation id="5573641252776268565">パスポートの編集</translation>
 <translation id="5578606540385219379">サービス プロバイダ</translation>
 <translation id="5580958916614886209">有効期限の「月」を確認してもう一度お試しください</translation>
+<translation id="5582453333200265572">ID カードを更新</translation>
 <translation id="5583442610070676234"><ph name="COMPARE_SET_NAME" /> の比較表のその他の操作</translation>
 <translation id="55841966151154662">この IBAN を Google ウォレットに保存できませんでした。代わりにこのデバイスの Chrome に保存されました。</translation>
 <translation id="558420943003240152">パスワードとパスキーを管理...</translation>
@@ -3091,6 +3096,7 @@
 <translation id="5808435672482059465">Chrome 履歴を表示</translation>
 <translation id="5810442152076338065"><ph name="DOMAIN" /> への接続は古い暗号スイートにより暗号化されています。</translation>
 <translation id="5813119285467412249">追加のやり直し（&amp;R）</translation>
+<translation id="5813274153495000141">情報を保存すると、フォームにすばやく入力できます。情報はデバイスに保存されます。</translation>
 <translation id="5813753398265398978">物理学</translation>
 <translation id="5817918615728894473">ペア設定</translation>
 <translation id="5820625124144807242">注文の確認が完了したら、<ph name="BNPL_ISSUER_NAME" /> のアカウントにログインするか、アカウントを作成する必要があります。このアカウントは自動的に Google Pay にリンクされます。</translation>

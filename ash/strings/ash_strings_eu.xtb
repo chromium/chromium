@@ -1049,6 +1049,7 @@ Bateriaren iraupena luzatzeko, eginbide batzuk mugatu dira.</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Ikuspegi orokorreko modua</translation>
 <translation id="4242533952199664413">Ireki ezarpenak</translation>
+<translation id="4244765461494758482">Ezarpen hauek ChromeOS-eko beste gailuekin sinkronizatzen ari dira. Hemen alda ditzakezu, edo zerrenda osoa kudeatu ezarpenetan.</translation>
 <translation id="4247123849143712100">Eguneratu eta itzali</translation>
 <translation id="4249248555939881673">Sareko konexioaren zain…</translation>
 <translation id="4250229828105606438">Pantaila-argazkia</translation>
@@ -2329,6 +2330,7 @@ Itzaltzeko, eduki sakatuta berriro gailuaren etengailua.</translation>
 <translation id="8051716679295756675">Badago "<ph name="DESK_TEMPLATE_NAME" />" izeneko txantiloi bat</translation>
 <translation id="8052898407431791827">Kopiatu da arbelean</translation>
 <translation id="8054466585765276473">Bateria-denbora kalkulatzen.</translation>
+<translation id="8063363226185507157">Erabilerraztasun-ezarpen sinkronizatuak</translation>
 <translation id="8076492880354921740">Fitxak</translation>
 <translation id="8079538659226626406">Pantaila partekatzea</translation>
 <translation id="8083540854303889870">Gerorako gordetakoak</translation>

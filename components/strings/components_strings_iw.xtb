@@ -479,6 +479,7 @@
 <translation id="1727613060316725209">האישור תקין</translation>
 <translation id="1728677426644403582">זהו המקור של דף אינטרנט</translation>
 <translation id="173080396488393970">אין תמיכה בכרטיס מסוג זה</translation>
+<translation id="1731563515262205847">ML-DSA-65</translation>
 <translation id="1732445923934584865">אני רוצה לבקש באופן אישי במקום זאת</translation>
 <translation id="1733064249834771892">גופנים</translation>
 <translation id="1733631169686303142">ציוד אודיו</translation>
@@ -994,6 +995,7 @@
 <translation id="2521385132275182522">סיכת הידוק בפינה הימנית התחתונה</translation>
 <translation id="2521736961081452453">יצירת טופס</translation>
 <translation id="2524461107774643265">הוספת עוד מידע</translation>
+<translation id="2524962131655207565">‏<ph name="BEGIN_BOLD" />כדי להציע את האפשרויות האלה, התוכן של דף התשלום משותף עם Google.<ph name="END_BOLD" /> תוכניות התשלומים כפופות לעמידה בדרישות. כדי להסתיר את האפשרויות לתשלום אחר כך, צריך ללחוץ על <ph name="BEGIN_LINK" />הגדרות תשלומים<ph name="END_LINK" />.</translation>
 <translation id="2526062290525841862">‏כדי להפעיל את האפליקציה הזו, צריך להפעיל מחדש את מצב הפיתוח של אפליקציות אינטרנט מבודדות (IWA)</translation>
 <translation id="2526280916094749336">‏אפשר להשתמש בכתובות שמורות במוצרי Google. הכתובת הזו תישמר בחשבון Google שלך, <ph name="ACCOUNT" />.</translation>
 <translation id="2527451058878391043">‏קוד האימות (CVC) מופיע בצד הקדמי של הכרטיס. זהו הקוד בן 4 הספרות שמופיע בצד ימין מעל למספר הכרטיס.</translation>
@@ -1596,6 +1598,7 @@
 <translation id="350069200438440499">שם הקובץ:</translation>
 <translation id="3501300228850242680">מוזיקת מטאל</translation>
 <translation id="350421688684366066">Labels (High-Gloss)</translation>
+<translation id="3507062913298382727">לשמור את התעודה המזהה?</translation>
 <translation id="350763432931695541">מתבצע חילוץ טקסט בדפים הבאים</translation>
 <translation id="3507869775212388416">משרות בתחום המשפטים</translation>
 <translation id="3507936815618196901">ליצור מפה בתלת ממד של הסביבה שלך ולעקוב אחר מיקום המצלמה</translation>
@@ -1990,6 +1993,7 @@
 <translation id="4098306082496067348">לוחצים על פרטי הכרטיס הווירטואלי כדי להוסיף אותם לתשלום.</translation>
 <translation id="4099048595830172239">לפי המדיניות של מנהל המערכת, לא מומלץ לשתף את המסך עם <ph name="APPLICATION_TITLE" /> כשמופיע בו תוכן סודי גלוי:</translation>
 <translation id="4099391883283080991">‏<ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, מקישים על Tab ואז על Enter כדי להתאים אישית את הגופנים וגודל הטקסט ב-Chrome</translation>
+<translation id="4100421230355095925">ML-DSA-44</translation>
 <translation id="4101413244023615925">טקסט וגרפיקה</translation>
 <translation id="4101917550061398111">מחיקת הפריטים שנבחרו</translation>
 <translation id="4102567721634170493">חדשות מקומיות</translation>
@@ -2217,6 +2221,7 @@
 <translation id="4415156962929755728">Plastic (High Gloss)</translation>
 <translation id="4415426530740016218">כתובת איסוף</translation>
 <translation id="4415748029120993980">‏עקומה אליפטית SECG מסוג secp384r1 (מוכרת גם בשם NIST P-384)</translation>
+<translation id="4418150423720608641">ML-DSA-87</translation>
 <translation id="4419287616181386201">אפשר למחוק את הסיסמאות בהגדרות הניהול שלהן</translation>
 <translation id="4424024547088906515">‏השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />. אישור האבטחה שלו לא נחשב כמהימן על ידי Chrome. ייתכן שהסיבה לכך היא תצורה שגויה או תוקף המיירט את החיבור שלך.</translation>
 <translation id="4425750422187370446">ביגוד לספורט</translation>
@@ -2961,6 +2966,7 @@ Del</translation>
 <translation id="5573641252776268565">עריכת פרטי הדרכון</translation>
 <translation id="5578606540385219379">ספקי שירותים</translation>
 <translation id="5580958916614886209">יש לבדוק את חודש התפוגה ולנסות שוב</translation>
+<translation id="5582453333200265572">לעדכן את התעודה המזהה?</translation>
 <translation id="5583442610070676234">פעולות נוספות לגבי טבלת ההשוואה <ph name="COMPARE_SET_NAME" /></translation>
 <translation id="55841966151154662">‏לא ניתן לשמור את הכרטיס הזה ב-Google Wallet. במקום זאת, הוא נשמר ב-Chrome במכשיר הזה.</translation>
 <translation id="558420943003240152">ניהול סיסמאות ומפתחות גישה…</translation>
@@ -3095,6 +3101,7 @@ Del</translation>
 <translation id="5808435672482059465">‏הצגת ההיסטוריה ב‑Chrome</translation>
 <translation id="5810442152076338065">החיבור שלך אל <ph name="DOMAIN" /> מוצפן באמצעות חבילת צופן מיושנת.</translation>
 <translation id="5813119285467412249">&amp;ביצוע מחדש של הוספה</translation>
+<translation id="5813274153495000141">אפשר לשמור את הפרטים ולמלא טפסים מהר יותר. הם יישמרו במכשיר שלך.</translation>
 <translation id="5813753398265398978">פיזיקה</translation>
 <translation id="5817918615728894473">התאמה</translation>
 <translation id="5820625124144807242">‏אחרי שבודקים את ההזמנה, צריך להיכנס לחשבון <ph name="BNPL_ISSUER_NAME" /> או ליצור חשבון חדש אצל הספק הזה. החשבון הזה יקושר באופן אוטומטי ל-Google Pay.</translation>

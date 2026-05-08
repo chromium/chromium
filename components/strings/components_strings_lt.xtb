@@ -479,6 +479,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="1727613060316725209">Sertifikatas galioja</translation>
 <translation id="1728677426644403582">Peržiūrite tinklalapio šaltinį</translation>
 <translation id="173080396488393970">Šio tipo kortelė nepalaikoma</translation>
+<translation id="1731563515262205847">ML-DSA-65</translation>
 <translation id="1732445923934584865">Geriau paklausti asmeniškai</translation>
 <translation id="1733064249834771892">šriftai</translation>
 <translation id="1733631169686303142">Garso įranga</translation>
@@ -1598,6 +1599,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="350069200438440499">Failo pav.:</translation>
 <translation id="3501300228850242680">Metalas (muzika)</translation>
 <translation id="350421688684366066">Etiketės (itin blizgios)</translation>
+<translation id="3507062913298382727">Išsaugokite asmens tapatybės kortelę</translation>
 <translation id="350763432931695541">Išarchyvuojamas tekstas keliuose kituose puslapiuose</translation>
 <translation id="3507869775212388416">Darbai teisės srityje</translation>
 <translation id="3507936815618196901">Kurti jūsų aplinkos 3D žemėlapį ir stebėti kameros padėtį</translation>
@@ -1992,6 +1994,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="4098306082496067348">Palieskite išsamią virtualiosios kortelės informaciją, jei norite ją pridėti prie atsiskaitymo.</translation>
 <translation id="4099048595830172239">Pagal administratoriaus politiką nerekomenduojama bendrinti ekrano su <ph name="APPLICATION_TITLE" />, kai matomas konfidencialus turinys.</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, paspauskite tabuliavimo klavišą, tada – „Enter“, kad galėtumėte tinkinti šriftų dydį ir šriftų šeimas naršyklėje „Chrome“.</translation>
+<translation id="4100421230355095925">ML-DSA-44</translation>
 <translation id="4101413244023615925">Tekstas ir grafiniai elementai</translation>
 <translation id="4101917550061398111">Ištrinti pasirinktus elementus</translation>
 <translation id="4102567721634170493">Vietinės naujienos</translation>
@@ -2219,6 +2222,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="4415156962929755728">Plastikas (itin blizgus)</translation>
 <translation id="4415426530740016218">Paėmimo adresas</translation>
 <translation id="4415748029120993980">SECG elipsės formos kreivės secp384r1 (taip pat vadinama NIST P-384)</translation>
+<translation id="4418150423720608641">ML-DSA-87</translation>
 <translation id="4419287616181386201">Slaptažodžius galima ištrinti jų tvarkymo nustatymuose</translation>
 <translation id="4424024547088906515">Šiam serveriui nepavyko patvirtinti, kad tai yra <ph name="DOMAIN" />; jo saugos sertifikatas nėra patikimas „Chrome“. Taip gali nutikti dėl netinkamos konfigūracijos ar dėl ryšį pertraukusio užgrobėjo.</translation>
 <translation id="4425750422187370446">Sporto apranga</translation>
@@ -2958,6 +2962,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="5573641252776268565">Paso redagavimas</translation>
 <translation id="5578606540385219379">Paslaugų teikėjai</translation>
 <translation id="5580958916614886209">Patikrinkite galiojimo pabaigos mėnesį ir bandykite dar kartą</translation>
+<translation id="5582453333200265572">Atnaujinkite asmens tapatybės kortelę</translation>
 <translation id="5583442610070676234">Daugiau veiksmų, susijusių su lentele „<ph name="COMPARE_SET_NAME" />“</translation>
 <translation id="55841966151154662">Šio IBAN nepavyko išsaugoti „Google Wallet“. Vietoje to jis išsaugotas naršyklėje „Chrome“ šiame įrenginyje.</translation>
 <translation id="558420943003240152">Tvarkyti slaptažodžius…</translation>
@@ -3092,6 +3097,7 @@ Jei norite paslėpti mokėjimo vėliau parinktis, eikite į <ph name="BEGIN_LINK
 <translation id="5808435672482059465">„Chrome“ istorijos peržiūra</translation>
 <translation id="5810442152076338065">Ryšys su <ph name="DOMAIN" /> užšifruotas naudojant pasenusį šifravimo paketą.</translation>
 <translation id="5813119285467412249">&amp;Pridėti dar kartą</translation>
+<translation id="5813274153495000141">Išsaugokite informaciją ir sparčiau užpildykite formas. Išsaugoma įrenginyje.</translation>
 <translation id="5813753398265398978">Fizika</translation>
 <translation id="5817918615728894473">Susieti</translation>
 <translation id="5820625124144807242">Peržiūrėję užsakymą turite prisijungti prie „<ph name="BNPL_ISSUER_NAME" />“ paskyros arba ją sukurti. Ši paskyra bus automatiškai susieta su „Google Pay“.</translation>

@@ -479,6 +479,7 @@
 <translation id="1727613060316725209">Тастыктама жарамдуу</translation>
 <translation id="1728677426644403582">Сиз Интернет барагынын кодун көрүп жатасыз</translation>
 <translation id="173080396488393970">Мындай карточка колдоого алынбайт</translation>
+<translation id="1731563515262205847">ML-DSA-65</translation>
 <translation id="1732445923934584865">Анын ордуна өзүнөн суроо</translation>
 <translation id="1733064249834771892">ариптер</translation>
 <translation id="1733631169686303142">Аудио жабдык</translation>
@@ -1596,6 +1597,7 @@
 <translation id="350069200438440499">Файлдын аталышы:</translation>
 <translation id="3501300228850242680">Металл (Музыка)</translation>
 <translation id="350421688684366066">Энбелгилер (өтө жылтырак)</translation>
+<translation id="3507062913298382727">Өздүк документти сактаңыз</translation>
 <translation id="350763432931695541">Кийинки барактардагы текст чыгарылууда</translation>
 <translation id="3507869775212388416">Юридикалык жумуштар</translation>
 <translation id="3507936815618196901">Айланаңыздын 3D картасын түзүү же камераңыздын абалына көз салуу</translation>
@@ -1990,6 +1992,7 @@
 <translation id="4098306082496067348">Төлөө процессине кошуу үчүн виртуалдык картанын маалыматын таптаңыз.</translation>
 <translation id="4099048595830172239">Купуя мазмун көрүнүп турганда, администратор экраныңызды <ph name="APPLICATION_TITLE" /> менен бөлүшүүнү сунуштабайт:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome'до ариптерди жана алардын өлчөмүн ыңгайлаштыруу үчүн Tab, андан кийин Enter баскычын басыңыз</translation>
+<translation id="4100421230355095925">ML-DSA-44</translation>
 <translation id="4101413244023615925">Текст жана графика</translation>
 <translation id="4101917550061398111">Тандалган нерселерди өчүрүү</translation>
 <translation id="4102567721634170493">Жергиликтүү жаңылыктар</translation>
@@ -2217,6 +2220,7 @@
 <translation id="4415156962929755728">Пластик (өтө жылтырак)</translation>
 <translation id="4415426530740016218">Алып кете турган жердин дарегин тандоо</translation>
 <translation id="4415748029120993980">SECG эллиптикалык ийри сызыгы secp384r1 (aka NIST P-384)</translation>
+<translation id="4418150423720608641">ML-DSA-87</translation>
 <translation id="4419287616181386201">Сырсөздөрдү алардын параметрлеринен өчүрсөңүз болот</translation>
 <translation id="4424024547088906515">Бул сервер <ph name="DOMAIN" /> экендигин далилдей алган жок; себеби Chrome анын коопсуздук тастыктамасына ишенбейт. Мындай көйгөй туура эмес конфигурация менен шартталышы мүмкүн же туташууңузга чабуулчу кийлигишип жатат.</translation>
 <translation id="4425750422187370446">Спорттук кийим</translation>
@@ -2956,6 +2960,7 @@
 <translation id="5573641252776268565">Паспортту түзөтүү</translation>
 <translation id="5578606540385219379">Кызмат көрсөтүүчүлөр</translation>
 <translation id="5580958916614886209">Мөөнөтү аяктоочу айды текшерип, кайталап көрүңүз</translation>
+<translation id="5582453333200265572">Өздүк документти жаңыртыңыз</translation>
 <translation id="5583442610070676234"><ph name="COMPARE_SET_NAME" /> салыштыруучу таблицасы боюнча кошумча аракеттер</translation>
 <translation id="55841966151154662">Бул IBAN коду Google Капчыкка сакталган жок. Анын ордуна ал ушул түзмөктөгү Chrome'до сакталды.</translation>
 <translation id="558420943003240152">Сырсөздөрдү жана киргизүүчү ачкычтарды башкаруу…</translation>
@@ -3090,6 +3095,7 @@
 <translation id="5808435672482059465">Chrome'до көрүлгөн вебсайттарды көрүү</translation>
 <translation id="5810442152076338065"><ph name="DOMAIN" /> менен туташууңуз эскирген шифр топтому менен шифрленген.</translation>
 <translation id="5813119285467412249">Кошууну &amp;кайталоо</translation>
+<translation id="5813274153495000141">Маалыматыңызды сактап, формаларды тезирээк толтуруңуз. Түзмөгүңүзгө сакталат.</translation>
 <translation id="5813753398265398978">Физика</translation>
 <translation id="5817918615728894473">Байланыштыруу</translation>
 <translation id="5820625124144807242">Буйрутмаңызды карап чыккандан кийин, <ph name="BNPL_ISSUER_NAME" /> аккаунтуна кирип же аны түзүшүңүз керек. Бул аккаунт Google Pay менен автоматтык түрдө байланыштырылат.</translation>
