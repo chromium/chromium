@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -48,7 +49,7 @@ inline constexpr char kPushRegistrationIdServiceWorkerKey[] =
 // Owned by RenderFrameHostImpl (if `this` handles requests from a document) or
 // RenderProcessHostImpl (if `this` handles requests from a service worker).
 // Lives on the UI thread.
-class PushMessagingManager : public blink::mojom::PushMessaging {
+class CONTENT_EXPORT PushMessagingManager : public blink::mojom::PushMessaging {
  public:
   PushMessagingManager(
       RenderProcessHost& render_process_host,
@@ -78,6 +79,9 @@ class PushMessagingManager : public blink::mojom::PushMessaging {
                        GetSubscriptionCallback callback) override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(PushMessagingManagerTest,
+                           TimeOfCheckToTimeOfUse_OriginSecurityCheck);
+
   struct RegisterData;
 
   void Register(RegisterData data);

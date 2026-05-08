@@ -660,6 +660,18 @@ void PushMessagingManager::DidGetSubscription(
 
       const url::Origin& origin = registration->key().origin();
 
+      // Verify CanAccessDataForOrigin(), potentially a second time.
+      // GetSubscription() attempts this call earlier, but continues if
+      // registration is dormant. At this point it is required.
+      if (!ChildProcessSecurityPolicyImpl::GetInstance()
+               ->CanAccessDataForOrigin(render_process_host_->GetDeprecatedID(),
+                                        origin)) {
+        bad_message::ReceivedBadMessage(
+            &*render_process_host_,
+            bad_message::PMM_GET_SUBSCRIPTION_INVALID_ORIGIN);
+        return;
+      }
+
       GetSubscriptionInfo(
           origin, service_worker_registration_id, application_server_key,
           push_subscription_id,
