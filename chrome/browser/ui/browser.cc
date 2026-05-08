@@ -243,6 +243,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "net/base/filename_util.h"
+#include "services/network/public/mojom/web_sandbox_flags.mojom.h"
 #include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "third_party/blink/public/mojom/frame/blocked_navigation_types.mojom.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
@@ -2281,6 +2282,15 @@ bool Browser::IsWebContentsCreationOverridden(
     // tab. Note, we do this even if the task isn't active (e.g. paused) so that
     // a user action on behalf of the actor has the same behavior since the
     // resumed task will still be fixed to the tab.
+
+    // However, if the opener is sandboxed and restricted from top-level
+    // navigation, we cannot force a same-tab redirection as it would violate
+    // the sandbox. Instead, we decline to override creation, allowing the
+    // browser to safely open a new popup window (since kPopups is allowed).
+    if (opener &&
+        opener->IsSandboxed(network::mojom::WebSandboxFlags::kTopNavigation)) {
+      return false;
+    }
     return true;
   }
 
