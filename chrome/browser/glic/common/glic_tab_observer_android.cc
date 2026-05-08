@@ -28,6 +28,8 @@ TabCreationType ToTypeCreationType(TabModel::TabLaunchType type) {
     case TabModel::TabLaunchType::FROM_LONGPRESS_FOREGROUND:
     case TabModel::TabLaunchType::FROM_LONGPRESS_BACKGROUND:
       return TabCreationType::kFromLink;
+    case TabModel::TabLaunchType::FROM_BOOKMARK_BAR_BACKGROUND:
+      return TabCreationType::kFromBookmark;
     default:
       return TabCreationType::kUnknown;
   }

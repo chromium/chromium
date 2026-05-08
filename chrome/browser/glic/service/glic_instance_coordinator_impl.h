@@ -246,6 +246,7 @@ class GlicInstanceCoordinatorImpl
   void OnTabsInserted(const TabStripModelChange::Insert* insert);
   void MaybeDaisyChainNewTab(const TabCreationEvent& event);
   void MaybeDaisyChainFromLinkClick(const TabCreationEvent& event);
+  void MaybeDaisyChainFromBookmark(const TabCreationEvent& event);
 
   void OnInvokeHandlerComplete(GlicInstance* instance,
                                GlicInvokeHandler* handler);

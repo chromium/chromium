@@ -818,9 +818,12 @@ chromium-metrics-reviews@google.com.
     This metric should eventually replace
     Glic.Instance.FirstActionInDaisyChainPanel.
   </summary>
+<!-- LINT.IfChange(Source) -->
+
   <token key="Source">
     <variant name="ActorAddTab" summary="actor adding a new tab"/>
     <variant name="AutoOpenPdf" summary="auto-opened for a PDF"/>
+    <variant name="Bookmark" summary="opening a bookmark in a new tab"/>
     <variant name="GlicContents" summary="clicking a link in the Glic panel"/>
     <variant name="LastActiveInstance"
         summary="last active instance was used when user triggered glic on an
@@ -830,6 +833,8 @@ chromium-metrics-reviews@google.com.
     <variant name="WebHandoff"
         summary="opened via navigation capture / web handoff"/>
   </token>
+<!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/metrics_types.h:DaisyChainSource) -->
+
 </histogram>
 
 <histogram name="Glic.Instance.EventCounts" enum="GlicInstanceEvent"

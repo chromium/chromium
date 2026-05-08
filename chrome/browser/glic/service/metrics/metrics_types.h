@@ -152,6 +152,7 @@ enum class ModeOffset : int {
   kMaxValue = kAudioDetached,
 };
 
+// LINT.IfChange(DaisyChainSource)
 enum class DaisyChainSource {
   kUnknown = 0,
   kGlicContents = 1,
@@ -161,8 +162,10 @@ enum class DaisyChainSource {
   kWebHandoff = 5,
   kAutoOpenPdf = 6,
   kLastActiveInstance = 7,
-  kMaxValue = kLastActiveInstance,
+  kBookmark = 8,
+  kMaxValue = kBookmark,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/histograms.xml:Source)
 
 std::string GetDaisyChainSourceString(DaisyChainSource source);
 

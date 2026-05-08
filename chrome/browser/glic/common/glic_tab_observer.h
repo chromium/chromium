@@ -21,6 +21,7 @@ class TabInterface;
 enum class TabCreationType {
   kUserInitiated,
   kFromLink,
+  kFromBookmark,
   kUnknown,
 };
 

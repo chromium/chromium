@@ -110,5 +110,10 @@ TabCreationType GlicTabObserverImpl::DetermineTabCreationType(
     return TabCreationType::kFromLink;
   }
 
+  if (ui::PageTransitionCoreTypeIs(entry->GetTransitionType(),
+                                   ui::PAGE_TRANSITION_AUTO_BOOKMARK)) {
+    return TabCreationType::kFromBookmark;
+  }
+
   return TabCreationType::kUnknown;
 }

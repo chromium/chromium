@@ -38,6 +38,8 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
+#include "chrome/browser/ui/navigator/browser_navigator.h"
+#include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/common/chrome_features.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
 #include "components/enterprise/browser/reporting/reporting_features.h"
@@ -605,6 +607,41 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
     // Focus should be on the new foreground tab's page contents.
     EXPECT_FALSE(instance->HasFocus());
   }
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
+                       BookmarkDaisyChaining) {
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+
+  // Simulate opening a bookmark in a new foreground tab.
+  GlicTestTabAddedWaiter waiter(GetProfile());
+
+#if BUILDFLAG(IS_ANDROID)
+  TabListInterface* tab_list = GetTabListInterface();
+  TabModel* tab_model = static_cast<TabModel*>(tab_list);
+  Profile* profile = GetProfile();
+
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(content::WebContents::CreateParams(profile));
+  web_contents->GetController().LoadURL(
+      GURL("about:blank"), content::Referrer(),
+      ui::PAGE_TRANSITION_AUTO_BOOKMARK, std::string());
+
+  tabs::TabInterface* tab2 = tab_model->CreateTab(
+      nullptr, std::move(web_contents), -1,
+      TabModel::TabLaunchType::FROM_BOOKMARK_BAR_BACKGROUND, false);
+  tab_model->ActivateTab(tab2->GetHandle());
+#else
+  NavigateParams params(PlatformBrowserTest::browser(), GURL("about:blank"),
+                        ui::PAGE_TRANSITION_AUTO_BOOKMARK);
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  Navigate(&params);
+#endif
+
+  tabs::TabInterface* tab2_result = waiter.Wait();
+
+  EXPECT_EQ(instance, coordinator().GetInstanceImplForTab(tab2_result));
+  EXPECT_OK(WaitForEmbedderActivationOrPeek(instance, tab2_result));
 }
 
 // Glic floaty and live modes are not supported on Android.

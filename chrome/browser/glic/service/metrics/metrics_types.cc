@@ -22,6 +22,8 @@ std::string GetDaisyChainSourceString(DaisyChainSource source) {
       return "AutoOpenPdf";
     case DaisyChainSource::kLastActiveInstance:
       return "LastActiveInstance";
+    case DaisyChainSource::kBookmark:
+      return "Bookmark";
     case DaisyChainSource::kUnknown:
       return "Unknown";
   }

@@ -868,6 +868,8 @@ void GlicInstanceCoordinatorImpl::OnTabEvent(const GlicTabEvent& event) {
   MaybeDaisyChainNewTab(*creation_event);
 
   MaybeDaisyChainFromLinkClick(*creation_event);
+
+  MaybeDaisyChainFromBookmark(*creation_event);
 }
 
 void GlicInstanceCoordinatorImpl::MaybeDaisyChainFromLinkClick(
@@ -886,7 +888,28 @@ void GlicInstanceCoordinatorImpl::MaybeDaisyChainFromLinkClick(
     return;
   }
 
-  instance->MaybeDaisyChainToTab(event.opener, event.new_tab);
+  instance->MaybeDaisyChainToTab(event.opener, event.new_tab,
+                                 DaisyChainSource::kTabContents);
+}
+
+void GlicInstanceCoordinatorImpl::MaybeDaisyChainFromBookmark(
+    const TabCreationEvent& event) {
+  if (!base::FeatureList::IsEnabled(features::kGlicDaisyChainViaCoordinator)) {
+    return;
+  }
+
+  if (event.creation_type != TabCreationType::kFromBookmark || !event.old_tab ||
+      !event.new_tab) {
+    return;
+  }
+
+  auto* instance = GetInstanceImplForTab(event.old_tab);
+  if (!instance) {
+    return;
+  }
+
+  instance->MaybeDaisyChainToTab(event.old_tab, event.new_tab,
+                                 DaisyChainSource::kBookmark);
 }
 
 void GlicInstanceCoordinatorImpl::MaybeDaisyChainNewTab(

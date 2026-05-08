@@ -163,7 +163,8 @@ class GlicInstanceImpl : public GlicInstance,
   // Called when a new tab is created from a source tab that is bound to this
   // instance. This attempts to daisy chain the new tab to the same instance.
   void MaybeDaisyChainToTab(tabs::TabInterface* source_tab,
-                            tabs::TabInterface* target_tab);
+                            tabs::TabInterface* target_tab,
+                            DaisyChainSource source);
 
   // Closes the embedder identified by `key`.
   // NOTE: This method may result in the deletion of `this`.

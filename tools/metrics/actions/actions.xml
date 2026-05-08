@@ -193,6 +193,8 @@ should be able to be added at any place in this file.
   <variant name="" summary="aggregated"/>
   <variant name="ActorAddTab"
       summary="Daisy chaining initiated from Actor creating a new tab."/>
+  <variant name="Bookmark"
+      summary="Daisy chaining initiated from opening a bookmark."/>
   <variant name="GlicContents"
       summary="Daisy chaining initiated from clicking a link in the Glic Host
                UI."/>

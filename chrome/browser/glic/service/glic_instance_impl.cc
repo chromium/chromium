@@ -196,7 +196,8 @@ class GlicTabContentsObserver : public content::WebContentsObserver {
     tabs::TabInterface* source_tab = tabs::TabInterface::GetFromContents(
         content::WebContents::FromRenderFrameHost(source_render_frame_host));
 
-    instance_->MaybeDaisyChainToTab(source_tab, tab_to_bind);
+    instance_->MaybeDaisyChainToTab(source_tab, tab_to_bind,
+                                    DaisyChainSource::kTabContents);
   }
 
  private:
@@ -204,7 +205,8 @@ class GlicTabContentsObserver : public content::WebContentsObserver {
 };
 
 void GlicInstanceImpl::MaybeDaisyChainToTab(tabs::TabInterface* source_tab,
-                                            tabs::TabInterface* target_tab) {
+                                            tabs::TabInterface* target_tab,
+                                            DaisyChainSource source) {
   // Ideally we would like to unify this daisy chaining logic with what is in
   // `CreateTab`, but doing so would require a more involved plumbing change in
   // order to play nicely with detached mode.
@@ -227,12 +229,12 @@ void GlicInstanceImpl::MaybeDaisyChainToTab(tabs::TabInterface* source_tab,
     side_panel_options.pin_trigger = GlicPinTrigger::kDaisyChain;
     side_panel_options.prefer_peek = true;
     auto show_options = ShowOptions{side_panel_options};
-    instance_metrics().OnDaisyChain(DaisyChainSource::kTabContents,
+    instance_metrics().OnDaisyChain(source,
                                     /*success=*/true, target_tab, source_tab);
     Show(show_options);
   } else {
     // Record the failure.
-    instance_metrics().OnDaisyChain(DaisyChainSource::kTabContents,
+    instance_metrics().OnDaisyChain(source,
                                     /*success=*/false, target_tab, source_tab);
   }
 }
