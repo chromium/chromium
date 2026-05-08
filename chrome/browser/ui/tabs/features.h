@@ -21,6 +21,12 @@ BASE_DECLARE_FEATURE(kTabGroupHome);
 // to be broken crbug.com/413080225#comment8).
 BASE_DECLARE_FEATURE(kSessionRestoreShowThrobberOnVisible);
 
+// Allows split tabs to be arranged top/bottom.
+BASE_DECLARE_FEATURE(kSplitViewHorizontal);
+// When enabled, creating a new split tab through the context menu will open a
+// submenu to select the split's orientation.
+BASE_DECLARE_FEATURE_PARAM(bool, kSplitViewHorizontalDirectAccess);
+
 // Whether or not a split view should restore together.
 BASE_DECLARE_FEATURE(kSplitViewTabRestore);
 
