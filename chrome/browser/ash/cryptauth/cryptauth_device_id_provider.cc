@@ -4,22 +4,22 @@
 
 #include "chrome/browser/ash/cryptauth/cryptauth_device_id_provider.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/uuid.h"
-#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash::cryptauth_device_id {
 
 void RegisterLocalPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterStringPref(prefs::kCryptAuthDeviceId, std::string());
+  registry->RegisterStringPref(ash::prefs::kCryptAuthDeviceId, std::string());
 }
 
 std::string GetDeviceID(PrefService& local_state) {
-  std::string device_id = local_state.GetString(prefs::kCryptAuthDeviceId);
+  std::string device_id = local_state.GetString(ash::prefs::kCryptAuthDeviceId);
   if (device_id.empty()) {
     device_id = base::Uuid::GenerateRandomV4().AsLowercaseString();
-    local_state.SetString(prefs::kCryptAuthDeviceId, device_id);
+    local_state.SetString(ash::prefs::kCryptAuthDeviceId, device_id);
   }
   return device_id;
 }

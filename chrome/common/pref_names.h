@@ -2630,21 +2630,6 @@ inline constexpr char kSigninInterceptionEnabled[] =
 inline constexpr char kEchoCheckedOffers[] = "EchoCheckedOffers";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-// Device identifier used by CryptAuth stored in local state. This ID is
-// combined with a user ID before being registered with the CryptAuth server,
-// so it can't correlate users on the same device.
-// Note: This constant was previously specific to EasyUnlock, so the string
-//       constant contains "easy_unlock".
-inline constexpr char kCryptAuthDeviceId[] = "easy_unlock.device_id";
-
-// The most recently retrieved Instance ID and Instance ID token for the app ID,
-// "com.google.chrome.cryptauth", used by the CryptAuth client. These prefs are
-// used to track how often (if ever) the Instance ID and Instance ID token
-// rotate because CryptAuth assumes the Instance ID is static.
-inline constexpr char kCryptAuthInstanceId[] = "cryptauth.instance_id";
-inline constexpr char kCryptAuthInstanceIdToken[] =
-    "cryptauth.instance_id_token";
-
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 // Policy that indicates how to handle animated images.
 inline constexpr char kAnimationPolicy[] = "settings.a11y.animation_policy";

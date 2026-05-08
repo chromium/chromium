@@ -20,7 +20,6 @@
 #include "base/time/time.h"
 #include "base/version.h"
 #include "chrome/browser/ash/cryptauth/cryptauth_device_id_provider.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/network_type_pattern.h"
@@ -127,8 +126,8 @@ void LogInstanceIdTokenFetchRetries(int count) {
 // static
 void ClientAppMetadataProviderService::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
-  registry->RegisterStringPref(::prefs::kCryptAuthInstanceId, std::string());
-  registry->RegisterStringPref(::prefs::kCryptAuthInstanceIdToken,
+  registry->RegisterStringPref(ash::prefs::kCryptAuthInstanceId, std::string());
+  registry->RegisterStringPref(ash::prefs::kCryptAuthInstanceIdToken,
                                std::string());
 }
 
@@ -252,12 +251,12 @@ void ClientAppMetadataProviderService::OnInstanceIdFetched(
     const std::string& instance_id) {
   DCHECK(!instance_id.empty());
   std::string previous_instance_id =
-      pref_service_->GetString(::prefs::kCryptAuthInstanceId);
+      pref_service_->GetString(ash::prefs::kCryptAuthInstanceId);
   if (!previous_instance_id.empty()) {
     base::UmaHistogramBoolean("CryptAuth.InstanceId.DidInstanceIdChange",
                               previous_instance_id != instance_id);
   }
-  pref_service_->SetString(::prefs::kCryptAuthInstanceId, instance_id);
+  pref_service_->SetString(ash::prefs::kCryptAuthInstanceId, instance_id);
 
   GetInstanceId()->GetToken(
       device_sync::
@@ -307,12 +306,12 @@ void ClientAppMetadataProviderService::OnInstanceIdTokenFetched(
 
   DCHECK(!token.empty());
   std::string previous_instance_id_token =
-      pref_service_->GetString(::prefs::kCryptAuthInstanceIdToken);
+      pref_service_->GetString(ash::prefs::kCryptAuthInstanceIdToken);
   if (!previous_instance_id_token.empty()) {
     base::UmaHistogramBoolean("CryptAuth.InstanceId.DidInstanceIdTokenChange",
                               previous_instance_id_token != token);
   }
-  pref_service_->SetString(::prefs::kCryptAuthInstanceIdToken, token);
+  pref_service_->SetString(ash::prefs::kCryptAuthInstanceIdToken, token);
 
   cryptauthv2::ClientAppMetadata metadata;
 
