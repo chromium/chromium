@@ -2634,6 +2634,9 @@ const FeatureEntry::FeatureParam
 
 const FeatureEntry::FeatureParam kNewTabPageCustomizationV2_EnableLogs[] = {
     {"enable_logs", "true"}};
+const FeatureEntry::FeatureParam kNewTabPageCustomizationV2_ShowPromo[] = {
+    {"show_promo", "true"},
+    {"show_logo_and_search_box", "true"}};
 
 const FeatureEntry::FeatureVariation kNewTabPageCustomizationV2Variations[] = {
     {"Show color picker", kNewTabPageCustomizationV2_ShowColorPicker, nullptr},
@@ -2641,7 +2644,9 @@ const FeatureEntry::FeatureVariation kNewTabPageCustomizationV2Variations[] = {
      kNewTabPageCustomizationV2_DailyRefreshThresholdMs, nullptr},
     {"Show logo and search box in the preview dialog",
      kNewTabPageCustomizationV2_ShowLogoAndSearchBox, nullptr},
-    {"Enable logs", kNewTabPageCustomizationV2_EnableLogs, nullptr}};
+    {"Enable logs", kNewTabPageCustomizationV2_EnableLogs, nullptr},
+    {"Show promo and logo/search box in the preview dialog",
+     kNewTabPageCustomizationV2_ShowPromo, nullptr}};
 
 const FeatureEntry::FeatureParam
     kAndroidAppIntegrationMultiDataSource_SkipDeviceCheck[] = {

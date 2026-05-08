@@ -263,6 +263,9 @@ constexpr base::FeatureParam<bool> kEnableRecentTabsTip{
     /*default_value=*/true};
 
 BASE_FEATURE(kNewTabPageCustomizationV2, base::FEATURE_DISABLED_BY_DEFAULT);
+constexpr base::FeatureParam<bool> kNewTabPageCustomizationV2ShowPromo{
+    &kNewTabPageCustomizationV2, "show_promo",
+    /*default_value=*/false};
 
 constexpr base::FeatureParam<int> kNewTabPageCustomizationV2IphMaxImpression{
     &kNewTabPageCustomizationV2, "iph_max_impression",
