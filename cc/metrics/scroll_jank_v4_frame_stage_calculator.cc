@@ -13,7 +13,9 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/rand_util.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/base/features.h"
@@ -405,6 +407,30 @@ class ScrollIdBasedCalculator : public ScrollJankV4FrameStageCalculator {
           eligible_end_max_scroll_id] =
         CalculateFrameScrollEventBoundsAndSetResultId(events_metrics,
                                                       result_id);
+
+    // If `event_metrics` contains at least one GSU (eligible or ineligible),
+    // emit the "Event.ScrollJank.FrameStageScrollIdBasedCalculationIssues" UMA
+    // histogram with 1% probability.
+    if ((has_ineligible_updates ||
+         eligible_update_scroll_id_range.has_value()) &&
+        base::ShouldRecordSubsampledMetric(0.01)) {
+      UMA_HISTOGRAM_ENUMERATION(
+          "Event.ScrollJank.FrameStageScrollIdBasedCalculationIssues", [&] {
+            bool overlapping_scrolls =
+                eligible_update_scroll_id_range.has_value() &&
+                eligible_update_scroll_id_range->max >
+                    eligible_update_scroll_id_range->min;
+            if (overlapping_scrolls) {
+              return has_ineligible_updates
+                         ? ScrollIdBasedCalculationIssues::
+                               kOverlappingScrollsAndLateUpdate
+                         : ScrollIdBasedCalculationIssues::kOverlappingScrolls;
+            }
+            return has_ineligible_updates
+                       ? ScrollIdBasedCalculationIssues::kLateUpdate
+                       : ScrollIdBasedCalculationIssues::kNoIssues;
+          }());
+    }
 
     if (has_ineligible_updates) {
       TRACE_EVENT("input",

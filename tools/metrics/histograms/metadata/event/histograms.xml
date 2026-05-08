@@ -749,6 +749,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Event.ScrollJank.FrameStageScrollIdBasedCalculationIssues"
+    enum="FrameStageScrollIdBasedCalculationIssues" expires_after="2026-11-06">
+  <owner>petrcermak@chromium.org</owner>
+  <owner>kartarsingh@google.com</owner>
+  <owner>jonross@chromium.org</owner>
+  <owner>woa-performance-team@google.com</owner>
+  <summary>
+    The issues encountered by the scroll-ID-based implementation of
+    `cc::ScrollJankV4FrameStageCalculator` when processing scroll events in a
+    single frame. Only emitted for frames which contain at least one GSU.
+  </summary>
+</histogram>
+
 <histogram name="Event.ScrollJank.MissedVsyncs.PerFrame" units="counts"
     expires_after="2026-09-06">
   <owner>kartarsingh@google.com</owner>

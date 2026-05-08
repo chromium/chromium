@@ -7,6 +7,8 @@
 #include <cstdint>
 #include <optional>
 
+#include "base/rand_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "cc/base/features.h"
@@ -537,6 +539,9 @@ class ScrollJankV4FrameStageScrollIdBasedCalculatorTest
   ScrollJankV4FrameStageScrollIdBasedCalculatorTest()
       : ScrollJankV4FrameStageCalculatorTest(
             /* use_scroll_id_to_calculate_stages= */ true) {}
+
+ protected:
+  base::MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample_;
 };
 
 TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest,
@@ -550,6 +555,7 @@ TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest, RegularScrolls) {
   // Frame 1: 1st GSU of scroll 1.
   base::TimeTicks scroll1_id = MillisecondsTicks(100);
   {
+    base::HistogramTester histogram_tester;
     EventMetrics::List events_metrics;
     events_metrics.push_back(metrics_creator_.FirstGestureScrollUpdateBuilder()
                                  .SetTimestamp(MillisecondsTicks(105))
@@ -573,10 +579,16 @@ TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest, RegularScrolls) {
                      .first_input_trace_id = TraceId(1)},
                 /* synthetic= */ std::nullopt)}));
     EXPECT_THAT(events_metrics, AllHaveResultId(1001));
+    histogram_tester.ExpectUniqueSample(
+        "Event.ScrollJank.FrameStageScrollIdBasedCalculationIssues",
+        ScrollJankV4FrameStageCalculator::ScrollIdBasedCalculationIssues::
+            kNoIssues,
+        1);
   }
 
   // Frame 2: 2nd GSU of scroll 1.
   {
+    base::HistogramTester histogram_tester;
     EventMetrics::List events_metrics;
     events_metrics.push_back(metrics_creator_.GestureScrollUpdateBuilder()
                                  .SetTimestamp(MillisecondsTicks(120))
@@ -597,11 +609,17 @@ TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest, RegularScrolls) {
                          .first_input_trace_id = TraceId(2)},
                     /* synthetic= */ std::nullopt)}));
     EXPECT_THAT(events_metrics, AllHaveResultId(1002));
+    histogram_tester.ExpectUniqueSample(
+        "Event.ScrollJank.FrameStageScrollIdBasedCalculationIssues",
+        ScrollJankV4FrameStageCalculator::ScrollIdBasedCalculationIssues::
+            kNoIssues,
+        1);
   }
 
   // Frame 3: GSE of scroll 1 and 1st GSU of scroll 2
   base::TimeTicks scroll2_id = MillisecondsTicks(130);
   {
+    base::HistogramTester histogram_tester;
     EventMetrics::List events_metrics;
     events_metrics.push_back(metrics_creator_.GestureScrollEndBuilder()
                                  .SetTimestamp(MillisecondsTicks(135))
@@ -631,10 +649,16 @@ TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest, RegularScrolls) {
                         },
                         /* synthetic= */ std::nullopt)}));
     EXPECT_THAT(events_metrics, AllHaveResultId(1003));
+    histogram_tester.ExpectUniqueSample(
+        "Event.ScrollJank.FrameStageScrollIdBasedCalculationIssues",
+        ScrollJankV4FrameStageCalculator::ScrollIdBasedCalculationIssues::
+            kNoIssues,
+        1);
   }
 
   // Frame 4: no scroll events.
   {
+    base::HistogramTester histogram_tester;
     EventMetrics::List events_metrics;
     events_metrics.push_back(
         metrics_creator_.CreateEventBuilder(ui::EventType::kTouchMoved)
@@ -643,10 +667,13 @@ TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest, RegularScrolls) {
     auto stages =
         calculator_->CalculateStages(events_metrics, /* result_id= */ 1004);
     EXPECT_THAT(stages, IsEmpty());
+    histogram_tester.ExpectTotalCount(
+        "Event.ScrollJank.FrameStageScrollIdBasedCalculationIssues", 0);
   }
 
   // Frame 5: 2nd-3rd GSU of scroll 2.
   {
+    base::HistogramTester histogram_tester;
     EventMetrics::List events_metrics;
     events_metrics.push_back(metrics_creator_.GestureScrollUpdateBuilder()
                                  .SetTimestamp(MillisecondsTicks(155))
@@ -674,10 +701,16 @@ TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest, RegularScrolls) {
                          .first_input_trace_id = TraceId(4)},
                     /* synthetic= */ std::nullopt)}));
     EXPECT_THAT(events_metrics, AllHaveResultId(1005));
+    histogram_tester.ExpectUniqueSample(
+        "Event.ScrollJank.FrameStageScrollIdBasedCalculationIssues",
+        ScrollJankV4FrameStageCalculator::ScrollIdBasedCalculationIssues::
+            kNoIssues,
+        1);
   }
 
   // Frame 6: 4th GSU and GSE of scroll 2
   {
+    base::HistogramTester histogram_tester;
     EventMetrics::List events_metrics;
     events_metrics.push_back(metrics_creator_.GestureScrollUpdateBuilder()
                                  .SetTimestamp(MillisecondsTicks(175))
@@ -706,10 +739,16 @@ TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest, RegularScrolls) {
                         /* synthetic= */ std::nullopt)},
                     ScrollJankV4Frame::Stage{ScrollEnd{}}));
     EXPECT_THAT(events_metrics, AllHaveResultId(1006));
+    histogram_tester.ExpectUniqueSample(
+        "Event.ScrollJank.FrameStageScrollIdBasedCalculationIssues",
+        ScrollJankV4FrameStageCalculator::ScrollIdBasedCalculationIssues::
+            kNoIssues,
+        1);
   }
 
   // Frame 7: no scroll events.
   {
+    base::HistogramTester histogram_tester;
     EventMetrics::List events_metrics;
     events_metrics.push_back(
         metrics_creator_.CreateEventBuilder(ui::EventType::kGestureTap)
@@ -718,11 +757,14 @@ TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest, RegularScrolls) {
     auto stages =
         calculator_->CalculateStages(events_metrics, /* result_id= */ 1007);
     EXPECT_THAT(stages, IsEmpty());
+    histogram_tester.ExpectTotalCount(
+        "Event.ScrollJank.FrameStageScrollIdBasedCalculationIssues", 0);
   }
 
   // Frame 8: 1st GSU of scroll 3.
   base::TimeTicks scroll3_id = MillisecondsTicks(195);
   {
+    base::HistogramTester histogram_tester;
     EventMetrics::List events_metrics;
     events_metrics.push_back(metrics_creator_.FirstGestureScrollUpdateBuilder()
                                  .SetTimestamp(MillisecondsTicks(205))
@@ -746,10 +788,16 @@ TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest, RegularScrolls) {
                      .first_input_trace_id = TraceId(7)},
                 /* synthetic= */ std::nullopt)}));
     EXPECT_THAT(events_metrics, AllHaveResultId(1008));
+    histogram_tester.ExpectUniqueSample(
+        "Event.ScrollJank.FrameStageScrollIdBasedCalculationIssues",
+        ScrollJankV4FrameStageCalculator::ScrollIdBasedCalculationIssues::
+            kNoIssues,
+        1);
   }
 
   // Frame 9: 2nd GSU of scroll 3.
   {
+    base::HistogramTester histogram_tester;
     EventMetrics::List events_metrics;
     events_metrics.push_back(metrics_creator_.GestureScrollUpdateBuilder()
                                  .SetTimestamp(MillisecondsTicks(220))
@@ -770,10 +818,16 @@ TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest, RegularScrolls) {
                          .first_input_trace_id = TraceId(8)},
                     /* synthetic= */ std::nullopt)}));
     EXPECT_THAT(events_metrics, AllHaveResultId(1009));
+    histogram_tester.ExpectUniqueSample(
+        "Event.ScrollJank.FrameStageScrollIdBasedCalculationIssues",
+        ScrollJankV4FrameStageCalculator::ScrollIdBasedCalculationIssues::
+            kNoIssues,
+        1);
   }
 
   // Frame 10: Standalone GSE of scroll 3.
   {
+    base::HistogramTester histogram_tester;
     EventMetrics::List events_metrics;
     events_metrics.push_back(metrics_creator_.GestureScrollEndBuilder()
                                  .SetTimestamp(MillisecondsTicks(235))
@@ -783,6 +837,8 @@ TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest, RegularScrolls) {
         calculator_->CalculateStages(events_metrics, /* result_id= */ 1010);
     EXPECT_THAT(stages, ElementsAre(ScrollJankV4Frame::Stage{ScrollEnd{}}));
     EXPECT_THAT(events_metrics, AllHaveResultId(1010));
+    histogram_tester.ExpectTotalCount(
+        "Event.ScrollJank.FrameStageScrollIdBasedCalculationIssues", 0);
   }
 }
 
@@ -790,6 +846,7 @@ TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest, OverlappingScrolls) {
   // Frame 1: 1st GSU of scroll 1.
   base::TimeTicks scroll1_id = MillisecondsTicks(100);
   {
+    base::HistogramTester histogram_tester;
     EventMetrics::List events_metrics;
     events_metrics.push_back(metrics_creator_.FirstGestureScrollUpdateBuilder()
                                  .SetTimestamp(MillisecondsTicks(105))
@@ -813,12 +870,18 @@ TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest, OverlappingScrolls) {
                      .first_input_trace_id = TraceId(1)},
                 /* synthetic= */ std::nullopt)}));
     EXPECT_THAT(events_metrics, AllHaveResultId(1001));
+    histogram_tester.ExpectBucketCount(
+        "Event.ScrollJank.FrameStageScrollIdBasedCalculationIssues",
+        ScrollJankV4FrameStageCalculator::ScrollIdBasedCalculationIssues::
+            kNoIssues,
+        1);
   }
 
   // Frame 2: 2nd GSU of scroll 1 and 1st GSU of scroll 2. The calculator should
   // count the frame towards scroll 1 and end scroll 1.
   base::TimeTicks scroll2_id = MillisecondsTicks(115);
   {
+    base::HistogramTester histogram_tester;
     EventMetrics::List events_metrics;
     events_metrics.push_back(metrics_creator_.GestureScrollUpdateBuilder()
                                  .SetTimestamp(MillisecondsTicks(120))
@@ -850,11 +913,17 @@ TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest, OverlappingScrolls) {
                         /* synthetic= */ std::nullopt)},
                     ScrollJankV4Frame::Stage{ScrollEnd{}}));
     EXPECT_THAT(events_metrics, AllHaveResultId(1002));
+    histogram_tester.ExpectBucketCount(
+        "Event.ScrollJank.FrameStageScrollIdBasedCalculationIssues",
+        ScrollJankV4FrameStageCalculator::ScrollIdBasedCalculationIssues::
+            kOverlappingScrolls,
+        1);
   }
 
   // Frame 3: 2nd GSU of scroll 2. The calculator should treat this as the first
   // frame of scroll 2.
   {
+    base::HistogramTester histogram_tester;
     EventMetrics::List events_metrics;
     events_metrics.push_back(metrics_creator_.GestureScrollUpdateBuilder()
                                  .SetTimestamp(MillisecondsTicks(135))
@@ -878,6 +947,11 @@ TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest, OverlappingScrolls) {
                      .first_input_trace_id = TraceId(4)},
                 /* synthetic= */ std::nullopt)}));
     EXPECT_THAT(events_metrics, AllHaveResultId(1003));
+    histogram_tester.ExpectUniqueSample(
+        "Event.ScrollJank.FrameStageScrollIdBasedCalculationIssues",
+        ScrollJankV4FrameStageCalculator::ScrollIdBasedCalculationIssues::
+            kNoIssues,
+        1);
   }
 }
 
@@ -886,6 +960,7 @@ TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest,
   // Frame 1: 1st GSU and GSE of scroll 1.
   base::TimeTicks scroll1_id = MillisecondsTicks(100);
   {
+    base::HistogramTester histogram_tester;
     EventMetrics::List events_metrics;
     events_metrics.push_back(metrics_creator_.FirstGestureScrollUpdateBuilder()
                                  .SetTimestamp(MillisecondsTicks(105))
@@ -914,11 +989,17 @@ TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest,
                 /* synthetic= */ std::nullopt)},
             ScrollJankV4Frame::Stage{ScrollEnd{}}));
     EXPECT_THAT(events_metrics, AllHaveResultId(1001));
+    histogram_tester.ExpectBucketCount(
+        "Event.ScrollJank.FrameStageScrollIdBasedCalculationIssues",
+        ScrollJankV4FrameStageCalculator::ScrollIdBasedCalculationIssues::
+            kNoIssues,
+        1);
   }
 
   // Frame 2: 2nd GSU for scroll 1. The calculator should ignore this late GSU
   // because it's already seen a GSE for the same scroll.
   {
+    base::HistogramTester histogram_tester;
     EventMetrics::List events_metrics;
     events_metrics.push_back(metrics_creator_.GestureScrollUpdateBuilder()
                                  .SetTimestamp(MillisecondsTicks(120))
@@ -931,6 +1012,11 @@ TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest,
         calculator_->CalculateStages(events_metrics, /* result_id= */ 1002);
     EXPECT_THAT(stages, IsEmpty());
     EXPECT_THAT(events_metrics, AllHaveResultId(1002));
+    histogram_tester.ExpectBucketCount(
+        "Event.ScrollJank.FrameStageScrollIdBasedCalculationIssues",
+        ScrollJankV4FrameStageCalculator::ScrollIdBasedCalculationIssues::
+            kLateUpdate,
+        1);
   }
 }
 
@@ -939,6 +1025,7 @@ TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest,
   // Frame 1: 1st GSU for scroll 1.
   base::TimeTicks scroll1_id = MillisecondsTicks(100);
   {
+    base::HistogramTester histogram_tester;
     EventMetrics::List events_metrics;
     events_metrics.push_back(metrics_creator_.FirstGestureScrollUpdateBuilder()
                                  .SetTimestamp(MillisecondsTicks(105))
@@ -962,11 +1049,17 @@ TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest,
                      .first_input_trace_id = TraceId(1)},
                 /* synthetic= */ std::nullopt)}));
     EXPECT_THAT(events_metrics, AllHaveResultId(1001));
+    histogram_tester.ExpectUniqueSample(
+        "Event.ScrollJank.FrameStageScrollIdBasedCalculationIssues",
+        ScrollJankV4FrameStageCalculator::ScrollIdBasedCalculationIssues::
+            kNoIssues,
+        1);
   }
 
   // Frame 2: 1st GSU for scroll 2.
   base::TimeTicks scroll2_id = MillisecondsTicks(110);
   {
+    base::HistogramTester histogram_tester;
     EventMetrics::List events_metrics;
     events_metrics.push_back(metrics_creator_.FirstGestureScrollUpdateBuilder()
                                  .SetTimestamp(MillisecondsTicks(115))
@@ -991,11 +1084,17 @@ TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest,
                      .first_input_trace_id = TraceId(2)},
                 /* synthetic= */ std::nullopt)}));
     EXPECT_THAT(events_metrics, AllHaveResultId(1002));
+    histogram_tester.ExpectUniqueSample(
+        "Event.ScrollJank.FrameStageScrollIdBasedCalculationIssues",
+        ScrollJankV4FrameStageCalculator::ScrollIdBasedCalculationIssues::
+            kNoIssues,
+        1);
   }
 
   // Frame 3: 2nd GSU for scroll 1. The calculator should IGNORE this late GSU
   // because it's already seen a GSU for the next scroll.
   {
+    base::HistogramTester histogram_tester;
     EventMetrics::List events_metrics;
     events_metrics.push_back(metrics_creator_.GestureScrollUpdateBuilder()
                                  .SetTimestamp(MillisecondsTicks(120))
@@ -1008,11 +1107,17 @@ TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest,
         calculator_->CalculateStages(events_metrics, /* result_id= */ 1003);
     EXPECT_THAT(stages, IsEmpty());
     EXPECT_THAT(events_metrics, AllHaveResultId(1003));
+    histogram_tester.ExpectUniqueSample(
+        "Event.ScrollJank.FrameStageScrollIdBasedCalculationIssues",
+        ScrollJankV4FrameStageCalculator::ScrollIdBasedCalculationIssues::
+            kLateUpdate,
+        1);
   }
 
   // Frame 4: 2nd GSU for scroll 2. The calculator should process this GSU
   // because scroll 2 hasn't ended yet.
   {
+    base::HistogramTester histogram_tester;
     EventMetrics::List events_metrics;
     events_metrics.push_back(metrics_creator_.GestureScrollUpdateBuilder()
                                  .SetTimestamp(MillisecondsTicks(125))
@@ -1033,6 +1138,11 @@ TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest,
                          .first_input_trace_id = TraceId(4)},
                     /* synthetic= */ std::nullopt)}));
     EXPECT_THAT(events_metrics, AllHaveResultId(1004));
+    histogram_tester.ExpectUniqueSample(
+        "Event.ScrollJank.FrameStageScrollIdBasedCalculationIssues",
+        ScrollJankV4FrameStageCalculator::ScrollIdBasedCalculationIssues::
+            kNoIssues,
+        1);
   }
 }
 
@@ -1041,6 +1151,7 @@ TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest,
   // Frame 1: 1st GSU of scroll 1.
   base::TimeTicks scroll1_id = MillisecondsTicks(100);
   {
+    base::HistogramTester histogram_tester;
     EventMetrics::List events_metrics;
     events_metrics.push_back(metrics_creator_.FirstGestureScrollUpdateBuilder()
                                  .SetTimestamp(MillisecondsTicks(105))
@@ -1064,11 +1175,17 @@ TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest,
                      .first_input_trace_id = TraceId(1)},
                 /* synthetic= */ std::nullopt)}));
     EXPECT_THAT(events_metrics, AllHaveResultId(1001));
+    histogram_tester.ExpectUniqueSample(
+        "Event.ScrollJank.FrameStageScrollIdBasedCalculationIssues",
+        ScrollJankV4FrameStageCalculator::ScrollIdBasedCalculationIssues::
+            kNoIssues,
+        1);
   }
 
   // Frame 2: 1st GSU of scroll 2.
   base::TimeTicks scroll2_id = MillisecondsTicks(110);
   {
+    base::HistogramTester histogram_tester;
     EventMetrics::List events_metrics;
     events_metrics.push_back(metrics_creator_.FirstGestureScrollUpdateBuilder()
                                  .SetTimestamp(MillisecondsTicks(115))
@@ -1093,11 +1210,17 @@ TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest,
                      .first_input_trace_id = TraceId(2)},
                 /* synthetic= */ std::nullopt)}));
     EXPECT_THAT(events_metrics, AllHaveResultId(1002));
+    histogram_tester.ExpectUniqueSample(
+        "Event.ScrollJank.FrameStageScrollIdBasedCalculationIssues",
+        ScrollJankV4FrameStageCalculator::ScrollIdBasedCalculationIssues::
+            kNoIssues,
+        1);
   }
 
   // Frame 3: GSE for scroll 1. The calculator should IGNORE this late GSE
   // because it's already seen a GSU for the next scroll.
   {
+    base::HistogramTester histogram_tester;
     EventMetrics::List events_metrics;
     events_metrics.push_back(metrics_creator_.GestureScrollEndBuilder()
                                  .SetTimestamp(MillisecondsTicks(120))
@@ -1107,11 +1230,14 @@ TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest,
         calculator_->CalculateStages(events_metrics, /* result_id= */ 1003);
     EXPECT_THAT(stages, IsEmpty());
     EXPECT_THAT(events_metrics, AllHaveResultId(1003));
+    histogram_tester.ExpectTotalCount(
+        "Event.ScrollJank.FrameStageScrollIdBasedCalculationIssues", 0);
   }
 
   // Frame 4: 2nd GSU for scroll 2. The calculator should process this GSU
   // because scroll 2 hasn't ended yet.
   {
+    base::HistogramTester histogram_tester;
     EventMetrics::List events_metrics;
     events_metrics.push_back(metrics_creator_.GestureScrollUpdateBuilder()
                                  .SetTimestamp(MillisecondsTicks(125))
@@ -1132,6 +1258,131 @@ TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest,
                          .first_input_trace_id = TraceId(4)},
                     /* synthetic= */ std::nullopt)}));
     EXPECT_THAT(events_metrics, AllHaveResultId(1004));
+    histogram_tester.ExpectUniqueSample(
+        "Event.ScrollJank.FrameStageScrollIdBasedCalculationIssues",
+        ScrollJankV4FrameStageCalculator::ScrollIdBasedCalculationIssues::
+            kNoIssues,
+        1);
+  }
+}
+
+TEST_F(ScrollJankV4FrameStageScrollIdBasedCalculatorTest,
+       OverlappingScrollsAndLateUpdates) {
+  // Frame 1: 1st GSU of scroll 1.
+  base::TimeTicks scroll1_id = MillisecondsTicks(100);
+  {
+    base::HistogramTester histogram_tester;
+    EventMetrics::List events_metrics;
+    events_metrics.push_back(metrics_creator_.FirstGestureScrollUpdateBuilder()
+                                 .SetTimestamp(MillisecondsTicks(105))
+                                 .SetScrollBeginArrivalTimestamp(scroll1_id)
+                                 .SetDelta(10)
+                                 .SetIsSynthetic(false)
+                                 .SetTraceId(TraceId(1))
+                                 .Build());
+    auto stages =
+        calculator_->CalculateStages(events_metrics, /* result_id= */ 1001);
+    EXPECT_THAT(
+        stages,
+        ElementsAre(
+            ScrollJankV4Frame::Stage{ScrollStart{}},
+            ScrollJankV4Frame::Stage{ScrollUpdates(
+                Real{.first_input_generation_ts = MillisecondsTicks(105),
+                     .last_input_generation_ts = MillisecondsTicks(105),
+                     .has_inertial_input = false,
+                     .abs_total_raw_delta_pixels = 10,
+                     .max_abs_inertial_raw_delta_pixels = 0,
+                     .first_input_trace_id = TraceId(1)},
+                /* synthetic= */ std::nullopt)}));
+    EXPECT_THAT(events_metrics, AllHaveResultId(1001));
+    histogram_tester.ExpectUniqueSample(
+        "Event.ScrollJank.FrameStageScrollIdBasedCalculationIssues",
+        ScrollJankV4FrameStageCalculator::ScrollIdBasedCalculationIssues::
+            kNoIssues,
+        1);
+  }
+
+  // Frame 2: 1st GSU of scroll 2.
+  base::TimeTicks scroll2_id = MillisecondsTicks(110);
+  {
+    base::HistogramTester histogram_tester;
+    EventMetrics::List events_metrics;
+    events_metrics.push_back(metrics_creator_.FirstGestureScrollUpdateBuilder()
+                                 .SetTimestamp(MillisecondsTicks(115))
+                                 .SetScrollBeginArrivalTimestamp(scroll2_id)
+                                 .SetDelta(20)
+                                 .SetIsSynthetic(false)
+                                 .SetTraceId(TraceId(2))
+                                 .Build());
+    auto stages =
+        calculator_->CalculateStages(events_metrics, /* result_id= */ 1002);
+    EXPECT_THAT(
+        stages,
+        ElementsAre(
+            ScrollJankV4Frame::Stage{ScrollEnd{}},
+            ScrollJankV4Frame::Stage{ScrollStart{}},
+            ScrollJankV4Frame::Stage{ScrollUpdates(
+                Real{.first_input_generation_ts = MillisecondsTicks(115),
+                     .last_input_generation_ts = MillisecondsTicks(115),
+                     .has_inertial_input = false,
+                     .abs_total_raw_delta_pixels = 20,
+                     .max_abs_inertial_raw_delta_pixels = 0,
+                     .first_input_trace_id = TraceId(2)},
+                /* synthetic= */ std::nullopt)}));
+    EXPECT_THAT(events_metrics, AllHaveResultId(1002));
+    histogram_tester.ExpectUniqueSample(
+        "Event.ScrollJank.FrameStageScrollIdBasedCalculationIssues",
+        ScrollJankV4FrameStageCalculator::ScrollIdBasedCalculationIssues::
+            kNoIssues,
+        1);
+  }
+
+  // Frame 3: 2nd GSU of scroll 1, 2nd GSU of scroll 2, and 1st GSU of scroll3.
+  base::TimeTicks scroll3_id = MillisecondsTicks(120);
+  {
+    base::HistogramTester histogram_tester;
+    EventMetrics::List events_metrics;
+    events_metrics.push_back(metrics_creator_.GestureScrollUpdateBuilder()
+                                 .SetTimestamp(MillisecondsTicks(125))
+                                 .SetScrollBeginArrivalTimestamp(scroll1_id)
+                                 .SetDelta(30)
+                                 .SetIsSynthetic(false)
+                                 .SetTraceId(TraceId(3))
+                                 .Build());
+    events_metrics.push_back(metrics_creator_.GestureScrollUpdateBuilder()
+                                 .SetTimestamp(MillisecondsTicks(130))
+                                 .SetScrollBeginArrivalTimestamp(scroll2_id)
+                                 .SetDelta(40)
+                                 .SetIsSynthetic(false)
+                                 .SetTraceId(TraceId(4))
+                                 .Build());
+    events_metrics.push_back(metrics_creator_.FirstGestureScrollUpdateBuilder()
+                                 .SetTimestamp(MillisecondsTicks(135))
+                                 .SetScrollBeginArrivalTimestamp(scroll3_id)
+                                 .SetDelta(50)
+                                 .SetIsSynthetic(false)
+                                 .SetTraceId(TraceId(5))
+                                 .Build());
+    auto stages =
+        calculator_->CalculateStages(events_metrics, /* result_id= */ 1003);
+    EXPECT_THAT(
+        stages,
+        ElementsAre(
+            ScrollJankV4Frame::Stage{ScrollUpdates(
+                Real{.first_input_generation_ts = MillisecondsTicks(130),
+                     .last_input_generation_ts = MillisecondsTicks(130),
+                     .has_inertial_input = false,
+                     .abs_total_raw_delta_pixels = 40,
+                     .max_abs_inertial_raw_delta_pixels = 0,
+                     .first_input_trace_id = TraceId(4)},
+                /* synthetic= */ std::nullopt)},
+            ScrollJankV4Frame::Stage{ScrollEnd{}}));
+    EXPECT_THAT(events_metrics, AllHaveResultId(1003));
+    histogram_tester.ExpectBucketCount(
+        "Event.ScrollJank.FrameStageScrollIdBasedCalculationIssues",
+        ScrollJankV4FrameStageCalculator::ScrollIdBasedCalculationIssues::
+            kOverlappingScrollsAndLateUpdate,
+        1);
   }
 }
 

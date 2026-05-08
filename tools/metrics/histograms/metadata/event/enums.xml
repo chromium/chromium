@@ -284,6 +284,31 @@ chromium-metrics-reviews@google.com.
       label="Forced Non-Blocking Due to Unresponsive Main Thread (deprecated)"/>
 </enum>
 
+<!-- LINT.IfChange(FrameStageScrollIdBasedCalculationIssues) -->
+
+<enum name="FrameStageScrollIdBasedCalculationIssues">
+  <summary>
+    The issues encountered by the scroll-ID-based implementation of
+    `cc::ScrollJankV4FrameStageCalculator` when processing scroll events in a
+    single frame. Only emitted for frames which contain at least one GSU.
+  </summary>
+  <int value="0" label="No issues">
+    The frame only contained eligible scroll updates from at most one scroll.
+  </int>
+  <int value="1" label="Overlapping scrolls">
+    The frame contained eligible scroll updates from more than one scroll.
+  </int>
+  <int value="2" label="Late update">
+    The frame contained scroll updates that the calculator ignored because they
+    arrived after the corresponding scroll has already ended.
+  </int>
+  <int value="3" label="Overlapping scrolls and late update">
+    The frame contained both overlapping scrolls and late updates.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//cc/metrics/scroll_jank_v4_frame_stage_calculator.h:ScrollIdBasedCalculationIssues) -->
+
 <enum name="MotionEventToolType">
   <summary>The type of tool that triggers a pointer-type MotionEvent.</summary>
   <int value="0" label="Unknown">Unknown tool type.</int>
