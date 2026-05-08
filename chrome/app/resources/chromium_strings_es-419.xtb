@@ -355,6 +355,7 @@
 <translation id="4724676981607797757">No se pudo completar la instalación debido a un error de protocolo no compatible.</translation>
 <translation id="4746050847053251315">¿Deseas salir de Chromium de todos modos?</translation>
 <translation id="4748217263233248895">Se acaba de instalar una actualización de seguridad especial para Chromium. Reinícialo ahora (se restablecerán tus pestañas).</translation>
+<translation id="4759645701210484457">Preguntarle a Chromium</translation>
 <translation id="4771701986670315895">No lo visitaste recientemente. Chromium quitó los permisos de <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="COUNT" /> más.</translation>
 <translation id="4788777615168560705">Chromium no puede revisar las contraseñas. Vuelve a intentarlo dentro de 24 horas o <ph name="BEGIN_LINK" />revisa las contraseñas en tu Cuenta de Google<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">Se usará el mismo corrector ortográfico que se emplea en la Búsqueda de Google. El texto que escribes en el navegador se envía a Google. Puedes modificar este comportamiento en la configuración en cualquier momento.</translation>
@@ -521,6 +522,7 @@
 <translation id="6676384891291319759">Acceder a Internet</translation>
 <translation id="668175097507315160">Chromium OS no pudo sincronizar los datos porque se produjo un error de acceso.</translation>
 <translation id="6691132793308828750">Quitar los datos de esta app de Chromium</translation>
+<translation id="6692797197837897398">Chromium te otorga más control sobre los anuncios que ves y limita la información que pueden obtener los sitios sobre ti cuando te muestran anuncios personalizados</translation>
 <translation id="6709350901466051922">Chromium necesita permiso de acceso al micrófono para este sitio.</translation>
 <translation id="6712881677154121168">Error de descarga: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6717134281241384636">Tu perfil no se puede utilizar porque proviene de una versión más actualizada de Chromium. Es posible que algunas características no estén disponibles. Especifica un directorio de perfil diferente o utiliza una versión más reciente de Chromium.</translation>

@@ -357,6 +357,7 @@
 <translation id="4724676981607797757">A telepítés nem támogatott protokoll hiba miatt nem sikerült.</translation>
 <translation id="4746050847053251315">Biztosan kilép a Chromiumból?</translation>
 <translation id="4748217263233248895">A rendszer egy speciális biztonsági frissítést alkalmazott a Chromiumon. Indítsa újra a számítógépet, a lapokat majd mi visszaállítjuk.</translation>
+<translation id="4759645701210484457">Kérdezzen a Chromiumtól</translation>
 <translation id="4771701986670315895">Nem látogatta meg mostanában. A Chromium eltávolította a következőket: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> és további <ph name="COUNT" />.</translation>
 <translation id="4788777615168560705">A Chromium nem tudja ellenőrizni a jelszavait. Próbálja újra 24 óra múlva, vagy <ph name="BEGIN_LINK" />ellenőrizze jelszavait a Google-fiókjában<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">A szolgáltatás ugyanazt a helyesírás-ellenőrzést használja, mint a Google Kereső. A begépelt szöveget a böngésző elküldi a Google-nak. A beállítások között ezt bármikor módosíthatja.</translation>
@@ -523,6 +524,7 @@
 <translation id="6676384891291319759">Internetelérés</translation>
 <translation id="668175097507315160">A ChromiumOS egy bejelentkezési hiba miatt nem tudta szinkronizálni az adatokat.</translation>
 <translation id="6691132793308828750">Az alkalmazás adatainak eltávolítása a Chromiumból</translation>
+<translation id="6692797197837897398">A Chromium nagyobb irányítást ad afelett, hogy milyen hirdetések jelenjenek meg Önnek, és korlátozza, hogy mely webhelyek tudhatnak meg Önről információkat, amikor személyre szabott hirdetéseket jelenítenek meg.</translation>
 <translation id="6709350901466051922">A Chromiumnak mikrofonhasználati engedélyre van szüksége ehhez a webhelyhez</translation>
 <translation id="6712881677154121168">Letöltési hiba: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6717134281241384636">A profilja nem használható, mert az a Chromium egy újabb verziójából származik. Előfordulhat, hogy egyes funkciók nem érhetők el. Kérjük, adjon meg egy másik profilmappát, vagy használja a Chromium újabb verzióját.</translation>

@@ -3434,6 +3434,7 @@
 <translation id="3347086966102161372">ଛବି ଠିକଣା &amp;କପି କରନ୍ତୁ</translation>
 <translation id="3348038390189153836">କାଢ଼ିବା ଯୋଗ୍ୟ ଡିଭାଇସ୍ ଚିହ୍ନଟ ହୋଇଛି</translation>
 <translation id="3348973040180736882">ଡିକମ୍ପ୍ରେସିଂ</translation>
+<translation id="3349610303043713601">AI ମାଧ୍ୟମରେ ବ୍ରାଉଜ କରନ୍ତୁ</translation>
 <translation id="3349933790966648062">ମେମୋରୀ ଫୁଟ୍‍ପ୍ରିଣ୍ଟ</translation>
 <translation id="3351472127384196879">ଆପଣଙ୍କ ପେନରେ ବଟନ ଯୋଗ କରନ୍ତୁ କିମ୍ବା ଖୋଜନ୍ତୁ</translation>
 <translation id="3353786022389205125">"ସ୍ଲିପ ମୋଡରୁ ସକ୍ରିୟ ହେବା ସମୟରେ ଲକ ସ୍କ୍ରିନ ଦେଖାନ୍ତୁ"କୁ ଚାଲୁ କରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
@@ -6819,7 +6820,6 @@
 <translation id="5712153969432126546">ସାଇଟଗୁଡ଼ିକ ବେଳେବେଳେ ଡକ୍ୟୁମେଣ୍ଟ, ଚୁକ୍ତି ଏବଂ ଫର୍ମଗୁଡ଼ିକ ପରି PDFଗୁଡ଼ିକୁ ପବ୍ଲିସ୍ କରେ</translation>
 <translation id="571222594670061844">ପରିଚୟ ପ୍ରଦାନ କରୁଥିବା ସେବାଗୁଡ଼ିକରୁ ସାଇନ-ଇନ ପ୍ରମ୍ପ୍ଟଗୁଡ଼ିକୁ ସାଇଟଗୁଡ଼ିକ ଦେଖାଇପାରନ୍ତି</translation>
 <translation id="5713158217420111469"><ph name="DEVICE" /> ସହ ସଂଯୋଗ କରାଯାଇଛି</translation>
-<translation id="5713988532993992900">ଇନଭର୍ଟ କରାଯାଇଛି</translation>
 <translation id="5714100381896040477">ସ୍କ୍ରିନ ଉପରେ ସୀମିତ ମୁଭମେଣ୍ଟ</translation>
 <translation id="5719854774000914513">ସାଇଟଗୁଡ଼ିକ HID ଡିଭାଇସଗୁଡ଼ିକ ସହ ସଂଯୋଗ କରିବାକୁ ପଚାରିପାରେ</translation>
 <translation id="5720729194423017301">ସାଇଟ ଏବଂ ସର୍ଚ୍ଚ ଇଞ୍ଜିନ ପାଇଁ ସର୍ଟକଟ</translation>
@@ -8734,7 +8734,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="7044606776288350625">ଡାଟା ସିଙ୍କ୍ କରନ୍ତୁ</translation>
 <translation id="7050037487872780845">ଅବୈଧ ହଟସ୍ପଟ କନଫିଗରେସନ</translation>
 <translation id="7051222203795962489">{COUNT,plural, =1{ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ <ph name="USER_EMAIL" />ରେ ପାସୱାର୍ଡ ସେଭ କରାଯାଇଛି}other{ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ <ph name="USER_EMAIL" />ରେ ପାସୱାର୍ଡଗୁଡ଼ିକ ସେଭ କରାଯାଇଛି}}</translation>
-<translation id="7051728324516005763">Chromeରେ AI</translation>
 <translation id="7052762602787632571">&amp;ବ୍ରାଉଜିଂ ଡାଟା ଡିଲିଟ କରନ୍ତୁ...</translation>
 <translation id="705352103640172578">ୱାଟରଫଲ</translation>
 <translation id="7053983685419859001">ଅବରୋଧ କରନ୍ତୁ</translation>

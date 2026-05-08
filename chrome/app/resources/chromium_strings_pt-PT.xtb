@@ -357,6 +357,7 @@
 <translation id="4724676981607797757">A instalação falhou devido a um erro de protocolo não suportado.</translation>
 <translation id="4746050847053251315">Quer fechar o Chromium mesmo assim?</translation>
 <translation id="4748217263233248895">Acabou de ser instalada uma atualização de segurança especial para o Chromium. Reinicie agora e iremos restaurar os seus separadores.</translation>
+<translation id="4759645701210484457">Pedir ao Chromium</translation>
 <translation id="4771701986670315895">Não visitou o site recentemente. O Chromium removeu <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e mais <ph name="COUNT" />.</translation>
 <translation id="4788777615168560705">O Chromium não consegue verificar as suas palavras-passe. Tente novamente após 24 horas ou <ph name="BEGIN_LINK" />verifique as palavras-passe na sua Conta Google<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">Utiliza o mesmo corretor ortográfico utilizado na Pesquisa Google. O texto que introduzir no navegador é enviado à Google. Pode alterar este comportamento nas definições.</translation>
@@ -526,6 +527,7 @@ Se esta página não estiver a funcionar conforme esperado, experimente permitir
 <translation id="6676384891291319759">Aceder à Internet</translation>
 <translation id="668175097507315160">O ChromiumOS não conseguiu sincronizar os dados devido a um erro no início de sessão.</translation>
 <translation id="6691132793308828750">Remover os dados desta app do Chromium</translation>
+<translation id="6692797197837897398">O Chromium dá-lhe mais controlo sobre os anúncios que vê e limita o que os sites podem saber sobre si quando lhe mostram anúncios personalizados</translation>
 <translation id="6709350901466051922">O Chromium necessita da autorização do microfone para este site</translation>
 <translation id="6712881677154121168">Erro de transferência: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6717134281241384636">O seu perfil não pode ser utilizado porque pertence a uma versão mais recente do Chromium.

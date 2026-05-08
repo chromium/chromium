@@ -1676,7 +1676,6 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="8030852056903932865">Schválit</translation>
 <translation id="8032569120109842252">Sledováno</translation>
 <translation id="8035522026858423976"><ph name="TAB_TITLE" />, vybraná ztlumená anonymní karta</translation>
-<translation id="8036587585440959897">Některá rozšíření mohou do Chromu přidat vyhledávače.</translation>
 <translation id="8037750541064988519">Zbývá: <ph name="DAYS" /> d</translation>
 <translation id="8037801708772278989">Zkontrolováno právě teď</translation>
 <translation id="804335162455518893">SD karta nenalezena</translation>
@@ -1859,7 +1858,6 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="8765470054473112089">Při psaní do adresního řádku nebo vyhledávacího pole odesílá Chrome zadaný text do výchozího vyhledávače, aby vám mohl nabízet lepší návrhy. V anonymním režimu je tato funkce vypnutá.</translation>
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome našel slabé heslo, které byste mohli vylepšit}few{Chrome našel # slabá hesla, která byste mohli vylepšit}many{Chrome našel # slabého hesla, které byste mohli vylepšit}other{Chrome našel # slabých hesel, která byste mohli vylepšit}}</translation>
 <translation id="8766529642647037772">Vytvořit zvýrazněný odkaz, jako je tento?</translation>
-<translation id="8769783688897433958">Zobrazit informace o webu a oprávnění</translation>
 <translation id="8788265440806329501">Historie navigace je zavřená</translation>
 <translation id="8790193082819560975">Klepnutím vyhledáte na nové kartě možnosti zakoupení produktu.</translation>
 <translation id="8798449543960971550">Čtení</translation>
@@ -1963,7 +1961,6 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="9169507124922466868">Historie navigace je otevřená na půlce</translation>
 <translation id="9189607089796819144">Chcete soubor „<ph name="FILE_NAME" />“ (<ph name="FILE_SIZE" />) i přesto stáhnout?</translation>
 <translation id="9190276265094487094">Ve všech synchronizovaných zařízeních budete mít historii, takže budete moci pokračovat v tom, co jste dělali</translation>
-<translation id="9190355771000652811">Tuto klávesovou zkratku používejte v adresním řádku se zkratkami pro vyhledávače a vyhledávání na webech.</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" />, vybraná připnutá anonymní karta</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Zkontrolováno před 1 minutou}few{Zkontrolováno před # minutami}many{Zkontrolováno před # minuty}other{Aktualizováno před # minutami}}</translation>
 <translation id="9204836675896933765">Zbývá 1 soubor</translation>

@@ -271,7 +271,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="2226826835915474236">Inactive shortcuts</translation>
 <translation id="2227179592712503583">Remove suggestion</translation>
 <translation id="2227444325776770048">Continue as <ph name="USER_FULL_NAME" /></translation>
-<translation id="2230411774874187555">Get all your saved info</translation>
 <translation id="2230777942707397948">Empty window</translation>
 <translation id="223356358902285214">Web &amp; App Activity</translation>
 <translation id="2233735624724508540">Choose a time frame and then tap Delete data</translation>
@@ -484,7 +483,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3057938290530993634">Tap and hold to pin your most visited websites for easy access next time</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> bookmark}other{<ph name="BOOKMARKS_COUNT_MANY" /> bookmarks}}</translation>
 <translation id="3062802207422175757">Articles on your interests on Chrome</translation>
-<translation id="3066107845790462226">Download video frame</translation>
 <translation id="3066573403916685335">Move Down</translation>
 <translation id="3067505415088964188">Price is low</translation>
 <translation id="3070005020161560471">Automatically translate</translation>
@@ -1218,7 +1216,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6264485186158353794">Back to safety</translation>
 <translation id="6267106249090587268">Notifications <ph name="SEPARATOR" /> Chrome removed these permissions because of spam or deceptive contents</translation>
 <translation id="6276708887952587684">View page source</translation>
-<translation id="62768169905160414">Copy video frame</translation>
 <translation id="6277522088822131679">There was a problem printing the page. Please try again.</translation>
 <translation id="6278428485366576908">Theme</translation>
 <translation id="6291294824436685757">Delete browsing data; select data to delete</translation>

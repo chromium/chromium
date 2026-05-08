@@ -119,6 +119,7 @@
 <translation id="2174917724755363426">Installationen er ikke fuldført. Er du sikker på, at du vil annullere?</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2190166659037789668">Fejl ved søgning efter opdatering: <ph name="UPDATE_CHECK_ERROR" />.</translation>
+<translation id="2199691482078155239">Chrome giver dig mere kontrol over, hvilke annoncer du får vist, og browseren begrænser, hvilke websites der kan få oplysninger om dig, når de viser dig personligt tilpassede annoncer</translation>
 <translation id="2216543877350048334">Log ud for at fjerne din Google-konto fra Chrome</translation>
 <translation id="2236949375853147973">Min aktivitet</translation>
 <translation id="22791603784558743">Luk Gemini i Chrome Dev</translation>
@@ -145,9 +146,6 @@
 <translation id="2569974318947988067">Chrome vil forsøge at opgradere navigationen til HTTPS</translation>
 <translation id="2571392474191184472">Din organisation administrerer Chrome</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> er allerede logget ind på denne Chrome-profil. Hvis du vil holde din browsing adskilt, kan Chrome oprette en ny profil til dig selv.</translation>
-<translation id="2575799939951057838">Af sikkerhedsmæssige årsager deaktiverer Chrome JavaScript-optimering, når du besøger et website for første gang.
-
-Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering.</translation>
 <translation id="2580411288591421699">Det er ikke muligt at installere den samme version af Google Chrome, som allerede kører. Luk Google Chrome, og prøv igen.</translation>
 <translation id="2586406160782125153">Denne handling sletter dine browserdata på denne enhed. Hvis du senere vil hente dine data igen, skal du logge ind på Chrome som <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">Det downloadede installationsprogram kunne ikke gemmes i cache. Fejl: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
@@ -654,6 +652,7 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="7655472416356262023">Fjern kontoen fra Chrome</translation>
 <translation id="7658239707568436148">Annuller</translation>
 <translation id="7670287553302121848">Chrome-kontoen kræver fornyet godkendelse</translation>
+<translation id="7675756456029023637">Spørg Chrome</translation>
 <translation id="769538538642757151">Chrome giver dig besked, hvis der er noget, du skal gennemgå</translation>
 <translation id="769906121737764913">Luk Gemini i Chrome Beta</translation>
 <translation id="7716950018788545737">Opgaverne er afsluttet.</translation>

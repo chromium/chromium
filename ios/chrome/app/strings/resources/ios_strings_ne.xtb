@@ -442,6 +442,7 @@
 <translation id="2493269659028026145"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> प्रयोग गरी तुरुन्तै लक गर्नुहोस्</translation>
 <translation id="2496180316473517155">ब्राउजिङ इतिहास</translation>
 <translation id="2496626742194544812">पहिलो ट्याबमा जानुहोस्</translation>
+<translation id="2497852260688568942">तपाईंको प्रशासकले सिंंक असक्षम पार्नुभएको छ।</translation>
 <translation id="2499505845365628575">तपाई <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" /> मा गई आफ्ना सबै ब्राउजिङ हिस्ट्री भेट्टाउन सक्नुहुन्छ।</translation>
 <translation id="2511117522375201202">तपाईंको सुरक्षा जोखिममा पार्न सक्ने ह्याक वा चोरी भएका <ph name="NUMBER_OF_PASSWORDS" /> वटा पासवर्ड छन्।</translation>
 <translation id="2513103768503127042">तपाईं आफ्ना ट्याब समूहहरू यहाँ भेट्टाउनु हुने छ</translation>
@@ -2000,7 +2001,6 @@
 <translation id="7938254975914653459">फेसटाइम</translation>
 <translation id="7939856641500914040">ब्राउजिङ डेटा मेटाउनुहोस्…</translation>
 <translation id="7941578031639087549">{count,plural, =1{यो पेज तपाईंको खाता ({email}) मा पछि पढ्न सेभ गरिएका वेबपेजको सूचीमा हालिएको छ}other{{count} वटा पेज तपाईंको खाता ({email}) मा पछि पढ्न सेभ गरिएका वेबपेजको सूचीमा हालिएका छन्}}</translation>
-<translation id="7948579849190819732">हालको ट्याब</translation>
 <translation id="7952353944614086413">तपाईंका खुला ट्याब र समूहहरू</translation>
 <translation id="7952670906562503188">तपाईं {passkey_count} वटा पासकी र आफूले कहिल्यै पनि साइन इनसम्बन्धी जानकारी सेभ नगर्ने विकल्प रोजेका साइट तथा एपहरूको सूची मेटाउन लाग्दै हुनुहुन्छ। तपाईंले साइट तथा एपहरूको खाता बनाउनुभएको छ भने सो खाता मेटाइने छैन।</translation>
 <translation id="7958575506592576831">पेजको सुरक्षासँग सम्बन्धित जानकारी</translation>

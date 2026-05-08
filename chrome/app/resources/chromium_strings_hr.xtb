@@ -357,6 +357,7 @@
 <translation id="4724676981607797757">Instalacija nije uspjela zbog pogreške nepodržanog protokola.</translation>
 <translation id="4746050847053251315">Želite li ipak zatvoriti Chromium?</translation>
 <translation id="4748217263233248895">Upravo je primijenjeno posebno sigurnosno ažuriranje za Chromium. Ponovo pokrenite sustav i vratit ćemo vaše kartice.</translation>
+<translation id="4759645701210484457">Pitajte Chromium</translation>
 <translation id="4771701986670315895">U posljednje vrijeme niste posjećivali web-lokaciju. Chromium je uklonio dopuštenja <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="COUNT" /></translation>
 <translation id="4788777615168560705">Chromium ne može provjeriti vaše zaporke. Pokušajte ponovno nakon 24 sata ili <ph name="BEGIN_LINK" />provjerite zaporke na svojem Google računu<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">Upotrebljava istu provjeru pravopisa koja se upotrebljava na Google pretraživanju. Tekst koji unesete u preglednik šalje se Googleu. To ponašanje možete promijeniti u postavkama kad god želite.</translation>
@@ -523,6 +524,7 @@
 <translation id="6676384891291319759">Pristup Internetu</translation>
 <translation id="668175097507315160">Chromium OS nije mogao sinkronizirati vaše podatke zbog pogreške prilikom prijave.</translation>
 <translation id="6691132793308828750">Uklonite podatke ove aplikacije iz Chromiuma</translation>
+<translation id="6692797197837897398">Chromium vam pruža veću kontrolu nad oglasima koji vam se prikazuju i ograničava ono što web-lokacije mogu saznati o vama kad vam prikazuju personalizirane oglase.</translation>
 <translation id="6709350901466051922">Chromium treba dopuštenje za mikrofon za ovu web-lokaciju</translation>
 <translation id="6712881677154121168">Pogreška pri preuzimanju: <ph name="DOWNLOAD_ERROR" /></translation>
 <translation id="6717134281241384636">Vaš se profil ne može upotrebljavati jer je iz novije verzije Chromiuma.

@@ -357,6 +357,7 @@
 <translation id="4724676981607797757">Installimine ebaõnnestus toetamata protokolli vea tõttu.</translation>
 <translation id="4746050847053251315">Kas väljuda Chromiumist ikkagi?</translation>
 <translation id="4748217263233248895">Äsja rakendati Chromiumi spetsiaalne turvavärskendus. Taaskäivitage brauser, misjärel teie vahelehed taastatakse.</translation>
+<translation id="4759645701210484457">Küsige Chromiumilt</translation>
 <translation id="4771701986670315895">Te pole hiljuti külastanud. Chromium eemaldas load <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja veel <ph name="COUNT" />.</translation>
 <translation id="4788777615168560705">Chromium ei saa teie paroole kontrollida. Proovige uuesti 24 tunni pärast või <ph name="BEGIN_LINK" />kontrollige oma Google'i kontol paroole<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">See kasutab sama õigekirjakontrolli, mida kasutatakse Google'i otsingus. Brauseris sisestatav tekst saadetakse Google'ile. Seda käitumist saab seadetes alati muuta.</translation>
@@ -523,6 +524,7 @@
 <translation id="6676384891291319759">Pääs Internetti</translation>
 <translation id="668175097507315160">Chromium OS ei saanud sisselogimisvea tõttu teie andmeid sünkroonida.</translation>
 <translation id="6691132793308828750">Eemalda selle rakenduse andmed Chromiumist</translation>
+<translation id="6692797197837897398">Chromium annab teile suurema kontrolli nähtavate reklaamide üle ja piirab teavet, mida saidid teile isikupärastatud reklaamide näitamisel saavad teie kohta õppida</translation>
 <translation id="6709350901466051922">Chromium vajab selle saidi puhul mikrofoni kasutamise luba</translation>
 <translation id="6712881677154121168">Allalaadimisviga: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6717134281241384636">Teie profiili ei saa kasutada, kuna see pärineb Chromiumi uuemast versioonist.

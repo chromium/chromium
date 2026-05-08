@@ -357,6 +357,7 @@
 <translation id="4724676981607797757">Asennus epäonnistui, koska protokollaa ei tueta.</translation>
 <translation id="4746050847053251315">Suljetaanko Chromium silti?</translation>
 <translation id="4748217263233248895">Chromiumin tärkeä tietoturvapäivitys on asennettu. Käynnistä selain uudelleen – palautamme avoimet välilehdet.</translation>
+<translation id="4759645701210484457">Kysy Chromiumilta</translation>
 <translation id="4771701986670315895">Sivustot, joilla et ole käynyt viime aikoina. Chromium poisti nämä luvat: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja <ph name="COUNT" /> muuta.</translation>
 <translation id="4788777615168560705">Chromium ei voi tarkistaa salasanojasi. Yritä uudelleen 24 tunnin kuluttua tai <ph name="BEGIN_LINK" />tarkista salasanat Google-tililtä<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">Tämä käyttää samaa oikeinkirjoituksen tarkistusta kuin Google Haku. Selaimeen kirjoittamasi teksti lähetetään Googlelle. Voit vaihtaa valintasi milloin tahansa asetuksista.</translation>
@@ -523,6 +524,7 @@
 <translation id="6676384891291319759">Käytä internetiä</translation>
 <translation id="668175097507315160">Chromium-käyttöjärjestelmä ei voi synkronoida dataa kirjautumisvirheen vuoksi.</translation>
 <translation id="6691132793308828750">Poista tämän sovelluksen data Chromiumista</translation>
+<translation id="6692797197837897398">Chromiumin avulla voit vaikuttaa enemmän näkemiisi mainoksiin ja rajoittaa, mitä tietoa sivustot voivat saada sinusta, kun ne näyttävät sinulle personoituja mainoksia</translation>
 <translation id="6709350901466051922">Chromium tarvitsee mikrofonin luvan tällä sivustolla</translation>
 <translation id="6712881677154121168">Latausvirhe: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6717134281241384636">Profiiliasi ei voi käyttää, sillä se on peräisin Chromiumin uudemmasta versiosta.

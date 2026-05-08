@@ -3447,6 +3447,7 @@
 <translation id="3347086966102161372">ອັດ​ສຳ​ເນົາ​ທີ່​ຢູ່​ຮູບ</translation>
 <translation id="3348038390189153836">ກວດພົບອຸປະກອນທີ່​ສາມາດຖອດອອກໄດ້</translation>
 <translation id="3348973040180736882">ກຳລັງເຊົາບີບອັດ</translation>
+<translation id="3349610303043713601">ເລືອກເບິ່ງດ້ວຍ AI</translation>
 <translation id="3349933790966648062">ຮ່ອງຮອຍຄວາມຈຳ</translation>
 <translation id="3351472127384196879">ເພີ່ມ ຫຼື ຊອກຫາປຸ່ມຢູ່ບິກຂອງທ່ານ</translation>
 <translation id="3353786022389205125">ກະລຸນາເປີດໃຊ້ "ສະແດງໜ້າຈໍລັອກໃນເວລາຕື່ນຈາກການນອນຫຼັບ" ແລ້ວລອງໃໝ່</translation>
@@ -6835,7 +6836,6 @@
 <translation id="5712153969432126546">ບາງເທື່ອເວັບໄຊຈະເຜີຍແຜ່ PDF ຕ່າງໆ ເຊັ່ນ: ເອກະສານ, ສັນຍາ ແລະ ແບບຟອມ</translation>
 <translation id="571222594670061844">ເວັບໄຊສາມາດສະແດງຂໍ້ຄວາມການເຂົ້າສູ່ລະບົບຈາກບໍລິການຕົວຕົນຕ່າງໆໄດ້</translation>
 <translation id="5713158217420111469">ເຊື່ອມຕໍ່ຫາ <ph name="DEVICE" /> ແລ້ວ</translation>
-<translation id="5713988532993992900">ປີ້ນສີ</translation>
 <translation id="5714100381896040477">ຈໍາກັດການເຄື່ອນໄຫວຢູ່ໜ້າຈໍ</translation>
 <translation id="5719854774000914513">ເວັບໄຊສາມາດຂໍເຊື່ອມຕໍ່ກັບອຸປະກອນ HID ໄດ້</translation>
 <translation id="5720729194423017301">ທາງລັດສຳລັບເວັບໄຊ ແລະ ໂປຣແກຣມຊອກຫາ</translation>
@@ -8749,7 +8749,6 @@
 <translation id="7044606776288350625">ຊິ້ງຂໍ້ມູນ</translation>
 <translation id="7050037487872780845">ການຕັ້ງຄ່າຮັອດສະປອດບໍ່ຖືກຕ້ອງ</translation>
 <translation id="7051222203795962489">{COUNT,plural, =1{ລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານ, <ph name="USER_EMAIL" />}other{ລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານ, <ph name="USER_EMAIL" />}}</translation>
-<translation id="7051728324516005763">AI ໃນ Chrome</translation>
 <translation id="7052762602787632571">&amp;ລຶບຂໍ້ມູນການທ່ອງເວັບ...</translation>
 <translation id="705352103640172578">ນໍ້າຕົກຕາດ</translation>
 <translation id="7053983685419859001">ບລັອກ</translation>

@@ -357,6 +357,7 @@
 <translation id="4724676981607797757">La instal·lació ha fallat a causa d'un error de protocol no admès.</translation>
 <translation id="4746050847053251315">Vols sortir de Chromium igualment?</translation>
 <translation id="4748217263233248895">S'acaba d'aplicar una actualització de seguretat especial per a Chromium. Reinicia el navegador i restaurarem les pestanyes.</translation>
+<translation id="4759645701210484457">Demana a Chromium</translation>
 <translation id="4771701986670315895">No l'has visitat recentment. Chromium ha suprimit <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="COUNT" /> més.</translation>
 <translation id="4788777615168560705">Chromium no pot comprovar les teves contrasenyes. Torna-ho a provar al cap de 24 hores o <ph name="BEGIN_LINK" />comprova les contrasenyes desades al teu Compte de Google<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">Fa servir el mateix corrector ortogràfic que s'utilitza a la Cerca de Google. El text que escrius al navegador s'envia a Google. Pots canviar aquest comportament sempre que vulguis a la configuració.</translation>
@@ -523,6 +524,7 @@
 <translation id="6676384891291319759">Accedeix a Internet</translation>
 <translation id="668175097507315160">Chromium OS no ha pogut sincronitzar les teves dades a causa d'un error en iniciar la sessió.</translation>
 <translation id="6691132793308828750">Suprimeix les dades d'aquesta aplicació de Chromium</translation>
+<translation id="6692797197837897398">Chromium et proporciona més control sobre els anuncis que veus i limita la informació que els llocs web poden obtenir sobre tu quan et mostren anuncis personalitzats</translation>
 <translation id="6709350901466051922">Chromium necessita permís d'accés al micròfon per a aquest lloc web</translation>
 <translation id="6712881677154121168">Error de baixada: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6717134281241384636">El vostre perfil no es pot utilitzar perquè es va crear amb una versió més recent de Chromium.

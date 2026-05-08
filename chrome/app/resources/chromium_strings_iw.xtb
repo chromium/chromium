@@ -355,6 +355,7 @@
 <translation id="4724676981607797757">ההתקנה נכשלה בגלל שגיאת פרוטוקול שלא נתמך.</translation>
 <translation id="4746050847053251315">‏לסגור את Chromium בכל זאת?</translation>
 <translation id="4748217263233248895">‏בוצע עדכון אבטחה מיוחד של Chromium. עכשיו עליך להפעיל מחדש ואנחנו נשחזר את הכרטיסיות.</translation>
+<translation id="4759645701210484457">‏שואלים את Chromium</translation>
 <translation id="4771701986670315895">‏לא נכנסת לאתר הזה בזמן האחרון. ההרשאות "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" ועוד <ph name="COUNT" /> הרשאות הוסרו על ידי Chromium.</translation>
 <translation id="4788777615168560705">‏Chromium לא יכול לבדוק את הסיסמאות שלך. יש לנסות שוב בעוד 24 שעות או <ph name="BEGIN_LINK" />לבדוק את הסיסמאות בחשבון Google<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">‏נעשה כאן שימוש בבדיקת האיות של חיפוש Google. הטקסט המוקלד בדפדפן נשלח אל Google. אפשר לשנות את ההתנהגות הזו בכל שלב דרך ההגדרות.</translation>
@@ -521,6 +522,7 @@
 <translation id="6676384891291319759">גישה אל האינטרנט</translation>
 <translation id="668175097507315160">‏לא בוצע סנכרון של הנתונים ב-ChromiumOS בגלל שגיאה בתהליך הכניסה.</translation>
 <translation id="6691132793308828750">‏להסיר את הנתונים של האפליקציה הזאת מ-Chromium?</translation>
+<translation id="6692797197837897398">‏ב-Chromium יש לך יותר שליטה במודעות שמוצגות לך, וחלות הגבלות על המידע עליך שהאתרים יכולים לקבל בהצגת מודעות בהתאמה אישית.</translation>
 <translation id="6709350901466051922">‏נדרשת הרשאת גישה למיקרופון ב-Chromium עבור האתר הזה</translation>
 <translation id="6712881677154121168">שגיאה בהורדה: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6717134281241384636">‏לא ניתן להשתמש בפרופיל שלך משום שהוא מגיע מגרסה חדשה יותר של Chromium.

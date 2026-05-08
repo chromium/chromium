@@ -442,6 +442,7 @@
 <translation id="2493269659028026145">Lock immediately with <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="2496180316473517155">Browsing history</translation>
 <translation id="2496626742194544812">Go to first tab</translation>
+<translation id="2497852260688568942">Sync is disabled by your administrator</translation>
 <translation id="2499505845365628575">You can find all your browsing history from the <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="2511117522375201202">You have <ph name="NUMBER_OF_PASSWORDS" /> compromised passwords that could put your security at risk.</translation>
 <translation id="2513103768503127042">You’ll find your tab groups here</translation>
@@ -566,7 +567,6 @@
 <translation id="2969979262385602596">Failed to sign in. Please try again later.</translation>
 <translation id="2975761176769946178">A URL is required</translation>
 <translation id="297667759942911166">Collaborate in tab groups</translation>
-<translation id="298696743524648170">To use Gemini in Chrome, sign in to Chrome with your Google Account</translation>
 <translation id="2987670534697681860">Verify that it's you to access all your passwords on this device.</translation>
 <translation id="2989523299700148168">Recently Visited</translation>
 <translation id="2989805286512600854">Open in new tab</translation>
@@ -621,7 +621,6 @@
 <translation id="31652791196570636">Dismiss</translation>
 <translation id="3167868116600277716">Discover feed</translation>
 <translation id="3169472444629675720">Discover</translation>
-<translation id="3172755898799085680">Gemini is not available on this page</translation>
 <translation id="3174662312949010067">You can also use saved passwords on your other devices.</translation>
 <translation id="3177338796769255211">Sign in to get your bookmarks and more on all your devices</translation>
 <translation id="3181954750937456830">Safe Browsing (protects you and your device from dangerous sites)</translation>
@@ -997,7 +996,6 @@
 <translation id="4552042254369397518">Copying…</translation>
 <translation id="4553044860350038560">More passkeys</translation>
 <translation id="4564893319561643483">Hide '<ph name="TITLE" />'</translation>
-<translation id="456502772933839252">Sharing <ph name="PAGE_TITLE" /></translation>
 <translation id="4565377596337484307">Hide password</translation>
 <translation id="4568230126482344545">Hide Recent tabs</translation>
 <translation id="4578835633387306383">Turn on…</translation>

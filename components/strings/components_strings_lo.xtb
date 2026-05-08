@@ -754,7 +754,6 @@
 <translation id="2168151236314517198">ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວບລັອກການພິມເນື້ອຫານີ້ໄວ້</translation>
 <translation id="2171244127100824330">ໃນ <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> ສຳລັບ <ph name="ACCOUNT" /></translation>
 <translation id="2172089022819052306">ການສ້ອມແປງ ແລະ ບໍາລຸງຮັກສາຍານພາຫະນະ</translation>
-<translation id="217231402430591139">ເຊື່ອມໂຍງບັນຊີຂອງທ່ານ</translation>
 <translation id="2173302385160625112">ກວດເບິ່ງການເຊື່ອມຕໍ່ອິນເຕີເນັດຂອງທ່ານ</translation>
 <translation id="2174875517416416684">ທຸລະກຳຂອງທ່ານບໍ່ສຳເລັດ. ບໍ່ມີການຖອນເງິນອອກຈາກບັນຊີຂອງທ່ານ.</translation>
 <translation id="2175630235841878061">ໄຟລ໌ທີ່ມີຂະໜາດເກີນ 100MB ບໍ່ພ້ອມໃຫ້ດາວໂຫຼດ</translation>
@@ -3216,7 +3215,6 @@
 <translation id="6006365096047131769">3 x 5 ນິ້ວ</translation>
 <translation id="6008122969617370890">ລຳດັບ N ເຖິງ 1</translation>
 <translation id="6008256403891681546">JCB</translation>
-<translation id="6012135807160718387">ການເຂົ້າລະຫັດຂອງ Google ປົກປ້ອງຂໍ້ມູນຂອງທ່ານ</translation>
 <translation id="6014801569448771146">ກວດເບິ່ງລະຫັດຜ່ານຂອງທ່ານ</translation>
 <translation id="6014851866995737824">ບໍ່ສົນໃຈເນື່ອງຈາກບໍ່ມີລາຍຊື່ "ເປີດການນຳໃຊ້" ຫຼື "ປິດການນຳໃຊ້".</translation>
 <translation id="6015796118275082299">ປີ</translation>
@@ -5255,6 +5253,7 @@
 <translation id="9186371298532546532">ໃຊ້ທີ່ຢູ່ນີ້ໃນບ່ອນອື່ນໆ</translation>
 <translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> ປ່ຽນແປງແຖບນີ້ແລ້ວ</translation>
 <translation id="9189789270972826888">ຄລິກລາຍລະອຽດບັດຂ້າງລຸ່ມເພື່ອສຳເນົາ ແລະ ວາງຫາກບໍ່ໄດ້ຕື່ມຂໍ້ມູນບັດ. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
+<translation id="9190557999028587593">ຫົວຂໍ້ທີ່ເກົ່າກວ່າ 4 ອາທິດຈະຖືກລຶບອອກໂດຍອັດຕະໂນມັດ</translation>
 <translation id="9191834167571392248">ເຈາະຮູຢູ່ລຸ່ມສຸດເບື້ອງຊ້າຍ</translation>
 <translation id="9192361865877479444">ໂລຫະ (ດ້ານ)</translation>
 <translation id="9192947025498305328">ຜະລິດຕະພັນເສີມຄວາມງາມຈາກທຳມະຊາດ</translation>

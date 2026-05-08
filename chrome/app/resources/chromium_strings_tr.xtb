@@ -354,6 +354,7 @@
 <translation id="4724676981607797757">Desteklenmeyen bir protokol hatası nedeniyle yükleme işlemi başarısız oldu.</translation>
 <translation id="4746050847053251315">Yine de Chromium'dan çıkılsın mı?</translation>
 <translation id="4748217263233248895">Chromium için özel bir güvenlik güncellemesi uygulandı. Uygulamayı hemen yeniden başlatın; açık sekmeleriniz geri yüklenir.</translation>
+<translation id="4759645701210484457">Chromium'a sor</translation>
 <translation id="4771701986670315895">Son zamanlarda ziyaret etmediniz. Chromium; <ph name="PERMISSION_1" /> ve <ph name="PERMISSION_2" /> izni ile birlikte <ph name="COUNT" /> izni daha kaldırdı.</translation>
 <translation id="4788777615168560705">Chromium, şifrelerinizi kontrol edemiyor. 24 saat sonra tekrar deneyin veya <ph name="BEGIN_LINK" />şifreleri Google Hesabınızda kontrol edin<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">Bu işlev, Google Arama'da kullanılan yazım denetiminin aynısını kullanır. Tarayıcıda yazdığınız metin Google'a gönderilir. Bu davranışı istediğiniz zaman ayarlardan değiştirebilirsiniz.</translation>
@@ -520,6 +521,7 @@
 <translation id="6676384891291319759">İnternet'e erişin</translation>
 <translation id="668175097507315160">Oturum açma sırasındaki bir hata nedeniyle ChromiumOS, verilerinizi senkronize edemedi.</translation>
 <translation id="6691132793308828750">Bu uygulamanın verilerini Chromium'dan kaldır</translation>
+<translation id="6692797197837897398">Chromium, gördüğünüz reklamlarda daha fazla kontrol sahibi olmanızı sağlar ve kişiselleştirilmiş reklamlar gösteren sitelerin hakkınızda edinebileceği bilgileri sınırlandırır</translation>
 <translation id="6709350901466051922">Bu site için Chromium'un mikrofon iznine ihtiyacı var</translation>
 <translation id="6712881677154121168">İndirme hatası: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6717134281241384636">Profiliniz daha yeni bir Chromium sürümünden olduğundan kullanılamıyor.

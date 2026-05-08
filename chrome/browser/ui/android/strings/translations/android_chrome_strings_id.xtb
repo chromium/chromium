@@ -1676,7 +1676,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="8030852056903932865">Setujui</translation>
 <translation id="8032569120109842252">Mengikuti</translation>
 <translation id="8035522026858423976"><ph name="TAB_TITLE" />, Tab Samaran yang Dibisukan dan Dipilih</translation>
-<translation id="8036587585440959897">Beberapa ekstensi dapat menambahkan mesin telusur ke Chrome.</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> hari lagi</translation>
 <translation id="8037801708772278989">Baru saja diperiksa</translation>
 <translation id="804335162455518893">Kartu SD tidak ditemukan</translation>
@@ -1963,7 +1962,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="9169507124922466868">Histori navigasi terbuka setengah</translation>
 <translation id="9189607089796819144">Ingin tetap mendownload "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />)?</translation>
 <translation id="9190276265094487094">Histori Anda akan tersedia di semua perangkat yang disinkronkan, sehingga Anda dapat melanjutkan kegiatan Anda</translation>
-<translation id="9190355771000652811">Di kolom URL, gunakan pintasan keyboard ini dengan pintasan untuk mesin telusur dan penelusuran situs.</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" />, Tab Samaran Tersemat yang Dipilih</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Diperiksa 1 menit yang lalu}other{Diperiksa # menit yang lalu}}</translation>
 <translation id="9204836675896933765">1 file tersisa</translation>

@@ -123,6 +123,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="2174917724755363426">L'installation n'est pas terminée. Voulez-vous vraiment annuler?</translation>
 <translation id="2186206192313702726">Lentille Google</translation>
 <translation id="2190166659037789668">Erreur de vérification de la mise à jour : <ph name="UPDATE_CHECK_ERROR" />.</translation>
+<translation id="2199691482078155239">Chrome vous donne plus de contrôle sur les annonces que vous voyez et limite ce que les sites peuvent apprendre sur vous lorsqu'ils vous présentent des annonces personnalisées</translation>
 <translation id="2216543877350048334">Pour retirer votre compte Google de Chrome, déconnectez-vous</translation>
 <translation id="2236949375853147973">Mon activité</translation>
 <translation id="22791603784558743">Fermer Gemini dans Chrome pour les développeurs</translation>
@@ -657,6 +658,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="7655472416356262023">Retirer le compte de Chrome</translation>
 <translation id="7658239707568436148">Annuler</translation>
 <translation id="7670287553302121848">Le compte Chrome nécessite une réauthentification</translation>
+<translation id="7675756456029023637">Demander à Chrome</translation>
 <translation id="769538538642757151">Chrome vous informera si vous devez examiner quelque chose</translation>
 <translation id="769906121737764913">Fermer Gemini dans la version bêta de Chrome</translation>
 <translation id="7716950018788545737">Tâches terminées.</translation>

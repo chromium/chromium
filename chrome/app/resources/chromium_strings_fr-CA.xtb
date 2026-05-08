@@ -358,6 +358,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="4724676981607797757">Échec de l'installation en raison d'une erreur de protocole non pris en charge.</translation>
 <translation id="4746050847053251315">Quitter Chromium quand même?</translation>
 <translation id="4748217263233248895">Une mise à jour de sécurité spéciale pour Chromium vient d'être effectuée. Redémarrez maintenant, et nous restaurerons vos onglets.</translation>
+<translation id="4759645701210484457">Demander à Chromium</translation>
 <translation id="4771701986670315895">Vous n'avez pas effectué de visite récemment. Chromium a retiré <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> et <ph name="COUNT" /> autres.</translation>
 <translation id="4788777615168560705">Chromium ne peut pas vérifier vos mots de passe. Réessayez après 24 heures ou <ph name="BEGIN_LINK" />effectuez une vérification des mots de passe dans votre compte Google<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">Cela fait appel au même correcteur orthographique que celui qui est utilisé dans la recherche Google. Le texte que vous tapez dans le navigateur est envoyé à Google. Vous pouvez toujours modifier ce comportement dans les paramètres.</translation>
@@ -524,6 +525,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="6676384891291319759">Accéder à Internet</translation>
 <translation id="668175097507315160">Chromium OS ne peut pas synchroniser vos données, car une erreur s'est produite lors de la connexion.</translation>
 <translation id="6691132793308828750">Retirer les données de cette appli de Chromium</translation>
+<translation id="6692797197837897398">Chromium vous donne plus de contrôle sur les annonces que vous voyez et limite ce que les sites peuvent apprendre sur vous lorsqu'ils vous présentent des annonces personnalisées</translation>
 <translation id="6709350901466051922">Chromium requiert l'autorisation d'accéder au microphone pour ce site</translation>
 <translation id="6712881677154121168">Erreur de téléchargement : <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6717134281241384636">Votre profil ne peut pas être utilisé, car il provient d'une version plus récente de Chromium.

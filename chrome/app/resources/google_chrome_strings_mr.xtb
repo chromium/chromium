@@ -121,6 +121,7 @@
 <translation id="2174917724755363426">इंस्टॉलेशन पूर्ण झाले नाही. तुम्हाला नक्की रद्द करायचे आहे का?</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2190166659037789668">अपडेट तपासणीदरम्यान एरर आली: <ph name="UPDATE_CHECK_ERROR" />.</translation>
+<translation id="2199691482078155239">Chrome हे तुम्हाला तुम्ही पाहता त्या जाहिरातींवर अधिक नियंत्रण देते आणि साइट तुम्हाला पर्सनलाइझ केलेल्या जाहिराती दाखवतात, तेव्हा त्यांना तुमच्याबद्दल कोणती माहिती मिळू शकते हे मर्यादित करते</translation>
 <translation id="2216543877350048334">Chrome मधून तुमचे Google खाते काढून टाकण्यासाठी, साइन आउट करा</translation>
 <translation id="2236949375853147973">माझी अ‍ॅक्टिव्हिटी</translation>
 <translation id="22791603784558743">Chrome डेव्हलपर मधील Gemini बंद करा</translation>
@@ -147,9 +148,6 @@
 <translation id="2569974318947988067">Chrome हे नेव्हिगेशन HTTPS वर अपग्रेड करण्याचा प्रयत्न करेल</translation>
 <translation id="2571392474191184472">तुमची संस्था Chrome व्यवस्थापित करते</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> यांनी आधीपासून या Chrome प्रोफाइलमध्ये साइन इन केलेले आहे. तुमचे ब्राउझिंग स्वतंत्र ठेवण्यासाठी, Chrome तुमच्याकरिता तुमची स्वतःची प्रोफाइल तयार करू शकते.</translation>
-<translation id="2575799939951057838">सुरक्षेसाठी, तुम्ही साइटला पहिल्यांदा भेट देता, तेव्हा Chrome JavaScript ऑप्टिमायझेशन बंद करते.
-
-हे पेज अपेक्षेप्रमाणे काम करत नसल्यास, ऑप्टिमायझेशनला अनुमती देऊन पहा.</translation>
 <translation id="2580411288591421699">सध्या चालत असलेली Google Chrome ची समान आवृत्ती इंस्टॉल करू शकत नाही. कृपया Google Chrome बंद करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="2586406160782125153">हे या डिव्‍हाइसमधून तुमचा ब्राउझिंग डेटा हटवेल. नंतर तुमचा डेटा पुनर्प्राप्त करण्‍यासाठी, Chrome मध्ये <ph name="USER_EMAIL" /> म्हणून साइन इन करा.</translation>
 <translation id="259935314519650377">डाउनलोड केलेला इंस्टॉलर कॅशे करता आला नाही. एरर: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
@@ -658,6 +656,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="7655472416356262023">Chrome मधून खाते काढून टाका</translation>
 <translation id="7658239707568436148">रद्द करा</translation>
 <translation id="7670287553302121848">Chrome खात्यासाठी री-ऑथेंटिकेशन आवश्यक आहे</translation>
+<translation id="7675756456029023637">Chrome ला विचारा</translation>
 <translation id="769538538642757151">तुम्ही एखाद्या गोष्टीचे पुनरावलोकन करणे आवश्यक असल्यास, Chrome तुम्हाला कळवेल</translation>
 <translation id="769906121737764913">Chrome बीटा मधील Gemini बंद करा</translation>
 <translation id="7716950018788545737">टास्क संपले आहे (संपली आहेत).</translation>

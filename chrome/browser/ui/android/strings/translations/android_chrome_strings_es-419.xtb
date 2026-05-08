@@ -1858,7 +1858,6 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="8765470054473112089">Cuando escribes en la barra de direcciones o en el cuadro de búsqueda, Chrome envía lo que escribes a tu motor de búsqueda predeterminado para obtener mejores sugerencias. Esta función está desactivada en el modo Incógnito.</translation>
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome encontró una contraseña poco segura que podrías mejorar}other{Chrome encontró # contraseñas poco seguras que podrías mejorar}}</translation>
 <translation id="8766529642647037772">¿Quieres crear un vínculo destacado como este?</translation>
-<translation id="8769783688897433958">Ver información y permisos del sitio</translation>
 <translation id="8788265440806329501">Se cerró el Historial de navegación</translation>
 <translation id="8790193082819560975">Presiona para buscar las opciones de compra del producto en una pestaña nueva.</translation>
 <translation id="8798449543960971550">Leídas</translation>

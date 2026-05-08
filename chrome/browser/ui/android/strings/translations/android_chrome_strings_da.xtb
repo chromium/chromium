@@ -1676,7 +1676,6 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="8030852056903932865">Godkend</translation>
 <translation id="8032569120109842252">Følger</translation>
 <translation id="8035522026858423976"><ph name="TAB_TITLE" />, valgt inkognitofane med lyden slået fra</translation>
-<translation id="8036587585440959897">Nogle udvidelser kan føje søgemaskiner til Chrome.</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> dage tilbage</translation>
 <translation id="8037801708772278989">Tjekket lige nu</translation>
 <translation id="804335162455518893">SD-kortet blev ikke fundet</translation>
@@ -1963,7 +1962,6 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="9169507124922466868">Navigationshistorikken er åbnet halvt</translation>
 <translation id="9189607089796819144">Vil du downloade "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) alligevel?</translation>
 <translation id="9190276265094487094">Din historik er på alle synkroniserede enheder, så du kan fortsætte med det, du var i gang med</translation>
-<translation id="9190355771000652811">I adresselinjen kan du bruge denne tastaturgenvej til genveje til søgemaskiner og websitesøgning.</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" />, fastgjort valgt inkognitofane</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Tjekket for 1 minut siden}one{Tjekket for # minut siden}other{Tjekket for # minutter siden}}</translation>
 <translation id="9204836675896933765">1 fil tilbage</translation>

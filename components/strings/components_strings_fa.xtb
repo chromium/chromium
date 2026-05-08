@@ -478,7 +478,6 @@
 <translation id="1727613060316725209">گواهینامه معتبر است</translation>
 <translation id="1728677426644403582">درحال مشاهده منبع یک صفحه وب هستید</translation>
 <translation id="173080396488393970">این نوع کارت پشتیبانی نمی‌شود</translation>
-<translation id="1731563515262205847">ML-DSA-65</translation>
 <translation id="1732445923934584865">درعوض حضوری درخواست شود</translation>
 <translation id="1733064249834771892">قلم‌ها</translation>
 <translation id="1733631169686303142">تجهیزات صوتی</translation>
@@ -1598,7 +1597,6 @@
 <translation id="350069200438440499">نام فایل:</translation>
 <translation id="3501300228850242680">متال (موسیقی)</translation>
 <translation id="350421688684366066">برچسب (خیلی براق)</translation>
-<translation id="3507062913298382727">ذخیره کردن کارت شناسایی</translation>
 <translation id="350763432931695541">درحال استخراج نوشتار چند صفحه بعدی</translation>
 <translation id="3507869775212388416">مشاغل حقوقی</translation>
 <translation id="3507936815618196901">ایجاد نقشه سه‌بعدی از محیط و ردیابی موقعیت دوربین</translation>
@@ -1992,7 +1990,6 @@
 <translation id="4098306082496067348">روی جزئیات کارت مجازی تک‌ضرب بزنید تا به بخش تسویه‌حساب اضافه شود.</translation>
 <translation id="4099048595830172239">سیاست سرپرست توصیه می‌کند هرگاه محتوای محرمانه در صفحه‌نمایش شما نمایان باشد، صفحه را با <ph name="APPLICATION_TITLE" /> هم‌رسانی نکنید:</translation>
 <translation id="4099391883283080991">‏<ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای سفارشی کردن اندازه قلم‌ها و طرح حروف در Chrome، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
-<translation id="4100421230355095925">ML-DSA-44</translation>
 <translation id="4101413244023615925">نوشتار و تصاویر گرافیکی</translation>
 <translation id="4101917550061398111">حذف موارد انتخابی</translation>
 <translation id="4102567721634170493">اخبار محلی</translation>
@@ -2220,7 +2217,6 @@
 <translation id="4415156962929755728">پلاستیک (خیلی براق)</translation>
 <translation id="4415426530740016218">نشانی تحویل گرفتن</translation>
 <translation id="4415748029120993980">‏منحنی بیضوی SECG مدل secp384r1 (به‌ نام NIST P-384)</translation>
-<translation id="4418150423720608641">ML-DSA-87</translation>
 <translation id="4419287616181386201">گذرواژه‌ها را می‌توان در تنظیمات مدیریت آن‌ها حذف کرد</translation>
 <translation id="4424024547088906515">‏این سرور نتوانست اثبات کند که این <ph name="DOMAIN" /> است؛ گواهی امنیتی آن مورداعتماد Chrome نیست. ممکن است علت این موضوع پیکربندی اشتباه باشد یا مهاجی اتصال شما را قطع کرده است.</translation>
 <translation id="4425750422187370446">پوشاک ورزشی</translation>
@@ -2960,7 +2956,6 @@
 <translation id="5573641252776268565">ویرایش گذرنامه</translation>
 <translation id="5578606540385219379">ارائه‌دهندگان خدمات</translation>
 <translation id="5580958916614886209">ماه انقضا را بررسی و دوباره امتحان کنید</translation>
-<translation id="5582453333200265572">به‌روز کردن کارت شناسایی</translation>
 <translation id="5583442610070676234">کنش‌های بیشتر برای جدول مقایسه <ph name="COMPARE_SET_NAME" /></translation>
 <translation id="55841966151154662">‏این کارت در «کیف پول Google» ذخیره نشد. درعوض، در Chrome این دستگاه ذخیره شد.</translation>
 <translation id="558420943003240152">مدیریت گذرواژه‌ها و گذرکلیدها…</translation>
@@ -3094,7 +3089,6 @@
 <translation id="5808435672482059465">‏مشاهده «سابقه Chrome»</translation>
 <translation id="5810442152076338065">اتصال شما به <ph name="DOMAIN" /> با استفاده از یک مجموعه رمز منسوخ، رمزگذاری شده است.</translation>
 <translation id="5813119285467412249">&amp;انجام مجدد افزودن</translation>
-<translation id="5813274153495000141">اطلاعاتتان را ذخیره کنید و فرم‌ها را سریع‌تر پر کنید. اطلاعات در دستگاهتان ذخیره می‌شود.</translation>
 <translation id="5813753398265398978">فیزیک</translation>
 <translation id="5817918615728894473">مرتبط‌سازی</translation>
 <translation id="5820625124144807242">‏پس‌از بررسی سفارشتان، باید به سیستم وارد شوید یا با <ph name="BNPL_ISSUER_NAME" /> حساب ایجاد کنید. این حساب به‌طور خودکار به Google Pay پیوند داده خواهد شد.</translation>
@@ -5255,6 +5249,7 @@
 <translation id="9186371298532546532">از این نشانی در جا‌های بیشتری استفاده کنید</translation>
 <translation id="9189468832660648522">‫<ph name="MEMBER_FIRST_NAME" /> این زبانه را تغییر داد</translation>
 <translation id="9189789270972826888">اگر جزئیات کارت کامل نشده است، روی جزئیات کارت در پایین کلیک کنید تا کپی و جای‌گذاری شود. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
+<translation id="9190557999028587593">موضوع‌های قدیمی‌تر از ۴ هفته به‌طور خودکار حذف می‌شوند</translation>
 <translation id="9191834167571392248">سوراخ در پایین سمت چپ</translation>
 <translation id="9192361865877479444">فلز (مات)</translation>
 <translation id="9192947025498305328">زیباییِ پاک</translation>

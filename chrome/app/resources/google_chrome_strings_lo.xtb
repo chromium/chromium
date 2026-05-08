@@ -123,6 +123,7 @@
 <translation id="2174917724755363426">ການຕິດຕັ້ງບໍ່ສຳເລັດ. ທ່ານແນ່ໃຈບໍ່ວ່າທ່ານຕ້ອງການຍົກເລີກ?</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2190166659037789668">ກວດສອບການອັບເດດຜິດພາດ: <ph name="UPDATE_CHECK_ERROR" />.</translation>
+<translation id="2199691482078155239">Chrome ເຮັດໃຫ້ທ່ານຄວບຄຸມໂຄສະນາທີ່ທ່ານເຫັນໄດ້ຫຼາຍຂຶ້ນ ແລະ ຈຳກັດສິ່ງທີ່ເວັບໄຊສາມາດຮຽນຮູ້ກ່ຽວກັບທ່ານໃນເວລາທີ່ພວກມັນສະແດງໂຄສະນາທີ່ປັບແຕ່ງສ່ວນຕົວໃຫ້ທ່ານເຫັນ</translation>
 <translation id="2216543877350048334">ເພື່ອລຶບບັນຊີ Google ຂອງທ່ານອອກຈາກ Chrome, ໃຫ້ອອກຈາກລະບົບ</translation>
 <translation id="2236949375853147973">ການເຄື່ອນໄຫວຂອງຂ້ອຍ</translation>
 <translation id="22791603784558743">ປິດ Gemini ໃນ Chrome Dev</translation>
@@ -149,9 +150,6 @@
 <translation id="2569974318947988067">Chrome ຈະພະຍາຍາມອັບເກຣດການນຳທາງເປັນ HTTPS</translation>
 <translation id="2571392474191184472">ອົງການຂອງທ່ານຈັດການ Chrome</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> ເຂົ້າສູ່ລະບົບໂປຣໄຟລ໌ Chrome ນີ້ຢູ່ກ່ອນແລ້ວ. ເພື່ອແຍກການທ່ອງເວັບຂອງທ່ານໄວ້ຕ່າງຫາກ, Chrome ສາມາດສ້າງໂປຣໄຟລ໌ຂອງທ່ານເອງໃຫ້ທ່ານໄດ້.</translation>
-<translation id="2575799939951057838">ເພື່ອຄວາມປອດໄພ, Chrome ຈະປິດການເພີ່ມປະສິດທິພາບ JavaScript ເມື່ອທ່ານເຂົ້າເບິ່ງເວັບໄຊເປັນເທື່ອທຳອິດ.
-
-ຫາກໜ້ານີ້ບໍ່ເຮັດວຽກຕາມທີ່ຄາດໄວ້, ໃຫ້ລອງອະນຸຍາດການເພີ່ມປະສິດທິພາບ.</translation>
 <translation id="2580411288591421699">ບໍ່ສາມາດຕິດຕັ້ງ Google Chrome ລຸ້ນດຽວກັບທີ່ກໍາລັງແລ່ນຢູ່ໃນປະຈຸບັນ. ກະລຸນາປິດ Google Chrome ແລະລອງໃໝ່ອີກ.</translation>
 <translation id="2586406160782125153">ນີ້ຈະລຶບຂໍ້ມູນປະຫວັດການທ່ອງເວັບຂອງທ່ານອອກຈາກວິດີໂອນີ້. ເພື່ອກູ້ຂໍ້ມູນຂອງທ່ານຄືນໃນພາຍຫຼັງ, ກະລຸນາເຂົ້າສູ່ລະບົບ Chrome ເປັນ <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">ການແຄສຕົວຕິດຕັ້ງທີ່ດາວໂຫຼດໄວ້ບໍ່ສຳເລັດ. ຂໍ້ຜິດພາດ: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
@@ -662,6 +660,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="7655472416356262023">ລຶບບັນຊີອອກຈາກ Chrome</translation>
 <translation id="7658239707568436148">ຍົກ​ເລີກ​</translation>
 <translation id="7670287553302121848">ບັນຊີ Chrome ຕ້ອງມີການພິສູດຢືນຢັນຄືນໃໝ່</translation>
+<translation id="7675756456029023637">ຖາມ Chrome</translation>
 <translation id="769538538642757151">Chrome ຈະແຈ້ງໃຫ້ທ່ານຮູ້ຫາກມີສິ່ງໃດທີ່ທ່ານຕ້ອງກວດສອບ</translation>
 <translation id="769906121737764913">ປິດ Gemini ໃນ Chrome Beta</translation>
 <translation id="7716950018788545737">ໜ້າວຽກສິ້ນສຸດແລ້ວ.</translation>

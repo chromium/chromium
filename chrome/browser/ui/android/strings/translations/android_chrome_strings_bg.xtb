@@ -1676,7 +1676,6 @@
 <translation id="8030852056903932865">Одобряване</translation>
 <translation id="8032569120109842252">Следено</translation>
 <translation id="8035522026858423976"><ph name="TAB_TITLE" /> – избран раздел в режим „инкогнито“, чийто звук е спрян</translation>
-<translation id="8036587585440959897">Някои разширения могат да добавят търсещи машини към Chrome.</translation>
 <translation id="8037750541064988519">Остават <ph name="DAYS" /> дни</translation>
 <translation id="8037801708772278989">Проверено току-що</translation>
 <translation id="804335162455518893">SD картата не е намерена</translation>
@@ -1963,7 +1962,6 @@
 <translation id="9169507124922466868">Историята на навигацията е наполовина отворена</translation>
 <translation id="9189607089796819144">Искате ли да изтеглите „<ph name="FILE_NAME" />“ (<ph name="FILE_SIZE" />) въпреки това?</translation>
 <translation id="9190276265094487094">Историята ви ще бъде достъпна на всичките ви синхронизирани устройства, за да можете да продължавате това, което сте правили</translation>
-<translation id="9190355771000652811">В адресната лента използвайте тази клавишна комбинация заедно с преки пътища за търсещи машини и търсене в сайтове.</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" /> – избран е фиксиран раздел в режим „инкогнито“</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Проверено преди 1 минута}other{Проверено преди # минути}}</translation>
 <translation id="9204836675896933765">Остава 1 файл</translation>

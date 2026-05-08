@@ -442,6 +442,7 @@
 <translation id="2493269659028026145"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" />-р тэр даруй түгжих</translation>
 <translation id="2496180316473517155">Хайлтын түүх</translation>
 <translation id="2496626742194544812">Эхний таб руу очих</translation>
+<translation id="2497852260688568942">Таны админ синкийг идэвхгүй болгосон байна.</translation>
 <translation id="2499505845365628575">Та хөтчийн бүх түүхээ <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />-с олох боломжтой.</translation>
 <translation id="2511117522375201202">Танд аюулгүй байдлыг тань эрсдэлд оруулж болох алдагдсан <ph name="NUMBER_OF_PASSWORDS" /> нууц үг байна.</translation>
 <translation id="2513103768503127042">Та табын бүлгээ эндээс олно</translation>
@@ -2000,7 +2001,6 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939856641500914040">Интернэтээр үзсэн өгөгдлийг устгах…</translation>
 <translation id="7941578031639087549">{count,plural, =1{Таны {email} бүртгэлийн унших жагсаалтад тань хуудас нэмсэн}other{Таны {email} бүртгэлийн унших жагсаалтад тань {count} хуудас нэмсэн}}</translation>
-<translation id="7948579849190819732">Одоогийн таб</translation>
 <translation id="7952353944614086413">Таны нээлттэй таб, бүлэг</translation>
 <translation id="7952670906562503188">Та {passkey_count} нэвтрэх түлхүүр болон нэвтрэх мэдээлэл хэзээ ч хадгалахгүй байхаар сонгосон сайт, аппын жагсаалтыг устгах гэж байна. Таны сайт, аппад зориулж үүсгэсэн аливаа бүртгэлийг устгахгүй.</translation>
 <translation id="7958575506592576831">Хуудасны аюулгүй байдлын мэдээлэл</translation>

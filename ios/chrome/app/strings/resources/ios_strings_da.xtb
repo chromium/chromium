@@ -442,6 +442,7 @@
 <translation id="2493269659028026145">Lås straks ved hjælp af <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="2496180316473517155">Browserhistorik</translation>
 <translation id="2496626742194544812">Gå til første fane</translation>
+<translation id="2497852260688568942">Synkronisering er deaktiveret af din administrator.</translation>
 <translation id="2499505845365628575">Du kan finde hele din browserhistorik via <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="2511117522375201202">Du har <ph name="NUMBER_OF_PASSWORDS" /> kompromitterede adgangskoder, hvilket kan udgøre en sikkerhedsrisiko.</translation>
 <translation id="2513103768503127042">Her kan du se dine fanegrupper</translation>
@@ -2000,7 +2001,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939856641500914040">Slet browserdata…</translation>
 <translation id="7941578031639087549">{count,plural, =1{Siden blev føjet til din læseliste på kontoen {email}}one{{count} side blev føjet til din læseliste på kontoen {email}}other{{count} sider blev føjet til din læseliste på kontoen {email}}}</translation>
-<translation id="7948579849190819732">Aktuel fane</translation>
 <translation id="7952353944614086413">Dine åbne faner og grupper</translation>
 <translation id="7952670906562503188">Du er ved at slette {passkey_count} adgangsnøgler og listen over websites og apps, hvor du har valgt aldrig at gemme loginoplysninger. Alle konti, du har oprettet til websites og apps, slettes ikke.</translation>
 <translation id="7958575506592576831">Oplysninger om sidesikkerhed</translation>

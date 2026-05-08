@@ -1096,7 +1096,6 @@
 <translation id="2677748264148917807">このページを離れる</translation>
 <translation id="2679216653373462289">モーション センサーと光センサーの使用</translation>
 <translation id="2679659833697380">情報はデバイスに保存されます</translation>
-<translation id="2680837394649649718"><ph name="DEVICE_NAME" /> の Chrome に送信しました。</translation>
 <translation id="2683195745483370038">その他の結果が見つかりました</translation>
 <translation id="2686919536310834199">文書作成サポートのフィードバックを送信します。</translation>
 <translation id="2687555958734450033">最適サイズ</translation>
@@ -3087,7 +3086,6 @@
 <translation id="5787146423283493983">キー合意</translation>
 <translation id="5793317771769868848">このお支払い方法はこのデバイスから削除されます</translation>
 <translation id="5794065675298686371">価格トラッキングの通知をオンにする</translation>
-<translation id="5797984091151707075">管理者ポリシーによりブロックされています</translation>
 <translation id="5800727402210090597">携帯電話の修理、サービス</translation>
 <translation id="580241730938216256">更新を開始</translation>
 <translation id="5804241973901381774">権限</translation>
@@ -5256,6 +5254,7 @@
 <translation id="9186371298532546532">この住所を他の場所でも使用する</translation>
 <translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> さんがこのタブを変更しました</translation>
 <translation id="9189789270972826888">カード情報が入力されていない場合は、以下のカード情報をクリックしてコピーして貼り付けてください。<ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
+<translation id="9190557999028587593">4 週間以上経過したトピックは自動的に削除されます</translation>
 <translation id="9191834167571392248">パンチ（左下）</translation>
 <translation id="9192361865877479444">金属（非光沢）</translation>
 <translation id="9192947025498305328">クリーン ビューティー</translation>

@@ -1676,7 +1676,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="8030852056903932865">Aprobar</translation>
 <translation id="8032569120109842252">Seguindo</translation>
 <translation id="8035522026858423976"><ph name="TAB_TITLE" />, pestana do modo de incógnito silenciada e seleccionada</translation>
-<translation id="8036587585440959897">Algunhas extensións poden engadir motores de busca a Chrome.</translation>
 <translation id="8037750541064988519">Quedan <ph name="DAYS" /> días</translation>
 <translation id="8037801708772278989">A comprobación realizouse agora mesmo</translation>
 <translation id="804335162455518893">Non se atopou a tarxeta SD</translation>
@@ -1963,7 +1962,6 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="9169507124922466868">O historial de navegación abriuse ata a metade</translation>
 <translation id="9189607089796819144">Queres descargar o ficheiro "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) de todos os modos?</translation>
 <translation id="9190276265094487094">Terás o teu historial en todos os dispositivos sincronizados, de tal xeito que poidas continuar co que estabas facendo</translation>
-<translation id="9190355771000652811">Na barra de enderezos, utiliza esta combinación de teclas con atallos para motores de busca e a busca de sitios.</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" />, pestana do modo de incógnito seleccionada e fixada</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{A comprobación realizouse hai 1 minuto}other{A comprobación realizouse hai # minutos}}</translation>
 <translation id="9204836675896933765">Queda 1 ficheiro</translation>

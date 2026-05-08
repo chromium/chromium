@@ -442,6 +442,7 @@
 <translation id="2493269659028026145">Блокировать сразу, используя <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="2496180316473517155">История браузера</translation>
 <translation id="2496626742194544812">Перейти к первой вкладке</translation>
+<translation id="2497852260688568942">Ваш администратор отключил синхронизацию</translation>
 <translation id="2499505845365628575">Чтобы посмотреть историю браузера, выберите "<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />".</translation>
 <translation id="2511117522375201202">Раскрытых паролей: <ph name="NUMBER_OF_PASSWORDS" />. Ваша безопасность под угрозой.</translation>
 <translation id="2513103768503127042">Здесь хранятся группы вкладок</translation>
@@ -1748,7 +1749,7 @@
 <translation id="7029809446516969842">Пароли</translation>
 <translation id="7035825883570480307">Включить уведомления?</translation>
 <translation id="7039345315346323556">Недавние</translation>
-<translation id="704692552158601232">Браузер по умолчанию</translation>
+<translation id="704692552158601232">Приложение браузера по умолчанию</translation>
 <translation id="7055240621761583113">Автозаполнение пароля</translation>
 <translation id="7057567173736333354">Опишите изображение</translation>
 <translation id="7063811929043357292">Твоим аккаунтом управляет твой родитель.

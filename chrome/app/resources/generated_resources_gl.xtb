@@ -3434,6 +3434,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3347086966102161372">C&amp;opiar enderezo da imaxe</translation>
 <translation id="3348038390189153836">Dispositivo extraíble detectado</translation>
 <translation id="3348973040180736882">Descomprimindo</translation>
+<translation id="3349610303043713601">Explorar coa IA</translation>
 <translation id="3349933790966648062">Uso de memoria</translation>
 <translation id="3351472127384196879">Engade botóns no lapis ou cámbialles a localización</translation>
 <translation id="3353786022389205125">Activa Mostrar pantalla de bloqueo ao activarse despois da suspensión e, logo, volve tentalo</translation>
@@ -6824,7 +6825,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5712153969432126546">Ás veces, os sitios publican PDF (por exemplo, documentos, contratos e formularios)</translation>
 <translation id="571222594670061844">Os sitios poden mostrar solicitudes de inicio de sesión dos servizos de identidade</translation>
 <translation id="5713158217420111469">Conectado con: <ph name="DEVICE" /></translation>
-<translation id="5713988532993992900">Invertido</translation>
 <translation id="5714100381896040477">Limita o movemento na pantalla</translation>
 <translation id="5719854774000914513">Os sitios poden pedirche permiso para conectarse a dispositivos de interface humana</translation>
 <translation id="5720729194423017301">Atallos a sitios e buscadores</translation>
@@ -8737,7 +8737,6 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="7044606776288350625">Sincronizar datos</translation>
 <translation id="7050037487872780845">A configuración da zona wifi non é válida</translation>
 <translation id="7051222203795962489">{COUNT,plural, =1{O contrasinal gardouse na túa Conta de Google, <ph name="USER_EMAIL" />}other{Os contrasinais gardáronse na túa Conta de Google, <ph name="USER_EMAIL" />}}</translation>
-<translation id="7051728324516005763">IA en Chrome</translation>
 <translation id="7052762602787632571">&amp;Eliminar datos de navegación…</translation>
 <translation id="705352103640172578">Fervenza</translation>
 <translation id="7053983685419859001">Bloquear</translation>

@@ -355,6 +355,7 @@
 <translation id="4724676981607797757">A instalação falhou devido a um erro de protocolo sem suporte.</translation>
 <translation id="4746050847053251315">Sair do Chromium mesmo assim?</translation>
 <translation id="4748217263233248895">Uma atualização de segurança especial para o Chromium acabou de ser aplicada. Reinicie agora, e suas guias serão restauradas.</translation>
+<translation id="4759645701210484457">Perguntar ao Chromium</translation>
 <translation id="4771701986670315895">Você não visitou os sites recentemente. O Chromium removeu <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e outras <ph name="COUNT" />.</translation>
 <translation id="4788777615168560705">Não foi possível verificar suas senhas. Tente novamente em 24 horas ou <ph name="BEGIN_LINK" />verifique-as na sua Conta do Google<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">Esta opção usa o mesmo corretor ortográfico usado na Pesquisa Google. O texto digitado no navegador é enviado para o Google. É possível alterar esse comportamento nas configurações a qualquer momento.</translation>
@@ -407,9 +408,6 @@
 <translation id="5524890928877629608">canto superior esquerdo da área de pesquisa: <ph name="LEFT" />% à esquerda, <ph name="TOP" />% acima</translation>
 <translation id="5527463683072221100">Abrir PDFs no Chromium</translation>
 <translation id="5536164441519929134">Pergunte<ph name="LINE_BREAK" />sobre esta guia</translation>
-<translation id="555970465369471303">Por segurança, o Chromium desativa a otimização do JavaScript quando você acessa um site pela primeira vez.
-
-Se esta página não funcionar como o esperado, ative a otimização.</translation>
 <translation id="5579324208890605088">Erro de inicialização: execute o instalador como um usuário comum, não como administrador.</translation>
 <translation id="5580770360767802657">Use o Chromium por padrão e o mantenha fixado</translation>
 <translation id="5596627076506792578">Mais opções</translation>
@@ -524,6 +522,7 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="6676384891291319759">Acessar a internet</translation>
 <translation id="668175097507315160">O ChromiumOS não pôde sincronizar seus dados devido a um erro durante o login.</translation>
 <translation id="6691132793308828750">Remover os dados deste app do Chromium</translation>
+<translation id="6692797197837897398">O Chromium oferece mais controle sobre os anúncios mostrados e limita o que os sites podem saber sobre você quando mostram anúncios personalizados</translation>
 <translation id="6709350901466051922">O Chromium precisa da permissão de acesso ao microfone para este site</translation>
 <translation id="6712881677154121168">Erro no download: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6717134281241384636">Seu perfil não pode ser usado porque é de uma versão mais recente do Chromium. Alguns recursos podem não estar disponíveis. Especifique outro diretório de perfil ou use uma versão mais recente do Chromium.</translation>

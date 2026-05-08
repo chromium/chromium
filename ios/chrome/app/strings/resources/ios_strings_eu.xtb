@@ -442,6 +442,7 @@
 <translation id="2493269659028026145">Blokeatu berehala <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> bidez</translation>
 <translation id="2496180316473517155">Arakatze-historia</translation>
 <translation id="2496626742194544812">Joan lehen fitxara</translation>
+<translation id="2497852260688568942">Administratzaileak sinkronizazioa desgaitu du</translation>
 <translation id="2499505845365628575">Arakatze-historia osoa ikusteko, ireki <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="2511117522375201202">Arriskuan dauden <ph name="NUMBER_OF_PASSWORDS" /> pasahitz dauzkazu, eta baliteke horrek segurtasunari eragitea.</translation>
 <translation id="2513103768503127042">Hemen aurkituko dituzu fitxa taldeak</translation>
@@ -2000,7 +2001,6 @@
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939856641500914040">Ezabatu arakatze-datuak…</translation>
 <translation id="7941578031639087549">{count,plural, =1{Orria gehitu da zure kontuaren ({email}) irakurketa-zerrendan}other{{count} orri gehitu dira zure kontuaren ({email}) irakurketa-zerrendan}}</translation>
-<translation id="7948579849190819732">Fitxa hau</translation>
 <translation id="7952353944614086413">Zure fitxa eta talde irekiak</translation>
 <translation id="7952670906562503188">{passkey_count} sarbide-gako eta saioa hasteko informazioa inoiz ez gordetzeko aukeratu dituzun webguneen eta aplikazioen zerrenda ezabatuko dituzu. Webgune eta aplikazioetarako sortu dituzun kontuak ez dira ezabatuko.</translation>
 <translation id="7958575506592576831">Orriaren segurtasunaren informazioa</translation>

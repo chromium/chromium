@@ -1096,7 +1096,6 @@
 <translation id="2677748264148917807">나가기</translation>
 <translation id="2679216653373462289">움직임 감지 센서 및 조도 센서 사용</translation>
 <translation id="2679659833697380">정보가 기기에 저장됩니다.</translation>
-<translation id="2680837394649649718"><ph name="DEVICE_NAME" />의 Chrome으로 전송되었습니다.</translation>
 <translation id="2683195745483370038">다른 검색 결과가 표시됨</translation>
 <translation id="2686919536310834199">작성 지원 기능에 관한 의견을 보냅니다.</translation>
 <translation id="2687555958734450033">자동 맞춤</translation>
@@ -3087,7 +3086,6 @@
 <translation id="5787146423283493983">키 계약</translation>
 <translation id="5793317771769868848">기기에서 이 결제 수단이 삭제됩니다.</translation>
 <translation id="5794065675298686371">가격 추적 알림 사용 설정</translation>
-<translation id="5797984091151707075">관리자 정책에 따라 차단됨</translation>
 <translation id="5800727402210090597">휴대전화 수리 및 서비스</translation>
 <translation id="580241730938216256">업데이트 시작</translation>
 <translation id="5804241973901381774">권한</translation>
@@ -5254,6 +5252,7 @@
 <translation id="9186371298532546532">더 많은 위치에서 이 주소 사용</translation>
 <translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" />님이 이 탭을 변경했습니다.</translation>
 <translation id="9189789270972826888">카드가 입력되지 않은 경우 아래의 카드 세부정보를 클릭하고 복사하여 붙여넣으세요. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
+<translation id="9190557999028587593">4주가 지난 주제는 자동으로 삭제됩니다.</translation>
 <translation id="9191834167571392248">왼쪽 하단 펀칭</translation>
 <translation id="9192361865877479444">금속(매트)</translation>
 <translation id="9192947025498305328">클린 뷰티</translation>

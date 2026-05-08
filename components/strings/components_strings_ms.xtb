@@ -754,7 +754,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2168151236314517198">Pencetakan kandungan ini disekat oleh dasar pentadbir anda</translation>
 <translation id="2171244127100824330">Dalam <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> untk <ph name="ACCOUNT" /></translation>
 <translation id="2172089022819052306">Pembaikan &amp; Penyelenggaraan Kenderaan</translation>
-<translation id="217231402430591139">Pautkan akaun anda</translation>
 <translation id="2173302385160625112">Periksa sambungan Internet anda</translation>
 <translation id="2174875517416416684">Transaksi anda tidak berjaya. Tiada dana yang dikeluarkan daripada akaun anda.</translation>
 <translation id="2175630235841878061">Fail dengan saiz melebihi 100MB tidak tersedia untuk dimuat turun</translation>
@@ -3219,7 +3218,6 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="6006365096047131769">3 x 5 in</translation>
 <translation id="6008122969617370890">Susunan N-ke-1</translation>
 <translation id="6008256403891681546">JCB</translation>
-<translation id="6012135807160718387">Penyulitan Google melindungi maklumat anda</translation>
 <translation id="6014801569448771146">Semak kata laluan anda</translation>
 <translation id="6014851866995737824">Diabaikan kerana tiada senarai "dayakan" atau "lumpuhkan".</translation>
 <translation id="6015796118275082299">Tahun</translation>
@@ -5260,6 +5258,7 @@ Butiran tambahan:
 <translation id="9186371298532546532">Gunakan alamat ini pada lebih banyak tempat</translation>
 <translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> menukar tab ini</translation>
 <translation id="9189789270972826888">Klik butiran kad di bawah untuk menyalin dan menampal jika kad tidak diisi. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
+<translation id="9190557999028587593">Topik yang disimpan melebihi 4 minggu akan dipadamkan secara automatik</translation>
 <translation id="9191834167571392248">Tebukan bawah sebelah kiri</translation>
 <translation id="9192361865877479444">Logam (Kusam)</translation>
 <translation id="9192947025498305328">Kecantikan Alamiah</translation>

@@ -271,7 +271,6 @@
 <translation id="2226826835915474236">ທາງລັດທີ່ບໍ່ເຄື່ອນໄຫວ</translation>
 <translation id="2227179592712503583">ລຶບການແນະນຳອອກ</translation>
 <translation id="2227444325776770048">ສືບຕໍ່ໃຊ້ໃນຊື່ <ph name="USER_FULL_NAME" /></translation>
-<translation id="2230411774874187555">ຮັບຂໍ້ມູນທີ່ບັນທຶກໄວ້ທັງໝົດຂອງທ່ານ</translation>
 <translation id="2230777942707397948">ໜ້າຈໍຫວ່າງເປົ່າ</translation>
 <translation id="223356358902285214">ການເຄື່ອນໄຫວເວັບ ແລະ ແອັບ</translation>
 <translation id="2233735624724508540">ເລືອກຂອບເຂດເວລາ ແລ້ວແຕະລຶບຂໍ້ມູນ</translation>
@@ -484,7 +483,6 @@
 <translation id="3057938290530993634">ແຕະຄ້າງໄວ້ເພື່ອປັກໝຸດເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງຫຼາຍທີ່ສຸດເພື່ອໃຫ້ເຂົ້າເຖິງໄດ້ງ່າຍໃນເທື່ອຕໍ່ໄປ</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> ບຸກມາກ}other{<ph name="BOOKMARKS_COUNT_MANY" /> ບຸກມາກ}}</translation>
 <translation id="3062802207422175757">ບົດຄວາມທີ່ທ່ານສົນໃຈໃນ Chrome</translation>
-<translation id="3066107845790462226">ດາວໂຫຼດເຟຣມວິດີໂອ</translation>
 <translation id="3066573403916685335">ຍ້າຍ​ລົງ</translation>
 <translation id="3067505415088964188">ລາຄາຕ່ຳ</translation>
 <translation id="3070005020161560471">ແປໂດຍອັດຕະໂນມັດ</translation>
@@ -1218,7 +1216,6 @@
 <translation id="6264485186158353794">ກັບ​ຄືນ​ສູ່ຄາມປອດ​ໄພ</translation>
 <translation id="6267106249090587268">ການແຈ້ງເຕືອນ <ph name="SEPARATOR" /> Chrome ໄດ້ລຶບການອະນຸຍາດເຫຼົ່ານີ້ອອກເນື່ອງຈາກມີສະແປມ ຫຼື ເນື້ອຫາຫຼອກລວງ</translation>
 <translation id="6276708887952587684">ເບິ່ງແຫຼ່ງທີ່ມາຂອງຫນ້າ</translation>
-<translation id="62768169905160414">ສຳເນົາເຟຣມວິດີໂອ</translation>
 <translation id="6277522088822131679">ມີບັນຫາການພິມໜ້າ. ກະລຸນາລອງໃໝ່ອີກ.</translation>
 <translation id="6278428485366576908">ສີສັນໜ້າຕາ</translation>
 <translation id="6291294824436685757">ລຶບຂໍ້ມູນການທ່ອງເວັບ; ເລືອກຂໍ້ມູນທີ່ຈະລຶບ</translation>
