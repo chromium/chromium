@@ -6392,10 +6392,6 @@ grit("resources") {
       "//url/mojom:url_mojom_gurl_js",
     ]
   }
-
-  if (safe_browsing_mode == 1) {
-    deps += [ "//chrome/browser/resources/reset_password:build_ts" ]
-  }
 }
 
 action("expired_flags_list_gen") {

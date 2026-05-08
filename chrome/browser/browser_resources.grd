@@ -144,11 +144,7 @@
         <include name="IDR_ARC_POWER_CONTROL_JS" file="resources\chromeos\arc_power_control\arc_power_control.js" type="BINDATA" />
         <include name="IDR_ARC_POWER_CONTROL_CSS" file="resources\chromeos\arc_power_control\arc_power_control.css" type="BINDATA" />
       </if>
-      <if expr="safe_browsing_mode == 1">
-        <include name="IDR_RESET_PASSWORD_HTML" file="resources\reset_password\reset_password.html" type="BINDATA" />
-        <include name="IDR_RESET_PASSWORD_JS" file="${root_gen_dir}\chrome\browser\resources\reset_password\tsc\reset_password.js" use_base_dir="false" type="BINDATA" />
-        <include name="IDR_RESET_PASSWORD_MOJOM_WEBUI_JS" file="${root_gen_dir}\chrome\browser\resources\reset_password\tsc\reset_password.mojom-webui.js" use_base_dir="false" type="BINDATA" />
-      </if>
+
       <if expr="is_android">
         <include name="IDR_DEV_UI_LOADER_ERROR_HTML" file="resources/dev_ui/dev_ui_loader_error.html" type="BINDATA" />
       </if>

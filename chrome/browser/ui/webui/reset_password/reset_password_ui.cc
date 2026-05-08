@@ -18,7 +18,8 @@
 #include "chrome/browser/ui/webui/reset_password/reset_password.mojom.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/grit/browser_resources.h"
+#include "chrome/grit/reset_password_resources.h"
+#include "chrome/grit/reset_password_resources_map.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_service.h"
 #include "components/safe_browsing/core/browser/password_protection/metrics_util.h"
@@ -132,11 +133,8 @@ ResetPasswordUI::ResetPasswordUI(content::WebUI* web_ui)
       content::WebUIDataSource::CreateAndAdd(
           web_ui->GetWebContents()->GetBrowserContext(),
           chrome::kChromeUIResetPasswordHost);
-  webui::EnableTrustedTypesCSP(html_source);
-  html_source->AddResourcePath("reset_password.js", IDR_RESET_PASSWORD_JS);
-  html_source->AddResourcePath("reset_password.mojom-webui.js",
-                               IDR_RESET_PASSWORD_MOJOM_WEBUI_JS);
-  html_source->SetDefaultResource(IDR_RESET_PASSWORD_HTML);
+  webui::SetupWebUIDataSource(html_source, kResetPasswordResources,
+                              IDR_RESET_PASSWORD_RESET_PASSWORD_HTML);
   html_source->AddLocalizedStrings(PopulateStrings());
 }
 

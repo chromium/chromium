@@ -6,6 +6,7 @@ import("//chrome/browser/buildflags.gni")
 import("//chrome/common/features.gni")
 import("//components/compose/features.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
+import("//components/safe_browsing/buildflags.gni")
 import("//content/browser/devtools/features.gni")
 import("//pdf/features.gni")
 import("//printing/buildflags/buildflags.gni")
@@ -204,6 +205,10 @@ group("resources") {
 
   if (enterprise_watermark) {
     public_deps += [ "watermark:resources" ]
+  }
+
+  if (safe_browsing_mode == 1) {
+    public_deps += [ "reset_password:resources" ]
   }
 }
 
