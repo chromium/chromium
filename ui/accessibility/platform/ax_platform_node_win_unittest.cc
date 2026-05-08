@@ -21,6 +21,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_util_win.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -7524,6 +7525,40 @@ TEST_F(AXPlatformNodeWinTest, ISelectionItemProviderMenuItemRadio) {
       GetIRawElementProviderSimpleFromChildIndex(3)->GetPatternProvider(
           UIA_SelectionItemPatternId, &option4_provider));
   ASSERT_EQ(nullptr, option4_provider.Get());
+}
+
+TEST_F(AXPlatformNodeWinTest, SelectedMenuItemSelectionEventNotifiesFocus) {
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kMenu;
+
+  AXNodeData menu_item;
+  menu_item.id = 2;
+  menu_item.role = ax::mojom::Role::kMenuItem;
+  menu_item.AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, true);
+  root.child_ids.push_back(menu_item.id);
+
+  Init(root, menu_item);
+
+  bool focus_event_fired = false;
+  bool selection_event_fired = false;
+  AXPlatformNodeBase::SetOnNotifyEventCallbackForTesting(
+      ax::mojom::Event::kFocus,
+      base::BindLambdaForTesting([&]() { focus_event_fired = true; }));
+  AXPlatformNodeBase::SetOnNotifyEventCallbackForTesting(
+      ax::mojom::Event::kSelection,
+      base::BindLambdaForTesting([&]() { selection_event_fired = true; }));
+
+  AXPlatformNodeFromNode(GetRoot()->children()[0])
+      ->NotifyAccessibilityEvent(ax::mojom::Event::kSelection);
+
+  AXPlatformNodeBase::SetOnNotifyEventCallbackForTesting(
+      ax::mojom::Event::kFocus, base::RepeatingClosure());
+  AXPlatformNodeBase::SetOnNotifyEventCallbackForTesting(
+      ax::mojom::Event::kSelection, base::RepeatingClosure());
+
+  EXPECT_TRUE(focus_event_fired);
+  EXPECT_FALSE(selection_event_fired);
 }
 
 TEST_F(AXPlatformNodeWinTest, ISelectionItemProviderTable) {
