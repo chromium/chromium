@@ -19,9 +19,11 @@ source_set("feature_showcase") {
 
   deps = [
     "//base",
+    "//chrome/app/theme:chrome_unscaled_resources",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/regional_capabilities",
     "//chrome/browser/resources/feature_showcase:resources",
+    "//chrome/browser/resources/intro:resources",
     "//components/regional_capabilities",
     "//components/signin/public/base:signin_switches",
     "//ui/webui",

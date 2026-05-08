@@ -1,0 +1,109 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  --child-max-height_: 500px;
+  --child-max-width_: 500px;
+  --content-gap_: 24px;
+  --showcase-text-gap_: 24px;
+  --showcase-text-padding-top_: 24px;
+  --subtitle-font-size_: 16px;
+  --text-max-width_: 349px;
+  --title-font-size_: 24px;
+  align-items: center;
+  color: var(--cr-primary-text-color);
+  display: flex;
+  flex-direction: row;
+  gap: var(--content-gap_);
+  height: 100%;
+  justify-content: center;
+  margin: 0;
+}
+
+@media screen and ((max-width: 780px) or (max-height: 600px)) {
+  :host {
+    --showcase-text-gap_: 12px;
+    --showcase-text-padding-top_: 12px;
+    --subtitle-font-size_: 14px;
+    --text-max-width_: 290px;
+    --title-font-size_: 20px;
+  }
+}
+
+.content-child {
+  align-items: center;
+  display: flex;
+  flex: 1;
+  height: 60%;
+  max-height: var(--child-max-height_);
+  max-width: var(--child-max-width_);
+  width: 60%;
+}
+
+#showcase-illustration {
+  align-items: flex-start;
+  justify-content: flex-end;
+  position: relative;
+}
+
+::slotted([slot='illustration']) {
+  border-radius: 24px;
+  max-height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+  object-position: right center;
+}
+
+#showcase-description {
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+#showcase-text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--showcase-text-gap_);
+  padding-top: var(--showcase-text-padding-top_);
+}
+
+.title {
+  font-weight: 500;
+  letter-spacing: 0;
+  line-height: 32px;
+  font-size: var(--title-font-size_);
+  max-width: var(--text-max-width_);
+  margin: 0;
+}
+
+.subtitle {
+  font-size: var(--subtitle-font-size_);
+  font-weight: 400;
+  line-height: 24px;
+  margin: 0;
+  max-width: var(--text-max-width_);
+}
+
+#button-container {
+  display: flex;
+<if expr="not is_win">
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+</if>
+<if expr="is_win">
+  flex-direction: row;
+  justify-content: flex-start;
+</if>
+  gap: 8px;
+}
+
+:host-context([dir='rtl']) ::slotted([slot='illustration']) {
+  object-position: left center;
+}

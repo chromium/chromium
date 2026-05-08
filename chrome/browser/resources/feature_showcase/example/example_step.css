@@ -7,7 +7,14 @@
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
-#viewManager {
-  height: 100vh;
-  width: 100vw;
+:host {
+  height: 100%;
+}
+
+feature-showcase-step {
+  height: 100%;
+}
+
+#illustration {
+  content: url(images/refresh_showcase_illustration.png);
 }

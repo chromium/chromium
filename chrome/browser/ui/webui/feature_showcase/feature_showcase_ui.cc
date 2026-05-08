@@ -7,16 +7,33 @@
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/feature_list.h"
+#include "build/branding_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/regional_capabilities/regional_capabilities_service_factory.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/feature_showcase_resources.h"
 #include "chrome/grit/feature_showcase_resources_map.h"
+#include "chrome/grit/intro_resources.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/webui/webui_util.h"
+
+namespace {
+void AddExampleStepResources(content::WebUIDataSource* source) {
+// For now placeholder illustration, will be used later in the DB screen.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  source->AddResourcePath("images/refresh_showcase_illustration.png",
+                          IDR_DEFAULT_BROWSER_SHOWCASE_CHROME);
+#else
+  source->AddResourcePath(
+      "images/refresh_showcase_illustration.png",
+      IDR_INTRO_IMAGES_REFRESH_SHOWCASE_ILLUSTRATION_CHROMIUM_PNG);
+#endif
+}
+}  // namespace
 
 FeatureShowcaseUIConfig::FeatureShowcaseUIConfig()
     : content::DefaultWebUIConfig<FeatureShowcaseUI>(
@@ -42,7 +59,7 @@ FeatureShowcaseUI::FeatureShowcaseUI(content::WebUI* web_ui)
   webui::SetupWebUIDataSource(source, kFeatureShowcaseResources,
                               IDR_FEATURE_SHOWCASE_FEATURE_SHOWCASE_HTML);
 
-  source->AddString("message", "Hello from Feature Showcase!");
+  AddExampleStepResources(source);
 }
 
 FeatureShowcaseUI::~FeatureShowcaseUI() = default;
