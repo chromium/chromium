@@ -131,11 +131,6 @@ void TriggerSoftNavigationAndWait(content::WebContents* web_contents,
 class SoftNavigationTest : public MetricIntegrationTest,
                            public testing::WithParamInterface<bool> {
  public:
-  void PreRunTestOnMainThread() override {
-    InProcessBrowserTest::PreRunTestOnMainThread();
-    histogram_tester_ = std::make_unique<base::HistogramTester>();
-  }
-
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kEnableGpuBenchmarking);
     command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
@@ -465,14 +460,13 @@ class SoftNavigationTest : public MetricIntegrationTest,
     EXPECT_TRUE(extract_lcp_before_first_soft_nav);
     EXPECT_EQ(lcp_before_first_soft_nav, lcp);
 
-    histogram_tester_->ExpectUniqueSample(
+    histogram_tester().ExpectUniqueSample(
         "PageLoad.BeforeSoftNavigation.LargestContentfulPaint2",
         lcp_before_first_soft_nav, 1);
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
 // This test focuses on measuring the image LCP of a soft navigation in UKM.
