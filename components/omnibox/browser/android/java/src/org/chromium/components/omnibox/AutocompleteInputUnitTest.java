@@ -137,14 +137,18 @@ public class AutocompleteInputUnitTest {
         assertFalse(mInput.allowExactKeywordMatch());
 
         // Adding first space should enable keyword matching
-        mInput.setUserText("keyword test");
+        mInput.setUserText("keyword ");
         assertTrue(mInput.allowExactKeywordMatch());
+
+        // Adding subsequent text after space should disable keyword matching
+        mInput.setUserText("keyword test");
+        assertFalse(mInput.allowExactKeywordMatch());
     }
 
     @Test
     public void allowExactKeywordMatch_removingSpace() {
-        // Set text with space to enable keyword matching
-        mInput.setUserText("keyword test");
+        // Set text with first space to enable keyword matching
+        mInput.setUserText("keyword ");
         assertTrue(mInput.allowExactKeywordMatch());
 
         // Removing space should disable keyword matching
@@ -159,19 +163,19 @@ public class AutocompleteInputUnitTest {
         assertFalse(mInput.allowExactKeywordMatch());
 
         // Add space - should enable
-        mInput.setUserText("search term");
+        mInput.setUserText("search ");
         assertTrue(mInput.allowExactKeywordMatch());
 
-        // Modify text but keep space - should remain enabled
+        // Modify text to have multiple words - should become disabled
         mInput.setUserText("search different");
-        assertTrue(mInput.allowExactKeywordMatch());
+        assertFalse(mInput.allowExactKeywordMatch());
 
-        // Remove space - should disable
+        // Remove space - should remain disabled
         mInput.setUserText("searchterm");
         assertFalse(mInput.allowExactKeywordMatch());
 
         // Add space again - should re-enable
-        mInput.setUserText("search again");
+        mInput.setUserText("search ");
         assertTrue(mInput.allowExactKeywordMatch());
     }
 
@@ -181,13 +185,25 @@ public class AutocompleteInputUnitTest {
         mInput.setUserText(null);
         assertFalse(mInput.allowExactKeywordMatch());
 
-        // Test transition from null to text with space
-        mInput.setUserText("test space");
+        // Test transition from null to text with first space
+        mInput.setUserText("test ");
         assertTrue(mInput.allowExactKeywordMatch());
 
         // Test transition to empty string
         mInput.setUserText("");
         assertFalse(mInput.allowExactKeywordMatch());
+    }
+
+    @Test
+    public void testAllowExactKeywordTrigger() {
+        assertTrue(AutocompleteInput.allowExactKeywordTrigger("yahoo "));
+        assertFalse(AutocompleteInput.allowExactKeywordTrigger("yahoo"));
+        assertFalse(AutocompleteInput.allowExactKeywordTrigger(" "));
+        assertFalse(AutocompleteInput.allowExactKeywordTrigger(""));
+        assertFalse(AutocompleteInput.allowExactKeywordTrigger(null));
+        assertFalse(AutocompleteInput.allowExactKeywordTrigger("yahoo t"));
+        assertFalse(AutocompleteInput.allowExactKeywordTrigger("yahoo yahoo "));
+        assertFalse(AutocompleteInput.allowExactKeywordTrigger(" yahoo "));
     }
 
     @Test
@@ -288,18 +304,18 @@ public class AutocompleteInputUnitTest {
         // Test setting text with multiple spaces
         mInput.setUserText("test multiple spaces");
         assertEquals("test multiple spaces", mInput.getUserText());
-        assertTrue(mInput.allowExactKeywordMatch());
+        assertFalse(mInput.allowExactKeywordMatch());
     }
 
     @Test
     public void integrationTest_resetClearsAllState() {
         // Set up some state
         mInput.setPageClassification(PageClassification.OTHER_VALUE);
-        mInput.setUserText("test with space");
+        mInput.setUserText("test ");
 
         // Verify state is set
         assertEquals(PageClassification.OTHER_VALUE, mInput.getPageClassification());
-        assertEquals("test with space", mInput.getUserText());
+        assertEquals("test ", mInput.getUserText());
         assertTrue(mInput.allowExactKeywordMatch());
         assertFalse(mInput.isInZeroPrefixContext());
 
@@ -323,8 +339,8 @@ public class AutocompleteInputUnitTest {
         assertTrue(mInput.isInZeroPrefixContext());
         assertFalse(mInput.allowExactKeywordMatch());
 
-        // Add text with space - should disable caching but enable keyword match
-        mInput.setUserText("search term");
+        // Add text with first space - should disable caching but enable keyword match
+        mInput.setUserText("search ");
         assertFalse(mInput.isInCacheableContext());
         assertFalse(mInput.isInZeroPrefixContext());
         assertTrue(mInput.allowExactKeywordMatch());

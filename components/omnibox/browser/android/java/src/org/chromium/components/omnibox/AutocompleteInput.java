@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import android.util.Range;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.UserData;
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -315,7 +316,9 @@ public class AutocompleteInput implements UserData {
      * existing content of the UserText the selection markers and keyword matching flags are reset.
      * When new text matches the existing text no action is taken.
      *
-     * @param text The user-typed text. Null text is automatically replaced with empty string.
+     * @param text The user-typed text. Null text is automatically replaced with empty string. Note
+     *     that if the site search is triggered, the text will only contains the content after the
+     *     keyword and space.
      * @return The AutocompleteInput object.
      */
     public AutocompleteInput setUserText(@Nullable String text) {
@@ -324,10 +327,8 @@ public class AutocompleteInput implements UserData {
         String oldText = mUserText.get();
         if (TextUtils.equals(text, oldText)) return this;
 
-        boolean oldTextUsesKeywordActivator =
-                !TextUtils.isEmpty(oldText) && TextUtils.indexOf(oldText, ' ') > 0;
-        boolean newTextUsesKeywordActivator =
-                !TextUtils.isEmpty(text) && TextUtils.indexOf(text, ' ') > 0;
+        boolean oldTextUsesKeywordActivator = allowExactKeywordTrigger(oldText);
+        boolean newTextUsesKeywordActivator = allowExactKeywordTrigger(text);
 
         // Allow engaging Keyword mode only if the user input introduces first space.
         mAllowExactKeywordMatch |= !oldTextUsesKeywordActivator && newTextUsesKeywordActivator;
@@ -550,5 +551,18 @@ public class AutocompleteInput implements UserData {
     /** Sets the ModelMode that should be used. */
     public void setModelMode(int modelMode) {
         mModelMode = modelMode;
+    }
+
+    @VisibleForTesting
+    static boolean allowExactKeywordTrigger(String text) {
+        if (TextUtils.isEmpty(text)) return false;
+        // Given test should at least contains keyword + space to allow keyword match.
+        if (text.length() <= 1 || !text.endsWith(" ")) return false;
+
+        // Checks if there is exactly one space in the input.  If a user triggers site search
+        // (e.g. "yahoo "), then deletes the chip via <backspace> and continues typing a multi-word
+        // query ("yahoo some query"), we must prevent the first word from falsely re-triggering the
+        // keyword match.
+        return text.indexOf(' ') == text.lastIndexOf(' ');
     }
 }
