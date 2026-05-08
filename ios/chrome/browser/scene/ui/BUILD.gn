@@ -27,6 +27,7 @@ source_set("ui") {
   deps = [
     ":constants",
     "//base",
+    "//components/strings",
     "//ios/chrome/app/strings:ios_strings",
     "//ios/chrome/browser/app_bar/ui",
     "//ios/chrome/browser/app_bar/ui:constants",

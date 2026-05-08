@@ -37,6 +37,18 @@ typedef NS_ENUM(NSInteger, BubblePageControlPage);
              showsNextButton:(BOOL)showsNextButton
                         page:(BubblePageControlPage)page
                textAlignment:(NSTextAlignment)textAlignment
+                    delegate:(id<BubbleViewDelegate>)delegate;
+
+// Extends initializer above with `customNextButtonTitle`.
+- (instancetype)initWithText:(NSString*)text
+              arrowDirection:(BubbleArrowDirection)direction
+                   alignment:(BubbleAlignment)alignment
+            showsCloseButton:(BOOL)shouldShowCloseButton
+                       title:(NSString*)titleString
+             showsNextButton:(BOOL)showsNextButton
+                        page:(BubblePageControlPage)page
+               textAlignment:(NSTextAlignment)textAlignment
+       customNextButtonTitle:(NSString*)customNextButtonTitle
                     delegate:(id<BubbleViewDelegate>)delegate
     NS_DESIGNATED_INITIALIZER;
 

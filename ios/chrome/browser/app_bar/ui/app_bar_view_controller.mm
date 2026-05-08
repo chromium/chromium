@@ -245,7 +245,7 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
   _spotlightView.hidden = !shouldShow;
 }
 
-- (void)showIPHBackground {
+- (void)showIPHBackgroundWithCentering:(BOOL)centered {
   if (!_IPHBackgroundView) {
     _IPHBackgroundView = [[AppBarIPHBackgroundView alloc] init];
     _IPHBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -254,6 +254,8 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
 
     AddSameConstraints(_backgroundView, _IPHBackgroundView);
   }
+
+  _IPHBackgroundView.centered = centered;
 
   UIView* background = _IPHBackgroundView;
 
@@ -343,6 +345,8 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
   ]];
 
   [self.layoutGuideCenter referenceView:_stackView underName:kAppBarGuide];
+  [self.layoutGuideCenter referenceView:_assistantButton
+                              underName:kAppBarAssistantButtonGuide];
 
   // The AppBar is created in "portrait" orientation.
   [self updateStackViewConstraintsForPortrait:YES];

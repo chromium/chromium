@@ -34,11 +34,13 @@
 
 @interface FakeSceneConsumer : NSObject <TestSceneConsumer>
 @property(nonatomic, assign) BOOL showNewIAPromoCalled;
+@property(nonatomic, assign) BOOL eligibleForGemini;
 @end
 
 @implementation FakeSceneConsumer
-- (void)showNewIAPromo {
+- (void)showNewIAPromoWithGeminiEligibility:(BOOL)eligible {
   self.showNewIAPromoCalled = YES;
+  self.eligibleForGemini = eligible;
 }
 - (void)updateForFullscreenProgress:(CGFloat)progress {
 }

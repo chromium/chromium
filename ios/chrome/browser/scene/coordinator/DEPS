@@ -16,6 +16,7 @@ include_rules = [
   "+ios/chrome/browser/incognito_interstitial/ui_bundled",
   "+ios/chrome/browser/incognito_reauth/ui_bundled",
   "+ios/chrome/browser/infobars/model",
+  "+ios/chrome/browser/intelligence/bwg/model",
   "+ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h",
   "+ios/chrome/browser/mailto_handler/model",
   "+ios/chrome/browser/main/ui",

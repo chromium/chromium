@@ -16,6 +16,9 @@
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)coder NS_UNAVAILABLE;
 
+// Whether the gradient is centered (YES) or left-bottom aligned (NO).
+@property(nonatomic, assign) BOOL centered;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_APP_BAR_UI_APP_BAR_IPH_BACKGROUND_VIEW_H_

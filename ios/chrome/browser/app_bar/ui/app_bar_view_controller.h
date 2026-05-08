@@ -45,7 +45,9 @@
 - (void)toggleSpotlightView:(BOOL)shouldShow;
 
 // Shows the blue-ish background with a circular gradient.
-- (void)showIPHBackground;
+// If `centered` is YES, the gradient is centered. Otherwise, it is left-bottom
+// aligned.
+- (void)showIPHBackgroundWithCentering:(BOOL)centered;
 
 // Hides the blue-ish background.
 - (void)hideIPHBackground;

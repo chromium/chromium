@@ -11,7 +11,9 @@
 @protocol AppBarCommands <NSObject>
 
 // Shows the blue-ish background with a circular gradient on the App Bar.
-- (void)showIPHBackground;
+// If `centered` is YES, the gradient is centered. Otherwise, it is left-bottom
+// aligned.
+- (void)showIPHBackgroundWithCentering:(BOOL)centered;
 
 // Hides the blue-ish background on the App Bar.
 - (void)hideIPHBackground;

@@ -53,6 +53,17 @@ enum class GuidedTourStep;
                (CallbackWithIPHDismissalReasonType)dismissalCallback
     NS_UNAVAILABLE;
 
+- (instancetype)initWithText:(NSString*)text
+                       title:(NSString*)titleString
+              arrowDirection:(BubbleArrowDirection)arrowDirection
+                   alignment:(BubbleAlignment)alignment
+                  bubbleType:(BubbleViewType)type
+             pageControlPage:(BubblePageControlPage)page
+       customNextButtonTitle:(NSString*)customNextButtonTitle
+           dismissalCallback:
+               (CallbackWithIPHDismissalReasonType)dismissalCallback
+    NS_UNAVAILABLE;
+
 // Presents the bubble in `parentViewController`'s view. The underlying
 // BubbleViewController is added as a child view controller of
 // `parentViewController`. `anchorPoint` determines where the bubble is anchored

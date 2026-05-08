@@ -287,8 +287,8 @@
 
 #pragma mark - AppBarCommands
 
-- (void)showIPHBackground {
-  [_viewController showIPHBackground];
+- (void)showIPHBackgroundWithCentering:(BOOL)centered {
+  [_viewController showIPHBackgroundWithCentering:centered];
 }
 
 - (void)hideIPHBackground {

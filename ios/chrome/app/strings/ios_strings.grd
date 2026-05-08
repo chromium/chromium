@@ -4619,6 +4619,12 @@
       <message name="IDS_IOS_NEW_FEATURE_ACCESSIBILITY_HINT" desc="Accessibility hint spoken by VoiceOver to let the user know there is a new feature. This string will be appended to an existing accesibility label when the UI is showing a 'new' badge to attract the user's attention. For example, the label 'Default Browser' would become 'Default Browser, new feature', which is why the string is not capitalized at its start. [iOS/iPadOS only]">
         new feature
       </message>
+      <message name="IDS_IOS_NEW_IA_PROMO_IPH_GEMINI_TEXT" desc="Main text for the second in-product help bubble suggesting Gemini built-in. [Length: unlimited] [iOS only]">
+        Use Gemini to summarize, explain, and more.
+      </message>
+      <message name="IDS_IOS_NEW_IA_PROMO_IPH_GEMINI_TITLE" desc="Title for the second in-product help bubble suggesting Gemini built-in. [Length: unlimited] [iOS only]">
+        Gemini Built In
+      </message>
       <message name="IDS_IOS_NEW_IA_PROMO_IPH_TEXT" desc="Main text for the in-product help bubble suggesting a faster way to use the app. [Length: unlimited] [iOS only]">
         Getting around in the app is easier now.
       </message>

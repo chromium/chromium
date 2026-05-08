@@ -11,7 +11,7 @@
 @protocol SceneConsumer <NSObject>
 
 // Tells the consumer to show the new IA promo.
-- (void)showNewIAPromo;
+- (void)showNewIAPromoWithGeminiEligibility:(BOOL)eligible;
 
 @end
 

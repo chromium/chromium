@@ -90,7 +90,8 @@ enum class IPHDismissalReasonType {
   kTappedAnchorView = 8,
   kVoiceOverAnnouncementEnded = 9,
   kSwipedAsInstructedByGestureIPH = 10,
-  kMaxValue = kSwipedAsInstructedByGestureIPH,
+  kTappedNext = 11,
+  kMaxValue = kTappedNext,
 };
 
 // The page that should be highlighted in the Bubble PageControl.

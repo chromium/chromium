@@ -99,5 +99,8 @@ extern GuideName* const kLocationBarBadgeLargeEntrypointGuide;
 extern GuideName* const kInputAccessoryViewLayoutGuide;
 // A guide that is constrained to match the frame of the app bar.
 extern GuideName* const kAppBarGuide;
+// A guide that is constrained to match the frame of the app bar's assistant
+// button.
+extern GuideName* const kAppBarAssistantButtonGuide;
 
 #endif  // IOS_CHROME_BROWSER_SHARED_UI_UTIL_LAYOUT_GUIDE_NAMES_H_

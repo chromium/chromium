@@ -47,6 +47,8 @@ source_set("coordinator") {
     "//ios/chrome/browser/incognito_interstitial/ui_bundled:coordinator",
     "//ios/chrome/browser/incognito_reauth/ui_bundled:incognito_reauth_scene_agent",
     "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/intelligence/bwg/model:gemini_service",
+    "//ios/chrome/browser/intelligence/bwg/model:gemini_service_factory",
     "//ios/chrome/browser/intelligence/bwg/utils:constants",
     "//ios/chrome/browser/mailto_handler/model",
     "//ios/chrome/browser/mailto_handler/model:mailto_handler_factory",

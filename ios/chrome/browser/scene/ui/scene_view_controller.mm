@@ -8,6 +8,7 @@
 
 #import "base/check.h"
 #import "base/trace_event/trace_event.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_layout_utils.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_presentation_context.h"
@@ -31,6 +32,13 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
+
+namespace {
+
+// Transition delay between IPH presentations.
+constexpr NSTimeInterval kIPHTransitionDelay = 0.5;
+
+}  // namespace
 
 @interface SceneViewController () <LayoutStateObserver, SceneViewDelegate>
 @end
@@ -750,8 +758,66 @@
 
 #pragma mark - SceneConsumer
 
-- (void)showNewIAPromo {
-  [self.appBarHandler showIPHBackground];
+- (void)showNewIAPromoWithGeminiEligibility:(BOOL)geminiEligible {
+  [self.appBarHandler showIPHBackgroundWithCentering:YES];
+  BubbleArrowDirection arrowDirection = BubbleArrowDirectionDown;
+  AppBarPosition position = self.layoutState.appBarPosition;
+  if (position == AppBarPosition::kLeft) {
+    arrowDirection = BubbleArrowDirectionLeading;
+  } else if (position == AppBarPosition::kRight) {
+    arrowDirection = BubbleArrowDirectionTrailing;
+  }
+
+  __weak __typeof(self) weakSelf = self;
+  CallbackWithIPHDismissalReasonType callback =
+      ^(IPHDismissalReasonType reason) {
+        [weakSelf.appBarHandler hideIPHBackground];
+        if (reason == IPHDismissalReasonType::kTappedNext && geminiEligible) {
+          dispatch_after(
+              dispatch_time(DISPATCH_TIME_NOW,
+                            (int64_t)(kIPHTransitionDelay * NSEC_PER_SEC)),
+              dispatch_get_main_queue(), ^{
+                [weakSelf showSecondIAPromo];
+              });
+        } else {
+          [weakSelf.mutator newIAPromoIPHDismissed];
+        }
+      };
+
+  NSString* title = l10n_util::GetNSString(IDS_IOS_NEW_IA_PROMO_IPH_TITLE);
+  NSString* subtitle = l10n_util::GetNSString(IDS_IOS_NEW_IA_PROMO_IPH_TEXT);
+
+  BubbleViewType bubbleType =
+      geminiEligible ? BubbleViewTypeRichWithNext : BubbleViewTypeRich;
+
+  BubbleViewControllerPresenter* presenter =
+      [[BubbleViewControllerPresenter alloc]
+               initWithText:subtitle
+                      title:title
+             arrowDirection:arrowDirection
+                  alignment:BubbleAlignmentCenter
+                 bubbleType:bubbleType
+            pageControlPage:BubblePageControlPageNone
+          dismissalCallback:callback];
+  presenter.dismissalTimerDisabled = geminiEligible;
+
+  UIView* anchorView =
+      [self.layoutGuideCenter referencedViewUnderName:kAppBarGuide];
+  if (!anchorView) {
+    anchorView = self.view;
+  }
+
+  // `convertPoint:toView:` is taking into account the transform. In all cases,
+  // the closest side to the content is the top side.
+  CGPoint anchorPoint = CGPointMake(anchorView.bounds.size.width / 2.0, 0);
+  CGPoint windowAnchorPoint = [anchorView convertPoint:anchorPoint toView:nil];
+
+  [presenter presentInViewController:self anchorPoint:windowAnchorPoint];
+}
+
+// Shows the second step of the IPH promo, promoting Gemini.
+- (void)showSecondIAPromo {
+  [self.appBarHandler showIPHBackgroundWithCentering:NO];
   BubbleArrowDirection arrowDirection = BubbleArrowDirectionDown;
   AppBarPosition position = self.layoutState.appBarPosition;
   if (position == AppBarPosition::kLeft) {
@@ -767,28 +833,46 @@
         [weakSelf.mutator newIAPromoIPHDismissed];
       };
 
-  NSString* title = l10n_util::GetNSString(IDS_IOS_NEW_IA_PROMO_IPH_TITLE);
-  NSString* subtitle = l10n_util::GetNSString(IDS_IOS_NEW_IA_PROMO_IPH_TEXT);
+  NSString* title =
+      l10n_util::GetNSString(IDS_IOS_NEW_IA_PROMO_IPH_GEMINI_TITLE);
+  NSString* subtitle =
+      l10n_util::GetNSString(IDS_IOS_NEW_IA_PROMO_IPH_GEMINI_TEXT);
 
   BubbleViewControllerPresenter* presenter =
       [[BubbleViewControllerPresenter alloc]
-               initWithText:subtitle
-                      title:title
-             arrowDirection:arrowDirection
-                  alignment:BubbleAlignmentCenter
-                 bubbleType:BubbleViewTypeRich
-            pageControlPage:BubblePageControlPageNone
-          dismissalCallback:callback];
+                   initWithText:subtitle
+                          title:title
+                 arrowDirection:arrowDirection
+                      alignment:BubbleAlignmentTopOrLeading
+                     bubbleType:BubbleViewTypeRichWithNext
+                pageControlPage:BubblePageControlPageNone
+          customNextButtonTitle:l10n_util::GetNSString(IDS_CLOSE)
+              dismissalCallback:callback];
+  presenter.dismissalTimerDisabled = YES;
 
-  UIView* anchorView =
-      [self.layoutGuideCenter referencedViewUnderName:kAppBarGuide];
+  UIView* anchorView = [self.layoutGuideCenter
+      referencedViewUnderName:kAppBarAssistantButtonGuide];
   if (!anchorView) {
     anchorView = self.view;
   }
 
-  // `convertPoint:toView:` is taking into account the transform. In all cases,
-  // the closest side to the content is the top side.
-  CGPoint anchorPoint = CGPointMake(anchorView.bounds.size.width / 2.0, 0);
+  CGPoint anchorPoint = CGPointZero;
+  switch (arrowDirection) {
+    case BubbleArrowDirectionDown:
+      anchorPoint = CGPointMake(anchorView.bounds.size.width / 2.0, 0);
+      break;
+    case BubbleArrowDirectionUp:
+      anchorPoint = CGPointMake(anchorView.bounds.size.width / 2.0,
+                                anchorView.bounds.size.height);
+      break;
+    case BubbleArrowDirectionLeading:
+      anchorPoint = CGPointMake(anchorView.bounds.size.width,
+                                anchorView.bounds.size.height / 2.0);
+      break;
+    case BubbleArrowDirectionTrailing:
+      anchorPoint = CGPointMake(0, anchorView.bounds.size.height / 2.0);
+      break;
+  }
   CGPoint windowAnchorPoint = [anchorView convertPoint:anchorPoint toView:nil];
 
   [presenter presentInViewController:self anchorPoint:windowAnchorPoint];

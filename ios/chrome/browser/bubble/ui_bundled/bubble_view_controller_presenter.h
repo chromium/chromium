@@ -63,6 +63,11 @@ using CallbackWithIPHDismissalReasonType =
 // will be ignored if set to 0 or smaller.
 @property(nonatomic, assign) NSTimeInterval customBubbleVisibilityDuration;
 
+// Whether the auto-dismiss timer should be disabled. If YES, the bubble will
+// stay visible until dismissed manually (e.g. via tap or next/close button).
+// Defaults to NO.
+@property(nonatomic, assign) BOOL dismissalTimerDisabled;
+
 // An override for the pan gesture availability.
 // The default is `NO`. If set, the pan gesture for IPH dismissal will be
 // suppressed, ignoring the pan gesture ablation experiment.
@@ -84,6 +89,17 @@ using CallbackWithIPHDismissalReasonType =
                    alignment:(BubbleAlignment)alignment
                   bubbleType:(BubbleViewType)type
              pageControlPage:(BubblePageControlPage)page
+           dismissalCallback:
+               (CallbackWithIPHDismissalReasonType)dismissalCallback;
+
+// Extends initializer above with `customNextButtonTitle`.
+- (instancetype)initWithText:(NSString*)text
+                       title:(NSString*)titleString
+              arrowDirection:(BubbleArrowDirection)arrowDirection
+                   alignment:(BubbleAlignment)alignment
+                  bubbleType:(BubbleViewType)type
+             pageControlPage:(BubblePageControlPage)page
+       customNextButtonTitle:(NSString*)customNextButtonTitle
            dismissalCallback:
                (CallbackWithIPHDismissalReasonType)dismissalCallback
     NS_DESIGNATED_INITIALIZER;

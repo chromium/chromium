@@ -13,6 +13,8 @@ namespace feature_engagement {
 class Tracker;
 }
 
+class GeminiService;
+
 enum class AppBarPosition;
 @protocol FullscreenUIElement;
 class FullscreenController;
@@ -26,6 +28,9 @@ class FullscreenController;
 
 // The feature engagement tracker.
 @property(nonatomic, assign) feature_engagement::Tracker* tracker;
+
+// The Gemini service.
+@property(nonatomic, assign) GeminiService* geminiService;
 
 // The position of the App Bar. Only set at startup, not updated after.
 @property(nonatomic, assign) AppBarPosition appBarPositionAtLaunch;

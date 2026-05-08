@@ -52,6 +52,8 @@
 #import "ios/chrome/browser/incognito_interstitial/ui_bundled/incognito_interstitial_coordinator_delegate.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/mailto_handler/model/mailto_handler_service.h"
 #import "ios/chrome/browser/mailto_handler/model/mailto_handler_service_factory.h"
@@ -285,6 +287,8 @@ void OnListFamilyMembersResponse(
                                                 _incognitoBrowser.get())];
     _sceneMediator.tracker =
         feature_engagement::TrackerFactory::GetForProfile(self.profile);
+    _sceneMediator.geminiService =
+        GeminiServiceFactory::GetForProfile(self.profile);
     if (IsChromeNextIaEnabled()) {
       [_layoutState updateAppBarPositionWithView:_viewController.view
                                      coordinator:nil];

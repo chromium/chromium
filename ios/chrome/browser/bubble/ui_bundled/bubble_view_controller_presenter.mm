@@ -101,6 +101,7 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
 @synthesize alignment = _alignment;
 @synthesize dismissalCallback = _dismissalCallback;
 @synthesize voiceOverAnnouncement = _voiceOverAnnouncement;
+@synthesize dismissalTimerDisabled = _dismissalTimerDisabled;
 
 - (instancetype)initWithText:(NSString*)text
                        title:(NSString*)titleString
@@ -108,6 +109,25 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
                    alignment:(BubbleAlignment)alignment
                   bubbleType:(BubbleViewType)type
              pageControlPage:(BubblePageControlPage)page
+           dismissalCallback:
+               (CallbackWithIPHDismissalReasonType)dismissalCallback {
+  return [self initWithText:text
+                      title:titleString
+             arrowDirection:arrowDirection
+                  alignment:alignment
+                 bubbleType:type
+            pageControlPage:page
+      customNextButtonTitle:nil
+          dismissalCallback:dismissalCallback];
+}
+
+- (instancetype)initWithText:(NSString*)text
+                       title:(NSString*)titleString
+              arrowDirection:(BubbleArrowDirection)arrowDirection
+                   alignment:(BubbleAlignment)alignment
+                  bubbleType:(BubbleViewType)type
+             pageControlPage:(BubblePageControlPage)page
+       customNextButtonTitle:(NSString*)customNextButtonTitle
            dismissalCallback:
                (CallbackWithIPHDismissalReasonType)dismissalCallback {
   self = [super init];
@@ -119,6 +139,7 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
                                          alignment:alignment
                                     bubbleViewType:type
                                    pageControlPage:page
+                             customNextButtonTitle:customNextButtonTitle
                                           delegate:self];
     _userEngaged = NO;
     _triggerFollowUpAction = NO;
@@ -344,16 +365,22 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
   [self dismissAnimated:YES reason:IPHDismissalReasonType::kTappedClose];
 }
 
+- (void)didTapNextButton {
+  [self dismissAnimated:YES reason:IPHDismissalReasonType::kTappedNext];
+}
+
 #pragma mark - Private
 
 // Set up a timer that dismisses the bubble view.
 - (void)setUpDismissalTimer {
-  self.bubbleDismissalTimer = [NSTimer
-      scheduledTimerWithTimeInterval:[self bubbleVisibilityDuration]
-                              target:self
-                            selector:@selector(bubbleDismissalTimerFired:)
-                            userInfo:nil
-                             repeats:NO];
+  if (!self.dismissalTimerDisabled) {
+    self.bubbleDismissalTimer = [NSTimer
+        scheduledTimerWithTimeInterval:[self bubbleVisibilityDuration]
+                                target:self
+                              selector:@selector(bubbleDismissalTimerFired:)
+                              userInfo:nil
+                               repeats:NO];
+  }
 
   self.userEngaged = YES;
   self.triggerFollowUpAction = YES;
