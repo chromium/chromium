@@ -51,6 +51,7 @@ public class AutofillAiDelegate {
     private static final int DEFAULT_SNACKBAR_DURATION = 10000;
 
     private final ChromeBaseSettingsFragment mFragment;
+    private final EntityDataManager.EntityDataManagerObserver mEntityObserver;
     private @Nullable EntityEditorCoordinator mEntityEditor;
     private @Nullable ReauthenticatorBridge mReauthenticatorBridge;
     private final EntityEditorCoordinator.Delegate mEntityEditorDelegate =
@@ -99,16 +100,31 @@ public class AutofillAiDelegate {
 
     /**
      * @param fragment The fragment hosting the settings.
+     * @param entityObserver Observer to be notified if entities change.
      */
-    AutofillAiDelegate(ChromeBaseSettingsFragment fragment) {
+    AutofillAiDelegate(ChromeBaseSettingsFragment fragment, EntityDataManager.EntityDataManagerObserver entityObserver) {
         mFragment = fragment;
+        mEntityObserver = entityObserver;
     }
 
     EntityEditorCoordinator.Delegate getEntityEditorDelegate() {
         return mEntityEditorDelegate;
     }
 
-    public void onDestroyView() {
+    void onActivityCreated() {
+        EntityDataManager entityDataManager =
+            EntityDataManagerFactory.getForProfile(mFragment.getProfile());
+        if (entityDataManager != null) {
+            entityDataManager.registerDataObserver(mEntityObserver);
+        }
+    }
+
+    void onDestroyView() {
+        EntityDataManager entityDataManager =
+            EntityDataManagerFactory.getForProfile(mFragment.getProfile());
+        if (entityDataManager != null) {
+            entityDataManager.unregisterDataObserver(mEntityObserver);
+        }
         if (mReauthenticatorBridge != null) {
             mReauthenticatorBridge.destroy();
             mReauthenticatorBridge = null;

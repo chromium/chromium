@@ -53,6 +53,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager;
+import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager.EntityDataManagerObserver;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory;
 import org.chromium.chrome.browser.device_reauth.BiometricStatus;
 import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
@@ -401,7 +402,63 @@ public class AutofillIdentityDocsFragmentTest {
 
     // TODO(crbug.com/482994257): Sorting test
 
-    // TODO(crbug.com/482994257): Refresh entities test
+    @Test
+    @MediumTest
+    public void testAutofillAiEntities_rebuildsOnEntityChange() throws Exception {
+        EntityType passportType = TestUtils.getPassportEntityType();
+
+        EntityInstanceWithLabels entity1 =
+                new EntityInstanceWithLabels(
+                        "guid1",
+                        passportType,
+                        /* entityInstanceLabel= */ "Passport",
+                        /* entityInstanceSubLabel= */ "John Doe",
+                        /* storedInWallet= */ false,
+                        /* walletEntityUrl= */ null);
+
+        LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap1 =
+                new LinkedHashMap<>();
+        instancesMap1.put(passportType, Arrays.asList(entity1));
+
+        when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap1);
+
+        mSettingsActivityTestRule.startSettingsActivity();
+
+        // Capture the observer registered by the fragment.
+        ArgumentCaptor<EntityDataManagerObserver> captor =
+                ArgumentCaptor.forClass(EntityDataManagerObserver.class);
+        verify(mEntityDataManager, atLeastOnce()).registerDataObserver(captor.capture());
+        EntityDataManagerObserver observer = captor.getValue();
+
+        // Initially check that the entity is rendered.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Preference passportEntity =
+                            mSettingsActivityTestRule.getFragment().findPreference("guid1");
+                    Criteria.checkThat(
+                            "Passport entity should exist",
+                            passportEntity,
+                            Matchers.notNullValue());
+                });
+
+        // Change the entities and notify the observer.
+        LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap2 =
+                new LinkedHashMap<>();
+        instancesMap2.put(passportType, Collections.emptyList());
+        when(mEntityDataManager.getInstancesToList()).thenReturn(instancesMap2);
+        ThreadUtils.runOnUiThreadBlocking(() -> observer.onEntityInstancesChanged());
+
+        // Verify that the entity is gone.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Preference passportEntity =
+                            mSettingsActivityTestRule.getFragment().findPreference("guid1");
+                    Criteria.checkThat(
+                            "Passport entity should no longer exist",
+                            passportEntity,
+                            Matchers.nullValue());
+                });
+    }
 
     @Test
     @MediumTest

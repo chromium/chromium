@@ -127,7 +127,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
                 }
             };
 
-    private final AutofillAiDelegate mAutofillAiDelegate = new AutofillAiDelegate(this);
+    private final AutofillAiDelegate mAutofillAiDelegate = new AutofillAiDelegate(this, this);
 
     private static @Nullable EditorObserverForTest sObserverForTest;
     static final String PREF_NEW_PROFILE = "new_profile";
@@ -388,19 +388,12 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         PersonalDataManagerFactory.getForProfile(getProfile()).registerDataObserver(this);
-        EntityDataManager entityDataManager = EntityDataManagerFactory.getForProfile(getProfile());
-        if (entityDataManager != null) {
-            entityDataManager.registerDataObserver(this);
-        }
+        mAutofillAiDelegate.onActivityCreated();
     }
 
     @Override
     public void onDestroyView() {
         PersonalDataManagerFactory.getForProfile(getProfile()).unregisterDataObserver(this);
-        EntityDataManager entityDataManager = EntityDataManagerFactory.getForProfile(getProfile());
-        if (entityDataManager != null) {
-            entityDataManager.unregisterDataObserver(this);
-        }
         mAutofillAiDelegate.onDestroyView();
         super.onDestroyView();
     }

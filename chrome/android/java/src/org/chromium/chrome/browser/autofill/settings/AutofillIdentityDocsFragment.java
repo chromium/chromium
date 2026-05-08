@@ -17,6 +17,7 @@ import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
@@ -30,7 +31,8 @@ import java.util.Set;
 
 /** Fragment to manage Autofill AI Identity Documents. */
 @NullMarked
-public class AutofillIdentityDocsFragment extends ChromeBaseSettingsFragment {
+public class AutofillIdentityDocsFragment extends ChromeBaseSettingsFragment
+        implements EntityDataManager.EntityDataManagerObserver {
 
     public static final String PREF_OPT_IN_TOGGLE = "autofill_ai_identity_docs_opt_in";
 
@@ -40,7 +42,7 @@ public class AutofillIdentityDocsFragment extends ChromeBaseSettingsFragment {
                     EntityTypeName.DRIVERS_LICENSE,
                     EntityTypeName.NATIONAL_ID_CARD);
 
-    private final AutofillAiDelegate mAutofillAiDelegate = new AutofillAiDelegate(this);
+    private final AutofillAiDelegate mAutofillAiDelegate = new AutofillAiDelegate(this, this);
 
     private final SettableMonotonicObservableSupplier<String> mPageTitle =
             ObservableSuppliers.createMonotonic();
@@ -74,9 +76,21 @@ public class AutofillIdentityDocsFragment extends ChromeBaseSettingsFragment {
     }
 
     @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        mAutofillAiDelegate.onActivityCreated();
+    }
+
+    @Override
     public void onDestroyView() {
         mAutofillAiDelegate.onDestroyView();
         super.onDestroyView();
+    }
+
+    @Override
+    public void onEntityInstancesChanged() {
+        rebuildEntityList();
+        notifyPreferencesUpdated();
     }
 
     private void rebuildEntityList() {
