@@ -550,6 +550,17 @@ void WebAppInstallFlowDialogDelegate::
   base::RecordAction(base::UserMetricsAction(cancel_dialog_metric_name));
 }
 
+void WebAppInstallFlowDialogDelegate::OnCancelOrCloseClicked() {
+  if (current_step_ == InstallDialogStep::kSuccessful) {
+    IntentPickerTabHelper* helper =
+        IntentPickerTabHelper::FromWebContents(web_contents());
+    if (helper) {
+      helper->MaybeShowIntentPickerIcon();
+    }
+  }
+  OnCancel();
+}
+
 // Updates dialog title based on current step.
 void WebAppInstallFlowDialogDelegate::UpdateDialogTitleAndHeader(
     InstallDialogStep step) {
@@ -608,11 +619,6 @@ void WebAppInstallFlowDialogDelegate::OnInstallResult(
   }
   install_success_ = true;
   reparent_closure_ = std::move(reparent_closure);
-  IntentPickerTabHelper* helper =
-      IntentPickerTabHelper::FromWebContents(web_contents());
-  if (helper) {
-    helper->MaybeShowIntentPickerIcon();
-  }
   UpdateProgressAndMaybeAdvance();
 }
 
@@ -747,8 +753,9 @@ void WebAppInstallFlowDialogDelegate::Show(
                                   IDS_WEB_APP_INSTALL_FLOW_NEXT))
               .SetId(WebAppInstallFlowDialogDelegate::kInstallButton))
       .AddCancelButton(
-          base::BindOnce(&WebAppInstallFlowDialogDelegate::OnCancel,
-                         delegate_weak_ptr),
+          base::BindOnce(
+              &WebAppInstallFlowDialogDelegate::OnCancelOrCloseClicked,
+              delegate_weak_ptr),
           ui::DialogModel::Button::Params().SetId(kCancelButtonId))
       .SetCloseActionCallback(base::BindOnce(
           &WebAppInstallFlowDialogDelegate::OnClose, delegate_weak_ptr))

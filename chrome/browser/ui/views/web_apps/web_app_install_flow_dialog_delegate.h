@@ -97,6 +97,7 @@ class WebAppInstallFlowDialogDelegate : public WebAppModalDialogDelegate {
   void OnAccept();
   void OnCancel();
   void OnClose();
+  void OnCancelOrCloseClicked();
   void OnDestroyed();
 
   void OnTextFieldChangedMaybeUpdateButton(
