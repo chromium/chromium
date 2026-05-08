@@ -243,10 +243,19 @@ public class UrlBar extends AutocompleteEditText {
                 this,
                 () -> {
                     // We have now avoided the first draw problem (see the comments above) so we
-                    // want to
-                    // make the URL bar focusable so that touches etc. activate it.
+                    // want to make the URL bar focusable so that touches etc. activate it.
                     setFocusable(mAllowFocus);
                     setFocusableInTouchMode(mAllowFocus);
+
+                    // Override Android defaults that are applied by the OS as part of the text
+                    // initialization. If applied directly from the constructor - Android will
+                    // revert these settings to what it assumes is right.
+                    // Android does that because the `inputType` is intentionally not set to
+                    // `multiline`, however the moment we do that - Android applies other
+                    // incompatible defaults (and starts wrapping URLs).
+                    setSingleLine(false);
+                    setMaxLines(MULTILINE_EDIT_MAX_LINES);
+                    setHorizontallyScrolling(true);
                 });
 
         setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
@@ -398,15 +407,9 @@ public class UrlBar extends AutocompleteEditText {
     }
 
     private void updateUrlBarForMultilineInput() {
-        if (mFocused && mAllowMultilineInput) {
-            setSingleLine(false);
-            setMaxLines(MULTILINE_EDIT_MAX_LINES);
-            setHorizontallyScrolling(!mCurrentInputCanBeWrapped);
-        } else {
-            setSingleLine(true);
-            setMaxLines(1);
-            setHorizontallyScrolling(true);
-        }
+        boolean wantWrap = mFocused && mAllowMultilineInput && mCurrentInputCanBeWrapped;
+        if (wantWrap == !isHorizontallyScrollable()) return;
+        setHorizontallyScrolling(!wantWrap);
     }
 
     /**

@@ -1045,21 +1045,15 @@ public class UrlBarUnitTest {
         // Mark current input as wrapping eligible.
         mUrlBar.setInputIsMultilineEligible(true);
         mUrlBar.onFocusChanged(true, View.LAYOUT_DIRECTION_LTR, new Rect());
-        assertEquals(UrlBar.MULTILINE_EDIT_MAX_LINES, mUrlBar.getMaxLines());
-        assertFalse(mUrlBar.isSingleLine());
         assertFalse(mUrlBar.isHorizontallyScrollable());
 
         // Mark current input as wrapping ineligible.
         mUrlBar.setInputIsMultilineEligible(false);
-        assertEquals(UrlBar.MULTILINE_EDIT_MAX_LINES, mUrlBar.getMaxLines());
-        assertFalse(mUrlBar.isSingleLine());
         assertTrue(mUrlBar.isHorizontallyScrollable());
 
         // Defocused omnibox - never multiline
         mUrlBar.onFocusChanged(false, View.LAYOUT_DIRECTION_LTR, new Rect());
         mUrlBar.setInputIsMultilineEligible(true);
-        assertEquals(1, mUrlBar.getMaxLines());
-        assertTrue(mUrlBar.isSingleLine());
         assertTrue(mUrlBar.isHorizontallyScrollable());
 
         // Suppress line wrapping.
@@ -1068,8 +1062,6 @@ public class UrlBarUnitTest {
         // Mark current input as wrapping eligible.
         mUrlBar.setInputIsMultilineEligible(true);
         mUrlBar.onFocusChanged(true, View.LAYOUT_DIRECTION_LTR, new Rect());
-        assertEquals(1, mUrlBar.getMaxLines());
-        assertTrue(mUrlBar.isSingleLine());
         assertTrue(mUrlBar.isHorizontallyScrollable());
     }
 
@@ -1141,18 +1133,17 @@ public class UrlBarUnitTest {
     @EnableFeatures(OmniboxFeatureList.MULTILINE_EDIT_FIELD)
     public void onFocusChanged_MultilineEligibility() {
         mUrlBar.setAllowMultilineInput(true);
-        mUrlBar.onFocusChanged(true, View.FOCUS_DOWN, null);
-        assertFalse(mUrlBar.isSingleLine());
-        assertEquals(UrlBar.MULTILINE_EDIT_MAX_LINES, mUrlBar.getMaxLines());
-
         mUrlBar.onFocusChanged(false, View.FOCUS_DOWN, null);
-        assertTrue(mUrlBar.isSingleLine());
-        assertEquals(1, mUrlBar.getMaxLines());
+        assertTrue(mUrlBar.isHorizontallyScrollable());
 
-        mUrlBar.setAllowMultilineInput(false);
         mUrlBar.onFocusChanged(true, View.FOCUS_DOWN, null);
-        assertTrue(mUrlBar.isSingleLine());
-        assertEquals(1, mUrlBar.getMaxLines());
+        assertTrue(mUrlBar.isHorizontallyScrollable());
+
+        mUrlBar.setAllowMultilineInput(true);
+        assertTrue(mUrlBar.isHorizontallyScrollable());
+
+        mUrlBar.setInputIsMultilineEligible(true);
+        assertFalse(mUrlBar.isHorizontallyScrollable());
     }
 
     @Test

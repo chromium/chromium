@@ -158,12 +158,10 @@ public class UrlBarViewBinderUnitTest {
     public void testSetAllowMultilineInput() {
         mModel.set(UrlBarProperties.ALLOW_MULTILINE_INPUT, true);
         mUrlBar.onFocusChanged(true, View.FOCUS_DOWN, null);
-        assertFalse(mUrlBar.isSingleLine());
-        assertEquals(UrlBar.MULTILINE_EDIT_MAX_LINES, mUrlBar.getMaxLines());
+        mUrlBar.setInputIsMultilineEligible(true);
+        assertFalse(mUrlBar.isHorizontallyScrollable());
 
         mModel.set(UrlBarProperties.ALLOW_MULTILINE_INPUT, false);
-        mUrlBar.onFocusChanged(true, View.FOCUS_DOWN, null);
-        assertTrue(mUrlBar.isSingleLine());
-        assertEquals(1, mUrlBar.getMaxLines());
+        assertTrue(mUrlBar.isHorizontallyScrollable());
     }
 }
