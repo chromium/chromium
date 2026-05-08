@@ -17,7 +17,6 @@
 #include "extensions/browser/extension_prefs_helper_factory.h"
 #include "extensions/browser/extension_protocols.h"
 #include "extensions/browser/extension_registrar_factory.h"
-#include "extensions/browser/extension_user_activation_service_factory.h"
 #include "extensions/browser/image_loader_factory.h"
 #include "extensions/browser/message_tracker.h"
 #include "extensions/browser/pending_extension_manager_factory.h"
@@ -58,7 +57,6 @@ void EnsureCoreBrowserContextKeyedServiceFactoriesBuilt() {
   ExtensionFunction::EnsureShutdownNotifierFactoryBuilt();
   ExtensionPrefsFactory::GetInstance();
   ExtensionNavigationRegistry::GetFactoryInstance();
-  ExtensionUserActivationServiceFactory::GetInstance();
   ExtensionPrefsHelperFactory::GetInstance();
   ExtensionRegistrarFactory::GetInstance();
   ImageLoaderFactory::GetInstance();
