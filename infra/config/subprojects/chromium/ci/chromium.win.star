@@ -726,12 +726,9 @@ ci.builder(
     ),
     cq_mirrors_console_view = "mirrors",
     contact_team_email = "chrome-desktop-engprod@google.com",
-    # 20min (bot update) + 3hr (compile time without cache) +
-    # 40min (isolate tests) with 1hr buffer
-    # TODO: crbug.com/506222555: Extend timeout to let builds to
-    # upload logs.
-    # execution_timeout = 5 * time.hour,
-    execution_timeout = 7 * time.hour,
+    # 3hr (compile time without cache) +
+    # 30min (isolate tests) with buffer
+    execution_timeout = 5 * time.hour,
 )
 
 ci.thin_tester(
