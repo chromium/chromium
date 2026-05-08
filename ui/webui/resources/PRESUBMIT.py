@@ -87,7 +87,6 @@ def CheckNoDisallowedJS(input_api, output_api):
   EXCLUDE_PATH_PREFIXES = [
     'ui/webui/resources/js/ios/',
     'ui/webui/resources/js/load_time_data_deprecated.js',
-    'ui/webui/resources/js/util_deprecated.js',
     'ui/webui/resources/tools/',
   ]
 

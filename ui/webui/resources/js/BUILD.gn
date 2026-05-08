@@ -50,11 +50,6 @@ build_webui("build") {
     ]
   }
 
-  if (is_chromeos || is_ios) {
-    # Used by ChromeOS UIs and ios inspect and omaha UIs
-    ts_files += [ "util_deprecated.js" ]
-  }
-
   if (enable_dice_support) {
     ts_files += [ "batch_upload_promo/batch_upload_promo_proxy.ts" ]
   }

@@ -78,6 +78,7 @@ ts_files = [
   "promise_resolver.js",
   "smb_shares/smb_browser_proxy.js",
   "util.js",
+  "util_deprecated.js",
   "web_ui_listener_behavior.js",
 ]
 
