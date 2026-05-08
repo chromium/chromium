@@ -371,6 +371,8 @@ namespace features {
 
 BASE_FEATURE(kDoNotEvictOnAXLocationChange, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnforceUserActivationForBeforeUnload,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace features
 
 namespace content {
@@ -7375,6 +7377,20 @@ void RenderFrameHostImpl::RunBeforeUnloadConfirm(
 
   // Don't show the dialog and indicate navigation should continue.
   if (GetContentClient()->browser()->ShouldSkipBeforeUnloadDialog(this)) {
+    std::move(ipc_response_callback).Run(/*success=*/true);
+    return;
+  }
+
+  // Check if this frame could legally display a dialog.
+  if (base::FeatureList::IsEnabled(
+          features::kEnforceUserActivationForBeforeUnload) &&
+      !CouldDisplayBeforeUnloadDialog()) {
+    SendInterventionReport(
+        "BeforeUnloadNoGesture",
+        "Blocked attempt to show a 'beforeunload' confirmation panel for a "
+        "frame that never had a user gesture since its load. "
+        "https://www.chromestatus.com/feature/5082396709879808",
+        /*child_frame=*/nullptr);
     std::move(ipc_response_callback).Run(/*success=*/true);
     return;
   }

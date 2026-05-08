@@ -979,6 +979,54 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_FALSE(rfh->CouldDisplayBeforeUnloadDialog());
 }
 
+class RenderFrameHostImplUserActivationBeforeUnloadBrowserTest
+    : public RenderFrameHostImplBrowserTest {
+ public:
+  RenderFrameHostImplUserActivationBeforeUnloadBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        features::kEnforceUserActivationForBeforeUnload);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that the browser process blocks a beforeunload dialog if the frame
+// does not have user activation, even if requested by the renderer.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplUserActivationBeforeUnloadBrowserTest,
+                       BeforeUnloadDialogBlockedByBrowserActivationCheck) {
+  TestJavaScriptDialogManager dialog_manager;
+  web_contents()->SetDelegate(&dialog_manager);
+
+  EXPECT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+  RenderFrameHostImpl* rfh = root_frame_host();
+
+  // Disable the hang monitor to avoid races.
+  PrepContentsForBeforeUnloadTest(web_contents(),
+                                  /*trigger_user_activation=*/false);
+
+  // Add handler without user gesture.
+  ASSERT_TRUE(ExecJs(rfh, "window.onbeforeunload = () => 'x';",
+                     EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  // Call RunBeforeUnloadConfirm directly, bypassing renderer checks.
+  bool callback_ran = false;
+  rfh->RunBeforeUnloadConfirm(true,
+                              base::BindLambdaForTesting([&](bool success) {
+                                EXPECT_TRUE(success);
+                                callback_ran = true;
+                              }));
+
+  // Verify the callback was called synchronously.
+  EXPECT_TRUE(callback_ran);
+
+  // Verify no dialog was shown because browser-side check blocked it.
+  EXPECT_EQ(0, dialog_manager.num_beforeunload_dialogs_seen());
+
+  web_contents()->SetDelegate(nullptr);
+}
+
 // Test that beforeunload handlers registered in out-of-process iframes can
 // display dialogs, even during renderer-initiated navigations in a process that
 // does not have a beforeunload handler. Also verifies that the correct metrics
