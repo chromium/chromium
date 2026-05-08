@@ -95,6 +95,7 @@ import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.gesturenav.GestureNavigationUtils;
 import org.chromium.chrome.browser.gesturenav.OverscrollGlowCoordinator;
 import org.chromium.chrome.browser.gesturenav.TabOnBackGestureHandler;
+import org.chromium.chrome.browser.glic.GlicButtonDelegate;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.homepage.HomepageManager.HomepageStateListener;
@@ -200,6 +201,7 @@ import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoord
 import org.chromium.chrome.browser.ui.actions.ActionId;
 import org.chromium.chrome.browser.ui.actions.ActionProperties;
 import org.chromium.chrome.browser.ui.actions.ActionRegistry;
+import org.chromium.chrome.browser.ui.actions.glic.GlicActionCoordinator;
 import org.chromium.chrome.browser.ui.actions.tabswitcher.TabSwitcherActionProvider;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
@@ -425,6 +427,8 @@ public class ToolbarManager
     private final ScrimManager mScrimManager;
 
     private final OneshotSupplier<Boolean> mPromoShownOneshotSupplier;
+    private final GlicButtonDelegate mToggleGlicCallback;
+    private @Nullable GlicActionCoordinator mGlicActionCoordinator;
 
     private final TabStripTopControlLayer mTabStripTopControlLayer;
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
@@ -795,9 +799,11 @@ public class ToolbarManager
             SnackbarManager snackbarManager,
             @Nullable OmniboxChipManager omniboxChipManager,
             @Nullable BottomBarHostManager bottomBarHostManager,
-            @Nullable ActionRegistry actionRegistry) {
+            @Nullable ActionRegistry actionRegistry,
+            GlicButtonDelegate toggleGlicCallback) {
         TraceEvent.begin("ToolbarManager.ToolbarManager");
         mActionRegistry = actionRegistry;
+        mToggleGlicCallback = toggleGlicCallback;
         mActivity = activity;
         mWindowAndroid = windowAndroid;
         mCompositorViewHolder = compositorViewHolder;
@@ -2492,6 +2498,19 @@ public class ToolbarManager
                                         tabModelSelector.isIncognitoSelected()));
                     });
         }
+
+        if (mActionRegistry != null) {
+            mGlicActionCoordinator =
+                    new GlicActionCoordinator(
+                            mActivity,
+                            mActionRegistry,
+                            mToggleGlicCallback,
+                            mActivityTabProvider.asObservable(),
+                            mChromeAndroidTaskSupplier,
+                            mBrowserControlsSizer,
+                            mTabModelSelectorSupplier);
+        }
+
         Profile profile = tabModelSelector.getModel(false).getProfile();
         assert profile != null;
 
@@ -2870,6 +2889,11 @@ public class ToolbarManager
         if (mTabSwitcherActionProvider != null) {
             mTabSwitcherActionProvider.destroy();
             mTabSwitcherActionProvider = null;
+        }
+
+        if (mGlicActionCoordinator != null) {
+            mGlicActionCoordinator.destroy();
+            mGlicActionCoordinator = null;
         }
 
         if (mExtensionsToolbarCoordinator != null) {

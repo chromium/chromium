@@ -39,9 +39,9 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.glic.GlicButtonDelegate;
 import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.glic.GlicEnablingJni;
-import org.chromium.chrome.browser.glic.GlicToolbarButtonController;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab_group_suggestion.toolbar.GroupSuggestionsButtonController;
@@ -71,7 +71,7 @@ public class TabbedAdaptiveToolbarBehaviorTest {
     @Mock private TabCreatorManager mTabCreatorManager;
     @Mock private TabBookmarker mTabBookmarker;
     @Mock private GroupSuggestionsButtonController mGroupSuggestionsButtonController;
-    @Mock private GlicToolbarButtonController.GlicButtonDelegate mGlicButtonDelegate;
+    @Mock private GlicButtonDelegate mGlicButtonDelegate;
     @Mock private ChromeAndroidTask mChromeAndroidTask;
     @Mock private BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
 

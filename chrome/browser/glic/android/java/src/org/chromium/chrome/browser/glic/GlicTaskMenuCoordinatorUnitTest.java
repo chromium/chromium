@@ -44,7 +44,7 @@ public class GlicTaskMenuCoordinatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private TabModelSelector mTabModelSelector;
-    @Mock private GlicToolbarButtonController.GlicButtonDelegate mToggleGlicCallback;
+    @Mock private GlicButtonDelegate mToggleGlicCallback;
 
     private Context mContext;
     private GlicTaskMenuCoordinator mCoordinator;

@@ -50,8 +50,29 @@ android_library("helper_java") {
   resources_package = "org.chromium.chrome.browser.glic"
 }
 
+android_library("menu_java") {
+  resources_package = "org.chromium.chrome.browser.glic"
+  sources = [
+    "java/src/org/chromium/chrome/browser/glic/GlicTaskMenuCoordinator.java",
+  ]
+  deps = [
+    ":common_java",
+    ":java_resources",
+    "//base:base_java",
+    "//chrome/android:chrome_app_java_resources",
+    "//chrome/browser/actor/android:java",
+    "//chrome/browser/glic:public_java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
+    "//components/browser_ui/widget/android:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+}
+
 android_library("common_java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/glic/GlicButtonDelegate.java",
     "java/src/org/chromium/chrome/browser/glic/GlicButtonStateController.java",
   ]
   deps = [
@@ -83,7 +104,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/glic/GlicNavigationUtils.java",
     "java/src/org/chromium/chrome/browser/glic/GlicPromoCoordinator.java",
     "java/src/org/chromium/chrome/browser/glic/GlicSettings.java",
-    "java/src/org/chromium/chrome/browser/glic/GlicTaskMenuCoordinator.java",
     "java/src/org/chromium/chrome/browser/glic/GlicToolbarButtonController.java",
     "java/src/org/chromium/chrome/browser/glic/GlicUtils.java",
   ]
@@ -94,6 +114,7 @@ android_library("java") {
     ":helper_java",
     ":java_resources",
     ":jni_headers_java",
+    ":menu_java",
     "//base:base_java",
     "//base:base_shared_preferences_java",
     "//build/android:build_java",
@@ -109,7 +130,6 @@ android_library("java") {
     "//chrome/browser/settings:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
-    "//chrome/browser/ui/android/actions:java",
     "//chrome/browser/ui/android/bottombar:java",
     "//chrome/browser/ui/android/signin:java",
     "//chrome/browser/ui/android/toolbar:adaptive_features_java",
@@ -185,6 +205,7 @@ robolectric_library("junit") {
     ":java",
     ":java_resources",
     ":jni_headers_java",
+    ":menu_java",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",

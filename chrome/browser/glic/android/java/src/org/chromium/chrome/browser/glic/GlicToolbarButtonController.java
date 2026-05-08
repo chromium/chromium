@@ -40,17 +40,6 @@ import java.util.function.Supplier;
 public class GlicToolbarButtonController extends BaseButtonDataProvider {
     public static final int ACTION_CHIP_COLLAPSE_DELAY_MS = 30000;
 
-    /** Delegate interface for handling clicks on the Glic toolbar button. */
-    @FunctionalInterface
-    public interface GlicButtonDelegate {
-        /**
-         * Called when the Glic button is clicked.
-         *
-         * @param preventClose whether to prevent closing the Glic UI if it's already open.
-         */
-        void onClick(boolean preventClose);
-    }
-
     private final Activity mActivity;
     private final GlicButtonDelegate mToggleGlicCallback;
     private final Supplier<@Nullable Tracker> mTrackerSupplier;

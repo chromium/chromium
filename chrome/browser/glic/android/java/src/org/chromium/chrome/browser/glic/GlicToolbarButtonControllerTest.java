@@ -68,7 +68,7 @@ public class GlicToolbarButtonControllerTest {
     @Mock private ActorKeyedService mActorService;
     @Mock private BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
     private BrowserStateBrowserControlsVisibilityDelegate mBrowserControlsVisibilityDelegate;
-    @Mock private GlicToolbarButtonController.GlicButtonDelegate mToggleGlicCallback;
+    @Mock private GlicButtonDelegate mToggleGlicCallback;
     @Mock private Tracker mTracker;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private ButtonDataProvider.ButtonDataObserver mObserver;

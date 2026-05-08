@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.bookmarks.AddToBookmarksToolbarButtonControll
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
+import org.chromium.chrome.browser.glic.GlicButtonDelegate;
 import org.chromium.chrome.browser.glic.GlicToolbarButtonController;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -55,7 +56,7 @@ public class TabbedAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
     private final Supplier<@Nullable TabModelSelector> mTabModelSelectorSupplier;
     private final MonotonicObservableSupplier<@StripVisibilityState Integer>
             mTabStripVisibilitySupplier;
-    private final GlicToolbarButtonController.GlicButtonDelegate mToggleGlicCallback;
+    private final GlicButtonDelegate mToggleGlicCallback;
     private final Supplier<@Nullable ChromeAndroidTask> mChromeAndroidTaskSupplier;
     private final BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
 
@@ -85,7 +86,7 @@ public class TabbedAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
             Supplier<GroupSuggestionsButtonController> groupSuggestionsButtonController,
             Supplier<@Nullable TabModelSelector> tabModelSelectorSupplier,
             MonotonicObservableSupplier<@StripVisibilityState Integer> tabStripVisibilitySupplier,
-            GlicToolbarButtonController.GlicButtonDelegate toggleGlicCallback,
+            GlicButtonDelegate toggleGlicCallback,
             Supplier<@Nullable ChromeAndroidTask> chromeAndroidTaskSupplier,
             BrowserControlsVisibilityManager browserControlsVisibilityManager) {
         mActivity = activity;

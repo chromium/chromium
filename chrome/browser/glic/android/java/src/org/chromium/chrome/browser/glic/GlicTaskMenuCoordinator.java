@@ -41,7 +41,7 @@ public class GlicTaskMenuCoordinator {
     private final Context mContext;
 
     private final Supplier<@Nullable TabModelSelector> mTabModelSelectorSupplier;
-    private final GlicToolbarButtonController.GlicButtonDelegate mToggleGlicCallback;
+    private final GlicButtonDelegate mToggleGlicCallback;
     private @Nullable AnchoredPopupWindow mMenuWindow;
 
     /**
@@ -54,7 +54,7 @@ public class GlicTaskMenuCoordinator {
     public GlicTaskMenuCoordinator(
             Context context,
             Supplier<@Nullable TabModelSelector> tabModelSelectorSupplier,
-            GlicToolbarButtonController.GlicButtonDelegate toggleGlicCallback) {
+            GlicButtonDelegate toggleGlicCallback) {
         mContext = context;
 
         mTabModelSelectorSupplier = tabModelSelectorSupplier;

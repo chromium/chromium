@@ -2038,7 +2038,8 @@ public class RootUiCoordinator
                             assertNonNull(mSnackbarManagerSupplier.get()),
                             mOmniboxChipManager,
                             mBottomBarHostManager,
-                            mActionRegistry);
+                            mActionRegistry,
+                            this::toggleGlic);
             if (!mSupportsAppMenuSupplier.getAsBoolean()) {
                 mToolbarManager.getToolbar().disableMenuButton();
             }

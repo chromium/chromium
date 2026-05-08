@@ -40,6 +40,8 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.actor.ActorKeyedService;
+import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
@@ -56,6 +58,8 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.findinpage.FindToolbarManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
+import org.chromium.chrome.browser.glic.GlicKeyedService;
+import org.chromium.chrome.browser.glic.GlicKeyedServiceFactory;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponent;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingComponentSupplier;
 import org.chromium.chrome.browser.layouts.CompositorModelChangeProcessor;
@@ -214,6 +218,8 @@ public class ToolbarManagerUnitTest {
     @Mock private SyncService mSyncService;
     @Mock private ActionRegistry mActionRegistry;
     @Mock private PropertyModel mActionPropertyModel;
+    @Mock private ActorKeyedService mActorKeyedService;
+    @Mock private GlicKeyedService mGlicKeyedService;
 
     private ActivityController<TestActivity> mActivityController;
     private ToolbarManager mToolbarManager;
@@ -222,6 +228,8 @@ public class ToolbarManagerUnitTest {
     @Before
     @SuppressWarnings("unchecked") // Raw CompositorModelChangeProcessor mock.
     public void setUp() {
+        ActorKeyedServiceFactory.setForTesting(mActorKeyedService);
+        GlicKeyedServiceFactory.setForTesting(mGlicKeyedService);
         ComposeboxQueryControllerBridge.setInstanceForTesting(null);
         ChromeAutocompleteSchemeClassifierJni.setInstanceForTesting(
                 mChromeAutocompleteSchemeClassifierJni);
@@ -419,7 +427,8 @@ public class ToolbarManagerUnitTest {
                         mSnackbarManager,
                         mOmniboxChipManager,
                         mBottomBarHostManager,
-                        mActionRegistry);
+                        mActionRegistry,
+                        /* toggleGlicCallback= */ (preventClose) -> {});
 
         NonNullObservableSupplier<TabModelDotInfo> dotSupplier =
                 ObservableSuppliers.createNonNull(mTabModelDotInfo);

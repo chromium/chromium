@@ -9,6 +9,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.app.Activity;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -23,14 +25,26 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.actor.ActorKeyedService;
+import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
+import org.chromium.chrome.browser.glic.GlicButtonDelegate;
+import org.chromium.chrome.browser.glic.GlicButtonStateController;
+import org.chromium.chrome.browser.glic.GlicKeyedService;
+import org.chromium.chrome.browser.glic.GlicKeyedServiceFactory;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.actions.ActionId;
 import org.chromium.chrome.browser.ui.actions.ActionProperties;
 import org.chromium.chrome.browser.ui.actions.ActionRegistry;
 import org.chromium.chrome.browser.ui.actions.button.ButtonState;
+import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.JUnitTestGURLs;
+
+import java.util.function.Supplier;
 
 /** Unit tests for {@link GlicActionCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -39,7 +53,15 @@ public class GlicActionCoordinatorUnitTest {
 
     @Mock private Tab mTab;
     @Mock private Tab mIncognitoTab;
-    @Mock private Runnable mToggleGlicCallback;
+    @Mock private Tab mNtpTab;
+    @Mock private GlicButtonDelegate mToggleGlicCallback;
+    @Mock private Profile mProfile;
+    @Mock private Activity mActivity;
+    @Mock private Supplier<ChromeAndroidTask> mTaskSupplier;
+    @Mock private BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
+    @Mock private Supplier<TabModelSelector> mTabModelSelectorSupplier;
+    @Mock private ActorKeyedService mActorService;
+    @Mock private GlicKeyedService mGlicKeyedService;
 
     private ActionRegistry mActionRegistry;
     private SettableNullableObservableSupplier<Tab> mTabSupplier;
@@ -48,21 +70,37 @@ public class GlicActionCoordinatorUnitTest {
 
     @Before
     public void setUp() {
+        ActorKeyedServiceFactory.setForTesting(mActorService);
+        GlicKeyedServiceFactory.setForTesting(mGlicKeyedService);
+
         mActionRegistry = new ActionRegistry();
         mTabSupplier = ObservableSuppliers.createNullable();
-        mActionModel = new PropertyModel.Builder(ActionProperties.ALL_KEYS).build();
+        mActionModel = new PropertyModel.Builder(GlicActionProperties.ALL_KEYS).build();
         mActionRegistry.register(ActionId.GLIC, mActionModel);
 
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
         when(mTab.isOffTheRecord()).thenReturn(false);
+        when(mTab.getProfile()).thenReturn(mProfile);
 
         when(mIncognitoTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
         when(mIncognitoTab.isOffTheRecord()).thenReturn(true);
+        when(mIncognitoTab.getProfile()).thenReturn(mProfile);
 
-        mTabSupplier.set(mTab);
+        when(mNtpTab.getUrl()).thenReturn(JUnitTestGURLs.NTP_URL);
+        when(mNtpTab.isOffTheRecord()).thenReturn(false);
+        when(mNtpTab.getProfile()).thenReturn(mProfile);
 
         mCoordinator =
-                new GlicActionCoordinator(mActionRegistry, mToggleGlicCallback, mTabSupplier);
+                new GlicActionCoordinator(
+                        mActivity,
+                        mActionRegistry,
+                        mToggleGlicCallback,
+                        mTabSupplier,
+                        mTaskSupplier,
+                        mBrowserControlsVisibilityManager,
+                        mTabModelSelectorSupplier);
+
+        mTabSupplier.set(mTab);
         ShadowLooper.idleMainLooper();
     }
 
@@ -75,7 +113,7 @@ public class GlicActionCoordinatorUnitTest {
     public void testClick_callsToggle() {
         Callback<android.view.View> callback = mActionModel.get(ActionProperties.ON_PRESS_CALLBACK);
         callback.onResult(null);
-        verify(mToggleGlicCallback).run();
+        verify(mToggleGlicCallback).onClick(false);
     }
 
     @Test
@@ -85,19 +123,13 @@ public class GlicActionCoordinatorUnitTest {
 
     @Test
     public void testState_Incognito() {
-        when(mTab.isOffTheRecord()).thenReturn(true);
-        mCoordinator.destroy();
-        mCoordinator =
-                new GlicActionCoordinator(mActionRegistry, mToggleGlicCallback, mTabSupplier);
+        mTabSupplier.set(mIncognitoTab);
         assertEquals(ButtonState.UNCLICKABLE, mActionModel.get(ActionProperties.BUTTON_STATE));
     }
 
     @Test
     public void testState_Ntp() {
-        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.NTP_URL);
-        mCoordinator.destroy();
-        mCoordinator =
-                new GlicActionCoordinator(mActionRegistry, mToggleGlicCallback, mTabSupplier);
+        mTabSupplier.set(mNtpTab);
         assertEquals(ButtonState.UNCLICKABLE, mActionModel.get(ActionProperties.BUTTON_STATE));
     }
 
@@ -122,5 +154,15 @@ public class GlicActionCoordinatorUnitTest {
         observer.onUrlUpdated(mTab);
 
         assertEquals(ButtonState.UNCLICKABLE, mActionModel.get(ActionProperties.BUTTON_STATE));
+    }
+
+    @Test
+    public void testOnStateChanged_updatesModel() {
+        mCoordinator.onStateChanged(
+                GlicButtonStateController.ButtonState.WORKING, /* isPanelOpen= */ false);
+
+        assertEquals(
+                GlicButtonStateController.ButtonState.WORKING,
+                mActionModel.get(GlicActionProperties.GLIC_STATE));
     }
 }
