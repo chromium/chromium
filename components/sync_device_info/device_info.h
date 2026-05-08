@@ -170,6 +170,8 @@ class DeviceInfo {
     kTv = 6,
   };
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   // LINT.IfChange(GlicExperimentalTriggeringState)
   enum class GlicExperimentalTriggeringState {
     kUnavailable = 0,
@@ -177,8 +179,8 @@ class DeviceInfo {
     kReady = 2,
     kMaxValue = kReady,
   };
-  // LINT.ThenChange(//components/sync/protocol/sync_enums.proto:GlicExperimentalTriggeringState)
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicExperimentalTriggeringState)
+  // LINT.ThenChange(//components/sync/protocol/sync_enums.proto:GlicExperimentalTriggeringState,
+  // //tools/metrics/histograms/metadata/glic/enums.xml:GlicExperimentalTriggeringState)
 
   DeviceInfo(
       const std::string& guid,
