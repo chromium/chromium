@@ -54,5 +54,14 @@ def fetch_recipe_bundle(project, is_verbose):
   logging.getLogger('basic_logger').info(' '.join(cmd))
   # The stdout of `cipd install` seems noisy, and all useful logs appear to go
   # to stderr anyway.
-  subprocess.check_call(cmd, stdout=subprocess.DEVNULL)
+  try:
+    subprocess.check_call(cmd, stdout=subprocess.DEVNULL)
+  except subprocess.CalledProcessError:
+    logging.error(
+        'Failed to install recipe bundle via CIPD. Note: If running in '
+        'a non-interactive remote environment, this may be caused '
+        'by Context Aware Access (CAA) / BeyondCorp blocks preventing '
+        'downloads. Please ensure your remote session is explicitly '
+        'authenticated.')
+    raise
   return cipd_root_dir

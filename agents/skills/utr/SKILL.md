@@ -40,3 +40,20 @@ found at [tools/utr/README.md](https://chromium.googlesource.com/chromium/src/+/
 
 Information about cross-compiling Windows targets on Linux can be found at
 [docs/win_cross.md](https://chromium.googlesource.com/chromium/src/+/main/docs/win_cross.md).
+
+## Troubleshooting in Non-Interactive Environments
+
+When running UTR inside non-interactive remote sessions, you may encounter
+BeyondCorp / Context Aware Access (CAA) authentication blockers or missing
+remote `.cipd_bin/` packages:
+
+1. **Explicit Re-authentication:**
+   If fetching binaries or updating datasets stalls or raises an authentication failure, explicitly generate a fresh Context Aware Access token in the terminal:
+   ```sh
+   luci-auth login -scopes https://www.googleapis.com/auth/userinfo.email
+   ```
+2. **Forcing Narrow Execution Scope:**
+   Avoid broad isolation failures by always supplying specific test targets and the force flag:
+   ```sh
+   vpython3 tools/utr/run.py --force -t <test_suite> -p chromium -B try -b <builder> compile
+   ```

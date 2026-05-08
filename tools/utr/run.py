@@ -267,7 +267,9 @@ def _main_impl():
   cipd_bin_path = _SRC_DIR.joinpath('third_party', 'depot_tools', '.cipd_bin')
   if not cipd_bin_path.exists():
     logging.warning(
-        ".cipd_bin folder not found. 'gclient sync' may need to be run")
+        ".cipd_bin folder not found. To resolve missing dependencies in a "
+        "remote workspace, please run 'gclient sync -D' and ensure "
+        "your session is authenticated with Context Aware Access (CAA).")
   else:
     os.environ["PATH"] = str(cipd_bin_path) + os.pathsep + os.environ["PATH"]
 

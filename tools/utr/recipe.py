@@ -57,6 +57,10 @@ def check_luci_context_auth():
         "Please run 'luci-auth login -scopes "
         "https://www.googleapis.com/auth/userinfo.email' to authenticate, "
         'preferring your @google.com account if you have one.')
+    logging.error(
+        'Note: If running in a non-interactive remote environment, '
+        'this failure may be due to Context Aware Access (CAA) / BeyondCorp '
+        'token blocks. You may need to re-authenticate explicitly.')
     return False
   return True
 
