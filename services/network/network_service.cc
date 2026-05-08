@@ -750,11 +750,21 @@ void NetworkService::ConfigureStubHostResolver(
     net::SecureDnsMode secure_dns_mode,
     const net::DnsOverHttpsConfig& dns_over_https_config,
     bool additional_dns_types_enabled,
-    const std::vector<net::IPEndPoint>& fallback_doh_nameservers) {
+    const std::vector<net::IPEndPoint>& fallback_doh_nameservers,
+    bool insecure_dns_via_platform_apis_enabled) {
   // Enable or disable the insecure part of DnsClient. "DnsClient" is the class
   // that implements the stub resolver.
+  net::HostResolverManager::InsecureDnsMode mode;
+  if (insecure_dns_client_enabled && insecure_dns_via_platform_apis_enabled) {
+    mode = net::HostResolverManager::InsecureDnsMode::kEnabledPlatform;
+  } else if (insecure_dns_client_enabled) {
+    mode = net::HostResolverManager::InsecureDnsMode::kEnabledBuiltIn;
+  } else {
+    mode = net::HostResolverManager::InsecureDnsMode::kDisabled;
+  }
+
   host_resolver_manager_->SetInsecureDnsClientEnabled(
-      insecure_dns_client_enabled, additional_dns_types_enabled);
+      mode, additional_dns_types_enabled);
 
   // Configure DNS over HTTPS.
   DCHECK(dns_config_overrides_set_by_ == FunctionTag::None ||

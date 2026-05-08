@@ -224,6 +224,9 @@ BASE_FEATURE(kWebViewEarlyStartupTracing, base::FEATURE_DISABLED_BY_DEFAULT);
 // calling content code.
 BASE_FEATURE(kWebViewEarlyTracingInit, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables the resolution of hostnames via platform DNS APIs in WebView.
+BASE_FEATURE(kWebViewEnableDnsPlatform, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables tracing init on a background thread. This is mutually exclusive with
 // `kWebViewEarlyTracingInit`. If both flags are enabled,
 // `kWebViewEarlyTracingInit` will take precedent.

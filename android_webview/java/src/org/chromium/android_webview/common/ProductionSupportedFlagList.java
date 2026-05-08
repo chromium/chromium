@@ -1399,6 +1399,9 @@ public final class ProductionSupportedFlagList {
                 ContentFeatures.PREFETCH_REQUEST_STATUS_LISTENER_ASYNC,
                 "Make PrefetchRequestStatusListener notifications async."),
         Flag.baseFeature(AwFeatures.WEBVIEW_NAVIGATE, "Enables the WebView navigate method"),
+        Flag.baseFeature(
+                AwFeatures.WEBVIEW_ENABLE_DNS_PLATFORM,
+                "Enables the resolution of hostnames via platform DNS APIs in WebView."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

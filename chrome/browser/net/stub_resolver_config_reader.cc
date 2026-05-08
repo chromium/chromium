@@ -170,6 +170,10 @@ bool ShouldUseDohFallback(net::SecureDnsMode secure_dns_mode,
   return true;
 }
 
+// For insecure DNS resolution in Chrome, enables the usage of platform DNS
+// APIs, instead of Chrome's built-in DNS client.
+BASE_FEATURE(kChromeEnableDnsPlatform, base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace
 
 #if BUILDFLAG(IS_WIN)
@@ -457,7 +461,9 @@ SecureDnsConfig StubResolverConfigReader::GetAndUpdateConfiguration(
     content::GetNetworkService()->ConfigureStubHostResolver(
         GetInsecureStubResolverEnabled(), GetHappyEyeballsV3Enabled(),
         secure_dns_mode, doh_config, additional_dns_query_types_enabled,
-        fallback_doh_nameservers);
+        fallback_doh_nameservers,
+        net::features::IsDnsPlatformSupported() &&
+            base::FeatureList::IsEnabled(kChromeEnableDnsPlatform));
   }
 
   return SecureDnsConfig(secure_dns_mode, std::move(doh_config),

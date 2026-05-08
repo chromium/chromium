@@ -436,7 +436,8 @@ TEST_F(HostResolverServiceEndpointRequestTest, KillDnsTask) {
   // DNS client causing AbortInsecureDnsTasks. The request falls back to
   // SystemTask, which doesn't resolve the destination.
   resolver_->SetInsecureDnsClientEnabled(
-      /*enabled=*/false, /*additional_dns_types_enabled=*/false);
+      HostResolverManager::InsecureDnsMode::kDisabled,
+      /*additional_dns_types_enabled=*/false);
   ASSERT_TRUE(requester.request()->GetEndpointResults().empty());
   ASSERT_TRUE(requester.request()->GetDnsAliasResults().empty());
   ASSERT_FALSE(requester.request()->EndpointsCryptoReady());
@@ -482,7 +483,8 @@ TEST_F(HostResolverServiceEndpointRequestTest, KillDnsTaskFallbackSecure) {
   // DNS client causing AbortInsecureDnsTasks, triggering secure DNS task as
   // fallback.
   resolver_->SetInsecureDnsClientEnabled(
-      /*enabled=*/false, /*additional_dns_types_enabled=*/false);
+      HostResolverManager::InsecureDnsMode::kDisabled,
+      /*additional_dns_types_enabled=*/false);
 
   EXPECT_THAT(requester.request()->GetEndpointResults(),
               ElementsAre(ExpectServiceEndpoint(

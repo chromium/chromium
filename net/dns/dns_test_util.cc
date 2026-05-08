@@ -507,7 +507,9 @@ class MockDnsTransactionFactory::MockTransaction final : public DnsTransaction {
       case AttemptMode::kHttp:
         secure = true;
         break;
-      default:
+      case AttemptMode::kPlatform:
+        // Currently we do not expect AttemptMode::kPlatform to be used in
+        // tests that mock DnsTransaction.
         NOTREACHED();
     }
     // Do not allow matching any rules if transaction is secure and no DoH

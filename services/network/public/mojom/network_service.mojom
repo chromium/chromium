@@ -261,12 +261,17 @@ interface NetworkService {
   // DoH is preferred to falling back to insecure DNS. If these nameservers are
   // successfully upgraded to DoH, they are used in the order defined by
   // `net::ResolveContext::GetDohIterator`.
+  //
+  // `insecure_dns_via_platform_apis_enabled` controls whether the DNS_PLATFORM
+  // task type is used instead of the DNS task type. See
+  // HostResolver::ManagerOptions::insecure_dns_via_platform_apis_enabled.
   ConfigureStubHostResolver(bool insecure_dns_client_enabled,
                             bool happy_eyeballs_v3_enabled,
                             SecureDnsMode secure_dns_mode,
                             DnsOverHttpsConfig dns_over_https_config,
                             bool additional_dns_types_enabled,
-                            array<IPEndPoint> fallback_doh_nameservers);
+                            array<IPEndPoint> fallback_doh_nameservers,
+                            bool insecure_dns_via_platform_apis_enabled);
 
   // Disables QUIC for the NetworkService. Affects all existing NetworkContexts,
   // and all new ones that are created. Once called, QUIC cannot be re-enabled.

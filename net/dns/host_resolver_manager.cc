@@ -137,6 +137,10 @@
 #endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/android_info.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace net {
 
 namespace {
@@ -445,10 +449,12 @@ HostResolverManager::HostResolverManager(
       is_happy_eyeballs_v3_enabled_(
           base::FeatureList::IsEnabled(features::kHappyEyeballsV3)),
       tick_clock_(base::DefaultTickClock::GetInstance()),
-      https_svcb_options_(
-          options.https_svcb_options
-              ? *options.https_svcb_options
-              : HostResolver::HttpsSvcbOptions::FromFeatures()) {
+      https_svcb_options_(options.https_svcb_options
+                              ? *options.https_svcb_options
+                              : HostResolver::HttpsSvcbOptions::FromFeatures()),
+      platform_apis_enabled_(options.insecure_dns_via_platform_apis_enabled) {
+  CHECK(!platform_apis_enabled_ || features::IsDnsPlatformSupported());
+
   PrioritizedDispatcher::Limits job_limits = GetDispatcherLimits(options);
   dispatcher_ = std::make_unique<PrioritizedDispatcher>(job_limits);
   max_queued_jobs_ = job_limits.total_jobs * 100u;
@@ -608,17 +614,36 @@ HostResolverManager::CreateServiceEndpointRequest(
 }
 
 void HostResolverManager::SetInsecureDnsClientEnabled(
-    bool enabled,
+    InsecureDnsMode mode,
     bool additional_dns_types_enabled) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  CHECK(mode != InsecureDnsMode::kEnabledPlatform ||
+        features::IsDnsPlatformSupported());
 
   if (!dns_client_)
     return;
 
+  bool insecure_dns_enabled = false;
+  switch (mode) {
+    case InsecureDnsMode::kDisabled:
+      insecure_dns_enabled = false;
+      platform_apis_enabled_ = false;
+      break;
+    case InsecureDnsMode::kEnabledBuiltIn:
+      insecure_dns_enabled = true;
+      platform_apis_enabled_ = false;
+      break;
+    case InsecureDnsMode::kEnabledPlatform:
+      insecure_dns_enabled = true;
+      platform_apis_enabled_ = true;
+      break;
+  }
+
   bool enabled_before = dns_client_->CanUseInsecureDnsTransactions();
   bool additional_types_before =
       enabled_before && dns_client_->CanQueryAdditionalTypesViaInsecureDns();
-  dns_client_->SetInsecureEnabled(enabled, additional_dns_types_enabled);
+  dns_client_->SetInsecureEnabled(insecure_dns_enabled,
+                                  additional_dns_types_enabled);
 
   // Abort current tasks if `CanUseInsecureDnsTransactions()` changes or if
   // insecure transactions are enabled and
@@ -1301,6 +1326,8 @@ void HostResolverManager::PushDnsTasks(bool system_task_allowed,
   // DnsTasks. It is still necessary to call this method, however, so that the
   // correct cache tasks for the secure dns mode are added.
   const bool dns_tasks_allowed = !ShouldForceSystemResolverDueToTestOverride();
+  const TaskType dns_task_type =
+      platform_apis_enabled_ ? TaskType::DNS_PLATFORM : TaskType::DNS;
   // Upgrade the insecure DnsTask depending on the secure dns mode.
   switch (secure_dns_mode) {
     case SecureDnsMode::kSecure:
@@ -1317,7 +1344,7 @@ void HostResolverManager::PushDnsTasks(bool system_task_allowed,
               resolve_context)) {
         // Don't run a secure DnsTask if there are no available DoH servers.
         if (dns_tasks_allowed && insecure_tasks_allowed)
-          out_tasks->push_back(TaskType::DNS);
+          out_tasks->push_back(dns_task_type);
       } else if (prioritize_local_lookups) {
         // If local lookups are prioritized, the cache should be checked for
         // both secure and insecure results prior to running a secure DnsTask.
@@ -1325,7 +1352,7 @@ void HostResolverManager::PushDnsTasks(bool system_task_allowed,
         if (dns_tasks_allowed) {
           out_tasks->push_back(TaskType::SECURE_DNS);
           if (insecure_tasks_allowed)
-            out_tasks->push_back(TaskType::DNS);
+            out_tasks->push_back(dns_task_type);
         }
       } else {
         if (allow_cache) {
@@ -1339,26 +1366,28 @@ void HostResolverManager::PushDnsTasks(bool system_task_allowed,
         if (allow_cache)
           out_tasks->push_back(TaskType::INSECURE_CACHE_LOOKUP);
         if (dns_tasks_allowed && insecure_tasks_allowed)
-          out_tasks->push_back(TaskType::DNS);
+          out_tasks->push_back(dns_task_type);
       }
       break;
     case SecureDnsMode::kOff:
       DCHECK(!allow_cache || IsLocalTask(out_tasks->front()));
       if (dns_tasks_allowed && insecure_tasks_allowed)
-        out_tasks->push_back(TaskType::DNS);
+        out_tasks->push_back(dns_task_type);
       break;
     default:
       NOTREACHED();
   }
 
-  constexpr TaskType kWantTasks[] = {TaskType::DNS, TaskType::SECURE_DNS};
-  const bool no_dns_or_secure_tasks =
-      std::ranges::find_first_of(*out_tasks, kWantTasks) == out_tasks->end();
+  constexpr TaskType kBuiltinTasks[] = {TaskType::DNS, TaskType::SECURE_DNS,
+                                        TaskType::DNS_PLATFORM};
+  const bool no_builtin_tasks =
+      std::ranges::find_first_of(*out_tasks, kBuiltinTasks) == out_tasks->end();
   // The system resolver can be used as a fallback for a non-existent or
-  // failing DnsTask if allowed by the request parameters.
+  // failing builtin resolver task, if allowed by the request parameters.
   if (system_task_allowed &&
-      (no_dns_or_secure_tasks || allow_fallback_to_systemtask_))
+      (no_builtin_tasks || allow_fallback_to_systemtask_)) {
     out_tasks->push_back(TaskType::SYSTEM);
+  }
 }
 
 void HostResolverManager::CreateTaskSequence(
@@ -1460,6 +1489,8 @@ void HostResolverManager::CreateTaskSequence(
   // `HOST_RESOLVER_CANONNAME` is only supported through system resolution.
   if (job_key.flags & HOST_RESOLVER_CANONNAME) {
     DCHECK(std::ranges::find(*out_tasks, TaskType::DNS) == out_tasks->end());
+    DCHECK(std::ranges::find(*out_tasks, TaskType::DNS_PLATFORM) ==
+           out_tasks->end());
     DCHECK(std::ranges::find(*out_tasks, TaskType::MDNS) == out_tasks->end());
   }
 }

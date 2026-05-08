@@ -49,6 +49,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewEarlyTracingInit,
     &features::kWebViewEnableApiCallUserActions,
     &features::kWebViewEnableCrash,
+    &features::kWebViewEnableDnsPlatform,
     &features::kWebViewFasterGetDefaultUserAgent,
     &features::kWebViewFetchOriginTrialsComponent,
     &features::kWebViewFileSystemAccess,

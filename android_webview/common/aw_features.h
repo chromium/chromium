@@ -24,6 +24,7 @@ BASE_DECLARE_FEATURE(kWebViewConfigurableLibraryPrefetch);
 BASE_DECLARE_FEATURE(kWebViewContentRestrictionSupport);
 BASE_DECLARE_FEATURE(kWebViewEarlyStartupTracing);
 BASE_DECLARE_FEATURE(kWebViewEarlyTracingInit);
+BASE_DECLARE_FEATURE(kWebViewEnableDnsPlatform);
 BASE_DECLARE_FEATURE(kWebViewFileSystemAccess);
 BASE_DECLARE_FEATURE(kWebViewInvokeZoomPickerOnGSU);
 BASE_DECLARE_FEATURE(kWebViewLazyFetchHandWritingIcon);

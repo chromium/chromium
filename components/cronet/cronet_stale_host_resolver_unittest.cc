@@ -156,11 +156,11 @@ class CronetStaleHostResolverTest : public testing::Test {
       inner_resolver->GetManagerForTesting()->SetDnsClientForTesting(
           std::move(dns_client));
       inner_resolver->GetManagerForTesting()->SetInsecureDnsClientEnabled(
-          /*enabled=*/true,
+          net::HostResolverManager::InsecureDnsMode::kEnabledBuiltIn,
           /*additional_dns_types_enabled=*/true);
     } else {
       inner_resolver->GetManagerForTesting()->SetInsecureDnsClientEnabled(
-          /*enabled=*/false,
+          net::HostResolverManager::InsecureDnsMode::kDisabled,
           /*additional_dns_types_enabled=*/false);
     }
     return inner_resolver;

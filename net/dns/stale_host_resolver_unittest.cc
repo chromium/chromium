@@ -182,11 +182,11 @@ class StaleHostResolverTest : public TestWithTaskEnvironment {
       inner_resolver->GetManagerForTesting()->SetDnsClientForTesting(
           std::move(dns_client));
       inner_resolver->GetManagerForTesting()->SetInsecureDnsClientEnabled(
-          /*enabled=*/true,
+          HostResolverManager::InsecureDnsMode::kEnabledBuiltIn,
           /*additional_dns_types_enabled=*/true);
     } else {
       inner_resolver->GetManagerForTesting()->SetInsecureDnsClientEnabled(
-          /*enabled=*/false,
+          HostResolverManager::InsecureDnsMode::kDisabled,
           /*additional_dns_types_enabled=*/false);
     }
     return inner_resolver;

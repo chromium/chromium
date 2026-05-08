@@ -774,7 +774,8 @@ void ShellContentBrowserClient::OnNetworkServiceCreated(
         /*secure_dns_mode=*/net::SecureDnsMode::kAutomatic,
         net::DnsOverHttpsConfig(),
         /*additional_dns_types_enabled=*/true,
-        /*fallback_doh_nameservers=*/{});
+        /*fallback_doh_nameservers=*/{},
+        /*insecure_dns_via_platform_apis_enabled=*/false);
   }
 #endif
 }

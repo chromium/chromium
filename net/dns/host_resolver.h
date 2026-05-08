@@ -349,6 +349,19 @@ class NET_EXPORT HostResolver {
     // SetInsecureDnsClientEnabled() for details.
     bool insecure_dns_client_enabled = false;
 
+    // Initial setting for whether TaskType::DNS_PLATFORM must be used instead
+    // of TaskType::DNS. Requires `insecure_dns_client_enabled` to be true to
+    // have any effect (otherwise TaskType::DNS won't be used in the first
+    // place). See HostResolverManager::SetInsecureDnsClientEnabled() for
+    // details.
+    // Before setting this to true one must ensure that the platform DNS APIs
+    // are supported on the current device
+    // (via net::features::IsDnsPlatformSupported()).
+    // This exists as a separate option to let different Chromium-based products
+    // make different choices. It cannot be a build flag because embedders can
+    // build in the same way but want different behavior.
+    bool insecure_dns_via_platform_apis_enabled = false;
+
     // Initial setting for whether additional DNS types (e.g. HTTPS) may be
     // queried when using the built-in resolver for insecure DNS.
     bool additional_types_via_insecure_dns_enabled = true;

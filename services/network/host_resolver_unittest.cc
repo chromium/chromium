@@ -1486,7 +1486,7 @@ TEST_F(HostResolverTest, TextResults) {
   inner_resolver->GetManagerForTesting()->SetDnsClientForTesting(
       std::move(dns_client));
   inner_resolver->GetManagerForTesting()->SetInsecureDnsClientEnabled(
-      /*enabled=*/true,
+      net::HostResolverManager::InsecureDnsMode::kEnabledBuiltIn,
       /*additional_dns_types_enabled=*/true);
 
   HostResolver resolver(inner_resolver.get(), net::NetLog::Get());
@@ -1529,7 +1529,7 @@ TEST_F(HostResolverTest, HostResults) {
   inner_resolver->GetManagerForTesting()->SetDnsClientForTesting(
       std::move(dns_client));
   inner_resolver->GetManagerForTesting()->SetInsecureDnsClientEnabled(
-      /*enabled=*/true,
+      net::HostResolverManager::InsecureDnsMode::kEnabledBuiltIn,
       /*additional_dns_types_enabled=*/true);
 
   HostResolver resolver(inner_resolver.get(), net::NetLog::Get());
@@ -1569,7 +1569,7 @@ TEST_F(HostResolverTest, RespectsDisablingAdditionalQueryTypes) {
   inner_resolver->GetManagerForTesting()->SetDnsClientForTesting(
       std::move(dns_client));
   inner_resolver->GetManagerForTesting()->SetInsecureDnsClientEnabled(
-      /*enabled=*/true,
+      net::HostResolverManager::InsecureDnsMode::kEnabledBuiltIn,
       /*additional_dns_types_enabled=*/false);
 
   HostResolver resolver(inner_resolver.get(), net::NetLog::Get());
