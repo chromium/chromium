@@ -44,7 +44,6 @@ public class LocalTabGroupListBottomSheetRowMediatorUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private FaviconResolver mFaviconResolver;
     @Mock private Runnable mOnClickRunnable;
     @Mock private TabMovedCallback mTabMovedCallback;
@@ -63,22 +62,21 @@ public class LocalTabGroupListBottomSheetRowMediatorUnitTest {
         mTabs = new ArrayList<>();
         mTabs.add(mTab1);
 
-        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
-        when(mTabGroupModelFilter.getTabUngrouper()).thenReturn(mTabUngrouper);
-        when(mTabGroupModelFilter.getTabsInGroup(mGroupId)).thenReturn(mTabs);
-        when(mTabGroupModelFilter.getGroupLastShownTabId(mGroupId)).thenReturn(TEST_ROOT_ID);
-        when(mTabGroupModelFilter.tabGroupExists(mGroupId)).thenReturn(true);
-        when(mTabGroupModelFilter.getGroupLastShownTabId(mGroupId)).thenReturn(TEST_TAB_ID1);
-        when(mTabGroupModelFilter.getTabCountForGroup(mGroupId)).thenReturn(1);
-        when(mTabGroupModelFilter.getTabGroupColor(mGroupId)).thenReturn(TEST_COLOR);
-        when(mTabGroupModelFilter.getTabGroupTitle(mGroupId)).thenReturn(TEST_TITLE);
+        when(mTabModel.getTabUngrouper()).thenReturn(mTabUngrouper);
+        when(mTabModel.getTabsInGroup(mGroupId)).thenReturn(mTabs);
+        when(mTabModel.getGroupLastShownTabId(mGroupId)).thenReturn(TEST_ROOT_ID);
+        when(mTabModel.tabGroupExists(mGroupId)).thenReturn(true);
+        when(mTabModel.getGroupLastShownTabId(mGroupId)).thenReturn(TEST_TAB_ID1);
+        when(mTabModel.getTabCountForGroup(mGroupId)).thenReturn(1);
+        when(mTabModel.getTabGroupColor(mGroupId)).thenReturn(TEST_COLOR);
+        when(mTabModel.getTabGroupTitle(mGroupId)).thenReturn(TEST_TITLE);
         when(mTabModel.getTabById(TEST_TAB_ID1)).thenReturn(mTab1);
         when(mTabModel.getTabById(TEST_TAB_ID2)).thenReturn(mTab2);
 
         mMediator =
                 new LocalTabGroupListBottomSheetRowMediator(
                         mGroupId,
-                        mTabGroupModelFilter,
+                        mTabModel,
                         mFaviconResolver,
                         mOnClickRunnable,
                         mTabMovedCallback,
@@ -107,7 +105,7 @@ public class LocalTabGroupListBottomSheetRowMediatorUnitTest {
         mMediator =
                 new LocalTabGroupListBottomSheetRowMediator(
                         mGroupId,
-                        mTabGroupModelFilter,
+                        mTabModel,
                         mFaviconResolver,
                         mOnClickRunnable,
                         mTabMovedCallback,
@@ -117,7 +115,7 @@ public class LocalTabGroupListBottomSheetRowMediatorUnitTest {
         Runnable clickRunnable = model.get(TabGroupRowProperties.ROW_CLICK_RUNNABLE);
         clickRunnable.run();
 
-        verify(mTabGroupModelFilter)
+        verify(mTabModel)
                 .mergeListOfTabsToGroup(
                         tabList,
                         mTab1,
@@ -134,7 +132,7 @@ public class LocalTabGroupListBottomSheetRowMediatorUnitTest {
         Runnable clickRunnable = model.get(TabGroupRowProperties.ROW_CLICK_RUNNABLE);
         clickRunnable.run();
 
-        verify(mTabGroupModelFilter, never())
+        verify(mTabModel, never())
                 .mergeListOfTabsToGroup(
                         mTabs,
                         mTab1,
@@ -146,13 +144,13 @@ public class LocalTabGroupListBottomSheetRowMediatorUnitTest {
     @Test
     public void testClickRow_groupNoLongerExists() {
         PropertyModel model = mMediator.getModel();
-        when(mTabGroupModelFilter.tabGroupExists(mGroupId)).thenReturn(false);
+        when(mTabModel.tabGroupExists(mGroupId)).thenReturn(false);
         when(mTabModel.getTabById(TEST_TAB_ID1)).thenReturn(mTab1);
 
         Runnable clickRunnable = model.get(TabGroupRowProperties.ROW_CLICK_RUNNABLE);
         clickRunnable.run();
 
-        verify(mTabGroupModelFilter, never())
+        verify(mTabModel, never())
                 .mergeListOfTabsToGroup(
                         mTabs,
                         mTab1,

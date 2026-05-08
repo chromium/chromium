@@ -59,7 +59,6 @@ import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster.ClusterData;
@@ -95,7 +94,6 @@ public class TabGroupRowMediatorUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabModel mTabModel;
     @Mock private TabRemover mTabRemover;
     @Mock private TabGroupSyncService mTabGroupSyncService;
@@ -138,7 +136,6 @@ public class TabGroupRowMediatorUnitTest {
                 new ContextThemeWrapper(
                         ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
 
-        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabModel.getTabRemover()).thenReturn(mTabRemover);
         when(mCollaborationService.getServiceStatus()).thenReturn(mServiceStatus);
         when(mServiceStatus.isAllowedToJoin()).thenReturn(true);
@@ -168,13 +165,13 @@ public class TabGroupRowMediatorUnitTest {
             when(tab.getTabGroupId()).thenReturn(GROUP_ID1);
             tabList.add(tab);
         }
-        when(mTabGroupModelFilter.getTabsInGroup(GROUP_ID1)).thenReturn(tabList);
+        when(mTabModel.getTabsInGroup(GROUP_ID1)).thenReturn(tabList);
 
         TabGroupRowMediator mediator =
                 new TabGroupRowMediator(
                         mContext,
                         mSyncGroup,
-                        mTabGroupModelFilter,
+                        mTabModel,
                         mTabGroupSyncService,
                         mDataSharingService,
                         mCollaborationService,

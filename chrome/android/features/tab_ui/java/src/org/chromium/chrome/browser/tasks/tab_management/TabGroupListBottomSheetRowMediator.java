@@ -11,8 +11,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabMovedCallback;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster.ClusterData;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupRowView.TabGroupRowViewTitleData;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupTimeAgo.TimestampEvent;
@@ -33,14 +33,14 @@ import java.util.Objects;
 @NullMarked
 class TabGroupListBottomSheetRowMediator {
     private final SavedTabGroup mSavedTabGroup;
-    private final TabGroupModelFilter mTabGroupModelFilter;
+    private final TabModel mTabModel;
     private final @Nullable TabGroupSyncService mTabGroupSyncService;
     private final @Nullable TabMovedCallback mTabMovedCallback;
     private final PropertyModel mPropertyModel;
 
     /**
      * @param savedTabGroup The tab group to be represented by this row.
-     * @param tabGroupModelFilter Used to read current tab groups.
+     * @param tabModel Used to read current tab groups.
      * @param faviconResolver Used to fetch favicon images for some tabs.
      * @param tabGroupSyncService Used to fetch synced copy of tab groups.
      * @param onClickRunnable To be run on clicking the row.
@@ -49,14 +49,14 @@ class TabGroupListBottomSheetRowMediator {
      */
     public TabGroupListBottomSheetRowMediator(
             SavedTabGroup savedTabGroup,
-            TabGroupModelFilter tabGroupModelFilter,
+            TabModel tabModel,
             FaviconResolver faviconResolver,
             @Nullable TabGroupSyncService tabGroupSyncService,
             Runnable onClickRunnable,
             @Nullable TabMovedCallback tabMovedCallback,
             List<Tab> tabs) {
         mSavedTabGroup = savedTabGroup;
-        mTabGroupModelFilter = tabGroupModelFilter;
+        mTabModel = tabModel;
         mTabGroupSyncService = tabGroupSyncService;
         mTabMovedCallback = tabMovedCallback;
 
@@ -118,7 +118,7 @@ class TabGroupListBottomSheetRowMediator {
             return;
         }
 
-        mergeTabsToDest(tabs, localId, mTabGroupModelFilter, mTabMovedCallback);
+        mergeTabsToDest(tabs, localId, mTabModel, mTabMovedCallback);
     }
 
     private boolean areTabsAlreadyInGroup(List<Tab> tabsToBeMoved) {

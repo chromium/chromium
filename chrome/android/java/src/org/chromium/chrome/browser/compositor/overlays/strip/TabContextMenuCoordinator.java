@@ -799,7 +799,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
     private List<ListItem> getRegularTabGroups(
             List<Tab> tabs, @Nullable Token groupToNotBeIncluded) {
         GroupWindowChecker windowChecker =
-                new GroupWindowChecker(mTabGroupSyncService, mTabGroupModelFilter);
+                new GroupWindowChecker(mTabGroupSyncService, getTabModel());
         List<SavedTabGroup> sortedTabGroups =
                 windowChecker.getSortedGroupList(
                         groupWindowState ->
@@ -846,7 +846,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                             mergeTabsToDest(
                                     tabs,
                                     firstTabInGroupTabId,
-                                    mTabGroupModelFilter,
+                                    getTabModel(),
                                     /* tabMovedCallback= */ null);
                         } else {
                             mMultiInstanceOrchestrator.moveTabsToWindowByIdChecked(
@@ -884,10 +884,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                         recordMenuAction(
                                 R.id.add_to_group_incognito_sub_menu_id, tabs.size() > 1, true);
                         mergeTabsToDest(
-                                tabs,
-                                tabIdInGroup,
-                                mTabGroupModelFilter,
-                                /* tabMovedCallback= */ null);
+                                tabs, tabIdInGroup, getTabModel(), /* tabMovedCallback= */ null);
                     };
             result.add(
                     new ListItemBuilder()

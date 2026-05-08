@@ -13,8 +13,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabMovedCallback;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster.ClusterData;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupRowView.TabGroupRowViewTitleData;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -24,19 +24,19 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Contains the logic to set the state of the model and react to actions. Uses the {@link
- * TabGroupModelFilter} as its primary source of truth.
+ * Contains the logic to set the state of the model and react to actions. Uses the {@link TabModel}
+ * as its primary source of truth.
  */
 @NullMarked
 class LocalTabGroupListBottomSheetRowMediator {
     private final Token mGroupId;
-    private final TabGroupModelFilter mTabGroupModelFilter;
+    private final TabModel mTabModel;
     private final @Nullable TabMovedCallback mTabMovedCallback;
     private final PropertyModel mPropertyModel;
 
     /**
      * @param groupId The id of the tab group to be represented by this row.
-     * @param tabGroupModelFilter Used to read current tab groups.
+     * @param tabModel Used to read current tab groups.
      * @param faviconResolver Used to fetch favicon images for some tabs.
      * @param onClickRunnable To be run on clicking the row.
      * @param tabMovedCallback Used to follow up on a tab being moved groups or ungrouped.
@@ -44,29 +44,27 @@ class LocalTabGroupListBottomSheetRowMediator {
      */
     public LocalTabGroupListBottomSheetRowMediator(
             Token groupId,
-            TabGroupModelFilter tabGroupModelFilter,
+            TabModel tabModel,
             FaviconResolver faviconResolver,
             Runnable onClickRunnable,
             @Nullable TabMovedCallback tabMovedCallback,
             List<Tab> tabs) {
         mGroupId = groupId;
-        mTabGroupModelFilter = tabGroupModelFilter;
+        mTabModel = tabModel;
         mTabMovedCallback = tabMovedCallback;
 
-        int numTabs = mTabGroupModelFilter.getTabCountForGroup(mGroupId);
-        List<GURL> urlList =
-                TabGroupFaviconCluster.buildUrlListFromFilter(mGroupId, mTabGroupModelFilter);
+        int numTabs = mTabModel.getTabCountForGroup(mGroupId);
+        List<GURL> urlList = TabGroupFaviconCluster.buildUrlListFromFilter(mGroupId, mTabModel);
 
         PropertyModel.Builder builder = new PropertyModel.Builder(TabGroupRowProperties.ALL_KEYS);
         builder.with(
                 TabGroupRowProperties.CLUSTER_DATA,
                 new ClusterData(faviconResolver, numTabs, urlList));
-        builder.with(
-                TabGroupRowProperties.COLOR_INDEX, mTabGroupModelFilter.getTabGroupColor(groupId));
+        builder.with(TabGroupRowProperties.COLOR_INDEX, mTabModel.getTabGroupColor(groupId));
 
         TabGroupRowViewTitleData titleData =
                 new TabGroupRowViewTitleData(
-                        mTabGroupModelFilter.getTabGroupTitle(groupId),
+                        mTabModel.getTabGroupTitle(groupId),
                         numTabs,
                         R.plurals.tab_group_bottom_sheet_row_accessibility_text);
         builder.with(TabGroupRowProperties.TITLE_DATA, titleData);
@@ -89,7 +87,7 @@ class LocalTabGroupListBottomSheetRowMediator {
         assert !tabs.isEmpty();
 
         // Ensure that the group still exists.
-        if (!mTabGroupModelFilter.tabGroupExists(mGroupId)) {
+        if (!mTabModel.tabGroupExists(mGroupId)) {
             return;
         }
 
@@ -98,8 +96,8 @@ class LocalTabGroupListBottomSheetRowMediator {
             return;
         }
 
-        @TabId int destTabId = mTabGroupModelFilter.getGroupLastShownTabId(mGroupId);
-        mergeTabsToDest(tabs, destTabId, mTabGroupModelFilter, mTabMovedCallback);
+        @TabId int destTabId = mTabModel.getGroupLastShownTabId(mGroupId);
+        mergeTabsToDest(tabs, destTabId, mTabModel, mTabMovedCallback);
     }
 
     private boolean areTabsAlreadyInGroup(List<Tab> tabsToBeMoved) {

@@ -40,7 +40,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -73,7 +72,6 @@ public class TabGroupVisualDataDialogManagerUnitTest {
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private Profile mProfile;
     @Mock private TabModel mTabModel;
-    @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private ModalDialogProperties.Controller mDialogController;
     @Captor private ArgumentCaptor<PropertyModel> mModelCaptor;
 
@@ -95,17 +93,15 @@ public class TabGroupVisualDataDialogManagerUnitTest {
         TabGroupSyncFeaturesJni.setInstanceForTesting(mTabGroupSyncFeaturesJniMock);
         SyncServiceFactory.setInstanceForTesting(mSyncService);
 
-        doReturn(true).when(mTabGroupModelFilter).tabGroupExists(TAB_GROUP_ID);
-        doReturn(UNSET_TAB_GROUP_TITLE).when(mTabGroupModelFilter).getTabGroupTitle(TAB_GROUP_ID);
-        doReturn(mTabModel).when(mTabGroupModelFilter).getTabModel();
+        doReturn(true).when(mTabModel).tabGroupExists(TAB_GROUP_ID);
+        doReturn(UNSET_TAB_GROUP_TITLE).when(mTabModel).getTabGroupTitle(TAB_GROUP_ID);
         doReturn(mProfile).when(mTabModel).getProfile();
         doReturn(true).when(mTabGroupSyncFeaturesJniMock).isTabGroupSyncEnabled(mProfile);
     }
 
     @Test
     public void testVisualDataDialogDelegate_showDialog() {
-        mTabGroupVisualDataDialogManager.showDialog(
-                TAB_GROUP_ID, mTabGroupModelFilter, mDialogController);
+        mTabGroupVisualDataDialogManager.showDialog(TAB_GROUP_ID, mTabModel, mDialogController);
         verify(mModalDialogManager).showDialog(mModelCaptor.capture(), eq(ModalDialogType.APP));
 
         PropertyModel model = mModelCaptor.getValue();
@@ -127,10 +123,8 @@ public class TabGroupVisualDataDialogManagerUnitTest {
     public void testVisualDataDialogDelegate_doubleShowDismissed() {
         // Mock a double trigger for the creation dialog observer method for the same group action,
         // but show dialog is only called once.
-        mTabGroupVisualDataDialogManager.showDialog(
-                TAB_GROUP_ID, mTabGroupModelFilter, mDialogController);
-        mTabGroupVisualDataDialogManager.showDialog(
-                TAB_GROUP_ID, mTabGroupModelFilter, mDialogController);
+        mTabGroupVisualDataDialogManager.showDialog(TAB_GROUP_ID, mTabModel, mDialogController);
+        mTabGroupVisualDataDialogManager.showDialog(TAB_GROUP_ID, mTabModel, mDialogController);
         verify(mModalDialogManager, times(1))
                 .showDialog(mModelCaptor.capture(), eq(ModalDialogType.APP));
     }
@@ -143,8 +137,7 @@ public class TabGroupVisualDataDialogManagerUnitTest {
                 .when(mTracker)
                 .shouldTriggerHelpUi(TAB_GROUP_CREATION_DIALOG_SYNC_TEXT_FEATURE);
 
-        mTabGroupVisualDataDialogManager.showDialog(
-                TAB_GROUP_ID, mTabGroupModelFilter, mDialogController);
+        mTabGroupVisualDataDialogManager.showDialog(TAB_GROUP_ID, mTabModel, mDialogController);
         verify(mModalDialogManager).showDialog(mModelCaptor.capture(), eq(ModalDialogType.APP));
 
         PropertyModel model = mModelCaptor.getValue();
@@ -166,8 +159,7 @@ public class TabGroupVisualDataDialogManagerUnitTest {
                 .shouldTriggerHelpUi(TAB_GROUP_CREATION_DIALOG_SYNC_TEXT_FEATURE);
         when(mSyncService.getActiveDataTypes()).thenReturn(Collections.emptySet());
 
-        mTabGroupVisualDataDialogManager.showDialog(
-                TAB_GROUP_ID, mTabGroupModelFilter, mDialogController);
+        mTabGroupVisualDataDialogManager.showDialog(TAB_GROUP_ID, mTabModel, mDialogController);
         verify(mModalDialogManager).showDialog(mModelCaptor.capture(), eq(ModalDialogType.APP));
 
         PropertyModel model = mModelCaptor.getValue();
@@ -195,8 +187,7 @@ public class TabGroupVisualDataDialogManagerUnitTest {
         when(mSyncService.getActiveDataTypes())
                 .thenReturn(Collections.singleton(DataType.SAVED_TAB_GROUP));
 
-        mTabGroupVisualDataDialogManager.showDialog(
-                TAB_GROUP_ID, mTabGroupModelFilter, mDialogController);
+        mTabGroupVisualDataDialogManager.showDialog(TAB_GROUP_ID, mTabModel, mDialogController);
         verify(mModalDialogManager).showDialog(mModelCaptor.capture(), eq(ModalDialogType.APP));
 
         PropertyModel model = mModelCaptor.getValue();
@@ -217,8 +208,7 @@ public class TabGroupVisualDataDialogManagerUnitTest {
 
     @Test
     public void testVisualDataDialogDelegate_accessibilityDelegate() {
-        mTabGroupVisualDataDialogManager.showDialog(
-                TAB_GROUP_ID, mTabGroupModelFilter, mDialogController);
+        mTabGroupVisualDataDialogManager.showDialog(TAB_GROUP_ID, mTabModel, mDialogController);
         verify(mModalDialogManager).showDialog(mModelCaptor.capture(), eq(ModalDialogType.APP));
 
         PropertyModel model = mModelCaptor.getValue();

@@ -133,7 +133,7 @@ public class TabGroupListBottomSheetCoordinator {
         mMediator =
                 new TabGroupListBottomSheetMediator(
                         modelList,
-                        filter,
+                        filter.getTabModel(),
                         tabGroupCreationCallback,
                         tabMovedCallback,
                         faviconResolver,

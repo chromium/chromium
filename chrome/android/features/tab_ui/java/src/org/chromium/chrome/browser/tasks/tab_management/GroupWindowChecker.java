@@ -8,8 +8,8 @@ import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabList;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
@@ -32,16 +32,15 @@ public class GroupWindowChecker {
     }
 
     private final @Nullable TabGroupSyncService mSyncService;
-    private final TabGroupModelFilter mFilter;
+    private final TabModel mTabModel;
 
     /**
      * @param syncService The service to use for accessing synced tab groups.
-     * @param filter Used for accessing tab information.
+     * @param tabModel Used for accessing tab information.
      */
-    public GroupWindowChecker(
-            @Nullable TabGroupSyncService syncService, TabGroupModelFilter filter) {
+    public GroupWindowChecker(@Nullable TabGroupSyncService syncService, TabModel tabModel) {
         mSyncService = syncService;
-        mFilter = filter;
+        mTabModel = tabModel;
     }
 
     /**
@@ -84,7 +83,7 @@ public class GroupWindowChecker {
         boolean isFullyClosing = true;
         boolean foundGroup = false;
 
-        TabList tabList = mFilter.getTabModel().getComprehensiveModel();
+        TabList tabList = mTabModel.getComprehensiveModel();
         for (Tab tab : tabList) {
             if (groupId.equals(tab.getTabGroupId())) {
                 foundGroup = true;

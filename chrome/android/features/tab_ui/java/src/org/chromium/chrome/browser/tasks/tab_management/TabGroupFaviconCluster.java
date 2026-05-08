@@ -22,7 +22,7 @@ import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
@@ -93,15 +93,15 @@ public class TabGroupFaviconCluster extends ConstraintLayout {
     }
 
     /**
-     * Convenience method that builds a list of urls for a cluster from a tab group model filter.
+     * Convenience method that builds a list of urls for a cluster from a tab model.
      * TODO(crbug.com/394154545): Move to a better location.
      *
      * @param tabGroupId The id for the tab group.
-     * @param filter The tab group model filter for the tab group.
+     * @param tabModel The tab model for the tab group.
      * @return A list of URLs with an appropriate size for the cluster logic.
      */
-    public static List<GURL> buildUrlListFromFilter(Token tabGroupId, TabGroupModelFilter filter) {
-        List<Tab> savedTabs = filter.getTabsInGroup(tabGroupId);
+    public static List<GURL> buildUrlListFromFilter(Token tabGroupId, TabModel tabModel) {
+        List<Tab> savedTabs = tabModel.getTabsInGroup(tabGroupId);
         int numberOfTabs = savedTabs.size();
         int urlCount = Math.min(TabGroupFaviconCluster.CORNER_COUNT, numberOfTabs);
         List<GURL> urlList = new ArrayList<>();

@@ -13,7 +13,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,7 +23,6 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 
 import java.util.List;
@@ -34,16 +32,10 @@ import java.util.List;
 public class TabKeyEventHandlerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabModel mTabModel;
 
     private int mNextTabId = 2748;
     private int mTabCount;
-
-    @Before
-    public void setUp() {
-        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
-    }
 
     @Test
     public void testMoveForwardSingleTab() {
@@ -52,7 +44,7 @@ public class TabKeyEventHandlerUnitTest {
 
         TabKeyEventHandler.onPageKeyEvent(
                 new TabKeyEventData(tab1.getId(), KEYCODE_PAGE_UP),
-                mTabGroupModelFilter,
+                mTabModel,
                 /* moveSingleTab= */ true);
 
         verify(mTabModel).moveTab(tab1.getId(), 0);
@@ -65,7 +57,7 @@ public class TabKeyEventHandlerUnitTest {
 
         TabKeyEventHandler.onPageKeyEvent(
                 new TabKeyEventData(tab0.getId(), KEYCODE_PAGE_DOWN),
-                mTabGroupModelFilter,
+                mTabModel,
                 /* moveSingleTab= */ true);
 
         verify(mTabModel).moveTab(tab0.getId(), 1);
@@ -79,7 +71,7 @@ public class TabKeyEventHandlerUnitTest {
 
         TabKeyEventHandler.onPageKeyEvent(
                 new TabKeyEventData(tab1.getId(), KEYCODE_PAGE_UP),
-                mTabGroupModelFilter,
+                mTabModel,
                 /* moveSingleTab= */ true);
 
         verify(mTabModel, never()).moveTab(anyInt(), anyInt());
@@ -93,7 +85,7 @@ public class TabKeyEventHandlerUnitTest {
 
         TabKeyEventHandler.onPageKeyEvent(
                 new TabKeyEventData(tab1.getId(), KEYCODE_PAGE_DOWN),
-                mTabGroupModelFilter,
+                mTabModel,
                 /* moveSingleTab= */ true);
 
         verify(mTabModel, never()).moveTab(anyInt(), anyInt());
@@ -106,10 +98,10 @@ public class TabKeyEventHandlerUnitTest {
 
         TabKeyEventHandler.onPageKeyEvent(
                 new TabKeyEventData(tab.getId(), KEYCODE_PAGE_DOWN),
-                mTabGroupModelFilter,
+                mTabModel,
                 /* moveSingleTab= */ false);
 
-        verify(mTabGroupModelFilter).moveRelatedTabs(tab.getId(), 2);
+        verify(mTabModel).moveRelatedTabs(tab.getId(), 2);
     }
 
     @Test
@@ -119,10 +111,10 @@ public class TabKeyEventHandlerUnitTest {
 
         TabKeyEventHandler.onPageKeyEvent(
                 new TabKeyEventData(tab.getId(), KEYCODE_PAGE_UP),
-                mTabGroupModelFilter,
+                mTabModel,
                 /* moveSingleTab= */ false);
 
-        verify(mTabGroupModelFilter).moveRelatedTabs(tab.getId(), 0);
+        verify(mTabModel).moveRelatedTabs(tab.getId(), 0);
     }
 
     private Tab addTab() {
@@ -133,7 +125,7 @@ public class TabKeyEventHandlerUnitTest {
         int index = mTabCount++;
         when(mTabModel.indexOf(tab)).thenReturn(index);
         when(mTabModel.getTabAt(index)).thenReturn(tab);
-        when(mTabGroupModelFilter.getRelatedTabList(tabId)).thenReturn(List.of(tab));
+        when(mTabModel.getRelatedTabList(tabId)).thenReturn(List.of(tab));
         return tab;
     }
 
@@ -146,8 +138,8 @@ public class TabKeyEventHandlerUnitTest {
         when(tab1.getTabGroupId()).thenReturn(tabGroupId);
 
         List<Tab> tabs = List.of(tab0, tab1);
-        when(mTabGroupModelFilter.getRelatedTabList(tab0.getId())).thenReturn(tabs);
-        when(mTabGroupModelFilter.getRelatedTabList(tab1.getId())).thenReturn(tabs);
+        when(mTabModel.getRelatedTabList(tab0.getId())).thenReturn(tabs);
+        when(mTabModel.getRelatedTabList(tab1.getId())).thenReturn(tabs);
         return tabs;
     }
 }

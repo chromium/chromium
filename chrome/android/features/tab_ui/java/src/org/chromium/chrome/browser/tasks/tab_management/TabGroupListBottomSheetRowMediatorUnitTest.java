@@ -21,7 +21,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter.MergeNotificationType;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabMovedCallback;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -49,7 +48,6 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private TabMovedCallback mTabMovedCallback;
     @Mock private FaviconResolver mFaviconResolver;
@@ -80,14 +78,13 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
         mSavedTabGroup.savedTabs = savedTabs;
         savedTabGroupTab.localId = TEST_LOCAL_ID;
 
-        when(mTabGroupModelFilter.getTabUngrouper()).thenReturn(mTabUngrouper);
-        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
+        when(mTabModel.getTabUngrouper()).thenReturn(mTabUngrouper);
         when(mTabModel.getTabById(TEST_LOCAL_ID)).thenReturn(mTab);
 
         mMediator =
                 new TabGroupListBottomSheetRowMediator(
                         mSavedTabGroup,
-                        mTabGroupModelFilter,
+                        mTabModel,
                         mFaviconResolver,
                         mTabGroupSyncService,
                         mOnClickRunnable,
@@ -118,7 +115,7 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
         Runnable clickRunnable = model.get(TabGroupRowProperties.ROW_CLICK_RUNNABLE);
         clickRunnable.run();
 
-        verify(mTabGroupModelFilter)
+        verify(mTabModel)
                 .mergeListOfTabsToGroup(mTabs, mTab, MergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
         verify(mTabMovedCallback).onTabMoved();
         verify(mOnClickRunnable).run();
@@ -132,7 +129,7 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
         Runnable clickRunnable = model.get(TabGroupRowProperties.ROW_CLICK_RUNNABLE);
         clickRunnable.run();
 
-        verify(mTabGroupModelFilter, never())
+        verify(mTabModel, never())
                 .mergeListOfTabsToGroup(mTabs, mTab, MergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
         verify(mTabMovedCallback, never()).onTabMoved();
         verify(mOnClickRunnable).run();
@@ -145,7 +142,7 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
         Runnable clickRunnable = model.get(TabGroupRowProperties.ROW_CLICK_RUNNABLE);
         clickRunnable.run();
 
-        verify(mTabGroupModelFilter, never())
+        verify(mTabModel, never())
                 .mergeListOfTabsToGroup(mTabs, mTab, MergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
         verify(mTabMovedCallback, never()).onTabMoved();
         verify(mOnClickRunnable).run();
@@ -158,7 +155,7 @@ public class TabGroupListBottomSheetRowMediatorUnitTest {
         Runnable clickRunnable = model.get(TabGroupRowProperties.ROW_CLICK_RUNNABLE);
         clickRunnable.run();
 
-        verify(mTabGroupModelFilter, never())
+        verify(mTabModel, never())
                 .mergeListOfTabsToGroup(mTabs, mTab, MergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
         verify(mTabMovedCallback, never()).onTabMoved();
         verify(mOnClickRunnable).run();

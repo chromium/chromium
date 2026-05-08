@@ -50,7 +50,6 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridContextMenuCoordinator.ShowTabListEditor;
@@ -85,7 +84,6 @@ public class TabGridContextMenuCoordinatorUnitTest {
             new ActivityScenarioRule<>(TestActivity.class);
 
     @Mock private TabBookmarker mTabBookmarker;
-    @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabGroupListBottomSheetCoordinator mTabGroupListBottomSheetCoordinator;
     @Mock private TabGroupCreationDialogManager mTabGroupCreationDialogManager;
     @Mock private Supplier<ShareDelegate> mShareDelegateSupplier;
@@ -113,8 +111,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
         mTabGroupId = Token.createRandom();
         mTabBookmarkerSupplier = ObservableSuppliers.createNonNull(mTabBookmarker);
 
-        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
-        when(mTabGroupModelFilter.getTabGroupCount()).thenReturn(1);
+        when(mTabModel.getTabGroupCount()).thenReturn(1);
         when(mTabModel.getTabRemover()).thenReturn(mTabRemover);
         when(mTabModel.getProfile()).thenReturn(mProfile);
         when(mShareDelegateSupplier.get()).thenReturn(mShareDelegate);
@@ -130,7 +127,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
                         mActivity,
                         mTabBookmarkerSupplier,
                         mProfile,
-                        mTabGroupModelFilter,
+                        mTabModel,
                         mTabGroupListBottomSheetCoordinator,
                         mTabGroupCreationDialogManager,
                         mShareDelegateSupplier,
@@ -193,7 +190,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
         TabOverflowMenuCoordinator.OnItemClickedCallback<Integer> callback =
                 TabGridContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarkerSupplier,
-                        mTabGroupModelFilter,
+                        mTabModel,
                         mTabGroupListBottomSheetCoordinator,
                         mTabGroupCreationDialogManager,
                         mShareDelegateSupplier,
@@ -212,7 +209,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
         TabOverflowMenuCoordinator.OnItemClickedCallback<Integer> callback =
                 TabGridContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarkerSupplier,
-                        mTabGroupModelFilter,
+                        mTabModel,
                         mTabGroupListBottomSheetCoordinator,
                         mTabGroupCreationDialogManager,
                         mShareDelegateSupplier,
@@ -231,7 +228,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
         TabOverflowMenuCoordinator.OnItemClickedCallback<Integer> callback =
                 TabGridContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarkerSupplier,
-                        mTabGroupModelFilter,
+                        mTabModel,
                         mTabGroupListBottomSheetCoordinator,
                         mTabGroupCreationDialogManager,
                         mShareDelegateSupplier,
@@ -242,7 +239,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
                 TAB_ID,
                 /* collaborationId= */ null,
                 /* listViewTouchTracker= */ null);
-        verify(mTabGroupCreationDialogManager).showDialog(mTabGroupId, mTabGroupModelFilter);
+        verify(mTabGroupCreationDialogManager).showDialog(mTabGroupId, mTabModel);
     }
 
     @Test
@@ -250,7 +247,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
         TabOverflowMenuCoordinator.OnItemClickedCallback<Integer> callback =
                 TabGridContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarkerSupplier,
-                        mTabGroupModelFilter,
+                        mTabModel,
                         mTabGroupListBottomSheetCoordinator,
                         mTabGroupCreationDialogManager,
                         mShareDelegateSupplier,
@@ -269,7 +266,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
         TabOverflowMenuCoordinator.OnItemClickedCallback<Integer> callback =
                 TabGridContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarkerSupplier,
-                        mTabGroupModelFilter,
+                        mTabModel,
                         mTabGroupListBottomSheetCoordinator,
                         mTabGroupCreationDialogManager,
                         mShareDelegateSupplier,
@@ -288,7 +285,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
         TabOverflowMenuCoordinator.OnItemClickedCallback<Integer> callback =
                 TabGridContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarkerSupplier,
-                        mTabGroupModelFilter,
+                        mTabModel,
                         mTabGroupListBottomSheetCoordinator,
                         mTabGroupCreationDialogManager,
                         mShareDelegateSupplier,
@@ -307,7 +304,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
         TabOverflowMenuCoordinator.OnItemClickedCallback<Integer> callback =
                 TabGridContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarkerSupplier,
-                        mTabGroupModelFilter,
+                        mTabModel,
                         mTabGroupListBottomSheetCoordinator,
                         mTabGroupCreationDialogManager,
                         mShareDelegateSupplier,
@@ -326,7 +323,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
         TabOverflowMenuCoordinator.OnItemClickedCallback<Integer> callback =
                 TabGridContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarkerSupplier,
-                        mTabGroupModelFilter,
+                        mTabModel,
                         mTabGroupListBottomSheetCoordinator,
                         mTabGroupCreationDialogManager,
                         mShareDelegateSupplier,
@@ -345,7 +342,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
         TabOverflowMenuCoordinator.OnItemClickedCallback<Integer> callback =
                 TabGridContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarkerSupplier,
-                        mTabGroupModelFilter,
+                        mTabModel,
                         mTabGroupListBottomSheetCoordinator,
                         mTabGroupCreationDialogManager,
                         mShareDelegateSupplier,
@@ -364,7 +361,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
         TabOverflowMenuCoordinator.OnItemClickedCallback<Integer> callback =
                 TabGridContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarkerSupplier,
-                        mTabGroupModelFilter,
+                        mTabModel,
                         mTabGroupListBottomSheetCoordinator,
                         mTabGroupCreationDialogManager,
                         mShareDelegateSupplier,
@@ -416,7 +413,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
         TabOverflowMenuCoordinator.OnItemClickedCallback<Integer> callback =
                 TabGridContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarkerSupplier,
-                        mTabGroupModelFilter,
+                        mTabModel,
                         mTabGroupListBottomSheetCoordinator,
                         mTabGroupCreationDialogManager,
                         mShareDelegateSupplier,
@@ -438,7 +435,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
         TabOverflowMenuCoordinator.OnItemClickedCallback<Integer> callback =
                 TabGridContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarkerSupplier,
-                        mTabGroupModelFilter,
+                        mTabModel,
                         mTabGroupListBottomSheetCoordinator,
                         mTabGroupCreationDialogManager,
                         mShareDelegateSupplier,
@@ -458,7 +455,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
         TabOverflowMenuCoordinator.OnItemClickedCallback<Integer> callback =
                 TabGridContextMenuCoordinator.getMenuItemClickedCallback(
                         mTabBookmarkerSupplier,
-                        mTabGroupModelFilter,
+                        mTabModel,
                         mTabGroupListBottomSheetCoordinator,
                         mTabGroupCreationDialogManager,
                         mShareDelegateSupplier,
@@ -560,7 +557,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
     public void testBuildMenuActionItems_noGroups() {
         mUrl = new GURL(LOCALHOST_URL);
         when(mTab.getUrl()).thenReturn(mUrl);
-        when(mTabGroupModelFilter.getTabGroupCount()).thenReturn(0);
+        when(mTabModel.getTabGroupCount()).thenReturn(0);
         mCoordinator.buildMenuActionItems(mMenuItemList, TAB_ID);
 
         assertEquals(7, mMenuItemList.size());
@@ -579,7 +576,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
 
         mUrl = new GURL(LOCALHOST_URL);
         when(mTab.getUrl()).thenReturn(mUrl);
-        when(mTabGroupModelFilter.getTabGroupCount()).thenReturn(0);
+        when(mTabModel.getTabGroupCount()).thenReturn(0);
         mCoordinator.buildMenuActionItems(mMenuItemList, TAB_ID);
 
         assertEquals(7, mMenuItemList.size());
@@ -617,7 +614,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
 
     @Test
     public void testGetMenuWidth_withTabGroups() {
-        when(mTabGroupModelFilter.getTabGroupCount()).thenReturn(1);
+        when(mTabModel.getTabGroupCount()).thenReturn(1);
         assertEquals(
                 mActivity
                         .getResources()
@@ -628,7 +625,7 @@ public class TabGridContextMenuCoordinatorUnitTest {
 
     @Test
     public void testGetMenuWidth_noTabGroups() {
-        when(mTabGroupModelFilter.getTabGroupCount()).thenReturn(0);
+        when(mTabModel.getTabGroupCount()).thenReturn(0);
         assertEquals(
                 mActivity
                         .getResources()

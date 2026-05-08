@@ -289,20 +289,20 @@ public class TabGroupUtils {
      *
      * @param tabs The tabs to be added to a tab group.
      * @param destTabId The tab id of the destination tab group.
-     * @param tabGroupModelFilter Used to read current tab groups.
+     * @param tabModel Used to read current tab groups.
      * @param tabMovedCallback Used to follow up on a tab being moved groups or ungrouped.
      */
     public static void mergeTabsToDest(
             List<Tab> tabs,
             @TabId int destTabId,
-            TabGroupModelFilter tabGroupModelFilter,
+            TabModel tabModel,
             @Nullable TabMovedCallback tabMovedCallback) {
-        Tab destTab = tabGroupModelFilter.getTabModel().getTabById(destTabId);
+        Tab destTab = tabModel.getTabById(destTabId);
         if (destTab == null) {
             return;
         }
 
-        tabGroupModelFilter.mergeListOfTabsToGroup(
+        tabModel.mergeListOfTabsToGroup(
                 tabs, destTab, MergeNotificationType.NOTIFY_IF_NOT_NEW_GROUP);
         if (tabMovedCallback != null) {
             tabMovedCallback.onTabMoved();

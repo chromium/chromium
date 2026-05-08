@@ -10,7 +10,7 @@ import android.text.TextUtils;
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabGroupCreationDialogResultAction;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabGroupCreationFinalSelections;
 import org.chromium.chrome.tab_ui.R;
@@ -37,15 +37,14 @@ public class TabGroupCreationDialogManager {
 
     private class TabGroupCreationDialogController implements Controller {
         private final Token mTabGroupId;
-        private final TabGroupModelFilter mTabGroupModelFilter;
+        private final TabModel mTabModel;
 
-        private TabGroupCreationDialogController(
-                @Nullable Token tabGroupId, TabGroupModelFilter tabGroupModelFilter) {
+        private TabGroupCreationDialogController(@Nullable Token tabGroupId, TabModel tabModel) {
             assert tabGroupId != null;
-            assert tabGroupModelFilter.tabGroupExists(tabGroupId);
+            assert tabModel.tabGroupExists(tabGroupId);
 
             mTabGroupId = tabGroupId;
-            mTabGroupModelFilter = tabGroupModelFilter;
+            mTabModel = tabModel;
         }
 
         @Override
@@ -64,7 +63,7 @@ public class TabGroupCreationDialogManager {
 
         @Override
         public void onDismiss(PropertyModel model, @DialogDismissalCause int dismissalCause) {
-            boolean stillExists = mTabGroupModelFilter.tabGroupExists(mTabGroupId);
+            boolean stillExists = mTabModel.tabGroupExists(mTabGroupId);
 
             final @TabGroupColorId int defaultColorId =
                     mTabGroupVisualDataDialogManager.getDefaultColorId();
@@ -72,7 +71,7 @@ public class TabGroupCreationDialogManager {
                     mTabGroupVisualDataDialogManager.getCurrentColorId();
             boolean didChangeColor = currentColorId != defaultColorId;
             if (stillExists) {
-                mTabGroupModelFilter.setTabGroupColor(mTabGroupId, currentColorId);
+                mTabModel.setTabGroupColor(mTabGroupId, currentColorId);
             }
 
             // Only save the group title input text if it has been changed from the suggested
@@ -81,7 +80,7 @@ public class TabGroupCreationDialogManager {
             String inputGroupTitle = mTabGroupVisualDataDialogManager.getCurrentGroupTitle();
             boolean didChangeTitle = !Objects.equals(initialGroupTitle, inputGroupTitle);
             if (didChangeTitle && !TextUtils.isEmpty(inputGroupTitle) && stillExists) {
-                mTabGroupModelFilter.setTabGroupTitle(mTabGroupId, inputGroupTitle);
+                mTabModel.setTabGroupTitle(mTabGroupId, inputGroupTitle);
             }
 
             recordDialogSelectionHistogram(didChangeColor, didChangeTitle);
@@ -128,13 +127,13 @@ public class TabGroupCreationDialogManager {
      * dialog means that it is shown after the group has already been merged.
      *
      * @param tabGroupId The destination tab group id of the new tab group that has been created.
-     * @param filter The current TabGroupModelFilter that this group is created on.
+     * @param tabModel The current TabModel that this group is created on.
      */
-    public void showDialog(@Nullable Token tabGroupId, TabGroupModelFilter filter) {
+    public void showDialog(@Nullable Token tabGroupId, TabModel tabModel) {
         mTabGroupCreationDialogController =
-                new TabGroupCreationDialogController(tabGroupId, filter);
+                new TabGroupCreationDialogController(tabGroupId, tabModel);
         mTabGroupVisualDataDialogManager.showDialog(
-                tabGroupId, filter, mTabGroupCreationDialogController);
+                tabGroupId, tabModel, mTabGroupCreationDialogController);
     }
 
     private void recordDialogSelectionHistogram(boolean didChangeColor, boolean didChangeTitle) {

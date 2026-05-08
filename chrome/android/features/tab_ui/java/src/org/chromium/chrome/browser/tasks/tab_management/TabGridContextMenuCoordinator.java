@@ -31,7 +31,6 @@ import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabClosureParamsUtils;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.ListItemBuilder;
@@ -64,7 +63,7 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
 
     private static final String MENU_USER_ACTION_PREFIX = "TabSwitcher.ContextMenu.";
     private final Activity mActivity;
-    private final TabGroupModelFilter mTabGroupModelFilter;
+    private final TabModel mTabModel;
     private final BookmarkModel mBookmarkModel;
     private boolean mIsMenuFocusableUponCreation;
 
@@ -72,7 +71,7 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
             Activity activity,
             Supplier<@Nullable TabBookmarker> tabBookmarkerSupplier,
             Profile profile,
-            TabGroupModelFilter tabGroupModelFilter,
+            TabModel tabModel,
             TabGroupListBottomSheetCoordinator tabGroupListBottomSheetCoordinator,
             TabGroupCreationDialogManager tabGroupCreationDialogManager,
             Supplier<@Nullable ShareDelegate> shareDelegateSupplier,
@@ -84,25 +83,25 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
                 R.layout.tab_switcher_action_menu_layout,
                 getMenuItemClickedCallback(
                         tabBookmarkerSupplier,
-                        tabGroupModelFilter,
+                        tabModel,
                         tabGroupListBottomSheetCoordinator,
                         tabGroupCreationDialogManager,
                         shareDelegateSupplier,
                         showTabListEditor),
-                tabGroupModelFilter::getTabModel,
+                () -> tabModel,
                 /* multiInstanceManager= */ null,
                 tabGroupSyncService,
                 collaborationService,
                 activity);
         mActivity = activity;
-        mTabGroupModelFilter = tabGroupModelFilter;
+        mTabModel = tabModel;
         mBookmarkModel = BookmarkModel.getForProfile(profile);
     }
 
     /**
      * @param activity The activity where this context menu will be shown.
      * @param tabBookmarkerSupplier Supplies the {@link TabBookmarker} used to bookmark tabs.
-     * @param tabGroupModelFilter Supplies the {@link TabModel}.
+     * @param tabModel Supplies the {@link TabModel}.
      * @param tabGroupListBottomSheetCoordinator The {@link TabGroupListBottomSheetCoordinator} that
      *     will be used to show a bottom sheet when the user selects the "Add to group" option.
      * @param tabGroupCreationDialogManager The manager for the dialog showed on tab group creation.
@@ -113,12 +112,12 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
     public static TabGridContextMenuCoordinator createContextMenuCoordinator(
             Activity activity,
             Supplier<@Nullable TabBookmarker> tabBookmarkerSupplier,
-            TabGroupModelFilter tabGroupModelFilter,
+            TabModel tabModel,
             TabGroupListBottomSheetCoordinator tabGroupListBottomSheetCoordinator,
             TabGroupCreationDialogManager tabGroupCreationDialogManager,
             Supplier<@Nullable ShareDelegate> shareDelegateSupplier,
             ShowTabListEditor showTabListEditor) {
-        Profile profile = assumeNonNull(tabGroupModelFilter.getTabModel().getProfile());
+        Profile profile = assumeNonNull(tabModel.getProfile());
         @Nullable TabGroupSyncService tabGroupSyncService =
                 profile.isOffTheRecord() ? null : TabGroupSyncServiceFactory.getForProfile(profile);
         CollaborationService collaborationService =
@@ -128,7 +127,7 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
                 activity,
                 tabBookmarkerSupplier,
                 profile,
-                tabGroupModelFilter,
+                tabModel,
                 tabGroupListBottomSheetCoordinator,
                 tabGroupCreationDialogManager,
                 shareDelegateSupplier,
@@ -147,7 +146,7 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
      */
     public void showMenu(ViewRectProvider anchorViewRectProvider, int tabId, boolean focusable) {
         mIsMenuFocusableUponCreation = focusable;
-        boolean isIncognito = mTabGroupModelFilter.getTabModel().isIncognitoBranded();
+        boolean isIncognito = mTabModel.isIncognitoBranded();
         dismiss();
 
         if (!anchorViewRectProvider.isViewShown()) return;
@@ -174,14 +173,13 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
     @VisibleForTesting
     static OnItemClickedCallback<Integer> getMenuItemClickedCallback(
             Supplier<@Nullable TabBookmarker> tabBookmarkerSupplier,
-            TabGroupModelFilter tabGroupModelFilter,
+            TabModel tabModel,
             TabGroupListBottomSheetCoordinator coordinator,
             TabGroupCreationDialogManager dialogManager,
             Supplier<@Nullable ShareDelegate> shareDelegateSupplier,
             ShowTabListEditor showTabListEditor) {
         return (menuId, tabId, collaborationId, listViewTouchTracker) -> {
             if (tabId == Tab.INVALID_TAB_ID) return;
-            TabModel tabModel = tabGroupModelFilter.getTabModel();
             TabBookmarker tabBookmarker = assumeNonNull(tabBookmarkerSupplier.get());
             @Nullable Tab tab = getTabById(() -> tabModel, tabId);
             if (tab == null) return;
@@ -191,9 +189,9 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
                         .share(tab, /* shareDirectly= */ false, TAB_STRIP_CONTEXT_MENU);
                 recordUserActionWithPrefix("ShareTab");
             } else if (menuId == R.id.add_to_new_tab_group) {
-                tabGroupModelFilter.createSingleTabGroup(tab);
+                tabModel.createSingleTabGroup(tab);
                 Token groupId = assumeNonNull(tab.getTabGroupId());
-                dialogManager.showDialog(groupId, tabGroupModelFilter);
+                dialogManager.showDialog(groupId, tabModel);
                 recordUserActionWithPrefix("AddToNewGroup");
             } else if (menuId == R.id.add_to_tab_group) {
                 coordinator.showBottomSheet(List.of(tab));
@@ -233,12 +231,12 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
 
     @Override
     protected void buildMenuActionItems(ModelList itemList, Integer id) {
-        @Nullable Tab tab = getTabById(mTabGroupModelFilter::getTabModel, id);
+        @Nullable Tab tab = getTabById(() -> mTabModel, id);
         if (tab == null) return;
 
         boolean isIncognito = tab.isIncognitoBranded();
 
-        if (mTabGroupModelFilter.getTabGroupCount() == 0) {
+        if (mTabModel.getTabGroupCount() == 0) {
             itemList.add(
                     new ListItemBuilder()
                             .withTitleRes(R.string.menu_add_tab_to_new_group)
@@ -315,7 +313,7 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
     @Override
     protected int getMenuWidth(int anchorViewWidthPx) {
         return getDimensionPixelSize(
-                mTabGroupModelFilter.getTabGroupCount() == 0
+                mTabModel.getTabGroupCount() == 0
                         ? R.dimen.tab_grid_context_menu_extended_width
                         : R.dimen.tab_grid_context_menu_max_width);
     }
@@ -323,7 +321,7 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
     @Nullable
     @Override
     protected String getCollaborationIdOrNull(Integer id) {
-        @Nullable Tab tab = getTabById(mTabGroupModelFilter::getTabModel, id);
+        @Nullable Tab tab = getTabById(() -> mTabModel, id);
         if (tab == null) return null;
         return TabShareUtils.getCollaborationIdOrNull(tab.getTabGroupId(), mTabGroupSyncService);
     }
@@ -352,7 +350,7 @@ public class TabGridContextMenuCoordinator extends TabOverflowMenuCoordinator<@T
     }
 
     private ListItem buildMuteUnmuteSiteItem(Tab tab, boolean isIncognito) {
-        boolean showUnmute = mTabGroupModelFilter.getTabModel().isMuted(tab);
+        boolean showUnmute = mTabModel.isMuted(tab);
         @StringRes int titleRes = showUnmute ? R.string.unmute_site : R.string.mute_site;
         @IdRes int menuId = showUnmute ? R.id.unmute_site : R.id.mute_site;
         @DrawableRes

@@ -19,7 +19,6 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
@@ -37,7 +36,6 @@ public class GroupWindowCheckerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private TabGroupSyncService mSyncService;
-    @Mock private TabGroupModelFilter mFilter;
     @Mock private TabModel mTabModel;
     @Spy private TabList mTabList;
     @Mock private Tab mTab1;
@@ -45,10 +43,9 @@ public class GroupWindowCheckerUnitTest {
 
     @Before
     public void setUp() {
-        when(mFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabModel.getComprehensiveModel()).thenReturn(mTabList);
 
-        mSyncUtils = new GroupWindowChecker(mSyncService, mFilter);
+        mSyncUtils = new GroupWindowChecker(mSyncService, mTabModel);
     }
 
     @Test

@@ -32,7 +32,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tabmodel.TabGroupColorUtils;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.color_picker.ColorPickerCoordinator;
@@ -112,13 +111,13 @@ public class TabGroupVisualDataDialogManager {
      * Construct and show the modal dialog for setting tab group visual data.
      *
      * @param tabGroupId The destination tab group id when modifying a tab group.
-     * @param filter The current TabGroupModelFilter that this group is modified on.
+     * @param tabModel The current TabModel that this group is modified on.
      * @param dialogController The dialog controller for the modal dialog's actions.
      */
     @Initializer
     public void showDialog(
             @Nullable Token tabGroupId,
-            TabGroupModelFilter filter,
+            TabModel tabModel,
             ModalDialogProperties.Controller dialogController) {
         // If the model is not null, it indicates a chained double show attempt is occurring.
         // Early exit the second attempt so that we don't show another dialog and cause the
@@ -133,7 +132,7 @@ public class TabGroupVisualDataDialogManager {
         }
 
         assert tabGroupId != null;
-        assert filter.tabGroupExists(tabGroupId);
+        assert tabModel.tabGroupExists(tabGroupId);
 
         mCustomView =
                 LayoutInflater.from(mContext).inflate(R.layout.tab_group_visual_data_dialog, null);
@@ -142,10 +141,10 @@ public class TabGroupVisualDataDialogManager {
         DialogTitle dialogTitle = mCustomView.findViewById(R.id.visual_data_dialog_title);
         dialogTitle.setText(mDialogTitleRes);
         // Set the description text to be displayed on the dialog underneath the title.
-        setDescriptionText(filter);
+        setDescriptionText(tabModel);
 
         // Set the default or current title to be displayed in the edit text box.
-        mInitialGroupTitle = TabGroupTitleUtils.getDisplayableTitle(mContext, filter, tabGroupId);
+        mInitialGroupTitle = TabGroupTitleUtils.getDisplayableTitle(mContext, tabModel, tabGroupId);
         AppCompatEditText editTextView = mCustomView.findViewById(R.id.title_input_text);
         editTextView.setText(mInitialGroupTitle);
         editTextView.setAccessibilityDelegate(
@@ -179,7 +178,7 @@ public class TabGroupVisualDataDialogManager {
                         /* isIncognito= */ false,
                         ColorPickerLayoutType.DYNAMIC,
                         null);
-        mDefaultColorId = filter.getTabGroupColorWithFallback(tabGroupId);
+        mDefaultColorId = tabModel.getTabGroupColorWithFallback(tabGroupId);
         mColorPickerCoordinator.setSelectedColorItem(mDefaultColorId);
 
         LinearLayout linearLayout = mCustomView.findViewById(R.id.visual_data_dialog_layout);
@@ -254,9 +253,8 @@ public class TabGroupVisualDataDialogManager {
         return assertNonNull(mColorPickerCoordinator.getSelectedColorSupplier().get());
     }
 
-    private void setDescriptionText(TabGroupModelFilter filter) {
+    private void setDescriptionText(TabModel tabModel) {
         if (mDialogType == DialogType.TAB_GROUP_CREATION) {
-            TabModel tabModel = filter.getTabModel();
             Profile profile = assumeNonNull(tabModel.getProfile());
             TextView descriptionView =
                     mCustomView.findViewById(R.id.visual_data_dialog_description);

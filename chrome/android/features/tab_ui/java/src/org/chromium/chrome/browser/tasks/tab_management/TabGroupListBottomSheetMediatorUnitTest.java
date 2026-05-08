@@ -37,7 +37,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabGroupCreationCallback;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils.TabMovedCallback;
 import org.chromium.chrome.browser.tabmodel.TabList;
@@ -70,7 +69,6 @@ public class TabGroupListBottomSheetMediatorUnitTest {
 
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private TabGroupListBottomSheetCoordinatorDelegate mDelegate;
-    @Mock private TabGroupModelFilter mFilter;
     @Mock private TabModel mTabModel;
     @Mock private TabUngrouper mTabUngrouper;
     @Mock private TabList mTabList;
@@ -101,7 +99,7 @@ public class TabGroupListBottomSheetMediatorUnitTest {
         mMediator =
                 new TabGroupListBottomSheetMediator(
                         mModelList,
-                        mFilter,
+                        mTabModel,
                         mTabGroupCreationCallback,
                         mTabMovedCallback,
                         mFaviconResolver,
@@ -119,8 +117,7 @@ public class TabGroupListBottomSheetMediatorUnitTest {
         when(mTabList.getTabAtChecked(2)).thenReturn(mTab3);
 
         when(mTabModel.getComprehensiveModel()).thenReturn(mTabList);
-        when(mFilter.getTabModel()).thenReturn(mTabModel);
-        when(mFilter.getTabUngrouper()).thenReturn(mTabUngrouper);
+        when(mTabModel.getTabUngrouper()).thenReturn(mTabUngrouper);
 
         when(mTab1.getId()).thenReturn(1);
         when(mTab2.getId()).thenReturn(2);
@@ -129,7 +126,7 @@ public class TabGroupListBottomSheetMediatorUnitTest {
         mToken1 = Token.createRandom();
         mToken2 = Token.createRandom();
         mToken3 = Token.createRandom();
-        when(mFilter.getAllTabGroupIds()).thenReturn(Set.of(mToken1, mToken2));
+        when(mTabModel.getAllTabGroupIds()).thenReturn(Set.of(mToken1, mToken2));
 
         when(mTab1.getId()).thenReturn(1);
         when(mTab2.getId()).thenReturn(2);
@@ -305,7 +302,7 @@ public class TabGroupListBottomSheetMediatorUnitTest {
         mMediator =
                 new TabGroupListBottomSheetMediator(
                         mModelList,
-                        mFilter,
+                        mTabModel,
                         mTabGroupCreationCallback,
                         mTabMovedCallback,
                         mFaviconResolver,
@@ -386,7 +383,7 @@ public class TabGroupListBottomSheetMediatorUnitTest {
         // Simulate clicking the "New Group" row.
         mModelList.get(0).model.get(ROW_CLICK_RUNNABLE).run();
 
-        verify(mFilter).mergeListOfTabsToGroup(eq(tabs), eq(mTab1), anyInt());
+        verify(mTabModel).mergeListOfTabsToGroup(eq(tabs), eq(mTab1), anyInt());
         verify(mDelegate).hide(INTERACTION_COMPLETE);
         verify(mTabGroupCreationCallback).onTabGroupCreated(any());
     }
@@ -404,7 +401,7 @@ public class TabGroupListBottomSheetMediatorUnitTest {
 
         verify(mTabMovedCallback).onTabMoved();
         verify(mTabUngrouper).ungroupTabs(eq(tabs), anyBoolean(), anyBoolean());
-        verify(mFilter).createSingleTabGroup(mTab1);
+        verify(mTabModel).createSingleTabGroup(mTab1);
         verify(mDelegate).hide(INTERACTION_COMPLETE);
         verify(mTabGroupCreationCallback).onTabGroupCreated(any());
     }
@@ -424,7 +421,7 @@ public class TabGroupListBottomSheetMediatorUnitTest {
         mMediator =
                 new TabGroupListBottomSheetMediator(
                         mModelList,
-                        mFilter,
+                        mTabModel,
                         mTabGroupCreationCallback,
                         mTabMovedCallback,
                         mFaviconResolver,
@@ -442,7 +439,7 @@ public class TabGroupListBottomSheetMediatorUnitTest {
         mMediator =
                 new TabGroupListBottomSheetMediator(
                         mModelList,
-                        mFilter,
+                        mTabModel,
                         mTabGroupCreationCallback,
                         mTabMovedCallback,
                         mFaviconResolver,
@@ -464,7 +461,7 @@ public class TabGroupListBottomSheetMediatorUnitTest {
         mMediator =
                 new TabGroupListBottomSheetMediator(
                         mModelList,
-                        mFilter,
+                        mTabModel,
                         mTabGroupCreationCallback,
                         mTabMovedCallback,
                         mFaviconResolver,
@@ -487,7 +484,7 @@ public class TabGroupListBottomSheetMediatorUnitTest {
         mMediator =
                 new TabGroupListBottomSheetMediator(
                         mModelList,
-                        mFilter,
+                        mTabModel,
                         mTabGroupCreationCallback,
                         mTabMovedCallback,
                         mFaviconResolver,

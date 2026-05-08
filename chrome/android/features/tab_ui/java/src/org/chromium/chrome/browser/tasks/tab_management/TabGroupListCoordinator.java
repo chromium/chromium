@@ -33,7 +33,7 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.tab_ui.R;
@@ -75,7 +75,7 @@ public class TabGroupListCoordinator {
 
     /**
      * @param context Used to load resources and views.
-     * @param filter Used to interact with local tab model and groups.
+     * @param tabModel Used to interact with local tab model and groups.
      * @param profileProvider Used to fetch keyed service.
      * @param paneManager Used to switch to show detailed tab group UI.
      * @param tabGroupUiActionHandler Used to open hidden tab groups.
@@ -86,7 +86,7 @@ public class TabGroupListCoordinator {
      */
     public TabGroupListCoordinator(
             Context context,
-            TabGroupModelFilter filter,
+            TabModel tabModel,
             ProfileProvider profileProvider,
             PaneManager paneManager,
             TabGroupUiActionHandler tabGroupUiActionHandler,
@@ -180,7 +180,7 @@ public class TabGroupListCoordinator {
                         context,
                         modelList,
                         propertyModel,
-                        filter,
+                        tabModel,
                         faviconResolver,
                         tabGroupSyncService,
                         dataSharingService,

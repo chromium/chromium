@@ -27,7 +27,7 @@ import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
-import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster.ClusterData;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupRowView.TabGroupRowViewTitleData;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupTimeAgo.TimestampEvent;
@@ -54,7 +54,7 @@ class TabGroupRowMediator {
     private final CallbackController mCallbackController = new CallbackController();
     private final Context mContext;
     private final SavedTabGroup mSavedTabGroup;
-    private final TabGroupModelFilter mTabGroupModelFilter;
+    private final TabModel mTabModel;
     private final TabGroupSyncService mTabGroupSyncService;
     private final DataSharingService mDataSharingService;
     private final CollaborationService mCollaborationService;
@@ -69,7 +69,7 @@ class TabGroupRowMediator {
 
     /**
      * @param context Used to load resources and create views.
-     * @param tabGroupModelFilter Used to read current tab groups.
+     * @param tabModel Used to read current tab groups.
      * @param tabGroupSyncService Used to fetch synced copy of tab groups.
      * @param dataSharingService Used to fetch shared group data.
      * @param collaborationService Used to fetch collaboration group data.
@@ -84,7 +84,7 @@ class TabGroupRowMediator {
     public TabGroupRowMediator(
             Context context,
             SavedTabGroup savedTabGroup,
-            TabGroupModelFilter tabGroupModelFilter,
+            TabModel tabModel,
             TabGroupSyncService tabGroupSyncService,
             DataSharingService dataSharingService,
             CollaborationService collaborationService,
@@ -97,7 +97,7 @@ class TabGroupRowMediator {
             DataSharingTabManager dataSharingTabManager) {
         mContext = context;
         mSavedTabGroup = savedTabGroup;
-        mTabGroupModelFilter = tabGroupModelFilter;
+        mTabModel = tabModel;
         mTabGroupSyncService = tabGroupSyncService;
         mPaneManager = paneManager;
         mDataSharingService = dataSharingService;
@@ -229,7 +229,7 @@ class TabGroupRowMediator {
         if (state == GroupWindowState.IN_CURRENT_CLOSING) {
             for (SavedTabGroupTab savedTab : savedTabGroup.savedTabs) {
                 if (savedTab.localId != null) {
-                    mTabGroupModelFilter.getTabModel().cancelTabClosure(savedTab.localId);
+                    mTabModel.cancelTabClosure(savedTab.localId);
                 }
             }
         } else if (state == GroupWindowState.HIDDEN) {
@@ -253,7 +253,7 @@ class TabGroupRowMediator {
             return;
         }
 
-        int tabId = mTabGroupModelFilter.getGroupLastShownTabId(savedTabGroup.localId.tabGroupId);
+        int tabId = mTabModel.getGroupLastShownTabId(savedTabGroup.localId.tabGroupId);
         assert tabId != Tab.INVALID_TAB_ID;
         mPaneManager.focusPane(PaneId.TAB_SWITCHER);
         TabSwitcherPaneBase tabSwitcherPaneBase =
@@ -311,7 +311,7 @@ class TabGroupRowMediator {
             // No need to show a dialog for this since the closure already started.
             for (SavedTabGroupTab savedTab : mSavedTabGroup.savedTabs) {
                 if (savedTab.localId != null) {
-                    mTabGroupModelFilter.getTabModel().commitTabClosure(savedTab.localId);
+                    mTabModel.commitTabClosure(savedTab.localId);
                 }
             }
             // Because the pending closure might have been hiding or part of a closure containing
@@ -319,14 +319,12 @@ class TabGroupRowMediator {
             mTabGroupSyncService.removeGroup(assumeNonNull(mSavedTabGroup.syncId));
         } else if (state == GroupWindowState.IN_CURRENT) {
             assumeNonNull(mSavedTabGroup.localId);
-            mTabGroupModelFilter
-                    .getTabModel()
+            mTabModel
                     .getTabRemover()
                     .closeTabs(
                             assumeNonNull(
                                             TabClosureParams.forCloseTabGroup(
-                                                    mTabGroupModelFilter,
-                                                    mSavedTabGroup.localId.tabGroupId))
+                                                    mTabModel, mSavedTabGroup.localId.tabGroupId))
                                     .allowUndo(false)
                                     .build(),
                             allowDialog);
