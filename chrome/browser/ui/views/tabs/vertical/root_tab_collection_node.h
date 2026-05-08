@@ -68,11 +68,9 @@ class RootTabCollectionNode : public TabCollectionNode,
   void OnTabGroupFocusChanged(
       std::optional<tab_groups::TabGroupId> new_focused_group_id,
       std::optional<tab_groups::TabGroupId> old_focused_group_id) override;
-  void OnTabChangedAt(tabs::TabInterface* tab,
-                      int model_index,
-                      TabChangeType change_type) override;
 
-  void UpdateTabsData(const std::set<tabs::TabInterface*>& changed_tabs);
+  void NotifyTabSelectionChanged(
+      const std::set<tabs::TabInterface*>& changed_tabs);
 
   void NotifyOnChildrenAdded();
 

@@ -201,14 +201,7 @@ void RootTabCollectionNode::OnTabStripModelChanged(
     selected_tabs_ = selected_tabs;
   }
 
-  if (change.type() == TabStripModelChange::kReplaced) {
-    // Discarding a tab causes a replace change notification to be sent. Add any
-    // replaced tab to the list of tabs to update.
-    auto* replace = change.GetReplace();
-    changed_tabs.insert(tab_strip_model->GetTabAtIndex(replace->index));
-  }
-
-  UpdateTabsData(changed_tabs);
+  NotifyTabSelectionChanged(changed_tabs);
 }
 
 void RootTabCollectionNode::OnTabWillBeAdded() {
@@ -249,17 +242,7 @@ void RootTabCollectionNode::OnTabGroupFocusChanged(
                                               old_focused_group_id);
 }
 
-void RootTabCollectionNode::OnTabChangedAt(tabs::TabInterface* tab,
-                                           int model_index,
-                                           TabChangeType change_type) {
-  if (tab_strip_model_->closing_all()) {
-    return;
-  }
-
-  UpdateTabsData({tab});
-}
-
-void RootTabCollectionNode::UpdateTabsData(
+void RootTabCollectionNode::NotifyTabSelectionChanged(
     const std::set<tabs::TabInterface*>& changed_tabs) {
   std::set<TabCollectionNode*> nodes_to_notify;
 
@@ -289,7 +272,7 @@ void RootTabCollectionNode::UpdateTabsData(
   }
 
   for (auto* node : nodes_to_notify) {
-    node->NotifyDataChanged();
+    node->NotifyTabSelectionChanged();
   }
 }
 

@@ -130,10 +130,11 @@ class TabCollectionNode {
   base::CallbackListSubscription RegisterWillDestroyCallback(
       base::OnceClosure callback);
 
-  base::CallbackListSubscription RegisterDataChangedCallback(
+  // Runs `callback` whenever a tab's selection or activation changes.
+  base::CallbackListSubscription RegisterTabSelectionChangedCallback(
       base::RepeatingClosure callback);
 
-  void NotifyDataChanged();
+  void NotifyTabSelectionChanged();
 
   void SetController(VerticalTabStripController* controller);
   VerticalTabStripController* GetController() { return tab_strip_controller_; }
@@ -165,7 +166,7 @@ class TabCollectionNode {
   void EnsureFocusOrder(size_t child_index);
 
   base::OnceClosureList on_will_destroy_callback_list_;
-  base::RepeatingClosureList on_data_changed_callback_list_;
+  base::RepeatingClosureList on_tab_selection_changed_callback_list_;
 
   const Type type_;
   const tabs::TabCollectionNodeHandle handle_;

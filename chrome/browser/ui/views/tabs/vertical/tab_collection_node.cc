@@ -74,13 +74,14 @@ base::CallbackListSubscription TabCollectionNode::RegisterWillDestroyCallback(
   return on_will_destroy_callback_list_.Add(std::move(callback));
 }
 
-base::CallbackListSubscription TabCollectionNode::RegisterDataChangedCallback(
+base::CallbackListSubscription
+TabCollectionNode::RegisterTabSelectionChangedCallback(
     base::RepeatingClosure callback) {
-  return on_data_changed_callback_list_.Add(std::move(callback));
+  return on_tab_selection_changed_callback_list_.Add(std::move(callback));
 }
 
-void TabCollectionNode::NotifyDataChanged() {
-  on_data_changed_callback_list_.Notify();
+void TabCollectionNode::NotifyTabSelectionChanged() {
+  on_tab_selection_changed_callback_list_.Notify();
 }
 
 void TabCollectionNode::SetController(VerticalTabStripController* controller) {

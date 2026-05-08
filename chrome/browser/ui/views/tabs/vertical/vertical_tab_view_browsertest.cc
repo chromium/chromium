@@ -171,16 +171,9 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, IconDataChanged) {
   EXPECT_TRUE(icon->GetShowingAttentionIndicator());
 
   // After discarding the tab, the icon should show the discard indicator.
-  std::unique_ptr<content::WebContents> replacement_web_contents =
-      content::WebContents::Create(
-          content::WebContents::CreateParams(browser()->profile()));
-  replacement_web_contents->SetWasDiscarded(true);
-  performance_manager::user_tuning::UserPerformanceTuningManager::
-      PreDiscardResourceUsage::CreateForWebContents(
-          replacement_web_contents.get(), base::KiBU(0),
-          ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
-  tab_strip_model()->DiscardWebContentsAt(0,
-                                          std::move(replacement_web_contents));
+  tabs::TabInterface* tab = tab_strip_model()->GetTabAtIndex(0);
+  performance_manager::user_tuning::UserPerformanceTuningManager::GetInstance()
+      ->DiscardPageForTesting(tab->GetContents());
   EXPECT_TRUE(icon->GetShowingDiscardIndicator());
 }
 
