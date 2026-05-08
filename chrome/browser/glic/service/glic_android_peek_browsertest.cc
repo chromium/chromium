@@ -131,4 +131,27 @@ IN_PROC_BROWSER_TEST_F(GlicAndroidPeekBrowserTest,
       WaitForSidePanelState(new_tab, GlicSidePanelCoordinator::State::kPeek));
 }
 
+IN_PROC_BROWSER_TEST_F(GlicAndroidPeekBrowserTest,
+                       ShowDoesNotDeactivateActiveEmbedder) {
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+
+  EXPECT_TRUE(instance->IsShowing());
+  EXPECT_EQ(instance->GetActiveEmbedderTabForTesting(), tab);
+
+  auto* embedder_before = instance->GetEmbedderForTab(tab);
+  ASSERT_TRUE(embedder_before);
+
+  // Call Show again with prefer_peek = true.
+  SidePanelShowOptions side_panel_options{*tab};
+  side_panel_options.prefer_peek = true;
+
+  instance->Show(ShowOptions{side_panel_options});
+
+  // It should still be showing and active.
+  EXPECT_TRUE(instance->IsShowing());
+  EXPECT_EQ(instance->GetActiveEmbedderTabForTesting(), tab);
+  EXPECT_EQ(embedder_before, instance->GetEmbedderForTab(tab));
+}
+
 }  // namespace glic

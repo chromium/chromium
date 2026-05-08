@@ -123,13 +123,6 @@ BASE_FEATURE(kGlicUnbindOnClose, base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 
-bool ShouldShowInactiveSidePanel(const SidePanelShowOptions& options) {
-  auto* coordinator = GlicSidePanelCoordinator::GetForTab(&options.tab.get());
-  bool supports_peek = coordinator && coordinator->SupportsPeek();
-  bool is_activated = options.tab->IsActivated();
-  return !is_activated || (options.prefer_peek && supports_peek);
-}
-
 EmbedderKey CreateSidePanelEmbedderKey(tabs::TabInterface* tab) {
   CHECK(tab);
   return EmbedderKey(tab);
@@ -394,11 +387,31 @@ bool GlicInstanceImpl::IsLiveMode() {
   return interaction_mode_ == mojom::WebClientMode::kAudio;
 }
 
+bool GlicInstanceImpl::ShouldShowInactiveSidePanel(
+    const SidePanelShowOptions& options) const {
+  if (!options.tab->IsActivated()) {
+    return true;
+  }
+
+  if (!options.prefer_peek) {
+    return false;
+  }
+
+  EmbedderKey key = CreateSidePanelEmbedderKey(&options.tab.get());
+  if (IsActiveEmbedder(key)) {
+    return false;
+  }
+
+  auto* coordinator = GlicSidePanelCoordinator::GetForTab(&options.tab.get());
+  return coordinator && coordinator->SupportsPeek();
+}
+
 void GlicInstanceImpl::Show(const ShowOptions& options) {
   VLOG(1) << "Glic [InstanceImpl] Show, id=" << id_.value();
 
   TRACE_EVENT_INSTANT("glic", "GlicInstanceImpl::Show",
                       perfetto::Flow::FromPointer(this));
+
   if (const auto* side_panel_options =
           std::get_if<SidePanelShowOptions>(&options.embedder_options);
       side_panel_options) {
@@ -409,7 +422,6 @@ void GlicInstanceImpl::Show(const ShowOptions& options) {
   }
 
   EmbedderKey new_key = GetEmbedderKey(options);
-
   // Look up the current embedder for that tab/key.
   EmbedderEntry* entry = GetEmbedderEntry(new_key);
   const bool new_embedder_will_show =
@@ -1000,6 +1012,10 @@ GlicUiEmbedder* GlicInstanceImpl::CreateActiveEmbedderForFloaty(
 
 void GlicInstanceImpl::ShowInactiveSidePanelEmbedderFor(
     const SidePanelShowOptions& options) {
+  CHECK(!IsActiveEmbedder(CreateSidePanelEmbedderKey(&options.tab.get())))
+      << "ShowInactiveSidePanelEmbedderFor called for active embedder. "
+         "Converting an active embedder to an inactive one needs to be done "
+         "with DeactivateCurrentEmbedder.";
   auto& entry =
       BindTab(&options.tab.get(), options.pin_trigger, options.pin_on_bind);
   entry.embedder = GlicInactiveSidePanelUi::CreateForBackgroundTab(
@@ -1531,6 +1547,11 @@ void GlicInstanceImpl::OnTabAddedToTask(
                                    /*success=*/false);
     return;
   }
+
+  if (IsActiveEmbedder(CreateSidePanelEmbedderKey(tab))) {
+    return;
+  }
+
   SidePanelShowOptions side_panel_options{*tab};
   side_panel_options.suppress_opening_animation = true;
   side_panel_options.prefer_peek = true;

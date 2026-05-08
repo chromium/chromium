@@ -1131,8 +1131,26 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorActorTaskTest,
 
   instance->OnTabAddedToTask(task_id, tab2->GetHandle());
 
-  EXPECT_TRUE(instance->IsShowing());
   EXPECT_OK(WaitForEmbedderActivationOrPeek(instance, tab2));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorActorTaskTest,
+                       OnTabAddedToTaskShortcutsIfAlreadyBound) {
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+
+  EXPECT_TRUE(instance->IsShowing());
+  auto* embedder_before = instance->GetEmbedderForTab(tab);
+  ASSERT_TRUE(embedder_before);
+
+  actor::TaskId task_id(123);
+
+  // Call OnTabAddedToTask for the already bound tab.
+  instance->OnTabAddedToTask(task_id, tab->GetHandle());
+
+  // It should still be showing and the embedder should not have changed.
+  EXPECT_TRUE(instance->IsShowing());
+  EXPECT_EQ(embedder_before, instance->GetEmbedderForTab(tab));
 }
 
 class GlicInstanceCoordinatorHibernationTest

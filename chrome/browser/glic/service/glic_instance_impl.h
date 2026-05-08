@@ -356,6 +356,7 @@ class GlicInstanceImpl : public GlicInstance,
   void MaybeWarmZeroStateSuggestions();
 
   bool IsActiveEmbedder(EmbedderKey key) const;
+  bool ShouldShowInactiveSidePanel(const SidePanelShowOptions& options) const;
 
   bool ShouldPinOnBind() const;
 
