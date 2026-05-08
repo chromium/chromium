@@ -451,10 +451,6 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   // This will clear all the local cvcs.
   bool ClearLocalCvcs();
 
-  // Method to clear all local CVCs created before mid-May 2025. For more
-  // information, see crbug.com/411681430.
-  bool ClearLocalCvcsUpToMay2025();
-
 #if BUILDFLAG(IS_IOS)
   // Method to clean up for crbug.com/445879524.
   bool CleanupForCrbug445879524();

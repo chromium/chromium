@@ -253,10 +253,6 @@ class AutofillWebDataBackendImpl final
   // Method to clear all the local CVCs from the web database.
   WebDatabase::State ClearLocalCvcs(WebDatabase* db);
 
-  // Method to clear all local CVCs created before mid-May 2025. For more
-  // information, see crbug.com/411681430.
-  WebDatabase::State ClearLocalCvcsUpToMay2025(WebDatabase* db);
-
 #if BUILDFLAG(IS_IOS)
   // Method to clean up for crbug.com/445879524.
   WebDatabase::State CleanupForCrbug445879524(WebDatabase* db);

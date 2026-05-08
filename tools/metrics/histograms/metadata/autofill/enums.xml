@@ -4453,8 +4453,8 @@ Called by update_autofill_enums.py.-->
   <int value="301" label="RemoveEntityInstance: Failure"/>
   <int value="310" label="RemoveEntityInstancesModifiedBetween: Success"/>
   <int value="311" label="RemoveEntityInstancesModifiedBetween: Failure"/>
-  <int value="312" label="ClearLocalCvcsUpToMay2025: Success"/>
-  <int value="313" label="ClearLocalCvcsUpToMay2025: Failure"/>
+  <int value="312" label="(Deprecated) ClearLocalCvcsUpToMay2025: Success"/>
+  <int value="313" label="(Deprecated) ClearLocalCvcsUpToMay2025: Failure"/>
   <int value="314" label="CleanupForCrbug445879524: Success"/>
   <int value="315" label="CleanupForCrbug445879524: Failure"/>
   <int value="316" label="AddOrUpdateValuableMetadata: Success"/>

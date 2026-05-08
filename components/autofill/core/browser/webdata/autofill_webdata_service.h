@@ -181,10 +181,6 @@ class AutofillWebDataService : public WebDataServiceBase {
   // Method to clear all the local CVCs from the web database.
   void ClearLocalCvcs();
 
-  // Method to clear all local CVCs created before mid-May 2025. For more
-  // information, see crbug.com/411681430.
-  void ClearLocalCvcsUpToMay2025();
-
 #if BUILDFLAG(IS_IOS)
   // Method to clean up for crbug.com/445879524.
   void CleanupForCrbug445879524();

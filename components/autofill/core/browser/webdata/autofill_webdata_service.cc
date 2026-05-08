@@ -305,13 +305,6 @@ void AutofillWebDataService::ClearLocalCvcs() {
                                 autofill_backend_));
 }
 
-void AutofillWebDataService::ClearLocalCvcsUpToMay2025() {
-  wdbs_->ScheduleDBTask(
-      FROM_HERE,
-      base::BindOnce(&AutofillWebDataBackendImpl::ClearLocalCvcsUpToMay2025,
-                     autofill_backend_));
-}
-
 #if BUILDFLAG(IS_IOS)
 void AutofillWebDataService::CleanupForCrbug445879524() {
   wdbs_->ScheduleDBTask(

@@ -132,8 +132,7 @@ enum class Result {
   kRemoveEntityInstance_Failure = 301,
   kRemoveEntityInstancesModifiedBetween_Success = 310,
   kRemoveEntityInstancesModifiedBetween_Failure = 311,
-  kClearLocalCvcsUpToMay2025_Success = 312,
-  kClearLocalCvcsUpToMay2025_Failure = 313,
+  // Clearing local CVCs up to May 2025 (312, 313) is deprecated.
   kCleanupForCrbug445879524_Success = 314,
   kCleanupForCrbug445879524_Failure = 315,
   kAddOrUpdateValuableMetadata_Success = 316,
@@ -1040,17 +1039,6 @@ WebDatabase::State AutofillWebDataBackendImpl::ClearLocalCvcs(WebDatabase* db) {
     return WebDatabase::COMMIT_NEEDED;
   }
   ReportResult(Result::kClearLocalCvcs_Failure);
-  return WebDatabase::COMMIT_NOT_NEEDED;
-}
-
-WebDatabase::State AutofillWebDataBackendImpl::ClearLocalCvcsUpToMay2025(
-    WebDatabase* db) {
-  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-  if (PaymentsAutofillTable::FromWebDatabase(db)->ClearLocalCvcsUpToMay2025()) {
-    ReportResult(Result::kClearLocalCvcsUpToMay2025_Success);
-    return WebDatabase::COMMIT_NEEDED;
-  }
-  ReportResult(Result::kClearLocalCvcsUpToMay2025_Failure);
   return WebDatabase::COMMIT_NOT_NEEDED;
 }
 

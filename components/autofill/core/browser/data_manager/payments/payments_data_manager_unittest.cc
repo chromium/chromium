@@ -270,8 +270,6 @@ class PaymentsDataManagerHelper : public PaymentsDataManagerTestBase {
 class PaymentsDataManagerTest : public PaymentsDataManagerHelper,
                                 public testing::Test {
  public:
-  long kClearTimestampForLocalCvcs = 1747828800;  // May 21, 2025.
-
   PaymentsDataManagerTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterSyncing,
@@ -774,51 +772,6 @@ TEST_F(PaymentsDataManagerTest, UpdateLocalCvc) {
   ASSERT_EQ(payments_data_manager().GetLocalCreditCards().size(), 1U);
   EXPECT_EQ(payments_data_manager().GetLocalCreditCards()[0]->cvc(), kNewCvc);
 }
-
-#if !BUILDFLAG(IS_IOS)
-// Test that cleanup for crbug.com/411681430 is working as expected.
-TEST_F(PaymentsDataManagerTest, ClearLocalCvcsUpToMay2025) {
-  AdvanceClock(kArbitraryTime - base::Time::Now());
-  // Add a credit card with older timestamp to the database.
-  CreditCard credit_card_1(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                           test::kEmptyOrigin);
-  test::SetCreditCardInfo(&credit_card_1, "John Doe",
-                          "4111111111111111" /* Visa */, "01", "2999", "1",
-                          u"123");
-  payments_data_manager().AddCreditCard(credit_card_1);
-  WaitForOnPaymentsDataChanged();
-
-  AdvanceClock(
-      (base::Time::FromSecondsSinceUnixEpoch(kClearTimestampForLocalCvcs + 1)) -
-      base::Time::Now());
-  // Add another credit card with timestamp later than
-  // `kClearTimestampForLocalCvcs` timestamp to the database.
-  CreditCard credit_card_2(base::Uuid::GenerateRandomV4().AsLowercaseString(),
-                           test::kEmptyOrigin);
-  test::SetCreditCardInfo(&credit_card_2, "John Doe",
-                          "378282246310005" /* AmEx */, "01", "2999", "1",
-                          u"0000");
-  payments_data_manager().AddCreditCard(credit_card_2);
-  WaitForOnPaymentsDataChanged();
-
-  ASSERT_EQ(payments_data_manager().GetLocalCreditCards().size(), 2U);
-  EXPECT_FALSE(payments_data_manager().GetLocalCreditCards()[0]->cvc().empty());
-  EXPECT_FALSE(payments_data_manager().GetLocalCreditCards()[1]->cvc().empty());
-
-  prefs::SetPaymentCvcStorage(prefs_.get(), false);
-  ResetPaymentsDataManager();
-
-  ASSERT_EQ(payments_data_manager().GetLocalCreditCards().size(), 2U);
-  EXPECT_TRUE(payments_data_manager()
-                  .GetCreditCardByGUID(credit_card_1.guid())
-                  ->cvc()
-                  .empty());
-  EXPECT_FALSE(payments_data_manager()
-                   .GetCreditCardByGUID(credit_card_2.guid())
-                   ->cvc()
-                   .empty());
-}
-#endif  // !BUILDFLAG(IS_IOS)
 
 // Test that verify add, update, remove server cvc function working as expected.
 TEST_P(PaymentsDataManagerServerTest, ServerCvc) {

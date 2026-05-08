@@ -260,9 +260,6 @@ constexpr std::initializer_list<
 constexpr std::string_view kPaymentInstrumentCreationOptionsTable =
     "payment_instrument_creation_options";
 
-constexpr std::string_view kClearTimestampForLocalCvcs =
-    "1747828800";  // May 21, 2025.
-
 void BindEncryptedStringToColumn(sql::Statement* s,
                                  int column_index,
                                  const std::string& value,
@@ -1095,13 +1092,6 @@ std::vector<std::unique_ptr<ServerCvc>> PaymentsAutofillTable::GetAllServerCvcs(
 
 bool PaymentsAutofillTable::ClearLocalCvcs() {
   sql::DeleteAllRows(*db(), kLocalStoredCvcTable);
-  return db()->GetLastChangeCount() > 0;
-}
-
-bool PaymentsAutofillTable::ClearLocalCvcsUpToMay2025() {
-  sql::DeleteFromTable(
-      *db(), kLocalStoredCvcTable,
-      base::StrCat({kLastUpdatedTimestamp, "<", kClearTimestampForLocalCvcs}));
   return db()->GetLastChangeCount() > 0;
 }
 
