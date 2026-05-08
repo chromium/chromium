@@ -26489,7 +26489,12 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "RelaxLimitAImageReaderMaxSizeToOneManufacturerBlocklist": "*Broadcom*|*Google*",
+                        "RelaxLimitAImageReaderMaxSizeToOneSoCBlocklist": "*Broadcom*"
+                    },
                     "enable_features": [
+                        "RelaxLimitAImageReaderMaxSizeToOne",
                         "WebViewSurfaceControlForTV"
                     ]
                 }
