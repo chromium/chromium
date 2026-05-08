@@ -130,7 +130,6 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
-#include "components/strings/grit/components_variant_strings.h"
 #include "components/subscription_eligibility/subscription_eligibility_service.h"
 #include "components/sync/base/features.h"
 #include "content/public/browser/isolated_web_apps_policy.h"
@@ -695,11 +694,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       enablement_service && enablement_service->GetEnablementState() ==
                                 accessibility_annotator::
                                     RemoteAnnotatorEnablementState::kEnabled);
-  html_source->AddLocalizedString("accessibilityAnnotatorSettingsTitle",
-                                  IDS_ACCESSIBILITY_ANNOTATOR_SETTINGS_TITLE);
-  html_source->AddLocalizedString(
-      "accessibilityAnnotatorSettingsDescription",
-      IDS_ACCESSIBILITY_ANNOTATOR_SETTINGS_DESCRIPTION_DESKTOP);
 
   html_source->AddString("webuiRefresh2026", base::FeatureList::IsEnabled(
                                                  features::kWebuiRefresh2026)

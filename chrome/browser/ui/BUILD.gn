@@ -667,7 +667,6 @@ static_library("ui") {
     "//components/spellcheck/browser",
     "//components/startup_metric_utils",
     "//components/strings",
-    "//components/strings:components_variant_strings",
     "//components/subresource_filter/content/browser",
     "//components/subresource_filter/core/browser",
     "//components/supervised_user/core/browser",

@@ -34,13 +34,4 @@
   <message name="IDS_ACCESSIBILITY_ANNOTATOR_INFO_SECONDARY_BUTTON" desc="" formatter_data="android_java" translateable="false">
     Ipsum
   </message>
-  <message name="IDS_ACCESSIBILITY_ANNOTATOR_SETTINGS_TITLE" desc="" translateable="false">
-    Lorem ipsum dolor sit amet
-  </message>
-  <message name="IDS_ACCESSIBILITY_ANNOTATOR_SETTINGS_DESCRIPTION_ANDROID" desc="" translateable="false">
-    Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet.
-  </message>
-  <message name="IDS_ACCESSIBILITY_ANNOTATOR_SETTINGS_DESCRIPTION_DESKTOP" desc="" translateable="false">
-    Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet.
-  </message>
 </grit-part>
