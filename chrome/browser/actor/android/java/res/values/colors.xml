@@ -7,4 +7,5 @@ found in the LICENSE file.
 <resources>
     <color name="actor_overlay_hover_color">@color/baseline_primary_40_alpha_24</color>
     <color name="actor_view_button_background_color">@color/baseline_primary_40</color>
+    <color name="actor_control_icon_button_background_color">@color/gm3_baseline_surface_container_light</color>
 </resources>

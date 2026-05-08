@@ -130,7 +130,6 @@ source_set("android") {
 
 android_resources("java_resources") {
   sources = [
-    "java/res/color/actor_control_icon_button_bg.xml",
     "java/res/drawable/actor_gts_tab_indicator_background.xml",
     "java/res/drawable/actor_thumbnail_overlay_outline.xml",
     "java/res/layout/actor_control_layout.xml",
