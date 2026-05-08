@@ -320,7 +320,7 @@ void KeyframeEffect::StartKeyframeModels(base::TimeTicks monotonic_time,
         keyframe_model->run_state() ==
             KeyframeModel::WAITING_FOR_TARGET_AVAILABILITY) {
       animated_properties[keyframe_model->TargetProperty()] = true;
-      keyframe_model->SetRunState(KeyframeModel::RUNNING, monotonic_time);
+      keyframe_model->SetRunState(KeyframeModel::RUNNING);
       keyframe_model->set_start_time(
           monotonic_time -
           keyframe_model->hold_time().value_or(base::TimeDelta()) /

@@ -562,7 +562,7 @@ TEST(KeyframeModelTest, TrimTimePauseResumeReverse) {
 
 TEST(KeyframeModelTest, TrimTimeZeroDuration) {
   std::unique_ptr<KeyframeModel> keyframe_model(CreateKeyframeModel(0, 0));
-  keyframe_model->SetRunState(KeyframeModel::RUNNING, TicksFromSecondsF(0.0));
+  keyframe_model->SetRunState(KeyframeModel::RUNNING);
   EXPECT_EQ(0,
             keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-1.0))
                 .InSecondsF());
@@ -581,7 +581,7 @@ TEST(KeyframeModelTest, TrimTimeZeroDuration) {
 TEST(KeyframeModelTest, TrimTimeStarting) {
   std::unique_ptr<KeyframeModel> keyframe_model(CreateKeyframeModel(1, 5.0));
   keyframe_model->ResetStartTimeForTesting();
-  keyframe_model->SetRunState(KeyframeModel::STARTING, TicksFromSecondsF(0.0));
+  keyframe_model->SetRunState(KeyframeModel::STARTING);
   EXPECT_EQ(0.0,
             keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-1.0))
                 .InSecondsF());
@@ -604,7 +604,7 @@ TEST(KeyframeModelTest, TrimTimeStarting) {
                 .InSecondsF());
   // Transition to RUNNING computes start_time = 0s - 2s = -2s.
   keyframe_model->UnpauseForTesting(TicksFromSecondsF(0.0));
-  keyframe_model->SetRunState(KeyframeModel::RUNNING, TicksFromSecondsF(0.0));
+  keyframe_model->SetRunState(KeyframeModel::RUNNING);
   EXPECT_EQ(1.0,
             keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-1.0))
                 .InSecondsF());
@@ -621,7 +621,7 @@ TEST(KeyframeModelTest, TrimTimeStarting) {
 
 TEST(KeyframeModelTest, TrimTimeNeedsSynchronizedStartTime) {
   std::unique_ptr<KeyframeModel> keyframe_model(CreateKeyframeModel(1, 5.0));
-  keyframe_model->SetRunState(KeyframeModel::RUNNING, TicksFromSecondsF(0.0));
+  keyframe_model->SetRunState(KeyframeModel::RUNNING);
   keyframe_model->set_needs_synchronized_start_time(true);
   EXPECT_EQ(0.0,
             keyframe_model->TrimTimeToCurrentIteration(TicksFromSecondsF(-1.0))
@@ -666,7 +666,7 @@ TEST(KeyframeModelTest, TrimTimeNeedsSynchronizedStartTime) {
 
 TEST(KeyframeModelTest, IsFinishedAtZeroIterations) {
   std::unique_ptr<KeyframeModel> keyframe_model(CreateKeyframeModel(0));
-  keyframe_model->SetRunState(KeyframeModel::RUNNING, TicksFromSecondsF(0.0));
+  keyframe_model->SetRunState(KeyframeModel::RUNNING);
   EXPECT_FALSE(keyframe_model->IsFinishedAt(TicksFromSecondsF(-1.0)));
   EXPECT_TRUE(keyframe_model->IsFinishedAt(TicksFromSecondsF(0.0)));
   EXPECT_TRUE(keyframe_model->IsFinishedAt(TicksFromSecondsF(1.0)));
@@ -674,7 +674,7 @@ TEST(KeyframeModelTest, IsFinishedAtZeroIterations) {
 
 TEST(KeyframeModelTest, IsFinishedAtOneIteration) {
   std::unique_ptr<KeyframeModel> keyframe_model(CreateKeyframeModel(1));
-  keyframe_model->SetRunState(KeyframeModel::RUNNING, TicksFromSecondsF(0.0));
+  keyframe_model->SetRunState(KeyframeModel::RUNNING);
   EXPECT_FALSE(keyframe_model->IsFinishedAt(TicksFromSecondsF(-1.0)));
   EXPECT_FALSE(keyframe_model->IsFinishedAt(TicksFromSecondsF(0.0)));
   EXPECT_TRUE(keyframe_model->IsFinishedAt(TicksFromSecondsF(1.0)));
@@ -684,7 +684,7 @@ TEST(KeyframeModelTest, IsFinishedAtOneIteration) {
 TEST(KeyframeModelTest, IsFinishedAtInfiniteIterations) {
   std::unique_ptr<KeyframeModel> keyframe_model(
       CreateKeyframeModel(std::numeric_limits<double>::infinity()));
-  keyframe_model->SetRunState(KeyframeModel::RUNNING, TicksFromSecondsF(0.0));
+  keyframe_model->SetRunState(KeyframeModel::RUNNING);
   EXPECT_FALSE(keyframe_model->IsFinishedAt(TicksFromSecondsF(0.0)));
   EXPECT_FALSE(keyframe_model->IsFinishedAt(TicksFromSecondsF(0.5)));
   EXPECT_FALSE(keyframe_model->IsFinishedAt(TicksFromSecondsF(1.0)));
@@ -694,7 +694,7 @@ TEST(KeyframeModelTest, IsFinishedAtInfiniteIterations) {
 TEST(KeyframeModelTest, IsFinishedStartDelay) {
   std::unique_ptr<KeyframeModel> keyframe_model(CreateKeyframeModel(1));
   keyframe_model->set_start_delay(base::Milliseconds(500));
-  keyframe_model->SetRunState(KeyframeModel::RUNNING, TicksFromSecondsF(0.0));
+  keyframe_model->SetRunState(KeyframeModel::RUNNING);
 
   EXPECT_FALSE(keyframe_model->IsFinishedAt(TicksFromSecondsF(-1.0)));
   EXPECT_FALSE(keyframe_model->IsFinishedAt(TicksFromSecondsF(0.0)));
@@ -708,7 +708,7 @@ TEST(KeyframeModelTest, IsFinishedStartDelay) {
 TEST(KeyframeModelTest, IsFinishedNegativeStartDelay) {
   std::unique_ptr<KeyframeModel> keyframe_model(CreateKeyframeModel(1));
   keyframe_model->set_start_delay(base::Milliseconds(-500));
-  keyframe_model->SetRunState(KeyframeModel::RUNNING, TicksFromSecondsF(0.0));
+  keyframe_model->SetRunState(KeyframeModel::RUNNING);
 
   EXPECT_FALSE(keyframe_model->IsFinishedAt(TicksFromSecondsF(-1.0)));
   EXPECT_FALSE(keyframe_model->IsFinishedAt(TicksFromSecondsF(0.0)));
@@ -718,46 +718,43 @@ TEST(KeyframeModelTest, IsFinishedNegativeStartDelay) {
 
 TEST(KeyframeModelTest, IsFinishedAtNotRunning) {
   std::unique_ptr<KeyframeModel> keyframe_model(CreateKeyframeModel(0));
-  keyframe_model->SetRunState(KeyframeModel::RUNNING, TicksFromSecondsF(0.0));
+  keyframe_model->SetRunState(KeyframeModel::RUNNING);
   EXPECT_TRUE(keyframe_model->IsFinishedAt(TicksFromSecondsF(0.0)));
-  keyframe_model->SetRunState(KeyframeModel::PAUSED, TicksFromSecondsF(0.0));
+  keyframe_model->SetRunState(KeyframeModel::PAUSED);
   EXPECT_FALSE(keyframe_model->IsFinishedAt(TicksFromSecondsF(0.0)));
-  keyframe_model->SetRunState(KeyframeModel::WAITING_FOR_TARGET_AVAILABILITY,
-                              TicksFromSecondsF(0.0));
+  keyframe_model->SetRunState(KeyframeModel::WAITING_FOR_TARGET_AVAILABILITY);
   EXPECT_FALSE(keyframe_model->IsFinishedAt(TicksFromSecondsF(0.0)));
-  keyframe_model->SetRunState(KeyframeModel::FINISHED, TicksFromSecondsF(0.0));
+  keyframe_model->SetRunState(KeyframeModel::FINISHED);
   EXPECT_TRUE(keyframe_model->IsFinishedAt(TicksFromSecondsF(0.0)));
-  keyframe_model->SetRunState(KeyframeModel::ABORTED, TicksFromSecondsF(0.0));
+  keyframe_model->SetRunState(KeyframeModel::ABORTED);
   EXPECT_TRUE(keyframe_model->IsFinishedAt(TicksFromSecondsF(0.0)));
 }
 
 TEST(KeyframeModelTest, IsFinished) {
   std::unique_ptr<KeyframeModel> keyframe_model(CreateKeyframeModel(1));
-  keyframe_model->SetRunState(KeyframeModel::RUNNING, TicksFromSecondsF(0.0));
+  keyframe_model->SetRunState(KeyframeModel::RUNNING);
   EXPECT_FALSE(keyframe_model->is_finished());
-  keyframe_model->SetRunState(KeyframeModel::PAUSED, TicksFromSecondsF(0.0));
+  keyframe_model->SetRunState(KeyframeModel::PAUSED);
   EXPECT_FALSE(keyframe_model->is_finished());
-  keyframe_model->SetRunState(KeyframeModel::WAITING_FOR_TARGET_AVAILABILITY,
-                              TicksFromSecondsF(0.0));
+  keyframe_model->SetRunState(KeyframeModel::WAITING_FOR_TARGET_AVAILABILITY);
   EXPECT_FALSE(keyframe_model->is_finished());
-  keyframe_model->SetRunState(KeyframeModel::FINISHED, TicksFromSecondsF(0.0));
+  keyframe_model->SetRunState(KeyframeModel::FINISHED);
   EXPECT_TRUE(keyframe_model->is_finished());
-  keyframe_model->SetRunState(KeyframeModel::ABORTED, TicksFromSecondsF(0.0));
+  keyframe_model->SetRunState(KeyframeModel::ABORTED);
   EXPECT_TRUE(keyframe_model->is_finished());
 }
 
 TEST(KeyframeModelTest, IsFinishedNeedsSynchronizedStartTime) {
   std::unique_ptr<KeyframeModel> keyframe_model(CreateKeyframeModel(1));
-  keyframe_model->SetRunState(KeyframeModel::RUNNING, TicksFromSecondsF(2.0));
+  keyframe_model->SetRunState(KeyframeModel::RUNNING);
   EXPECT_FALSE(keyframe_model->is_finished());
-  keyframe_model->SetRunState(KeyframeModel::PAUSED, TicksFromSecondsF(2.0));
+  keyframe_model->SetRunState(KeyframeModel::PAUSED);
   EXPECT_FALSE(keyframe_model->is_finished());
-  keyframe_model->SetRunState(KeyframeModel::WAITING_FOR_TARGET_AVAILABILITY,
-                              TicksFromSecondsF(2.0));
+  keyframe_model->SetRunState(KeyframeModel::WAITING_FOR_TARGET_AVAILABILITY);
   EXPECT_FALSE(keyframe_model->is_finished());
-  keyframe_model->SetRunState(KeyframeModel::FINISHED, TicksFromSecondsF(0.0));
+  keyframe_model->SetRunState(KeyframeModel::FINISHED);
   EXPECT_TRUE(keyframe_model->is_finished());
-  keyframe_model->SetRunState(KeyframeModel::ABORTED, TicksFromSecondsF(0.0));
+  keyframe_model->SetRunState(KeyframeModel::ABORTED);
   EXPECT_TRUE(keyframe_model->is_finished());
 }
 

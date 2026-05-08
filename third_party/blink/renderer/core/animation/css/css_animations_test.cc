@@ -825,7 +825,7 @@ class CSSAnimationsCompositorSyncTest : public CSSAnimationsTest {
     // Set the opacity keyframe model into a running state and sync with
     // blink::Animation.
     base::TimeTicks timeline_time = TimelineTime();
-    keyframe_model->SetRunState(cc::KeyframeModel::RUNNING, TimelineTime());
+    keyframe_model->SetRunState(cc::KeyframeModel::RUNNING);
     keyframe_model->set_needs_synchronized_start_time(false);
     if (needs_start_time) {
       keyframe_model->UnpauseForTesting(timeline_time);

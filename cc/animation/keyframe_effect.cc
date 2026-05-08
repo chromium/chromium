@@ -298,8 +298,7 @@ void KeyframeEffect::AbortKeyframeModel(int keyframe_model_id) {
   if (gfx::KeyframeModel* keyframe_model =
           GetKeyframeModelById(keyframe_model_id)) {
     if (!keyframe_model->is_finished()) {
-      keyframe_model->SetRunState(gfx::KeyframeModel::ABORTED,
-                                  last_tick_time_.value_or(base::TimeTicks()));
+      keyframe_model->SetRunState(gfx::KeyframeModel::ABORTED);
       if (has_bound_element_animations())
         element_animations_->UpdateClientAnimationState();
     }
@@ -327,12 +326,9 @@ void KeyframeEffect::AbortKeyframeModelsWithProperty(
           KeyframeModel::ToCcKeyframeModel(keyframe_model.get())
               ->is_impl_only()) {
         keyframe_model->SetRunState(
-            gfx::KeyframeModel::ABORTED_BUT_NEEDS_COMPLETION,
-            last_tick_time_.value_or(base::TimeTicks()));
+            gfx::KeyframeModel::ABORTED_BUT_NEEDS_COMPLETION);
       } else {
-        keyframe_model->SetRunState(
-            gfx::KeyframeModel::ABORTED,
-            last_tick_time_.value_or(base::TimeTicks()));
+        keyframe_model->SetRunState(gfx::KeyframeModel::ABORTED);
       }
       aborted_keyframe_model = true;
     }
@@ -432,8 +428,7 @@ bool KeyframeEffect::DispatchAnimationEventToKeyframeModel(
 
     case AnimationPlaybackEvent::Type::kAborted:
       if (keyframe_model) {
-        keyframe_model->SetRunState(gfx::KeyframeModel::ABORTED,
-                                    event.monotonic_time);
+        keyframe_model->SetRunState(gfx::KeyframeModel::ABORTED);
         keyframe_model->set_received_finished_event(true);
         dispatched = true;
         animation_->animation_host()
@@ -606,11 +601,8 @@ void KeyframeEffect::MarkAbortedKeyframeModelsForDeletion(
             GetKeyframeModelById(keyframe_model_impl->id())) {
       if (keyframe_model->run_state() == gfx::KeyframeModel::ABORTED) {
         keyframe_model_impl->SetRunState(
-            gfx::KeyframeModel::WAITING_FOR_DELETION,
-            keyframe_effect_impl->last_tick_time_.value_or(base::TimeTicks()));
-        keyframe_model->SetRunState(
-            gfx::KeyframeModel::WAITING_FOR_DELETION,
-            last_tick_time_.value_or(base::TimeTicks()));
+            gfx::KeyframeModel::WAITING_FOR_DELETION);
+        keyframe_model->SetRunState(gfx::KeyframeModel::WAITING_FOR_DELETION);
         keyframe_model_aborted = true;
       }
     }
@@ -919,15 +911,14 @@ void KeyframeEffect::StartKeyframeModels(base::TimeTicks monotonic_time) {
       // KeyframeModels in the group.
       if (null_intersection) {
         keyframe_model_waiting_for_target->SetRunState(
-            gfx::KeyframeModel::STARTING, monotonic_time);
+            gfx::KeyframeModel::STARTING);
         for (size_t j = keyframe_model_index + 1; j < keyframe_models().size();
              ++j) {
           auto* cc_keyframe_model =
               KeyframeModel::ToCcKeyframeModel(keyframe_models()[j].get());
           if (keyframe_model_waiting_for_target->group() ==
               cc_keyframe_model->group()) {
-            cc_keyframe_model->SetRunState(gfx::KeyframeModel::STARTING,
-                                           monotonic_time);
+            cc_keyframe_model->SetRunState(gfx::KeyframeModel::STARTING);
           }
         }
       } else {
@@ -944,9 +935,7 @@ void KeyframeEffect::PromoteStartedKeyframeModels(AnimationEvents* events) {
             ->affects_active_elements()) {
       auto* cc_keyframe_model =
           KeyframeModel::ToCcKeyframeModel(keyframe_model.get());
-      cc_keyframe_model->SetRunState(
-          gfx::KeyframeModel::RUNNING,
-          last_tick_time_.value_or(base::TimeTicks()));
+      cc_keyframe_model->SetRunState(gfx::KeyframeModel::RUNNING);
       bool adjusted_for_hold_time = false;
       if (!cc_keyframe_model->has_set_start_time() &&
           !cc_keyframe_model->needs_synchronized_start_time()) {
@@ -982,8 +971,7 @@ void KeyframeEffect::MarkKeyframeModelsForDeletion(
     AnimationEvents* events) {
   bool marked_keyframe_model_for_deletion = false;
   auto MarkForDeletion = [&](KeyframeModel* keyframe_model) {
-    keyframe_model->SetRunState(gfx::KeyframeModel::WAITING_FOR_DELETION,
-                                monotonic_time);
+    keyframe_model->SetRunState(gfx::KeyframeModel::WAITING_FOR_DELETION);
     marked_keyframe_model_for_deletion = true;
   };
 
@@ -1082,7 +1070,7 @@ void KeyframeEffect::MarkFinishedKeyframeModels(
     if (!animation_->IsScrollLinkedAnimation() &&
         !keyframe_model->is_finished() &&
         keyframe_model->IsFinishedAt(monotonic_time)) {
-      keyframe_model->SetRunState(gfx::KeyframeModel::FINISHED, monotonic_time);
+      keyframe_model->SetRunState(gfx::KeyframeModel::FINISHED);
       keyframe_model_finished = true;
       SetNeedsPushProperties();
     }
@@ -1097,8 +1085,7 @@ void KeyframeEffect::MarkFinishedKeyframeModels(
         case gfx::KeyframeModel::RUNNING:
         case gfx::KeyframeModel::PAUSED:
         case gfx::KeyframeModel::PAUSED_EXCLUSIVE:
-          keyframe_model->SetRunState(gfx::KeyframeModel::FINISHED,
-                                      monotonic_time);
+          keyframe_model->SetRunState(gfx::KeyframeModel::FINISHED);
           keyframe_model_finished = true;
           break;
         default:

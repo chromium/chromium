@@ -58,7 +58,7 @@ KeyframeModel::KeyframeModel(std::unique_ptr<AnimationCurve> curve,
 
 KeyframeModel::~KeyframeModel() {
   if (run_state() == RUNNING || IsPaused(run_state())) {
-    SetRunState(ABORTED, base::TimeTicks());
+    SetRunState(ABORTED);
   }
 }
 
@@ -66,8 +66,7 @@ int KeyframeModel::TargetProperty() const {
   return target_property_;
 }
 
-void KeyframeModel::SetRunState(RunState run_state,
-                                base::TimeTicks monotonic_time) {
+void KeyframeModel::SetRunState(RunState run_state) {
   run_state_ = run_state;
   if ((run_state_ == STARTING || run_state_ == RUNNING) &&
       auto_fills_on_finish_) {
@@ -79,7 +78,7 @@ void KeyframeModel::Pause(base::TimeDelta hold_time, RunState pause_run_state) {
   CHECK(IsPaused(pause_run_state));
   start_time_.reset();
   set_hold_time(hold_time);
-  SetRunState(pause_run_state, base::TimeTicks());
+  SetRunState(pause_run_state);
 }
 
 void KeyframeModel::Reverse(base::TimeTicks monotonic_time) {
@@ -88,13 +87,13 @@ void KeyframeModel::Reverse(base::TimeTicks monotonic_time) {
   set_hold_time(std::nullopt);
   set_playback_rate(-playback_rate_);
   set_start_time(monotonic_time - current_time_to_match / playback_rate());
-  SetRunState(RUNNING, monotonic_time);
+  SetRunState(RUNNING);
 }
 
 void KeyframeModel::UnpauseForTesting(base::TimeTicks monotonic_time) {
   set_start_time(monotonic_time - hold_time().value() / playback_rate());
   set_hold_time(std::nullopt);
-  SetRunState(RUNNING, monotonic_time);
+  SetRunState(RUNNING);
 }
 
 KeyframeModel::Phase KeyframeModel::CalculatePhaseForTesting(

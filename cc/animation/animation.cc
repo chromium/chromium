@@ -292,7 +292,7 @@ gfx::KeyframeModel::RunState Animation::GetRunState() const {
 
 void Animation::SetRunState(KeyframeModel::RunState run_state) {
   for (auto& km : keyframe_effect()->keyframe_models()) {
-    km->SetRunState(run_state, base::TimeTicks());
+    km->SetRunState(run_state);
   }
 }
 
@@ -324,7 +324,7 @@ void Animation::Play(base::TimeTicks monotonic_time) {
 
   for (auto& km : keyframe_effect()->keyframe_models()) {
     KeyframeModel* cc_km = KeyframeModel::ToCcKeyframeModel(km.get());
-    km->SetRunState(KeyframeModel::RunState::RUNNING, monotonic_time);
+    km->SetRunState(KeyframeModel::RunState::RUNNING);
     // TODO(crbug.com/451238244): For scroll-driven animations, we will likely
     // want to compute the start time from the animation's scroll timeline's
     // start offset.

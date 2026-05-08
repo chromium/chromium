@@ -423,7 +423,7 @@ TEST_F(WorkletAnimationTest, UpdateInputStateProducesCorrectState) {
 
   // Operating on individual KeyframeModel doesn't affect the state of
   // WorkletAnimation.
-  keyframe_model->SetRunState(KeyframeModel::FINISHED, time);
+  keyframe_model->SetRunState(KeyframeModel::FINISHED);
   state = std::make_unique<MutatorInputState>();
   time += base::Seconds(0.1);
   worklet_animation_->UpdateInputState(state.get(), time, scroll_tree, true);

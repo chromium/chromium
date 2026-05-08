@@ -72,9 +72,7 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframeModel {
   virtual int TargetProperty() const;
 
   RunState run_state() const { return run_state_; }
-  // TODO(crbug.com/497867796): Rename this to set_run_state and delete unused
-  // |monotonic_time| param.
-  virtual void SetRunState(RunState run_state, base::TimeTicks monotonic_time);
+  virtual void SetRunState(RunState run_state);
 
   // Pause the keyframe effect at |hold_time|. Note that this clears the start
   // time.

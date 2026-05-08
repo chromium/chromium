@@ -138,8 +138,7 @@ int KeyframeModel::TargetProperty() const {
   return target_property_id_.target_property_type();
 }
 
-void KeyframeModel::SetRunState(RunState new_run_state,
-                                base::TimeTicks monotonic_time) {
+void KeyframeModel::SetRunState(RunState new_run_state) {
   char name_buffer[256];
   UNSAFE_TODO(base::SpanPrintf(name_buffer, "%s-%d-%d", curve()->TypeName(),
                                TargetProperty(), group_));
@@ -156,7 +155,7 @@ void KeyframeModel::SetRunState(RunState new_run_state,
   bool was_finished = is_finished();
 
   auto old_run_state_name = gfx::KeyframeModel::ToString(run_state());
-  gfx::KeyframeModel::SetRunState(new_run_state, monotonic_time);
+  gfx::KeyframeModel::SetRunState(new_run_state);
   auto new_run_state_name = gfx::KeyframeModel::ToString(new_run_state);
 
   if (is_controlling_instance_ && !was_finished && is_finished()) {

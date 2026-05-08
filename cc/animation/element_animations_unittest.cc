@@ -1687,8 +1687,7 @@ TEST_F(ElementAnimationsTest, InfiniteLooping) {
 
   EXPECT_TRUE(animation_->GetKeyframeModel(TargetProperty::OPACITY));
   animation_->GetKeyframeModel(TargetProperty::OPACITY)
-      ->SetRunState(KeyframeModel::ABORTED,
-                    kInitialTickTime + base::Milliseconds(750));
+      ->SetRunState(KeyframeModel::ABORTED);
   EXPECT_FALSE(animation_->keyframe_effect()->HasTickingKeyframeModel());
   EXPECT_EQ(0.75f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
 }
@@ -1768,8 +1767,7 @@ TEST_F(ElementAnimationsTest, AbortAGroupedAnimation) {
       animation_->keyframe_effect()->GetKeyframeModelById(keyframe_model_id));
   animation_->keyframe_effect()
       ->GetKeyframeModelById(keyframe_model_id)
-      ->SetRunState(KeyframeModel::ABORTED,
-                    kInitialTickTime + base::Milliseconds(1000));
+      ->SetRunState(KeyframeModel::ABORTED);
   animation_->Tick(kInitialTickTime + base::Milliseconds(1000));
   animation_->UpdateState(true, events.get());
   EXPECT_TRUE(animation_->keyframe_effect()->HasTickingKeyframeModel());
@@ -2467,7 +2465,7 @@ TEST_F(ElementAnimationsTest, MaximumScale) {
                      element_id_, ElementListType::ACTIVE));
 
   animation_impl_->keyframe_effect()->GetKeyframeModelById(2)->SetRunState(
-      KeyframeModel::FINISHED, TicksFromSecondsF(0.0));
+      KeyframeModel::FINISHED);
 
   // Only unfinished animations should be considered by MaximumAnimationScale.
   EXPECT_EQ(5.f, element_animations_impl_->MaximumScale(
