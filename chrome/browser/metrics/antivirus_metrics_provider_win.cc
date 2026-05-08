@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/win/util_win_service.h"
 #include "chrome/common/channel_info.h"
 #include "components/version_info/channel.h"
@@ -43,6 +44,8 @@ void AntiVirusMetricsProvider::ProvideSystemProfileMetrics(
 }
 
 void AntiVirusMetricsProvider::AsyncInit(base::OnceClosure done_callback) {
+  base::ElapsedTimer timer;
+
   if (!remote_util_win_) {
     remote_util_win_ = LaunchUtilWinServiceInstance();
     remote_util_win_.reset_on_idle_timeout(base::Seconds(5));
@@ -55,14 +58,21 @@ void AntiVirusMetricsProvider::AsyncInit(base::OnceClosure done_callback) {
   remote_util_win_->GetAntiVirusProducts(
       ShouldReportFullNames(),
       base::BindOnce(&AntiVirusMetricsProvider::GotAntiVirusProducts,
-                     base::Unretained(this), std::move(done_callback)));
+                     base::Unretained(this), std::move(done_callback),
+                     std::move(timer)));
 }
 
 void AntiVirusMetricsProvider::GotAntiVirusProducts(
     base::OnceClosure done_callback,
+    base::ElapsedTimer timer,
     const std::vector<metrics::SystemProfileProto::AntiVirusProduct>& result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   remote_util_win_.reset();
   av_products_ = result;
+  if (!av_products_.empty()) {
+    base::UmaHistogramTimes("UMA.AntiVirusMetricsProvider.Latency",
+                            timer.Elapsed());
+  }
+
   std::move(done_callback).Run();
 }

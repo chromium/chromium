@@ -11,11 +11,13 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_checker.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/version.h"
+#include "base/win/scoped_com_initializer.h"
 #include "chrome/services/util_win/util_win_impl.h"
 #include "components/variations/hashing.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,6 +31,7 @@ void VerifySystemProfileData(const metrics::SystemProfileProto& system_profile,
   // following is possible.
   constexpr char kWindowsDefender[] = "Windows Defender";
   constexpr char kWindowsDefenderAntivirus[] = "Windows Defender Antivirus";
+  constexpr char kMicrosoftDefenderAntivirus[] = "Microsoft Defender Antivirus";
 
   bool defender_found = false;
   uint32_t last_hash = 0xdeadbeef;
@@ -38,12 +41,15 @@ void VerifySystemProfileData(const metrics::SystemProfileProto& system_profile,
     }
     if (av.product_name_hash() == variations::HashName(kWindowsDefender) ||
         av.product_name_hash() ==
-            variations::HashName(kWindowsDefenderAntivirus)) {
+            variations::HashName(kWindowsDefenderAntivirus) ||
+        av.product_name_hash() ==
+            variations::HashName(kMicrosoftDefenderAntivirus)) {
       defender_found = true;
       if (expect_unhashed_value) {
         EXPECT_TRUE(av.has_product_name());
         EXPECT_TRUE(av.product_name() == kWindowsDefender ||
-                    av.product_name() == kWindowsDefenderAntivirus);
+                    av.product_name() == kWindowsDefenderAntivirus ||
+                    av.product_name() == kMicrosoftDefenderAntivirus);
       } else {
         EXPECT_FALSE(av.has_product_name());
       }
@@ -102,17 +108,20 @@ class AntiVirusMetricsProviderTest : public ::testing::TestWithParam<bool> {
 
   bool got_results_;
   bool expect_unhashed_value_;
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::UI};
   std::optional<UtilWinImpl> util_win_impl_;
   AntiVirusMetricsProvider provider_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::ThreadCheckerImpl thread_checker_;
+  base::HistogramTester histogram_tester_;
 };
 
-// TODO(crbug.com/41295648): Flaky on Windows 10.
-TEST_P(AntiVirusMetricsProviderTest, DISABLED_GetMetricsFullName) {
+TEST_P(AntiVirusMetricsProviderTest, GetMetricsFullName) {
   base::ScopedAllowBlockingForTesting scoped_allow_blocking_;
+  base::win::ScopedCOMInitializer com_initializer;
 
+  ASSERT_TRUE(com_initializer.Succeeded());
   ASSERT_TRUE(thread_checker_.CalledOnValidThread());
   SetFullNamesFeatureEnabled(expect_unhashed_value_);
 
@@ -123,6 +132,7 @@ TEST_P(AntiVirusMetricsProviderTest, DISABLED_GetMetricsFullName) {
                      base::Unretained(this)));
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(got_results_);
+  histogram_tester_.ExpectTotalCount("UMA.AntiVirusMetricsProvider.Latency", 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(, AntiVirusMetricsProviderTest, ::testing::Bool());

@@ -115,6 +115,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="UMA.AntiVirusMetricsProvider.Latency" units="ms"
+    expires_after="2026-10-13">
+  <owner>yawfrempong@google.com</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Records the time it takes to retrieve a user's installed antivirus product
+    information. This metric is only recorded for successfully retrieval
+    attempts. This metric is recorded once per browser session at startup.
+  </summary>
+</histogram>
+
 <histogram name="UMA.AntiVirusMetricsProvider.Result"
     enum="AntiVirusMetricsProviderResult" expires_after="never">
 <!-- expires-never: needed to proactively diagnose changes in the Windows API used here. -->
