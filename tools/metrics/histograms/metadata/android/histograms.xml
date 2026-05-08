@@ -3911,19 +3911,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Android.Navigation.Renderer.UAOverrideUpdated.ExternalDisplay"
-    enum="Boolean" expires_after="2026-04-01">
-  <owner>skavuluru@google.com</owner>
-  <owner>shuyng@google.com</owner>
-  <owner>clank-large-form-factors@google.com</owner>
-  <summary>
-    Records whether user agent was overridden to desktop mode during a renderer
-    initiated navigation on an external display. This is to determine % of
-    Navigation.UserAgentStringType increase that is attributable to external
-    displays.
-  </summary>
-</histogram>
-
 <histogram name="Android.NTP.Impression" enum="NTPImpressionType"
     expires_after="2026-09-06">
   <owner>finkm@chromium.org</owner>

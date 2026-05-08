@@ -92,12 +92,6 @@ void RequestDesktopSiteWebContentsObserverAndroid::DidStartNavigation(
   // RDS External Display support.
   bool should_allow_on_external_display =
       ShouldAllowOnExternalDisplay(is_global_setting);
-  if (navigation_handle->IsRendererInitiated() &&
-      should_allow_on_external_display) {
-    base::UmaHistogramBoolean(
-        "Android.Navigation.Renderer.UAOverrideUpdated.ExternalDisplay",
-        !desktop_mode);
-  }
   desktop_mode |= should_allow_on_external_display;
 
   // Override UA for renderer initiated navigation only. UA override for browser
