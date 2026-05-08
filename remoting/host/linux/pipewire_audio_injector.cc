@@ -24,6 +24,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
+#include "remoting/base/in_memory_fifo_buffer.h"
 #include "remoting/base/jitter_buffer.h"
 #include "remoting/host/linux/pipewire_utils.h"
 #include "remoting/proto/audio.pb.h"
@@ -38,9 +39,10 @@ constexpr uint32_t kAudioRate = 48000;
 constexpr uint32_t kAudioChannels = 2;
 constexpr size_t kBytesPerFrame = kAudioChannels * sizeof(int16_t);
 
+// 256KB is about 1.3s of audio. This must be a power of two.
+static constexpr size_t kJitterBufferCapacity = 256 * 1024;
+
 static constexpr JitterBuffer::Config kJitterBufferConfig = {
-    // 256KB is about 1.3s of audio. This must be a power of two.
-    .capacity = 256 * 1024,
     .frame_size = kBytesPerFrame,
     // 30ms of audio: 48000 * 4 * 0.03 = 5760 bytes.
     .max_starvation_bytes = 5760,
@@ -114,13 +116,22 @@ class PipewireAudioInjector::Core {
   // `stream_node_id_` is known. Cleared once `stream_node_id_` is known.
   std::map<uint32_t, uint32_t> pending_links_;
 
-  JitterBuffer jitter_buffer_{kJitterBufferConfig};
+  std::unique_ptr<InMemoryFifoBufferWriter> audio_writer_;
+  std::unique_ptr<JitterBuffer> audio_reader_;
 
+  // Flag to defer `JitterBuffer::Clear()` from PipeWire's main thread to the
+  // real-time processing thread (`HandleStreamProcess`) to ensure
+  // thread-safety.
+  std::atomic<bool> pending_clear_{false};
   std::atomic<bool> has_consumers_{false};
 };
 
 PipewireAudioInjector::Core::Core() {
   CHECK(EnsurePipewireInitialized()) << "PipeWire library is not initialized.";
+  std::unique_ptr<InMemoryFifoBufferReader> reader;
+  CHECK(CreateInMemoryFifoBuffer(kJitterBufferCapacity, audio_writer_, reader));
+  audio_reader_ =
+      std::make_unique<JitterBuffer>(kJitterBufferConfig, std::move(reader));
 }
 
 DISABLE_CFI_DLSYM
@@ -241,7 +252,7 @@ void PipewireAudioInjector::Core::InjectAudioPacket(
       LOG(ERROR) << "Dropped misaligned audio data packet.";
       continue;
     }
-    jitter_buffer_.Write(base::as_byte_span(data));
+    audio_writer_->Write(base::as_byte_span(data));
   }
 }
 
@@ -280,7 +291,7 @@ void PipewireAudioInjector::Core::HandleStreamStateChanged(
     pending_links_.clear();
 
     if (was_empty && !active_links_.empty()) {
-      jitter_buffer_.Clear();
+      pending_clear_.store(true, std::memory_order_release);
       has_consumers_.store(true, std::memory_order_relaxed);
       on_audio_injector_consumers_changed_cb_.Run(true);
     }
@@ -294,6 +305,10 @@ void PipewireAudioInjector::Core::OnStreamProcess(void* data) {
 
 DISABLE_CFI_DLSYM
 void PipewireAudioInjector::Core::HandleStreamProcess() {
+  if (pending_clear_.exchange(false, std::memory_order_acquire)) {
+    audio_reader_->Clear();
+  }
+
   while (struct pw_buffer* b =
              pw_->pw_stream_dequeue_buffer(pw_stream_.get())) {
     struct spa_buffer* buf = b->buffer;
@@ -319,7 +334,8 @@ void PipewireAudioInjector::Core::HandleStreamProcess() {
     auto dst_span = UNSAFE_BUFFERS(base::span<uint8_t>(
         static_cast<uint8_t*>(buf->datas[0].data), buf->datas[0].maxsize));
 
-    size_t bytes_read = jitter_buffer_.Read(dst_span.first(target_bytes));
+    size_t bytes_read =
+        audio_reader_->Read(dst_span.first(target_bytes)).value_or(0);
 
     if (bytes_read < target_bytes) {
       // Fill the rest of the buffer with silence.
@@ -378,7 +394,7 @@ void PipewireAudioInjector::Core::HandleRegistryGlobal(
     return;
   }
   if (active_links_.empty()) {
-    jitter_buffer_.Clear();
+    pending_clear_.store(true, std::memory_order_release);
     has_consumers_.store(true, std::memory_order_relaxed);
     on_audio_injector_consumers_changed_cb_.Run(true);
   }
@@ -395,7 +411,7 @@ void PipewireAudioInjector::Core::HandleRegistryGlobalRemove(uint32_t id) {
   pending_links_.erase(id);
   if (active_links_.erase(id) > 0 && active_links_.empty()) {
     has_consumers_.store(false, std::memory_order_relaxed);
-    jitter_buffer_.Clear();
+    pending_clear_.store(true, std::memory_order_release);
     on_audio_injector_consumers_changed_cb_.Run(false);
   }
 }

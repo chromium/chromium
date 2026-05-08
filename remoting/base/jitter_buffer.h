@@ -6,26 +6,26 @@
 #define REMOTING_BASE_JITTER_BUFFER_H_
 
 #include <atomic>
-#include <vector>
+#include <memory>
 
 #include "base/containers/span.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "remoting/base/fifo_buffer.h"
 
 namespace remoting {
 
-// A Single-Producer Single-Consumer (SPSC) lock-free jitter buffer for raw
-// bytes. This buffer is designed to be used by a non-time-sensitive producer
-// thread and a real-time consumer thread.
+// A decorator for FifoBufferReader that adds jitter control (buffering
+// thresholds, latency recovery, and starvation tracking) for raw audio bytes.
 //
-// All operations are thread-safe as long as there is only one producer and one
-// consumer.
-class JitterBuffer {
+// Designed for Single-Producer Single-Consumer (SPSC) usage.
+// All SPSC methods must be called from a single thread (lazily bound on the
+// first call), but the instance can be safely constructed and destructed on a
+// different sequence (such as the owner main thread) as long as there is no
+// concurrent access.
+class JitterBuffer : public FifoBufferReader {
  public:
   struct Config {
-    // Total buffer size in bytes. Must be a power of two.
-    size_t capacity;
-
     // The size of a single frame (e.g., channels * bytes per sample).
     // All operations will be aligned to this size.
     size_t frame_size;
@@ -42,30 +42,19 @@ class JitterBuffer {
     size_t minimum_threshold;
   };
 
-  explicit JitterBuffer(const Config& config);
+  JitterBuffer(const Config& config,
+               std::unique_ptr<FifoBufferReader> fifo_buffer_reader);
 
   JitterBuffer(const JitterBuffer&) = delete;
   JitterBuffer& operator=(const JitterBuffer&) = delete;
 
-  ~JitterBuffer();
+  ~JitterBuffer() override;
 
-  // Appends data to the buffer. Returns the number of bytes written.
-  // If the buffer is full, it will write as much as possible and return.
-  // This is called from the producer thread.
-  size_t Write(base::span<const uint8_t> data);
-
-  // Reads data from the buffer into `destination`. Returns the number of bytes
-  // read. If the buffer has not reached the minimum threshold since the last
-  // underrun, it returns 0.
-  // This is called from the consumer thread.
-  size_t Read(base::span<uint8_t> destination);
-
-  // Resets the buffer to its initial state.
-  // Safe to call from any thread.
-  void Clear();
-
-  // Returns the number of bytes currently buffered.
-  size_t GetBufferedBytes() const;
+  // FifoBufferReader implementation.
+  std::optional<size_t> Read(base::span<uint8_t> destination) override;
+  std::optional<size_t> Skip(size_t bytes) override;
+  void Clear() override;
+  std::optional<size_t> GetBufferedBytes() const override;
 
  private:
   enum class State {
@@ -76,17 +65,7 @@ class JitterBuffer {
   };
 
   const Config config_;
-
-  // A bitmask used to wrap indices into `buffer_`. Equal to `config_.capacity -
-  // 1`.
-  const size_t mask_;
-
-  std::vector<uint8_t> buffer_;
-
-  std::atomic<size_t> read_index_{0};
-  std::atomic<size_t> write_index_{0};
-
-  std::atomic<bool> pending_clear_{false};
+  std::unique_ptr<FifoBufferReader> fifo_buffer_reader_;
 
   State state_ GUARDED_BY_CONTEXT(consumer_sequence_checker_) =
       State::kBuffering;
@@ -94,7 +73,6 @@ class JitterBuffer {
   // Track starvation (underruns) while in the Playing state.
   size_t starvation_bytes_ GUARDED_BY_CONTEXT(consumer_sequence_checker_) = 0;
 
-  SEQUENCE_CHECKER(producer_sequence_checker_);
   SEQUENCE_CHECKER(consumer_sequence_checker_);
 };
 

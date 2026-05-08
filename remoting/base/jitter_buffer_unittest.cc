@@ -4,9 +4,12 @@
 
 #include "remoting/base/jitter_buffer.h"
 
+#include <memory>
+#include <optional>
 #include <vector>
 
-#include "testing/gtest/include/gtest/gtest.h"
+#include "remoting/base/fifo_buffer_test_base.h"
+#include "remoting/base/in_memory_fifo_buffer.h"
 
 namespace remoting {
 
@@ -15,60 +18,65 @@ constexpr size_t kCapacity = 1024;
 constexpr size_t kFrameSize = 4;
 }  // namespace
 
-class JitterBufferTest : public testing::Test {
+class JitterBufferTestDelegate {
  public:
-  JitterBufferTest()
-      : buffer_({.capacity = kCapacity,
-                 .frame_size = kFrameSize,
-                 .max_starvation_bytes = 0,
-                 .max_latency_bytes = 0,
-                 .minimum_threshold = 0}) {}
+  JitterBufferTestDelegate() {
+    std::unique_ptr<InMemoryFifoBufferReader> reader;
+    CHECK(CreateInMemoryFifoBuffer(kCapacity, writer_, reader));
+    jitter_buffer_ = std::make_unique<JitterBuffer>(
+        JitterBuffer::Config{.frame_size = kFrameSize,
+                             .max_starvation_bytes = 0,
+                             .max_latency_bytes = 0,
+                             .minimum_threshold = 0},
+        std::move(reader));
+  }
 
- protected:
-  JitterBuffer buffer_;
+  FifoBufferWriter& GetWriter() { return *writer_; }
+  FifoBufferReader& GetReader() { return *jitter_buffer_; }
+
+ private:
+  std::unique_ptr<InMemoryFifoBufferWriter> writer_;
+  std::unique_ptr<JitterBuffer> jitter_buffer_;
 };
 
-TEST_F(JitterBufferTest, BasicWriteRead) {
-  std::vector<uint8_t> data = {1, 2, 3, 4, 5, 6, 7, 8};
-  EXPECT_EQ(buffer_.Write(data), 8u);
-  EXPECT_EQ(buffer_.GetBufferedBytes(), 8u);
+using JitterBufferTestTypes = testing::Types<JitterBufferTestDelegate>;
+INSTANTIATE_TYPED_TEST_SUITE_P(Jitter, FifoBufferTest, JitterBufferTestTypes);
 
-  std::vector<uint8_t> read_data(8);
-  // Default threshold is 0, so it should play immediately.
-  EXPECT_EQ(buffer_.Read(read_data), 8u);
-  EXPECT_EQ(read_data, data);
-  EXPECT_EQ(buffer_.GetBufferedBytes(), 0u);
-}
+class JitterBufferTest : public testing::Test {
+ protected:
+  JitterBufferTestDelegate delegate_;
+};
 
 TEST_F(JitterBufferTest, Thresholding) {
-  JitterBuffer buffer({.capacity = kCapacity,
-                       .frame_size = kFrameSize,
+  std::unique_ptr<InMemoryFifoBufferWriter> writer;
+  std::unique_ptr<InMemoryFifoBufferReader> reader;
+  ASSERT_TRUE(CreateInMemoryFifoBuffer(kCapacity, writer, reader));
+  JitterBuffer buffer({.frame_size = kFrameSize,
                        .max_starvation_bytes = 0,
                        .max_latency_bytes = 0,
-                       .minimum_threshold = 12});
+                       .minimum_threshold = 12},
+                      std::move(reader));
 
   std::vector<uint8_t> data = {1, 2, 3, 4, 5, 6, 7, 8};
-  EXPECT_EQ(buffer.Write(data), 8u);
+  EXPECT_EQ(writer->Write(data), WriteResult::kSuccess);
 
   std::vector<uint8_t> read_data(8);
   // Below threshold.
   EXPECT_EQ(buffer.Read(read_data), 0u);
 
-  EXPECT_EQ(buffer.Write(data), 8u);
+  EXPECT_EQ(writer->Write(data), WriteResult::kSuccess);
   // Now 16 bytes, above threshold. Reads full 8 bytes.
   EXPECT_EQ(buffer.Read(read_data), 8u);
   EXPECT_EQ(read_data, data);
 
   // Now 8 bytes left. Still in Playing state.
-  // Original test expected 0 because it was below threshold, but now we allow
-  // partial reads or remaining data in Playing state.
   EXPECT_EQ(buffer.Read(read_data), 8u);
   EXPECT_EQ(read_data, data);
 
   // Empty, should stay in Playing state for a bit (lazy re-buffering).
   EXPECT_EQ(buffer.Read(read_data), 0u);
 
-  EXPECT_EQ(buffer.Write(data), 8u);
+  EXPECT_EQ(writer->Write(data), WriteResult::kSuccess);
   // Still in Playing state. Should read immediately even though it's below
   // the threshold (12).
   EXPECT_EQ(buffer.Read(read_data), 8u);
@@ -76,13 +84,16 @@ TEST_F(JitterBufferTest, Thresholding) {
 }
 
 TEST_F(JitterBufferTest, PartialReadInPlayingState) {
-  JitterBuffer buffer({.capacity = kCapacity,
-                       .frame_size = kFrameSize,
+  std::unique_ptr<InMemoryFifoBufferWriter> writer;
+  std::unique_ptr<InMemoryFifoBufferReader> reader;
+  ASSERT_TRUE(CreateInMemoryFifoBuffer(kCapacity, writer, reader));
+  JitterBuffer buffer({.frame_size = kFrameSize,
                        .max_starvation_bytes = 0,
                        .max_latency_bytes = 0,
-                       .minimum_threshold = 8});
+                       .minimum_threshold = 8},
+                      std::move(reader));
   std::vector<uint8_t> data = {1, 2, 3, 4, 5, 6, 7, 8};
-  buffer.Write(data);
+  EXPECT_EQ(writer->Write(data), WriteResult::kSuccess);
 
   std::vector<uint8_t> read_data(12);
   // Reached threshold. Reads 8 bytes.
@@ -92,7 +103,7 @@ TEST_F(JitterBufferTest, PartialReadInPlayingState) {
 
   // Buffer is empty, but we stay in Playing state for a while (lazy
   // re-buffering).
-  buffer.Write({9, 10, 11, 12});
+  EXPECT_EQ(writer->Write({9, 10, 11, 12}), WriteResult::kSuccess);
   // Should read immediately even though it's below threshold (8).
   EXPECT_EQ(buffer.Read(read_data), 4u);
   EXPECT_EQ(std::vector<uint8_t>(read_data.begin(), read_data.begin() + 4),
@@ -101,97 +112,54 @@ TEST_F(JitterBufferTest, PartialReadInPlayingState) {
 
 TEST_F(JitterBufferTest, LatencyRecovery) {
   constexpr size_t kLargeCapacity = 64 * 1024;
-  JitterBuffer large_buffer({.capacity = kLargeCapacity,
-                             .frame_size = 4,
+  std::unique_ptr<InMemoryFifoBufferWriter> writer;
+  std::unique_ptr<InMemoryFifoBufferReader> reader;
+  ASSERT_TRUE(CreateInMemoryFifoBuffer(kLargeCapacity, writer, reader));
+  JitterBuffer large_buffer({.frame_size = 4,
                              .max_starvation_bytes = 0,
                              .max_latency_bytes = 28800,
-                             .minimum_threshold = 4});
+                             .minimum_threshold = 4},
+                            std::move(reader));
 
   // Write a lot of data to trigger recovery (> 28800 bytes).
   std::vector<uint8_t> large_data(30000, 0xFF);
-  large_buffer.Write(large_data);
+  EXPECT_EQ(writer->Write(large_data), WriteResult::kSuccess);
 
   std::vector<uint8_t> read_data(4);
   // Read should trigger recovery and skip ahead to threshold (4).
   EXPECT_EQ(large_buffer.Read(read_data), 4u);
-  EXPECT_EQ(large_buffer.GetBufferedBytes(),
-            0u);  // read 4, so 0 left (it skipped to threshold).
-}
-
-TEST_F(JitterBufferTest, WrapAround) {
-  std::vector<uint8_t> data(kCapacity - 4, 0xAA);
-  EXPECT_EQ(buffer_.Write(data), kCapacity - 4);
-
-  std::vector<uint8_t> read_data(kCapacity - 4);
-  EXPECT_EQ(buffer_.Read(read_data), kCapacity - 4);
-
-  // Write again, should wrap.
-  std::vector<uint8_t> wrap_data = {1, 2, 3, 4, 5, 6, 7, 8};
-  EXPECT_EQ(buffer_.Write(wrap_data), 8u);
-
-  std::vector<uint8_t> wrap_read(8);
-  EXPECT_EQ(buffer_.Read(wrap_read), 8u);
-  EXPECT_EQ(wrap_read, wrap_data);
-}
-
-TEST_F(JitterBufferTest, FullBuffer) {
-  std::vector<uint8_t> data(kCapacity, 0xBB);
-  EXPECT_EQ(buffer_.Write(data), kCapacity);
-  EXPECT_EQ(buffer_.GetBufferedBytes(), kCapacity);
-
-  // Try to write more.
-  std::vector<uint8_t> extra_data = {1, 2, 3, 4};
-  EXPECT_EQ(buffer_.Write(extra_data), 0u);
-
-  std::vector<uint8_t> read_data(kCapacity);
-  EXPECT_EQ(buffer_.Read(read_data), kCapacity);
-  EXPECT_EQ(read_data, data);
-}
-
-TEST_F(JitterBufferTest, Clear) {
-  std::vector<uint8_t> data = {1, 2, 3, 4};
-  buffer_.Write(data);
-  EXPECT_EQ(buffer_.GetBufferedBytes(), 4u);
-
-  buffer_.Clear();
-  EXPECT_EQ(buffer_.GetBufferedBytes(), 0u);
-
-  // Call Read() with an empty span to process the clear.
-  buffer_.Read({});
-
-  std::vector<uint8_t> read_data(4);
-  EXPECT_EQ(buffer_.Read(read_data), 0u);
+  EXPECT_EQ(large_buffer.GetBufferedBytes(), 0u);  // read 4, so 0 left.
 }
 
 TEST_F(JitterBufferTest, ClearAdvancesReadIndex) {
   std::vector<uint8_t> data1 = {1, 2, 3, 4};
-  buffer_.Write(data1);
+  EXPECT_EQ(delegate_.GetWriter().Write(data1), WriteResult::kSuccess);
 
-  // Clear should set the pending flag.
-  buffer_.Clear();
-  EXPECT_EQ(buffer_.GetBufferedBytes(), 0u);
-
-  // Call Read() with an empty span to process the clear.
-  buffer_.Read({});
+  // Clear the buffer immediately.
+  delegate_.GetReader().Clear();
+  EXPECT_EQ(delegate_.GetReader().GetBufferedBytes(), 0u);
 
   // Next write should be fine.
   std::vector<uint8_t> data2 = {5, 6, 7, 8};
-  buffer_.Write(data2);
-  EXPECT_EQ(buffer_.GetBufferedBytes(), 4u);
+  EXPECT_EQ(delegate_.GetWriter().Write(data2), WriteResult::kSuccess);
+  EXPECT_EQ(delegate_.GetReader().GetBufferedBytes(), 4u);
 
   std::vector<uint8_t> read_data(4);
-  EXPECT_EQ(buffer_.Read(read_data), 4u);
+  EXPECT_EQ(delegate_.GetReader().Read(read_data), 4u);
   EXPECT_EQ(read_data, data2);
 }
 
 TEST_F(JitterBufferTest, LazyRebuffering) {
-  JitterBuffer buffer({.capacity = kCapacity,
-                       .frame_size = 4,
+  std::unique_ptr<InMemoryFifoBufferWriter> writer;
+  std::unique_ptr<InMemoryFifoBufferReader> reader;
+  ASSERT_TRUE(CreateInMemoryFifoBuffer(kCapacity, writer, reader));
+  JitterBuffer buffer({.frame_size = 4,
                        .max_starvation_bytes = 100,
                        .max_latency_bytes = 0,
-                       .minimum_threshold = 100});
+                       .minimum_threshold = 100},
+                      std::move(reader));
   std::vector<uint8_t> data(100, 0xAA);
-  buffer.Write(data);
+  EXPECT_EQ(writer->Write(data), WriteResult::kSuccess);
 
   std::vector<uint8_t> read_data(100);
   // Reached threshold. Reads full 100 bytes.
@@ -206,7 +174,7 @@ TEST_F(JitterBufferTest, LazyRebuffering) {
   // If we write a small amount of data now, it should be readable immediately
   // even though it's below the threshold (100).
   std::vector<uint8_t> small_data = {1, 2, 3, 4};
-  buffer.Write(small_data);
+  EXPECT_EQ(writer->Write(small_data), WriteResult::kSuccess);
   std::vector<uint8_t> small_read(4);
   EXPECT_EQ(buffer.Read(small_read), 4u);
   EXPECT_EQ(small_read, small_data);
@@ -217,7 +185,7 @@ TEST_F(JitterBufferTest, LazyRebuffering) {
   EXPECT_EQ(buffer.Read(silence_req), 0u);  // Total 120 bytes silence.
 
   // Should now be in Buffering state.
-  buffer.Write(small_data);
+  EXPECT_EQ(writer->Write(small_data), WriteResult::kSuccess);
   EXPECT_EQ(buffer.Read(small_read), 0u);  // Waiting for threshold (100)
 }
 

@@ -15,6 +15,10 @@
 namespace remoting {
 
 // A FifoBufferWriter implementation backed by a Mojo Data Pipe Producer Handle.
+// All SPSC methods must be called from a single thread (lazily bound on the
+// first call), but the instance can be safely constructed and destructed on a
+// different sequence (such as the owner main thread) as long as there is no
+// concurrent access.
 class IpcFifoBufferWriter : public FifoBufferWriter {
  public:
   explicit IpcFifoBufferWriter(
@@ -35,6 +39,10 @@ class IpcFifoBufferWriter : public FifoBufferWriter {
 };
 
 // A FifoBufferReader implementation backed by a Mojo Data Pipe Consumer Handle.
+// All SPSC methods must be called from a single thread (lazily bound on the
+// first call), but the instance can be safely constructed and destructed on a
+// different sequence (such as the owner main thread) as long as there is no
+// concurrent access.
 class IpcFifoBufferReader : public FifoBufferReader {
  public:
   explicit IpcFifoBufferReader(
