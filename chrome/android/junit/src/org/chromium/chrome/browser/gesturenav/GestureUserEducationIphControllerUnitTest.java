@@ -98,6 +98,7 @@ public class GestureUserEducationIphControllerUnitTest {
         when(mWindowAndroid.getWindow()).thenReturn(mWindow);
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mWebContents.getNavigationController()).thenReturn(mNavigationController);
+        mController.setDisableAnimationsForTesting(true);
     }
 
     @Test

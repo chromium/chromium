@@ -9,7 +9,8 @@ found in the LICENSE file.
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:accessibilityPaneTitle="@string/iph_gesture_user_education_layout_description"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -48,7 +49,8 @@ found in the LICENSE file.
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/gesture_user_education_arrow_margin_bottom"
-            android:layout_gravity="start" />
+            android:layout_gravity="start"
+            app:lottie_colorFilter="@macro/default_control_color_active" />
     </LinearLayout>
 
     <TextView
