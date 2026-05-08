@@ -979,11 +979,16 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
                        options:UIViewAnimationOptionTransitionCrossDissolve
                     animations:^{
                       [button setNeedsUpdateConfiguration];
+                      [button layoutIfNeeded];
                     }
                     completion:nil];
   } else {
-    // Update the color immediately.
-    [button setNeedsUpdateConfiguration];
+    // Update the color immediately, bypassing UIButtonConfiguration's implicit
+    // animations.
+    [UIView performWithoutAnimation:^{
+      [button setNeedsUpdateConfiguration];
+      [button layoutIfNeeded];
+    }];
   }
 }
 
