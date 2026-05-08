@@ -45,6 +45,17 @@ BASE_FEATURE(kApplyNativeOcclusionToCompositor,
 BASE_FEATURE(kAlwaysTrackNativeWindowOcclusionForTest,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, native window occlusion tracking listens for
+// EVENT_OBJECT_DESTROY on top-level windows that previously occluded a tracked
+// window, and recalculates occlusion when one of them is destroyed. This
+// covers the case where the owning process is forcibly terminated (e.g., via
+// TerminateProcess), which doesn't reliably fire EVENT_OBJECT_HIDE or
+// EVENT_SYSTEM_FOREGROUND. Enabled by default; behind a feature flag so it
+// can be disabled remotely via Finch if a regression is observed. See
+// https://crbug.com/510416850 for context.
+BASE_FEATURE(kRecalculateNativeWinOcclusionOnWindowDestroy,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Field trial param name for `kApplyNativeOcclusionToCompositor`.
 const base::FeatureParam<std::string> kApplyNativeOcclusionToCompositorType{
     &kApplyNativeOcclusionToCompositor, "type", /*default=*/""};
