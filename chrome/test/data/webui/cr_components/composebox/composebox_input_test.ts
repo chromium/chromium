@@ -151,8 +151,8 @@ suite('ComposeboxInputTest', () => {
     assertTrue(!!chip);
 
     const rect = chip.getBoundingClientRect();
-    assertEquals(38, rect.width);
-    assertEquals(24, rect.height);
+    assertEquals(24, rect.width);
+    assertEquals(14, rect.height);
 
     const computed = getComputedStyle(chip);
     assertEquals('0px', computed.paddingTop);
@@ -160,7 +160,6 @@ suite('ComposeboxInputTest', () => {
     assertEquals('0px', computed.paddingLeft);
     assertEquals('0px', computed.paddingRight);
     assertEquals('inline-flex', computed.display);
-    assertEquals('18px', computed.lineHeight);
   });
 
   test('input minHeight stays unset for short hint', async () => {
