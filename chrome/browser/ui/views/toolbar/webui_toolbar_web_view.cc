@@ -496,6 +496,10 @@ views::View* WebUIToolbarWebView::GetView() {
   return this;
 }
 
+void WebUIToolbarWebView::AnnounceAlert(const std::u16string& announcement) {
+  GetViewAccessibility().AnnounceAlert(announcement);
+}
+
 void WebUIToolbarWebView::OnPreferredSizeChanged() {
   PreferredSizeChanged();
 }

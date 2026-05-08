@@ -7,10 +7,7 @@ import '//resources/js/cr.js';
 import {BrowserControlsService} from './browser_controls_api.mojom-webui.js';
 import type {BrowserControlsServiceInterface} from './browser_controls_api.mojom-webui.js';
 import {ClickDispositionFlag} from './browser_controls_api_data_model.mojom-webui.js';
-import {
-  ToolbarUIObserverCallbackRouter,
-  ToolbarUIService,
-} from './toolbar_ui_api.mojom-webui.js';
+import {ToolbarUIObserverCallbackRouter, ToolbarUIService} from './toolbar_ui_api.mojom-webui.js';
 import type {ToolbarUIServiceInterface} from './toolbar_ui_api.mojom-webui.js';
 import {ContextMenuType} from './toolbar_ui_api_data_model.mojom-webui.js';
 import type {BackForwardButtonState, NavigationControlsState, OmniboxViewState, ReloadControlState} from './toolbar_ui_api_data_model.mojom-webui.js';

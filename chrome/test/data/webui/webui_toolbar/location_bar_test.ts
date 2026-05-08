@@ -59,4 +59,51 @@ suite('LocationBar', function() {
     locationIcon.dispatchEvent(new PointerEvent('pointercancel'));
     assertFalse(locationBar.hasAttribute('chip-hovered'));
   });
+
+  test('ContentSettingsIcons hovered state', async () => {
+    // Force the location bar to show a content setting icon.
+    locationBar.locationBarState = {
+      ...initialState,
+      contentSettingImageStates: [{
+        type: 0,  // kCookies
+        isBlocked: true,
+        tooltip: 'Cookies blocked',
+        accessibilityString: '',
+        isBubbleVisible: false,
+        shouldRunAnimation: false,
+        explanatoryString: '',
+      }],
+    };
+    await microtasksFinished();
+
+    const contentSettingsIcons =
+        locationBar.shadowRoot.querySelector('content-settings-icons');
+    assertTrue(!!contentSettingsIcons);
+
+    const contentSettingIcon =
+        contentSettingsIcons.shadowRoot.querySelector('content-setting-icon');
+    assertTrue(!!contentSettingIcon);
+
+    const iconButton =
+        contentSettingIcon.shadowRoot.querySelector('cr-icon-button');
+    assertTrue(!!iconButton);
+
+    // Hovering the container should NOT trigger the hovered state.
+    contentSettingsIcons.dispatchEvent(new PointerEvent('pointerenter'));
+    assertFalse(locationBar.hasAttribute('chip-hovered'));
+
+    // Hovering the individual icon button SHOULD trigger the hovered state.
+    iconButton.dispatchEvent(new PointerEvent('pointerenter'));
+    assertTrue(locationBar.hasAttribute('chip-hovered'));
+
+    iconButton.dispatchEvent(new PointerEvent('pointerleave'));
+    assertFalse(locationBar.hasAttribute('chip-hovered'));
+
+    // Verify pointercancel also removes the hovered state.
+    iconButton.dispatchEvent(new PointerEvent('pointerenter'));
+    assertTrue(locationBar.hasAttribute('chip-hovered'));
+
+    iconButton.dispatchEvent(new PointerEvent('pointercancel'));
+    assertFalse(locationBar.hasAttribute('chip-hovered'));
+  });
 });

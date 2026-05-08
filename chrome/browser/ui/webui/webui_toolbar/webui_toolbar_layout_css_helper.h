@@ -11,9 +11,9 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "third_party/blink/public/mojom/loader/local_resource_loader_config.mojom.h"
 
-namespace gfx {
-class FontList;
-}  // namespace gfx
+namespace views {
+class TypographyProvider;
+}
 
 /* Provides a CSS file defining CSS variables corresponding to all the
  * LayoutConstants, and some fonts. This should normally be hooked up as a
@@ -40,9 +40,12 @@ class WebUIToolbarLayoutCssHelper {
   static std::string EscapeCssFontName(std::string_view in);
 
  private:
-  static void AddFontVariables(std::string_view prefix,
-                               const gfx::FontList& font,
-                               std::string& out);
+  static void AddFontVariables(
+      std::string_view prefix,
+      int context,
+      int style,
+      const views::TypographyProvider& typography_provider,
+      std::string& out);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_WEBUI_TOOLBAR_WEBUI_TOOLBAR_LAYOUT_CSS_HELPER_H_

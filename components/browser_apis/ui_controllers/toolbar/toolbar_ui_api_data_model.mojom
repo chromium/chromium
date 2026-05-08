@@ -184,9 +184,8 @@ struct ContentSettingImageState {
   // The type of icon to display.
   ContentSettingImageType type;
 
-  // NOTE: this isn't actually announced unless `should_notify_accessibility` is
-  // true -- it's merely the accessible name.
-  mojo_base.mojom.String16 accessibility_announcement_string;
+  // Accessible name for the icon. If empty, `tooltip` is used instead.
+  mojo_base.mojom.String16 accessibility_string;
 
   // Mouseover popup text to display over icon.
   mojo_base.mojom.String16 tooltip;
@@ -196,19 +195,23 @@ struct ContentSettingImageState {
   // the blocked status.
   bool is_blocked;
 
-  // If true, `accessibility_announcement_string` is announced to users of
-  // accessibility technologies.
-  bool should_notify_accessibility;
-
   // If true, the bubble is visible, so the icon should be highlighted.
+  //
+  // TODO: crbug.com/489109708 - Consider removing `should_run_animation` if we
+  // can use element tracking for highlighting instead.
   bool is_bubble_visible;
+
+  // TODO: crbug.com/489109708 - For stateful property below, we'll need to
+  // send an incrementing generation number instead, as updates can be
+  // consolidated, and check against the last known number on the WebUI side.
+  // This prevents an issue where the initial message (run animation) gets lost
+  // in consolidation.
 
   // If true, when `explanitory_string` is displayed, it should appear via an
   // animation.
   bool should_run_animation;
 
-  // Explanatory text that either appears instantly, or animates in, depending
-  // on the value of `should_run_animation`.
+  // Explanatory text that animates in if `should_run_animation` is true.
   mojo_base.mojom.String16 explanatory_string;
 
   // NOTE: The visual icon to display is determined by `type`

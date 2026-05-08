@@ -28,6 +28,13 @@ ${this.locationBarState.lhsChipsState.permissionDashboard ?
 <readonly-omnibox id="omnibox"
   .omniboxViewState="${this.locationBarState.omniboxViewState}">
 </readonly-omnibox>
+<content-settings-icons id="contentSettings"
+    .contentSettingImageStates=
+        "${this.locationBarState.contentSettingImageStates}"
+    @chip-pointerenter="${this.onChipPointerenter_}"
+    @chip-pointerleave="${this.onChipPointerleave_}"
+    @chip-pointercancel="${this.onChipPointercancel_}">
+</content-settings-icons>
 <!--_html_template_end_-->`;
   // clang-format on
 }

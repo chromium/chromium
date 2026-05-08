@@ -285,6 +285,8 @@ if (!is_android) {
   source_set("test_support") {
     testonly = true
     sources = [
+      "mock_webui_toolbar_control_delgate.cc",
+      "mock_webui_toolbar_control_delgate.h",
       "webui_test_utils.cc",
       "webui_test_utils.h",
     ]

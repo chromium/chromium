@@ -20,6 +20,7 @@ class WebContents;
 
 class ContentSettingImageModel;
 class ContentSettingImageViewDelegate;
+class WebUIToolbarControlDelegate;
 
 // Manages the ContentSettingImageModels for WebUI toolbar and provides
 // state updates to be pushed via ToolbarUIService.
@@ -27,7 +28,7 @@ class WebUIContentSettingImageControl {
  public:
   // `delegate` must outlive this instance.
   explicit WebUIContentSettingImageControl(
-      ContentSettingImageViewDelegate* delegate);
+      ContentSettingImageViewDelegate* setting_view_delegate);
   WebUIContentSettingImageControl(const WebUIContentSettingImageControl&) =
       delete;
   WebUIContentSettingImageControl& operator=(
@@ -35,11 +36,14 @@ class WebUIContentSettingImageControl {
   ~WebUIContentSettingImageControl();
 
   // Generates the default set of models.
-  void Init();
+  //
+  // `webui_delegate` must outlive this instance.
+  void Init(WebUIToolbarControlDelegate* webui_delegate = nullptr);
 
   // Allows injecting a custom set of models for testing.
   void InitForTesting(
-      std::vector<std::unique_ptr<ContentSettingImageModel>> models);
+      std::vector<std::unique_ptr<ContentSettingImageModel>> models,
+      WebUIToolbarControlDelegate* webui_delegate = nullptr);
 
   // Returns the current state of all content setting images for `web_contents`,
   // auto-opens a bubble if requested, and updates model state for fields that
@@ -61,8 +65,12 @@ class WebUIContentSettingImageControl {
   ShowContentSettingsBubbleImpl(
       toolbar_ui_api::mojom::ContentSettingImageType type);
 
-  // Safe since the constructor requires that `delegate_` outlive this instance.
-  const raw_ptr<ContentSettingImageViewDelegate> delegate_;
+  // Safe since the constructor requires that `setting_view_delegate_` outlive
+  // this instance.
+  const raw_ptr<ContentSettingImageViewDelegate> setting_view_delegate_ =
+      nullptr;
+  // Safe since Init() requires that `webui_delegate_` outlive this instance.
+  raw_ptr<WebUIToolbarControlDelegate> webui_delegate_ = nullptr;
   std::vector<std::unique_ptr<ContentSettingImageModel>> models_;
 };
 

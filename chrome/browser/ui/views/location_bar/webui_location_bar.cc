@@ -106,7 +106,7 @@ void WebUILocationBar::Init(WebUIToolbarControlDelegate* delegate) {
       /*omnibox_view=*/omnibox_view_.get(), omnibox_controller_.get(),
       /*location_bar=*/this, /*presenter_delegate=*/*this);
 
-  content_setting_image_control_.Init();
+  content_setting_image_control_.Init(delegate);
 
   // Unretained is safe because `this` owns `moved_subscription_`.
   moved_subscription_ =

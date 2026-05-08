@@ -22,6 +22,7 @@
   font-family: var(--omnibox-primary-font-family);
   font-size: var(--omnibox-primary-font-size);
   font-weight: var(--omnibox-primary-font-weight);
+  line-height: var(--omnibox-primary-line-height);
   height: var(--omnibox-height);
 }
 

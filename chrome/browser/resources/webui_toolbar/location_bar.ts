@@ -4,6 +4,7 @@
 
 import './readonly_omnibox.js';
 import './location_icon.js';
+import './content_settings_icons.js';
 import './permission_dashboard.js';
 
 import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
@@ -51,7 +52,6 @@ export class LocationBarElement extends CrLitElement {
       userInputInProgress: false,
       popupOpen: false,
     },
-    contentSettingImageStates: [],
     lhsChipsState: {
       securityChip: {
         icon: 0,
@@ -64,6 +64,7 @@ export class LocationBarElement extends CrLitElement {
       activityIndicators: [],
       permissionDashboard: null,
     },
+    contentSettingImageStates: [],
   };
 
   private trackedElementManager_: TrackedElementManager;

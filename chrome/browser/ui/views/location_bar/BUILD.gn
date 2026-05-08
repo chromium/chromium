@@ -308,6 +308,7 @@ source_set("interactive_ui_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
   sources = [
     "content_setting_image_view_interactive_uitest.cc",
+    "content_setting_interactive_uitest.cc",
     "find_bar_interactive_uitest.cc",
     "lens_overlay_homework_page_action_icon_view_interactive_uitest.cc",
     "lens_overlay_page_action_icon_view_interactive_uitest.cc",

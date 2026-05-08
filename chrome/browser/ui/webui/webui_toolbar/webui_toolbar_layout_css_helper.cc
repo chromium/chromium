@@ -233,18 +233,17 @@ std::string WebUIToolbarLayoutCssHelper::GenerateLayoutConstantsCss() {
        "px;"});
 
   const auto& typography_provider = views::TypographyProvider::Get();
-  AddFontVariables("--omnibox-primary",
-                   typography_provider.GetFont(CONTEXT_OMNIBOX_PRIMARY,
-                                               views::style::STYLE_PRIMARY),
+  AddFontVariables("--omnibox-primary", CONTEXT_OMNIBOX_PRIMARY,
+                   views::style::STYLE_PRIMARY, typography_provider,
                    css_string);
-  AddFontVariables(
-      "--omnibox-chip",
-      typography_provider.GetFont(CONTEXT_OMNIBOX_PRIMARY,
-                                  views::style::STYLE_BODY_4_EMPHASIS),
-      css_string);
-  AddFontVariables("--permission-chip",
-                   typography_provider.GetFont(views::style::CONTEXT_BUTTON_MD,
-                                               views::style::STYLE_PRIMARY),
+  AddFontVariables("--omnibox-primary-body-3-emphasis", CONTEXT_OMNIBOX_PRIMARY,
+                   views::style::STYLE_BODY_3_EMPHASIS, typography_provider,
+                   css_string);
+  AddFontVariables("--omnibox-chip", CONTEXT_OMNIBOX_PRIMARY,
+                   views::style::STYLE_BODY_4_EMPHASIS, typography_provider,
+                   css_string);
+  AddFontVariables("--permission-chip", views::style::CONTEXT_BUTTON_MD,
+                   views::style::STYLE_PRIMARY, typography_provider,
                    css_string);
 
   css_string.push_back('}');
@@ -316,9 +315,13 @@ std::string WebUIToolbarLayoutCssHelper::EscapeCssFontName(
 }
 
 // static
-void WebUIToolbarLayoutCssHelper::AddFontVariables(std::string_view prefix,
-                                                   const gfx::FontList& font,
-                                                   std::string& out) {
+void WebUIToolbarLayoutCssHelper::AddFontVariables(
+    std::string_view prefix,
+    int context,
+    int style,
+    const views::TypographyProvider& typography_provider,
+    std::string& out) {
+  const gfx::FontList& font = typography_provider.GetFont(context, style);
   DCHECK_EQ(1u, font.GetFonts().size());
   base::StrAppend(
       &out,
@@ -327,6 +330,9 @@ void WebUIToolbarLayoutCssHelper::AddFontVariables(std::string_view prefix,
        EscapeCssFontName(font.GetPrimaryFont().GetFontName()), "\";",
        prefix, "-font-size:", base::NumberToString(font.GetFontSize()), "px;",
        prefix, "-font-weight:",
-       base::NumberToString(static_cast<int>(font.GetFontWeight())), ";"});
+       base::NumberToString(static_cast<int>(font.GetFontWeight())), ";",
+       prefix, "-line-height:",
+       base::NumberToString(typography_provider.GetLineHeight(context, style)),
+       "px;"});
   // clang-format on
 }

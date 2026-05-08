@@ -4,9 +4,6 @@
 
 #include "chrome/browser/ui/views/location_bar/webui_content_setting_image_control.h"
 
-#include <optional>
-#include <variant>
-
 #include "base/check.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
@@ -18,7 +15,9 @@
 #include "chrome/browser/ui/content_settings/content_setting_image_view_delegate.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/views/content_setting_bubble_contents.h"
+#include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api.mojom.h"
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "content/public/browser/web_contents.h"
@@ -52,11 +51,9 @@ toolbar_ui_api::mojom::ContentSettingImageStatePtr GetImageStateForModel(
         l10n_util::GetStringUTF16(model->explanatory_string_id());
   }
   if (model->AccessibilityAnnouncementStringId() != 0) {
-    state->accessibility_announcement_string =
+    state->accessibility_string =
         l10n_util::GetStringUTF16(model->AccessibilityAnnouncementStringId());
   }
-  state->should_notify_accessibility =
-      model->ShouldNotifyAccessibility(web_contents);
   state->should_run_animation = model->ShouldRunAnimation(web_contents);
 
   return state;
@@ -65,18 +62,22 @@ toolbar_ui_api::mojom::ContentSettingImageStatePtr GetImageStateForModel(
 }  // namespace
 
 WebUIContentSettingImageControl::WebUIContentSettingImageControl(
-    ContentSettingImageViewDelegate* delegate)
-    : delegate_(delegate) {}
+    ContentSettingImageViewDelegate* setting_view_delegate)
+    : setting_view_delegate_(setting_view_delegate) {}
 
 WebUIContentSettingImageControl::~WebUIContentSettingImageControl() = default;
 
-void WebUIContentSettingImageControl::Init() {
+void WebUIContentSettingImageControl::Init(
+    WebUIToolbarControlDelegate* webui_delegate) {
   models_ = ContentSettingImageModel::GenerateContentSettingImageModels();
+  webui_delegate_ = webui_delegate;
 }
 
 void WebUIContentSettingImageControl::InitForTesting(
-    std::vector<std::unique_ptr<ContentSettingImageModel>> models) {
+    std::vector<std::unique_ptr<ContentSettingImageModel>> models,
+    WebUIToolbarControlDelegate* webui_delegate) {
   models_ = std::move(models);
+  webui_delegate_ = webui_delegate;
 }
 
 std::vector<toolbar_ui_api::mojom::ContentSettingImageStatePtr>
@@ -95,6 +96,15 @@ WebUIContentSettingImageControl::ProcessContentSettingState(
       // After gathering the state, we need to notify the model that it's been
       // shown / notified so it doesn't repeat itself in the next update.
       if (model->ShouldNotifyAccessibility(web_contents)) {
+        auto name = l10n_util::GetStringUTF16(
+            model->AccessibilityAnnouncementStringId());
+
+        if (webui_delegate_) {
+          webui_delegate_->AnnounceAlert(l10n_util::GetStringFUTF16(
+              IDS_A11Y_INDICATORS_ANNOUNCEMENT, name,
+              l10n_util::GetStringUTF16(IDS_A11Y_OMNIBOX_CHIP_HINT)));
+        }
+
         model->AccessibilityWasNotified(web_contents);
       }
       if (model->ShouldAutoOpenBubble(web_contents)) {
@@ -103,6 +113,12 @@ WebUIContentSettingImageControl::ProcessContentSettingState(
         model->SetBubbleWasAutoOpened(web_contents);
       }
       if (model->ShouldRunAnimation(web_contents)) {
+        // TODO: crbug.com/489109708 - Investigate why the animation sometimes
+        // re-runs when typing in the location bar post-animation.
+        int string_id = model->explanatory_string_id();
+        if (string_id && webui_delegate_) {
+          webui_delegate_->AnnounceAlert(l10n_util::GetStringUTF16(string_id));
+        }
         model->SetAnimationHasRun(web_contents);
       }
     }
@@ -121,7 +137,7 @@ void WebUIContentSettingImageControl::ShowContentSettingsBubble(
 base::expected<std::monostate, mojo_base::mojom::ErrorPtr>
 WebUIContentSettingImageControl::ShowContentSettingsBubbleImpl(ImageType type) {
   content::WebContents* web_contents =
-      delegate_->GetContentSettingWebContents();
+      setting_view_delegate_->GetContentSettingWebContents();
   if (!web_contents) {
     return std::monostate();
   }
@@ -144,7 +160,8 @@ WebUIContentSettingImageControl::ShowContentSettingsBubbleImpl(ImageType type) {
 
   std::unique_ptr<ContentSettingBubbleModel> bubble_model =
       model->CreateBubbleModel(
-          delegate_->GetContentSettingBubbleModelDelegate(), web_contents);
+          setting_view_delegate_->GetContentSettingBubbleModelDelegate(),
+          web_contents);
 
   // Create and show the bubble contents.
   BrowserWindowInterface* browser =

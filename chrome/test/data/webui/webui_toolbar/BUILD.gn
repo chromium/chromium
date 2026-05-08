@@ -11,6 +11,7 @@ build_webui_tests("build") {
   ]
 
   files = [
+    "content_setting_icon_test.ts",
     "location_bar_test.ts",
     "location_bar_focus_test.ts",
     "location_bar_high_contrast_focus_test.ts",

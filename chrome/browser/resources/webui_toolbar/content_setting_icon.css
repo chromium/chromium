@@ -1,0 +1,234 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: flex;
+  align-items: center;
+  width: auto;
+  font-family: var(--omnibox-primary-body-3-emphasis-font-family);
+  font-size: var(--omnibox-primary-body-3-emphasis-font-size);
+  font-weight: var(--omnibox-primary-body-3-emphasis-font-weight);
+  line-height: var(--omnibox-primary-body-3-emphasis-line-height);
+  --explanatory-text-width: 200px;
+}
+
+#label {
+/* TODO: crbug.com/489109708 - Fix color mismatch with C++ views. */
+  color: var(--color-toolbar-button-icon);
+  max-width: 0;
+  margin-inline-start: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  /* TODO: crbug.com/489109708 - Fix icon padding, as the clickable area is
+   * larger than in C++ views. */
+}
+
+:host([animating]) #label {
+  margin-inline-start: var(--location-bar-child-internal-spacing);
+  animation: slide-in-out 3s;
+}
+
+@keyframes slide-in-out {
+  0% {
+    max-width: 0;
+    animation-timing-function: ease-out;
+  }
+  20% {
+    max-width: var(--explanatory-text-width);
+  }
+  80% {
+    max-width: var(--explanatory-text-width);
+    animation-timing-function: ease-out;
+  }
+  100% {
+    max-width: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :host([animating]) #label {
+    animation: pop-in-out 3s;
+    max-width: var(--explanatory-text-width);
+  }
+
+  @keyframes pop-in-out {
+    from {
+      max-width: var(--explanatory-text-width);
+    }
+    to {
+      max-width: var(--explanatory-text-width);
+    }
+  }
+}
+
+/* TODO: crbug.com/489109708 - These can be set directly rather than via a
+ * class. */
+.icon-ads {
+  --cr-icon-image: url(rhs_icons/ads_chrome_refresh.svg);
+}
+
+.icon-ads-off {
+  --cr-icon-image: url(rhs_icons/ads_off_chrome_refresh.svg);
+}
+
+.icon-code {
+  --cr-icon-image: url(rhs_icons/code_chrome_refresh.svg);
+}
+
+.icon-code-off {
+  --cr-icon-image: url(rhs_icons/code_off_chrome_refresh.svg);
+}
+
+.icon-content-paste {
+  --cr-icon-image: url(rhs_icons/content_paste.svg);
+}
+
+.icon-content-paste-off {
+  --cr-icon-image: url(rhs_icons/content_paste_off.svg);
+}
+
+.icon-database {
+  --cr-icon-image: url(rhs_icons/database.svg);
+}
+
+.icon-database-off {
+  --cr-icon-image: url(rhs_icons/database_off.svg);
+}
+
+.icon-file-download {
+  --cr-icon-image: url(rhs_icons/file_download_chrome_refresh.svg);
+}
+
+.icon-file-download-off {
+  --cr-icon-image: url(rhs_icons/file_download_off_chrome_refresh.svg);
+}
+
+.icon-framebust {
+  --cr-icon-image: url(rhs_icons/open_in_new_chrome_refresh.svg);
+}
+
+.icon-framebust-off {
+  --cr-icon-image: url(rhs_icons/open_in_new_off_chrome_refresh.svg);
+}
+
+.icon-iframe {
+  --cr-icon-image: url(rhs_icons/iframe.svg);
+}
+
+.icon-iframe-off {
+  --cr-icon-image: url(rhs_icons/iframe_off.svg);
+}
+
+.icon-location {
+  --cr-icon-image: url(rhs_icons/location_on_chrome_refresh.svg);
+}
+
+.icon-location-off {
+  --cr-icon-image: url(rhs_icons/location_off_chrome_refresh.svg);
+}
+
+.icon-mic {
+  --cr-icon-image: url(rhs_icons/mic_chrome_refresh.svg);
+}
+
+.icon-mic-off {
+  --cr-icon-image: url(rhs_icons/mic_off_chrome_refresh.svg);
+}
+
+.icon-midi {
+  --cr-icon-image: url(rhs_icons/midi_chrome_refresh.svg);
+}
+
+.icon-midi-off {
+  --cr-icon-image: url(rhs_icons/midi_off_chrome_refresh.svg);
+}
+
+.icon-not-secure-warning {
+  --cr-icon-image: url(rhs_icons/not_secure_warning_chrome_refresh.svg);
+}
+
+.icon-not-secure-warning-off {
+  --cr-icon-image: url(rhs_icons/not_secure_warning_off_chrome_refresh.svg);
+}
+
+.icon-notifications {
+  --cr-icon-image: url(rhs_icons/notifications_chrome_refresh.svg);
+}
+
+.icon-notifications-off {
+  --cr-icon-image: url(rhs_icons/notifications_off_chrome_refresh.svg);
+}
+
+.icon-photo {
+  --cr-icon-image: url(rhs_icons/photo_chrome_refresh.svg);
+}
+
+.icon-photo-off {
+  --cr-icon-image: url(rhs_icons/photo_off_chrome_refresh.svg);
+}
+
+.icon-protocol-handler {
+  --cr-icon-image: url(rhs_icons/protocol_handler_chrome_refresh.svg);
+}
+
+.icon-protocol-handler-off {
+  --cr-icon-image: url(rhs_icons/protocol_handler_off_chrome_refresh.svg);
+}
+
+.icon-sensors {
+  --cr-icon-image: url(rhs_icons/sensors_chrome_refresh.svg);
+}
+
+.icon-sensors-off {
+  --cr-icon-image: url(rhs_icons/sensors_off_chrome_refresh.svg);
+}
+
+<if expr="is_chromeos">
+.icon-smart-card-reader {
+  --cr-icon-image: url(rhs_icons/smart_card_reader.svg);
+}
+
+.icon-smart-card-reader-off {
+  --cr-icon-image: url(rhs_icons/smart_card_reader_off.svg);
+}
+</if>
+
+.icon-storage-access {
+  --cr-icon-image: url(rhs_icons/storage_access.svg);
+}
+
+.icon-storage-access-off {
+  --cr-icon-image: url(rhs_icons/storage_access_off.svg);
+}
+
+<if expr="is_win">
+.icon-sync-saved-locally {
+  --cr-icon-image: url(rhs_icons/sync_saved_locally.svg);
+}
+
+.icon-sync-saved-locally-off {
+  --cr-icon-image: url(rhs_icons/sync_saved_locally_off.svg);
+}
+</if>
+
+.icon-videocam {
+  --cr-icon-image: url(rhs_icons/videocam_chrome_refresh.svg);
+}
+
+.icon-videocam-off {
+  --cr-icon-image: url(rhs_icons/videocam_off_chrome_refresh.svg);
+}
+
+.icon-volume-up {
+  --cr-icon-image: url(rhs_icons/volume_up_chrome_refresh.svg);
+}
+
+.icon-volume-off {
+  --cr-icon-image: url(rhs_icons/volume_off_chrome_refresh.svg);
+}

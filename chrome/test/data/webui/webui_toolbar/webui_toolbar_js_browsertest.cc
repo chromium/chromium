@@ -32,6 +32,10 @@ IN_PROC_BROWSER_TEST_F(WebUiToolbarJsTest, ReadOnlyOmnibox) {
   RunTest("webui_toolbar/readonly_omnibox_test.js", "mocha.run();");
 }
 
+IN_PROC_BROWSER_TEST_F(WebUiToolbarJsTest, ContentSettingIcon) {
+  RunTest("webui_toolbar/content_setting_icon_test.js", "mocha.run();");
+}
+
 IN_PROC_BROWSER_TEST_F(WebUiToolbarJsTest, PinnedToolbarAction) {
   RunTest("webui_toolbar/pinned_toolbar_action_test.js", "mocha.run();");
 }
