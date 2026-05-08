@@ -1734,6 +1734,7 @@ source_set("platform_browser_tests") {
       "../browser/extensions/extension_override_apitest.cc",
       "../browser/extensions/extension_tab_util_browsertest.cc",
       "../browser/extensions/extension_unload_browsertest.cc",
+      "../browser/extensions/extension_user_activation_service_browsertest.cc",
       "../browser/extensions/extension_user_script_loader_browsertest.cc",
       "../browser/extensions/extensions_disabled_browsertest.cc",
       "../browser/extensions/gpu_browsertest.cc",
