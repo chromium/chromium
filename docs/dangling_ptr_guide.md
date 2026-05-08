@@ -16,14 +16,14 @@ See also the general instructions about the dangling pointer detector:
     - [Observer callback](#observer-callback)
     - [Challenging lifespan](#challenging-lifespan)
     - [Cyclic pointers](#cyclic-pointers)
-    - [Fallback solution](#fallback-solution)
+    - [Fallback solution](#what-to-do-about-dangling-pointers-the-dangling-pointer-does-not-own-the-deleted-object-fallback-solution)
   - [`Case 3` The pointer manages ownership over the object](#the-pointer-manages-ownership-over-the-object)
     - [Smart pointers](#smart-pointers)
     - [Object vended from C API](#object-vended-from-c-api)
     - [Object conditionally owned](#object-conditionally-owned)
-    - [Fallback solution](#fallback-solution-1)
+    - [Fallback solution](#what-to-do-about-dangling-pointers-the-pointer-manages-ownership-over-the-object-fallback-solution)
 - [What to do about unretained dangling pointers](./unretained_dangling_ptr_guide.md)
-- [I can't figure out which pointer is dangling](I-can_t-figure-out-which-pointer-is-dangling)
+- [I can't figure out which pointer is dangling](#i-can_t-figure-out-which-pointer-is-dangling)
 - [FAQ - Why dangling pointers matter](#faq-why-dangling-pointers-matter)
 
 ## What to do about dangling pointers
