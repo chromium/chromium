@@ -2920,6 +2920,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.ZoomAction" enum="GlicZoomAction"
+    expires_after="2026-09-20">
+  <owner>cuianthony@chromium.org</owner>
+  <owner>glic-dev@google.com</owner>
+  <summary>
+    The zoom action taken by the user using keyboard shortcuts. Recorded when
+    the user presses the zoom in, zoom out, or reset zoom keyboard shortcuts
+    while the Glic panel is focused.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

@@ -39,6 +39,7 @@
 #include "chrome/browser/glic/common/future_browser_features.h"
 #include "chrome/browser/glic/common/glic_navigation.h"
 #include "chrome/browser/glic/fre/fre_util.h"
+#include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
@@ -224,6 +225,17 @@ GlicUnpinTrigger FromMojomUnpinTrigger(mojom::UnpinTrigger trigger) {
       return GlicUnpinTrigger::kChip;
     case mojom::UnpinTrigger::kActuation:
       return GlicUnpinTrigger::kActuation;
+  }
+}
+
+GlicZoomAction ToGlicZoomAction(mojom::ZoomAction action) {
+  switch (action) {
+    case mojom::ZoomAction::kZoomIn:
+      return GlicZoomAction::kZoomIn;
+    case mojom::ZoomAction::kZoomOut:
+      return GlicZoomAction::kZoomOut;
+    case mojom::ZoomAction::kReset:
+      return GlicZoomAction::kReset;
   }
 }
 
@@ -2594,6 +2606,8 @@ void GlicPageHandler::NotifyWindowIntentToShow() {
 }
 
 void GlicPageHandler::Zoom(mojom::ZoomAction zoom_action) {
+  base::UmaHistogramEnumeration("Glic.ZoomAction",
+                                ToGlicZoomAction(zoom_action));
   page_->Zoom(zoom_action);
 }
 

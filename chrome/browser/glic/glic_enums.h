@@ -74,6 +74,15 @@ enum class CannotActReason {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/enums.xml:ActorTaskCreateFailedReason)
 
+// LINT.IfChange(GlicZoomAction)
+enum class GlicZoomAction {
+  kZoomIn = 0,
+  kZoomOut = 1,
+  kReset = 2,
+  kMaxValue = kReset,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicZoomAction)
+
 }  // namespace glic
 
 #endif  // CHROME_BROWSER_GLIC_GLIC_ENUMS_H_

@@ -892,6 +892,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/host/context/glic_page_features_manager.h:GlicYoutubeSummarizeVideoZSSResult) -->
 
+<!-- LINT.IfChange(GlicZoomAction) -->
+
+<enum name="GlicZoomAction">
+  <int value="0" label="Zoom In"/>
+  <int value="1" label="Zoom Out"/>
+  <int value="2" label="Reset"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/glic_enums.h:GlicZoomAction) -->
+
 <!-- LINT.IfChange(LoadingStage) -->
 
 <enum name="LoadingStage">
