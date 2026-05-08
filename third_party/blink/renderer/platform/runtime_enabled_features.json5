@@ -2988,8 +2988,7 @@
     {
       // https://open-ui.org/components/scoped-focusgroup.explainer/
       name: "Focusgroup",
-      status: "experimental",
-      origin_trial_feature_name: "Focusgroup",
+      status: "stable",
     },
     {
       // 2-D grid navigation functionality of focusgroup is considered out of
