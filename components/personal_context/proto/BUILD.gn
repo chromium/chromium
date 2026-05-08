@@ -1,0 +1,5 @@
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("personal_context_proto") {
+  sources = [ "context_memory_service.proto" ]
+}
