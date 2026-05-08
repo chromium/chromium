@@ -372,6 +372,12 @@
       name: "AIPageContentPaidContentAnnotation",
       status: "stable"
     },
+    // When enabled, certian element coordinates will be tracked using the
+    // Element::SetTrackedElementSubRect() method.
+    {
+      name: "AIPageContentTrackedElements",
+      status: "test"
+    },
     // Clamp AIPageContent visible bounding boxes to the local-root viewport
     // after visual-viewport mapping to normalize viewport-relative geometry.
     {

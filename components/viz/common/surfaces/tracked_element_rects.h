@@ -20,15 +20,17 @@ namespace viz {
 
 using TrackedElementId = base::Token;
 
-// The feature that is tracking the element. The feature values are kept opaque
-// at this level. The actual values are maintained in the higher level browser
-// code. If any new features are added, `kTrackedElementFeatureMax` should be
-// updated. For the actual values, see
-// components/page_content_annotations/core/tracked_element_feature.h
+// The feature that is tracking the element. Some feature values are kept opaque
+// at this level, and are instead maintained in the higher level browser
+// code. If any new browser-level features are added,
+// `kTrackedElementFeatureMax` should be updated. For the browser-level values,
+// see components/page_content_annotations/core/tracked_element_feature.h
 
 // LINT.IfChange(TrackedElementFeature)
 enum class TrackedElementFeature : int32_t {
-  kTrackedElementFeatureMax = 1,
+  kIframeTracking = 0,
+  kTrackedElementFeatureEnd,
+  kTrackedElementFeatureMax = kTrackedElementFeatureEnd + 1,
 };
 // LINT.ThenChange(//components/page_content_annotations/core/tracked_element_feature.h:TrackedElementFeature)
 

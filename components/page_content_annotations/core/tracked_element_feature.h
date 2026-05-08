@@ -10,23 +10,26 @@
 namespace page_content_annotations {
 
 // This enum represents the feature that is tracking a blink element rect. This
-// enum is meant to be cast to a cc::TrackedElementFeature when calling
+// enum is meant to extend viz::TrackedElementFeature and is used to
+// define values that should not be directly exposed to viz. The values of
+// this enum can be cast to a viz::TrackedElementFeature when calling
 // blink::Element::SetTrackedElementSubRect().
 
-// For the blink TrackedElementRects definition, see
-// third_party/blink/renderer/platform/graphics/paint/tracked_element_data.h.
-// For the cc TrackedElementRects definition, see
-// cc/trees/tracked_element_rects.h.
+// For the viz TrackedElementRects definition, see
+// components/viz/common/surfaces/tracked_element_rects.h.
 
-// If any new features are added, `kTrackedElementFeatureMax` in
-// cc/trees/tracked_element_rects.h should be updated.
+// If any new features are added here,
+// `viz::TrackedElementFeature::kTrackedElementFeatureMax` should be updated.
 
 // LINT.IfChange(TrackedElementFeature)
 enum class TrackedElementFeature : int32_t {
-  kAIHighlight = 0,
-  kIframeTracking = 1,
+  // TODO(http://crbug.com/441532128): Extend viz::TrackedElementFeature
+  // properly by importing that file and incrementing from
+  // kTrackedElementFeatureEnd. This will require fixing an ios build error that
+  // is caused by adding a //components/viz/common dependency to this component.
+  kAIHighlight = 2,
 };
-// LINT.ThenChange(//cc/trees/tracked_element_rects.h:TrackedElementFeature)
+// LINT.ThenChange(//components/viz/common/surfaces/tracked_element_rects.h:TrackedElementFeature)
 
 }  // namespace page_content_annotations
 

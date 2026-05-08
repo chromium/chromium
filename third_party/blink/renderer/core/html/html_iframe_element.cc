@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "components/viz/common/surfaces/tracked_element_rects.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
@@ -54,6 +55,7 @@
 #include "third_party/blink/renderer/core/permissions_policy/document_policy_parser.h"
 #include "third_party/blink/renderer/core/permissions_policy/iframe_policy.h"
 #include "third_party/blink/renderer/core/permissions_policy/permissions_policy_parser.h"
+#include "third_party/blink/renderer/platform/graphics/paint/tracked_element_data.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/json/json_parser.h"
@@ -545,6 +547,12 @@ void HTMLIFrameElement::RemovedFrom(ContainerNode& insertion_point) {
   if (html_doc && insertion_point.IsInDocumentTree()) {
     html_doc->RemoveNamedItem(name_);
   }
+
+  viz::TrackedElementFeature tracking_feature =
+      viz::TrackedElementFeature::kIframeTracking;
+  if (GetTrackedElementSubRect(tracking_feature)) {
+    ClearTrackedElementSubRect(tracking_feature);
+  }
 }
 
 bool HTMLIFrameElement::IsInteractiveContent() const {
@@ -668,6 +676,30 @@ void HTMLIFrameElement::DidChangeAttributes() {
   }
   GetDocument().GetFrame()->GetLocalFrameHostRemote().DidChangeSrcDoc(
       ContentFrame()->GetFrameToken(), srcdoc_value);
+
+  if (RuntimeEnabledFeatures::AIPageContentTrackedElementsEnabled()) {
+    viz::TrackedElementFeature tracking_feature =
+        viz::TrackedElementFeature::kIframeTracking;
+    const TrackedElementSubRect* tracked_element =
+        GetTrackedElementSubRect(tracking_feature);
+    if (!tracked_element ||
+        tracked_element->frame_token != ContentFrame()->GetFrameToken() ||
+        tracked_element->parent_frame_token !=
+            GetDocument().GetFrame()->GetLocalFrameToken()) {
+      if (tracked_element) {
+        ClearTrackedElementSubRect(tracking_feature);
+      }
+      SetTrackedElementSubRect(
+          tracking_feature,
+          TrackedElementSubRect(
+              TrackedElementId(base::Token::CreateRandom()),
+              /*should_add_to_compositor_frame_metadata=*/true,
+              /*sub_rect=*/std::nullopt,
+              /*frame_token=*/ContentFrame()->GetFrameToken(),
+              /*parent_frame_token=*/
+              GetDocument().GetFrame()->GetLocalFrameToken()));
+    }
+  }
 }
 
 void HTMLIFrameElement::CheckPotentialPermissionsPolicyViolation() {

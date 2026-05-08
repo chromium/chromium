@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 
@@ -399,6 +400,31 @@ TEST_F(HTMLIFrameElementSimTest,
       << "Expect error that Shared Storage operations are not allowed in "
          "insecure contexts but got: "
       << ConsoleMessages().front();
+}
+
+TEST_F(HTMLIFrameElementSimTest, SetTrackedElement) {
+  ScopedAIPageContentTrackedElementsForTest scoped_feature(true);
+  SimRequest main_resource("https://example.com", "text/html");
+  LoadURL("https://example.com");
+  main_resource.Complete(R"(
+    <iframe id="my-iframe" src="https://iframe.com"></iframe>
+  )");
+
+  auto* iframe = To<HTMLIFrameElement>(
+      GetDocument().getElementById(AtomicString("my-iframe")));
+
+  viz::TrackedElementFeature tracking_feature =
+      viz::TrackedElementFeature::kIframeTracking;
+  const auto* tracked_rect = iframe->GetTrackedElementSubRect(tracking_feature);
+
+  ASSERT_TRUE(tracked_rect);
+  EXPECT_TRUE(tracked_rect->should_add_to_compositor_frame_metadata);
+  EXPECT_EQ(tracked_rect->frame_token, iframe->ContentFrame()->GetFrameToken());
+  EXPECT_EQ(tracked_rect->parent_frame_token,
+            iframe->GetDocument().GetFrame()->GetLocalFrameToken());
+
+  iframe->remove();
+  EXPECT_FALSE(iframe->GetTrackedElementSubRect(tracking_feature));
 }
 
 }  // namespace blink
