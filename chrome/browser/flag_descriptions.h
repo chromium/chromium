@@ -1539,6 +1539,9 @@ inline constexpr char kGlicPanelResetSizeAndLocationDescription[] =
 inline constexpr char kGlicPrintMenuItemName[] = "Glic Print Menu Item";
 inline constexpr char kGlicPrintMenuItemDescription[] =
     "Enables showing the Glic print contextual menu item.";
+inline constexpr char kGlicPdfSummarizeName[] = "Glic Pdf Summarize";
+inline constexpr char kGlicPdfSummarizeDescription[] =
+    "Enables the pdf summarize button.";
 inline constexpr char kGlicWarmingName[] = "Glic Pre-Warming";
 inline constexpr char kGlicWarmingDescription[] =
     "Enables the pre-warming of the Glic panel's web client.";

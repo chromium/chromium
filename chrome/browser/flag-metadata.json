@@ -5395,6 +5395,11 @@
     "expiry_milestone": 144
   },
   {
+    "name": "glic-pdf-summarize",
+    "owners": [ "erikchen@chromium.org", "//chrome/browser/glic/OWNERS" ],
+    "expiry_milestone": 155
+  },
+  {
     "name": "glic-pre-warming",
     "owners": [ "carlosk@chromium.org", "vollick@chromium.org", "//chrome/browser/glic/OWNERS" ],
     "expiry_milestone": 150
