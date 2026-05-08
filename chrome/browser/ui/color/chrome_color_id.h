@@ -58,6 +58,11 @@
   E_CPONLY(kColorAvatarButtonNormalRipple) \
   E_CPONLY(kColorAvatarStroke) \
   E_CPONLY(kColorAvatarFillForContrast) \
+  /* Bookmark Manager page colors. */ \
+  E_CPONLY(kColorBookmarkManagerItemBackgroundSelected) \
+  E_CPONLY(kColorBookmarkManagerItemOutline) \
+  E_CPONLY(kColorBookmarkManagerItemText) \
+  E_CPONLY(kColorBookmarkManagerItemTitle) \
   /* Bookmark bar colors. */ \
   E_CPONLY(kColorBookmarkBarBackground) \
   E_CPONLY(kColorBookmarkBarForeground) \

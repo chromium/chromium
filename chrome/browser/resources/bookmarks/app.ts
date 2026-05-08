@@ -12,6 +12,7 @@ import '/strings.m.js';
 import './command_manager.js';
 import './toolbar.js';
 
+import {ColorChangeUpdater, COLORS_CSS_SELECTOR} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrSplitterElement} from 'chrome://resources/cr_elements/cr_splitter/cr_splitter.js';
 import {FindShortcutMixinLit} from 'chrome://resources/cr_elements/find_shortcut_mixin_lit.js';
@@ -95,6 +96,12 @@ export class BookmarksAppElement extends BookmarksAppElementBase {
   override connectedCallback() {
     super.connectedCallback();
 
+    const enableWebuiRefresh2026 =
+        loadTimeData.getString('webuiRefresh2026') !== '';
+    if (enableWebuiRefresh2026) {
+      this.addThemedColors_();
+      ColorChangeUpdater.forDocument().start();
+    }
     document.documentElement.classList.remove('loading');
 
     // These events are added to the document because capture doesn't work
@@ -268,6 +275,14 @@ export class BookmarksAppElement extends BookmarksAppElementBase {
 
   getDndManagerForTesting(): DndManager|null {
     return this.dndManager_;
+  }
+
+  private addThemedColors_() {
+    assert(document.body.querySelector(COLORS_CSS_SELECTOR) === null);
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'chrome://theme/colors.css?sets=ui,chrome';
+    document.body.appendChild(link);
   }
 }
 

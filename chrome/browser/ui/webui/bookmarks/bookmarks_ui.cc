@@ -155,6 +155,11 @@ content::WebUIDataSource* CreateAndAddBookmarksUIHTMLSource(Profile* profile) {
       "images/batch_upload_bookmarks_promo_dark.svg",
       IDR_BOOKMARKS_IMAGES_BATCH_UPLOAD_BOOKMARKS_PROMO_DARK_SVG);
 
+  source->AddString("webuiRefresh2026",
+                    base::FeatureList::IsEnabled(features::kWebuiRefresh2026)
+                        ? "webui-refresh-2026"
+                        : "");
+
   return source;
 }
 
@@ -176,7 +181,8 @@ BookmarksUIConfig::CreateWebUIController(content::WebUI* web_ui,
   return std::make_unique<BookmarksUI>(web_ui);
 }
 
-BookmarksUI::BookmarksUI(content::WebUI* web_ui) : WebUIController(web_ui) {
+BookmarksUI::BookmarksUI(content::WebUI* web_ui)
+    : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
   // Set up the chrome://bookmarks/ source.
   Profile* profile = Profile::FromWebUI(web_ui);
   auto* source = CreateAndAddBookmarksUIHTMLSource(profile);

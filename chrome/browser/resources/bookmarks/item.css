@@ -11,6 +11,8 @@
  * #css_wrapper_metadata_end */
 
 :host {
+  --cr-icon-button-focus-outline-color: var(
+      --color-bookmark-manager-item-outline);
   --iron-icon-fill-color: var(--google-grey-700);
   align-items: center;
   color: inherit;
@@ -26,6 +28,47 @@
 :host([is-selected-item_]) {
   --iron-icon-fill-color: var(--google-blue-600);
   background-color: var(--highlight-color);
+}
+
+:host-context([webui-refresh-2026]) {
+  &:host {
+    --iron-icon-fill-color: var(--color-bookmark-manager-item-text);
+    color: var(--color-bookmark-manager-item-text);
+  }
+
+  &:host([is-selected-item_]) {
+    background-color: var(--color-bookmark-manager-item-background-selected);
+  }
+
+  #website-title {
+    color: var(--color-bookmark-manager-item-title);
+  }
+
+  #website-url {
+    color: var(--color-bookmark-manager-item-text);
+  }
+
+  cr-icon-button {
+    --cr-icon-button-fill-color: var(--color-bookmark-manager-item-text);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    &:host([is-selected-item_]),
+    &:host([is-selected-item_]) .folder-icon {
+      --cr-icon-button-focus-outline-color: var(
+          --color-bookmark-manager-item-outline);
+      --iron-icon-fill-color: var(--color-bookmark-manager-item-text);
+      color: var(--color-bookmark-manager-item-text);
+    }
+
+    &:host([is-selected-item_]) #website-title {
+      color: var(--color-bookmark-manager-item-title);
+    }
+
+    &:host([is-selected-item_]) cr-icon-button {
+      --cr-icon-button-fill-color: var(--color-bookmark-manager-item-text);
+    }
+  }
 }
 
 @media (prefers-color-scheme: dark) {

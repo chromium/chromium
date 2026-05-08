@@ -17,6 +17,29 @@
   --cr-vertical-tab-height: 33px;
 }
 
+:host-context([webui-refresh-2026]) {
+  .cr-nav-menu-item {
+    color: initial;
+  }
+
+  .cr-nav-menu-item.drag-on {
+    background: var(--color-nav-menu-item-background-selected);
+  }
+
+  .cr-nav-menu-item[selected],
+  .cr-nav-menu-item.drag-on {
+    --iron-icon-fill-color: var(--color-nav-menu-item-selected);
+    color: var(--color-nav-menu-item-selected);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .cr-nav-menu-item[selected] #arrow,
+    .cr-nav-menu-item.drag-on #arrow {
+      --cr-icon-button-fill-color: var(--color-nav-menu-item-selected);
+    }
+  }
+}
+
 .cr-nav-menu-item {
   color: var(--folder-inactive-color);
   /* Add enough space at the end for the focus outline to not be cropped. */

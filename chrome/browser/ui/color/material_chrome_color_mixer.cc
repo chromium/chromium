@@ -72,6 +72,13 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorActivityIndicatorSubtitleForeground] = {
       ui::kColorSysOnSurfaceSubtle};
 
+  // Bookmark Manager page colors.
+  mixer[kColorBookmarkManagerItemBackgroundSelected] = {
+      ui::kColorSysBaseContainer};
+  mixer[kColorBookmarkManagerItemOutline] = {ui::kColorSysPrimary};
+  mixer[kColorBookmarkManagerItemText] = {ui::kColorSysOnSurfaceSubtle};
+  mixer[kColorBookmarkManagerItemTitle] = {ui::kColorSysOnSurface};
+
   // Desktop Media picker colors.
   mixer[kColorDesktopMediaPickerDescriptionLabel] = {
       ui::kColorSysOnSurfaceSubtle};
