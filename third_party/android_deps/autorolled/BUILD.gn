@@ -60,7 +60,8 @@ template("define_autorolled_targets") {
     deps = [ "//third_party/android_deps:org_ow2_asm_asm_java" ]
   }
   if (!limit_android_deps) {
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     android_aar_prebuilt("com_airbnb_android_lottie_java") {
       aar_path = "autorolled/cipd/libs/com_airbnb_android_lottie/lottie.aar"
       info_path = "autorolled/committed/libs/com_airbnb_android_lottie/com_airbnb_android_lottie.info"
@@ -71,7 +72,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     if (google_play_services_package == "//third_party/android_deps") {
       android_aar_prebuilt("google_play_services_auth_java") {
         aar_path = "autorolled/cipd/libs/com_google_android_gms_play_services_auth/play-services-auth.aar"
@@ -90,7 +92,8 @@ template("define_autorolled_targets") {
       }
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     if (google_play_services_package == "//third_party/android_deps") {
       android_aar_prebuilt("google_play_services_auth_api_phone_java") {
         aar_path = "autorolled/cipd/libs/com_google_android_gms_play_services_auth_api_phone/play-services-auth-api-phone.aar"
@@ -107,7 +110,8 @@ template("define_autorolled_targets") {
       }
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     if (google_play_services_package == "//third_party/android_deps") {
       android_aar_prebuilt("google_play_services_auth_base_java") {
         aar_path = "autorolled/cipd/libs/com_google_android_gms_play_services_auth_base/play-services-auth-base.aar"
@@ -123,7 +127,8 @@ template("define_autorolled_targets") {
       }
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     if (google_play_services_package == "//third_party/android_deps") {
       android_aar_prebuilt("google_play_services_auth_blockstore_java") {
         aar_path = "autorolled/cipd/libs/com_google_android_gms_play_services_auth_blockstore/play-services-auth-blockstore.aar"
@@ -138,7 +143,8 @@ template("define_autorolled_targets") {
       }
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     if (google_play_services_package == "//third_party/android_deps") {
       android_aar_prebuilt("google_play_services_base_java") {
         aar_path = "autorolled/cipd/libs/com_google_android_gms_play_services_base/play-services-base.aar"
@@ -154,7 +160,8 @@ template("define_autorolled_targets") {
       }
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     if (google_play_services_package == "//third_party/android_deps") {
       android_aar_prebuilt("google_play_services_basement_java") {
         aar_path = "autorolled/cipd/libs/com_google_android_gms_play_services_basement/play-services-basement.aar"
@@ -179,7 +186,8 @@ template("define_autorolled_targets") {
       }
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     if (google_play_services_package == "//third_party/android_deps") {
       android_aar_prebuilt("google_play_services_cast_java") {
         aar_path = "autorolled/cipd/libs/com_google_android_gms_play_services_cast/play-services-cast.aar"
@@ -197,7 +205,8 @@ template("define_autorolled_targets") {
       }
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     if (google_play_services_package == "//third_party/android_deps") {
       android_aar_prebuilt("google_play_services_cast_framework_java") {
         aar_path = "autorolled/cipd/libs/com_google_android_gms_play_services_cast_framework/play-services-cast-framework.aar"
@@ -225,7 +234,8 @@ template("define_autorolled_targets") {
       }
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     if (google_play_services_package == "//third_party/android_deps") {
       android_aar_prebuilt("google_play_services_fido_java") {
         aar_path = "autorolled/cipd/libs/com_google_android_gms_play_services_fido/play-services-fido.aar"
@@ -241,7 +251,8 @@ template("define_autorolled_targets") {
       }
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     if (google_play_services_package == "//third_party/android_deps") {
       android_aar_prebuilt("google_play_services_gcm_java") {
         aar_path = "autorolled/cipd/libs/com_google_android_gms_play_services_gcm/play-services-gcm.aar"
@@ -259,7 +270,8 @@ template("define_autorolled_targets") {
       }
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     if (google_play_services_package == "//third_party/android_deps") {
       android_aar_prebuilt("google_play_services_identity_credentials_java") {
         aar_path = "autorolled/cipd/libs/com_google_android_gms_play_services_identity_credentials/play-services-identity-credentials.aar"
@@ -274,7 +286,8 @@ template("define_autorolled_targets") {
       }
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     if (google_play_services_package == "//third_party/android_deps") {
       android_aar_prebuilt("google_play_services_iid_java") {
         aar_path = "autorolled/cipd/libs/com_google_android_gms_play_services_iid/play-services-iid.aar"
@@ -291,7 +304,8 @@ template("define_autorolled_targets") {
       }
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     if (google_play_services_package == "//third_party/android_deps") {
       android_aar_prebuilt("google_play_services_instantapps_java") {
         aar_path = "autorolled/cipd/libs/com_google_android_gms_play_services_instantapps/play-services-instantapps.aar"
@@ -305,7 +319,8 @@ template("define_autorolled_targets") {
       }
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     if (google_play_services_package == "//third_party/android_deps") {
       android_aar_prebuilt("google_play_services_location_java") {
         aar_path = "autorolled/cipd/libs/com_google_android_gms_play_services_location/play-services-location.aar"
@@ -322,7 +337,8 @@ template("define_autorolled_targets") {
       }
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     if (google_play_services_package == "//third_party/android_deps") {
       android_aar_prebuilt("google_play_services_tasks_java") {
         aar_path = "autorolled/cipd/libs/com_google_android_gms_play_services_tasks/play-services-tasks.aar"
@@ -334,7 +350,8 @@ template("define_autorolled_targets") {
       }
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     if (google_play_services_package == "//third_party/android_deps") {
       android_aar_prebuilt("google_play_services_time_java") {
         aar_path = "autorolled/cipd/libs/com_google_android_gms_play_services_time/play-services-time.aar"
@@ -348,7 +365,8 @@ template("define_autorolled_targets") {
       }
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     if (google_play_services_package == "//third_party/android_deps") {
       android_aar_prebuilt("google_play_services_vision_java") {
         aar_path = "autorolled/cipd/libs/com_google_android_gms_play_services_vision/play-services-vision.aar"
@@ -362,7 +380,8 @@ template("define_autorolled_targets") {
       }
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     if (google_play_services_package == "//third_party/android_deps") {
       android_aar_prebuilt("google_play_services_vision_common_java") {
         aar_path = "autorolled/cipd/libs/com_google_android_gms_play_services_vision_common/play-services-vision-common.aar"
@@ -378,7 +397,8 @@ template("define_autorolled_targets") {
       }
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     android_aar_prebuilt(
         "com_google_android_libraries_identity_googleid_googleid_java") {
       aar_path = "autorolled/cipd/libs/com_google_android_libraries_identity_googleid_googleid/googleid.aar"
@@ -390,15 +410,16 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     if (!defined(material_design_target)) {
       android_aar_prebuilt("com_google_android_material_material_java") {
         aar_path = "autorolled/cipd/libs/com_google_android_material_material/material.aar"
         info_path = "autorolled/committed/libs/com_google_android_material_material/com_google_android_material_material.info"
         enable_bytecode_checks = false
 
-        # Target is swapped out when internal code is enabled.
-        # Please depend on //third_party/android_deps:material_design_java instead.
+        # Target is swapped out when internal code is enabled. Please depend on
+        # //third_party/android_deps:material_design_java instead.
         visibility = [ "//third_party/android_deps:*" ]
         deps = [
           "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
@@ -439,7 +460,8 @@ template("define_autorolled_targets") {
       }
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     if (!defined(playcore_target)) {
       android_aar_prebuilt("com_google_android_play_feature_delivery_java") {
         aar_path = "autorolled/cipd/libs/com_google_android_play_feature_delivery/feature-delivery.aar"
@@ -457,7 +479,8 @@ template("define_autorolled_targets") {
       }
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     android_aar_prebuilt("com_google_android_play_review_java") {
       aar_path =
           "autorolled/cipd/libs/com_google_android_play_review/review.aar"
@@ -470,7 +493,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     android_aar_prebuilt("com_google_ar_impress_java") {
       aar_path = "autorolled/cipd/libs/com_google_ar_impress/impress.aar"
       info_path = "autorolled/committed/libs/com_google_ar_impress/com_google_ar_impress.info"
@@ -486,7 +510,8 @@ template("define_autorolled_targets") {
       extract_native_libraries = true
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("com_google_auto_service_auto_service_annotations_java") {
       jar_path = "autorolled/cipd/libs/com_google_auto_service_auto_service_annotations/auto-service-annotations.jar"
       output_name = "com_google_auto_service_auto_service_annotations"
@@ -495,7 +520,8 @@ template("define_autorolled_targets") {
       preferred_dep = true
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("com_google_code_findbugs_jsr305_java") {
       jar_path =
           "autorolled/cipd/libs/com_google_code_findbugs_jsr305/jsr305.jar"
@@ -504,7 +530,8 @@ template("define_autorolled_targets") {
       enable_bytecode_checks = false
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("com_google_code_gson_gson_java") {
       jar_path = "autorolled/cipd/libs/com_google_code_gson_gson/gson.jar"
       output_name = "com_google_code_gson_gson"
@@ -514,7 +541,8 @@ template("define_autorolled_targets") {
       deps = [ "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java" ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("com_google_errorprone_error_prone_annotations_java") {
       jar_path = "autorolled/cipd/libs/com_google_errorprone_error_prone_annotations/error_prone_annotations.jar"
       output_name = "com_google_errorprone_error_prone_annotations"
@@ -523,7 +551,8 @@ template("define_autorolled_targets") {
       preferred_dep = true
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     if (google_play_services_package == "//third_party/android_deps") {
       android_aar_prebuilt("google_firebase_firebase_messaging_java") {
         aar_path = "autorolled/cipd/libs/com_google_firebase_firebase_messaging/firebase-messaging.aar"
@@ -555,7 +584,8 @@ template("define_autorolled_targets") {
       }
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     if (!defined(guava_android_target)) {
       java_prebuilt("com_google_guava_guava_java") {
         jar_path = "autorolled/cipd/libs/com_google_guava_guava/guava.jar"
@@ -589,7 +619,8 @@ template("define_autorolled_targets") {
       }
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("com_google_j2objc_j2objc_annotations_java") {
       jar_path = "autorolled/cipd/libs/com_google_j2objc_j2objc_annotations/j2objc-annotations.jar"
       output_name = "com_google_j2objc_j2objc_annotations"
@@ -597,7 +628,8 @@ template("define_autorolled_targets") {
       enable_bytecode_checks = false
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     android_aar_prebuilt("com_google_mlkit_common_java") {
       aar_path = "autorolled/cipd/libs/com_google_mlkit_common/common.aar"
       info_path = "autorolled/committed/libs/com_google_mlkit_common/com_google_mlkit_common.info"
@@ -617,7 +649,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     android_aar_prebuilt("com_google_mlkit_genai_common_java") {
       aar_path =
           "autorolled/cipd/libs/com_google_mlkit_genai_common/genai-common.aar"
@@ -631,7 +664,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     android_aar_prebuilt("com_google_mlkit_genai_prompt_java") {
       aar_path =
           "autorolled/cipd/libs/com_google_mlkit_genai_prompt/genai-prompt.aar"
@@ -654,7 +688,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     if (!defined(android_proto_runtime)) {
       java_prebuilt("com_google_protobuf_protobuf_javalite_java") {
         jar_path = "autorolled/cipd/libs/com_google_protobuf_protobuf_javalite/protobuf-javalite.jar"
@@ -663,13 +698,13 @@ template("define_autorolled_targets") {
         requires_android = true
         enable_bytecode_checks = false
 
-        # Target is swapped out when internal code is enabled.
-        # Please depend on //third_party/android_deps:protobuf_lite_runtime_java instead.
+        # Target is swapped out when internal code is enabled. Please depend on
+        # //third_party/android_deps:protobuf_lite_runtime_java instead.
         visibility = [ "//third_party/android_deps:*" ]
 
-        # Prebuilt protos in the runtime library.
-        # If you want to use these protos, you should create a proto_java_library
-        # target for them. See crbug.com/1103399 for discussion.
+        # Prebuilt protos in the runtime library. If you want to use these
+        # protos, you should create a proto_java_library target for them. See
+        # crbug.com/1103399 for discussion.
         jar_excluded_patterns = [
           "com/google/protobuf/Any*",
           "com/google/protobuf/Duration*",
@@ -679,7 +714,8 @@ template("define_autorolled_targets") {
       }
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("com_google_truth_truth_java") {
       jar_path = "autorolled/cipd/libs/com_google_truth_truth/truth.jar"
       output_name = "com_google_truth_truth"
@@ -697,7 +733,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     android_aar_prebuilt("com_squareup_leakcanary_leakcanary_android_java") {
       aar_path = "autorolled/cipd/libs/com_squareup_leakcanary_leakcanary_android/leakcanary-android.aar"
       info_path = "autorolled/committed/libs/com_squareup_leakcanary_leakcanary_android/com_squareup_leakcanary_leakcanary_android.info"
@@ -710,7 +747,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     android_aar_prebuilt(
         "com_squareup_leakcanary_leakcanary_android_core_java") {
       aar_path = "autorolled/cipd/libs/com_squareup_leakcanary_leakcanary_android_core/leakcanary-android-core.aar"
@@ -725,7 +763,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     android_aar_prebuilt(
         "com_squareup_leakcanary_leakcanary_android_instrumentation_java") {
       aar_path = "autorolled/cipd/libs/com_squareup_leakcanary_leakcanary_android_instrumentation/leakcanary-android-instrumentation.aar"
@@ -742,7 +781,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("com_squareup_leakcanary_shark_java") {
       jar_path = "autorolled/cipd/libs/com_squareup_leakcanary_shark/shark.jar"
       output_name = "com_squareup_leakcanary_shark"
@@ -757,7 +797,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("com_squareup_leakcanary_shark_android_java") {
       jar_path = "autorolled/cipd/libs/com_squareup_leakcanary_shark_android/shark-android.jar"
       output_name = "com_squareup_leakcanary_shark_android"
@@ -770,7 +811,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("com_squareup_okio_okio_jvm_java") {
       jar_path = "autorolled/cipd/libs/com_squareup_okio_okio_jvm/okio-jvm.jar"
       output_name = "com_squareup_okio_okio_jvm"
@@ -779,7 +821,8 @@ template("define_autorolled_targets") {
       deps = [ "//third_party/kotlin_stdlib:kotlin_stdlib_java" ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     android_aar_prebuilt("io_grpc_grpc_android_java") {
       aar_path = "autorolled/cipd/libs/io_grpc_grpc_android/grpc-android.aar"
       info_path = "autorolled/committed/libs/io_grpc_grpc_android/io_grpc_grpc_android.info"
@@ -792,7 +835,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("io_grpc_grpc_api_java") {
       jar_path = "autorolled/cipd/libs/io_grpc_grpc_api/grpc-api.jar"
       output_name = "io_grpc_grpc_api"
@@ -806,7 +850,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     android_aar_prebuilt("io_grpc_grpc_binder_java") {
       aar_path = "autorolled/cipd/libs/io_grpc_grpc_binder/grpc-binder.aar"
       info_path = "autorolled/committed/libs/io_grpc_grpc_binder/io_grpc_grpc_binder.info"
@@ -828,7 +873,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("io_grpc_grpc_inprocess_java") {
       jar_path =
           "autorolled/cipd/libs/io_grpc_grpc_inprocess/grpc-inprocess.jar"
@@ -844,7 +890,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("io_grpc_grpc_protobuf_lite_java") {
       jar_path = "autorolled/cipd/libs/io_grpc_grpc_protobuf_lite/grpc-protobuf-lite.jar"
       output_name = "io_grpc_grpc_protobuf_lite"
@@ -859,7 +906,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("io_grpc_grpc_stub_java") {
       jar_path = "autorolled/cipd/libs/io_grpc_grpc_stub/grpc-stub.jar"
       output_name = "io_grpc_grpc_stub"
@@ -874,7 +922,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("io_grpc_grpc_testing_java") {
       jar_path = "autorolled/cipd/libs/io_grpc_grpc_testing/grpc-testing.jar"
       output_name = "io_grpc_grpc_testing"
@@ -892,7 +941,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("io_grpc_grpc_util_java") {
       jar_path = "autorolled/cipd/libs/io_grpc_grpc_util/grpc-util.jar"
       output_name = "io_grpc_grpc_util"
@@ -908,7 +958,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     android_aar_prebuilt("io_reactivex_rxjava2_rxandroid_java") {
       aar_path =
           "autorolled/cipd/libs/io_reactivex_rxjava2_rxandroid/rxandroid.aar"
@@ -917,7 +968,8 @@ template("define_autorolled_targets") {
       deps = [ "//third_party/android_deps:io_reactivex_rxjava2_rxjava_java" ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("javax_annotation_javax_annotation_api_java") {
       jar_path = "autorolled/cipd/libs/javax_annotation_javax_annotation_api/javax.annotation-api.jar"
       output_name = "javax_annotation_javax_annotation_api"
@@ -926,7 +978,8 @@ template("define_autorolled_targets") {
       enable_bytecode_checks = false
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("javax_inject_javax_inject_java") {
       jar_path =
           "autorolled/cipd/libs/javax_inject_javax_inject/javax.inject.jar"
@@ -936,7 +989,8 @@ template("define_autorolled_targets") {
       enable_bytecode_checks = false
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("org_checkerframework_checker_qual_java") {
       jar_path = "autorolled/cipd/libs/org_checkerframework_checker_qual/checker-qual.jar"
       output_name = "org_checkerframework_checker_qual"
@@ -944,7 +998,8 @@ template("define_autorolled_targets") {
       enable_bytecode_checks = false
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("org_checkerframework_checker_util_java") {
       jar_path = "autorolled/cipd/libs/org_checkerframework_checker_util/checker-util.jar"
       output_name = "org_checkerframework_checker_util"
@@ -955,7 +1010,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("org_codehaus_mojo_animal_sniffer_annotations_java") {
       jar_path = "autorolled/cipd/libs/org_codehaus_mojo_animal_sniffer_annotations/animal-sniffer-annotations.jar"
       output_name = "org_codehaus_mojo_animal_sniffer_annotations"
@@ -963,7 +1019,8 @@ template("define_autorolled_targets") {
       enable_bytecode_checks = false
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("org_jetbrains_kotlinx_atomicfu_jvm_java") {
       jar_path = "autorolled/cipd/libs/org_jetbrains_kotlinx_atomicfu_jvm/atomicfu-jvm.jar"
       output_name = "org_jetbrains_kotlinx_atomicfu_jvm"
@@ -972,7 +1029,8 @@ template("define_autorolled_targets") {
       deps = [ "//third_party/kotlin_stdlib:kotlin_stdlib_java" ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("org_jetbrains_kotlinx_kotlinx_coroutines_android_java") {
       jar_path = "autorolled/cipd/libs/org_jetbrains_kotlinx_kotlinx_coroutines_android/kotlinx-coroutines-android.jar"
       output_name = "org_jetbrains_kotlinx_kotlinx_coroutines_android"
@@ -985,7 +1043,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm_java") {
       jar_path = "autorolled/cipd/libs/org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm/kotlinx-coroutines-core-jvm.jar"
       output_name = "org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm"
@@ -994,7 +1053,8 @@ template("define_autorolled_targets") {
       deps = [ "//third_party/kotlin_stdlib:kotlin_stdlib_java" ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("org_jetbrains_kotlinx_kotlinx_coroutines_guava_java") {
       jar_path = "autorolled/cipd/libs/org_jetbrains_kotlinx_kotlinx_coroutines_guava/kotlinx-coroutines-guava.jar"
       output_name = "org_jetbrains_kotlinx_kotlinx_coroutines_guava"
@@ -1007,7 +1067,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("org_jetbrains_kotlinx_kotlinx_serialization_core_jvm_java") {
       jar_path = "autorolled/cipd/libs/org_jetbrains_kotlinx_kotlinx_serialization_core_jvm/kotlinx-serialization-core-jvm.jar"
       output_name = "org_jetbrains_kotlinx_kotlinx_serialization_core_jvm"
@@ -1017,12 +1078,14 @@ template("define_autorolled_targets") {
       deps = [ "//third_party/kotlin_stdlib:kotlin_stdlib_java" ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_group("org_jetbrains_kotlinx_kotlinx_serialization_json_java") {
       deps = [ "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_serialization_json_jvm_java" ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("org_reactivestreams_reactive_streams_java") {
       jar_path = "autorolled/cipd/libs/org_reactivestreams_reactive_streams/reactive-streams.jar"
       output_name = "org_reactivestreams_reactive_streams"
@@ -1030,7 +1093,8 @@ template("define_autorolled_targets") {
       enable_bytecode_checks = false
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("org_robolectric_robolectric_java") {
       jar_path =
           "autorolled/cipd/libs/org_robolectric_robolectric/robolectric.jar"
@@ -1059,7 +1123,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("com_google_android_annotations_java") {
       jar_path =
           "autorolled/cipd/libs/com_google_android_annotations/annotations.jar"
@@ -1076,7 +1141,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     if (google_play_services_package == "//third_party/android_deps") {
       android_aar_prebuilt("google_android_datatransport_transport_api_java") {
         aar_path = "autorolled/cipd/libs/com_google_android_datatransport_transport_api/transport-api.aar"
@@ -1093,7 +1159,8 @@ template("define_autorolled_targets") {
       }
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     if (google_play_services_package == "//third_party/android_deps") {
       android_aar_prebuilt(
           "google_android_datatransport_transport_backend_cct_java") {
@@ -1117,7 +1184,8 @@ template("define_autorolled_targets") {
       }
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     if (google_play_services_package == "//third_party/android_deps") {
       android_aar_prebuilt(
           "google_android_datatransport_transport_runtime_java") {
@@ -1141,7 +1209,8 @@ template("define_autorolled_targets") {
       }
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     if (google_play_services_package == "//third_party/android_deps") {
       android_aar_prebuilt("google_play_services_clearcut_java") {
         aar_path = "autorolled/cipd/libs/com_google_android_gms_play_services_clearcut/play-services-clearcut.aar"
@@ -1164,7 +1233,8 @@ template("define_autorolled_targets") {
       }
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     if (google_play_services_package == "//third_party/android_deps") {
       android_aar_prebuilt("google_play_services_cloud_messaging_java") {
         aar_path = "autorolled/cipd/libs/com_google_android_gms_play_services_cloud_messaging/play-services-cloud-messaging.aar"
@@ -1184,7 +1254,8 @@ template("define_autorolled_targets") {
       }
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     if (google_play_services_package == "//third_party/android_deps") {
       android_aar_prebuilt("google_play_services_flags_java") {
         aar_path = "autorolled/cipd/libs/com_google_android_gms_play_services_flags/play-services-flags.aar"
@@ -1204,7 +1275,8 @@ template("define_autorolled_targets") {
       }
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     if (google_play_services_package == "//third_party/android_deps") {
       android_aar_prebuilt("google_play_services_phenotype_java") {
         aar_path = "autorolled/cipd/libs/com_google_android_gms_play_services_phenotype/play-services-phenotype.aar"
@@ -1226,7 +1298,8 @@ template("define_autorolled_targets") {
       }
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     if (google_play_services_package == "//third_party/android_deps") {
       android_aar_prebuilt("google_play_services_stats_java") {
         aar_path = "autorolled/cipd/libs/com_google_android_gms_play_services_stats/play-services-stats.aar"
@@ -1246,7 +1319,8 @@ template("define_autorolled_targets") {
       }
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     android_aar_prebuilt("com_google_android_play_core_common_java") {
       aar_path = "autorolled/cipd/libs/com_google_android_play_core_common/core-common.aar"
       info_path = "autorolled/committed/libs/com_google_android_play_core_common/com_google_android_play_core_common.info"
@@ -1260,7 +1334,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("com_google_auto_value_auto_value_annotations_java") {
       jar_path = "autorolled/cipd/libs/com_google_auto_value_auto_value_annotations/auto-value-annotations.jar"
       output_name = "com_google_auto_value_auto_value_annotations"
@@ -1277,7 +1352,8 @@ template("define_autorolled_targets") {
       testonly = true
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     if (google_play_services_package == "//third_party/android_deps") {
       java_prebuilt("google_firebase_firebase_annotations_java") {
         jar_path = "autorolled/cipd/libs/com_google_firebase_firebase_annotations/firebase-annotations.jar"
@@ -1296,7 +1372,8 @@ template("define_autorolled_targets") {
       }
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     if (google_play_services_package == "//third_party/android_deps") {
       android_aar_prebuilt("google_firebase_firebase_common_java") {
         aar_path = "autorolled/cipd/libs/com_google_firebase_firebase_common/firebase-common.aar"
@@ -1323,7 +1400,8 @@ template("define_autorolled_targets") {
       }
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     if (google_play_services_package == "//third_party/android_deps") {
       android_aar_prebuilt("google_firebase_firebase_components_java") {
         aar_path = "autorolled/cipd/libs/com_google_firebase_firebase_components/firebase-components.aar"
@@ -1344,7 +1422,8 @@ template("define_autorolled_targets") {
       }
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     if (google_play_services_package == "//third_party/android_deps") {
       android_aar_prebuilt("google_firebase_firebase_datatransport_java") {
         aar_path = "autorolled/cipd/libs/com_google_firebase_firebase_datatransport/firebase-datatransport.aar"
@@ -1366,7 +1445,8 @@ template("define_autorolled_targets") {
       }
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     if (google_play_services_package == "//third_party/android_deps") {
       java_prebuilt("google_firebase_firebase_encoders_java") {
         jar_path = "autorolled/cipd/libs/com_google_firebase_firebase_encoders/firebase-encoders.jar"
@@ -1385,7 +1465,8 @@ template("define_autorolled_targets") {
       }
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     if (google_play_services_package == "//third_party/android_deps") {
       android_aar_prebuilt("google_firebase_firebase_encoders_json_java") {
         aar_path = "autorolled/cipd/libs/com_google_firebase_firebase_encoders_json/firebase-encoders-json.aar"
@@ -1405,7 +1486,8 @@ template("define_autorolled_targets") {
       }
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     if (google_play_services_package == "//third_party/android_deps") {
       java_prebuilt("google_firebase_firebase_encoders_proto_java") {
         jar_path = "autorolled/cipd/libs/com_google_firebase_firebase_encoders_proto/firebase-encoders-proto.jar"
@@ -1427,7 +1509,8 @@ template("define_autorolled_targets") {
       }
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     if (google_play_services_package == "//third_party/android_deps") {
       android_aar_prebuilt("google_firebase_firebase_iid_interop_java") {
         aar_path = "autorolled/cipd/libs/com_google_firebase_firebase_iid_interop/firebase-iid-interop.aar"
@@ -1447,7 +1530,8 @@ template("define_autorolled_targets") {
       }
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     if (google_play_services_package == "//third_party/android_deps") {
       android_aar_prebuilt("google_firebase_firebase_installations_java") {
         aar_path = "autorolled/cipd/libs/com_google_firebase_firebase_installations/firebase-installations.aar"
@@ -1471,7 +1555,8 @@ template("define_autorolled_targets") {
       }
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     if (google_play_services_package == "//third_party/android_deps") {
       android_aar_prebuilt(
           "google_firebase_firebase_installations_interop_java") {
@@ -1492,7 +1577,8 @@ template("define_autorolled_targets") {
       }
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     if (google_play_services_package == "//third_party/android_deps") {
       android_aar_prebuilt(
           "google_firebase_firebase_measurement_connector_java") {
@@ -1513,7 +1599,8 @@ template("define_autorolled_targets") {
       }
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("com_google_guava_failureaccess_java") {
       jar_path = "autorolled/cipd/libs/com_google_guava_failureaccess/failureaccess.jar"
       output_name = "com_google_guava_failureaccess"
@@ -1524,7 +1611,8 @@ template("define_autorolled_targets") {
       visibility = [ "//third_party/android_deps:*" ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt(
         "com_google_testparameterinjector_test_parameter_injector_java") {
       jar_path = "autorolled/cipd/libs/com_google_testparameterinjector_test_parameter_injector/test-parameter-injector.jar"
@@ -1541,7 +1629,8 @@ template("define_autorolled_targets") {
       testonly = true
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     android_aar_prebuilt("com_squareup_curtains_curtains_java") {
       aar_path =
           "autorolled/cipd/libs/com_squareup_curtains_curtains/curtains.aar"
@@ -1557,7 +1646,8 @@ template("define_autorolled_targets") {
       deps = [ "//third_party/kotlin_stdlib:kotlin_stdlib_java" ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     android_aar_prebuilt(
         "com_squareup_leakcanary_leakcanary_android_test_java") {
       aar_path = "autorolled/cipd/libs/com_squareup_leakcanary_leakcanary_android_test/leakcanary-android-test.aar"
@@ -1581,7 +1671,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     android_aar_prebuilt(
         "com_squareup_leakcanary_leakcanary_android_utils_java") {
       aar_path = "autorolled/cipd/libs/com_squareup_leakcanary_leakcanary_android_utils/leakcanary-android-utils.aar"
@@ -1601,7 +1692,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("com_squareup_leakcanary_leakcanary_core_java") {
       jar_path = "autorolled/cipd/libs/com_squareup_leakcanary_leakcanary_core/leakcanary-core.jar"
       output_name = "com_squareup_leakcanary_leakcanary_core"
@@ -1623,7 +1715,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("com_squareup_leakcanary_leakcanary_gc_java") {
       jar_path = "autorolled/cipd/libs/com_squareup_leakcanary_leakcanary_gc/leakcanary-gc.jar"
       output_name = "com_squareup_leakcanary_leakcanary_gc"
@@ -1640,7 +1733,8 @@ template("define_autorolled_targets") {
       deps = [ "//third_party/kotlin_stdlib:kotlin_stdlib_java" ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("com_squareup_leakcanary_leakcanary_object_watcher_java") {
       jar_path = "autorolled/cipd/libs/com_squareup_leakcanary_leakcanary_object_watcher/leakcanary-object-watcher.jar"
       output_name = "com_squareup_leakcanary_leakcanary_object_watcher"
@@ -1661,7 +1755,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     android_aar_prebuilt(
         "com_squareup_leakcanary_leakcanary_object_watcher_android_java") {
       aar_path = "autorolled/cipd/libs/com_squareup_leakcanary_leakcanary_object_watcher_android/leakcanary-object-watcher-android.aar"
@@ -1680,7 +1775,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     android_aar_prebuilt(
         "com_squareup_leakcanary_leakcanary_object_watcher_android_androidx_java") {
       aar_path = "autorolled/cipd/libs/com_squareup_leakcanary_leakcanary_object_watcher_android_androidx/leakcanary-object-watcher-android-androidx.aar"
@@ -1699,7 +1795,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     android_aar_prebuilt(
         "com_squareup_leakcanary_leakcanary_object_watcher_android_core_java") {
       aar_path = "autorolled/cipd/libs/com_squareup_leakcanary_leakcanary_object_watcher_android_core/leakcanary-object-watcher-android-core.aar"
@@ -1720,7 +1817,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("com_squareup_leakcanary_leakcanary_test_core_java") {
       jar_path = "autorolled/cipd/libs/com_squareup_leakcanary_leakcanary_test_core/leakcanary-test-core.jar"
       output_name = "com_squareup_leakcanary_leakcanary_test_core"
@@ -1743,7 +1841,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     android_aar_prebuilt("com_squareup_leakcanary_plumber_android_java") {
       aar_path = "autorolled/cipd/libs/com_squareup_leakcanary_plumber_android/plumber-android.aar"
       info_path = "autorolled/committed/libs/com_squareup_leakcanary_plumber_android/com_squareup_leakcanary_plumber_android.info"
@@ -1761,7 +1860,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     android_aar_prebuilt("com_squareup_leakcanary_plumber_android_core_java") {
       aar_path = "autorolled/cipd/libs/com_squareup_leakcanary_plumber_android_core/plumber-android-core.aar"
       info_path = "autorolled/committed/libs/com_squareup_leakcanary_plumber_android_core/com_squareup_leakcanary_plumber_android_core.info"
@@ -1781,7 +1881,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("com_squareup_leakcanary_shark_graph_java") {
       jar_path = "autorolled/cipd/libs/com_squareup_leakcanary_shark_graph/shark-graph.jar"
       output_name = "com_squareup_leakcanary_shark_graph"
@@ -1803,7 +1904,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("com_squareup_leakcanary_shark_hprof_java") {
       jar_path = "autorolled/cipd/libs/com_squareup_leakcanary_shark_hprof/shark-hprof.jar"
       output_name = "com_squareup_leakcanary_shark_hprof"
@@ -1823,7 +1925,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("com_squareup_leakcanary_shark_log_java") {
       jar_path =
           "autorolled/cipd/libs/com_squareup_leakcanary_shark_log/shark-log.jar"
@@ -1841,7 +1944,8 @@ template("define_autorolled_targets") {
       deps = [ "//third_party/kotlin_stdlib:kotlin_stdlib_java" ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("com_squareup_moshi_moshi_java") {
       jar_path = "autorolled/cipd/libs/com_squareup_moshi_moshi/moshi.jar"
       output_name = "com_squareup_moshi_moshi"
@@ -1862,7 +1966,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_group("com_squareup_okio_okio_java") {
       # To remove visibility constraint, add this dependency to
       # //third_party/android_deps/autorolled/build.gradle.template
@@ -1873,7 +1978,8 @@ template("define_autorolled_targets") {
       deps = [ "//third_party/android_deps:com_squareup_okio_okio_jvm_java" ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_group("com_squareup_wire_wire_runtime_java") {
       # To remove visibility constraint, add this dependency to
       # //third_party/android_deps/autorolled/build.gradle.template
@@ -1887,7 +1993,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("com_squareup_wire_wire_runtime_jvm_java") {
       jar_path = "autorolled/cipd/libs/com_squareup_wire_wire_runtime_jvm/wire-runtime-jvm.jar"
       output_name = "com_squareup_wire_wire_runtime_jvm"
@@ -1908,7 +2015,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("io_grpc_grpc_context_java") {
       jar_path = "autorolled/cipd/libs/io_grpc_grpc_context/grpc-context.jar"
       output_name = "io_grpc_grpc_context"
@@ -1925,7 +2033,8 @@ template("define_autorolled_targets") {
       deps = [ "//third_party/android_deps:io_grpc_grpc_api_java" ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("io_grpc_grpc_core_java") {
       jar_path = "autorolled/cipd/libs/io_grpc_grpc_core/grpc-core.jar"
       output_name = "io_grpc_grpc_core"
@@ -1957,7 +2066,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("io_perfmark_perfmark_api_java") {
       jar_path =
           "autorolled/cipd/libs/io_perfmark_perfmark_api/perfmark-api.jar"
@@ -1974,7 +2084,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("io_reactivex_rxjava2_rxjava_java") {
       jar_path = "autorolled/cipd/libs/io_reactivex_rxjava2_rxjava/rxjava.jar"
       output_name = "io_reactivex_rxjava2_rxjava"
@@ -1992,7 +2103,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("org_bouncycastle_bcprov_jdk18on_java") {
       jar_path = "autorolled/cipd/libs/org_bouncycastle_bcprov_jdk18on/bcprov-jdk18on.jar"
       output_name = "org_bouncycastle_bcprov_jdk18on"
@@ -2008,7 +2120,8 @@ template("define_autorolled_targets") {
       testonly = true
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("org_conscrypt_conscrypt_openjdk_uber_java") {
       jar_path = "autorolled/cipd/libs/org_conscrypt_conscrypt_openjdk_uber/conscrypt-openjdk-uber.jar"
       output_name = "org_conscrypt_conscrypt_openjdk_uber"
@@ -2024,7 +2137,8 @@ template("define_autorolled_targets") {
       testonly = true
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_group("org_jetbrains_kotlinx_atomicfu_java") {
       # To remove visibility constraint, add this dependency to
       # //third_party/android_deps/autorolled/build.gradle.template
@@ -2037,7 +2151,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_group("org_jetbrains_kotlinx_kotlinx_coroutines_core_java") {
       # To remove visibility constraint, add this dependency to
       # //third_party/android_deps/autorolled/build.gradle.template
@@ -2048,7 +2163,8 @@ template("define_autorolled_targets") {
       deps = [ "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_jvm_java" ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt(
         "org_jetbrains_kotlinx_kotlinx_coroutines_play_services_java") {
       jar_path = "autorolled/cipd/libs/org_jetbrains_kotlinx_kotlinx_coroutines_play_services/kotlinx-coroutines-play-services.jar"
@@ -2070,7 +2186,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_group("org_jetbrains_kotlinx_kotlinx_coroutines_test_java") {
       # To remove visibility constraint, add this dependency to
       # //third_party/android_deps/autorolled/build.gradle.template
@@ -2082,7 +2199,8 @@ template("define_autorolled_targets") {
       deps = [ "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_test_jvm_java" ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("org_jetbrains_kotlinx_kotlinx_coroutines_test_jvm_java") {
       jar_path = "autorolled/cipd/libs/org_jetbrains_kotlinx_kotlinx_coroutines_test_jvm/kotlinx-coroutines-test-jvm.jar"
       output_name = "org_jetbrains_kotlinx_kotlinx_coroutines_test_jvm"
@@ -2103,7 +2221,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_group("org_jetbrains_kotlinx_kotlinx_serialization_core_java") {
       # To remove visibility constraint, add this dependency to
       # //third_party/android_deps/autorolled/build.gradle.template
@@ -2114,7 +2233,8 @@ template("define_autorolled_targets") {
       deps = [ "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_serialization_core_jvm_java" ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("org_jetbrains_kotlinx_kotlinx_serialization_json_jvm_java") {
       jar_path = "autorolled/cipd/libs/org_jetbrains_kotlinx_kotlinx_serialization_json_jvm/kotlinx-serialization-json-jvm.jar"
       output_name = "org_jetbrains_kotlinx_kotlinx_serialization_json_jvm"
@@ -2134,7 +2254,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("org_robolectric_annotations_java") {
       jar_path =
           "autorolled/cipd/libs/org_robolectric_annotations/annotations.jar"
@@ -2151,7 +2272,8 @@ template("define_autorolled_targets") {
       testonly = true
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("org_robolectric_junit_java") {
       jar_path = "autorolled/cipd/libs/org_robolectric_junit/junit.jar"
       output_name = "org_robolectric_junit"
@@ -2171,7 +2293,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("org_robolectric_nativeruntime_java") {
       jar_path =
           "autorolled/cipd/libs/org_robolectric_nativeruntime/nativeruntime.jar"
@@ -2194,7 +2317,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("org_robolectric_nativeruntime_dist_compat_java") {
       jar_path = "autorolled/cipd/libs/org_robolectric_nativeruntime_dist_compat/nativeruntime-dist-compat.jar"
       output_name = "org_robolectric_nativeruntime_dist_compat"
@@ -2210,7 +2334,8 @@ template("define_autorolled_targets") {
       testonly = true
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("org_robolectric_pluginapi_java") {
       jar_path = "autorolled/cipd/libs/org_robolectric_pluginapi/pluginapi.jar"
       output_name = "org_robolectric_pluginapi"
@@ -2230,7 +2355,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("org_robolectric_plugins_maven_dependency_resolver_java") {
       jar_path = "autorolled/cipd/libs/org_robolectric_plugins_maven_dependency_resolver/plugins-maven-dependency-resolver.jar"
       output_name = "org_robolectric_plugins_maven_dependency_resolver"
@@ -2252,7 +2378,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("org_robolectric_resources_java") {
       jar_path = "autorolled/cipd/libs/org_robolectric_resources/resources.jar"
       output_name = "org_robolectric_resources"
@@ -2274,7 +2401,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("org_robolectric_sandbox_java") {
       jar_path = "autorolled/cipd/libs/org_robolectric_sandbox/sandbox.jar"
       output_name = "org_robolectric_sandbox"
@@ -2301,7 +2429,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("org_robolectric_shadowapi_java") {
       jar_path = "autorolled/cipd/libs/org_robolectric_shadowapi/shadowapi.jar"
       output_name = "org_robolectric_shadowapi"
@@ -2321,7 +2450,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("org_robolectric_shadows_framework_java") {
       jar_path = "autorolled/cipd/libs/org_robolectric_shadows_framework/shadows-framework.jar"
       output_name = "org_robolectric_shadows_framework"
@@ -2351,7 +2481,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("org_robolectric_utils_java") {
       jar_path = "autorolled/cipd/libs/org_robolectric_utils/utils.jar"
       output_name = "org_robolectric_utils"
@@ -2372,7 +2503,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("org_robolectric_utils_reflector_java") {
       jar_path = "autorolled/cipd/libs/org_robolectric_utils_reflector/utils-reflector.jar"
       output_name = "org_robolectric_utils_reflector"
@@ -2393,7 +2525,8 @@ template("define_autorolled_targets") {
       ]
     }
 
-    # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+    # This is generated, do not edit. Update BuildConfigGenerator.groovy
+    # instead.
     java_prebuilt("org_yaml_snakeyaml_java") {
       jar_path = "autorolled/cipd/libs/org_yaml_snakeyaml/snakeyaml.jar"
       output_name = "org_yaml_snakeyaml"

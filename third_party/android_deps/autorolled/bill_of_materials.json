@@ -1612,7 +1612,7 @@
     {
         "name": "firebase-messaging",
         "group": "com.google.firebase",
-        "version": "25.0.1"
+        "version": "25.0.2"
     },
     {
         "name": "failureaccess",
@@ -2017,27 +2017,27 @@
     {
         "name": "kotlinx-coroutines-android",
         "group": "org.jetbrains.kotlinx",
-        "version": "1.11.0-rc02"
+        "version": "1.11.0"
     },
     {
         "name": "kotlinx-coroutines-bom",
         "group": "org.jetbrains.kotlinx",
-        "version": "1.11.0-rc02"
+        "version": "1.11.0"
     },
     {
         "name": "kotlinx-coroutines-core",
         "group": "org.jetbrains.kotlinx",
-        "version": "1.11.0-rc02"
+        "version": "1.11.0"
     },
     {
         "name": "kotlinx-coroutines-core-jvm",
         "group": "org.jetbrains.kotlinx",
-        "version": "1.11.0-rc02"
+        "version": "1.11.0"
     },
     {
         "name": "kotlinx-coroutines-guava",
         "group": "org.jetbrains.kotlinx",
-        "version": "1.11.0-rc02"
+        "version": "1.11.0"
     },
     {
         "name": "kotlinx-coroutines-play-services",
