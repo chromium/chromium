@@ -927,9 +927,9 @@ public final class ChromePreferenceKeys {
     public static final String SIGNIN_PROMO_LAST_SHOWN_MAJOR_VERSION =
             "signin_promo_last_shown_chrome_version";
 
-    /** Holds the time when the fullscreen signin promo should be shown again. */
-    public static final String SIGNIN_PROMO_NEXT_SHOW_TIME =
-            "Chrome.FullscreenSigninPromo.NextShowTime";
+    /** Holds last promo shown time with a random time offset. */
+    public static final String SIGNIN_PROMO_LAST_SHOWN_TIME_WITH_RANDOM_OFFSET =
+            "Chrome.FullscreenSigninPromo.LastShownTimeWithRandomTimeOffset";
 
     /**
      * Whether the user dismissed the personalized sign in promo from the new tab page. Default
@@ -1270,7 +1270,7 @@ public final class ChromePreferenceKeys {
                 SHOW_HOME_BUTTON_POLICY_STATE,
                 SYNC_PROMO_SHOW_COUNT.pattern(),
                 SIGNIN_PROMO_AUTOFILL_AND_PASSWORDS_DISMISSED,
-                SIGNIN_PROMO_NEXT_SHOW_TIME,
+                SIGNIN_PROMO_LAST_SHOWN_TIME_WITH_RANDOM_OFFSET,
                 SIGNIN_PROMO_HISTORY_PAGE_DECLINED,
                 SIGNIN_PROMO_HISTORY_PAGE_LAST_SHOWN_TIME,
                 SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME,

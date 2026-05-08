@@ -11245,6 +11245,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "interval": "60"
+                    },
                     "enable_features": [
                         "FullscreenSignInPromoUseDate"
                     ]

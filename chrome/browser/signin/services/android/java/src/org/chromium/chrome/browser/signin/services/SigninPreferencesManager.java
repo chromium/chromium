@@ -70,7 +70,7 @@ public class SigninPreferencesManager {
     public void clearSigninPromoLastShownPrefsForTesting() {
         mManager.removeKey(ChromePreferenceKeys.SIGNIN_PROMO_LAST_SHOWN_MAJOR_VERSION);
         mManager.removeKey(ChromePreferenceKeys.SIGNIN_PROMO_LAST_SHOWN_ACCOUNT_NAMES);
-        mManager.removeKey(ChromePreferenceKeys.SIGNIN_PROMO_NEXT_SHOW_TIME);
+        mManager.removeKey(ChromePreferenceKeys.SIGNIN_PROMO_LAST_SHOWN_TIME_WITH_RANDOM_OFFSET);
     }
 
     /**
@@ -86,22 +86,20 @@ public class SigninPreferencesManager {
         mManager.writeInt(ChromePreferenceKeys.SIGNIN_PROMO_LAST_SHOWN_MAJOR_VERSION, majorVersion);
     }
 
-    /**
-     * Returns the time in milliseconds when signin promo should be shown again, or 0 if it was
-     * never recorded.
-     */
-    public long getSigninPromoNextShowTime() {
-        return mManager.readLong(ChromePreferenceKeys.SIGNIN_PROMO_NEXT_SHOW_TIME);
+    /** Returns the last promo shown time with a random time offset. Returns -1 if never set. */
+    public long getSigninPromoLastShownTimeWithRandomOffset() {
+        return mManager.readLong(
+                ChromePreferenceKeys.SIGNIN_PROMO_LAST_SHOWN_TIME_WITH_RANDOM_OFFSET, -1);
     }
 
     /**
-     * Sets the time after when signin promo should be shown again. The time is stored in
-     * milliseconds.
+     * Sets last promo shown time with a random time offset.
      *
-     * @param showTime The next time in milliseconds when the promo should be shown.
+     * @param rnd Time in milliseconds.
      */
-    public void setSigninPromoNextShowTime(long showTime) {
-        mManager.writeLong(ChromePreferenceKeys.SIGNIN_PROMO_NEXT_SHOW_TIME, showTime);
+    public void setSigninPromoLastShownTimeWithRandomOffset(long rnd) {
+        mManager.writeLong(
+                ChromePreferenceKeys.SIGNIN_PROMO_LAST_SHOWN_TIME_WITH_RANDOM_OFFSET, rnd);
     }
 
     /**

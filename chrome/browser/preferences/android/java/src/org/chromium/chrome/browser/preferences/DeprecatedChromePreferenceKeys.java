@@ -44,6 +44,7 @@ public class DeprecatedChromePreferenceKeys {
                 "Chrome.Flags.SafeModeEnabled",
                 "Chrome.Flags.SafeString.*",
                 "Chrome.Flags.SafeValuesVersion",
+                "Chrome.FullscreenSigninPromo.NextShowTime",
                 "Chrome.Glic.ButtonPinned",
                 "Chrome.IsolatedSplits.VersionCode",
                 "Chrome.MultiInstance.ClosedByUser.*",
