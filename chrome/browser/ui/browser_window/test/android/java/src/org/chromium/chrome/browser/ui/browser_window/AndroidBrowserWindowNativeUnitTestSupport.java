@@ -63,11 +63,6 @@ final class AndroidBrowserWindowNativeUnitTestSupport {
     }
 
     @CalledByNative
-    private long invokeGetNativePtrForTesting() {
-        return mAndroidBrowserWindow.getNativePtrForTesting();
-    }
-
-    @CalledByNative
     private long invokeGetNativeBaseWindowPtrForTesting() {
         return mAndroidBrowserWindow.getNativeBaseWindowPtrForTesting();
     }

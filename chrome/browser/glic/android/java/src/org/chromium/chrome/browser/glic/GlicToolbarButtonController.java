@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.glic;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -91,7 +92,7 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
         void onClick(boolean preventClose);
     }
 
-    private final Context mContext;
+    private final Activity mActivity;
     private final GlicButtonDelegate mToggleGlicCallback;
     private final Supplier<@Nullable Tracker> mTrackerSupplier;
     private final Supplier<@Nullable ChromeAndroidTask> mTaskSupplier;
@@ -112,7 +113,7 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
     private @Nullable AnchoredPopupWindow mMenuWindow;
 
     /**
-     * @param context The Android context.
+     * @param activity The Android activity.
      * @param activeTabSupplier The currently active tab.
      * @param toggleGlicCallback Callback to run when the button is clicked to open Glic.
      * @param trackerSupplier Supplier for the current profile tracker.
@@ -121,7 +122,7 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
      * @param tabModelSelectorSupplier Supplier for the TabModelSelector.
      */
     public GlicToolbarButtonController(
-            Context context,
+            Activity activity,
             Supplier<@Nullable Tab> activeTabSupplier,
             GlicButtonDelegate toggleGlicCallback,
             Supplier<@Nullable Tracker> trackerSupplier,
@@ -134,12 +135,13 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
                 activeTabSupplier,
                 /* modalDialogManager= */ null,
                 new ButtonSpec.Builder(
-                                AppCompatResources.getDrawable(context, R.drawable.ic_spark_24dp),
-                                context.getString(R.string.glic_button_entrypoint_ask_gemini_label),
+                                AppCompatResources.getDrawable(activity, R.drawable.ic_spark_24dp),
+                                activity.getString(
+                                        R.string.glic_button_entrypoint_ask_gemini_label),
                                 /* supportsTinting= */ true)
                         .setButtonVariant(AdaptiveToolbarButtonVariant.GLIC)
                         .build());
-        mContext = context;
+        mActivity = activity;
         mToggleGlicCallback = toggleGlicCallback;
         mTrackerSupplier = trackerSupplier;
         mTaskSupplier = taskSupplier;
@@ -147,8 +149,8 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mDefaultSpec = mButtonData.getButtonSpec();
         Drawable collapsedDrawable =
-                AppCompatResources.getDrawable(context, R.drawable.glic_dirty_dot_spark);
-        mWorkingSpec = createWorkingSpec(context);
+                AppCompatResources.getDrawable(activity, R.drawable.glic_dirty_dot_spark);
+        mWorkingSpec = createWorkingSpec(activity);
         mReviewSpec =
                 new ButtonSpec.Builder(createReviewSpec())
                         .setCollapsedDrawable(collapsedDrawable)
@@ -340,8 +342,11 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
         ChromeAndroidTask task = mTaskSupplier.get();
         if (task == null) return;
 
-        long browserWindowPtr = task.getOrCreateNativeBrowserWindowPtr(mCurrentProfile);
-        boolean isOpen = mCurrentGlicService.isPanelShowingForBrowser(browserWindowPtr);
+        long browserWindowPtr = task.getNativeBrowserWindowPtr(mCurrentProfile, mActivity);
+        boolean isOpen = false;
+        if (browserWindowPtr != 0) {
+            isOpen = mCurrentGlicService.isPanelShowingForBrowser(browserWindowPtr);
+        }
         if (mIsPanelOpen != isOpen) {
             mIsPanelOpen = isOpen;
             notifyObservers(true);
@@ -534,7 +539,7 @@ public class GlicToolbarButtonController extends BaseButtonDataProvider
     @Override
     protected @Nullable IphCommandBuilder getIphCommandBuilder(Tab tab) {
         return new IphCommandBuilder(
-                mContext.getResources(),
+                mActivity.getResources(),
                 FeatureConstants.GLIC_PROMO_ANDROID_FEATURE,
                 R.string.iph_glic_promo_text,
                 R.string.iph_glic_promo_accessibility_text);

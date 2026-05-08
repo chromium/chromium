@@ -355,8 +355,11 @@ public class StripLayoutTrailingButtonsCoordinator {
         if (activity == null) return;
         var task = mTaskTracker.get(activity.getTaskId());
         if (task == null) return;
-        long browserWindowPtr = task.getOrCreateNativeBrowserWindowPtr(mProfile);
-        boolean isOpened = mGlicKeyedService.isPanelShowingForBrowser(browserWindowPtr);
+        long browserWindowPtr = task.getNativeBrowserWindowPtr(mProfile, activity);
+        boolean isOpened = false;
+        if (browserWindowPtr != 0) {
+            isOpened = mGlicKeyedService.isPanelShowingForBrowser(browserWindowPtr);
+        }
 
         mIsGlicUiVisible = isOpened;
         if (mGlicButton != null) {

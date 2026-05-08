@@ -765,6 +765,25 @@ final class ChromeAndroidTaskImpl
     }
 
     @Override
+    public long getNativeBrowserWindowPtr(Profile profile, Activity activity) {
+        ThreadUtils.assertOnUiThread();
+        assert mState == State.PENDING_CREATE
+                        || mState == State.IDLE
+                        || mState == State.PENDING_UPDATE
+                : "This Task is not pending or alive.";
+        for (var obj : mActivityScopedObjectsDeque) {
+            if (obj.mActivityScopedObjects.mActivityWindowAndroid.getActivity().get() == activity) {
+                var browserWindow = obj.mAndroidBrowserWindows.get(profile);
+                if (browserWindow != null) {
+                    return browserWindow.getNativePtr();
+                }
+                return 0;
+            }
+        }
+        return 0;
+    }
+
+    @Override
     public void destroy() {
         ThreadUtils.assertOnUiThread();
         if (mState != State.IDLE) {
@@ -824,6 +843,7 @@ final class ChromeAndroidTaskImpl
                     == internalActivityScopedObjects.mActivityScopedObjects.mActivityWindowAndroid;
         }
         long ptr = browserWindow.getNativePtr();
+        assert ptr != 0 : "Native object has not been created.";
 
         if (internalActivityScopedObjects != null) {
             var profile = browserWindow.getProfile();

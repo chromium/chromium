@@ -95,7 +95,7 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
 
         when(mTaskTracker.get(anyInt())).thenReturn(mTask);
-        when(mTask.getOrCreateNativeBrowserWindowPtr(any())).thenReturn(mBwiPtr);
+        when(mTask.getNativeBrowserWindowPtr(any(), any())).thenReturn(mBwiPtr);
 
         UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
@@ -219,6 +219,27 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
         // Verify button returns to non-highlighted state.
         assertFalse(
                 "Glic button should not be highlighted when UI is hidden globally.",
+                mGlicButton.isHighlighted());
+    }
+
+    @Test
+    public void testGlicHighlightedState_WindowPtrZero() {
+        assertNotNull("Glic button should be created.", mGlicButton);
+
+        ArgumentCaptor<GlobalShowHideObserver> observerCaptor =
+                ArgumentCaptor.forClass(GlobalShowHideObserver.class);
+        Mockito.verify(mGlicKeyedService).addGlobalShowHideObserver(observerCaptor.capture());
+
+        // Simulate getNativeBrowserWindowPtr returning 0
+        when(mTask.getNativeBrowserWindowPtr(any(), any())).thenReturn(0L);
+
+        // Simulate Glic UI opening event.
+        when(mGlicKeyedService.isPanelShowingForBrowser(mBwiPtr)).thenReturn(true);
+        observerCaptor.getValue().onGlobalShowHide();
+
+        // Verify button is NOT highlighted because ptr was 0.
+        assertFalse(
+                "Glic button should not be highlighted when window ptr is 0.",
                 mGlicButton.isHighlighted());
     }
 
