@@ -1210,7 +1210,6 @@ source_set("unit_tests") {
     deps += [
       "//components/storage_monitor:test_support",
       "//extensions/browser/api/declarative_net_request/filter_list_converter:unit_tests",
-      "//extensions/shell:app_shell_lib",
     ]
 
     if (!is_android) {
@@ -1265,11 +1264,11 @@ source_set("unit_tests") {
       "//chromeos/dbus/power",
       "//components/account_id",
       "//components/feedback",
+      "//components/feedback/content:factory",
       "//components/prefs",
       "//components/prefs:test_support",
       "//components/user_manager",
       "//components/user_manager:test_support",
-      "//extensions/shell:app_shell_lib",
       "//google_apis",
     ]
   }

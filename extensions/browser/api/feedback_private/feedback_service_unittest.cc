@@ -16,9 +16,10 @@
 #include "components/feedback/feedback_data.h"
 #include "components/feedback/feedback_report.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/api/feedback_private/feedback_private_delegate.h"
 #include "extensions/browser/api/feedback_private/mock_feedback_service.h"
 #include "extensions/browser/api_unittest.h"
-#include "extensions/shell/browser/api/feedback_private/shell_feedback_private_delegate.h"
+#include "extensions/common/api/feedback_private.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -89,7 +90,7 @@ class MockFeedbackUploader : public FeedbackUploader {
   base::WeakPtrFactory<MockFeedbackUploader> weak_ptr_factory_{this};
 };
 
-class MockFeedbackPrivateDelegate : public ShellFeedbackPrivateDelegate {
+class MockFeedbackPrivateDelegate : public FeedbackPrivateDelegate {
  public:
   MockFeedbackPrivateDelegate() {
     ON_CALL(*this, FetchSystemInformation)
@@ -112,16 +113,41 @@ class MockFeedbackPrivateDelegate : public ShellFeedbackPrivateDelegate {
 
   ~MockFeedbackPrivateDelegate() override = default;
 
+  MOCK_METHOD(base::DictValue,
+              GetStrings,
+              (content::BrowserContext*, bool),
+              (const, override));
   MOCK_METHOD(void,
               FetchSystemInformation,
               (content::BrowserContext*, system_logs::SysLogsFetcherCallback),
               (const, override));
 #if BUILDFLAG(IS_CHROMEOS)
+  MOCK_METHOD(std::unique_ptr<system_logs::SystemLogsSource>,
+              CreateSingleLogSource,
+              (api::feedback_private::LogSource),
+              (const, override));
   MOCK_METHOD(void,
               FetchExtraLogs,
               (scoped_refptr<feedback::FeedbackData>, FetchExtraLogsCallback),
               (const, override));
+  MOCK_METHOD(api::feedback_private::LandingPageType,
+              GetLandingPageType,
+              (const feedback::FeedbackData&),
+              (const, override));
 #endif  // BUILDFLAG(IS_CHROMEOS)
+  MOCK_METHOD(std::string,
+              GetSignedInUserEmail,
+              (content::BrowserContext*),
+              (const, override));
+  MOCK_METHOD(void, NotifyFeedbackDelayed, (), (const, override));
+  MOCK_METHOD(feedback::FeedbackUploader*,
+              GetFeedbackUploaderForContext,
+              (content::BrowserContext*),
+              (const, override));
+  MOCK_METHOD(void,
+              OpenFeedback,
+              (content::BrowserContext*, api::feedback_private::FeedbackSource),
+              (const, override));
 };
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -332,9 +358,9 @@ TEST_F(FeedbackServiceTest, SendFeedbackWithoutSysInfo) {
   base::MockCallback<SendFeedbackCallback> mock_callback;
   EXPECT_CALL(mock_callback, Run(true));
 
-  auto shell_delegate = std::make_unique<ShellFeedbackPrivateDelegate>();
+  auto feedback_delegate = std::make_unique<MockFeedbackPrivateDelegate>();
   auto feedback_service = base::MakeRefCounted<FeedbackService>(
-      browser_context(), shell_delegate.get());
+      browser_context(), feedback_delegate.get());
 
   RunUntilFeedbackIsSent(feedback_service, params, mock_callback.Get());
 }
