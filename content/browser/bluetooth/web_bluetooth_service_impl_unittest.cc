@@ -10,14 +10,15 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "content/browser/bluetooth/bluetooth_adapter_factory_wrapper.h"
 #include "content/browser/bluetooth/bluetooth_allowed_devices.h"
+#include "content/browser/bluetooth/bluetooth_blocklist.h"
 #include "content/browser/bluetooth/web_bluetooth_pairing_manager.h"
 #include "content/public/browser/bluetooth_delegate.h"
 #include "content/public/common/content_client.h"
@@ -1030,6 +1031,24 @@ TEST_F(WebBluetoothServiceImplTest, DeferredStartNotifySession) {
 
     run_loop.Run();
   }
+}
+
+TEST_F(WebBluetoothServiceImplTest, StartNotificationsBlocklisted) {
+  RegisterTestCharacteristic();
+  FakeBluetoothCharacteristic& test_characteristic =
+      battery_device_bundle().characteristic();
+
+  BluetoothBlocklist::Get().Add(test_characteristic.GetUUID(),
+                                BluetoothBlocklist::Value::EXCLUDE_READS);
+
+  base::test::TestFuture<WebBluetoothResult> future;
+  service_ptr_->RemoteCharacteristicStartNotifications(
+      test_characteristic.GetIdentifier(),
+      BindCharacteristicClientAndPassRemote(), future.GetCallback());
+
+  EXPECT_EQ(future.Get(), WebBluetoothResult::BLOCKLISTED_READ);
+
+  BluetoothBlocklist::Get().ResetToDefaultValuesForTest();
 }
 
 TEST_F(WebBluetoothServiceImplTest, DeviceGattServicesDiscoveryTimeout) {

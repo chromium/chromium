@@ -1308,6 +1308,13 @@ void WebBluetoothServiceImpl::RemoteCharacteristicStartNotifications(
     return;
   }
 
+  if (BluetoothBlocklist::Get().IsExcludedFromReads(
+          query_result.characteristic->GetUUID())) {
+    RecordStartNotificationsOutcome(UMAGATTOperationOutcome::kBlocklisted);
+    std::move(callback).Run(blink::mojom::WebBluetoothResult::BLOCKLISTED_READ);
+    return;
+  }
+
   BluetoothRemoteGattCharacteristic::Properties notify_or_indicate =
       query_result.characteristic->GetProperties() &
       (BluetoothRemoteGattCharacteristic::PROPERTY_NOTIFY |
