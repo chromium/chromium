@@ -738,5 +738,60 @@ class MagiPresubmitTest(unittest.TestCase):
                 "list contains a non-string element" in r for r in results))
 
 
+    def testJsonProjectSpecEnvironment(self):
+        # Missing repo_type
+        invalid_env_1 = (
+            '{"checklist": {}, "goal": "Test", "target_files": [], '
+            '"anti_goals": [], "edge_cases": [], "paranoia_mode": false, '
+            '"auditability_level": "NORMAL", "next_phase": "SCAFFOLDING", '
+            '"environment": {"vcs": "JJ", "harness": "JETSKI"}}')
+        self.mock_input.affected_files = [
+            MockAffectedFile('remoting/tools/magi-mode/project.magi.json')
+        ]
+        self.mock_input.files_content = {
+            'remoting/tools/magi-mode/project.magi.json': invalid_env_1
+        }
+        schema_json = '{"definitions": {"ProjectSpec": {"required": []}}}'
+
+        with patch('builtins.open',
+                   unittest.mock.mock_open(read_data=schema_json)):
+            results = PRESUBMIT.CheckJsonFiles(
+                self.mock_input, self.mock_output)
+            self.assertTrue(any(
+                'environment is missing required key "repo_type"' in r for r in results))
+
+        # Invalid repo_type
+        invalid_env_2 = (
+            '{"checklist": {}, "goal": "Test", "target_files": [], '
+            '"anti_goals": [], "edge_cases": [], "paranoia_mode": false, '
+            '"auditability_level": "NORMAL", "next_phase": "SCAFFOLDING", '
+            '"environment": {"vcs": "JJ", "harness": "JETSKI", "repo_type": "INVALID"}}')
+        self.mock_input.files_content = {
+            'remoting/tools/magi-mode/project.magi.json': invalid_env_2
+        }
+        with patch('builtins.open',
+                   unittest.mock.mock_open(read_data=schema_json)):
+            results = PRESUBMIT.CheckJsonFiles(
+                self.mock_input, self.mock_output)
+            self.assertTrue(any(
+                'environment.repo_type must be CHROMIUM or GOOGLE_INTERNAL' in r for r in results))
+
+        # Invalid output_directory type
+        invalid_env_3 = (
+            '{"checklist": {}, "goal": "Test", "target_files": [], '
+            '"anti_goals": [], "edge_cases": [], "paranoia_mode": false, '
+            '"auditability_level": "NORMAL", "next_phase": "SCAFFOLDING", '
+            '"environment": {"vcs": "JJ", "harness": "JETSKI", "repo_type": "CHROMIUM", "output_directory": 123}}')
+        self.mock_input.files_content = {
+            'remoting/tools/magi-mode/project.magi.json': invalid_env_3
+        }
+        with patch('builtins.open',
+                   unittest.mock.mock_open(read_data=schema_json)):
+            results = PRESUBMIT.CheckJsonFiles(
+                self.mock_input, self.mock_output)
+            self.assertTrue(any(
+                'environment.output_directory must be a string' in r for r in results))
+
+
 if __name__ == '__main__':
     unittest.main()

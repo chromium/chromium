@@ -142,28 +142,40 @@ next expert.
     "target_files": ["Absolute paths to the files that must be modified."],
     "anti_goals": ["What should explicitly NOT be changed."],
     "edge_cases": ["Specific warnings from logs or code context."],
+    "build_targets": ["//remoting/host:host"],
     "next_phase": "SCAFFOLDING",
     "paranoia_mode": false,
     "auditability_level": "NORMAL",
     "environment": {
+      "repo_type": "CHROMIUM",
       "vcs": "JJ",
-      "harness": "JETSKI"
+      "harness": "JETSKI",
+      "output_directory": "out/Default"
     }
   }
   ```
+  *Tooling Selection:* The combination of `repo_type`, `vcs`, and `harness` in the
+  `environment` block determines the exact build, test, and upload commands
+  used by the agents.
 
 ### 1. Scaffolding (The Architect & Test Phase)
 - **Roughing In (The Architect):** First, invoke an Architect sub-agent. The
   Architect MUST read `project.magi.json` to understand the goal. Their mandate
   is to create necessary files, define class interfaces, set up Mojo pipes, and
   GN/DEPS rules. Leave implementation details empty or stubbed (e.g.,
-  `NOTIMPLEMENTED()`). The Architect SHOULD signal `next_phase: SCAFFOLDING` (if
-  Test Expert yet to be invoked) or `PREPARATION`.
-- **Test-Driven Development (The Test Expert):** Second, invoke a Test Expert
-  sub-agent to establish the testing boundaries. Their mandate is to add test
-  files (`*_unittest.cc`), define the required test fixtures, and stub out the
-  critical test cases based on the Architect's scaffold. The Test Expert SHOULD
-  signal `next_phase: PREPARATION`.
+  `NOTIMPLEMENTED()`). The Architect MUST signal `next_phase: SCAFFOLDING`.
+- **Test-Driven Development (The Test Expert):** Second, after the Architect
+  completes the scaffold, invoke a Test Expert sub-agent to establish the
+  testing boundaries. Their mandate is to add test files (`*_unittest.cc`),
+  define the required test fixtures, and stub out the critical test cases based
+  on the Architect's scaffold. To ensure failure in Chromium's GTest framework
+  (confirming TDD behavior), the Test Expert MUST insert `ADD_FAILURE("NOT
+  IMPLEMENTED");` into the stubbed test cases. The Test Expert SHOULD signal
+  `next_phase: PREPARATION`.
+- **Scaffold Verification:** Before proceeding to Phase 2, the Orchestrator MUST
+  attempt to build the scaffolded targets. If `build_targets` are defined in
+  `project.magi.json`, the Orchestrator MUST verify that the scaffold compiles
+  and that all newly added tests fail (confirming TDD behavior).
 - **Snapshot:** The Orchestrator records this state (e.g., as a local commit) as
   the "Base Scaffold" so all parallel Domain Experts share the exact same
   multi-file API and test boundaries. The Synthesizing Architect will
@@ -187,20 +199,23 @@ next expert.
   `review_mode` (`SUPERVISOR` or `CONSENSUS`) and include it in the initial
   `state_block.magi.json`.
     *   **CONSENSUS:** Use if `auditability_level == "VERBOSE"`,
-        `paranoia_mode == true`, or if the number of selected reviewers > 5.
+        `paranoia_mode == true`, or if the number of selected reviewers > 3.
+        For critical or P1 tasks, the Engineering Manager SHOULD mandate a
+        minimum of 3 specialized reviewers to ensure broad coverage.
     *   **SUPERVISOR:** Default for all other cases.
 - **State Transport Selection:** The Engineering Manager MUST calculate a
   Context Bloat Risk Score `(Reviewer Count * Target Files)` and select
   `state_transport`:
     *   **FILE_IO:** Use if `paranoia_mode == true` or Risk Score > 15. All
         drafts, reviews, and state updates are written to `.magi.*.json` files.
-    *   **EPHEMERAL_WITH_LOGS:** Use if `auditability_level == "VERBOSE"`.
-        Structured data is passed natively in JSON payloads to the Orchestrator,
-        but also teed to `.magi.*.json` files on disk for auditing. (These files
-        MUST be stored in a dedicated directory, e.g., `.magi_logs/`, which
-        MUST be explicitly added to the repository's `.gitignore` file to
-        prevent data leaks).
-    *   **EPHEMERAL:** Default. C++ Drafts go to disk, but reviews, constraints,
+    *   **EPHEMERAL_WITH_LOGS:** Default for low-risk tasks. Structured data is
+        passed natively in JSON payloads to the Orchestrator, but also teed to
+        `.magi.*.json` files on disk for auditing. (These files MUST be stored
+        in a dedicated directory, e.g., `.magi_logs/`).
+    *   **Log Isolation:** The `.magi_logs/` directory **must be excluded from
+        all generated CLs** and **must be cleaned up** at the end of the run.
+    *   **EPHEMERAL:** Use only when minimal disk I/O is required and no
+        auditing is needed. C++ Drafts go to disk, but reviews, constraints,
         and state updates are passed exclusively in JSON payloads.
   *In-Memory Validation:* If an `EPHEMERAL` mode is active, the Orchestrator
   MUST strictly validate incoming JSON payloads against `magi_schema.json` in
@@ -258,8 +273,14 @@ Once the Domain Experts finish:
     }
     ```
 2.  **The Synthesizing Architect:** Read the `[filename].[persona].magi.[N]`
-    drafts and synthesize them into "Draft A" in the original file. Signal
-    `next_phase: CRITIQUE`.
+    drafts and synthesize them into "Draft A" in the original file.
+    *   **Conflict Resolution:** The Synthesizing Architect MUST use a surgical
+        3-way merge strategy (Base Scaffold + Draft A + Draft B) rather than
+        full-file overwrites to resolve conflicts between domain experts.
+    *   **Synthesis Build:** If `build_targets` are defined in
+        `project.magi.json`, the Synthesizing Architect MUST run the local
+        build/test suite on "Draft A" and attach the build logs to the
+        synthesis report before signaling `next_phase: CRITIQUE`.
 ### 5. The Review Workflow (Consensus Loop vs. Supervisor)
 1.  **Blind Critique:** Push Draft A to an expanded panel of Reviewers.
     **File I/O:** Output routing depends on `state_transport`:
@@ -286,6 +307,10 @@ Once the Domain Experts finish:
     >   objects with `file`, optional `line`, and `comment`), optional
     >   `unlisted_issues_found` (array of strings), and `next_phase`
     >   ("ANALYSIS") to `review.[persona].magi.[iteration].json`.
+
+    *Overlapping Mandates:* For critical checklist items (e.g., security, data
+    safety), the Engineering Manager SHOULD ensure that at least two independent
+    reviewers evaluate the same item to achieve consensus.
 
 #### Path A: Supervisor Synthesis (Default)
 If `review_mode == SUPERVISOR`, the Orchestrator (or a specialized Supervisor

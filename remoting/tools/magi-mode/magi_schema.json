@@ -25,9 +25,11 @@
       "type": "object",
       "properties": {
         "vcs": { "type": "string", "enum": ["GIT", "JJ"] },
-        "harness": { "type": "string", "enum": ["JETSKI", "GENERIC_CLI"] }
+        "harness": { "type": "string", "enum": ["JETSKI", "GENERIC_CLI"] },
+        "repo_type": { "type": "string", "enum": ["CHROMIUM", "GOOGLE_INTERNAL"] },
+        "output_directory": { "type": "string" }
       },
-      "required": ["vcs", "harness"]
+      "required": ["vcs", "harness", "repo_type"]
     },
     "StateBlock": {
       "type": "object",

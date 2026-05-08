@@ -648,6 +648,33 @@ def CheckJsonFiles(input_api, output_api):
                     f'JETSKI or GENERIC_CLI, got {harness}'
                 )
             )
+          repo_type = environment.get('repo_type')
+          output_directory = environment.get('output_directory')
+
+          if 'repo_type' not in environment:
+            results.append(
+                output_api.PresubmitError(
+                    f'File {f.LocalPath()} environment is missing required '
+                    f'key "repo_type".'
+                )
+            )
+          elif repo_type not in ('CHROMIUM', 'GOOGLE_INTERNAL'):
+            results.append(
+                output_api.PresubmitError(
+                    f'File {f.LocalPath()} environment.repo_type must be '
+                    f'CHROMIUM or GOOGLE_INTERNAL, got {repo_type}'
+                )
+            )
+
+          if output_directory is not None and not isinstance(
+              output_directory, str
+          ):
+            results.append(
+                output_api.PresubmitError(
+                    f'File {f.LocalPath()} environment.output_directory must be '
+                    f'a string, got {type(output_directory).__name__}'
+                )
+            )
     elif filename.startswith('review'):
       if next_p and next_p != 'ANALYSIS':
         results.append(
