@@ -9,8 +9,10 @@ import static android.view.ViewGroup.LayoutParams.WRAP_CONTENT;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
@@ -44,9 +46,11 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Criteria;
@@ -64,6 +68,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
+import org.chromium.chrome.browser.layouts.CompositorModelChangeProcessor;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.page_image_service.ImageServiceBridgeJni;
@@ -72,6 +77,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
+import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
+import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer;
 import org.chromium.ui.base.TestActivity;
@@ -102,6 +110,7 @@ public class BookmarkBarCoordinatorTest {
 
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private LayoutManager mLayoutManager;
+    @Mock private CompositorModelChangeProcessor mChangeProcessor;
     @Mock private Runnable mLayoutManagerRequestUpdate;
     @Mock private FullscreenManager mFullscreenManager;
     @Mock private ResourceManager mResourceManager;
@@ -116,18 +125,24 @@ public class BookmarkBarCoordinatorTest {
     @Mock private BookmarkManagerOpener mBookmarkManagerOpener;
     @Mock private TopControlsStacker mTopControlsStacker;
     @Mock private TopUiThemeColorProvider mTopUiThemeColorProvider;
+    @Mock private SideUiStateProvider mSideUiStateProvider;
 
+    private ShadowLooper mShadowLooper;
     private BookmarkBarCoordinator mCoordinator;
     private BookmarkId mDesktopFolderId;
     private RecyclerView mItemsContainer;
     private FakeBookmarkModel mModel;
     private FrameLayout mOverflowButton;
     private SettableMonotonicObservableSupplier<Profile> mProfileSupplier;
+    private final OneshotSupplierImpl<SideUiStateProvider> mSideUiStateProviderSupplier =
+            new OneshotSupplierImpl<>();
     private BookmarkBar mView;
     private FrameLayout mContentContainer;
 
     @Before
     public void setUp() {
+        mShadowLooper = ShadowLooper.shadowMainLooper();
+
         mModel = FakeBookmarkModel.createModel();
         mDesktopFolderId = mModel.getDesktopFolderId();
         mProfileSupplier = ObservableSuppliers.createMonotonic(mProfile);
@@ -137,11 +152,18 @@ public class BookmarkBarCoordinatorTest {
         when(mFaviconHelperJni.init()).thenReturn(1L);
         when(mResourceManager.getBitmapDynamicResourceLoader()).thenReturn(mDynamicResourceLoader);
 
+        setupLayoutManagerMock();
+
         BookmarkModel.setInstanceForTesting(mModel);
         FaviconHelperJni.setInstanceForTesting(mFaviconHelperJni);
         ImageServiceBridgeJni.setInstanceForTesting(mImageServiceBridgeJni);
 
         onActivity(this::createCoordinator);
+    }
+
+    @SuppressWarnings("unchecked") // Raw CompositorModelChangeProcessor mock.
+    private void setupLayoutManagerMock() {
+        when(mLayoutManager.createCompositorMCP(any(), any(), any())).thenReturn(mChangeProcessor);
     }
 
     private BookmarkId addItemToDesktopFolder(String title) {
@@ -194,7 +216,8 @@ public class BookmarkBarCoordinatorTest {
                         ObservableSuppliers.createNonNull(mBookmarkManagerOpener),
                         mTopControlsStacker,
                         ObservableSuppliers.alwaysNull(),
-                        mTopUiThemeColorProvider);
+                        mTopUiThemeColorProvider,
+                        mSideUiStateProviderSupplier);
 
         assertNotNull("Verify view stub inflation during construction.", mView);
 
@@ -625,5 +648,44 @@ public class BookmarkBarCoordinatorTest {
                 mCoordinator
                         .getBookmarkBarSceneLayerModelForTesting()
                         .get(BookmarkBarSceneLayerProperties.OFFSET_TAG));
+    }
+
+    @Test
+    @SmallTest
+    public void testSideUiObserver_AddAndRemove() {
+        mSideUiStateProviderSupplier.set(mSideUiStateProvider);
+        mShadowLooper.idle();
+
+        ArgumentCaptor<SideUiObserver> observerCaptor =
+                ArgumentCaptor.forClass(SideUiObserver.class);
+        verify(mSideUiStateProvider).addObserver(observerCaptor.capture());
+
+        mCoordinator.destroy();
+        verify(mSideUiStateProvider).removeObserver(observerCaptor.getValue());
+    }
+
+    @Test
+    @SmallTest
+    public void testSideUiObserver_MarginUpdates() {
+        MarginLayoutParams params = (MarginLayoutParams) mView.getLayoutParams();
+        int initialStartMargin = params.getMarginStart();
+        int initialEndMargin = params.getMarginEnd();
+        int initialWidth = mView.getWidth();
+
+        mSideUiStateProviderSupplier.set(mSideUiStateProvider);
+        mShadowLooper.idle();
+
+        ArgumentCaptor<SideUiObserver> observerCaptor =
+                ArgumentCaptor.forClass(SideUiObserver.class);
+        verify(mSideUiStateProvider).addObserver(observerCaptor.capture());
+        SideUiObserver observer = observerCaptor.getValue();
+
+        SideUiSpecs specs = new SideUiSpecs(100, 200);
+        observer.onSideUiSpecsChanged(specs);
+
+        params = (MarginLayoutParams) mView.getLayoutParams();
+        assertNotEquals(initialStartMargin, params.getMarginStart());
+        assertNotEquals(initialEndMargin, params.getMarginEnd());
+        assertNotEquals(initialWidth, mView.getWidth());
     }
 }

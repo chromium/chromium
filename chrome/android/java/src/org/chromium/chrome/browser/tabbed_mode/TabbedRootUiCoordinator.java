@@ -2431,7 +2431,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mBookmarkManagerOpenerSupplier,
                             mTopControlsStacker,
                             mActivityTabProvider.asObservable(),
-                            getTopUiThemeColorProvider());
+                            getTopUiThemeColorProvider(),
+                            mSideUiStateProviderSupplier);
             if (mBookmarkBarVisibilityProvider != null) {
                 mBookmarkBarVisibilityProvider.addObserver(mBookmarkBarCoordinator);
             }

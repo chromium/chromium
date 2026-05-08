@@ -13,6 +13,9 @@ import static org.chromium.ui.accessibility.KeyboardFocusUtil.setFocusOnFirstFoc
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.ColorStateList;
+import android.transition.ChangeBounds;
+import android.transition.Fade;
+import android.transition.Transition;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,6 +33,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpener;
@@ -56,6 +60,10 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
+import org.chromium.chrome.browser.ui.side_ui.SideUiObserver;
+import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
+import org.chromium.chrome.browser.ui.side_ui.ViewMarginAdjusterForSideUi;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.widget.ViewResourceFrameLayout;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -65,6 +73,7 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.ui.resources.ResourceManager;
 import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
 
+import java.util.Set;
 import java.util.function.Supplier;
 
 /** Coordinator for the bookmark bar which provides users with bookmark access from top chrome. */
@@ -86,6 +95,8 @@ public class BookmarkBarCoordinator
     private final BookmarkBarMediator mMediator;
     private final BookmarkBar mView;
     private final FrameLayout mContentContainer;
+    private final SideUiObserver mSideUiObserver;
+    private @Nullable SideUiStateProvider mSideUiStateProvider;
     private final TopControlsStacker mTopControlsStacker;
     private final Callback<@Nullable Void> mHeightChangeCallback;
     private final Runnable mRequestUpdate;
@@ -133,6 +144,7 @@ public class BookmarkBarCoordinator
      * @param topControlsStacker TopControlsStacker to manage the view's y-offset.
      * @param currentTabSupplier Supplier of current tab to use for observers.
      * @param topUiThemeColorProvider Provider for theme colors to match background color.
+     * @param sideUiStateProviderSupplier Provider for the {@link SideUiStateProvider}.
      */
     public BookmarkBarCoordinator(
             Activity activity,
@@ -150,7 +162,8 @@ public class BookmarkBarCoordinator
             MonotonicObservableSupplier<BookmarkManagerOpener> bookmarkManagerOpenerSupplier,
             TopControlsStacker topControlsStacker,
             NullableObservableSupplier<Tab> currentTabSupplier,
-            TopUiThemeColorProvider topUiThemeColorProvider) {
+            TopUiThemeColorProvider topUiThemeColorProvider,
+            OneshotSupplier<SideUiStateProvider> sideUiStateProviderSupplier) {
         mContext = activity;
         mRequestUpdate = requestUpdate;
         mResourceManager = resourceManager;
@@ -175,6 +188,12 @@ public class BookmarkBarCoordinator
         // the content of the Bookmark Bar, and a hairline footer.
         mView = (BookmarkBar) viewStub.inflate();
         mContentContainer = mView.findViewById(R.id.bookmark_bar_content_container);
+        mSideUiObserver = new BookmarkBarAdjusterForSideUi(mView);
+        sideUiStateProviderSupplier.onAvailable(
+                (sideUiStateProvider) -> {
+                    mSideUiStateProvider = sideUiStateProvider;
+                    mSideUiStateProvider.addObserver(mSideUiObserver);
+                });
 
         // The content container contains the tightly-wrapper ViewResourceFrameLayout for snapshots.
         mViewResourceFrameLayout =
@@ -303,6 +322,9 @@ public class BookmarkBarCoordinator
             if (mItemAnimator != null) {
                 mItemAnimator.destroy();
             }
+        }
+        if (mSideUiStateProvider != null && mSideUiObserver != null) {
+            mSideUiStateProvider.removeObserver(mSideUiObserver);
         }
 
         mTopControlsStacker.removeControl(this);
@@ -734,6 +756,38 @@ public class BookmarkBarCoordinator
         // Otherwise, we will show the Android widgets anytime we are not mid-scroll. We know we are
         // not scrolling when the top controls offset is 0.
         mMediator.setVisibility(mBrowserControlsStateProvider.getTopControlOffset() == 0);
+    }
+
+    // Private classes:
+
+    private static class BookmarkBarAdjusterForSideUi extends ViewMarginAdjusterForSideUi {
+        BookmarkBarAdjusterForSideUi(View view) {
+            super(view);
+        }
+
+        @Override
+        public Set<Transition> createTransitions() {
+            Transition bounds = new ChangeBounds();
+            Transition fade = new Fade();
+
+            // Directly add the BookmarkBarButton class as a Transition target. The
+            // RecyclerView mItemContainer can attach/detach/manipulation item Views in
+            // ways that confuse Transitions, so the button class must be targeted
+            // directly to ensure that fade-in (appearing) animations apply to the
+            // buttons. Otherwise, buttons that added after the Transition is started
+            // (i.e. new buttons that are appearing) will not be animated.
+            bounds.addTarget(BookmarkBarButton.class);
+            fade.addTarget(BookmarkBarButton.class);
+
+            return Set.of(bounds, fade);
+        }
+
+        @Override
+        public @Nullable Transition onPreSideUiSpecsChange(SideUiSpecs sideUiSpecs) {
+            Transition transition = super.onPreSideUiSpecsChange(sideUiSpecs);
+            super.triggerSynchronousMeasureAndLayout();
+            return transition;
+        }
     }
 
     // Custom animator for BookmarkBar RecyclerView:
