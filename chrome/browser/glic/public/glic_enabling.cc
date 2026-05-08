@@ -715,6 +715,7 @@ bool GlicEnabling::IsShareImageEnabledForProfile(Profile* profile) {
          base::FeatureList::IsEnabled(features::kGlicShareImage);
 }
 
+
 GlicEnabling::GlicEnabling(Profile* profile,
                            ProfileAttributesStorage* profile_attributes_storage)
     : profile_(profile),
@@ -816,89 +817,9 @@ bool GlicEnabling::GetExperimentalTriggeringEnabled() const {
 
 syncer::DeviceInfo::GlicExperimentalTriggeringState
 GlicEnabling::GetExperimentalTriggeringState() const {
-  if (!IsEnabledForProfile(profile_)) {
-    return syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable;
-  }
-
   if (!base::FeatureList::IsEnabled(features::kGlicExperimentalTriggering)) {
     return syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable;
   }
-  bool is_device_managed = false;
-
-  // TODO(crbug.com/510420396): Refactor this out as the logic is the same in
-  // glic policy checker
-  // Check if the browser or the device is managed
-  auto* management_service_factory =
-      policy::ManagementServiceFactory::GetInstance();
-  auto* browser_management_service =
-      management_service_factory->GetForProfile(profile_);
-  auto* platform_management_service =
-      management_service_factory->GetForPlatform();
-  if ((browser_management_service && browser_management_service->IsManaged()) ||
-      (platform_management_service &&
-       platform_management_service->IsManaged())) {
-    is_device_managed = true;
-  }
-
-  bool has_managed_account = false;
-
-  // Check if enterprise account
-  if (!is_device_managed) {
-    bool is_enterprise_account_data_protected = false;
-    if (base::FeatureList::IsEnabled(features::kGlicUserStatusCheck)) {
-      std::optional<glic::CachedUserStatus> cached_user_status =
-          glic::GlicUserStatusFetcher::GetCachedUserStatus(profile_);
-      if (cached_user_status.has_value()) {
-        is_enterprise_account_data_protected =
-            cached_user_status->is_enterprise_account_data_protected;
-      } else {
-        // NOTE: Do not return false as a fail-closed here. CachedUserStatus is
-        // only fetched when `is_managed` of
-        // GlicUserStatusFetcher::UpdateUserStatus is true. Returning false
-        // means gating all the non-enterprise accounts from actuation.
-      }
-    }
-
-    signin::Tribool account_is_managed_tribool = signin::Tribool::kUnknown;
-    signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForProfile(profile_);
-    if (identity_manager) {
-      // `account_info` is empty if the user has not signed in.
-      const CoreAccountInfo account_info =
-          identity_manager->GetPrimaryAccountInfo(
-              signin::ConsentLevel::kSignin);
-      const AccountInfo extended_account_info =
-          identity_manager->FindExtendedAccountInfoByAccountId(
-              account_info.account_id);
-
-      account_is_managed_tribool = extended_account_info.IsManaged();
-    }
-
-    has_managed_account = is_enterprise_account_data_protected ||
-                          account_is_managed_tribool == signin::Tribool::kTrue;
-  }
-
-  bool is_managed = is_device_managed || has_managed_account;
-
-  // Apply policy if managed, unless it's a dogfood client.
-  variations::VariationsService* variations_service =
-      g_browser_process->variations_service();
-  bool is_likely_dogfood_client =
-      variations_service && variations_service->IsLikelyDogfoodClient();
-
-  if (is_managed && !is_likely_dogfood_client) {
-    // Check policy
-    auto* pref_service = profile_->GetPrefs();
-    auto policy_state =
-        static_cast<glic::prefs::GlicExperimentalTriggeringPolicyState>(
-            pref_service->GetInteger(
-                glic::prefs::kGlicExperimentalTriggeringPolicySettings));
-    if (policy_state !=
-        glic::prefs::GlicExperimentalTriggeringPolicyState::kEnabled) {
-      return syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable;
-    }
-  }
-
   if (HasConsented() && GetUserEnabledActuationOnWeb() &&
       GetExperimentalTriggeringEnabled()) {
     return syncer::DeviceInfo::GlicExperimentalTriggeringState::kReady;

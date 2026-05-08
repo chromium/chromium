@@ -4,17 +4,12 @@
 
 #include "chrome/browser/glic/public/glic_enabling.h"
 
-#include <string>
-#include <utility>
-
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_pref_names.h"
-#include "chrome/browser/glic/glic_pref_names_internal.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_features.mojom-features.h"
 #include "chrome/browser/glic/host/glic_features.mojom.h"
@@ -24,18 +19,15 @@
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/metrics/metrics_state_manager.h"
-#include "components/metrics/test/test_enabled_state_provider.h"
-#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/prefs/pref_service.h"
-#include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/variations/service/test_variations_service.h"
+#include "components/variations/service/variations_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -777,178 +769,6 @@ TEST_F(GlicEnablingProfileEligibilityTest, ConsentChangedCallback) {
   EXPECT_TRUE(callback_called);
 }
 
-TEST_F(GlicEnablingProfileReadyStateTestBase,
-       GetExperimentalTriggeringState_NonManaged_Ready) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(features::kGlicExperimentalTriggering);
-
-  auto& enabling = glic::GlicKeyedService::Get(profile())->enabling();
-  enabling.SetCompletedFre(prefs::FreStatus::kCompleted);
-  profile()->GetPrefs()->SetBoolean(prefs::kGlicUserEnabledActuationOnWeb,
-                                    true);
-  profile()->GetPrefs()->SetBoolean(prefs::kGlicExperimentalTriggeringEnabled,
-                                    true);
-
-  EXPECT_EQ(enabling.GetExperimentalTriggeringState(),
-            syncer::DeviceInfo::GlicExperimentalTriggeringState::kReady);
-}
-
-TEST_F(GlicEnablingProfileReadyStateTestBase,
-       GetExperimentalTriggeringState_Managed_DefaultOff) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(features::kGlicExperimentalTriggering);
-
-  policy::ScopedManagementServiceOverrideForTesting
-      scoped_management_service_override(
-          policy::ManagementServiceFactory::GetForProfile(profile()),
-          policy::EnterpriseManagementAuthority::CLOUD);
-
-  auto& enabling = glic::GlicKeyedService::Get(profile())->enabling();
-  enabling.SetCompletedFre(prefs::FreStatus::kCompleted);
-  profile()->GetPrefs()->SetBoolean(prefs::kGlicUserEnabledActuationOnWeb,
-                                    true);
-  profile()->GetPrefs()->SetBoolean(prefs::kGlicExperimentalTriggeringEnabled,
-                                    true);
-
-  EXPECT_EQ(enabling.GetExperimentalTriggeringState(),
-            syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable);
-}
-
-TEST_F(GlicEnablingProfileReadyStateTestBase,
-       GetExperimentalTriggeringState_Managed_PolicyEnabled) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(features::kGlicExperimentalTriggering);
-
-  policy::ScopedManagementServiceOverrideForTesting
-      scoped_management_service_override(
-          policy::ManagementServiceFactory::GetForProfile(profile()),
-          policy::EnterpriseManagementAuthority::CLOUD);
-
-  profile()->GetPrefs()->SetInteger(
-      prefs::kGlicExperimentalTriggeringPolicySettings,
-      std::to_underlying(
-          glic::prefs::GlicExperimentalTriggeringPolicyState::kEnabled));
-
-  auto& enabling = glic::GlicKeyedService::Get(profile())->enabling();
-  enabling.SetCompletedFre(prefs::FreStatus::kCompleted);
-  profile()->GetPrefs()->SetBoolean(prefs::kGlicUserEnabledActuationOnWeb,
-                                    true);
-  profile()->GetPrefs()->SetBoolean(prefs::kGlicExperimentalTriggeringEnabled,
-                                    true);
-
-  EXPECT_EQ(enabling.GetExperimentalTriggeringState(),
-            syncer::DeviceInfo::GlicExperimentalTriggeringState::kReady);
-}
-
-TEST_F(GlicEnablingProfileReadyStateTestBase,
-       GetExperimentalTriggeringState_WorkspaceAccount_DefaultOff) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      {features::kGlicExperimentalTriggering, features::kGlicUserStatusCheck},
-      {});
-
-  // Make account managed (Workspace)
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile());
-  AccountInfo account_info =
-      identity_manager->FindExtendedAccountInfoByAccountId(
-          identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin));
-  account_info =
-      AccountInfo::Builder(account_info).SetHostedDomain("example.com").Build();
-  signin::UpdateAccountInfoForAccount(identity_manager, account_info);
-
-  auto& enabling = glic::GlicKeyedService::Get(profile())->enabling();
-  enabling.SetCompletedFre(prefs::FreStatus::kCompleted);
-  profile()->GetPrefs()->SetBoolean(prefs::kGlicUserEnabledActuationOnWeb,
-                                    true);
-  profile()->GetPrefs()->SetBoolean(prefs::kGlicExperimentalTriggeringEnabled,
-                                    true);
-
-  EXPECT_EQ(enabling.GetExperimentalTriggeringState(),
-            syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable);
-}
-
-TEST_F(GlicEnablingProfileReadyStateTestBase,
-       GetExperimentalTriggeringState_WorkspaceAccount_PolicyEnabled) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      {features::kGlicExperimentalTriggering, features::kGlicUserStatusCheck},
-      {});
-
-  // Make account managed (Workspace)
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile());
-  AccountInfo account_info =
-      identity_manager->FindExtendedAccountInfoByAccountId(
-          identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin));
-  account_info =
-      AccountInfo::Builder(account_info).SetHostedDomain("example.com").Build();
-  signin::UpdateAccountInfoForAccount(identity_manager, account_info);
-
-  profile()->GetPrefs()->SetInteger(
-      prefs::kGlicExperimentalTriggeringPolicySettings,
-      std::to_underlying(
-          glic::prefs::GlicExperimentalTriggeringPolicyState::kEnabled));
-
-  auto& enabling = glic::GlicKeyedService::Get(profile())->enabling();
-  enabling.SetCompletedFre(prefs::FreStatus::kCompleted);
-  profile()->GetPrefs()->SetBoolean(prefs::kGlicUserEnabledActuationOnWeb,
-                                    true);
-  profile()->GetPrefs()->SetBoolean(prefs::kGlicExperimentalTriggeringEnabled,
-                                    true);
-
-  EXPECT_EQ(enabling.GetExperimentalTriggeringState(),
-            syncer::DeviceInfo::GlicExperimentalTriggeringState::kReady);
-}
-
-TEST_F(GlicEnablingProfileReadyStateTestBase,
-       GetExperimentalTriggeringState_DogfoodBypass) {
-  base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      {features::kGlicExperimentalTriggering, features::kGlicUserStatusCheck},
-      {});
-
-  // Setup TestVariationsService
-  TestingPrefServiceSimple local_state;
-  variations::TestVariationsService::RegisterPrefs(local_state.registry());
-  metrics::TestEnabledStateProvider enabled_state_provider(/*consent=*/false,
-                                                           /*enabled=*/false);
-  auto metrics_state_manager = metrics::MetricsStateManager::Create(
-      &local_state, &enabled_state_provider, std::wstring(), base::FilePath(),
-      metrics::StartupVisibility::kUnknown);
-  auto variations_service = std::make_unique<variations::TestVariationsService>(
-      &local_state, metrics_state_manager.get());
-
-  variations_service->SetIsLikelyDogfoodClientForTesting(true);
-  TestingBrowserProcess::GetGlobal()->SetVariationsService(
-      variations_service.get());
-  struct ScopedVariationsServiceReset {
-    ~ScopedVariationsServiceReset() {
-      TestingBrowserProcess::GetGlobal()->SetVariationsService(nullptr);
-    }
-  } reset_variations_service;
-
-  // Mock the profile as managed so we actually enter the policy check
-  policy::ScopedManagementServiceOverrideForTesting
-      scoped_management_service_override(
-          policy::ManagementServiceFactory::GetForProfile(profile()),
-          policy::EnterpriseManagementAuthority::CLOUD);
-
-  profile()->GetPrefs()->SetInteger(
-      prefs::kGlicExperimentalTriggeringPolicySettings,
-      std::to_underlying(
-          glic::prefs::GlicExperimentalTriggeringPolicyState::kDisabled));
-
-  auto& enabling = glic::GlicKeyedService::Get(profile())->enabling();
-  enabling.SetCompletedFre(prefs::FreStatus::kCompleted);
-  profile()->GetPrefs()->SetBoolean(prefs::kGlicUserEnabledActuationOnWeb,
-                                    true);
-  profile()->GetPrefs()->SetBoolean(prefs::kGlicExperimentalTriggeringEnabled,
-                                    true);
-
-  EXPECT_EQ(enabling.GetExperimentalTriggeringState(),
-            syncer::DeviceInfo::GlicExperimentalTriggeringState::kReady);
-}
 TEST_F(GlicEnablingProfileEligibilityTest,
        GetExperimentalTriggeringState_AllDisabled) {
   base::test::ScopedFeatureList feature_list;
@@ -974,12 +794,11 @@ TEST_F(GlicEnablingProfileEligibilityTest,
             syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable);
 }
 
-TEST_F(GlicEnablingProfileReadyStateTestBase,
+TEST_F(GlicEnablingProfileEligibilityTest,
        GetExperimentalTriggeringState_MainEnabled_BypassDisabled_NeedsOptIn) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kGlic,
-                            features::kGlicExperimentalTriggering},
+      /*enabled_features=*/{features::kGlicExperimentalTriggering},
       /*disabled_features=*/{features::kGlicExperimentalTriggeringOptInBypass});
 
   auto& enabling = glic::GlicKeyedService::Get(profile())->enabling();
@@ -989,22 +808,15 @@ TEST_F(GlicEnablingProfileReadyStateTestBase,
   enabling.SetUserEnabledActuationOnWeb(false);
   enabling.SetExperimentalTriggeringEnabled(false);
 
-  // Bypass the enterprise policy check which defaults to disabled.
-  profile()->GetPrefs()->SetInteger(
-      prefs::kGlicExperimentalTriggeringPolicySettings,
-      std::to_underlying(
-          glic::prefs::GlicExperimentalTriggeringPolicyState::kEnabled));
-
   EXPECT_EQ(enabling.GetExperimentalTriggeringState(),
             syncer::DeviceInfo::GlicExperimentalTriggeringState::kNeedsOptIn);
 }
 
-TEST_F(GlicEnablingProfileReadyStateTestBase,
+TEST_F(GlicEnablingProfileEligibilityTest,
        GetExperimentalTriggeringState_MainEnabled_BypassDisabled_Ready) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kGlic,
-                            features::kGlicExperimentalTriggering},
+      /*enabled_features=*/{features::kGlicExperimentalTriggering},
       /*disabled_features=*/{features::kGlicExperimentalTriggeringOptInBypass});
 
   auto& enabling = glic::GlicKeyedService::Get(profile())->enabling();
@@ -1013,22 +825,16 @@ TEST_F(GlicEnablingProfileReadyStateTestBase,
   enabling.SetCompletedFre(prefs::FreStatus::kCompleted);
   enabling.SetUserEnabledActuationOnWeb(true);
   enabling.SetExperimentalTriggeringEnabled(true);
-  // Bypass the enterprise policy check which defaults to disabled.
-  profile()->GetPrefs()->SetInteger(
-      prefs::kGlicExperimentalTriggeringPolicySettings,
-      std::to_underlying(
-          glic::prefs::GlicExperimentalTriggeringPolicyState::kEnabled));
 
   EXPECT_EQ(enabling.GetExperimentalTriggeringState(),
             syncer::DeviceInfo::GlicExperimentalTriggeringState::kReady);
 }
 
-TEST_F(GlicEnablingProfileReadyStateTestBase,
+TEST_F(GlicEnablingProfileEligibilityTest,
        GetExperimentalTriggeringState_MainEnabled_BypassEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kGlic,
-                            features::kGlicExperimentalTriggering,
+      /*enabled_features=*/{features::kGlicExperimentalTriggering,
                             features::kGlicExperimentalTriggeringOptInBypass},
       /*disabled_features=*/{});
 
@@ -1038,12 +844,6 @@ TEST_F(GlicEnablingProfileReadyStateTestBase,
   enabling.SetCompletedFre(prefs::FreStatus::kIncomplete);
   enabling.SetUserEnabledActuationOnWeb(false);
   enabling.SetExperimentalTriggeringEnabled(false);
-
-  // Bypass the enterprise policy check which defaults to disabled.
-  profile()->GetPrefs()->SetInteger(
-      prefs::kGlicExperimentalTriggeringPolicySettings,
-      std::to_underlying(
-          glic::prefs::GlicExperimentalTriggeringPolicyState::kEnabled));
 
   // Bypass should make it ready.
   EXPECT_EQ(enabling.GetExperimentalTriggeringState(),

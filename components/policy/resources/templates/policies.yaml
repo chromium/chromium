@@ -1450,8 +1450,6 @@ policies:
   1449: SubAppsWithoutPromptsAllowedForOrigins
   1450: SubAppsWithoutPromptsBlockedForOrigins
   1451: IsolatedModeSettings
-  1452: GeminiExperimentalTriggeringSettings
-
 
 atomic_groups:
   1: Homepage

@@ -85,16 +85,6 @@ enum class GlicActuationOnWebPolicyState {
   kMaxValue = kDisabled
 };
 
-// Values for the "glic.experimental_triggering_setting" pref.
-enum class GlicExperimentalTriggeringPolicyState {
-  kMinValue = 0,
-
-  kEnabled = kMinValue,
-  kDisabled = 1,
-
-  kMaxValue = kDisabled
-};
-
 // Boolean pref that determines if the Glic button in the tabstrip is pinned.
 inline constexpr char kGlicPinnedToTabstrip[] = "glic.pinned_to_tabstrip";
 
@@ -109,10 +99,6 @@ inline constexpr char kGlicTabContextEnabled[] = "glic.tab_context_enabled";
 inline constexpr char kGlicDefaultTabContextEnabled[] =
     "glic.default_tab_context_enabled";
 
-// Integer pref that determines if Glic experimental triggering is enabled.
-// Controlled by enterprise policy.
-inline constexpr char kGlicExperimentalTriggeringPolicySettings[] =
-    "glic.experimental_triggering_policy_settings";
 
 // Boolean pref that determines the rollout eligibility for the user profile.
 inline constexpr char kGlicRolloutEligibility[] =
