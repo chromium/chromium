@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.search_engines.settings.custom_search_engine
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
@@ -178,6 +177,15 @@ public class CustomSearchEngineListMediatorUnitTest {
         PropertyModel model = itemCaptor.getValue().model;
         ListMenuDelegate delegate = model.get(SiteSearchProperties.MENU_DELEGATE);
 
-        assertNull(delegate);
+        assertNotNull(delegate);
+
+        BasicListMenu listMenu = (BasicListMenu) delegate.getListMenu();
+        ModelListAdapter adapter = listMenu.getContentAdapter();
+        assertEquals(1, adapter.getCount());
+
+        ListItem item0 = (ListItem) adapter.getItem(0);
+        assertEquals(
+                R.string.site_search_list_menu_edit,
+                item0.model.get(ListMenuItemProperties.TITLE_ID));
     }
 }

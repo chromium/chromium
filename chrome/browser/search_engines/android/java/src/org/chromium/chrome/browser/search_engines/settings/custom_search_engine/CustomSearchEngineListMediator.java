@@ -55,25 +55,27 @@ public class CustomSearchEngineListMediator extends BaseSiteSearchMediator {
 
     @Override
     protected @Nullable ListMenuDelegate createMenuDelegate(TemplateUrl url) {
-        TemplateUrl defaultSearchEngine = mTemplateUrlService.getDefaultSearchEngineTemplateUrl();
-        if (url.equals(defaultSearchEngine)) {
-            return null;
-        }
-
         return () -> {
+            TemplateUrl defaultSearchEngine =
+                    mTemplateUrlService.getDefaultSearchEngineTemplateUrl();
             ModelList menuItems = new ModelList();
+
             menuItems.add(
                     new ListItemBuilder()
                             .withTitleRes(R.string.site_search_list_menu_edit)
                             .build());
-            menuItems.add(
-                    new ListItemBuilder()
-                            .withTitleRes(R.string.site_search_list_menu_make_default)
-                            .build());
-            menuItems.add(
-                    new ListItemBuilder()
-                            .withTitleRes(R.string.site_search_list_menu_delete)
-                            .build());
+
+            // Only allow users to make default or remove if it is not DSE.
+            if (!url.equals(defaultSearchEngine)) {
+                menuItems.add(
+                        new ListItemBuilder()
+                                .withTitleRes(R.string.site_search_list_menu_make_default)
+                                .build());
+                menuItems.add(
+                        new ListItemBuilder()
+                                .withTitleRes(R.string.site_search_list_menu_delete)
+                                .build());
+            }
 
             return BrowserUiListMenuUtils.getBasicListMenu(
                     mContext,
