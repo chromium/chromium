@@ -119,10 +119,8 @@ class ReadFromFileAudioSource : public AudioOutputStream::AudioSourceCallback {
     int frames = max_size / (dest->channels() * kBitsPerSample / 8);
     if (max_size) {
       static_assert(kBitsPerSample == 16, "FromInterleaved expects 2 bytes.");
-      dest->FromInterleaved<SignedInt16SampleTypeTraits>(
-          reinterpret_cast<const int16_t*>(
-              base::span(*file_).subspan(pos_).data()),
-          frames);
+      dest->FromInterleavedBytes<SignedInt16SampleTypeTraits>(
+          base::span(*file_).subspan(pos_, max_size));
       pos_ += max_size;
     }
     return frames;

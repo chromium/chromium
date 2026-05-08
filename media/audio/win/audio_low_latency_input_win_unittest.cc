@@ -233,8 +233,7 @@ class WriteToFileAudioSink : public AudioInputStream::AudioInputCallback {
               const AudioGlitchInfo& glitch_info) override {
     const int num_samples = src->frames() * src->channels();
     auto interleaved = base::HeapArray<int16_t>::Uninit(num_samples);
-    src->ToInterleaved<SignedInt16SampleTypeTraits>(src->frames(),
-                                                    interleaved.data());
+    src->ToInterleaved<SignedInt16SampleTypeTraits>(interleaved.as_span());
 
     // Store data data in a temporary buffer to avoid making blocking
     // fwrite() calls in the audio callback. The complete buffer will be
