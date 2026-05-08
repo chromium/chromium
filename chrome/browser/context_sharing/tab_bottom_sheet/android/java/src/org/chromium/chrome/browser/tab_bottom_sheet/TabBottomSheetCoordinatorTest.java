@@ -48,6 +48,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.ActivityState;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.context_sharing.R;
@@ -553,5 +554,44 @@ public class TabBottomSheetCoordinatorTest {
         View expandedContent = mView.findViewById(R.id.expanded_content_group);
 
         assertEquals(expectedLandscapeHeight, expandedContent.getLayoutParams().height);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_BOTTOM_SHEET + ":resize_webview/false")
+    public void testOnContainerSizeChanged_ActivityPaused_DoesNotChangeHeight() {
+        BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
+        View expandedContent = mView.findViewById(R.id.expanded_content_group);
+        int initialHeight = expandedContent.getLayoutParams().height;
+
+        when(mWindowAndroid.getActivityState()).thenReturn(ActivityState.PAUSED);
+        observer.onContainerSizeChanged(CONTAINER_WIDTH, CONTAINER_HEIGHT);
+
+        assertEquals(initialHeight, expandedContent.getLayoutParams().height);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_BOTTOM_SHEET + ":resize_webview/false")
+    public void testOnContainerSizeChanged_ActivityStopped_DoesNotChangeHeight() {
+        BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
+        View expandedContent = mView.findViewById(R.id.expanded_content_group);
+        int initialHeight = expandedContent.getLayoutParams().height;
+
+        when(mWindowAndroid.getActivityState()).thenReturn(ActivityState.STOPPED);
+        observer.onContainerSizeChanged(CONTAINER_WIDTH, CONTAINER_HEIGHT);
+
+        assertEquals(initialHeight, expandedContent.getLayoutParams().height);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_BOTTOM_SHEET + ":resize_webview/false")
+    public void testOnContainerSizeChanged_ActivityDestroyed_DoesNotChangeHeight() {
+        BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
+        View expandedContent = mView.findViewById(R.id.expanded_content_group);
+        int initialHeight = expandedContent.getLayoutParams().height;
+
+        when(mWindowAndroid.getActivityState()).thenReturn(ActivityState.DESTROYED);
+        observer.onContainerSizeChanged(CONTAINER_WIDTH, CONTAINER_HEIGHT);
+
+        assertEquals(initialHeight, expandedContent.getLayoutParams().height);
     }
 }
