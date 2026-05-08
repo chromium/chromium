@@ -630,7 +630,6 @@ void MenuListSelectType::CreateShadowSubtree(ShadowRoot& root) {
 }
 
 void MenuListSelectType::ManuallyAssignSlots() {
-  VectorOf<Node> option_nodes;
   HTMLButtonElement* first_button = nullptr;
   VectorOf<Node> all_children_except_first_button;
   bool after_first_element = false;
@@ -648,9 +647,6 @@ void MenuListSelectType::ManuallyAssignSlots() {
       }
     }
     all_children_except_first_button.push_back(child);
-    if (CanAssignToSelectSlot(child)) {
-      option_nodes.push_back(child);
-    }
   }
 
   CHECK(button_slot_);
