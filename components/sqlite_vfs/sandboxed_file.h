@@ -14,6 +14,8 @@
 #include "base/component_export.h"
 #include "base/files/file.h"
 #include "base/files/memory_mapped_file.h"
+#include "base/unguessable_token.h"
+#include "components/sqlite_vfs/file_system_id.h"
 #include "components/sqlite_vfs/lock_state.h"
 #include "components/sqlite_vfs/shared_locks.h"
 #include "sql/sandboxed_vfs_file.h"
@@ -43,6 +45,7 @@ class COMPONENT_EXPORT(SQLITE_VFS) SandboxedFile
                 base::File file,
                 AccessRights access_rights,
                 std::optional<SharedLocks> shared_locks = std::nullopt,
+                base::UnguessableToken shared_locks_id = {},
                 base::File wal_index_file = {});
   SandboxedFile(SandboxedFile& other) = delete;
   SandboxedFile& operator=(const SandboxedFile& other) = delete;
@@ -76,6 +79,11 @@ class COMPONENT_EXPORT(SQLITE_VFS) SandboxedFile
   AccessRights access_rights() const { return access_rights_; }
   Client client() const { return client_; }
   FileType file_type() const { return file_type_; }
+
+  const std::optional<FileSystemId>& file_system_id() const {
+    return file_system_id_;
+  }
+  base::UnguessableToken shared_locks_id() const { return shared_locks_id_; }
 
   // Returns a reference to the instance's file regardless of whether it is
   // open (`IsValid()` returns true) or closed (otherwise). The reference is
@@ -115,6 +123,9 @@ class COMPONENT_EXPORT(SQLITE_VFS) SandboxedFile
   // connection. See `SqliteVfsFileSet::Abandon()` for details.
   LockState Abandon();
 
+  // Returns true if the database lock has been marked as abandoned.
+  bool IsAbandoned() const;
+
  private:
   // Returns true if this instance is likely opened for exclusive access.
   // Take care: this is only valid for FileType::kMainDb files.
@@ -142,10 +153,14 @@ class COMPONENT_EXPORT(SQLITE_VFS) SandboxedFile
   // protocols are implemented. Otherwise, this file is opened in exclusive mode
   // so no shared locks are required. Only used for the main database file.
   std::optional<SharedLocks> shared_locks_;
+  base::UnguessableToken shared_locks_id_;
 
   // The WAL-index file. Only used for the main database file, and only when
   // opened for sharing (exclusive locking mode off).
   base::File wal_index_file_;
+
+  // ID of the main database file for double-open detection.
+  std::optional<FileSystemId> file_system_id_;
 
   // Mapped pages of the WAL-index file. Only used for the main database file,
   // and only when opened for sharing (exclusive locking mode off).

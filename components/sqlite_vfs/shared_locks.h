@@ -78,6 +78,9 @@ class COMPONENT_EXPORT(SQLITE_VFS) SharedLocks {
   // requesting such will properly detect that the lock has been abandoned.
   LockState Abandon();
 
+  // Returns true if the database lock has been marked as abandoned.
+  bool IsAbandoned() const;
+
   // Acquires or releases `num_locks` WAL locks beginning at index `lock_index`.
   // Shared locks are acquired and released individually (`num_locks` ==
   // 1). Exclusive locks are acquired in a range (`num_locks` >= 1).

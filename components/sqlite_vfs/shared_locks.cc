@@ -228,6 +228,12 @@ LockState SharedLocks::Abandon() {
   return LockState::kNotHeld;
 }
 
+bool SharedLocks::IsAbandoned() const {
+  return (const_cast<SharedLocks*>(this)->GetDatabaseLock().load(
+              std::memory_order_relaxed) &
+          kAbandonedBit) != 0;
+}
+
 int SharedLocks::ShmLock(int lock_index,
                          int num_locks,
                          LockOperation operation,

@@ -1173,6 +1173,123 @@ TEST_P(SqliteVfsMultiprocessTest, AbandonReadOnlyShared) {
               ElementsAre(static_cast<int>(sql::SqliteErrorCode::kIoLock)));
 }
 
+TEST_P(SqliteVfsMultiprocessTest, AbandonAndReconnect) {
+  ASSERT_OK_AND_ASSIGN(
+      auto file_set_1,
+      CreateAndBindFileSet(file_set_directory(), base::FilePath(kBaseName),
+                           journal_mode_wal()));
+  {
+    auto unregister_runner_1 =
+        SqliteSandboxedVfsDelegate::GetInstance()->RegisterSandboxedFiles(
+            file_set_1);
+
+    sql::Database db_1(MakeDatabaseOptionsForFileSet(file_set_1),
+                       sql::Database::Tag("Test"));
+    ::testing::StrictMock<ScopedMockErrorCallback> error_mock(db_1);
+    ASSERT_TRUE(db_1.Open(file_set_1.GetDbVirtualFilePath()));
+
+    // Create table.
+    ASSERT_TRUE(db_1.Execute("CREATE TABLE test (val TEXT)"));
+    ASSERT_TRUE(db_1.Execute("INSERT INTO test (val) VALUES ('initial')"));
+  }
+
+  // Spawn child.
+  mojo::Remote<sqlite_vfs::mojom::SqliteVfsMultiprocessTestHelper> child =
+      SpawnChild("SqliteVfsChild");
+
+  // Pass read-only file set to child.
+  ASSERT_OK_AND_ASSIGN(
+      auto pending_file_set_1,
+      ShareConnection(file_set_directory(), base::FilePath(kBaseName),
+                      file_set_1, /*read_write=*/false));
+  mojo::Remote<sqlite_vfs::mojom::ReadOnlyConnection> connection_1 =
+      OpenDatabaseReadOnly(child, std::move(pending_file_set_1));
+  ASSERT_TRUE(connection_1.is_bound());
+
+  // Child should see 'initial'.
+  {
+    base::test::TestFuture<base::expected<std::string, int32_t>> future;
+    connection_1->Read(future.GetCallback());
+    EXPECT_THAT(future.Take(), ValueIs("initial"));
+  }
+
+  // Parent Abandons the file set.
+  file_set_1.Abandon();
+
+  // Parent creates a new connection to the same physical database files.
+  ASSERT_OK_AND_ASSIGN(
+      auto pending_file_set_2,
+      MakePendingFileSet(Client::kTest, file_set_directory(),
+                         base::FilePath(kBaseName),
+                         /*single_connection=*/false, journal_mode_wal()));
+  ASSERT_OK_AND_ASSIGN(
+      auto file_set_2,
+      SqliteVfsFileSet::Bind(Client::kTest, std::move(pending_file_set_2)));
+  auto unregister_runner_2 =
+      SqliteSandboxedVfsDelegate::GetInstance()->RegisterSandboxedFiles(
+          file_set_2);
+
+  {
+    sql::Database db_2(MakeDatabaseOptionsForFileSet(file_set_2),
+                       sql::Database::Tag("Test"));
+    ::testing::StrictMock<ScopedMockErrorCallback> error_mock(db_2);
+    ASSERT_TRUE(db_2.Open(file_set_2.GetDbVirtualFilePath()));
+    ASSERT_TRUE(db_2.Execute("INSERT INTO test (val) VALUES ('new_value')"));
+  }
+
+  // Parent shares this new connection with the child.
+  ASSERT_OK_AND_ASSIGN(
+      auto pending_file_set_2_ro,
+      ShareConnection(file_set_directory(), base::FilePath(kBaseName),
+                      file_set_2, /*read_write=*/false));
+
+  // Child succeeds in opening a second connection because the first has been
+  // abandoned.
+  base::test::TestFuture<
+      mojo::PendingRemote<sqlite_vfs::mojom::ReadOnlyConnection>>
+      future_2;
+  child->OpenDatabaseReadOnly(std::move(pending_file_set_2_ro),
+                              future_2.GetCallback());
+  auto remote_2 = future_2.Take();
+  ASSERT_TRUE(remote_2.is_valid());
+  mojo::Remote<sqlite_vfs::mojom::ReadOnlyConnection> connection_2(
+      std::move(remote_2));
+
+  // Verify that child can use the new connection to read the new value.
+  {
+    base::test::TestFuture<base::expected<std::string, int32_t>> future;
+    connection_2->Read(future.GetCallback());
+    EXPECT_THAT(future.Take(), ValueIs(std::string("new_value")));
+  }
+
+  // Verify that child gets a kIoLock error on connection_1.
+  {
+    base::test::TestFuture<base::expected<std::string, int32_t>> future;
+    connection_1->Read(future.GetCallback());
+    EXPECT_THAT(future.Take(),
+                ErrorIs(static_cast<int>(sql::SqliteErrorCode::kIoLock)));
+  }
+
+  // Cleanup.
+  {
+    base::test::TestFuture<std::vector<int32_t>> close_future;
+    connection_1->CloseDatabase(base::BindOnce(
+        [](base::OnceCallback<void(std::vector<int32_t>)> cb,
+           const std::vector<int32_t>& errors) { std::move(cb).Run(errors); },
+        close_future.GetCallback()));
+    EXPECT_THAT(close_future.Take(),
+                ElementsAre(static_cast<int>(sql::SqliteErrorCode::kIoLock)));
+  }
+  {
+    base::test::TestFuture<std::vector<int32_t>> close_future;
+    connection_2->CloseDatabase(base::BindOnce(
+        [](base::OnceCallback<void(std::vector<int32_t>)> cb,
+           const std::vector<int32_t>& errors) { std::move(cb).Run(errors); },
+        close_future.GetCallback()));
+    EXPECT_THAT(close_future.Take(), IsEmpty());
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(,
                          SqliteVfsMultiprocessTest,
                          Bool(),

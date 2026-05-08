@@ -107,6 +107,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SandboxedVfs.GetFileSystemIdError.{VfsClient}"
+    enum="PlatformFileError" expires_after="2027-05-01">
+  <owner>grt@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Reports the error encountered when attempting to retrieve the physical file
+    system ID for a sandboxed SQLite file set's main database file for the
+    {VfsClient}.
+  </summary>
+</histogram>
+
 <histogram name="SandboxedVfs.LockResult.{VfsClient}" enum="PlatformFileError"
     expires_after="2026-11-06">
   <owner>grt@chromium.org</owner>
