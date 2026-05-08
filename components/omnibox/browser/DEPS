@@ -48,6 +48,7 @@ include_rules = [
   "+components/strings/grit/components_strings.h",
   "+components/sync",
   "+components/sync_preferences",
+  "+components/sync_sessions",
   "+components/ukm",
   "+components/url_formatter",
   "+components/variations",

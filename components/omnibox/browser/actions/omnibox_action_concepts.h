@@ -43,6 +43,9 @@ enum class OmniboxActionId {
   // A site search action that enters keyword mode for a specific site.
   SITE_SEARCH,
 
+  // Action to open a tab from another device.
+  CROSS_DEVICE_TAB,
+
   // Keep as a last item in the list, with ID one larger than the last valid
   // Action Id.
   LAST

@@ -29,6 +29,10 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+namespace sync_sessions {
+class SessionSyncService;
+}  // namespace sync_sessions
+
 class AutocompleteScoringModelService;
 class OnDeviceTailModelService;
 class OmniboxTriggeredFeatureService;
@@ -138,6 +142,10 @@ class MockAutocompleteProviderClient
     return mock_tab_group_sync_service_.get();
   }
 
+  sync_sessions::SessionSyncService* GetSessionSyncService() const override {
+    return session_sync_service_;
+  }
+
   AimEligibilityService* GetAimEligibilityService() const override {
     return nullptr;
   }
@@ -199,6 +207,11 @@ class MockAutocompleteProviderClient
     identity_manager_ = identity_manager;
   }
 
+  void set_session_sync_service(
+      sync_sessions::SessionSyncService* session_sync_service) {
+    session_sync_service_ = session_sync_service;
+  }
+
   network::TestURLLoaderFactory* test_url_loader_factory() {
     return &test_url_loader_factory_;
   }
@@ -232,6 +245,8 @@ class MockAutocompleteProviderClient
       unscoped_extension_provider_delegate_;
   MockTabMatcher tab_matcher_;
   raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;  // Not owned.
+  raw_ptr<sync_sessions::SessionSyncService> session_sync_service_ =
+      nullptr;  // Not owned.
   std::unique_ptr<tab_groups::MockTabGroupSyncService>
       mock_tab_group_sync_service_;
 };

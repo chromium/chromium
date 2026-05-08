@@ -417,6 +417,10 @@ DesktopNTPZpsSection::DesktopNTPZpsSection(
     : ZpsSectionWithLocalHistory(
           limit,
           {
+              Group(1,
+                    {
+                        {omnibox::GROUP_CROSS_DEVICE_TABS, 1},
+                    }),
               Group(
                   8,
                   {
@@ -497,6 +501,10 @@ DesktopSRPZpsSection::DesktopSRPZpsSection(
     : ZpsSection(
           max_suggestions,
           {
+              Group(1,
+                    {
+                        {omnibox::GROUP_CROSS_DEVICE_TABS, 1},
+                    }),
               Group(
                   search_limit,
                   {
@@ -537,6 +545,10 @@ DesktopWebSearchZpsSection::DesktopWebSearchZpsSection(
     size_t contextual_search_limit)
     : Section(limit,
               {
+                  Group(1,
+                        {
+                            {omnibox::GROUP_CROSS_DEVICE_TABS, 1},
+                        }),
                   Group(limit,
                         {
                             {omnibox::GROUP_VISITED_DOC_RELATED, limit},

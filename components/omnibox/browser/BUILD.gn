@@ -114,6 +114,8 @@ static_library("browser") {
   sources = [
     "actions/contextual_search_action.cc",
     "actions/contextual_search_action.h",
+    "actions/cross_device_tab_action.cc",
+    "actions/cross_device_tab_action.h",
     "actions/omnibox_action.cc",
     "actions/omnibox_action.h",
     "actions/omnibox_action_concepts.h",
@@ -185,6 +187,8 @@ static_library("browser") {
     "clipboard_provider.h",
     "contextual_search_provider.cc",
     "contextual_search_provider.h",
+    "cross_device_tab_provider.cc",
+    "cross_device_tab_provider.h",
     "document_provider.cc",
     "document_provider.h",
     "document_suggestions_service.cc",
@@ -381,6 +385,7 @@ static_library("browser") {
     "//components/signin/public/identity_manager",
     "//components/strings",
     "//components/sync",
+    "//components/sync_sessions",
     "//components/url_formatter",
     "//components/variations",
     "//components/variations/net",
@@ -420,7 +425,8 @@ static_library("browser") {
     deps += [ "//components/keep_alive_registry" ]
   }
 
-  # GeolocationHeaderService is not supported on iOS due to dependencies on //content
+  # GeolocationHeaderService is not supported on iOS due to dependencies on
+  # //content
   if (!is_ios) {
     deps += [ "//ui/base/clipboard" ]
     public_deps += [
@@ -843,6 +849,7 @@ source_set("unit_tests") {
     "calculator_provider_unittest.cc",
     "clipboard_provider_unittest.cc",
     "contextual_search_provider_unittest.cc",
+    "cross_device_tab_provider_unittest.cc",
     "document_provider_unittest.cc",
     "document_suggestions_service_unittest.cc",
     "enterprise_search_aggregator_provider_unittest.cc",
@@ -933,6 +940,7 @@ source_set("unit_tests") {
     "//components/signin/public/identity_manager:test_support",
     "//components/strings",
     "//components/sync_preferences:test_support",
+    "//components/sync_sessions:test_support",
     "//components/ukm:test_support",
     "//components/url_formatter",
     "//components/variations",
@@ -959,7 +967,8 @@ source_set("unit_tests") {
     ]
   }
 
-  # GeolocationHeaderService is not supported on iOS due to dependencies on //content
+  # GeolocationHeaderService is not supported on iOS due to dependencies on
+  # //content
   if (!is_ios) {
     sources += [
       "geolocation_header_service_unittest.cc",

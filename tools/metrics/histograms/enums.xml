@@ -8308,6 +8308,7 @@ from previous Chrome versions.
       label="enable-experimental-accessibility-manifest-v3:enabled"/>
   <int value="-1903365454" label="SyncPseudoUSSPreferences:disabled"/>
   <int value="-1903166011" label="IsolatedWebAppDevMode:disabled"/>
+  <int value="-1902143870" label="OmniboxCrossDeviceTabZeroSuggest:disabled"/>
   <int value="-1902142840" label="CalendarModelDebugMode:enabled"/>
   <int value="-1901503351" label="CrosBatteryChargeLimit:disabled"/>
   <int value="-1899788521"
@@ -14835,6 +14836,7 @@ from previous Chrome versions.
   <int value="258131615" label="MacAccessibilityTextOperation:disabled"/>
   <int value="258621334"
       label="HappinessTrackingSurveysForDesktopDemo:disabled"/>
+  <int value="258906936" label="OmniboxCrossDeviceTabZeroSuggest:enabled"/>
   <int value="259021228" label="OffMainThreadFetch:disabled"/>
   <int value="259633436" label="AutofillDropdownLayout:disabled"/>
   <int value="259704832" label="show-frozen-update-notifications:disabled"/>

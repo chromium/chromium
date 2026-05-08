@@ -70,6 +70,10 @@ namespace signin {
 class IdentityManager;
 }
 
+namespace sync_sessions {
+class SessionSyncService;
+}  // namespace sync_sessions
+
 namespace tab_groups {
 class TabGroupSyncService;
 }
@@ -119,6 +123,7 @@ class AutocompleteProviderClient : public OmniboxAction::Client {
   virtual base::CallbackListSubscription GetLensSuggestInputsWhenReady(
       LensOverlaySuggestInputsCallback callback) const = 0;
   virtual tab_groups::TabGroupSyncService* GetTabGroupSyncService() const = 0;
+  virtual sync_sessions::SessionSyncService* GetSessionSyncService() const = 0;
   virtual AimEligibilityService* GetAimEligibilityService() const = 0;
 
   // The value to use for Accept-Languages HTTP header when making an HTTP

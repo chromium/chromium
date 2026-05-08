@@ -65,6 +65,7 @@ std::string AutocompleteMatchType::ToString(AutocompleteMatchType::Type type) {
     "featured-enterprise-search",
     "history-embeddings-answer",
     "tab-group",
+    "cross-device-tab",
   });
   // clang-format on
   static_assert(strings.size() == AutocompleteMatchType::NUM_TYPES,
@@ -138,16 +139,14 @@ std::u16string GetAccessibilityBaseLabel(const AutocompleteMatch& match,
 
       // NAVSUGGEST_PERSONALIZED is like SEARCH_SUGGEST_PERSONALIZED, but it's a
       // URL instead of a search query.
-      IDS_ACC_AUTOCOMPLETE_HISTORY,        // NAVSUGGEST_PERSONALIZED
-      0,                                   // CALCULATOR
-      IDS_ACC_AUTOCOMPLETE_CLIPBOARD_URL,  // CLIPBOARD_URL
-      0,                                   // VOICE_SUGGEST
-      0,                                   // PHYSICAL_WEB_DEPRECATED
-      0,                                   // PHYSICAL_WEB_OVERFLOW_DEPRECATED
-      IDS_ACC_AUTOCOMPLETE_HISTORY,        // TAB_SEARCH_DEPRECATED
-      0,                                   // DOCUMENT_SUGGESTION
-
-      // TODO(orinj): Determine appropriate accessibility labels for Pedals
+      IDS_ACC_AUTOCOMPLETE_HISTORY,          // NAVSUGGEST_PERSONALIZED
+      0,                                     // CALCULATOR
+      IDS_ACC_AUTOCOMPLETE_CLIPBOARD_URL,    // CLIPBOARD_URL
+      0,                                     // VOICE_SUGGEST
+      0,                                     // PHYSICAL_WEB_DEPRECATED
+      0,                                     // PHYSICAL_WEB_OVERFLOW_DEPRECATED
+      IDS_ACC_AUTOCOMPLETE_HISTORY,          // TAB_SEARCH_DEPRECATED
+      0,                                     // DOCUMENT_SUGGESTION
       0,                                     // PEDAL
       IDS_ACC_AUTOCOMPLETE_CLIPBOARD_TEXT,   // CLIPBOARD_TEXT
       IDS_ACC_AUTOCOMPLETE_CLIPBOARD_IMAGE,  // CLIPBOARD_IMAGE
@@ -163,6 +162,7 @@ std::u16string GetAccessibilityBaseLabel(const AutocompleteMatch& match,
       0,                                     // FEATURED_ENTERPRISE_SEARCH
       0,                                     // HISTORY_EMBEDDINGS_ANSWER
       0,                                     // TAB_GROUP
+      0,                                     // CROSS_DEVICE_TAB
   });
   static_assert(std::size(message_ids) == AutocompleteMatchType::NUM_TYPES,
                 "message_ids must have NUM_TYPES elements");

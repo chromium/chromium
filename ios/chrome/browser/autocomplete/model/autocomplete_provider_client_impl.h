@@ -26,6 +26,10 @@ namespace component_updater {
 class ComponentUpdateService;
 }
 
+namespace sync_sessions {
+class SessionSyncService;
+}  // namespace sync_sessions
+
 namespace tab_groups {
 class TabGroupSyncService;
 }
@@ -77,8 +81,9 @@ class AutocompleteProviderClientImpl : public AutocompleteProviderClient {
   ProviderStateService* GetProviderStateService() const override;
   base::CallbackListSubscription GetLensSuggestInputsWhenReady(
       LensOverlaySuggestInputsCallback callback) const override;
-  AimEligibilityService* GetAimEligibilityService() const override;
   tab_groups::TabGroupSyncService* GetTabGroupSyncService() const override;
+  sync_sessions::SessionSyncService* GetSessionSyncService() const override;
+  AimEligibilityService* GetAimEligibilityService() const override;
 
   std::string GetAcceptLanguages() const override;
   std::string GetEmbedderRepresentationOfAboutScheme() const override;

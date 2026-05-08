@@ -3193,6 +3193,11 @@ inline constexpr char kOmniboxCalcProviderName[] = "Omnibox calc provider";
 inline constexpr char kOmniboxCalcProviderDescription[] =
     "When enabled, suggests recent calculator results in the omnibox.";
 
+inline constexpr char kOmniboxCrossDeviceTabZeroSuggestName[] =
+    "Omnibox Cross-Device Tab Zero Suggest";
+inline constexpr char kOmniboxCrossDeviceTabZeroSuggestDescription[] =
+    "Enables showing cross-device tabs in the omnibox zero-state.";
+
 inline constexpr char kOmniboxDiagnosticsName[] =
     "Omnibox Diagnostics (restart twice)";
 inline constexpr char kOmniboxDiagnosticsDescription[] =

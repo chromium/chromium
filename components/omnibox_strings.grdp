@@ -344,6 +344,20 @@
     <ph name="SUGGESTION_TITLE">$1<ex>Google</ex></ph>, <ph name="SUGGESTION_DESCRIPTION">$2<ex>Search result</ex></ph>, <ph name="MATCH_POSITION">$3<ex>2</ex></ph> of <ph name="NUM_MATCHES_IN_GROUP">$4<ex>5</ex></ph> in the group <ph name="GROUP_HEADER">$5<ex>Trending Searches</ex></ph>.
   </message>
 
+  <!-- TODO(crbug.com/508162292): Mark these strings as translateable in future patches. -->
+  <message name="IDS_OMNIBOX_ACTION_CROSS_DEVICE_TAB_HINT" desc="The button text for the Cross-Device Tab omnibox action. Clicking this button takes users to a view of their synced tabs from other devices." translateable="false">
+    Tabs from other devices
+  </message>
+  <message name="IDS_OMNIBOX_ACTION_CROSS_DEVICE_TAB_SUGGESTION_CONTENTS" desc="The button tooltip for the Cross-Device Tab omnibox action. Clicking this button takes users to a view of their synced tabs from other devices." translateable="false">
+    Tabs from other devices
+  </message>
+  <message name="IDS_ACC_OMNIBOX_ACTION_CROSS_DEVICE_TAB_SUFFIX" desc="Suffix for spoken suggestion description with action button to explain keystroke used to see cross-device tabs." translateable="false">
+    <ph name="CROSS_DEVICE_TAB_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>google.com</ex></ph>, press Tab, then Enter for tabs from other devices
+  </message>
+  <message name="IDS_ACC_OMNIBOX_ACTION_CROSS_DEVICE_TAB" desc="Announcement when the Cross-Device Tab action button is focused." translateable="false">
+    Tabs from other devices button, press Enter to see tabs from other devices
+  </message>
+
   <!-- History Clusters Actions. -->
   <message name="IDS_OMNIBOX_HISTORY_CLUSTERS_SEARCH_HINT" desc="The button text for the History Clusters omnibox suggestion in sentence case. Clicking this button takes users to a view of their browsing history related to the suggestion.">
     Resume browsing

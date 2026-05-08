@@ -49,6 +49,7 @@
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/sync/model/session_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/components/webui/web_ui_url_constants.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
@@ -205,6 +206,11 @@ AutocompleteProviderClientImpl::GetLensSuggestInputsWhenReady(
 tab_groups::TabGroupSyncService*
 AutocompleteProviderClientImpl::GetTabGroupSyncService() const {
   return nullptr;
+}
+
+sync_sessions::SessionSyncService*
+AutocompleteProviderClientImpl::GetSessionSyncService() const {
+  return SessionSyncServiceFactory::GetForProfile(profile_);
 }
 
 AimEligibilityService*

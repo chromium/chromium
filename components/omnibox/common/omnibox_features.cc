@@ -84,6 +84,14 @@ BASE_FEATURE(kHideSuggestionGroupHeaders,
 // remote zero-prefix suggestions are enabled.
 BASE_FEATURE(kLocalHistoryZeroSuggestBeyondNTP, DISABLED);
 
+// Enables showing tabs from other devices in zero-prefix suggest.
+BASE_FEATURE(kOmniboxCrossDeviceTabZeroSuggest, DISABLED);
+BASE_FEATURE_PARAM(int,
+                   kOmniboxCrossDeviceTabZeroSuggestMaxAge,
+                   &kOmniboxCrossDeviceTabZeroSuggest,
+                   "max_age_minutes",
+                   5);
+
 // Enables the use of a request debouncer to throttle the number of ZPS prefetch
 // requests initiated over a given period of time (to help minimize the
 // performance impact of ZPS prefetching on the remote Suggest service).

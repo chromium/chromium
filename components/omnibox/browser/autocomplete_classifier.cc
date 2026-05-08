@@ -93,6 +93,9 @@ int AutocompleteClassifier::DefaultOmniboxProviders(bool is_low_memory_device) {
       (OmniboxFieldTrial::IsOnDeviceHeadSuggestEnabledForAnyMode()
            ? AutocompleteProvider::TYPE_ON_DEVICE_HEAD
            : 0) |
+      (base::FeatureList::IsEnabled(omnibox::kOmniboxCrossDeviceTabZeroSuggest)
+           ? AutocompleteProvider::TYPE_CROSS_DEVICE_TAB
+           : 0) |
       AutocompleteProvider::TYPE_BOOKMARK | AutocompleteProvider::TYPE_BUILTIN |
       AutocompleteProvider::TYPE_HISTORY_QUICK |
       AutocompleteProvider::TYPE_HISTORY_URL |

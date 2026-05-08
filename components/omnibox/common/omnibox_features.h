@@ -30,6 +30,8 @@ BASE_DECLARE_FEATURE(kDynamicMaxAutocomplete);
 
 // Local history zero-prefix (aka zero-suggest) and prefix suggestions.
 BASE_DECLARE_FEATURE(kFocusTriggersWebAndSRPZeroSuggest);
+BASE_DECLARE_FEATURE(kOmniboxCrossDeviceTabZeroSuggest);
+BASE_DECLARE_FEATURE_PARAM(int, kOmniboxCrossDeviceTabZeroSuggestMaxAge);
 BASE_DECLARE_FEATURE(kOnClobberSuggestIOS);
 BASE_DECLARE_FEATURE(kHideContextualGroupHeaders);
 BASE_DECLARE_FEATURE(kHideSuggestionGroupHeaders);

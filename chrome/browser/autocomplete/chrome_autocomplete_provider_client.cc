@@ -44,6 +44,7 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
@@ -83,6 +84,7 @@
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/service/sync_service.h"
+#include "components/sync_sessions/session_sync_service.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 #include "components/variations/service/variations_service.h"
@@ -462,6 +464,11 @@ ChromeAutocompleteProviderClient::GetProviderStateService() const {
 tab_groups::TabGroupSyncService*
 ChromeAutocompleteProviderClient::GetTabGroupSyncService() const {
   return tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile_);
+}
+
+sync_sessions::SessionSyncService*
+ChromeAutocompleteProviderClient::GetSessionSyncService() const {
+  return SessionSyncServiceFactory::GetForProfile(profile_);
 }
 
 AimEligibilityService*

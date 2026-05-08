@@ -975,6 +975,10 @@ omnibox::GroupId AutocompleteMatch::GetDefaultGroupId(Type type) {
   if (type == AutocompleteMatchType::HISTORY_CLUSTER)
     return omnibox::GROUP_HISTORY_CLUSTER;
 
+  if (type == AutocompleteMatchType::CROSS_DEVICE_TAB) {
+    return omnibox::GROUP_CROSS_DEVICE_TABS;
+  }
+
   return omnibox::GROUP_OTHER_NAVS;
 }
 
@@ -1463,6 +1467,8 @@ AutocompleteMatch::GetOmniboxEventResultType(int action_index) const {
       case OmniboxActionId::STARTER_PACK_TABS:
       case OmniboxActionId::STARTER_PACK_AI_MODE:
         return OmniboxEventProto::Suggestion::STARTER_PACK;
+      case OmniboxActionId::CROSS_DEVICE_TAB:
+        return OmniboxEventProto::Suggestion::CROSS_DEVICE_TAB;
       case OmniboxActionId::UNKNOWN:
       case OmniboxActionId::LAST:
         NOTREACHED();
@@ -1540,6 +1546,8 @@ AutocompleteMatch::GetOmniboxEventResultType(int action_index) const {
       return OmniboxEventProto::Suggestion::HISTORY_EMBEDDINGS_ANSWER;
     case AutocompleteMatchType::TAB_GROUP:
       return OmniboxEventProto::Suggestion::TAB_GROUP;
+    case AutocompleteMatchType::CROSS_DEVICE_TAB:
+      return OmniboxEventProto::Suggestion::CROSS_DEVICE_TAB;
     case AutocompleteMatchType::CONTACT_DEPRECATED:
     case AutocompleteMatchType::PHYSICAL_WEB_DEPRECATED:
     case AutocompleteMatchType::PHYSICAL_WEB_OVERFLOW_DEPRECATED:

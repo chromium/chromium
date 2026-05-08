@@ -7017,6 +7017,11 @@
     "expiry_milestone": 149
   },
   {
+    "name": "omnibox-cross-device-tab-zero-suggest",
+    "owners": [ "mastiz@chromium.org", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "omnibox-debug-logs",
     "owners": [ "mahmadi@chromium.org", "sophiechang@chromium.org", "chrome-contextual-tasks-eng@google.com"],
     // This flag is used by regular debugging by developers and internal users

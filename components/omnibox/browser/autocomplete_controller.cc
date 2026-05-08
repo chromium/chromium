@@ -60,6 +60,7 @@
 #include "components/omnibox/browser/calculator_provider.h"
 #include "components/omnibox/browser/clipboard_provider.h"
 #include "components/omnibox/browser/contextual_search_provider.h"
+#include "components/omnibox/browser/cross_device_tab_provider.h"
 #include "components/omnibox/browser/document_provider.h"
 #include "components/omnibox/browser/enterprise_search_aggregator_provider.h"
 #include "components/omnibox/browser/featured_search_provider.h"
@@ -1451,6 +1452,10 @@ void AutocompleteController::InitializeSyncProviders(int provider_types) {
   if (provider_types & AutocompleteProvider::TYPE_RECENTLY_CLOSED_TABS) {
     providers_.push_back(base::MakeRefCounted<RecentlyClosedTabsProvider>(
         provider_client_.get(), this));
+  }
+  if (provider_types & AutocompleteProvider::TYPE_CROSS_DEVICE_TAB) {
+    providers_.push_back(
+        base::MakeRefCounted<CrossDeviceTabProvider>(provider_client_.get()));
   }
 #if BUILDFLAG(IS_ANDROID)
   if (provider_types & AutocompleteProvider::TYPE_TAB_GROUP) {

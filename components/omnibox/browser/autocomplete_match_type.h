@@ -94,6 +94,7 @@ struct AutocompleteMatchType {
                                        // Enterprise policy.
     HISTORY_EMBEDDINGS_ANSWER   = 38,
     TAB_GROUP                   = 39,  // A tab group match.
+    CROSS_DEVICE_TAB            = 40,  // A tab opened on another device.
     NUM_TYPES,
   };
   // clang-format on

@@ -11876,6 +11876,12 @@ const FeatureEntry kFeatureEntries[] = {
      omnibox::flag_descriptions::kOmniboxDebugLogsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kOmniboxDebugLogs)},
 
+    {"omnibox-cross-device-tab-zero-suggest",
+     flag_descriptions::kOmniboxCrossDeviceTabZeroSuggestName,
+     flag_descriptions::kOmniboxCrossDeviceTabZeroSuggestDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(omnibox::kOmniboxCrossDeviceTabZeroSuggest)},
+
     {"contextual-tasks-context",
      contextual_tasks::flag_descriptions::kContextualTasksContextName,
      contextual_tasks::flag_descriptions::kContextualTasksContextDescription,

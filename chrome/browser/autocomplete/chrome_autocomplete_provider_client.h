@@ -33,6 +33,10 @@ class StoragePartition;
 class WebContents;
 }  // namespace content
 
+namespace sync_sessions {
+class SessionSyncService;
+}  // namespace sync_sessions
+
 namespace unified_consent {
 class UrlKeyedDataCollectionConsentHelper;
 }
@@ -97,6 +101,7 @@ class ChromeAutocompleteProviderClient : public AutocompleteProviderClient {
   OnDeviceTailModelService* GetOnDeviceTailModelService() const override;
   ProviderStateService* GetProviderStateService() const override;
   tab_groups::TabGroupSyncService* GetTabGroupSyncService() const override;
+  sync_sessions::SessionSyncService* GetSessionSyncService() const override;
   AimEligibilityService* GetAimEligibilityService() const override;
 
   bool IsOffTheRecord() const override;
