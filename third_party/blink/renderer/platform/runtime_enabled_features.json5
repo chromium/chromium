@@ -5701,6 +5701,10 @@
       status: "stable",
     },
     {
+      name: "SvgUseNestedResourceDocumentsDelayLoad",
+      status: "stable",
+    },
+    {
       name: "SynthesizedKeyboardEventsForAccessibilityActions",
       status: "experimental",
     },

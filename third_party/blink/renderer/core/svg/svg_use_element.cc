@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_transformable_container.h"
+#include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_length.h"
 #include "third_party/blink/renderer/core/svg/svg_circle_element.h"
 #include "third_party/blink/renderer/core/svg/svg_ellipse_element.h"
@@ -138,8 +139,11 @@ void SVGUseElement::RemovedFrom(ContainerNode& root_parent) {
 
 void SVGUseElement::DidMoveToNewDocument(Document& old_document) {
   SVGGraphicsElement::DidMoveToNewDocument(old_document);
-  if (load_event_delayer_) {
-    load_event_delayer_->DocumentChanged(GetDocument());
+  if (resource_load_event_delayer_) {
+    resource_load_event_delayer_->DocumentChanged(GetDocument());
+  }
+  if (attach_load_event_delayer_) {
+    attach_load_event_delayer_->DocumentChanged(GetDocument());
   }
   UpdateTargetReference();
 }
@@ -193,14 +197,14 @@ void SVGUseElement::UpdateDocumentContent(
   if (document_content_ == document_content) {
     return;
   }
-  auto old_load_event_delayer = std::move(load_event_delayer_);
+  auto old_load_event_delayer = std::move(resource_load_event_delayer_);
   notification_pending_ = false;
   if (document_content_) {
     document_content_->RemoveObserver(this);
   }
   document_content_ = document_content;
   if (document_content_) {
-    load_event_delayer_ =
+    resource_load_event_delayer_ =
         std::make_unique<IncrementLoadEventDelayCount>(GetDocument());
     notification_pending_ = true;
     document_content_->AddObserver(this);
@@ -319,6 +323,7 @@ void SVGUseElement::ScheduleShadowTreeRecreation() {
 
 void SVGUseElement::CancelShadowTreeRecreation() {
   needs_shadow_tree_recreation_ = false;
+  attach_load_event_delayer_.reset();
   GetDocument().UnscheduleUseShadowTreeUpdate(*this);
 }
 
@@ -368,8 +373,10 @@ SVGElement* SVGUseElement::InstanceRoot() const {
 void SVGUseElement::BuildPendingResource() {
   if (!isConnected()) {
     DCHECK(!needs_shadow_tree_recreation_);
+    DCHECK(!attach_load_event_delayer_);
     return;  // Already replaced by rebuilding ancestor.
   }
+  auto attach_load_event_delayer = std::move(attach_load_event_delayer_);
   CancelShadowTreeRecreation();
 
   // Check if this element is scheduled (by an ancestor) to be replaced.
@@ -388,6 +395,7 @@ void SVGUseElement::BuildPendingResource() {
     AttachShadowTree(*target);
   }
   DCHECK(!needs_shadow_tree_recreation_);
+  DCHECK(!attach_load_event_delayer_);
 }
 
 String SVGUseElement::title() const {
@@ -473,6 +481,7 @@ SVGElement* SVGUseElement::CreateInstanceTree(SVGElement& target_root) const {
 void SVGUseElement::AttachShadowTree(SVGElement& target) {
   DCHECK(!InstanceRoot());
   DCHECK(!needs_shadow_tree_recreation_);
+  DCHECK(!attach_load_event_delayer_);
 
   // Do not allow self-referencing.
   if (IsDisallowedElement(target) || HasCycleUseReferencing(*this, target))
@@ -634,10 +643,17 @@ void SVGUseElement::ResourceNotifyFinished(
       !notification_pending_) {
     return;
   }
-  load_event_delayer_.reset();
+  auto load_event_delayer = std::move(resource_load_event_delayer_);
   notification_pending_ = false;
   if (!isConnected())
     return;
+  // Don't keep delaying the 'load' event if this is within an isolated
+  // document, because we don't know when it will have its shadow trees
+  // rebuilt, so this could block them from loading.
+  if (RuntimeEnabledFeatures::SvgUseNestedResourceDocumentsDelayLoadEnabled() &&
+      InActiveDocument() && !SVGImage::IsInSVGImage(this)) {
+    attach_load_event_delayer_ = std::move(load_event_delayer);
+  }
   InvalidateShadowTree();
 
   const bool is_error = document_content->ErrorOccurred();

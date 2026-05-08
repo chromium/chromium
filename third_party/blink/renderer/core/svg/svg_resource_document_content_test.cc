@@ -29,7 +29,16 @@ class FakeSVGResourceDocumentObserver final
 
 }  // namespace
 
-class SVGResourceDocumentContentSimTest : public SimTest {};
+class SVGResourceDocumentContentSimTest : public SimTest {
+ public:
+  void FlushTaskQueue(TaskType task_queue) {
+    base::RunLoop run_loop;
+    GetDocument()
+        .GetTaskRunner(task_queue)
+        ->PostTask(FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+};
 
 TEST_F(SVGResourceDocumentContentSimTest, GetDocumentBeforeLoadComplete) {
   SimRequest main_resource("https://example.com/test.html", "text/html");
@@ -138,11 +147,7 @@ TEST_F(SVGResourceDocumentContentSimTest, AsyncLoadCompleteCallbackRace) {
 
   // Flush tasks on the "internal loading" task queue. IsolatedSVGDocumentHost
   // will post/run the async-loading-complete callback on this task queue.
-  base::RunLoop run_loop;
-  GetDocument()
-      .GetTaskRunner(TaskType::kInternalLoading)
-      ->PostTask(FROM_HERE, run_loop.QuitClosure());
-  run_loop.Run();
+  FlushTaskQueue(TaskType::kInternalLoading);
 
   // Update layout and paint. This will rebuild the instance tree for the
   // <use>. The rebuilding should not succeed (find the referenced target)
@@ -151,6 +156,14 @@ TEST_F(SVGResourceDocumentContentSimTest, AsyncLoadCompleteCallbackRace) {
   Compositor().BeginFrame();
 
   main_resource.Complete();
+
+  // Ensure that the resource finished notification has been delivered to the
+  // <use> element.
+  FlushTaskQueue(TaskType::kInternalLoading);
+
+  // Update layout (and paint). This will ensure that the <use> shadow tree has
+  // been rebuilt and the document 'load' event should no longer be delayed.
+  Compositor().BeginFrame();
 }
 
 TEST_F(SVGResourceDocumentContentSimTest,
