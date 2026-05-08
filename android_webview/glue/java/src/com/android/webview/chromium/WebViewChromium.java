@@ -4169,7 +4169,6 @@ class WebViewChromium
 
     @Override
     public void setBackgroundColor(final int color) {
-        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_SET_BACKGROUND_COLOR);
         if (checkNeedsPost()) {
             mFactory.addTask(
                     new Runnable() {
