@@ -4103,6 +4103,8 @@ static_library("ui") {
       "views/omnibox/omnibox_aim_popup_webui_content.h",
       "views/omnibox/omnibox_context_menu.cc",
       "views/omnibox/omnibox_context_menu.h",
+      "views/omnibox/omnibox_full_popup_webui_content.cc",
+      "views/omnibox/omnibox_full_popup_webui_content.h",
       "views/omnibox/omnibox_header_view.cc",
       "views/omnibox/omnibox_header_view.h",
       "views/omnibox/omnibox_local_answer_header_view.cc",

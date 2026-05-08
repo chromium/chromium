@@ -3205,6 +3205,8 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <summary>
     Records whether the renderer process has crashed and the contents is being
     reloaded before showing the WebUI AI Mode popup.
+
+    Recorded every time the AI Mode WebUI Omnibox popup web content is shown.
   </summary>
 </histogram>
 
@@ -3250,7 +3252,33 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
     Records the termination status of the AI Mode Popup WebUI renderer process
-    when it goes away. This helps monitor crash rates and types.
+    when it goes away, whether due to normal termination or a process crash.
+    This helps monitor crash rates and types.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.Popup.FullWebUI.CrashRecovery" enum="Boolean"
+    expires_after="2026-12-22">
+  <owner>khalidpeer@chromium.org</owner>
+  <owner>avivkiss@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Records whether the renderer process has crashed and the contents is being
+    reloaded before showing the Full WebUI Omnibox popup.
+
+    Recorded every time the full WebUI Omnibox popup web content is shown.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.Popup.FullWebUI.RendererProcessGoneStatus"
+    enum="OmniboxWebUIRendererProcessGoneStatus" expires_after="2026-12-22">
+  <owner>khalidpeer@chromium.org</owner>
+  <owner>avivkiss@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Records the termination status of the Full WebUI Omnibox Popup renderer
+    process when it goes away, whether due to normal termination or a process
+    crash. This helps monitor crash rates and types.
   </summary>
 </histogram>
 
@@ -3317,7 +3345,9 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
     Records whether the renderer process has crashed and the contents is being
-    reloaded before showing the WebUI Omnibox popup.
+    reloaded before showing the classic WebUI Omnibox popup.
+
+    Recorded every time the classic WebUI Omnibox popup web content is shown.
   </summary>
 </histogram>
 
@@ -3371,7 +3401,8 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
     Records the termination status of the Omnibox WebUI renderer process when it
-    goes away. This helps monitor crash rates and types.
+    goes away, whether due to normal termination or a process crash. This helps
+    monitor crash rates and types.
   </summary>
 </histogram>
 
