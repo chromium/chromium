@@ -252,7 +252,7 @@
   {
       "name": "android-bottom-toolbar-v2",
       "owners": [ "pnoland@chromium.org", "ender@google.com" ],
-      "expiry_milestone": 155
+      "expiry_milestone": 160
   },
   {
     "name": "android-caret-browsing",
@@ -4484,7 +4484,7 @@
   {
     "name": "exact-match-favicons",
     "owners": [ "skym@chromium.org", "chrome-mobile-search@google.com" ],
-    "expiry_milestone": 158
+    "expiry_milestone": 160
   },
   {
     "name": "exclude-pip-from-screen-capture",
@@ -7150,12 +7150,12 @@
   {
     "name": "omnibox-multiline-edit-field",
     "owners": [ "ender@google.com", "chrome-mobile-search@google.com"],
-    "expiry_milestone": 150
+    "expiry_milestone": 160
   },
   {
     "name": "omnibox-multimodal-input",
     "owners": [ "ender@google.com", "chrome-mobile-search@google.com" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 160
   },
   {
     "name": "omnibox-num-ntp-zps-recent-searches",
@@ -7230,7 +7230,7 @@
   {
       "name": "omnibox-site-search",
       "owners": ["ender@google.com", "chrome-mobile-search@google.com"],
-      "expiry_milestone": 155
+      "expiry_milestone": 160
   },
   {
     "name": "omnibox-starter-pack-expansion",
@@ -9011,7 +9011,7 @@
   {
     "name": "tab-storage-sqlite-prototype",
     "owners": [ "skym@chromium.org", "clank-tab-dev@google.com" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 160
   },
   {
     "name": "tab-strip-declutter",
