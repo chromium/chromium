@@ -31,6 +31,7 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
+#include "ui/accessibility/platform/ax_platform_node_win.h"
 #include "ui/accessibility/platform/inspect/ax_event_recorder_win.h"
 #include "ui/accessibility/platform/inspect/ax_event_recorder_win_uia.h"
 #endif
@@ -60,6 +61,17 @@ void CleanupViewsAXEventRecorderMac();
 #endif
 
 namespace views {
+
+#if BUILDFLAG(IS_WIN)
+namespace {
+
+void WaitForNoGhostAXPlatformNodeWin() {
+  EXPECT_TRUE(base::test::RunUntil(
+      [] { return ui::AXPlatformNodeWin::GetCounts().ghost_nodes == 0u; }));
+}
+
+}  // namespace
+#endif
 
 // --- EventRecordingSession implementation ---
 
@@ -209,6 +221,11 @@ void DumpAccessibilityEventsViewsTestBase::TearDownOnMainThread() {
 #endif
 
   widget_.reset();
+
+#if BUILDFLAG(IS_WIN)
+  // Let COM/UIA releases finish before gtest's platform-node leak listener.
+  WaitForNoGhostAXPlatformNodeWin();
+#endif
 
   InProcessBrowserTest::TearDownOnMainThread();
 }
