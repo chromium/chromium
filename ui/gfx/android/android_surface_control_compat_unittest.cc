@@ -217,6 +217,19 @@ TEST(SurfaceControl, ColorSpaceToADataSpace) {
     EXPECT_EQ(extended_range_brightness_ratio, 1.f);
   }
 
+  // Rec601 Should map to sRGB transfer per go/smpte170m-cursed.
+  {
+    ADataSpace dataspace = ADATASPACE_UNKNOWN;
+    float extended_range_brightness_ratio = 0.f;
+    EXPECT_TRUE(SurfaceControl::ColorSpaceToADataSpace(
+        gfx::ColorSpace::CreateREC601(), 1.f, dataspace,
+        extended_range_brightness_ratio));
+    EXPECT_EQ(dataspace, ADATASPACE_STANDARD_BT601_525 |
+                             ADATASPACE_TRANSFER_SRGB |
+                             ADATASPACE_RANGE_LIMITED);
+    EXPECT_EQ(extended_range_brightness_ratio, 1.f);
+  }
+
   // sRGB, but it will come out as extended because there is a >1 desired
   // brightness ratio.
   {

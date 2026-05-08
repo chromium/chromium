@@ -414,9 +414,6 @@ bool SetDataSpaceTransfer(const gfx::ColorSpace& color_space,
                           float& extended_range_brightness_ratio) {
   extended_range_brightness_ratio = 1.f;
   switch (color_space.GetTransferID()) {
-    case gfx::ColorSpace::TransferID::SMPTE170M:
-      dataspace |= ADATASPACE_TRANSFER_SMPTE_170M;
-      return true;
     case gfx::ColorSpace::TransferID::LINEAR_HDR:
       dataspace |= ADATASPACE_TRANSFER_LINEAR;
       return true;
@@ -430,7 +427,9 @@ bool SetDataSpaceTransfer(const gfx::ColorSpace& color_space,
       dataspace |= ADATASPACE_TRANSFER_SRGB;
       return true;
     case gfx::ColorSpace::TransferID::BT709:
-      // We use SRGB for BT709. See |ColorSpace::GetTransferFunction()| for
+    case gfx::ColorSpace::TransferID::SMPTE170M:
+      // We use SRGB for BT709 and SMPTE170M. See
+      // |ColorSpace::GetTransferFunction()| and go/smpte170m-cursed for
       // details.
       dataspace |= ADATASPACE_TRANSFER_SRGB;
       return true;
