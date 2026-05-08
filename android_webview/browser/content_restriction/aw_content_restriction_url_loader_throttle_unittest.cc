@@ -34,8 +34,11 @@ class MockAwContentRestrictionManagerClient
   MOCK_METHOD(bool, IsContentRestrictionEnabled, (), (override));
   MOCK_METHOD(void,
               RequestContentClassification,
-              (const network::ResourceRequest&, ContentClassificationCallback),
+              (int64_t,
+               const network::ResourceRequest&,
+               ContentClassificationCallback),
               (override));
+  MOCK_METHOD(int, CreateRequestBodyPipeAndGetWriteFd, (int64_t), (override));
 };
 
 class TestThrottleDelegate : public blink::URLLoaderThrottle::Delegate {
@@ -89,11 +92,29 @@ TEST_F(AwContentRestrictionURLLoaderThrottleTest,
   EXPECT_FALSE(tracker_.IsNavigationBlocked(kTestNavigationId));
 }
 
+TEST_F(AwContentRestrictionURLLoaderThrottleTest,
+       AllowRequestsWhenNoNavigationIdSet) {
+  // Set up a separate throttle instance with the navigation id not set.
+  TestThrottleDelegate delegate;
+  AwContentRestrictionURLLoaderThrottle throttle{&mock_client_, &tracker_,
+                                                 std::nullopt};
+  throttle.set_delegate(&delegate);
+
+  network::ResourceRequest request;
+  request.url = GURL(kTestUrl);
+  bool defer = false;
+  throttle.WillStartRequest(&request, &defer);
+
+  EXPECT_FALSE(defer);
+  EXPECT_FALSE(delegate.resume_called());
+  EXPECT_FALSE(delegate.cancel_called());
+}
+
 TEST_F(AwContentRestrictionURLLoaderThrottleTest, AllowRequest) {
   EXPECT_CALL(mock_client_, IsContentRestrictionEnabled())
       .WillOnce(Return(true));
-  EXPECT_CALL(mock_client_, RequestContentClassification(_, _))
-      .WillOnce(WithArgs<1>(
+  EXPECT_CALL(mock_client_, RequestContentClassification(_, _, _))
+      .WillOnce(WithArgs<2>(
           [](AwContentRestrictionManagerClient::ContentClassificationCallback
                  callback) { std::move(callback).Run(true); }));
 
@@ -110,8 +131,8 @@ TEST_F(AwContentRestrictionURLLoaderThrottleTest, AllowRequest) {
 TEST_F(AwContentRestrictionURLLoaderThrottleTest, BlockRequest) {
   EXPECT_CALL(mock_client_, IsContentRestrictionEnabled())
       .WillOnce(Return(true));
-  EXPECT_CALL(mock_client_, RequestContentClassification(_, _))
-      .WillOnce(WithArgs<1>(
+  EXPECT_CALL(mock_client_, RequestContentClassification(_, _, _))
+      .WillOnce(WithArgs<2>(
           [](AwContentRestrictionManagerClient::ContentClassificationCallback
                  callback) { std::move(callback).Run(false); }));
 

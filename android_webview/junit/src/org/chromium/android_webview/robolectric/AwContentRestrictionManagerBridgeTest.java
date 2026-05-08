@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 import android.content.ComponentName;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.ParcelFileDescriptor;
 
 import androidx.test.filters.SmallTest;
 
@@ -54,10 +55,13 @@ public class AwContentRestrictionManagerBridgeTest {
             "android.webkit.MetaDataHolderService";
     private static final String TEST_URL = "https://example.com";
     private static final String TEST_MIME_TYPE = "text/html";
+    private static final long TEST_NAVIGATION_ID = 123;
 
     private ManifestMetadataMockApplicationContext mContext;
     private ComponentName mMetadataServiceName;
     private Boolean mCallbackResult;
+    private AwContentRestrictionManagerBridge mBridge;
+
     private final JniOnceCallback<Boolean> mMockCallback =
             new JniOnceCallback<Boolean>() {
                 @Override
@@ -70,13 +74,22 @@ public class AwContentRestrictionManagerBridgeTest {
             };
 
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
         mCallbackResult = null;
         mContext = new ManifestMetadataMockApplicationContext(RuntimeEnvironment.application);
         mMetadataServiceName = new ComponentName(mContext, METADATA_HOLDER_SERVICE_NAME);
         ContextUtils.initApplicationContextForTests(mContext);
         AconfigFlaggedApiDelegate.setInstanceForTesting(mFlaggedApiDelegate);
         setEnableContentRestrictionMetadata(true);
+
+        // Stub out ParcelFileDescriptor.createPipe() to prevent crashes on detachFd().
+        ParcelFileDescriptor mockReadFd = Mockito.mock(ParcelFileDescriptor.class);
+        ParcelFileDescriptor mockWriteFd = Mockito.mock(ParcelFileDescriptor.class);
+        when(mockWriteFd.detachFd()).thenReturn(42);
+        AwContentRestrictionManagerBridge.setParcelFileDescriptorPipeFactoryForTesting(
+                () -> new ParcelFileDescriptor[] {mockReadFd, mockWriteFd});
+
+        mBridge = new AwContentRestrictionManagerBridge();
     }
 
     private void setEnableContentRestrictionMetadata(boolean enabled) {
@@ -91,7 +104,7 @@ public class AwContentRestrictionManagerBridgeTest {
     @Feature({"AndroidWebView"})
     @DisableFeatures({AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT})
     public void testIsContentRestrictionEnabled_featureDisabled() {
-        Assert.assertFalse(AwContentRestrictionManagerBridge.isContentRestrictionEnabled());
+        Assert.assertFalse(mBridge.isContentRestrictionEnabled());
         verifyNoInteractions(mFlaggedApiDelegate);
     }
 
@@ -101,11 +114,11 @@ public class AwContentRestrictionManagerBridgeTest {
     @EnableFeatures({AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT})
     public void testIsContentRestrictionEnabled_featureEnabled() {
         when(mFlaggedApiDelegate.isContentRestrictionEnabled()).thenReturn(true);
-        Assert.assertTrue(AwContentRestrictionManagerBridge.isContentRestrictionEnabled());
+        Assert.assertTrue(mBridge.isContentRestrictionEnabled());
         verify(mFlaggedApiDelegate).isContentRestrictionEnabled();
 
         when(mFlaggedApiDelegate.isContentRestrictionEnabled()).thenReturn(false);
-        Assert.assertFalse(AwContentRestrictionManagerBridge.isContentRestrictionEnabled());
+        Assert.assertFalse(mBridge.isContentRestrictionEnabled());
         verify(mFlaggedApiDelegate, times(2)).isContentRestrictionEnabled();
     }
 
@@ -115,7 +128,7 @@ public class AwContentRestrictionManagerBridgeTest {
     @EnableFeatures({AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT})
     public void testIsContentRestrictionEnabled_appOptOut() {
         setEnableContentRestrictionMetadata(false);
-        Assert.assertFalse(AwContentRestrictionManagerBridge.isContentRestrictionEnabled());
+        Assert.assertFalse(mBridge.isContentRestrictionEnabled());
         verifyNoInteractions(mFlaggedApiDelegate);
     }
 
@@ -124,9 +137,9 @@ public class AwContentRestrictionManagerBridgeTest {
     @Feature({"AndroidWebView"})
     @EnableFeatures({AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT})
     public void testRequestContentClassification_invalidUrl() {
-        AwContentRestrictionManagerBridge.requestContentClassification(
-                /* url= */ null, TEST_MIME_TYPE, mMockCallback);
-        Assert.assertEquals(false, mCallbackResult);
+        mBridge.requestContentClassification(
+                TEST_NAVIGATION_ID, /* url= */ null, TEST_MIME_TYPE, mMockCallback);
+        Assert.assertFalse("Should block requests with invalid URL", mCallbackResult);
         verifyNoInteractions(mFlaggedApiDelegate);
     }
 
@@ -136,10 +149,10 @@ public class AwContentRestrictionManagerBridgeTest {
     @EnableFeatures({AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT})
     public void testRequestContentClassification_delegateMissing() {
         AconfigFlaggedApiDelegate.setInstanceForTesting(null);
-        AwContentRestrictionManagerBridge.requestContentClassification(
-                TEST_URL, TEST_MIME_TYPE, mMockCallback);
+        mBridge.requestContentClassification(
+                TEST_NAVIGATION_ID, TEST_URL, TEST_MIME_TYPE, mMockCallback);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        Assert.assertEquals(false, mCallbackResult);
+        Assert.assertFalse("Should block requests when delegate is missing", mCallbackResult);
         verifyNoInteractions(mFlaggedApiDelegate);
     }
 
@@ -150,13 +163,16 @@ public class AwContentRestrictionManagerBridgeTest {
     public void testRequestContentClassification_allowed() {
         Promise<Boolean> promise = new Promise<>();
         when(mFlaggedApiDelegate.requestContentRestrictionClassification(
-                        Mockito.any(), Mockito.eq(null), Mockito.eq(TEST_MIME_TYPE), Mockito.any()))
+                        /* uri= */ Mockito.any(),
+                        /* requestBody= */ Mockito.eq(null),
+                        /* mimeType= */ Mockito.eq(TEST_MIME_TYPE),
+                        /* executor= */ Mockito.any()))
                 .thenReturn(promise);
-        AwContentRestrictionManagerBridge.requestContentClassification(
-                TEST_URL, TEST_MIME_TYPE, mMockCallback);
+        mBridge.requestContentClassification(
+                TEST_NAVIGATION_ID, TEST_URL, TEST_MIME_TYPE, mMockCallback);
         promise.fulfill(true);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        Assert.assertEquals(true, mCallbackResult);
+        Assert.assertTrue("Should allow request when delegate allows", mCallbackResult);
     }
 
     @Test
@@ -166,13 +182,60 @@ public class AwContentRestrictionManagerBridgeTest {
     public void testRequestContentClassification_blocked() {
         Promise<Boolean> promise = new Promise<>();
         when(mFlaggedApiDelegate.requestContentRestrictionClassification(
-                        Mockito.any(), Mockito.eq(null), Mockito.eq(TEST_MIME_TYPE), Mockito.any()))
+                        /* uri= */ Mockito.any(),
+                        /* requestBody= */ Mockito.eq(null),
+                        /* mimeType= */ Mockito.eq(TEST_MIME_TYPE),
+                        /* executor= */ Mockito.any()))
                 .thenReturn(promise);
-        AwContentRestrictionManagerBridge.requestContentClassification(
-                TEST_URL, TEST_MIME_TYPE, mMockCallback);
+        mBridge.requestContentClassification(
+                TEST_NAVIGATION_ID, TEST_URL, TEST_MIME_TYPE, mMockCallback);
         promise.fulfill(false);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        Assert.assertEquals(false, mCallbackResult);
+        Assert.assertFalse("Should block request when delegate denies", mCallbackResult);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @EnableFeatures({AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT})
+    public void testRequestContentClassification_withRequestBody() {
+        mBridge.createRequestBodyPipeAndGetWriteFd(TEST_NAVIGATION_ID);
+        Promise<Boolean> promise = new Promise<>();
+        when(mFlaggedApiDelegate.requestContentRestrictionClassification(
+                        /* uri= */ Mockito.any(),
+                        /* requestBody= */ Mockito.isNotNull(),
+                        /* mimeType= */ Mockito.eq(TEST_MIME_TYPE),
+                        /* executor= */ Mockito.any()))
+                .thenReturn(promise);
+        mBridge.requestContentClassification(
+                TEST_NAVIGATION_ID, TEST_URL, TEST_MIME_TYPE, mMockCallback);
+        promise.fulfill(true);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        Assert.assertTrue("Should allow request when delegate allows", mCallbackResult);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @EnableFeatures({AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT})
+    public void testDestroyCleansUpReadFileDescriptorMap() {
+        mBridge.createRequestBodyPipeAndGetWriteFd(TEST_NAVIGATION_ID);
+        mBridge.destroy();
+
+        // Although non-conventional, we verify that there is no request body being tracked by
+        // triggering a request to classify content.
+        Promise<Boolean> promise = new Promise<>();
+        when(mFlaggedApiDelegate.requestContentRestrictionClassification(
+                        /* uri= */ Mockito.any(),
+                        /* requestBody= */ Mockito.eq(null),
+                        /* mimeType= */ Mockito.eq(TEST_MIME_TYPE),
+                        /* executor= */ Mockito.any()))
+                .thenReturn(promise);
+        mBridge.requestContentClassification(
+                TEST_NAVIGATION_ID, TEST_URL, TEST_MIME_TYPE, mMockCallback);
+        promise.fulfill(true);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        Assert.assertTrue("Should allow request when delegate allows", mCallbackResult);
     }
 
     @Test
@@ -180,7 +243,7 @@ public class AwContentRestrictionManagerBridgeTest {
     @Feature({"AndroidWebView"})
     @EnableFeatures({AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT})
     public void testSendShowRestrictedContentIntent_invalidUrl() {
-        Assert.assertFalse(AwContentRestrictionManagerBridge.sendShowRestrictedContentIntent(null));
+        Assert.assertFalse(mBridge.sendShowRestrictedContentIntent(null));
         verifyNoInteractions(mFlaggedApiDelegate);
     }
 
@@ -190,8 +253,7 @@ public class AwContentRestrictionManagerBridgeTest {
     @EnableFeatures({AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT})
     public void testSendShowRestrictedContentIntent_delegateMissing() {
         AconfigFlaggedApiDelegate.setInstanceForTesting(null);
-        Assert.assertFalse(
-                AwContentRestrictionManagerBridge.sendShowRestrictedContentIntent(TEST_URL));
+        Assert.assertFalse(mBridge.sendShowRestrictedContentIntent(TEST_URL));
         verifyNoInteractions(mFlaggedApiDelegate);
     }
 
@@ -203,8 +265,7 @@ public class AwContentRestrictionManagerBridgeTest {
         Uri testUri = Uri.parse(TEST_URL);
         when(mFlaggedApiDelegate.sendShowRestrictedContentIntent(Mockito.eq(testUri)))
                 .thenReturn(true);
-        Assert.assertTrue(
-                AwContentRestrictionManagerBridge.sendShowRestrictedContentIntent(TEST_URL));
+        Assert.assertTrue(mBridge.sendShowRestrictedContentIntent(TEST_URL));
         verify(mFlaggedApiDelegate).sendShowRestrictedContentIntent(Mockito.eq(testUri));
     }
 
@@ -216,8 +277,7 @@ public class AwContentRestrictionManagerBridgeTest {
         Uri testUri = Uri.parse(TEST_URL);
         when(mFlaggedApiDelegate.sendShowRestrictedContentIntent(Mockito.eq(testUri)))
                 .thenReturn(false);
-        Assert.assertFalse(
-                AwContentRestrictionManagerBridge.sendShowRestrictedContentIntent(TEST_URL));
+        Assert.assertFalse(mBridge.sendShowRestrictedContentIntent(TEST_URL));
         verify(mFlaggedApiDelegate).sendShowRestrictedContentIntent(Mockito.eq(testUri));
     }
 }

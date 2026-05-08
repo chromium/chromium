@@ -26,10 +26,13 @@ void AwContentRestrictionURLLoaderThrottle::WillStartRequest(
     network::ResourceRequest* request,
     bool* defer) {
   DCHECK(content_restriction_manager_client_);
-  if (content_restriction_manager_client_->IsContentRestrictionEnabled()) {
+  if (navigation_id_.has_value() &&
+      content_restriction_manager_client_->IsContentRestrictionEnabled()) {
     *defer = true;
+
+    // TODO(crbug.com/481113476): Also process the request body.
     content_restriction_manager_client_->RequestContentClassification(
-        *request,
+        navigation_id_.value(), *request,
         base::BindOnce(
             &AwContentRestrictionURLLoaderThrottle::OnClassificationResult,
             weak_ptr_factory_.GetWeakPtr()));
