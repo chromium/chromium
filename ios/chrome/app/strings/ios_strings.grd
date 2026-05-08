@@ -551,6 +551,9 @@
       <message name="IDS_IOS_ASK_GEMINI_CHIP_PREFILL_PROMPT" desc="Prefill prompt passed to the floaty when the Ask Gemini Chip is tapped [iOS only]">
         Give me a one-line summary and useful insights beyond this page. Use a concise, casual tone. Limit to 100 words.
       </message>
+      <message name="IDS_IOS_ASK_GEMINI_EDIT_MENU" desc="Edit Menu button to ask Gemini about the selected text.">
+        Ask Gemini
+      </message>
       <message name="IDS_IOS_AUTH_REASON" desc="A description that appears when the user needs to authenticate to use a suggestion.">
       Chrome keeps your sensitive data secure with Face ID
       </message>
@@ -6797,6 +6800,9 @@ Handoff must also be enabled in the General section of Settings, and your device
       </message>
       <message name="IDS_IOS_SEARCH_WHAT_YOU_SEE_TIPS_PROMO_TITLE" desc="The title for the 'Search what you see' promotional UI. [iOS only]">
         Search what you see with Google Lens
+      </message>
+      <message name="IDS_IOS_SEARCH_WITH_TITLE_PROVIDER_SEARCH" desc="Edit menu button title to open a tab with a Search query of the current selection. Will contain the search provider. [Length: 25em]." meaning="Edit menu Search button [Length: 25em]">
+        <ph name="SEARCH_PROVIDER">$1<ex>Google</ex></ph> Search
       </message>
       <message name="IDS_IOS_SEARCH_WITH_TITLE_SEARCH_WITH" desc="Edit menu button title to open a tab with a Search query of the current selection. Will contain the search provider. [Length: 25em]." meaning="Edit menu Search button [Length: 25em]">
         Search with <ph name="SEARCH_PROVIDER">$1<ex>Google</ex></ph>

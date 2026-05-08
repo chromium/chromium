@@ -254,6 +254,9 @@ PositionForExplainGeminiEditMenu ExplainGeminiEditMenuPosition() {
   if (param == 2) {
     return PositionForExplainGeminiEditMenu::kAfterSearch;
   }
+  if (param == 3) {
+    return PositionForExplainGeminiEditMenu::kAdjacent;
+  }
   return PositionForExplainGeminiEditMenu::kDisabled;
 }
 

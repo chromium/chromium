@@ -74,6 +74,10 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
 
 // Returns the title of button Explain With Gemini.
 - (NSString*)buttonTitle {
+  if (ExplainGeminiEditMenuPosition() ==
+      PositionForExplainGeminiEditMenu::kAdjacent) {
+    return l10n_util::GetNSString(IDS_IOS_ASK_GEMINI_EDIT_MENU);
+  }
   return l10n_util::GetNSString(IDS_IOS_EXPLAIN_GEMINI_EDIT_MENU);
 }
 
@@ -233,6 +237,12 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
     menuElement = [UIDeferredMenuElement elementWithProvider:provider];
   }
 
+  if (ExplainGeminiEditMenuPosition() ==
+      PositionForExplainGeminiEditMenu::kAdjacent) {
+    edit_menu::AddElementToChromeMenu(builder, menuElement,
+                                      /*primary*/ YES);
+    return;
+  }
   if (ExplainGeminiEditMenuPosition() ==
       PositionForExplainGeminiEditMenu::kAfterSearch) {
     edit_menu::AddElementToChromeMenu(builder, menuElement,

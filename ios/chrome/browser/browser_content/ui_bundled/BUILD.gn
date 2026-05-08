@@ -117,6 +117,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/enterprise/data_controls/model",
     "//ios/chrome/browser/enterprise/data_controls/model:test_support",
     "//ios/chrome/browser/fullscreen/ui_bundled",
+    "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/link_to_text/model",
     "//ios/chrome/browser/link_to_text/ui_bundled",
     "//ios/chrome/browser/overlays/model",

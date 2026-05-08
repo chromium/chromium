@@ -16,6 +16,7 @@
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/browser_content/ui_bundled/browser_edit_menu_utils.h"
 #import "ios/chrome/browser/enterprise/data_controls/model/data_controls_tab_helper.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
@@ -118,7 +119,12 @@ void LogSelectedNumberChar(NSUInteger textLength) {
 
 // The title for the `Search with` button.
 - (NSString*)buttonTitle {
-  // Default value
+  if (ExplainGeminiEditMenuPosition() ==
+      PositionForExplainGeminiEditMenu::kAdjacent) {
+    return l10n_util::GetNSStringF(
+        IDS_IOS_SEARCH_WITH_TITLE_PROVIDER_SEARCH,
+        _templateURLService->GetDefaultSearchProvider()->short_name());
+  }
   return l10n_util::GetNSStringF(
       IDS_IOS_SEARCH_WITH_TITLE_SEARCH_WITH,
       _templateURLService->GetDefaultSearchProvider()->short_name());
