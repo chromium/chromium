@@ -128,7 +128,8 @@ class PhishingImageEmbedderDelegate
   // 1. Visual extraction fails
   // 2. Model TfLite metadata is missing for embedding tflite model dimensions
   // 3. Embedder failed due to embedder creation or process failure.
-  void ImageEmbeddingDone(const ImageFeatureEmbedding& image_feature_embedding,
+  void ImageEmbeddingDone(PhishingImageEmbedder::Result result,
+                          const ImageFeatureEmbedding& image_feature_embedding,
                           const VisualFeatures& visual_features);
 
   // Shared code to begin image embedding if all conditions are met.

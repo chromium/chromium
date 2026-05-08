@@ -26,6 +26,7 @@
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/common/visual_utils.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/phishing_classifier_delegate.h"
+#include "components/safe_browsing/content/renderer/phishing_classifier/phishing_dom_utils.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/phishing_visual_feature_extractor.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/scorer.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -82,18 +83,16 @@ void PhishingClassifier::BeginClassification(DoneCallback done_callback) {
 
   blink::WebLocalFrame* frame = render_frame_->GetWebFrame();
 
-  // Check whether the URL is one that we should classify.
-  // Currently, we only classify http/https URLs that are GET requests.
-  GURL url(frame->GetDocument().Url());
-  if (!url.SchemeIsHTTPOrHTTPS()) {
-    RunFailureCallback(Result::kInvalidURLFormatRequest);
-    return;
-  }
-
-  blink::WebDocumentLoader* document_loader = frame->GetDocumentLoader();
-  if (!document_loader || document_loader->HttpMethod().Ascii() != "GET") {
-    RunFailureCallback(Result::kInvalidDocumentLoader);
-    return;
+  PhishingProcessStatus status = CanPerformPhishingDetection(frame);
+  switch (status) {
+    case PhishingProcessStatus::kInvalidUrlFormat:
+      RunFailureCallback(PhishingClassifier::Result::kInvalidURLFormatRequest);
+      return;
+    case PhishingProcessStatus::kInvalidDomLoader:
+      RunFailureCallback(PhishingClassifier::Result::kInvalidDocumentLoader);
+      return;
+    case PhishingProcessStatus::kValid:
+      break;
   }
 
   // For consistency, we always want to invoke the DoneCallback

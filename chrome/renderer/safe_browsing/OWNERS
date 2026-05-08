@@ -1,3 +1,4 @@
 file://components/safe_browsing/OWNERS
 
 per-file *phishing_classifier*=andysjlim@chromium.org
+per-file *phishing_dom_utils*=andysjlim@chromium.org

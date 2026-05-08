@@ -193,6 +193,7 @@ void PhishingImageEmbedderDelegate::CancelPendingImageEmbedding(
 }
 
 void PhishingImageEmbedderDelegate::ImageEmbeddingDone(
+    PhishingImageEmbedder::Result result,
     const ImageFeatureEmbedding& image_feature_embedding,
     const VisualFeatures& visual_features) {
   RecordEvent(SBPhishingImageEmbedderEvent::kImageEmbeddingComplete);
@@ -204,15 +205,34 @@ void PhishingImageEmbedderDelegate::ImageEmbeddingDone(
   }
 
   RecordEvent(SBPhishingImageEmbedderEvent::kImageEmbeddingRequestResponded);
-  if (image_feature_embedding.embedding_value_size()) {
+  mojom::PhishingImageEmbeddingResult final_result =
+      mojom::PhishingImageEmbeddingResult::kSuccess;
+  switch (result) {
+    case PhishingImageEmbedder::Result::kSuccess:
+      if (image_feature_embedding.embedding_value_size() == 0) {
+        final_result = mojom::PhishingImageEmbeddingResult::kFailed;
+      }
+      break;
+    case PhishingImageEmbedder::Result::kInvalidURLFormatRequest:
+      final_result =
+          mojom::PhishingImageEmbeddingResult::kInvalidURLFormatRequest;
+      break;
+    case PhishingImageEmbedder::Result::kInvalidDocumentLoader:
+      final_result =
+          mojom::PhishingImageEmbeddingResult::kInvalidDocumentLoader;
+      break;
+    case PhishingImageEmbedder::Result::kVisualExtractionFailed:
+      final_result = mojom::PhishingImageEmbeddingResult::kFailed;
+      break;
+  }
+
+  if (final_result == mojom::PhishingImageEmbeddingResult::kSuccess) {
     std::move(image_embedding_callback_)
-        .Run(mojom::PhishingImageEmbeddingResult::kSuccess,
-             mojo_base::ProtoWrapper(image_feature_embedding),
+        .Run(final_result, mojo_base::ProtoWrapper(image_feature_embedding),
              mojo_base::ProtoWrapper(visual_features));
   } else {
     std::move(image_embedding_callback_)
-        .Run(mojom::PhishingImageEmbeddingResult::kFailed, std::nullopt,
-             std::nullopt);
+        .Run(final_result, std::nullopt, std::nullopt);
   }
 }
 

@@ -9,6 +9,7 @@
 #include "base/trace_event/trace_event.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/common/visual_utils.h"
+#include "components/safe_browsing/content/renderer/phishing_classifier/phishing_dom_utils.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/phishing_visual_feature_extractor.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/scorer.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -48,8 +49,22 @@ void PhishingImageEmbedder::BeginImageEmbedding(
   visual_extractor_ = std::make_unique<PhishingVisualFeatureExtractor>();
   done_callback_ = std::move(done_callback);
 
+  blink::WebLocalFrame* frame = render_frame_->GetWebFrame();
+
+  PhishingProcessStatus status = CanPerformPhishingDetection(frame);
+  switch (status) {
+    case PhishingProcessStatus::kInvalidUrlFormat:
+      RunFailureCallback(Result::kInvalidURLFormatRequest);
+      return;
+    case PhishingProcessStatus::kInvalidDomLoader:
+      RunFailureCallback(Result::kInvalidDocumentLoader);
+      return;
+    case PhishingProcessStatus::kValid:
+      break;
+  }
+
   visual_extractor_->ExtractFeatures(
-      render_frame_->GetWebFrame(),
+      frame,
       base::BindOnce(&PhishingImageEmbedder::OnPlaybackDone,
                      weak_factory_.GetWeakPtr(), can_extract_visual_features));
 }
@@ -67,7 +82,7 @@ void PhishingImageEmbedder::OnPlaybackDone(bool can_extract_visual_features,
                            weak_factory_.GetWeakPtr(),
                            can_extract_visual_features));
   } else {
-    RunFailureCallback();
+    RunFailureCallback(Result::kVisualExtractionFailed);
   }
 }
 
@@ -97,27 +112,30 @@ void PhishingImageEmbedder::OnImageEmbeddingDone(
         base::BindOnce(&PhishingImageEmbedder::OnVisualFeaturesExtracted,
                        weak_factory_.GetWeakPtr(), image_feature_embedding));
   } else {
-    RunCallback(image_feature_embedding, VisualFeatures());
+    RunCallback(Result::kSuccess, image_feature_embedding, VisualFeatures());
   }
 }
 
 void PhishingImageEmbedder::OnVisualFeaturesExtracted(
     ImageFeatureEmbedding image_feature_embedding,
     std::unique_ptr<VisualFeatures> visual_features) {
-  RunCallback(image_feature_embedding, *visual_features.get());
+  RunCallback(Result::kSuccess, image_feature_embedding,
+              *visual_features.get());
 }
 
 void PhishingImageEmbedder::RunCallback(
+    Result result,
     const ImageFeatureEmbedding& image_feature_embedding,
     const VisualFeatures& visual_features) {
   TRACE_EVENT_END("safe_browsing", /* PhishingImageEmbedding */
                   perfetto::Track::FromPointer(this));
-  std::move(done_callback_).Run(image_feature_embedding, visual_features);
+  std::move(done_callback_)
+      .Run(result, image_feature_embedding, visual_features);
   Clear();
 }
 
-void PhishingImageEmbedder::RunFailureCallback() {
-  RunCallback(ImageFeatureEmbedding(), VisualFeatures());
+void PhishingImageEmbedder::RunFailureCallback(Result result) {
+  RunCallback(result, ImageFeatureEmbedding(), VisualFeatures());
 }
 
 void PhishingImageEmbedder::Clear() {

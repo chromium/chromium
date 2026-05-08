@@ -287,6 +287,10 @@ enum PhishingImageEmbeddingResult {
   kForwardBackTransition,
   // the image embedder process failed
   kFailed,
+  // Invalid URL request came in that is not HTTP/HTTPS or GET requests.
+  kInvalidURLFormatRequest,
+  // WebDocumentLoader failed to load.
+  kInvalidDocumentLoader,
 };
 
 // Interface for starting image embedding. This is scoped to a

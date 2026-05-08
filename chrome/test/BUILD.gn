@@ -2394,8 +2394,10 @@ if (is_android) {
     }
 
     if (safe_browsing_mode != 0) {
-      sources +=
-          [ "../renderer/safe_browsing/phishing_classifier_browsertest.cc" ]
+      sources += [
+        "../renderer/safe_browsing/phishing_classifier_browsertest.cc",
+        "../renderer/safe_browsing/phishing_dom_utils_browsertest.cc",
+      ]
 
       deps += [
         "//components/safe_browsing/content/browser:client_side_detection",
@@ -6057,6 +6059,7 @@ if (!is_android) {
           # message loops. See 306348
           "../renderer/safe_browsing/phishing_classifier_browsertest.cc",
           "../renderer/safe_browsing/phishing_classifier_delegate_browsertest.cc",
+          "../renderer/safe_browsing/phishing_dom_utils_browsertest.cc",
         ]
       }
     }

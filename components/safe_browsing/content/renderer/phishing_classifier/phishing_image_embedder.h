@@ -27,8 +27,16 @@ class PhishingVisualFeatureExtractor;
 // image_embedder.h
 class PhishingImageEmbedder {
  public:
+  enum class Result {
+    kSuccess = 0,
+    kInvalidURLFormatRequest = 1,
+    kInvalidDocumentLoader = 2,
+    kVisualExtractionFailed = 3,
+  };
+
   using DoneCallback =
-      base::OnceCallback<void(const ImageFeatureEmbedding& /* verdict */,
+      base::OnceCallback<void(Result /* result */,
+                              const ImageFeatureEmbedding& /* verdict */,
                               const VisualFeatures& /* visual_features */)>;
 
   explicit PhishingImageEmbedder(content::RenderFrame* render_frame);
@@ -74,12 +82,13 @@ class PhishingImageEmbedder {
 
   // Helper method to run the Image Embedding process' DoneCallback and clear
   // the state.
-  void RunCallback(const ImageFeatureEmbedding& image_feature_embedding,
+  void RunCallback(Result result,
+                   const ImageFeatureEmbedding& image_feature_embedding,
                    const VisualFeatures& visual_features);
 
   // Helper to run the DoneCallback when the visual extraction has failed. This
   // will always send an empty ImageFeatureEmbedding object.
-  void RunFailureCallback();
+  void RunFailureCallback(Result result);
 
   // Clears the current state of the ImageEmbedder.
   void Clear();
