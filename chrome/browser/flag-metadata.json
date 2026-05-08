@@ -2814,9 +2814,11 @@
     "name": "enable-android-grammar-check",
     "owners": [
       "jhtin@google.com",
+      "hdchuong@google.com",
+      "tranbaoduy@google.com",
       "essential-inputs-team@google.com"
     ],
-    "expiry_milestone": 150
+    "expiry_milestone": 160
   },
   {
     "name": "enable-android-media-insertion",
@@ -2890,17 +2892,21 @@
     "name": "enable-android-spellcheck-full-api-blink",
     "owners": [
       "jhtin@google.com",
+      "hdchuong@google.com",
+      "tranbaoduy@google.com",
       "essential-inputs-team@google.com"
     ],
-    "expiry_milestone": 150
+    "expiry_milestone": 160
   },
   {
     "name": "enable-android-spellcheck-native-ui",
     "owners": [
       "jhtin@google.com",
+      "hdchuong@google.com",
+      "tranbaoduy@google.com",
       "essential-inputs-team@google.com"
     ],
-    "expiry_milestone": 150
+    "expiry_milestone": 160
   },
   {
     "name": "enable-android-window-occlusion",
