@@ -3646,20 +3646,6 @@ Called by update_extension_permission.py.-->
   <int value="3" label="Dialog closed without user action"/>
 </enum>
 
-<enum name="TabsRemoveActionType">
-  <int value="0" label="kOtherRemovals"/>
-  <int value="1" label="kDSERemovalsWithoutUserGesture"/>
-  <int value="2" label="kDSERemovalsWithUserGesture"/>
-  <int value="3" label="kDSERemovalsAfterLandingOnSERP"/>
-</enum>
-
-<enum name="TabsUpdateActionType">
-  <int value="0" label="kOtherUpdates"/>
-  <int value="1" label="kDSERedirectsWithoutUserGesture"/>
-  <int value="2" label="kDSERedirectsWithUserGesture"/>
-  <int value="3" label="kDSERedirectsAfterLandingOnSERP"/>
-</enum>
-
 <enum name="UpdateDynamicRulesStatus">
   <int value="0" label="kSuccess"/>
   <int value="1" label="kErrorReadJSONRules"/>
