@@ -427,7 +427,6 @@ class WinWebAuthnBrowserTest
   WinWebAuthnBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         {device::kWebAuthnHelloSignal,
-         device::kWebAuthenticationWindowsHints,
          device::kWebAuthnSignalApiHidePasskeys},
         /*disabled_features=*/{});
   }

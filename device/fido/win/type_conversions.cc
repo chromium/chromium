@@ -29,7 +29,6 @@
 #include "device/fido/get_assertion_request_handler.h"
 #include "device/fido/make_credential_request_handler.h"
 #include "device/fido/opaque_attestation_statement.h"
-#include "device/fido/public/features.h"
 #include "device/fido/public/fido_transport_protocol.h"
 #include "device/fido/public/fido_types.h"
 #include "third_party/microsoft_webauthn/src/webauthn.h"
@@ -416,9 +415,6 @@ WinCredentialDetailsListToCredentialMetadata(
 
 std::vector<const wchar_t*> ToWinCredentialHints(
     base::span<const blink::mojom::Hint> hints) {
-  if (!base::FeatureList::IsEnabled(kWebAuthenticationWindowsHints)) {
-    return {};
-  }
   std::vector<const wchar_t*> ret;
   ret.reserve(hints.size());
   for (const blink::mojom::Hint& hint : hints) {
