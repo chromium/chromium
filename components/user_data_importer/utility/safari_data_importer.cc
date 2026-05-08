@@ -23,6 +23,7 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
+#include "components/history/core/browser/history_backend.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/common/pref_names.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
@@ -142,6 +143,17 @@ bool IsRedirect(const GURL& source_url, const GURL& destination_url) {
 
 // Returns whether to skip this history entry.
 bool IsSkippedEntry(const user_data_importer::SafariHistoryEntry& entry) {
+  // Skip entries that are older than the history retention threshold.
+  base::Time last_visit =
+      base::Time::UnixEpoch() + base::Microseconds(entry.time_usec);
+  base::Time expiration_time =
+      base::Time::Now() -
+      base::Days(history::HistoryBackend::kExpireDaysThreshold);
+
+  if (last_visit < expiration_time) {
+    return true;
+  }
+
   // If either source or destination URL is missing, we can't determine if this
   // entry should be skipped.
   if (entry.source_url.empty() || entry.destination_url.empty()) {
