@@ -203,10 +203,21 @@ wnwen@chromium.org
     }
 
     static String makeReadme(ChromiumDepGraph.DependencyDescription dependency) {
-        List<String> licenseStrings = []
+        List<String> licenseNames = []
         for (ChromiumDepGraph.LicenseSpec license : dependency.licenses) {
+            String name = license.name
+            if (!licenseNames.isEmpty() && (name?.startsWith("Version ") || name?.startsWith("Inc."))) {
+                String last = licenseNames.remove(licenseNames.size() - 1)
+                licenseNames.add(last + ", " + name)
+            } else {
+                licenseNames.add(name)
+            }
+        }
+
+        List<String> licenseStrings = []
+        for (String licenseName : licenseNames) {
             // Replace license names with ones that are whitelisted, see third_party/PRESUBMIT.py
-            switch (license.name) {
+            switch (licenseName) {
                 case 'The Apache License, Version 2.0':
                 case 'The Apache Software License, Version 2.0':
                 case 'Apache 2.0':
@@ -224,8 +235,16 @@ wnwen@chromium.org
                 case 'GNU General Public License, version 2, with the Classpath Exception':
                     licenseStrings.add('GPL-2.0-with-classpath-exception')
                     break
+                case 'SIL Open Font License':
+                case 'SIL Open Font License, Version 1.1':
+                    licenseStrings.add('OFL-1.1')
+                    break
+                case 'Unicode':
+                case 'Unicode, Inc. License':
+                    licenseStrings.add('Unicode-DFS-2016')
+                    break
                 default:
-                    licenseStrings.add(license.name)
+                    licenseStrings.add(licenseName)
             }
         }
         String licenseString = String.join(', ', licenseStrings)
