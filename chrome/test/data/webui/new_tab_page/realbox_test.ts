@@ -460,7 +460,7 @@ suite('NewTabPageRealboxNextTest', () => {
     assertEquals('running', maskBeforeStyle.animationPlayState);
   });
 
-  test('composeanimation plays on page load.', async () => {
+  test('composeanimation does not play on page load.', async () => {
     loadTimeData.overrideValues({searchboxShowComposeAnimation: true});
 
     realbox = createAndAppendRealbox({
@@ -480,7 +480,7 @@ suite('NewTabPageRealboxNextTest', () => {
         composeButton.shadowRoot.querySelector<HTMLElement>(
             '#glowAnimationWrapper');
     assertTrue(!!glowAnimationWrapper);
-    assertTrue(glowAnimationWrapper.classList.contains('play'));
+    assertFalse(glowAnimationWrapper.classList.contains('play'));
   });
 
   test('compose animation does not play on page load.', async () => {
