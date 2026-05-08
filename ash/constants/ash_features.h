@@ -773,8 +773,6 @@ BASE_DECLARE_FEATURE(kShimlessRMA3pDiagnosticsDevMode);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kShimlessRMA3pDiagnosticsAllowPermissionPolicy);
 COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kShimlessRMAHardwareValidationSkip);
-COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kShimlessRMAFlexibleSerialNumberName);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kShimlessRMAHideGoogleSKU);
@@ -1287,10 +1285,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsShimlessRMAOsUpdateEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsShimlessRMA3pDiagnosticsDevModeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsShimlessRMA3pDiagnosticsAllowPermissionPolicyEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsShimlessRMAHardwareValidationSkipEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsShimlessRMADynamicDeviceInfoInputsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsShimlessRMAFlexibleSerialNumberNameEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)

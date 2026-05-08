@@ -1731,11 +1731,6 @@ BASE_FEATURE(kShimlessRMA3pDiagnosticsDevMode,
 BASE_FEATURE(kShimlessRMA3pDiagnosticsAllowPermissionPolicy,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables or disables the skip option of hardware validation on Shimless RMA
-// landing page.
-BASE_FEATURE(kShimlessRMAHardwareValidationSkip,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables or disables the option to allow customized Serial Number namings.
 BASE_FEATURE(kShimlessRMAFlexibleSerialNumberName,
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -3214,10 +3209,6 @@ bool IsShimlessRMA3pDiagnosticsDevModeEnabled() {
 bool IsShimlessRMA3pDiagnosticsAllowPermissionPolicyEnabled() {
   return base::FeatureList::IsEnabled(
       kShimlessRMA3pDiagnosticsAllowPermissionPolicy);
-}
-
-bool IsShimlessRMAHardwareValidationSkipEnabled() {
-  return base::FeatureList::IsEnabled(kShimlessRMAHardwareValidationSkip);
 }
 
 bool IsShimlessRMAFlexibleSerialNumberNameEnabled() {

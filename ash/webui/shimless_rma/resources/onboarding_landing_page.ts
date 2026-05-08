@@ -179,8 +179,7 @@ export class OnboardingLandingPage extends OnboardingLandingPageBase {
    */
   onHardwareVerificationResult(result: HardwareVerificationResult): void {
     this.isCompliant = result.passResult !== undefined;
-    this.isSkipped = loadTimeData.getBoolean('hardwareValidationSkipEnabled') &&
-        result.skipResult !== undefined;
+    this.isSkipped = result.skipResult !== undefined;
     this.verificationInProgress = false;
 
     if (!this.isSkipped && !this.isCompliant) {
