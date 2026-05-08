@@ -161,4 +161,51 @@ test_interpolation({
   {at: 0.5, expect: 'path("M 30 100 H 170")'},
   {at: 1, expect: 'path("M 10 140 H 270")'},
 ]);
+
+// Same explicit <shape-box> on both sides interpolates segment-by-segment;
+// the trailing <shape-box> is preserved through the interpolated keyframes.
+test_interpolation({
+  property: 'shape-outside',
+  from: 'path("M 50 60 H 70") padding-box',
+  to: 'path("M 10 140 H 270") padding-box',
+}, [
+  {at: 0, expect: 'path("M 50 60 H 70") padding-box'},
+  {at: 0.5, expect: 'path("M 30 100 H 170") padding-box'},
+  {at: 1, expect: 'path("M 10 140 H 270") padding-box'},
+]);
+
+// Implicit and explicit margin-box are equivalent (margin-box is the spec
+// default), so they interpolate segment-by-segment.
+test_interpolation({
+  property: 'shape-outside',
+  from: 'path("M 50 60 H 70")',
+  to: 'path("M 10 140 H 270") margin-box',
+}, [
+  {at: 0, expect: 'path("M 50 60 H 70")'},
+  {at: 0.5, expect: 'path("M 30 100 H 170")'},
+  {at: 1, expect: 'path("M 10 140 H 270")'},
+]);
+
+test_interpolation({
+  property: 'shape-outside',
+  from: 'path("M 50 60 H 70") border-box',
+  to: 'path("M 10 140 H 270") border-box',
+}, [
+  {at: 0, expect: 'path("M 50 60 H 70") border-box'},
+  {at: 0.5, expect: 'path("M 30 100 H 170") border-box'},
+  {at: 1, expect: 'path("M 10 140 H 270") border-box'},
+]);
+
+// Mismatched <shape-box> falls back to discrete animation.
+test_no_interpolation({
+  property: 'shape-outside',
+  from: 'path("M 10 10 L 20 20 Z") border-box',
+  to: 'path("M 50 50 L 60 60 Z") padding-box',
+});
+
+test_no_interpolation({
+  property: 'shape-outside',
+  from: 'path("M 10 10 L 20 20 Z") content-box',
+  to: 'path("M 50 50 L 60 60 Z") margin-box',
+});
 </script>

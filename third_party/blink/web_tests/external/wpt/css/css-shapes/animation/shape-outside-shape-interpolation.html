@@ -169,4 +169,50 @@ test_no_interpolation({
   from: 'path("M10 10 M10 10")',
   to: 'shape(from 10px 10px, close)',
 });
+
+// Same explicit <shape-box> on both sides interpolates command-by-command;
+// the trailing <shape-box> is preserved through the interpolated keyframes.
+test_interpolation({
+  property: 'shape-outside',
+  from: 'shape(from 5px 5px, line to 10px 10%) padding-box',
+  to: 'shape(from -5px 5px, line to 20px 20%) padding-box',
+}, [
+  {at: 0, expect: 'shape(from 5px 5px, line to 10px 10%) padding-box'},
+  {at: 0.5, expect: 'shape(from 0px 5px, line to 15px 15%) padding-box'},
+  {at: 1, expect: 'shape(from -5px 5px, line to 20px 20%) padding-box'},
+]);
+
+test_interpolation({
+  property: 'shape-outside',
+  from: 'shape(from 5px 5px, hline to 5px, vline to -5px, close) border-box',
+  to: 'shape(from 15px 15px, hline to 25px, vline to -15px, close) border-box',
+}, [
+  {at: 0, expect: 'shape(from 5px 5px, hline to 5px, vline to -5px, close) border-box'},
+  {at: 0.5, expect: 'shape(from 10px 10px, hline to 15px, vline to -10px, close) border-box'},
+  {at: 1, expect: 'shape(from 15px 15px, hline to 25px, vline to -15px, close) border-box'},
+]);
+
+// shape() and path() with the same <shape-box> still interpolate together.
+test_interpolation({
+  property: 'shape-outside',
+  from: 'shape(from 5px 5px, hline to 5px, vline to -5px, close) margin-box',
+  to: 'path("M 15 15 H 25 V -15 Z") margin-box',
+}, [
+  {at: 0, expect: 'shape(from 5px 5px, hline to 5px, vline to -5px, close) margin-box'},
+  {at: 0.5, expect: 'shape(from 10px 10px, hline to 15px, vline to -10px, close) margin-box'},
+  {at: 1, expect: 'shape(from 15px 15px, hline to 25px, vline to -15px, close) margin-box'},
+]);
+
+// Mismatched <shape-box> falls back to discrete animation.
+test_no_interpolation({
+  property: 'shape-outside',
+  from: 'shape(from 5px 5px, line to 10px 10%) border-box',
+  to: 'shape(from -5px 5px, line to 20px 20%) padding-box',
+});
+
+test_no_interpolation({
+  property: 'shape-outside',
+  from: 'shape(from 5px 5px, line to 10px 10%) content-box',
+  to: 'path("M 5 5 L 10 10") margin-box',
+});
 </script>
