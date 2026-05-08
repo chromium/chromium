@@ -18,12 +18,11 @@ import "model_config.proto";
 import "model_mode.proto";
 import "rule_set.proto";
 import "section_config.proto";
-import "suggest_inventory.proto";
 import "tool_config.proto";
 import "tool_mode.proto";
 
 // Configuration for the AI searchbox (e.g. input plate and fusebox)
-// Next ID: 11
+// Next ID: 10
 message SearchboxConfig {
   // The rule set to use for the searchbox.
   optional RuleSet rule_set = 1;
@@ -45,9 +44,4 @@ message SearchboxConfig {
   // Default Searchbox input text field hint text.
   // Current active tools/models takes precedence
   optional string hint_text = 9;
-
-  // Preferred inventory for the request. This should be propagated as is to the
-  // /complete/search request using the 'azi' CGI arg.
-  // This is not relevant for Chrome at this point.
-  optional SuggestInventory preferred_inventory = 10;
 }

@@ -14,7 +14,7 @@ option java_outer_classname = 'IconResourceIdsProto';
 package omnibox;
 
 // These values represent mapping for icon resource ids
-// Next ID: 104
+// Next ID: 102
 enum IconResourceIds {
   // DEPRECATED
   reserved 80;
@@ -331,10 +331,4 @@ enum IconResourceIds {
   // https://fonts.corp.google.com/icons?selected=Google+Symbols:check_small:FILL@0;ROND@50;wght@400;GRAD@0;opsz@24&icon.size=24&icon.color=%23e3e3e3
   // For AIM.
   CHECK_SMALL = 101;
-  // https://fonts.corp.google.com/icons?selected=Google+Symbols:photo_prints:FILL@0;ROND@50;wght@400;GRAD@0;opsz@24&icon.size=24&icon.color=%23e3e3e3
-  // For AIM.
-  PHOTO_PRINTS = 102;
-  // https://fonts.corp.google.com/icons?selected=Google+Symbols:drive:FILL@0;ROND@50;wght@400;GRAD@0;opsz@24&icon.size=24&icon.color=%2523e3e3e3&icon.query=drive
-  // For AIM.
-  DRIVE = 103;
 }

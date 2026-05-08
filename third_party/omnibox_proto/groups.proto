@@ -82,10 +82,6 @@ enum GroupId {
   GROUP_AI_MODE_DEEP_SEARCH_ACTION = 10011;
   GROUP_AI_MODE_CREATE_IMAGE_ACTION = 10012;
   GROUP_AI_MODE_CANVAS_ACTION = 10013;
-  // This will be used for all steady state actions for chrome-ntp-action.
-  // TODO: b/487232930 - Replace the Create Images, Deep Search, Canvas actions
-  // with this group.
-  GROUP_STEADY_STATE_ACTION = 10014;
   GROUP_POLARIS_RESERVED_MAX = 19999;
 
   // Mobile-specific auxiliary suggestions.
@@ -95,7 +91,7 @@ enum GroupId {
   GROUP_MOBILE_QUERY_TILES = 30003;  // E.g. "News", "Films", "Sports", ...
   GROUP_MOBILE_RICH_ANSWER = 30004;  // Visually rich answer suggestion.
   GROUP_MOBILE_OPEN_TABS = 30005;    // Tabs which are currently open.
-  // Never launched: GROUP_MOBILE_CROSS_DEVICE_TABS = 30006;
+  GROUP_MOBILE_CROSS_DEVICE_TABS = 30006;  // Tabs opened on another device.
   GROUP_MOBILE_BOOKMARKS = 30007;
   GROUP_MOBILE_HISTORY = 30008;
 
@@ -118,7 +114,6 @@ enum GroupId {
   GROUP_HISTORY_CLUSTER = 50004;
   GROUP_MOST_VISITED = 50005;
   GROUP_RECENTLY_CLOSED_TABS = 50006;
-  GROUP_CROSS_DEVICE_TABS = 50007;  // Tabs opened on another device.
 
   // IPH suggestions that appear in zero-prefix.  These suggestions are
   // informational only and do not trigger a search or navigation.

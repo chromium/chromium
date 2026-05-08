@@ -15,7 +15,7 @@ package omnibox;
 
 // Input type
 // Assume text inputs are always allowed.
-// Next ID: 5
+// Next ID: 4
 // LINT.IfChange(InputType)
 enum InputType {
   // Unspecified input type.
@@ -26,7 +26,7 @@ enum InputType {
   INPUT_TYPE_LENS_FILE = 2;
   // Browser tab
   INPUT_TYPE_BROWSER_TAB = 3;
-  // Input from Drive
+  // Drive
   INPUT_TYPE_DRIVE = 4;
 }
 // LINT.ThenChange(//components/omnibox/composebox/composebox_query.mojom:InputType)

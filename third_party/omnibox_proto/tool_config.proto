@@ -20,7 +20,7 @@ import "tool_substate_config.proto";
 import "url_param.proto";
 
 // Configuration for a tool mode.
-// Next ID: 11
+// Next ID: 10
 // LINT.IfChange(ToolConfig)
 message ToolConfig {
   // The tool mode.
@@ -44,7 +44,5 @@ message ToolConfig {
   repeated ToolSubstateConfig substate_configs = 8;
   // The icon for the tool.
   optional Icon icon = 9;
-  // Whether to hide the tool from the tools menu (including tool chips).
-  bool hide_from_menu = 10;
 }
 // LINT.ThenChange(//components/omnibox/composebox/composebox_query.mojom:ToolConfig)
