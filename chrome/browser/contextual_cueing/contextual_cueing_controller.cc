@@ -308,7 +308,7 @@ void ContextualCueingController::InitiateModelExecutionRequest() {
     if (!tab_contents) {
       continue;
     }
-    if (!tab_contents->GetLastCommittedURL().SchemeIsHTTPOrHTTPS()) {
+    if (!IsUrlEligibleForCue(tab_contents->GetLastCommittedURL())) {
       continue;
     }
     background_tabs.push_back(
