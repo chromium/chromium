@@ -718,6 +718,46 @@ suite('NewTabPageComposeboxTest', () => {
     assertTrue(tabEvent.defaultPrevented);
   });
 
+  test('Smart Compose hint is hidden during backspacing', async () => {
+    createComposeboxElement(testProxy);
+    const inputElement = testProxy.element.getInputElement();
+    const input = inputElement.$.input;
+
+    // Enable Smart Compose.
+    loadTimeData.overrideValues({composeboxSmartComposeEnabled: true});
+    (testProxy.element as any).smartComposeEnabled_ = true;
+
+    // Provide an input and a hint.
+    input.value = 'tes';
+    input.dispatchEvent(new Event('input'));
+    const hint = 't';
+
+    testProxy.searchboxCallbackRouterRemote.autocompleteResultChanged(
+        createAutocompleteResultForTesting({
+          input: 'tes',
+          smartComposeInlineHint: hint,
+        }));
+    await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+    await microtasksFinished();
+
+    // Verify hint is visible.
+    assertTrue(!!inputElement.shadowRoot.querySelector('#smartCompose'));
+
+    // Simulate backspace.
+    input.dispatchEvent(new KeyboardEvent('keydown', {key: 'Backspace'}));
+    await microtasksFinished();
+
+    // Verify hint is hidden.
+    assertFalse(!!inputElement.shadowRoot.querySelector('#smartCompose'));
+
+    // Simulate typing a character.
+    input.dispatchEvent(new KeyboardEvent('keydown', {key: 'a'}));
+    await microtasksFinished();
+
+    // Verify hint is visible again.
+    assertTrue(!!inputElement.shadowRoot.querySelector('#smartCompose'));
+  });
+
   test('Tab behavior in matches list bypasses input focus check', async () => {
     createComposeboxElement(testProxy);
     const input = testProxy.element.getInputElement().$.input;

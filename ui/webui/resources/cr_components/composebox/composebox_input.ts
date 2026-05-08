@@ -47,6 +47,7 @@ export class ComposeboxInputElement extends I18nMixinLit
       submitEnabled: {type: Boolean, reflect: true},
       entrypointName: {type: String, reflect: true},
       cancelButtonTitle: {type: String},
+      isBackspacing_: {type: Boolean},
     };
   }
 
@@ -60,6 +61,7 @@ export class ComposeboxInputElement extends I18nMixinLit
   accessor submitEnabled: boolean = false;
   accessor entrypointName: string = '';
   accessor cancelButtonTitle: string = '';
+  accessor isBackspacing_: boolean = false;
 
   private caretResizeObserver_: ResizeObserver|null = null;
   private smartComposeResizeObserver_: ResizeObserver|null = null;
@@ -107,8 +109,9 @@ export class ComposeboxInputElement extends I18nMixinLit
       }
     }
 
-    if (changedProperties.has('smartComposeInlineHint')) {
-      if (this.smartComposeInlineHint) {
+    if (changedProperties.has('smartComposeInlineHint') ||
+        changedProperties.has('isBackspacing_')) {
+      if (this.showSmartComposeInlineHint_()) {
         const smartCompose =
             this.shadowRoot.querySelector<HTMLElement>('#smartCompose');
         if (smartCompose) {
@@ -212,6 +215,14 @@ export class ComposeboxInputElement extends I18nMixinLit
     this.dispatchEvent(new CustomEvent('input-click', {detail: e}));
   }
 
+  protected onInputKeydown_(e: KeyboardEvent) {
+    if (e.key === 'Backspace') {
+      this.isBackspacing_ = true;
+    } else if (e.key.length === 1 || e.key === 'Enter') {
+      this.isBackspacing_ = false;
+    }
+  }
+
   protected onInputKeyup_(e: KeyboardEvent) {
     if (!this.disableCaretColorAnimation) {
       this.updateCaret_();
@@ -234,6 +245,10 @@ export class ComposeboxInputElement extends I18nMixinLit
 
   protected onCancelClick_(e: Event) {
     this.dispatchEvent(new CustomEvent('cancel-click', {detail: e}));
+  }
+
+  protected showSmartComposeInlineHint_(): boolean {
+    return !!this.smartComposeInlineHint && !this.isBackspacing_;
   }
 
   // Recalculate the caret only when #inputWrapper's width changes.
