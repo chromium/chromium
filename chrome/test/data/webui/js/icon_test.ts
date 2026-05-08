@@ -4,7 +4,7 @@
 
 import {getFavicon, getFaviconForPageURL, getFaviconUrl, getFileIconUrl} from 'chrome://resources/js/icon.js';
 import type {GetFaviconUrlParams} from 'chrome://resources/js/icon.js';
-import {isAndroid, isChromeOS, isLinux, isMac, isWindows} from 'chrome://resources/js/platform.js';
+import {isAndroid, isIOS} from 'chrome://resources/js/platform.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('IconTest', function() {
@@ -92,9 +92,7 @@ suite('IconTest', function() {
           encodeURIComponent(url) + '&allowGoogleServerFallback=0") ' +
           `${window.devicePixelRatio}x)`;
 
-      // Android simulator returns true for isLinux, so also check isAndroid.
-      const isDesktop =
-          (isMac || isChromeOS || isWindows || isLinux) && !isAndroid;
+      const isDesktop = !isIOS && !isAndroid;
       return isDesktop ? expectedDesktop : expectedOther;
     }
 
@@ -130,9 +128,7 @@ suite('IconTest', function() {
         encodeURIComponent('http://foo.com/foo.ico') + '") ' +
         `${window.devicePixelRatio}x)`;
 
-    // Android simulator returns true for isLinux, so also check isAndroid.
-    const isDesktop =
-        (isMac || isChromeOS || isWindows || isLinux) && !isAndroid;
+    const isDesktop = !isIOS && !isAndroid;
     const expected = isDesktop ? expectedDesktop : expectedOther;
     assertEquals(expected, getFavicon(url));
   });

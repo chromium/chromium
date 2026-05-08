@@ -247,7 +247,10 @@ public class NavigateTest {
     @Test
     @MediumTest
     @Feature({"Navigation"})
-    @CommandLineFlags.Add({"enable-features=UserAgentClientHint"})
+    @CommandLineFlags.Add({
+        "enable-features=UserAgentClientHint",
+        "disable-features=AndroidDesktopUASpoofAsChromeOS"
+    })
     // TODO(crbug.com/40612550) Remove switch when UA-CH-* launched.
     public void testRequestDesktopSiteClientHints() throws Exception {
         final Tab tab =
@@ -269,7 +272,10 @@ public class NavigateTest {
     @Test
     @MediumTest
     @Feature({"Navigation"})
-    @CommandLineFlags.Add({"enable-features=UserAgentClientHint"})
+    @CommandLineFlags.Add({
+        "enable-features=UserAgentClientHint",
+        "disable-features=AndroidDesktopUASpoofAsChromeOS"
+    })
     @Restriction(DeviceFormFactor.DESKTOP)
     // TODO(crbug.com/40612550) Remove switch when UA-CH-* launched.
     public void testRequestDesktopSiteClientHintsForDesktopAndroidFormFactor() throws Exception {
@@ -355,7 +361,10 @@ public class NavigateTest {
     @Test
     @MediumTest
     @Feature({"Navigation"})
-    @CommandLineFlags.Add({"enable-features=UserAgentClientHint, CriticalClientHint"})
+    @CommandLineFlags.Add({
+        "enable-features=UserAgentClientHint, CriticalClientHint",
+        "disable-features=AndroidDesktopUASpoofAsChromeOS"
+    })
     // TODO(crbug.com/40612550) Remove switch when UA-CH-* launched.
     public void testRequestDesktopSiteCriticalClientHints() throws Exception {
         // TODO(crbug.com/40153192): Move EchoCriticalHeader request handler here when
