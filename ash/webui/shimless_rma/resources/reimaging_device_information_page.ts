@@ -541,10 +541,6 @@ export class ReimagingDeviceInformationPage extends
   }
 
   private async updateInputFieldModifiabilities(): Promise<void> {
-    if (!loadTimeData.getBoolean('dynamicDeviceInfoInputsEnabled')) {
-      return;
-    }
-
     const result = await this.shimlessRmaService.getStateProperties();
 
     if (result?.statePropertyResult.property?.updateDeviceInfoStateProperty ===

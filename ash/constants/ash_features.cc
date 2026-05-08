@@ -1736,11 +1736,6 @@ BASE_FEATURE(kShimlessRMA3pDiagnosticsAllowPermissionPolicy,
 BASE_FEATURE(kShimlessRMAHardwareValidationSkip,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables or disables the option of grey out specific input fields on Shimless
-// RMA device information page.
-BASE_FEATURE(kShimlessRMADynamicDeviceInfoInputs,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables or disables the option to allow customized Serial Number namings.
 BASE_FEATURE(kShimlessRMAFlexibleSerialNumberName,
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -3223,10 +3218,6 @@ bool IsShimlessRMA3pDiagnosticsAllowPermissionPolicyEnabled() {
 
 bool IsShimlessRMAHardwareValidationSkipEnabled() {
   return base::FeatureList::IsEnabled(kShimlessRMAHardwareValidationSkip);
-}
-
-bool IsShimlessRMADynamicDeviceInfoInputsEnabled() {
-  return base::FeatureList::IsEnabled(kShimlessRMADynamicDeviceInfoInputs);
 }
 
 bool IsShimlessRMAFlexibleSerialNumberNameEnabled() {

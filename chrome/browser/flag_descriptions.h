@@ -7668,11 +7668,6 @@ inline constexpr char kShimlessRMAHardwareValidationSkipName[] =
 inline constexpr char kShimlessRMAHardwareValidationSkipDescription[] =
     "Turns on Hardware Validation Skip in Shimless RMA";
 
-inline constexpr char kShimlessRMADynamicDeviceInfoInputsName[] =
-    "Enable Dynamic Device Info Inputs in Shimless RMA";
-inline constexpr char kShimlessRMADynamicDeviceInfoInputsDescription[] =
-    "Turns on Dynamic Device Info Inputs in Shimless RMA";
-
 inline constexpr char kShimlessRMAFlexibleSerialNumberNameName[] =
     "Enable Customized Serial Number Namings in Shimless RMA";
 inline constexpr char kShimlessRMAFlexibleSerialNumberNameDescription[] =

@@ -437,9 +437,6 @@ void AddFeatureFlags(content::WebUIDataSource* html_source) {
       "hardwareValidationSkipEnabled",
       features::IsShimlessRMAHardwareValidationSkipEnabled());
   html_source->AddBoolean(
-      "dynamicDeviceInfoInputsEnabled",
-      features::IsShimlessRMADynamicDeviceInfoInputsEnabled());
-  html_source->AddBoolean(
       "flexibleSerialNumberNameEnabled",
       features::IsShimlessRMAFlexibleSerialNumberNameEnabled());
   html_source->AddBoolean("hideGoogleSKUEnabled",

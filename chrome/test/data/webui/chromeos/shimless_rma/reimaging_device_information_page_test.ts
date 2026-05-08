@@ -97,7 +97,6 @@ suite('reimagingDeviceInformationPageTest', function() {
 
   suiteSetup(() => {
     loadTimeData.overrideValues({
-      'dynamicDeviceInfoInputsEnabled': true,
       'flexibleSerialNumberNameEnabled': true,
       'hideGoogleSKUEnabled': true,
     });

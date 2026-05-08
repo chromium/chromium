@@ -8526,14 +8526,6 @@
     "expiry_milestone": 134
   },
   {
-    "name": "shimless-rma-dynamic-device-info-inputs",
-    "owners": [
-      "jeffulin@google.com",
-      "cros-shimless-tpe-eng@google.com"
-    ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "shimless-rma-flexible-serial-number-name",
     "owners": [
       "jeffulin@google.com",
