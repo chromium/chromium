@@ -41,6 +41,8 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.ListMenuButton;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -134,6 +136,15 @@ class ExtensionActionListMediator implements Destroyable {
     private final ToolbarDelegate mToolbarDelegate = new ToolbarDelegate();
     private final ToolbarObserver mToolbarObserver = new ToolbarObserver();
 
+    private final ModalDialogManagerObserver mModalDialogManagerObserver =
+            new ModalDialogManagerObserver() {
+                @Override
+                public void onDialogAdded(PropertyModel model) {
+                    closePopup();
+                }
+            };
+    private final ModalDialogManager mModalDialogManager;
+
     private ActionState mActionState = new ActionState.Idle();
 
     @Nullable private final LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
@@ -162,7 +173,8 @@ class ExtensionActionListMediator implements Destroyable {
             ExtensionsToolbarBridge extensionsToolbarBridge,
             @Nullable ContextMenuPopulatorFactory contextMenuPopulatorFactory,
             @Nullable SelectionDropdownMenuDelegate selectionDropdownMenuDelegate,
-            TabModelSelector tabModelSelector) {
+            TabModelSelector tabModelSelector,
+            ModalDialogManager modalDialogManager) {
         mContext = context;
         mWindowAndroid = windowAndroid;
         mModels = models;
@@ -174,6 +186,8 @@ class ExtensionActionListMediator implements Destroyable {
         mContextMenuPopulatorFactory = contextMenuPopulatorFactory;
         mSelectionDropdownMenuDelegate = selectionDropdownMenuDelegate;
         mTabModelSelector = tabModelSelector;
+        mModalDialogManager = modalDialogManager;
+        mModalDialogManager.addObserver(mModalDialogManagerObserver);
 
         mExtensionsToolbarBridge.setActionListDelegate(mToolbarDelegate);
         mExtensionsToolbarBridge.addObserver(mToolbarObserver);
@@ -195,6 +209,7 @@ class ExtensionActionListMediator implements Destroyable {
 
         assert mActionState instanceof ActionState.Idle;
 
+        mModalDialogManager.removeObserver(mModalDialogManagerObserver);
         mExtensionsToolbarBridge.removeObserver(mToolbarObserver);
         mExtensionsToolbarBridge.setActionListDelegate(null);
         LifetimeAssert.setSafeToGc(mLifetimeAssert, true);

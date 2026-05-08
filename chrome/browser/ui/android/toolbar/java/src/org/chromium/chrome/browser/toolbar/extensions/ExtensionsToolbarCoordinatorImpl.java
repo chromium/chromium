@@ -136,7 +136,8 @@ public class ExtensionsToolbarCoordinatorImpl
                         rootView,
                         contextMenuPopulatorFactory,
                         selectionDropdownMenuDelegate,
-                        tabModelSelector);
+                        tabModelSelector,
+                        modalDialogManager);
         mToolbarModel = new PropertyModel.Builder(ExtensionsToolbarProperties.ALL_KEYS).build();
         mMenuButtonChangeProcessor =
                 PropertyModelChangeProcessor.create(

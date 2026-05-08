@@ -79,6 +79,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 /** End-to-end test for the extension toolbar on Desktop Android. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -1119,5 +1120,43 @@ public class ExtensionsToolbarTest {
                 .check(
                         withEventualExpectedViewState(
                                 withId(R.id.extensions_menu_close_button), VIEW_GONE | VIEW_NULL));
+    }
+
+    @Test
+    @LargeTest
+    public void testNewDialogDismissesExtensionPopup() throws IOException, TimeoutException {
+        String alphaId =
+                loadPopupExtension(
+                        "alpha", "Alpha Extension", "Alpha Action", "alpha popup opened");
+        ExtensionTestUtils.setExtensionActionVisible(mProfile, alphaId, true);
+        ViewUtils.onViewWaiting(withContentDescription("Alpha Action"))
+                .check(matches(isDisplayed()));
+
+        // Click on Alpha and wait for it to open the popup.
+        try (ExtensionTestMessageListener listener =
+                new ExtensionTestMessageListener("alpha popup opened")) {
+            clickViewWithContentDescription("Alpha Action");
+            assertTrue(listener.waitUntilSatisfied());
+        }
+        CriteriaHelper.pollInstrumentationThread(
+                () -> ExtensionTestUtils.getRenderFrameHostCount(mProfile, alphaId) == 1,
+                "Alpha popup did not open.");
+
+        // Display alert with JavaScript asynchronously.
+        WebContents webContents =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mActivityTestRule.getActivity().getActivityTab().getWebContents());
+        ThreadUtils.runOnUiThread(
+                () -> {
+                    webContents.evaluateJavaScriptForTests("alert('JavaScript alert');", null);
+                });
+
+        // Wait for the dialog to appear and click OK.
+        ViewUtils.onViewWaiting(withText("OK")).perform(click());
+
+        // Verify the extension popup was dismissed by the alert dialog.
+        CriteriaHelper.pollInstrumentationThread(
+                () -> ExtensionTestUtils.getRenderFrameHostCount(mProfile, alphaId) == 0,
+                "Alpha popup did not close.");
     }
 }

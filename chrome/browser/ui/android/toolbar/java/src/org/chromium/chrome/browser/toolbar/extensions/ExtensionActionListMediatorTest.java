@@ -67,6 +67,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.ListMenuHost;
 import org.chromium.ui.listmenu.MenuModelBridge;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
@@ -148,6 +149,8 @@ public class ExtensionActionListMediatorTest {
 
     @Mock private TabModelSelector mTabModelSelector;
 
+    @Mock private ModalDialogManager mModalDialogManager;
+
     @Captor private ArgumentCaptor<ListMenuHost.PopupMenuShownListener> mPopupListenerCaptor;
 
     @Captor
@@ -227,7 +230,8 @@ public class ExtensionActionListMediatorTest {
                         mExtensionsToolbarBridge,
                         /* contextMenuPopulatorFactory= */ null,
                         /* selectionDropdownMenuDelegate= */ null,
-                        mTabModelSelector) {
+                        mTabModelSelector,
+                        mModalDialogManager) {
                     @Override
                     Bitmap getIconForAction(String actionId, WebContents webContents) {
                         ActionData action = mActions.get(actionId);
@@ -404,6 +408,26 @@ public class ExtensionActionListMediatorTest {
 
         // There should be 0 items.
         assertEquals(0, mModels.size());
+    }
+
+    @Test
+    public void testDismissPopupOnDialogAdded() {
+        ArgumentCaptor<ModalDialogManager.ModalDialogManagerObserver> observerCaptor =
+                ArgumentCaptor.forClass(ModalDialogManager.ModalDialogManagerObserver.class);
+        verify(mModalDialogManager).addObserver(observerCaptor.capture());
+
+        // Trigger a popup.
+        long nativeHostPtr = 123L;
+        mBridgeDelegateCaptor.getValue().triggerPopup(ACTION1_ID, nativeHostPtr);
+
+        // Verify the native contents were created.
+        verify(mPopupContentsJniMock).create(nativeHostPtr);
+
+        // Simulate a dialog being added.
+        observerCaptor.getValue().onDialogAdded(null);
+
+        // The pending popup contents should be destroyed to prevent overlapping UIs.
+        verify(mPopupContentsMock).destroy();
     }
 
     @Test

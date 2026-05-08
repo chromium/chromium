@@ -32,6 +32,7 @@ import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelega
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.ListMenuButton;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -63,7 +64,8 @@ public class ExtensionActionListCoordinator implements Destroyable {
             ViewGroup rootView,
             @Nullable ContextMenuPopulatorFactory contextMenuPopulatorFactory,
             @Nullable SelectionDropdownMenuDelegate selectionDropdownMenuDelegate,
-            TabModelSelector tabModelSelector) {
+            TabModelSelector tabModelSelector,
+            ModalDialogManager modalDialogManager) {
         mContext = context;
         mContainer = container;
 
@@ -80,7 +82,8 @@ public class ExtensionActionListCoordinator implements Destroyable {
                         extensionsToolbarBridge,
                         contextMenuPopulatorFactory,
                         selectionDropdownMenuDelegate,
-                        tabModelSelector);
+                        tabModelSelector,
+                        modalDialogManager);
 
         ExtensionsToolbarDragTouchHandler dragTouchHandler =
                 new ExtensionsToolbarDragTouchHandler(context, mModels);
