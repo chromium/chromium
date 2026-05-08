@@ -4,6 +4,7 @@
 
 #include <utility>
 
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/browser.h"
@@ -741,7 +742,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestIframeTest, CrossOriginIframe) {
   EXPECT_EQ(1u, entries.size());
   for (const ukm::mojom::UkmEntry* const entry : entries) {
     test_ukm_recorder_->ExpectEntrySourceHasUrl(entry, main_frame_url);
-    EXPECT_EQ(2U, entry->metrics.size());
+    EXPECT_EQ(3U, entry->metrics.size());
     test_ukm_recorder_->ExpectEntryMetric(
         entry,
         ukm::builders::PaymentRequest_CheckoutEvents::kCompletionStatusName,
@@ -749,6 +750,13 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestIframeTest, CrossOriginIframe) {
     test_ukm_recorder_->ExpectEntryMetric(
         entry, ukm::builders::PaymentRequest_CheckoutEvents::kEvents2Name,
         expected_step_metric);
+    test_ukm_recorder_->ExpectEntryMetric(
+        entry,
+        ukm::builders::PaymentRequest_CheckoutEvents::
+            kWindowSizeCheckRejectionReasonName,
+        base::checked_cast<int64_t>(
+            JourneyLogger::WindowSizeCheckRejectionReason::
+                kNotRejectedOrNotShown));
   }
 }
 

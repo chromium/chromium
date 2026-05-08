@@ -22574,6 +22574,7 @@ Called by update_net_error_codes.py.-->
   <int value="0" label="Rejected at .show()"/>
   <int value="1" label="Rejected due to Payment Handler transition"/>
   <int value="2" label="Rejected due to browser window resize"/>
+  <int value="3" label="Not rejected or not shown"/>
 </enum>
 
 <enum name="PerformanceMonitor.UsageScenario.LongInterval">
