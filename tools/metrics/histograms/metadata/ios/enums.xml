@@ -2157,6 +2157,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/ios/chrome/browser/push_notification/model/constants.h:NotificationType) -->
 
+<enum name="NtpBackgroundCacheCleanupEvent">
+  <int value="0" label="Cleanup Skipped (New User)"/>
+  <int value="1" label="Cleanup Triggered"/>
+  <int value="2" label="Cleanup Completed Success"/>
+  <int value="3" label="Cleanup Completed Failure"/>
+  <int value="4" label="Refetch Triggered"/>
+  <int value="5" label="Refetch Completed Success"/>
+  <int value="6" label="Refetch Completed Failure"/>
+</enum>
+
 <!-- LINT.IfChange(OmniboxPositionType) -->
 
 <enum name="OmniboxPositionType">
