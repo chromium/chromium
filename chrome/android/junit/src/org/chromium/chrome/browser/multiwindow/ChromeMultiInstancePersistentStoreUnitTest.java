@@ -312,6 +312,21 @@ public class ChromeMultiInstancePersistentStoreUnitTest {
     }
 
     @Test
+    public void testReadCrashRecoveryData_MarkedForDeletion() {
+        // Instance 0: recoverable but marked for deletion. Should be filtered out.
+        ChromeMultiInstancePersistentStore.writeIsRecoverable(INSTANCE_ID_0, true);
+        ChromeMultiInstancePersistentStore.writeMarkedForDeletion(INSTANCE_ID_0, true);
+
+        // Instance 1: recoverable and NOT marked for deletion. Should be included.
+        ChromeMultiInstancePersistentStore.writeIsRecoverable(INSTANCE_ID_1, true);
+        ChromeMultiInstancePersistentStore.writeMarkedForDeletion(INSTANCE_ID_1, false);
+
+        var recoveryData = ChromeMultiInstancePersistentStore.readCrashRecoveryData();
+        assertEquals(1, recoveryData.size());
+        assertEquals(INSTANCE_ID_1, recoveryData.get(0).windowId);
+    }
+
+    @Test
     public void testReadCrashRecoveryData_Sorting() {
         // Write data for three instances in non-sequential order of IDs and access times.
         // Order of access: Instance 2 (oldest), Instance 0, Instance 1 (newest).
