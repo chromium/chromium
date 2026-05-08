@@ -65,7 +65,7 @@ BASE_FEATURE(kOnlyUseWindowResizeHelperOnResize,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls replacement of CATransactionCoordinator with a new implementation.
-BASE_FEATURE(kCATransactionV2, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kCATransactionV2, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_CHROMEOS)
