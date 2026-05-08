@@ -30,7 +30,7 @@ class IpcFifoBufferWriter : public FifoBufferWriter {
   ~IpcFifoBufferWriter() override;
 
   // FifoBufferWriter implementation.
-  WriteResult Write(base::span<const uint8_t> data) override;
+  Result Write(base::span<const uint8_t> data) override;
 
  private:
   mojo::ScopedDataPipeProducerHandle producer_handle_;

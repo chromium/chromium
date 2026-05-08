@@ -30,7 +30,7 @@ TYPED_TEST_P(FifoBufferTest, BasicWriteRead) {
   FifoBufferReader& reader = this->delegate_.GetReader();
 
   std::vector<uint8_t> data = {1, 2, 3, 4, 5, 6, 7, 8};
-  EXPECT_EQ(writer.Write(data), WriteResult::kSuccess);
+  EXPECT_EQ(writer.Write(data), FifoBufferWriter::Result::kSuccess);
   EXPECT_EQ(reader.GetBufferedBytes(), 8u);
 
   std::vector<uint8_t> read_data(8);

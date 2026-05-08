@@ -24,7 +24,7 @@ class InMemoryFifoBuffer
   InMemoryFifoBuffer(const InMemoryFifoBuffer&) = delete;
   InMemoryFifoBuffer& operator=(const InMemoryFifoBuffer&) = delete;
 
-  WriteResult Write(base::span<const uint8_t> data);
+  FifoBufferWriter::Result Write(base::span<const uint8_t> data);
   std::optional<size_t> Read(base::span<uint8_t> destination);
   std::optional<size_t> Skip(size_t bytes);
   void Clear();
@@ -65,7 +65,8 @@ InMemoryFifoBuffer::InMemoryFifoBuffer(size_t capacity)
 
 InMemoryFifoBuffer::~InMemoryFifoBuffer() = default;
 
-WriteResult InMemoryFifoBuffer::Write(base::span<const uint8_t> data) {
+FifoBufferWriter::Result InMemoryFifoBuffer::Write(
+    base::span<const uint8_t> data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(producer_sequence_checker_);
 
   // Producer thread: load `read_index_` with acquire to see the latest consumer
@@ -79,7 +80,7 @@ WriteResult InMemoryFifoBuffer::Write(base::span<const uint8_t> data) {
   if (space < data.size()) {
     LOG(WARNING) << "InMemoryFifoBuffer overflow, dropping " << data.size()
                  << " bytes. Buffered: " << buffered;
-    return WriteResult::kFull;
+    return FifoBufferWriter::Result::kFull;
   }
 
   size_t first_part = std::min(data.size(), capacity_ - (write_idx & mask_));
@@ -94,7 +95,7 @@ WriteResult InMemoryFifoBuffer::Write(base::span<const uint8_t> data) {
   // Producer thread: store `write_index_` with release to make data visible to
   // consumer.
   write_index_.store(write_idx + data.size(), std::memory_order_release);
-  return WriteResult::kSuccess;
+  return FifoBufferWriter::Result::kSuccess;
 }
 
 std::optional<size_t> InMemoryFifoBuffer::Read(
@@ -170,7 +171,8 @@ InMemoryFifoBufferWriter::InMemoryFifoBufferWriter(
 
 InMemoryFifoBufferWriter::~InMemoryFifoBufferWriter() = default;
 
-WriteResult InMemoryFifoBufferWriter::Write(base::span<const uint8_t> data) {
+FifoBufferWriter::Result InMemoryFifoBufferWriter::Write(
+    base::span<const uint8_t> data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return buffer_->Write(data);
 }

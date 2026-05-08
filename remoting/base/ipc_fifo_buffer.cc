@@ -25,11 +25,12 @@ IpcFifoBufferWriter::IpcFifoBufferWriter(
 
 IpcFifoBufferWriter::~IpcFifoBufferWriter() = default;
 
-WriteResult IpcFifoBufferWriter::Write(base::span<const uint8_t> data) {
+FifoBufferWriter::Result IpcFifoBufferWriter::Write(
+    base::span<const uint8_t> data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (data.empty()) {
-    return WriteResult::kSuccess;
+    return FifoBufferWriter::Result::kSuccess;
   }
 
   size_t bytes_written = 0;
@@ -37,20 +38,20 @@ WriteResult IpcFifoBufferWriter::Write(base::span<const uint8_t> data) {
       data, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE, bytes_written);
 
   if (result == MOJO_RESULT_OK) {
-    return WriteResult::kSuccess;
+    return FifoBufferWriter::Result::kSuccess;
   }
 
   if (result == MOJO_RESULT_SHOULD_WAIT || result == MOJO_RESULT_OUT_OF_RANGE) {
-    return WriteResult::kFull;
+    return FifoBufferWriter::Result::kFull;
   }
 
   if (result == MOJO_RESULT_FAILED_PRECONDITION) {
     // Peer closed. Fail gracefully.
-    return WriteResult::kFailed;
+    return FifoBufferWriter::Result::kFailed;
   }
 
   LOG(ERROR) << "Failed to write to Mojo Data Pipe: " << result;
-  return WriteResult::kFailed;
+  return FifoBufferWriter::Result::kFailed;
 }
 
 // =============================================================================

@@ -13,25 +13,25 @@
 
 namespace remoting {
 
-enum class WriteResult {
-  kSuccess,  // The entire span was successfully written.
-  kFull,     // Insufficient space; nothing was written (alignment preserved).
-  kFailed,   // The buffer is closed/fatal; nothing was written.
-};
-
 // A generic interface for writing to a Single-Producer Single-Consumer (SPSC)
 // FIFO buffer of raw bytes.
 class FifoBufferWriter {
  public:
+  enum class Result {
+    kSuccess,  // The entire span was successfully written.
+    kFull,     // Insufficient space; nothing was written (alignment preserved).
+    kFailed,   // The buffer is closed/fatal; nothing was written.
+  };
+
   virtual ~FifoBufferWriter() = default;
 
   // Appends data to the buffer.
   //
   // Enforces All-or-None semantics on overflow: if the buffer does not have
   // sufficient space for the entire `data` span, it must write 0 bytes and
-  // return WriteResult::kFull (preserving frame alignment for subsequent
+  // return Result::kFull (preserving frame alignment for subsequent
   // writes). Partial writes are not allowed.
-  virtual WriteResult Write(base::span<const uint8_t> data) = 0;
+  virtual Result Write(base::span<const uint8_t> data) = 0;
 };
 
 // A generic interface for reading from a Single-Producer Single-Consumer (SPSC)

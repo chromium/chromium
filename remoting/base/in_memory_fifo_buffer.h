@@ -44,7 +44,7 @@ class InMemoryFifoBufferWriter : public FifoBufferWriter {
   ~InMemoryFifoBufferWriter() override;
 
   // FifoBufferWriter implementation.
-  WriteResult Write(base::span<const uint8_t> data) override;
+  Result Write(base::span<const uint8_t> data) override;
 
  private:
   const scoped_refptr<InMemoryFifoBuffer> buffer_;

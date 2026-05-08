@@ -45,7 +45,8 @@ class IpcFifoBufferTest : public testing::Test {
 TEST_F(IpcFifoBufferTest, PeerClosed) {
   // This test is specific to IpcFifoBuffer's Mojo implementation.
   std::vector<uint8_t> data = {1, 2, 3, 4};
-  EXPECT_EQ(delegate_.GetWriter().Write(data), WriteResult::kSuccess);
+  EXPECT_EQ(delegate_.GetWriter().Write(data),
+            FifoBufferWriter::Result::kSuccess);
   EXPECT_EQ(delegate_.GetReader().GetBufferedBytes(), 4u);
 
   // Destroy writer.
@@ -67,7 +68,8 @@ TEST_F(IpcFifoBufferTest, WriterClosed) {
   // This test is specific to IpcFifoBuffer's Mojo implementation.
   std::vector<uint8_t> data = {1, 2, 3, 4};
   delegate_.ResetReader();
-  EXPECT_EQ(delegate_.GetWriter().Write(data), WriteResult::kFailed);
+  EXPECT_EQ(delegate_.GetWriter().Write(data),
+            FifoBufferWriter::Result::kFailed);
 }
 
 }  // namespace remoting

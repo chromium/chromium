@@ -43,11 +43,11 @@ TEST(InMemoryFifoBufferTest, Overflow) {
   ASSERT_TRUE(CreateInMemoryFifoBuffer(kCapacity, writer, reader));
 
   std::vector<uint8_t> data(kCapacity, 0xAA);
-  EXPECT_EQ(writer->Write(data), WriteResult::kSuccess);
+  EXPECT_EQ(writer->Write(data), FifoBufferWriter::Result::kSuccess);
   EXPECT_EQ(reader->GetBufferedBytes(), kCapacity);
 
   std::vector<uint8_t> extra_data = {1, 2, 3, 4};
-  EXPECT_EQ(writer->Write(extra_data), WriteResult::kFull);
+  EXPECT_EQ(writer->Write(extra_data), FifoBufferWriter::Result::kFull);
 
   std::vector<uint8_t> read_data(kCapacity);
   EXPECT_EQ(reader->Read(read_data), kCapacity);
@@ -62,14 +62,14 @@ TEST(InMemoryFifoBufferTest, WrapAround) {
   ASSERT_TRUE(CreateInMemoryFifoBuffer(kCapacity, writer, reader));
 
   std::vector<uint8_t> data(kCapacity - 4, 0xAA);
-  EXPECT_EQ(writer->Write(data), WriteResult::kSuccess);
+  EXPECT_EQ(writer->Write(data), FifoBufferWriter::Result::kSuccess);
 
   std::vector<uint8_t> read_data(kCapacity - 4);
   EXPECT_EQ(reader->Read(read_data), kCapacity - 4);
 
   // Write again, should wrap.
   std::vector<uint8_t> wrap_data = {1, 2, 3, 4, 5, 6, 7, 8};
-  EXPECT_EQ(writer->Write(wrap_data), WriteResult::kSuccess);
+  EXPECT_EQ(writer->Write(wrap_data), FifoBufferWriter::Result::kSuccess);
 
   std::vector<uint8_t> wrap_read(8);
   EXPECT_EQ(reader->Read(wrap_read), 8u);

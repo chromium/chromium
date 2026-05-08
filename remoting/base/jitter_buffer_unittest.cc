@@ -58,13 +58,13 @@ TEST_F(JitterBufferTest, Thresholding) {
                       std::move(reader));
 
   std::vector<uint8_t> data = {1, 2, 3, 4, 5, 6, 7, 8};
-  EXPECT_EQ(writer->Write(data), WriteResult::kSuccess);
+  EXPECT_EQ(writer->Write(data), FifoBufferWriter::Result::kSuccess);
 
   std::vector<uint8_t> read_data(8);
   // Below threshold.
   EXPECT_EQ(buffer.Read(read_data), 0u);
 
-  EXPECT_EQ(writer->Write(data), WriteResult::kSuccess);
+  EXPECT_EQ(writer->Write(data), FifoBufferWriter::Result::kSuccess);
   // Now 16 bytes, above threshold. Reads full 8 bytes.
   EXPECT_EQ(buffer.Read(read_data), 8u);
   EXPECT_EQ(read_data, data);
@@ -76,7 +76,7 @@ TEST_F(JitterBufferTest, Thresholding) {
   // Empty, should stay in Playing state for a bit (lazy re-buffering).
   EXPECT_EQ(buffer.Read(read_data), 0u);
 
-  EXPECT_EQ(writer->Write(data), WriteResult::kSuccess);
+  EXPECT_EQ(writer->Write(data), FifoBufferWriter::Result::kSuccess);
   // Still in Playing state. Should read immediately even though it's below
   // the threshold (12).
   EXPECT_EQ(buffer.Read(read_data), 8u);
@@ -93,7 +93,7 @@ TEST_F(JitterBufferTest, PartialReadInPlayingState) {
                        .minimum_threshold = 8},
                       std::move(reader));
   std::vector<uint8_t> data = {1, 2, 3, 4, 5, 6, 7, 8};
-  EXPECT_EQ(writer->Write(data), WriteResult::kSuccess);
+  EXPECT_EQ(writer->Write(data), FifoBufferWriter::Result::kSuccess);
 
   std::vector<uint8_t> read_data(12);
   // Reached threshold. Reads 8 bytes.
@@ -103,7 +103,7 @@ TEST_F(JitterBufferTest, PartialReadInPlayingState) {
 
   // Buffer is empty, but we stay in Playing state for a while (lazy
   // re-buffering).
-  EXPECT_EQ(writer->Write({9, 10, 11, 12}), WriteResult::kSuccess);
+  EXPECT_EQ(writer->Write({9, 10, 11, 12}), FifoBufferWriter::Result::kSuccess);
   // Should read immediately even though it's below threshold (8).
   EXPECT_EQ(buffer.Read(read_data), 4u);
   EXPECT_EQ(std::vector<uint8_t>(read_data.begin(), read_data.begin() + 4),
@@ -123,7 +123,7 @@ TEST_F(JitterBufferTest, LatencyRecovery) {
 
   // Write a lot of data to trigger recovery (> 28800 bytes).
   std::vector<uint8_t> large_data(30000, 0xFF);
-  EXPECT_EQ(writer->Write(large_data), WriteResult::kSuccess);
+  EXPECT_EQ(writer->Write(large_data), FifoBufferWriter::Result::kSuccess);
 
   std::vector<uint8_t> read_data(4);
   // Read should trigger recovery and skip ahead to threshold (4).
@@ -133,7 +133,8 @@ TEST_F(JitterBufferTest, LatencyRecovery) {
 
 TEST_F(JitterBufferTest, ClearAdvancesReadIndex) {
   std::vector<uint8_t> data1 = {1, 2, 3, 4};
-  EXPECT_EQ(delegate_.GetWriter().Write(data1), WriteResult::kSuccess);
+  EXPECT_EQ(delegate_.GetWriter().Write(data1),
+            FifoBufferWriter::Result::kSuccess);
 
   // Clear the buffer immediately.
   delegate_.GetReader().Clear();
@@ -141,7 +142,8 @@ TEST_F(JitterBufferTest, ClearAdvancesReadIndex) {
 
   // Next write should be fine.
   std::vector<uint8_t> data2 = {5, 6, 7, 8};
-  EXPECT_EQ(delegate_.GetWriter().Write(data2), WriteResult::kSuccess);
+  EXPECT_EQ(delegate_.GetWriter().Write(data2),
+            FifoBufferWriter::Result::kSuccess);
   EXPECT_EQ(delegate_.GetReader().GetBufferedBytes(), 4u);
 
   std::vector<uint8_t> read_data(4);
@@ -159,7 +161,7 @@ TEST_F(JitterBufferTest, LazyRebuffering) {
                        .minimum_threshold = 100},
                       std::move(reader));
   std::vector<uint8_t> data(100, 0xAA);
-  EXPECT_EQ(writer->Write(data), WriteResult::kSuccess);
+  EXPECT_EQ(writer->Write(data), FifoBufferWriter::Result::kSuccess);
 
   std::vector<uint8_t> read_data(100);
   // Reached threshold. Reads full 100 bytes.
@@ -174,7 +176,7 @@ TEST_F(JitterBufferTest, LazyRebuffering) {
   // If we write a small amount of data now, it should be readable immediately
   // even though it's below the threshold (100).
   std::vector<uint8_t> small_data = {1, 2, 3, 4};
-  EXPECT_EQ(writer->Write(small_data), WriteResult::kSuccess);
+  EXPECT_EQ(writer->Write(small_data), FifoBufferWriter::Result::kSuccess);
   std::vector<uint8_t> small_read(4);
   EXPECT_EQ(buffer.Read(small_read), 4u);
   EXPECT_EQ(small_read, small_data);
@@ -185,7 +187,7 @@ TEST_F(JitterBufferTest, LazyRebuffering) {
   EXPECT_EQ(buffer.Read(silence_req), 0u);  // Total 120 bytes silence.
 
   // Should now be in Buffering state.
-  EXPECT_EQ(writer->Write(small_data), WriteResult::kSuccess);
+  EXPECT_EQ(writer->Write(small_data), FifoBufferWriter::Result::kSuccess);
   EXPECT_EQ(buffer.Read(small_read), 0u);  // Waiting for threshold (100)
 }
 
