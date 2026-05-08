@@ -77,7 +77,13 @@ class MagiPresubmitTest(unittest.TestCase):
         self.mock_input.affected_files = [
             MockAffectedFile('remoting/tools/magi-mode/SKILL.md')]
         self.mock_input.files_content = {
-            'remoting/tools/magi-mode/SKILL.md': '[link](LINKED.md)\n',
+            'remoting/tools/magi-mode/SKILL.md': (
+                '[link](LINKED.md)\n'
+                'TONE MANDATE (SIGNAL-TO-NOISE):\n'
+                'Zero Preamble/Postamble\n'
+                'Artifacts Only\n'
+                'ADD_FAILURE("NOT IMPLEMENTED");\n'
+            ),
             'remoting/tools/magi-mode/LINKED.md': 'content\n',
             'remoting/tools/magi-mode/ORPHAN.md': 'content\n',
         }
@@ -791,6 +797,18 @@ class MagiPresubmitTest(unittest.TestCase):
                 self.mock_input, self.mock_output)
             self.assertTrue(any(
                 'environment.output_directory must be a string' in r for r in results))
+
+
+    def testCheckLogsDirectory(self):
+        self.mock_input.affected_files = [
+            MockAffectedFile('remoting/tools/magi-mode/.magi_logs/log.json')
+        ]
+        results = PRESUBMIT.CheckLogsDirectory(
+            self.mock_input, self.mock_output
+        )
+        self.assertTrue(
+            any('is in the .magi_logs/ directory' in r for r in results)
+        )
 
 
 if __name__ == '__main__':

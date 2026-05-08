@@ -169,8 +169,8 @@ next expert.
   testing boundaries. Their mandate is to add test files (`*_unittest.cc`),
   define the required test fixtures, and stub out the critical test cases based
   on the Architect's scaffold. To ensure failure in Chromium's GTest framework
-  (confirming TDD behavior), the Test Expert MUST insert `ADD_FAILURE("NOT
-  IMPLEMENTED");` into the stubbed test cases. The Test Expert SHOULD signal
+  (confirming TDD behavior), the Test Expert MUST insert
+  `ADD_FAILURE("NOT IMPLEMENTED");` into the stubbed test cases. The Test Expert SHOULD signal
   `next_phase: PREPARATION`.
 - **Scaffold Verification:** Before proceeding to Phase 2, the Orchestrator MUST
   attempt to build the scaffolded targets. If `build_targets` are defined in

@@ -153,7 +153,7 @@ def CheckMarkdownFiles(input_api, output_api):
                   f'Line {line_num} in '
                   f'{affected_files_map[md_file].LocalPath()} '
                   f'exceeds 80 characters ({len(line_stripped)} chars):\n'
-                  f'{line_stripped}'
+                  f'{line_stripped[:40]}... (truncated)'
               )
           )
 
@@ -273,6 +273,13 @@ def CheckMarkdownFiles(input_api, output_api):
               '"Zero Preamble/Postamble" and "Artifacts Only".'
           )
       )
+    if 'ADD_FAILURE("NOT IMPLEMENTED");' not in skill_content:
+      results.append(
+          output_api.PresubmitError(
+              'File SKILL.md must contain the TDD mandate requiring '
+              '"ADD_FAILURE(\\"NOT IMPLEMENTED\\");" in stubbed tests.'
+          )
+      )
 
   return results
 
@@ -289,6 +296,9 @@ def CheckJsonFiles(input_api, output_api):
       af.AbsoluteLocalPath(): af
       for af in input_api.AffectedFiles(include_deletes=False)
   }
+
+  project_content_cache = {}
+  persona_content_cache = {}
 
   schema_content_str = None
   if schema_path in affected_files_map:
@@ -502,41 +512,44 @@ def CheckJsonFiles(input_api, output_api):
             input_api.os_path.dirname(f.AbsoluteLocalPath()),
             'project.magi.json',
         )
-        proj_content_str = None
-        if project_file_path in affected_files_map:
-          proj_content_str = input_api.ReadFile(affected_files_map[project_file_path])
+        if project_file_path not in project_content_cache:
+          proj_content_str = None
+          if project_file_path in affected_files_map:
+            proj_content_str = input_api.ReadFile(affected_files_map[project_file_path])
 
-        if not proj_content_str and input_api.os_path.exists(project_file_path):
-          try:
-            with open(project_file_path, 'r', encoding='utf-8') as proj_f:
-              proj_content_str = proj_f.read()
-          except IOError:
-            pass
+          if not proj_content_str and input_api.os_path.exists(project_file_path):
+            try:
+              with open(project_file_path, 'r', encoding='utf-8') as proj_f:
+                proj_content_str = proj_f.read()
+            except IOError:
+              pass
 
-        if proj_content_str:
-          try:
-            proj_content = json.loads(proj_content_str)
-            if proj_content.get('paranoia_mode') is True:
-              results.append(
-                  output_api.PresubmitError(
-                      f'File {f.LocalPath()} has state_transport '
-                      f'{state_transport} but project.magi.json has '
-                      'paranoia_mode: true.'
-                  )
+          if proj_content_str:
+            try:
+              project_content_cache[project_file_path] = json.loads(proj_content_str)
+            except ValueError:
+              pass
+
+        proj_content = project_content_cache.get(project_file_path, {})
+        if proj_content.get('paranoia_mode') is True:
+          results.append(
+              output_api.PresubmitError(
+                  f'File {f.LocalPath()} has state_transport '
+                  f'{state_transport} but project.magi.json has '
+                  'paranoia_mode: true.'
               )
-            if (
-                state_transport == 'EPHEMERAL'
-                and proj_content.get('auditability_level') == 'VERBOSE'
-            ):
-              results.append(
-                  output_api.PresubmitError(
-                      f'File {f.LocalPath()} has state_transport EPHEMERAL '
-                      'but project.magi.json has auditability_level: VERBOSE. '
-                      'Consider using EPHEMERAL_WITH_LOGS instead.'
-                  )
+          )
+        if (
+            state_transport == 'EPHEMERAL'
+            and proj_content.get('auditability_level') == 'VERBOSE'
+        ):
+          results.append(
+              output_api.PresubmitError(
+                  f'File {f.LocalPath()} has state_transport EPHEMERAL '
+                  'but project.magi.json has auditability_level: VERBOSE. '
+                  'Consider using EPHEMERAL_WITH_LOGS instead.'
               )
-          except ValueError:
-            pass
+          )
 
       # Cross-file validation for checklist union merge
       personas = content.get('personas')
@@ -563,21 +576,27 @@ def CheckJsonFiles(input_api, output_api):
               input_api.os_path.join(repo_root, persona_path)
           )
 
-          persona_content_str = None
-          is_present = False
+          if abs_persona_path not in persona_content_cache:
+            persona_content_str = None
+            is_present = False
 
-          if abs_persona_path in affected_files_map:
-            persona_content_str = input_api.ReadFile(affected_files_map[abs_persona_path])
-            is_present = True
+            if abs_persona_path in affected_files_map:
+              persona_content_str = input_api.ReadFile(affected_files_map[abs_persona_path])
+              is_present = True
 
-          if not is_present:
-            if input_api.os_path.exists(abs_persona_path):
-              try:
-                with open(abs_persona_path, 'r', encoding='utf-8') as pf:
-                  persona_content_str = pf.read()
-                  is_present = True
-              except IOError:
-                pass
+            if not is_present:
+              if input_api.os_path.exists(abs_persona_path):
+                try:
+                  with open(abs_persona_path, 'r', encoding='utf-8') as pf:
+                    persona_content_str = pf.read()
+                    is_present = True
+                except IOError:
+                  pass
+            if is_present and persona_content_str:
+              persona_content_cache[abs_persona_path] = persona_content_str
+
+          persona_content_str = persona_content_cache.get(abs_persona_path)
+          is_present = persona_content_str is not None
 
           if not is_present:
             results.append(
@@ -703,10 +722,24 @@ def CheckJsonFiles(input_api, output_api):
   return results
 
 
+def CheckLogsDirectory(input_api, output_api):
+  results = []
+  for f in input_api.AffectedFiles(include_deletes=False):
+    if '.magi_logs/' in f.LocalPath().replace('\\', '/'):
+      results.append(
+          output_api.PresubmitError(
+              f'File {f.LocalPath()} is in the .magi_logs/ directory, '
+              f'which must be excluded from all CLs.'
+          )
+      )
+  return results
+
+
 def CheckChangeOnUpload(input_api, output_api):
   results = []
   results.extend(CheckMarkdownFiles(input_api, output_api))
   results.extend(CheckJsonFiles(input_api, output_api))
+  results.extend(CheckLogsDirectory(input_api, output_api))
   return results
 
 
@@ -714,4 +747,5 @@ def CheckChangeOnCommit(input_api, output_api):
   results = []
   results.extend(CheckMarkdownFiles(input_api, output_api))
   results.extend(CheckJsonFiles(input_api, output_api))
+  results.extend(CheckLogsDirectory(input_api, output_api))
   return results
