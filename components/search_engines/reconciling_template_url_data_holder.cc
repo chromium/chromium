@@ -148,7 +148,7 @@ ReconcilingTemplateURLDataHolder::FindMatchingBuiltInDefinitionsById(
     const TemplateURLData& data_to_match) const {
   // Search for potential migrations. It is prioritised over the regional
   // engines, which can change across runs. That's a very strict check (see
-  // `Resolver::MatchesEngineUnderMigration`), so there is no risk to  match the
+  // `Resolver::CompareEngineUnderMigration`), so there is no risk to  match the
   // wrong engine.
   if (std::unique_ptr<TemplateURLData> engine =
           prepopulate_data_resolver_->TryGetMigratedEngine(data_to_match);

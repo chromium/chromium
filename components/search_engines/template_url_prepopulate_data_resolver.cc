@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "components/prefs/pref_service.h"
@@ -17,6 +18,7 @@
 #include "components/search_engines/keyword_web_data_service.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
+#include "url/gurl.h"
 
 namespace TemplateURLPrepopulateData {
 
@@ -117,13 +119,25 @@ Resolver::ComputeDatabaseUpdateRequirements(
   return std::nullopt;
 }
 
-bool Resolver::MatchesEngineUnderMigration(
+bool Resolver::IsMatch(MigrationMatch match) {
+  switch (match) {
+    case MigrationMatch::kExactMatch:
+    case MigrationMatch::kHostMatch:
+      return true;
+    case MigrationMatch::kIdsDontMatch:
+    case MigrationMatch::kInvalidCheckedUrl:
+    case MigrationMatch::kUrlMismatch:
+      return false;
+  }
+}
+
+Resolver::MigrationMatch Resolver::CompareEngineUnderMigration(
     const TemplateURLData& checked_data,
     const PrepopulatedEngine* deprecated_engine) const {
   CHECK(deprecated_engine->migrate_to_id != 0, base::NotFatalUntil::M149);
 
   if (checked_data.prepopulate_id != deprecated_engine->id) {
-    return false;
+    return MigrationMatch::kIdsDontMatch;
   }
 
   // Don't only check the IDs, also check the URLs. The prepopulated
@@ -131,7 +145,25 @@ bool Resolver::MatchesEngineUnderMigration(
   // but only adds one version to regional engines sets. Checking the URL
   // ensures that the engine being migrated corresponds to the expected
   // regional version.
-  return checked_data.url() == deprecated_engine->search_url;
+  if (checked_data.url() == deprecated_engine->search_url) {
+    return MigrationMatch::kExactMatch;
+  }
+
+  GURL incoming_gurl(checked_data.url());
+  if (!incoming_gurl.is_valid()) {
+    return MigrationMatch::kInvalidCheckedUrl;
+  }
+
+  GURL built_in_gurl(deprecated_engine->search_url);
+  // Assumption checked in `TemplateURLPrepopulateDataTest.ValidSearchURLs`
+  // May still fail if we end up migrating Google to another prepopulate ID.
+  CHECK(built_in_gurl.is_valid());
+
+  if (incoming_gurl.host() == built_in_gurl.host()) {
+    return MigrationMatch::kHostMatch;
+  }
+
+  return MigrationMatch::kUrlMismatch;
 }
 
 std::unique_ptr<TemplateURLData> Resolver::TryGetMigratedEngine(
@@ -149,7 +181,13 @@ std::unique_ptr<TemplateURLData> Resolver::TryGetMigratedEngine(
   const auto& migrating_engines =
       regional_capabilities::GetMigratingPrepopulatedEngines();
   for (const auto& [new_engine_id, deprecated_engine] : migrating_engines) {
-    if (MatchesEngineUnderMigration(pre_migration_engine, deprecated_engine)) {
+    MigrationMatch match =
+        CompareEngineUnderMigration(pre_migration_engine, deprecated_engine);
+    if (match != MigrationMatch::kIdsDontMatch) {
+      base::UmaHistogramEnumeration(
+          "Omnibox.TemplateUrl.DseReconciler.MigrationMatch", match);
+    }
+    if (IsMatch(match)) {
       auto new_engine = GetEngineFromFullList(new_engine_id);
 
       // By design there should be an entry for this ID, see

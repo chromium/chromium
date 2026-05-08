@@ -207,6 +207,22 @@ class TemplateURLPrepopulateDataTest : public testing::Test {
   search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
 };
 
+TEST_F(TemplateURLPrepopulateDataTest, ValidSearchURLs) {
+  // Validates the assumption in
+  // TemplateURLPrepopulateData::Resolver::MatchesEngineUnderMigration that all
+  // prepopulated search engine URLs can be parsed without needing to resolve
+  // replacements. Google is the exception, but that's accounted for.
+  for (const PrepopulatedEngine* engine :
+       TemplateURLPrepopulateData::kAllEngines) {
+    if (engine == &TemplateURLPrepopulateData::google) {
+      continue;  // URL is not valid, it has a lot of replacements that need to
+                 // be processed before use.
+    }
+    EXPECT_TRUE(GURL(engine->search_url).is_valid())
+        << "Invalid search url: " << engine->search_url;
+  }
+}
+
 // Verifies the set of prepopulate data doesn't contain entries with duplicate
 // ids.
 TEST_F(TemplateURLPrepopulateDataTest, UniqueIDs) {

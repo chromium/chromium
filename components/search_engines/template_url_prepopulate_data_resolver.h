@@ -77,10 +77,31 @@ class Resolver : public KeyedService {
   std::optional<BuiltinKeywordsMetadata> ComputeDatabaseUpdateRequirements(
       const WDKeywordsResult::Metadata& keywords_database_metadata) const;
 
+  // Granular reasons for TemplateURLs to match (or not). See `IsMatch` to
+  // interpret the values.
+  // TODO(crbug.com/507355138): Remove the enum and revert to just using bool.
+  // LINT.IfChange(MigrationMatch)
+  enum class MigrationMatch {
+    kExactMatch = 0,
+    kHostMatch = 1,
+    kIdsDontMatch = 2,
+    kInvalidCheckedUrl = 3,
+    kUrlMismatch = 4,
+    kMaxValue = kUrlMismatch,
+  };
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/omnibox/enums.xml:MigrationMatch)
+
+  // Interprets the output of `CompareEngineUnderMigration(checked_data,
+  // deprecated_engine)`.
+  // Returns true if `match` indicates that `deprecated_engine`'s migration
+  // instruction can be applied to `checked_data`.
+  static bool IsMatch(MigrationMatch match);
+
   // Returns whether `deprecated_engine`'s migration instruction can be applied
   // to `checked_data`. This needs to be checked to ensure that we are not
   // incorrectly migrating custom or variant engine definitions.
-  bool MatchesEngineUnderMigration(
+  // Use `IsMatch(MigrationMatch)` to interpret the output.
+  MigrationMatch CompareEngineUnderMigration(
       const TemplateURLData& checked_data,
       const PrepopulatedEngine* deprecated_engine) const;
 

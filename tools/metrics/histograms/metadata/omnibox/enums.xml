@@ -210,6 +210,18 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="SearchTerms"/>
 </enum>
 
+<!-- LINT.IfChange(MigrationMatch) -->
+
+<enum name="MigrationMatch">
+  <int value="0" label="Exact Match"/>
+  <int value="1" label="Host Match"/>
+  <int value="2" label="IDs Don't Match"/>
+  <int value="3" label="Invalid Checked URL"/>
+  <int value="4" label="URL Mismatch"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/search_engines/template_url_prepopulate_data_resolver.cc:MigrationMatch) -->
+
 <!-- LINT.IfChange(OmniboxBuiltinEngineType) -->
 
 <enum name="OmniboxBuiltinEngineType">

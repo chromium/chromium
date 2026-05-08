@@ -4519,6 +4519,36 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram name="Omnibox.TemplateUrl.DBRefresh.MigrationMatch"
+    enum="MigrationMatch" expires_after="2026-12-31">
+  <owner>dgn@google.com</owner>
+  <owner>chrome-regionalcapabilities@google.com</owner>
+  <summary>
+    The match or mismatch reason found while comparing prepopulated engines and
+    keywords DB engines during prepopulated engines migration.
+
+    A &quot;match&quot; (e.g., exact or host match) indicates that an engine in
+    the keywords database corresponds to a prepopulated engine definition and
+    can be migrated. A &quot;mismatch&quot; (e.g., URL mismatch or invalid URL)
+    indicates that the existing engine does not sufficiently match the
+    prepopulated one, and thus cannot be safely migrated.
+
+    Recorded for each engine under migration that matches an existing engine,
+    during the keywords DB refresh that is done on profile load after a database
+    version update, country change, or migration feature flag flip.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.TemplateUrl.DBRefresh.TotalDuplicates" units="units"
+    expires_after="2026-12-31">
+  <owner>dgn@google.com</owner>
+  <owner>chrome-regionalcapabilities@google.com</owner>
+  <summary>
+    The total number of duplicate prepopulated engine IDs found in the search
+    engine database during a refresh.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.TemplateUrl.DBRefresh.UnmatchedDefaultSearchCount"
     units="count" expires_after="2026-09-20">
   <owner>dgn@google.com</owner>
@@ -4533,6 +4563,17 @@ Keep consistent with active providers. Doesn't need to include every provider in
     Recorded once per keywords database merging, which gets triggered on startup
     if the built-in search engines data has been updated, or the profile's
     assigned country changed.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.TemplateUrl.DseReconciler.MigrationMatch"
+    enum="MigrationMatch" expires_after="2026-12-31">
+  <owner>dgn@google.com</owner>
+  <owner>chrome-reg-cap@google.com</owner>
+  <summary>
+    The type of match found during prepopulated engine migration in the DSE
+    reconciler. Recorded for each engine under migration that matches an
+    existing engine.
   </summary>
 </histogram>
 
