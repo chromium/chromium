@@ -876,7 +876,6 @@ class DeviceBoundSessionsLiveSignInTest : public LiveSignInTestBase {
          net::features::kDeviceBoundSessionsForRestrictedSites,
          switches::kEnableChromeRefreshTokenBinding,
          switches::kEnableOAuthMultiloginStandardCookiesBinding,
-         net::features::kPersistDeviceBoundSessions,
          network::features::kUseUnexportableKeyServiceInBrowserProcess,
          unexportable_keys::
              kEnableBoundSessionCredentialsSoftwareKeysForManualTesting,

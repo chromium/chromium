@@ -1433,9 +1433,6 @@ TEST_F(NetworkContextTest, DeviceBoundSessionsDisableParam) {
 
 TEST_F(NetworkContextTest, DeviceBoundSessionsEnableWithStore) {
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      net::features::kPersistDeviceBoundSessions);
   mojom::NetworkContextParamsPtr context_params =
       CreateNetworkContextParamsForTesting();
   base::ScopedTempDir temp_dir;

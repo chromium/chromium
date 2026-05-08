@@ -3174,18 +3174,15 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
     }
 #endif
 
-    if (base::FeatureList::IsEnabled(
-            net::features::kPersistDeviceBoundSessions)) {
-      base::FilePath device_bound_sessions_file_path;
-      if (GetFullDataFilePath(params_->file_paths,
-                              &network::mojom::NetworkContextFilePaths::
-                                  device_bound_sessions_database_name,
-                              device_bound_sessions_file_path)) {
-        // Network-bound NetworkContexts should not persist state on disk.
-        CHECK(!is_network_bound);
-        builder.set_device_bound_sessions_file_path(
-            device_bound_sessions_file_path);
-      }
+    base::FilePath device_bound_sessions_file_path;
+    if (GetFullDataFilePath(params_->file_paths,
+                            &network::mojom::NetworkContextFilePaths::
+                                device_bound_sessions_database_name,
+                            device_bound_sessions_file_path)) {
+      // Network-bound NetworkContexts should not persist state on disk.
+      CHECK(!is_network_bound);
+      builder.set_device_bound_sessions_file_path(
+          device_bound_sessions_file_path);
     }
   }
 
