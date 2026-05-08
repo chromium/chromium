@@ -8077,6 +8077,19 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </token>
 </histogram>
 
+<histogram
+    name="Autofill.StoredCreditCardCount{AutofillCreditCardType}.WithNickname"
+    units="cards" expires_after="2027-04-30">
+  <owner>osaul@google.com</owner>
+  <owner>battre@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    The number of credit cards a user has stored with a valid nickname, measured
+    at Chrome profile launch time. {AutofillCreditCardType}
+  </summary>
+  <token key="AutofillCreditCardType" variants="AutofillCreditCardType"/>
+</histogram>
+
 <histogram name="Autofill.StoredCreditCardDisusedCount{AutofillCreditCardType}"
     units="cards" expires_after="2026-12-12">
   <owner>battre@chromium.org</owner>
