@@ -878,6 +878,36 @@ TEST_F(AllocatorShimTest, MallocGoodSize) {
   EXPECT_GE(good_size, kTestSize);
 }
 
+// Regression test: MallocZoneSize crash on freed direct-mapped allocation.
+// On macOS, the system (CoreFoundation/AppKit) may call malloc_zone_size()
+// for any pointer, including pointers in super pages that have been freed
+// and decommitted. Without the fix, this would SIGBUS when accessing
+// decommitted metadata.
+TEST_F(AllocatorShimTest, MallocSizeOnFreedDirectMapDoesNotCrash) {
+  // Allocate a large block that will be direct-mapped by PartitionAlloc.
+  // Direct-mapped allocations are immediately unmapped (via UnmapNow) when
+  // freed, so the super page metadata becomes inaccessible.
+  constexpr size_t kLargeSize = 2 * 1024 * 1024;  // 2 MiB
+  void* ptr = malloc(kLargeSize);
+  ASSERT_NE(ptr, nullptr);
+
+  // Verify malloc_size works while the allocation is alive.
+  size_t size_before_free = malloc_size(ptr);
+  EXPECT_GE(size_before_free, kLargeSize);
+
+  // Free the allocation. For direct-mapped allocations, this calls UnmapNow
+  // which decommits the super page and its metadata.
+  free(ptr);
+
+  // Now call malloc_size on the freed pointer. This exercises the same code
+  // path as the crash: MallocZoneSize -> ShimGetSizeEstimate ->
+  // GetSizeEstimate. Before the fix, this would SIGBUS on decommitted
+  // metadata. After the fix, the ReservationOffsetTable check returns 1
+  // (claiming ownership without accessing decommitted metadata).
+  size_t size_after_free = malloc_size(ptr);
+  EXPECT_EQ(size_after_free, 1u);
+}
+
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && PA_BUILDFLAG(IS_APPLE)
 
 TEST_F(AllocatorShimTest, OptimizeAllocatorDispatchTable) {

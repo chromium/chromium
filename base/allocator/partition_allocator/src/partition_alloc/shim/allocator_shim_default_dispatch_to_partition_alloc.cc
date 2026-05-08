@@ -592,12 +592,30 @@ size_t PartitionAllocFunctionsInternal<base_alloc_flags, base_free_flags>::
   }
 
 #if PA_BUILDFLAG(IS_APPLE)
-  if (!partition_alloc::IsManagedByPartitionAlloc(
-          reinterpret_cast<uintptr_t>(address))) {
+  uintptr_t address_as_uintptr = reinterpret_cast<uintptr_t>(address);
+  if (!partition_alloc::IsManagedByPartitionAlloc(address_as_uintptr)) {
     // The object pointed to by `address` is not allocated by the
     // PartitionAlloc.  The return value `0` means that the pointer does not
     // belong to this malloc zone.
     return 0;
+  }
+  // On macOS, the system (CoreFoundation/AppKit) may call malloc_zone_size()
+  // for any pointer, including pointers in super pages that have been freed
+  // and decommitted. IsManagedByPartitionAlloc() only checks if the address
+  // falls within the GigaCage range, which remains true even after the super
+  // page is freed. Verify that the super page is still allocated by checking
+  // the reservation offset table before accessing metadata, which would
+  // SIGBUS on a decommitted page.
+  //
+  // Return 1 (not 0) to indicate we still own this address — it is within
+  // our pool range even though the super page has been freed. Returning 0
+  // would tell the zone dispatcher we don't own it, potentially causing it
+  // to search other zones. Returning 1 is safe since the allocation is
+  // being torn down and 1 byte can't alias another live object.
+  if (!partition_alloc::internal::ReservationOffsetTable::Get(
+           address_as_uintptr)
+           .IsManagedByNormalBucketsOrDirectMap(address_as_uintptr)) {
+    return 1;
   }
 #endif  // PA_BUILDFLAG(IS_APPLE)
 

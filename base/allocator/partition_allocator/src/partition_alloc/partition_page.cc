@@ -366,6 +366,13 @@ void UnmapNow(uintptr_t reservation_start,
   }
 #endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
 
+  // Reset the offset table entries first, before decommitting metadata.
+  // This ensures that concurrent callers of MallocZoneSize (on macOS) that
+  // check IsManagedByNormalBucketsOrDirectMap() will see "not allocated"
+  // before the metadata pages become inaccessible, avoiding SIGBUS.
+  root->GetReservationOffsetTable().SetNotAllocatedTag(reservation_start,
+                                                       reservation_size);
+
 #if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
   // Decommit metadata area inside metadata cage to avoid DCHECK() failure
   // at next allocation. This must be done before
@@ -377,14 +384,6 @@ void UnmapNow(uintptr_t reservation_start,
                                PageTag::kPartitionAlloc);
   }
 #endif  // PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
-
-  // Reset the offset table entries for the given memory before unreserving
-  // it. Since the memory is not unreserved and not available for other
-  // threads, the table entries for the memory are not modified by other
-  // threads either. So we can update the table entries without race
-  // condition.
-  root->GetReservationOffsetTable().SetNotAllocatedTag(reservation_start,
-                                                       reservation_size);
 
 #if !PA_BUILDFLAG(HAS_64_BIT_POINTERS)
   AddressPoolManager::GetInstance().MarkUnused(pool, reservation_start,
