@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -300,6 +301,21 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest, PercentOverlapRounding) {
 
   histogram_tester.ExpectUniqueSample("Glic.PercentOverlapWithBrowser.OnClose",
                                       PercentOverlap::k50, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest, ZoomLevel_OnOpen) {
+  base::HistogramTester histogram_tester;
+
+  // Set zoom level for profile.
+  browser()->profile()->GetPrefs()->SetInteger(prefs::kGlicZoomLevel, 150);
+
+  // Open the side panel.
+  GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile())
+      ->ToggleUI(browser(), /*prevent_close=*/false,
+                 mojom::InvocationSource::kOsButton);
+
+  // Verify that Glic.ZoomLevel.OnOpen was logged with the correct value.
+  histogram_tester.ExpectUniqueSample("Glic.ZoomLevel.OnOpen", 150, 1);
 }
 
 class GlicMetricsBrowserTestWithCaptureRegion : public GlicMetricsBrowserTest {

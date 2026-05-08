@@ -294,6 +294,9 @@ interface PageHandler {
   // Called whenever the webview mainframe commits.
   WebviewCommitted(url.mojom.Url url);
 
+  // Notifies the host that the zoom level of the webview has changed.
+  OnZoomLevelChange(double zoom_factor);
+
   // Closes the Glic panel.
   ClosePanel() => ();
 

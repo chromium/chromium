@@ -38,6 +38,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       user_prefs::PrefRegistrySyncable::SYNCABLE_PRIORITY_PREF);
   registry->RegisterIntegerPref(
       kGlicCompletedFre, static_cast<int>(prefs::FreStatus::kNotStarted));
+  registry->RegisterIntegerPref(prefs::kGlicZoomLevel, 100);
   registry->RegisterTimePref(kGlicWindowLastDismissedTime, base::Time());
 
   // The default value is not used. If not set the default position is

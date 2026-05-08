@@ -9,9 +9,11 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_enums.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "components/prefs/pref_service.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
 namespace glic {
@@ -31,6 +33,13 @@ void GlicMetricsProvider::ProvideCurrentSessionData(
   int num_enabled_profiles = 0;
   for (auto* profile : profile_list) {
     GlicEnabling::EnablementForProfile(profile).RecordSteadyStateMetrics();
+
+    if (GlicEnabling::HasConsentedForProfile(profile)) {
+      base::UmaHistogramSparse(
+          "Glic.ZoomLevel.SteadyState",
+          profile->GetPrefs()->GetInteger(glic::prefs::kGlicZoomLevel));
+    }
+
     if (GlicEnabling::IsEnabledForProfile(profile)) {
       num_enabled_profiles++;
       if (GlicEnabling::IsEligibleForGlicTieredRollout(profile)) {

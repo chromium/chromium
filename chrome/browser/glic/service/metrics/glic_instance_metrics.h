@@ -18,6 +18,8 @@
 #include "chrome/browser/glic/service/metrics/glic_metrics_session_manager.h"
 #include "chrome/browser/glic/service/metrics/metrics_types.h"
 
+class PrefService;
+
 namespace content {
 class WebContents;
 }
@@ -146,7 +148,8 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   };
 
   GlicInstanceMetrics();
-  explicit GlicInstanceMetrics(GlicSharingManager* sharing_manager);
+  explicit GlicInstanceMetrics(GlicSharingManager* sharing_manager,
+                               PrefService* pref_service = nullptr);
   ~GlicInstanceMetrics() override;
 
   GlicInstanceMetrics(const GlicInstanceMetrics&) = delete;
@@ -392,6 +395,7 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   base::CallbackListSubscription pinned_tabs_changed_subscription_;
   base::CallbackListSubscription tab_pinning_status_subscription_;
   raw_ptr<GlicSharingManager> sharing_manager_ = nullptr;
+  raw_ptr<PrefService> pref_service_ = nullptr;
 
   bool first_side_panel_close_recorded_ = false;
 

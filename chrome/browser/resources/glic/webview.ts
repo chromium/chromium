@@ -186,6 +186,7 @@ export class WebviewController {
       const percentage = Math.round(e.newZoomFactor * 100);
       const message = loadTimeData.getStringF('zoomLabel', percentage + '%');
       getAnnouncerInstance().announce(message);
+      this.browserProxy.pageHandler.onZoomLevelChange(e.newZoomFactor);
     });
     // </if>
     this.eventTracker.add(
@@ -268,6 +269,8 @@ export class WebviewController {
       return;
     }
 
+    // Any changes to the range of supported zoom factors must be mirrored in
+    // GlicPageHandler.OnZoomLevelChange.
     const zoomFactors = [
       1.0,
       1.1,

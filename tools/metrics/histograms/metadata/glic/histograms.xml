@@ -2931,6 +2931,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.ZoomLevel.{Suffix}" units="%" expires_after="2026-09-20">
+  <owner>cuianthony@chromium.org</owner>
+  <owner>glic-dev@google.com</owner>
+  <summary>
+    The zoom level of the Glic webview as a percentage. Recorded {Suffix}.
+  </summary>
+  <token key="Suffix">
+    <variant name="OnOpen"
+        summary="when the Glic panel is opened by the user."/>
+    <variant name="SteadyState"
+        summary="periodically for active users (those who have completed the
+                 Glic FRE)."/>
+  </token>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>
