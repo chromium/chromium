@@ -66,8 +66,8 @@ crbug.com/40724063 external/wpt/pointerevents/pointerlock/pointerevent_movementx
 # Flaky on most bots
 crbug.com/485661974 external/wpt/client-hints/critical-ch/mis-matched.multiple.https.window.html [ Failure Pass ]
 crbug.com/485661974 external/wpt/client-hints/critical-ch/redirect.cross-origin.https.window.html [ Failure Pass ]
-crbug.com/457156701 external/wpt/client-hints/critical-ch/request-count.multiple.https.window.html [ Failure Pass ]
-crbug.com/464033157 external/wpt/client-hints/critical-ch/subresource.https.window.html [ Failure Pass ]
+crbug.com/485661974 external/wpt/client-hints/critical-ch/request-count.multiple.https.window.html [ Failure Pass ]
+crbug.com/485661974 external/wpt/client-hints/critical-ch/subresource.https.window.html [ Failure Pass ]
 crbug.com/485661974 external/wpt/client-hints/critical-ch/unsafe-method.https.window.html [ Failure Pass ]
 crbug.com/480332818 external/wpt/css/css-image-animation/image-animation-img-running-to-normal.tentative.html [ Failure Pass ]
 crbug.com/485328296 external/wpt/css/css-position/crashtests/inline-containing-block-dynamic-change.html [ Failure Pass ]
