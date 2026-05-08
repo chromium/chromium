@@ -502,8 +502,8 @@ void CountersAttachmentContext::CreateCounter(const LayoutObject& layout_object,
       const auto* current =
           To<Element>(counter_stack.back()->layout_object->GetNode());
       DCHECK(current);
-      if (LayoutTreeBuilderTraversal::ParentElement(*current) ==
-          LayoutTreeBuilderTraversal::ParentElement(*element)) {
+      if (LayoutTreeBuilderTraversal::LayoutParentElement(*current) ==
+          LayoutTreeBuilderTraversal::LayoutParentElement(*element)) {
         counter_stack.pop_back();
       }
     }
@@ -543,7 +543,7 @@ void CountersAttachmentContext::RemoveStaleCounters(
     const LayoutObject& last_object = *entry->layout_object;
     if (const auto* last_element = DynamicTo<Element>(last_object.GetNode())) {
       const Element* parent =
-          LayoutTreeBuilderTraversal::ParentElement(*last_element);
+          LayoutTreeBuilderTraversal::LayoutParentElement(*last_element);
       // We pop all elements whose parent is not ancestor of `element`.
       if (!parent || IsAncestorOf(*parent, *element)) {
         break;
@@ -596,9 +596,9 @@ void CountersAttachmentContext::RemoveCounterIfAncestorExists(
     return;
   }
   const Element* parent =
-      LayoutTreeBuilderTraversal::ParentElement(*previous_element);
+      LayoutTreeBuilderTraversal::LayoutParentElement(*previous_element);
   if (parent && IsAncestorOf(*parent, *element) &&
-      parent != LayoutTreeBuilderTraversal::ParentElement(*element)) {
+      parent != LayoutTreeBuilderTraversal::LayoutParentElement(*element)) {
     counter_stack.pop_back();
   }
 }
