@@ -159,6 +159,72 @@ const std::string ColumnsForVersion(int version, bool concatenated) {
   return base::JoinString(columns, concatenated ? " || " : ", ");
 }
 
+void UpdateAllKeywordHashes(sql::Database* db,
+                            const os_crypt_async::Encryptor* encryptor,
+                            std::string_view histogram_name) {
+  bool all_rows_migrated = true;
+  absl::Cleanup record_histogram = [&all_rows_migrated, histogram_name] {
+    base::UmaHistogramBoolean(histogram_name, all_rows_migrated);
+  };
+
+  // See the comment in `GetKeywordDataFromStatement` as to why this code is
+  // only enabled for Windows.
+#if BUILDFLAG(IS_WIN)
+  // If there is no platform encryption, nothing left to do, since the
+  // `url_hash` column will just be NULL.
+  if (!encryptor->IsEncryptionAvailable()) {
+    return;
+  }
+
+  // Read in all the urls, keywords, and ids and create hashes for each one.
+  sql::Statement query_statement(
+      db->GetCachedStatement(SQL_FROM_HERE,
+                             "SELECT id, url, keyword, starter_pack_id, "
+                             "enforced_by_policy FROM keywords"));
+
+  while (query_statement.Step()) {
+    TemplateURLData data;
+    data.id = query_statement.ColumnInt64(0);
+    const auto maybe_url = query_statement.ColumnString(1);
+
+    // Due to past bugs, there might be persisted entries with empty URLs. Avoid
+    // reading these out. GetKeywords() will delete these entries when they are
+    // read after migration.
+    if (maybe_url.empty()) {
+      all_rows_migrated = false;
+      continue;
+    }
+
+    // Populate the data to be hashed into the TemplateURLData. If any new
+    // values are being hashed in future, they must be added here.
+    data.SetURL(maybe_url);
+    data.SetKeyword(query_statement.ColumnString16(2));
+    data.starter_pack_id = query_statement.ColumnInt(3);
+    data.enforced_by_policy = query_statement.ColumnBool(4);
+
+    const std::vector<uint8_t> url_hash = data.GenerateHash();
+    const std::optional<std::vector<uint8_t>> encrypted_hash =
+        encryptor->EncryptString(std::string(url_hash.begin(), url_hash.end()));
+    if (!encrypted_hash) {
+      all_rows_migrated = false;
+      continue;
+    }
+
+    // Update each row in turn with the generated hash.
+    sql::Statement update_statement(db->GetCachedStatement(
+        SQL_FROM_HERE, "UPDATE keywords SET url_hash=? WHERE id=?"));
+
+    update_statement.BindBlob(0, *std::move(encrypted_hash));
+    update_statement.BindInt64(1, data.id);
+
+    if (!update_statement.Run()) {
+      all_rows_migrated = false;
+      continue;
+    }
+  }
+#endif  // BUILDFLAG(IS_WIN)
+}
+
 WebDatabaseTable::TypeKey GetKey() {
   // We just need a unique constant. Use the address of a static that
   // COMDAT folding won't touch in an optimizing linker.
@@ -248,6 +314,8 @@ bool KeywordTable::MigrateToVersion(int version,
       return MigrateToVersion122AddSiteSearchPolicyColumns();
     case 137:
       return MigrateToVersion137AddHashColumn();
+    case 152:
+      return MigrateToVersion152ExpandHashColumn();
   }
 
   return true;
@@ -514,61 +582,22 @@ bool KeywordTable::MigrateToVersion137AddHashColumn() {
     return false;
   }
 
-  bool all_rows_migrated = true;
-  absl::Cleanup record_histogram = [&all_rows_migrated] {
-    base::UmaHistogramBoolean("Search.KeywordTable.MigrationSuccess.V137",
-                              all_rows_migrated);
-  };
+  UpdateAllKeywordHashes(db(), encryptor(),
+                         "Search.KeywordTable.MigrationSuccess.V137");
 
-  // See the comment in `GetKeywordDataFromStatement` as to why this code is
-  // only enabled for Windows.
-#if BUILDFLAG(IS_WIN)
-  // If there is no platform encryption, nothing left to do, since the
-  // `url_hash` column will just be NULL.
-  if (!encryptor()->IsEncryptionAvailable()) {
-    return transaction.Commit();
+  return transaction.Commit();
+}
+
+bool KeywordTable::MigrateToVersion152ExpandHashColumn() {
+  sql::Transaction transaction(db());
+
+  if (!transaction.Begin()) {
+    return false;
   }
 
-  // Read in all the urls and ids and create hashes for each one.
-  sql::Statement query_statement(db()->GetCachedStatement(
-      SQL_FROM_HERE, base::StrCat({"SELECT id, url FROM keywords"})));
+  UpdateAllKeywordHashes(db(), encryptor(),
+                         "Search.KeywordTable.MigrationSuccess.V152");
 
-  while (query_statement.Step()) {
-    TemplateURLData data;
-    data.id = query_statement.ColumnInt64(0);
-    const auto maybe_url = query_statement.ColumnString(1);
-
-    // Due to past bugs, there might be persisted entries with empty URLs. Avoid
-    // reading these out. GetKeywords() will delete these entries when they are
-    // read after migration.
-    if (maybe_url.empty()) {
-      all_rows_migrated = false;
-      continue;
-    }
-
-    data.SetURL(maybe_url);
-    const std::vector<uint8_t> url_hash = data.GenerateHash();
-    const std::optional<std::vector<uint8_t>> encrypted_hash =
-        encryptor()->EncryptString(
-            std::string(url_hash.begin(), url_hash.end()));
-    if (!encrypted_hash) {
-      all_rows_migrated = false;
-      continue;
-    }
-
-    // Update each row in turn with the generated hash.
-    sql::Statement update_statement(db()->GetCachedStatement(
-        SQL_FROM_HERE, "UPDATE keywords SET url_hash=? WHERE id=?"));
-
-    update_statement.BindBlob(0, *std::move(encrypted_hash));
-    update_statement.BindInt64(1, data.id);
-
-    if (!update_statement.Run()) {
-      all_rows_migrated = false;
-      continue;
-    }
-  }
-#endif  // BUILDFLAG(IS_WIN)
   return transaction.Commit();
 }
 

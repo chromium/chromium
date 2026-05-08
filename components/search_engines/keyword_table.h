@@ -174,6 +174,7 @@ class KeywordTable : public WebDatabaseTable {
   bool MigrateToVersion112AddEnforcedByPolicyColumn();
   bool MigrateToVersion122AddSiteSearchPolicyColumns();
   bool MigrateToVersion137AddHashColumn();
+  bool MigrateToVersion152ExpandHashColumn();
 
  private:
   friend class KeywordTableTest;

@@ -173,9 +173,12 @@ std::vector<uint8_t> TemplateURLData::GenerateHash() const {
   base::Pickle pickle;
   pickle.WriteInt64(id);
   pickle.WriteString(url_);
+  pickle.WriteString16(keyword_);
+  pickle.WriteBool(enforced_by_policy);
+  pickle.WriteInt(starter_pack_id);
   // Prepend a hash version. This would allow expanding the data contained
   // within the hash in the future, while keeping backwards compatibility.
-  const uint8_t kHashVersion = 1u;
+  const uint8_t kHashVersion = 2u;
   std::vector<uint8_t> result(1, kHashVersion);
 
   const auto hash = crypto::hash::Sha256(pickle);

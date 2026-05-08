@@ -1326,6 +1326,20 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
   </summary>
 </histogram>
 
+<histogram name="Search.KeywordTable.MigrationSuccess.V152"
+    enum="BooleanSuccess" expires_after="2026-11-24">
+  <owner>wfh@chromium.org</owner>
+  <owner>jdonnelly@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Records whether or not the migration of the keywords table in the Web Data
+    sqlite database successfully completed without dropping any rows. This
+    metric is recorded when a Web Data database before v152 is loaded, which
+    happens at profile load. A failure here means one or more rows have been
+    dropped, but the table was migrated to v152 anyway.
+  </summary>
+</histogram>
+
 <histogram name="Search.OsDefaultsChoice.DelayFromDialogShownToFirstStatus"
     units="ms" expires_after="2026-11-03">
   <owner>dgn@chromium.org</owner>
