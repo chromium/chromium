@@ -537,19 +537,23 @@ class FuseboxViewBinder {
         borderColor =
                 OmniboxResourceProvider.getRequestTypeButtonBorderColor(
                         context, brandedColorScheme);
-        if (requestType == AutocompleteRequestType.IMAGE_GENERATION) {
-            buttonColor =
-                    OmniboxResourceProvider.getImageGenButtonColor(context, brandedColorScheme);
-
-            textAppearanceRes =
-                    OmniboxResourceProvider.getImageGenButtonTextRes(brandedColorScheme);
-            endDrawable.setTint(
-                    OmniboxResourceProvider.getDefaultIconColor(context, brandedColorScheme));
-        } else {
+        if (requestType == AutocompleteRequestType.AI_MODE) {
             buttonColor = OmniboxResourceProvider.getAiModeButtonColor(context, brandedColorScheme);
             textAppearanceRes = OmniboxResourceProvider.getAiModeButtonTextRes(brandedColorScheme);
             assumeNonNull(startDrawable).mutate().setTint(colorPrimary);
             endDrawable.setTint(colorPrimary);
+        } else {
+            buttonColor =
+                    OmniboxResourceProvider.getImageGenButtonColor(context, brandedColorScheme);
+            textAppearanceRes =
+                    OmniboxResourceProvider.getImageGenButtonTextRes(brandedColorScheme);
+            @ColorInt
+            int iconColor =
+                    OmniboxResourceProvider.getDefaultIconColor(context, brandedColorScheme);
+            if (requestType != AutocompleteRequestType.IMAGE_GENERATION) {
+                assumeNonNull(startDrawable).mutate().setTint(colorPrimary);
+            }
+            endDrawable.setTint(iconColor);
         }
 
         @Px int iconSizePx = res.getDimensionPixelSize(R.dimen.fusebox_button_icon_size);
