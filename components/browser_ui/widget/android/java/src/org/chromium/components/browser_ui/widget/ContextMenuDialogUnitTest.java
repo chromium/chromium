@@ -270,6 +270,7 @@ public class ContextMenuDialogUnitTest {
     private ContextMenuDialog createContextMenuDialog(boolean isPopup, boolean shouldRemoveScrim) {
         return new ContextMenuDialog(
                 mActivity,
+                /* windowAndroid= */ null,
                 /* theme= */ 0,
                 ContextMenuDialog.NO_CUSTOM_MARGIN,
                 ContextMenuDialog.NO_CUSTOM_MARGIN,

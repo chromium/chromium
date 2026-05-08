@@ -261,6 +261,7 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
         ContextMenuDialog dialog =
                 createContextMenuDialog(
                         mActivity,
+                        window,
                         layout,
                         menu,
                         mUsePopupWindow,
@@ -377,6 +378,7 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
         ContextMenuDialog dialog =
                 createContextMenuDialog(
                         mActivity,
+                        mWebContents.getTopLevelNativeWindow(),
                         new FrameLayout(mActivity),
                         menu,
                         mUsePopupWindow,
@@ -441,6 +443,7 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
     @VisibleForTesting
     static ContextMenuDialog createContextMenuDialog(
             Activity activity,
+            @Nullable WindowAndroid windowAndroid,
             View layout,
             View menuView,
             boolean isPopup,
@@ -457,6 +460,7 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
         final ContextMenuDialog dialog =
                 new ContextMenuDialog(
                         activity,
+                        windowAndroid,
                         R.style.ThemeOverlay_BrowserUI_AlertDialog,
                         topMarginPx,
                         bottomMarginPx,
@@ -469,7 +473,8 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
                         desiredPopupContentWidth,
                         dragDispatchingTargetView,
                         rect,
-                        EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled(),
+                        /* shouldPadForWindowInsets= */ EdgeToEdgeUtils
+                                .isEdgeToEdgeEverywhereEnabled(),
                         onDismissCallback);
         dialog.setContentView(layout);
 
