@@ -221,6 +221,10 @@ void OnNavigationRequestFailed(
 void OnNavigationEntryMarkedSkippable(const GURL& url,
                                       RenderFrameHostImpl* rfh);
 
+// Reports a DevTools issue when a back UI navigation would skip a history
+// entry that is tagged as an ad. `rfh` is the main frame of the pre-skip page.
+void OnBackUINavigationWouldSkipAd(RenderFrameHostImpl* rfh);
+
 // Logs fetch keepalive requests proxied via browser to Network panel.
 //
 // As the implementation requires a RenderFrameHost to locate a

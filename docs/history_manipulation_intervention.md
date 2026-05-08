@@ -155,6 +155,9 @@ objects) as skippable using the `is_entry_created_by_ad_` and
     navigations.
 * An entry where both `is_entry_created_by_ad_` and `is_ad_entry_creator_` are
     true is called an `is_possibly_skippable_ad_entry`.
+* If the browser detects that a back UI navigation would skip an
+    `is_possibly_skippable_ad_entry`, it proactively logs an explanatory message
+    to the DevTools Issues Panel.
 
 **Invariants for Back-to-ad Intervention:**
 1. Tagging for the back-to-ad intervention operates independently of the

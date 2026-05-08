@@ -1,0 +1,5 @@
+Verify that BackUINavigationWouldSkipAd generic issue is generated when Back-To-Ad Intervention would trigger.
+Generic Issue Details: {
+    errorType : BackUINavigationWouldSkipAd
+}
+

@@ -163,6 +163,9 @@ AuditsIssue::GenericIssueErrorTypeToProtocol(
     case mojom::blink::GenericIssueErrorType::kNavigationEntryMarkedSkippable:
       return protocol::Audits::GenericIssueErrorTypeEnum::
           NavigationEntryMarkedSkippable;
+    case mojom::blink::GenericIssueErrorType::kBackUINavigationWouldSkipAd:
+      return protocol::Audits::GenericIssueErrorTypeEnum::
+          BackUINavigationWouldSkipAd;
     case mojom::blink::GenericIssueErrorType::
         kAutofillAndManualTextPolicyControlledFeaturesInfo:
       return protocol::Audits::GenericIssueErrorTypeEnum::

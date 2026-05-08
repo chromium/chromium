@@ -864,6 +864,17 @@
     ]
   },
   {
+    "prefix": "back-to-ad-intervention",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "http/tests/inspector-protocol/issues/back-to-ad-skip-issue.js"
+    ],
+    "args": ["--enable-features=BackToAdIntervention"],
+    "owners": ["yaoxia@chromium.org"],
+    "expires": "Jan 1, 2027",
+    "exclusive_tests": "ALL"
+  },
+  {
     "prefix": "disable-frequency-capping-for-overlay-popup",
     "owners": [
       "yaoxia@chromium.org",

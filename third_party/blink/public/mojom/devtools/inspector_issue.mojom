@@ -320,6 +320,7 @@ enum GenericIssueErrorType {
   kFormInputHasWrongButWellIntendedAutocompleteValueError,
   kResponseWasBlockedByORB,
   kNavigationEntryMarkedSkippable,
+  kBackUINavigationWouldSkipAd,
   kAutofillAndManualTextPolicyControlledFeaturesInfo,
   kAutofillPolicyControlledFeatureInfo,
   kManualTextPolicyControlledFeatureInfo,
