@@ -66,8 +66,15 @@ class WebAppNavigationCapturingIntentPickerBrowserTest
   }
 };
 
+// TODO(crbug.com/511130056): Re-enable this test on Linux after fixing the
+// issue.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_FocusExisting DISABLED_FocusExisting
+#else
+#define MAYBE_FocusExisting FocusExisting
+#endif
 IN_PROC_BROWSER_TEST_F(WebAppNavigationCapturingIntentPickerBrowserTest,
-                       FocusExisting) {
+                       MAYBE_FocusExisting) {
   webapps::AppId app_id = test::InstallWebApp(
       profile(), WebAppInstallInfo::CreateForTesting(
                      GetAppUrl("manifest_focus.json"),
