@@ -5,13 +5,10 @@
 #include "chrome/browser/ui/webui/drive_picker_host/drive_picker_host_ui.h"
 
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/webui/drive_picker_host/untrusted/drive_picker_host_untrusted_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/omnibox/common/omnibox_features.h"
-#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/test/browser_task_environment.h"
@@ -23,9 +20,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
-
-constexpr char kAccessToken[] = "access_token";
-constexpr char kEmail[] = "test@example.com";
 
 class MockDrivePickerBridge
     : public drive_picker_host_untrusted::mojom::DrivePickerBridge {
@@ -41,8 +35,7 @@ class MockDrivePickerBridge
   MOCK_METHOD(
       void,
       ShowDrivePicker,
-      (mojo::PendingRemote<drive_picker_host::mojom::DrivePickerResultHandler>,
-       drive_picker_host_untrusted::mojom::DrivePickerKeysPtr),
+      (mojo::PendingRemote<drive_picker_host::mojom::DrivePickerResultHandler>),
       (override));
 
  private:
@@ -74,29 +67,18 @@ class DrivePickerHostUITest : public testing::Test {
   ~DrivePickerHostUITest() override = default;
 
   void SetUp() override {
-    TestingProfile::Builder builder;
-    builder.AddTestingFactories(IdentityTestEnvironmentProfileAdaptor::
-                                    GetIdentityTestEnvironmentFactories());
-    profile_ = builder.Build();
-    identity_test_env_adaptor_ =
-        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_.get());
-
+    profile_ = std::make_unique<TestingProfile>();
     web_contents_ = content::WebContentsTester::CreateTestWebContents(
         profile_.get(), nullptr);
   }
 
   TestingProfile* profile() { return profile_.get(); }
   content::WebContents* web_contents() { return web_contents_.get(); }
-  signin::IdentityTestEnvironment* identity_test_env() {
-    return identity_test_env_adaptor_->identity_test_env();
-  }
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   std::unique_ptr<TestingProfile> profile_;
-  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
-      identity_test_env_adaptor_;
   std::unique_ptr<content::WebContents> web_contents_;
   base::test::ScopedFeatureList feature_list_;
 };
@@ -119,9 +101,6 @@ TEST_F(DrivePickerHostUITest, TriggerDrivePickerHostForwardsToUntrusted) {
   feature_list_.InitAndEnableFeature(
       omnibox::kComposeboxDriveContextMenuOption);
 
-  identity_test_env()->MakePrimaryAccountAvailable(
-      kEmail, signin::ConsentLevel::kSignin);
-
   content::TestWebUI test_web_ui;
   test_web_ui.set_web_contents(web_contents());
   DrivePickerHostUI controller(&test_web_ui);
@@ -130,15 +109,8 @@ TEST_F(DrivePickerHostUITest, TriggerDrivePickerHostForwardsToUntrusted) {
   controller.SetBridge(mock_bridge.BindAndGetRemote());
 
   MockResultHandler result_handler;
-  EXPECT_CALL(mock_bridge, ShowDrivePicker(testing::_, testing::_))
-      .WillOnce(testing::WithArg<1>(
-          [](drive_picker_host_untrusted::mojom::DrivePickerKeysPtr keys) {
-            EXPECT_EQ(keys->oauth_token, kAccessToken);
-          }));
+  EXPECT_CALL(mock_bridge, ShowDrivePicker(testing::_));
   controller.TriggerDrivePickerHost(result_handler.BindAndGetRemote());
-
-  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      kAccessToken, base::Time::Now() + base::Hours(1));
 
   base::RunLoop().RunUntilIdle();
 }
@@ -146,9 +118,6 @@ TEST_F(DrivePickerHostUITest, TriggerDrivePickerHostForwardsToUntrusted) {
 TEST_F(DrivePickerHostUITest, TriggerDrivePickerHostQueuesUntilBridgeBound) {
   feature_list_.InitAndEnableFeature(
       omnibox::kComposeboxDriveContextMenuOption);
-
-  identity_test_env()->MakePrimaryAccountAvailable(
-      kEmail, signin::ConsentLevel::kSignin);
 
   content::TestWebUI test_web_ui;
   test_web_ui.set_web_contents(web_contents());
@@ -159,19 +128,9 @@ TEST_F(DrivePickerHostUITest, TriggerDrivePickerHostQueuesUntilBridgeBound) {
   controller.TriggerDrivePickerHost(result_handler.BindAndGetRemote());
 
   MockDrivePickerBridge mock_bridge;
-  // Setting bridge should flush the pending request and initiate the token
-  // fetch.
+  // Setting bridge should flush the pending request.
+  EXPECT_CALL(mock_bridge, ShowDrivePicker(testing::_));
   controller.SetBridge(mock_bridge.BindAndGetRemote());
-
-  // The call happens AFTER the token is fetched.
-  EXPECT_CALL(mock_bridge, ShowDrivePicker(testing::_, testing::_))
-      .WillOnce(testing::WithArg<1>(
-          [](drive_picker_host_untrusted::mojom::DrivePickerKeysPtr keys) {
-            EXPECT_EQ(keys->oauth_token, kAccessToken);
-          }));
-
-  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      kAccessToken, base::Time::Now() + base::Hours(1));
 
   base::RunLoop().RunUntilIdle();
 }

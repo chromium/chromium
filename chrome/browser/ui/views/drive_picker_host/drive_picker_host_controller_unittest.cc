@@ -49,8 +49,9 @@ TEST_F(DrivePickerHostControllerTest, ShowDrivePickerHostCreatesView) {
   base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(controller_->widget_);
+  ASSERT_TRUE(controller_->delegate_);
   DrivePickerHostView* view = views::AsViewClass<DrivePickerHostView>(
-      controller_->widget_->widget_delegate()->GetContentsView());
+      controller_->delegate_->GetContentsView());
   ASSERT_TRUE(view);
   EXPECT_EQ(controller_->web_contents(), view->GetWebContents());
 }

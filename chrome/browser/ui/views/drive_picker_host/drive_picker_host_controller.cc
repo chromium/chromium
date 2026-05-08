@@ -8,16 +8,11 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/logging.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_host_view.h"
 #include "components/constrained_window/constrained_window_views.h"
-#include "content/public/browser/web_contents.h"
 #include "ui/base/base_window.h"
-#include "ui/compositor/layer.h"
-#include "ui/gfx/geometry/rect.h"
-#include "ui/views/controls/webview/webview.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -32,32 +27,20 @@ void DrivePickerHostController::ShowDrivePickerHost(
     mojo::PendingRemote<drive_picker_host::mojom::DrivePickerResultHandler>
         result_handler) {
   // Ensure that we only have one Drive Picker Host view at a time.
-  if (widget_) {
-    return;
-  }
-
-  ui::BaseWindow* window = browser_window_interface_->GetWindow();
-  if (!window) {
-    return;
-  }
+  CHECK(!widget_);
 
   auto view = std::make_unique<DrivePickerHostView>(
       browser_window_interface_->GetProfile());
-  // Ensure the view has a non-zero preferred size before creating the widget.
-  // Mac does not support zero-sized windows, and this also ensures the dialog
-  // starts with the correct dimensions (covering the entire browser window).
-  view->SetPreferredSize(window->GetBounds().size());
 
-  gfx::NativeWindow native_window = window->GetNativeWindow();
+  gfx::NativeWindow native_window =
+      browser_window_interface_->GetWindow()->GetNativeWindow();
   if (!native_window) {
     return;
   }
 
-  auto delegate = std::make_unique<views::DialogDelegate>();
-  delegate->set_use_custom_frame(true);
-  delegate->SetCanResize(false);
+  delegate_ = std::make_unique<views::DialogDelegate>();
   // Ensure the widget is owned by the controller (via unique_ptr).
-  delegate->SetOwnershipOfNewWidget(
+  delegate_->SetOwnershipOfNewWidget(
       views::Widget::InitParams::Ownership::CLIENT_OWNS_WIDGET);
 
   // The Drive Picker Host is designed to be a window-modal overlay. This means
@@ -77,25 +60,22 @@ void DrivePickerHostController::ShowDrivePickerHost(
   // - Lifecycle Integrity: Blocking interaction with the rest of the window
   //   prevents edge cases where the browser window's state might change
   //   (e.g., navigating away in a tab) while the picker is still active.
-  delegate->SetModalType(ui::mojom::ModalType::kWindow);
-  delegate->SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
-  delegate->SetShowTitle(false);
-  delegate->SetShowCloseButton(false);
-  DrivePickerHostView* view_ptr = delegate->SetContentsView(std::move(view));
+  delegate_->SetModalType(ui::mojom::ModalType::kWindow);
+  delegate_->SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
+  delegate_->SetShowTitle(false);
+  delegate_->SetShowCloseButton(false);
+  DrivePickerHostView* view_ptr = delegate_->SetContentsView(std::move(view));
 
   // Use standard Chrome constrained window utility to create and show the modal
   // picker overlay. This utility manages the lifecycle and positioning of the
-  // dialog relative to the browser window, ensuring it correctly handles
-  // window resizes and modality. Despite CreateBrowserModalDialogViews being
-  // deprecated, it is the only option for creating a resizable
-  // *browser-modal* dialog that supports a WebContents view.
+  // dialog relative to the browser window, ensuring it correctly handles window
+  // resizes and modality. Despite CreateBrowserModalDialogViews being
+  // deprecated, it is the only option for creating a resizable *browser-modal*
+  // dialog that supports a WebContents view.
   views::Widget* widget = constrained_window::CreateBrowserModalDialogViews(
-      std::move(delegate), native_window);
+      delegate_.get(), native_window);
 
   widget_.reset(widget);
-
-  widget_->SetBounds(window->GetBounds());
-
   widget_->MakeCloseSynchronous(
       base::BindOnce(&DrivePickerHostController::ResetControllerState,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -113,13 +93,13 @@ void DrivePickerHostController::ShowDrivePickerHost(
     pending_picker_result_handler_ = std::move(result_handler);
   }
 
-  widget_->Activate();
   widget_->Show();
 }
 
 void DrivePickerHostController::ResetControllerState(
     views::Widget::ClosedReason reason) {
   widget_.reset();
+  delegate_.reset();
   is_picker_document_loaded_ = false;
   pending_picker_result_handler_.reset();
   Observe(nullptr);
@@ -131,10 +111,8 @@ void DrivePickerHostController::DocumentOnLoadCompletedInPrimaryMainFrame() {
   // We use `pending_picker_result_handler_` to check if there was a request to
   // trigger the picker UI before the document finished loading. This controller
   // only manages a single active picker session at a time.
-  if (pending_picker_result_handler_ && widget_ &&
-      widget_->widget_delegate()->GetContentsView()) {
-    views::AsViewClass<DrivePickerHostView>(
-        widget_->widget_delegate()->GetContentsView())
+  if (pending_picker_result_handler_ && widget_ && delegate_) {
+    views::AsViewClass<DrivePickerHostView>(delegate_->GetContentsView())
         ->TriggerDrivePickerHostUi(std::move(pending_picker_result_handler_));
   }
 }

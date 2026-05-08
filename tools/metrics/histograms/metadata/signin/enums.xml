@@ -789,7 +789,6 @@ chromium-metrics-reviews@google.com.
   <int value="96" label="Indigo"/>
   <int value="97" label="Glic Invoke API"/>
   <int value="98" label="Secure Gateway Service"/>
-  <int value="99" label="Drive Picker Host"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/signin/public/base/oauth_consumer_id.h:OAuthConsumerId) -->

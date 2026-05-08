@@ -13,7 +13,6 @@ build_webui("build") {
     "app.ts",
     "app.html.ts",
     "browser_proxy.ts",
-    "drive_picker_api_proxy.ts",
   ]
   css_files = [ "app.css" ]
   ts_composite = true

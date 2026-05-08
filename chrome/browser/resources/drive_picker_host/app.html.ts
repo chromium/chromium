@@ -8,6 +8,5 @@ import type {DrivePickerHostAppElement} from './app.js';
 
 export function getHtml(this: DrivePickerHostAppElement) {
   return html`<!--_html_template_start_-->
-<iframe src="chrome-untrusted://drive-picker-host/"></iframe>
 <!--_html_template_end_-->`;
 }

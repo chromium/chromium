@@ -54,7 +54,7 @@ class DrivePickerHostController : public content::WebContentsObserver {
 
   // Shows the Drive Picker Host (either a consent dialog or the picker
   // UI), and relays results to the provided result handler.
-  virtual void ShowDrivePickerHost(
+  void ShowDrivePickerHost(
       mojo::PendingRemote<drive_picker_host::mojom::DrivePickerResultHandler>
           result_handler);
 
@@ -75,6 +75,7 @@ class DrivePickerHostController : public content::WebContentsObserver {
   bool is_picker_document_loaded_ = false;
 
   raw_ptr<BrowserWindowInterface> browser_window_interface_;
+  std::unique_ptr<views::DialogDelegate> delegate_;
   std::unique_ptr<views::Widget> widget_;
 
   // Stores the result handler if the picker document is not yet loaded when

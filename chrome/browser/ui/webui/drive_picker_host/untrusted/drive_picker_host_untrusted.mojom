@@ -7,7 +7,9 @@ module drive_picker_host_untrusted.mojom;
 import "chrome/browser/ui/views/drive_picker_host/drive_picker_result_handler.mojom";
 
 // Browser-side handler for the untrusted page.
-interface PageHandler {
+interface DrivePickerUntrustedHostHandler {
+  // Binds the page interface to the handler.
+  BindPage(pending_remote<Page> page);
 };
 
 // WebUI-side page interface for the untrusted page.
@@ -15,22 +17,7 @@ interface Page {
   // Triggers the Drive Picker selection UI in the JS.
   ShowDrivePicker(
       pending_remote<drive_picker_host.mojom.DrivePickerResultHandler>
-          result_handler,
-      DrivePickerKeys keys);
-};
-
-// Factory for creating Page handlers.
-interface PageHandlerFactory {
-  // Creates a Page handler for the given Page.
-  CreatePageHandler(pending_remote<Page> page,
-                    pending_receiver<PageHandler> handler);
-};
-
-// Keys for the Drive Picker selection UI.
-struct DrivePickerKeys {
-  string oauth_token;
-  string api_key;
-  string app_id;
+          result_handler);
 };
 
 // Interface for communication from the trusted host to the
@@ -39,6 +26,5 @@ interface DrivePickerBridge {
   // Triggers the Drive Picker selection UI in the untrusted page.
   ShowDrivePicker(
       pending_remote<drive_picker_host.mojom.DrivePickerResultHandler>
-          result_handler,
-      DrivePickerKeys keys);
+          result_handler);
 };
