@@ -85,14 +85,6 @@ class MockKeyedOneTimeTokenService
 };
 
 class AttemptOtpFillingToolBrowserTest : public ActorToolsTest {
- public:
-  AttemptOtpFillingToolBrowserTest() {
-    // Force the factory to instantiate and register with the DependencyManager
-    // before the dependency graph is locked during profile creation. This
-    // avoids a DCHECK failure in DependencyManager.
-    autofill::OneTimeTokenServiceFactory::GetInstance();
-  }
-
  protected:
   void SetUpOnMainThread() override {
     ActorToolsTest::SetUpOnMainThread();
