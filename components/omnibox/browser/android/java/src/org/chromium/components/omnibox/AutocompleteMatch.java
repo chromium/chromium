@@ -427,6 +427,12 @@ public class AutocompleteMatch {
         return mIsDeletable;
     }
 
+    /** {@return whether the match type is a search or url match to what the user typed} */
+    public boolean isWhatYouTyped() {
+        return mType == OmniboxSuggestionType.URL_WHAT_YOU_TYPED
+                || mType == OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED;
+    }
+
     /**
      * Returns the extra HTTP headers associated with this autocomplete match. These headers should
      * be included when navigating to the suggestion's URL.

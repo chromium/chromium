@@ -38,7 +38,6 @@ import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.GroupsProto.GroupConfig;
 import org.chromium.components.omnibox.OmniboxFeatures;
-import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.ToolModeUtils;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -402,12 +401,11 @@ class DropdownItemViewInfoListBuilder {
             // Inner loop to populate AutocompleteMatch objects belonging to this group.
             while (index < newMatchesCount) {
                 var match = newMatches.get(index);
-                if (isAimRequest && OmniboxFeatures.sAIMSuppressVerbatimMatch.isEnabled()) {
-                    if (match.getType() == OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED
-                            || match.getType() == OmniboxSuggestionType.URL_WHAT_YOU_TYPED) {
-                        index++;
-                        continue;
-                    }
+                if (isAimRequest
+                        && OmniboxFeatures.sAIMSuppressVerbatimMatch.isEnabled()
+                        && match.isWhatYouTyped()) {
+                    index++;
+                    continue;
                 }
 
                 var matchGroupConfig =

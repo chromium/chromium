@@ -28,7 +28,6 @@ import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.OmniboxFeatures;
-import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.ui.base.Clipboard;
@@ -75,9 +74,7 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
             return false;
         }
 
-        if ((suggestion.getType() != OmniboxSuggestionType.URL_WHAT_YOU_TYPED
-                        && suggestion.getType() != OmniboxSuggestionType.SEARCH_WHAT_YOU_TYPED)
-                || !suggestion.getUrl().equals(activeTab.getUrl())) {
+        if (!suggestion.isWhatYouTyped() || !suggestion.getUrl().equals(activeTab.getUrl())) {
             return false;
         }
 
