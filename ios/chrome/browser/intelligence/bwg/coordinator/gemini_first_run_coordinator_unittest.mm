@@ -252,3 +252,16 @@ TEST_F(GeminiFirstRunCoordinatorTest, AIHubIPHNotTriggered) {
 
   EXPECT_OCMOCK_VERIFY(mock_help_command_handler_);
 }
+
+// Tests that kGeminiExternalAppStoreEvent IPH triggers when the user is shown
+// the promo from an external App Store event.
+TEST_F(GeminiFirstRunCoordinatorTest, ExternalAppStoreEventIPHWasTriggered) {
+  OCMExpect([mock_help_command_handler_
+      presentInProductHelpWithType:InProductHelpType::
+                                       kGeminiExternalAppStoreEvent]);
+
+  StartCoordinatorWithEntryPoint(gemini::EntryPoint::ExternalAppStoreEvent);
+  [coordinator_ stop];
+
+  EXPECT_OCMOCK_VERIFY(mock_help_command_handler_);
+}

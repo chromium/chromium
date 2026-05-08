@@ -504,6 +504,8 @@ should be able to be added at any place in this file.
       summary="For iOSFeedSwipeStaticFeature feature"/>
   <variant name="_iOSGeminiContextualCueChip"
       summary="For Gemini contextual cue chip feature."/>
+  <variant name="_iOSGeminiExternalAppStoreEvent"
+      summary="For the Gemini external App Store event IPH feature."/>
   <variant name="_iOSGeminiFullscreenPromoFeature"
       summary="For iOSGeminiFullscreenPromoFeature feature"/>
   <variant name="_iOSGeminiImageRemix"

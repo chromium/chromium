@@ -3049,6 +3049,35 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHiOSGeminiExternalAppStoreEvent.name == feature->name) {
+    // A config to show an IPH promoting the Gemini feature in the Page Action
+    // Menu when the user enters via a promotional external App Store event.
+    // The IPH is shown at most once within a 40-day window, and only if the
+    // Page Action Menu IPH or Gemini Image Remix IPH was not triggered in the
+    // last 3 days.
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+    config.session_rate = Comparator(ANY, 0);
+    config.blocked_by.type = BlockedBy::Type::NONE;
+    config.blocking.type = Blocking::Type::NONE;
+
+    config.trigger = EventConfig("gemini_external_app_store_event_trigger",
+                                 Comparator(LESS_THAN, 1), 40,
+                                 feature_engagement::kMaxStoragePeriod);
+    config.used =
+        EventConfig("gemini_external_app_store_event_used", Comparator(ANY, 0),
+                    feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+    config.event_configs.insert(EventConfig(
+        feature_engagement::events::kIOSPageActionMenuIPHTrigger,
+        Comparator(EQUAL, 0), 3, feature_engagement::kMaxStoragePeriod));
+    config.event_configs.insert(EventConfig(
+        feature_engagement::events::kIOSGeminiImageRemixIPHTrigger,
+        Comparator(EQUAL, 0), 3, feature_engagement::kMaxStoragePeriod));
+    return config;
+  }
+
   if (kIPHiOSAIHubNewBadge.name == feature->name) {
     FeatureConfig config;
     config.valid = true;
@@ -3168,6 +3197,9 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
         events::kIOSPageActionMenuIPHTrigger, Comparator(EQUAL, 0), 3, 365));
     config.event_configs.insert(
         EventConfig(events::kIOSGeminiFullscreenPromoTriggered,
+                    Comparator(EQUAL, 0), 3, 365));
+    config.event_configs.insert(
+        EventConfig("gemini_external_app_store_event_trigger",
                     Comparator(EQUAL, 0), 3, 365));
     return config;
   }

@@ -335,6 +335,9 @@ chromium-metrics-reviews@google.com.
       summary="Showing the static Feed Swipe IPH on iOS."/>
   <variant name="IPH_iOSGeminiContextualCueChip"
       summary="Gemini contextual cue chip on the omnibox"/>
+  <variant name="IPH_iOSGeminiExternalAppStoreEvent"
+      summary="shows Gemini IPH bubble after Gemini FRE is invoked from an
+               external App Store event and dismissed"/>
   <variant name="IPH_iOSGeminiFullscreenPromoFeature"
       summary="showing the fullscreen Gemini promo on iOS"/>
   <variant name="IPH_iOSGeminiImageRemix"

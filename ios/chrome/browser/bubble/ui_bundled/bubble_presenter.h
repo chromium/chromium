@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/feature_list.h"
 #import "base/memory/raw_ptr.h"
 
 @protocol BubblePresenterDelegate;
@@ -165,7 +166,7 @@ class DeviceSwitcherResultDispatcher;
 // Optionally present a bubble associated with the page action menu icon in the
 // Omnibox. The eligibility is based off if the BWG Promo was shown and
 // dismissed.
-- (void)presentPageActionMenuBubble;
+- (void)presentPageActionMenuBubbleForFeature:(const base::Feature&)feature;
 
 // Optionally presents a bubble associated with the reader mode options.
 - (void)presentReaderModeOptionsBubble;

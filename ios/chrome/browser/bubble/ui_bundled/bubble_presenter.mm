@@ -786,7 +786,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
   }
 }
 
-- (void)presentPageActionMenuBubble {
+- (void)presentPageActionMenuBubbleForFeature:(const base::Feature&)feature {
   if (![self canPresentBubbleWithCheckTabScrolledToTop:NO]) {
     return;
   }
@@ -815,7 +815,7 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
 
   __weak __typeof(self) weakSelf = self;
   BubbleViewControllerPresenter* presenter = [self
-      presentBubbleForFeature:feature_engagement::kIPHIOSPageActionMenu
+      presentBubbleForFeature:feature
       direction:arrowDirection
       alignment:BubbleAlignmentTopOrLeading
       text:text

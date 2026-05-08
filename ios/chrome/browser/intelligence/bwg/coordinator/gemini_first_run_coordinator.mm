@@ -329,10 +329,13 @@
   return GeminiTabHelper::FromWebState(activeWebState);
 }
 
-// Attempts to present the entry point IPH the user hasn't used the AI Hub entry
-// point yet.
+// Attempts to present the entry point IPH if the user hasn't used the AI Hub
+// entry point yet.
 - (void)presentPageActionMenuIPH {
-  if (_entryPoint != gemini::EntryPoint::AIHub) {
+  if (_entryPoint == gemini::EntryPoint::ExternalAppStoreEvent) {
+    [_helpCommandsHandler presentInProductHelpWithType:
+                              InProductHelpType::kGeminiExternalAppStoreEvent];
+  } else if (_entryPoint != gemini::EntryPoint::AIHub) {
     [_helpCommandsHandler
         presentInProductHelpWithType:InProductHelpType::kPageActionMenu];
   }

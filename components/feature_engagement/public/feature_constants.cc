@@ -893,6 +893,10 @@ BASE_FEATURE(kIPHiOSNewIAPromoFeature,
              "IPH_iOSNewIAPromoFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kIPHiOSGeminiExternalAppStoreEvent,
+             "IPH_iOSGeminiExternalAppStoreEvent",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kIPHiOSPinMostVisitedSiteFeature,
              "IPH_iOSPinMostVisitedSiteFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);

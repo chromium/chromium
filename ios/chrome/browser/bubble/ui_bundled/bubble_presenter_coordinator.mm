@@ -209,7 +209,16 @@
       CHECK(IsPageActionMenuEnabled());
       _presenter.pageActionMenuEntryPointHandler = HandlerForProtocol(
           commandDispatcher, PageActionMenuEntryPointCommands);
-      [_presenter presentPageActionMenuBubble];
+      [_presenter presentPageActionMenuBubbleForFeature:
+                      feature_engagement::kIPHIOSPageActionMenu];
+      break;
+    }
+    case InProductHelpType::kGeminiExternalAppStoreEvent: {
+      CHECK(IsPageActionMenuEnabled());
+      _presenter.pageActionMenuEntryPointHandler = HandlerForProtocol(
+          commandDispatcher, PageActionMenuEntryPointCommands);
+      [_presenter presentPageActionMenuBubbleForFeature:
+                      feature_engagement::kIPHiOSGeminiExternalAppStoreEvent];
       break;
     }
     case InProductHelpType::kReaderModeOptions: {

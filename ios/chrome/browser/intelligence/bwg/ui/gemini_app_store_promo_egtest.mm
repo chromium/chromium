@@ -83,6 +83,7 @@ void SimulateGeminiPromoURLOpening() {
       "--disable-features=AnimatedDefaultBrowserPromoInFRE");
   config.features_enabled.push_back(kPageActionMenu);
   config.features_enabled.push_back(kAppStoreInAppEvents);
+  config.iph_feature_enabled = "IPH_iOSGeminiExternalAppStoreEvent";
   return config;
 }
 
@@ -108,6 +109,17 @@ void SimulateGeminiPromoURLOpening() {
   [FirstRunTestCaseBase dismissDefaultBrowserAndRemainingScreens];
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:GeminiPromoMainTitle()];
+
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Dismiss Gemini Promo screen.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonStackSecondaryButton()]
+      performAction:grey_tap()];
+
+  // Verify that the specialized IPH bubble is displayed.
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      grey_accessibilityID(@"BubbleViewLabelIdentifier")];
 }
 
 // Tests that the snackbar shows on a fresh install after deep link if user
@@ -127,6 +139,11 @@ void SimulateGeminiPromoURLOpening() {
   id<GREYMatcher> snackbarMatcher = grey_accessibilityLabel(
       l10n_util::GetNSString(IDS_IOS_GEMINI_SIGN_IN_REQUIRED_SNACKBAR));
   [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:snackbarMatcher];
+
+  // Verify that the specialized IPH bubble is not visible.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          @"BubbleViewLabelIdentifier")]
+      assertWithMatcher:grey_notVisible()];
 }
 
 // Tests that the Gemini FRE promo shows for an existing signed-in user after
@@ -145,6 +162,17 @@ void SimulateGeminiPromoURLOpening() {
   SimulateGeminiPromoURLOpening();
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:GeminiPromoMainTitle()];
+
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Dismiss Gemini Promo screen.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonStackSecondaryButton()]
+      performAction:grey_tap()];
+
+  // Verify that the specialized IPH bubble is displayed.
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      grey_accessibilityID(@"BubbleViewLabelIdentifier")];
 }
 
 // Tests that the snackbar shows for an existing signed-out user after deep
@@ -160,6 +188,11 @@ void SimulateGeminiPromoURLOpening() {
   id<GREYMatcher> snackbarMatcher = grey_accessibilityLabel(
       l10n_util::GetNSString(IDS_IOS_GEMINI_SIGN_IN_REQUIRED_SNACKBAR));
   [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:snackbarMatcher];
+
+  // Verify that the specialized IPH bubble is not visible.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          @"BubbleViewLabelIdentifier")]
+      assertWithMatcher:grey_notVisible()];
 }
 
 @end
