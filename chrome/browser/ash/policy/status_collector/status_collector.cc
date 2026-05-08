@@ -86,8 +86,10 @@ void StatusCollector::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
   // TODO(crbug.com/40569404): move to ChildStatusCollector after migration.
   registry->RegisterDictionaryPref(ash::prefs::kUserActivityTimes);
-  registry->RegisterTimePref(prefs::kLastChildScreenTimeReset, base::Time());
-  registry->RegisterTimePref(prefs::kLastChildScreenTimeSaved, base::Time());
+  registry->RegisterTimePref(ash::prefs::kLastChildScreenTimeReset,
+                             base::Time());
+  registry->RegisterTimePref(ash::prefs::kLastChildScreenTimeSaved,
+                             base::Time());
   registry->RegisterIntegerPref(ash::prefs::kChildScreenTimeMilliseconds, 0);
 
   AppInfoGenerator::RegisterProfilePrefs(registry);

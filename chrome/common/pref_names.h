@@ -602,23 +602,10 @@ inline constexpr char kTextToSpeechVolume[] = "settings.tts.speech_volume";
 inline constexpr char kManagedSessionUseFullLoginWarning[] =
     "managed_session.use_full_warning";
 
-
-// Last time the kChildScreenTimeMilliseconds was saved.
-inline constexpr char kLastChildScreenTimeSaved[] =
-    "last_child_screen_time_saved";
-
-// Last time that the kChildScreenTime pref was reset.
-inline constexpr char kLastChildScreenTimeReset[] =
-    "last_child_screen_time_reset";
-
 // Amount of times the release notes suggestion chip should be
 // shown before it disappears.
 inline constexpr char kReleaseNotesSuggestionChipTimesLeftToShow[] =
     "times_left_to_show_release_notes_suggestion_chip";
-
-
-
-
 
 // A string pref storing the path of device wallpaper image file.
 inline constexpr char kDeviceWallpaperImageFilePath[] =

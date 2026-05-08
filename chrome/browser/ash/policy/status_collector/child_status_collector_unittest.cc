@@ -381,7 +381,7 @@ class ChildStatusCollectorTest : public testing::Test {
         base::BindOnce(
             [](Time time, PrefService* profile_pref_service_) {
               EXPECT_EQ(time, profile_pref_service_->GetTime(
-                                  prefs::kLastChildScreenTimeReset));
+                                  ash::prefs::kLastChildScreenTimeReset));
             },
             time, pref_service()));
   }
@@ -557,7 +557,7 @@ TEST_F(ChildStatusCollectorTest, ActivityKeptInPref) {
   // the results are stored in a pref.
   RestartStatusCollector(base::BindRepeating(&GetEmptyAndroidStatus));
   // Avoid resetting to test accumulating screen time.
-  pref_service()->SetTime(prefs::kLastChildScreenTimeReset, Time::Now());
+  pref_service()->SetTime(ash::prefs::kLastChildScreenTimeReset, Time::Now());
   SimulateStateChanges(test_states,
                        sizeof(test_states) / sizeof(DeviceStateTransitions));
 

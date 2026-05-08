@@ -236,8 +236,9 @@ void ChildStatusCollector::UpdateChildUsageTime() {
   if (reset_time > now)
     reset_time -= base::Days(1);
   // Reset screen time if it has not been reset today.
-  if (reset_time > pref_service_->GetTime(prefs::kLastChildScreenTimeReset)) {
-    pref_service_->SetTime(prefs::kLastChildScreenTimeReset, now);
+  if (reset_time >
+      pref_service_->GetTime(ash::prefs::kLastChildScreenTimeReset)) {
+    pref_service_->SetTime(ash::prefs::kLastChildScreenTimeReset, now);
     pref_service_->SetInteger(ash::prefs::kChildScreenTimeMilliseconds, 0);
     pref_service_->CommitPendingWrite();
   }

@@ -3806,6 +3806,14 @@ inline constexpr char kFamilyUserMetricsSessionEngagementDuration[] =
 inline constexpr char kKnownUserParentAccessCodeConfig[] =
     "child_user.parent_access_code.config";
 
+// Last time that the kChildScreenTimeMilliseconds pref was reset.
+inline constexpr char kLastChildScreenTimeReset[] =
+    "last_child_screen_time_reset";
+
+// Last time the kChildScreenTimeMilliseconds was saved.
+inline constexpr char kLastChildScreenTimeSaved[] =
+    "last_child_screen_time_saved";
+
 // Dictionary pref containing configuration used to verify Parent Access Code.
 // Controlled by ParentAccessCodeConfig policy.
 inline constexpr char kParentAccessCodeConfig[] =
