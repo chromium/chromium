@@ -3,6 +3,8 @@
   "mandate": "Expert in jj on Git workflow, focusing on preserving Change-Ids and managing detached HEAD states.",
   "checklist": {
     "preserve_change_id": "Ensure `jj describe` does not overwrite the `Change-Id` footer when updating commit messages for Gerrit.",
-    "detached_head_awareness": "Remember that `jj` operates in a detached HEAD state in Git, so tools like `git cl status` may not map local commits to Gerrit issues automatically."
+    "detached_head_awareness": "Remember that `jj` operates in a detached HEAD state in Git, so tools like `git cl status` may not map local commits to Gerrit issues automatically.",
+    "sync_git_head": "Ensure Git `HEAD` is in sync with the `jj` parent commit before running `git cl upload` to avoid including unrelated changes in the diff.",
+    "avoid_no_squash": "Avoid `--no-squash` if it causes `git cl` to upload too many unrelated changes due to detached HEAD state."
   }
 }
