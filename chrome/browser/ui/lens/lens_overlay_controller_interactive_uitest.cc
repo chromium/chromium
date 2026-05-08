@@ -213,7 +213,6 @@ class LensOverlayControllerCUJTest : public InteractiveFeaturePromoTest {
                                {{"use-pdfs-as-context", "true"},
                                 {"auto-focus-searchbox", "false"}}}},
         /*disabled_features=*/{contextual_tasks::kContextualTasks,
-                               lens::features::kLensSearchZeroStateCsb,
                                features::kNonBlockingOsClipboardReads});
   }
 
@@ -1344,153 +1343,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerReturnToPageCUJTest,
       WaitForShow(LensOverlayController::kOverlaySidePanelWebViewId));
 }
 
-class LensOverlayControllerStraightToSrpTest
-    : public LensOverlayControllerCUJTest {
- public:
-  LensOverlayControllerStraightToSrpTest() = default;
-  ~LensOverlayControllerStraightToSrpTest() override = default;
-  LensOverlayControllerStraightToSrpTest(
-      const LensOverlayControllerStraightToSrpTest&) = delete;
-  void operator=(const LensOverlayControllerStraightToSrpTest&) = delete;
-
-  void SetUpFeatureList() override {
-    feature_list_.InitWithFeaturesAndParameters(
-        {base::test::FeatureRefAndParams(
-             lens::features::kLensOverlayStraightToSrp, {}),
-         base::test::FeatureRefAndParams(
-             lens::features::kLensOverlayEduActionChip,
-             {{"url-allow-filters", "[\"*\"]"},
-              {"url-path-match-allow-filters", "[\"select\"]"}})},
-        {contextual_tasks::kContextualTasks,
-         lens::features::kLensOverlayOptimizationFilter,
-         features::kNonBlockingOsClipboardReads});
-  }
-};
-
-// This tests the following CUJ:
-//  (1) User navigates to a website that triggers the homework action chip.
-//  (2) User clicks the action chip and the side panel opens with CSB results.
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerStraightToSrpTest,
-                       HomeworkActionChipOpensCsbResults) {
-  WaitForTemplateURLServiceToLoad();
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlaySidePanelWebViewId);
-
-  const DeepQuery kPathToSidePanelSearchboxInput{
-      "lens-side-panel-app",
-      "cr-lens-searchbox",
-      "cr-searchbox-input",
-      "input",
-  };
-
-  // Helper function to check for specific text in an element.
-  auto CheckSearchboxValue = [](ui::ElementIdentifier web_contents_id,
-                                const DeepQuery& query,
-                                const std::string& expected_text) {
-    return CheckJsResultAt(
-        web_contents_id, query,
-        base::StringPrintf("el => el.value === '%s'", expected_text.c_str()));
-  };
-
-  const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
-  // Navigate to a matching page.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url)));
-  // We need to wait for paint in order to take a screenshot of the page.
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return browser()
-        ->tab_strip_model()
-        ->GetActiveTab()
-        ->GetContents()
-        ->CompletedFirstVisuallyNonEmptyPaint();
-  }));
-  ASSERT_TRUE(TriggerLenOverlayHomeworkPageAction());
-
-  RunTestSequence(
-      PressButton(kLensOverlayHomeworkPageActionIconElementId),
-      // Side panel should open.
-      InAnyContext(InstrumentNonTabWebView(
-                       kOverlaySidePanelWebViewId,
-                       LensOverlayController::kOverlaySidePanelWebViewId),
-                   WaitForWebContentsReady(kOverlaySidePanelWebViewId)),
-
-      // The CSB query in the side panel should say "help me with this"
-      InSameContext(CheckSearchboxValue(kOverlaySidePanelWebViewId,
-                                        kPathToSidePanelSearchboxInput,
-                                        "help me with this")));
-}
-
-class LensOverlayControllerStraightToSrpCustomQueryTest
-    : public LensOverlayControllerCUJTest {
- public:
-  LensOverlayControllerStraightToSrpCustomQueryTest() = default;
-  ~LensOverlayControllerStraightToSrpCustomQueryTest() override = default;
-  LensOverlayControllerStraightToSrpCustomQueryTest(
-      const LensOverlayControllerStraightToSrpCustomQueryTest&) = delete;
-  void operator=(const LensOverlayControllerStraightToSrpCustomQueryTest&) =
-      delete;
-
-  void SetUpFeatureList() override {
-    feature_list_.InitWithFeaturesAndParameters(
-        {base::test::FeatureRefAndParams(
-             lens::features::kLensOverlayStraightToSrp,
-             {{"query", "use this query instead"}}),
-         base::test::FeatureRefAndParams(
-             lens::features::kLensOverlayEduActionChip,
-             {{"url-allow-filters", "[\"*\"]"},
-              {"url-path-match-allow-filters", "[\"select\"]"}})},
-        {contextual_tasks::kContextualTasks,
-         lens::features::kLensOverlayOptimizationFilter,
-         features::kNonBlockingOsClipboardReads});
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerStraightToSrpCustomQueryTest,
-                       HomeworkActionChipOpensCsbResults) {
-  WaitForTemplateURLServiceToLoad();
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlaySidePanelWebViewId);
-
-  const DeepQuery kPathToSidePanelSearchboxInput{
-      "lens-side-panel-app",
-      "cr-lens-searchbox",
-      "cr-searchbox-input",
-      "input",
-  };
-
-  // Helper function to check for specific text in an element.
-  auto CheckSearchboxValue = [](ui::ElementIdentifier web_contents_id,
-                                const DeepQuery& query,
-                                const std::string& expected_text) {
-    return CheckJsResultAt(
-        web_contents_id, query,
-        base::StringPrintf("el => el.value === '%s'", expected_text.c_str()));
-  };
-
-  const GURL url = embedded_test_server()->GetURL(kDocumentWithNamedElement);
-  // Navigate to a matching page.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url)));
-  // We need to wait for paint in order to take a screenshot of the page.
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return browser()
-        ->tab_strip_model()
-        ->GetActiveTab()
-        ->GetContents()
-        ->CompletedFirstVisuallyNonEmptyPaint();
-  }));
-  ASSERT_TRUE(TriggerLenOverlayHomeworkPageAction());
-
-  RunTestSequence(
-      PressButton(kLensOverlayHomeworkPageActionIconElementId),
-      // Side panel should open.
-      InAnyContext(InstrumentNonTabWebView(
-                       kOverlaySidePanelWebViewId,
-                       LensOverlayController::kOverlaySidePanelWebViewId),
-                   WaitForWebContentsReady(kOverlaySidePanelWebViewId)),
-
-      // The CSB query in the side panel should say "use this query instead"
-      InSameContext(CheckSearchboxValue(kOverlaySidePanelWebViewId,
-                                        kPathToSidePanelSearchboxInput,
-                                        "use this query instead")));
-}
-
 class LensOverlayControllerEduActionChipTest
     : public LensOverlayControllerCUJTest {
  public:
@@ -1507,9 +1359,7 @@ class LensOverlayControllerEduActionChipTest
              {{"max-shown-count", "5"}}),
          base::test::FeatureRefAndParams(
              lens::features::kLensOverlayOptimizationFilter, {})},
-        {lens::features::kLensOverlayStraightToSrp,
-         lens::features::kLensSearchZeroStateCsb,
-         features::kNonBlockingOsClipboardReads});
+        {features::kNonBlockingOsClipboardReads});
   }
 
   void SetupOptimizationFilter() {
@@ -1596,59 +1446,6 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerEduActionChipTest,
       EnsurePresent(kLensOverlayHomeworkPageActionIconElementId));
 }
 
-class LensOverlayControllerZeroStateCsbTest
-    : public LensOverlayControllerCUJTest {
- public:
-  LensOverlayControllerZeroStateCsbTest() = default;
-  ~LensOverlayControllerZeroStateCsbTest() override = default;
-  LensOverlayControllerZeroStateCsbTest(
-      const LensOverlayControllerStraightToSrpTest&) = delete;
-  void operator=(const LensOverlayControllerZeroStateCsbTest&) = delete;
-
-  void SetUpFeatureList() override {
-    feature_list_.InitWithFeaturesAndParameters(
-        {base::test::FeatureRefAndParams(
-            lens::features::kLensSearchZeroStateCsb, {})},
-        {features::kNonBlockingOsClipboardReads});
-  }
-};
-
-// This tests the following CUJ:
-//  (1) User navigates to a website.
-//  (2) User opens lens overlay and the side panel opens with CSB results.
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerZeroStateCsbTest,
-                       OpenLensOverlayOpensResults) {
-  WaitForTemplateURLServiceToLoad();
-  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlaySidePanelWebViewId);
-
-  const DeepQuery kPathToSidePanelSearchboxInput{
-      "lens-side-panel-app",
-      "cr-lens-searchbox",
-      "cr-searchbox-input",
-      "input",
-  };
-
-  // Helper function to check for specific text in an element.
-  auto CheckSearchboxValue = [](ui::ElementIdentifier web_contents_id,
-                                const DeepQuery& query,
-                                const std::string& expected_text) {
-    return CheckJsResultAt(
-        web_contents_id, query,
-        base::StringPrintf("el => el.value === '%s'", expected_text.c_str()));
-  };
-
-  RunTestSequence(
-      OpenLensOverlay(),
-      // Side panel should open.
-      InAnyContext(InstrumentNonTabWebView(
-                       kOverlaySidePanelWebViewId,
-                       LensOverlayController::kOverlaySidePanelWebViewId),
-                   WaitForWebContentsReady(kOverlaySidePanelWebViewId)),
-
-      // The CSB query in the side panel should be empty.
-      InSameContext(CheckSearchboxValue(kOverlaySidePanelWebViewId,
-                                        kPathToSidePanelSearchboxInput, "")));
-}
 
 class ContextualTasksLensOverlayControllerInteractiveUiTest
     : public LensOverlayControllerCUJTest {
@@ -1662,8 +1459,7 @@ class ContextualTasksLensOverlayControllerInteractiveUiTest
                               {contextual_tasks::
                                    kContextualTasksForceEntryPointEligibility,
                                {}}},
-        /*disabled_features=*/{lens::features::kLensSearchZeroStateCsb,
-                               features::kNonBlockingOsClipboardReads});
+        /*disabled_features=*/{features::kNonBlockingOsClipboardReads});
   }
 
   void SetUpInProcessBrowserTestFixture() override {

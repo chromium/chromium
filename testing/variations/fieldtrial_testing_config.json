@@ -5734,24 +5734,6 @@
             ]
         }
     ],
-    "ChromnientStraightToSrp": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "LensOverlayStraightToSrp"
-                    ]
-                }
-            ]
-        }
-    ],
     "ChromnientSurvey": [
         {
             "platforms": [
@@ -5809,24 +5791,6 @@
                     "name": "Enabled_20250826",
                     "enable_features": [
                         "LensOverlayUpdatedClientContext"
-                    ]
-                }
-            ]
-        }
-    ],
-    "ChromnientZeroStateCsb": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "LensSearchZeroStateCsb"
                     ]
                 }
             ]

@@ -631,7 +631,7 @@ class ContextualTasksLensInteractionBrowserTest
           {{"cluster-info-endpoint-url",
             embedded_test_server()->GetURL("/v1/clusterinfo").spec()}}},
          {contextual_tasks::kContextualTasksForceEntryPointEligibility, {}}},
-        {lens::features::kLensSearchZeroStateCsb});
+        {});
     InProcessBrowserTest::SetUp();
   }
 

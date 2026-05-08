@@ -90,8 +90,6 @@ BASE_FEATURE(kLensSearchNotFoundOnPageToast,
              "kLensSearchNotFoundOnPageToast",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kLensOverlayStraightToSrp, base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kLensSearchAimM3, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kLensSearchAimM3EnUs, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kLensSearchAimM3UseAimEligibility,
@@ -114,8 +112,6 @@ BASE_FEATURE(kLensAimSuggestions, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensAimSuggestionsGradientBackground,
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kLensSearchZeroStateCsb, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kLensVideoCitations, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -540,9 +536,6 @@ const base::FeatureParam<base::TimeDelta>
         &kLensOverlayEduActionChip, "lens-action-chip-show-debounce-interval",
         base::Seconds(1)};
 
-constexpr base::FeatureParam<std::string> kLensOverlayStraightToSrpQuery{
-    &kLensOverlayStraightToSrp, "query", ""};
-
 constexpr base::FeatureParam<bool> kOpenAimInSidePanel{
     &kLensSearchAimM3, "open-aim-in-side-panel", true};
 
@@ -571,9 +564,6 @@ constexpr base::FeatureParam<bool>
     kLensOverlayTextSelectionContextMenuEntrypointContextualize{
         &kLensOverlayTextSelectionContextMenuEntrypoint, "contextualize",
         false};
-
-constexpr base::FeatureParam<std::string> kZeroStateCsbQuery{
-    &kLensSearchZeroStateCsb, "zero-state-csb-query", ""};
 
 const base::FeatureParam<
     LensAimSuggestionsType>::Option kLensAimSuggestionsTypeOptions[] = {
@@ -1254,13 +1244,6 @@ bool IsLensSearchNotFoundOnPageToastEnabled() {
   return base::FeatureList::IsEnabled(kLensSearchNotFoundOnPageToast);
 }
 
-bool IsLensOverlayStraightToSrpEnabled() {
-  return base::FeatureList::IsEnabled(kLensOverlayStraightToSrp);
-}
-
-std::string GetStraightToSrpQuery() {
-  return kLensOverlayStraightToSrpQuery.Get();
-}
 
 bool IsLensOverlayTextSelectionContextMenuEntrypointEnabled() {
   return base::FeatureList::IsEnabled(
@@ -1279,13 +1262,6 @@ bool IsLensSidePanelWebviewResultsEnabled() {
   return base::FeatureList::IsEnabled(kLensSidePanelEnableWebviewResults);
 }
 
-bool IsLensSearchZeroStateCsbEnabled() {
-  return base::FeatureList::IsEnabled(kLensSearchZeroStateCsb);
-}
-
-std::string GetZeroStateCsbQuery() {
-  return IsLensSearchZeroStateCsbEnabled() ? kZeroStateCsbQuery.Get() : "";
-}
 
 bool IsLensVideoCitationsEnabled() {
   return base::FeatureList::IsEnabled(kLensVideoCitations);

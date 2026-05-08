@@ -11586,12 +11586,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kBookmarkTabGroupConversion)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if !BUILDFLAG(IS_ANDROID)
-    {"enable-lens-overlay-straight-to-srp",
-     flag_descriptions::kLensOverlayStraightToSrpName,
-     flag_descriptions::kLensOverlayStraightToSrpDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(lens::features::kLensOverlayStraightToSrp)},
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
     {"autofill-android-desktop-suppress-accessory-on-empty",
@@ -11972,10 +11966,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(lens::features::kLensSearchReinvocationAffordance)},
 
-    {"lens-search-zero-state-csb",
-     flag_descriptions::kLensSearchZeroStateCsbName,
-     flag_descriptions::kLensSearchZeroStateCsbDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(lens::features::kLensSearchZeroStateCsb)},
 
     {"lens-updated-feedback-entrypoint",
      flag_descriptions::kLensUpdatedFeedbackEntrypointName,

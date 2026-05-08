@@ -2867,10 +2867,6 @@ inline constexpr char kLensOverlaySidePanelOpenInNewTabName[] =
 inline constexpr char kLensOverlaySidePanelOpenInNewTabDescription[] =
     "Enables open in new tab in the Lens overlay side panel.";
 
-inline constexpr char kLensOverlayStraightToSrpName[] =
-    "Lens overlay straight to SRP";
-inline constexpr char kLensOverlayStraightToSrpDescription[] =
-    "Enables straight to SRP flows for the Lens overlay.";
 
 inline constexpr char kLensOverlayPermissionBubbleAltName[] =
     "Lens overlay permission bubble alt appearance";
@@ -2932,10 +2928,6 @@ inline constexpr char kLensSearchSidePanelNewFeedbackName[] =
 inline constexpr char kLensSearchSidePanelNewFeedbackDescription[] =
     "Enables a new feedback entry point in the Lens side panel.";
 
-inline constexpr char kLensSearchZeroStateCsbName[] =
-    "Lens search zero state CSB";
-inline constexpr char kLensSearchZeroStateCsbDescription[] =
-    "Enables a zero state CSB query in Lens.";
 
 inline constexpr char kLensVideoCitationsName[] = "Lens video citations";
 inline constexpr char kLensVideoCitationsDescription[] =
