@@ -15775,6 +15775,27 @@
             ]
         }
     ],
+    "MapsNativePreviewUniversalLink": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Treatment",
+                    "enable_features": [
+                        "IOSMiniMapUniversalLink"
+                    ]
+                },
+                {
+                    "name": "Counterfactual",
+                    "enable_features": [
+                        "IOSMiniMapUniversalLinkCounterfactual"
+                    ]
+                }
+            ]
+        }
+    ],
     "MediaFoundationBatchRead": [
         {
             "platforms": [
