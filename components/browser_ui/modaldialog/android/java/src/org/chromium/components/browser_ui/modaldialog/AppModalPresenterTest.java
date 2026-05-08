@@ -50,12 +50,13 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseActivityTestRule;
-import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ImmutableWeakReference;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -68,7 +69,7 @@ import org.chromium.ui.test.util.BlankUiTestActivity;
 import java.util.concurrent.TimeoutException;
 
 /** Tests for {@link AppModalPresenter}. */
-@RunWith(BaseJUnit4ClassRunner.class)
+@RunWith(ContentJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @EnableFeatures(ModalDialogFeatureList.MODAL_DIALOG_LAYOUT_WITH_SYSTEM_INSETS)
 public class AppModalPresenterTest {
@@ -207,6 +208,7 @@ public class AppModalPresenterTest {
     @Test
     @SmallTest
     @Feature({"ModalDialog"})
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/479879586
     public void testButton_negativeButtonFilled() throws Exception {
         PropertyModel dialog =
                 createDialog(
@@ -223,6 +225,7 @@ public class AppModalPresenterTest {
     @Test
     @SmallTest
     @Feature({"ModalDialog"})
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/479879586
     public void testButton_primaryButtonFilled() throws Exception {
         PropertyModel dialog =
                 createDialog(

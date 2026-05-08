@@ -30,7 +30,6 @@ import org.mockito.Mockito;
 import org.chromium.base.MathUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
-import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
@@ -42,9 +41,11 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate.SelectionObserver;
+import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.ui.base.ActivityWindowAndroid;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.PhotoPickerListener;
 import org.chromium.ui.base.WindowAndroid;
@@ -58,7 +59,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /** Tests for the PhotoPickerDialog class. */
-@RunWith(BaseJUnit4ClassRunner.class)
+@RunWith(ContentJUnit4ClassRunner.class)
 public class PhotoPickerDialogTest
         implements PhotoPickerListener,
                 SelectionObserver<PickerBitmap>,
@@ -555,6 +556,7 @@ public class PhotoPickerDialogTest
     @Test
     @LargeTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O) // Video is only supported on O+.
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/479879586
     public void testVideoPlayerPlayAndRestart() throws Throwable {
         // Requesting to play a video is not a case of an accidental disk read on the UI thread.
         StrictMode.ThreadPolicy oldPolicy =
@@ -614,6 +616,7 @@ public class PhotoPickerDialogTest
     @Test
     @LargeTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O) // Video is only supported on O+.
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/479879586
     public void testVideoPlayerPlayAndBackPress() throws Throwable {
         // Requesting to play a video is not a case of an accidental disk read on the UI thread.
         StrictMode.ThreadPolicy oldPolicy =

@@ -72,6 +72,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
@@ -101,6 +102,7 @@ import org.chromium.components.offline_items_collection.RenameResult;
 import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.url_formatter.UrlFormatterJni;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -522,6 +524,7 @@ public class DownloadActivityV2Test {
     @Test
     @MediumTest
     @DisabledTest(message = "crbug.com/427410747")
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/479879586
     public void testDeleteDangerousUsingMenu() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -551,6 +554,7 @@ public class DownloadActivityV2Test {
     @Test
     @MediumTest
     @DisabledTest(message = "crbug.com/427410747")
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/479879586
     public void testDeleteDangerousUsingSelection() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -655,6 +659,7 @@ public class DownloadActivityV2Test {
 
     @Test
     @MediumTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/479879586
     public void testShowListItemMenuWithRename() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -759,6 +764,7 @@ public class DownloadActivityV2Test {
 
     @Test
     @MediumTest
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/479879586
     public void testDeleteItem() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
