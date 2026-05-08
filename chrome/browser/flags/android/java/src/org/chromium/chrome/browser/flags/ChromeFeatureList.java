@@ -599,8 +599,6 @@ public abstract class ChromeFeatureList {
     public static final String RENAME_JOURNEYS = "RenameJourneys";
     public static final String REPORT_NOTIFICATION_CONTENT_DETECTION_DATA =
             "ReportNotificationContentDetectionData";
-    public static final String RIGHT_EDGE_GOES_FORWARD_GESTURE_NAV =
-            "RightEdgeGoesForwardGestureNav";
     public static final String ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL =
             "RobustWindowManagementExperimental";
     public static final String SAFETY_HUB = "SafetyHub";
@@ -1115,8 +1113,6 @@ public abstract class ChromeFeatureList {
                     REPORT_NOTIFICATION_CONTENT_DETECTION_DATA,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
-    public static final CachedFlag sRightEdgeGoesForwardGestureNav =
-            newCachedFlag(RIGHT_EDGE_GOES_FORWARD_GESTURE_NAV, false);
     public static final CachedFlag sSafetyHubWeakAndReusedPasswords =
             newCachedFlag(SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS, false);
     public static final CachedFlag sSearchInCCT =
@@ -1372,7 +1368,6 @@ public abstract class ChromeFeatureList {
                     sPriceChangeModule,
                     sProtectRecentlyVisibleTab,
                     sReportNotificationContentDetectionData,
-                    sRightEdgeGoesForwardGestureNav,
                     sSafetyHubWeakAndReusedPasswords,
                     sSearchInCCT,
                     sSearchInCCTAlternateTapHandling,

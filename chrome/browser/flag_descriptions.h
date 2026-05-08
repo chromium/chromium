@@ -5950,11 +5950,6 @@ inline constexpr char kRelatedSearchesSwitchName[] =
 inline constexpr char kRelatedSearchesSwitchDescription[] =
     "Enables requesting related searches suggestions.";
 
-inline constexpr char kRightEdgeGoesForwardGestureNavName[] =
-    "RightEdgeGoesForwardGestureNav";
-inline constexpr char kRightEdgeGoesForwardGestureNavDescription[] =
-    "Enables the right edge to navigate forward in OS gesture navigation mode.";
-
 inline constexpr char
     kSafeBrowsingScamDetectionKeyboardLockTriggerAndroidName[] =
         "Scam Detection Keyboard Lock Trigger Android";

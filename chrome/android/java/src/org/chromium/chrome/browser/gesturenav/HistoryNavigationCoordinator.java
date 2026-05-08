@@ -23,7 +23,6 @@ import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.browser_ui.widget.TouchEventProvider;
 import org.chromium.content_public.browser.WebContents;
@@ -239,8 +238,7 @@ public class HistoryNavigationCoordinator
     private void notifyNavigationState() {
         WebContents webContents = mTab != null ? mTab.getWebContents() : null;
         if (webContents != null) {
-            webContents.setSupportsForwardTransitionAnimation(
-                    mEnabled || ToolbarManager.isRightEdgeGoesForwardGestureNavEnabled());
+            webContents.setSupportsForwardTransitionAnimation(mEnabled);
         }
 
         // Check against |mActivityLifecycleDisptacher|/|mTouchEventProvider| prevents the flow

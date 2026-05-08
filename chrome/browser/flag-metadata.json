@@ -8291,11 +8291,6 @@
     "expiry_milestone": 154
   },
   {
-    "name": "right-edge-goes-forward-gesture-nav",
-    "owners": [ "eleanorlee@google.com", "lazzzis@google.com", "twellington@chromium.org" ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "robust-window-management-experimental",
     "owners": [ "aishwaryarj@google.com", "rathomas@google.com", "clank-large-form-factors@google.com" ],
     "expiry_milestone": 150

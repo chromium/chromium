@@ -42,7 +42,6 @@ import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.ViewportTestUtils;
@@ -50,7 +49,6 @@ import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.back_press.BackPressMetrics;
 import org.chromium.chrome.browser.bookmarks.BookmarkPage;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.native_page.BasicSmoothTransitionDelegate;
@@ -475,110 +473,6 @@ public class NavigationTransitionsTest {
             Assert.assertEquals(url1, getCurrentUrl());
         }
         helper.waitForNext();
-    }
-
-    /**
-     * Tests that when the user swipes from the right edge in OS gesture navigation mode, the tab
-     * navigates forward with a preview if there is forward history.
-     */
-    @Test
-    @MediumTest
-    @EnableFeatures(ChromeFeatureList.RIGHT_EDGE_GOES_FORWARD_GESTURE_NAV)
-    @MinAndroidSdkLevel(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    public void testRightEdgeGoesForwardInGestureNavMode() throws Throwable {
-        // This test is only for gesture nav mode.
-        if (mTestNavigationMode == NAVIGATION_MODE_THREE_BUTTON) return;
-
-        String url1 = mTestServer.getURL("/chrome/test/data/android/blue.html");
-        String url2 = mTestServer.getURL("/chrome/test/data/android/green.html");
-        String url3 = mTestServer.getURL("/chrome/test/data/android/simple.html");
-        mActivityTestRule.loadUrl(url1);
-        mActivityTestRule.loadUrl(url2);
-        mActivityTestRule.loadUrl(url3);
-
-        WebContentsUtils.waitForCopyableViewInWebContents(getWebContents());
-
-        // Swipe from the left edge (back nav) twice. url3 -> url2 -> url1.
-        performNavigationTransition(url2, BackEventCompat.EDGE_LEFT);
-        waitForTransitionFinished();
-        Assert.assertEquals(url2, getCurrentUrl());
-
-        performNavigationTransition(url1, BackEventCompat.EDGE_LEFT);
-        waitForTransitionFinished();
-        Assert.assertEquals(url1, getCurrentUrl());
-
-        // Swipe from the right edge (forward nav) twice. url1 -> url2 -> url3.
-        performNavigationTransition(url2, BackEventCompat.EDGE_RIGHT);
-        waitForTransitionFinished();
-        Assert.assertEquals(url2, getCurrentUrl());
-
-        performNavigationTransition(url3, BackEventCompat.EDGE_RIGHT);
-        waitForTransitionFinished();
-        Assert.assertEquals(url3, getCurrentUrl());
-
-        // Swipe from the left edge (back nav) once and then from the right edge (forward nav) once.
-        // url3 -> url2 -> url3.
-        performNavigationTransition(url2, BackEventCompat.EDGE_LEFT);
-        waitForTransitionFinished();
-        Assert.assertEquals(url2, getCurrentUrl());
-
-        performNavigationTransition(url3, BackEventCompat.EDGE_RIGHT);
-        waitForTransitionFinished();
-        Assert.assertEquals(url3, getCurrentUrl());
-    }
-
-    /**
-     * Test semantic forward and backward swipes when directions are mirrored due to an RTL UI
-     * direction.
-     */
-    @Test
-    @MediumTest
-    @EnableFeatures({
-        ChromeFeatureList.RIGHT_EDGE_GOES_FORWARD_GESTURE_NAV,
-    })
-    @MinAndroidSdkLevel(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    public void testRightEdgeGoesForwardInGestureNavModeInRTL() throws Throwable {
-        // This test is only for gesture nav mode.
-        if (mTestNavigationMode == NAVIGATION_MODE_THREE_BUTTON) return;
-
-        setRtlForTesting(true);
-
-        String url1 = mTestServer.getURL("/chrome/test/data/android/blue.html");
-        String url2 = mTestServer.getURL("/chrome/test/data/android/green.html");
-        String url3 = mTestServer.getURL("/chrome/test/data/android/simple.html");
-        mActivityTestRule.loadUrl(url1);
-        mActivityTestRule.loadUrl(url2);
-        mActivityTestRule.loadUrl(url3);
-
-        WebContentsUtils.waitForCopyableViewInWebContents(getWebContents());
-
-        // Swipe from the right edge (back nav) twice. url3 -> url2 -> url1.
-        performNavigationTransition(url2, BackEventCompat.EDGE_RIGHT);
-        waitForTransitionFinished();
-        Assert.assertEquals(url2, getCurrentUrl());
-
-        performNavigationTransition(url1, BackEventCompat.EDGE_RIGHT);
-        waitForTransitionFinished();
-        Assert.assertEquals(url1, getCurrentUrl());
-
-        // Swipe from the left edge (forward nav) twice. url1 -> url2 -> url3.
-        performNavigationTransition(url2, BackEventCompat.EDGE_LEFT);
-        waitForTransitionFinished();
-        Assert.assertEquals(url2, getCurrentUrl());
-
-        performNavigationTransition(url3, BackEventCompat.EDGE_LEFT);
-        waitForTransitionFinished();
-        Assert.assertEquals(url3, getCurrentUrl());
-
-        // Swipe from the right edge (back nav) once and then from the left edge (forward nav) once.
-        // url3 -> url2 -> url3.
-        performNavigationTransition(url2, BackEventCompat.EDGE_RIGHT);
-        waitForTransitionFinished();
-        Assert.assertEquals(url2, getCurrentUrl());
-
-        performNavigationTransition(url3, BackEventCompat.EDGE_LEFT);
-        waitForTransitionFinished();
-        Assert.assertEquals(url3, getCurrentUrl());
     }
 
     /**

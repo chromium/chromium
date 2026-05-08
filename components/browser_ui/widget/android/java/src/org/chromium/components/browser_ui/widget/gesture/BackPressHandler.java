@@ -84,12 +84,7 @@ public interface BackPressHandler {
     }
 
     /** Result of back press handling. */
-    @IntDef({
-        BackPressResult.SUCCESS,
-        BackPressResult.FAILURE,
-        BackPressResult.UNKNOWN,
-        BackPressResult.IGNORED
-    })
+    @IntDef({BackPressResult.SUCCESS, BackPressResult.FAILURE, BackPressResult.UNKNOWN})
     @Retention(RetentionPolicy.SOURCE)
     @interface BackPressResult {
         // Successfully intercept the back press and does something to handle the back press,
@@ -101,9 +96,6 @@ public interface BackPressHandler {
         int FAILURE = 1;
         // Do not use unless it is not possible to verify if the back press was correctly handled.
         int UNKNOWN = 2;
-        // When nothing is expected to occur, such as trying to navigate forward with no forward
-        // history.
-        int IGNORED = 3;
         int NUM_TYPES = UNKNOWN + 1;
     }
 

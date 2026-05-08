@@ -255,7 +255,6 @@ BASE_DECLARE_FEATURE(kRelatedSearchesAllLanguage);
 BASE_DECLARE_FEATURE(kRelatedSearchesSwitch);
 BASE_DECLARE_FEATURE(kReloadTabUiResourcesIfChanged);
 BASE_DECLARE_FEATURE(kRemoveTabFocusOnShowingAndSelect);
-BASE_DECLARE_FEATURE(kRightEdgeGoesForwardGestureNav);
 BASE_DECLARE_FEATURE(kRobustWindowManagementExperimental);
 BASE_DECLARE_FEATURE(kScheduleWindowCleaning);
 BASE_DECLARE_FEATURE(kSearchInCCT);

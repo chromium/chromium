@@ -5701,11 +5701,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(data_controls::kEnableClipboardDataControlsAndroid)},
 
-    {"right-edge-goes-forward-gesture-nav",
-     flag_descriptions::kRightEdgeGoesForwardGestureNavName,
-     flag_descriptions::kRightEdgeGoesForwardGestureNavDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kRightEdgeGoesForwardGestureNav)},
-
     // Android Edge to edge
     {"draw-chrome-pages-edge-to-edge",
      flag_descriptions::kDrawChromePagesEdgeToEdgeName,

@@ -103,7 +103,6 @@ public class BackPressManager implements Destroyable, BackPressHandlerRegistry {
                     case BackPressResult.SUCCESS:
                         return true;
                     case BackPressResult.UNKNOWN:
-                    case BackPressResult.IGNORED:
                         return null;
                 }
             } else {
@@ -145,7 +144,7 @@ public class BackPressManager implements Destroyable, BackPressHandlerRegistry {
                     mLastCalledHandlerType = index;
                     if (result == BackPressResult.FAILURE) {
                         BackPressManager.this.handleBackPress();
-                    } else if (result != BackPressResult.IGNORED) {
+                    } else {
                         record(index);
                     }
                 } else {
@@ -469,7 +468,7 @@ public class BackPressManager implements Destroyable, BackPressHandlerRegistry {
                 if (res == BackPressResult.FAILURE) {
                     failed = true;
                     recordFailure(i);
-                } else if (res != BackPressResult.IGNORED) {
+                } else {
                     record(i);
                     return;
                 }
