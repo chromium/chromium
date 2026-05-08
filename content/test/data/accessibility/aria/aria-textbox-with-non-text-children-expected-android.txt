@@ -27,4 +27,3 @@ android.webkit.WebView focusable focused
 ++++++android.widget.TextView name='name: '
 ++++++android.widget.EditText clickable editable_text focusable interesting hint='name:' input_type=1
 ++android.widget.EditText clickable editable_text interesting hint='not editable, img child'
-++++android.widget.Image

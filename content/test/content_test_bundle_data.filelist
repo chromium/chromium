@@ -1598,6 +1598,8 @@ data/accessibility/aria/aria-searchbox-expected-auralinux.txt
 data/accessibility/aria/aria-searchbox-expected-blink.txt
 data/accessibility/aria/aria-searchbox-expected-mac.txt
 data/accessibility/aria/aria-searchbox-expected-win.txt
+data/accessibility/aria/aria-searchbox-with-label-expected-android.txt
+data/accessibility/aria/aria-searchbox-with-label.html
 data/accessibility/aria/aria-searchbox-with-rich-text-expected-android.txt
 data/accessibility/aria/aria-searchbox-with-rich-text-expected-blink.txt
 data/accessibility/aria/aria-searchbox-with-rich-text-expected-mac.txt

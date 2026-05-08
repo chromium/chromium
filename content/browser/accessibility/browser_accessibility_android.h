@@ -121,6 +121,7 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
   bool IsChildOfLeaf() const override;
   bool IsLeaf() const override;
   bool IsLeafConsideringChildren() const;
+  bool HasFocusableChild() const;
 
   std::u16string GetBrailleLabel() const;
   std::u16string GetBrailleRoleDescription() const;
