@@ -6,7 +6,11 @@
 
 #include "base/barrier_closure.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
+#include "base/strings/escape.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
@@ -16,6 +20,48 @@
 #include "content/public/browser/web_contents.h"
 
 namespace glic {
+
+namespace {
+
+// Based on URLToImageMarkup from clipboard_utilities.cc.
+std::u16string GetImageMarkup(const GURL& src_url,
+                              content::RenderFrameHost* rfh) {
+  if (!src_url.is_valid()) {
+    return u"";
+  }
+  std::u16string alt = u"";
+  auto* contents = content::WebContents::FromRenderFrameHost(rfh);
+  if (contents) {
+    std::u16string title = base::EscapeForHTML(contents->GetTitle());
+    if (!title.empty()) {
+      alt = base::StrCat({u" alt=\"", title, u"\""});
+    }
+  }
+  std::u16string spec = base::EscapeForHTML(base::UTF8ToUTF16(src_url.spec()));
+  return base::StrCat({u"<img src=\"", spec, u"\"", alt, u"></img>"});
+}
+
+ui::ClipboardMetadata CreateClipboardMetadata(size_t size) {
+  ui::ClipboardMetadata metadata;
+  metadata.format_type = ui::ClipboardFormatType::PngType();
+  metadata.size = size;
+  return metadata;
+}
+
+void ExtractThumbnailData(const GlicInvokeOptions& options,
+                          std::vector<uint8_t>& thumbnail_data) {
+  if (options.additional_context && options.additional_context->context) {
+    for (const auto& part : options.additional_context->context->parts) {
+      if (part->is_data() && part->get_data()->mime_type == "image/png") {
+        const auto& buffer = part->get_data()->data;
+        thumbnail_data = std::vector<uint8_t>(buffer.begin(), buffer.end());
+        break;
+      }
+    }
+  }
+}
+
+}  // namespace
 
 SequentialTaskGroup::SequentialTaskGroup() = default;
 SequentialTaskGroup::SequentialTaskGroup(
@@ -372,6 +418,160 @@ void WaitForActuationTask::OnTimeout() {
   timer_.Stop();
   subscription_ = {};
   std::move(error_callback_).Run(GlicInvokeError::kTimeout);
+}
+
+ClipboardPolicyTask::ClipboardPolicyTask(
+    GlicInstanceImpl* instance,
+    const GlicInvokeOptions& options,
+    base::OnceCallback<void(GlicInvokeError)> error_callback)
+    : instance_(instance), error_callback_(std::move(error_callback)) {
+  if (!options.additional_context.has_value() ||
+      !options.additional_context->source_rfh_id) {
+    return;
+  }
+  source_rfh_id_ = options.additional_context->source_rfh_id;
+  ExtractThumbnailData(options, thumbnail_data_);
+  src_url_ = GURL(options.additional_context->context->name.value_or(""));
+}
+
+ClipboardPolicyTask::~ClipboardPolicyTask() = default;
+
+void ClipboardPolicyTask::Start(base::OnceClosure done_callback) {
+  done_callback_ = std::move(done_callback);
+
+  if (!source_rfh_id_) {
+    std::move(error_callback_)
+        .Run(GlicInvokeError::kAdditionalContextNoSourceFrame);
+    return;
+  }
+
+  auto* source_rfh = content::RenderFrameHost::FromID(source_rfh_id_);
+  if (!source_rfh) {
+    std::move(error_callback_)
+        .Run(GlicInvokeError::kAdditionalContextNoSourceFrame);
+    return;
+  }
+
+  content::ClipboardEndpoint source(
+      ui::DataTransferEndpoint(
+          source_rfh->GetMainFrame()->GetLastCommittedURL(),
+          {.off_the_record =
+               source_rfh->GetBrowserContext()->IsOffTheRecord()}),
+      base::BindRepeating(
+          [](content::GlobalRenderFrameHostId rfh_id)
+              -> content::BrowserContext* {
+            auto* rfh = content::RenderFrameHost::FromID(rfh_id);
+            return rfh ? rfh->GetBrowserContext() : nullptr;
+          },
+          source_rfh->GetGlobalId()),
+      *source_rfh);
+
+  ui::ClipboardMetadata metadata =
+      CreateClipboardMetadata(thumbnail_data_.size());
+
+  content::ClipboardPasteData data;
+  data.png = thumbnail_data_;
+  data.html = GetImageMarkup(src_url_, source_rfh);
+
+  RunPolicyCheck(source, metadata, std::move(data), source_rfh);
+}
+
+CopyPolicyTask::CopyPolicyTask(
+    GlicInstanceImpl* instance,
+    const GlicInvokeOptions& options,
+    base::OnceCallback<void(GlicInvokeError)> error_callback)
+    : ClipboardPolicyTask(instance, options, std::move(error_callback)) {}
+
+CopyPolicyTask::~CopyPolicyTask() = default;
+
+void CopyPolicyTask::RunPolicyCheck(const content::ClipboardEndpoint& source,
+                                    const ui::ClipboardMetadata& metadata,
+                                    content::ClipboardPasteData data,
+                                    content::RenderFrameHost* source_rfh) {
+  enterprise_data_protection::IsClipboardCopyAllowedByPolicy(
+      source, metadata, data,
+      base::BindOnce(&CopyPolicyTask::OnCopyPolicyCheckComplete,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CopyPolicyTask::OnCopyPolicyCheckComplete(
+    const ui::ClipboardFormatType& data_type,
+    const content::ClipboardPasteData& data,
+    std::optional<std::u16string> replacement_data) {
+  if (replacement_data.has_value() || data.empty()) {
+    std::move(error_callback_)
+        .Run(GlicInvokeError::kAdditionalContextFailedCopyPolicy);
+    return;
+  }
+
+  std::move(done_callback_).Run();
+}
+
+PastePolicyCheckTask::PastePolicyCheckTask(
+    content::WebContents* web_contents,
+    GlicInstanceImpl* instance,
+    const GlicInvokeOptions& options,
+    base::OnceCallback<void(GlicInvokeError)> error_callback)
+    : ClipboardPolicyTask(instance, options, std::move(error_callback)) {
+  Observe(web_contents);
+}
+
+PastePolicyCheckTask::~PastePolicyCheckTask() = default;
+
+void PastePolicyCheckTask::RunPolicyCheck(
+    const content::ClipboardEndpoint& source,
+    const ui::ClipboardMetadata& metadata,
+    content::ClipboardPasteData paste_data,
+    content::RenderFrameHost* source_rfh) {
+  if (thumbnail_data_.empty()) {
+    std::move(error_callback_)
+        .Run(GlicInvokeError::kAdditionalContextNoClipboardMetadata);
+    return;
+  }
+
+  auto* host = &instance_->host();
+  auto* glic_rfh = host->GetGuestMainFrame();
+  if (!glic_rfh) {
+    std::move(error_callback_)
+        .Run(GlicInvokeError::kAdditionalContextNoClientFrame);
+    return;
+  }
+
+  auto get_browser_context =
+      [](content::GlobalRenderFrameHostId rfh_id) -> content::BrowserContext* {
+    auto* rfh = content::RenderFrameHost::FromID(rfh_id);
+    return rfh ? rfh->GetBrowserContext() : nullptr;
+  };
+
+  content::ClipboardEndpoint destination(
+      ui::DataTransferEndpoint(
+          glic_rfh->GetLastCommittedURL(),
+          {.off_the_record = glic_rfh->GetBrowserContext()->IsOffTheRecord()}),
+      base::BindRepeating(get_browser_context, glic_rfh->GetGlobalId()),
+      *glic_rfh);
+
+  enterprise_data_protection::PasteIfAllowedByPolicy(
+      source, destination, metadata, std::move(paste_data),
+      base::BindOnce(&PastePolicyCheckTask::OnPastePolicyCheckComplete,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void PastePolicyCheckTask::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  std::move(error_callback_)
+      .Run(GlicInvokeError::kAdditionalContextSawNavigation);
+}
+
+void PastePolicyCheckTask::OnPastePolicyCheckComplete(
+    std::optional<content::ClipboardPasteData> data) {
+  Observe(nullptr);
+  if (!data || data->png.empty()) {
+    // Policy denied or error.
+    std::move(error_callback_)
+        .Run(GlicInvokeError::kAdditionalContextFailedPastePolicy);
+    return;
+  }
+  std::move(done_callback_).Run();
 }
 
 }  // namespace glic

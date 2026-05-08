@@ -15,6 +15,7 @@
 #include "chrome/browser/glic/fre/glic_fre_controller.h"
 #include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
 #include "chrome/browser/glic/host/guest_util.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -253,6 +254,24 @@ void GlicShareImageHandler::OnReceivedTabContext(
       content::RenderFrameHost::FromID(render_frame_host_id_);
   if (!rfh) {
     ShareComplete(ShareImageResult::kFailedNoFrame);
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(features::kGlicShareImageViaInvoke)) {
+    GlicInvokeOptions invoke_options(mojom::InvocationSource::kSharedImage);
+    invoke_options.additional_context =
+        AdditionalTabContext(std::move(additional_context_),
+                             render_frame_host_id_, PolicyCheck::kClipboard);
+    invoke_options.target.surface = tab;
+    invoke_options.target.conversation = NewConversation();
+    invoke_options.fre_override = mojom::FreOverride::kTrustFirstClick;
+    invoke_options.on_error = base::BindOnce(
+        &GlicShareImageHandler::OnInvokeError, weak_ptr_factory_.GetWeakPtr());
+    invoke_options.on_success = base::BindOnce(
+        &GlicShareImageHandler::ShareComplete, weak_ptr_factory_.GetWeakPtr(),
+        ShareImageResult::kSentImageToClient);
+    service_->Invoke(std::move(invoke_options));
+    StopObservingNavigation();
     return;
   }
 
@@ -516,27 +535,85 @@ std::optional<GlicInstance*> GlicShareImageHandler::GetAndVerifyInstance(
   return instance;
 }
 
+void GlicShareImageHandler::OnInvokeError(GlicInvokeError error) {
+  switch (error) {
+    case GlicInvokeError::kUnknown:
+      ShareComplete(ShareImageResult::kFailedUnknown);
+      break;
+    case GlicInvokeError::kTimeout:
+      if (!GlicEnabling::HasConsentedForProfile(service_->profile())) {
+        ShareComplete(
+            ShareImageResult::kFailedTimedOutDidNotCompleteOnboarding);
+      } else {
+        ShareComplete(ShareImageResult::kFailedTimedOut);
+      }
+      break;
+    case GlicInvokeError::kInvalidConversationId:
+      ShareComplete(ShareImageResult::kFailedInvalidConversationId);
+      break;
+    case GlicInvokeError::kInvalidTab:
+      ShareComplete(ShareImageResult::kFailedNoTab);
+      break;
+    case GlicInvokeError::kTabClosed:
+      ShareComplete(ShareImageResult::kFailedNoTab);
+      break;
+    case GlicInvokeError::kInstanceDestroyed:
+      ShareComplete(ShareImageResult::kFailedLostInstance);
+      break;
+    case GlicInvokeError::kInvokeInProgress:
+      ShareComplete(ShareImageResult::kFailedInvokeInProgress);
+      break;
+    case GlicInvokeError::kInvalidConfiguration:
+      ShareComplete(ShareImageResult::kFailedInvalidConfiguration);
+      break;
+    case GlicInvokeError::kAdditionalContextSawNavigation:
+      ShareComplete(ShareImageResult::kFailedSawNavigation);
+      break;
+    case GlicInvokeError::kAdditionalContextFailedCopyPolicy:
+      ShareComplete(ShareImageResult::kFailedClipboardCopyPolicy);
+      break;
+    case GlicInvokeError::kAdditionalContextFailedPastePolicy:
+      ShareComplete(ShareImageResult::kFailedClipboardPastePolicy);
+      break;
+    case GlicInvokeError::kAdditionalContextNoSourceFrame:
+      ShareComplete(ShareImageResult::kFailedNoFrame);
+      break;
+    case GlicInvokeError::kAdditionalContextNoClientFrame:
+      ShareComplete(ShareImageResult::kFailedNoClientFrame);
+      break;
+    case GlicInvokeError::kAdditionalContextNoClipboardMetadata:
+      ShareComplete(ShareImageResult::kFailedNoClipboardMetadata);
+      break;
+    default:
+      ShareComplete(ShareImageResult::kFailedUnknown);
+      break;
+  }
+}
+
 void GlicShareImageHandler::ShareComplete(ShareImageResult result) {
   if (result == ShareImageResult::kSentImageToClient) {
-    // Do final checks for readiness before sending the context.
-    tabs::TabInterface* tab = tab_handle_.Get();
-    if (!tab) {
-      ShareComplete(ShareImageResult::kFailedNoTab);
-      return;
-    }
-    std::optional<bool> optional_is_client_ready = IsClientReady(*tab);
-    if (!optional_is_client_ready.has_value()) {
-      // If we get nullopt, it sharing is already completed, so bail.
-      return;
-    }
-    bool is_client_ready = *optional_is_client_ready;
-    if (!is_client_ready) {
-      ShareComplete(ShareImageResult::kFailedClientUnreadied);
-      return;
-    }
+    if (!base::FeatureList::IsEnabled(features::kGlicShareImageViaInvoke)) {
+      // Do final checks for readiness before sending the context.
+      tabs::TabInterface* tab = tab_handle_.Get();
+      if (!tab) {
+        ShareComplete(ShareImageResult::kFailedNoTab);
+        return;
+      }
+      std::optional<bool> optional_is_client_ready = IsClientReady(*tab);
+      if (!optional_is_client_ready.has_value()) {
+        // If we get nullopt, it sharing is already completed, so bail.
+        return;
+      }
+      bool is_client_ready = *optional_is_client_ready;
+      if (!is_client_ready) {
+        ShareComplete(ShareImageResult::kFailedClientUnreadied);
+        return;
+      }
 
-    service_->SendAdditionalContext(tab_handle_,
-                                    std::move(additional_context_));
+      // If we're using the invoke API, then the context has already been sent.
+      service_->SendAdditionalContext(tab_handle_,
+                                      std::move(additional_context_));
+    }
   } else if (result != ShareImageResult::kFailedClipboardPastePolicy &&
              result != ShareImageResult::kFailedClipboardCopyPolicy) {
     // Policy checks already show UI when they fail and don't need a toast.

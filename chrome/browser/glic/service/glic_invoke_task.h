@@ -13,11 +13,19 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
+#include "base/types/expected.h"
+#include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/service/glic_ui_types.h"
+#include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/clipboard_types.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/base/clipboard/clipboard_format_type.h"
+#include "ui/base/clipboard/clipboard_metadata.h"
+#include "url/gurl.h"
 
 class Profile;
 
@@ -236,7 +244,6 @@ class WaitForActuationTask : public GlicInvokeTask {
   void Start(base::OnceClosure done_callback) override;
 
  private:
- private:
   void OnTimeout();
   void OnActuatingChanged(bool actuating);
   void Update();
@@ -253,6 +260,81 @@ class WaitForActuationTask : public GlicInvokeTask {
   bool did_start_ = false;
   bool did_finish_ = false;
   base::CallbackListSubscription subscription_;
+};
+
+// Base class for tasks that perform enterprise data protection policy checks
+// on clipboard-like data.
+class ClipboardPolicyTask : public GlicInvokeTask {
+ public:
+  ClipboardPolicyTask(GlicInstanceImpl* instance,
+                      const GlicInvokeOptions& options,
+                      base::OnceCallback<void(GlicInvokeError)> error_callback);
+  ~ClipboardPolicyTask() override;
+
+  void Start(base::OnceClosure done_callback) override;
+
+ protected:
+  virtual void RunPolicyCheck(const content::ClipboardEndpoint& source,
+                              const ui::ClipboardMetadata& metadata,
+                              content::ClipboardPasteData data,
+                              content::RenderFrameHost* source_rfh) = 0;
+
+  bool NeedsPolicyChecks() const;
+
+  raw_ptr<GlicInstanceImpl> instance_;
+  content::GlobalRenderFrameHostId source_rfh_id_;
+  std::vector<uint8_t> thumbnail_data_;
+  GURL src_url_;
+  base::OnceClosure done_callback_;
+  base::OnceCallback<void(GlicInvokeError)> error_callback_;
+};
+
+class CopyPolicyTask : public ClipboardPolicyTask {
+ public:
+  CopyPolicyTask(GlicInstanceImpl* instance,
+                 const GlicInvokeOptions& options,
+                 base::OnceCallback<void(GlicInvokeError)> error_callback);
+  ~CopyPolicyTask() override;
+
+ protected:
+  void RunPolicyCheck(const content::ClipboardEndpoint& source,
+                      const ui::ClipboardMetadata& metadata,
+                      content::ClipboardPasteData data,
+                      content::RenderFrameHost* source_rfh) override;
+
+ private:
+  void OnCopyPolicyCheckComplete(
+      const ui::ClipboardFormatType& data_type,
+      const content::ClipboardPasteData& data,
+      std::optional<std::u16string> replacement_data);
+
+  base::WeakPtrFactory<CopyPolicyTask> weak_ptr_factory_{this};
+};
+
+class PastePolicyCheckTask : public ClipboardPolicyTask,
+                             public content::WebContentsObserver {
+ public:
+  PastePolicyCheckTask(
+      content::WebContents* contents,
+      GlicInstanceImpl* instance,
+      const GlicInvokeOptions& options,
+      base::OnceCallback<void(GlicInvokeError)> error_callback);
+  ~PastePolicyCheckTask() override;
+
+ protected:
+  void RunPolicyCheck(const content::ClipboardEndpoint& source,
+                      const ui::ClipboardMetadata& metadata,
+                      content::ClipboardPasteData data,
+                      content::RenderFrameHost* source_rfh) override;
+
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
+
+ private:
+  void OnPastePolicyCheckComplete(
+      std::optional<content::ClipboardPasteData> data);
+
+  base::WeakPtrFactory<PastePolicyCheckTask> weak_ptr_factory_{this};
 };
 
 }  // namespace glic

@@ -167,6 +167,7 @@ void GlicInvokeHandler::Invoke() {
                                   weak_ptr_factory_.GetWeakPtr()));
     }
   }
+
   if (!options_.tab_sharing.tabs_to_pin.empty()) {
     CHECK(options_.tab_sharing.pin_trigger != GlicPinTrigger::kUnknown);
     instance_->sharing_manager().PinTabs(options_.tab_sharing.tabs_to_pin,
@@ -178,6 +179,14 @@ void GlicInvokeHandler::Invoke() {
   if (should_wait_for_load_) {
     tasks.push_back(
         std::make_unique<WaitForNavigationTask>(tab_->GetContents()));
+  }
+
+  if (options_.additional_context.has_value() &&
+      options_.additional_context->policy_check == PolicyCheck::kClipboard) {
+    tasks.push_back(std::make_unique<CopyPolicyTask>(
+        &*instance_, options_,
+        base::BindOnce(&GlicInvokeHandler::OnError,
+                       weak_ptr_factory_.GetWeakPtr())));
   }
 
   auto show_options = ShowOptions::ForSidePanel(
@@ -212,6 +221,14 @@ void GlicInvokeHandler::Invoke() {
 
   if (options_.wait_for_panel_open) {
     tasks.push_back(std::make_unique<StabilizationTask>(tab_->GetContents()));
+  }
+
+  if (options_.additional_context.has_value() &&
+      options_.additional_context->policy_check == PolicyCheck::kClipboard) {
+    tasks.push_back(std::make_unique<PastePolicyCheckTask>(
+        tab_->GetContents(), &*instance_, options_,
+        base::BindOnce(&GlicInvokeHandler::OnError,
+                       weak_ptr_factory_.GetWeakPtr())));
   }
 
   tasks.push_back(std::make_unique<WaitForFreCompletionTask>(
@@ -316,8 +333,8 @@ mojom::InvokeOptionsPtr GlicInvokeHandler::CreateMojoOptions() {
     mojo_options->prompts = options_.prompts;
   }
 
-  if (options_.additional_context) {
-    mojo_options->context = std::move(options_.additional_context);
+  if (options_.additional_context && options_.additional_context->context) {
+    mojo_options->context = std::move(options_.additional_context->context);
   }
 
   mojo_options->auto_submit = auto_submit_passkey_.has_value();

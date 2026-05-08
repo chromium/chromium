@@ -1008,6 +1008,12 @@ chromium-metrics-reviews@google.com.
   <int value="17" label="kFailedTimedOutDidNotCompleteOnboarding"/>
   <int value="18" label="kFailedLostInstance"/>
   <int value="19" label="kFailedSawNavigationDidNotCompleteOnboarding"/>
+  <int value="20" label="kFailedUnknown"/>
+  <int value="21" label="kFailedInvalidConversationId"/>
+  <int value="22" label="kFailedInvokeInProgress"/>
+  <int value="23" label="kFailedInvalidConfiguration"/>
+  <int value="24" label="kFailedNoClientFrame"/>
+  <int value="25" label="kFailedNoClipboardMetadata"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.h:ShareImageResult) -->

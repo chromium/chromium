@@ -14,6 +14,7 @@
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/glic_instance.h"
+#include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "components/lens/lens_metadata.mojom.h"
@@ -104,6 +105,10 @@ class GlicShareImageHandler : public content::WebContentsObserver {
   // unexpectedly. Returns nullopt if the flow has failed due to an invalid
   // instance change.
   std::optional<GlicInstance*> GetAndVerifyInstance(tabs::TabInterface* tab);
+
+  // Called if the invoke API hits a failure. This completes the share process
+  // and causes metrics to be logged.
+  void OnInvokeError(GlicInvokeError error);
 
   // Called when the end result of sharing is known. Sends context on success.
   void ShareComplete(ShareImageResult result);

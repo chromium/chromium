@@ -264,14 +264,6 @@ union InvokeTargetSurface {
   NewTabMojo new_tab;
 };
 
-// The level of in-flight navigation events allowed without canceling the
-// invocation.
-enum AllowedInflightNavigation {
-  kNone,
-  kSameDomain,
-  kAll,
-};
-
 // @generate glic_api
 // Configuration to override the default ZSS behavior for the invocation,
 // only having an impact if ZSS would be shown for the invocation.

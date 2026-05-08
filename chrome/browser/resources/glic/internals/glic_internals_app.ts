@@ -7,7 +7,7 @@ import '//resources/cr_elements/cr_tabs/cr_tabs.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {ActuationEligibility, ActuationTarget, AllowedInflightNavigation, FeatureMode, FreOverride, InvocationSource} from '../glic.mojom-webui.js';
+import {ActuationEligibility, ActuationTarget, FeatureMode, FreOverride, InvocationSource} from '../glic.mojom-webui.js';
 import {InternalsPageHandlerFactory, InternalsPageHandlerRemote} from '../glic_internals.mojom-webui.js';
 import type {InternalsDataPayload, TriggerInvokeFromInternalsOptions} from '../glic_internals.mojom-webui.js';
 
@@ -319,7 +319,6 @@ export class GlicInternalsAppElement extends CrLitElement {
       skillId: null,
       errorMessage: null,
       timeout: null,
-      allowedInflightNavigation: AllowedInflightNavigation.kNone,
       autoSubmit: this.invokeAutoSubmit_,
       freOverride: this.invokeFreOverride_,
       waitForPanelOpen: this.invokeWaitForPanelOpen_,

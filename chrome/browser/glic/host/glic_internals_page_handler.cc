@@ -192,7 +192,9 @@ void GlicInternalsPageHandler::TriggerInvokeFromInternalsAction(
   options.prompts = std::move(mojo_options->prompts);
 
   if (mojo_options->additional_context) {
-    options.additional_context = std::move(mojo_options->additional_context);
+    options.additional_context = AdditionalTabContext(
+        std::move(mojo_options->additional_context),
+        content::GlobalRenderFrameHostId(), PolicyCheck::kClipboard);
   }
 
   if (mojo_options->conversation->is_new_conversation()) {
@@ -216,19 +218,6 @@ void GlicInternalsPageHandler::TriggerInvokeFromInternalsAction(
   options.fre_override = mojo_options->fre_override;
   options.wait_for_panel_open = mojo_options->wait_for_panel_open;
   options.target.actuation_target = mojo_options->actuation_target;
-
-  switch (mojo_options->allowed_inflight_navigation) {
-    case mojom::AllowedInflightNavigation::kSameDomain:
-      options.allowed_inflight_navigation =
-          AllowedInflightNavigation::kSameDomain;
-      break;
-    case mojom::AllowedInflightNavigation::kNone:
-      options.allowed_inflight_navigation = AllowedInflightNavigation::kNone;
-      break;
-    case mojom::AllowedInflightNavigation::kAll:
-      options.allowed_inflight_navigation = AllowedInflightNavigation::kAll;
-      break;
-  }
 
   auto split_callback = base::SplitOnceCallback(std::move(callback));
 

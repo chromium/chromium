@@ -466,8 +466,9 @@ void GlicSelectionObserver::InvokeGlicFromSelectionAffordance(
         if (auto* glic_keyed_service = GlicKeyedService::Get(profile)) {
           GlicInvokeOptions options(glic::Target(tab_interface),
                                     mojom::InvocationSource::kNudge);
-          options.additional_context =
-              CreateAdditionalContext(web_contents.get(), selected_text);
+          options.additional_context = AdditionalTabContext(
+              CreateAdditionalContext(web_contents.get(), selected_text),
+              content::GlobalRenderFrameHostId(), PolicyCheck::kNone);
           glic_keyed_service->Invoke(std::move(options));
         }
       }

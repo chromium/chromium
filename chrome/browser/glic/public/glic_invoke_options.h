@@ -17,6 +17,7 @@
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/global_routing_id.h"
 
 class BrowserWindowInterface;
 
@@ -104,12 +105,29 @@ struct ZssConfig {
   std::optional<std::string> additional_content;
 };
 
-// The level of in-flight navigation events allowed without canceling the
-// invocation.
-enum class AllowedInflightNavigation {
+// Specifies the type of policy check to perform.
+enum class PolicyCheck {
   kNone,
-  kSameDomain,
-  kAll,
+  // Performs clipboard copy and past policy checks.
+  kClipboard,
+};
+
+// Provides additional context and information about its source.
+struct AdditionalTabContext {
+  AdditionalTabContext(glic::mojom::AdditionalContextPtr context,
+                       content::GlobalRenderFrameHostId source_rfh_id,
+                       PolicyCheck policy_check);
+  ~AdditionalTabContext();
+  AdditionalTabContext(const AdditionalTabContext&);
+  AdditionalTabContext& operator=(const AdditionalTabContext&);
+
+  glic::mojom::AdditionalContextPtr context;
+
+  // The RenderFrameHost ID of the source of the invocation, if applicable.
+  content::GlobalRenderFrameHostId source_rfh_id;
+
+  // Specifies the policy check to perform, if any.
+  PolicyCheck policy_check = PolicyCheck::kClipboard;
 };
 
 // Possible errors that can occur during a Glic invocation.
@@ -129,6 +147,19 @@ enum class GlicInvokeError {
   kInvokeInProgress,
   // The provided invocation configuration is invalid.
   kInvalidConfiguration,
+  // Observed a navigation before the policy checks completed.
+  kAdditionalContextSawNavigation,
+  // The clipboard copy policy check failed for the given additional context.
+  kAdditionalContextFailedCopyPolicy,
+  // The clipboard paste policy check failed for the given additional context.
+  kAdditionalContextFailedPastePolicy,
+  // Could not find the source frame instance for the policy checks.
+  kAdditionalContextNoSourceFrame,
+  // Could not find the web client frame instance for the policy checks.
+  kAdditionalContextNoClientFrame,
+  // Could not create clipboard metadata for policy checks. This is likely due
+  // to the context type not yet being supported.
+  kAdditionalContextNoClipboardMetadata,
 };
 
 // Details for invoking Glic with tabs shared. See
@@ -170,7 +201,7 @@ struct GlicInvokeOptions {
   // included with the invocation.
   // Warning: not fully implemented.
   // TODO(b/504627812): finish implementing.
-  glic::mojom::AdditionalContextPtr additional_context;
+  std::optional<AdditionalTabContext> additional_context;
 
   // Tabs to pin as part of invocation.
   TabSharingOptions tab_sharing;
@@ -202,10 +233,6 @@ struct GlicInvokeOptions {
 
   // The amount of time to wait before canceling the invocation.
   std::optional<base::TimeDelta> timeout;
-
-  // The level of navigation events allowed without canceling the invocation.
-  AllowedInflightNavigation allowed_inflight_navigation =
-      AllowedInflightNavigation::kAll;
 
   // Whether to wait until the side panel has fully opened and the web
   // contents have stabilized before sending the invoke payload to the client.

@@ -87,7 +87,13 @@ enum class ShareImageResult {
   kFailedTimedOutDidNotCompleteOnboarding = 17,
   kFailedLostInstance = 18,
   kFailedSawNavigationDidNotCompleteOnboarding = 19,
-  kMaxValue = kFailedSawNavigationDidNotCompleteOnboarding,
+  kFailedUnknown = 20,
+  kFailedInvalidConversationId = 21,
+  kFailedInvokeInProgress = 22,
+  kFailedInvalidConfiguration = 23,
+  kFailedNoClientFrame = 24,
+  kFailedNoClipboardMetadata = 25,
+  kMaxValue = kFailedNoClipboardMetadata,
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:ShareImageResult)

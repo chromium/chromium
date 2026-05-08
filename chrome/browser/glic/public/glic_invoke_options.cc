@@ -23,6 +23,28 @@ ZssConfig::~ZssConfig() = default;
 ZssConfig::ZssConfig(const ZssConfig&) = default;
 ZssConfig& ZssConfig::operator=(const ZssConfig&) = default;
 
+AdditionalTabContext::AdditionalTabContext(
+    glic::mojom::AdditionalContextPtr context,
+    content::GlobalRenderFrameHostId source_rfh_id,
+    PolicyCheck policy_check)
+    : context(std::move(context)),
+      source_rfh_id(source_rfh_id),
+      policy_check(policy_check) {}
+AdditionalTabContext::~AdditionalTabContext() = default;
+AdditionalTabContext::AdditionalTabContext(const AdditionalTabContext& other)
+    : context(mojo::Clone(other.context)),
+      source_rfh_id(other.source_rfh_id),
+      policy_check(other.policy_check) {}
+AdditionalTabContext& AdditionalTabContext::operator=(
+    const AdditionalTabContext& other) {
+  if (this != &other) {
+    context = mojo::Clone(other.context);
+    source_rfh_id = other.source_rfh_id;
+    policy_check = other.policy_check;
+  }
+  return *this;
+}
+
 Target::Target() = default;
 Target::Target(Target&&) = default;
 Target& Target::operator=(Target&&) = default;

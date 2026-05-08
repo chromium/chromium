@@ -28,7 +28,6 @@ struct TriggerInvokeFromInternalsOptions {
   string? skill_id;
   string? error_message;
   mojo_base.mojom.TimeDelta? timeout;
-  AllowedInflightNavigation allowed_inflight_navigation;
   bool auto_submit;
   FreOverride fre_override = kUnspecified;
   bool wait_for_panel_open;
