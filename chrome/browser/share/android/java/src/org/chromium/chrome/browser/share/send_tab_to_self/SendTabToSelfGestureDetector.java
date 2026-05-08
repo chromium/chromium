@@ -13,6 +13,7 @@ import android.hardware.SensorManager;
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 
@@ -27,19 +28,23 @@ import java.util.function.Supplier;
 public class SendTabToSelfGestureDetector implements SensorEventListener {
     private static final String TAG = "STTSGestureDetector";
 
-    // Threshold for considering an acceleration event as a "tap".
-    // This value usually requires tuning based on hardware and surface types.
-    // 15 m/s^2 is a reasonable starting point for a sharp tap.
-    private static final float ACCELERATION_THRESHOLD = 15.0f;
-
     // Time window for a double tap (in milliseconds).
     private static final long MIN_DELAY_MS = 100;
     private static final long MAX_DELAY_MS = 500;
+
+    // Acceleration threshold values (m/s^2) for different sensitivity levels.
+    // Higher sensitivity requires less force (lower threshold) to trigger.
+    private static final float THRESHOLD_LOW_SENSITIVITY = 20.0f;
+    private static final float THRESHOLD_MEDIUM_SENSITIVITY = 15.0f;
+    private static final float THRESHOLD_HIGH_SENSITIVITY = 10.0f;
 
     private final SensorManager mSensorManager;
     private final @Nullable Sensor mAccelerometer;
     private final Supplier<Tab> mTabSupplier;
     private final Supplier<Profile> mProfileSupplier;
+    // Threshold for considering an acceleration event as a "tap" (in m/s^2).
+    // Dynamically configured based on the gesture sensitivity level.
+    private final float mAccelerationThreshold;
 
     private long mLastTapTimeMs;
     private boolean mListening;
@@ -50,6 +55,7 @@ public class SendTabToSelfGestureDetector implements SensorEventListener {
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
         mTabSupplier = tabSupplier;
         mProfileSupplier = profileSupplier;
+        mAccelerationThreshold = getAccelerationThreshold();
     }
 
     public void start() {
@@ -89,7 +95,7 @@ public class SendTabToSelfGestureDetector implements SensorEventListener {
         // Calculate the magnitude of the acceleration vector.
         double magnitude = Math.sqrt(x * x + y * y + z * z);
 
-        if (magnitude > ACCELERATION_THRESHOLD) {
+        if (magnitude > mAccelerationThreshold) {
             long delay = currentTimeMs - mLastTapTimeMs;
 
             Log.d(TAG, "Peak detected: magnitude=%f, delay=%d", magnitude, delay);
@@ -156,5 +162,21 @@ public class SendTabToSelfGestureDetector implements SensorEventListener {
                 result -> {
                     Log.i(TAG, "Send tab result: %s", result);
                 });
+    }
+
+    private static float getAccelerationThreshold() {
+        // Map gesture sensitivity parameters to acceleration thresholds (m/s^2).
+        // - "low": harder to trigger, requires sharp tap (20 m/s^2)
+        // - "medium" (or default): standard trigger threshold (15 m/s^2)
+        // - "high": easier to trigger, requires light tap (10 m/s^2)
+        String sensitivity =
+                ChromeFeatureList.getFieldTrialParamByFeature(
+                        ChromeFeatureList.SEND_TAB_TO_SELF_GESTURE, "sensitivity");
+        if ("low".equals(sensitivity)) {
+            return THRESHOLD_LOW_SENSITIVITY;
+        } else if ("high".equals(sensitivity)) {
+            return THRESHOLD_HIGH_SENSITIVITY;
+        }
+        return THRESHOLD_MEDIUM_SENSITIVITY;
     }
 }
