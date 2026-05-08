@@ -354,6 +354,7 @@ def CheckJsonFiles(input_api, output_api):
       continue
 
     filename = input_api.os_path.basename(f.LocalPath())
+    parts = f.LocalPath().replace('\\', '/').split('/')
     if filename.startswith('state_block'):
       active_schema = state_block_schema
     elif filename.startswith('project'):
@@ -362,8 +363,19 @@ def CheckJsonFiles(input_api, output_api):
       active_schema = review_feedback_schema
     elif filename.startswith('constraints'):
       active_schema = constraints_schema
-    elif 'personas' in f.LocalPath().replace('\\', '/').split('/'):
+    elif 'personas' in parts:
       active_schema = persona_def_schema
+      # Dummy comment to force Gerrit update.
+      # Enforce directory depth limit (max 5 from /personas)
+      # Depth is exactly the index of 'personas' in the reversed list
+      depth = parts[::-1].index('personas')
+      if depth > 5:
+        results.append(
+            output_api.PresubmitError(
+                f'File {f.LocalPath()} exceeds maximum persona directory '
+                f'depth of 5 (current depth: {depth})'
+            )
+        )
     else:
       continue
 

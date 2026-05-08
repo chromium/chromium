@@ -665,6 +665,37 @@ class MagiPresubmitTest(unittest.TestCase):
                 self.mock_input, self.mock_output)
             self.assertTrue(any('missing required keys' in r for r in results))
 
+    def testJsonPersonaDirectoryDepth(self):
+        valid_json = '{"role": "Test", "mandate": "Test", "checklist": {}}'
+        schema_json = '{"definitions": {"PersonaDef": {"required": []}}}'
+
+        # Depth 5 (valid)
+        self.mock_input.affected_files = [
+            MockAffectedFile('remoting/tools/magi-mode/personas/1/2/3/4/5.json')
+        ]
+        self.mock_input.files_content = {
+            'remoting/tools/magi-mode/personas/1/2/3/4/5.json': valid_json
+        }
+        with patch('builtins.open',
+                   unittest.mock.mock_open(read_data=schema_json)):
+            results = PRESUBMIT.CheckJsonFiles(
+                self.mock_input, self.mock_output)
+            self.assertEqual(len(results), 0)
+
+        # Depth 6 (invalid)
+        self.mock_input.affected_files = [
+            MockAffectedFile('remoting/tools/magi-mode/personas/1/2/3/4/5/6.json')
+        ]
+        self.mock_input.files_content = {
+            'remoting/tools/magi-mode/personas/1/2/3/4/5/6.json': valid_json
+        }
+        with patch('builtins.open',
+                   unittest.mock.mock_open(read_data=schema_json)):
+            results = PRESUBMIT.CheckJsonFiles(
+                self.mock_input, self.mock_output)
+            self.assertTrue(any(
+                'exceeds maximum persona directory depth of 5' in r for r in results))
+
 
 if __name__ == '__main__':
     unittest.main()
