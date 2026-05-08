@@ -342,6 +342,9 @@ export class AppElement extends AppElementBase {
         type: Number,
         reflect: true,
       },
+
+      energyEffectEnabled_: {type: Boolean, reflect: true},
+      energyEffectAnimationEnabled_: {type: Boolean, reflect: true},
     };
   }
 
@@ -438,7 +441,10 @@ export class AppElement extends AppElementBase {
       loadTimeData.getBoolean('composeboxShowContextMenuDescription');
   protected accessor enableThreadsRail_: boolean =
       loadTimeData.getBoolean('enableThreadsRail');
-
+  protected accessor energyEffectEnabled_: boolean =
+      loadTimeData.getBoolean('energyEffectEnabled');
+  protected accessor energyEffectAnimationEnabled_: boolean =
+      loadTimeData.getBoolean('energyEffectAnimationEnabled');
   private accessor selectedCustomizeDialogPage_: string|null = null;
   private accessor middleSlotPromoLoaded_: boolean = false;
   private accessor modulesLoadedStatus_: ModuleLoadStatus =
