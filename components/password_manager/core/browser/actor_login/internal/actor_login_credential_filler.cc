@@ -393,9 +393,7 @@ void ActorLoginCredentialFiller::FillAllEligibleFields(
           return password_manager::ArePasswordFormUniqueKeysEqual(
               stored_credential, best_match);
         });
-    if (base::FeatureList::IsEnabled(
-            password_manager::features::kActorLoginSameSiteIframeSupport) &&
-        !stored_credential_belongs_to_manager) {
+    if (!stored_credential_belongs_to_manager) {
       continue;
     }
     if (should_store_permission_) {

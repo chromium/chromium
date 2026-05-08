@@ -760,10 +760,6 @@ TEST_P(ActorLoginCredentialFillerTest, FillsNestedFrameWithSameOrigin) {
 
 TEST_P(ActorLoginCredentialFillerTest,
        FillsSameSiteDirectChildOfPrimaryMainFrame) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {password_manager::features::kActorLoginSameSiteIframeSupport}, {});
-
   const url::Origin main_frame_origin =
       url::Origin::Create(GURL("https://example.com"));
   const url::Origin form_origin =
@@ -809,56 +805,9 @@ TEST_P(ActorLoginCredentialFillerTest,
             LoginStatusResult::kSuccessUsernameAndPasswordFilled);
 }
 
-TEST_P(ActorLoginCredentialFillerTest,
-       DoesntFillSameSiteDirectChildOfPrimaryMainFrame_FeatureOff) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {}, {password_manager::features::kActorLoginSameSiteIframeSupport});
 
-  const url::Origin main_frame_origin =
-      url::Origin::Create(GURL("https://example.com"));
-  const url::Origin form_origin =
-      url::Origin::Create(GURL("https://login.example.com"));
-  const Credential credential = CreateTestCredential(
-      kTestUsername, form_origin.GetURL(), main_frame_origin);
-  const FormData form_data = CreateSigninFormData(form_origin.GetURL());
-  SetSavedCredential(&form_fetcher_, form_origin.GetURL(), kTestUsername,
-                     kTestPassword);
-
-  ON_CALL(mock_driver_, GetLastCommittedOrigin)
-      .WillByDefault(ReturnRef(form_origin));
-  // Form is not in the main frame, but in a frame that is the direct child
-  // of the main frame.
-  ON_CALL(mock_driver_, IsInPrimaryMainFrame).WillByDefault(Return(false));
-  EXPECT_CALL(mock_driver_, IsDirectChildOfPrimaryMainFrame)
-      .WillRepeatedly(Return(true));
-
-  std::vector<std::unique_ptr<PasswordFormManager>> form_managers;
-  form_managers.push_back(
-      CreateFormManagerWithParsedForm(form_origin, form_data, mock_driver_));
-  const PasswordForm* parsed_form = form_managers[0]->GetParsedObservedForm();
-
-  base::test::TestFuture<LoginStatusResultOrError> future;
-  ActorLoginCredentialFiller filler(
-      main_frame_origin, credential, should_store_permission(), &mock_client_,
-      mqls_logger(), base::TimeTicks::Now(), mock_is_task_in_focus_.Get(),
-      future.GetCallback());
-  EXPECT_CALL(mock_form_cache_, GetFormManagers)
-      .WillOnce(Return(base::span(form_managers)));
-
-  EXPECT_FALSE(parsed_form->username_element_renderer_id.is_null());
-  EXPECT_FALSE(parsed_form->password_element_renderer_id.is_null());
-
-  filler.AttemptLogin(&mock_password_manager_);
-  const LoginStatusResultOrError& result = future.Get();
-  ASSERT_TRUE(result.has_value());
-  EXPECT_EQ(result.value(), LoginStatusResult::kErrorNoSigninForm);
-}
 
 TEST_P(ActorLoginCredentialFillerTest, DoesntFillSameSiteNestedIframe) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {password_manager::features::kActorLoginSameSiteIframeSupport}, {});
   const url::Origin origin = url::Origin::Create(GURL("https://example.com/"));
   const url::Origin same_site_origin =
       url::Origin::Create(GURL("https://login.example.com"));
@@ -1010,10 +959,6 @@ TEST_P(ActorLoginCredentialFillerTest,
 
 TEST_P(ActorLoginCredentialFillerTest,
        FillUsernameAndPasswordInAllEligibleFieldsAcrossSameSiteIframes) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kActorLoginSameSiteIframeSupport);
-
   const url::Origin origin = url::Origin::Create(GURL("https://example.com"));
   const url::Origin same_site_origin_1 =
       url::Origin::Create(GURL("https://login.example.com"));
@@ -1125,9 +1070,6 @@ TEST_P(ActorLoginCredentialFillerTest,
 
 TEST_P(ActorLoginCredentialFillerTest,
        DoesntFillUsernameAndPasswordThatAreNotBestMatch) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kActorLoginSameSiteIframeSupport);
   const url::Origin origin = url::Origin::Create(GURL("https://example.com"));
   main_frame_origin_ = origin;
   const url::Origin same_site_origin_1 =
@@ -1221,9 +1163,6 @@ TEST_P(ActorLoginCredentialFillerTest,
 
 TEST_P(ActorLoginCredentialFillerTest,
        FillUsernameAndPasswordInAllEligibleFieldsPreferMainframe) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kActorLoginSameSiteIframeSupport);
   const url::Origin origin = url::Origin::Create(GURL("https://example.com"));
   const url::Origin same_site_origin_1 =
       url::Origin::Create(GURL("https://login.example.com"));
@@ -2359,10 +2298,6 @@ TEST_P(ActorLoginCredentialFillerTest,
 
 TEST_P(ActorLoginCredentialFillerTest,
        UsesChosenAffiliatedCredentialOverExactMatch_InIframe) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kActorLoginSameSiteIframeSupport);
-
   // The origin where the credential is being filled.
   url::Origin current_origin = url::Origin::Create(GURL("https://example.com"));
   // The origin where the form is in.

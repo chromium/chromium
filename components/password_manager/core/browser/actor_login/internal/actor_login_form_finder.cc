@@ -66,13 +66,9 @@ GetFieldType(const autofill::FormFieldData& field,
 
 bool IsFormOriginSupported(const url::Origin& form_origin,
                            const url::Origin& main_frame_origin) {
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kActorLoginSameSiteIframeSupport)) {
-    return net::registry_controlled_domains::SameDomainOrHost(
-        form_origin, main_frame_origin,
-        net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-  }
-  return form_origin.IsSameOriginWith(main_frame_origin);
+  return net::registry_controlled_domains::SameDomainOrHost(
+      form_origin, main_frame_origin,
+      net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
 }
 
 bool IsValidFrameAndOriginToFill(
