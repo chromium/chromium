@@ -658,10 +658,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabPrerenderingTest,
   ASSERT_TRUE(RunExtensionTest("tabs/prerendering_into_new_tab")) << message_;
 }
 
-// TODO(https://crbug.com/449095632): Port to desktop android. Currently fails
-// because the chrome.tabGroups.onRemoved notification is not received.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-
 // Tests the tabs.onUpdated events dispatched when moving a tab group from one
 // window to another.
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, MovingAGroupToANewWindow) {
@@ -676,6 +672,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, MovingAGroupToANewWindow) {
   constexpr char kBackgroundJs[] = R"(
     chrome.test.runTests([
       async function moveGroup() {
+        const isAndroid =
+            (await chrome.runtime.getPlatformInfo()).os === 'android';
+
         // Create other tabs in window 1 to add to a group.
         await chrome.tabs.create({url: 'about:blank'});
         await chrome.tabs.create({url: 'about:blank'});
@@ -711,7 +710,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, MovingAGroupToANewWindow) {
 
         // Move the tab group to window 2 and wait for it to process.
         await chrome.tabGroups.move(groupId, {windowId: window2.id, index: 0});
-        await groupRemovedEvent;
+
+        // TODO(https://crbug.com/511186385): The tabGroups.onRemoved event is
+        // not received on Android. Update this when that's fixed.
+        if (!isAndroid) {
+          await groupRemovedEvent;
+        }
         await groupCreatedEvent;
 
         // Wait for any pending events to come in.
@@ -758,5 +762,3 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, MovingAGroupToANewWindow) {
   ASSERT_TRUE(LoadExtension(test_dir.UnpackedPath()));
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
-
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
