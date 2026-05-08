@@ -11,6 +11,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/theme/ThemeColorProvider.java",
     "java/src/org/chromium/chrome/browser/theme/ThemeModuleUtils.java",
     "java/src/org/chromium/chrome/browser/theme/ThemeUtils.java",
+    "java/src/org/chromium/chrome/browser/theme/ToolbarThemeColorProvider.java",
     "java/src/org/chromium/chrome/browser/theme/TopUiThemeColorProvider.java",
     "java/src/org/chromium/chrome/browser/ui/theme/BrandedColorScheme.java",
     "java/src/org/chromium/chrome/browser/ui/theme/ChromeSemanticColorUtils.java",
@@ -57,6 +58,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/theme/AdjustedTopUiThemeColorProviderUnitTest.java",
     "java/src/org/chromium/chrome/browser/theme/BottomUiThemeColorProviderTest.java",
     "java/src/org/chromium/chrome/browser/theme/ThemeUtilsUnitTest.java",
+    "java/src/org/chromium/chrome/browser/theme/ToolbarThemeColorProviderTest.java",
   ]
   deps = [
     ":java",
