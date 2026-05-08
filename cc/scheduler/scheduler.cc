@@ -383,8 +383,8 @@ void Scheduler::OnBeginFrameSourcePausedChanged(bool paused) {
 
 // BeginFrame is the mechanism that tells us that now is a good time to start
 // making a frame. Usually this means that user input for the frame is complete.
-// If the scheduler is busy, we queue the BeginFrame to be handled later as
-// a BeginRetroFrame.
+// If the scheduler is busy, we queue the BeginFrame to be handled later as a
+// pending BeginMainFrame.
 bool Scheduler::OnBeginFrameDerivedImpl(const viz::BeginFrameArgs& args) {
   TRACE_EVENT1("cc,benchmark", "Scheduler::BeginFrame", "args", args.AsValue());
 
