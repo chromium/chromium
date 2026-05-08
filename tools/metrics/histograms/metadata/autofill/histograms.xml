@@ -8788,7 +8788,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram
     name="Autofill.TouchToFill.CreditCard.AutofillUsedAfterTouchToFillDismissal"
-    enum="Boolean" expires_after="2026-05-19">
+    enum="Boolean" expires_after="2027-05-19">
   <owner>smcgruer@google.com</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
@@ -8804,7 +8804,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.TouchToFill.CreditCard.FillingCorrectness"
-    enum="BooleanAutofillFillingCorrectness" expires_after="2026-05-19">
+    enum="BooleanAutofillFillingCorrectness" expires_after="2027-05-19">
   <owner>smcgruer@google.com</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
@@ -8815,7 +8815,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.TouchToFill.CreditCard.NumberOfCardsShown"
-    units="cards" expires_after="2026-05-19">
+    units="cards" expires_after="2027-05-19">
   <owner>smcgruer@google.com</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
@@ -8825,7 +8825,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.TouchToFill.CreditCard.Outcome2"
-    enum="TouchToFill.CreditCard.Outcome" expires_after="2026-07-19">
+    enum="TouchToFill.CreditCard.Outcome" expires_after="2027-05-19">
   <owner>smcgruer@google.com</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
@@ -8842,7 +8842,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.TouchToFill.CreditCard.PerfectFilling" enum="Boolean"
-    expires_after="2026-05-19">
+    expires_after="2027-05-19">
   <owner>smcgruer@google.com</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
@@ -8854,7 +8854,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.TouchToFill.CreditCard.SelectedIndex" units="index"
-    expires_after="2026-07-19">
+    expires_after="2027-05-19">
   <owner>smcgruer@google.com</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
@@ -8864,7 +8864,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.TouchToFill.CreditCard.TriggerOutcome"
-    enum="TouchToFill.PaymentMethod.TriggerOutcome" expires_after="2026-05-19">
+    enum="TouchToFill.PaymentMethod.TriggerOutcome" expires_after="2027-05-19">
   <owner>smcgruer@google.com</owner>
   <owner>chrome-payments-eng@google.com</owner>
   <summary>
