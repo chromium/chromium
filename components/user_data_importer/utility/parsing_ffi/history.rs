@@ -5,7 +5,7 @@
 use crate::ffi;
 use crate::json::{self, ZipEntryBufReader};
 use crate::models::SafariHistoryJSONEntry;
-use crate::{utils::has_extension, ZipFileArchive};
+use crate::{utils::should_process_file, ZipFileArchive};
 use cxx::{CxxVector, UniquePtr};
 use std::io::Read;
 use std::mem;
@@ -99,7 +99,7 @@ pub fn parse_safari_history(
 ) {
     let mut history = CxxVector::<ffi::SafariHistoryEntry>::new();
     let result = archive.fold_files(true, |acc, file, outpath| {
-        if has_extension(outpath, ffi::FileType::SafariHistory) {
+        if should_process_file(outpath, ffi::FileType::SafariHistory) {
             let stream_reader = ZipEntryBufReader::new(file);
             let result = json::deserialize_top_level::<SafariHistoryJSONEntry, _>(
                 stream_reader.inner,

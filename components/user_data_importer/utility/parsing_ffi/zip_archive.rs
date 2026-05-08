@@ -6,7 +6,7 @@ use crate::ffi;
 use crate::history;
 use crate::json::{self, ZipEntryBufReader};
 use crate::models::PaymentCardJSONEntry;
-use crate::utils::has_extension;
+use crate::utils::should_process_file;
 
 use anyhow::{anyhow, Error, Result};
 use cxx::{CxxString, CxxVector};
@@ -118,7 +118,7 @@ impl ZipFileArchive {
         // them.
         if file_type == ffi::FileType::SafariHistory {
             return self.fold_files(0u64, |mut total_file_size_bytes, file, outpath| {
-                if has_extension(outpath, file_type) {
+                if should_process_file(outpath, file_type) {
                     let file_size_bytes = file.size();
                     let stream_reader = ZipEntryBufReader::new(file);
                     if history::is_safari_history_file(stream_reader) {
@@ -132,7 +132,7 @@ impl ZipFileArchive {
         // All other types are find operations with a size check after file
         // selection.
         let size = self.find_and_map_file(|file, outpath| {
-            if has_extension(outpath, file_type) {
+            if should_process_file(outpath, file_type) {
                 if file_type == ffi::FileType::Bookmarks || file_type == ffi::FileType::Passwords {
                     return Some(file.size());
                 } else if file_type == ffi::FileType::PaymentCards {
@@ -160,7 +160,7 @@ impl ZipFileArchive {
         }
 
         let result = self.find_and_map_file(|mut file, outpath| {
-            if has_extension(outpath, file_type) {
+            if should_process_file(outpath, file_type) {
                 // Read the first file matching the requested type found within the zip file.
                 let mut file_contents = String::new();
                 if file.read_to_string(&mut file_contents).is_err() {
@@ -192,7 +192,7 @@ impl ZipFileArchive {
         mut payment_cards: Pin<&mut CxxVector<ffi::PaymentCardEntry>>,
     ) -> bool {
         let result = self.find_and_map_file(|file, outpath| {
-            if has_extension(outpath, ffi::FileType::PaymentCards) {
+            if should_process_file(outpath, ffi::FileType::PaymentCards) {
                 let stream_reader = ZipEntryBufReader::new(file);
                 if parse_payment_cards_file(stream_reader, |payment_card_item| {
                     payment_cards.as_mut().push(payment_card_item.into());

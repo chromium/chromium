@@ -17,11 +17,16 @@ pub(crate) fn expected_extension(file_type: ffi::FileType) -> Result<&'static st
     }
 }
 
-// Verifies if the file in the provided path has the desired extension.
-pub(crate) fn has_extension(path: &Path, file_type: ffi::FileType) -> bool {
+// Returns whether the file should be processed for the provided file type.
+// This checks if the file has the correct extension and is not a hidden file.
+pub(crate) fn should_process_file(path: &Path, file_type: ffi::FileType) -> bool {
     let Ok(ext) = expected_extension(file_type) else {
         return false;
     };
+
+    if path.file_name().is_some_and(|name| name.to_string_lossy().starts_with(".")) {
+        return false;
+    }
 
     path.extension().is_some_and(|actual_extension| actual_extension.eq_ignore_ascii_case(ext))
 }
