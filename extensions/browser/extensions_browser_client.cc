@@ -235,7 +235,8 @@ void ExtensionsBrowserClient::GetWebViewStoragePartitionConfig(
     bool in_memory,
     base::OnceCallback<void(std::optional<content::StoragePartitionConfig>)>
         callback) {
-  const GURL& owner_site_url = owner_site_instance->GetSiteURL();
+  const GURL& owner_site_url =
+      owner_site_instance->GetSecurityPrincipal().GetDeprecatedSiteURL();
   auto partition_config = content::StoragePartitionConfig::Create(
       browser_context, owner_site_url.GetHost(), partition_name, in_memory);
 

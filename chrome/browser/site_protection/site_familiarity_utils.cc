@@ -16,6 +16,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -166,7 +167,9 @@ void EnableV8Optimizations(content::WebContents* web_contents) {
     return;
   }
 
-  const GURL& site_url = web_contents->GetSiteInstance()->GetSiteURL();
+  const GURL& site_url = web_contents->GetSiteInstance()
+                             ->GetSecurityPrincipal()
+                             .GetDeprecatedSiteURL();
   if (site_url.is_empty()) {
     return;
   }

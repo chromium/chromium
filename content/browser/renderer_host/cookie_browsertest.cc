@@ -23,6 +23,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
@@ -229,16 +230,20 @@ IN_PROC_BROWSER_TEST_P(CookieBrowserTest, Cookies) {
   WebContentsImpl* web_contents_http =
       static_cast<WebContentsImpl*>(shell()->web_contents());
   if (AreStrictSiteInstancesEnabled()) {
-    EXPECT_EQ("http://a.test/",
-              web_contents_http->GetSiteInstance()->GetSiteURL().spec());
+    EXPECT_EQ("http://a.test/", web_contents_http->GetSiteInstance()
+                                    ->GetSecurityPrincipal()
+                                    .GetDeprecatedSiteURL()
+                                    .spec());
     // Create expected site url, including port if origin isolation is enabled.
     std::string expected_site_url =
         SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault(
             shell()->web_contents()->GetBrowserContext())
             ? url::Origin::Create(https_url).GetURL().spec()
             : std::string("https://a.test/");
-    EXPECT_EQ(expected_site_url,
-              web_contents_https->GetSiteInstance()->GetSiteURL().spec());
+    EXPECT_EQ(expected_site_url, web_contents_https->GetSiteInstance()
+                                     ->GetSecurityPrincipal()
+                                     .GetDeprecatedSiteURL()
+                                     .spec());
   } else {
     // Note: Both use the default SiteInstance because the URLs don't require
     // a dedicated process, but these default SiteInstances are not the same

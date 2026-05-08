@@ -331,8 +331,9 @@ void WebContentsTaskProvider::WebContentsEntry::DidFinishNavigation(
   // We only need to update tasks for primary main frame navigations except for
   // MPArch guest view.
   //
-  // FencedFrame task gets the title from |SiteInstance::GetSiteURL()| which
-  // does not change for the same site instance, thus no need to update;
+  // FencedFrame task gets the title from
+  // |SecurityPrincipal::GetDeprecatedSiteURL()| which does not change for the
+  // same site instance, thus no need to update;
   // prerender does not support multiple navigations thus no need to update its
   // title.
   if (!navigation_handle->IsInPrimaryMainFrame() &&

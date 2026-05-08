@@ -42,6 +42,7 @@
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/ssl_host_state_delegate.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -888,7 +889,10 @@ TEST_F(WebContentsImplTest, NavigateFromSitelessUrl) {
   EXPECT_EQ(native_url, contents()->GetLastCommittedURL());
   EXPECT_EQ(native_url, contents()->GetVisibleURL());
   EXPECT_EQ(orig_instance, contents()->GetSiteInstance());
-  EXPECT_EQ(GURL(), contents()->GetSiteInstance()->GetSiteURL());
+  EXPECT_EQ(GURL(), contents()
+                        ->GetSiteInstance()
+                        ->GetSecurityPrincipal()
+                        .GetDeprecatedSiteURL());
   EXPECT_FALSE(orig_instance->HasSite());
 
   // Navigate to new site (should keep same site instance, but might change
@@ -929,8 +933,11 @@ TEST_F(WebContentsImplTest, NavigateFromSitelessUrl) {
 
   EXPECT_EQ(orig_instance, contents()->GetSiteInstance());
   if (AreStrictSiteInstancesEnabled()) {
-    EXPECT_TRUE(
-        contents()->GetSiteInstance()->GetSiteURL().DomainIs("google.com"));
+    EXPECT_TRUE(contents()
+                    ->GetSiteInstance()
+                    ->GetSecurityPrincipal()
+                    .GetDeprecatedSiteURL()
+                    .DomainIs("google.com"));
   } else {
     // Verify that the empty SiteInstance gets converted into a default
     // SiteInstance because |url| does not require a dedicated process.
@@ -990,7 +997,10 @@ TEST_F(WebContentsImplTest, NavigateFromRestoredSitelessUrl) {
   navigation->Commit();
 
   EXPECT_EQ(orig_instance, contents()->GetSiteInstance());
-  EXPECT_EQ(GURL(), contents()->GetSiteInstance()->GetSiteURL());
+  EXPECT_EQ(GURL(), contents()
+                        ->GetSiteInstance()
+                        ->GetSecurityPrincipal()
+                        .GetDeprecatedSiteURL());
   EXPECT_FALSE(orig_instance->HasSite());
 
   // Navigate to a regular site and verify that the SiteInstance was kept.

@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/common/url_constants.h"
@@ -27,7 +28,10 @@ const GURL& GetWebUIUrlForLogging(content::WebUI* web_ui) {
   // This returns the actual WebUI url which can differ from the visible
   // URL (e.g. chrome://newtab can be rewrote to chrome://new-tab-page or
   // chrome://new-tab-page-third-party)
-  return web_ui->GetRenderFrameHost()->GetSiteInstance()->GetSiteURL();
+  return web_ui->GetRenderFrameHost()
+      ->GetSiteInstance()
+      ->GetSecurityPrincipal()
+      .GetDeprecatedSiteURL();
 }
 
 bool ShouldLogUrl(const GURL& web_ui_url) {

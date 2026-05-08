@@ -13,6 +13,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/site_instance.h"
 #include "pdf/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -73,7 +74,8 @@ std::u16string SubframeTask::GetTitle() {
   // For Isolated Web Apps, subframe rows display IWA name:
   //     "Subframe: Example Isolated Web App"
 
-  const GURL& site_url = site_instance_->GetSiteURL();
+  const GURL& site_url =
+      site_instance_->GetSecurityPrincipal().GetDeprecatedSiteURL();
   Profile* profile =
       Profile::FromBrowserContext(site_instance_->GetBrowserContext());
 

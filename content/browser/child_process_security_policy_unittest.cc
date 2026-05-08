@@ -29,6 +29,7 @@
 #include "content/common/features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/content_client.h"
@@ -3308,7 +3309,8 @@ TEST_P(ChildProcessSecurityPolicyTest, NoBrowsingInstanceIDs_UnlockedProcess) {
     if (ShouldUseDefaultSiteInstanceGroup()) {
       EXPECT_EQ(foo_instance->group(),
                 foo_instance->DefaultSiteInstanceGroupForBrowsingInstance());
-      EXPECT_EQ(foo_instance->GetSiteURL(), foo_url);
+      EXPECT_EQ(foo_instance->GetSecurityPrincipal().GetDeprecatedSiteURL(),
+                foo_url);
     } else {
       EXPECT_TRUE(foo_instance->IsDefaultSiteInstance());
       EXPECT_EQ(foo_instance->GetSiteInfo(),

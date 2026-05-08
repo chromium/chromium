@@ -16,6 +16,7 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/webui/web_ui_controller_factory_registry.h"
 #include "content/common/content_navigation_policy.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_ui.h"
@@ -238,9 +239,11 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest, WebUISameSiteSubframe) {
   EXPECT_EQ(subframe_url, observer.last_committed_url());
   EXPECT_EQ(root->current_frame_host()->GetSiteInstance(),
             root->child_at(0)->current_frame_host()->GetSiteInstance());
-  EXPECT_EQ(
-      GetWebUIURL("web-ui"),
-      root->child_at(0)->current_frame_host()->GetSiteInstance()->GetSiteURL());
+  EXPECT_EQ(GetWebUIURL("web-ui"), root->child_at(0)
+                                       ->current_frame_host()
+                                       ->GetSiteInstance()
+                                       ->GetSecurityPrincipal()
+                                       .GetDeprecatedSiteURL());
 
   // The subframe should have its own WebUI object different from the parent
   // frame.
@@ -288,8 +291,10 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest, WebUICrossSiteSubframe) {
     EXPECT_EQ(url::Origin::Create(child_frame_url),
               child->current_frame_host()->GetLastCommittedOrigin());
   }
-  EXPECT_EQ(GetWebUIURL("web-ui-subframe"),
-            child->current_frame_host()->GetSiteInstance()->GetSiteURL());
+  EXPECT_EQ(GetWebUIURL("web-ui-subframe"), child->current_frame_host()
+                                                ->GetSiteInstance()
+                                                ->GetSecurityPrincipal()
+                                                .GetDeprecatedSiteURL());
   EXPECT_NE(root->current_frame_host()->GetSiteInstance(),
             child->current_frame_host()->GetSiteInstance());
   EXPECT_NE(root->current_frame_host()->GetProcess(),
@@ -540,7 +545,10 @@ IN_PROC_BROWSER_TEST_F(WebUISecurityTest, WebUIFailedNavigation) {
   EXPECT_TRUE(root->current_frame_host()->GetEnabledBindings().empty());
 
   if (SiteIsolationPolicy::IsErrorPageIsolationEnabled(true)) {
-    EXPECT_EQ(root->current_frame_host()->GetSiteInstance()->GetSiteURL(),
+    EXPECT_EQ(root->current_frame_host()
+                  ->GetSiteInstance()
+                  ->GetSecurityPrincipal()
+                  .GetDeprecatedSiteURL(),
               GURL(kUnreachableWebDataURL));
   }
 

@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/web_contents.h"
 #include "media/media_buildflags.h"
 
@@ -343,7 +344,10 @@ void CdmDocumentServiceImpl::OnCdmEvent(media::CdmEvent event,
     return;
   }
 
-  auto site = render_frame_host().GetSiteInstance()->GetSiteURL();
+  auto site = render_frame_host()
+                  .GetSiteInstance()
+                  ->GetSecurityPrincipal()
+                  .GetDeprecatedSiteURL();
   switch (event) {
     case media::CdmEvent::kSignificantPlayback:
       monitor->OnSignificantPlayback(site);

@@ -109,7 +109,7 @@ void ChromeExtensionsBrowserClient::GetWebViewStoragePartitionConfig(
           webapps::kIsolatedAppScheme)) {
     base::expected<web_app::IsolatedWebAppUrlInfo, std::string> url_info =
         web_app::IsolatedWebAppUrlInfo::Create(
-            owner_site_instance->GetSiteURL());
+            owner_site_instance->GetSecurityPrincipal().GetDeprecatedSiteURL());
     DCHECK(url_info.has_value()) << url_info.error();
 
     auto* profile = Profile::FromBrowserContext(browser_context);

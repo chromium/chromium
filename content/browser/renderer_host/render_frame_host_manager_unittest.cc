@@ -43,6 +43,7 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_iterator.h"
 #include "content/public/browser/render_widget_host_observer.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -1170,7 +1171,9 @@ TEST_P(RenderFrameHostManagerTest, WebUI) {
   // try to re-use the SiteInstance/process for non Web UI things that may
   // get loaded in between.
   EXPECT_TRUE(host->GetSiteInstance()->HasSite());
-  EXPECT_EQ(kUrl, host->GetSiteInstance()->GetSiteURL());
+  EXPECT_EQ(
+      kUrl,
+      host->GetSiteInstance()->GetSecurityPrincipal().GetDeprecatedSiteURL());
 
   // There will be a WebUI because GetFrameHostForNavigation was already called
   // twice.

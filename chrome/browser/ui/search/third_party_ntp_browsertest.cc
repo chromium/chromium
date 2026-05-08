@@ -16,6 +16,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/spare_render_process_host_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -361,9 +362,11 @@ IN_PROC_BROWSER_TEST_P(ThirdPartyNTPBrowserTest, VerifySiteInstance) {
   EXPECT_EQ(ntp_url, content::EvalJs(web_contents, "window.location.href"));
 
   // Verify that NTP committed in remote NTP SiteInstance.
-  EXPECT_EQ(
-      GURL("chrome-search://remote-ntp/"),
-      web_contents->GetPrimaryMainFrame()->GetSiteInstance()->GetSiteURL());
+  EXPECT_EQ(GURL("chrome-search://remote-ntp/"),
+            web_contents->GetPrimaryMainFrame()
+                ->GetSiteInstance()
+                ->GetSecurityPrincipal()
+                .GetDeprecatedSiteURL());
 }
 
 // Verify that a third-party NTP can use the spare renderer when we enable

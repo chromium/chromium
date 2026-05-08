@@ -379,7 +379,7 @@ const Extension* ShellContentBrowserClient::GetExtension(
   ExtensionRegistry* registry =
       ExtensionRegistry::Get(site_instance->GetBrowserContext());
   return registry->enabled_extensions().GetExtensionOrAppByURL(
-      site_instance->GetSiteURL());
+      site_instance->GetSecurityPrincipal().GetDeprecatedSiteURL());
 }
 
 }  // namespace extensions

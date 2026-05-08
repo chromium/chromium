@@ -11,6 +11,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -27,7 +28,8 @@ std::u16string GetTaskTitle(
 
   // TODO(crbug.com/40775860): Display the page title instead of the site URL
   // for main frames.
-  const GURL& site_url = site_instance->GetSiteURL();
+  const GURL& site_url =
+      site_instance->GetSecurityPrincipal().GetDeprecatedSiteURL();
   const std::u16string name = base::UTF8ToUTF16(site_url.spec());
 
   const bool is_main_frame = !parent_task;

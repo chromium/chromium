@@ -28,6 +28,7 @@
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/favicon_status.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/fenced_frame_test_util.h"
@@ -302,7 +303,8 @@ IN_PROC_BROWSER_TEST_F(TabContentsTagTest, NavigateToPageNoFavicon) {
                                ->tab_strip_model()
                                ->GetActiveWebContents()
                                ->GetSiteInstance()
-                               ->GetSiteURL();
+                               ->GetSecurityPrincipal()
+                               .GetDeprecatedSiteURL();
 
   // Check that the task manager uses the specified favicon for the page.
   base::FilePath test_dir;

@@ -105,6 +105,7 @@
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_process_host_priority_client.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -5870,8 +5871,12 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, DataUrlsHaveUniqueSiteURLs) {
 
   auto* main_frame = shell()->web_contents()->GetPrimaryMainFrame();
   auto* new_frame = new_shell->web_contents()->GetPrimaryMainFrame();
-  GURL main_url = main_frame->GetSiteInstance()->GetSiteURL();
-  GURL new_url = new_frame->GetSiteInstance()->GetSiteURL();
+  GURL main_url = main_frame->GetSiteInstance()
+                      ->GetSecurityPrincipal()
+                      .GetDeprecatedSiteURL();
+  GURL new_url = new_frame->GetSiteInstance()
+                     ->GetSecurityPrincipal()
+                     .GetDeprecatedSiteURL();
   EXPECT_NE(new_frame->GetSiteInstance(), main_frame->GetSiteInstance());
 
   // The site URL is the data scheme followed by a serialized nonce, which is
@@ -6841,7 +6846,9 @@ class NavigationHandleWatcher : public WebContentsObserver {
       : WebContentsObserver(web_contents) {}
   void DidStartNavigation(NavigationHandle* navigation_handle) override {
     DCHECK_EQ(GURL("http://b.com/"),
-              navigation_handle->GetStartingSiteInstance()->GetSiteURL());
+              navigation_handle->GetStartingSiteInstance()
+                  ->GetSecurityPrincipal()
+                  .GetDeprecatedSiteURL());
   }
 };
 
@@ -10185,8 +10192,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
     // In per-origin IsolatedSandboxedIframes mode, the server port is retained
     // in the site URL.
     GURL main_site(embedded_test_server()->GetURL("a.com", "/"));
-    EXPECT_EQ(main_site,
-              root->current_frame_host()->GetSiteInstance()->GetSiteURL());
+    EXPECT_EQ(main_site, root->current_frame_host()
+                             ->GetSiteInstance()
+                             ->GetSecurityPrincipal()
+                             .GetDeprecatedSiteURL());
   }
 
   FrameTreeNode* child_node = root->child_at(0);
@@ -10725,9 +10734,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       child->current_frame_host()->GetSiteInstance()->process_reuse_policy());
 
   EXPECT_TRUE(child->current_frame_host()->IsCrossProcessSubframe());
-  EXPECT_EQ(
-      bar_url.GetHost(),
-      child->current_frame_host()->GetSiteInstance()->GetSiteURL().GetHost());
+  EXPECT_EQ(bar_url.GetHost(), child->current_frame_host()
+                                   ->GetSiteInstance()
+                                   ->GetSecurityPrincipal()
+                                   .GetDeprecatedSiteURL()
+                                   .GetHost());
 
   // The subframe's SiteInstance should still be different from second_shell's
   // SiteInstance, and they should be in separate BrowsingInstances.
@@ -12438,9 +12449,14 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_NE(
       subframe->current_frame_host()->GetSiteInstance()->GetProcess(),
       popup_subframe->current_frame_host()->GetSiteInstance()->GetProcess());
-  EXPECT_NE(
-      subframe->current_frame_host()->GetSiteInstance()->GetSiteURL(),
-      popup_subframe->current_frame_host()->GetSiteInstance()->GetSiteURL());
+  EXPECT_NE(subframe->current_frame_host()
+                ->GetSiteInstance()
+                ->GetSecurityPrincipal()
+                .GetDeprecatedSiteURL(),
+            popup_subframe->current_frame_host()
+                ->GetSiteInstance()
+                ->GetSecurityPrincipal()
+                .GetDeprecatedSiteURL());
 }
 
 // Ensure that when a process is about to be destroyed after the last active

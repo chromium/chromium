@@ -11,6 +11,7 @@
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -217,7 +218,8 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerProcessBrowserTest,
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), empty_site_url);
   scoped_refptr<SiteInstanceImpl> site_instance =
       web_contents()->GetPrimaryMainFrame()->GetSiteInstance();
-  EXPECT_EQ(GURL(), site_instance->GetSiteURL());
+  EXPECT_EQ(GURL(),
+            site_instance->GetSecurityPrincipal().GetDeprecatedSiteURL());
   ChildProcessId page_process_id = current_frame_host()->GetProcess()->GetID();
   EXPECT_TRUE(page_process_id);
 

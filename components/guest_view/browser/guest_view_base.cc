@@ -26,6 +26,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -598,7 +599,10 @@ const GURL& GuestViewBase::GetOwnerLastCommittedURL() const {
 }
 
 const GURL& GuestViewBase::GetOwnerSiteURL() const {
-  return owner_rfh()->GetSiteInstance()->GetSiteURL();
+  return owner_rfh()
+      ->GetSiteInstance()
+      ->GetSecurityPrincipal()
+      .GetDeprecatedSiteURL();
 }
 
 void GuestViewBase::SetAttachParams(const base::DictValue& params) {

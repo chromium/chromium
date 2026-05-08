@@ -533,8 +533,9 @@ bool ChromeContentBrowserClientExtensionsPart::
       ExtensionRegistry::Get(
           outermost_main_frame->GetSiteInstance()->GetBrowserContext())
           ->enabled_extensions()
-          .GetExtensionOrAppByURL(
-              outermost_main_frame->GetSiteInstance()->GetSiteURL());
+          .GetExtensionOrAppByURL(outermost_main_frame->GetSiteInstance()
+                                      ->GetSecurityPrincipal()
+                                      .GetDeprecatedSiteURL());
   return !extension || !extension->is_extension();
 }
 
@@ -758,8 +759,8 @@ void ChromeContentBrowserClientExtensionsPart::SiteInstanceGotProcessAndSite(
   // for isolated origins or cross-site iframes). For that case, don't look up
   // the hosted app's Extension from the site URL using GetExtensionOrAppByURL,
   // since it isn't treated as a hosted app.
-  const Extension* extension =
-      GetEnabledExtensionFromSiteURL(context, site_instance->GetSiteURL());
+  const Extension* extension = GetEnabledExtensionFromSiteURL(
+      context, site_instance->GetSecurityPrincipal().GetDeprecatedSiteURL());
   if (!extension) {
     return;
   }
@@ -839,7 +840,7 @@ bool ChromeContentBrowserClientExtensionsPart::
 #endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
 
   const Extension* extension = registry->enabled_extensions().GetByID(
-      main_frame_site.GetSiteURL().GetHost());
+      main_frame_site.GetSecurityPrincipal().GetDeprecatedSiteURL().GetHost());
   extension_webkit_preferences::SetPreferences(extension, web_prefs);
   return true;
 }

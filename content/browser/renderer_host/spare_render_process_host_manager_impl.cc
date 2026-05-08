@@ -22,6 +22,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_main_runner.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 
@@ -625,7 +626,7 @@ RenderProcessHost* SpareRenderProcessHostManagerImpl::MaybeTakeSpare(
       site_instance->GetSecurityPrincipal().IsGuest()
 #if !BUILDFLAG(IS_ANDROID)
       || GetContentClient()->browser()->IsTopChromeWebUIURL(
-             site_instance->GetSiteURL())
+             site_instance->GetSecurityPrincipal().GetDeprecatedSiteURL())
 #endif
   ) {
     action = SpareProcessMaybeTakeAction::kRefusedBySiteInstance;

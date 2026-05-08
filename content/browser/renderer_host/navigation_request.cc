@@ -140,6 +140,7 @@
 #include "content/public/browser/reduce_accept_language_utils.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/runtime_feature_state/runtime_feature_state_document_data.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/tracing_support.h"
@@ -1810,7 +1811,8 @@ NavigationRequest::NavigationRequest(
       GetContentClient()->browser()->IsInitialWebUIURL(
           frame_tree_node_->current_frame_host()
               ->GetSiteInstance()
-              ->GetSiteURL());
+              ->GetSecurityPrincipal()
+              .GetDeprecatedSiteURL());
   CHECK(!current_rfh_is_initial_webui || IsInitialWebUINavigation());
   if (IsInitialWebUINavigation()) {
     // Initial WebUI navigations must satisfy all these conditions

@@ -24,6 +24,7 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/media_service.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -531,7 +532,11 @@ void MediaInterfaceProxy::ConnectToMediaFoundationService(
   // Passing an empty CdmType since it is not needed in this scenario.
   auto& mf_service = GetMediaFoundationService(
       media::CdmType(), render_frame_host().GetBrowserContext(),
-      render_frame_host().GetSiteInstance()->GetSiteURL(), cdm_path);
+      render_frame_host()
+          .GetSiteInstance()
+          ->GetSecurityPrincipal()
+          .GetDeprecatedSiteURL(),
+      cdm_path);
 
   // Passing an empty CdmType as MediaFoundation-based CDMs don't use CdmStorage
   // currently.
@@ -595,7 +600,10 @@ media::mojom::CdmFactory* MediaInterfaceProxy::ConnectToCdmService(
   DCHECK(!cdm_factory_map_.count(cdm_info.type));
 
   auto* browser_context = render_frame_host().GetBrowserContext();
-  auto& site = render_frame_host().GetSiteInstance()->GetSiteURL();
+  auto& site = render_frame_host()
+                   .GetSiteInstance()
+                   ->GetSecurityPrincipal()
+                   .GetDeprecatedSiteURL();
   auto& cdm_service = GetCdmService(browser_context, site, cdm_info);
 
   mojo::Remote<media::mojom::CdmFactory> cdm_factory_remote;

@@ -76,6 +76,7 @@
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/render_widget_host_iterator.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -3639,7 +3640,8 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
     SiteInstanceImpl* parent_site_instance =
         frame_tree_node_->parent()->GetSiteInstance();
     if (GetContentClient()->browser()->ShouldStayInParentProcessForNTP(
-            dest_url_info.url, parent_site_instance->GetSiteURL())) {
+            dest_url_info.url, parent_site_instance->GetSecurityPrincipal()
+                                   .GetDeprecatedSiteURL())) {
       // NTP is considered non-isolated.
       CHECK(!dest_url_info.IsIsolated());
       AppendReason(reason,

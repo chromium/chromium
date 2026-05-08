@@ -2482,8 +2482,9 @@ void ChromeContentBrowserClient::SiteInstanceGotProcessAndSite(
 #if !BUILDFLAG(IS_ANDROID)
   // Remember the ID of the Instant process to signal the renderer process
   // on startup in |AppendExtraCommandLineSwitches| below.
-  if (search::ShouldAssignURLToInstantRenderer(site_instance->GetSiteURL(),
-                                               profile)) {
+  if (search::ShouldAssignURLToInstantRenderer(
+          site_instance->GetSecurityPrincipal().GetDeprecatedSiteURL(),
+          profile)) {
     InstantService* instant_service =
         InstantServiceFactory::GetForProfile(profile);
     if (instant_service) {

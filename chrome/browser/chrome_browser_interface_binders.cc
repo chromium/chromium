@@ -133,6 +133,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/media/media_foundation_service_monitor.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/site_instance.h"
 #include "media/mojo/mojom/media_foundation_preferences.mojom.h"
 #include "media/mojo/services/media_foundation_preferences.h"
@@ -366,7 +367,9 @@ void BindMediaFoundationPreferences(
     content::RenderFrameHost* frame_host,
     mojo::PendingReceiver<media::mojom::MediaFoundationPreferences> receiver) {
   MediaFoundationPreferencesImpl::Create(
-      frame_host->GetSiteInstance()->GetSiteURL(),
+      frame_host->GetSiteInstance()
+          ->GetSecurityPrincipal()
+          .GetDeprecatedSiteURL(),
       base::BindRepeating(&MediaFoundationServiceMonitor::
                               IsHardwareSecureDecryptionAllowedForSite),
       std::move(receiver));

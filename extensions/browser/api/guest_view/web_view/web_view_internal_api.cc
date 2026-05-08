@@ -25,6 +25,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/stop_find_action.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
@@ -111,7 +112,9 @@ std::optional<extensions::mojom::HostID> GenerateHostIDFromEmbedder(
   }
 
   if (embedder_rfh && embedder_rfh->GetMainFrame()->GetWebUI()) {
-    const GURL& url = embedder_rfh->GetSiteInstance()->GetSiteURL();
+    const GURL& url = embedder_rfh->GetSiteInstance()
+                          ->GetSecurityPrincipal()
+                          .GetDeprecatedSiteURL();
     return extensions::mojom::HostID(
         extensions::mojom::HostID::HostType::kWebUi, url.spec());
   }
@@ -637,8 +640,11 @@ WebViewInternalAddContentScriptsFunction::Run() {
   if (!params->instance_id)
     return RespondNow(Error(kViewInstanceIdError));
 
-  GURL owner_base_url(
-      render_frame_host()->GetSiteInstance()->GetSiteURL().GetWithEmptyPath());
+  GURL owner_base_url(render_frame_host()
+                          ->GetSiteInstance()
+                          ->GetSecurityPrincipal()
+                          .GetDeprecatedSiteURL()
+                          .GetWithEmptyPath());
   std::optional<extensions::mojom::HostID> host_id =
       GenerateHostIDFromEmbedder(extension(), render_frame_host());
   if (!host_id) {

@@ -346,9 +346,14 @@ class CtrlClickShouldEndUpInSameProcessTest : public CtrlClickProcessTest {
     // SiteInstance and BrowsingInstance from the old contents.
     EXPECT_EQ(contents1->GetPrimaryMainFrame()->GetProcess(),
               contents2->GetPrimaryMainFrame()->GetProcess());
-    EXPECT_EQ(
-        contents1->GetPrimaryMainFrame()->GetSiteInstance()->GetSiteURL(),
-        contents2->GetPrimaryMainFrame()->GetSiteInstance()->GetSiteURL());
+    EXPECT_EQ(contents1->GetPrimaryMainFrame()
+                  ->GetSiteInstance()
+                  ->GetSecurityPrincipal()
+                  .GetDeprecatedSiteURL(),
+              contents2->GetPrimaryMainFrame()
+                  ->GetSiteInstance()
+                  ->GetSecurityPrincipal()
+                  .GetDeprecatedSiteURL());
     EXPECT_FALSE(contents1->GetSiteInstance()->IsRelatedSiteInstance(
         contents2->GetSiteInstance()));
   }
@@ -687,9 +692,11 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     EXPECT_FALSE(observer.last_navigation_succeeded());
     EXPECT_EQ(url, observer.last_navigation_url());
-    EXPECT_EQ(
-        GURL(content::kUnreachableWebDataURL),
-        web_contents->GetPrimaryMainFrame()->GetSiteInstance()->GetSiteURL());
+    EXPECT_EQ(GURL(content::kUnreachableWebDataURL),
+              web_contents->GetPrimaryMainFrame()
+                  ->GetSiteInstance()
+                  ->GetSecurityPrincipal()
+                  .GetDeprecatedSiteURL());
   }
 
   // Install an extension, which will redirect all navigations to a.com URLs to
@@ -730,9 +737,11 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
     observer.Wait();
     EXPECT_TRUE(observer.last_navigation_succeeded());
     EXPECT_EQ(GURL(url::kAboutBlankURL), observer.last_navigation_url());
-    EXPECT_NE(
-        GURL(content::kUnreachableWebDataURL),
-        web_contents->GetPrimaryMainFrame()->GetSiteInstance()->GetSiteURL());
+    EXPECT_NE(GURL(content::kUnreachableWebDataURL),
+              web_contents->GetPrimaryMainFrame()
+                  ->GetSiteInstance()
+                  ->GetSecurityPrincipal()
+                  .GetDeprecatedSiteURL());
   }
 
   // In the above setup, the reload was carried out with the error page being
@@ -749,9 +758,10 @@ IN_PROC_BROWSER_TEST_F(ChromeNavigationBrowserTest,
   // and process selection should still honor the initiator, rather than end up
   // in an unlocked process and an unassigned SiteInstance.  See
   // https://crbug.com/40261555.
-  EXPECT_EQ(
-      "http://a.com/",
-      web_contents->GetPrimaryMainFrame()->GetSiteInstance()->GetSiteURL());
+  EXPECT_EQ("http://a.com/", web_contents->GetPrimaryMainFrame()
+                                 ->GetSiteInstance()
+                                 ->GetSecurityPrincipal()
+                                 .GetDeprecatedSiteURL());
   EXPECT_TRUE(web_contents->GetPrimaryMainFrame()
                   ->GetProcess()
                   ->IsProcessLockedToSiteForTesting());

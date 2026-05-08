@@ -242,7 +242,10 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
   // https://crbug.com/40091207.
   bool current_frame_is_extension_process =
       !!registry->enabled_extensions().GetExtensionOrAppByURL(
-          navigation_handle()->GetStartingSiteInstance()->GetSiteURL());
+          navigation_handle()
+              ->GetStartingSiteInstance()
+              ->GetSecurityPrincipal()
+              .GetDeprecatedSiteURL());
 
   if (!url_has_extension_scheme && !current_frame_is_extension_process) {
     // Relax this restriction for apps that use <webview>.  See

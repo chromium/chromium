@@ -15,6 +15,7 @@
 #include "content/browser/storage_partition_impl.h"
 #include "content/common/url_schemes.h"
 #include "content/public/browser/child_process_host.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_task_environment.h"
@@ -264,9 +265,10 @@ TEST_F(ServiceWorkerProcessManagerTest,
             true /* can_use_existing_process */,
             AncestorFrameType::kNormalFrame, &process_info);
     EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, status);
-    EXPECT_EQ(
-        GURL("http://example.com"),
-        render_process_host_factory_->last_site_instance_used()->GetSiteURL());
+    EXPECT_EQ(GURL("http://example.com"),
+              render_process_host_factory_->last_site_instance_used()
+                  ->GetSecurityPrincipal()
+                  .GetDeprecatedSiteURL());
     EXPECT_FALSE(render_process_host_factory_->last_site_instance_used()
                      ->GetSecurityPrincipal()
                      .IsGuest());

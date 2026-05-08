@@ -1335,8 +1335,10 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   EXPECT_EQ(extensions_instance->GetProcess(),
             data_frame_rfh->GetSiteInstance()->GetProcess());
 
-  EXPECT_EQ(web_url.GetHost(),
-            web_frame_rfh->GetSiteInstance()->GetSiteURL().GetHost());
+  EXPECT_EQ(web_url.GetHost(), web_frame_rfh->GetSiteInstance()
+                                   ->GetSecurityPrincipal()
+                                   .GetDeprecatedSiteURL()
+                                   .GetHost());
   EXPECT_NE(devtools_instance, web_frame_rfh->GetSiteInstance());
   EXPECT_NE(extensions_instance, web_frame_rfh->GetSiteInstance());
 
@@ -1354,8 +1356,10 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   web_frame_rfh = ChildFrameAt(panel_frame_rfh, 2);
 
   EXPECT_EQ(about_blank_url, web_frame_rfh->GetLastCommittedURL());
-  EXPECT_EQ(web_url.GetHost(),
-            web_frame_rfh->GetSiteInstance()->GetSiteURL().GetHost());
+  EXPECT_EQ(web_url.GetHost(), web_frame_rfh->GetSiteInstance()
+                                   ->GetSecurityPrincipal()
+                                   .GetDeprecatedSiteURL()
+                                   .GetHost());
   EXPECT_NE(devtools_instance, web_frame_rfh->GetSiteInstance());
   EXPECT_NE(extensions_instance, web_frame_rfh->GetSiteInstance());
 
@@ -1452,8 +1456,10 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
             devtools_extension_devtools_page_rfh->GetSiteInstance());
   EXPECT_EQ(extensions_instance,
             devtools_sidebar_pane_extension_rfh->GetSiteInstance());
-  EXPECT_EQ(web_url.GetHost(),
-            http_iframe_rfh->GetSiteInstance()->GetSiteURL().GetHost());
+  EXPECT_EQ(web_url.GetHost(), http_iframe_rfh->GetSiteInstance()
+                                   ->GetSecurityPrincipal()
+                                   .GetDeprecatedSiteURL()
+                                   .GetHost());
   EXPECT_NE(devtools_instance, http_iframe_rfh->GetSiteInstance());
   EXPECT_NE(extensions_instance, http_iframe_rfh->GetSiteInstance());
 }
@@ -1527,8 +1533,10 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   EXPECT_TRUE(devtools_instance->GetSecurityPrincipal().SchemeIs(
       content::kChromeDevToolsScheme));
   EXPECT_NE(devtools_instance, extensions_instance);
-  EXPECT_EQ(web_url.GetHost(),
-            http_iframe_rfh->GetSiteInstance()->GetSiteURL().GetHost());
+  EXPECT_EQ(web_url.GetHost(), http_iframe_rfh->GetSiteInstance()
+                                   ->GetSecurityPrincipal()
+                                   .GetDeprecatedSiteURL()
+                                   .GetHost());
   EXPECT_NE(devtools_instance, http_iframe_rfh->GetSiteInstance());
   EXPECT_NE(extensions_instance, http_iframe_rfh->GetSiteInstance());
 }
@@ -1600,7 +1608,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
   EXPECT_EQ(extensions_instance,
             devtools_extension_panel_rfh->GetSiteInstance());
   EXPECT_EQ(non_dt_extension_test_url.DeprecatedGetOriginAsURL(),
-            non_devtools_extension_rfh->GetSiteInstance()->GetSiteURL());
+            non_devtools_extension_rfh->GetSiteInstance()
+                ->GetSecurityPrincipal()
+                .GetDeprecatedSiteURL());
   EXPECT_NE(devtools_instance, non_devtools_extension_rfh->GetSiteInstance());
   EXPECT_NE(extensions_instance, non_devtools_extension_rfh->GetSiteInstance());
 }

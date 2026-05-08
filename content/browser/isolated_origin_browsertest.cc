@@ -33,6 +33,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/browser/web_exposed_isolation_level.h"
@@ -638,9 +639,10 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderCommandLineTest,
   // Make sure the child (i.e. sub-origin) is not isolated.
   EXPECT_NE(root->current_frame_host()->GetSiteInstance(),
             child_frame_node->current_frame_host()->GetSiteInstance());
-  EXPECT_EQ(
-      GURL("https://foo.com"),
-      child_frame_node->current_frame_host()->GetSiteInstance()->GetSiteURL());
+  EXPECT_EQ(GURL("https://foo.com"), child_frame_node->current_frame_host()
+                                         ->GetSiteInstance()
+                                         ->GetSecurityPrincipal()
+                                         .GetDeprecatedSiteURL());
   // The following test passes because IsIsolatedOrigin doesn't distinguish
   // between command-line isolation and opt-in isolation.
   EXPECT_TRUE(policy->IsIsolatedOrigin(
@@ -1623,8 +1625,8 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationPrerenderOptInHeaderTest,
                    .IsOriginKeyed());
   EXPECT_EQ(AgentClusterKey::OACStatus::kSiteKeyedByDefault,
             new_prerender_site_instance_impl->GetSiteInfo().oac_status());
-  EXPECT_TRUE(new_prerender_site_instance_impl->GetSiteURL() ==
-                  GURL("https://foo.com") ||
+  EXPECT_TRUE(new_prerender_site_instance_impl->GetSecurityPrincipal()
+                      .GetDeprecatedSiteURL() == GURL("https://foo.com") ||
               new_prerender_site_instance_impl->IsDefaultSiteInstance());
 }
 
@@ -1753,9 +1755,10 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
                   ->RequiresDedicatedProcess());
   GURL expected_isolated_sub_origin =
       url::Origin::Create(isolated_suborigin_url).GetURL();
-  EXPECT_EQ(
-      expected_isolated_sub_origin,
-      child_frame_node->current_frame_host()->GetSiteInstance()->GetSiteURL());
+  EXPECT_EQ(expected_isolated_sub_origin, child_frame_node->current_frame_host()
+                                              ->GetSiteInstance()
+                                              ->GetSecurityPrincipal()
+                                              .GetDeprecatedSiteURL());
   EXPECT_EQ(expected_isolated_suborigin_lock,
             ProcessLock::FromSiteInfo(child_frame_node->current_frame_host()
                                           ->GetSiteInstance()
@@ -2212,7 +2215,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest, MainFrameNavigation) {
   // The site URL for isolated.foo.com should be the full origin rather than
   // scheme and eTLD+1.
   EXPECT_EQ(https_server()->GetURL("isolated.foo.com", "/"),
-            isolated_instance->GetSiteURL());
+            isolated_instance->GetSecurityPrincipal().GetDeprecatedSiteURL());
 
   // Now use a renderer-initiated navigation to go to an unisolated origin,
   // www.foo.com. This should end up back in the `popup`'s process.
@@ -2261,7 +2264,10 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest, MainFrameNavigation) {
       https_server()->GetURL("isolated.bar.com", "/isolate_origin"));
   EXPECT_TRUE(NavigateToURLFromRenderer(web_contents(), second_isolated_url));
   EXPECT_EQ(https_server()->GetURL("isolated.bar.com", "/"),
-            web_contents()->GetSiteInstance()->GetSiteURL());
+            web_contents()
+                ->GetSiteInstance()
+                ->GetSecurityPrincipal()
+                .GetDeprecatedSiteURL());
   EXPECT_NE(isolated_instance, web_contents()->GetSiteInstance());
   EXPECT_NE(unisolated_instance, web_contents()->GetSiteInstance());
 }
@@ -2782,9 +2788,10 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest, IsolatedBaseOrigin) {
   // Both non-isolated subdomains are in the same SiteInstance.
   EXPECT_EQ(child_frame_node1->current_frame_host()->GetSiteInstance(),
             child_frame_node2->current_frame_host()->GetSiteInstance());
-  EXPECT_EQ(
-      GURL("https://foo.com"),
-      child_frame_node1->current_frame_host()->GetSiteInstance()->GetSiteURL());
+  EXPECT_EQ(GURL("https://foo.com"), child_frame_node1->current_frame_host()
+                                         ->GetSiteInstance()
+                                         ->GetSecurityPrincipal()
+                                         .GetDeprecatedSiteURL());
 
   // The base-origin and the children are in different processes.
   EXPECT_NE(
@@ -2924,9 +2931,14 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
 
   // Both SiteInstances should have the same site URL, because they have no
   // port.
-  EXPECT_EQ(
-      root->current_frame_host()->GetSiteInstance()->GetSiteURL(),
-      child_frame_node1->current_frame_host()->GetSiteInstance()->GetSiteURL());
+  EXPECT_EQ(root->current_frame_host()
+                ->GetSiteInstance()
+                ->GetSecurityPrincipal()
+                .GetDeprecatedSiteURL(),
+            child_frame_node1->current_frame_host()
+                ->GetSiteInstance()
+                ->GetSecurityPrincipal()
+                .GetDeprecatedSiteURL());
   EXPECT_NE(root->current_frame_host()->GetSiteInstance()->GetSiteInfo(),
             child_frame_node1->current_frame_host()
                 ->GetSiteInstance()
@@ -3559,8 +3571,9 @@ IN_PROC_BROWSER_TEST_F(StrictOriginIsolationTest, MainframesAreIsolated) {
             policy->GetProcessLock(sub_foo_process_id));
 
   EXPECT_NE(foo_process_id, sub_foo_process_id);
-  EXPECT_NE(foo_site_instance->GetSiteURL(),
-            sub_foo_site_instance->GetSiteURL());
+  EXPECT_NE(
+      foo_site_instance->GetSecurityPrincipal().GetDeprecatedSiteURL(),
+      sub_foo_site_instance->GetSecurityPrincipal().GetDeprecatedSiteURL());
 
   // Now verify with a renderer-initiated navigation.
   GURL another_foo_url(
@@ -3678,7 +3691,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest, MainFrameNavigation) {
 
   // The site URL for isolated.foo.com should be the full origin rather than
   // scheme and eTLD+1.
-  EXPECT_EQ(GURL("http://isolated.foo.com/"), isolated_instance->GetSiteURL());
+  EXPECT_EQ(GURL("http://isolated.foo.com/"),
+            isolated_instance->GetSecurityPrincipal().GetDeprecatedSiteURL());
 
   // Now use a renderer-initiated navigation to go to an unisolated origin,
   // www.foo.com. This should end up back in the `popup`'s process.
@@ -3722,8 +3736,10 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest, MainFrameNavigation) {
   GURL second_isolated_url(
       embedded_test_server()->GetURL("isolated.bar.com", "/title3.html"));
   EXPECT_TRUE(NavigateToURLFromRenderer(web_contents(), second_isolated_url));
-  EXPECT_EQ(GURL("http://isolated.bar.com/"),
-            web_contents()->GetSiteInstance()->GetSiteURL());
+  EXPECT_EQ(GURL("http://isolated.bar.com/"), web_contents()
+                                                  ->GetSiteInstance()
+                                                  ->GetSecurityPrincipal()
+                                                  .GetDeprecatedSiteURL());
   EXPECT_NE(isolated_instance, web_contents()->GetSiteInstance());
   EXPECT_NE(unisolated_instance, web_contents()->GetSiteInstance());
 }
@@ -3746,8 +3762,10 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest, Popup) {
             popup->web_contents()->GetSiteInstance());
 
   // The popup's site URL should match the full isolated origin.
-  EXPECT_EQ(GURL("http://isolated.foo.com/"),
-            popup->web_contents()->GetSiteInstance()->GetSiteURL());
+  EXPECT_EQ(GURL("http://isolated.foo.com/"), popup->web_contents()
+                                                  ->GetSiteInstance()
+                                                  ->GetSecurityPrincipal()
+                                                  .GetDeprecatedSiteURL());
 
   // Now open a second popup from an isolated origin to a URL with an
   // unisolated origin and ensure that there was another process swap.
@@ -3779,8 +3797,10 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest, Subframe) {
   EXPECT_NE(web_contents()->GetSiteInstance(),
             child->current_frame_host()->GetSiteInstance());
   EXPECT_TRUE(child->current_frame_host()->IsCrossProcessSubframe());
-  EXPECT_EQ(GURL("http://isolated.foo.com/"),
-            child->current_frame_host()->GetSiteInstance()->GetSiteURL());
+  EXPECT_EQ(GURL("http://isolated.foo.com/"), child->current_frame_host()
+                                                  ->GetSiteInstance()
+                                                  ->GetSecurityPrincipal()
+                                                  .GetDeprecatedSiteURL());
 
   // Verify that the isolated frame's subframe (which starts out at a relative
   // path) is kept in the isolated parent's SiteInstance.
@@ -3831,8 +3851,10 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest,
   EXPECT_NE(web_contents()->GetSiteInstance(),
             child->current_frame_host()->GetSiteInstance());
   EXPECT_TRUE(child->current_frame_host()->IsCrossProcessSubframe());
-  EXPECT_EQ(GURL("http://isolated.foo.com/"),
-            child->current_frame_host()->GetSiteInstance()->GetSiteURL());
+  EXPECT_EQ(GURL("http://isolated.foo.com/"), child->current_frame_host()
+                                                  ->GetSiteInstance()
+                                                  ->GetSecurityPrincipal()
+                                                  .GetDeprecatedSiteURL());
 
   // Navigate the child frame cross-site, but to a non-isolated origin. Without
   // full site isolation, this should bring the subframe back into the main
@@ -3893,8 +3915,10 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest, SubframeReusesExistingProcess) {
       child->current_frame_host()->GetSiteInstance()->process_reuse_policy());
 
   EXPECT_TRUE(child->current_frame_host()->IsCrossProcessSubframe());
-  EXPECT_EQ(GURL("http://isolated.foo.com/"),
-            child->current_frame_host()->GetSiteInstance()->GetSiteURL());
+  EXPECT_EQ(GURL("http://isolated.foo.com/"), child->current_frame_host()
+                                                  ->GetSiteInstance()
+                                                  ->GetSecurityPrincipal()
+                                                  .GetDeprecatedSiteURL());
 
   // The subframe's SiteInstance should still be different from second_shell's
   // SiteInstance, and they should be in separate BrowsingInstances.
@@ -4527,8 +4551,10 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest, IsolatedOriginWithSubdomain) {
 
   EXPECT_EQ(isolated_instance, child->current_frame_host()->GetSiteInstance());
   EXPECT_FALSE(child->current_frame_host()->IsCrossProcessSubframe());
-  EXPECT_EQ(GURL("http://isolated.foo.com/"),
-            child->current_frame_host()->GetSiteInstance()->GetSiteURL());
+  EXPECT_EQ(GURL("http://isolated.foo.com/"), child->current_frame_host()
+                                                  ->GetSiteInstance()
+                                                  ->GetSecurityPrincipal()
+                                                  .GetDeprecatedSiteURL());
 
   // Now try navigating the main frame (renderer-initiated) to the isolated
   // origin's subdomain.  This should not swap processes.
@@ -5122,8 +5148,10 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginTest, SubframeErrorPages) {
               child1->current_frame_host()->GetSiteInstance());
     if (!SiteIsolationPolicy::IsErrorPageIsolationEnabled(
             /*in_main_frame=*/false)) {
-      EXPECT_EQ(GURL("http://isolated.foo.com/"),
-                child1->current_frame_host()->GetSiteInstance()->GetSiteURL());
+      EXPECT_EQ(GURL("http://isolated.foo.com/"), child1->current_frame_host()
+                                                      ->GetSiteInstance()
+                                                      ->GetSecurityPrincipal()
+                                                      .GetDeprecatedSiteURL());
     } else {
       EXPECT_TRUE(child1->current_frame_host()
                       ->GetSiteInstance()
@@ -6461,8 +6489,10 @@ IN_PROC_BROWSER_TEST_P(IsolatedOriginTestWithDefaultSiteInstanceGroups,
   EXPECT_NE(web_contents()->GetSiteInstance(),
             child->current_frame_host()->GetSiteInstance());
   EXPECT_TRUE(child->current_frame_host()->IsCrossProcessSubframe());
-  EXPECT_EQ(GURL("http://isolated.foo.com/"),
-            child->current_frame_host()->GetSiteInstance()->GetSiteURL());
+  EXPECT_EQ(GURL("http://isolated.foo.com/"), child->current_frame_host()
+                                                  ->GetSiteInstance()
+                                                  ->GetSecurityPrincipal()
+                                                  .GetDeprecatedSiteURL());
 
   // Verify that the isolated frame's subframe (which starts out at a relative
   // path) is kept in the isolated parent's SiteInstance.

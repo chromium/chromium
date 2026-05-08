@@ -35,6 +35,7 @@
 #include "content/browser/webui/url_data_manager_backend.h"
 #include "content/browser/webui/web_ui_controller_factory_registry.h"
 #include "content/common/content_navigation_policy.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_exposed_isolation_level.h"
 #include "content/public/browser/web_ui_controller.h"
@@ -794,11 +795,13 @@ TEST_F(SiteInstanceTest, SetSite) {
 
   scoped_refptr<SiteInstanceImpl> instance(SiteInstanceImpl::Create(&context));
   EXPECT_FALSE(instance->HasSite());
-  EXPECT_TRUE(instance->GetSiteURL().is_empty());
+  EXPECT_TRUE(
+      instance->GetSecurityPrincipal().GetDeprecatedSiteURL().is_empty());
 
   instance->SetSite(
       UrlInfo::CreateForTesting(GURL("http://www.google.com/index.html")));
-  EXPECT_EQ(GURL("http://google.com"), instance->GetSiteURL());
+  EXPECT_EQ(GURL("http://google.com"),
+            instance->GetSecurityPrincipal().GetDeprecatedSiteURL());
 
   EXPECT_TRUE(instance->HasSite());
 
@@ -1297,7 +1300,8 @@ TEST_F(SiteInstanceTest, IsSuitableForUrlInfo) {
       SiteInstanceImpl::Create(browser_context.get()));
 
   EXPECT_FALSE(instance->HasSite());
-  EXPECT_TRUE(instance->GetSiteURL().is_empty());
+  EXPECT_TRUE(
+      instance->GetSecurityPrincipal().GetDeprecatedSiteURL().is_empty());
 
   // Check prior to assigning a site or process to the instance, which is
   // expected to return false to allow the SiteInstance to be used for anything.
@@ -1401,7 +1405,8 @@ TEST_F(SiteInstanceTest, ProcessPerSiteWithWrongBindings) {
       SiteInstanceImpl::Create(browser_context.get()));
 
   EXPECT_FALSE(instance->HasSite());
-  EXPECT_TRUE(instance->GetSiteURL().is_empty());
+  EXPECT_TRUE(
+      instance->GetSecurityPrincipal().GetDeprecatedSiteURL().is_empty());
 
   // Simulate navigating to a WebUI URL in a process that does not have WebUI
   // bindings.  This already requires bypassing security checks.
@@ -1443,7 +1448,8 @@ TEST_F(SiteInstanceTest, NoProcessPerSiteForEmptySite) {
 
   instance->SetSite(UrlInfo());
   EXPECT_TRUE(instance->HasSite());
-  EXPECT_TRUE(instance->GetSiteURL().is_empty());
+  EXPECT_TRUE(
+      instance->GetSecurityPrincipal().GetDeprecatedSiteURL().is_empty());
   instance->GetOrCreateProcessForTesting();
 
   EXPECT_FALSE(RenderProcessHostImpl::GetSoleProcessHostForSite(
@@ -2051,7 +2057,8 @@ TEST_F(SiteInstanceTest, CreateForUrlInfo) {
 
   if (AreStrictSiteInstancesEnabled()) {
     EXPECT_FALSE(instance1->IsDefaultSiteInstance());
-    EXPECT_EQ(kNonIsolatedUrl, instance1->GetSiteURL());
+    EXPECT_EQ(kNonIsolatedUrl,
+              instance1->GetSecurityPrincipal().GetDeprecatedSiteURL());
   } else {
     EXPECT_TRUE(instance1->IsDefaultSiteInstance());
   }
@@ -2060,13 +2067,15 @@ TEST_F(SiteInstanceTest, CreateForUrlInfo) {
   EXPECT_TRUE(instance1->IsSameSiteWithURL(kNonIsolatedUrl));
 
   EXPECT_FALSE(instance2->IsDefaultSiteInstance());
-  EXPECT_EQ(kIsolatedUrl, instance2->GetSiteURL());
+  EXPECT_EQ(kIsolatedUrl,
+            instance2->GetSecurityPrincipal().GetDeprecatedSiteURL());
   EXPECT_TRUE(instance2->DoesSiteInfoForURLMatch(
       UrlInfo::CreateForTesting(kIsolatedUrl)));
   EXPECT_TRUE(instance2->IsSameSiteWithURL(kIsolatedUrl));
 
   EXPECT_FALSE(instance3->IsDefaultSiteInstance());
-  EXPECT_EQ(GURL("file:"), instance3->GetSiteURL());
+  EXPECT_EQ(GURL("file:"),
+            instance3->GetSecurityPrincipal().GetDeprecatedSiteURL());
   EXPECT_TRUE(
       instance3->DoesSiteInfoForURLMatch(UrlInfo::CreateForTesting(kFileUrl)));
   // Not same site because file URL's don't have a host.
@@ -2085,7 +2094,8 @@ TEST_F(SiteInstanceTest, CreateForUrlInfo) {
   EXPECT_TRUE(instance5->HasSite());
   if (AreStrictSiteInstancesEnabled()) {
     EXPECT_FALSE(instance5->IsDefaultSiteInstance());
-    EXPECT_EQ("custom-standard://custom/", instance5->GetSiteURL());
+    EXPECT_EQ("custom-standard://custom/",
+              instance5->GetSecurityPrincipal().GetDeprecatedSiteURL());
     EXPECT_EQ("http://foo.com/", instance5->GetSiteInfo().GetProcessLockURL());
   } else {
     EXPECT_TRUE(instance5->IsDefaultSiteInstance());

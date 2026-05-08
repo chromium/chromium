@@ -78,6 +78,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/storage_partition.h"
@@ -378,13 +379,15 @@ TEST_F(ChromeContentBrowserClientWindowTest, ShouldStayInParentProcessForNTP) {
                                           GURL("chrome-search://remote-ntp"));
   EXPECT_TRUE(client.ShouldStayInParentProcessForNTP(
       GURL("chrome-search://most-visited/title.html"),
-      site_instance->GetSiteURL()));
+      site_instance->GetSecurityPrincipal().GetDeprecatedSiteURL()));
 
   // Only the most visited tiles host is allowed to stay in the 3P NTP.
   EXPECT_FALSE(client.ShouldStayInParentProcessForNTP(
-      GURL("chrome-search://foo/"), site_instance->GetSiteURL()));
+      GURL("chrome-search://foo/"),
+      site_instance->GetSecurityPrincipal().GetDeprecatedSiteURL()));
   EXPECT_FALSE(client.ShouldStayInParentProcessForNTP(
-      GURL("chrome://new-tab-page"), site_instance->GetSiteURL()));
+      GURL("chrome://new-tab-page"),
+      site_instance->GetSecurityPrincipal().GetDeprecatedSiteURL()));
 
   site_instance = content::SiteInstance::CreateForURL(
       browser()->profile(), GURL("chrome://new-tab-page"));
@@ -393,13 +396,15 @@ TEST_F(ChromeContentBrowserClientWindowTest, ShouldStayInParentProcessForNTP) {
   // ShouldStayInParentProcessForNTP() should only return true for NTPs hosted
   // under the chrome-search: scheme.
   EXPECT_FALSE(client.ShouldStayInParentProcessForNTP(
-      GURL("chrome://new-tab-page"), site_instance->GetSiteURL()));
+      GURL("chrome://new-tab-page"),
+      site_instance->GetSecurityPrincipal().GetDeprecatedSiteURL()));
 
   // For now, we also allow chrome-search://most-visited to stay in 1P NTP,
   // chrome://new-tab-page.  We should consider tightening this to only allow
   // most-visited tiles to stay in 3P NTP.
   EXPECT_TRUE(client.ShouldStayInParentProcessForNTP(
-      GURL("chrome-search://most-visited"), site_instance->GetSiteURL()));
+      GURL("chrome-search://most-visited"),
+      site_instance->GetSecurityPrincipal().GetDeprecatedSiteURL()));
 }
 
 TEST_F(ChromeContentBrowserClientWindowTest, OverrideNavigationParams) {

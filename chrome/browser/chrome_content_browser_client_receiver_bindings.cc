@@ -326,7 +326,9 @@ void ChromeContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
     return;
   }
 
-  const GURL& site = render_frame_host->GetSiteInstance()->GetSiteURL();
+  const GURL& site = render_frame_host->GetSiteInstance()
+                         ->GetSecurityPrincipal()
+                         .GetDeprecatedSiteURL();
   content::BrowserContext* browser_context =
       render_frame_host->GetProcess()->GetBrowserContext();
   auto* extension = extensions::ExtensionRegistry::Get(browser_context)

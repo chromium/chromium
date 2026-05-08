@@ -37,6 +37,7 @@
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/event_router.h"
@@ -260,8 +261,9 @@ bool ExtensionMayAttachToRenderFrameHost(
         if (chrome_pdf::features::IsOopifPdfEnabled() &&
             (IsPdfExtensionOrigin(
                  render_frame_host->GetLastCommittedOrigin()) ||
-             IsPdfExtensionUrl(
-                 render_frame_host->GetSiteInstance()->GetSiteURL()))) {
+             IsPdfExtensionUrl(render_frame_host->GetSiteInstance()
+                                   ->GetSecurityPrincipal()
+                                   .GetDeprecatedSiteURL()))) {
           return content::RenderFrameHost::FrameIterationAction::kContinue;
         }
 #endif  // BUILDFLAG(ENABLE_PDF)
@@ -280,8 +282,10 @@ bool ExtensionMayAttachToRenderFrameHost(
                 render_frame_host->GetLastCommittedURL(), &page_url, error) ||
             !ExtensionMayAttachToURLOrInnerURL(
                 extension, extension_profile,
-                render_frame_host->GetSiteInstance()->GetSiteURL(), &page_url,
-                error)) {
+                render_frame_host->GetSiteInstance()
+                    ->GetSecurityPrincipal()
+                    .GetDeprecatedSiteURL(),
+                &page_url, error)) {
           result = false;
           return content::RenderFrameHost::FrameIterationAction::kStop;
         }

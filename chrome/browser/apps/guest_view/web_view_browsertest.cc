@@ -6810,8 +6810,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessWebViewTest, SimpleNavigations) {
 
   // Ensure the guest SiteInstance reflects the proper site and actually uses
   // site isolation.
-  EXPECT_EQ("http://a.test/",
-            main_frame->GetSiteInstance()->GetSiteURL().spec());
+  EXPECT_EQ("http://a.test/", main_frame->GetSiteInstance()
+                                  ->GetSecurityPrincipal()
+                                  .GetDeprecatedSiteURL()
+                                  .spec());
   EXPECT_TRUE(main_frame->GetSiteInstance()->RequiresDedicatedProcess());
   EXPECT_TRUE(main_frame->GetProcess()->IsProcessLockedToSiteForTesting());
 
@@ -6838,7 +6840,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessWebViewTest, SimpleNavigations) {
                 .GetStoragePartitionConfig());
   EXPECT_EQ(subframe->GetProcess()->GetStoragePartition(),
             main_frame->GetProcess()->GetStoragePartition());
-  EXPECT_EQ("http://b.test/", subframe->GetSiteInstance()->GetSiteURL().spec());
+  EXPECT_EQ("http://b.test/", subframe->GetSiteInstance()
+                                  ->GetSecurityPrincipal()
+                                  .GetDeprecatedSiteURL()
+                                  .spec());
   EXPECT_TRUE(subframe->GetSiteInstance()->RequiresDedicatedProcess());
   EXPECT_TRUE(subframe->GetProcess()->IsProcessLockedToSiteForTesting());
 }

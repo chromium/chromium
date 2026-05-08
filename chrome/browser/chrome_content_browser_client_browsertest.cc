@@ -238,16 +238,22 @@ IN_PROC_BROWSER_TEST_F(IsolatedOriginNTPBrowserTest,
       InstantServiceFactory::GetForProfile(browser()->profile());
   EXPECT_TRUE(instant_service->IsInstantProcess(
       contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID()));
-  EXPECT_EQ(contents->GetPrimaryMainFrame()->GetSiteInstance()->GetSiteURL(),
-            ntp_site_instance->GetSiteURL());
+  EXPECT_EQ(contents->GetPrimaryMainFrame()
+                ->GetSiteInstance()
+                ->GetSecurityPrincipal()
+                .GetDeprecatedSiteURL(),
+            ntp_site_instance->GetSecurityPrincipal().GetDeprecatedSiteURL());
 
   // Navigating to a non-NTP URL on ntp.com should not result in an Instant
   // process.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), isolated_url));
   EXPECT_FALSE(instant_service->IsInstantProcess(
       contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID()));
-  EXPECT_EQ(contents->GetPrimaryMainFrame()->GetSiteInstance()->GetSiteURL(),
-            site_instance->GetSiteURL());
+  EXPECT_EQ(contents->GetPrimaryMainFrame()
+                ->GetSiteInstance()
+                ->GetSecurityPrincipal()
+                .GetDeprecatedSiteURL(),
+            site_instance->GetSecurityPrincipal().GetDeprecatedSiteURL());
 }
 
 // Helper class to test window creation from NTP.

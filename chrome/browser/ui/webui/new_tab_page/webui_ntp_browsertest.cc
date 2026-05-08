@@ -25,6 +25,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/spare_render_process_host_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/child_process_id.h"
@@ -120,9 +121,10 @@ IN_PROC_BROWSER_TEST_F(WebUiNtpBrowserTest, VerifySiteInstance) {
   ASSERT_EQ(ntp_url, web_contents->GetLastCommittedURL());
 
   const GURL& webui_ntp_url = chrome::ChromeUINewTabPageURLAsGURL();
-  ASSERT_EQ(
-      webui_ntp_url,
-      web_contents->GetPrimaryMainFrame()->GetSiteInstance()->GetSiteURL());
+  ASSERT_EQ(webui_ntp_url, web_contents->GetPrimaryMainFrame()
+                               ->GetSiteInstance()
+                               ->GetSecurityPrincipal()
+                               .GetDeprecatedSiteURL());
 }
 
 // Verify that the WebUI NTP uses process-per-site.

@@ -215,6 +215,7 @@ class CONTENT_EXPORT SiteInfo : public SecurityPrincipal {
   bool IsWebUI() const override;
   const StoragePartitionConfig& GetStoragePartitionConfig() const override;
   bool SchemeIs(std::string_view scheme) const override;
+  const GURL& GetDeprecatedSiteURL() const override;
 
   // This function returns a new SiteInfo which is equivalent to the original,
   // except that its AgentClusterKey is made site-keyed if it had been created
@@ -222,27 +223,9 @@ class CONTENT_EXPORT SiteInfo : public SecurityPrincipal {
   SiteInfo GetNonOriginKeyedEquivalentForMetrics(
       const IsolationContext& isolation_context) const;
 
-  // Returns the site URL associated with all of the documents and workers in
-  // this principal, as described above.
-  //
-  // Compared to the AgentClusterKey, this URL might have been overridden from
-  // the actual URL of the content in cases that involve effective URLs such as
-  // hosted apps. The AgentClusterKey is always computed with the real URL, as
-  // it is a web spec concept and effective URLs are not part of the spec.
-  //
-  // NOTE: In most cases, code should be performing checks against the origin
-  // returned by |RenderFrameHost::GetLastCommittedOrigin()|. In contrast, the
-  // GURL returned by |site_url()| should not be considered authoritative
-  // because:
-  // - A SiteInstance can host pages from multiple sites if "site per process"
-  //   is not enabled and the SiteInstance isn't hosting pages that require
-  //   process isolation (e.g. WebUI or extensions).
-  // - Even with site per process, the site URL is not an origin: while often
-  //   derived from the origin, it only contains the scheme and the eTLD + 1,
-  //   i.e. an origin with the host "deeply.nested.subdomain.example.com"
-  //   corresponds to a site URL with the host "example.com".
-  // - When origin isolation is in use, there may be multiple SiteInstance with
-  //   the same site_url() but that differ in other properties.
+  // Additional non-virtual accessor to site_url_, which is ok to use from
+  // inside //content. See SecurityPrincipal::GetDeprecatedSiteURL for more
+  // info.
   const GURL& site_url() const { return site_url_; }
 
   // Returns the AgentClusterKey of the execution contexts within this SiteInfo.

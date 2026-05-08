@@ -6,6 +6,7 @@
 
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/site_instance.h"
 #include "google_apis/gaia/gaia_urls.h"
 
@@ -28,6 +29,8 @@ bool ShouldExposeGoogleAccountsPrivateApi(
   // uses a dedicated process, rather than sharing process with eTLD+1.
   return rfh_origin == GetAllowedGoogleAccountsOrigin() &&
          rfh->GetSiteInstance()->RequiresDedicatedProcess() &&
-         rfh->GetSiteInstance()->GetSiteURL().GetHost() ==
-             GetAllowedGoogleAccountsOrigin().host();
+         rfh->GetSiteInstance()
+                 ->GetSecurityPrincipal()
+                 .GetDeprecatedSiteURL()
+                 .GetHost() == GetAllowedGoogleAccountsOrigin().host();
 }

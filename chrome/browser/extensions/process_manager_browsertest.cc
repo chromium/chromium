@@ -44,6 +44,7 @@
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
@@ -758,8 +759,10 @@ IN_PROC_BROWSER_TEST_F(ProcessManagerBrowserTest, ExtensionProcessReuse) {
     ExtensionHost* extension_host =
         pm->GetBackgroundHostForExtension(extension->id());
 
-    EXPECT_EQ(extension->url(),
-              extension_host->host_contents()->GetSiteInstance()->GetSiteURL());
+    EXPECT_EQ(extension->url(), extension_host->host_contents()
+                                    ->GetSiteInstance()
+                                    ->GetSecurityPrincipal()
+                                    .GetDeprecatedSiteURL());
 
     processes.insert(extension_host->render_process_host()->GetDeprecatedID());
   }

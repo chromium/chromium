@@ -57,6 +57,7 @@
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -2159,7 +2160,9 @@ class LoadCommittedCapturer : public WebContentsObserver {
     // quickly.
     if (rfh->IsPendingDeletion()) {
       DLOG(INFO) << "Skipping pending delete RFH: "
-                 << rfh->GetSiteInstance()->GetSiteURL();
+                 << rfh->GetSiteInstance()
+                        ->GetSecurityPrincipal()
+                        .GetDeprecatedSiteURL();
       return;
     }
 
@@ -14458,7 +14461,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     EXPECT_EQ(GURL("http://bar.com"), root->child_at(0)
                                           ->current_frame_host()
                                           ->GetSiteInstance()
-                                          ->GetSiteURL());
+                                          ->GetSecurityPrincipal()
+                                          .GetDeprecatedSiteURL());
   }
 }
 
@@ -18287,7 +18291,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_NE(
       success_site_instance->GetOrCreateProcessForTesting()->GetDeprecatedID(),
       error_site_instance->GetProcess()->GetDeprecatedID());
-  EXPECT_EQ(GURL(kUnreachableWebDataURL), error_site_instance->GetSiteURL());
+  EXPECT_EQ(GURL(kUnreachableWebDataURL),
+            error_site_instance->GetSecurityPrincipal().GetDeprecatedSiteURL());
 
   EXPECT_TRUE(
       error_site_instance->GetProcess()->GetProcessLock().is_error_page());
@@ -18465,7 +18470,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   scoped_refptr<SiteInstance> error_site_instance =
       popup_main_frame->GetSiteInstance();
   EXPECT_NE(original_site_instance, error_site_instance);
-  EXPECT_EQ(GURL(kUnreachableWebDataURL), error_site_instance->GetSiteURL());
+  EXPECT_EQ(GURL(kUnreachableWebDataURL),
+            error_site_instance->GetSecurityPrincipal().GetDeprecatedSiteURL());
 
   // The URL displayed in the URL bar is about:blank.
   EXPECT_EQ(GURL("about:blank"), popup_contents->GetVisibleURL());
@@ -23502,7 +23508,10 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
       shell()->web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin();
   EXPECT_EQ(origin_to_commit.value(), committed_origin);
 
-  GURL site_url = contents()->GetSiteInstance()->GetSiteURL();
+  GURL site_url = contents()
+                      ->GetSiteInstance()
+                      ->GetSecurityPrincipal()
+                      .GetDeprecatedSiteURL();
   if (AreStrictSiteInstancesEnabled()) {
     EXPECT_EQ(site_url.spec(),
               "data:" + origin_to_commit->GetNonceForTesting()->ToString());

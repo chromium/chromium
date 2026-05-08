@@ -8,6 +8,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/site_instance.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -43,7 +44,8 @@ std::u16string FencedFrameTask::GetTitle() const {
   const int message_id = site_instance_->GetBrowserContext()->IsOffTheRecord()
                              ? IDS_TASK_MANAGER_FENCED_FRAME_INCOGNITO_PREFIX
                              : IDS_TASK_MANAGER_FENCED_FRAME_PREFIX;
-  const auto title = base::UTF8ToUTF16(site_instance_->GetSiteURL().spec());
+  const auto title = base::UTF8ToUTF16(
+      site_instance_->GetSecurityPrincipal().GetDeprecatedSiteURL().spec());
   return l10n_util::GetStringFUTF16(message_id, title);
 }
 

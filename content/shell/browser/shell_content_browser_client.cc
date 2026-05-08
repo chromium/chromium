@@ -53,6 +53,7 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_view_delegate.h"
@@ -217,9 +218,11 @@ void BindMediaFoundationPreferences(
     mojo::PendingReceiver<media::mojom::MediaFoundationPreferences> receiver) {
   // Passing in a NullCallback since we don't have MediaFoundationServiceMonitor
   // in content.
-  MediaFoundationPreferencesImpl::Create(
-      frame_host->GetSiteInstance()->GetSiteURL(), base::NullCallback(),
-      std::move(receiver));
+  MediaFoundationPreferencesImpl::Create(frame_host->GetSiteInstance()
+                                             ->GetSecurityPrincipal()
+                                             .GetDeprecatedSiteURL(),
+                                         base::NullCallback(),
+                                         std::move(receiver));
 }
 #endif  // BUILDFLAG(IS_WIN)
 

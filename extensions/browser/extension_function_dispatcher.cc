@@ -29,6 +29,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -173,9 +174,11 @@ void ExtensionFunctionDispatcher::Dispatch(
               ExtensionIdForTracing(params->extension_id));
 
   ScopedRequestParamsCrashKeys request_params_crash_keys(*params);
-  SCOPED_CRASH_KEY_STRING256(
-      "extensions", "frame.GetSiteInstance()",
-      frame.GetSiteInstance()->GetSiteURL().possibly_invalid_spec());
+  SCOPED_CRASH_KEY_STRING256("extensions", "frame.GetSiteInstance()",
+                             frame.GetSiteInstance()
+                                 ->GetSecurityPrincipal()
+                                 .GetDeprecatedSiteURL()
+                                 .possibly_invalid_spec());
 
   if (auto bad_message_code = ValidateRequest(*params, &frame, process)) {
     // Kill the renderer if it's an invalid request.

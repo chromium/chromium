@@ -35,6 +35,7 @@
 #include "content/common/frame.mojom.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/bindings_policy.h"
@@ -2647,9 +2648,10 @@ TEST_F(NavigationControllerTest, RestoreNavigate) {
   EXPECT_EQ(0, our_controller.GetLastCommittedEntryIndex());
   EXPECT_FALSE(our_controller.GetPendingEntry());
   if (AreStrictSiteInstancesEnabled()) {
-    EXPECT_EQ(
-        url,
-        our_controller.GetLastCommittedEntry()->site_instance()->GetSiteURL());
+    EXPECT_EQ(url, our_controller.GetLastCommittedEntry()
+                       ->site_instance()
+                       ->GetSecurityPrincipal()
+                       .GetDeprecatedSiteURL());
   } else {
     // Verify we get the default SiteInstance since |url| does not require a
     // dedicated process.
@@ -2722,9 +2724,10 @@ TEST_F(NavigationControllerTest, RestoreNavigateAfterFailure) {
   EXPECT_EQ(0, our_controller.GetLastCommittedEntryIndex());
   EXPECT_FALSE(our_controller.GetPendingEntry());
   if (AreStrictSiteInstancesEnabled()) {
-    EXPECT_EQ(
-        url,
-        our_controller.GetLastCommittedEntry()->site_instance()->GetSiteURL());
+    EXPECT_EQ(url, our_controller.GetLastCommittedEntry()
+                       ->site_instance()
+                       ->GetSecurityPrincipal()
+                       .GetDeprecatedSiteURL());
   } else {
     // Verify we get the default SiteInstance since |url| does not require a
     // dedicated process.

@@ -13,6 +13,7 @@
 #include "content/common/content_navigation_policy.h"
 #include "content/common/features.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/security_principal.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
@@ -1541,7 +1542,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                                               ->web_contents()
                                               ->GetPrimaryMainFrame()
                                               ->GetSiteInstance()
-                                              ->GetSiteURL());
+                                              ->GetSecurityPrincipal()
+                                              .GetDeprecatedSiteURL());
   EXPECT_EQ(net::OK, current_frame_host()->last_http_status_code());
 
   RenderFrameDeletedObserver delete_rfh_a(current_frame_host());
