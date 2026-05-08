@@ -1078,6 +1078,10 @@ BASE_FEATURE(kMatchSourceAudioChannelLayout, base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables media capturing to continue in the background.
 BASE_FEATURE(kAndroidEnableBackgroundMediaCapturing,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Allows audio playback capture on Android.
+BASE_FEATURE(kAllowAudioPlaybackCapture, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Allows media playback to start when the audio focus request is delayed
 // (e.g. during a phone call).
 BASE_FEATURE(kAllowDelayedAudioFocusGainAndroid,
