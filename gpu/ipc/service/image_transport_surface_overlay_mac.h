@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "base/power_monitor/power_observer.h"
 #include "gpu/ipc/service/command_buffer_stub.h"
 #include "gpu/ipc/service/image_transport_surface.h"
 #include "ui/gfx/ca_layer_result.h"
@@ -38,8 +37,7 @@ struct CARendererLayerParams;
 
 namespace gpu {
 
-class ImageTransportSurfaceOverlayMacEGL : public gl::Presenter,
-                                           public base::PowerSuspendObserver {
+class ImageTransportSurfaceOverlayMacEGL : public gl::Presenter {
  public:
   ImageTransportSurfaceOverlayMacEGL(
       scoped_refptr<SharedContextState> context_state,
@@ -90,9 +88,6 @@ class ImageTransportSurfaceOverlayMacEGL : public gl::Presenter,
   std::unique_ptr<ui::CALayerTreeCoordinator> ca_layer_tree_coordinator_;
 
 #if BUILDFLAG(IS_MAC)
-  // Implements base::PowerSuspendObserver.
-  void OnResume() override;
-
   // The expected display time from CVDisplayLinkCallback for the frame being
   // committed.
   base::TimeTicks GetDisplaytime(base::TimeTicks latch_time);
