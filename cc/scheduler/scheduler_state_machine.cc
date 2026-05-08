@@ -52,6 +52,14 @@ bool ShouldThrottleMainFrameRate(const SchedulerSettings& settings) {
                    features::kThrottleMainFrameTo60HzWebView)
              : base::FeatureList::IsEnabled(features::kThrottleMainFrameTo60Hz);
 #else
+  // The browser compositor drives the application UI animations, which we want
+  // to be running at the nominal framerate.
+  bool is_browser_compositor =
+      settings.commit_to_active_tree || settings.single_threaded_proxy;
+  if (is_browser_compositor) {
+    return false;
+  }
+
   return base::FeatureList::IsEnabled(features::kThrottleMainFrameTo60Hz);
 #endif  // BUILDFLAG(IS_ANDROID)
 }
