@@ -331,7 +331,7 @@ void TranslateAgent::ExecuteScript(const std::string& script) {
   if (!main_frame)
     return;
 
-  WebScriptSource source = WebScriptSource(WebString::FromUtf8(script));
+  WebScriptSource source = WebScriptSource(WebString::FromAscii(script));
   main_frame->ExecuteScriptInIsolatedWorld(
       world_id_, source, blink::BackForwardCacheAware::kAllow);
 }
@@ -343,7 +343,7 @@ bool TranslateAgent::ExecuteScriptAndGetBoolResult(const std::string& script,
     return fallback;
 
   v8::HandleScope handle_scope(main_frame->GetAgentGroupScheduler()->Isolate());
-  WebScriptSource source = WebScriptSource(WebString::FromUtf8(script));
+  WebScriptSource source = WebScriptSource(WebString::FromAscii(script));
   v8::Local<v8::Value> result =
       main_frame->ExecuteScriptInIsolatedWorldAndReturnValue(
           world_id_, source, blink::BackForwardCacheAware::kAllow);
@@ -362,7 +362,7 @@ std::string TranslateAgent::ExecuteScriptAndGetStringResult(
 
   v8::Isolate* isolate = main_frame->GetAgentGroupScheduler()->Isolate();
   v8::HandleScope handle_scope(isolate);
-  WebScriptSource source = WebScriptSource(WebString::FromUtf8(script));
+  WebScriptSource source = WebScriptSource(WebString::FromAscii(script));
   v8::Local<v8::Value> result =
       main_frame->ExecuteScriptInIsolatedWorldAndReturnValue(
           world_id_, source, blink::BackForwardCacheAware::kAllow);
@@ -388,7 +388,7 @@ double TranslateAgent::ExecuteScriptAndGetDoubleResult(
     return 0.0;
 
   v8::HandleScope handle_scope(main_frame->GetAgentGroupScheduler()->Isolate());
-  WebScriptSource source = WebScriptSource(WebString::FromUtf8(script));
+  WebScriptSource source = WebScriptSource(WebString::FromAscii(script));
   v8::Local<v8::Value> result =
       main_frame->ExecuteScriptInIsolatedWorldAndReturnValue(
           world_id_, source, blink::BackForwardCacheAware::kAllow);
@@ -406,7 +406,7 @@ int64_t TranslateAgent::ExecuteScriptAndGetIntegerResult(
     return 0;
 
   v8::HandleScope handle_scope(main_frame->GetAgentGroupScheduler()->Isolate());
-  WebScriptSource source = WebScriptSource(WebString::FromUtf8(script));
+  WebScriptSource source = WebScriptSource(WebString::FromAscii(script));
   v8::Local<v8::Value> result =
       main_frame->ExecuteScriptInIsolatedWorldAndReturnValue(
           world_id_, source, blink::BackForwardCacheAware::kAllow);
