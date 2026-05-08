@@ -14,11 +14,12 @@ option java_outer_classname = 'InputTypeConfigProto';
 package omnibox;
 
 import "icon.proto";
+import "input_source.proto";
 import "input_type.proto";
 import "input_type_rule.proto";
 
 // Configuration for an input type.
-// Next ID: 5
+// Next ID: 6
 // LINT.IfChange(InputTypeConfig)
 message InputTypeConfig {
   // The input type.
@@ -29,5 +30,7 @@ message InputTypeConfig {
   optional InputTypeRule rule = 3;
   // The icon for the input type.
   optional Icon icon = 4;
+  // The source for the input.
+  optional InputSource input_source = 5;
 }
 // LINT.ThenChange(//components/omnibox/composebox/composebox_query.mojom:InputTypeConfig)

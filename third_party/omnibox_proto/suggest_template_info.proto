@@ -138,6 +138,7 @@ message SuggestTemplateInfo {
 
   // This sends information about what the Fusebox action does. For example,
   // it might preselect a tool, a model or something else.
+  // See
   // Next ID: 2
   message FuseboxAction {
     // Which tool gets preselected when the user clicks on the suggestion.
