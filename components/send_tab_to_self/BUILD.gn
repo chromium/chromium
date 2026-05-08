@@ -61,16 +61,6 @@ static_library("send_tab_to_self") {
     ":features",
     "//components/send_tab_to_self/proto:send_tab_to_self_proto",
   ]
-  if (is_android) {
-    sources += [
-      "send_tab_to_self_infobar_delegate.cc",
-      "send_tab_to_self_infobar_delegate.h",
-    ]
-    deps += [
-      "//components/infobars/core",
-      "//content/public/browser",
-    ]
-  }
 }
 
 source_set("features") {
