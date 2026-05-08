@@ -78,8 +78,11 @@ source_set("android") {
 android_resources("java_resources") {
   sources = [
     "android/java/res/drawable/side_panel_container_bg.xml",
+    "android/java/res/drawable/side_panel_container_stroke.xml",
     "android/java/res/layout/side_panel_container.xml",
     "android/java/res/layout/side_panel_dev_feature.xml",
+    "android/java/res/values/colors.xml",
+    "android/java/res/values/dimens.xml",
   ]
 }
 

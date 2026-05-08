@@ -40,6 +40,7 @@ import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiContainerProperties;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
+import org.chromium.ui.base.TestActivity;
 
 /** Unit tests for {@link SideUiCoordinatorImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -66,7 +67,7 @@ public class SideUiCoordinatorImplTest {
 
     @Before
     public void setUp() {
-        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        Activity activity = Robolectric.buildActivity(TestActivity.class).setup().get();
 
         // Set up the parent View of side UI anchor containers.
         mAnchorContainerParent = new FrameLayout(activity);

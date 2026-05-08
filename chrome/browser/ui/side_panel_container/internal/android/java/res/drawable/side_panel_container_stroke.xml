@@ -5,19 +5,16 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<inset
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
     android:insetLeft="@dimen/side_ui_container_padding"
     android:insetTop="@dimen/side_ui_container_padding"
     android:insetRight="@dimen/side_ui_container_padding"
     android:insetBottom="@dimen/side_ui_container_padding">
   <shape
       android:shape="rectangle">
-    <solid android:color="@macro/default_bg_color" />
     <corners android:radius="@dimen/side_panel_corner_radius" />
-    <padding android:left="@dimen/side_panel_hairline_width"
-        android:top="@dimen/side_panel_hairline_width"
-        android:right="@dimen/side_panel_hairline_width"
-        android:bottom="@dimen/side_panel_hairline_width"/>
+    <stroke
+        android:width="@dimen/side_panel_hairline_width"
+        android:color="@color/side_panel_hairline_color" />
   </shape>
 </inset>
