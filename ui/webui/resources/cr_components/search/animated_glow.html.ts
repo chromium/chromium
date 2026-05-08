@@ -26,9 +26,17 @@ export function getHtml(this: SearchAnimatedGlowElement) {
    * on the Background styling.
    * - Background and its ::before apply a frosted glass effect in drag and
    * drop mode, and act as overlay to help create the gradient border
-   * and background color in the composebox. It moves to create a shutter
+   * and background color in the composebox/searchbox. It moves to create a shutter
    * expanding glow effect.
-   * - Audio wave provides the voice animation to show browser is listening
+   * - Audio wave/recording wave provides the voice animation to show browser is listening.
+   * Its contents are absolutely positioned, so it is not in the full overlay div.
+   * - Double gradient mask is the secondary mask to support 'Background' div in covering up
+   *  the 2 background gradient colors (having 2 makes that gradient effect stronger, too).
+   * - 'fullContainerOverlay' is 100% of the size of the composebox/searchbox. This overlay goes over
+   * the background and gradient effects. It allows for any animated elements within it to be
+   * relatively positioned (in flexbox) throughout the composebox/searchbox anywhere within the whole
+   * composebox/searchbox. Only animations should go in here. Recording wave goes in here.
+   * NOTE: Voice search animations are not dependent on 'energyEffectAnimationEnabled' flag.
    */
 
   // clang-format off
@@ -54,15 +62,18 @@ export function getHtml(this: SearchAnimatedGlowElement) {
       <div class="gradient"></div>
       <div class="background"
           part="composebox-background">
-        ${(this.voiceSearchCoherenceSearchboxEnabled_ ||
+      </div>
+    `}
+
+    <div id="fullContainerOverlay">
+       ${(this.voiceSearchCoherenceSearchboxEnabled_ ||
            this.voiceSearchCoherenceComposeboxesEnabled_)
            && this.inVoiceSearchMode && this.requiresVoice ?
            html`<recording-wave id='recordingWave'
                 .isListening="${this.inVoiceSearchMode}">
                 </recording-wave>`
            : ''}
-      </div>
-    `}
+    </div>
     ${!(this.voiceSearchCoherenceSearchboxEnabled_ ||
        this.voiceSearchCoherenceComposeboxesEnabled_)
        && this.inVoiceSearchMode && this.requiresVoice ?
