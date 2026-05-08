@@ -4,9 +4,11 @@
 
 #include "chrome/browser/indigo/indigo_service.h"
 
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/component_updater/indigo_component_installer.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/indigo/api_client.h"
 #include "chrome/browser/indigo/indigo_extension_utils.h"
@@ -46,6 +48,18 @@ bool CombinedEligibility::ReadyToOnboard() const {
   return !remote_eligibility->has_user_image || !has_onboarded_pref;
 }
 
+// static
+std::optional<base::FilePath> IndigoService::GetScriptPath() {
+  static constexpr char kIndigoScriptSwitch[] = "indigo-script";
+  base::FilePath override_path =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+          kIndigoScriptSwitch);
+  if (!override_path.empty()) {
+    return override_path;
+  }
+  return component_updater::GetIndigoContentScriptPath();
+}
+
 IndigoService::IndigoService(Profile* profile,
                              signin::IdentityManager* identity_manager,
                              PrefService* pref_service)
@@ -75,6 +89,11 @@ IndigoService::IndigoService(Profile* profile,
   extensions::ComponentLoader::Get(profile_)->Add(
       indigo_extension_utils::GetManifest(),
       base::FilePath(FILE_PATH_LITERAL("indigo")));
+
+  indigo_component_ready_subscription_ =
+      component_updater::RegisterIndigoComponentReadyCallback(
+          base::BindRepeating(&IndigoService::OnIndigoComponentReady,
+                              base::Unretained(this)));
 }
 
 IndigoService::~IndigoService() = default;
@@ -114,6 +133,10 @@ void IndigoService::AnchoredMessageShown() {
 }
 
 LocalEligibility IndigoService::ComputeLocalEligibility() const {
+  if (!GetScriptPath().has_value()) {
+    return LocalEligibility::kMissingScript;
+  }
+
   if (pref_service_) {
     int policy_val = pref_service_->GetInteger(prefs::kIndigoPolicy);
     if (policy_val != prefs::Policy::kAllowed) {
@@ -145,6 +168,10 @@ void IndigoService::UpdateLocalEligibilityAndNotify() {
     last_known_local_eligibility_ = new_eligibility;
     local_eligibility_callback_list_.Notify(new_eligibility);
   }
+}
+
+void IndigoService::OnIndigoComponentReady() {
+  UpdateLocalEligibilityAndNotify();
 }
 
 void IndigoService::GetCombinedEligibility(

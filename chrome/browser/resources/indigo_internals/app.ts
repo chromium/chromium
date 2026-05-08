@@ -101,6 +101,8 @@ export class IndigoInternalsAppElement extends CrLitElement {
         return 'Missing Capabilities';
       case LocalEligibility.kDisabledByPolicy:
         return 'Disabled By Policy';
+      case LocalEligibility.kMissingScript:
+        return 'Missing Script';
       default:
         assertNotReachedCase(this.localEligibility_);
     }
@@ -115,6 +117,7 @@ export class IndigoInternalsAppElement extends CrLitElement {
       case LocalEligibility.kNotSignedIn:
       case LocalEligibility.kMissingCapabilities:
       case LocalEligibility.kDisabledByPolicy:
+      case LocalEligibility.kMissingScript:
         return 'status-ineligible';
       default:
         assertNotReachedCase(this.localEligibility_);

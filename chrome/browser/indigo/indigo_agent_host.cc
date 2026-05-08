@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -15,8 +14,8 @@
 #include "base/logging.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/component_updater/indigo_component_installer.h"
 #include "chrome/browser/indigo/indigo_image_replacement_manager.h"
+#include "chrome/browser/indigo/indigo_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
@@ -28,7 +27,6 @@
 namespace indigo {
 
 namespace {
-const char kIndigoScriptSwitch[] = "indigo-script";
 
 std::optional<std::string> ReadFileToStringSync(const base::FilePath& path) {
   std::string content;
@@ -55,28 +53,18 @@ bool IndigoAgentHost::Invoke() {
     return true;
   }
 
-  base::FilePath override_path =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
-          kIndigoScriptSwitch);
-  std::optional<base::FilePath> component_path =
-      component_updater::GetIndigoContentScriptPath();
-
-  base::FilePath target_path;
-  if (!override_path.empty()) {
-    target_path = override_path;
-  } else if (component_path.has_value()) {
-    target_path = *component_path;
-  } else {
+  std::optional<base::FilePath> script_path = IndigoService::GetScriptPath();
+  if (!script_path.has_value()) {
     return false;
   }
 
   injection_state_ = InjectionState::kInjecting;
   pending_invoke_count_++;
 
-  GURL script_url = net::FilePathToFileURL(target_path);
+  GURL script_url = net::FilePathToFileURL(*script_path);
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
-      base::BindOnce(&ReadFileToStringSync, target_path),
+      base::BindOnce(&ReadFileToStringSync, *script_path),
       base::BindOnce(&IndigoAgentHost::OnScriptLoaded,
                      weak_factory_.GetWeakPtr(), std::move(script_url)));
   return true;

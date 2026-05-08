@@ -4,10 +4,13 @@
 
 #include "chrome/browser/indigo/indigo_service.h"
 
+#include "base/command_line.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/component_updater/indigo_component_installer.h"
 #include "chrome/browser/indigo/indigo_prefs.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
@@ -30,6 +33,14 @@ class IndigoServiceTest : public testing::Test {
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(features::kIndigo);
     ::indigo::prefs::RegisterProfilePrefs(prefs_.registry());
+    if (set_script_switch_in_setup_) {
+      scoped_command_line_.GetProcessCommandLine()->AppendSwitchASCII(
+          "indigo-script", "/dummy/path");
+    }
+  }
+
+  void TearDown() override {
+    component_updater::ResetIndigoInstallDirForTesting();
   }
 
   void CreateService() {
@@ -112,6 +123,8 @@ class IndigoServiceTest : public testing::Test {
   int remote_eligibility_fetch_count_ = 0;
   IndigoService::RemoteEligibilityCallback pending_remote_eligibility_callback_;
   bool auto_complete_remote_eligibility_fetch_ = true;
+  bool set_script_switch_in_setup_ = true;
+  base::test::ScopedCommandLine scoped_command_line_;
 };
 
 TEST_F(IndigoServiceTest, DefaultStateNotSignedIn) {
@@ -251,6 +264,35 @@ TEST_F(IndigoServiceTest, ErrorMessageStored) {
   CombinedEligibility combined_eligibility = future.Get();
   EXPECT_FALSE(combined_eligibility.remote_eligibility.has_value());
   EXPECT_EQ(combined_eligibility.remote_eligibility.error(), "Server down");
+}
+
+class IndigoServiceNoScriptTest : public IndigoServiceTest {
+ public:
+  IndigoServiceNoScriptTest() { set_script_switch_in_setup_ = false; }
+};
+
+TEST_F(IndigoServiceNoScriptTest, ScriptNotAvailable) {
+  CreateService();
+  EXPECT_EQ(service_->GetLocalEligibility(), LocalEligibility::kMissingScript);
+}
+
+TEST_F(IndigoServiceNoScriptTest, DynamicComponentReady) {
+  CreateService();
+  EXPECT_EQ(service_->GetLocalEligibility(), LocalEligibility::kMissingScript);
+
+  base::test::TestFuture<LocalEligibility> future;
+  auto sub = service_->RegisterLocalEligibilityChangedCallback(
+      future.GetRepeatingCallback());
+
+  // Simulate component ready.
+  component_updater::IndigoComponentInstallerPolicy policy;
+  policy.ComponentReady(base::Version("1.0"),
+                        base::FilePath(FILE_PATH_LITERAL("/dummy/path")),
+                        base::DictValue());
+
+  // It should transition to kNotSignedIn (since we are not signed in).
+  EXPECT_EQ(future.Take(), LocalEligibility::kNotSignedIn);
+  EXPECT_EQ(service_->GetLocalEligibility(), LocalEligibility::kNotSignedIn);
 }
 
 }  // namespace indigo
