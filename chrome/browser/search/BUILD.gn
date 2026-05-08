@@ -83,6 +83,7 @@ source_set("search") {
       "//mojo/public/cpp/bindings",
       "//ui/base",
       "//ui/gfx:color_utils",
+      "//ui/webui/resources/cr_components/composebox:mojo_bindings",
     ]
   }
 }
