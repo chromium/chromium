@@ -72,6 +72,9 @@ class TabMenuModel : public ui::SimpleMenuModel {
   void BuildForWebApp(int index);
   void BuildSendTabToSelfSubmenu(int index);
   void BuildLegacySendTabToSelfItem();
+  void AppendGlicItems(int index,
+                       int num_tabs,
+                       const std::vector<int>& indices);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // Support for appending and executing commands for extension items in the
