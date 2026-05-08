@@ -177,6 +177,10 @@ class CC_ANIMATION_EXPORT KeyframeEffect : public gfx::KeyframeEffect {
     replaced_group_ = replaced_group;
   }
 
+  std::optional<base::TimeTicks> last_tick_time() const {
+    return last_tick_time_;
+  }
+
  protected:
   // We override this because we have additional bookkeeping (eg, noting if
   // we've aborted a scroll animation, updating ticking state, sending updates

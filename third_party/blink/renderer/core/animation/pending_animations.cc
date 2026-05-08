@@ -238,8 +238,7 @@ int PendingAnimations::NextCompositorGroup() {
     // Wrap around, skipping reserved groups.
     ++compositor_group_;
   } while (compositor_group_ == kCompositorGroupAutoAssign ||
-           compositor_group_ == kCompositorGroupHasStartTime ||
-           compositor_group_ == kCompositorGroupTriggered);
+           compositor_group_ == kCompositorGroupHasStartTime);
 
   return compositor_group_;
 }

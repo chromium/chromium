@@ -177,6 +177,10 @@ class GFX_KEYFRAME_ANIMATION_EXPORT KeyframeModel {
   KeyframeModel::Phase CalculatePhaseForTesting(
       base::TimeDelta local_time) const;
 
+  // This mirrors blink::Animation::pause/play setting hold time for an
+  // animation with an unresolved current time.
+  base::TimeDelta CalculateInitialHoldTime(double playback_rate) const;
+
  protected:
   KeyframeModel(std::unique_ptr<AnimationCurve> curve,
                 int keyframe_model_id,

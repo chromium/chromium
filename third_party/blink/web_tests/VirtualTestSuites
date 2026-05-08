@@ -6091,6 +6091,36 @@
     "expires": "never"
   },
   {
+    "prefix": "compositor-timeline-trigger",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "external/wpt/scroll-animations/animation-trigger/animation-trigger-alternate.tentative.html",
+      "external/wpt/scroll-animations/animation-trigger/animation-trigger-disarmed-by-apis.tentative.html",
+      "external/wpt/scroll-animations/animation-trigger/animation-trigger-late-attached-timeline.tentative.html",
+      "external/wpt/scroll-animations/animation-trigger/animation-trigger-multiple-animations.tentative.html",
+      "external/wpt/scroll-animations/animation-trigger/animation-trigger-once.tentative.html",
+      "external/wpt/scroll-animations/animation-trigger/animation-trigger-once-play-state.tentative.html",
+      "external/wpt/scroll-animations/animation-trigger/animation-trigger-fill-mode-both.tentative.html",
+      "external/wpt/scroll-animations/animation-trigger/animation-trigger-fill-mode-none.tentative.html",
+      "external/wpt/scroll-animations/animation-trigger/animation-trigger-play.tentative.html",
+      "external/wpt/scroll-animations/animation-trigger/animation-trigger-untriggered-animations-exposed.tentative.html",
+      "external/wpt/scroll-animations/animation-trigger/animation-trigger-addAnimation.tentative.html",
+      "external/wpt/scroll-animations/animation-trigger/timeline-trigger-source-starts-in-trigger-range.tentative.html"
+    ],
+    "args": [
+      "--enable-features=CompositorTimelineTrigger",
+      "--enable-threaded-compositing"
+    ],
+    "owners": [
+      "awogbemila@chromium.org"
+    ],
+    "expires": "Feb 17, 2027"
+  },
+  {
     "prefix": "webaudio-playback-stats",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [

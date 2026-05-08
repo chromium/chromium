@@ -65,8 +65,6 @@ class CORE_EXPORT PendingAnimations final
   static const int kCompositorGroupAutoAssign = 0;
   // Compositor group reserved for animations which already have a start time.
   static const int kCompositorGroupHasStartTime = 1;
-  // Compositor group reserved for triggered animations.
-  static const int kCompositorGroupTriggered = 2;
 
   explicit PendingAnimations(Document& document)
       : timer_(document.GetTaskRunner(TaskType::kInternalDefault),
@@ -103,9 +101,10 @@ class CORE_EXPORT PendingAnimations final
 
   void Trace(Visitor*) const;
 
+  int NextCompositorGroup();
+
  private:
   void TimerFired(TimerBase*);
-  int NextCompositorGroup();
   void FlushWaitingNonCompositedAnimations();
 
   HeapVector<Member<Animation>> pending_;

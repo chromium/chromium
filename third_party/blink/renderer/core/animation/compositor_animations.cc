@@ -36,6 +36,7 @@
 
 #include "cc/animation/animation_id_provider.h"
 #include "cc/animation/filter_animation_curve.h"
+#include "cc/animation/keyframe_effect.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/animation/animation_effect.h"
 #include "third_party/blink/renderer/core/animation/css/compositor_keyframe_color.h"
@@ -698,6 +699,10 @@ void CompositorAnimations::StartAnimationOnCompositor(
                            keyframe_models, animation_playback_rate,
                            is_monotonic_timeline, is_boundary_aligned);
   DCHECK(!keyframe_models.empty());
+  DCHECK(compositor_animation.CcAnimation()
+             ->keyframe_effect()
+             ->keyframe_models()
+             .empty());
   for (auto& keyframe_model : keyframe_models) {
     int id = keyframe_model->id();
     compositor_animation.AddKeyframeModel(std::move(keyframe_model));

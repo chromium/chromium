@@ -349,8 +349,7 @@ class CORE_EXPORT Animation : public EventTarget,
   // the influence of the compositor animation trigger attempting to push the
   // animation to the compositor. Returns false otherwise.
   bool StartTriggeredAnimationOnCompositor(
-      const PaintArtifactCompositor* paint_artifact_compositor,
-      bool& pause_keyframe_models);
+      const PaintArtifactCompositor* paint_artifact_compositor);
   void CancelAnimationOnCompositor();
   void RestartAnimationOnCompositor(
       CompositorPendingReason reason =
@@ -361,6 +360,11 @@ class CORE_EXPORT Animation : public EventTarget,
     return last_compositor_failure_reasons_;
   }
 
+  // The compositor started playing this animation on the impl thread.
+  // Synchronize to the impl thread start time. This is only called for
+  // triggered[1] animations.
+  // [1] https://drafts.csswg.org/animation-triggers-1/
+  void NotifyAnimationStartedAsync(base::TimeDelta monotonic_time);
   void NotifyReady(AnimationTimeDelta ready_time);
   void CommitPendingPlay(AnimationTimeDelta ready_time);
   void CommitPendingPause(AnimationTimeDelta ready_time);

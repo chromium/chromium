@@ -43,6 +43,8 @@ class CC_ANIMATION_EXPORT TimelineTrigger : public AnimationTrigger {
               AnimationEvents* events,
               base::TimeTicks monotonic_time);
 
+  State GetStateForTest() const { return state_; }
+
  protected:
   explicit TimelineTrigger(int id,
                            scoped_refptr<AnimationTimeline> timeline,
@@ -62,6 +64,8 @@ class CC_ANIMATION_EXPORT TimelineTrigger : public AnimationTrigger {
   // ranges.
   Boundaries boundaries_;
   // The most recently observed state of the trigger.
+  // TODO(crbug.com/451238244): Move state_ to AnimationTrigger class. It
+  // applies to all types of triggers.
   State state_ = State::kIdle;
 };
 

@@ -58,6 +58,13 @@ std::optional<TimelineTriggerState> TimelineTrigger::ComputeState() {
 }
 
 bool TimelineTrigger::Update() {
+  if (compositor_trigger_) {
+    // If a cc TimelineTrigger exists, it is the source of truth for
+    // the trigger's state. The state is synchronized in
+    // NotifyActivate/Deactivate.
+    return true;
+  }
+
   std::optional<State> new_state = ComputeState();
   if (!new_state) {
     return false;

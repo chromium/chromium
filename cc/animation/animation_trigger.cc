@@ -4,8 +4,11 @@
 
 #include "cc/animation/animation_trigger.h"
 
+#include <memory>
 #include <vector>
 
+#include "base/check_op.h"
+#include "base/time/time.h"
 #include "cc/animation/animation_host.h"
 #include "cc/animation/animation_timeline.h"
 #include "cc/animation/animation_trigger_delegate.h"
@@ -84,7 +87,16 @@ void AnimationTrigger::PerformActivate(AnimationEvents* events,
   DCHECK(events);
   events->events().emplace_back(AnimationTriggerEvent(
       id(), AnimationTriggerEvent::Type::kActivate, monotonic_time));
-  // TODO(crbug.com/451238244): Trigger animations.
+
+  for (auto& animation_data : animation_data_.Write(*this)) {
+    AnimationTimeline* timeline =
+        animation_host_->GetTimelineById(animation_data.timeline_id);
+    Animation* animation =
+        timeline->GetAnimationById(animation_data.animation_id);
+    DCHECK(animation);
+    PerformBehavior(*animation, animation_data.activate_behavior,
+                    monotonic_time);
+  }
 }
 
 void AnimationTrigger::PerformDeactivate(AnimationEvents* events,
@@ -92,7 +104,16 @@ void AnimationTrigger::PerformDeactivate(AnimationEvents* events,
   DCHECK(events);
   events->events().emplace_back(AnimationTriggerEvent(
       id(), AnimationTriggerEvent::Type::kDeactivate, monotonic_time));
-  // TODO(crbug.com/451238244): Trigger animations.
+
+  for (auto& animation_data : animation_data_.Write(*this)) {
+    AnimationTimeline* timeline =
+        animation_host_->GetTimelineById(animation_data.timeline_id);
+    Animation* animation =
+        timeline->GetAnimationById(animation_data.animation_id);
+    DCHECK(animation);
+    PerformBehavior(*animation, animation_data.deactivate_behavior,
+                    monotonic_time);
+  }
 }
 
 void AnimationTrigger::SetAnimationTriggerDelegate(
@@ -110,6 +131,31 @@ void AnimationTrigger::DispatchAnimationTriggerEvent(
       case AnimationTriggerEvent::Type::kDeactivate:
         animation_trigger_delegate_->NotifyDeactivated(event.time);
     }
+  }
+}
+
+void AnimationTrigger::PerformPlay(Animation& animation,
+                                   base::TimeTicks monotonic_time) {
+  animation.Play(monotonic_time);
+}
+
+void AnimationTrigger::PerformBehavior(Animation& animation,
+                                       Behavior behavior,
+                                       base::TimeTicks monotonic_time) {
+  switch (behavior) {
+    case Behavior::kPlay:
+      PerformPlay(animation, monotonic_time);
+      break;
+    case Behavior::kPlayOnce:
+    case Behavior::kPlayForwards:
+    case Behavior::kPlayBackwards:
+    case Behavior::kPause:
+    case Behavior::kReset:
+    case Behavior::kReplay:
+      // TODO(crbug.com/451238244): Implement these behaviors.
+      NOTREACHED();
+    case Behavior::kNone:
+      break;
   }
 }
 

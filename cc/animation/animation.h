@@ -153,7 +153,17 @@ class CC_ANIMATION_EXPORT Animation : public base::RefCounted<Animation>,
 
   void set_is_replacement() { is_replacement_ = true; }
 
+  void SetStartTime(base::TimeTicks start_time);
   std::optional<base::TimeTicks> GetStartTime() const;
+
+  void SetHoldTime(std::optional<base::TimeDelta> hold_time);
+
+  void SetRunState(KeyframeModel::RunState run_state);
+  KeyframeModel::RunState GetRunState() const;
+
+  bool IsFinished() const;
+
+  void Play(base::TimeTicks monotonic_time);
 
   virtual bool IsWorkletAnimation() const;
 

@@ -64,6 +64,7 @@ class CORE_EXPORT AnimationTrigger : public ScriptWrappable,
 
   static bool HasPausedCSSPlayState(Animation* animation);
   static CcBehavior ToCcAnimationTriggerBehavior(Behavior behavior);
+  static bool CanCompositeBehavior(Behavior behavior);
 
   void UpdateCompositorTrigger(
       const PaintArtifactCompositor* paint_artifact_compositor);
@@ -126,7 +127,8 @@ class CORE_EXPORT AnimationTrigger : public ScriptWrappable,
   virtual void DidAddAnimation();
   virtual void DidRemoveAnimation(Animation* animation);
 
-  bool IsTriggeredOnCompositor(Animation* animation);
+  bool IsTriggeredOnCompositor(Animation* animation,
+                               const std::pair<Behavior, Behavior>&);
   void UpdateCompositorTriggerAnimations(
       const PaintArtifactCompositor* paint_artifact_compositor);
 

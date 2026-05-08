@@ -272,6 +272,67 @@ std::optional<base::TimeTicks> Animation::GetStartTime() const {
   return km.start_time();
 }
 
+void Animation::SetStartTime(base::TimeTicks start_time) {
+  for (auto& km : keyframe_effect()->keyframe_models()) {
+    km->set_start_time(start_time);
+    KeyframeModel::ToCcKeyframeModel(km.get())
+        ->set_needs_synchronized_start_time(false);
+  }
+}
+
+void Animation::SetHoldTime(std::optional<base::TimeDelta> hold_time) {
+  for (auto& km : keyframe_effect()->keyframe_models()) {
+    km->set_hold_time(hold_time);
+  }
+}
+
+gfx::KeyframeModel::RunState Animation::GetRunState() const {
+  return keyframe_effect()->keyframe_models().front()->run_state();
+}
+
+void Animation::SetRunState(KeyframeModel::RunState run_state) {
+  for (auto& km : keyframe_effect()->keyframe_models()) {
+    km->SetRunState(run_state, base::TimeTicks());
+  }
+}
+
+bool Animation::IsFinished() const {
+  const gfx::KeyframeModel& km = *keyframe_effect()->keyframe_models().front();
+  return keyframe_effect()->last_tick_time().has_value() &&
+         (km.is_finished() ||
+          km.IsFinishedAtMonotonicTime(*keyframe_effect()->last_tick_time()));
+}
+
+void Animation::Play(base::TimeTicks monotonic_time) {
+  if (GetRunState() == gfx::KeyframeModel::RunState::RUNNING ||
+      GetRunState() == gfx::KeyframeModel::RunState::STARTING) {
+    return;
+  }
+
+  KeyframeModel* first_km = KeyframeModel::ToCcKeyframeModel(
+      keyframe_effect()->keyframe_models().front().get());
+  std::optional<base::TimeDelta> hold_time = first_km->hold_time();
+
+  // If the animation had finished, we need to set it up to start playing from
+  // the "beginning."
+  if (IsFinished() || !hold_time) {
+    hold_time = first_km->CalculateInitialHoldTime(first_km->playback_rate());
+  }
+
+  base::TimeTicks start_time =
+      monotonic_time - hold_time.value() / first_km->playback_rate();
+
+  for (auto& km : keyframe_effect()->keyframe_models()) {
+    KeyframeModel* cc_km = KeyframeModel::ToCcKeyframeModel(km.get());
+    km->SetRunState(KeyframeModel::RunState::RUNNING, monotonic_time);
+    // TODO(crbug.com/451238244): For scroll-driven animations, we will likely
+    // want to compute the start time from the animation's scroll timeline's
+    // start offset.
+    cc_km->set_start_time(start_time);
+    cc_km->set_hold_time(std::nullopt);
+  }
+}
+
 void Animation::SetNeedsPushProperties() {
   if (!animation_timeline())
     return;

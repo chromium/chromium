@@ -41,6 +41,7 @@
 #include "cc/animation/keyframe_effect.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_animation_play_state.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_timeline_range_offset.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
 #include "third_party/blink/renderer/core/animation/animation_effect.h"
@@ -996,6 +997,41 @@ bool Animation::HasLowerCompositeOrdering(
   return animation1->SequenceNumber() < animation2->SequenceNumber();
 }
 
+void Animation::NotifyAnimationStartedAsync(base::TimeDelta monotonic_time) {
+  DCHECK(compositor_state_);
+  DCHECK(pending_play_);
+
+  double monotonic_animation_start_time = monotonic_time.InSecondsF();
+
+  // Prepare for an effective NotifyReady.
+  compositor_state_->pending_action = CompositorAction::kStart;
+  compositor_state_->start_time.reset();
+
+  // We need to store the hold time prior to its being cleared in NotifyReady.
+  // TODO(crbug.com/451238244): For now, we only get here if the animation was
+  // not already running. If it was already running, what we want to compute
+  // here is the current_time_to_match similar to CommitPendingPlay.
+  DCHECK(hold_time_);
+  base::TimeDelta cc_hold_time = ComputeCompositorHoldTime().value();
+
+  AnimationTimeDelta ready_time =
+      ANIMATION_TIME_DELTA_FROM_SECONDS(monotonic_animation_start_time) -
+      TimelineInternal()->ZeroTime();
+  NotifyReady(ready_time);
+
+  compositor_state_->hold_time = hold_time_;
+
+  double playback_rate = EffectivePlaybackRate();
+  cc::Animation* cc_animation = GetCompositorAnimation()->CcAnimation();
+  // TODO(crbug.com/508229282): Add a static KeyframeModel function that
+  // computes start time given monotonic time, hold_time and playback rate and
+  // use it everywhere this calculation is done.
+  cc_animation->SetStartTime(base::TimeTicks() + monotonic_time -
+                             cc_hold_time / playback_rate);
+  cc_animation->SetHoldTime(std::nullopt);
+  cc_animation->SetRunState(cc::KeyframeModel::RunState::RUNNING);
+}
+
 void Animation::NotifyReady(AnimationTimeDelta ready_time) {
   // Complete the pending updates prior to updating the compositor state in
   // order to ensure a correct start time for the compositor state without the
@@ -1829,7 +1865,20 @@ void Animation::PlayInternal(AutoRewind auto_rewind,
   finished_ = false;
   committed_finish_notification_ = false;
   SetOutdated();
-  SetCompositorPending(CompositorPendingReason::kPendingUpdate);
+
+  CompositorPendingReason reason = CompositorPendingReason::kPendingUpdate;
+  if (RuntimeEnabledFeatures::CompositorTimelineTriggerEnabled() &&
+      !triggers_.empty() && HasActiveAnimationsOnCompositor()) {
+    // If this is a triggered animation, we may have already created a
+    // compositor animation that is sitting "idle" on the compositor thread.
+    // As such, PreCommit may not see a need to create a playing compositor
+    // animation and fail to fulfil this play request.
+    // This cancel ensures that we fulfil this play request even if PreCommit
+    // can't detect any timing changes that warrant creating a playing
+    // animation.
+    reason = CompositorPendingReason::kPendingCancel;
+  }
+  SetCompositorPending(reason);
 
   // Update an animation’s finished state. As the finished state may be
   // transient, we defer resolving the finished promise until the next
@@ -2361,11 +2410,11 @@ void Animation::ForceServiceOnNextFrame() {
 CompositorAnimations::FailureReasons
 Animation::CheckCanStartAnimationOnCompositor(
     const PaintArtifactCompositor* paint_artifact_compositor,
-    StartOnCompositorReason check_reason,
+    StartOnCompositorReason start_reason,
     PropertyHandleSet* unsupported_properties_for_tracing) const {
   CompositorAnimations::FailureReasons reasons =
       CheckCanStartAnimationOnCompositorInternal();
-  bool for_trigger = check_reason == StartOnCompositorReason::kAnimationTrigger;
+  bool for_trigger = start_reason == StartOnCompositorReason::kAnimationTrigger;
 
   // An Animation that is not playing will not produce a visual, so there is no
   // reason to composite it, unless it is attached to an animation trigger.
@@ -2537,10 +2586,12 @@ void Animation::OnPaintWorkletImageCreated() {
 
 void Animation::StartAnimationOnCompositor(
     const PaintArtifactCompositor* paint_artifact_compositor,
-    StartOnCompositorReason check_reason) {
+    StartOnCompositorReason start_reason) {
   DCHECK_EQ(CheckCanStartAnimationOnCompositor(paint_artifact_compositor,
-                                               check_reason, nullptr),
+                                               start_reason, nullptr),
             CompositorAnimations::kNoFailure);
+  DCHECK(start_reason != StartOnCompositorReason::kAnimationTrigger ||
+         !Playing());
 
   // If PlaybackRate is 0, then we will run into divide by 0 issues.
   DCHECK(!TimingCalculations::IsWithinAnimationTimeEpsilon(
@@ -3363,8 +3414,7 @@ void Animation::DetachCompositedLayers() {
 }
 
 bool Animation::StartTriggeredAnimationOnCompositor(
-    const PaintArtifactCompositor* paint_artifact_compositor,
-    bool& pause_keyframe_models) {
+    const PaintArtifactCompositor* paint_artifact_compositor) {
   CompositorAnimation* compositor_anim = GetCompositorAnimation();
   bool has_cc_animation = compositor_anim && compositor_anim->CcAnimation();
 
@@ -3376,7 +3426,6 @@ bool Animation::StartTriggeredAnimationOnCompositor(
   }
 
   if (has_cc_animation) {
-    compositor_group_ = PendingAnimations::kCompositorGroupTriggered;
     return true;
   }
 
@@ -3405,15 +3454,13 @@ bool Animation::StartTriggeredAnimationOnCompositor(
 
   CreateCompositorAnimation(std::nullopt);
   compositor_state_ = std::make_unique<CompositorState>(*this);
-  compositor_group_ = PendingAnimations::kCompositorGroupTriggered;
+  compositor_group_ = document_->GetPendingAnimations().NextCompositorGroup();
   StartAnimationOnCompositor(paint_artifact_compositor,
                              StartOnCompositorReason::kAnimationTrigger);
 
-  // An animation attached to a trigger should either be paused, running or
-  // finished. We should pause the cc keyframes only in the paused and finished
-  // cases to prevent the compositor from playing the animation while waiting
-  // for the trigger condition.
-  pause_keyframe_models = !Playing();
+  base::TimeDelta hold_time = *ComputeCompositorHoldTime();
+  GetCompositorAnimation()->CcAnimation()->Pause(
+      hold_time, cc::KeyframeModel::PAUSED_EXCLUSIVE);
 
   return true;
 }

@@ -304,6 +304,11 @@ base::TimeDelta KeyframeModel::CalculateHoldTime(base::TimeTicks monotonic_time,
                              ConvertMonotonicTimeToLocalTime(monotonic_time)));
   }
 
+  return CalculateInitialHoldTime(playback_rate);
+}
+
+base::TimeDelta KeyframeModel::CalculateInitialHoldTime(
+    double playback_rate) const {
   // This mirrors blink::Animation::pause/play setting hold time for an idle
   // animation.
   return playback_rate > 0 ? start_delay_ : CalculateEndTime();
