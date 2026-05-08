@@ -9,8 +9,11 @@
 #include "base/scoped_observation.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
-#include "components/history/core/browser/history_types.h"
 #include "components/search_engines/template_url_service_client.h"
+
+namespace history {
+struct VisitedURLInfo;
+}
 
 class TemplateURLService;
 
