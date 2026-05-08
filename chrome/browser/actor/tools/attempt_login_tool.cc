@@ -15,6 +15,7 @@
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/browser/actor/tools/tool_delegate.h"
+#include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/password_manager/actor_login/actor_login_service.h"
@@ -25,6 +26,8 @@
 #include "chrome/common/actor_webui.mojom.h"
 #include "components/actor/core/actor_features.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
+#include "components/affiliations/core/browser/affiliation_service.h"
+#include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/favicon/core/favicon_service.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/password_manager/core/browser/features/password_features.h"
@@ -219,6 +222,22 @@ void AttemptLoginTool::Invoke(ToolCallback callback) {
     return;
   }
 
+  // Only false on Android.
+  if (!affiliations_updated_) {
+    affiliations::AffiliationService* affiliation_service =
+        AffiliationServiceFactory::GetForProfile(&tool_delegate().GetProfile());
+    if (affiliation_service) {
+      affiliation_service->UpdateAffiliationsAndBranding(
+          {affiliations::FacetURI::FromPotentiallyInvalidSpec(
+              current_origin.GetURL().GetWithEmptyPath().spec())},
+          base::BindOnce(&AttemptLoginTool::OnAffiliationsUpdated,
+                         weak_ptr_factory_.GetWeakPtr()));
+    } else {
+      // Unblock the tool execution even if AffiliationService is not available.
+      affiliations_updated_ = true;
+    }
+  }
+
   GetActorLoginService().GetCredentials(
       tab, sign_in_with_google_button_.has_value(), quality_logger_.AsWeakPtr(),
       base::BindOnce(&AttemptLoginTool::OnGetCredentials,
@@ -344,6 +363,13 @@ void AttemptLoginTool::OnAllIconsFetched() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+void AttemptLoginTool::OnAffiliationsUpdated() {
+  affiliations_updated_ = true;
+  if (on_affiliations_updated_callback_) {
+    std::move(on_affiliations_updated_callback_).Run();
+  }
+}
+
 void AttemptLoginTool::OnCredentialSelected(
     webui::mojom::SelectCredentialDialogResponsePtr response) {
   std::optional<actor_login::Credential> selected_credential;
@@ -403,11 +429,28 @@ void AttemptLoginTool::OnCredentialSelected(
   webui::mojom::UserGrantedPermissionDuration permission_duration =
       response->permission_duration.value_or(
           webui::mojom::UserGrantedPermissionDuration::kOneTime);
+
+  SetUserSelectedCredential(*selected_credential, permission_duration);
+}
+
+void AttemptLoginTool::SetUserSelectedCredential(
+    actor_login::Credential selected_credential,
+    webui::mojom::UserGrantedPermissionDuration permission_duration) {
+  // TODO(crbug.com/504897444): Test this once browser tests are available on
+  // Android.
+  if (!affiliations_updated_) {
+    on_affiliations_updated_callback_ =
+        base::BindOnce(&AttemptLoginTool::SetUserSelectedCredential,
+                       weak_ptr_factory_.GetWeakPtr(), selected_credential,
+                       permission_duration);
+    return;
+  }
+
   tool_delegate().SetUserSelectedCredential(
-      ToolDelegate::CredentialWithPermission(*selected_credential,
+      ToolDelegate::CredentialWithPermission(selected_credential,
                                              permission_duration),
       base::BindOnce(&AttemptLoginTool::OnCredentialCachingDone,
-                     weak_ptr_factory_.GetWeakPtr(), *selected_credential,
+                     weak_ptr_factory_.GetWeakPtr(), selected_credential,
                      permission_duration));
 }
 

@@ -65,11 +65,15 @@ class AttemptLoginTool : public Tool {
                      GURL origin,
                      const favicon_base::FaviconImageResult& result);
   void OnAllIconsFetched();
+  void OnAffiliationsUpdated();
   void OnCredentialCachingDone(
       actor_login::Credential selected_credential,
       webui::mojom::UserGrantedPermissionDuration permission_duration);
   void OnCredentialSelected(
       webui::mojom::SelectCredentialDialogResponsePtr response);
+  void SetUserSelectedCredential(
+      actor_login::Credential selected_credential,
+      webui::mojom::UserGrantedPermissionDuration permission_duration);
   void OnAttemptLogin(actor_login::Credential selected_credential,
                       bool should_store_permission,
                       actor_login::LoginStatusResultOrError login_status);
@@ -129,6 +133,11 @@ class AttemptLoginTool : public Tool {
   content::GlobalRenderFrameHostToken main_rfh_token_;
 
   ToolCallback invoke_callback_;
+
+  // Track if the affiliations update has finished. This is only relevant on
+  // Android. On other platforms, the update happens on startup.
+  bool affiliations_updated_ = !BUILDFLAG(IS_ANDROID);
+  base::OnceClosure on_affiliations_updated_callback_;
 
   base::WeakPtrFactory<AttemptLoginTool> weak_ptr_factory_{this};
 };
