@@ -174,6 +174,9 @@ export const BridgeConstants = {
       SHOULD_SET_DEFAULT_VOICE: 'shouldSetDefaultVoice',
       SRE_MOVE: 'sreMove',
       SRE_WALK: 'sreWalk',
+      TENJI_BACK_TRANSLATE: 'tenjiBackTranslate',
+      TENJI_START_WORKER: 'tenjiStartWorker',
+      TENJI_TRANSLATE: 'tenjiTranslate',
     },
   },
 

@@ -26,6 +26,14 @@ ChromeVoxBrailleTranslatorManagerTest = class extends ChromeVoxE2ETest {
   addChangeListener(callback) {
     return this.manager.addChangeListener(callOnce(this.newCallback(callback)));
   }
+
+  /** @override */
+  get featureList() {
+    let list = super.featureList || {};
+    list.enabled = list.enabled || [];
+    list.enabled.push('features::kAccessibilityChromeVoxJapaneseBraille');
+    return list;
+  }
 };
 
 

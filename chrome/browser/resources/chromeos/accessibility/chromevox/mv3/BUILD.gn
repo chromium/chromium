@@ -131,6 +131,7 @@ ts_modules = [
   "common/braille/braille_key_types.ts",
   "common/braille/braille_table.ts",
   "common/braille/nav_braille.ts",
+  "common/braille/tenji/sandboxed_tenji_wrapper.ts",
   "common/bridge_constants.ts",
   "common/command.ts",
   "common/command_store.ts",
@@ -165,6 +166,7 @@ ts_modules = [
   "offscreen/earcon_engine.ts",
   "offscreen/offscreen.ts",
   "offscreen/liblouis_worker.ts",
+  "offscreen/tenji_worker.ts",
   "panel/i_search_ui.ts",
   "panel/menu_manager.ts",
   "panel/menu_manager_with_test_endpoints.ts",
@@ -287,6 +289,7 @@ run_jsbundler("copied_files") {
   ]
 
   sources = [
+    "common/braille/tenji/sandboxed_tenji_wrapper.html",
     "images/chromevox.svg",
     "images/close-36.png",
     "images/close-hover-36.png",

@@ -13,6 +13,7 @@ import type {ClipboardData, StateWithMaxCellHeight} from '../common/offscreen_br
 
 import {EarconEngine} from './earcon_engine.js';
 import {LibLouisWorker} from './liblouis_worker.js';
+import {TenjiWorker} from './tenji_worker.js';
 
 const TARGET = BridgeConstants.Offscreen.TARGET;
 const Action = BridgeConstants.Offscreen.Action;
@@ -297,3 +298,4 @@ OffscreenBrailleDisplayManager.init();
 OffscreenMathHandler.init();
 EarconEngine.init();
 LibLouisWorker.init();
+TenjiWorker.init();

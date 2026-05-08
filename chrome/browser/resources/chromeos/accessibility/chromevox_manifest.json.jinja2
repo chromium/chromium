@@ -74,7 +74,11 @@
   "content_security_policy": "default-src 'none'; script-src 'self' 'wasm-eval' chrome://resources; style-src 'unsafe-inline' chrome://resources; img-src 'self' data:;",
 {% else %}
   "content_security_policy": {
-    "extension_pages": "default-src 'none'; script-src 'self' chrome://resources 'wasm-unsafe-eval'; style-src 'unsafe-inline' chrome://resources; img-src 'self' data:;"
+    "extension_pages": "default-src 'none'; script-src 'self' chrome://resources 'wasm-unsafe-eval'; style-src 'unsafe-inline' chrome://resources; img-src 'self' data:;",
+    "sandbox": "sandbox allow-scripts; script-src 'self' 'unsafe-eval'; child-src 'self';"
+  },
+  "sandbox": {
+     "pages": ["chromevox/mv3/common/braille/tenji/sandboxed_tenji_wrapper.html"]
   },
 {% endif %}
   "externally_connectable": {
