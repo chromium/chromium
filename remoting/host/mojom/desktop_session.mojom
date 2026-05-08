@@ -57,6 +57,17 @@ struct AudioPacket {
   Channels channels = Channels.kInvalid;
 };
 
+// Describes the audio sampling rate and channels configuration.
+struct AudioSampleInfo {
+  uint32 sampling_rate;
+  uint8 channels;
+};
+
+// Wraps a Mojo consumer handle to be typemapped to IpcFifoBufferReader.
+struct IpcFifoBufferReader {
+  handle<data_pipe_consumer> consumer_handle;
+};
+
 // Contains clipboard event data.
 // This struct mirrors the remoting::protocol::ClipboardEvents protobuf struct.
 struct ClipboardEvent {
@@ -494,10 +505,17 @@ interface DesktopSessionControl {
   SetHostCursorRenderedByClient();
 
   // Starts the audio injector device.
-  StartAudioInjector();
+  // TODO: crbug.com/509659010 - make `audio_reader` not optional once SPSC
+  // rollout is complete.
+  StartAudioInjector(IpcFifoBufferReader? audio_reader);
 
   // Injects an audio packet into the audio injector device.
+  // TODO: crbug.com/509659010 - remove InjectAudioPacket once SPSC rollout is
+  // complete.
   InjectAudioPacket(AudioPacket packet);
+
+  // Sets the sample rate and channels for the SPSC audio injector.
+  SetAudioInjectorSampleInfo(AudioSampleInfo info) => ();
 };
 
 struct CreateVideoCapturerResult {

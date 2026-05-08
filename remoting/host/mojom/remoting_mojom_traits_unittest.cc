@@ -12,6 +12,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
+#include "remoting/base/ipc_fifo_buffer.h"
 #include "remoting/base/source_location.h"
 #include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/base/screen_resolution.h"
@@ -756,5 +757,26 @@ TEST_P(MicrophoneControlTest, RoundTrip) {
 INSTANTIATE_TEST_SUITE_P(RemotingMojomTraitsTest,
                          MicrophoneControlTest,
                          testing::Bool());
+
+TEST(RemotingMojomTraitsTest, IpcFifoBufferReader) {
+  std::unique_ptr<IpcFifoBufferWriter> writer;
+  std::unique_ptr<IpcFifoBufferReader> reader;
+  ASSERT_TRUE(CreateIpcFifoBuffer(1024, writer, reader));
+
+  // Write some data to verify SPSC round-trip through serialization.
+  std::vector<uint8_t> data = {1, 2, 3, 4};
+  EXPECT_EQ(writer->Write(data), FifoBufferWriter::Result::kSuccess);
+
+  std::unique_ptr<IpcFifoBufferReader> output;
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::IpcFifoBufferReader>(
+      reader, output));
+
+  ASSERT_TRUE(output);
+  EXPECT_EQ(output->GetBufferedBytes(), 4u);
+
+  std::vector<uint8_t> read_data(4);
+  EXPECT_EQ(output->Read(read_data), 4u);
+  EXPECT_EQ(read_data, data);
+}
 
 }  // namespace remoting

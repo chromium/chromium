@@ -25,6 +25,11 @@ IpcFifoBufferWriter::IpcFifoBufferWriter(
 
 IpcFifoBufferWriter::~IpcFifoBufferWriter() = default;
 
+mojo::ScopedDataPipeProducerHandle IpcFifoBufferWriter::TakeProducerHandle() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return std::move(producer_handle_);
+}
+
 FifoBufferWriter::Result IpcFifoBufferWriter::Write(
     base::span<const uint8_t> data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -66,6 +71,11 @@ IpcFifoBufferReader::IpcFifoBufferReader(
 }
 
 IpcFifoBufferReader::~IpcFifoBufferReader() = default;
+
+mojo::ScopedDataPipeConsumerHandle IpcFifoBufferReader::TakeConsumerHandle() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return std::move(consumer_handle_);
+}
 
 std::optional<size_t> IpcFifoBufferReader::Read(
     base::span<uint8_t> destination) {

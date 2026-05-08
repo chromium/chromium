@@ -25,6 +25,7 @@ static_library("transport") {
 
 static_library("protocol") {
   sources = [
+    "audio_sample_info.h",
     "audio_stub.h",
     "auth_util.cc",
     "auth_util.h",

@@ -32,6 +32,8 @@ class IpcFifoBufferWriter : public FifoBufferWriter {
   // FifoBufferWriter implementation.
   Result Write(base::span<const uint8_t> data) override;
 
+  mojo::ScopedDataPipeProducerHandle TakeProducerHandle();
+
  private:
   mojo::ScopedDataPipeProducerHandle producer_handle_;
 
@@ -58,6 +60,8 @@ class IpcFifoBufferReader : public FifoBufferReader {
   std::optional<size_t> Skip(size_t bytes) override;
   void Clear() override;
   std::optional<size_t> GetBufferedBytes() const override;
+
+  mojo::ScopedDataPipeConsumerHandle TakeConsumerHandle();
 
  private:
   mojo::ScopedDataPipeConsumerHandle consumer_handle_;

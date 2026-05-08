@@ -368,7 +368,7 @@ void DesktopSessionProxy::OnDesktopSessionAgentStarted(
   }
 
   if (should_start_audio_injector_) {
-    desktop_session_control_->StartAudioInjector();
+    desktop_session_control_->StartAudioInjector(nullptr);
   }
 
   if (client_session_events_) {
@@ -567,7 +567,7 @@ void DesktopSessionProxy::StartAudioInjector() {
 
   should_start_audio_injector_ = true;
   if (desktop_session_control_) {
-    desktop_session_control_->StartAudioInjector();
+    desktop_session_control_->StartAudioInjector(nullptr);
   }
 }
 

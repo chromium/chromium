@@ -599,4 +599,29 @@ bool mojo::StructTraits<remoting::mojom::MicrophoneControlDataView,
   return true;
 }
 
+// static
+bool mojo::StructTraits<remoting::mojom::IpcFifoBufferReaderDataView,
+                        std::unique_ptr<remoting::IpcFifoBufferReader>>::
+    Read(remoting::mojom::IpcFifoBufferReaderDataView data_view,
+         std::unique_ptr<remoting::IpcFifoBufferReader>* out_reader) {
+  mojo::ScopedDataPipeConsumerHandle consumer_handle =
+      data_view.TakeConsumerHandle();
+  if (!consumer_handle.is_valid()) {
+    return false;
+  }
+  *out_reader = std::make_unique<remoting::IpcFifoBufferReader>(
+      std::move(consumer_handle));
+  return true;
+}
+
+// static
+bool mojo::StructTraits<remoting::mojom::AudioSampleInfoDataView,
+                        ::remoting::protocol::AudioSampleInfo>::
+    Read(remoting::mojom::AudioSampleInfoDataView data_view,
+         ::remoting::protocol::AudioSampleInfo* out_info) {
+  out_info->sampling_rate = data_view.sampling_rate();
+  out_info->channels = data_view.channels();
+  return true;
+}
+
 }  // namespace mojo

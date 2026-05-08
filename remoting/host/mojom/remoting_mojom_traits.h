@@ -25,6 +25,7 @@
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/map_traits_protobuf.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
+#include "remoting/base/ipc_fifo_buffer.h"
 #include "remoting/base/result.h"
 #include "remoting/base/source_location.h"
 #include "remoting/host/base/desktop_environment_options.h"
@@ -37,6 +38,7 @@
 #include "remoting/proto/coordinates.pb.h"
 #include "remoting/proto/event.pb.h"
 #include "remoting/proto/file_transfer.pb.h"
+#include "remoting/protocol/audio_sample_info.h"
 #include "remoting/protocol/file_transfer_helpers.h"
 #include "remoting/protocol/transport.h"
 #include "services/network/public/cpp/ip_endpoint_mojom_traits.h"
@@ -1587,6 +1589,45 @@ class StructTraits<remoting::mojom::MicrophoneControlDataView,
 
   static bool Read(remoting::mojom::MicrophoneControlDataView data_view,
                    ::remoting::protocol::MicrophoneControl* out_control);
+};
+
+template <>
+class StructTraits<remoting::mojom::IpcFifoBufferReaderDataView,
+                   std::unique_ptr<remoting::IpcFifoBufferReader>> {
+ public:
+  static bool IsNull(
+      const std::unique_ptr<remoting::IpcFifoBufferReader>& reader) {
+    return !reader;
+  }
+
+  static void SetToNull(std::unique_ptr<remoting::IpcFifoBufferReader>* out) {
+    out->reset();
+  }
+
+  static mojo::ScopedDataPipeConsumerHandle consumer_handle(
+      std::unique_ptr<remoting::IpcFifoBufferReader>& reader) {
+    return reader->TakeConsumerHandle();
+  }
+
+  static bool Read(remoting::mojom::IpcFifoBufferReaderDataView data_view,
+                   std::unique_ptr<remoting::IpcFifoBufferReader>* out_reader);
+};
+
+template <>
+class StructTraits<remoting::mojom::AudioSampleInfoDataView,
+                   ::remoting::protocol::AudioSampleInfo> {
+ public:
+  static uint32_t sampling_rate(
+      const ::remoting::protocol::AudioSampleInfo& info) {
+    return info.sampling_rate;
+  }
+
+  static uint8_t channels(const ::remoting::protocol::AudioSampleInfo& info) {
+    return info.channels;
+  }
+
+  static bool Read(remoting::mojom::AudioSampleInfoDataView data_view,
+                   ::remoting::protocol::AudioSampleInfo* out_info);
 };
 
 }  // namespace mojo

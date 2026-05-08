@@ -151,9 +151,13 @@ class DesktopSessionAgent
   void BeginFileWrite(const base::FilePath& file_path,
                       BeginFileWriteCallback callback) override;
   void SetHostCursorRenderedByClient() override;
-  void StartAudioInjector() override;
+  void StartAudioInjector(
+      std::unique_ptr<IpcFifoBufferReader> audio_reader) override;
   void InjectAudioPacket(
       std::unique_ptr<remoting::AudioPacket> packet) override;
+  void SetAudioInjectorSampleInfo(
+      const protocol::AudioSampleInfo& info,
+      SetAudioInjectorSampleInfoCallback callback) override;
 
   // Creates desktop integration components and a connected IPC channel to be
   // used to access them. The client end of the channel is returned.
