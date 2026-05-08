@@ -8686,6 +8686,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_COMPOSEBOX_TAB_PICKER_ADD_TABS_TITLE" desc="Title for the Composebox tab picker when no tabs are selected.">
         Add recent tabs
       </message>
+      <message name="IDS_NTP_COMPOSEBOX_SHARE_TABS" desc="Label for the row in the Composebox context menu that opens a flyout listing all open tabs to share.">
+        Share tabs
+      </message>
+      <message name="IDS_NTP_COMPOSEBOX_RECENT_TAB_SUFFIX" desc="Suffix label appended after the title of the most recently active tab in the Share tabs flyout. Visual separation from the title is handled by CSS, not by leading white space in this string.">
+        · Recent tab
+      </message>
       <message name="IDS_NTP_COMPOSE_ADD_IMAGE"  desc="Text for a button label that opens a menu so users can add an image to their search.">
         Add image
       </message>

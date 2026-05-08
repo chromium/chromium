@@ -52,6 +52,7 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/page_classification_functions.h"
 #include "components/omnibox/browser/vector_icons.h"
+#include "components/omnibox/common/composebox_features.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/omnibox/composebox/contextual_search_mojom_traits.h"
 #include "components/prefs/pref_service.h"
@@ -202,15 +203,18 @@ void ContextualSearchboxHandler::GetRecentTabs(GetRecentTabsCallback callback) {
     }
   }
 
-  // Sort the tabs by last active time, and truncate to the maximum number of
-  // tabs to return.
-  int max_tab_suggestions = std::min(static_cast<int>(tab_times.size()),
-                                     GetContextMenuMaxTabSuggestions());
-  std::partial_sort(tab_times.begin(), tab_times.begin() + max_tab_suggestions,
-                    tab_times.end(), [](const TabTime& a, const TabTime& b) {
-                      return a.time > b.time;
-                    });
-  tab_times.resize(max_tab_suggestions);
+  // Sort the tabs by last active time.
+  auto cmp = [](const TabTime& a, const TabTime& b) { return a.time > b.time; };
+  if (base::FeatureList::IsEnabled(omnibox::kContextManagementInComposebox)) {
+    std::sort(tab_times.begin(), tab_times.end(), cmp);
+  } else {
+    int max_tab_suggestions = std::min(static_cast<int>(tab_times.size()),
+                                      GetContextMenuMaxTabSuggestions());
+    std::partial_sort(tab_times.begin(),
+                      tab_times.begin() + max_tab_suggestions,
+                      tab_times.end(), cmp);
+    tab_times.resize(max_tab_suggestions);
+  }
 
   // Now that tabs have been culled, extract data for only this most recent
   // selection, which is a small subset of all tabs.

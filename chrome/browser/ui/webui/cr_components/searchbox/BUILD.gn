@@ -73,6 +73,7 @@ source_set("searchbox_impl") {
     "//components/contextual_tasks/public:query_contextualizer",
     "//components/google/core/common",
     "//components/omnibox/browser:vector_icons",
+    "//components/omnibox/common:features",
     "//components/search",
     "//components/sessions",
     "//components/vector_icons",

@@ -602,6 +602,7 @@ static_library("ui") {
     "//components/offline_pages/buildflags",
     "//components/omnibox/browser",
     "//components/omnibox/browser:vector_icons",
+    "//components/omnibox/common:features",
     "//components/onc",
     "//components/optimization_guide/content/browser",
     "//components/optimization_guide/core",
