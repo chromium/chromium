@@ -30,6 +30,7 @@ source_set("flags") {
     "//components/enterprise/buildflags",
     "//components/enterprise/client_certificates/core",
     "//components/enterprise/connectors/core",
+    "//components/enterprise/data_controls/core/browser:features",
     "//components/feature_engagement/public",
     "//components/feed:feature_list",
     "//components/history/core/browser",

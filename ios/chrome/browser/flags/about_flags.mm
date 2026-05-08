@@ -43,6 +43,7 @@
 #import "components/enterprise/buildflags/buildflags.h"
 #import "components/enterprise/client_certificates/core/features.h"
 #import "components/enterprise/connectors/core/features.h"
+#import "components/enterprise/data_controls/core/browser/features.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/feature_list.h"
 #import "components/feed/feed_feature_list.h"
@@ -2920,6 +2921,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"ios-how-to-chrome", flag_descriptions::kIOSHowToChromeName,
      flag_descriptions::kIOSHowToChromeDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kIOSHowToChrome)},
+    {"data-controls-search-with",
+     flag_descriptions::kDataControlsSearchWithName,
+     flag_descriptions::kDataControlsSearchWithDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(data_controls::kDataControlsSearchWith)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

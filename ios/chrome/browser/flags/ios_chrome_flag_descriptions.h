@@ -503,6 +503,12 @@ inline constexpr char kCrossDeviceSigninName[] = "Cross-Device Sign-in";
 inline constexpr char kCrossDeviceSigninDescription[] =
     "Guards the logic to start sign-in from a given QR Code.";
 
+inline constexpr char kDataControlsSearchWithName[] =
+    "Data Controls enforcement for search context menu item";
+inline constexpr char kDataControlsSearchWithDescription[] =
+    "Enables the Enterprise Data Controls for restricting data exfiltration "
+    "with the \"Search with...\" context menu item.";
+
 inline constexpr char kDataSharingDebugLogsName[] =
     "Enable data sharing debug logs";
 inline constexpr char kDataSharingDebugLogsDescription[] =
