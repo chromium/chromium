@@ -9011,7 +9011,7 @@
   {
     "name": "tab-groups-focusing",
     "owners": [ "dpenning@google.com", "top-chrome-desktop-ui@google.com" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 160
   },
   {
     "name": "tab-storage-sqlite-prototype",
