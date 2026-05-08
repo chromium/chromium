@@ -152,6 +152,8 @@ memory regions. The GN arguments to enable it are:
 enable_backup_ref_ptr_support=false
 is_asan=true
 is_component_build=false
+is_debug=false
+dcheck_always_on = true
 use_asan_backup_ref_ptr=false
 use_raw_ptr_asan_unowned_impl=true
 ```
