@@ -193,7 +193,7 @@ everything listed below.
 
 * [Policy templates](https://dl.google.com/dl/edgedl/chrome/policy/policy_templates.zip)
   will be updated automatically.
-* [Policy documentation](https://cloud.google.com/docs/chrome-enterprise/policies/)
+* [Policy documentation](https://chromeenterprise.google/policies/)
   will be updated automatically.
 
 ------

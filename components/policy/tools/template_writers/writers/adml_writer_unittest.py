@@ -430,7 +430,7 @@ class AdmlWriterUnittest(xml_writer_base_unittest.XmlWriterBaseTest):
         '<string id="DictionaryPolicyStub">Dictionary policy caption</string>\n'
         '<string id="DictionaryPolicyStub_Explain">'
         'This is a test description.\n'
-        'See https://cloud.google.com/docs/chrome-enterprise/policies/?policy='
+        'See https://chromeenterprise.google/policies/?policy='
         'DictionaryPolicyStub\n</string>')
     self.AssertXMLEquals(output, expected_output)
     # Assert generated presentation elements.

@@ -13,7 +13,7 @@ from infra import ChromeEnterpriseTestCase
 class FullscreenAllowedTest(ChromeEnterpriseTestCase):
   """Test the FullscreenAllowed policy.
 
-  See https://cloud.google.com/docs/chrome-enterprise/policies/?policy=FullscreenAllowed"""
+  See https://chromeenterprise.google/policies/?policy=FullscreenAllowed"""
 
   Policy = 'FullscreenAllowed'
 

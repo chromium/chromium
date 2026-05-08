@@ -23,11 +23,11 @@ of the code:
   and between two different BMM instances from different Chrome profiles.
 * **Policy support**: Several policies are respected:
 
-  - [EditBookmarksEnabled](https://cloud.google.com/docs/chrome-enterprise/policies/?policy=EditBookmarksEnabled):
+  - [EditBookmarksEnabled](https://chromeenterprise.google/policies/?policy=EditBookmarksEnabled):
     Prevents all editing operations
-  - [ManagedBookmarks](https://cloud.google.com/docs/chrome-enterprise/policies/?policy=ManagedBookmarks):
+  - [ManagedBookmarks](https://chromeenterprise.google/policies/?policy=ManagedBookmarks):
     Defines a folder of immutable bookmarks.
-  - [IncognitoModeAvailability](https://cloud.google.com/docs/chrome-enterprise/policies/?policy=IncognitoModeAvailability):
+  - [IncognitoModeAvailability](https://chromeenterprise.google/policies/?policy=IncognitoModeAvailability):
     Disables/force-enables opening bookmarks in Incognito
 
 ## Data-flow model

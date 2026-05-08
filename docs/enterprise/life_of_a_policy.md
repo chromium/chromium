@@ -21,7 +21,7 @@ When adding a new policy, put the platforms it will be supported in the
 `future_on` list. This will ensure that the policy is not included in the
 auto-generated documentation or templates. It will also exclude the policy from
 the Stable and Beta channels unless it's enabled specifically by
-[EnableExperimentalPolicies](https://cloud.google.com/docs/chrome-enterprise/policies/?policy=EnableExperimentalPolicies)
+[EnableExperimentalPolicies](https://chromeenterprise.google/policies/?policy=EnableExperimentalPolicies)
 policy.
 
 ### Review process

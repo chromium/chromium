@@ -7,7 +7,7 @@ from writers import gpo_editor_writer
 import re
 
 NEWLINE = '\r\n'
-POLICY_LIST_URL = '''https://cloud.google.com/docs/chrome-enterprise/policies/?policy='''
+POLICY_LIST_URL = '''https://chromeenterprise.google/policies/?policy='''
 
 
 def GetWriter(config):

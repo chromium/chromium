@@ -30,7 +30,7 @@ doc_back_to_top:
 doc_banner:
   desc: A banner shown at the top of the policy documentation
   text: The Chrome Enterprise policy list is moving! Please update your bookmarks
-    to <ph name="POLICY_DOCUMENTATION_URL">https://cloud.google.com/docs/chrome-enterprise/policies/<ex>https://cloud.google.com/docs/chrome-enterprise/policies/</ex></ph>.
+    to <ph name="POLICY_DOCUMENTATION_URL">https://chromeenterprise.google/policies/<ex>https://chromeenterprise.google/policies/</ex></ph>.
 doc_chrome_os_example_value:
   desc: Caption text of the field 'windows (ChromeOS clients)' in the summary chart
     of a policy in the generated documentation
@@ -177,7 +177,7 @@ doc_recommended:
 doc_reference_link:
   desc: Text pointing the user to the reference page for this policy, which may have
     more info (since it doesn't have a size limit)
-  text: 'Reference: <ph name="REFERENCE_URL">$6<ex>https://cloud.google.com/docs/chrome-enterprise/policies/?policy=WallpaperImage</ex></ph>'
+  text: 'Reference: <ph name="REFERENCE_URL">$6<ex>https://chromeenterprise.google/policies/?policy=WallpaperImage</ex></ph>'
 doc_schema:
   desc: Caption text of the 'schema' in the summary chart of a policy in the generated
     documentation
@@ -185,7 +185,7 @@ doc_schema:
 doc_schema_description_link:
   desc: Text pointing the user to the expanded documentation page for this policy,
     containing the information about schema and formatting.
-  text: See <ph name="REFERENCE_URL">$6<ex>https://cloud.google.com/docs/chrome-enterprise/policies/?policy=WallpaperImage</ex></ph>
+  text: See <ph name="REFERENCE_URL">$6<ex>https://chromeenterprise.google/policies/?policy=WallpaperImage</ex></ph>
     for more information about schema and formatting.
 doc_sensitive:
   desc: A flag that indicates that this policy is only supported for users that

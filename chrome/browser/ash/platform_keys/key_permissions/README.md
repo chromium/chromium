@@ -6,7 +6,7 @@ This directory contains code managing platform key permissions.
 
 This can only be “corporate” or undefined. If a key is marked for “corporate”
 usage, only extensions listed in
-[KeyPermissions](https://cloud.google.com/docs/chrome-enterprise/policies/?policy=KeyPermissions)
+[KeyPermissions](https://chromeenterprise.google/policies/?policy=KeyPermissions)
 policy will be allowed to access this key via chrome.platformKeys and
 chrome.enterprise.platformKeys APIs. Key Usages are considered to be
 properties / metadata attached to keys themselves. This metadata was

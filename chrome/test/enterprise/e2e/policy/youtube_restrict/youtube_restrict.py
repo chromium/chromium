@@ -14,7 +14,7 @@ from infra import ChromeEnterpriseTestCase
 class YouTubeRestrictTest(ChromeEnterpriseTestCase):
   """Test the ForceYouTubeRestrict policy.
 
-  See https://cloud.google.com/docs/chrome-enterprise/policies/?policy=ForceYouTubeRestrict"""
+  See https://chromeenterprise.google/policies/?policy=ForceYouTubeRestrict"""
 
   RestrictedText = "Restricted Mode is enabled by your network administrator"
 

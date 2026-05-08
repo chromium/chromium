@@ -23,7 +23,7 @@ from chrome_ent_test.infra.core import test
 @environment(file="../policy_test.asset.textpb")
 class CloudReportingEnabledTest(ChromeEnterpriseTestCase):
   """Test the CloudReportingEnabled policy:
-  https://cloud.google.com/docs/chrome-enterprise/policies/?policy=CloudReportingEnabled."""
+  https://chromeenterprise.google/policies/?policy=CloudReportingEnabled."""
 
   ADMIN_USER_EMAIL = 'admin@chromepizzatest.com'
   SCOPES = [

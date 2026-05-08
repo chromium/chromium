@@ -18,7 +18,7 @@ class ChromeDataRegionSettingTest(ChromeEnterpriseTestCase):
   """Test ChromeDataRegionSetting policy.
 
   See:
-     https://cloud.google.com/docs/chrome-enterprise/policies/?policy=ChromeDataRegionSetting
+     https://chromeenterprise.google/policies/?policy=ChromeDataRegionSetting
   """
 
   @before_all
@@ -85,7 +85,8 @@ class ChromeDataRegionSettingTest(ChromeEnterpriseTestCase):
   def test_cloudUser_ChromeDataRegionSettingNoPreference(self):
     # Domain: chromepizzatest.com
     # OrgUnit: CBCM testing > Policy Testing > Automated2
-    # User belongs to an OU with ChromeDataRegionSetting set to No Preference (0)
+    # User belongs to an OU with ChromeDataRegionSetting
+    # set to No Preference (0)
     account = "account2@chromepizzatest.com"
     path = f"gs://{self.gsbucket}/secrets/account2-password"
     cmd = r"gsutil cat " + path

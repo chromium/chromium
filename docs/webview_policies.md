@@ -19,4 +19,4 @@ list of supported policies.
 
 [3]: https://developer.android.com/training/enterprise/work-policy-ctrl.html#apply_restrictions
 [1]: https://developer.android.com/training/enterprise/app-restrictions.html
-[2]: https://cloud.google.com/docs/chrome-enterprise/policies
+[2]: https://chromeenterprise.google/policies/

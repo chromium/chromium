@@ -63,7 +63,7 @@ several approaches to minimize mistakes:
    what sites trigger the most warnings, and disable those that we identify as
    mistakes.
  * For domains used in company environments, we provide an [Enterprise
-   Policy](https://cloud.google.com/docs/chrome-enterprise/policies/?policy=LookalikeWarningAllowlistDomains)
+   Policy](https://chromeenterprise.google/policies/?policy=LookalikeWarningAllowlistDomains)
    allowing businesses to selectively disable warnings as needed for their
    users.
  * For several months following the roll-out of new lookalike checks, we accept

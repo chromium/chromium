@@ -14,9 +14,9 @@ class DefaultSearchProviderTest(ChromeEnterpriseTestCase):
               DefaultSearchProviderName,
               DefaultSearchProviderSearchURL
 
-    https://cloud.google.com/docs/chrome-enterprise/policies/?policy=DefaultSearchProviderEnabled
-    https://cloud.google.com/docs/chrome-enterprise/policies/?policy=DefaultSearchProviderName
-    https://cloud.google.com/docs/chrome-enterprise/policies/?policy=DefaultSearchProviderSearchURL
+    https://chromeenterprise.google/policies/?policy=DefaultSearchProviderEnabled
+    https://chromeenterprise.google/policies/?policy=DefaultSearchProviderName
+    https://chromeenterprise.google/policies/?policy=DefaultSearchProviderSearchURL
 
     """
 

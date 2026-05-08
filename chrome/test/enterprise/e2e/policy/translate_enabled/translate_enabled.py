@@ -15,7 +15,7 @@ from infra import ChromeEnterpriseTestCase
 class TranslateEnabledTest(ChromeEnterpriseTestCase):
   """Test the TranslateEnabled policy.
 
-  See https://cloud.google.com/docs/chrome-enterprise/policies/?policy=TranslateEnabled"""
+  See https://chromeenterprise.google/policies/?policy=TranslateEnabled"""
 
   @before_all
   def setup(self):

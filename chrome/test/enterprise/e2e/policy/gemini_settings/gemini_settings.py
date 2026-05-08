@@ -15,7 +15,7 @@ class GeminiSettingsTest(ChromeEnterpriseTestCase):
   """Test GeminiSettings policy.
 
   See:
-     https://cloud.google.com/docs/chrome-enterprise/policies/?policy=GeminiSettings
+     https://chromeenterprise.google/policies/?policy=GeminiSettings
   """
 
   @before_all

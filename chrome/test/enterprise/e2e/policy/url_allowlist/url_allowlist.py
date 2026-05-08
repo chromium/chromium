@@ -18,8 +18,8 @@ class UrlAllowlistTest(ChromeEnterpriseTestCase):
 
   This policy provides exceptions to the URLBlocklist policy.
 
-  See https://cloud.google.com/docs/chrome-enterprise/policies/?policy=URLBlocklist
-  and https://cloud.google.com/docs/chrome-enterprise/policies/?policy=URLAllowlist"""
+  See https://chromeenterprise.google/policies/?policy=URLBlocklist
+  and https://chromeenterprise.google/policies/?policy=URLAllowlist"""
 
   @before_all
   def setup(self):

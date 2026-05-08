@@ -13,7 +13,7 @@ from infra import ChromeEnterpriseTestCase
 class AppsShortcutEnabledTest(ChromeEnterpriseTestCase):
   """Test the ShowAppsShortcutInBookmarkBar policy.
 
-  See https://cloud.google.com/docs/chrome-enterprise/policies/?policy=ShowAppsShortcutInBookmarkBar"""
+  See https://chromeenterprise.google/policies/?policy=ShowAppsShortcutInBookmarkBar"""
 
   Policy = 'ShowAppsShortcutInBookmarkBar'
 

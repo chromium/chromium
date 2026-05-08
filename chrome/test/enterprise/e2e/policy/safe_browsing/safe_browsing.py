@@ -15,7 +15,7 @@ from infra import ChromeEnterpriseTestCase
 class SafeBrowsingEnabledTest(ChromeEnterpriseTestCase):
   """Test the SafeBrowsingEnabled policy.
 
-  See https://cloud.google.com/docs/chrome-enterprise/policies/?policy=SafeBrowsingEnabled"""
+  See https://chromeenterprise.google/policies/?policy=SafeBrowsingEnabled"""
 
   @before_all
   def setup(self):

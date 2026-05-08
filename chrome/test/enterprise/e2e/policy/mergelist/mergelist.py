@@ -21,7 +21,7 @@ flags.DEFINE_string(
 @environment(file="../policy_test.asset.textpb")
 class MergelistTest(ChromeEnterpriseTestCase):
   """Test the PolicyListMultipleSourceMergeList policy.
-    https://cloud.google.com/docs/chrome-enterprise/policies/?policy=PolicyListMultipleSourceMergeList"""
+    https://chromeenterprise.google/policies/?policy=PolicyListMultipleSourceMergeList"""
 
   _CHROMIUM_URL = 'https://chromium.org'
   _GOOGLE_URL = 'https://google.com'

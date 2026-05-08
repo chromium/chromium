@@ -16,7 +16,7 @@ from chrome_ent_test.infra.core import test
 @environment(file="../policy_test.asset.textpb")
 class CloudManagementEnrollmentTokenTest(ChromeEnterpriseTestCase):
   """Test the CloudManagementEnrollmentToken policy:
-  https://cloud.google.com/docs/chrome-enterprise/policies/?policy=CloudManagementEnrollmentToken."""
+  https://chromeenterprise.google/policies/?policy=CloudManagementEnrollmentToken."""
 
   @before_all
   def setup(self):

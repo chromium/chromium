@@ -13,7 +13,7 @@ from infra import ChromeEnterpriseTestCase
 class ExtensionInstallForcelistTest(ChromeEnterpriseTestCase):
   """Test the ExtensionInstallForcelist policy.
 
-  See https://cloud.google.com/docs/chrome-enterprise/policies/?policy=ExtensionInstallForcelist"""
+  See https://chromeenterprise.google/policies/?policy=ExtensionInstallForcelist"""
 
   # This is the extension id of the Google Keep extension.
   ExtensionId = 'lpcaedmchfhocbbapmcbpinfpgnhiddi'

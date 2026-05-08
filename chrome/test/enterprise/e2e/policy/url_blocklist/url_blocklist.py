@@ -16,7 +16,7 @@ _ERR_BLOCKED_BY_ADMINISTRATOR = 'is blocked'
 class UrlBlocklistTest(ChromeEnterpriseTestCase):
   """Test the URLBlocklist policy.
 
-  See https://cloud.google.com/docs/chrome-enterprise/policies/?policy=URLBlocklist"""
+  See https://chromeenterprise.google/policies/?policy=URLBlocklist"""
 
   @before_all
   def setup(self):

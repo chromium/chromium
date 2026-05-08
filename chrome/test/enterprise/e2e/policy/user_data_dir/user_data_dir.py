@@ -15,7 +15,7 @@ from infra import ChromeEnterpriseTestCase
 class UserDataDirTest(ChromeEnterpriseTestCase):
   """Test the UserDataDir
 
-    https://cloud.google.com/docs/chrome-enterprise/policies/?policy=UserDataDir.
+    https://chromeenterprise.google/policies/?policy=UserDataDir.
 
     """
 

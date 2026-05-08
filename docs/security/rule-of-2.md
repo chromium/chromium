@@ -132,7 +132,7 @@ Low-privilege processes include sandboxed utility processes and renderer
 processes with [Site Isolation](
 https://www.chromium.org/Home/chromium-security/site-isolation) (very good) or
 [origin isolation](
-https://cloud.google.com/docs/chrome-enterprise/policies/?policy=IsolateOrigins)
+https://chromeenterprise.google/policies/?policy=IsolateOrigins)
 (even better).
 
 ### Processing, Parsing, And Deserializing

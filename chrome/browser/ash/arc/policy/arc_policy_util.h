@@ -134,7 +134,7 @@ bool IsArcDisabledForEnterprise();
 
 // Returns set of packages requested to install from |arc_policy|. |arc_policy|
 // has JSON blob format, see
-// https://cloud.google.com/docs/chrome-enterprise/policies/?policy=ArcPolicy
+// https://chromeenterprise.google/policies/?policy=ArcPolicy
 std::set<std::string> GetRequestedPackagesFromArcPolicy(
     const std::string& arc_policy);
 

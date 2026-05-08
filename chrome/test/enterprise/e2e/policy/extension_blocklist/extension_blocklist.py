@@ -13,7 +13,7 @@ from infra import ChromeEnterpriseTestCase
 @environment(file="../policy_test.asset.textpb")
 class ExtensionInstallBlocklistTest(ChromeEnterpriseTestCase):
   """Test the ExtensionInstallBlocklist policy.
-    https://cloud.google.com/docs/chrome-enterprise/policies/?policy=ExtensionInstallBlocklist"""
+    https://chromeenterprise.google/policies/?policy=ExtensionInstallBlocklist"""
 
   @before_all
   def setup(self):

@@ -20,7 +20,7 @@ FLAGS = flags.FLAGS
 class RestoreOnStartupTest(ChromeEnterpriseTestCase):
   """Test the RestoreOnStartup policy.
 
-  See https://cloud.google.com/docs/chrome-enterprise/policies/?policy=RestoreOnStartup."""
+  See https://chromeenterprise.google/policies/?policy=RestoreOnStartup."""
 
   @before_all
   def setup(self):
