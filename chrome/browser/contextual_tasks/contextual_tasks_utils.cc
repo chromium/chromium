@@ -75,7 +75,7 @@ ContextualTasksUIInterface* GetWebUiInterface(
   }
 
   content::WebUIController* controller = web_ui->GetController();
-  if (!controller) {
+  if (!controller || !controller->GetType()) {
     return nullptr;
   }
 

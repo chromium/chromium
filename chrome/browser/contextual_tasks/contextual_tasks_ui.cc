@@ -806,9 +806,9 @@ void ContextualTasksUI::BindInterface(
 
 bool ContextualTasksUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  // Check if the user should have landed on the WebUI via an entry point. If
-  // not, refuse to load the WebUI to prevent a broken experience.
-  return base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks);
+  // Disable for OTR profiles.
+  return base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks) &&
+         !browser_context->IsOffTheRecord();
 }
 
 bool ContextualTasksUIConfig::ShouldCrashOnJavascriptErrorInDevelopmentBuild()
