@@ -47,7 +47,7 @@ std::optional<VideoType> ParseNewStyleVp9CodecID(std::string_view codec_id) {
       .subsampling = VideoChromaSampling::k420,
   };
 
-  std::vector<std::string> fields = base::SplitString(
+  std::vector<std::string_view> fields = base::SplitStringPiece(
       codec_id, ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
 
   // First four fields are mandatory. No more than 9 fields are expected.
@@ -63,6 +63,7 @@ std::optional<VideoType> ParseNewStyleVp9CodecID(std::string_view codec_id) {
   }
 
   std::vector<int> values;
+  values.reserve(fields.size() - 1);
   for (size_t i = 1; i < fields.size(); ++i) {
     // Missing value is not allowed.
     if (fields[i] == "") {
@@ -239,7 +240,7 @@ std::optional<VideoType> ParseAv1CodecId(std::string_view codec_id) {
   // <chromaSubsampling>.<colorPrimaries>.<transferCharacteristics>.
   // <matrixCoefficients>.<videoFullRangeFlag>
 
-  std::vector<std::string> fields = base::SplitString(
+  std::vector<std::string_view> fields = base::SplitStringPiece(
       codec_id, ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
 
   // The parameters sample entry 4CC, profile, level, tier, and bitDepth are all
@@ -284,7 +285,7 @@ std::optional<VideoType> ParseAv1CodecId(std::string_view codec_id) {
 
   // Since tier has been validated, strip the trailing tier indicator to allow
   // int conversion below.
-  fields[2].resize(2);
+  fields[2] = fields[2].substr(0, 2);
 
   // Fill with dummy values to ensure parallel indices with fields.
   std::vector<int> values(fields.size(), 0);
@@ -585,7 +586,7 @@ std::optional<VideoType> ParseHEVCCodecId(std::string_view codec_id) {
     return std::nullopt;
   }
 
-  std::vector<std::string> elem = base::SplitString(
+  std::vector<std::string_view> elem = base::SplitStringPiece(
       codec_id, ".", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   DCHECK(elem[0] == "hev1" || elem[0] == "hvc1");
 
@@ -598,7 +599,7 @@ std::optional<VideoType> ParseHEVCCodecId(std::string_view codec_id) {
   if (elem[1].size() > 0 &&
       (elem[1][0] == 'A' || elem[1][0] == 'B' || elem[1][0] == 'C')) {
     general_profile_space = 1 + (elem[1][0] - 'A');
-    elem[1].erase(0, 1);
+    elem[1] = elem[1].substr(1);
   }
   DCHECK(general_profile_space >= 0 && general_profile_space <= 3);
 
@@ -680,7 +681,7 @@ std::optional<VideoType> ParseHEVCCodecId(std::string_view codec_id) {
   uint8_t general_tier_flag;
   if (elem[3].size() > 0 && (elem[3][0] == 'L' || elem[3][0] == 'H')) {
     general_tier_flag = (elem[3][0] == 'L') ? 0 : 1;
-    elem[3].erase(0, 1);
+    elem[3] = elem[3].substr(1);
   } else {
     DVLOG(4) << __func__ << ": invalid general_tier_flag=" << elem[3];
     return std::nullopt;
@@ -816,7 +817,7 @@ std::optional<VideoType> ParseDolbyVisionCodecId(std::string_view codec_id) {
     return std::nullopt;
   }
 
-  std::vector<std::string> elem = base::SplitString(
+  std::vector<std::string_view> elem = base::SplitStringPiece(
       codec_id, ".", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   DCHECK(elem[0] == "dvh1" || elem[0] == "dvhe" || elem[0] == "dva1" ||
          elem[0] == "dvav" || elem[0] == "dav1");
@@ -903,7 +904,7 @@ std::optional<VideoType> ParseDolbyVisionCodecId(std::string_view codec_id) {
 }
 
 std::optional<VideoType> ParseCodec(std::string_view codec_id) {
-  std::vector<std::string> elem = base::SplitString(
+  std::vector<std::string_view> elem = base::SplitStringPiece(
       codec_id, ".", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   if (elem.empty()) {
     return std::nullopt;
