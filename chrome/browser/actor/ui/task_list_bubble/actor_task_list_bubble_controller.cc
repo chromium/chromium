@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/check.h"
-#include "base/debug/stack_trace.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"

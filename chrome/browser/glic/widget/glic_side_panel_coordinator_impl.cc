@@ -4,7 +4,6 @@
 
 #include "chrome/browser/glic/public/widget/glic_side_panel_coordinator_impl.h"
 
-#include "base/debug/stack_trace.h"
 #include "base/functional/callback.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"

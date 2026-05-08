@@ -157,7 +157,6 @@ void GlicActorTaskIconManager::UpdateTaskListBubble(actor::TaskId task_id) {
         RequiresTaskProcessing(state.value());
 
     if (ShouldShowBubble(state.value(), duration)) {
-      LOG(WARNING) << __func__ << " ShouldShowBubble!";
       // Notify the bubble only if a task now requires processing. This callback
       // will open the task list bubble and make it active, in order to bring it
       // to the user's attention. This is also necessary for when a user
