@@ -43,7 +43,6 @@ IN_PROC_BROWSER_TEST_P(LabelDumpAccessibilityEventsTest, SetText) {
   }
   SetFilters(R"(
 @MAC-ALLOW:AXTitleChanged*
-@WIN-ALLOW:EVENT_OBJECT_NAMECHANGE*
 @WIN-ALLOW:IA2_EVENT_TEXT_*
 @UIA-WIN-ALLOW:Text_TextChanged*
 @AURALINUX-ALLOW:NAME-CHANGED*

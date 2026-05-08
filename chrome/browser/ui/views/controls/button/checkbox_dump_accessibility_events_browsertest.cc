@@ -18,8 +18,7 @@ class CheckboxDumpAccessibilityEventsTest
     : public DumpAccessibilityEventsViewsTestBase {
  public:
   std::vector<ui::AXPropertyFilter> DefaultFilters() const override {
-    std::vector<ui::AXPropertyFilter> filters =
-        DumpAccessibilityEventsViewsTestBase::DefaultFilters();
+    std::vector<ui::AXPropertyFilter> filters;
 
 #if BUILDFLAG(IS_WIN)
     filters.emplace_back("EVENT_OBJECT_STATECHANGE*",

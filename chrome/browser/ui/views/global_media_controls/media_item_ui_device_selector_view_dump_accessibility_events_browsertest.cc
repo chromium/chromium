@@ -57,18 +57,17 @@ class MediaItemUIDeviceSelectorViewDumpAccessibilityEventsTest
     : public DumpAccessibilityEventsViewsTestBase {
  public:
   std::vector<ui::AXPropertyFilter> DefaultFilters() const override {
-    std::vector<ui::AXPropertyFilter> filters =
-        DumpAccessibilityEventsViewsTestBase::DefaultFilters();
+    std::vector<ui::AXPropertyFilter> filters;
 
 #if BUILDFLAG(IS_WIN)
+    filters.emplace_back("EVENT_OBJECT_STATECHANGE*",
+                         ui::AXPropertyFilter::ALLOW);
     filters.emplace_back("ExpandCollapseExpandCollapseState*",
                          ui::AXPropertyFilter::ALLOW);
     filters.emplace_back("StructureChanged*", ui::AXPropertyFilter::DENY);
     filters.emplace_back("AriaProperties*", ui::AXPropertyFilter::DENY);
 #elif BUILDFLAG(IS_MAC)
     filters.emplace_back("AXExpandedChanged*", ui::AXPropertyFilter::ALLOW);
-#elif BUILDFLAG(IS_LINUX)
-    filters.emplace_back("CHILDREN-CHANGED:*", ui::AXPropertyFilter::DENY);
 #endif
 
     return filters;
@@ -113,6 +112,7 @@ class MediaItemUIDeviceSelectorViewDumpAccessibilityEventsTest
 
 IN_PROC_BROWSER_TEST_P(MediaItemUIDeviceSelectorViewDumpAccessibilityEventsTest,
                        ShowDevices) {
+  AddAllowFilter("STATE-CHANGE:EXPANDED:TRUE*");
   BEGIN_RECORDING_EVENTS_OR_SKIP("media-device-selector-show-devices");
   device_selector_view_->ShowDevices();
 }
@@ -126,6 +126,7 @@ IN_PROC_BROWSER_TEST_P(MediaItemUIDeviceSelectorViewDumpAccessibilityEventsTest,
   // sees no net change.
   WaitForPendingSerialization();
 
+  AddAllowFilter("STATE-CHANGE:EXPANDED:FALSE*");
   BEGIN_RECORDING_EVENTS_OR_SKIP("media-device-selector-hide-devices");
   device_selector_view_->HideDevices();
 }

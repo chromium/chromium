@@ -38,6 +38,12 @@ class SliderDumpAccessibilityEventsTest
 };
 
 IN_PROC_BROWSER_TEST_P(SliderDumpAccessibilityEventsTest, ValueChanged) {
+  SetFilters(R"(
+@WIN-ALLOW:EVENT_OBJECT_VALUECHANGE*
+@UIA-WIN-ALLOW:RangeValueValue*
+@MAC-ALLOW:AXValueChanged*
+@AURALINUX-ALLOW:VALUE-CHANGED*
+)");
   BEGIN_RECORDING_EVENTS_OR_SKIP("slider-value-changed");
   slider_->SetValue(0.5f);
 }

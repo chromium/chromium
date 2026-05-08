@@ -24,8 +24,7 @@ class TreeViewDumpAccessibilityEventsTest
     : public DumpAccessibilityEventsViewsTestBase {
  public:
   std::vector<ui::AXPropertyFilter> DefaultFilters() const override {
-    std::vector<ui::AXPropertyFilter> filters =
-        DumpAccessibilityEventsViewsTestBase::DefaultFilters();
+    std::vector<ui::AXPropertyFilter> filters;
 
 #if BUILDFLAG(IS_WIN)
     filters.emplace_back("ExpandCollapseExpandCollapseState*",
@@ -33,13 +32,12 @@ class TreeViewDumpAccessibilityEventsTest
     filters.emplace_back("StructureChanged*", ui::AXPropertyFilter::DENY);
     filters.emplace_back("AriaProperties*", ui::AXPropertyFilter::DENY);
 #elif BUILDFLAG(IS_MAC)
-    filters.emplace_back("AXExpandedChanged*", ui::AXPropertyFilter::ALLOW);
+    filters.emplace_back("AXRowExpanded*", ui::AXPropertyFilter::ALLOW);
+    filters.emplace_back("AXRowCollapsed*", ui::AXPropertyFilter::ALLOW);
     // ViewsAXEnabled fires AXRowCountChanged (via AXEventGenerator) in addition
     // to AXRowExpanded/AXRowCollapsed. ViewsAXDisabled does not. Suppress the
     // extra event so both variants produce the same output.
     filters.emplace_back("AXRowCountChanged*", ui::AXPropertyFilter::DENY);
-#elif BUILDFLAG(IS_LINUX)
-    filters.emplace_back("CHILDREN-CHANGED:*", ui::AXPropertyFilter::DENY);
 #endif
 
     return filters;
@@ -89,6 +87,7 @@ IN_PROC_BROWSER_TEST_P(TreeViewDumpAccessibilityEventsTest, ExpandNode) {
   }
 #endif
 
+  AddAllowFilter("STATE-CHANGE:EXPANDED:TRUE*");
   ui::TreeModelNode* child1 = model_->GetRoot()->children()[0].get();
   BEGIN_RECORDING_EVENTS_OR_SKIP("tree-expand-node");
   tree_view_->Expand(child1);
@@ -96,6 +95,7 @@ IN_PROC_BROWSER_TEST_P(TreeViewDumpAccessibilityEventsTest, ExpandNode) {
 }
 
 IN_PROC_BROWSER_TEST_P(TreeViewDumpAccessibilityEventsTest, CollapseNode) {
+  AddAllowFilter("STATE-CHANGE:EXPANDED:FALSE*");
   ui::TreeModelNode* child1 = model_->GetRoot()->children()[0].get();
   tree_view_->Expand(child1);
   WaitForPendingSerialization();
@@ -108,7 +108,6 @@ IN_PROC_BROWSER_TEST_P(TreeViewDumpAccessibilityEventsTest, CollapseNode) {
 // events. TreeView::SetSelectedNode() calls SetIsSelected(true) on the node's
 // AXVirtualView, which fires Event::kSelection through ViewAccessibility.
 IN_PROC_BROWSER_TEST_P(TreeViewDumpAccessibilityEventsTest, SelectNode) {
-  AddDenyFilter("*");
   SetFilters(R"(
 @WIN-ALLOW:EVENT_OBJECT_SELECTION on*
 @UIA-WIN-ALLOW:SelectionItem_ElementSelected*

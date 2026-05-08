@@ -1981,7 +1981,6 @@ class OmniboxViewViewsDumpAccessibilityEventsTest
 IN_PROC_BROWSER_TEST_P(OmniboxViewViewsDumpAccessibilityEventsTest,
                        OmniboxPopupOpenClose) {
   SetFilters(R"(
-    @UIA-WIN-DENY:*
     @UIA-WIN-ALLOW:ControllerFor*
   )");
 

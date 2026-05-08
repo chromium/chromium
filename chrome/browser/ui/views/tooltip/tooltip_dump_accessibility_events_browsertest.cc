@@ -96,7 +96,6 @@ class TooltipDumpAccessibilityEventsTest
   std::vector<ui::AXPropertyFilter> DefaultFilters() const override {
     std::vector<ui::AXPropertyFilter> filters;
 #if BUILDFLAG(IS_WIN)
-    filters.emplace_back("*", ui::AXPropertyFilter::DENY);
     filters.emplace_back("*ROLE_SYSTEM_TOOLTIP*", ui::AXPropertyFilter::ALLOW);
     filters.emplace_back("ToolTipOpened*", ui::AXPropertyFilter::ALLOW);
     filters.emplace_back("ToolTipClosed*", ui::AXPropertyFilter::ALLOW);

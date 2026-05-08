@@ -50,21 +50,21 @@ IN_PROC_BROWSER_TEST_P(TextfieldDumpAccessibilityEventsTest, ValueChanged) {
   }
   // The ViewsAX path fires AXValueChanged on the parent AXGroup in addition
   // to the textfield itself. Filter it for consistent cross-variant output.
+  SetFilters(R"(
+@WIN-ALLOW:EVENT_OBJECT_VALUECHANGE*
+@WIN-ALLOW:IA2_EVENT_TEXT_INSERTED*
+@UIA-WIN-ALLOW:Text_TextChanged*
+@UIA-WIN-ALLOW:ValueValue*
+@MAC-ALLOW:AXValueChanged*
+@AURALINUX-ALLOW:TEXT-INSERT*
+)");
   AddDenyFilter("AXValueChanged on AXGroup*");
   BEGIN_RECORDING_EVENTS_OR_SKIP("textfield-value-changed");
   textfield_->SetText(u"Hello World");
 }
 
-// TODO(crbug.com/483355367): Disabled due to flakiness on Linux and Windows.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-#define MAYBE_TextSelectionChanged DISABLED_TextSelectionChanged
-#else
-#define MAYBE_TextSelectionChanged TextSelectionChanged
-#endif
 IN_PROC_BROWSER_TEST_P(TextfieldDumpAccessibilityEventsTest,
-                       MAYBE_TextSelectionChanged) {
-  AddDenyFilter("AutomationFocusChanged*");
-
+                       TextSelectionChanged) {
   textfield_->SetText(u"Hello World");
   textfield_->SetSelectedRange(gfx::Range(0));
   WaitForPendingSerialization();
@@ -73,8 +73,18 @@ IN_PROC_BROWSER_TEST_P(TextfieldDumpAccessibilityEventsTest,
   ASSERT_TRUE(base::test::RunUntil([&]() { return textfield_->HasFocus(); }));
   WaitForPendingSerialization();
 
+  SetFilters(R"(
+@WIN-ALLOW:IA2_EVENT_TEXT_CARET_MOVED*
+@UIA-WIN-ALLOW:Text_TextSelectionChanged*
+@MAC-ALLOW:AXSelectedTextChanged*
+@AURALINUX-ALLOW:TEXT-CARET-MOVED*
+@AURALINUX-ALLOW:TEXT-SELECTION-CHANGED*
+)");
   BEGIN_RECORDING_EVENTS_OR_SKIP("textfield-text-selection-changed");
   textfield_->SetSelectedRange(gfx::Range(1, 5));
+  if (GetApiType() == ui::AXApiType::kWinUIA) {
+    EXPECT_TRUE(WaitForCapturedEvent("Text_TextSelectionChanged"));
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(

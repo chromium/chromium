@@ -291,13 +291,9 @@ DumpAccessibilityEventsViewsTestBase::BeginRecordingEvents(
     }
   }
 
-  // Configure filters and start listening. Only pass DefaultFilters() to the
-  // event recorder — these control how element properties are formatted in
-  // EventReceived(). The additional_filters_ (DENY/ALLOW patterns for event
-  // names) are applied later in FilterEventLogs() for event-level filtering.
-  // Passing event-name filters like DENY:* to the recorder's formatter would
-  // suppress all element properties, producing empty element descriptions.
-  event_recorder_->SetPropertyFilters(DefaultFilters());
+  // Event filters are applied later in FilterEventLogs(). Passing them to the
+  // recorder's formatter can suppress element properties in formatted output.
+  event_recorder_->SetPropertyFilters({});
   event_recorder_->ListenToEvents(base::DoNothing());
   recording_events_ = true;
 
@@ -326,7 +322,14 @@ void DumpAccessibilityEventsViewsTestBase::StopRecordingAndCompare(
     recording_events_ = false;
   }
 
-  EXPECT_TRUE(ValidateAgainstExpectation(test_name, CollectEventLogs()));
+  std::vector<std::string> event_logs = CollectEventLogs();
+
+  // Release platform recorder references before gtest's end-of-test leak
+  // listener runs. On Windows, formatted event targets can keep COM wrappers
+  // alive until the recorder is destroyed.
+  event_recorder_.reset();
+
+  EXPECT_TRUE(ValidateAgainstExpectation(test_name, event_logs));
 }
 
 void DumpAccessibilityEventsViewsTestBase::WaitForPendingSerialization() {
@@ -399,33 +402,7 @@ base::FilePath DumpAccessibilityEventsViewsTestBase::GetExpectationDirectory()
 
 std::vector<ui::AXPropertyFilter>
 DumpAccessibilityEventsViewsTestBase::DefaultFilters() const {
-  std::vector<ui::AXPropertyFilter> filters;
-
-#if BUILDFLAG(IS_WIN)
-  // Suppress noisy location change events.
-  filters.emplace_back("EVENT_OBJECT_LOCATIONCHANGE*",
-                       ui::AXPropertyFilter::DENY);
-  // Suppress system events that may be noisy.
-  filters.emplace_back("EVENT_SYSTEM_*", ui::AXPropertyFilter::DENY);
-  // Allow show/hide and state changes by default.
-  filters.emplace_back("EVENT_OBJECT_SHOW*", ui::AXPropertyFilter::ALLOW);
-  filters.emplace_back("EVENT_OBJECT_HIDE*", ui::AXPropertyFilter::ALLOW);
-  filters.emplace_back("EVENT_OBJECT_STATECHANGE*",
-                       ui::AXPropertyFilter::ALLOW);
-  filters.emplace_back("EVENT_OBJECT_FOCUS*", ui::AXPropertyFilter::ALLOW);
-  filters.emplace_back("IA2_EVENT_*", ui::AXPropertyFilter::ALLOW);
-#elif BUILDFLAG(IS_MAC)
-  filters.emplace_back("AXFocusedUIElementChanged*",
-                       ui::AXPropertyFilter::ALLOW);
-  filters.emplace_back("AXSelectedChildrenChanged*",
-                       ui::AXPropertyFilter::ALLOW);
-  filters.emplace_back("AXValueChanged*", ui::AXPropertyFilter::ALLOW);
-#elif BUILDFLAG(IS_LINUX)
-  filters.emplace_back("STATE-CHANGE:*", ui::AXPropertyFilter::ALLOW);
-  filters.emplace_back("FOCUS-EVENT:*", ui::AXPropertyFilter::ALLOW);
-#endif
-
-  return filters;
+  return {};
 }
 
 void DumpAccessibilityEventsViewsTestBase::AddPropertyFilter(
@@ -503,14 +480,16 @@ DumpAccessibilityEventsViewsTestBase::CollectEventLogs() {
 std::vector<std::string> DumpAccessibilityEventsViewsTestBase::FilterEventLogs(
     const std::vector<std::string>& event_logs) const {
   // Build the combined filter list: default filters + any filters added via
-  // AddPropertyFilter() in individual tests.
+  // AddPropertyFilter() in individual tests. Views event tests deny events by
+  // default; tests and subclasses opt in only the platform events they assert.
   std::vector<ui::AXPropertyFilter> filters = DefaultFilters();
   filters.insert(filters.end(), additional_filters_.begin(),
                  additional_filters_.end());
 
   std::vector<std::string> filtered;
   for (const auto& event_log : event_logs) {
-    if (ui::AXTreeFormatter::MatchesPropertyFilters(filters, event_log, true)) {
+    if (ui::AXTreeFormatter::MatchesPropertyFilters(filters, event_log,
+                                                    false)) {
       filtered.push_back(base::EscapeNonASCII(event_log));
     }
   }

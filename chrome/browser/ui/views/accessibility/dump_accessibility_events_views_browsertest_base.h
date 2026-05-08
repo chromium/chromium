@@ -89,6 +89,8 @@ class DumpAccessibilityEventsViewsTestBase
 
   base::FilePath GetExpectationDirectory() const;
 
+  // Returns event-log filters shared by tests in a fixture. Event logs are
+  // denied by default; tests must allow the platform events they assert.
   virtual std::vector<ui::AXPropertyFilter> DefaultFilters() const;
 
   Widget* widget() { return widget_.get(); }

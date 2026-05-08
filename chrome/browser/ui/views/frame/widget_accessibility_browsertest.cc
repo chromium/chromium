@@ -29,10 +29,8 @@ class WidgetDumpAccessibilityEventsTest
     : public DumpAccessibilityEventsViewsTestBase {
  public:
   std::vector<ui::AXPropertyFilter> DefaultFilters() const override {
-    std::vector<ui::AXPropertyFilter> filters =
-        DumpAccessibilityEventsViewsTestBase::DefaultFilters();
+    std::vector<ui::AXPropertyFilter> filters;
 
-    filters.emplace_back("*", ui::AXPropertyFilter::DENY);
     filters.emplace_back("STATE-CHANGE:ACTIVE:*",
                          ui::AXPropertyFilter::ALLOW_EMPTY);
 

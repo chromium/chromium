@@ -45,6 +45,12 @@ class ButtonDumpAccessibilityEventsTest
 
 IN_PROC_BROWSER_TEST_P(ButtonDumpAccessibilityEventsTest, ButtonClick) {
   SKIP_IF_VIEWS_AX_ENABLED();
+  SetFilters(R"(
+@WIN-ALLOW:EVENT_OBJECT_STATECHANGE*
+@UIA-WIN-ALLOW:ToggleToggleState*
+@MAC-ALLOW:AXValueChanged*
+@AURALINUX-ALLOW:STATE-CHANGE:CHECKED*
+)");
   BEGIN_RECORDING_EVENTS_OR_SKIP("button-click");
   ui::test::EventGenerator generator(GetRootWindow(widget()));
   generator.MoveMouseTo(button_->GetBoundsInScreen().CenterPoint());
@@ -52,31 +58,24 @@ IN_PROC_BROWSER_TEST_P(ButtonDumpAccessibilityEventsTest, ButtonClick) {
 }
 
 IN_PROC_BROWSER_TEST_P(ButtonDumpAccessibilityEventsTest, ButtonFocus) {
-  // On some CI bots, the address bar receives a focus-loss event before the
-  // button gets focus, producing spurious FOCUS-EVENT:FALSE and
-  // STATE-CHANGE:FOCUSED:FALSE lines. Deny all broad focus/state events first,
-  // then re-allow only the :TRUE variants we care about.
-  AddDenyFilter("FOCUS-EVENT:*");
-  AddDenyFilter("STATE-CHANGE:*");
-  AddAllowFilter("FOCUS-EVENT:TRUE*");
-  AddAllowFilter("STATE-CHANGE:FOCUSED:TRUE*");
+  SetFilters(R"(
+@WIN-ALLOW:EVENT_OBJECT_FOCUS*
+@UIA-WIN-ALLOW:AutomationFocusChanged*
+@MAC-ALLOW:AXFocusedUIElementChanged*
+@AURALINUX-ALLOW:FOCUS-EVENT:TRUE*
+@AURALINUX-ALLOW:STATE-CHANGE:FOCUSED:TRUE*
+)");
 
   BEGIN_RECORDING_EVENTS_OR_SKIP("button-focus");
   button_->RequestFocus();
 }
 
-// TODO(crbug.com/483355367): Disabled due to flakiness on Linux.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_EnabledStateChanged DISABLED_EnabledStateChanged
-#else
-#define MAYBE_EnabledStateChanged EnabledStateChanged
-#endif
-IN_PROC_BROWSER_TEST_P(ButtonDumpAccessibilityEventsTest,
-                       MAYBE_EnabledStateChanged) {
+IN_PROC_BROWSER_TEST_P(ButtonDumpAccessibilityEventsTest, EnabledStateChanged) {
   SetFilters(R"(
 @WIN-ALLOW:EVENT_OBJECT_STATECHANGE*
 @UIA-WIN-ALLOW:IsEnabled*
 @AURALINUX-ALLOW:STATE-CHANGE:ENABLED*
+@AURALINUX-ALLOW:STATE-CHANGE:READ-ONLY*
 @AURALINUX-ALLOW:STATE-CHANGE:SENSITIVE*
 )");
   BEGIN_RECORDING_EVENTS_OR_SKIP("button-enabled-state-changed");
