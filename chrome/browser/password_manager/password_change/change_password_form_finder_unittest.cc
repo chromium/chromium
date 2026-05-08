@@ -286,6 +286,10 @@ TEST_P(ChangePasswordFormFinderTest, ChangePasswordFormNotDetected) {
       "PasswordManager.ChangePasswordFormDetected", false, 1);
   histogram_tester.ExpectTotalCount(
       "PasswordManager.ChangePasswordFormDetectionTime", 0);
+  CheckOpenFormStatus(
+      logs_uploader.GetFinalLog(),
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_TIME_OUT);
 }
 
 TEST_P(ChangePasswordFormFinderTest,

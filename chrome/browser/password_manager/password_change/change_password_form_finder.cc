@@ -236,6 +236,7 @@ void ChangePasswordFormFinder::OnExecutionResponseCallback(
   }
 
   form_waiter_.reset();
+  button_click_attempted_ = true;
   click_helper_ = std::make_unique<ButtonClickHelper>(
       web_contents_, client_, dom_node_id,
       base::BindOnce(&ChangePasswordFormFinder::OnButtonClicked,
@@ -291,7 +292,14 @@ void ChangePasswordFormFinder::OnChangePasswordFormFoundAfterClick(
 
 void ChangePasswordFormFinder::OnFormNotFound() {
   LogMessage(client_, Logger::STRING_AUTOMATED_PASSWORD_CHANGE_FORM_NOT_FOUND);
-  logs_uploader_->FormNotDetectedAfterOpening();
+  if (button_click_attempted_) {
+    logs_uploader_->FormNotDetectedAfterOpening();
+  } else {
+    logs_uploader_->SetFlowInterrupted(
+        kOpenFormFlowStep,
+        ModelQualityLogsUploader::QualityStatus::
+            PasswordChangeQuality_StepQuality_SubmissionStatus_TIME_OUT);
+  }
 
   CHECK(failure_callback_);
   std::move(failure_callback_).Run(ErrorCase::kFormNotFound);

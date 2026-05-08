@@ -117,6 +117,7 @@ class ChangePasswordFormFinder {
   std::unique_ptr<ButtonClickHelper> click_helper_;
 
   base::OneShotTimer timeout_timer_;
+  bool button_click_attempted_ = false;
 
   base::WeakPtrFactory<ChangePasswordFormFinder> weak_ptr_factory_{this};
 };

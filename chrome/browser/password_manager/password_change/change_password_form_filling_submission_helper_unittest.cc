@@ -484,6 +484,10 @@ TEST_P(ChangePasswordFormFillingSubmissionHelperTest, FailedDueToTimeout) {
       ChangePasswordFormFillingSubmissionHelper::kSubmissionWaitingTimeout);
 
   EXPECT_EQ(completion_future.Get().error(), SubmissionError::kTimeout);
+  CheckSubmitFormStatus(
+      logs_uploader()->GetFinalLog(),
+      QualityStatus::
+          PasswordChangeQuality_StepQuality_SubmissionStatus_TIME_OUT);
 }
 
 

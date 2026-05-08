@@ -402,6 +402,12 @@ void ChangePasswordFormFillingSubmissionHelper::OnButtonClicked(
 
 void ChangePasswordFormFillingSubmissionHelper::OnTimeout() {
   LogMessage(client_, Logger::STRING_AUTOMATED_PASSWORD_CHANGE_TIMEOUT);
+  if (logs_uploader_) {
+    logs_uploader_->SetFlowInterrupted(
+        kSubmitFormFlowStep,
+        ModelQualityLogsUploader::QualityStatus::
+            PasswordChangeQuality_StepQuality_SubmissionStatus_TIME_OUT);
+  }
   std::move(callback_).Run(base::unexpected(SubmissionError::kTimeout));
 }
 
