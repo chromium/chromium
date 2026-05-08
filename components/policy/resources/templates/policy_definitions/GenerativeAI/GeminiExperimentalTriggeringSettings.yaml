@@ -1,0 +1,29 @@
+caption: Controls Gemini experimental triggering
+desc: This is an experimental policy.
+
+owners:
+- rosiey@google.com
+- sauski@google.com
+- file://chrome/browser/glic/OWNERS
+example_value: 1
+future_on:
+- chrome.*
+- chrome_os
+features:
+  dynamic_refresh: true
+  per_profile: true
+type: int-enum
+schema:
+  type: integer
+  enum:
+  - 0
+  - 1
+items:
+- caption: Allow Gemini experimental triggering.
+  name: Enabled
+  value: 0
+- caption: Disallow Gemini experimental triggering.
+  name: Disabled
+  value: 1
+default: 1
+tags: []

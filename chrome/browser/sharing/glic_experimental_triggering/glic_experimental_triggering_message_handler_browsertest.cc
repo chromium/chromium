@@ -12,12 +12,15 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/glic/test_support/new_glic_api_test.h"
 #include "chrome/common/chrome_features.h"
+#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
+#include "components/prefs/pref_service.h"
 #include "components/sharing_message/mock_sharing_message_sender.h"
 #include "components/sharing_message/proto/sharing_message.pb.h"
 #include "content/public/test/browser_test.h"
@@ -45,6 +48,17 @@ class GlicExperimentalTriggeringMessageHandlerBrowserTest
     GlicApiBrowserTest::SetUpOnMainThread();
     GlicEnabling::SetBypassEnablementChecksForTesting(true);
 
+    // Mark enterprise management authority for platform and profile as NONE
+    // to avoid ambient management state on some bots affecting tests.
+    platform_management_override_ =
+        std::make_unique<policy::ScopedManagementServiceOverrideForTesting>(
+            policy::ManagementServiceFactory::GetForPlatform(),
+            policy::EnterpriseManagementAuthority::NONE);
+    profile_management_override_ =
+        std::make_unique<policy::ScopedManagementServiceOverrideForTesting>(
+            policy::ManagementServiceFactory::GetForProfile(GetProfile()),
+            policy::EnterpriseManagementAuthority::NONE);
+
     handler_ = std::make_unique<GlicExperimentalTriggeringMessageHandler>(
         GetProfile(), &mock_sharing_message_sender_);
 
@@ -64,12 +78,18 @@ class GlicExperimentalTriggeringMessageHandlerBrowserTest
 
   void TearDownOnMainThread() override {
     handler_.reset();
+    platform_management_override_.reset();
+    profile_management_override_.reset();
     GlicApiBrowserTest::TearDownOnMainThread();
   }
 
   base::test::ScopedFeatureList feature_list_;
   testing::NiceMock<MockSharingMessageSender> mock_sharing_message_sender_;
   std::unique_ptr<GlicExperimentalTriggeringMessageHandler> handler_;
+  std::unique_ptr<policy::ScopedManagementServiceOverrideForTesting>
+      platform_management_override_;
+  std::unique_ptr<policy::ScopedManagementServiceOverrideForTesting>
+      profile_management_override_;
 };
 
 IN_PROC_BROWSER_TEST_F(GlicExperimentalTriggeringMessageHandlerBrowserTest,

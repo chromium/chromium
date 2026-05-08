@@ -1,0 +1,32 @@
+[
+  {
+    "os": [
+      "linux",
+      "mac",
+      "win",
+      "chromeos"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "GeminiExperimentalTriggeringSettings": 1
+        },
+        "prefs": {
+          "glic.experimental_triggering_policy_settings": {
+            "value": 1
+          }
+        }
+      },
+      {
+        "policies": {
+          "GeminiExperimentalTriggeringSettings": 0
+        },
+        "prefs": {
+          "glic.experimental_triggering_policy_settings": {
+            "value": 0
+          }
+        }
+      }
+    ]
+  }
+]
