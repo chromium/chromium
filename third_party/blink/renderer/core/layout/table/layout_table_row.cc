@@ -60,51 +60,59 @@ LayoutTable* LayoutTableRow::Table() const {
   return nullptr;
 }
 
-void LayoutTableRow::AddChild(LayoutObject* child, LayoutObject* before_child) {
+void LayoutTableRow::AddChildBeforeDescendant(LayoutObject* new_child,
+                                              LayoutObject* before_descendant) {
+  NOT_DESTROYED();
+  DCHECK_NE(before_descendant->Parent(), this);
+
+  if (new_child->IsTableCell()) {
+    LayoutObject* before_child =
+        SplitAnonymousBoxesAroundChild(before_descendant);
+    DCHECK_EQ(before_child->Parent(), this);
+    AddChild(new_child, before_child);
+    return;
+  }
+
+  LayoutObject* before_descendant_container = before_descendant->Parent();
+  while (before_descendant_container->Parent() != this) {
+    before_descendant_container = before_descendant_container->Parent();
+  }
+  CHECK(before_descendant_container->IsAnonymous());
+  CHECK(before_descendant_container->IsTableCell());
+
+  // Insert the child into the anonymous table-cell instead of here.
+  before_descendant_container->AddChild(new_child, before_descendant);
+}
+
+void LayoutTableRow::AddChild(LayoutObject* new_child,
+                              LayoutObject* before_child) {
   NOT_DESTROYED();
   if (LayoutTable* table = Table()) {
     table->TableGridStructureChanged();
   }
 
-  if (!child->IsTableCell()) {
-    LayoutObject* last = before_child;
-    if (!last)
-      last = LastCell();
-    if (last && last->IsAnonymous() && last->IsTableCell()) {
-      LayoutBlockFlow* last_cell = To<LayoutBlockFlow>(last);
-      if (before_child == last_cell)
-        before_child = last_cell->FirstChild();
-      last_cell->AddChild(child, before_child);
-      return;
-    }
-
-    if (before_child && !before_child->IsAnonymous() &&
-        before_child->Parent() == this) {
-      LayoutObject* cell = before_child->PreviousSibling();
-      if (cell && cell->IsTableCell() && cell->IsAnonymous()) {
-        cell->AddChild(child);
-        return;
-      }
-    }
-
-    // If before_child is inside an anonymous cell, insert into the cell.
-    if (last && !last->IsTableCell() && last->Parent() &&
-        last->Parent()->IsAnonymous()) {
-      last->Parent()->AddChild(child, before_child);
-      return;
-    }
-
-    auto* cell = LayoutTableCell::CreateAnonymousWithParent(*this);
-    AddChild(cell, before_child);
-    cell->AddChild(child);
+  if (before_child && before_child->Parent() != this) {
+    AddChildBeforeDescendant(new_child, before_child);
     return;
   }
 
-  if (before_child && before_child->Parent() != this)
-    before_child = SplitAnonymousBoxesAroundChild(before_child);
+  if (!new_child->IsTableCell()) {
+    LayoutObject* after_child =
+        before_child ? before_child->PreviousSibling() : LastChild();
 
-  DCHECK(!before_child || before_child->IsTableCell());
-  LayoutBlock::AddChild(child, before_child);
+    if (after_child && after_child->IsAnonymous()) {
+      after_child->AddChild(new_child);
+      return;
+    }
+
+    // No suitable existing anonymous table-cell - create a new one.
+    LayoutTableCell* cell = LayoutTableCell::CreateAnonymousWithParent(*this);
+    LayoutBox::AddChild(cell, before_child);
+    cell->AddChild(new_child);
+    return;
+  }
+
+  LayoutBox::AddChild(new_child, before_child);
 }
 
 void LayoutTableRow::RemoveChild(LayoutObject* child) {

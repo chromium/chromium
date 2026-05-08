@@ -84,6 +84,9 @@ class CORE_EXPORT LayoutTableRow : public LayoutBlock {
   unsigned RowIndex() const;
 
  private:
+  void AddChildBeforeDescendant(LayoutObject* new_child,
+                                LayoutObject* before_descendant);
+
   bool IsTableRow() const final {
     NOT_DESTROYED();
     return true;
