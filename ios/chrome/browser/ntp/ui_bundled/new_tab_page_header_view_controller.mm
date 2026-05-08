@@ -397,7 +397,8 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
       [self.headerView setIdentityDiscErrorBadge];
     }
 
-    [self.headerView addSubview:_searchEngineLogoMediator.view];
+    [self.headerView insertSubview:_searchEngineLogoMediator.view
+                      belowSubview:self.headerView.toolBarView];
     _searchEngineLogoMediator.view.translatesAutoresizingMaskIntoConstraints =
         NO;
     _searchEngineLogoMediator.view.accessibilityIdentifier =
