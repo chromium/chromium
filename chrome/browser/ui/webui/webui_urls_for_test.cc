@@ -130,7 +130,12 @@ base::span<const std::string_view> GetChromeUrlsForTest() {
       "chrome://password-manager-internals",
       "chrome://policy",
       "chrome://predictors",
+
+  // TODO(crbug.com/511254271): Flaky on some Linux builders.
+#if !BUILDFLAG(IS_LINUX)
       "chrome://prefs-internals",
+#endif
+
       "chrome://privacy-sandbox-internals",
       "chrome://private-aggregation-internals",
       "chrome://private-ai-internals",
