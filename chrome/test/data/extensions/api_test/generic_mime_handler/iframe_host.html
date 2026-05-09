@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head><title>Iframe Host</title></head>
+<body>
+<div id="sentinel">main_frame_untouched</div>
+<iframe id="pdf" src="/test.pdf"></iframe>
+<script>
+  // Always tell the handler to abort.
+  window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'handler-ready') {
+      event.source.postMessage(
+          {type: 'handler-action', action: 'abort'}, '*');
+    }
+  });
+</script>
+</body>
+</html>

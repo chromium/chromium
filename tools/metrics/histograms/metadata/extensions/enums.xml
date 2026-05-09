@@ -2904,6 +2904,7 @@ Called by update_extension_histograms.py.-->
   <int value="1966" label="INDIGOPRIVATE_GETORIGINALIMAGE"/>
   <int value="1967" label="INDIGOPRIVATE_GETREPLACEMENTIMAGE"/>
   <int value="1968" label="OFFSCREEN_HASDOCUMENT"/>
+  <int value="1969" label="MIMEHANDLER_ABORTANDFALLBACKTONATIVEHANDLER"/>
 </enum>
 
 <!-- LINT.ThenChange(//extensions/browser/extension_function_histogram_value.h:HistogramValue) -->

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head><title>Two Iframes Same URL</title></head>
+<body>
+<iframe id="a" src="/test.pdf"></iframe>
+<iframe id="b" src="/test.pdf"></iframe>
+<script>
+  // Iframe A's handler is told to abort; iframe B's handler is told to
+  // stay. Identifies the sender by walking from `event.source` up to
+  // the direct child of this window, then matching against the two
+  // iframe elements. Verifies that FrameTreeNodeId-keyed fallback
+  // state distinguishes two same-URL embedders -- only A swaps, B stays.
+  window.addEventListener('message', (event) => {
+    if (!event.data || event.data.type !== 'handler-ready') {
+      return;
+    }
+    let win = event.source;
+    while (win.parent && win.parent !== window) {
+      win = win.parent;
+    }
+    const iframeA = document.getElementById('a');
+    const iframeB = document.getElementById('b');
+    let action = null;
+    if (win === iframeA.contentWindow) {
+      action = 'abort';
+    } else if (win === iframeB.contentWindow) {
+      action = 'stay';
+    }
+    if (action) {
+      event.source.postMessage({type: 'handler-action', action}, '*');
+    }
+  });
+</script>
+</body>
+</html>
