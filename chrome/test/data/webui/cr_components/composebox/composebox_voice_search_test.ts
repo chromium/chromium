@@ -201,6 +201,87 @@ suite('ComposeboxVoiceSearch', () => {
     return voiceSearchElement;
   }
 
+  test('verifies idle timeout is 1500ms', async () => {
+    // Open the UI. This calls start(), but openVoiceSearchUI()
+    // swallows/resets the setTimeout tracker at the end.
+    await openVoiceSearchUI();
+
+    // Trigger an audio event to force the timer to reset.
+    // This will generate a fresh setTimeout call outside of the
+    // openVoiceSearchUI() function.
+    mockSpeechRecognition.onaudiostart!(new Event('audiostart'));
+
+    const [, timeoutMs] = await windowProxy.whenCalled('setTimeout');
+
+    // Ensure it matches Google3.
+    assertEquals(1500, timeoutMs);
+  });
+
+  test('ABORTED error bypasses timer management', async () => {
+    await openVoiceSearchUI();
+    windowProxy.reset();
+
+    mockSpeechRecognition.onerror!
+        ({error: 'aborted'} as SpeechRecognitionErrorEvent);
+    await microtasksFinished();
+
+    // No timers should be called when 'aborted' is received.
+    assertEquals(0, windowProxy.getCallCount('clearTimeout'));
+    assertEquals(0, windowProxy.getCallCount('setTimeout'));
+  });
+
+  test('clears active timers when user manually closes the UI', async () => {
+    const voiceSearchElement = await openVoiceSearchUI();
+    windowProxy.reset();  // Clear trackers from the start() phase
+
+    // Simulate user explicitly closing the interface
+    const mockVoiceSearch =
+        voiceSearchElement as unknown as MockComposeboxVoiceSearch;
+    mockVoiceSearch.onCloseClick_();
+    await microtasksFinished();
+
+    // Assert that clearTimeout is called twice during the teardown sequence
+    // (once by the abort()->onError cascade, and once by resetState_)
+    assertEquals(
+        2, windowProxy.getCallCount('clearTimeout'),
+        'clearTimeout must be called on close to prevent background execution');
+
+    // No timers should be created during cleanup.
+    assertEquals(
+        0, windowProxy.getCallCount('setTimeout'),
+        'No new timers should be created during cleanup');
+  });
+
+  test('idle timer resets dynamically during continuous speech', async () => {
+    await openVoiceSearchUI();
+
+    windowProxy.resetResolver('setTimeout');
+    windowProxy.reset();
+
+    mockSpeechRecognition.onaudiostart!(new Event('audiostart'));
+    await microtasksFinished();
+
+    mockSpeechRecognition.onspeechstart!(new Event('speechstart'));
+    await microtasksFinished();
+
+    const result = createResults(1);
+    Object.defineProperty(
+        result.results[0]![0]!, 'transcript',
+        {value: 'testing', writable: true, configurable: true});
+    mockSpeechRecognition.onresult!(result);
+    await microtasksFinished();
+
+    // Expect windowProxy to react to these events: start(), onAudioStart_(),
+    // onSpeechStart_(), onResult_(), to reset the previous idle timer and start
+    // a fresh one.
+    assertTrue(
+        windowProxy.getCallCount('clearTimeout') >= 3,
+        'clearTimeout should be called to destroy the previous idle timer');
+    assertTrue(
+        windowProxy.getCallCount('setTimeout') >= 3,
+        'setTimeout should be called to start a fresh idle timer');
+  });
+
   test('hides stop and submit buttons when error scrim is shown', async () => {
     loadTimeData.overrideValues({
       voiceSearchCoherenceComposeboxesEnabled: true,
