@@ -1299,6 +1299,7 @@ Shell::~Shell() {
     observer.OnShellDestroyed();
   }
 
+  native_cursor_manager_ = nullptr;
   DCHECK(instance_ == this);
   instance_ = nullptr;
 }
