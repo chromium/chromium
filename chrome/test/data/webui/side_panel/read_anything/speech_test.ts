@@ -199,16 +199,18 @@ suite('Speech', () => {
     let mockTimer: MockTimer;
 
     function selectAndPlay(
-        baseTree: any, anchorId: number, anchorOffset: number, focusId: number,
-        focusOffset: number, isBackward: boolean = false): void {
+        baseTree: Object, anchorId: number, anchorOffset: number,
+        focusId: number, focusOffset: number,
+        isBackward: boolean = false): void {
       select(
           baseTree, anchorId, anchorOffset, focusId, focusOffset, isBackward);
       playFromSelection();
     }
 
     function select(
-        baseTree: any, anchorId: number, anchorOffset: number, focusId: number,
-        focusOffset: number, isBackward: boolean = false): void {
+        baseTree: Object, anchorId: number, anchorOffset: number,
+        focusId: number, focusOffset: number,
+        isBackward: boolean = false): void {
       mockTimer.install();
       stubAnimationFrame();
       const selectedTree = Object.assign(

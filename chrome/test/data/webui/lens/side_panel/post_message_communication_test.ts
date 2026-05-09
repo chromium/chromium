@@ -121,7 +121,7 @@ suite('PostMessageCommunication', () => {
     const message = [1, 2, 3, 4];
 
     // Setup postMessage listener on the iframe.
-    let receivedMessage: any;
+    let receivedMessage: unknown;
     let receivedOrigin: string = '';
 
     resultsFrame.contentWindow!.postMessage = (message, origin) => {
@@ -147,7 +147,7 @@ suite('PostMessageCommunicationWithMockTimer', () => {
   const mockTimer = new MockTimer();
 
   let postMessageCallCount: number = 0;
-  let lastReceivedPostMessageData: any;
+  let lastReceivedPostMessageData: unknown;
   let lastReceivedPostMessageOrigin: string = '';
 
   setup(() => {

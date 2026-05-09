@@ -40,7 +40,8 @@ export function mockMetrics(): TestMetricsBrowserProxy {
   return metrics;
 }
 
-export function emitEvent(app: AppElement, name: string, options?: any): void {
+export function emitEvent(
+    app: AppElement, name: string, options?: CustomEventInit): void {
   app.$.toolbar.dispatchEvent(new CustomEvent(name, options));
 }
 

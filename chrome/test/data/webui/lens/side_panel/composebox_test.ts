@@ -52,8 +52,9 @@ function getTransitionEndPromise(
 suite('Composebox', () => {
   let testBrowserProxy: TestLensSidePanelBrowserProxy;
   let lensSidePanelElement: LensSidePanelAppElement;
-  let mockPageHandler: TestMock<PageHandlerRemote>;
-  let mockSearchboxPageHandler: TestMock<SearchboxPageHandlerRemote>;
+  let mockPageHandler: TestMock<PageHandlerRemote>&PageHandlerRemote;
+  let mockSearchboxPageHandler: TestMock<SearchboxPageHandlerRemote>&
+      SearchboxPageHandlerRemote;
   let searchboxCallbackRouterRemote: SearchboxPageRemote;
 
   // Returns the composebox element.
@@ -68,8 +69,8 @@ suite('Composebox', () => {
     mockSearchboxPageHandler = TestMock.fromClass(SearchboxPageHandlerRemote);
     const searchboxCallbackRouter = new SearchboxPageCallbackRouter();
     ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
-        mockPageHandler as any, new PageCallbackRouter(),
-        mockSearchboxPageHandler as any, searchboxCallbackRouter));
+        mockPageHandler, new PageCallbackRouter(), mockSearchboxPageHandler,
+        searchboxCallbackRouter));
 
     searchboxCallbackRouterRemote =
         searchboxCallbackRouter.$.bindNewPipeAndPassRemote();
@@ -699,7 +700,7 @@ suite('Composebox', () => {
     // Verify max suggestions is calculated correctly.
     // Note: Composebox height might vary slightly, so we check range or
     // specific logic if predictable. We can check if it's > 0.
-    const maxSuggestions1 = (composebox as any).maxSuggestions;
+    const maxSuggestions1 = composebox.maxSuggestions!;
     assertTrue(maxSuggestions1 > 0);
 
     // Increase window height.
@@ -709,7 +710,7 @@ suite('Composebox', () => {
     window.dispatchEvent(new Event('resize'));
     await waitAfterNextRender(lensSidePanelElement);
 
-    const maxSuggestions2 = (composebox as any).maxSuggestions;
+    const maxSuggestions2 = composebox.maxSuggestions!;
     assertTrue(maxSuggestions2 > maxSuggestions1);
   });
 
@@ -725,7 +726,7 @@ suite('Composebox', () => {
     assertTrue(!!dropdown);
 
     // Set max suggestions to 1.
-    (composebox as any).maxSuggestions = 1;
+    composebox.maxSuggestions = 1;
     await waitAfterNextRender(composebox);
 
     // Focus input to expand composebox.
@@ -771,7 +772,7 @@ suite('Composebox', () => {
     await waitAfterNextRender(lensSidePanelElement);
 
     // Verify max suggestions is calculated correctly.
-    const maxSuggestions1 = (composebox as any).maxSuggestions;
+    const maxSuggestions1 = composebox.maxSuggestions!;
     assertTrue(maxSuggestions1 > 0);
 
     // Increase window height.
@@ -783,7 +784,7 @@ suite('Composebox', () => {
     window.dispatchEvent(new Event('resize'));
     await waitAfterNextRender(lensSidePanelElement);
 
-    const maxSuggestions2 = (composebox as any).maxSuggestions;
+    const maxSuggestions2 = composebox.maxSuggestions!;
     assertTrue(maxSuggestions2 > maxSuggestions1);
   });
 
@@ -799,7 +800,7 @@ suite('Composebox', () => {
     assertTrue(!!dropdown);
 
     // Set max suggestions to 1.
-    (composebox as any).maxSuggestions = 1;
+    composebox.maxSuggestions = 1;
     await waitAfterNextRender(composebox);
 
     // Focus input to expand composebox.

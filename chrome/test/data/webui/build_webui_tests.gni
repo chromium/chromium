@@ -104,6 +104,9 @@ template("build_webui_tests") {
     if (defined(invoker.ts_path_mappings)) {
       path_mappings += invoker.ts_path_mappings
     }
+    path_mappings += [ "//webui-test/*|" +
+                       rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
+                                   target_gen_dir) ]
     if (defined(invoker.is_chrome_untrusted) && invoker.is_chrome_untrusted) {
       path_mappings += [ "chrome-untrusted://webui-test/*|" + rebase_path(
                              "$root_gen_dir/chrome/test/data/webui/tsc/*",
@@ -182,17 +185,14 @@ template("build_webui_tests") {
         # Note: DO NOT add new entries to the list below.
         # TODO(crbug.com/494464740): Fix all violations below and turn on this
         # check by default.
-        "//chrome/test/data/webui/compose",
         "//chrome/test/data/webui/contextual_tasks",
         "//chrome/test/data/webui/cr_components/composebox",
         "//chrome/test/data/webui/cr_components/searchbox",
         "//chrome/test/data/webui/glic",
-        "//chrome/test/data/webui/lens",
         "//chrome/test/data/webui/new_tab_page",
         "//chrome/test/data/webui/print_preview",
         "//chrome/test/data/webui/settings",
         "//chrome/test/data/webui/side_panel/customize_chrome",
-        "//chrome/test/data/webui/side_panel/read_anything",
         "//chrome/test/data/webui/tab_search",
         "//chrome/test/data/webui/unexportable_keys_internals",
         "//chrome/test/data/webui/webui_toolbar",

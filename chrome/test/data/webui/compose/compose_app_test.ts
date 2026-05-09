@@ -716,9 +716,7 @@ suite('ComposeApp', () => {
         'some response', ComposeStatus.kOk, /*onDeviceEvaluationUsed=*/
         true);
     await microtasksFinished();
-    assertTrue(
-        (app as any).showOnDeviceDogfoodFooter_(),
-        'show footer should be true');
+    assertTrue(isVisible(app.$.onDeviceUsedFooter));
     await wait();
     assertTrue(
         isVisible(app.$.onDeviceUsedFooter),

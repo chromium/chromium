@@ -576,11 +576,12 @@ suite('SpeechController', () => {
     // Swap global setTimeout to immediately fire the callback for this test
     const originalSetTimeout = window.setTimeout;
     let timeoutFired = false;
-    window.setTimeout = ((fn: Function) => {
-                          timeoutFired = true;
-                          fn();
-                          return 1;
-                        }) as any;
+
+    window.setTimeout = (fn: TimerHandler) => {
+      timeoutFired = true;
+      (fn as Function)();
+      return 1;
+    };
 
     try {
       onPlayPauseToggle(textContent);
@@ -613,10 +614,10 @@ suite('SpeechController', () => {
 
     const originalClearTimeout = window.clearTimeout;
     let clearTimeoutCalls = 0;
-    window.clearTimeout = ((id: number) => {
-                            clearTimeoutCalls++;
-                            originalClearTimeout(id);
-                          }) as any;
+    window.clearTimeout = (id: number|undefined) => {
+      clearTimeoutCalls++;
+      originalClearTimeout(id);
+    };
 
     try {
       onPlayPauseToggle(textContent);

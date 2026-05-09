@@ -488,7 +488,7 @@ suite('Searchbox', () => {
 
 suite('SearchboxMotionTweaks', () => {
   let testBrowserProxy: TestLensOverlayBrowserProxy;
-  let lensOverlayElement: any;
+  let lensOverlayElement: LensOverlayAppElement;
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;

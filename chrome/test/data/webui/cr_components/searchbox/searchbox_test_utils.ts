@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {InputState} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
-import {ToolMode as ComposeboxToolMode} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import type {InputState} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
+import {ToolMode as ComposeboxToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
+import {assertEquals} from '//webui-test/chai_assert.js';
 
 export type {InputState};
 

@@ -9,7 +9,16 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-te
 import {createApp} from './common.js';
 
 suite('ReadabilityAxTreeAnchorsIntegration', () => {
-  function setTree(rootChildren: number[], nodes: Object[]) {
+  interface SimpleNode {
+    id: number;
+    role?: string;
+    htmlTag?: string;
+    childIds?: number[];
+    name?: string;
+    url?: string;
+  }
+
+  function setTree(rootChildren: number[], nodes: SimpleNode[]) {
     const tree = {
       rootId: 1,
       nodes: [
@@ -22,7 +31,7 @@ suite('ReadabilityAxTreeAnchorsIntegration', () => {
         ...nodes,
       ],
     };
-    const contentNodeIds = nodes.map((n: any) => n.id);
+    const contentNodeIds = nodes.map((n) => n.id);
     contentNodeIds.push(1);
     chrome.readingMode.setAnchorsForTesting(tree, contentNodeIds);
   }

@@ -41,7 +41,7 @@ export class TestSpeechBrowserProxy extends TestBrowserProxy implements
     this.methodCalled('resume');
   }
 
-  setOnVoicesChanged(onvoiceschanged: (event: Event) => any) {
+  setOnVoicesChanged(onvoiceschanged: (event: Event) => void) {
     this.methodCalled('setOnVoicesChanged', onvoiceschanged);
   }
 

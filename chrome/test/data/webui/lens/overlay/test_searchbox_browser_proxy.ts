@@ -12,6 +12,7 @@ import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/ung
 import type {WindowOpenDisposition} from '//resources/mojo/ui/base/mojom/window_open_disposition.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 import {PageCallbackRouter} from 'chrome-untrusted://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {MockInputState} from 'chrome-untrusted://webui-test/cr_components/searchbox/searchbox_test_utils.js';
 import {TestBrowserProxy} from 'chrome-untrusted://webui-test/test_browser_proxy.js';
 
 /**
@@ -21,8 +22,6 @@ import {TestBrowserProxy} from 'chrome-untrusted://webui-test/test_browser_proxy
  * handler remote, resolving the browser call promises with named arguments.
  */
 class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
-  private results_: Map<string, any> = new Map();
-
   constructor() {
     super([
       'deleteAutocompleteMatch',
@@ -60,10 +59,6 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
       'getPageClassification',
       'setSmartComposeStats',
     ]);
-  }
-
-  setResultFor(methodName: string, result: any) {
-    this.results_.set(methodName, result);
   }
 
   setPage(page: PageRemote) {
@@ -163,9 +158,6 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
 
   getRecentTabs() {
     this.methodCalled('getRecentTabs');
-    if (this.results_.has('getRecentTabs')) {
-      return this.results_.get('getRecentTabs');
-    }
     return Promise.resolve({tabs: []});
   }
 
@@ -176,11 +168,7 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
 
   getInputState() {
     this.methodCalled('getInputState');
-    if (this.results_.has('getInputState')) {
-      return this.results_.get('getInputState');
-    }
-
-    return Promise.resolve();
+    return Promise.resolve({state: new MockInputState()});
   }
 
   notifySessionStarted() {
