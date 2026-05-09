@@ -672,17 +672,20 @@ sk_sp<const SkData> MakeDataAvoidingCopy(SkStreamAsset* stream) {
   return SkData::MakeFromStream(stream, stream->getLength());
 }
 
-void RemovePageObjectsFromPage(FPDF_PAGE page,
-                               base::span<FPDF_PAGEOBJECT> page_objects) {
+// Caller takes ownership of `page_objects` via the return value.
+std::vector<ScopedFPDFPageObject> RemovePageObjectsFromPage(
+    FPDF_PAGE page,
+    std::vector<FPDF_PAGEOBJECT> page_objects) {
+  std::vector<ScopedFPDFPageObject> page_object_deleters;
+  page_object_deleters.reserve(page_objects.size());
   for (FPDF_PAGEOBJECT page_object : page_objects) {
     CHECK(FPDFPage_RemoveObject(page, page_object));
-
     // FPDFPage_RemoveObject() transferred ownership of `page_object` to the
-    // caller. Free it since `page_object` is being discarded.
-    FPDFPageObj_Destroy(page_object);
+    // caller. This transfers ownership into `page_object_deleters`.
+    page_object_deleters.push_back(ScopedFPDFPageObject(page_object));
   }
+  return page_object_deleters;
 }
-
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
 void CheckBitmapProperties(const SkBitmap& sk_bitmap, FPDF_BITMAP fpdf_bitmap) {
@@ -5265,8 +5268,9 @@ void PDFiumEngine::DiscardStroke(int page_index, InkStrokeId id) {
   CHECK(PageIndexInBounds(page_index));
   auto it = ink_stroke_data_.find(id);
   CHECK(it != ink_stroke_data_.end());
-  RemovePageObjectsFromPage(pages_[page_index]->GetPage(),
-                            it->second.page_objects);
+  std::vector<ScopedFPDFPageObject> page_object_deleters =
+      RemovePageObjectsFromPage(pages_[page_index]->GetPage(),
+                                std::move(it->second.page_objects));
   ink_stroke_data_.erase(it);
 
   if (!PageStillHasEdits(page_index)) {
