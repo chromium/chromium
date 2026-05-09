@@ -23,9 +23,10 @@ found in the LICENSE file.
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <include
-        android:id="@+id/pdf_toolbar"
-        layout="@layout/pdf_toolbar"
+    <ViewStub
+        android:id="@+id/pdf_toolbar_stub"
+        android:inflatedId="@+id/pdf_toolbar"
+        android:layout="@layout/pdf_toolbar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"

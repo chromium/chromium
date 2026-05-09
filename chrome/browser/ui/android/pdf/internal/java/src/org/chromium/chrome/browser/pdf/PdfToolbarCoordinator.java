@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.pdf;
 
 import android.view.View;
+import android.view.ViewStub;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -28,7 +29,11 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
     public PdfToolbarCoordinator(View parentView, PdfToolbarActionsDelegate delegate) {
         mDelegate = delegate;
         PdfToolbar toolbar = parentView.findViewById(R.id.pdf_toolbar);
-        // TODO(crbug.com/496180649): Only show the toolbar when the PDF is loaded via ViewStub.
+        if (toolbar == null) {
+            ViewStub stub = parentView.findViewById(R.id.pdf_toolbar_stub);
+            assert stub != null;
+            toolbar = (PdfToolbar) stub.inflate();
+        }
         toolbar.setVisibility(View.VISIBLE);
 
         // TODO(crbug.com/507061296): Remove hardcoded values after the PDF is loaded.
