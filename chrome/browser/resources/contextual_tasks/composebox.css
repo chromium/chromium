@@ -70,6 +70,7 @@
   --cr-composebox-tool-chip-height: 36px;
   --file-thumbnail-border-radius: 6px;
   --file-chip-border-radius: 12px;
+  --icon-menu-button-size: 36px;
 }
 
 @media (prefers-color-scheme: light) {
