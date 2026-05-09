@@ -6,6 +6,6 @@
 
 namespace omnibox {
 
-BASE_FEATURE(kContextMenuTabFlyover, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kContextManagementInComposebox, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace omnibox

@@ -16193,6 +16193,7 @@ from previous Chrome versions.
   <int value="686371937" label="ResponsiveIframes:disabled"/>
   <int value="686822618" label="DefaultSiteInstanceGroups:enabled"/>
   <int value="686929809" label="BorealisWebUIInstaller:enabled"/>
+  <int value="687401919" label="ContextManagementInComposebox:disabled"/>
   <int value="687838135" label="ThirdPartyDoodles:disabled"/>
   <int value="687883942" label="AndroidWindowPopupResizeAfterSpawn:enabled"/>
   <int value="687967510" label="LacrosNonSyncingProfiles:disabled"/>
@@ -19356,6 +19357,7 @@ from previous Chrome versions.
   <int value="1720399117" label="SkiaGraphite:enabled"/>
   <int value="1720657677" label="SensitiveContent:enabled"/>
   <int value="1721854955" label="EnableEdidBasedDisplayIds:disabled"/>
+  <int value="1722214178" label="ContextManagementInComposebox:enabled"/>
   <int value="1722521465" label="CrosBatterySaverAlwaysOn:disabled"/>
   <int value="1722739418" label="CCTNestedSecurityIcon:disabled"/>
   <int value="1722748383" label="EnableAppReinstallZeroState:disabled"/>

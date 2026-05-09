@@ -310,6 +310,7 @@ source_set("ui_impl") {
     "//components/keyed_service/core",
     "//components/lens",
     "//components/omnibox/browser:mojo_bindings",
+    "//components/omnibox/common:features",
     "//components/sessions",
     "//components/shared_highlighting/core/common",
     "//components/tabs:public",

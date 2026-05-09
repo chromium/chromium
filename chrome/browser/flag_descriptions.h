@@ -1442,6 +1442,12 @@ inline constexpr char kCompressionDictionaryTTLDescription[] =
     "Enables support for the 'ttl' parameter in the 'use-as-dictionary' HTTP "
     "response header.";
 
+inline constexpr char kContextManagementInComposeboxName[] =
+    "Context management in the Composebox";
+inline constexpr char kContextManagementInComposeboxDescription[] =
+    "Enables an updated tab context management UI in the plus button and "
+    "composebox context menu.";
+
 inline constexpr char kContextMenuEmptySpaceName[] =
     "Context menu at empty space";
 inline constexpr char kContextMenuEmptySpaceDescription[] =

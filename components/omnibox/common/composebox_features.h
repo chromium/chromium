@@ -10,10 +10,12 @@
 
 namespace omnibox {
 
-// If enabled, the Composebox Context Menu will show the current/most recent tab
-// in the context menu and below it, an "Add tabs" menu item which, when
-// clicked, shows the users current tab in a flyover.
-BASE_DECLARE_FEATURE(kContextMenuTabFlyover);
+// If enabled, this feature will enable an updated tab context management UI.
+// - The Composebox Context Menu will show the current and most recent tabs in a
+// flyover.
+// - Tab favicon chips will show next to the "+" button and in the context menu
+// instead of in the co-browse tool bar and RHS dropdown.
+BASE_DECLARE_FEATURE(kContextManagementInComposebox);
 
 }  // namespace omnibox
 

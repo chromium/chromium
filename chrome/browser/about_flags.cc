@@ -134,6 +134,7 @@
 #include "components/offline_pages/core/offline_page_feature.h"
 #include "components/omnibox/browser/aim_eligibility_service_features.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/common/composebox_features.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/on_device_translation/buildflags/buildflags.h"
@@ -7067,6 +7068,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNtpComposeboxUsesChromeComposeClientDescription,
      kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kComposeboxUsesChromeComposeClient)},
+
+    {"context-management-in-composebox",
+     flag_descriptions::kContextManagementInComposeboxName,
+     flag_descriptions::kContextManagementInComposeboxDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(omnibox::kContextManagementInComposebox)},
 
 #if !BUILDFLAG(IS_ANDROID)
     {"ntp-alpha-background-collections",
