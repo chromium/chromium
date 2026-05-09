@@ -15,12 +15,20 @@ module sys_stage1 [system] {
     header "$sysroot/alloca.h"
     export *
   }
+  module ctype_h {
+    header "$sysroot/ctype.h"
+    export *
+  }
   module fcntl_h {
     header "$sysroot/fcntl.h"
     export *
   }
   module features_h {
     header "$sysroot/features.h"
+    export *
+  }
+  module fenv_h {
+    header "$sysroot/fenv.h"
     export *
   }
   module getopt_h {
@@ -81,10 +89,6 @@ module sys_stage1 [system] {
   }
   module time_h {
     header "$sysroot/time.h"
-    export *
-  }
-  module unistd_h {
-    header "$sysroot/unistd.h"
     export *
   }
   module wchar_h {

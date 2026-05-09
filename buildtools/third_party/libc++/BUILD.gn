@@ -196,7 +196,6 @@ if (use_clang_modules && use_unified_system_module) {
       public_deps = [
         ":_Builtin_stdint",
         ":_DarwinFoundation2",
-        ":std_ctype_h",
       ]
     }
     DarwinFoundation3_module("xlocale") {
@@ -330,13 +329,11 @@ if (use_clang_modules && use_unified_system_module) {
   libcxx_module("std") {
     public_deps = [
       ":_Builtin_float",
+      ":_Builtin_inttypes",
       ":_Builtin_limits",
       ":_Builtin_stdalign",
       ":std_core",
-      ":std_ctype_h",
       ":std_errno_h",
-      ":std_fenv_h",
-      ":std_inttypes_h",
       ":std_math_h",
       ":std_private_mbstate_t",
       ":std_string_h",
@@ -365,31 +362,10 @@ if (use_clang_modules && use_unified_system_module) {
     ]
   }
 
-  libcxx_module("std_ctype_h") {
-    public_deps = [
-      ":std_config",
-      ":sysroot_ctype",
-    ]
-  }
-
   libcxx_module("std_errno_h") {
     public_deps = [
       ":std_config",
       ":sysroot_errno",
-    ]
-  }
-
-  libcxx_module("std_fenv_h") {
-    public_deps = [
-      ":std_config",
-      ":sysroot_fenv",
-    ]
-  }
-
-  libcxx_module("std_inttypes_h") {
-    public_deps = [
-      ":_Builtin_inttypes",
-      ":std_config",
     ]
   }
 
@@ -439,10 +415,7 @@ if (use_clang_modules && use_unified_system_module) {
     public_deps = [
       ":std",
       ":std_core",
-      ":std_ctype_h",
       ":std_errno_h",
-      ":std_fenv_h",
-      ":std_inttypes_h",
       ":std_math_h",
       ":std_private_mbstate_t",
       ":std_stdatomic_h",
