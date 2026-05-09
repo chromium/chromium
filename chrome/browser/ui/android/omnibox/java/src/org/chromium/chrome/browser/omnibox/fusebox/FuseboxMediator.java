@@ -1179,7 +1179,9 @@ import java.util.function.Supplier;
             }
         }
         boolean showModelPicker = modelButtonDataList.size() >= 2;
-        mModel.set(FuseboxProperties.POPUP_MODEL_DIVIDER_VISIBLE, showModelPicker);
+        boolean showModelPickerDivider =
+                showModelPicker && !OmniboxFeatures.sShowBottomSheetPopup.getValue();
+        mModel.set(FuseboxProperties.POPUP_MODEL_DIVIDER_VISIBLE, showModelPickerDivider);
         mModel.set(FuseboxProperties.POPUP_MODEL_HEADER_VISIBLE, showModelPicker);
         mModel.set(
                 FuseboxProperties.POPUP_MODEL_HEADER_TEXT,

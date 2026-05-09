@@ -16,7 +16,7 @@ found in the LICENSE file.
     <FrameLayout
         android:id="@+id/start_icon_background"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/fusebox_button_size"
+        android:layout_height="@dimen/fusebox_bottom_sheet_attachment_button_height"
         android:background="@drawable/fusebox_horizontal_attachment_background"
         android:foreground="?attr/selectableItemBackground"
         android:duplicateParentState="true"
@@ -24,8 +24,9 @@ found in the LICENSE file.
 
         <ImageView
             android:id="@+id/start_icon"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="@dimen/fusebox_popup_item_icon_size"
+            android:layout_height="@dimen/fusebox_popup_item_icon_size"
+            android:layout_gravity="center"
             android:importantForAccessibility="no"
             app:tint="@macro/default_icon_color" />
     </FrameLayout>
@@ -35,7 +36,9 @@ found in the LICENSE file.
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/fusebox_carousel_item_text_margin_top"
-        android:gravity="center_horizontal" />
+        android:gravity="center_horizontal"
+        android:maxLines="2"
+        android:ellipsize="end" />
 
     <!-- Always-hidden view to support duck-typing with the vertical layout. -->
     <ImageView
