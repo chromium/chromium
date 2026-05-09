@@ -3397,3 +3397,32 @@ TEST_F(AutocompleteControllerTest,
     EXPECT_EQ(url_match.destination_url.spec(), "https://example.com/");
   }
 }
+
+TEST_F(AutocompleteControllerTest, IncludesSmartComposeStatsInAdditionalStats) {
+  omnibox::metrics::SmartComposeStats stats;
+  stats.set_enabled(true);
+  stats.set_shown_count(1);
+  stats.set_accepted_count(2);
+  stats.set_characters_accepted(3);
+  stats.set_shown_length(4);
+  controller_.SetSmartComposeStats(stats);
+
+  TemplateURLRef::SearchTermsArgs search_terms_args(u"test");
+  controller_.UpdateSearchTermsArgsWithAdditionalSearchboxStats(
+      base::TimeDelta(), search_terms_args);
+
+  ASSERT_TRUE(search_terms_args.searchbox_stats.has_smart_compose_stats());
+  EXPECT_TRUE(
+      search_terms_args.searchbox_stats.smart_compose_stats().enabled());
+  EXPECT_EQ(
+      search_terms_args.searchbox_stats.smart_compose_stats().shown_count(), 1);
+  EXPECT_EQ(
+      search_terms_args.searchbox_stats.smart_compose_stats().accepted_count(),
+      2);
+  EXPECT_EQ(search_terms_args.searchbox_stats.smart_compose_stats()
+                .characters_accepted(),
+            3);
+  EXPECT_EQ(
+      search_terms_args.searchbox_stats.smart_compose_stats().shown_length(),
+      4);
+}

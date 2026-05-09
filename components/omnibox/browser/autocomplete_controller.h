@@ -248,6 +248,10 @@ class AutocompleteController : public AutocompleteProviderListener,
       base::TimeDelta query_formulation_time,
       TemplateURLRef::SearchTermsArgs& search_terms_args) const;
 
+  // Sets the Smart Compose stats to be included in searchbox stats on
+  // navigation.
+  void SetSmartComposeStats(const omnibox::metrics::SmartComposeStats& stats);
+
   // Adds an invocation source parameter to the match's destination URL.
   void UpdateMatchDestinationURLWithInvocationSource(
       AutocompleteMatch* match) const;
@@ -611,6 +615,9 @@ class AutocompleteController : public AutocompleteProviderListener,
 
   // The preferred steady state (unfocused) omnibox position.
   metrics::OmniboxEventProto::OmniboxPosition steady_state_omnibox_position_;
+
+  // The Smart Compose stats to be included in searchbox stats on navigation.
+  std::optional<omnibox::metrics::SmartComposeStats> smart_compose_stats_;
 
   // Configures autocomplete provider for different embedders.
   // TODO(crbug.com/455133849 & crbug.com/455132352): Make `const` after
