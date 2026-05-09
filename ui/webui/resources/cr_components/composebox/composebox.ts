@@ -157,11 +157,16 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
         type: Boolean,
         reflect: true,
       },
+      isZeroState: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
   accessor enableFileHint: boolean = false;
   accessor energyEffectAnimationEnabled: boolean = false;
+  accessor isZeroState: boolean = false;
   accessor isFollowupQuery: boolean = false;
   accessor inputPlaceholderOverride: string = '';
   accessor suggestionActivityEnabled: boolean = true;

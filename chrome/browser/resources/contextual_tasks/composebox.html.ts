@@ -65,6 +65,7 @@ export function getHtml(this: ContextualTasksComposeboxElement) {
           .enableFileHint="${this.enableFileHint_}"
           .isCanvasQuerySubmitted="${this.isCanvasQuerySubmitted}"
           .energyEffectAnimationEnabled="${this.energyEffectAnimationEnabled_}"
+          .isZeroState="${this.isZeroState}"
           @result-changed="${this.onSuggestionsResultChanged_}"
           @open-image-upload="${this.onOpenImageUpload_}"
           @open-file-upload="${this.onOpenFileUpload_}"

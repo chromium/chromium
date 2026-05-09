@@ -153,6 +153,7 @@
   --emphasized-curve-energy-effect-enabled: cubic-bezier(0.2, 0, 0, 1);
   --emphasized-decelerate-curve: cubic-bezier(0.05, 0.7, 0.1, 1);
   --emphasized-accelerate-curve: cubic-bezier(0.3, 0, 0.8, 0.15);
+  --standard-decelerate-curve: cubic-bezier(0, 0, 0, 1);
 
   background-color: var(--search-background-color);
   display: grid;
