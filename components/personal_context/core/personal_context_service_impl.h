@@ -16,6 +16,12 @@ class PersonalContextServiceImpl : public PersonalContextService {
   PersonalContextServiceImpl(const PersonalContextServiceImpl&) = delete;
   PersonalContextServiceImpl& operator=(const PersonalContextServiceImpl&) = delete;
   ~PersonalContextServiceImpl() override;
+
+  // PersonalContextService implementation:
+  void FetchContext(proto::ContextMemoryFeature feature,
+                    const google::protobuf::MessageLite& request_metadata,
+                    const ContextMemoryRequestOptions& options,
+                    FetchContextCallback callback) override;
 };
 
 }  // namespace personal_context

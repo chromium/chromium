@@ -4,14 +4,20 @@
 
 source_set("core") {
   sources = [
+    "context_memory_error.cc",
+    "context_memory_error.h",
     "personal_context_service.h",
     "personal_context_service_impl.cc",
     "personal_context_service_impl.h",
+    "personal_context_types.cc",
+    "personal_context_types.h",
   ]
 
   public_deps = [
     "//base",
     "//components/keyed_service/core",
+    "//components/personal_context/proto:personal_context_proto",
+    "//net",
   ]
 }
 
