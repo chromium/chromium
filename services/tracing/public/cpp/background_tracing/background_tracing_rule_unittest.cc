@@ -254,6 +254,80 @@ TEST_F(BackgroundTracingRuleTest, RuleActivatesAfterDelay) {
   rule->Uninstall();
 }
 
+TEST_F(BackgroundTracingRuleTest,
+       MultipleRulesForSameTriggerOnlyFirstTriggers) {
+  perfetto::protos::gen::TriggerRule config1;
+  CreateRuleConfig(R"pb(
+                     name: "rule1" manual_trigger_name: "test_trigger"
+                   )pb",
+                   config1);
+  auto rule1 = BackgroundTracingRule::Create(config1);
+
+  perfetto::protos::gen::TriggerRule config2;
+  CreateRuleConfig(R"pb(
+                     name: "rule2" manual_trigger_name: "test_trigger"
+                   )pb",
+                   config2);
+  auto rule2 = BackgroundTracingRule::Create(config2);
+
+  int trigger_count1 = 0;
+  rule1->Install(base::BindLambdaForTesting([&](const BackgroundTracingRule*) {
+    trigger_count1++;
+    return true;
+  }));
+
+  int trigger_count2 = 0;
+  rule2->Install(base::BindLambdaForTesting([&](const BackgroundTracingRule*) {
+    trigger_count2++;
+    return true;
+  }));
+
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("test_trigger"));
+
+  EXPECT_EQ(1, trigger_count1);
+  EXPECT_EQ(0, trigger_count2);
+
+  rule1->Uninstall();
+  rule2->Uninstall();
+}
+
+TEST_F(BackgroundTracingRuleTest,
+       MultipleRulesForSameTriggerFirstRejectSecondAccept) {
+  perfetto::protos::gen::TriggerRule config1;
+  CreateRuleConfig(R"pb(
+                     name: "rule1" manual_trigger_name: "test_trigger"
+                   )pb",
+                   config1);
+  auto rule1 = BackgroundTracingRule::Create(config1);
+
+  perfetto::protos::gen::TriggerRule config2;
+  CreateRuleConfig(R"pb(
+                     name: "rule2" manual_trigger_name: "test_trigger"
+                   )pb",
+                   config2);
+  auto rule2 = BackgroundTracingRule::Create(config2);
+
+  int trigger_count1 = 0;
+  rule1->Install(base::BindLambdaForTesting([&](const BackgroundTracingRule*) {
+    trigger_count1++;
+    return false;
+  }));
+
+  int trigger_count2 = 0;
+  rule2->Install(base::BindLambdaForTesting([&](const BackgroundTracingRule*) {
+    trigger_count2++;
+    return true;
+  }));
+
+  EXPECT_TRUE(base::trace_event::EmitNamedTrigger("test_trigger"));
+
+  EXPECT_EQ(1, trigger_count1);
+  EXPECT_EQ(1, trigger_count2);
+
+  rule1->Uninstall();
+  rule2->Uninstall();
+}
+
 TEST_F(BackgroundTracingRuleTest, RepeatingIntervalRuleFromValidProto) {
   perfetto::protos::gen::TriggerRule config;
   CreateRuleConfig(

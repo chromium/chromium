@@ -63,15 +63,14 @@ bool NamedTriggerManager::NotifyObservers(const std::string& trigger_name,
   if (it == observers_.end()) {
     return false;
   }
-  bool triggered = false;
   for (Observer& obs : it->second) {
-    triggered |= obs.OnNamedTrigger(value, flow_id);
+    if (obs.OnNamedTrigger(value, flow_id)) {
+      TRACE_EVENT_INSTANT("tracing.background", "NamedTrigger",
+                          perfetto::Flow::Global(flow_id));
+      return true;
+    }
   }
-  if (triggered) {
-    TRACE_EVENT_INSTANT("tracing.background", "NamedTrigger",
-                        perfetto::Flow::Global(flow_id));
-  }
-  return triggered;
+  return false;
 }
 
 }  // namespace base::trace_event
