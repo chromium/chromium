@@ -60,6 +60,7 @@ cr-composebox {
   --color-composebox-recent-tab-chip-outline: unset; /* Omnibox has no recent tab chip. */
   --color-composebox-scrim-background: unset; /* No scrim. */
   --color-composebox-submit-button-background: var(--color-omnibox-composebox-submit-button-background);
+  --color-composebox-submit-button-energy: var(--color-omnibox-composebox-submit-button-energy);
   --color-composebox-submit-button-icon: var(--color-omnibox-composebox-submit-button-icon);
   --color-composebox-submit-button-hover: var(--color-omnibox-action-icon-hover);
   --color-composebox-suggestion-activity: unset; /* No activity suggestion disclaimer. */
