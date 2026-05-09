@@ -858,10 +858,9 @@ bool ContextualSearchboxHandler::ShouldOpenInLensSidePanel(
                 browser_window_interface)
           : nullptr;
 
-  bool lens_overlay_enabled = false;
   auto* entry_point_controller =
       lens::LensOverlayEntryPointController::From(browser_window_interface);
-  lens_overlay_enabled =
+  bool lens_overlay_enabled =
       entry_point_controller && entry_point_controller->IsEnabled();
 
   return active_web_contents &&
@@ -872,7 +871,7 @@ bool ContextualSearchboxHandler::ShouldOpenInLensSidePanel(
          session_handle->IsTabInContext(
              sessions::SessionTabHelper::IdForTab(active_web_contents));
 }
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void ContextualSearchboxHandler::DeleteContext(
     const base::UnguessableToken& context_token,

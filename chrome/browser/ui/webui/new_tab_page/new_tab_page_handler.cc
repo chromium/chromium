@@ -124,15 +124,18 @@ const int64_t kMaxDownloadBytes = 1024 * 1024;
 
 constexpr char kDisableInteraction[] = "disable";
 constexpr char kDismissInteraction[] = "dismiss";
+#if !BUILDFLAG(IS_ANDROID)
 constexpr char kIgnoreInteraction[] = "ignore";
+#endif
 constexpr char kUseInteraction[] = "use";
+
+// TODO(b/502297163): Implement for Android.
+#if !BUILDFLAG(IS_ANDROID)
 constexpr auto kModuleInteractionNames =
     base::MakeFixedFlatSet<std::string_view>(
         {kDisableInteraction, kDismissInteraction, kIgnoreInteraction,
          kUseInteraction});
 
-// TODO(b/502297163): Implement for Android.
-#if !BUILDFLAG(IS_ANDROID)
 // Returns a list of module IDs that are eligible for HATS.
 std::vector<std::string> GetSurveyEligibleModuleIds() {
   return base::SplitString(
@@ -453,11 +456,9 @@ new_tab_page::mojom::PromoPtr MakePromo(const PromoData& data) {
   return promo;
 }
 
-base::DictValue MakeModuleInteractionTriggerIdDictionary() {
 // TODO(b/502297163): Implement for Android.
-#if BUILDFLAG(IS_ANDROID)
-  return base::DictValue();
-#else
+#if !BUILDFLAG(IS_ANDROID)
+base::DictValue MakeModuleInteractionTriggerIdDictionary() {
   const auto data = base::GetFieldTrialParamValueByFeature(
       features::kHappinessTrackingSurveysForDesktopNtpModules,
       ntp_features::kNtpModulesInteractionBasedSurveyEligibleIdsParam);
@@ -485,8 +486,8 @@ base::DictValue MakeModuleInteractionTriggerIdDictionary() {
   }
 
   return std::move(*value_with_error).TakeDict();
-#endif  // !BUILDFLAG(IS_ANDROID)
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -545,9 +546,9 @@ NewTabPageHandler::NewTabPageHandler(
       promo_service_(PromoServiceFactory::GetForProfile(profile)),
       microsoft_auth_service_(
           MicrosoftAuthServiceFactory::GetForProfile(profile)),
-#endif
       interaction_module_id_trigger_dict_(
           MakeModuleInteractionTriggerIdDictionary()),
+#endif
       browser_window_changed_subscription_(
           webui::RegisterBrowserWindowInterfaceChanged(
               web_contents_,
@@ -596,8 +597,6 @@ NewTabPageHandler::NewTabPageHandler(
   }
 
   pref_change_registrar_.Init(profile_->GetPrefs());
-// TODO(b/502297163): Implement for Android.
-#if !BUILDFLAG(IS_ANDROID)
   pref_change_registrar_.Add(
       prefs::kNtpModulesVisible,
       base::BindRepeating(&NewTabPageHandler::UpdateDisabledModules,
@@ -621,6 +620,8 @@ NewTabPageHandler::NewTabPageHandler(
       base::BindRepeating(&NewTabPageHandler::UpdateActionChipsVisibility,
                           base::Unretained(this)));
 
+// TODO(b/502297163): Implement for Android.
+#if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(
           feature_engagement::kIPHDesktopRealboxContextualSearchFeature)) {
     searchbox_shown_subscription_ =
@@ -651,8 +652,6 @@ NewTabPageHandler::~NewTabPageHandler() {
 // static
 void NewTabPageHandler::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kNtpComposeButtonShownCountPrefName, 0);
-// TODO(b/502297163): Implement for Android.
-#if !BUILDFLAG(IS_ANDROID)
   registry->RegisterListPref(prefs::kNtpDisabledModules);
   registry->RegisterListPref(prefs::kNtpHiddenModules);
   registry->RegisterListPref(prefs::kNtpModulesOrder);
@@ -668,6 +667,8 @@ void NewTabPageHandler::RegisterProfilePrefs(PrefRegistrySimple* registry) {
       prefs::kNtpCustomizeChromeSidePanelAutoOpeningsCount, 0);
   registry->RegisterBooleanPref(prefs::kNtpCustomizeChromeExplicitlyClosed,
                                 false);
+// TODO(b/502297163): Implement for Android.
+#if !BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(prefs::kNtpCustomizeChromeIPHAutoOpened, false);
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
@@ -750,10 +751,7 @@ void NewTabPageHandler::OnRestoreModule(const std::string& module_id) {
 }
 
 void NewTabPageHandler::SetModulesVisible(bool visible) {
-// TODO(b/502297163): Implement for Android.
-#if !BUILDFLAG(IS_ANDROID)
   DisableModuleAutoRemoval(profile_, ntp_modules::kAllModulesId);
-#endif
   profile_->GetPrefs()->SetBoolean(prefs::kNtpModulesVisible, visible);
 }
 
@@ -777,10 +775,7 @@ void NewTabPageHandler::SetModulesDisabled(
     }
   }
 
-// TODO(b/502297163): Implement for Android.
-#if !BUILDFLAG(IS_ANDROID)
   DisableModuleListAutoRemoval(profile_, module_ids);
-#endif
 
   // We're not recording a user interaction if the modules were disabled due to
   // feature optimization auto removal.
@@ -823,14 +818,14 @@ void NewTabPageHandler::UpdateDisabledModules() {
 
 void NewTabPageHandler::OnModulesLoadedWithData(
     const std::vector<std::string>& module_ids) {
-// TODO(b/502297163): Implement for Android.
-#if !BUILDFLAG(IS_ANDROID)
   UpdateModulesStaleness(profile_, module_ids);
 
   for (const auto& module_id : module_ids) {
     IncrementDictPrefKeyCount(prefs::kNtpModulesLoadedCountDict, module_id);
   }
 
+// TODO(b/502297163): Implement for Android.
+#if !BUILDFLAG(IS_ANDROID)
   std::vector<std::string> survey_eligible_module_ids =
       GetSurveyEligibleModuleIds();
   if (std::any_of(module_ids.begin(), module_ids.end(),
@@ -1488,10 +1483,7 @@ void NewTabPageHandler::MaybeShowWebstoreToast() {
 }
 
 void NewTabPageHandler::RecordModuleInteraction(const std::string& module_id) {
-// TODO(b/502297163): Implement for Android.
-#if !BUILDFLAG(IS_ANDROID)
   DisableModuleAutoRemoval(profile_, module_id);
-#endif
   IncrementDictPrefKeyCount(prefs::kNtpModulesInteractedCountDict, module_id);
 }
 
@@ -1506,6 +1498,8 @@ void NewTabPageHandler::IncrementDictPrefKeyCount(const std::string& pref_name,
                   : 1);
 }
 
+// TODO(b/502297163): Implement for Android.
+#if !BUILDFLAG(IS_ANDROID)
 const std::string& NewTabPageHandler::GetSurveyTriggerIdForModuleAndInteraction(
     std::string_view interaction,
     const std::string& module_id) {
@@ -1523,6 +1517,7 @@ const std::string& NewTabPageHandler::GetSurveyTriggerIdForModuleAndInteraction(
 
   return kNoTriggerId;
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void NewTabPageHandler::SetModuleHidden(const std::string& module_id,
                                         bool hidden) {
