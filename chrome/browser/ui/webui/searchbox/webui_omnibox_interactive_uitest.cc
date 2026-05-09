@@ -39,6 +39,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/contextual_search/mock_contextual_search_service.h"
 #include "components/contextual_search/pref_names.h"
@@ -58,6 +59,7 @@
 #include "third_party/omnibox_proto/aim_eligibility_response.pb.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/base/interaction/interaction_sequence.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
@@ -843,7 +845,8 @@ class WebUIOmniboxSimplificationInteractiveTest
         omnibox::internal::kWebUIOmniboxSimplification,
         base::FieldTrialParams{
             {"Omnibox_ContextButtonHasBackground", "true"},
-            {"Omnibox_ContextButtonShapeIsOblong", "true"}});
+            {"Omnibox_ContextButtonShapeIsOblong", "true"},
+            {"Omnibox_ContextButtonShowSuggestionLabel", "true"}});
     feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
   }
 
@@ -884,4 +887,22 @@ IN_PROC_BROWSER_TEST_F(WebUIOmniboxSimplificationInteractiveTest,
       InSameContext(CheckJsResultAt(
           kClassicPopupWebView, kContextButton,
           "el => window.getComputedStyle(el).borderRadius", "100px")));
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIOmniboxSimplificationInteractiveTest,
+                       HasSuggestionLabel) {
+  const DeepQuery kSuggestionLabel = {"omnibox-popup-app", "#context",
+                                      "#description"};
+  std::u16string expected_text =
+      l10n_util::GetStringUTF16(IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_MULTIMODAL);
+  RunTestSequence(
+      AddInstrumentedTab(kNewTab, chrome::ChromeUINewTabURLAsGURL()),
+      SetAimEligibleResponse(), SeedSearchboxResult("a"),
+      FocusElement(kOmniboxElementId), EnterText(kOmniboxElementId, u"a"),
+      WaitForClassicPopupReady(),
+      InAnyContext(
+          WaitForElementToRender(kClassicPopupWebView, kSuggestionLabel)),
+      InSameContext(CheckJsResultAt(kClassicPopupWebView, kSuggestionLabel,
+                                    "el => el.textContent.trim()",
+                                    base::UTF16ToUTF8(expected_text))));
 }

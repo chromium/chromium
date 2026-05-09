@@ -359,9 +359,9 @@ const base::FeatureParam<bool> kContextButtonHasBackground{
 const base::FeatureParam<bool> kContextButtonShapeIsOblong{
     &internal::kWebUIOmniboxSimplification,
     "Omnibox_ContextButtonShapeIsOblong", false};
-const base::FeatureParam<bool> kContextButtonShowAskAboutTabsLabel{
+const base::FeatureParam<bool> kContextButtonShowSuggestionLabel{
     &internal::kWebUIOmniboxSimplification,
-    "Omnibox_ContextButtonShowAskAboutTabsLabel", false};
+    "Omnibox_ContextButtonShowSuggestionLabel", false};
 const base::FeatureParam<bool> kContextMenuShowAskAboutTabsAction{
     &internal::kWebUIOmniboxSimplification,
     "Omnibox_ContextMenuShowAskAboutTabsAction", false};
