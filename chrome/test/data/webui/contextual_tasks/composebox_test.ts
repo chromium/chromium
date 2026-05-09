@@ -1255,4 +1255,64 @@ suite('ContextualTasksComposeboxTest', () => {
     assertEquals(
         1, mockComposeboxPageHandler.getCallCount('onContextMenuOpened'));
   });
+
+  test('VoiceSearchErrorDetailsLinkIsClickable', async () => {
+    const contextualComposebox = contextualTasksApp.$.composebox;
+    const innerComposebox = contextualComposebox.$.composebox;
+
+    contextualComposebox.style.pointerEvents = 'none';
+
+    const voiceSearchElement =
+        innerComposebox.shadowRoot.querySelector('cr-composebox-voice-search');
+    assertTrue(!!voiceSearchElement, 'Voice search element should exist');
+
+    // Trigger a NO_MATCH error to display the error details link.
+    (voiceSearchElement as unknown as {
+      onError_: (e: number) => void,
+    }).onError_(5);
+    await microtasksFinished();
+
+    const detailsLink =
+        voiceSearchElement.shadowRoot.querySelector<HTMLAnchorElement>(
+            '#details');
+    assertTrue(!!detailsLink, 'Error details link should be rendered');
+
+    const computedStyle = window.getComputedStyle(detailsLink);
+    assertEquals(
+        'auto', computedStyle.pointerEvents,
+        'Details link must have pointer-events: auto despite parent restrictions');
+
+    let cancelEventFired = false;
+    let isCanceledByUser = true;
+    voiceSearchElement.addEventListener('voice-search-cancel', (e: Event) => {
+      cancelEventFired = true;
+      isCanceledByUser = (e as CustomEvent<boolean>).detail;
+    });
+
+    detailsLink.click();
+    await microtasksFinished();
+
+    assertEquals(
+        1, mockComposeboxPageHandler.getCallCount('navigateUrl'),
+        'navigateUrl should be called exactly once');
+
+    const navigatedUrl =
+        await mockComposeboxPageHandler.whenCalled('navigateUrl');
+
+    assertTrue(
+        typeof navigatedUrl === 'string' &&
+            navigatedUrl.includes('support.google.com'),
+        'Should navigate to the correct Chrome support page');
+
+    assertTrue(cancelEventFired, 'voice-search-cancel event should be fired');
+    assertFalse(
+        isCanceledByUser,
+        'Cancel event should indicate it was not canceled by user');
+
+    assertFalse(
+        (voiceSearchElement as unknown as {
+          shouldShowErrorScrim_: () => boolean,
+        }).shouldShowErrorScrim_(),
+        'Error scrim should hide after clicking the details link');
+  });
 });

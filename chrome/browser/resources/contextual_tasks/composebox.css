@@ -591,6 +591,11 @@
  top: var(--cancel-button-top);
 }
 
+#composebox::part(voice-details-link) {
+ pointer-events: auto;
+ cursor: pointer;
+}
+
 #composebox[in-voice-search-mode_]::part(composebox-background)::before {
  background-color: var(--cr-composebox-background-color);
 }
