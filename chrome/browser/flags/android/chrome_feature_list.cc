@@ -585,7 +585,7 @@ BASE_FEATURE(kAndroidOmniboxFocusedNewTabPage, base::FEATURE_DISABLED_BY_DEFAULT
 BASE_FEATURE(kAndroidPageInfoAsAppMenuItem, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidProgressBarVisualUpdate, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidSaveCardNonBlockingDialog, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kAndroidSearchInSettings,"SearchInSettings", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAndroidSearchInSettings, "SearchInSettings", base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidSettingsContainment, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidSettingsUrl, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidSetupList, base::FEATURE_DISABLED_BY_DEFAULT);
