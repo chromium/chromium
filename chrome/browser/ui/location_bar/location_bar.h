@@ -141,6 +141,10 @@ class LocationBar {
   // Gets an anchor for the entire location bar.
   virtual ui::TrackedElement* GetAnchorOrNull() = 0;
 
+  // Returns true if the location bar is currently in the middle of a popup
+  // state transition.
+  virtual bool in_popup_state_transition() const;
+
   // Returns the Browser object this is for. This may be nullptr sometimes;
   // known cases include captive portals on ChromeOS and
   // PresentationReceiverWindowView.

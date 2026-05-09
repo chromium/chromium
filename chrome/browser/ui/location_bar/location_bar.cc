@@ -24,3 +24,7 @@ LocationBar::~LocationBar() = default;
 void LocationBar::NotifyBoundsChanged() {
   observers_.Notify(&Observer::OnLocationBarBoundsChanged);
 }
+
+bool LocationBar::in_popup_state_transition() const {
+  return false;
+}

@@ -1908,9 +1908,11 @@ void LocationBarView::OnPopupStateChanged(OmniboxPopupState old_state,
   // Hide the old popup.
   switch (old_state) {
     case OmniboxPopupState::kClassic:
-      // Normally, the classic popup hides itself in `UpdatePopupAppearance()`
-      // before updating the popup state. However, explicitly hide the classic
-      // popup for scenario of transitioning from the classic to the aim popup.
+    case OmniboxPopupState::kFull:
+      // Normally, the classic/full popup hides itself in
+      // `UpdatePopupAppearance()` before updating the popup state. However,
+      // explicitly hide the classic/full popup for scenario of transitioning
+      // from the classic to the aim popup.
       if (omnibox_popup_view_->IsOpen()) {
         omnibox_popup_view_->UpdatePopupAppearance();
       }
@@ -1927,7 +1929,8 @@ void LocationBarView::OnPopupStateChanged(OmniboxPopupState old_state,
   // Show the new popup.
   switch (new_state) {
     case OmniboxPopupState::kClassic:
-      // The classic popup shows itself in `UpdatePopupAppearance()` before
+    case OmniboxPopupState::kFull:
+      // The classic/full popup shows itself in `UpdatePopupAppearance()` before
       // updating the popup state.
       break;
     case OmniboxPopupState::kAim:
@@ -1973,8 +1976,7 @@ void LocationBarView::ValidatePopupState(OmniboxPopupState state) {
   // Note: GetWidget() returns the BrowserView's widget, not the popup widget.
   if (views::Widget* widget = GetWidget();
       !widget || !widget->IsVisible() ||
-      base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup) ||
-      base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopupV2)) {
+      base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopup)) {
     return;
   }
 
@@ -1989,6 +1991,7 @@ void LocationBarView::ValidatePopupState(OmniboxPopupState state) {
           << " aim=" << aim_is_shown;
       break;
     case OmniboxPopupState::kClassic:
+    case OmniboxPopupState::kFull:
       DCHECK(classic_is_open && !aim_is_shown)
           << "Widget state mismatch in kClassic: classic=" << classic_is_open
           << " aim=" << aim_is_shown;
@@ -2364,6 +2367,10 @@ ui::MouseEvent LocationBarView::AdjustMouseEventLocationForOmniboxView(
 
 bool LocationBarView::GetPopupMode() const {
   return is_popup_mode_;
+}
+
+bool LocationBarView::in_popup_state_transition() const {
+  return in_popup_state_transition_;
 }
 
 page_actions::PageActionController* LocationBarView::GetPageActionController() {

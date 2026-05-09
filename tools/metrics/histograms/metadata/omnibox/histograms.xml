@@ -3194,6 +3194,10 @@ Keep consistent with active providers. Doesn't need to include every provider in
     this metric can be seen as a time budget for the AI Mode WebUI page remote
     to be bound and ready to receive calls. Recorded at most once per browser
     window.
+
+    Recorded the very first time the AI Mode WebUI Omnibox popup is shown to the
+    user during the course of a browser session (i.e. subsequent show-popup
+    operations in the same browser window DO NOT log this histogram).
   </summary>
 </histogram>
 
@@ -3242,6 +3246,8 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <summary>
     Record the time between the request of the AIM popup widget to show and when
     the first frame is painted by the widget on the screen.
+
+    Recorded every time the native widget hosting the AIM popup is shown.
   </summary>
 </histogram>
 
@@ -3257,6 +3263,27 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram name="Omnibox.Popup.FullWebUI.ConstructionToFirstShownDuration"
+    units="ms" expires_after="2026-12-22">
+  <owner>khalidpeer@chromium.org</owner>
+  <owner>mahmadi@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Records the time between the Full WebUI page load which happens when the
+    omnibox popup presenter is constructed and the first time the popup widget
+    is shown. Given that the Full WebUI page begins the asynchronous process of
+    loading its resources, initialization, and binding immediately after it is
+    loaded, this metric can be seen as a time budget for the WebUI page remote
+    to be bound and ready to receive calls. Recorded at most once per browser
+    window.
+
+    Recorded the very first time the full WebUI Omnibox popup is shown to the
+    user during the course of a browser session (i.e. subsequent show-popup
+    operations in the same browser window DO NOT log this histogram).
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.Popup.FullWebUI.CrashRecovery" enum="Boolean"
     expires_after="2026-12-22">
   <owner>khalidpeer@chromium.org</owner>
@@ -3267,6 +3294,46 @@ Keep consistent with active providers. Doesn't need to include every provider in
     reloaded before showing the Full WebUI Omnibox popup.
 
     Recorded every time the full WebUI Omnibox popup web content is shown.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.Popup.FullWebUI.DeferredShowVisualStateReadyDuration"
+    units="ms" expires_after="2026-12-22">
+  <owner>khalidpeer@chromium.org</owner>
+  <owner>avivkiss@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Records the duration it took for the visual state callback to be called (or
+    fallback timeout to be reached) during a deferred show of the Full WebUI
+    popup. Logged every time the popup show is triggered.
+  </summary>
+</histogram>
+
+<histogram
+    name="Omnibox.Popup.FullWebUI.DeferredShowVisualStateReadyFromTimeout"
+    enum="Boolean" expires_after="2026-12-22">
+  <owner>khalidpeer@chromium.org</owner>
+  <owner>avivkiss@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Records whether the deferred show of the Full WebUI popup was triggered by
+    the fallback timer task (True) or the visual state callback (False). Logged
+    every time the popup show is triggered.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.Popup.FullWebUI.PresenterShowLatency.ToPaint"
+    units="ms" expires_after="2026-12-22">
+  <owner>khalidpeer@chromium.org</owner>
+  <owner>mahmadi@chromium.org</owner>
+  <owner>kylixrd@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Record the time between the request of the Full WebUI popup widget to show
+    and when the first frame is painted by the widget on the screen.
+
+    Recorded every time the native widget hosting the full WebUI popup is shown.
   </summary>
 </histogram>
 
@@ -3336,6 +3403,10 @@ Keep consistent with active providers. Doesn't need to include every provider in
     resources, initialization, and binding immediately after it is loaded, this
     metric can be seen as a time budget for the WebUI page remote to be bound
     and ready to receive calls. Recorded at most once per browser window.
+
+    Recorded the very first time the classic WebUI Omnibox popup is shown to the
+    user during the course of a browser session (i.e. subsequent show-popup
+    operations in the same browser window DO NOT log this histogram).
   </summary>
 </histogram>
 
@@ -3392,6 +3463,8 @@ Keep consistent with active providers. Doesn't need to include every provider in
   <summary>
     Record the time between the request of the classic popup widget to show and
     when the first frame is painted by the widget on the screen.
+
+    Recorded every time the native widget hosting the classic popup is shown.
   </summary>
 </histogram>
 

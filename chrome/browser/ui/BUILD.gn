@@ -4118,6 +4118,8 @@ static_library("ui") {
       "views/omnibox/omnibox_popup_aim_presenter.h",
       "views/omnibox/omnibox_popup_closer.cc",
       "views/omnibox/omnibox_popup_closer.h",
+      "views/omnibox/omnibox_popup_full_presenter.cc",
+      "views/omnibox/omnibox_popup_full_presenter.h",
       "views/omnibox/omnibox_popup_presenter.cc",
       "views/omnibox/omnibox_popup_presenter.h",
       "views/omnibox/omnibox_popup_presenter_base.cc",

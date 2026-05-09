@@ -24,7 +24,7 @@
 class LocationBar;
 class OmniboxController;
 class OmniboxView;
-class OmniboxPopupPresenter;
+class OmniboxPopupPresenterBase;
 class OmniboxPopupPresenterDelegate;
 
 class OmniboxPopupViewWebUI : public OmniboxPopupView,
@@ -38,7 +38,7 @@ class OmniboxPopupViewWebUI : public OmniboxPopupView,
   OmniboxPopupViewWebUI& operator=(const OmniboxPopupViewWebUI&) = delete;
   ~OmniboxPopupViewWebUI() override;
 
-  raw_ptr<OmniboxPopupPresenter> presenter() { return presenter_.get(); }
+  raw_ptr<OmniboxPopupPresenterBase> presenter() { return presenter_.get(); }
 
   // OmniboxPopupView:
   void InvalidateLine(size_t line) override;
@@ -74,7 +74,7 @@ class OmniboxPopupViewWebUI : public OmniboxPopupView,
   raw_ptr<LocationBar> location_bar_;
 
   // The presenter that manages its own widget and WebUI presentation.
-  std::unique_ptr<OmniboxPopupPresenter> presenter_;
+  std::unique_ptr<OmniboxPopupPresenterBase> presenter_;
 
   // Observe `OmniboxEditModel` for updates that require updating the views.
   base::ScopedObservation<OmniboxEditModel, OmniboxEditModel::Observer>

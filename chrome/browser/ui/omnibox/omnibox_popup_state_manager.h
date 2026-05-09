@@ -11,8 +11,9 @@
 // Represents the state of omnibox popup currently visible.
 enum class OmniboxPopupState {
   kNone,     // No popup is visible
-  kClassic,  // Classic popup is visible
-  kAim       // AI Mode popup is visible
+  kClassic,  // Classic popup (suggestions dropdown only) is visible
+  kAim,      // AI Mode popup is visible
+  kFull,     // Full popup (input row + suggestions dropdown) is visible
 };
 
 // Manages the visibility state of omnibox popups and notifies subscribers.

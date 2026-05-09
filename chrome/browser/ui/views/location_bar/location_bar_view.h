@@ -145,7 +145,7 @@ class LocationBarView
   // Initializes the LocationBarView.
   void Init();
 
-  bool in_popup_state_transition() const { return in_popup_state_transition_; }
+  bool in_popup_state_transition() const override;
 
   // Returns a background that paints an (optionally stroked) rounded rect with
   // the given color.

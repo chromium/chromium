@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_full_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_content.h"
@@ -54,8 +55,13 @@ OmniboxPopupViewWebUI::OmniboxPopupViewWebUI(
       construction_time_(base::TimeTicks::Now()),
       omnibox_view_(omnibox_view),
       location_bar_(location_bar) {
-  presenter_ = std::make_unique<OmniboxPopupPresenter>(
-      location_bar, presenter_delegate, controller);
+  if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopupV2)) {
+    presenter_ = std::make_unique<OmniboxPopupFullPresenter>(
+        location_bar, presenter_delegate, controller);
+  } else {
+    presenter_ = std::make_unique<OmniboxPopupPresenter>(
+        location_bar, presenter_delegate, controller);
+  }
   controller->edit_model()->set_popup_view(this);
   edit_model_observation_.Observe(controller->edit_model());
 }
@@ -99,10 +105,12 @@ void OmniboxPopupViewWebUI::UpdatePopupAppearance() {
     // Do this AFTER widget operations. LocationBarView is subscribed to state
     // changes and attempts to call `UpdatePopupAppearance()` again if the
     // widget is open.
-    // Only update the state if it's currently kClassic. If it's already
+    // Only update the state if it's currently kClassic/kFull. If it's already
     // transitioning to another state (e.g., kAim), don't override it.
     if (controller()->popup_state_manager()->popup_state() ==
-        OmniboxPopupState::kClassic) {
+            OmniboxPopupState::kClassic ||
+        controller()->popup_state_manager()->popup_state() ==
+            OmniboxPopupState::kFull) {
       controller()->popup_state_manager()->SetPopupState(
           OmniboxPopupState::kNone);
     }
@@ -118,9 +126,12 @@ void OmniboxPopupViewWebUI::UpdatePopupAppearance() {
           presenter_->GetWebUIContent()->GetWebContents(),
           base::TimeTicks::Now());
     }
-    // Update the popup state manager that the classic popup is opening.
-    controller()->popup_state_manager()->SetPopupState(
-        OmniboxPopupState::kClassic);
+    // Update the popup state manager to reflect the appropriate "opened" state.
+    auto new_state =
+        base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopupV2)
+            ? OmniboxPopupState::kFull
+            : OmniboxPopupState::kClassic;
+    controller()->popup_state_manager()->SetPopupState(new_state);
 
     if (!was_visible) {
       if (!construction_time_.is_null()) {

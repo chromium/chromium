@@ -91,6 +91,8 @@ class OmniboxPopupPresenterBase {
       "Omnibox.Popup.WebUI";
   inline static constexpr std::string_view kAimPopupMetricPrefix =
       "Omnibox.Popup.Aim";
+  inline static constexpr std::string_view kFullWebUIPopupMetricPrefix =
+      "Omnibox.Popup.FullWebUI";
 
   // The container for the WebUI WebView.
   views::View* GetUIContainer() const;

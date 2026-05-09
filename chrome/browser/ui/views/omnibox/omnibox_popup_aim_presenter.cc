@@ -22,10 +22,9 @@ OmniboxPopupAimPresenter::OmniboxPopupAimPresenter(
     OmniboxController* controller)
     : OmniboxPopupPresenterBase(location_bar_view,
                                 *location_bar_view,
-                                controller),
-      location_bar_view_(location_bar_view) {
+                                controller) {
   SetWebUIContent(std::make_unique<OmniboxAimPopupWebUIContent>(
-      this, location_bar_view_, controller));
+      this, location_bar_view, controller));
 }
 
 OmniboxPopupAimPresenter::~OmniboxPopupAimPresenter() = default;
@@ -80,7 +79,7 @@ void OmniboxPopupAimPresenter::OnWidgetActivationChanged(views::Widget* widget,
   if (!active &&
       controller()->popup_state_manager()->popup_state() ==
           OmniboxPopupState::kAim &&
-      !location_bar_view_->in_popup_state_transition()) {
+      !location_bar()->in_popup_state_transition()) {
     // Don't close popup if there's an active permission prompt. This check can
     // be reached when the permission prompt has just been shown for Voice
     // permission from the omnibox popup and interacting with the prompt has
