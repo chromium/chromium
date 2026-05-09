@@ -28,7 +28,8 @@ class ContextualTasksUiServiceDelegateDesktop
                       const GURL& page_url) override;
   void ShowUndoSnackbar(
       BrowserWindowInterface* browser_window_interface) override;
-  void OnWebUIReady(const base::Uuid& task_id,
+  void OnWebUIReady(BrowserWindowInterface* browser_window_interface,
+                    const base::Uuid& task_id,
                     content::WebContents* web_contents) override;
   void OnWebUIDestroyed(BrowserWindowInterface* browser_window_interface,
                         const std::optional<base::Uuid>& task_id) override;

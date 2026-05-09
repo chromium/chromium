@@ -29,10 +29,10 @@ void ContextualTasksUiServiceDelegateAndroid::OpenFeedbackUi(
 }
 
 void ContextualTasksUiServiceDelegateAndroid::OnWebUIReady(
+    BrowserWindowInterface* browser_window_interface,
     const base::Uuid& task_id,
     content::WebContents* web_contents) {
-  auto* bridge = ContextualTasksBridge::From(
-      webui::GetBrowserWindowInterface(web_contents));
+  auto* bridge = ContextualTasksBridge::From(browser_window_interface);
   if (!bridge) {
     return;
   }

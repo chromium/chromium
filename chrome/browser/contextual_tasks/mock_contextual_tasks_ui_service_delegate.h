@@ -8,6 +8,8 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+class BrowserWindowInterface;
+
 namespace contextual_tasks {
 
 class MockContextualTasksUiServiceDelegate
@@ -26,7 +28,9 @@ class MockContextualTasksUiServiceDelegate
               (override));
   MOCK_METHOD(void,
               OnWebUIReady,
-              (const base::Uuid& task_id, content::WebContents* web_contents),
+              (BrowserWindowInterface * browser_window_interface,
+               const base::Uuid& task_id,
+               content::WebContents* web_contents),
               (override));
   MOCK_METHOD(void,
               OnWebUIDestroyed,

@@ -1476,10 +1476,11 @@ void ContextualTasksUiService::OnTaskChanged(
 }
 
 void ContextualTasksUiService::OnWebUIReady(
+    BrowserWindowInterface* browser_window_interface,
     const base::Uuid& task_id,
     content::WebContents* web_contents) {
   if (delegate_) {
-    delegate_->OnWebUIReady(task_id, web_contents);
+    delegate_->OnWebUIReady(browser_window_interface, task_id, web_contents);
   }
 }
 

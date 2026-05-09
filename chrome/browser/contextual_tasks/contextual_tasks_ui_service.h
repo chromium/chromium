@@ -186,7 +186,8 @@ class ContextualTasksUiService : public KeyedService {
                              bool is_shown_in_tab);
 
   // Called when the WebUI is ready.
-  virtual void OnWebUIReady(const base::Uuid& task_id,
+  virtual void OnWebUIReady(BrowserWindowInterface* browser_window_interface,
+                            const base::Uuid& task_id,
                             content::WebContents* web_contents);
 
   // Called when the WebUI controller is destroyed.
