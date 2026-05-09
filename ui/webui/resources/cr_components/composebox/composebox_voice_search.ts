@@ -459,8 +459,8 @@ export class ComposeboxVoiceSearchElement extends
 
     // Handle error display and dismissal behavior based on the embedder.
     if (!this.hasErrorTimer) {
-      if (error === VoiceSearchError.NO_MATCH) {
-        // Without a timer, NO_MATCH errors close immediately with no message.
+      if (error === VoiceSearchError.NO_MATCH || error === VoiceSearchError.NO_SPEECH) {
+        // Without a timer, NO_MATCH and NO_SPEECH errors close immediately with no message.
         this.errorMessage_ = '';
         this.resetState_();
         this.recordMetric_(
@@ -486,8 +486,8 @@ export class ComposeboxVoiceSearchElement extends
       // If there is a timer, an error message would show up.
       this.errorMessage_ = this.getErrorText_(error);
 
-      if (error === VoiceSearchError.NO_MATCH) {
-        // NO_MATCH errors auto-close after a longer delay.
+      if (error === VoiceSearchError.NO_MATCH || error === VoiceSearchError.NO_SPEECH) {
+        // NO_MATCH and NO_SPEECH errors auto-close after a longer delay.
         this.timerId_ = WindowProxy.getInstance().setTimeout(() => {
           this.recordMetric_(
               VoiceSearchMetricType.ACTION, VoiceSearchAction.ERROR_CANCELING,

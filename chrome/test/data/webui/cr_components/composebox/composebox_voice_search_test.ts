@@ -297,6 +297,60 @@ suite('ComposeboxVoiceSearch', () => {
       });
 
   test(
+      'idle timeout triggers NO_SPEECH and auto-closes instantly in Composebox',
+      async () => {
+        const hidePromise =
+            getTransitionEndPromise(composeboxElement.$.composebox, 'opacity');
+        const voiceSearchButton = getVoiceSearchButton(composeboxElement);
+        voiceSearchButton!.click();
+        await microtasksFinished();
+        await hidePromise;
+
+        const voiceSearchElement =
+            getVoiceSearchElement(composeboxElement) as any;
+        // Simulate Composebox behavior where timer is disabled.
+        voiceSearchElement.hasErrorTimer = false;
+
+        let cancelEventFired = false;
+        voiceSearchElement.addEventListener('voice-search-cancel', () => {
+          cancelEventFired = true;
+        });
+
+        // Intercept the 1.5s idle timer triggered during start().
+        const [callback] = await windowProxy.whenCalled('setTimeout');
+        // Reset resolver to verify no extra timers are created afterwards.
+        windowProxy.resetResolver('setTimeout');
+        callback();
+
+        await microtasksFinished();
+        await voiceSearchElement.updateComplete;
+
+        // Assert: Component state is cleared due to instant resetState_().
+        assertEquals(null, voiceSearchElement.detailedError_);
+        // Assert: NO_SPEECH error was successfully recorded in metrics.
+        assertEquals(
+            1,
+            metrics.count(
+                'VoiceSearch.Errors.NTP_REALBOX', VoiceSearchError.NO_SPEECH));
+
+        // Assert: UI closes instantly with no error message and no new timers.
+        assertTrue(cancelEventFired);
+        assertEquals('', voiceSearchElement['errorMessage_']);
+        assertEquals(0, windowProxy.getCallCount('setTimeout'));
+
+        // Assert: The action is logged as ERROR_CANCELING.
+        assertEquals(
+            1,
+            metrics.count(
+                'VoiceSearch.Action.NTP_REALBOX',
+                VoiceSearchAction.ERROR_CANCELING));
+
+        // Clean up internal state to prevent leaking into the next test.
+        voiceSearchElement['voiceModeEndCleanup_']();
+        await microtasksFinished();
+      });
+
+  test(
       'NO_MATCH error auto-closes after 24s when hasErrorTimer is true',
       async () => {
         const voiceSearchElement = await openVoiceSearchUI();
@@ -719,33 +773,6 @@ suite('ComposeboxVoiceSearch', () => {
     await voiceSearchElement.updateComplete;
     // Speech recognition overrides existing composebox input.
     assertEquals('hellogoodbye', voiceSearchInput.value);
-  });
-
-  test('idle timer exits voice search if no final result', async () => {
-    const hidePromise =
-        getTransitionEndPromise(composeboxElement.$.composebox, 'opacity');
-    const voiceSearchButton = getVoiceSearchButton(composeboxElement);
-    voiceSearchButton!.click();
-    await microtasksFinished();
-    await hidePromise;
-
-    assertTrue(mockSpeechRecognition.voiceSearchInProgress);
-
-    const [callback] = await windowProxy.whenCalled('setTimeout');
-    callback();
-    await microtasksFinished();
-    const voiceSearchElement = getVoiceSearchElement(composeboxElement);
-    await voiceSearchElement.updateComplete;
-
-    // Assert.
-    assertEquals(VoiceSearchError.NO_SPEECH, voiceSearchElement.detailedError_);
-    assertEquals(
-        loadTimeData.getString('noVoice'),
-        (voiceSearchElement as any).errorMessage_);
-    assertFalse(mockSpeechRecognition.voiceSearchInProgress);
-    assertEquals(searchboxHandler.getCallCount('submitQuery'), 0);
-    assertStyle(composeboxElement.$.composebox, 'opacity', '0');
-    assertStyle(voiceSearchElement, 'display', 'inline');
   });
 
   test('idle timer submits voice search if final result exists', async () => {
