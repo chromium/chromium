@@ -845,25 +845,16 @@ bool ToolbarView::GetIsShowingGlicActorTaskIconNudge() {
   return glic_actor_task_icon_ && glic_actor_task_icon_->GetIsShowingNudge();
 }
 
-void ToolbarView::OnTriggerGlicNudgeUI(std::string label) {
+void ToolbarView::OnTriggerGlicNudgeUI(glic::NudgeParams params) {
   if (GetIsShowingGlicActorTaskIconNudge()) {
     return;
   }
 
   CHECK(glic_button_);
-  if (!label.empty()) {
-    glic_button_->SetNudgeLabel(label);
+  if (!params.label.empty()) {
+    glic_button_->SetNudgeLabel(std::move(params.label));
     ShowToolbarNudge(glic_button_);
   }
-}
-
-void ToolbarView::OnTriggerAnchoredMessage(
-    std::string label,
-    std::string anchored_message_text,
-    std::optional<std::string> prompt_suggestion) {
-  // ToolbarView does not support the page action framework path used by
-  // TabStripActionContainer. Fall back to the chip nudge.
-  OnTriggerGlicNudgeUI(std::move(label));
 }
 
 void ToolbarView::OnHideGlicNudgeUI() {

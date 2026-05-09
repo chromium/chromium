@@ -18,6 +18,7 @@
 #include "content/public/browser/web_contents.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/glic/browser_ui/anchored_nudge_controller.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #endif
 
@@ -30,9 +31,18 @@ GlicNudgeController::GlicNudgeController(
   CHECK(tab_list_);
   tab_list_observation_.Observe(tab_list);
 
-  if (base::FeatureList::IsEnabled(contextual_cueing::kContextualCueingV2)) {
+  const bool cue_v2_enabled =
+      base::FeatureList::IsEnabled(contextual_cueing::kContextualCueingV2);
+  if (cue_v2_enabled) {
     glic::GlicCueTarget::Register(*browser_window_interface);
   }
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (!cue_v2_enabled && base::FeatureList::IsEnabled(kUseAnchoredMessage)) {
+    anchored_nudge_controller_ =
+        std::make_unique<AnchoredNudgeController>(*browser_window_interface);
+  }
+#endif
 }
 
 GlicNudgeController::~GlicNudgeController() = default;
@@ -92,10 +102,12 @@ void GlicNudgeController::UpdateNudgeLabel(
         delegate->OnHideGlicNudgeUI();
       } else if (base::FeatureList::IsEnabled(kUseAnchoredMessage) &&
                  !anchored_message_text.empty()) {
-        delegate->OnTriggerAnchoredMessage(nudge_label, anchored_message_text,
-                                           prompt_suggestion);
+#if !BUILDFLAG(IS_ANDROID)
+        anchored_nudge_controller_->OnTriggerGlicNudgeUI(NudgeParams(
+            nudge_label, anchored_message_text, std::move(prompt_suggestion)));
+#endif
       } else {
-        delegate->OnTriggerGlicNudgeUI(nudge_label);
+        delegate->OnTriggerGlicNudgeUI(NudgeParams(nudge_label));
       }
     }
   }
@@ -158,6 +170,10 @@ void GlicNudgeController::OnActiveTabChanged(TabListInterface& tab_list,
 
 GlicNudgeDelegate* GlicNudgeController::GetActiveDelegate() {
 #if !BUILDFLAG(IS_ANDROID)
+  if (anchored_nudge_controller_) {
+    return anchored_nudge_controller_.get();
+  }
+
   auto* vertical_tab_strip_state_controller =
       tabs::VerticalTabStripStateController::From(browser_window_interface_);
 

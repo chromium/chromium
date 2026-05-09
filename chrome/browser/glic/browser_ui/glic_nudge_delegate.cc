@@ -6,13 +6,19 @@
 
 namespace glic {
 
-// Default implementation for Destructor.
-GlicNudgeDelegate::~GlicNudgeDelegate() = default;
+NudgeParams::~NudgeParams() = default;
+NudgeParams::NudgeParams(NudgeParams&&) = default;
+NudgeParams& NudgeParams::operator=(NudgeParams&&) = default;
 
-// Default implementation for GetIsShowingNudge.
-bool GlicNudgeDelegate::GetIsShowingGlicNudge() {
-  // Default behavior is to return false.
-  return false;
-}
+NudgeParams::NudgeParams(std::string label)
+    : NudgeParams(std::move(label), {}, {}) {}
+NudgeParams::NudgeParams(std::string label,
+                         std::string anchored_message_text,
+                         std::optional<std::string> prompt_suggestion)
+    : label(std::move(label)),
+      anchored_message_text(std::move(anchored_message_text)),
+      prompt_suggestion(std::move(prompt_suggestion)) {}
+
+GlicNudgeDelegate::~GlicNudgeDelegate() = default;
 
 }  // namespace glic

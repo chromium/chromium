@@ -13,6 +13,7 @@ source_set("browser_ui") {
   ]
   if (!is_android) {
     sources += [
+      "anchored_nudge_controller.h",
       "glic_button_controller.h",
       "glic_iph_controller.h",
       "glic_selection_widget.h",
@@ -41,6 +42,7 @@ source_set("impl") {
   ]
   if (!is_android) {
     sources += [
+      "anchored_nudge_controller.cc",
       "glic_button_controller.cc",
       "glic_iph_controller.cc",
       "glic_selection_widget.cc",

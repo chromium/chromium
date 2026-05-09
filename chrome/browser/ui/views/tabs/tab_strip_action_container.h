@@ -117,11 +117,7 @@ class TabStripActionContainer : public views::View,
   void MouseMovedOutOfHost() override;
 
   // GlicNudgeDelegate:
-  void OnTriggerGlicNudgeUI(std::string label) override;
-  void OnTriggerAnchoredMessage(
-      std::string label,
-      std::string anchored_message_text,
-      std::optional<std::string> prompt_suggestion) override;
+  void OnTriggerGlicNudgeUI(glic::NudgeParams params) override;
   void OnHideGlicNudgeUI() override;
   bool GetIsShowingGlicNudge() override;
 
@@ -230,10 +226,6 @@ class TabStripActionContainer : public views::View,
   std::unique_ptr<ScopedTabStripModalUI> scoped_tab_strip_modal_ui_;
 
   std::list<base::CallbackListSubscription> subscriptions_;
-
-  // Tracks the page-action subscription for the anchored contextual cue.
-  // Reset when the anchored message is hidden or replaced.
-  base::CallbackListSubscription anchored_message_subscription_;
 
   std::unique_ptr<TabStripNudgeAnimationSession> animation_session_;
 

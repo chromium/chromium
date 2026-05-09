@@ -21,10 +21,8 @@
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_instance.h"
-#include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
-#include "chrome/browser/glic/public/glic_passkeys.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -49,7 +47,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/tabs/public/tab_interface.h"
-#include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -69,9 +66,6 @@
 #include "base/feature_list.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
-#include "chrome/browser/ui/actions/chrome_action_id.h"
-#include "chrome/browser/ui/page_action/page_action_controller.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace {
@@ -320,123 +314,27 @@ void TabStripActionContainer::MouseMovedOutOfHost() {
   SetLockedExpansionMode(LockedExpansionMode::kNone, nullptr);
 }
 
-void TabStripActionContainer::OnTriggerGlicNudgeUI(std::string label) {
+void TabStripActionContainer::OnTriggerGlicNudgeUI(glic::NudgeParams params) {
   if (GetIsShowingGlicActorTaskIconNudge()) {
     return;
   }
 
   CHECK(glic_button_);
-  if (!label.empty()) {
-    glic_button_->SetNudgeLabel(std::move(label));
+  if (!params.label.empty()) {
+    glic_button_->SetNudgeLabel(std::move(params.label));
     if (!glic_button_->GetIsShowingNudge()) {
       ShowTabStripNudge(glic_button_);
     }
   }
 }
 
-void TabStripActionContainer::OnTriggerAnchoredMessage(
-    std::string label,
-    std::string anchored_message_text,
-    std::optional<std::string> prompt_suggestion) {
-  if (GetIsShowingGlicActorTaskIconNudge()) {
-    return;
-  }
-
-  CHECK(glic_button_);
-
-  auto* active_tab = browser_window_interface_->GetActiveTabInterface();
-  if (!active_tab) {
-    return;
-  }
-
-  auto* tab_features = active_tab->GetTabFeatures();
-  if (!tab_features) {
-    return;
-  }
-
-  auto* controller = tab_features->page_action_controller();
-  if (!controller) {
-    return;
-  }
-
-  // Find the ActionItem for contextual cueing, registered at browser
-  // initialization in BrowserActions::InitializeBrowserActions().
-  auto* action =
-      actions::ActionManager::Get().FindAction(kActionGlicContextualCueing);
-  if (!action) {
-    return;
-  }
-
-  // Set the chip text to the cue label.
-  action->SetText(base::UTF8ToUTF16(label));
-  action->SetImage(ui::ImageModel::FromVectorIcon(
-      glic::GlicVectorIconManager::GetVectorIcon(IDR_GLIC_BUTTON_VECTOR_ICON),
-      ui::kColorSysOnSurface, 18));
-  action->SetEnabled(true);
-  action->SetVisible(true);
-  action->SetInvokeActionCallback(base::BindRepeating(
-      [](base::WeakPtr<BrowserWindowInterface> bwi,
-         std::optional<std::string> prompt, actions::ActionItem* item,
-         actions::ActionInvocationContext context) {
-        if (!bwi) {
-          return;
-        }
-        if (auto* glic_service =
-                glic::GlicKeyedService::Get(bwi->GetProfile())) {
-          if (tabs::TabInterface* tab = bwi->GetActiveTabInterface()) {
-            glic::GlicInvokeOptions options(
-                glic::Target(tab),
-                glic::mojom::InvocationSource::kAnchoredContextualCue);
-            if (prompt.has_value()) {
-              options.prompts.push_back(prompt.value());
-            }
-            glic_service->InvokeWithAutoSubmit(
-                glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey(),
-                std::move(options));
-          }
-        }
-      },
-      browser_window_interface_->GetWeakPtr(), std::move(prompt_suggestion)));
-
-  anchored_message_subscription_ =
-      controller->CreateActionItemSubscription(action);
-  controller->Show(kActionGlicContextualCueing);
-  // The secondary label becomes the anchored message bubble text.
-  controller->SetAnchoredMessageText(kActionGlicContextualCueing,
-                                     base::UTF8ToUTF16(anchored_message_text));
-  gfx::ImageSkia* icon =
-      ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-          IDR_GLIC_BUTTON_ALT_ICON);
-  controller->SetAnchoredMessageIcon(
-      kActionGlicContextualCueing,
-      icon ? ui::ImageModel::FromImageSkia(*icon) : ui::ImageModel());
-  controller->SetAnchoredMessageAction(
-      kActionGlicContextualCueing,
-      page_actions::AnchoredMessageActionIconType::kClose, /*model=*/nullptr);
-  controller->ShowAnchoredMessage(
-      kActionGlicContextualCueing,
-      {.priority = page_actions::PageActionPriorityCategory::kContextualCue});
-}
-
 void TabStripActionContainer::OnHideGlicNudgeUI() {
   CHECK(glic_button_);
   HideTabStripNudge(glic_button_);
-
-  // Also dismiss the anchored message if it was shown via the page action path.
-  anchored_message_subscription_ = {};
-  auto* active_tab = browser_window_interface_->GetActiveTabInterface();
-  if (active_tab) {
-    if (auto* tab_features = active_tab->GetTabFeatures()) {
-      if (auto* controller = tab_features->page_action_controller()) {
-        controller->Hide(kActionGlicContextualCueing);
-      }
-    }
-  }
 }
 
 bool TabStripActionContainer::GetIsShowingGlicNudge() {
-  return (glic_button_ && glic_button_->GetIsShowingNudge()) ||
-         !!anchored_message_subscription_;
+  return glic_button_ && glic_button_->GetIsShowingNudge();
 }
 
 void TabStripActionContainer::SetButtonController(

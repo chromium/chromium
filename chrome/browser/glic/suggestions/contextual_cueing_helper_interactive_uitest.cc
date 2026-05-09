@@ -50,18 +50,8 @@
 
 class FakeGlicNudgeDelegate : public glic::GlicNudgeDelegate {
  public:
-  void OnTriggerGlicNudgeUI(std::string label) override {
-    last_nudge_label_ = label;
-    if (!last_nudge_label_.empty()) {
-      is_showing_nudge_ = true;
-      future_.SetValue();
-    }
-  }
-  void OnTriggerAnchoredMessage(
-      std::string label,
-      std::string anchored_message_text,
-      std::optional<std::string> prompt_suggestion) override {
-    last_nudge_label_ = label;
+  void OnTriggerGlicNudgeUI(glic::NudgeParams params) override {
+    last_nudge_label_ = params.label;
     if (!last_nudge_label_.empty()) {
       is_showing_nudge_ = true;
       future_.SetValue();
@@ -148,7 +138,7 @@ class ContextualCueingHelperBrowserTest
          {page_content_annotations::features::kAnnotatedPageContentExtraction,
           {}},
          {contextual_tasks::kContextualTasks, {}}},
-        {contextual_cueing::kContextualCueingV2});
+        {contextual_cueing::kContextualCueingV2, glic::kUseAnchoredMessage});
   }
 };
 

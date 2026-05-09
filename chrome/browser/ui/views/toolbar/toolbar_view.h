@@ -229,13 +229,9 @@ class ToolbarView : public views::AccessiblePaneView,
 
   // GlicNudgeDelegate:
   // Called when the glic nudge UI needs to be triggered. `label' holds the
-  // nudge label.
-  void OnTriggerGlicNudgeUI(std::string label) override;
-  // Show an anchored message bubble via the page action framework.
-  void OnTriggerAnchoredMessage(
-      std::string label,
-      std::string anchored_message_text,
-      std::optional<std::string> prompt_suggestion) override;
+  // nudge label. `anchored_message_text` and `prompt_suggestion` are unused in
+  // this UI.
+  void OnTriggerGlicNudgeUI(glic::NudgeParams params) override;
   // Called when the glic nudge UI needs to be hidden.
   void OnHideGlicNudgeUI() override;
   // Called when we want to check if the UI is currently showing.

@@ -88,6 +88,10 @@ class GlicNudgeController : public TabListInterfaceObserver {
   raw_ptr<GlicNudgeDelegate> tab_strip_delegate_ = nullptr;
   raw_ptr<GlicNudgeDelegate> toolbar_delegate_ = nullptr;
 
+#if !BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<GlicNudgeDelegate> anchored_nudge_controller_;
+#endif
+
   // The suggested prompt associated with the nudge label.
   std::optional<std::string> prompt_suggestion_;
 
