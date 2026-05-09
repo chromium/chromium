@@ -10,13 +10,20 @@ import type {OverflowMenuElement} from './overflow_menu.js';
 export function getHtml(this: OverflowMenuElement) {
   return html`<!--_html_template_start_-->
     <cr-action-menu id="menu">
-      <button class="dropdown-item"
-          @click="${this.onOpenInNewTabClick_}"
-          ?disabled="${!this.enableOpenInNewTabButton}">
-        <cr-icon icon="contextual_tasks:open_in_full_tab"></cr-icon>
-        $i18n{openInNewTab}
-      </button>
-      <div class="dropdown-divider"></div>
+      ${this.isSmallDeviceFormFactor ? html`
+        <button class="dropdown-item" @click="${this.onThreadHistoryClick_}">
+          <cr-icon icon="contextual_tasks:notes_spark"></cr-icon>
+          $i18n{threadHistoryTooltip}
+        </button>
+      ` : html`
+        <button class="dropdown-item"
+            @click="${this.onOpenInNewTabClick_}"
+            ?disabled="${!this.enableOpenInNewTabButton}">
+          <cr-icon icon="contextual_tasks:open_in_full_tab"></cr-icon>
+          $i18n{openInNewTab}
+        </button>
+        <div class="dropdown-divider"></div>
+      `}
       <button class="dropdown-item" @click="${this.onMyActivityClick_}">
 <if expr="_google_chrome">
         <cr-icon icon="contextual_tasks:g_logo"></cr-icon>

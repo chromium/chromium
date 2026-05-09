@@ -9,6 +9,7 @@ import '//resources/cr_elements/icons.html.js';
 
 import {AnchorAlignment} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {BrowserProxy} from './contextual_tasks_browser_proxy.js';
@@ -39,10 +40,13 @@ export class OverflowMenuElement extends CrLitElement {
   static override get properties() {
     return {
       enableOpenInNewTabButton: {type: Boolean, reflect: true},
+      isSmallDeviceFormFactor: {type: Boolean},
     };
   }
 
   accessor enableOpenInNewTabButton: boolean = false;
+  accessor isSmallDeviceFormFactor: boolean =
+      loadTimeData.getBoolean('isSmallDeviceFormFactor');
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
 
   showAt(target: HTMLElement) {
@@ -54,6 +58,12 @@ export class OverflowMenuElement extends CrLitElement {
 
   close() {
     this.$.menu.close();
+  }
+
+  protected onThreadHistoryClick_() {
+    this.close();
+    recordAction('ContextualTasks.WebUI.UserAction.OpenThreadHistory');
+    this.browserProxy_.handler.showThreadHistory();
   }
 
   protected onOpenInNewTabClick_() {
