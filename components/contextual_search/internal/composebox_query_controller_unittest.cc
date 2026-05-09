@@ -2598,16 +2598,10 @@ TEST_F(ComposeboxQueryControllerTest,
                                url_future.GetCallback());
   GURL aim_url = url_future.Take();
 
-  // Check that the vsint is populated correctly.
-  auto vsint = GetVsintFromUrl(aim_url);
-  EXPECT_EQ(vsint.text_select().selected_texts(), "hello");
-  EXPECT_TRUE(vsint.log_data().is_parent_query());
-  EXPECT_EQ(vsint.interaction_type(),
-            lens::LensOverlayInteractionRequestMetadata::WEBPAGE_QUERY);
-  EXPECT_TRUE(vsint.has_zoomed_crop());
-  EXPECT_EQ(vsint.zoomed_crop().zoom(), 1);
-  EXPECT_EQ(vsint.zoomed_crop().crop().coordinate_type(),
-            lens::CoordinateType::NORMALIZED);
+  // Verify that the vsint parameter is NOT present in the URL.
+  std::string vsint_param;
+  EXPECT_FALSE(net::GetValueForKeyInQuery(
+      aim_url, kVisualSearchInteractionDataParameterKey, &vsint_param));
 
   // Get the file and viewport upload requests.
   std::optional<lens::LensOverlayServerRequest> file_upload_request;
@@ -3299,13 +3293,10 @@ TEST_F(ComposeboxQueryControllerTest, QuerySubmittedWithUploadedPdf) {
                                url_future.GetCallback());
   GURL aim_url = url_future.Take();
 
-  // Check that the vsint is populated correctly.
-  auto vsint = GetVsintFromUrl(aim_url);
-  EXPECT_EQ(vsint.text_select().selected_texts(), "hello");
-  EXPECT_TRUE(vsint.log_data().is_parent_query());
-  EXPECT_EQ(vsint.interaction_type(),
-            lens::LensOverlayInteractionRequestMetadata::PDF_QUERY);
-  EXPECT_FALSE(vsint.has_zoomed_crop());
+  // Verify that the vsint parameter is NOT present in the URL.
+  std::string vsint_param;
+  EXPECT_FALSE(net::GetValueForKeyInQuery(
+      aim_url, kVisualSearchInteractionDataParameterKey, &vsint_param));
 
   // Assert: Lens request id is NOT added to multimodal pdf queries.
   std::string vsrid_value;
@@ -3541,13 +3532,10 @@ TEST_F(ComposeboxQueryControllerTest,
                                url_future.GetCallback());
   GURL search_url = url_future.Take();
 
-  // Check that the vsint is populated correctly.
-  auto vsint = GetVsintFromUrl(search_url);
-  EXPECT_EQ(vsint.text_select().selected_texts(), "hello");
-  EXPECT_TRUE(vsint.log_data().is_parent_query());
-  EXPECT_EQ(vsint.interaction_type(),
-            lens::LensOverlayInteractionRequestMetadata::PDF_QUERY);
-  EXPECT_FALSE(vsint.has_zoomed_crop());
+  // Verify that the vsint parameter is NOT present in the URL.
+  std::string vsint_param;
+  EXPECT_FALSE(net::GetValueForKeyInQuery(
+      search_url, kVisualSearchInteractionDataParameterKey, &vsint_param));
 
   // Assert: Lens request id is added to multimodal pdf queries.
   std::string vsrid_value;
@@ -3591,13 +3579,10 @@ TEST_F(ComposeboxQueryControllerTest,
                                url_future_2.GetCallback());
   GURL no_query_text_url = url_future_2.Take();
 
-  // Check that the vsint is populated correctly.
-  auto vsint_2 = GetVsintFromUrl(no_query_text_url);
-  EXPECT_EQ(vsint_2.text_select().selected_texts(), "");
-  EXPECT_TRUE(vsint_2.log_data().is_parent_query());
-  EXPECT_EQ(vsint_2.interaction_type(),
-            lens::LensOverlayInteractionRequestMetadata::PDF_QUERY);
-  EXPECT_FALSE(vsint_2.has_zoomed_crop());
+  // Verify that the vsint parameter is NOT present in the URL.
+  EXPECT_FALSE(net::GetValueForKeyInQuery(
+      no_query_text_url, kVisualSearchInteractionDataParameterKey,
+      &vsint_param));
 
   // Check that the udm value is set to 26 (unimodal search).
   std::string udm_value_26;
@@ -3652,12 +3637,10 @@ TEST_F(ComposeboxQueryControllerTest,
   ASSERT_TRUE(interaction_request.has_value());
   EXPECT_TRUE(interaction_request->has_interaction_request());
 
-  // Check that the vsint is populated correctly.
-  auto vsint = GetVsintFromUrl(search_url);
-  EXPECT_EQ(vsint.text_select().selected_texts(), "hello");
-  EXPECT_TRUE(vsint.log_data().is_parent_query());
-  EXPECT_EQ(vsint.interaction_type(),
-            lens::LensOverlayInteractionRequestMetadata::PDF_QUERY);
+  // Verify that the vsint parameter is NOT present in the URL.
+  std::string vsint_param;
+  EXPECT_FALSE(net::GetValueForKeyInQuery(
+      search_url, kVisualSearchInteractionDataParameterKey, &vsint_param));
 
   // Assert: Lens request id is added to multimodal pdf queries.
   std::string vsrid_value;
@@ -3822,16 +3805,10 @@ TEST_F(ComposeboxQueryControllerTest, QuerySubmittedWithUploadedImage) {
                                url_future.GetCallback());
   GURL aim_url = url_future.Take();
 
-  // Check that the vsint is populated correctly.
-  auto vsint = GetVsintFromUrl(aim_url);
-  EXPECT_EQ(vsint.text_select().selected_texts(), "hello");
-  EXPECT_TRUE(vsint.log_data().is_parent_query());
-  EXPECT_EQ(vsint.interaction_type(),
-            lens::LensOverlayInteractionRequestMetadata::REGION);
-  EXPECT_TRUE(vsint.has_zoomed_crop());
-  EXPECT_EQ(vsint.zoomed_crop().zoom(), 1);
-  EXPECT_EQ(vsint.zoomed_crop().crop().coordinate_type(),
-            lens::CoordinateType::NORMALIZED);
+  // Verify that the vsint parameter is NOT present in the URL.
+  std::string vsint_param;
+  EXPECT_FALSE(net::GetValueForKeyInQuery(
+      aim_url, kVisualSearchInteractionDataParameterKey, &vsint_param));
 
   // Assert: Lens request id is NOT added to multimodal pdf queries.
   std::string vsrid_value;
@@ -4780,26 +4757,14 @@ TEST_F(ComposeboxQueryControllerTest,
   auto client_to_aim_message = controller().CreateClientToAimRequest(
       std::move(create_client_to_aim_request_info));
 
-  // Assert: Verify that the visual search interaction data is included.
+  // Assert: Verify that the visual search interaction data is NOT included.
   ASSERT_EQ(client_to_aim_message.submit_query()
                 .payload()
                 .lens_image_query_data_size(),
             1);
   const auto& lens_image_query_data =
       client_to_aim_message.submit_query().payload().lens_image_query_data(0);
-  EXPECT_TRUE(lens_image_query_data.has_visual_search_interaction_data());
-  const auto& interaction_data =
-      lens_image_query_data.visual_search_interaction_data();
-  EXPECT_EQ(interaction_data.log_data().user_selection_data().selection_type(),
-            lens::MULTIMODAL_SEARCH);
-  EXPECT_EQ(interaction_data.interaction_type(),
-            lens::LensOverlayInteractionRequestMetadata::REGION);
-  // Verify default full region crop.
-  EXPECT_TRUE(interaction_data.has_zoomed_crop());
-  EXPECT_FLOAT_EQ(interaction_data.zoomed_crop().crop().center_x(), 0.5f);
-  EXPECT_FLOAT_EQ(interaction_data.zoomed_crop().crop().center_y(), 0.5f);
-  EXPECT_FLOAT_EQ(interaction_data.zoomed_crop().crop().width(), 1.0f);
-  EXPECT_FLOAT_EQ(interaction_data.zoomed_crop().crop().height(), 1.0f);
+  EXPECT_FALSE(lens_image_query_data.has_visual_search_interaction_data());
 }
 #endif  // !BUILDFLAG(IS_IOS)
 
@@ -4980,15 +4945,9 @@ TEST_F(ComposeboxQueryControllerTest,
                 .payload()
                 .lens_image_query_data_size(),
             1);
-  const auto& interaction_data = client_to_aim_message.submit_query()
-                                     .payload()
-                                     .lens_image_query_data(0)
-                                     .visual_search_interaction_data();
-
-  EXPECT_EQ(interaction_data.interaction_type(),
-            lens::LensOverlayInteractionRequestMetadata::PDF_QUERY);
-  // PDFs do not have a zoomed crop by default.
-  EXPECT_FALSE(interaction_data.has_zoomed_crop());
+  const auto& lens_image_query_data =
+      client_to_aim_message.submit_query().payload().lens_image_query_data(0);
+  EXPECT_FALSE(lens_image_query_data.has_visual_search_interaction_data());
 }
 
 TEST_F(ComposeboxQueryControllerTest,
@@ -5069,15 +5028,11 @@ TEST_F(ComposeboxQueryControllerTest,
   EXPECT_TRUE(interaction_data_0.has_zoomed_crop());
   EXPECT_FLOAT_EQ(interaction_data_0.zoomed_crop().zoom(), 2.0);
 
-  // Verify that pdf_token (lens_image_query_data 1) keeps its default PDF_QUERY
-  // interaction.
-  const auto& interaction_data_1 = client_to_aim_message.submit_query()
-                                       .payload()
-                                       .lens_image_query_data(1)
-                                       .visual_search_interaction_data();
-  EXPECT_EQ(interaction_data_1.interaction_type(),
-            lens::LensOverlayInteractionRequestMetadata::PDF_QUERY);
-  EXPECT_FALSE(interaction_data_1.has_zoomed_crop());
+  // Verify that pdf_token (lens_image_query_data 1) does not have interaction
+  // data.
+  const auto& lens_image_query_data_1 =
+      client_to_aim_message.submit_query().payload().lens_image_query_data(1);
+  EXPECT_FALSE(lens_image_query_data_1.has_visual_search_interaction_data());
 }
 
 TEST_F(ComposeboxQueryControllerTest, CreateClientToAimRequest_NoInteraction) {
@@ -5107,14 +5062,9 @@ TEST_F(ComposeboxQueryControllerTest, CreateClientToAimRequest_NoInteraction) {
                 .payload()
                 .lens_image_query_data_size(),
             1);
-  const auto& interaction_data = client_to_aim_message.submit_query()
-                                     .payload()
-                                     .lens_image_query_data(0)
-                                     .visual_search_interaction_data();
-
-  EXPECT_EQ(interaction_data.interaction_type(),
-            lens::LensOverlayInteractionRequestMetadata::PDF_QUERY);
-  EXPECT_FALSE(interaction_data.has_zoomed_crop());
+  const auto& lens_image_query_data =
+      client_to_aim_message.submit_query().payload().lens_image_query_data(0);
+  EXPECT_FALSE(lens_image_query_data.has_visual_search_interaction_data());
 }
 
 TEST_F(ComposeboxQueryControllerTest, CreateSearchUrl_IncludesAddedInputs) {
