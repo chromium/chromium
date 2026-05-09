@@ -1544,23 +1544,12 @@ const FeatureEntry::Choice kContextualSuggestionsUiImprovementsChoices[] = {
      "OpenLensActionUITweaks"},
 };
 
-const FeatureEntry::FeatureParam kComposeboxNextSingleContext[] = {
-    {"MaxNumFiles", "1"},
-};
-const FeatureEntry::FeatureParam kComposeboxNextSingleContextForRealboxNext[] =
-    {
-        {"NtpComposeboxMaxNumFiles", "1"},
-};
-const FeatureEntry::FeatureParam kComposeboxNextForRealboxNext[] = {
-    {"NtpComposeboxContextMenuEnableMultiTabSelection", "true"},
+const FeatureEntry::FeatureParam kComposeboxNextThreadsRail[] = {
+    {"EnableThreadsRail", "true"},
 };
 
 const FeatureEntry::FeatureVariation kNtpComposeboxVariations[] = {
-    {"- Next Experience Single Context", kComposeboxNextSingleContext, nullptr},
-    {"- Next Experience for Realbox Next", kComposeboxNextForRealboxNext,
-     nullptr},
-    {"- Next Experience Single Context for Realbox Next",
-     kComposeboxNextSingleContextForRealboxNext, nullptr},
+    {"- With Threads Rail", kComposeboxNextThreadsRail, nullptr},
 };
 
 const FeatureEntry::FeatureParam kShowNextRealboxCyclingPlaceholders[] = {
@@ -1577,33 +1566,13 @@ const FeatureEntry::FeatureParam
         {"NtpNextEnableCanvasChipParam", "true"},
 };
 
-const FeatureEntry::FeatureParam
-    kNtpNextShowChipsUIWithNtpActionClientWithNoRecentTabInSteadyState[] = {
-        {"kNtpNextShowStaticRecentTabChipParam", "false"},
-};
-
-const FeatureEntry::FeatureParam
-    kNtpNextShowChipsUIWithNtpActionClientWithCanvasAndNoRecentTabInSteadyState
-        [] = {
-            {"kNtpNextShowStaticRecentTabChipParam", "false"},
-            {"NtpNextEnableCanvasChipParam", "true"},
-};
-
 const FeatureEntry::FeatureParam kNtpNextAllowDisablement[] = {
     {"NtpNextDisablementContextMenuParam", "true"},
 };
 
 const FeatureEntry::FeatureVariation kNtpNextVariations[] = {
-    {"- Show Chips UI with a New Client and No Recent Tab Chip in the Steady "
-     "State",
-     kNtpNextShowChipsUIWithNtpActionClientWithNoRecentTabInSteadyState,
-     nullptr},
     {"- Show Chips UI with a New Suggestions Client and Canvas Chip",
      kNtpNextShowChipsUIWithChromeNtpActionClientAndCanvas, nullptr},
-    {"- Show Chips UI with a New Client, Canvas Chip, and No Recent Tab Chip "
-     "in the Steady State",
-     kNtpNextShowChipsUIWithNtpActionClientWithCanvasAndNoRecentTabInSteadyState,
-     nullptr},
     {"- Allow Disable", kNtpNextAllowDisablement, nullptr},
 };
 

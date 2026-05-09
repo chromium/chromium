@@ -318,7 +318,7 @@ const base::FeatureParam<bool> kNtpNextClientSensitivityCheckParam(
 const base::FeatureParam<bool> kNtpNextShowStaticRecentTabChipParam(
     &ntp_features::kNtpNextFeatures,
     "NtpNextShowStaticRecentTabChipParam",
-    true);
+    false);
 const base::FeatureParam<bool> kNtpNextShowDismissalUIParam(
     &ntp_features::kNtpNextFeatures,
     "NtpNextShowDismissalUIParam",
