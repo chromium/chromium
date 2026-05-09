@@ -3470,9 +3470,17 @@ inline constexpr char kEmbeddedPermissionEnabledDescription[] =
     "and contextual "
     "tasks' permission requests.";
 
-inline constexpr char kVoiceSearchCoherenceName[] =
+inline constexpr char kVoiceSearchCoherenceComposeboxName[] =
+    "Composebox Voice Search Coherence";
+inline constexpr char kVoiceSearchCoherenceComposeboxDescription[] =
+    "Enables the voice search coherence (new recording animation, "
+    "new metrics, new stop/submit button, no live transcription) "
+    "for all the composeboxes by default. Options include cobrowsing "
+    "only.";
+
+inline constexpr char kVoiceSearchCoherenceSearchboxName[] =
     "NTP Searchbox (Realbox) Voice Search Coherence";
-inline constexpr char kVoiceSearchCoherenceDescription[] =
+inline constexpr char kVoiceSearchCoherenceSearchboxDescription[] =
     "Enables the voice search coherence experiment (new recording animation, "
     "new metrics, added stop/submit button) for the New Tab Page "
     "searchbox, with option for live transcription.";

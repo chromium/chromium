@@ -13721,6 +13721,7 @@ from previous Chrome versions.
   <int value="-137716319" label="ExtensionManifestV2Unsupported:enabled"/>
   <int value="-137394236" label="TabStripContextMenuAndroid:disabled"/>
   <int value="-137303226" label="enable-chromevox-developer-option"/>
+  <int value="-137076667" label="VoiceSearchCoherenceComposeboxes:disabled"/>
   <int value="-136974597" label="DefaultBrowserPromptSurfaces:disabled"/>
   <int value="-136663703" label="Compose:enabled"/>
   <int value="-136485076" label="NtpModules:disabled"/>
@@ -18150,6 +18151,7 @@ from previous Chrome versions.
   <int value="1324080668" label="VcControlsUi:disabled"/>
   <int value="1324623677"
       label="SessionRestorePrioritizesBackgroundUseCases:enabled"/>
+  <int value="1324658052" label="VoiceSearchCoherenceComposeboxes:enabled"/>
   <int value="1325459977" label="HandwritingGestureEditing:disabled"/>
   <int value="1326063771" label="ChromeWebuiRefresh2023:disabled"/>
   <int value="1326530782" label="AutofillParseAsync:enabled"/>

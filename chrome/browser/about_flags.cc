@@ -1306,21 +1306,30 @@ const FeatureEntry::FeatureVariation
          nullptr},
 };
 
-const FeatureEntry::FeatureParam kVoiceSearchCoherenceSearchboxParams[] = {
-    {"VoiceSearchCoherenceSearchboxNoLiveTranscription", "true"},
-};
-
 const FeatureEntry::FeatureParam
     kVoiceSearchCoherenceLiveTranscriptionParams[] = {
-        {"VoiceSearchCoherenceSearchboxNoLiveTranscription", "true"},
         {"VoiceSearchCoherenceSearchboxWithLiveTranscription", "true"}};
 
 // Normal 'Enabled' option is just 'No Live Transcription'. 'Disabled' option
 // disables live transcription and the experiment.
-const FeatureEntry::FeatureVariation kVoiceSearchCoherenceVariations[] = {
-    {"(No Live Transcription)", kVoiceSearchCoherenceSearchboxParams, nullptr},
-    {"(With Live Transcription)", kVoiceSearchCoherenceLiveTranscriptionParams,
-     nullptr}};
+const FeatureEntry::FeatureVariation
+    kVoiceSearchCoherenceSearchboxVariations[] = {
+        {"(No Live Transcription)", {}, nullptr},
+        {"(With Live Transcription)",
+         kVoiceSearchCoherenceLiveTranscriptionParams, nullptr}};
+
+const FeatureEntry::FeatureParam
+    kVoiceSearchCoherenceComposeboxCobrowsingParams[] = {
+        {"VoiceSearchCoherenceComposeboxCobrowsingOnly", "true"}};
+
+// Normal 'Enabled' option is just 'all composeboxes' enabled by default.
+// 'Disabled' option disables all composeboxes, including cobrowsing (default
+// value is 'off').
+const FeatureEntry::FeatureVariation
+    kVoiceSearchCoherenceComposeboxVariations[] = {
+        {"(All composeboxes)", {}, nullptr},
+        {"(Cobrowsing only)", kVoiceSearchCoherenceComposeboxCobrowsingParams,
+         nullptr}};
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
@@ -6768,11 +6777,11 @@ const FeatureEntry kFeatureEntries[] = {
      MULTI_VALUE_TYPE(kMemlogStackModeChoices)},
 
     {"ntp-searchbox-voice-search-coherence",
-     flag_descriptions::kVoiceSearchCoherenceName,
-     flag_descriptions::kVoiceSearchCoherenceDescription, kOsDesktop,
+     flag_descriptions::kVoiceSearchCoherenceSearchboxName,
+     flag_descriptions::kVoiceSearchCoherenceSearchboxDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kVoiceSearchCoherenceSearchbox,
-                                    kVoiceSearchCoherenceVariations,
-                                    "VoiceSearchCoherenceVariations")},
+                                    kVoiceSearchCoherenceSearchboxVariations,
+                                    "VoiceSearchCoherenceSearchboxVariations")},
 
     {"omnibox-max-zero-suggest-matches",
      flag_descriptions::kOmniboxMaxZeroSuggestMatchesName,
@@ -6897,6 +6906,14 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kNumSrpZpsRelatedSearches,
                                     kNumSrpZpsRelatedSearches,
                                     "PowerTools")},
+
+    {"composebox-voice-search-coherence",
+     flag_descriptions::kVoiceSearchCoherenceComposeboxName,
+     flag_descriptions::kVoiceSearchCoherenceComposeboxDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         omnibox::kVoiceSearchCoherenceComposeboxes,
+         kVoiceSearchCoherenceComposeboxVariations,
+         "VoiceSearchCoherenceComposeboxVariations")},
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
     {"history-embeddings", flag_descriptions::kHistoryEmbeddingsName,

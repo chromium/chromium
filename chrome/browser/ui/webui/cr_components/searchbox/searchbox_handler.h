@@ -63,6 +63,10 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
     bool is_lens = false;
   };
 
+  static bool GetAllVoiceSearchCoherenceComposeboxesEnabled();
+  static bool GetVoiceSearchCoherenceAnySearchboxExperimentEnabled();
+  static bool GetVoiceSearchCoherenceCobrowsingComposeboxEnabled();
+
   static base::DictValue GetWebUIDataSourceDict(Profile* profile);
   static base::DictValue GetWebUIDataSourceDict(Profile* profile,
                                                 WebUIDataSourceOptions options);

@@ -380,13 +380,19 @@ BASE_FEATURE(kOmniboxDebugLogs, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kThinkingModelIconUpdate, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Kill switch - Enables voice search coherence across composeboxes in NTP,
-// cobrowsing, omnibox:
+// cobrowsing, omnibox by default, unless feature param overrides.
 //  - Submit and stop buttons in voice search mode.
 //  - New voice recording animation.
 //  - New metrics for voice search across composeboxes.
 //  - No live transcription below the new recording animation.
 BASE_FEATURE(kVoiceSearchCoherenceComposeboxes,
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables voice search coherence (as described above) only for cobrowsing.
+// Overrides the default (default was all surfaces enabled).
+const base::FeatureParam<bool> kVoiceSearchCoherenceComposeboxCobrowsingOnly{
+    &kVoiceSearchCoherenceComposeboxes,
+    "VoiceSearchCoherenceComposeboxCobrowsingOnly", false};
 
 // Enables voice search live experiment for NTP searchbox, (arm 1):
 //  - Submit and stop buttons in voice search mode.

@@ -311,6 +311,34 @@ base::DictValue SearchboxHandler::GetWebUIDataSourceDict(Profile* profile) {
   return GetWebUIDataSourceDict(profile, WebUIDataSourceOptions{});
 }
 
+// Static:
+// Returns if all voice search coherence composeboxes are enabled (the default),
+// and there is no override (cobrowsing only composebox is enabled) for voice
+// coherence.
+bool SearchboxHandler::GetAllVoiceSearchCoherenceComposeboxesEnabled() {
+  return base::FeatureList::IsEnabled(
+             omnibox::kVoiceSearchCoherenceComposeboxes) &&
+         !omnibox::kVoiceSearchCoherenceComposeboxCobrowsingOnly.Get();
+}
+
+// Static:
+// Returns if cobrowsing voice coherence is enabled, regardless of the other
+// surfaces.
+bool SearchboxHandler::GetVoiceSearchCoherenceCobrowsingComposeboxEnabled() {
+  return base::FeatureList::IsEnabled(
+             omnibox::kVoiceSearchCoherenceComposeboxes) ||
+         omnibox::kVoiceSearchCoherenceComposeboxCobrowsingOnly.Get();
+}
+
+// Static:
+// Returns if the new voice search animation/metrics/stop button are enabled,
+// regardless of transcription.
+bool SearchboxHandler::GetVoiceSearchCoherenceAnySearchboxExperimentEnabled() {
+  return base::FeatureList::IsEnabled(
+             omnibox::kVoiceSearchCoherenceSearchbox) ||
+         omnibox::kVoiceSearchCoherenceSearchboxWithLiveTranscription.Get();
+}
+
 // static
 base::DictValue SearchboxHandler::GetWebUIDataSourceDict(
     Profile* profile,
@@ -332,11 +360,18 @@ base::DictValue SearchboxHandler::GetWebUIDataSourceDict(
   dict.Set("enableThumbnailSizingTweaks", false);
   dict.Set("enableCsbMotionTweaks", false);
 
-  // Returns if composeboxes voice coherence is not gated. Includes new metrics,
-  // new animation, new submit/stop buttons, no live transcription.
-  dict.Set(
-      "voiceSearchCoherenceComposeboxesEnabled",
-      base::FeatureList::IsEnabled(omnibox::kVoiceSearchCoherenceComposeboxes));
+  // Returns if ALL composeboxe surfaces' voice coherence is not gated. Includes
+  // new metrics, new animation, new submit/stop buttons, no live transcription.
+  // Will be false if "voice search coherence only for cobrowsing" is enabled.
+  dict.Set("voiceSearchCoherenceComposeboxesEnabled",
+           GetAllVoiceSearchCoherenceComposeboxesEnabled());
+
+  // Returns if cobrowsing composebox voice coherence is not gated.
+  // Coherence includes new metrics, new animation, new submit/stop buttons,
+  // no live transcription. Other surfaces can also be not gated if this is
+  // true.
+  dict.Set("voiceSearchCoherenceCobrowsingComposeboxEnabled",
+           GetVoiceSearchCoherenceCobrowsingComposeboxEnabled());
 
   // Enables if voice search ntp searchbox live experiment is on. Includes new
   // metrics, new animation, new submit/stop buttons, no live transcription.
@@ -351,10 +386,8 @@ base::DictValue SearchboxHandler::GetWebUIDataSourceDict(
 
   // Enables if either arm of the voice search ntp searchbox live experiment
   // is on.
-  dict.Set(
-      "voiceSearchCoherenceAnySearchboxExperimentEnabled",
-      base::FeatureList::IsEnabled(omnibox::kVoiceSearchCoherenceSearchbox) ||
-          omnibox::kVoiceSearchCoherenceSearchboxWithLiveTranscription.Get());
+  dict.Set("voiceSearchCoherenceAnySearchboxExperimentEnabled",
+           GetVoiceSearchCoherenceAnySearchboxExperimentEnabled());
 
   static constexpr webui::LocalizedString kStrings[] = {
       {"lensSearchButtonLabel", IDS_TOOLTIP_LENS_SEARCH},
