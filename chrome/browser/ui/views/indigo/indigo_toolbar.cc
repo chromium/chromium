@@ -330,11 +330,9 @@ void IndigoToolbar::ShowAt(
     views::View* parent_view,
     base::FunctionRef<gfx::Point(const gfx::Size&)> toolbar_origin_func) {
   views::View* view = view_tracker_.view();
-  bool is_new = !view;
-  std::unique_ptr<views::View> new_view;
-  if (is_new) {
-    new_view = CreateToolbarView();
-    view = new_view.get();
+  if (!view) {
+    owned_view_ = CreateToolbarView();
+    view = owned_view_.get();
     view_tracker_.SetView(view);
   }
 
@@ -348,9 +346,15 @@ void IndigoToolbar::ShowAt(
   preferred_offset.Offset(-insets.left(), -insets.top());
   view->SetProperty(kIndigoToolbarOffsetKey, preferred_offset);
 
-  if (is_new) {
-    parent_view->RemoveAllChildViews();
-    parent_view->AddChildView(std::move(new_view));
+  if (!parent_view) {
+    // View is created and offset is stored in owned_view_, but cannot be shown
+    // yet.
+    return;
+  }
+
+  if (owned_view_) {
+    DCHECK(parent_view->children().empty());
+    parent_view->AddChildView(std::move(owned_view_));
     parent_view->InvalidateLayout();
   } else {
     view->InvalidateLayout();
@@ -376,8 +380,27 @@ void IndigoToolbar::Hide() {
   view_tracker_.SetView(nullptr);
   if (view && view->parent()) {
     views::View* parent = view->parent();
-    parent->RemoveAllChildViews();
+    parent->RemoveChildViewT(view);
     parent->InvalidateLayout();
+  }
+  owned_view_.reset();
+}
+
+void IndigoToolbar::TabWillBecomeHidden() {
+  views::View* view = view_tracker_.view();
+  CHECK(view);
+  views::View* parent = view->parent();
+  if (parent) {
+    owned_view_ = parent->RemoveChildViewT(view);
+    parent->InvalidateLayout();
+  }
+}
+
+void IndigoToolbar::TabDidBecomeVisible(views::View* parent_view) {
+  if (owned_view_) {
+    DCHECK(parent_view->children().empty());
+    parent_view->AddChildView(std::move(owned_view_));
+    parent_view->InvalidateLayout();
   }
 }
 

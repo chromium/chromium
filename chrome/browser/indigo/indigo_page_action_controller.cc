@@ -74,6 +74,19 @@ IndigoPageActionController::IndigoPageActionController(
                 base::Unretained(this)));
   }
 
+  // TODO(b/511166876): Split view visual swaps (reversing panels) and some
+  // other related changes do not fire tab visibility changes, even though it
+  // may have changed which ContentsContainerView shows a tab contents.
+  // We'll need to either observe these directly or create a higher level
+  // event that describes when a tab may have changed how it is rendered in the
+  // BrowserView.
+  tab_became_hidden_subscription_ = tab_interface.RegisterWillBecomeHidden(
+      base::BindRepeating(&IndigoPageActionController::TabWillBecomeHidden,
+                          base::Unretained(this)));
+  tab_became_visible_subscription_ = tab_interface.RegisterDidBecomeVisible(
+      base::BindRepeating(&IndigoPageActionController::TabDidBecomeVisible,
+                          base::Unretained(this)));
+
   UpdateEntryPointsState();
 }
 
@@ -166,37 +179,25 @@ void IndigoPageActionController::ContinueInvoke(
     if (!toolbar_) {
       toolbar_ = std::make_unique<IndigoToolbar>(this);
     }
-    auto* browser_view = BrowserView::GetBrowserViewForBrowser(
-        tab().GetBrowserWindowInterface());
-    if (browser_view) {
-      auto* contents_container =
-          browser_view->GetContentsContainerViewFor(tab().GetContents());
-      toolbar_->Show(contents_container->indigo_overlay_view());
-    }
+    views::View* parent_view = GetIndigoOverlayView();
+    toolbar_->Show(parent_view);
     return;
   }
 }
 
 void IndigoPageActionController::ShowToolbarInside(const gfx::Rect& rect) {
-  content::WebContents* web_contents = tab().GetContents();
-  if (!web_contents) {
-    return;
-  }
-
   if (!toolbar_) {
     toolbar_ = std::make_unique<IndigoToolbar>(this);
   }
-  auto* browser_view =
-      BrowserView::GetBrowserViewForBrowser(tab().GetBrowserWindowInterface());
-  if (browser_view) {
-    auto* contents_container =
-        browser_view->GetContentsContainerViewFor(tab().GetContents());
-    auto* contents_webview = contents_container->contents_view();
-    gfx::Rect container_rect = views::View::ConvertRectToTarget(
-        contents_webview, contents_container, rect);
-    toolbar_->ShowInside(contents_container->indigo_overlay_view(),
-                         container_rect);
-  }
+
+  views::View* parent_view = GetIndigoOverlayView();
+
+  // TODO(b/511166876): We assume that contents_webview and
+  // indigo_overlay_view share the same origin and coordinate space for now.
+  // In the future, if their layouts differ (e.g., in RTL or if devtools
+  // placement changes the sibling origins), we should perform an appropriate
+  // coordinate conversion using views::View::ConvertRectToTarget.
+  toolbar_->ShowInside(parent_view, rect);
 }
 
 void IndigoPageActionController::DidFinishNavigation(
@@ -248,6 +249,27 @@ void IndigoPageActionController::OnClose(IndigoToolbar* toolbar) {
       manager->ResetAllReplacements();
     }
   }
+}
+
+void IndigoPageActionController::TabWillBecomeHidden(tabs::TabInterface* tab) {
+  DCHECK_EQ(tab, &this->tab());
+  if (toolbar_) {
+    toolbar_->TabWillBecomeHidden();
+  }
+}
+
+void IndigoPageActionController::TabDidBecomeVisible(tabs::TabInterface* tab) {
+  DCHECK_EQ(tab, &this->tab());
+  if (!toolbar_) {
+    return;
+  }
+
+  auto* parent_view = GetIndigoOverlayView();
+  if (!parent_view) {
+    return;
+  }
+
+  toolbar_->TabDidBecomeVisible(parent_view);
 }
 
 void IndigoPageActionController::OnRegenerate(IndigoToolbar* toolbar) {
@@ -346,6 +368,22 @@ void IndigoPageActionController::OnOptimizationGuideDecision(
   }
   optimization_guide_decision_ = decision;
   UpdateEntryPointsState();
+}
+
+views::View* IndigoPageActionController::GetIndigoOverlayView() const {
+  if (!tab().IsVisible()) {
+    return nullptr;
+  }
+
+  auto* browser_view =
+      BrowserView::GetBrowserViewForBrowser(tab().GetBrowserWindowInterface());
+  CHECK(browser_view);
+
+  auto* contents_container =
+      browser_view->GetContentsContainerViewFor(tab().GetContents());
+  CHECK(contents_container);
+
+  return contents_container->indigo_overlay_view();
 }
 
 }  // namespace indigo

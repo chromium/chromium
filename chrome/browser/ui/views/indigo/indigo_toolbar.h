@@ -85,6 +85,12 @@ class IndigoToolbar {
   void ShowInside(views::View* parent_view, const gfx::Rect& rect);
   void Hide();
 
+  // Reclaims ownership of the toolbar view when the tab is hidden.
+  void TabWillBecomeHidden();
+
+  // Re-attaches the reclaimed view to the new parent view on tab visibility.
+  void TabDidBecomeVisible(views::View* parent_view);
+
  private:
   std::unique_ptr<views::View> CreateToolbarView();
   std::unique_ptr<views::Button> CreateExpandedButton(
@@ -100,6 +106,12 @@ class IndigoToolbar {
 
   raw_ptr<Delegate> delegate_;
   views::ViewTracker view_tracker_;
+
+  // Holds the toolbar view when the tab is deactivated or not yet active,
+  // preserving its state. Ownership is transferred back here in
+  // TabWillDeactivate or during initial creation while inactive, and returned
+  // to the parent view in ShowAt (called via TabDidActivate or Show).
+  std::unique_ptr<views::View> owned_view_;
 
   bool is_expanded_ = false;
 };
