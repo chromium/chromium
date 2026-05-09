@@ -4062,6 +4062,17 @@ INSTANTIATE_TEST_SUITE_P(
                                .auto_open_pdf = true}),
     &WithTestParams::PrintTestVariant);
 
+IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testGetZoomLevel) {
+  // Confirm that the observer is notified through getZoomLevel of the initial
+  // state, i.e. zoom level of 1.0.
+  ExecuteJsTest();
+
+  // Zoom in and confirm that the observer is notified of the new state, i.e.
+  // zoom level of 1.1.
+  GetHost()->Zoom(mojom::ZoomAction::kZoomIn);
+  ContinueJsTest();
+}
+
 auto DefaultTestParamSet() {
   return testing::Values(TestParams{});
 }

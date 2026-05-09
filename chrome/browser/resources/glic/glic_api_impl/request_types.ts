@@ -661,6 +661,12 @@ export declare type HostRequestTypes = ValidateRequestMap<{
     },
     backgroundAllowed: true,
   },
+  glicBrowserSubscribeToZoomLevel: {
+    backgroundAllowed: true,
+  },
+  glicBrowserUnsubscribeFromZoomLevel: {
+    backgroundAllowed: true,
+  },
 }>;
 
 // Types of requests to the GlicWebClient.
@@ -918,6 +924,12 @@ export declare type WebClientRequestTypes = ValidateRequestMap<{
     },
     backgroundAllowed: true,
   },
+  glicWebClientNotifyZoomLevelChanged: {
+    request: {
+      zoomFactor: number,
+    },
+    backgroundAllowed: true,
+  },
 }>;
 
 
@@ -1028,6 +1040,8 @@ export const HOST_REQUEST_TYPES: HostRequestEnumNamesType&{MAX_VALUE: number} =
         OnActionSubmitted: 93,
         SubscribeToTabFavicon: 94,
         ShowBrowseSkillsUi: 95,
+        SubscribeToZoomLevel: 96,
+        UnsubscribeFromZoomLevel: 97,
       };
       return {...result, MAX_VALUE: Math.max(...Object.values(result))};
     })();

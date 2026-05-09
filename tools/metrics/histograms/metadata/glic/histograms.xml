@@ -288,12 +288,14 @@ chromium-metrics-reviews@google.com.
     <variant name="SubscribeToPinCandidates"/>
     <variant name="SubscribeToTabData"/>
     <variant name="SubscribeToTabFavicon"/>
+    <variant name="SubscribeToZoomLevel"/>
     <variant name="SwitchConversation"/>
     <variant name="UninterruptActorTask"/>
     <variant name="UnpinAllTabs"/>
     <variant name="UnpinTabs"/>
     <variant name="UnsubscribeFromCaptureRegion"/>
     <variant name="UnsubscribeFromPinCandidates"/>
+    <variant name="UnsubscribeFromZoomLevel"/>
     <variant name="UpdateSkill"/>
     <variant name="WebClientCreated"/>
     <variant name="WebClientInitialized"/>

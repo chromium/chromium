@@ -182,12 +182,15 @@ export class WebviewController {
         this.webview, 'unresponsive', this.onUnresponsive.bind(this));
     this.eventTracker.add(this.webview, 'exit', this.onExit.bind(this));
     // <if expr="not is_android">
-    this.eventTracker.add(this.webview, 'zoomchange', (e: any) => {
-      const percentage = Math.round(e.newZoomFactor * 100);
-      const message = loadTimeData.getStringF('zoomLabel', percentage + '%');
-      getAnnouncerInstance().announce(message);
-      this.browserProxy.pageHandler.onZoomLevelChange(e.newZoomFactor);
-    });
+    if (isFullWebView(this.webview)) {
+      this.eventTracker.add(this.webview, 'zoomchange', (e: any) => {
+        const percentage = Math.round(e.newZoomFactor * 100);
+        const message = loadTimeData.getStringF('zoomLabel', percentage + '%');
+        getAnnouncerInstance().announce(message);
+        this.browserProxy.pageHandler.onZoomLevelChange(e.newZoomFactor);
+        this.host?.onZoomLevelChanged(e.newZoomFactor);
+      });
+    }
     // </if>
     this.eventTracker.add(
         this.webview, 'loadstart', this.onLoadStart.bind(this));

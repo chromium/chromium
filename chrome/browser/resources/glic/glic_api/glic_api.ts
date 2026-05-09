@@ -673,6 +673,13 @@ export declare interface GlicBrowserHost {
   getDefaultTabContextPermissionState?(): ObservableValue<boolean>;
 
   /**
+   * Returns the zoom level of the Glic webview.
+   * The client should subscribe to this to be notified of zoom level changes.
+   * The value is a float representing the zoom factor (e.g., 1.5 for 150%).
+   */
+  getZoomLevel?(): ObservableValue<number>;
+
+  /**
    * Set the state of the microphone permission in settings. Returns a promise
    * that resolves when the browser has stored the new pref value.
    */

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import {isFullWebView} from '/shared/web_view_type.js';
 import {assert, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
 
@@ -681,6 +682,22 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
       this.cancelTimeout();
       this.setState(WebUiState.kHoldLoading);
     }
+  }
+
+  getZoom(): Promise<number> {
+    return new Promise((resolve) => {
+      if (!this.webview || !isFullWebView(this.webview.webview)) {
+        resolve(1.0);
+        return;
+      }
+      // Cast to any because the WebView type definition is missing `getZoom`
+      // and `setZoom`. We've already checked that this.webview is a full
+      // WebView so this should be safe.
+      const webview = this.webview.webview as any;
+      webview.getZoom((currentZoom: number) => {
+        resolve(currentZoom);
+      });
+    });
   }
 
   webClientWarmed(): void {

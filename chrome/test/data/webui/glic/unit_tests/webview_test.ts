@@ -140,6 +140,9 @@ suite('WebviewZoomTest', () => {
       enableDragResize(_enabled: boolean) {}
       webClientReady() {}
       webClientWarmed() {}
+      getZoom() {
+        return Promise.resolve(1.0);
+      }
     }
 
     controller = new WebviewController(

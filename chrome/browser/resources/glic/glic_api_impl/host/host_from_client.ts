@@ -517,6 +517,14 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
     }
   }
 
+  glicBrowserSubscribeToZoomLevel(): void {
+    this.host.subscribeToZoomLevel();
+  }
+
+  glicBrowserUnsubscribeFromZoomLevel(): void {
+    this.host.unsubscribeFromZoomLevel();
+  }
+
   glicBrowserDeleteCapturedRegion(request: {tabId: string, regionId: string}) {
     this.handler.deleteCapturedRegion(
         idFromClient(request.tabId), request.regionId);

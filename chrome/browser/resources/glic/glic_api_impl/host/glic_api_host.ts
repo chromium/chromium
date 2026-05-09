@@ -70,6 +70,9 @@ export interface ApiHostEmbedder {
   // when triggered from the browser.
   webClientReady(): void;
   webClientWarmed(): void;
+
+  // Returns the current zoom level of the webview.
+  getZoom(): Promise<number>;
 }
 
 
@@ -203,10 +206,11 @@ export class GlicApiHost implements PostMessageRequestHandler {
   captureRegionObserver?: CaptureRegionObserverImpl;
   tabDataHandlerSet: TabDataHandlerSet;
   tabFaviconHandlerSet: TabFaviconHandlerSet;
+  private isSubscribedToZoomLevel = false;
 
   constructor(
       private browserProxy: BrowserProxy, communicator: GlicApiCommunicator,
-      embedder: ApiHostEmbedder) {
+      private embedder: ApiHostEmbedder) {
     this.sender = new GatedSender(communicator.postMessageSender);
     this.handler = new WebClientHandlerRemote();
     this.handler.onConnectionError.addListener(() => {
@@ -257,6 +261,28 @@ export class GlicApiHost implements PostMessageRequestHandler {
 
   shouldGateRequests(): boolean {
     return !this.panelIsActive && this.enableApiActivationGating;
+  }
+
+  async subscribeToZoomLevel() {
+    this.isSubscribedToZoomLevel = true;
+    try {
+      const zoomFactor = await this.embedder.getZoom();
+      this.sender.sendLatestWhenActive(
+          'glicWebClientNotifyZoomLevelChanged', {zoomFactor});
+    } catch (e) {
+      console.warn('Failed to get initial zoom level', e);
+    }
+  }
+
+  unsubscribeFromZoomLevel() {
+    this.isSubscribedToZoomLevel = false;
+  }
+
+  onZoomLevelChanged(zoomFactor: number) {
+    if (this.isSubscribedToZoomLevel) {
+      this.sender.sendLatestWhenActive(
+          'glicWebClientNotifyZoomLevelChanged', {zoomFactor});
+    }
   }
 
   waitingOnPanelWillOpen() {

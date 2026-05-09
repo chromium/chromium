@@ -95,6 +95,13 @@ class WebClient implements GlicWebClient {
     const boundFocusedChangedCallback = this.focusedTabChangedV2.bind(this);
     focusedTabStateV2.subscribe(boundFocusedChangedCallback);
 
+    if (this.browser.getZoomLevel) {
+      const zoomLevel = await this.browser.getZoomLevel();
+      zoomLevel.subscribe((factor: number) => {
+        logMessage(`Zoom level changed to: ${factor}`);
+      });
+    }
+
     // Initialize permission switches and subscribe for updates.
     const permissionStates:
         Partial<Record<PermissionSwitchName, Observable<boolean>>> = {
