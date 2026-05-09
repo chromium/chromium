@@ -4368,6 +4368,8 @@ failing to fetch the updates which puts users' security at risk. -->
     <variant name="" summary="any"/>
     <variant name=".BypassedByUser" summary="a BypassedByUser"/>
     <variant name=".CancelledByUser" summary="a CancelledByUser"/>
+    <variant name=".CancelledByUserCancellationTime"
+        summary="a CancelledByUserCancellationTime"/>
     <variant name=".FailedToGetToken" summary="a FailedToGetToken"/>
     <variant name=".FailedToGetVerdict" summary="a FailedToGetVerdict"/>
     <variant name=".FileEncrypted" summary="a FileEncrypted"/>
