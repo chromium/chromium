@@ -60,7 +60,8 @@ class OrderTemplateUrlsByPrepopulatedAndManagedAndAlphabetically {
 };
 
 template_url_starter_pack_data::StarterPackIdSet GetDisabledStarterPackIds(
-    bool ai_mode_enabled);
+    bool ai_mode_enabled,
+    bool gemini_enabled);
 
 }  // namespace internal
 #endif  // COMPONENTS_SEARCH_ENGINES_UI_UTILS_H_

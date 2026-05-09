@@ -440,8 +440,11 @@ TEST_F(FeaturedSearchProviderTest,
       }));
   base::test::ScopedFeatureList features;
   features.InitWithFeaturesAndParameters(
-      {{history_embeddings::kHistoryEmbeddings, {}},
-       {omnibox::kStarterPackIPH, {}}},
+      {
+          {history_embeddings::kHistoryEmbeddings, {}},
+          {omnibox::kStarterPackExpansion, {}},
+          {omnibox::kStarterPackIPH, {}},
+      },
       {});
   PrefService* prefs = client_->GetPrefs();
 
@@ -950,9 +953,10 @@ TEST_F(FeaturedSearchProviderTest, HistoryEmbedding_Iphs) {
 
 TEST_F(FeaturedSearchProviderTest, IphShownLimit) {
   base::test::ScopedFeatureList features;
-  features.InitWithFeatures(
-      {{omnibox::kStarterPackIPH}, {history_embeddings::kHistoryEmbeddings}},
-      {});
+  features.InitWithFeatures({{omnibox::kStarterPackExpansion},
+                             {omnibox::kStarterPackIPH},
+                             {history_embeddings::kHistoryEmbeddings}},
+                            {});
   AddStarterPackEntriesToTemplateUrlService();
   AutocompleteInput input;
   input.set_focus_type(metrics::INTERACTION_FOCUS);
