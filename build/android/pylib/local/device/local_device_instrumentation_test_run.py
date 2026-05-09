@@ -42,7 +42,6 @@ from pylib.local.device import local_device_environment
 from pylib.local.device import local_device_test_run
 from pylib.output import remote_output_manager
 from pylib.symbols import stack_symbolizer
-from pylib.utils import chrome_proxy_utils
 from pylib.utils import code_coverage_utils
 from pylib.utils import device_dependencies
 from pylib.utils import gold_utils
@@ -64,10 +63,6 @@ _DEVICE_TEMP_DIR_DATA_ROOT = posixpath.join('/data/local/tmp',
 _JINJA_TEMPLATE_DIR = os.path.join(
     host_paths.DIR_SOURCE_ROOT, 'build', 'android', 'pylib', 'instrumentation')
 _JINJA_TEMPLATE_FILENAME = 'render_test.html.jinja'
-
-_WPR_GO_LINUX_X86_64_PATH = os.path.join(host_paths.DIR_SOURCE_ROOT,
-                                         'third_party', 'webpagereplay', 'cipd',
-                                         'bin', 'linux', 'x86_64', 'wpr')
 
 _TAG = 'test_runner_py'
 
@@ -125,9 +120,6 @@ _VALUE_WEBVIEW_REBASELINE_MODE = 'rebaseline'
 
 FEATURE_ANNOTATION = 'Feature'
 RENDER_TEST_FEATURE_ANNOTATION = 'RenderTest'
-WPR_ARCHIVE_FILE_PATH_ANNOTATION = 'WPRArchiveDirectory'
-WPR_ARCHIVE_NAME_ANNOTATION = 'WPRArchiveDirectory$ArchiveName'
-WPR_RECORD_REPLAY_TEST_FEATURE_ANNOTATION = 'WPRRecordReplayTest'
 
 _DEVICE_GOLD_DIR = 'skia_gold'
 # A map of Android product models to SDK ints. The keys can be found via `adb
@@ -329,7 +321,6 @@ class LocalDeviceInstrumentationTestRun(
     local_device_test_run.LocalDeviceTestRun):
   def __init__(self, env, test_instance):
     super().__init__(env, test_instance)
-    self._chrome_proxy = None
     self._context_managers = collections.defaultdict(list)
     self._flag_changers = {}
     self._webview_flag_changers = {}
@@ -1159,40 +1150,6 @@ class LocalDeviceInstrumentationTestRun(
     if self._test_instance.webview_rebaseline_mode:
       extras[_EXTRA_WEBVIEW_REBASELINE_MODE] = _VALUE_WEBVIEW_REBASELINE_MODE
 
-    if _IsWPRRecordReplayTest(test):
-      wpr_archive_relative_path = _GetWPRArchivePath(test)
-      if not wpr_archive_relative_path:
-        raise RuntimeError('Could not find the WPR archive file path '
-                           'from annotation.')
-      wpr_archive_path = os.path.join(host_paths.DIR_SOURCE_ROOT,
-                                      wpr_archive_relative_path)
-      if not os.path.isdir(wpr_archive_path):
-        raise RuntimeError('WPRArchiveDirectory annotation should point '
-                           'to a directory only. '
-                           '{0} exist: {1}'.format(
-                               wpr_archive_path,
-                               os.path.exists(wpr_archive_path)))
-
-      file_name = _GetWPRArchiveFileName(
-          test) or self._GetUniqueTestName(test) + '.wprgo'
-
-      # Some linux version does not like # in the name. Replaces it with __.
-      archive_path = os.path.join(wpr_archive_path,
-                                  _ReplaceUncommonChars(file_name))
-
-      if not os.path.exists(_WPR_GO_LINUX_X86_64_PATH):
-        # If we got to this stage, then we should have
-        # checkout_android set.
-        raise RuntimeError(
-            'WPR Go binary not found at {}'.format(_WPR_GO_LINUX_X86_64_PATH))
-      # Tells the server to use the binaries retrieved from CIPD.
-      chrome_proxy_utils.ChromeProxySession.SetWPRServerBinary(
-          _WPR_GO_LINUX_X86_64_PATH)
-      self._chrome_proxy = chrome_proxy_utils.ChromeProxySession()
-      self._chrome_proxy.wpr_record_mode = self._test_instance.wpr_record_mode
-      self._chrome_proxy.Start(device, archive_path)
-      flags_to_add.extend(self._chrome_proxy.GetFlags())
-
     if flags_to_add:
       self._CreateFlagChangersIfNeeded(device)
       self._flag_changers[str(device)].PushFlags(add=flags_to_add)
@@ -1320,15 +1277,6 @@ class LocalDeviceInstrumentationTestRun(
         json_data['image_link'] = image_archive.Link()
         return json_data
 
-      def stop_chrome_proxy():
-        # Removes the port forwarding
-        if self._chrome_proxy:
-          self._chrome_proxy.Stop(device)
-          if not self._chrome_proxy.wpr_replay_mode:
-            logging.info('WPR Record test generated archive file %s',
-                         self._chrome_proxy.wpr_archive_path)
-          self._chrome_proxy = None
-
       def pull_baseline_profile():
         # Search though status responses for the one with the key we are
         # looking for.
@@ -1354,9 +1302,8 @@ class LocalDeviceInstrumentationTestRun(
       # the results! Things such as whether the test CRASHED have not yet been
       # determined.
       post_test_steps = [
-          restore_flags, stop_chrome_proxy, handle_coverage_data,
-          handle_render_test_data, pull_ui_screen_captures,
-          pull_baseline_profile
+          restore_flags, handle_coverage_data, handle_render_test_data,
+          pull_ui_screen_captures, pull_baseline_profile
       ]
       if self._env.concurrent_adb:
         reraiser_thread.RunAsync(post_test_steps)
@@ -1943,27 +1890,6 @@ class LocalDeviceInstrumentationTestRun(
     timeout *= cls._GetTimeoutScaleFromAnnotations(annotations)
 
     return timeout
-
-
-def _IsWPRRecordReplayTest(test):
-  """Determines whether a test or a list of tests is a WPR RecordReplay Test."""
-  if not isinstance(test, list):
-    test = [test]
-  return any(WPR_RECORD_REPLAY_TEST_FEATURE_ANNOTATION in t['annotations'].get(
-      FEATURE_ANNOTATION, {}).get('value', ()) for t in test)
-
-
-def _GetWPRArchivePath(test):
-  """Retrieves the archive path from the WPRArchiveDirectory annotation."""
-  return test['annotations'].get(WPR_ARCHIVE_FILE_PATH_ANNOTATION,
-                                 {}).get('value', ())
-
-
-def _GetWPRArchiveFileName(test):
-  """Retrieves the WPRArchiveDirectory.ArchiveName annotation."""
-  value = test['annotations'].get(WPR_ARCHIVE_NAME_ANNOTATION,
-                                  {}).get('value', None)
-  return value[0] if value else None
 
 
 def _ReplaceUncommonChars(original):

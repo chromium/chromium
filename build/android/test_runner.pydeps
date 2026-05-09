@@ -11,17 +11,12 @@
 ../../third_party/catapult/common/py_trace_event/py_trace_event/trace_event_impl/perfetto_trace_writer.py
 ../../third_party/catapult/common/py_trace_event/py_trace_event/trace_time.py
 ../../third_party/catapult/common/py_utils/py_utils/__init__.py
-../../third_party/catapult/common/py_utils/py_utils/atexit_with_log.py
-../../third_party/catapult/common/py_utils/py_utils/binary_manager.py
 ../../third_party/catapult/common/py_utils/py_utils/cloud_storage.py
 ../../third_party/catapult/common/py_utils/py_utils/cloud_storage_global_lock.py
 ../../third_party/catapult/common/py_utils/py_utils/contextlib_ext.py
 ../../third_party/catapult/common/py_utils/py_utils/lock.py
 ../../third_party/catapult/common/py_utils/py_utils/modules_util.py
-../../third_party/catapult/common/py_utils/py_utils/retry_util.py
 ../../third_party/catapult/common/py_utils/py_utils/tempfile_ext.py
-../../third_party/catapult/common/py_utils/py_utils/ts_proxy_server.py
-../../third_party/catapult/common/py_utils/py_utils/webpagereplay_go_server.py
 ../../third_party/catapult/dependency_manager/dependency_manager/__init__.py
 ../../third_party/catapult/dependency_manager/dependency_manager/archive_info.py
 ../../third_party/catapult/dependency_manager/dependency_manager/base_config.py
@@ -38,7 +33,6 @@
 ../../third_party/catapult/devil/devil/android/battery_utils.py
 ../../third_party/catapult/devil/devil/android/constants/__init__.py
 ../../third_party/catapult/devil/devil/android/constants/chrome.py
-../../third_party/catapult/devil/devil/android/constants/file_system.py
 ../../third_party/catapult/devil/devil/android/crash_handler.py
 ../../third_party/catapult/devil/devil/android/decorators.py
 ../../third_party/catapult/devil/devil/android/device_denylist.py
@@ -49,7 +43,6 @@
 ../../third_party/catapult/devil/devil/android/device_utils.py
 ../../third_party/catapult/devil/devil/android/devil_util.py
 ../../third_party/catapult/devil/devil/android/flag_changer.py
-../../third_party/catapult/devil/devil/android/forwarder.py
 ../../third_party/catapult/devil/devil/android/logcat_monitor.py
 ../../third_party/catapult/devil/devil/android/ndk/__init__.py
 ../../third_party/catapult/devil/devil/android/ndk/abis.py
@@ -69,8 +62,6 @@
 ../../third_party/catapult/devil/devil/android/tools/script_common.py
 ../../third_party/catapult/devil/devil/android/tools/system_app.py
 ../../third_party/catapult/devil/devil/android/tools/webview_app.py
-../../third_party/catapult/devil/devil/android/valgrind_tools/__init__.py
-../../third_party/catapult/devil/devil/android/valgrind_tools/base_tool.py
 ../../third_party/catapult/devil/devil/base_error.py
 ../../third_party/catapult/devil/devil/constants/__init__.py
 ../../third_party/catapult/devil/devil/constants/exit_codes.py
@@ -221,7 +212,6 @@ pylib/symbols/deobfuscator.py
 pylib/symbols/expensive_line_transformer.py
 pylib/symbols/stack_symbolizer.py
 pylib/utils/__init__.py
-pylib/utils/chrome_proxy_utils.py
 pylib/utils/code_coverage_utils.py
 pylib/utils/device_dependencies.py
 pylib/utils/dexdump.py

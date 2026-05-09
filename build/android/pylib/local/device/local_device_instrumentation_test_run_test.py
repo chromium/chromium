@@ -65,58 +65,6 @@ class LocalDeviceInstrumentationTestRunTest(unittest.TestCase):
         'SadTest.testNotRun', base_test_result.ResultType.NOTRUN)
     self.assertTrue(self._obj._ShouldRetry(test, result))
 
-  def testIsWPRRecordReplayTest_matchedWithKey(self):
-    test = {
-        'annotations': {
-            'Feature': {
-                'value': ['WPRRecordReplayTest', 'dummy']
-            }
-        },
-        'class': 'WPRDummyTest',
-        'method': 'testRun',
-    }
-    self.assertTrue(
-        local_device_instrumentation_test_run._IsWPRRecordReplayTest(test))
-
-  def testIsWPRRecordReplayTest_noMatchedKey(self):
-    test = {
-        'annotations': {
-            'Feature': {
-                'value': ['abc', 'dummy']
-            }
-        },
-        'class': 'WPRDummyTest',
-        'method': 'testRun',
-    }
-    self.assertFalse(
-        local_device_instrumentation_test_run._IsWPRRecordReplayTest(test))
-
-  def testGetWPRArchivePath_matchedWithKey(self):
-    test = {
-        'annotations': {
-            'WPRArchiveDirectory': {
-                'value': 'abc'
-            }
-        },
-        'class': 'WPRDummyTest',
-        'method': 'testRun',
-    }
-    self.assertEqual(
-        local_device_instrumentation_test_run._GetWPRArchivePath(test), 'abc')
-
-  def testGetWPRArchivePath_noMatchedWithKey(self):
-    test = {
-        'annotations': {
-            'Feature': {
-                'value': 'abc'
-            }
-        },
-        'class': 'WPRDummyTest',
-        'method': 'testRun',
-    }
-    self.assertFalse(
-        local_device_instrumentation_test_run._GetWPRArchivePath(test))
-
   def testIsRenderTest_matchedWithKey(self):
     test = {
         'annotations': {
