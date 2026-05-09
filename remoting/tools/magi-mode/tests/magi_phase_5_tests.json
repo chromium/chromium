@@ -1,0 +1,49 @@
+{
+    "$schema": "./magi_test_schemas.json#/definitions/Scenario",
+    "name": "Review & Consensus",
+    "description": "Verify review consolidation and consensus logic.",
+    "base_inputs": {
+        "project_spec": "testdata/project.magi.json",
+        "state_block": "testdata/state_block.magi.json"
+    },
+    "cases": [
+        {
+            "phase": 5,
+            "name": "Consensus Logical AND",
+            "override_inputs": {
+                "mock_reviews": [
+                    {
+                        "persona": "core/security.json",
+                        "verdict": "ACCEPT",
+                        "checklist": {
+                            "no_pii_leaks": true
+                        }
+                    },
+                    {
+                        "persona": "domain/signaling.json",
+                        "verdict": "REJECT",
+                        "checklist": {
+                            "no_pii_leaks": false
+                        },
+                        "comments": [
+                            {
+                                "file": "testdata/file1.cc",
+                                "line": 5,
+                                "comment": "Found PII!"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "expected_outputs": {
+                "files_created": [
+                    "testdata/state_block.magi.json"
+                ],
+                "valid_json": true,
+                "content_patterns": {
+                    "testdata/state_block.magi.json": "\"no_pii_leaks\": false"
+                }
+            }
+        }
+    ]
+}

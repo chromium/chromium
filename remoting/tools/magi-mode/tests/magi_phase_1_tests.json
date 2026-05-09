@@ -1,0 +1,41 @@
+{
+    "$schema": "./magi_test_schemas.json#/definitions/Scenario",
+    "name": "Architect Scaffolding",
+    "description": "Verify file creation by Architect.",
+    "base_inputs": {
+        "project_spec": "testdata/project.magi.json"
+    },
+    "cases": [
+        {
+            "phase": 1,
+            "name": "Standard Scaffolding",
+            "override_inputs": {},
+            "expected_outputs": {
+                "files_created": [
+                    "testdata/scaffold_file.cc",
+                    "testdata/scaffold_file.h"
+                ],
+                "content_patterns": {
+                    "testdata/scaffold_file.h": "class ScaffoldFile",
+                    "testdata/BUILD.gn": "\"scaffold_file.cc\""
+                },
+                "buildable": true
+            }
+        },
+        {
+            "phase": 1,
+            "name": "No Build Targets",
+            "override_inputs": {
+                "project_spec_overrides": {
+                    "build_targets": []
+                }
+            },
+            "expected_outputs": {
+                "files_created": [
+                    "testdata/scaffold_file.cc"
+                ],
+                "buildable": false
+            }
+        }
+    ]
+}

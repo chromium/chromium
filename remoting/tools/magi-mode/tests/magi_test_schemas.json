@@ -1,0 +1,151 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "MAGI Test Harness Schemas",
+    "definitions": {
+        "Scenario": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "base_inputs": {
+                    "type": "object",
+                    "properties": {
+                        "project_spec": {
+                            "type": "string"
+                        },
+                        "state_block": {
+                            "type": "string"
+                        },
+                        "draft_files": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "mock_reviews": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/MockReview"
+                            }
+                        }
+                    }
+                },
+                "cases": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/TestCase"
+                    }
+                }
+            },
+            "required": [
+                "name",
+                "base_inputs",
+                "cases"
+            ]
+        },
+        "TestCase": {
+            "type": "object",
+            "properties": {
+                "phase": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "override_inputs": {
+                    "type": "object",
+                    "properties": {
+                        "project_spec_overrides": {
+                            "type": "object"
+                        },
+                        "state_block_overrides": {
+                            "type": "object"
+                        },
+                        "draft_files_overrides": {
+                            "type": "object"
+                        },
+                        "mock_reviews": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/MockReview"
+                            }
+                        }
+                    }
+                },
+                "expected_outputs": {
+                    "type": "object",
+                    "properties": {
+                        "files_created": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "content_patterns": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        },
+                        "buildable": {
+                            "type": "boolean"
+                        },
+                        "valid_json": {
+                            "type": "boolean"
+                        }
+                    }
+                }
+            },
+            "required": [
+                "name",
+                "expected_outputs"
+            ]
+        },
+        "MockReview": {
+            "type": "object",
+            "properties": {
+                "persona": {
+                    "type": "string"
+                },
+                "verdict": {
+                    "type": "string",
+                    "enum": [
+                        "ACCEPT",
+                        "REJECT"
+                    ]
+                },
+                "checklist": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "boolean"
+                    }
+                },
+                "comments": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "file": {
+                                "type": "string"
+                            },
+                            "line": {
+                                "type": "integer"
+                            },
+                            "comment": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "required": [
+                "persona",
+                "verdict"
+            ]
+        }
+    }
+}

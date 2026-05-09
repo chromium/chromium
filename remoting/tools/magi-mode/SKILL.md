@@ -154,9 +154,9 @@ next expert.
     }
   }
   ```
-  *Tooling Selection:* The combination of `repo_type`, `vcs`, and `harness` in the
-  `environment` block determines the exact build, test, and upload commands
-  used by the agents.
+  *Tooling Selection:* The combination of `repo_type`, `vcs`, and
+  `harness` in the `environment` block determines the exact build, test,
+  and upload commands used by the agents.
 
 ### 1. Scaffolding (The Architect & Test Phase)
 - **Roughing In (The Architect):** First, invoke an Architect sub-agent. The
@@ -170,8 +170,8 @@ next expert.
   define the required test fixtures, and stub out the critical test cases based
   on the Architect's scaffold. To ensure failure in Chromium's GTest framework
   (confirming TDD behavior), the Test Expert MUST insert
-  `ADD_FAILURE("NOT IMPLEMENTED");` into the stubbed test cases. The Test Expert SHOULD signal
-  `next_phase: PREPARATION`.
+  `ADD_FAILURE("NOT IMPLEMENTED");` into the stubbed test cases.
+  The Test Expert SHOULD signal `next_phase: PREPARATION`.
 - **Scaffold Verification:** Before proceeding to Phase 2, the Orchestrator MUST
   attempt to build the scaffolded targets. If `build_targets` are defined in
   `project.magi.json`, the Orchestrator MUST verify that the scaffold compiles
@@ -458,3 +458,9 @@ If `project.magi.json#environment/harness == "JETSKI"`, the Orchestrator:
 - When a bug occurs only on a specific platform and the fix might impact others.
 - When adding a new feature that has significant performance or security
   implications.
+
+## Testing Protocol
+To validate the MAGI protocol execution and prevent regressions in prompt
+instructions and state machine transitions, consult the
+[SKILL_TEST.md](./SKILL_TEST.md) document. It defines unit tests for each phase
+of the protocol using isolated mock data.

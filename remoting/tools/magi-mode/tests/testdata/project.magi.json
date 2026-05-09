@@ -1,0 +1,20 @@
+{
+    "checklist": {},
+    "goal": "Mock goal for testing.",
+    "target_files": [
+        "testdata/file1.cc"
+    ],
+    "anti_goals": [],
+    "edge_cases": [],
+    "build_targets": [
+        "//remoting/tools/magi-mode/tests/testdata:test_target"
+    ],
+    "next_phase": "SCAFFOLDING",
+    "paranoia_mode": false,
+    "auditability_level": "NORMAL",
+    "environment": {
+        "repo_type": "CHROMIUM",
+        "vcs": "JJ",
+        "harness": "JETSKI"
+    }
+}

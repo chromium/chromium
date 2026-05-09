@@ -1,0 +1,22 @@
+{
+    "checklist": {
+        "no_pii_in_logs": true,
+        "check_input_handling": true,
+        "check_memory_management": true,
+        "check_privilege_boundaries": true,
+        "check_xml_fallback": true,
+        "ftl_address_handling": true,
+        "signal_strategy_listener": true
+    },
+    "iteration": 1,
+    "stall_count": 0,
+    "active_constraints": [],
+    "resolved_constraints": [],
+    "personas": [
+        "remoting/tools/magi-mode/personas/core/security.json",
+        "remoting/tools/magi-mode/personas/domain/signaling.json"
+    ],
+    "next_phase": "CRITIQUE",
+    "review_mode": "CONSENSUS",
+    "state_transport": "FILE_IO"
+}
