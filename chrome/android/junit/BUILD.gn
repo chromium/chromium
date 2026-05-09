@@ -421,7 +421,8 @@ if (is_android) {
     ]
   }
 
-  # Partition tests into one target per-package to keep incremental build times down.
+  # Partition tests into one target per-package to keep incremental build times
+  # down.
   robolectric_library("chrome_junit_tests_org.chromium.chrome.browser") {
     sources = [
       "//chrome/android/java/src/org/chromium/chrome/browser/bottombar/BottomBarContainerCoordinatorUnitTest.java",
@@ -1529,6 +1530,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/multiwindow/MultiInstanceOrchestratorImplUnitTest.java",
       "src/org/chromium/chrome/browser/multiwindow/MultiWindowUtilsUnitTest.java",
       "src/org/chromium/chrome/browser/multiwindow/TabReparentingDelegateUnitTest.java",
+      "src/org/chromium/chrome/browser/multiwindow/TabbedWindowStateTrackerUnitTest.java",
       "src/org/chromium/chrome/browser/multiwindow/WindowOcclusionTrackerUnitTest.java",
       "src/org/chromium/chrome/browser/multiwindow/WindowZOrderTrackerUnitTest.java",
       "src/org/chromium/chrome/browser/native_page/ContextMenuManagerUnitTest.java",

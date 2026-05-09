@@ -1122,10 +1122,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             // TODO(crbug.com/491791326): Handle multiple profiles for mobile.
             Profile profile = tabModelSelector.getCurrentModel().getProfile();
             assert profile != null;
-            chromeAndroidTask.addFeature(
-                    new ChromeAndroidTaskFeatureKey(
-                            ExtensionWindowControllerBridge.class, profile, activityWindowAndroid),
-                    ExtensionWindowControllerBridgeFactory::create);
+            addWindowingFeatures(chromeAndroidTask, profile, activityWindowAndroid);
 
             // 5. Make the ChromeAndroidTask available via OneshotSupplier.
             mChromeAndroidTaskSupplier.set(chromeAndroidTask);
@@ -1135,6 +1132,20 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     /** Returns an {@link OneshotSupplier} for {@link ChromeAndroidTask}. */
     protected final OneshotSupplier<ChromeAndroidTask> getChromeAndroidTaskSupplier() {
         return mChromeAndroidTaskSupplier;
+    }
+
+    /**
+     * Adds windowing {@link ChromeAndroidTaskFeature}s to this activity's {@link
+     * ChromeAndroidTask}.
+     */
+    protected void addWindowingFeatures(
+            ChromeAndroidTask chromeAndroidTask,
+            Profile profile,
+            ActivityWindowAndroid activityWindowAndroid) {
+        chromeAndroidTask.addFeature(
+                new ChromeAndroidTaskFeatureKey(
+                        ExtensionWindowControllerBridge.class, profile, activityWindowAndroid),
+                ExtensionWindowControllerBridgeFactory::create);
     }
 
     @Override

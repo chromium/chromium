@@ -830,6 +830,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/multiwindow/MultiWindowUtils.java",
   "java/src/org/chromium/chrome/browser/multiwindow/TabReparentingDelegate.java",
   "java/src/org/chromium/chrome/browser/multiwindow/TabbedCrashRecoveryDelegate.java",
+  "java/src/org/chromium/chrome/browser/multiwindow/TabbedWindowStateTracker.java",
   "java/src/org/chromium/chrome/browser/multiwindow/WindowOcclusionMetrics.java",
   "java/src/org/chromium/chrome/browser/multiwindow/WindowOcclusionTracker.java",
   "java/src/org/chromium/chrome/browser/multiwindow/WindowZOrderTracker.java",
