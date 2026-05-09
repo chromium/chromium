@@ -8765,6 +8765,11 @@ Keep your key file in a safe place. You will need it to create new versions of y
         desc="Placeholder text for the composebox when there is exactly one document (PDF) in the carousel.">
         Ask about this doc
       </message>
+      <message name="IDS_COMPOSE_SHARING_TABS" desc="Text for a menu item that indicates how many tabs are currently being shared. [ICU Syntax]">
+        {TAB_COUNT, plural,
+          =1 {Sharing 1 tab}
+          other {Sharing # tabs}}
+      </message>
       <message name="IDS_NTP_ACTION_CHIP_TAB_HEADING_1" desc="Heading of the tab action chip on the NTP." >
         Ask about previous tab
       </message>
