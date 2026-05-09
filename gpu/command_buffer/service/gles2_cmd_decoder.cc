@@ -14729,6 +14729,12 @@ error::Error GLES2DecoderImpl::HandleRequestExtensionCHROMIUM(
   if (feature_str.contains("GL_OES_fbo_render_mipmap ")) {
     feature_info_->EnableOESFboRenderMipmap();
   }
+  if (feature_str.contains("GL_ANGLE_compressed_texture_etc ")) {
+    feature_info_->EnableWebGLCompressedTextureETC();
+  }
+  if (feature_str.contains("GL_OES_compressed_ETC1_RGB8_texture ")) {
+    feature_info_->EnableWebGLCompressedTextureETC1();
+  }
 
   UpdateCapabilities();
 

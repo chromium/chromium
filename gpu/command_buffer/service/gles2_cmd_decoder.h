@@ -66,6 +66,8 @@ struct GPU_GLES2_EXPORT DisallowedFeatures {
     ext_float_blend = false;
     oes_fbo_render_mipmap = false;
     oes_draw_buffers_indexed = false;
+    webgl_compressed_texture_etc = false;
+    webgl_compressed_texture_etc1 = false;
   }
 
   bool operator==(const DisallowedFeatures& other) const {
@@ -83,6 +85,8 @@ struct GPU_GLES2_EXPORT DisallowedFeatures {
   bool ext_float_blend = false;
   bool oes_fbo_render_mipmap = false;
   bool oes_draw_buffers_indexed = false;
+  bool webgl_compressed_texture_etc = false;
+  bool webgl_compressed_texture_etc1 = false;
 };
 
 // This class implements the DecoderContext interface, decoding GLES2

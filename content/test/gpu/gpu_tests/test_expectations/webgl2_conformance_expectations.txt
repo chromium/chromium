@@ -1043,10 +1043,6 @@ crbug.com/352104898 [ fuchsia fuchsia-board-qemu-x64 passthrough angle-swiftshad
 
 # Roll WebGL d1b65aa..b934957.
 crbug.com/1448567 [ android android-pixel-2 passthrough ] conformance2/transform_feedback/simultaneous_binding.html [ Failure ]
-crbug.com/1448570 [ android-pixel-4 angle-disabled no-passthrough ] conformance/extensions/webgl-compressed-texture-etc.html [ Failure ]
-crbug.com/1448570 [ android-pixel-4 angle-disabled no-passthrough ] conformance/extensions/webgl-compressed-texture-etc1.html [ Failure ]
-crbug.com/1448570 [ android android-pixel-2 angle-disabled no-passthrough ] conformance/extensions/webgl-compressed-texture-etc.html [ Failure ]
-crbug.com/1448570 [ android android-pixel-2 angle-disabled no-passthrough ] conformance/extensions/webgl-compressed-texture-etc1.html [ Failure ]
 crbug.com/1448569 [ win angle-d3d11 ] conformance2/glsl3/texture-bias.html [ Failure ]
 
 crbug.com/332743717 [ android android-pixel-4 ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]

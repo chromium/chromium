@@ -437,6 +437,28 @@ void FeatureInfo::EnableOESTextureHalfFloatLinear() {
   feature_flags_.enable_texture_half_float_linear = true;
 }
 
+void FeatureInfo::EnableWebGLCompressedTextureETC() {
+  if (!webgl_compressed_texture_etc_available_) {
+    return;
+  }
+  if (!gfx::HasExtension(extensions_, "GL_ANGLE_compressed_texture_etc")) {
+    AddExtensionString("GL_ANGLE_compressed_texture_etc");
+    validators_.UpdateETCCompressedTextureFormats();
+  }
+}
+
+void FeatureInfo::EnableWebGLCompressedTextureETC1() {
+  if (!webgl_compressed_texture_etc1_available_) {
+    return;
+  }
+  if (!feature_flags_.oes_compressed_etc1_rgb8_texture) {
+    AddExtensionString("GL_OES_compressed_ETC1_RGB8_texture");
+    feature_flags_.oes_compressed_etc1_rgb8_texture = true;
+    validators_.compressed_texture_format.AddValue(GL_ETC1_RGB8_OES);
+    validators_.texture_internal_format_storage.AddValue(GL_ETC1_RGB8_OES);
+  }
+}
+
 void FeatureInfo::EnableANGLEInstancedArrayIfPossible(
     const gfx::ExtensionSet& extensions) {
   if (!feature_flags_.angle_instanced_arrays) {
@@ -1090,10 +1112,10 @@ void FeatureInfo::InitializeFeatures(uint32_t complete_fbo_for_workarounds) {
   // ANGLE only exposes this extension when it has native support of the
   // GL_ETC1_RGB8 format.
   if (gfx::HasExtension(extensions, "GL_OES_compressed_ETC1_RGB8_texture")) {
-    AddExtensionString("GL_OES_compressed_ETC1_RGB8_texture");
-    feature_flags_.oes_compressed_etc1_rgb8_texture = true;
-    validators_.compressed_texture_format.AddValue(GL_ETC1_RGB8_OES);
-    validators_.texture_internal_format_storage.AddValue(GL_ETC1_RGB8_OES);
+    webgl_compressed_texture_etc1_available_ = true;
+    if (!disallowed_features_.webgl_compressed_texture_etc1) {
+      EnableWebGLCompressedTextureETC1();
+    }
   }
 
   // Expose GL_ANGLE_compressed_texture_etc when ANGLE exposes it directly or
@@ -1101,8 +1123,10 @@ void FeatureInfo::InitializeFeatures(uint32_t complete_fbo_for_workarounds) {
   // support of these formats.
   if (gfx::HasExtension(extensions, "GL_ANGLE_compressed_texture_etc") ||
       (gl_version_info_->is_es3 && !gl_version_info_->is_angle)) {
-    AddExtensionString("GL_ANGLE_compressed_texture_etc");
-    validators_.UpdateETCCompressedTextureFormats();
+    webgl_compressed_texture_etc_available_ = true;
+    if (!disallowed_features_.webgl_compressed_texture_etc) {
+      EnableWebGLCompressedTextureETC();
+    }
   }
 
   if (gfx::HasExtension(extensions, "GL_AMD_compressed_ATC_texture")) {

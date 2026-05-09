@@ -60,6 +60,8 @@ DisallowedFeatures GetDisallowedFeatures(ContextType context_type) {
     adjusted_disallowed_features.ext_float_blend = true;
     adjusted_disallowed_features.oes_fbo_render_mipmap = true;
     adjusted_disallowed_features.oes_draw_buffers_indexed = true;
+    adjusted_disallowed_features.webgl_compressed_texture_etc = true;
+    adjusted_disallowed_features.webgl_compressed_texture_etc1 = true;
   }
   return adjusted_disallowed_features;
 }
