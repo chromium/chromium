@@ -26,10 +26,11 @@
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_interface.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/common/channel_info.h"
@@ -676,17 +677,19 @@ void ComposeboxQueryControllerBridge::InitializeInputStateModel() {
   if (OmniboxFieldTrial::kOmniboxShowModelPicker.Get()) {
     AimEligibilityService* aim_service =
         AimEligibilityServiceFactory::GetForProfile(profile_);
-    const signin::IdentityManager* identity_manager =
-        profile_ ? IdentityManagerFactory::GetForProfile(profile_) : nullptr;
-    bool has_primary_account =
-        identity_manager &&
-        identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+    auto* ui_service = profile_
+                           ? contextual_tasks::ContextualTasksUiServiceFactory::
+                                 GetForBrowserContext(profile_)
+                           : nullptr;
+    bool browser_identity_matches_aim_identity =
+        ui_service && ui_service->IsSignedInToBrowserWithValidCredentials() &&
+        ui_service->IsUrlForPrimaryAccount(GURL());
     const omnibox::SearchboxConfig* config_ptr =
         aim_service->GetSearchboxConfig();
     input_state_model_ = std::make_unique<contextual_search::InputStateModel>(
         *session_handle_, config_ptr ? *config_ptr : omnibox::SearchboxConfig(),
         GURL(), profile_ ? profile_->IsOffTheRecord() : false,
-        has_primary_account);
+        browser_identity_matches_aim_identity);
     input_state_subscription_ =
         input_state_model_->subscribe(base::BindRepeating(
             &ComposeboxQueryControllerBridge::OnInputStateChanged,
