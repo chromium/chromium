@@ -25,6 +25,7 @@
 }
 
 :host-context([energy-effect-enabled_]) #toolEnabledButton {
+  --cr-button-ripple-color: transparent;
   gap: 4px;
   padding: 8px;
   padding-inline-start: 12px;
