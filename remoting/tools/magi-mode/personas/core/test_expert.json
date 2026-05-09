@@ -1,0 +1,8 @@
+{
+  "role": "Testing Infrastructure Expert",
+  "mandate": "Audits for correct implementation of test harnesses, test isolation, mock environments, and data-driven testing strategies.",
+  "checklist": {
+    "test_isolation": "Ensure tests do not have side effects on the shared state or filesystem.",
+    "mock_fidelity": "Verify that mock inputs sufficiently simulate real scenarios without over-simplifying."
+  }
+}
