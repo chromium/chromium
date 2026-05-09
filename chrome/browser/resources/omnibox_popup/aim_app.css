@@ -71,14 +71,18 @@ cr-composebox {
   --cr-composebox-input-placeholder-color: var(--color-omnibox-foreground-disabled);
   --cr-composebox-outline-hcm: none;
   --cr-composebox-submit-button-margin-inline-start: auto;
-  --cr-composebox-submit-border-radius: 100px;
   --cr-composebox-submit-container-top: auto;
-  --cr-composebox-submit-height: 32px;
-  --cr-composebox-submit-icon-offset: 0;
   --cr-composebox-suggestion-activity-bottom: 0;
   --cr-composebox-suggestion-activity-margin-top: 0;
   --cr-composebox-voice-icon-top: auto;
   position: relative;
+}
+
+:host([energy-effect-enabled_]) #composebox {
+  --cr-composebox-submit-border-radius: 100px;
+  --cr-composebox-submit-height: 32px;
+  --cr-composebox-submit-icon-offset: 0;
+  --cr-composebox-submit-width: 40px;
 }
 
 cr-composebox[searchbox-layout-mode='Compact'],
@@ -108,6 +112,10 @@ cr-composebox[searchbox-layout-mode='TallBottomContext']::part(context-menu-and-
 }
 
 cr-composebox[searchbox-layout-mode='TallBottomContext']::part(submit) {
+  bottom: 10px;
+}
+
+:host([energy-effect-enabled_]) cr-composebox[searchbox-layout-mode='TallBottomContext']::part(submit) {
   bottom: 14px;
 }
 
@@ -120,6 +128,10 @@ cr-composebox[searchbox-layout-mode='TallBottomContext']::part(voice-icon) {
 }
 
 cr-composebox[submit-enabled][searchbox-layout-mode='TallBottomContext']:not([show-dropdown])::part(submit) {
+  bottom: 6px;
+}
+
+:host([energy-effect-enabled_]) cr-composebox[submit-enabled][searchbox-layout-mode='TallBottomContext']:not([show-dropdown])::part(submit) {
   bottom: 14px;
 }
 
