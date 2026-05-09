@@ -86,3 +86,108 @@
 :host([disabled]) #submitContainer:hover #submitOverlay {
   background-color: transparent;
 }
+
+/* Energy Effect Animations */
+:host-context([energy-effect-animation-enabled_]) {
+  --button-scale-x: 1.16;
+  --expressive-fast-curve: cubic-bezier(0.42, 1.67, 0.21, 0.9);
+  --icon-scale-x: 0.95;
+  --icon-scale-y: 0.95;
+  --on-press-duration: 200ms;
+  --on-release-duration: 400ms;
+}
+
+/* Submit Button Click Scale Animation */
+:host-context([energy-effect-animation-enabled_]) #submitContainer {
+  --cr-icon-button-transition: var(--on-release-duration)
+                               var(--expressive-fast-curve);
+}
+
+/* Apply scale animations to inner background layers to avoid conflicts
+ * with Nextbox's entrance animations, which override the transform property on the
+ * host's ::part(submit) selector. */
+:host-context([energy-effect-animation-enabled_]) #submitEnergy,
+:host-context([energy-effect-animation-enabled_]) #submitOverlay {
+  scale: 1 1;
+  transform-origin: center;
+  transition: scale var(--on-release-duration) var(--expressive-fast-curve);
+  will-change: scale;
+}
+
+:host-context([energy-effect-animation-enabled_])
+  #submitContainer:active #submitEnergy,
+:host-context([energy-effect-animation-enabled_])
+  #submitContainer:active #submitOverlay {
+  scale: var(--button-scale-x) 1;
+  transition-duration: var(--on-press-duration);
+}
+
+/* Manually simulate the "squish" compound scale effect.
+ * Since the parent #submitContainer is no longer scaling, we
+ * multiply the button's X-scale by the icon's X-scale to mimic
+ * the icon being stretched by a scaling parent before squishing. */
+:host-context([energy-effect-animation-enabled_])
+  #submitContainer:active #submitIcon {
+  scale: calc(var(--button-scale-x) * var(--icon-scale-x)) var(--icon-scale-y);
+  transition-duration: var(--on-press-duration);
+}
+
+/* Submit Button Energy (Blur) Animation */
+#submitEnergy {
+  border-radius: inherit;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  position: absolute;
+  z-index: 0;
+}
+
+/* Decouple background color when energy effect is enabled */
+:host-context([energy-effect-animation-enabled_]) #submitEnergy {
+  background-color: var(--color-composebox-submit-button-background);
+  bottom: 0;
+  height: var(--cr-composebox-submit-height, var(--cr-icon-button-size));
+  inset-inline-end: 0;
+  inset-inline-start: auto;
+  top: auto;
+  width: var(--cr-composebox-submit-width, var(--cr-icon-button-size));
+  z-index: 0;
+}
+
+:host([disabled]:host-context([energy-effect-animation-enabled_]))
+  #submitEnergy {
+  opacity: 0.4;
+}
+
+:host-context([energy-effect-animation-enabled_]) #submitIcon {
+  background-color: transparent;
+  scale: 1 1;
+  transform-origin: center;
+  transition: scale var(--on-release-duration) var(--expressive-fast-curve);
+  will-change: scale;
+  z-index: 1;
+}
+
+:host-context([energy-effect-animation-enabled_]) #submitEnergy::after {
+  background: var(--color-composebox-submit-button-energy, #779cff);
+  border-radius: inherit;
+  content: '';
+  filter: blur(7px);
+  inset: 5px;
+  opacity: 0;
+  position: absolute;
+  transform: translate(0, -14px);
+  transition:
+    transform var(--on-release-duration) var(--expressive-fast-curve),
+    opacity var(--on-release-duration) var(--expressive-fast-curve);
+  z-index: 0;
+}
+
+:host-context([energy-effect-animation-enabled_])
+  #submitContainer:active #submitEnergy::after {
+  opacity: 1;
+  transform: translate(0, 0);
+  transition:
+    transform var(--on-press-duration) var(--expressive-fast-curve),
+    opacity var(--on-press-duration) var(--expressive-fast-curve);
+}
