@@ -607,6 +607,9 @@
 	path = agents/internal
 	url = https://chrome-internal.googlesource.com/chrome/agents-internal
 	gclient-condition = checkout_src_internal or checkout_src_internal_infra
+[submodule "agents/shared"]
+	path = agents/shared
+	url = https://chromium.googlesource.com/chromium/agents
 [submodule "third_party/android_prebuilts/build_tools"]
 	path = third_party/android_prebuilts/build_tools
 	url = https://android.googlesource.com/platform/prebuilts/build-tools

@@ -46,6 +46,7 @@ per-file .../SECURITY_OWNERS=file://SECURITY_OWNERS
 
 # git submodules
 per-file agents/internal=*
+per-file agents/shared=*
 per-file build/fuchsia/internal=*
 per-file chrome/app/theme/default_100_percent/google_chrome=*
 per-file chrome/app/theme/default_200_percent/google_chrome=*

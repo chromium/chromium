@@ -537,6 +537,10 @@ vars = {
   # the commit queue can handle CLs rolling agents-internal
   # and whatever else without interference from each other.
   'agents_internal_revision': '0930fb1c6044c36bd542f0a8c444e5633b8531f1',
+  # Three lines of non-changing comments so that
+  # the commit queue can handle CLs rolling agents-public
+  # and whatever else without interference from each other.
+  'agents_public_revision': 'a7a654607a875b56ab1599ae6d4a04ca99884d19',
 
   # If you change this, also update the libc++ revision in
   # //buildtools/deps_revisions.gni.
@@ -3126,6 +3130,10 @@ deps = {
   'src/agents/internal': {
     'url': Var('chrome_git') + '/chrome/agents-internal.git' + '@' + Var('agents_internal_revision'),
     'condition': 'checkout_src_internal or checkout_src_internal_infra',
+  },
+
+  'src/agents/shared': {
+    'url': Var('chromium_git') + '/chromium/agents.git' + '@' + Var('agents_public_revision'),
   },
 
   'src/internal/tools/edit_monitor/cipd': {
