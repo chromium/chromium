@@ -370,7 +370,7 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
           GetUserDataFactory().CreateInstance<glic::SelectionOverlayController>(
               tab, &tab, profile->GetPrefs());
 
-      if (base::FeatureList::IsEnabled(features::kGlicSelectionPrompt)) {
+      if (glic::GlicEnabling::IsSelectionPromptEnabledForProfile(profile)) {
         glic_selection_observer_ =
             std::make_unique<glic::GlicSelectionObserver>(tab.GetContents());
       }
