@@ -131,6 +131,30 @@ contextual_tasks::mojom::IconType IconTypeToMojom(lens::AimIconType icon_id) {
   }
 }
 
+// Returns the active (uploaded but not submitted) context token that matches
+// the provided injected input ID. This specifically iterates over the active
+// token set rather than using FindTokenForInjectedInput to ensure that
+// operations only target un-submitted inputs currently present in the
+// composebox, filtering out artifacts from previous queries stored in the
+// controller map.
+std::optional<base::UnguessableToken> FindActiveInjectedInputToken(
+    contextual_search::ContextualSearchSessionHandle* handle,
+    std::string_view id) {
+  if (!handle || !handle->GetController() || id.empty()) {
+    return std::nullopt;
+  }
+  for (const auto& token : handle->GetUploadedContextTokens()) {
+    const auto* file_info = handle->GetController()->GetFileInfo(token);
+    if (file_info) {
+      auto injected_id = file_info->GetInjectedInputId();
+      if (injected_id.has_value() && injected_id.value() == id) {
+        return token;
+      }
+    }
+  }
+  return std::nullopt;
+}
+
 }  // namespace
 
 namespace contextual_tasks {
@@ -563,6 +587,23 @@ void ContextualTasksPageHandler::OnReceivedInjectInput(
     if (!handle) {
       return;
     }
+
+    // If a chip with the same ID is already injected, clean it up to perform
+    // a full override.
+    if (modality->has_id()) {
+      auto existing_token =
+          FindActiveInjectedInputToken(handle, modality->id());
+      if (existing_token.has_value()) {
+        // Synchronously delete the file from the backend before notifying the
+        // UI. This prevents redundant removal notifications back to the server
+        // when the UI later asynchronously invokes the `DeleteContext`
+        // callback, as that lookup will return nullptr.
+        handle->DeleteFile(existing_token.value());
+        web_ui_controller_->GetPageRemote()->RemoveInjectedInput(
+            existing_token.value());
+      }
+    }
+
     auto token = handle->CreateContextToken();
 
     mojo_input->title = std::string(modality->title());
@@ -589,8 +630,13 @@ void ContextualTasksPageHandler::OnReceivedRemoveInjectedInput(
     const std::string& id) {
   contextual_search::ContextualSearchSessionHandle* handle =
       web_ui_controller_->GetOrCreateContextualSessionHandle();
-  auto token = handle->GetController()->FindTokenForInjectedInput(id);
+  auto token = FindActiveInjectedInputToken(handle, id);
   if (token.has_value()) {
+    // Synchronously delete the file from the backend before notifying the UI.
+    // This prevents redundant removal notifications back to the server when the
+    // UI later asynchronously invokes the `DeleteContext` callback, as that
+    // lookup will return nullptr.
+    handle->DeleteFile(token.value());
     web_ui_controller_->GetPageRemote()->RemoveInjectedInput(token.value());
   }
 }

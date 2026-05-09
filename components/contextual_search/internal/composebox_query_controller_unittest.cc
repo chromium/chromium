@@ -5714,8 +5714,6 @@ TEST_F(ComposeboxQueryControllerTest, UploadModalityChipSuccess) {
   ASSERT_TRUE(file_info->input_data);
   ASSERT_TRUE(file_info->input_data->modality_chip_props.has_value());
   EXPECT_EQ(file_info->input_data->modality_chip_props->id(), "test_chip_id");
-  EXPECT_EQ(controller().FindTokenForInjectedInput("test_chip_id").value(),
-            file_token);
 
   // Verify that no network requests were sent for the chip upload.
   EXPECT_EQ(controller().num_file_upload_requests_sent(), 0);

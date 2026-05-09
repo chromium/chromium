@@ -2250,18 +2250,6 @@ ComposeboxQueryController::GetFileInfoList() {
   return file_infos;
 }
 
-std::optional<base::UnguessableToken>
-ComposeboxQueryController::FindTokenForInjectedInput(const std::string& id) {
-  for (const auto& [token, info] : active_files_) {
-    if (info) {
-      auto injected_input_id = info->GetInjectedInputId();
-      if (injected_input_id.has_value() && injected_input_id.value() == id) {
-        return token;
-      }
-    }
-  }
-  return std::nullopt;
-}
 
 base::WeakPtr<contextual_search::ContextualSearchContextController>
 ComposeboxQueryController::AsWeakPtr() {

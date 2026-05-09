@@ -25,6 +25,8 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/application_locale_storage/application_locale_storage.h"
+#include "components/contextual_search/mock_contextual_search_context_controller.h"
+#include "components/contextual_search/mock_contextual_search_session_handle.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
@@ -977,6 +979,108 @@ TEST_F(ContextualTasksPageHandlerTest, PrefChangeNotification) {
 
   profile()->GetPrefs()->SetBoolean(prefs::kPinContextualTaskButton, true);
 
+  run_loop.Run();
+}
+
+TEST_F(ContextualTasksPageHandlerTest,
+       OnReceivedInjectInput_OverridesExisting) {
+  // Setup mocks.
+  NiceMock<contextual_search::MockContextualSearchSessionHandle>
+      mock_session_handle;
+  NiceMock<contextual_search::MockContextualSearchContextController>
+      mock_controller;
+
+  ON_CALL(mock_session_handle, GetController())
+      .WillByDefault(Return(&mock_controller));
+  ON_CALL(*contextual_tasks_ui_, GetOrCreateContextualSessionHandle())
+      .WillByDefault(Return(&mock_session_handle));
+
+  // Register pre-existing active token.
+  base::UnguessableToken old_token = base::UnguessableToken::Create();
+  mock_session_handle.GetUploadedContextTokensForTesting().push_back(old_token);
+
+  // Mock corresponding file info mapping to "target_id".
+  contextual_search::FileInfo old_file_info;
+  old_file_info.input_data = std::make_unique<lens::ContextualInputData>();
+  old_file_info.input_data->modality_chip_props = lens::ModalityChipProps();
+  old_file_info.input_data->modality_chip_props->set_id("target_id");
+
+  ON_CALL(mock_controller, GetFileInfo(old_token))
+      .WillByDefault(Return(&old_file_info));
+
+  // Action prep: Pack the inject request into full AimToClientMessage
+  // container.
+  lens::AimToClientMessage container;
+  auto* input_proto = container.mutable_inject_input();
+  input_proto->mutable_modality()->set_id("target_id");
+  input_proto->mutable_modality()->set_title("New Title");
+
+  size_t size = container.ByteSizeLong();
+  std::vector<uint8_t> serialized(size);
+  container.SerializeToArray(serialized.data(), size);
+
+  // 1. Verification: Should synchronously drop the OLD token.
+  EXPECT_CALL(mock_controller, DeleteFile(old_token)).WillOnce(Return(true));
+  EXPECT_CALL(page_, RemoveInjectedInput(old_token)).Times(1);
+
+  // 2. Verification: Should instantiate unique NEW token.
+  base::UnguessableToken new_token = base::UnguessableToken::Create();
+  EXPECT_CALL(mock_session_handle, CreateContextToken())
+      .WillOnce(Return(new_token));
+
+  // 3. Verification: Should successfully pipe NEW injection command to UI.
+  base::RunLoop run_loop;
+  EXPECT_CALL(page_, InjectInput(_))
+      .WillOnce([&run_loop, new_token](mojom::InjectedInputPtr mojo_input) {
+        EXPECT_EQ(mojo_input->file_token, new_token);
+        run_loop.Quit();
+      });
+
+  page_handler_->OnWebviewMessage(serialized);
+  run_loop.Run();
+}
+
+TEST_F(ContextualTasksPageHandlerTest,
+       OnReceivedRemoveInjectedInput_SynchronousDelete) {
+  NiceMock<contextual_search::MockContextualSearchSessionHandle>
+      mock_session_handle;
+  NiceMock<contextual_search::MockContextualSearchContextController>
+      mock_controller;
+
+  ON_CALL(mock_session_handle, GetController())
+      .WillByDefault(Return(&mock_controller));
+  ON_CALL(*contextual_tasks_ui_, GetOrCreateContextualSessionHandle())
+      .WillByDefault(Return(&mock_session_handle));
+
+  base::UnguessableToken target_token = base::UnguessableToken::Create();
+  mock_session_handle.GetUploadedContextTokensForTesting().push_back(
+      target_token);
+
+  contextual_search::FileInfo file_info;
+  file_info.input_data = std::make_unique<lens::ContextualInputData>();
+  file_info.input_data->modality_chip_props = lens::ModalityChipProps();
+  file_info.input_data->modality_chip_props->set_id("removable_id");
+
+  ON_CALL(mock_controller, GetFileInfo(target_token))
+      .WillByDefault(Return(&file_info));
+
+  // Verify synchronous remove flow.
+  EXPECT_CALL(mock_controller, DeleteFile(target_token)).WillOnce(Return(true));
+  base::RunLoop run_loop;
+  EXPECT_CALL(page_, RemoveInjectedInput(target_token))
+      .WillOnce([&run_loop](const base::UnguessableToken& token) {
+        run_loop.Quit();
+      });
+
+  // Action prep: Pack and route via the public interface.
+  lens::AimToClientMessage container;
+  container.mutable_remove_injected_input()->set_id("removable_id");
+
+  size_t size = container.ByteSizeLong();
+  std::vector<uint8_t> serialized(size);
+  container.SerializeToArray(serialized.data(), size);
+
+  page_handler_->OnWebviewMessage(serialized);
   run_loop.Run();
 }
 
