@@ -1129,6 +1129,54 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
       coordinator->SidePanelUIBase::IsSidePanelEntryShowing(second_entry_key));
 }
 
+IN_PROC_BROWSER_TEST_F(
+    SidePanelCoordinatorAndroidBrowserTest,
+    OnWindowResized_True_RestoresActiveEntryIfCachedKeyIsForDifferentTab) {
+  // Arrange: Open 2 tabs, both with their own entries.
+  BrowserWindowInterface* browser = GetBrowserWindow();
+  auto* coordinator = SidePanelCoordinatorAndroid::From(browser);
+  auto* tab_list = TabListInterface::From(browser);
+  tabs::TabInterface* tab_1 = tab_list->GetActiveTab();
+  tabs::TabInterface* tab_2 =
+      tab_list->OpenTab(GURL("about:blank"), /*index=*/1);
+
+  auto entry_key_1 = SidePanelEntryKey(SidePanelEntryId::kAboutThisSite);
+  auto entry_key_2 = SidePanelEntryKey(SidePanelEntryId::kGlic);
+  SidePanelRegistry::From(tab_1)->Register(
+      CreateSidePanelEntry(entry_key_1, browser));
+  SidePanelRegistry::From(tab_2)->Register(
+      CreateSidePanelEntry(entry_key_2, browser));
+
+  coordinator->SetNoDelaysForTesting(true);
+
+  // 1. Show entry in Tab 1.
+  tab_list->ActivateTab(tab_1->GetHandle());
+  coordinator->SidePanelUIBase::Show(entry_key_1, std::nullopt, true);
+  ASSERT_TRUE(coordinator->IsSidePanelShowing());
+
+  // 2. Show entry in Tab 2.
+  tab_list->ActivateTab(tab_2->GetHandle());
+  coordinator->SidePanelUIBase::Show(entry_key_2, std::nullopt, true);
+  ASSERT_TRUE(coordinator->IsSidePanelShowing());
+
+  // 3. Make the window too small. This hides the panel and caches Tab 2's key.
+  coordinator->OnWindowResized(nullptr, false);
+  ASSERT_FALSE(coordinator->IsSidePanelShowing());
+
+  // 4. Switch to Tab 1 while the window is still small.
+  // This does NOT show the panel (blocked by small window).
+  tab_list->ActivateTab(tab_1->GetHandle());
+  ASSERT_FALSE(coordinator->IsSidePanelShowing());
+
+  // 5. Act: Make the window large again.
+  coordinator->OnWindowResized(nullptr, true);
+
+  // 6. Assert: Side panel should be shown for Tab 1.
+  // Even though the cached key was for Tab 2, Tab 1 has its own active entry.
+  EXPECT_TRUE(coordinator->IsSidePanelShowing());
+  EXPECT_TRUE(coordinator->IsSidePanelEntryShowing(entry_key_1));
+}
+
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
                        OnWindowResized_False_ClosesSidePanel) {
   // Arrange:

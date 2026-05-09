@@ -227,7 +227,18 @@ void SidePanelCoordinatorAndroid::OnWindowResized(JNIEnv* env,
       // TODO(crbug.com/507911289): Revisit animations.
       Show(*key_to_restore_after_window_resize_, std::nullopt,
            /*suppress_animations=*/true);
-      key_to_restore_after_window_resize_.reset();
+    } else {
+      // If we didn't restore a cached key (e.g. because we are on a different
+      // tab), check if the current tab has an active entry that was blocked.
+      SidePanelRegistry* contextual_registry = GetActiveContextualRegistry();
+      std::optional<SidePanelEntry*> active_contextual_entry =
+          contextual_registry ? contextual_registry->GetActiveEntry()
+                              : std::nullopt;
+      if (active_contextual_entry) {
+        Show(UniqueKey{contextual_registry->GetTabInterface().GetHandle(),
+                       (*active_contextual_entry)->key()},
+             std::nullopt, /*suppress_animations=*/true);
+      }
     }
   } else {
     if (IsSidePanelShowing() && !IsClosing()) {
