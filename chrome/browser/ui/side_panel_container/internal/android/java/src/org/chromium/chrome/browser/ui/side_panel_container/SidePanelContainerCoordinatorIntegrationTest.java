@@ -31,6 +31,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.build.annotations.NullMarked;
@@ -43,6 +44,9 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.ViewUtils;
+import org.chromium.ui.test.util.RenderTestRule;
+
+import java.io.IOException;
 
 /** Tests {@link SidePanelContainerCoordinatorImpl}'s integration with {@code ChromeActivity}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -59,6 +63,12 @@ public class SidePanelContainerCoordinatorIntegrationTest {
     @Rule
     public final FreshCtaTransitTestRule mFreshCtaTransitTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
+
+    @Rule
+    public RenderTestRule mRenderTestRule =
+            RenderTestRule.Builder.withPublicCorpus()
+                    .setBugComponent(RenderTestRule.Component.UI_BROWSER_TOP_CHROME_SIDE_PANEL)
+                    .build();
 
     @Before
     public void setUp() {
@@ -269,6 +279,27 @@ public class SidePanelContainerCoordinatorIntegrationTest {
         // Assert.
         assertFalse(
                 ThreadUtils.runOnUiThreadBlocking(() -> coordinator.isShowing(sidePanelContent)));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void renderContainer() throws IOException {
+        // Arrange.
+        var coordinator = getSidePanelContainerCoordinator();
+        var sidePanelContent = createSidePanelContent("Side Panel Content");
+
+        // Act.
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        coordinator.populateContent(
+                                sidePanelContent,
+                                mOnAnimationFinishedCallbackMock,
+                                /* startingBounds= */ null,
+                                /* suppressAnimations= */ true));
+        FrameLayout containerView = waitForContainerViewWithValidWidth(coordinator);
+
+        mRenderTestRule.render(containerView, "side_panel_container");
     }
 
     @SuppressLint("SetTextI18n")

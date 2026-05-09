@@ -145,6 +145,7 @@ public class RenderTestRule extends TestWatcher {
         Component.UI_BROWSER_CONTENT_SUGGESTIONS_FEED,
         Component.UI_BROWSER_CONTENT_SUGGESTIONS_HISTORY,
         Component.UI_BROWSER_FIRST_RUN,
+        Component.UI_BROWSER_GLIC,
         Component.UI_BROWSER_INCOGNITO,
         Component.UI_BROWSER_INFOBARS,
         Component.UI_BROWSER_MEDIA_PICKER,
@@ -175,6 +176,7 @@ public class RenderTestRule extends TestWatcher {
         Component.UI_BROWSER_SHOPPING_MERCHANT_TRUST,
         Component.UI_BROWSER_SHOPPING_PRICE_TRACKING,
         Component.UI_BROWSER_TOOLBAR,
+        Component.UI_BROWSER_TOP_CHROME_SIDE_PANEL,
         Component.UI_BROWSER_THUMBNAIL,
         Component.UI_BROWSER_WEB_APP_INSTALLS,
         Component.UI_NOTIFICATIONS,
@@ -233,6 +235,7 @@ public class RenderTestRule extends TestWatcher {
         String UI_BROWSER_SHOPPING_PRICE_TRACKING = "UI>Browser>Shopping>PriceTracking";
         String UI_BROWSER_THUMBNAIL = "UI>Browser>Thumbnail";
         String UI_BROWSER_TOOLBAR = "UI>Browser>Toolbar";
+        String UI_BROWSER_TOP_CHROME_SIDE_PANEL = "UI>Browser>TopChrome>SidePanel";
         String UI_BROWSER_WEB_APP_INSTALLS = "UI>Browser>WebAppInstalls";
         String UI_NOTIFICATIONS = "UI>Notifications";
         String UI_SETTINGS_PRIVACY = "UI>Settings>Privacy";
