@@ -116,6 +116,11 @@ BASE_FEATURE(kContextualTasksLazyFetchClusterInfo,
 // Enables custom UI for NLM.
 BASE_FEATURE(kContextualTasksCustomNlmUi, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables the use of APC comparison for webpages in the recontextualization
+// flow.
+BASE_FEATURE(kContextualTasksWebpageApcComparison,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 bool GetIsContextualTasksUpdateModeOnNavigationEnabled() {
   return base::FeatureList::IsEnabled(kContextualTasksUpdateModelOnNavigation);
 }
@@ -568,6 +573,10 @@ ExpandButtonOption GetExpandButtonOption() {
 
 bool IsRoundedClipPathEnabled() {
   return base::FeatureList::IsEnabled(kContextualTasksRoundedClipPath);
+}
+
+bool GetIsWebpageApcComparisonEnabled() {
+  return base::FeatureList::IsEnabled(kContextualTasksWebpageApcComparison);
 }
 
 namespace flag_descriptions {

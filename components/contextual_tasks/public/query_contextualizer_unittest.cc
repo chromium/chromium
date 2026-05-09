@@ -21,6 +21,7 @@
 #include "components/contextual_search/mock_contextual_search_session_handle.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/contextual_task_context.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
 #include "components/lens/contextual_input.h"
 #include "components/lens/lens_features.h"
@@ -768,6 +769,359 @@ TEST_F(QueryContextualizerTest,
   EXPECT_CALL(*session_handle_,
               StartTabContextUploadFlow(testing::_, testing::_, testing::_))
       .Times(0);
+
+  base::MockCallback<QueryContextualizer::PageContextIneligibleCallback>
+      ineligible_callback;
+  base::MockCallback<QueryContextualizer::TabProcessedCallback>
+      processed_callback;
+
+  EXPECT_CALL(processed_callback, Run(tab_id));
+
+  base::MockCallback<QueryContextualizer::ContextualizedCallback> done_callback;
+  EXPECT_CALL(done_callback, Run(testing::_));
+
+  contextualizer_->Contextualize(task_id, "test query", {tab_id}, {},
+                                 ineligible_callback.Get(),
+                                 processed_callback.Get(), done_callback.Get(),
+                                 /*enable_smart_tab_selection=*/false);
+  CompleteAllUploads();
+}
+
+TEST_F(QueryContextualizerTest,
+       Contextualize_NoRecontextualizationIfApcComparisonDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      kContextualTasksWebpageApcComparison);
+
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  int32_t tab_id = 100;
+  SessionID session_id = SessionID::FromSerializedValue(1);
+  GURL kUrl("about:blank");
+  std::string kTitle = "about:blank";
+
+  // Setup context with uploaded tab
+  ContextualTask task(task_id);
+  UrlResource resource(kUrl, ResourceType::kWebpage);
+  resource.title = kTitle;
+  resource.tab_id = session_id;
+  task.AddUrlResource(resource);
+
+  auto context = std::make_unique<ContextualTaskContext>(task);
+
+  EXPECT_CALL(*service_,
+              GetContextForTask(
+                  task_id,
+                  testing::Contains(
+                      ContextualTaskContextSource::kSubmittedContextDecorator),
+                  testing::NotNull(), testing::_))
+      .WillOnce(
+          [&context](
+              const base::Uuid& task_id,
+              const std::set<ContextualTaskContextSource>& sources,
+              std::unique_ptr<ContextDecorationParams> params,
+              base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
+                  callback) { std::move(callback).Run(std::move(context)); });
+
+  // Setup FileInfo with uploaded status and some content.
+  std::vector<const contextual_search::FileInfo*> file_info_list;
+  contextual_search::FileInfo file_info;
+  file_info.tab_session_id = session_id;
+  file_info.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
+  file_info.request_id.emplace();
+  file_info.request_id->set_context_id(12345);
+
+  auto input_data = std::make_unique<lens::ContextualInputData>();
+  std::string old_content = "old content";
+  auto old_content_span = base::as_bytes(base::span(old_content));
+  std::vector<uint8_t> old_bytes(old_content_span.begin(),
+                                 old_content_span.end());
+  lens::ContextualInput old_input(std::move(old_bytes),
+                                  lens::MimeType::kPlainText);
+  input_data->context_input.emplace().push_back(std::move(old_input));
+  file_info.input_data = std::move(input_data);
+
+  file_info_list.push_back(&file_info);
+
+  EXPECT_CALL(*context_controller_, GetFileInfoList())
+      .WillRepeatedly(testing::Return(file_info_list));
+
+  EXPECT_CALL(*delegate_, GetTabUrl(tab_id))
+      .WillRepeatedly(testing::Return(kUrl));
+  EXPECT_CALL(*delegate_, GetTabSessionId(tab_id))
+      .WillRepeatedly(testing::Return(session_id));
+
+  // Expect GetPageContext call with NEW/CHANGED content.
+  EXPECT_CALL(*delegate_, GetPageContext(tab_id, testing::_))
+      .WillOnce([session_id](
+                    QueryContextualizer::TabId id,
+                    base::OnceCallback<void(
+                        std::unique_ptr<lens::ContextualInputData>)> callback) {
+        auto data = std::make_unique<lens::ContextualInputData>();
+        std::string new_content = "new content";
+        auto new_content_span = base::as_bytes(base::span(new_content));
+        std::vector<uint8_t> new_bytes(new_content_span.begin(),
+                                       new_content_span.end());
+        lens::ContextualInput new_input(std::move(new_bytes),
+                                        lens::MimeType::kPlainText);
+        data->context_input.emplace().push_back(std::move(new_input));
+        data->tab_session_id = session_id;
+        data->page_url = GURL("about:blank");
+        data->page_title = "about:blank";
+        data->context_id = 12345;
+        data->is_page_context_eligible = true;
+        std::move(callback).Run(std::move(data));
+      });
+
+  // Expect StartTabContextUploadFlow call to NOT be called because page content
+  // bytes (APC) comparison is disabled.
+  EXPECT_CALL(*session_handle_,
+              StartTabContextUploadFlow(testing::_, testing::_, testing::_))
+      .Times(0);
+
+  base::MockCallback<QueryContextualizer::PageContextIneligibleCallback>
+      ineligible_callback;
+  base::MockCallback<QueryContextualizer::TabProcessedCallback>
+      processed_callback;
+
+  EXPECT_CALL(processed_callback, Run(tab_id));
+
+  base::MockCallback<QueryContextualizer::ContextualizedCallback> done_callback;
+  EXPECT_CALL(done_callback, Run(testing::_));
+
+  contextualizer_->Contextualize(task_id, "test query", {tab_id}, {},
+                                 ineligible_callback.Get(),
+                                 processed_callback.Get(), done_callback.Get(),
+                                 /*enable_smart_tab_selection=*/false);
+  CompleteAllUploads();
+}
+
+TEST_F(QueryContextualizerTest,
+       Contextualize_WebpageRecontextualizedWithApcIfViewportAndApcChanged) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      kContextualTasksWebpageApcComparison);
+
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  int32_t tab_id = 100;
+  SessionID session_id = SessionID::FromSerializedValue(1);
+  GURL kUrl("about:blank");
+  std::string kTitle = "about:blank";
+
+  // Setup context with uploaded tab
+  ContextualTask task(task_id);
+  UrlResource resource(kUrl, ResourceType::kWebpage);
+  resource.title = kTitle;
+  resource.tab_id = session_id;
+  task.AddUrlResource(resource);
+
+  auto context = std::make_unique<ContextualTaskContext>(task);
+
+  EXPECT_CALL(*service_,
+              GetContextForTask(
+                  task_id,
+                  testing::Contains(
+                      ContextualTaskContextSource::kSubmittedContextDecorator),
+                  testing::NotNull(), testing::_))
+      .WillOnce(
+          [&context](
+              const base::Uuid& task_id,
+              const std::set<ContextualTaskContextSource>& sources,
+              std::unique_ptr<ContextDecorationParams> params,
+              base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
+                  callback) { std::move(callback).Run(std::move(context)); });
+
+  // Setup FileInfo with uploaded status, some content, and old screenshot.
+  std::vector<const contextual_search::FileInfo*> file_info_list;
+  contextual_search::FileInfo file_info;
+  file_info.tab_session_id = session_id;
+  file_info.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
+  file_info.request_id.emplace();
+  file_info.request_id->set_context_id(12345);
+
+  auto input_data = std::make_unique<lens::ContextualInputData>();
+  input_data->primary_content_type = lens::MimeType::kPlainText;
+  std::string old_content = "old content";
+  auto old_content_span = base::as_bytes(base::span(old_content));
+  std::vector<uint8_t> old_bytes(old_content_span.begin(),
+                                 old_content_span.end());
+  lens::ContextualInput old_input(std::move(old_bytes),
+                                  lens::MimeType::kPlainText);
+  input_data->context_input.emplace().push_back(std::move(old_input));
+  input_data->viewport_screenshot_bytes = std::vector<uint8_t>{1, 2, 3};
+  file_info.input_data = std::move(input_data);
+
+  file_info_list.push_back(&file_info);
+
+  EXPECT_CALL(*context_controller_, GetFileInfoList())
+      .WillRepeatedly(testing::Return(file_info_list));
+
+  EXPECT_CALL(*delegate_, GetTabUrl(tab_id))
+      .WillRepeatedly(testing::Return(kUrl));
+  EXPECT_CALL(*delegate_, GetTabSessionId(tab_id))
+      .WillRepeatedly(testing::Return(session_id));
+
+  // Expect GetPageContext call with NEW content and NEW screenshot.
+  EXPECT_CALL(*delegate_, GetPageContext(tab_id, testing::_))
+      .WillOnce([session_id](
+                    QueryContextualizer::TabId id,
+                    base::OnceCallback<void(
+                        std::unique_ptr<lens::ContextualInputData>)> callback) {
+        auto data = std::make_unique<lens::ContextualInputData>();
+        data->primary_content_type = lens::MimeType::kPlainText;
+        std::string new_content = "longer new content";
+        auto new_content_span = base::as_bytes(base::span(new_content));
+        std::vector<uint8_t> new_bytes(new_content_span.begin(),
+                                       new_content_span.end());
+        lens::ContextualInput new_input(std::move(new_bytes),
+                                        lens::MimeType::kPlainText);
+        data->context_input.emplace().push_back(std::move(new_input));
+        data->viewport_screenshot_bytes = std::vector<uint8_t>{4, 5, 6};
+        data->tab_session_id = session_id;
+        data->page_url = GURL("about:blank");
+        data->page_title = "about:blank";
+        data->context_id = 12345;
+        data->is_page_context_eligible = true;
+        std::move(callback).Run(std::move(data));
+      });
+
+  // Expect IsTabValid call to return true so the flow can proceed.
+  EXPECT_CALL(*delegate_, IsTabValid(tab_id)).WillOnce(testing::Return(true));
+
+  // Expect StartTabContextUploadFlow to be called because viewport changed.
+  // And context_input (APC) should BE INCLUDED because page content also
+  // changed.
+  EXPECT_CALL(*session_handle_,
+              StartTabContextUploadFlow(testing::_, testing::_, testing::_))
+      .WillOnce([](const base::UnguessableToken& file_token,
+                   std::unique_ptr<lens::ContextualInputData> data,
+                   std::optional<lens::ImageEncodingOptions> image_options) {
+        ASSERT_TRUE(data->context_input.has_value());
+        EXPECT_EQ(data->context_input->size(), 1u);
+      });
+
+  base::MockCallback<QueryContextualizer::PageContextIneligibleCallback>
+      ineligible_callback;
+  base::MockCallback<QueryContextualizer::TabProcessedCallback>
+      processed_callback;
+
+  EXPECT_CALL(processed_callback, Run(tab_id));
+
+  base::MockCallback<QueryContextualizer::ContextualizedCallback> done_callback;
+  EXPECT_CALL(done_callback, Run(testing::_));
+
+  contextualizer_->Contextualize(task_id, "test query", {tab_id}, {},
+                                 ineligible_callback.Get(),
+                                 processed_callback.Get(), done_callback.Get(),
+                                 /*enable_smart_tab_selection=*/false);
+  CompleteAllUploads();
+}
+
+TEST_F(
+    QueryContextualizerTest,
+    Contextualize_WebpageRecontextualizedWithoutApcIfViewportChangedButApcUnchanged) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      kContextualTasksWebpageApcComparison);
+
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  int32_t tab_id = 100;
+  SessionID session_id = SessionID::FromSerializedValue(1);
+  GURL kUrl("about:blank");
+  std::string kTitle = "about:blank";
+
+  // Setup context with uploaded tab
+  ContextualTask task(task_id);
+  UrlResource resource(kUrl, ResourceType::kWebpage);
+  resource.title = kTitle;
+  resource.tab_id = session_id;
+  task.AddUrlResource(resource);
+
+  auto context = std::make_unique<ContextualTaskContext>(task);
+
+  EXPECT_CALL(*service_,
+              GetContextForTask(
+                  task_id,
+                  testing::Contains(
+                      ContextualTaskContextSource::kSubmittedContextDecorator),
+                  testing::NotNull(), testing::_))
+      .WillOnce(
+          [&context](
+              const base::Uuid& task_id,
+              const std::set<ContextualTaskContextSource>& sources,
+              std::unique_ptr<ContextDecorationParams> params,
+              base::OnceCallback<void(std::unique_ptr<ContextualTaskContext>)>
+                  callback) { std::move(callback).Run(std::move(context)); });
+
+  // Setup FileInfo with uploaded status, some content, and old screenshot.
+  std::vector<const contextual_search::FileInfo*> file_info_list;
+  contextual_search::FileInfo file_info;
+  file_info.tab_session_id = session_id;
+  file_info.upload_status =
+      contextual_search::ContextUploadStatus::kUploadSuccessful;
+  file_info.request_id.emplace();
+  file_info.request_id->set_context_id(12345);
+
+  auto input_data = std::make_unique<lens::ContextualInputData>();
+  input_data->primary_content_type = lens::MimeType::kPlainText;
+  std::string old_content = "same content";
+  auto old_content_span = base::as_bytes(base::span(old_content));
+  std::vector<uint8_t> old_bytes(old_content_span.begin(),
+                                 old_content_span.end());
+  lens::ContextualInput old_input(std::move(old_bytes),
+                                  lens::MimeType::kPlainText);
+  input_data->context_input.emplace().push_back(std::move(old_input));
+  input_data->viewport_screenshot_bytes = std::vector<uint8_t>{1, 2, 3};
+  file_info.input_data = std::move(input_data);
+
+  file_info_list.push_back(&file_info);
+
+  EXPECT_CALL(*context_controller_, GetFileInfoList())
+      .WillRepeatedly(testing::Return(file_info_list));
+
+  EXPECT_CALL(*delegate_, GetTabUrl(tab_id))
+      .WillRepeatedly(testing::Return(kUrl));
+  EXPECT_CALL(*delegate_, GetTabSessionId(tab_id))
+      .WillRepeatedly(testing::Return(session_id));
+
+  // Expect GetPageContext call with SAME content and NEW screenshot.
+  EXPECT_CALL(*delegate_, GetPageContext(tab_id, testing::_))
+      .WillOnce([session_id](
+                    QueryContextualizer::TabId id,
+                    base::OnceCallback<void(
+                        std::unique_ptr<lens::ContextualInputData>)> callback) {
+        auto data = std::make_unique<lens::ContextualInputData>();
+        data->primary_content_type = lens::MimeType::kPlainText;
+        std::string new_content = "same content";
+        auto new_content_span = base::as_bytes(base::span(new_content));
+        std::vector<uint8_t> new_bytes(new_content_span.begin(),
+                                       new_content_span.end());
+        lens::ContextualInput new_input(std::move(new_bytes),
+                                        lens::MimeType::kPlainText);
+        data->context_input.emplace().push_back(std::move(new_input));
+        data->viewport_screenshot_bytes = std::vector<uint8_t>{4, 5, 6};
+        data->tab_session_id = session_id;
+        data->page_url = GURL("about:blank");
+        data->page_title = "about:blank";
+        data->context_id = 12345;
+        data->is_page_context_eligible = true;
+        std::move(callback).Run(std::move(data));
+      });
+
+  // Expect IsTabValid call to return true so the flow can proceed.
+  EXPECT_CALL(*delegate_, IsTabValid(tab_id)).WillOnce(testing::Return(true));
+
+  // Expect StartTabContextUploadFlow to be called because viewport changed.
+  // But context_input (APC) should BE OMITTED (std::nullopt) because page
+  // content did not change.
+  EXPECT_CALL(*session_handle_,
+              StartTabContextUploadFlow(testing::_, testing::_, testing::_))
+      .WillOnce([](const base::UnguessableToken& file_token,
+                   std::unique_ptr<lens::ContextualInputData> data,
+                   std::optional<lens::ImageEncodingOptions> image_options) {
+        EXPECT_FALSE(data->context_input.has_value());
+      });
 
   base::MockCallback<QueryContextualizer::PageContextIneligibleCallback>
       ineligible_callback;

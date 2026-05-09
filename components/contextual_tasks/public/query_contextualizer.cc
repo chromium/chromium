@@ -658,7 +658,13 @@ bool QueryContextualizer::CheckIfContextChangedAndPrepareUploadData(
     page_content_changed = false;
   }
 
-  if (!page_content_changed && !viewport_changed) {
+  bool context_changed = viewport_changed;
+  if (GetIsWebpageApcComparisonEnabled() &&
+      new_data.primary_content_type != lens::MimeType::kPdf) {
+    context_changed |= page_content_changed;
+  }
+
+  if (!context_changed) {
     return true;
   }
 
