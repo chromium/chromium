@@ -111,10 +111,10 @@ void ChromeProfileRequestGenerator::Generate(
   bool is_signals_only = generation_config.security_signals_mode ==
                          SecuritySignalsMode::kSignalsOnly;
 
-  if (is_signals_only) {
-    profile_report_generator_.set_policies_enabled(
-        enterprise_signals::features::IsPolicyDataCollectionEnabled());
-  }
+  profile_report_generator_.set_policies_enabled(
+      is_signals_only
+          ? enterprise_signals::features::IsPolicyDataCollectionEnabled()
+          : true);
 
   auto barrier_callback = base::BarrierCallback<
       std::variant<std::unique_ptr<em::BrowserReport>,
