@@ -3496,6 +3496,8 @@ constexpr char kExtensionAiDataInternalName[] =
     "enable-extension-ai-data-collection";
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
+constexpr char kGemma4ForBuiltInAIInternalName[] = "gemma4-for-built-in-ai";
+
 const FeatureEntry::FeatureParam kDiscountOnShoppyPage[] = {
     {commerce::kDiscountOnShoppyPageParam, "true"}};
 
@@ -10255,7 +10257,8 @@ const FeatureEntry kFeatureEntries[] = {
      MULTI_VALUE_TYPE(kAIClassifierChoices),
      flag_descriptions::kAIAPIsForGeminiNanoLinks},
 
-    {"gemma4-for-built-in-ai", flag_descriptions::kGemma4ForBuiltInAIName,
+    {kGemma4ForBuiltInAIInternalName,
+     flag_descriptions::kGemma4ForBuiltInAIName,
      flag_descriptions::kGemma4ForBuiltInAIDescription, kOsDesktop,
      MULTI_VALUE_TYPE(kGemma4Choices),
      flag_descriptions::kGemma4ForBuiltInAILinks},
@@ -13275,9 +13278,8 @@ void GetStorage(Profile* profile, GetStorageCallback callback) {
 
 bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
                                        const FeatureEntry& entry) {
-#if BUILDFLAG(IS_CHROMEOS)
   version_info::Channel channel = chrome::GetChannel();
-
+#if BUILDFLAG(IS_CHROMEOS)
   // enable-ui-devtools is only available on for non Stable channels.
   if (std::string_view(ui_devtools::switches::kEnableUiDevTools) ==
           entry.internal_name &&
@@ -13371,20 +13373,18 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  version_info::Channel chrome_channel = chrome::GetChannel();
   // Only show extension AI data flag in non-stable channels.
   if (std::string_view(kExtensionAiDataInternalName) == entry.internal_name) {
-    return chrome_channel != version_info::Channel::BETA &&
-           chrome_channel != version_info::Channel::DEV &&
-           chrome_channel != version_info::Channel::CANARY &&
-           chrome_channel != version_info::Channel::UNKNOWN;
+    return channel != version_info::Channel::BETA &&
+           channel != version_info::Channel::DEV &&
+           channel != version_info::Channel::CANARY &&
+           channel != version_info::Channel::UNKNOWN;
   }
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
   // Only show the payments test flag to disable merchant allowlists if channel
   // is one of Beta/Dev/Canary/ Unknown.
-  version_info::Channel channel = chrome::GetChannel();
   if (std::string_view(
           kDisableFacilitatedPaymentsMerchantAllowlistInternalName) ==
       entry.internal_name) {
@@ -13398,10 +13398,19 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
 #if !BUILDFLAG(IS_ANDROID)
   // Only show Webium flag for Canary channel and developer builds.
   if (std::string_view(kWebiumFlag) == entry.internal_name) {
-    return chrome::GetChannel() != version_info::Channel::CANARY &&
+    return channel != version_info::Channel::CANARY &&
            version_info::IsOfficialBuild();
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  // Only show the Gemma4 flag on Canary/Dev/Unknown and unofficial builds.
+  if (std::string_view(kGemma4ForBuiltInAIInternalName) ==
+      entry.internal_name) {
+    return channel != version_info::Channel::CANARY &&
+           channel != version_info::Channel::DEV &&
+           channel != version_info::Channel::UNKNOWN &&
+           version_info::IsOfficialBuild();
+  }
 
   if (flags::IsFlagExpired(storage, entry.internal_name)) {
     return true;

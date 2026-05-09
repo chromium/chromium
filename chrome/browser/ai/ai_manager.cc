@@ -23,6 +23,8 @@
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
 #include "base/types/pass_key.h"
+#include "base/version_info/channel.h"
+#include "base/version_info/version_info.h"
 #include "chrome/browser/ai/ai_classifier.h"
 #include "chrome/browser/ai/ai_context_bound_object.h"
 #include "chrome/browser/ai/ai_context_bound_object_set.h"
@@ -38,6 +40,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/channel_info.h"
 #include "components/language/core/common/locale_util.h"
 #include "components/on_device_ai/ai_utils.h"
 #include "components/optimization_guide/core/delivery/model_util.h"
@@ -308,7 +311,13 @@ std::optional<std::string> GetUseCaseFromFeatureConfig(
     return std::nullopt;
   }
 
-  if (base::FeatureList::IsEnabled(kAIApiFoundationalModel)) {
+  // Support experimental use cases on Canary/Dev/Unknown and unofficial builds.
+  version_info::Channel channel = chrome::GetChannel();
+  if (base::FeatureList::IsEnabled(kAIApiFoundationalModel) &&
+      (channel == version_info::Channel::CANARY ||
+       channel == version_info::Channel::DEV ||
+       channel == version_info::Channel::UNKNOWN ||
+       !version_info::IsOfficialBuild())) {
     std::string model_version = base::GetFieldTrialParamValueByFeature(
         kAIApiFoundationalModel, kModelVersionParam);
     auto it = feature_config.experimental_use_cases().find(model_version);
