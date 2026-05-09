@@ -323,8 +323,6 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
     base::Uuid task_id = base::Uuid::ParseLowercase(task_id_str);
     if (task_id.is_valid()) {
       task_id_ = task_id;
-      ui_service_->OnWebUIReady(GetBrowser(), task_id,
-                                web_ui->GetWebContents());
     }
   }
 
@@ -735,6 +733,11 @@ bool ContextualTasksUI::IsInitComplete() {
 }
 
 void ContextualTasksUI::OnInitComplete() {
+  if (task_id_) {
+    ui_service_->OnWebUIReady(GetBrowser(), *task_id_,
+                              web_ui()->GetWebContents());
+  }
+
   for (auto& observer : observers_) {
     observer.OnInitComplete();
   }

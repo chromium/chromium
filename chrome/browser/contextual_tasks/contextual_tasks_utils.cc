@@ -65,12 +65,21 @@ void RecordInnerFrameContentsHttpResponseCode(int http_status_code,
 
 ContextualTasksUIInterface* GetWebUiInterface(
     content::WebContents* web_contents) {
-  if (!web_contents || !web_contents->GetWebUI() ||
-      !web_contents->GetWebUI()->GetController()) {
+  if (!web_contents) {
     return nullptr;
   }
 
-  return web_contents->GetWebUI()->GetController()->GetAs<ContextualTasksUI>();
+  content::WebUI* web_ui = web_contents->GetWebUI();
+  if (!web_ui) {
+    return nullptr;
+  }
+
+  content::WebUIController* controller = web_ui->GetController();
+  if (!controller) {
+    return nullptr;
+  }
+
+  return controller->GetAs<ContextualTasksUI>();
 }
 
 bool IsValidUrlForSuggestedTab(const GURL& url,
