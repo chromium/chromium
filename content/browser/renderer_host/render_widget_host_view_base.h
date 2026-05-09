@@ -239,6 +239,15 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   virtual void UpdateIntrinsicSizingInfo(
       blink::mojom::IntrinsicSizingInfoPtr sizing_info);
 
+  // Transforms point and/or rect from view's coordinate space to
+  // root_view's coordinate space. Returns false if no transform was found
+  // between the view and root_view.
+  static bool TransformPointAndRectToRootView(
+      RenderWidgetHostViewBase* view,
+      RenderWidgetHostViewBase* root_view,
+      gfx::Point* transformed_point,
+      gfx::Rect* transformed_rect);
+
   static void CopyMainAndPopupFromSurface(
       base::WeakPtr<RenderWidgetHostImpl> main_host,
       base::WeakPtr<DelegatedFrameHost> main_frame_host,
@@ -551,6 +560,17 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   }
 
   virtual viz::SurfaceId GetFallbackSurfaceIdForTesting() const;
+
+#if BUILDFLAG(IS_WIN)
+  // Called by child frame views before delegating OnStartStylusWriting to the
+  // root view, so the root view uses the provided callback for the TSF
+  // FocusHandwritingTarget response instead of its own.
+  using OnFocusHandwritingTargetCallback =
+      base::RepeatingCallback<void(const gfx::Rect& /*rect_in_screen*/,
+                                   const gfx::Size& /*distance_threshold*/)>;
+  virtual void SetStylusHandwritingFocusCallback(
+      OnFocusHandwritingTargetCallback callback) {}
+#endif  // BUILDFLAG(IS_WIN)
 
  protected:
   explicit RenderWidgetHostViewBase(RenderWidgetHost* host);

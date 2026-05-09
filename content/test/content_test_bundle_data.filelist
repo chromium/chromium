@@ -9138,6 +9138,7 @@ data/stale-while-revalidate.html
 data/stop.html
 data/storage/common.js
 data/storage/quota_change_test.html
+data/stylus_handwriting_oopif_test.html
 data/stylus_handwriting_test.html
 data/super_tall_page.html
 data/super_tall_parent.html

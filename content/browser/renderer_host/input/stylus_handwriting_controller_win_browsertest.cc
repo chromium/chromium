@@ -5,19 +5,28 @@
 #include "content/browser/renderer_host/input/stylus_handwriting_controller_win.h"
 
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/stylus_handwriting/win/features.h"
+#include "content/browser/renderer_host/frame_tree.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/input/mock_tfhandwriting.h"
 #include "content/browser/renderer_host/input/stylus_handwriting_callback_sink_win.h"
 #include "content/browser/renderer_host/input/stylus_handwriting_win_test_helper.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
+#include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
+#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/hit_test_region_observer.h"
+#include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -230,7 +239,7 @@ class StylusHandwritingControllerWinTest
   // Starts the test server and navigates to the given url. Sets a large enough
   // size to the root window. Returns after the navigation to the url is
   // complete.
-  void StartTestWithPage(const std::string& url) {
+  virtual void StartTestWithPage(const std::string& url) {
     ASSERT_TRUE(embedded_test_server()->Start());
     NavigateToURLAndWaitForMainFrame(embedded_test_server()->GetURL(url));
     aura::Window* content = shell()->web_contents()->GetContentNativeView();
@@ -255,28 +264,35 @@ class StylusHandwritingControllerWinTest
     frame_observer.Wait();
   }
 
+  // Returns the execution target for JS calls. Subclasses override this
+  // to target a child frame.
+  virtual ToRenderFrameHost GetTargetFrame() const {
+    return ToRenderFrameHost(shell());
+  }
+
   void FocusEmptyTextField() const {
-    ASSERT_TRUE(ExecJs(shell(), "focus_empty_text_field()"));
+    ASSERT_TRUE(ExecJs(GetTargetFrame(), "focus_empty_text_field()"));
   }
 
   void FocusIneligibleTextField() const {
-    ASSERT_TRUE(ExecJs(shell(), "focus_ineligible_text_field()"));
+    ASSERT_TRUE(ExecJs(GetTargetFrame(), "focus_ineligible_text_field()"));
   }
 
-  gfx::PointF GetPointInsideEmptyTextField() {
+  virtual gfx::PointF GetPointInsideEmptyTextField() {
     gfx::PointF point;
     EXPECT_TRUE(JSONToPoint(
-        EvalJs(shell(), "get_point_inside_empty_text_field()").ExtractString(),
+        EvalJs(GetTargetFrame(), "get_point_inside_empty_text_field()")
+            .ExtractString(),
         &point));
     return point;
   }
 
-  gfx::PointF GetPointInsideIneligibleTextField() {
+  virtual gfx::PointF GetPointInsideIneligibleTextField() {
     gfx::PointF point;
-    EXPECT_TRUE(
-        JSONToPoint(EvalJs(shell(), "get_point_inside_ineligible_text_field()")
-                        .ExtractString(),
-                    &point));
+    EXPECT_TRUE(JSONToPoint(
+        EvalJs(GetTargetFrame(), "get_point_inside_ineligible_text_field()")
+            .ExtractString(),
+        &point));
     return point;
   }
 
@@ -336,16 +352,120 @@ class StylusHandwritingControllerWinTest
                         Return(S_OK)));
   }
 
+ protected:
+  std::unique_ptr<ui::test::EventGenerator> generator_;
+
  private:
   Microsoft::WRL::ComPtr<MockTfHandwritingRequest> mock_handwriting_request_;
   Microsoft::WRL::ComPtr<MockTfFocusHandwritingTargetArgsImpl>
       mock_focus_handwriting_target_args_;
-  std::unique_ptr<ui::test::EventGenerator> generator_;
+};
+
+// Parameterized test class for tests that should run against both root frame
+// and OOPIF text inputs. The OOPIF variant navigates a cross-origin child
+// iframe to the test page and routes JS/coordinates through it.
+class StylusHandwritingControllerWinFrameTypeTest
+    : public StylusHandwritingControllerWinTest,
+      public ::testing::WithParamInterface<bool> {
+ protected:
+  bool IsOOPIF() const { return GetParam(); }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    StylusHandwritingControllerWinTest::SetUpCommandLine(command_line);
+    if (IsOOPIF()) {
+      IsolateAllSitesForTesting(command_line);
+    }
+  }
+
+  void SetUpOnMainThread() override {
+    if (IsOOPIF()) {
+      host_resolver()->AddRule("*", "127.0.0.1");
+      SetupCrossSiteRedirector(embedded_test_server());
+    }
+    StylusHandwritingControllerWinTest::SetUpOnMainThread();
+  }
+
+  void TearDownOnMainThread() override {
+    // Reset before the render process is shut down to avoid a dangling
+    // raw_ptr when RenderFrameHostImpl is destroyed during FastShutdown.
+    child_frame_host_ = nullptr;
+    StylusHandwritingControllerWinTest::TearDownOnMainThread();
+  }
+
+  void StartTestWithPage(const std::string& url) override {
+    if (!IsOOPIF()) {
+      StylusHandwritingControllerWinTest::StartTestWithPage(url);
+      return;
+    }
+    ASSERT_TRUE(embedded_test_server()->Start());
+    // Navigate to a page with a cross-origin iframe.
+    GURL main_url(embedded_test_server()->GetURL(
+        "a.com", "/stylus_handwriting_oopif_test.html"));
+    NavigateToURLAndWaitForMainFrame(main_url);
+
+    // Navigate the iframe to the test page on a different origin.
+    FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                              ->GetPrimaryFrameTree()
+                              .root();
+    ASSERT_EQ(1u, root->child_count());
+    FrameTreeNode* child = root->child_at(0);
+    GURL child_url(embedded_test_server()->GetURL("b.com", url));
+    ASSERT_TRUE(
+        NavigateToURLFromRenderer(child->current_frame_host(), child_url));
+
+    // Wait for hit test data so events are routed correctly.
+    child = root->child_at(0);
+    WaitForHitTestData(child->current_frame_host());
+    child_frame_host_ = child->current_frame_host();
+
+    aura::Window* content = shell()->web_contents()->GetContentNativeView();
+    content->GetHost()->SetBoundsInPixels(gfx::Rect(800, 800));
+    generator_ = std::make_unique<ui::test::EventGenerator>(
+        GetRenderWidgetHostViewAura()->GetNativeView()->GetRootWindow());
+  }
+
+  ToRenderFrameHost GetTargetFrame() const override {
+    return IsOOPIF() ? ToRenderFrameHost(child_frame_host_)
+                     : StylusHandwritingControllerWinTest::GetTargetFrame();
+  }
+
+  gfx::PointF GetPointInsideEmptyTextField() override {
+    gfx::PointF point =
+        StylusHandwritingControllerWinTest::GetPointInsideEmptyTextField();
+    return TransformPointToRootIfNeeded(point);
+  }
+
+  gfx::PointF GetPointInsideIneligibleTextField() override {
+    gfx::PointF point =
+        StylusHandwritingControllerWinTest::GetPointInsideIneligibleTextField();
+    return TransformPointToRootIfNeeded(point);
+  }
+
+ private:
+  // For OOPIF, coordinates from JS are in child frame space. This transforms
+  // them to root view coordinates so that event generation works correctly.
+  gfx::PointF TransformPointToRootIfNeeded(const gfx::PointF& point) {
+    if (!IsOOPIF() || !child_frame_host_) {
+      return point;
+    }
+    auto* child_view = static_cast<RenderWidgetHostViewChildFrame*>(
+        child_frame_host_->GetRenderWidgetHost()->GetView());
+    return child_view->TransformPointToRootCoordSpaceF(point);
+  }
+
+  raw_ptr<RenderFrameHostImpl> child_frame_host_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
                          StylusHandwritingControllerWinCreationTest,
                          ::testing::ValuesIn(GetAPIErrors()));
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         StylusHandwritingControllerWinFrameTypeTest,
+                         ::testing::Bool(),
+                         [](const auto& info) {
+                           return info.param ? "OOPIF" : "Root";
+                         });
 
 IN_PROC_BROWSER_TEST_P(StylusHandwritingControllerWinCreationTest,
                        APIAvailability) {
@@ -356,7 +476,7 @@ IN_PROC_BROWSER_TEST_P(StylusHandwritingControllerWinCreationTest,
 // Tests that using a pen and performing a stroke in a textfield notifies
 // Shell Handwriting API of a stroke.
 // TODO(crbug.com/498290679): Investigate test flakiness
-IN_PROC_BROWSER_TEST_F(StylusHandwritingControllerWinTest,
+IN_PROC_BROWSER_TEST_P(StylusHandwritingControllerWinFrameTypeTest,
                        DISABLED_BasicStroke) {
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/stylus_handwriting_test.html"));
   const gfx::Point point = gfx::ToRoundedPoint(GetPointInsideEmptyTextField());
@@ -368,7 +488,7 @@ IN_PROC_BROWSER_TEST_F(StylusHandwritingControllerWinTest,
 // Tests that using a pen and performing a stroke in a textfield without focus,
 // does notify the Shell Handwriting API of a stroke.
 // TODO(crbug.com/498290679): Investigate test flakiness
-IN_PROC_BROWSER_TEST_F(StylusHandwritingControllerWinTest,
+IN_PROC_BROWSER_TEST_P(StylusHandwritingControllerWinFrameTypeTest,
                        DISABLED_BasicStrokeNoFocus) {
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/stylus_handwriting_test.html"));
   const gfx::Point point = gfx::ToRoundedPoint(GetPointInsideEmptyTextField());
@@ -395,7 +515,7 @@ IN_PROC_BROWSER_TEST_F(StylusHandwritingControllerWinTest,
 // passed in to FocusHandwritingTarget is the same as that of the textfield
 // where the stroke was initiated. Therefore the expected response is
 // TF_HANDWRITING_TARGET_FOCUSED.
-IN_PROC_BROWSER_TEST_F(StylusHandwritingControllerWinTest,
+IN_PROC_BROWSER_TEST_P(StylusHandwritingControllerWinFrameTypeTest,
                        FocusHandwritingOnEligibleTarget) {
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/stylus_handwriting_test.html"));
   gfx::Point point = gfx::ToRoundedPoint(GetPointInsideEmptyTextField());
@@ -443,14 +563,15 @@ IN_PROC_BROWSER_TEST_F(StylusHandwritingControllerWinTest,
 // Performs a stroke and then calls ::FocusHandwritingTarget(). The test
 // simulates the case where the target element eligibility has changed after the
 // stroke was initiated which should prevent setting the focus on the element.
-IN_PROC_BROWSER_TEST_F(StylusHandwritingControllerWinTest,
+IN_PROC_BROWSER_TEST_P(StylusHandwritingControllerWinFrameTypeTest,
                        FocusHandwritingOnUnsupportedTarget) {
   ASSERT_NO_FATAL_FAILURE(StartTestWithPage("/stylus_handwriting_test.html"));
   gfx::Point point = gfx::ToRoundedPoint(GetPointInsideEmptyTextField());
   ExpectStrokeCallSequence(1);
   ExecuteStroke(point);
 
-  EXPECT_TRUE(ExecJs(shell(), "disable_handwriting_for_empty_textfield()"));
+  EXPECT_TRUE(
+      ExecJs(GetTargetFrame(), "disable_handwriting_for_empty_textfield()"));
 
   GetEventGenerator()->delegate()->ConvertPointFromTarget(
       GetRenderWidgetHostViewAura()->GetNativeView(), &point);

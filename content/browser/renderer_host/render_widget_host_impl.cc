@@ -4030,31 +4030,6 @@ RenderWidgetHostImpl::GetEmbeddedRenderInputRouters() {
   return GetEmbeddedRenderWidgetHosts(GetView());
 }
 
-namespace {
-
-bool TransformPointAndRectToRootView(RenderWidgetHostViewBase* view,
-                                     RenderWidgetHostViewBase* root_view,
-                                     gfx::Point* transformed_point,
-                                     gfx::Rect* transformed_rect) {
-  gfx::Transform transform_to_main_frame;
-  if (!view->GetTransformToViewCoordSpace(root_view,
-                                          &transform_to_main_frame)) {
-    return false;
-  }
-
-  if (transformed_point) {
-    *transformed_point = transform_to_main_frame.MapPoint(*transformed_point);
-  }
-
-  if (transformed_rect) {
-    *transformed_rect = transform_to_main_frame.MapRect(*transformed_rect);
-  }
-
-  return true;
-}
-
-}  // namespace
-
 void RenderWidgetHostImpl::AnimateDoubleTapZoomInMainFrame(
     const gfx::Point& point,
     const gfx::Rect& rect_to_zoom) {
@@ -4072,9 +4047,9 @@ void RenderWidgetHostImpl::AnimateDoubleTapZoomInMainFrame(
   auto* root_view = view_->GetRootView();
   gfx::Point transformed_point(point);
   gfx::Rect transformed_rect_to_zoom(rect_to_zoom);
-  if (!TransformPointAndRectToRootView(view_.get(), root_view,
-                                       &transformed_point,
-                                       &transformed_rect_to_zoom)) {
+  if (!RenderWidgetHostViewBase::TransformPointAndRectToRootView(
+          view_.get(), root_view, &transformed_point,
+          &transformed_rect_to_zoom)) {
     return;
   }
 
@@ -4100,8 +4075,8 @@ void RenderWidgetHostImpl::ZoomToFindInPageRectInMainFrame(
 
   auto* root_view = view_->GetRootView();
   gfx::Rect transformed_rect_to_zoom(rect_to_zoom);
-  if (!TransformPointAndRectToRootView(view_.get(), root_view, nullptr,
-                                       &transformed_rect_to_zoom)) {
+  if (!RenderWidgetHostViewBase::TransformPointAndRectToRootView(
+          view_.get(), root_view, nullptr, &transformed_rect_to_zoom)) {
     return;
   }
 

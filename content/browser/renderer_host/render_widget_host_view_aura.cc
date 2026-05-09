@@ -2523,8 +2523,11 @@ void RenderWidgetHostViewAura::OnStartStylusWriting() {
   // callback response from the renderer process. This will be used to discard
   // responses in OnFocusHandled()/OnFocusFailed() later for such cases.
   handwriting_controller->OnStartStylusWriting(
-      base::BindRepeating(&RenderWidgetHostViewAura::OnFocusHandwritingTarget,
-                          weak_ptr_factory_.GetWeakPtr()),
+      stylus_handwriting_focus_callback_.is_null()
+          ? base::BindRepeating(
+                &RenderWidgetHostViewAura::OnFocusHandwritingTarget,
+                weak_ptr_factory_.GetWeakPtr())
+          : std::move(stylus_handwriting_focus_callback_),
       last_stylus_handwriting_properties_.value());
   last_stylus_handwriting_properties_.reset();
 }
@@ -2572,14 +2575,24 @@ void RenderWidgetHostViewAura::OnEditElementFocusedForStylusWriting(
                : handwriting_controller->OnFocusFailed();
 }
 
+void RenderWidgetHostViewAura::SetStylusHandwritingFocusCallback(
+    OnFocusHandwritingTargetCallback callback) {
+  stylus_handwriting_focus_callback_ = std::move(callback);
+}
+
 void RenderWidgetHostViewAura::OnFocusHandwritingTarget(
     const gfx::Rect& focus_screen_rect_in_dips,
     const gfx::Size& tolerance_screen_distance_in_dips) {
   // TODO(crbug.com/355578906): Consider `tolerance_screen_distance_in_dips`.
-  if (host()) {
-    host()->UpdateElementFocusForStylusWriting(
-        ConvertRectFromScreen(focus_screen_rect_in_dips));
+  if (!host()) {
+    if (StylusHandwritingControllerWin::GetInstance()) {
+      StylusHandwritingControllerWin::GetInstance()->OnFocusFailed();
+    }
+    return;
   }
+
+  host()->UpdateElementFocusForStylusWriting(
+      ConvertRectFromScreen(focus_screen_rect_in_dips));
 }
 #endif  // BUILDFLAG(IS_WIN)
 
