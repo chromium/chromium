@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="darker_gray">#555</color>
+    <color name="footer_light_grey">#FFFAFAFA</color>
+    <color name="footer_medium_grey">#FFEEEEEE</color>
+</resources>

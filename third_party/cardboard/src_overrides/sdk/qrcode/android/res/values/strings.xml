@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+    <string name="no_permissions"
+            description="Text shown on Android Toast when permissions are not granted.
+                         [CHAR_LIMIT=140]">
+            Cardboard SDK requires camera and write to external storage permission to read the QR code and save the encoded device parameters.</string>
+    <string name="no_camera_permission"
+            description="Text shown on Android Toast when camera permission is not granted.
+                         [CHAR_LIMIT=70]">
+            Camera permission is not granted and is needed to read QR codes</string>
+    <string name="title_activity_qr_code_capture"
+            description="QrCodeCapture activity title. [CHAR_LIMIT=30]">
+            QrCodeCapture</string>
+    <string name="reading_qr_code_instructions"
+            description="Text shown on bottom of QR code capture activity to indicate instructions
+                         to read QR code. [CHAR_LIMIT=50]">
+            Find this Cardboard symbol on your viewer</string>
+    <string name="cannot_find_symbol"
+            description="Text shown on bottom of QR code capture activity to indicate SKIP button
+                         presence. [CHAR_LIMIT=30]">
+            Can\'t find this symbol?</string>
+    <string name="skip_scanning"
+            description="Text shown for button to skip the workflow to pair a Cardboard view with
+                         the user's phone. [CHAR_LIMIT=10]">
+            SKIP</string>
+    <string name="headset_detection_activity_title"
+            description="Headset detection activity title. [CHAR_LIMIT=30]">
+            HeadsetDetector</string>
+    <string name="viewer_detected"
+            description="Text shown when a device with NFC tag is detected [CHAR_LIMIT=30]">
+            Viewer detected</string>
+    <string name="invalid_qr_code"
+            description="Text shown when an invalid QR code is scanned. [CHAR_LIMIT=30]">
+            Invalid QR Code</string>
+    <string name="connection_error"
+            description="Text shown when a connection error occurs when retrieving the QR Code
+                         content. [CHAR_LIMIT=30]">
+            Connection error</string>
+    <string name="missing_dependencies"
+            description="Text shown when dependencies are not available to scan QR Codes.
+                         [CHAR_LIMIT=40]">
+            QR Code detector dependency missing</string>
+</resources>
