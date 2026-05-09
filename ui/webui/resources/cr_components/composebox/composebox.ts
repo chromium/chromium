@@ -741,6 +741,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     const newTranscript = e.detail;
     if (newTranscript && newTranscript.trim().length > 0) {
       this.input = newTranscript;
+      this.queryAutocomplete(/* clearMatches= */ false);
     }
     this.voiceSearchEndCleanup();
   }
