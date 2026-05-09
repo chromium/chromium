@@ -304,9 +304,6 @@ class AcceleratorConfigurationProvider
       shortcut_customization::mojom::AcceleratorConfigurationProvider>
       receiver_{this};
 
-  raw_ptr<AshAcceleratorConfiguration, DanglingUntriaged>
-      ash_accelerator_configuration_;
-
   // One accelerator action ID can potentially have multiple accelerators
   // associated with it.
   ActionIdToAcceleratorsMap id_to_non_configurable_accelerators_;
