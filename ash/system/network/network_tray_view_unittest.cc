@@ -5,6 +5,7 @@
 #include "ash/system/network/network_tray_view.h"
 
 #include <memory>
+#include <vector>
 
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
@@ -16,6 +17,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/services/network_config/public/cpp/fake_cros_network_config.h"
@@ -31,6 +33,7 @@ namespace {
 
 using ::chromeos::network_config::FakeCrosNetworkConfig;
 using ::chromeos::network_config::mojom::ConnectionStateType;
+using ::chromeos::network_config::mojom::DeviceStatePropertiesPtr;
 using ::chromeos::network_config::mojom::NetworkStatePropertiesPtr;
 using ::chromeos::network_config::mojom::NetworkType;
 using ::chromeos::network_config::mojom::PortalState;
@@ -53,7 +56,15 @@ class NetworkTrayViewTest : public AshTestBase {
         ->system_tray_model()
         ->network_state_model()
         ->ConfigureRemoteForTesting(cros_network()->GetPendingRemote());
-    base::RunLoop().RunUntilIdle();
+    // Ensure the test remote receives the observer registration above.
+    base::RunLoop run_loop;
+    Shell::Get()
+        ->system_tray_model()
+        ->network_state_model()
+        ->cros_network_config()
+        ->GetDeviceStateList(base::BindLambdaForTesting(
+            [&](std::vector<DeviceStatePropertiesPtr>) { run_loop.Quit(); }));
+    run_loop.Run();
 
     std::unique_ptr<NetworkTrayView> network_tray_view =
         std::make_unique<NetworkTrayView>(GetPrimaryShelf(),
