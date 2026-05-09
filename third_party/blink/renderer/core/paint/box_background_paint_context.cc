@@ -318,6 +318,7 @@ PhysicalRect BoxBackgroundPaintContext::NormalPositioningArea(
 bool BoxBackgroundPaintContext::DisallowBorderDerivedAdjustment() const {
   return painting_view_ || painting_table_cell_ ||
          box_has_multiple_fragments_ ||
+         positioning_box_->StyleRef().HasBorderShape() ||
          positioning_box_->StyleRef().BorderImage().GetImage() ||
          positioning_box_->StyleRef().BorderCollapse() ==
              EBorderCollapse::kCollapse;
