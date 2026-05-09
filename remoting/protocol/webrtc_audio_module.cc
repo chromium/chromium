@@ -22,7 +22,7 @@ const int kFrameLengthMs = 10;
 const int kSamplesPerFrame = kSamplingRate * kFrameLengthMs / 1000;
 
 constexpr base::TimeDelta kPollInterval =
-    base::Milliseconds(5 * kFrameLengthMs);
+    base::Milliseconds(3 * kFrameLengthMs);
 const int kChannels = 2;
 const int kBytesPerSample = 2;
 
@@ -326,6 +326,7 @@ int WebrtcAudioModule::GetRecordAudioParameters(
 
 void WebrtcAudioModule::StartPlayoutOnAudioThread() {
   DCHECK(audio_task_runner_->BelongsToCurrentThread());
+  last_poll_time_ = base::TimeTicks::Now();
   poll_timer_ = std::make_unique<base::RepeatingTimer>();
   poll_timer_->Start(FROM_HERE, kPollInterval,
                      base::BindRepeating(&WebrtcAudioModule::PollFromSource,
@@ -341,17 +342,48 @@ void WebrtcAudioModule::PollFromSource() {
   DCHECK(audio_task_runner_->BelongsToCurrentThread());
 
   base::AutoLock lock(lock_);
+  base::TimeTicks now = base::TimeTicks::Now();
   if (!audio_transport_) {
+    last_poll_time_ = now;
     return;
   }
 
-  for (int i = 0; i < kPollInterval.InMilliseconds() / kFrameLengthMs; i++) {
+  base::TimeDelta elapsed = now - last_poll_time_;
+  int64_t frames_to_pull = elapsed.IntDiv(base::Milliseconds(kFrameLengthMs));
+  if (frames_to_pull <= 0) {
+    return;
+  }
+
+  // Cap `frames_to_pull` to a reasonable maximum (100ms) to protect against
+  // heavy thread delays or deep sleep wakeups. If we hit the cap, we reset
+  // `last_poll_time_` to `now` to safely abandon the accumulated drift.
+  bool capped = false;
+  if (frames_to_pull > 10) {
+    frames_to_pull = 10;
+    capped = true;
+  }
+
+  for (int64_t i = 0; i < frames_to_pull; i++) {
     int64_t elapsed_time_ms = -1;
     int64_t ntp_time_ms = -1;
     char data[kBytesPerSample * kChannels * kSamplesPerFrame];
     audio_transport_->PullRenderData(kBytesPerSample * 8, kSamplingRate,
                                      kChannels, kSamplesPerFrame, data,
                                      &elapsed_time_ms, &ntp_time_ms);
+  }
+
+  if (capped) {
+    last_poll_time_ = now;
+  } else {
+    // We advance `last_poll_time_` by exactly the time corresponding to the
+    // pulled frames rather than setting it to `now`, which may not be the same
+    // due to integer division. This acts as a software phase-locked loop (PLL)
+    // that safely preserves fractional remainders (e.g. if elapsed is 32ms, we
+    // pull 3 frames and leave the 2ms remainder to roll over to the next timer
+    // tick). This ensures that over long durations, the total audio produced
+    // perfectly matches wall-clock time, preventing cumulative starvation
+    // drift.
+    last_poll_time_ += base::Milliseconds(frames_to_pull * kFrameLengthMs);
   }
 }
 

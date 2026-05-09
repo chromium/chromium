@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
+#include "base/time/time.h"
 #include "third_party/webrtc/modules/audio_device/include/audio_device.h"
 
 namespace base {
@@ -121,6 +122,10 @@ class WebrtcAudioModule : public webrtc::AudioDeviceModule {
   // Timer running on the |audio_task_runner_| that polls audio from
   // |audio_transport_|.
   std::unique_ptr<base::RepeatingTimer> poll_timer_;
+
+  // Calculated as `start_time + frames_pulled * kFrameLengthMs`. Used to
+  // determine how many frames should be pulled next.
+  base::TimeTicks last_poll_time_;
 };
 
 }  // namespace remoting::protocol
