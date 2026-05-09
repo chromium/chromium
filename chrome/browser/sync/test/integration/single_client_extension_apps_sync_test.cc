@@ -20,6 +20,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -51,7 +52,9 @@ class FakeServerAppChecker : public fake_server::FakeServerMatchStatusChecker {
   // Depending on the platform some apps are auto-installed and synced, so they
   // are implicitly added to the expected set of ids.
   explicit FakeServerAppChecker(std::vector<std::string> expected_app_ids) {
-    expected_app_ids.push_back(extensions::kWebStoreAppId);
+    if (base::FeatureList::IsEnabled(extensions_features::kWebstoreHostedApp)) {
+      expected_app_ids.push_back(extensions::kWebStoreAppId);
+    }
 #if BUILDFLAG(IS_CHROMEOS)
     expected_app_ids.push_back(app_constants::kChromeAppId);
 #endif

@@ -6696,7 +6696,27 @@ IN_PROC_BROWSER_TEST_P(WebstoreWebViewTest, NoRendererKillWithChromeWebStore) {
   content::TestFrameNavigationObserver error_observer(guest);
   EXPECT_TRUE(ExecJs(guest, "location.href = '" + url.spec() + "';"));
   error_observer.Wait();
-  EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, error_observer.last_net_error_code());
+
+  // Navigation should be blocked if it corresponds to the webstore.
+  // * This is always true for the "new" webstore URL
+  //   (chromewebstore.google.com). This is the URL used in production.
+  // * This is always true for a URL provided by the test switch to set a
+  //   webstore URL (used in testing / staging).
+  // * This is true for the legacy webstore URL (chrome.google.com/webstore) if
+  //   any only if the legacy hosted app is installed. If the app isn't
+  //   installed, navigation to its URL should succeed (it's treated like a
+  //   normal URL).
+  bool expect_blocked =
+      webstore_url() == GURL(kNewWebstoreURL) ||
+      webstore_url() == GURL(kWebstoreURLOverride) ||
+      (webstore_url() == GURL(kWebstoreURL) &&
+       base::FeatureList::IsEnabled(extensions_features::kWebstoreHostedApp));
+
+  if (expect_blocked) {
+    EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT, error_observer.last_net_error_code());
+  } else {
+    EXPECT_TRUE(error_observer.last_navigation_succeeded());
+  }
 
   guest = GetGuestRenderFrameHost();
   EXPECT_TRUE(guest->IsRenderFrameLive());

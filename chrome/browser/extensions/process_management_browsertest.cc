@@ -36,6 +36,7 @@
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/process_map.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_handlers/web_accessible_resources_info.h"
 #include "extensions/common/switches.h"
 #include "net/dns/mock_host_resolver.h"
@@ -551,8 +552,12 @@ IN_PROC_BROWSER_TEST_P(ChromeWebStoreProcessTest,
   content::RenderProcessHost* new_process_host =
       web_contents->GetPrimaryMainFrame()->GetProcess();
   if (GetParam() == kWebstoreURL) {
-    EXPECT_TRUE(extensions::ProcessMap::Get(profile())->Contains(
-        extensions::kWebStoreAppId, new_process_host->GetID()));
+    // The webstore should be in the process map if and only if the hosted app
+    // is loaded.
+    EXPECT_EQ(
+        base::FeatureList::IsEnabled(extensions_features::kWebstoreHostedApp),
+        extensions::ProcessMap::Get(profile())->Contains(
+            extensions::kWebStoreAppId, new_process_host->GetID()));
   }
 
   // Verify that Webstore is isolated in a separate renderer process.
@@ -604,8 +609,12 @@ IN_PROC_BROWSER_TEST_P(ChromeWebStoreInIsolatedOriginTest,
   if (GetParam() == kWebstoreURL) {
     content::RenderProcessHost* render_process_host =
         web_contents->GetPrimaryMainFrame()->GetProcess();
-    EXPECT_TRUE(extensions::ProcessMap::Get(profile())->Contains(
-        extensions::kWebStoreAppId, render_process_host->GetID()));
+    // The webstore should be in the process map if and only if the hosted app
+    // is loaded.
+    EXPECT_EQ(
+        base::FeatureList::IsEnabled(extensions_features::kWebstoreHostedApp),
+        extensions::ProcessMap::Get(profile())->Contains(
+            extensions::kWebStoreAppId, render_process_host->GetID()));
   }
 }
 

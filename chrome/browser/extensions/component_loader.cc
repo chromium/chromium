@@ -433,10 +433,12 @@ void ComponentLoader::AddWebStoreApp() {
   }
 #endif
 
-  AddWithNameAndDescription(
-      IDR_WEBSTORE_MANIFEST, base::FilePath(FILE_PATH_LITERAL("web_store")),
-      l10n_util::GetStringUTF8(IDS_WEBSTORE_NAME_STORE),
-      l10n_util::GetStringUTF8(IDS_WEBSTORE_APP_DESCRIPTION));
+  if (base::FeatureList::IsEnabled(extensions_features::kWebstoreHostedApp)) {
+    AddWithNameAndDescription(
+        IDR_WEBSTORE_MANIFEST, base::FilePath(FILE_PATH_LITERAL("web_store")),
+        l10n_util::GetStringUTF8(IDS_WEBSTORE_NAME_STORE),
+        l10n_util::GetStringUTF8(IDS_WEBSTORE_APP_DESCRIPTION));
+  }
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

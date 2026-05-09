@@ -15,6 +15,7 @@
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/management.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/switches.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -109,7 +110,15 @@ IN_PROC_BROWSER_TEST_P(WebstoreDomainBrowserTest, ExpectedAvailability) {
 
   EXPECT_EQ(expect_fun_apis, is_api_available("webstorePrivate"));
   EXPECT_EQ(expect_fun_apis, is_api_available("management"));
-  EXPECT_TRUE(is_api_available("runtime"));
+
+  // Even runtime shouldn't be available for the old hosted app URL if the
+  // hosted app isn't installed.
+  bool expect_runtime =
+      GetParam() == GURL(kNewWebstoreURL) ||
+      GetParam() == GURL(kWebstoreOverrideURL) ||
+      (GetParam() == GURL(kWebstoreAppBaseURL) &&
+       base::FeatureList::IsEnabled(extensions_features::kWebstoreHostedApp));
+  EXPECT_EQ(expect_runtime, is_api_available("runtime"));
 
   ASSERT_TRUE(NavigateToURL(web_contents, not_webstore_url));
   EXPECT_EQ(web_contents->GetPrimaryMainFrame()->GetLastCommittedURL(),

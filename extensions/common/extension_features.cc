@@ -179,6 +179,16 @@ BASE_FEATURE(kStructuredCloningForMessaging, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kTelemetryExtensionPendingApprovalApi,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// TODO(https://crbug.com/328494022): Disable this on ChromeOS, too, and then
+// eventually remove it.
+BASE_FEATURE(kWebstoreHostedApp,
+#if BUILDFLAG(IS_CHROMEOS)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif  // BUILDFLAG(IS_CHROMEOS)
+);
+
 // TODO(crbug.com/399447642): Clean up this feature after confirming the fix is
 // sufficient.
 BASE_FEATURE(kWebstoreInstallerUserGestureKillSwitch,

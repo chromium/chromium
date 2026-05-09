@@ -72,6 +72,7 @@
 #include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/switches.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
@@ -1683,23 +1684,37 @@ IN_PROC_BROWSER_TEST_F(WebstoreIsolationBrowserTest, WebstorePopupIsIsolated) {
   EXPECT_TRUE(content::NavigateToURLFromRenderer(popup, webstore_url));
   scoped_refptr<content::SiteInstance> webstore_instance(
       popup->GetPrimaryMainFrame()->GetSiteInstance());
-  EXPECT_NE(webstore_instance, popup_instance);
-  EXPECT_NE(webstore_instance, initial_instance);
-  EXPECT_NE(webstore_instance->GetProcess(), initial_instance->GetProcess());
-  EXPECT_NE(webstore_instance->GetProcess(),
-            popup_instance->GetOrCreateProcessForTesting());
-  EXPECT_FALSE(webstore_instance->IsRelatedSiteInstance(popup_instance.get()));
-  EXPECT_FALSE(
-      webstore_instance->IsRelatedSiteInstance(initial_instance.get()));
 
-  // Finally navigate the popup back away from the web store URL. This will lead
-  // to another new process and BrowsingInstance swap.
-  EXPECT_TRUE(content::NavigateToURLFromRenderer(popup, first_url));
-  scoped_refptr<content::SiteInstance> final_instance(
-      popup->GetPrimaryMainFrame()->GetSiteInstance());
-  EXPECT_NE(final_instance->GetProcess(),
-            webstore_instance->GetOrCreateProcessForTesting());
-  EXPECT_FALSE(final_instance->IsRelatedSiteInstance(webstore_instance.get()));
+  if (base::FeatureList::IsEnabled(extensions_features::kWebstoreHostedApp)) {
+    // The webstore hosted app is installed. The webstore should have been
+    // forced into a new site instance.
+    EXPECT_NE(webstore_instance, popup_instance);
+    EXPECT_NE(webstore_instance, initial_instance);
+    EXPECT_NE(webstore_instance->GetProcess(), initial_instance->GetProcess());
+    EXPECT_NE(webstore_instance->GetProcess(),
+              popup_instance->GetOrCreateProcessForTesting());
+    EXPECT_FALSE(
+        webstore_instance->IsRelatedSiteInstance(popup_instance.get()));
+    EXPECT_FALSE(
+        webstore_instance->IsRelatedSiteInstance(initial_instance.get()));
+
+    // Finally navigate the popup back away from the web store URL. This will
+    // lead to another new process and BrowsingInstance swap.
+    EXPECT_TRUE(content::NavigateToURLFromRenderer(popup, first_url));
+    scoped_refptr<content::SiteInstance> final_instance(
+        popup->GetPrimaryMainFrame()->GetSiteInstance());
+    EXPECT_NE(final_instance->GetProcess(),
+              webstore_instance->GetOrCreateProcessForTesting());
+    EXPECT_FALSE(
+        final_instance->IsRelatedSiteInstance(webstore_instance.get()));
+  } else {
+    // The webstore hosted app isn't installed. No fun site instance
+    // shenanigans; the popup should be in a related site instance to its
+    // opener.
+    EXPECT_EQ(webstore_instance, popup_instance);
+    EXPECT_EQ(webstore_instance->GetProcess(),
+              popup_instance->GetOrCreateProcessForTesting());
+  }
 }
 
 // Make sure that the new Chrome Web Store URL used in production
