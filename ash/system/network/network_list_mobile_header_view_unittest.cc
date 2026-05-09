@@ -14,13 +14,7 @@
 #include "ash/system/tray/tray_toggle_button.h"
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
-#include "base/run_loop.h"
-#include "chromeos/ash/components/network/network_device_handler.h"
-#include "chromeos/ash/components/network/network_state_handler.h"
-#include "chromeos/ash/components/network/network_type_pattern.h"
-#include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "components/onc/onc_constants.h"
-#include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/controls/button/button.h"
@@ -30,32 +24,10 @@
 
 namespace ash {
 
-namespace {
-
-const char kStubCellularDevicePath[] = "/device/stub_cellular_device";
-const char kStubCellularDeviceName[] = "stub_cellular_device";
-
-}  // namespace
-
 class NetworkListMobileHeaderViewTest : public AshTestBase {
  public:
   NetworkListMobileHeaderViewTest() = default;
   ~NetworkListMobileHeaderViewTest() override = default;
-
-  // AshTestBase:
-  void SetUp() override {
-    AshTestBase::SetUp();
-    network_state_helper()->ClearDevices();
-
-    network_state_helper()->manager_test()->AddTechnology(shill::kTypeCellular,
-                                                          /*enabled=*/true);
-
-    network_state_helper()->device_test()->AddDevice(
-        kStubCellularDevicePath, shill::kTypeCellular, kStubCellularDeviceName);
-
-    // Wait for network state and device change events to be handled.
-    base::RunLoop().RunUntilIdle();
-  }
 
   void TearDown() override {
     network_list_mobile_header_view_ = nullptr;
@@ -74,10 +46,6 @@ class NetworkListMobileHeaderViewTest : public AshTestBase {
     widget_->SetFullscreen(true);
     network_list_mobile_header_view_ =
         widget_->SetContentsView(std::move(network_list_mobile_header_view));
-  }
-
-  NetworkStateTestHelper* network_state_helper() {
-    return &network_config_helper_.network_state_helper();
   }
 
   void SetToggleState(bool is_on) {
@@ -107,7 +75,6 @@ class NetworkListMobileHeaderViewTest : public AshTestBase {
   }
 
   std::unique_ptr<views::Widget> widget_;
-  network_config::CrosNetworkConfigTestHelper network_config_helper_;
   FakeNetworkListNetworkHeaderViewDelegate
       fake_network_list_network_header_delegate_;
   raw_ptr<NetworkListMobileHeaderView> network_list_mobile_header_view_;
