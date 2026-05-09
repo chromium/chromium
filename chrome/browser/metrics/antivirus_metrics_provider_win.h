@@ -5,14 +5,14 @@
 #ifndef CHROME_BROWSER_METRICS_ANTIVIRUS_METRICS_PROVIDER_WIN_H_
 #define CHROME_BROWSER_METRICS_ANTIVIRUS_METRICS_PROVIDER_WIN_H_
 
-#include "components/metrics/metrics_provider.h"
-
 #include <vector>
 
 #include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/sequence_checker.h"
+#include "base/timer/elapsed_timer.h"
 #include "chrome/services/util_win/public/mojom/util_win.mojom.h"
+#include "components/metrics/metrics_provider.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 
@@ -46,6 +46,7 @@ class AntiVirusMetricsProvider : public metrics::MetricsProvider {
   // gathered.
   void GotAntiVirusProducts(
       base::OnceClosure done_callback,
+      base::ElapsedTimer timer,
       const std::vector<metrics::SystemProfileProto::AntiVirusProduct>& result);
 
   mojo::Remote<chrome::mojom::UtilWin> remote_util_win_;
