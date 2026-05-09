@@ -98,6 +98,13 @@ class SecurityReportingBrowserTest
       public testing::WithParamInterface<testing::tuple<bool, bool, bool>> {
  protected:
   SecurityReportingBrowserTest() {
+    if (are_policies_enabled()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          enterprise_signals::features::kPolicyDataCollectionEnabled);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          enterprise_signals::features::kPolicyDataCollectionEnabled);
+    }
     management_mixin_ = ManagementContextMixin::Create(
         &mixin_host_, this,
         {
@@ -105,9 +112,6 @@ class SecurityReportingBrowserTest
             .is_cloud_machine_managed = is_device_managed(),
             .affiliated = is_affiliated(),
         });
-    scoped_feature_list_.InitWithFeatureState(
-        enterprise_signals::features::kPolicyDataCollectionEnabled,
-        is_policy_collection_enabled());
   }
 
   void SetUp() override {
@@ -206,6 +210,9 @@ class SecurityReportingBrowserTest
 
     bool expect_signals_override_value =
         profile_type != em::ChromeProfileReportRequest::PROFILE_REPORT;
+    bool expect_base_profile_report =
+        profile_type !=
+        em::ChromeProfileReportRequest::PROFILE_SECURITY_SIGNALS;
 
     EXPECT_EQ(profile_report_request.has_browser_device_identifier(),
               expect_signals_override_value);
@@ -233,21 +240,20 @@ class SecurityReportingBrowserTest
     // `profile_signals_report` is a signals report only sub-proto.
     EXPECT_EQ(chrome_user_profile_info.has_profile_signals_report(),
               expect_signals_override_value);
+    EXPECT_EQ(chrome_user_profile_info.profile_id().empty(),
+              !expect_signals_override_value);
 
-    if (!expect_signals_override_value) {
-      return;
+    if (expect_signals_override_value) {
+      VerifyProfileSignalsReport(
+          chrome_user_profile_info.profile_signals_report(), GetProfile());
+
+      EXPECT_EQ(chrome_user_profile_info.profile_id(),
+                enterprise::ProfileIdServiceFactory::GetForProfile(GetProfile())
+                    ->GetProfileId()
+                    .value());
     }
 
-    VerifyProfileSignalsReport(
-        chrome_user_profile_info.profile_signals_report(), GetProfile());
-
-    ASSERT_FALSE(chrome_user_profile_info.profile_id().empty());
-
-    EXPECT_EQ(chrome_user_profile_info.profile_id(),
-              enterprise::ProfileIdServiceFactory::GetForProfile(GetProfile())
-                  ->GetProfileId()
-                  .value());
-    if (is_policy_collection_enabled()) {
+    if (expect_base_profile_report || are_policies_enabled()) {
       EXPECT_GT(chrome_user_profile_info.chrome_policies_size(), 0);
     } else {
       EXPECT_EQ(chrome_user_profile_info.chrome_policies_size(), 0);
@@ -256,7 +262,7 @@ class SecurityReportingBrowserTest
 
   bool is_device_managed() { return testing::get<0>(GetParam()); }
   bool is_affiliated() { return testing::get<1>(GetParam()); }
-  bool is_policy_collection_enabled() { return testing::get<2>(GetParam()); }
+  bool are_policies_enabled() { return testing::get<2>(GetParam()); }
 
   bool can_collect_pii_signals() {
     return is_device_managed() && is_affiliated();
@@ -357,14 +363,14 @@ INSTANTIATE_TEST_SUITE_P(
     SecurityReportingBrowserTest,
     testing::Combine(/*is_device_managed=*/testing::Values(true),
                      /*is_affiliated=*/testing::Bool(),
-                     /*is_policy_collection_enabled*/ testing::Bool()));
+                     /*are_policies_enabled=*/testing::Bool()));
 
 INSTANTIATE_TEST_SUITE_P(
     UnmanagedDeviceCase,
     SecurityReportingBrowserTest,
     testing::Combine(/*is_device_managed=*/testing::Values(false),
                      /*is_affiliated=*/testing::Values(false),
-                     /*is_policy_collection_enabled*/ testing::Bool()));
+                     /*are_policies_enabled=*/testing::Bool()));
 
 // Test that confirms the correct form of reports are being triggered.
 // Collection contexts such as management state don't affect the expectations so
@@ -461,6 +467,16 @@ IN_PROC_BROWSER_TEST_P(SecurityReportTriggerBrowserTest,
   VerifyRequest(test_future.Get(),
                 em::ChromeProfileReportRequest::PROFILE_SECURITY_SIGNALS);
 
+  if (!are_policies_enabled()) {
+    histogram_tester().ExpectBucketCount(
+        "Enterprise.SecurityReport.User.Trigger", SecurityReportTrigger::kTimer,
+        1);
+    histogram_tester().ExpectBucketCount(
+        "Enterprise.SecurityReport.User.Trigger",
+        SecurityReportTrigger::kPolicyChange, 0);
+    return;
+  }
+
   // This ensures the Network Service response has time to hop threads
   // and trigger the "OnReportUploaded" callback.
   {
@@ -497,6 +513,6 @@ INSTANTIATE_TEST_SUITE_P(
     SecurityReportTriggerBrowserTest,
     testing::Combine(/*is_device_managed*/ ::testing::Values(false),
                      /*is_affiliated*/ ::testing::Values(false),
-                     /*is_policy_collection_enabled*/ testing::Values(true)));
+                     /*are_policies_enabled=*/testing::Bool()));
 
 }  // namespace enterprise_reporting
