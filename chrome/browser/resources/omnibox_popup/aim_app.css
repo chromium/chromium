@@ -100,6 +100,11 @@
   min-height: 44px;
 }
 
+#composebox::part(voice-stop-button) {
+  background-color: var(--color-sys-neutral-container);
+  --cr-icon-button-fill-color: var(--color-sys-on-surface);
+}
+
 #composebox::part(context-menu-and-tools) {
   margin-top: var(--omnibox-context-menu-container-margin-top);
 }
