@@ -4022,10 +4022,10 @@
   {
     "name": "enable-site-isolation-for-password-sites",
     "owners": [ "site-isolation-dev@chromium.org", "alexmos@chromium.org", "lukasza@chromium.org" ],
-    // Note: while password-triggered site isolation launched in M77, it only
-    // affected devices above a predefined memory threshold.  This flag is kept
-    // around because it allows users of low-memory devices to opt in.
-    "expiry_milestone": 150
+    // This flag is needed without an expiration to allow users of low-memory
+    // Android devices to opt in to partial site isolation, which is otherwise
+    // enabled only above a predefined memory threshold.
+    "expiry_milestone": -1
   },
   {
     "name": "enable-site-per-process",
@@ -6043,7 +6043,7 @@
     // This is useful for isolating additional origins beyond the normal site
     // isolation policy, as well as for diagnosing problems when site isolation
     // only applies to some sites.
-    "expiry_milestone": 150
+    "expiry_milestone": -1
   },
   {
     "name": "iwa-key-distribution-component-exp-cohort",
@@ -8697,11 +8697,11 @@
     "expiry_milestone": 160
   },
   {
-    "_comment1": "Shipping some form of Site Isolation to Android is tracked",
-    "_comment2": "in https://crbug.com/849815.",
     "name": "site-isolation-trial-opt-out",
     "owners": [ "site-isolation-dev@chromium.org", "alexmos@chromium.org", "creis@chromium.org", "lukasza@chromium.org" ],
-    "expiry_milestone": 150
+    // This is useful to opt out of active site isolation modes for debugging
+    // site isolation issues.
+    "expiry_milestone": -1
   },
   {
     "name": "skia-graphite",
