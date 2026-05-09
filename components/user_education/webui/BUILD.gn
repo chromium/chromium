@@ -10,8 +10,6 @@ source_set("webui") {
     "help_bubble_handler.h",
     "help_bubble_webui.cc",
     "help_bubble_webui.h",
-    "tracked_element_help_bubble_webui_anchor.cc",
-    "tracked_element_help_bubble_webui_anchor.h",
     "whats_new_registry.cc",
     "whats_new_registry.h",
     "whats_new_storage_service.h",
@@ -33,6 +31,7 @@ source_set("webui") {
     "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
     "//ui/webui/resources/js/browser_command:mojo_bindings",
     "//ui/webui/resources/js/tracked_element:mojo_bindings",
+    "//ui/webui/tracked_element",
   ]
 }
 
@@ -57,6 +56,7 @@ source_set("unit_tests") {
     "//components/variations",
     "//components/vector_icons",
     "//content/public/browser",
+    "//content/test:test_support",
     "//skia",
     "//testing/gmock",
     "//testing/gtest",
@@ -65,6 +65,7 @@ source_set("unit_tests") {
     "//ui/base/interaction:test_support",
     "//ui/webui/resources/cr_components/help_bubble:mojo_bindings",
     "//ui/webui/resources/js/browser_command:mojo_bindings",
+    "//ui/webui/tracked_element",
   ]
 }
 

@@ -16,10 +16,11 @@
 #include "components/user_education/common/feature_promo/feature_promo_specification.h"
 #include "components/user_education/common/user_education_context.h"
 #include "components/user_education/webui/help_bubble_handler.h"
-#include "components/user_education/webui/tracked_element_help_bubble_webui_anchor.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/webui/tracked_element/tracked_element_handler.h"
+#include "ui/webui/tracked_element/tracked_element_web_ui.h"
 
 BrowserFeaturePromoController::~BrowserFeaturePromoController() {
   OnDestroying();
@@ -197,10 +198,9 @@ BrowserFeaturePromoController::GetContextForHelpBubbleImpl(
           anchor_element->AsA<views::TrackedElementViews>()) {
     browser = GetBrowserForView(view_element->view());
   } else if (auto* const webui_element =
-                 anchor_element->AsA<
-                     user_education::TrackedElementHelpBubbleWebUIAnchor>()) {
+                 anchor_element->AsA<ui::TrackedElementWebUI>()) {
     browser = webui::GetBrowserWindowInterface(
-        webui_element->handler()->GetWebContents());
+        webui_element->handler()->web_contents());
   }
   if (browser) {
     if (auto* interface = BrowserUserEducationInterface::From(browser)) {

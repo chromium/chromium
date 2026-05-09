@@ -21,6 +21,7 @@ source_set("tracked_element") {
   deps = [
     "//base",
     "//ui/gfx/geometry",
+    "//ui/views",
   ]
 }
 

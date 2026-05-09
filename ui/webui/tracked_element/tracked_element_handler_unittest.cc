@@ -12,6 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
@@ -560,6 +561,96 @@ TEST_F(TrackedElementHandlerTest, Interaction) {
   EXPECT_TRUE(handler()->Confirm(name));
   EXPECT_THAT(manager.TakeInteractionEvents(),
               testing::ElementsAre("Confirm:" + name));
+}
+
+TEST_F(TrackedElementHandlerTest,
+       WebContentsVisibilityChangesElementVisibility) {
+  handler_remote()->TrackedElementVisibilityChanged(
+      kTestElementIdentifier1.GetName(), true, kElementBounds);
+  tracked_element_handler_remote_.FlushForTesting();
+
+  auto* const tracker = ui::ElementTracker::GetElementTracker();
+  auto* const element =
+      tracker->GetElementInAnyContext(kTestElementIdentifier1);
+  ASSERT_TRUE(element);
+  const ui::ElementContext context = element->context();
+  EXPECT_TRUE(tracker->IsElementVisible(kTestElementIdentifier1, context));
+
+  // Hide WebContents.
+  handler()->OnVisibilityChanged(content::Visibility::HIDDEN);
+  EXPECT_FALSE(tracker->IsElementVisible(kTestElementIdentifier1, context));
+
+  // Show WebContents.
+  handler()->OnVisibilityChanged(content::Visibility::VISIBLE);
+  EXPECT_TRUE(tracker->IsElementVisible(kTestElementIdentifier1, context));
+}
+
+TEST_F(TrackedElementHandlerTest, DestroyHandlerHidesElement) {
+  handler_remote()->TrackedElementVisibilityChanged(
+      kTestElementIdentifier1.GetName(), true, kElementBounds);
+  tracked_element_handler_remote_.FlushForTesting();
+
+  auto* const tracker = ui::ElementTracker::GetElementTracker();
+  auto* const element =
+      tracker->GetElementInAnyContext(kTestElementIdentifier1);
+  ASSERT_TRUE(element);
+  const ui::ElementContext context = element->context();
+  EXPECT_TRUE(tracker->IsElementVisible(kTestElementIdentifier1, context));
+
+  // Destroy handler (simulates WebContents being destroyed).
+  handler_.reset();
+  EXPECT_FALSE(tracker->IsElementVisible(kTestElementIdentifier1, context));
+}
+
+TEST_F(TrackedElementHandlerTest, VisibilityLockPreventsHiding) {
+  handler_remote()->TrackedElementVisibilityChanged(
+      kTestElementIdentifier1.GetName(), true, kElementBounds);
+  tracked_element_handler_remote_.FlushForTesting();
+
+  auto* const tracker = ui::ElementTracker::GetElementTracker();
+  auto* const element =
+      tracker->GetElementInAnyContext(kTestElementIdentifier1);
+  ASSERT_TRUE(element);
+  const ui::ElementContext context = element->context();
+  EXPECT_TRUE(tracker->IsElementVisible(kTestElementIdentifier1, context));
+
+  // Acquire lock.
+  auto lock = handler()->LockVisible(kTestElementIdentifier1.GetName());
+  ASSERT_TRUE(lock);
+
+  // Hide WebContents.
+  handler()->OnVisibilityChanged(content::Visibility::HIDDEN);
+  // Element should still be visible because of the lock.
+  EXPECT_TRUE(tracker->IsElementVisible(kTestElementIdentifier1, context));
+
+  // Release lock.
+  lock.reset();
+  // Now it should be hidden.
+  EXPECT_FALSE(tracker->IsElementVisible(kTestElementIdentifier1, context));
+}
+
+TEST_F(TrackedElementHandlerTest, MultipleVisibilityLocks) {
+  handler_remote()->TrackedElementVisibilityChanged(
+      kTestElementIdentifier1.GetName(), true, kElementBounds);
+  tracked_element_handler_remote_.FlushForTesting();
+
+  auto* const tracker = ui::ElementTracker::GetElementTracker();
+  auto* const element =
+      tracker->GetElementInAnyContext(kTestElementIdentifier1);
+  ASSERT_TRUE(element);
+  const ui::ElementContext context = element->context();
+
+  auto lock1 = handler()->LockVisible(kTestElementIdentifier1.GetName());
+  auto lock2 = handler()->LockVisible(kTestElementIdentifier1.GetName());
+
+  handler()->OnVisibilityChanged(content::Visibility::HIDDEN);
+  EXPECT_TRUE(tracker->IsElementVisible(kTestElementIdentifier1, context));
+
+  lock1.reset();
+  EXPECT_TRUE(tracker->IsElementVisible(kTestElementIdentifier1, context));
+
+  lock2.reset();
+  EXPECT_FALSE(tracker->IsElementVisible(kTestElementIdentifier1, context));
 }
 
 // TODO(crbug.com/40243115): add tests for element screen bounds. This requires

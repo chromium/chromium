@@ -114,7 +114,8 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "components/user_education/webui/help_bubble_handler.h"
-#include "components/user_education/webui/tracked_element_help_bubble_webui_anchor.h"
+#include "ui/webui/tracked_element/tracked_element_handler.h"
+#include "ui/webui/tracked_element/tracked_element_web_ui.h"
 #endif
 
 namespace {
@@ -1575,14 +1576,12 @@ bool NewTabPageHandler::SyncMicrosoftModulesWithAuth() {
 #if !BUILDFLAG(IS_ANDROID)
 void NewTabPageHandler::TryShowRealboxContextualMenuIPH(
     ui::TrackedElement* element) {
-  if (!element ||
-      !element->IsA<user_education::TrackedElementHelpBubbleWebUIAnchor>()) {
+  if (!element || !element->IsA<ui::TrackedElementWebUI>()) {
     return;
   }
 
-  auto* anchor =
-      element->AsA<user_education::TrackedElementHelpBubbleWebUIAnchor>();
-  if (anchor->handler()->GetWebContents() != web_contents_) {
+  auto* anchor = element->AsA<ui::TrackedElementWebUI>();
+  if (anchor->handler()->web_contents() != web_contents_) {
     return;
   }
 

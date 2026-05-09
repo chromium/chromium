@@ -37,7 +37,6 @@
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "components/user_education/webui/help_bubble_handler.h"
-#include "components/user_education/webui/tracked_element_help_bubble_webui_anchor.h"
 #include "components/webui/chrome_urls/pref_names.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -45,6 +44,8 @@
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/view_subregion_anchor.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/webui/tracked_element/tracked_element_handler.h"
+#include "ui/webui/tracked_element/tracked_element_web_ui.h"
 
 namespace {
 constexpr char16_t kBubbleBodyText[] = u"Bubble body text.";
@@ -167,9 +168,9 @@ class HelpBubbleFactoryWebUIInteractiveUiTest : public InteractiveBrowserTest {
         CheckElement(
             anchor,
             [](ui::TrackedElement* el) {
-              return el
-                  ->AsA<user_education::TrackedElementHelpBubbleWebUIAnchor>()
+              return el->AsA<ui::TrackedElementWebUI>()
                   ->handler()
+                  ->help_bubble_handler()
                   ->IsHelpBubbleShowingForTesting(el->identifier());
             },
             has_help_bubble)

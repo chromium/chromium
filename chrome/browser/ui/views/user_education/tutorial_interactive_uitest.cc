@@ -35,7 +35,6 @@
 #include "components/user_education/views/help_bubble_factory_views.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "components/user_education/views/help_bubble_views.h"
-#include "components/user_education/webui/tracked_element_help_bubble_webui_anchor.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -47,6 +46,8 @@
 #include "ui/events/event.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
+#include "ui/webui/tracked_element/tracked_element_handler.h"
+#include "ui/webui/tracked_element/tracked_element_web_ui.h"
 
 namespace {
 constexpr char kTestTutorialId[] = "TutorialInteractiveUitest Tutorial";
@@ -175,8 +176,9 @@ class WebUITutorialInteractiveUitest : public InteractiveBrowserTest {
     return InAnyContext(CheckElement(
         CustomizeButtonsHandler::kCustomizeChromeButtonElementId,
         [](ui::TrackedElement* el) {
-          return el->AsA<user_education::TrackedElementHelpBubbleWebUIAnchor>()
+          return el->AsA<ui::TrackedElementWebUI>()
               ->handler()
+              ->help_bubble_handler()
               ->IsHelpBubbleShowingForTesting(el->identifier());
         },
         showing));

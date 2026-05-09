@@ -22,7 +22,6 @@
 #include "components/user_education/common/tutorial/tutorial_service.h"
 #include "components/user_education/webui/help_bubble_handler.h"
 #include "components/user_education/webui/help_bubble_webui.h"
-#include "components/user_education/webui/tracked_element_help_bubble_webui_anchor.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/framework_specific_implementation.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -30,6 +29,8 @@
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view_utils.h"
+#include "ui/webui/tracked_element/tracked_element_handler.h"
+#include "ui/webui/tracked_element/tracked_element_web_ui.h"
 
 BrowserHelpBubbleDelegate::BrowserHelpBubbleDelegate() = default;
 BrowserHelpBubbleDelegate::~BrowserHelpBubbleDelegate() = default;
@@ -136,15 +137,13 @@ FloatingWebUIHelpBubbleFactoryBrowser::
 
 bool FloatingWebUIHelpBubbleFactoryBrowser::CanBuildBubbleForTrackedElement(
     const ui::TrackedElement* element) const {
-  if (!element->IsA<user_education::TrackedElementHelpBubbleWebUIAnchor>()) {
+  if (!element->IsA<ui::TrackedElementWebUI>()) {
     return false;
   }
 
   // If this is a WebUI in a tab, then don't use this factory.
   const auto* contents =
-      element->AsA<user_education::TrackedElementHelpBubbleWebUIAnchor>()
-          ->handler()
-          ->GetWebContents();
+      element->AsA<ui::TrackedElementWebUI>()->handler()->web_contents();
   // Note: this checks all tabs for their WebContents.
   if (GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(contents)) {
     return false;

@@ -7,13 +7,14 @@
 #include "components/user_education/views/help_bubble_factory_views.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "components/user_education/webui/help_bubble_handler.h"
-#include "components/user_education/webui/tracked_element_help_bubble_webui_anchor.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/framework_specific_implementation.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
+#include "ui/webui/tracked_element/tracked_element_handler.h"
+#include "ui/webui/tracked_element/tracked_element_web_ui.h"
 
 namespace user_education {
 
@@ -39,15 +40,18 @@ views::WebView* FindWebViewWithContentsRecursive(
 }
 
 // Attempts to extract the host WebView from `element`; returns null if
-// `element` is not a TrackedElementHelpBubbleWebUIAnchor or the host view
+// `element` is not a TrackedElementWebUI or the host view
 // cannot be determined.
 views::WebView* GetWebViewForElement(const ui::TrackedElement* element) {
-  if (!element->IsA<TrackedElementHelpBubbleWebUIAnchor>()) {
+  if (!element->IsA<ui::TrackedElementWebUI>()) {
     return nullptr;
   }
-  const auto* const element_webui =
-      element->AsA<TrackedElementHelpBubbleWebUIAnchor>();
-  auto* const contents = element_webui->handler()->GetWebContents();
+
+  const auto* const element_webui = element->AsA<ui::TrackedElementWebUI>();
+  auto* const contents = element_webui->handler()->web_contents();
+  if (!contents) {
+    return nullptr;
+  }
   auto* const widget = views::Widget::GetWidgetForNativeWindow(
       contents->GetTopLevelNativeWindow());
   if (!widget) {
@@ -72,8 +76,9 @@ std::unique_ptr<HelpBubble> FloatingWebUIHelpBubbleFactory::CreateBubble(
   anchor.view = GetWebViewForElement(element);
   anchor.rect = element->GetScreenBounds();
   auto result = CreateBubbleImpl(element, anchor, std::move(params), nullptr);
-  element->AsA<TrackedElementHelpBubbleWebUIAnchor>()
+  element->AsA<ui::TrackedElementWebUI>()
       ->handler()
+      ->help_bubble_handler()
       ->OnFloatingHelpBubbleCreated(element->identifier(), result.get());
   return result;
 }

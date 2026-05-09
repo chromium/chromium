@@ -5,9 +5,10 @@
 #include "components/user_education/webui/help_bubble_webui.h"
 
 #include "components/user_education/webui/help_bubble_handler.h"
-#include "components/user_education/webui/tracked_element_help_bubble_webui_anchor.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/framework_specific_implementation.h"
+#include "ui/webui/tracked_element/tracked_element_handler.h"
+#include "ui/webui/tracked_element/tracked_element_web_ui.h"
 
 namespace user_education {
 
@@ -54,13 +55,16 @@ std::unique_ptr<HelpBubble> HelpBubbleFactoryWebUI::CreateBubble(
     ui::TrackedElement* element,
     HelpBubbleParams params) {
   HelpBubbleHandlerBase* const handler =
-      element->AsA<TrackedElementHelpBubbleWebUIAnchor>()->handler();
+      element->AsA<ui::TrackedElementWebUI>()->handler()->help_bubble_handler();
   return handler->CreateHelpBubble(element->identifier(), std::move(params));
 }
 
 bool HelpBubbleFactoryWebUI::CanBuildBubbleForTrackedElement(
     const ui::TrackedElement* element) const {
-  return element->IsA<TrackedElementHelpBubbleWebUIAnchor>();
+  if (const auto* element_webui = element->AsA<ui::TrackedElementWebUI>()) {
+    return element_webui->handler()->help_bubble_handler() != nullptr;
+  }
+  return false;
 }
 
 DEFINE_FRAMEWORK_SPECIFIC_METADATA(HelpBubbleFactoryWebUI)

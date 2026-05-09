@@ -16,6 +16,26 @@
 namespace ui {
 
 class TrackedElementHandler;
+class TrackedElementWebUI;
+
+// While at least one of these is alive, the element will be considered
+// "effectively visible" even if the WebContents is hidden, as long as it is
+// "raw visible" (i.e. present in the WebUI).
+class TrackedElementVisibilityLock {
+ public:
+  explicit TrackedElementVisibilityLock(
+      base::WeakPtr<TrackedElementWebUI> element);
+  ~TrackedElementVisibilityLock();
+  TrackedElementVisibilityLock(const TrackedElementVisibilityLock&) = delete;
+  TrackedElementVisibilityLock& operator=(const TrackedElementVisibilityLock&) =
+      delete;
+  TrackedElementVisibilityLock(TrackedElementVisibilityLock&&) noexcept;
+  TrackedElementVisibilityLock& operator=(
+      TrackedElementVisibilityLock&&) noexcept;
+
+ private:
+  base::WeakPtr<TrackedElementWebUI> element_;
+};
 
 class TrackedElementWebUI : public ui::TrackedElement {
  public:
@@ -59,19 +79,28 @@ class TrackedElementWebUI : public ui::TrackedElement {
 
  private:
   friend class TrackedElementHandler;
+  friend class TrackedElementVisibilityLock;
 
   void ReleaseHighlightHandle();
 
-  void SetVisible(bool visible, gfx::RectF bounds = gfx::RectF());
+  void SetRawVisible(bool visible, gfx::RectF bounds = gfx::RectF());
+  void UpdateEffectiveVisibility(bool bounds_changed = false);
   void Activate();
   void CustomEvent(ui::CustomElementEventType event_type);
   bool visible() const { return visible_; }
   void set_can_highlight(bool can_highlight) { can_highlight_ = can_highlight; }
 
+  // Returns a new visibility lock.
+  std::unique_ptr<TrackedElementVisibilityLock> LockVisible();
+  void AddVisibilityLock();
+  void RemoveVisibilityLock();
+
   const raw_ptr<TrackedElementHandler> handler_;
   bool visible_ = false;
+  bool raw_visible_ = false;
   bool can_highlight_ = false;
   gfx::RectF last_known_bounds_;
+  int visibility_lock_count_ = 0;
   raw_ptr<HighlightHandle> highlight_handle_ = nullptr;
 
   base::WeakPtrFactory<TrackedElementWebUI> weak_ptr_factory_{this};
