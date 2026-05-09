@@ -116,7 +116,7 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar
             new Runnable() {
                 @Override
                 public void run() {
-                    if (!mIsStarted) {
+                    if (!mIsStarted || !isAttachedToWindow()) {
                         return;
                     }
                     mAnimationLogic.reset(getProgress());
@@ -338,9 +338,15 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar
         super.onDetachedFromWindow();
 
         removeCallbacks(mHideProgressBarRunnable);
+        removeCallbacks(mHideProgressBarRunnableWithoutFade);
+        removeCallbacks(mStartSmoothIndeterminate);
 
         mSmoothProgressAnimator.setTimeListener(null);
         mSmoothProgressAnimator.cancel();
+
+        if (mAnimatingView != null) {
+            mAnimatingView.cancelAnimation();
+        }
 
         if (shouldAnimateCompositedLayer()) {
             if (ChromeFeatureList.sAndroidApb144Patch6.isEnabled()) {
