@@ -182,7 +182,6 @@ class SmsObserverSuppressTextMessagesEnabled : public SmsObserverTest {
     managed_network_configuration_handler()->SetPolicy(
         ::onc::ONC_SOURCE_DEVICE_POLICY, /*userhash=*/std::string(),
         base::ListValue(), global_config);
-    base::RunLoop().RunUntilIdle();
   }
 
   void AssertHistogramCounts(size_t user_suppressed_count,
