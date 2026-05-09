@@ -6,6 +6,7 @@ import './audio_wave.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import {type PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './animated_glow.css.js';
 import {getHtml} from './animated_glow.html.js';
@@ -51,6 +52,10 @@ export class SearchAnimatedGlowElement extends CrLitElement {
       },
       transcript: {type: String},
       receivedSpeech: {type: Boolean},
+      energyEffectAnimationEnabled: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
@@ -62,6 +67,93 @@ export class SearchAnimatedGlowElement extends CrLitElement {
   accessor isCollapsible: boolean = false;
   accessor transcript: string = '';
   accessor receivedSpeech: boolean = false;
+  accessor energyEffectAnimationEnabled: boolean = false;
+
+  private targetAngle_: number = 0;
+  private maskCurrAngle_: number = 0;
+  private gradCurrAngle_: number = 0;
+  private isDragging_: boolean = false;
+  private rafId_: number|null = null;
+
+  private onDragOver_ = (e: DragEvent) => {
+    if (!this.isDragging_) {
+      return;
+    }
+    const newAngle = this.getAngleFromEvent_(e);
+    if (this.targetAngle_ === 0 && this.maskCurrAngle_ === 0) {
+      this.targetAngle_ = newAngle;
+      this.maskCurrAngle_ = newAngle;
+      this.gradCurrAngle_ = newAngle;
+    } else {
+      this.targetAngle_ = newAngle;
+    }
+  };
+
+  private getAngleFromEvent_(e: DragEvent): number {
+    const rect = this.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    const scaleX = 4;
+    const scaleY = 1.0;
+    const dx = (e.clientX - centerX) / scaleX;
+    const dy = (e.clientY - centerY) / scaleY;
+    return Math.atan2(dy, dx) * (180 / Math.PI);
+  }
+
+  private lerpAngle_(start: number, end: number, factor: number): number {
+    let delta = end - start;
+    while (delta > 180) {
+      delta -= 360;
+    }
+    while (delta < -180) {
+      delta += 360;
+    }
+    return start + delta * factor;
+  }
+
+  private renderLoop_ = () => {
+    const maskLerpFactor = 0.08;
+    const gradLerpFactor = 0.03;
+    this.maskCurrAngle_ =
+        this.lerpAngle_(this.maskCurrAngle_, this.targetAngle_, maskLerpFactor);
+    this.gradCurrAngle_ =
+        this.lerpAngle_(this.gradCurrAngle_, this.targetAngle_, gradLerpFactor);
+
+    const maskOffset = -167;
+    const gradOffset = -165;
+
+    this.style.setProperty(
+        '--mask-angle', `${this.maskCurrAngle_ + maskOffset}deg`);
+    this.style.setProperty(
+        '--gradient-angle', `${this.gradCurrAngle_ + gradOffset}deg`);
+
+    if (this.isDragging_) {
+      this.rafId_ = requestAnimationFrame(this.renderLoop_);
+    }
+  };
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+    if (changedProperties.has('animationState')) {
+      if (this.energyEffectAnimationEnabled &&
+          this.animationState === GlowAnimationState.DRAGGING) {
+        this.isDragging_ = true;
+        window.addEventListener('dragover', this.onDragOver_);
+        this.rafId_ = requestAnimationFrame(this.renderLoop_);
+      } else if (
+          changedProperties.get('animationState') ===
+          GlowAnimationState.DRAGGING) {
+        this.isDragging_ = false;
+        window.removeEventListener('dragover', this.onDragOver_);
+        if (this.rafId_ !== null) {
+          cancelAnimationFrame(this.rafId_);
+          this.rafId_ = null;
+        }
+        this.style.removeProperty('--mask-angle');
+        this.style.removeProperty('--gradient-angle');
+      }
+    }
+  }
 }
 
 declare global {

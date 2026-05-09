@@ -31,14 +31,26 @@ export function getHtml(this: SearchAnimatedGlowElement) {
 
   // clang-format off
   return html`<!--_html_template_start_-->
-    <div id="dragDropPlaceholder">${this.dragDropPlaceholder}</div>
-    <div class="gradient gradient-outer-glow"></div>
-    <div class="double-gradient"></div>
-    <div class="double-gradient-mask"></div>
-    <div class="gradient"></div>
-    <div class="background"
-        part="composebox-background">
-    </div>
+    ${this.energyEffectAnimationEnabled && this.animationState === GlowAnimationState.DRAGGING ? html`
+      <div class="gradient-blur-wrapper">
+        <div class="gradient"></div>
+      </div>
+      <div class="gradient-sharp-wrapper">
+        <div class="double-gradient"></div>
+      </div>
+      <div class="double-gradient-mask"></div>
+      <div class="background" part="composebox-background"></div>
+      <div id="dragDropPlaceholder">${this.dragDropPlaceholder}</div>
+    ` : html`
+      <div id="dragDropPlaceholder">${this.dragDropPlaceholder}</div>
+      <div class="gradient gradient-outer-glow"></div>
+      <div class="double-gradient"></div>
+      <div class="double-gradient-mask"></div>
+      <div class="gradient"></div>
+      <div class="background"
+          part="composebox-background">
+      </div>
+    `}
     ${this.requiresVoice ? html`
       <audio-wave
           ?is-listening="${this.animationState === GlowAnimationState.LISTENING}"

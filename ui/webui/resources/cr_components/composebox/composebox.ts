@@ -153,10 +153,15 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       },
       isFollowupQuery: {type: Boolean},
       enableFileHint: {type: Boolean},
+      energyEffectAnimationEnabled: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
   accessor enableFileHint: boolean = false;
+  accessor energyEffectAnimationEnabled: boolean = false;
   accessor isFollowupQuery: boolean = false;
   accessor inputPlaceholderOverride: string = '';
   accessor suggestionActivityEnabled: boolean = true;

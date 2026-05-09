@@ -83,6 +83,11 @@
   z-index: var(--search-animated-glow-drag-drop-placeholder-z-index, 4);
 }
 
+:host([energy-effect-animation-enabled]) .gradient-blur-wrapper {
+  display: contents;
+  border-radius: inherit;
+}
+
 .gradient,
 .double-gradient,
 .double-gradient-mask {
@@ -194,11 +199,41 @@
     var(--search-animated-glow-gradient-curve) forwards;
 }
 
+:host([animation-state='dragging'][energy-effect-animation-enabled]) {
+  --dragging-glow-gradient: conic-gradient(
+    #3186ff 34%,
+    #9378ff 37%,
+    #f96bd6 39%,
+    #fc413d 41%,
+    #fc413d 48%,
+    #ff6b2b 50%,
+    #fec700 52%,
+    #ffdb0f 56%,
+    #88de42 58%,
+    #0ebc5f 61%,
+    #0ebc5f 65%,
+    #2eaab2 70%,
+    #00a9bb 72%,
+    #3186ff 73%,
+    #3186ff 83%,
+    #3186ff 100%
+  );
+}
+
 :host([animation-state='dragging']) .gradient::before,
 :host([animation-state='dragging']) .double-gradient::before {
   animation: ambient-spin 6s linear infinite;
   filter: blur(20px);
   opacity: 1;
+  z-index: var(--search-animated-glow-gradient-z-index, 2);
+}
+
+:host([animation-state='dragging'][energy-effect-animation-enabled]) .gradient::before,
+:host([animation-state='dragging'][energy-effect-animation-enabled]) .double-gradient::before {
+  animation: none;
+  background: var(--dragging-glow-gradient);
+  opacity: 1;
+  rotate: var(--gradient-angle, 0deg);
   scale: 1 0.8;
   z-index: var(--search-animated-glow-gradient-z-index, 2);
 }
@@ -415,14 +450,97 @@
   filter: blur(8px);
 }
 
+:host([animation-state='dragging'][energy-effect-animation-enabled]) .gradient-blur-wrapper {
+  border-radius: inherit;
+  display: block;
+  filter: blur(8px);
+  inset: -2px;
+  overflow: hidden;
+  position: absolute;
+}
+
+:host([animation-state='dragging'][energy-effect-animation-enabled]) .gradient-sharp-wrapper {
+  border-radius: inherit;
+  display: block;
+  filter: blur(2px);
+  inset: 0;
+  overflow: hidden;
+  position: absolute;
+}
+
+:host([animation-state='dragging'][energy-effect-animation-enabled]) .gradient-blur-wrapper .gradient {
+  scale: 7 1.5;
+  -webkit-mask-image: conic-gradient(
+    from var(--mask-angle, 0deg),
+    transparent 0%,
+    transparent 50%,
+    black 68%,
+    black 75%,
+    transparent 89%,
+    transparent 100%
+  );
+  mask-image: conic-gradient(
+    from var(--mask-angle, 0deg),
+    transparent 0%,
+    transparent 50%,
+    black 68%,
+    black 75%,
+    transparent 89%,
+    transparent 100%
+  );
+}
+
+:host([animation-state='dragging'][energy-effect-animation-enabled]) .double-gradient {
+  scale: 7 1.5;
+  -webkit-mask-image: conic-gradient(
+    from var(--mask-angle, 0deg),
+    transparent 0%,
+    transparent 65%,
+    black 70%,
+    transparent 89%,
+    transparent 100%
+  );
+  mask-image: conic-gradient(
+    from var(--mask-angle, 0deg),
+    transparent 0%,
+    transparent 65%,
+    black 70%,
+    transparent 89%,
+    transparent 100%
+  );
+  position: absolute;
+  inset: 0;
+}
+
+:host([animation-state='dragging'][energy-effect-animation-enabled]) .double-gradient::before {
+  animation: none;
+  background: var(--dragging-glow-gradient);
+  filter: none;
+  opacity: 1;
+  rotate: var(--gradient-angle, 0deg);
+  scale: 1.2;
+  z-index: var(--search-animated-glow-gradient-z-index, 2);
+}
+
 :host([animation-state='dragging']) .background {
-  /*
-  * Set transparent border to let gradient
-  * pop out. Make it static compared to animated to make
-  * border more slow/steady with stable thickness.
-  */
   animation: none;
   border-width: 2px;
+  pointer-events: none;
+  z-index: var(--search-animated-glow-background-z-index, 3);
+}
+
+:host([animation-state='dragging'][energy-effect-animation-enabled]) .background {
+  /*
+  * Remove transparent border and inset by 2px so background covers
+  * the center up to the composebox border, letting the gradient
+  * (which is at inset: 0 relative to host, so -1px relative to composebox)
+  * show as an outer glow.
+  * Set background-color to be opaque to cover the gradient inside the box.
+  */
+  animation: none;
+  background-color: var(--cr-composebox-background-color, var(--color-search-animated-glow-background));
+  border-width: 0;
+  inset: 1px;
   pointer-events: none;
   z-index: var(--search-animated-glow-background-z-index, 3);
 }
