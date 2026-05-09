@@ -509,7 +509,14 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest,
       InAnyContext(WaitForElementToRender(kAimPopupWebView, kDeepSearchChip)));
 }
 
-IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest, QueryWithTabContext) {
+// TODO(crbug.com/509753148): Re-enable this test on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_QueryWithTabContext DISABLED_QueryWithTabContext
+#else
+#define MAYBE_QueryWithTabContext QueryWithTabContext
+#endif
+IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest,
+                       MAYBE_QueryWithTabContext) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
 
   // Force a larger window size to give the popup room to grow.
