@@ -1,7 +1,7 @@
 Name: play-services-fido
 Short Name: play-services-fido
-URL: https://dl.google.com/dl/android/maven2/com/google/android/gms/play-services-fido/21.2.0/play-services-fido-21.2.0.aar
-Version: 21.2.0
+URL: https://dl.google.com/dl/android/maven2/com/google/android/gms/play-services-fido/21.3.0/play-services-fido-21.3.0.aar
+Version: 21.3.0
 Update Mechanism: Autoroll
 License: Android Software Development Kit License
 License File: LICENSE

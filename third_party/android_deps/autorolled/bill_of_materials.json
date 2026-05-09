@@ -1427,7 +1427,7 @@
     {
         "name": "play-services-fido",
         "group": "com.google.android.gms",
-        "version": "21.2.0"
+        "version": "21.3.0"
     },
     {
         "name": "play-services-flags",
