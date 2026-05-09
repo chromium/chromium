@@ -157,6 +157,11 @@ class ContextualTasksComposeboxHandler
   // Returns the context ID for the active tab, if any.
   std::optional<int64_t> GetActiveTabContextId();
 
+  // Whether to override the feature flag and force allow tab suggestions.
+  // This is done when the initial active tab was already uploaded to initiate
+  // the session as in Lens contextual queries.
+  bool ShouldForceAllowTabSuggestion(int32_t tab_id);
+
   // Called when all tabs have been re-uploaded, to continue query
   // submission. `overlay_token` is the token of the initial objects request for
   // the Lens overlay / CSB, used in the ClientToAimRequest. It needs to be
@@ -172,7 +177,7 @@ class ContextualTasksComposeboxHandler
       base::expected<base::UnguessableToken,
                      contextual_search::ContextUploadErrorType> token);
 
-  LensSearchController* GetLensSearchController() const;
+  virtual LensSearchController* GetLensSearchController() const;
 
   // Called when a non-delayed context upload (file or tab) has finished.
   // Potentially submits query if no other context is uploading.

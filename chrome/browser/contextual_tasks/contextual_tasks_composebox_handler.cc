@@ -960,7 +960,11 @@ void ContextualTasksComposeboxHandler::UpdateSuggestedTabContext(
 
   // Filter the suggested tab info based on blocklisted URLs and update the UI.
   searchbox::mojom::TabInfoPtr filtered_suggestion;
-  if (contextual_tasks::GetIsTabAutoSuggestionChipEnabled() && suggested_tab &&
+  const bool is_tab_suggestion_enabled =
+      contextual_tasks::GetIsTabAutoSuggestionChipEnabled() ||
+      (suggested_tab && ShouldForceAllowTabSuggestion(suggested_tab->tab_id));
+
+  if (is_tab_suggestion_enabled && suggested_tab &&
       !blocklisted_suggestions_.contains(suggested_tab->url)) {
     current_suggestion_ = suggested_tab->url;
     filtered_suggestion = searchbox::mojom::TabInfo::New();
@@ -1066,6 +1070,30 @@ ContextualTasksComposeboxHandler::GetActiveTabContextId() {
     }
   }
   return std::nullopt;
+}
+
+bool ContextualTasksComposeboxHandler::ShouldForceAllowTabSuggestion(
+    int32_t tab_id) {
+  auto* browser = web_ui_interface_->GetBrowser();
+  if (!browser) {
+    return false;
+  }
+  auto* active_tab = TabListInterface::From(browser)->GetActiveTab();
+  if (!active_tab) {
+    return false;
+  }
+
+  // If the tab being evaluated is not the currently active tab, ignore it.
+  if (active_tab->GetHandle().raw_value() != tab_id) {
+    return false;
+  }
+
+  auto* session_handle = GetContextualSessionHandle();
+  if (!session_handle) {
+    return false;
+  }
+
+  return session_handle->is_contextual_lens_session();
 }
 
 void ContextualTasksComposeboxHandler::MaybeSendPendingQuery() {
