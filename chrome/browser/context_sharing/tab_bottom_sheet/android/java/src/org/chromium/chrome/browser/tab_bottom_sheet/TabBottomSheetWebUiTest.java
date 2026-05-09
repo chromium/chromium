@@ -18,6 +18,7 @@ import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.Window;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -57,6 +58,8 @@ public class TabBottomSheetWebUiTest {
     @Mock private ContextMenuPopulatorFactory mContextMenuPopulatorFactory;
     @Mock private CoBrowseViewsZoomControl mZoomControl;
     @Mock private ContentView mMockContentView;
+    @Mock private Window mMockWindow;
+    @Mock private View mMockDecorView;
 
     private TabBottomSheetWebUi mWebUi;
 
@@ -64,6 +67,11 @@ public class TabBottomSheetWebUiTest {
     public void setUp() {
         ThinWebViewFactory.setInstanceForTesting(mThinWebView);
         when(mThinWebView.getView()).thenReturn(mView);
+
+        when(mWindowAndroid.getWindow()).thenReturn(mMockWindow);
+        when(mMockWindow.getDecorView()).thenReturn(mMockDecorView);
+        when(mMockDecorView.getHeight()).thenReturn(1000);
+
         Context context =
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),

@@ -58,7 +58,8 @@ public class TabBottomSheetWebUi {
         mContextMenuPopulatorFactory = contextMenuPopulatorFactory;
         mBackgroundColor = backgroundColor;
         mZoomControl = zoomControl;
-        mWebViewResizingHelper = new WebViewResizingHelper(containerView, backgroundColor);
+        mWebViewResizingHelper =
+                new WebViewResizingHelper(containerView, windowAndroid, backgroundColor);
         resetThinWebView();
     }
 
@@ -132,6 +133,7 @@ public class TabBottomSheetWebUi {
                             .setContextMenuPopulatorFactory(mContextMenuPopulatorFactory)
                             .setSupportTheming(true)
                             .build());
+            mWebViewResizingHelper.setThinWebView(mThinWebView, mWebContents);
         } else {
             resetThinWebView();
         }
@@ -186,7 +188,7 @@ public class TabBottomSheetWebUi {
                         constraints,
                         assumeNonNull(mWindowAndroid.getIntentRequestTracker()),
                         /* enablePermissionRequests= */ true);
-        mWebViewResizingHelper.setThinWebView(mThinWebView);
+        mWebViewResizingHelper.reset();
     }
 
     static void setInTestModeForTesting() {

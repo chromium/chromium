@@ -135,7 +135,8 @@ public class TabBottomSheetCoordinatorTest {
         containerView.setFocusable(true);
         containerView.setFocusableInTouchMode(true);
 
-        mWebViewResizingHelper = new WebViewResizingHelper(containerView, Color.WHITE);
+        mWebViewResizingHelper =
+                new WebViewResizingHelper(containerView, mWindowAndroid, Color.WHITE);
         when(mMockWebUi.getWebViewResizingHelper()).thenReturn(mWebViewResizingHelper);
         View webUiView = new View(mContext);
         when(mMockWebUi.getWebUiView()).thenReturn(webUiView);
