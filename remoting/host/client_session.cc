@@ -101,6 +101,30 @@ constexpr char kRtcLogTransferDataChannelPrefix[] = "rtc-log-transfer-";
 constexpr base::TimeDelta kDefaultBoostCaptureInterval = base::Milliseconds(5);
 constexpr base::TimeDelta kDefaultBoostDuration = base::Milliseconds(50);
 
+std::string_view PixelTypeToString(
+    remoting::protocol::VideoLayout::PixelType pixel_type) {
+  switch (pixel_type) {
+    case remoting::protocol::VideoLayout_PixelType_LOGICAL:
+      return "DIPs";
+    case remoting::protocol::VideoLayout_PixelType_PHYSICAL:
+      return "Physical pixels";
+    default:
+      return "Unknown pixel type";
+  }
+}
+
+void LogVideoTrack(int index,
+                   const remoting::protocol::VideoTrackLayout& track) {
+  HOST_LOG << "  track " << index << ": "
+           << "id="
+           << (track.has_screen_id() ? base::NumberToString(track.screen_id())
+                                     : "[none]")
+           << ", name='" << track.display_name()
+           << "', pos=" << track.position_x() << "," << track.position_y()
+           << ", " << track.width() << "x" << track.height() << ", dpi=["
+           << track.x_dpi() << "," << track.y_dpi() << "]";
+}
+
 }  // namespace
 
 namespace remoting {
@@ -164,10 +188,14 @@ void ClientSession::NotifyClientResolution(
     const protocol::ClientResolution& resolution) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(resolution.width_pixels() >= 0 && resolution.height_pixels() >= 0);
-  VLOG(1) << "Received ClientResolution (width=" << resolution.width_pixels()
-          << ", height=" << resolution.height_pixels()
-          << ", x_dpi=" << resolution.x_dpi()
-          << ", y_dpi=" << resolution.y_dpi() << ")";
+  HOST_LOG << "Received ClientResolution (width=" << resolution.width_pixels()
+           << ", height=" << resolution.height_pixels()
+           << ", x_dpi=" << resolution.x_dpi()
+           << ", y_dpi=" << resolution.y_dpi() << ", screen_id="
+           << (resolution.has_screen_id()
+                   ? base::NumberToString(resolution.screen_id())
+                   : "[none]")
+           << ")";
 
   if (!screen_controls_) {
     return;
@@ -476,6 +504,15 @@ void ClientSession::ControlPeerConnection(
 }
 
 void ClientSession::SetVideoLayout(const protocol::VideoLayout& video_layout) {
+  HOST_LOG << "Received VideoLayout ("
+           << PixelTypeToString(video_layout.pixel_type()) << ", primary_id="
+           << (video_layout.has_primary_screen_id()
+                   ? base::NumberToString(video_layout.primary_screen_id())
+                   : "[none]")
+           << ")";
+  for (int i = 0; i < video_layout.video_track_size(); i++) {
+    LogVideoTrack(i, video_layout.video_track(i));
+  }
   screen_controls_->SetVideoLayout(video_layout);
 }
 
@@ -1126,7 +1163,7 @@ void ClientSession::OnDesktopDisplayChanged(
     return;
   }
 
-  LOG(INFO) << "ClientSession::OnDesktopDisplayChanged";
+  HOST_LOG << "ClientSession::OnDesktopDisplayChanged";
 
   // Scan display list to calculate the full desktop size.
   int min_x = 0;
@@ -1135,27 +1172,18 @@ void ClientSession::OnDesktopDisplayChanged(
   int max_y = 0;
   int dpi_x = 0;
   int dpi_y = 0;
-  std::string_view dips_or_physical_pixels;
-  switch (displays->pixel_type()) {
-    case protocol::VideoLayout::PixelType::VideoLayout_PixelType_LOGICAL:
-      dips_or_physical_pixels = "DIPs";
-      break;
-    case protocol::VideoLayout::PixelType::VideoLayout_PixelType_PHYSICAL:
-      dips_or_physical_pixels = "Physical pixels";
-      break;
-    default:
-      dips_or_physical_pixels = "Unknown pixel type";
-  }
-  LOG(INFO) << "  Scanning display info... (" << dips_or_physical_pixels << ")";
+  std::string_view dips_or_physical_pixels =
+      PixelTypeToString(displays->pixel_type());
+  HOST_LOG << "Scanning display info... (" << dips_or_physical_pixels
+           << ", primary_id="
+           << (displays->has_primary_screen_id()
+                   ? base::NumberToString(displays->primary_screen_id())
+                   : "[none]")
+           << ")";
   for (int display_id = 0; display_id < displays->video_track_size();
        display_id++) {
-    protocol::VideoTrackLayout track = displays->video_track(display_id);
-    LOG(INFO) << "   #" << display_id << " : " << track.position_x() << ","
-              << track.position_y() << " " << track.width() << "x"
-              << track.height() << " [" << track.x_dpi() << "," << track.y_dpi()
-              << "], screen_id=" << track.screen_id() << ", primary="
-              << (displays->has_primary_screen_id() &&
-                  track.screen_id() == displays->primary_screen_id());
+    const protocol::VideoTrackLayout& track = displays->video_track(display_id);
+    LogVideoTrack(display_id, track);
     if (dpi_x == 0) {
       dpi_x = track.x_dpi();
     }
@@ -1240,9 +1268,9 @@ void ClientSession::OnDesktopDisplayChanged(
   video_track->set_height(size.height());
   video_track->set_x_dpi(dpi_x);
   video_track->set_y_dpi(dpi_y);
-  LOG(INFO) << "  Full Desktop (" << dips_or_physical_pixels << ") = 0,0 "
-            << size.width() << "x" << size.height() << " [" << dpi_x << ","
-            << dpi_y << "]";
+  HOST_LOG << "Full Desktop (" << dips_or_physical_pixels << ") = 0,0 "
+           << size.width() << "x" << size.height() << ", dpi=[" << dpi_x << ","
+           << dpi_y << "]";
 
   desktop_display_info_.CopyFromVideoLayoutProto(*displays);
 
@@ -1255,13 +1283,7 @@ void ClientSession::OnDesktopDisplayChanged(
     video_track->set_media_stream_id(
         protocol::WebrtcVideoStream::StreamNameForId(display.screen_id()));
 
-    LOG(INFO) << "  Display " << display_id << " = " << display.position_x()
-              << "," << display.position_y() << " " << display.width() << "x"
-              << display.height() << " [" << display.x_dpi() << ","
-              << display.y_dpi() << "], screen_id=" << display.screen_id()
-              << ", primary="
-              << (displays->has_primary_screen_id() &&
-                  display.screen_id() == displays->primary_screen_id());
+    LogVideoTrack(display_id, display);
   }
 
   // Set the display index, if this is the first message being processed or if
