@@ -7946,6 +7946,7 @@ from previous Chrome versions.
   <int value="-2039343702"
       label="KeepAliveRendererForKeepaliveRequests:enabled"/>
   <int value="-2038973140" label="VideoConference:enabled"/>
+  <int value="-2038801824" label="AiModeSpaceDoesNotActivate:disabled"/>
   <int value="-2038766884" label="OfferMigrationToDiceUsers:enabled"/>
   <int value="-2038281501" label="ClipboardHistoryWebContentsPaste:enabled"/>
   <int value="-2038175774"
@@ -15286,6 +15287,7 @@ from previous Chrome versions.
   <int value="378093891" label="PrecompileInlineScripts:disabled"/>
   <int value="378380475" label="ClipboardHistoryRefresh:disabled"/>
   <int value="378412701" label="LensOverlayBackToPage:enabled"/>
+  <int value="378851509" label="AiModeSpaceDoesNotActivate:enabled"/>
   <int value="378948081"
       label="AutofillEnableInfoBarAccountIndicationFooter:disabled"/>
   <int value="378994579" label="Previews:enabled"/>

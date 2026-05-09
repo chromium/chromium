@@ -9432,6 +9432,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAiModeEntryPointAlwaysNavigatesDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kAiModeEntryPointAlwaysNavigates)},
 
+    {"omnibox-ai-mode-space-does-not-activate",
+     flag_descriptions::kOmniboxAiModeSpaceDoesNotActivateName,
+     flag_descriptions::kOmniboxAiModeSpaceDoesNotActivateDescription,
+     kOsDesktop, FEATURE_VALUE_TYPE(omnibox::kAiModeSpaceDoesNotActivate)},
+
     {"webui-omnibox-aim-popup", flag_descriptions::kWebUIOmniboxAimPopupName,
      flag_descriptions::kWebUIOmniboxAimPopupDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::internal::kWebUIOmniboxAimPopup,

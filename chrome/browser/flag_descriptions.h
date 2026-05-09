@@ -56,6 +56,12 @@ inline constexpr char kAiModeEntryPointAlwaysNavigatesDescription[] =
     "If enabled, clicking aim button in omnibox always navigates directly to "
     "google.com/aimode.";
 
+inline constexpr char kOmniboxAiModeSpaceDoesNotActivateName[] =
+    "Omnibox AI Mode Space Does Not Activate";
+inline constexpr char kOmniboxAiModeSpaceDoesNotActivateDescription[] =
+    "If enabled, pressing space when the AI mode button has focus will "
+    "insert a space into the omnibox instead of activating the button.";
+
 inline constexpr char kOmniboxAimServerEligibilityName[] =
     "AIM Server Eligibility";
 inline constexpr char kOmniboxAimServerEligibilityDescription[] =
