@@ -206,9 +206,13 @@ suite('ContextualTasksAppComposeboxBasicModeTest', function() {
         const loadCommitEvent = new Event('loadcommit');
         Object.assign(
             loadCommitEvent, {url: 'http://example.com', isTopLevel: true});
+        const navigationFinished = new Promise<void>(resolve => {
+          appElement.setOnLoadStartFinishedCallbackForTesting(resolve);
+        });
         appElement.onThreadFrameLoadCommitForTesting(
             loadCommitEvent as chrome.webviewTag.LoadCommitEvent);
-        await microtasksFinished();
+        await navigationFinished;
+        await appElement.updateComplete;
 
         // Should be in basic mode now because the app is navigating from an AI
         // page.
@@ -289,9 +293,13 @@ suite('ContextualTasksAppComposeboxBasicModeTest', function() {
         const loadCommitEvent = new Event('loadcommit');
         Object.assign(
             loadCommitEvent, {url: 'http://example.com', isTopLevel: true});
+        const navigationFinished = new Promise<void>(resolve => {
+          appElement.setOnLoadStartFinishedCallbackForTesting(resolve);
+        });
         appElement.onThreadFrameLoadCommitForTesting(
             loadCommitEvent as chrome.webviewTag.LoadCommitEvent);
-        await microtasksFinished();
+        await navigationFinished;
+        await appElement.updateComplete;
 
         // Should be in basic mode now because the app is navigating from an AI
         // page.
@@ -450,9 +458,13 @@ suite('ContextualTasksAppComposeboxBasicModeTest', function() {
         const loadCommitEvent = new Event('loadcommit');
         Object.assign(
             loadCommitEvent, {url: 'http://example.com', isTopLevel: true});
+        const navigationFinished = new Promise<void>(resolve => {
+          appElement.setOnLoadStartFinishedCallbackForTesting(resolve);
+        });
         appElement.onThreadFrameLoadCommitForTesting(
             loadCommitEvent as chrome.webviewTag.LoadCommitEvent);
-        await microtasksFinished();
+        await navigationFinished;
+        await appElement.updateComplete;
 
         // Should still be in basic mode during navigation.
         assertTrue(appElement.hasAttribute('is-in-basic-mode_'));
@@ -496,9 +508,13 @@ suite('ContextualTasksAppComposeboxBasicModeTest', function() {
         const loadCommitEvent = new Event('loadcommit');
         Object.assign(
             loadCommitEvent, {url: 'http://example.com', isTopLevel: true});
+        const navigationFinished = new Promise<void>(resolve => {
+          appElement.setOnLoadStartFinishedCallbackForTesting(resolve);
+        });
         appElement.onThreadFrameLoadCommitForTesting(
             loadCommitEvent as chrome.webviewTag.LoadCommitEvent);
-        await microtasksFinished();
+        await navigationFinished;
+        await appElement.updateComplete;
 
         // Should be in basic mode now because the app is navigating from an AI
         // page.
@@ -584,9 +600,13 @@ suite('ContextualTasksAppComposeboxBasicModeTest', function() {
         const loadCommitEvent = new Event('loadcommit');
         Object.assign(
             loadCommitEvent, {url: 'http://example.com', isTopLevel: true});
+        const navigationFinished = new Promise<void>(resolve => {
+          appElement.setOnLoadStartFinishedCallbackForTesting(resolve);
+        });
         appElement.onThreadFrameLoadCommitForTesting(
             loadCommitEvent as chrome.webviewTag.LoadCommitEvent);
-        await microtasksFinished();
+        await navigationFinished;
+        await appElement.updateComplete;
 
         // Should be in basic mode now because the app is navigating from an AI
         // page.
