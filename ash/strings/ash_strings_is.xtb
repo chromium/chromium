@@ -1048,7 +1048,6 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Yfirlitsstilling</translation>
 <translation id="4242533952199664413">Opna stillingar</translation>
-<translation id="4244765461494758482">Þessar stillingar eru samstilltar í öllum ChromeOS-tækjunum þínum. Þú getur breytt þeim hér eða haldið utan um listann í stillingunum.</translation>
 <translation id="4247123849143712100">Uppfæra og slökkva</translation>
 <translation id="4249248555939881673">Bíður eftir nettengingu...</translation>
 <translation id="4250229828105606438">Skjámynd</translation>
@@ -2329,7 +2328,6 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="8051716679295756675">Sniðmát sem heitir <ph name="DESK_TEMPLATE_NAME" /> er þegar til</translation>
 <translation id="8052898407431791827">Afritað á klippiborð</translation>
 <translation id="8054466585765276473">Reiknar rafhlöðuendingu.</translation>
-<translation id="8063363226185507157">Samstilltar aðgengisstillingar</translation>
 <translation id="8076492880354921740">Flipar</translation>
 <translation id="8079538659226626406">Deila skjá</translation>
 <translation id="8083540854303889870">Vistað til síðari nota</translation>
