@@ -822,8 +822,10 @@ void RenderViewHostImpl::RenderWidgetLostFocus() {
 }
 
 void RenderViewHostImpl::SetInitialFocus(bool reverse) {
-  GetMainRenderFrameHost()->GetAssociatedLocalMainFrame()->SetInitialFocus(
-      reverse);
+  if (is_active()) {
+    GetMainRenderFrameHost()->GetAssociatedLocalMainFrame()->SetInitialFocus(
+        reverse);
+  }
 }
 
 void RenderViewHostImpl::AnimateDoubleTapZoom(const gfx::Point& point,
