@@ -376,6 +376,7 @@ enum BadMessageReason {
   RFHI_WEBMCP_EXPOSED_NON_HTTPS_ORIGIN = 348,
   RFHI_SYNCHONOUS_COMMIT_ORIGIN_MISMATCH = 349,
   RFHI_WEBMCP_INVALID_TOOL_OWNER = 350,
+  NR_BAD_ORIGIN_HEADER = 351,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the

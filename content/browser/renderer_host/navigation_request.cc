@@ -50,6 +50,7 @@
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "content/browser/agent_cluster_key.h"
 #include "content/browser/back_forward_cache/back_forward_cache_impl.h"
+#include "content/browser/bad_message.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/browsing_topics/header_util.h"
 #include "content/browser/child_process_security_policy_impl.h"
@@ -411,42 +412,32 @@ void AddAdditionalRequestHeaders(
   // Next, set the HTTP Origin if needed.
   std::optional<std::string> existing_origin =
       headers->GetHeader(net::HttpRequestHeaders::kOrigin);
-  if (NeedsHTTPOrigin(method)) {
-    // TODO(https://crbug.com/491783215): investigate whether it is possible to
-    // set Origin headers (at least on navigation requests) exclusively in the
-    // browser process and kill any renderer that provides Origin itself.
+  bool needs_http_origin = NeedsHTTPOrigin(method);
+  if (needs_http_origin) {
     url::Origin origin_header_value = initiator_origin.value_or(url::Origin());
     origin_header_value = Referrer::SanitizeOriginForRequest(
         url, origin_header_value, referrer->policy);
     std::string serialized_origin = origin_header_value.Serialize();
-    if (existing_origin && existing_origin != serialized_origin &&
-        !is_browser_initiated && !is_history &&
-        base::FeatureList::IsEnabled(features::kDumpOnOriginHeaderMismatch)) {
-      // TODO(https://crbug.com/487795397): this should
-      // be a `bad_message::ReceivedBadMessage` and return `false` once
-      // DumpWithoutCrashing data is evaluated.
-      SCOPED_CRASH_KEY_STRING64("Bug487795397", "invalid_header",
-                                net::HttpRequestHeaders::kOrigin);
-      SCOPED_CRASH_KEY_STRING64("Bug487795397", "existing_origin",
-                                existing_origin.value());
-      SCOPED_CRASH_KEY_STRING64("Bug487795397", "serialized_origin",
-                                serialized_origin);
-      SCOPED_CRASH_KEY_BOOL("Bug487795397", "needs_origin_header", true);
-      base::debug::DumpWithoutCrashing();
-    }
     headers->SetHeader(net::HttpRequestHeaders::kOrigin, serialized_origin);
-  } else if (existing_origin && !is_browser_initiated && !is_history &&
-             base::FeatureList::IsEnabled(
-                 features::kDumpOnUnexpectedOriginHeader)) {
-    // TODO(https://crbug.com/40093290): this should
-    // be a `bad_message::ReceivedBadMessage` and return `false` once
-    // DumpWithoutCrashing() data is evaluated.
-    SCOPED_CRASH_KEY_STRING64("Bug487795397", "invalid_header",
-                              net::HttpRequestHeaders::kOrigin);
-    SCOPED_CRASH_KEY_STRING64("Bug487795397", "existing_origin",
+  } else if (!is_browser_initiated && !is_history) {
+    headers->RemoveHeader(net::HttpRequestHeaders::kOrigin);
+  }
+  if (existing_origin && !is_browser_initiated && !is_history &&
+      base::FeatureList::IsEnabled(features::kKillOnUnexpectedOriginHeader)) {
+    // A well-behaved renderer will never provide an Origin header on a
+    // navigation request, and will instead rely on the browser process to set
+    // it. History navigations are excluded from this enforcement because it is
+    // valid behavior for a renderer-initiated history navigation to reach this
+    // point with an Origin header populated from an existing navigation entry.
+    SCOPED_CRASH_KEY_STRING64("Bug487795397", "renderer_provided_origin",
                               existing_origin.value());
-    SCOPED_CRASH_KEY_BOOL("Bug487795397", "needs_origin_header", false);
-    base::debug::DumpWithoutCrashing();
+    SCOPED_CRASH_KEY_STRING64(
+        "Bug487795397", "current_header_origin",
+        headers->GetHeader(net::HttpRequestHeaders::kOrigin).value_or(""));
+    SCOPED_CRASH_KEY_BOOL("Bug487795397", "needs_origin_header",
+                          needs_http_origin);
+    bad_message::ReceivedBadMessage(render_view_host->GetProcess(),
+                                    bad_message::NR_BAD_ORIGIN_HEADER);
   }
 
   if (base::FeatureList::IsEnabled(features::kDocumentPolicyNegotiation)) {
