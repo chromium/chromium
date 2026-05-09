@@ -8598,6 +8598,37 @@
             ]
         }
     ],
+    "DesktopOmniboxActionButtonRefinements": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledBoth",
+                    "enable_features": [
+                        "AiModeSpaceDoesNotActivate",
+                        "HideAimEntrypointForUrlSuggestions"
+                    ]
+                },
+                {
+                    "name": "EnabledHideAimEntrypoint",
+                    "enable_features": [
+                        "HideAimEntrypointForUrlSuggestions"
+                    ]
+                },
+                {
+                    "name": "EnabledSpaceDoesNotSubmit",
+                    "enable_features": [
+                        "AiModeSpaceDoesNotActivate"
+                    ]
+                }
+            ]
+        }
+    ],
     "DesktopOmniboxCalculatorProvider": [
         {
             "platforms": [
@@ -8611,24 +8642,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "OmniboxCalcProvider"
-                    ]
-                }
-            ]
-        }
-    ],
-    "DesktopOmniboxHideAimUrl": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "HideAimEntrypointForUrlSuggestions"
                     ]
                 }
             ]
