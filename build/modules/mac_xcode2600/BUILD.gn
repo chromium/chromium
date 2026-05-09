@@ -110,6 +110,7 @@ apple_sysroot_module("_DarwinFoundation3") {
     ":_Builtin_stdint",
     ":_DarwinFoundation1",
     ":_DarwinFoundation2",
+    ":std_ctype_h",
   ]
 }
 
@@ -170,16 +171,17 @@ apple_sysroot_module("sched") {
 libcxx_module("std") {
   public_deps = [
     ":_Builtin_float",
-    ":_Builtin_inttypes",
     ":_Builtin_limits",
     ":_Builtin_stdalign",
     ":_Builtin_stdarg",
     ":_Builtin_stddef",
-    ":_DarwinFoundation1",
     ":_DarwinFoundation2",
     ":_DarwinFoundation3",
     ":std_core",
+    ":std_ctype_h",
     ":std_errno_h",
+    ":std_fenv_h",
+    ":std_inttypes_h",
     ":std_math_h",
     ":std_private_mbstate_t",
     ":std_string_h",
@@ -200,8 +202,23 @@ libcxx_module("std_core") {
   ]
 }
 
+libcxx_module("std_ctype_h") {
+  public_deps = [ ":_DarwinFoundation2" ]
+}
+
 libcxx_module("std_errno_h") {
   public_deps = [ ":_DarwinFoundation1" ]
+}
+
+libcxx_module("std_fenv_h") {
+  public_deps = [ ":_DarwinFoundation1" ]
+}
+
+libcxx_module("std_inttypes_h") {
+  public_deps = [
+    ":_Builtin_inttypes",
+    ":_Builtin_stdint",
+  ]
 }
 
 libcxx_module("std_math_h") {
@@ -337,7 +354,10 @@ group("all_modules") {
     ":std",
     ":std_complex_h",
     ":std_core",
+    ":std_ctype_h",
     ":std_errno_h",
+    ":std_fenv_h",
+    ":std_inttypes_h",
     ":std_math_h",
     ":std_private_mbstate_t",
     ":std_stdatomic_h",

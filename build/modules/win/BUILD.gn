@@ -77,13 +77,15 @@ builtin_module("ptrauth") {
 libcxx_module("std") {
   public_deps = [
     ":_Builtin_float",
-    ":_Builtin_inttypes",
     ":_Builtin_limits",
     ":_Builtin_stdalign",
     ":_Builtin_stdarg",
     ":_Builtin_stddef",
     ":std_core",
+    ":std_ctype_h",
     ":std_errno_h",
+    ":std_fenv_h",
+    ":std_inttypes_h",
     ":std_math_h",
     ":std_private_mbstate_t",
     ":std_string_h",
@@ -107,8 +109,26 @@ libcxx_module("std_core") {
   ]
 }
 
+libcxx_module("std_ctype_h") {
+  public_deps = [ ":sys_stage1" ]
+}
+
 libcxx_module("std_errno_h") {
   public_deps = [ ":sys_stage1" ]
+}
+
+libcxx_module("std_fenv_h") {
+  public_deps = [
+    ":_Builtin_float",
+    ":sys_stage1",
+  ]
+}
+
+libcxx_module("std_inttypes_h") {
+  public_deps = [
+    ":_Builtin_inttypes",
+    ":_Builtin_stdint",
+  ]
 }
 
 libcxx_module("std_math_h") {
@@ -152,10 +172,7 @@ libcxx_module("std_wctype_h") {
 }
 
 sysroot_module("sys_stage1") {
-  public_deps = [
-    ":_Builtin_float",
-    ":_Builtin_stddef",
-  ]
+  public_deps = [ ":_Builtin_stddef" ]
 }
 
 sysroot_module("sys_stage2") {
@@ -196,7 +213,10 @@ group("all_modules") {
     ":std",
     ":std_complex_h",
     ":std_core",
+    ":std_ctype_h",
     ":std_errno_h",
+    ":std_fenv_h",
+    ":std_inttypes_h",
     ":std_math_h",
     ":std_private_mbstate_t",
     ":std_stdatomic_h",

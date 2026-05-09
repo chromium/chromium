@@ -2,7 +2,7 @@ Name: libcxx
 Short Name: libc++
 URL: http://libcxx.llvm.org/
 Version: N/A
-Revision: 5abc7f839700f0f17338434e1c1c6a8c87c00c11
+Revision: be1c391acca009d8d80535ce924e3d285451cdfa
 Update Mechanism: Autoroll
 License: NCSA, Apache-with-LLVM-Exception, MIT
 License File: src/LICENSE.TXT
