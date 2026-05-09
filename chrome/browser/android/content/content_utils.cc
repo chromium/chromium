@@ -21,6 +21,10 @@ static void JNI_ContentUtils_SetUserAgentOverride(
     const base::android::JavaRef<jobject>& jweb_contents,
     bool j_override_in_new_tabs) {
   constexpr char kLinuxInfoStr[] = "X11; Linux x86_64";
+  constexpr char kChromeOSInfoStr[] = "X11; CrOS x86_64 14541.0.0";
+
+  bool spoof_as_chromeos = base::FeatureList::IsEnabled(
+      blink::features::kAndroidDesktopUASpoofAsChromeOS);
 
   // Note: Any updates to desktop overrides here should also be applied to
   // DESKTOP form factor defaults in embedder_support::GetUserAgentMetadata.
@@ -30,12 +34,13 @@ static void JNI_ContentUtils_SetUserAgentOverride(
   blink::UserAgentOverride spoofed_ua;
   spoofed_ua.ua_string_override =
       embedder_support::BuildUserAgentFromOSAndProduct(
-          kLinuxInfoStr, embedder_support::GetProductAndVersion());
+          spoof_as_chromeos ? kChromeOSInfoStr : kLinuxInfoStr,
+          embedder_support::GetProductAndVersion());
   spoofed_ua.ua_metadata_override = metadata;
   spoofed_ua.ua_metadata_override->platform =
       base::FeatureList::IsEnabled(blink::features::kAndroidDesktopUAPlatform)
           ? "Android"
-          : "Linux";
+          : (spoof_as_chromeos ? "Chrome OS" : "Linux");
   spoofed_ua.ua_metadata_override->platform_version =
       std::string();  // match content::GetOSVersion(false) on Linux
   spoofed_ua.ua_metadata_override->model = std::string();

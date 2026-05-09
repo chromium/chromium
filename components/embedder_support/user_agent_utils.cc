@@ -299,20 +299,24 @@ std::string GetUserAgentPlatform() {
 }
 
 std::string GetUnifiedPlatform() {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
   // This constant is only used on Android (desktop) and Linux.
-  constexpr char kUnifiedPlatformLinuxX64[] = "X11; Linux x86_64";
+  constexpr char kUnifiedPlatformChromeOSX64[] = "X11; CrOS x86_64 14541.0.0";
+
 #endif
 #if BUILDFLAG(IS_ANDROID)
   // The Android XR device by default also has the unified platform of desktop
   // form factor.
   if (base::android::device_info::is_desktop() ||
       base::android::device_info::is_xr()) {
-    return kUnifiedPlatformLinuxX64;
+    return base::FeatureList::IsEnabled(
+               blink::features::kAndroidDesktopUASpoofAsChromeOS)
+               ? kUnifiedPlatformChromeOSX64
+               : "X11; Linux x86_64";
   }
   return "Linux; Android 10; K";
 #elif BUILDFLAG(IS_CHROMEOS)
-  return "X11; CrOS x86_64 14541.0.0";
+  return kUnifiedPlatformChromeOSX64;
 #elif BUILDFLAG(IS_MAC)
   return "Macintosh; Intel Mac OS X 10_15_7";
 #elif BUILDFLAG(IS_WIN)
@@ -320,7 +324,7 @@ std::string GetUnifiedPlatform() {
 #elif BUILDFLAG(IS_FUCHSIA)
   return "Fuchsia";
 #elif BUILDFLAG(IS_LINUX)
-  return kUnifiedPlatformLinuxX64;
+  return "X11; Linux x86_64";
 #elif BUILDFLAG(IS_IOS)
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     return "iPad; CPU iPad OS 14_0 like Mac OS X";
@@ -613,7 +617,10 @@ std::string GetPlatformForUAMetadata() {
     return base::FeatureList::IsEnabled(
                blink::features::kAndroidDesktopUAPlatform)
                ? "Android"
-               : "Linux";
+               : (base::FeatureList::IsEnabled(
+                      blink::features::kAndroidDesktopUASpoofAsChromeOS)
+                      ? "Chrome OS"
+                      : "Linux");
   }
 #endif
 

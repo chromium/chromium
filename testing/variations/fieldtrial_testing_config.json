@@ -910,6 +910,21 @@
             ]
         }
     ],
+    "AndroidDesktopUASpoofAsChromeOS": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidDesktopUASpoofAsChromeOS"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidDesktopWebPrefsLargeDisplays": [
         {
             "platforms": [
