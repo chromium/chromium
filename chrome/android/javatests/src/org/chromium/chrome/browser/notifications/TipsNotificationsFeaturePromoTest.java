@@ -29,6 +29,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
@@ -45,11 +46,14 @@ import org.chromium.chrome.browser.toolbar.settings.AddressBarSettingsFragment;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.notifications.TipsPromoDetailsPageBottomSheetFacility;
 import org.chromium.chrome.test.transit.notifications.TipsPromoMainPageBottomSheetFacility;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
+import org.chromium.chrome.test.transit.page.CtaPageStation;
 import org.chromium.chrome.test.transit.quick_delete.QuickDeleteDialogFacility;
 import org.chromium.chrome.test.transit.settings.SettingsStation;
+import org.chromium.chrome.test.transit.signin.SigninBottomSheetFacility;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -142,7 +146,7 @@ public class TipsNotificationsFeaturePromoTest {
                 .isEqualTo(
                         mContext.getString(R.string.tips_promo_bottom_sheet_negative_button_text));
         SettingsStation<SafeBrowsingSettingsFragment> safeBrowsingSettings =
-                mainPageBottomSheet.clickESBSettingsButton();
+                mainPageBottomSheet.clickPositiveButton(featureType);
         assertFinalDestination(safeBrowsingSettings);
 
         // Return to a PageStation for InitialStateRule to reset properly.
@@ -186,7 +190,7 @@ public class TipsNotificationsFeaturePromoTest {
                 "esb_feature_promo_detail_page");
 
         SettingsStation<SafeBrowsingSettingsFragment> safeBrowsingSettings =
-                detailsPageBottomSheet.clickESBSettingsButton();
+                detailsPageBottomSheet.clickPositiveButton(featureType);
         assertFinalDestination(safeBrowsingSettings);
 
         // Return to a PageStation for InitialStateRule to reset properly.
@@ -219,7 +223,8 @@ public class TipsNotificationsFeaturePromoTest {
         assertThat(((ButtonCompat) mainPageBottomSheet.detailsButtonElement.value()).getText())
                 .isEqualTo(
                         mContext.getString(R.string.tips_promo_bottom_sheet_negative_button_text));
-        QuickDeleteDialogFacility quickDeleteDialog = mainPageBottomSheet.clickQuickDeleteButton();
+        QuickDeleteDialogFacility quickDeleteDialog =
+                mainPageBottomSheet.clickPositiveButton(featureType);
         assertFinalDestination(openedNtp, quickDeleteDialog);
 
         // Return to a PageStation for InitialStateRule to reset properly.
@@ -264,7 +269,7 @@ public class TipsNotificationsFeaturePromoTest {
                 "quick_delete_feature_promo_detail_page");
 
         QuickDeleteDialogFacility quickDeleteDialog =
-                detailsPageBottomSheet.clickQuickDeleteButton();
+                detailsPageBottomSheet.clickPositiveButton(featureType);
         assertFinalDestination(openedNtp, quickDeleteDialog);
 
         // Return to a PageStation for InitialStateRule to reset properly.
@@ -292,7 +297,7 @@ public class TipsNotificationsFeaturePromoTest {
         assertThat(((ButtonCompat) mainPageBottomSheet.detailsButtonElement.value()).getText())
                 .isEqualTo(
                         mContext.getString(R.string.tips_promo_bottom_sheet_negative_button_text));
-        mainPageBottomSheet.clickGoogleLensButton(mLensController);
+        mainPageBottomSheet.clickPositiveButton(featureType, mLensController);
 
         // Return to a PageStation for InitialStateRule to reset properly, which clicking the bottom
         // sheet does since the Google Lens call is intercepted and does not show.
@@ -333,7 +338,7 @@ public class TipsNotificationsFeaturePromoTest {
                 ((View) detailsPageBottomSheet.bottomSheetElement.value()),
                 "google_lens_feature_promo_detail_page");
 
-        detailsPageBottomSheet.clickGoogleLensButton(mLensController);
+        detailsPageBottomSheet.clickPositiveButton(featureType, mLensController);
 
         // Return to a PageStation for InitialStateRule to reset properly, which clicking the bottom
         // sheet does since the Google Lens call is intercepted and does not show.
@@ -364,7 +369,7 @@ public class TipsNotificationsFeaturePromoTest {
                 .isEqualTo(
                         mContext.getString(R.string.tips_promo_bottom_sheet_negative_button_text));
         SettingsStation<AddressBarSettingsFragment> bottomOmniboxSettings =
-                mainPageBottomSheet.clickBottomOmniboxSettingsButton();
+                mainPageBottomSheet.clickPositiveButton(featureType);
         assertFinalDestination(bottomOmniboxSettings);
 
         // Return to a PageStation for InitialStateRule to reset properly.
@@ -409,13 +414,369 @@ public class TipsNotificationsFeaturePromoTest {
                 "bottom_omnibox_feature_promo_detail_page");
 
         SettingsStation<AddressBarSettingsFragment> bottomOmniboxSettings =
-                detailsPageBottomSheet.clickBottomOmniboxSettingsButton();
+                detailsPageBottomSheet.clickPositiveButton(featureType);
         assertFinalDestination(bottomOmniboxSettings);
 
         // Return to a PageStation for InitialStateRule to reset properly.
         bottomOmniboxSettings
                 .pressBackTo()
                 .arriveAt(RegularNewTabPageStation.newBuilder().initFrom(openedNtp).build());
+    }
+
+    @Test
+    @MediumTest
+    public void testPasswordAutofillBottomSheetMainPageAccept() {
+        @TipsNotificationsFeatureType
+        int featureType = TipsNotificationsFeatureType.PASSWORD_AUTOFILL;
+
+        var tripResult = showFeatureTipBottomSheet(featureType);
+        TipsPromoMainPageBottomSheetFacility<RegularNewTabPageStation> mainPageBottomSheet =
+                tripResult.first;
+        RegularNewTabPageStation openedNtp = tripResult.second;
+
+        assertThat(((TextView) mainPageBottomSheet.mainPageTitleElement.value()).getText())
+                .isEqualTo(
+                        mContext.getString(
+                                R.string.tips_promo_bottom_sheet_title_password_autofill));
+        assertThat(((TextView) mainPageBottomSheet.mainPageDescriptionElement.value()).getText())
+                .isEqualTo(
+                        mContext.getString(
+                                R.string.tips_promo_bottom_sheet_description_password_autofill));
+        assertThat(((ButtonCompat) mainPageBottomSheet.settingsButtonElement.value()).getText())
+                .isEqualTo(
+                        mContext.getString(
+                                R.string.tips_promo_bottom_sheet_positive_button_text_noop));
+        assertThat(((ButtonCompat) mainPageBottomSheet.detailsButtonElement.value()).getText())
+                .isEqualTo(
+                        mContext.getString(R.string.tips_promo_bottom_sheet_negative_button_text));
+
+        mainPageBottomSheet.clickPositiveButton(featureType);
+        assertFinalDestination(openedNtp);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testPasswordAutofillBottomSheetDetailPageAccept() throws IOException {
+        @TipsNotificationsFeatureType
+        int featureType = TipsNotificationsFeatureType.PASSWORD_AUTOFILL;
+        List<Integer> detailPageStepsRes =
+                List.of(
+                        R.string.tips_promo_bottom_sheet_first_step_password_autofill,
+                        R.string.tips_promo_bottom_sheet_second_step_password_autofill,
+                        R.string.tips_promo_bottom_sheet_third_step_password_autofill);
+
+        var tripResult = showFeatureTipBottomSheet(featureType);
+        TipsPromoMainPageBottomSheetFacility<RegularNewTabPageStation> mainPageBottomSheet =
+                tripResult.first;
+        RegularNewTabPageStation openedNtp = tripResult.second;
+
+        mRenderTestRule.render(
+                ((View) mainPageBottomSheet.bottomSheetElement.value()),
+                "password_autofill_feature_promo_main_page");
+
+        TipsPromoDetailsPageBottomSheetFacility<RegularNewTabPageStation> detailsPageBottomSheet =
+                mainPageBottomSheet.clickDetailsButton(detailPageStepsRes);
+        assertThat(((TextView) detailsPageBottomSheet.detailPageTitleElement.value()).getText())
+                .isEqualTo(
+                        mContext.getString(
+                                R.string.tips_promo_bottom_sheet_title_password_autofill));
+        assertThat(((ButtonCompat) detailsPageBottomSheet.settingsButtonElement.value()).getText())
+                .isEqualTo(
+                        mContext.getString(
+                                R.string.tips_promo_bottom_sheet_positive_button_text_noop));
+
+        mRenderTestRule.render(
+                ((View) detailsPageBottomSheet.bottomSheetElement.value()),
+                "password_autofill_feature_promo_detail_page");
+
+        detailsPageBottomSheet.clickPositiveButton(featureType);
+        assertFinalDestination(openedNtp);
+    }
+
+    @Test
+    @MediumTest
+    public void testSigninBottomSheetMainPageAccept() {
+        @TipsNotificationsFeatureType int featureType = TipsNotificationsFeatureType.SIGNIN;
+
+        var tripResult = showFeatureTipBottomSheet(featureType);
+        TipsPromoMainPageBottomSheetFacility<RegularNewTabPageStation> mainPageBottomSheet =
+                tripResult.first;
+        RegularNewTabPageStation openedNtp = tripResult.second;
+
+        assertThat(((TextView) mainPageBottomSheet.mainPageTitleElement.value()).getText())
+                .isEqualTo(mContext.getString(R.string.educational_tip_sign_in_promo_title));
+        assertThat(((TextView) mainPageBottomSheet.mainPageDescriptionElement.value()).getText())
+                .isEqualTo(mContext.getString(R.string.educational_tip_sign_in_promo_description));
+        assertThat(((ButtonCompat) mainPageBottomSheet.settingsButtonElement.value()).getText())
+                .isEqualTo(mContext.getString(R.string.signin_promo_signin));
+        assertThat(((ButtonCompat) mainPageBottomSheet.detailsButtonElement.value()).getText())
+                .isEqualTo(
+                        mContext.getString(R.string.tips_promo_bottom_sheet_negative_button_text));
+
+        SigninBottomSheetFacility signinSheet =
+                mainPageBottomSheet.clickPositiveButton(featureType);
+        signinSheet.dismiss();
+        assertFinalDestination(openedNtp);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testSigninBottomSheetDetailPageAccept() throws IOException {
+        @TipsNotificationsFeatureType int featureType = TipsNotificationsFeatureType.SIGNIN;
+        List<Integer> detailPageStepsRes =
+                List.of(
+                        R.string.tips_promo_bottom_sheet_first_step_signin,
+                        R.string.tips_promo_bottom_sheet_second_step_signin,
+                        R.string.tips_promo_bottom_sheet_third_step_signin);
+
+        var tripResult = showFeatureTipBottomSheet(featureType);
+        TipsPromoMainPageBottomSheetFacility<RegularNewTabPageStation> mainPageBottomSheet =
+                tripResult.first;
+        RegularNewTabPageStation openedNtp = tripResult.second;
+
+        mRenderTestRule.render(
+                ((View) mainPageBottomSheet.bottomSheetElement.value()),
+                "signin_feature_promo_main_page");
+
+        TipsPromoDetailsPageBottomSheetFacility<RegularNewTabPageStation> detailsPageBottomSheet =
+                mainPageBottomSheet.clickDetailsButton(detailPageStepsRes);
+        assertThat(((TextView) detailsPageBottomSheet.detailPageTitleElement.value()).getText())
+                .isEqualTo(mContext.getString(R.string.sign_in_to_chrome));
+        assertThat(((ButtonCompat) detailsPageBottomSheet.settingsButtonElement.value()).getText())
+                .isEqualTo(mContext.getString(R.string.signin_promo_signin));
+
+        mRenderTestRule.render(
+                ((View) detailsPageBottomSheet.bottomSheetElement.value()),
+                "signin_feature_promo_detail_page");
+
+        SigninBottomSheetFacility signinSheet =
+                detailsPageBottomSheet.clickPositiveButton(featureType);
+        signinSheet.dismiss();
+        assertFinalDestination(openedNtp);
+    }
+
+    @Test
+    @MediumTest
+    public void testCreateTabGroupsBottomSheetMainPageAccept() {
+        @TipsNotificationsFeatureType
+        int featureType = TipsNotificationsFeatureType.CREATE_TAB_GROUPS;
+
+        var tripResult = showFeatureTipBottomSheet(featureType);
+        TipsPromoMainPageBottomSheetFacility<RegularNewTabPageStation> mainPageBottomSheet =
+                tripResult.first;
+        RegularNewTabPageStation openedNtp = tripResult.second;
+
+        assertThat(((TextView) mainPageBottomSheet.mainPageTitleElement.value()).getText())
+                .isEqualTo(mContext.getString(R.string.educational_tip_tab_group_title));
+        assertThat(((TextView) mainPageBottomSheet.mainPageDescriptionElement.value()).getText())
+                .isEqualTo(mContext.getString(R.string.educational_tip_tab_group_description));
+        assertThat(((ButtonCompat) mainPageBottomSheet.settingsButtonElement.value()).getText())
+                .isEqualTo(
+                        mContext.getString(
+                                R.string.tips_promo_bottom_sheet_positive_button_text_try_now));
+        assertThat(((ButtonCompat) mainPageBottomSheet.detailsButtonElement.value()).getText())
+                .isEqualTo(
+                        mContext.getString(R.string.tips_promo_bottom_sheet_negative_button_text));
+
+        RegularTabSwitcherStation tabSwitcher =
+                mainPageBottomSheet.clickPositiveButton(featureType);
+        assertFinalDestination(tabSwitcher);
+
+        tabSwitcher
+                .pressBackTo()
+                .arriveAt(RegularNewTabPageStation.newBuilder().initFrom(openedNtp).build());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testCreateTabGroupsBottomSheetDetailPageAccept() throws IOException {
+        @TipsNotificationsFeatureType
+        int featureType = TipsNotificationsFeatureType.CREATE_TAB_GROUPS;
+        List<Integer> detailPageStepsRes =
+                List.of(
+                        R.string.tips_promo_bottom_sheet_first_step_create_tab_groups,
+                        R.string.tips_promo_bottom_sheet_second_step_create_tab_groups,
+                        R.string.tips_promo_bottom_sheet_third_step_create_tab_groups);
+
+        var tripResult = showFeatureTipBottomSheet(featureType);
+        TipsPromoMainPageBottomSheetFacility<RegularNewTabPageStation> mainPageBottomSheet =
+                tripResult.first;
+        RegularNewTabPageStation openedNtp = tripResult.second;
+
+        mRenderTestRule.render(
+                ((View) mainPageBottomSheet.bottomSheetElement.value()),
+                "create_tab_groups_feature_promo_main_page");
+
+        TipsPromoDetailsPageBottomSheetFacility<RegularNewTabPageStation> detailsPageBottomSheet =
+                mainPageBottomSheet.clickDetailsButton(detailPageStepsRes);
+        assertThat(((TextView) detailsPageBottomSheet.detailPageTitleElement.value()).getText())
+                .isEqualTo(mContext.getString(R.string.educational_tip_tab_group_title));
+        assertThat(((ButtonCompat) detailsPageBottomSheet.settingsButtonElement.value()).getText())
+                .isEqualTo(
+                        mContext.getString(
+                                R.string.tips_promo_bottom_sheet_positive_button_text_try_now));
+
+        mRenderTestRule.render(
+                ((View) detailsPageBottomSheet.bottomSheetElement.value()),
+                "create_tab_groups_feature_promo_detail_page");
+
+        RegularTabSwitcherStation tabSwitcher =
+                detailsPageBottomSheet.clickPositiveButton(featureType);
+        assertFinalDestination(tabSwitcher);
+
+        tabSwitcher
+                .pressBackTo()
+                .arriveAt(RegularNewTabPageStation.newBuilder().initFrom(openedNtp).build());
+    }
+
+    @Test
+    @MediumTest
+    public void testCustomizeMvtBottomSheetMainPageAccept() {
+        @TipsNotificationsFeatureType int featureType = TipsNotificationsFeatureType.CUSTOMIZE_MVT;
+
+        var tripResult = showFeatureTipBottomSheet(featureType);
+        TipsPromoMainPageBottomSheetFacility<RegularNewTabPageStation> mainPageBottomSheet =
+                tripResult.first;
+        RegularNewTabPageStation openedNtp = tripResult.second;
+
+        assertThat(((TextView) mainPageBottomSheet.mainPageTitleElement.value()).getText())
+                .isEqualTo(
+                        mContext.getString(R.string.tips_promo_bottom_sheet_title_customize_mvt));
+        assertThat(((TextView) mainPageBottomSheet.mainPageDescriptionElement.value()).getText())
+                .isEqualTo(
+                        mContext.getString(
+                                R.string.tips_promo_bottom_sheet_description_customize_mvt));
+        assertThat(((ButtonCompat) mainPageBottomSheet.settingsButtonElement.value()).getText())
+                .isEqualTo(
+                        mContext.getString(
+                                R.string.tips_promo_bottom_sheet_positive_button_text_noop));
+        assertThat(((ButtonCompat) mainPageBottomSheet.detailsButtonElement.value()).getText())
+                .isEqualTo(
+                        mContext.getString(R.string.tips_promo_bottom_sheet_negative_button_text));
+
+        mainPageBottomSheet.clickPositiveButton(featureType);
+        assertFinalDestination(openedNtp);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testCustomizeMvtBottomSheetDetailPageAccept() throws IOException {
+        @TipsNotificationsFeatureType int featureType = TipsNotificationsFeatureType.CUSTOMIZE_MVT;
+        List<Integer> detailPageStepsRes =
+                List.of(
+                        R.string.tips_promo_bottom_sheet_first_step_customize_mvt,
+                        R.string.tips_promo_bottom_sheet_second_step_customize_mvt,
+                        R.string.tips_promo_bottom_sheet_third_step_customize_mvt);
+
+        var tripResult = showFeatureTipBottomSheet(featureType);
+        TipsPromoMainPageBottomSheetFacility<RegularNewTabPageStation> mainPageBottomSheet =
+                tripResult.first;
+        RegularNewTabPageStation openedNtp = tripResult.second;
+
+        mRenderTestRule.render(
+                ((View) mainPageBottomSheet.bottomSheetElement.value()),
+                "customize_mvt_feature_promo_main_page");
+
+        TipsPromoDetailsPageBottomSheetFacility<RegularNewTabPageStation> detailsPageBottomSheet =
+                mainPageBottomSheet.clickDetailsButton(detailPageStepsRes);
+        assertThat(((TextView) detailsPageBottomSheet.detailPageTitleElement.value()).getText())
+                .isEqualTo(
+                        mContext.getString(R.string.tips_promo_bottom_sheet_title_customize_mvt));
+        assertThat(((ButtonCompat) detailsPageBottomSheet.settingsButtonElement.value()).getText())
+                .isEqualTo(
+                        mContext.getString(
+                                R.string.tips_promo_bottom_sheet_positive_button_text_noop));
+
+        mRenderTestRule.render(
+                ((View) detailsPageBottomSheet.bottomSheetElement.value()),
+                "customize_mvt_feature_promo_detail_page");
+
+        detailsPageBottomSheet.clickPositiveButton(featureType);
+        assertFinalDestination(openedNtp);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testRecentTabsBottomSheetMainPageAccept() {
+        @TipsNotificationsFeatureType int featureType = TipsNotificationsFeatureType.RECENT_TABS;
+
+        var tripResult = showFeatureTipBottomSheet(featureType);
+        TipsPromoMainPageBottomSheetFacility<RegularNewTabPageStation> mainPageBottomSheet =
+                tripResult.first;
+        RegularNewTabPageStation openedNtp = tripResult.second;
+
+        assertThat(((TextView) mainPageBottomSheet.mainPageTitleElement.value()).getText())
+                .isEqualTo(mContext.getString(R.string.tips_promo_bottom_sheet_title_recent_tabs));
+        assertThat(((TextView) mainPageBottomSheet.mainPageDescriptionElement.value()).getText())
+                .isEqualTo(
+                        mContext.getString(
+                                R.string.tips_promo_bottom_sheet_description_recent_tabs));
+        assertThat(((ButtonCompat) mainPageBottomSheet.settingsButtonElement.value()).getText())
+                .isEqualTo(
+                        mContext.getString(
+                                R.string.tips_promo_bottom_sheet_positive_button_text_recent_tabs));
+        assertThat(((ButtonCompat) mainPageBottomSheet.detailsButtonElement.value()).getText())
+                .isEqualTo(
+                        mContext.getString(R.string.tips_promo_bottom_sheet_negative_button_text));
+
+        CtaPageStation recentTabsPage = mainPageBottomSheet.clickPositiveButton(featureType);
+
+        // Verify that the opened page is indeed the Recent Tabs page.
+        String url =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mCtaTestRule.getActivity().getActivityTab().getUrl().getSpec());
+        assertThat(url).contains("recent-tabs");
+
+        assertFinalDestination(recentTabsPage);
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testRecentTabsBottomSheetDetailPageAccept() throws IOException {
+        @TipsNotificationsFeatureType int featureType = TipsNotificationsFeatureType.RECENT_TABS;
+        List<Integer> detailPageStepsRes =
+                List.of(
+                        R.string.tips_promo_bottom_sheet_first_step_recent_tabs,
+                        R.string.tips_promo_bottom_sheet_second_step_recent_tabs,
+                        R.string.tips_promo_bottom_sheet_third_step_recent_tabs);
+
+        var tripResult = showFeatureTipBottomSheet(featureType);
+        TipsPromoMainPageBottomSheetFacility<RegularNewTabPageStation> mainPageBottomSheet =
+                tripResult.first;
+        RegularNewTabPageStation openedNtp = tripResult.second;
+
+        mRenderTestRule.render(
+                ((View) mainPageBottomSheet.bottomSheetElement.value()),
+                "recent_tabs_feature_promo_main_page");
+
+        TipsPromoDetailsPageBottomSheetFacility<RegularNewTabPageStation> detailsPageBottomSheet =
+                mainPageBottomSheet.clickDetailsButton(detailPageStepsRes);
+        assertThat(((TextView) detailsPageBottomSheet.detailPageTitleElement.value()).getText())
+                .isEqualTo(mContext.getString(R.string.tips_promo_bottom_sheet_title_recent_tabs));
+        assertThat(((ButtonCompat) detailsPageBottomSheet.settingsButtonElement.value()).getText())
+                .isEqualTo(
+                        mContext.getString(
+                                R.string.tips_promo_bottom_sheet_positive_button_text_recent_tabs));
+
+        mRenderTestRule.render(
+                ((View) detailsPageBottomSheet.bottomSheetElement.value()),
+                "recent_tabs_feature_promo_detail_page");
+
+        CtaPageStation recentTabsPage = detailsPageBottomSheet.clickPositiveButton(featureType);
+
+        // Verify that the opened page is indeed the Recent Tabs page.
+        String url =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mCtaTestRule.getActivity().getActivityTab().getUrl().getSpec());
+        assertThat(url).contains("recent-tabs");
+
+        assertFinalDestination(recentTabsPage);
     }
 
     private Pair<

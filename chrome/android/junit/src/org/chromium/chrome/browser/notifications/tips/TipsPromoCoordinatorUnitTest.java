@@ -107,7 +107,7 @@ public class TipsPromoCoordinatorUnitTest {
                         mWindowAndroid,
                         /* isIncognito= */ false,
                         mProfile,
-                        mLayoutManager,
+                        () -> mLayoutManager,
                         TipsNotificationsFeatureType.ENHANCED_SAFE_BROWSING);
         verify(mBottomSheetController).addObserver(mBottomSheetObserverCaptor.capture());
         mPropertyModel = mTipsPromoCoordinator.getModelForTesting();
@@ -685,7 +685,7 @@ public class TipsPromoCoordinatorUnitTest {
                         mWindowAndroid,
                         /* isIncognito= */ false,
                         mProfile,
-                        mLayoutManager,
+                        () -> mLayoutManager,
                         featureType);
         mPropertyModel = mTipsPromoCoordinator.getModelForTesting();
         mView = mTipsPromoCoordinator.getViewForTesting();

@@ -2761,7 +2761,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                                     getWindowAndroid(),
                                     getCurrentTabModel().isIncognito(),
                                     getProfileProviderSupplier().get().getOriginalProfile(),
-                                    mLayoutManager,
+                                    () -> mLayoutManager,
                                     fromTipsNotifications);
                     mTipsPromoCoordinator.showBottomSheet();
                 }

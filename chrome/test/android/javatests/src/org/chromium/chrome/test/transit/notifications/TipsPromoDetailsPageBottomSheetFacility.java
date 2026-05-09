@@ -17,11 +17,6 @@ import org.chromium.base.test.transit.ViewElement;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.lens.LensController;
-import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
-import org.chromium.chrome.browser.toolbar.settings.AddressBarSettingsFragment;
-import org.chromium.chrome.test.transit.quick_delete.QuickDeleteDialogFacility;
-import org.chromium.chrome.test.transit.settings.SettingsStation;
 import org.chromium.chrome.test.transit.ui.BottomSheetFacility;
 import org.chromium.ui.widget.ButtonCompat;
 
@@ -75,36 +70,11 @@ public class TipsPromoDetailsPageBottomSheetFacility<
                 .enterFacility(new TipsPromoMainPageBottomSheetFacility<>());
     }
 
-    /** Press the settings button to navigate to the safe browsing settings page. */
-    public SettingsStation<SafeBrowsingSettingsFragment> clickESBSettingsButton() {
-        return settingsButtonElement
-                .clickTo()
-                .exitFacilityAnd()
-                .arriveAt(new SettingsStation<>(SafeBrowsingSettingsFragment.class));
-    }
-
-    /** Press the settings button to navigate to the quick delete page. */
-    public QuickDeleteDialogFacility clickQuickDeleteButton() {
-        return settingsButtonElement
-                .clickTo()
-                .exitFacilityAnd()
-                .enterFacility(new QuickDeleteDialogFacility());
-    }
-
-    /** Press the settings button to navigate to Google Lens. */
-    public void clickGoogleLensButton(LensController lensController) {
-        ChromeTabbedActivity.interceptMoveTaskToBackForTesting();
-        settingsButtonElement
-                .clickTo()
-                .waitForAnd(new LensIntentFulfilledCondition(lensController))
-                .exitFacility();
-    }
-
-    /** Press the settings button to navigate to the bottom omnibox settings page. */
-    public SettingsStation<AddressBarSettingsFragment> clickBottomOmniboxSettingsButton() {
-        return settingsButtonElement
-                .clickTo()
-                .exitFacilityAnd()
-                .arriveAt(new SettingsStation<>(AddressBarSettingsFragment.class));
+    /** Performs the positive button click action for a given feature type. */
+    @SuppressWarnings("unchecked")
+    public <T> T clickPositiveButton(int featureType, Object... extraArgs) {
+        return (T)
+                NotificationsTestUtils.clickPositiveButton(
+                        settingsButtonElement, featureType, mHostStation, extraArgs);
     }
 }

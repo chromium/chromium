@@ -68,6 +68,7 @@ import org.chromium.ui.widget.ButtonCompat;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
+import java.util.function.Supplier;
 
 /** Coordinator to manage the promo for the Tips Notifications feature. */
 @NullMarked
@@ -118,7 +119,7 @@ public class TipsPromoCoordinator {
     private final ChromeTabCreator mRegularTabCreator;
     private final WindowAndroid mWindowAndroid;
     private final boolean mIsIncognito;
-    private final LayoutManager mLayoutManager;
+    private final Supplier<LayoutManager> mLayoutManagerSupplier;
     private final TipsPromoSheetContent mSheetContent;
     private final PropertyModel mPropertyModel;
     private final PropertyModelChangeProcessor mChangeProcessor;
@@ -151,7 +152,7 @@ public class TipsPromoCoordinator {
             WindowAndroid windowAndroid,
             boolean isIncognito,
             Profile profile,
-            LayoutManager layoutManager,
+            Supplier<LayoutManager> layoutManagerSupplier,
             @TipsNotificationsFeatureType int featureType) {
         mContext = context;
         mBottomSheetController = bottomSheetController;
@@ -160,7 +161,7 @@ public class TipsPromoCoordinator {
         mRegularTabCreator = regularTabCreator;
         mWindowAndroid = windowAndroid;
         mIsIncognito = isIncognito;
-        mLayoutManager = layoutManager;
+        mLayoutManagerSupplier = layoutManagerSupplier;
         mPropertyModel = TipsPromoProperties.createDefaultModel();
         mLensController = LensController.getInstance();
         mFeatureType = featureType;
@@ -312,7 +313,9 @@ public class TipsPromoCoordinator {
                 break;
             case TipsNotificationsFeatureType.CREATE_TAB_GROUPS:
                 TabSwitcherUtils.navigateToTabSwitcher(
-                        mLayoutManager, /* animate= */ true, /* onNavigationFinished= */ null);
+                        mLayoutManagerSupplier.get(),
+                        /* animate= */ true,
+                        /* onNavigationFinished= */ null);
                 break;
             case TipsNotificationsFeatureType.CUSTOMIZE_MVT:
                 // No-op since there is no page to travel to.
