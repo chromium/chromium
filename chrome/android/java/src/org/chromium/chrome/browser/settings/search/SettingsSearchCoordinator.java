@@ -1219,9 +1219,10 @@ public class SettingsSearchCoordinator
 
             // When switching from 2-column to single-column mode, we may be at non-main
             // settings where search cannot be initiated and search UI should be hidden.
-            // For UI consistency, we revert to default state (FS_SETTINGS).
+            // For UI consistency, we revert to default state (FS_SETTINGS) after clearing
+            // the fragment to prevent fragments overlapping crbug.com/511065590.
             if (mFragmentState == FS_SEARCH && !showingMain) {
-                exitSearchState(/* clearFragment= */ false);
+                exitSearchState(/* clearFragment= */ true);
                 mUpdateFirstVisibleTitle.onResult(0);
                 return;
             }
