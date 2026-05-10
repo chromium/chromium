@@ -1542,6 +1542,13 @@ base::TimeTicks VizLayerContext::UpdateDisplayTreeFrom(
         std::make_unique<gfx::DelegatedInkMetadata>(
             *tree.delegated_ink_metadata());
   }
+
+  if (auto token = host_impl_->TakeScreenshotDestinationToken();
+      !token.is_empty()) {
+    update->screenshot_destination =
+        blink::SameDocNavigationScreenshotDestinationToken(token);
+  }
+
   update->may_throttle_if_undrawn_frames =
       host_impl_->may_throttle_if_undrawn_frames();
   update->is_viewport_mobile_optimized =

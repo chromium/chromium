@@ -19,6 +19,7 @@ import "services/viz/public/mojom/compositing/tiling.mojom";
 import "services/viz/public/mojom/compositing/transferable_resource.mojom";
 import "services/viz/public/mojom/compositing/view_transition_request.mojom";
 import "skia/public/mojom/skcolor4f.mojom";
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/display_color_spaces.mojom";
 import "ui/gfx/mojom/overlay_transform.mojom";
@@ -232,6 +233,11 @@ struct LayerTreeUpdate {
 
   // Metadata for delegated ink trails.
   gfx.mojom.DelegatedInkMetadata? delegated_ink_metadata;
+
+  // When non-empty, the next compositor frame also informs viz to issue a
+  // screenshot against the previous surface.
+  blink.mojom.SameDocNavigationScreenshotDestinationToken?
+      screenshot_destination;
 
   // Whether the compositor should throttle if there are undrawn frames.
   bool may_throttle_if_undrawn_frames;

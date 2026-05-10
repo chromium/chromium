@@ -2044,6 +2044,12 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
   } else {
     layers.clear_delegated_ink_metadata();
   }
+
+  if (update->screenshot_destination) {
+    host_impl_->SetScreenshotDestinationToken(
+        update->screenshot_destination->value());
+  }
+
   host_impl_->SetMayThrottleIfUndrawnFrames(
       update->may_throttle_if_undrawn_frames);
   host_impl_->set_viewport_mobile_optimized(

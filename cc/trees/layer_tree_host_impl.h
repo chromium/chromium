@@ -338,6 +338,15 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
     return may_throttle_if_undrawn_frames_;
   }
 
+  void SetScreenshotDestinationToken(base::UnguessableToken token) {
+    screenshot_destination_ = std::move(token);
+  }
+  base::UnguessableToken TakeScreenshotDestinationToken() {
+    base::UnguessableToken token = std::move(screenshot_destination_);
+    screenshot_destination_ = base::UnguessableToken();
+    return token;
+  }
+
   // Analogous to a commit, this function is used to create a sync tree and
   // add impl-side invalidations to it.
   // virtual for testing.

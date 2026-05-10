@@ -2434,7 +2434,9 @@ viz::CompositorFrameMetadata LayerTreeHostImpl::MakeCompositorFrameMetadata() {
     metadata.screenshot_destination =
         blink::SameDocNavigationScreenshotDestinationToken(
             screenshot_destination_);
-    screenshot_destination_ = base::UnguessableToken();
+    if (!settings().TreesInVizInClientProcess()) {
+      screenshot_destination_ = base::UnguessableToken();
+    }
   }
 
   metadata.is_software = GetDrawMode() != DrawMode::DRAW_MODE_HARDWARE;
