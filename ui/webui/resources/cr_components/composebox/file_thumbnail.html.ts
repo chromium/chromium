@@ -120,16 +120,23 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
           </div>
           <div class="chip-overlay"></div>
         </div>
-      ` : (this.file.objectUrl || this.file.dataUrl) ? html`
+      ` : (this.file.type.startsWith('image/') || this.file.objectUrl
+            || this.file.dataUrl) ? html`
         <div id="imgChip" class="img-chip">
           ${this.isUploading_ ? html`
             <svg role="image" class="spinner" viewBox="0 0 100 100">
               <circle class="spinner-circle" cx="50" cy="50" r="40" />
             </svg>
           ` : html`
+            ${this.file.thumbnailUrl ? html`
+              <img is="cr-auto-img" class="img-thumbnail"
+                auto-src="${this.file.thumbnailUrl}"
+                aria-label="${this.file.name}">
+            ` : html`
             <img class="img-thumbnail"
               src="${this.file.objectUrl || this.file.dataUrl}"
               aria-label="${this.file.name}">
+            `}
           `}
           ${this.file.isDeletable ? html`<cr-icon-button
               class="img-overlay"
@@ -146,6 +153,11 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
               <svg role="image" class="spinner" viewBox="0 0 100 100">
                 <circle class="spinner-circle" cx="50" cy="50" r="40" />
               </svg>
+            ` : (this.file.type === 'application/vnd.google-apps.document' ||
+                 this.file.type === 'application/vnd.google-apps.spreadsheet' ||
+                 this.file.type === 'application/vnd.google-apps.presentation') ? html`
+              <img is="cr-auto-img" class="document-icon" draggable="false"
+                  auto-src="https://drive-thirdparty.googleusercontent.com/32/type/${this.file.type}">
             ` : html`
               <cr-icon icon="${
                   this.shouldUsePdfIcon_() ?

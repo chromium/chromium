@@ -50,6 +50,7 @@ export function createComposeboxFile(
         isDeletable: true,
         iconName: null,
         supportsUnimodal: true,
+        thumbnailUrl: null,
       },
       override);
 }

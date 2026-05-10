@@ -135,6 +135,34 @@ suite('NewTabPageComposeboxFileThumbnailTest', () => {
     assertEquals((icon as any).icon, 'thumbnail:pdf');
   });
 
+  test('display document file (flag enabled) for google doc', async () => {
+    loadTimeData.overrideValues({lensSendRawFileMediaTypesEnabled: true});
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    fileThumbnailElement = new ComposeboxFileThumbnailElement();
+    document.body.appendChild(fileThumbnailElement);
+
+    // Arrange.
+    fileThumbnailElement.file =
+        createComposeboxFile(0, {type: 'application/vnd.google-apps.document'});
+    await microtasksFinished();
+
+    // Assert one document file.
+    const title =
+        fileThumbnailElement.shadowRoot.querySelector('#documentTitle');
+    assertTrue(!!title);
+    assertEquals(title.tagName, 'P');
+    assertEquals(title.textContent, fileThumbnailElement.file.name);
+
+    // Assert auto-src image icon is shown.
+    const icon =
+        fileThumbnailElement.shadowRoot.querySelector('.document-icon');
+    assertTrue(!!icon);
+    assertEquals(icon.tagName, 'IMG');
+    assertEquals(
+        icon.getAttribute('auto-src'),
+        'https://drive-thirdparty.googleusercontent.com/32/type/application/vnd.google-apps.document');
+  });
+
   test('display tab file', async () => {
     // Arrange.
     fileThumbnailElement.file = createComposeboxFile(2, {
