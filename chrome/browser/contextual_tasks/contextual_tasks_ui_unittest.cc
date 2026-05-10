@@ -84,12 +84,6 @@ class MockTaskInfoDelegate : public TaskInfoDelegate {
 
   void SetThreadId(std::optional<std::string> id) override { thread_id_ = id; }
 
-  void SetThreadTurnId(std::optional<std::string> id) override {
-    turn_id_ = id;
-  }
-
-  const std::optional<std::string>& GetThreadTurnId() { return turn_id_; }
-
   const std::optional<std::string>& GetThreadTitle() override { return title_; }
 
   void SetThreadTitle(std::optional<std::string> title) override {
@@ -123,7 +117,6 @@ class MockTaskInfoDelegate : public TaskInfoDelegate {
  private:
   std::optional<base::Uuid> task_id_;
   std::optional<std::string> thread_id_;
-  std::optional<std::string> turn_id_;
   std::optional<std::string> title_;
   GURL url_;
   bool is_shown_in_tab_ = false;
@@ -630,7 +623,6 @@ TEST_F(ContextualTasksUiTest, TaskDetailsUpdated) {
 
   EXPECT_EQ(delegate.GetTaskId(), task_id);
   EXPECT_EQ(delegate.GetThreadId(), thread_id);
-  EXPECT_EQ(delegate.GetThreadTurnId(), turn_id);
 
   // Fake an updated turn
   GURL url2(kAiPageUrl);
@@ -646,7 +638,6 @@ TEST_F(ContextualTasksUiTest, TaskDetailsUpdated) {
 
   EXPECT_EQ(delegate.GetTaskId(), task_id);
   EXPECT_EQ(delegate.GetThreadId(), thread_id);
-  EXPECT_EQ(delegate.GetThreadTurnId(), turn_id2);
   observer.reset();
 }
 

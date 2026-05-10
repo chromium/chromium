@@ -157,7 +157,6 @@ class ContextualTasksUI
   void SetTaskId(std::optional<base::Uuid> id) override;
   const std::optional<std::string>& GetThreadId() override;
   void SetThreadId(std::optional<std::string> id) override;
-  void SetThreadTurnId(std::optional<std::string> id) override;
   const std::optional<std::string>& GetThreadTitle() override;
   void SetThreadTitle(std::optional<std::string> title) override;
   void SetAimUrl(const GURL& url) override;
@@ -381,11 +380,6 @@ class ContextualTasksUI
   // thread and is used to detect changes in the embedded page. If this value is
   // changing, it is very likely that `task_id` should also change.
   std::optional<std::string> thread_id_;
-
-  // The ID of the current turn (a single submission and response) for the
-  // active thread, if it exists. This will be empty for a new thread and is
-  // used to keep the UI URL up to date.
-  std::optional<std::string> thread_turn_id_;
 
   std::optional<std::string> thread_title_;
 
