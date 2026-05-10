@@ -55,8 +55,7 @@ const base::FeatureParam<AddContextButtonVariant>
         &kAddContextButtonVariantOptions};
 // If true, hides the "Add Context" button in the "classic" popup.
 const base::FeatureParam<bool> kHideClassicContextButton{
-    &internal::kWebUIOmniboxAimPopup, "Omnibox_HideClassicContextButton",
-    false};
+    &internal::kWebUIOmniboxAimPopup, "Omnibox_HideClassicContextButton", true};
 
 // When enabled, clicking aim button in omnibox always navigates directly to
 // g.com/aimode, e.g. instead of opening the AI Mode popup
