@@ -874,6 +874,27 @@ class MenuButtonUpdateListener {
   base::test::TestFuture<void> menu_update_future_;
 };
 
+// Returns true if any browser window uses an off-the-record profile related
+// to `profile`. Inlined from the previous chrome::IsOffTheRecordBrowserInUse
+// helper in chrome/browser/ui/browser_finder.h.
+bool IsOffTheRecordBrowserInUse(Profile* profile) {
+  if (!profile) {
+    return false;
+  }
+
+  bool off_the_record_in_use = false;
+  GlobalBrowserCollection::GetInstance()->ForEach(
+      [&](BrowserWindowInterface* browser) {
+        Profile* window_profile = browser->GetProfile();
+        if (window_profile && window_profile->IsSameOrParent(profile) &&
+            window_profile->IsOffTheRecord()) {
+          off_the_record_in_use = true;
+        }
+        return !off_the_record_in_use;
+      });
+  return off_the_record_in_use;
+}
+
 }  // anonymous namespace
 
 BrowserState::BrowserState(
@@ -2390,7 +2411,7 @@ void WebAppIntegrationTestDriver::NavigateAppHome() {
   GURL app_home_url = GURL(chrome::kChromeUIAppsURL);
   WindowOpenDisposition win_disposition;
   content::TestNavigationObserver url_observer(app_home_url);
-  if (chrome::IsOffTheRecordBrowserInUse(browser()->profile())) {
+  if (IsOffTheRecordBrowserInUse(browser()->profile())) {
     win_disposition = WindowOpenDisposition::OFF_THE_RECORD;
     url_observer.StartWatchingNewWebContents();
   } else {

@@ -68,7 +68,6 @@
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_ui_prefs.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -217,6 +216,27 @@ const char16_t* kOpenNewBeforeUnloadPage =
 
 const base::FilePath::CharType* kTitle1File = FILE_PATH_LITERAL("title1.html");
 const base::FilePath::CharType* kTitle2File = FILE_PATH_LITERAL("title2.html");
+
+// Returns true if any browser window uses an off-the-record profile related
+// to `profile`. Inlined from the previous chrome::IsOffTheRecordBrowserInUse
+// helper in chrome/browser/ui/browser_finder.h.
+bool IsOffTheRecordBrowserInUse(Profile* profile) {
+  if (!profile) {
+    return false;
+  }
+
+  bool off_the_record_in_use = false;
+  GlobalBrowserCollection::GetInstance()->ForEach(
+      [&](BrowserWindowInterface* browser) {
+        Profile* window_profile = browser->GetProfile();
+        if (window_profile && window_profile->IsSameOrParent(profile) &&
+            window_profile->IsOffTheRecord()) {
+          off_the_record_in_use = true;
+        }
+        return !off_the_record_in_use;
+      });
+  return off_the_record_in_use;
+}
 
 // Given a page title, returns the expected window caption string.
 std::u16string WindowCaptionFromPageTitle(const std::u16string& page_title) {
@@ -2809,13 +2829,13 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, TestPopupBounds) {
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserTest, IsOffTheRecordBrowserInUse) {
-  EXPECT_FALSE(chrome::IsOffTheRecordBrowserInUse(browser()->profile()));
+  EXPECT_FALSE(IsOffTheRecordBrowserInUse(browser()->profile()));
 
   Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
-  EXPECT_TRUE(chrome::IsOffTheRecordBrowserInUse(browser()->profile()));
+  EXPECT_TRUE(IsOffTheRecordBrowserInUse(browser()->profile()));
 
   CloseBrowserSynchronously(incognito_browser);
-  EXPECT_FALSE(chrome::IsOffTheRecordBrowserInUse(browser()->profile()));
+  EXPECT_FALSE(IsOffTheRecordBrowserInUse(browser()->profile()));
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserTest, TestActiveTabChangedUserAction) {
