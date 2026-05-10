@@ -1428,6 +1428,11 @@ void SearchboxHandler::ShouldShowDriveDisclaimer(
 
 void SearchboxHandler::OnDriveDisclaimerAccepted() {}
 
+void SearchboxHandler::OnDriveUploadClicked(
+    OnDriveUploadClickedCallback callback) {
+  std::move(callback).Run(searchbox::mojom::DriveUploadResponse::New());
+}
+
 OmniboxController* SearchboxHandler::omnibox_controller() const {
   return controller_;
 }

@@ -249,6 +249,35 @@ struct PlaceholderConfig {
   mojo_base.mojom.TimeDelta fade_text_animation_duration;
 };
 
+// Errors that can occur when processing selected Drive files.
+enum DriveUploadError {
+  kSizeLimitExceeded,
+  kMaxFilesExceeded,
+};
+
+// Information about a successfully processed Drive file.
+struct DriveFile {
+  // The UnguessableToken acts as a secure, cross-process identifier. The WebUI
+  // uses this token to:
+  //   1. Identify the file payload and metadata when submitting a query.
+  //   2. Delete the file from the browser-process cache.
+  //   3. Listen for status changes from the browser-process.
+  // It does not grant the WebUI any direct access or capabilities to the file
+  // itself.
+  mojo_base.mojom.UnguessableToken token;
+  string mime_type;
+  string file_name;
+  string? thumbnail_url;
+};
+
+// The result of the Drive upload action.
+struct DriveUploadResponse {
+  // It is expected that the order in this array is the order of the selection,
+  // so we know which files to drop off based on upload size error.
+  array<DriveFile> files;
+  DriveUploadError? error;
+};
+
 // Used by the WebUI page to bootstrap bidirectional communication.
 interface PageHandlerFactory {
   // The SearchboxBrowserProxy singleton calls this when it's first initialized.
@@ -428,8 +457,7 @@ interface PageHandler {
   OnDriveDisclaimerAccepted();
 
   // Called when the user clicks the drive upload button.
-  // TODO(crbug.com/504758597): Add a callback to return the drive files selected.
-  OnDriveUploadClicked();
+  OnDriveUploadClicked() => (DriveUploadResponse response);
 
   // Gets the page classification for the current context.
   GetPageClassification() => (string metricSource);

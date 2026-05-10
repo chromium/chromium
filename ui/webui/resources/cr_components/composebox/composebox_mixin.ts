@@ -11,12 +11,13 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {hasKeyModifiers} from '//resources/js/util.js';
 import type {CrLitElement, PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SelectedFileInfo, SmartComposeStats, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {DriveUploadError} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import type {Url} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {ComposeboxFile, ComposeboxFileValidationError, ContextType, ContextualSearchInputStateDeletionType, FILE_VALIDATION_ERRORS_MAP, getLoadTimeBoolean, isContextUploadStatusTerminal, ProcessFilesError, recordBoolean, recordContextAdditionMethod, recordContextualElementClickedMetric, recordEnumerationValue, recordInputTypeShown, recordModelModeSelection, recordModelModeShown, recordToolModeSelection, recordToolModeShown, recordUserAction} from './common.js';
-import type {ComposeboxState, TabUpload, TabUploadOrigin} from './common.js';
+import type {ComposeboxState, DriveUpload, TabUpload, TabUploadOrigin} from './common.js';
 import type {PageHandlerRemote} from './composebox.mojom-webui.js';
 import type {ComposeboxDropdownElement} from './composebox_dropdown.js';
 import type {ComposeboxInputElement} from './composebox_input.js';
@@ -870,10 +871,12 @@ export const ComposeboxEmbedderMixin =
               this.composeboxSource, 'AimPopup', ContextType.FILE);
         }
 
-        onOpenDriveUpload() {
+        async onOpenDriveUpload() {
           recordContextualElementClickedMetric(
               this.composeboxSource, 'AimPopup', ContextType.DRIVE);
-          this.getSearchboxHandler().onDriveUploadClicked();
+          const {response} =
+              await this.getSearchboxHandler().onDriveUploadClicked();
+          this.addDriveUploads(response.files, response.error ?? undefined);
         }
 
         onSmartTabSharingActiveChanged(e: CustomEvent<{active: boolean}>) {
@@ -1361,6 +1364,42 @@ export const ComposeboxEmbedderMixin =
           recordContextAdditionMethod(
               ComposeboxContextAddedMethod.DRAG_AND_DROP,
               this.composeboxSource);
+        }
+
+        addDriveUploads(driveUploads: DriveUpload[], error?: DriveUploadError) {
+          // Handle any pre-existing error passed in (e.g., from the NTP)
+          if (error === DriveUploadError.kMaxFilesExceeded) {
+            this.handleProcessFilesError(ProcessFilesError.MAX_FILES_EXCEEDED);
+          } else if (error === DriveUploadError.kSizeLimitExceeded) {
+            this.handleProcessFilesError(ProcessFilesError.FILE_TOO_LARGE);
+          }
+
+          // Add the successful files to the Composebox
+          const composeboxFiles: Map<UnguessableToken, ComposeboxFile> =
+              new Map();
+          for (const file of driveUploads) {
+            const attachment = ComposeboxFile.createFromFile(
+                file.token, {name: file.fileName, type: file.mimeType},
+                ContextUploadStatus.kNotUploaded, {
+                  dataUrl: file.thumbnailUrl ?? null,
+                  objectUrl: null,
+                  iconName: null,
+                  supportsUnimodal: true,
+                });
+            composeboxFiles.set(file.token, attachment);
+
+            const announcer = getAnnouncerInstance();
+            announcer.announce(this.i18n('composeboxFileUploadStartedText'));
+          }
+
+          if (composeboxFiles.size > 0) {
+            this.files = new Map([
+              ...this.files.entries(),
+              ...composeboxFiles.entries(),
+            ]);
+            this.recordFileValidationMetric(ComposeboxFileValidationError.NONE);
+            this.focusInput();
+          }
         }
 
         processFiles(files: FileList|null) {
@@ -1877,6 +1916,7 @@ export interface ComposeboxEmbedderMixinInterface extends
   addFileContextFromBrowser(uuid: UnguessableToken, fileInfo: SelectedFileInfo):
       void;
   addDroppedFiles(files: FileList|null): void;
+  addDriveUploads(driveUploads: DriveUpload[], error?: DriveUploadError): void;
   processFiles(files: FileList|null): void;
   updateFileStatus(
       token: UnguessableToken, status: ContextUploadStatus,

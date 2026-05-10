@@ -210,6 +210,7 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
 
   onDriveUploadClicked() {
     this.methodCalled('onDriveUploadClicked');
+    return Promise.resolve({response: {files: [], error: null}});
   }
 
   addTabContext(tabId: number, delayUpload: boolean) {

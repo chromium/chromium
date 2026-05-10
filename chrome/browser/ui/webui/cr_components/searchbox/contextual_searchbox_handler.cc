@@ -76,6 +76,38 @@ namespace {
 
 constexpr int kThumbnailWidth = 125;
 constexpr int kThumbnailHeight = 200;
+constexpr size_t kMaxSize = 100 * 1000 * 1000;
+
+struct DriveFileData {
+  std::string drive_id;
+  std::string mime_type;
+  std::string file_name;
+  uint64_t size_bytes;
+  std::optional<std::string> resource_key;
+  std::optional<std::string> thumbnail_url;
+};
+
+std::vector<DriveFileData> GetMockDriveFiles() {
+  std::vector<DriveFileData> selected_files;
+
+  DriveFileData file1;
+  file1.drive_id = "mock_drive_id_1";
+  file1.mime_type = "application/vnd.google-apps.document";
+  file1.file_name = "Mock Google Doc.gdoc";
+  file1.size_bytes = 10000000;
+  file1.resource_key = "mock_resource_key_1";
+  selected_files.push_back(std::move(file1));
+
+  DriveFileData file2;
+  file2.drive_id = "mock_drive_id_2";
+  file2.mime_type = "image/png";
+  file2.file_name = "Mock Image.png";
+  file2.size_bytes = 1000000;
+  file2.resource_key = "mock_resource_key_2";
+  selected_files.push_back(std::move(file2));
+
+  return selected_files;
+}
 
 }  // namespace
 
@@ -598,8 +630,65 @@ void ContextualSearchboxHandler::AddDriveContext(
       context_token, drive_id, resource_key, mime_type_string);
 }
 
-void ContextualSearchboxHandler::OnDriveUploadClicked() {
-  // TODO(crbug.com/504744908): Open the drive picker here once implemented.
+void ContextualSearchboxHandler::OnDriveUploadClicked(
+    OnDriveUploadClickedCallback callback) {
+  CHECK(
+      base::FeatureList::IsEnabled(omnibox::kComposeboxDriveContextMenuOption));
+  CHECK(contextual_search::ContextualSearchService::IsContextSharingEnabled(
+      profile_->GetPrefs()));
+
+  auto response = searchbox::mojom::DriveUploadResponse::New();
+
+  // TODO(crbug.com/504745345): Replace with selected Drive files from Drive
+  // Picker.
+  std::vector<DriveFileData> selected_files = GetMockDriveFiles();
+
+  bool count_limit_hit = false;
+  bool size_limit_hit = false;
+  size_t valid_files_count = 0;
+  size_t max_files = GetInputState().max_total_inputs;
+
+  for (const auto& file : selected_files) {
+    if (valid_files_count >= max_files) {
+      count_limit_hit = true;
+      break;
+    }
+
+    if (file.size_bytes > kMaxSize) {
+      size_limit_hit = true;
+      continue;
+    }
+
+    // --- Valid File ---
+    auto* contextual_session_handle = GetContextualSessionHandle();
+    if (!contextual_session_handle) {
+      continue;
+    }
+
+    base::UnguessableToken token =
+        contextual_session_handle->CreateContextToken();
+    contextual_session_handle->StartDriveContextUploadFlow(
+        token, file.drive_id, file.resource_key, file.mime_type);
+
+    auto success_file = searchbox::mojom::DriveFile::New();
+    success_file->token = token;
+    success_file->file_name = file.file_name;
+    success_file->mime_type = file.mime_type;
+    success_file->thumbnail_url = file.thumbnail_url;
+
+    response->files.push_back(std::move(success_file));
+    valid_files_count++;
+  }
+
+  // Determine highest priority error. File limit takes precedence over size
+  // limit.
+  if (count_limit_hit) {
+    response->error = searchbox::mojom::DriveUploadError::kMaxFilesExceeded;
+  } else if (size_limit_hit) {
+    response->error = searchbox::mojom::DriveUploadError::kSizeLimitExceeded;
+  }
+
+  std::move(callback).Run(std::move(response));
 }
 
 std::vector<base::UnguessableToken>

@@ -255,7 +255,7 @@ void ContextualSearchSessionHandle::StartUrlContextUploadFlow(
 void ContextualSearchSessionHandle::StartDriveContextUploadFlow(
     const base::UnguessableToken& file_token,
     const std::string& drive_id,
-    const std::string& resource_key,
+    std::optional<std::string> resource_key,
     const std::string& mime_type_string) {
   // Exit early if the file token is not in the list of uploaded context
   // tokens, i.e. it was deleted before the upload flow could start.
