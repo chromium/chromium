@@ -1315,6 +1315,9 @@ interface WebClientHandler {
   // in the browser process.
   JournalRecordFeedback(bool positive, string reason);
 
+  // Called when the opt-in CTA is shown.
+  OnOptinImpression();
+
   // Called when the user submits input.
   OnUserInputSubmitted(WebClientMode mode);
 

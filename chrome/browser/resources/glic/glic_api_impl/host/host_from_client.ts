@@ -639,6 +639,10 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
     this.handler.setAudioDucking(request.enabled);
   }
 
+  glicBrowserOnOptinImpression(): void {
+    this.handler.onOptinImpression();
+  }
+
   glicBrowserOnUserInputSubmitted(request: {mode: number}): void {
     this.handler.onUserInputSubmitted(request.mode);
   }

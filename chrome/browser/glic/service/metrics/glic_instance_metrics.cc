@@ -121,6 +121,25 @@ GlicInstanceMetrics::~GlicInstanceMetrics() {
   OnInstanceDestroyed();
 }
 
+void GlicInstanceMetrics::OnOptinImpression() {
+  if (!base::FeatureList::IsEnabled(features::kGlicOptInImpressionMetrics)) {
+    return;
+  }
+  is_opt_in_pending_ = true;
+  MaybeRecordOptInImpression();
+}
+
+void GlicInstanceMetrics::MaybeRecordOptInImpression() {
+  if (!is_opt_in_pending_ ||
+      !base::FeatureList::IsEnabled(features::kGlicOptInImpressionMetrics) ||
+      !is_client_ready_ || !visibility_tracker_->state()) {
+    return;
+  }
+  base::RecordAction(
+      base::UserMetricsAction("Glic.Onboarding.OptInImpression"));
+  is_opt_in_pending_ = false;
+}
+
 void GlicInstanceMetrics::OnGlicScrollAttempt() {
   CHECK(base::FeatureList::IsEnabled(features::kGlicScrollTo));
   ++scroll_attempt_count_;
@@ -269,6 +288,7 @@ void GlicInstanceMetrics::OnVisibilityChanged(bool is_visible) {
     OnInstanceHidden();
   }
   visibility_tracker_->OnStateChanged(is_visible);
+  MaybeRecordOptInImpression();
 }
 
 void GlicInstanceMetrics::OnBind() {
@@ -774,6 +794,9 @@ void GlicInstanceMetrics::OnWebUiStateChanged(mojom::WebUiState state) {
 }
 
 void GlicInstanceMetrics::OnClientReady(EmbedderType type) {
+  is_client_ready_ = true;
+  MaybeRecordOptInImpression();
+
   if (invocation_start_time_.is_null()) {
     return;
   }
