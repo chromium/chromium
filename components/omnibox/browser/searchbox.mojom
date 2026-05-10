@@ -405,13 +405,6 @@ interface PageHandler {
       => result<mojo_base.mojom.UnguessableToken,
                 composebox_query.mojom.ContextUploadErrorType>;
 
-  // Attach a Drive file to the query context. If the file cannot be attached,
-  // the result will contain an error, otherwise it will contain the token
-  // identifying the file context.
-  AddDriveContext(string drive_id, string resource_key, string mime_type)
-      => result<mojo_base.mojom.UnguessableToken,
-                composebox_query.mojom.ContextUploadErrorType>;
-
   // Notify handler of context deletion. This removes the context data (e.g.
   // File, or tab page content) from the browser-side cache.
   // `from_automatic_chip` indicates whether the deleted context is auto

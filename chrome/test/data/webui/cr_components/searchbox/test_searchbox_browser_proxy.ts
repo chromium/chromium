@@ -45,7 +45,6 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
       'notifySessionAbandoned',
       'addFileContext',
       'addTabContext',
-      'addDriveContext',
       'onDriveUploadClicked',
       'deleteContext',
       'clearFiles',
@@ -200,11 +199,6 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
 
   addFileContext(fileInfo: SelectedFileInfo, fileBytes: BigBuffer) {
     this.methodCalled('addFileContext', {fileInfo, fileBytes});
-    return Promise.resolve('');
-  }
-
-  addDriveContext(driveId: string, resourceKey: string, mimeType: string) {
-    this.methodCalled('addDriveContext', {driveId, resourceKey, mimeType});
     return Promise.resolve('');
   }
 
