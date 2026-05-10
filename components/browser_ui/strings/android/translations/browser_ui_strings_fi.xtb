@@ -529,6 +529,7 @@
 <translation id="6447842834002726250">Evästeet</translation>
 <translation id="6452138246455930388">Hinnanalennus avoimella välilehdellä, vanha hinta <ph name="OLD_PRICE" />, nyt <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Kun ikkuna on kapea, pyydä mobiilinäkymää</translation>
+<translation id="6514791408445720076">Muokkaa sivua</translation>
 <translation id="6527303717912515753">Jaa</translation>
 <translation id="6530703012083415527">Kun tämä on päällä, sivustot voivat käyttää ponnahdusikkunoita ja uudelleenohjauksia. Kun tämä on pois päältä, sivustot eivät voi käyttää ponnahdusikkunoita tai uudelleenohjauksia.</translation>
 <translation id="6540488083026747005">Olet sallinut kolmannen osapuolen evästeet tällä sivustolla</translation>
@@ -706,6 +707,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:</translation>
 <translation id="83792324527827022">Sivusto käyttää kameraasi ja mikrofoniasi</translation>
 <translation id="8380167699614421159">Tällä sivustolla on häiritseviä tai harhaanjohtavia mainoksia</translation>
 <translation id="8394832520002899662">Palaa sivustolle napauttamalla</translation>
+<translation id="8404500559369898929">Tee Chromesta näköisesi valitsemalla oma taustateema</translation>
 <translation id="8409345997656833551">Saat ilmoituksen, kun artikkelissa voidaan käyttää yksinkertaistettua näkymää</translation>
 <translation id="8416874502399604126">Mikrofoni sallittu tällä kertaa</translation>
 <translation id="8423565414844018592">Tekstin skaalaukseksi valittu <ph name="TEXT_SCALING" /></translation>

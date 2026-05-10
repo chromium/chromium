@@ -1676,6 +1676,7 @@
 <translation id="8030852056903932865">Հաստատել</translation>
 <translation id="8032569120109842252">Հետևում եք</translation>
 <translation id="8035522026858423976"><ph name="TAB_TITLE" />, ընտրված ինկոգնիտո ներդիր, որի ձայնն անջատված է</translation>
+<translation id="8036587585440959897">Որոշ ընդլայնումներ կարող են Chrome-ում որոնողական համակարգեր ավելացնել։</translation>
 <translation id="8037750541064988519">Մնացել է <ph name="DAYS" /> օր</translation>
 <translation id="8037801708772278989">Ստուգվել է հենց նոր</translation>
 <translation id="804335162455518893">SD քարտը չհաջողվեց գտնել</translation>
@@ -1962,6 +1963,7 @@
 <translation id="9169507124922466868">Նավիգացիայի պատմության թերթը կիսաբացված է</translation>
 <translation id="9189607089796819144">Ներբեռնե՞լ «<ph name="FILE_NAME" />» ֆայլը (<ph name="FILE_SIZE" />)</translation>
 <translation id="9190276265094487094">Ձեր գործողությունների պատմությունը հասանելի կլինի բոլոր համաժամացված սարքերում, և դուք կկարողանաք շարունակել այն, ինչ անում էիք</translation>
+<translation id="9190355771000652811">Հասցեագոտում օգտագործեք այս ստեղնային դյուրանցումը և որոնողական համակարգերի ու կայքերում որոնման համար դյուրանցումները։</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" />, ընտրված ամրացված ինկոգնիտո ներդիր</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Ստուգվել է 1 րոպե առաջ}one{Ստուգվել է # րոպե առաջ}other{Ստուգվել է # րոպե առաջ}}</translation>
 <translation id="9204836675896933765">Մնաց 1 ֆայլ</translation>

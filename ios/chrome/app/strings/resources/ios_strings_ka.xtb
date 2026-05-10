@@ -202,6 +202,7 @@
 <translation id="1657011748321897393">ვერ გაზიარდა, რადგან არ ხართ დაკავშირებული ქსელთან.</translation>
 <translation id="1668001730617725852">ჩანართების ახალ ჯგუფში გახსნა</translation>
 <translation id="1670861525135254448">ავტომობილის შენახვა</translation>
+<translation id="1671568970992212376">შეინახეთ ფოტოები Google Photos-ში და განახორციელეთ მათზე წვდომა ნებისმიერ დროს.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> — <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="1678855624321223424">თქვენი ორგანიზაციის წესების მიხედვით, ეს ფაილი შეიძლება შეიცავდეს სენსიტიურ ინფორმაციას</translation>
 <translation id="168389590065701766">უკვე შეგიძლიათ გახსნათ Google Lens მისამართთა ზოლიდან და მოიძიოთ ნებისმიერი რამ, რასაც ხედავთ</translation>
@@ -442,7 +443,6 @@
 <translation id="2493269659028026145">მყისიერად დაბლოკვა <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />-ის მეშვეობით</translation>
 <translation id="2496180316473517155">ნახვის ისტორია</translation>
 <translation id="2496626742194544812">პირველ ჩანართზე გადასვლა</translation>
-<translation id="2497852260688568942">სინქრონიზაცია გათიშულია თქვენი ადმინისტრატორის მიერ</translation>
 <translation id="2499505845365628575">ვების დათვალიერების მთელი ისტორიის გასაცნობად გამოიყენეთ<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="2511117522375201202"><ph name="NUMBER_OF_PASSWORDS" /> გატეხილი პაროლი გაქვთ, რაც უსაფრთხოებისთვის რისკის შემცველია.</translation>
 <translation id="2513103768503127042">თქვენს ჩანართების ჯგუფებს აქ ნახავთ</translation>
@@ -567,6 +567,7 @@
 <translation id="2969979262385602596">ვერ შევიდა. მოგვიანებით სცადეთ.</translation>
 <translation id="2975761176769946178">URL სავალდებულოა.</translation>
 <translation id="297667759942911166">ჩანართების ჯგუფებში თანამშრომლობა</translation>
+<translation id="298696743524648170">Chrome-ში Gemini-ს გამოსაყენებლად შედით Chrome-ში თქვენი Google ანგარიშით</translation>
 <translation id="2987670534697681860">დაადასტურეთ ვინაობა ამ მოწყობილობაზე თქვენს ყველა პაროლზე წვდომის მისაღებად.</translation>
 <translation id="2989523299700148168">ახლახან მონახულებული</translation>
 <translation id="2989805286512600854">ახალ ჩანართზე გახსნა</translation>
@@ -621,6 +622,7 @@
 <translation id="31652791196570636">დახურვა</translation>
 <translation id="3167868116600277716">არხის დათვალიერება</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3172755898799085680">Gemini მიუწვდომელია ამ გვერდზე</translation>
 <translation id="3174662312949010067">თქვენი შენახული პაროლების გამოყენება თქვენს სხვა მოწყობილობებზეც შეგიძლიათ.</translation>
 <translation id="3177338796769255211">შედით სისტემაში, რომ მიიღოთ თქვენი სანიშნეები და სხვა მონაცემები თქვენს ყველა მოწყობილობაზე</translation>
 <translation id="3181954750937456830">Safe Browsing (თქვენ და თქვენს მოწყობილობებს გიცავთ სახიფათო საიტებისგან)</translation>
@@ -996,6 +998,7 @@
 <translation id="4552042254369397518">მიმდინარეობს კოპირება…</translation>
 <translation id="4553044860350038560">წვდომის სხვა გასაღებები</translation>
 <translation id="4564893319561643483">დაიმალოს „<ph name="TITLE" />“</translation>
+<translation id="456502772933839252">ზიარდება <ph name="PAGE_TITLE" /></translation>
 <translation id="4565377596337484307">პაროლის დამალვა</translation>
 <translation id="4568230126482344545">ბოლოდროინდელი ჩანართების დამალვა</translation>
 <translation id="4578835633387306383">ჩართვა…</translation>

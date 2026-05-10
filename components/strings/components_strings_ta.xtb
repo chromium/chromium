@@ -754,6 +754,7 @@
 <translation id="2168151236314517198">இந்த உள்ளடக்கத்தை அச்சிடுவது நிர்வாகக் கொள்கையின்படி தடுக்கப்பட்டுள்ளது</translation>
 <translation id="2171244127100824330"><ph name="ACCOUNT" />க்கு <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />இல்</translation>
 <translation id="2172089022819052306">வாகனம் பழுதுபார்த்தல் மற்றும் பராமரித்தல்</translation>
+<translation id="217231402430591139">கணக்கை இணை</translation>
 <translation id="2173302385160625112">உங்கள் இணைய இணைப்பைச் சரிபார்க்கவும்</translation>
 <translation id="2174875517416416684">உங்கள் பணப் பரிமாற்றம் நிறைவடையவில்லை. உங்கள் கணக்கில் இருந்து பணம் எடுக்கப்படவில்லை.</translation>
 <translation id="2175630235841878061">100 மெ.பை. அளவைவிடப் பெரிய ஃபைல்களைப் பதிவிறக்க முடியாது</translation>
@@ -3213,6 +3214,7 @@
 <translation id="6006365096047131769">3 x 5 இன்ச்</translation>
 <translation id="6008122969617370890">பின்னோக்கிய வரிசை</translation>
 <translation id="6008256403891681546">JCB</translation>
+<translation id="6012135807160718387">Google என்க்ரிப்ஷன் உங்கள் தகவலைப் பாதுகாக்கும்</translation>
 <translation id="6014801569448771146">கடவுச்சொற்களைச் சோதித்துப் பார்க்கவும்</translation>
 <translation id="6014851866995737824">"இயக்க வேண்டியவை" பட்டியலோ "முடக்க வேண்டியவை" பட்டியலோ இல்லாததால் தவிர்க்கப்பட்டது.</translation>
 <translation id="6015796118275082299">ஆண்டு</translation>
@@ -5252,7 +5254,6 @@
 <translation id="9186371298532546532">இந்த முகவரியை மேலும் பல இடங்களில் பயன்படுத்துங்கள்</translation>
 <translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> இந்தப் பக்கத்தை மாற்றியுள்ளார்</translation>
 <translation id="9189789270972826888">கார்டு நிரப்பப்படவில்லை என்றால் நகலெடுத்து ஒட்ட கீழே உள்ள கார்டு விவரங்களைக் கிளிக் செய்யவும். <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
-<translation id="9190557999028587593">4 வாரங்களுக்கு முந்தைய தலைப்புகள் தானாக நீக்கப்படும்</translation>
 <translation id="9191834167571392248">பஞ்ச் பாட்டம் லெஃப்ட்</translation>
 <translation id="9192361865877479444">மேட் மெட்டல்</translation>
 <translation id="9192947025498305328">தீங்கற்ற அழகுப் பொருட்கள்</translation>

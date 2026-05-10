@@ -3447,7 +3447,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3347086966102161372">K&amp;opioi kuvan osoite</translation>
 <translation id="3348038390189153836">Havaittiin irrotettava laite</translation>
 <translation id="3348973040180736882">Puretaan</translation>
-<translation id="3349610303043713601">Selaa tekoälyn avulla</translation>
 <translation id="3349933790966648062">Käytetty muisti</translation>
 <translation id="3351472127384196879">Lisää tai etsi painikkeita kynällä</translation>
 <translation id="3353786022389205125">Laita asetus "Näytä lukitusnäyttö, kun laite poistuu virransäästötilasta" päälle ja yritä uudelleen</translation>
@@ -6834,6 +6833,7 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5712153969432126546">Sivustot julkaisevat joskus PDF-tiedostoja, kuten asiakirjoja, sopimuksia ja lomakkeita</translation>
 <translation id="571222594670061844">Sivustot voivat näyttää identiteettipalveluiden sisäänkirjautumiskehotteita</translation>
 <translation id="5713158217420111469">Yhdistetty: <ph name="DEVICE" /></translation>
+<translation id="5713988532993992900">Käänteinen</translation>
 <translation id="5714100381896040477">Rajoita liikettä näytöllä</translation>
 <translation id="5719854774000914513">Sivustot saavat pyytää lupaa yhdistää HID-laitteisiin</translation>
 <translation id="5720729194423017301">Sivustojen ja hakukoneiden pikakomennot</translation>
@@ -8748,6 +8748,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7044606776288350625">Datan synkronointi</translation>
 <translation id="7050037487872780845">Virheellinen hotspotin määritys</translation>
 <translation id="7051222203795962489">{COUNT,plural, =1{Salasana tallennettu Google-tilille: <ph name="USER_EMAIL" />}other{Salasanat tallennettu Google-tilille: <ph name="USER_EMAIL" />}}</translation>
+<translation id="7051728324516005763">Tekoäly Chromessa</translation>
 <translation id="7052762602787632571">&amp;Poista selausdata…</translation>
 <translation id="705352103640172578">Vesiputous</translation>
 <translation id="7053983685419859001">Estä</translation>

@@ -1100,6 +1100,7 @@
 <translation id="2677748264148917807">Դուրս գալ էջից</translation>
 <translation id="2679216653373462289">Օգտագործել ձեր շարժման և լուսավորության սենսորները</translation>
 <translation id="2679659833697380">Տեղեկությունները պահվում են ձեր սարքում</translation>
+<translation id="2680837394649649718">Ուղարկվել է Chrome-ին ձեր <ph name="DEVICE_NAME" /> սարքում։</translation>
 <translation id="2683195745483370038">Այլ արդյունքներ</translation>
 <translation id="2686919536310834199">Կարծիք ուղարկեք «Օգնիր ինձ գրել» գործառույթի մասին</translation>
 <translation id="2687555958734450033">Լավագույն տարբերակ</translation>
@@ -3095,6 +3096,7 @@
 <translation id="5787146423283493983">Բանալիների համաձայնեցում</translation>
 <translation id="5793317771769868848">Վճարման այս եղանակը կջնջվի այս սարքից</translation>
 <translation id="5794065675298686371">Միացրեք գների հետագծման ծանուցումները</translation>
+<translation id="5797984091151707075">Արգելափակված է ադմինիստրատորի սահմանած կանոնների հիման վրա</translation>
 <translation id="5800727402210090597">Բջջային հեռախոսների վերանորոգում և սպասարկում</translation>
 <translation id="580241730938216256">Թարմացնել</translation>
 <translation id="5804241973901381774">Թույլտվություններ</translation>
@@ -5261,7 +5263,6 @@
 <translation id="9186371298532546532">Ավելացրեք այս հասցեն ավելի շատ վայրերում</translation>
 <translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> օգտատերը փոփոխել է այս ներդիրը</translation>
 <translation id="9189789270972826888">Եթե քարտի տվյալները չեն լրացվել, ներքևում սեղմեք քարտի տվյալների վրա, որպեսզի պատճենեք և տեղադրեք։ <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
-<translation id="9190557999028587593">4 շաբաթից հին թեմաներն ավտոմատ ջնջվում են</translation>
 <translation id="9191834167571392248">Անցք ներքևի ձախ կողմում</translation>
 <translation id="9192361865877479444">Մետաղ (անփայլ)</translation>
 <translation id="9192947025498305328">Էկոլոգիապես մաքուր կոսմետիկա</translation>

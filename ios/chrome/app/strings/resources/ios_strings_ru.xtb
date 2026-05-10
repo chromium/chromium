@@ -442,7 +442,6 @@
 <translation id="2493269659028026145">Блокировать сразу, используя <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="2496180316473517155">История браузера</translation>
 <translation id="2496626742194544812">Перейти к первой вкладке</translation>
-<translation id="2497852260688568942">Ваш администратор отключил синхронизацию</translation>
 <translation id="2499505845365628575">Чтобы посмотреть историю браузера, выберите "<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />".</translation>
 <translation id="2511117522375201202">Раскрытых паролей: <ph name="NUMBER_OF_PASSWORDS" />. Ваша безопасность под угрозой.</translation>
 <translation id="2513103768503127042">Здесь хранятся группы вкладок</translation>
@@ -567,6 +566,7 @@
 <translation id="2969979262385602596">Не удалось войти в аккаунт. Повторите попытку.</translation>
 <translation id="2975761176769946178">Необходимо указать URL.</translation>
 <translation id="297667759942911166">Совместная работа в группах вкладок</translation>
+<translation id="298696743524648170">Чтобы использовать Gemini в Chrome, войдите в браузер с аккаунтом Google.</translation>
 <translation id="2987670534697681860">Чтобы получить доступ ко всем паролям на этом устройстве, подтвердите личность.</translation>
 <translation id="2989523299700148168">Недавние</translation>
 <translation id="2989805286512600854">Открыть в новой вкладке</translation>
@@ -621,6 +621,7 @@
 <translation id="31652791196570636">Закрыть</translation>
 <translation id="3167868116600277716">Лента рекомендаций</translation>
 <translation id="3169472444629675720">Рекомендации</translation>
+<translation id="3172755898799085680">Gemini недоступен на этой странице.</translation>
 <translation id="3174662312949010067">Вы также можете использовать сохраненные пароли на других своих устройствах.</translation>
 <translation id="3177338796769255211">Войдите, чтобы получить доступ к закладкам и многому другому на всех своих устройствах.</translation>
 <translation id="3181954750937456830">Безопасный просмотр (защищает вас и ваше устройство от опасных сайтов)</translation>
@@ -996,6 +997,7 @@
 <translation id="4552042254369397518">Копирование…</translation>
 <translation id="4553044860350038560">Другие ключи доступа</translation>
 <translation id="4564893319561643483">Скрыть карточку "<ph name="TITLE" />"</translation>
+<translation id="456502772933839252">Вы вместе смотрите <ph name="PAGE_TITLE" />.</translation>
 <translation id="4565377596337484307">Скрыть пароль</translation>
 <translation id="4568230126482344545">Скрыть раздел "Недавние вкладки"</translation>
 <translation id="4578835633387306383">Включить</translation>
@@ -1749,7 +1751,7 @@
 <translation id="7029809446516969842">Пароли</translation>
 <translation id="7035825883570480307">Включить уведомления?</translation>
 <translation id="7039345315346323556">Недавние</translation>
-<translation id="704692552158601232">Приложение браузера по умолчанию</translation>
+<translation id="704692552158601232">Браузер по умолчанию</translation>
 <translation id="7055240621761583113">Автозаполнение пароля</translation>
 <translation id="7057567173736333354">Опишите изображение</translation>
 <translation id="7063811929043357292">Твоим аккаунтом управляет твой родитель.

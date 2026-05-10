@@ -442,7 +442,6 @@
 <translation id="2493269659028026145">Заключване незабавно чрез <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="2496180316473517155">История на сърфирането</translation>
 <translation id="2496626742194544812">Към първия раздел</translation>
-<translation id="2497852260688568942">Синхронизирането е деактивирано от администратора ви</translation>
 <translation id="2499505845365628575">Можете да намерите цялата си история на сърфиране чрез „<ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />“.</translation>
 <translation id="2511117522375201202">Имате <ph name="NUMBER_OF_PASSWORDS" /> компрометирани пароли, които могат да представляват риск за сигурността ви.</translation>
 <translation id="2513103768503127042">Тук ще намерите групите си раздели</translation>
@@ -2001,6 +2000,7 @@
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939856641500914040">Изтриване на данните за сърфирането…</translation>
 <translation id="7941578031639087549">{count,plural, =1{Страницата бе добавена към списъка за четене в профила ви {email}}other{{count} страници бяха добавени към списъка за четене в профила ви {email}}}</translation>
+<translation id="7948579849190819732">Текущ раздел</translation>
 <translation id="7952353944614086413">Вашите отворени раздели и групи</translation>
 <translation id="7952670906562503188">Напът сте да изтриете {passkey_count} ключа за достъп и списъка със сайтове и приложения, за които сте избрали данните за вход никога да не се запазват. Профилите, които сте създали за сайтове или приложения, няма да бъдат изтрити.</translation>
 <translation id="7958575506592576831">Информация за сигурността на страницата</translation>

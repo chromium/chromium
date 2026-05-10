@@ -754,6 +754,7 @@
 <translation id="2168151236314517198">Бул нерсени басып чыгаруу аракети администраторуңуздун саясаты менен бөгөттөлгөн</translation>
 <translation id="2171244127100824330"><ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> кызматындагы <ph name="ACCOUNT" /></translation>
 <translation id="2172089022819052306">Унааны оңдоо жана тейлөө</translation>
+<translation id="217231402430591139">Аккаунтуңузду байланыштырыңыз</translation>
 <translation id="2173302385160625112">Интернет байланышыңызды текшериңиз</translation>
 <translation id="2174875517416416684">Транзакция аткарылбай калды. Эсебиңизден каражат алынган жок.</translation>
 <translation id="2175630235841878061">Өлчөмү 100 Мб жогору файлды жүктөп алууга болбойт</translation>
@@ -1096,6 +1097,7 @@
 <translation id="2677748264148917807">Чыгуу</translation>
 <translation id="2679216653373462289">Кыймыл жана жарык сенсорлорун колдонуу</translation>
 <translation id="2679659833697380">Маалыматыңыз түзмөгүңүзгө сакталды</translation>
+<translation id="2680837394649649718"><ph name="DEVICE_NAME" /> түзмөгүндөгү Chrome'го жөнөтүлдү.</translation>
 <translation id="2683195745483370038">Табылган башка натыйжалар</translation>
 <translation id="2686919536310834199">Жазууга жардам бер функциясы үчүн пикир билдирүү.</translation>
 <translation id="2687555958734450033">Туура формат</translation>
@@ -3085,6 +3087,7 @@
 <translation id="5787146423283493983">Негизги макулдашуу</translation>
 <translation id="5793317771769868848">Бул төлөм ыкмасы ушул түзмөктөн өчүрүлөт</translation>
 <translation id="5794065675298686371">Бааларга көз салуу билдирмелерин күйгүзүү</translation>
+<translation id="5797984091151707075">Администратордун эрежелери менен бөгөттөлгөн</translation>
 <translation id="5800727402210090597">Мобилдик телефондорду оңдоо жана тейлөө</translation>
 <translation id="580241730938216256">Жаңыртып баштоо</translation>
 <translation id="5804241973901381774">Уруксаттар</translation>
@@ -3214,6 +3217,7 @@
 <translation id="6006365096047131769">3 x 5 дюйм</translation>
 <translation id="6008122969617370890">N–1 ирети</translation>
 <translation id="6008256403891681546">JCB</translation>
+<translation id="6012135807160718387">Google шифрлөөсү маалыматыңызды коргойт</translation>
 <translation id="6014801569448771146">Сырсөздөрүңүздү текшериңиз</translation>
 <translation id="6014851866995737824">"Иштетүү" же "өчүрүү" тизмеси берилбегендиктен, этибарга алынган жок.</translation>
 <translation id="6015796118275082299">Жыл</translation>
@@ -5252,7 +5256,6 @@
 <translation id="9186371298532546532">Бул дарек башка жерлерде колдонулсун</translation>
 <translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> бул өтмөктү өзгөрттү</translation>
 <translation id="9189789270972826888">Эгер карта толтурулбаган болсо, көчүрүү жана чаптоо үчүн төмөндөгү картанын чоо-жайын чыкылдатыңыз. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
-<translation id="9190557999028587593">4 апта мурун изделген темалар өзү өчүп калат</translation>
 <translation id="9191834167571392248">Төмөнкү сол жагын тешүү</translation>
 <translation id="9192361865877479444">Металл (Жылтырабаган кагаз)</translation>
 <translation id="9192947025498305328">Таза сулуулук</translation>

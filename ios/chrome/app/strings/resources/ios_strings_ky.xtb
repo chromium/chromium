@@ -442,7 +442,6 @@
 <translation id="2493269659028026145"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> менен дароо кулпулоо</translation>
 <translation id="2496180316473517155">Серептөө таржымалы</translation>
 <translation id="2496626742194544812">Биринчи өтмөккө өтүү</translation>
-<translation id="2497852260688568942">Шайкештирүү функциясын администраторуңуз өчүрүп койгон</translation>
 <translation id="2499505845365628575">Көрүлгөн вебсайттарды <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" /> аркылуу таба аласыз.</translation>
 <translation id="2511117522375201202">Коопсуздугуңузду тобокелге салуучу <ph name="NUMBER_OF_PASSWORDS" /> уурдалган сырсөзүңүз бар.</translation>
 <translation id="2513103768503127042">Өтмөктөр топторун ушул жерден табасыз</translation>
@@ -567,6 +566,7 @@
 <translation id="2969979262385602596">Кире албай калдңз. Бир аздн кийн аракт кылп көрңз.</translation>
 <translation id="2975761176769946178">URL талап кылынат</translation>
 <translation id="297667759942911166">Өтмөктөр тобунда кызматташуу</translation>
+<translation id="298696743524648170">Chrome'догу Gemini'ды колдонуу үчүн Chrome'го Google аккаунтуңуз менен кириңиз</translation>
 <translation id="2987670534697681860">Бул түзмөктөгү бардык сырсөздөрүңүздү алуу үчүн сиз экениңизди ырастаңыз.</translation>
 <translation id="2989523299700148168">Жакында колдонулгандар</translation>
 <translation id="2989805286512600854">Жаңы өтмөктө ачуу</translation>
@@ -621,6 +621,7 @@
 <translation id="31652791196570636">Жабуу</translation>
 <translation id="3167868116600277716">Сунуштар түрмөгү</translation>
 <translation id="3169472444629675720">Аныктоо</translation>
+<translation id="3172755898799085680">Gemini бул баракта иштебейт</translation>
 <translation id="3174662312949010067">Сакталган сырсөздөрдү башка түзмөктөрүңүздө да колдонсоңуз болот.</translation>
 <translation id="3177338796769255211">Бардык түзмөктөрүңүздө кыстармаларды жана башка нерселерди алуу үчүн аккаунтуңузга кириңиз</translation>
 <translation id="3181954750937456830">Коопсуз серептөө (сизди жана түзмөгүңүздү кооптуу сайттардан коргойт)</translation>
@@ -996,6 +997,7 @@
 <translation id="4552042254369397518">Көчүрүлүүдө…</translation>
 <translation id="4553044860350038560">Дагы башка киргизүүчү ачкычтар</translation>
 <translation id="4564893319561643483">Жашыруу: "<ph name="TITLE" />"</translation>
+<translation id="456502772933839252"><ph name="PAGE_TITLE" /> бөлүшүлүүдө</translation>
 <translation id="4565377596337484307">Сырсөздү жашыруу</translation>
 <translation id="4568230126482344545">"Акыркы өтмөктөр" параметрин жашыруу</translation>
 <translation id="4578835633387306383">Күйгүзүү…</translation>
@@ -2001,6 +2003,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939856641500914040">Серептөө дайындарын өчүрүү…</translation>
 <translation id="7941578031639087549">{count,plural, =1{Барак {email} аккаунтуңуздагы окуу тизмесине кошулду}other{{count} барак {email} аккаунтуңуздагы окуу тизмесине кошулду}}</translation>
+<translation id="7948579849190819732">Учурдагы өтмөк</translation>
 <translation id="7952353944614086413">Ачык өтмөктөрүңүз жана топторуңуз</translation>
 <translation id="7952670906562503188">{passkey_count} киргизүүчү ачкычты жана кирүү маалыматы эч качан сакталбай турган сайттардын жана колдонмолордун тизмесин өчүргөнү турасыз. Сайттарда же колдонмолордо түзүлгөн аккаунт өчүрүлбөйт.</translation>
 <translation id="7958575506592576831">Баракчанын коопсуздук маалыматы</translation>

@@ -119,7 +119,6 @@
 <translation id="2174917724755363426">Установка не завершена. Отменить ее?</translation>
 <translation id="2186206192313702726">Google Объектив</translation>
 <translation id="2190166659037789668">Ошибка проверки обновлений: <ph name="UPDATE_CHECK_ERROR" />.</translation>
-<translation id="2199691482078155239">Chrome дает больше контроля над тем, какие объявления вы видите и какую информацию о вас могут получать сайты при персонализации рекламы</translation>
 <translation id="2216543877350048334">Чтобы удалить аккаунт Google из браузера, выйдите из Chrome</translation>
 <translation id="2236949375853147973">Мои действия</translation>
 <translation id="22791603784558743">Закрыть Gemini в Chrome для разработчиков</translation>
@@ -146,6 +145,9 @@
 <translation id="2569974318947988067">Chrome будет менять используемый протокол на HTTPS, где это возможно.</translation>
 <translation id="2571392474191184472">Ваша организация управляет Chrome</translation>
 <translation id="2574930892358684005">Пользователь <ph name="EXISTING_USER" /> уже вошел в этот профиль Chrome. Вы можете создать свой профиль, чтобы использовать браузер Chrome отдельно.</translation>
+<translation id="2575799939951057838">В целях безопасности Chrome отключает оптимизацию JavaScript, когда вы впервые посещаете сайт.
+
+Если эта страница работает не так, как ожидалось, попробуйте разрешить оптимизацию.</translation>
 <translation id="2580411288591421699">Не удается установить версию Google Chrome, аналогичную уже выполняемой. Закройте Google Chrome и повторите попытку.</translation>
 <translation id="2586406160782125153">Данные о работе в браузере будут удалены с устройства. Чтобы восстановить данные позже, войдите в Chrome как <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">Не удалось кешировать скачанный установщик. Ошибка: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
@@ -651,7 +653,6 @@
 <translation id="7655472416356262023">Удалить аккаунт из Chrome</translation>
 <translation id="7658239707568436148">Отмена</translation>
 <translation id="7670287553302121848">Необходимо снова войти в аккаунт Chrome</translation>
-<translation id="7675756456029023637">Спросить Chrome</translation>
 <translation id="769538538642757151">Мы сообщим, если потребуется что-то проверить</translation>
 <translation id="769906121737764913">Закрыть Gemini в бета-версии Chrome</translation>
 <translation id="7716950018788545737">Одна или несколько задач прерваны.</translation>

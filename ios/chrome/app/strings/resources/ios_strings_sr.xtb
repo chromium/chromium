@@ -442,7 +442,6 @@
 <translation id="2493269659028026145">Одмах закључај помоћу: <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="2496180316473517155">Историја прегледања</translation>
 <translation id="2496626742194544812">Иде на прву картицу</translation>
-<translation id="2497852260688568942">Администратор је онемогућио синхронизацију</translation>
 <translation id="2499505845365628575">Комплетну историју прегледања можете да прегледате помоћу дугмета <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="2511117522375201202">Број угрожених лозинки које могу да угрозе безбедност је <ph name="NUMBER_OF_PASSWORDS" />.</translation>
 <translation id="2513103768503127042">Овде ћете пронаћи групе картица</translation>
@@ -567,6 +566,7 @@
 <translation id="2969979262385602596">Пријављивање није успело. Пробајте поново касније.</translation>
 <translation id="2975761176769946178">URL је обавезан</translation>
 <translation id="297667759942911166">Сарађујте у групама картица</translation>
+<translation id="298696743524648170">Да бисте користили Gemini у Chrome-у, пријавите се у Chrome помоћу Google налога</translation>
 <translation id="2987670534697681860">Потврдите идентитет да бисте приступили свим лозинкама на овом уређају.</translation>
 <translation id="2989523299700148168">Недавно посећено</translation>
 <translation id="2989805286512600854">Отвори на новој картици</translation>
@@ -621,6 +621,7 @@
 <translation id="31652791196570636">Одбаци</translation>
 <translation id="3167868116600277716">Discover фид</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3172755898799085680">Gemini није доступан на овој страници</translation>
 <translation id="3174662312949010067">Можете да користите сачуване лозинке и на другим уређајима.</translation>
 <translation id="3177338796769255211">Пријавите се да бисте приступали обележивачима и другом садржају на свим уређајима</translation>
 <translation id="3181954750937456830">Безбедно прегледање (штити вас и уређај од опасних сајтова)</translation>
@@ -996,6 +997,7 @@
 <translation id="4552042254369397518">Копира се…</translation>
 <translation id="4553044860350038560">Још приступних кључева</translation>
 <translation id="4564893319561643483">Сакријте „<ph name="TITLE" />“</translation>
+<translation id="456502772933839252">Дели се страница <ph name="PAGE_TITLE" /></translation>
 <translation id="4565377596337484307">Сакриј лозинку</translation>
 <translation id="4568230126482344545">Сакриј Недавне картице</translation>
 <translation id="4578835633387306383">Укључи…</translation>
@@ -2001,6 +2003,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7938254975914653459">FaceTime</translation>
 <translation id="7939856641500914040">Избриши податке прегледања…</translation>
 <translation id="7941578031639087549">{count,plural, =1{Страница је додата на листу за читање на налогу, {email}}one{{count} страница је додата на листу за читање на налогу, {email}}few{{count} странице су додате на листу за читање на налогу, {email}}other{{count} страница је додато на листу за читање на налогу, {email}}}</translation>
+<translation id="7948579849190819732">Актуелна картица</translation>
 <translation id="7952353944614086413">Отворене картице и групе</translation>
 <translation id="7952670906562503188">Ускоро ћете избрисати приступне кључеве ({passkey_count}) и листу сајтова и апликација за које сте одабрали да никада не чувате податке за пријављивање. Налози које сте отворили за сајтове и апликације неће бити избрисани.</translation>
 <translation id="7958575506592576831">Информације о безбедности странице</translation>

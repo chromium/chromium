@@ -271,6 +271,7 @@
 <translation id="2226826835915474236">Неактивные быстрые команды</translation>
 <translation id="2227179592712503583">Удалить подсказку</translation>
 <translation id="2227444325776770048">Продолжить как <ph name="USER_FULL_NAME" /></translation>
+<translation id="2230411774874187555">Получите доступ ко всем сохраненным данным</translation>
 <translation id="2230777942707397948">Пустое окно</translation>
 <translation id="223356358902285214">История приложений и веб-поиска</translation>
 <translation id="2233735624724508540">Выберите период и нажмите "Удалить данные".</translation>
@@ -483,6 +484,7 @@
 <translation id="3057938290530993634">Нажмите и удерживайте, чтобы закрепить часто посещаемые сайты для быстрого доступа.</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> закладка}one{<ph name="BOOKMARKS_COUNT_MANY" /> закладка}few{<ph name="BOOKMARKS_COUNT_MANY" /> закладки}many{<ph name="BOOKMARKS_COUNT_MANY" /> закладок}other{<ph name="BOOKMARKS_COUNT_MANY" /> закладки}}</translation>
 <translation id="3062802207422175757">Прочитайте в Chrome статьи, подобранные с учетом ваших интересов.</translation>
+<translation id="3066107845790462226">Скачать кадр видео</translation>
 <translation id="3066573403916685335">Перейти вниз</translation>
 <translation id="3067505415088964188">Низкая цена</translation>
 <translation id="3070005020161560471">Переводить автоматически</translation>
@@ -1216,6 +1218,7 @@
 <translation id="6264485186158353794">Вернуться к безопасной странице</translation>
 <translation id="6267106249090587268">Уведомления <ph name="SEPARATOR" /> Chrome отозвал эти разрешения из-за спама или недостоверной информации</translation>
 <translation id="6276708887952587684">Посмотреть исходный код страницы</translation>
+<translation id="62768169905160414">Скопировать кадр видео</translation>
 <translation id="6277522088822131679">Не удалось распечатать страницу. Повторите попытку.</translation>
 <translation id="6278428485366576908">Тема</translation>
 <translation id="6291294824436685757">Удалить данные о работе в браузере; выбрать, какие данные удалить</translation>

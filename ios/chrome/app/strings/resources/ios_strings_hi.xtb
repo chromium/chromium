@@ -442,7 +442,6 @@
 <translation id="2493269659028026145"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> से तुरंत लॉक करें</translation>
 <translation id="2496180316473517155">ब्राउज़िंग इतिहास</translation>
 <translation id="2496626742194544812">पहले टैब पर जाएं</translation>
-<translation id="2497852260688568942">सिंक को आपके व्यवस्थापक ने अक्षम कर दिया है</translation>
 <translation id="2499505845365628575">आपको अपना पूरा ब्राउज़िंग इतिहास, <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" /> से मिल सकता है.</translation>
 <translation id="2511117522375201202">आपके <ph name="NUMBER_OF_PASSWORDS" /> पासवर्ड या तो हैक हुए हैं या चोरी हुए हैं. इनसे आपकी सुरक्षा को खतरा हो सकता है.</translation>
 <translation id="2513103768503127042">आपको अपने टैब ग्रुप यहां दिखेंगे</translation>
@@ -567,6 +566,7 @@
 <translation id="2969979262385602596">साइन इन नहीं हो पाया. बाद में फिर से कोशिश करें.</translation>
 <translation id="2975761176769946178">यूआरएल ज़रूरी है</translation>
 <translation id="297667759942911166">टैब ग्रुप में मिलकर काम करें</translation>
+<translation id="298696743524648170">'Chrome में Gemini' का इस्तेमाल करने के लिए, अपने Google खाते से Chrome में साइन इन करें</translation>
 <translation id="2987670534697681860">इस डिवाइस से अपने सभी पासवर्ड ऐक्सेस करने के लिए, अपनी पहचान की पुष्टि करें.</translation>
 <translation id="2989523299700148168">हाल ही में देखे गए</translation>
 <translation id="2989805286512600854">नए टैब में खोलें</translation>
@@ -621,6 +621,7 @@
 <translation id="31652791196570636">खारिज करें</translation>
 <translation id="3167868116600277716">डिस्कवर फ़ीड</translation>
 <translation id="3169472444629675720">डिस्कवर</translation>
+<translation id="3172755898799085680">इस पेज पर Gemini की सुविधा उपलब्ध नहीं है</translation>
 <translation id="3174662312949010067">सेव किए गए पासवर्ड आपके दूसरे डिवाइसों पर भी इस्तेमाल किए जा सकते हैं.</translation>
 <translation id="3177338796769255211">अपने सभी डिवाइसों पर बुकमार्क वगैरह का ऐक्सेस पाने के लिए साइन इन करें</translation>
 <translation id="3181954750937456830">सुरक्षित ब्राउज़िंग (आपकी और आपके डिवाइस की खतरनाक साइट से सुरक्षा करती है)</translation>
@@ -996,6 +997,7 @@
 <translation id="4552042254369397518">कॉपी किया जा रहा है…</translation>
 <translation id="4553044860350038560">और पासकी</translation>
 <translation id="4564893319561643483">"<ph name="TITLE" />" छिपाएं</translation>
+<translation id="456502772933839252"><ph name="PAGE_TITLE" /> को शेयर किया जा रहा है</translation>
 <translation id="4565377596337484307">पासवर्ड छिपाएं</translation>
 <translation id="4568230126482344545">हाल ही के टैब छिपाएं</translation>
 <translation id="4578835633387306383">चालू करें…</translation>

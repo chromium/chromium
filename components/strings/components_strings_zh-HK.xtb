@@ -754,6 +754,7 @@
 <translation id="2168151236314517198">管理員政策禁止列印此內容</translation>
 <translation id="2171244127100824330">在 <ph name="ACCOUNT" /> 的「<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />」</translation>
 <translation id="2172089022819052306">汽車維修和保養</translation>
+<translation id="217231402430591139">連結你的帳戶</translation>
 <translation id="2173302385160625112">檢查互聯網連線</translation>
 <translation id="2174875517416416684">交易不成功。你的帳戶未有扣款。</translation>
 <translation id="2175630235841878061">無法下載超過 100 MB 的檔案</translation>
@@ -3216,6 +3217,7 @@
 <translation id="6006365096047131769">3 x 5 吋</translation>
 <translation id="6008122969617370890">N 至 1 的順序</translation>
 <translation id="6008256403891681546">JCB 卡</translation>
+<translation id="6012135807160718387">Google 加密技術可保護你的資料</translation>
 <translation id="6014801569448771146">請檢查您的密碼</translation>
 <translation id="6014851866995737824">此政策缺少「啟用」或「停用」清單，因此系統已忽略。</translation>
 <translation id="6015796118275082299">年</translation>
@@ -5254,7 +5256,6 @@
 <translation id="9186371298532546532">在更多地方使用此地址</translation>
 <translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" />已變更此分頁</translation>
 <translation id="9189789270972826888">如果系統尚未自動填寫資料，按一下下方的信用卡詳情即可複製並貼上。<ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
-<translation id="9190557999028587593">系統會自動刪除 4 週前的主題</translation>
 <translation id="9191834167571392248">打孔 (左下方)</translation>
 <translation id="9192361865877479444">金屬 (啞面)</translation>
 <translation id="9192947025498305328">潔淨美容</translation>

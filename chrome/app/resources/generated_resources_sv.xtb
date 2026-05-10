@@ -3448,7 +3448,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3347086966102161372">K&amp;opiera bildadress</translation>
 <translation id="3348038390189153836">En mobil enhet har upptäckts</translation>
 <translation id="3348973040180736882">Packar upp</translation>
-<translation id="3349610303043713601">Surfa med AI</translation>
 <translation id="3349933790966648062">Minnesanvändning</translation>
 <translation id="3351472127384196879">Lägg till eller hitta knappar på pennan</translation>
 <translation id="3353786022389205125">Aktivera Visa låsskärm efter viloläge och försök igen</translation>
@@ -4994,7 +4993,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4405781821077215583">Gör objekt på skärmen, bland annat text, mindre eller större</translation>
 <translation id="4406308048672435032">Du kan inaktivera den här fliken eller uppdatera för att se hela listan igen</translation>
 <translation id="4406881185911439342">Grupp i fokus</translation>
-<translation id="4406883609789734330">Live Caption</translation>
+<translation id="4406883609789734330">Livetextning</translation>
 <translation id="4406963243402726564">Data som inte har sparats</translation>
 <translation id="4408599188496843485">H&amp;jälp</translation>
 <translation id="4409340274650920844">{NUM_APPS,plural,offset:2 =1{Administratören kan spela in din skärm med <ph name="APP0_NAME" />. Du får en avisering när inspelningen startar.}=2{Administratören kan spela in din skärm med <ph name="APP0_NAME" /> och <ph name="APP1_NAME" />. Du får en avisering när inspelningen startar.}=3{Administratören kan spela in din skärm med <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> och en annan app. Du får en avisering när inspelningen startar.}other{Administratören kan spela in skärmen med <ph name="APP0_NAME" />, <ph name="APP1_NAME" /> och # andra appar. Du får en avisering när inspelningen startar.}}</translation>

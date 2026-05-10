@@ -1097,6 +1097,7 @@
 <translation id="2677748264148917807">ছেড়ে চলে যান</translation>
 <translation id="2679216653373462289">আপনার মোশন ও লাইট সেন্সর ব্যবহার করা</translation>
 <translation id="2679659833697380">আপনার তথ্য ডিভাইসে সেভ করা হয়েছে</translation>
+<translation id="2680837394649649718">আপনার <ph name="DEVICE_NAME" />-এ Chrome-এ পাঠানো হয়েছে।</translation>
 <translation id="2683195745483370038">অন্য ফলাফল পাওয়া গেছে</translation>
 <translation id="2686919536310834199">'লিখতে সাহায্য করো' ফিচার সম্পর্কে মতামত পাঠান।</translation>
 <translation id="2687555958734450033">সবচেয়ে মানানসই</translation>
@@ -3087,6 +3088,7 @@
 <translation id="5787146423283493983">কী চুক্তি</translation>
 <translation id="5793317771769868848">এই ডিভাইস থেকে এই পেমেন্ট পদ্ধতি মুছে ফেলা হবে</translation>
 <translation id="5794065675298686371">প্রাইস ট্র্যাকিং বিজ্ঞপ্তি চালু করুন</translation>
+<translation id="5797984091151707075">অ্যাডমিন নীতি অনুযায়ী ব্লক করা হয়েছে</translation>
 <translation id="5800727402210090597">মোবাইল ফোন মেরামত ও পরিষেবা</translation>
 <translation id="580241730938216256">আপডেট শুরু করুন</translation>
 <translation id="5804241973901381774">অনুমতিগুলি</translation>
@@ -5254,7 +5256,6 @@
 <translation id="9186371298532546532">একাধিক জায়গায় এই ঠিকানাটি ব্যবহার করুন</translation>
 <translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> এই ট্যাব পরিবর্তন করেছেন</translation>
 <translation id="9189789270972826888">কার্ডের বিবরণ পূরণ করা না হলে, কপি ও পেস্ট করতে নিচে দেওয়া কার্ডের বিবরণে ক্লিক করুন। <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
-<translation id="9190557999028587593">৪ সপ্তাহের বেশি পুরনো বিষয় অটোমেটিক মুছে দেওয়া হয়</translation>
 <translation id="9191834167571392248">নিচে বাঁদিকে পাঞ্চ করুন</translation>
 <translation id="9192361865877479444">মেটাল (ম্যাট)</translation>
 <translation id="9192947025498305328">ক্লিন বিউটি</translation>

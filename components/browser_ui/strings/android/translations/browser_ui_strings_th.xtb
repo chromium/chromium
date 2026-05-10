@@ -529,6 +529,7 @@
 <translation id="6447842834002726250">คุกกี้</translation>
 <translation id="6452138246455930388">ราคาต่ำลงในแท็บที่เปิดอยู่ จาก <ph name="OLD_PRICE" /> เป็น <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">เมื่อใช้หน้าต่างที่แคบ ให้ขอมุมมองบนมือถือ</translation>
+<translation id="6514791408445720076">ปรับแต่งหน้าเว็บ</translation>
 <translation id="6527303717912515753">แชร์</translation>
 <translation id="6530703012083415527">เมื่อเปิด เว็บไซต์จะใช้ป๊อปอัปและการเปลี่ยนเส้นทางได้ เมื่อปิด เว็บไซต์จะใช้ป๊อปอัปและการเปลี่ยนเส้นทางไม่ได้</translation>
 <translation id="6540488083026747005">คุณอนุญาตคุกกี้ของบุคคลที่สามสำหรับเว็บไซต์นี้</translation>
@@ -706,6 +707,7 @@
 <translation id="83792324527827022">มีเว็บไซต์กำลังใช้กล้องถ่ายรูปและไมโครโฟน</translation>
 <translation id="8380167699614421159">เว็บไซต์นี้แสดงโฆษณาที่แทรกหรือทำให้เข้าใจผิด</translation>
 <translation id="8394832520002899662">แตะเพื่อกลับไปที่เว็บไซต์</translation>
+<translation id="8404500559369898929">ปรับเปลี่ยน Chrome ในแบบของคุณด้วยการเลือกธีมพื้นหลังที่กำหนดเอง</translation>
 <translation id="8409345997656833551">รับการแจ้งเตือนเมื่อแสดงบทความในมุมมองอย่างง่ายได้</translation>
 <translation id="8416874502399604126">อนุญาตให้ใช้ไมโครโฟนในครั้งนี้</translation>
 <translation id="8423565414844018592">ตั้งค่าการปรับขนาดข้อความเป็น <ph name="TEXT_SCALING" /></translation>

@@ -1676,6 +1676,7 @@
 <translation id="8030852056903932865">核准</translation>
 <translation id="8032569120109842252">追蹤中</translation>
 <translation id="8035522026858423976"><ph name="TAB_TITLE" />，選取的無痕分頁，已設為靜音</translation>
+<translation id="8036587585440959897">部分擴充功能可以將搜尋引擎新增到 Chrome</translation>
 <translation id="8037750541064988519">還剩 <ph name="DAYS" /> 天</translation>
 <translation id="8037801708772278989">剛剛檢查</translation>
 <translation id="804335162455518893">找不到 SD 卡</translation>
@@ -1962,6 +1963,7 @@
 <translation id="9169507124922466868">已在畫面下半部顯示瀏覽記錄</translation>
 <translation id="9189607089796819144">仍要下載「<ph name="FILE_NAME" />」(<ph name="FILE_SIZE" />) 嗎？</translation>
 <translation id="9190276265094487094">所有已同步的裝置上都會有你的歷史記錄，方便你繼續執行先前的工作</translation>
+<translation id="9190355771000652811">在網址列中，將此鍵盤快速鍵與搜尋引擎和搜尋捷徑搭配使用。</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" />，選取的固定無痕分頁</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{已在 1 分鐘前檢查}other{已在 # 分鐘前檢查}}</translation>
 <translation id="9204836675896933765">還剩 1 個檔案</translation>

@@ -122,7 +122,6 @@
 <translation id="2174917724755363426">ઇન્સ્ટૉલેશનની પ્રક્રિયા પૂર્ણ થઈ નથી. શું તમે ખરેખર રદ કરવા માગો છો?</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2190166659037789668">અપડેટ ચેક કરવામાં ભૂલ: <ph name="UPDATE_CHECK_ERROR" />.</translation>
-<translation id="2199691482078155239">તમે જુઓ છો તે જાહેરાતો માટે Chrome તમને વધુ નિયંત્રણો આપે છે અને સાઇટ તમને મનગમતી બનાવેલી જાહેરાતો બતાવે ત્યારે તે તમારા વિશે શું જાણી શકે છે તેને મર્યાદિત કરે છે</translation>
 <translation id="2216543877350048334">Chromeમાંથી તમારા Google એકાઉન્ટને કાઢી નાખવા માટે, સાઇન આઉટ કરો</translation>
 <translation id="2236949375853147973">મારી ઍક્ટિવિટી</translation>
 <translation id="22791603784558743">Chrome Devમાં Gemini બંધ કરો</translation>
@@ -149,6 +148,9 @@
 <translation id="2569974318947988067">Chrome નૅવિગેશનને HTTPS પર અપગ્રેડ કરવાનો પ્રયાસ કરશે</translation>
 <translation id="2571392474191184472">તમારી સંસ્થા Chromeને મેનેજ કરે છે</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> આ Chrome પ્રોફાઇલમાં પહેલેથી સાઇન ઇન છે. તમારું બ્રાઉઝિંગ અલગ રાખવા, Chrome તમારા માટે તમારી અલગ પ્રોફાઇલ બનાવી શકે છે.</translation>
+<translation id="2575799939951057838">સુરક્ષા માટે, જ્યારે તમે પહેલી વાર કોઈ સાઇટની મુલાકાત લો, ત્યારે Chrome JavaScript ઑપ્ટિમાઇઝેશન બંધ કરે છે.
+
+જો આ પેજ અપેક્ષા મુજબ કામ ન કરતું હોય, તો ઑપ્ટિમાઇઝેશનને મંજૂરી આપવાનો પ્રયાસ કરો.</translation>
 <translation id="2580411288591421699">હાલમાં ચાલી રહ્યું છે તે જ Google Chrome વર્ઝનને ઇન્સ્ટૉલ કરી શકાતું નથી. કૃપા કરીને Google Chrome બંધ કરો અને ફરીથી પ્રયાસ કરો.</translation>
 <translation id="2586406160782125153">આ, તમારા બ્રાઉઝિંગ ડેટાને આ ડિવાઇસમાંથી ડિલીટ કરશે. પછીથી તમારો ડેટા ફરીથી મેળવવા માટે, Chromeમાં <ph name="USER_EMAIL" /> તરીકે સાઇન ઇન કરો.</translation>
 <translation id="259935314519650377">ડાઉનલોડ કરેલા ઇન્સ્ટૉલરને કૅશ મેમરીમાં સાચવવામાં નિષ્ફળ રહ્યાં. ભૂલ: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
@@ -659,7 +661,6 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="7655472416356262023">Chromeમાંથી એકાઉન્ટ કાઢી નાખો</translation>
 <translation id="7658239707568436148">રદ કરો</translation>
 <translation id="7670287553302121848">Chrome એકાઉન્ટને પુન:પ્રમાણીકરણની જરૂર છે</translation>
-<translation id="7675756456029023637">Chromeને પૂછો</translation>
 <translation id="769538538642757151">જો કંઈપણ માટે તમારા રિવ્યૂની જરૂર હોય, તો Chrome તમને જણાવશે</translation>
 <translation id="769906121737764913">Chrome બીટામાં Gemini બંધ કરો</translation>
 <translation id="7716950018788545737">કામ સમાપ્ત થયું/થયા.</translation>

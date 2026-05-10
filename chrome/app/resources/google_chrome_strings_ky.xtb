@@ -123,7 +123,6 @@
 <translation id="2174917724755363426">Орнотулган жок. Чын эле токтотосузбу?</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2190166659037789668">Жаңыртууну текшерүү катасы: <ph name="UPDATE_CHECK_ERROR" />.</translation>
-<translation id="2199691482078155239">Chrome жарнамаларды көбүрөөк көзөмөлдөө мүмкүнчүлүгүн берет жана жекелештирилген жарнамаларды көрсөтүүдө сайттар чогулта турган сиз жөнүндө маалыматтарды чектейт</translation>
 <translation id="2216543877350048334">Google аккаунтуңузду Chromium'дан өчүрүү үчүн чыгыңыз</translation>
 <translation id="2236949375853147973">Менин аракеттерим</translation>
 <translation id="22791603784558743">Chrome Dev'деги Gemini'ды жабуу</translation>
@@ -150,6 +149,9 @@
 <translation id="2569974318947988067">Chrome чабыттоолорду HTTPS'ке жаңыртканга аракет кылат</translation>
 <translation id="2571392474191184472">Chrome'ду уюмуңуз тескейт</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> ушул Chrome профилине мурунтан эле кирип турат. Сиз серептеген нерселерди ажыратуу максатында Chrome сиз үчүн өзүнчө профиль түзүп бере алат.</translation>
+<translation id="2575799939951057838">Коопсуздук үчүн сайтты биринчи жолу ачканыңызда Chrome JavaScript'ти оптималдаштырууну өчүрөт.
+
+Эгер бул бет ойдогудай иштебей жатса, оптималдаштырууга уруксат берип көрүңүз.</translation>
 <translation id="2580411288591421699">Учурда иштеп жаткан Google Chrome версиясын орнотуу мүмкүн эмес. Google Chrome'ду жаап, дагы бир жолу аракет кылып көрүңүз.</translation>
 <translation id="2586406160782125153">Ушуну менен бул түзмөктөн серептөө дайын-даректериңиз өчүрүлөт. Дайын-даректериңизди кийинчерээк чыгарып алуу үчүн Chrome'го <ph name="USER_EMAIL" /> аккаунту менен кириңиз.</translation>
 <translation id="259935314519650377">Жүктөлүп алынган орноткучтун кеши түзүлбөй калды. Ката: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
@@ -660,7 +662,6 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="7655472416356262023">Аккаунтту Chrome'дон өчүрүү</translation>
 <translation id="7658239707568436148">Жокко чыгаруу</translation>
 <translation id="7670287553302121848">Chrome аккаунтунун аныктыгын кайрадан текшерүү керек</translation>
-<translation id="7675756456029023637">Chrome'дон суроо</translation>
 <translation id="769538538642757151">Бир нерсеге көңүл бурушуңуз керек болсо, Chrome сизге кабарлап коёт</translation>
 <translation id="769906121737764913">Chrome Бетадагы Gemini'ды жабуу</translation>
 <translation id="7716950018788545737">Жасалчу иш(-тер) аткарылды.</translation>

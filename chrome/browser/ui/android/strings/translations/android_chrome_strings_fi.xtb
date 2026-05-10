@@ -271,6 +271,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="2226826835915474236">Ei-aktiiviset pikakomennot</translation>
 <translation id="2227179592712503583">Poista ehdotus</translation>
 <translation id="2227444325776770048">Jatka tilillä <ph name="USER_FULL_NAME" /></translation>
+<translation id="2230411774874187555">Saat kaikki tallennetut tiedot</translation>
 <translation id="2230777942707397948">Tyhjä ikkuna</translation>
 <translation id="223356358902285214">Verkko- ja sovellustoiminta</translation>
 <translation id="2233735624724508540">Valitse aikaväli ja napauta sitten Poista data</translation>
@@ -483,6 +484,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="3057938290530993634">Kiinnitä useimmin avaamasi verkkosivustot koskettamalla pitkään, niin löydät ne helposti seuraavalla kerralla</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> kirjanmerkki}other{<ph name="BOOKMARKS_COUNT_MANY" /> kirjanmerkkiä}}</translation>
 <translation id="3062802207422175757">Artikkeleita kiinnostuksen kohteistasi Chromessa</translation>
+<translation id="3066107845790462226">Lataa videon yksittäiskuva</translation>
 <translation id="3066573403916685335">Siirrä alas</translation>
 <translation id="3067505415088964188">Hinta on alhainen</translation>
 <translation id="3070005020161560471">Käännä nämä automaattisesti</translation>
@@ -1216,6 +1218,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="6264485186158353794">Takaisin suojaukseen</translation>
 <translation id="6267106249090587268">Ilmoitukset <ph name="SEPARATOR" /> Chrome on poistanut nämä luvat roskasisällön tai vilpillisen sisällön vuoksi</translation>
 <translation id="6276708887952587684">Näytä sivun lähdekoodi</translation>
+<translation id="62768169905160414">Kopioi videon yksittäiskuva</translation>
 <translation id="6277522088822131679">Sivua tulostettaessa tapahtui virhe. Yritä uudelleen.</translation>
 <translation id="6278428485366576908">Teema</translation>
 <translation id="6291294824436685757">Poista selausdata; valitse poistettava data</translation>

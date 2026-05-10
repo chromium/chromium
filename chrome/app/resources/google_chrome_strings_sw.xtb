@@ -123,7 +123,6 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="2174917724755363426">Usakinishaji haujakamilika. Je, una uhakika unataka kughairi?</translation>
 <translation id="2186206192313702726">Lenzi ya Google</translation>
 <translation id="2190166659037789668">Hitilafu ya ukaguzi wa sasisho: <ph name="UPDATE_CHECK_ERROR" />.</translation>
-<translation id="2199691482078155239">Chrome hukupa udhibiti zaidi wa matangazo unayoona na hudhibiti taarifa kukuhusu ambazo tovuti zinaweza kupata zinapokuonyesha matangazo yaliyowekewa mapendeleo</translation>
 <translation id="2216543877350048334">Ili uondoe Akaunti yako ya Google kwenye Chrome, ondoka kwenye akaunti</translation>
 <translation id="2236949375853147973">Shughuli Zangu</translation>
 <translation id="22791603784558743">Funga Gemini kwenye Chrome - toleo la Dev</translation>
@@ -150,6 +149,9 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="2569974318947988067">Chrome itajaribu kuboresha usogezaji ili utumie HTTPS</translation>
 <translation id="2571392474191184472">Shirika lako linadhibiti Chrome</translation>
 <translation id="2574930892358684005">Tayari <ph name="EXISTING_USER" /> ameingia katika akaunti kwenye wasifu huu wa Chrome. Ili utenganishe shughuli zako za kuvinjari, Chrome inaweza kukutengenezea wasifu wako mwenyewe.</translation>
+<translation id="2575799939951057838">Chrome huzima kipengele cha uboreshaji wa JavaScript wakati unatembelea tovuti mara ya kwanza ili kudumisha usalama.
+
+Jaribu kuruhusu uboreshaji ikiwa ukurasa huu haufanyi kazi inavyotarajiwa.</translation>
 <translation id="2580411288591421699">Huwezi kusakinisha toleo la Google Chrome ambalo tayari linatumika. Tafadhali funga Google Chrome na ujaribu tena.</translation>
 <translation id="2586406160782125153">Hatua hii itafuta data yako ya kuvinjari kwenye kifaa hiki. Ili urejeshe data yako baadaye, ingia katika Chrome ukitumia <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">Imeshindwa kuweka akiba ya kisakinishaji kilichopakuliwa. Hitilafu: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>
@@ -660,7 +662,6 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="7655472416356262023">Ondoa akaunti kwenye Chrome</translation>
 <translation id="7658239707568436148">Ghairi</translation>
 <translation id="7670287553302121848">Akaunti ya Chrome inahitaji kuthibitisha upya</translation>
-<translation id="7675756456029023637">Uliza Chrome</translation>
 <translation id="769538538642757151">Chrome itakufahamisha ikiwa kuna chochote kinachohitaji ukague</translation>
 <translation id="769906121737764913">Funga Gemini kwenye Chrome - toleo la Beta</translation>
 <translation id="7716950018788545737">Majukumu yamekamilika.</translation>

@@ -1096,6 +1096,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2677748264148917807">Napusti</translation>
 <translation id="2679216653373462289">Upotrebljavajte senzore kretanja i svjetlosne senzore</translation>
 <translation id="2679659833697380">Vaši se podaci spremaju na vaš uređaj</translation>
+<translation id="2680837394649649718">Poslano u Chrome na uređaju <ph name="DEVICE_NAME" />.</translation>
 <translation id="2683195745483370038">Pronađeni su ostali rezultati</translation>
 <translation id="2686919536310834199">Pošaljite povratne informacije za pomoć pri pisanju.</translation>
 <translation id="2687555958734450033">Najbolja veličina</translation>
@@ -3085,6 +3086,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="5787146423283493983">Sporazum ključa</translation>
 <translation id="5793317771769868848">Taj će se način plaćanja izbrisati s ovog uređaja</translation>
 <translation id="5794065675298686371">Uključivanje obavijesti o praćenju cijena</translation>
+<translation id="5797984091151707075">Blokirano pravilima administratora</translation>
 <translation id="5800727402210090597">Popravci i usluge u vezi s mobilnim telefonima</translation>
 <translation id="580241730938216256">Pokreni ažuriranje</translation>
 <translation id="5804241973901381774">Dopuštenja</translation>
@@ -5254,7 +5256,6 @@ i netočne vjerodajnice. To može značiti da se neki napadač pokušava predsta
 <translation id="9186371298532546532">Upotrijebite tu adresu na više mjesta</translation>
 <translation id="9189468832660648522">Korisnik <ph name="MEMBER_FIRST_NAME" /> promijenio je ovu karticu</translation>
 <translation id="9189789270972826888">Kliknite podatke o kartici u nastavku da biste ih kopirali i zalijepili ako kartica nije ispunjena. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
-<translation id="9190557999028587593">Teme starije od četiri tjedna automatski se brišu</translation>
 <translation id="9191834167571392248">Bušenje pri dnu lijevo</translation>
 <translation id="9192361865877479444">Metal (mat)</translation>
 <translation id="9192947025498305328">Prirodna kozmetika</translation>

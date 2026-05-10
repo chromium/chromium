@@ -3433,7 +3433,6 @@
 <translation id="3347086966102161372">К&amp;опирај адресу слике</translation>
 <translation id="3348038390189153836">Откривен је преносиви уређај</translation>
 <translation id="3348973040180736882">Декомпримује се</translation>
-<translation id="3349610303043713601">Прегледај помоћу вештачке интелигенције</translation>
 <translation id="3349933790966648062">Меморијски простор у употреби</translation>
 <translation id="3351472127384196879">Додајте или пронађите дугмад на оловци</translation>
 <translation id="3353786022389205125">Укључите „Прикажи закључани екран при покретању из режима спавања“ и пробајте поново</translation>
@@ -6822,6 +6821,7 @@
 <translation id="5712153969432126546">Сајтови понекад објављују PDF-ове, попут докумената, уговора и образаца</translation>
 <translation id="571222594670061844">Сајтови могу да приказују упите за пријављивање из услуга за идентитет</translation>
 <translation id="5713158217420111469">Успостављена је веза са: <ph name="DEVICE" /></translation>
+<translation id="5713988532993992900">Окренуто</translation>
 <translation id="5714100381896040477">Ограничите кретање по екрану</translation>
 <translation id="5719854774000914513">Сајтови могу да траже да се повезују са HID уређајима</translation>
 <translation id="5720729194423017301">Пречице за сајтове и претраживаче</translation>
@@ -8740,6 +8740,7 @@
 <translation id="7044606776288350625">Синхронизација података</translation>
 <translation id="7050037487872780845">Неважећа конфигурација хотспота</translation>
 <translation id="7051222203795962489">{COUNT,plural, =1{Лозинка је сачувана на Google налогу, <ph name="USER_EMAIL" />}one{Лозинке су сачуване на Google налогу, <ph name="USER_EMAIL" />}few{Лозинке су сачуване на Google налогу, <ph name="USER_EMAIL" />}other{Лозинке су сачуване на Google налогу, <ph name="USER_EMAIL" />}}</translation>
+<translation id="7051728324516005763">Вештачка интелигенција у Chrome-у</translation>
 <translation id="7052762602787632571">&amp;Избриши податке прегледања…</translation>
 <translation id="705352103640172578">Водопад</translation>
 <translation id="7053983685419859001">Блокирај</translation>

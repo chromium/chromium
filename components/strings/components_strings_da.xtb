@@ -1096,6 +1096,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2677748264148917807">Forlad</translation>
 <translation id="2679216653373462289">Brug dine bevægelses- og lyssensorer</translation>
 <translation id="2679659833697380">Dine oplysninger gemmes på din enhed</translation>
+<translation id="2680837394649649718">Sendt til Chrome på din <ph name="DEVICE_NAME" />.</translation>
 <translation id="2683195745483370038">Andre resultater blev fundet</translation>
 <translation id="2686919536310834199">Send feedback om Hjælp mig med at skrive.</translation>
 <translation id="2687555958734450033">Bedste format</translation>
@@ -3086,6 +3087,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="5787146423283493983">Nøgleoverensstemmelse</translation>
 <translation id="5793317771769868848">Betalingsmetoden slettes fra denne enhed</translation>
 <translation id="5794065675298686371">Aktivér prissporingsnotifikationer</translation>
+<translation id="5797984091151707075">Blokeret af administratorpolitikken</translation>
 <translation id="5800727402210090597">Reparation og servicering af mobiltelefoner</translation>
 <translation id="580241730938216256">Start opdatering</translation>
 <translation id="5804241973901381774">Tilladelser</translation>
@@ -5255,7 +5257,6 @@ Yderligere oplysninger:
 <translation id="9186371298532546532">Brug denne adresse flere steder</translation>
 <translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> har ændret denne fane</translation>
 <translation id="9189789270972826888">Klik på kortoplysningerne nedenfor for at kopiere og indsætte, hvis kortet ikke blev udfyldt. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
-<translation id="9190557999028587593">Emner, der er mere end 4 uger gamle, slettes automatisk</translation>
 <translation id="9191834167571392248">Hul nederst til venstre</translation>
 <translation id="9192361865877479444">Metal (mat)</translation>
 <translation id="9192947025498305328">Ren skønhed</translation>

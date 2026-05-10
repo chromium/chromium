@@ -3448,7 +3448,6 @@
 <translation id="3347086966102161372">பட முகவரியை ந&amp;கலெடு</translation>
 <translation id="3348038390189153836">அகற்றத்தக்க சாதனம் கண்டறியப்பட்டது</translation>
 <translation id="3348973040180736882">டீகம்ப்ரஸ்ஸிங்</translation>
-<translation id="3349610303043713601">AI மூலம் பிரவுசிங் செய்யுங்கள்</translation>
 <translation id="3349933790966648062">நினைவகப் பயன்பாடு</translation>
 <translation id="3351472127384196879">பேனாவில் உள்ள பட்டன்களைச் சேர்த்தல்/அமைத்தல்</translation>
 <translation id="3353786022389205125">"உறக்கத்தில் இருந்து விழிக்கும்போது லாக் ஸ்கிரீனைக் காட்டு" என்பதை இயக்கிவிட்டு மீண்டும் முயலவும்</translation>
@@ -6839,6 +6838,7 @@
 <translation id="5712153969432126546">சிலசமயம் ஆவணங்கள், ஒப்பந்தங்கள், படிவங்கள் போன்ற PDFகளை தளங்கள் வெளியிடும்</translation>
 <translation id="571222594670061844">அடையாளச் சரிபார்ப்புச் சேவைகளில் இருந்து வரும் உள்நுழைவு அறிவிப்புகளைத் தளங்கள் காட்டும்</translation>
 <translation id="5713158217420111469"><ph name="DEVICE" /> உடன் இணைக்கப்பட்டது</translation>
+<translation id="5713988532993992900">இன்வெர்டெட்</translation>
 <translation id="5714100381896040477">திரையில் அனிமேஷன்களைக் குறைக்கும்</translation>
 <translation id="5719854774000914513">HID சாதனங்களுடன் தளங்கள் இணைய முயலும்போது அனுமதி கேட்க வேண்டும்</translation>
 <translation id="5720729194423017301">இணையதளங்கள் மற்றும் தேடல் இன்ஜின்களுக்கான ஷார்ட்கட்கள்</translation>
@@ -8753,6 +8753,7 @@
 <translation id="7044606776288350625">தரவை ஒத்திசைத்தல்</translation>
 <translation id="7050037487872780845">தவறான ஹாட்ஸ்பாட் உள்ளமைவு</translation>
 <translation id="7051222203795962489">{COUNT,plural, =1{உங்கள் Google கணக்கில் (<ph name="USER_EMAIL" />) கடவுச்சொல் சேமிக்கப்பட்டது}other{உங்கள் Google கணக்கில் (<ph name="USER_EMAIL" />) கடவுச்சொற்கள் சேமிக்கப்பட்டன}}</translation>
+<translation id="7051728324516005763">Chromeமில் AI</translation>
 <translation id="7052762602787632571">உலாவிய தரவை நீக்கு...</translation>
 <translation id="705352103640172578">நீர்வீழ்ச்சி</translation>
 <translation id="7053983685419859001">தடு</translation>

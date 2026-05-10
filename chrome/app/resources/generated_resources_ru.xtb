@@ -3437,7 +3437,6 @@
 <translation id="3347086966102161372">&amp;Копировать URL картинки</translation>
 <translation id="3348038390189153836">Обнаружено съемное устройство</translation>
 <translation id="3348973040180736882">Распаковка</translation>
-<translation id="3349610303043713601">Поиск с помощью ИИ</translation>
 <translation id="3349933790966648062">Память</translation>
 <translation id="3351472127384196879">Добавьте или переназначьте кнопки пера</translation>
 <translation id="3353786022389205125">Установите флажок "Показывать заблокированный экран при выходе из спящего режима" и повторите попытку.</translation>
@@ -6826,6 +6825,7 @@
 <translation id="5712153969432126546">Иногда на сайтах публикуются файлы в формате PDF, например документы, договоры или формы.</translation>
 <translation id="571222594670061844">Разрешить сайтам показывать предложения войти в аккаунт через сервисы идентификации</translation>
 <translation id="5713158217420111469">Подключено устройство "<ph name="DEVICE" />"</translation>
+<translation id="5713988532993992900">Инвертированный</translation>
 <translation id="5714100381896040477">Ограничить перемещение на экране</translation>
 <translation id="5719854774000914513">Разрешить сайтам отправлять запрос на подключение к HID-устройствам</translation>
 <translation id="5720729194423017301">Сочетания клавиш для сайтов и поисковых систем</translation>
@@ -8746,6 +8746,7 @@
 <translation id="7044606776288350625">Синхронизация данных</translation>
 <translation id="7050037487872780845">Неверная конфигурация точки доступа.</translation>
 <translation id="7051222203795962489">{COUNT,plural, =1{Пароль сохранен в вашем аккаунте Google (<ph name="USER_EMAIL" />).}one{Пароли сохранены в вашем аккаунте Google (<ph name="USER_EMAIL" />).}few{Пароли сохранены в вашем аккаунте Google (<ph name="USER_EMAIL" />).}many{Пароли сохранены в вашем аккаунте Google (<ph name="USER_EMAIL" />).}other{Пароли сохранены в вашем аккаунте Google (<ph name="USER_EMAIL" />).}}</translation>
+<translation id="7051728324516005763">ИИ в Chrome</translation>
 <translation id="7052762602787632571">&amp;Удалить данные о работе в браузере…</translation>
 <translation id="705352103640172578">Водопад</translation>
 <translation id="7053983685419859001">Блокировать</translation>

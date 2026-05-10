@@ -442,7 +442,6 @@
 <translation id="2493269659028026145">Άμεσο κλείδωμα με <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="2496180316473517155">Ιστορικό περιήγησης</translation>
 <translation id="2496626742194544812">Μετάβαση στην πρώτη καρτέλα</translation>
-<translation id="2497852260688568942">Ο συγχρονισμός έχει απενεργοποιηθεί από τον διαχειριστή σας</translation>
 <translation id="2499505845365628575">Μπορείτε να βρείτε όλο το ιστορικό περιήγησης χρησιμοποιώντας το κουμπί <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="2511117522375201202">Έχετε <ph name="NUMBER_OF_PASSWORDS" /> παραβιασμένους κωδικούς πρόσβασης που θα μπορούσαν να διακυβεύσουν την ασφάλειά σας.</translation>
 <translation id="2513103768503127042">Εδώ θα βρείτε τις ομάδες καρτελών</translation>
@@ -567,6 +566,7 @@
 <translation id="2969979262385602596">Αποτυχία σύνδεσης. Δοκιμάστε ξανά αργότερα.</translation>
 <translation id="2975761176769946178">Απαιτείται URL</translation>
 <translation id="297667759942911166">Συνεργασία σε ομάδες καρτελών</translation>
+<translation id="298696743524648170">Για να χρησιμοποιήσετε το Gemini στο Chrome, συνδεθείτε στο Chrome με τον Λογαριασμό σας Google</translation>
 <translation id="2987670534697681860">Επαληθεύστε την ταυτότητά σας, για να αποκτήσετε πρόσβαση σε όλους τους κωδικούς πρόσβασης σε αυτή τη συσκευή.</translation>
 <translation id="2989523299700148168">Πραγματοποιήθηκε επίσκεψη πρόσφατα</translation>
 <translation id="2989805286512600854">Άνοιγμα σε Νέα Καρτέλα</translation>
@@ -621,6 +621,7 @@
 <translation id="31652791196570636">Παράβλεψη</translation>
 <translation id="3167868116600277716">Ροή Discover</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3172755898799085680">Το Gemini δεν είναι διαθέσιμο σε αυτή τη σελίδα</translation>
 <translation id="3174662312949010067">Μπορείτε επίσης να αποθηκεύσετε κωδικούς πρόσβασης σε άλλες συσκευές σας.</translation>
 <translation id="3177338796769255211">Συνδεθείτε, για να έχετε στη διάθεσή σας τους σελιδοδείκτες και άλλα στοιχεία σε όλες τις συσκευές σας</translation>
 <translation id="3181954750937456830">Ασφαλής περιήγηση (προστατεύει εσάς και τη συσκευή σας από επικίνδυνους ιστοτόπους)</translation>
@@ -996,6 +997,7 @@
 <translation id="4552042254369397518">Αντιγραφή…</translation>
 <translation id="4553044860350038560">Περισσότερα κλειδιά πρόσβασης</translation>
 <translation id="4564893319561643483">Απόκρυψη <ph name="TITLE" /></translation>
+<translation id="456502772933839252">Κοινή χρήση <ph name="PAGE_TITLE" /></translation>
 <translation id="4565377596337484307">Απόκρυψη κωδικού πρόσβασης</translation>
 <translation id="4568230126482344545">Απόκρυψη Πρόσφατων καρτελών</translation>
 <translation id="4578835633387306383">Ενεργοποίηση…</translation>

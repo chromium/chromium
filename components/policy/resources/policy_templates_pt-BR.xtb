@@ -963,6 +963,7 @@ o item da política entre em vigor. A política NÃO amplia os recursos atuais d
 
 Caso a política seja deixada sem definição, é possível que o <ph name="PRODUCT_OS_NAME" /> selecione gerenciadores padrão de acordo com a lógica interna.</translation>
 <translation id="1651810147727432656">Bloquear a permissão para gerenciamento de janelas nesses sites</translation>
+<translation id="1652357791185933887">Modo Isolado desativado</translation>
 <translation id="1654087023995670109">Aplicar o modo visitante do navegador</translation>
 <translation id="1655229863189977773">Define o tamanho do cache de disco em bytes</translation>
 <translation id="1655518801232583832">Ativar a resolução de DNS do sistema fora do serviço de rede</translation>
@@ -1278,6 +1279,14 @@ A disponibilidade das extensões ainda é controlada por outras políticas.</tra
 <translation id="1858775210076906272">Configuração pré-preenchida do Kerberos</translation>
 <translation id="1861206724856734193">Define uma lista de regras para prevenção contra vazamento de dados.</translation>
 <translation id="1862267110714201519">Desativar o recurso de janela fantasma.</translation>
+<translation id="1862749749551522146">A aleatorização do tamanho do pool de soquetes é um mecanismo de segurança que impede que invasores explorem limites de capacidade determinísticos para aprender informações de sites.
+Se a capacidade de um pool for normalmente de 128 soquetes, esse mecanismo limita aleatoriamente o pool entre 128 e 256.
+Isso pode permitir até 2 vezes mais conexões com o proxy, mas, na prática, o valor esperado é de 1,2 vezes.
+
+Isso afeta as configurações de <ph name="MAX_CONNECTIONS_PER_PROXY_POLICY_NAME" /> e <ph name="MAX_CONNECTIONS_PER_PROXY_FOR_WEBSOCKET_POLICY_NAME" />.
+Em vez de essas políticas definirem o limite máximo, o limite será de 2 vezes os seus valores (embora, na prática, o valor esperado seja cerca de 1,2x).
+
+A opção está ativada por padrão para todos os pools, mas essa política permite que o recurso seja desativado especificamente para pools de proxy.</translation>
 <translation id="1865417998205858223">Principais permissões</translation>
 <translation id="1865867000796030567">Ativar a política faz com que o valor da chave de manifesto <ph name="REQUIRED_PLATFORM_VERSION" /> do aplicativo de quiosque iniciado automaticamente sem atraso seja usado como o prefixo da versão de destino atualizada automaticamente.
 
@@ -2425,6 +2434,24 @@ Esta política se aplica apenas a novas tentativas de conexão e não invalida a
 <translation id="252742292004421898">Permitir a API Direct Sockets nestes sites</translation>
 <translation id="2528762900096510743">Ativar serviço automático de encerramento de sessão</translation>
 <translation id="2529880111512635313">Configurar a lista de extensões e aplicativos instalados forçadamente</translation>
+<translation id="2530090617700835618">Se a política for definida, será especificado o número máximo de conexões simultâneas por servidor proxy para solicitações WebSocket.
+
+Para modificar o limite de solicitações que não são WebSocket, consulte <ph name="MAX_CONNECTIONS_PER_PROXY_POLICY_NAME" />.
+
+Se a política não for definida, o valor padrão de 128 será usado.
+
+Alguns web apps são conhecidos por consumir muitas conexões com GETs irresponsivos, então, definir um valor inferior a 128 pode gerar interrupções na rede do navegador caso haja muitos deles com conexões pendentes abertas.
+Alguns servidores proxy não podem administrar um grande número de conexões simultâneas por cliente, mas isso pode ser resolvido definindo um número menor para esta política.
+
+O valor deve ser igual ou maior que 6.
+Se você definir um número abaixo desse limite, o valor 6 será usado.
+A definição de valores abaixo do padrão (128) fica sob sua responsabilidade.
+
+O valor deve ser igual ou inferior a 256.
+Se você definir um número acima desse limite, o valor 256 será usado.
+Aumentar acima do padrão (128) fica sob sua responsabilidade.
+
+Os limites aplicados são afetados por <ph name="ALLOW_SOCKET_POOL_SIZE_RANDOMIZATION_FOR_PROXIES_POLICY_NAME" />.</translation>
 <translation id="253135976343875019">Intervalo da advertência de inatividade no funcionamento com alimentação CA</translation>
 <translation id="2532480434098051405">Permita imagem inline e aprimore os modelos de IA.</translation>
 <translation id="2535370400681639351">Se a política for definida como "Ativada", solicitações de autenticação gnubby serão transmitidas por proxy para a conexão de host remoto.
@@ -2736,6 +2763,18 @@ Se a política for definida como 2 ("Desativada"), a integração do Google Deve
 <translation id="2707733461906745082">Separação de perfis</translation>
 <translation id="2707873794476722903">O "Navegação segura" está ativo no modo padrão.</translation>
 <translation id="2709516037105925701">Preenchimento automático</translation>
+<translation id="2711046686375160732">Especifica se o Modo de Navegação Anônima deve ser substituído pelo Modo Isolado.
+
+O Modo Isolado é um modo de navegação temporário exclusivo para empresas que substitui o Modo de Navegação Anônima.
+Ao contrário do Modo de Navegação Anônima, o Modo Isolado é compatível com políticas empresariais relacionadas à DLP e extensões de instalação forçada.
+
+Tenha em mente que as políticas relacionadas à Navegação Anônima não são aplicadas ao Modo Isolado.
+
+Se for definida como 1 — Ativado, o Modo Isolado será ativado e vai substituir o Modo de Navegação Anônima.
+
+Se for definida como 0 — Desativada ou deixada sem definição, o Modo Isolado será desativado e a Navegação Anônima será usada como comportamento padrão.
+
+Esta política exige uma licença do Chrome Enterprise Premium para entrar em vigor.</translation>
 <translation id="2713913573196284609">Esse valor foi descontinuado na versão M121. Na versão M121 e em versões mais recentes, os valores serão tratados como EnabledBelowThreshold.</translation>
 <translation id="2713977837384407666">Sempre enviar métricas ao Google</translation>
 <translation id="2714359695399346815">Se a política for definida como "Ativada" ou deixada sem definição, o uso de servidores STUN será permitido, isso faz com que clientes remotos possam descobrir e se conectar a esta máquina, mesmo quando separados por um firewall.
@@ -4463,6 +4502,15 @@ Esta política não terá efeito se a <ph name="ENTERPRISE_PROFILE_BADGE_TOOLBAR
       Cada entrada da lista contém um dicionário que deve incluir a identificação de extensão no campo 'extensão-id', e o URL de atualização no campo 'update-url'.</translation>
 <translation id="3869180930654347954">Desativar o First-Party Sets para todos os usuários afetados</translation>
 <translation id="3869566220234507038">Sempre carregar o navegador <ph name="LACROS_ROOTFS_NAME" /> <ph name="LACROS_NAME" /></translation>
+<translation id="3869959969423392506">A política controla se os Apps Isolados da Web (AIWs) vão poder adicionar Sub Apps por padrão.
+
+Se a política for definida como 1, as origens de AIW poderão adicionar Sub Apps e ignorar os requisitos de interação ou confirmação do usuário.
+
+Se ela for definida como 2, as origens do AIW não poderão adicionar Sub Apps.
+
+Se a política for definida como 3 ou deixada sem definição, as origens de Apps Isolados da Web poderão adicionar Sub Apps após a confirmação do usuário.
+
+Essa política pode ser substituída para origens específicas de Apps Isolados da Web usando as políticas <ph name="SUB_APPS__WITHOUT_PROMPTS_ALLOWED_FOR_ORIGINS_POLICY_NAME" /> e <ph name="SUB_APPS_WITHOUT_PROMPTS_BLOCKED_FOR_POLICY_NAME" />.</translation>
 <translation id="3870035799352372700">Impedir que o Google Assistente acesse o contexto na tela durante interações</translation>
 <translation id="3870059789954671543">Ativar o recurso de acessibilidade de destaque do foco no teclado na tela de login.
 
@@ -4741,6 +4789,7 @@ Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos
       Para saber mais sobre os padrões de <ph name="URL_LABEL" /> válidos, acesse https://chromeenterprise.google/policies/url-patterns/. No entanto, o padrão "*", que corresponde a qualquer URL, não é compatível com esta política.</translation>
 <translation id="4070039109671307724">Diversos</translation>
 <translation id="4071922398488395340">Incluir cookies de sessão na funcionalidade de SSO flutuante</translation>
+<translation id="4072065629757524">Impedir que as origens de Apps Isolados da Web adicionem Sub Apps</translation>
 <translation id="4072225853834793549">Desativar atalhos de acessibilidade na tela de login</translation>
 <translation id="4074922053013383215">Economia de memória moderada.</translation>
 <translation id="4075675819066819571">Posicionar a estante no lado esquerdo da tela</translation>
@@ -4816,6 +4865,11 @@ A disponibilidade das extensões ainda é controlada por outras políticas.</tra
 <translation id="4120401094617902941">Taxa em que os contadores de tempo de execução são amostrados e coletados. O mínimo permitido é de um dia.
 
 Se deixada sem definição, a frequência padrão de um dia será usada.</translation>
+<translation id="4121173511469084157">Por padrão, os Apps Isolados da Web (AIWs) podem adicionar Sub Apps se o usuário confirmar o comando de forma interativa.
+
+Esta política controla quais origens de AIW poderão adicionar Sub Apps sem que o usuário seja requisitado.
+
+Esta política substitui o comportamento de <ph name="DEFAULT_SUB_APPS_WITHOUT_PROMPTS_SETTING_POLICY_NAME" /> e é substituída por <ph name="SUB_APPS_WITHOUT_PROMPTS_BLOCKED_FOR_ORIGINS_POLICY_NAME" />.</translation>
 <translation id="4121350739760194865">Evitar que promoções de aplicativos apareçam na página nova guia</translation>
 <translation id="4122432898152851612">O usuário tem acesso à interface relacionada ao recurso de sincronização de arquivos do <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="4122473079291425973">A página Nova guia exibirá cards se houver conteúdo disponível, mas os usuários poderão mudar essa configuração</translation>
@@ -5429,6 +5483,24 @@ Para mais informações sobre <ph name="IP_PROTECTION_NAME" />, acesse: <ph name
 
 O lançamento de <ph name="IP_PROTECTION_NAME" /> vai acontecer antes da versão M139.</translation>
 <translation id="4525328580251166229">Controlar políticas relacionadas ao subsistema da Bruschetta.</translation>
+<translation id="452801090660038046">Se a política for definida, será especificado o número máximo de conexões simultâneas por servidor proxy para solicitações que não são WebSocket.
+
+Para modificar o limite de solicitações WebSocket, consulte <ph name="MAX_CONNECTIONS_PER_PROXY_FOR_WEBSOCKET_POLICY_NAME" />.
+
+Se a política não for definida, o valor padrão de 128 será usado.
+
+Alguns web apps são conhecidos por consumir muitas conexões com GETs irresponsivos, então, definir um valor inferior a 128 pode gerar interrupções na rede do navegador caso haja muitos deles com conexões pendentes abertas.
+Alguns servidores proxy não podem administrar um grande número de conexões simultâneas por cliente, mas isso pode ser resolvido definindo um número menor para esta política.
+
+O valor deve ser igual ou maior que 6.
+Se você definir um número abaixo desse limite, o valor 6 será usado.
+A definição de valores abaixo do padrão (128) fica sob sua responsabilidade.
+
+O valor deve ser igual ou inferior a 256 (99 para <ph name="PRODUCT_NAME" /> e 147 para versões anteriores).
+Se você definir um número acima desse limite, o valor 256 será usado (99 para <ph name="PRODUCT_NAME" /> e 147 para versões anteriores).
+Aumentar acima do padrão (128) fica sob sua responsabilidade.
+
+Os limites aplicados são afetados por <ph name="ALLOW_SOCKET_POOL_SIZE_RANDOMIZATION_FOR_PROXIES_POLICY_NAME" />.</translation>
 <translation id="4528981768990874684">Desativar o recurso <ph name="IP_PROTECTION_NAME" />.</translation>
 <translation id="453031441196755904">Essa política está obsoleta.</translation>
 <translation id="4531706050939927436">Os apps Android podem ser instalados forçadamente a partir do Google Admin Console usando o Google Play. Eles não usam esta política.</translation>
@@ -5529,6 +5601,7 @@ Para saber mais sobre padrões de URL válidos, consulte https://chromeenterpris
           diferentes desta política.
           </translation>
 <translation id="4578265298946081589">Não é reinicializado quando o usuário sai.</translation>
+<translation id="4579171808398039136">Impedir que os Apps Isolados da Web usem a API Sub Apps Add sem o comando do usuário</translation>
 <translation id="4581507927311097234">O tempo, em milissegundos, sem entrada do usuário até que a tela seja desligada.</translation>
 <translation id="4582027661281685066">Lista de padrões de URL. As solicitações iniciadas em sites veiculados por origens correspondentes não estão sujeitas a verificações de <ph name="PRIVATE_NETWORK_ACCESS" />.
 
@@ -6031,6 +6104,7 @@ Se a política não tiver definição, <ph name="DEFAULT_DIRECT_SOCKETS_SETTING_
 Os padrões de URL não podem entrar em conflito com <ph name="DIRECT_SOCKETS_BLOCKED_FOR_URLS_POLICY_NAME" />. Nenhuma política terá precedência se um URL tiver correspondência com ambas.
 
 Para saber mais sobre padrões de URL válidos, consulte https://chromeenterprise.google/policies/url-patterns. <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
+<translation id="4883562563790831457">Substituir o Modo de Navegação Anônima pelo Modo Isolado</translation>
 <translation id="4885338965457068455">Contém uma expressão regular para determinar as contas do Google qualificadas para salvar arquivos PDF no Google Drive pelo visualizador de PDF do <ph name="PRODUCT_NAME" />.
 
       Uma mensagem de erro será exibida se um usuário tentar fazer upload de um arquivo PDF para o Google Drive usando uma conta que não corresponda a esse padrão.
@@ -10268,6 +10342,7 @@ Se ela for definida como falsa, o comportamento antigo será ativado.</translati
 <translation id="7372831798009983116">Ativar o recurso de acessibilidade de clique automático</translation>
 <translation id="7373200034079131670">Reinicializar quando o usuário sair se o Android ou uma VM tiver sido iniciada.</translation>
 <translation id="7374784840090523241">Criar chaves de acesso em outros repositórios, por exemplo, no perfil do <ph name="PRODUCT_NAME" />, por padrão.</translation>
+<translation id="73755679940750599">Permitir que as origens de Apps Isolados da Web adicionem Sub Apps sem o comando do usuário</translation>
 <translation id="7375785904116479354">Se a política for definida como ativada, o mecanismo de pesquisa padrão será importado do navegador padrão anterior durante a primeira execução. Se a política for definida como desativada ou não for definida, o mecanismo de pesquisa padrão não será importado durante a primeira execução.
 
       O usuário pode acionar uma caixa de diálogo de importação em que a caixa de seleção do mecanismo de pesquisa padrão estará marcada ou desmarcada de acordo com o valor da política.</translation>
@@ -11139,11 +11214,13 @@ Desative a política somente se você estiver usando uma solução de segurança
 <translation id="7941975817681987555">Não prever ações da rede em nenhuma conexão de rede</translation>
 <translation id="794447754389837404">Bloquear o acesso à rede particular na API Direct Sockets nestes sites</translation>
 <translation id="7945445169067895719">Ativar o bloqueio quando o dispositivo for suspenso ou a tampa for fechada</translation>
+<translation id="7945744599423774764">Permitir a aleatorização do tamanho do pool de soquetes para proxies</translation>
 <translation id="7946350455013548764">Se a política for definida como "3", os sites vão poder pedir acesso aos dispositivos HID. Se a política for definida como "2", o acesso a dispositivos HID vai ser negado.
 
       Se não for definida, os sites têm permissão para solicitar acesso, mas os usuários podem mudar essa configuração.
 
       Esta política pode ser substituída por padrões de <ph name="URL_LABEL" /> específicos usando as políticas <ph name="WEB_HID_ASK_FOR_URLS_POLICY_NAME" /> e <ph name="WEB_HID_BLOCKED_FOR_URLS_POLICY_NAME" />.</translation>
+<translation id="794786228154185413">Permitir que Apps Isolados da Web usem a API Sub Apps Add sem o comando do usuário</translation>
 <translation id="7950451717181391167">A definição da política especifica se os usuários usam <ph name="CLASS_TOOLS_NAME" /> para enviar/receber conteúdo, enviar/receber legendas como estudantes ou professores ou se as ferramentas de gerenciamento de turmas estão desativadas para os usuários.</translation>
 <translation id="7952007677054834789">Configura as páginas a serem carregadas na inicialização, a página inicial padrão e a página "Nova guia" padrão no <ph name="PRODUCT_NAME" /> e impede que elas sejam alteradas pelos usuários.
 
@@ -11208,6 +11285,11 @@ Esta política é temporária e será removida.</translation>
           Esta política foi removida no Chrome 110.
                                         </translation>
 <translation id="7976157349247117979">Nome do destino do <ph name="PRODUCT_NAME" /></translation>
+<translation id="7981824720804106055">Por padrão, os Apps Isolados da Web (AIWs) podem adicionar Sub Apps se o usuário confirmar o comando de forma interativa.
+
+Esta política controla quais origens de AIW serão impedidas de adicionar Sub Apps sem que a interação do usuário seja requisitada.
+
+Esta política substitui o comportamento de <ph name="DEFAULT_SUB_APPS_WITHOUT_PROMPTS_SETTING_POLICY_NAME" /> e de <ph name="SUB_APPS_WITHOUT_PROMPTS_ALLOWED_FOR_ORIGINS_POLICY_NAME" />.</translation>
 <translation id="7985242821674907985"><ph name="PRODUCT_NAME" /></translation>
 <translation id="7985781946183471651">Glanceables no <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="7986473886676689183">Ativar relatórios do Android</translation>
@@ -11740,6 +11822,7 @@ Quando esta política não é definida, o controle facial fica desativado, mas p
 <translation id="8337114537412769126">Se a <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> estiver ativada, definir <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> especificará os parâmetros durante a pesquisa sugerida com POST. Ele consiste em pares nome-valor separados por vírgula. Se o valor for um parâmetro modelo, como <ph name="SEARCH_TERM_MARKER" />, ele será substituído pelos dados dos termos de pesquisa reais.
 
       Se a <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> não for definida, as solicitações de pesquisa sugerida serão enviadas usando o método get.</translation>
+<translation id="8337200442224446773">Impedir a aleatorização do pool de soquetes para proxies</translation>
 <translation id="8337961007759352651">Os scripts para workers (como Web worker, service workers etc.) exigem um tipo MIME JavaScript, como <ph name="MIMETYPE_TEXT_JAVASCRIPT" />. Os scripts de worker com tipos MIME legados, como <ph name="MIMETYPE_TEXT_ASCII" />, vão ser rejeitados.</translation>
 <translation id="8339089771335211509">O WebRTC usará apenas a interface conectada à Internet pública e não se conectará usando endereços IP particulares.</translation>
 <translation id="8339420913453596618">Segundo fator desativado</translation>
@@ -11764,6 +11847,7 @@ Definir a política como <ph name="RUNTIME_ENABLED_VALUE_NAME" /> permite que a 
 Se a política for deixada sem definição, o comportamento será <ph name="RUNTIME_ENABLED_VALUE_NAME" /> por padrão.
 
 Observação: essa política é uma solução temporária para ajudar na transição das APIs de tela cheia com o prefixo webkit. A versão M131 é a última que terá essa política.</translation>
+<translation id="8355021858374793722">Controlar o uso da API Sub Apps Add</translation>
 <translation id="8356953698979920095">Se os valores forem definidos para a política, a cor de luz de fundo do teclado do dispositivo
 
 vai ser definida como padrão durante o login do usuário.</translation>
@@ -12181,6 +12265,7 @@ Quando ela for definida como falsa, os dados da política e o horário de busca 
 Esta política só é eficaz quando a máquina está registrada na <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> do <ph name="PRODUCT_NAME" />.
 Para o <ph name="PRODUCT_OS_NAME" />, ela sempre é eficaz.</translation>
 <translation id="8619748440665904084">Desativar a importação de dados de preenchimento automático de formulários na primeira execução</translation>
+<translation id="8621146428060651659">Permitir a aleatorização do pool de soquetes para proxies</translation>
 <translation id="862621549134406761">Ativar verificação de uso da Chave RSA</translation>
 <translation id="8626826495474944836">Exigir isolamento de sites para todos os sites</translation>
 <translation id="8630797597241896082">Permitir o segundo plano de IA generativa para videochamadas e melhorar os modelos de IA</translation>
@@ -13037,10 +13122,12 @@ O padrão é RollbackDisabled.</translation>
 <translation id="9206364386317031168">Permitir que sites façam solicitações de rede para o dispositivo local.</translation>
 <translation id="9206472508136116830">Não permitir a detecção de compartilhamento do NetBIOS</translation>
 <translation id="9207596996305971030">Não informar eventos de login/logout</translation>
+<translation id="9208328979373108724">Permitir que as origens de Apps Isolados da Web adicionem Sub Apps, mas exigir o comando do usuário</translation>
 <translation id="9210647066889383361">Permitir que os usuários façam login no próprio dispositivo com o Smart Lock</translation>
 <translation id="9212598607138782107">Provedor de identidade na nuvem da Okta®</translation>
 <translation id="9213751049772256263">Desativar todas as variações</translation>
 <translation id="9217154963008402249">Frequência de pacotes de monitoramento de rede</translation>
+<translation id="921762538903956073">Modo Isolado disponível</translation>
 <translation id="9220314833408124365">Usar uma política de referenciador padrão de no-referrer-when-downgrade</translation>
 <translation id="922160134042190462">Não ativar a <ph name="DESK_API_NAME" /> para o controle do <ph name="PRODUCT_OS_NAME" /> de terceiros</translation>
 <translation id="9221827710437832530">Permitir acesso à geolocalização na tela de login.</translation>

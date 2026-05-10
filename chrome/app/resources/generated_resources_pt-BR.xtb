@@ -218,7 +218,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1145593918056169051">A impressora parou</translation>
 <translation id="1147098843963878839">{SELECTED_ITEMS,plural, =0{Extensões}=1{Extensões ({SELECTED_ITEMS})}one{Extensões ({SELECTED_ITEMS})}other{Extensões ({SELECTED_ITEMS})}}</translation>
 <translation id="114715166554490743">Ponteiro com a cabeça</translation>
-<translation id="114721135501989771">A tecnologia Google no Chrome</translation>
+<translation id="114721135501989771">A tecnologia do Google no Chrome</translation>
 <translation id="1147322039136785890">Agora, entregue o dispositivo para <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147867844630510586">Fazer login com <ph name="IDP_NAME" /></translation>
 <translation id="1148464196693569530">Permitir scripts de usuário</translation>
@@ -665,6 +665,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1449191289887455076">Pressione "<ph name="CURRENTKEY" />" novamente para confirmar a atribuição e <ph name="RESPONSE" /></translation>
 <translation id="1450484535522155181">Abrir perfil de visitante</translation>
 <translation id="1451375123200651445">Página da Web, arquivo único</translation>
+<translation id="1452651021404174820">Escolha um dispositivo</translation>
 <translation id="1453561711872398978">Enviar <ph name="BEGIN_LINK" />
     registros de depuração<ph name="END_LINK" /> (recomendado)</translation>
 <translation id="1454223536435069390">T&amp;irar captura de tela</translation>
@@ -746,7 +747,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1504253885059472207">Fixar a visualização dividida</translation>
 <translation id="1504551620756424144">As pastas compartilhadas estão disponíveis no Windows em <ph name="BASE_DIR" />.</translation>
 <translation id="1505494256539862015">exportar as senhas</translation>
-<translation id="1505654899813338756">Monte grupos para manter suas guias relacionadas juntas e sincronizadas em todos os seus dispositivos.</translation>
+<translation id="1505654899813338756">Monte grupos de guias relacionadas para sincronizá-las em todos os seus dispositivos.</translation>
 <translation id="1506061864768559482">Mecanismo de pesquisa</translation>
 <translation id="1506187449813838456">Aumentar tom de voz</translation>
 <translation id="1507170440449692343">Esta página foi impedida de acessar sua câmera.</translation>
@@ -1747,6 +1748,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2178545675770638239">Selecionar senha</translation>
 <translation id="2178585470774851578">Você está ativando recursos de depuração do ChromeOS Flex que vão definir o sshd daemon e permitir o boot por drives USB.</translation>
 <translation id="2178614541317717477">Compromisso da autoridade de certificação</translation>
+<translation id="2180082148774168439">Acesse este site em uma janela exclusiva no seu computador</translation>
 <translation id="2180620921879609685">Bloquear conteúdo em qualquer página</translation>
 <translation id="2181821976797666341">Políticas</translation>
 <translation id="2182058453334755893">Copiado para a área de transferência</translation>
@@ -3216,7 +3218,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3179982752812949580">Fonte do texto</translation>
 <translation id="31806439105337256">Mostrar guias verticalmente</translation>
 <translation id="3180990259147710757">Mover a mandíbula para a esquerda</translation>
-<translation id="3181825792072797598">Ativar a Sincronização</translation>
+<translation id="3181825792072797598">Ativar a sincronização</translation>
 <translation id="3181954750937456830">Navegação segura: protege você e seu dispositivo de sites perigosos</translation>
 <translation id="3182749001423093222">Verificação ortográfica</translation>
 <translation id="3183139917765991655">Importador de perfil</translation>
@@ -3449,7 +3451,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3347086966102161372">C&amp;opiar endereço da imagem</translation>
 <translation id="3348038390189153836">Dispositivo removível detectado</translation>
 <translation id="3348973040180736882">Descompactando</translation>
-<translation id="3349610303043713601">Navegar com a IA</translation>
 <translation id="3349933790966648062">Consumo de memória</translation>
 <translation id="3351472127384196879">Adicionar ou localizar botões na caneta</translation>
 <translation id="3353786022389205125">Ative a opção "Mostrar tela de bloqueio ao sair do modo de suspensão" e tente novamente.</translation>
@@ -4024,6 +4025,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3735039640698208086">Ao reproduzir áudio…</translation>
 <translation id="3735740477244556633">Ordenar por</translation>
 <translation id="3735827758948958091">Não é possível abrir <ph name="FILE_NAMES" /> com uma conexão limitada</translation>
+<translation id="3736487688526377259">Selecione o dispositivo em que você quer receber este link.</translation>
 <translation id="3737058101969549870">Manter os dados de navegação atuais separados do novo perfil?</translation>
 <translation id="3738632186060045350">Os dados do <ph name="DEVICE_TYPE" /> serão excluídos em 24 horas</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
@@ -6840,6 +6842,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5712153969432126546">Às vezes, os sites podem publicar PDFs, como documentos, contratos, e formulários</translation>
 <translation id="571222594670061844">Sites podem mostrar solicitações de login de serviços de identificação</translation>
 <translation id="5713158217420111469">Conectado a <ph name="DEVICE" /></translation>
+<translation id="5713988532993992900">Invertido</translation>
 <translation id="5714100381896040477">Limitar o movimento na tela</translation>
 <translation id="5719854774000914513">Os sites podem pedir para se conectar a dispositivos HID</translation>
 <translation id="5720729194423017301">Atalhos para sites e mecanismos de pesquisa</translation>
@@ -8756,6 +8759,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7044606776288350625">Sincronizar dados</translation>
 <translation id="7050037487872780845">Configuração de ponto de acesso inválida</translation>
 <translation id="7051222203795962489">{COUNT,plural, =1{Senha salva na sua Conta do Google <ph name="USER_EMAIL" />}one{Senha salva na sua Conta do Google <ph name="USER_EMAIL" />}other{Senhas salvas na sua Conta do Google <ph name="USER_EMAIL" />}}</translation>
+<translation id="7051728324516005763">IA no Chrome</translation>
 <translation id="7052762602787632571">&amp;Excluir dados de navegação…</translation>
 <translation id="705352103640172578">Cachoeira</translation>
 <translation id="7053983685419859001">Bloquear</translation>

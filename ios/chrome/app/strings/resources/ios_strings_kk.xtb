@@ -213,7 +213,7 @@
 <translation id="1702583479431863204">Сайт босатылды.</translation>
 <translation id="1709916727352927457">Кіру кілтін жою</translation>
 <translation id="1715515772563243997"><ph name="SITE" /> сайты сенімді болса, сақталған құпия сөз арқылы кіре аласыз.</translation>
-<translation id="1718835860248848330">Соңғы сағат</translation>
+<translation id="1718835860248848330">Соңғы бір сағат</translation>
 <translation id="1728549374069268714">Қою және өту</translation>
 <translation id="1732468323901456775"><ph name="MODULE_NAME" /> хабарландыруларын қосу</translation>
 <translation id="1739364174357629566">Белгілі жолаушы нөмірін (KTN) жаңартыңыз</translation>
@@ -442,7 +442,6 @@
 <translation id="2493269659028026145"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> арқылы бірден құлыптау</translation>
 <translation id="2496180316473517155">Шолу журналы</translation>
 <translation id="2496626742194544812">Бірінші қойындыға өту</translation>
-<translation id="2497852260688568942">Синхрондау мүмкіндігін әкімші өшіріп қойған</translation>
 <translation id="2499505845365628575">Браузерді қолданудың толық тарихын <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" /> бөлімінен көруге болады.</translation>
 <translation id="2511117522375201202">Қауіпсіздігіңізге қауіп төндіруі мүмкін <ph name="NUMBER_OF_PASSWORDS" /> ұрланған құпия сөзіңіз бар.</translation>
 <translation id="2513103768503127042">Қойындылар топтарын осы жерден табуға болады</translation>

@@ -271,6 +271,7 @@
 <translation id="2226826835915474236">უმოქმედო მალსახმობები</translation>
 <translation id="2227179592712503583">შემოთავაზების ამოშლა</translation>
 <translation id="2227444325776770048">გაგრძელება, როგორც <ph name="USER_FULL_NAME" /></translation>
+<translation id="2230411774874187555">მიიღეთ თქვენი ყველა შენახული ინფორმაცია</translation>
 <translation id="2230777942707397948">ცარიელი ფანჯარა</translation>
 <translation id="223356358902285214">ვებსა და აპებში აქტივობა</translation>
 <translation id="2233735624724508540">აირჩიეთ დროის მონაკვეთი და შეეხეთ მონაცემების წაშლას</translation>
@@ -483,6 +484,7 @@
 <translation id="3057938290530993634">ხანგრძლივად შეეხეთ თქვენი ყველაზე ხშირად მონახულებული ვებსაიტების ჩასამაგრებლად, რათა შემდეგ ჯერზე მარტივად მიიღოთ მათზე წვდომა</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> სანიშნე}other{<ph name="BOOKMARKS_COUNT_MANY" /> სანიშნე}}</translation>
 <translation id="3062802207422175757">თქვენს ინტერესებთან დაკავშირებული სტატიები Chrome-ში</translation>
+<translation id="3066107845790462226">ვიდეოს კადრის ჩამოტვირთვა</translation>
 <translation id="3066573403916685335">გადაადგილება ქვევით</translation>
 <translation id="3067505415088964188">ფასი დაბალია</translation>
 <translation id="3070005020161560471">ავტომატურად ითარგმნოს</translation>
@@ -1216,6 +1218,7 @@
 <translation id="6264485186158353794">უსაფრთხოებაზე დაბრუნება</translation>
 <translation id="6267106249090587268">შეტყობინებები <ph name="SEPARATOR" /> Chrome-მა ამოშალა ეს ნებართვები სპამის ან შეცდომაში შემყვანი კონტენტის გამო</translation>
 <translation id="6276708887952587684">გვერდის წყაროს ნახვა</translation>
+<translation id="62768169905160414">ვიდეოს კადრის კოპირება</translation>
 <translation id="6277522088822131679">გვერდის დაბეჭდვისას დაფიქსირდა შეცდომა. გთხოვთ ცადოთ ხელახლა.</translation>
 <translation id="6278428485366576908">თემა</translation>
 <translation id="6291294824436685757">დათვალიერების მონაცემების წაშლა; მონიშნეთ წასაშლელი მონაცემები</translation>

@@ -1096,6 +1096,7 @@
 <translation id="2677748264148917807">离开</translation>
 <translation id="2679216653373462289">使用移动传感器和光传感器</translation>
 <translation id="2679659833697380">您的信息会保存到您的设备上</translation>
+<translation id="2680837394649649718">已发送到<ph name="DEVICE_NAME" />上的 Chrome。</translation>
 <translation id="2683195745483370038">找到其他结果</translation>
 <translation id="2686919536310834199">针对“帮我写”功能发送反馈。</translation>
 <translation id="2687555958734450033">最适合</translation>
@@ -3082,6 +3083,7 @@
 <translation id="5787146423283493983">密钥协议</translation>
 <translation id="5793317771769868848">此付款方式将从本设备中删除</translation>
 <translation id="5794065675298686371">开启价格跟踪通知</translation>
+<translation id="5797984091151707075">已被管理员政策屏蔽</translation>
 <translation id="5800727402210090597">手机维修和服务</translation>
 <translation id="580241730938216256">开始更新</translation>
 <translation id="5804241973901381774">权限</translation>
@@ -5249,7 +5251,6 @@
 <translation id="9186371298532546532">在更多地方使用此地址</translation>
 <translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" />更改了此标签页</translation>
 <translation id="9189789270972826888">如果卡片未填写，请点击下方的卡片详细信息进行复制粘贴。<ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
-<translation id="9190557999028587593">系统会自动删除保留时长超过 4 周的主题</translation>
 <translation id="9191834167571392248">打孔（左下角）</translation>
 <translation id="9192361865877479444">金属（哑光）</translation>
 <translation id="9192947025498305328">洁净美容</translation>

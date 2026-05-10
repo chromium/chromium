@@ -664,6 +664,7 @@
 <translation id="1449191289887455076">მიმაგრების დადასტურება და <ph name="RESPONSE" /> რომ შესრულდეს, ხელახლა დააჭირეთ „<ph name="CURRENTKEY" />“-ს</translation>
 <translation id="1450484535522155181">სტუმრის პროფილის გახსნა</translation>
 <translation id="1451375123200651445">ვებგვერდი, ერთი ფაილი</translation>
+<translation id="1452651021404174820">მოწყობილობის არჩევა</translation>
 <translation id="1453561711872398978"><ph name="BEGIN_LINK" />გამართვის ჟურნალების<ph name="END_LINK" /> გაგზავნა (რეკომენდებულია)</translation>
 <translation id="1454223536435069390">ე&amp;კრანის ანაბეჭდის გადაღება</translation>
 <translation id="145432137617179457">მართლწერის შემოწმების ენები</translation>
@@ -1736,6 +1737,7 @@
 <translation id="2178545675770638239">აირჩიეთ პაროლი</translation>
 <translation id="2178585470774851578">თქვენ აპირებთ, ჩართოთ ChromeOS Flex-ის გამართვის ფუნქციები, რომელთა მიერაც დაყენდება sshd daemon და გააქტიურდება ჩატვირთვა USB დისკებიდან.</translation>
 <translation id="2178614541317717477">CA კომპრომისი</translation>
+<translation id="2180082148774168439">გახსენით ეს საიტი თქვენი კომპიუტერის შესაბამის ფანჯარაში</translation>
 <translation id="2180620921879609685">კონტენტის დაბლოკვა ნებისმიერ გვერდზე</translation>
 <translation id="2181821976797666341">წესები</translation>
 <translation id="2182058453334755893">დაკოპირდა თქვენს გაცვლის ბუფერში</translation>
@@ -3435,7 +3437,6 @@
 <translation id="3347086966102161372">სურათის მისამართის კ&amp;ოპირება</translation>
 <translation id="3348038390189153836">აღმოჩენილია ამოშლადი მოწყობილობა</translation>
 <translation id="3348973040180736882">შეკუმშვის გაუქმება</translation>
-<translation id="3349610303043713601">დათვალიერება ხელოვნური ინტელექტის დახმარებით</translation>
 <translation id="3349933790966648062">მეხსიერების მოხმარება</translation>
 <translation id="3351472127384196879">დაამატეთ ან იპოვეთ ღილაკები თქვენს კალამზე</translation>
 <translation id="3353786022389205125">ჩართეთ „ჩაკეტილი ეკრანის ჩვენება გამოღვიძებისას“ და ცადეთ ხელახლა</translation>
@@ -4010,6 +4011,7 @@
 <translation id="3735039640698208086">აუდიოს დაკვრისას…</translation>
 <translation id="3735740477244556633">დალაგება</translation>
 <translation id="3735827758948958091"><ph name="FILE_NAMES" /> ვერ გაიხსნება, სანამ ლიმიტირებულ კავშირს იყენებთ</translation>
+<translation id="3736487688526377259">აირჩიეთ მოწყობილობა, რომელზეც გსურთ ამ ბმულის მიღება.</translation>
 <translation id="3737058101969549870">გსურთ დათვალიერების არსებული მონაცემების ამ ახალი პროფილისგან განცალკევებით შენახვა?</translation>
 <translation id="3738632186060045350"><ph name="DEVICE_TYPE" />-ზე არსებული მონაცემები წაიშლება 24 საათში</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>

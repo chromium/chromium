@@ -1676,6 +1676,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="8030852056903932865">Mirato</translation>
 <translation id="8032569120109842252">Po ndjek</translation>
 <translation id="8035522026858423976"><ph name="TAB_TITLE" />, skeda e zgjedhur "e fshehtë" e vendosur në heshtje</translation>
+<translation id="8036587585440959897">Disa shtesa mund të shtojnë motorët e kërkimit në Chrome.</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> ditë të mbetura</translation>
 <translation id="8037801708772278989">Kontrolluar pikërisht tani</translation>
 <translation id="804335162455518893">Karta SD nuk u gjet</translation>
@@ -1962,6 +1963,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="9169507124922466868">Historiku i navigimit është gjysmë i hapur</translation>
 <translation id="9189607089796819144">Dëshiron ta shkarkosh "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />) gjithsesi?</translation>
 <translation id="9190276265094487094">Do të kesh historikun në të gjitha pajisjet e sinkronizuara, në mënyrë që të vazhdosh atë që po bëje</translation>
+<translation id="9190355771000652811">Në shiritin e adresave, përdor këtë shkurtore të tastierës me shkurtoret për motorët e kërkimit dhe kërkimin e sajteve.</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" />, skeda "e fshehtë" e zgjedhur e gozhduar</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{Kontrolluar 1 minutë më parë}other{Kontrolluar # minuta më parë}}</translation>
 <translation id="9204836675896933765">1 skedar i mbetur</translation>

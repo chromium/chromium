@@ -1676,6 +1676,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8030852056903932865">Зөвшөөрөх</translation>
 <translation id="8032569120109842252">Дагаж буй</translation>
 <translation id="8035522026858423976"><ph name="TAB_TITLE" />, Сонгогдож, дууг нь хаасан нууцлалтай таб</translation>
+<translation id="8036587585440959897">Зарим өргөтгөл Chrome-д хайлтын систем нэмэх боломжтой.</translation>
 <translation id="8037750541064988519"><ph name="DAYS" /> өдөр үлдсэн</translation>
 <translation id="8037801708772278989">Дөнгөж сая шалгасан</translation>
 <translation id="804335162455518893">SD карт олдсонгүй</translation>
@@ -1962,6 +1963,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="9169507124922466868">Навигацын түүхийг хагас нээлээ</translation>
 <translation id="9189607089796819144">Та ямартай ч "<ph name="FILE_NAME" />" (<ph name="FILE_SIZE" />)-г татмаар байна уу?</translation>
 <translation id="9190276265094487094">Таны синк хийсэн бүх төхөөрөмж дээр таны түүхийг хадгална. Ингэснээр та хийж байсан зүйлээ үргэлжлүүлэх боломжтой</translation>
+<translation id="9190355771000652811">Хаяг оруулах хэсэгт хайлтын систем, сайтын хайлтын товчлолын хамт энэ товчлуурын шууд холбоосыг ашиглана уу.</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" />, Бэхэлсэн нууцлалтай сонгогдсон таб</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 минутын өмнө шалгасан}other{# минутын өмнө шалгасан}}</translation>
 <translation id="9204836675896933765">1 файл үлдсэн</translation>

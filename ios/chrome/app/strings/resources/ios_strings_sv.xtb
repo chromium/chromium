@@ -442,7 +442,6 @@
 <translation id="2493269659028026145">Lås omedelbart med <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="2496180316473517155">Webbhistorik</translation>
 <translation id="2496626742194544812">Öppna första fliken</translation>
-<translation id="2497852260688568942">Synkronisering har inaktiverats av administratören</translation>
 <translation id="2499505845365628575">Du hittar all webbhistorik från <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="2511117522375201202">Du har <ph name="NUMBER_OF_PASSWORDS" /> utsatta lösenord som kan innebära en säkerhetsrisk.</translation>
 <translation id="2513103768503127042">Du hittar dina flikgrupper här</translation>
@@ -567,6 +566,7 @@
 <translation id="2969979262385602596">Det gick inte att logga in. Försök igen senare.</translation>
 <translation id="2975761176769946178">En webbadress krävs</translation>
 <translation id="297667759942911166">Samarbeta i flikgrupper</translation>
+<translation id="298696743524648170">Logga in i Chrome med ditt Google-konto om du vill använda Gemini i Chrome</translation>
 <translation id="2987670534697681860">Verifiera din identitet för att få åtkomst till alla dina lösenord på den här enheten.</translation>
 <translation id="2989523299700148168">Nyligen besökta</translation>
 <translation id="2989805286512600854">Öppna i ny flik</translation>
@@ -621,6 +621,7 @@
 <translation id="31652791196570636">Ignorera</translation>
 <translation id="3167868116600277716">Förslagsflödet</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3172755898799085680">Gemini är inte tillgängligt på den här sidan</translation>
 <translation id="3174662312949010067">Du kan även använda de sparade lösenorden på andra enheter.</translation>
 <translation id="3177338796769255211">Logga in om du vill ha dina bokmärken med mera på alla dina enheter</translation>
 <translation id="3181954750937456830">Säker webbsökning (skyddar dig och enheten från skadliga webbplatser)</translation>
@@ -996,6 +997,7 @@
 <translation id="4552042254369397518">Kopierar …</translation>
 <translation id="4553044860350038560">Fler nycklar</translation>
 <translation id="4564893319561643483">Dölj <ph name="TITLE" /></translation>
+<translation id="456502772933839252">Delar <ph name="PAGE_TITLE" /></translation>
 <translation id="4565377596337484307">Dölj lösenord</translation>
 <translation id="4568230126482344545">Dölj Senaste flikarna</translation>
 <translation id="4578835633387306383">Aktivera …</translation>

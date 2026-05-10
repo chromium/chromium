@@ -271,6 +271,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="2226826835915474236">Inaktiva genvägar</translation>
 <translation id="2227179592712503583">Ta bort förslag</translation>
 <translation id="2227444325776770048">Fortsätt som <ph name="USER_FULL_NAME" /></translation>
+<translation id="2230411774874187555">Få all din sparade information</translation>
 <translation id="2230777942707397948">Tomt fönster</translation>
 <translation id="223356358902285214">Webb- och appaktivitet</translation>
 <translation id="2233735624724508540">Välj en tidsperiod och tryck sedan på Radera data</translation>
@@ -483,6 +484,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3057938290530993634">Tryck länge för att fästa dina mest besökta webbplatser så att du kommer åt dem snabbt nästa gång</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> bokmärke}other{<ph name="BOOKMARKS_COUNT_MANY" /> bokmärken}}</translation>
 <translation id="3062802207422175757">Artiklar om dina intressen i Chrome</translation>
+<translation id="3066107845790462226">Ladda ned videobildruta</translation>
 <translation id="3066573403916685335">Flytta ner</translation>
 <translation id="3067505415088964188">Priset är lågt</translation>
 <translation id="3070005020161560471">Översätt automatiskt</translation>
@@ -1217,6 +1219,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6264485186158353794">Tillbaka till säker webbplats</translation>
 <translation id="6267106249090587268">Aviseringar <ph name="SEPARATOR" /> Chrome har tagit bort dessa behörigheter på grund av spam eller vilseledande innehåll</translation>
 <translation id="6276708887952587684">Visa sidkälla</translation>
+<translation id="62768169905160414">Kopiera videobildruta</translation>
 <translation id="6277522088822131679">Det gick inte att skriva ut sidan. Försök igen.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6291294824436685757">Radera webbinformation: välj data att radera</translation>

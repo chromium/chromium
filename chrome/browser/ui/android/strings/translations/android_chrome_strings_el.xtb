@@ -271,6 +271,7 @@
 <translation id="2226826835915474236">Ανενεργές συντομεύσεις</translation>
 <translation id="2227179592712503583">Κατάργηση πρότασης</translation>
 <translation id="2227444325776770048">Συνέχεια ως <ph name="USER_FULL_NAME" /></translation>
+<translation id="2230411774874187555">Απόκτηση όλων των αποθηκευμένων πληροφοριών</translation>
 <translation id="2230777942707397948">Κενό παράθυρο</translation>
 <translation id="223356358902285214">Δραστηριότητα ιστού και εφαρμογών</translation>
 <translation id="2233735624724508540">Επιλέξτε ένα χρονικό διάστημα και, στη συνέχεια, πατήστε Διαγραφή δεδομένων</translation>
@@ -483,6 +484,7 @@
 <translation id="3057938290530993634">Πατήστε παρατεταμένα για καρφίτσωμα των ιστοτόπων με τις περισσότερες επισκέψεις για εύκολη πρόσβαση την επόμενη φορά</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> σελιδοδείκτης}other{<ph name="BOOKMARKS_COUNT_MANY" /> σελιδοδείκτες}}</translation>
 <translation id="3062802207422175757">Άρθρα για τα ενδιαφέροντά σας στο Chrome</translation>
+<translation id="3066107845790462226">Λήψη καρέ βίντεο</translation>
 <translation id="3066573403916685335">Μετακίνηση κάτω</translation>
 <translation id="3067505415088964188">Η τιμή είναι χαμηλή</translation>
 <translation id="3070005020161560471">Να γίνεται μετάφραση αυτόματα</translation>
@@ -1216,6 +1218,7 @@
 <translation id="6264485186158353794">Πίσω στην ασφάλεια</translation>
 <translation id="6267106249090587268">Ειδοποιήσεις <ph name="SEPARATOR" /> Το Chrome κατάργησε αυτές τις άδειες λόγω ανεπιθύμητου ή παραπλανητικού περιεχομένου</translation>
 <translation id="6276708887952587684">Προβολή πηγαίου κώδικα σελίδας</translation>
+<translation id="62768169905160414">Αντιγραφή καρέ βίντεο</translation>
 <translation id="6277522088822131679">Παρουσιάστηκε ένα πρόβλημα κατά την εκτύπωση της σελίδας. Δοκιμάστε ξανά.</translation>
 <translation id="6278428485366576908">Θέμα</translation>
 <translation id="6291294824436685757">Διαγραφή δεδομένων περιήγησης. Επιλέξτε δεδομένα για διαγραφή</translation>

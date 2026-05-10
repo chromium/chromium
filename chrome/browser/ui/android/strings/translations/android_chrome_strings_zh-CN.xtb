@@ -1674,6 +1674,7 @@
 <translation id="8030852056903932865">批准</translation>
 <translation id="8032569120109842252">已关注</translation>
 <translation id="8035522026858423976"><ph name="TAB_TITLE" />，已选择的无痕式标签页，已设为静音</translation>
+<translation id="8036587585440959897">某些扩展程序可以向 Chrome 添加搜索引擎。</translation>
 <translation id="8037750541064988519">还剩 <ph name="DAYS" /> 天</translation>
 <translation id="8037801708772278989">刚刚检查过</translation>
 <translation id="804335162455518893">找不到 SD 卡</translation>
@@ -1960,6 +1961,7 @@
 <translation id="9169507124922466868">导航历史记录在下半屏中显示</translation>
 <translation id="9189607089796819144">您仍要下载“<ph name="FILE_NAME" />”(<ph name="FILE_SIZE" />) 吗？</translation>
 <translation id="9190276265094487094">您将能够在所有已同步的设备上查看您的历史记录，以继续执行先前未完成的操作</translation>
+<translation id="9190355771000652811">在地址栏中，将此键盘快捷键与用于搜索引擎和网站搜索的快捷字词结合使用。</translation>
 <translation id="9197941237799589838"><ph name="TAB_TITLE" />，所选固定无痕式标签页</translation>
 <translation id="9199368092038462496">{NUM_MINS,plural, =1{1 分钟前检查过}other{# 分钟前检查过}}</translation>
 <translation id="9204836675896933765">还剩 1 个文件</translation>

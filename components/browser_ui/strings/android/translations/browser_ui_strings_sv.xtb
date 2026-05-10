@@ -529,6 +529,7 @@
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6452138246455930388">Prissänkning på den öppna fliken, från <ph name="OLD_PRICE" /> till <ph name="NEW_PRICE" />, <ph name="PRODUCT_NAME" />, <ph name="DOMAIN_NAME" /></translation>
 <translation id="6500423977866688905">Begär mobilvy när fönstret är smalt</translation>
+<translation id="6514791408445720076">Anpassa din sida</translation>
 <translation id="6527303717912515753">Dela</translation>
 <translation id="6530703012083415527">När detta är aktiverat kan webbplatser använda popup-fönster och omdirigeringar. När detta är inaktiverat får webbplatser inte använda popup-fönster och omdirigeringar.</translation>
 <translation id="6540488083026747005">Du har tillåtit tredjepartscookies på den här webbplatsen</translation>
@@ -706,6 +707,7 @@ Avancerat skydd styr följande Chrome-inställningar:</translation>
 <translation id="83792324527827022">En webbplats använder kameran och mikrofonen</translation>
 <translation id="8380167699614421159">Påträngande eller vilseledande annonser visas på den här webbplatsen</translation>
 <translation id="8394832520002899662">Återgå till webbplatsen genom att trycka här</translation>
+<translation id="8404500559369898929">Anpassa Chrome genom att välja ett anpassat bakgrundstema</translation>
 <translation id="8409345997656833551">Bli meddelad om det finns en förenklad vy av en artikel</translation>
 <translation id="8416874502399604126">Mikrofon tillåts den här gången</translation>
 <translation id="8423565414844018592">Textskalning är inställd på <ph name="TEXT_SCALING" /></translation>

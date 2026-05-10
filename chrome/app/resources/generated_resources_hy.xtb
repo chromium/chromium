@@ -3433,7 +3433,6 @@
 <translation id="3347086966102161372">Պատճենել պատկերի հասցեն</translation>
 <translation id="3348038390189153836">Հայտնաբերվել է արտաքին կրիչ</translation>
 <translation id="3348973040180736882">Ապասեղմում</translation>
-<translation id="3349610303043713601">Դիտարկել ԱԲ-ի միջոցով</translation>
 <translation id="3349933790966648062">Օգտագործված հիշողության ծավալ</translation>
 <translation id="3351472127384196879">Ավելացրեք կամ գտեք կոճակներ ձեր գրիչի վրա</translation>
 <translation id="3353786022389205125">Միացրեք «Ցույց տալ կողպէկրանը քնի ռեժիմից դուրս գալիս» պարամետրը և նորից փորձեք</translation>
@@ -6820,6 +6819,7 @@
 <translation id="5712153969432126546">Կայքերը երբեմն հրապարակում են PDF ֆայլեր, օրինակ՝ փաստաթղթեր, պայմանագրեր և այլ ձևեր։</translation>
 <translation id="571222594670061844">Կայքերը կարող են ցույց տալ նույնականացման ծառայությունների մուտքի հարցումներ</translation>
 <translation id="5713158217420111469">Միացած է <ph name="DEVICE" />-ին</translation>
+<translation id="5713988532993992900">Շրջված</translation>
 <translation id="5714100381896040477">Սահմանափակել շարժը էկրանի վրա</translation>
 <translation id="5719854774000914513">Կայքերը կարող են HID սարքերին միանալու թույլտվություն հայցել</translation>
 <translation id="5720729194423017301">Կայքերի և որոնողական համակարգերի դյուրանցումներ</translation>
@@ -8734,6 +8734,7 @@
 <translation id="7044606776288350625">Տվյալների համաժամացում</translation>
 <translation id="7050037487872780845">Թեժ կետի սխալ կազմաձև</translation>
 <translation id="7051222203795962489">{COUNT,plural, =1{Գաղտնաբառը պահվեց ձեր Google հաշվում (<ph name="USER_EMAIL" />)}one{Գաղտնաբառը պահվեց ձեր Google հաշվում (<ph name="USER_EMAIL" />)}other{Գաղտնաբառերը պահվեցին ձեր Google հաշվում (<ph name="USER_EMAIL" />)}}</translation>
+<translation id="7051728324516005763">ԱԲ-ն Chrome-ում</translation>
 <translation id="7052762602787632571">&amp;Ջնջել այցելությունների պատմությունը...</translation>
 <translation id="705352103640172578">Ջրվեժ</translation>
 <translation id="7053983685419859001">Արգելափակել</translation>

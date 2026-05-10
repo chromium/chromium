@@ -1096,6 +1096,7 @@
 <translation id="2677748264148917807">छोड्नुहोस्</translation>
 <translation id="2679216653373462289">तपाईंको डिभाइसका मोसन तथा लाइट सेन्सरहरू प्रयोग गर्ने</translation>
 <translation id="2679659833697380">तपाईंको जानकारी तपाईंको डिभाइसमा सेभ गरिन्छ</translation>
+<translation id="2680837394649649718">तपाईंको <ph name="DEVICE_NAME" /> मा भएको Chrome मा पठाइएको छ।</translation>
 <translation id="2683195745483370038">अन्य परिणामहरू भेटिए</translation>
 <translation id="2686919536310834199">"मलाई लेख्न मद्दत गर्नुहोस्" सुविधाका सम्बन्धमा प्रतिक्रिया पठाउनुहोस्।</translation>
 <translation id="2687555958734450033">सबैभन्दा मिल्ने</translation>
@@ -3084,6 +3085,7 @@
 <translation id="5787146423283493983">प्रमुख सम्झौता</translation>
 <translation id="5793317771769868848">यो डिभाइसबाट यो भुक्तानी विधि हटाइने छ</translation>
 <translation id="5794065675298686371">मूल्यको ट्र्याकिङसम्बन्धी नोटिफिकेसन अन गर्नुहोस्</translation>
+<translation id="5797984091151707075">एड्मिनको नीतिबमोजिम ब्लक गरिएको छ</translation>
 <translation id="5800727402210090597">मोबाइल फोन मर्मत गर्ने सेवाहरू</translation>
 <translation id="580241730938216256">अपडेट सुरु गर्नुहोस्</translation>
 <translation id="5804241973901381774">अनुमतिहरू</translation>
@@ -5251,7 +5253,6 @@
 <translation id="9186371298532546532">यो ठेगाना अझ धेरै ठाउँहरूमा प्रयोग गर्नुहोस्</translation>
 <translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> ले यो ट्याब परिवर्तन गर्नुभयो</translation>
 <translation id="9189789270972826888">कार्डका विवरणहरू स्वतः भरिएको छैन भने तल दिइएका विवरणहरूमा क्लिक गरी तिनलाई कपी र पेस्ट गर्नुहोस्। <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
-<translation id="9190557999028587593">४ हप्ताभन्दा पुराना विषयहरू स्वतः मेटाइन्छन्</translation>
 <translation id="9191834167571392248">फेदको बायाँपट्टि प्वाल</translation>
 <translation id="9192361865877479444">मेटल (म्याट)</translation>
 <translation id="9192947025498305328">स्वास्थ्य तथा वातावरणमैत्री सौन्दर्य प्रसाधन</translation>

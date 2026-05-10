@@ -1096,6 +1096,7 @@
 <translation id="2677748264148917807">Quitter</translation>
 <translation id="2679216653373462289">Utiliser vos capteurs de mouvement et de luminosité</translation>
 <translation id="2679659833697380">Vos informations sont enregistrées sur votre appareil</translation>
+<translation id="2680837394649649718">Envoyé à Chrome sur votre <ph name="DEVICE_NAME" />.</translation>
 <translation id="2683195745483370038">Autres résultats trouvés</translation>
 <translation id="2686919536310834199">Envoyez des commentaires pour l'Aide à la rédaction.</translation>
 <translation id="2687555958734450033">Ajustement optimal</translation>
@@ -3086,6 +3087,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5787146423283493983">Accord de la clé</translation>
 <translation id="5793317771769868848">Ce mode de paiement sera supprimé de cet appareil</translation>
 <translation id="5794065675298686371">Activer les notifications de suivi des prix</translation>
+<translation id="5797984091151707075">Bloqué par la politique de l'administrateur</translation>
 <translation id="5800727402210090597">Réparation et services de téléphones cellulaires</translation>
 <translation id="580241730938216256">Démarrer la mise à jour</translation>
 <translation id="5804241973901381774">Autorisations</translation>
@@ -5252,7 +5254,6 @@ Détails supplémentaires :
 <translation id="9186371298532546532">Utilisez cette adresse dans plus d'endroits</translation>
 <translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> a modifié cet onglet</translation>
 <translation id="9189789270972826888">Cliquez sur les détails de la carte ci-dessous pour copier-coller le contenu si la carte n'a pas été remplie automatiquement. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
-<translation id="9190557999028587593">Les sujets datant d'il y a plus de quatre semaines sont automatiquement supprimés</translation>
 <translation id="9191834167571392248">Perforation en bas à gauche</translation>
 <translation id="9192361865877479444">Métal (mat)</translation>
 <translation id="9192947025498305328">Produits de beauté responsables</translation>

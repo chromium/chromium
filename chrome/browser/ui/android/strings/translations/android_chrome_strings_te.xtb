@@ -271,6 +271,7 @@
 <translation id="2226826835915474236">ఇన్‌యాక్టివ్ షార్ట్‌కట్‌లు</translation>
 <translation id="2227179592712503583">సూచనను తీసివేయండి</translation>
 <translation id="2227444325776770048"><ph name="USER_FULL_NAME" />గా కొనసాగించండి</translation>
+<translation id="2230411774874187555">మీరు సేవ్ చేసిన మొత్తం సమాచారాన్ని పొందండి</translation>
 <translation id="2230777942707397948">ఖాళీ విండో</translation>
 <translation id="223356358902285214">వెబ్ &amp; యాప్ యాక్టివిటీ</translation>
 <translation id="2233735624724508540">సమయ వ్యవధిని ఎంచుకుని, ఆపై 'డేటాను తొలగించండి' అనే ఆప్షన్‌ను ట్యాప్ చేయండి</translation>
@@ -483,6 +484,7 @@
 <translation id="3057938290530993634">తర్వాతిసారి సులభంగా యాక్సెస్ చేయడానికి, మీరు ఎక్కువగా సందర్శించే వెబ్‌సైట్‌లను పిన్ చేయడానికి ట్యాప్ చేసి ఉంచండి</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> బుక్‌మార్క్}other{<ph name="BOOKMARKS_COUNT_MANY" /> బుక్‌మార్క్‌లు}}</translation>
 <translation id="3062802207422175757">Chromeలోని మీ అభిరుచులకు అనుగుణమైన కథనాలు</translation>
+<translation id="3066107845790462226">వీడియో ఫ్రేమ్ డౌన్‌లోడ్ చేయండి</translation>
 <translation id="3066573403916685335">క్రిందికి తరలించండి</translation>
 <translation id="3067505415088964188">ధర తక్కువగా ఉంటుంది</translation>
 <translation id="3070005020161560471">ఆటోమేటిక్‌గా అనువదించాల్సినవి</translation>
@@ -1214,6 +1216,7 @@
 <translation id="6264485186158353794">భద్రతకు తిరిగి వెళ్ళు</translation>
 <translation id="6267106249090587268">నోటిఫికేషన్‌లు <ph name="SEPARATOR" /> స్పామ్ లేదా మోసపూరిత కంటెంట్‌ల కారణంగా Chrome ఈ అనుమతులను తీసివేసింది</translation>
 <translation id="6276708887952587684">పేజీ సోర్స్ కోడ్‌ను చూడండి</translation>
+<translation id="62768169905160414">వీడియో ఫ్రేమ్‌ను కాపీ చేయండి</translation>
 <translation id="6277522088822131679">పేజీని ముద్రిస్తున్నప్పుడు సమస్య ఏర్పడింది. దయచేసి మళ్లీ ట్రై చేయండి.</translation>
 <translation id="6278428485366576908">థీమ్</translation>
 <translation id="6291294824436685757">బ్రౌజింగ్ డేటాను తొలగించండి; తొలగించడానికి డేటాను ఎంచుకోండి</translation>
@@ -1635,7 +1638,7 @@
 <translation id="784934925303690534">సమయ పరిధి</translation>
 <translation id="7851858861565204677">ఇతర పరికరాలు</translation>
 <translation id="78527117619130387">పిన్ చేసిన ట్యాబ్‌ను మూసివేయడానికి ^Wను మళ్లీ నొక్కండి</translation>
-<translation id="7853202427316060426">కార్యాచరణ</translation>
+<translation id="7853202427316060426">యాక్టివిటీ</translation>
 <translation id="7859988229622350291">వీటిని ఎప్పటికీ అనువదించవద్దు</translation>
 <translation id="7866213166286285359">పేజీలను ఇక్కడ అనువదించండి</translation>
 <translation id="7875915731392087153">ఈమెయిల్‌ను క్రియేట్ చేయండి</translation>

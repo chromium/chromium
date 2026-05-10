@@ -442,7 +442,6 @@
 <translation id="2493269659028026145">Bloquear imediatamente com o <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="2496180316473517155">Histórico de navegação</translation>
 <translation id="2496626742194544812">Ir para o primeiro separador</translation>
-<translation id="2497852260688568942">A sincronização foi desativada pelo gestor</translation>
 <translation id="2499505845365628575">Pode encontrar todo o seu histórico de navegação através do botão <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="2511117522375201202">Tem <ph name="NUMBER_OF_PASSWORDS" /> palavras-passe comprometidas que podem pôr a sua segurança em risco.</translation>
 <translation id="2513103768503127042">Os seus grupos de separadores vão ser apresentados aqui</translation>
@@ -567,6 +566,7 @@
 <translation id="2969979262385602596">Falha ao iniciar sessão. Tente nov. mais tarde.</translation>
 <translation id="2975761176769946178">É necessário um URL</translation>
 <translation id="297667759942911166">Colabore em grupos de separadores</translation>
+<translation id="298696743524648170">Para usar o Gemini no Chrome, inicie sessão no Chrome com a sua Conta Google</translation>
 <translation id="2987670534697681860">Valide a sua identidade para aceder a todas as suas palavras-passe neste dispositivo.</translation>
 <translation id="2989523299700148168">Visitados recentemente</translation>
 <translation id="2989805286512600854">Abrir num Novo Separador</translation>
@@ -621,6 +621,7 @@
 <translation id="31652791196570636">Ignorar</translation>
 <translation id="3167868116600277716">Feed do Discover</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3172755898799085680">O Gemini não está disponível nesta página</translation>
 <translation id="3174662312949010067">Também pode utilizar palavras-passe guardadas nos outros dispositivos.</translation>
 <translation id="3177338796769255211">Inicie sessão para ter acesso aos seus marcadores e muito mais em todos os seus dispositivos</translation>
 <translation id="3181954750937456830">Navegação segura (protege o utilizador e o seu dispositivo contra sites perigosos)</translation>
@@ -996,6 +997,7 @@
 <translation id="4552042254369397518">A copiar…</translation>
 <translation id="4553044860350038560">Mais chaves de acesso</translation>
 <translation id="4564893319561643483">Oculte "<ph name="TITLE" />"</translation>
+<translation id="456502772933839252">A partilhar <ph name="PAGE_TITLE" /></translation>
 <translation id="4565377596337484307">Ocultar palavra-passe</translation>
 <translation id="4568230126482344545">Ocultar Separadores recentes</translation>
 <translation id="4578835633387306383">Ativar…</translation>

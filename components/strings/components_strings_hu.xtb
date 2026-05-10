@@ -1096,6 +1096,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2677748264148917807">Lap elhagyása</translation>
 <translation id="2679216653373462289">Mozgás- és fényérzékelők használata</translation>
 <translation id="2679659833697380">Adatait az eszközre menti a rendszer</translation>
+<translation id="2680837394649649718">Elküldve a Chrome-ba a(z) <ph name="DEVICE_NAME" /> eszközön.</translation>
 <translation id="2683195745483370038">További találatok vannak</translation>
 <translation id="2686919536310834199">Visszajelzés küldése a Segítség az íráshoz funkcióval kapcsolatban.</translation>
 <translation id="2687555958734450033">Legjobb illeszkedés</translation>
@@ -3083,6 +3084,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="5787146423283493983">Kulcsmegegyezés</translation>
 <translation id="5793317771769868848">Ez a fizetési mód törölve lesz erről az eszközről.</translation>
 <translation id="5794065675298686371">Az árfigyelési értesítések bekapcsolása</translation>
+<translation id="5797984091151707075">Rendszergazdai házirend által letiltva</translation>
 <translation id="5800727402210090597">Mobiltelefon-javítás és kapcsolódó szolgáltatások</translation>
 <translation id="580241730938216256">Frissítés indítása</translation>
 <translation id="5804241973901381774">Engedélyek</translation>
@@ -5253,7 +5255,6 @@ További részletek:
 <translation id="9186371298532546532">A cím használata több helyen is</translation>
 <translation id="9189468832660648522"><ph name="MEMBER_FIRST_NAME" /> módosította ezt a lapot</translation>
 <translation id="9189789270972826888">Ha a kártyaadatok nem voltak kitöltve, kattintson az alábbi kártyaadatokra a másoláshoz és beillesztéshez. <ph name="IDS_AUTOFILL_FILLED_CARD_INFORMATION_BUBBLE_LEARN_MORE_LINK_LABEL" /></translation>
-<translation id="9190557999028587593">A 4 hétnél régebbi témák automatikusan törlődnek</translation>
 <translation id="9191834167571392248">Lyuk balra lent</translation>
 <translation id="9192361865877479444">Fém (matt)</translation>
 <translation id="9192947025498305328">Etikus szépségápolás</translation>
