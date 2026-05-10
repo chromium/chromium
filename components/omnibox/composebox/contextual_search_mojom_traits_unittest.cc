@@ -47,6 +47,13 @@ TEST(ContextualSearchMojomTraitsTest, InputTypeUnknownValue) {
   EXPECT_EQ(output, omnibox::InputType::INPUT_TYPE_UNSPECIFIED);
 }
 
+TEST(ContextualSearchMojomTraitsTest, InputTypeInvalidMojomValue) {
+  mojom::InputType input = static_cast<mojom::InputType>(999);
+  omnibox::InputType result =
+      mojo::EnumTraits<mojom::InputType, omnibox::InputType>::FromMojom(input);
+  EXPECT_EQ(result, omnibox::InputType::INPUT_TYPE_UNSPECIFIED);
+}
+
 TEST(ContextualSearchMojomTraitsTest, ContextUploadStatusUnknownValue) {
   contextual_search::ContextUploadStatus input =
       static_cast<contextual_search::ContextUploadStatus>(999);
