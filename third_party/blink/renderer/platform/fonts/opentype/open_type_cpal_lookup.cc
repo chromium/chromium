@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_cpal_lookup.h"
 
+#include "base/containers/heap_array.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_face_from_typeface.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/skia/include/core/SkStream.h"
@@ -61,18 +62,16 @@ Vector<Color> OpenTypeCpalLookup::RetrieveColorRecords(
     return Vector<Color>();
   }
 
-  std::unique_ptr<hb_color_t[]> colors =
-      std::make_unique<hb_color_t[]>(num_colors);
+  auto colors = base::HeapArray<hb_color_t>::WithSize(num_colors);
   if (!hb_ot_color_palette_get_colors(face.get(), palette_index, 0, &num_colors,
-                                      colors.get())) {
+                                      colors.data())) {
     return Vector<Color>();
   }
   Vector<Color> color_records(num_colors);
   for (unsigned i = 0; i < num_colors; i++) {
-    color_records[i] = Color(hb_color_get_red(UNSAFE_TODO(colors[i])),
-                             hb_color_get_green(UNSAFE_TODO(colors[i])),
-                             hb_color_get_blue(UNSAFE_TODO(colors[i])),
-                             hb_color_get_alpha(UNSAFE_TODO(colors[i])));
+    color_records[i] = Color::FromRGBA(
+        hb_color_get_red(colors[i]), hb_color_get_green(colors[i]),
+        hb_color_get_blue(colors[i]), hb_color_get_alpha(colors[i]));
   }
   return color_records;
 }
