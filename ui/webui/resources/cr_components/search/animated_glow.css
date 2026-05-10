@@ -221,7 +221,8 @@
 }
 
 :host([animation-state='dragging'][energy-effect-animation-enabled]),
-:host([animation-state='expanding'][energy-effect-animation-enabled][is-zero-state]) {
+:host([animation-state='expanding'][energy-effect-animation-enabled][is-zero-state]),
+:host([animation-state='submitting'][energy-effect-animation-enabled]) {
   --dragging-glow-gradient: conic-gradient(
     #3186ff 34%,
     #9378ff 37%,
@@ -253,7 +254,9 @@
 :host([animation-state='dragging'][energy-effect-animation-enabled]) .gradient-blur-wrapper .gradient::before,
 :host([animation-state='dragging'][energy-effect-animation-enabled]) .gradient-sharp-wrapper .double-gradient::before,
 :host([animation-state='expanding'][energy-effect-animation-enabled][is-zero-state]) .gradient-blur-wrapper .gradient::before,
-:host([animation-state='expanding'][energy-effect-animation-enabled][is-zero-state]) .gradient-sharp-wrapper .double-gradient::before {
+:host([animation-state='expanding'][energy-effect-animation-enabled][is-zero-state]) .gradient-sharp-wrapper .double-gradient::before,
+:host([animation-state='submitting'][energy-effect-animation-enabled]) .gradient-blur-wrapper .gradient::before,
+:host([animation-state='submitting'][energy-effect-animation-enabled]) .gradient-sharp-wrapper .double-gradient::before {
   animation: none;
   background: var(--dragging-glow-gradient);
   opacity: 1;
@@ -264,13 +267,12 @@
 
 :host([animation-state='submitting']) .gradient::before,
 :host([animation-state='submitting']) .gradient.gradient-outer-glow::before {
-  animation: gradient-spin-submit var(--glif-rotation-duration_)
+  animation: gradient-spin-expand var(--glif-rotation-duration_)
     var(--search-animated-glow-gradient-curve) forwards;
 }
 
 :host([animation-state='submitting']) .gradient.gradient-outer-glow {
-  animation: blur-close var(--glif-rotation-duration_)
-    var(--search-animated-glow-gradient-curve);
+  animation: blur-expand var(--expand-timing_);
 }
 
 .gradient::after {
@@ -475,7 +477,8 @@
 }
 
 :host([animation-state='dragging'][energy-effect-animation-enabled]) .gradient-blur-wrapper,
-:host([animation-state='expanding'][energy-effect-animation-enabled][is-zero-state]) .gradient-blur-wrapper {
+:host([animation-state='expanding'][energy-effect-animation-enabled][is-zero-state]) .gradient-blur-wrapper,
+:host([animation-state='submitting'][energy-effect-animation-enabled]) .gradient-blur-wrapper {
   border-radius: inherit;
   display: block;
   filter: blur(8px);
@@ -484,7 +487,8 @@
   position: absolute;
 }
 
-:host([animation-state='expanding'][energy-effect-animation-enabled][is-zero-state]) .gradient-blur-wrapper {
+:host([animation-state='expanding'][energy-effect-animation-enabled][is-zero-state]) .gradient-blur-wrapper,
+:host([animation-state='submitting'][energy-effect-animation-enabled]) .gradient-blur-wrapper {
   animation:
     animateOpacity var(--gradient-burst-duration) both,
     animateAngles var(--gradient-burst-duration)
@@ -539,7 +543,8 @@
 }
 
 :host([animation-state='dragging'][energy-effect-animation-enabled]) .gradient-sharp-wrapper,
-:host([animation-state='expanding'][energy-effect-animation-enabled][is-zero-state]) .gradient-sharp-wrapper {
+:host([animation-state='expanding'][energy-effect-animation-enabled][is-zero-state]) .gradient-sharp-wrapper,
+:host([animation-state='submitting'][energy-effect-animation-enabled]) .gradient-sharp-wrapper {
   border-radius: inherit;
   display: block;
   filter: blur(2px);
@@ -548,7 +553,8 @@
   position: absolute;
 }
 
-:host([animation-state='expanding'][energy-effect-animation-enabled][is-zero-state]) .gradient-sharp-wrapper {
+:host([animation-state='expanding'][energy-effect-animation-enabled][is-zero-state]) .gradient-sharp-wrapper,
+:host([animation-state='submitting'][energy-effect-animation-enabled]) .gradient-sharp-wrapper {
   animation:
     animateOpacity var(--gradient-burst-duration) both,
     animateAngles var(--gradient-burst-duration)
@@ -556,7 +562,8 @@
 }
 
 :host([animation-state='dragging'][energy-effect-animation-enabled]) .gradient-blur-wrapper .gradient,
-:host([animation-state='expanding'][energy-effect-animation-enabled][is-zero-state]) .gradient-blur-wrapper .gradient {
+:host([animation-state='expanding'][energy-effect-animation-enabled][is-zero-state]) .gradient-blur-wrapper .gradient,
+:host([animation-state='submitting'][energy-effect-animation-enabled]) .gradient-blur-wrapper .gradient {
   scale: 7 1.5;
   -webkit-mask-image: conic-gradient(
     from var(--mask-angle, 0deg),
@@ -579,7 +586,8 @@
 }
 
 :host([animation-state='dragging'][energy-effect-animation-enabled]) .double-gradient,
-:host([animation-state='expanding'][energy-effect-animation-enabled][is-zero-state]) .double-gradient {
+:host([animation-state='expanding'][energy-effect-animation-enabled][is-zero-state]) .double-gradient,
+:host([animation-state='submitting'][energy-effect-animation-enabled]) .double-gradient {
   scale: 7 1.5;
   -webkit-mask-image: conic-gradient(
     from var(--mask-angle, 0deg),
@@ -602,7 +610,8 @@
 }
 
 :host([animation-state='dragging'][energy-effect-animation-enabled]) .gradient-sharp-wrapper .double-gradient::before,
-:host([animation-state='expanding'][energy-effect-animation-enabled][is-zero-state]) .gradient-sharp-wrapper .double-gradient::before {
+:host([animation-state='expanding'][energy-effect-animation-enabled][is-zero-state]) .gradient-sharp-wrapper .double-gradient::before,
+:host([animation-state='submitting'][energy-effect-animation-enabled]) .gradient-sharp-wrapper .double-gradient::before {
   animation: none;
   background: var(--dragging-glow-gradient);
   filter: none;
@@ -623,7 +632,8 @@
 }
 
 :host([animation-state='dragging'][energy-effect-animation-enabled]) .background,
-:host([animation-state='expanding'][energy-effect-animation-enabled][is-zero-state]) .background {
+:host([animation-state='expanding'][energy-effect-animation-enabled][is-zero-state]) .background,
+:host([animation-state='submitting'][energy-effect-animation-enabled]) .background {
   /*
   * Remove transparent border and inset by 2px so background covers
   * the center up to the composebox border, letting the gradient

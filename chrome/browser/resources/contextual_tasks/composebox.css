@@ -182,6 +182,10 @@
   animation: animateBorder var(--box-shadow-animation-duration) both;
 }
 
+:host([energy-effect-enabled_]) #composebox[animation-state='submitting']::after {
+  animation: animateBorderSubmitting var(--box-shadow-animation-duration) both;
+}
+
 :host([energy-effect-enabled_]) #composebox[animation-state='dragging']::after {
   display: none;
 }
@@ -200,6 +204,23 @@
   }
   39.4% {
     opacity: 1;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes animateBorderSubmitting {
+  0% {
+    opacity: 1;
+    animation-timing-function: var(--standard-decelerate-curve);
+  }
+  25% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0;
+    animation-timing-function: var(--emphasized-accelerate-curve);
   }
   100% {
     opacity: 1;
@@ -246,7 +267,8 @@
   box-shadow: 0 4px 18px -2px rgba(60, 64, 67, 0.12);
 }
 
-:host([energy-effect-enabled_]) #composebox[animation-state='expanding']::part(composebox) {
+:host([energy-effect-enabled_]) #composebox[animation-state='expanding']::part(composebox),
+:host([energy-effect-enabled_]) #composebox[animation-state='submitting']::part(composebox) {
   animation: animateShadow var(--box-shadow-animation-duration) both;
 }
 
@@ -866,7 +888,7 @@
   }
 }
 
-:host([energy-effect-enabled_]) #composebox[animation-state='submitting'] {
+:host(:not([energy-effect-enabled_])) #composebox[animation-state='submitting'] {
   animation: bump-on-submit 350ms;
   animation-delay: 50ms;
   transform-origin: bottom;
@@ -877,13 +899,12 @@
     animation-timing-function: cubic-bezier(0, 0, 0, 1);
     transform: scaleY(1);
   }
-
   28.5% {
     animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     transform: scaleY(1.12);
   }
-
   100% {
     transform: scaleY(1);
   }
 }
+
