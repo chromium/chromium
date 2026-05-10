@@ -3,6 +3,6 @@
 // found in the LICENSE file.
 
 export function recordAction(actionName: string) {
-  chrome.metricsPrivate.recordUserAction(actionName);
-  chrome.metricsPrivate.recordBoolean(actionName, true);
+  chrome.histograms.recordUserAction(actionName);
+  chrome.histograms.recordBoolean(actionName, true);
 }

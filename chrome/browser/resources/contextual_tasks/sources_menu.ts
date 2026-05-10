@@ -18,6 +18,7 @@ import type {BrowserProxy} from './contextual_tasks_browser_proxy.js';
 import {BrowserProxyImpl} from './contextual_tasks_browser_proxy.js';
 import {getCss} from './sources_menu.css.js';
 import {getHtml} from './sources_menu.html.js';
+import {recordAction} from './utils.js';
 
 export interface SourcesMenuElement {
   $: {
@@ -65,10 +66,7 @@ export class SourcesMenuElement extends CrLitElement {
   protected onTabClick_(e: Event) {
     this.close();
 
-    chrome.metricsPrivate.recordUserAction(
-        'ContextualTasks.WebUI.UserAction.TabFromSourcesMenuClicked');
-    chrome.metricsPrivate.recordBoolean(
-        'ContextualTasks.WebUI.UserAction.TabFromSourcesMenuClicked', true);
+    recordAction('ContextualTasks.WebUI.UserAction.TabFromSourcesMenuClicked');
     const contextInfo = this.getContextInfoFromEvent_(e);
     this.browserProxy_.handler.onTabClickedFromSourcesMenu(
         contextInfo.tab!.tabId, contextInfo.tab!.url);

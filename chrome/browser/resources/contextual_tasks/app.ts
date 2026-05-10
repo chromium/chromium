@@ -39,6 +39,7 @@ import {BrowserProxyImpl} from './contextual_tasks_browser_proxy.js';
 import {PostMessageHandler} from './post_message_handler.js';
 import type {Rect} from './post_message_handler.js';
 import {getNonOccludedClipPath} from './utils/clip_path.js';
+import {recordAction} from './utils.js';
 
 declare global {
   interface HTMLElementEventMap {
@@ -492,11 +493,8 @@ export class ContextualTasksAppElement extends CrLitElement {
         }
 
         if (this.isShownInTab_) {
-          chrome.metricsPrivate.recordUserAction(
+          recordAction(
               'ContextualTasks.HistoryNavigation.UserAction.NavigatedInFullTab');
-          chrome.metricsPrivate.recordBoolean(
-              'ContextualTasks.HistoryNavigation.UserAction.NavigatedInFullTab',
-              true);
         }
 
         this.browserProxy_.handler.setTaskId({value: taskUuid});
@@ -1064,10 +1062,7 @@ export class ContextualTasksAppElement extends CrLitElement {
   }
 
   protected async onNewThreadClick_() {
-    chrome.metricsPrivate.recordUserAction(
-        'ContextualTasks.WebUI.UserAction.OpenNewThread');
-    chrome.metricsPrivate.recordBoolean(
-        'ContextualTasks.WebUI.UserAction.OpenNewThread', true);
+    recordAction('ContextualTasks.WebUI.UserAction.OpenNewThread');
     const {url} = await this.browserProxy_.handler.getThreadUrl();
     const newThreadUrl = new URL(url);
     const currentUrl = new URL(this.$.threadFrame.src);
