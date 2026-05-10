@@ -218,7 +218,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1145593918056169051">A impressora parou</translation>
 <translation id="1147098843963878839">{SELECTED_ITEMS,plural, =0{Extensões}=1{Extensões ({SELECTED_ITEMS})}one{Extensões ({SELECTED_ITEMS})}other{Extensões ({SELECTED_ITEMS})}}</translation>
 <translation id="114715166554490743">Ponteiro com a cabeça</translation>
-<translation id="114721135501989771">A tecnologia Google no Chrome</translation>
+<translation id="114721135501989771">A tecnologia do Google no Chrome</translation>
 <translation id="1147322039136785890">Agora, entregue o dispositivo para <ph name="SUPERVISED_USER_NAME" /></translation>
 <translation id="1147867844630510586">Fazer login com <ph name="IDP_NAME" /></translation>
 <translation id="1148464196693569530">Permitir scripts de usuário</translation>
@@ -745,7 +745,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1504253885059472207">Fixar a visualização dividida</translation>
 <translation id="1504551620756424144">As pastas compartilhadas estão disponíveis no Windows em <ph name="BASE_DIR" />.</translation>
 <translation id="1505494256539862015">exportar as senhas</translation>
-<translation id="1505654899813338756">Monte grupos para manter suas guias relacionadas juntas e sincronizadas em todos os seus dispositivos.</translation>
+<translation id="1505654899813338756">Monte grupos de guias relacionadas para sincronizá-las em todos os seus dispositivos.</translation>
 <translation id="1506061864768559482">Mecanismo de pesquisa</translation>
 <translation id="1506187449813838456">Aumentar tom de voz</translation>
 <translation id="1507170440449692343">Esta página foi impedida de acessar sua câmera.</translation>
@@ -3205,7 +3205,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3179982752812949580">Fonte do texto</translation>
 <translation id="31806439105337256">Mostrar guias verticalmente</translation>
 <translation id="3180990259147710757">Mover a mandíbula para a esquerda</translation>
-<translation id="3181825792072797598">Ativar a Sincronização</translation>
+<translation id="3181825792072797598">Ativar a sincronização</translation>
 <translation id="3181954750937456830">Navegação segura: protege você e seu dispositivo de sites perigosos</translation>
 <translation id="3182749001423093222">Verificação ortográfica</translation>
 <translation id="3183139917765991655">Importador de perfil</translation>
