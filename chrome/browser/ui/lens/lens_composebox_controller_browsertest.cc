@@ -1382,3 +1382,18 @@ IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return overlay_controller->state() == State::kHidden; }));
 }
+
+IN_PROC_BROWSER_TEST_F(LensComposeboxControllerBrowserTest,
+                       OnFocusChangedDoesNotCrashWhenOff) {
+  WaitForPaint();
+
+  // Contextualize on focus should be default enabled.
+  auto* lens_controller = GetLensSearchController();
+  ASSERT_TRUE(lens_controller);
+
+  // Ensure the controller is OFF.
+  ASSERT_TRUE(lens_controller->IsOff());
+
+  // Simulate focus. This should not crash.
+  GetLensComposeboxController()->OnFocusChanged(true);
+}

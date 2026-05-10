@@ -145,6 +145,12 @@ void LensComposeboxController::OnFocusChanged(bool focused) {
     return;
   }
 
+  // Ignore if contextualization is not active.
+  if (!lens_search_controller_->lens_search_contextualization_controller()
+           ->IsActive()) {
+    return;
+  }
+
   // If the composebox becomes focused, the user is showing intent to issue a
   // new query. Upload the new page content for contextualization. The content
   // is updated asynchronously, but this class does not need to wait for the
