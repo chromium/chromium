@@ -264,25 +264,6 @@ chromium-metrics-reviews@google.com.
              memory"/>
 </enum>
 
-<!-- LINT.IfChange(CustomTabsToolbarButtons) -->
-
-<enum name="CustomTabsToolbarButtons">
-  <int value="-1" label="Invalid"/>
-  <int value="0" label="No button"/>
-  <int value="1" label="Share/OIB"/>
-  <int value="2" label="Share/Custom"/>
-  <int value="3" label="Share"/>
-  <int value="4" label="Share/MTB"/>
-  <int value="5" label="OIB/Custom"/>
-  <int value="6" label="OIB"/>
-  <int value="7" label="OIB/MTB"/>
-  <int value="8" label="Custom"/>
-  <int value="9" label="Custom/MTB"/>
-  <int value="10" label="MTB"/>
-</enum>
-
-<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/customtabs/features/toolbar/CustomTabToolbar.java:CctActions) -->
-
 <!-- LINT.IfChange(FinishReason) -->
 
 <enum name="FinishReason">

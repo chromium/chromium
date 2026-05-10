@@ -60,16 +60,6 @@ chromium-metrics-reviews@google.com.
                wrapper started"/>
 </variants>
 
-<histogram name="CustomTab.AdaptiveToolbarButton.ActionButtons"
-    enum="CustomTabsToolbarButtons" expires_after="2026-09-20">
-  <owner>jinsukkiim@google.com</owner>
-  <owner>clank-app-team@google.com</owner>
-  <summary>
-    Records which buttons are shown in top toolbar. Recorded when CCT is closed
-    to capture the list of buttons finally presented to users. Android only.
-  </summary>
-</histogram>
-
 <histogram name="CustomTab.AdaptiveToolbarButton.FallbackUi"
     enum="AdaptiveToolbarButtonVariant" expires_after="2026-10-04">
   <owner>jinsukkiim@google.com</owner>

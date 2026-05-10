@@ -161,12 +161,8 @@ public class CustomTabToolbarCoordinator {
 
         boolean isInDesktopWindow = AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManager);
 
-        if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {
-            if (mToolbarButtonsCoordinator != null) {
-                mToolbarButtonsCoordinator.setCustomActionButtonsVisible(!isInDesktopWindow);
-            }
-        } else {
-            mToolbarManager.setCustomActionsVisibility(!isInDesktopWindow);
+        if (mToolbarButtonsCoordinator != null) {
+            mToolbarButtonsCoordinator.setCustomActionButtonsVisible(!isInDesktopWindow);
         }
 
         if (isInDesktopWindow) {
@@ -183,18 +179,13 @@ public class CustomTabToolbarCoordinator {
      */
     public void onToolbarInitialized(
             ToolbarManager manager,
-            @Nullable CustomTabToolbarButtonsCoordinator toolbarButtonsCoordinator) {
+            CustomTabToolbarButtonsCoordinator toolbarButtonsCoordinator) {
         assert manager != null : "Toolbar manager not initialized";
         mToolbarManager = manager;
         mToolbarColorController.onToolbarInitialized(manager);
         mToolbarButtonsCoordinator = toolbarButtonsCoordinator;
 
-        if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {
-            assumeNonNull(mToolbarButtonsCoordinator);
-            mToolbarButtonsCoordinator.setCloseButtonClickHandler(v -> onCloseButtonClick());
-        } else {
-            mCloseButtonVisibilityManager.setVisibility(mIntentDataProvider.isCloseButtonEnabled());
-        }
+        mToolbarButtonsCoordinator.setCloseButtonClickHandler(v -> onCloseButtonClick());
 
         mCloseButtonVisibilityManager.onToolbarInitialized(manager, mToolbarButtonsCoordinator);
         updateTitleBarVisibility();
@@ -356,19 +347,9 @@ public class CustomTabToolbarCoordinator {
             return false;
         }
 
-        if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {
-            if (mToolbarButtonsCoordinator == null) return false;
+        if (mToolbarButtonsCoordinator == null) return false;
 
-            mToolbarButtonsCoordinator.updateCustomActionButton(
-                    index, params.getIcon(mActivity), params.getDescription());
-            return true;
-        }
-
-        if (mToolbarManager == null) {
-            return false;
-        }
-
-        mToolbarManager.updateCustomActionButton(
+        mToolbarButtonsCoordinator.updateCustomActionButton(
                 index, params.getIcon(mActivity), params.getDescription());
         return true;
     }

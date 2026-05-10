@@ -57,7 +57,6 @@ import org.chromium.chrome.browser.customtabs.features.branding.MismatchNotifica
 import org.chromium.chrome.browser.customtabs.features.desktop_popup_header.DesktopPopupHeaderLayoutCoordinator;
 import org.chromium.chrome.browser.customtabs.features.desktop_popup_header.DesktopPopupHeaderUtils;
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizeDelegate;
-import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.MinimizedFeatureUtils;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.CustomTabHeightStrategy;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabDisplayManager;
 import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialCustomTabTabObserver;
@@ -437,76 +436,36 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         Supplier<@Nullable AppMenuHandler> appMenuHandler =
                 () -> mAppMenuCoordinator != null ? mAppMenuCoordinator.getAppMenuHandler() : null;
 
-        if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {
-            CustomTabToolbar toolbar = mActivity.findViewById(R.id.toolbar);
-            mToolbarButtonsCoordinator =
-                    new CustomTabToolbarButtonsCoordinator(
-                            mActivity,
-                            toolbar,
-                            mIntentDataProvider.get(),
-                            params ->
-                                    mToolbarCoordinator
-                                            .get()
-                                            .onCustomButtonClick(mActivity, params),
-                            mMinimizeDelegateSupplier.get(),
-                            appMenuHandler,
-                            omniboxParams,
-                            mActivityLifecycleDispatcher,
-                            mActivityTabProvider);
-
-            assert mFindToolbarManager != null;
-            super.initializeToolbar();
-
-            mToolbarManager.setOptionalButtonDelegate(mToolbarButtonsCoordinator);
-            mToolbarCoordinator
-                    .get()
-                    .onToolbarInitialized(mToolbarManager, mToolbarButtonsCoordinator);
-            View coordinator = mActivity.findViewById(R.id.coordinator);
-            assumeNonNull(mCustomTabHeightStrategy);
-            mCustomTabHeightStrategy.onToolbarInitialized(
-                    coordinator,
-                    toolbar,
-                    mIntentDataProvider.get().getPartialTabToolbarCornerRadius(),
-                    mToolbarButtonsCoordinator);
-
-            if (shouldEnableOmnibox) {
-                assert omniboxParams != null;
-                toolbar.setOmniboxParams(omniboxParams);
-            }
-
-            return;
-        }
+        CustomTabToolbar toolbar = mActivity.findViewById(R.id.toolbar);
+        mToolbarButtonsCoordinator =
+                new CustomTabToolbarButtonsCoordinator(
+                        mActivity,
+                        toolbar,
+                        mIntentDataProvider.get(),
+                        params ->
+                                mToolbarCoordinator
+                                        .get()
+                                        .onCustomButtonClick(mActivity, params),
+                        mMinimizeDelegateSupplier.get(),
+                        appMenuHandler,
+                        omniboxParams,
+                        mActivityLifecycleDispatcher,
+                        mActivityTabProvider);
 
         assert mFindToolbarManager != null;
         super.initializeToolbar();
 
-        // TODO(crbug.com/402213312): Move as much of this as possible into
-        // CustomTabToolbar#initializeToolbar rather than calling a bunch of setters.
-
-        mToolbarCoordinator.get().onToolbarInitialized(mToolbarManager, null);
-
-        CustomTabToolbar toolbar = mActivity.findViewById(R.id.toolbar);
-        toolbar.initVisibilityRule(mActivity, appMenuHandler, mIntentDataProvider.get());
-        var cpac = getContextualPageActionController();
-        if (cpac != null) cpac.setButtonVisibilitySupplier(toolbar.getShowOptionalButton());
+        mToolbarManager.setOptionalButtonDelegate(mToolbarButtonsCoordinator);
+        mToolbarCoordinator
+                .get()
+                .onToolbarInitialized(mToolbarManager, mToolbarButtonsCoordinator);
         View coordinator = mActivity.findViewById(R.id.coordinator);
         assumeNonNull(mCustomTabHeightStrategy);
         mCustomTabHeightStrategy.onToolbarInitialized(
                 coordinator,
                 toolbar,
                 mIntentDataProvider.get().getPartialTabToolbarCornerRadius(),
-                null);
-        if (mBrandingController != null) {
-            mBrandingController.onToolbarInitialized(toolbar.getBrandingDelegate());
-        }
-        toolbar.setCloseButtonPosition(mIntentDataProvider.get().getCloseButtonPosition());
-        var minimizeDelegate = mMinimizeDelegateSupplier.get();
-        if (minimizeDelegate != null) {
-            toolbar.setMinimizeDelegate(minimizeDelegate);
-        }
-        if (!MinimizedFeatureUtils.shouldEnableMinimizedCustomTabs(mIntentDataProvider.get())) {
-            toolbar.setMinimizeButtonEnabled(false);
-        }
+                mToolbarButtonsCoordinator);
         if (mIntentDataProvider.get().isPartialCustomTab()) {
             Callback<Runnable> softInputCallback =
                     ((PartialCustomTabDisplayManager) mCustomTabHeightStrategy)::onShowSoftInput;

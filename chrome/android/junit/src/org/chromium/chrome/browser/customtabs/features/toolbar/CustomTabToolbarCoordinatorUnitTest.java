@@ -45,7 +45,6 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabActivityContentTe
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabController;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.flags.ActivityType;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegateSupplier;
 import org.chromium.chrome.browser.tab.Tab;
@@ -186,11 +185,7 @@ public class CustomTabToolbarCoordinatorUnitTest {
         when(env.intentDataProvider.isCloseButtonEnabled()).thenReturn(true);
 
         mCoordinator.onToolbarInitialized(mToolbarManager, mToolbarButtonsCoordinator);
-        if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {
-            verify(mToolbarButtonsCoordinator).setCloseButtonClickHandler(any());
-        } else {
-            verify(mCloseButtonVisibilityManager).setVisibility(true);
-        }
+        verify(mToolbarButtonsCoordinator).setCloseButtonClickHandler(any());
     }
 
     @Test
@@ -198,11 +193,7 @@ public class CustomTabToolbarCoordinatorUnitTest {
         when(env.intentDataProvider.isCloseButtonEnabled()).thenReturn(false);
 
         mCoordinator.onToolbarInitialized(mToolbarManager, mToolbarButtonsCoordinator);
-        if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {
-            verify(mToolbarButtonsCoordinator).setCloseButtonClickHandler(any());
-        } else {
-            verify(mCloseButtonVisibilityManager).setVisibility(false);
-        }
+        verify(mToolbarButtonsCoordinator).setCloseButtonClickHandler(any());
     }
 
     @Test
@@ -220,11 +211,7 @@ public class CustomTabToolbarCoordinatorUnitTest {
         mCoordinator.onToolbarInitialized(mToolbarManager, mToolbarButtonsCoordinator);
         verify(mToolbarManager).releaseHideMenuButtonToken(TokenHolder.INVALID_TOKEN);
 
-        if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {
-            verify(mToolbarButtonsCoordinator).setCustomActionButtonsVisible(true);
-        } else {
-            verify(mToolbarManager).setCustomActionsVisibility(true);
-        }
+        verify(mToolbarButtonsCoordinator).setCustomActionButtonsVisible(true);
 
         // Enter desktop windowing.
         when(mToolbarManager.hideMenuButtonPersistently(TokenHolder.INVALID_TOKEN)).thenReturn(0);
@@ -238,11 +225,7 @@ public class CustomTabToolbarCoordinatorUnitTest {
         // Verify menu button and custom actions are hidden.
         observer.onDesktopWindowingModeChanged(true);
         verify(mToolbarManager).hideMenuButtonPersistently(TokenHolder.INVALID_TOKEN);
-        if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {
-            verify(mToolbarButtonsCoordinator).setCustomActionButtonsVisible(false);
-        } else {
-            verify(mToolbarManager).setCustomActionsVisibility(false);
-        }
+        verify(mToolbarButtonsCoordinator).setCustomActionButtonsVisible(false);
     }
 
     @Test
@@ -260,11 +243,7 @@ public class CustomTabToolbarCoordinatorUnitTest {
         // Verify menu button and custom actions are hidden.
         mCoordinator.onToolbarInitialized(mToolbarManager, mToolbarButtonsCoordinator);
         verify(mToolbarManager).hideMenuButtonPersistently(TokenHolder.INVALID_TOKEN);
-        if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {
-            verify(mToolbarButtonsCoordinator).setCustomActionButtonsVisible(false);
-        } else {
-            verify(mToolbarManager).setCustomActionsVisibility(false);
-        }
+        verify(mToolbarButtonsCoordinator).setCustomActionButtonsVisible(false);
 
         // Exit desktop windowing.
         appHeaderState = new AppHeaderState(WINDOW_RECT, WIDEST_UNOCCLUDED_RECT, false);
@@ -276,10 +255,6 @@ public class CustomTabToolbarCoordinatorUnitTest {
 
         observer.onDesktopWindowingModeChanged(false);
         verify(mToolbarManager).releaseHideMenuButtonToken(0);
-        if (ChromeFeatureList.sCctToolbarRefactor.isEnabled()) {
-            verify(mToolbarButtonsCoordinator).setCustomActionButtonsVisible(true);
-        } else {
-            verify(mToolbarManager).setCustomActionsVisibility(true);
-        }
+        verify(mToolbarButtonsCoordinator).setCustomActionButtonsVisible(true);
     }
 }
