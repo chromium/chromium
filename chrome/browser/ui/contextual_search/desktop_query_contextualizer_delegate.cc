@@ -13,12 +13,6 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/android/tab_features.h"
-#else
-#include "chrome/browser/ui/tabs/public/tab_features.h"
-#endif  // BUILDFLAG(IS_ANDROID)
-
 namespace contextual_tasks {
 
 DesktopQueryContextualizerDelegate::DesktopQueryContextualizerDelegate(
@@ -64,14 +58,14 @@ void DesktopQueryContextualizerDelegate::GetPageContext(
     return;
   }
 
-  auto* tab_features = tab->GetTabFeatures();
-  if (!tab_features || !tab_features->tab_contextualization_controller()) {
+  auto* tab_contextualization_controller =
+      lens::TabContextualizationController::From(tab);
+  if (!tab_contextualization_controller) {
     std::move(callback).Run(nullptr);
     return;
   }
 
-  tab_features->tab_contextualization_controller()->GetPageContext(
-      std::move(callback));
+  tab_contextualization_controller->GetPageContext(std::move(callback));
 }
 
 bool DesktopQueryContextualizerDelegate::IsTabValid(

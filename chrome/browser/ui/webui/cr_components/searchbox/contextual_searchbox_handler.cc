@@ -33,7 +33,6 @@
 #include "chrome/browser/ui/contextual_search/desktop_query_contextualizer_delegate.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/webui/cr_components/searchbox/searchbox_utils.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
@@ -233,7 +232,7 @@ void ContextualSearchboxHandler::GetRecentTabs(GetRecentTabsCallback callback) {
     tab_data->show_in_current_tab_chip = show_in_current_tab_chip;
 
     lens::TabContextualizationController* tab_context_controller =
-        tab_time.tab->GetTabFeatures()->tab_contextualization_controller();
+        lens::TabContextualizationController::From(tab_time.tab);
     tab_data->show_in_previous_tab_chip =
         !google_util::IsGoogleSearchUrl(last_committed_url) &&
         tab_context_controller->GetInitialPageContextEligibility() &&
@@ -278,7 +277,7 @@ void ContextualSearchboxHandler::GetTabPreview(int32_t tab_id,
   }
 
   lens::TabContextualizationController* tab_context_controller =
-      tab->GetTabFeatures()->tab_contextualization_controller();
+      lens::TabContextualizationController::From(tab);
 
   content::WebContents* web_contents = tab->GetContents();
   tab_context_controller->CaptureScreenshot(
@@ -572,7 +571,7 @@ void ContextualSearchboxHandler::ContinueAddTabContext(
   RecordTabAddedMetric(tab, /*is_tab_suggestion_chip=*/delay_upload);
 
   lens::TabContextualizationController* tab_contextualization_controller =
-      tab->GetTabFeatures()->tab_contextualization_controller();
+      lens::TabContextualizationController::From(tab);
   tab_contextualization_controller->GetPageContext(base::BindOnce(
       &ContextualSearchboxHandler::OnGetTabPageContext,
       weak_ptr_factory_.GetWeakPtr(), delay_upload, context_token));
