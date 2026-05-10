@@ -1404,22 +1404,16 @@ proto_library("certificate_rpc_proto") {
   deps = [ ":rpc_resources_proto" ]
 }
 
-config("sharing_log_proto_inputs_config") {
-  inputs = [ "//third_party/protobuf/src/google/protobuf/duration.proto" ]
-}
-
-group("sharing_log_proto_inputs") {
-  public_configs = [ ":sharing_log_proto_inputs_config" ]
-}
-
 # src/sharing/proto/analytics
 proto_library("sharing_log_proto") {
   proto_in_dir = "src"
   sources =
       [ "${proto_in_dir}/sharing/proto/analytics/nearby_sharing_log.proto" ]
   proto_out_dir = "third_party/nearby"
-  proto_deps = [ ":sharing_log_proto_inputs" ]
-  deps = [ ":sharing_enums_proto" ]
+  deps = [
+    ":sharing_enums_proto",
+    "//third_party/protobuf:google_protobuf_duration_lite_proto",
+  ]
 
   # For built-in protos, specifically duration.proto.
   import_dirs = [ "//third_party/protobuf/src" ]
