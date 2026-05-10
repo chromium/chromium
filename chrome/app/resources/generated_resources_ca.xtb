@@ -1722,6 +1722,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2164131635608782358"><ph name="FIRST_SWITCH" />, <ph name="SECOND_SWITCH" />, <ph name="THIRD_SWITCH" /> i 1 interruptor més</translation>
 <translation id="2165177462441582039">Tria durant quant de temps ha d'estar marcat cada element</translation>
 <translation id="2166369534954157698">L'àgil guineu marró salta per sobre del gos mandrós</translation>
+<translation id="2168036794078614559">S'ha enviat l'informe</translation>
 <translation id="2169062631698640254">Inicia la sessió de tota manera</translation>
 <translation id="2173302385160625112">Comprova la connexió a Internet</translation>
 <translation id="2173801458090845390">Afegeix l'identificador de sol·licitud a aquest dispositiu</translation>
@@ -2062,6 +2063,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2402226831639195063">Tons</translation>
 <translation id="2405887402346713222">Números de sèrie del dispositiu i del component</translation>
 <translation id="2406153734066939945">Vols suprimir aquest perfil i les dades associades?</translation>
+<translation id="2406942743794219791">Confirma el motor de cerca predeterminat que vols</translation>
 <translation id="2407671304279211586">Selecciona un proveïdor de DNS</translation>
 <translation id="2408018932941436077">S'està desant la targeta</translation>
 <translation id="2408742686124047357">Fixa Google Lens a la barra d'eines per accedir-hi fàcilment la propera vegada</translation>
@@ -3043,6 +3045,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3046892784550338476">Versió <ph name="PRODUCT_VERSION" /><ph name="PRODUCT_VERSION_SUFFIX" /> (<ph name="PRODUCT_CHANNEL" />) <ph name="PRODUCT_MODIFIER" /> <ph name="PRODUCT_VERSION_BITS" /></translation>
 <translation id="3046910703532196514">Pàgina web completa</translation>
 <translation id="304747341537320566">Motors de parla</translation>
+<translation id="3047618804758101928">L'extensió "<ph name="EXTENSION_NAME" />" ha canviat la configuració</translation>
 <translation id="3047678109605649715">No hi ha cap veu en <ph name="LANGUAGE" /> al teu dispositiu. Allibera espai al dispositiu i torna-ho a provar.</translation>
 <translation id="3048336643003835855">Dispositius d'interfície humana del proveïdor <ph name="VENDOR_ID" /></translation>
 <translation id="3048589239114571785">Reprodueix (K)</translation>
@@ -9995,6 +9998,7 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7939062555109487992">Opcions avançades</translation>
 <translation id="793923212791838">El dispositiu no es pot utilitzar en aquest lloc web</translation>
 <translation id="7939328347457537652">Gestiona els certificats del dispositiu</translation>
+<translation id="7939918959917132075">L'extensió ho ha canviat a això</translation>
 <translation id="7940087892955752820">No s'ha pogut deixar de compartir aquesta carpeta perquè una aplicació l'està utilitzant. La carpeta es deixarà de compartir la propera vegada que <ph name="SPECIFIC_NAME" /> s'apagui.</translation>
 <translation id="7940265372707990269">Ordena per <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Preparació de la compartició de xarxa:</translation>

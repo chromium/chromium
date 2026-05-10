@@ -479,6 +479,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1727613060316725209">Certifikát je platný</translation>
 <translation id="1728677426644403582">Prohlížíte si zdrojový kód webové stránky</translation>
 <translation id="173080396488393970">Tento typ karty není podporován</translation>
+<translation id="1731563515262205847">ML-DSA-65</translation>
 <translation id="1732445923934584865">Zeptat se osobně</translation>
 <translation id="1733064249834771892">písma</translation>
 <translation id="1733631169686303142">Zvukové vybavení</translation>
@@ -1594,6 +1595,7 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="350069200438440499">Název souboru:</translation>
 <translation id="3501300228850242680">Metal</translation>
 <translation id="350421688684366066">Štítky (vysoký lesk)</translation>
+<translation id="3507062913298382727">Uložení průkazu totožnosti</translation>
 <translation id="350763432931695541">Extrahování textu na několika dalších stránkách</translation>
 <translation id="3507869775212388416">Právnická povolání</translation>
 <translation id="3507936815618196901">Vytvářet 3D mapu vašeho okolí a sledovat polohu kamery</translation>
@@ -1987,6 +1989,7 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="4098306082496067348">Klepnutím na podrobnosti virtuální karty je přidáte k platbě.</translation>
 <translation id="4099048595830172239">Zásady administrátora nedoporučují sdílení obrazovky s aplikací <ph name="APPLICATION_TITLE" />, když je vidět důvěrný obsah:</translation>
 <translation id="4099391883283080991"><ph name="CUSTOMIZE_CHROME_FONTS_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím tabulátoru a poté klávesy Enter si v Chromu můžete přizpůsobit velikosti a typy písem</translation>
+<translation id="4100421230355095925">ML-DSA-44</translation>
 <translation id="4101413244023615925">Text a obrázek</translation>
 <translation id="4101917550061398111">Smazat vybrané položky</translation>
 <translation id="4102567721634170493">Místní zprávy</translation>
@@ -2214,6 +2217,7 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="4415156962929755728">Plast (vysoký lesk)</translation>
 <translation id="4415426530740016218">Adresa vyzvednutí</translation>
 <translation id="4415748029120993980">Eliptická křivka SECG secp384r1 (neboli NIST P-384)</translation>
+<translation id="4418150423720608641">ML-DSA-87</translation>
 <translation id="4419287616181386201">Hesla lze smazat v nastavení jejich správy</translation>
 <translation id="4424024547088906515">Server nedokázal prokázat, že patří doméně <ph name="DOMAIN" />. Chrome jeho bezpečnostnímu certifikátu nedůvěřuje. Může to být způsobeno nesprávnou konfigurací nebo tím, že vaše připojení zachytává útočník.</translation>
 <translation id="4425750422187370446">Sportovní oblečení</translation>
@@ -2953,6 +2957,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5573641252776268565">Úprava pasu</translation>
 <translation id="5578606540385219379">Poskytovatelé služeb</translation>
 <translation id="5580958916614886209">Zkontrolujte měsíc vypršení platnosti a zkuste to znovu.</translation>
+<translation id="5582453333200265572">Aktualizace průkazu totožnosti</translation>
 <translation id="5583442610070676234">Další akce pro srovnávací tabulku <ph name="COMPARE_SET_NAME" /></translation>
 <translation id="55841966151154662">Tento kód IBAN se nepodařilo uložit do Peněženky Google. Uložil se do Chromu na tomto zařízení.</translation>
 <translation id="558420943003240152">Spravovat hesla a přístupové klíče…</translation>
@@ -3087,6 +3092,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="5808435672482059465">Zobrazit historii Chromu</translation>
 <translation id="5810442152076338065">Vaše připojení k doméně <ph name="DOMAIN" /> je šifrováno za použití zastaralé šifrovací sady.</translation>
 <translation id="5813119285467412249">&amp;Opakovat přidání</translation>
+<translation id="5813274153495000141">Uložte si své údaje a vyplňujte formuláře rychleji. Údaje se vám uloží do zařízení.</translation>
 <translation id="5813753398265398978">Fyzika</translation>
 <translation id="5817918615728894473">Spárovat</translation>
 <translation id="5820625124144807242">Po kontrole objednávky se musíte přihlásit nebo si vytvořit účet <ph name="BNPL_ISSUER_NAME" />. Tento účet pak bude automaticky propojen se službou Google Pay.</translation>

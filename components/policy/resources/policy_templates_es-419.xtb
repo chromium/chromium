@@ -4578,6 +4578,22 @@ La política puede combinarse con <ph name="POLICY_CLOUD_POLICY_OVERRIDES_PLATFO
           Si no la estableces, inicialmente las teclas especiales estarán inhabilitadas en la pantalla de acceso, pero el usuario podrá habilitarlas en cualquier momento.</translation>
 <translation id="3927291637826333102">Permitir que estos orígenes capturen pestañas, ventanas y escritorios</translation>
 <translation id="3928726028264020458">Habilitar los informes de los VPD del dispositivo</translation>
+<translation id="393516164454995927">Si estableces la política, se especificará la cantidad máxima de conexiones en simultáneo por servidor proxy para las solicitudes de WebSocket.
+
+Para modificar los límites de solicitudes que no son de WebSocket, consulta <ph name="MAX_CONNECTIONS_PER_PROXY_POLICY_NAME" />.
+
+Si no estableces la política, se usará el valor predeterminado de 128.
+
+Algunas apps web son conocidas por utilizar muchas conexiones con solicitudes GET pendientes. Por lo tanto, si estableces un valor menor a 128 es posible que la red del navegador quede pendiente si hay demasiadas apps web con conexiones pendientes abiertas.
+Algunos servidores proxy no pueden soportar una gran cantidad de conexiones en simultáneo por cliente. Para solucionar este problema, establece un valor más bajo para esta política.
+
+El valor debe ser igual o superior a 6.
+Si estableces un valor por debajo de ese límite, se usará 6.
+Usa un valor menor al valor predeterminado (128) bajo tu responsabilidad.
+
+El valor debe ser igual o inferior a 256.
+Si estableces un valor superior a ese límite, se usará 256.
+Usa un valor mayor al valor predeterminado (128) bajo tu responsabilidad.</translation>
 <translation id="3935592079035695061">Milisegundos desde la medianoche.</translation>
 <translation id="3937800910397007337">Forzar la prioridad en primer plano para todas las pestañas</translation>
 <translation id="3941289958028934630">Inhabilitar las descripciones por voz en la pantalla de acceso</translation>
@@ -8003,6 +8019,22 @@ Si la estableces como falsa, se suprimirá la atribución a la extensión en el 
 Si el valor se establece como verdadero o no se establece, pueden usar la lista de estudiantes de Google Classroom.
 
 Si se establece como falsa, no podrán acceder a la función.</translation>
+<translation id="6061604539167728530">Si estableces la política, se especificará la cantidad máxima de conexiones en simultáneo por servidor proxy para solicitudes que no sean de WebSocket.
+
+Para modificar los límites de solicitudes de WebSocket, consulta <ph name="MAX_CONNECTIONS_PER_PROXY_FOR_WEBSOCKET_POLICY_NAME" />.
+
+Si no estableces la política, se usará el valor predeterminado de 128.
+
+Algunas apps web son conocidas por utilizar muchas conexiones con solicitudes GET pendientes. Por lo tanto, si estableces un valor menor a 128 es posible que la red del navegador quede pendiente si hay demasiadas apps web con conexiones pendientes abiertas.
+Algunos servidores proxy no pueden soportar una gran cantidad de conexiones en simultáneo por cliente. Para solucionar este problema, establece un valor más bajo para esta política.
+
+El valor debe ser igual o superior a 6.
+Si estableces un valor por debajo de ese límite, se usará 6.
+Usa un valor menor al valor predeterminado (128) bajo tu responsabilidad.
+
+El valor debe ser igual o inferior a 256 (99 en <ph name="PRODUCT_NAME" /> 147 y versiones anteriores).
+Si estableces un valor superior a ese límite, se usará 256 (99 en <ph name="PRODUCT_NAME" /> 147 y versiones anteriores).
+Usa un valor mayor al valor predeterminado (128) bajo tu responsabilidad.</translation>
 <translation id="6066761914755798079">Si activas <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" />, establecer <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POLICY_NAME" /> especificará la URL del motor de búsqueda para proporcionar sugerencias de búsqueda. La URL debe incluir la string <ph name="SEARCH_TERM_MARKER" />, que se reemplazará en la búsqueda por los términos del usuario.
 
       Puedes especificar la URL de búsqueda de Google de la siguiente manera: <ph name="GOOGLE_SUGGEST_SEARCH_URL" />.</translation>

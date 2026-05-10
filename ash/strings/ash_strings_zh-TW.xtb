@@ -2630,7 +2630,7 @@
 <translation id="9068849894565669697">選取顏色</translation>
 <translation id="9071966355747967534">「<ph name="FEATURE_NAME" />」無法使用</translation>
 <translation id="9072519059834302790">電池剩餘使用時間：<ph name="TIME_LEFT" />。</translation>
-<translation id="9074432941673450836">你可以在 <ph name="PRODUCT_NAME" /> 上使用應用程式處理大小事。如要尋找應用程式，可以使用啟動器。按下鍵盤的啟動器鍵 (位於左側 Shift 鍵上方) 也能開啟啟動器。</translation>
+<translation id="9074432941673450836">你可以在 <ph name="PRODUCT_NAME" /> 上使用應用程式處理大小事。如要尋找應用程式，可以使用啟動器。按下鍵盤的啟動器鍵 (位於左側 Shift 鍵上方) 也能打開啟動器。</translation>
 <translation id="9074739597929991885">藍牙</translation>
 <translation id="9077515519330855811">媒體控制項，正在播放「<ph name="MEDIA_TITLE" />」</translation>
 <translation id="9079012373317704997">無法遠端開啟相機存取權</translation>
