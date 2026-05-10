@@ -1424,11 +1424,11 @@ try_.builder(
 )
 
 try_.builder(
-    name = "android-x64-treesinviz-enabled-rel",
+    name = "android-x64-treesinviz-disabled-rel",
     mirrors = [
-        "ci/android-x64-treesinviz-enabled-rel",
+        "ci/android-x64-treesinviz-disabled-rel",
     ],
-    gn_args = "ci/android-x64-treesinviz-enabled-rel",
+    gn_args = "ci/android-x64-treesinviz-disabled-rel",
     contact_team_email = "chrome-gpu-team@google.com",
 )
 

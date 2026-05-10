@@ -640,11 +640,11 @@ try_.builder(
 )
 
 try_.builder(
-    name = "mac-treesinviz-enabled-rel",
+    name = "mac-treesinviz-disabled-rel",
     mirrors = [
-        "ci/mac-treesinviz-enabled-rel",
+        "ci/mac-treesinviz-disabled-rel",
     ],
-    gn_args = "ci/mac-treesinviz-enabled-rel",
+    gn_args = "ci/mac-treesinviz-disabled-rel",
     contact_team_email = "chrome-gpu-team@google.com",
 )
 

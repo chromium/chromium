@@ -6698,6 +6698,36 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "trees_in_viz_disabled_tests_android",
+    targets = [
+        "cc_unittests",
+        "viz_unittests",
+        "content_browsertests",
+        "android_browsertests",
+    ],
+    mixins = [
+        targets.mixin(
+            args = ["--disable-features=TreesInViz"],
+        ),
+    ],
+)
+
+targets.bundle(
+    name = "trees_in_viz_disabled_tests_chromeos",
+    targets = [
+        "cc_unittests",
+        "viz_unittests",
+        "content_browsertests",
+        "browser_tests",
+    ],
+    mixins = [
+        targets.mixin(
+            args = ["--disable-features=TreesInViz"],
+        ),
+    ],
+)
+
+targets.bundle(
     name = "trees_in_viz_enabled_tests",
     targets = [
         "cc_unittests",
@@ -6723,36 +6753,6 @@ targets.bundle(
             args = ["--enable-features=TreesInViz"],
         ),
     },
-)
-
-targets.bundle(
-    name = "trees_in_viz_enabled_tests_android",
-    targets = [
-        "cc_unittests",
-        "viz_unittests",
-        "content_browsertests",
-        "android_browsertests",
-    ],
-    mixins = [
-        targets.mixin(
-            args = ["--enable-features=TreesInViz"],
-        ),
-    ],
-)
-
-targets.bundle(
-    name = "trees_in_viz_enabled_tests_chromeos",
-    targets = [
-        "cc_unittests",
-        "viz_unittests",
-        "content_browsertests",
-        "browser_tests",
-    ],
-    mixins = [
-        targets.mixin(
-            args = ["--enable-features=TreesInViz"],
-        ),
-    ],
 )
 
 targets.bundle(

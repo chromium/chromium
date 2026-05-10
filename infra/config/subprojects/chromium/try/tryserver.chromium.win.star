@@ -463,11 +463,11 @@ try_.builder(
 )
 
 try_.builder(
-    name = "win-treesinviz-enabled-rel",
+    name = "win-treesinviz-disabled-rel",
     mirrors = [
-        "ci/win-treesinviz-enabled-rel",
+        "ci/win-treesinviz-disabled-rel",
     ],
-    gn_args = "ci/win-treesinviz-enabled-rel",
+    gn_args = "ci/win-treesinviz-disabled-rel",
     contact_team_email = "chrome-gpu-team@google.com",
 )
 

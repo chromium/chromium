@@ -2419,8 +2419,8 @@ consoles.console_view(
 )
 
 fyi_mac_builder(
-    name = "mac-treesinviz-enabled-rel",
-    description_html = "This builder runs a set of test suites with the TreesInViz feature enabled.",
+    name = "mac-treesinviz-disabled-rel",
+    description_html = "This builder runs a set of test suites with the TreesInViz feature disabled.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -2448,7 +2448,7 @@ fyi_mac_builder(
         ],
     ),
     targets = targets.bundle(
-        targets = ["trees_in_viz_enabled_tests"],
+        targets = ["trees_in_viz_disabled_tests"],
         mixins = [
             "mac_15_x64",
             "retry_only_failed_tests",
@@ -2495,8 +2495,8 @@ fyi_mac_builder(
 )
 
 ci.builder(
-    name = "win-treesinviz-enabled-rel",
-    description_html = "This builder runs a set of test suites with the TreesInViz feature enabled.",
+    name = "win-treesinviz-disabled-rel",
+    description_html = "This builder runs a set of test suites with the TreesInViz feature disabled.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -2524,7 +2524,7 @@ ci.builder(
         ],
     ),
     targets = targets.bundle(
-        targets = ["trees_in_viz_enabled_tests"],
+        targets = ["trees_in_viz_disabled_tests"],
         mixins = [
             "x86-64",
             "win10",
@@ -2578,8 +2578,8 @@ ci.builder(
 )
 
 ci.builder(
-    name = "linux-chromeos-treesinviz-enabled-rel",
-    description_html = "This builder runs a set of test suites with the TreesInViz feature enabled.",
+    name = "linux-chromeos-treesinviz-disabled-rel",
+    description_html = "This builder runs a set of test suites with the TreesInViz feature disabled.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -2608,7 +2608,7 @@ ci.builder(
         ],
     ),
     targets = targets.bundle(
-        targets = ["trees_in_viz_enabled_tests_chromeos"],
+        targets = ["trees_in_viz_disabled_tests_chromeos"],
         mixins = [
             "x86-64",
             "linux-jammy",
@@ -2646,8 +2646,8 @@ ci.builder(
 )
 
 ci.builder(
-    name = "android-x64-treesinviz-enabled-rel",
-    description_html = "This builder runs a set of test suites with the TreesInViz feature enabled.",
+    name = "android-x64-treesinviz-disabled-rel",
+    description_html = "This builder runs a set of test suites with the TreesInViz feature disabled.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -2681,7 +2681,7 @@ ci.builder(
         ],
     ),
     targets = targets.bundle(
-        targets = ["trees_in_viz_enabled_tests_android"],
+        targets = ["trees_in_viz_disabled_tests_android"],
         mixins = [
             "15-x64-emulator",
             "emulator-8-cores",
@@ -2730,8 +2730,8 @@ ci.builder(
 )
 
 ci.builder(
-    name = "linux-treesinviz-disabled-rel",
-    description_html = "This builder runs a set of test suites with the TreesInViz feature disabled.",
+    name = "linux-treesinviz-enabled-rel",
+    description_html = "This builder runs a set of test suites with the TreesInViz feature enabled.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
             config = "chromium",
@@ -2759,7 +2759,7 @@ ci.builder(
         ],
     ),
     targets = targets.bundle(
-        targets = ["trees_in_viz_disabled_tests"],
+        targets = ["trees_in_viz_enabled_tests"],
         mixins = [
             "linux-jammy",
             "retry_only_failed_tests",

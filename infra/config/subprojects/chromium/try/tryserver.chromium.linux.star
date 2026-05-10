@@ -1060,11 +1060,11 @@ try_.builder(
 )
 
 try_.builder(
-    name = "linux-treesinviz-disabled-rel",
+    name = "linux-treesinviz-enabled-rel",
     mirrors = [
-        "ci/linux-treesinviz-disabled-rel",
+        "ci/linux-treesinviz-enabled-rel",
     ],
-    gn_args = "ci/linux-treesinviz-disabled-rel",
+    gn_args = "ci/linux-treesinviz-enabled-rel",
     contact_team_email = "chrome-gpu-team@google.com",
 )
 
