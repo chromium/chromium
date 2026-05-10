@@ -450,9 +450,19 @@ search-animated-glow {
 }
 
 :host([in-voice-search-mode]) #composebox {
+  block-size: fit-content;
+  min-block-size: 108px;
   opacity: 0;
   /* CANNOT be display: None since :host depends on its height. */
   visibility: hidden;
+}
+
+:host([in-voice-search-mode]) #inputContainer {
+  /* Ensure that the suggestions' height do not affect
+   * size of composebox, and thus voice container (which inherits
+   * from composebox).
+   */
+  display: none;
 }
 
 cr-composebox-voice-search {
