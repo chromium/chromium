@@ -218,6 +218,8 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
       SkColorSetARGB(0x60, 0x1F, 0x1F, 0x1F)};
   mixer[kColorComposeboxContextEntrypointHoverBackground] = {
       SkColorSetARGB(0x0F, 0x1F, 0x1F, 0x1F)};
+  mixer[kColorComposeboxToolChipBackground] = {
+      SkColorSetARGB(0x0F, 0x1F, 0x1F, 0x1F)};
   mixer[kColorComposeboxLink] = {gfx::kGoogleBlue700};
 
   mixer[kColorNewTabPageWallpaperSearchButtonBackground] = {
