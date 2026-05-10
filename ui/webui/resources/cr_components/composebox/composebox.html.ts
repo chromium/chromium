@@ -12,7 +12,7 @@ export function getHtml(this: ComposeboxElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
   ${!this.disableComposeboxAnimation ? html`
-    <search-animated-glow
+    <search-animated-glow id="animatedSearchElement"
         animation-state="${this.animationState}"
         .inVoiceSearchMode="${this.inVoiceSearchMode}"
         .entrypointName="${this.entrypointName}"

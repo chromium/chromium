@@ -47,8 +47,15 @@ export class OmniboxAimAppElement extends CrLitElement {
       hasAllowedInputs_: {type: Boolean},
       caretAnimationsEnabled_: {type: Boolean},
       disableComposeboxAnimation_: {type: Boolean},
-      energyEffectEnabled_: {type: Boolean, reflect: true},
-      energyEffectAnimationEnabled_: {type: Boolean, reflect: true},
+      energyEffectEnabled_: {
+        type: Boolean,
+        reflect: true,
+      },
+      energyEffectAnimationEnabled_: {
+        type: Boolean,
+        reflect: true,
+      },
+      disableVoiceSearchAnimation_: {type: Boolean},
     };
   }
 
@@ -59,6 +66,10 @@ export class OmniboxAimAppElement extends CrLitElement {
   protected accessor hasAllowedInputs_: boolean = false;
   protected accessor disableComposeboxAnimation_: boolean =
       loadTimeData.getBoolean('composeboxAnimationDisabled');
+  // Voice search animation is disabled outside of voice coherence.
+  protected accessor disableVoiceSearchAnimation_: boolean =
+      !loadTimeData.getBoolean('voiceSearchCoherenceComposeboxesEnabled');
+
   protected accessor caretAnimationsEnabled_: boolean =
       loadTimeData.getBoolean('caretAnimationEnabled');
   protected accessor energyEffectEnabled_: boolean =
