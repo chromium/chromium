@@ -124,6 +124,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       AutofillAIEntityEditDateItem* dateItem =
           base::apple::ObjCCastStrict<AutofillAIEntityEditDateItem>(item);
       dateItem.editingEnabled = self.tableView.editing;
+      dateItem.hideIcon = !self.tableView.editing;
       dateItem.delegate = self;
       dateItem.textFieldDelegate = self;
     }
@@ -458,6 +459,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)tableViewItemDidEndEditing:
     (TableViewTextEditItem*)tableViewTextEditItem {
   [self validateFields];
+
+  // When a custom date picker is dismissed and editing ends, the date item'
+  // text field must be reconfigured so that the edit icon is shown once again.
+  if ([tableViewTextEditItem
+          isKindOfClass:[AutofillAIEntityEditDateItem class]]) {
+    [self reconfigureCellsForItems:@[ tableViewTextEditItem ]];
+  }
 }
 
 #pragma mark - UITextFieldDelegate
