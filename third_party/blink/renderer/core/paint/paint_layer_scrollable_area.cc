@@ -1394,8 +1394,10 @@ bool PaintLayerScrollableArea::CanPropagateScroll() const {
       box->StyleRef().Visibility() != EVisibility::kVisible) {
     return true;
   }
-  if (box->StyleRef().OverscrollBehaviorX() != EOverscrollBehavior::kAuto ||
-      box->StyleRef().OverscrollBehaviorY() != EOverscrollBehavior::kAuto) {
+  if ((box->StyleRef().OverscrollBehaviorX() != EOverscrollBehavior::kAuto &&
+       box->StyleRef().OverscrollBehaviorX() != EOverscrollBehavior::kChain) ||
+      (box->StyleRef().OverscrollBehaviorY() != EOverscrollBehavior::kAuto &&
+       box->StyleRef().OverscrollBehaviorY() != EOverscrollBehavior::kChain)) {
     return false;
   }
   return true;

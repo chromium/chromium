@@ -77,15 +77,23 @@ bool ScrollManager::CanPropagate(const LayoutBox* layout_box,
   switch (direction) {
     case ScrollPropagationDirection::kBoth:
       return ((layout_box->StyleRef().OverscrollBehaviorX() ==
-               EOverscrollBehavior::kAuto) &&
+                   EOverscrollBehavior::kAuto ||
+               layout_box->StyleRef().OverscrollBehaviorX() ==
+                   EOverscrollBehavior::kChain) &&
               (layout_box->StyleRef().OverscrollBehaviorY() ==
-               EOverscrollBehavior::kAuto));
+                   EOverscrollBehavior::kAuto ||
+               layout_box->StyleRef().OverscrollBehaviorY() ==
+                   EOverscrollBehavior::kChain));
     case ScrollPropagationDirection::kVertical:
       return layout_box->StyleRef().OverscrollBehaviorY() ==
-             EOverscrollBehavior::kAuto;
+                 EOverscrollBehavior::kAuto ||
+             layout_box->StyleRef().OverscrollBehaviorY() ==
+                 EOverscrollBehavior::kChain;
     case ScrollPropagationDirection::kHorizontal:
       return layout_box->StyleRef().OverscrollBehaviorX() ==
-             EOverscrollBehavior::kAuto;
+                 EOverscrollBehavior::kAuto ||
+             layout_box->StyleRef().OverscrollBehaviorX() ==
+                 EOverscrollBehavior::kChain;
     case ScrollPropagationDirection::kNone:
       return true;
     default:
@@ -122,7 +130,8 @@ ScrollManager::ScrollChainResult ScrollManager::RecomputeScrollChain(
           EOverscrollBehavior behavior =
               is_vertical ? cur_box->StyleRef().OverscrollBehaviorY()
                           : cur_box->StyleRef().OverscrollBehaviorX();
-          if (behavior != EOverscrollBehavior::kAuto) {
+          if (behavior != EOverscrollBehavior::kAuto &&
+              behavior != EOverscrollBehavior::kChain) {
             result.can_bubble = false;
             break;
           }

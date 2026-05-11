@@ -1795,8 +1795,11 @@ bool LayoutBox::HasHorizontallyScrollableAncestor(LayoutObject* layout_object) {
 
     // Scroll is not propagating.
     if (layout_object->StyleRef().OverscrollBehaviorX() !=
-        EOverscrollBehavior::kAuto)
+            EOverscrollBehavior::kAuto &&
+        layout_object->StyleRef().OverscrollBehaviorX() !=
+            EOverscrollBehavior::kChain) {
       break;
+    }
 
     if (!layout_object->Parent() &&
         layout_object->GetNode() == layout_object->GetDocument() &&
