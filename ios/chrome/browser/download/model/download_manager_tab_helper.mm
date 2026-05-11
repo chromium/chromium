@@ -58,11 +58,7 @@ DownloadManagerTabHelper::~DownloadManagerTabHelper() {
     web_state_ = nullptr;
   }
 
-  if (task_) {
-    task_->RemoveObserver(this);
-    task_ = nullptr;
-    task_final_file_path_.clear();
-  }
+  CleanupCurrentDownload();
 }
 
 #pragma mark - Public methods
@@ -114,9 +110,7 @@ void DownloadManagerTabHelper::SetCurrentDownload(
   // If there is no new task and an existing task is present, remove the
   // observer and reset the task.
   if (!task) {
-    task_->RemoveObserver(this);
-    task_ = nullptr;
-    task_final_file_path_.clear();
+    CleanupCurrentDownload();
     return;
   }
 
@@ -168,15 +162,13 @@ web::DownloadTask* DownloadManagerTabHelper::GetActiveDownloadTask() {
 }
 
 void DownloadManagerTabHelper::CleanupCurrentDownload() {
-  if (delegate_ && delegate_started_) {
-    delegate_started_ = false;
-    [delegate_ downloadManagerTabHelper:this didCleanupDownload:task_.get()];
-  }
-
   if (task_) {
+    if (delegate_ && delegate_started_) {
+      delegate_started_ = false;
+      [delegate_ downloadManagerTabHelper:this didCleanupDownload:task_.get()];
+    }
     task_->RemoveObserver(this);
-    // Defer task destruction to avoid clearing ObserverList during iteration.
-    ScheduleTaskDestruction();
+    task_.reset();
     task_final_file_path_.clear();
   }
 }
@@ -225,11 +217,7 @@ void DownloadManagerTabHelper::WebStateDestroyed(web::WebState* web_state) {
   DCHECK_EQ(web_state_, web_state);
   web_state_->RemoveObserver(this);
   web_state_ = nullptr;
-  if (task_) {
-    task_->RemoveObserver(this);
-    task_ = nullptr;
-    task_final_file_path_.clear();
-  }
+  CleanupCurrentDownload();
 }
 
 #pragma mark - web::DownloadTaskObserver
@@ -238,7 +226,10 @@ void DownloadManagerTabHelper::OnDownloadUpdated(web::DownloadTask* task) {
   DCHECK_EQ(task, task_.get());
   switch (task->GetState()) {
     case web::DownloadTask::State::kCancelled:
-      CleanupCurrentDownload();
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&DownloadManagerTabHelper::CleanupCurrentDownload,
+                         weak_ptr_factory_.GetWeakPtr()));
       break;
     case web::DownloadTask::State::kInProgress:
       break;
@@ -258,11 +249,7 @@ void DownloadManagerTabHelper::OnDownloadUpdated(web::DownloadTask* task) {
 
 void DownloadManagerTabHelper::DidCreateDownload(
     std::unique_ptr<web::DownloadTask> task) {
-  if (task_) {
-    task_->RemoveObserver(this);
-    task_ = nullptr;
-    task_final_file_path_.clear();
-  }
+  CleanupCurrentDownload();
   task_ = std::move(task);
   task_->AddObserver(this);
   if (web_state_->IsVisible() && delegate_) {
@@ -361,16 +348,6 @@ void DownloadManagerTabHelper::MaybeSetDownloadPathForAutoDeletion() {
   auto_deletion::AutoDeletionService* service =
       GetApplicationContext()->GetAutoDeletionService();
   service->SetDownloadPath(GetDownloadTaskFinalFilePath());
-}
-
-void DownloadManagerTabHelper::ScheduleTaskDestruction() {
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&DownloadManagerTabHelper::DestroyTask,
-                                weak_ptr_factory_.GetWeakPtr()));
-}
-
-void DownloadManagerTabHelper::DestroyTask() {
-  task_.reset();
 }
 
 DownloadFileService* DownloadManagerTabHelper::GetDownloadFileService() {

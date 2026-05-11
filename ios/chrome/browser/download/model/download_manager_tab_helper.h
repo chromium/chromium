@@ -70,7 +70,7 @@ class DownloadManagerTabHelper
   // Starts the current download task. Asserts that `task == task_`.
   virtual void StartDownload(web::DownloadTask* task);
 
-  // Cleans up current download resources and notifies delegate.
+  // Cleans up current download resources if any and notifies delegate.
   void CleanupCurrentDownload();
 
   // Sets whether the Download toolbar should adapt to the fullscreen state.
@@ -125,13 +125,6 @@ class DownloadManagerTabHelper
 
   // Sets the download path for Auto-deletion if enabled.
   void MaybeSetDownloadPathForAutoDeletion();
-
-  // Defers task destruction to avoid iterator invalidation during notification.
-  void ScheduleTaskDestruction();
-
-  // Destroys the task. Must not be called directly.
-  // See ScheduleTaskDestruction().
-  void DestroyTask();
 
   // Move the download to user selected location if `shouldProceed` is set as
   // true, otherwise clean up the current download task.

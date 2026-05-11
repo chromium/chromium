@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_DOWNLOAD_COORDINATOR_DOWNLOAD_MANAGER_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_DOWNLOAD_COORDINATOR_DOWNLOAD_MANAGER_COORDINATOR_H_
 
+#import "base/memory/weak_ptr.h"
 #import "ios/chrome/browser/download/model/download_manager_tab_helper_delegate.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
@@ -26,7 +27,7 @@ class DownloadTask;
 
 // Download Manager supports only one download task at a time. Set to null when
 // stop method is called.
-@property(nonatomic) web::DownloadTask* downloadTask;
+@property(nonatomic, assign) base::WeakPtr<web::DownloadTask> downloadTask;
 
 // Underlying UIViewController presented by this coordinator.
 @property(nonatomic, readonly) UIViewController* viewController;
