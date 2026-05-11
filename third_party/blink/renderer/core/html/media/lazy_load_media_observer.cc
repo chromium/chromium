@@ -138,6 +138,13 @@ void LazyLoadMediaObserver::Trace(Visitor* visitor) const {
   visitor->Trace(lazy_load_intersection_observer_);
 }
 
+wtf_size_t LazyLoadMediaObserver::GetObservationCountForTesting() const {
+  if (!lazy_load_intersection_observer_) {
+    return 0;
+  }
+  return lazy_load_intersection_observer_->Observations().size();
+}
+
 int LazyLoadMediaObserver::GetLazyLoadingMarginPx(const Document& document) {
   const Settings* settings = document.GetSettings();
   if (!settings) {

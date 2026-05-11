@@ -891,6 +891,10 @@ void HTMLMediaElement::RemovedFrom(ContainerNode& insertion_point) {
   DVLOG(3) << "removedFrom(" << *this << ", " << insertion_point << ")";
 
   removed_from_document_timer_.StartOneShot(base::TimeDelta(), FROM_HERE);
+  if (RuntimeEnabledFeatures::LazyLoadVideoAndAudioEnabled() &&
+      lazy_media_load_state_ == LazyMediaLoadState::kDeferred) {
+    LazyMediaHelper::StopMonitoring(this);
+  }
 
   HTMLElement::RemovedFrom(insertion_point);
 }

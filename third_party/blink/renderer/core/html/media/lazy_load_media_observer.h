@@ -38,6 +38,9 @@ class CORE_EXPORT LazyLoadMediaObserver final
   // Returns whether any resources started loading as a result.
   bool LoadAllImagesAndBlockLoadEvent(Document& for_document);
 
+  // Returns the number of elements currently being monitored.
+  wtf_size_t GetObservationCountForTesting() const;
+
  private:
   // Callback invoked when observed elements intersect or stop intersecting
   // with the viewport margin.

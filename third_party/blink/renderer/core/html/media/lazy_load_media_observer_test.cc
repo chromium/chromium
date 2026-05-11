@@ -6,6 +6,8 @@
 // These tests initially fail until the loading attribute is implemented
 // for HTMLMediaElement.
 
+#include "third_party/blink/renderer/core/html/media/lazy_load_media_observer.h"
+
 #include <array>
 #include <optional>
 #include <tuple>
@@ -605,6 +607,54 @@ TEST_F(LazyLoadMediaTest, GarbageCollectDeferredLazyLoadMedia) {
   ThreadState::Current()->CollectAllGarbageForTesting();
 
   EXPECT_EQ(nullptr, video);
+}
+
+// Regression test: removing a deferred lazy-load video from the DOM must
+// clean up its IntersectionObserver observation to avoid a null Target()
+// dereference in LoadAllImagesAndBlockLoadEvent.
+TEST_F(LazyLoadMediaTest, RemovedLazyVideoDoesNotCrashOnPrint) {
+  SimRequest main_resource("https://example.com/", "text/html");
+
+  LoadURL("https://example.com/");
+
+  main_resource.Complete(String::Format(
+      R"HTML(
+        <body>
+        <div style='height: %dpx;'></div>
+        <video id='my_video' src='https://example.com/video.mp4' loading='lazy'>
+        </video>
+        </body>)HTML",
+      kViewportHeight + kLoadingDistanceThreshold + 100));
+
+  Compositor().BeginFrame();
+  test::RunPendingTasks();
+
+  auto* video =
+      To<HTMLVideoElement>(GetDocument().QuerySelector(AtomicString("video")));
+  ASSERT_NE(video, nullptr);
+
+  // The lazy load observer lives on the root document.
+  Document* root_document =
+      GetDocument().GetFrame()->LocalFrameRoot().GetDocument();
+  LazyLoadMediaObserver& observer =
+      root_document->EnsureLazyLoadMediaObserver();
+
+  // The deferred video should be tracked by the observer.
+  EXPECT_EQ(observer.GetObservationCountForTesting(), 1u);
+
+  // Remove the deferred lazy-load video from the DOM.
+  video->remove();
+  EXPECT_FALSE(video->isConnected());
+
+  // The RemovedFrom fix should have unobserved the element.
+  EXPECT_EQ(observer.GetObservationCountForTesting(), 0u);
+
+  // LoadAllImagesAndBlockLoadEvent should complete without crashing.
+  observer.LoadAllImagesAndBlockLoadEvent(GetDocument());
+
+  // Re-inserting the element should restart monitoring.
+  GetDocument().body()->AppendChild(video);
+  EXPECT_EQ(observer.GetObservationCountForTesting(), 1u);
 }
 
 }  // namespace
