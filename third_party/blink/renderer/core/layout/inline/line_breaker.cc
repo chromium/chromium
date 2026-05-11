@@ -1090,11 +1090,12 @@ void LineBreaker::BreakLine(LineInfo* line_info) {
         MoveToNextOf(item);
         continue;
       }
-      if (!HandleRuby(line_info)) {
+      if (HandleRuby(line_info)) {
+        HandleOverflowIfNeeded(line_info);
+      } else {
         AddItem(item, line_info);
         MoveToNextOf(item);
       }
-      HandleOverflowIfNeeded(line_info);
       continue;
     }
     if (item.Type() == InlineItem::kOutOfFlowPositioned) {
