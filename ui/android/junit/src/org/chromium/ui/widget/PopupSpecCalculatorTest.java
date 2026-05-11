@@ -307,8 +307,8 @@ public final class PopupSpecCalculatorTest {
         // E.bottom = A.bottom + h = 300
         doTestAnchoredPopupAtRect(
                 "Anchored on bottom right.",
-                /*anchorRect*/ new Rect(0, 0, 0, 0),
-                /*expectedPopupRect*/ new Rect(0, 0, 150, 300));
+                /* anchoredRect= */ new Rect(0, 0, 0, 0),
+                /* expectedRect= */ new Rect(0, 0, 150, 300));
 
         // E.left = A.left-w = 500 - 150 = 350
         // E.top = A.bottom = 0
@@ -316,16 +316,16 @@ public final class PopupSpecCalculatorTest {
         // E.bottom = A.bottom + h = 0 + 300
         doTestAnchoredPopupAtRect(
                 "Anchored on bottom left.",
-                /*anchorRect*/ new Rect(500, 0, 500, 0),
-                /*expectedPopupRect*/ new Rect(350, 0, 500, 300));
+                /* anchoredRect= */ new Rect(500, 0, 500, 0),
+                /* expectedRect= */ new Rect(350, 0, 500, 300));
 
         // E.left = A.right = 0
         // E.top = A.top - h = 800 - 300 = 500
         // E.right = A.right + w = 0 + 150
         doTestAnchoredPopupAtRect(
                 "Anchored on top right.",
-                /*anchorRect*/ new Rect(0, 800, 0, 800),
-                /*expectedPopupRect*/ new Rect(0, 500, 150, 800));
+                /* anchoredRect= */ new Rect(0, 800, 0, 800),
+                /* expectedRect= */ new Rect(0, 500, 150, 800));
 
         // E.left = A.left - w = 600 - 150 = 450
         // E.top = A.top - h = 1000 - 300 = 700
@@ -333,8 +333,8 @@ public final class PopupSpecCalculatorTest {
         // E.bottom = A.top = 1000
         doTestAnchoredPopupAtRect(
                 "Anchored on top left due to space limit.",
-                /*anchorRect*/ new Rect(600, 1000, 600, 1000),
-                /*expectedPopupRect*/ new Rect(450, 700, 600, 1000));
+                /* anchoredRect= */ new Rect(600, 1000, 600, 1000),
+                /* expectedRect= */ new Rect(450, 700, 600, 1000));
     }
 
     @Test
@@ -345,8 +345,8 @@ public final class PopupSpecCalculatorTest {
         // E.bottom = A.bottom + h = 300
         doTestAnchoredPopupAtRect(
                 "Bias left when space is equal.",
-                /*anchorRect*/ new Rect(300, 0, 300, 0),
-                /*expectedPopupRect*/ new Rect(150, 0, 300, 300));
+                /* anchoredRect= */ new Rect(300, 0, 300, 0),
+                /* expectedRect= */ new Rect(150, 0, 300, 300));
 
         // E.left = A.left - w = 200 - 150 = 50
         // E.top = A.top = 0
@@ -354,8 +354,8 @@ public final class PopupSpecCalculatorTest {
         // E.bottom = A.bottom + h = 300
         doTestAnchoredPopupAtRect(
                 "Bias left when it has more space.",
-                /*anchorRect*/ new Rect(200, 0, 450, 0),
-                /*expectedPopupRect*/ new Rect(50, 0, 200, 300));
+                /* anchoredRect= */ new Rect(200, 0, 450, 0),
+                /* expectedRect= */ new Rect(50, 0, 200, 300));
 
         // E.left = A.right = 300
         // E.top = A.bottom = 0
@@ -363,8 +363,8 @@ public final class PopupSpecCalculatorTest {
         // E.bottom = A.bottom + h = 300
         doTestAnchoredPopupAtRect(
                 "Bias right when it has more space.",
-                /*anchorRect*/ new Rect(150, 0, 300, 0),
-                /*expectedPopupRect*/ new Rect(300, 0, 450, 300));
+                /* anchoredRect= */ new Rect(150, 0, 300, 0),
+                /* expectedRect= */ new Rect(300, 0, 450, 300));
     }
 
     @Test
@@ -375,8 +375,8 @@ public final class PopupSpecCalculatorTest {
         // E.bottom = A.bottom + h = 500 + 300 = 800
         doTestAnchoredPopupAtRect(
                 "Bias below when space is equal.",
-                /*anchorRect*/ new Rect(0, 500, 0, 500),
-                /*expectedPopupRect*/ new Rect(0, 500, 150, 800));
+                /* anchoredRect= */ new Rect(0, 500, 0, 500),
+                /* expectedRect= */ new Rect(0, 500, 150, 800));
 
         // E.left = A.right = 0
         // E.top = A.top - h = 600 - 300 = 300
@@ -384,8 +384,8 @@ public final class PopupSpecCalculatorTest {
         // E.bottom = A.top = 600
         doTestAnchoredPopupAtRect(
                 "Bias top when it has more space.",
-                /*anchorRect*/ new Rect(0, 600, 0, 600),
-                /*expectedPopupRect*/ new Rect(0, 300, 150, 600));
+                /* anchoredRect= */ new Rect(0, 600, 0, 600),
+                /* expectedRect= */ new Rect(0, 300, 150, 600));
 
         // E.left = A.right = 0
         // E.top = A.bottom = 300
@@ -393,8 +393,8 @@ public final class PopupSpecCalculatorTest {
         // E.bottom = A.bottom + h = 300 + 300 = 600
         doTestAnchoredPopupAtRect(
                 "Bias below when it has more space",
-                /*anchorRect*/ new Rect(0, 300, 0, 300),
-                /*expectedPopupRect*/ new Rect(0, 300, 150, 600));
+                /* anchoredRect= */ new Rect(0, 300, 0, 300),
+                /* expectedRect= */ new Rect(0, 300, 150, 600));
     }
 
     @Test
@@ -407,8 +407,8 @@ public final class PopupSpecCalculatorTest {
         // E.bottom = A.bottom + h = 300
         doTestAnchoredPopupAtRect(
                 "Force overlap with anchor rect on left.",
-                /*anchorRect*/ new Rect(100, 0, 600, 0),
-                /*expectedPopupRect*/ new Rect(0, 0, 150, 300));
+                /* anchoredRect= */ new Rect(100, 0, 600, 0),
+                /* expectedRect= */ new Rect(0, 0, 150, 300));
 
         // E.right = min(window.right, A.right + w) = min(600, 500 + 150) = 600
         // E.left = E.right - w = 600 - 150 = 450
@@ -416,8 +416,8 @@ public final class PopupSpecCalculatorTest {
         // E.bottom = A.bottom + h = 300
         doTestAnchoredPopupAtRect(
                 "Force overlap with anchor rect on right.",
-                /*anchorRect*/ new Rect(0, 0, 500, 0),
-                /*expectedPopupRect*/ new Rect(450, 0, 600, 300));
+                /* anchoredRect= */ new Rect(0, 0, 500, 0),
+                /* expectedRect= */ new Rect(450, 0, 600, 300));
     }
 
     @Test
@@ -431,8 +431,8 @@ public final class PopupSpecCalculatorTest {
         doTestAnchoredPopupAtRect(
                 "Both above and below does not have enough space, anchored below due to bias. "
                         + "Reduce the height to fit into left over space on bottom.",
-                /*anchorRect*/ new Rect(0, 100, 0, 950),
-                /*expectedPopupRect*/ new Rect(0, 950, 150, 1000));
+                /* anchoredRect= */ new Rect(0, 100, 0, 950),
+                /* expectedRect= */ new Rect(0, 950, 150, 1000));
     }
 
     @Test
@@ -445,8 +445,8 @@ public final class PopupSpecCalculatorTest {
         // E.bottom = A.bottom + h = 300
         doTestAnchoredPopupAtRect(
                 "Leave margin between screen and anchor rect.",
-                /*anchorRect*/ new Rect(0, 0, 0, 0),
-                /*expectedPopupRect*/ new Rect(10, 0, 160, 300));
+                /* anchoredRect= */ new Rect(0, 0, 0, 0),
+                /* expectedRect= */ new Rect(10, 0, 160, 300));
     }
 
     @Test
@@ -459,8 +459,8 @@ public final class PopupSpecCalculatorTest {
         // E.bottom = A.bottom + h + paddingY = 0 + 300 + 2 = 302
         doTestAnchoredPopupAtRect(
                 "Adding padding into popup rect size.",
-                /*anchorRect*/ new Rect(0, 0, 0, 0),
-                /*expectedPopupRect*/ new Rect(0, 0, 153, 302));
+                /* anchoredRect= */ new Rect(0, 0, 0, 0),
+                /* expectedRect= */ new Rect(0, 0, 153, 302));
     }
 
     @Test
@@ -472,8 +472,8 @@ public final class PopupSpecCalculatorTest {
         // E.bottom = A.bottom + h = 300
         doTestAnchoredPopupAtRect(
                 "Max width greater than expected size.",
-                /*anchorRect*/ new Rect(0, 0, 0, 0),
-                /*expectedPopupRect*/ new Rect(0, 0, 150, 300));
+                /* anchoredRect= */ new Rect(0, 0, 0, 0),
+                /* expectedRect= */ new Rect(0, 0, 150, 300));
 
         mMaxWidthPx = 100;
         // E.left = A.right = 0
@@ -482,8 +482,8 @@ public final class PopupSpecCalculatorTest {
         // E.bottom = A.bottom + h = 300
         doTestAnchoredPopupAtRect(
                 "Max width limited to 100.",
-                /*anchorRect*/ new Rect(0, 0, 0, 0),
-                /*expectedPopupRect*/ new Rect(0, 0, 100, 300));
+                /* anchoredRect= */ new Rect(0, 0, 0, 0),
+                /* expectedRect= */ new Rect(0, 0, 100, 300));
     }
 
     @Test
@@ -495,8 +495,8 @@ public final class PopupSpecCalculatorTest {
         // E.bottom = A.bottom + h = 300
         doTestAnchoredPopupAtRect(
                 "Popup shown as desired width.",
-                /*anchorRect*/ new Rect(0, 0, 0, 0),
-                /*expectedPopupRect*/ new Rect(0, 0, 200, 300));
+                /* anchoredRect= */ new Rect(0, 0, 0, 0),
+                /* expectedRect= */ new Rect(0, 0, 200, 300));
 
         // E.left = max(window.left, A.left - desiredWidth) = max(0, 150-200) = 0
         // E.top = A.bottom = 0
@@ -504,8 +504,8 @@ public final class PopupSpecCalculatorTest {
         // E.bottom = A.bottom + h = 300
         doTestAnchoredPopupAtRect(
                 "Shown as desired width even when available space is less.",
-                /*anchorRect*/ new Rect(150, 0, 600, 0),
-                /*expectedPopupRect*/ new Rect(0, 0, 200, 300));
+                /* anchoredRect= */ new Rect(150, 0, 600, 0),
+                /* expectedRect= */ new Rect(0, 0, 200, 300));
 
         // E.left = A.right = 0
         // E.top = A.bottom = 0
@@ -514,8 +514,8 @@ public final class PopupSpecCalculatorTest {
         mMaxWidthPx = 180;
         doTestAnchoredPopupAtRect(
                 "Desired width will respect a smaller max width.",
-                /*anchorRect*/ new Rect(0, 0, 0, 0),
-                /*expectedPopupRect*/ new Rect(0, 0, 180, 300));
+                /* anchoredRect= */ new Rect(0, 0, 0, 0),
+                /* expectedRect= */ new Rect(0, 0, 180, 300));
 
         // E.left = A.right = 0
         // E.top = A.bottom = 0
@@ -524,8 +524,8 @@ public final class PopupSpecCalculatorTest {
         mMaxWidthPx = 300;
         doTestAnchoredPopupAtRect(
                 "Popup shown as desired width when max width is larger.",
-                /*anchorRect*/ new Rect(0, 0, 0, 0),
-                /*expectedPopupRect*/ new Rect(0, 0, 200, 300));
+                /* anchoredRect= */ new Rect(0, 0, 0, 0),
+                /* expectedRect= */ new Rect(0, 0, 200, 300));
     }
 
     @Test
@@ -537,8 +537,8 @@ public final class PopupSpecCalculatorTest {
         // E.bottom = A.bottom + desiredHeight = 500
         doTestAnchoredPopupAtRect(
                 "Popup shown as desired height.",
-                /*anchorRect*/ new Rect(0, 0, 0, 0),
-                /*expectedPopupRect*/ new Rect(0, 0, 150, 500));
+                /* anchoredRect= */ new Rect(0, 0, 0, 0),
+                /* expectedRect= */ new Rect(0, 0, 150, 500));
 
         // E.left = A.right = 0
         // E.top = A.top - desiredHeight = 100
@@ -546,8 +546,8 @@ public final class PopupSpecCalculatorTest {
         // E.bottom = E.top + desiredHeight = 600
         doTestAnchoredPopupAtRect(
                 "Shown as desired height even when available space is less.",
-                /*anchorRect*/ new Rect(0, 600, 0, 800),
-                /*expectedPopupRect*/ new Rect(0, 100, 150, 600));
+                /* anchoredRect= */ new Rect(0, 600, 0, 800),
+                /* expectedRect= */ new Rect(0, 100, 150, 600));
     }
 
     @Test
@@ -560,8 +560,8 @@ public final class PopupSpecCalculatorTest {
         // E.bottom = A.bottom + desiredHeight = 500
         doTestAnchoredPopupAtRect(
                 "Popup shown as desired size.",
-                /*anchorRect*/ new Rect(0, 0, 0, 0),
-                /*expectedPopupRect*/ new Rect(0, 0, 200, 500));
+                /* anchoredRect= */ new Rect(0, 0, 0, 0),
+                /* expectedRect= */ new Rect(0, 0, 200, 500));
 
         // E.left = A.left - desiredWidth = 400
         // E.top = A.top - desiredHeight = 500
@@ -569,8 +569,8 @@ public final class PopupSpecCalculatorTest {
         // E.bottom = E.top + desiredHeight = 1000
         doTestAnchoredPopupAtRect(
                 "Shown as desired size even when available space is less.",
-                /*anchorRect*/ new Rect(600, 1000, 600, 1000),
-                /*expectedPopupRect*/ new Rect(400, 500, 600, 1000));
+                /* anchoredRect= */ new Rect(600, 1000, 600, 1000),
+                /* expectedRect= */ new Rect(400, 500, 600, 1000));
     }
 
     @Test
@@ -583,8 +583,8 @@ public final class PopupSpecCalculatorTest {
         // E.bottom = A.bottom + h = 300
         doTestAnchoredPopupAtRect(
                 "Below and center the anchor rect.",
-                /*anchorRect*/ new Rect(300, 0, 300, 0),
-                /*expectedPopupRect*/ new Rect(225, 0, 375, 300));
+                /* anchoredRect= */ new Rect(300, 0, 300, 0),
+                /* expectedRect= */ new Rect(225, 0, 375, 300));
 
         // E.left = (A.left + A.right) / 2 - w / 2 = (200 + 400) / 2 - 150 / 2 = 225
         // E.top = A.bottom = 0
@@ -592,8 +592,8 @@ public final class PopupSpecCalculatorTest {
         // E.bottom = A.bottom + h = 300
         doTestAnchoredPopupAtRect(
                 "Use the center of the anchor rect width.",
-                /*anchorRect*/ new Rect(200, 0, 400, 0),
-                /*expectedPopupRect*/ new Rect(225, 0, 375, 300));
+                /* anchoredRect= */ new Rect(200, 0, 400, 0),
+                /* expectedRect= */ new Rect(225, 0, 375, 300));
 
         // E.left = (A.left + A.right) / 2 - w / 2 = (400 + 500) / 2 - 150 / 2 = 375
         // E.top = A.top - h = 600 - 300 = 300
@@ -601,8 +601,8 @@ public final class PopupSpecCalculatorTest {
         // E.bottom = A.top = 600
         doTestAnchoredPopupAtRect(
                 "Above and center the anchor rect.",
-                /*anchorRect*/ new Rect(400, 600, 500, 600),
-                /*expectedPopupRect*/ new Rect(375, 300, 525, 600));
+                /* anchoredRect= */ new Rect(400, 600, 500, 600),
+                /* expectedRect= */ new Rect(375, 300, 525, 600));
     }
 
     @Test
@@ -616,8 +616,8 @@ public final class PopupSpecCalculatorTest {
         // E.bottom = A.bottom + h = 300
         doTestAnchoredPopupAtRect(
                 "Right of anchor rect.",
-                /*anchorRect*/ new Rect(300, 0, 300, 0),
-                /*expectedPopupRect*/ new Rect(300, 0, 450, 300));
+                /* anchoredRect= */ new Rect(300, 0, 300, 0),
+                /* expectedRect= */ new Rect(300, 0, 450, 300));
 
         LocalizationUtils.setRtlForTesting(true);
         // E.left = A.left - w = 300 - 150 = 150
@@ -626,8 +626,8 @@ public final class PopupSpecCalculatorTest {
         // E.bottom = A.bottom + h = 300
         doTestAnchoredPopupAtRect(
                 "Left of anchor rect.",
-                /*anchorRect*/ new Rect(300, 0, 300, 0),
-                /*expectedPopupRect*/ new Rect(150, 0, 300, 300));
+                /* anchoredRect= */ new Rect(300, 0, 300, 0),
+                /* expectedRect= */ new Rect(150, 0, 300, 300));
     }
 
     @Test
@@ -640,16 +640,16 @@ public final class PopupSpecCalculatorTest {
         // E.bottom = A.top = 300
         doTestAnchoredPopupAtRect(
                 "Show above the anchor even when bottom has more space.",
-                /*anchorRect*/ new Rect(0, 300, 0, 300),
-                /*expectedPopupRect*/ new Rect(0, 0, 150, 300));
+                /* anchoredRect= */ new Rect(0, 300, 0, 300),
+                /* expectedRect= */ new Rect(0, 0, 150, 300));
         // E.left = A.right = 0
         // E.top = A.bottom = 200
         // E.right = A.right + w  = 150
         // E.bottom = A.bottom + h = 200 + 300 = 500
         doTestAnchoredPopupAtRect(
                 "Show below the anchor since top does not have enough space.",
-                /*anchorRect*/ new Rect(0, 200, 0, 200),
-                /*expectedPopupRect*/ new Rect(0, 200, 150, 500));
+                /* anchoredRect= */ new Rect(0, 200, 0, 200),
+                /* expectedRect= */ new Rect(0, 200, 150, 500));
 
         mPreferredVerticalOrientation = VerticalOrientation.BELOW;
         // E.left = A.right = 0
@@ -658,16 +658,16 @@ public final class PopupSpecCalculatorTest {
         // E.bottom = A.bottom + h = 600 + 300 = 900
         doTestAnchoredPopupAtRect(
                 "Show below the anchor even when top has more space.",
-                /*anchorRect*/ new Rect(0, 600, 0, 600),
-                /*expectedPopupRect*/ new Rect(0, 600, 150, 900));
+                /* anchoredRect= */ new Rect(0, 600, 0, 600),
+                /* expectedRect= */ new Rect(0, 600, 150, 900));
         // E.left = A.right = 0
         // E.top = A.top - h = 800 - 300 = 500
         // E.right = A.right + w  = 150
         // E.bottom = A.top = 800
         doTestAnchoredPopupAtRect(
                 "Show above the anchor since bottom does not have enough space.",
-                /*anchorRect*/ new Rect(0, 800, 0, 800),
-                /*expectedPopupRect*/ new Rect(0, 500, 150, 800));
+                /* anchoredRect= */ new Rect(0, 800, 0, 800),
+                /* expectedRect= */ new Rect(0, 500, 150, 800));
     }
 
     @Test
@@ -683,16 +683,16 @@ public final class PopupSpecCalculatorTest {
         // E.bottom = A.bottom + h = 700 + 300 = 1000
         doTestAnchoredPopupAtRect(
                 "Anchored left bottom as preferred current orientation.",
-                /*anchorRect*/ new Rect(200, 700, 200, 700),
-                /*expectedPopupRect*/ new Rect(50, 700, 200, 1000));
+                /* anchoredRect= */ new Rect(200, 700, 200, 700),
+                /* expectedRect= */ new Rect(50, 700, 200, 1000));
         // E.left = A.right = 200
         // E.top = A.top - h = 700 - 300 = 400
         // E.right = A.right + w  = 200 + 150 = 350
         // E.bottom = A.top = 700
         doTestAnchoredPopupAtRect(
                 "Anchored top right due to limited space",
-                /*anchorRect*/ new Rect(100, 700, 200, 800),
-                /*expectedPopupRect*/ new Rect(200, 400, 350, 700));
+                /* anchoredRect= */ new Rect(100, 700, 200, 800),
+                /* expectedRect= */ new Rect(200, 400, 350, 700));
     }
 
     @Test
@@ -704,16 +704,16 @@ public final class PopupSpecCalculatorTest {
         // E.bottom = A.bottom + h = 200 + 300 = 500
         doTestAnchoredPopupAtRect(
                 "Horizontal overlap with rect while position to the right.",
-                /*anchorRect*/ new Rect(0, 0, 100, 200),
-                /*expectedPopupRect*/ new Rect(0, 200, 150, 500));
+                /* anchoredRect= */ new Rect(0, 0, 100, 200),
+                /* expectedRect= */ new Rect(0, 200, 150, 500));
         // E.left = A.right - w = 600 - 150 = 450
         // E.top = A.bottom = 200
         // E.right = A.right = 600
         // E.bottom = A.bottom + h = 200 + 300 = 500
         doTestAnchoredPopupAtRect(
                 "Horizontal overlap with rect while position to the left.",
-                /*anchorRect*/ new Rect(400, 0, 600, 200),
-                /*expectedPopupRect*/ new Rect(450, 200, 600, 500));
+                /* anchoredRect= */ new Rect(400, 0, 600, 200),
+                /* expectedRect= */ new Rect(450, 200, 600, 500));
     }
 
     @Test
@@ -725,16 +725,16 @@ public final class PopupSpecCalculatorTest {
         // E.bottom = A.top + h = 400 + 300 = 700
         doTestAnchoredPopupAtRect(
                 "Vertical overlap with rect while position below.",
-                /*anchorRect*/ new Rect(100, 400, 100, 600),
-                /*expectedPopupRect*/ new Rect(100, 400, 250, 700));
+                /* anchoredRect= */ new Rect(100, 400, 100, 600),
+                /* expectedRect= */ new Rect(100, 400, 250, 700));
         // E.left = A.right = 100
         // E.top = A.bottom - h = 900 - 300 = 600
         // E.right = A.right + w = 100 + 150 = 250
         // E.bottom = A.bottom = 900
         doTestAnchoredPopupAtRect(
                 "Vertical overlap with rect while position below.",
-                /*anchorRect*/ new Rect(100, 800, 100, 900),
-                /*expectedPopupRect*/ new Rect(100, 600, 250, 900));
+                /* anchoredRect= */ new Rect(100, 800, 100, 900),
+                /* expectedRect= */ new Rect(100, 600, 250, 900));
     }
 
     @Test
@@ -748,8 +748,8 @@ public final class PopupSpecCalculatorTest {
         doTestAnchoredPopupAtRect(
                 "Popup forced to horizontally overlap with anchor; "
                         + "vertical with anchor is expected.",
-                /*anchorRect*/ new Rect(100, 200, 500, 800),
-                /*expectedPopupRect*/ new Rect(0, 200, 150, 500));
+                /* anchoredRect= */ new Rect(100, 200, 500, 800),
+                /* expectedRect= */ new Rect(0, 200, 150, 500));
 
         // Use smart anchor with max width to allow more width shown for the popup.
         mSmartAnchorWithMaxWidth = true;
@@ -760,8 +760,8 @@ public final class PopupSpecCalculatorTest {
         doTestAnchoredPopupAtRect(
                 "Popup adjusted to show below the anchored rect, "
                         + "while horizontally overlap with anchor but not vertically.",
-                /*anchorRect*/ new Rect(100, 200, 500, 800),
-                /*expectedPopupRect*/ new Rect(350, 800, 500, 1000));
+                /* anchoredRect= */ new Rect(100, 200, 500, 800),
+                /* expectedRect= */ new Rect(350, 800, 500, 1000));
     }
 
     private void setDefaultValueForAnchoredPopup() {
