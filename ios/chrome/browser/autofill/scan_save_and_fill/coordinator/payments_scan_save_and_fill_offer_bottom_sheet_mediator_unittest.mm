@@ -6,6 +6,9 @@
 
 #import <memory>
 
+#import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_mock_clock_override.h"
+#import "base/time/time.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
@@ -24,7 +27,8 @@ class PaymentsScanSaveAndFillOfferBottomSheetMediatorTest
     : public PlatformTest {
  public:
   PaymentsScanSaveAndFillOfferBottomSheetMediatorTest()
-      : test_web_state_(std::make_unique<web::FakeWebState>()) {
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        test_web_state_(std::make_unique<web::FakeWebState>()) {
     web_state_list_ = std::make_unique<WebStateList>(&web_state_list_delegate_);
 
     test_web_state_->SetCurrentURL(GURL("http://foo.com"));
@@ -46,6 +50,7 @@ class PaymentsScanSaveAndFillOfferBottomSheetMediatorTest
 
     mediator_ = [[PaymentsScanSaveAndFillOfferBottomSheetMediator alloc]
         initWithParams:autofill::FormActivityParams()];
+    mediator_.consumer = consumer_;
   }
 
  protected:
@@ -82,4 +87,38 @@ TEST_F(PaymentsScanSaveAndFillOfferBottomSheetMediatorTest,
   [mediator_ didAcceptScanCardSuggestion];
 
   EXPECT_OCMOCK_VERIFY(providerMock);
+}
+
+TEST_F(PaymentsScanSaveAndFillOfferBottomSheetMediatorTest, ExitReasonLogging) {
+  base::HistogramTester histogram_tester;
+  CreateMediator();
+
+  [mediator_ logExitReason:ScanCardSuggestionBottomSheetExitReason::kIgnore];
+  histogram_tester.ExpectUniqueSample(
+      "IOS.ScanCardBottomSheet.ExitReason",
+      static_cast<int>(ScanCardSuggestionBottomSheetExitReason::kIgnore), 1);
+
+  [mediator_
+      logExitReason:ScanCardSuggestionBottomSheetExitReason::kAcceptSuggestion];
+  histogram_tester.ExpectBucketCount(
+      "IOS.ScanCardBottomSheet.ExitReason",
+      static_cast<int>(
+          ScanCardSuggestionBottomSheetExitReason::kAcceptSuggestion),
+      1);
+}
+
+TEST_F(PaymentsScanSaveAndFillOfferBottomSheetMediatorTest,
+       TimeToSelectionLogging) {
+  base::HistogramTester histogram_tester;
+  CreateMediator();
+
+  [mediator_ scanCardBottomSheetViewDidAppear];
+
+  const auto time_to_selection = base::Milliseconds(500);
+  task_environment_.FastForwardBy(time_to_selection);
+
+  [mediator_ didAcceptScanCardSuggestion];
+
+  histogram_tester.ExpectTimeBucketCount(
+      "IOS.ScanCardBottomSheet.TimeToSelection", time_to_selection, 1);
 }

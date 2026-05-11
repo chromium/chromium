@@ -5,7 +5,10 @@
 #import "ios/chrome/browser/autofill/scan_save_and_fill/coordinator/payments_scan_save_and_fill_offer_bottom_sheet_mediator.h"
 
 #import "base/check.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
+#import "base/timer/elapsed_timer.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "ios/chrome/browser/autofill/scan_save_and_fill/ui/payments_scan_save_and_fill_offer_bottom_sheet_consumer.h"
 
@@ -15,6 +18,9 @@
 
   // The object that provides suggestions while filling forms.
   __weak id<FormInputSuggestionsProvider> _provider;
+
+  // The timer started when the view appeared.
+  std::optional<base::ElapsedTimer> _viewDidAppearTimer;
 }
 
 - (instancetype)initWithParams:(autofill::FormActivityParams)params {
@@ -33,6 +39,11 @@
 #pragma mark - Public
 
 - (void)didAcceptScanCardSuggestion {
+  if (_viewDidAppearTimer) {
+    base::UmaHistogramTimes("IOS.ScanCardBottomSheet.TimeToSelection",
+                            _viewDidAppearTimer->Elapsed());
+  }
+
   if (!_provider) {
     return;
   }
@@ -63,6 +74,15 @@
 
 - (void)setProvider:(id<FormInputSuggestionsProvider>)provider {
   _provider = provider;
+}
+
+- (void)scanCardBottomSheetViewDidAppear {
+  _viewDidAppearTimer = base::ElapsedTimer();
+}
+
+- (void)logExitReason:(ScanCardSuggestionBottomSheetExitReason)exitReason {
+  base::UmaHistogramEnumeration("IOS.ScanCardBottomSheet.ExitReason",
+                                exitReason);
 }
 
 @end

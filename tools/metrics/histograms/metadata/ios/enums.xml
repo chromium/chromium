@@ -2589,6 +2589,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/ios/chrome/browser/autofill/scan_save_and_fill/ui/payments_scan_save_and_fill_edit_view_controller.h:ScanCardOfferToSaveAction) -->
 
+<!-- LINT.IfChange(ScanCardSuggestionBottomSheetExitReason) -->
+
+<enum name="ScanCardSuggestionBottomSheetExitReason">
+  <int value="0" label="Ignore"/>
+  <int value="1" label="Accept Suggestion"/>
+  <int value="2" label="Reject Suggestion"/>
+  <int value="3" label="Could Not Present"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/autofill/scan_save_and_fill/coordinator/payments_scan_save_and_fill_offer_bottom_sheet_mediator.h:ScanCardSuggestionBottomSheetExitReason) -->
+
 <!-- LINT.IfChange(SyncedSetUpAppliedPref) -->
 
 <enum name="SyncedSetUpAppliedPref">

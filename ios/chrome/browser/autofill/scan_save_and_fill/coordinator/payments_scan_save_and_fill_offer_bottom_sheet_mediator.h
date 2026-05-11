@@ -15,6 +15,18 @@ struct FormActivityParams;
 
 class WebStateList;
 
+// LINT.IfChange(ScanCardSuggestionBottomSheetExitReason)
+enum class ScanCardSuggestionBottomSheetExitReason {
+  kIgnore = 0,
+  kAcceptSuggestion = 1,
+  kRejectSuggestion = 2,
+  // Could not present the view controller for the bottom sheet as a modal for
+  // other reasons.
+  kCouldNotPresent = 3,
+  kMaxValue = kCouldNotPresent,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:ScanCardSuggestionBottomSheetExitReason)
+
 @protocol PaymentsScanSaveAndFillOfferBottomSheetConsumer;
 
 @interface PaymentsScanSaveAndFillOfferBottomSheetMediator : NSObject
@@ -34,6 +46,12 @@ class WebStateList;
 
 // Replaces the object in charge of providing suggestions.
 - (void)setProvider:(id<FormInputSuggestionsProvider>)provider;
+
+// Called when the view appeared.
+- (void)scanCardBottomSheetViewDidAppear;
+
+// Logs the exit reason for the scan card bottom sheet.
+- (void)logExitReason:(ScanCardSuggestionBottomSheetExitReason)exitReason;
 
 @end
 

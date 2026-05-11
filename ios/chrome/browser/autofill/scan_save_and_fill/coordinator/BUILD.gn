@@ -52,6 +52,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/tabs/model",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
     "//testing/gtest",
     "//third_party/ocmock",
   ]

@@ -79,6 +79,8 @@ CGFloat const kCustomFaviconSideLength = 58;
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
 
+  [self.delegate paymentsBottomSheetViewDidAppear];
+
   UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification,
                                   self.imageViewAccessibilityLabel);
 }

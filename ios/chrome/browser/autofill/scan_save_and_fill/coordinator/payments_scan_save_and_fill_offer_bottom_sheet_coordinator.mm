@@ -37,6 +37,9 @@
   std::optional<WebStateListObserverBridge> _webStateListObserverBridge;
   std::optional<base::ScopedObservation<WebStateList, WebStateListObserver>>
       _observation;
+
+  // Whether the exit reason has been logged.
+  BOOL _exitReasonLogged;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)baseViewController
@@ -95,6 +98,8 @@
   // Dismiss right away if the presentation failed to avoid having a zombie
   // coordinator.
   if (!_viewController.presentingViewController) {
+    [self logExitReasonIfNeeded:ScanCardSuggestionBottomSheetExitReason::
+                                    kCouldNotPresent];
     id<BrowserCoordinatorCommands> handler = HandlerForProtocol(
         self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
     [handler dismissPaymentSuggestions];
@@ -129,7 +134,12 @@
 
 #pragma mark - PaymentsScanSaveAndFillOfferBottomSheetDelegate
 
+- (void)paymentsBottomSheetViewDidAppear {
+  [_mediator scanCardBottomSheetViewDidAppear];
+}
+
 - (void)paymentsBottomSheetDidDisappear {
+  [self logExitReasonIfNeeded:ScanCardSuggestionBottomSheetExitReason::kIgnore];
   [_mediator disconnect];
   id<BrowserCoordinatorCommands> handler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
@@ -137,6 +147,8 @@
 }
 
 - (void)didTapScanCardButton {
+  [self logExitReasonIfNeeded:ScanCardSuggestionBottomSheetExitReason::
+                                  kAcceptSuggestion];
   // Disable user interactions on the root view of the view controller so any
   // further user action isn't allowed. Only one action is allowed on the sheet.
   _viewController.view.userInteractionEnabled = NO;
@@ -154,6 +166,8 @@
 }
 
 - (void)didTapOnCancelButton {
+  [self logExitReasonIfNeeded:ScanCardSuggestionBottomSheetExitReason::
+                                  kRejectSuggestion];
   _viewController.delegate = nil;
   [_mediator disconnect];
 
@@ -164,6 +178,17 @@
                                       completion:^{
                                         [weakHandler dismissPaymentSuggestions];
                                       }];
+}
+
+#pragma mark - Private
+
+// Logs the exit reason for the bottom sheet if it hasn't been logged already.
+- (void)logExitReasonIfNeeded:
+    (ScanCardSuggestionBottomSheetExitReason)exitReason {
+  if (!_exitReasonLogged) {
+    [_mediator logExitReason:exitReason];
+    _exitReasonLogged = YES;
+  }
 }
 
 @end

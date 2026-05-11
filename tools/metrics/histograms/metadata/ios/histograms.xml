@@ -6725,6 +6725,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.ScanCardBottomSheet.ExitReason"
+    enum="ScanCardSuggestionBottomSheetExitReason" expires_after="2027-03-31">
+  <owner>qihuizhao@google.com</owner>
+  <owner>yiwenqian@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Tracks the reason the Scan Card bottom sheet suggestion was dismissed or
+    accepted. Recorded when the user accepts the suggestion or the bottom sheet
+    is dismissed.
+  </summary>
+</histogram>
+
+<histogram name="IOS.ScanCardBottomSheet.TimeToSelection" units="ms"
+    expires_after="2027-03-31">
+  <owner>qihuizhao@google.com</owner>
+  <owner>yiwenqian@google.com</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the elapsed time between displaying the Scan Card bottom sheet
+    suggestion and selecting the scan button. Recorded when the user taps the
+    scan button.
+  </summary>
+</histogram>
+
 <histogram name="IOS.ScanCardBottomSheet.TimeToTrigger.{Outcome}" units="ms"
     expires_after="2027-04-01">
   <owner>yiwenqian@google.com</owner>
