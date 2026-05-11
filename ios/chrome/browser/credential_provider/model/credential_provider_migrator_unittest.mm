@@ -6,7 +6,6 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "base/test/test_future.h"
 #import "components/password_manager/core/browser/password_form.h"
@@ -15,7 +14,6 @@
 #import "components/password_manager/core/browser/password_store/password_form_converters.h"
 #import "components/webauthn/core/browser/test_passkey_model.h"
 #import "ios/chrome/browser/credential_provider/model/archivable_credential+password_form.h"
-#import "ios/chrome/browser/credential_provider/model/features.h"
 #import "ios/chrome/common/credential_provider/archivable_credential+passkey.h"
 #import "ios/chrome/common/credential_provider/user_defaults_credential_store.h"
 #import "testing/gtest_mac.h"
@@ -312,19 +310,7 @@ TEST_F(CredentialProviderMigratorTest, InvalidPasskeyMigration) {
       IsEmpty());
 }
 
-class CredentialProviderMigratorWithSignalAPITest
-    : public CredentialProviderMigratorTest {
- protected:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(kCredentialProviderSignalAPI);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(CredentialProviderMigratorWithSignalAPITest,
-       PasskeyMigrationUpdatesHidden) {
+TEST_F(CredentialProviderMigratorTest, PasskeyMigrationUpdatesHidden) {
   UserDefaultsCredentialStore* store =
       [[UserDefaultsCredentialStore alloc] initWithUserDefaults:user_defaults_
                                                             key:store_key_];
@@ -414,8 +400,7 @@ TEST_F(CredentialProviderMigratorWithSignalAPITest,
   EXPECT_EQ(passkeys[0].hidden_time(), kJan1st2024);
 }
 
-TEST_F(CredentialProviderMigratorWithSignalAPITest,
-       PasskeyMigrationUpdatesUsername) {
+TEST_F(CredentialProviderMigratorTest, PasskeyMigrationUpdatesUsername) {
   UserDefaultsCredentialStore* store =
       [[UserDefaultsCredentialStore alloc] initWithUserDefaults:user_defaults_
                                                             key:store_key_];

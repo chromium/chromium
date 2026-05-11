@@ -12,13 +12,11 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/password_manager/core/browser/passkey_credential.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
-#import "ios/chrome/browser/credential_provider/model/features.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/cells/table_view_stacked_details_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_details/credential_details.h"
@@ -866,8 +864,6 @@ TEST_F(PasswordDetailsTableViewControllerTest, CopyDetailsFailedEmitted) {
 
 // Tests that hidden passkeys are ordered after non-hidden.
 TEST_F(PasswordDetailsTableViewControllerTest, SortsCredentialsByHiddenState) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kCredentialProviderSignalAPI);
 
   PasskeyCredential::Source source =
       PasskeyCredential::Source::kGooglePasswordManager;

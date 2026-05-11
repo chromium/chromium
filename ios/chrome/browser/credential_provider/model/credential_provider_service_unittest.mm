@@ -128,7 +128,6 @@ class CredentialProviderServiceTest : public PlatformTest {
         password_manager::prefs::kCredentialsEnablePasskeys, true);
     testing_pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kAutomaticPasskeyUpgrades, true);
-    scoped_feature_list_.InitAndEnableFeature(kCredentialProviderSignalAPI);
   }
 
   void TearDown() override {
@@ -248,7 +247,6 @@ class CredentialProviderServiceTest : public PlatformTest {
   affiliations::FakeAffiliationService affiliation_service_;
   MockFaviconLoader favicon_loader_;
   std::unique_ptr<CredentialProviderService> credential_provider_service_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   bool favicon_called_ = false;
   base::ScopedTempDir scoped_temp_dir_;
 };

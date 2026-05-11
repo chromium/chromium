@@ -16,7 +16,6 @@
 #import "components/webauthn/core/browser/passkey_model.h"
 #import "components/webauthn/core/browser/passkey_model_utils.h"
 #import "ios/chrome/browser/credential_provider/model/archivable_credential+password_form.h"
-#import "ios/chrome/browser/credential_provider/model/features.h"
 #import "ios/chrome/common/credential_provider/archivable_credential+passkey.h"
 #import "ios/chrome/common/credential_provider/passkey_model_observer_bridge.h"
 #import "ios/chrome/common/credential_provider/user_defaults_credential_store.h"
@@ -134,8 +133,7 @@ static constexpr char kPasskeysIOSMigration[] = "Passkeys.IOSMigration";
           continue;
         }
 
-        if (base::FeatureList::IsEnabled(kCredentialProviderSignalAPI) &&
-            credential_specifics->hidden() != credential.hidden) {
+        if (credential_specifics->hidden() != credential.hidden) {
           // TODO(crbug.com/432260316): Log metrics.
           // TODO(crbug.com/432260316): Add PasskeyChangeQuotaTracker.
           if (credential.hidden) {
@@ -148,8 +146,7 @@ static constexpr char kPasskeysIOSMigration[] = "Passkeys.IOSMigration";
         }
 
         std::string username = base::SysNSStringToUTF8(credential.username);
-        if (base::FeatureList::IsEnabled(kCredentialProviderSignalAPI) &&
-            credential_specifics->user_name() != username) {
+        if (credential_specifics->user_name() != username) {
           _passkeyStore->UpdatePasskey(
               credentialId,
               {.user_name = username,

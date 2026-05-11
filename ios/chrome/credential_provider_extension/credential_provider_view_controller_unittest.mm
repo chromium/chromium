@@ -73,14 +73,7 @@ class CredentialProviderViewControllerTest : public PlatformTest {
                                               error:nil];
     NSUserDefaults* userDefaults = app_group::GetGroupUserDefaults();
     [userDefaults removeObjectForKey:kTestUserDefaultsKey];
-    [userDefaults removeObjectForKey:
-                      AppGroupUserDefaulsCredentialProviderSignalAPIEnabled()];
-  }
 
-  void SetSignalAPIEnabled() {
-    NSUserDefaults* defaults = app_group::GetGroupUserDefaults();
-    [defaults setBool:YES
-               forKey:AppGroupUserDefaulsCredentialProviderSignalAPIEnabled()];
   }
 
   void CreateStoreWithCredentials(NSArray<id<Credential>>* credentials) {
@@ -108,51 +101,8 @@ class CredentialProviderViewControllerTest : public PlatformTest {
   id<CredentialStore> credential_store_;
 };
 
-TEST_F(CredentialProviderViewControllerTest,
-       ReportUnknownCredentialIgnoredWithFeatureDisabled) {
-  CreateStoreWithCredentials(@[ TestPasskeyCredential() ]);
-  EXPECT_EQ(credential_store_.credentials.count, 1u);
-  EXPECT_FALSE(credential_store_.credentials[0].hidden);
-
-  [controller_
-      reportUnknownPublicKeyCredentialForRelyingParty:kTestRPId
-                                         credentialID:StringToData(
-                                                          kTestCredentialId)];
-  EXPECT_EQ(credential_store_.credentials.count, 1u);
-  EXPECT_FALSE(credential_store_.credentials[0].hidden);
-}
-
-TEST_F(CredentialProviderViewControllerTest,
-       ReportPublicKeyCredentialUpdateIgnoredWithFeatureDisabled) {
-  CreateStoreWithCredentials(@[ TestPasskeyCredential() ]);
-  EXPECT_EQ(credential_store_.credentials.count, 1u);
-  EXPECT_NSEQ(credential_store_.credentials[0].username, kTestUsername);
-
-  [controller_
-      reportPublicKeyCredentialUpdateForRelyingParty:kTestRPId
-                                          userHandle:StringToData(kTestUserId)
-                                             newName:@"newUser"];
-  EXPECT_EQ(credential_store_.credentials.count, 1u);
-  EXPECT_NSEQ(credential_store_.credentials[0].username, kTestUsername);
-}
-
-TEST_F(CredentialProviderViewControllerTest,
-       ReportAllAcceptedPublicKeyCredentialsIgnoredWithFeatureDisabled) {
-  CreateStoreWithCredentials(@[ TestPasskeyCredential() ]);
-  EXPECT_EQ(credential_store_.credentials.count, 1u);
-  EXPECT_FALSE(credential_store_.credentials[0].hidden);
-
-  [controller_
-      reportAllAcceptedPublicKeyCredentialsForRelyingParty:kTestRPId
-                                                userHandle:StringToData(
-                                                               kTestUserId)
-                                     acceptedCredentialIDs:@[]];
-  EXPECT_EQ(credential_store_.credentials.count, 1u);
-  EXPECT_FALSE(credential_store_.credentials[0].hidden);
-}
 
 TEST_F(CredentialProviderViewControllerTest, MarksUnknownCredentialHidden) {
-  SetSignalAPIEnabled();
   CreateStoreWithCredentials(@[ TestPasskeyCredential() ]);
 
   EXPECT_EQ(credential_store_.credentials.count, 1u);
@@ -171,7 +121,6 @@ TEST_F(CredentialProviderViewControllerTest, MarksUnknownCredentialHidden) {
 
 TEST_F(CredentialProviderViewControllerTest,
        IgnoresUsernameUpdateForCredentialEditedByUser) {
-  SetSignalAPIEnabled();
   CreateStoreWithCredentials(
       @[ TestPasskeyCredential(/*edited_by_user=*/YES) ]);
 
@@ -187,7 +136,6 @@ TEST_F(CredentialProviderViewControllerTest,
 }
 
 TEST_F(CredentialProviderViewControllerTest, UpdatesCredentialUsername) {
-  SetSignalAPIEnabled();
   CreateStoreWithCredentials(@[ TestPasskeyCredential() ]);
 
   EXPECT_EQ(credential_store_.credentials.count, 1u);
@@ -203,7 +151,6 @@ TEST_F(CredentialProviderViewControllerTest, UpdatesCredentialUsername) {
 
 TEST_F(CredentialProviderViewControllerTest,
        MarksCredentialNotPresentOnAcceptedListAsHidden) {
-  SetSignalAPIEnabled();
   CreateStoreWithCredentials(@[ TestPasskeyCredential() ]);
 
   EXPECT_EQ(credential_store_.credentials.count, 1u);
@@ -221,7 +168,6 @@ TEST_F(CredentialProviderViewControllerTest,
 }
 
 TEST_F(CredentialProviderViewControllerTest, HiddenCredentialRestored) {
-  SetSignalAPIEnabled();
   CreateStoreWithCredentials(@[ TestPasskeyCredential() ]);
 
   EXPECT_EQ(credential_store_.credentials.count, 1u);

@@ -398,9 +398,6 @@ enum class PasskeyUserVerificationStatus {
 
 - (void)reportUnknownPublicKeyCredentialForRelyingParty:(NSString*)relyingParty
                                            credentialID:(NSData*)credentialID {
-  if (!IsSignalAPIEnabled()) {
-    return;
-  }
 
   NSArray<id<Credential>>* credentials = self.credentialStore.credentials;
   NSUInteger credentialIndex =
@@ -422,9 +419,6 @@ enum class PasskeyUserVerificationStatus {
 - (void)reportPublicKeyCredentialUpdateForRelyingParty:(NSString*)relyingParty
                                             userHandle:(NSData*)userHandle
                                                newName:(NSString*)newName {
-  if (!IsSignalAPIEnabled()) {
-    return;
-  }
 
   NSArray<id<Credential>>* credentials = self.credentialStore.credentials;
   NSUInteger credentialIndex =
@@ -456,9 +450,6 @@ enum class PasskeyUserVerificationStatus {
                                        acceptedCredentialIDs:
                                            (NSArray<NSData*>*)
                                                acceptedCredentialIDs {
-  if (!IsSignalAPIEnabled()) {
-    return;
-  }
 
   NSArray<id<Credential>>* credentials = self.credentialStore.credentials;
   NSUInteger credentialIndex =

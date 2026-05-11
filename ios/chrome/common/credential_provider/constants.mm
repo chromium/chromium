@@ -77,10 +77,6 @@ NSString* const kUserDefaultsCredentialProviderAutomaticPasskeyUpgradeSetting =
 NSString* const kUserDefaultsCredentialProviderPasskeyLargeBlobSetting =
     @"kUserDefaultsCredentialProviderPasskeyLargeBlobSetting";
 
-// Used to generate the key for the app group user defaults containing whether
-// signal API is currently enabled.
-NSString* const kUserDefaultsCredentialProviderSignalAPISetting =
-    @"kUserDefaultsCredentialProviderSignalAPISetting";
 
 // Used to generate the key for the app group user defaults containing whether
 // the button order in the confirmation alerts should be swapped.
@@ -191,10 +187,6 @@ NSString* AppGroupUserDefaulsCredentialProviderPasskeyLargeBlobEnabled() {
           kUserDefaultsCredentialProviderPasskeyLargeBlobSetting];
 }
 
-NSString* AppGroupUserDefaulsCredentialProviderSignalAPIEnabled() {
-  return [AppGroupPrefix()
-      stringByAppendingString:kUserDefaultsCredentialProviderSignalAPISetting];
-}
 
 NSString*
 AppGroupUserDefaulsCredentialProviderConfirmationButtonSwapOrderEnabled() {

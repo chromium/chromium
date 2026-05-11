@@ -15,9 +15,6 @@ BOOL IsAutomaticPasskeyUpgradeEnabled();
 // Whether passkey Large Blob support is enabled.
 BOOL IsPasskeyLargeBlobEnabled();
 
-// Whether signal API is enabled.
-BOOL IsSignalAPIEnabled();
-
 // Whether password creation is enabled for this user by preference.
 BOOL IsPasswordCreationUserEnabled();
 

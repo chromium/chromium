@@ -56,10 +56,6 @@ NSString* AppGroupUserDefaulsCredentialProviderAutomaticPasskeyUpgradeEnabled();
 // support is currently enabled.
 NSString* AppGroupUserDefaulsCredentialProviderPasskeyLargeBlobEnabled();
 
-// Key for the app group user defaults containing whether signal API is
-// currently enabled.
-NSString* AppGroupUserDefaulsCredentialProviderSignalAPIEnabled();
-
 // Key for the app group user defaults containing whether the button order in
 // the confirmation alerts should be swapped.
 NSString*

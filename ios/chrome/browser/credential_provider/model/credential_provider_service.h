@@ -161,12 +161,8 @@ class CredentialProviderService
   // Syncs whether or not automatic passkey upgrade is enabled.
   void UpdateAutomaticPasskeyUpgradeSetting();
 
-
   // Syncs whether or not Large Blob is enabled.
   void UpdatePasskeyLargeBlobSetting();
-
-  // Syncs whether or not signal API is enabled.
-  void UpdateSignalAPISetting();
 
   // PasswordStoreConsumer:
   void OnGetPasswordStoreResultsOrErrorFrom(

@@ -11,9 +11,6 @@
 // Feature flag to enable passkey Large Blob support in the credential provider.
 BASE_DECLARE_FEATURE(kCredentialProviderPasskeyLargeBlob);
 
-// Feature flag to enable signal API in the credential provider.
-BASE_DECLARE_FEATURE(kCredentialProviderSignalAPI);
-
 // Feature flag to enable refactored AddCredentials in the credential provider.
 BASE_DECLARE_FEATURE(kCredentialProviderRefactoredAddCredentials);
 

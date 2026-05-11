@@ -310,11 +310,6 @@ TEST_F(CredentialListMediatorTest, FetchAllCredentialsPasskeysOnly) {
 
 // Tests that fetching all credentials filters out hidden passkeys.
 TEST_F(CredentialListMediatorTest, FetchAllCredentialsWithHiddenPasskeys) {
-  NSUserDefaults* defaults = app_group::GetGroupUserDefaults();
-  [defaults setBool:YES
-             forKey:AppGroupUserDefaulsCredentialProviderSignalAPIEnabled()];
-  [defaults synchronize];
-
   ArchivableCredential* passkey_credential = TestPasskeyCredential();
   ArchivableCredential* hidden_passkey = TestPasskeyCredential(/*hidden=*/YES);
 
