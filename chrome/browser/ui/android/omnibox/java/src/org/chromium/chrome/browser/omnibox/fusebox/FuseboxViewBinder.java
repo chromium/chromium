@@ -329,7 +329,7 @@ class FuseboxViewBinder {
                 OmniboxResourceProvider.getPrimaryIconTintList(
                         buttonView.getContext(), brandedColorScheme);
         ColorStateList iconBackgroundTint =
-                OmniboxResourceProvider.getPrimaryIconBackgroundColor(
+                OmniboxResourceProvider.getPrimaryIconBackgroundTintList(
                         buttonView.getContext(), brandedColorScheme);
         themeButton(buttonView, textAppearance, iconTint, iconBackgroundTint);
         if (data.hasColor) {
@@ -605,7 +605,8 @@ class FuseboxViewBinder {
         ColorStateList iconTint =
                 OmniboxResourceProvider.getPrimaryIconTintList(context, brandedColorScheme);
         ColorStateList iconBackgroundTint =
-                OmniboxResourceProvider.getPrimaryIconBackgroundColor(context, brandedColorScheme);
+                OmniboxResourceProvider.getPrimaryIconBackgroundTintList(
+                        context, brandedColorScheme);
         @StyleRes
         int dynamicTextAppearance =
                 OmniboxResourceProvider.getPopupButtonTextRes(brandedColorScheme);

@@ -54,6 +54,8 @@ android_resources("java_resources") {
     "java/res/color/color_primary_with_alpha_20.xml",
     "java/res/color/color_primary_with_alpha_5.xml",
     "java/res/color/color_primary_with_alpha_50.xml",
+    "java/res/color/color_surface_container_incognito_tint_list.xml",
+    "java/res/color/color_surface_container_tint_list.xml",
     "java/res/color/default_icon_color_accent1_tint_list.xml",
     "java/res/color/default_icon_color_dark_tint_list.xml",
     "java/res/color/default_icon_color_disabled.xml",

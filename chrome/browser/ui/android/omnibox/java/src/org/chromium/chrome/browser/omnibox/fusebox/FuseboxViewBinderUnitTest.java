@@ -15,6 +15,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
+import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -646,5 +647,41 @@ public class FuseboxViewBinderUnitTest {
         } else {
             assertTrue(endIcon.getVisibility() == View.GONE || endIcon.getDrawable() == null);
         }
+    }
+
+    @Test
+    public void horizontalAttachments_applyStatefulColors() {
+        Activity activity = mActivityController.get();
+        ViewGroup popupView =
+                (ViewGroup)
+                        LayoutInflater.from(activity)
+                                .inflate(R.layout.fusebox_context_popup, /* root= */ null);
+        doReturn(popupView).when(mPopupWindow).getContentView();
+
+        FuseboxPopup horizontalPopup =
+                new FuseboxPopup(
+                        activity,
+                        mWindowAndroid,
+                        mPopupWindow,
+                        popupView,
+                        mDynamicRectProvider,
+                        /* isBottomSheet= */ true);
+        FuseboxViewHolder viewHolder =
+                new FuseboxViewHolder(mViewHolder.parentView, horizontalPopup);
+
+        FuseboxViewBinder.bind(mModel, viewHolder, FuseboxProperties.COLOR_SCHEME);
+
+        View currentTabButton = horizontalPopup.mAddCurrentTab;
+        View iconBackground = currentTabButton.findViewById(R.id.start_icon_background);
+        assertNotNull(iconBackground);
+
+        ColorStateList bgTint = iconBackground.getBackgroundTintList();
+        assertNotNull(bgTint);
+        assertTrue(bgTint.isStateful());
+
+        TextView textView = currentTabButton.findViewById(R.id.action_text);
+        ColorStateList textColors = textView.getTextColors();
+        assertNotNull(textColors);
+        assertTrue(textColors.isStateful());
     }
 }

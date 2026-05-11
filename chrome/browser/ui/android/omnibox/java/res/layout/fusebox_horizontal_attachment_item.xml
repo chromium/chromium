@@ -28,6 +28,7 @@ found in the LICENSE file.
             android:layout_height="@dimen/fusebox_popup_item_icon_size"
             android:layout_gravity="center"
             android:importantForAccessibility="no"
+            android:duplicateParentState="true"
             app:tint="@macro/default_icon_color" />
     </FrameLayout>
 
@@ -38,7 +39,8 @@ found in the LICENSE file.
         android:layout_marginTop="@dimen/fusebox_carousel_item_text_margin_top"
         android:gravity="center_horizontal"
         android:maxLines="2"
-        android:ellipsize="end" />
+        android:ellipsize="end"
+        android:duplicateParentState="true" />
 
     <!-- Always-hidden view to support duck-typing with the vertical layout. -->
     <ImageView

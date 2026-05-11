@@ -765,12 +765,11 @@ public class OmniboxResourceProvider {
      * @param brandedColorScheme The {@link BrandedColorScheme}.
      * @return The primary icon background color.
      */
-    public static ColorStateList getPrimaryIconBackgroundColor(
+    public static ColorStateList getPrimaryIconBackgroundTintList(
             Context context, @BrandedColorScheme int brandedColorScheme) {
         boolean isIncognito =
                 convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
-        return ColorStateList.valueOf(
-                IncognitoColors.getColorSurfaceContainer(context, isIncognito));
+        return IncognitoColors.getColorSurfaceContainerTintList(context, isIncognito);
     }
 
     /** Resolves the icon tint color for the icons that should be vivid, such as the + button. */
