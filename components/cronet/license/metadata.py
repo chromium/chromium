@@ -42,18 +42,27 @@ class Metadata:
     def _get_version_control(self):
         """Returns the VCS of the URL provided if possible,
     otherwise None is returned."""
-        if "git" in self.get_url() or "googlesource" in self.get_url():
+        url = self.get_url()
+        if "git" in url or "googlesource" in url:
             return "Git"
-        if "hg" in self.get_url():
+        if "hg" in url:
             return "Hg"
+        if "crates.io" in url:
+            return "crates.io"
         return None
 
     def _create_identifier_block(
             self) -> metadata_dictionary.MetadataDictionary:
         identifier_dictionary = metadata_dictionary.MetadataDictionary(
             "identifier")
-        identifier_dictionary["value"] = f"\"{self.get_url()}\""
-        identifier_dictionary["type"] = f"\"{self._get_version_control()}\""
+
+        vcs = self._get_version_control()
+        identifier_dictionary["type"] = f"\"{vcs}\""
+        if vcs == "crates.io":
+            identifier_dictionary["value"] = f"\"{self.get_name()}\""
+        else:
+            identifier_dictionary["value"] = f"\"{self.get_url()}\""
+
         if self.get_version():
             identifier_dictionary["version"] = f"\"{self.get_version()}\""
         return identifier_dictionary
