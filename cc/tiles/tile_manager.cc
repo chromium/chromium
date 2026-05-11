@@ -671,6 +671,7 @@ void TileManager::ExternalDependencyCompletedForRasterTask(
 
 bool TileManager::PrepareTiles(
     const GlobalStateThatImpactsTilePriority& state) {
+  TRACE_EVENT("cc", __PRETTY_FUNCTION__);
   ++prepare_tiles_count_;
   last_active_time_ = NowWithOverride();
   ScheduleReduceTileMemoryWhenIdle(base::TimeDelta());
@@ -685,6 +686,10 @@ bool TileManager::PrepareTiles(
   }
 
   signals_ = Signals();
+  if (global_state_.viewport_size != state.viewport_size) {
+    resource_pool_->NotifyOfViewportSizeChange(global_state_.viewport_size,
+                                               state.viewport_size);
+  }
   global_state_ = state;
 
   // Ensure that we don't schedule any decode work for checkered images until

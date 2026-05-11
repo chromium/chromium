@@ -14,6 +14,7 @@
 #include <utility>
 
 #include "base/containers/circular_deque.h"
+#include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -21,6 +22,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/memory_allocator_dump_guid.h"
 #include "base/trace_event/memory_dump_provider.h"
+#include "base/trace_event/trace_event.h"
 #include "cc/cc_export.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/resources/shared_image_format.h"
@@ -28,8 +30,10 @@
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/sync_token.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -41,6 +45,8 @@ class RasterContextProvider;
 }
 
 namespace cc {
+
+CC_EXPORT BASE_DECLARE_FEATURE(kInvalidateResourcesOnSizeChange);
 
 class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
   class PoolResource;
@@ -306,6 +312,8 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
     return !disallow_non_exact_reuse_;
   }
 
+  void NotifyOfViewportSizeChange(gfx::Size old_size, gfx::Size new_size);
+
   // Overrides internal clock for testing purposes.
   void SetClockForTesting(const base::TickClock* clock) { clock_ = clock; }
   int tracing_id() const { return tracing_id_; }
@@ -467,6 +475,7 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
   bool HasEvictableResources() const;
   base::TimeTicks GetUsageTimeForLRUResource() const;
   void FlushEvictedResources();
+  void UpdateTracingCounters();
 
   const raw_ptr<viz::ClientResourceProvider> resource_provider_;
   const raw_ptr<viz::RasterContextProvider> context_provider_;
@@ -474,6 +483,10 @@ class CC_EXPORT ResourcePool : public base::trace_event::MemoryDumpProvider {
   const base::TimeDelta resource_expiration_delay_;
   const bool disallow_non_exact_reuse_ = false;
   const int tracing_id_;
+  const std::string total_memory_track_name_;
+  const std::string in_use_memory_track_name_;
+  perfetto::CounterTrack total_memory_track_;
+  perfetto::CounterTrack in_use_memory_track_;
 
   size_t next_resource_unique_id_ = 1;
   size_t max_memory_usage_bytes_ = 0;

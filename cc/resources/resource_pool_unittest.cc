@@ -829,4 +829,112 @@ TEST_F(ResourcePoolTest, InvalidResource) {
   resource_pool_->ReleaseResource(std::move(resource));
 }
 
+TEST_F(ResourcePoolTest, NotifyOfViewportSizeChangeDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(kInvalidateResourcesOnSizeChange);
+
+  gfx::Size size(100, 100);
+  viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
+  gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
+
+  // Create an unused resource.
+  CheckAndReturnResource(
+      resource_pool_->AcquireResource(size, format, color_space));
+  EXPECT_EQ(1u, resource_pool_->GetTotalResourceCountForTesting());
+
+  // Notify of viewport size change.
+  resource_pool_->NotifyOfViewportSizeChange(gfx::Size(100, 100),
+                                             gfx::Size(200, 200));
+
+  // Resource should still be there.
+  EXPECT_EQ(1u, resource_pool_->GetTotalResourceCountForTesting());
+}
+
+TEST_F(ResourcePoolTest, NotifyOfViewportSizeChangeEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kInvalidateResourcesOnSizeChange);
+
+  gfx::Size size(100, 100);
+  viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
+  gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
+
+  // Create an unused resource.
+  CheckAndReturnResource(
+      resource_pool_->AcquireResource(size, format, color_space));
+  EXPECT_EQ(1u, resource_pool_->GetTotalResourceCountForTesting());
+
+  // Notify of viewport size change.
+  resource_pool_->NotifyOfViewportSizeChange(gfx::Size(100, 100),
+                                             gfx::Size(200, 200));
+
+  // Unused resource should have been evicted.
+  EXPECT_EQ(0u, resource_pool_->GetTotalResourceCountForTesting());
+}
+
+TEST_F(ResourcePoolTest, NotifyOfViewportSizeChangeEnabledBusy) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kInvalidateResourcesOnSizeChange);
+
+  gfx::Size size(100, 100);
+  viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
+  gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
+
+  // Create a resource and export it (making it busy).
+  ResourcePool::InUsePoolResource resource =
+      resource_pool_->AcquireResource(size, format, color_space);
+  SetBackingOnResource(resource);
+  EXPECT_TRUE(resource_pool_->PrepareForExport(
+      resource, viz::TransferableResource::ResourceSource::kTest));
+
+  std::vector<viz::TransferableResource> transfers;
+  resource_provider_->PrepareSendToParent(
+      {resource.resource_id_for_export()}, &transfers,
+      context_provider_->SharedImageInterface());
+
+  // Return to pool, it should go to busy_resources_.
+  resource_pool_->ReleaseResource(std::move(resource));
+  EXPECT_EQ(1u, resource_pool_->GetBusyResourceCountForTesting());
+
+  // Notify of viewport size change.
+  resource_pool_->NotifyOfViewportSizeChange(gfx::Size(100, 100),
+                                             gfx::Size(200, 200));
+
+  // It should still be busy.
+  EXPECT_EQ(1u, resource_pool_->GetBusyResourceCountForTesting());
+
+  // Now return it from the parent.
+  auto returned_resources =
+      viz::TransferableResource::ReturnResources(transfers);
+  resource_provider_->ReceiveReturnsFromParent(std::move(returned_resources));
+
+  // It should have been deleted because it was marked avoid_reuse.
+  EXPECT_EQ(0u, resource_pool_->GetTotalResourceCountForTesting());
+}
+
+TEST_F(ResourcePoolTest, NotifyOfViewportSizeChangeEnabledInUse) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kInvalidateResourcesOnSizeChange);
+
+  gfx::Size size(100, 100);
+  viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
+  gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
+
+  // Create a resource and keep it in use.
+  ResourcePool::InUsePoolResource resource =
+      resource_pool_->AcquireResource(size, format, color_space);
+  EXPECT_EQ(1u, resource_pool_->resource_count());
+
+  // Notify of viewport size change.
+  resource_pool_->NotifyOfViewportSizeChange(gfx::Size(100, 100),
+                                             gfx::Size(200, 200));
+
+  // It should still be in use.
+  EXPECT_EQ(1u, resource_pool_->resource_count());
+
+  // Return to pool. It should be deleted immediately because it was marked
+  // avoid_reuse.
+  resource_pool_->ReleaseResource(std::move(resource));
+  EXPECT_EQ(0u, resource_pool_->GetTotalResourceCountForTesting());
+}
+
 }  // namespace cc

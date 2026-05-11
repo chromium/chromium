@@ -15,6 +15,7 @@
 #include "base/trace_event/traced_value.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "cc/cc_export.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace cc {
 
@@ -114,12 +115,15 @@ class GlobalStateThatImpactsTilePriority {
 
   TreePriority tree_priority;
 
+  gfx::Size viewport_size;
+
   bool operator==(const GlobalStateThatImpactsTilePriority& other) const {
     return memory_limit_policy == other.memory_limit_policy &&
            soft_memory_limit_in_bytes == other.soft_memory_limit_in_bytes &&
            hard_memory_limit_in_bytes == other.hard_memory_limit_in_bytes &&
            num_resources_limit == other.num_resources_limit &&
-           tree_priority == other.tree_priority;
+           tree_priority == other.tree_priority &&
+           viewport_size == other.viewport_size;
   }
   bool operator!=(const GlobalStateThatImpactsTilePriority& other) const {
     return !(*this == other);

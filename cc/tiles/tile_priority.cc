@@ -110,6 +110,7 @@ void GlobalStateThatImpactsTilePriority::AsValueInto(
   state->SetInteger("num_resources_limit",
                     base::saturated_cast<int>(num_resources_limit));
   state->SetString("tree_priority", TreePriorityToString(tree_priority));
+  MathUtil::AddToTracedValue("viewport_size", viewport_size, state);
 }
 
 }  // namespace cc

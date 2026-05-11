@@ -14,6 +14,7 @@
 #include <utility>
 
 #include "base/atomic_sequence_num.h"
+#include "base/feature_list.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
@@ -36,6 +37,9 @@ using base::trace_event::MemoryAllocatorDump;
 using base::trace_event::MemoryDumpLevelOfDetail;
 
 namespace cc {
+
+BASE_FEATURE(kInvalidateResourcesOnSizeChange,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 ResourcePool::Backing::Backing(const gfx::Size& size,
                                viz::SharedImageFormat format,
@@ -188,6 +192,14 @@ ResourcePool::ResourcePool(
       resource_expiration_delay_(expiration_delay),
       disallow_non_exact_reuse_(disallow_non_exact_reuse),
       tracing_id_(g_next_tracing_id.GetNext()),
+      total_memory_track_name_(
+          base::StringPrintf("ResourcePoolTotalMemory_%d", tracing_id_)),
+      in_use_memory_track_name_(
+          base::StringPrintf("ResourcePoolInUseMemory_%d", tracing_id_)),
+      total_memory_track_(perfetto::DynamicString(total_memory_track_name_),
+                          perfetto::ProcessTrack::Current()),
+      in_use_memory_track_(perfetto::DynamicString(in_use_memory_track_name_),
+                           perfetto::ProcessTrack::Current()),
       flush_evicted_resources_deadline_(base::TimeTicks::Max()),
       clock_(base::DefaultTickClock::GetInstance()) {
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
@@ -306,6 +318,7 @@ ResourcePool::InUsePoolResource ResourcePool::AcquireResource(
   if (!resource)
     resource = CreateResource(size, format, color_space);
   resource->set_debug_name(debug_name);
+  UpdateTracingCounters();
   return InUsePoolResource(resource);
 }
 
@@ -396,6 +409,7 @@ ResourcePool::TryAcquireResourceForPartialRaster(
     resource->set_invalidated_rect(gfx::Rect());
     resource->set_content_id(0);
     resource->set_debug_name(debug_name);
+    UpdateTracingCounters();
     return InUsePoolResource(resource);
   }
 
@@ -407,11 +421,18 @@ void ResourcePool::OnBackingAllocated(PoolResource* resource) {
   total_memory_usage_bytes_ += size;
   if (resource->state() == PoolResource::kUnused)
     unused_memory_usage_bytes_ += size;
+  UpdateTracingCounters();
+}
+
+void ResourcePool::UpdateTracingCounters() {
+  TRACE_COUNTER("cc", total_memory_track_, total_memory_usage_bytes_);
+  TRACE_COUNTER("cc", in_use_memory_track_, memory_usage_bytes());
 }
 
 void ResourcePool::OnResourceReleased(size_t unique_id,
                                       const gpu::SyncToken& sync_token,
                                       bool lost) {
+  TRACE_EVENT("cc", __PRETTY_FUNCTION__);
   // If this fails we've removed a resource from the ResourceProvider somehow
   // while it was still in use by the ResourcePool client. That would prevent
   // the client from being able to use the ResourceId on the InUsePoolResource,
@@ -439,6 +460,8 @@ void ResourcePool::OnResourceReleased(size_t unique_id,
     resource->backing()->returned_sync_token = sync_token;
   DidFinishUsingResource(std::move(*busy_it));
   busy_resources_.erase(busy_it);
+
+  UpdateTracingCounters();
 }
 
 bool ResourcePool::PrepareForExport(
@@ -469,7 +492,23 @@ bool ResourcePool::PrepareForExport(
   return true;
 }
 
+void ResourcePool::NotifyOfViewportSizeChange(gfx::Size old_size,
+                                              gfx::Size new_size) {
+  TRACE_EVENT("cc", __PRETTY_FUNCTION__, "old_size", old_size.ToString(),
+              "new_size", new_size.ToString());
+  if (base::FeatureList::IsEnabled(kInvalidateResourcesOnSizeChange)) {
+    // The viewport size has changed, meaning that many tilings (but not all)
+    // have also changed size.
+    //
+    // We could try to find out which ones by setting a very low TTL on the
+    // available tiles, but we might as well discard all available ones, and
+    // remember that the currently in-flight tiles should also be discarded.
+    InvalidateResources();
+  }
+}
+
 void ResourcePool::InvalidateResources() {
+  TRACE_EVENT("cc", __PRETTY_FUNCTION__);
   unused_resources_by_size_.clear();
   while (!unused_resources_.empty()) {
     DCHECK_GE(unused_memory_usage_bytes_,
@@ -550,6 +589,7 @@ void ResourcePool::ReleaseResource(InUsePoolResource in_use_resource) {
   // Now that we have evictable resources, schedule an eviction call for this
   // resource if necessary.
   ScheduleEvictExpiredResourcesIn(resource_expiration_delay_);
+  UpdateTracingCounters();
 }
 
 void ResourcePool::OnContentReplaced(const InUsePoolResource& in_use_resource,
@@ -604,6 +644,7 @@ void ResourcePool::DeleteResource(std::unique_ptr<PoolResource> resource) {
     flush_evicted_resources_deadline_ =
         clock_->NowTicks() + kDefaultMaxFlushDelay;
   }
+  UpdateTracingCounters();
 }
 
 void ResourcePool::UpdateResourceContentIdAndInvalidation(

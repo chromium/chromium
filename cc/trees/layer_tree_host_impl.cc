@@ -767,6 +767,7 @@ void LayerTreeHostImpl::AnimateInternal() {
 }
 
 bool LayerTreeHostImpl::PrepareTiles() {
+  TRACE_EVENT("cc", __PRETTY_FUNCTION__);
   DCHECK(!settings_.trees_in_viz_in_viz_process);
 
   tile_priorities_dirty_ |= active_tree() && active_tree()->UpdateTiles();
@@ -774,6 +775,11 @@ bool LayerTreeHostImpl::PrepareTiles() {
 
   if (!tile_priorities_dirty_) {
     return false;
+  }
+
+  if (active_tree()) {
+    global_tile_state_.viewport_size =
+        active_tree()->GetDeviceViewport().size();
   }
 
   bool did_prepare_tiles = tile_manager_.PrepareTiles(global_tile_state_);
