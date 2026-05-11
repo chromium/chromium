@@ -73,7 +73,9 @@ class JniPaymentApp : public PaymentApp::Delegate {
       JNIEnv* env,
       const base::android::JavaRef<jobject>& jpayment_response);
 
-  void FreeNativeObject(JNIEnv* env);
+  void FreeNativeObjectSoon(JNIEnv* env);
+
+  ~JniPaymentApp() override;
 
  private:
   // PaymentApp::Delegate implementation:
@@ -84,7 +86,6 @@ class JniPaymentApp : public PaymentApp::Delegate {
                                 const std::string& error_message) override;
 
   explicit JniPaymentApp(std::unique_ptr<PaymentApp> payment_app);
-  ~JniPaymentApp() override;
 
   std::unique_ptr<PaymentApp> payment_app_;
   base::android::ScopedJavaGlobalRef<jobject> invoke_callback_;

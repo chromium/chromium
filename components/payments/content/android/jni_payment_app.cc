@@ -15,6 +15,7 @@
 #include "components/payments/content/android/payment_handler_host.h"
 #include "components/payments/content/payment_request_converter.h"
 #include "components/payments/core/payment_method_data.h"
+#include "content/public/browser/browser_thread.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
 #include "ui/gfx/android/java_bitmap.h"
 
@@ -44,7 +45,7 @@ ScopedJavaLocalRef<jobject> JniPaymentApp::Create(
     JNIEnv* env,
     std::unique_ptr<PaymentApp> payment_app) {
   // The |app| is owned by JniPaymentApp.java and will be destroyed through a
-  // JniPaymentApp::FreeNativeObject() call.
+  // JniPaymentApp::FreeNativeObjectSoon() call.
   JniPaymentApp* app = new JniPaymentApp(std::move(payment_app));
 
   return Java_JniPaymentApp_Constructor(
@@ -183,8 +184,8 @@ JniPaymentApp::SetAppSpecificResponseFields(
       env, mojom::PaymentResponse::Serialize(&result));
 }
 
-void JniPaymentApp::FreeNativeObject(JNIEnv* env) {
-  delete this;
+void JniPaymentApp::FreeNativeObjectSoon(JNIEnv* env) {
+  content::GetUIThreadTaskRunner({})->DeleteSoon(FROM_HERE, this);
 }
 
 void JniPaymentApp::OnInstrumentDetailsReady(
@@ -240,7 +241,9 @@ void JniPaymentApp::OnInstrumentDetailsError(
 }
 
 JniPaymentApp::JniPaymentApp(std::unique_ptr<PaymentApp> payment_app)
-    : payment_app_(std::move(payment_app)) {}
+    : payment_app_(std::move(payment_app)) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+}
 
 JniPaymentApp::~JniPaymentApp() = default;
 
