@@ -15653,6 +15653,23 @@
             ]
         }
     ],
+    "MacOptimizeCachedFirstRect": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledAll_20260508",
+                    "enable_features": [
+                        "CachedFirstRectAllowInvalidSelection",
+                        "CachedFirstRectAllowRangeOutsideSelection",
+                        "CachedFirstRectMoreSelectionFallbacks"
+                    ]
+                }
+            ]
+        }
+    ],
     "MainNodeAnnotationsRollout": [
         {
             "platforms": [

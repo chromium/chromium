@@ -9,6 +9,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #import "base/mac/mac_util.h"
 #include "base/run_loop.h"
@@ -18,6 +19,7 @@
 #include "base/test/scoped_feature_list.h"
 #import "content/app_shim_remote_cocoa/render_widget_host_view_cocoa.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/common/features.h"
 #include "content/public/browser/browser_accessibility_state.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -273,6 +275,13 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacTest, GetPageTextForSpeech) {
 // isn't in the active selection, which requires a sync IPC to the renderer.
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewMacTest,
                        GetFirstRectForCharacterRangeUncached) {
+  // If AllowRangeOutsideSelection is enabled, the result is allowed to be empty
+  // to skip the sync IPC.
+  if (base::FeatureList::IsEnabled(
+          features::kCachedFirstRectAllowRangeOutsideSelection)) {
+    GTEST_SKIP();
+  }
+
   GURL url("data:text/html,Hello");
   EXPECT_TRUE(NavigateToURL(shell(), url));
 
