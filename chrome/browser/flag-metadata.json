@@ -9607,6 +9607,11 @@
     "expiry_milestone": 155
   },
   {
+    "name": "vertical-tabs-grab-handle-removal",
+    "owners": [ "kunaldaftari@google.com", "top-chrome-desktop-ui@google.com" ],
+    "expiry_milestone": 155
+  },
+  {
     "name": "vids-app-preinstall",
     "owners": [ "alancutter@chromium.org", "cros-ca-eng@google.com" ],
     "expiry_milestone": 150
