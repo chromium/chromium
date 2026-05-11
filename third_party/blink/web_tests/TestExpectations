@@ -2119,7 +2119,7 @@ crbug.com/1223955 external/wpt/css/css-ruby/ruby-inlinize-blocks-005.html [ Fail
 
 crbug.com/1333451 external/wpt/css/css-ruby/intra-base-white-space-001.html [ Failure ]
 
-crbug.com/505419357 external/wpt/css/css-ruby/ruby-overhang-spaces-011.html [ Crash ]
+crbug.com/505419357 external/wpt/css/css-ruby/ruby-overhang-spaces-011.html [ Failure Crash ]
 
 # WebRTC: there's an open bug with some capture scenarios not working.
 crbug.com/1156408 [ Mac ] external/wpt/webrtc/RTCPeerConnection-relay-canvas.https.html [ Failure Pass Timeout ]
