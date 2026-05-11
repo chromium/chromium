@@ -20,9 +20,9 @@ DEFINE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(ViewSubregionAnchor,
 DEFINE_FRAMEWORK_SPECIFIC_METADATA(ViewSubregionAnchor)
 
 ViewSubregionAnchor::ViewSubregionAnchor(ui::ElementIdentifier id,
-                                         views::View& view)
-    : TrackedElement(id, views::ElementTrackerViews::GetContextForView(&view)) {
-  SetView(view);
+                                         views::View& host)
+    : TrackedElement(id, views::ElementTrackerViews::GetContextForView(&host)) {
+  SetHost(host);
 }
 
 ViewSubregionAnchor::~ViewSubregionAnchor() {
@@ -42,16 +42,16 @@ void ViewSubregionAnchor::MaybeUpdateAnchor(gfx::Rect local_anchor_region) {
   }
 }
 
-void ViewSubregionAnchor::MoveTo(View& new_view,
+void ViewSubregionAnchor::MoveTo(View& new_host,
                                  std::optional<gfx::Rect> new_anchor_region) {
-  if (view_ == &new_view) {
+  if (host_.view() == &new_host) {
     if (new_anchor_region) {
       MaybeUpdateAnchor(*new_anchor_region);
     }
     return;
   }
 
-  SetView(new_view);
+  SetHost(new_host);
 
   if (new_anchor_region) {
     last_anchor_region_ = *new_anchor_region;
@@ -63,22 +63,25 @@ void ViewSubregionAnchor::MoveTo(View& new_view,
 }
 
 gfx::Rect ViewSubregionAnchor::GetScreenBounds() const {
+  if (!host_) {
+    return gfx::Rect();
+  }
   gfx::Rect screen_bounds = last_anchor_region_;
-  views::View::ConvertRectToScreen(&*view_, &screen_bounds);
+  views::View::ConvertRectToScreen(host_.view(), &screen_bounds);
   return screen_bounds;
 }
 
 gfx::NativeView ViewSubregionAnchor::GetNativeView() const {
-  if (!view_->GetWidget()) {
+  if (!host_ || !host_.view()->GetWidget()) {
     return gfx::NativeView();
   }
-  return view_->GetWidget()->GetNativeView();
+  return host_.view()->GetWidget()->GetNativeView();
 }
 
 std::string ViewSubregionAnchor::ToString() const {
   auto result = TrackedElement::ToString();
   result.append(" tracking view ");
-  result.append(view_->GetClassName());
+  result.append(host_ ? host_.view()->GetClassName() : "[none]");
   return result;
 }
 
@@ -93,7 +96,7 @@ void ViewSubregionAnchor::SetHidden(bool hidden) {
 
 void ViewSubregionAnchor::OnAnchorViewShown(ui::TrackedElement* el) {
   if (auto* const view_el = el->AsA<views::TrackedElementViews>()) {
-    if (view_el->view() == &*view_) {
+    if (view_el->view() == host_.view()) {
       view_visible_ = true;
       UpdateVisibility();
     }
@@ -102,16 +105,16 @@ void ViewSubregionAnchor::OnAnchorViewShown(ui::TrackedElement* el) {
 
 void ViewSubregionAnchor::OnAnchorViewHidden(ui::TrackedElement* el) {
   if (auto* const view_el = el->AsA<views::TrackedElementViews>()) {
-    if (view_el->view() == &*view_) {
+    if (view_el->view() == host_.view()) {
       view_visible_ = false;
       UpdateVisibility();
     }
   }
 }
 
-void ViewSubregionAnchor::SetView(View& view) {
-  view_ = &view;
-  CHECK(view_);
+void ViewSubregionAnchor::SetHost(View& view) {
+  host_.SetView(&view);
+  CHECK(host_);
   CHECK_EQ(context(), views::ElementTrackerViews::GetContextForView(&view))
       << "Moving an anchor to a different context is not supported.";
   const ui::ElementIdentifier view_id =

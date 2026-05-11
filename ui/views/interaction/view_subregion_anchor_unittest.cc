@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/bind.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -74,6 +75,13 @@ class ViewSubregionAnchorTest
   std::unique_ptr<ViewSubregionAnchor> anchor_;
   std::unique_ptr<Widget> widget_;
 };
+
+TEST_F(ViewSubregionAnchorTest, ReportsHost) {
+  RunTestSequenceInContext(GetContext(), WaitForShow(kSubregionAnchorId),
+                           CheckView(kHostId, [this](View* view) {
+                             return view == &anchor_->view();
+                           }));
+}
 
 TEST_F(ViewSubregionAnchorTest, VisibilityTracksHost) {
   RunTestSequenceInContext(
@@ -244,6 +252,52 @@ TEST_F(ViewSubregionAnchorTest, MoveAnchorToVisibleView) {
       GetContext(), Do([this] { view1_->SetVisible(false); }),
       WaitForHide(kSubregionAnchorId), Do([this] { anchor_->MoveTo(*view2_); }),
       WaitForShow(kSubregionAnchorId));
+}
+
+TEST_F(ViewSubregionAnchorTest, DeleteHost) {
+  RunTestSequenceInContext(
+      GetContext(), Do([this] {
+        View* const host = host_;
+        host_ = nullptr;  // required to prevent UAF
+        view1_->RemoveChildViewT(host);
+      }),
+      WaitForHide(kSubregionAnchorId),
+      Check([this]() { return !anchor_->host_.view(); }, "Host is null."),
+      Check([this]() { return !anchor_->GetNativeView(); },
+            "Expect no native view."),
+      CheckResult([this]() { return anchor_->GetScreenBounds(); }, gfx::Rect(),
+                  "Expect empty screen bounds."));
+}
+
+TEST_F(ViewSubregionAnchorTest, DeleteHostDoesNotCauseUAF) {
+  // Ensure that both elements cease to be visible *before* the anchor becomes
+  // invalid.
+  auto sub1 = ui::ElementTracker::GetElementTracker()->AddElementHiddenCallback(
+      kHostId, GetContext(),
+      base::BindLambdaForTesting(
+          [&, this](ui::TrackedElement* el) { (void)anchor_->view(); }));
+  auto sub2 = ui::ElementTracker::GetElementTracker()->AddElementHiddenCallback(
+      kSubregionAnchorId, GetContext(),
+      base::BindLambdaForTesting(
+          [&, this](ui::TrackedElement* el) { (void)anchor_->view(); }));
+
+  View* const host = host_;
+  host_ = nullptr;  // required to prevent UAF
+  view1_->RemoveChildViewT(host);
+
+  // By this point the view should be invalid.
+  CHECK(!anchor_->host_.view());
+}
+
+TEST_F(ViewSubregionAnchorTest, DeleteHostThenMove) {
+  RunTestSequenceInContext(GetContext(), Do([this] {
+                             View* const host = host_;
+                             host_ = nullptr;  // required to prevent UAF
+                             view1_->RemoveChildViewT(host);
+                           }),
+                           WaitForHide(kSubregionAnchorId),
+                           Do([this] { anchor_->MoveTo(*view2_); }),
+                           WaitForShow(kSubregionAnchorId));
 }
 
 }  // namespace views
