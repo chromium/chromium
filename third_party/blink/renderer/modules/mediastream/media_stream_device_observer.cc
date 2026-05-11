@@ -69,6 +69,7 @@ void MediaStreamDeviceObserver::OnDeviceStopped(
     return;
   }
 
+  Vector<WebMediaStreamDeviceObserver::OnDeviceStoppedCb> callbacks;
   for (Stream& stream : it->value) {
     if (IsAudioInputMediaType(device.type)) {
       RemoveStreamDeviceFromArray(device, &stream.audio_devices);
@@ -76,14 +77,22 @@ void MediaStreamDeviceObserver::OnDeviceStopped(
       RemoveStreamDeviceFromArray(device, &stream.video_devices);
     }
     if (stream.on_device_stopped_cb) {
-      // Running `stream.on_device_stopped_cb` can destroy `this`. Use a weak
-      // pointer to detect that condition, and stop processing if it happens.
-      base::WeakPtr<MediaStreamDeviceObserver> weak_this =
-          weak_factory_.GetWeakPtr();
-      stream.on_device_stopped_cb.Run(device);
-      if (!weak_this) {
-        return;
-      }
+      // Running `stream.on_device_stopped_cb` can modify
+      // `label_stream_map_` and cause a `DCHECK failed: Vector modified
+      // while being iterated.`. Instead the callback is copied to `callbacks`
+      // and run after the iteration over the streams for this label.
+      callbacks.push_back(stream.on_device_stopped_cb);
+    }
+  }
+
+  // Running `stream.on_device_stopped_cb` can destroy `this`. Use a weak
+  // pointer to detect that condition, and stop processing if it happens.
+  base::WeakPtr<MediaStreamDeviceObserver> weak_this =
+      weak_factory_.GetWeakPtr();
+  for (const auto& cb : callbacks) {
+    cb.Run(device);
+    if (!weak_this) {
+      return;
     }
   }
 
