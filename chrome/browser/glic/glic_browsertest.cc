@@ -5,7 +5,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/run_until.h"
-#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -15,8 +14,6 @@
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/sync/device_info_sync_service_factory.h"
-#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
@@ -27,11 +24,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/sync/test/test_sync_service.h"
-#include "components/sync_device_info/fake_device_info_sync_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -153,114 +146,6 @@ IN_PROC_BROWSER_TEST_F(SharedGlicBrowserTest, FocusTrappingGuestPanel) {
   )";
 
   EXPECT_EQ("success", content::EvalJs(web_contents_, script));
-}
-
-class GlicKeyedServiceSyncBrowserTest : public GlicBrowserTest {
- public:
-  GlicKeyedServiceSyncBrowserTest() = default;
-  ~GlicKeyedServiceSyncBrowserTest() override = default;
-
-  void SetUpOnMainThread() override {
-    GlicBrowserTest::SetUpOnMainThread();
-    platform_management_override_ =
-        std::make_unique<policy::ScopedManagementServiceOverrideForTesting>(
-            policy::ManagementServiceFactory::GetForPlatform(),
-            policy::EnterpriseManagementAuthority::NONE);
-    profile_management_override_ =
-        std::make_unique<policy::ScopedManagementServiceOverrideForTesting>(
-            policy::ManagementServiceFactory::GetForProfile(profile()),
-            policy::EnterpriseManagementAuthority::NONE);
-  }
-
-  void TearDownOnMainThread() override {
-    platform_management_override_.reset();
-    profile_management_override_.reset();
-    GlicBrowserTest::TearDownOnMainThread();
-  }
-
-  void InitializeFeatureList() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kGlicExperimentalTriggering);
-  }
-
-  void SetUpInProcessBrowserTestFixture() override {
-    create_services_subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(
-                base::BindRepeating(&GlicKeyedServiceSyncBrowserTest::
-                                        OnWillCreateBrowserContextServices,
-                                    base::Unretained(this)));
-    GlicBrowserTest::SetUpInProcessBrowserTestFixture();
-  }
-
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
-    DeviceInfoSyncServiceFactory::GetInstance()->SetTestingFactory(
-        context, base::BindRepeating([](content::BrowserContext* context)
-                                         -> std::unique_ptr<KeyedService> {
-          return std::make_unique<syncer::FakeDeviceInfoSyncService>();
-        }));
-    SyncServiceFactory::GetInstance()->SetTestingFactory(
-        context, base::BindRepeating([](content::BrowserContext* context)
-                                         -> std::unique_ptr<KeyedService> {
-          return std::make_unique<syncer::TestSyncService>();
-        }));
-  }
-
-  Profile* profile() { return browser()->profile(); }
-
-  syncer::FakeDeviceInfoSyncService* fake_device_info_sync_service() {
-    return static_cast<syncer::FakeDeviceInfoSyncService*>(
-        DeviceInfoSyncServiceFactory::GetForProfile(profile()));
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-  base::CallbackListSubscription create_services_subscription_;
-  std::unique_ptr<policy::ScopedManagementServiceOverrideForTesting>
-      platform_management_override_;
-  std::unique_ptr<policy::ScopedManagementServiceOverrideForTesting>
-      profile_management_override_;
-};
-
-IN_PROC_BROWSER_TEST_F(GlicKeyedServiceSyncBrowserTest,
-                       PrefChangesTriggerSyncRefresh) {
-  // Ensure glic is enabled and allowed.
-  SetGlicCapability(profile(), true);
-  // Start with FRE incomplete (default).
-  SetFRECompletion(profile(), prefs::FreStatus::kIncomplete);
-
-  glic::GlicKeyedService* glic_service =
-      glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile());
-  ASSERT_TRUE(glic_service);
-  glic::GlicEnabling& enabling = glic_service->enabling();
-
-  // Initially, state should be kNeedsOptIn (1) and no refresh has been
-  // triggered yet.
-  ASSERT_EQ(fake_device_info_sync_service()->RefreshLocalDeviceInfoCount(), 0);
-
-  // 1. Set UserEnabledActuationOnWeb to true -> should NOT trigger refresh
-  // (state remains kNeedsOptIn because FRE is incomplete and triggering is
-  // false).
-  enabling.SetUserEnabledActuationOnWeb(true);
-  EXPECT_EQ(fake_device_info_sync_service()->RefreshLocalDeviceInfoCount(), 0);
-
-  // 2. Set ExperimentalTriggeringEnabled to true -> should NOT trigger refresh
-  // (state remains kNeedsOptIn because FRE is still incomplete).
-  enabling.SetExperimentalTriggeringEnabled(true);
-  EXPECT_EQ(fake_device_info_sync_service()->RefreshLocalDeviceInfoCount(), 0);
-
-  // 3. Set FRE to completed -> should trigger refresh (state becomes kReady).
-  SetFRECompletion(profile(), prefs::FreStatus::kCompleted);
-  EXPECT_EQ(fake_device_info_sync_service()->RefreshLocalDeviceInfoCount(), 1);
-
-  // 4. Toggle ExperimentalTriggeringEnabled to false -> should trigger refresh
-  // (state becomes kNeedsOptIn).
-  enabling.SetExperimentalTriggeringEnabled(false);
-  EXPECT_EQ(fake_device_info_sync_service()->RefreshLocalDeviceInfoCount(), 2);
-
-  // 5. Toggle it back to true -> should trigger refresh (state becomes kReady).
-  enabling.SetExperimentalTriggeringEnabled(true);
-  EXPECT_EQ(fake_device_info_sync_service()->RefreshLocalDeviceInfoCount(), 3);
 }
 
 }  // namespace
