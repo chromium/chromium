@@ -193,7 +193,7 @@ public class MediaSessionImpl extends MediaSession {
     }
 
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         void resume(long nativeMediaSessionAndroid);
 
         void suspend(long nativeMediaSessionAndroid);

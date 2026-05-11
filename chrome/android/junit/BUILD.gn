@@ -901,6 +901,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/media/ui/MediaNotificationTestTabHolder.java",
       "src/org/chromium/chrome/browser/media/ui/MediaNotificationThrottlerTest.java",
       "src/org/chromium/chrome/browser/media/ui/MediaNotificationTitleUpdatedTest.java",
+      "src/org/chromium/chrome/browser/media/ui/MediaSessionTabHelperTest.java",
     ]
 
     deps = [

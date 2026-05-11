@@ -38,7 +38,6 @@ public final class TabHelpers {
         TabDistillabilityProvider.createForTab(tab);
         InterceptNavigationDelegateTabHelper.createForTab(tab);
         ContextualSearchTabHelper.createForTab(tab);
-        MediaSessionTabHelper.createForTab(tab);
         TaskTabHelper.createForTab(tab, parentTab);
         TabBrowserControlsConstraintsHelper.createForTab(tab);
         if (ReaderModeManager.isEnabled()) ReaderModeManager.createForTab(tab);
@@ -67,6 +66,7 @@ public final class TabHelpers {
         TabWebContentsObserver.from(tab);
         SwipeRefreshHandler.from(tab);
         AccessibilityTabHelper.from(tab);
+        MediaSessionTabHelper.from(tab);
         TabFavicon.from(tab);
         TrustedCdn.from(tab);
         TabAssociatedApp.from(tab);
