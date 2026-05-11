@@ -115,9 +115,6 @@ class GlicSelectionObserver
   base::CallbackListSubscription panel_state_subscription_;
   std::u16string last_selected_text_;
 
-  // Timer to process the selection after a timeout.
-  base::OneShotTimer selection_debounce_timer_;
-
   // The text of the last selection that was ignored due to rate limiting.
   std::optional<std::u16string> pending_selection_text_;
 
@@ -131,6 +128,7 @@ class GlicSelectionObserver
 
   bool has_sent_selection_context_ = false;
   bool is_widget_pinned_ = false;
+  bool is_selecting_ = false;
 
   base::WeakPtr<views::Widget> selection_widget_;
 

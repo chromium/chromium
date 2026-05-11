@@ -173,64 +173,19 @@ TEST_F(GlicSelectionObserverTest, ObserverDeduplicatesRenderWidgetHosts) {
   EXPECT_EQ(0u, GetObservedFramesCount());
 }
 
-TEST_F(GlicSelectionObserverTest, SelectionUpdatesDebounced) {
+TEST_F(GlicSelectionObserverTest, SelectionClearsInstantly) {
   auto* observer = GetObserver();
   ASSERT_TRUE(observer);
 
-  std::u16string selected_text = u"Hello World";
-  observer->OnTextSelectionChanged(nullptr, selected_text);
-
-  // Should be debounced.
-  EXPECT_EQ(0, observer->update_count());
-
-  task_environment()->FastForwardBy(base::Milliseconds(300));
-
-  EXPECT_EQ(1, observer->update_count());
-  ASSERT_TRUE(observer->last_processed_text().has_value());
-  EXPECT_EQ(selected_text, *observer->last_processed_text());
-}
-
-TEST_F(GlicSelectionObserverTest, MultipleSelectionUpdatesDebounced) {
-  auto* observer = GetObserver();
-  ASSERT_TRUE(observer);
-
-  // First update.
-  observer->OnTextSelectionChanged(nullptr, u"First");
-  EXPECT_EQ(0, observer->update_count());
-
-  // Second update before the timer fires.
-  task_environment()->FastForwardBy(base::Milliseconds(100));
-  observer->OnTextSelectionChanged(nullptr, u"Second");
-  EXPECT_EQ(0, observer->update_count());
-
-  // Fast forward to fire the timer for the second update.
-  task_environment()->FastForwardBy(base::Milliseconds(300));
-
-  // Verify updated with the second text.
-  EXPECT_EQ(1, observer->update_count());
-  ASSERT_TRUE(observer->last_processed_text().has_value());
-  EXPECT_EQ(u"Second", *observer->last_processed_text());
-}
-
-TEST_F(GlicSelectionObserverTest, SelectionClearsDebounced) {
-  auto* observer = GetObserver();
-  ASSERT_TRUE(observer);
-
-  // Set initial selection
+  // Set initial selection (processed instantly when not selecting).
   observer->OnTextSelectionChanged(nullptr, u"Initial");
-  task_environment()->FastForwardBy(base::Milliseconds(300));
   EXPECT_EQ(1, observer->update_count());
   observer->Reset();
 
-  // Clear selection
+  // Clear selection.
   observer->OnTextSelectionChanged(nullptr, u"");
 
-  // Clearing also debounces.
-  EXPECT_EQ(0, observer->update_count());
-
-  task_environment()->FastForwardBy(base::Milliseconds(300));
-
-  // Should be called with empty string.
+  // Clearing is also processed instantly.
   EXPECT_EQ(1, observer->update_count());
   ASSERT_TRUE(observer->last_processed_text().has_value());
   EXPECT_EQ(u"", *observer->last_processed_text());
@@ -243,9 +198,8 @@ TEST_F(GlicSelectionObserverTest, TooLongSelectionIgnored) {
   // kMaxSelectionLength is 1000.
   std::u16string huge_text(1001, 'a');
   observer->OnTextSelectionChanged(nullptr, huge_text);
-  task_environment()->FastForwardBy(base::Milliseconds(300));
 
-  // Should be treated as clearing (empty text).
+  // Should be treated as clearing (empty text) instantly.
   EXPECT_EQ(1, observer->update_count());
   ASSERT_TRUE(observer->last_processed_text().has_value());
   EXPECT_EQ(u"", *observer->last_processed_text());
@@ -258,9 +212,8 @@ TEST_F(GlicSelectionObserverTest, TooShortSelectionIgnored) {
   // kMinSelectionLength is 3.
   std::u16string short_text(2, 'a');
   observer->OnTextSelectionChanged(nullptr, short_text);
-  task_environment()->FastForwardBy(base::Milliseconds(300));
 
-  // Should be treated as clearing (empty text).
+  // Should be treated as clearing (empty text) instantly.
   EXPECT_EQ(1, observer->update_count());
   ASSERT_TRUE(observer->last_processed_text().has_value());
   EXPECT_EQ(u"", *observer->last_processed_text());
@@ -309,29 +262,43 @@ TEST_F(GlicSelectionObserverTest, SelectionTrimmed) {
   EXPECT_EQ(u"abc", *observer->last_processed_text());
 }
 
-TEST_F(GlicSelectionObserverTest, DebounceRestarted) {
+TEST_F(GlicSelectionObserverTest, MultipleSelectionUpdatesDuringDrag) {
   auto* observer = GetObserver();
   ASSERT_TRUE(observer);
 
-  // First update.
+  content::RenderWidgetHost* rwh = GetRenderWidgetHost();
+  ASSERT_TRUE(rwh);
+
+  // Simulate MouseDown to start drag.
+  blink::WebMouseEvent mouse_down(
+      blink::WebInputEvent::Type::kMouseDown,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  mouse_down.button = blink::WebPointerProperties::Button::kLeft;
+  observer->OnInputEvent(*rwh, mouse_down,
+                         content::RenderWidgetHost::InputEventObserver::
+                             InputEventSource::kUnknown);
+
+  // First selection update during drag.
   observer->OnTextSelectionChanged(nullptr, u"First");
   EXPECT_EQ(0, observer->update_count());
 
-  // Advance time partially (150ms).
-  task_environment()->FastForwardBy(base::Milliseconds(150));
-  EXPECT_EQ(0, observer->update_count());
-
-  // Second update. Timer should be restarted.
+  // Second selection update during drag.
   observer->OnTextSelectionChanged(nullptr, u"Second");
   EXPECT_EQ(0, observer->update_count());
 
-  // Wait 100ms. Total since second update = 100ms.
-  task_environment()->FastForwardBy(base::Milliseconds(100));
-  EXPECT_EQ(0, observer->update_count());
+  // Simulate MouseUp to complete drag.
+  blink::WebMouseEvent mouse_up(
+      blink::WebInputEvent::Type::kMouseUp, blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  mouse_up.button = blink::WebPointerProperties::Button::kLeft;
+  observer->OnInputEvent(*rwh, mouse_up,
+                         content::RenderWidgetHost::InputEventObserver::
+                             InputEventSource::kUnknown);
 
-  // Wait 150ms. Total since second update = 250ms ( > 200ms).
-  task_environment()->FastForwardBy(base::Milliseconds(150));
+  // Verify that only the last selection is processed instantly.
   EXPECT_EQ(1, observer->update_count());
+  ASSERT_TRUE(observer->last_processed_text().has_value());
   EXPECT_EQ(u"Second", *observer->last_processed_text());
 }
 
@@ -344,11 +311,7 @@ TEST_F(GlicSelectionObserverTest, KeyboardSelectionIgnored) {
       blink::WebInputEvent::Type::kKeyDown, blink::WebInputEvent::kNoModifiers,
       blink::WebInputEvent::GetStaticTimeStampForTests());
 
-  // We need a dummy RenderWidgetHost, but we can pass a nullptr since it's not
-  // used by OnInputEvent in this context except for signature. Wait,
-  // OnInputEvent takes `const content::RenderWidgetHost&`, so passing nullptr
-  // is UB. Let's just create a dummy WebMouseEvent. Wait, I can use the
-  // web_contents's RWH.
+  // Simulate a keyboard event using the WebContents RenderWidgetHost.
   content::RenderWidgetHost* rwh =
       web_contents()->GetPrimaryMainFrame()->GetRenderWidgetHost();
   ASSERT_TRUE(rwh);
@@ -357,10 +320,10 @@ TEST_F(GlicSelectionObserverTest, KeyboardSelectionIgnored) {
                          content::RenderWidgetHost::InputEventObserver::
                              InputEventSource::kUnknown);
 
-  // Send a text selection event
+  // Send a text selection event.
   observer->OnTextSelectionChanged(nullptr, u"Keyboard Selection");
 
-  // It should clear the selection immediately
+  // It should clear the selection immediately.
   EXPECT_EQ(1, observer->update_count());
   ASSERT_TRUE(observer->last_processed_text().has_value());
   EXPECT_EQ(u"", *observer->last_processed_text());
@@ -372,15 +335,25 @@ TEST_F(GlicSelectionObserverTest, KeyboardSelectionIgnored) {
       blink::WebInputEvent::Type::kMouseDown,
       blink::WebInputEvent::kNoModifiers,
       blink::WebInputEvent::GetStaticTimeStampForTests());
+  mouse_event.button = blink::WebPointerProperties::Button::kLeft;
   observer->OnInputEvent(*rwh, mouse_event,
                          content::RenderWidgetHost::InputEventObserver::
                              InputEventSource::kUnknown);
 
   observer->OnTextSelectionChanged(nullptr, u"Mouse Selection");
-  // Should be debounced.
+  // Should be ignored during selection drag.
   EXPECT_EQ(0, observer->update_count());
 
-  task_environment()->FastForwardBy(base::Milliseconds(300));
+  // Simulate a MouseUp event.
+  blink::WebMouseEvent mouse_up(
+      blink::WebInputEvent::Type::kMouseUp, blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  mouse_up.button = blink::WebPointerProperties::Button::kLeft;
+  observer->OnInputEvent(*rwh, mouse_up,
+                         content::RenderWidgetHost::InputEventObserver::
+                             InputEventSource::kUnknown);
+
+  // Should be processed instantly on MouseUp.
   EXPECT_EQ(1, observer->update_count());
   ASSERT_TRUE(observer->last_processed_text().has_value());
   EXPECT_EQ(u"Mouse Selection", *observer->last_processed_text());
@@ -514,6 +487,180 @@ TEST_F(GlicSelectionObserverTest, CopyLinkToHighlight) {
   }));
 
   ui::Clipboard::DestroyClipboardForCurrentThread();
+}
+
+TEST_F(GlicSelectionObserverTest, SelectionShowOnlyAfterMouseUp) {
+  auto* observer = GetObserver();
+  ASSERT_TRUE(observer);
+
+  content::RenderWidgetHost* rwh = GetRenderWidgetHost();
+  ASSERT_TRUE(rwh);
+
+  // Simulate MouseDown.
+  blink::WebMouseEvent mouse_down_event(
+      blink::WebInputEvent::Type::kMouseDown,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  mouse_down_event.button = blink::WebPointerProperties::Button::kLeft;
+  observer->OnInputEvent(*rwh, mouse_down_event,
+                         content::RenderWidgetHost::InputEventObserver::
+                             InputEventSource::kUnknown);
+
+  // Selection changes during drag.
+  observer->OnTextSelectionChanged(nullptr, u"Drag Selection");
+
+  // Verify no update has been processed yet.
+  task_environment()->FastForwardBy(base::Milliseconds(300));
+  EXPECT_EQ(0, observer->update_count());
+
+  // Simulate MouseUp.
+  blink::WebMouseEvent mouse_up_event(
+      blink::WebInputEvent::Type::kMouseUp, blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  mouse_up_event.button = blink::WebPointerProperties::Button::kLeft;
+  observer->OnInputEvent(*rwh, mouse_up_event,
+                         content::RenderWidgetHost::InputEventObserver::
+                             InputEventSource::kUnknown);
+
+  // Verify the update has been processed immediately.
+  EXPECT_EQ(1, observer->update_count());
+  ASSERT_TRUE(observer->last_processed_text().has_value());
+  EXPECT_EQ(u"Drag Selection", *observer->last_processed_text());
+}
+
+TEST_F(GlicSelectionObserverTest, SelectionShowOnTripleClick) {
+  auto* observer = GetObserver();
+  ASSERT_TRUE(observer);
+
+  content::RenderWidgetHost* rwh = GetRenderWidgetHost();
+  ASSERT_TRUE(rwh);
+
+  // Simulate one click.
+  blink::WebMouseEvent mouse_down1(
+      blink::WebInputEvent::Type::kMouseDown,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  mouse_down1.button = blink::WebPointerProperties::Button::kLeft;
+  mouse_down1.click_count = 1;
+  observer->OnInputEvent(*rwh, mouse_down1,
+                         content::RenderWidgetHost::InputEventObserver::
+                             InputEventSource::kUnknown);
+
+  blink::WebMouseEvent mouse_up1(
+      blink::WebInputEvent::Type::kMouseUp, blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  mouse_up1.button = blink::WebPointerProperties::Button::kLeft;
+  mouse_up1.click_count = 1;
+  observer->OnInputEvent(*rwh, mouse_up1,
+                         content::RenderWidgetHost::InputEventObserver::
+                             InputEventSource::kUnknown);
+
+  // Simulate a double click.
+  blink::WebMouseEvent mouse_down2(
+      blink::WebInputEvent::Type::kMouseDown,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  mouse_down2.button = blink::WebPointerProperties::Button::kLeft;
+  mouse_down2.click_count = 2;
+  observer->OnInputEvent(*rwh, mouse_down2,
+                         content::RenderWidgetHost::InputEventObserver::
+                             InputEventSource::kUnknown);
+
+  observer->OnTextSelectionChanged(nullptr, u"Word");
+
+  blink::WebMouseEvent mouse_up2(
+      blink::WebInputEvent::Type::kMouseUp, blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  mouse_up2.button = blink::WebPointerProperties::Button::kLeft;
+  mouse_up2.click_count = 2;
+  observer->OnInputEvent(*rwh, mouse_up2,
+                         content::RenderWidgetHost::InputEventObserver::
+                             InputEventSource::kUnknown);
+
+  // Verify widget shown for Word.
+  EXPECT_EQ(1, observer->update_count());
+  EXPECT_EQ(u"Word", *observer->last_processed_text());
+
+  observer->Reset();
+
+  // Simulate a triple click.
+  blink::WebMouseEvent mouse_down3(
+      blink::WebInputEvent::Type::kMouseDown,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  mouse_down3.button = blink::WebPointerProperties::Button::kLeft;
+  mouse_down3.click_count = 3;
+  observer->OnInputEvent(*rwh, mouse_down3,
+                         content::RenderWidgetHost::InputEventObserver::
+                             InputEventSource::kUnknown);
+
+  observer->OnTextSelectionChanged(nullptr, u"Entire Paragraph");
+
+  blink::WebMouseEvent mouse_up3(
+      blink::WebInputEvent::Type::kMouseUp, blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  mouse_up3.button = blink::WebPointerProperties::Button::kLeft;
+  mouse_up3.click_count = 3;
+  observer->OnInputEvent(*rwh, mouse_up3,
+                         content::RenderWidgetHost::InputEventObserver::
+                             InputEventSource::kUnknown);
+
+  // Verify widget shown for Entire Paragraph.
+  EXPECT_EQ(1, observer->update_count());
+  EXPECT_EQ(u"Entire Paragraph", *observer->last_processed_text());
+}
+
+TEST_F(GlicSelectionObserverTest, SelectionShowOnShiftClick) {
+  auto* observer = GetObserver();
+  ASSERT_TRUE(observer);
+
+  content::RenderWidgetHost* rwh = GetRenderWidgetHost();
+  ASSERT_TRUE(rwh);
+
+  // Initial mouse selection.
+  observer->OnTextSelectionChanged(nullptr, u"Initial Text");
+  task_environment()->FastForwardBy(base::Milliseconds(300));
+  EXPECT_EQ(1, observer->update_count());
+  EXPECT_EQ(u"Initial Text", *observer->last_processed_text());
+  observer->Reset();
+
+  // Hold Shift (KeyDown).
+  blink::WebKeyboardEvent shift_down(
+      blink::WebInputEvent::Type::kKeyDown, blink::WebInputEvent::kShiftKey,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  observer->OnInputEvent(*rwh, shift_down,
+                         content::RenderWidgetHost::InputEventObserver::
+                             InputEventSource::kUnknown);
+
+  // Expect UI to be dismissed.
+  EXPECT_TRUE(observer->dismiss_ui_called());
+  EXPECT_FALSE(observer->dismiss_ui_kept_nudge());
+  observer->Reset();
+
+  // Simulate MouseDown with Shift modifier.
+  blink::WebMouseEvent mouse_down(
+      blink::WebInputEvent::Type::kMouseDown, blink::WebInputEvent::kShiftKey,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  mouse_down.button = blink::WebPointerProperties::Button::kLeft;
+  observer->OnInputEvent(*rwh, mouse_down,
+                         content::RenderWidgetHost::InputEventObserver::
+                             InputEventSource::kUnknown);
+
+  // Selection extended.
+  observer->OnTextSelectionChanged(nullptr, u"Initial Text Extended");
+
+  // Simulate MouseUp.
+  blink::WebMouseEvent mouse_up(
+      blink::WebInputEvent::Type::kMouseUp, blink::WebInputEvent::kShiftKey,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  mouse_up.button = blink::WebPointerProperties::Button::kLeft;
+  observer->OnInputEvent(*rwh, mouse_up,
+                         content::RenderWidgetHost::InputEventObserver::
+                             InputEventSource::kUnknown);
+
+  // Verify widget shown for extended text.
+  EXPECT_EQ(1, observer->update_count());
+  EXPECT_EQ(u"Initial Text Extended", *observer->last_processed_text());
 }
 
 TEST_F(GlicSelectionObserverTest, WidgetFrequencyCapping) {
