@@ -579,6 +579,7 @@ _CONFIG = [
 
             # cc painting and raster types.
             'cc::AuxImage',
+            'cc::BeginMainFrameReason',
             'cc::CategorizedWorkerPool',
             'cc::ColorFilter',
             'cc::DrawImage',

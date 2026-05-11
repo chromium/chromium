@@ -309,7 +309,10 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // for instance in the case of RequestAnimationFrame from blink to ensure the
   // main frame update is run on the next tick without preemptively forcing a
   // full commit synchronization or layer updates.
-  void SetNeedsAnimate(bool urgent = false);
+  void SetNeedsAnimate(BeginMainFrameReason, bool urgent = false);
+  void SetNeedsAnimate(bool urgent = false) {
+    SetNeedsAnimate(BeginMainFrameReason::kOther, urgent);
+  }
 
   // Calls SetNeedsAnimate() if there is no main frame already in progress.
   void SetNeedsAnimateIfNotInsideMainFrame();

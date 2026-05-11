@@ -96,7 +96,7 @@ class CC_EXPORT ProxyMain : public Proxy {
       LayerTreeFrameSink* layer_tree_frame_sink) override;
   void SetVisible(bool visible) override;
   void SetShouldWarmUp() override;
-  void SetNeedsAnimate(bool urgent) override;
+  void SetNeedsAnimate(BeginMainFrameReason, bool urgent) override;
   void SetNeedsUpdateLayers() override;
   void SetNeedsCommit() override;
   void SetNeedsRedraw(const gfx::Rect& damage_rect) override;
@@ -167,6 +167,10 @@ class CC_EXPORT ProxyMain : public Proxy {
   // temporarily stop drawing.
   bool ShouldSubscribeToBeginFrames() const;
 
+  void set_begin_main_frame_reason(const BeginMainFrameReason reason) {
+    begin_main_frame_reason_.set(static_cast<int>(reason));
+  }
+
   raw_ptr<LayerTreeHost> layer_tree_host_;
 
   raw_ptr<TaskRunnerProvider> task_runner_provider_;
@@ -219,6 +223,7 @@ class CC_EXPORT ProxyMain : public Proxy {
   bool begin_frame_source_paused_ = false;
   int main_frames_in_flight_ = 0;
   bool needs_begin_main_frame_ = false;
+  std::bitset<BeginMainFrameReasonSize> begin_main_frame_reason_;
   viz::BeginFrameArgs last_begin_main_frame_args_;
   bool begin_impl_frame_idle_ = false;
   bool request_begin_main_frame_not_expected_ = false;

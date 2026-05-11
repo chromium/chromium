@@ -160,6 +160,10 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
   bool TabsToLinks() override;
   void InvalidateContainer() override;
   void ScheduleAnimation(const LocalFrameView*,
+                         cc::BeginMainFrameReason,
+                         base::TimeDelta delay,
+                         bool urgent) override;
+  void ScheduleAnimation(const LocalFrameView*,
                          base::TimeDelta delay,
                          bool urgent) override;
   gfx::Rect LocalRootToScreenDIPs(const gfx::Rect&,

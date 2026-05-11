@@ -822,9 +822,9 @@ void LayerTreeHost::SetRequestHighFramerate(bool flag) {
 }
 
 DISABLE_CFI_PERF
-void LayerTreeHost::SetNeedsAnimate(bool urgent) {
+void LayerTreeHost::SetNeedsAnimate(BeginMainFrameReason reason, bool urgent) {
   DCHECK(IsMainThread());
-  proxy_->SetNeedsAnimate(urgent);
+  proxy_->SetNeedsAnimate(reason, urgent);
   swap_promise_manager_.NotifyLatencyInfoSwapPromiseMonitors();
   events_metrics_manager_.SaveActiveEventMetrics();
 }

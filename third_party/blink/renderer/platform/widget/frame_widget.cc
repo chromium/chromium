@@ -6,6 +6,12 @@
 
 namespace blink {
 
+void FrameWidget::RequestAnimationAfterDelay(cc::BeginMainFrameReason,
+                                             const base::TimeDelta& delay,
+                                             bool urgent) {
+  RequestAnimationAfterDelay(delay, urgent);
+}
+
 FrameWidget::~FrameWidget() = default;
 
 }  // namespace blink
