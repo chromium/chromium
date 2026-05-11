@@ -19,6 +19,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "remoting/base/fifo_buffer.h"
 #include "remoting/host/action_executor.h"
 #include "remoting/host/active_display_monitor.h"
 #include "remoting/host/audio_capturer.h"
@@ -155,6 +156,10 @@ std::unique_ptr<AudioInjector> BasicDesktopEnvironment::CreateAudioInjector() {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
   return interaction_strategy_->CreateAudioInjector();
+}
+
+std::unique_ptr<FifoBufferWriter> BasicDesktopEnvironment::TakeAudioWriter() {
+  return nullptr;
 }
 
 std::unique_ptr<DesktopCapturer> BasicDesktopEnvironment::CreateVideoCapturer(

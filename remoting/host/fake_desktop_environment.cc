@@ -17,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "remoting/base/fifo_buffer.h"
 #include "remoting/host/audio_capturer.h"
 #include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/base/screen_controls.h"
@@ -170,6 +171,10 @@ FakeDesktopEnvironment::CreateRemoteWebAuthnStateChangeNotifier() {
 }
 
 std::unique_ptr<AudioInjector> FakeDesktopEnvironment::CreateAudioInjector() {
+  return nullptr;
+}
+
+std::unique_ptr<FifoBufferWriter> FakeDesktopEnvironment::TakeAudioWriter() {
   return nullptr;
 }
 

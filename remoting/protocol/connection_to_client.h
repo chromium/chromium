@@ -10,8 +10,6 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "remoting/base/session_options.h"
-#include "remoting/base/session_policies.h"
 #include "remoting/base/source_location.h"
 #include "remoting/protocol/message_pipe.h"
 #include "remoting/protocol/network_settings.h"
@@ -20,6 +18,9 @@
 
 namespace remoting {
 class DesktopCapturer;
+class FifoBufferWriter;
+class SessionOptions;
+struct SessionPolicies;
 }  // namespace remoting
 
 namespace remoting::protocol {
@@ -106,6 +107,9 @@ class ConnectionToClient {
   // client.
   virtual std::unique_ptr<AudioStream> StartAudioStream(
       std::unique_ptr<AudioSource> audio_source) = 0;
+
+  // Sets the SPSC audio writer to inject low-latency playout PCM audio.
+  virtual void SetAudioWriter(std::unique_ptr<FifoBufferWriter> writer) = 0;
 
   // The client stubs used by the host to send control messages to the client.
   // The stub must not be accessed before OnConnectionAuthenticated(), or

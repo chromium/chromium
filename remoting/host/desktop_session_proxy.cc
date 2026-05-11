@@ -24,6 +24,8 @@
 #include "build/build_config.h"
 #include "ipc/ipc_channel_proxy.h"
 #include "remoting/base/capabilities.h"
+#include "remoting/base/fifo_buffer.h"
+#include "remoting/base/ipc_fifo_buffer.h"
 #include "remoting/host/audio_injector.h"
 #include "remoting/host/client_session.h"
 #include "remoting/host/client_session_control.h"
@@ -368,7 +370,7 @@ void DesktopSessionProxy::OnDesktopSessionAgentStarted(
   }
 
   if (should_start_audio_injector_) {
-    desktop_session_control_->StartAudioInjector(nullptr);
+    DoStartAudioInjector();
   }
 
   if (client_session_events_) {
@@ -567,8 +569,30 @@ void DesktopSessionProxy::StartAudioInjector() {
 
   should_start_audio_injector_ = true;
   if (desktop_session_control_) {
-    desktop_session_control_->StartAudioInjector(nullptr);
+    DoStartAudioInjector();
   }
+}
+
+void DesktopSessionProxy::DoStartAudioInjector() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(desktop_session_control_);
+
+  audio_writer_.reset();
+
+  std::unique_ptr<IpcFifoBufferWriter> writer;
+  std::unique_ptr<IpcFifoBufferReader> reader;
+  if (!CreateIpcFifoBuffer(kDefaultFifoBufferCapacity, writer, reader)) {
+    LOG(ERROR) << "Failed to create IPC FIFO buffer for playout audio.";
+    return;
+  }
+
+  audio_writer_ = std::move(writer);
+  desktop_session_control_->StartAudioInjector(std::move(reader));
+}
+
+std::unique_ptr<FifoBufferWriter> DesktopSessionProxy::TakeAudioWriter() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return std::move(audio_writer_);
 }
 
 void DesktopSessionProxy::InjectAudioPacket(
