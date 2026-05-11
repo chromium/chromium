@@ -158,6 +158,8 @@ cargo_crate("lib") {
   ]
   features = [ "compiled_data" ]
 
+  testonly = true
+
   #####################################################################
   # Tweaking which GN `config`s apply to this target.
 
