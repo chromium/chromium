@@ -325,32 +325,9 @@ const LayoutResult* LayoutBox::CachedLayoutResult(
       // the fragment's block-offset within the fragmentainer has changed, we
       // need to check if the node will still fit as one fragment. If we cannot
       // be sure that this is the case, we need to miss the cache.
-      if (new_space.IsInitialColumnBalancingPass()) {
-        if (!old_space.IsInitialColumnBalancingPass()) {
-          // If the previous result was generated with a known fragmentainer
-          // size (i.e. not in the initial column balancing pass),
-          // TallestUnbreakableBlockSize() won't be stored in the layout result,
-          // because we currently only calculate this in the initial column
-          // balancing pass. Since we're now in an initial column balancing pass
-          // again, we cannot re-use the result, because not propagating the
-          // tallest unbreakable block-size might cause incorrect layout.
-          //
-          // Another problem is OOF descendants. In the initial column balancing
-          // pass, they affect FragmentainerBlockSize() (because OOFs are
-          // supposed to affect column balancing), while in actual layout
-          // passes, OOFs will escape their actual containing block and become
-          // direct children of some fragmentainer. In other words, any relevant
-          // information about OOFs and how they might affect balancing has been
-          // lost.
-          return nullptr;
-        }
-        // (On the other hand, if the previous result was also generated in the
-        // initial column balancing pass, we don't need to perform any
-        // additional checks.)
-      } else if (new_space.FragmentainerBlockSize() !=
-                     old_space.FragmentainerBlockSize() ||
-                 new_space.FragmentainerOffset() !=
-                     old_space.FragmentainerOffset()) {
+      if (new_space.FragmentainerBlockSize() !=
+              old_space.FragmentainerBlockSize() ||
+          new_space.FragmentainerOffset() != old_space.FragmentainerOffset()) {
         // The fragment block-offset will either change, or the fragmentainer
         // block-size has changed. If the node is fragmented, we're going to
         // have to refragment, since the fragmentation line has moved,

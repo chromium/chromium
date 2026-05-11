@@ -328,16 +328,14 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
   }
 
   std::optional<LayoutUnit> MinimalSpaceShortage() const {
-    if (!rare_data_ || space_.IsInitialColumnBalancingPass() ||
-        rare_data_->minimal_space_shortage == kIndefiniteSize) {
+    if (!rare_data_ || rare_data_->minimal_space_shortage == kIndefiniteSize) {
       return std::nullopt;
     }
     return rare_data_->minimal_space_shortage;
   }
 
   LayoutUnit TallestUnbreakableBlockSize() const {
-    if (!rare_data_ || !space_.IsInitialColumnBalancingPass() ||
-        rare_data_->tallest_unbreakable_block_size == kIndefiniteSize) {
+    if (!rare_data_) {
       return LayoutUnit();
     }
     return rare_data_->tallest_unbreakable_block_size;
@@ -730,19 +728,21 @@ class CORE_EXPORT LayoutResult final : public GarbageCollected<LayoutResult> {
     Member<const ColumnSpannerPath> column_spanner_path;
     Member<const GridLayoutData> grid_layout_data;
     MarginStrut end_margin_strut;
-    union {
-      // Only set in the initial column balancing layout pass, when we have no
-      // clue what the column block-size is going to be.
-      LayoutUnit tallest_unbreakable_block_size;
 
-      // Only set in subsequent column balancing passes, when we have set a
-      // tentative column block-size. At every column boundary we'll record
-      // space shortage, and store the smallest one here. If the columns
-      // couldn't fit all the content, and we're allowed to stretch columns
-      // further, we'll perform another pass with the column block-size
-      // increased by this amount.
-      LayoutUnit minimal_space_shortage = kIndefiniteSize;
-    };
+    // For column balancing: The tallest piece of content that should not be
+    // broken (such as lines, break-inside:avoid blocks, and so on). Only set in
+    // the initial column balancing layout pass, when we have no clue what the
+    // column block-size is going to be.
+    LayoutUnit tallest_unbreakable_block_size;
+
+    // For column balancing: At every column boundary we'll record space
+    // shortage, and store the smallest one here. If the columns couldn't fit
+    // all the content, and we're allowed to stretch columns further, we'll
+    // perform another pass with the column block-size increased by this
+    // amount. Only set in subsequent column balancing passes, when we have set
+    // a tentative column block-size.
+    LayoutUnit minimal_space_shortage = kIndefiniteSize;
+
     LayoutUnit block_size_for_fragmentation = kIndefiniteSize;
     ExclusionSpace exclusion_space;
     scoped_refptr<SerializedScriptValue> custom_layout_data;

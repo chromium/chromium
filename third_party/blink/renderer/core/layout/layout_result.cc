@@ -252,13 +252,12 @@ LayoutResult::LayoutResult(const PhysicalFragment* physical_fragment,
         builder->line_clamp_after_layout_object_;
   }
 
+  // For column balancing only one of `tallest_unbreakable_block_size_` or
+  // `minimal_space_shortage_` are calculated. The former for the initial pass,
+  // and the latter for all subsequent (column-stretch-) passes.
   if (builder->tallest_unbreakable_block_size_ >= LayoutUnit()) {
     EnsureRareData()->tallest_unbreakable_block_size =
         builder->tallest_unbreakable_block_size_;
-
-    // This field shares storage with "minimal space shortage", so both cannot
-    // be set at the same time.
-    DCHECK_EQ(builder->minimal_space_shortage_, kIndefiniteSize);
   } else if (builder->minimal_space_shortage_ != kIndefiniteSize) {
     EnsureRareData()->minimal_space_shortage = builder->minimal_space_shortage_;
   }
