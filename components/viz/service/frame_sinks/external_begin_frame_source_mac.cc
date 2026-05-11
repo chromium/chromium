@@ -130,9 +130,10 @@ void ExternalBeginFrameSourceMac::SetVSyncDisplayID(int64_t display_id,
   output_surface_->SetVSyncDisplayID(display_id, force_update);
 
   // Remove the current callback from display_link_mac_ or from the timer.
-  if (needs_begin_frames_) {
-    StopBeginFrame();
+  if (needs_begin_frames_ || vsync_callback_mac_) {
+    StopBeginFrame(/*force_stop=*/true);
   }
+  vsync_callback_keep_alive_counter_ = 0;
 
   // Remove the old DisplayLinkMac.
   display_link_mac_.reset();
@@ -239,13 +240,17 @@ void ExternalBeginFrameSourceMac::StartBeginFrame() {
   time_source_->SetActive(/*active=*/true);
 }
 
-void ExternalBeginFrameSourceMac::StopBeginFrame() {
+void ExternalBeginFrameSourceMac::StopBeginFrame(bool force_stop) {
   if (display_link_mac_) {
     DCHECK(vsync_callback_mac_);
     vsyncs_to_skip_ = 0;
-    // Do not reset `vsync_callback_mac_` here. Instead, defer unregistering it
-    // until the keep-alive counter has reached `kMaxKeepAliveCount` in
-    // `OnDisplayLinkCallback()`.
+    // If not force_update, wait until the keep-alive counter has reached
+    // `kMaxKeepAliveCount` in `OnDisplayLinkCallback()`.
+    if (force_stop) {
+      // Remove and unregister VSyncCallbackMac immediately after display
+      // switch.
+      vsync_callback_mac_.reset();
+    }
     return;
   }
 
@@ -266,7 +271,7 @@ void ExternalBeginFrameSourceMac::OnNeedsBeginFrames(bool needs_begin_frames) {
   if (needs_begin_frames_) {
     StartBeginFrame();
   } else {
-    StopBeginFrame();
+    StopBeginFrame(/*force_stop=*/false);
   }
 }
 
@@ -275,13 +280,11 @@ void ExternalBeginFrameSourceMac::OnDisplayLinkCallback(
     ui::VSyncParamsMac params) {
   // If we have reached `kMaxKeepAliveCount` consecutive callbacks without
   // needing a begin frame, stop the display link.
-  vsync_callback_keep_alive_counter_++;
-  if (vsync_callback_keep_alive_counter_ >= kMaxKeepAliveCount) {
-    vsync_callback_mac_.reset();
-    return;
-  }
-
   if (!needs_begin_frames_) {
+    vsync_callback_keep_alive_counter_++;
+    if (vsync_callback_keep_alive_counter_ >= kMaxKeepAliveCount) {
+      vsync_callback_mac_.reset();
+    }
     return;
   }
   vsync_callback_keep_alive_counter_ = 0;

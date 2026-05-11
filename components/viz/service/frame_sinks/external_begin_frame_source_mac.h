@@ -72,7 +72,7 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSourceMac
   void CreateDelayBasedTimeSourceIfNeeded();
 
   void StartBeginFrame();
-  void StopBeginFrame();
+  void StopBeginFrame(bool force_stop);
 
   BeginFrameArgsGenerator begin_frame_args_generator_;
 
