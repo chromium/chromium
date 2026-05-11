@@ -15,6 +15,7 @@
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/task_id.h"
 #include "components/actor/core/shared_types.h"
+#include "components/autofill/core/common/unique_ids.h"
 
 namespace actor {
 
@@ -53,6 +54,7 @@ class AttemptOtpFillingTool : public Tool {
 
   tabs::TabHandle tab_handle_;
   std::vector<PageTarget> trigger_fields_;
+  std::vector<autofill::FieldGlobalId> trigger_field_ids_;
   bool for_signin_;
 
   base::WeakPtrFactory<AttemptOtpFillingTool> weak_factory_{this};

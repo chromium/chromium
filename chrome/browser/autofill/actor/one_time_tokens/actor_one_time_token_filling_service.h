@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "components/actor/core/shared_types.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/tabs/public/tab_interface.h"
 
 namespace autofill {
@@ -29,18 +29,17 @@ class ActorOneTimeTokenFillingService {
   //
   // The `callback` will be invoked with the retrieved OTP string, or an empty
   // string if retrieval fails or no OTP is available.
-  virtual void RetrieveOtp(
-      tabs::TabHandle tab_handle,
-      const std::vector<::actor::PageTarget>& trigger_fields,
-      base::OnceCallback<void(std::string)> callback) = 0;
+  virtual void RetrieveOtp(tabs::TabHandle tab_handle,
+                           const std::vector<FieldGlobalId>& trigger_field_ids,
+                           base::OnceCallback<void(std::string)> callback) = 0;
 
   // Asynchronously fills the `otp` into the field(s) identified by
-  // `trigger_fields` for the given `tab`.
+  // `trigger_field_ids` for the given `tab`.
   //
   // The `callback` will be invoked with a boolean indicating whether the
   // filling operation was successful.
   virtual void FillOtp(tabs::TabHandle tab_handle,
-                       const std::vector<::actor::PageTarget>& trigger_fields,
+                       const std::vector<FieldGlobalId>& trigger_field_ids,
                        const std::string& otp,
                        base::OnceCallback<void(bool)> callback) = 0;
 };

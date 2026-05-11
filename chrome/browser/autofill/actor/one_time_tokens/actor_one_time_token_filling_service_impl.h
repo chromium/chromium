@@ -11,7 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service.h"
-#include "components/actor/core/shared_types.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/tabs/public/tab_interface.h"
 
 class Profile;
@@ -28,11 +28,11 @@ class ActorOneTimeTokenFillingServiceImpl
 
   // ActorOneTimeTokenFillingService:
   void RetrieveOtp(tabs::TabHandle tab_handle,
-                   const std::vector<::actor::PageTarget>& trigger_fields,
+                   const std::vector<FieldGlobalId>& trigger_field_ids,
                    base::OnceCallback<void(std::string)> callback) override;
 
   void FillOtp(tabs::TabHandle tab_handle,
-               const std::vector<::actor::PageTarget>& trigger_fields,
+               const std::vector<FieldGlobalId>& trigger_field_ids,
                const std::string& otp,
                base::OnceCallback<void(bool)> callback) override;
 

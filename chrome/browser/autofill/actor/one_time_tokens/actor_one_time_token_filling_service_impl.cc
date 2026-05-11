@@ -26,7 +26,7 @@ ActorOneTimeTokenFillingServiceImpl::~ActorOneTimeTokenFillingServiceImpl() =
 
 void ActorOneTimeTokenFillingServiceImpl::RetrieveOtp(
     const tabs::TabHandle tab_handle,
-    const std::vector<::actor::PageTarget>& trigger_fields,
+    const std::vector<FieldGlobalId>& trigger_field_ids,
     base::OnceCallback<void(std::string)> callback) {
   tabs::TabInterface* tab = tab_handle.Get();
   if (!tab || !tab->GetContents()) {
@@ -58,7 +58,7 @@ void ActorOneTimeTokenFillingServiceImpl::RetrieveOtp(
 
 void ActorOneTimeTokenFillingServiceImpl::FillOtp(
     const tabs::TabHandle tab_handle,
-    const std::vector<::actor::PageTarget>& trigger_fields,
+    const std::vector<FieldGlobalId>& trigger_field_ids,
     const std::string& otp,
     base::OnceCallback<void(bool)> callback) {
   // TODO(b/502907696): This should use AutofillManager to do real filling.

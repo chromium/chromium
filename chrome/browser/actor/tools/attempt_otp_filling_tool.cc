@@ -11,6 +11,7 @@
 
 #include "base/functional/bind.h"
 #include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/actor/tools/page_target_util.h"
 #include "chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/action_result.h"
@@ -47,10 +48,30 @@ void AttemptOtpFillingTool::Validate(ToolCallback callback) {
 
 mojom::ActionResultPtr AttemptOtpFillingTool::TimeOfUseValidation(
     const optimization_guide::proto::AnnotatedPageContent* last_observation) {
-  if (!GetTargetTab().Get()) {
+  tabs::TabInterface* tab = GetTargetTab().Get();
+  if (!tab) {
     return MakeResult(mojom::ActionResultCode::kTabWentAway,
                       /*requires_page_stabilization=*/false,
                       "Target tab was destroyed before invocation.");
+  }
+
+  if (!last_observation) {
+    return MakeResult(mojom::ActionResultCode::kFormFillingNoLastTabObservation,
+                      /*requires_page_stabilization=*/false,
+                      "Last tab observation is null.");
+  }
+
+  trigger_field_ids_.clear();
+  trigger_field_ids_.reserve(trigger_fields_.size());
+  for (const auto& trigger_field : trigger_fields_) {
+    autofill::FieldGlobalId field_id =
+        GetFieldIdFromPageTarget(last_observation, tab, trigger_field);
+    if (!field_id) {
+      return MakeResult(mojom::ActionResultCode::kFormFillingFieldNotFound,
+                        /*requires_page_stabilization=*/false,
+                        "Trigger field not found.");
+    }
+    trigger_field_ids_.push_back(field_id);
   }
 
   return MakeOkResult();
@@ -63,12 +84,12 @@ void AttemptOtpFillingTool::Invoke(ToolCallback callback) {
   // For now, we just log it ...
   journal().Log(JournalURL(), task_id(), "AttemptOtpFillingTool::Invoke",
                 JournalDetailsBuilder()
-                    .Add("trigger_fields_count", trigger_fields_.size())
+                    .Add("trigger_fields_count", trigger_field_ids_.size())
                     .Add("for_signin", for_signin_)
                     .Build());
 
   tool_delegate().GetActorOneTimeTokenFillingService().RetrieveOtp(
-      GetTargetTab(), trigger_fields_,
+      GetTargetTab(), trigger_field_ids_,
       base::BindOnce(&AttemptOtpFillingTool::OnOtpRetrieved,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -94,7 +115,7 @@ void AttemptOtpFillingTool::OnOtpRetrieved(ToolCallback callback,
 
   // TODO(b/502907696): Trigger the actual filling, correctly.
   tool_delegate().GetActorOneTimeTokenFillingService().FillOtp(
-      GetTargetTab(), trigger_fields_, otp,
+      GetTargetTab(), trigger_field_ids_, otp,
       base::BindOnce(&AttemptOtpFillingTool::OnOtpFilled,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
