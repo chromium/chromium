@@ -410,6 +410,9 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorTabAlertPipPlayingInactiveFrameActive] = {ui::kColorSysPrimary};
   mixer[kColorTabAlertPipPlayingInactiveFrameInactive] = {ui::kColorSysPrimary};
 
+  /* cr-tab colors. */
+  mixer[kColorTabNavItemSelected] = {ui::kColorSysPrimary};
+
   // Hover card tab alert colors.
   mixer[kColorHoverCardTabAlertMediaRecordingIcon] = {ui::kColorSysError};
   mixer[kColorHoverCardTabAlertPipPlayingIcon] = {ui::kColorSysPrimary};

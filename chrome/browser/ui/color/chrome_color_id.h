@@ -239,7 +239,7 @@
   E_CPONLY(kColorMultiContentsViewInactiveContentOutline) \
   E_CPONLY(kColorMultiContentsViewHighlightContentOutline) \
   E_CPONLY(kColorMultiContentsViewMiniToolbarForeground) \
-  /* Nav Menu Item colors. */ \
+  /* cr-nav-menu-item colors. */ \
   E_CPONLY(kColorNavMenuItem) \
   E_CPONLY(kColorNavMenuItemSelected) \
   E_CPONLY(kColorNavMenuItemBackgroundHover) \
@@ -988,6 +988,8 @@
   E_CPONLY(kColorTabstripScrollContainerShadow) \
   E_CPONLY(kColorTabThrobber) \
   E_CPONLY(kColorTabThrobberPreconnect) \
+  /* cr-tab colors. */ \
+  E_CPONLY(kColorTabNavItemSelected) \
   /* Tab Search colors */ \
   E_CPONLY(kColorTabSearchButtonBackground) \
   E_CPONLY(kColorTabSearchButtonIcon) \

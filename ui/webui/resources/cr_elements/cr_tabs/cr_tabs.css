@@ -20,6 +20,20 @@
   user-select: none;
 }
 
+:host-context([webui-refresh-2026]) {
+  &:host {
+    --cr-tabs-selected-color: var(--color-tab-nav-item-selected,
+        var(--google-blue-600));
+  }
+
+  @media (prefers-color-scheme: dark) {
+    &:host {
+      --cr-tabs-selected-color: var(--color-tab-nav-item-selected,
+          var(--google-blue-300));
+    }
+  }
+}
+
 .tab {
   align-items: center;
   color: var(--cr-secondary-text-color);
