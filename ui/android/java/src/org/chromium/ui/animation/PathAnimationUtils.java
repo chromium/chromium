@@ -11,6 +11,8 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
 
+import java.util.Arrays;
+
 /** Utilities related to {@link Path} for animations */
 @NullMarked
 public class PathAnimationUtils {
@@ -112,6 +114,9 @@ public class PathAnimationUtils {
         assert firstPoint.length == 2 && secondPoint.length == 2
                 : "Each point should only contain x and y (length of 2)";
         assert firstPoint[0] != secondPoint[0] && firstPoint[1] != secondPoint[1]
-                : "Coordinates x and y should be different for both points.";
+                : "Coordinates x and y should be different for both points. First point: "
+                        + Arrays.toString(firstPoint)
+                        + ", Second point: "
+                        + Arrays.toString(secondPoint);
     }
 }
