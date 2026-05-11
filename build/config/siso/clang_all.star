@@ -54,14 +54,6 @@ def __filegroups(ctx):
             "type": "glob",
             "includes": ["*.h"],
         },
-        # vendor provided headers for libc++.
-        path.join(root, "buildtools/third_party/libc++") + ":headers": {
-            "type": "glob",
-            "includes": [
-                "__*",
-            ],
-        },
-
         # toolchain root
         # :headers for compiling
         path.join(root, "third_party/llvm-build/Release+Asserts") + ":headers": {
@@ -87,21 +79,17 @@ def __filegroups(ctx):
 def __input_deps(ctx):
     build_dir = ctx.fs.canonpath(".")
 
+    libcxx_inputs = [
+        "buildtools/third_party/libc++/__assertion_handler",
+        "buildtools/third_party/libc++/__config_site",
+        "third_party/libc++/src/include:headers",
+    ]
+
     return {
-        # need this because we use
-        # third_party/libc++/src/include:headers,
-        # but scandeps doesn't scan `__config` file, which uses
-        # `#include <__config_site>`
-        # also need `__assertion_handler`. b/321171148
-        "third_party/libc++/src/include": [
-            "buildtools/third_party/libc++:headers",
-        ],
-        # This is necessary for modules build where libc++ headers are copied to build directory.
-        path.join(build_dir, "gen/third_party/libc++/src/include") + ":headers": [
-            path.join(build_dir, "gen/third_party/libc++/src/include/module.modulemap"),
-            path.join(build_dir, "phony/buildtools/third_party/libc++/copy_custom_headers") + ":inputs",
-            path.join(build_dir, "phony/buildtools/third_party/libc++/copy_libcxx_headers") + ":inputs",
-        ],
+        "third_party/llvm-build/Release+Asserts/bin/clang++": libcxx_inputs,
+        "third_party/llvm-build/Release+Asserts/bin/clang++.exe": libcxx_inputs,
+        "third_party/llvm-build/Release+Asserts/bin/clang-cl": libcxx_inputs,
+        "third_party/llvm-build/Release+Asserts/bin/clang-cl.exe": libcxx_inputs,
         "third_party/llvm-build/Release+Asserts/bin/lld-link": [
             "build/config/c++/libc++.natvis",
             "build/win/as_invoker.manifest",

@@ -286,7 +286,8 @@ if (target_os == "android") {
 } else if (target_os == "zos") {
   _default_toolchain = "//build/toolchain/zos:$target_cpu"
 } else if (target_os == "emscripten") {
-  # Because it's too hard to remove all targets from //BUILD.gn that do not work with it.
+  # Because it's too hard to remove all targets from //BUILD.gn that do not work
+  # with it.
   assert(
       false,
       "emscripten is not a supported target_os. It is available only as secondary toolchain.")
@@ -581,13 +582,6 @@ foreach(_target_type,
         public_deps = []
       }
 
-      if (is_clang) {
-        # When clang is used, some target may use clang module. This dependency
-        # is required for things to work, regardless of whether the libc++
-        # module is used in this target or not.
-        public_deps += [ "//buildtools/third_party/libc++:headers" ]
-      }
-
       if (!defined(use_libcxx_modules)) {
         use_libcxx_modules = is_clang
       }
@@ -717,13 +711,6 @@ foreach(_target_type,
 
       if (!defined(public_deps)) {
         public_deps = []
-      }
-
-      if (is_clang) {
-        # When clang is used, some target may use clang module. This dependency
-        # is required for things to work, regardless of whether the libc++
-        # module is used in this target or not.
-        public_deps += [ "//buildtools/third_party/libc++:headers" ]
       }
 
       if (!defined(use_libcxx_modules)) {
