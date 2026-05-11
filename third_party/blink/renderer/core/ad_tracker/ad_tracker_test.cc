@@ -3249,13 +3249,13 @@ TEST_F(AdTrackerSimTest,
   EXPECT_TRUE(ad_tracker_->last_is_ad_script_in_stack_result());
 }
 
-// Tests a scenario where an ad script calls a non-ad monkey patch, but the
-// non-ad patch adds an extra layer of indirection (stack depth).
-// Since the heuristic only checks the top 2 stack frames for ad scripts,
-// and both top frames belong to the non-ad script, the call is NOT flagged
-// as an ad.
-TEST_F(AdTrackerSimTest,
-       IgnoreMonkeyPatchHeuristic_AdScriptCallsDeepNonAdPatch_IsNotAd) {
+// Tests that a call is flagged as an ad when an ad script calls a non-ad
+// monkey-patch, and the non-ad patch adds exactly enough indirection to
+// reach the buffer limit. With a stack buffer size of 5, the ad script
+// falls exactly on the 5th frame (index 4).
+TEST_F(
+    AdTrackerSimTest,
+    IgnoreMonkeyPatchHeuristic_AdScriptCallsDeepNonAdPatch_WithinLimit_IsAd) {
   String vanilla_patch_url = "https://example.com/patch.js";
   String ad_caller_url = "https://example.com/caller.js?ad=true";
   SimSubresourceRequest vanilla_patch(vanilla_patch_url, "text/javascript");
@@ -3266,22 +3266,76 @@ TEST_F(AdTrackerSimTest,
           <script src="caller.js?ad=true"></script></body>
   )HTML");
 
-  // The non-ad script monkeypatches history.pushState.
-  // Crucially, it uses an internal helper function to invoke the original API.
-  // This creates the following stack structure:
-  // 0. Native pushState
-  // 1. internalHelper (patch.js - Non-Ad)
-  // 2. window.history.pushState wrapper (patch.js - Non-Ad)
-  // 3. Global Scope (caller.js - Ad)
+  // The non-ad script monkey-patches history.pushState.
+  // It uses a chain of internal helper functions to invoke the original API.
+  // Stack structure (5 frames captured):
+  // 0. helper3 (patch.js - Non-Ad)
+  // 1. helper2 (patch.js - Non-Ad)
+  // 2. helper1 (patch.js - Non-Ad)
+  // 3. window.history.pushState wrapper (patch.js - Non-Ad)
+  // 4. Global Scope (caller.js - Ad) -> Caught!
   vanilla_patch.Complete(R"SCRIPT(
     const originalPushState = window.history.pushState;
 
-    function internalHelper(args) {
-      originalPushState.apply(window.history, args);
-    }
+    function helper3(args) { originalPushState.apply(window.history, args); }
+    function helper2(args) { helper3(args); }
+    function helper1(args) { helper2(args); }
 
     window.history.pushState = function(...args) {
-      internalHelper(args);
+      helper1(args);
+    };
+  )SCRIPT");
+
+  // The ad script invokes the monkeypatched pushState.
+  ad_caller.Complete(R"SCRIPT(
+    window.history.pushState(null, '', '/');
+  )SCRIPT");
+
+  base::RunLoop().RunUntilIdle();
+
+  // The call should be flagged as an ad. The AdTracker heuristic inspects
+  // the top 5 frames and sees the ad script exactly at the boundary
+  // (frame index 4).
+  EXPECT_TRUE(ad_tracker_->last_is_ad_script_in_stack_result());
+}
+
+// Tests that a call is NOT flagged as an ad when an ad script calls a non-ad
+// monkey-patch, but the non-ad patch adds multiple layers of indirection
+// that exceed the stack buffer size. With a buffer size of 5, the ad script
+// falls beyond the 5th frame.
+TEST_F(
+    AdTrackerSimTest,
+    IgnoreMonkeyPatchHeuristic_AdScriptCallsDeepNonAdPatch_ExceedsLimit_IsNotAd) {
+  String vanilla_patch_url = "https://example.com/patch.js";
+  String ad_caller_url = "https://example.com/caller.js?ad=true";
+  SimSubresourceRequest vanilla_patch(vanilla_patch_url, "text/javascript");
+  SimSubresourceRequest ad_caller(ad_caller_url, "text/javascript");
+
+  main_resource_->Complete(R"HTML(
+    <body><script src="patch.js"></script>
+          <script src="caller.js?ad=true"></script></body>
+  )HTML");
+
+  // The non-ad script monkey-patches history.pushState.
+  // It uses a chain of internal helper functions to invoke the original API.
+  // Stack structure (5 frames captured):
+  // 0. helper4 (patch.js - Non-Ad)
+  // 1. helper3 (patch.js - Non-Ad)
+  // 2. helper2 (patch.js - Non-Ad)
+  // 3. helper1 (patch.js - Non-Ad)
+  // 4. window.history.pushState wrapper (patch.js - Non-Ad)
+  // --- buffer boundary (size 5) ---
+  // 5. Global Scope (caller.js - Ad) -> Missed!
+  vanilla_patch.Complete(R"SCRIPT(
+    const originalPushState = window.history.pushState;
+
+    function helper4(args) { originalPushState.apply(window.history, args); }
+    function helper3(args) { helper4(args); }
+    function helper2(args) { helper3(args); }
+    function helper1(args) { helper2(args); }
+
+    window.history.pushState = function(...args) {
+      helper1(args);
     };
   )SCRIPT");
 
@@ -3292,10 +3346,10 @@ TEST_F(AdTrackerSimTest,
 
   base::RunLoop().RunUntilIdle();
 
-  // The call should NOT be flagged as an ad.
-  // The AdTracker heuristic inspects the top 2 frames. It sees 'internalHelper'
-  // (non-ad) and the 'pushState' wrapper (non-ad). It does not look deep enough
-  // to find the Ad Script initiator.
+  // The call should NOT be flagged as an ad. The AdTracker heuristic inspects
+  // the top 5 frames and only sees the non-ad helpers and the pushState
+  // wrapper. It does not look deep enough to find the ad script initiator
+  // located at frame index 5.
   EXPECT_FALSE(ad_tracker_->last_is_ad_script_in_stack_result());
 }
 

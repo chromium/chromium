@@ -483,11 +483,15 @@ bool AdTracker::IsAdScriptInStackHelper(
     return false;
   }
 
-  // We inspect the top two stack frames. It allows us to capture publisher
-  // monkey patch scenarios (i.e., a publisher monkey patch that passively
-  // invokes an ad's intent.
-  std::array<v8::StackTrace::ScriptData, 2> stack_buffer;
-  auto stack = v8::StackTrace::CurrentScriptData(isolate, stack_buffer);
+  // When the `ignore_monkey_patch` heuristic is specified, we inspect the top
+  // five stack frames instead of just the top frame. It allows us to capture
+  // publisher monkey patch scenarios (i.e., one or more publisher monkey
+  // patches that passively invoke an ad's intent).
+  std::array<v8::StackTrace::ScriptData, 5> stack_buffer;
+  size_t limit = (ignore_monkey_patch != MonkeyPatchableApi::kNone) ? 5 : 1;
+  auto stack = v8::StackTrace::CurrentScriptData(
+      isolate,
+      v8::MemorySpan<v8::StackTrace::ScriptData>(stack_buffer.data(), limit));
 
   if (stack.empty()) {
     // There is nothing on the v8 stack. This means that we're in some
