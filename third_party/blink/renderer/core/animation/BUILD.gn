@@ -184,6 +184,8 @@ blink_core_sources("animation") {
     "css_var_cycle_interpolation_type.h",
     "css_visibility_interpolation_type.cc",
     "css_visibility_interpolation_type.h",
+    "css_zoom_interpolation_type.cc",
+    "css_zoom_interpolation_type.h",
     "deferred_timeline.cc",
     "deferred_timeline.h",
     "document_animation.h",

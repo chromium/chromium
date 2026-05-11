@@ -3387,6 +3387,10 @@ bool IsLineHeightPropertyHandle(const PropertyHandle& property) {
   return property == PropertyHandle(GetCSSPropertyLineHeight());
 }
 
+bool IsZoomPropertyHandle(const PropertyHandle& property) {
+  return property == PropertyHandle(GetCSSPropertyZoom());
+}
+
 bool IsDisplayPropertyHandle(const PropertyHandle& property) {
   return property == PropertyHandle(GetCSSPropertyDisplay());
 }
@@ -3735,6 +3739,13 @@ bool CSSAnimations::IsAnimatingLineHeightProperty(
   return element_animations &&
          element_animations->GetEffectStack().AffectsProperties(
              IsLineHeightPropertyHandle);
+}
+
+bool CSSAnimations::IsAnimatingZoomProperty(
+    const ElementAnimations* element_animations) {
+  return element_animations &&
+         element_animations->GetEffectStack().AffectsProperties(
+             IsZoomPropertyHandle);
 }
 
 bool CSSAnimations::IsAnimatingRevert(

@@ -34,6 +34,11 @@ class CORE_EXPORT CSSNumberInterpolationType : public CSSInterpolationType {
                                  const NonInterpolableValue*,
                                  const StyleResolverState&) const final;
 
+ protected:
+  InterpolationValue MaybeConvertValue(const CSSValue&,
+                                       const StyleResolverState&,
+                                       ConversionCheckers&) const override;
+
  private:
   InterpolationValue CreateNumberValue(double number) const;
   InterpolationValue MaybeConvertNeutral(const InterpolationValue& underlying,
@@ -42,9 +47,6 @@ class CORE_EXPORT CSSNumberInterpolationType : public CSSInterpolationType {
                                          ConversionCheckers&) const final;
   InterpolationValue MaybeConvertInherit(const StyleResolverState&,
                                          ConversionCheckers&) const final;
-  InterpolationValue MaybeConvertValue(const CSSValue&,
-                                       const StyleResolverState&,
-                                       ConversionCheckers&) const final;
 
   CSSPrimitiveValue::UnitType UnitType() const {
     return round_to_integer_ ? CSSPrimitiveValue::UnitType::kInteger

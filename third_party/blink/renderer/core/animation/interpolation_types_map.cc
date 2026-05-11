@@ -64,6 +64,7 @@
 #include "third_party/blink/renderer/core/animation/css_translate_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_var_cycle_interpolation_type.h"
 #include "third_party/blink/renderer/core/animation/css_visibility_interpolation_type.h"
+#include "third_party/blink/renderer/core/animation/css_zoom_interpolation_type.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_syntax_definition.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
@@ -257,6 +258,12 @@ const InterpolationTypes* InterpolationTypesMap::Get(
       case CSSPropertyID::kZIndex:
         applicable_types->push_back(
             MakeGarbageCollected<CSSNumberInterpolationType>(property));
+        break;
+      case CSSPropertyID::kZoom:
+        if (RuntimeEnabledFeatures::CSSZoomAnimationEnabled()) {
+          applicable_types->push_back(
+              MakeGarbageCollected<CSSZoomInterpolationType>(property));
+        }
         break;
       case CSSPropertyID::kCornerTopLeftShape:
       case CSSPropertyID::kCornerTopRightShape:

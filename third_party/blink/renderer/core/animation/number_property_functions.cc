@@ -65,6 +65,8 @@ std::optional<double> NumberPropertyFunctions::GetNumber(
         return std::optional<double>();
       }
       return style.ZIndex();
+    case CSSPropertyID::kZoom:
+      return style.Zoom();
 
     case CSSPropertyID::kLineHeight: {
       const Length& length = style.LineHeight();
@@ -129,6 +131,7 @@ double NumberPropertyFunctions::ClampNumber(const CSSProperty& property,
     case CSSPropertyID::kLineHeight:
     case CSSPropertyID::kPathLength:
     case CSSPropertyID::kTabSize:
+    case CSSPropertyID::kZoom:
       return ClampTo<float>(value, 0);
 
     case CSSPropertyID::kOrphans:

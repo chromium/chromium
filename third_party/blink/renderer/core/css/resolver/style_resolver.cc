@@ -2931,6 +2931,14 @@ bool StyleResolver::CanReuseBaseComputedStyle(const StyleResolverState& state) {
     }
   }
 
+  // Zoom scales every length resolved against the base style (unlike the
+  // narrower font / line-height cases above), so any interpolated zoom value
+  // makes the cached lengths stale.
+  if (RuntimeEnabledFeatures::CSSZoomAnimationEnabled() &&
+      CSSAnimations::IsAnimatingZoomProperty(element_animations)) {
+    return false;
+  }
+
   // Normally, we apply all active animation effects on top of the style created
   // by regular CSS declarations. However, !important declarations have a
   // higher priority than animation effects [1]. If we're currently animating
