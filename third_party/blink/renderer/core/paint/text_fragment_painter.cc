@@ -41,6 +41,8 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
+#include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
+#include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
@@ -117,6 +119,108 @@ bool ShouldPaintEmphasisMark(const ComputedStyle& style,
     return !text_item.HasOverAnnotation();
   }
   return !text_item.HasUnderAnnotation();
+}
+
+bool IsDecorationSkipSpace(UChar c) {
+  if (c <= 0x7F) {
+    return IsAsciiSpace(c);
+  }
+  return !!(unicode::Category(c) & unicode::kSeparator_Space);
+}
+
+bool IsNotDecorationSkipSpace(UChar c) {
+  return !IsDecorationSkipSpace(c);
+}
+
+struct SpaceSkipWidths {
+  LayoutUnit start_width;
+  LayoutUnit end_width;
+};
+
+Vector<gfx::RectF> ComputeInteriorSpaceRects(const FragmentItem& text_item,
+                                             const StringView& item_text,
+                                             LayoutUnit decoration_line_over,
+                                             LayoutUnit decoration_block_size) {
+  Vector<gfx::RectF> rects;
+  if (item_text.empty()) {
+    return rects;
+  }
+
+  const string_size_t len = item_text.length();
+  const string_size_t item_start = text_item.StartOffset();
+  string_size_t last_non_space =
+      item_text.ReverseFind(IsNotDecorationSkipSpace);
+
+  // Skip leading spaces.
+  string_size_t i = item_text.Find(IsNotDecorationSkipSpace);
+  // Walk through the non-space portions; collect space runs encountered between
+  // two non-space characters.
+  while (i < len) {
+    // Advance past non-space characters.
+    i = item_text.Find(IsDecorationSkipSpace, i);
+    if (i >= len) {
+      break;
+    }
+
+    // Found a space run starting at i. Find its end.
+    string_size_t space_start = i;
+    i = item_text.Find(IsNotDecorationSkipSpace, i);
+    string_size_t space_end = i;
+
+    // If this space run starts after the last non-space character, it is a
+    // trailing run — stop (handled separately via SpaceSkipWidths).
+    if (space_start > last_non_space) {
+      break;
+    }
+
+    // This is an interior space run.
+    auto [left, right] = text_item.LineLeftAndRightForOffsets(
+        item_text, item_start + space_start, item_start + space_end);
+    if (right > left) {
+      rects.emplace_back(left, decoration_line_over, right - left,
+                         decoration_block_size);
+    }
+  }
+
+  return rects;
+}
+
+SpaceSkipWidths ComputeSpaceSkipWidths(const FragmentItem& text_item,
+                                       const StringView& item_text,
+                                       TextDecorationSkipSpaces skip,
+                                       bool check_start,
+                                       bool check_end) {
+  SpaceSkipWidths result;
+  if (item_text.empty()) {
+    return result;
+  }
+
+  const string_size_t item_start = text_item.StartOffset();
+  const string_size_t item_end = text_item.EndOffset();
+  if (check_start && EnumHasFlags(skip, TextDecorationSkipSpaces::kStart)) {
+    // Find how many leading spaces are in this item.
+    string_size_t i = item_text.Find(IsNotDecorationSkipSpace);
+    i = (i == kNotFound) ? item_text.length() : i;
+    if (i > 0) {
+      auto [left, right] = text_item.LineLeftAndRightForOffsets(
+          item_text, item_start, item_start + i);
+      result.start_width = right - left;
+    }
+  }
+
+  if (check_end && EnumHasFlags(skip, TextDecorationSkipSpaces::kEnd)) {
+    // Find how many trailing spaces are in this item.
+    const string_size_t len = item_text.length();
+    string_size_t pos = item_text.ReverseFind(IsNotDecorationSkipSpace);
+    string_size_t i = (pos == kNotFound) ? 0 : pos + 1;
+    if (i < len) {
+      auto [left, right] = text_item.LineLeftAndRightForOffsets(
+          item_text, item_start + i, item_end);
+      result.end_width = right - left;
+    }
+  }
+
+  return result;
 }
 
 PhysicalDirection GetDisclosureOrientation(const ComputedStyle& style,
@@ -423,12 +527,107 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
 
   TextPainter text_painter(context, paint_info.GetSvgContextPaints(), *font,
                            visual_rect, text_origin);
+
+  // Apply text-decoration-skip-spaces by trimming the decoration box.
+  LineRelativeRect decoration_box = rotated_box;
+  const TextDecorationSkipSpaces skip_spaces =
+      RuntimeEnabledFeatures::CSSTextDecorationSkipSpacesEnabled()
+          ? style.GetTextDecorationSkipSpaces()
+          : TextDecorationSkipSpaces::kNone;
+  // For text-decoration-skip-spaces: all, collect interior space run rects
+  // (in item-local line-relative coordinates) so we can clip them out of the
+  // decoration canvas after the writing-mode rotation is applied.
+  Vector<gfx::RectF> interior_space_rects;
+  if (skip_spaces != TextDecorationSkipSpaces::kNone &&
+      style.HasAppliedTextDecorations()) {
+    const bool is_first_text_on_line = [&]() -> bool {
+      if (cursor_.IsAtFirst()) {
+        return true;
+      }
+      // Check if every preceding inline leaf consists entirely of skip spaces.
+      InlineCursor prev = cursor_;
+      prev.MoveToPreviousInlineLeaf();
+      while (prev) {
+        const StringView prev_text = prev.CurrentText();
+        if (prev_text.IsAllSpecialCharacters<IsDecorationSkipSpace>()) {
+          return false;
+        }
+        prev.MoveToPreviousInlineLeaf();
+      }
+      return true;
+    }();
+    const bool is_last_text_on_line = [&]() -> bool {
+      InlineCursor next = cursor_;
+      next.MoveToNextInlineLeaf();
+      while (next) {
+        const StringView next_text = next.CurrentText();
+        if (!next_text.IsAllSpecialCharacters<IsDecorationSkipSpace>()) {
+          return false;
+        }
+        next.MoveToNextInlineLeaf();
+      }
+      return true;
+    }();
+
+    // For 'all', treat it as 'start end' for space-character trimming, but
+    // also trim any trailing letter-spacing at line edges.
+    const bool is_all = (skip_spaces == TextDecorationSkipSpaces::kAll);
+    const TextDecorationSkipSpaces effective_skip =
+        is_all ? (TextDecorationSkipSpaces::kStart |
+                  TextDecorationSkipSpaces::kEnd)
+               : skip_spaces;
+
+    LayoutUnit extra_end_trim;
+    if (is_all && is_last_text_on_line) {
+      // 'all' additionally skips letter-spacing adjacent to the line end.
+      // letter-spacing is added after each glyph, so the last character on a
+      // line has trailing letter-spacing extending the decoration. Trim it.
+      const float letter_spacing = style.LetterSpacing();
+      if (letter_spacing > 0) {
+        extra_end_trim = LayoutUnit(letter_spacing);
+      }
+    }
+
+    const StringView item_text = cursor_.CurrentText();
+
+    if (is_first_text_on_line || is_last_text_on_line) {
+      SpaceSkipWidths skip_widths =
+          ComputeSpaceSkipWidths(text_item, item_text, effective_skip,
+                                 is_first_text_on_line, is_last_text_on_line);
+      skip_widths.end_width += extra_end_trim;
+      if (skip_widths.start_width > LayoutUnit() ||
+          skip_widths.end_width > LayoutUnit()) {
+        decoration_box.offset.line_left += skip_widths.start_width;
+        decoration_box.size.inline_size -=
+            (skip_widths.start_width + skip_widths.end_width);
+      }
+    }
+    decoration_box.size.inline_size =
+        decoration_box.size.inline_size.ClampNegativeToZero();
+
+    if (is_all) {
+      interior_space_rects = ComputeInteriorSpaceRects(
+          text_item, item_text, decoration_box.offset.line_over,
+          decoration_box.size.block_size);
+      const LayoutUnit item_line_left = LayoutUnit(physical_box.offset.left);
+      for (auto& rect : interior_space_rects) {
+        rect.set_x(rect.x() + item_line_left);
+      }
+    }
+  }
+
   TextDecorationPainter decoration_painter(text_painter, inline_context_,
                                            paint_info, style, text_style,
-                                           rotated_box, selection);
+                                           decoration_box, selection);
   HighlightPainter highlight_painter(
       fragment_paint_info, text_painter, decoration_painter, paint_info,
       cursor_, text_item, physical_box.offset, style, text_style, selection);
+  // Pass the decoration_box to HighlightPainter so that the kOverlay path
+  // respects text-decoration-skip-spaces trimming.
+  if (skip_spaces != TextDecorationSkipSpaces::kNone &&
+      style.HasAppliedTextDecorations()) {
+    highlight_painter.SetOriginatingDecorationRect(decoration_box);
+  }
   if (paint_info.phase == PaintPhase::kForeground) {
     if (auto* mf_checker = MobileFriendlinessChecker::From(document)) {
       if (auto* text = DynamicTo<LayoutText>(*layout_object)) {
@@ -480,6 +679,13 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
     if (TextPainter::SvgTextPaintState* state = text_painter.GetSvgState()) {
       DCHECK(rotation->IsInvertible());
       state->EnsureShaderTransform().PostConcat(rotation->Inverse());
+    }
+  }
+
+  if (!interior_space_rects.empty()) {
+    state_saver.SaveIfNeeded();
+    for (const gfx::RectF& space_rect : interior_space_rects) {
+      context.ClipOut(space_rect);
     }
   }
 

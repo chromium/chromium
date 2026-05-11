@@ -1025,11 +1025,6 @@ crbug.com/1140324 [ Win11 ] external/wpt/css/css-text-decor/text-underline-offse
 crbug.com/1140324 [ Win10.20h2 ] external/wpt/css/css-text-decor/text-underline-offset-variable.html [ Failure ]
 crbug.com/1143005 [ Win10.20h2 ] media/track/track-cue-rendering-vertical.html [ Failure ]
 
-# Skip spaces at the start and end of a line
-crbug.com/1360067 external/wpt/css/css-text-decor/text-decoration-skip-spaces-001.html [ Failure ]
-crbug.com/1360067 external/wpt/css/css-text-decor/text-decoration-skip-spaces-002.html [ Failure ]
-crbug.com/1360067 external/wpt/css/css-text-decor/text-decoration-skip-spaces-003.html [ Failure ]
-crbug.com/1360067 external/wpt/css/css-text-decor/text-decoration-skip-spaces-004.html [ Failure ]
 
 # CSS Grid Lanes failing tests
 crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/fragmentation/* [ Failure Skip ]

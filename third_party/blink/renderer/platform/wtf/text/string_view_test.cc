@@ -1057,4 +1057,29 @@ TEST(StringViewTest, ContainsNoAsciiUpper) {
   EXPECT_FALSE(StringView(u"abcD\u3000").ContainsNoAsciiUpper());
 }
 
+TEST(StringViewTest, ReverseFindCharacterMatchFunction) {
+  EXPECT_EQ(kNotFound,
+            StringView().ReverseFind([](UChar ch) { return ch == 'e'; }));
+  EXPECT_EQ(kNotFound,
+            StringView("").ReverseFind([](UChar ch) { return ch == 'e'; }));
+
+  // "abcdeabcde": a=0,b=1,c=2,d=3,e=4,a=5,b=6,c=7,d=8,e=9
+  StringView view8("abcdeabcde");
+  ASSERT_TRUE(view8.Is8Bit());
+  EXPECT_EQ(9u, view8.ReverseFind([](UChar ch) { return ch == 'e'; }));
+  EXPECT_EQ(4u, view8.ReverseFind([](UChar ch) { return ch == 'e'; }, 8));
+  EXPECT_EQ(kNotFound,
+            view8.ReverseFind([](UChar ch) { return ch == 'e'; }, 3));
+  EXPECT_EQ(kNotFound, view8.ReverseFind([](UChar ch) { return ch == 'x'; }));
+
+  // "abcdeabcde" as 16-bit.
+  StringView view16(u"abcdeabcde");
+  ASSERT_FALSE(view16.Is8Bit());
+  EXPECT_EQ(9u, view16.ReverseFind([](UChar ch) { return ch == 'e'; }));
+  EXPECT_EQ(4u, view16.ReverseFind([](UChar ch) { return ch == 'e'; }, 8));
+  EXPECT_EQ(kNotFound,
+            view16.ReverseFind([](UChar ch) { return ch == 'e'; }, 3));
+  EXPECT_EQ(kNotFound, view16.ReverseFind([](UChar ch) { return ch == 'x'; }));
+}
+
 }  // namespace blink

@@ -951,6 +951,25 @@ inline string_size_t Find(base::span<const CharType> characters,
   return it == end ? kNotFound : std::distance(begin, it);
 }
 
+template <typename CharType>
+inline string_size_t ReverseFind(base::span<const CharType> characters,
+                                 CharacterMatchFunctionPtr match_function,
+                                 string_size_t index) {
+  const size_t length = characters.size();
+  if (!length) {
+    return kNotFound;
+  }
+  if (index >= length) {
+    index = length - 1;
+  }
+  while (!match_function(characters[index])) {
+    if (!index--) {
+      return kNotFound;
+    }
+  }
+  return index;
+}
+
 inline StringImpl::size_type StringImpl::Find(LChar character,
                                               size_type start) const {
   if (Is8Bit())

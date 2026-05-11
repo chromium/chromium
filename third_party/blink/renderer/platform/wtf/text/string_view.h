@@ -378,6 +378,10 @@ class WTF_EXPORT StringView {
   // Find the last occurrence of a character. Returns the index of the match, or
   // `kNotFound`.
   size_type rfind(UChar ch, size_type start = npos) const;
+  // Find the last character matching `match_function`. Returns the index of
+  // the match, or `kNotFound`.
+  size_type ReverseFind(CharacterMatchFunctionPtr match_function,
+                        size_type start = npos) const;
 
   // We have no find_first_of(), find_last_of(), find_first_not_of(), and
   // find_last_not_of().  Feel free to add them if necessary.
@@ -586,6 +590,13 @@ inline StringView::size_type StringView::Find(
     size_type start) const {
   return Is8Bit() ? blink::Find(Span8(), match_function, start)
                   : blink::Find(Span16(), match_function, start);
+}
+
+inline StringView::size_type StringView::ReverseFind(
+    CharacterMatchFunctionPtr match_function,
+    size_type start) const {
+  return Is8Bit() ? blink::ReverseFind(Span8(), match_function, start)
+                  : blink::ReverseFind(Span16(), match_function, start);
 }
 
 template <bool isSpecialCharacter(UChar)>

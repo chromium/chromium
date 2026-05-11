@@ -1164,7 +1164,10 @@ void HighlightPainter::PaintDecorationsExceptLineThrough(
     // Paint the decoration over the range of the originating fragment or active
     // highlight, but clip it to the range of the part.
     const LineRelativeRect decoration_rect =
-        LineRelativeWorldRect(decoration.range);
+        (decoration.type == HighlightLayerType::kOriginating &&
+         originating_decoration_rect_)
+            ? *originating_decoration_rect_
+            : LineRelativeWorldRect(decoration.range);
 
     std::optional<TextDecorationInfo> decoration_info{};
     decoration_painter_.UpdateDecorationInfo(decoration_info, fragment_item_,
@@ -1220,7 +1223,10 @@ void HighlightPainter::PaintDecorationsOnlyLineThrough(
     // Paint the decoration over the range of the originating fragment or active
     // highlight, but clip it to the range of the part.
     const LineRelativeRect decoration_rect =
-        LineRelativeWorldRect(decoration.range);
+        (decoration.type == HighlightLayerType::kOriginating &&
+         originating_decoration_rect_)
+            ? *originating_decoration_rect_
+            : LineRelativeWorldRect(decoration.range);
 
     std::optional<TextDecorationInfo> decoration_info{};
     decoration_painter_.UpdateDecorationInfo(decoration_info, fragment_item_,

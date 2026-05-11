@@ -210,6 +210,12 @@ class CORE_EXPORT HighlightPainter {
 
   SelectionPaintState* Selection() { return selection_; }
 
+  // Sets the decoration rect for the originating content, pre-trimmed by
+  // text-decoration-skip-spaces.
+  void SetOriginatingDecorationRect(const LineRelativeRect& rect) {
+    originating_decoration_rect_ = rect;
+  }
+
  private:
   struct HighlightEdgeInfo {
     unsigned offset;
@@ -295,6 +301,7 @@ class CORE_EXPORT HighlightPainter {
   HeapVector<HighlightPart> parts_;
   Vector<HighlightEdgeInfo> edges_info_;
   Case paint_case_;
+  std::optional<LineRelativeRect> originating_decoration_rect_;
 };
 
 }  // namespace blink
