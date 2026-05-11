@@ -290,7 +290,8 @@ class NativeDesktopMediaList::Worker
   static std::vector<SourceDescription> FormatSources(
       const webrtc::DesktopCapturer::SourceList& sources,
       const DesktopMediaID::Type source_type,
-      DesktopMediaID::Id excluded_window_id);
+      DesktopMediaID::Id excluded_window_id,
+      bool is_source_list_delegated);
 
 #if BUILDFLAG(IS_WIN)
   static std::vector<SourceDescription> GetCurrentProcessWindows();
@@ -410,8 +411,8 @@ void NativeDesktopMediaList::Worker::Refresh(bool update_thumbnails) {
     capturer_->SelectSources(source_ids, thumbnail_size_);
   }
 
-  std::vector<SourceDescription> source_descriptions =
-      FormatSources(sources, source_type_, excluded_window_id_);
+  std::vector<SourceDescription> source_descriptions = FormatSources(
+      sources, source_type_, excluded_window_id_, is_source_list_delegated_);
 
 #if BUILDFLAG(IS_WIN)
   // If |add_current_process_windows_| is set to false, |capturer_| will have
@@ -485,7 +486,8 @@ std::vector<DesktopMediaListBase::SourceDescription>
 NativeDesktopMediaList::Worker::FormatSources(
     const webrtc::DesktopCapturer::SourceList& sources,
     const DesktopMediaID::Type source_type,
-    DesktopMediaID::Id excluded_window_id) {
+    DesktopMediaID::Id excluded_window_id,
+    bool is_source_list_delegated) {
   std::vector<SourceDescription> source_descriptions;
   std::u16string title;
   for (size_t i = 0; i < sources.size(); ++i) {
@@ -513,6 +515,9 @@ NativeDesktopMediaList::Worker::FormatSources(
         NOTREACHED();
     }
     DesktopMediaID source_id(source_type, sources[i].id);
+    if (is_source_list_delegated) {
+      source_id.id_type = DesktopMediaID::IdType::kNativePickerSession;
+    }
     source_descriptions.emplace_back(std::move(source_id), title);
   }
 
@@ -654,11 +659,15 @@ void NativeDesktopMediaList::Worker::OnRecurrentCaptureResult(
   gfx::ImageSkia thumbnail =
       ScaleDesktopFrame(std::move(frame), thumbnail_size_);
 
+  DesktopMediaID id(source_type_, source_id);
+  if (is_source_list_delegated_) {
+    id.id_type = content::DesktopMediaID::IdType::kNativePickerSession;
+  }
+
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &AssignWindowIdAndUpdateThumbnail,
-          DesktopMediaID(source_type_, source_id), is_source_list_delegated_,
+          &AssignWindowIdAndUpdateThumbnail, id, is_source_list_delegated_,
           thumbnail,
           base::BindOnce(&NativeDesktopMediaList::UpdateSourceThumbnail,
                          media_list_)));

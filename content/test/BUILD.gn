@@ -912,7 +912,8 @@ static_library("test_support") {
 if (is_fuchsia) {
   # TODO(crbug.com/40830160): Split this test suite into chrome/WebEngine
   # versions.
-  # TODO(crbug.com/40829930): Move WebEngine-specific suites to //fuchsia_web/webengine/
+  # TODO(crbug.com/40829930): Move WebEngine-specific suites to
+  # //fuchsia_web/webengine/
   group("performance_web_engine_test_suite") {
     testonly = true
     data = [ "//content/test/gpu/run_telemetry_benchmark_fuchsia.py" ]
@@ -1060,10 +1061,10 @@ group("telemetry_gpu_integration_test_data") {
   data_deps = [ ":telemetry_gpu_common_data" ]
 }
 
-# Instead of implicitly depends on the main function from libbrowsertest_support.a,
-# executables should now depend on 'default_content_test_launcher' if they want to
-# use the main function from content_test_launcher.cc.
-# see b/324126269 for detailes.
+# Instead of implicitly depends on the main function from
+# libbrowsertest_support.a, executables should now depend on
+# 'default_content_test_launcher' if they want to use the main function from
+# content_test_launcher.cc. see b/324126269 for details.
 source_set("default_content_test_launcher") {
   testonly = true
   sources = [ "content_test_launcher.cc" ]
@@ -2099,7 +2100,8 @@ test("content_browsertests") {
   if (!is_ios && !is_android) {
     sources += [ "../browser/file_system_access/file_system_access_observer_browsertest.cc" ]
 
-    # Add Material Design components for accessibility tests on desktop platforms
+    # Add Material Design components for accessibility tests on desktop
+    # platforms
     data += [ "//third_party/material_web_components/" ]
   }
 
@@ -3538,6 +3540,7 @@ test("content_unittests") {
   # Screen capture unit tests.
   if (enable_screen_capture) {
     sources += [
+      "../browser/media/capture/desktop_media_id_unittest.cc",
       "../browser/media/capture/frame_sink_video_capture_device_unittest.cc",
       "../browser/media/capture/web_contents_auto_scaler_unittest.cc",
       "../browser/media/capture/web_contents_frame_tracker_unittest.cc",
@@ -3545,6 +3548,7 @@ test("content_unittests") {
     ]
     if (is_mac) {
       sources += [
+        "../browser/media/capture/desktop_capture_util_mac_unittest.mm",
         "../browser/media/capture/pip_screen_capture_coordinator_impl_unittest.cc",
         "../browser/media/capture/pip_screen_capture_coordinator_proxy_impl_unittest.cc",
       ]
@@ -3860,7 +3864,8 @@ group("fuzzers") {
 # test_buildbucket_api_gpu_cases.py on bots. This also tells the build system
 # when the tests should be re-run - when one of the dependent files changes.
 #
-# TODO(crbug.com/40130215): Remove once power testing is migrated to perf waterfall.
+# TODO(crbug.com/40130215): Remove once power testing is migrated to perf
+# waterfall.
 group("test_buildbucket_api_gpu_use_cases") {
   data = [
     # The test runner and its dependencies.

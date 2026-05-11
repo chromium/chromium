@@ -8,10 +8,17 @@
 #include <optional>
 
 #include "base/functional/callback.h"
+#include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
+
+#if BUILDFLAG(IS_MAC)
+#include <sys/types.h>
+
+#include <string>
+#endif
 
 namespace content::desktop_capture {
 
@@ -59,6 +66,25 @@ CONTENT_EXPORT void CloseNativeScreenCapturePicker(DesktopMediaID source_id);
 // window. Must only be called on the UI thread.
 CONTENT_EXPORT std::optional<DesktopMediaID::Id>
 GetPipWindowToExcludeFromScreenCapture(DesktopMediaID::Id desktop_id);
+
+#if BUILDFLAG(IS_MAC)
+struct ApplicationAudioCaptureId {
+  std::string bundle_id;
+  std::optional<pid_t> pid;
+
+  bool operator==(const ApplicationAudioCaptureId& other) const = default;
+};
+
+using GetApplicationAudioCaptureIdCallback =
+    base::OnceCallback<void(const std::optional<ApplicationAudioCaptureId>&)>;
+
+// Resolves a DesktopMediaID (session or native) into its main
+// ApplicationAudioCaptureId. Must be called from a sequenced
+// thread. Callback will be invoked on the calling sequence.
+CONTENT_EXPORT void GetApplicationAudioCaptureId(
+    DesktopMediaID desktop_media_id,
+    GetApplicationAudioCaptureIdCallback callback);
+#endif  // #if BUILDFLAG(IS_MAC)
 
 }  // namespace content::desktop_capture
 

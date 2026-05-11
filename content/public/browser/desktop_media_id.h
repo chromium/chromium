@@ -22,6 +22,13 @@ struct CONTENT_EXPORT DesktopMediaID {
   enum Type { TYPE_NONE, TYPE_SCREEN, TYPE_WINDOW, TYPE_WEB_CONTENTS };
   enum class AudioType { kNone, kSystem, kApplication };
 
+  // Explicitly defines the provenance of the |id| field.
+  enum class IdType {
+    kPlatformNative,       // ID is a direct platform handle (e.g., CGWindowID).
+    kNativePickerSession,  // ID is an opaque handle for a native picker
+                           // session.
+  };
+
   using Id = intptr_t;
 
   // Represents an "unset" value for either |id| or |window_id|.
@@ -70,6 +77,8 @@ struct CONTENT_EXPORT DesktopMediaID {
   // referring to the same logical window.
   Id id = kNullId;
   Id window_id = kNullId;
+
+  IdType id_type = IdType::kPlatformNative;
 
   // This id contains information for WebContents capture.
   WebContentsMediaCaptureId web_contents_id;

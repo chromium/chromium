@@ -13,6 +13,7 @@
 #include "base/process/process_handle.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
@@ -26,6 +27,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/desktop_capture.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/render_process_host.h"
@@ -47,7 +49,6 @@
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_MAC)
-#include "media/webrtc/application_audio_capture_id_mac.h"
 #include "third_party/webrtc/modules/desktop_capture/mac/window_list_utils.h"
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -443,48 +444,68 @@ void OnAudioDeviceIdObtained(
       std::move(on_media_stream_capture_indicator_ui_created_callback));
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-namespace {
+#if BUILDFLAG(IS_WIN)
 std::optional<std::string> ProcessIdToApplicationLoopbackDeviceId(
     base::ProcessId process_id,
     bool restrict_own_audio) {
   if (process_id == base::kNullProcessId) {
     return std::nullopt;
   }
-#if BUILDFLAG(IS_MAC)
-  std::optional<media::ApplicationAudioCaptureId> capture_identifier =
-      media::GetApplicationAudioCaptureIdForProcess(process_id);
-  if (!capture_identifier) {
-    return std::nullopt;
-  }
-  if (restrict_own_audio &&
-      capture_identifier->pid == base::GetCurrentProcId()) {
-    return media::CreateRestrictOwnAudioBrowserLoopbackDeviceId(
-        capture_identifier->bundle_id, *capture_identifier->pid);
-  }
-  return media::CreateApplicationLoopbackDeviceId(capture_identifier->bundle_id,
-                                                  capture_identifier->pid);
-#else
   if (restrict_own_audio && base::GetCurrentProcId() == process_id) {
     return media::CreateRestrictOwnAudioBrowserLoopbackDeviceId();
   }
   return media::CreateApplicationLoopbackDeviceId(process_id);
-#endif  // BUILDFLAG(IS_MAC)
 }
-}  // namespace
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-
-std::optional<std::string> GetApplicationId(intptr_t window_id,
-                                            bool restrict_own_audio) {
-#if BUILDFLAG(IS_WIN)
-  return ProcessIdToApplicationLoopbackDeviceId(GetAppMainProcessId(window_id),
-                                                restrict_own_audio);
-#elif BUILDFLAG(IS_MAC)
-  return ProcessIdToApplicationLoopbackDeviceId(
-      webrtc::GetWindowOwnerPid(window_id), restrict_own_audio);
-#else
-  return std::nullopt;
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_MAC)
+void OnGetApplicationAudioCaptureId(
+    bool restrict_own_audio,
+    base::OnceCallback<void(std::optional<std::string>)> callback,
+    const std::optional<content::desktop_capture::ApplicationAudioCaptureId>&
+        capture_identifier) {
+  if (!capture_identifier) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  if (restrict_own_audio &&
+      capture_identifier->pid == base::GetCurrentProcId()) {
+    std::move(callback).Run(
+        media::CreateRestrictOwnAudioBrowserLoopbackDeviceId(
+            capture_identifier->bundle_id, *capture_identifier->pid));
+    return;
+  }
+
+  std::move(callback).Run(media::CreateApplicationLoopbackDeviceId(
+      capture_identifier->bundle_id, capture_identifier->pid));
+}
+#endif  // BUILDFLAG(IS_MAC)
+
+void GetApplicationAudioDeviceIdAsync(
+    content::DesktopMediaID desktop_media_id,
+    bool restrict_own_audio,
+    base::OnceCallback<void(std::optional<std::string>)> callback) {
+#if BUILDFLAG(IS_MAC)
+  content::desktop_capture::GetApplicationAudioCaptureId(
+      desktop_media_id,
+      base::BindOnce(&OnGetApplicationAudioCaptureId, restrict_own_audio,
+                     std::move(callback)));
+#elif BUILDFLAG(IS_WIN)
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(
+          [](intptr_t window_id, bool restrict_own_audio) {
+            return ProcessIdToApplicationLoopbackDeviceId(
+                GetAppMainProcessId(window_id), restrict_own_audio);
+          },
+          desktop_media_id.id, restrict_own_audio),
+      std::move(callback));
+#else
+  // Linux/ChromeOS don't support this yet. Post a task to avoid re-entrancy.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
+#endif
 }
 
 void GetAudioDeviceId(content::DesktopMediaID desktop_media_id,
@@ -508,10 +529,8 @@ void GetAudioDeviceId(content::DesktopMediaID desktop_media_id,
   } else if (desktop_media_id.type == content::DesktopMediaID::TYPE_WINDOW &&
              desktop_media_id.window_audio_type ==
                  content::DesktopMediaID::AudioType::kApplication) {
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE,
-        base::BindOnce(&GetApplicationId, desktop_media_id.id,
-                       restrict_own_audio),
+    GetApplicationAudioDeviceIdAsync(
+        desktop_media_id, restrict_own_audio,
         std::move(audio_device_id_obtained_callback));
     return;
   } else {
