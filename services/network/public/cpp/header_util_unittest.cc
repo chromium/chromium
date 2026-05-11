@@ -204,6 +204,11 @@ TEST(HeaderUtilTest, ContainsForbiddenSecurityHeader) {
   headers.SetHeader("Sec-Invalid", "value");
   EXPECT_TRUE(ContainsForbiddenSecurityHeader(headers));
 
+  // Sec-Fetch- headers should be forbidden by default
+  net::HttpRequestHeaders fetch_headers;
+  fetch_headers.SetHeader("Sec-Fetch-Site", "same-origin");
+  EXPECT_TRUE(ContainsForbiddenSecurityHeader(fetch_headers));
+
   // Sec-GPC cases
   net::HttpRequestHeaders gpc_headers;
   gpc_headers.SetHeader("Sec-GPC", "1");
