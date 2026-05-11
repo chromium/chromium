@@ -380,55 +380,7 @@ class UpdateWprTest(unittest.TestCase):
     self.wpr_updater._DeleteExistingWpr()
     os_remove.assert_not_called()
 
-  @mock.patch(WPR_UPDATER + '_ExtractMissingURLsFromLog',
-              return_value=['foo', 'bar'])
-  @mock.patch(WPR_UPDATER + 'WprUpdater._GetWprArchivePathsAndUsageForStory',
-              return_value=[('<archive>', False)])
-  @mock.patch('py_utils.binary_manager.BinaryManager', autospec=True)
-  def testAddMissingURLsToArchive(self, bmanager, existing_wpr, extract_mock):
-    del existing_wpr   # Unused.
 
-    wpr_archive_info = mock.Mock()
-    wpr_archive_info.data = {
-      'archives': {
-        '<story>': {'DEFAULT': '<archive>'},
-      }
-    }
-    self.wpr_updater.wpr_archive_info = wpr_archive_info
-
-    bmanager.return_value.FetchPath.return_value = '<wpr-go-bin>'
-    self.wpr_updater._AddMissingURLsToArchive('<replay-log>')
-    extract_mock.assert_called_once_with('<replay-log>')
-    self._check_call.assert_called_once_with(
-        ['<wpr-go-bin>', 'add', '<archive>', 'foo', 'bar'])
-
-  @mock.patch('core.cli_helpers.Ask', side_effect=[
-      'other_archive'])
-  @mock.patch(WPR_UPDATER + '_ExtractMissingURLsFromLog',
-              return_value=['foo', 'bar'])
-  @mock.patch(WPR_UPDATER + 'WprUpdater._GetWprArchivePathsAndUsageForStory',
-              return_value=[('other_archive', False)])
-  @mock.patch('py_utils.binary_manager.BinaryManager', autospec=True)
-  def testAddMissingURLsToArchiveMulti(self, bmanager,
-                                       existing_wpr, extract_mock, ask):
-    del existing_wpr, ask   # Unused.
-
-    wpr_archive_info = mock.Mock()
-    wpr_archive_info.data = {
-      'archives': {
-        '<story>': {
-          'DEFAULT': '<archive>',
-          'mac': 'other_archive'
-        }
-      }
-    }
-    self.wpr_updater.wpr_archive_info = wpr_archive_info
-
-    bmanager.return_value.FetchPath.return_value = '<wpr-go-bin>'
-    self.wpr_updater._AddMissingURLsToArchive('<replay-log>')
-    extract_mock.assert_called_once_with('<replay-log>')
-    self._check_call.assert_called_once_with(
-        ['<wpr-go-bin>', 'add', 'other_archive', 'foo', 'bar'])
 
   @mock.patch(WPR_UPDATER + '_PrintRunInfo')
   @mock.patch(WPR_UPDATER + 'WprUpdater._DeleteExistingWpr')

@@ -33,10 +33,8 @@ from telemetry import record_wpr
 from telemetry.wpr import archive_info
 from telemetry.internal.browser import browser_finder
 from telemetry.internal.browser import browser_options
-from telemetry.internal.util import binary_manager as telemetry_binary_manager
 
-import py_utils
-from py_utils import binary_manager, cloud_storage
+from py_utils import cloud_storage
 
 
 SRC_ROOT = os.path.abspath(
@@ -52,8 +50,6 @@ DEFAULT_REVIEWERS = ['johnchen@chromium.org']
 MISSING_RESOURCE_RE = re.compile(
     r'\[network\]: Failed to load resource: the server responded with a status '
     r'of 404 \(\) ([^\s]+)')
-TELEMETRY_BIN_DEPS_CONFIG = os.path.join(
-    path_util.GetTelemetryDir(), 'telemetry', 'binary_dependencies.json')
 
 
 def _GetBranchName():
@@ -220,7 +216,6 @@ class WprUpdater(object):
     self.output_dir = tempfile.mkdtemp()
     self.bug_id = args.bug_id
     self.reviewers = args.reviewers or DEFAULT_REVIEWERS
-    self.wpr_go_bin = None
 
     self._LoadArchiveInfo()
 
@@ -432,29 +427,6 @@ class WprUpdater(object):
         configuration=configuration, url=resp['jobUrl'])
     return resp['jobUrl']
 
-  def _AddMissingURLsToArchive(self, replay_out_file):
-    existing_wprs = self._GetWprArchivePathsAndUsageForStory()
-    if len(existing_wprs) == 0:
-      return
-
-    if len(existing_wprs) == 1:
-      archive = existing_wprs[0][0]
-    else:
-      cli_helpers.Comment("WPR Archives for this story:")
-      print(str(self._GetWprArchivesForStory()))
-      archive = cli_helpers.Ask(
-          'Which archive should I add URLs to?',
-          [e[0] for e in existing_wprs])
-
-    missing_urls = _ExtractMissingURLsFromLog(replay_out_file)
-    if not missing_urls:
-      return
-
-    if not self.wpr_go_bin:
-      self.wpr_go_bin = (
-        binary_manager.BinaryManager([TELEMETRY_BIN_DEPS_CONFIG]).FetchPath(
-        'wpr_go', py_utils.GetHostArchName(), py_utils.GetHostOsName()))
-    subprocess.check_call([self.wpr_go_bin, 'add', archive] + missing_urls)
 
   def LiveRun(self):
     cli_helpers.Step('LIVE RUN: %s' % self.story)
@@ -626,9 +598,7 @@ class WprUpdater(object):
     while action != 'continue':
       if action == 'record':
         self.RecordWpr()
-      if action == 'add-missing':
-        self._AddMissingURLsToArchive(replay_out_file)
-      if action in ['record', 'add-missing', 'just-replay']:
+      if action in ['record', 'just-replay']:
         replay_out_file = self.ReplayWpr()
         cli_helpers.Comment(
             'Check that the console:error:all metrics above have low values '
@@ -643,11 +613,10 @@ class WprUpdater(object):
       if action == 'stop':
         return
       action = cli_helpers.Ask(
-          'Should I record and replay again, just replay, add all missing URLs '
-          'into archive and try replay again, continue with uploading CL, stop '
+          'Should I record and replay again, just replay, continue with uploading CL, stop '
           'and exit, or would you prefer to see diff between live/replay '
           'console logs?',
-          ['record', 'just-replay', 'add-missing', 'continue', 'stop', 'diff'],
+          ['record', 'just-replay', 'continue', 'stop', 'diff'],
           default='continue')
 
     # Upload WPR and create a WIP CL for the new story.
@@ -717,7 +686,6 @@ class CrossbenchWprUpdater(object):
     self.binary = args.binary
     self.bug_id = args.bug_id
     self.reviewers = args.reviewers or DEFAULT_REVIEWERS
-    self.wpr_go_bin = None
     self.cb_wprgo_file = args.cb_wprgo_file
 
     self._SetupOutput(args)
@@ -740,7 +708,6 @@ class CrossbenchWprUpdater(object):
     options = browser_options.BrowserFinderOptions()
     options.chrome_root = pathlib.Path(SRC_ROOT)
     parser = options.CreateParser()
-    telemetry_binary_manager.InitDependencyManager(None)
     parser.parse_args([self._CHROME_BROWSER % browser_arg])
     # Finding the browser package and installing the required dependencies.
     possible_browser = browser_finder.FindBrowser(options)
