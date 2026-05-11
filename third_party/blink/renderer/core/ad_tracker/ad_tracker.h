@@ -212,6 +212,9 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
 
   // Returns true if `api` is a monkeyaptched function and matches `function` in
   // the `isolate`'s current context.
+  // WARNING: This function executes js and can therefore modify the members of
+  // this class. Consider all iterators obtained before calling
+  // IsFunctionAMonkeyPatch to be invalid.
   // TODO(jkarlin): This function really wants a context, not an isolate.
   bool IsFunctionAMonkeyPatch(v8::Isolate* isolate,
                               const v8::Local<v8::Function>& function,
