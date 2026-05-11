@@ -13,6 +13,7 @@
 #include "components/sync_sessions/mock_session_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 
 using testing::_;
 using testing::IsNull;
@@ -81,7 +82,36 @@ TEST_F(SyncedScreenshotDataSourceTest, StartDataRequest_ValidURL) {
         EXPECT_EQ(returned_data, screenshot_data);
       });
 
-  const GURL url("chrome://synced-screenshot/session_123/456");
+  const GURL url(absl::StrFormat("chrome://synced-screenshot/%s/%d",
+                                 session_tag, tab_id.id()));
+  StartDataRequest(url, callback.Get());
+}
+
+TEST_F(SyncedScreenshotDataSourceTest, StartDataRequest_ValidURL_WithQuery) {
+  const std::string session_tag = "session_123";
+  const SessionID tab_id = SessionID::FromSerializedValue(456);
+  const std::string screenshot_data = "fake_jpeg_data";
+
+  EXPECT_CALL(*mock_session_sync_service(),
+              ReadTabScreenshot(session_tag, tab_id, _))
+      .WillOnce(
+          [&](const std::string&, SessionID,
+              base::OnceCallback<void(std::optional<std::string>)> callback) {
+            std::move(callback).Run(screenshot_data);
+          });
+
+  base::MockCallback<content::URLDataSource::GotDataCallback> callback;
+  EXPECT_CALL(callback, Run(_))
+      .WillOnce([&](scoped_refptr<base::RefCountedMemory> data) {
+        ASSERT_TRUE(data);
+        std::string returned_data(reinterpret_cast<const char*>(data->front()),
+                                  data->size());
+        EXPECT_EQ(returned_data, screenshot_data);
+      });
+
+  const GURL url(
+      absl::StrFormat("chrome://synced-screenshot/%s/%d?timestamp=789",
+                      session_tag, tab_id.id()));
   StartDataRequest(url, callback.Get());
 }
 
@@ -122,6 +152,7 @@ TEST_F(SyncedScreenshotDataSourceTest, StartDataRequest_NotFound) {
   base::MockCallback<content::URLDataSource::GotDataCallback> callback;
   EXPECT_CALL(callback, Run(IsNull()));
 
-  const GURL url("chrome://synced-screenshot/session_123/456");
+  const GURL url(absl::StrFormat("chrome://synced-screenshot/%s/%d",
+                                 session_tag, tab_id.id()));
   StartDataRequest(url, callback.Get());
 }

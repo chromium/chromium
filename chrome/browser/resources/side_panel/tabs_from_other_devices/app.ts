@@ -156,7 +156,8 @@ export class TabsFromOtherDevicesAppElement extends
       ...tab,
       sessionTag,
       screenshotUrl: this.showScreenshots_ ?
-          `chrome://synced-screenshot/${sessionTag}/${tab.sessionId}` :
+          `chrome://synced-screenshot/${sessionTag}/${tab.sessionId}` +
+              `?${tab.timestamp}` :
           undefined,
     };
   }

@@ -41,17 +41,17 @@ void SyncedScreenshotDataSource::StartDataRequest(
     return;
   }
 
-  const std::string path = content::URLDataSource::URLToRequestPath(url);
+  std::string_view path = url.path();
 
-  // Path format: <session_tag>/<tab_id>
+  // Path format: /<session_tag>/<tab_id>
   size_t slash_pos = path.find_last_of('/');
-  if (slash_pos == std::string::npos) {
+  if (slash_pos == std::string_view::npos || slash_pos == 0) {
     std::move(callback).Run(nullptr);
     return;
   }
 
-  std::string session_tag = path.substr(0, slash_pos);
-  std::string tab_id_str = path.substr(slash_pos + 1);
+  std::string_view session_tag = path.substr(1, slash_pos - 1);
+  std::string_view tab_id_str = path.substr(slash_pos + 1);
 
   int32_t tab_id_val = 0;
   if (!base::StringToInt(tab_id_str, &tab_id_val) ||
@@ -63,7 +63,7 @@ void SyncedScreenshotDataSource::StartDataRequest(
   SessionID tab_id = SessionID::FromSerializedValue(tab_id_val);
 
   session_sync_service->ReadTabScreenshot(
-      session_tag, tab_id,
+      std::string(session_tag), tab_id,
       base::BindOnce(
           [](content::URLDataSource::GotDataCallback callback,
              std::optional<std::string> screenshot_data) {
