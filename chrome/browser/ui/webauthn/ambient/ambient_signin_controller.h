@@ -29,11 +29,6 @@ namespace page_actions {
 class PageActionController;
 }  // namespace page_actions
 
-namespace password_manager {
-class PasskeyCredential;
-struct PasswordForm;
-}  // namespace password_manager
-
 namespace tabs {
 class TabInterface;
 }  // namespace tabs
@@ -60,19 +55,12 @@ class AmbientSigninController
   ~AmbientSigninController() override;
 
   // Shows the Ambient UI with the provided credentials.
-  void Show(AuthenticatorRequestDialogModel* model,
-            std::vector<password_manager::PasskeyCredential> credentials,
-            std::vector<std::unique_ptr<password_manager::PasswordForm>> forms,
-            PasskeyCredentialSelectionCallback passkey_callback,
-            PasswordCredentialSelectionCallback password_callback);
+  void Show(AuthenticatorRequestDialogModel* model);
 
   void TriggerPageActionSignIn();
 
-  // Called when the user selects a passkey shown in the bubble.
-  void OnPasskeySelected(const std::vector<uint8_t>& account_id);
-
-  // Called when the user selects a password shown in the bubble.
-  void OnPasswordSelected(const password_manager::PasswordForm* form);
+  // Called when a mechanism is selected.
+  void OnMechanismSelected(size_t index);
 
   std::u16string GetRpIdForDisplay() const;
   base::OnceClosure GetSignInCallback();
@@ -112,12 +100,9 @@ class AmbientSigninController
 
   std::vector<base::CallbackListSubscription> tab_subscriptions_;
   raw_ptr<AmbientSigninBubbleView> ambient_signin_bubble_view_;
-  PasskeyCredentialSelectionCallback passkey_selection_callback_;
-  PasswordCredentialSelectionCallback password_selection_callback_;
-  std::vector<std::unique_ptr<password_manager::PasswordForm>> password_forms_;
-  std::vector<password_manager::PasskeyCredential> passkey_credentials_;
 
   raw_ptr<AuthenticatorRequestDialogModel> model_;
+  std::vector<size_t> credential_indices_;
 
   // Set when `Show()` is called. Retains the UI type until `Show()` is called
   // again.

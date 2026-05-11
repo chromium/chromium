@@ -1847,15 +1847,7 @@ void AuthenticatorRequestDialogController::StartAutofillRequest() {
     auto* controller =
         ambient_signin::AmbientSigninController::GetOrCreateForCurrentDocument(
             render_frame_host);
-    controller->Show(
-        model(), credentials, std::move(passwords_),
-        base::BindOnce(
-            IgnoreResult(
-                &AuthenticatorRequestDialogController::OnAccountPreselected),
-            weak_factory_.GetWeakPtr()),
-        base::BindRepeating(
-            &AuthenticatorRequestDialogModel::OnPasswordCredentialSelected,
-            base::Unretained(model_)));
+    controller->Show(model());
   }
 
   ChromeWebAuthnCredentialsDelegate* webauthn_credentials_delegate =
@@ -1920,7 +1912,8 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
   const bool is_get_assertion =
       transport_availability_.request_type == FidoRequestType::kGetAssertion;
   bool specific_local_passkeys_listed = false;
-  if (is_get_assertion && IsModalRequest(ui_presentation())) {
+  if (is_get_assertion && (IsModalRequest(ui_presentation()) ||
+                           ui_presentation() == UIPresentation::kAmbient)) {
     // List passkeys instead of mechanisms for platform & GPM authenticators.
     for (const auto& cred : transport_availability_.recognized_credentials) {
       if (cred.source == AuthenticatorType::kICloudKeychain &&

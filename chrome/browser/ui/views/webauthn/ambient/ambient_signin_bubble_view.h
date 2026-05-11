@@ -12,13 +12,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
-
-namespace password_manager {
-class PasskeyCredential;
-struct PasswordForm;
-}  // namespace password_manager
 
 namespace ui {
 class Event;
@@ -56,10 +52,11 @@ class AmbientSigninBubbleView : public views::BubbleDialogDelegateView {
 
   // Provide credentials for display and show the bubble. This must be called
   // before any of the methods below are called.
+  // `mechanisms` is the full list of indices from the model. `indices`
+  // indicates which entries in `mechanisms` need to be displayed.
   void ShowCredentials(
-      const std::vector<password_manager::PasskeyCredential>& credentials,
-      const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
-          forms);
+      const std::vector<AuthenticatorRequestDialogModel::Mechanism>& mechanisms,
+      const std::vector<size_t>& indices);
 
   void Show();
   void Hide();
@@ -68,17 +65,13 @@ class AmbientSigninBubbleView : public views::BubbleDialogDelegateView {
   void DisconnectController();
 
  private:
-  void OnPasskeySelected(const std::vector<uint8_t>& account_id,
-                         const ui::Event& event);
-  void OnPasswordSelected(const password_manager::PasswordForm* form,
-                          const ui::Event& event);
+  void OnMechanismSelected(size_t index, const ui::Event& event);
   void SetModeByCredentialCount(size_t credential_count);
   void SetButtonArea();
 
-  std::unique_ptr<views::View> CreatePasskeyRow(
-      const password_manager::PasskeyCredential& passkey);
-  std::unique_ptr<views::View> CreatePasswordRow(
-      const password_manager::PasswordForm* form);
+  std::unique_ptr<views::View> CreateRow(
+      const AuthenticatorRequestDialogModel::Mechanism& mechanism,
+      size_t index);
 
   Mode mode_ = Mode::kSingleCredential;
   raw_ptr<AmbientSigninController> controller_;

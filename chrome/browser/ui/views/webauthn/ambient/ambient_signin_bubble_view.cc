@@ -90,15 +90,11 @@ AmbientSigninBubbleView::~AmbientSigninBubbleView() {
 }
 
 void AmbientSigninBubbleView::ShowCredentials(
-    const std::vector<password_manager::PasskeyCredential>& credentials,
-    const std::vector<std::unique_ptr<password_manager::PasswordForm>>& forms) {
-  SetModeByCredentialCount(credentials.size() + forms.size());
-  for (const auto& passkey : credentials) {
-    AddChildView(CreatePasskeyRow(passkey));
-  }
-
-  for (const auto& form : forms) {
-    AddChildView(CreatePasswordRow(form.get()));
+    const std::vector<AuthenticatorRequestDialogModel::Mechanism>& mechanisms,
+    const std::vector<size_t>& indices) {
+  SetModeByCredentialCount(indices.size());
+  for (size_t i = 0; i < indices.size(); ++i) {
+    AddChildView(CreateRow(mechanisms.at(indices.at(i)), indices.at(i)));
   }
   SetButtonArea();
 
@@ -132,23 +128,12 @@ void AmbientSigninBubbleView::DisconnectController() {
   Close();
 }
 
-void AmbientSigninBubbleView::OnPasskeySelected(
-    const std::vector<uint8_t>& account_id,
-    const ui::Event& event) {
+void AmbientSigninBubbleView::OnMechanismSelected(size_t index,
+                                                  const ui::Event& event) {
   if (!controller_) {
     return;
   }
-  controller_->OnPasskeySelected(account_id);
-  Hide();
-}
-
-void AmbientSigninBubbleView::OnPasswordSelected(
-    const password_manager::PasswordForm* form,
-    const ui::Event& event) {
-  if (!controller_) {
-    return;
-  }
-  controller_->OnPasswordSelected(form);
+  controller_->OnMechanismSelected(index);
   Hide();
 }
 
@@ -181,34 +166,15 @@ void AmbientSigninBubbleView::SetButtonArea() {
   set_fixed_width(kBubbleWidth);
 }
 
-std::unique_ptr<views::View> AmbientSigninBubbleView::CreatePasskeyRow(
-    const password_manager::PasskeyCredential& passkey) {
+std::unique_ptr<views::View> AmbientSigninBubbleView::CreateRow(
+    const AuthenticatorRequestDialogModel::Mechanism& mechanism,
+    size_t index) {
   auto row = std::make_unique<HoverButton>(
-      base::BindRepeating(&AmbientSigninBubbleView::OnPasskeySelected,
-                          weak_ptr_factory_.GetWeakPtr(),
-                          passkey.credential_id()),
-      /*icon_view=*/
+      base::BindRepeating(&AmbientSigninBubbleView::OnMechanismSelected,
+                          weak_ptr_factory_.GetWeakPtr(), index),
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          vector_icons::kPasskeyIcon, ui::kColorIcon, kIconSize)),
-      /*title=*/base::UTF8ToUTF16(passkey.username()),
-      /*subtitle=*/passkey.GetAuthenticatorLabel(),
-      /*secondary_view=*/GetSecondaryIconForRow(mode_));
-  return row;
-}
-
-std::unique_ptr<views::View> AmbientSigninBubbleView::CreatePasswordRow(
-    const password_manager::PasswordForm* form) {
-  auto row = std::make_unique<HoverButton>(
-      base::BindRepeating(&AmbientSigninBubbleView::OnPasswordSelected,
-                          weak_ptr_factory_.GetWeakPtr(), form),
-      /*icon_view=*/
-      std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
-          kPasswordFieldIcon, ui::kColorIcon, kIconSize)),
-      /*title=*/form->username_value,
-      /*subtitle=*/
-      std::u16string(form->password_value.length(),
-                     password_manager::constants::kPasswordReplacementChar),
-      /*secondary_view=*/GetSecondaryIconForRow(mode_));
+          *mechanism.icon, ui::kColorIcon, kIconSize)),
+      mechanism.name, mechanism.description, GetSecondaryIconForRow(mode_));
   return row;
 }
 

@@ -11,15 +11,15 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/mock_callback.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/page_action/action_ids.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
 #include "chrome/browser/ui/page_action/test_support/mock_page_action_controller.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "components/password_manager/core/browser/passkey_credential.h"
-#include "components/password_manager/core/browser/password_form.h"
 #include "components/tabs/public/mock_tab_interface.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/web_contents_tester.h"
@@ -33,8 +33,6 @@ namespace ambient_signin {
 
 namespace {
 
-using password_manager::PasskeyCredential;
-using password_manager::PasswordForm;
 using testing::_;
 using testing::Return;
 
@@ -65,15 +63,6 @@ class AmbientSigninControllerTest : public ChromeRenderViewHostTestHarness {
     return mock_page_action_controller_.get();
   }
 
-  PasskeyCredential TestCredential() {
-    return PasskeyCredential(PasskeyCredential::Source::kGooglePasswordManager,
-                             PasskeyCredential::RpId("example.com"),
-                             PasskeyCredential::CredentialId({1, 2, 3}),
-                             PasskeyCredential::UserId({4, 5, 6}),
-                             PasskeyCredential::Username("username"),
-                             PasskeyCredential::DisplayName("display name"));
-  }
-
  protected:
   std::unique_ptr<tabs::MockTabInterface> mock_tab_interface_;
   std::unique_ptr<page_actions::MockPageActionController>
@@ -84,9 +73,10 @@ TEST_F(AmbientSigninControllerTest, ShowSinglePasskey) {
   auto model =
       base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
   model->relying_party_id = "example.com";
-  std::vector<PasskeyCredential> credentials;
-  credentials.emplace_back(TestCredential());
-  std::vector<std::unique_ptr<PasswordForm>> forms;
+  model->mechanisms.emplace_back(
+      AuthenticatorRequestDialogModel::Mechanism::Credential(
+          {device::AuthenticatorType::kEnclave, {4, 5, 6}, std::nullopt}),
+      u"username", vector_icons::kPasskeyIcon, base::DoNothing());
 
   EXPECT_CALL(*page_action_controller(), Show(kActionWebAuthnAmbientSignin));
   EXPECT_CALL(*page_action_controller(),
@@ -97,19 +87,18 @@ TEST_F(AmbientSigninControllerTest, ShowSinglePasskey) {
                            l10n_util::GetStringFUTF16(
                                IDS_WEBAUTHN_SIGN_IN_AS_PROMPT, u"username")));
 
-  controller()->Show(model.get(), std::move(credentials), std::move(forms),
-                     base::DoNothing(), base::DoNothing());
+  controller()->Show(model.get());
 }
 
 TEST_F(AmbientSigninControllerTest, ShowSinglePassword) {
   auto model =
       base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
   model->relying_party_id = "example.com";
-  std::vector<PasskeyCredential> credentials;
-  std::vector<std::unique_ptr<PasswordForm>> forms;
-  auto form = std::make_unique<PasswordForm>();
-  form->username_value = u"username";
-  forms.push_back(std::move(form));
+  model->mechanisms.emplace_back(
+      AuthenticatorRequestDialogModel::Mechanism::Password(
+          AuthenticatorRequestDialogModel::Mechanism::PasswordInfo(
+              std::nullopt)),
+      u"username", kPasswordFieldIcon, base::DoNothing());
 
   EXPECT_CALL(*page_action_controller(), Show(kActionWebAuthnAmbientSignin));
   EXPECT_CALL(*page_action_controller(),
@@ -120,23 +109,22 @@ TEST_F(AmbientSigninControllerTest, ShowSinglePassword) {
                            l10n_util::GetStringFUTF16(
                                IDS_WEBAUTHN_SIGN_IN_AS_PROMPT, u"username")));
 
-  controller()->Show(model.get(), std::move(credentials), std::move(forms),
-                     base::DoNothing(), base::DoNothing());
+  controller()->Show(model.get());
 }
 
 TEST_F(AmbientSigninControllerTest, TriggerPageActionSignInPasskey) {
   auto model =
       base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
   model->relying_party_id = "example.com";
-  std::vector<PasskeyCredential> credentials;
-  credentials.emplace_back(TestCredential());
-  std::vector<std::unique_ptr<PasswordForm>> forms;
+  base::MockRepeatingClosure passkey_callback;
+  model->mechanisms.emplace_back(
+      AuthenticatorRequestDialogModel::Mechanism::Credential(
+          {device::AuthenticatorType::kEnclave, {4, 5, 6}, std::nullopt}),
+      u"username", vector_icons::kPasskeyIcon, passkey_callback.Get());
 
-  base::MockOnceCallback<void(const std::vector<uint8_t>)> passkey_callback;
-  EXPECT_CALL(passkey_callback, Run(std::vector<uint8_t>{1, 2, 3}));
+  EXPECT_CALL(passkey_callback, Run());
 
-  controller()->Show(model.get(), std::move(credentials), std::move(forms),
-                     passkey_callback.Get(), base::NullCallback());
+  controller()->Show(model.get());
 
   EXPECT_CALL(*page_action_controller(), Hide(kActionWebAuthnAmbientSignin))
       .Times(testing::AtLeast(1));
@@ -148,20 +136,16 @@ TEST_F(AmbientSigninControllerTest, TriggerPageActionSignInPassword) {
   auto model =
       base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
   model->relying_party_id = "example.com";
-  std::vector<PasskeyCredential> credentials;
-  std::vector<std::unique_ptr<PasswordForm>> forms;
-  auto form = std::make_unique<PasswordForm>();
-  form->username_value = u"username";
-  form->password_value = u"password";
-  forms.push_back(std::move(form));
+  base::MockRepeatingClosure password_callback;
+  model->mechanisms.emplace_back(
+      AuthenticatorRequestDialogModel::Mechanism::Password(
+          AuthenticatorRequestDialogModel::Mechanism::PasswordInfo(
+              std::nullopt)),
+      u"username", kPasswordFieldIcon, password_callback.Get());
 
-  base::MockOnceCallback<void(PasswordCredentialPair)> password_callback;
-  EXPECT_CALL(password_callback,
-              Run(std::make_pair(std::u16string(u"username"),
-                                 std::u16string(u"password"))));
+  EXPECT_CALL(password_callback, Run());
 
-  controller()->Show(model.get(), std::move(credentials), std::move(forms),
-                     base::NullCallback(), password_callback.Get());
+  controller()->Show(model.get());
 
   EXPECT_CALL(*page_action_controller(), Hide(kActionWebAuthnAmbientSignin))
       .Times(testing::AtLeast(1));
@@ -173,12 +157,12 @@ TEST_F(AmbientSigninControllerTest, OnRequestCompleteClosesUI) {
   auto model =
       base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
   model->relying_party_id = "example.com";
-  std::vector<PasskeyCredential> credentials;
-  credentials.emplace_back(TestCredential());
-  std::vector<std::unique_ptr<PasswordForm>> forms;
+  model->mechanisms.emplace_back(
+      AuthenticatorRequestDialogModel::Mechanism::Credential(
+          {device::AuthenticatorType::kEnclave, {4, 5, 6}, std::nullopt}),
+      u"username", vector_icons::kPasskeyIcon, base::DoNothing());
 
-  controller()->Show(model.get(), std::move(credentials), std::move(forms),
-                     base::DoNothing(), base::DoNothing());
+  controller()->Show(model.get());
 
   EXPECT_CALL(*page_action_controller(), Hide(kActionWebAuthnAmbientSignin))
       .Times(testing::AtLeast(1));
@@ -190,15 +174,15 @@ TEST_F(AmbientSigninControllerTest, GetSignInCallbackPasskey) {
   auto model =
       base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
   model->relying_party_id = "example.com";
-  std::vector<PasskeyCredential> credentials;
-  credentials.emplace_back(TestCredential());
-  std::vector<std::unique_ptr<PasswordForm>> forms;
+  base::MockRepeatingClosure passkey_callback;
+  model->mechanisms.emplace_back(
+      AuthenticatorRequestDialogModel::Mechanism::Credential(
+          {device::AuthenticatorType::kEnclave, {4, 5, 6}, std::nullopt}),
+      u"username", vector_icons::kPasskeyIcon, passkey_callback.Get());
 
-  base::MockOnceCallback<void(const std::vector<uint8_t>)> passkey_callback;
-  EXPECT_CALL(passkey_callback, Run(std::vector<uint8_t>{1, 2, 3}));
+  EXPECT_CALL(passkey_callback, Run());
 
-  controller()->Show(model.get(), std::move(credentials), std::move(forms),
-                     passkey_callback.Get(), base::DoNothing());
+  controller()->Show(model.get());
 
   EXPECT_CALL(*page_action_controller(), Hide(kActionWebAuthnAmbientSignin))
       .Times(testing::AtLeast(1));
@@ -211,20 +195,16 @@ TEST_F(AmbientSigninControllerTest, GetSignInCallbackPassword) {
   auto model =
       base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
   model->relying_party_id = "example.com";
-  std::vector<PasskeyCredential> credentials;
-  std::vector<std::unique_ptr<PasswordForm>> forms;
-  auto form = std::make_unique<PasswordForm>();
-  form->username_value = u"username";
-  form->password_value = u"password";
-  forms.push_back(std::move(form));
+  base::MockRepeatingClosure password_callback;
+  model->mechanisms.emplace_back(
+      AuthenticatorRequestDialogModel::Mechanism::Password(
+          AuthenticatorRequestDialogModel::Mechanism::PasswordInfo(
+              std::nullopt)),
+      u"username", kPasswordFieldIcon, password_callback.Get());
 
-  base::MockOnceCallback<void(PasswordCredentialPair)> password_callback;
-  EXPECT_CALL(password_callback,
-              Run(std::make_pair(std::u16string(u"username"),
-                                 std::u16string(u"password"))));
+  EXPECT_CALL(password_callback, Run());
 
-  controller()->Show(model.get(), std::move(credentials), std::move(forms),
-                     base::DoNothing(), password_callback.Get());
+  controller()->Show(model.get());
 
   EXPECT_CALL(*page_action_controller(), Hide(kActionWebAuthnAmbientSignin))
       .Times(testing::AtLeast(1));

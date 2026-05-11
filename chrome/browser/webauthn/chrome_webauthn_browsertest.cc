@@ -49,6 +49,7 @@
 #include "chrome/browser/webauthn/authenticator_request_dialog_controller.h"
 #include "chrome/browser/webauthn/authenticator_transport.h"
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
+#include "chrome/browser/webauthn/fake_password_credential_fetcher.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
 #include "chrome/browser/webauthn/test_util.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
@@ -57,6 +58,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/webauthn/core/browser/passkey_change_quota_tracker.h"
@@ -158,19 +160,6 @@ static constexpr char kGetAssertionWithHints[] = R"((() => {
 })())";
 
 #endif  // BUILDFLAG(IS_WIN)
-
-static constexpr char kAmbientUIGetRequest[] = R"((() => {
-navigator.credentials.get({
-  uiMode: 'passive',
-  mediation: 'conditional',
-  publicKey: {
-    challenge: new Uint8Array([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]),
-    timeout: 10000,
-    userVerification: 'discouraged',
-    allowCredentials: [],
-  }}).then(c => window.domAutomationController.send('webauthn: OK'),
-           e => window.domAutomationController.send('error ' + e));
-})())";
 
 std::string GetSignalUnknownCredentialScript(
     base::span<const uint8_t> credential_id) {
@@ -1180,6 +1169,34 @@ IN_PROC_BROWSER_TEST_F(WebAuthnConditionalUITest,
 }
 
 class WebAuthnAmbientUITest : public WebAuthnBrowserTest {
+ protected:
+  static constexpr char kAmbientUIGetRequest[] = R"((() => {
+    navigator.credentials.get({
+      uiMode: 'passive',
+      mediation: 'conditional',
+      publicKey: {
+        challenge: new Uint8Array([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]),
+        timeout: 10000,
+        userVerification: 'discouraged',
+        allowCredentials: [],
+      }}).then(c => window.domAutomationController.send('webauthn: OK'),
+               e => window.domAutomationController.send('error ' + e));
+    })())";
+
+  static constexpr char kAmbientUIGetRequestWithPassword[] = R"((() => {
+    navigator.credentials.get({
+      uiMode: 'passive',
+      mediation: 'conditional',
+      password: true,
+      publicKey: {
+        challenge: new Uint8Array([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]),
+        timeout: 10000,
+        userVerification: 'discouraged',
+        allowCredentials: [],
+      }}).then(c => window.domAutomationController.send('webauthn: OK'),
+               e => window.domAutomationController.send('error ' + e));
+    })())";
+
  public:
   WebAuthnAmbientUITest() {
     // kWebAuthnImmediateGet is necessary because the uiMode attribute is not
@@ -1207,6 +1224,12 @@ class WebAuthnAmbientUITest : public WebAuthnBrowserTest {
     }
 
     // ChromeAuthenticatorRequestDelegate::TestObserver:
+    void Created(ChromeAuthenticatorRequestDelegate* delegate) override {
+      if (password_fetcher_) {
+        delegate->SetPasswordFetcherForTesting(std::move(password_fetcher_));
+      }
+    }
+
     void OnTransportAvailabilityEnumerated(
         ChromeAuthenticatorRequestDelegate* delegate,
         device::FidoRequestHandlerBase::TransportAvailabilityInfo* tai)
@@ -1230,11 +1253,17 @@ class WebAuthnAmbientUITest : public WebAuthnBrowserTest {
       }
     }
 
+    void SetPasswordFetcher(
+        std::unique_ptr<PasswordCredentialFetcher> fetcher) {
+      password_fetcher_ = std::move(fetcher);
+    }
+
     std::vector<std::string> accounts_;
 
    private:
     State state_ = kHasNotShowedUI;
     base::RunLoop run_loop_;
+    std::unique_ptr<PasswordCredentialFetcher> password_fetcher_;
   };
 
   void SetUpOnMainThread() override {
@@ -1354,8 +1383,111 @@ IN_PROC_BROWSER_TEST_F(WebAuthnAmbientUITest, AmbientUIBubble) {
   ASSERT_TRUE(ambient_controller);
 
   // Simulate user selection.
-  ambient_controller->OnPasskeySelected(
-      std::vector<uint8_t>(std::begin(kCredentialID), std::end(kCredentialID)));
+  // There are two credentials, so they should be at indices 0 and 1.
+  ambient_controller->OnMechanismSelected(0);
+
+  std::string result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&result));
+  EXPECT_EQ(result, "\"webauthn: OK\"");
+}
+
+// Tests that Ambient UI correctly deduplicates two passkeys with the same
+// user ID.
+IN_PROC_BROWSER_TEST_F(WebAuthnAmbientUITest, AmbientUIDeduplication) {
+  // One passkey is provided by GPM and the other is from a platform provider.
+  auto* passkey_model = static_cast<webauthn::TestPasskeyModel*>(
+      PasskeyModelFactory::GetForProfile(browser()->profile()));
+  passkey_model->AddNewPasskeyForTesting(CreateWebAuthnCredentialSpecifics(
+      kCredentialID, kUserId1, kUsername1, kDisplayName1));
+
+  virtual_device_factory_->mutable_state()->InjectResidentKey(
+      kCredentialID2, "www.example.com",
+      std::vector<uint8_t>(std::begin(kUserId1), std::end(kUserId1)),
+      kUsername1, kDisplayName1);
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+
+  virtual_device_factory_->mutable_state()->simulate_press_callback =
+      base::BindLambdaForTesting(
+          [](device::VirtualFidoDevice* device) { return true; });
+
+  content::ExecuteScriptAsync(web_contents, kAmbientUIGetRequest);
+  observer_->WaitForUI();
+
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  page_actions::PageActionView* action_view =
+      browser_view->GetLocationBarView()
+          ->page_action_container()
+          ->GetPageActionView(kActionWebAuthnAmbientSignin);
+  // If deduplication failed, there would be 2 credentials, triggering the
+  // bubble instead of page action.
+  ASSERT_TRUE(action_view);
+  EXPECT_TRUE(action_view->GetVisible());
+
+  // Simulate user selection.
+  ui::MouseEvent click(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
+                       base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON,
+                       ui::EF_LEFT_MOUSE_BUTTON);
+  action_view->NotifyClick(click);
+
+  std::string result;
+  ASSERT_TRUE(message_queue.WaitForMessage(&result));
+  EXPECT_EQ(result, "\"webauthn: OK\"");
+}
+
+// Tests that Ambient UI correctly deduplicates a passkey and a password for the
+// same account.
+IN_PROC_BROWSER_TEST_F(WebAuthnAmbientUITest, AmbientUIPasswordDeduplication) {
+  virtual_device_factory_->mutable_state()->InjectResidentKey(
+      kCredentialID, "www.example.com",
+      std::vector<uint8_t>(std::begin(kUserId1), std::end(kUserId1)),
+      kUsername1, kDisplayName1);
+  auto* passkey_model = static_cast<webauthn::TestPasskeyModel*>(
+      PasskeyModelFactory::GetForProfile(browser()->profile()));
+  passkey_model->AddNewPasskeyForTesting(CreateWebAuthnCredentialSpecifics(
+      kCredentialID, kUserId1, kUsername1, kDisplayName1));
+
+  auto fetcher = std::make_unique<FakePasswordCredentialFetcher>(
+      browser()
+          ->tab_strip_model()
+          ->GetActiveWebContents()
+          ->GetPrimaryMainFrame());
+  std::vector<std::unique_ptr<password_manager::PasswordForm>> passwords;
+  auto form = std::make_unique<password_manager::PasswordForm>();
+  form->username_value = base::UTF8ToUTF16(std::string(kUsername1));
+  form->password_value = u"password";
+  form->url = GURL("https://www.example.com");
+  passwords.push_back(std::move(form));
+  fetcher->SetPasswords(std::move(passwords));
+  observer_->SetPasswordFetcher(std::move(fetcher));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::DOMMessageQueue message_queue(web_contents);
+
+  virtual_device_factory_->mutable_state()->simulate_press_callback =
+      base::BindLambdaForTesting(
+          [](device::VirtualFidoDevice* device) { return true; });
+
+  content::ExecuteScriptAsync(web_contents, kAmbientUIGetRequestWithPassword);
+  observer_->WaitForUI();
+
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  page_actions::PageActionView* action_view =
+      browser_view->GetLocationBarView()
+          ->page_action_container()
+          ->GetPageActionView(kActionWebAuthnAmbientSignin);
+  // If deduplication failed, there would be 2 mechanisms (1 passkey, 1
+  // password), triggering the bubble instead of page action.
+  ASSERT_TRUE(action_view);
+  EXPECT_TRUE(action_view->GetVisible());
+
+  ui::MouseEvent click(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
+                       base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON,
+                       ui::EF_LEFT_MOUSE_BUTTON);
+  action_view->NotifyClick(click);
 
   std::string result;
   ASSERT_TRUE(message_queue.WaitForMessage(&result));

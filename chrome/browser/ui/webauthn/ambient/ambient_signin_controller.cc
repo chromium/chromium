@@ -27,8 +27,6 @@
 #include "chrome/browser/ui/views/webauthn/ambient/ambient_signin_bubble_view.h"
 #include "chrome/browser/ui/webauthn/webauthn_ui_helpers.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/password_manager/core/browser/passkey_credential.h"
-#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
@@ -58,13 +56,7 @@ AmbientSigninController::~AmbientSigninController() {
   }
 }
 
-void AmbientSigninController::Show(
-    AuthenticatorRequestDialogModel* model,
-    std::vector<password_manager::PasskeyCredential> credentials,
-    std::vector<std::unique_ptr<password_manager::PasswordForm>> forms,
-    PasskeyCredentialSelectionCallback passkey_callback,
-    PasswordCredentialSelectionCallback password_callback) {
-  CHECK(!credentials.empty() || !forms.empty());
+void AmbientSigninController::Show(AuthenticatorRequestDialogModel* model) {
   if (!model_) {
     model_ = model;
     model_->observers.AddObserver(this);
@@ -72,19 +64,23 @@ void AmbientSigninController::Show(
     CHECK(model == model_);
   }
 
-  passkey_selection_callback_ = std::move(passkey_callback);
-  password_selection_callback_ = std::move(password_callback);
-  passkey_credentials_.swap(credentials);
-  password_forms_.swap(forms);
+  credential_indices_.clear();
+  for (size_t i = 0; i < model_->mechanisms.size(); ++i) {
+    const auto& type = model_->mechanisms[i].type;
+    if (std::holds_alternative<
+            AuthenticatorRequestDialogModel::Mechanism::Credential>(type) ||
+        std::holds_alternative<
+            AuthenticatorRequestDialogModel::Mechanism::Password>(type)) {
+      credential_indices_.push_back(i);
+    }
+  }
+
+  CHECK(!credential_indices_.empty());
 
   // It is TBD how multiple credentials will work with Page Actions.
-  // This is a heuristic for the prototype:
-  // If there is only one passkey, show the Page Action, ignoring passwords if
-  // any are present. Else if there are multiple passkeys, show the bubble with
-  // all credentials. Else if there is only one password, show the Page Action.
-  // Else show the bubble with the multiple passwords.
-  if (passkey_credentials_.size() != 1 &&
-      !(passkey_credentials_.empty() && password_forms_.size() == 1)) {
+  // For now, show the page action if there is only one mechanism, and the
+  // bubble otherwise.
+  if (credential_indices_.size() != 1) {
     ui_type_ = UiType::kBubble;
     ShowBubbleView();
     return;
@@ -100,25 +96,14 @@ void AmbientSigninController::ShowPageAction() {
     return;
   }
 
-  if (passkey_credentials_.empty()) {
-    // Showing a password.
-    controller->OverrideText(
-        kActionWebAuthnAmbientSignin,
-        l10n_util::GetStringFUTF16(IDS_WEBAUTHN_SIGN_IN_AS_PROMPT,
-                                   password_forms_.at(0)->username_value));
-    controller->OverrideImage(
-        kActionWebAuthnAmbientSignin,
-        ui::ImageModel::FromVectorIcon(kPasswordFieldIcon, ui::kColorIcon));
-  } else {
-    controller->OverrideText(
-        kActionWebAuthnAmbientSignin,
-        l10n_util::GetStringFUTF16(
-            IDS_WEBAUTHN_SIGN_IN_AS_PROMPT,
-            base::UTF8ToUTF16(passkey_credentials_.at(0).username())));
-    controller->OverrideImage(kActionWebAuthnAmbientSignin,
-                              ui::ImageModel::FromVectorIcon(
-                                  vector_icons::kPasskeyIcon, ui::kColorIcon));
-  }
+  CHECK_EQ(credential_indices_.size(), 1u);
+  const auto& mechanism = model_->mechanisms.at(credential_indices_.at(0));
+  controller->OverrideText(kActionWebAuthnAmbientSignin,
+                           l10n_util::GetStringFUTF16(
+                               IDS_WEBAUTHN_SIGN_IN_AS_PROMPT, mechanism.name));
+  controller->OverrideImage(
+      kActionWebAuthnAmbientSignin,
+      ui::ImageModel::FromVectorIcon(*mechanism.icon, ui::kColorIcon));
 
   controller->Show(kActionWebAuthnAmbientSignin);
   controller->ShowSuggestionChip(kActionWebAuthnAmbientSignin);
@@ -126,13 +111,7 @@ void AmbientSigninController::ShowPageAction() {
 
 void AmbientSigninController::TriggerPageActionSignIn() {
   Close();
-
-  if (!passkey_credentials_.empty()) {
-    OnPasskeySelected(passkey_credentials_.begin()->credential_id());
-    return;
-  }
-  CHECK(!password_forms_.empty());
-  OnPasswordSelected(password_forms_.begin()->get());
+  OnMechanismSelected(0);
 }
 
 void AmbientSigninController::ShowBubbleView() {
@@ -150,8 +129,8 @@ void AmbientSigninController::ShowBubbleView() {
 
   if (!ambient_signin_bubble_view_) {
     ambient_signin_bubble_view_ = new AmbientSigninBubbleView(anchor, this);
-    ambient_signin_bubble_view_->ShowCredentials(passkey_credentials_,
-                                                 password_forms_);
+    ambient_signin_bubble_view_->ShowCredentials(model_->mechanisms,
+                                                 credential_indices_);
   }
 }
 
@@ -170,17 +149,9 @@ AmbientSigninController::AmbientSigninController(
           &AmbientSigninController::TabDidEnterForeground, GetWeakPtr())));
 }
 
-void AmbientSigninController::OnPasskeySelected(
-    const std::vector<uint8_t>& account_id) {
+void AmbientSigninController::OnMechanismSelected(size_t index) {
   ui_type_ = UiType::kNone;
-  std::move(passkey_selection_callback_).Run(account_id);
-}
-
-void AmbientSigninController::OnPasswordSelected(
-    const password_manager::PasswordForm* form) {
-  ui_type_ = UiType::kNone;
-  std::move(password_selection_callback_)
-      .Run(std::make_pair(form->username_value, form->password_value));
+  model_->mechanisms.at(credential_indices_.at(index)).callback.Run();
 }
 
 std::u16string AmbientSigninController::GetRpIdForDisplay() const {
@@ -198,14 +169,9 @@ std::u16string AmbientSigninController::GetRpIdForDisplay() const {
 }
 
 base::OnceClosure AmbientSigninController::GetSignInCallback() {
-  CHECK(password_forms_.size() + passkey_credentials_.size() == 1);
-  if (!password_forms_.empty()) {
-    return base::BindOnce(&AmbientSigninController::OnPasswordSelected,
-                          GetWeakPtr(), password_forms_.begin()->get());
-  }
-  return base::BindOnce(&AmbientSigninController::OnPasskeySelected,
-                        GetWeakPtr(),
-                        passkey_credentials_.begin()->credential_id());
+  CHECK_EQ(credential_indices_.size(), 1u);
+  return base::BindOnce(&AmbientSigninController::OnMechanismSelected,
+                        GetWeakPtr(), 0);
 }
 
 void AmbientSigninController::Close() {

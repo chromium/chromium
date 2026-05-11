@@ -54,8 +54,9 @@ struct MechanismTraits {
 
 std::vector<Mechanism> SortMechanisms(std::vector<Mechanism> mechanisms,
                                       UIPresentation ui_presentation) {
-  if (ui_presentation != UIPresentation::kModalImmediate) {
-    // For non-immediate presentations, return mechanisms as is.
+  if (ui_presentation != UIPresentation::kModalImmediate &&
+      ui_presentation != UIPresentation::kAmbient) {
+    // For non-immediate and non-ambient presentations, return mechanisms as is.
     // Further default sorting could be added here if needed for other modes.
     return mechanisms;
   }
