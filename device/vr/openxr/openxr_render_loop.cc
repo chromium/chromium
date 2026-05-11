@@ -907,12 +907,16 @@ void OpenXrRenderLoop::SubmitFrameDrawnIntoTexture(
     int16_t frame_index,
     const std::vector<LayerId>& layer_ids,
     const gpu::SyncToken& sync_token,
+    const std::vector<gpu::SyncToken>& camera_sync_tokens,
     base::TimeDelta time_waited) {
   TRACE_EVENT_BEGIN("xr", "OpenXrRenderLoop::WaitSyncToken",
                     perfetto::Track(frame_index));
   DVLOG(3) << __func__ << " frame_index=" << frame_index;
   gpu::gles2::GLES2Interface* gl = context_provider_->ContextGL();
   gl->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
+  for (auto& camera_sync_token : camera_sync_tokens) {
+    gl->WaitSyncTokenCHROMIUM(camera_sync_token.GetConstData());
+  }
   const GLuint id = gl->CreateGpuFenceCHROMIUM();
   context_provider_->ContextSupport()->GetGpuFence(
       id, base::BindOnce(&OpenXrRenderLoop::OnWebXrTokenSignaled,

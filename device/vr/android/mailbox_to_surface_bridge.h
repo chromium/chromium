@@ -48,11 +48,9 @@ class MailboxToSurfaceBridge {
   // and issues a server wait for it.
   virtual void WaitForClientGpuFence(gfx::GpuFence&) = 0;
 
-  // Creates a GpuFence in the GPU process after the supplied sync_token
-  // completes, and copies it for use in the local context. This is
-  // asynchronous, the callback receives the GpuFence once it's available.
+  // Creates a GpuFence in the GPU process. The callback receives the GpuFence
+  // once it's available.
   virtual void CreateGpuFence(
-      const gpu::SyncToken& sync_token,
       base::OnceCallback<void(std::unique_ptr<gfx::GpuFence>)> callback) = 0;
 
   // Creates a shared image bound to |buffer_handle|. Returns the shared image

@@ -16,6 +16,7 @@ include_rules = [
     "+device/vr/public/mojom/xr_session.mojom-blink-forward.h",
     "+gpu/command_buffer/client/client_shared_image.h",
     "+gpu/command_buffer/client/gles2_interface.h",
+    "+gpu/command_buffer/common/sync_token.h",
     "+services/metrics/public/cpp/ukm_builders.h",
     "+ui/display/display.h",
     "+ui/gfx/geometry",

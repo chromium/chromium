@@ -76,7 +76,8 @@ class XRFrameProvider final : public GarbageCollected<XRFrameProvider> {
   // and finally `SubmitFrame()` to send the cached data for the current frame.
   void ClearCachedLayersData();
   void SubmitLayer(device::LayerId layer_id, XrLayerClient*, bool was_changed);
-  void SubmitFrame(XRFrameTransportDelegate* transport_delegate);
+  void SubmitFrame(XRFrameTransportDelegate* transport_delegate,
+                   Vector<gpu::SyncToken> camera_sync_tokens = {});
 
   void Dispose();
   void OnFocusChanged();

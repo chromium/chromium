@@ -947,6 +947,7 @@ void ArCoreGl::FinishRenderingFrame(WebXrFrame* frame) {
     for (const auto& reclaimed_sync_token : frame->reclaimed_sync_tokens) {
       ar_image_transport_->WaitSyncToken(reclaimed_sync_token);
       ar_image_transport_->CreateGpuFenceForSyncToken(reclaimed_sync_token,
+                                                      /*camera_sync_tokens=*/{},
                                                       barrier_callback);
     }
     frame->reclaimed_sync_tokens.clear();
@@ -1208,6 +1209,7 @@ void ArCoreGl::SubmitFrameDrawnIntoTexture(
     int16_t frame_index,
     const std::vector<LayerId>& layer_ids,
     const gpu::SyncToken& sync_token,
+    const std::vector<gpu::SyncToken>& camera_sync_tokens,
     base::TimeDelta time_waited) {
   TRACE_EVENT1("gpu", "ArCoreGl::SubmitFrameDrawnIntoTexture", "frame",
                frame_index);
@@ -1224,11 +1226,19 @@ void ArCoreGl::SubmitFrameDrawnIntoTexture(
   if (!IsSubmitFrameExpected(frame_index))
     return;
 
+  for (auto& camera_sync_token : camera_sync_tokens) {
+    ar_image_transport_->WaitSyncToken(camera_sync_token);
+  }
+
+  // This sync token is ordered after all camera sync tokens, so following code
+  // will only have to wait this one sync token.
+  gpu::SyncToken camera_sync_token = ar_image_transport_->GenSyncToken();
+
   // The previous sync token has been consumed by the renderer process, so we
   // need to set this one for use by the compositor.
   webxr_->GetAnimatingFrame()->shared_buffer->sync_token = sync_token;
   webxr_->GetAnimatingFrame()->camera_image_shared_buffer->sync_token =
-      sync_token;
+      camera_sync_token;
 
   const ArCompositorFrameSink::FrameType frame_type =
       ar_image_transport_->IsWebGPUSession()

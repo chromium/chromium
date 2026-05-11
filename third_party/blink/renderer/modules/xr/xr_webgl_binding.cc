@@ -776,8 +776,8 @@ gfx::Rect XRWebGLBinding::GetViewportForView(XRProjectionLayer* layer,
                    layer->textureHeight() * view->CurrentViewportScale());
 }
 
-void XRWebGLBinding::OnFrameEnd() {
-  camera_helper_->OnFrameEnd();
+gpu::SyncToken XRWebGLBinding::OnFrameEnd() {
+  return camera_helper_->OnFrameEnd();
 }
 
 XRFrameTransportDelegate* XRWebGLBinding::GetTransportDelegate() {

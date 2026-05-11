@@ -77,19 +77,20 @@ void XRCameraUpdateHelper::MaybeAccessCameraTexture() {
   }
 }
 
-void XRCameraUpdateHelper::OnFrameEnd() {
+gpu::SyncToken XRCameraUpdateHelper::OnFrameEnd() {
   did_try_to_access_camera_texture_ = false;
+  gpu::SyncToken sync_token;
 
   // The session_ might have ended in the middle of the frame. Only perform the
   // main work of OnFrameEnd if it's still valid. Otherwise, simply ensure the
   // shared image access is properly ended.
   if (session_->ended()) {
     if (camera_image_texture_scoped_access_) {
-      gpu::SharedImageTexture::ScopedAccess::EndAccess(
+      sync_token = gpu::SharedImageTexture::ScopedAccess::EndAccess(
           std::move(camera_image_texture_scoped_access_));
       camera_image_shared_image_texture_.reset();
     }
-    return;
+    return sync_token;
   }
 
   if (session_->immersive()) {
@@ -108,7 +109,7 @@ void XRCameraUpdateHelper::OnFrameEnd() {
                   "camera_image_shared_image_texture_->id()="
                << camera_image_shared_image_texture_->id();
 
-      gpu::SharedImageTexture::ScopedAccess::EndAccess(
+      sync_token = gpu::SharedImageTexture::ScopedAccess::EndAccess(
           std::move(camera_image_texture_scoped_access_));
       camera_image_shared_image_texture_.reset();
 
@@ -123,6 +124,7 @@ void XRCameraUpdateHelper::OnFrameEnd() {
       }
     }
   }
+  return sync_token;
 }
 
 void XRCameraUpdateHelper::Trace(Visitor* visitor) const {

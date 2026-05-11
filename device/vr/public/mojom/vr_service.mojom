@@ -1224,6 +1224,7 @@ interface XRPresentationProvider {
   SubmitFrameDrawnIntoTexture(int16 frame_id,
                               array<LayerId> layer_ids,
                               gpu.mojom.SyncToken sync_token,
+                              array<gpu.mojom.SyncToken> camera_sync_tokens,
                               mojo_base.mojom.TimeDelta time_waited);
 };
 

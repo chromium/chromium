@@ -89,7 +89,7 @@ class XRWebGLBinding final : public ScriptWrappable, public XRGraphicsBinding {
   gfx::Rect GetViewportForView(XRProjectionLayer* layer,
                                XRViewData* view) override;
 
-  void OnFrameEnd() override;
+  gpu::SyncToken OnFrameEnd() override;
 
   WebGLRenderingContextBase* context() const { return webgl_context_.Get(); }
 

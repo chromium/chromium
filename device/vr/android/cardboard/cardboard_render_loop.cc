@@ -463,6 +463,7 @@ void CardboardRenderLoop::SubmitFrameDrawnIntoTexture(
     int16_t frame_index,
     const std::vector<LayerId>& layer_ids,
     const gpu::SyncToken& sync_token,
+    const std::vector<gpu::SyncToken>& camera_sync_tokens,
     base::TimeDelta time_waited) {
   TRACE_EVENT1("gpu", "CardboardRenderLoop::SubmitFrameDrawnIntoTexture",
                "frame", frame_index);
@@ -481,15 +482,16 @@ void CardboardRenderLoop::SubmitFrameDrawnIntoTexture(
 
   // Start processing the frame now if possible. If there's already a current
   // processing frame, defer it until that frame calls TryDeferredProcessing.
-  webxr_->ProcessOrDefer(
-      base::BindOnce(&CardboardRenderLoop::ProcessFrameDrawnIntoTexture,
-                     weak_ptr_factory_.GetWeakPtr(), sync_token));
+  webxr_->ProcessOrDefer(base::BindOnce(
+      &CardboardRenderLoop::ProcessFrameDrawnIntoTexture,
+      weak_ptr_factory_.GetWeakPtr(), sync_token, camera_sync_tokens));
 }
 
 void CardboardRenderLoop::ProcessFrameDrawnIntoTexture(
-    const gpu::SyncToken& sync_token) {
+    const gpu::SyncToken& sync_token,
+    const std::vector<gpu::SyncToken>& camera_sync_tokens) {
   cardboard_image_transport_->CreateGpuFenceForSyncToken(
-      sync_token,
+      sync_token, camera_sync_tokens,
       base::BindOnce(&CardboardRenderLoop::OnWebXrTokenSignaled, GetWeakPtr()));
 
   if (pending_getframedata_) {

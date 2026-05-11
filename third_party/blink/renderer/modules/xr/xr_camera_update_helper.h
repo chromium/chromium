@@ -22,7 +22,7 @@ class XRCameraUpdateHelper : public GarbageCollected<XRCameraUpdateHelper> {
                                 WebGLRenderingContextBase* webgl_context);
 
   WebGLTexture* GetCameraTexture();
-  void OnFrameEnd();
+  gpu::SyncToken OnFrameEnd();
 
   void Trace(Visitor*) const;
 

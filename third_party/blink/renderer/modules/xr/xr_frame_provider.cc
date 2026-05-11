@@ -815,8 +815,8 @@ void XRFrameProvider::ClearCachedLayersData() {
   layers_.clear();
 }
 
-void XRFrameProvider::SubmitFrame(
-    XRFrameTransportDelegate* transport_delegate) {
+void XRFrameProvider::SubmitFrame(XRFrameTransportDelegate* transport_delegate,
+                                  Vector<gpu::SyncToken> camera_sync_tokens) {
   CHECK(transport_delegate);
 
   if (!immersive_presentation_provider_.is_bound()) {
@@ -871,7 +871,7 @@ void XRFrameProvider::SubmitFrame(
 
   bool succeeded = frame_transport_->FrameSubmit(
       immersive_presentation_provider_.get(), transport_delegate,
-      std::move(layers_), this_frame_id);
+      std::move(layers_), std::move(camera_sync_tokens), this_frame_id);
 
   succeeded ? num_frames_++ : dropped_frames_++;
   if (succeeded) {

@@ -132,11 +132,10 @@ void MailboxToSurfaceBridgeImpl::WaitForClientGpuFence(
 }
 
 void MailboxToSurfaceBridgeImpl::CreateGpuFence(
-    const gpu::SyncToken& sync_token,
     base::OnceCallback<void(std::unique_ptr<gfx::GpuFence>)> callback) {
   TRACE_EVENT0("gpu", "CreateGpuFence");
   DCHECK(IsConnected());
-  gl_->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
+
   GLuint id = gl_->CreateGpuFenceCHROMIUM();
   context_support_->GetGpuFence(id, std::move(callback));
   gl_->DestroyGpuFenceCHROMIUM(id);

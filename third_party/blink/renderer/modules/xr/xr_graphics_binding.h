@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_GRAPHICS_BINDING_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_GRAPHICS_BINDING_H_
 
+#include "gpu/command_buffer/common/sync_token.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
@@ -40,7 +41,7 @@ class XRGraphicsBinding : public GarbageCollectedMixin {
   virtual gfx::Rect GetViewportForView(XRProjectionLayer* layer,
                                        XRViewData* view) = 0;
 
-  virtual void OnFrameEnd() {}
+  virtual gpu::SyncToken OnFrameEnd() { return gpu::SyncToken(); }
 
   virtual XRFrameTransportDelegate* GetTransportDelegate() = 0;
 
