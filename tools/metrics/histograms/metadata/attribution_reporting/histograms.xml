@@ -263,7 +263,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.AttributionBehavior"
-    enum="ConversionAttributionBehavior" expires_after="2025-09-01">
+    enum="ConversionAttributionBehavior" expires_after="2027-04-01">
   <owner>pbirk@chromium.org</owner>
   <owner>jdeabreu@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
@@ -275,6 +275,8 @@ chromium-metrics-reviews@google.com.
     content in the WebView, or if Attribution should be disabled.
 
     The histogram is logged whenever a new WebContents is created for a WebView.
+
+    Warning: This histogram was expired from 2025-09-01 to 2026-05-04.
   </summary>
 </histogram>
 
@@ -405,7 +407,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.DataAvailableCall.{MethodCall}"
-    enum="DataAvailableCallsite" expires_after="2025-09-01">
+    enum="DataAvailableCallsite" expires_after="2027-04-01">
   <owner>pbirk@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
   <summary>
@@ -423,6 +425,8 @@ chromium-metrics-reviews@google.com.
     DataHost is called in attribution_src_loader.cc , and enum value of
     &quot;Browser&quot; when the implementation in
     attribution_data_host_manager_impl.cc is invoked.
+
+    Warning: This histogram was expired from 2025-09-01 to 2026-05-04.
   </summary>
   <token key="MethodCall">
     <variant name="OsSource"/>

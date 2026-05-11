@@ -2845,7 +2845,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ComponentUpdater.AndroidComponentLoader.LoadStatus.{Component}"
-    enum="BooleanSuccess" expires_after="2026-09-01">
+    enum="BooleanSuccess" expires_after="2027-04-01">
   <owner>pbirk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <owner>src/components/component_updater/android/OWNERS</owner>
@@ -5318,7 +5318,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OriginTrials.PersistentOriginTrial.CriticalRestart"
-    enum="Boolean" expires_after="2026-08-03">
+    enum="Boolean" expires_after="2027-04-01">
   <owner>pbirk@chromium.org</owner>
   <owner>src/components/origin_trials/OWNERS</owner>
   <summary>
@@ -5337,7 +5337,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OriginTrials.PersistentOriginTrial.LevelDbInitSuccess"
-    enum="Boolean" expires_after="2026-08-03">
+    enum="Boolean" expires_after="2027-04-01">
   <owner>pbirk@chromium.org</owner>
   <owner>src/components/origin_trials/OWNERS</owner>
   <summary>
@@ -5349,7 +5349,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OriginTrials.PersistentOriginTrial.LevelDbLoadSize"
-    units="origins" expires_after="2026-08-03">
+    units="origins" expires_after="2027-04-01">
   <owner>pbirk@chromium.org</owner>
   <owner>src/components/origin_trials/OWNERS</owner>
   <summary>
@@ -5362,7 +5362,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OriginTrials.PersistentOriginTrial.LevelDbLoadSuccess"
-    enum="Boolean" expires_after="2026-08-03">
+    enum="Boolean" expires_after="2027-04-01">
   <owner>pbirk@chromium.org</owner>
   <owner>src/components/origin_trials/OWNERS</owner>
   <summary>
@@ -5374,7 +5374,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OriginTrials.PersistentOriginTrial.LevelDbLoadTime" units="ms"
-    expires_after="2026-10-04">
+    expires_after="2027-04-01">
   <owner>pbirk@chromium.org</owner>
   <owner>src/components/origin_trials/OWNERS</owner>
   <summary>
@@ -5387,7 +5387,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OriginTrials.PersistentOriginTrial.OriginLookupsBeforeDbLoad"
-    units="origins" expires_after="2026-08-03">
+    units="origins" expires_after="2027-04-01">
   <owner>pbirk@chromium.org</owner>
   <owner>src/components/origin_trials/OWNERS</owner>
   <summary>
@@ -5404,7 +5404,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OriginTrials.PersistentOriginTrial.OriginsAddedBeforeDbLoad"
-    units="origins" expires_after="2026-08-03">
+    units="origins" expires_after="2027-04-01">
   <owner>pbirk@chromium.org</owner>
   <owner>src/components/origin_trials/OWNERS</owner>
   <summary>
@@ -5417,7 +5417,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OriginTrials.PersistentOriginTrial.PartitionSetSize"
-    units="sites" expires_after="2026-08-03">
+    units="sites" expires_after="2027-04-01">
   <owner>pbirk@chromium.org</owner>
   <owner>src/components/origin_trials/OWNERS</owner>
   <summary>
@@ -5431,7 +5431,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OriginTrials.PersistentOriginTrial.TokenHasFirstPartyPartition"
-    enum="Boolean" expires_after="2026-08-03">
+    enum="Boolean" expires_after="2027-04-01">
   <owner>pbirk@chromium.org</owner>
   <owner>src/components/origin_trials/OWNERS</owner>
   <summary>
@@ -7546,7 +7546,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="Tracing.Init.InitTracing" units="ms"
-    expires_after="2026-12-01">
+    expires_after="2027-04-01">
   <owner>pbirk@chromium.org</owner>
   <owner>webview-team@google.com</owner>
   <owner>chrometto-team@google.com</owner>
@@ -7559,7 +7559,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="Tracing.Init.Perfetto.Initialize" units="ms"
-    expires_after="2026-12-01">
+    expires_after="2027-04-01">
   <owner>pbirk@chromium.org</owner>
   <owner>webview-team@google.com</owner>
   <owner>chrometto-team@google.com</owner>
