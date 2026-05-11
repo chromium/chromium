@@ -55,6 +55,7 @@
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_response.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/loader/fetch/console_logger.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_info.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
@@ -116,14 +117,31 @@ class PartialResourceRequest {
 class ResourceFetcherTestBase : public testing::Test {
  public:
   ResourceFetcherTestBase()
-      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  ~ResourceFetcherTestBase() override = default;
+
+ protected:
+  void SetUp() override {
+    scoped_memory_cache_ = std::make_unique<ScopedMemoryCacheForTesting>(
+        MakeGarbageCollected<MemoryCache>(
+            task_environment_.GetMainThreadTaskRunner()));
     Resource::SetClockForTesting(task_environment_.GetMockClock());
     // The state of global LcppEnabled flag depends on several feature flags
     // which can be enabled/disabled in tests. Clear the global flag value.
     ResetLcppEnabledForTesting();
   }
-  ~ResourceFetcherTestBase() override {
-    MemoryCache::Get()->EvictResources();
+
+  void TearDown() override {
+    // ThreadState::CollectAllGarbageForTesting() must be called before
+    // resetting `scoped_memory_cache_`. This ensures that any garbage objects
+    // (like `ResourceFetcher` which clears preloads in its pre-finalizer) are
+    // fully collected and finalized while the test's `MemoryCache` is still
+    // active. Otherwise, finalizers running during the GC inside
+    // `scoped_memory_cache_.reset()` would call `MemoryCache::Get()` when
+    // `g_memory_cache` is already null, causing an illegal allocation during GC
+    // sweeping and crashing.
+    blink::ThreadState::Current()->CollectAllGarbageForTesting();
+    scoped_memory_cache_.reset();
     Resource::SetClockForTesting(nullptr);
   }
 
@@ -221,8 +239,9 @@ class ResourceFetcherTestBase : public testing::Test {
         kTestResourceMimeType, platform_->GetURLLoaderMockFactory());
   }
 
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_;
   ScopedTestingPlatformSupport<FetchTestingPlatformSupport> platform_;
+  std::unique_ptr<ScopedMemoryCacheForTesting> scoped_memory_cache_;
 };
 
 class ResourceFetcherTest : public ResourceFetcherTestBase,
@@ -1501,29 +1520,42 @@ TEST_P(ResourceFetcherTest, DuplicatePreloadAllowsPriorityChange) {
   EXPECT_FALSE(resource1->IsUnusedPreload());
 }
 
-TEST_P(ResourceFetcherTest, StrongReferenceThreshold) {
+class ResourceFetcherStrongReferenceThresholdTest : public ResourceFetcherTest {
+ public:
   // Upper and lower bound for the size of a resource. The actual size is the
   // sum of overhead (between 3700 and 5200 bytes, varies by platform) and
-  // encoded length (103 bytes for `kTestResourcefilename`)
-  constexpr size_t kMockResourceSizeLowerBound = 3700 + 103;
-  constexpr size_t kMockResourceSizeUpperBound = 5200 + 103;
+  // encoded length (103 bytes for `kTestResourceFilename`)
+  static constexpr size_t kMockResourceSizeLowerBound = 3700 + 103;
+  static constexpr size_t kMockResourceSizeUpperBound = 5200 + 103;
 
   // Set up the strong reference feature so that the memory cache can keep
   // strong references to 2 resources, but not 3.
-  constexpr size_t kTotalSizeThreshold = kMockResourceSizeUpperBound * 2;
-  constexpr size_t kResourceSizeThreshold = kMockResourceSizeUpperBound;
+  static constexpr size_t kTotalSizeThreshold = kMockResourceSizeUpperBound * 2;
+  static constexpr size_t kResourceSizeThreshold = kMockResourceSizeUpperBound;
+
+  ResourceFetcherStrongReferenceThresholdTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {
+            {features::kMemoryCacheStrongReference,
+             {{"memory_cache_strong_ref_total_size_threshold",
+               base::NumberToString(kTotalSizeThreshold)},
+              {"memory_cache_strong_ref_resource_size_threshold",
+               base::NumberToString(kResourceSizeThreshold)}}},
+        },
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ResourceFetcherStrongReferenceThresholdTest,
+                         testing::Bool());
+
+TEST_P(ResourceFetcherStrongReferenceThresholdTest, StrongReferenceThreshold) {
   static_assert(3 * kMockResourceSizeLowerBound > kTotalSizeThreshold);
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeaturesAndParameters(
-      /*enabled_features=*/
-      {
-          {features::kMemoryCacheStrongReference,
-           {{"memory_cache_strong_ref_total_size_threshold",
-             base::NumberToString(kTotalSizeThreshold)},
-            {"memory_cache_strong_ref_resource_size_threshold",
-             base::NumberToString(kResourceSizeThreshold)}}},
-      },
-      /*disabled_features=*/{});
 
   ResourceFetcher* fetcher = CreateFetcher();
 
