@@ -5,7 +5,7 @@ desc: |-
 
   Note that this policy doesn't affect <ph name="GOOGLE_AI_MODE_PRODUCT_NAME">Google AI Mode</ph> on the web. It only controls how users can share information with it when using <ph name="PRODUCT_NAME">Google Chrome</ph>.
 
-  0/unset = users can share page or file content with <ph name="GOOGLE_AI_MODE_PRODUCT_NAME">Google AI Mode</ph>.
+  0 = users can share page or file content with <ph name="GOOGLE_AI_MODE_PRODUCT_NAME">Google AI Mode</ph>.
 
   1 = users cannot share page or file content with <ph name="GOOGLE_AI_MODE_PRODUCT_NAME">Google AI Mode</ph>. The entry points for sharing context and the side panel will be disabled or hidden.
 

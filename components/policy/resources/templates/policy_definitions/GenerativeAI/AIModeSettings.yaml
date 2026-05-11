@@ -5,7 +5,7 @@ desc: |-
 
   To access this feature, Google must be set as the user's default search engine.
 
-  0/unset = The feature will be available to users.
+  0 = The feature will be available to users.
 
   1 = The feature will not be available to users.
 

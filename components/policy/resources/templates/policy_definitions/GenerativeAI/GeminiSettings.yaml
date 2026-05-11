@@ -2,7 +2,7 @@ caption: Settings for Gemini integration
 desc: |-
   This setting allows Gemini app integrations.
 
-  0/unset = Gemini integration will be available for users.
+  0 = Gemini integration will be available for users.
 
   1 = Gemini integration will not be available for users.
 
