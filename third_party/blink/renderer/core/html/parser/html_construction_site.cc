@@ -868,7 +868,13 @@ void HTMLConstructionSite::AdjustInsertionLocation(
       task.parent = parent_item->GetNode();
     }
 
-    CHECK(!task.next_child || task.next_child->parentNode() == task.parent);
+    if (task.next_child && task.next_child->parentNode() != task.parent) {
+      // TODO(https://crbug.com/506629815): This is a rare case where some timing scenario causes a mismatch here.
+      // It is not easily reproducible, so making this a DUMP_WILL_CHECK to
+      // investigate given more cases. For now making this into an append.
+      DUMP_WILL_BE_CHECK(false) << "DOM state changed during parser tick";
+      task.next_child = nullptr;
+    }
   }
 
   if (task.parent != open_elements_.RootNode() || !root_insertion_point_) {
