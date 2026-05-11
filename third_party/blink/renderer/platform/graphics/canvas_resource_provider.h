@@ -418,20 +418,12 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   virtual bool IsSingleBuffered() const = 0;
 
  protected:
-  CanvasResourceSharedImage* resource() {
-    return static_cast<CanvasResourceSharedImage*>(resource_.get());
-  }
   virtual base::WeakPtr<WebGraphicsContext3DProviderWrapper>
   ContextProviderWrapper() const = 0;
   virtual void EnsureWriteAccess() = 0;
   virtual void EndWriteAccess() = 0;
 
   virtual scoped_refptr<CanvasResourceSharedImage> NewOrRecycledResource() = 0;
-
-  // The resource that is currently being used by this provider.
-  scoped_refptr<CanvasResourceSharedImage> resource_;
-
-  bool current_resource_has_write_access_ = false;
 
   static void NotifyGpuContextLostTask(
       base::WeakPtr<CanvasResourceProviderSharedImage>);
@@ -441,11 +433,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   static constexpr int kMaxRecycledCanvasResources = 3;
 
  private:
-  scoped_refptr<CanvasResourceSharedImage> CreateResource();
-
-  const CanvasResourceSharedImage* resource() const {
-    return static_cast<const CanvasResourceSharedImage*>(resource_.get());
-  }
 };
 
 // * Subclass of CanvasResourceProviderSharedImage that is specialized for usage
@@ -582,9 +569,20 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
 
   base::WeakPtr<Canvas2DResourceProviderSharedImage> CreateWeakPtr();
 
+  CanvasResourceSharedImage* resource() {
+    return static_cast<CanvasResourceSharedImage*>(resource_.get());
+  }
+  const CanvasResourceSharedImage* resource() const {
+    return static_cast<const CanvasResourceSharedImage*>(resource_.get());
+  }
+
   // If this instance is single-buffered or |resource_recycling_enabled_| is
   // false, |image_pool_| will not recycle resources.
   std::unique_ptr<gpu::SharedImagePool<CanvasResourceSharedImage>> image_pool_;
+
+  scoped_refptr<CanvasResourceSharedImage> resource_;
+
+  bool current_resource_has_write_access_ = false;
 
   cc::PaintImage::ContentId cached_content_id_ =
       cc::PaintImage::kInvalidContentId;
@@ -772,6 +770,13 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
 
   base::WeakPtr<CanvasNon2DResourceProviderSharedImage> CreateWeakPtr();
 
+  CanvasResourceSharedImage* resource() {
+    return static_cast<CanvasResourceSharedImage*>(resource_.get());
+  }
+  const CanvasResourceSharedImage* resource() const {
+    return static_cast<const CanvasResourceSharedImage*>(resource_.get());
+  }
+
  private:
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()
       const override {
@@ -797,6 +802,10 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   // If this instance is single-buffered or |resource_recycling_enabled_| is
   // false, |image_pool_| will not recycle resources.
   std::unique_ptr<gpu::SharedImagePool<CanvasResourceSharedImage>> image_pool_;
+
+  scoped_refptr<CanvasResourceSharedImage> resource_;
+
+  bool current_resource_has_write_access_ = false;
 
   cc::PaintImage::ContentId cached_content_id_ =
       cc::PaintImage::kInvalidContentId;
