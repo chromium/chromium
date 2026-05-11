@@ -530,6 +530,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &switches::kClankDefaultSearchApi,
     &sync_preferences::features::kCrossDevicePrefTrackerExtraLogs,
     &sync_sessions::kOptimizeAssociateWindowsAndroid,
+    &sync_sessions::kSyncTabScreenshots,
     &syncer::kNewTabPageCustomizationThemeSync,
     &syncer::kSyncEnableNewSyncDashboardUrl,
     &syncer::kSyncEnablePasswordsSyncErrorMessageAlternative,
