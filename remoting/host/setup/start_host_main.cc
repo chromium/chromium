@@ -409,6 +409,21 @@ int StartHostMain(int argc, char** argv) {
   base::Thread io_thread("IO thread");
   io_thread.StartWithOptions(std::move(io_thread_options));
 
+#if defined(REMOTING_ENABLE_CRASH_REPORTING)
+  // We don't have a config file yet so we can't use IsUsageStatsAllowed().
+  // We check the command line parameter instead. This allows even corp users
+  // to disable crash reporting for the start-host command itself (e.g. during
+  // setup), which does not affect the actual host daemon process (which will
+  // still force crash reporting on corp users).
+  if (!command_line->HasSwitch(kDisableCrashReportingSwitchName)) {
+#if BUILDFLAG(IS_LINUX)
+    InitializeCrashpadReporting();
+#elif BUILDFLAG(IS_WIN)
+    InitializeBreakpadReporting();
+#endif  // BUILDFLAG(IS_LINUX)
+  }
+#endif  // defined(REMOTING_ENABLE_CRASH_REPORTING)
+
 #if BUILDFLAG(IS_LINUX)
   const HostType* host_type = nullptr;
   if (command_line->HasSwitch(kHostTypeSwitchName)) {
@@ -505,18 +520,6 @@ int StartHostMain(int argc, char** argv) {
     PrintDefaultHelpMessage(argv[0]);
     return 1;
   }
-
-#if defined(REMOTING_ENABLE_CRASH_REPORTING)
-  // We don't have a config file yet so we can't use IsUsageStatsAllowed(),
-  // instead we can just check the command line parameter.
-  if (params.enable_crash_reporting) {
-#if BUILDFLAG(IS_LINUX)
-    InitializeCrashpadReporting();
-#elif BUILDFLAG(IS_WIN)
-    InitializeBreakpadReporting();
-#endif  // BUILDFLAG(IS_LINUX)
-  }
-#endif  // defined(REMOTING_ENABLE_CRASH_REPORTING)
 
   scoped_refptr<net::URLRequestContextGetter> url_request_context_getter(
       new remoting::URLRequestContextGetter(io_thread.task_runner()));
