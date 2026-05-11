@@ -128,7 +128,7 @@ class MockPasswordReuseDetector : public PasswordReuseDetector {
               (override));
   MOCK_METHOD(void,
               OnLoginsRetained,
-              (PasswordForm::Store, const std::vector<PasswordForm>&),
+              (PasswordForm::Store, const std::vector<StoredCredential>&),
               (override));
   MOCK_METHOD(void, ClearCachedAccountStorePasswords, (), (override));
   MOCK_METHOD(void,
@@ -721,8 +721,8 @@ TEST_F(PasswordReuseManagerImplTest, OnLoginsRetainedCalledWithCorrectParams) {
                  PasswordForm::Store::kProfileStore);
   EXPECT_CALL(*password_reuse_detector(),
               OnLoginsRetained(PasswordForm::Store::kProfileStore,
-                               testing::UnorderedElementsAreArray(
-                                   {submitted_form_profile})));
+                               testing::UnorderedElementsAre(EqStoredCredential(
+                                   submitted_form_profile))));
   profile_store()->TriggerOnLoginsRetainedForAndroid({submitted_form_profile});
   RunUntilIdle();
 
@@ -731,8 +731,8 @@ TEST_F(PasswordReuseManagerImplTest, OnLoginsRetainedCalledWithCorrectParams) {
                  PasswordForm::Store::kAccountStore);
   EXPECT_CALL(*password_reuse_detector(),
               OnLoginsRetained(PasswordForm::Store::kAccountStore,
-                               testing::UnorderedElementsAreArray(
-                                   {submitted_form_account})));
+                               testing::UnorderedElementsAre(EqStoredCredential(
+                                   submitted_form_account))));
   account_store()->TriggerOnLoginsRetainedForAndroid({submitted_form_account});
   RunUntilIdle();
 }

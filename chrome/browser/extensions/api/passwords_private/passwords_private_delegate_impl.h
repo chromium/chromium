@@ -208,7 +208,7 @@ class PasswordsPrivateDelegateImpl
       password_manager::PasswordStoreInterface* store,
       const password_manager::PasswordStoreChangeList& changes) override;
   void OnLoginsRetained(password_manager::PasswordStoreInterface* store,
-                        const std::vector<password_manager::PasswordForm>&
+                        const std::vector<password_manager::StoredCredential>&
                             retained_passwords) override;
   void OnErrorStateChanged(password_manager::PasswordStoreInterface* store,
                            password_manager::ActionableError error) override;

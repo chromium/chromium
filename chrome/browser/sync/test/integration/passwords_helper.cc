@@ -569,6 +569,6 @@ void PasswordFormsAddedChecker::OnLoginsChanged(
 
 void PasswordFormsAddedChecker::OnLoginsRetained(
     password_manager::PasswordStoreInterface* store,
-    const std::vector<password_manager::PasswordForm>& retained_passwords) {
+    const std::vector<password_manager::StoredCredential>& retained_passwords) {
   // Not used.
 }

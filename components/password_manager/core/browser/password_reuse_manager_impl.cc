@@ -23,6 +23,7 @@
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/password_manager/core/browser/password_reuse_manager_signin_notifier.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/base/consent_level.h"
@@ -530,23 +531,30 @@ void PasswordReuseManagerImpl::OnLoginsChanged(
 
 void PasswordReuseManagerImpl::OnLoginsRetained(
     PasswordStoreInterface* store,
-    const std::vector<PasswordForm>& retained_passwords) {
+    const std::vector<StoredCredential>& retained_credentials) {
   PasswordForm::Store store_type = store == account_store_
                                        ? PasswordForm::Store::kAccountStore
                                        : PasswordForm::Store::kProfileStore;
-  OnLoginsRetainedImpl(store_type, retained_passwords);
+  OnLoginsRetainedImpl(store_type, retained_credentials);
 }
 
 void PasswordReuseManagerImpl::OnLoginsRetainedImpl(
     PasswordForm::Store store_type,
-    const std::vector<PasswordForm>& retained_passwords) {
-  if (DelayUntilReady(&PasswordReuseManagerImpl::OnLoginsRetainedImpl,
-                      store_type, retained_passwords)) {
+    const std::vector<StoredCredential>& retained_credentials) {
+  std::vector<StoredCredential> cloned_passwords;
+  for (const auto& cred : retained_credentials) {
+    cloned_passwords.push_back(CloneStoredCredential(cred));
+  }
+
+  if (!hash_password_manager_) {
+    pending_tasks_.push_back(base::BindOnce(
+        &PasswordReuseManagerImpl::OnLoginsRetainedImpl, base::Unretained(this),
+        store_type, std::move(cloned_passwords)));
     return;
   }
   ScheduleTask(base::BindOnce(&PasswordReuseDetector::OnLoginsRetained,
                               base::Unretained(reuse_detector_.get()),
-                              store_type, retained_passwords));
+                              store_type, std::move(cloned_passwords)));
 }
 
 bool PasswordReuseManagerImpl::ScheduleTask(base::OnceClosure task) {

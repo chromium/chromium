@@ -38,6 +38,7 @@ namespace {
 using ::password_manager::PasswordForm;
 using ::password_manager::PasswordStoreInterface;
 using ::password_manager::SavedPasswordsPresenter;
+using ::password_manager::StoredCredential;
 using ::password_manager::TestPasswordStore;
 using ::testing::SizeIs;
 
@@ -69,7 +70,7 @@ class FakePasswordStoreObserver
 
   void OnLoginsRetained(
       PasswordStoreInterface* store,
-      const std::vector<PasswordForm>& retained_passwords) override {}
+      const std::vector<StoredCredential>& retained_credentials) override {}
 
   bool WaitForLoginsChanged() { return future_.Wait(); }
 

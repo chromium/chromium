@@ -164,8 +164,8 @@ class WebViewPasswordStoreObserver
                                             removed:removed];
   }
   void OnLoginsRetained(password_manager::PasswordStoreInterface* store,
-                        const std::vector<password_manager::PasswordForm>&
-                            retained_passwords) override {
+                        const std::vector<password_manager::StoredCredential>&
+                            retained_credentials) override {
     // No op.
   }
 

@@ -215,7 +215,7 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
                        const PasswordStoreChangeList& changes) override;
   void OnLoginsRetained(
       PasswordStoreInterface* store,
-      const std::vector<PasswordForm>& retained_passwords) override;
+      const std::vector<StoredCredential>& retained_credentials) override;
 
   // PasskeyModel::Observer:
   void OnPasskeysChanged(

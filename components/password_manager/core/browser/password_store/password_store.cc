@@ -544,14 +544,10 @@ void PasswordStore::NotifyLoginsRetainedOnMainSequence(
     return;
   }
 
-  std::vector<PasswordForm> retained_logins;
-  retained_logins.reserve(std::get<BackendLoginsResult>(result).size());
-  for (const auto& cred : std::get<BackendLoginsResult>(result)) {
-    retained_logins.push_back(ToPasswordForm(cred));
-  }
-
+  const std::vector<StoredCredential>& retained_credentials =
+      std::get<BackendLoginsResult>(result);
   for (auto& observer : observers_) {
-    observer.OnLoginsRetained(this, retained_logins);
+    observer.OnLoginsRetained(this, retained_credentials);
   }
 
 #if BUILDFLAG(IS_ANDROID)

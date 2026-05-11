@@ -697,8 +697,8 @@ void CredentialProviderService::OnPrimaryAccountChanged(
 
 void CredentialProviderService::OnLoginsRetained(
     password_manager::PasswordStoreInterface* /*store*/,
-    const std::vector<password_manager::PasswordForm>& /*retained_passwords*/) {
-}
+    const std::vector<
+        password_manager::StoredCredential>& /*retained_credentials*/) {}
 
 void CredentialProviderService::OnInjectedAffiliationAfterLoginsChanged(
     password_manager::PasswordStoreInterface* store,

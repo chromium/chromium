@@ -37,7 +37,7 @@ class PasswordAffiliationSourceAdapter
                        const PasswordStoreChangeList& changes) override;
   void OnLoginsRetained(
       PasswordStoreInterface* store,
-      const std::vector<PasswordForm>& retained_passwords) override;
+      const std::vector<StoredCredential>& retained_credentials) override;
 
   // PasswordStoreConsumer:
   void OnGetPasswordStoreResultsOrErrorFrom(

@@ -81,7 +81,7 @@ void PasswordAffiliationSourceAdapter::OnLoginsChanged(
 
 void PasswordAffiliationSourceAdapter::OnLoginsRetained(
     PasswordStoreInterface* store,
-    const std::vector<PasswordForm>& retained_passwords) {
+    const std::vector<StoredCredential>& retained_credentials) {
   // TODO(b/328037758): Handle retained passwords.
 }
 

@@ -100,7 +100,7 @@ void PasswordCounter::OnLoginsChanged(PasswordStoreInterface* store,
 
 void PasswordCounter::OnLoginsRetained(
     PasswordStoreInterface* store,
-    const std::vector<PasswordForm>& retained_passwords) {
+    const std::vector<StoredCredential>& retained_credentials) {
   NOTREACHED() << "Needs to be implemented for Android if needed";
 }
 

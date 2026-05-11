@@ -82,7 +82,7 @@ class PasswordReuseDetector {
 
   virtual void OnLoginsRetained(
       PasswordForm::Store password_store_type,
-      const std::vector<PasswordForm>& retained_passwords) = 0;
+      const std::vector<StoredCredential>& retained_credentials) = 0;
 
   // Clears all the cached passwords which are stored on the account store.
   virtual void ClearCachedAccountStorePasswords() = 0;

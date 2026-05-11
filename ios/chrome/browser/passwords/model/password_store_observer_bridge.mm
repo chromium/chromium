@@ -16,6 +16,7 @@ void PasswordStoreObserverBridge::OnLoginsChanged(
 
 void PasswordStoreObserverBridge::OnLoginsRetained(
     password_manager::PasswordStoreInterface* store,
-    const std::vector<password_manager::PasswordForm>& /*retained_passwords*/) {
+    const std::vector<
+        password_manager::StoredCredential>& /*retained_credentials*/) {
   [observer_ loginsDidChangeInStore:store];
 }

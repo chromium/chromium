@@ -906,12 +906,9 @@ TEST_F(PasswordReuseDetectorTest, OnLoginsRetained) {
 
   // Remove the first test data entry corresponding to "saved_password".
   test_data.erase(test_data.begin());
-  std::vector<PasswordForm> retained_forms;
-  for (const auto& form : GetForms(test_data)) {
-    retained_forms.push_back(form);
-  }
-  reuse_detector.OnLoginsRetained(PasswordForm::Store::kProfileStore,
-                                  retained_forms);
+  reuse_detector.OnLoginsRetained(
+      PasswordForm::Store::kProfileStore,
+      password_manager::FromPasswordForms(GetForms(test_data)));
 
   EXPECT_CALL(mockConsumer, OnReuseCheckDone(false, _, _, _, _, _, _));
   reuse_detector.CheckReuse(u"saved_password", "https://evil.com",
@@ -939,12 +936,9 @@ TEST_F(PasswordReuseDetectorTest, OnLoginsRetainedCalledForEachStore) {
 
   // Remove the first test data entry corresponding to "saved_password".
   profile_passwords.erase(profile_passwords.begin());
-  std::vector<PasswordForm> retained_forms_in_profile_store;
-  for (const auto& form : GetForms(profile_passwords)) {
-    retained_forms_in_profile_store.push_back(form);
-  }
-  reuse_detector.OnLoginsRetained(PasswordForm::Store::kProfileStore,
-                                  retained_forms_in_profile_store);
+  reuse_detector.OnLoginsRetained(
+      PasswordForm::Store::kProfileStore,
+      password_manager::FromPasswordForms(GetForms(profile_passwords)));
 
   // Reuse found (another password was removed, not the checked one).
   EXPECT_CALL(mockConsumer, OnReuseCheckDone(true, _, _, _, _, _, _));

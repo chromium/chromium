@@ -113,14 +113,14 @@ void PasswordReuseDetectorImpl::OnLoginsChanged(
 
 void PasswordReuseDetectorImpl::OnLoginsRetained(
     PasswordForm::Store password_store_type,
-    const std::vector<PasswordForm>& retained_passwords) {
+    const std::vector<StoredCredential>& retained_credentials) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RemoveAllLoginsByStoreType(password_store_type);
 
-  // |retained_passwords| contains also blacklisted entities, but since they
+  // |retained_credentials| contains also blacklisted entities, but since they
   // don't have password value they will be skipped inside AddPassword().
-  for (const auto& form : retained_passwords) {
-    AddPassword(FromPasswordForm(form));
+  for (const auto& cred : retained_credentials) {
+    AddPassword(cred);
   }
 }
 

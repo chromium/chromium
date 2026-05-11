@@ -1315,7 +1315,7 @@ void PasswordsPrivateDelegateImpl::OnLoginsChanged(
 
 void PasswordsPrivateDelegateImpl::OnLoginsRetained(
     password_manager::PasswordStoreInterface*,
-    const std::vector<password_manager::PasswordForm>&) {}
+    const std::vector<password_manager::StoredCredential>&) {}
 
 void PasswordsPrivateDelegateImpl::OnErrorStateChanged(
     password_manager::PasswordStoreInterface* store,

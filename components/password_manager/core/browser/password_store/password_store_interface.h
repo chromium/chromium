@@ -63,12 +63,12 @@ class PasswordStoreInterface : public RefcountedKeyedService {
                                  const PasswordStoreChangeList& changes) = 0;
 
     // Notifies the observer that password data changed. Will be called from
-    // the UI thread. The `retained_passwords` are a complete list of passwords
-    // and blocklisted sites. The passed `store` issued the observer
+    // the UI thread. The `retained_credentials` are a complete list of
+    // passwords and blocklisted sites. The passed `store` issued the observer
     // notification in case there might be multiple ones.
     virtual void OnLoginsRetained(
         PasswordStoreInterface* store,
-        const std::vector<PasswordForm>& retained_passwords) = 0;
+        const std::vector<StoredCredential>& retained_credentials) = 0;
 
     // Notifies the observer that error state of the password store may have
     // changed. This happens when the store backend receives a notification

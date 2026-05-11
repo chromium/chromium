@@ -120,10 +120,10 @@ class PasswordReuseManagerImpl : public PasswordReuseManager,
       const password_manager::PasswordStoreChangeList& changes) override;
   void OnLoginsRetained(
       PasswordStoreInterface* store,
-      const std::vector<PasswordForm>& retained_passwords) override;
+      const std::vector<StoredCredential>& retained_credentials) override;
   void OnLoginsRetainedImpl(
       PasswordForm::Store store_type,
-      const std::vector<PasswordForm>& retained_passwords);
+      const std::vector<StoredCredential>& retained_credentials);
 
   // Implements signin::IdentityManager::Observer.
   void OnPrimaryAccountChanged(

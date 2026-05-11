@@ -616,7 +616,7 @@ void SavedPasswordsPresenter::OnLoginsChanged(
 
 void SavedPasswordsPresenter::OnLoginsRetained(
     PasswordStoreInterface* store,
-    const std::vector<PasswordForm>& retained_passwords) {
+    const std::vector<StoredCredential>& retained_credentials) {
   bool is_using_account_store = store == account_store_.get();
 
   // Remove cached credentials for the current store.
@@ -628,7 +628,7 @@ void SavedPasswordsPresenter::OnLoginsRetained(
                 });
 
   // TODO(crbug.com/40876661): Inject branding info for these credentials.
-  AddForms(retained_passwords,
+  AddForms(ToPasswordForms(retained_credentials),
            base::BindOnce(&SavedPasswordsPresenter::NotifySavedPasswordsChanged,
                           weak_ptr_factory_.GetWeakPtr(),
                           PasswordStoreChangeList()));
