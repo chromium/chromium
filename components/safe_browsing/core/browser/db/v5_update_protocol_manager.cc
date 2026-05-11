@@ -220,11 +220,12 @@ void V5UpdateProtocolManager::OnURLLoaderComplete(
       list_identifier_to_version_mapping);
 
   request_.reset();
-  // TODO(crbug.com/362791941): set next_update_interval_ from minimum wait
-  // duration.
-  // The caller should update its state now based on the parsed
-  // response. The callback must call `ScheduleNextUpdate()` at the end to
-  // resume downloading updates.
+  // Set the next update interval based on the minimum wait duration
+  // across lists.
+  next_update_interval_ = result.minimum_wait_duration;
+  // The caller should update its state now based on the parsed response.
+  // The callback must call `ScheduleNextUpdate()` at the end to resume
+  // downloading updates.
   update_callback_.Run(std::move(result.hash_list_map));
 }
 
@@ -258,20 +259,46 @@ V5UpdateProtocolManager::ParseUpdateResponse(
         list_identifier_to_version_mapping) {
   V5::BatchGetHashListsResponse server_response;
   server_response.ParseFromString(response_body.value());
-  // TODO(crbug.com/362791941): failed parsing
-  // TODO(crbug.com/362791941): return minimum wait duration
+  // TODO(crbug.com/362791941): failed parsing - including confirming response #
+  // lists matches request # lists
   std::map<ListIdentifier, V5::HashList> parsed_response;
+  // TODO(crbug.com/362791941): consider non-optional + initialize to max time
+  std::optional<base::TimeDelta> overall_minimum_wait_duration;
   for (int i = 0; i < server_response.hash_lists_size(); ++i) {
     V5::HashList& hash_list = *server_response.mutable_hash_lists(i);
     // The v5 API sends back the lists in the same order as requested.
     ListIdentifier list_identifier =
         list_identifier_to_version_mapping[i].list_identifier;
+
+    // Save off the smallest minimum_wait_duration across lists and use that to
+    // determine when next to trigger an update request.
+    std::optional<base::TimeDelta> list_minimum_wait_duration;
+    if (hash_list.has_minimum_wait_duration()) {
+      // TODO(crbug.com/362791941): fail if invalid duration (negative)
+      const auto& duration = hash_list.minimum_wait_duration();
+      list_minimum_wait_duration = base::Seconds(duration.seconds()) +
+                                   base::Nanoseconds(duration.nanos());
+    } else {
+      // If minimum_wait_duration is unset (or 0, handled above), clients are
+      // expected to fetch immediately. Note that this is not expected to happen
+      // in our case because we are not setting any client-specified constraints
+      // that would trigger an unset (or 0) minimum_wait_duration. But, we
+      // respect the server's response if it responds this way regardless.
+      list_minimum_wait_duration = base::TimeDelta();
+    }
+    if (!overall_minimum_wait_duration.has_value() ||
+        list_minimum_wait_duration.value() <
+            overall_minimum_wait_duration.value()) {
+      overall_minimum_wait_duration = list_minimum_wait_duration.value();
+    }
+
     V5::HashList list_to_insert;
     list_to_insert.Swap(&hash_list);
     parsed_response[list_identifier] = std::move(list_to_insert);
   }
 
-  return ParsedResponse(std::move(parsed_response));
+  return ParsedResponse(std::move(parsed_response),
+                        overall_minimum_wait_duration.value());
 }
 
 V5UpdateProtocolManager::ListIdentifierAndVersion::ListIdentifierAndVersion(
@@ -282,8 +309,10 @@ V5UpdateProtocolManager::ListIdentifierAndVersion::ListIdentifierAndVersion(
 V5UpdateProtocolManager::ParsedResponse::ParsedResponse() = default;
 
 V5UpdateProtocolManager::ParsedResponse::ParsedResponse(
-    std::map<ListIdentifier, V5::HashList> hash_list_map)
-    : hash_list_map(std::move(hash_list_map)) {}
+    std::map<ListIdentifier, V5::HashList> hash_list_map,
+    base::TimeDelta minimum_wait_duration)
+    : hash_list_map(std::move(hash_list_map)),
+      minimum_wait_duration(minimum_wait_duration) {}
 
 V5UpdateProtocolManager::ParsedResponse::~ParsedResponse() = default;
 V5UpdateProtocolManager::ParsedResponse::ParsedResponse(ParsedResponse&&) =

@@ -54,7 +54,7 @@ bool SBUpdateProtocolManager::IsUpdateScheduled() const {
 // back off after a certain number of errors.
 base::TimeDelta SBUpdateProtocolManager::GetNextUpdateInterval(bool back_off) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(next_update_interval_.is_positive());
+  CHECK(next_update_interval_.is_positive() || next_update_interval_.is_zero());
 
   base::TimeDelta next = next_update_interval_;
   if (back_off) {

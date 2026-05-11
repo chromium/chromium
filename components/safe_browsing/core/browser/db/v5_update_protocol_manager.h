@@ -74,18 +74,20 @@ class V5UpdateProtocolManager : public SBUpdateProtocolManager {
  private:
   friend class V5UpdateProtocolManagerTest;
 
-  // The parsed response from the server.
-  // TODO(crbug.com/362791941): add minimum_wait_duration
+  // The parsed response from the server, including the minimum specified
+  // wait duration across all lists in the response.
   struct ParsedResponse {
     ParsedResponse();
-    explicit ParsedResponse(
-        std::map<ListIdentifier, V5::HashList> hash_list_map);
+    ParsedResponse(std::map<ListIdentifier, V5::HashList> hash_list_map,
+                   base::TimeDelta minimum_wait_duration);
     ~ParsedResponse();
     ParsedResponse(ParsedResponse&&);
     ParsedResponse& operator=(ParsedResponse&&);
 
     // The list updates.
     std::map<ListIdentifier, V5::HashList> hash_list_map;
+    // How long to wait before the next update attempt.
+    base::TimeDelta minimum_wait_duration;
   };
 
   // Called when the request completes. Parses the response and calls
@@ -112,7 +114,8 @@ class V5UpdateProtocolManager : public SBUpdateProtocolManager {
   // Parses the base64 encoded response received from the server as a
   // `BatchGetHashListsResponse` protobuf.
   // Returns the mapping per requested `ListIdentifier` to the `HashList`
-  // returned from the server.
+  // returned from the server. Also returns the minimum wait duration across
+  // lists in the response.
   ParsedResponse ParseUpdateResponse(
       const std::optional<std::string>& response_body,
       const std::vector<ListIdentifierAndVersion>&
