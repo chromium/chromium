@@ -14,6 +14,8 @@ build_webui("build") {
   ts_files = [
     "app.ts",
     "app.html.ts",
+    "default_browser/default_browser_step.ts",
+    "default_browser/default_browser_step.html.ts",
     "feature_showcase_step.ts",
     "feature_showcase_step.html.ts",
     "example/example_step.ts",
@@ -21,6 +23,7 @@ build_webui("build") {
   ]
   css_files = [
     "app.css",
+    "default_browser/default_browser_step.css",
     "feature_showcase_step.css",
     "example/example_step.css",
   ]

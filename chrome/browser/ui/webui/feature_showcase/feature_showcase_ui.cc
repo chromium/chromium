@@ -11,9 +11,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/regional_capabilities/regional_capabilities_service_factory.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/feature_showcase_resources.h"
 #include "chrome/grit/feature_showcase_resources_map.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/grit/intro_resources.h"
 #include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -22,8 +24,17 @@
 #include "ui/webui/webui_util.h"
 
 namespace {
-void AddExampleStepResources(content::WebUIDataSource* source) {
-// For now placeholder illustration, will be used later in the DB screen.
+void AddDefaultBrowserStepResources(content::WebUIDataSource* source) {
+  source->AddLocalizedStrings({
+      {"refreshDefaultBrowserTitle", IDS_FRE_REFRESH_DEFAULT_BROWSER_TITLE},
+      {"refreshDefaultBrowserSubtitle",
+       IDS_FRE_REFRESH_DEFAULT_BROWSER_SUBTITLE},
+      {"refreshDefaultBrowserSetAsDefault",
+       IDS_FRE_REFRESH_DEFAULT_BROWSER_SET_AS_DEFAULT},
+      {"refreshDefaultBrowserNoThanks",
+       IDS_FRE_REFRESH_DEFAULT_BROWSER_NO_THANKS},
+  });
+
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   source->AddResourcePath("images/refresh_showcase_illustration.png",
                           IDR_DEFAULT_BROWSER_SHOWCASE_CHROME);
@@ -59,7 +70,7 @@ FeatureShowcaseUI::FeatureShowcaseUI(content::WebUI* web_ui)
   webui::SetupWebUIDataSource(source, kFeatureShowcaseResources,
                               IDR_FEATURE_SHOWCASE_FEATURE_SHOWCASE_HTML);
 
-  AddExampleStepResources(source);
+  AddDefaultBrowserStepResources(source);
 }
 
 FeatureShowcaseUI::~FeatureShowcaseUI() = default;

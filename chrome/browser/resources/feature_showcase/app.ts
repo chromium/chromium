@@ -5,6 +5,7 @@
 import '//resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import './feature_showcase_step.js';
 import './example/example_step.js';
+import './default_browser/default_browser_step.js';
 
 import type {CrViewManagerElement} from '//resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import {assert} from '//resources/js/assert.js';

@@ -15,6 +15,12 @@ export function getHtml(this: FeatureShowcaseAppElement) {
           @step-completed="${this.onStepCompleted_}">
       </feature-showcase-example-step>
   ` : ''}
+
+  ${this.hasStep_('default-browser') ? html`
+      <feature-showcase-default-browser-step id="default-browser" slot="view"
+          @step-completed="${this.onStepCompleted_}">
+      </feature-showcase-default-browser-step>
+  ` : ''}
 </cr-view-manager>
 <!--_html_template_end_-->`;
   // clang-format on

@@ -1383,7 +1383,7 @@
     "includes": [7495],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/feature_showcase/resources.grd": {
-    "META": {"sizes": {"includes": [10]}},
+    "META": {"sizes": {"includes": [50]}},
     "includes": [7505],
   },
   # END components/ section.
