@@ -778,7 +778,7 @@ UIButton* TopToolbarButton(NSString* symbol_name,
 // Displays the menu to rename and change the color of the currently displayed
 // group.
 - (void)displayEditionMenu {
-  [_handler showTabGroupEditionForGroup:_tabGroup];
+  [_handler showTabGroupEditionForGroup:_tabGroup->GetWeakPtr()];
 }
 
 // Returns the tab group menu.

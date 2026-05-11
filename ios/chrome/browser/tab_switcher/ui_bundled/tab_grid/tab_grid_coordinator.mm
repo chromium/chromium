@@ -1563,7 +1563,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   } else {
     coordinator = _regularGridCoordinator;
   }
-  [coordinator showTabGroupEditionForGroup:group.get()];
+  [coordinator showTabGroupEditionForGroup:group];
 }
 
 - (void)closeTabWithIdentifier:(web::WebStateID)identifier
