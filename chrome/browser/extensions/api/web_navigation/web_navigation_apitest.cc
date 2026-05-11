@@ -569,7 +569,13 @@ IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, ServerRedirectSingleProcess) {
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, ForwardBack) {
+// TODO(crbug.com/511975946): Fix flaky test.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_ForwardBack DISABLED_ForwardBack
+#else
+#define MAYBE_ForwardBack ForwardBack
+#endif
+IN_PROC_BROWSER_TEST_F(WebNavigationApiTest, MAYBE_ForwardBack) {
   ASSERT_TRUE(RunTest("webnavigation/forwardBack")) << message_;
 }
 
