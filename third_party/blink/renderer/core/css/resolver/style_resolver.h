@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/style/filter_operations.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 
 namespace blink {
@@ -85,10 +86,11 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
       const ComputedStyle* layout_parent_base_style,
       const StyleRecalcContext&);
 
-  // Return a reference to the initial style singleton.
+  // Return a reference to the cached initial style.
   const ComputedStyle& InitialStyle() const;
+  void InvalidateInitialStyle();
 
-  // Create a new ComputedStyleBuilder based on the initial style singleton.
+  // Create a new ComputedStyleBuilder based on the cached initial style.
   ComputedStyleBuilder CreateComputedStyleBuilder() const;
 
   // Create a new ComputedStyleBuilder inheriting from the given style.
@@ -407,8 +409,10 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
 
   MatchedPropertiesCache matched_properties_cache_;
 
+  const ComputedStyle* CreateInitialStyle() const;
+
   // This member is on a hot-path for creating ComputedStyle objects.
-  const subtle::UncompressedMember<const ComputedStyle> initial_style_;
+  mutable Member<const ComputedStyle> initial_style_;
   SelectorFilter selector_filter_;
 
   // Micro 1-element cache.

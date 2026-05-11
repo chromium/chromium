@@ -232,6 +232,7 @@ class StyleBuilderConverter {
                                                       const CSSValue&);
   template <typename T>
   static T ConvertLineWidth(StyleResolverState&, const CSSValue&);
+  static int ClampLineWidth(double);
   static int ConvertBorderWidth(const StyleResolverState&, const CSSValue&);
   static int ConvertOutlineOffset(const StyleResolverState&, const CSSValue&);
   static uint16_t ConvertColumnRuleWidth(StyleResolverState&, const CSSValue&);

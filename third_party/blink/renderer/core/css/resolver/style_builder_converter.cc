@@ -1956,6 +1956,15 @@ StyleInterestDelay StyleBuilderConverter::ConvertInterestDelayValue(
       StyleBuilderConverter::ConvertTimeValue(state, value));
 }
 
+int StyleBuilderConverter::ClampLineWidth(double width) {
+  if (width > 0.0 && width < 1.0) {
+    return 1;
+  }
+
+  // Clamp the result to a reasonable range for layout.
+  return ClampTo<int>(std::floor(width), 0, LayoutUnit::Max().ToInt());
+}
+
 int StyleBuilderConverter::ConvertBorderWidth(const StyleResolverState& state,
                                               const CSSValue& value) {
   double result = 0;
@@ -1983,12 +1992,7 @@ int StyleBuilderConverter::ConvertBorderWidth(const StyleResolverState& state,
         primitive_value.ComputeLength<float>(state.CssToLengthConversionData());
   }
 
-  if (result > 0.0 && result < 1.0) {
-    return 1;
-  }
-
-  // Clamp the result to a reasonable range for layout.
-  return ClampTo<int>(floor(result), 0, LayoutUnit::Max().ToInt());
+  return ClampLineWidth(result);
 }
 
 int StyleBuilderConverter::ConvertOutlineOffset(const StyleResolverState& state,

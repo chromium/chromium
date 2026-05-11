@@ -1719,6 +1719,7 @@ void LocalFrame::SetZoomFactors(float layout_zoom_factor,
   }
 
   if (layout_zoom_changed) {
+    document->GetStyleEngine().InvalidateInitialStyle();
     MaybeUpdateWindowControlsOverlayWithNewZoomLevel();
     document->LayoutViewportWasResized();
     document->MediaQueryAffectingValueChanged(MediaValueChange::kOther);

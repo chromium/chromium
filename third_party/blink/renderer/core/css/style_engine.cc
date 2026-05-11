@@ -65,6 +65,7 @@
 #include "third_party/blink/renderer/core/css/resolver/scoped_style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/selector_filter_parent_scope.h"
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_stats.h"
 #include "third_party/blink/renderer/core/css/resolver/style_rule_usage_tracker.h"
 #include "third_party/blink/renderer/core/css/resolver/viewport_style_resolver.h"
@@ -2753,6 +2754,7 @@ bool StyleEngine::HasRulesForId(const AtomicString& id) const {
 }
 
 void StyleEngine::InitialStyleChanged() {
+  InvalidateInitialStyle();
   MarkViewportStyleDirty();
   // We need to update the viewport style immediately because media queries
   // evaluated in MediaQueryAffectingValueChanged() below may rely on the
@@ -2761,6 +2763,12 @@ void StyleEngine::InitialStyleChanged() {
   MediaQueryAffectingValueChanged(MediaValueChange::kOther);
   MarkAllElementsForStyleRecalc(
       StyleChangeReasonForTracing::Create(style_change_reason::kSettings));
+}
+
+void StyleEngine::InvalidateInitialStyle() {
+  if (resolver_) {
+    resolver_->InvalidateInitialStyle();
+  }
 }
 
 void StyleEngine::UAStyleChanged() {

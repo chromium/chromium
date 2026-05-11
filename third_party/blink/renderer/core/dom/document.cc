@@ -3690,6 +3690,7 @@ void Document::SetPrinting(PrintingState state) {
     // We force the color-scheme to light for printing.
     ColorSchemeChanged();
     // StyleResolver::InitialStyleForElement uses different zoom for printing.
+    GetStyleEngine().InvalidateInitialStyle();
     GetStyleEngine().MarkViewportStyleDirty();
     // Separate UA sheet for printing.
     GetStyleEngine().MarkAllElementsForStyleRecalc(

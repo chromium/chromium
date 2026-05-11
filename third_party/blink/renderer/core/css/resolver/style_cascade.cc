@@ -530,18 +530,33 @@ void StyleCascade::CollectFromInterpolations() {
   }
 }
 
-// The implicit defaulting behavior of inherited properties is to take
-// the value of the parent style [1]. However, we never reach
-// Longhand::ApplyInherit for implicit defaults, which is needed to adjust
-// Lengths with premultiplied zoom. Therefore, all inherited properties
-// are instead explicitly defaulted [2] when the effective zoom has changed
-// versus the parent zoom.
+// StyleCascade collects declarations before all cascade-affecting properties
+// have necessarily reached their final values. If CSS zoom changes the
+// effective zoom during cascade, implicit defaults [1] with premultiplied
+// lengths need to be explicitly defaulted [2] so their
+// ApplyInitial/ApplyInherit paths run with the element's new zoom.
 //
 // [1] https://drafts.csswg.org/css-cascade/#defaulting
 // [2] https://drafts.csswg.org/css-cascade/#defaulting-keywords
 void StyleCascade::AddExplicitDefaults() {
-  if (state_.GetDocument().StandardizedBrowserZoomEnabled() &&
-      effective_zoom_changed_) {
+  if (!effective_zoom_changed_) {
+    return;
+  }
+
+  // These non-inherited initial values are stored zoomed in `ComputedStyle`.
+  // The document initial style only accounts for `InitialZoom`, so recompute
+  // them when CSS zoom changes this element's effective zoom during cascade.
+  map_.Add(CSSPropertyID::kBorderTopWidth,
+           CascadePriority(CascadeOrigin::kNone));
+  map_.Add(CSSPropertyID::kBorderRightWidth,
+           CascadePriority(CascadeOrigin::kNone));
+  map_.Add(CSSPropertyID::kBorderBottomWidth,
+           CascadePriority(CascadeOrigin::kNone));
+  map_.Add(CSSPropertyID::kBorderLeftWidth,
+           CascadePriority(CascadeOrigin::kNone));
+  map_.Add(CSSPropertyID::kOutlineWidth, CascadePriority(CascadeOrigin::kNone));
+
+  if (state_.GetDocument().StandardizedBrowserZoomEnabled()) {
     // These inherited properties can contain lengths:
     //
     //   -webkit-border-horizontal-spacing

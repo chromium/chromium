@@ -640,9 +640,7 @@ static void CollectScopedResolversForHostedShadowTrees(
   }
 }
 
-StyleResolver::StyleResolver(Document& document)
-    : initial_style_(ComputedStyle::GetInitialStyleSingleton()),
-      document_(document) {
+StyleResolver::StyleResolver(Document& document) : document_(document) {
   UpdateMediaType();
 }
 
@@ -2323,19 +2321,23 @@ void StyleResolver::LoadPaginationResources() {
 }
 
 const ComputedStyle& StyleResolver::InitialStyle() const {
-  DCHECK(initial_style_);
+  if (!initial_style_) {
+    initial_style_ = CreateInitialStyle();
+  }
   return *initial_style_;
 }
 
+void StyleResolver::InvalidateInitialStyle() {
+  initial_style_ = nullptr;
+}
+
 ComputedStyleBuilder StyleResolver::CreateComputedStyleBuilder() const {
-  DCHECK(initial_style_);
-  return ComputedStyleBuilder(*initial_style_);
+  return ComputedStyleBuilder(InitialStyle());
 }
 
 ComputedStyleBuilder StyleResolver::CreateComputedStyleBuilderInheritingFrom(
     const ComputedStyle& parent_style) const {
-  DCHECK(initial_style_);
-  return ComputedStyleBuilder(*initial_style_, parent_style);
+  return ComputedStyleBuilder(InitialStyle(), parent_style);
 }
 
 float StyleResolver::InitialZoom() const {
@@ -2344,6 +2346,22 @@ float StyleResolver::InitialZoom() const {
     return !document.Printing() ? frame->LayoutZoomFactor() : 1;
   }
   return 1;
+}
+
+const ComputedStyle* StyleResolver::CreateInitialStyle() const {
+  ComputedStyleBuilder builder(*ComputedStyle::GetInitialStyleSingleton());
+  float initial_zoom = InitialZoom();
+  builder.SetBorderTopWidth(StyleBuilderConverter::ClampLineWidth(
+      ComputedStyleInitialValues::InitialBorderTopWidth() * initial_zoom));
+  builder.SetBorderRightWidth(StyleBuilderConverter::ClampLineWidth(
+      ComputedStyleInitialValues::InitialBorderRightWidth() * initial_zoom));
+  builder.SetBorderBottomWidth(StyleBuilderConverter::ClampLineWidth(
+      ComputedStyleInitialValues::InitialBorderBottomWidth() * initial_zoom));
+  builder.SetBorderLeftWidth(StyleBuilderConverter::ClampLineWidth(
+      ComputedStyleInitialValues::InitialBorderLeftWidth() * initial_zoom));
+  builder.SetOutlineWidth(StyleBuilderConverter::ClampLineWidth(
+      ComputedStyleInitialValues::InitialOutlineWidth() * initial_zoom));
+  return builder.TakeStyle();
 }
 
 ComputedStyleBuilder StyleResolver::InitialStyleBuilderForElement() const {

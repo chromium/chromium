@@ -7231,6 +7231,62 @@ TEST_F(StyleEngineTest, BorderWidthsAreRecalculatedWhenZoomChanges) {
   checkBorderWidth(1.0f);
 }
 
+TEST_F(StyleEngineTest, InitialBorderAndOutlineWidthsUpdateWhenZoomChanges) {
+  frame_test_helpers::WebViewHelper web_view_helper;
+  WebViewImpl* web_view_impl = web_view_helper.Initialize();
+  WebFrameWidget* main_frame_widget = web_view_impl->MainFrameWidget();
+
+  const auto set_zoom = [&](float zoom_factor) {
+    main_frame_widget->SetZoomLevelForTesting(
+        ZoomFactorToZoomLevel(zoom_factor));
+    main_frame_widget->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+  };
+
+  const auto set_device_scale_factor = [&](float device_scale_factor) {
+    main_frame_widget->SetDeviceScaleFactorForTesting(device_scale_factor);
+    main_frame_widget->UpdateAllLifecyclePhases(DocumentUpdateReason::kTest);
+  };
+
+  Document* document =
+      To<LocalFrame>(web_view_impl->GetPage()->MainFrame())->GetDocument();
+  document->body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      #target {
+        border-top-style: solid;
+        outline-style: solid;
+      }
+    </style>
+    <div id="target"></div>
+  )HTML");
+
+  set_zoom(1.0f);
+  set_device_scale_factor(1.0f);
+
+  const Element* target = document->getElementById(AtomicString("target"));
+  ASSERT_NE(target, nullptr);
+
+  const auto check_widths = [&](int expected_width) {
+    const ComputedStyle* style = target->GetComputedStyle();
+    ASSERT_NE(style, nullptr);
+    EXPECT_EQ(expected_width, style->BorderTopWidth());
+    EXPECT_EQ(expected_width, style->OutlineWidth());
+  };
+
+  check_widths(3);
+
+  set_zoom(2.0f);
+  check_widths(6);
+
+  set_device_scale_factor(2.0f);
+  check_widths(12);
+
+  set_zoom(1.0f);
+  check_widths(6);
+
+  set_device_scale_factor(1.0f);
+  check_widths(3);
+}
+
 TEST_F(StyleEngineTest, InitialStyle_Recalc) {
   GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <style>
