@@ -18,7 +18,6 @@
 #include "components/enterprise/common/files_scan_data.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
 #include "net/base/directory_lister.h"
 #include "third_party/blink/public/mojom/choosers/file_chooser.mojom.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
@@ -63,22 +62,6 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
                          public content::WebContentsObserver,
                          private net::DirectoryLister::DirectoryListerDelegate {
  public:
-  // Tab-scoped container that anchors the lifetime of active operations.
-  class ActiveHelpers : public content::WebContentsUserData<ActiveHelpers> {
-   public:
-    ~ActiveHelpers() override;
-
-    static void Add(content::WebContents* tab,
-                    scoped_refptr<FileSelectHelper> helper);
-    static void Remove(FileSelectHelper* helper);
-
-   private:
-    friend WebContentsUserData;
-    explicit ActiveHelpers(content::WebContents* web_contents);
-    std::set<scoped_refptr<FileSelectHelper>> helpers_;
-    WEB_CONTENTS_USER_DATA_KEY_DECL();
-  };
-
   FileSelectHelper(const FileSelectHelper&) = delete;
   FileSelectHelper& operator=(const FileSelectHelper&) = delete;
 
@@ -93,10 +76,6 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
       content::WebContents* tab,
       scoped_refptr<content::FileSelectListener> listener,
       const base::FilePath& path);
-
-  base::WeakPtr<FileSelectHelper> GetWeakPtr() {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
 
  private:
   friend class base::RefCountedThreadSafe<FileSelectHelper>;
@@ -138,7 +117,6 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
   FRIEND_TEST_ALL_PREFIXES(FileSelectHelperTest, GetFileTypesFromAcceptType);
   FRIEND_TEST_ALL_PREFIXES(FileSelectHelperTest, MultipleFileExtensionsForMime);
   FRIEND_TEST_ALL_PREFIXES(FileSelectHelperTest, ConfirmationDialog);
-  FRIEND_TEST_ALL_PREFIXES(FileSelectHelperTest, TaskKeepsAlive);
   FRIEND_TEST_ALL_PREFIXES(policy::DlpFilesControllerAshBrowserTest,
                            FilesUploadCallerPassed);
 
@@ -270,6 +248,9 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
   // vector.
   void DeleteTemporaryFiles();
 
+  // Cleans up when the initiator of the file chooser is no longer valid.
+  void CleanUp();
+
   // Calls RunFileChooserEnd() if the webcontents was destroyed. Returns true
   // if the file chooser operation shouldn't proceed.
   bool AbortIfWebContentsDestroyed();
@@ -357,7 +338,9 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
   std::unique_ptr<ScopedTuckPictureInPicture> scoped_tuck_picture_in_picture_;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_CHROMEOS)
   base::WeakPtrFactory<FileSelectHelper> weak_ptr_factory_{this};
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 #endif  // CHROME_BROWSER_FILE_SELECT_HELPER_H_
