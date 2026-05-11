@@ -36,7 +36,6 @@ FILES_TO_SYNC = [
     'crdtp/json.h',
     'crdtp/json_platform.h',
     'crdtp/json_test.cc',
-    'crdtp/maybe.h',
     'crdtp/parser_handler.h',
     'crdtp/protocol_core.cc',
     'crdtp/protocol_core.h',
