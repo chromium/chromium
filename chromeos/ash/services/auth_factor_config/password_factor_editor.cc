@@ -104,10 +104,9 @@ mojom::PasswordComplexity CheckLocalPasswordComplexityImpl(
 
   if (policy.has_value()) {
     // LocalAuthFactorsComplexity policy is set, perform the new check.
-    bool ok = CheckPasswordComplexity(password, policy.value()) ==
-              PasswordComplexityResult::kOk;
-    return ok ? mojom::PasswordComplexity::kOk
-              : mojom::PasswordComplexity::kTooShort;
+    PasswordComplexityResult result =
+        CheckPasswordComplexity(password, policy.value());
+    return static_cast<mojom::PasswordComplexity>(result);
   }
 
   // We're counting unicode points here because we already have a function for

@@ -143,10 +143,14 @@ interface PinFactorEditor {
 };
 
 // A value describing the complexity of a password.
+// LINT.IfChange(PasswordComplexity)
 enum PasswordComplexity {
   kOk,
   kTooShort,
+  kMissesCharacters,
+  kContainsTrivialSequence,
 };
+// LINT.ThenChange(//chromeos/ash/components/policy/local_auth_factors/local_auth_factors_complexity.h:PasswordComplexityResult)
 
 // Interface for methods specific to password authentication. Served from chrome
 // ash, intended to be consumed by the following trusted webuis:

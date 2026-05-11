@@ -145,4 +145,18 @@ export class PasswordSettingsApi implements PasswordSettingsApiInterface {
         await retryUntilSome(() => passwordDialog.localPasswordInput());
     await input.assertHintMessage(expected);
   }
+
+  async assertFirstInputError(expected: string): Promise<void> {
+    const passwordDialog = await this.openSetLocalPasswordDialog();
+    const input =
+        await retryUntilSome(() => passwordDialog.localPasswordInput());
+    await input.assertFirstInputErrorMessage(expected);
+  }
+
+  async enterFirstInput(value: string): Promise<void> {
+    const passwordDialog = await this.openSetLocalPasswordDialog();
+    const input =
+        await retryUntilSome(() => passwordDialog.localPasswordInput());
+    await input.enterFirstInput(value);
+  }
 }

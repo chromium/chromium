@@ -51,6 +51,9 @@ constexpr std::string kComplexPassword = "abcDEF123+-%";
 // checking that the length was at least 8.
 constexpr std::string kSimplePassword = "simplepassword";
 
+// A short password of length 5.
+constexpr std::string kShortPassword = "short";
+
 // An invalid token.
 constexpr std::string kInvalidToken = "invalid_token";
 
@@ -331,8 +334,6 @@ IN_PROC_BROWSER_TEST_F(AuthFactorConfigTestWithGaiaPassword,
 // to enforce appropriate complexity.
 IN_PROC_BROWSER_TEST_F(AuthFactorConfigTestWithGaiaPassword,
                        UpdateOnlinePasswordNoComplexityCheck) {
-  static const std::string kShortPassword = "short";
-
   std::optional<std::string> auth_token = MakeAuthToken(test::kGaiaPassword);
   ASSERT_TRUE(auth_token.has_value());
   mojom::PasswordFactorEditor& password_editor =
@@ -439,7 +440,7 @@ IN_PROC_BROWSER_TEST_F(
   std::optional<std::string> auth_token = MakeAuthToken(test::kLocalPassword);
   ASSERT_TRUE(auth_token.has_value());
 
-  auto result = CheckLocalPasswordComplexity(*auth_token, kSimplePassword);
+  auto result = CheckLocalPasswordComplexity(*auth_token, kShortPassword);
 
   EXPECT_EQ(result, mojom::PasswordComplexity::kTooShort);
 }

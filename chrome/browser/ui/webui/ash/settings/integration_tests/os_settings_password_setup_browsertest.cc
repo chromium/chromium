@@ -94,6 +94,45 @@ IN_PROC_BROWSER_TEST_F(
       "Must be at least 6 characters and have at least one letter or symbol");
 }
 
+IN_PROC_BROWSER_TEST_F(
+    OSSettingsAuthFactorSetupTestWithGaiaPassword,
+    CheckPasswordInputError_LocalAuthFactorsComplexityPolicyHigh) {
+  GetProfile()->GetPrefs()->SetInteger(
+      ash::prefs::kLocalAuthFactorsComplexity,
+      static_cast<int>(ash::LocalAuthFactorsComplexity::kHigh));
+
+  mojom::LockScreenSettingsAsyncWaiter lock_screen_settings =
+      OpenLockScreenSettingsAndAuthenticate();
+  mojom::PasswordSettingsApiAsyncWaiter password_settings =
+      GoToPasswordSettings(lock_screen_settings);
+
+  // Policy is set to "high" so a different new message is expected.
+  password_settings.AssertCanOpenLocalPasswordDialog();
+  password_settings.AssertPasswordInputHint(
+      "Must be at least 12 characters and have uppercase letters, lowercase "
+      "letters, numbers, and symbols. Must not have repeated characters or "
+      "sequences of 4 or more.");
+
+  // 1. Test TOO_SHORT error
+  password_settings.AssertFirstInputError("");  // Initially no error
+  password_settings.EnterFirstInput("short");
+  password_settings.AssertFirstInputError("Must be at least 12 characters");
+
+  // 2. Test MISSES_CHARACTERS error
+  password_settings.EnterFirstInput("longpasswordbutnoclasses");
+  password_settings.AssertFirstInputError(
+      "Must have uppercase letters, lowercase letters, numbers, and symbols");
+
+  // 3. Test CONTAINS_TRIVIAL_SEQUENCE error
+  password_settings.EnterFirstInput("abcde12345!@#$%ABCDE");
+  password_settings.AssertFirstInputError(
+      "Must not have repeated characters or sequences of 4 or more");
+
+  // 4. Test OK
+  password_settings.EnterFirstInput("P@ssword1234!");
+  password_settings.AssertFirstInputError("");
+}
+
 class OSSettingsAuthFactorSetupTestWithLocalPassword
     : public OSSettingsAuthFactorSetupTest {
  public:
