@@ -27,9 +27,6 @@
 #include "components/sync/service/sync_service_impl.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#if BUILDFLAG(IS_ANDROID)
-#include "ui/base/device_form_factor.h"
-#endif
 
 using search_engines_helper::HasSearchEngine;
 using testing::IsNull;
@@ -57,26 +54,14 @@ class SingleClientSearchEnginesSyncTestBase : public SyncTest {
       : SyncTest(test_type) {}
   ~SingleClientSearchEnginesSyncTestBase() override = default;
 
-  void SetUpOnMainThread() override {
-    SyncTest::SetUpOnMainThread();
-#if BUILDFLAG(IS_ANDROID)
-    if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE) {
-      GTEST_SKIP() << "Search engines sync is only supported on Large Form "
-                      "Factor (LFF) Android devices.";
-    }
-#endif
-  }
-
   bool SetupClients() override {
     if (!SyncTest::SetupClients()) {
       return false;
     }
 
     // Wait for models to load.
-#if !BUILDFLAG(IS_ANDROID)
     search_test_utils::WaitForTemplateURLServiceToLoad(
         TemplateURLServiceFactory::GetForProfile(verifier()));
-#endif
     search_test_utils::WaitForTemplateURLServiceToLoad(
         TemplateURLServiceFactory::GetForProfile(GetProfile(0)));
 
@@ -84,12 +69,8 @@ class SingleClientSearchEnginesSyncTestBase : public SyncTest {
   }
 
   bool UseVerifier() override {
-#if BUILDFLAG(IS_ANDROID)
-    return false;
-#else
     // TODO(crbug.com/40724973): rewrite test to not use verifier.
     return true;
-#endif
   }
 };
 
@@ -99,14 +80,10 @@ class SingleClientSearchEnginesSyncTest
  public:
   SingleClientSearchEnginesSyncTest()
       : SingleClientSearchEnginesSyncTestBase(SINGLE_CLIENT) {
-    std::vector<base::test::FeatureRef> enabled_features;
-#if BUILDFLAG(IS_ANDROID)
-    enabled_features.push_back(syncer::kSyncSearchEnginesAndroidLFF);
-#endif
     if (GetSetupSyncMode() == SyncTest::SetupSyncMode::kSyncTransportOnly) {
-      enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
+      scoped_feature_list_.InitAndEnableFeature(
+          syncer::kReplaceSyncPromosWithSignInPromos);
     }
-    scoped_feature_list_.InitWithFeatures(enabled_features, {});
   }
   ~SingleClientSearchEnginesSyncTest() override = default;
 
@@ -118,18 +95,11 @@ class SingleClientSearchEnginesSyncTest
 
 IN_PROC_BROWSER_TEST_P(SingleClientSearchEnginesSyncTest, Sanity) {
   ASSERT_TRUE(SetupSync());
-#if !BUILDFLAG(IS_ANDROID)
   ASSERT_TRUE(search_engines_helper::ServiceMatchesVerifier(0));
-#endif
   search_engines_helper::AddSearchEngine(/*profile_index=*/0,
                                          /*keyword=*/"test0");
   ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
-#if BUILDFLAG(IS_ANDROID)
-  EXPECT_TRUE(search_engines_helper::HasSearchEngineInFakeServer(
-      "test0", GetFakeServer()));
-#else
   ASSERT_TRUE(search_engines_helper::ServiceMatchesVerifier(0));
-#endif
 }
 
 IN_PROC_BROWSER_TEST_P(SingleClientSearchEnginesSyncTest,
@@ -336,16 +306,13 @@ class
  public:
   SingleClientSearchEnginesSyncTestWithSeparateLocalAndAccountSearchEnginesEnabled()
       : SingleClientSearchEnginesSyncTestBase(SINGLE_CLIENT) {
-    std::vector<base::test::FeatureRef> enabled_features = {
-        syncer::kSeparateLocalAndAccountSearchEngines,
-        // This is needed to enable search engines in transport mode.
-        switches::kEnablePreferencesAccountStorage,
-        syncer::kReplaceSyncPromosWithSignInPromos,
-    };
-#if BUILDFLAG(IS_ANDROID)
-    enabled_features.push_back(syncer::kSyncSearchEnginesAndroidLFF);
-#endif
-    feature_list_.InitWithFeatures(enabled_features, {});
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{syncer::kSeparateLocalAndAccountSearchEngines,
+                              // This is needed to enable search engines in
+                              // transport mode.
+                              switches::kEnablePreferencesAccountStorage,
+                              syncer::kReplaceSyncPromosWithSignInPromos},
+        /*disabled_features=*/{});
   }
 
   // This test suite runs in transport-only mode because it deals with sepe.
@@ -595,7 +562,7 @@ IN_PROC_BROWSER_TEST_F(
       "key1", GetFakeServer()));
 }
 
-#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(
     SingleClientSearchEnginesSyncTestWithSeparateLocalAndAccountSearchEnginesEnabled,
     PRE_ShouldClearAccountDataOnStartupIfSignInAllowedBitChanged) {

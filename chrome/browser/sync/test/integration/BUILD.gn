@@ -31,7 +31,6 @@ source_set("sync_integration_tests_impl") {
     "//chrome/browser/plus_addresses",
     "//chrome/browser/prefs",
     "//chrome/browser/reading_list",
-    "//chrome/browser/search_engines",
     "//chrome/browser/signin",
     "//chrome/browser/subscription_eligibility",
     "//chrome/browser/sync",
@@ -54,7 +53,6 @@ source_set("sync_integration_tests_impl") {
     "//components/plus_addresses/core/browser/webdata",
     "//components/reading_list/core:test_support",
     "//components/saved_tab_groups/test_support",
-    "//components/search_engines",
     "//components/skills:features",
     "//components/sync:test_support",
     "//components/sync_bookmarks",
@@ -82,7 +80,6 @@ source_set("sync_integration_tests_impl") {
     "single_client_plus_address_sync_test.cc",
     "single_client_preferences_sync_test.cc",
     "single_client_reading_list_sync_test.cc",
-    "single_client_search_engines_sync_test.cc",
     "single_client_shared_tab_group_data_sync_test.cc",
     "single_client_standalone_transport_sync_test.cc",
     "single_client_sync_invalidations_test.cc",
@@ -174,6 +171,9 @@ source_set("sync_integration_tests_impl") {
       "web_apps/single_client_web_apps_sync_generated_icon_fix_sync_test.cc",
       "web_apps/single_client_web_apps_sync_test.cc",
 
+      # TODO(crbug.com/502050495): Enable search engines sync tests on Android.
+      "single_client_search_engines_sync_test.cc",
+
       # Tests with two clients can't run on Android because Android doesn't
       # support multiple profiles.
       "two_client_app_settings_sync_test.cc",
@@ -264,6 +264,7 @@ source_set("sync_integration_tests_impl") {
       "//chrome/browser/browsing_data:constants",
       "//chrome/browser/consent_auditor",
       "//chrome/browser/metrics/desktop_session_duration",
+      "//chrome/browser/search_engines",
       "//chrome/browser/send_tab_to_self",
       "//chrome/browser/send_tab_to_self:impl",
       "//chrome/browser/sharing",
@@ -291,6 +292,7 @@ source_set("sync_integration_tests_impl") {
       "//components/history/core/common",
       "//components/reading_list/core",
       "//components/saved_tab_groups/internal:tab_group_sync_bridge",
+      "//components/search_engines",
       "//components/send_tab_to_self",
       "//components/skills/public",
       "//components/spellcheck/common",
@@ -443,8 +445,6 @@ source_set("sync_integration_test_support") {
     "reading_list_helper.h",
     "saved_tab_groups_helper.cc",
     "saved_tab_groups_helper.h",
-    "search_engines_helper.cc",
-    "search_engines_helper.h",
     "send_tab_to_self_helper.cc",
     "send_tab_to_self_helper.h",
     "session_hierarchy_match_checker.cc",
@@ -565,6 +565,8 @@ source_set("sync_integration_test_support") {
       "migration_waiter.h",
       "migration_watcher.cc",
       "migration_watcher.h",
+      "search_engines_helper.cc",
+      "search_engines_helper.h",
       "sessions_helper.cc",
       "sessions_helper.h",
       "sync_app_helper.cc",
