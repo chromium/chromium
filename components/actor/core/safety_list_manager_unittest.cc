@@ -73,6 +73,14 @@ TEST_P(SafetyListManagerTest, ParseSafetyLists_Validity) {
     size_t expected_blocked_count;
   } kTestCases[] = {
       {
+          "malformed json",
+          "this isn't json",
+          ParseResult::kInvalidJson,
+          ParseResult::kInvalidJson,
+          0u,
+          0u,
+      },
+      {
           "not_dictionary",
           R"json({
             "navigation_allowed": [ "{}" ],
