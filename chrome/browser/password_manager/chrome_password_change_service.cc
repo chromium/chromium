@@ -183,8 +183,7 @@ void ChromePasswordChangeService::OfferPasswordChangeUi(
 #if !BUILDFLAG(IS_ANDROID)
   GURL change_pwd_url = GetChangePasswordURLOverride(credentials.url);
   if (!change_pwd_url.is_valid()) {
-    change_pwd_url =
-        affiliation_service_->GetChangePasswordURL(credentials.url);
+    change_pwd_url = credentials.change_password_url;
   }
 
   CHECK(change_pwd_url.is_valid());
