@@ -9811,3 +9811,4 @@ crbug.com/510507820 [ Win10.20h2 ] virtual/speech-with-unified-autoplay/external
 
 # Gardener 2026-05-11
 crbug.com/511249206 [ Mac ] virtual/compositor-timeline-trigger/external/wpt/scroll-animations/animation-trigger/animation-trigger-multiple-animations.tentative.html [ Failure Pass ]
+crbug.com/502696520 http/tests/inspector-protocol/page/subframe-navigation.js [ Failure Pass ]
