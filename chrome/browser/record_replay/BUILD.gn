@@ -16,6 +16,8 @@ static_library("impl") {
     "chrome_record_replay_client.h",
     "recording_data_manager_factory.cc",
     "recording_data_manager_factory.h",
+    "task_parameters_extractor_factory.cc",
+    "task_parameters_extractor_factory.h",
   ]
 
   deps = [

@@ -31,6 +31,8 @@ static_library("browser") {
     "task_discovery_service.h",
     "task_discovery_service_impl.cc",
     "task_discovery_service_impl.h",
+    "task_parameters_extractor.cc",
+    "task_parameters_extractor.h",
     "task_provider.cc",
     "task_provider.h",
   ]
@@ -54,6 +56,7 @@ source_set("unit_tests") {
     "file_task_provider_unittest.cc",
     "recording_data_manager_impl_unittest.cc",
     "task_database_unittest.cc",
+    "task_parameters_extractor_unittest.cc",
   ]
   deps = [
     ":browser",
