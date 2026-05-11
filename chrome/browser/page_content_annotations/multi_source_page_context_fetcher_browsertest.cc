@@ -224,6 +224,7 @@ class ScreenshotTimeoutMultiSourcePageContextFetcherBrowserTest
         {kGlicTabScreenshotExperiment,
          {
              {"screenshot_timeout_ms", "1us"},
+             {"screenshot_timeout_allowance_ms", "10s"},
          }},
     };
     std::vector<base::test::FeatureRef> disabled_features;
@@ -236,15 +237,9 @@ class ScreenshotTimeoutMultiSourcePageContextFetcherBrowserTest
   base::test::ScopedFeatureList features_;
 };
 
-// TODO(https://crbug.com/478727457): flaky timeouts
-#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
-#define MAYBE_TakesScreenshot DISABLED_TakesScreenshot
-#else
-#define MAYBE_TakesScreenshot TakesScreenshot
-#endif
 IN_PROC_BROWSER_TEST_F(
     ScreenshotTimeoutMultiSourcePageContextFetcherBrowserTest,
-    MAYBE_TakesScreenshot) {
+    TakesScreenshot) {
   GURL url = embedded_https_test_server().GetURL("/empty.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
@@ -267,12 +262,16 @@ IN_PROC_BROWSER_TEST_F(
     if (result->screenshot_result.has_value()) {
       continue;
     }
+    if (histograms.GetBucketCount("Glic.PageContextFetcher.GetScreenshotError",
+                                  content::CopyFromSurfaceError::kTimeout) ==
+        0) {
+      continue;
+    }
     histograms.ExpectUniqueSample("Glic.PageContextFetcher.GetScreenshotError",
                                   content::CopyFromSurfaceError::kTimeout, 1);
     break;
   }
 }
-#undef MAYBE_TakesScreenshot
 
 class RedactingMultiSourcePageContextFetcherBrowserTest
     : public MultiSourcePageContextFetcherBrowserTest {

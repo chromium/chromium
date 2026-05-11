@@ -180,8 +180,6 @@ enum class ScreenshotImageType {
 // We use a timer on the viz side as well as a timer on the browser side and
 // offset them by this allowance. Hopefully having the viz timer fire always
 // as this will give us more information as to the failure.
-constexpr base::TimeDelta kScreenshotTimeoutBrowserAllowance =
-    base::Milliseconds(500);
 
 ScreenshotImageType GetScreenshotImageType(
     const std::optional<ScreenshotOptions::ScreenshotCollectionOptions>&
@@ -647,7 +645,7 @@ void PageContextFetcher::ScheduleScreenshotTimeout() {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&PageContextFetcher::OnScreenshotTimeout, GetWeakPtr()),
-      kScreenshotTimeout.Get() + kScreenshotTimeoutBrowserAllowance);
+      kScreenshotTimeout.Get() + kScreenshotTimeoutBrowserAllowance.Get());
 }
 
 void PageContextFetcher::ReceivedViewportBitmap(
@@ -942,6 +940,10 @@ const base::FeatureParam<std::string> kScreenshotImageType{
 
 const base::FeatureParam<base::TimeDelta> kScreenshotTimeout{
     &kGlicTabScreenshotExperiment, "screenshot_timeout_ms", base::Seconds(5)};
+
+const base::FeatureParam<base::TimeDelta> kScreenshotTimeoutBrowserAllowance{
+    &kGlicTabScreenshotExperiment, "screenshot_timeout_allowance_ms",
+    base::Milliseconds(500)};
 
 PdfOptions::PdfOptions(Format format, uint32_t size_limit)
     : format_(format), size_limit_(size_limit) {

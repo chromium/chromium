@@ -301,6 +301,9 @@ extern const base::FeatureParam<std::string> kScreenshotImageType;
 
 extern const base::FeatureParam<base::TimeDelta> kScreenshotTimeout;
 
+extern const base::FeatureParam<base::TimeDelta>
+    kScreenshotTimeoutBrowserAllowance;
+
 // Callback used for relaying progress.
 class FetchPageProgressListener {
  public:
