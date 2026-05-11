@@ -65,7 +65,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kPrefetchOffTheMainThread,
     &features::kPreviewHandwritingGesture,
     &features::kReduceGpuPriorityOnBackground,
-    &features::kRemoveCachedProcessFromBindingManager,
     &features::kContinueGestureOnLosingFocus,
     &features::kSandboxedProcessServiceLimitOnAndroid,
     &features::kScrollAfterOSKViewportShrinkFix,

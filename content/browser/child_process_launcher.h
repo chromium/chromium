@@ -98,8 +98,7 @@ struct RenderProcessPriority {
                         bool boost_for_discard,
 #if BUILDFLAG(IS_ANDROID)
                         bool is_spare_renderer,
-                        ChildProcessImportance importance,
-                        bool has_active_clients
+                        ChildProcessImportance importance
 #else
                         std::optional<base::Process::Priority> priority_override
 #endif
@@ -177,10 +176,6 @@ struct RenderProcessPriority {
   bool is_spare_renderer;
 
   ChildProcessImportance importance;
-
-  // |has_active_clients| is true if this process has at least one client that
-  // is considered active.
-  bool has_active_clients;
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)

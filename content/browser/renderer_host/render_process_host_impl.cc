@@ -1683,8 +1683,7 @@ RenderProcessHostImpl::RenderProcessHostImpl(
                 false /* boost_for_discard */,
 #if BUILDFLAG(IS_ANDROID)
                 is_spare_renderer,
-                ChildProcessImportance::NORMAL,
-                false /* has_active_clients */
+                ChildProcessImportance::NORMAL
 #else
                 std::nullopt
 #endif
@@ -5817,7 +5816,6 @@ void RenderProcessHostImpl::UpdateProcessPriorityInputs() {
 #if BUILDFLAG(IS_ANDROID)
   ChildProcessImportance new_effective_importance =
       ChildProcessImportance::NORMAL;
-  bool new_has_active_clients = false;
 #endif
   for (RenderProcessHostPriorityClient* client : priority_clients_) {
     RenderProcessHostPriorityClient::Priority priority = client->GetPriority();
@@ -5846,8 +5844,6 @@ void RenderProcessHostImpl::UpdateProcessPriorityInputs() {
 #if BUILDFLAG(IS_ANDROID)
     new_effective_importance =
         std::max(new_effective_importance, priority.importance);
-    new_has_active_clients =
-        new_has_active_clients || priority.has_active_clients;
 #endif
   }
 
@@ -5860,11 +5856,9 @@ void RenderProcessHostImpl::UpdateProcessPriorityInputs() {
   intersects_viewport_ = new_intersects_viewport;
   is_discarding_ = new_is_discarding;
 #if BUILDFLAG(IS_ANDROID)
-  inputs_changed = inputs_changed ||
-                   new_effective_importance != effective_importance_ ||
-                   new_has_active_clients != has_active_clients_;
+  inputs_changed =
+      inputs_changed || new_effective_importance != effective_importance_;
   effective_importance_ = new_effective_importance;
-  has_active_clients_ = new_has_active_clients;
 #endif
   if (inputs_changed)
     UpdateProcessPriority();
@@ -5889,7 +5883,7 @@ void RenderProcessHostImpl::UpdateProcessPriority() {
       boost_for_loading_count_ > 0, is_discarding_,
 #if BUILDFLAG(IS_ANDROID)
       spare_renderer_priority_status_ == SpareRendererPriorityStatus::kSpare,
-      GetEffectiveImportance(), has_active_clients_
+      GetEffectiveImportance()
 #else
       priority_override_
 #endif

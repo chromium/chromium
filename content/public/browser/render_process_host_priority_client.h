@@ -27,7 +27,6 @@ class RenderProcessHostPriorityClient {
     bool is_discarding;
 #if BUILDFLAG(IS_ANDROID)
     ChildProcessImportance importance;
-    bool has_active_clients;
 #endif
   };
 

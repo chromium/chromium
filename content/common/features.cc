@@ -632,11 +632,6 @@ BASE_FEATURE(kReusePrerenderingProcessForMainFrames,
 // now anyway; they don't work.
 BASE_FEATURE(kRestrictOrientationLockToPhones,
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// When enabled, inactive renderers (e.g. in back-forward cache) are removed
-// from the binding manager to lower their priority.
-BASE_FEATURE(kRemoveCachedProcessFromBindingManager,
-             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Fix for scrolling to focused editable input fields after tapping to show the
