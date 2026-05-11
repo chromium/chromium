@@ -77,7 +77,7 @@ std::string GetProfileName(AudioCodecProfile profile) {
   }
 }
 
-AudioCodec StringToAudioCodec(const std::string& codec_id) {
+AudioCodec StringToAudioCodec(std::string_view codec_id) {
   if (codec_id == "aac")
     return AudioCodec::kAAC;
   if (codec_id == "ac-3" || codec_id == "mp4a.A5" || codec_id == "mp4a.a5")
