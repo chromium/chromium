@@ -1215,6 +1215,9 @@ export declare interface CreateActorTabOptions {
  * intentionally no constraints on when or how often they are called.
  */
 export declare interface GlicBrowserHostMetrics {
+  /** Called when the opt-in CTA is shown. */
+  onOptinImpression?(): void;
+
   /** Called when the user has submitted input via the web client. */
   onUserInputSubmitted?(mode: WebClientMode): void;
 

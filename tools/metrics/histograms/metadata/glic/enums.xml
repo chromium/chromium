@@ -382,6 +382,7 @@ chromium-metrics-reviews@google.com.
   <int value="96" label="OnExperimentalTriggeringUpdate"/>
   <int value="97" label="SubscribeToZoomLevel"/>
   <int value="98" label="UnsubscribeFromZoomLevel"/>
+  <int value="99" label="OnOptinImpression"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/resources/glic/glic_api_impl/request_types.ts:ApiRequestType) -->

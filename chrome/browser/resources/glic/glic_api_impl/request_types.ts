@@ -410,6 +410,9 @@ export declare type HostRequestTypes = ValidateRequestMap<{
       reactionType: MetricUserInputReactionType,
     },
   },
+  glicBrowserOnOptinImpression: {
+    backgroundAllowed: true,
+  },
   glicBrowserOnContextUploadStarted: {
     backgroundAllowed: true,
   },
@@ -1069,6 +1072,7 @@ const RECORDED_REQUEST_IDS = {
   OnExperimentalTriggeringUpdate: 96,
   SubscribeToZoomLevel: 97,
   UnsubscribeFromZoomLevel: 98,
+  OnOptinImpression: 99,
 } as const satisfies HostRequestEnumNamesType;
 // LINT.ThenChange(
 //  //tools/metrics/histograms/metadata/glic/histograms.xml:ApiRequestType,

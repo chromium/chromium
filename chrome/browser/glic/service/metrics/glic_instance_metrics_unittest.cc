@@ -13,6 +13,7 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/service/metrics/metrics_types.h"
 #include "chrome/common/chrome_features.h"
 #include "components/metrics/profile_metrics_service.h"
@@ -58,6 +59,34 @@ class GlicInstanceMetricsTestWithPolyline : public GlicInstanceMetricsTest {
  private:
   base::test::ScopedFeatureList feature_list_;
 };
+
+TEST_F(GlicInstanceMetricsTest, OptinImpression) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kGlicOptInImpressionMetrics);
+
+  metrics_.OnOptinImpression();
+  EXPECT_EQ(
+      user_action_tester_.GetActionCount("Glic.Onboarding.OptInImpression"), 0);
+
+  metrics_.OnVisibilityChanged(true);
+  metrics_.OnClientReady(GlicInstanceMetrics::EmbedderType::kSidePanel);
+
+  EXPECT_EQ(
+      user_action_tester_.GetActionCount("Glic.Onboarding.OptInImpression"), 1);
+}
+
+TEST_F(GlicInstanceMetricsTest, OptinImpression_KillSwitchDisabled) {
+  base::test::ScopedFeatureList disabled_feature_list;
+  disabled_feature_list.InitAndDisableFeature(
+      features::kGlicOptInImpressionMetrics);
+
+  metrics_.OnOptinImpression();
+  metrics_.OnVisibilityChanged(true);
+  metrics_.OnClientReady(GlicInstanceMetrics::EmbedderType::kSidePanel);
+
+  EXPECT_EQ(
+      user_action_tester_.GetActionCount("Glic.Onboarding.OptInImpression"), 0);
+}
 
 TEST_F(GlicInstanceMetricsTest, OnActivationChanged_LogsTimeSinceLastActive) {
   // First activation.

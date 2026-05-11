@@ -15571,6 +15571,16 @@ should be able to be added at any place in this file.
   <description>The Glic instance WebUI is warmed.</description>
 </action>
 
+<action name="Glic.Onboarding.OptInImpression">
+  <owner>dewittj@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <owner>basiaz@google.com</owner>
+  <description>
+    The Glic web client has signalled that an onboarding flow has been shown,
+    and the instance is ready and visible.
+  </description>
+</action>
+
 <action name="Glic.Pinned">
   <owner>charlesmeng@chromium.org</owner>
   <owner>erikchen@chromium.org</owner>

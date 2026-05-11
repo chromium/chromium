@@ -1634,6 +1634,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     }
   }
 
+  void OnOptinImpression() override {
+    host().instance_metrics().OnOptinImpression();
+  }
+
   void OnUserInputSubmitted(mojom::WebClientMode mode) override {
     if (base::FeatureList::IsEnabled(
             features::kGlicFixTimeToFirstQueryKillSwitch)) {
