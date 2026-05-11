@@ -1,10 +1,6 @@
 {
     "chromium.android": {
         "android-10-x86-nofieldtrial-rel": {
-            "webview_cts_tests full_mode": {
-                "shards": 3,
-                "try_builder": "android-x86-rel"
-            },
             "webview_trichrome_cts_tests full_mode": {
                 "shards": 3,
                 "try_builder": "android-x86-rel"
@@ -16,23 +12,13 @@
                 "try_builder": "android-x64-rel"
             }
         },
-        "android-12l-x64-rel-cq": {
-            "chrome_public_test_apk_tablet": {
-                "shards": 3,
-                "try_builder": "android-x64-rel"
-            }
-        },
         "android-16-x64-rel": {
-            "android_browsertests": {
-                "shards": 34,
-                "try_builder": "android-x64-rel"
-            },
             "chrome_public_test_apk": {
-                "shards": 80,
+                "shards": 56,
                 "try_builder": "android-x64-rel"
             },
             "components_browsertests": {
-                "shards": 4,
+                "shards": 10,
                 "try_builder": "android-x64-rel"
             }
         },
@@ -57,14 +43,6 @@
     },
     "chromium.android.desktop": {
         "android-desktop-x64-rel-15-tests": {
-            "android_browsertests": {
-                "shards": 127,
-                "try_builder": "android-desktop-x64-rel"
-            },
-            "chrome_public_test_apk_desktop": {
-                "shards": 4,
-                "try_builder": "android-desktop-x64-rel"
-            },
             "unit_tests": {
                 "shards": 3,
                 "try_builder": "android-desktop-x64-rel"
