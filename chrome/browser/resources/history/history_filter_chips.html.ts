@@ -15,18 +15,14 @@ export function getHtml(this: HistoryFilterChipsElement) {
           id="userVisitsChip"
           ?selected="${this.isUserSelected()}"
           @click="${this.onUserVisitsClick_}">
-        ${this.isUserSelected() ? html`
-          <cr-icon icon="cr:check"></cr-icon>
-        ` : ''}
+        <cr-icon icon="${this.getUserVisitsIcon_()}"></cr-icon>
         $i18n{sourceFilterChipUser}
       </cr-chip>
       <cr-chip
           id="actorVisitsChip"
           ?selected="${this.isActorSelected()}"
           @click="${this.onActorVisitsClick_}">
-        ${this.isActorSelected() ? html`
-          <cr-icon icon="cr:check"></cr-icon>
-        ` : ''}
+        <cr-icon icon="${this.getActorVisitsIcon_()}"></cr-icon>
         $i18n{sourceFilterChipActor}
       </cr-chip>
     </div>

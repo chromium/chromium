@@ -44,6 +44,8 @@ suite('HistoryFilterChipsTest', function() {
     const userChip =
         element.shadowRoot.querySelector<HTMLElement>('#userVisitsChip');
     assertTrue(!!userChip);
+    const userIcon = userChip.querySelector('cr-icon');
+    assertTrue(!!userIcon);
 
     let eventDetail: {userVisits: boolean, actorVisits: boolean}|undefined;
     element.addEventListener('filter-changed', ((e: CustomEvent) => {
@@ -61,6 +63,7 @@ suite('HistoryFilterChipsTest', function() {
     assertTrue(eventDetail.userVisits);
     assertFalse(eventDetail.actorVisits);
     assertTrue(userChip.hasAttribute('selected'));
+    assertEquals('cr:check', userIcon.icon);
 
     // Show all visits by a second click on the user chip.
     userChip.click();
@@ -72,12 +75,15 @@ suite('HistoryFilterChipsTest', function() {
     assertTrue(eventDetail.userVisits);
     assertTrue(eventDetail.actorVisits);
     assertFalse(userChip.hasAttribute('selected'));
+    assertEquals('cr:person', userIcon.icon);
   });
 
   test('ToggleActorChip', async () => {
     const actorChip =
         element.shadowRoot.querySelector<HTMLElement>('#actorVisitsChip');
     assertTrue(!!actorChip);
+    const actorIcon = actorChip.querySelector('cr-icon');
+    assertTrue(!!actorIcon);
 
     let eventDetail: {userVisits: boolean, actorVisits: boolean}|undefined;
     element.addEventListener('filter-changed', ((e: CustomEvent) => {
@@ -95,6 +101,7 @@ suite('HistoryFilterChipsTest', function() {
     assertFalse(eventDetail.userVisits);
     assertTrue(eventDetail.actorVisits);
     assertTrue(actorChip.hasAttribute('selected'));
+    assertEquals('cr:check', actorIcon.icon);
 
     // Show all visits by a second click on the actor chip.
     actorChip.click();
@@ -106,6 +113,13 @@ suite('HistoryFilterChipsTest', function() {
     assertTrue(eventDetail.userVisits);
     assertTrue(eventDetail.actorVisits);
     assertFalse(actorChip.hasAttribute('selected'));
+    // <if expr="_google_chrome">
+    assertEquals(
+        'history-internal:screensaver-auto', actorIcon.icon);
+    // </if>
+    // <if expr="not _google_chrome">
+    assertEquals('', actorIcon.icon);
+    // </if>
   });
 
   test('ToggleBothChips', async () => {

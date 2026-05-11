@@ -3591,7 +3591,7 @@ deps = {
 
   'src/chrome/browser/resources/history/internal': {
       'url': Var('chrome_git') + '/chrome/browser/resources/history/internal.git' + '@' +
-        '5b789f9b11c2415368d107cd8fa9c5ed86b35a50',
+        'f6d92ae9b41e3bf4f0ffcfe1208d3517de302cda',
       'condition': 'checkout_src_internal',
   },
 
