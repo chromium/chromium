@@ -43,8 +43,7 @@ export function setupEnhancedProtectionMessage() {
       });
     }
   }
-  // TODO(crbug.com/483453845): Identify why enhancedProtectionMessage is null
-  // on document re-creation.
+
   if (enhancedProtectionMessage) {
     enhancedProtectionMessage.classList.remove('hidden');
 
