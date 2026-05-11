@@ -43,6 +43,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.OngoingStubbing;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -164,8 +165,12 @@ public final class AndroidFontLookupImplTest {
         mAndroidFontLookup.fetchAllFontFiles(mFetchAllFontFilesCallback);
 
         mMojoTestRule.runLoop(RUN_LOOP_TIMEOUT_MS);
-        verify(mFetchAllFontFilesCallback, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
-                .call(mFontMapCaptor.capture());
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        verify(
+                                        mFetchAllFontFilesCallback,
+                                        timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
+                                .call(mFontMapCaptor.capture()));
 
         Map<String, ReadOnlyFile> response = mFontMapCaptor.getValue();
         assertEquals(3, response.size());
@@ -191,8 +196,12 @@ public final class AndroidFontLookupImplTest {
         mAndroidFontLookup.fetchAllFontFiles(mFetchAllFontFilesCallback);
 
         mMojoTestRule.runLoop(RUN_LOOP_TIMEOUT_MS);
-        verify(mFetchAllFontFilesCallback, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
-                .call(mFontMapCaptor.capture());
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        verify(
+                                        mFetchAllFontFilesCallback,
+                                        timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
+                                .call(mFontMapCaptor.capture()));
 
         Map<String, ReadOnlyFile> response = mFontMapCaptor.getValue();
         assertEquals(2, response.size());
@@ -216,8 +225,12 @@ public final class AndroidFontLookupImplTest {
         mAndroidFontLookup.fetchAllFontFiles(mFetchAllFontFilesCallback);
 
         mMojoTestRule.runLoop(RUN_LOOP_TIMEOUT_MS);
-        verify(mFetchAllFontFilesCallback, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
-                .call(mFontMapCaptor.capture());
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        verify(
+                                        mFetchAllFontFilesCallback,
+                                        timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL))
+                                .call(mFontMapCaptor.capture()));
 
         Map<String, ReadOnlyFile> response = mFontMapCaptor.getValue();
         assertTrue(response.isEmpty());
