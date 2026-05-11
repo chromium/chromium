@@ -50,11 +50,11 @@ div { (<style>)
         border-right-color: black;
         border-bottom-color: black;
         border-left-color: black;
-        border-image-source: initial;
-        border-image-slice: initial;
-        border-image-width: initial;
-        border-image-outset: initial;
-        border-image-repeat: initial;
+        border-image-source: none;
+        border-image-slice: 100%;
+        border-image-width: 1;
+        border-image-outset: 0;
+        border-image-repeat: stretch;
 
 [expanded] 
 div { (user agent stylesheet)

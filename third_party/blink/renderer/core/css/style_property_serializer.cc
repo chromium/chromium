@@ -23,6 +23,7 @@
 
 #include "third_party/blink/renderer/core/css/style_property_serializer.h"
 
+#include <algorithm>
 #include <bitset>
 
 #include "base/logging.h"
@@ -187,7 +188,7 @@ StylePropertySerializer::CSSPropertyValueSetForSerializer::PropertyAt(
   const CSSPropertyValue& property = property_set_->PropertyAt(all_index_);
   return StylePropertySerializer::PropertyValueForSerializer(
       CSSProperty::Get(property_id).GetCSSPropertyName(), property.Value(),
-      property.IsImportant());
+      property.IsImportant(), property.IsImplicit());
 }
 
 bool StylePropertySerializer::CSSPropertyValueSetForSerializer::
@@ -3073,13 +3074,25 @@ String StylePropertySerializer::BorderPropertyValue(
 }
 
 String StylePropertySerializer::BorderImagePropertyValue() const {
+  const StylePropertyShorthand& shorthand = borderImageShorthand();
+
+  bool is_initial = true;
+  for (wtf_size_t i = 1; i < shorthand.length(); ++i) {
+    const CSSValue* value =
+        property_set_.GetPropertyCSSValue(*shorthand.properties()[i]);
+    if (*value != *To<Longhand>(*shorthand.properties()[i]).InitialValue()) {
+      is_initial = false;
+      break;
+    }
+  }
+  if (is_initial) {
+    return property_set_.GetPropertyCSSValue(*shorthand.properties()[0])
+        ->CssText();
+  }
+
   StringBuilder result;
-  const CSSProperty* properties[] = {
-      &GetCSSPropertyBorderImageSource(), &GetCSSPropertyBorderImageSlice(),
-      &GetCSSPropertyBorderImageWidth(), &GetCSSPropertyBorderImageOutset(),
-      &GetCSSPropertyBorderImageRepeat()};
   size_t index = 0;
-  for (const CSSProperty* property : properties) {
+  for (const CSSProperty* property : shorthand.properties()) {
     const CSSValue& value = *property_set_.GetPropertyCSSValue(*property);
     if (!result.empty()) {
       result.Append(" ");
