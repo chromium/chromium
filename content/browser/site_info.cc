@@ -11,6 +11,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/safe_ref.h"
 #include "base/no_destructor.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "content/browser/child_process_security_policy_impl.h"
@@ -79,8 +80,8 @@ GURL GetErrorPageSiteAndLockURL() {
   return GURL(kUnreachableWebDataURL);
 }
 
-GURL SchemeAndHostToSite(const std::string& scheme, const std::string& host) {
-  return GURL(scheme + url::kStandardSchemeSeparator + host);
+GURL SchemeAndHostToSite(std::string_view scheme, std::string_view host) {
+  return GURL(base::StrCat({scheme, url::kStandardSchemeSeparator, host}));
 }
 
 // Figure out which origin to use for computing site and process lock URLs for
@@ -614,16 +615,18 @@ std::string SiteInfo::GetDebugString() const {
     if (agent_cluster_key_.GetOrigin() == GetOriginForUnlockedProcess()) {
       debug_string += " , empty lock";
     } else {
-      debug_string +=
-          ", locked to " + agent_cluster_key_.GetOrigin().GetDebugString();
+      base::StrAppend(
+          &debug_string,
+          {", locked to ", agent_cluster_key_.GetOrigin().GetDebugString()});
     }
     debug_string += ", origin-keyed";
   } else {
     if (agent_cluster_key_.GetSite().is_empty()) {
       debug_string += " , empty lock";
     } else if (agent_cluster_key_.GetSite() != site_url_) {
-      debug_string +=
-          ", locked to " + agent_cluster_key_.GetSite().possibly_invalid_spec();
+      base::StrAppend(&debug_string,
+                      {", locked to ",
+                       agent_cluster_key_.GetSite().possibly_invalid_spec()});
     }
     debug_string += ", site-keyed";
   }
@@ -640,8 +643,10 @@ std::string SiteInfo::GetDebugString() const {
     if (web_exposed_isolation_info_.is_isolated_application()) {
       debug_string += " application";
     }
-    debug_string += ", coi-origin='" +
-                    web_exposed_isolation_info_.origin().GetDebugString() + "'";
+    base::StrAppend(
+        &debug_string,
+        {", coi-origin=", web_exposed_isolation_info_.origin().GetDebugString(),
+         "'"});
   }
 
   if (web_exposed_isolation_info_.is_isolated_application() &&
@@ -671,9 +676,10 @@ std::string SiteInfo::GetDebugString() const {
   }
 
   if (!storage_partition_config_.is_default()) {
-    debug_string +=
-        ", partition=" + storage_partition_config_.partition_domain() + "." +
-        storage_partition_config_.partition_name();
+    base::StrAppend(
+        &debug_string,
+        {", partition=", storage_partition_config_.partition_domain(), ".",
+         storage_partition_config_.partition_name()});
     if (storage_partition_config_.in_memory()) {
       debug_string += ", in-memory";
     }
@@ -684,9 +690,10 @@ std::string SiteInfo::GetDebugString() const {
   }
 
   if (agent_cluster_key_.GetCrossOriginIsolationKey().has_value()) {
-    debug_string += ", coi agent cluster origin=" +
-                    agent_cluster_key_.GetCrossOriginIsolationKey()
-                        ->common_coi_origin.GetDebugString();
+    base::StrAppend(&debug_string,
+                    {", coi agent cluster origin=",
+                     agent_cluster_key_.GetCrossOriginIsolationKey()
+                         ->common_coi_origin.GetDebugString()});
     if (agent_cluster_key_.GetCrossOriginIsolationKey()
             ->cross_origin_isolation_mode ==
         blink::mojom::CrossOriginIsolationMode::kConcrete) {
@@ -840,8 +847,8 @@ AgentClusterKey SiteInfo::GetAgentClusterKeyForURL(
       !effective_url.has_value()) {
     WebUIDomains host_domains = GetWebUIDomains(url_info.url);
     return AgentClusterKey::CreateSiteKeyed(
-        GURL(url_info.url.GetScheme() + url::kStandardSchemeSeparator +
-             host_domains.back()),
+        GURL(base::StrCat({url_info.url.scheme(), url::kStandardSchemeSeparator,
+                           host_domains.back()})),
         AgentClusterKey::OACStatus::kSiteKeyedByDefault);
   }
 
@@ -973,8 +980,8 @@ AgentClusterKey SiteInfo::GetAgentClusterKeyForURL(
   }
 
   // All other URLs use a site-keyed agent cluster based on their scheme.
-  DCHECK(!url.GetScheme().empty());
-  GURL site_url = GURL(url.GetScheme() + ":");
+  DCHECK(!url.scheme().empty());
+  GURL site_url = GURL(base::StrCat({url.scheme(), ":"}));
   return AgentClusterKey::CreateSiteKeyed(site_url, oac_status);
 }
 
@@ -1202,8 +1209,8 @@ WebExposedIsolationLevel SiteInfo::ComputeWebExposedIsolationLevelForEmptySite(
 // static
 GURL SiteInfo::GetOriginBasedSiteURLForDataURL(const url::Origin& origin) {
   CHECK(origin.opaque());
-  return GURL(url::kDataScheme + std::string(":") +
-              origin.GetNonceForSerialization()->ToString());
+  return GURL(base::StrCat(
+      {url::kDataScheme, ":", origin.GetNonceForSerialization()->ToString()}));
 }
 
 // static
