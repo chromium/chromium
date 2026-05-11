@@ -46,10 +46,11 @@ enum class GamepadSource {
   kMaxValue = kWinGameInput,
 };
 
+// PadState must not have a user-provided constructor so that it remains
+// value-initializable. This ensures that structural padding is zeroed when
+// initialized as `PadState()`, preventing information leaks of
+// browser-process stack memory (crbug.com/501747804).
 struct PadState {
-  PadState();
-  ~PadState();
-
   // Index of the slot occupied by this gamepad.
   int pad_index = 0;
 

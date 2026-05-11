@@ -24,9 +24,6 @@ const float kMinAxisResetValue = 0.1f;
 
 }  // namespace
 
-PadState::PadState() = default;
-PadState::~PadState() = default;
-
 GamepadPadStateProvider::GamepadPadStateProvider() {
   pad_states_ = base::HeapArray<PadState>::WithSize(Gamepads::kItemsLengthCap);
 

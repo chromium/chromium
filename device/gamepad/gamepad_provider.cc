@@ -507,8 +507,9 @@ void GamepadProvider::DoPoll() {
     it->GetGamepadData(changed);
   }
 
-  Gamepads old_buffer;
-  Gamepads new_buffer;
+  // Value-initialize to zero padding and prevent leaks (crbug.com/501747804).
+  Gamepads old_buffer = {};
+  Gamepads new_buffer = {};
   GetCurrentGamepadData(&old_buffer);
 
   for (size_t i = 0; i < Gamepads::kItemsLengthCap; ++i) {
