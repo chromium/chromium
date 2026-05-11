@@ -14,7 +14,6 @@
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/omnibox/coordinator/omnibox_mediator_delegate.h"
-#import "ios/chrome/browser/omnibox/model/omnibox_autocomplete_controller.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_text_controller.h"
 #import "ios/chrome/browser/omnibox/model/placeholder_service/placeholder_service.h"
 #import "ios/chrome/browser/omnibox/model/placeholder_service/placeholder_service_observer_bridge.h"
@@ -24,7 +23,6 @@
 #import "ios/chrome/browser/omnibox/public/omnibox_ui_features.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_util.h"
 #import "ios/chrome/browser/omnibox/ui/omnibox_consumer.h"
-#import "ios/chrome/browser/omnibox/ui/omnibox_text_input.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_util.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
@@ -65,9 +63,6 @@ using base::UserMetricsAction;
 // The latest URL used to fetch the favicon.
 @property(nonatomic, assign) GURL latestFaviconURL;
 
-// The types the clipboard currently stores.
-@property(nonatomic, assign) std::set<ClipboardContentType> clipboardTypes;
-
 @end
 
 @implementation OmniboxMediator {
@@ -89,12 +84,6 @@ using base::UserMetricsAction;
     _isIncognito = isIncognito;
     _tracker = tracker;
     _presentationContext = presentationContext;
-
-    __weak __typeof(self) weakSelf = self;
-    [self checkClipboardContent:^(std::set<ClipboardContentType> types) {
-      weakSelf.clipboardTypes = types;
-      [weakSelf beginMonitoringClipboard];
-    }];
   }
   return self;
 }
@@ -512,66 +501,7 @@ using base::UserMetricsAction;
   }
 }
 
-- (void)disconnect {
-  [self endMonitoringClipboard];
-}
-
 #pragma mark - Private methods
-
-- (void)beginMonitoringClipboard {
-  [[NSNotificationCenter defaultCenter]
-      addObserver:self
-         selector:@selector(applicationDidBecomeActive:)
-             name:UIApplicationDidBecomeActiveNotification
-           object:nil];
-}
-
-- (void)endMonitoringClipboard {
-  [[NSNotificationCenter defaultCenter]
-      removeObserver:self
-                name:UIApplicationDidBecomeActiveNotification
-              object:nil];
-}
-
-- (void)applicationDidBecomeActive:(NSNotification*)notification {
-  // The clipboard can change externally. Whenever the app resumes, check for
-  // new clipboard types. If the user didn't enter any text, refresh
-  // autocomplete suggestions to include potential new clipboard data.
-  __weak __typeof(self) weakSelf = self;
-
-  // Clipboard suggestions are only shown when the text is empty; no need to
-  // refresh otherwise. The `clipboardTypes` also don't need to be updated
-  // as they should remain in sync with the visually displayed suggestion.
-  BOOL hasText = _omniboxTextController.textInput.text.length != 0;
-  if (!hasText) {
-    return;
-  }
-
-  [self checkClipboardContent:^(std::set<ClipboardContentType> types) {
-    if (types == weakSelf.clipboardTypes) {
-      return;
-    }
-    weakSelf.clipboardTypes = types;
-    [weakSelf.omniboxTextController
-            .omniboxAutocompleteController clearAndRestartAutocomplete];
-  }];
-}
-
-- (void)checkClipboardContent:
-    (void (^)(std::set<ClipboardContentType>))completion {
-  ClipboardRecentContent* clipboardRecentContent =
-      ClipboardRecentContent::GetInstance();
-  if (!clipboardRecentContent) {
-    completion({});
-    return;
-  }
-
-  std::set<ClipboardContentType> desired_types = {ClipboardContentType::URL,
-                                                  ClipboardContentType::Text,
-                                                  ClipboardContentType::Image};
-  clipboardRecentContent->HasRecentContentFromClipboard(
-      desired_types, base::BindOnce(completion));
-}
 
 // Loads an image-search query with `image`.
 - (void)loadImageQuery:(UIImage*)image {

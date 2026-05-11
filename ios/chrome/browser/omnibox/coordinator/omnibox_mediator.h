@@ -73,9 +73,6 @@ class Tracker;
 /// Sets the image used in image search.
 - (void)setThumbnailImage:(UIImage*)image;
 
-/// Disconnects the mediator.
-- (void)disconnect;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_COORDINATOR_OMNIBOX_MEDIATOR_H_
