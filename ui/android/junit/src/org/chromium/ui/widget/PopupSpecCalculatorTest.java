@@ -429,10 +429,26 @@ public final class PopupSpecCalculatorTest {
         // E.right = A.right + w = 150
         // E.bottom = min(window.bottom, A.bottom + h) = min(1000, 950+300) = 1000
         doTestAnchoredPopupAtRect(
-                "Both above and below does not have enough space, anchored below due to bias. "
-                        + "Reduce the height to fit into left over space on bottom.",
-                /* anchoredRect= */ new Rect(0, 100, 0, 950),
-                /* expectedRect= */ new Rect(0, 950, 150, 1000));
+                "Both above and below does not have enough space, anchored above because it has"
+                        + " more space. Reduce the height to fit into left over space on top.",
+                /*anchorRect*/ new Rect(0, 100, 0, 950),
+                /*expectedPopupRect*/ new Rect(0, 0, 150, 100));
+    }
+
+    @Test
+    public void spec_LimitedSpaceY_AnchoredToBottom() {
+        mWindowRect = new Rect(0, 0, 600, 100);
+        mRootWidth = 600;
+        mPopupHeight = 300;
+        mContentView.setMinimumHeight(mPopupHeight);
+        mVerticalOverlapAnchor = true;
+
+        Rect anchorRect = new Rect(0, 100, 600, 100);
+
+        doTestAnchoredPopupAtRect(
+                "Anchored to bottom with limited space above. Should position above.",
+                anchorRect,
+                new Rect(0, 0, 150, 100));
     }
 
     @Test

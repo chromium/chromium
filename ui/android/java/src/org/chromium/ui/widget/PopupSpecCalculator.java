@@ -239,10 +239,9 @@ public class PopupSpecCalculator implements SpecCalculator {
         // Determine whether or not the popup should be above or below the anchor.
         // Aggressively try to put it below the anchor. Put it above only if it would fit
         // better.
-        // TODO(crbug.com/40831291): Address cases where spaceBelowAnchor = 0, popup is still
-        // biased to anchored below the rect.
+        boolean belowHasMoreSpace = spaceBelowAnchor >= spaceAboveAnchor;
         boolean isPositionBelow =
-                (idealFitsBelow && spaceBelowAnchor >= spaceAboveAnchor) || !idealFitsAbove;
+                (idealFitsBelow != idealFitsAbove) ? idealFitsBelow : belowHasMoreSpace;
 
         // Override the ideal popup orientation if we are trying to maintain the current one.
         if (preferCurrentOrientation && currentPositionBelow != isPositionBelow) {
