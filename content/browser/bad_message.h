@@ -374,6 +374,7 @@ enum BadMessageReason {
   RFHI_WEBMCP_DUPLICATE_BIND = 346,
   RFHI_WEBMCP_DUPLICATE_SET_RECEIVER = 347,
   RFHI_WEBMCP_EXPOSED_NON_HTTPS_ORIGIN = 348,
+  RFHI_WEBMCP_INVALID_TOOL_OWNER = 350,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the

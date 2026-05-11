@@ -13,54 +13,17 @@
 
 namespace blink {
 
-namespace {
-
-String GetToolErrorMessage(const ScriptToolError& error) {
-  if (!error.message.empty()) {
-    return error.message;
-  }
-  String conversion;
-  switch (error.code) {
-    case ScriptToolErrorCode::kInvalidToolName:
-      conversion = "Tool was not executed due to invalid name";
-      break;
-    case ScriptToolErrorCode::kInvalidInputArguments:
-      conversion = "Tool was not executed due to invalid input arguments";
-      break;
-    case ScriptToolErrorCode::kMissingRequiredSubmitButton:
-      conversion =
-          "Tool was not executed due to missing required submit button";
-      break;
-    case ScriptToolErrorCode::kToolInvocationFailed:
-      conversion =
-          "Tool was executed but the invocation failed. For example, the "
-          "script function threw an error";
-      break;
-    case ScriptToolErrorCode::kToolCancelled:
-      conversion = "Tool was cancelled";
-      break;
-    default:
-      NOTREACHED();
-  }
-  if (error.message.empty()) {
-    return conversion;
-  }
-  return conversion + ": " + error.message;
-}
-
-}  // namespace
-
 ModelContextTesting::ModelContextTesting(ModelContext& model_context)
     : model_context_(model_context) {
   model_context_->SetToolChangeCallback(blink::BindRepeating(
       &ModelContextTesting::OnToolChange, WrapWeakPersistent(this)));
 }
 
-HeapVector<Member<RegisteredTool>> ModelContextTesting::listTools() {
-  HeapVector<Member<RegisteredTool>> tools;
+HeapVector<Member<RegisteredToolDeprecated>> ModelContextTesting::listTools() {
+  HeapVector<Member<RegisteredToolDeprecated>> tools;
   model_context_->ForEachScriptTool(
       [&tools](const mojom::blink::ScriptTool& mojom_tool) {
-        auto* tool = MakeGarbageCollected<RegisteredTool>();
+        auto* tool = MakeGarbageCollected<RegisteredToolDeprecated>();
         tool->setName(mojom_tool.name);
         tool->setDescription(mojom_tool.description);
         tool->setInputSchema(mojom_tool.input_schema);

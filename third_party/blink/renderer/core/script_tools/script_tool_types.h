@@ -36,6 +36,38 @@ struct ScriptToolError {
   }
 };
 
+// TODO(https://crbug.com/506393880): Move this to the `model_context.cc`
+// anonymous namespace, when `model_context_testing.cc` stops relying on it.
+inline String GetToolErrorMessage(const ScriptToolError& error) {
+  if (!error.message.empty()) {
+    return error.message;
+  }
+  String conversion;
+  switch (error.code) {
+    case ScriptToolErrorCode::kInvalidToolName:
+      conversion = "Tool was not executed due to invalid name";
+      break;
+    case ScriptToolErrorCode::kInvalidInputArguments:
+      conversion = "Tool was not executed due to invalid input arguments";
+      break;
+    case ScriptToolErrorCode::kMissingRequiredSubmitButton:
+      conversion =
+          "Tool was not executed due to missing required submit button";
+      break;
+    case ScriptToolErrorCode::kToolInvocationFailed:
+      conversion =
+          "Tool was executed but the invocation failed. For example, the "
+          "script function threw an error";
+      break;
+    case ScriptToolErrorCode::kToolCancelled:
+      conversion = "Tool was cancelled";
+      break;
+    default:
+      conversion = "Unknown failure";
+  }
+  return conversion;
+}
+
 struct ScriptToolDeclaration {
   String description;
   String input_schema;
