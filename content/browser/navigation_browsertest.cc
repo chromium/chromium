@@ -9183,9 +9183,14 @@ IN_PROC_BROWSER_TEST_P(NavigationBrowserTestPaintHoldingSubframe,
   EXPECT_EQ(bitmap.getColor(4, 4), SK_ColorRED) << cc::GetPNGDataUrl(bitmap);
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         NavigationBrowserTestPaintHoldingSubframe,
-                         ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    NavigationBrowserTestPaintHoldingSubframe,
+    ::testing::Bool(),
+    [](const testing::TestParamInfo<
+        NavigationBrowserTestPaintHoldingSubframe::ParamType>& info) {
+      return info.param ? "RenderDocumentEnabled" : "RenderDocumentDisabled";
+    });
 
 RenderFrameHostImpl* GetMainFrameSpeculativeRFH(WebContentsImpl* web_contents) {
   return web_contents->GetPrimaryFrameTree()
