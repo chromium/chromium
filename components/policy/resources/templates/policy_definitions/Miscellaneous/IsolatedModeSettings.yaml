@@ -12,7 +12,7 @@ desc: |-
 
   If set to 0 - Disabled or left unset, Isolated Mode is disabled, and standard Incognito behavior is used.
 
-  This policy requires a Chrome Enterprise Premium license to take effect.
+  This policy requires a `<ph name="CHROME_ENTERPRISE_PREMIUM_NAME">Chrome Enterprise Premium</ph>` license to take effect.
 example_value: 1
 features:
   cloud_only: true

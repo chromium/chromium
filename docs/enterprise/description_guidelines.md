@@ -200,7 +200,8 @@ avoid validation errors.
 * ChromeOS: `<ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>`
 * ChromeOS Flex: `<ph name="PRODUCT_OS_FLEX_NAME">Google ChromeOS Flex</ph>`
 * Chrome Browser Cloud Management: `<ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME">Chrome Browser Cloud Management</ph>`
-* Chrome Cleanup: `<ph name="CHROME_CLEANUP_NAME">Chrome Cleanup</ph>`
+* Chrome Enterprise Core: `<ph name="CHROME_ENTERPRISE_CORE_NAME">Chrome Enterprise Core</ph>`
+* Chrome Enterprise Premium: `<ph name="CHROME_ENTERPRISE_PREMIUM_NAME">Chrome Enterprise Premium</ph>`
 * Chrome Remote Desktop: `<ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME">Chrome Remote Desktop</ph>`
 * Chrome Sync: `<ph name="CHROME_SYNC_NAME">Chrome Sync</ph>`
 * Chrome DevTools: `<ph name="CHROME_DEVTOOLS_NAME">Chrome DevTools</ph>`
