@@ -487,12 +487,6 @@ inline constexpr char kCredentialProviderPasskeyLargeBlobDescription[] =
     "Enables support for the Large Blob extension for Passkeys in the "
     "Credential Provider Extension.";
 
-inline constexpr char kCredentialProviderPasskeyPRFName[] =
-    "Credential Provider PRF support";
-inline constexpr char kCredentialProviderPasskeyPRFDescription[] =
-    "Enables support for the PRF extension for Passkeys in the Credential "
-    "Provider Extension.";
-
 inline constexpr char kCredentialProviderPerformanceImprovementsName[] =
     "Credential Provider Performance Improvements";
 inline constexpr char kCredentialProviderPerformanceImprovementsDescription[] =

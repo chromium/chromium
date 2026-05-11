@@ -12,9 +12,6 @@
 // Whether automatic passkey upgrade is enabled for the user.
 BOOL IsAutomaticPasskeyUpgradeEnabled();
 
-// Whether passkey PRF support is enabled.
-BOOL IsPasskeyPRFEnabled();
-
 // Whether passkey Large Blob support is enabled.
 BOOL IsPasskeyLargeBlobEnabled();
 

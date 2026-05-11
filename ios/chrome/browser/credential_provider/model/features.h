@@ -8,9 +8,6 @@
 #import "base/feature_list.h"
 #import "ios/chrome/browser/credential_provider/model/credential_provider_buildflags.h"
 
-// Feature flag to enable passkey PRF support in the credential provider.
-BASE_DECLARE_FEATURE(kCredentialProviderPasskeyPRF);
-
 // Feature flag to enable passkey Large Blob support in the credential provider.
 BASE_DECLARE_FEATURE(kCredentialProviderPasskeyLargeBlob);
 

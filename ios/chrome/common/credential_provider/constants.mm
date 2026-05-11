@@ -71,10 +71,6 @@ NSString* const kUserDefaultsCredentialProviderPasswordSyncSetting =
 NSString* const kUserDefaultsCredentialProviderAutomaticPasskeyUpgradeSetting =
     @"kUserDefaultsCredentialProviderAutomaticPasskeyUpgradeSetting";
 
-// Used to generate the key for the app group user defaults containing whether
-// passkey PRF support is currently enabled.
-NSString* const kUserDefaultsCredentialProviderPasskeyPRFSetting =
-    @"kUserDefaultsCredentialProviderPasskeyPRFSetting";
 
 // Used to generate the key for the app group user defaults containing whether
 // passkey Large Blob support is currently enabled.
@@ -188,10 +184,6 @@ AppGroupUserDefaulsCredentialProviderAutomaticPasskeyUpgradeEnabled() {
           kUserDefaultsCredentialProviderAutomaticPasskeyUpgradeSetting];
 }
 
-NSString* AppGroupUserDefaulsCredentialProviderPasskeyPRFEnabled() {
-  return [AppGroupPrefix()
-      stringByAppendingString:kUserDefaultsCredentialProviderPasskeyPRFSetting];
-}
 
 NSString* AppGroupUserDefaulsCredentialProviderPasskeyLargeBlobEnabled() {
   return [AppGroupPrefix()

@@ -161,8 +161,6 @@ class CredentialProviderService
   // Syncs whether or not automatic passkey upgrade is enabled.
   void UpdateAutomaticPasskeyUpgradeSetting();
 
-  // Syncs whether or not PRF is enabled.
-  void UpdatePasskeyPRFSetting();
 
   // Syncs whether or not Large Blob is enabled.
   void UpdatePasskeyLargeBlobSetting();

@@ -94,9 +94,7 @@ constexpr base::TimeDelta kPasskeyUpgradeRecencyThreshold = base::Minutes(5);
     self.userHandle = nil;
 
     if (@available(iOS 18.0, *)) {
-      if (IsPasskeyPRFEnabled()) {
-        _prf = [PRFData fromParameters:passkeyCredentialRequestParameters];
-      }
+      _prf = [PRFData fromParameters:passkeyCredentialRequestParameters];
     }
   }
   return self;
@@ -148,9 +146,7 @@ constexpr base::TimeDelta kPasskeyUpgradeRecencyThreshold = base::Minutes(5);
         self.excludedCredentials = [excludedCredentials copy];
       }
 
-      if (IsPasskeyPRFEnabled()) {
-        _prf = [PRFData fromRequest:passkeyCredentialRequest];
-      }
+      _prf = [PRFData fromRequest:passkeyCredentialRequest];
 
       // Registration side large blob extension.
       _largeBlobCheckSupported = [PasskeyRequestDetails

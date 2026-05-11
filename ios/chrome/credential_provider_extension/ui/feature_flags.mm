@@ -15,12 +15,6 @@ BOOL IsAutomaticPasskeyUpgradeEnabled() {
       boolValue];
 }
 
-BOOL IsPasskeyPRFEnabled() {
-  return [[app_group::GetGroupUserDefaults()
-      objectForKey:AppGroupUserDefaulsCredentialProviderPasskeyPRFEnabled()]
-      boolValue];
-}
-
 BOOL IsPasskeyLargeBlobEnabled() {
   return [[app_group::GetGroupUserDefaults()
       objectForKey:

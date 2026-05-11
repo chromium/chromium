@@ -1949,11 +1949,6 @@
     "expiry_milestone": 160
   },
   {
-    "name": "cpe-passkey-prf-support",
-    "owners": ["sugoi@chromium.org", "bling-transactions-eng@google.com"],
-    "expiry_milestone": 145
-  },
-  {
     "name": "cras-output-plugin-processor",
     "owners": ["hunghsienchen@google.com", "chromeos-audio@google.com" ],
     "expiry_milestone": 151
