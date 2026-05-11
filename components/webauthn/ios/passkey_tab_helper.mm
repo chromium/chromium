@@ -461,6 +461,21 @@ void PasskeyTabHelper::SetIOSPasskeyClientCommandsHandler(
   client_->SetIOSPasskeyClientCommandsHandler(handler);
 }
 
+PasskeyTabHelper::FrameHierarchy PasskeyTabHelper::GetFrameHierarchy(
+    web::WebFrame* web_frame) const {
+  web::WebFramesManager* web_frames_manager =
+      PasskeyJavaScriptFeature::GetInstance()->GetWebFramesManager(
+          web_state_.get());
+  web::WebFrame* main_frame =
+      web_frames_manager ? web_frames_manager->GetMainWebFrame() : nullptr;
+  url::Origin top_origin =
+      main_frame ? main_frame->GetSecurityOrigin() : url::Origin();
+  bool is_cross_origin_iframe =
+      !web_frame ||
+      !web_frame->GetSecurityOrigin().IsSameOriginWith(top_origin);
+  return FrameHierarchy{top_origin, is_cross_origin_iframe};
+}
+
 web::WebFrame* PasskeyTabHelper::GetWebFrame(
     const std::string& frame_id) const {
   web::WebState* web_state = web_state_.get();
@@ -571,11 +586,13 @@ void PasskeyTabHelper::StartPasskeyCreation(std::string request_id) {
     return;
   }
 
-  // TODO(crbug.com/460485333): Use proper top origin.
+  PasskeyTabHelper::FrameHierarchy frame_hierarchy =
+      GetFrameHierarchy(web_frame);
+
   std::string client_data_json = BuildClientDataJson(
       {ClientDataRequestType::kWebAuthnCreate, web_frame->GetSecurityOrigin(),
-       /*top_origin=*/url::Origin(), params.Challenge(),
-       /*is_cross_origin_iframe=*/false},
+       frame_hierarchy.top_origin, params.Challenge(),
+       frame_hierarchy.is_cross_origin_iframe},
       /*payment_json=*/std::nullopt);
 
   client_->FetchKeys(ReauthenticatePurpose::kEncrypt,
@@ -766,11 +783,13 @@ void PasskeyTabHelper::StartPasskeyAssertion(std::string request_id,
     return;
   }
 
-  // TODO(crbug.com/460485333): Use proper top origin.
+  PasskeyTabHelper::FrameHierarchy frame_hierarchy =
+      GetFrameHierarchy(web_frame);
+
   std::string client_data_json = BuildClientDataJson(
       {ClientDataRequestType::kWebAuthnGet, web_frame->GetSecurityOrigin(),
-       /*top_origin=*/url::Origin(), params.Challenge(),
-       /*is_cross_origin_iframe=*/false},
+       frame_hierarchy.top_origin, params.Challenge(),
+       frame_hierarchy.is_cross_origin_iframe},
       /*payment_json=*/std::nullopt);
 
   client_->FetchKeys(

@@ -131,6 +131,12 @@ class PasskeyTabHelper : public web::WebStateObserver,
   using PendingRequest =
       std::variant<AssertionRequestParams, RegistrationRequestParams>;
 
+  // Information about the frame hierarchy.
+  struct FrameHierarchy {
+    url::Origin top_origin;
+    bool is_cross_origin_iframe;
+  };
+
   explicit PasskeyTabHelper(
       web::WebState* web_state,
       PasskeyModel* passkey_model,
@@ -225,6 +231,11 @@ class PasskeyTabHelper : public web::WebStateObserver,
   // them. Returns std::nullopt otherwise.
   std::optional<RegistrationRequestParams>
   ExtractParamsFromRegistrationRequestsMap(std::string request_id);
+
+  // Determines the frame hierarchy for the given `web_frame`. Returns the top
+  // origin and whether the frame is a cross-origin iframe relative to the main
+  // frame.
+  FrameHierarchy GetFrameHierarchy(web::WebFrame* web_frame) const;
 
   // Returns a web frame from a web frame id. May return null.
   web::WebFrame* GetWebFrame(const std::string& frame_id) const;

@@ -21,9 +21,11 @@ bool FakeIOSPasskeyClient::PerformUserVerification() {
 
 void FakeIOSPasskeyClient::FetchKeys(ReauthenticatePurpose purpose,
                                      KeysFetchedCallback callback) {
+  static const size_t kKeyLength = 32u;
   fetch_keys_called_ = true;
   if (!callback.is_null()) {
-    std::move(callback).Run({}, nil);
+    // Return a single 32 bytes key (zeroed out).
+    std::move(callback).Run({std::vector<uint8_t>(kKeyLength, 0)}, nil);
   }
 }
 
