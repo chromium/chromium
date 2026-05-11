@@ -233,6 +233,8 @@ export class RecordingWaveElement extends CrLitElement {
         // Reset container in case of dirty initial state.
         this.$.barsContainer.replaceChildren();
 
+        this.$.barsContainer.style.setProperty('--bar-width', `${BAR_WIDTH}px`);
+
         for (let i = 0; i < MAX_BARS; i++) {
           this.barsData_.push({
             level: MINIMUM_VOLUME_LEVEL,
