@@ -1041,7 +1041,7 @@ public class AutofillProfilesFragmentTest {
 
         assertNotNull(
                 autofillProfileFragment.findPreference(
-                        AutofillProfilesFragment.DISABLED_WALLET_DATA_SHARING));
+                        AutofillAiDelegate.DISABLED_WALLET_DATA_SHARING));
     }
 
     @Test
@@ -1063,7 +1063,7 @@ public class AutofillProfilesFragmentTest {
 
         assertNull(
                 autofillProfileFragment.findPreference(
-                        AutofillProfilesFragment.DISABLED_WALLET_DATA_SHARING));
+                        AutofillAiDelegate.DISABLED_WALLET_DATA_SHARING));
     }
 
     @Test
@@ -1084,7 +1084,7 @@ public class AutofillProfilesFragmentTest {
 
         assertNull(
                 autofillProfileFragment.findPreference(
-                        AutofillProfilesFragment.DISABLED_WALLET_DATA_SHARING));
+                        AutofillAiDelegate.DISABLED_WALLET_DATA_SHARING));
     }
 
     @Test
@@ -1106,7 +1106,7 @@ public class AutofillProfilesFragmentTest {
 
         assertNull(
                 autofillProfileFragment.findPreference(
-                        AutofillProfilesFragment.DISABLED_WALLET_DATA_SHARING));
+                        AutofillAiDelegate.DISABLED_WALLET_DATA_SHARING));
     }
 
     @Test
