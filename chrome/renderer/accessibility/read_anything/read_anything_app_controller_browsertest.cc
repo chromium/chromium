@@ -3539,6 +3539,108 @@ TEST_F(ReadAnythingAppControllerImmersiveTest,
   Mock::VerifyAndClearExpectations(distiller_);
 }
 
+TEST_F(ReadAnythingAppControllerImmersiveTest,
+       ImmersiveMode_UnpausesOnReopenWithPendingSelection) {
+  // 1. Start in immersive overlay with a good distillation.
+  controller().OnGetPresentationState(
+      read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
+  EXPECT_CALL(page_handler_,
+              OnDistillationStateChanged(
+                  read_anything::mojom::ReadAnythingDistillationState::
+                      kDistillationWithContent))
+      .Times(1);
+  controller().OnAXTreeDistilled(tree_id_, {1});
+  page_handler_.FlushForTesting();
+  ASSERT_TRUE(controller().IsUpdateProcessingPaused());
+
+  // 2. Close immersive view (switch to kInactive layout).
+  controller().OnGetPresentationState(
+      read_anything::mojom::ReadAnythingPresentationState::kInactive);
+  ASSERT_TRUE(controller().IsUpdateProcessingPaused());
+
+  // 3. Send a selection change event, which should be queued, setting pending
+  // selection.
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  update.has_tree_data = true;
+  update.tree_data.sel_anchor_object_id = 1;
+  update.tree_data.sel_focus_object_id = 1;
+  update.tree_data.sel_anchor_offset = 0;
+  update.tree_data.sel_focus_offset = 1;
+  ui::AXNodeData root;
+  root.id = 1;
+  update.root_id = root.id;
+  update.nodes = {std::move(root)};
+  std::vector<ui::AXEvent> events;
+  ui::AXEvent selection_event;
+  selection_event.event_type = ax::mojom::Event::kDocumentSelectionChanged;
+  events.push_back(selection_event);
+
+  controller().AccessibilityEventReceived(tree_id_, {update}, events);
+  EXPECT_TRUE(model().has_pending_selection());
+
+  // 4. Reopen immersive view. It should unpause to process the pending updates.
+  controller().OnGetPresentationState(
+      read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
+
+  // 5. Verify pending selection is cleared and update processing pauses again.
+  EXPECT_FALSE(model().has_pending_selection());
+  EXPECT_TRUE(controller().IsUpdateProcessingPaused());
+}
+
+TEST_F(ReadAnythingAppControllerImmersiveTest,
+       ImmersiveMode_ResetsReadingModeSelectionCountOnUserSelection) {
+  // 1. Start in immersive overlay with a good distillation.
+  controller().OnGetPresentationState(
+      read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
+  EXPECT_CALL(page_handler_,
+              OnDistillationStateChanged(
+                  read_anything::mojom::ReadAnythingDistillationState::
+                      kDistillationWithContent))
+      .Times(1);
+  controller().OnAXTreeDistilled(tree_id_, {1});
+  page_handler_.FlushForTesting();
+
+  // 2. Collapse selection from reading mode.
+  EXPECT_CALL(page_handler_, OnCollapseSelection()).Times(1);
+  controller().OnCollapseSelection();
+  page_handler_.FlushForTesting();
+  EXPECT_EQ(model().unprocessed_selections_from_reading_mode(), 1);
+
+  // 3. Close immersive view.
+  controller().OnGetPresentationState(
+      read_anything::mojom::ReadAnythingPresentationState::kInactive);
+
+  // 4. Send a user-initiated main panel selection change event.
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  update.has_tree_data = true;
+  update.event_from = ax::mojom::EventFrom::kUser;
+  update.tree_data.sel_anchor_object_id = 1;
+  update.tree_data.sel_focus_object_id = 1;
+  update.tree_data.sel_anchor_offset = 0;
+  update.tree_data.sel_focus_offset = 1;
+  ui::AXNodeData root;
+  root.id = 1;
+  update.root_id = root.id;
+  update.nodes = {std::move(root)};
+  std::vector<ui::AXEvent> events;
+  ui::AXEvent selection_event;
+  selection_event.event_type = ax::mojom::Event::kDocumentSelectionChanged;
+  selection_event.event_from = ax::mojom::EventFrom::kUser;
+  events.push_back(selection_event);
+
+  controller().AccessibilityEventReceived(tree_id_, {update}, events);
+
+  // 5. Reopen immersive view.
+  controller().OnGetPresentationState(
+      read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
+
+  // 6. Verify that selections_from_reading_mode_ was reset to 0 by the user
+  // event.
+  EXPECT_EQ(model().unprocessed_selections_from_reading_mode(), 0);
+}
+
 class ReadAnythingAppControllerV8SegmentationTest
     : public ReadAnythingAppControllerTest {
  public:

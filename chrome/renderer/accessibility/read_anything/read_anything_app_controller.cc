@@ -564,7 +564,8 @@ void ReadAnythingAppController::OnStringAttributeChanged(
   }
 }
 
-bool ReadAnythingAppController::IsUpdateProcessingPaused() const {
+bool ReadAnythingAppController::IsUpdateProcessingPaused(
+    bool allow_selection_updates) const {
   if (model_.screen2x_distiller_running() ||
       read_aloud_model_.speech_playing()) {
     return true;
@@ -588,9 +589,13 @@ bool ReadAnythingAppController::IsUpdateProcessingPaused() const {
       read_anything::mojom::ReadAnythingPresentationState::
           kInImmersiveOverlay) {
     // We only want to block the processing/distillation pipeline if there is
-    // already a good distillation on IRM. If a distillation is pending, or if
-    // the current distillation is empty, we don't want to block the pending
-    // update.
+    // already a good distillation on IRM. If a distillation or selection is
+    // pending, or if the current distillation is empty, we don't want to
+    // block the pending update.
+    if (allow_selection_updates && model_.has_pending_selection()) {
+      return false;
+    }
+
     return model_.distillation_state() ==
            read_anything::mojom::ReadAnythingDistillationState::
                kDistillationWithContent;
@@ -599,8 +604,10 @@ bool ReadAnythingAppController::IsUpdateProcessingPaused() const {
   return false;
 }
 
-void ReadAnythingAppController::ProcessPendingUpdatesIfAllowed() {
-  if (IsUpdateProcessingPaused() || !model_.ContainsActiveTree()) {
+void ReadAnythingAppController::ProcessPendingUpdatesIfAllowed(
+    bool allow_selection_updates) {
+  if (IsUpdateProcessingPaused(allow_selection_updates) ||
+      !model_.ContainsActiveTree()) {
     return;
   }
 
@@ -1925,11 +1932,21 @@ void ReadAnythingAppController::SendGetPresentationStateRequest() const {
 
 void ReadAnythingAppController::OnGetPresentationState(
     read_anything::mojom::ReadAnythingPresentationState presentation_state) {
+  bool is_immersive_opening =
+      (presentation_state ==
+       read_anything::mojom::ReadAnythingPresentationState::
+           kInImmersiveOverlay) &&
+      (model_.active_presentation_state() !=
+       read_anything::mojom::ReadAnythingPresentationState::
+           kInImmersiveOverlay);
+
   model_.set_active_presentation_state(presentation_state);
   // Now that the presentation state changed which is potentially one of the
   // factors blocking processing, see if we can unblock processing of the
   // updates.
-  ProcessPendingUpdatesIfAllowed();
+  ProcessPendingUpdatesIfAllowed(
+      /* allow_selection_updates=*/is_immersive_opening);
+
   ExecuteJavaScript("chrome.readingMode.onPresentationStateReceived(" +
                     base::ToString(static_cast<int>(presentation_state)) +
                     ");");

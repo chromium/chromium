@@ -645,6 +645,8 @@ class ReadAnythingAppModel {
     return side_panel_distillation_mode_;
   }
 
+  bool has_pending_selection() const { return has_pending_selection_; }
+
  private:
   // An index for searching substrings within the flattened
   // |global_ax_tree_text_|. It uses a Suffix Array to find any string in O(log
@@ -830,6 +832,7 @@ class ReadAnythingAppModel {
   bool requires_distillation_ = false;
   bool reset_draw_timer_ = false;
   bool requires_post_process_selection_ = false;
+  bool has_pending_selection_ = false;
   int selections_from_reading_mode_ = 0;
   int words_seen_ = 0;
   int words_heard_ = 0;

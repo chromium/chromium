@@ -130,11 +130,13 @@ class ReadAnythingAppController
   void OnTreeRemoved(ui::AXTree* tree) override;
 
   // Returns whether the processing of accessibility updates should be paused.
-  bool IsUpdateProcessingPaused() const;
+  // If allow_selection_updates is true (e.g. while immersive is opening),
+  // pending selection updates may be allowed to process.
+  bool IsUpdateProcessingPaused(bool allow_selection_updates = false) const;
 
   // If the update-processing system is not paused, applies pending updates and
   // triggers necessary actions. If paused, does nothing.
-  void ProcessPendingUpdatesIfAllowed();
+  void ProcessPendingUpdatesIfAllowed(bool allow_selection_updates = false);
 
   // read_anything::mojom::UntrustedPage:
   void AccessibilityEventReceived(

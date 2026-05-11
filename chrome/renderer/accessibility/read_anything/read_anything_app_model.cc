@@ -531,10 +531,17 @@ void ReadAnythingAppModel::AddPendingUpdates(const ui::AXTreeID& tree_id,
 
 void ReadAnythingAppModel::ClearPendingUpdates() {
   pending_updates_.clear();
+  has_pending_selection_ = false;
 }
 
 void ReadAnythingAppModel::UnserializePendingUpdates(
     const ui::AXTreeID& tree_id) {
+  // has_pending_selection_ is used to process updates that would not have
+  // otherwise been processed if Immersive is opening and already had a good
+  // distillation. Therefore, it should be reset once UnserializePendingUpdates
+  // is called. If no selection is processed (e.g. due to no pending updates),
+  // that means there is no longer a pending selection to process.
+  has_pending_selection_ = false;
   if (!pending_updates_.contains(tree_id)) {
     VLOG(1) << "Returning early in UnserializePendingUpdates because it "
                "doesn't contain tree id "
@@ -692,6 +699,11 @@ void ReadAnythingAppModel::ApplyAccessibilityUpdates(
     VLOG(1) << "ApplyAccessibilityUpdates- tree ID is not the active tree";
     UnserializeUpdates(updates, tree_id);
   }
+
+  // has_pending_selection_ is used to process updates that would not have
+  // otherwise been processed if Immersive is opening and already had a good
+  // distillation. Therefore, it should be reset once updates are applied.
+  has_pending_selection_ = false;
 }
 
 void ReadAnythingAppModel::QueueAccessibilityUpdates(
@@ -916,6 +928,13 @@ void ReadAnythingAppModel::ProcessNonGeneratedEvents(
 #if BUILDFLAG(IS_MAC)
     VLOG(2) << "Non-generated event type: " << event.event_type;
 #endif
+    if (event.event_type == ax::mojom::Event::kDocumentSelectionChanged ||
+        event.event_type == ax::mojom::Event::kTextSelectionChanged) {
+      // Keep track of pending selections so that Immersive can properly
+      // update if there's been a selection change.
+      has_pending_selection_ = true;
+    }
+
     // Readability distillation ignores state change events as selection
     // post-processing is the only required dynamic update.
     if (is_readability_next_distillation_method()) {
@@ -1049,6 +1068,11 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
       if (event.event_params->event ==
           ui::AXEventGenerator::Event::DOCUMENT_SELECTION_CHANGED) {
         requires_post_process_selection_ = true;
+        if (event.event_params->event_from == ax::mojom::EventFrom::kUser) {
+          // Direct main panel user interaction fully supersedes any stale
+          // reading-mode-initiated selection actions.
+          selections_from_reading_mode_ = 0;
+        }
       }
       continue;
     }
@@ -1056,6 +1080,11 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
     switch (event.event_params->event) {
       case ui::AXEventGenerator::Event::DOCUMENT_SELECTION_CHANGED:
         requires_post_process_selection_ = true;
+        if (event.event_params->event_from == ax::mojom::EventFrom::kUser) {
+          // Direct main panel user interaction fully supersedes any stale
+          // reading-mode-initiated selection actions.
+          selections_from_reading_mode_ = 0;
+        }
         break;
       case ui::AXEventGenerator::Event::DOCUMENT_TITLE_CHANGED:
         if (event.event_params->event_from == ax::mojom::EventFrom::kUser) {
