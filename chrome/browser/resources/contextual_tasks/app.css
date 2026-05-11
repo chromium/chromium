@@ -277,7 +277,9 @@
 
   /* Color of Active tool chip */
   --color-composebox-context-entrypoint-hover-background: rgba(42, 43, 54, 1);
+  --color-composebox-lens-button-hover-background: rgba(42, 43, 54, 1);
   --color-composebox-tool-chip-background: rgba(42, 43, 54, 1);
+  --color-composebox-voice-button-hover-background: rgba(42, 43, 54, 1);
   --color-searchbox-results-foreground: rgba(255, 255, 255, 1);
 }
 
@@ -347,6 +349,10 @@
     var(--surface-highest-container-button-hover-color);
 
   /* Composebox button colors */
+  --color-composebox-lens-button-hover-background:
+    var(--surface-container-highest-color);
+  --color-composebox-voice-button-hover-background:
+    var(--surface-container-highest-color);
   --color-composebox-voice-lens-button: var(--on-surface-default-text-color);
   --color-composebox-cancel-button: var(--on-surface-default-text-color);
   --color-composebox-hover: var(--surface-highest-container-button-hover-color);
@@ -362,6 +368,8 @@
   --toolbar-text-color: var(--on-surface-default-text-color);
 
   /* Active tool chip colors */
+  --color-composebox-context-entrypoint-background:
+    var(--surface-container-highest-color);
   --color-composebox-context-entrypoint-hover-background:
     var(--surface-container-highest-color);
   --color-composebox-tool-chip-background:

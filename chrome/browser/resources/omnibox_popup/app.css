@@ -26,8 +26,11 @@
   --cr-searchbox-match-font-weight: 700;
 
   --text-input-inline-start-spacing: 16px;
+  --color-composebox-context-entrypoint-background: var(--color-omnibox-action-icon-hover);
   --color-composebox-context-entrypoint-hover-background: var(--color-omnibox-action-icon-hover);
+  --color-composebox-lens-button-hover-background: var(--color-omnibox-action-icon-hover);
   --color-composebox-tool-chip-background: var(--color-omnibox-action-icon-hover);
+  --color-composebox-voice-button-hover-background: var(--color-omnibox-action-icon-hover);
   --color-composebox-context-entrypoint-text: var(--color-omnibox-context-entrypoint-text);
   --color-composebox-lens-search-button-border-color: var(--color-omnibox-keyword-separator);
   --color-composebox-recent-tab-chip-outline: var(--color-omnibox-keyword-separator);

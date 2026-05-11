@@ -306,8 +306,11 @@
   E_CPONLY(kColorComposeboxFileCarouselUrl) \
   E_CPONLY(kColorComposeboxContextEntrypointTextDisabled) \
   E_CPONLY(kColorComposeboxContextEntrypointHoverBackground) \
-  E_CPONLY(kColorComposeboxToolChipBackground) \
+  E_CPONLY(kColorComposeboxContextEntrypointBackground) \
+  E_CPONLY(kColorComposeboxLensButtonHoverBackground) \
   E_CPONLY(kColorComposeboxLink) \
+  E_CPONLY(kColorComposeboxToolChipBackground) \
+  E_CPONLY(kColorComposeboxVoiceButtonHoverBackground) \
   E_CPONLY(kColorNewTabPageCommonInputPlaceholder) \
   E_CPONLY(kColorNewTabPageControlBackgroundHovered) \
   E_CPONLY(kColorNewTabPageControlBackgroundSelected) \
