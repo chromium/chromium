@@ -71,8 +71,10 @@ WebSocketEndpointLockManager::~WebSocketEndpointLockManager() {
 
 void WebSocketEndpointLockManager::UnlockEndpoint(const IPEndPoint& endpoint) {
   auto lock_info_it = lock_info_map_.find(endpoint);
-  // Nothing to do if the lock is not held. This is not an error.
-  if (lock_info_it == lock_info_map_.end()) {
+  // Nothing to do if the lock is not held or in the lock delay period.
+  // This is not an error.
+  if (lock_info_it == lock_info_map_.end() ||
+      !lock_info_it->second.endpoint_lock) {
     return;
   }
 

@@ -198,29 +198,64 @@ TEST_F(WebSocketEndpointLockManagerTest, EndpointLockForgottenOnUnlock) {
   EXPECT_TRUE(websocket_endpoint_lock_manager_.IsEmpty());
 }
 
-// Destroying EndpointLock after UnlockEndpoint() does nothing.
-TEST_F(WebSocketEndpointLockManagerTest,
-       DestroyEndpointLockAfterUnlockEndpointDoesNothing) {
-  std::array<FakeWaiter, 3> waiters;
-
+// Unlocking an endpoint multiple times should not cause issues.
+TEST_F(WebSocketEndpointLockManagerTest, MultipleUnlockEndpoint) {
+  std::array<FakeWaiter, 2> waiters;
   auto endpoint_lock1 = std::make_unique<EndpointLock>(
       &websocket_endpoint_lock_manager_, DummyEndpoint());
   EXPECT_THAT(endpoint_lock1->LockEndpoint(waiters[0].GetCallback()), IsOk());
+
+  websocket_endpoint_lock_manager_.UnlockEndpoint(DummyEndpoint());
+  // Try to unlock when an unlock task has been posted but not run.
+  websocket_endpoint_lock_manager_.UnlockEndpoint(DummyEndpoint());
+  websocket_endpoint_lock_manager_.UnlockEndpoint(DummyEndpoint());
+  // Destroying the lock should also be safe.
+  endpoint_lock1.reset();
+
+  // Lock should be available.
   EndpointLock endpoint_lock2(&websocket_endpoint_lock_manager_,
                               DummyEndpoint());
   EXPECT_THAT(endpoint_lock2.LockEndpoint(waiters[1].GetCallback()),
               IsError(ERR_IO_PENDING));
-  EndpointLock endpoint_lock3(&websocket_endpoint_lock_manager_,
-                              DummyEndpoint());
-  EXPECT_THAT(endpoint_lock3.LockEndpoint(waiters[2].GetCallback()),
+  waiters[1].WaitForLock();
+  UnlockDummyEndpoint(1);
+}
+
+// Check that streams are assigned in FIFO order. Use a mix of unlocking
+// methods.
+TEST_F(WebSocketEndpointLockManagerTest, Fifo) {
+  std::array<FakeWaiter, 4> waiters;
+  auto endpoint_lock1 = std::make_unique<EndpointLock>(
+      &websocket_endpoint_lock_manager_, DummyEndpoint());
+  EXPECT_THAT(endpoint_lock1->LockEndpoint(waiters[0].GetCallback()), IsOk());
+  auto endpoint_lock2 = std::make_unique<EndpointLock>(
+      &websocket_endpoint_lock_manager_, DummyEndpoint());
+  EXPECT_THAT(endpoint_lock2->LockEndpoint(waiters[1].GetCallback()),
+              IsError(ERR_IO_PENDING));
+  auto endpoint_lock3 = std::make_unique<EndpointLock>(
+      &websocket_endpoint_lock_manager_, DummyEndpoint());
+  EXPECT_THAT(endpoint_lock3->LockEndpoint(waiters[2].GetCallback()),
+              IsError(ERR_IO_PENDING));
+  auto endpoint_lock4 = std::make_unique<EndpointLock>(
+      &websocket_endpoint_lock_manager_, DummyEndpoint());
+  EXPECT_THAT(endpoint_lock4->LockEndpoint(waiters[3].GetCallback()),
               IsError(ERR_IO_PENDING));
 
   endpoint_lock1.reset();
-  RunUntilIdle();
-  EXPECT_TRUE(waiters[1].called());
+  waiters[1].WaitForLock();
+  EXPECT_FALSE(websocket_endpoint_lock_manager_.IsEmpty());
   EXPECT_FALSE(waiters[2].called());
+  EXPECT_FALSE(waiters[3].called());
 
-  UnlockDummyEndpoint(2);
+  UnlockDummyEndpoint(1);
+  waiters[2].WaitForLock();
+  EXPECT_FALSE(websocket_endpoint_lock_manager_.IsEmpty());
+  EXPECT_FALSE(waiters[3].called());
+
+  endpoint_lock3.reset();
+  waiters[3].WaitForLock();
+  EXPECT_FALSE(websocket_endpoint_lock_manager_.IsEmpty());
+  UnlockDummyEndpoint(1);
 }
 
 // UnlockEndpoint() should always be asynchronous.
