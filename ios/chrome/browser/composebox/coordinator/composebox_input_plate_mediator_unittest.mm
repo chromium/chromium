@@ -202,6 +202,7 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
                      templateURLService:template_url_service()
                   aimEligibilityService:aim_eligibility_service_.get()
                             prefService:&pref_service_
+                                profile:profile_.get()
                    cobrowseBrowserAgent:nil
               browserCoordinatorHandler:nil
                            sceneHandler:nil
@@ -652,6 +653,7 @@ TEST_F(ComposeboxInputPlateMediatorTest,
                        templateURLService:template_url_service()
                     aimEligibilityService:aim_eligibility_service_.get()
                               prefService:&pref_service_
+                                  profile:profile_.get()
                      cobrowseBrowserAgent:nil
                 browserCoordinatorHandler:nil
                              sceneHandler:nil

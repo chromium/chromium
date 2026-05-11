@@ -36,6 +36,7 @@
 #import "components/contextual_search/input_state_model.h"
 #import "components/contextual_search/internal/ios/composebox_context_upload_observer_bridge.h"
 #import "components/contextual_search/internal/ios/composebox_query_controller_ios.h"
+#import "components/contextual_tasks/public/query_contextualizer.h"
 #import "components/lens/contextual_input.h"
 #import "components/lens/lens_bitmap_processing.h"
 #import "components/lens/lens_overlay_mime_type.h"
@@ -51,6 +52,7 @@
 #import "components/search_engines/util.h"
 #import "ios/chrome/browser/cobrowse/model/cobrowse_browser_agent.h"
 #import "ios/chrome/browser/cobrowse/model/cobrowse_context.h"
+#import "ios/chrome/browser/cobrowse/model/ios_contextual_tasks_service_factory.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_constants.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_url_loader.h"
 #import "ios/chrome/browser/composebox/coordinator/web_state_deferred_executor.h"
@@ -69,6 +71,7 @@
 #import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/utils/mime_type_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -281,7 +284,75 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
     SearchEngineObserving,
     ComposeboxInputItemCollectionDelegate,
     WebStateDeferredExecutorDelegate>
+
+// Delegate methods for QueryContextualizer.
+- (GURL)GetTabUrl:(contextual_tasks::QueryContextualizer::TabId)id;
+- (SessionID)GetTabSessionId:(contextual_tasks::QueryContextualizer::TabId)id;
+- (void)GetPageContext:(contextual_tasks::QueryContextualizer::TabId)id
+              callback:
+                  (base::OnceCallback<void(
+                       std::unique_ptr<lens::ContextualInputData>)>)callback;
+- (bool)IsTabValid:(contextual_tasks::QueryContextualizer::TabId)id;
+- (std::optional<lens::ImageEncodingOptions>)
+    GetTabViewportEncodingOptionsForQueryContextualizer;
+- (contextual_search::ContextualSearchSessionHandle*)
+    GetOrCreateSessionHandleForQueryContextualizer;
+
 @end
+
+namespace {
+
+class QueryContextualizerDelegateBridge
+    : public contextual_tasks::QueryContextualizer::Delegate {
+ public:
+  explicit QueryContextualizerDelegateBridge(
+      ComposeboxInputPlateMediator* mediator)
+      : mediator_(mediator) {}
+
+  GURL GetTabUrl(contextual_tasks::QueryContextualizer::TabId id) override {
+    return [mediator_ GetTabUrl:id];
+  }
+
+  SessionID GetTabSessionId(
+      contextual_tasks::QueryContextualizer::TabId id) override {
+    return [mediator_ GetTabSessionId:id];
+  }
+
+  void GetPageContext(
+      contextual_tasks::QueryContextualizer::TabId id,
+      base::OnceCallback<void(std::unique_ptr<lens::ContextualInputData>)>
+          callback) override {
+    [mediator_ GetPageContext:id callback:std::move(callback)];
+  }
+
+  bool IsTabValid(contextual_tasks::QueryContextualizer::TabId id) override {
+    return [mediator_ IsTabValid:id];
+  }
+
+  std::optional<lens::ImageEncodingOptions>
+  GetTabViewportEncodingOptionsForQueryContextualizer() override {
+    return [mediator_ GetTabViewportEncodingOptionsForQueryContextualizer];
+  }
+
+  contextual_search::ContextualSearchSessionHandle*
+  GetOrCreateSessionHandleForQueryContextualizer() override {
+    return [mediator_ GetOrCreateSessionHandleForQueryContextualizer];
+  }
+
+  void GetRelevantTabsForQuery(
+      const std::string& query_text,
+      const std::vector<GURL>& attached_context_urls,
+      base::OnceCallback<void(
+          std::vector<contextual_tasks::QueryContextualizer::TabId>)> callback)
+      override {
+    std::move(callback).Run({});
+  }
+
+ private:
+  __weak ComposeboxInputPlateMediator* mediator_;
+};
+
+}  // namespace
 
 @implementation ComposeboxInputPlateMediator {
   // The ordered list of items for display.
@@ -308,6 +379,8 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
   raw_ptr<AimEligibilityService> _aimEligibilityService;
   // The preference service.
   raw_ptr<PrefService> _prefService;
+  // The profile.
+  raw_ptr<ProfileIOS> _profile;
   // Browser agent to manage the cobrowse context.
   raw_ptr<CobrowseBrowserAgent> _cobrowseBrowserAgent;
 
@@ -317,6 +390,12 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
                      web::WebStateID,
                      base::UnguessableTokenHash>
       _latestTabSelectionMapping;
+
+  // Delegate for the query contextualizer.
+  std::unique_ptr<QueryContextualizerDelegateBridge>
+      _queryContextualizerDelegate;
+  // Orchestrator to contextualize tabs before search.
+  std::unique_ptr<contextual_tasks::QueryContextualizer> _queryContextualizer;
 
   // Utilitary to delay execution until the web state is loaded.
   WebStateDeferredExecutor* _webStateDeferredExecutor;
@@ -377,6 +456,7 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
               aimEligibilityService:
                   (AimEligibilityService*)aimEligibilityService
                         prefService:(PrefService*)prefService
+                            profile:(ProfileIOS*)profile
                cobrowseBrowserAgent:(CobrowseBrowserAgent*)cobrowseBrowserAgent
           browserCoordinatorHandler:
               (id<BrowserCoordinatorCommands>)browserCoordinatorHandler
@@ -388,6 +468,7 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
     _browserCoordinatorHandler = browserCoordinatorHandler;
     _sceneHandler = sceneHandler;
     _prefService = prefService;
+    _profile = profile;
     _cobrowseBrowserAgent = cobrowseBrowserAgent;
     _contextualSearchSession = std::move(contextualSearchSession);
     if (_contextualSearchSession) {
@@ -422,6 +503,15 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
     _aimEligibilityService = aimEligibilityService;
     _items = [[ComposeboxInputItemCollection alloc] init];
     _items.delegate = self;
+    contextual_tasks::ContextualTasksService* tasksService =
+        IOSContextualTasksServiceFactory::GetForProfile(_profile);
+    if (tasksService) {
+      _queryContextualizerDelegate =
+          std::make_unique<QueryContextualizerDelegateBridge>(self);
+      _queryContextualizer =
+          std::make_unique<contextual_tasks::QueryContextualizer>(
+              tasksService, _queryContextualizerDelegate.get());
+    }
   }
   return self;
 }
@@ -440,6 +530,8 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
   _aimEligibilityService = nullptr;
   _cobrowseBrowserAgent = nullptr;
   _inputStateModel = nullptr;
+  _queryContextualizer.reset();
+  _queryContextualizerDelegate.reset();
   _composeboxObserverBridge.reset();
   if (_contextualSearchSession) {
     if (!_inNavigation) {
@@ -453,6 +545,7 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
   _URLLoader = nil;
   _consumer = nil;
   _prefService = nullptr;
+  _profile = nullptr;
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -593,8 +686,26 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
         [weakSelf didCreateSearchURL:URL];
       }));
 
-  _contextualSearchSession->CreateSearchUrl(std::move(search_url_request_info),
-                                            std::move(callback));
+  auto createSearchUrlCallback = base::BindOnce(
+      &contextual_search::ContextualSearchSessionHandle::CreateSearchUrl,
+      _contextualSearchSession->AsWeakPtr(), std::move(search_url_request_info),
+      std::move(callback));
+
+  if (_queryContextualizer) {
+    _queryContextualizer->Contextualize(
+        /*task_id=*/std::nullopt, base::SysNSStringToUTF8(text),
+        /*tabs_to_recontextualize=*/{}, /*tabs_to_force_contextualize=*/{},
+        /*on_ineligible_callback=*/base::DoNothing(),
+        /*on_processed_callback=*/base::DoNothing(),
+        base::BindOnce(
+            [](base::OnceClosure closure,
+               base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
+                   ignored_handle) { std::move(closure).Run(); },
+            std::move(createSearchUrlCallback)),
+        /*enable_smart_tab_selection=*/false);
+  } else {
+    std::move(createSearchUrlCallback).Run();
+  }
 }
 
 - (void)processTab:(web::WebState*)webState
@@ -2748,6 +2859,49 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
 
 - (void)voiceSearchDidReceiveSearchQuery:(NSString*)query {
   [self sendText:query];
+}
+
+#pragma mark - contextual_tasks::QueryContextualizer::Delegate
+
+- (GURL)GetTabUrl:(contextual_tasks::QueryContextualizer::TabId)id {
+  // No-op. Recontextualization is only needed for the contextual-tasks
+  // composebox handler.
+  return GURL();
+}
+
+- (SessionID)GetTabSessionId:(contextual_tasks::QueryContextualizer::TabId)id {
+  // No-op. Recontextualization is only needed for the contextual-tasks
+  // composebox handler.
+  return SessionID::InvalidValue();
+}
+
+- (void)GetPageContext:(contextual_tasks::QueryContextualizer::TabId)id
+              callback:
+                  (base::OnceCallback<void(
+                       std::unique_ptr<lens::ContextualInputData>)>)callback {
+  // No-op. Recontextualization is only needed for the contextual-tasks
+  // composebox handler.
+  if (callback) {
+    std::move(callback).Run(nullptr);
+  }
+}
+
+- (bool)IsTabValid:(contextual_tasks::QueryContextualizer::TabId)id {
+  // No-op. Recontextualization is only needed for the contextual-tasks
+  // composebox handler.
+  return false;
+}
+
+- (std::optional<lens::ImageEncodingOptions>)
+    GetTabViewportEncodingOptionsForQueryContextualizer {
+  // No-op. Recontextualization is only needed for the contextual-tasks
+  // composebox handler.
+  return std::nullopt;
+}
+
+- (contextual_search::ContextualSearchSessionHandle*)
+    GetOrCreateSessionHandleForQueryContextualizer {
+  return _contextualSearchSession.get();
 }
 
 #pragma mark - WebStateDeferredExecutorDelegate

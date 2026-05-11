@@ -1,6 +1,7 @@
 include_rules = [
   # keep-sorted start
   "+components/contextual_search",
+  "+components/contextual_tasks/public",
   "+components/omnibox/composebox",
   "+components/open_from_clipboard",
   "+ios/chrome/browser/aim/model",
@@ -8,6 +9,7 @@ include_rules = [
   "+ios/chrome/browser/bookmarks/model",
   "+ios/chrome/browser/cobrowse/model/cobrowse_browser_agent.h",
   "+ios/chrome/browser/cobrowse/model/cobrowse_context.h",
+  "+ios/chrome/browser/cobrowse/model/ios_contextual_tasks_service_factory.h",
   "+ios/chrome/browser/context_menu/ui_bundled",
   "+ios/chrome/browser/default_browser/model",
   "+ios/chrome/browser/drag_and_drop/model",

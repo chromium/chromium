@@ -11,6 +11,7 @@
 #include <vector>
 
 #import "components/contextual_search/internal/ios/composebox_context_upload_observer_bridge.h"
+#import "components/contextual_tasks/public/query_contextualizer.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_entrypoint.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_mode_holder.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_omnibox_client_delegate.h"
@@ -32,6 +33,7 @@ class AimEligibilityService;
 class FaviconLoader;
 class PersistTabContextBrowserAgent;
 class PrefService;
+class ProfileIOS;
 class TemplateURLService;
 class WebStateList;
 
@@ -85,6 +87,7 @@ class ContextualSearchSessionHandle;
               aimEligibilityService:
                   (AimEligibilityService*)aimEligibilityService
                         prefService:(PrefService*)prefService
+                            profile:(ProfileIOS*)profile
                cobrowseBrowserAgent:(CobrowseBrowserAgent*)cobrowseBrowserAgent
           browserCoordinatorHandler:
               (id<BrowserCoordinatorCommands>)browserCoordinatorHandler
