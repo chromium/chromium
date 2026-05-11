@@ -89,8 +89,7 @@ VIZ_COMMON_EXPORT extern const char kTargetForVSyncInteraction[];
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kThrottleFrameSinksOnInteraction);
 VIZ_COMMON_EXPORT bool ShouldThrottleWhenInteractiveFrameSinks();
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kAllowUndamagedNonrootRenderPassToSkip);
-VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(
-    kAllowForceMergeRenderPassWithRequireOverlayQuads);
+
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kOnBeginFrameThrottleVideo);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kAdpf);
 VIZ_COMMON_EXPORT extern const base::FeatureParam<std::string>

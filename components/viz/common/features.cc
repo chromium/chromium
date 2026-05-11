@@ -200,11 +200,6 @@ BASE_FEATURE(kAllowUndamagedNonrootRenderPassToSkip,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// Allow SurfaceAggregator to merge render passes when they contain quads that
-// require overlay (e.g. protected video). See usage in |EmitSurfaceContent|.
-BASE_FEATURE(kAllowForceMergeRenderPassWithRequireOverlayQuads,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // if enabled, Any CompositorFrameSink of type video that defines a preferred
 // framerate that is below the display framerate will throttle OnBeginFrame
 // callbacks to match the preferred framerate.

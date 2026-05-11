@@ -1031,10 +1031,8 @@ void SurfaceAggregator::EmitSurfaceContent(
   // in a copy of the render pass quads in the intermediate pass and a copy in
   // the dest pass. Since we are not copying the copy request itself to the dest
   // pass, the quads that require overlay can still be promoted to overlay.
-  const bool allow_forced_merge_pass = base::FeatureList::IsEnabled(
-      features::kAllowForceMergeRenderPassWithRequireOverlayQuads);
   const bool force_merge_pass =
-      allow_forced_merge_pass && !merge_pass && pass_is_mergeable &&
+      !merge_pass && pass_is_mergeable &&
       std::ranges::any_of(dest_pass_list_->back()->quad_list,
                           &OverlayCandidate::RequiresOverlay);
 
