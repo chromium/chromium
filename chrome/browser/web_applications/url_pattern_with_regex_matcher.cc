@@ -41,7 +41,7 @@ std::optional<RE2::Set> MakeScopeSet(
 }
 
 bool MatchScopePart(const std::optional<RE2::Set>& scope_set,
-                    const std::string& part) {
+                    std::string_view part) {
   if (scope_set.has_value()) {
     return scope_set->Match(part, nullptr);
   }
@@ -71,14 +71,14 @@ UrlPatternWithRegexMatcher& UrlPatternWithRegexMatcher::operator=(
     UrlPatternWithRegexMatcher&& other) = default;
 
 bool UrlPatternWithRegexMatcher::Match(const GURL& url) const {
-  return MatchScopePart(protocol_scope_set_, url.GetScheme()) &&
-         MatchScopePart(username_scope_set_, url.GetUsername()) &&
-         MatchScopePart(password_scope_set_, url.GetPassword()) &&
-         MatchScopePart(hostname_scope_set_, url.GetHost()) &&
-         MatchScopePart(port_scope_set_, url.GetPort()) &&
-         MatchScopePart(pathname_scope_set_, url.GetPath()) &&
-         MatchScopePart(search_scope_set_, url.GetQuery()) &&
-         MatchScopePart(hash_scope_set_, url.GetRef());
+  return MatchScopePart(protocol_scope_set_, url.scheme()) &&
+         MatchScopePart(username_scope_set_, url.username()) &&
+         MatchScopePart(password_scope_set_, url.password()) &&
+         MatchScopePart(hostname_scope_set_, url.host()) &&
+         MatchScopePart(port_scope_set_, url.port()) &&
+         MatchScopePart(pathname_scope_set_, url.path()) &&
+         MatchScopePart(search_scope_set_, url.query()) &&
+         MatchScopePart(hash_scope_set_, url.ref());
 }
 
 }  // namespace web_app
