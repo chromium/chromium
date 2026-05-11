@@ -53,7 +53,6 @@ import java.util.concurrent.TimeoutException;
 })
 @Features.EnableFeatures(ChromeFeatureList.DISPLAY_EDGE_TO_EDGE_FULLSCREEN)
 @Batch(Batch.PER_CLASS)
-@DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288438
 public class FullscreenVideoTest {
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
@@ -105,6 +104,8 @@ public class FullscreenVideoTest {
     @Test
     @MediumTest
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO) // PiP not supported on AAOS.
+    // Fullscreen PiP disabled on Desktop crbug.com/486262122#comment5.
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM)
     public void testFullscreenToPip() throws TimeoutException {
         loadUrlAndEnterFullscreen("/content/test/data/media/video-player-pip.html");
         // Test framework requirement. This will prevent visual transition but should keep all the
