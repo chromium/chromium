@@ -950,7 +950,9 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
                           systemSymbol:YES
                       monochromeSymbol:NO
                        accessibilityID:kToolsMenuHideToolbars
-                          hideItemText:nil
+                          hideItemText:
+                              l10n_util::GetNSString(
+                                  IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_HIDE_TOOLBARS)
                                handler:^{
                                  [weakSelf startCollapseToolbars];
                                }];
@@ -1643,7 +1645,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   self.askBWGAction.enabled = [self isGeminiAvailable];
 
   if (base::FeatureList::IsEnabled(kHideToolbarsInOverflowMenu)) {
-    self.hideToolbarsAction.enabled = YES;
+    self.hideToolbarsAction.enabled = ![self isCurrentWebPageNTP];
   }
 }
 

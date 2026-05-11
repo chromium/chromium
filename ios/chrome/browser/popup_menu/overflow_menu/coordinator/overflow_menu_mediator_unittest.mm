@@ -525,6 +525,9 @@ TEST_F(OverflowMenuMediatorTest, TestMenuItemsCount) {
   if (send_tab_to_self::AreIOSTabRemindersEnabled() && !mediator_.incognito) {
     number_of_action_items++;
   }
+  if (base::FeatureList::IsEnabled(kHideToolbarsInOverflowMenu)) {
+    number_of_action_items++;
+  }
 
   // New Tab, New Incognito Tab.
   NSUInteger number_of_tab_actions = 2;
@@ -622,6 +625,9 @@ TEST_F(OverflowMenuMediatorTest, TestItemsStatusOnNTP) {
 
   EXPECT_TRUE(HasItem(kToolsMenuNewTabId, /*enabled=*/YES));
   EXPECT_FALSE(HasItem(kToolsMenuSiteInformation, /*enabled=*/YES));
+  if (base::FeatureList::IsEnabled(kHideToolbarsInOverflowMenu)) {
+    EXPECT_TRUE(HasItem(kToolsMenuHideToolbars, /*enabled=*/NO));
+  }
 }
 
 // Tests that the share action is not added to the overflow menu when the share

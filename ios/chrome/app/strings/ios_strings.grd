@@ -4992,6 +4992,9 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_FIND_IN_PAGE" desc="The title for the context menu item to hide Find in Page. This should match the title of the Find in Page action in the menu." meaning="[iOS only] [Length: Unlimited]">
         Hide Find in Page
       </message>
+      <message name="IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_HIDE_TOOLBARS" desc="The title for the context menu item to hide Hide Toolbar. This should match the title of the Hide Toolbar action in the menu." meaning="[iOS only] [Length: Unlimited]">
+        Hide Hide Toolbar
+      </message>
       <message name="IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_LENS_OVERLAY" desc="The title for the context menu item to hide Search screen with Google Lens. This should match the title of the Search screen with Google Lens action in the menu." meaning="[iOS only] [Length: Unlimited]">
         Hide Search screen with Google Lens
       </message>
