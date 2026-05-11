@@ -786,7 +786,7 @@ BASE_FEATURE(kFjordOobeForSquid, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kFjordOobeForceEnabled, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls if the Fjord image switch screen is shown during OOBE.
-BASE_FEATURE(kFjordOobeImageSwitch, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFjordOobeImageSwitch, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables the Flex Auto-Enrollment feature on ChromeOS
 BASE_FEATURE(kFlexAutoEnrollment, base::FEATURE_DISABLED_BY_DEFAULT);
