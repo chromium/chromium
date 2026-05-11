@@ -728,9 +728,13 @@ void WebSocket::AddChannel(
       headers_to_pass.SetHeader(header->name, header->value);
     }
   }
-  channel_->SendAddChannelRequest(socket_url, requested_protocols, origin_,
-                                  storage_access_api_status, isolation_info,
-                                  headers_to_pass, traffic_annotation_);
+  channel_->SendAddChannelRequest(
+      socket_url, requested_protocols, origin_, storage_access_api_status,
+      isolation_info, headers_to_pass,
+      (options_ & mojom::kWebSocketOptionMaximumPriority)
+          ? net::WebSocketPriorityHint::kMaximum
+          : net::WebSocketPriorityHint::kDefault,
+      traffic_annotation_);
 }
 
 void WebSocket::OnWritable(MojoResult result,

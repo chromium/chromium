@@ -771,6 +771,7 @@ struct WebSocketStreamCreationCallbackArgumentSaver {
       const HttpRequestHeaders& additional_headers,
       URLRequestContext* new_url_request_context,
       const NetLogWithSource& net_log,
+      WebSocketPriorityHint new_priority_hint,
       NetworkTrafficAnnotationTag traffic_annotation,
       std::unique_ptr<WebSocketStream::ConnectDelegate> new_connect_delegate) {
     socket_url = new_socket_url;
@@ -779,6 +780,7 @@ struct WebSocketStreamCreationCallbackArgumentSaver {
     isolation_info = new_isolation_info;
     url_request_context = new_url_request_context;
     connect_delegate = std::move(new_connect_delegate);
+    priority_hint = new_priority_hint;
     return std::make_unique<MockWebSocketStreamRequest>();
   }
 
@@ -788,6 +790,7 @@ struct WebSocketStreamCreationCallbackArgumentSaver {
   IsolationInfo isolation_info;
   raw_ptr<URLRequestContext> url_request_context;
   std::unique_ptr<WebSocketStream::ConnectDelegate> connect_delegate;
+  WebSocketPriorityHint priority_hint = WebSocketPriorityHint::kDefault;
 };
 
 std::vector<char> AsVector(std::string_view s) {
@@ -830,7 +833,7 @@ class WebSocketChannelTest : public TestWithTaskEnvironment {
         connect_data_.socket_url, connect_data_.requested_subprotocols,
         connect_data_.origin, net::StorageAccessApiStatus::kNone,
         connect_data_.isolation_info, HttpRequestHeaders(),
-        TRAFFIC_ANNOTATION_FOR_TESTS,
+        WebSocketPriorityHint::kDefault, TRAFFIC_ANNOTATION_FOR_TESTS,
         base::BindOnce(&WebSocketStreamCreationCallbackArgumentSaver::Create,
                        base::Unretained(&connect_data_.argument_saver)));
   }

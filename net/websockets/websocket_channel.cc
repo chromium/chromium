@@ -308,10 +308,11 @@ void WebSocketChannel::SendAddChannelRequest(
     StorageAccessApiStatus storage_access_api_status,
     const IsolationInfo& isolation_info,
     const HttpRequestHeaders& additional_headers,
+    WebSocketPriorityHint priority_hint,
     NetworkTrafficAnnotationTag traffic_annotation) {
   SendAddChannelRequestWithSuppliedCallback(
       socket_url, requested_subprotocols, origin, storage_access_api_status,
-      isolation_info, additional_headers, traffic_annotation,
+      isolation_info, additional_headers, priority_hint, traffic_annotation,
       base::BindOnce(&WebSocketStream::CreateAndConnectStream));
 }
 
@@ -445,11 +446,12 @@ void WebSocketChannel::SendAddChannelRequestForTesting(
     StorageAccessApiStatus storage_access_api_status,
     const IsolationInfo& isolation_info,
     const HttpRequestHeaders& additional_headers,
+    WebSocketPriorityHint priority_hint,
     NetworkTrafficAnnotationTag traffic_annotation,
     WebSocketStreamRequestCreationCallback callback) {
   SendAddChannelRequestWithSuppliedCallback(
       socket_url, requested_subprotocols, origin, storage_access_api_status,
-      isolation_info, additional_headers, traffic_annotation,
+      isolation_info, additional_headers, priority_hint, traffic_annotation,
       std::move(callback));
 }
 
@@ -470,6 +472,7 @@ void WebSocketChannel::SendAddChannelRequestWithSuppliedCallback(
     StorageAccessApiStatus storage_access_api_status,
     const IsolationInfo& isolation_info,
     const HttpRequestHeaders& additional_headers,
+    WebSocketPriorityHint priority_hint,
     NetworkTrafficAnnotationTag traffic_annotation,
     WebSocketStreamRequestCreationCallback callback) {
   DCHECK_EQ(FRESHLY_CONSTRUCTED, state_);
@@ -480,7 +483,8 @@ void WebSocketChannel::SendAddChannelRequestWithSuppliedCallback(
   stream_request_ = std::move(callback).Run(
       socket_url_, requested_subprotocols, origin, storage_access_api_status,
       isolation_info, additional_headers, url_request_context_.get(),
-      NetLogWithSource(), traffic_annotation, std::move(connect_delegate));
+      NetLogWithSource(), priority_hint, traffic_annotation,
+      std::move(connect_delegate));
   SetState(CONNECTING);
 }
 

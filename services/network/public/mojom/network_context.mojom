@@ -107,6 +107,11 @@ const uint32 kWebSocketOptionBlockAllCookies = 1;
 // cookies.
 const uint32 kWebSocketOptionBlockThirdPartyCookies = 2;
 
+// If this is set, the WebSocket connection will be created with
+// MAXIMUM_PRIORITY and LOAD_IGNORE_LIMITS. This is only intended for internal
+// Chrome use.
+const uint32 kWebSocketOptionMaximumPriority = 4;
+
 // The browser can provide a CustomProxyConfig to a CustomProxyConfigClient
 // running in the network service. The network service will use the given proxy
 // configuration if a request matches the proxy rules and all the other

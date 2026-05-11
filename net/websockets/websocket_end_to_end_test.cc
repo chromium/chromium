@@ -519,7 +519,8 @@ class WebSocketEndToEndTest : public TestWithTaskEnvironment {
                                                   context_.get());
     channel_->SendAddChannelRequest(
         GURL(socket_url), sub_protocols_, origin, StorageAccessApiStatus::kNone,
-        isolation_info, HttpRequestHeaders(), TRAFFIC_ANNOTATION_FOR_TESTS);
+        isolation_info, HttpRequestHeaders(), WebSocketPriorityHint::kDefault,
+        TRAFFIC_ANNOTATION_FOR_TESTS);
   }
 
   // Send the connect request to |socket_url| and wait for a response. Returns

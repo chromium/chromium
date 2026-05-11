@@ -62,6 +62,16 @@ namespace {
 // JavaScript programs to recognize the timeout cause.
 constexpr int kHandshakeTimeoutIntervalInSeconds = 240;
 
+RequestPriority WebSocketPriorityHintToRequestPriority(
+    WebSocketPriorityHint priority_hint) {
+  switch (priority_hint) {
+    case WebSocketPriorityHint::kDefault:
+      return DEFAULT_PRIORITY;
+    case WebSocketPriorityHint::kMaximum:
+      return MAXIMUM_PRIORITY;
+  }
+}
+
 class WebSocketStreamRequestImpl;
 
 class Delegate : public URLRequest::Delegate {
@@ -110,16 +120,18 @@ class WebSocketStreamRequestImpl : public WebSocketStreamRequestAPI {
       StorageAccessApiStatus storage_access_api_status,
       const IsolationInfo& isolation_info,
       const HttpRequestHeaders& additional_headers,
+      WebSocketPriorityHint priority_hint,
       NetworkTrafficAnnotationTag traffic_annotation,
       std::unique_ptr<WebSocketStream::ConnectDelegate> connect_delegate,
       std::unique_ptr<WebSocketStreamRequestAPI> api_delegate)
       : delegate_(this),
         connect_delegate_(std::move(connect_delegate)),
-        url_request_(context->CreateRequest(url,
-                                            DEFAULT_PRIORITY,
-                                            &delegate_,
-                                            traffic_annotation,
-                                            /*is_for_websockets=*/true)),
+        url_request_(context->CreateRequest(
+            url,
+            WebSocketPriorityHintToRequestPriority(priority_hint),
+            &delegate_,
+            traffic_annotation,
+            /*is_for_websockets=*/true)),
         api_delegate_(std::move(api_delegate)) {
     DCHECK_EQ(IsolationInfo::RequestType::kOther,
               isolation_info.request_type());
@@ -156,7 +168,11 @@ class WebSocketStreamRequestImpl : public WebSocketStreamRequestAPI {
         connect_delegate_.get(), requested_subprotocols, this);
     url_request_->SetUserData(kWebSocketHandshakeUserDataKey,
                               std::move(create_helper));
-    url_request_->SetLoadFlags(LOAD_DISABLE_CACHE | LOAD_BYPASS_CACHE);
+    int load_flags = LOAD_DISABLE_CACHE | LOAD_BYPASS_CACHE;
+    if (priority_hint == WebSocketPriorityHint::kMaximum) {
+      load_flags |= LOAD_IGNORE_LIMITS;
+    }
+    url_request_->SetLoadFlags(load_flags);
     connect_delegate_->OnCreateRequest(url_request_.get());
   }
 
@@ -531,12 +547,13 @@ std::unique_ptr<WebSocketStreamRequest> WebSocketStream::CreateAndConnectStream(
     const HttpRequestHeaders& additional_headers,
     URLRequestContext* url_request_context,
     const NetLogWithSource& net_log,
+    WebSocketPriorityHint priority_hint,
     NetworkTrafficAnnotationTag traffic_annotation,
     std::unique_ptr<ConnectDelegate> connect_delegate) {
   auto request = std::make_unique<WebSocketStreamRequestImpl>(
       socket_url, requested_subprotocols, url_request_context, origin,
       storage_access_api_status, isolation_info, additional_headers,
-      traffic_annotation, std::move(connect_delegate), nullptr);
+      priority_hint, traffic_annotation, std::move(connect_delegate), nullptr);
   request->Start(std::make_unique<base::OneShotTimer>());
   return std::move(request);
 }
@@ -551,6 +568,7 @@ WebSocketStream::CreateAndConnectStreamForTesting(
     const HttpRequestHeaders& additional_headers,
     URLRequestContext* url_request_context,
     const NetLogWithSource& net_log,
+    WebSocketPriorityHint priority_hint,
     NetworkTrafficAnnotationTag traffic_annotation,
     std::unique_ptr<WebSocketStream::ConnectDelegate> connect_delegate,
     std::unique_ptr<base::OneShotTimer> timer,
@@ -558,7 +576,8 @@ WebSocketStream::CreateAndConnectStreamForTesting(
   auto request = std::make_unique<WebSocketStreamRequestImpl>(
       socket_url, requested_subprotocols, url_request_context, origin,
       storage_access_api_status, isolation_info, additional_headers,
-      traffic_annotation, std::move(connect_delegate), std::move(api_delegate));
+      priority_hint, traffic_annotation, std::move(connect_delegate),
+      std::move(api_delegate));
   request->Start(std::move(timer));
   return std::move(request);
 }

@@ -126,7 +126,8 @@ void WebSocketStreamCreateTestBase::CreateAndConnectStream(
       socket_url, sub_protocols, origin, storage_access_api_status,
       isolation_info, additional_headers,
       url_request_context_host_.GetURLRequestContext(), NetLogWithSource(),
-      TRAFFIC_ANNOTATION_FOR_TESTS, std::move(connect_delegate),
+      WebSocketPriorityHint::kDefault, TRAFFIC_ANNOTATION_FOR_TESTS,
+      std::move(connect_delegate),
       timer ? std::move(timer) : std::make_unique<base::OneShotTimer>(),
       std::move(api_delegate));
 }

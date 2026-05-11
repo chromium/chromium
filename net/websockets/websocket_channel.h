@@ -70,6 +70,7 @@ class NET_EXPORT WebSocketChannel {
       const HttpRequestHeaders&,
       URLRequestContext*,
       const NetLogWithSource&,
+      WebSocketPriorityHint,
       NetworkTrafficAnnotationTag,
       std::unique_ptr<WebSocketStream::ConnectDelegate>)>
       WebSocketStreamRequestCreationCallback;
@@ -98,6 +99,7 @@ class NET_EXPORT WebSocketChannel {
       StorageAccessApiStatus storage_access_api_status,
       const IsolationInfo& isolation_info,
       const HttpRequestHeaders& additional_headers,
+      WebSocketPriorityHint priority_hint,
       NetworkTrafficAnnotationTag traffic_annotation);
 
   // Sends a data frame to the remote side. It is the responsibility of the
@@ -142,6 +144,7 @@ class NET_EXPORT WebSocketChannel {
       StorageAccessApiStatus storage_access_api_status,
       const IsolationInfo& isolation_info,
       const HttpRequestHeaders& additional_headers,
+      WebSocketPriorityHint priority_hint,
       NetworkTrafficAnnotationTag traffic_annotation,
       WebSocketStreamRequestCreationCallback callback);
 
@@ -216,6 +219,7 @@ class NET_EXPORT WebSocketChannel {
       StorageAccessApiStatus storage_access_api_status,
       const IsolationInfo& isolation_info,
       const HttpRequestHeaders& additional_headers,
+      WebSocketPriorityHint priority_hint,
       NetworkTrafficAnnotationTag traffic_annotation,
       WebSocketStreamRequestCreationCallback callback);
 
