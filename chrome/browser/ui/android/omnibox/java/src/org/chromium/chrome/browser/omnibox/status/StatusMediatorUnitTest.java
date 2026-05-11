@@ -73,6 +73,7 @@ import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteRequestType;
+import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.components.prefs.PrefService;
@@ -381,6 +382,21 @@ public final class StatusMediatorUnitTest {
         assertEquals(
                 R.string.accessibility_toolbar_exit_hub_search,
                 mModel.get(StatusProperties.STATUS_ACCESSIBILITY_DOUBLE_TAP_DESCRIPTION_RES));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(OmniboxFeatureList.EXACT_MATCH_FAVICONS)
+    public void testStatusIcon_hubSearchWithExactMatchFaviconEnabled() {
+        doReturn(PageClassification.ANDROID_HUB_VALUE)
+                .when(mLocationBarDataProvider)
+                .getPageClassification(/* prefetch= */ false);
+        mExactMatchUrlSupplier.set(JUnitTestGURLs.BLUE_1);
+        mMediator.updateLocationBarIcon(IconTransitionType.CROSSFADE);
+
+        assertEquals(
+                R.drawable.ic_arrow_back_24dp,
+                mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconRes());
     }
 
     @Test

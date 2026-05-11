@@ -530,7 +530,16 @@ public class StatusMediator
                         ? AutocompleteRequestType.SEARCH
                         : mInputSessionState.getAutocompleteInput().getRequestType();
 
-        if (exactMatch && mShowExactMatchGlobe) {
+        if (isHubSearch()) {
+            mPermissionStatusHandler.reset(/* shouldDismissNativePrompt= */ false);
+            updateStatusViewVisibility();
+            iconRes = R.drawable.ic_arrow_back_24dp;
+            tintRes = ThemeUtils.getThemedToolbarIconTintRes(mBrandedColorScheme);
+            doubleTapDescriptionRes = R.string.accessibility_toolbar_exit_hub_search;
+            applyStatusIconAndTooltipProperties(
+                    mModel.get(StatusProperties.VERBOSE_STATUS_TEXT_VISIBLE));
+            clickListener = mOnStatusIconNavigateBackButtonPress;
+        } else if (exactMatch && mShowExactMatchGlobe) {
             mPermissionStatusHandler.reset(/* shouldDismissNativePrompt= */ false);
             iconRes = R.drawable.ic_globe_24dp;
             tintRes = mNavigationIconTintRes;
@@ -562,15 +571,6 @@ public class StatusMediator
             mPermissionStatusHandler.reset(/* shouldDismissNativePrompt= */ true);
             // No need to proceed further if we've already updated it for the search engine icon.
             return;
-        } else if (isHubSearch()) {
-            mPermissionStatusHandler.reset(/* shouldDismissNativePrompt= */ false);
-            updateStatusViewVisibility();
-            iconRes = R.drawable.ic_arrow_back_24dp;
-            tintRes = ThemeUtils.getThemedToolbarIconTintRes(mBrandedColorScheme);
-            doubleTapDescriptionRes = R.string.accessibility_toolbar_exit_hub_search;
-            applyStatusIconAndTooltipProperties(
-                    mModel.get(StatusProperties.VERBOSE_STATUS_TEXT_VISIBLE));
-            clickListener = mOnStatusIconNavigateBackButtonPress;
         } else if (mUrlHasFocus) {
             mPermissionStatusHandler.reset(/* shouldDismissNativePrompt= */ true);
             iconRes =
