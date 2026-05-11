@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -18,7 +19,10 @@
 #include "net/base/schemeful_site.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/custom_handlers/protocol_handler_utils.h"
 #include "third_party/blink/public/common/manifest/manifest_util.h"
+#include "third_party/blink/public/common/scheme_registry.h"
+#include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/blink/public/mojom/manifest/manifest_manager.mojom.h"
 #include "url/gurl.h"
@@ -94,6 +98,18 @@ std::optional<std::string> MaybeGetBadMessageStringForManifest(
       if (!document_origin.IsSameOriginWith(protocol_handler->url)) {
         return "Manifest protocol_handlers must be same-origin with the "
                "document.";
+      }
+
+      blink::ProtocolHandlerSecurityLevel security_level =
+          blink::CommonSchemeRegistry::IsIsolatedAppScheme(
+              document_origin.scheme())
+              ? blink::ProtocolHandlerSecurityLevel::kIsolatedAppFeatures
+              : blink::ProtocolHandlerSecurityLevel::kStrict;
+      if (!blink::IsValidCustomHandlerScheme(
+              base::UTF16ToUTF8(protocol_handler->protocol), security_level)) {
+        return "Manifest protocol_handlers protocol is invalid or restricted "
+               "for security level:" +
+               base::ToString(security_level);
       }
     }
 

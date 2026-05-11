@@ -1402,6 +1402,35 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest,
                             "match the document scheme."));
 }
 
+IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, ProtocolInvalidSchemeBadMessage) {
+  const GURL test_url =
+      embedded_test_server()->GetURL("/manifest/empty-manifest.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+
+  ManifestManagerHost* host = ManifestManagerHost::GetOrCreateForPage(
+      shell()->web_contents()->GetPrimaryPage());
+
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  auto bad_manifest = blink::mojom::Manifest::New();
+  bad_manifest->start_url = test_url;
+  bad_manifest->id = test_url;
+  bad_manifest->scope = embedded_test_server()->GetURL("/manifest/");
+
+  auto protocol_handler = blink::mojom::ManifestProtocolHandler::New();
+  protocol_handler->protocol = u"https";
+  protocol_handler->url =
+      embedded_test_server()->GetURL("/manifest/handler?q=%s");
+  bad_manifest->protocol_handlers.push_back(std::move(protocol_handler));
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  host->ValidateAndMaybeOverrideManifestForTesting(
+      blink::mojom::ManifestRequestResult::kSuccess, std::move(bad_manifest));
+  EXPECT_THAT(
+      bad_message_observer.WaitForBadMessage(),
+      ::testing::StartsWith(
+          "Manifest protocol_handlers protocol is invalid or restricted"));
+}
+
 // Local waiter to wait for WebContentsObserver::DidUpdateWebManifestURL.
 class ManifestUrlUpdateWaiter : public content::WebContentsObserver {
  public:
