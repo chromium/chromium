@@ -81,11 +81,9 @@ source_set("data_controls") {
       "//components/reporting/client:report_queue_factory",
       "//components/reporting/proto:record_constants",
       "//components/reporting/util:status",
+      "//components/web_modal",
       "//ui/views",
     ]
-  }
-  if (enable_extensions) {
-    deps += [ "//chrome/browser/extensions" ]
   }
 
   allow_circular_includes_from = []

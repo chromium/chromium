@@ -98,7 +98,6 @@ source_set("enterprise") {
       "//chrome/browser/ui/tabs:tab_strip_model_observer",
       "//chrome/browser/ui/webui/signin:signin_utils",
       "//chrome/browser/upgrade_detector:build_state_observer",
-      "//extensions/common",
       "//ui/message_center/public/cpp",
       "//ui/views",
     ]
@@ -509,7 +508,6 @@ source_set("impl") {
       "signals/device_info_fetcher.cc",
     ]
     deps += [
-      "//chrome/browser/extensions",
       "//chrome/browser/search_engine_choice",
       "//chrome/browser/sync",
       "//chrome/browser/themes",
@@ -789,7 +787,6 @@ source_set("impl") {
       "//chrome/browser/enterprise/connectors/device_trust/key_management/browser",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core",
       "//chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence",
-      "//chrome/browser/extensions",
       "//chrome/services/system_signals/public/cpp/browser",
     ]
   }
@@ -804,5 +801,9 @@ source_set("impl") {
 
   if (enable_extensions_core) {
     sources += [ "reporting/extension_info.cc" ]
+    deps += [
+      "//chrome/browser/extensions",
+      "//extensions/browser",
+    ]
   }
 }

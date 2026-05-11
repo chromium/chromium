@@ -90,8 +90,6 @@
 #include "chrome/browser/engagement/site_engagement_service_factory.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
-#include "chrome/browser/enterprise/connectors/reporting/browser_crash_event_router.h"
-#include "chrome/browser/enterprise/connectors/reporting/reporting_event_router_factory.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_url_lookup_service_factory.h"
 #include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/enterprise/remote_commands/user_remote_commands_service_factory.h"
@@ -584,7 +582,14 @@
 #include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_service_factory.h"
 #endif
 
-#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(FULL_SAFE_BROWSING)
+#include "chrome/browser/enterprise/connectors/reporting/browser_crash_event_router.h"
+#include "chrome/browser/enterprise/connectors/reporting/reporting_event_router_factory.h"
+#endif
+
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) && \
+    BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/enterprise/connectors/reporting/extension_install_event_router.h"
 #include "chrome/browser/enterprise/connectors/reporting/extension_telemetry_event_router_factory.h"
 #endif
@@ -936,27 +941,34 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if !BUILDFLAG(IS_CHROMEOS)
   enterprise_commands::UserRemoteCommandsServiceFactory::GetInstance();
 #endif
-#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
-  enterprise_connectors::ExtensionInstallEventRouterFactory::GetInstance();
-  enterprise_connectors::ExtensionTelemetryEventRouterFactory::GetInstance();
-#endif
-#if BUILDFLAG(ENTERPRISE_TELOMERE_REPORTING)
-  if (base::FeatureList::IsEnabled(enterprise_connectors::kTelomereReporting)) {
-    enterprise_connectors::TelomereEventRouterFactory::GetInstance();
-  }
-#endif
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(FULL_SAFE_BROWSING)
   enterprise_connectors::BrowserCrashEventRouterFactory::GetInstance();
+#endif
   enterprise_connectors::ConnectorsServiceFactory::GetInstance();
-  enterprise_connectors::ReportingEventRouterFactory::GetInstance();
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
   enterprise_connectors::DeviceTrustConnectorServiceFactory::GetInstance();
   enterprise_connectors::DeviceTrustServiceFactory::GetInstance();
 #endif
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) && \
+    BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  enterprise_connectors::ExtensionInstallEventRouterFactory::GetInstance();
+  enterprise_connectors::ExtensionTelemetryEventRouterFactory::GetInstance();
+#endif
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)) && \
     BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS) &&                    \
     BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   enterprise_connectors::LocalBinaryUploadServiceFactory::GetInstance();
+#endif
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(FULL_SAFE_BROWSING)
+  enterprise_connectors::ReportingEventRouterFactory::GetInstance();
+#endif
+#if BUILDFLAG(ENTERPRISE_TELOMERE_REPORTING)
+  if (base::FeatureList::IsEnabled(enterprise_connectors::kTelomereReporting)) {
+    enterprise_connectors::TelomereEventRouterFactory::GetInstance();
+  }
 #endif
 #if BUILDFLAG(ENTERPRISE_WATERMARK)
   enterprise_data_protection::DataProtectionUrlLookupServiceFactory::

@@ -20,7 +20,7 @@ source_set("reporting") {
     ]
   }
 
-  if (enterprise_cloud_content_analysis && enable_extensions) {
+  if (enterprise_cloud_content_analysis && enable_extensions_core) {
     sources += [
       "extension_install_event_router.h",
       "extension_telemetry_event_router.h",
@@ -53,8 +53,8 @@ source_set("reporting") {
     "//third_party/crashpad/crashpad/client",
   ]
 
-  if (enterprise_cloud_content_analysis && enable_extensions) {
-    deps += [
+  if (enterprise_cloud_content_analysis && enable_extensions_core) {
+    public_deps += [
       "//extensions/browser",
       "//extensions/common",
     ]
@@ -75,7 +75,7 @@ source_set("impl") {
     ]
   }
 
-  if (enterprise_cloud_content_analysis && enable_extensions) {
+  if (enterprise_cloud_content_analysis && enable_extensions_core) {
     sources += [
       "extension_install_event_router.cc",
       "extension_telemetry_event_router.cc",
@@ -122,7 +122,7 @@ source_set("impl") {
   if (enterprise_cloud_content_analysis) {
     deps += [ "//components/enterprise/connectors/core:cloud_content_scanning" ]
 
-    if (enable_extensions) {
+    if (enable_extensions_core) {
       deps += [ "//chrome/browser/extensions" ]
     }
   }
@@ -141,7 +141,7 @@ source_set("unit_tests") {
     "reporting_event_router_unittest.cc",
   ]
 
-  if (enterprise_cloud_content_analysis && enable_extensions) {
+  if (enterprise_cloud_content_analysis && enable_extensions_core) {
     sources += [
       "extension_install_event_router_unittest.cc",
       "extension_telemetry_event_router_unittest.cc",

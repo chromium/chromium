@@ -585,6 +585,7 @@ source_set("extensions") {
     "//components/no_state_prefetch/browser",
     "//components/performance_manager",
     "//components/policy/core/browser",
+    "//components/policy/core/common",
     "//components/pref_registry",
     "//components/privacy_sandbox:features",
     "//components/privacy_sandbox:privacy_sandbox_prefs",
@@ -1004,7 +1005,6 @@ source_set("extensions") {
       "//components/download/public/common:public",
       "//components/drive",
       "//components/embedder_support:user_agent",
-      "//components/enterprise",
       "//components/enterprise/buildflags",
       "//components/enterprise/connectors/core",
       "//components/favicon/content",
@@ -1034,7 +1034,6 @@ source_set("extensions") {
       "//components/performance_manager",
       "//components/permissions",
       "//components/policy:generated",
-      "//components/policy/core/browser",
       "//components/reading_list/core",
       "//components/resources",
       "//components/safe_browsing:buildflags",
@@ -1230,7 +1229,6 @@ source_set("extensions") {
         "preinstalled_apps.h",
       ]
       deps += [
-        "//components/enterprise",
         "//components/enterprise/common/proto:connectors_proto",
         "//components/keep_alive_registry",
       ]
@@ -1555,6 +1553,10 @@ source_set("extensions") {
 
     if (!is_android && !is_chromeos) {
       deps += [ "//chrome/browser/ui/toasts" ]
+    }
+
+    if (enterprise_cloud_content_analysis) {
+      deps += [ "//components/enterprise/common/proto:browser_events_proto" ]
     }
   }  # if (enable_extensions)
 
