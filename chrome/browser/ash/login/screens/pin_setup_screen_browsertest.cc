@@ -977,4 +977,38 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenComplexityTest,
   WaitUntilConfirmationStep();
 }
 
+// Tests that navigating back from the confirmation step to the setup step
+// correctly preserves the complexity-based requirement message (4 digits) and
+// does not revert to the legacy requirement message (6 digits).
+IN_PROC_BROWSER_TEST_F(PinSetupScreenComplexityTest,
+                       BackButtonPreservesComplexityMessage) {
+  ShowPinSetupScreen();
+  SetComplexityPolicy(ash::LocalAuthFactorsComplexity::kLow);
+  WaitForScreenShown();
+
+  // Wait for the complexity policy to be fetched and the UI to update.
+  test::OobeJS()
+      .CreateWaiter(base::StrCat({test::GetOobeElementPath(kProblemDiv),
+                                  ".textContent.includes('4 digits')"}))
+      ->Wait();
+
+  EnterPin("1234");
+  TapNextButton();
+
+  // Wait for the UI to transition to the confirmation step.
+  test::OobeJS().CreateVisibilityWaiter(true, kBackButton)->Wait();
+
+  // Navigate back to the first step.
+  test::OobeJS().ClickOnPath(kBackButton);
+
+  // Wait for the UI to transition back.
+  test::OobeJS().CreateVisibilityWaiter(false, kBackButton)->Wait();
+
+  // Verification: It must still show the 4-digit requirement.
+  test::OobeJS()
+      .CreateWaiter(base::StrCat({test::GetOobeElementPath(kProblemDiv),
+                                  ".textContent.includes('4 digits')"}))
+      ->Wait();
+}
+
 }  // namespace ash

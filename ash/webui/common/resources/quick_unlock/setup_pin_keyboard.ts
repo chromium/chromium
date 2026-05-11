@@ -49,12 +49,14 @@ export enum ProblemType {
   ERROR = 'error',
 }
 
-const ComplexityErrorMap = {
+const ComplexityErrorMap: Record<
+    Exclude<LocalAuthFactorsComplexity, LocalAuthFactorsComplexity.kUnset>,
+    MessageType> = {
   [LocalAuthFactorsComplexity.kNone]: MessageType.COMPLEXITY_NONE,
   [LocalAuthFactorsComplexity.kLow]: MessageType.COMPLEXITY_LOW,
   [LocalAuthFactorsComplexity.kMedium]: MessageType.COMPLEXITY_MEDIUM,
   [LocalAuthFactorsComplexity.kHigh]: MessageType.COMPLEXITY_HIGH,
-} as Record<LocalAuthFactorsComplexity, MessageType>;
+};
 
 const SetupPinKeyboardElementBase = I18nMixin(PolymerElement);
 
@@ -183,8 +185,9 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
       },
 
       localAuthFactorsComplexity_: {
-        type: LocalAuthFactorsComplexity,
-        value: LocalAuthFactorsComplexity.kUnset,
+        type: Object,
+        value: undefined,
+        observer: 'updateDefaultMessage_',
       },
     };
   }
@@ -204,7 +207,7 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
   private problemClass_: ProblemType|''|undefined;
   private pinHasPassedMinimumLength_: boolean;
   private isSetPinCallPending_: boolean;
-  private localAuthFactorsComplexity_: LocalAuthFactorsComplexity;
+  private localAuthFactorsComplexity_: LocalAuthFactorsComplexity|undefined;
   private credentialRequirements_: CredentialRequirements|undefined;
 
   override focus(): void {
@@ -226,7 +229,13 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
     this.isConfirmStep = false;
     this.pinHasPassedMinimumLength_ = false;
     this.useRecoveryModeApi = false;
-    this.showProblem_(MessageType.TOO_SHORT, ProblemType.WARNING);
+
+    // Note: this.localAuthFactorsComplexity_ is NOT reset here.
+    // This value represents the cached policy configuration for the current
+    // user/device, which remains valid across multiple PIN entry attempts.
+    // Keeping it avoids unnecessary re-fetching and prevents the legacy
+    // 6-digit message "flash" during the fetch.
+    this.updateDefaultMessage_();
   }
 
   /**
@@ -463,7 +472,12 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
     }
 
     this.enableSubmit = false;
-    const messageId = ComplexityErrorMap[this.localAuthFactorsComplexity_];
+    let messageId = MessageType.TOO_WEAK;
+    if (this.localAuthFactorsComplexity_ !== undefined &&
+        this.localAuthFactorsComplexity_ !==
+            LocalAuthFactorsComplexity.kUnset) {
+      messageId = ComplexityErrorMap[this.localAuthFactorsComplexity_];
+    }
     this.showProblem_(messageId, ProblemType.ERROR);
   }
 
@@ -481,10 +495,9 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
         return;
       }
       this.localAuthFactorsComplexity_ = newValue;
-
-      const messageId = ComplexityErrorMap[this.localAuthFactorsComplexity_];
-      this.showProblem_(messageId, ProblemType.WARNING);
     } catch (e) {
+      console.error('Error calling fetchLocalAuthFactorsComplexity_:', e);
+      this.localAuthFactorsComplexity_ = LocalAuthFactorsComplexity.kUnset;
       switch (e) {
         case ConfigureResult.kInvalidTokenError:
           fireAuthTokenInvalidEvent(this);
@@ -494,6 +507,35 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
           assertNotReached();
       }
     }
+  }
+
+  private updateDefaultMessage_(): void {
+    // 1. Initial/fetching state - stay silent while we wait for the complexity
+    // policy to avoid the legacy 6-digit message "flash".
+    if (this.localAuthFactorsComplexity_ === undefined) {
+      this.hideProblem_();
+      return;
+    }
+
+    // 2. Complexity policy is in effect.
+    if (this.localAuthFactorsComplexity_ !==
+        LocalAuthFactorsComplexity.kUnset) {
+      this.showProblem_(
+          ComplexityErrorMap[this.localAuthFactorsComplexity_],
+          ProblemType.WARNING);
+      return;
+    }
+
+    // 3. Complexity policy is unset or fetch error (backend says "no policy"):
+    // Fall back to the legacy 6-digit requirement.
+    this.showProblem_(MessageType.TOO_SHORT, ProblemType.WARNING);
+  }
+
+  private shouldDisableKeyboard_(
+      isSetPinCallPending: boolean,
+      localAuthFactorsComplexity: LocalAuthFactorsComplexity|
+      undefined): boolean {
+    return isSetPinCallPending || localAuthFactorsComplexity === undefined;
   }
 
   /**

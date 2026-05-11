@@ -64,7 +64,7 @@ Where:
 <pin-keyboard id="pinKeyboard" on-pin-change="onPinChange_"
     on-submit="onPinSubmit_" value="{{pinKeyboardValue_}}"
     has-error="[[hasError_(problemMessageId_, problemClass_)]]"
-    disabled="[[isSetPinCallPending_]]"
+    disabled="[[shouldDisableKeyboard_(isSetPinCallPending_, localAuthFactorsComplexity_)]]"
     enable-visibility-icon="[[enableVisibilityIcon]]"
     enable-placeholder="[[enablePlaceholder]]">
   <!-- Warning/error; only shown if title is hidden. -->
