@@ -527,7 +527,8 @@ if (is_android) {
     ]
   }
 
-  # Used by all base test targets: gtests, robolectric, and instrumentation tests.
+  # Used by all base test targets: gtests, robolectric, and instrumentation
+  # tests.
   android_library("test_support_java") {
     testonly = true
 
@@ -610,6 +611,7 @@ if (is_android) {
       "//third_party/android_deps:com_squareup_leakcanary_shark_java",
       "//third_party/androidx:androidx_work_work_multiprocess_java",
       "//third_party/androidx:androidx_work_work_runtime_java",
+      "//third_party/junit",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }

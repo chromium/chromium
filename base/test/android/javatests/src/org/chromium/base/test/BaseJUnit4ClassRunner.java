@@ -41,7 +41,6 @@ import org.chromium.base.test.util.BaseRestrictions;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIfSkipCheck;
-import org.chromium.base.test.util.MockitoResetter;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.RestrictionSkipCheck;
 import org.chromium.base.test.util.SkipCheck;
@@ -134,6 +133,14 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
      * to the ClassRunner.
      */
     public interface ClassCleanupHook {
+        /**
+         * Called after the test method and all its @After methods have executed.
+         *
+         * @param method The test method that was executed.
+         * @param test The test instance.
+         */
+        default void onAfterTest(FrameworkMethod method, Object test) {}
+
         /**
          * @param clazz The class that was just run.
          */
@@ -586,11 +593,24 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
         // assertions, and to match the semantics of Robolectric's runners.
         BaseChromiumAndroidJUnitRunner.sInstance.runOnMainSync(
                 ResettersForTesting::afterClassHooksDidExecute);
-        MockitoResetter.clearOngoingStubbing();
         boolean finishSuccess = ActivityFinisher.finishAll();
         JniTestInstancesSnapshot.clearAllForTesting();
+
+        Throwable hookException = null;
         for (ClassCleanupHook hook : getClassCleanupHooks()) {
-            hook.onAfterTestClass(getTestClass().getJavaClass());
+            try {
+                hook.onAfterTestClass(getTestClass().getJavaClass());
+            } catch (Throwable t) {
+                if (hookException == null) {
+                    hookException = t;
+                } else {
+                    hookException.addSuppressed(t);
+                }
+                Log.e(TAG, "Exception in onAfterTestClass for hook " + hook, t);
+            }
+        }
+        if (hookException != null) {
+            throw new RuntimeException(hookException);
         }
         if (afterClassPassed && finishSuccess) {
             LifetimeAssert.assertAllInstancesDestroyedForTesting();
@@ -618,6 +638,55 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
     @Override
     protected Statement withAfters(FrameworkMethod method, Object test, Statement base) {
         // Afters are called before @Rule tearDown, so a good time for a screenshot.
-        return super.withAfters(method, test, new ScreenshotOnFailureStatement(base));
+        Statement afters = super.withAfters(method, test, new ScreenshotOnFailureStatement(base));
+        return new HookAftersStatement(method, test, afters);
+    }
+
+    private static class HookAftersStatement extends Statement {
+        private final FrameworkMethod mMethod;
+        private final Object mTest;
+        private final Statement mBase;
+
+        public HookAftersStatement(FrameworkMethod method, Object test, Statement base) {
+            mBase = base;
+            mMethod = method;
+            mTest = test;
+        }
+
+        @Override
+        public void evaluate() throws Throwable {
+            Throwable testException = null;
+            try {
+                mBase.evaluate();
+            } catch (Throwable t) {
+                testException = t;
+            }
+
+            Throwable hookException = null;
+            for (ClassCleanupHook hook : getClassCleanupHooks()) {
+                try {
+                    hook.onAfterTest(mMethod, mTest);
+                } catch (Throwable t) {
+                    if (hookException == null) {
+                        hookException = t;
+                    } else {
+                        hookException.addSuppressed(t);
+                    }
+                    Log.e(TAG, "Exception in onAfterTest for hook " + hook, t);
+                }
+            }
+
+            if (hookException != null) {
+                if (testException != null) {
+                    testException.addSuppressed(hookException);
+                } else {
+                    throw hookException;
+                }
+            }
+
+            if (testException != null) {
+                throw testException;
+            }
+        }
     }
 }

@@ -7,6 +7,8 @@ package org.chromium.base.test.util;
 import leakcanary.LeakAssertions;
 import leakcanary.LeakCanary;
 
+import org.junit.runners.model.FrameworkMethod;
+
 import shark.AndroidReferenceMatchers;
 import shark.ReferenceMatcher;
 import shark.ReferenceMatcherKt;
@@ -18,6 +20,7 @@ import shark.ReferencePattern.StaticFieldPattern;
 import org.chromium.base.CommandLine;
 import org.chromium.base.Log;
 import org.chromium.base.test.BaseJUnit4ClassRunner.AfterCleanupCheck;
+import org.chromium.base.test.BaseJUnit4ClassRunner.ClassCleanupHook;
 import org.chromium.build.annotations.ServiceImpl;
 
 import java.lang.annotation.ElementType;
@@ -31,12 +34,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
 
-@ServiceImpl(AfterCleanupCheck.class)
-public class LeakCanaryChecker implements AfterCleanupCheck {
+public class LeakCanaryChecker {
     private static final String TAG = "LeakCanaryChecker";
 
-    @Override
-    public void onAfterTestClass(Class<?> testClass) {
+    /**
+     * @return True if LeakCanary should run for this test class.
+     */
+    public static boolean isEnabled(Class<?> testClass) {
         boolean enabledByAnnotation = testClass.getAnnotation(EnableLeakChecks.class) != null;
         boolean enabledByFlag = CommandLine.getInstance().hasSwitch("enable-leak-checks");
         boolean disabledByAnnotation = testClass.getAnnotation(DisableLeakCheck.class) != null;
@@ -47,10 +51,36 @@ public class LeakCanaryChecker implements AfterCleanupCheck {
                             + testClass.getName());
         }
 
-        if (enabledByAnnotation || enabledByFlag) {
-            if (disabledByAnnotation) {
-                Log.w(TAG, "Leak check skipped by @DisableLeakCheck");
-            } else {
+        if ((enabledByAnnotation || enabledByFlag) && disabledByAnnotation) {
+            Log.w(TAG, "Leak check skipped by @DisableLeakCheck");
+        }
+
+        return (enabledByAnnotation || enabledByFlag) && !disabledByAnnotation;
+    }
+
+    @ServiceImpl(ClassCleanupHook.class)
+    public static class MockitoResetHook implements ClassCleanupHook {
+        @Override
+        public void onAfterTest(FrameworkMethod method, Object test) {
+            if (isEnabled(test.getClass())) {
+                MockitoResetter.addMocks(test);
+            }
+        }
+
+        @Override
+        public void onAfterTestClass(Class<?> testClass) {
+            if (isEnabled(testClass)) {
+                MockitoResetter.resetRecordedMocks();
+                MockitoResetter.clearOngoingStubbing();
+            }
+        }
+    }
+
+    @ServiceImpl(AfterCleanupCheck.class)
+    public static class LeakCheckHook implements AfterCleanupCheck {
+        @Override
+        public void onAfterTestClass(Class<?> testClass) {
+            if (isEnabled(testClass)) {
                 Log.i(TAG, "Running LeakCanary assertion");
                 checkLeaks();
             }
