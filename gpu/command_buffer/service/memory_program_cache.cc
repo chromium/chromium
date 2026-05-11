@@ -278,7 +278,7 @@ MemoryProgramCache::MemoryProgramCache(
           "MemoryProgramCache",
           std::nullopt,  // TODO(crbug.com/489671163): Add traits.
           this,
-          base::AsyncMemoryConsumerRegistration::CheckUnregister::kEnabled,
+          base::AsyncMemoryConsumerRegistration::CheckUnregister::kDisabled,
           base::AsyncMemoryConsumerRegistration::CheckRegistryExists::
               kDisabled),
       current_max_size_bytes_(max_cache_size_bytes) {}
