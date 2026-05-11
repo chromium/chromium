@@ -1813,7 +1813,6 @@ fyi_ios_builder(
             "ios_simulator",
             "arm64",
             "xctest",
-            "enable_swift_cxx_interop",
         ],
     ),
     targets = targets.bundle(
@@ -1871,7 +1870,6 @@ fyi_ios_builder(
             "ios_simulator",
             "arm64",
             "xctest",
-            "enable_swift_cxx_interop",
         ],
     ),
     # ios18-beta-sim compiles with xcode version n-1, but
@@ -1929,7 +1927,6 @@ fyi_ios_builder(
             "ios_simulator",
             "arm64",
             "xctest",
-            "enable_swift_cxx_interop",
         ],
     ),
     targets = targets.bundle(
@@ -1989,7 +1986,6 @@ fyi_ios_builder(
             "ios_simulator",
             "arm64",
             "xctest",
-            "enable_swift_cxx_interop",
         ],
     ),
     # ios18-sdk-sim compiles with xcode version n, and runs

@@ -1,7 +1,6 @@
 {
   "gn_args": {
     "enable_run_ios_unittests_with_xctest": true,
-    "enable_swift_cxx_interop": true,
     "is_component_build": false,
     "is_debug": true,
     "symbol_level": 1,
