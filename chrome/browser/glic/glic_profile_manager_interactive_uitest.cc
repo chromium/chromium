@@ -95,7 +95,7 @@ class DISABLED_GlicProfileManagerUiTest : public test::InteractiveGlicTest {
     const bool warmed = GetInstanceCoordinator()
                             .GetWebContentsWarmingPoolForTesting()
                             .HasWarmedContainerForTesting() ||
-                        service->IsWindowOrFreShowing();
+                        service->instance_coordinator().IsAnyPanelShowing();
     if (!warmed) {
       return "Not warmed";
     }

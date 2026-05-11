@@ -378,10 +378,6 @@ bool GlicKeyedService::IsWindowDetached() const {
   return instance_coordinator().IsDetached();
 }
 
-bool GlicKeyedService::IsWindowOrFreShowing() const {
-  return instance_coordinator().IsAnyPanelShowing();
-}
-
 base::CallbackListSubscription
 GlicKeyedService::AddContextAccessIndicatorStatusChangedCallback(
     ContextAccessIndicatorChangedCallback callback) {

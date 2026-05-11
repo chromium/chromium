@@ -157,10 +157,6 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
   // Virtual for testing.
   virtual bool IsWindowDetached() const;
 
-  bool IsWindowOrFreShowing() const;
-
-  // Private API for the glic WebUI.
-
   void SetContextAccessIndicator(bool show);
 
   // Callback for changes to the context access indicator status.

@@ -92,7 +92,7 @@ void BrowserTabStripModelDelegate::OpenGlicWindowFromSharedTab() {
   auto* service =
       glic::GlicKeyedServiceFactory::GetGlicKeyedService(browser_->profile());
 
-  if (!service->IsWindowOrFreShowing()) {
+  if (!service->instance_coordinator().IsAnyPanelShowing()) {
     service->ToggleUI(/*bwi=*/nullptr, /*prevent_close=*/true,
                       glic::mojom::InvocationSource::kSharedTab);
   }

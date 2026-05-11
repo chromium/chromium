@@ -524,9 +524,14 @@ std::unique_ptr<glic::TabStripGlicButton>
 TabStripActionContainer::CreateGlicButton() {
   glic::GlicKeyedService* service =
       glic::GlicKeyedService::Get(browser_window_interface_->GetProfile());
+  // TODO(b/512097288): Use IsPanelShowingForBrowser() instead of
+  // IsAnyPanelShowing() to avoid state leakage across windows.
+  // Also, refactor this so only one class is responsible for setting the
+  // tooltip.
   std::u16string tooltip_text = l10n_util::GetStringUTF16(
-      service->IsWindowOrFreShowing() ? IDS_GLIC_TAB_STRIP_BUTTON_TOOLTIP_CLOSE
-                                      : IDS_GLIC_TAB_STRIP_BUTTON_TOOLTIP);
+      service->instance_coordinator().IsAnyPanelShowing()
+          ? IDS_GLIC_TAB_STRIP_BUTTON_TOOLTIP_CLOSE
+          : IDS_GLIC_TAB_STRIP_BUTTON_TOOLTIP);
   std::unique_ptr<glic::TabStripGlicButton> glic_button =
       std::make_unique<glic::TabStripGlicButton>(
           browser_window_interface_,

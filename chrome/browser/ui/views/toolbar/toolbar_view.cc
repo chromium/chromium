@@ -745,8 +745,9 @@ std::unique_ptr<glic::ToolbarGlicButton> ToolbarView::CreateGlicButton() {
   glic::GlicKeyedService* service =
       glic::GlicKeyedService::Get(browser_view_->GetProfile());
   std::u16string tooltip_text = l10n_util::GetStringUTF16(
-      service->IsWindowOrFreShowing() ? IDS_GLIC_TAB_STRIP_BUTTON_TOOLTIP_CLOSE
-                                      : IDS_GLIC_TAB_STRIP_BUTTON_TOOLTIP);
+      service->instance_coordinator().IsAnyPanelShowing()
+          ? IDS_GLIC_TAB_STRIP_BUTTON_TOOLTIP_CLOSE
+          : IDS_GLIC_TAB_STRIP_BUTTON_TOOLTIP);
   std::unique_ptr<glic::ToolbarGlicButton> glic_button =
       std::make_unique<glic::ToolbarGlicButton>(
           browser_view_->browser(),

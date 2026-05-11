@@ -272,7 +272,7 @@ bool GlicProfileManager::IsShowing() const {
   if (!last_active_glic_) {
     return false;
   }
-  return last_active_glic_->IsWindowOrFreShowing();
+  return last_active_glic_->instance_coordinator().IsAnyPanelShowing();
 }
 
 void GlicProfileManager::OnProfileAdded(Profile* profile) {

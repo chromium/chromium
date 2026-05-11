@@ -88,7 +88,7 @@ IN_PROC_BROWSER_TEST_F(GlicButtonTest, UnpinCommand) {
 }
 
 IN_PROC_BROWSER_TEST_F(GlicButtonTest, TooltipAndA11yTextForOpening) {
-  EXPECT_FALSE(glic_service()->IsWindowOrFreShowing());
+  EXPECT_FALSE(glic_service()->instance_coordinator().IsAnyPanelShowing());
   EXPECT_EQ(glic_button()->GetViewAccessibility().GetCachedName(),
             l10n_util::GetStringUTF16(IDS_GLIC_TAB_STRIP_BUTTON_TOOLTIP));
 }
