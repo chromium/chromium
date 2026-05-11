@@ -5,6 +5,10 @@
 package org.chromium.chrome.browser.tab_bottom_sheet;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
@@ -139,5 +143,42 @@ public class WebViewResizingHelperUnitTest {
 
         mHelper.setToFixedHeight(500);
         assertEquals(500, expandedContent.getLayoutParams().height);
+    }
+
+    @Test
+    public void testUpdateBounds_EarlyReturn() {
+        mHelper.setThinWebView(mMockThinWebView, mMockWebContents);
+        FrameLayout container = (FrameLayout) mHelper.getResizingContainer();
+
+        clearInvocations(mMockWebContents);
+
+        // Case 1: width == 0
+        container.layout(0, 0, 0, 100);
+        verify(mMockWebContents, never()).setSize(anyInt(), anyInt());
+
+        // Case 2: height == 0
+        container.layout(0, 0, 100, 0);
+        verify(mMockWebContents, never()).setSize(anyInt(), anyInt());
+
+        // Case 3: width == mWebContents.getWidth() && height == mWebContents.getHeight()
+        when(mMockWebContents.getWidth()).thenReturn(100);
+        when(mMockWebContents.getHeight()).thenReturn(200);
+        container.layout(0, 0, 100, 200);
+        verify(mMockWebContents, never()).setSize(anyInt(), anyInt());
+    }
+
+    @Test
+    public void testUpdateBounds_SetsSize() {
+        mHelper.setThinWebView(mMockThinWebView, mMockWebContents);
+        FrameLayout container = (FrameLayout) mHelper.getResizingContainer();
+
+        when(mMockWebContents.getWidth()).thenReturn(50);
+        when(mMockWebContents.getHeight()).thenReturn(50);
+
+        clearInvocations(mMockWebContents);
+
+        container.layout(0, 0, 100, 200);
+
+        verify(mMockWebContents).setSize(100, 200);
     }
 }
