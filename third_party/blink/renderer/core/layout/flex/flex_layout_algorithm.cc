@@ -3029,7 +3029,7 @@ BreakStatus FlexLayoutAlgorithm::BreakBeforeRowIfNeeded(
 
   if (has_container_separation) {
     if (IsForcedBreakValue(GetConstraintSpace(), row_break_between)) {
-      BreakBeforeChild(GetConstraintSpace(), child, /*layout_result=*/nullptr,
+      BreakBeforeChild(child, /*layout_result=*/nullptr,
                        fragmentainer_block_offset, fragmentainer_block_size,
                        kBreakAppealPerfect, /*is_forced_break=*/true,
                        &container_builder_, row.line_cross_size);
@@ -3053,7 +3053,7 @@ BreakStatus FlexLayoutAlgorithm::BreakBeforeRowIfNeeded(
   // We're out of space. Figure out where to insert a soft break. It will either
   // be before this row, or before an earlier sibling, if there's a more
   // appealing breakpoint there.
-  if (!AttemptSoftBreak(GetConstraintSpace(), child,
+  if (!AttemptSoftBreak(child,
                         /*layout_result=*/nullptr, fragmentainer_block_offset,
                         fragmentainer_block_size, appeal_before,
                         &container_builder_, row.line_cross_size)) {

@@ -174,7 +174,7 @@ class CORE_EXPORT LayoutAlgorithm {
                                        LayoutUnit fragmentainer_block_offset,
                                        bool has_container_separation) {
     return ::blink::BreakBeforeChildIfNeeded(
-        GetConstraintSpace(), child, layout_result, fragmentainer_block_offset,
+        child, layout_result, fragmentainer_block_offset,
         FragmentainerCapacityForChildren(), has_container_separation,
         &container_builder_);
   }

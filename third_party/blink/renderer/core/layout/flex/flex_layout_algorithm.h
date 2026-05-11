@@ -160,7 +160,7 @@ class CORE_EXPORT FlexLayoutAlgorithm
       bool is_row_item,
       FlexColumnBreakInfo* flex_column_break_info) {
     return ::blink::BreakBeforeChildIfNeeded(
-        GetConstraintSpace(), child, layout_result, fragmentainer_block_offset,
+        child, layout_result, fragmentainer_block_offset,
         FragmentainerCapacityForChildren(), has_container_separation,
         &container_builder_, is_row_item, flex_column_break_info);
   }

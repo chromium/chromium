@@ -431,7 +431,6 @@ bool HasBreakOpportunityBeforeNextChild(
 // flex container, in which case, we may be tracking certain break behavior at
 // the column level.
 BreakStatus BreakBeforeChildIfNeeded(
-    const ConstraintSpace&,
     LayoutInputNode child,
     const LayoutResult&,
     LayoutUnit fragmentainer_block_offset,
@@ -445,7 +444,6 @@ BreakStatus BreakBeforeChildIfNeeded(
 // |block_size_override| should only be supplied when you wish to propagate a
 // different block-size than that of the provided layout result.
 void BreakBeforeChild(
-    const ConstraintSpace&,
     LayoutInputNode child,
     const LayoutResult*,
     LayoutUnit fragmentainer_block_offset,
@@ -471,7 +469,6 @@ LayoutUnit CalculateUnbreakableBlockSize(const ConstraintSpace&,
 // when you wish to propagate a different block-size than that of the provided
 // layout result.
 void PropagateSpaceShortage(
-    const ConstraintSpace&,
     const LayoutResult*,
     LayoutUnit fragmentainer_block_offset,
     LayoutUnit fragmentainer_block_size,
@@ -496,7 +493,8 @@ void UpdateMinimalSpaceShortage(std::optional<LayoutUnit> space_shortage,
 // update the appeal of breaking before or inside the child (if we're not going
 // to break before it). If false is returned, it means that we need to break
 // before the child (or even earlier). See BreakBeforeChildIfNeeded() for
-// details on |flex_column_break_info|.
+// details on `flex_column_break_info`. Note that `builder` is nullptr in cases
+// where the builder shouldn't be updated. This is the case for e.g. floats.
 bool MovePastBreakpoint(const ConstraintSpace& space,
                         LayoutInputNode child,
                         const LayoutResult& layout_result,
@@ -522,7 +520,6 @@ bool MovePastBreakpoint(const ConstraintSpace& space,
 // builder, and update appeal accordingly. See BreakBeforeChildIfNeeded() for
 // details on |flex_column_break_info|.
 void UpdateEarlyBreakAtBlockChild(
-    const ConstraintSpace&,
     BlockNode child,
     const LayoutResult&,
     BreakAppeal appeal_before,
@@ -536,7 +533,6 @@ void UpdateEarlyBreakAtBlockChild(
 // different block-size than that of the provided layout result. See
 // BreakBeforeChildIfNeeded() for details on |flex_column_break_info|.
 bool AttemptSoftBreak(
-    const ConstraintSpace&,
     LayoutInputNode child,
     const LayoutResult*,
     LayoutUnit fragmentainer_block_offset,

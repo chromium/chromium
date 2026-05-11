@@ -888,7 +888,6 @@ bool HasBreakOpportunityBeforeNextChild(
 }
 
 BreakStatus BreakBeforeChildIfNeeded(
-    const ConstraintSpace& space,
     LayoutInputNode child,
     const LayoutResult& layout_result,
     LayoutUnit fragmentainer_block_offset,
@@ -897,6 +896,7 @@ BreakStatus BreakBeforeChildIfNeeded(
     BoxFragmentBuilder* builder,
     bool is_row_item,
     FlexColumnBreakInfo* flex_column_break_info) {
+  const ConstraintSpace& space = builder->GetConstraintSpace();
   DCHECK(space.HasBlockFragmentation());
 
   // Break-before and break-after are handled at the row level.
@@ -904,7 +904,7 @@ BreakStatus BreakBeforeChildIfNeeded(
     EBreakBetween break_between =
         CalculateBreakBetweenValue(child, layout_result, *builder);
     if (IsForcedBreakValue(space, break_between)) {
-      BreakBeforeChild(space, child, &layout_result, fragmentainer_block_offset,
+      BreakBeforeChild(child, &layout_result, fragmentainer_block_offset,
                        fragmentainer_block_size, kBreakAppealPerfect,
                        /*is_forced_break=*/true, builder);
       return BreakStatus::kBrokeBefore;
@@ -926,18 +926,17 @@ BreakStatus BreakBeforeChildIfNeeded(
   // Breaking inside the child isn't appealing, and we're out of space. Figure
   // out where to insert a soft break. It will either be before this child, or
   // before an earlier sibling, if there's a more appealing breakpoint there.
-  if (!AttemptSoftBreak(
-          space, child, &layout_result, fragmentainer_block_offset,
-          fragmentainer_block_size, appeal_before, builder,
-          /*block_size_override=*/std::nullopt, flex_column_break_info)) {
+  if (!AttemptSoftBreak(child, &layout_result, fragmentainer_block_offset,
+                        fragmentainer_block_size, appeal_before, builder,
+                        /*block_size_override=*/std::nullopt,
+                        flex_column_break_info)) {
     return BreakStatus::kNeedsEarlierBreak;
   }
 
   return BreakStatus::kBrokeBefore;
 }
 
-void BreakBeforeChild(const ConstraintSpace& space,
-                      LayoutInputNode child,
+void BreakBeforeChild(LayoutInputNode child,
                       const LayoutResult* layout_result,
                       LayoutUnit fragmentainer_block_offset,
                       LayoutUnit fragmentainer_block_size,
@@ -956,8 +955,9 @@ void BreakBeforeChild(const ConstraintSpace& space,
   }
 #endif
 
+  const ConstraintSpace& space = builder->GetConstraintSpace();
   if (space.HasKnownFragmentainerBlockSize()) {
-    PropagateSpaceShortage(space, layout_result, fragmentainer_block_offset,
+    PropagateSpaceShortage(layout_result, fragmentainer_block_offset,
                            fragmentainer_block_size, builder,
                            block_size_override);
   }
@@ -987,13 +987,13 @@ LayoutUnit CalculateUnbreakableBlockSize(
   return block_size;
 }
 
-void PropagateSpaceShortage(const ConstraintSpace& space,
-                            const LayoutResult* layout_result,
+void PropagateSpaceShortage(const LayoutResult* layout_result,
                             LayoutUnit fragmentainer_block_offset,
                             LayoutUnit fragmentainer_block_size,
                             FragmentBuilder* builder,
                             std::optional<LayoutUnit> block_size_override) {
   // Only multicol cares about space shortage.
+  const ConstraintSpace& space = builder->GetConstraintSpace();
   if (space.BlockFragmentationType() != kFragmentColumn)
     return;
 
@@ -1125,7 +1125,7 @@ bool MovePastBreakpoint(const ConstraintSpace& space,
     // that we know what do to in order to honor orphans and widows, if at all
     // possible. We also only do this for non-row items since items in a row
     // will be parallel to one another.)
-    UpdateEarlyBreakAtBlockChild(space, To<BlockNode>(child), layout_result,
+    UpdateEarlyBreakAtBlockChild(To<BlockNode>(child), layout_result,
                                  appeal_before, builder,
                                  flex_column_break_info);
   }
@@ -1230,8 +1230,7 @@ bool MovePastBreakpoint(const ConstraintSpace& space,
         // We're moving past the breakpoint even if the child doesn't fit. This
         // may happen with monolithic content at the beginning of the
         // fragmentainer. Report space shortage.
-        PropagateSpaceShortage(space, &layout_result,
-                               fragmentainer_block_offset,
+        PropagateSpaceShortage(&layout_result, fragmentainer_block_offset,
                                fragmentainer_block_size, builder);
       }
     }
@@ -1242,8 +1241,7 @@ bool MovePastBreakpoint(const ConstraintSpace& space,
   return false;
 }
 
-void UpdateEarlyBreakAtBlockChild(const ConstraintSpace& space,
-                                  BlockNode child,
+void UpdateEarlyBreakAtBlockChild(BlockNode child,
                                   const LayoutResult& layout_result,
                                   BreakAppeal appeal_before,
                                   BoxFragmentBuilder* builder,
@@ -1260,6 +1258,7 @@ void UpdateEarlyBreakAtBlockChild(const ConstraintSpace& space,
     // If the child broke inside, it shouldn't have any early-break.
     DCHECK(!IsBreakInside(break_token));
 
+    const ConstraintSpace& space = builder->GetConstraintSpace();
     appeal_inside = CalculateBreakAppealInside(space, layout_result,
                                                breakpoint->GetBreakAppeal());
     if (flex_column_break_info) {
@@ -1309,8 +1308,7 @@ void UpdateEarlyBreakAtBlockChild(const ConstraintSpace& space,
       MakeGarbageCollected<EarlyBreak>(child, appeal_before));
 }
 
-bool AttemptSoftBreak(const ConstraintSpace& space,
-                      LayoutInputNode child,
+bool AttemptSoftBreak(LayoutInputNode child,
                       const LayoutResult* layout_result,
                       LayoutUnit fragmentainer_block_offset,
                       LayoutUnit fragmentainer_block_size,
@@ -1334,7 +1332,7 @@ bool AttemptSoftBreak(const ConstraintSpace& space,
   if (found_earlier_break) {
     // Found a better place to break. Before aborting, calculate and report
     // space shortage from where we'd actually break.
-    PropagateSpaceShortage(space, layout_result, fragmentainer_block_offset,
+    PropagateSpaceShortage(layout_result, fragmentainer_block_offset,
                            fragmentainer_block_size, builder,
                            block_size_override);
     return false;
@@ -1343,9 +1341,9 @@ bool AttemptSoftBreak(const ConstraintSpace& space,
   // Break before the child. Note that there may be a better break further up
   // with higher appeal (but it's too early to tell), in which case this
   // breakpoint will be replaced.
-  BreakBeforeChild(space, child, layout_result, fragmentainer_block_offset,
+  BreakBeforeChild(child, layout_result, fragmentainer_block_offset,
                    fragmentainer_block_size, appeal_before,
-                   /* is_forced_break */ false, builder, block_size_override);
+                   /*is_forced_break=*/false, builder, block_size_override);
   return true;
 }
 

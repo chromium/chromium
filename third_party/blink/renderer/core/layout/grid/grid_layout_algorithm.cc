@@ -2105,8 +2105,7 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
           // fragmentainer space we'd need to fit more content.
           DisableLayoutSideEffectsScope disable_side_effects;
           auto* result = grid_item.node.Layout(space, break_token);
-          PropagateSpaceShortage(constraint_space, result,
-                                 fragmentainer_block_offset,
+          PropagateSpaceShortage(result, fragmentainer_block_offset,
                                  fragmentainer_block_size, &container_builder_);
         }
         has_subsequent_children = true;
@@ -2161,8 +2160,7 @@ void GridLayoutAlgorithm::PlaceGridItemsForFragmentation(
 
           // We are choosing to add an early breakpoint at a row. Propagate our
           // space shortage to the column balancer.
-          PropagateSpaceShortage(constraint_space, result,
-                                 fragmentainer_block_offset,
+          PropagateSpaceShortage(result, fragmentainer_block_offset,
                                  fragmentainer_block_size, &container_builder_);
 
           // We may have "break-before:avoid" or similar on this row. Instead

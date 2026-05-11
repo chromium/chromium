@@ -1519,11 +1519,10 @@ const LayoutResult* TableLayoutAlgorithm::GenerateFragment(
           kBreakAppealLastResort, /*builder=*/nullptr);
     }
     if (needs_break_before) {
-      BreakBeforeChild(GetConstraintSpace(), grouped_children.footer, result,
-                       fragmentainer_block_offset,
-                       FragmentainerCapacityForChildren(),
-                       kBreakAppealLastResort, /*is_forced_break=*/false,
-                       &container_builder_);
+      BreakBeforeChild(
+          grouped_children.footer, result, fragmentainer_block_offset,
+          FragmentainerCapacityForChildren(), kBreakAppealLastResort,
+          /*is_forced_break=*/false, &container_builder_);
     } else {
       container_builder_.AddResult(*result, offset);
     }
