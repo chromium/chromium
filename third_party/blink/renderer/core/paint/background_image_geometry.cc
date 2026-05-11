@@ -365,6 +365,7 @@ void BackgroundImageGeometry::AdjustPositioningArea(
   //   has collapsed borders
   // * We are painting a block-fragmented box.
   // * There is a border image, because it may not be opaque or may be outset.
+  // * There is a border shape, because the border geometry is not rectangular.
   bool disallow_border_derived_adjustment =
       !ShouldPaintSelfBlockBackground(paint_info.phase) ||
       fill_layer.Composite() != CompositeOperator::kCompositeSourceOver ||
