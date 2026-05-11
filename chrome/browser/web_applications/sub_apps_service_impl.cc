@@ -233,6 +233,11 @@ bool AppsScopesOverlap(
     const webapps::AppId& parent_app_id,
     const std::vector<std::unique_ptr<WebAppInstallInfo>>& collected_installs,
     WebAppRegistrar& registrar) {
+  GURL parent_scope = registrar.GetAppScope(parent_app_id);
+  if (IsInScope(parent_scope, new_scope)) {
+    return true;
+  }
+
   auto scopes_overlap = [&](const GURL& other_scope) {
     return IsInScope(new_scope, other_scope) ||
            IsInScope(other_scope, new_scope);

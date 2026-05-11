@@ -100,6 +100,10 @@ class FinalizeUpdateJob {
                           CommitCallback commit_callback,
                           bool success);
 
+  // Check that sub apps cannot have overlapping scopes with parent
+  // or other sub apps of its parent.
+  bool SubAppScopeOverlapWithParentOrSibling(const WebApp* existing_web_app);
+
   raw_ptr<Lock> lock_ = nullptr;
   raw_ptr<WithAppResources> lock_with_app_resources_ = nullptr;
   const raw_ref<WebAppProvider> provider_;

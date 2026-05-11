@@ -1,0 +1,10 @@
+{
+  "name": "identical scope sub app",
+  "icons": [{
+    "src": "/subapps_icon.png",
+    "sizes": "512x512",
+    "type": "image/png"
+    }],
+  "start_url": "/identical_scope_sub_app_index.html",
+  "display": "standalone"
+}

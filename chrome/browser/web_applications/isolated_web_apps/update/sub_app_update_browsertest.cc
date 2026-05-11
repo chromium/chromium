@@ -32,6 +32,7 @@
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/test/web_app_page_waiter.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -101,7 +102,7 @@ IsolatedWebAppBuilder CreateIwaBuilder(
       .AddHtml("/",
                base::ReplaceStringPlaceholders("<h1>Parent IWA v$1</h1>",
                                                {std::string(version)}, nullptr))
-      .AddHtml("/subapp",
+      .AddHtml("/subapp/index.html",
                base::ReplaceStringPlaceholders(
                    R"(
             <!DOCTYPE html>
@@ -121,7 +122,7 @@ IsolatedWebAppBuilder CreateIwaBuilder(
             {
               "name": "$1",
               "version": "$2",
-              "start_url": "/subapp",
+              "start_url": "/subapp/index.html",
               "display": "standalone",
               "icons": [{
                 "src": "/icon.png",
@@ -285,8 +286,9 @@ IN_PROC_BROWSER_TEST_F(SubAppUpdateBrowserTest,
   IsolatedWebAppUrlInfo iwa_url_info =
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(bundle_id);
   webapps::AppId sub_app_id = InstallSubAppAndWait(
-      iwa_browser->tab_strip_model()->GetActiveWebContents(), "/subapp",
-      iwa_url_info.origin().GetURL().Resolve("/subapp"));
+      iwa_browser->tab_strip_model()->GetActiveWebContents(),
+      "/subapp/index.html",
+      iwa_url_info.origin().GetURL().Resolve("/subapp/index.html"));
 
   EXPECT_EQ(provider().registrar_unsafe().GetAppShortName(sub_app_id),
             "Sub App");
@@ -298,7 +300,7 @@ IN_PROC_BROWSER_TEST_F(SubAppUpdateBrowserTest,
 
   UpdateIwaToV2AndWait(bundle_id, "Sub App", R"([{
         "name": "Shortcut",
-        "url": "/shortcut"
+        "url": "subapp/shortcut"
       }])");
 
   WebAppTestManifestUpdatedObserver manifest_observer(
@@ -320,7 +322,8 @@ IN_PROC_BROWSER_TEST_F(SubAppUpdateBrowserTest,
   EXPECT_THAT(
       provider().registrar_unsafe().GetAppShortcutsMenuItemInfos(sub_app_id),
       testing::ElementsAre(Shortcut(
-          u"Shortcut", iwa_url_info.origin().GetURL().Resolve("/shortcut"))));
+          u"Shortcut",
+          iwa_url_info.origin().GetURL().Resolve("/subapp/shortcut"))));
 }
 
 IN_PROC_BROWSER_TEST_F(SubAppUpdateBrowserTest,
@@ -336,8 +339,9 @@ IN_PROC_BROWSER_TEST_F(SubAppUpdateBrowserTest,
   IsolatedWebAppUrlInfo iwa_url_info =
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(bundle_id);
   webapps::AppId sub_app_id = InstallSubAppAndWait(
-      iwa_browser->tab_strip_model()->GetActiveWebContents(), "/subapp",
-      iwa_url_info.origin().GetURL().Resolve("/subapp"));
+      iwa_browser->tab_strip_model()->GetActiveWebContents(),
+      "/subapp/index.html",
+      iwa_url_info.origin().GetURL().Resolve("/subapp/index.html"));
 
   EXPECT_EQ(provider().registrar_unsafe().GetAppShortName(sub_app_id),
             "Sub App");
@@ -348,9 +352,9 @@ IN_PROC_BROWSER_TEST_F(SubAppUpdateBrowserTest,
   iwa_browser->window()->Close();
 
   UpdateIwaToV2AndWait(bundle_id, "Sub App Updated", R"([{
-                "name": "Shortcut",
-                "url": "/shortcut"
-              }])");
+        "name": "Shortcut",
+        "url": "subapp/shortcut"
+      }])");
 
   WebAppTestManifestUpdatedObserver manifest_observer(
       &provider().install_manager());
@@ -370,9 +374,383 @@ IN_PROC_BROWSER_TEST_F(SubAppUpdateBrowserTest,
   EXPECT_THAT(
       provider().registrar_unsafe().GetAppShortcutsMenuItemInfos(sub_app_id),
       testing::ElementsAre(Shortcut(
-          u"Shortcut", iwa_url_info.origin().GetURL().Resolve("/shortcut"))));
+          u"Shortcut",
+          iwa_url_info.origin().GetURL().Resolve("/subapp/shortcut"))));
 
   VerifyAppUpdateButtonIsGone(sub_app_browser);
+}
+
+// Sub apps must never have overlapping scopes with each other,
+// this is enforced on installation. This test check that it is also enforced
+// on update.
+IN_PROC_BROWSER_TEST_F(SubAppUpdateBrowserTest, SubAppScopeOverlap) {
+  const web_package::SignedWebBundleId bundle_id =
+      web_package::test::GetDefaultEd25519WebBundleId();
+
+  GURL update_manifest_url =
+      iwa_test_update_server_.GetUpdateManifestUrl(bundle_id);
+
+  ManifestBuilder parent_manifest =
+      ManifestBuilder()
+          .SetName("Parent IWA")
+          .SetVersion("1.0.0")
+          .AddIcon("/icon.png", gfx::Size(256, 256), "image/png")
+          .AddPermissionsPolicy(
+              network::mojom::PermissionsPolicyFeature::kSubApps,
+              /*self=*/true, /*origins=*/{});
+  parent_manifest.SetUpdateManifestUrl(update_manifest_url);
+
+  IsolatedWebAppBuilder iwa_v1(parent_manifest);
+  iwa_v1.AddIconAsPng("/icon.png", CreateSquareIcon(256, SK_ColorBLUE));
+  iwa_v1.AddHtml("/", "<h1>Parent IWA v1</h1>");
+
+  // Sub app 1: scope /sub1/.
+  iwa_v1.AddHtml("/sub1/index.html", R"(
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <link rel="manifest" href="/sub1/manifest.json">
+        <title>Sub App 1</title>
+      </head>
+      <body><h1>Sub App 1</h1></body>
+    </html>
+  )");
+  iwa_v1.AddResource("/sub1/manifest.json", R"(
+    {
+      "name": "Sub App 1",
+      "version": "1.0.0",
+      "id": "/sub1/index.html",
+      "start_url": "/sub1/index.html",
+      "scope": "/sub1/",
+      "icons": [{
+        "src": "/icon.png",
+        "sizes": "256x256",
+        "type": "image/png"
+      }]
+    }
+  )",
+                     "application/manifest+json");
+
+  // Sub app 2: scope /sub2/.
+  iwa_v1.AddHtml("/sub2/index.html", R"(
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <link rel="manifest" href="/sub2/manifest.json">
+        <title>Sub App 2</title>
+      </head>
+      <body><h1>Sub App 2</h1></body>
+    </html>
+  )");
+  iwa_v1.AddResource("/sub2/manifest.json", R"(
+    {
+      "name": "Sub App 2",
+      "version": "1.0.0",
+      "id": "/sub2/index.html",
+      "start_url": "/sub2/index.html",
+      "scope": "/sub2/",
+      "icons": [{
+        "src": "/icon.png",
+        "sizes": "256x256",
+        "type": "image/png"
+      }]
+    }
+  )",
+                     "application/manifest+json");
+
+  iwa_v1
+      .BuildBundle(bundle_id, {web_package::test::GetDefaultEd25519KeyPair()})
+      ->InstallChecked(profile());
+
+  IsolatedWebAppUrlInfo iwa_url_info =
+      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(bundle_id);
+  webapps::AppId iwa_app_id = iwa_url_info.app_id();
+
+  Browser* iwa_browser = LaunchWebAppBrowserAndWait(iwa_app_id);
+  ASSERT_NE(iwa_browser, nullptr);
+
+  webapps::AppId sub_app_1_id = InstallSubAppAndWait(
+      iwa_browser->tab_strip_model()->GetActiveWebContents(),
+      "/sub1/index.html",
+      iwa_url_info.origin().GetURL().Resolve("/sub1/index.html"));
+
+  webapps::AppId sub_app_2_id = InstallSubAppAndWait(
+      iwa_browser->tab_strip_model()->GetActiveWebContents(),
+      "/sub2/index.html",
+      iwa_url_info.origin().GetURL().Resolve("/sub2/index.html"));
+
+  EXPECT_EQ(provider().registrar_unsafe().GetAppShortName(sub_app_1_id),
+            "Sub App 1");
+  EXPECT_EQ(provider().registrar_unsafe().GetAppScope(sub_app_1_id),
+            iwa_url_info.origin().GetURL().Resolve("/sub1/"));
+  EXPECT_EQ(provider().registrar_unsafe().GetAppShortName(sub_app_2_id),
+            "Sub App 2");
+  EXPECT_EQ(provider().registrar_unsafe().GetAppScope(sub_app_2_id),
+            iwa_url_info.origin().GetURL().Resolve("/sub2/"));
+
+  iwa_browser->window()->Close();
+
+  // Update parent IWA that includes the sub apps.
+  ManifestBuilder parent_manifest_v2 =
+      ManifestBuilder()
+          .SetName("Parent IWA")
+          .SetVersion("2.0.0")
+          .AddIcon("/icon.png", gfx::Size(256, 256), "image/png")
+          .AddPermissionsPolicy(
+              network::mojom::PermissionsPolicyFeature::kSubApps,
+              /*self=*/true, /*origins=*/{});
+  parent_manifest_v2.SetUpdateManifestUrl(update_manifest_url);
+
+  IsolatedWebAppBuilder iwa_v2(parent_manifest_v2);
+  iwa_v2.AddIconAsPng("/icon.png", CreateSquareIcon(256, SK_ColorBLUE));
+  iwa_v2.AddHtml("/", "<h1>Parent IWA v2</h1>");
+
+  // Sub app 1: change name to check if update works.
+  iwa_v2.AddHtml("/sub1/index.html", R"(
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <link rel="manifest" href="/sub1/manifest.json">
+        <title>Sub App 1</title>
+      </head>
+      <body><h1>Sub App 1</h1></body>
+    </html>
+  )");
+  iwa_v2.AddResource("/sub1/manifest.json", R"(
+    {
+      "name": "Sub App 1 Updated",
+      "version": "2.0.0",
+      "id": "/sub1/index.html",
+      "start_url": "/sub1/index.html",
+      "scope": "/sub1/",
+      "icons": [{
+        "src": "/icon.png",
+        "sizes": "256x256",
+        "type": "image/png"
+      }]
+    }
+  )",
+                     "application/manifest+json");
+
+  // Sub app 2: scope overlaps with Sub App 1, also change name to check if
+  // update is applied. We must keep /sub2/index.html defined in V2 so the
+  // initial launch (using the old start URL) works.
+  iwa_v2.AddHtml("/sub2/index.html", R"(
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <link rel="manifest" href="/sub2/manifest.json">
+        <title>Sub App 2</title>
+      </head>
+      <body><h1>Sub App 2</h1></body>
+    </html>
+  )");
+  // Define the new start URL inside /sub1/
+  iwa_v2.AddHtml("/sub1/sub2_index.html", R"(
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <link rel="manifest" href="/sub2/manifest.json">
+        <title>Sub App 2</title>
+      </head>
+      <body><h1>Sub App 2</h1></body>
+    </html>
+  )");
+  iwa_v2.AddResource("/sub2/manifest.json", R"(
+    {
+      "name": "Sub App 2 Updated",
+      "version": "2.0.0",
+      "id": "/sub2/index.html",
+      "start_url": "/sub1/sub2_index.html",
+      "scope": "/sub1/",
+      "icons": [{
+        "src": "/icon.png",
+        "sizes": "256x256",
+        "type": "image/png"
+      }]
+    }
+  )",
+                     "application/manifest+json");
+
+  UpdateIwaAndWait(bundle_id, iwa_v2);
+
+  // Now launch Sub App 2 to trigger its manifest update check.
+  Browser* sub_app_2_browser = LaunchWebAppBrowserAndWait(sub_app_2_id);
+  ASSERT_NE(sub_app_2_browser, nullptr);
+
+  EXPECT_TRUE(
+      test::WebAppPageWaiter(
+          sub_app_2_browser->tab_strip_model()->GetActiveWebContents())
+          .ExpectManifest(
+              provider().registrar_unsafe().GetAppManifestId(sub_app_2_id))
+          .WaitAndFlushCommands());
+
+  // We expect the update to fail due to scope overlap validation.
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+  // Ensure that update button is not present.
+  VerifyAppUpdateButtonIsGone(sub_app_2_browser);
+
+  // The name must not be updated.
+  EXPECT_EQ(provider().registrar_unsafe().GetAppShortName(sub_app_2_id),
+            "Sub App 2");
+  // The scope must remain /sub2/ (not updated).
+  EXPECT_EQ(provider().registrar_unsafe().GetAppScope(sub_app_2_id),
+            iwa_url_info.origin().GetURL().Resolve("/sub2/"));
+}
+
+// Parent scope must not be in scope of a sub app.
+// e.g. illegal state when parent.scope == "/scope/some". sub_app.scope =
+// "/scope".
+IN_PROC_BROWSER_TEST_F(SubAppUpdateBrowserTest, SubAppParentInScope) {
+  const web_package::SignedWebBundleId bundle_id =
+      web_package::test::GetDefaultEd25519WebBundleId();
+
+  GURL update_manifest_url =
+      iwa_test_update_server_.GetUpdateManifestUrl(bundle_id);
+
+  ManifestBuilder parent_manifest =
+      ManifestBuilder()
+          .SetName("Parent IWA")
+          .SetVersion("1.0.0")
+          .AddIcon("/icon.png", gfx::Size(256, 256), "image/png")
+          .AddPermissionsPolicy(
+              network::mojom::PermissionsPolicyFeature::kSubApps,
+              /*self=*/true, /*origins=*/{});
+  parent_manifest.SetUpdateManifestUrl(update_manifest_url);
+
+  IsolatedWebAppBuilder iwa_v1(parent_manifest);
+  iwa_v1.AddIconAsPng("/icon.png", CreateSquareIcon(256, SK_ColorBLUE));
+  iwa_v1.AddHtml("/", "<h1>Parent IWA v1</h1>");
+
+  // Sub app: scope /sub1/ initially to be allowed to install.
+  iwa_v1.AddHtml("/sub1/index.html", R"(
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <link rel="manifest" href="/sub1/manifest.json">
+        <title>Sub App 1</title>
+      </head>
+      <body><h1>Sub App 1</h1></body>
+    </html>
+  )");
+  iwa_v1.AddResource("/sub1/manifest.json", R"(
+    {
+      "name": "Sub App 1",
+      "version": "1.0.0",
+      "id": "/sub1/index.html",
+      "start_url": "/sub1/index.html",
+      "scope": "/sub1/",
+      "icons": [{
+        "src": "/icon.png",
+        "sizes": "256x256",
+        "type": "image/png"
+      }]
+    }
+  )",
+                     "application/manifest+json");
+
+  iwa_v1
+      .BuildBundle(bundle_id, {web_package::test::GetDefaultEd25519KeyPair()})
+      ->InstallChecked(profile());
+
+  IsolatedWebAppUrlInfo iwa_url_info =
+      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(bundle_id);
+  webapps::AppId iwa_app_id = iwa_url_info.app_id();
+
+  Browser* iwa_browser = LaunchWebAppBrowserAndWait(iwa_app_id);
+  ASSERT_NE(iwa_browser, nullptr);
+
+  webapps::AppId sub_app_1_id = InstallSubAppAndWait(
+      iwa_browser->tab_strip_model()->GetActiveWebContents(),
+      "/sub1/index.html",
+      iwa_url_info.origin().GetURL().Resolve("/sub1/index.html"));
+
+  EXPECT_EQ(provider().registrar_unsafe().GetAppShortName(sub_app_1_id),
+            "Sub App 1");
+  EXPECT_EQ(provider().registrar_unsafe().GetAppScope(sub_app_1_id),
+            iwa_url_info.origin().GetURL().Resolve("/sub1/"));
+
+  iwa_browser->window()->Close();
+
+  // Update parent IWA that includes the sub app.
+  ManifestBuilder parent_manifest_v2 =
+      ManifestBuilder()
+          .SetName("Parent IWA")
+          .SetVersion("2.0.0")
+          .AddIcon("/icon.png", gfx::Size(256, 256), "image/png")
+          .AddPermissionsPolicy(
+              network::mojom::PermissionsPolicyFeature::kSubApps,
+              /*self=*/true, /*origins=*/{});
+  parent_manifest_v2.SetUpdateManifestUrl(update_manifest_url);
+
+  IsolatedWebAppBuilder iwa_v2(parent_manifest_v2);
+  iwa_v2.AddIconAsPng("/icon.png", CreateSquareIcon(256, SK_ColorBLUE));
+  iwa_v2.AddHtml("/", "<h1>Parent IWA v2</h1>");
+
+  // Sub app: make scope to be /, identical to the parent.
+  // Include also initial html to be sure that first open before update works.
+  iwa_v2.AddHtml("/sub1/index.html", R"(
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <link rel="manifest" href="/manifest.json">
+        <title>Sub App 1</title>
+      </head>
+      <body><h1>Sub App 1</h1></body>
+    </html>
+  )");
+  // New start index.
+  iwa_v2.AddHtml("/sub_index.html", R"(
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <link rel="manifest" href="/manifest.json">
+        <title>Sub App 1</title>
+      </head>
+      <body><h1>Sub App 1</h1></body>
+    </html>
+  )");
+
+  // Scope will be implicitly taken as "parent_url/".
+  iwa_v2.AddResource("/manifest.json", R"(
+    {
+      "name": "Sub App 1 Updated",
+      "version": "2.0.0",
+      "id": "/sub1/index.html",
+      "start_url": "/sub_index.html",
+      "icons": [{
+        "src": "/icon.png",
+        "sizes": "256x256",
+        "type": "image/png"
+      }]
+    }
+  )",
+                     "application/manifest+json");
+
+  UpdateIwaAndWait(bundle_id, iwa_v2);
+
+  // Now launch Sub App to trigger its manifest update check.
+  Browser* sub_app_1_browser = LaunchWebAppBrowserAndWait(sub_app_1_id);
+  ASSERT_NE(sub_app_1_browser, nullptr);
+
+  EXPECT_TRUE(
+      test::WebAppPageWaiter(
+          sub_app_1_browser->tab_strip_model()->GetActiveWebContents())
+          .ExpectManifest(
+              provider().registrar_unsafe().GetAppManifestId(sub_app_1_id))
+          .WaitAndFlushCommands());
+
+  // We expect the update to fail due to scope overlap validation.
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+  // Ensure that update button is not present.
+  VerifyAppUpdateButtonIsGone(sub_app_1_browser);
+
+  // The name must not be updated.
+  EXPECT_EQ(provider().registrar_unsafe().GetAppShortName(sub_app_1_id),
+            "Sub App 1");
+  // The scope must remain /sub1/ (not updated).
+  EXPECT_EQ(provider().registrar_unsafe().GetAppScope(sub_app_1_id),
+            iwa_url_info.origin().GetURL().Resolve("/sub1/"));
 }
 
 }  // namespace

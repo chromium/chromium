@@ -734,6 +734,20 @@ IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest,
   EXPECT_EQ(2ul, GetAllSubAppIds(parent_app_id_).size());
 }
 
+// Verify that Add fails when trying to add a sub-app with a scope identical to
+// the parent app's scope.
+IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddFailIdenticalScope) {
+  content::RenderFrameHost* iwa_frame = InstallAndOpenParentIwaApp();
+  BindRemote(iwa_frame);
+
+  ExpectCallAdd({{webapps::ManifestId(
+                      GetURLFromPath("/identical_scope_sub_app_index.html")),
+                  SubAppsServiceResultCode::kFailure}},
+                {{"/identical_scope_sub_app_index.html",
+                  "/identical_scope_sub_app_index.html"}});
+  EXPECT_EQ(0ul, GetAllSubAppIds(parent_app_id_).size());
+}
+
 // Verify that Add works correctly for 0 sub-apps to be installed.
 IN_PROC_BROWSER_TEST_F(SubAppsServiceImplBrowserTest, AddZero) {
   content::RenderFrameHost* iwa_frame = InstallAndOpenParentIwaApp();
