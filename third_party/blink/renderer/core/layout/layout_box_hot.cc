@@ -384,20 +384,6 @@ const LayoutResult* LayoutBox::CachedLayoutResult(
         if (cached_layout_result->IsTruncatedByFragmentationLine())
           return nullptr;
 
-        // TODO(layout-dev): This likely shouldn't be scoped to just OOFs, but
-        // scoping it more widely results in several perf regressions[1].
-        //
-        // [1] https://bugs.chromium.org/p/chromium/issues/detail?id=1362550
-        if (node.IsOutOfFlowPositioned()) {
-          // If the fragmentainer size has changed, and there previously was
-          // space shortage reported, we should re-run layout to avoid reporting
-          // the same space shortage again.
-          std::optional<LayoutUnit> space_shortage =
-              cached_layout_result->MinimalSpaceShortage();
-          if (space_shortage && *space_shortage > LayoutUnit())
-            return nullptr;
-        }
-
         // Returns true if there are any floats added by |cached_layout_result|
         // which will end up crossing the fragmentation line.
         auto DoFloatsCrossFragmentationLine = [&]() -> bool {
