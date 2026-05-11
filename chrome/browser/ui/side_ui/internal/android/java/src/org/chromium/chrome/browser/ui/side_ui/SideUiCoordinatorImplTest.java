@@ -10,8 +10,10 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 import android.app.Activity;
+import android.content.res.Configuration;
 import android.util.Size;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -37,6 +39,7 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiContainerProperties;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiSpecs;
@@ -51,6 +54,7 @@ public class SideUiCoordinatorImplTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private ViewStub mStartAnchorContainerStub;
     @Mock private ViewStub mEndAnchorContainerStub;
     @Mock private SideUiObserver mSideUiObserver;
@@ -84,8 +88,12 @@ public class SideUiCoordinatorImplTest {
                 (ViewGroup)
                         LayoutInflater.from(activity)
                                 .inflate(R.layout.side_ui_anchor_container, /* root= */ null);
-        mAnchorContainerParent.addView(mStartAnchorContainer);
-        mAnchorContainerParent.addView(mEndAnchorContainer);
+        mAnchorContainerParent.addView(
+                mStartAnchorContainer,
+                new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT));
+        mAnchorContainerParent.addView(
+                mEndAnchorContainer,
+                new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT));
 
         mSideUiContainerView = new View(activity);
         mSideUiContainer = new TestSideUiContainer(mSideUiContainerView);
@@ -97,6 +105,7 @@ public class SideUiCoordinatorImplTest {
         mCoordinator =
                 new SideUiCoordinatorImpl(
                         activity,
+                        mActivityLifecycleDispatcher,
                         mAnchorContainerParent,
                         mStartAnchorContainerStub,
                         mEndAnchorContainerStub,
@@ -108,6 +117,22 @@ public class SideUiCoordinatorImplTest {
         // mAnchorContainerParent should have the size specified in @Config.
         assertEquals(WINDOW_SIZE_PX.getWidth(), mAnchorContainerParent.getWidth());
         assertEquals(WINDOW_SIZE_PX.getHeight(), mAnchorContainerParent.getHeight());
+    }
+
+    @Test
+    public void testConstructor_RegisterListeners() {
+        // The constructor is invoked in setUp().
+
+        verify(mActivityLifecycleDispatcher).register(mCoordinator);
+        assertEquals(1, mTopMarginSupplier.getObserverCount());
+    }
+
+    @Test
+    public void testDestroy_UnregisterListeners() {
+        mCoordinator.destroy();
+
+        verify(mActivityLifecycleDispatcher).unregister(mCoordinator);
+        assertEquals(0, mTopMarginSupplier.getObserverCount());
     }
 
     @Test
@@ -159,6 +184,7 @@ public class SideUiCoordinatorImplTest {
         mCoordinator.requestUpdateContainer(
                 new SideUiContainerProperties(AnchorSide.START, width),
                 /* suppressAnimations= */ true);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         // Verify observers notified.
         SideUiSpecs expectedSideUiSpecs = new SideUiSpecs(width, /* endContainerWidth= */ 0);
@@ -179,6 +205,7 @@ public class SideUiCoordinatorImplTest {
         mCoordinator.requestUpdateContainer(
                 new SideUiContainerProperties(AnchorSide.END, width),
                 /* suppressAnimations= */ true);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         // Verify observers notified.
         SideUiSpecs expectedSideUiSpecs = new SideUiSpecs(/* startContainerWidth= */ 0, width);
@@ -197,12 +224,14 @@ public class SideUiCoordinatorImplTest {
         mCoordinator.requestUpdateContainer(
                 new SideUiContainerProperties(AnchorSide.START, /* width= */ 100),
                 /* suppressAnimations= */ true);
+        RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(mStartAnchorContainer, mSideUiContainerView.getParent());
 
         // Then update to width 0.
         mCoordinator.requestUpdateContainer(
                 new SideUiContainerProperties(AnchorSide.START, /* width= */ 0),
                 /* suppressAnimations= */ true);
+        RobolectricUtil.runAllBackgroundAndUi();
         assertNull(mSideUiContainerView.getParent());
         assertEquals(0, getSideUiContainerViewWidth());
     }
@@ -215,6 +244,7 @@ public class SideUiCoordinatorImplTest {
         mCoordinator.requestUpdateContainer(
                 new SideUiContainerProperties(AnchorSide.END, width),
                 /* suppressAnimations= */ true);
+        RobolectricUtil.runAllBackgroundAndUi();
 
         // Verify SideUiContainer#determineContainerWidth() is invoked with correct parameters.
         assertEquals(Integer.valueOf(width), mSideUiContainer.mLastRequestedWidth);
@@ -231,12 +261,14 @@ public class SideUiCoordinatorImplTest {
         mCoordinator.requestUpdateContainer(
                 new SideUiContainerProperties(AnchorSide.START, /* width= */ 100),
                 /* suppressAnimations= */ true);
+        RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(mStartAnchorContainer, mSideUiContainerView.getParent());
 
         // Switch to END.
         mCoordinator.requestUpdateContainer(
                 new SideUiContainerProperties(AnchorSide.END, /* width= */ 200),
                 /* suppressAnimations= */ true);
+        RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(mEndAnchorContainer, mSideUiContainerView.getParent());
     }
 
@@ -254,6 +286,7 @@ public class SideUiCoordinatorImplTest {
         mCoordinator.requestUpdateContainer(
                 new SideUiContainerProperties(AnchorSide.START, /* width= */ 10),
                 /* suppressAnimations= */ true);
+        RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(unexpectedStart, View.VISIBLE, mStartAnchorContainer.getVisibility());
         assertEquals(unexpectedEnd, View.GONE, mEndAnchorContainer.getVisibility());
 
@@ -261,6 +294,7 @@ public class SideUiCoordinatorImplTest {
         mCoordinator.requestUpdateContainer(
                 new SideUiContainerProperties(AnchorSide.END, /* width= */ 90),
                 /* suppressAnimations= */ true);
+        RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(unexpectedStart, View.GONE, mStartAnchorContainer.getVisibility());
         assertEquals(unexpectedEnd, View.VISIBLE, mEndAnchorContainer.getVisibility());
 
@@ -268,6 +302,7 @@ public class SideUiCoordinatorImplTest {
         mCoordinator.requestUpdateContainer(
                 new SideUiContainerProperties(AnchorSide.END, /* width= */ 0),
                 /* suppressAnimations= */ true);
+        RobolectricUtil.runAllBackgroundAndUi();
         assertEquals(unexpectedStart, View.GONE, mStartAnchorContainer.getVisibility());
         assertEquals(unexpectedEnd, View.GONE, mEndAnchorContainer.getVisibility());
     }
@@ -334,6 +369,62 @@ public class SideUiCoordinatorImplTest {
         // The anchor containers' measured height should remain unchanged.
         assertEquals(newParentHeight, mStartAnchorContainer.getMeasuredHeight());
         assertEquals(newParentHeight, mEndAnchorContainer.getMeasuredHeight());
+    }
+
+    @Test
+    public void testOnConfigurationChanged_SideUiSpecsChanged_ApplyNewSpecs() {
+        mCoordinator.registerSideUiContainer(mSideUiContainer);
+        mCoordinator.addObserver(mSideUiObserver);
+
+        // Open a side UI.
+        @Px int initialSideUiWidth = 360;
+        mSideUiContainer.mDeterminedWidth = initialSideUiWidth;
+        mCoordinator.requestUpdateContainer(
+                new SideUiContainerProperties(AnchorSide.END, initialSideUiWidth),
+                /* suppressAnimations= */ true);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Simulate a configuration change.
+        clearInvocations(mSideUiObserver);
+        @Px int newSideUiWidth = 412;
+        mSideUiContainer.mDeterminedWidth = newSideUiWidth;
+        mCoordinator.onConfigurationChanged(new Configuration());
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Verify that observers are notified with the updated specs.
+        SideUiSpecs expectedSideUiSpecs =
+                new SideUiSpecs(/* startContainerWidth= */ 0, newSideUiWidth);
+        verify(mSideUiObserver).onSideUiSpecsChanged(eq(expectedSideUiSpecs));
+
+        // Verify the container view's width is updated.
+        assertEquals(newSideUiWidth, getSideUiContainerViewWidth());
+    }
+
+    @Test
+    public void testOnConfigurationChanged_SideUiSpecsNotChanged_NoOp() {
+        mCoordinator.registerSideUiContainer(mSideUiContainer);
+        mCoordinator.addObserver(mSideUiObserver);
+
+        // Open a side UI.
+        @Px int initialSideUiWidth = 360;
+        mSideUiContainer.mDeterminedWidth = initialSideUiWidth;
+        mCoordinator.requestUpdateContainer(
+                new SideUiContainerProperties(AnchorSide.END, initialSideUiWidth),
+                /* suppressAnimations= */ true);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Simulate a configuration change.
+        // Note that we don't change "mSideUiContainer.mDeterminedWidth", which means the
+        // SideUiSpecs remains unchanged.
+        clearInvocations(mSideUiObserver);
+        mCoordinator.onConfigurationChanged(new Configuration());
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Verify that observers are NOT notified again (no new changes).
+        verifyNoInteractions(mSideUiObserver);
+
+        // Verify the container view's width is unchanged.
+        assertEquals(initialSideUiWidth, getSideUiContainerViewWidth());
     }
 
     private int getSideUiContainerViewWidth() {

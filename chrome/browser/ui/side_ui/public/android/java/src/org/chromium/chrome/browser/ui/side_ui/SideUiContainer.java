@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import androidx.annotation.Px;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 
 /**
  * Container for a side UI view that will be anchored to either the left or right side of the main
@@ -53,6 +54,10 @@ public interface SideUiContainer {
     /** Returns the container's current width. */
     @Px
     int getCurrentWidth();
+
+    /** Returns the container's current anchor side. */
+    @AnchorSide
+    int getAnchorSide();
 
     /**
      * Sets the new width. <strong>Important:</strong> this should only be called by the {@link

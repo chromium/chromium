@@ -11,6 +11,7 @@ import androidx.annotation.Px;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 
 /** Minimum implementation of {@link SideUiContainer} to allow setting/getting width for tests. */
 @NullMarked
@@ -24,6 +25,9 @@ public final class TestSideUiContainer implements SideUiContainer {
 
     /** The last {@code windowWidth} received by {@link #determineContainerWidth}. */
     public @Nullable @Px Integer mLastWindowWidth;
+
+    /** Width to be returned by {@link #determineContainerWidth}, if not null. */
+    public @Nullable @Px Integer mDeterminedWidth;
 
     private final View mSideUiContainerView;
 
@@ -43,12 +47,18 @@ public final class TestSideUiContainer implements SideUiContainer {
         mLastAvailableWidth = availableWidth;
         mLastWindowWidth = windowWidth;
 
-        return requestedWidth;
+        return mDeterminedWidth != null ? mDeterminedWidth : requestedWidth;
     }
 
     @Override
     public int getCurrentWidth() {
         return mSideUiContainerView.getWidth();
+    }
+
+    @Override
+    @AnchorSide
+    public int getAnchorSide() {
+        return AnchorSide.END;
     }
 
     @Override
