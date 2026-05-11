@@ -94,7 +94,6 @@ disallowed_extension_deps_ = [
   "//extensions/common:core_api_provider",
   "//extensions/common/api/*",
   "//extensions/renderer/*",
-  "//extensions/shell/*",
   "//extensions/components/*",
   "//extensions/strings/*",
 ]

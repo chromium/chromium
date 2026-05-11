@@ -217,6 +217,7 @@ static_library("test_support") {
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
+# TODO(crbug.com/40425056): Rename to test_pak.
 repack("shell_and_test_pak") {
   testonly = true
 
@@ -238,6 +239,7 @@ repack("shell_and_test_pak") {
     "$root_gen_dir/ui/strings/ui_strings_en-US.pak",
   ]
 
+  # TODO(crbug.com/40425056): Rename to extensions_test.pak.
   output = "$root_out_dir/extensions_shell_and_test.pak"
 
   deps = [
@@ -258,13 +260,11 @@ repack("shell_and_test_pak") {
     sources += [
       "$root_gen_dir/content/browser/devtools/devtools_resources.pak",
       "$root_gen_dir/device/bluetooth/strings/bluetooth_strings_en-US.pak",
-      "$root_gen_dir/extensions/shell/app_shell_resources.pak",
     ]
 
     deps += [
       "//content/browser/devtools:devtools_resources",
       "//device/bluetooth/strings",
-      "//extensions/shell:resources",
     ]
   }
 }

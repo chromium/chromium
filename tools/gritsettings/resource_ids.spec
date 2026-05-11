@@ -1633,9 +1633,6 @@
     "includes": [9400],
     "structures": [9420],
   },
-  "extensions/shell/app_shell_resources.grd": {
-    "includes": [9440],
-  },
   "extensions/strings/extensions_strings.grd": {
     "messages": [9460],
   },

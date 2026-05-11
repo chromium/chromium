@@ -553,10 +553,6 @@ group("gn_all") {
         ]
       }
 
-      if (enable_extensions) {
-        deps += [ "//extensions/shell:app_shell" ]
-      }
-
       if (media_use_ffmpeg && !is_android) {
         deps += [ "//media:ffmpeg_regression_tests" ]
       }

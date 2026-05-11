@@ -1,5 +1,0 @@
-"Application support" for the app_shell executable.
-
-This directory has nothing to do with the apps/extensions themselves.
-
-See content/shell/app for a similar example.
