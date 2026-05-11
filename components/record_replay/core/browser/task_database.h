@@ -20,10 +20,10 @@
 namespace record_replay {
 
 // Manages the relational SQLite database for record/replay recordings,
-// activity annotations, and activity data.
+// task definitions, and task data.
 //
-// SQLite allows structured queries, such as retrieving all annotations for a
-// given site or managing data overrides independently of shareable intent.
+// SQLite allows structured queries, such as retrieving all task definitions for
+// a given site or managing data overrides independently of shareable intent.
 class TaskDatabase {
  public:
   TaskDatabase();
@@ -42,36 +42,36 @@ class TaskDatabase {
   // Retrieves every Recording that matches the given `url`.
   std::vector<Recording> GetRecordingsByUrl(std::string url);
 
-  // Handles both insertion (when annotation_id is nullopt) and updates.
-  void SaveActivityAnnotation(std::optional<int64_t> annotation_id,
-                              ActivityAnnotation annotation,
-                              std::string target_url,
-                              std::optional<int64_t> recording_id);
+  // Handles both insertion (when task_definition_id is nullopt) and updates.
+  void SaveTaskDefinition(std::optional<int64_t> task_definition_id,
+                          TaskDefinition task_definition,
+                          std::string target_url,
+                          std::optional<int64_t> recording_id);
 
   // Attempts to seed from file (if path not empty), then Finch (if json not
   // empty). Triggers DumpWithoutCrashing if all attempted seeding mechanisms
   // fail.
   void RunSeeding(base::FilePath file_path, std::string feature_json);
 
-  // Retrieves the annotation for a given ID, if it exists.
-  std::optional<ActivityAnnotation> GetActivityAnnotation(
-      int64_t annotation_id);
+  // Retrieves the task definition for a given ID, if it exists.
+  std::optional<TaskDefinition> GetTaskDefinition(int64_t task_definition_id);
 
-  // Retrieves all annotations for a site, returning their IDs and proto data.
-  std::vector<std::pair<int64_t, ActivityAnnotation>>
-  GetActivityAnnotationsByUrl(const std::string& url);
+  // Retrieves all task definitions for a site, returning their IDs and proto
+  // data.
+  std::vector<std::pair<int64_t, TaskDefinition>> GetTaskDefinitionsByUrl(
+      const std::string& url);
 
-  // Saves or updates activity data for an annotation.
-  bool SaveActivityData(int64_t annotation_id, const ActivityData& data);
+  // Saves or updates task data for a task definition.
+  bool SaveTaskData(int64_t task_definition_id, const TaskData& data);
 
-  // Retrieves activity data for an annotation.
-  std::optional<ActivityData> GetActivityData(int64_t annotation_id);
+  // Retrieves task data for a task definition.
+  std::optional<TaskData> GetTaskData(int64_t task_definition_id);
 
-  // Deletes activity data for an annotation.
-  bool DeleteActivityData(int64_t annotation_id);
+  // Deletes task data for a task definition.
+  bool DeleteTaskData(int64_t task_definition_id);
 
-  // Deletes an activity annotation.
-  bool DeleteActivityAnnotation(int64_t annotation_id);
+  // Deletes a task definition.
+  bool DeleteTaskDefinition(int64_t task_definition_id);
 
  private:
   // Returns the current version of the database.
@@ -83,25 +83,25 @@ class TaskDatabase {
   // Creates the "Recordings" table if it doesn't exist.
   bool CreateRecordingsTable();
 
-  // Creates the "ActivityAnnotations" table if it doesn't exist.
-  bool CreateActivityAnnotationsTable();
+  // Creates the "TaskDefinitions" table if it doesn't exist.
+  bool CreateTaskDefinitionsTable();
 
-  // Creates the "ActivityData" table if it doesn't exist.
-  bool CreateActivityDataTable();
+  // Creates the "TaskData" table if it doesn't exist.
+  bool CreateTaskDataTable();
 
   // Reads a file and seeds the database if empty.
-  base::expected<std::vector<ActivityAnnotation>, std::string>
-  SeedAnnotationsFromFile(const base::FilePath& file_path);
+  base::expected<std::vector<TaskDefinition>, std::string>
+  SeedTaskDefinitionsFromFile(const base::FilePath& file_path);
 
-  // Checks if the "ActivityAnnotations" table is empty.
-  bool IsActivityAnnotationsTableEmpty();
+  // Checks if the "TaskDefinitions" table is empty.
+  bool IsTaskDefinitionsTableEmpty();
 
   // Reads JSON and seeds the database if empty.
-  base::expected<std::vector<ActivityAnnotation>, std::string>
-  GetSeedAnnotationsFromJson(const std::string& json_string);
+  base::expected<std::vector<TaskDefinition>, std::string>
+  GetSeedTaskDefinitionsFromJson(const std::string& json_string);
 
-  // Saves a batch of seeded annotations within an atomic transaction.
-  void SaveSeededAnnotations(std::vector<ActivityAnnotation> annotations);
+  // Saves a batch of seeded task definitions within an atomic transaction.
+  void SaveSeededTaskDefinitions(std::vector<TaskDefinition> task_definitions);
 
   sql::Database db_;
 

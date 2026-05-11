@@ -39,40 +39,41 @@ class MockRecordingDataManager : public RecordingDataManager {
                base::OnceCallback<void(std::vector<Recording>)> callback),
               (override));
   MOCK_METHOD(void,
-              SaveActivityAnnotation,
-              (std::optional<int64_t> annotation_id,
-               ActivityAnnotation annotation,
+              SaveTaskDefinition,
+              (std::optional<int64_t> task_definition_id,
+               TaskDefinition task_definition,
                std::string target_url,
                std::optional<int64_t> recording_id,
                base::OnceClosure callback),
               (override));
   MOCK_METHOD(
       void,
-      GetActivityAnnotation,
-      (int64_t annotation_id,
-       base::OnceCallback<void(std::optional<ActivityAnnotation>)> callback),
+      GetTaskDefinition,
+      (int64_t task_definition_id,
+       base::OnceCallback<void(std::optional<TaskDefinition>)> callback),
       (override));
   MOCK_METHOD(
       void,
-      GetActivityAnnotationsByUrl,
+      GetTaskDefinitionsByUrl,
       (std::string url,
-       base::OnceCallback<
-           void(std::vector<std::pair<int64_t, ActivityAnnotation>>)> callback),
+       base::OnceCallback<void(std::vector<std::pair<int64_t, TaskDefinition>>)>
+           callback),
       (override));
   MOCK_METHOD(void,
-              SaveActivityData,
-              (int64_t annotation_id,
-               ActivityData data,
+              SaveTaskData,
+              (int64_t task_definition_id,
+               TaskData data,
                base::OnceCallback<void(bool)> callback),
               (override));
   MOCK_METHOD(void,
-              GetActivityData,
-              (int64_t annotation_id,
-               base::OnceCallback<void(std::optional<ActivityData>)> callback),
+              GetTaskData,
+              (int64_t task_definition_id,
+               base::OnceCallback<void(std::optional<TaskData>)> callback),
               (override));
   MOCK_METHOD(void,
-              DeleteActivityData,
-              (int64_t annotation_id, base::OnceCallback<void(bool)> callback),
+              DeleteTaskData,
+              (int64_t task_definition_id,
+               base::OnceCallback<void(bool)> callback),
               (override));
 };
 

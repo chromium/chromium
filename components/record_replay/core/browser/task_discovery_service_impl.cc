@@ -2,26 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/record_replay/core/browser/activity_discovery_service_impl.h"
+#include "components/record_replay/core/browser/task_discovery_service_impl.h"
 
-#include "components/record_replay/core/browser/activity_provider.h"
+#include "components/record_replay/core/browser/task_provider.h"
 #include "url/gurl.h"
 
 namespace record_replay {
 
-ActivityDiscoveryServiceImpl::ActivityDiscoveryServiceImpl()
-    : providers_(ActivityProvider::CreateProviders()) {}
+TaskDiscoveryServiceImpl::TaskDiscoveryServiceImpl()
+    : providers_(TaskProvider::CreateProviders()) {}
 
-ActivityDiscoveryServiceImpl::~ActivityDiscoveryServiceImpl() = default;
+TaskDiscoveryServiceImpl::~TaskDiscoveryServiceImpl() = default;
 
-void ActivityDiscoveryServiceImpl::ShouldOfferActivity(
+void TaskDiscoveryServiceImpl::ShouldOfferTask(
     const GURL& url,
     base::OnceCallback<void(bool)> callback) {
   cached_metadata_.reset();
   QueryNextProvider(0, url, std::move(callback));
 }
 
-void ActivityDiscoveryServiceImpl::QueryNextProvider(
+void TaskDiscoveryServiceImpl::QueryNextProvider(
     size_t index,
     const GURL& url,
     base::OnceCallback<void(bool)> callback) {
@@ -32,17 +32,17 @@ void ActivityDiscoveryServiceImpl::QueryNextProvider(
 
   // TODO(crbug.com/504514117): What if the provider does not respond? Improve
   // this interface to allow for a timeout.
-  providers_[index]->ShouldOfferActivity(
+  providers_[index]->ShouldOfferTask(
       url,
-      base::BindOnce(&ActivityDiscoveryServiceImpl::OnProviderResponse,
+      base::BindOnce(&TaskDiscoveryServiceImpl::OnProviderResponse,
                      base::Unretained(this), index, url, std::move(callback)));
 }
 
-void ActivityDiscoveryServiceImpl::OnProviderResponse(
+void TaskDiscoveryServiceImpl::OnProviderResponse(
     size_t index,
     const GURL& url,
     base::OnceCallback<void(bool)> callback,
-    std::optional<ActivityDiscoveryService::AutomationMetadata> metadata) {
+    std::optional<TaskDiscoveryService::AutomationMetadata> metadata) {
   if (metadata.has_value()) {
     cached_metadata_ = std::move(metadata);
     std::move(callback).Run(true);
@@ -52,8 +52,8 @@ void ActivityDiscoveryServiceImpl::OnProviderResponse(
   QueryNextProvider(index + 1, url, std::move(callback));
 }
 
-std::optional<ActivityDiscoveryService::AutomationMetadata>
-ActivityDiscoveryServiceImpl::GetMetadata() {
+std::optional<TaskDiscoveryService::AutomationMetadata>
+TaskDiscoveryServiceImpl::GetMetadata() {
   return cached_metadata_;
 }
 

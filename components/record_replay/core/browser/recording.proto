@@ -71,26 +71,26 @@ message Recording {
   optional int64 id = 6;
 }
 
-message ActivityAnnotation {
+message TaskDefinition {
   int64 recording_id = 1;  // Optional, omitted if no recording.
   string url = 2;          // Target URL.
   string title = 3;
   string description = 4;
-  map<int32, StepAnnotation> steps = 5;
+  map<int32, StepDefinition> steps = 5;
 }
 
-message StepAnnotation {
+message StepDefinition {
   string description = 1;
   repeated string expected_data_keys = 2;
 }
 
-message ActivityData {
+message TaskData {
   // Maps step index to the data values.
   map<int32, StepDataValues> step_data = 1;
 }
 
 message StepDataValues {
-  // Maps data key to its value. The keys are from StepAnnotation
+  // Maps data key to its value. The keys are from StepDefinition
   // expected_data_keys.
   map<string, string> values = 1;
 }

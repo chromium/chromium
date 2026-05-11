@@ -7,15 +7,8 @@ import("//third_party/protobuf/proto_library.gni")
 
 static_library("browser") {
   sources = [
-    "activity_discovery_service.h",
-    "activity_discovery_service_impl.cc",
-    "activity_discovery_service_impl.h",
-    "activity_provider.cc",
-    "activity_provider.h",
-    "annotation_parsing_utils.cc",
-    "annotation_parsing_utils.h",
-    "file_activity_provider.cc",
-    "file_activity_provider.h",
+    "file_task_provider.cc",
+    "file_task_provider.h",
     "parsing_utils.cc",
     "parsing_utils.h",
     "record_replay_client.cc",
@@ -33,6 +26,13 @@ static_library("browser") {
     "replayer.h",
     "task_database.cc",
     "task_database.h",
+    "task_definition_parsing_utils.cc",
+    "task_definition_parsing_utils.h",
+    "task_discovery_service.h",
+    "task_discovery_service_impl.cc",
+    "task_discovery_service_impl.h",
+    "task_provider.cc",
+    "task_provider.h",
   ]
 
   deps = [
@@ -51,7 +51,7 @@ static_library("browser") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "file_activity_provider_unittest.cc",
+    "file_task_provider_unittest.cc",
     "recording_data_manager_impl_unittest.cc",
     "task_database_unittest.cc",
   ]

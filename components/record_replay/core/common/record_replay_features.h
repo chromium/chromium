@@ -11,7 +11,7 @@ namespace record_replay::features {
 
 BASE_DECLARE_FEATURE(kRecordReplayBase);
 
-BASE_DECLARE_FEATURE_PARAM(std::string, kRecordReplayAnnotationSeed);
+BASE_DECLARE_FEATURE_PARAM(std::string, kRecordReplayTaskDefinitionSeed);
 
 }  // namespace record_replay::features
 

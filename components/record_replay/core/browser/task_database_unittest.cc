@@ -66,56 +66,56 @@ TEST_F(TaskDatabaseTest, AddAndGetRecording) {
   }
 }
 
-TEST_F(TaskDatabaseTest, SaveAndRetrieveActivityAnnotation) {
+TEST_F(TaskDatabaseTest, SaveAndRetrieveTaskDefinition) {
   Recording recording;
   recording.set_url("https://example.com");
   int64_t recording_id = db_->AddRecording(recording);
 
-  ActivityAnnotation annotation;
-  annotation.set_title("Test Annotation");
-  annotation.set_description("Test Description");
+  TaskDefinition task_definition;
+  task_definition.set_title("Test Task");
+  task_definition.set_description("Test Description");
 
-  db_->SaveActivityAnnotation(std::nullopt, annotation, "https://example.com",
-                              recording_id);
+  db_->SaveTaskDefinition(std::nullopt, task_definition, "https://example.com",
+                          recording_id);
 
-  std::vector<std::pair<int64_t, ActivityAnnotation>> retrieved =
-      db_->GetActivityAnnotationsByUrl("https://example.com");
+  std::vector<std::pair<int64_t, TaskDefinition>> retrieved =
+      db_->GetTaskDefinitionsByUrl("https://example.com");
   ASSERT_EQ(retrieved.size(), 1u);
-  EXPECT_EQ(retrieved[0].second.title(), "Test Annotation");
+  EXPECT_EQ(retrieved[0].second.title(), "Test Task");
   EXPECT_EQ(retrieved[0].second.description(), "Test Description");
 }
 
-TEST_F(TaskDatabaseTest, GetActivityAnnotationForNonExistentId) {
-  EXPECT_FALSE(db_->GetActivityAnnotation(99999).has_value());
+TEST_F(TaskDatabaseTest, GetTaskDefinitionForNonExistentId) {
+  EXPECT_FALSE(db_->GetTaskDefinition(99999).has_value());
 }
 
-TEST_F(TaskDatabaseTest, CascadeDeleteActivityData) {
+TEST_F(TaskDatabaseTest, CascadeDeleteTaskData) {
   Recording recording;
   recording.set_url("https://example.com");
   int64_t recording_id = db_->AddRecording(recording);
 
-  ActivityAnnotation annotation;
-  annotation.set_title("Test Annotation");
-  db_->SaveActivityAnnotation(std::nullopt, annotation, "https://example.com",
-                              recording_id);
+  TaskDefinition task_definition;
+  task_definition.set_title("Test Task");
+  db_->SaveTaskDefinition(std::nullopt, task_definition, "https://example.com",
+                          recording_id);
 
-  std::vector<std::pair<int64_t, ActivityAnnotation>> retrieved =
-      db_->GetActivityAnnotationsByUrl("https://example.com");
+  std::vector<std::pair<int64_t, TaskDefinition>> retrieved =
+      db_->GetTaskDefinitionsByUrl("https://example.com");
   ASSERT_EQ(retrieved.size(), 1u);
-  int64_t annotation_id = retrieved[0].first;
+  int64_t task_definition_id = retrieved[0].first;
 
-  ActivityData data;
+  TaskData data;
   (*data.mutable_step_data())[0].mutable_values()->insert({"key", "value"});
-  EXPECT_TRUE(db_->SaveActivityData(annotation_id, data));
+  EXPECT_TRUE(db_->SaveTaskData(task_definition_id, data));
 
   // Verify data is there.
-  EXPECT_TRUE(db_->GetActivityData(annotation_id).has_value());
+  EXPECT_TRUE(db_->GetTaskData(task_definition_id).has_value());
 
-  // Delete the annotation.
-  EXPECT_TRUE(db_->DeleteActivityAnnotation(annotation_id));
+  // Delete the task definition.
+  EXPECT_TRUE(db_->DeleteTaskDefinition(task_definition_id));
 
   // Verify data is gone due to cascade delete.
-  EXPECT_FALSE(db_->GetActivityData(annotation_id).has_value());
+  EXPECT_FALSE(db_->GetTaskData(task_definition_id).has_value());
 }
 
 }  // namespace record_replay

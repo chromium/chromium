@@ -19,8 +19,8 @@ namespace {
 
 base::FilePath GetSeedingFilePath() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(switches::kActivityMetadataFile)) {
-    return command_line->GetSwitchValuePath(switches::kActivityMetadataFile);
+  if (command_line->HasSwitch(switches::kTaskDefinitionFile)) {
+    return command_line->GetSwitchValuePath(switches::kTaskDefinitionFile);
   }
   return base::FilePath();
 }
@@ -44,7 +44,7 @@ RecordingDataManagerImpl::RecordingDataManagerImpl(base::FilePath profile_path)
   // specified) and the Feature configuration, prioritizing the file.
   db_.AsyncCall(&TaskDatabase::RunSeeding)
       .WithArgs(GetSeedingFilePath(),
-                features::kRecordReplayAnnotationSeed.Get());
+                features::kRecordReplayTaskDefinitionSeed.Get());
 }
 
 RecordingDataManagerImpl::~RecordingDataManagerImpl() = default;
@@ -65,57 +65,57 @@ void RecordingDataManagerImpl::GetRecordingsByUrl(
       .Then(std::move(callback));
 }
 
-void RecordingDataManagerImpl::SaveActivityAnnotation(
-    std::optional<int64_t> annotation_id,
-    ActivityAnnotation annotation,
+void RecordingDataManagerImpl::SaveTaskDefinition(
+    std::optional<int64_t> task_definition_id,
+    TaskDefinition task_definition,
     std::string target_url,
     std::optional<int64_t> recording_id,
     base::OnceClosure callback) {
-  db_.AsyncCall(&TaskDatabase::SaveActivityAnnotation)
-      .WithArgs(annotation_id, std::move(annotation), std::move(target_url),
-                recording_id)
+  db_.AsyncCall(&TaskDatabase::SaveTaskDefinition)
+      .WithArgs(task_definition_id, std::move(task_definition),
+                std::move(target_url), recording_id)
       .Then(std::move(callback));
 }
 
-void RecordingDataManagerImpl::GetActivityAnnotation(
-    int64_t annotation_id,
-    base::OnceCallback<void(std::optional<ActivityAnnotation>)> callback) {
-  db_.AsyncCall(&TaskDatabase::GetActivityAnnotation)
-      .WithArgs(annotation_id)
+void RecordingDataManagerImpl::GetTaskDefinition(
+    int64_t task_definition_id,
+    base::OnceCallback<void(std::optional<TaskDefinition>)> callback) {
+  db_.AsyncCall(&TaskDatabase::GetTaskDefinition)
+      .WithArgs(task_definition_id)
       .Then(std::move(callback));
 }
 
-void RecordingDataManagerImpl::GetActivityAnnotationsByUrl(
+void RecordingDataManagerImpl::GetTaskDefinitionsByUrl(
     std::string url,
-    base::OnceCallback<
-        void(std::vector<std::pair<int64_t, ActivityAnnotation>>)> callback) {
-  db_.AsyncCall(&TaskDatabase::GetActivityAnnotationsByUrl)
+    base::OnceCallback<void(std::vector<std::pair<int64_t, TaskDefinition>>)>
+        callback) {
+  db_.AsyncCall(&TaskDatabase::GetTaskDefinitionsByUrl)
       .WithArgs(std::move(url))
       .Then(std::move(callback));
 }
 
-void RecordingDataManagerImpl::SaveActivityData(
-    int64_t annotation_id,
-    ActivityData data,
+void RecordingDataManagerImpl::SaveTaskData(
+    int64_t task_definition_id,
+    TaskData data,
     base::OnceCallback<void(bool)> callback) {
-  db_.AsyncCall(&TaskDatabase::SaveActivityData)
-      .WithArgs(annotation_id, std::move(data))
+  db_.AsyncCall(&TaskDatabase::SaveTaskData)
+      .WithArgs(task_definition_id, std::move(data))
       .Then(std::move(callback));
 }
 
-void RecordingDataManagerImpl::GetActivityData(
-    int64_t annotation_id,
-    base::OnceCallback<void(std::optional<ActivityData>)> callback) {
-  db_.AsyncCall(&TaskDatabase::GetActivityData)
-      .WithArgs(annotation_id)
+void RecordingDataManagerImpl::GetTaskData(
+    int64_t task_definition_id,
+    base::OnceCallback<void(std::optional<TaskData>)> callback) {
+  db_.AsyncCall(&TaskDatabase::GetTaskData)
+      .WithArgs(task_definition_id)
       .Then(std::move(callback));
 }
 
-void RecordingDataManagerImpl::DeleteActivityData(
-    int64_t annotation_id,
+void RecordingDataManagerImpl::DeleteTaskData(
+    int64_t task_definition_id,
     base::OnceCallback<void(bool)> callback) {
-  db_.AsyncCall(&TaskDatabase::DeleteActivityData)
-      .WithArgs(annotation_id)
+  db_.AsyncCall(&TaskDatabase::DeleteTaskData)
+      .WithArgs(task_definition_id)
       .Then(std::move(callback));
 }
 

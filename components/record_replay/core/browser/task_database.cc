@@ -12,8 +12,8 @@
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "components/record_replay/core/browser/annotation_parsing_utils.h"
 #include "components/record_replay/core/browser/parsing_utils.h"
+#include "components/record_replay/core/browser/task_definition_parsing_utils.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
@@ -78,8 +78,8 @@ void TaskDatabase::Init(base::FilePath profile_path) {
     // Drop tables in the reverse order of dependencies (leaf to root).
     // Since foreign key constraints are active, SQLite would reject dropping
     // parent tables (like Recordings) if their children are still active.
-    std::ignore = db_.Execute("DROP TABLE IF EXISTS ActivityData");
-    std::ignore = db_.Execute("DROP TABLE IF EXISTS ActivityAnnotations");
+    std::ignore = db_.Execute("DROP TABLE IF EXISTS TaskData");
+    std::ignore = db_.Execute("DROP TABLE IF EXISTS TaskDefinitions");
     std::ignore = db_.Execute("DROP TABLE IF EXISTS Recordings");
   }
 
@@ -88,13 +88,13 @@ void TaskDatabase::Init(base::FilePath profile_path) {
     return;
   }
 
-  if (!CreateActivityAnnotationsTable()) {
-    DLOG(ERROR) << "Failed to create ActivityAnnotations table.";
+  if (!CreateTaskDefinitionsTable()) {
+    DLOG(ERROR) << "Failed to create TaskDefinitions table.";
     return;
   }
 
-  if (!CreateActivityDataTable()) {
-    DLOG(ERROR) << "Failed to create ActivityData table.";
+  if (!CreateTaskDataTable()) {
+    DLOG(ERROR) << "Failed to create TaskData table.";
     return;
   }
 
@@ -144,15 +144,15 @@ bool TaskDatabase::CreateRecordingsTable() {
       "ON Recordings(url, start_time DESC)");
 }
 
-bool TaskDatabase::CreateActivityAnnotationsTable() {
+bool TaskDatabase::CreateTaskDefinitionsTable() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (db_.DoesTableExist("ActivityAnnotations")) {
+  if (db_.DoesTableExist("TaskDefinitions")) {
     return true;
   }
 
   static constexpr char kSql[] =
-      "CREATE TABLE ActivityAnnotations("
-      "annotation_id INTEGER PRIMARY KEY AUTOINCREMENT,"
+      "CREATE TABLE TaskDefinitions("
+      "task_definition_id INTEGER PRIMARY KEY AUTOINCREMENT,"
       "recording_id INTEGER REFERENCES Recordings(id) ON DELETE SET NULL,"
       "target_url TEXT,"
       "proto BLOB)";
@@ -160,66 +160,65 @@ bool TaskDatabase::CreateActivityAnnotationsTable() {
     return false;
   }
   return db_.Execute(
-      "CREATE INDEX IF NOT EXISTS activity_annotations_url ON "
-      "ActivityAnnotations(target_url)");
+      "CREATE INDEX IF NOT EXISTS task_definitions_url ON "
+      "TaskDefinitions(target_url)");
 }
 
-bool TaskDatabase::IsActivityAnnotationsTableEmpty() {
+bool TaskDatabase::IsTaskDefinitionsTableEmpty() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  static constexpr char kSql[] =
-      "SELECT EXISTS(SELECT 1 FROM ActivityAnnotations)";
+  static constexpr char kSql[] = "SELECT EXISTS(SELECT 1 FROM TaskDefinitions)";
   sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSql));
   return statement.Step() && statement.ColumnInt(0) == 0;
 }
 
-base::expected<std::vector<ActivityAnnotation>, std::string>
-TaskDatabase::GetSeedAnnotationsFromJson(const std::string& json_string) {
+base::expected<std::vector<TaskDefinition>, std::string>
+TaskDatabase::GetSeedTaskDefinitionsFromJson(const std::string& json_string) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!IsActivityAnnotationsTableEmpty()) {
-    return std::vector<ActivityAnnotation>();
+  if (!IsTaskDefinitionsTableEmpty()) {
+    return std::vector<TaskDefinition>();
   }
 
   std::vector<base::Value> values = ParseJSONListOfDicts(json_string);
-  std::vector<ActivityAnnotation> seeded_annotations;
+  std::vector<TaskDefinition> seeded_task_definitions;
   int index = 0;
   for (const base::Value& item : values) {
     if (!item.is_dict()) {
       return base::unexpected(
-          base::StrCat({"Activity metadata item at index ",
+          base::StrCat({"Task metadata item at index ",
                         base::NumberToString(index), " is not a dictionary."}));
     }
 
-    // Parse and validate the annotation using modern base::Value::Dict.
-    base::expected<ActivityAnnotation, std::string> result =
-        ParseAnnotation(item.GetDict());
+    // Parse and validate the task definition using modern base::Value::Dict.
+    base::expected<TaskDefinition, std::string> result =
+        ParseTaskDefinition(item.GetDict());
     if (!result.has_value()) {
       return base::unexpected(
           base::StrCat({"Error in item ", base::NumberToString(index), ": ",
                         result.error()}));
     }
 
-    seeded_annotations.push_back(std::move(result.value()));
+    seeded_task_definitions.push_back(std::move(result.value()));
     index++;
   }
-  return seeded_annotations;
+  return seeded_task_definitions;
 }
 
-base::expected<std::vector<ActivityAnnotation>, std::string>
-TaskDatabase::SeedAnnotationsFromFile(const base::FilePath& file_path) {
+base::expected<std::vector<TaskDefinition>, std::string>
+TaskDatabase::SeedTaskDefinitionsFromFile(const base::FilePath& file_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!IsActivityAnnotationsTableEmpty()) {
-    return std::vector<ActivityAnnotation>();
+  if (!IsTaskDefinitionsTableEmpty()) {
+    return std::vector<TaskDefinition>();
   }
 
   std::string json_string;
   if (!base::ReadFileToString(file_path, &json_string)) {
     return base::unexpected(base::StrCat(
-        {"Failed to read activity metadata file: ", file_path.AsUTF8Unsafe()}));
+        {"Failed to read task metadata file: ", file_path.AsUTF8Unsafe()}));
   }
 
-  return GetSeedAnnotationsFromJson(json_string);
+  return GetSeedTaskDefinitionsFromJson(json_string);
 }
 
 void TaskDatabase::RunSeeding(base::FilePath file_path,
@@ -227,7 +226,7 @@ void TaskDatabase::RunSeeding(base::FilePath file_path,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Skip if already seeded.
-  if (!IsActivityAnnotationsTableEmpty()) {
+  if (!IsTaskDefinitionsTableEmpty()) {
     return;
   }
 
@@ -235,10 +234,10 @@ void TaskDatabase::RunSeeding(base::FilePath file_path,
 
   // Try seeding from a local file first to give developer overrides priority.
   if (!file_path.empty()) {
-    if (base::expected<std::vector<ActivityAnnotation>, std::string> result =
-            SeedAnnotationsFromFile(file_path);
+    if (base::expected<std::vector<TaskDefinition>, std::string> result =
+            SeedTaskDefinitionsFromFile(file_path);
         result.has_value()) {
-      SaveSeededAnnotations(std::move(result.value()));
+      SaveSeededTaskDefinitions(std::move(result.value()));
       return;
     } else {
       first_error = std::move(result.error());
@@ -247,10 +246,10 @@ void TaskDatabase::RunSeeding(base::FilePath file_path,
 
   // Fall back to Finch seeding if the local file was not specified or failed.
   if (!feature_json.empty()) {
-    if (base::expected<std::vector<ActivityAnnotation>, std::string> result =
-            GetSeedAnnotationsFromJson(feature_json);
+    if (base::expected<std::vector<TaskDefinition>, std::string> result =
+            GetSeedTaskDefinitionsFromJson(feature_json);
         result.has_value()) {
-      SaveSeededAnnotations(std::move(result.value()));
+      SaveSeededTaskDefinitions(std::move(result.value()));
       return;
     } else if (first_error.empty()) {
       first_error = std::move(result.error());
@@ -262,18 +261,18 @@ void TaskDatabase::RunSeeding(base::FilePath file_path,
   }
 }
 
-bool TaskDatabase::CreateActivityDataTable() {
+bool TaskDatabase::CreateTaskDataTable() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (db_.DoesTableExist("ActivityData")) {
+  if (db_.DoesTableExist("TaskData")) {
     return true;
   }
 
   static constexpr char kSql[] =
-      "CREATE TABLE ActivityData("
-      "annotation_id INTEGER PRIMARY KEY,"
+      "CREATE TABLE TaskData("
+      "task_definition_id INTEGER PRIMARY KEY,"
       "proto BLOB,"
-      "FOREIGN KEY(annotation_id) REFERENCES "
-      "ActivityAnnotations(annotation_id) "
+      "FOREIGN KEY(task_definition_id) REFERENCES "
+      "TaskDefinitions(task_definition_id) "
       "ON DELETE CASCADE)";
   return db_.Execute(kSql);
 }
@@ -318,25 +317,26 @@ std::vector<Recording> TaskDatabase::GetRecordingsByUrl(std::string url) {
   return recordings;
 }
 
-void TaskDatabase::SaveActivityAnnotation(std::optional<int64_t> annotation_id,
-                                          ActivityAnnotation annotation,
-                                          std::string target_url,
-                                          std::optional<int64_t> recording_id) {
+void TaskDatabase::SaveTaskDefinition(std::optional<int64_t> task_definition_id,
+                                      TaskDefinition task_definition,
+                                      std::string target_url,
+                                      std::optional<int64_t> recording_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   std::string normalized_url = NormalizeUrl(target_url);
-  annotation.set_url(normalized_url);
+  task_definition.set_url(normalized_url);
   if (recording_id) {
-    annotation.set_recording_id(*recording_id);
+    task_definition.set_recording_id(*recording_id);
   }
 
   static constexpr char kSql[] =
-      "INSERT OR REPLACE INTO ActivityAnnotations(annotation_id, recording_id, "
+      "INSERT OR REPLACE INTO TaskDefinitions(task_definition_id, "
+      "recording_id, "
       "target_url, proto) "
       "VALUES(?, ?, ?, ?)";
   sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSql));
-  if (annotation_id) {
-    statement.BindInt64(0, *annotation_id);
+  if (task_definition_id) {
+    statement.BindInt64(0, *task_definition_id);
   } else {
     statement.BindNull(0);
   }
@@ -346,71 +346,71 @@ void TaskDatabase::SaveActivityAnnotation(std::optional<int64_t> annotation_id,
     statement.BindNull(1);
   }
   statement.BindString(2, normalized_url);
-  statement.BindBlob(3, annotation.SerializeAsString());
+  statement.BindBlob(3, task_definition.SerializeAsString());
 
   statement.Run();
 }
 
-std::optional<ActivityAnnotation> TaskDatabase::GetActivityAnnotation(
-    int64_t annotation_id) {
+std::optional<TaskDefinition> TaskDatabase::GetTaskDefinition(
+    int64_t task_definition_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   static constexpr char kSql[] =
-      "SELECT proto FROM ActivityAnnotations WHERE annotation_id=?";
+      "SELECT proto FROM TaskDefinitions WHERE task_definition_id=?";
   sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSql));
-  statement.BindInt64(0, annotation_id);
+  statement.BindInt64(0, task_definition_id);
 
   if (statement.Step()) {
-    ActivityAnnotation annotation;
-    if (annotation.ParseFromString(statement.ColumnBlobAsString(0))) {
-      return annotation;
+    TaskDefinition task_definition;
+    if (task_definition.ParseFromString(statement.ColumnBlobAsString(0))) {
+      return task_definition;
     }
   }
 
   return std::nullopt;
 }
 
-std::vector<std::pair<int64_t, ActivityAnnotation>>
-TaskDatabase::GetActivityAnnotationsByUrl(const std::string& url) {
+std::vector<std::pair<int64_t, TaskDefinition>>
+TaskDatabase::GetTaskDefinitionsByUrl(const std::string& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   static constexpr char kSql[] =
-      "SELECT annotation_id, proto FROM ActivityAnnotations WHERE target_url=?";
+      "SELECT task_definition_id, proto FROM TaskDefinitions WHERE "
+      "target_url=?";
   sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSql));
   statement.BindString(0, NormalizeUrl(url));
 
-  std::vector<std::pair<int64_t, ActivityAnnotation>> annotations;
+  std::vector<std::pair<int64_t, TaskDefinition>> task_definitions;
   while (statement.Step()) {
     int64_t id = statement.ColumnInt64(0);
-    ActivityAnnotation annotation;
-    if (annotation.ParseFromString(statement.ColumnBlobAsString(1))) {
-      annotations.emplace_back(id, std::move(annotation));
+    TaskDefinition task_definition;
+    if (task_definition.ParseFromString(statement.ColumnBlobAsString(1))) {
+      task_definitions.emplace_back(id, std::move(task_definition));
     }
   }
-  return annotations;
+  return task_definitions;
 }
 
-bool TaskDatabase::SaveActivityData(int64_t annotation_id,
-                                    const ActivityData& data) {
+bool TaskDatabase::SaveTaskData(int64_t task_definition_id,
+                                const TaskData& data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   static constexpr char kSql[] =
-      "INSERT OR REPLACE INTO ActivityData(annotation_id, proto) "
+      "INSERT OR REPLACE INTO TaskData(task_definition_id, proto) "
       "VALUES(?, ?)";
   sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSql));
-  statement.BindInt64(0, annotation_id);
+  statement.BindInt64(0, task_definition_id);
   statement.BindBlob(1, data.SerializeAsString());
 
   return statement.Run();
 }
 
-std::optional<ActivityData> TaskDatabase::GetActivityData(
-    int64_t annotation_id) {
+std::optional<TaskData> TaskDatabase::GetTaskData(int64_t task_definition_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   static constexpr char kSql[] =
-      "SELECT proto FROM ActivityData WHERE annotation_id=?";
+      "SELECT proto FROM TaskData WHERE task_definition_id=?";
   sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSql));
-  statement.BindInt64(0, annotation_id);
+  statement.BindInt64(0, task_definition_id);
 
   if (statement.Step()) {
-    ActivityData data;
+    TaskData data;
     if (data.ParseFromString(statement.ColumnBlobAsString(0))) {
       return data;
     }
@@ -419,35 +419,35 @@ std::optional<ActivityData> TaskDatabase::GetActivityData(
   return std::nullopt;
 }
 
-bool TaskDatabase::DeleteActivityData(int64_t annotation_id) {
+bool TaskDatabase::DeleteTaskData(int64_t task_definition_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   static constexpr char kSql[] =
-      "DELETE FROM ActivityData WHERE annotation_id=?";
+      "DELETE FROM TaskData WHERE task_definition_id=?";
   sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSql));
-  statement.BindInt64(0, annotation_id);
+  statement.BindInt64(0, task_definition_id);
 
   return statement.Run();
 }
 
-bool TaskDatabase::DeleteActivityAnnotation(int64_t annotation_id) {
+bool TaskDatabase::DeleteTaskDefinition(int64_t task_definition_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   static constexpr char kSql[] =
-      "DELETE FROM ActivityAnnotations WHERE annotation_id=?";
+      "DELETE FROM TaskDefinitions WHERE task_definition_id=?";
   sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSql));
-  statement.BindInt64(0, annotation_id);
+  statement.BindInt64(0, task_definition_id);
 
   return statement.Run();
 }
 
-void TaskDatabase::SaveSeededAnnotations(
-    std::vector<ActivityAnnotation> annotations) {
+void TaskDatabase::SaveSeededTaskDefinitions(
+    std::vector<TaskDefinition> task_definitions) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   sql::Transaction transaction(&db_);
   if (transaction.Begin()) {
-    for (ActivityAnnotation& annotation : annotations) {
-      std::string url = annotation.url();
-      SaveActivityAnnotation(std::nullopt, std::move(annotation),
-                             std::move(url), std::nullopt);
+    for (TaskDefinition& task_definition : task_definitions) {
+      std::string url = task_definition.url();
+      SaveTaskDefinition(std::nullopt, std::move(task_definition),
+                         std::move(url), std::nullopt);
     }
     std::ignore = transaction.Commit();
   }

@@ -12,7 +12,7 @@ namespace record_replay::features {
 BASE_FEATURE(kRecordReplayBase, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(std::string,
-                   kRecordReplayAnnotationSeed,
+                   kRecordReplayTaskDefinitionSeed,
                    &kRecordReplayBase,
                    "");
 

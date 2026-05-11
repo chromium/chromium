@@ -15,8 +15,8 @@
 
 namespace record_replay {
 
-// Manages persistent storage for recording protos, activity annotations, and
-// sensitive activity data.
+// Manages persistent storage for recording protos, task definitions, and
+// sensitive task data.
 //
 // Tied to the lifecycle of a `Profile`.
 class RecordingDataManager : public KeyedService {
@@ -37,37 +37,38 @@ class RecordingDataManager : public KeyedService {
       std::string url,
       base::OnceCallback<void(std::vector<Recording>)> callback) = 0;
 
-  // Handles both insertion (when annotation_id is nullopt) and updates.
-  virtual void SaveActivityAnnotation(std::optional<int64_t> annotation_id,
-                                      ActivityAnnotation annotation,
-                                      std::string target_url,
-                                      std::optional<int64_t> recording_id,
-                                      base::OnceClosure callback) = 0;
+  // Handles both insertion (when task_definition_id is nullopt) and updates.
+  virtual void SaveTaskDefinition(std::optional<int64_t> task_definition_id,
+                                  TaskDefinition task_definition,
+                                  std::string target_url,
+                                  std::optional<int64_t> recording_id,
+                                  base::OnceClosure callback) = 0;
 
-  // Retrieves the annotation for a given ID, if it exists.
-  virtual void GetActivityAnnotation(
-      int64_t annotation_id,
-      base::OnceCallback<void(std::optional<ActivityAnnotation>)> callback) = 0;
+  // Retrieves the task definition for a given ID, if it exists.
+  virtual void GetTaskDefinition(
+      int64_t task_definition_id,
+      base::OnceCallback<void(std::optional<TaskDefinition>)> callback) = 0;
 
-  // Retrieves all annotations for a site, returning their IDs and proto data.
-  virtual void GetActivityAnnotationsByUrl(
+  // Retrieves all task definitions for a site, returning their IDs and proto
+  // data.
+  virtual void GetTaskDefinitionsByUrl(
       std::string url,
-      base::OnceCallback<void(
-          std::vector<std::pair<int64_t, ActivityAnnotation>>)> callback) = 0;
+      base::OnceCallback<void(std::vector<std::pair<int64_t, TaskDefinition>>)>
+          callback) = 0;
 
-  // Saves or updates activity data for an annotation.
-  virtual void SaveActivityData(int64_t annotation_id,
-                                ActivityData data,
-                                base::OnceCallback<void(bool)> callback) = 0;
+  // Saves or updates task data for a task definition.
+  virtual void SaveTaskData(int64_t task_definition_id,
+                            TaskData data,
+                            base::OnceCallback<void(bool)> callback) = 0;
 
-  // Retrieves activity data for an annotation.
-  virtual void GetActivityData(
-      int64_t annotation_id,
-      base::OnceCallback<void(std::optional<ActivityData>)> callback) = 0;
+  // Retrieves task data for a task definition.
+  virtual void GetTaskData(
+      int64_t task_definition_id,
+      base::OnceCallback<void(std::optional<TaskData>)> callback) = 0;
 
-  // Deletes activity data for an annotation.
-  virtual void DeleteActivityData(int64_t annotation_id,
-                                  base::OnceCallback<void(bool)> callback) = 0;
+  // Deletes task data for a task definition.
+  virtual void DeleteTaskData(int64_t task_definition_id,
+                              base::OnceCallback<void(bool)> callback) = 0;
 };
 
 }  // namespace record_replay

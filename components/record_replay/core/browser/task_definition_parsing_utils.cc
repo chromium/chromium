@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/record_replay/core/browser/annotation_parsing_utils.h"
+#include "components/record_replay/core/browser/task_definition_parsing_utils.h"
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -12,10 +12,10 @@ namespace record_replay {
 
 namespace {
 
-// Maps a single step dictionary from JSON to the protobuf StepAnnotation.
-base::expected<StepAnnotation, std::string> MapStep(
+// Maps a single step dictionary from JSON to the protobuf StepDefinition.
+base::expected<StepDefinition, std::string> MapStep(
     const base::DictValue& step_dict) {
-  StepAnnotation step_proto;
+  StepDefinition step_proto;
   const std::string* step_desc = step_dict.FindString("description");
   if (!step_desc || step_desc->empty()) {
     return base::unexpected("Missing required field 'description' in step.");
@@ -34,19 +34,19 @@ base::expected<StepAnnotation, std::string> MapStep(
 }
 
 // Parses a list of explicit steps (Detailed Syntax) and maps them to the proto.
-base::expected<ActivityAnnotation, std::string> ParseDetailedSyntax(
+base::expected<TaskDefinition, std::string> ParseDetailedSyntax(
     const GURL& url,
     const std::string& title,
     const std::string* instructions,
     const std::string* anchored_message,
     const base::ListValue& steps_list) {
-  ActivityAnnotation annotation;
-  annotation.set_url(url.spec());
-  annotation.set_title(title);
+  TaskDefinition task_definition;
+  task_definition.set_url(url.spec());
+  task_definition.set_title(title);
 
   if (const std::string* desc =
           instructions ? instructions : anchored_message) {
-    annotation.set_description(*desc);
+    task_definition.set_description(*desc);
   }
 
   int step_index = 1;  // Protobuf is 1-indexed.
@@ -57,40 +57,40 @@ base::expected<ActivityAnnotation, std::string> ParseDetailedSyntax(
                         " is not a dictionary."}));
     }
 
-    base::expected<StepAnnotation, std::string> step =
+    base::expected<StepDefinition, std::string> step =
         MapStep(step_val.GetDict());
     if (!step.has_value()) {
       return base::unexpected(
           base::StrCat({"Error in step ", base::NumberToString(step_index - 1),
                         ": ", step.error()}));
     }
-    (*annotation.mutable_steps())[step_index++] = std::move(step.value());
+    (*task_definition.mutable_steps())[step_index++] = std::move(step.value());
   }
-  return annotation;
+  return task_definition;
 }
 
 // Synthesizes a single-step sequence using a fallback description.
-base::expected<ActivityAnnotation, std::string> ParseQuickSyntax(
+base::expected<TaskDefinition, std::string> ParseQuickSyntax(
     const GURL& url,
     const std::string& title,
     const std::string& fallback_desc) {
-  ActivityAnnotation annotation;
-  annotation.set_url(url.spec());
-  annotation.set_title(title);
-  annotation.set_description(fallback_desc);
+  TaskDefinition task_definition;
+  task_definition.set_url(url.spec());
+  task_definition.set_title(title);
+  task_definition.set_description(fallback_desc);
 
-  StepAnnotation step_proto;
+  StepDefinition step_proto;
   step_proto.set_description(fallback_desc);
-  (*annotation.mutable_steps())[1] = std::move(step_proto);
+  (*task_definition.mutable_steps())[1] = std::move(step_proto);
 
-  return annotation;
+  return task_definition;
 }
 
 }  // namespace
 
-// Parses a top-level activity annotation dictionary.
+// Parses a top-level task definition dictionary.
 // Validates required fields and handles both Detailed and Quick syntax.
-base::expected<ActivityAnnotation, std::string> ParseAnnotation(
+base::expected<TaskDefinition, std::string> ParseTaskDefinition(
     const base::DictValue& dict) {
   const std::string* url_str = dict.FindString("url");
   const std::string* title = dict.FindString("title");
@@ -108,7 +108,7 @@ base::expected<ActivityAnnotation, std::string> ParseAnnotation(
     return base::unexpected(base::StrCat({"Invalid GURL: ", *url_str}));
   }
 
-  // Intent Validation: 'title' is required for UI presentation of the activity.
+  // Intent Validation: 'title' is required for UI presentation of the task.
   if (!title || title->empty()) {
     return base::unexpected("Missing required field 'title'.");
   }

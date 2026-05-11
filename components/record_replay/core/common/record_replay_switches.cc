@@ -6,6 +6,6 @@
 
 namespace record_replay::switches {
 
-const char kActivityMetadataFile[] = "activity-metadata-file";
+const char kTaskDefinitionFile[] = "task-definition-file";
 
 }  // namespace record_replay::switches

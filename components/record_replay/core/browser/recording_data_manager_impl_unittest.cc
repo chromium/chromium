@@ -172,7 +172,7 @@ TEST_F(RecordingDataManagerImplTest, AddMultipleIdenticalRecordingsForSameUrl) {
   EXPECT_THAT(recordings[1], EqualsProto(first_recording));
 }
 
-TEST_F(RecordingDataManagerImplTest, SaveAndRetrieveActivityAnnotation) {
+TEST_F(RecordingDataManagerImplTest, SaveAndRetrieveTaskDefinition) {
   const Recording recording = CreateLoginRecording();
 
   base::test::TestFuture<int64_t> id_future;
@@ -180,23 +180,23 @@ TEST_F(RecordingDataManagerImplTest, SaveAndRetrieveActivityAnnotation) {
   int64_t recording_id = id_future.Get();
   ASSERT_GT(recording_id, 0);
 
-  ActivityAnnotation annotation;
-  annotation.set_title("Test Title");
-  annotation.set_description("Test Description");
-  StepAnnotation step;
+  TaskDefinition task_definition;
+  task_definition.set_title("Test Title");
+  task_definition.set_description("Test Description");
+  StepDefinition step;
   step.set_description("Step 1");
-  (*annotation.mutable_steps())[1] = step;
+  (*task_definition.mutable_steps())[1] = step;
 
   base::test::TestFuture<void> add_future;
-  data_manager().SaveActivityAnnotation(std::nullopt, annotation,
-                                        recording.url(), recording_id,
-                                        add_future.GetCallback());
+  data_manager().SaveTaskDefinition(std::nullopt, task_definition,
+                                    recording.url(), recording_id,
+                                    add_future.GetCallback());
   add_future.Get();
 
-  base::test::TestFuture<std::vector<std::pair<int64_t, ActivityAnnotation>>>
+  base::test::TestFuture<std::vector<std::pair<int64_t, TaskDefinition>>>
       get_future;
-  data_manager().GetActivityAnnotationsByUrl(recording.url(),
-                                             get_future.GetCallback());
+  data_manager().GetTaskDefinitionsByUrl(recording.url(),
+                                         get_future.GetCallback());
   auto retrieved = get_future.Get();
 
   ASSERT_EQ(retrieved.size(), 1u);
@@ -205,7 +205,7 @@ TEST_F(RecordingDataManagerImplTest, SaveAndRetrieveActivityAnnotation) {
   EXPECT_EQ(retrieved[0].second.steps().at(1).description(), "Step 1");
 }
 
-TEST_F(RecordingDataManagerImplTest, SaveAndRetrieveActivityData) {
+TEST_F(RecordingDataManagerImplTest, SaveAndRetrieveTaskData) {
   const Recording recording = CreateLoginRecording();
 
   base::test::TestFuture<int64_t> id_future;
@@ -213,69 +213,67 @@ TEST_F(RecordingDataManagerImplTest, SaveAndRetrieveActivityData) {
   int64_t recording_id = id_future.Get();
   ASSERT_GT(recording_id, 0);
 
-  ActivityAnnotation annotation;
-  annotation.set_title("Test Title");
+  TaskDefinition task_definition;
+  task_definition.set_title("Test Title");
   base::test::TestFuture<void> anno_future;
-  data_manager().SaveActivityAnnotation(std::nullopt, annotation,
-                                        recording.url(), recording_id,
-                                        anno_future.GetCallback());
+  data_manager().SaveTaskDefinition(std::nullopt, task_definition,
+                                    recording.url(), recording_id,
+                                    anno_future.GetCallback());
   anno_future.Get();
 
-  ActivityData data;
+  TaskData data;
   StepDataValues values;
   (*values.mutable_values())["key1"] = "value1";
   (*data.mutable_step_data())[1] = values;
 
   base::test::TestFuture<bool> save_future;
-  data_manager().SaveActivityData(recording_id, data,
-                                  save_future.GetCallback());
+  data_manager().SaveTaskData(recording_id, data, save_future.GetCallback());
   EXPECT_TRUE(save_future.Get());
 
-  base::test::TestFuture<std::optional<ActivityData>> get_future;
-  data_manager().GetActivityData(recording_id, get_future.GetCallback());
-  std::optional<ActivityData> retrieved_data = get_future.Get();
+  base::test::TestFuture<std::optional<TaskData>> get_future;
+  data_manager().GetTaskData(recording_id, get_future.GetCallback());
+  std::optional<TaskData> retrieved_data = get_future.Get();
 
   ASSERT_TRUE(retrieved_data.has_value());
   EXPECT_EQ(retrieved_data->step_data().at(1).values().at("key1"), "value1");
 }
 
-TEST_F(RecordingDataManagerImplTest, DeleteActivityData) {
+TEST_F(RecordingDataManagerImplTest, DeleteTaskData) {
   const Recording recording = CreateLoginRecording();
 
   base::test::TestFuture<int64_t> id_future;
   data_manager().AddRecording(recording, id_future.GetCallback());
   int64_t recording_id = id_future.Get();
 
-  ActivityAnnotation annotation;
+  TaskDefinition task_definition;
   base::test::TestFuture<void> anno_future;
-  data_manager().SaveActivityAnnotation(std::nullopt, annotation,
-                                        recording.url(), recording_id,
-                                        anno_future.GetCallback());
+  data_manager().SaveTaskDefinition(std::nullopt, task_definition,
+                                    recording.url(), recording_id,
+                                    anno_future.GetCallback());
   anno_future.Get();
 
-  ActivityData data;
+  TaskData data;
   (*data.mutable_step_data())[1] = StepDataValues();
 
   base::test::TestFuture<bool> save_future;
-  data_manager().SaveActivityData(recording_id, data,
-                                  save_future.GetCallback());
+  data_manager().SaveTaskData(recording_id, data, save_future.GetCallback());
   ASSERT_TRUE(save_future.Get());
 
   base::test::TestFuture<bool> delete_future;
-  data_manager().DeleteActivityData(recording_id, delete_future.GetCallback());
+  data_manager().DeleteTaskData(recording_id, delete_future.GetCallback());
   EXPECT_TRUE(delete_future.Get());
 
-  base::test::TestFuture<std::optional<ActivityData>> get_future;
-  data_manager().GetActivityData(recording_id, get_future.GetCallback());
+  base::test::TestFuture<std::optional<TaskData>> get_future;
+  data_manager().GetTaskData(recording_id, get_future.GetCallback());
   EXPECT_FALSE(get_future.Get().has_value());
 }
 
-TEST_F(RecordingDataManagerImplTest, SaveActivityDataWithInvalidIdFails) {
-  ActivityData data;
+TEST_F(RecordingDataManagerImplTest, SaveTaskDataWithInvalidIdFails) {
+  TaskData data;
   (*data.mutable_step_data())[1] = StepDataValues();
 
   base::test::TestFuture<bool> save_future;
-  data_manager().SaveActivityData(9999, data, save_future.GetCallback());
+  data_manager().SaveTaskData(9999, data, save_future.GetCallback());
   EXPECT_FALSE(save_future.Get());
 }
 
@@ -295,21 +293,21 @@ TEST_F(RecordingDataManagerImplTest, SeedFromFileQuickSyntax) {
   ASSERT_TRUE(base::WriteFile(seed_file, json));
 
   scoped_command_line.GetProcessCommandLine()->AppendSwitchPath(
-      switches::kActivityMetadataFile, seed_file);
+      switches::kTaskDefinitionFile, seed_file);
 
   RecreateDataManager();
 
-  base::test::TestFuture<std::vector<std::pair<int64_t, ActivityAnnotation>>>
+  base::test::TestFuture<std::vector<std::pair<int64_t, TaskDefinition>>>
       future;
-  data_manager().GetActivityAnnotationsByUrl("https://example.com",
-                                             future.GetCallback());
-  auto annotations = future.Get();
+  data_manager().GetTaskDefinitionsByUrl("https://example.com",
+                                         future.GetCallback());
+  auto task_definitions = future.Get();
 
-  ASSERT_EQ(annotations.size(), 1u);
-  EXPECT_EQ(annotations[0].second.title(), "Quick Title");
-  EXPECT_EQ(annotations[0].second.description(), "Quick Instructions");
-  ASSERT_EQ(annotations[0].second.steps().size(), 1u);
-  EXPECT_EQ(annotations[0].second.steps().at(1).description(),
+  ASSERT_EQ(task_definitions.size(), 1u);
+  EXPECT_EQ(task_definitions[0].second.title(), "Quick Title");
+  EXPECT_EQ(task_definitions[0].second.description(), "Quick Instructions");
+  ASSERT_EQ(task_definitions[0].second.steps().size(), 1u);
+  EXPECT_EQ(task_definitions[0].second.steps().at(1).description(),
             "Quick Instructions");
 }
 
@@ -339,24 +337,28 @@ TEST_F(RecordingDataManagerImplTest, SeedFromFileDetailedSyntax) {
   ASSERT_TRUE(base::WriteFile(seed_file, json));
 
   scoped_command_line.GetProcessCommandLine()->AppendSwitchPath(
-      switches::kActivityMetadataFile, seed_file);
+      switches::kTaskDefinitionFile, seed_file);
 
   RecreateDataManager();
 
-  base::test::TestFuture<std::vector<std::pair<int64_t, ActivityAnnotation>>>
+  base::test::TestFuture<std::vector<std::pair<int64_t, TaskDefinition>>>
       future;
-  data_manager().GetActivityAnnotationsByUrl("https://example.com/detailed",
-                                             future.GetCallback());
-  auto annotations = future.Get();
+  data_manager().GetTaskDefinitionsByUrl("https://example.com/detailed",
+                                         future.GetCallback());
+  auto task_definitions = future.Get();
 
-  ASSERT_EQ(annotations.size(), 1u);
-  EXPECT_EQ(annotations[0].second.title(), "Detailed Title");
-  EXPECT_EQ(annotations[0].second.description(), "Top Level Description");
-  ASSERT_EQ(annotations[0].second.steps().size(), 2u);
-  EXPECT_EQ(annotations[0].second.steps().at(1).description(), "Step 1 Desc");
-  EXPECT_EQ(annotations[0].second.steps().at(1).expected_data_keys(0), "key1");
-  EXPECT_EQ(annotations[0].second.steps().at(2).description(), "Step 2 Desc");
-  EXPECT_EQ(annotations[0].second.steps().at(2).expected_data_keys(0), "key2");
+  ASSERT_EQ(task_definitions.size(), 1u);
+  EXPECT_EQ(task_definitions[0].second.title(), "Detailed Title");
+  EXPECT_EQ(task_definitions[0].second.description(), "Top Level Description");
+  ASSERT_EQ(task_definitions[0].second.steps().size(), 2u);
+  EXPECT_EQ(task_definitions[0].second.steps().at(1).description(),
+            "Step 1 Desc");
+  EXPECT_EQ(task_definitions[0].second.steps().at(1).expected_data_keys(0),
+            "key1");
+  EXPECT_EQ(task_definitions[0].second.steps().at(2).description(),
+            "Step 2 Desc");
+  EXPECT_EQ(task_definitions[0].second.steps().at(2).expected_data_keys(0),
+            "key2");
 }
 
 }  // namespace

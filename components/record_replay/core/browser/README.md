@@ -25,8 +25,8 @@ It interfaces with these layers through the `RecordReplayClient` and
 - **`RecordingDataManager`**: An interface for persistent storage of recorded
   sessions.
 - **`TaskDatabase`**: A relational SQLite database that stores metadata
-  about recordings, standalone `ActivityAnnotation` intent analysis, and
-  sensitive `ActivityData` values. It supports efficient lookup by site and
+  about recordings, standalone `TaskDefinition` intent analysis, and
+  sensitive `TaskData` values. It supports efficient lookup by site and
   handles database migrations and seeding from Finch parameters.
 - **Abstractions (`record_replay_client.h`, `record_replay_driver.h`, `record_replay_driver_factory.h`)**:
   Abstract interfaces that allow the core logic to communicate with the content

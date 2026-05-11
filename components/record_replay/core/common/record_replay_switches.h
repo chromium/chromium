@@ -7,7 +7,7 @@
 
 namespace record_replay::switches {
 
-extern const char kActivityMetadataFile[];
+extern const char kTaskDefinitionFile[];
 
 }  // namespace record_replay::switches
 

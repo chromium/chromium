@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/record_replay/core/browser/file_activity_provider.h"
+#include "components/record_replay/core/browser/file_task_provider.h"
 
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
-#include "components/record_replay/core/browser/annotation_parsing_utils.h"
 #include "components/record_replay/core/browser/parsing_utils.h"
+#include "components/record_replay/core/browser/task_definition_parsing_utils.h"
 
 namespace record_replay {
 
@@ -25,18 +25,18 @@ std::optional<std::string> ReadFileToStringAsync(const base::FilePath& path) {
 
 }  // namespace
 
-FileActivityProvider::FileActivityProvider(const base::FilePath& file_path) {
+FileTaskProvider::FileTaskProvider(const base::FilePath& file_path) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&ReadFileToStringAsync, file_path),
-      base::BindOnce(&FileActivityProvider::OnFileLoaded,
+      base::BindOnce(&FileTaskProvider::OnFileLoaded,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-FileActivityProvider::~FileActivityProvider() = default;
+FileTaskProvider::~FileTaskProvider() = default;
 
-std::optional<ActivityDiscoveryService::AutomationMetadata>
-FileActivityProvider::GetMetadata(const GURL& url) const {
+std::optional<TaskDiscoveryService::AutomationMetadata>
+FileTaskProvider::GetMetadata(const GURL& url) const {
   auto it = metadata_map_.find(url);
   if (it != metadata_map_.end()) {
     return it->second;
@@ -44,11 +44,10 @@ FileActivityProvider::GetMetadata(const GURL& url) const {
   return std::nullopt;
 }
 
-void FileActivityProvider::ShouldOfferActivity(
+void FileTaskProvider::ShouldOfferTask(
     const GURL& url,
-    base::OnceCallback<
-        void(std::optional<ActivityDiscoveryService::AutomationMetadata>)>
-        callback) {
+    base::OnceCallback<void(
+        std::optional<TaskDiscoveryService::AutomationMetadata>)> callback) {
   if (!is_ready_) {
     pending_queries_.emplace_back(url, std::move(callback));
     return;
@@ -57,8 +56,7 @@ void FileActivityProvider::ShouldOfferActivity(
   std::move(callback).Run(GetMetadata(url));
 }
 
-void FileActivityProvider::OnFileLoaded(
-    std::optional<std::string> file_content) {
+void FileTaskProvider::OnFileLoaded(std::optional<std::string> file_content) {
   if (!file_content) {
     OnJsonParsed({});
     return;
@@ -68,7 +66,7 @@ void FileActivityProvider::OnFileLoaded(
   OnJsonParsed(std::move(values));
 }
 
-void FileActivityProvider::OnJsonParsed(std::vector<base::Value> values) {
+void FileTaskProvider::OnJsonParsed(std::vector<base::Value> values) {
   is_ready_ = true;
 
   for (const auto& item : values) {
@@ -76,14 +74,15 @@ void FileActivityProvider::OnJsonParsed(std::vector<base::Value> values) {
       continue;
     }
 
-    auto result = ParseAnnotation(item.GetDict());
+    auto result = ParseTaskDefinition(item.GetDict());
     if (result.has_value()) {
-      const ActivityAnnotation& annotation = result.value();
-      GURL url(annotation.url());
-      metadata_map_.emplace(url, ActivityDiscoveryService::AutomationMetadata{
-                                     .title = annotation.title(),
-                                     .instructions = annotation.description(),
-                                     .anchored_message = ""});
+      const TaskDefinition& task_definition = result.value();
+      GURL url(task_definition.url());
+      metadata_map_.emplace(url,
+                            TaskDiscoveryService::AutomationMetadata{
+                                .title = task_definition.title(),
+                                .instructions = task_definition.description(),
+                                .anchored_message = ""});
     }
   }
 
