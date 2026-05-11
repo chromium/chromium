@@ -1461,7 +1461,8 @@ base::TimeTicks VizLayerContext::UpdateDisplayTreeFrom(
     const gfx::Rect& viewport_damage_rect,
     bool frame_has_damage,
     bool is_flush,
-    std::vector<ui::LatencyInfo> latency_info) {
+    std::vector<ui::LatencyInfo> latency_info,
+    viz::TrackedElementRects tracked_element_rects) {
   TRACE_EVENT0("viz", "VizLayerContext::UpdateDisplayTreeFrom");
 
   auto& property_trees = *tree.property_trees();
@@ -1494,6 +1495,7 @@ base::TimeTicks VizLayerContext::UpdateDisplayTreeFrom(
   update->is_flush = is_flush;
 
   update->latency_info = std::move(latency_info);
+  update->tracked_element_rects = std::move(tracked_element_rects);
   update->device_viewport = tree.GetDeviceViewport();
   update->device_scale_factor = tree.device_scale_factor();
   DUMP_WILL_BE_CHECK_GT(update->device_scale_factor, 0.f);

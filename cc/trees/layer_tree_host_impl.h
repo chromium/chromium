@@ -422,9 +422,11 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   void DidDrawAllLayers(const FrameData& frame);
 
   // Pushes differential updates to the display tree via a LayerContext.
-  base::TimeTicks UpdateDisplayTree(FrameData& frame,
-                                    std::vector<ui::LatencyInfo> latency_info,
-                                    bool is_flush = false);
+  base::TimeTicks UpdateDisplayTree(
+      FrameData& frame,
+      std::vector<ui::LatencyInfo> latency_info,
+      viz::TrackedElementRects tracked_element_rects,
+      bool is_flush = false);
 
   // Synchronizes the current tree state to Viz without triggering a draw.
   void FlushDisplayTree();
@@ -567,6 +569,15 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   ImageDecodeCache* GetImageDecodeCache() const;
 
   uint32_t next_frame_token() const;
+
+  void set_tracked_element_rects_from_client(
+      viz::TrackedElementRects tracked_element_rects) {
+    tracked_element_rects_from_client_ = std::move(tracked_element_rects);
+  }
+
+  const viz::TrackedElementRects& tracked_element_rects_from_client() const {
+    return tracked_element_rects_from_client_;
+  }
 
   // Buffers `callback` until a relevant presentation feedback arrives, at which
   // point the callback will be posted to run on the main thread. A presentation
@@ -1375,6 +1386,10 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // InputDelegate, which normally provides this information, is not present
   // in the Viz process.
   bool is_handling_interaction_from_client_ = false;
+
+  // Only used in TreesInViz mode. Stores tracked element rects passed from the
+  // client so that they can be added to generated frame metadata in Viz.
+  viz::TrackedElementRects tracked_element_rects_from_client_;
 
   // Settings whether we dump generated compositor frame during DrawLayers.
   // They are for debug purposes for TreesInViz and TreeAnimationsInViz.

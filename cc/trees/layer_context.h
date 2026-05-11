@@ -53,7 +53,8 @@ class CC_EXPORT LayerContext {
       const gfx::Rect& viewport_damage_rect,
       bool frame_has_damage,
       bool is_flush,
-      std::vector<ui::LatencyInfo> latency_info) = 0;
+      std::vector<ui::LatencyInfo> latency_info,
+      viz::TrackedElementRects tracked_element_rects) = 0;
 
   // Pushes an update to a single tile in the context's display tree.
   virtual void UpdateDisplayTile(

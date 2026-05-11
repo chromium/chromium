@@ -2025,6 +2025,9 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
   RETURN_IF_FALSE(update->next_frame_token > 0, "invalid frame token");
   host_impl_->set_next_frame_token_from_client(update->next_frame_token);
 
+  host_impl_->set_tracked_element_rects_from_client(
+      std::move(update->tracked_element_rects));
+
   for (const auto& latency : update->latency_info) {
     if (latency.terminated()) {
       return base::unexpected("Received already-terminated LatencyInfo");

@@ -29,7 +29,8 @@ class TestLayerContext : public LayerContext {
       const gfx::Rect& viewport_damage_rect,
       bool frame_has_damage,
       bool is_flush,
-      std::vector<ui::LatencyInfo> latency_info) override;
+      std::vector<ui::LatencyInfo> latency_info,
+      viz::TrackedElementRects tracked_element_rects) override;
 
   void UpdateDisplayTile(PictureLayerImpl& layer,
                          const Tile& tile,

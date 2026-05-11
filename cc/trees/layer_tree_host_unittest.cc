@@ -12100,6 +12100,68 @@ class LayerTreeHostTestTrackedElementRects
 
 SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostTestTrackedElementRects);
 
+class LayerTreeHostTestTrackedElementRectsTreesInViz
+    : public LayerTreeHostTestTrackedElementRects {
+ public:
+  LayerTreeHostTestTrackedElementRectsTreesInViz() {
+    feature_list_.InitAndEnableFeature(features::kTreesInViz);
+  }
+
+  void DidActivateTreeOnThread(LayerTreeHostImpl* host_impl) override {
+    base::AutoLock lock(client_host_impl_lock_);
+    client_host_impl_ = host_impl;
+  }
+
+  void DisplayReceivedCompositorFrameOnThread(
+      const viz::CompositorFrame& frame) override {
+    LayerTreeHostImpl* host_impl = nullptr;
+    {
+      // Add a lock to prevent a data race between this and
+      // DidActivateTreeOnThread() / AfterTest().
+      base::AutoLock lock(client_host_impl_lock_);
+      host_impl = client_host_impl_;
+    }
+    if (!host_impl) {
+      return;
+    }
+
+    // Verify service-side tracked element rects.
+    auto* frame_sink = static_cast<TestLayerTreeFrameSink*>(
+        host_impl->layer_tree_frame_sink());
+    viz::LayerContextImpl* layer_context =
+        frame_sink->support()->layer_context_for_testing();
+    ASSERT_TRUE(layer_context);
+    auto* service_host_impl = layer_context->host_impl();
+    ASSERT_TRUE(service_host_impl);
+
+    // Read rects from client from the service-side host impl.
+    const auto& rects = service_host_impl->tracked_element_rects_from_client();
+
+    // Expected compositor frame rects have kFeature1 and kId2 and Rect(0, 0,
+    // 10, 5).
+    EXPECT_EQ(rects.size(), 1u);
+    ASSERT_TRUE(rects.contains(kFeature1));
+    const auto& element_list = rects.at(kFeature1);
+    EXPECT_EQ(element_list.size(), 1u);
+    EXPECT_EQ(element_list[0].id, kId2);
+    EXPECT_EQ(element_list[0].visible_bounds, gfx::Rect(0, 0, 10, 5));
+
+    EndTest();
+  }
+
+  void AfterTest() override {
+    base::AutoLock lock(client_host_impl_lock_);
+    client_host_impl_ = nullptr;
+  }
+
+ private:
+  mutable base::Lock client_host_impl_lock_;
+  raw_ptr<LayerTreeHostImpl> client_host_impl_ = nullptr;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+SINGLE_AND_MULTI_THREAD_TEST_F(LayerTreeHostTestTrackedElementRectsTreesInViz);
+
 class LayerTreeHostTestTreesInVizSyncViewportDeltas : public LayerTreeHostTest {
  public:
   LayerTreeHostTestTreesInVizSyncViewportDeltas() {

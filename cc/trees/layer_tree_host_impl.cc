@@ -2433,8 +2433,12 @@ viz::CompositorFrameMetadata LayerTreeHostImpl::MakeCompositorFrameMetadata() {
   }
 
   metadata.capture_bounds = CollectRegionCaptureBounds();
-  metadata.tracked_element_rects = CollectTrackedElementRects(
-      /*is_for_compositor_frame_metadata=*/true);
+  if (settings().trees_in_viz_in_viz_process) {
+    metadata.tracked_element_rects = tracked_element_rects_from_client_;
+  } else {
+    metadata.tracked_element_rects = CollectTrackedElementRects(
+        /*is_for_compositor_frame_metadata=*/true);
+  }
 
   if (!screenshot_destination_.is_empty()) {
     metadata.screenshot_destination =
@@ -2610,7 +2614,7 @@ std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
 
     // Send updates to Viz even for no damage case when TreesInViz is enabled.
     if (settings_.TreesInVizInClientProcess()) {
-      UpdateDisplayTree(*frame, {});
+      UpdateDisplayTree(*frame, {}, viz::TrackedElementRects());
     }
 
     active_tree()->ResetAllChangeTracking();
@@ -2701,7 +2705,8 @@ std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
     send_frame_token_to_embedder_ =
         compositor_frame.metadata.send_frame_token_to_embedder;
     trees_in_viz_submit_time = UpdateDisplayTree(
-        *frame, std::move(compositor_frame.metadata.latency_info));
+        *frame, std::move(compositor_frame.metadata.latency_info),
+        std::move(compositor_frame.metadata.tracked_element_rects));
 
     layer_tree_frame_sink_->ExportFrameTiming();
   } else {
@@ -3200,6 +3205,7 @@ void LayerTreeHostImpl::DidDrawAllLayers(const FrameData& frame) {
 base::TimeTicks LayerTreeHostImpl::UpdateDisplayTree(
     FrameData& frame,
     std::vector<ui::LatencyInfo> latency_info,
+    viz::TrackedElementRects tracked_element_rects,
     bool is_flush) {
   DCHECK(settings_.TreesInVizInClientProcess());
   DCHECK(layer_context_);
@@ -3210,7 +3216,7 @@ base::TimeTicks LayerTreeHostImpl::UpdateDisplayTree(
       *active_tree(), *resource_provider(),
       layer_tree_frame_sink_->shared_image_interface().get(),
       viewport_damage_rect_, !frame.has_no_damage, is_flush,
-      std::move(latency_info));
+      std::move(latency_info), std::move(tracked_element_rects));
 }
 
 void LayerTreeHostImpl::FlushDisplayTree() {
@@ -3239,7 +3245,7 @@ void LayerTreeHostImpl::FlushDisplayTree() {
   // activation of this specific update and ensures that subsequent metadata
   // (like frame tokens in ACKs) remains consistent.
   ++next_frame_token_;
-  UpdateDisplayTree(frame, {}, /*is_flush=*/true);
+  UpdateDisplayTree(frame, {}, viz::TrackedElementRects(), /*is_flush=*/true);
 
   // A flush update synchronizes state (e.g. tile evictions) to Viz but does not
   // result in a frame draw. We reset internal damage tracking and tree change

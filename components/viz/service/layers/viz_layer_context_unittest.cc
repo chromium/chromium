@@ -137,7 +137,8 @@ void VizLayerContextTest::UpdateDisplayTreeAndWait() {
   viz_layer_context_->UpdateDisplayTreeFrom(
       *host_impl_->active_tree(), *host_impl_->resource_provider(),
       /*shared_image_interface=*/nullptr, viewport_damage_rect,
-      frame_has_damage, /*is_flush=*/false, std::move(latency_info));
+      frame_has_damage, /*is_flush=*/false, std::move(latency_info),
+      TrackedElementRects());
 
   base::RunLoop run_loop;
   fake_layer_context_.on_update_display_tree_ = run_loop.QuitClosure();
@@ -290,7 +291,8 @@ TEST_F(VizLayerContextTest, FlushOnlyUpdate) {
   viz_layer_context_->UpdateDisplayTreeFrom(
       *host_impl_->active_tree(), *host_impl_->resource_provider(),
       /*shared_image_interface=*/nullptr, viewport_damage_rect,
-      frame_has_damage, /*is_flush=*/true, std::move(latency_info));
+      frame_has_damage, /*is_flush=*/true, std::move(latency_info),
+      TrackedElementRects());
 
   base::RunLoop run_loop;
   fake_layer_context_.on_update_display_tree_ = run_loop.QuitClosure();
