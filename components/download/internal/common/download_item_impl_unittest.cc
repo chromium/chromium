@@ -2561,5 +2561,92 @@ TEST_F(DownloadItemTest, ResumptionClampingClearsHashState) {
   EXPECT_FALSE(captured_has_hash_state);
 }
 
+TEST_F(DownloadItemTest, DataUrlNotTruncatedWhileInProgress) {
+  std::string large_data_url = "data:text/plain,";
+  large_data_url.append(2000, 'a');
+  create_info()->url_chain.clear();
+  create_info()->url_chain.emplace_back(large_data_url);
+
+  DownloadItemImpl* item = CreateDownloadItem();
+  MockDownloadFile* file =
+      DoIntermediateRename(item, DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS);
+
+  ASSERT_EQ(DownloadItem::IN_PROGRESS, item->GetState());
+  EXPECT_EQ(large_data_url, item->GetURL().spec());
+
+  CleanupItem(item, file, DownloadItem::IN_PROGRESS);
+}
+
+TEST_F(DownloadItemTest, TruncateDataUrlAfterComplete) {
+  std::string large_data_url = "data:text/plain,";
+  large_data_url.append(2000, 'a');
+  create_info()->url_chain.clear();
+  create_info()->url_chain.emplace_back(large_data_url);
+
+  DownloadItemImpl* item = CreateDownloadItem();
+  MockDownloadFile* download_file =
+      DoIntermediateRename(item, DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS);
+
+  ASSERT_EQ(DownloadItem::IN_PROGRESS, item->GetState());
+  EXPECT_EQ(large_data_url, item->GetURL().spec());
+
+  DoDestinationComplete(item, download_file);
+
+  EXPECT_EQ(DownloadItem::COMPLETE, item->GetState());
+  EXPECT_EQ(1024u, item->GetURL().spec().length());
+  EXPECT_EQ(large_data_url.substr(0, 1024), item->GetURL().spec());
+}
+
+TEST_F(DownloadItemTest, TruncateDataUrlAfterCancel) {
+  std::string large_data_url = "data:text/plain,";
+  large_data_url.append(2000, 'a');
+  create_info()->url_chain.clear();
+  create_info()->url_chain.emplace_back(large_data_url);
+
+  DownloadItemImpl* item = CreateDownloadItem();
+  download::DownloadTargetCallback target_callback;
+  MockDownloadFile* download_file =
+      CallDownloadItemStart(item, &target_callback);
+
+  EXPECT_CALL(*download_file, Cancel());
+
+  item->Cancel(true);
+
+  EXPECT_EQ(DownloadItem::CANCELLED, item->GetState());
+  EXPECT_EQ(1024u, item->GetURL().spec().length());
+  EXPECT_EQ(large_data_url.substr(0, 1024), item->GetURL().spec());
+}
+
+TEST_F(DownloadItemTest, SmallDataUrlNotTruncatedAfterComplete) {
+  std::string small_data_url = "data:text/plain,small";
+  create_info()->url_chain.clear();
+  create_info()->url_chain.emplace_back(small_data_url);
+
+  DownloadItemImpl* item = CreateDownloadItem();
+  MockDownloadFile* download_file =
+      DoIntermediateRename(item, DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS);
+
+  DoDestinationComplete(item, download_file);
+
+  EXPECT_EQ(DownloadItem::COMPLETE, item->GetState());
+  EXPECT_EQ(small_data_url, item->GetURL().spec());
+}
+
+TEST_F(DownloadItemTest, LargeHttpUrlNotTruncatedAfterComplete) {
+  std::string large_http_url = "http://example.com/download?";
+  large_http_url.append(2000, 'a');
+  create_info()->url_chain.clear();
+  create_info()->url_chain.emplace_back(large_http_url);
+
+  DownloadItemImpl* item = CreateDownloadItem();
+  MockDownloadFile* download_file =
+      DoIntermediateRename(item, DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS);
+
+  DoDestinationComplete(item, download_file);
+
+  EXPECT_EQ(DownloadItem::COMPLETE, item->GetState());
+  EXPECT_EQ(large_http_url, item->GetURL().spec());
+}
+
 }  // namespace
 }  // namespace download

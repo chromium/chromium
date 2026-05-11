@@ -2385,6 +2385,10 @@ void DownloadItemImpl::TransitionTo(DownloadInternalState new_state) {
   DownloadInternalState old_state = state_;
   state_ = new_state;
 
+  if (IsDownloadDone(GetURL(), InternalToExternalState(new_state),
+                     last_reason_)) {
+    TruncateDataUrlAtTheEndIfNeeded(&request_info_.url_chain);
+  }
   DCHECK(IsSavePackageDownload()
              ? IsValidSavePackageStateTransition(old_state, new_state)
              : IsValidStateTransition(old_state, new_state))

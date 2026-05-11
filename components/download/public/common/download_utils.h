@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <optional>
+#include <vector>
 
 #include "components/download/database/download_db_entry.h"
 #include "components/download/database/in_progress/download_entry.h"
@@ -20,6 +21,7 @@
 #include "net/cert/cert_status_flags.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
+#include "url/gurl.h"
 
 namespace net {
 class HttpRequestHeaders;
@@ -171,6 +173,10 @@ bool IsInterruptedDownloadAutoResumable(download::DownloadItem* download_item,
 COMPONENTS_DOWNLOAD_EXPORT
 bool IsContentDispositionAttachmentInHead(
     const network::mojom::URLResponseHead& response_head);
+
+// Truncates large `data:` URLs in the URL chain to save memory.
+COMPONENTS_DOWNLOAD_EXPORT void TruncateDataUrlAtTheEndIfNeeded(
+    std::vector<GURL>* url_chain);
 
 }  // namespace download
 

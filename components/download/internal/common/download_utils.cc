@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
@@ -37,6 +38,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/origin.h"
+#include "url/url_constants.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "components/download/internal/common/android/download_collection_bridge.h"
@@ -63,6 +65,9 @@ const int kDefaultOverwrittenDownloadExpiredTimeInDays = 90;
 
 // Default buffer size in bytes to write to the download file.
 const int kDefaultDownloadFileBufferSize = 524288;
+
+// Maximum size of a data URL. URLs larger than this will be truncated.
+const size_t kMaxDataURLSize = 1024u;
 
 #if BUILDFLAG(IS_ANDROID)
 // Default maximum length of a downloaded file name on Android.
@@ -174,6 +179,18 @@ void OnInterMediateUriCreated(LocalPathCallback callback,
 }  // namespace
 
 const uint32_t DownloadItem::kInvalidId = 0;
+
+void TruncateDataUrlAtTheEndIfNeeded(std::vector<GURL>* url_chain) {
+  for (GURL& url : *url_chain) {
+    if (url.SchemeIs(url::kDataScheme)) {
+      const std::string& data_url = url.spec();
+      if (data_url.size() > kMaxDataURLSize) {
+        GURL truncated_url(data_url.substr(0, kMaxDataURLSize));
+        url.Swap(&truncated_url);
+      }
+    }
+  }
+}
 
 DownloadInterruptReason HandleRequestCompletionStatus(
     net::Error error_code,

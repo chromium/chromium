@@ -64,23 +64,7 @@ using history::DownloadState;
 
 namespace {
 
-// Max data url size to be stored in history DB.
-const size_t kMaxDataURLSize = 1024u;
 
-// If there is a data URL at the end of the url chain, truncate it if it is too
-// long.
-void TruncatedDataUrlAtTheEndIfNeeded(std::vector<GURL>* url_chain) {
-  if (url_chain->empty())
-    return;
-  GURL* url = &url_chain->back();
-  if (url->SchemeIs(url::kDataScheme)) {
-    const std::string& data_url = url->spec();
-    if (data_url.size() > kMaxDataURLSize) {
-      GURL truncated_url(data_url.substr(0, kMaxDataURLSize));
-      url->Swap(&truncated_url);
-    }
-  }
-}
 
 // Per-DownloadItem data. This information does not belong inside DownloadItem,
 // and keeping maps in DownloadHistory from DownloadItem to this information is
@@ -192,7 +176,7 @@ history::DownloadRow GetDownloadRow(download::DownloadItem* item) {
   }
 #endif
   download.download_slice_info = history::GetHistoryDownloadSliceInfos(*item);
-  TruncatedDataUrlAtTheEndIfNeeded(&download.url_chain);
+  download::TruncateDataUrlAtTheEndIfNeeded(&download.url_chain);
   return download;
 }
 
@@ -393,7 +377,7 @@ void DownloadHistory::LoadHistoryDownloads(
     download::DownloadInterruptReason history_reason =
         history::ToContentDownloadInterruptReason(row.interrupt_reason);
     std::vector<GURL> url_chain = row.url_chain;
-    TruncatedDataUrlAtTheEndIfNeeded(&url_chain);
+    download::TruncateDataUrlAtTheEndIfNeeded(&url_chain);
 
     // If the serialized EmbedderDownloadData is not present in DownloadRow,
     // use the site URL to grab the appropriate StoragePartitionConfig to use
