@@ -30,13 +30,15 @@ public interface SideUiObserver {
     }
 
     /**
-     * Called after the Side UI has initiated a {@link Transition} its new resting UI state to
-     * handle a resize. This will either be 1) a static resize or 2) when an animated resize
-     * Transition has just begun.
+     * Called after {@link SideUiCoordinator} has applied the given {@link SideUiSpecs} to the UI.
      *
-     * <p>The {@link SideUiSpecs} that are passed represent the resting state after the
-     * aforementioned resize will be completed. These specs are also the same as the ones queryable
-     * through {@link SideUiCoordinator#getCurrentSideUiSpecs()}.
+     * <p>For static resizing, this will be called immediately after the UI change.
+     *
+     * <p>For animated resizing using a {@link Transition}, this will be called when the {@link
+     * Transition} has just begun.
+     *
+     * <p>For both cases above, the {@link SideUiSpecs} parameter represents the resting state after
+     * the aforementioned resizing is completed.
      *
      * <p>This is intended to be used by UI elements that need to resize themselves in response to
      * the changes in the Side UI.

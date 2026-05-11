@@ -152,7 +152,7 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator {
     @Override
     public void addObserver(SideUiObserver observer) {
         if (mSideUiObservers.addObserver(observer)) {
-            observer.onSideUiSpecsChanged(getCurrentSideUiSpecs());
+            observer.onSideUiSpecsChanged(measureSideUiSpecs());
         }
     }
 
@@ -164,8 +164,7 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator {
     }
 
     @Override
-    public SideUiSpecs getCurrentSideUiSpecs() {
-        // Infers by measuring the two parent containers.
+    public SideUiSpecs measureSideUiSpecs() {
         View sideUiParent = (View) mStartAnchorContainer.getParent();
         assert sideUiParent == mEndAnchorContainer.getParent()
                 : "Anchor containers should have the same parent.";
@@ -384,9 +383,8 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator {
     }
 
     /**
-     * Notifies each {@link SideUiObserver} of the new {@link SideUiSpecs}. Called after the
-     * containers and their views have reached their resting state (and {@link
-     * #getCurrentSideUiSpecs()} represents this resting state).
+     * Notifies each {@link SideUiObserver} of the new {@link SideUiSpecs} that represents the
+     * resting UI state.
      */
     private void notifySideUiSpecsChanged(SideUiSpecs sideUiSpecs) {
         for (SideUiObserver observer : mSideUiObservers) {

@@ -1135,7 +1135,7 @@ public class CompositorViewHolder extends FrameLayout
         // the view if they are visible, therefore shrinking the Blink-side view size.
         int horizontalViewportInsets = 0;
         if (AndroidSidePanelEnabledFn.isEnabled() && mSideUiStateProvider != null) {
-            SideUiSpecs sideUiSpecs = mSideUiStateProvider.getCurrentSideUiSpecs();
+            SideUiSpecs sideUiSpecs = mSideUiStateProvider.measureSideUiSpecs();
             horizontalViewportInsets =
                     sideUiSpecs.mStartContainerWidth + sideUiSpecs.mEndContainerWidth;
         }
@@ -1416,7 +1416,7 @@ public class CompositorViewHolder extends FrameLayout
         // Only reposition custom views and native pages. Do not reposition ContentView.
         if (!currentTab.isShowingCustomView() && !currentTab.isNativePage()) return;
 
-        SideUiSpecs sideUiSpecs = mSideUiStateProvider.getCurrentSideUiSpecs();
+        SideUiSpecs sideUiSpecs = mSideUiStateProvider.measureSideUiSpecs();
         MarginLayoutParams layoutParams = (MarginLayoutParams) mView.getLayoutParams();
         // Layout parameters can be null if the view is not yet attached to the view hierarchy
         // or fully initialized (e.g. during tab reparenting).
@@ -1543,7 +1543,7 @@ public class CompositorViewHolder extends FrameLayout
 
     private void adjustRectForSideUi(RectF outRect) {
         if (mSideUiStateProvider != null) {
-            SideUiSpecs sideUiSpecs = mSideUiStateProvider.getCurrentSideUiSpecs();
+            SideUiSpecs sideUiSpecs = mSideUiStateProvider.measureSideUiSpecs();
             int leftOffset =
                     LocalizationUtils.isLayoutRtl()
                             ? sideUiSpecs.mEndContainerWidth

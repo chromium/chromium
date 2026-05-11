@@ -293,11 +293,11 @@ public class SideUiCoordinatorImplTest {
     }
 
     @Test
-    public void testGetCurrentSideUiSpecs_AfterTopMarginChange() {
+    public void testMeasureSideUiSpecs_AfterTopMarginChange() {
         int sideUiTopMargin = 100;
         mTopMarginSupplier.set(sideUiTopMargin);
 
-        mCoordinator.getCurrentSideUiSpecs();
+        mCoordinator.measureSideUiSpecs();
 
         assertEquals(
                 "Unexpected measured height.",
@@ -310,7 +310,7 @@ public class SideUiCoordinatorImplTest {
     }
 
     @Test
-    public void testGetCurrentSideUiSpecs_AfterParentResize() {
+    public void testMeasureSideUiSpecs_AfterParentResize() {
         // Simulate the measure pass for when side UI's parent is resized.
         int newParentHeight = mAnchorContainerParent.getHeight() - 100;
         mAnchorContainerParent.measure(
@@ -318,8 +318,8 @@ public class SideUiCoordinatorImplTest {
                         mAnchorContainerParent.getWidth(), View.MeasureSpec.EXACTLY),
                 View.MeasureSpec.makeMeasureSpec(newParentHeight, View.MeasureSpec.EXACTLY));
 
-        // Call getCurrentSideUiSpecs() before the layout pass.
-        mCoordinator.getCurrentSideUiSpecs();
+        // Call measureSideUiSpecs() before the layout pass.
+        mCoordinator.measureSideUiSpecs();
 
         // The anchor containers should use newParentHeight (the new measured height).
         assertEquals(newParentHeight, mStartAnchorContainer.getMeasuredHeight());
@@ -328,8 +328,8 @@ public class SideUiCoordinatorImplTest {
         // Now simulate the layout pass.
         mAnchorContainerParent.layout(0, 0, mAnchorContainerParent.getWidth(), newParentHeight);
 
-        // Call getCurrentSideUiSpecs() again.
-        mCoordinator.getCurrentSideUiSpecs();
+        // Call measureSideUiSpecs() again.
+        mCoordinator.measureSideUiSpecs();
 
         // The anchor containers' measured height should remain unchanged.
         assertEquals(newParentHeight, mStartAnchorContainer.getMeasuredHeight());
