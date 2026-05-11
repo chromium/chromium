@@ -562,7 +562,7 @@
     ],
     "args": ["--disable-blink-features=DecoupleComputedBorderWidthFromStyle",
              "--disable-blink-features=DecoupleResolvedColumnRuleWidthFromStyle"],
-    "expires": "Apr 30, 2026",
+    "expires": "Nov 30, 2026",
     "owners": ["samomekarajr@microsoft.com", "kbabbitt@microsoft.com"]
   },
   {
