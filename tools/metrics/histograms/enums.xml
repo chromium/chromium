@@ -10121,6 +10121,7 @@ from previous Chrome versions.
   <int value="-1314603238" label="ChromeHomePullToRefreshIphAtTop:enabled"/>
   <int value="-1313810940" label="StrictOriginIsolation:disabled"/>
   <int value="-1312719341" label="ChromeRefresh2023NTB:enabled"/>
+  <int value="-1312128217" label="NtpNextCanvasChip:enabled"/>
   <int value="-1311575452"
       label="AutofillEnforceMinRequiredFieldsForUpload:disabled"/>
   <int value="-1311503211" label="MuteNotificationsDuringScreenShare:enabled"/>
@@ -13862,9 +13863,11 @@ from previous Chrome versions.
   <int value="-77872983" label="BookmarkAppsMac:disabled"/>
   <int value="-77789682" label="SharingPreferVapid:disabled"/>
   <int value="-77713912" label="EnableKeyboardBacklightToggle:enabled"/>
+  <int value="-77603038" label="NtpRealboxCyclingPlaceholders:disabled"/>
   <int value="-77084779" label="ExperimentalFlingAnimation:enabled"/>
   <int value="-76631048" label="disable-offline-auto-reload-visible-only"/>
   <int value="-76445689" label="WasmCodeCache:enabled"/>
+  <int value="-76415619" label="NtpNextCanvasChip:disabled"/>
   <int value="-76348564" label="PointerLockOptions:enabled"/>
   <int value="-75418012" label="ContextualSuggestionsOptOut:disabled"/>
   <int value="-75396730" label="UseAlternateHistorySyncIllustration:disabled"/>
@@ -20137,6 +20140,7 @@ from previous Chrome versions.
   <int value="1982520858" label="XplatSyncedSetup:enabled"/>
   <int value="1982576646" label="PanelSelfRefresh2:disabled"/>
   <int value="1983635890" label="TabGroupColorRefresh:enabled"/>
+  <int value="1983761109" label="NtpRealboxCyclingPlaceholders:enabled"/>
   <int value="1983968737" label="PdfGlicSummarize:disabled"/>
   <int value="1984029104" label="test-third-party-cookie-phaseout:enabled"/>
   <int value="1985040337" label="EnableFastTouchpadClick:enabled"/>

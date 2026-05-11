@@ -6371,6 +6371,11 @@ inline constexpr char kNtpRealboxNextName[] = "NTP Realbox Next";
 inline constexpr char kNtpRealboxNextDescription[] =
     "Enables the Realbox 'Next' experience.";
 
+inline constexpr char kNtpRealboxCyclingPlaceholdersName[] =
+    "NTP Realbox Cycling Placeholders";
+inline constexpr char kNtpRealboxCyclingPlaceholdersDescription[] =
+    "Enables cycling placeholders within the Realbox 'Next' experience.";
+
 inline constexpr char kNtpDriveModuleName[] = "NTP Drive Module";
 inline constexpr char kNtpDriveModuleDescription[] =
     "Shows the Google Drive module on the New Tab Page";
@@ -6447,6 +6452,10 @@ inline constexpr char kNtpModuleSignInRequirementDescription[] =
 inline constexpr char kNtpNextFeaturesName[] = "NTP Next Features";
 inline constexpr char kNtpNextFeaturesDescription[] =
     "Enables features (e.g., AI action chips) in NTP Next";
+
+inline constexpr char kNtpNextCanvasChipName[] = "NTP Next Canvas Chip";
+inline constexpr char kNtpNextCanvasChipDescription[] =
+    "Enables the Canvas tool chip for NTP action chips";
 
 inline constexpr char kNtpOneGoogleBarAsyncBarPartsName[] =
     "NTP OneGoogleBar Async Bar Parts";

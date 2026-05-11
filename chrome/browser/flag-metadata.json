@@ -6887,6 +6887,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "ntp-next-canvas-chip",
+    "owners": [ "rtatum@chromium.com", "chrome-desktop-ntp@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "ntp-next-features",
     "owners": [
       "jennserrano@google.com",
@@ -6910,6 +6915,11 @@
     "name": "ntp-realbox-cr23-theming",
     "owners": [ "niharm@google.com", "mahmadi@google.com"],
     "expiry_milestone": 140
+  },
+  {
+    "name": "ntp-realbox-cycling-placeholders",
+    "owners": [ "rtatum@chromium.com", "chrome-desktop-ntp@google.com" ],
+    "expiry_milestone": 160
   },
   {
     "name": "ntp-realbox-next",

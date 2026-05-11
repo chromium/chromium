@@ -1531,27 +1531,11 @@ const FeatureEntry::FeatureVariation kNtpComposeboxVariations[] = {
     {"- With Threads Rail", kComposeboxNextThreadsRail, nullptr},
 };
 
-const FeatureEntry::FeatureParam kShowNextRealboxCyclingPlaceholders[] = {
-    {"CyclingPlaceholders", "true"},
-};
-
-const FeatureEntry::FeatureVariation kNtpRealboxNextVariations[] = {
-    {"- Show Next Realbox: Cycling placeholders",
-     kShowNextRealboxCyclingPlaceholders, nullptr},
-};
-
-const FeatureEntry::FeatureParam
-    kNtpNextShowChipsUIWithChromeNtpActionClientAndCanvas[] = {
-        {"NtpNextEnableCanvasChipParam", "true"},
-};
-
 const FeatureEntry::FeatureParam kNtpNextAllowDisablement[] = {
     {"NtpNextDisablementContextMenuParam", "true"},
 };
 
 const FeatureEntry::FeatureVariation kNtpNextVariations[] = {
-    {"- Show Chips UI with a New Suggestions Client and Canvas Chip",
-     kNtpNextShowChipsUIWithChromeNtpActionClientAndCanvas, nullptr},
     {"- Allow Disable", kNtpNextAllowDisablement, nullptr},
 };
 
@@ -7014,9 +6998,12 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"ntp-realbox-next", flag_descriptions::kNtpRealboxNextName,
      flag_descriptions::kNtpRealboxNextDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_realbox::kNtpRealboxNext,
-                                    kNtpRealboxNextVariations,
-                                    "NtpRealboxNext")},
+     FEATURE_VALUE_TYPE(ntp_realbox::kNtpRealboxNext)},
+
+    {"ntp-realbox-cycling-placeholders",
+     flag_descriptions::kNtpRealboxCyclingPlaceholdersName,
+     flag_descriptions::kNtpRealboxCyclingPlaceholdersDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_realbox::kNtpRealboxCyclingPlaceholders)},
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_CHROMEOS)
@@ -7103,6 +7090,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpNextFeatures,
                                     kNtpNextVariations,
                                     "NtpNextFeatures")},
+
+    {"ntp-next-canvas-chip", flag_descriptions::kNtpNextCanvasChipName,
+     flag_descriptions::kNtpNextCanvasChipDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_features::kNtpNextCanvasChip)},
 
     {"ntp-modules-drag-and-drop", flag_descriptions::kNtpModulesDragAndDropName,
      flag_descriptions::kNtpModulesDragAndDropDescription, kOsDesktop,
