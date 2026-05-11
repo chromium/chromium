@@ -109,6 +109,7 @@ specific_include_rules = {
     "+ios/chrome/browser/omnibox/model",
     "+ios/chrome/browser/aim/model",
     "+ios/chrome/browser/composebox/model",
+    "+ios/chrome/browser/cobrowse/model",
   ],
   'test_with_profile.mm': [
     "+ios/chrome/browser/optimization_guide/model",

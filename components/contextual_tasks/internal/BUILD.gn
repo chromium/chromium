@@ -6,6 +6,7 @@ source_set("internal") {
   visibility = [
     ":*",
     "//chrome/browser/contextual_tasks:*",
+    "//ios/chrome/browser/cobrowse/model:factory",
   ]
 
   sources = [
