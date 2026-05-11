@@ -7,8 +7,11 @@
 #include <gtest/gtest.h>
 
 #include "base/strings/strcat.h"
+#include "base/test/scoped_feature_list.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/web/web_text_check_client.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_check_requester.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_check_test_base.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_checker.h"
@@ -109,6 +112,72 @@ TEST_F(OnDemandSpellCheckControllerTest,
 }
 
 TEST_F(OnDemandSpellCheckControllerTest,
+       RequestFullCheckingWithoutUserActivation) {
+  SetSpellCheckChunkingEnabled(true);
+  SetBodyContent("<div contenteditable='true'>foo</div>");
+  Element* div = QuerySelector("div");
+
+  // Focus the element programmatically (not from user gesture).
+  div->Focus();
+  ASSERT_FALSE(div->WasLastFocusFromUserGesture());
+
+  OnDemandController().RequestFullChecking(div);
+  test::RunPendingTasks();
+
+  EXPECT_EQ(OnDemandSpellCheckController::State::kInactive,
+            OnDemandController().GetState());
+  EXPECT_EQ(0, Requester().LastRequestSequence());
+}
+
+TEST_F(OnDemandSpellCheckControllerTest,
+       RequestFullCheckingWithTransientUserActivation) {
+  SetSpellCheckChunkingEnabled(true);
+  SetBodyContent("<div contenteditable='true'>foo</div>");
+  Element* div = QuerySelector("div");
+
+  // Focus the element programmatically (not from user gesture).
+  div->Focus();
+  ASSERT_FALSE(div->WasLastFocusFromUserGesture());
+
+  // Simulate transient user activation.
+  GetFrame().NotifyUserActivation(
+      mojom::blink::UserActivationNotificationType::kInteraction);
+  ASSERT_TRUE(LocalFrame::HasTransientUserActivation(&GetFrame()));
+
+  OnDemandController().RequestFullChecking(div);
+  test::RunPendingTasks();
+
+  // It should now be active because of the transient activation.
+  EXPECT_EQ(1, Requester().LastRequestSequence());
+}
+
+TEST_F(OnDemandSpellCheckControllerTest,
+       RequestFullCheckingWithFocusedElementOutsideContainer) {
+  SetSpellCheckChunkingEnabled(true);
+  SetBodyContent(
+      "<div id='container' contenteditable='true'>foo</div>"
+      "<div id='other' contenteditable='true'>bar</div>");
+  Element* container = QuerySelector("#container");
+  Element* other = QuerySelector("#other");
+
+  // Focus the 'other' element with a simulated user gesture.
+  other->Focus(FocusParams(SelectionBehaviorOnFocus::kRestore,
+                           mojom::blink::FocusType::kMouse, nullptr));
+  ASSERT_TRUE(other->WasLastFocusFromUserGesture());
+  ASSERT_FALSE(container->contains(other));
+
+  // Request full checking on 'container'.
+  OnDemandController().RequestFullChecking(container);
+  test::RunPendingTasks();
+
+  // It should NOT be active because the focused element is outside the
+  // container.
+  EXPECT_EQ(OnDemandSpellCheckController::State::kInactive,
+            OnDemandController().GetState());
+  EXPECT_EQ(0, Requester().LastRequestSequence());
+}
+
+TEST_F(OnDemandSpellCheckControllerTest,
        RequestFullCheckingWhenGlobalSpellcheckDisabled) {
   class DisabledTextCheckerClient : public WebTextCheckClient {
    public:
@@ -142,6 +211,11 @@ TEST_F(OnDemandSpellCheckControllerTest, RequestFullCheckingWithoutChunking) {
 
   ASSERT_EQ(0, Requester().LastRequestSequence());
 
+  // Simulate transient user activation.
+  GetFrame().NotifyUserActivation(
+      mojom::blink::UserActivationNotificationType::kInteraction);
+  ASSERT_TRUE(LocalFrame::HasTransientUserActivation(&GetFrame()));
+
   OnDemandController().RequestFullChecking(div);
   test::RunPendingTasks();
 
@@ -163,6 +237,11 @@ TEST_F(OnDemandSpellCheckControllerTest, RequestFullCheckingWithChunking) {
 
   ASSERT_EQ(0, Requester().LastRequestSequence());
 
+  // Simulate transient user activation.
+  GetFrame().NotifyUserActivation(
+      mojom::blink::UserActivationNotificationType::kInteraction);
+  ASSERT_TRUE(LocalFrame::HasTransientUserActivation(&GetFrame()));
+
   OnDemandController().RequestFullChecking(div);
   test::RunPendingTasks();
 
@@ -181,6 +260,11 @@ TEST_F(OnDemandSpellCheckControllerTest, SetSpellCheckingDisabled) {
   SetBodyContent("<div contenteditable='true'>foo</div>");
   Element* div = QuerySelector("div");
 
+  // Simulate transient user activation.
+  GetFrame().NotifyUserActivation(
+      mojom::blink::UserActivationNotificationType::kInteraction);
+  ASSERT_TRUE(LocalFrame::HasTransientUserActivation(&GetFrame()));
+
   OnDemandController().RequestFullChecking(div);
   OnDemandController().SetSpellCheckingDisabled(*div);
 
@@ -193,6 +277,11 @@ TEST_F(OnDemandSpellCheckControllerTest, SetElementRemoved) {
   SetSpellCheckChunkingEnabled(true);
   SetBodyContent("<div contenteditable='true'>foo</div>");
   Element* div = QuerySelector("div");
+
+  // Simulate transient user activation.
+  GetFrame().NotifyUserActivation(
+      mojom::blink::UserActivationNotificationType::kInteraction);
+  ASSERT_TRUE(LocalFrame::HasTransientUserActivation(&GetFrame()));
 
   OnDemandController().RequestFullChecking(div);
   OnDemandController().ElementRemoved(*div);
@@ -208,6 +297,11 @@ TEST_F(OnDemandSpellCheckControllerTest, RequestFullCheckingWithChunkingShort) {
   Element* div = QuerySelector("div");
 
   ASSERT_EQ(0, Requester().LastRequestSequence());
+
+  // Simulate transient user activation.
+  GetFrame().NotifyUserActivation(
+      mojom::blink::UserActivationNotificationType::kInteraction);
+  ASSERT_TRUE(LocalFrame::HasTransientUserActivation(&GetFrame()));
 
   OnDemandController().RequestFullChecking(div);
   test::RunPendingTasks();
@@ -226,6 +320,11 @@ TEST_F(OnDemandSpellCheckControllerTest,
   Element* div = QuerySelector("div");
 
   ASSERT_EQ(0, Requester().LastRequestSequence());
+
+  // Simulate transient user activation.
+  GetFrame().NotifyUserActivation(
+      mojom::blink::UserActivationNotificationType::kInteraction);
+  ASSERT_TRUE(LocalFrame::HasTransientUserActivation(&GetFrame()));
 
   OnDemandController().RequestFullChecking(div);
   test::RunPendingTasks();

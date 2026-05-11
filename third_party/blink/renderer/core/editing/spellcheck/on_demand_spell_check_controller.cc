@@ -4,7 +4,10 @@
 
 #include "third_party/blink/renderer/core/editing/spellcheck/on_demand_spell_check_controller.h"
 
+#include "base/feature_list.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
@@ -58,6 +61,20 @@ void OnDemandSpellCheckController::RequestFullChecking(
     const ContainerNode* container_node) {
   if (!IsSpellCheckingEnabled() ||
       !SpellChecker::IsSpellCheckingEnabledAt(Position(container_node, 0))) {
+    ClearProgress();
+    return;
+  }
+
+  const Element* focused_element = window_->document()->FocusedElement();
+  const bool has_transient_user_activation =
+      LocalFrame::HasTransientUserActivation(window_->GetFrame());
+  const bool is_focused_element_in_container =
+      focused_element && container_node->contains(focused_element);
+  if (!has_transient_user_activation &&
+      (!is_focused_element_in_container ||
+       !focused_element->WasLastFocusFromUserGesture()) &&
+      !base::FeatureList::IsEnabled(
+          features::kUnrestrictSpellingAndGrammarForTesting)) {
     ClearProgress();
     return;
   }

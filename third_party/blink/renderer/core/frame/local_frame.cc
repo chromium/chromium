@@ -4221,6 +4221,12 @@ void LocalFrame::PerformFullContentSpellCheck() {
     return;
   }
 
+  // Interacting with the IME UI (which triggers this Mojo call) counts as a
+  // user interaction. Refresh the transient activation window so the
+  // on-demand spellchecker's security circuit break allows the request.
+  NotifyUserActivation(
+      mojom::blink::UserActivationNotificationType::kInteraction);
+
   ContainerNode* container_node = HighestEditableRoot(
       Selection().ComputeVisibleSelectionInDOMTree().Start());
   if (!container_node) {
