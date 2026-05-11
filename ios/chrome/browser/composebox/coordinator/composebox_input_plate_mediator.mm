@@ -279,6 +279,16 @@ std::vector<lens::MimeType> MimeTypesFromCollection(
   return types;
 }
 
+// Returns the default image encoding options.
+// TODO(crbug.com/40280872): Plumb encoding options from a central config.
+lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
+  lens::ImageEncodingOptions image_options;
+  image_options.max_width = 1024;
+  image_options.max_height = 1024;
+  image_options.compression_quality = 80;
+  return image_options;
+}
+
 }  // namespace
 
 @interface ComposeboxInputPlateMediator () <
@@ -1240,15 +1250,9 @@ class QueryContextualizerDelegateBridge
     item.serverToken = serverToken;
   }
 
-  // TODO(crbug.com/40280872): Plumb encoding options from a central config.
-  lens::ImageEncodingOptions image_options;
-  image_options.max_width = 1024;
-  image_options.max_height = 1024;
-  image_options.compression_quality = 80;
-
   if (_contextualSearchSession) {
     _contextualSearchSession->StartTabContextUploadFlow(
-        serverToken, std::move(inputData), image_options);
+        serverToken, std::move(inputData), GetDefaultImageEncodingOptions());
   }
 
   [self notifyContextChanged];
@@ -1901,12 +1905,6 @@ class QueryContextualizerDelegateBridge
     return;
   }
 
-  // TODO(crbug.com/40280872): Plumb encoding options from a central config.
-  lens::ImageEncodingOptions image_options;
-  image_options.max_width = 1024;
-  image_options.max_height = 1024;
-  image_options.compression_quality = 80;
-
   // UIImagePNGRepresentation is an expensive operation. We execute this on a
   // background thread to prevent blocking the UI, especially during batch
   // processing.
@@ -1917,7 +1915,7 @@ class QueryContextualizerDelegateBridge
       base::BindOnce(^(NSData* data) {
         [weakSelf handleImageUploadWithData:data
                           forItemIdentifier:identifier
-                                    options:image_options];
+                                    options:GetDefaultImageEncodingOptions()];
       }));
 }
 
@@ -2008,7 +2006,7 @@ class QueryContextualizerDelegateBridge
     }
     _contextualSearchSession->StartFileContextUploadFlow(
         serverToken, fileName, mimeType, std::move(buffer),
-        /*image_options=*/std::nullopt);
+        GetDefaultImageEncodingOptions());
     [self notifyContextChanged];
   }
 
