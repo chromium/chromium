@@ -45,15 +45,14 @@
 
 // Creates a new instance based on the given mappings.
 - (instancetype)
-      initWithToolMapping:
-          (std::unordered_map<ComposeboxMode, ComposeboxStringBundle*>)
-              controlMapping
-             modelMapping:
-                 (std::unordered_map<ComposeboxModelOption,
-                                     ComposeboxStringBundle*>)modelMapping
-       modelSectionHeader:(NSString*)modelSectionHeader
-       toolsSectionHeader:(NSString*)toolsSectionHeader
-    regularSearchHintText:(NSString*)regularSearchHintText;
+    initWithToolMapping:
+        (std::unordered_map<ComposeboxMode, ComposeboxStringBundle*>)
+            controlMapping
+           modelMapping:
+               (std::unordered_map<ComposeboxModelOption,
+                                   ComposeboxStringBundle*>)modelMapping
+     modelSectionHeader:(NSString*)modelSectionHeader
+     toolsSectionHeader:(NSString*)toolsSectionHeader;
 
 // Returns the menu label for the given tool.
 - (NSString*)menuLabelForTool:(ComposeboxMode)tool;

@@ -13,6 +13,7 @@
 #import "components/search_engines/template_url.h"
 #import "components/search_engines/template_url_data.h"
 #import "components/search_engines/template_url_service.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/favicon/model/mock_favicon_loader.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_consumer.h"
 #import "ios/chrome/browser/omnibox/model/placeholder_service/placeholder_service.h"
@@ -22,6 +23,7 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -90,8 +92,9 @@ class LocationBarMediatorTest : public PlatformTest {
 TEST_F(LocationBarMediatorTest, SetConsumerUpdatesPlaceholderTextImmediately) {
   id mock_consumer = OCMProtocolMock(@protocol(LocationBarConsumer));
 
-  OCMExpect([mock_consumer
-      setPlaceholderText:base::SysUTF16ToNSString(kTestProviderName)]);
+  NSString* expectedPlaceholder = l10n_util::GetNSStringF(
+      IDS_OMNIBOX_EMPTY_HINT_WITH_DSE_NAME, kTestProviderName);
+  OCMExpect([mock_consumer setPlaceholderText:expectedPlaceholder]);
 
   [mediator_ setConsumer:mock_consumer];
 

@@ -252,6 +252,7 @@ source_set("unit_tests") {
     "//components/feature_engagement/test:test_support",
     "//components/omnibox/browser:test_support",
     "//components/search_engines",
+    "//components/strings",
     "//components/variations",
     "//components/variations:test_support",
     "//ios/chrome/app/strings",

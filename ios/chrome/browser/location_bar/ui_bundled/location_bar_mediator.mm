@@ -11,6 +11,7 @@
 #import "components/google/core/common/google_util.h"
 #import "components/lens/lens_url_utils.h"
 #import "components/omnibox/common/omnibox_features.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent_observer_bridge.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
@@ -37,11 +38,13 @@
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/common/NSString+Chromium.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/grit/ios_theme_resources.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 #import "skia/ext/skia_utils_ios.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -137,15 +140,12 @@ const CGFloat kIconPointSize = 16.0;
       search_engines::SupportsSearchByImage(self.templateURLService);
   self.searchEngineSupportsLens =
       search_engines::SupportsSearchImageWithLens(self.templateURLService);
-  const TemplateURL* defaultSearchProvider =
-      self.templateURLService->GetDefaultSearchProvider();
-  NSString* providerName =
-      defaultSearchProvider
-          ? [NSString
-                cr_fromString16:defaultSearchProvider
-                                    ->AdjustedShortNameForLocaleDirection()]
-          : @"";
-  [self.consumer setPlaceholderText:providerName];
+
+  NSString* placeholderText = @"";
+  if (self.placeholderService) {
+    placeholderText = self.placeholderService->GetCurrentPlaceholderText();
+  }
+  [self.consumer setPlaceholderText:placeholderText];
 }
 
 #pragma mark - Setters

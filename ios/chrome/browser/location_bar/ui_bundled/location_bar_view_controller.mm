@@ -136,8 +136,8 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
 // edit menu option to do an image search.
 @property(nonatomic, assign) BOOL lensImageEnabled;
 
-// Search provider name (used for placeholder text).
-@property(nonatomic, copy) NSString* searchProviderName;
+// Placeholder text.
+@property(nonatomic, copy) NSString* placeholderText;
 
 // Type of the current placeholder view.
 @property(nonatomic, assign) LocationBarPlaceholderType placeholderType;
@@ -411,11 +411,11 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
   [self.dispatcher hideComposebox];
 }
 
-- (void)setPlaceholderText:(NSString*)searchProviderName {
-  if (_searchProviderName == searchProviderName) {
+- (void)setPlaceholderText:(NSString*)placeholderText {
+  if ([_placeholderText isEqualToString:placeholderText]) {
     return;
   }
-  _searchProviderName = searchProviderName;
+  _placeholderText = [placeholderText copy];
   if (_isNTP) {
     [self updatePlaceholder];
   }
@@ -814,15 +814,8 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
 
 // Updates placeholder in the steady view.
 - (void)updatePlaceholder {
-  NSString* placeholderString = self.searchOrTypeURLPlaceholderText;
   [self.locationBarSteadyView
-      setLocationLabelPlaceholderText:placeholderString];
-}
-
-// Computes correct placeholder text.
-- (NSString*)searchOrTypeURLPlaceholderText {
-  return l10n_util::GetNSStringF(IDS_OMNIBOX_EMPTY_HINT_WITH_DSE_NAME,
-                                 self.searchProviderName.cr_UTF16String);
+      setLocationLabelPlaceholderText:self.placeholderText];
 }
 
 #pragma mark - UIContextMenuInteractionDelegate
