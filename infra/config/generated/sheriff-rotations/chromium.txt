@@ -87,7 +87,6 @@ ci/ios-simulator
 ci/ios-simulator-full-configs
 ci/ios-simulator-noncq
 ci/linux-archive-rel
-ci/linux-arm64-dbg
 ci/linux-bfcache-rel
 ci/linux-blink-asan-rel
 ci/linux-blink-leak-rel

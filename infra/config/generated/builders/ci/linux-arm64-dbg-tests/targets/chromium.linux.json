@@ -1,9 +1,4 @@
 {
-  "linux-arm64-dbg": {
-    "additional_compile_targets": [
-      "all"
-    ]
-  },
   "linux-arm64-dbg-tests": {
     "gtest_tests": [
       {

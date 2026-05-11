@@ -442,6 +442,43 @@ ci.builder(
         ],
     ),
     targets = targets.bundle(
+        additional_compile_targets = [
+            "all",
+        ],
+    ),
+    cores = 32,
+    ssd = True,
+    gardener_rotations = args.ignore_default(None),
+    console_view_entry = consoles.console_view_entry(
+        category = "arm64",
+        short_name = "bld",
+    ),
+    contact_team_email = "chrome-linux-engprod@google.com",
+    execution_timeout = 6 * time.hour,
+)
+
+ci.thin_tester(
+    name = "linux-arm64-dbg-tests",
+    description_html = "Linux ARM64 Debug tests.",
+    parent = "ci/linux-arm64-dbg",
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "arm64",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = ["mb"],
+            build_config = builder_config.build_config.DEBUG,
+            target_arch = builder_config.target_arch.ARM,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
+        ),
+    ),
+    targets = targets.bundle(
         targets = [
             "chromium_linux_gtests",
         ],
@@ -475,12 +512,12 @@ ci.builder(
         browser_config = targets.browser_config.DEBUG,
         os_type = targets.os_type.LINUX,
     ),
+    gardener_rotations = args.ignore_default(None),
     console_view_entry = consoles.console_view_entry(
         category = "arm64",
         short_name = "dbg",
     ),
     contact_team_email = "chrome-linux-engprod@google.com",
-    execution_timeout = 9 * time.hour,
 )
 
 ci.builder(

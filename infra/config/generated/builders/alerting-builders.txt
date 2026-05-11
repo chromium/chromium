@@ -355,7 +355,6 @@ ci/linux-angle-chromium-builder
 ci/linux-angle-chromium-intel
 ci/linux-angle-chromium-nvidia
 ci/linux-archive-rel
-ci/linux-arm64-dbg
 ci/linux-bfcache-rel
 ci/linux-blink-asan-rel
 ci/linux-blink-leak-rel
@@ -601,7 +600,6 @@ try/ios-simulator-exp
 try/ios-simulator-full-configs
 try/ios-simulator-noncq
 try/linux-angle-chromium-try
-try/linux-arm64-dbg
 try/linux-asan-dbg
 try/linux-asan-media-rel
 try/linux-asan-media-v8-arm-rel

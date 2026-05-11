@@ -111,15 +111,20 @@ try_.builder(
 
 try_.builder(
     name = "linux-arm64-dbg",
-    mirrors = ["ci/linux-arm64-dbg"],
+    mirrors = [
+        "ci/linux-arm64-dbg",
+        "ci/linux-arm64-dbg-tests",
+    ],
     gn_args = gn_args.config(
         configs = [
             "ci/linux-arm64-dbg",
             "debug_try_builder",
         ],
     ),
+    cores = 16,
+    ssd = True,
     contact_team_email = "chrome-linux-engprod@google.com",
-    execution_timeout = 9 * time.hour,
+    execution_timeout = 6 * time.hour,
 )
 
 try_.builder(

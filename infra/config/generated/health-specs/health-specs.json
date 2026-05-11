@@ -9654,6 +9654,27 @@
           }
         ]
       },
+      "linux-arm64-dbg-tests": {
+        "contact_team_email": "chrome-linux-engprod@google.com",
+        "problem_specs": [
+          {
+            "name": "Unhealthy",
+            "period_days": 7,
+            "score": 5,
+            "thresholds": {
+              "_default": "_default"
+            }
+          },
+          {
+            "name": "Low Value",
+            "period_days": 90,
+            "score": 1,
+            "thresholds": {
+              "_default": "_default"
+            }
+          }
+        ]
+      },
       "linux-arm64-rel-fyi": {
         "contact_team_email": "chrome-linux-engprod@google.com",
         "problem_specs": [

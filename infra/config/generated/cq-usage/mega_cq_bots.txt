@@ -87,7 +87,6 @@ chromium/try/ios-simulator
 chromium/try/ios-simulator-exp
 chromium/try/ios-simulator-full-configs
 chromium/try/ios-simulator-noncq
-chromium/try/linux-arm64-dbg
 chromium/try/linux-asan-dbg
 chromium/try/linux-asan-media-rel
 chromium/try/linux-asan-media-v8-arm-rel

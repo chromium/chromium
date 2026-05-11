@@ -32,6 +32,38 @@
                 "config": "chromium"
               }
             }
+          },
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "linux-arm64-dbg-tests",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "builder_group": "chromium.linux",
+              "execution_mode": "TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Debug",
+                "config": "chromium",
+                "target_arch": "arm",
+                "target_bits": 64,
+                "target_platform": "linux"
+              },
+              "legacy_gclient_config": {
+                "apply_configs": [
+                  "arm64"
+                ],
+                "config": "chromium"
+              },
+              "parent": {
+                "bucket": "ci",
+                "builder": "linux-arm64-dbg",
+                "project": "chromium"
+              }
+            }
           }
         ]
       },
@@ -39,6 +71,13 @@
         {
           "bucket": "ci",
           "builder": "linux-arm64-dbg",
+          "project": "chromium"
+        }
+      ],
+      "builder_ids_in_scope_for_testing": [
+        {
+          "bucket": "ci",
+          "builder": "linux-arm64-dbg-tests",
           "project": "chromium"
         }
       ],

@@ -5,6 +5,7 @@ ci/Linux Tests
 ci/Linux Tests (dbg)(1)
 ci/Network Service Linux
 ci/linux-arm64-dbg
+ci/linux-arm64-dbg-tests
 ci/linux-arm64-rel-fyi
 ci/linux-arm64-wayland-rel-fyi
 ci/linux-bfcache-rel
