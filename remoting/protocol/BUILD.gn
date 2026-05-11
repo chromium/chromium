@@ -175,6 +175,8 @@ static_library("protocol") {
     "video_renderer.h",
     "video_stats_stub.h",
     "video_stub.h",
+    "webrtc_audio_fifo_sink_adapter.cc",
+    "webrtc_audio_fifo_sink_adapter.h",
     "webrtc_audio_module.cc",
     "webrtc_audio_module.h",
     "webrtc_audio_sink_adapter.cc",
@@ -349,6 +351,7 @@ source_set("unit_tests") {
     "spake2_authenticator_unittest.cc",
     "stream_packet_socket_unittest.cc",
     "validating_authenticator_unittest.cc",
+    "webrtc_audio_fifo_sink_adapter_unittest.cc",
     "webrtc_event_log_data_unittest.cc",
     "webrtc_video_renderer_adapter_unittest.cc",
   ]

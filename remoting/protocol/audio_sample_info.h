@@ -12,6 +12,8 @@ namespace remoting::protocol {
 // Describes the audio sampling configuration (rate and channels) of an SPSC
 // audio stream.
 struct AudioSampleInfo {
+  bool operator==(const AudioSampleInfo& other) const = default;
+
   // The sampling rate in Hz (e.g. 48000).
   uint32_t sampling_rate = 0;
 
