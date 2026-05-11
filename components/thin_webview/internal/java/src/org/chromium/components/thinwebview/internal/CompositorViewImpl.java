@@ -19,7 +19,6 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.components.thinwebview.CompositorView;
 import org.chromium.components.thinwebview.ThinWebViewConstraints;
 import org.chromium.ui.base.WindowAndroid;
@@ -162,8 +161,6 @@ public class CompositorViewImpl implements CompositorView {
         TextureView textureView = new TextureView(mContext);
         textureView.setSurfaceTextureListener(
                 new TextureView.SurfaceTextureListener() {
-                    private @Nullable Surface mSurface;
-
                     @Override
                     public void onSurfaceTextureUpdated(SurfaceTexture surfaceTexture) {}
 
@@ -171,7 +168,6 @@ public class CompositorViewImpl implements CompositorView {
                     public void onSurfaceTextureSizeChanged(
                             SurfaceTexture surfaceTexture, int width, int height) {
                         if (mNativeCompositorViewImpl == 0) return;
-                        assert textureView.getSurfaceTexture() == surfaceTexture;
                         CompositorViewImplJni.get()
                                 .surfaceChanged(
                                         mNativeCompositorViewImpl,
@@ -179,16 +175,11 @@ public class CompositorViewImpl implements CompositorView {
                                         width,
                                         height,
                                         false,
-                                        getSurface());
+                                        new Surface(surfaceTexture));
                     }
 
                     @Override
                     public boolean onSurfaceTextureDestroyed(SurfaceTexture surfaceTexture) {
-                        assert textureView.getSurfaceTexture() == surfaceTexture;
-                        if (mSurface != null) {
-                            mSurface.release();
-                            mSurface = null;
-                        }
                         if (mNativeCompositorViewImpl == 0) return false;
                         CompositorViewImplJni.get().surfaceDestroyed(mNativeCompositorViewImpl);
                         return false;
@@ -198,7 +189,6 @@ public class CompositorViewImpl implements CompositorView {
                     public void onSurfaceTextureAvailable(
                             SurfaceTexture surfaceTexture, int width, int height) {
                         if (mNativeCompositorViewImpl == 0) return;
-                        assert textureView.getSurfaceTexture() == surfaceTexture;
                         CompositorViewImplJni.get().surfaceCreated(mNativeCompositorViewImpl);
                         CompositorViewImplJni.get()
                                 .surfaceChanged(
@@ -207,14 +197,7 @@ public class CompositorViewImpl implements CompositorView {
                                         width,
                                         height,
                                         false,
-                                        getSurface());
-                    }
-
-                    private Surface getSurface() {
-                        if (mSurface == null) {
-                            mSurface = new Surface(textureView.getSurfaceTexture());
-                        }
-                        return mSurface;
+                                        new Surface(surfaceTexture));
                     }
                 });
         return textureView;
