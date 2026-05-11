@@ -339,6 +339,9 @@ export class ContextualTasksAppElement extends CrLitElement {
   // even if the load is aborted and the frame therefore never changes.
   private lastThreadFrameLoadStartEvent_: chrome.webviewTag.LoadStartEvent|
       null = null;
+  // Tracks whether the frame is loading for the very first time to prevent
+  // double animations.
+  private isInitialFrameLoad_: boolean = true;
 
   private updateThemeFromUrl(url: URL) {
     const csParam = url.searchParams.get('cs');
@@ -818,7 +821,9 @@ export class ContextualTasksAppElement extends CrLitElement {
 
     if (isAiPage && isZeroState) {
       this.isZeroState_ = true;
-      this.playZeroStateAnimations_();
+      if (!this.isInitialFrameLoad_) {
+        this.playZeroStateAnimations_();
+      }
     }
 
     if (!wasZeroState && isZeroState) {
@@ -846,6 +851,8 @@ export class ContextualTasksAppElement extends CrLitElement {
       }
       this.isInBasicMode_ = true;
     }
+
+    this.isInitialFrameLoad_ = false;
 
     if (this.onLoadStartFinishedCallbackForTesting_) {
       this.onLoadStartFinishedCallbackForTesting_();
