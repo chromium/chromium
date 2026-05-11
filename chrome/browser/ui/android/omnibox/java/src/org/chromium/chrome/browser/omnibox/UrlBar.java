@@ -57,6 +57,7 @@ import org.chromium.components.browser_ui.share.ShareHelper;
 import org.chromium.components.browser_ui.util.FirstDrawDetector;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.KeyNavigationUtil;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayUtil;
@@ -717,62 +718,47 @@ public class UrlBar extends AutocompleteEditText {
     public boolean onTextContextMenuItem(int id) {
         if (mTextContextMenuDelegate == null) return super.onTextContextMenuItem(id);
 
-        if (id == android.R.id.paste) {
-            String pasteString = mTextContextMenuDelegate.getTextToPaste();
-            if (pasteString != null) {
-                int min = 0;
-                int max = getText().length();
+        boolean isCutOption = false;
+        int selStart = isFocused() ? getSelectionStart() : 0;
+        int selEnd = isFocused() ? getSelectionEnd() : getText().length();
 
-                if (isFocused()) {
-                    final int selStart = getSelectionStart();
-                    final int selEnd = getSelectionEnd();
-
-                    min = Math.max(0, Math.min(selStart, selEnd));
-                    max = Math.max(0, Math.max(selStart, selEnd));
-                }
-
-                Selection.setSelection(getText(), max);
-                getText().replace(min, max, pasteString);
+        switch (id) {
+            case android.R.id.paste:
+                String pasteString = mTextContextMenuDelegate.getTextToPaste();
+                // Forbid pasting to unfocused Omnibox.
+                if (pasteString == null || !isFocused()) return true;
+                Selection.setSelection(getText(), selEnd);
+                getText().replace(selStart, selEnd, pasteString);
                 onPaste();
-            }
-            return true;
-        }
+                return true;
 
-        if ((id == android.R.id.cut || id == android.R.id.copy)) {
-            if (id == android.R.id.cut) {
-                RecordUserAction.record("Omnibox.LongPress.Cut");
-            } else {
-                RecordUserAction.record("Omnibox.LongPress.Copy");
-            }
-            String currentText = getText().toString();
-            String replacementCutCopyText =
-                    mTextContextMenuDelegate.getReplacementCutCopyText(
-                            currentText, getSelectionStart(), getSelectionEnd());
-            if (replacementCutCopyText == null) return super.onTextContextMenuItem(id);
+            case android.R.id.cut:
+                isCutOption = true; // Fall through.
 
-            setIgnoreTextChangesForAutocomplete(true);
-            setText(replacementCutCopyText);
-            setSelection(0, replacementCutCopyText.length());
-            setIgnoreTextChangesForAutocomplete(false);
+            case android.R.id.copy:
+                RecordUserAction.record(
+                        isCutOption ? "Omnibox.LongPress.Cut" : "Omnibox.LongPress.Copy");
 
-            boolean retVal = super.onTextContextMenuItem(id);
+                // Detect and handle a Specific edge case: when the user selection should include
+                // elided text (`https://`, `www` etc).
+                // We intentionally omit the scheme of certain URLs, but we want to ensure these
+                // parts are still present in the copied URL. When the Delegate returns a non-null
+                // replacement text - we use it instead of the selection.
+                String replacementCutCopyText =
+                        mTextContextMenuDelegate.getReplacementCutCopyText(
+                                getText().toString(), selStart, selEnd);
 
-            if (TextUtils.equals(getText(), replacementCutCopyText)) {
-                // Restore the old text if the operation did modify the text.
-                setIgnoreTextChangesForAutocomplete(true);
-                setText(currentText);
+                // No text from the Delegate - let OS handle the action.
+                if (replacementCutCopyText == null) break;
 
-                // Move the cursor to the end.
-                setSelection(getText().length());
-                setIgnoreTextChangesForAutocomplete(false);
-            }
+                Clipboard.getInstance().setText(replacementCutCopyText);
+                if (isCutOption) getText().replace(selStart, selEnd, "");
+                return true;
 
-            return retVal;
-        }
-
-        if (id == android.R.id.shareText) {
-            RecordUserAction.record("Omnibox.LongPress.Share");
-            ShareHelper.recordShareSource(ShareHelper.ShareSourceAndroid.ANDROID_SHARE_SHEET);
+            case android.R.id.shareText:
+                RecordUserAction.record("Omnibox.LongPress.Share");
+                ShareHelper.recordShareSource(ShareHelper.ShareSourceAndroid.ANDROID_SHARE_SHEET);
+                break;
         }
 
         return super.onTextContextMenuItem(id);

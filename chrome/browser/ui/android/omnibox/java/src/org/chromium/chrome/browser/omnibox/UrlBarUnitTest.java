@@ -71,6 +71,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
 import org.chromium.components.omnibox.OmniboxFeatureList;
+import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.test.util.MockitoHelper;
 
@@ -109,6 +110,8 @@ public class UrlBarUnitTest {
     private @Mock ViewStructure mViewStructure;
     private @Mock Layout mLayout;
     private @Mock TextPaint mPaint;
+    private @Mock Clipboard mClipboard;
+    private @Mock UrlBar.UrlBarTextContextMenuDelegate mTextContextMenuDelegate;
 
     private int mLastTextDirection;
     private int mLastTextAlignment;
@@ -169,6 +172,8 @@ public class UrlBarUnitTest {
 
         lenient().doReturn(mFontMetrics).when(mPaint).getFontMetrics();
         lenient().doReturn(mPaint).when(mUrlBar).getPaint();
+        Clipboard.setInstanceForTesting(mClipboard);
+        mUrlBar.setTextContextMenuDelegate(mTextContextMenuDelegate);
     }
 
     @After
@@ -1226,5 +1231,63 @@ public class UrlBarUnitTest {
 
         int spanStart = text.getSpanStart(spans[0]);
         assertTrue(spanStart >= 1000);
+    }
+
+    @Test
+    public void onTextContextMenuItem_copy_delegateOverrides() {
+        doReturn(true).when(mUrlBar).isFocused();
+        mUrlBar.setText("original text");
+        mUrlBar.setSelection(0, 8);
+        doReturn("override text")
+                .when(mTextContextMenuDelegate)
+                .getReplacementCutCopyText(eq("original text"), anyInt(), anyInt());
+
+        assertTrue(mUrlBar.onTextContextMenuItem(android.R.id.copy));
+
+        verify(mClipboard).setText("override text");
+        assertEquals("original text", mUrlBar.getText().toString());
+    }
+
+    @Test
+    public void onTextContextMenuItem_cut_delegateOverrides() {
+        doReturn(true).when(mUrlBar).isFocused();
+        mUrlBar.setText("original text");
+        mUrlBar.setSelection(0, 8);
+        doReturn("override text")
+                .when(mTextContextMenuDelegate)
+                .getReplacementCutCopyText(eq("original text"), anyInt(), anyInt());
+
+        assertTrue(mUrlBar.onTextContextMenuItem(android.R.id.cut));
+
+        verify(mClipboard).setText("override text");
+        assertEquals(" text", mUrlBar.getText().toString());
+    }
+
+    @Test
+    public void onTextContextMenuItem_copy_delegateDoesNotOverride() {
+        doReturn(true).when(mUrlBar).isFocused();
+        mUrlBar.setText("original text");
+        mUrlBar.setSelection(0, 8);
+        doReturn(null)
+                .when(mTextContextMenuDelegate)
+                .getReplacementCutCopyText(any(), anyInt(), anyInt());
+
+        mUrlBar.onTextContextMenuItem(android.R.id.copy);
+        // Expect control to be passed to TextView.
+        verify(mClipboard, never()).setText(any());
+    }
+
+    @Test
+    public void onTextContextMenuItem_cut_delegateDoesNotOverride() {
+        mUrlBar.setText("original text");
+        mUrlBar.setSelection(0, 8);
+        doReturn(null)
+                .when(mTextContextMenuDelegate)
+                .getReplacementCutCopyText(any(), anyInt(), anyInt());
+
+        mUrlBar.onTextContextMenuItem(android.R.id.cut);
+
+        // Expect control to be passed to TextView.
+        verify(mClipboard, never()).setText(any());
     }
 }
