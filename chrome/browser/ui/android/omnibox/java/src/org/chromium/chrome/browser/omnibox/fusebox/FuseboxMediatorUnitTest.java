@@ -2125,4 +2125,17 @@ public class FuseboxMediatorUnitTest {
         assertTrue(mAttachments.get(0).isSuggestedTab);
         histogramWatcher.assertExpected();
     }
+
+    @Test
+    public void testUpdateClientControlledToolButtonList_setsCorrectIcons() {
+        OmniboxFeatures.sShowModelPicker.setForTesting(false);
+        recreateMediator();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        List<PopupButtonData> toolButtons =
+                mModel.get(FuseboxProperties.POPUP_TOOL_BUTTON_DATA_LIST);
+        assertThat(toolButtons).hasSize(2);
+        assertEquals(IconResourceIds.SEARCH_LOUPE_WITH_SPARKLE_VALUE, toolButtons.get(0).iconId);
+        assertEquals(IconResourceIds.BANANA_VALUE, toolButtons.get(1).iconId);
+    }
 }
