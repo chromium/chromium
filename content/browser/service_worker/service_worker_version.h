@@ -105,6 +105,8 @@ FORWARD_DECLARE_TEST(ServiceWorkerVersionTest, StaleUpdate_NonActiveWorker);
 FORWARD_DECLARE_TEST(ServiceWorkerVersionTest, StaleUpdate_RunningWorker);
 FORWARD_DECLARE_TEST(ServiceWorkerVersionTest, StaleUpdate_StartWorker);
 FORWARD_DECLARE_TEST(ServiceWorkerVersionTest,
+                     InstalledScriptsSenderResetOnStopping);
+FORWARD_DECLARE_TEST(ServiceWorkerVersionTest,
                      StallInStopping_DetachThenRestart);
 FORWARD_DECLARE_TEST(ServiceWorkerVersionTest, StallInStopping_DetachThenStart);
 FORWARD_DECLARE_TEST(ServiceWorkerVersionTest, StartRequestWithNullContext);
@@ -840,6 +842,9 @@ class CONTENT_EXPORT ServiceWorkerVersion
   FRIEND_TEST_ALL_PREFIXES(
       service_worker_version_unittest::ServiceWorkerVersionTest,
       StallInStopping_DetachThenRestart);
+  FRIEND_TEST_ALL_PREFIXES(
+      service_worker_version_unittest::ServiceWorkerVersionTest,
+      InstalledScriptsSenderResetOnStopping);
   FRIEND_TEST_ALL_PREFIXES(
       service_worker_version_unittest::ServiceWorkerVersionTest,
       RequestNowTimeout);

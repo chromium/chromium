@@ -1341,6 +1341,48 @@ TEST_P(ServiceWorkerVersionTest, StallInStopping_DetachThenRestart) {
   EXPECT_EQ(blink::ServiceWorkerStatusCode::kOk, start_status.value());
 }
 
+// When the browser issues `Stop` on a worker that is still `kStarting`,
+// `installed_scripts_sender_` must be torn down promptly so a renderer wedged
+// in `ThreadSafeScriptContainer::WaitOnWorkerThread` can wake before
+// `kStopWorkerTimeout` expires. Regression test for crbug.com/484218883.
+TEST_P(ServiceWorkerVersionTest, InstalledScriptsSenderResetOnStopping) {
+  // `installed_scripts_sender_` is only created for installed versions.
+  version_->SetStatus(ServiceWorkerVersion::INSTALLED);
+
+  // Stall in starting; the `StopWorker` IPC is left unanswered so the worker
+  // remains in `kStopping` and `OnStoppedInternal` does not run.
+  helper_->AddNewPendingInstanceClient<DelayedFakeEmbeddedWorkerInstanceClient>(
+      helper_.get());
+  std::optional<blink::ServiceWorkerStatusCode> status;
+  base::RunLoop run_loop;
+  version_->StartWorker(
+      ServiceWorkerMetrics::EventType::UNKNOWN,
+      ReceiveServiceWorkerStatus(&status, run_loop.QuitClosure()));
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_EQ(blink::EmbeddedWorkerStatus::kStarting, version_->running_status());
+  ASSERT_NE(nullptr, version_->installed_scripts_sender_);
+
+  // Trigger the start timeout to force a `Stop` while still `kStarting`.
+  // `kStartNewWorkerTimeout` (5m) exceeds `kStartInstalledWorkerTimeout` (60s),
+  // so backdating by it triggers the timeout regardless of installed state.
+  EXPECT_TRUE(version_->timeout_timer_.IsRunning());
+  version_->start_time_ = base::TimeTicks::Now() -
+                          ServiceWorkerVersion::kStartNewWorkerTimeout -
+                          base::Minutes(1);
+  version_->timeout_timer_.user_task().Run();
+  run_loop.Run();
+  EXPECT_EQ(blink::ServiceWorkerStatusCode::kErrorTimeout, status.value());
+  base::RunLoop().RunUntilIdle();
+
+  // The worker is still `kStopping` (the renderer never acked `StopWorker`),
+  // but `installed_scripts_sender_` has already been dropped by `OnStopping`.
+  // Without this, a renderer wedged in `WaitOnWorkerThread` could not wake
+  // until `OnStoppedInternal` ran after `kStopWorkerTimeout`.
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopping, version_->running_status());
+  EXPECT_EQ(nullptr, version_->installed_scripts_sender_);
+}
+
 TEST_P(ServiceWorkerVersionTest, RendererCrashDuringEvent) {
   version_->SetStatus(ServiceWorkerVersion::ACTIVATED);
 

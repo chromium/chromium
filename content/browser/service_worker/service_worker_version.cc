@@ -1668,6 +1668,16 @@ void ServiceWorkerVersion::OnStopping() {
   // whether an event can be dispatched or not.
   is_endpoint_ready_ = false;
 
+  // The renderer's service worker thread may be blocked in
+  // `ThreadSafeScriptContainer::WaitOnWorkerThread` waiting for script data;
+  // the only thing that wakes it (besides the bytes arriving) is the
+  // browser-side Mojo binding to `ServiceWorkerInstalledScriptsManager` being
+  // torn down. If we leave `installed_scripts_sender_` alive across the `Stop`,
+  // the renderer cannot acknowledge the `StopWorker` IPC and we hit
+  // `DETACH_STALLED_IN_STOPPING` after `kStopWorkerTimeout`. So we drop the
+  // sender eagerly. See crbug.com/484218883.
+  installed_scripts_sender_.reset();
+
   // Shorten the interval so stalling in stopped can be fixed quickly. Once the
   // worker stops, the timer is disabled. The interval will be reset to normal
   // when the worker starts up again.
