@@ -19383,9 +19383,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_OVERFLOW_MENU_ITEM_TEXT_MEDIA_CONTROLS" desc="Text of overflow menu item of media controls">
       Media controls
     </message>
-    <message name="IDS_OVERFLOW_MENU_ITEM_TEXT_NEW_TAB" desc="Text of overflow menu item of new tab button in tablet mode">
-      New tab
-    </message>
     <message name="IDS_OVERFLOW_MENU_ITEM_TEXT_SIDE_PANEL" desc="Text of overflow menu item of side panel button">
       Open side panel
     </message>

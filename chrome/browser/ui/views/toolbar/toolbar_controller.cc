@@ -305,12 +305,6 @@ ToolbarController::GetDefaultResponsiveElements(Browser* browser) {
                kToolbarMediaButtonElementId, kToolbarMediaBubbleElementId),
            /*is_section_end=*/true),
        ToolbarController::ResponsiveElementInfo(
-           ToolbarController::ElementIdInfo(kToolbarNewTabButtonElementId,
-                                            IDS_OVERFLOW_MENU_ITEM_TEXT_NEW_TAB,
-                                            nullptr,
-                                            kToolbarNewTabButtonElementId),
-           /*is_section_end=*/true),
-       ToolbarController::ResponsiveElementInfo(
            ToolbarController::ElementIdInfo(
                kToolbarAvatarButtonElementId,
                IDS_OVERFLOW_MENU_ITEM_TEXT_PROFILE,
@@ -325,9 +319,9 @@ std::vector<ui::ElementIdentifier>
 ToolbarController::GetDefaultOverflowOrder() {
   return std::vector<ui::ElementIdentifier>(
       {kToolbarHomeButtonElementId, kToolbarChromeLabsButtonElementId,
-       kToolbarMediaButtonElementId, kToolbarNewTabButtonElementId,
-       kToolbarForwardButtonElementId, kToolbarBatterySaverButtonElementId,
-       kToolbarAvatarButtonElementId, kToolbarSplitTabsToolbarButtonElementId,
+       kToolbarMediaButtonElementId, kToolbarForwardButtonElementId,
+       kToolbarBatterySaverButtonElementId, kToolbarAvatarButtonElementId,
+       kToolbarSplitTabsToolbarButtonElementId,
        ContextualTasksButton::kContextualTasksToolbarButton});
 }
 
@@ -345,7 +339,6 @@ std::string ToolbarController::GetActionNameFromElementIdentifier(
            {kToolbarForwardButtonElementId, "ForwardButton"},
            {kToolbarHomeButtonElementId, "HomeButton"},
            {kToolbarMediaButtonElementId, "MediaButton"},
-           {kToolbarNewTabButtonElementId, "NewTabButton"},
            {kToolbarSidePanelButtonElementId, "SidePanelButton"},
            {kToolbarSplitTabsToolbarButtonElementId, "SplitTabs"},
            {ContextualTasksButton::kContextualTasksToolbarButton,

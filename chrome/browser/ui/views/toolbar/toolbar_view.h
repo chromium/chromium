@@ -324,8 +324,6 @@ class ToolbarView : public views::AccessiblePaneView,
 
   void OnTouchUiChanged();
 
-  void NewTabButtonPressed(const ui::Event& event);
-
   void InitGlicContainer();
 
   void OnVerticalTabStripModeChanged(

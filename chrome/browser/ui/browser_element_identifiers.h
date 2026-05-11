@@ -260,7 +260,6 @@ DECLARE_ELEMENT_IDENTIFIER_VALUE(kToolbarForwardButtonMenuElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kToolbarHomeButtonElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kToolbarMediaBubbleElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kToolbarMediaButtonElementId);
-DECLARE_ELEMENT_IDENTIFIER_VALUE(kToolbarNewTabButtonElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kToolbarOverflowButtonElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(
     kToolbarPerformanceInterventionButtonElementId);

@@ -1423,11 +1423,6 @@ void ToolbarView::OnThemeChanged() {
   SchedulePaint();
 }
 
-void ToolbarView::NewTabButtonPressed(const ui::Event& event) {
-  chrome::NewTab(browser_view_->browser(),
-                 NewTabTypes::kNewTabButtonInToolbarForTouch);
-}
-
 bool ToolbarView::AcceleratorPressed(const ui::Accelerator& accelerator) {
   const views::View* focused_view = focus_manager()->GetFocusedView();
   if (focused_view && (focused_view->GetID() == VIEW_ID_OMNIBOX)) {
