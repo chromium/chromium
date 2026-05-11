@@ -283,6 +283,11 @@ class ContextualSearchboxHandler
   void RecordTabAddedMetric(tabs::TabInterface* const tab,
                             bool is_tab_suggestion_chip);
 
+  // Returns true if the query should be opened in the Lens side panel.
+  bool ShouldOpenInLensSidePanel(
+      content::WebContents* active_web_contents,
+      contextual_search::ContextualSearchSessionHandle* session_handle);
+
   virtual void InitializeInputStateModel();
 
   void UpdateTabListObservation(TabListInterface* tab_list);
