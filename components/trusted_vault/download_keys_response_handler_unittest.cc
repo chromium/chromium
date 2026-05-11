@@ -7,6 +7,8 @@
 #include <vector>
 
 #include "base/strings/string_number_conversions.h"
+#include "base/test/scoped_feature_list.h"
+#include "components/trusted_vault/features.h"
 #include "components/trusted_vault/proto/vault.pb.h"
 #include "components/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/trusted_vault/securebox.h"
@@ -80,13 +82,19 @@ std::string CreateGetSecurityDomainMemberResponseWithSyncMembership(
   return member.SerializeAsString();
 }
 
-class DownloadKeysResponseHandlerTest : public testing::Test {
+class DownloadKeysResponseHandlerTest : public testing::TestWithParam<bool> {
  public:
   DownloadKeysResponseHandlerTest()
       : handler_(SecurityDomainId::kChromeSync,
                  TrustedVaultKeyAndVersion(kKnownTrustedVaultKey,
                                            kKnownTrustedVaultKeyVersion),
-                 MakeTestKeyPair()) {}
+                 MakeTestKeyPair()) {
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(kE2eeRotationProofBypassFix);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(kE2eeRotationProofBypassFix);
+    }
+  }
 
   ~DownloadKeysResponseHandlerTest() override = default;
 
@@ -99,12 +107,15 @@ class DownloadKeysResponseHandlerTest : public testing::Test {
   const std::vector<uint8_t> kTrustedVaultKey3 = {1, 2, 3, 7};
 
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
   const DownloadKeysResponseHandler handler_;
 };
 
+INSTANTIATE_TEST_SUITE_P(All, DownloadKeysResponseHandlerTest, testing::Bool());
+
 // All HttpStatuses except kSuccess should end up in kOtherError, kNetworkError
 // or kMemberNotFound reporting.
-TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleHttpErrors) {
+TEST_P(DownloadKeysResponseHandlerTest, ShouldHandleHttpErrors) {
   EXPECT_THAT(
       handler()
           .ProcessResponse(
@@ -144,7 +155,7 @@ TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleHttpErrors) {
 
 // Simplest legitimate case of key rotation, server side state corresponds to
 // kKnownTrustedVaultKey -> kTrustedVaultKey1 key chain.
-TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleSingleKeyRotation) {
+TEST_P(DownloadKeysResponseHandlerTest, ShouldHandleSingleKeyRotation) {
   const DownloadKeysResponseHandler::ProcessedResponse processed_response =
       handler().ProcessResponse(
           /*http_status=*/TrustedVaultRequest::HttpStatus::kSuccess,
@@ -165,7 +176,7 @@ TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleSingleKeyRotation) {
 
 // Multiple key rotations may happen while client is offline, server-side key
 // chain is kKnownTrustedVaultKey -> kTrustedVaultKey1 -> kTrustedVaultKey2.
-TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleMultipleKeyRotations) {
+TEST_P(DownloadKeysResponseHandlerTest, ShouldHandleMultipleKeyRotations) {
   const DownloadKeysResponseHandler::ProcessedResponse processed_response =
       handler().ProcessResponse(
           /*http_status=*/TrustedVaultRequest::HttpStatus::kSuccess,
@@ -192,7 +203,7 @@ TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleMultipleKeyRotations) {
 // Full key chain is: kKnownTrustedVaultKey -> kTrustedVaultKey1 ->
 // kTrustedVaultKey2.
 // Server-side key chain is: kTrustedVaultKey1 -> kTrustedVaultKey2.
-TEST_F(DownloadKeysResponseHandlerTest,
+TEST_P(DownloadKeysResponseHandlerTest,
        ShouldHandleAbsenseOfKnownKeyWhenKeyChainIsRecoverable) {
   const DownloadKeysResponseHandler::ProcessedResponse processed_response =
       handler().ProcessResponse(
@@ -221,7 +232,7 @@ TEST_F(DownloadKeysResponseHandlerTest,
 // Possible full key chain is: kKnownTrustedVaultKey -> kTrustedVaultKey1 ->
 // kTrustedVaultKey2 -> kTrustedVaultKey3.
 // Server side key chain is: kTrustedVaultKey2 -> kTrustedVaultKey3.
-TEST_F(DownloadKeysResponseHandlerTest,
+TEST_P(DownloadKeysResponseHandlerTest,
        ShouldHandleAbsenseOfKnownKeyWhenKeyChainIsNotRecoverable) {
   const DownloadKeysResponseHandler::ProcessedResponse processed_response =
       handler().ProcessResponse(
@@ -244,7 +255,7 @@ TEST_F(DownloadKeysResponseHandlerTest,
 // The test populates undecryptable/corrupted |wrapped_key| field, handler
 // should return kMembershipCorrupted to allow client to restore the member by
 // re-registration.
-TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleUndecryptableKey) {
+TEST_P(DownloadKeysResponseHandlerTest, ShouldHandleUndecryptableKey) {
   trusted_vault_pb::SecurityDomainMember member;
   AddSecurityDomainMembership(
       GetSecurityDomainPath(SecurityDomainId::kChromeSync),
@@ -269,7 +280,7 @@ TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleUndecryptableKey) {
 // The test populates invalid |rotation_proof| field for the single key
 // rotation. kTrustedVaultKey1 is expected to be signed with
 // kKnownTrustedVaultKey, but instead it's signed with kTrustedVaultKey2.
-TEST_F(DownloadKeysResponseHandlerTest,
+TEST_P(DownloadKeysResponseHandlerTest,
        ShouldHandleInvalidKeyProofOnSingleKeyRotation) {
   const DownloadKeysResponseHandler::ProcessedResponse processed_response =
       handler().ProcessResponse(
@@ -290,7 +301,7 @@ TEST_F(DownloadKeysResponseHandlerTest,
 // multiple key rotations have happened.
 // kTrustedVaultKey1 is expected to be signed with kKnownTrustedVaultKey, but
 // instead it's signed with kTrustedVaultKey2.
-TEST_F(DownloadKeysResponseHandlerTest,
+TEST_P(DownloadKeysResponseHandlerTest,
        ShouldHandleInvalidKeyProofOnMultipleKeyRotations) {
   const DownloadKeysResponseHandler::ProcessedResponse processed_response =
       handler().ProcessResponse(
@@ -310,7 +321,7 @@ TEST_F(DownloadKeysResponseHandlerTest,
 }
 
 // In this scenario client already has most recent trusted vault key.
-TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleAbsenseOfNewKeys) {
+TEST_P(DownloadKeysResponseHandlerTest, ShouldHandleAbsenseOfNewKeys) {
   const DownloadKeysResponseHandler::ProcessedResponse processed_response =
       handler().ProcessResponse(
           /*http_status=*/TrustedVaultRequest::HttpStatus::kSuccess,
@@ -328,7 +339,7 @@ TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleAbsenseOfNewKeys) {
 
 // Tests handling the situation, when response isn't a valid serialized
 // SecurityDomainMemberProto proto.
-TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleCorruptedResponseProto) {
+TEST_P(DownloadKeysResponseHandlerTest, ShouldHandleCorruptedResponseProto) {
   EXPECT_THAT(handler()
                   .ProcessResponse(
                       /*http_status=*/TrustedVaultRequest::HttpStatus::kSuccess,
@@ -339,7 +350,7 @@ TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleCorruptedResponseProto) {
 
 // Client expects that the sync security domain membership exists, but the
 // response indicates it doesn't by having no memberships.
-TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleAbsenseOfMemberships) {
+TEST_P(DownloadKeysResponseHandlerTest, ShouldHandleAbsenseOfMemberships) {
   EXPECT_THAT(handler()
                   .ProcessResponse(
                       /*http_status=*/TrustedVaultRequest::HttpStatus::kSuccess,
@@ -350,7 +361,7 @@ TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleAbsenseOfMemberships) {
 }
 
 // Same as above, but there is a different security domain membership.
-TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleAbsenseOfSyncMembership) {
+TEST_P(DownloadKeysResponseHandlerTest, ShouldHandleAbsenseOfSyncMembership) {
   trusted_vault_pb::SecurityDomainMember member;
   AddSecurityDomainMembership(
       "other_domain", MakeTestKeyPair()->public_key(),
@@ -366,7 +377,7 @@ TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleAbsenseOfSyncMembership) {
               Eq(TrustedVaultDownloadKeysStatus::kMembershipNotFound));
 }
 
-TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleEmptyMembership) {
+TEST_P(DownloadKeysResponseHandlerTest, ShouldHandleEmptyMembership) {
   trusted_vault_pb::SecurityDomainMember member;
   AddSecurityDomainMembership(
       GetSecurityDomainPath(SecurityDomainId::kChromeSync),
@@ -383,7 +394,7 @@ TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleEmptyMembership) {
               Eq(TrustedVaultDownloadKeysStatus::kMembershipEmpty));
 }
 
-TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleAllSecurityDomains) {
+TEST_P(DownloadKeysResponseHandlerTest, ShouldHandleAllSecurityDomains) {
   for (const SecurityDomainId security_domain : kAllSecurityDomainIdValues) {
     trusted_vault_pb::SecurityDomainMember member;
     AddSecurityDomainMembership(
@@ -412,7 +423,7 @@ TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleAllSecurityDomains) {
 }
 
 // Tests handling presence of other security domain memberships.
-TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleMultipleSecurityDomains) {
+TEST_P(DownloadKeysResponseHandlerTest, ShouldHandleMultipleSecurityDomains) {
   trusted_vault_pb::SecurityDomainMember member;
   AddSecurityDomainMembership(
       "other_domain", MakeTestKeyPair()->public_key(),
@@ -440,6 +451,84 @@ TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleMultipleSecurityDomains) {
               ElementsAre(kTrustedVaultKey1));
   EXPECT_THAT(processed_response.last_key_version,
               Eq(kKnownTrustedVaultKeyVersion + 1));
+}
+
+TEST_P(DownloadKeysResponseHandlerTest,
+       ShouldHandleSameVersionWithDifferentKey) {
+  // Server sends a different key at same version, with no rotation proof.
+  const std::vector<uint8_t> kDifferentKey = {9, 9, 9, 9};
+  const DownloadKeysResponseHandler::ProcessedResponse processed_response =
+      handler().ProcessResponse(
+          /*http_status=*/TrustedVaultRequest::HttpStatus::kSuccess,
+          /*response_body=*/
+          CreateGetSecurityDomainMemberResponseWithSyncMembership(
+              /*trusted_vault_keys=*/{kDifferentKey},
+              /*trusted_vault_keys_versions=*/{kKnownTrustedVaultKeyVersion},
+              /*signing_keys=*/{{}}));
+
+  if (GetParam()) {
+    EXPECT_THAT(processed_response.status,
+                Eq(TrustedVaultDownloadKeysStatus::kMembershipCorrupted));
+    EXPECT_THAT(processed_response.downloaded_keys, IsEmpty());
+  } else {
+    // NOTE: The legacy implementation (when the feature flag is disabled) has
+    // a bug/vulnerability where it accepts a different key at the same version
+    // without verification, incorrectly returning `kNoNewKeys` with the
+    // server-supplied wrong key.
+    EXPECT_THAT(processed_response.status,
+                Eq(TrustedVaultDownloadKeysStatus::kNoNewKeys));
+    EXPECT_THAT(processed_response.downloaded_keys, ElementsAre(kDifferentKey));
+  }
+}
+
+TEST_P(DownloadKeysResponseHandlerTest, ShouldHandleVersionRegression) {
+  // Server sends key with a lower version, no rotation proof.
+  const std::vector<uint8_t> kLowerVersionKey = {9, 9, 9, 9};
+  const DownloadKeysResponseHandler::ProcessedResponse processed_response =
+      handler().ProcessResponse(
+          /*http_status=*/TrustedVaultRequest::HttpStatus::kSuccess,
+          /*response_body=*/
+          CreateGetSecurityDomainMemberResponseWithSyncMembership(
+              /*trusted_vault_keys=*/{kLowerVersionKey},
+              /*trusted_vault_keys_versions=*/
+              {kKnownTrustedVaultKeyVersion - 1},
+              /*signing_keys=*/{{}}));
+
+  if (GetParam()) {
+    EXPECT_THAT(processed_response.status,
+                Eq(TrustedVaultDownloadKeysStatus::kMembershipCorrupted));
+    EXPECT_THAT(processed_response.downloaded_keys, IsEmpty());
+  } else {
+    // NOTE: The legacy implementation (when the feature flag is disabled) has
+    // a bug/vulnerability where it tolerates version regression, incorrectly
+    // returning `kNoNewKeys` with the regressed lower-version key.
+    EXPECT_THAT(processed_response.status,
+                Eq(TrustedVaultDownloadKeysStatus::kNoNewKeys));
+    EXPECT_THAT(processed_response.downloaded_keys,
+                ElementsAre(kLowerVersionKey));
+  }
+}
+
+TEST_P(DownloadKeysResponseHandlerTest, ShouldHandleRotationsToNewKeys) {
+  const DownloadKeysResponseHandler::ProcessedResponse processed_response =
+      handler().ProcessResponse(
+          /*http_status=*/TrustedVaultRequest::HttpStatus::kSuccess,
+          /*response_body=*/
+          CreateGetSecurityDomainMemberResponseWithSyncMembership(
+              /*trusted_vault_keys=*/
+              {kTrustedVaultKey1, kTrustedVaultKey2},
+              /*trusted_vault_keys_versions=*/
+              {kKnownTrustedVaultKeyVersion + 1,
+               kKnownTrustedVaultKeyVersion + 2},
+              /*signing_keys=*/
+              {kKnownTrustedVaultKey, kTrustedVaultKey1}));
+
+  EXPECT_THAT(processed_response.status,
+              Eq(TrustedVaultDownloadKeysStatus::kSuccess));
+  EXPECT_THAT(processed_response.downloaded_keys,
+              ElementsAre(kTrustedVaultKey1, kTrustedVaultKey2));
+  EXPECT_THAT(processed_response.last_key_version,
+              Eq(kKnownTrustedVaultKeyVersion + 2));
 }
 
 }  // namespace

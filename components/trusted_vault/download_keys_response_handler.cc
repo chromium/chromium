@@ -9,6 +9,8 @@
 #include <optional>
 #include <utility>
 
+#include "base/check.h"
+#include "components/trusted_vault/features.h"
 #include "components/trusted_vault/proto/vault.pb.h"
 #include "components/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/trusted_vault/securebox.h"
@@ -81,10 +83,20 @@ std::optional<std::vector<ExtractedSharedKey>> ExtractAndSortSharedKeys(
 
 // Validates |rotation_proof| starting from the key next to
 // last known trusted vault key.
+// |key_chain| must be sorted by ascending version number.
+// The highest version number in |key_chain| must be greater than the version
+// in |last_known_trusted_vault_key_and_version|.
 bool IsValidKeyChain(
     const std::vector<ExtractedSharedKey>& key_chain,
     const TrustedVaultKeyAndVersion& last_known_trusted_vault_key_and_version) {
-  DCHECK(!key_chain.empty());
+  CHECK(!key_chain.empty());
+  CHECK(std::ranges::is_sorted(key_chain, std::less<>(),
+                               &ExtractedSharedKey::version));
+  if (base::FeatureList::IsEnabled(kE2eeRotationProofBypassFix)) {
+    CHECK(key_chain.back().version >
+          last_known_trusted_vault_key_and_version.version);
+  }
+
   int last_valid_key_version = last_known_trusted_vault_key_and_version.version;
   std::vector<uint8_t> last_valid_key =
       last_known_trusted_vault_key_and_version.key;
@@ -92,6 +104,7 @@ bool IsValidKeyChain(
     if (next_key.version <= last_valid_key_version) {
       continue;
     }
+
     if (next_key.version != last_valid_key_version + 1) {
       // Missing intermediate key.
       return false;
@@ -209,13 +222,46 @@ DownloadKeysResponseHandler::ProcessResponse(
     return ProcessedResponse(
         /*status=*/TrustedVaultDownloadKeysStatus::kMembershipEmpty);
   }
+  if (base::FeatureList::IsEnabled(kE2eeRotationProofBypassFix)) {
+    if (extracted_keys->back().version <
+        last_trusted_vault_key_and_version_.version) {
+      // |current_member| appears corrupt, as its keys have a lower version than
+      // the last currently trusted one.
+      return ProcessedResponse(
+          /*status=*/TrustedVaultDownloadKeysStatus::kMembershipCorrupted);
+    }
 
-  if (!IsValidKeyChain(*extracted_keys, last_trusted_vault_key_and_version_)) {
-    // Data corresponding to |current_member| is corrupted or
-    // |last_trusted_vault_key_and_version_| is too old.
-    return ProcessedResponse(
-        /*status=*/TrustedVaultDownloadKeysStatus::
-            kKeyProofsVerificationFailed);
+    if (auto it = std::ranges::find(*extracted_keys,
+                                    last_trusted_vault_key_and_version_.version,
+                                    &ExtractedSharedKey::version);
+        it != extracted_keys->end() &&
+        it->trusted_vault_key != last_trusted_vault_key_and_version_.key) {
+      // |current_member| appears corrupt, as its key with the version of the
+      // last trusted vault key doesn't match the key bytes of the last
+      // trusted vault key.
+      return ProcessedResponse(
+          /*status=*/TrustedVaultDownloadKeysStatus::kMembershipCorrupted);
+    }
+
+    if (extracted_keys->back().version >
+            last_trusted_vault_key_and_version_.version &&
+        !IsValidKeyChain(*extracted_keys,
+                         last_trusted_vault_key_and_version_)) {
+      // New keys provided by |current_member| failed rotation proof
+      // verification.
+      return ProcessedResponse(
+          /*status=*/TrustedVaultDownloadKeysStatus::
+              kKeyProofsVerificationFailed);
+    }
+  } else {
+    if (!IsValidKeyChain(*extracted_keys,
+                         last_trusted_vault_key_and_version_)) {
+      // Data corresponding to |current_member| is corrupted or
+      // |last_trusted_vault_key_and_version_| is too old.
+      return ProcessedResponse(
+          /*status=*/TrustedVaultDownloadKeysStatus::
+              kKeyProofsVerificationFailed);
+    }
   }
 
   std::vector<std::vector<uint8_t>> trusted_vault_keys;
@@ -225,11 +271,19 @@ DownloadKeysResponseHandler::ProcessResponse(
 
   TrustedVaultDownloadKeysStatus status =
       TrustedVaultDownloadKeysStatus::kSuccess;
-  if (extracted_keys->back().version <=
-      last_trusted_vault_key_and_version_.version) {
-    // In theory, the above check could be == instead of <=, since server
-    // version should not decrease, but it is tolerated to make implementation
-    // more robust.
+  const bool is_no_new_keys =
+      base::FeatureList::IsEnabled(kE2eeRotationProofBypassFix)
+          ? (extracted_keys->back().version ==
+             last_trusted_vault_key_and_version_.version)
+          : (extracted_keys->back().version <=
+             last_trusted_vault_key_and_version_.version);
+  if (is_no_new_keys) {
+    // In theory, the check when the feature flag is disabled could be ==
+    // instead of <=, since server version should not decrease, but it was
+    // tolerated to make the legacy implementation more robust. When the
+    // `kE2eeRotationProofBypassFix` flag is enabled, strictly lower version
+    // cases are already rejected in the conditions above, so checking for
+    // strict equality here is sufficient and more consistent.
     status = TrustedVaultDownloadKeysStatus::kNoNewKeys;
   }
 
