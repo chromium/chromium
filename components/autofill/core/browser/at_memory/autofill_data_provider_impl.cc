@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <optional>
 #include <string_view>
 #include <vector>
 
@@ -77,6 +78,55 @@ double CalculateRankingScore(int64_t use_count, base::Time use_date) {
   return usage_history.GetRankingScore(base::Time::Now());
 }
 
+// Evaluates the primary value of a result for the given entity instance.
+std::u16string GetFormattedEntityValue(const EntityInstance& entity,
+                                       std::string_view app_locale) {
+  // TODO(crbug.com/492978632): Handle fetching the unmasked data for server
+  // EntityInstances.
+  auto get_primary_attribute_name =
+      [](EntityTypeName entity_type_name) -> AttributeTypeName {
+    switch (entity_type_name) {
+      case EntityTypeName::kVehicle:
+        return AttributeTypeName::kVehiclePlateNumber;
+      case EntityTypeName::kPassport:
+        return AttributeTypeName::kPassportNumber;
+      case EntityTypeName::kDriversLicense:
+        return AttributeTypeName::kDriversLicenseNumber;
+      case EntityTypeName::kOrder:
+        return AttributeTypeName::kOrderId;
+      case EntityTypeName::kNationalIdCard:
+        return AttributeTypeName::kNationalIdCardNumber;
+      case EntityTypeName::kKnownTravelerNumber:
+        return AttributeTypeName::kKnownTravelerNumberNumber;
+      case EntityTypeName::kRedressNumber:
+        return AttributeTypeName::kRedressNumberNumber;
+      case EntityTypeName::kFlightReservation:
+        return AttributeTypeName::kFlightReservationFlightNumber;
+      case EntityTypeName::kShipment:
+        return AttributeTypeName::kShipmentTrackingNumber;
+    }
+  };
+
+  base::optional_ref<const AttributeInstance> primary_attr = entity.attribute(
+      AttributeType(get_primary_attribute_name(entity.type().name())));
+  if (primary_attr) {
+    const std::u16string value = primary_attr->GetCompleteInfo(app_locale);
+    if (!value.empty()) {
+      return value;
+    }
+  }
+
+  // Fallback to the first non-empty attribute if no primary attribute is found.
+  for (const AttributeInstance& attribute : entity.attributes()) {
+    const std::u16string attr_value = attribute.GetCompleteInfo(app_locale);
+    if (!attr_value.empty()) {
+      return attr_value;
+    }
+  }
+
+  return std::u16string();
+}
+
 // Creates a data entry for a specific attribute of an Autofill AI entity.
 MemorySearchResult CreateResultFromEntityAttribute(
     const EntityInstance& entity,
@@ -120,8 +170,8 @@ MemorySearchResult CreateResultFromAddressProfile(
   // Add other address fields as metadata.
   AddMetadataToResult(entry, profile, EntryType::kNameFull, field_type,
                       app_locale);
-  AddMetadataToResult(entry, profile, EntryType::kAddressStreetAddress, field_type,
-                      app_locale);
+  AddMetadataToResult(entry, profile, EntryType::kAddressStreetAddress,
+                      field_type, app_locale);
   AddMetadataToResult(entry, profile, EntryType::kAddressCity, field_type,
                       app_locale);
   AddMetadataToResult(entry, profile, EntryType::kAddressState, field_type,
@@ -206,36 +256,24 @@ std::vector<MemorySearchResult> FetchAutofillAiEntityData(
       continue;
     }
 
-    // Combined entry with all non-empty attributes concatenated.
-    std::vector<std::u16string> values;
+    // TODO(crbug.com/492978632): Handle masking SPII data for Autofill AI.
     std::vector<EntryMetadata> all_metadata;
     for (const AttributeInstance& attr : entity.attributes()) {
       std::u16string attr_value = attr.GetCompleteInfo(app_locale);
       if (!attr_value.empty()) {
-        values.push_back(attr_value);
         EntryType metadata_type = AttributeTypeToEntryType(attr.type());
-        all_metadata.emplace_back(metadata_type,
-                                  GetEntryTypeNameForI18n(metadata_type),
-                                  std::move(attr_value));
+        all_metadata.emplace_back(
+            metadata_type, GetEntryTypeNameForI18n(metadata_type), attr_value);
       }
     }
-    if (!values.empty()) {
+
+    std::u16string value = GetFormattedEntityValue(entity, app_locale);
+    if (!value.empty()) {
       MemorySearchResult entry = MemorySearchResult(
-          entry_type, GetEntryTypeNameForI18n(entry_type),
-          base::JoinString(values, u" "),
+          entry_type, GetEntryTypeNameForI18n(entry_type), std::move(value),
           CalculateRankingScore(entity.use_count(), entity.use_date()));
       entry.metadata_list = std::move(all_metadata);
       entries.push_back(std::move(entry));
-    }
-
-    // Also add individual attributes as separate entries.
-    for (const AttributeInstance& attr : entity.attributes()) {
-      std::u16string attr_value = attr.GetCompleteInfo(app_locale);
-      if (attr_value.empty()) {
-        continue;
-      }
-      entries.push_back(CreateResultFromEntityAttribute(
-          entity, attr, AttributeTypeToEntryType(attr.type()), app_locale));
     }
   }
   return entries;
