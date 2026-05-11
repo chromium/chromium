@@ -2529,10 +2529,23 @@ void ResourceFetcher::WarnUnusedPreloads(
     // resource wouldn't be harmful. We need to plumb information from the
     // browser process to check whether the resource was already in the HTTP
     // cache.
-    String message =
-        StrCat({"The resource ", pair.key.GetString(),
-                " was preloaded using link preload in Early Hints but not "
-                "used within a few seconds from the window's load event."});
+    String as_value = LinkAsAttributeToString(pair.value.as);
+    String crossorigin_info;
+    if (pair.value.cross_origin !=
+        network::mojom::CrossOriginAttribute::kUnspecified) {
+      crossorigin_info =
+          pair.value.cross_origin ==
+                  network::mojom::CrossOriginAttribute::kUseCredentials
+              ? " crossorigin=use-credentials"
+              : " crossorigin=anonymous";
+    }
+    String message = StrCat(
+        {"The resource ", pair.key.GetString(), " (as=", as_value,
+         crossorigin_info,
+         ") was preloaded using link preload in Early Hints but not "
+         "used within a few seconds from the window's load event. Please "
+         "make sure it has an appropriate `as` value, a correct "
+         "`crossorigin` value and it is preloaded intentionally."});
     console_logger_->AddConsoleMessage(
         mojom::blink::ConsoleMessageSource::kJavaScript,
         mojom::blink::ConsoleMessageLevel::kWarning, message);
