@@ -1005,7 +1005,7 @@ export class ContextualTasksAppElement extends CrLitElement {
     const style: string[] = [
       `--composebox-margin-bottom: 0;`,  // Need to remove margin on the child
                                          // container.
-      `position: fixed;`,
+      `position: ${this.inNlm_ ? 'fixed' : 'absolute'};`,
       `bottom: ${window.innerHeight - relativeRect.bottom}px;`,
       `left: ${relativeRect.left}px;`,
       `width: ${relativeRect.width}px;`,
