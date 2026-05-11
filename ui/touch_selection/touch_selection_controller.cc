@@ -8,6 +8,7 @@
 
 #include "base/auto_reset.h"
 #include "base/check_op.h"
+#include "base/memory/weak_auto_reset.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
@@ -126,8 +127,12 @@ void TouchSelectionController::OnSelectionBoundsChanged(
   // of the call.
   InputEventType causal_input_event = response_pending_input_event_;
   response_pending_input_event_ = InputEventType::kNone;
-  base::AutoReset<InputEventType> auto_reset_response_pending_input_event(
-      &response_pending_input_event_, causal_input_event);
+  // Use WeakAutoReset to avoid writing to freed memory if this is destroyed
+  // during the call (e.g. via synchronous JNI callout).
+  base::WeakAutoReset reset_response_pending_input_event(
+      weak_factory_.GetWeakPtr(),
+      &TouchSelectionController::response_pending_input_event_,
+      causal_input_event);
 
   if ((start_orientation_ == TouchHandleOrientation::LEFT ||
        start_orientation_ == TouchHandleOrientation::RIGHT) &&
