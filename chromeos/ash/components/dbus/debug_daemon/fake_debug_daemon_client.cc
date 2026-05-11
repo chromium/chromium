@@ -166,18 +166,33 @@ void FakeDebugDaemonClient::BackupArcBugReport(
 }
 
 void FakeDebugDaemonClient::GetAllLogs(GetLogsCallback callback) {
-  std::map<std::string, std::string> sample;
-  sample["Sample Log"] = "Your email address is abc@abc.com";
+  std::map<std::string, std::string> result(logs_.begin(), logs_.end());
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), false, sample));
+      FROM_HERE, base::BindOnce(std::move(callback), true, std::move(result)));
 }
 
 void FakeDebugDaemonClient::GetLog(
     const std::string& log_name,
     chromeos::DBusMethodCallback<std::string> callback) {
-  std::string result = log_name + ": response from GetLog";
+  std::optional<std::string> result;
+  if (auto it = logs_.find(log_name); it != logs_.end()) {
+    result = it->second;
+  }
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
+}
+
+void FakeDebugDaemonClient::SetLog(std::string_view log_name,
+                                   std::optional<std::string> log_data) {
+  if (auto it = logs_.find(log_name); it != logs_.end()) {
+    if (log_data.has_value()) {
+      it->second = std::move(*log_data);
+    } else {
+      logs_.erase(it);
+    }
+  } else if (log_data.has_value()) {
+    logs_.emplace(log_name, std::move(*log_data));
+  }
 }
 
 void FakeDebugDaemonClient::TestICMP(const std::string& ip_address,

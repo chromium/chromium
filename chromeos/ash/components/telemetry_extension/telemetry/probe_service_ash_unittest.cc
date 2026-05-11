@@ -11,6 +11,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/debug_daemon/fake_debug_daemon_client.h"
 #include "chromeos/ash/components/mojo_service_manager/fake_mojo_service_manager.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -83,12 +84,15 @@ TEST_F(ProbeServiceAshTest, ProbeTelemetryInfoSuccess) {
 // Tests that GetOemData requests OEM data in debugd and
 // forwards response via callback.
 TEST_F(ProbeServiceAshTest, GetOemDataSuccess) {
+  static_cast<ash::FakeDebugDaemonClient*>(ash::DebugDaemonClient::Get())
+      ->SetLog("oemdata", "response from GetLog");
+
   base::RunLoop run_loop;
   probe_service()->GetOemData(
       base::BindLambdaForTesting([&](crosapi::mojom::ProbeOemDataPtr ptr) {
         ASSERT_TRUE(ptr);
         ASSERT_TRUE(ptr->oem_data.has_value());
-        EXPECT_EQ(ptr->oem_data.value(), "oemdata: response from GetLog");
+        EXPECT_EQ(ptr->oem_data.value(), "response from GetLog");
 
         run_loop.Quit();
       }));

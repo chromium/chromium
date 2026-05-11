@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/debug_daemon/fake_debug_daemon_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -30,6 +31,10 @@ class SingleDebugDaemonLogSourceTest : public ::testing::Test {
     // Since no debug daemon will be available during a unit test, use
     // FakeDebugDaemonClient to provide dummy DebugDaemonClient functionality.
     ash::DebugDaemonClient::InitializeFake();
+    auto* fake_debugd_client =
+        static_cast<ash::FakeDebugDaemonClient*>(ash::DebugDaemonClient::Get());
+    fake_debugd_client->SetLog("modetest", "modetest: response from GetLog");
+    fake_debugd_client->SetLog("lsusb", "lsusb: response from GetLog");
   }
 
   void TearDown() override { ash::DebugDaemonClient::Shutdown(); }

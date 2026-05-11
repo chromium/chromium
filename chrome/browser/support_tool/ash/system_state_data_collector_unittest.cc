@@ -16,6 +16,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -75,6 +76,13 @@ class SystemStateDataCollectorTest : public ::testing::Test {
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     ash::DebugDaemonClient::InitializeFake();
+
+    auto* fake_debugd_client =
+        static_cast<ash::FakeDebugDaemonClient*>(ash::DebugDaemonClient::Get());
+    for (const auto& extra_log : SystemStateDataCollector::GetExtraLogNames()) {
+      fake_debugd_client->SetLog(
+          extra_log, base::StrCat({extra_log, ": response from GetLog"}));
+    }
   }
 
   void TearDown() override {

@@ -123,6 +123,9 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) FakeDebugDaemonClient
   // Sets routes that will be returned by GetRoutes() for testing.
   void SetRoutesForTesting(std::vector<std::string> routes);
 
+  // Configures logs to be returned from GetLog()/GetAllLogs().
+  void SetLog(std::string_view log_name, std::optional<std::string> log_data);
+
   const std::string& scheduler_configuration_name() const {
     return scheduler_configuration_name_;
   }
@@ -137,6 +140,7 @@ class COMPONENT_EXPORT(DEBUG_DAEMON) FakeDebugDaemonClient
       pending_wait_for_service_to_be_available_callbacks_;
   // Stores printer's name as a key and PPD content as a value.
   std::map<std::string, std::string> printers_;
+  std::map<std::string, std::string, std::less<>> logs_;
   std::vector<std::string> routes_;
   std::string scheduler_configuration_name_;
   std::set<std::string> u2f_flags_;
