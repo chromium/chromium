@@ -1,8 +1,5 @@
 # LLD for Mac builds
 
-> [!WARNING]
-> This document is outdated. Apple linker is used for Mac builds by default now.
-
 Like on other platforms, Chromium uses the LLD linker on iOS and macOS.
 
 ## Background
@@ -13,8 +10,9 @@ is the executable file format used on most OSs, including Linux, Android,
 Chrome OS, Fuchsia), and it's faster than other COFF linkers (the executable
 file format on Windows).
 
-Recent benchmarks show that the new Apple linker (`ld-prime`) is faster than
-LLD for local macOS builds (See https://crbug.com/502338406).
+LLD is currently twice as fast as ld64, the macOS system linker, at linking
+Chromium Framework in symbol\_level=0 release builds, despite ld64 being already
+fast. (Before Xcode 14.1, LLD was 6x as fast as ld64.)
 
 LLD has advantages unrelated to speed, too:
 
@@ -44,27 +42,9 @@ Visual Studio linker link.exe, the LLD Mach-O port tries to be
 commandline-compatible with ld64. This means LLD accepts different flags on
 different platforms.
 
-## Current Status
+## Current status and known issues
 
-### macOS Builds
-- **Non-official builds:** Default to the Apple linker (`ld-prime`) for faster
-  linking.
-- **Official builds:** Default to LLD to support ThinLTO.
-
-### iOS Builds
-- iOS builds continue to use LLD. Testing with the Apple linker has not been
-  prioritized yet.
-
-### ThinLTO
-- For ThinLTO builds, Chromium continues to use LLD. The Apple linker is not
-  supported for ThinLTO.
-
-## Known Issues
-- **LLD Performance on Mac:** The `-read-workers` flag has potential to
-  improve performance by enabling parallel reading of input files (tracked by
-  https://crbug.com/502338406), but it is currently blocked by an upstream
-  issue.
-
+LLD is used by default in all build configurations.
 All tests on all bots are passing, both Intel and Arm.
 Most things even work.
 
