@@ -240,6 +240,7 @@ class RunTest(unittest.TestCase, StreamTestingMixin):
                            '/tmp/layout-test-results/results.html')
         ])
 
+    @unittest.skip("Flaky hang - crbug.com/496616520")
     def test_max_locked_shards(self):
         # Tests for the default of using one locked shard even in the case of more than one child process.
         _, regular_output, _ = logging_run(
