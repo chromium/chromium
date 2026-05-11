@@ -16,7 +16,7 @@
 #include "content/public/renderer/render_thread.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/permissions/permissions_data.h"
-#include "extensions/grit/extensions_renderer_resources.h"
+#include "extensions/grit/extensions_renderer_generated_resources.h"
 #include "extensions/renderer/extension_frame_helper.h"
 #include "extensions/renderer/injection_host.h"
 #include "extensions/renderer/script_context.h"
@@ -76,7 +76,7 @@ struct GreasemonkeyApiJsString {
 GreasemonkeyApiJsString::GreasemonkeyApiJsString() {
   std::string greasemonky_api_js(
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-          IDR_GREASEMONKEY_API_JS));
+          IDR_EXTENSIONS_RENDERER_GENERATED_GREASEMONKEY_API_JS));
   source_ = blink::WebString::FromUtf8(greasemonky_api_js);
 }
 

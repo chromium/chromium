@@ -67,6 +67,7 @@
 #include "extensions/common/switches.h"
 #include "extensions/common/user_scripts_allowed_state.h"
 #include "extensions/common/utils/extension_utils.h"
+#include "extensions/grit/extensions_renderer_generated_resources.h"
 #include "extensions/grit/extensions_renderer_resources.h"
 #include "extensions/renderer/api/messaging/native_renderer_messaging_service.h"
 #include "extensions/renderer/content_watcher.h"
@@ -829,8 +830,10 @@ void Dispatcher::DidCreateDocumentElement(blink::WebLocalFrame* frame) {
 
   if (extension &&
       (extension->is_extension() || extension->is_platform_app())) {
-    int resource_id = extension->is_platform_app() ? IDR_PLATFORM_APP_CSS
-                                                   : IDR_EXTENSION_FONTS_CSS;
+    int resource_id =
+        extension->is_platform_app()
+            ? IDR_EXTENSIONS_RENDERER_GENERATED_PLATFORM_APP_CSS
+            : IDR_EXTENSIONS_RENDERER_GENERATED_EXTENSION_FONTS_CSS;
     std::string stylesheet =
         ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
             resource_id);

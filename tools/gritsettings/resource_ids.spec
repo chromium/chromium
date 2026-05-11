@@ -1630,8 +1630,11 @@
     "includes": [9380],
   },
   "extensions/renderer/resources/extensions_renderer_resources.grd": {
-    "includes": [9400],
     "structures": [9420],
+  },
+  "<(SHARED_INTERMEDIATE_DIR)/extensions/renderer/resources/resources.grd": {
+    "META": {"sizes": {"includes": [100]}},
+    "includes": [9430],
   },
   "extensions/strings/extensions_strings.grd": {
     "messages": [9460],

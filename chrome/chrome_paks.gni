@@ -524,6 +524,7 @@ template("chrome_extra_paks") {
     if (enable_extensions_core) {
       sources += [
         "$root_gen_dir/chrome/extensions_resources.pak",
+        "$root_gen_dir/extensions/extensions_renderer_generated_resources.pak",
         "$root_gen_dir/extensions/extensions_renderer_resources.pak",
         "$root_gen_dir/extensions/extensions_resources.pak",
       ]

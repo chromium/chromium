@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "extensions/grit/extensions_renderer_resources.h"
+#include "extensions/grit/extensions_renderer_generated_resources.h"
 #include "extensions/renderer/module_system_test.h"
 
 namespace extensions {
@@ -13,7 +13,7 @@ class UtilsUnittest : public ModuleSystemTest {
   void SetUp() override {
     ModuleSystemTest::SetUp();
 
-    env()->RegisterModule("utils", IDR_UTILS_JS);
+    env()->RegisterModule("utils", IDR_EXTENSIONS_RENDERER_GENERATED_UTILS_JS);
     env()->RegisterTestFile("utils_unittest", "utils_unittest.js");
     env()->OverrideNativeHandler("schema_registry",
                                  "exports.$set('GetSchema', function() {});");

@@ -1,0 +1,131 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//extensions/buildflags/buildflags.gni")
+import("//tools/grit/grit_rule.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(enable_extensions_core)
+
+grit("extensions_renderer_resources") {
+  source = "extensions_renderer_resources.grd"
+  outputs = [
+    "grit/extensions_renderer_resources.h",
+    "extensions_renderer_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/extensions"
+}
+
+generate_grd("build_grdp") {
+  grd_prefix = "extensions_renderer_generated"
+  out_grd = "$target_gen_dir/resources.grdp"
+  input_files_base_dir = rebase_path(".", "//")
+
+  input_files = [
+    "app_runtime_custom_bindings.js",
+    "app_window_custom_bindings.js",
+    "automation/automation_custom_bindings.js",
+    "automation/automation_event.js",
+    "automation/automation_node.js",
+    "automation/automation_tree_cache.js",
+    "browser_test_environment_specific_bindings.js",
+    "context_menus_custom_bindings.js",
+    "context_menus_handlers.js",
+    "declarative_webrequest_custom_bindings.js",
+    "entry_id_manager.js",
+    "extension_fonts.css",
+    "feedback_private_custom_bindings.js",
+    "file_entry_binding_util.js",
+    "file_system_custom_bindings.js",
+    "greasemonkey_api.js",
+    "guest_view/extension_options/extension_options_attributes.js",
+    "guest_view/extension_options/extension_options_constants.js",
+    "guest_view/extension_options/extension_options_element.js",
+    "guest_view/extension_options/extension_options_events.js",
+    "guest_view/extension_options/extension_options.js",
+    "guest_view/guest_view_attributes.js",
+    "guest_view/guest_view_constants.js",
+    "guest_view/guest_view_container_element.js",
+    "guest_view/guest_view_container.js",
+    "guest_view/guest_view_deny.js",
+    "guest_view/guest_view_events.js",
+    "guest_view/guest_view.js",
+    "guest_view/safe_methods.js",
+    "guest_view/web_view/extensions_web_view_element.js",
+    "guest_view/web_view/web_view_action_requests.js",
+    "guest_view/web_view/web_view_api_methods.js",
+    "guest_view/web_view/web_view_attributes.js",
+    "guest_view/web_view/web_view_constants.js",
+    "guest_view/web_view/web_view_deny.js",
+    "guest_view/web_view/web_view_element.js",
+    "guest_view/web_view/web_view_events.js",
+    "guest_view/web_view/web_view_internal.js",
+    "guest_view/web_view/web_view.js",
+    "guest_view/web_view/web_view_request_custom_bindings.js",
+    "image_util.js",
+    "keep_alive.js",
+    "mime_handler_private_custom_bindings.js",
+    "mojo_private_custom_bindings.js",
+    "permissions_custom_bindings.js",
+    "platform_app.css",
+    "platform_app.js",
+    "printer_provider_custom_bindings.js",
+    "set_icon.js",
+    "test_custom_bindings.js",
+    "uncaught_exception_handler.js",
+    "utils.js",
+    "web_request_custom_bindings.js",
+    "web_request_event.js",
+  ]
+
+  if (is_chromeos) {
+    input_files += [
+      "guest_view/app_view/app_view_deny.js",
+      "guest_view/app_view/app_view_element.js",
+      "guest_view/app_view/app_view.js",
+    ]
+  }
+}
+
+generate_grd("build_mojo_grdp") {
+  grd_prefix = "extensions_renderer_generated"
+  out_grd = "$target_gen_dir/mojo_resources.grdp"
+  input_files_base_dir = rebase_path(root_gen_dir, root_build_dir) + "/"
+
+  input_files = [
+    "extensions/common/api/mime_handler.mojom.js",
+    "extensions/common/mojom/keep_alive.mojom.js",
+  ]
+
+  deps = [
+    "//extensions/common:mojom_js",
+    "//extensions/common/api:mojom_js",
+  ]
+}
+
+generate_grd("build_grd") {
+  grd_prefix = "extensions_renderer_generated"
+  out_grd = "$target_gen_dir/resources.grd"
+  grdp_files = [
+    "$target_gen_dir/resources.grdp",
+    "$target_gen_dir/mojo_resources.grdp",
+  ]
+  deps = [
+    ":build_grdp",
+    ":build_mojo_grdp",
+  ]
+}
+
+grit("extensions_renderer_generated_resources") {
+  source = "$target_gen_dir/resources.grd"
+  enable_input_discovery_for_gn_analyze = false
+  deps = [ ":build_grd" ]
+  outputs = [
+    "grit/extensions_renderer_generated_resources.h",
+    "grit/extensions_renderer_generated_resources_map.cc",
+    "grit/extensions_renderer_generated_resources_map.h",
+    "extensions_renderer_generated_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/extensions"
+}

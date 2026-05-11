@@ -6,7 +6,7 @@
 
 #include "components/guest_view/buildflags/buildflags.h"
 #include "extensions/buildflags/buildflags.h"
-#include "extensions/grit/extensions_renderer_resources.h"
+#include "extensions/grit/extensions_renderer_generated_resources.h"
 #include "extensions/renderer/api/context_menus_custom_bindings.h"
 #include "extensions/renderer/api/declarative_content_hooks_delegate.h"
 #include "extensions/renderer/api/dom_hooks_delegate.h"
@@ -163,58 +163,89 @@ void CoreExtensionsRendererAPIProvider::PopulateSourceMap(
     int id = 0;
   } js_resources[] = {
 #if BUILDFLAG(IS_CHROMEOS)
-      {"appView", IDR_APP_VIEW_JS},
-      {"appViewDeny", IDR_APP_VIEW_DENY_JS},
-      {"appViewElement", IDR_APP_VIEW_ELEMENT_JS},
+      {"appView",
+       IDR_EXTENSIONS_RENDERER_GENERATED_GUEST_VIEW_APP_VIEW_APP_VIEW_JS},
+      {"appViewDeny",
+       IDR_EXTENSIONS_RENDERER_GENERATED_GUEST_VIEW_APP_VIEW_APP_VIEW_DENY_JS},
+      {"appViewElement",
+       IDR_EXTENSIONS_RENDERER_GENERATED_GUEST_VIEW_APP_VIEW_APP_VIEW_ELEMENT_JS},
 #endif
 
-      {"entryIdManager", IDR_ENTRY_ID_MANAGER},
-      {"extensionOptions", IDR_EXTENSION_OPTIONS_JS},
-      {"extensionOptionsElement", IDR_EXTENSION_OPTIONS_ELEMENT_JS},
-      {"extensionOptionsAttributes", IDR_EXTENSION_OPTIONS_ATTRIBUTES_JS},
-      {"extensionOptionsConstants", IDR_EXTENSION_OPTIONS_CONSTANTS_JS},
-      {"extensionOptionsEvents", IDR_EXTENSION_OPTIONS_EVENTS_JS},
-      {"feedbackPrivate", IDR_FEEDBACK_PRIVATE_CUSTOM_BINDINGS_JS},
-      {"fileEntryBindingUtil", IDR_FILE_ENTRY_BINDING_UTIL_JS},
-      {"fileSystem", IDR_FILE_SYSTEM_CUSTOM_BINDINGS_JS},
+      {"entryIdManager", IDR_EXTENSIONS_RENDERER_GENERATED_ENTRY_ID_MANAGER_JS},
+      {"extensionOptions",
+       IDR_EXTENSIONS_RENDERER_GENERATED_GUEST_VIEW_EXTENSION_OPTIONS_EXTENSION_OPTIONS_JS},
+      {"extensionOptionsElement",
+       IDR_EXTENSIONS_RENDERER_GENERATED_GUEST_VIEW_EXTENSION_OPTIONS_EXTENSION_OPTIONS_ELEMENT_JS},
+      {"extensionOptionsAttributes",
+       IDR_EXTENSIONS_RENDERER_GENERATED_GUEST_VIEW_EXTENSION_OPTIONS_EXTENSION_OPTIONS_ATTRIBUTES_JS},
+      {"extensionOptionsConstants",
+       IDR_EXTENSIONS_RENDERER_GENERATED_GUEST_VIEW_EXTENSION_OPTIONS_EXTENSION_OPTIONS_CONSTANTS_JS},
+      {"extensionOptionsEvents",
+       IDR_EXTENSIONS_RENDERER_GENERATED_GUEST_VIEW_EXTENSION_OPTIONS_EXTENSION_OPTIONS_EVENTS_JS},
+      {"feedbackPrivate",
+       IDR_EXTENSIONS_RENDERER_GENERATED_FEEDBACK_PRIVATE_CUSTOM_BINDINGS_JS},
+      {"fileEntryBindingUtil",
+       IDR_EXTENSIONS_RENDERER_GENERATED_FILE_ENTRY_BINDING_UTIL_JS},
+      {"fileSystem",
+       IDR_EXTENSIONS_RENDERER_GENERATED_FILE_SYSTEM_CUSTOM_BINDINGS_JS},
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
-      {"guestView", IDR_GUEST_VIEW_JS},
-      {"guestViewAttributes", IDR_GUEST_VIEW_ATTRIBUTES_JS},
-      {"guestViewConstants", IDR_GUEST_VIEW_CONSTANTS_JS},
-      {"guestViewContainer", IDR_GUEST_VIEW_CONTAINER_JS},
-      {"guestViewContainerElement", IDR_GUEST_VIEW_CONTAINER_ELEMENT_JS},
-      {"guestViewDeny", IDR_GUEST_VIEW_DENY_JS},
-      {"guestViewEvents", IDR_GUEST_VIEW_EVENTS_JS},
+      {"guestView", IDR_EXTENSIONS_RENDERER_GENERATED_GUEST_VIEW_GUEST_VIEW_JS},
+      {"guestViewAttributes",
+       IDR_EXTENSIONS_RENDERER_GENERATED_GUEST_VIEW_GUEST_VIEW_ATTRIBUTES_JS},
+      {"guestViewConstants",
+       IDR_EXTENSIONS_RENDERER_GENERATED_GUEST_VIEW_GUEST_VIEW_CONSTANTS_JS},
+      {"guestViewContainer",
+       IDR_EXTENSIONS_RENDERER_GENERATED_GUEST_VIEW_GUEST_VIEW_CONTAINER_JS},
+      {"guestViewContainerElement",
+       IDR_EXTENSIONS_RENDERER_GENERATED_GUEST_VIEW_GUEST_VIEW_CONTAINER_ELEMENT_JS},
+      {"guestViewDeny",
+       IDR_EXTENSIONS_RENDERER_GENERATED_GUEST_VIEW_GUEST_VIEW_DENY_JS},
+      {"guestViewEvents",
+       IDR_EXTENSIONS_RENDERER_GENERATED_GUEST_VIEW_GUEST_VIEW_EVENTS_JS},
 #endif
 
-      {"safeMethods", IDR_SAFE_METHODS_JS},
-      {"imageUtil", IDR_IMAGE_UTIL_JS},
-      {"setIcon", IDR_SET_ICON_JS},
-      {"test", IDR_TEST_CUSTOM_BINDINGS_JS},
+      {"safeMethods",
+       IDR_EXTENSIONS_RENDERER_GENERATED_GUEST_VIEW_SAFE_METHODS_JS},
+      {"imageUtil", IDR_EXTENSIONS_RENDERER_GENERATED_IMAGE_UTIL_JS},
+      {"setIcon", IDR_EXTENSIONS_RENDERER_GENERATED_SET_ICON_JS},
+      {"test", IDR_EXTENSIONS_RENDERER_GENERATED_TEST_CUSTOM_BINDINGS_JS},
       {"test_environment_specific_bindings",
-       IDR_BROWSER_TEST_ENVIRONMENT_SPECIFIC_BINDINGS_JS},
-      {"uncaught_exception_handler", IDR_UNCAUGHT_EXCEPTION_HANDLER_JS},
-      {"utils", IDR_UTILS_JS},
-      {"webRequest", IDR_WEB_REQUEST_CUSTOM_BINDINGS_JS},
-      {"webRequestEvent", IDR_WEB_REQUEST_EVENT_JS},
+       IDR_EXTENSIONS_RENDERER_GENERATED_BROWSER_TEST_ENVIRONMENT_SPECIFIC_BINDINGS_JS},
+      {"uncaught_exception_handler",
+       IDR_EXTENSIONS_RENDERER_GENERATED_UNCAUGHT_EXCEPTION_HANDLER_JS},
+      {"utils", IDR_EXTENSIONS_RENDERER_GENERATED_UTILS_JS},
+      {"webRequest",
+       IDR_EXTENSIONS_RENDERER_GENERATED_WEB_REQUEST_CUSTOM_BINDINGS_JS},
+      {"webRequestEvent",
+       IDR_EXTENSIONS_RENDERER_GENERATED_WEB_REQUEST_EVENT_JS},
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
       // Note: webView not webview so that this doesn't interfere with the
       // chrome.webview API bindings.
-      {"webView", IDR_WEB_VIEW_JS},
-      {"webViewElement", IDR_WEB_VIEW_ELEMENT_JS},
-      {"extensionsWebViewElement", IDR_EXTENSIONS_WEB_VIEW_ELEMENT_JS},
-      {"webViewDeny", IDR_WEB_VIEW_DENY_JS},
-      {"webViewActionRequests", IDR_WEB_VIEW_ACTION_REQUESTS_JS},
-      {"webViewApiMethods", IDR_WEB_VIEW_API_METHODS_JS},
-      {"webViewAttributes", IDR_WEB_VIEW_ATTRIBUTES_JS},
-      {"webViewConstants", IDR_WEB_VIEW_CONSTANTS_JS},
-      {"webViewEvents", IDR_WEB_VIEW_EVENTS_JS},
-      {"webViewInternal", IDR_WEB_VIEW_INTERNAL_CUSTOM_BINDINGS_JS},
+      {"webView",
+       IDR_EXTENSIONS_RENDERER_GENERATED_GUEST_VIEW_WEB_VIEW_WEB_VIEW_JS},
+      {"webViewElement",
+       IDR_EXTENSIONS_RENDERER_GENERATED_GUEST_VIEW_WEB_VIEW_WEB_VIEW_ELEMENT_JS},
+      {"extensionsWebViewElement",
+       IDR_EXTENSIONS_RENDERER_GENERATED_GUEST_VIEW_WEB_VIEW_EXTENSIONS_WEB_VIEW_ELEMENT_JS},
+      {"webViewDeny",
+       IDR_EXTENSIONS_RENDERER_GENERATED_GUEST_VIEW_WEB_VIEW_WEB_VIEW_DENY_JS},
+      {"webViewActionRequests",
+       IDR_EXTENSIONS_RENDERER_GENERATED_GUEST_VIEW_WEB_VIEW_WEB_VIEW_ACTION_REQUESTS_JS},
+      {"webViewApiMethods",
+       IDR_EXTENSIONS_RENDERER_GENERATED_GUEST_VIEW_WEB_VIEW_WEB_VIEW_API_METHODS_JS},
+      {"webViewAttributes",
+       IDR_EXTENSIONS_RENDERER_GENERATED_GUEST_VIEW_WEB_VIEW_WEB_VIEW_ATTRIBUTES_JS},
+      {"webViewConstants",
+       IDR_EXTENSIONS_RENDERER_GENERATED_GUEST_VIEW_WEB_VIEW_WEB_VIEW_CONSTANTS_JS},
+      {"webViewEvents",
+       IDR_EXTENSIONS_RENDERER_GENERATED_GUEST_VIEW_WEB_VIEW_WEB_VIEW_EVENTS_JS},
+      {"webViewInternal",
+       IDR_EXTENSIONS_RENDERER_GENERATED_GUEST_VIEW_WEB_VIEW_WEB_VIEW_INTERNAL_JS},
 #endif
 
-      {"keep_alive", IDR_KEEP_ALIVE_JS},
+      {"keep_alive", IDR_EXTENSIONS_RENDERER_GENERATED_KEEP_ALIVE_JS},
 
 // TODO(https://crbug.com/356905053): Figure out mojo bindings for
 // desktop-android builds. Currently, the full bindings aren't generated.
@@ -226,30 +257,46 @@ void CoreExtensionsRendererAPIProvider::PopulateSourceMap(
       {"mojo_bindings_lite", IDR_MOJO_MOJO_BINDINGS_LITE_JS},
 #endif
 
-      {"extensions/common/mojom/keep_alive.mojom", IDR_KEEP_ALIVE_MOJOM_JS},
+      {"extensions/common/mojom/keep_alive.mojom",
+       IDR_EXTENSIONS_RENDERER_GENERATED_EXTENSIONS_COMMON_MOJOM_KEEP_ALIVE_MOJOM_JS},
 
       // Custom bindings.
-      {"automation", IDR_AUTOMATION_CUSTOM_BINDINGS_JS},
-      {"automationEvent", IDR_AUTOMATION_EVENT_JS},
-      {"automationNode", IDR_AUTOMATION_NODE_JS},
-      {"automationTreeCache", IDR_AUTOMATION_TREE_CACHE_JS},
+      {"automation",
+       IDR_EXTENSIONS_RENDERER_GENERATED_AUTOMATION_AUTOMATION_CUSTOM_BINDINGS_JS},
+      {"automationEvent",
+       IDR_EXTENSIONS_RENDERER_GENERATED_AUTOMATION_AUTOMATION_EVENT_JS},
+      {"automationNode",
+       IDR_EXTENSIONS_RENDERER_GENERATED_AUTOMATION_AUTOMATION_NODE_JS},
+      {"automationTreeCache",
+       IDR_EXTENSIONS_RENDERER_GENERATED_AUTOMATION_AUTOMATION_TREE_CACHE_JS},
 #if BUILDFLAG(ENABLE_PLATFORM_APPS)
-      {"app.runtime", IDR_APP_RUNTIME_CUSTOM_BINDINGS_JS},
-      {"app.window", IDR_APP_WINDOW_CUSTOM_BINDINGS_JS},
+      {"app.runtime",
+       IDR_EXTENSIONS_RENDERER_GENERATED_APP_RUNTIME_CUSTOM_BINDINGS_JS},
+      {"app.window",
+       IDR_EXTENSIONS_RENDERER_GENERATED_APP_WINDOW_CUSTOM_BINDINGS_JS},
 #endif
-      {"declarativeWebRequest", IDR_DECLARATIVE_WEBREQUEST_CUSTOM_BINDINGS_JS},
-      {"contextMenus", IDR_CONTEXT_MENUS_CUSTOM_BINDINGS_JS},
-      {"contextMenusHandlers", IDR_CONTEXT_MENUS_HANDLERS_JS},
-      {"mimeHandlerPrivate", IDR_MIME_HANDLER_PRIVATE_CUSTOM_BINDINGS_JS},
-      {"extensions/common/api/mime_handler.mojom", IDR_MIME_HANDLER_MOJOM_JS},
-      {"mojoPrivate", IDR_MOJO_PRIVATE_CUSTOM_BINDINGS_JS},
-      {"permissions", IDR_PERMISSIONS_CUSTOM_BINDINGS_JS},
-      {"printerProvider", IDR_PRINTER_PROVIDER_CUSTOM_BINDINGS_JS},
-      {"webViewRequest", IDR_WEB_VIEW_REQUEST_CUSTOM_BINDINGS_JS},
+      {"declarativeWebRequest",
+       IDR_EXTENSIONS_RENDERER_GENERATED_DECLARATIVE_WEBREQUEST_CUSTOM_BINDINGS_JS},
+      {"contextMenus",
+       IDR_EXTENSIONS_RENDERER_GENERATED_CONTEXT_MENUS_CUSTOM_BINDINGS_JS},
+      {"contextMenusHandlers",
+       IDR_EXTENSIONS_RENDERER_GENERATED_CONTEXT_MENUS_HANDLERS_JS},
+      {"mimeHandlerPrivate",
+       IDR_EXTENSIONS_RENDERER_GENERATED_MIME_HANDLER_PRIVATE_CUSTOM_BINDINGS_JS},
+      {"extensions/common/api/mime_handler.mojom",
+       IDR_EXTENSIONS_RENDERER_GENERATED_EXTENSIONS_COMMON_API_MIME_HANDLER_MOJOM_JS},
+      {"mojoPrivate",
+       IDR_EXTENSIONS_RENDERER_GENERATED_MOJO_PRIVATE_CUSTOM_BINDINGS_JS},
+      {"permissions",
+       IDR_EXTENSIONS_RENDERER_GENERATED_PERMISSIONS_CUSTOM_BINDINGS_JS},
+      {"printerProvider",
+       IDR_EXTENSIONS_RENDERER_GENERATED_PRINTER_PROVIDER_CUSTOM_BINDINGS_JS},
+      {"webViewRequest",
+       IDR_EXTENSIONS_RENDERER_GENERATED_GUEST_VIEW_WEB_VIEW_WEB_VIEW_REQUEST_CUSTOM_BINDINGS_JS},
 
 #if BUILDFLAG(ENABLE_PLATFORM_APPS)
       // Platform app sources that are not API-specific..
-      {"platformApp", IDR_PLATFORM_APP_JS},
+      {"platformApp", IDR_EXTENSIONS_RENDERER_GENERATED_PLATFORM_APP_JS},
 #endif
   };
 
