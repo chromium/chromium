@@ -74,6 +74,18 @@ class SerialIoHandler : public base::RefCountedThreadSafe<SerialIoHandler> {
   // |callback| is run.
   void Write(base::span<const uint8_t> buffer, WriteCompleteCallback callback);
 
+#if BUILDFLAG(IS_WIN)
+  // Registers a closure to be run when the pending read operation completes.
+  // This is used to ensure that memory buffers backing the pending read remain
+  // valid until the kernel has signaled completion.
+  void KeepAliveUntilReadCompletes(base::OnceClosure cleanup);
+
+  // Registers a closure to be run when the pending write operation completes.
+  // This is used to ensure that memory buffers backing the pending write remain
+  // valid until the kernel has signaled completion.
+  void KeepAliveUntilWriteCompletes(base::OnceClosure cleanup);
+#endif  // BUILDFLAG(IS_WIN)
+
   // Indicates whether or not a read is currently pending.
   bool IsReadPending() const;
 
@@ -222,6 +234,11 @@ class SerialIoHandler : public base::RefCountedThreadSafe<SerialIoHandler> {
   WriteCompleteCallback pending_write_callback_;
   mojom::SerialSendError write_cancel_reason_;
   bool write_canceled_;
+
+#if BUILDFLAG(IS_WIN)
+  base::OnceClosure pending_read_cleanup_;
+  base::OnceClosure pending_write_cleanup_;
+#endif  // BUILDFLAG(IS_WIN)
 
   // Callback to handle the completion of a pending Open() request.
   OpenCompleteCallback open_complete_;

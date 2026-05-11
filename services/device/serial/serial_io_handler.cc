@@ -231,12 +231,31 @@ void SerialIoHandler::Write(base::span<const uint8_t> buffer,
   WriteImpl();
 }
 
+#if BUILDFLAG(IS_WIN)
+void SerialIoHandler::KeepAliveUntilReadCompletes(base::OnceClosure cleanup) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(IsReadPending());
+  pending_read_cleanup_ = std::move(cleanup);
+}
+
+void SerialIoHandler::KeepAliveUntilWriteCompletes(base::OnceClosure cleanup) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(IsWritePending());
+  pending_write_cleanup_ = std::move(cleanup);
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 void SerialIoHandler::ReadCompleted(int bytes_read,
                                     mojom::SerialReceiveError error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsReadPending());
   pending_read_buffer_ = base::span<uint8_t>();
   std::move(pending_read_callback_).Run(bytes_read, error);
+#if BUILDFLAG(IS_WIN)
+  if (pending_read_cleanup_) {
+    std::move(pending_read_cleanup_).Run();
+  }
+#endif  // BUILDFLAG(IS_WIN)
   Release();
 }
 
@@ -246,6 +265,11 @@ void SerialIoHandler::WriteCompleted(int bytes_written,
   DCHECK(IsWritePending());
   pending_write_buffer_ = base::span<const uint8_t>();
   std::move(pending_write_callback_).Run(bytes_written, error);
+#if BUILDFLAG(IS_WIN)
+  if (pending_write_cleanup_) {
+    std::move(pending_write_cleanup_).Run();
+  }
+#endif  // BUILDFLAG(IS_WIN)
   Release();
 }
 

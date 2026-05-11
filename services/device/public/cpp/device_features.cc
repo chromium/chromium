@@ -71,6 +71,11 @@ BASE_FEATURE(kSafeUsbDeviceHandleWinClose, base::FEATURE_ENABLED_BY_DEFAULT);
 // connection is closed.
 BASE_FEATURE(kSafeHidConnectionWinClose, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, SerialPortImpl will ensure that shared memory buffers backing
+// pending OVERLAPPED requests are not unmapped until the kernel has signaled
+// completion, even if the port is closed.
+BASE_FEATURE(kSafeSerialPortImplWinClose, base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Defines a feature parameter for the `kWinSystemLocationPermission` feature.
 // This parameter controls the polling interval (in milliseconds) for checking
 // the permission status. The default polling interval is set to 500
