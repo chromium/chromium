@@ -300,6 +300,46 @@ IN_PROC_BROWSER_TEST_P(AppViewTest,
   ContinueEmbedding(guest_app, true);
 }
 
+IN_PROC_BROWSER_TEST_P(AppViewTest, NoCrossProfilePendingRequestCollision) {
+  // Existing test utilities don't handle opening apps in other profiles. For
+  // ease of testing, we simulate an app making an embed request in another
+  // profile and leaving it pending.
+  const base::UnguessableToken other_profile_token =
+      base::UnguessableToken::Create();
+  const int colliding_id = 1;
+  extensions::AppViewGuest::AddFakePendingRequestForTesting(other_profile_token,
+                                                            colliding_id);
+
+  // Now in the original profile, embed an app normally.
+  const extensions::Extension* host_app =
+      LoadAndLaunchPlatformApp("app_view/host_app", "AppViewTest.LAUNCHED");
+  const extensions::Extension* guest_app =
+      InstallPlatformApp("app_view/guest_app");
+
+  ExtensionTestMessageListener on_embed_requested_listener(
+      "AppViewTest.EmbedRequested");
+  ASSERT_TRUE(content::ExecJs(
+      extensions::AppWindowRegistry::Get(browser()->profile())
+          ->GetCurrentAppWindowForApp(host_app->id())
+          ->web_contents(),
+      content::JsReplace("onAppCommand($1, $2);", "EMBED", guest_app->id())));
+  ASSERT_TRUE(on_embed_requested_listener.WaitUntilSatisfied());
+  EXPECT_EQ(
+      2u,
+      extensions::AppViewGuest::GetAllRegisteredInstanceIdsForTesting().size());
+
+  ContinueEmbedding(guest_app, true);
+
+  guest_view::GuestViewBase* guest =
+      test_guest_view_manager()->WaitForSingleGuestViewCreated();
+  EXPECT_EQ(browser()->profile(), guest->browser_context());
+  EXPECT_TRUE(test_guest_view_manager()->WaitUntilAttachedAndLoaded(guest));
+
+  EXPECT_EQ(
+      1u,
+      extensions::AppViewGuest::GetAllRegisteredInstanceIdsForTesting().size());
+}
+
 // Load an AppView which loads a WebView with a text field. The embedding app
 // calls `focus()` on the AppView. The AppView calls `focus()` on the WebView.
 // This should be enough to focus the content of the WebView without further

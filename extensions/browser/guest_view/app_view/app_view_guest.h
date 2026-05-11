@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/containers/id_map.h"
+#include "base/unguessable_token.h"
 #include "base/values.h"
 #include "components/guest_view/browser/guest_view.h"
 #include "extensions/browser/guest_view/app_view/app_view_guest_delegate.h"
@@ -52,6 +53,10 @@ class AppViewGuest : public guest_view::GuestView<AppViewGuest> {
 
   // Sets the AppDelegate for this guest.
   void SetAppDelegateForTest(AppDelegate* delegate);
+
+  static void AddFakePendingRequestForTesting(
+      const base::UnguessableToken& profile_token,
+      int guest_instance_id);
 
  private:
   explicit AppViewGuest(content::RenderFrameHost* owner_rfh);

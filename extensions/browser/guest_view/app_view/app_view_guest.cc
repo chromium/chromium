@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "components/guest_view/browser/guest_view_manager.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_features.h"
 #include "extensions/browser/api/app_runtime/app_runtime_api.h"
@@ -53,7 +54,9 @@ struct ResponseInfo {
   ~ResponseInfo() = default;
 };
 
-using PendingResponseMap = std::map<int, std::unique_ptr<ResponseInfo>>;
+using PendingResponseKey = std::pair<int, base::UnguessableToken>;
+using PendingResponseMap =
+    std::map<PendingResponseKey, std::unique_ptr<ResponseInfo>>;
 base::LazyInstance<PendingResponseMap>::DestructorAtExit
     g_pending_response_map = LAZY_INSTANCE_INITIALIZER;
 
@@ -72,7 +75,8 @@ bool AppViewGuest::CompletePendingRequest(
     const std::string& guest_extension_id,
     content::RenderProcessHost* guest_render_process_host) {
   PendingResponseMap* response_map = g_pending_response_map.Pointer();
-  auto it = response_map->find(guest_instance_id);
+  auto it = response_map->find(
+      std::make_pair(guest_instance_id, browser_context->UniqueToken()));
   // Kill the requesting process if it is not the real guest.
   if (it == response_map->end()) {
     // The requester used an invalid |guest_instance_id|.
@@ -355,10 +359,13 @@ void AppViewGuest::LaunchAppAndFireEvent(
           ->enabled_extensions()
           .GetByID(context_info->extension_id);
 
-  g_pending_response_map.Get().insert(std::make_pair(
-      guest_instance_id(),
+  auto [it, inserted] = g_pending_response_map.Get().insert(std::make_pair(
+      std::make_pair(guest_instance_id(), browser_context()->UniqueToken()),
       std::make_unique<ResponseInfo>(extension, std::move(owned_this),
                                      std::move(callback))));
+  // If there was a conflicting element, then it's unsafe to proceed as `this`
+  // would be destroyed.
+  CHECK(inserted);
 
   base::DictValue embed_request;
   embed_request.Set(appview::kGuestInstanceID, guest_instance_id());
@@ -384,9 +391,18 @@ void AppViewGuest::SetAppDelegateForTest(AppDelegate* delegate) {
 std::vector<int> AppViewGuest::GetAllRegisteredInstanceIdsForTesting() {
   std::vector<int> instances;
   for (const auto& key_value : g_pending_response_map.Get()) {
-    instances.push_back(key_value.first);
+    instances.push_back(key_value.first.first);
   }
   return instances;
+}
+
+void AppViewGuest::AddFakePendingRequestForTesting(
+    const base::UnguessableToken& profile_token,
+    int guest_instance_id) {
+  auto [it, inserted] = g_pending_response_map.Get().insert(std::make_pair(
+      std::make_pair(guest_instance_id, profile_token),
+      std::make_unique<ResponseInfo>(nullptr, nullptr, base::NullCallback())));
+  CHECK(inserted);
 }
 
 }  // namespace extensions
