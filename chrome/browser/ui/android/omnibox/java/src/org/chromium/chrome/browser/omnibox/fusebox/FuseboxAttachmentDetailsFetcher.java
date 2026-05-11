@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.omnibox.fusebox;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
@@ -141,46 +139,30 @@ class FuseboxAttachmentDetailsFetcher extends AsyncTask<Boolean> {
 
     @Override
     protected void onPostExecute(Boolean result) {
-        if (result == null || !result) {
+        if (mMimeType == null || mTitle == null || mData == null || result == null || !result) {
             mCallback.onResult(/* result= */ null);
             return;
         }
 
-        String mimeType = assumeNonNull(mMimeType);
-
         FuseboxAttachment attachment =
-                switch (MimeTypeUtils.getTypeFromMimeType(mimeType)) {
+                switch (MimeTypeUtils.getTypeFromMimeType(mMimeType)) {
                     case MimeTypeUtils.Type.IMAGE ->
                             mThumbnail != null
                                     ? FuseboxAttachment.forImage(
                                             mThumbnail,
-                                            assumeNonNull(mTitle),
-                                            mimeType,
-                                            assumeNonNull(mData),
+                                            mTitle,
+                                            mMimeType,
+                                            mData,
                                             mStartTime,
                                             mButtonType)
                                     : FuseboxAttachment.forImageNoThumbnail(
-                                            assumeNonNull(mTitle),
-                                            mimeType,
-                                            assumeNonNull(mData),
-                                            mStartTime,
-                                            mButtonType);
+                                            mTitle, mMimeType, mData, mStartTime, mButtonType);
                     case MimeTypeUtils.Type.PDF ->
                             FuseboxAttachment.forPdf(
-                                    mThumbnail,
-                                    assumeNonNull(mTitle),
-                                    mimeType,
-                                    assumeNonNull(mData),
-                                    mStartTime,
-                                    mButtonType);
+                                    mThumbnail, mTitle, mMimeType, mData, mStartTime, mButtonType);
                     default ->
                             FuseboxAttachment.forFile(
-                                    mThumbnail,
-                                    assumeNonNull(mTitle),
-                                    mimeType,
-                                    assumeNonNull(mData),
-                                    mStartTime,
-                                    mButtonType);
+                                    mThumbnail, mTitle, mMimeType, mData, mStartTime, mButtonType);
                 };
 
         mCallback.onResult(attachment);
