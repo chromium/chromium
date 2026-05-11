@@ -217,12 +217,7 @@ interface Crosapi {
   [MinVersion=127] BindTelemetryManagementService@129(
     pending_receiver<TelemetryManagementService> receiver);
 
-  // Binds the telemetry probe service to allow Lacros request telemetry data
-  // from Ash.
-  // Added in M106.
-  [MinVersion=93] BindTelemetryProbeService@97(
-      pending_receiver<crosapi.mojom.TelemetryProbeService> receiver);
-
+  // BindTelemetryProbeService@97 was removed.
   // BindTestController@14 was removed.
   // BindTimeZoneService@65 was removed.
   // BindTts@58 was removed.

@@ -179,11 +179,6 @@ void CrosapiAsh::BindTelemetryManagementService(
   telemetry_management_service_ash_->BindReceiver(std::move(receiver));
 }
 
-void CrosapiAsh::BindTelemetryProbeService(
-    mojo::PendingReceiver<mojom::TelemetryProbeService> receiver) {
-  probe_service_ash_->BindReceiver(std::move(receiver));
-}
-
 void CrosapiAsh::OnDisconnected() {
   auto it = disconnect_handler_map_.find(receiver_set_.current_receiver());
   if (it == disconnect_handler_map_.end()) {

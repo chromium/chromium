@@ -83,8 +83,6 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindTelemetryManagementService(
       mojo::PendingReceiver<mojom::TelemetryManagementService> receiver)
       override;
-  void BindTelemetryProbeService(
-      mojo::PendingReceiver<mojom::TelemetryProbeService> receiver) override;
 
   LocalPrinterAsh* local_printer_ash() { return local_printer_ash_.get(); }
 

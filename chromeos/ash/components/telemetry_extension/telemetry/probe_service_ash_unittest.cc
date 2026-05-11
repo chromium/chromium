@@ -12,7 +12,6 @@
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/mojo_service_manager/fake_mojo_service_manager.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -21,23 +20,20 @@ class ProbeServiceAshTest : public testing::Test {
  public:
   void SetUp() override {
     cros_healthd::FakeCrosHealthd::Initialize();
-    probe_service_.BindReceiver(
-        remote_probe_service_.BindNewPipeAndPassReceiver());
   }
 
   void TearDown() override {
     cros_healthd::FakeCrosHealthd::Shutdown();
   }
 
-  crosapi::mojom::TelemetryProbeServiceProxy* probe_service() const {
-    return remote_probe_service_.get();
+  crosapi::mojom::TelemetryProbeService* probe_service() {
+    return &probe_service_;
   }
 
  private:
   base::test::TaskEnvironment task_environment_;
   ::ash::mojo_service_manager::FakeMojoServiceManager fake_service_manager_;
 
-  mojo::Remote<crosapi::mojom::TelemetryProbeService> remote_probe_service_;
   ProbeServiceAsh probe_service_;
 };
 

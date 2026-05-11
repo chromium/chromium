@@ -11,9 +11,6 @@
 #include "chromeos/ash/components/telemetry_extension/telemetry/probe_service_converters.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash {
 
@@ -21,38 +18,21 @@ ProbeServiceAsh::ProbeServiceAsh() = default;
 
 ProbeServiceAsh::~ProbeServiceAsh() = default;
 
-void ProbeServiceAsh::BindReceiver(
-    mojo::PendingReceiver<crosapi::mojom::TelemetryProbeService> receiver) {
-  receivers_.Add(this, std::move(receiver));
-}
-
 void ProbeServiceAsh::ProbeTelemetryInfo(
     const std::vector<crosapi::mojom::ProbeCategoryEnum>& categories,
     ProbeTelemetryInfoCallback callback) {
-  GetService()->ProbeTelemetryInfo(
-      converters::telemetry::ConvertCategoryVector(categories),
-      base::BindOnce(
-          [](crosapi::mojom::TelemetryProbeService::ProbeTelemetryInfoCallback
-                 callback,
-             cros_healthd::mojom::TelemetryInfoPtr ptr) {
-            std::move(callback).Run(
-                converters::telemetry::ConvertProbePtr(std::move(ptr)));
-          },
-          std::move(callback)));
-}
-
-cros_healthd::mojom::CrosHealthdProbeService* ProbeServiceAsh::GetService() {
-  if (!service_ || !service_.is_connected()) {
-    cros_healthd::ServiceConnection::GetInstance()->BindProbeService(
-        service_.BindNewPipeAndPassReceiver());
-    service_.set_disconnect_handler(
-        base::BindOnce(&ProbeServiceAsh::OnDisconnect, base::Unretained(this)));
-  }
-  return service_.get();
-}
-
-void ProbeServiceAsh::OnDisconnect() {
-  service_.reset();
+  cros_healthd::ServiceConnection::GetInstance()
+      ->GetProbeService()
+      ->ProbeTelemetryInfo(
+          converters::telemetry::ConvertCategoryVector(categories),
+          base::BindOnce(
+              [](crosapi::mojom::TelemetryProbeService::
+                     ProbeTelemetryInfoCallback callback,
+                 cros_healthd::mojom::TelemetryInfoPtr ptr) {
+                std::move(callback).Run(
+                    converters::telemetry::ConvertProbePtr(std::move(ptr)));
+              },
+              std::move(callback)));
 }
 
 }  // namespace ash
