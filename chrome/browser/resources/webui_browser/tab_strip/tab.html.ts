@@ -13,13 +13,13 @@ export function getHtml(this: TabElement) {
   <div id="faviconContainer">
     <div id="favicon"></div>
   </div>
-  <span id="title">${this.data.title}</span>
+  <span id="title">${this.tabData.title}</span>
   <cr-icon-button
       class="close"
       iron-icon="cr:clear"
       @click="${this.onCloseClick}">
   </cr-icon-button>
-  <div id="bottomCorners" ?hidden="${!this.data.isActive}">
+  <div id="bottomCorners" ?hidden="${!this.tabData.isActive}">
     <div id="leftCorner" class="corner"></div>
     <div id="rightCorner" class="corner"></div>
   </div>

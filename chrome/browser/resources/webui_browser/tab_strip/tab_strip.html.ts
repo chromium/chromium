@@ -10,12 +10,17 @@ export function getHtml(this: TabStripElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
 <div id="tabstrip">
-    ${this.tabs_.map(item => html`
-      <webui-browser-tab id="${this.tabIdToDomId(item.id)}" .data="${item}"
-          .dragInProgress="${this.dragInProgress_}"
-          @tab-close-click="${this.onTabCloseClick}">
-      </webui-browser-tab>
-    `)}
+    ${this.items_.map(item => item.type === 'tab' ? html`
+          <webui-browser-tab id="${this.tabIdToDomId(item.id)}"
+              .tabData="${item.tabData}"
+              .dragInProgress="${this.dragInProgress_}"
+              @tab-close-click="${this.onTabCloseClick}">
+          </webui-browser-tab>
+        ` : html`
+          <webui-browser-tab-group .collectionId="${item.id}"
+              .groupData="${item.groupData}">
+          </webui-browser-tab-group>
+        `)}
   <cr-icon-button id="newTabButton" iron-icon="cr:add"
       title="$i18n{tooltipNewTab}"
       @click="${this.onNewTabButtonClick_}">

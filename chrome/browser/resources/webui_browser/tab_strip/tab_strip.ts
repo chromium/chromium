@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './tab.js';
+import './tab_group.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/icons.html.js';
@@ -12,7 +13,7 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {TabStripService} from '/tab_strip_api/tab_strip_api.mojom-webui.js';
 import type {TabStripServiceRemote} from '/tab_strip_api/tab_strip_api.mojom-webui.js';
-import type {Container, Tab as TabData, TabCreatedContainer, TabGroupVisualData} from '/tab_strip_api/tab_strip_api_data_model.mojom-webui.js';
+import type {Container, Tab, TabCreatedContainer, TabGroup, TabGroupVisualData} from '/tab_strip_api/tab_strip_api_data_model.mojom-webui.js';
 import {OnDataChangedEventFieldTags, whichOnDataChangedEvent} from '/tab_strip_api/tab_strip_api_events.mojom-webui.js';
 import type {OnCollectionCreatedEvent, OnDataChangedEvent, OnNodeMovedEvent, OnNodesClosedEvent, OnTabsCreatedEvent} from '/tab_strip_api/tab_strip_api_events.mojom-webui.js';
 import type {NodeId} from '/tab_strip_api/tab_strip_api_types.mojom-webui.js';
@@ -23,6 +24,20 @@ import type {TabActivated, TabAdded, TabClosed, TabUpdated} from './events.js';
 import type {TabElement} from './tab.js';
 import {getCss} from './tab_strip.css.js';
 import {getHtml} from './tab_strip.html.js';
+
+export interface TabItem {
+  type: 'tab';
+  id: string;
+  tabData: Tab;
+}
+
+export interface TabGroupItem {
+  type: 'group';
+  id: string;
+  groupData: TabGroupVisualData;
+}
+
+type TabStripItem = TabItem|TabGroupItem;
 
 export interface TabStripElement {
   $: {
@@ -45,7 +60,7 @@ export class TabStripElement extends CrLitElement implements TabStripObserver {
 
   static override get properties() {
     return {
-      tabs_: {
+      items_: {
         type: Array,
       },
       activeTab_: {
@@ -59,7 +74,7 @@ export class TabStripElement extends CrLitElement implements TabStripObserver {
     };
   }
 
-  protected accessor tabs_: TabData[] = [];
+  protected accessor items_: TabStripItem[] = [];
   protected accessor activeTab_: string = '';
   protected accessor dragInProgress_ = false;
 
@@ -86,9 +101,13 @@ export class TabStripElement extends CrLitElement implements TabStripObserver {
       if (!container || !container.children) {
         return;
       }
-      container.children.forEach((containerElement: Container, _: number) => {
+      container.children.forEach((containerElement: Container) => {
         if (containerElement.data.tab) {
           this.addTab(containerElement.data.tab);
+        } else if (containerElement.data.tabGroup) {
+          const group = containerElement.data.tabGroup;
+          this.addGroup(group);
+          processContainer(containerElement);
         } else {
           processContainer(containerElement);
         }
@@ -118,19 +137,29 @@ export class TabStripElement extends CrLitElement implements TabStripObserver {
 
   onNodesClosed(nodesClosedEvent: OnNodesClosedEvent) {
     nodesClosedEvent.nodeIds.forEach(nodeId => {
-      this.removeTab(nodeId);
+      this.removeItem(nodeId);
     });
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
-    for (let i = 0; i < this.tabs_.length; ++i) {
-      const tab = this.tabs_[i]!;
-      const tabShouldBeActive = tab.id === this.activeTab_;
-      const activationChanged = tab.isActive !== tabShouldBeActive;
-      if (activationChanged) {
-        this.tabs_[i] = {...tab, isActive: tabShouldBeActive};
+
+    if (!changedProperties.has('activeTab_' as keyof TabStripElement)) {
+      return;
+    }
+
+    for (let i = 0; i < this.items_.length; ++i) {
+      const item = this.items_[i]!;
+      const shouldBeActive = item.id === this.activeTab_;
+
+      if (item.type !== 'tab' || item.tabData.isActive === shouldBeActive) {
+        continue;
       }
+
+      this.items_[i] = {
+        ...item,
+        tabData: {...item.tabData, isActive: shouldBeActive},
+      };
     }
   }
 
@@ -152,7 +181,7 @@ export class TabStripElement extends CrLitElement implements TabStripObserver {
         break;
       case OnDataChangedEventFieldTags.TAB_GROUP:
         const tabGroup = onDataChangedEvent.tabGroup!.data;
-        this.setTabGroupVisualData(tabGroup.id, tabGroup.data);
+        this.updateTabGroup(tabGroup);
         break;
       case OnDataChangedEventFieldTags.SPLIT_TAB:
         throw new Error('unimplemented type: splitTab');
@@ -167,9 +196,14 @@ export class TabStripElement extends CrLitElement implements TabStripObserver {
 
   // End TabStripObserver impl:
 
-  private addTab(tab: TabData) {
-    this.tabs_.push(tab);
+  private addTab(tab: Tab) {
+    this.items_.push({
+      type: 'tab',
+      id: tab.id,
+      tabData: tab,
+    });
     this.requestUpdate();
+
     if (tab.isActive) {
       this.activeTab_ = tab.id;
     }
@@ -180,46 +214,70 @@ export class TabStripElement extends CrLitElement implements TabStripObserver {
     });
   }
 
+  private addGroup(group: TabGroup) {
+    this.items_.push({
+      type: 'group',
+      id: group.id,
+      groupData: group.data,
+    });
+    this.requestUpdate();
+  }
+
   protected onTabCloseClick(e: CustomEvent<{id: string}>) {
     this.tabStripService_.closeNodes([e.detail.id]);
   }
 
   private activateTab(tabId: NodeId) {
-    const targetActive = this.tabs_.find(tab => tab.id === tabId);
-    if (!targetActive) {
+    const item = this.items_.find(
+        (i): i is TabItem => i.type === 'tab' && i.id === tabId);
+    if (!item) {
       return;
     }
 
     this.activeTab_ = tabId;
-    targetActive.isActive = true;
     this.tabStripService_.activateTab(tabId);
-    this.requestUpdate();
-    this.fire<TabActivated>('tab-activated', targetActive);
+    this.fire<TabActivated>('tab-activated', item.tabData);
   }
 
   // TODO(webium): implement this.
   // private setTabGroupForTab(/*tabId*/ _: NodeId, /*groupId*/ _2?: NodeId) {
   //}
 
-  private setTabGroupVisualData(_: string, _2: TabGroupVisualData) {
-    // TODO(webium): implement this.
+  private updateTabGroup(group: TabGroup) {
+    const index =
+        this.items_.findIndex(i => i.type === 'group' && i.id === group.id);
+    if (index !== -1) {
+      const groupItem = this.items_[index] as TabGroupItem;
+      this.items_[index] = {...groupItem, groupData: group.data};
+      this.requestUpdate();
+    }
   }
 
-  private updateTab(tabData: TabData) {
-    const targetIdx = this.tabs_.findIndex(tab => tab.id === tabData.id);
-    if (targetIdx === -1) {
+  private updateTab(tab: Tab) {
+    const index =
+        this.items_.findIndex(i => i.type === 'tab' && i.id === tab.id);
+    if (index === -1) {
       return;
     }
 
-    this.tabs_[targetIdx] = tabData;
+    this.items_[index] = {
+      type: 'tab',
+      id: tab.id,
+      tabData: tab,
+    };
     // Needed to get the tab element to refresh with the updated data.
     this.requestUpdate();
-    this.fire<TabUpdated>('tab-updated', tabData);
+    this.fire<TabUpdated>('tab-updated', tab);
   }
 
-  private removeTab(tabId: NodeId) {
-    this.tabs_ = this.tabs_.filter(tab => tab.id !== tabId);
-    this.fire<TabClosed>('tab-closed', tabId);
+  private removeItem(id: NodeId) {
+    const itemToRemove = this.items_.find(item => item.id === id);
+    this.items_ = this.items_.filter(item => item.id !== id);
+    this.requestUpdate();
+
+    if (itemToRemove && itemToRemove.type === 'tab') {
+      this.fire<TabClosed>('tab-closed', id);
+    }
   }
 
   protected onNewTabButtonClick_() {
@@ -260,7 +318,7 @@ export class TabStripElement extends CrLitElement implements TabStripObserver {
                 el.localName === 'webui-browser-tab') as TabElement |
         null;
     if (tabElement) {
-      this.draggedTabId = tabElement.data.id;
+      this.draggedTabId = tabElement.tabData.id;
       this.dragInProgress_ = true;
       this.outOfBoundsDragX = e.clientX;
       this.outOfBoundsDragY = e.clientY;
@@ -326,38 +384,40 @@ export class TabStripElement extends CrLitElement implements TabStripObserver {
     const dragElementRect = this.getDraggedElement().getBoundingClientRect();
 
     // Now we will test the positioning after the DOM has been laid out.
-    const index = this.tabs_.findIndex(tab => {
-      return tab.id === this.draggedTabId;
+    const index = this.items_.findIndex(item => {
+      return item.type === 'tab' && item.id === this.draggedTabId;
     });
     assert(index !== -1);
     // Test for swap forward case.
-    if (this.tabs_[index - 1]) {
+    const prevItem = this.items_[index - 1];
+    if (prevItem && prevItem.type === 'tab') {
       const targetIdx = index - 1;
-      const targetId = this.tabIdToDomId(this.tabs_[targetIdx]!.id);
+      const targetId = this.tabIdToDomId(prevItem.id);
       const target = this.shadowRoot.querySelector<TabElement>(
           `webui-browser-tab#${targetId}`);
       assert(target);
       const targetMidpoint = target.getBoundingClientRect().left +
           (target.getBoundingClientRect().width / 2);
       if (dragElementRect.left < targetMidpoint) {
-        [this.tabs_[index], this.tabs_[targetIdx]] =
-            [this.tabs_[targetIdx]!, this.tabs_[index]!];
-        this.tabs_ = [...this.tabs_];
+        [this.items_[index], this.items_[targetIdx]] =
+            [this.items_[targetIdx]!, this.items_[index]!];
+        this.items_ = [...this.items_];
       }
     }
     // Test for swap backward case.
-    if (this.tabs_[index + 1]) {
+    const nextItem = this.items_[index + 1];
+    if (nextItem && nextItem.type === 'tab') {
       const targetIdx = index + 1;
-      const targetId = this.tabIdToDomId(this.tabs_[targetIdx]!.id);
+      const targetId = this.tabIdToDomId(nextItem.id);
       const target = this.shadowRoot.querySelector<TabElement>(
           `webui-browser-tab#${targetId}`);
       assert(target);
       const targetMidpoint = target.getBoundingClientRect().left +
           (target.getBoundingClientRect().width / 2);
       if (dragElementRect.right > targetMidpoint) {
-        [this.tabs_[index], this.tabs_[targetIdx]] =
-            [this.tabs_[targetIdx]!, this.tabs_[index]!];
-        this.tabs_ = [...this.tabs_];
+        [this.items_[index], this.items_[targetIdx]] =
+            [this.items_[targetIdx]!, this.items_[index]!];
+        this.items_ = [...this.items_];
       }
     }
 

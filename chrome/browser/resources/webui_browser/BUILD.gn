@@ -30,6 +30,8 @@ build_webui("build") {
     "tab_strip/events.ts",
     "tab_strip/tab.html.ts",
     "tab_strip/tab.ts",
+    "tab_strip/tab_group.html.ts",
+    "tab_strip/tab_group.ts",
     "tab_strip/tab_strip.html.ts",
     "tab_strip/tab_strip.ts",
     "webui_browser.ts",
@@ -45,6 +47,7 @@ build_webui("build") {
     "extensions_bar.css",
     "side_panel.css",
     "tab_strip/tab.css",
+    "tab_strip/tab_group.css",
     "tab_strip/tab_strip.css",
     "webview.css",
   ]
