@@ -16,6 +16,7 @@
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/posix/safe_strerror.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -1156,6 +1157,15 @@ void RequestManager::SubmitCapturedJpegBuffer(uint32_t frame_number,
   CaptureResult& pending_result = pending_results_[frame_number];
   gfx::Size buffer_dimension =
       stream_buffer_manager_->GetBufferDimension(stream_type);
+  // Validate the JPEG buffer size to prevent underflow when calculating the
+  // header pointer (crbug.com/502782711).
+  if (static_cast<size_t>(buffer_dimension.width()) < sizeof(Camera3JpegBlob)) {
+    device_context_->SetErrorState(
+        media::VideoCaptureError::kCrosHalV3BufferManagerInvalidJpegBlob,
+        FROM_HERE, "Invalid JPEG buffer size");
+    return;
+  }
+
   auto shared_image =
       stream_buffer_manager_->GetSharedImageById(stream_type, buffer_ipc_id);
   CHECK(shared_image);
@@ -1175,6 +1185,13 @@ void RequestManager::SubmitCapturedJpegBuffer(uint32_t frame_number,
     device_context_->SetErrorState(
         media::VideoCaptureError::kCrosHalV3BufferManagerInvalidJpegBlob,
         FROM_HERE, "Invalid JPEG blob");
+    return;
+  }
+  // Validate the JPEG size to prevent out-of-bounds read (crbug.com/502782711).
+  if (header->jpeg_size > buffer_dimension.width() - sizeof(Camera3JpegBlob)) {
+    device_context_->SetErrorState(
+        media::VideoCaptureError::kCrosHalV3BufferManagerInvalidJpegBlob,
+        FROM_HERE, "Invalid JPEG size");
     return;
   }
   // Still capture result from HALv3 already has orientation info in EXIF,
