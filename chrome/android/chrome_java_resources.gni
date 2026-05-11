@@ -374,6 +374,8 @@ chrome_java_resources = [
   "java/res/drawable/notifications_active.xml",
   "java/res/drawable/permission_location_off.xml",
   "java/res/drawable/phone_recent_tab_empty_state_illustration.xml",
+  "java/res/drawable/photo_24dp.xml",
+  "java/res/drawable/photo_camera_24dp.xml",
   "java/res/drawable/pill_background.xml",
   "java/res/drawable/price_tracking_disabled.xml",
   "java/res/drawable/price_tracking_enabled_filled.xml",

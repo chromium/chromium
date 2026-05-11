@@ -143,12 +143,12 @@ class FuseboxPopup {
         initializeItem(
                 mCameraButton,
                 R.string.photo_picker_camera,
-                R.drawable.ic_photo_camera,
+                R.drawable.photo_camera_24dp,
                 R.string.accessibility_omnibox_add_camera_picture);
         initializeItem(
                 mGalleryButton,
                 R.string.omnibox_navattach_gallery,
-                R.drawable.ic_photo_library_fill_24dp,
+                R.drawable.photo_24dp,
                 R.string.accessibility_omnibox_add_images);
         initializeItem(
                 mFileButton,
