@@ -260,11 +260,6 @@ template("single_gcc_toolchain") {
     } else {
       nm = "nm"
     }
-    if (defined(invoker.dwp)) {
-      dwp_switch = " --dwp=\"${invoker.dwp}\""
-    } else {
-      dwp_switch = ""
-    }
 
     if (defined(invoker.shlib_extension)) {
       default_shlib_extension = invoker.shlib_extension
@@ -472,7 +467,7 @@ template("single_gcc_toolchain") {
         # (skipped on Aix)
         solink_extra_flags = "--partitioned-library"
       }
-      command = "\"$python_path\" \"$solink_wrapper\" --readelf=\"$readelf\" --nm=\"$nm\" $strip_switch$dwp_switch --sofile=\"$unstripped_sofile\" --tocfile=\"$tocfile\"$map_switch --output=\"$sofile\" -- $link_command $solink_extra_flags"
+      command = "\"$python_path\" \"$solink_wrapper\" --readelf=\"$readelf\" --nm=\"$nm\" $strip_switch --sofile=\"$unstripped_sofile\" --tocfile=\"$tocfile\"$map_switch --output=\"$sofile\" -- $link_command $solink_extra_flags"
 
       if (target_cpu == "mipsel" && is_component_build && is_android) {
         rspfile_content = "-Wl,--start-group -Wl,--whole-archive {{inputs}} {{solibs}} -Wl,--no-whole-archive {{libs}} -Wl,--end-group"
@@ -514,16 +509,6 @@ template("single_gcc_toolchain") {
         }
       }
 
-      # Clank build will generate DWP files when Fission is used.
-      # Other builds generate DWP files outside of the gn link targets, if at
-      # all.
-      if (defined(invoker.dwp)) {
-        outputs += [ unstripped_sofile + ".dwp" ]
-        if (defined(invoker.use_unstripped_as_runtime_outputs) &&
-            invoker.use_unstripped_as_runtime_outputs) {
-          runtime_outputs += [ unstripped_sofile + ".dwp" ]
-        }
-      }
       if (defined(map_file)) {
         outputs += [ map_file ]
       }
@@ -636,7 +621,7 @@ template("single_gcc_toolchain") {
 
       link_wrapper =
           rebase_path("//build/toolchain/gcc_link_wrapper.py", root_build_dir)
-      command = "\"$python_path\" \"$link_wrapper\" --output=\"$outfile\"$strip_switch$map_switch$dwp_switch -- $link_command"
+      command = "\"$python_path\" \"$link_wrapper\" --output=\"$outfile\"$strip_switch$map_switch -- $link_command"
 
       description = "LINK $outfile"
 
@@ -650,16 +635,6 @@ template("single_gcc_toolchain") {
         }
       }
 
-      # Clank build will generate DWP files when Fission is used.
-      # Other builds generate DWP files outside of the gn link targets, if at
-      # all.
-      if (defined(invoker.dwp)) {
-        outputs += [ unstripped_outfile + ".dwp" ]
-        if (defined(invoker.use_unstripped_as_runtime_outputs) &&
-            invoker.use_unstripped_as_runtime_outputs) {
-          runtime_outputs += [ unstripped_outfile + ".dwp" ]
-        }
-      }
       if (defined(invoker.link_outputs)) {
         outputs += invoker.link_outputs
       }

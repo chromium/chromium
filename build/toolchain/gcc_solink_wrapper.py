@@ -102,7 +102,6 @@ def main():
   parser.add_argument('--strip',
                       help='The strip binary to run',
                       metavar='PATH')
-  parser.add_argument('--dwp', help='The dwp binary to run', metavar='PATH')
   parser.add_argument('--sofile',
                       required=True,
                       help='Shared object file produced by linking command',
@@ -155,8 +154,6 @@ def main():
   if collect_inputs_only:
     if args.map_file:
       open(args.map_file, 'w').close()
-    if args.dwp:
-      open(args.sofile + '.dwp', 'w').close()
 
     with open(args.sofile, 'w') as f:
       CollectInputs(f, args.command)
@@ -170,17 +167,6 @@ def main():
 
   if result != 0:
     return result
-
-  # If dwp is set, then package debug info for this SO.
-  dwp_proc = None
-  if args.dwp:
-    # Explicit delete to account for symlinks (when toggling between
-    # debug/release).
-    SafeDelete(args.sofile + '.dwp')
-    # Suppress warnings about duplicate CU entries (https://crbug.com/1264130)
-    dwp_proc = subprocess.Popen(wrapper_utils.CommandToRun(
-        [args.dwp, '-e', args.sofile, '-o', args.sofile + '.dwp']),
-                                stderr=subprocess.DEVNULL)
 
   if not partitioned_library:
     # Next, generate the contents of the TOC file.
@@ -197,12 +183,6 @@ def main():
       result = subprocess.call(
           wrapper_utils.CommandToRun(
               [args.strip, '-o', args.output, args.sofile]))
-
-  if dwp_proc:
-    dwp_result = dwp_proc.wait()
-    if dwp_result != 0:
-      sys.stderr.write('dwp failed with error code {}\n'.format(dwp_result))
-      return dwp_result
 
   return result
 
