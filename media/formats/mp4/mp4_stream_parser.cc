@@ -465,8 +465,7 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
   moov_ = std::make_unique<Movie>();
   RCHECK(moov_->Parse(reader));
   runs_.reset();
-  audio_track_ids_.clear();
-  video_track_ids_.clear();
+  track_ids_.clear();
 
   has_audio_ = false;
   has_video_ = false;
@@ -483,12 +482,19 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
     const SampleDescription& samp_descr =
         track->media.information.sample_table.description;
 
+    uint32_t track_id = track->header.track_id;
+    if (track_ids_.contains(track_id)) {
+      MEDIA_LOG(ERROR, media_log_)
+          << "Duplicate track ID in moov: " << track_id;
+      return false;
+    }
+
     // TODO(wolenetz): When codec reconfigurations are supported, detect and
     // send a codec reconfiguration for fragments using a sample description
     // index different from the previous one. See https://crbug.com/748250.
     size_t desc_idx = 0;
     for (const auto& trex : moov_->extends.tracks) {
-      if (trex.track_id == track->header.track_id) {
+      if (trex.track_id == track_id) {
         desc_idx = trex.default_sample_description_index;
         break;
       }
@@ -733,12 +739,6 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
       }
 
       uint32_t audio_track_id = track->header.track_id;
-      if (audio_track_ids_.find(audio_track_id) != audio_track_ids_.end()) {
-        MEDIA_LOG(ERROR, media_log_)
-            << "Audio track with track_id=" << audio_track_id
-            << " already present.";
-        return false;
-      }
       bool is_track_encrypted = entry.sinf.info.track_encryption.is_encrypted;
       EncryptionScheme scheme = EncryptionScheme::kUnencrypted;
       if (is_track_encrypted) {
@@ -771,8 +771,8 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
         return false;
       }
       has_audio_ = true;
-      audio_track_ids_.insert(audio_track_id);
-      const char* track_kind = (audio_track_ids_.size() == 1 ? "main" : "");
+      track_ids_[audio_track_id] = DemuxerStream::AUDIO;
+      const char* track_kind = (detected_audio_track_count == 1 ? "main" : "");
       media_tracks->AddAudioTrack(
           audio_config, true, audio_track_id, MediaTrack::Kind(track_kind),
           MediaTrack::Label(track->media.handler.name),
@@ -813,12 +813,6 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
       gfx::Size natural_size = aspect_ratio.GetNaturalSize(visible_rect);
 
       uint32_t video_track_id = track->header.track_id;
-      if (video_track_ids_.find(video_track_id) != video_track_ids_.end()) {
-        MEDIA_LOG(ERROR, media_log_)
-            << "Video track with track_id=" << video_track_id
-            << " already present.";
-        return false;
-      }
       bool is_track_encrypted = entry.sinf.info.track_encryption.is_encrypted;
       EncryptionScheme scheme = EncryptionScheme::kUnencrypted;
       if (is_track_encrypted) {
@@ -875,9 +869,9 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
         return false;
       }
       has_video_ = true;
-      video_track_ids_.insert(video_track_id);
+      track_ids_[video_track_id] = DemuxerStream::VIDEO;
       auto track_kind =
-          MediaTrack::Kind(video_track_ids_.size() == 1 ? "main" : "");
+          MediaTrack::Kind(detected_video_track_count == 1 ? "main" : "");
       media_tracks->AddVideoTrack(
           video_config, true, video_track_id, track_kind,
           MediaTrack::Label(track->media.handler.name),
@@ -899,6 +893,7 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
             track->references);
       }
       if (metadata_track) {
+        track_ids_[metadata_track_id] = DemuxerStream::UNKNOWN;
         metadata_tracks_[metadata_track_id] = std::move(metadata_track);
         ++detected_metadata_track_count;
       }
@@ -1041,12 +1036,9 @@ ParseResult MP4StreamParser::EnqueueSample(BufferQueueMap* buffers) {
   }
 
   DemuxerStream::Type buffer_type = DemuxerStream::UNKNOWN;
-  if (audio_track_ids_.count(runs_->track_id())) {
-    buffer_type = DemuxerStream::AUDIO;
-  } else if (video_track_ids_.count(runs_->track_id())) {
-    buffer_type = DemuxerStream::VIDEO;
-  } else if (metadata_tracks_.count(runs_->track_id())) {
-    // Leave metadata samples' buffer type as UNKNOWN.
+  auto it = track_ids_.find(runs_->track_id());
+  if (it != track_ids_.end()) {
+    buffer_type = it->second;
   } else {
     // Skip this entire track if it's not one we're interested in
     if (!runs_->AdvanceRun()) {

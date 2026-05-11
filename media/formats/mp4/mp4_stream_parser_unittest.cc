@@ -573,6 +573,22 @@ TEST_F(MP4StreamParserTest, MissingSampleEncryptionInfo) {
   EXPECT_FALSE(AppendAllDataThenParseInPieces(*buffer, 512));
 }
 
+// Test that files with duplicate track IDs across different track types are
+// rejected.
+TEST_F(MP4StreamParserTest, DuplicateTrackIdRejected) {
+  InSequence s;
+
+  InitializeParser();
+
+  scoped_refptr<DecoderBuffer> buffer =
+      ReadTestDataFile("duplicate_track_id.mp4");
+
+  // We expect an error log about duplicate track ID.
+  EXPECT_MEDIA_LOG(testing::HasSubstr("Duplicate track ID in moov"));
+
+  EXPECT_FALSE(AppendAllDataThenParseInPieces(*buffer, 512));
+}
+
 // Test a file where all video samples start with an Access Unit
 // Delimiter (AUD) NALU.
 TEST_F(MP4StreamParserTest, VideoSamplesStartWithAUDs) {

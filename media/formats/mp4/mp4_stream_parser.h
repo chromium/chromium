@@ -14,6 +14,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "media/base/demuxer_stream.h"
 #include "media/base/media_export.h"
 #include "media/base/stream_parser.h"
 #include "media/formats/common/offset_byte_queue.h"
@@ -155,8 +156,9 @@ class MEDIA_EXPORT MP4StreamParser : public StreamParser {
 
   bool has_audio_;
   bool has_video_;
-  base::flat_set<uint32_t> audio_track_ids_;
-  base::flat_set<uint32_t> video_track_ids_;
+
+  // Used to prevent reused track IDs.
+  base::flat_map<uint32_t, DemuxerStream::Type> track_ids_;
   base::flat_map<uint32_t, std::unique_ptr<HdrMetadataTrack>> metadata_tracks_;
 
   // The object types allowed for audio tracks. For FLAC indication, use
