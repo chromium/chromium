@@ -31,6 +31,23 @@
             ]
         }
     ],
+    "AIFuseboxFakeboxEvolution": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AIOmniboxAskPlaceholder",
+                        "ComposeboxPlusButtonBottomSheet",
+                        "PlusButtonInFakebox"
+                    ]
+                }
+            ]
+        }
+    ],
     "AIFuseboxIOSModelPicker": [
         {
             "platforms": [
