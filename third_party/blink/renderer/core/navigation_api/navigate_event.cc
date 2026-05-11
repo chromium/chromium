@@ -86,7 +86,7 @@ class NavigateEvent::FulfillReaction final
   void React(ScriptState* script_state) {
     switch (type_) {
       case HandlerPhase::kPrecommit:
-        navigate_event_->CommitNow(script_state);
+        navigate_event_->CommitNow();
         break;
       case HandlerPhase::kPostcommit:
         navigate_event_->ReactDone(script_state, ScriptValue(),
@@ -454,7 +454,7 @@ void NavigateEvent::MaybeCommitImmediately(ScriptState* script_state) {
       kDelayLoadStart);
 
   if (navigation_action_precommit_handlers_list_.empty()) {
-    CommitNow(script_state);
+    CommitNow();
     return;
   }
 
@@ -483,7 +483,7 @@ void NavigateEvent::MaybeCommitImmediately(ScriptState* script_state) {
           MakeGarbageCollected<RejectReaction>(this));
 }
 
-void NavigateEvent::CommitNow(ScriptState* script_state) {
+void NavigateEvent::CommitNow() {
   CHECK_EQ(intercept_state_, InterceptState::kIntercepted);
   CHECK(!dispatch_params_->destination_item || !dispatch_params_->state_object);
   if (signal_->aborted()) {
@@ -521,8 +521,6 @@ void NavigateEvent::CommitNow(ScriptState* script_state) {
   if (LocalDOMWindow* window = DomWindow()) {
     window->GetFrame()->Loader().Progress().DidNavigationApiIntercept();
   }
-
-  React(script_state);
 }
 
 void NavigateEvent::React(ScriptState* script_state) {

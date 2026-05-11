@@ -117,7 +117,7 @@ class NavigateEvent final : public Event,
  private:
   bool PerformSharedChecks(const String& function_name, ExceptionState&);
 
-  void CommitNow(ScriptState*);
+  void CommitNow();
 
   void PotentiallyResetTheFocus();
   void PotentiallyProcessScrollBehavior();

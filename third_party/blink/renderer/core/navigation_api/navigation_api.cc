@@ -282,7 +282,7 @@ void NavigationApi::UpdateForNavigation(HistoryItem& item,
   // Without the microtasks scope deferring promise continuations, the order
   // inverts when committing a browser-initiated same-document navigation and
   // an event listener is present for either currententrychange or dispose.
-  V8RunMicrotasksScope scope(window_.Get());
+  V8RunMicrotasksScope run_microtasks_scope(window_.Get());
 
   auto* init = NavigationCurrentEntryChangeEventInit::Create();
   init->setNavigationType(ToV8NavigationType(type));
@@ -299,6 +299,12 @@ void NavigationApi::UpdateForNavigation(HistoryItem& item,
 
   if (auto* routemap = RouteMap::Get(window_->document())) {
     routemap->OnNavigationCommitted();
+  }
+
+  if (ongoing_navigate_event && window_->GetFrame()) {
+    auto* script_state = ToScriptStateForMainWorld(window_->GetFrame());
+    ScriptState::Scope scope(script_state);
+    ongoing_navigate_event->React(script_state);
   }
 }
 
@@ -911,9 +917,7 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
         window_, navigation_type, currentEntry(),
         navigate_event->destination());
     navigate_event->MaybeCommitImmediately(script_state);
-  } else if (params->event_type != NavigateEventType::kCrossDocument) {
-    navigate_event->React(script_state);
-  } else {
+  } else if (params->event_type == NavigateEventType::kCrossDocument) {
     window_->document()->GetViewTransitions().StartNavigationPreviewIfNeeded();
     navigate_event->MaybeDeferCrossDocumentCommit(script_state, params);
   }
