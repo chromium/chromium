@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <memory>
+#include <utility>
 
 #include "base/barrier_closure.h"
 #include "base/containers/flat_set.h"
@@ -48,8 +50,12 @@ class TestPolicy : public MemoryCoordinatorPolicy,
 
   bool WaitUntilRegistered(const std::string& name) {
     uint32_t consumer_id = base::PersistentHash(name);
-    return base::test::RunUntil(
-        [&]() { return registered_consumers_.contains(consumer_id); });
+    return base::test::RunUntil([&]() {
+      return std::ranges::any_of(registered_consumers_,
+                                 [consumer_id](const auto& pair) {
+                                   return pair.first == consumer_id;
+                                 });
+    });
   }
 
   // MemoryCoordinatorPolicyManager::Observer:
@@ -58,18 +64,20 @@ class TestPolicy : public MemoryCoordinatorPolicy,
                             std::optional<base::MemoryConsumerTraits> traits,
                             ProcessType process_type,
                             ChildProcessId child_process_id) override {
-    auto [it, inserted] = registered_consumers_.insert(consumer_id);
+    auto [it, inserted] =
+        registered_consumers_.insert({consumer_id, child_process_id});
     CHECK(inserted);
   }
 
   void OnConsumerGroupRemoved(uint32_t consumer_id,
                               ChildProcessId child_process_id) override {
-    size_t removed = registered_consumers_.erase(consumer_id);
+    size_t removed =
+        registered_consumers_.erase({consumer_id, child_process_id});
     CHECK_EQ(removed, 1u);
   }
 
  private:
-  base::flat_set<uint32_t> registered_consumers_;
+  base::flat_set<std::pair<uint32_t, ChildProcessId>> registered_consumers_;
 };
 
 class MemoryCoordinatorBrowserTest : public ContentBrowserTest {

@@ -5,10 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_PLAIN_TEXT_PAINTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_PLAIN_TEXT_PAINTER_H_
 
-#include "base/memory/memory_pressure_listener.h"
+#include "base/memory_coordinator/memory_consumer.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
-#include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
+#include "third_party/blink/renderer/platform/instrumentation/memory_coordinator/memory_consumer_registration.h"
 
 namespace gfx {
 class PointF;
@@ -41,7 +41,7 @@ class TextRun;
 // PlainTextPainter::Shared().
 class PLATFORM_EXPORT PlainTextPainter
     : public GarbageCollected<PlainTextPainter>,
-      public base::MemoryPressureListener {
+      public base::MemoryConsumer {
   USING_PRE_FINALIZER(PlainTextPainter, Dispose);
 
  public:
@@ -103,8 +103,9 @@ class PLATFORM_EXPORT PlainTextPainter
   // don't need to call this for the shared instance.
   void DidSwitchFrame();
 
-  // base::MemoryPressureListener:
-  void OnMemoryPressure(base::MemoryPressureLevel) override;
+  // base::MemoryConsumer:
+  void OnUpdateMemoryLimit() override;
+  void OnReleaseMemory() override;
 
  private:
   friend class PlainTextPainterTest;
@@ -121,8 +122,7 @@ class PLATFORM_EXPORT PlainTextPainter
   HeapHashMap<WeakMember<FontFallbackList>, Member<FrameShapeCache>> cache_map_;
   const Mode mode_;
 
-  std::optional<MemoryPressureListenerRegistration>
-      memory_pressure_listener_registration_;
+  std::optional<MemoryConsumerRegistration> memory_consumer_registration_;
 };
 
 }  // namespace blink

@@ -7,6 +7,7 @@
 #include <cmath>
 
 #include "base/containers/adapters.h"
+#include "base/memory_coordinator/utils.h"
 #include "third_party/blink/renderer/platform/fonts/character_range.h"
 #include "third_party/blink/renderer/platform/fonts/plain_text_node.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/frame_shape_cache.h"
@@ -19,8 +20,11 @@ namespace blink {
 PlainTextPainter::PlainTextPainter(PlainTextPainter::Mode mode) : mode_(mode) {
   // We don't use FrameShapeCache in the kShared mode. See GetCacheFor().
   if (mode_ == kCanvas) {
-    memory_pressure_listener_registration_.emplace(
-        FROM_HERE, base::MemoryPressureListenerTag::kPlainTextPainter, this);
+    memory_consumer_registration_.emplace(
+        "PlainTextPainter",
+        /*traits=*/std::nullopt,  // TODO(crbug.com/489671163): Fill traits.
+        this, MemoryConsumerRegistration::CheckUnregister::kDisabled,
+        MemoryConsumerRegistration::CheckRegistryExists::kDisabled);
   }
 }
 
@@ -29,8 +33,8 @@ void PlainTextPainter::Trace(Visitor* visitor) const {
 }
 
 void PlainTextPainter::Dispose() {
-  if (memory_pressure_listener_registration_) {
-    memory_pressure_listener_registration_->Dispose();
+  if (memory_consumer_registration_) {
+    memory_consumer_registration_->Dispose();
   }
 }
 
@@ -254,9 +258,10 @@ FrameShapeCache* PlainTextPainter::GetCacheFor(const Font& font) {
   return cache;
 }
 
-void PlainTextPainter::OnMemoryPressure(
-    base::MemoryPressureLevel memory_pressure_level) {
-  if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+void PlainTextPainter::OnUpdateMemoryLimit() {}
+
+void PlainTextPainter::OnReleaseMemory() {
+  if (memory_limit() <= base::kCriticalMemoryPressureThreshold) {
     cache_map_.clear();
   }
 }

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_global_context.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/memory_coordinator/utils.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_unique_name_lookup.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_face.h"
@@ -31,10 +32,16 @@ FontGlobalContext* FontGlobalContext::TryGet() {
 }
 
 FontGlobalContext::FontGlobalContext(PassKey)
-    : memory_pressure_listener_registration_(
-          FROM_HERE,
-          base::MemoryPressureListenerTag::kFontGlobalContext,
-          this) {}
+    : memory_consumer_registration_(
+          "FontGlobalContext",
+          /*traits=*/std::nullopt,  // TODO(crbug.com/489671163): Fill traits.
+          this,
+          MemoryConsumerRegistration::CheckUnregister::kDisabled,
+          MemoryConsumerRegistration::CheckRegistryExists::kDisabled) {}
+
+void FontGlobalContext::Dispose() {
+  memory_consumer_registration_.Dispose();
+}
 
 FontGlobalContext::~FontGlobalContext() = default;
 
@@ -53,13 +60,12 @@ void FontGlobalContext::Init() {
   HarfBuzzFace::Init();
 }
 
-void FontGlobalContext::OnMemoryPressure(
-    base::MemoryPressureLevel memory_pressure_level) {
-  if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_NONE) {
-    return;
-  }
+void FontGlobalContext::OnUpdateMemoryLimit() {}
 
-  font_cache_.Invalidate();
+void FontGlobalContext::OnReleaseMemory() {
+  if (memory_limit() <= base::kModerateMemoryPressureThreshold) {
+    font_cache_.Invalidate();
+  }
 }
 
 }  // namespace blink

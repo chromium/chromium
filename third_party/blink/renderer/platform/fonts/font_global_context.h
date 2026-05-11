@@ -6,10 +6,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_GLOBAL_CONTEXT_H_
 
 #include "base/containers/lru_cache.h"
-#include "base/memory/memory_pressure_listener.h"
+#include "base/memory_coordinator/memory_consumer.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_font_cache.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
+#include "third_party/blink/renderer/platform/instrumentation/memory_coordinator/memory_consumer_registration.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/text/layout_locale.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -26,11 +28,15 @@ class HarfBuzzFontCache;
 // font formatting.
 class PLATFORM_EXPORT FontGlobalContext
     : public GarbageCollected<FontGlobalContext>,
-      public base::MemoryPressureListener {
+      public base::MemoryConsumer {
+  USING_PRE_FINALIZER(FontGlobalContext, Dispose);
+
  public:
   using PassKey = base::PassKey<FontGlobalContext>;
   explicit FontGlobalContext(PassKey);
   ~FontGlobalContext() override;
+
+  void Dispose();
 
   static FontGlobalContext& Get();
   static FontGlobalContext* TryGet();
@@ -54,16 +60,16 @@ class PLATFORM_EXPORT FontGlobalContext
   // |Init()| should be called in main thread.
   static void Init();
 
-  // base::MemoryPressureListener:
-  void OnMemoryPressure(base::MemoryPressureLevel) override;
+  // base::MemoryConsumer:
+  void OnUpdateMemoryLimit() override;
+  void OnReleaseMemory() override;
 
  private:
   FontCache font_cache_;
   HarfBuzzFontCache harfbuzz_font_cache_;
   std::unique_ptr<FontUniqueNameLookup> font_unique_name_lookup_;
 
-  base::AsyncMemoryPressureListenerRegistration
-      memory_pressure_listener_registration_;
+  MemoryConsumerRegistration memory_consumer_registration_;
 };
 
 }  // namespace blink

@@ -4,21 +4,26 @@
 
 #include "content/renderer/skia_graphics_pressure_listener.h"
 
+#include "base/memory_coordinator/utils.h"
 #include "third_party/skia/include/core/SkGraphics.h"
 
 namespace content {
 
 SkiaGraphicsPressureListener::SkiaGraphicsPressureListener()
-    : memory_pressure_listener_registration_(
-          FROM_HERE,
-          base::MemoryPressureListenerTag::kSkiaGraphicsPressureListener,
-          this) {}
+    : memory_consumer_registration_(
+          "SkiaGraphics",
+          /*traits=*/std::nullopt,  // TODO(crbug.com/489671163): Fill traits.
+          this,
+          base::AsyncMemoryConsumerRegistration::CheckUnregister::kDisabled,
+          base::AsyncMemoryConsumerRegistration::CheckRegistryExists::
+              kDisabled) {}
 
 SkiaGraphicsPressureListener::~SkiaGraphicsPressureListener() = default;
 
-void SkiaGraphicsPressureListener::OnMemoryPressure(
-    base::MemoryPressureLevel level) {
-  if (level == base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+void SkiaGraphicsPressureListener::OnUpdateMemoryLimit() {}
+
+void SkiaGraphicsPressureListener::OnReleaseMemory() {
+  if (memory_limit() <= base::kCriticalMemoryPressureThreshold) {
     SkGraphics::PurgeAllCaches();
   }
 }

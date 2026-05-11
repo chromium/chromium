@@ -5,20 +5,22 @@
 #ifndef CONTENT_RENDERER_MEMORY_RECLAIMER_PRESSURE_LISTENER_H_
 #define CONTENT_RENDERER_MEMORY_RECLAIMER_PRESSURE_LISTENER_H_
 
-#include "base/memory/memory_pressure_listener.h"
+#include "base/memory_coordinator/async_memory_consumer_registration.h"
+#include "base/memory_coordinator/memory_consumer.h"
 
 namespace content {
 
-class MemoryReclaimerPressureListener : public base::MemoryPressureListener {
+class MemoryReclaimerPressureListener : public base::MemoryConsumer {
  public:
   MemoryReclaimerPressureListener();
   ~MemoryReclaimerPressureListener() override;
 
-  void OnMemoryPressure(base::MemoryPressureLevel level) override;
+  // base::MemoryConsumer:
+  void OnUpdateMemoryLimit() override;
+  void OnReleaseMemory() override;
 
  private:
-  base::AsyncMemoryPressureListenerRegistration
-      memory_pressure_listener_registration_;
+  base::AsyncMemoryConsumerRegistration memory_consumer_registration_;
 };
 
 }  // namespace content

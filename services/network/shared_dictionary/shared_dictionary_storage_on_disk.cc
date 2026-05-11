@@ -10,6 +10,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory_coordinator/utils.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/pattern.h"
 #include "base/strings/strcat.h"
@@ -100,12 +101,14 @@ SharedDictionaryStorageOnDisk::SharedDictionaryStorageOnDisk(
       isolation_key_(isolation_key),
       on_deleted_closure_runner_(std::move(on_deleted_closure_runner)),
       dictionary_cache_(dictionary_cache),
+      memory_consumer_registration_(
+          "SharedDictionaryStorageOnDisk",
+          /*traits=*/std::nullopt,  // TODO(crbug.com/489671163): Fill traits.
+          this,
+          base::AsyncMemoryConsumerRegistration::CheckUnregister::kDisabled,
+          base::AsyncMemoryConsumerRegistration::CheckRegistryExists::
+              kDisabled),
       previous_eviction_reason_(previous_eviction_reason) {
-  memory_pressure_listener_registration_ =
-      std::make_unique<base::AsyncMemoryPressureListenerRegistration>(
-          FROM_HERE,
-          base::MemoryPressureListenerTag::kSharedDictionaryStorageOnDisk,
-          this);
   manager_->metadata_store().GetDictionaries(
       isolation_key_,
       base::BindOnce(
@@ -261,7 +264,7 @@ SharedDictionaryStorageOnDisk::GetDictionarySyncInternal(
           weak_factory_.GetWeakPtr(), info->disk_cache_key_token())));
   dictionaries_.emplace(info->disk_cache_key_token(), shared_dictionary.get());
 
-  if (memory_pressure_level() == base::MEMORY_PRESSURE_LEVEL_NONE) {
+  if (memory_limit() >= base::kNoMemoryPressureThreshold) {
     dictionary_cache_->Put(info->disk_cache_key_token(), destination,
                            shared_dictionary);
   }

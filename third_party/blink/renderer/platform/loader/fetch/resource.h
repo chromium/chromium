@@ -31,7 +31,7 @@
 #include "base/auto_reset.h"
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/memory_pressure_listener.h"
+#include "base/memory_coordinator/memory_consumer.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/base/big_buffer.h"
@@ -42,7 +42,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_counted_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
-#include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
+#include "third_party/blink/renderer/platform/instrumentation/memory_coordinator/memory_consumer_registration.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/web_process_memory_dump.h"
 #include "third_party/blink/renderer/platform/loader/fetch/integrity_metadata.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_client.h"
@@ -113,7 +113,7 @@ PLATFORM_EXPORT String GetAsAttributeFromResourceType(ResourceType);
 // requested data has arrived. This class also does the actual communication
 // with the loader to obtain the resource from the network.
 class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
-                                 public base::MemoryPressureListener {
+                                 public base::MemoryConsumer {
   USING_PRE_FINALIZER(Resource, Dispose);
 
  public:
@@ -558,8 +558,9 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
 
   String ReasonNotDeletable() const;
 
-  // MemoryPressureListener overrides:
-  void OnMemoryPressure(base::MemoryPressureLevel) override;
+  // base::MemoryConsumer overrides:
+  void OnReleaseMemory() override;
+  void OnUpdateMemoryLimit() override;
 
   void CheckResourceIntegrity();
   void TriggerNotificationForFinishObservers(base::SingleThreadTaskRunner*);
@@ -638,7 +639,7 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
 
   WebScopedVirtualTimePauser virtual_time_pauser_;
 
-  MemoryPressureListenerRegistration memory_pressure_listener_registration_;
+  MemoryConsumerRegistration memory_consumer_registration_;
 };
 
 class ResourceFactory {

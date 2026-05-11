@@ -4,6 +4,9 @@
 
 #include "third_party/blink/renderer/platform/fonts/plain_text_painter.h"
 
+#include "base/functional/callback_helpers.h"
+#include "base/memory_coordinator/test_memory_consumer_registry.h"
+#include "base/run_loop.h"
 #include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
 #include "third_party/blink/renderer/platform/testing/font_test_base.h"
 #include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
@@ -28,6 +31,8 @@ TEST_F(PlainTextPainterTest, MemoryPressure) {
   if (MemoryPressureListenerRegistry::IsLowEndDevice()) {
     return;
   }
+  base::TestMemoryConsumerRegistry test_registry;
+
   auto* painter =
       MakeGarbageCollected<PlainTextPainter>(PlainTextPainter::kCanvas);
   EXPECT_EQ(0u, CacheMapSizeOf(*painter));
@@ -35,7 +40,14 @@ TEST_F(PlainTextPainterTest, MemoryPressure) {
   painter->SegmentAndShape(TextRun("text"), *font);
   EXPECT_EQ(1u, CacheMapSizeOf(*painter));
 
-  painter->OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  // Update limit to critical (0) and release memory.
+  {
+    base::RunLoop run_loop;
+    test_registry.NotifyUpdateMemoryLimitAsync(0, base::DoNothing());
+    test_registry.NotifyReleaseMemoryAsync(run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
   EXPECT_EQ(0u, CacheMapSizeOf(*painter));
 }
 
