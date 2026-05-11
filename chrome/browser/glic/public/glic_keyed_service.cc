@@ -369,15 +369,6 @@ GlicSharingManager& GlicKeyedService::active_instance_sharing_manager() {
   return *sharing_manager_.get();
 }
 
-bool GlicKeyedService::IsWindowShowing() const {
-  for (const auto* instance : instance_coordinator().GetInstances()) {
-    if (instance && instance->IsShowing()) {
-      return true;
-    }
-  }
-  return false;
-}
-
 bool GlicKeyedService::IsPanelShowingForBrowser(
     const BrowserWindowInterface& bwi) const {
   return instance_coordinator().IsPanelShowingForBrowser(bwi);
@@ -388,7 +379,7 @@ bool GlicKeyedService::IsWindowDetached() const {
 }
 
 bool GlicKeyedService::IsWindowOrFreShowing() const {
-  return IsWindowShowing();
+  return instance_coordinator().IsAnyPanelShowing();
 }
 
 base::CallbackListSubscription
@@ -486,8 +477,6 @@ base::CallbackListSubscription GlicKeyedService::AddUserInputSubmittedCallback(
     base::RepeatingClosure callback) {
   return user_input_submitted_callback_list_.Add(std::move(callback));
 }
-
-
 
 void GlicKeyedService::ShareContextImage(tabs::TabInterface* tab,
                                          content::RenderFrameHost* frame,

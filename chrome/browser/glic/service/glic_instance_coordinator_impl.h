@@ -106,9 +106,10 @@ class GlicInstanceCoordinatorImpl
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event_details) override;
 
-  // GlicInstanceCoordinator and GlicInstanceCoordinatorMetrics::DataProvider
-  // implementation
+  // GlicInstanceCoordinatorMetrics::DataProvider implementation
   std::vector<GlicInstance*> GetInstances() override;
+
+  bool IsAnyPanelShowing() const override;
   // GlicInstanceCoordinator implementation
   GlicInstance* GetInstanceForTab(const tabs::TabInterface* tab) const override;
   // Sorts instances by recency and returns the instance id and
@@ -185,6 +186,7 @@ class GlicInstanceCoordinatorImpl
   void SetWarmingEnabledForTesting(bool warming_enabled);
   GlicWebContentsWarmingPool& GetWebContentsWarmingPoolForTesting();
   std::string DescribeForTesting();
+  std::vector<GlicInstanceImpl*> GetInstancesForTesting();
 
   // Testing support. These methods should not be added to the public interface.
   GlicInstanceImpl* GetInstanceImplFor(const InstanceId& id) const;

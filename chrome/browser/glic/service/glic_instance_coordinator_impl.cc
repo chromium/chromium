@@ -211,12 +211,30 @@ GlicInstanceImpl* GlicInstanceCoordinatorImpl::GetInstanceImplForTab(
   return nullptr;
 }
 
+std::vector<GlicInstanceImpl*>
+GlicInstanceCoordinatorImpl::GetInstancesForTesting() {
+  std::vector<GlicInstanceImpl*> instances;
+  for (auto& entry : instances_) {
+    instances.push_back(entry.second.get());
+  }
+  return instances;
+}
+
 std::vector<GlicInstance*> GlicInstanceCoordinatorImpl::GetInstances() {
   std::vector<GlicInstance*> instances;
   for (auto& entry : instances_) {
     instances.push_back(entry.second.get());
   }
   return instances;
+}
+
+bool GlicInstanceCoordinatorImpl::IsAnyPanelShowing() const {
+  for (const auto& entry : instances_) {
+    if (entry.second && entry.second->IsShowing()) {
+      return true;
+    }
+  }
+  return false;
 }
 
 GlicInstance* GlicInstanceCoordinatorImpl::GetInstanceForTab(
@@ -394,7 +412,7 @@ void GlicInstanceCoordinatorImpl::OnInvokeHandlerComplete(
 
 void GlicInstanceCoordinatorImpl::CloseAndShutdownInstanceWithFrame(
     content::RenderFrameHost* render_frame_host) {
-  for (auto* instance : GetInstances()) {
+  for (auto& [id, instance] : instances_) {
     if (instance &&
         instance->host().IsWebContentPresentAndMatches(render_frame_host)) {
       instance->host().Close();
@@ -691,8 +709,9 @@ void GlicInstanceCoordinatorImpl::RemoveInstance(GlicInstanceImpl* instance) {
   }
   OnInstanceActivationChanged(instance, false);
 
-  // Remove the instance first, and then delete. This way, GetInstances() will
-  // not return the instance being deleted while it's being deleted.
+  // Remove the instance first, and then delete. This way,
+  // instances_ will not include the instance being deleted while
+  // it's being deleted.
   InstanceId id = instance->id();
   instance->CloseInstanceAndShutdown();
   if (instance == last_active_instance_) {

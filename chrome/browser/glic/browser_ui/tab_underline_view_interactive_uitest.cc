@@ -356,7 +356,7 @@ IN_PROC_BROWSER_TEST_F(TabUnderlineViewUiTest, ToggleSharingWithSingleTab) {
   EXPECT_FALSE(underline->IsShowing());
 
   RunTestSequence(OpenGlic());
-  EXPECT_TRUE(glic_service()->IsWindowShowing());
+  EXPECT_TRUE(glic_service()->instance_coordinator().IsAnyPanelShowing());
   // The underline should show when sharing is turned on.
   glic_service()->SetContextAccessIndicator(true);
   EXPECT_TRUE(
@@ -371,7 +371,7 @@ IN_PROC_BROWSER_TEST_F(TabUnderlineViewUiTest, ToggleSharingWithSingleTab) {
 IN_PROC_BROWSER_TEST_F(TabUnderlineViewUiTest,
                        SingleTabPinningWhileGlicWindowOpen) {
   RunTestSequence(OpenGlic());
-  EXPECT_TRUE(glic_service()->IsWindowShowing());
+  EXPECT_TRUE(glic_service()->instance_coordinator().IsAnyPanelShowing());
   auto* underline = GetUnderlineOfActiveTab();
   TesterImpl* tester = static_cast<TesterImpl*>(underline->tester());
   // Tab is pinned by default.

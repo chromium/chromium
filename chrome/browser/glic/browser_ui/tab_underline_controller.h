@@ -146,7 +146,7 @@ class TabUnderlineController
 
   void ShowOrAnimatePinnedUnderline(bool triggered_by_glic);
 
-  bool IsGlicWindowShowing() const;
+  bool IsAnyGlicPanelShowing() const;
 
   std::string UpdateReasonToString(UpdateUnderlineReason reason);
 

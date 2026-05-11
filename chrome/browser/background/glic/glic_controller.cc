@@ -7,6 +7,7 @@
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -39,7 +40,8 @@ void GlicController::Close() {
 bool GlicController::IsShowing() const {
   GlicKeyedService* glic_keyed_service =
       glic::GlicProfileManager::GetInstance()->GetLastActiveGlic();
-  return glic_keyed_service && glic_keyed_service->IsWindowShowing();
+  return glic_keyed_service &&
+         glic_keyed_service->instance_coordinator().IsAnyPanelShowing();
 }
 
 void GlicController::ToggleUI(bool prevent_close,

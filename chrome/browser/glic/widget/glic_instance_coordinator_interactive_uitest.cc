@@ -707,7 +707,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUiTest,
   g_browser_process->local_state()->SetBoolean(prefs::kGlicLauncherEnabled,
                                                true);
   service1->ToggleUI(nullptr, false, mojom::InvocationSource::kOsHotkey);
-  EXPECT_TRUE(service1->IsWindowShowing());
+  EXPECT_TRUE(service1->instance_coordinator().IsAnyPanelShowing());
 
   // Delete the second profile
   ui_test_utils::BrowserDestroyedObserver observer(browser1);
@@ -716,7 +716,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorUiTest,
       ProfileMetrics::DELETE_PROFILE_USER_MANAGER);
   observer.Wait();
 
-  EXPECT_FALSE(service1->IsWindowShowing());
+  EXPECT_FALSE(service1->instance_coordinator().IsAnyPanelShowing());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 

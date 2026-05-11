@@ -28,7 +28,7 @@ class GlicControllerUiTest : public GlicBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(GlicControllerUiTest, Toggle) {
-  ASSERT_FALSE(glic_service()->IsWindowShowing());
+  ASSERT_FALSE(coordinator().IsAnyPanelShowing());
 
   glic_controller().Toggle(mojom::InvocationSource::kOsButton);
   ASSERT_OK(WaitForGlicOpen());
@@ -44,7 +44,7 @@ IN_PROC_BROWSER_TEST_F(GlicControllerUiTest, Toggle) {
 #define MAYBE_Show Show
 #endif
 IN_PROC_BROWSER_TEST_F(GlicControllerUiTest, MAYBE_Show) {
-  ASSERT_FALSE(glic_service()->IsWindowShowing());
+  ASSERT_FALSE(coordinator().IsAnyPanelShowing());
 
   glic_controller().Show(mojom::InvocationSource::kOsButton);
   ASSERT_OK(WaitForGlicOpen());

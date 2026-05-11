@@ -149,9 +149,6 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
   // active instance.
   GlicSharingManager& active_instance_sharing_manager();
 
-  // Virtual for testing.
-  virtual bool IsWindowShowing() const;
-
   // Returns true if `bwi` has a glic panel showing for its active tab. Virtual
   // for testing.
   virtual bool IsPanelShowingForBrowser(
@@ -204,7 +201,6 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
   base::CallbackListSubscription AddUserInputSubmittedCallback(
       base::RepeatingClosure callback);
 
-
   // Fetches the image for the context menu item (if possible, and potentially
   // scaling and reencoding) and sends the result to the web client as
   // additional data.
@@ -213,7 +209,6 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
                          const ::GURL& src_url);
 
   AuthController& GetAuthController() { return *auth_controller_; }
-
 
   void AddPreloadCallback(base::OnceCallback<void()> callback);
 

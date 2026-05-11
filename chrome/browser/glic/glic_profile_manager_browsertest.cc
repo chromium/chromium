@@ -226,9 +226,8 @@ IN_PROC_BROWSER_TEST_F(GlicProfileManagerBrowserTest,
   auto* profile_manager = GlicProfileManager::GetInstance();
   profile_manager->SetActiveGlic(service0);
 
-  // Tell the mock glic to pretend that the window is open (otherwise, we won't
-  // attempt to close it).
-  service0->SetWindowShowing(true);
+  EXPECT_CALL(service0->mock_coordinator(), IsAnyPanelShowing())
+      .WillRepeatedly(testing::Return(true));
 
   // Opening glic from a second profile should make the profile manager close
   // the first one.

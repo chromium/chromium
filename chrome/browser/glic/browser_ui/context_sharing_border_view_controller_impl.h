@@ -84,7 +84,7 @@ class ContextSharingBorderViewControllerImpl
 
   void UpdateBorderView(UpdateBorderReason reason);
 
-  bool IsGlicWindowShowing() const;
+  bool IsAnyGlicPanelShowing() const;
 
   bool IsTabInCurrentView(const content::WebContents* tab) const;
 

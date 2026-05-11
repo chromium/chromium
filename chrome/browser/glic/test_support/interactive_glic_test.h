@@ -931,12 +931,9 @@ class InteractiveGlicTestMixin : public T {
   auto EnsureGlicWindowState(const std::string& desc, M&&... matchers) {
     return Api::CheckResult(
         [this]() {
-          for (auto* instance : instance_coordinator().GetInstances()) {
-            if (instance && instance->IsShowing()) {
-              return GlicPanelState::kOpen;
-            }
-          }
-          return GlicPanelState::kClosed;
+          return instance_coordinator().IsAnyInstanceShowing()
+                     ? GlicPanelState::kOpen
+                     : GlicPanelState::kClosed;
         },
         testing::Matcher<GlicPanelState>(
             testing::AnyOf(std::forward<M>(matchers)...)),

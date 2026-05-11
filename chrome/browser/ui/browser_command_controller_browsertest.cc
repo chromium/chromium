@@ -18,6 +18,7 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_window.h"
@@ -83,7 +84,6 @@
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #include "chrome/common/chrome_features.h"
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-
 
 namespace chrome {
 
@@ -768,7 +768,8 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandControllerBrowserTestGlic,
   EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_OPEN_GLIC));
   ASSERT_TRUE(
       glic::GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile())
-          ->IsWindowShowing());
+          ->instance_coordinator()
+          .IsAnyPanelShowing());
   // Open command is disabled because Glic is now open.
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return !chrome::IsCommandEnabled(browser(), IDC_OPEN_GLIC); }));

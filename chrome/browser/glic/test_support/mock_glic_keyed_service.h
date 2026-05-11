@@ -9,6 +9,7 @@
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/test_support/mock_glic_instance_coordinator.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/tabs/public/tab_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -60,12 +61,14 @@ class MockGlicKeyedService : public GlicKeyedService {
   bool IsWindowDetached() const override { return detached_; }
   void SetWindowDetached(bool detached) { detached_ = detached; }
 
-  bool IsWindowShowing() const override { return showing_; }
-  void SetWindowShowing(bool showing) { showing_ = showing; }
+  GlicInstanceCoordinator& instance_coordinator() const override {
+    return const_cast<MockGlicInstanceCoordinator&>(mock_coordinator_);
+  }
+  MockGlicInstanceCoordinator& mock_coordinator() { return mock_coordinator_; }
 
  private:
   bool detached_ = false;
-  bool showing_ = false;
+  MockGlicInstanceCoordinator mock_coordinator_;
 };
 
 }  // namespace glic

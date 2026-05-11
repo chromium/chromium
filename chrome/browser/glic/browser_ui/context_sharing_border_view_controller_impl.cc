@@ -178,7 +178,7 @@ void ContextSharingBorderViewControllerImpl::UpdateBorderView(
   SCOPED_CRASH_KEY_BOOL("crbug-398319435", "glic_focused_contents",
                         !!glic_focused_contents_in_current_view_);
   SCOPED_CRASH_KEY_BOOL("crbug-398319435", "is_glic_window_showing",
-                        IsGlicWindowShowing());
+                        IsAnyGlicPanelShowing());
 
   switch (reason) {
     case UpdateBorderReason::kContextAccessIndicatorOn: {
@@ -223,8 +223,8 @@ void ContextSharingBorderViewControllerImpl::UpdateBorderView(
   }
 }
 
-bool ContextSharingBorderViewControllerImpl::IsGlicWindowShowing() const {
-  return glic_service_->IsWindowShowing();
+bool ContextSharingBorderViewControllerImpl::IsAnyGlicPanelShowing() const {
+  return glic_service_->instance_coordinator().IsAnyPanelShowing();
 }
 
 bool ContextSharingBorderViewControllerImpl::IsTabInCurrentView(

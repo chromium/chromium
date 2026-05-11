@@ -227,7 +227,7 @@ void TabUnderlineController::UpdateUnderlineView(UpdateUnderlineReason reason) {
   SCOPED_CRASH_KEY_BOOL("crbug-398319435", "glic_focused_contents",
                         !!glic_current_focused_contents_);
   SCOPED_CRASH_KEY_BOOL("crbug-398319435", "is_glic_window_showing",
-                        glic_service_ && IsGlicWindowShowing());
+                        glic_service_ && IsAnyGlicPanelShowing());
 
   switch (reason) {
     case UpdateUnderlineReason::kContextAccessIndicatorOn: {
@@ -383,7 +383,7 @@ void TabUnderlineController::ShowOrAnimatePinnedUnderline(
     return;
   }
   // Pinned underlines should never be visible if the glic window is closed.
-  if (!IsGlicWindowShowing()) {
+  if (!IsAnyGlicPanelShowing()) {
     return;
   }
   if (ui_delegate_->IsShowing()) {
@@ -393,8 +393,9 @@ void TabUnderlineController::ShowOrAnimatePinnedUnderline(
   }
 }
 
-bool TabUnderlineController::IsGlicWindowShowing() const {
-  return glic_service_ && glic_service_->IsWindowShowing();
+bool TabUnderlineController::IsAnyGlicPanelShowing() const {
+  return glic_service_ &&
+         glic_service_->instance_coordinator().IsAnyPanelShowing();
 }
 
 std::string TabUnderlineController::UpdateReasonToString(

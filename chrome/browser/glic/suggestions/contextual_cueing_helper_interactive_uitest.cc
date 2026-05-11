@@ -857,5 +857,5 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingBypassNudgeCapsTest,
   // kAutoOpenGlicForPdf + auto_open_eligible should open the panel.
   auto* glic_service = glic::GlicKeyedService::Get(browser()->profile());
   ASSERT_TRUE(glic_service);
-  EXPECT_TRUE(glic_service->IsWindowShowing());
+  EXPECT_TRUE(glic_service->instance_coordinator().IsAnyPanelShowing());
 }

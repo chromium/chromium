@@ -18,7 +18,7 @@ class MockGlicInstanceCoordinator
   MockGlicInstanceCoordinator();
   ~MockGlicInstanceCoordinator();
 
-  MOCK_METHOD(std::vector<GlicInstance*>, GetInstances, (), (override));
+  MOCK_METHOD(bool, IsAnyPanelShowing, (), (const, override));
   MOCK_METHOD(GlicInstance*,
               GetInstanceForTab,
               (const tabs::TabInterface*),

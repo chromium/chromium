@@ -23,6 +23,7 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
+#include "chrome/browser/glic/public/service/glic_instance_coordinator.h"
 #include "chrome/browser/glic/suggestions/contextual_cueing_features.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
@@ -271,7 +272,7 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
       glic::GlicKeyedServiceFactory::GetGlicKeyedService(
           browser()->GetProfile());
 
-  EXPECT_TRUE(glic_keyed_service->IsWindowShowing());
+  EXPECT_TRUE(glic_keyed_service->instance_coordinator().IsAnyPanelShowing());
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
