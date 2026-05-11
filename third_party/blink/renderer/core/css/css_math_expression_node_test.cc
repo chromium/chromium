@@ -987,6 +987,19 @@ TEST(CSSMathExpressionNode, ValidRandomFunction) {
   }
 }
 
+TEST(CSSMathExpressionNode, ResolvedUnitTypeSafeFallback) {
+  CSSMathExpressionOperation::Operands operands{
+      CSSMathExpressionNumericLiteral::Create(
+          10, CSSPrimitiveValue::UnitType::kPercentage),
+      CSSMathExpressionNumericLiteral::Create(
+          10, CSSPrimitiveValue::UnitType::kPixels)};
+  const auto* operation = MakeGarbageCollected<CSSMathExpressionOperation>(
+      kCalcLength, std::move(operands), CSSMathOperator::kMultiply,
+      CSSMathType());
+  EXPECT_EQ(operation->ResolvedUnitType(),
+            CSSPrimitiveValue::UnitType::kUnknown);
+}
+
 }  // anonymous namespace
 
 }  // namespace blink

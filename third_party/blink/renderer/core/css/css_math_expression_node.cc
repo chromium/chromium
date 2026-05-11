@@ -3519,7 +3519,7 @@ CSSPrimitiveValue::UnitType CSSMathExpressionOperation::ResolvedUnitType()
           if (operands_[1]->Category() == kCalcNumber) {
             return operands_[0]->ResolvedUnitType();
           }
-          NOTREACHED();
+          return CSSPrimitiveValue::UnitType::kUnknown;
         }
         case CSSMathOperator::kAdd:
         case CSSMathOperator::kSubtract:
