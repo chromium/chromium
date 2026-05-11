@@ -384,6 +384,10 @@ void CompositorView::SetNeedsComposite(JNIEnv* env) {
   compositor_->SetNeedsComposite();
 }
 
+void CompositorView::SetDrawPaused(JNIEnv* env, bool paused) {
+  compositor_->SetDrawPaused(paused);
+}
+
 void CompositorView::BrowserChildProcessKilled(
     const content::ChildProcessData& data,
     const content::ChildProcessTerminationInfo& info) {

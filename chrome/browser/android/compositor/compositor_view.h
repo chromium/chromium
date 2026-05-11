@@ -53,6 +53,7 @@ class CompositorView : public content::CompositorClient,
   ui::ResourceManager* GetResourceManager();
   base::android::ScopedJavaLocalRef<jobject> GetResourceManager(JNIEnv* env);
   void SetNeedsComposite(JNIEnv* env);
+  void SetDrawPaused(JNIEnv* env, bool paused);
   void FinalizeLayers(JNIEnv* env);
   void SetLayoutBounds(JNIEnv* env);
   void SurfaceCreated(JNIEnv* env);

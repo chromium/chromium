@@ -17,6 +17,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.AttachedSurfaceControl;
 import android.view.Surface;
+import android.view.SurfaceControl.Transaction;
 import android.view.View;
 import android.view.Window;
 import android.widget.FrameLayout;
@@ -121,6 +122,10 @@ public class CompositorView extends FrameLayout
 
     private @Nullable Integer mSurfaceId;
     private boolean mHasActiveTouchInterceptors;
+
+    private int mPreviousWidth;
+    private int mResizeSeqNo;
+    private boolean mIsDrawPaused;
 
     // On P and above, toggling the screen off gets us in a state where the Surface is destroyed but
     // it is never recreated when it is turned on again. This is the only workaround that seems to
@@ -524,6 +529,12 @@ public class CompositorView extends FrameLayout
         // don't leak callbacks and hang the WindowManager.
         runDrawFinishedCallbackMaybeNotOnUiThread();
 
+        if (mIsDrawPaused) {
+            // It doesn't make sense to wait for a draw if we are explicitly paused.
+            drawingFinished.run();
+            return;
+        }
+
         final int requestId;
         synchronized (mDrawingFinishedCallbackLock) {
             mDrawingFinishedCallback = drawingFinished;
@@ -582,6 +593,42 @@ public class CompositorView extends FrameLayout
             }
         }
 
+        int oldWidth = mPreviousWidth;
+        mPreviousWidth = width;
+
+        mResizeSeqNo++;
+        final int seqNo = mResizeSeqNo;
+
+        boolean isWidthShrink = oldWidth > 0 && width < oldWidth;
+        boolean isFluidResize = isFluidResizeEnabledAndLff();
+
+        boolean shouldPause =
+                isWidthShrink
+                        && isFluidResize
+                        && android.os.Build.VERSION.SDK_INT
+                                >= android.os.Build.VERSION_CODES.TIRAMISU
+                        && getRootSurfaceControl() != null;
+
+        if (shouldPause) {
+            mIsDrawPaused = true;
+            CompositorViewJni.get().setDrawPaused(mNativeCompositorView, true);
+            runDrawFinishedCallbackMaybeNotOnUiThread();
+
+            AttachedSurfaceControl rootSurfaceControl = getRootSurfaceControl();
+            assert rootSurfaceControl != null;
+            Transaction t = new Transaction();
+            t.addTransactionCommittedListener(
+                    ThreadUtils::postOnUiThread,
+                    () -> {
+                        if (seqNo != mResizeSeqNo) return;
+                        unpauseDraw();
+                    });
+            rootSurfaceControl.applyTransactionOnDraw(t);
+            invalidate();
+        } else {
+            unpauseDraw();
+        }
+
         Integer surfaceId =
                 CompositorViewJni.get()
                         .surfaceChanged(
@@ -592,6 +639,7 @@ public class CompositorView extends FrameLayout
                                 canUseSurfaceControl(),
                                 surface,
                                 browserInputToken);
+
         mRenderHost.onSurfaceResized(width, height);
 
         if (InputUtils.isTransferInputToVizSupported()
@@ -608,6 +656,22 @@ public class CompositorView extends FrameLayout
             // the InputTransferHandler is aware that we are in Xr.
             handler.setIsInXr(mIsInXr);
         }
+    }
+
+    private void unpauseDraw() {
+        mIsDrawPaused = false;
+        if (mNativeCompositorView != 0) {
+            CompositorViewJni.get().setDrawPaused(mNativeCompositorView, false);
+            CompositorViewJni.get().setNeedsComposite(mNativeCompositorView);
+        }
+    }
+
+    private void resetFluidResizeState() {
+        if (mIsDrawPaused) {
+            unpauseDraw();
+        }
+        mPreviousWidth = 0;
+        mResizeSeqNo++; // Invalidate pending callbacks
     }
 
     @Override
@@ -636,6 +700,8 @@ public class CompositorView extends FrameLayout
         }
 
         CompositorViewJni.get().surfaceDestroyed(mNativeCompositorView);
+
+        resetFluidResizeState();
 
         if (mScreenStateReceiver != null) {
             ThreadUtils.postOnUiThread(
@@ -959,6 +1025,8 @@ public class CompositorView extends FrameLayout
         void finalizeLayers(long nativeCompositorView);
 
         void setNeedsComposite(long nativeCompositorView);
+
+        void setDrawPaused(long nativeCompositorView, boolean paused);
 
         void setLayoutBounds(long nativeCompositorView);
 
