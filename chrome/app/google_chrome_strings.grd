@@ -3023,7 +3023,7 @@ Google Chrome is unable to recover your settings.
       <message name="IDS_GLIC_TAB_STRIP_BUTTON_TOOLTIP" desc="This is the tooltip shown when hovering over the Gemini entry button in the tab strip while the Gemini window is closed." formatter_data="android_java">
         Open Gemini in Chrome
       </message>
-      <message name="IDS_GLIC_TAB_STRIP_BUTTON_TOOLTIP_CLOSE" desc="This is the tooltip shown when hovering over the Gemini entry button in the tab strip while the Gemini window is open.">
+      <message name="IDS_GLIC_TAB_STRIP_BUTTON_TOOLTIP_CLOSE" desc="This is the tooltip shown when hovering over the Gemini entry button in the tab strip while the Gemini window is open." formatter_data="android_java">
         Close Gemini in Chrome
       </message>
 
