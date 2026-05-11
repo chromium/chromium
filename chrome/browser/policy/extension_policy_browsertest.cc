@@ -1620,7 +1620,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionPolicyTest,
 // Verifies that corrupted non-webstore policy-based extension is automatically
 // repaired (reinstalled) even if hashes file is damaged too.
 // crbug.com/40150293: flaky on win
-#if BUILDFLAG(IS_WIN)
+// crbug.com/512086953: flaky on android
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_CorruptedNonWebstoreExtensionWithDamagedHashesRepaired \
   DISABLED_CorruptedNonWebstoreExtensionWithDamagedHashesRepaired
 #else
