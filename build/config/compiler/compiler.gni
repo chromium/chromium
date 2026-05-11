@@ -57,12 +57,36 @@ if (!defined(use_mold)) {
 }
 
 declare_args() {
+  # Enables support for ThinLTO, which links 3x-10x faster than full LTO. See
+  # also http://blog.llvm.org/2016/06/thinlto-scalable-and-incremental-lto.html
+  # Use it by default on official-optimized android and Chrome OS builds, but
+  # not ARC or linux-chromeos since it's been seen to not play nicely with
+  # Chrome's clang. crbug.com/1033839
+  use_thin_lto =
+      is_cfi || (is_clang && is_official_build && chrome_pgo_phase != 1 &&
+                 (is_linux || is_win || is_apple ||
+                  (is_android && target_os != "chromeos") ||
+                  (is_chromeos && is_chromeos_device)))
+}
+
+declare_args() {
+  # Set to true to use the Apple linker (ld64 / ld-prime) instead of LLD.
+  # This is the default for non-official builds on macOS.
+  # TODO(crbug.com/502338406): Enable for iOS by removing is_mac from the condition.
+  # See https://crbug.com/502338406 for benchmarking results.
+  use_apple_linker = host_os == "mac" && is_mac && !use_thin_lto
+}
+
+declare_args() {
   # Set to true to use lld, the LLVM linker.
-  # In late bring-up on macOS (see docs/mac_lld.md).
-  # Tentatively used on iOS, except in arm64e mode (not yet supported by lld).
-  # The default linker everywhere else.
-  use_lld = is_clang && current_os != "zos" && linker_path == "" &&
-            !(is_ios && current_cpu == "arm64e") && !use_mold
+  # This is the default when `is_clang` is true, except:
+  # - On zos.
+  # - When `experimental_linker_path` is set.
+  # - On iOS for arm64e (not yet supported by lld).
+  # - When using the Apple linker.
+  use_lld =
+      is_clang && current_os != "zos" && linker_path == "" &&
+      !(is_ios && current_cpu == "arm64e") && !use_mold && !use_apple_linker
 
   # If true, optimize for size.
   # Default to favoring speed over size for platforms not listed below.
@@ -159,17 +183,6 @@ declare_args() {
       # order to be able to archive symbols properly. https://crbug.com/40203231
       symbol_level >= 1 && !(is_android && is_official_build) && !is_fuchsia &&
       !is_apple && !is_win && (use_lld || linker_path != "")
-
-  # Enables support for ThinLTO, which links 3x-10x faster than full LTO. See
-  # also http://blog.llvm.org/2016/06/thinlto-scalable-and-incremental-lto.html
-  # Use it by default on official-optimized android and Chrome OS builds, but
-  # not ARC or linux-chromeos since it's been seen to not play nicely with
-  # Chrome's clang. crbug.com/1033839
-  use_thin_lto =
-      is_cfi || (is_clang && is_official_build && chrome_pgo_phase != 1 &&
-                 (is_linux || is_win || is_mac || (is_ios && use_lld) ||
-                  (is_android && target_os != "chromeos") ||
-                  (is_chromeos && is_chromeos_device)))
 
   # Whether we're using a sample profile collected on an architecture different
   # than the one we're compiling for.

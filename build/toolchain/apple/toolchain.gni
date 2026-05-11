@@ -949,6 +949,7 @@ template("apple_rust_host_build_tools_toolchain") {
       use_sanitizer_coverage = false
       generate_linker_map = false
       use_thin_lto = false
+      use_lld = host_os != "mac"
     }
   }
 }
