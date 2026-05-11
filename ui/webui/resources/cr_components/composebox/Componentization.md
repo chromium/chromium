@@ -17,8 +17,8 @@ information about why we are doing this, please read the
 
 There are two cases:
 
-1. Your methods are used by multiple (>= 2) surfaces.
-2. Your methods are used only by a specific surface (Cobrowse, NTP, or Omnibox).
+1. Your logic/methods are used by multiple (>= 2) surfaces.
+2. Your logic/methods are used by only one surface (Cobrowse, NTP, or Omnibox).
 
 Once one of the sets of steps below is taken, please add
 `NO_IFTTT=added a componentization reviewer` tag and continue the review.
@@ -43,17 +43,17 @@ add an owner from the OWNERS file to the reviewers list.
 
 Please add a comment
 `"// TODO: crbug.com/486707842 - Move to the Contextual Tasks embedder"` to the
-methods added, and then add `jamesleung@` to the cc list.
+methods/logic added, and then add `jamesleung@` to the cc list.
 
 #### NTP
 
 Please add a comment `"// TODO: crbug.com/486707841 - Move to the NTP embedder"`
-to the methods added and then add `jonnalad@` to the cc list.
+to the methods/logic added and then add `jonnalad@` to the cc list.
 
 #### Omnibox
 
 Please update `OmniboxComposeboxElement` in
-`chrome/browser/resources/omnibox_popup/omnibox_composebox.ts` instead of
+`chrome/browser/resources/omnibox_popup/omnibox_composebox.ts` in addition to
 `composebox.ts`.
 
 ______________________________________________________________________
