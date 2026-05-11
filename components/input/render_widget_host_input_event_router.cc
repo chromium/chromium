@@ -1894,14 +1894,23 @@ void RenderWidgetHostInputEventRouter::DispatchTouchpadGestureEvent(
 
 RenderWidgetHostViewInput*
 RenderWidgetHostInputEventRouter::FindViewFromFrameSinkId(
-    const viz::FrameSinkId& frame_sink_id) const {
+    const viz::FrameSinkId& frame_sink_id,
+    RenderWidgetHostViewInput* ancestor_to_verify) const {
   // TODO(kenrb): There should be a better way to handle hit tests to surfaces
   // that are no longer valid for hit testing. See https://crbug.com/790044.
   auto iter = owner_map_.find(frame_sink_id);
   // If the point hit a Surface whose namspace is no longer in the map, then
   // it likely means the RenderWidgetHostView has been destroyed but its
   // parent frame has not sent a new compositor frame since that happened.
-  return iter == owner_map_.end() ? nullptr : iter->second.get();
+  RenderWidgetHostViewInput* view =
+      iter == owner_map_.end() ? nullptr : iter->second.get();
+
+  if (view && ancestor_to_verify && view != ancestor_to_verify &&
+      !IsAncestorView(view, ancestor_to_verify)) {
+    return nullptr;
+  }
+
+  return view;
 }
 
 bool RenderWidgetHostInputEventRouter::ShouldContinueHitTesting(
