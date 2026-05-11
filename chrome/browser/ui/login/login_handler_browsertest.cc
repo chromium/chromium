@@ -60,6 +60,7 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/process_manager.h"
+#include "extensions/common/extension_features.h"
 #include "net/base/auth.h"
 #include "net/base/host_port_pair.h"
 #include "net/dns/mock_host_resolver.h"
@@ -71,9 +72,7 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "extensions/common/extension_features.h"
-#endif
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS));
 
 using content::NavigationController;
 using content::OpenURLParams;
