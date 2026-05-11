@@ -185,6 +185,7 @@ void CodeCacheHostTestcase::TearDown(base::OnceClosure done_closure) {
 
 void CodeCacheHostTestcase::TearDownOnUIThread(base::OnceClosure done_closure) {
   code_cache_host_receivers_.clear();
+  generated_code_cache_context_->Shutdown();
   generated_code_cache_context_.reset();
   cache_storage_control_wrapper_.reset();
   browser_context_.reset();
