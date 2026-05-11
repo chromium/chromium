@@ -32,6 +32,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
@@ -702,6 +703,7 @@ public class TipsNotificationsFeaturePromoTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "crbug.com/511908543: Test is failing across android builders")
     public void testRecentTabsBottomSheetMainPageAccept() {
         @TipsNotificationsFeatureType int featureType = TipsNotificationsFeatureType.RECENT_TABS;
 
@@ -738,6 +740,7 @@ public class TipsNotificationsFeaturePromoTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "crbug.com/511908543: Test is failing across android builders")
     public void testRecentTabsBottomSheetDetailPageAccept() throws IOException {
         @TipsNotificationsFeatureType int featureType = TipsNotificationsFeatureType.RECENT_TABS;
         List<Integer> detailPageStepsRes =
