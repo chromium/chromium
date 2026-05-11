@@ -91,14 +91,6 @@
 #include "components/performance_manager/public/freezing/freezing.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_WIN)
-#include "base/path_service.h"
-#include "chrome/browser/performance_manager/policies/priority_boost_browser_network_policy.h"
-#include "chrome/browser/performance_manager/policies/priority_boost_foreground_browser_network_policy.h"
-#include "chrome/browser/performance_manager/policies/priority_boost_gpu_browser_network_policy.h"
-#include "chrome/browser/performance_manager/policies/priority_boost_loading_browser_network_policy.h"
-#endif
-
 namespace {
 
 ChromeBrowserMainExtraPartsPerformanceManager* g_instance = nullptr;
@@ -196,30 +188,6 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
           switches::kSingleProcess)) {
     graph->PassToGraph(
         std::make_unique<performance_manager::TerminationTargetPolicy>());
-  }
-  if (base::FeatureList::IsEnabled(features::kDisableBoostPriority)) {
-    switch (features::kDisableBoostPriorityExemption.Get()) {
-      case features::DisableBoostPriorityExemption::kBrowserNetwork:
-        graph->PassToGraph(
-            std::make_unique<performance_manager::policies::
-                                 PriorityBoostBrowserNetworkPolicy>());
-        break;
-      case features::DisableBoostPriorityExemption::kGpuBrowserNetwork:
-        graph->PassToGraph(
-            std::make_unique<performance_manager::policies::
-                                 PriorityBoostGpuBrowserNetworkPolicy>());
-        break;
-      case features::DisableBoostPriorityExemption::kLoadingBrowserNetwork:
-        graph->PassToGraph(
-            std::make_unique<performance_manager::policies::
-                                 PriorityBoostLoadingBrowserNetworkPolicy>());
-        break;
-      case features::DisableBoostPriorityExemption::kForegroundBrowserNetwork:
-        graph->PassToGraph(std::make_unique<
-                           performance_manager::policies::
-                               PriorityBoostForegroundBrowserNetworkPolicy>());
-        break;
-    }
   }
 #endif  // BUILDFLAG(IS_WIN)
 

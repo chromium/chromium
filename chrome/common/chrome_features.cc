@@ -37,20 +37,7 @@ const base::FeatureParam<base::TimeDelta>
 BASE_FEATURE(kAppSpecificNotifications, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDisableBoostPriority, base::FEATURE_DISABLED_BY_DEFAULT);
-static constexpr base::FeatureParam<DisableBoostPriorityExemption>::Option
-    kDisableBoostPriorityOptions[] = {
-        {DisableBoostPriorityExemption::kBrowserNetwork, "BrowserNetwork"},
-        {DisableBoostPriorityExemption::kGpuBrowserNetwork,
-         "GpuBrowserNetwork"},
-        {DisableBoostPriorityExemption::kLoadingBrowserNetwork,
-         "LoadingBrowserNetwork"},
-        {DisableBoostPriorityExemption::kForegroundBrowserNetwork,
-         "ForegroundBrowserNetwork"}};
-constinit const base::FeatureParam<DisableBoostPriorityExemption>
-    kDisableBoostPriorityExemption{
-        &kDisableBoostPriority, "exempt_processes",
-        DisableBoostPriorityExemption::kForegroundBrowserNetwork,
-        &kDisableBoostPriorityOptions};
+
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_MAC)

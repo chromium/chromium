@@ -109,11 +109,7 @@ source_set("performance_manager") {
 
   if (is_win) {
     public += [
-      "policies/priority_boost_browser_network_policy.h",
-      "policies/priority_boost_foreground_browser_network_policy.h",
-      "policies/priority_boost_gpu_browser_network_policy.h",
       "policies/priority_boost_helpers.h",
-      "policies/priority_boost_loading_browser_network_policy.h",
       "public/dll_pre_read_policy_win.h",
     ]
   }
@@ -262,11 +258,7 @@ source_set("impl") {
   if (is_win) {
     sources += [
       "policies/dll_pre_read_policy_win.cc",
-      "policies/priority_boost_browser_network_policy.cc",
-      "policies/priority_boost_foreground_browser_network_policy.cc",
-      "policies/priority_boost_gpu_browser_network_policy.cc",
       "policies/priority_boost_helpers.cc",
-      "policies/priority_boost_loading_browser_network_policy.cc",
     ]
     deps += [
       "//chrome/browser:browser_features",
