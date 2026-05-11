@@ -468,7 +468,7 @@ public class FindTest {
     @Test
     @SmallTest
     @Feature({"FindInPage"})
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511287685
     public void testFindNextPreviousIncognitoTab() {
         String query = "pitts";
         var incognitoPage = mPage.openNewIncognitoTabOrWindowFast();

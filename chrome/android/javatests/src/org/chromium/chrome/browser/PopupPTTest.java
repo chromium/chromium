@@ -100,7 +100,7 @@ public class PopupPTTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288013
     public void test020SafeGestureTabNotBlocked() {
         PopupOnClickPageStation page =
                 PopupOnClickPageStation.loadInCurrentTab(
@@ -139,7 +139,7 @@ public class PopupPTTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288013
     public void test030AbusiveGesturePopupBlocked() {
         MockSafeBrowsingApiHandler.addMockResponse(
                 mCtaTestRule.getTestServer().getURL(PopupOnClickPageStation.PATH),
@@ -159,7 +159,7 @@ public class PopupPTTest {
     @Test
     @MediumTest
     @RequiresRestart
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288013
     public void testBlankPopupLaunchedFromBlockedChip() {
         PopupBlockedMessageFacility popupBlockedMessage =
                 BlankPopupOnLoadPageStation.loadInCurrentTabExpectBlocked(

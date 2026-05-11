@@ -55,7 +55,7 @@ public class SyncTest {
     @Test
     @LargeTest
     @Feature({"Sync"})
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288619
     public void testStopAndClear() {
         mSyncTestRule.getFakeServerHelper().setTrustedVaultNigori(new byte[] {1, 2, 3, 4});
         mSyncTestRule.setUpAccountAndSignInForTesting();

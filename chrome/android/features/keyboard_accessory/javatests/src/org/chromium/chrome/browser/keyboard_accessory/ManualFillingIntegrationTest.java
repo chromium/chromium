@@ -90,7 +90,7 @@ public class ManualFillingIntegrationTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511287512
     public void testKeyboardAccessoryHiddenUntilKeyboardShows() throws TimeoutException {
         mHelper.startAtTestPage(/* isRtl= */ false);
 
@@ -106,7 +106,7 @@ public class ManualFillingIntegrationTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511287512
     public void testKeyboardAccessoryDisappearsWithKeyboard() throws TimeoutException {
         mHelper.startAtTestPage(/* isRtl= */ false);
 
@@ -258,7 +258,7 @@ public class ManualFillingIntegrationTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511287512
     public void testSelectingNonPasswordInputDismissesAccessory() throws TimeoutException {
         mHelper.startAtTestPage(/* isRtl= */ false);
 

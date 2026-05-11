@@ -211,7 +211,7 @@ public class HistorySyncTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511289299
     public void testPositiveButtonWithNonMinorModeAccount() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()

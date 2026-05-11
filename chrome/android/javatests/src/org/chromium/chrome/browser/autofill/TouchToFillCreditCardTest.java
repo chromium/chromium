@@ -121,7 +121,7 @@ public class TouchToFillCreditCardTest {
     @Test
     @MediumTest
     @DisableFeatures(ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING)
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288092
     public void testSelectingLocalCard() throws TimeoutException {
         // Focus the field to bring up the touch to fill for credit cards.
         DOMUtils.clickNode(mWebContents, CREDIT_CARD_NUMBER_FIELD_ID);

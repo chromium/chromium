@@ -57,7 +57,7 @@ public class HistoryTabHelperTest {
     @DisableIf.Build(
             sdk_is_less_than = VERSION_CODES.UPSIDE_DOWN_CAKE,
             message = "This test is using an API introduced in Android U.")
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288253
     public void testAppHistory() throws Exception {
         Context context = ContextUtils.getApplicationContext();
         Intent viewIntent =

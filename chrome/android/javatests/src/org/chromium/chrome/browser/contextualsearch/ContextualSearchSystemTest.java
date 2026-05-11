@@ -42,7 +42,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures(ChromeFeatureList.CONTEXTUAL_SEARCH_DISABLE_ONLINE_DETECTION)
 @Batch(Batch.PER_CLASS)
-@DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+@DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511287523
 public class ContextualSearchSystemTest extends ContextualSearchInstrumentationBase {
     @Override
     @Before

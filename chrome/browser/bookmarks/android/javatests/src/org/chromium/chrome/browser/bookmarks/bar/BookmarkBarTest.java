@@ -90,7 +90,7 @@ import java.util.stream.IntStream;
 @EnableFeatures(ChromeFeatureList.ANDROID_BOOKMARK_BAR)
 @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
 @RunWith(ChromeJUnit4ClassRunner.class)
-@DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+@DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288719
 public class BookmarkBarTest {
 
     @Rule

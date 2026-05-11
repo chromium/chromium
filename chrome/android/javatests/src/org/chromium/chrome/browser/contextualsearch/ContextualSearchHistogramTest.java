@@ -36,7 +36,7 @@ import org.chromium.ui.base.DeviceFormFactor;
 @EnableFeatures(ChromeFeatureList.CONTEXTUAL_SEARCH_DISABLE_ONLINE_DETECTION)
 @Features.DisableFeatures({ContentFeatures.ANDROID_DESKTOP_ZOOM_SCALING})
 @Batch(Batch.PER_CLASS)
-@DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+@DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511287615
 public class ContextualSearchHistogramTest extends ContextualSearchInstrumentationBase {
     private HistogramWatcher mResultsSeenHistogramWatcher;
     private HistogramWatcher mAllSearchesHistogramWatcher;

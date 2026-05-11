@@ -54,7 +54,7 @@ public class PopupMultiwindowPTTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288012
     public void testBasic() {
         PopupOnClickPageStation page =
                 PopupOnClickPageStation.loadInCurrentTab(

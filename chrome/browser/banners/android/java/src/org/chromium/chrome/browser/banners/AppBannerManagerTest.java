@@ -864,7 +864,7 @@ public class AppBannerManagerTest {
     @Test
     @MediumTest
     @Feature({"AppBanners"})
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511289039
     public void testAppBannerDismissedAfterNavigation() throws Exception {
         String url =
                 WebappTestPage.getTestUrlWithAction(mTestServer, "call_stashed_prompt_on_click");

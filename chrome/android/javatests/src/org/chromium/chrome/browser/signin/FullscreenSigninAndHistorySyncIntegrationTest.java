@@ -452,7 +452,7 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288677
     public void testUserAlreadySignedIn_refuseHistorySync_historySyncRequired() {
         HistogramWatcher historySyncHistogramWatcher =
                 HistogramWatcher.newBuilder()
@@ -598,7 +598,7 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
     @Test
     @MediumTest
     @DisableFeatures(SigninFeatures.SUPPORT_FORCED_SIGNIN_POLICY)
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288677
     public void testBackPress() {
         mBlankUiActivityTestRule.launchActivity(null);
         when(mHistorySyncHelperMock.shouldDisplayHistorySync()).thenReturn(true);

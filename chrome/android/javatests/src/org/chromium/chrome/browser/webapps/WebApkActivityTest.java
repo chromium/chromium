@@ -108,7 +108,7 @@ public final class WebApkActivityTest {
     @LargeTest
     @Test
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO) // Flaky, see crbug.com/393561248
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511287766
     public void testActivateWebApkLPlus() throws Exception {
         // Launch WebAPK.
         WebappActivity webApkActivity =

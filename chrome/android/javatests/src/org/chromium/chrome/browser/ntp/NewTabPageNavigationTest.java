@@ -92,7 +92,7 @@ public class NewTabPageNavigationTest {
     /** Tests navigating to the tab switcher from the Incognito NTP. */
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288913
     public void testNavigateToTabSwitcherFromIncognitoNtp() {
         try (var histogram =
                 HistogramWatcher.newBuilder()

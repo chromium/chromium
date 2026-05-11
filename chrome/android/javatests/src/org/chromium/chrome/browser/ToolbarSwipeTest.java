@@ -163,7 +163,7 @@ public class ToolbarSwipeTest {
     @Test
     @MediumTest
     @Feature({"Android-TabSwitcher"})
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511287381
     public void testToolbarSwipeNextThenPrevTabIncognito() {
         WebPageStation pageStation =
                 initToolbarSwipeTest(

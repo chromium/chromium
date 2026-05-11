@@ -323,7 +323,7 @@ public class AccessorySheetViewTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511287120
     public void testHeader() {
         Runnable runnable = mock(Runnable.class);
 

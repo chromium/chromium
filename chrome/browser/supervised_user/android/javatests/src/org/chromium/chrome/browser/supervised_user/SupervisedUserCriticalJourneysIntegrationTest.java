@@ -110,7 +110,7 @@ public class SupervisedUserCriticalJourneysIntegrationTest {
     @Test
     @LargeTest
     @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/41485872")
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288668
     public void incognitoModeIsUnavailableFromTabSwitcherActionMenu() {
         onView(withId(R.id.tab_switcher_button)).perform(longClick());
         int incognitoMenuItemStringId =

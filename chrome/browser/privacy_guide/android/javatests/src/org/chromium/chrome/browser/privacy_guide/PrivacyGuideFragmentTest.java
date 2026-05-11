@@ -328,7 +328,7 @@ public class PrivacyGuideFragmentTest {
     @LargeTest
     @Feature({"RenderTest"})
     @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511289221
     public void testRenderSBCard() throws IOException {
         launchPrivacyGuide();
         goToCard(FragmentType.SAFE_BROWSING);
@@ -339,7 +339,7 @@ public class PrivacyGuideFragmentTest {
     @LargeTest
     @Feature({"RenderTest"})
     @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511289221
     public void testRenderSBEnhancedBottomSheet() throws IOException {
         launchPrivacyGuide();
         goToCard(FragmentType.SAFE_BROWSING);
@@ -660,7 +660,7 @@ public class PrivacyGuideFragmentTest {
     @Test
     @LargeTest
     @Feature({"PrivacyGuide"})
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511289221
     public void testMSBBCard_offToOnSettingsStatesHistogram() {
         setMSBBState(false);
         launchPrivacyGuide();
@@ -889,7 +889,7 @@ public class PrivacyGuideFragmentTest {
     @Test
     @LargeTest
     @Feature({"PrivacyGuide"})
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511289221
     public void testHistorySyncCard_nextButtonInitialSyncStateIsSet() {
         launchPrivacyGuide();
         mPrivacyGuideTestRule
@@ -905,7 +905,7 @@ public class PrivacyGuideFragmentTest {
     @Test
     @LargeTest
     @Feature({"PrivacyGuide"})
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511289221
     public void testHistorySyncCard_backButtonInitialSyncStateIsSet() {
         launchPrivacyGuide();
         mPrivacyGuideTestRule
@@ -1138,7 +1138,7 @@ public class PrivacyGuideFragmentTest {
     @Test
     @LargeTest
     @Feature({"PrivacyGuide"})
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511289221
     public void testCookiesCard_block3PIncognitoTo3PSettingsStatesHistogram() {
         setCookieControlsMode(CookieControlsMode.INCOGNITO_ONLY);
         launchPrivacyGuide();

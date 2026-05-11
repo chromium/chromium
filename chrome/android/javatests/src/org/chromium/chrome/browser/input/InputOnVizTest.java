@@ -140,7 +140,7 @@ public class InputOnVizTest {
     }
 
     @Test
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511287741
     public void handlesOverscrollsWithInputVizard() throws Exception {
         TabLoadObserver observer = new TabLoadObserver(mActivityTestRule.getActivityTab());
         observer.fullyLoadUrl(mLongHtmlTestPageUri);

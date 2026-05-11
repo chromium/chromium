@@ -144,7 +144,7 @@ public class MultiInstanceManagerApi31Test {
     // Final state: max limit = 2, active tasks = 2, inactive tasks = 2.
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511289033
     public void decreaseInstanceLimit_ExcessActive_ExcessTasksFinished() {
         // Set initial instance limit.
         MultiWindowUtils.setMaxInstancesForTesting(4);

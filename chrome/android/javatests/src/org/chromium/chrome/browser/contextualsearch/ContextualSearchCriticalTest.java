@@ -57,7 +57,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @SmallTest
     @Feature({"ContextualSearch"})
     // Previously disabled:  https://crbug.com/40121079
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288249
     public void testResolveCausesOneLowPriorityRequest() throws Exception {
         simulateSlowResolveSearch("states");
 

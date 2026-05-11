@@ -51,7 +51,7 @@ public class SessionMetricsTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511287776
     public void testSessionContainedGoogleSearchPage() {
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newBuilder()

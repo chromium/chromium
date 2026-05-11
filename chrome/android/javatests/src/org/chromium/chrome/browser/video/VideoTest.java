@@ -54,7 +54,7 @@ public class VideoTest {
     @DisableIf.Build(
             sdk_equals = Build.VERSION_CODES.Q,
             message = "crbug.com/447426928, crashing emulator with --disable-field-trial-config")
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511289115
     public void testLoadMediaUrl() throws TimeoutException {
         Tab tab = mPage.getTab();
         TabTitleObserver titleObserver = new TabTitleObserver(tab, "ready_to_play");

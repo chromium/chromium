@@ -216,7 +216,7 @@ public class TabSwitcherSearchTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288229
     public void testZeroPrefixSuggestions_Incognito() {
         List<String> urlsToOpen = List.of("/chrome/test/data/android/navigate/one.html");
         mPage = Journeys.createIncognitoTabsWithWebPages(mPage, mTestServer.getURLs(urlsToOpen));
@@ -316,7 +316,7 @@ public class TabSwitcherSearchTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288229
     public void testTypedSuggestions_Incognito() {
         List<String> urlsToOpen = List.of("/chrome/test/data/android/navigate/one.html");
         mPage = Journeys.createIncognitoTabsWithWebPages(mPage, mTestServer.getURLs(urlsToOpen));
@@ -329,7 +329,7 @@ public class TabSwitcherSearchTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288229
     public void testSearchActivityBackButton() {
         ChromeTabbedActivity cta = mCtaTestRule.getActivity();
         mPage.openRegularTabSwitcher().openTabSwitcherSearch().pressBackToRegularTabSwitcher(cta);
@@ -350,7 +350,7 @@ public class TabSwitcherSearchTest {
     @Test
     @MediumTest
     @DisableFeatures({OmniboxFeatureList.OMNIBOX_ITEM_DECORATION})
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288229
     public void testTypedSuggestions_OpenSearchSuggestion() {
         TabSwitcherSearchStation tabSwitcherSearchStation =
                 mPage.openRegularTabSwitcher().openTabSwitcherSearch();
@@ -514,7 +514,7 @@ public class TabSwitcherSearchTest {
     @Test
     @MediumTest
     @DisableFeatures({OmniboxFeatureList.OMNIBOX_ITEM_DECORATION})
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288229
     public void testTypedSuggestions_OpenSearchSuggestion_Incognito() {
         List<String> urlsToOpen = List.of("/chrome/test/data/android/navigate/one.html");
         mPage = Journeys.createIncognitoTabsWithWebPages(mPage, mTestServer.getURLs(urlsToOpen));

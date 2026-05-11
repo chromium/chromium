@@ -294,7 +294,7 @@ public class DragAndDropLauncherActivityTest {
      */
     @Test
     @LargeTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511289014
     public void testDraggedTabGroup_newWindow() throws Exception {
         var sourceActivity = mActivityTestRule.getActivity();
 

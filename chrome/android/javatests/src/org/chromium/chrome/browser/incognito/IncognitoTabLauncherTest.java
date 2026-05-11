@@ -75,7 +75,7 @@ public class IncognitoTabLauncherTest {
     @Feature("Incognito")
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511287105
     public void testLaunchIncognitoNewTab() throws TimeoutException {
         IncognitoNewTabPageStation ntp = startOnIncognitoNtp(false);
         assertIncognitoTabLaunched(ntp.getActivity(), false);
@@ -85,7 +85,7 @@ public class IncognitoTabLauncherTest {
     @Feature("Incognito")
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511287105
     public void testLaunchIncognitoNewTab_omniboxFocused_enabled_thirdParty()
             throws TimeoutException {
         IncognitoNewTabPageStation ntp = startOnIncognitoNtp(false);

@@ -73,7 +73,7 @@ public class TabSwitcherActionMenuPTTest {
 
     @Test
     @LargeTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511289339
     public void testOpenNewTabFromIncognito() {
         IncognitoNewTabPageStation incognitoNtp =
                 mCtaTestRule
@@ -94,7 +94,7 @@ public class TabSwitcherActionMenuPTTest {
 
     @Test
     @LargeTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511289339
     public void testOpenNewIncognitoTabFromIncognito() {
         IncognitoNewTabPageStation incognitoNtp =
                 mCtaTestRule

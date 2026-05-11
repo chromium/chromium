@@ -4,9 +4,6 @@
 
 package org.chromium.chrome.browser.image_descriptions;
 
-import org.chromium.base.test.util.DisableIf;
-import org.chromium.ui.base.DeviceFormFactor;
-
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -34,6 +31,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -45,6 +43,7 @@ import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /** Unit tests for {@link ImageDescriptionsSettings} */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -268,7 +267,7 @@ public class ImageDescriptionsSettingsTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511289279
     public void testUserTogglesSwitch_Off() {
         // When we toggle switch to Off, it should disable radio buttons and descriptions
         ThreadUtils.runOnUiThreadBlocking(

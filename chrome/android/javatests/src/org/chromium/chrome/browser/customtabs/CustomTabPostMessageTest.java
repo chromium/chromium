@@ -291,7 +291,7 @@ public class CustomTabPostMessageTest {
     /** Tests the postMessage requests sent from the page is received on the client side. */
     @Test
     @SmallTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288195
     public void testPostMessageReceivedFromPage() throws Exception {
         final CallbackHelper messageChannelHelper = new CallbackHelper();
         final CallbackHelper onPostMessageHelper = new CallbackHelper();

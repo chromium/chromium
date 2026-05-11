@@ -901,7 +901,7 @@ public class TabStripTest {
     @LargeTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @Feature({"TabStrip"})
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511287597
     public void testScrollingStripStackersWithLastTabSelected() throws Exception {
         testScrollingStripStackersWithLastTabSelected(/* isRtl= */ false);
     }
@@ -910,7 +910,7 @@ public class TabStripTest {
     @LargeTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @Feature({"TabStrip", "RTL"})
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511287597
     public void testScrollingStripStackersWithLastTabSelectedRtl() throws Exception {
         testScrollingStripStackersWithLastTabSelected(/* isRtl= */ true);
     }

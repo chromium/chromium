@@ -71,7 +71,7 @@ import java.util.concurrent.TimeoutException;
     SigninFeatures.ENABLE_SEAMLESS_SIGNIN,
     SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT
 })
-@DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+@DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288155
 public class MismatchNotificationControllerTest {
     private static final String TEST_URL = "https://www.google.com";
 

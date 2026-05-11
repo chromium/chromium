@@ -118,7 +118,7 @@ public class TouchToFillMainFlowIntegrationTest {
     @Test
     @MediumTest
     @DisableFeatures(ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING)
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288618
     public void testClickingSuggestionPopulatesForm()
             throws TimeoutException, InterruptedException {
         // Fill the password store.

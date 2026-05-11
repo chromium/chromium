@@ -120,7 +120,7 @@ public class SensitiveContentTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511287319
     public void testTabHasSensitiveContentWhileSensitiveFieldsArePresent() {
         assertNotSensitive(mPage);
 
@@ -133,7 +133,7 @@ public class SensitiveContentTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511287319
     public void testSensitiveContentClientObserver() {
         assertNotSensitive(mPage);
 
@@ -195,7 +195,7 @@ public class SensitiveContentTest {
     @Test
     @MediumTest
     @EnableFeatures(SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511287319
     public void testTabHasSensitiveContentAttributeIsUpdated() {
         final Tab tab = mCtaTestRule.getActivityTab();
         assertFalse(tab.getTabHasSensitiveContent());
@@ -252,7 +252,7 @@ public class SensitiveContentTest {
     @Test
     @LargeTest
     @EnableFeatures(SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511287319
     public void testIncognitoTabSwitcherBecomesSensitive() {
         final String histogram =
                 "SensitiveContent.TabSwitching.IncognitoTabSwitcherPane.Sensitivity";
@@ -319,7 +319,7 @@ public class SensitiveContentTest {
     @Test
     @LargeTest
     @EnableFeatures(SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511287319
     public void testIncognitoTabSwitcherBecomesSensitiveWithTabGroups() {
         // Open the first incognito tab.
         CtaPageStation page = mPage.openNewIncognitoTabOrWindowFast();

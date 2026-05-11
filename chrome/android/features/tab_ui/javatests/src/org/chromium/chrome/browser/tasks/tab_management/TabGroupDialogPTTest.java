@@ -67,7 +67,7 @@ import java.io.IOException;
     ChromeFeatureList.ANDROID_THEME_MODULE
 })
 @EnableFeatures(ChromeFeatureList.DATA_SHARING)
-@DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+@DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288228
 public class TabGroupDialogPTTest {
     @Rule
     public AutoResetCtaTransitTestRule mCtaTestRule =

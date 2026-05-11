@@ -86,7 +86,7 @@ import java.util.List;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
 @DoNotBatch(reason = "Relies on global state")
-@DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+@DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511287860
 public class SigninFirstRunFragmentRenderTest {
     /** Parameter provider for night mode state and device orientation. */
     public static class NightModeAndOrientationParameterProvider implements ParameterProvider {

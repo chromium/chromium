@@ -60,7 +60,7 @@ public class WebappDisplayCutoutTest {
     @Test
     @LargeTest
     @WebappDisplayCutoutTestRule.TestConfiguration(displayMode = DisplayMode.MINIMAL_UI)
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288753
     public void testViewportFitWebapp_MinimalUi() throws TimeoutException {
         mTestRule.setViewportFit(DisplayCutoutTestRule.VIEWPORT_FIT_COVER);
 

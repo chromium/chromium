@@ -2274,7 +2274,7 @@ public final class SafetyHubTest {
 
     @Test
     @MediumTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511289088
     public void testHelpCenterArticle() {
         mSafetyHubFragmentTestRule.startSettingsActivity();
         var histogramWatcher =

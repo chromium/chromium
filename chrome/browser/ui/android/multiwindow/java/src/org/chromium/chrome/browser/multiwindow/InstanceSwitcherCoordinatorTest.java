@@ -1337,7 +1337,7 @@ public class InstanceSwitcherCoordinatorTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288346
     public void testCancelRenameWindow() throws Exception {
         InstanceInfo[] instances =
                 createPersistedInstances(
@@ -1780,7 +1780,7 @@ public class InstanceSwitcherCoordinatorTest {
 
     @Test
     @SmallTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288346
     public void testMoreButtonHiddenWhenListIsEmpty() throws Exception {
         // 1 active, 1 inactive instance.
         InstanceInfo[] instances =

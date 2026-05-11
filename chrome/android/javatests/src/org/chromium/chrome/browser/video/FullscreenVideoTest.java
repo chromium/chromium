@@ -53,7 +53,7 @@ import java.util.concurrent.TimeoutException;
 })
 @Features.EnableFeatures(ChromeFeatureList.DISPLAY_EDGE_TO_EDGE_FULLSCREEN)
 @Batch(Batch.PER_CLASS)
-@DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+@DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288438
 public class FullscreenVideoTest {
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =

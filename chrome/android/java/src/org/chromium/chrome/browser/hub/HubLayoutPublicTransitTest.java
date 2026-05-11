@@ -162,7 +162,7 @@ public class HubLayoutPublicTransitTest {
 
     @Test
     @LargeTest
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511286726
     public void testIncognitoTabSwitcherStation_newTabGroup() {
         WebPageStation firstPage = mCtaTestRule.startOnBlankPage();
         IncognitoNewTabPageStation incognitoNewTabPageStation =

@@ -58,7 +58,7 @@ import org.chromium.ui.test.util.DeviceRestriction;
     ChromeFeatureList.ANDROID_THEME_MODULE
 })
 @Batch(Batch.PER_CLASS)
-@DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+@DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288348
 public class TabGroupListBottomSheetTest {
     @Rule
     public AutoResetCtaTransitTestRule mCtaTestRule =

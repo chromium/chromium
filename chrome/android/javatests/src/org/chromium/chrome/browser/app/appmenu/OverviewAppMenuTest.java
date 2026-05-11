@@ -88,7 +88,7 @@ public class OverviewAppMenuTest {
     @Test
     @LargeTest
     @Feature({"Browser", "Main"})
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/444482498
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288416
     public void testIncognitoAllMenuItems() {
         IncognitoTabSwitcherStation incognitoTabSwitcher =
                 mTabSwitcher.openAppMenu().openNewIncognitoTabOrWindow().openIncognitoTabSwitcher();
