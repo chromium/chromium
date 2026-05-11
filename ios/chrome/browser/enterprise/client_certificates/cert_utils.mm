@@ -36,6 +36,8 @@ namespace client_certificates {
 
 namespace {
 
+std::optional<std::string> (*g_mock_access_group)() = nullptr;
+
 std::optional<std::string> ComputeAppIdentifierPrefix() {
   NSDictionary* query = @{
     CFToNSPtrCast(kSecClass) : CFToNSPtrCast(kSecClassGenericPassword),
@@ -81,6 +83,10 @@ std::optional<std::string> ComputeAppIdentifierPrefix() {
 }  // namespace
 
 std::optional<std::string> GetAccessGroup() {
+  if (g_mock_access_group) {
+    return g_mock_access_group();
+  }
+
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
   auto appIdentifier = ComputeAppIdentifierPrefix();
@@ -89,6 +95,10 @@ std::optional<std::string> GetAccessGroup() {
   }
   return base::StrCat({*appIdentifier, ".", BUILDFLAG(IOS_APP_BUNDLE_ID_PREFIX),
                        ".devicetrust"});
+}
+
+void SetAccessGroupHookForTesting(std::optional<std::string> (*func)()) {
+  g_mock_access_group = func;
 }
 
 std::unique_ptr<PrivateKeyFactory> CreatePrivateKeyFactory(

@@ -12,6 +12,7 @@
 #import "base/values.h"
 #import "components/enterprise/client_certificates/core/mock_private_key_factory.h"
 #import "components/enterprise/client_certificates/core/private_key.h"
+#import "ios/chrome/browser/enterprise/client_certificates/cert_utils.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 
@@ -35,6 +36,10 @@ std::unique_ptr<PrivateKeyFactory> CreateMockFactory() {
   return mock_factory;
 }
 
+std::optional<std::string> GetEmptyAccessGroup() {
+  return std::nullopt;
+}
+
 }  // namespace
 
 class LazyUnexportablePrivateKeyFactoryTest : public PlatformTest {
@@ -47,6 +52,7 @@ class LazyUnexportablePrivateKeyFactoryTest : public PlatformTest {
 
   void TearDown() override {
     LazyUnexportablePrivateKeyFactory::SetFactoryCreatorForTesting(nullptr);
+    SetAccessGroupHookForTesting(nullptr);
     PlatformTest::TearDown();
   }
 
@@ -108,6 +114,23 @@ TEST_F(LazyUnexportablePrivateKeyFactoryTest,
   factory.CreatePrivateKey(create_future.GetCallback());
 
   EXPECT_TRUE(create_future.IsReady());
+}
+
+// Tests that the factory is created correctly when real factory is used and
+// GetAccessGroup returns std::nullopt.
+TEST_F(LazyUnexportablePrivateKeyFactoryTest, HandlesEmptyAccessGroup) {
+  SetAccessGroupHookForTesting(&GetEmptyAccessGroup);
+  // Remove the factory creator override so that the actual CreateBaseFactory
+  // logic runs in this test.
+  LazyUnexportablePrivateKeyFactory::SetFactoryCreatorForTesting(nullptr);
+  LazyUnexportablePrivateKeyFactory factory("test_profile");
+
+  base::test::TestFuture<scoped_refptr<PrivateKey>> create_future;
+  factory.CreatePrivateKey(create_future.GetCallback());
+
+  // It shouldn't crash, and since the access group is empty, no sub-factory
+  // is added for kUnexportableKey, so it should return nullptr.
+  EXPECT_EQ(create_future.Get(), nullptr);
 }
 
 }  // namespace client_certificates

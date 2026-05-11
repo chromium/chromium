@@ -29,6 +29,9 @@ class CertificateStore;
 // Must be called on a background thread to prevent hangs.
 std::optional<std::string> GetAccessGroup();
 
+// Sets a hook to override the keychain access group in tests.
+void SetAccessGroupHookForTesting(std::optional<std::string> (*func)());
+
 // Creates a PrivateKeyFactory using the given `application_tag` to isolate
 // keys. For browser-level usage, `kBrowserLevelApplicationTag` should be
 // provided. For profile-level usage, the profile name should be provided.
