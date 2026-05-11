@@ -228,7 +228,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAuthentication.CredentialExchange.PasskeyImportStatus"
-    enum="ImportedPasskeyStatus" expires_after="2026-06-21">
+    enum="ImportedPasskeyStatus" expires_after="2026-12-21">
   <owner>rgod@google.com</owner>
   <owner>chrome-webauthns@google.com</owner>
   <summary>
