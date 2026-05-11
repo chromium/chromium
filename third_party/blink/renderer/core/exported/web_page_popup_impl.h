@@ -156,7 +156,7 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
       bool event_processed) override;
   bool SupportsBufferedTouchEvents() override { return true; }
   void FocusChanged(mojom::blink::FocusState focus_state) override;
-  void ScheduleAnimation(cc::BeginMainFrameReason, bool urgent) override;
+  void ScheduleAnimation(bool urgent) override;
   void UpdateVisualProperties(
       const VisualProperties& visual_properties) override;
   gfx::Rect ViewportVisibleRect() override;

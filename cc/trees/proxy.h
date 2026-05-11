@@ -15,7 +15,6 @@
 #include "cc/cc_export.h"
 #include "cc/input/browser_controls_offset_tag_modifications.h"
 #include "cc/input/browser_controls_state.h"
-#include "cc/metrics/begin_main_frame_metrics.h"
 #include "cc/paint/draw_image.h"
 #include "cc/trees/paint_holding_commit_trigger.h"
 #include "cc/trees/paint_holding_reason.h"
@@ -50,13 +49,7 @@ class CC_EXPORT Proxy {
   virtual void SetVisible(bool visible) = 0;
   virtual void SetShouldWarmUp() = 0;
 
-  virtual void SetNeedsAnimate(BeginMainFrameReason reason, bool urgent) = 0;
-  void SetNeedsAnimate(bool urgent = false) {
-    SetNeedsAnimate(BeginMainFrameReason::kOther, urgent);
-  }
-  void SetNeedsAnimate(BeginMainFrameReason reason) {
-    SetNeedsAnimate(reason, false);
-  }
+  virtual void SetNeedsAnimate(bool urgent = false) = 0;
   virtual void SetNeedsUpdateLayers() = 0;
   virtual void SetNeedsCommit() = 0;
   virtual void SetNeedsRedraw(const gfx::Rect& damage_rect) = 0;

@@ -565,14 +565,6 @@ void ChromeClientImpl::InvalidateContainer() {
 void ChromeClientImpl::ScheduleAnimation(const LocalFrameView* frame_view,
                                          base::TimeDelta delay,
                                          bool urgent) {
-  ScheduleAnimation(frame_view, cc::BeginMainFrameReason::kOther, delay,
-                    urgent);
-}
-
-void ChromeClientImpl::ScheduleAnimation(const LocalFrameView* frame_view,
-                                         cc::BeginMainFrameReason reason,
-                                         base::TimeDelta delay,
-                                         bool urgent) {
   LocalFrame& frame = frame_view->GetFrame();
   // If the frame is still being created, it might not yet have a WebWidget.
   // TODO(dcheng): Is this the right thing to do? Is there a way to avoid having
@@ -581,7 +573,7 @@ void ChromeClientImpl::ScheduleAnimation(const LocalFrameView* frame_view,
   // WebFrameWidget needs to be initialized before initializing the core frame?
   FrameWidget* widget = frame.GetWidgetForLocalRoot();
   if (widget) {
-    widget->RequestAnimationAfterDelay(reason, delay, urgent);
+    widget->RequestAnimationAfterDelay(delay, urgent);
   }
 }
 

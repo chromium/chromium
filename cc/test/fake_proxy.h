@@ -31,7 +31,7 @@ class FakeProxy : public Proxy {
   void ReleaseLayerTreeFrameSink() override {}
   void SetShouldWarmUp() override {}
   void SetVisible(bool visible) override {}
-  void SetNeedsAnimate(BeginMainFrameReason, bool urgent) override {}
+  void SetNeedsAnimate(bool urgent) override {}
   void SetNeedsUpdateLayers() override {}
   void SetNeedsCommit() override {}
   void SetNeedsRedraw(const gfx::Rect& damage_rect) override {}

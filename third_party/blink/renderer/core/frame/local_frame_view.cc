@@ -3831,14 +3831,13 @@ void LocalFrameView::ServiceScrollAnimations(base::TimeTicks start_time) {
   }
 }
 
-void LocalFrameView::ScheduleAnimation(cc::BeginMainFrameReason reason,
-                                       base::TimeDelta delay,
+void LocalFrameView::ScheduleAnimation(base::TimeDelta delay,
                                        base::Location location,
                                        bool urgent) {
   TRACE_EVENT("cc", "LocalFrameView::ScheduleAnimation", "frame", GetFrame(),
               "delay", delay, "location", location);
   if (auto* client = GetChromeClient())
-    client->ScheduleAnimation(this, reason, delay, urgent);
+    client->ScheduleAnimation(this, delay, urgent);
 }
 
 void LocalFrameView::OnCommitRequested() {

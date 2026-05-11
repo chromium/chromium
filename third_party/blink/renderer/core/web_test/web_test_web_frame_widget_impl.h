@@ -75,7 +75,7 @@ class WebTestWebFrameWidgetImpl : public WebFrameWidgetImpl,
   void DidAutoResize(const gfx::Size& size) override;
 
   // WidgetBaseClient overrides:
-  void ScheduleAnimation(cc::BeginMainFrameReason reason, bool urgent) override;
+  void ScheduleAnimation(bool urgent) override;
   void WillBeginMainFrame() override;
   void ScheduleAnimationForWebTests() override;
   bool AllowsScrollResampling() override { return false; }

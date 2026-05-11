@@ -12,7 +12,6 @@
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
 #include "cc/input/browser_controls_offset_tag_modifications.h"
-#include "cc/metrics/begin_main_frame_metrics.h"
 #include "cc/trees/layer_tree_host.h"
 #include "mojo/public/mojom/base/text_direction.mojom-blink.h"
 #include "services/viz/public/mojom/compositing/frame_sink_id.mojom-blink.h"
@@ -81,10 +80,6 @@ class PLATFORM_EXPORT FrameWidget {
   // the compositor (ie LayerTreeHost::SetNeedsAnimate()).
   virtual void RequestAnimationAfterDelay(const base::TimeDelta&,
                                           bool urgent) = 0;
-
-  virtual void RequestAnimationAfterDelay(cc::BeginMainFrameReason,
-                                          const base::TimeDelta&,
-                                          bool urgent);
 
   // Sets the root layer. The |layer| can be null when detaching the root layer.
   virtual void SetRootLayer(scoped_refptr<cc::Layer> layer) = 0;

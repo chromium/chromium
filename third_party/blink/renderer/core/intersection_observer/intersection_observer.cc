@@ -386,8 +386,7 @@ void IntersectionObserver::observe(Element* target,
     // The IntersectionObserver spec requires that at least one observation
     // be recorded after observe() is called, even if the frame is throttled.
     frame_view->SetIntersectionObservationState(LocalFrameView::kRequired);
-    frame_view->ScheduleAnimation(
-        cc::BeginMainFrameReason::kIntersectionObserver);
+    frame_view->ScheduleAnimation();
   }
 }
 

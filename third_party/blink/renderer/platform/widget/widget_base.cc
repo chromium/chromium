@@ -1640,8 +1640,7 @@ void WidgetBase::OnImeEventGuardFinish(ImeEventGuard* guard) {
 #endif
 }
 
-void WidgetBase::RequestAnimationAfterDelay(cc::BeginMainFrameReason reason,
-                                            const base::TimeDelta& delay,
+void WidgetBase::RequestAnimationAfterDelay(const base::TimeDelta& delay,
                                             bool urgent) {
   if (delay.is_zero()) {
     // See the comment in MainThreadEventQueue::QueueEvent() explaining why we
@@ -1650,7 +1649,7 @@ void WidgetBase::RequestAnimationAfterDelay(cc::BeginMainFrameReason reason,
         input_handler_.handling_input_event() &&
         ::features::IsEligibleForThrottleMainFrameTo60Hz() &&
         base::FeatureList::IsEnabled(features::kUrgentMainFrameForInput);
-    client_->ScheduleAnimation(reason, urgent || urgent_for_input);
+    client_->ScheduleAnimation(urgent || urgent_for_input);
     return;
   }
 

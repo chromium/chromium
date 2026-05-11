@@ -104,7 +104,7 @@ ScriptedAnimationController::RegisterFrameCallback(FrameCallback* callback) {
     return 0;
   }
   CallbackId id = callback_collection_.RegisterFrameCallback(callback);
-  ScheduleAnimationIfNeeded(cc::BeginMainFrameReason::kRAF);
+  ScheduleAnimationIfNeeded();
   return id;
 }
 
@@ -236,8 +236,7 @@ void ScriptedAnimationController::EnqueueMediaQueryChangeListeners(
   ScheduleAnimationIfNeeded();
 }
 
-void ScriptedAnimationController::ScheduleAnimationIfNeeded(
-    cc::BeginMainFrameReason reason) {
+void ScriptedAnimationController::ScheduleAnimationIfNeeded() {
   if (!GetExecutionContext() || GetExecutionContext()->IsContextPaused())
     return;
 
@@ -246,7 +245,7 @@ void ScriptedAnimationController::ScheduleAnimationIfNeeded(
     return;
 
   if (HasScheduledFrameTasks()) {
-    frame->View()->ScheduleAnimation(reason);
+    frame->View()->ScheduleAnimation();
     return;
   }
 }

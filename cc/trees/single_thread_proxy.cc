@@ -193,7 +193,7 @@ void SingleThreadProxy::SetLayerTreeFrameSink(
   }
 }
 
-void SingleThreadProxy::SetNeedsAnimate(BeginMainFrameReason, bool urgent) {
+void SingleThreadProxy::SetNeedsAnimate(bool urgent) {
   TRACE_EVENT0("cc", "SingleThreadProxy::SetNeedsAnimate");
   DCHECK(task_runner_provider_->IsMainThread());
   if (animate_requested_)

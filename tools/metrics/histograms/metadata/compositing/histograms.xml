@@ -103,28 +103,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Compositing.BeginMainFrame.BMFReason1" units="reasons"
-    expires_after="2026-08-30">
-  <owner>thiabaud@google.com</owner>
-  <owner>jonross@chromium.org</owner>
-  <summary>
-    Records the reason(s) for which we triggered a BeginMainFrame. Recorded when
-    the BeginMainFrame is run. The value recorded is a bitset of the enum
-    |BeginMainFrameReason|, with all the reasons the current BeginMainFrame was
-    triggered.
-  </summary>
-</histogram>
-
-<histogram name="Compositing.BeginMainFrame.BMFReason1.NoUpdate"
-    units="reasons" expires_after="2026-08-30">
-  <owner>thiabaud@google.com</owner>
-  <owner>jonross@chromium.org</owner>
-  <summary>
-    Same as &quot;Compositing.BeginMainFrame.BMFReason1&quot;, but only recorded
-    if the BeginMainFrame finishes with no updates.
-  </summary>
-</histogram>
-
 <histogram name="Compositing.BeginMainFrame.MainResult"
     enum="BeginMainFrameMainResult" expires_after="2026-11-01">
   <owner>lizeb@chromium.org</owner>

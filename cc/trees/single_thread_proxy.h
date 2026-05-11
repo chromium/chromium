@@ -57,7 +57,7 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
   void ReleaseLayerTreeFrameSink() override;
   void SetVisible(bool visible) override;
   void SetShouldWarmUp() override;
-  void SetNeedsAnimate(BeginMainFrameReason, bool urgent) override;
+  void SetNeedsAnimate(bool urgent) override;
   void SetNeedsUpdateLayers() override;
   void SetNeedsCommit() override;
   void SetNeedsRedraw(const gfx::Rect& damage_rect) override;

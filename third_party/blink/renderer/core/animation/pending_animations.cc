@@ -46,10 +46,8 @@ void PendingAnimations::Add(Animation* animation) {
   pending_.push_back(animation);
 
   Document* document = animation->GetDocument();
-  if (document->View()) {
-    document->View()->ScheduleAnimation(
-        cc::BeginMainFrameReason::kCSSAnimation);
-  }
+  if (document->View())
+    document->View()->ScheduleAnimation();
 
   bool visible = document->GetPage() && document->GetPage()->IsPageVisible();
   if (!visible && !timer_.IsActive()) {
