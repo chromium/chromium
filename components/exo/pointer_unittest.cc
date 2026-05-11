@@ -21,6 +21,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/exo/buffer.h"
 #include "components/exo/data_source.h"
@@ -434,7 +435,13 @@ TEST_F(PointerTest, SetCursorTypeOutsideOfSurface) {
   pointer.reset();
 }
 
-TEST_F(PointerTest, SetCursorAndSetCursorType) {
+// TODO(crbug.com/511975946): Fix flaky test.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_SetCursorAndSetCursorType DISABLED_SetCursorAndSetCursorType
+#else
+#define MAYBE_SetCursorAndSetCursorType SetCursorAndSetCursorType
+#endif
+TEST_F(PointerTest, MAYBE_SetCursorAndSetCursorType) {
   auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
   auto* surface = shell_surface->surface_for_testing();
 
