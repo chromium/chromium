@@ -376,7 +376,7 @@ message ContentAttributes {
 }
 
 // The geometry of the content, in the page coordinate system.
-// Next ID: 8
+// Next ID: 9
 // NOTE: If `visual_bounding_box` is empty, i.e., the content is offscreen and
 // it's in an iframe, the `outer_bounding_box` may be incorrect. See crbug.com/384996050
 // for details.
@@ -424,6 +424,9 @@ message Geometry {
     deprecated = true,
     features = { field_presence: EXPLICIT }
   ];
+
+  // The computed CSS position property.
+  CssPosition css_position = 8 [features = { field_presence: EXPLICIT }];
 
   reserved 4, 5;
 }
@@ -782,7 +785,7 @@ message IframeData {
 
 // The data for a frame in the web page. This is the common data structure for
 // both the root frame and embedded iframes.
-// Next ID: 12
+// Next ID: 13
 message FrameData {
   // The security origin of the frame.
   SecurityOrigin security_origin = 1 [features = { field_presence: EXPLICIT }];
@@ -816,6 +819,10 @@ message FrameData {
   // TODO: crbug.com/489841640 - Remove this field once all consumers move to using
   // the field in ActionsResult.
   repeated ScriptToolResult script_tool_results = 11;
+
+  // Positive used line height in CSS px. Needed for scaling-proof
+  // geometry rules (e.g. menu popup heuristics expecting a minimum size).
+  int32 default_line_height_px = 12 [features = { field_presence: EXPLICIT }];
 
   reserved 7, 10;
 }
@@ -2311,6 +2318,19 @@ enum ContentAttributeType {
   CONTENT_ATTRIBUTE_TABLE_CELL = 11;
 
   reserved 12, 13, 14, 15, 16, 17, 18, 19;
+}
+
+// CSS position property values.
+enum CssPosition {
+  CSS_POSITION_STATIC_DEFAULT = 0;
+
+  CSS_POSITION_RELATIVE = 1;
+
+  CSS_POSITION_ABSOLUTE = 2;
+
+  CSS_POSITION_FIXED = 3;
+
+  CSS_POSITION_STICKY = 4;
 }
 
 // The reason why a node is clickable.
