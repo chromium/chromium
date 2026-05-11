@@ -10,10 +10,13 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/heap_bind.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
+// PromiseAll behaves similarly to JS Promise.all() - resolving
+// when all of the given promises have fulfilled, or any rejects.
 template <typename IDLType,
           typename ResolverType =
               std::conditional_t<std::is_same_v<IDLUndefined, IDLType>,
@@ -22,33 +25,75 @@ template <typename IDLType,
 class CORE_EXPORT PromiseAll final
     : public GarbageCollected<PromiseAll<IDLType>> {
  public:
-  // PromiseAll behaves similarly to JS Promise.all() - resolving
-  // when all of the given promises have fulfilled, or any rejects.
-  static ScriptPromise<ResolverType> Create(
+  using VectorType = HeapVector<
+      AddMemberIfNeeded<typename IDLTypeToBlinkImplType<IDLType>::type>>;
+  using ResolveCallbackType =
+      std::conditional_t<std::is_same_v<IDLUndefined, IDLType>,
+                         void(),
+                         void(VectorType)>;
+
+  // https://webidl.spec.whatwg.org/#waiting-for-all-promise
+  static ScriptPromise<ResolverType> GetPromiseForWaitingForAll(
       ScriptState* script_state,
       const HeapVector<MemberScriptPromise<IDLType>>& promises) {
-    if (promises.empty()) {
-      if constexpr (std::is_same_v<IDLUndefined, IDLType>) {
-        return ToResolvedUndefinedPromise(script_state);
-      } else {
-        return ToResolvedPromise<ResolverType>(script_state, VectorType());
-      }
-    }
     auto* resolver =
         MakeGarbageCollected<ScriptPromiseResolver<ResolverType>>(script_state);
-    MakeGarbageCollected<PromiseAll<IDLType>>(script_state, promises, resolver);
+
+    // `promises` might be out of control and GCed without resolving. Therefore,
+    // resolver needs to suppress the detach check.
+    resolver->SuppressDetachCheck();
+
+    bindings::HeapCallback<ResolveCallbackType> resolve_callback;
+    if constexpr (std::is_same_v<IDLUndefined, IDLType>) {
+      resolve_callback = bindings::HeapBind(
+          [](ScriptPromiseResolver<IDLUndefined>* resolver) {
+            resolver->Resolve();
+          },
+          resolver);
+    } else {
+      resolve_callback = bindings::HeapBind(
+          [](ScriptPromiseResolver<ResolverType>* resolver, VectorType values) {
+            resolver->Resolve(std::move(values));
+          },
+          resolver);
+    }
+
+    bindings::HeapCallback<void(ScriptValue)> reject_callback =
+        bindings::HeapBind([](ScriptPromiseResolver<ResolverType>* resolver,
+                              ScriptValue value) { resolver->Reject(value); },
+                           resolver);
+
+    WaitForAll(script_state, promises, std::move(resolve_callback),
+               std::move(reject_callback));
     return resolver->Promise();
+  }
+
+  // https://webidl.spec.whatwg.org/#wait-for-all
+  static void WaitForAll(
+      ScriptState* script_state,
+      const HeapVector<MemberScriptPromise<IDLType>>& promises,
+      bindings::HeapCallback<ResolveCallbackType> resolve_callback,
+      bindings::HeapCallback<void(ScriptValue)> reject_callback) {
+    MakeGarbageCollected<PromiseAll<IDLType>>(script_state, promises,
+                                              std::move(resolve_callback),
+                                              std::move(reject_callback));
   }
 
   PromiseAll(ScriptState* script_state,
              const HeapVector<MemberScriptPromise<IDLType>>& promises,
-             ScriptPromiseResolver<ResolverType>* resolver)
+             bindings::HeapCallback<ResolveCallbackType> resolve_callback,
+             bindings::HeapCallback<void(ScriptValue)> reject_callback)
       : number_of_pending_promises_(promises.size()),
         values_(promises.size()),
-        resolver_(resolver) {
-    // `promises` might be out of control and GCed without resolving. Therefore,
-    // resolver_ needs to suppress the detach check.
-    resolver_->SuppressDetachCheck();
+        resolve_callback_(std::move((resolve_callback))),
+        reject_callback_(std::move((reject_callback))) {
+    if (promises.empty()) {
+      ToEventLoop(script_state)
+          .EnqueueMicrotask(
+              BindOnce(&PromiseAll::RunResolveCallback, WrapPersistent(this)));
+      return;
+    }
+
     for (wtf_size_t i = 0; i < number_of_pending_promises_; ++i) {
       promises[i].Unwrap().Then(script_state,
                                 MakeGarbageCollected<Resolve>(i, this),
@@ -57,8 +102,9 @@ class CORE_EXPORT PromiseAll final
   }
 
   void Trace(Visitor* visitor) const {
-    visitor->Trace(resolver_);
     visitor->Trace(values_);
+    visitor->Trace(resolve_callback_);
+    visitor->Trace(reject_callback_);
   }
 
  private:
@@ -66,8 +112,6 @@ class CORE_EXPORT PromiseAll final
       std::conditional_t<IsGarbageCollectedTypeV<IDLType>,
                          std::add_pointer_t<IDLType>,
                          typename IDLTypeToBlinkImplType<IDLType>::type>;
-  using VectorType = HeapVector<
-      AddMemberIfNeeded<typename IDLTypeToBlinkImplType<IDLType>::type>>;
 
   class Resolve final : public ThenCallable<IDLType, Resolve> {
    public:
@@ -121,8 +165,7 @@ class CORE_EXPORT PromiseAll final
     if (--number_of_pending_promises_ > 0) {
       return;
     }
-    is_settled_ = true;
-    resolver_->Resolve();
+    RunResolveCallback();
   }
 
   template <typename T = IDLType>
@@ -136,9 +179,17 @@ class CORE_EXPORT PromiseAll final
     if (--number_of_pending_promises_ > 0) {
       return;
     }
+    RunResolveCallback();
+  }
+
+  void RunResolveCallback() {
+    DCHECK_EQ(number_of_pending_promises_, 0u);
     is_settled_ = true;
-    resolver_->Resolve(values_);
-    values_.clear();
+    if constexpr (std::is_same_v<IDLUndefined, IDLType>) {
+      std::move(resolve_callback_).Run();
+    } else {
+      std::move(resolve_callback_).Run(std::move(values_));
+    }
   }
 
   void OnRejected(const ScriptValue& value) {
@@ -146,13 +197,14 @@ class CORE_EXPORT PromiseAll final
       return;
     }
     is_settled_ = true;
-    resolver_->Reject(value);
+    std::move(reject_callback_).Run(value);
   }
 
   wtf_size_t number_of_pending_promises_;
   bool is_settled_ = false;
   VectorType values_;
-  Member<ScriptPromiseResolver<ResolverType>> resolver_;
+  bindings::HeapCallback<ResolveCallbackType> resolve_callback_;
+  bindings::HeapCallback<void(ScriptValue)> reject_callback_;
 };
 
 }  // namespace blink

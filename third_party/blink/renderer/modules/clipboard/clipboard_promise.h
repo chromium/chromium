@@ -123,7 +123,7 @@ class MODULES_EXPORT ClipboardPromise final
   class ClipboardItemDataPromiseFulfill;
   class ClipboardItemDataPromiseReject;
   void HandlePromiseWrite(
-      GCedHeapVector<Member<V8UnionBlobOrString>>* clipboard_item_list);
+      HeapVector<Member<V8UnionBlobOrString>> clipboard_item_list);
   void WriteClipboardItemData(
       GCedHeapVector<Member<V8UnionBlobOrString>>* clipboard_item_list);
 

@@ -916,8 +916,8 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
           script_state, try_catch.Exception());
     }
 
-    return PromiseAll<IDLUndefined>::Create(script_state,
-                                            {cancel_promise1, cancel_promise2});
+    return PromiseAll<IDLUndefined>::GetPromiseForWaitingForAll(
+        script_state, {cancel_promise1, cancel_promise2});
   }
 
   void Trace(Visitor* visitor) const override {

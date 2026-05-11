@@ -123,9 +123,7 @@ class NavigateEvent final : public Event,
   void PotentiallyProcessScrollBehavior();
   void ProcessScrollBehavior();
 
-  class FulfillReaction;
-  class RejectReaction;
-  void ReactDone(ScriptState*, ScriptValue, bool did_fulfill);
+  void ReactDone(ScriptState*, bool did_fulfill, ScriptValue);
 
   void DelayedLoadStartTimerFired();
 

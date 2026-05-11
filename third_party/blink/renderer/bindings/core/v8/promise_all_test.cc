@@ -67,7 +67,60 @@ struct Reject final : public ThenCallable<IDLAny, Reject> {
   ScriptValue rejected_value;
 };
 
-TEST(PromiseAllTest, ResolveUndefined) {
+template <typename IDLType>
+class WaitForAllResult : public GarbageCollected<WaitForAllResult<IDLType>> {
+ public:
+  using VectorType = HeapVector<
+      AddMemberIfNeeded<typename IDLTypeToBlinkImplType<IDLType>::type>>;
+  WaitForAllResult() = default;
+
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(resolve_value);
+    visitor->Trace(reject_value);
+  }
+
+  void OnResolveUndefined() { resolved = true; }
+
+  void OnResolve(VectorType resolve) {
+    resolved = true;
+    resolve_value = std::move(resolve);
+  }
+
+  void OnReject(ScriptValue value) {
+    rejected = true;
+    reject_value = value;
+  }
+
+  static WaitForAllResult<IDLType>* WaitFor(
+      ScriptState* script_state,
+      const HeapVector<MemberScriptPromise<IDLType>>& promises) {
+    WaitForAllResult<IDLType>* wait_for_all_result =
+        MakeGarbageCollected<WaitForAllResult<IDLType>>();
+    if constexpr (std::is_same_v<IDLType, IDLUndefined>) {
+      PromiseAll<IDLType>::WaitForAll(
+          script_state, promises,
+          bindings::HeapBind(&WaitForAllResult<IDLType>::OnResolveUndefined,
+                             wait_for_all_result),
+          bindings::HeapBind(&WaitForAllResult<IDLType>::OnReject,
+                             wait_for_all_result));
+    } else {
+      PromiseAll<IDLType>::WaitForAll(
+          script_state, promises,
+          bindings::HeapBind(&WaitForAllResult<IDLType>::OnResolve,
+                             wait_for_all_result),
+          bindings::HeapBind(&WaitForAllResult<IDLType>::OnReject,
+                             wait_for_all_result));
+    }
+    return wait_for_all_result;
+  }
+
+  bool resolved = false;
+  bool rejected = false;
+  VectorType resolve_value;
+  ScriptValue reject_value;
+};
+
+TEST(PromiseAllTest, PromiseResolveUndefined) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
@@ -76,7 +129,8 @@ TEST(PromiseAllTest, ResolveUndefined) {
   promises.push_back(ToResolvedUndefinedPromise(script_state));
   promises.push_back(ToResolvedUndefinedPromise(script_state));
 
-  auto promise = PromiseAll<IDLUndefined>::Create(script_state, promises);
+  auto promise = PromiseAll<IDLUndefined>::GetPromiseForWaitingForAll(
+      script_state, promises);
   ASSERT_FALSE(promise.IsEmpty());
 
   auto* resolve = MakeGarbageCollected<ResolveUndefined>();
@@ -92,7 +146,7 @@ TEST(PromiseAllTest, ResolveUndefined) {
   EXPECT_FALSE(reject->react_called);
 }
 
-TEST(PromiseAllTest, ResolveStrings) {
+TEST(PromiseAllTest, PromiseResolveStrings) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
@@ -102,7 +156,8 @@ TEST(PromiseAllTest, ResolveStrings) {
   promises.push_back(ToResolvedPromise<IDLString>(script_state, "second"));
   promises.push_back(ToResolvedPromise<IDLString>(script_state, "third"));
 
-  auto promise = PromiseAll<IDLString>::Create(script_state, promises);
+  auto promise =
+      PromiseAll<IDLString>::GetPromiseForWaitingForAll(script_state, promises);
   ASSERT_FALSE(promise.IsEmpty());
 
   auto* resolve = MakeGarbageCollected<ResolveStrings>();
@@ -116,12 +171,11 @@ TEST(PromiseAllTest, ResolveStrings) {
 
   EXPECT_TRUE(resolve->react_called);
   EXPECT_FALSE(reject->react_called);
-  EXPECT_EQ(resolve->resolve_strings[0], "first");
-  EXPECT_EQ(resolve->resolve_strings[1], "second");
-  EXPECT_EQ(resolve->resolve_strings[2], "third");
+  EXPECT_THAT(resolve->resolve_strings,
+              testing::ElementsAre("first", "second", "third"));
 }
 
-TEST(PromiseAllTest, Reject) {
+TEST(PromiseAllTest, PromiseReject) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
@@ -131,7 +185,8 @@ TEST(PromiseAllTest, Reject) {
   promises.push_back(ScriptPromise<IDLUndefined>::Reject(
       script_state, V8String(scope.GetIsolate(), "world")));
 
-  auto promise = PromiseAll<IDLUndefined>::Create(script_state, promises);
+  auto promise = PromiseAll<IDLUndefined>::GetPromiseForWaitingForAll(
+      script_state, promises);
   ASSERT_FALSE(promise.IsEmpty());
 
   auto* resolve = MakeGarbageCollected<ResolveUndefined>();
@@ -150,7 +205,7 @@ TEST(PromiseAllTest, Reject) {
   EXPECT_EQ("world", ToString(scope.GetContext(), reject->rejected_value));
 }
 
-TEST(PromiseAllTest, RejectTypeMismatch) {
+TEST(PromiseAllTest, PromiseRejectTypeMismatch) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
@@ -160,7 +215,8 @@ TEST(PromiseAllTest, RejectTypeMismatch) {
       script_state,
       ToV8Traits<LocalDOMWindow>::ToV8(script_state, &scope.GetWindow())));
 
-  auto promise = PromiseAll<Document>::Create(script_state, promises);
+  auto promise =
+      PromiseAll<Document>::GetPromiseForWaitingForAll(script_state, promises);
   ASSERT_FALSE(promise.IsEmpty());
 
   auto* resolve = MakeGarbageCollected<ResolveDocuments>();
@@ -178,6 +234,102 @@ TEST(PromiseAllTest, RejectTypeMismatch) {
   EXPECT_FALSE(reject->rejected_value.IsEmpty());
   EXPECT_EQ("TypeError: Failed to convert value to 'Document'.",
             ToString(scope.GetContext(), reject->rejected_value));
+}
+
+TEST(PromiseAllTest, WaitForAllResolveUndefined) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  ScriptState* script_state = scope.GetScriptState();
+
+  HeapVector<MemberScriptPromise<IDLUndefined>> promises;
+  promises.push_back(ToResolvedUndefinedPromise(script_state));
+  promises.push_back(ToResolvedUndefinedPromise(script_state));
+
+  auto* wait_for_all_result =
+      WaitForAllResult<IDLUndefined>::WaitFor(script_state, promises);
+
+  EXPECT_FALSE(wait_for_all_result->resolved);
+  EXPECT_FALSE(wait_for_all_result->rejected);
+
+  scope.PerformMicrotaskCheckpoint();
+
+  EXPECT_TRUE(wait_for_all_result->resolved);
+  EXPECT_FALSE(wait_for_all_result->rejected);
+}
+
+TEST(PromiseAllTest, WaitForAllResolveStrings) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  ScriptState* script_state = scope.GetScriptState();
+
+  HeapVector<MemberScriptPromise<IDLString>> promises;
+  promises.push_back(ToResolvedPromise<IDLString>(script_state, "first"));
+  promises.push_back(ToResolvedPromise<IDLString>(script_state, "second"));
+  promises.push_back(ToResolvedPromise<IDLString>(script_state, "third"));
+
+  auto* wait_for_all_result =
+      WaitForAllResult<IDLString>::WaitFor(script_state, promises);
+
+  EXPECT_FALSE(wait_for_all_result->resolved);
+  EXPECT_FALSE(wait_for_all_result->rejected);
+
+  scope.PerformMicrotaskCheckpoint();
+
+  EXPECT_TRUE(wait_for_all_result->resolved);
+  EXPECT_FALSE(wait_for_all_result->rejected);
+  EXPECT_THAT(wait_for_all_result->resolve_value,
+              testing::ElementsAre("first", "second", "third"));
+}
+
+TEST(PromiseAllTest, WaitForAllReject) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  ScriptState* script_state = scope.GetScriptState();
+
+  HeapVector<MemberScriptPromise<IDLUndefined>> promises;
+  promises.push_back(ToResolvedUndefinedPromise(script_state));
+  promises.push_back(ScriptPromise<IDLUndefined>::Reject(
+      script_state, V8String(scope.GetIsolate(), "world")));
+
+  auto* wait_for_all_result =
+      WaitForAllResult<IDLUndefined>::WaitFor(script_state, promises);
+
+  EXPECT_FALSE(wait_for_all_result->resolved);
+  EXPECT_FALSE(wait_for_all_result->rejected);
+
+  scope.PerformMicrotaskCheckpoint();
+
+  EXPECT_FALSE(wait_for_all_result->resolved);
+  EXPECT_TRUE(wait_for_all_result->rejected);
+
+  EXPECT_FALSE(wait_for_all_result->reject_value.IsEmpty());
+  EXPECT_EQ("world",
+            ToString(scope.GetContext(), wait_for_all_result->reject_value));
+}
+
+TEST(PromiseAllTest, WaitForAllRejectTypeMismatch) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  ScriptState* script_state = scope.GetScriptState();
+
+  HeapVector<MemberScriptPromise<Document>> promises;
+  promises.push_back(ScriptPromise<Document>::FromV8Value(
+      script_state,
+      ToV8Traits<LocalDOMWindow>::ToV8(script_state, &scope.GetWindow())));
+
+  auto* wait_for_all_result =
+      WaitForAllResult<Document>::WaitFor(script_state, promises);
+  EXPECT_FALSE(wait_for_all_result->resolved);
+  EXPECT_FALSE(wait_for_all_result->rejected);
+
+  scope.PerformMicrotaskCheckpoint();
+
+  EXPECT_FALSE(wait_for_all_result->resolved);
+  EXPECT_TRUE(wait_for_all_result->rejected);
+
+  EXPECT_FALSE(wait_for_all_result->reject_value.IsEmpty());
+  EXPECT_EQ("TypeError: Failed to convert value to 'Document'.",
+            ToString(scope.GetContext(), wait_for_all_result->reject_value));
 }
 
 }  // namespace

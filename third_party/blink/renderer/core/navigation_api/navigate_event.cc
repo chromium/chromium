@@ -72,51 +72,6 @@ TaskAttributionTopLevelOverrideScope::Type GetTaskAttributionScopeType(
 }
 }  // namespace
 
-enum class HandlerPhase { kPrecommit, kPostcommit };
-
-class NavigateEvent::FulfillReaction final
-    : public ThenCallable<IDLUndefined, FulfillReaction> {
- public:
-  FulfillReaction(NavigateEvent* navigate_event, HandlerPhase type)
-      : navigate_event_(navigate_event), type_(type) {}
-  void Trace(Visitor* visitor) const final {
-    ThenCallable<IDLUndefined, FulfillReaction>::Trace(visitor);
-    visitor->Trace(navigate_event_);
-  }
-  void React(ScriptState* script_state) {
-    switch (type_) {
-      case HandlerPhase::kPrecommit:
-        navigate_event_->CommitNow();
-        break;
-      case HandlerPhase::kPostcommit:
-        navigate_event_->ReactDone(script_state, ScriptValue(),
-                                   /*did_fulfill=*/true);
-        break;
-    }
-  }
-
- private:
-  Member<NavigateEvent> navigate_event_;
-  HandlerPhase type_;
-};
-
-class NavigateEvent::RejectReaction final
-    : public ThenCallable<IDLAny, RejectReaction> {
- public:
-  explicit RejectReaction(NavigateEvent* navigate_event)
-      : navigate_event_(navigate_event) {}
-  void Trace(Visitor* visitor) const final {
-    ThenCallable<IDLAny, RejectReaction>::Trace(visitor);
-    visitor->Trace(navigate_event_);
-  }
-  void React(ScriptState* script_state, ScriptValue value) {
-    navigate_event_->ReactDone(script_state, value, /*did_fulfill=*/false);
-  }
-
- private:
-  Member<NavigateEvent> navigate_event_;
-};
-
 NavigateEvent::NavigateEvent(ExecutionContext* context,
                              const AtomicString& type,
                              NavigateEventInit* init,
@@ -278,30 +233,6 @@ void NavigateEvent::deferPageSwap(NavigationDeferPageSwapOptions* options,
   deferred_commit_handler_list_.push_back(options->handler());
 }
 
-namespace {
-
-template <typename T>
-class DeferReaction final : public ThenCallable<T, DeferReaction<T>> {
- public:
-  explicit DeferReaction(NavigateEvent* navigate_event)
-      : navigate_event_(navigate_event) {}
-  void Trace(Visitor* visitor) const final {
-    ThenCallable<T, DeferReaction>::Trace(visitor);
-    visitor->Trace(navigate_event_);
-  }
-  void React(ScriptState*, ScriptValue) {
-    navigate_event_->ResumeDeferredCommit();
-  }
-  void React(ScriptState*, const HeapVector<ScriptValue>&) {
-    navigate_event_->ResumeDeferredCommit();
-  }
-
- private:
-  Member<NavigateEvent> navigate_event_;
-};
-
-}  // namespace
-
 void NavigateEvent::MaybeDeferCrossDocumentCommit(
     ScriptState* script_state,
     NavigateEventDispatchParams* params) {
@@ -327,10 +258,18 @@ void NavigateEvent::MaybeDeferCrossDocumentCommit(
     }
   }
 
-  PromiseAll<IDLAny>::Create(script_state, defer_promise_list)
-      .Then(script_state,
-            MakeGarbageCollected<DeferReaction<IDLSequence<IDLAny>>>(this),
-            MakeGarbageCollected<DeferReaction<IDLAny>>(this));
+  PromiseAll<IDLAny>::WaitForAll(
+      script_state, defer_promise_list,
+      bindings::HeapBind(
+          [](NavigateEvent* navigate_event, HeapVector<ScriptValue>) {
+            navigate_event->ResumeDeferredCommit();
+          },
+          this),
+      bindings::HeapBind(
+          [](NavigateEvent* navigate_event, ScriptValue) {
+            navigate_event->ResumeDeferredCommit();
+          },
+          this));
 }
 
 void NavigateEvent::Redirect(const String& url_string,
@@ -476,11 +415,11 @@ void NavigateEvent::MaybeCommitImmediately(ScriptState* script_state) {
     }
   }
 
-  PromiseAll<IDLUndefined>::Create(script_state, precommit_promises_list)
-      .Then(
-          script_state,
-          MakeGarbageCollected<FulfillReaction>(this, HandlerPhase::kPrecommit),
-          MakeGarbageCollected<RejectReaction>(this));
+  PromiseAll<IDLUndefined>::WaitForAll(
+      script_state, precommit_promises_list,
+      bindings::HeapBind(&NavigateEvent::CommitNow, this),
+      bindings::HeapBind(&NavigateEvent::ReactDone, this,
+                         WrapPersistent(script_state), /*did_fulfill=*/false));
 }
 
 void NavigateEvent::CommitNow() {
@@ -525,26 +464,16 @@ void NavigateEvent::CommitNow() {
 
 void NavigateEvent::React(ScriptState* script_state) {
   CHECK(navigation_action_handlers_list_.empty());
-
-  if (navigation_action_promises_list_.empty()) {
-    // There is a subtle timing difference between the fast-path for zero
-    // promises and the path for 1+ promises, in both spec and implementation.
-    // In most uses of Promise.all() / the Web IDL spec's "wait for
-    // all", this does not matter. However for us there are so many events and
-    // promise handlers firing around the same time (navigatesuccess, committed
-    // promise, finished promise, ...) that the difference is pretty easily
-    // observable by web developers and web platform tests. So, let's make sure
-    // we always go down the 1+ promises path.
-    navigation_action_promises_list_.push_back(
-        ToResolvedUndefinedPromise(script_state));
-  }
-
-  auto promise = PromiseAll<IDLUndefined>::Create(
-      script_state, navigation_action_promises_list_);
-  promise.Then(
-      script_state,
-      MakeGarbageCollected<FulfillReaction>(this, HandlerPhase::kPostcommit),
-      MakeGarbageCollected<RejectReaction>(this));
+  PromiseAll<IDLUndefined>::WaitForAll(
+      script_state, navigation_action_promises_list_,
+      bindings::HeapBind(
+          [](NavigateEvent* navigate_event, ScriptState* script_state) {
+            navigate_event->ReactDone(script_state, /*did_fulfill=*/true,
+                                      ScriptValue());
+          },
+          this, script_state),
+      bindings::HeapBind(&NavigateEvent::ReactDone, this, script_state,
+                         /*did_fulfill=*/false));
 
   if (HasNavigationActions() && DomWindow()) {
     if (AXObjectCache* cache =
@@ -564,8 +493,8 @@ void NavigateEvent::ResumeDeferredCommit() {
 }
 
 void NavigateEvent::ReactDone(ScriptState* script_state,
-                              ScriptValue value,
-                              bool did_fulfill) {
+                              bool did_fulfill,
+                              ScriptValue value) {
   CHECK_NE(intercept_state_, InterceptState::kFinished);
 
   LocalDOMWindow* window = DomWindow();

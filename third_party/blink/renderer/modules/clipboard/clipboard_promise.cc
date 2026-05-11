@@ -58,52 +58,6 @@ namespace blink {
 
 using mojom::blink::PermissionService;
 
-// This class deals with all the clipboard item promises and executes the write
-// operation after all the promises have been resolved.
-class ClipboardPromise::ClipboardItemDataPromiseFulfill final
-    : public ThenCallable<IDLSequence<V8UnionBlobOrString>,
-                          ClipboardItemDataPromiseFulfill> {
- public:
-  explicit ClipboardItemDataPromiseFulfill(ClipboardPromise* clipboard_promise)
-      : clipboard_promise_(clipboard_promise) {}
-
-  void Trace(Visitor* visitor) const final {
-    ThenCallable<IDLSequence<V8UnionBlobOrString>,
-                 ClipboardItemDataPromiseFulfill>::Trace(visitor);
-    visitor->Trace(clipboard_promise_);
-  }
-
-  void React(ScriptState* script_state,
-             HeapVector<Member<V8UnionBlobOrString>> clipboard_item_list) {
-    auto* list_copy =
-        MakeGarbageCollected<GCedHeapVector<Member<V8UnionBlobOrString>>>(
-            std::move(clipboard_item_list));
-    clipboard_promise_->HandlePromiseWrite(list_copy);
-  }
-
- private:
-  Member<ClipboardPromise> clipboard_promise_;
-};
-
-class ClipboardPromise::ClipboardItemDataPromiseReject final
-    : public ThenCallable<IDLAny, ClipboardItemDataPromiseReject> {
- public:
-  explicit ClipboardItemDataPromiseReject(ClipboardPromise* clipboard_promise)
-      : clipboard_promise_(clipboard_promise) {}
-
-  void Trace(Visitor* visitor) const final {
-    ThenCallable<IDLAny, ClipboardItemDataPromiseReject>::Trace(visitor);
-    visitor->Trace(clipboard_promise_);
-  }
-
-  void React(ScriptState* script_state, ScriptValue exception) {
-    clipboard_promise_->RejectClipboardItemPromise(exception);
-  }
-
- private:
-  Member<ClipboardPromise> clipboard_promise_;
-};
-
 // static
 ScriptPromise<IDLSequence<ClipboardItem>> ClipboardPromise::CreateForRead(
     ExecutionContext* context,
@@ -555,13 +509,15 @@ void ClipboardPromise::OnPlatformPermissionResultForRead(
 #endif
 
 void ClipboardPromise::HandlePromiseWrite(
-    GCedHeapVector<Member<V8UnionBlobOrString>>* clipboard_item_list) {
+    HeapVector<Member<V8UnionBlobOrString>> clipboard_item_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  auto* list_copy =
+      MakeGarbageCollected<GCedHeapVector<Member<V8UnionBlobOrString>>>(
+          std::move(clipboard_item_list));
   GetClipboardTaskRunner()->PostTask(
-      FROM_HERE,
-      BindOnce(&ClipboardPromise::WriteClipboardItemData, WrapPersistent(this),
-               WrapPersistent(clipboard_item_list)));
+      FROM_HERE, BindOnce(&ClipboardPromise::WriteClipboardItemData,
+                          WrapPersistent(this), WrapPersistent(list_copy)));
 }
 
 void ClipboardPromise::WriteClipboardItemData(
@@ -637,10 +593,10 @@ void ClipboardPromise::HandleWriteWithPermission(
   }
   ScriptState* script_state = GetScriptState();
   ScriptState::Scope scope(script_state);
-  PromiseAll<V8UnionBlobOrString>::Create(script_state, promise_list)
-      .Then(script_state,
-            MakeGarbageCollected<ClipboardItemDataPromiseFulfill>(this),
-            MakeGarbageCollected<ClipboardItemDataPromiseReject>(this));
+  PromiseAll<V8UnionBlobOrString>::WaitForAll(
+      script_state, promise_list,
+      bindings::HeapBind(&ClipboardPromise::HandlePromiseWrite, this),
+      bindings::HeapBind(&ClipboardPromise::RejectClipboardItemPromise, this));
 }
 
 void ClipboardPromise::HandleWriteTextWithPermission(

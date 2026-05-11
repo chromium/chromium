@@ -325,7 +325,8 @@ ScriptPromise<IDLUndefined> PipeToEngine::AbortAlgorithmAction() {
     actions.push_back(ReadableStream::Cancel(script_state_, Readable(), error));
   }
 
-  return PromiseAll<IDLUndefined>::Create(script_state_.Get(), actions);
+  return PromiseAll<IDLUndefined>::GetPromiseForWaitingForAll(
+      script_state_.Get(), actions);
 }
 
 void PipeToEngine::HandleNextEvent() {
