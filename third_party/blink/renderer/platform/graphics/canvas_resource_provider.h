@@ -60,7 +60,6 @@ class CanvasRenderingContext2D;
 class CanvasResource;
 class CanvasResourceSharedImage;
 class Canvas2DResourceProviderBitmap;
-class CanvasResourceProviderSharedImage;
 class CanvasNon2DResourceProviderSharedImage;
 class Canvas2DResourceProviderSharedImage;
 class MemoryManagedPaintCanvas;
@@ -197,6 +196,9 @@ class PLATFORM_EXPORT CanvasResourceProvider
   bool IsPrinting() { return delegate_ && delegate_->IsPrinting(); }
 
   static void NotifyWillTransfer(cc::PaintImage::ContentId content_id);
+
+  constexpr static base::TimeDelta kUnusedResourceExpirationTime =
+      base::Seconds(5);
 
   void AlwaysEnableRasterTimersForTesting(bool value) {
     always_enable_raster_timers_for_testing_ = value;
@@ -377,65 +379,12 @@ class PLATFORM_EXPORT Canvas2DResourceProviderBitmap
   sk_sp<SkSurface> CreateSkSurface() const override;
 };
 
-// * Renders to a SharedImage, which manages memory internally.
-// * Layers may be overlay candidates.
-class PLATFORM_EXPORT CanvasResourceProviderSharedImage
-    : public CanvasResourceProvider,
-      public CanvasResourceSharedImage::Client,
-      public FlushForImageObserver {
- public:
-  CanvasResourceProviderSharedImage(
-      gfx::Size,
-      viz::SharedImageFormat,
-      SkAlphaType,
-      const gfx::ColorSpace&,
-      Delegate*);
-  CanvasResourceProviderSharedImage(gfx::Size,
-                                    viz::SharedImageFormat,
-                                    SkAlphaType,
-                                    const gfx::ColorSpace&,
-                                    WebGraphicsSharedImageInterfaceProvider*,
-                                    Delegate*);
-  ~CanvasResourceProviderSharedImage() override;
-
-  virtual void ClearUnusedResources() = 0;
-
-  constexpr static base::TimeDelta kUnusedResourceExpirationTime =
-      base::Seconds(5);
-
-  bool IsAccelerated() const override = 0;
-  virtual bool IsSoftware() const = 0;
-
-  void OnFlushForImage(cc::PaintImage::ContentId content_id) override = 0;
-
-  // Indicates that the compositing path is single buffered, meaning that
-  // ProduceCanvasResource() return a reference to the same resource each time,
-  // which implies that Producing an animation frame may overwrite the resource
-  // used by the previous frame. This results in graphics updates skipping the
-  // queue, thus reducing latency, but with the possible side effects of tearing
-  // (in cases where the resource is scanned out directly) and irregular frame
-  // rate.
-  virtual bool IsSingleBuffered() const = 0;
-
- protected:
-  virtual base::WeakPtr<WebGraphicsContext3DProviderWrapper>
-  ContextProviderWrapper() const = 0;
-  virtual void EnsureWriteAccess() = 0;
-  virtual void EndWriteAccess() = 0;
-
-  virtual scoped_refptr<CanvasResourceSharedImage> NewOrRecycledResource() = 0;
-
-  // The maximum number of in-flight resources waiting to be used for
-  // recycling.
-  static constexpr int kMaxRecycledCanvasResources = 3;
-
- private:
-};
-
-// * Subclass of CanvasResourceProviderSharedImage that is specialized for usage
+// * Subclass of CanvasResourceProvider that is specialized for usage
 // * by Canvas2D.
 class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
-    : public CanvasResourceProviderSharedImage,
+    : public CanvasResourceProvider,
+      public CanvasResourceSharedImage::Client,
+      public FlushForImageObserver,
       public WebGraphicsContext3DProviderWrapper::DestructionObserver,
       public viz::ContextLostObserver,
       public BitmapGpuChannelLostObserver {
@@ -484,14 +433,14 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
                                       Delegate*);
   ~Canvas2DResourceProviderSharedImage() override;
 
-  void ClearUnusedResources() override;
+  void ClearUnusedResources();
   gpu::SharedImageUsageSet GetSharedImageUsageFlags() const;
   bool unused_resources_reclaim_timer_is_running_for_testing() const;
   bool HasUnusedResourcesForTesting() const;
-  bool IsSingleBuffered() const override;
+  bool IsSingleBuffered() const;
 
   bool IsAccelerated() const override { return is_accelerated_; }
-  bool IsSoftware() const override { return is_software_; }
+  bool IsSoftware() const { return is_software_; }
   bool IsGpuContextLost() const override;
 
   // WebGraphicsContext3DProviderWrapper::DestructionObserver implementation.
@@ -505,10 +454,10 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
 
   virtual scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason);
 
-  void EnsureWriteAccess() override;
-  void EndWriteAccess() override;
+  void EnsureWriteAccess();
+  void EndWriteAccess();
 
-  scoped_refptr<CanvasResourceSharedImage> NewOrRecycledResource() override;
+  scoped_refptr<CanvasResourceSharedImage> NewOrRecycledResource();
 
   // CanvasResourceProvider:
   void OnFlushForImage(cc::PaintImage::ContentId content_id) override;
@@ -540,7 +489,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
 
  private:
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()
-      const override {
+      const {
     return context_provider_wrapper_;
   }
 
@@ -568,6 +517,10 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
 
   static void NotifyGpuContextLostTask(
       base::WeakPtr<Canvas2DResourceProviderSharedImage>);
+
+  // The maximum number of in-flight resources waiting to be used for
+  // recycling.
+  static constexpr int kMaxRecycledCanvasResources = 3;
 
   CanvasResourceSharedImage* resource() {
     return static_cast<CanvasResourceSharedImage*>(resource_.get());
@@ -612,10 +565,12 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
       this};
 };
 
-// * Subclass of CanvasResourceProviderSharedImage that is specialized for usage
+// * Subclass of CanvasResourceProvider that is specialized for usage
 // * by non-Canvas2D clients.
 class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
-    : public CanvasResourceProviderSharedImage,
+    : public CanvasResourceProvider,
+      public CanvasResourceSharedImage::Client,
+      public FlushForImageObserver,
       public WebGraphicsContext3DProviderWrapper::DestructionObserver,
       public viz::ContextLostObserver,
       public BitmapGpuChannelLostObserver {
@@ -676,12 +631,12 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
       Delegate*);
   ~CanvasNon2DResourceProviderSharedImage() override;
 
-  void ClearUnusedResources() override;
+  void ClearUnusedResources();
   gpu::SharedImageUsageSet GetSharedImageUsageFlags() const;
-  bool IsSingleBuffered() const override;
+  bool IsSingleBuffered() const;
 
   bool IsAccelerated() const override { return is_accelerated_; }
-  bool IsSoftware() const override { return is_software_; }
+  bool IsSoftware() const { return is_software_; }
   bool IsGpuContextLost() const override;
 
   // WebGraphicsContext3DProviderWrapper::DestructionObserver implementation.
@@ -693,10 +648,10 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   base::ByteSize EstimatedSizeInBytes() const override;
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd) override;
 
-  void EnsureWriteAccess() override;
-  void EndWriteAccess() override;
+  void EnsureWriteAccess();
+  void EndWriteAccess();
 
-  scoped_refptr<CanvasResourceSharedImage> NewOrRecycledResource() override;
+  scoped_refptr<CanvasResourceSharedImage> NewOrRecycledResource();
 
   scoped_refptr<CanvasResource> ProduceCanvasResource();
 
@@ -773,6 +728,10 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   static void NotifyGpuContextLostTask(
       base::WeakPtr<CanvasNon2DResourceProviderSharedImage>);
 
+  // The maximum number of in-flight resources waiting to be used for
+  // recycling.
+  static constexpr int kMaxRecycledCanvasResources = 3;
+
   CanvasResourceSharedImage* resource() {
     return static_cast<CanvasResourceSharedImage*>(resource_.get());
   }
@@ -782,7 +741,7 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
 
  private:
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()
-      const override {
+      const {
     return context_provider_wrapper_;
   }
 

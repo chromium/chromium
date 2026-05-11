@@ -237,36 +237,6 @@ const base::FeatureParam<int> kMaxRecordedOpGraphiteKB(
     "max_recorded_op_graphite_kb",
     6 * 1024);
 
-CanvasResourceProviderSharedImage::CanvasResourceProviderSharedImage(
-    gfx::Size size,
-    viz::SharedImageFormat format,
-    SkAlphaType alpha_type,
-    const gfx::ColorSpace& color_space,
-    Delegate* delegate)
-    : CanvasResourceProvider(kSharedImage,
-                             size,
-                             format,
-                             alpha_type,
-                             color_space,
-                             delegate) {}
-
-CanvasResourceProviderSharedImage::CanvasResourceProviderSharedImage(
-    gfx::Size size,
-    viz::SharedImageFormat format,
-    SkAlphaType alpha_type,
-    const gfx::ColorSpace& color_space,
-    WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
-    Delegate* delegate)
-    : CanvasResourceProvider(kSharedImage,
-                             size,
-                             format,
-                             alpha_type,
-                             color_space,
-                             delegate) {}
-
-CanvasResourceProviderSharedImage::~CanvasResourceProviderSharedImage() =
-    default;
-
 base::WeakPtr<Canvas2DResourceProviderSharedImage>
 Canvas2DResourceProviderSharedImage::CreateWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
@@ -2001,11 +1971,12 @@ Canvas2DResourceProviderSharedImage::Canvas2DResourceProviderSharedImage(
     bool is_accelerated,
     gpu::SharedImageUsageSet shared_image_usage_flags,
     Delegate* delegate)
-    : CanvasResourceProviderSharedImage(size,
-                                        format,
-                                        alpha_type,
-                                        color_space,
-                                        delegate),
+    : CanvasResourceProvider(kSharedImage,
+                             size,
+                             format,
+                             alpha_type,
+                             color_space,
+                             delegate),
       is_accelerated_(is_accelerated),
       is_software_(false),
       context_provider_wrapper_(std::move(context_provider_wrapper)) {
@@ -2098,12 +2069,12 @@ Canvas2DResourceProviderSharedImage::Canvas2DResourceProviderSharedImage(
     const gfx::ColorSpace& color_space,
     WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
     Delegate* delegate)
-    : CanvasResourceProviderSharedImage(size,
-                                        format,
-                                        alpha_type,
-                                        color_space,
-                                        shared_image_interface_provider,
-                                        delegate),
+    : CanvasResourceProvider(kSharedImage,
+                             size,
+                             format,
+                             alpha_type,
+                             color_space,
+                             delegate),
       is_accelerated_(false),
       is_software_(true),
       shared_image_interface_provider_(
@@ -2219,11 +2190,12 @@ CanvasNon2DResourceProviderSharedImage::CanvasNon2DResourceProviderSharedImage(
     bool is_accelerated,
     gpu::SharedImageUsageSet shared_image_usage_flags,
     Delegate* delegate)
-    : CanvasResourceProviderSharedImage(size,
-                                        format,
-                                        alpha_type,
-                                        color_space,
-                                        delegate),
+    : CanvasResourceProvider(kSharedImage,
+                             size,
+                             format,
+                             alpha_type,
+                             color_space,
+                             delegate),
       recorder_for_external_draws_(
           std::make_unique<MemoryManagedPaintRecorder>(Size(),
                                                        /*client=*/nullptr)),
@@ -2315,12 +2287,12 @@ CanvasNon2DResourceProviderSharedImage::CanvasNon2DResourceProviderSharedImage(
     const gfx::ColorSpace& color_space,
     WebGraphicsSharedImageInterfaceProvider* shared_image_interface_provider,
     Delegate* delegate)
-    : CanvasResourceProviderSharedImage(size,
-                                        format,
-                                        alpha_type,
-                                        color_space,
-                                        shared_image_interface_provider,
-                                        delegate),
+    : CanvasResourceProvider(kSharedImage,
+                             size,
+                             format,
+                             alpha_type,
+                             color_space,
+                             delegate),
       recorder_for_external_draws_(
           std::make_unique<MemoryManagedPaintRecorder>(Size(),
                                                        /*client=*/nullptr)),
