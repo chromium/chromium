@@ -197,12 +197,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
         if (disabledSettingsInThirdPartyMode(getProfile())) {
             addDisabledSettingsInfoCard(screen);
         }
-        EntityDataManager entityDataManager = EntityDataManagerFactory.getForProfile(getProfile());
-        if (!disabledSettingsInThirdPartyMode(getProfile())
-                && entityDataManager != null
-                && !entityDataManager.isWalletPublicPassStorageEnabled()
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.AUTOFILL_AI_SHOW_WALLET_DISABLED_BANNER)) {
+        if (shouldShowWalletDataSharingDataCard(getProfile())) {
             addDisabledWalletDataSharingDataCard(screen);
         }
 
@@ -214,6 +209,15 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
         // LINT.ThenChange(:DynamicPreferences)
         mAutofillAiDelegate.addAutofillAiEntities(screen, /* typeFilter= */ null);
         updateDynamicPreferences(getProfile());
+    }
+
+    private static boolean shouldShowWalletDataSharingDataCard(Profile profile) {
+        EntityDataManager entityDataManager = EntityDataManagerFactory.getForProfile(profile);
+        return !disabledSettingsInThirdPartyMode(profile)
+                && entityDataManager != null
+                && !entityDataManager.isWalletPublicPassStorageEnabled()
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.AUTOFILL_AI_SHOW_WALLET_DISABLED_BANNER);
     }
 
     /** Adds an information card if settings are disabled in third-party mode. */
@@ -503,13 +507,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
                     } else {
                         addAddAddressButton(indexData, profile, getPrefFragmentName());
                     }
-                    EntityDataManager entityDataManager =
-                            EntityDataManagerFactory.getForProfile(profile);
-                    if (!disabledSettingsInThirdPartyMode
-                            && entityDataManager != null
-                            && !entityDataManager.isWalletPublicPassStorageEnabled()
-                            && ChromeFeatureList.isEnabled(
-                                    ChromeFeatureList.AUTOFILL_AI_SHOW_WALLET_DISABLED_BANNER)) {
+                    if (shouldShowWalletDataSharingDataCard(profile)) {
                         addDisabledWalletDataSharingDataCard(indexData, getPrefFragmentName());
                     }
                     addAutofillSwitch(indexData);
@@ -547,12 +545,7 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
             indexData.removeEntryForKey(prefFragmentName, DISABLED_SETTINGS_INFO);
         }
 
-        EntityDataManager entityDataManager = EntityDataManagerFactory.getForProfile(profile);
-        if (!disabledSettingsInThirdPartyMode
-                && entityDataManager != null
-                && !entityDataManager.isWalletPublicPassStorageEnabled()
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.AUTOFILL_AI_SHOW_WALLET_DISABLED_BANNER)) {
+        if (shouldShowWalletDataSharingDataCard(profile)) {
             if (indexData.getEntryForKey(prefFragmentName, DISABLED_WALLET_DATA_SHARING) == null) {
                 addDisabledWalletDataSharingDataCard(indexData, prefFragmentName);
             }
