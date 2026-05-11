@@ -171,6 +171,15 @@ UIImage* IconForModel(ComposeboxModelOption option) {
   [self applySnapshot];
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
+
+  __weak __typeof(self) weakSelf = self;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [weakSelf focusFirstMenuItem];
+  });
+}
+
 - (CGSize)preferredContentSize {
   CGSize size = super.preferredContentSize;
   [self.view layoutIfNeeded];
@@ -400,6 +409,22 @@ UIImage* IconForModel(ComposeboxModelOption option) {
 }
 
 #pragma mark - Private
+
+// Focuses the first item in the menu for accessibility.
+- (void)focusFirstMenuItem {
+  if ([_collectionView numberOfItemsInSection:0] > 0) {
+    NSIndexPath* firstIndexPath = [NSIndexPath indexPathForItem:0 inSection:0];
+    UICollectionViewCell* cell =
+        [_collectionView cellForItemAtIndexPath:firstIndexPath];
+    if (cell) {
+      UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
+                                      cell);
+    } else {
+      UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
+                                      _collectionView);
+    }
+  }
+}
 
 - (NSArray<ComposeboxMenuItem*>*)availableAttachmentItems {
   CHECK(_inputState);
