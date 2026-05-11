@@ -10607,6 +10607,10 @@ PseudoElement* Element::CreatePseudoElementIfNeeded(
     return nullptr;
   }
 
+  if (IsTransitionPseudoElement(pseudo_id)) {
+    pseudo_element->RetargetAnimations();
+  }
+
   probe::PseudoElementCreated(pseudo_element);
   return pseudo_element;
 }

@@ -341,6 +341,13 @@ void KeyframeEffect::RefreshTarget() {
   }
 }
 
+void KeyframeEffect::UpdateEffectTarget(PseudoElement* new_effect_target) {
+  DetachTarget(GetAnimation());
+  effect_target_ = new_effect_target;
+  AttachTarget(GetAnimation());
+  InvalidateAndNotifyOwner();
+}
+
 V8CompositeOperation KeyframeEffect::composite() const {
   return V8CompositeOperation(
       EffectModel::CompositeOperationToEnum(CompositeInternal()));

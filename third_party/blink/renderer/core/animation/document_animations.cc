@@ -472,4 +472,45 @@ void DocumentAnimations::AddTriggeredAnimation(CSSAnimation* animation) {
   triggered_animations_.insert(animation);
 }
 
+void DocumentAnimations::RetargetAnimationsForPseudoElement(
+    PseudoElement* new_effect_target) {
+  CHECK(new_effect_target);
+  Element& originating_element =
+      new_effect_target->UltimateOriginatingElement();
+  PseudoId pseudo_id = new_effect_target->GetPseudoId();
+  AtomicString pseudo_argument = new_effect_target->GetPseudoArgument();
+  for (auto& timeline : timelines_) {
+    for (auto& animation : timeline->GetAnimations()) {
+      if (animation->ReplaceStateRemoved()) {
+        continue;
+      }
+      if (!animation->effect() || (!animation->effect()->IsCurrent() &&
+                                   !animation->effect()->IsInEffect())) {
+        continue;
+      }
+      KeyframeEffect* effect = DynamicTo<KeyframeEffect>(animation->effect());
+      if (!effect) {
+        continue;
+      }
+      Element* target = effect->target();
+      if (!target || !target->isConnected()) {
+        continue;
+      }
+      if (*target != originating_element) {
+        continue;
+      }
+      Element* effect_target = effect->EffectTarget();
+      if (effect_target == new_effect_target) {
+        continue;
+      }
+      if (PseudoElement* candidate = DynamicTo<PseudoElement>(effect_target)) {
+        if (candidate->GetPseudoId() == pseudo_id &&
+            candidate->GetPseudoArgument() == pseudo_argument) {
+          effect->UpdateEffectTarget(new_effect_target);
+        }
+      }
+    }
+  }
+}
+
 }  // namespace blink

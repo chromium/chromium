@@ -67,6 +67,8 @@ class CORE_EXPORT DocumentAnimations final
   void GetAnimationsTargetingTreeScope(HeapVector<Member<Animation>>&,
                                        const TreeScope&);
 
+  void RetargetAnimationsForPseudoElement(PseudoElement* new_effect_target);
+
   // Updates existing animations as part of generating a new (document
   // lifecycle) frame. Note that this considers and updates state for
   // both composited and non-composited animations.

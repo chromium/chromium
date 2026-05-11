@@ -28,6 +28,7 @@
 
 #include <utility>
 
+#include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/post_style_update_scope.h"
 #include "third_party/blink/renderer/core/css/resolver/style_adjuster.h"
@@ -844,6 +845,13 @@ bool PseudoElement::IsInertRoot() const {
   // ::picker-icon and its descendants should not be included in the
   // accessibility tree.
   return pseudo_id_ == kPseudoIdPickerIcon;
+}
+
+void PseudoElement::RetargetAnimations() {
+  Element& originating_element = UltimateOriginatingElement();
+  originating_element.GetDocument()
+      .GetDocumentAnimations()
+      .RetargetAnimationsForPseudoElement(this);
 }
 
 }  // namespace blink

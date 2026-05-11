@@ -121,6 +121,8 @@ class CORE_EXPORT PseudoElement : public Element {
 
   bool IsInertRoot() const override;
 
+  void RetargetAnimations();
+
  protected:
   void SetIsGeneratedName(bool generated) { is_generated_name_ = generated; }
 

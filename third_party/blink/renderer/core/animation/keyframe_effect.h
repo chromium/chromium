@@ -153,6 +153,8 @@ class CORE_EXPORT KeyframeEffect final : public AnimationEffect {
   void SetLogicalPropertyResolutionContext(
       WritingDirectionMode writing_direction);
 
+  void UpdateEffectTarget(PseudoElement* new_effect_target);
+
  private:
   EffectModel::CompositeOperation CompositeInternal() const;
 
