@@ -68,11 +68,6 @@ class CORE_EXPORT CookieJar : public GarbageCollected<CookieJar> {
     // it was reused.
     kConnectedOldPipe = 2,
   };
-  using CookiesResponsePtr = network::mojom::blink::CookiesResponsePtr;
-
-  void OnSetCookieResponse(const KURL& cookie_url,
-                           const bool apply_devtools_overrides,
-                           CookiesResponsePtr response);
 
   RequestCookieManagerPipeState RequestRestrictedCookieManagerIfNeeded();
   void OnBackendDisconnect();

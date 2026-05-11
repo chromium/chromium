@@ -189,17 +189,14 @@ void AwProxyingRestrictedCookieManager::SetCookieFromString(
     const net::SiteForCookies& site_for_cookies,
     const url::Origin& top_frame_origin,
     net::StorageAccessApiStatus storage_access_api_status,
-    bool get_version_shared_memory,
     bool is_ad_tagged,
     bool apply_devtools_overrides,
-    const std::string& cookie,
-    SetCookieFromStringCallback callback) {
+    const std::string& cookie) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
   PrivacySetting cookieState = AllowCookies(url, site_for_cookies);
 
   if (cookieState == PrivacySetting::kStateDisallowed) {
-    std::move(callback).Run(/*response=*/nullptr);
     return;
   }
 
@@ -211,17 +208,9 @@ void AwProxyingRestrictedCookieManager::SetCookieFromString(
   if (cookieState == PrivacySetting::kStateAllowed ||
       (parsed_cookie.IsValid() && parsed_cookie.IsPartitioned() &&
        parsed_cookie.IsSecure())) {
-    // When using latched cookie policy, enable shared memory versioning.
-    const bool use_shared_memory =
-        base::FeatureList::IsEnabled(features::kWebViewLatchedCookiePolicy) &&
-        get_version_shared_memory;
-
     underlying_restricted_cookie_manager_->SetCookieFromString(
         url, site_for_cookies, top_frame_origin, storage_access_api_status,
-        use_shared_memory, is_ad_tagged, apply_devtools_overrides, cookie,
-        std::move(callback));
-  } else {
-    std::move(callback).Run(/*response=*/nullptr);
+        is_ad_tagged, apply_devtools_overrides, cookie);
   }
 }
 

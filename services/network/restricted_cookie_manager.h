@@ -157,11 +157,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
       const net::SiteForCookies& site_for_cookies,
       const url::Origin& top_frame_origin,
       net::StorageAccessApiStatus storage_access_api_status,
-      bool get_version_shared_memory,
       bool is_ad_tagged,
       bool apply_devtools_overrides,
-      const std::string& cookie,
-      SetCookieFromStringCallback callback) override;
+      const std::string& cookie) override;
 
   void GetCookiesString(const GURL& url,
                         const net::SiteForCookies& site_for_cookies,
@@ -311,16 +309,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
       bool is_ad_tagged,
       bool apply_devtools_overrides,
       bool force_disable_third_party_cookies) const;
-
-  void GetCookiesAfterSet(const GURL& url,
-                          const net::SiteForCookies& site_for_cookies,
-                          const url::Origin& top_frame_origin,
-                          net::StorageAccessApiStatus storage_access_api_status,
-                          bool is_ad_tagged,
-                          bool apply_devtools_overrides,
-                          SetCookieFromStringCallback callback,
-                          base::ReadOnlySharedMemoryRegion shared_memory_region,
-                          bool succeeded);
 
   void OnCookiesAccessed(network::mojom::CookieAccessDetailsPtr details);
 

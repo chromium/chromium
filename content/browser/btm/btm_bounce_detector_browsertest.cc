@@ -628,15 +628,9 @@ IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
       GetActiveWebContents(), primary_main_frame_final_url));
 
   CloseTab(GetActiveWebContents());
-  std::string access_type =
-      base::FeatureList::IsEnabled(network::features::kGetCookiesOnSet)
-          ? "ReadWrite"
-          : "Write";
   EXPECT_THAT(redirects,
-              ElementsAre(base::StringPrintf(
-                  "[1/1] blank -> a.test/page_with_blank_iframe.html "
-                  "(%s) -> d.test/title1.html",
-                  access_type)));
+              ElementsAre("[1/1] blank -> a.test/page_with_blank_iframe.html "
+                          "(Write) -> d.test/title1.html"));
 }
 
 IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
@@ -775,15 +769,9 @@ IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
       GetActiveWebContents(), primary_main_frame_final_url));
 
   CloseTab(GetActiveWebContents());
-  std::string access_type =
-      base::FeatureList::IsEnabled(network::features::kGetCookiesOnSet)
-          ? "ReadWrite"
-          : "Write";
   EXPECT_THAT(redirects,
-              ElementsAre(base::StringPrintf(
-                  "[1/1] blank -> a.test/page_with_blank_iframe.html "
-                  "(%s) -> d.test/title1.html",
-                  access_type)));
+              ElementsAre("[1/1] blank -> a.test/page_with_blank_iframe.html "
+                          "(Write) -> d.test/title1.html"));
 }
 
 IN_PROC_BROWSER_TEST_F(BtmBounceDetectorBrowserTest,
@@ -1993,11 +1981,6 @@ IN_PROC_BROWSER_TEST_F(BtmWebAuthnBrowserTest,
       "WebAuthnAssertionRequestSucceeded(b.test/title1.html)",
       "DidStartNavigation(d.test/title1.html)",
       "DidFinishNavigation(d.test/title1.html)"};
-  if (base::FeatureList::IsEnabled(network::features::kGetCookiesOnSet)) {
-    expected_log.insert(
-        expected_log.begin() + 5,
-        "OnCookiesAccessed(RenderFrameHost, Read: b.test/title1.html)");
-  }
 
   EXPECT_THAT(logger->log(), testing::ContainerEq(expected_log));
 

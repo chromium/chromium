@@ -505,12 +505,10 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyMetricsObserverBrowserTest,
   observer.Wait();
   NavigateToUntrackedUrl();
 
-  const int expected_reads =
-      base::FeatureList::IsEnabled(network::features::kGetCookiesOnSet) ? 1 : 0;
-  histogram_tester.ExpectUniqueSample(kReadCookieHistogram, expected_reads, 1);
+  histogram_tester.ExpectUniqueSample(kReadCookieHistogram, 0, 1);
   histogram_tester.ExpectBucketCount(
       "Blink.UseCounter.Features",
-      blink::mojom::WebFeature::kThirdPartyCookieRead, expected_reads);
+      blink::mojom::WebFeature::kThirdPartyCookieRead, 0);
   histogram_tester.ExpectBucketCount(
       "Blink.UseCounter.Features",
       blink::mojom::WebFeature::kThirdPartyCookieWrite, 1);

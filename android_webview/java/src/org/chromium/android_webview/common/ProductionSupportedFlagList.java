@@ -984,10 +984,6 @@ public final class ProductionSupportedFlagList {
                     + " preferences via the AndroidX API or manifest metadata supersedes this"
                     + " flag."),
         Flag.baseFeature(
-                BlinkFeatures.ASYNC_SET_COOKIE,
-                "When enabled, the communication between renderer and network service is "
-                        + "asynchronous when setting cookies."),
-        Flag.baseFeature(
                 AwFeatures.WEBVIEW_LATCHED_COOKIE_POLICY,
                 "When enabled, cookie policy settings are captured at RestrictedCookieManager "
                         + "creation time and used throughout its lifetime. This enables shared "
@@ -998,10 +994,6 @@ public final class ProductionSupportedFlagList {
                         + "Network Service opens the database, fixing race conditions that can "
                         + "cause cookie loss when cookies are set before WebView is fully "
                         + "initialized."),
-        Flag.baseFeature(
-                NetworkServiceFeatures.GET_COOKIES_ON_SET,
-                "When enabled, the network service returns all the cookies when setting a new "
-                        + "cookie, so that it can be cached."),
         Flag.baseFeature(
                 NetworkServiceFeatures.INCREASE_COOKIE_ACCESS_CACHE_SIZE,
                 "When enabled, keep more cookies in the cache to be able to skip redundant access"

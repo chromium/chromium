@@ -691,12 +691,6 @@
       status: "stable",
     },
     {
-      // When enabled, perform async IPCs from CookieJar::SetCookie to the
-      // network service.
-      name: "AsyncSetCookie",
-      status: "stable",
-    },
-    {
       name: "AttributionReporting",
       status: "stable",
       base_feature: "none",
