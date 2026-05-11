@@ -51,6 +51,10 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
 // Avoids copying ResourceRequest::TrustedParams when possible.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAvoidTrustedParamsCopies);
 
+// Optimizes mixed content checks by moving InWhichFrameIsContentMixed below
+// fast-exits and caching flag state.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kOptimizeMixedContentChecks);
+
 // Whether async touch moves are sent unthrottled to javascript handlers.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kUnthrottleAsyncTouchMoves);
 

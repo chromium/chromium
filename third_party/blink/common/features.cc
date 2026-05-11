@@ -73,6 +73,9 @@ BASE_FEATURE(kAndroidDesktopUASpoofAsChromeOS,
 // Avoids copying ResourceRequest::TrustedParams when possible.
 BASE_FEATURE(kAvoidTrustedParamsCopies, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, fast-exits the mixed-content checks for secure URLs.
+BASE_FEATURE(kOptimizeMixedContentChecks, base::FEATURE_ENABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kUnthrottleAsyncTouchMoves, base::FEATURE_ENABLED_BY_DEFAULT);
 #else

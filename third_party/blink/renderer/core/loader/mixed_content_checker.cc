@@ -358,6 +358,13 @@ Frame* MixedContentChecker::InWhichFrameIsContentMixed(LocalFrame* frame,
   if (!frame)
     return nullptr;
 
+  // Secure URLs cannot be mixed content.
+  static const bool optimize_enabled =
+      base::FeatureList::IsEnabled(features::kOptimizeMixedContentChecks);
+  if (optimize_enabled && IsUrlPotentiallyTrustworthy(url)) {
+    return nullptr;
+  }
+
   // Check the top frame first.
   Frame& top = frame->Tree().Top();
   MeasureStricterVersionOfIsMixedContent(top, url, frame);
