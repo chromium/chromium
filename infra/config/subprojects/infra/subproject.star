@@ -98,6 +98,11 @@ builders.builder(
             "ios-simulator",
             "ios-simulator-full-configs",
             "android-arm64-rel",
+            # TODO(crbug.com/402190537): Revisit the emulator-based Android CQ
+            # builders after the slowness in CIPD package deployment is fixed
+            "android-desktop-x64-rel",
+            "android-x64-rel",
+            "android-x86-rel",
         ],
         "exclude_suites": [
             "chrome_all_tast_tests",
