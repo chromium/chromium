@@ -20,6 +20,7 @@ class InlineItem;
 class LineInfo;
 class LogicalLineContainer;
 class LogicalLineItems;
+class ShapeResult;
 struct InlineItemResult;
 struct LogicalRubyColumn;
 
@@ -49,7 +50,9 @@ struct AnnotationOverhang {
 // a ruby column.
 //
 // This is used by LineBreaker.
-AnnotationOverhang GetOverhang(const InlineItemResult& item);
+AnnotationOverhang GetOverhang(const InlineItemResult& item,
+                               const LineInfo& line_info,
+                               wtf_size_t ruby_index);
 
 // Returns overhang values of the specified base/annotation lines.
 // These lines should have correct LineStyle.
@@ -58,7 +61,9 @@ AnnotationOverhang GetOverhang(const InlineItemResult& item);
 AnnotationOverhang GetOverhang(
     LayoutUnit ruby_size,
     const LineInfo& base_line,
-    const HeapVector<LineInfo, 1> annotation_line_list);
+    const HeapVector<LineInfo, 1> annotation_line_list,
+    const LineInfo& line_info,
+    wtf_size_t ruby_index);
 
 // Returns true if |start_overhang| is applied to a previous item, and
 // clamp |start_overhang| to the width of the previous item.
@@ -75,6 +80,7 @@ bool CanApplyStartOverhang(const LineInfo& line_info,
 // This function may update a InlineItemResult representing RubyColumn
 // in |line_info|
 LayoutUnit CommitPendingEndOverhang(const InlineItem& text_item,
+                                    const ShapeResult& shape_result,
                                     LineInfo* line_info);
 
 // Justify InlineItemResutls of the specified `line_info`.

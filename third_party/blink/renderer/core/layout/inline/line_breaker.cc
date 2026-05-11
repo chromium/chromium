@@ -1347,7 +1347,7 @@ void LineBreaker::HandleText(const InlineItem& item,
   // difficult to compute overhang after bidi reordering because it affect
   // line breaking.
   if (maybe_have_end_overhang_) {
-    position_ -= CommitPendingEndOverhang(item, line_info);
+    position_ -= CommitPendingEndOverhang(item, shape_result, line_info);
   }
 
   InlineItemResult* item_result = nullptr;
@@ -3331,10 +3331,11 @@ bool LineBreaker::HandleRuby(LineInfo* line_info, LayoutUnit retry_size) {
 
   LayoutUnit ruby_size = MaxLineWidth(base_line_info, annotation_line_list);
   LayoutUnit available = RemainingAvailableWidth().ClampNegativeToZero();
-  AnnotationOverhang overhang =
-      GetOverhang(ruby_size, base_line_info, annotation_line_list);
-  if (!CanApplyStartOverhang(*line_info, line_info->Results().size(),
-                             *current_style_, overhang.start)) {
+  wtf_size_t ruby_index = line_info->Results().size();
+  AnnotationOverhang overhang = GetOverhang(
+      ruby_size, base_line_info, annotation_line_list, *line_info, ruby_index);
+  if (!CanApplyStartOverhang(*line_info, ruby_index, *current_style_,
+                             overhang.start)) {
     overhang.start = LayoutUnit();
   }
   bool is_monolithic = IsMonolithicRuby(base_line_info, annotation_line_list);
@@ -3574,14 +3575,15 @@ InlineItemResult* LineBreaker::AddRubyColumnResult(
 
   if (base_line_info.Width() < ruby_size) {
     line_info.SetMayHaveRubyOverhang();
-
-    AnnotationOverhang overhang = GetOverhang(*column_result);
+    wtf_size_t ruby_index = line_info.Results().size() - 1;
+    AnnotationOverhang overhang =
+        GetOverhang(*column_result, line_info, ruby_index);
     if (overhang.end > LayoutUnit()) {
       column_result->pending_end_overhang = overhang.end;
       maybe_have_end_overhang_ = true;
     }
 
-    if (CanApplyStartOverhang(line_info, line_info.Results().size() - 1,
+    if (CanApplyStartOverhang(line_info, ruby_index,
                               column_result->item->GetLayoutObject()
                                   ? *column_result->item->Style()
                                   : *current_style_,

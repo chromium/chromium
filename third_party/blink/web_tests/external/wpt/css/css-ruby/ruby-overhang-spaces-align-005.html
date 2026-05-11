@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <meta charset="UTF-8">
-<title>Tests for ruby-overhang: spaces with ideographic spaces</title>
+<title>Tests for ruby-overhang: spaces with ruby-align: start and ideographic spaces</title>
 <link rel="help" href="https://drafts.csswg.org/css-ruby-1/#ruby-overhang">
-<link rel="match" href="ruby-overhang-spaces-001-ref.html">
-<meta name=assert content="With 'ruby-overhang: spaces', excess ruby overhang on top of the ideographic spaces, but no further.">
+<link rel="match" href="ruby-overhang-spaces-align-005-ref.html">
+<meta name=assert content="With 'ruby-overhang: spaces' and 'ruby-align: start', with no previous item.">
 <style>
 ruby {
     ruby-overhang: spaces;
-    ruby-align: center;
+    ruby-align: start;
 }
 div {
     font-size: 20px;
@@ -20,6 +20,6 @@ div {
 </style>
 <body lang="ja">
 <p>Test passes if orange and blue lines are aligned.
-<div class=test>あ　<ruby>あ<rt>ああああああああああ</ruby>　あ</div>
-<div class=measure>あ　　あ　　あ</div>
+<div class=test><ruby>あ<rt>ああああああ</ruby>　あ</div>
+<div class=measure>あ　　あ</div>
 </body>

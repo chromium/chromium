@@ -42,6 +42,10 @@ struct InlineItemResultRubyColumn
   // Spacing amount on the right of the last glyph. This is set on justify
   // a line, and consumed on applying ruby-align to an annotation.
   LayoutUnit last_base_glyph_spacing;
+
+  // An end overhang size to avoid overlapping annotations with the next ruby
+  // column. Only used for `ruby-overhang: spaces`.
+  LayoutUnit end_overhang;
 };
 
 }  // namespace blink

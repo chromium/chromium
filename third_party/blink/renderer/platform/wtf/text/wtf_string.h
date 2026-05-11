@@ -234,6 +234,20 @@ class WTF_EXPORT String {
   // 0.
   UChar32 CodePointAtOrZero(size_type) const;
 
+  // Returns the Unicode code point ending with text[i - 1]. That is to say,
+  //  - Returns a code point computed from text[i - 2] and text[i - 1] if i-1 is
+  //    greater than start_offset and text[i - 2] is a leading surrogate and
+  //    text[i - 1] is a trailing surrogate.
+  //  - Otherwise, text[i - 1] is returned.
+  //
+  // `i` argument is updated to point the first code unit of the read character.
+  // `start_offset` should be smaller than `i`.
+  UChar32 CodePointAtAndPrevious(size_type start_offset, size_type& i) const;
+
+  // Returns the Unicode code point starting at the specified offset of this
+  // string. `i` argument is updated to point the next of the read character.
+  UChar32 CodePointAtAndNext(size_type& i) const;
+
   // [string.modifiers] ---------------------------------------------
 
   // Removes `len` code units starting at `pos` from this string.

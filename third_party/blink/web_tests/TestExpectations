@@ -1011,10 +1011,7 @@ crbug.com/1168277 external/wpt/css/css-counter-styles/counter-style-at-rule/disc
 crbug.com/1176315 external/wpt/css/css-counter-styles/counter-style-at-rule/symbols-function.html [ Failure ]
 
 # [css-ruby-1]
-crbug.com/499042741 external/wpt/css/css-ruby/ruby-overhang-spaces-001.html [ Failure ]
 crbug.com/499042741 external/wpt/css/css-ruby/ruby-overhang-spaces-002.html [ Failure ]
-crbug.com/499042741 external/wpt/css/css-ruby/ruby-overhang-spaces-003.html [ Failure ]
-crbug.com/499042741 external/wpt/css/css-ruby/ruby-overhang-spaces-004.html [ Failure ]
 crbug.com/499042741 external/wpt/css/css-ruby/ruby-overhang-spaces-005.html [ Failure ]
 
 # Maybe WontFix according to the bug
@@ -2121,6 +2118,8 @@ crbug.com/1223955 external/wpt/css/css-ruby/ruby-inlinize-blocks-004.html [ Fail
 crbug.com/1223955 external/wpt/css/css-ruby/ruby-inlinize-blocks-005.html [ Failure ]
 
 crbug.com/1333451 external/wpt/css/css-ruby/intra-base-white-space-001.html [ Failure ]
+
+crbug.com/505419357 external/wpt/css/css-ruby/ruby-overhang-spaces-011.html [ Crash ]
 
 # WebRTC: there's an open bug with some capture scenarios not working.
 crbug.com/1156408 [ Mac ] external/wpt/webrtc/RTCPeerConnection-relay-canvas.https.html [ Failure Pass Timeout ]

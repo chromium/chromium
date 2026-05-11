@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="UTF-8">
-<title>test reference</title>
+<title>CSS Reference: ruby-overhang spaces with non-BMP characters</title>
 <style>
 ruby {
     ruby-overhang: spaces;
@@ -11,12 +11,13 @@ div {
     border-left: 5px solid;
     border-right: 5px solid;
     width: max-content;
+    margin-bottom: 10px;
 }
 .test { border-color: orange; }
 .measure { border-color: blue; }
 </style>
 <body lang="ja">
 <p>Test passes if orange and blue lines are aligned.
-<div class=test>あ<ruby>・　あ　・<rt>あああああああ</ruby>あ</div>
-<div class=measure>あ・　あ　・あ</div>
+<div class="test">🍊<ruby>　　あ　　<rt>ああああああああああ</ruby>🍊</div>
+<div class="measure">🍊<ruby>　　あ　　<rt>ああああああああああ</ruby>🍊</div>
 </body>
