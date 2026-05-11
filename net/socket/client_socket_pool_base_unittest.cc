@@ -563,6 +563,7 @@ class TestConnectJobFactory : public ConnectJobFactory {
       SecureDnsPolicy secure_dns_policy,
       bool disable_cert_network_fetches,
       const CommonConnectJobParams* common_connect_job_params,
+      handles::NetworkHandle target_network,
       ConnectJob::Delegate* delegate) const override {
     EXPECT_TRUE(!job_types_ || !job_types_->empty());
     TestConnectJob::JobType job_type = job_type_;

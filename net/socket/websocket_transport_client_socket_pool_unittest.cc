@@ -1334,7 +1334,8 @@ TEST_P(WebSocketTransportClientSocketPoolTest,
   scoped_refptr<TransportSocketParams> params =
       base::MakeRefCounted<TransportSocketParams>(
           HostPortPair(kHostName, 80), NetworkAnonymizationKey(),
-          SecureDnsPolicy::kAllow, OnHostResolutionCallback(),
+          SecureDnsPolicy::kAllow, handles::kInvalidNetworkHandle,
+          OnHostResolutionCallback(),
           /*supported_alpns=*/base::flat_set<std::string>());
 
   auto transport_connect_job = TransportConnectJob::Factory::CreateJob(
@@ -1367,7 +1368,8 @@ TEST_P(WebSocketTransportClientSocketPoolTest,
   scoped_refptr<TransportSocketParams> params =
       base::MakeRefCounted<TransportSocketParams>(
           HostPortPair(kHostName, 80), NetworkAnonymizationKey(),
-          SecureDnsPolicy::kAllow, OnHostResolutionCallback(),
+          SecureDnsPolicy::kAllow, handles::kInvalidNetworkHandle,
+          OnHostResolutionCallback(),
           /*supported_alpns=*/base::flat_set<std::string>());
 
   auto transport_connect_job = TransportConnectJob::Factory::CreateJob(
@@ -1392,11 +1394,13 @@ TEST_P(WebSocketTransportClientSocketPoolTest, LoadState) {
 
   auto params_v6_only = base::MakeRefCounted<TransportSocketParams>(
       HostPortPair("v6-only.test", 80), NetworkAnonymizationKey(),
-      SecureDnsPolicy::kAllow, OnHostResolutionCallback(),
+      SecureDnsPolicy::kAllow, handles::kInvalidNetworkHandle,
+      OnHostResolutionCallback(),
       /*supported_alpns=*/base::flat_set<std::string>());
   auto params_v6_and_v4 = base::MakeRefCounted<TransportSocketParams>(
       HostPortPair("v6-and-v4.test", 80), NetworkAnonymizationKey(),
-      SecureDnsPolicy::kAllow, OnHostResolutionCallback(),
+      SecureDnsPolicy::kAllow, handles::kInvalidNetworkHandle,
+      OnHostResolutionCallback(),
       /*supported_alpns=*/base::flat_set<std::string>());
 
   // v6-only.test will first block on DNS.

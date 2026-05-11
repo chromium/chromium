@@ -287,7 +287,11 @@ int ProxyResolvingClientSocket::DoInitConnection() {
       proxy_annotation_tag, /*force_tunnel=*/true, net::PRIVACY_MODE_DISABLED,
       net::OnHostResolutionCallback(), net::MAXIMUM_PRIORITY, net::SocketTag(),
       network_anonymization_key_, net::SecureDnsPolicy::kAllow,
-      common_connect_job_params_, this);
+      common_connect_job_params_,
+      // There is currently no use case for targeting a specific network when
+      // ProxyResolvingClientSocket is used. Expose this capability once (if)
+      // there is a need.
+      net::handles::kInvalidNetworkHandle, this);
   return connect_job_->Connect();
 }
 

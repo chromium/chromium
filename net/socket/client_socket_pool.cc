@@ -256,7 +256,7 @@ std::unique_ptr<ConnectJob> ClientSocketPool::CreateConnectJob(
       group_id.privacy_mode(), resolution_callback, request_priority,
       socket_tag, group_id.network_anonymization_key(),
       group_id.secure_dns_policy(), group_id.disable_cert_network_fetches(),
-      common_connect_job_params_, delegate);
+      common_connect_job_params_, group_id.target_network(), delegate);
 }
 
 void ClientSocketPool::UpdateStateBeforeAllocation() {

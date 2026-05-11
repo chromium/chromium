@@ -56,11 +56,13 @@ TransportSocketParams::TransportSocketParams(
     Endpoint destination,
     NetworkAnonymizationKey network_anonymization_key,
     SecureDnsPolicy secure_dns_policy,
+    handles::NetworkHandle target_network,
     OnHostResolutionCallback host_resolution_callback,
     base::flat_set<std::string> supported_alpns)
     : destination_(std::move(destination)),
       network_anonymization_key_(std::move(network_anonymization_key)),
       secure_dns_policy_(secure_dns_policy),
+      target_network_(target_network),
       host_resolution_callback_(std::move(host_resolution_callback)),
       supported_alpns_(std::move(supported_alpns)) {
 #if DCHECK_IS_ON()

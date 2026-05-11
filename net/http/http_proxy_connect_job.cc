@@ -156,7 +156,8 @@ HttpProxySocketParams::HttpProxySocketParams(
     bool tunnel,
     const NetworkTrafficAnnotationTag traffic_annotation,
     const NetworkAnonymizationKey& network_anonymization_key,
-    SecureDnsPolicy secure_dns_policy)
+    SecureDnsPolicy secure_dns_policy,
+    handles::NetworkHandle target_network)
     : HttpProxySocketParams(std::move(nested_params),
                             std::nullopt,
                             endpoint,
@@ -165,7 +166,8 @@ HttpProxySocketParams::HttpProxySocketParams(
                             tunnel,
                             std::move(traffic_annotation),
                             network_anonymization_key,
-                            secure_dns_policy) {}
+                            secure_dns_policy,
+                            target_network) {}
 
 HttpProxySocketParams::HttpProxySocketParams(
     SSLConfig quic_ssl_config,
@@ -175,7 +177,8 @@ HttpProxySocketParams::HttpProxySocketParams(
     bool tunnel,
     const NetworkTrafficAnnotationTag traffic_annotation,
     const NetworkAnonymizationKey& network_anonymization_key,
-    SecureDnsPolicy secure_dns_policy)
+    SecureDnsPolicy secure_dns_policy,
+    handles::NetworkHandle target_network)
     : HttpProxySocketParams(std::nullopt,
                             std::move(quic_ssl_config),
                             endpoint,
@@ -184,7 +187,8 @@ HttpProxySocketParams::HttpProxySocketParams(
                             tunnel,
                             std::move(traffic_annotation),
                             network_anonymization_key,
-                            secure_dns_policy) {}
+                            secure_dns_policy,
+                            target_network) {}
 
 HttpProxySocketParams::HttpProxySocketParams(
     std::optional<ConnectJobParams> nested_params,
@@ -195,7 +199,8 @@ HttpProxySocketParams::HttpProxySocketParams(
     bool tunnel,
     const NetworkTrafficAnnotationTag traffic_annotation,
     const NetworkAnonymizationKey& network_anonymization_key,
-    SecureDnsPolicy secure_dns_policy)
+    SecureDnsPolicy secure_dns_policy,
+    handles::NetworkHandle target_network)
     : nested_params_(std::move(nested_params)),
       quic_ssl_config_(std::move(quic_ssl_config)),
       endpoint_(endpoint),
@@ -204,7 +209,8 @@ HttpProxySocketParams::HttpProxySocketParams(
       tunnel_(tunnel),
       network_anonymization_key_(network_anonymization_key),
       traffic_annotation_(traffic_annotation),
-      secure_dns_policy_(secure_dns_policy) {
+      secure_dns_policy_(secure_dns_policy),
+      target_network_(target_network) {
   DCHECK(!proxy_chain_.is_direct());
   DCHECK(proxy_chain_.IsValid());
   CHECK(proxy_chain_index_ < proxy_chain_.length());

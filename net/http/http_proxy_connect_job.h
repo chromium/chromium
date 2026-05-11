@@ -16,6 +16,7 @@
 #include "net/base/net_error_details.h"
 #include "net/base/net_export.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/base/network_handle.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/request_priority.h"
 #include "net/dns/public/resolve_error_info.h"
@@ -53,6 +54,9 @@ class NET_EXPORT_PRIVATE HttpProxySocketParams
  public:
   // Construct an `HttpProxyConnectJob` over a transport or SSL connection
   // defined by the `ConnectJobParams`.
+  // Note: to maintain uniformity with proxied QUIC connections, the non-QUIC
+  // proxy case also explicitly accepts a `target_network`, instead of exposing
+  // it via `nested_params`.
   HttpProxySocketParams(
       ConnectJobParams nested_params,
       const HostPortPair& endpoint,
@@ -61,10 +65,16 @@ class NET_EXPORT_PRIVATE HttpProxySocketParams
       bool tunnel,
       const NetworkTrafficAnnotationTag traffic_annotation,
       const NetworkAnonymizationKey& network_anonymization_key,
-      SecureDnsPolicy secure_dns_policy);
+      SecureDnsPolicy secure_dns_policy,
+      handles::NetworkHandle target_network);
 
   // Construct an `HttpProxyConnectJob` over a QUIC connection using the given
   // SSL config.
+  // Note: unlike SOCKSSocketParams and SSLSocketParams, which strictly sit on
+  // top of a transport specified by a nested `ConnectJobParams`, proxied QUIC
+  // connections directly take care of establishing the underlying transport.
+  // This requires `HttpProxySocketParams` to accept `target_network`
+  // explicitly.
   HttpProxySocketParams(
       SSLConfig quic_ssl_config,
       const HostPortPair& endpoint,
@@ -73,7 +83,8 @@ class NET_EXPORT_PRIVATE HttpProxySocketParams
       bool tunnel,
       const NetworkTrafficAnnotationTag traffic_annotation,
       const NetworkAnonymizationKey& network_anonymization_key,
-      SecureDnsPolicy secure_dns_policy);
+      SecureDnsPolicy secure_dns_policy,
+      handles::NetworkHandle target_network);
 
   HttpProxySocketParams(const HttpProxySocketParams&) = delete;
   HttpProxySocketParams& operator=(const HttpProxySocketParams&) = delete;
@@ -115,6 +126,7 @@ class NET_EXPORT_PRIVATE HttpProxySocketParams
     return traffic_annotation_;
   }
   SecureDnsPolicy secure_dns_policy() { return secure_dns_policy_; }
+  handles::NetworkHandle target_network() const { return target_network_; }
 
  private:
   friend class base::RefCounted<HttpProxySocketParams>;
@@ -127,7 +139,8 @@ class NET_EXPORT_PRIVATE HttpProxySocketParams
       bool tunnel,
       const NetworkTrafficAnnotationTag traffic_annotation,
       const NetworkAnonymizationKey& network_anonymization_key,
-      SecureDnsPolicy secure_dns_policy);
+      SecureDnsPolicy secure_dns_policy,
+      handles::NetworkHandle target_network);
   ~HttpProxySocketParams();
 
   const std::optional<ConnectJobParams> nested_params_;
@@ -139,6 +152,7 @@ class NET_EXPORT_PRIVATE HttpProxySocketParams
   const NetworkAnonymizationKey network_anonymization_key_;
   const NetworkTrafficAnnotationTag traffic_annotation_;
   const SecureDnsPolicy secure_dns_policy_;
+  const handles::NetworkHandle target_network_ = handles::kInvalidNetworkHandle;
 };
 
 // HttpProxyConnectJob optionally establishes a tunnel through the proxy

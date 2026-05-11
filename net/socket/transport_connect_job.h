@@ -21,6 +21,7 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/net_export.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/base/network_handle.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/resolution_details.h"
@@ -55,6 +56,7 @@ class NET_EXPORT_PRIVATE TransportSocketParams
   TransportSocketParams(Endpoint destination,
                         NetworkAnonymizationKey network_anonymization_key,
                         SecureDnsPolicy secure_dns_policy,
+                        handles::NetworkHandle target_network,
                         OnHostResolutionCallback host_resolution_callback,
                         base::flat_set<std::string> supported_alpns);
 
@@ -66,6 +68,7 @@ class NET_EXPORT_PRIVATE TransportSocketParams
     return network_anonymization_key_;
   }
   SecureDnsPolicy secure_dns_policy() const { return secure_dns_policy_; }
+  handles::NetworkHandle target_network() const { return target_network_; }
   const OnHostResolutionCallback& host_resolution_callback() const {
     return host_resolution_callback_;
   }
@@ -80,6 +83,7 @@ class NET_EXPORT_PRIVATE TransportSocketParams
   const Endpoint destination_;
   const NetworkAnonymizationKey network_anonymization_key_;
   const SecureDnsPolicy secure_dns_policy_;
+  const handles::NetworkHandle target_network_;
   const OnHostResolutionCallback host_resolution_callback_;
   const base::flat_set<std::string> supported_alpns_;
 };

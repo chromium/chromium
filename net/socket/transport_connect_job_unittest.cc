@@ -83,7 +83,7 @@ class TransportConnectJobTest : public WithTaskEnvironment,
     return base::MakeRefCounted<TransportSocketParams>(
         url::SchemeHostPort(url::kHttpScheme, kHostName, 80),
         NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-        OnHostResolutionCallback(),
+        handles::kInvalidNetworkHandle, OnHostResolutionCallback(),
         /*supported_alpns=*/base::flat_set<std::string>());
   }
 
@@ -91,7 +91,7 @@ class TransportConnectJobTest : public WithTaskEnvironment,
     return base::MakeRefCounted<TransportSocketParams>(
         url::SchemeHostPort(url::kHttpsScheme, kHostName, 443),
         NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-        OnHostResolutionCallback(),
+        handles::kInvalidNetworkHandle, OnHostResolutionCallback(),
         /*supported_alpns=*/base::flat_set<std::string>{"h2", "http/1.1"});
   }
 
@@ -273,7 +273,7 @@ TEST_F(TransportConnectJobTest, HandlesHttpsEndpoint) {
       base::MakeRefCounted<TransportSocketParams>(
           url::SchemeHostPort(url::kHttpsScheme, kHostName, 80),
           NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-          OnHostResolutionCallback(),
+          handles::kInvalidNetworkHandle, OnHostResolutionCallback(),
           /*supported_alpns=*/base::flat_set<std::string>{"h2", "http/1.1"}),
       &test_delegate, nullptr /* net_log */);
   test_delegate.StartJobExpectingResult(&transport_connect_job, OK,
@@ -288,7 +288,8 @@ TEST_F(TransportConnectJobTest, HandlesNonStandardEndpoint) {
       DEFAULT_PRIORITY, SocketTag(), &common_connect_job_params_,
       base::MakeRefCounted<TransportSocketParams>(
           HostPortPair(kHostName, 80), NetworkAnonymizationKey(),
-          SecureDnsPolicy::kAllow, OnHostResolutionCallback(),
+          SecureDnsPolicy::kAllow, handles::kInvalidNetworkHandle,
+          OnHostResolutionCallback(),
           /*supported_alpns=*/base::flat_set<std::string>()),
       &test_delegate, nullptr /* net_log */);
   test_delegate.StartJobExpectingResult(&transport_connect_job, OK,
@@ -304,7 +305,7 @@ TEST_F(TransportConnectJobTest, SecureDnsPolicy) {
         base::MakeRefCounted<TransportSocketParams>(
             url::SchemeHostPort(url::kHttpScheme, kHostName, 80),
             NetworkAnonymizationKey(), secure_dns_policy,
-            OnHostResolutionCallback(),
+            handles::kInvalidNetworkHandle, OnHostResolutionCallback(),
             /*supported_alpns=*/base::flat_set<std::string>{}),
         &test_delegate, nullptr /* net_log */);
     test_delegate.StartJobExpectingResult(&transport_connect_job, OK,

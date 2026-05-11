@@ -22,6 +22,7 @@
 #include "net/base/load_timing_info.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/base/network_handle.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
@@ -165,7 +166,7 @@ class SSLConnectJobTest : public WithTaskEnvironment,
       SecureDnsPolicy secure_dns_policy) const {
     return base::MakeRefCounted<TransportSocketParams>(
         kHostHttps, NetworkAnonymizationKey(), secure_dns_policy,
-        OnHostResolutionCallback(),
+        handles::kInvalidNetworkHandle, OnHostResolutionCallback(),
         /*supported_alpns=*/base::flat_set<std::string>({"h2", "http/1.1"}));
   }
 
@@ -173,7 +174,8 @@ class SSLConnectJobTest : public WithTaskEnvironment,
       SecureDnsPolicy secure_dns_policy) const {
     return base::MakeRefCounted<TransportSocketParams>(
         kHttpProxyServer.host_port_pair(), NetworkAnonymizationKey(),
-        secure_dns_policy, OnHostResolutionCallback(),
+        secure_dns_policy, handles::kInvalidNetworkHandle,
+        OnHostResolutionCallback(),
         /*supported_alpns=*/base::flat_set<std::string>({}));
   }
 
@@ -193,7 +195,8 @@ class SSLConnectJobTest : public WithTaskEnvironment,
         kHostHttp, kHttpProxyChain,
         /*proxy_server_index=*/0,
         /*tunnel=*/true, TRAFFIC_ANNOTATION_FOR_TESTS,
-        NetworkAnonymizationKey(), secure_dns_policy);
+        NetworkAnonymizationKey(), secure_dns_policy,
+        handles::kInvalidNetworkHandle);
   }
 
   std::unique_ptr<ConnectJob> CreateConnectJob(

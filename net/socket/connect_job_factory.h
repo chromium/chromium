@@ -12,6 +12,7 @@
 
 #include "net/base/host_port_pair.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/base/network_handle.h"
 #include "net/base/privacy_mode.h"
 #include "net/base/request_priority.h"
 #include "net/dns/public/secure_dns_policy.h"
@@ -98,6 +99,7 @@ class NET_EXPORT_PRIVATE ConnectJobFactory {
       SecureDnsPolicy secure_dns_policy,
       bool disable_cert_network_fetches,
       const CommonConnectJobParams* common_connect_job_params,
+      handles::NetworkHandle target_network,
       ConnectJob::Delegate* delegate) const;
 
   // TODO(crbug.com/40181080): Rename to discourage use except in cases where
@@ -115,6 +117,7 @@ class NET_EXPORT_PRIVATE ConnectJobFactory {
       const NetworkAnonymizationKey& network_anonymization_key,
       SecureDnsPolicy secure_dns_policy,
       const CommonConnectJobParams* common_connect_job_params,
+      handles::NetworkHandle target_network,
       ConnectJob::Delegate* delegate) const;
 
  private:
@@ -133,6 +136,7 @@ class NET_EXPORT_PRIVATE ConnectJobFactory {
       SecureDnsPolicy secure_dns_policy,
       bool disable_cert_network_fetches,
       const CommonConnectJobParams* common_connect_job_params,
+      handles::NetworkHandle target_network,
       ConnectJob::Delegate* delegate) const;
 
   std::unique_ptr<HttpProxyConnectJob::Factory> http_proxy_connect_job_factory_;

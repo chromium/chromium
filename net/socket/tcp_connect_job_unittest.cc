@@ -25,6 +25,7 @@
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_handle.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_stream_pool_test_util.h"
@@ -127,7 +128,8 @@ class TcpConnectJobTest : public TestWithTaskEnvironment {
   scoped_refptr<TransportSocketParams> SocketParams() {
     return base::MakeRefCounted<TransportSocketParams>(
         destination_, NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-        on_host_resolution_callback_, GetSupportedAplns());
+        handles::kInvalidNetworkHandle, on_host_resolution_callback_,
+        GetSupportedAplns());
   }
 
   // Initializes `test_delegate_` and `connect_job_`, tearing down old ones

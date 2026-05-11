@@ -224,7 +224,8 @@ class HttpProxyConnectJobTest : public HttpProxyConnectJobTestBase,
     }
     return base::MakeRefCounted<TransportSocketParams>(
         kHttpProxyServer.host_port_pair(), NetworkAnonymizationKey(),
-        secure_dns_policy, OnHostResolutionCallback(),
+        secure_dns_policy, handles::kInvalidNetworkHandle,
+        OnHostResolutionCallback(),
         /*supported_alpns=*/base::flat_set<std::string>());
   }
 
@@ -236,7 +237,8 @@ class HttpProxyConnectJobTest : public HttpProxyConnectJobTestBase,
     return base::MakeRefCounted<SSLSocketParams>(
         ConnectJobParams(base::MakeRefCounted<TransportSocketParams>(
             kHttpsProxyServer.host_port_pair(), NetworkAnonymizationKey(),
-            secure_dns_policy, OnHostResolutionCallback(),
+            secure_dns_policy, handles::kInvalidNetworkHandle,
+            OnHostResolutionCallback(),
             /*supported_alpns=*/base::flat_set<std::string>())),
         HostPortPair(kHttpsProxyHost, 443), SSLConfig(),
         NetworkAnonymizationKey());
@@ -257,7 +259,8 @@ class HttpProxyConnectJobTest : public HttpProxyConnectJobTestBase,
         std::move(params), HostPortPair(kEndpointHost, tunnel ? 443 : 80),
         GetParam() == HTTP ? kHttpProxyChain : kHttpsProxyChain,
         /*proxy_chain_index=*/0, tunnel, TRAFFIC_ANNOTATION_FOR_TESTS,
-        NetworkAnonymizationKey(), secure_dns_policy);
+        NetworkAnonymizationKey(), secure_dns_policy,
+        handles::kInvalidNetworkHandle);
   }
 
   // Creates a correctly constructed `SSLSocketParams()` corresponding to the
@@ -293,7 +296,8 @@ class HttpProxyConnectJobTest : public HttpProxyConnectJobTestBase,
     return base::MakeRefCounted<SSLSocketParams>(
         ConnectJobParams(base::MakeRefCounted<TransportSocketParams>(
             proxy_server.host_port_pair(), NetworkAnonymizationKey(),
-            secure_dns_policy, OnHostResolutionCallback(),
+            secure_dns_policy, handles::kInvalidNetworkHandle,
+            OnHostResolutionCallback(),
             /*supported_alpns=*/base::flat_set<std::string>())),
         proxy_server.host_port_pair(), SSLConfig(), NetworkAnonymizationKey());
   }
@@ -327,7 +331,8 @@ class HttpProxyConnectJobTest : public HttpProxyConnectJobTestBase,
     return base::MakeRefCounted<HttpProxySocketParams>(
         ConnectJobParams(std::move(ssl_params)), connect_host_port_pair,
         proxy_chain, proxy_chain_index, tunnel, TRAFFIC_ANNOTATION_FOR_TESTS,
-        NetworkAnonymizationKey(), secure_dns_policy);
+        NetworkAnonymizationKey(), secure_dns_policy,
+        handles::kInvalidNetworkHandle);
   }
 
   std::unique_ptr<HttpProxyConnectJob> CreateConnectJobForHttpRequest(
@@ -2793,7 +2798,7 @@ TEST_F(HttpProxyConnectQuicJobTest, RequestQuicProxy) {
           quic_proxy_ssl_config, HostPortPair(kEndpointHost, 443), proxy_chain,
           /*proxy_chain_index=*/0, /*tunnel=*/true,
           TRAFFIC_ANNOTATION_FOR_TESTS, NetworkAnonymizationKey(),
-          SecureDnsPolicy::kAllow);
+          SecureDnsPolicy::kAllow, handles::kInvalidNetworkHandle);
 
   TestConnectJobDelegate test_delegate;
   auto connect_job = std::make_unique<HttpProxyConnectJob>(
@@ -2839,7 +2844,7 @@ TEST_F(HttpProxyConnectQuicJobTest, QuicProxyRequestUsesRfcV1) {
           quic_proxy_ssl_config, HostPortPair(kEndpointHost, 443), proxy_chain,
           /*proxy_chain_index=*/0, /*tunnel=*/true,
           TRAFFIC_ANNOTATION_FOR_TESTS, NetworkAnonymizationKey(),
-          SecureDnsPolicy::kAllow);
+          SecureDnsPolicy::kAllow, handles::kInvalidNetworkHandle);
 
   TestConnectJobDelegate test_delegate;
   auto connect_job = std::make_unique<HttpProxyConnectJob>(
@@ -2887,7 +2892,7 @@ TEST_F(HttpProxyConnectQuicJobTest, RequestMultipleQuicProxies) {
           quic_proxy_ssl_config, HostPortPair(kEndpointHost, 443), proxy_chain,
           /*proxy_chain_index=*/1, /*tunnel=*/true,
           TRAFFIC_ANNOTATION_FOR_TESTS, NetworkAnonymizationKey(),
-          SecureDnsPolicy::kAllow);
+          SecureDnsPolicy::kAllow, handles::kInvalidNetworkHandle);
 
   TestConnectJobDelegate test_delegate;
   auto connect_job = std::make_unique<HttpProxyConnectJob>(

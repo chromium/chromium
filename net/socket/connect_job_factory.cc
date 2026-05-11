@@ -14,6 +14,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/base/network_handle.h"
 #include "net/base/privacy_mode.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/request_priority.h"
@@ -75,13 +76,15 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
     SecureDnsPolicy secure_dns_policy,
     bool disable_cert_network_fetches,
     const CommonConnectJobParams* common_connect_job_params,
+    handles::NetworkHandle target_network,
     ConnectJob::Delegate* delegate) const {
-  return CreateConnectJob(
-      Endpoint(std::move(endpoint)), proxy_chain, proxy_annotation_tag,
-      allowed_bad_certs, alpn_mode, force_tunnel, privacy_mode,
-      resolution_callback, request_priority, socket_tag,
-      network_anonymization_key, secure_dns_policy,
-      disable_cert_network_fetches, common_connect_job_params, delegate);
+  return CreateConnectJob(Endpoint(std::move(endpoint)), proxy_chain,
+                          proxy_annotation_tag, allowed_bad_certs, alpn_mode,
+                          force_tunnel, privacy_mode, resolution_callback,
+                          request_priority, socket_tag,
+                          network_anonymization_key, secure_dns_policy,
+                          disable_cert_network_fetches,
+                          common_connect_job_params, target_network, delegate);
 }
 
 std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
@@ -97,6 +100,7 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
     const NetworkAnonymizationKey& network_anonymization_key,
     SecureDnsPolicy secure_dns_policy,
     const CommonConnectJobParams* common_connect_job_params,
+    handles::NetworkHandle target_network,
     ConnectJob::Delegate* delegate) const {
   SchemelessEndpoint schemeless_endpoint{using_ssl, std::move(endpoint)};
   return CreateConnectJob(
@@ -105,7 +109,7 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
       force_tunnel, privacy_mode, resolution_callback, request_priority,
       socket_tag, network_anonymization_key, secure_dns_policy,
       /*disable_cert_network_fetches=*/false, common_connect_job_params,
-      delegate);
+      target_network, delegate);
 }
 
 std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
@@ -123,13 +127,14 @@ std::unique_ptr<ConnectJob> ConnectJobFactory::CreateConnectJob(
     SecureDnsPolicy secure_dns_policy,
     bool disable_cert_network_fetches,
     const CommonConnectJobParams* common_connect_job_params,
+    handles::NetworkHandle target_network,
     ConnectJob::Delegate* delegate) const {
   ConnectJobParams connect_job_params = ConstructConnectJobParams(
       endpoint, proxy_chain, proxy_annotation_tag, allowed_bad_certs, alpn_mode,
       force_tunnel, privacy_mode, resolution_callback,
       network_anonymization_key, secure_dns_policy,
       disable_cert_network_fetches, common_connect_job_params,
-      proxy_dns_network_anonymization_key_);
+      proxy_dns_network_anonymization_key_, target_network);
 
   if (connect_job_params.is_ssl()) {
     return ssl_connect_job_factory_->Create(

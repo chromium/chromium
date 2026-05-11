@@ -80,7 +80,8 @@ class SOCKSConnectJobTest : public testing::Test, public WithTaskEnvironment {
     return base::MakeRefCounted<SOCKSSocketParams>(
         ConnectJobParams(base::MakeRefCounted<TransportSocketParams>(
             HostPortPair(kProxyHostName, kProxyPort), NetworkAnonymizationKey(),
-            secure_dns_policy, OnHostResolutionCallback(),
+            secure_dns_policy, handles::kInvalidNetworkHandle,
+            OnHostResolutionCallback(),
             /*supported_alpns=*/base::flat_set<std::string>())),
         socks_version == SOCKSVersion::V5,
         socks_version == SOCKSVersion::V4
@@ -132,7 +133,7 @@ TEST_F(SOCKSConnectJobTest, HostResolutionFailureSOCKS4Endpoint) {
             ConnectJobParams(base::MakeRefCounted<TransportSocketParams>(
                 HostPortPair(kProxyHostName, kProxyPort),
                 NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                OnHostResolutionCallback(),
+                handles::kInvalidNetworkHandle, OnHostResolutionCallback(),
                 /*supported_alpns=*/base::flat_set<std::string>())),
             false /* socks_v5 */, HostPortPair(hostname, kSOCKS4TestPort),
             NetworkAnonymizationKey(), TRAFFIC_ANNOTATION_FOR_TESTS);
