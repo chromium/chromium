@@ -7,7 +7,8 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/branded_strings.h"
@@ -54,10 +55,12 @@ UpdateRecommendedMessageBox::UpdateRecommendedMessageBox() {
 #elif BUILDFLAG(GOOGLE_CHROME_BRANDING) && \
     (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
   update_message = l10n_util::GetPluralStringFUTF16(
-      IDS_UPDATE_RECOMMENDED_ALT, chrome::GetIncognitoBrowserCount());
+      IDS_UPDATE_RECOMMENDED_ALT,
+      GlobalBrowserCollection::GetInstance()->GetIncognitoBrowserCount());
 #else
   update_message = l10n_util::GetPluralStringFUTF16(
-      IDS_UPDATE_RECOMMENDED, chrome::GetIncognitoBrowserCount());
+      IDS_UPDATE_RECOMMENDED,
+      GlobalBrowserCollection::GetInstance()->GetIncognitoBrowserCount());
 #endif
 
   // Also deleted when the window closes.

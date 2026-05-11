@@ -2702,7 +2702,8 @@ void WebAppIntegrationTestDriver::SwitchIncognitoProfile() {
   }
   BrowserAddedWaiter browser_added_waiter;
   CHECK(chrome::ExecuteCommand(browser(), IDC_NEW_INCOGNITO_WINDOW));
-  ASSERT_EQ(1U, chrome::GetIncognitoBrowserCount());
+  ASSERT_EQ(1U,
+            GlobalBrowserCollection::GetInstance()->GetIncognitoBrowserCount());
   browser_added_waiter.Wait();
   Browser* incognito_browser = browser_added_waiter.browser_added();
   ASSERT_TRUE(incognito_browser);

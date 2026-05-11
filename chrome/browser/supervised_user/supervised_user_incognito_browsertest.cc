@@ -6,7 +6,6 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
@@ -35,7 +34,8 @@ class AllIncognitoBrowsersClosedWaiter : public BrowserCollectionObserver {
   void Wait() { run_loop_.Run(); }
 
   void OnBrowserClosed(BrowserWindowInterface* browser) override {
-    if (chrome::GetIncognitoBrowserCount() == 0u) {
+    if (GlobalBrowserCollection::GetInstance()->GetIncognitoBrowserCount() ==
+        0u) {
       run_loop_.Quit();
     }
   }
@@ -63,25 +63,30 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserIncognitoBrowserTest,
                        UnsupervisedSignInDoesNotCloseIncognito) {
   // Create a new incognito windows (this is allowed as the user is not signed
   // in).
-  CHECK_EQ(chrome::GetIncognitoBrowserCount(), 0u);
+  CHECK_EQ(GlobalBrowserCollection::GetInstance()->GetIncognitoBrowserCount(),
+           0u);
   CreateIncognitoBrowser();
-  CHECK_EQ(chrome::GetIncognitoBrowserCount(), 1u);
+  CHECK_EQ(GlobalBrowserCollection::GetInstance()->GetIncognitoBrowserCount(),
+           1u);
 
   // Sign in as a regular user.
   supervision_mixin.SignIn(SupervisionMixin::SignInMode::kRegular);
 
   // Check the incognito window remains open.
   base::RunLoop().RunUntilIdle();
-  CHECK_EQ(chrome::GetIncognitoBrowserCount(), 1u);
+  CHECK_EQ(GlobalBrowserCollection::GetInstance()->GetIncognitoBrowserCount(),
+           1u);
 }
 
 IN_PROC_BROWSER_TEST_F(SupervisedUserIncognitoBrowserTest,
                        SupervisedSignInClosesIncognito) {
   // Create a new incognito window (this is allowed as the user is not signed
   // in).
-  CHECK_EQ(chrome::GetIncognitoBrowserCount(), 0u);
+  CHECK_EQ(GlobalBrowserCollection::GetInstance()->GetIncognitoBrowserCount(),
+           0u);
   CreateIncognitoBrowser();
-  CHECK_EQ(chrome::GetIncognitoBrowserCount(), 1u);
+  CHECK_EQ(GlobalBrowserCollection::GetInstance()->GetIncognitoBrowserCount(),
+           1u);
 
   AllIncognitoBrowsersClosedWaiter incognito_closed_waiter;
 
@@ -90,7 +95,8 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserIncognitoBrowserTest,
 
   // Check the incognito window remains open.
   incognito_closed_waiter.Wait();
-  ASSERT_EQ(chrome::GetIncognitoBrowserCount(), 0u);
+  ASSERT_EQ(GlobalBrowserCollection::GetInstance()->GetIncognitoBrowserCount(),
+            0u);
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)

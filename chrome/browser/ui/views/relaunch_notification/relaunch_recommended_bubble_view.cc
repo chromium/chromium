@@ -14,8 +14,8 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/app_menu_control.h"
@@ -100,8 +100,9 @@ ui::ImageModel RelaunchRecommendedBubbleView::GetWindowIcon() {
 void RelaunchRecommendedBubbleView::Init() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
   auto label = std::make_unique<views::Label>(
-      l10n_util::GetPluralStringFUTF16(IDS_RELAUNCH_RECOMMENDED_BODY,
-                                       chrome::GetIncognitoBrowserCount()),
+      l10n_util::GetPluralStringFUTF16(
+          IDS_RELAUNCH_RECOMMENDED_BODY,
+          GlobalBrowserCollection::GetInstance()->GetIncognitoBrowserCount()),
       views::style::CONTEXT_DIALOG_BODY_TEXT);
 
   label->SetMultiLine(true);

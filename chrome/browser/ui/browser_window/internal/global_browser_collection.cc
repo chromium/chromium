@@ -8,8 +8,10 @@
 
 #include "base/memory/raw_ref.h"
 #include "base/no_destructor.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "ui/base/base_window.h"
@@ -88,4 +90,21 @@ GlobalBrowserCollection::GetPlatformDelegate() {
 BrowserWindowInterface* GlobalBrowserCollection::GetActiveBrowser() {
   BrowserWindowInterface* browser = GetLastActiveBrowser();
   return (browser && browser->GetWindow()->IsActive()) ? browser : nullptr;
+}
+
+size_t GlobalBrowserCollection::GetIncognitoBrowserCount() {
+  size_t incognito_browser_count = 0;
+  ForEach([&incognito_browser_count](BrowserWindowInterface* browser) {
+    if (!browser->GetProfile()->IsIncognitoProfile()) {
+      return true;
+    }
+#if !BUILDFLAG(IS_ANDROID)
+    if (browser->GetType() == BrowserWindowInterface::Type::TYPE_DEVTOOLS) {
+      return true;
+    }
+#endif
+    incognito_browser_count++;
+    return true;
+  });
+  return incognito_browser_count;
 }

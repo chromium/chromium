@@ -43,6 +43,11 @@ class GlobalBrowserCollection : public BrowserCollection {
   // nullptr otherwise.
   BrowserWindowInterface* GetActiveBrowser();
 
+  // Returns the number of incognito browsers across all profiles, excluding
+  // DevTools windows. Mirrors the prior chrome::GetIncognitoBrowserCount()
+  // free function.
+  size_t GetIncognitoBrowserCount();
+
  protected:
   // BrowserCollection:
   BrowserVector GetBrowsers(Order order) override;

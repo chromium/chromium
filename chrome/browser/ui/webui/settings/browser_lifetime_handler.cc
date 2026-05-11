@@ -22,7 +22,8 @@
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #endif
@@ -149,7 +150,8 @@ void BrowserLifetimeHandler::HandleGetRelaunchConfirmationDialogDescription(
   CHECK(args[1].is_bool());
   const bool is_version_update = args[1].GetBool();
 
-  size_t incognito_count = chrome::GetIncognitoBrowserCount();
+  size_t incognito_count =
+      GlobalBrowserCollection::GetInstance()->GetIncognitoBrowserCount();
   base::Value description;
 
   // The caller can specify if this is a confirmation dialog for browser version
@@ -185,7 +187,8 @@ void BrowserLifetimeHandler::HandleShouldShowRelaunchConfirmationDialog(
   } else {
     // Show a confirmation dialog before the restart if there is an incognito
     // window open.
-    base::Value result = base::Value(chrome::GetIncognitoBrowserCount() > 0);
+    base::Value result = base::Value(
+        GlobalBrowserCollection::GetInstance()->GetIncognitoBrowserCount() > 0);
     ResolveJavascriptCallback(callback_id, result);
   }
 }

@@ -11,8 +11,8 @@
 #include "base/metrics/user_metrics_action.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -148,7 +148,7 @@ RelaunchRequiredDialogView::RelaunchRequiredDialogView(
       l10n_util::GetPluralStringFUTF16(
           ap_style_ ? IDS_ADVANCED_PROTECTION_RELAUNCH_REQUIRED_BODY
                     : IDS_RELAUNCH_REQUIRED_BODY,
-          chrome::GetIncognitoBrowserCount()),
+          GlobalBrowserCollection::GetInstance()->GetIncognitoBrowserCount()),
       views::style::CONTEXT_DIALOG_BODY_TEXT);
   label->SetMultiLine(true);
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);

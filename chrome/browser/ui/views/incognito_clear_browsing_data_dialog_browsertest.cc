@@ -7,9 +7,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -123,7 +123,8 @@ IN_PROC_BROWSER_TEST_F(IncognitoClearBrowsingDataDialogTest,
       "Incognito.ClearBrowsingDataDialog.ActionType",
       IncognitoClearBrowsingDataDialog::DialogActionType::kCloseIncognito, 1);
   observer.Wait();
-  ASSERT_EQ(0u, chrome::GetIncognitoBrowserCount());
+  ASSERT_EQ(0u,
+            GlobalBrowserCollection::GetInstance()->GetIncognitoBrowserCount());
 }
 
 IN_PROC_BROWSER_TEST_F(IncognitoClearBrowsingDataDialogTest, TestCancelButton) {
@@ -150,7 +151,8 @@ IN_PROC_BROWSER_TEST_F(IncognitoClearBrowsingDataDialogTest,
 
   CloseBrowserSynchronously(GetIncognitoBrowser());
 
-  ASSERT_EQ(0u, chrome::GetIncognitoBrowserCount());
+  ASSERT_EQ(0u,
+            GlobalBrowserCollection::GetInstance()->GetIncognitoBrowserCount());
 }
 
 IN_PROC_BROWSER_TEST_F(IncognitoClearBrowsingDataDialogTest,
@@ -190,7 +192,8 @@ IN_PROC_BROWSER_TEST_F(IncognitoClearBrowsingDataDialogTest,
   ui_test_utils::BrowserDestroyedObserver observer(GetIncognitoBrowser());
   GetDialogView()->CancelDialog();
   observer.Wait();
-  ASSERT_EQ(0u, chrome::GetIncognitoBrowserCount());
+  ASSERT_EQ(0u,
+            GlobalBrowserCollection::GetInstance()->GetIncognitoBrowserCount());
 }
 
 IN_PROC_BROWSER_TEST_F(IncognitoClearBrowsingDataDialogTest, TestGotItButton) {

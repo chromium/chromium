@@ -7,7 +7,7 @@
 
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -37,7 +37,8 @@ class IncognitoModeInSupervisedContextUiTest
  protected:
   auto CheckCountOfIncognitoBrowsers(size_t expected_count) {
     return Check(base::BindLambdaForTesting([expected_count]() {
-                   return chrome::GetIncognitoBrowserCount() == expected_count;
+                   return GlobalBrowserCollection::GetInstance()
+                              ->GetIncognitoBrowserCount() == expected_count;
                  }),
                  "Verify count of incognito browsers");
   }
