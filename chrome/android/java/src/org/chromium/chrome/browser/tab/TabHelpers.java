@@ -42,7 +42,6 @@ public final class TabHelpers {
         TaskTabHelper.createForTab(tab, parentTab);
         TabBrowserControlsConstraintsHelper.createForTab(tab);
         if (ReaderModeManager.isEnabled()) ReaderModeManager.createForTab(tab);
-        AccessibilityTabHelper.createForTab(tab);
 
         // The following will start prefetching data for the price drops feature, so
         // we should only do it if the user is eligible for the feature (e.g. has sync enabled).
@@ -67,6 +66,7 @@ public final class TabHelpers {
 
         TabWebContentsObserver.from(tab);
         SwipeRefreshHandler.from(tab);
+        AccessibilityTabHelper.from(tab);
         TabFavicon.from(tab);
         TrustedCdn.from(tab);
         TabAssociatedApp.from(tab);
