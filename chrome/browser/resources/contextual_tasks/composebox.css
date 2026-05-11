@@ -126,21 +126,6 @@
   pointer-events: none;
 }
 
-:host([is-zero-state][energy-effect-enabled_]) #composebox::part(composebox) {
-  will-change: opacity;
-  animation: zero-state-composebox-fade-in 50ms
-      var(--emphasized-accelerate-curve) both;
-}
-
-@keyframes zero-state-composebox-fade-in {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
-}
-
 :host(:not([input-enabled])) #composebox::part(input) {
   caret-color: transparent;
 }
