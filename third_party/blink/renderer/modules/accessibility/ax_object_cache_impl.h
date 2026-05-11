@@ -905,6 +905,14 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // Helper to clean up any references to the AXObject's AXID.
   void RemoveReferencesToAXID(AXID);
 
+  // Recursive implementation for RemoveSubtree(). |removing_subtree_axids|
+  // is scoped to a single top-level removal and prevents cycles through cached
+  // child references from re-entering the same AXObject.
+  void RemoveSubtreeInternal(const Node*,
+                             bool remove_root,
+                             bool notify_parent,
+                             HashSet<AXID>& removing_subtree_axids);
+
   HeapMojoRemote<mojom::blink::RenderAccessibilityHost>&
   GetOrCreateRemoteRenderAccessibilityHost();
   WebLocalFrameClient* GetWebLocalFrameClient() const;

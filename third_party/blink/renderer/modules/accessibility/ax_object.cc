@@ -430,7 +430,7 @@ void AXObject::SetAncestorsHaveDirtyDescendants() {
   AXObject* ancestor = this;
 
   while (true) {
-    ancestor = ancestor->ParentObject();
+    ancestor = ancestor->ParentObjectIfPresent();
     if (!ancestor) {
       break;
     }
@@ -453,7 +453,8 @@ void AXObject::SetAncestorsHaveDirtyDescendants() {
 #if AX_FAIL_FAST_BUILD()
   // Walk up the tree looking for dirty bits that failed to be set. If any
   // are found, this is a bug.
-  for (auto* obj = ParentObject(); obj; obj = obj->ParentObject()) {
+  for (auto* obj = ParentObjectIfPresent(); obj;
+       obj = obj->ParentObjectIfPresent()) {
     if (obj->CachedIsIncludedInTree() && !obj->has_dirty_descendants_) {
       NOTREACHED() << "Failed to set dirty bits on some ancestors:\n"
                    << ParentChainToStringHelper(this);
