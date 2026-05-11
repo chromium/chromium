@@ -22,6 +22,7 @@ import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.browser_ui.settings.search.SearchIndexValidator;
 
 /**
  * Fragment for the "Image Descriptions" settings sub-page under Settings > Accessibility. This page
@@ -108,6 +109,12 @@ public class ImageDescriptionsSettings extends PreferenceFragmentCompat
             mDelegate.setOnlyOnWifiRequirement((boolean) newValue, mProfile);
         }
         return true;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        SearchIndexValidator.validateSearchIndex(this);
     }
 
     @Initializer

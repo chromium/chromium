@@ -33,16 +33,7 @@ public class ChromeBaseSearchIndexProvider extends BaseSearchIndexProvider
         super(fragmentName, xmlRes, isSearchable);
     }
 
-    /**
-     * Override of {@link SearchIndexProvider#initPreferenceXml()} that also accepts {@link Profile}
-     * to determine the preference xml resource.
-     *
-     * @param context The {@link Context} used to access application resources.
-     * @param profile The {@link Profile} used to obtain the preference xml resource.
-     * @param indexData The central {@link SettingsIndexData} object to be populated.
-     * @param providerMap Map of all registered providers, keyed by Fragment Class Name. Used to
-     *     look up default extras for child fragments.
-     */
+    @Override
     public void initPreferenceXml(
             Context context,
             Profile profile,

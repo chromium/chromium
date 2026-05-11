@@ -38,6 +38,8 @@ import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 
+import java.util.Set;
+
 /** Preferences fragment to allow users to manage Buy Now Pay Later application settings. */
 @NullMarked
 public class AutofillBuyNowPayLaterFragment extends ChromeBaseSettingsFragment
@@ -68,18 +70,16 @@ public class AutofillBuyNowPayLaterFragment extends ChromeBaseSettingsFragment
         requireActivity()
                 .addMenuProvider(new AutofillHelpMenuProvider(this), this, Lifecycle.State.RESUMED);
 
+        mPersonalDataManager = PersonalDataManagerFactory.getForProfile(getProfile());
+        mPersonalDataManager.registerDataObserver(this);
+
         // Create blank preference screen.
         PreferenceScreen screen = getPreferenceManager().createPreferenceScreen(getStyledContext());
         // Suppresses unwanted animations while Preferences are removed from and re-added to the
         // screen.
         screen.setShouldUseGeneratedIds(false);
         setPreferenceScreen(screen);
-    }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        // Rebuild the preference list in case any of the underlying data has been updated.
         rebuildPage();
     }
 
@@ -168,13 +168,6 @@ public class AutofillBuyNowPayLaterFragment extends ChromeBaseSettingsFragment
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        mPersonalDataManager = PersonalDataManagerFactory.getForProfile(getProfile());
-        mPersonalDataManager.registerDataObserver(this);
-    }
-
-    @Override
     public void onDestroyView() {
         mPersonalDataManager.unregisterDataObserver(this);
         super.onDestroyView();
@@ -204,6 +197,11 @@ public class AutofillBuyNowPayLaterFragment extends ChromeBaseSettingsFragment
                             PREF_KEY_ENABLE_BUY_NOW_PAY_LATER,
                             R.string.autofill_bnpl_settings_label,
                             R.string.autofill_bnpl_settings_toggle_sublabel);
+                }
+
+                @Override
+                public Set<String> getIgnoredKeys() {
+                    return Set.of(PREF_KEY_BNPL_ISSUER_TERM);
                 }
             };
 }
