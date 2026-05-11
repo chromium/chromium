@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/common/buildflags.h"
+#include "chrome/common/pref_names.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/view.h"
 
@@ -30,7 +32,20 @@
 
 BrowserViewLayoutDelegateImpl::BrowserViewLayoutDelegateImpl(
     BrowserView& browser_view)
-    : browser_view_(browser_view) {}
+    : browser_view_(browser_view) {
+  if (base::FeatureList::IsEnabled(tabs::kHorizontalTabStripComboButton)) {
+    PrefService* prefs = browser_view_->GetProfile()->GetPrefs();
+    tab_search_pinned_to_tab_strip_ =
+        prefs->GetBoolean(prefs::kTabSearchPinnedToTabstrip);
+
+    pref_registrar_.Init(prefs);
+    pref_registrar_.Add(
+        prefs::kTabSearchPinnedToTabstrip,
+        base::BindRepeating(
+            &BrowserViewLayoutDelegateImpl::OnTabSearchPinnedStateChanged,
+            base::Unretained(this)));
+  }
+}
 BrowserViewLayoutDelegateImpl::~BrowserViewLayoutDelegateImpl() = default;
 
 bool BrowserViewLayoutDelegateImpl::ShouldDrawTabStrip() const {
@@ -142,9 +157,14 @@ bool BrowserViewLayoutDelegateImpl::IsActiveTabSplit() const {
 
 bool BrowserViewLayoutDelegateImpl::IsActiveTabAtLeadingWindowEdge() const {
   if (auto* const frame = GetFrameView()) {
-    const bool has_leading_search_button =
+    bool has_leading_search_button =
         tabs::GetTabSearchPosition(browser_view_->browser()) ==
         tabs::TabSearchPosition::kLeadingHorizontalTabstrip;
+    if (base::FeatureList::IsEnabled(tabs::kHorizontalTabStripComboButton)) {
+      // Tab search button can be unpinned so including it in the determination
+      // of leading edge of horizontal tab strip.
+      has_leading_search_button &= tab_search_pinned_to_tab_strip_;
+    }
     if (!frame->CaptionButtonsOnLeadingEdge() && !has_leading_search_button) {
       return browser_view_->browser()->tab_strip_model()->IsTabInForeground(0);
     }
@@ -236,4 +256,10 @@ const BrowserFrameView* BrowserViewLayoutDelegateImpl::GetFrameView() const {
   return browser_view_->browser_widget()
              ? browser_view_->browser_widget()->GetFrameView()
              : nullptr;
+}
+
+void BrowserViewLayoutDelegateImpl::OnTabSearchPinnedStateChanged() {
+  tab_search_pinned_to_tab_strip_ =
+      browser_view_->GetProfile()->GetPrefs()->GetBoolean(
+          prefs::kTabSearchPinnedToTabstrip);
 }
