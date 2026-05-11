@@ -14,7 +14,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -644,7 +643,7 @@ void CachedStorageArea::EnsureLoaded() {
   }
 
   base::TimeDelta time_to_prime = base::TimeTicks::Now() - before;
-  UMA_HISTOGRAM_TIMES("LocalStorage.MojoTimeToPrime", time_to_prime);
+  base::UmaHistogramTimes("LocalStorage.MojoTimeToPrime", time_to_prime);
 
   if (base::FeatureList::IsEnabled(kDomStorageAblation)) {
     base::TimeDelta delay =
@@ -661,19 +660,19 @@ void CachedStorageArea::EnsureLoaded() {
   // Track localStorage size, from 0-6MB. Note that the maximum size should be
   // 10MB, but we add some slop since we want to make sure the max size is
   // always above what we see in practice, since histograms can't change.
-  UMA_HISTOGRAM_CUSTOM_COUNTS(
+  base::UmaHistogramCustomCounts(
       "LocalStorage.MojoSizeInKB",
       base::saturated_cast<base::Histogram::Sample32>(local_storage_size_kb), 1,
       6 * 1024, 50);
   if (local_storage_size_kb < 100) {
-    UMA_HISTOGRAM_TIMES("LocalStorage.MojoTimeToPrimeForUnder100KB",
-                        time_to_prime);
+    base::UmaHistogramTimes("LocalStorage.MojoTimeToPrimeForUnder100KB",
+                            time_to_prime);
   } else if (local_storage_size_kb < 1000) {
-    UMA_HISTOGRAM_TIMES("LocalStorage.MojoTimeToPrimeFor100KBTo1MB",
-                        time_to_prime);
+    base::UmaHistogramTimes("LocalStorage.MojoTimeToPrimeFor100KBTo1MB",
+                            time_to_prime);
   } else {
-    UMA_HISTOGRAM_TIMES("LocalStorage.MojoTimeToPrimeFor1MBTo5MB",
-                        time_to_prime);
+    base::UmaHistogramTimes("LocalStorage.MojoTimeToPrimeFor1MBTo5MB",
+                            time_to_prime);
   }
 }
 
@@ -770,7 +769,6 @@ String CachedStorageArea::Uint8VectorToString(const Vector<uint8_t>& input,
   if (corrupt) {
     // TODO(mek): Better error recovery when corrupt (or otherwise invalid) data
     // is detected.
-    LOCAL_HISTOGRAM_BOOLEAN("LocalStorageCachedArea.CorruptData", true);
     LOG(ERROR) << "Corrupt data in domstorage";
     return g_empty_string;
   }

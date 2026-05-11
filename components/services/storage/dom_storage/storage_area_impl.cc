@@ -11,7 +11,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
@@ -693,7 +692,7 @@ base::TimeDelta StorageAreaImpl::ComputeCommitDelay() const {
                         data_rate_limiter_.ComputeDelayNeeded(elapsed_time)));
   // TODO(mek): Rename histogram to match class name, or eliminate histogram
   // entirely.
-  UMA_HISTOGRAM_LONG_TIMES("LevelDBWrapper.CommitDelay", delay);
+  base::UmaHistogramLongTimes("LevelDBWrapper.CommitDelay", delay);
   return delay;
 }
 

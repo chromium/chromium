@@ -14,7 +14,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
@@ -45,45 +44,6 @@ const size_t kMaxSessionStorageCacheSize = 2 * 1024 * 1024;
 const unsigned kMaxSessionStorageAreaCount = 50;
 const size_t kMaxSessionStorageCacheSize = 20 * 1024 * 1024;
 #endif
-
-enum class SessionStorageCachePurgeReason {
-  kNotNeeded,
-  kSizeLimitExceeded,
-  kAreaCountLimitExceeded,
-  kInactiveOnLowEndDevice,
-  kAggressivePurgeTriggered
-};
-
-void RecordSessionStorageCachePurgedHistogram(
-    SessionStorageCachePurgeReason reason,
-    size_t purged_size_kib) {
-  UMA_HISTOGRAM_COUNTS_100000("SessionStorageContext.CachePurgedInKB",
-                              purged_size_kib);
-  switch (reason) {
-    case SessionStorageCachePurgeReason::kSizeLimitExceeded:
-      UMA_HISTOGRAM_COUNTS_100000(
-          "SessionStorageContext.CachePurgedInKB.SizeLimitExceeded",
-          purged_size_kib);
-      break;
-    case SessionStorageCachePurgeReason::kAreaCountLimitExceeded:
-      UMA_HISTOGRAM_COUNTS_100000(
-          "SessionStorageContext.CachePurgedInKB.AreaCountLimitExceeded",
-          purged_size_kib);
-      break;
-    case SessionStorageCachePurgeReason::kInactiveOnLowEndDevice:
-      UMA_HISTOGRAM_COUNTS_100000(
-          "SessionStorageContext.CachePurgedInKB.InactiveOnLowEndDevice",
-          purged_size_kib);
-      break;
-    case SessionStorageCachePurgeReason::kAggressivePurgeTriggered:
-      UMA_HISTOGRAM_COUNTS_100000(
-          "SessionStorageContext.CachePurgedInKB.AggressivePurgeTriggered",
-          purged_size_kib);
-      break;
-    case SessionStorageCachePurgeReason::kNotNeeded:
-      NOTREACHED();
-  }
-}
 
 }  // namespace
 
@@ -136,12 +96,6 @@ void SessionStorageImpl::BindNamespace(
 
   PurgeUnusedAreasIfNeeded();
   found->second->Bind(std::move(receiver));
-
-  size_t total_cache_size, unused_area_count;
-  GetStatistics(&total_cache_size, &unused_area_count);
-  // Track the total sessionStorage cache size.
-  UMA_HISTOGRAM_COUNTS_100000("SessionStorageContext.CacheSizeInKB",
-                              total_cache_size / 1024);
 }
 
 void SessionStorageImpl::BindStorageArea(
@@ -399,9 +353,6 @@ void SessionStorageImpl::ShutDown() {
 }
 
 void SessionStorageImpl::PurgeMemory() {
-  size_t total_cache_size, unused_area_count;
-  GetStatistics(&total_cache_size, &unused_area_count);
-
   // Purge all areas that don't have bindings.
   for (const auto& namespace_pair : namespaces_) {
     namespace_pair.second->PurgeUnboundAreas();
@@ -410,14 +361,6 @@ void SessionStorageImpl::PurgeMemory() {
   for (const auto& data_map_pair : data_maps_) {
     data_map_pair.second->storage_area()->PurgeMemory();
   }
-
-  // Track the size of cache purged.
-  size_t final_total_cache_size;
-  GetStatistics(&final_total_cache_size, &unused_area_count);
-  size_t purged_size_kib = (total_cache_size - final_total_cache_size) / 1024;
-  RecordSessionStorageCachePurgedHistogram(
-      SessionStorageCachePurgeReason::kAggressivePurgeTriggered,
-      purged_size_kib);
 }
 
 void SessionStorageImpl::PurgeUnusedAreasIfNeeded() {
@@ -425,32 +368,23 @@ void SessionStorageImpl::PurgeUnusedAreasIfNeeded() {
   GetStatistics(&total_cache_size, &unused_area_count);
 
   // Nothing to purge.
-  if (!unused_area_count)
+  if (!unused_area_count) {
     return;
-
-  SessionStorageCachePurgeReason purge_reason =
-      SessionStorageCachePurgeReason::kNotNeeded;
-
-  if (total_cache_size > kMaxSessionStorageCacheSize)
-    purge_reason = SessionStorageCachePurgeReason::kSizeLimitExceeded;
-  else if (data_maps_.size() > kMaxSessionStorageAreaCount)
-    purge_reason = SessionStorageCachePurgeReason::kAreaCountLimitExceeded;
-  else if (base::SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled()) {
-    purge_reason = SessionStorageCachePurgeReason::kInactiveOnLowEndDevice;
   }
 
-  if (purge_reason == SessionStorageCachePurgeReason::kNotNeeded)
-    return;
+  bool cache_size_limit_exceeded =
+      total_cache_size > kMaxSessionStorageCacheSize;
 
-  // Purge all areas that don't have bindings.
-  for (const auto& namespace_pair : namespaces_) {
-    namespace_pair.second->PurgeUnboundAreas();
+  bool area_count_limit_exceeded =
+      data_maps_.size() > kMaxSessionStorageAreaCount;
+
+  if (cache_size_limit_exceeded || area_count_limit_exceeded ||
+      base::SysInfo::IsLowEndDeviceOrPartialLowEndModeEnabled()) {
+    // Purge all areas that don't have bindings.
+    for (const auto& namespace_pair : namespaces_) {
+      namespace_pair.second->PurgeUnboundAreas();
+    }
   }
-
-  size_t final_total_cache_size;
-  GetStatistics(&final_total_cache_size, &unused_area_count);
-  size_t purged_size_kib = (total_cache_size - final_total_cache_size) / 1024;
-  RecordSessionStorageCachePurgedHistogram(purge_reason, purged_size_kib);
 }
 
 void SessionStorageImpl::ScavengeUnusedNamespaces() {

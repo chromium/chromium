@@ -1238,45 +1238,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="SessionStorageContext.CachePurgedInKB{DOMStorageCachePurgeReason}"
-    units="KB" expires_after="2024-12-01">
-  <owner>ayui@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Total size of the HTML5 SessionStorage browser-side cache purged in KB,
-    recorded when memory pressure signal is triggered or cache size hit the
-    limits.
-
-    Warning: Histogram expired between M95-M110. Data may be missing.
-    {DOMStorageCachePurgeReason}
-  </summary>
-  <token key="DOMStorageCachePurgeReason">
-    <variant name=""/>
-    <variant name=".AggressivePurgeTriggered"
-        summary="Aggressive purge was triggered on memory pressure."/>
-    <variant name=".AreaCountLimitExceeded"
-        summary="Storage areas count exceeded limit."/>
-    <variant name=".InactiveOnLowEndDevice"
-        summary="Inactive areas found in low end device."/>
-    <variant name=".ModeratePurgeTriggered"
-        summary="Moderate purge was triggered on memory pressure."/>
-    <variant name=".SizeLimitExceeded" summary="Cache size exceeded limit."/>
-  </token>
-</histogram>
-
-<histogram name="SessionStorageContext.CacheSizeInKB" units="KB"
-    expires_after="2024-12-01">
-  <owner>ayui@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Total size of the HTML5 SessionStorage databases in KB in the browser-side
-    cache. Recorded each time a new database is opened in memory.
-
-    Warning: Histogram expired between M95-M110. Data may be missing.
-  </summary>
-</histogram>
-
 </histograms>
 
 </histogram-configuration>
