@@ -5,6 +5,7 @@
 #include "components/services/storage/service_worker/service_worker_database.h"
 
 #include <optional>
+#include <string_view>
 
 #include "base/byte_size.h"
 #include "base/command_line.h"
@@ -226,8 +227,9 @@ std::string CreateUserDataKeyPrefix(int64_t registration_id) {
 }
 
 std::string CreateUserDataKey(int64_t registration_id,
-                              const std::string& user_data_name) {
-  return CreateUserDataKeyPrefix(registration_id).append(user_data_name);
+                              std::string_view user_data_name) {
+  return base::StrCat(
+      {CreateUserDataKeyPrefix(registration_id), user_data_name});
 }
 
 std::string CreateHasUserDataKeyPrefix(const std::string& user_data_name) {
@@ -263,7 +265,7 @@ void PutPurgeableResourceIdToBatch(int64_t resource_id,
       "");
 }
 
-ServiceWorkerDatabase::Status ParseId(const std::string& serialized,
+ServiceWorkerDatabase::Status ParseId(std::string_view serialized,
                                       int64_t* out) {
   DCHECK(out);
   int64_t id;
@@ -2167,9 +2169,9 @@ ServiceWorkerDatabase::ReadUserDataForAllRegistrationsByKeyPrefix(
         break;
       }
 
-      std::vector<std::string> parts = base::SplitString(
+      std::vector<std::string_view> parts = base::SplitStringPiece(
           user_data_name_with_id,
-          std::string(1, service_worker_internals::kKeySeparator),
+          std::string_view(&service_worker_internals::kKeySeparator, 1),
           base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
       if (parts.size() != 2) {
         status = Status::kErrorCorrupted;
@@ -2192,8 +2194,8 @@ ServiceWorkerDatabase::ReadUserDataForAllRegistrationsByKeyPrefix(
         user_data->clear();
         break;
       }
-      user_data->push_back(
-          mojom::ServiceWorkerUserData::New(registration_id, parts[0], value));
+      user_data->push_back(mojom::ServiceWorkerUserData::New(
+          registration_id, std::string(parts[0]), value));
     }
   }
 
@@ -2235,9 +2237,9 @@ ServiceWorkerDatabase::DeleteUserDataForAllRegistrationsByKeyPrefix(
                      &user_data_name_with_id);
     DCHECK(did_remove_prefix);
 
-    std::vector<std::string> parts = base::SplitString(
+    std::vector<std::string_view> parts = base::SplitStringPiece(
         user_data_name_with_id,
-        std::string(1, service_worker_internals::kKeySeparator),
+        std::string_view(&service_worker_internals::kKeySeparator, 1),
         base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
     if (parts.size() != 2)
       return Status::kErrorCorrupted;
