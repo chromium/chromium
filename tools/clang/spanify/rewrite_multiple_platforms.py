@@ -16,6 +16,7 @@ import subprocess
 import time
 
 from gnconfigs import GnConfigs
+from spanify_utils import scratch_dir, clear_scratch_dir
 
 PROJECTS = {
     'chrome': {
@@ -73,8 +74,6 @@ LLVM_BUILD_DIR = pathlib.Path('third_party/llvm-build')
 LLVM_UPSTREAM_DIR = pathlib.Path('third_party/llvm-build-upstream')
 REWRITER_BINARY_PATH = LLVM_BUILD_DIR / 'Release+Asserts/bin/spanify'
 CLANG_LIB_REL_PATH = pathlib.Path('Release+Asserts/lib/clang')
-
-SCRATCH_DIR = pathlib.Path('~/scratch').expanduser()
 
 
 def get_out_dir(platform):
@@ -242,7 +241,7 @@ def prepare_platform(platform, out_dir, project):
                    check=True)
 
 
-def run_rewrite_tool(platform, out_dir, project, scratch_dir):
+def run_rewrite_tool(platform, out_dir, project):
     """
     Runs the spanify tool and filters output for uniqueness using awk.
     """
@@ -267,8 +266,8 @@ def run_rewrite_tool(platform, out_dir, project, scratch_dir):
 
     cmd.extend([compile_dirs, f'path-filter={compile_dirs}'])
 
-    out_path = scratch_dir / f'rewriter-{platform}.main.out'
-    err_path = scratch_dir / f'rewriter-{platform}.main.err'
+    out_path = scratch_dir() / f'rewriter-{platform}.main.out'
+    err_path = scratch_dir() / f'rewriter-{platform}.main.err'
 
     logging.info("Running: %s | awk '!x[$0]++' > %s", shlex.join(cmd),
                  out_path)
@@ -301,35 +300,34 @@ def run_rewrite_phase(platforms, project):
     """
     Prepares and runs the rewrite tool for all specified platforms.
     """
-    shutil.rmtree(SCRATCH_DIR, ignore_errors=True)
-    SCRATCH_DIR.mkdir(parents=True)
+    clear_scratch_dir()
 
     for platform in platforms:
         out_dir = get_out_dir(platform)
         prepare_platform(platform, out_dir, project)
-        run_rewrite_tool(platform, out_dir, project, SCRATCH_DIR)
+        run_rewrite_tool(platform, out_dir, project)
 
 
 def apply_edits_phase(last_platform):
     """
     Extracts edits from the rewrite tool output and applies them.
     """
-    SCRATCH_DIR.mkdir(parents=True, exist_ok=True)
+    scratch_dir().mkdir(parents=True, exist_ok=True)
     logging.info('Applying edits...')
     # Clear out stale patches from previous runs or tests. They will be
     # recreated by apply_edits.py, but we want to make sure we don't have any
     # leftover patches lying around from previous runs that could cause
     # confusion.
-    for f in SCRATCH_DIR.glob('patch*'):
+    for f in scratch_dir().glob('patch*'):
         f.unlink()
 
     logging.info('Running: extract_edits.py | apply_edits.py')
 
     # Combine all rewrite outputs into one file first
-    all_edits = SCRATCH_DIR / 'all.main.out'
+    all_edits = scratch_dir() / 'all.main.out'
     with all_edits.open('wb') as wfd:
         # Use sorted to guarantee reproducible ordering across environments
-        for f in sorted(SCRATCH_DIR.glob('*.main.out')):
+        for f in sorted(scratch_dir().glob('*.main.out')):
             if f != all_edits:
                 with f.open('rb') as rfd:
                     shutil.copyfileobj(rfd, wfd)

@@ -90,7 +90,7 @@ then runs the tool over every configuration in the list of platforms.
    the rewrite on. Defaults to `linux`. Valid choices are `android`, `win`,
    `linux`, `cros`, `chromeos`, `mac`.
 2. `--skip-rewrite` or `-r` for short: If you've already ran on the platform and
-   have the associated `~/scratch` directory, you can just skip generating this.
+   have the associated `<scratch>` directory, you can just skip generating this.
 3. `--skip-extract-edits` or `-e` for short: Don't attempt to run
    `extract_edits.py` on the results of the rewrite.
 4. `--project`: The project to spanify. Valid choices are `chrome` (default) and
@@ -116,6 +116,21 @@ Example commands:
   ./tools/clang/spanify/rewrite_multiple_platforms.py --project partition_alloc
   ./tools/clang/spanify/rewrite_multiple_platforms.py -p linux --skip-rewrite
 ```
+
+### Environment Variables
+
+1. `SPANIFY_SCRATCH_DIR`: By default, the script uses a `spanify_scratch`
+   directory in the current working directory to store intermediate results
+   (e.g., build artifacts, generated patches). You can override this by setting
+   the `SPANIFY_SCRATCH_DIR` environment variable. This is useful if you want to
+   avoid cluttering your workdir or if you want to share scratch results across
+   different checkouts.
+
+   Example:
+   ```bash
+   export SPANIFY_SCRATCH_DIR=~/my_spanify_scratch
+   ./tools/clang/spanify/rewrite_multiple_platforms.py
+   ```
 
 ### Troubleshooting
 

@@ -18,6 +18,7 @@ import random
 import re
 import subprocess
 import sys
+from spanify_utils import scratch_dir
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -197,29 +198,29 @@ def upload_zip_to_drive_folder(creds, zip_file):
         file = (service.files().create(body=file_metadata,
                                        media_body=media,
                                        fields="id").execute())
-        print("uploaded " + zip_file + " as " + name +
-              " to file: https://drive.google.com/file/d/" + file.get("id"))
+        print(f"uploaded {zip_file} as {name} "
+              f"to file: https://drive.google.com/file/d/{file.get('id')}")
     except HttpError as error:
         print(f"Uploading to drive errored: {error}", file=sys.stderr)
 
 
-def upload_scratch(creds, file_name, scratch_dir):
+def upload_scratch(creds, file_name):
     """
     Uploads a new file to the provided google drive folder.
     """
     try:
         # Since we've reduced the size of stdout we can include everything in
         # the scratch directory.
-        output_zip = f"{scratch_dir}/{file_name}"
-        run(f"zip -q {output_zip} {scratch_dir}/*")
-        upload_zip_to_drive_folder(creds, f"{scratch_dir}/{file_name}")
+        output_zip = scratch_dir() / file_name
+        run(f'zip -q "{output_zip}" "{scratch_dir()}"/*')
+        upload_zip_to_drive_folder(creds, output_zip)
     except Exception as e:
         print(f"Failed to upload scratch: {e}", file=sys.stderr)
 
 
-def report_case_result(scratch_dir, result, spreadsheet, spreadsheet_id, today,
-                       index, patches, user, error_msg, diff, final_file):
-    with open(scratch_dir + "/evaluation.csv", "a") as f:
+def report_case_result(result, spreadsheet, spreadsheet_id, today, index,
+                       patches, user, error_msg, diff, final_file):
+    with (scratch_dir() / "evaluation.csv").open("a") as f:
         f.write(f"{index}, {result}, {error_msg}\n")
     try:
         append_row(spreadsheet, spreadsheet_id, [
@@ -250,7 +251,7 @@ def report_case_result(scratch_dir, result, spreadsheet, spreadsheet_id, today,
         print(f"Failed to append_row but uploaded error to spreadsheet: {e}",
               file=sys.stderr)
 
-    with open(scratch_dir + f"/patch_{index}.{result}", "w+") as f:
+    with (scratch_dir() / f"patch_{index}.{result}").open("w+") as f:
         f.write(final_file)
 
 
@@ -280,20 +281,17 @@ if __name__ == "__main__":
 
     today = datetime.now().strftime("%Y/%m/%d")
     today_underscore = today.replace("/", "_")
-    scratch_dir = os.path.expanduser("~/scratch")
     creds = get_google_creds()
     spreadsheet = get_spreadsheet(creds)
     user = getpass.getuser()
 
     def report_success(index, patches, error_msg, diff, final_file):
-        report_case_result(scratch_dir, "pass", spreadsheet, spreadsheet_id,
-                           today, index, patches, user, error_msg, diff,
-                           final_file)
+        report_case_result("pass", spreadsheet, spreadsheet_id, today, index,
+                           patches, user, error_msg, diff, final_file)
 
     def report_failure(index, patches, error_msg, diff, final_file):
-        report_case_result(scratch_dir, "fail", spreadsheet, spreadsheet_id,
-                           today, index, patches, user, error_msg, diff,
-                           final_file)
+        report_case_result("fail", spreadsheet, spreadsheet_id, today, index,
+                           patches, user, error_msg, diff, final_file)
 
     print(f"Running evaluate_patches.py for project {project}...")
 
@@ -318,18 +316,15 @@ if __name__ == "__main__":
     # We've updated the args and need to generate new build files.
     run(f"gn gen out/{platform}", f"Failed to generate out/{platform}.")
 
-    # Produce a full rewrite, and store individual patches below ~/scratch/patch_*
+    # Produce a full rewrite, and store individual patches below <scratch>/patch_*
     rewrite_script = "./tools/clang/spanify/rewrite_multiple_platforms.py"
     run(f"{rewrite_script} --platform={platform} --project={rewrite_project}")
 
     run("git reset --hard origin/main")  # Restore source code.
     run("gclient sync -fD", exit_on_error=False)  # Restore compiler.
-    run("git rev-parse HEAD > ~/scratch/git_revision.txt")  # Save commit.
+    run(f'git rev-parse HEAD > "{(scratch_dir() / "git_revision.txt")}"')
 
-    patches = [
-        name for name in os.listdir(scratch_dir)
-        if name.startswith("patch_") and name.endswith(".txt")
-    ]
+    patches = [p.name for p in scratch_dir().glob("patch_*.txt")]
 
     # Sort numerically the patches to evaluate.
     patches.sort(key=lambda x: int(x.split("_")[1].split(".")[0]))
@@ -346,7 +341,7 @@ if __name__ == "__main__":
     # 3, pass, ""
     # 4, fail, "subcommand failed"
     # ```
-    with open(scratch_dir + "/evaluation.csv", "w+") as f:
+    with (scratch_dir() / "evaluation.csv").open("w+") as f:
         f.write("patch, status, error_msg\n")
 
     # Perform a clean build to ensure a valid state for the incremental builds.
@@ -368,7 +363,7 @@ if __name__ == "__main__":
             run(f"git new-branch spanification_rewrite_evaluate_{index}")
             try:
                 result = subprocess.run(
-                    f"cat ~/scratch/{patch} " +
+                    f'cat "{(scratch_dir() / patch)}" ' +
                     " | tools/clang/scripts/apply_edits.py" +
                     f" -p ./out/{platform}/",
                     shell=True,
@@ -379,8 +374,8 @@ if __name__ == "__main__":
                 error_msg = ("\"" + str(e) + " !!! exception(stderr): " +
                              str(e.stderr) + "\"")
 
-                run(f"git diff  > ~/scratch/patch_{index}.diff")
-                diff = open(scratch_dir + f"/patch_{index}.diff").read()
+                run(f'git diff  > "{(scratch_dir() / f"patch_{index}.diff")}"')
+                diff = (scratch_dir() / f"patch_{index}.diff").read_text()
 
                 final_file = str(e.stderr) + "\n" + str(e.stdout)
 
@@ -403,15 +398,16 @@ if __name__ == "__main__":
             if not run("git commit -F commit_message.txt",
                        exit_on_error=False):
                 # We fail when there is no diff get the replacements instead.
-                diff = open(scratch_dir + f"/patch_{index}.txt").read()
+                diff = (scratch_dir() / f"patch_{index}.txt").read_text()
 
                 report_failure(index, patches, "Failed to commit diff", diff,
                                "")
                 continue
 
             # Serialize changes
-            run(f"git diff HEAD~...HEAD > ~/scratch/patch_{index}.diff")
-            diff = open(scratch_dir + f"/patch_{index}.diff").read()
+            run(f'git diff HEAD~...HEAD > "{(scratch_dir() / f"patch_{index}.diff")}"'
+                )
+            diff = (scratch_dir() / f"patch_{index}.diff").read_text()
 
             # Build and evaluate
             print(f"Evaluating patch {index}/{len(patches)}")
@@ -427,7 +423,7 @@ if __name__ == "__main__":
             print(result.stderr)
 
             final_file = result.stderr + "\n" + result.stdout
-            with open(scratch_dir + f"/patch_{index}.out", "w+") as f:
+            with (scratch_dir() / f"patch_{index}.out").open("w+") as f:
                 f.write(result.stderr)
                 f.write(result.stdout)
 
@@ -467,4 +463,4 @@ if __name__ == "__main__":
         # the evaluate_patches tool itself.
         unique_id = random.randint(1, 10000)
         file_name = f"{today_underscore}_evaluate_patches_{user}_{unique_id}.zip"
-        upload_scratch(creds, file_name, scratch_dir)
+        upload_scratch(creds, file_name)

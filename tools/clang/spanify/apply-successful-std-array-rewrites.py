@@ -6,23 +6,22 @@
 
 Prerequisites:
 --------------
-Populate ~/scratch/patch_{}.{out,diff,pass,fail} files by running:
+Populate <scratch>/patch_{}.{out,diff,pass,fail} files by running:
 //tools/clang/spanify/evaluate_patches.py
 with patch_limit = 9999
 """
 
 import pathlib
 import sys
-from spanify_utils import apply_collected_edits
+from spanify_utils import apply_collected_edits, scratch_dir
 
 
 def main():
-    scratch_dir = pathlib.Path('~/scratch').expanduser()
     valid_patches = []
 
-    for p in scratch_dir.glob('patch_*.pass'):
+    for p in scratch_dir().glob('patch_*.pass'):
         index = int(p.name.removeprefix('patch_').removesuffix('.pass'))
-        diff_file = scratch_dir / f"patch_{index}.diff"
+        diff_file = scratch_dir() / f"patch_{index}.diff"
         if diff_file.exists():
             valid_patches.append((index, diff_file))
 
@@ -41,7 +40,7 @@ def main():
 
         if has_std_array:
             print(f"Processing patch_{index}.diff")
-            txt_file = scratch_dir / f"patch_{index}.txt"
+            txt_file = scratch_dir() / f"patch_{index}.txt"
             if txt_file.exists():
                 replacements.extend(
                     txt_file.read_text().splitlines(keepends=True))

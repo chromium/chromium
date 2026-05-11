@@ -86,7 +86,9 @@ https://docs.google.com/document/d/1hUPe21CDdbT6_YFHl03KWlcZqhNIPBAfC-5N5DDY2OE/
 import sys
 import urllib.parse
 
+import os
 from os.path import expanduser
+from spanify_utils import scratch_dir
 import pprint
 from collections import defaultdict
 
@@ -472,31 +474,30 @@ def main():
         component.changes |= component.frontier_changes_accepted
 
     # Emit the changes:
-    # - ~/scratch/patches.txt: A summary of each atomic change.
-    # - ~/scratch/patch_<patch_index>: Write each atomic change.
+    # - <scratch>/patches.txt: A summary of each atomic change.
+    # - <scratch>/patch_<patch_index>: Write each atomic change.
     # - stdout: Print a bundle of all the changes. This is usually piped to
     #           "./tools/clang/scripts/apply_edits.py" to apply the changes.
 
-    summary_filename = expanduser('~/scratch/patches.txt')
-    summary_file = open(summary_filename, 'w')
+    summary_filename = scratch_dir() / 'patches.txt'
+    with summary_filename.open('w') as summary_file:
+        component_with_changes = [
+            component for component in Component.all
+            if len(component.changes) > 0
+        ]
 
-    component_with_changes = [
-        component for component in Component.all if len(component.changes) > 0
-    ]
+        for index, component in enumerate(component_with_changes):
+            merged_component_changes = merge_insertions_and_remove_precedence_field(
+                component.changes)
 
-    for index, component in enumerate(component_with_changes):
-        merged_component_changes = merge_insertions_and_remove_precedence_field(
-            component.changes)
+            for text in merged_component_changes:
+                print(text)
 
-        for text in merged_component_changes:
-            print(text)
+            summary_file.write(
+                f'patch_{index}: {len(merged_component_changes)}\n')
 
-        summary_file.write(f'patch_{index}: {len(merged_component_changes)}\n')
-
-        with open(expanduser(f'~/scratch/patch_{index}.txt'), 'w') as f:
-            f.write('\n'.join(merged_component_changes))
-
-    summary_file.close()
+            with (scratch_dir() / f'patch_{index}.txt').open('w') as f:
+                f.write('\n'.join(merged_component_changes))
 
     return 0
 

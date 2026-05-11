@@ -42,18 +42,17 @@
 # example
 # 1. Checkout "main"
 # 2. download a spanification patch: "rewrite" (or run at head) into your
-#    ~/scratch directory
+#    <scratch> directory
 # 3. run this script to apply patches and figure out the set that compile on
 #    all relevant platforms.
 # 4. upload the patch and fix any tests or things this script missed.
-import glob
 import os
-import re
 import sys
 import subprocess
 import getpass
 
 # common gn args for spanify project scripts.
+from spanify_utils import scratch_dir
 from gnconfigs import GnConfigs, GenerateGnTarget
 from enum import Enum
 
@@ -176,12 +175,10 @@ def run(command, error_message=None, exit_on_error=True):
     return True
 
 
-def FindSuccessfulPatchNumbers(scratch_dir: str) -> tuple:
-    files = glob.glob(scratch_dir + '/patch_*.pass')
+def FindSuccessfulPatchNumbers() -> tuple:
     result = []
-    regex = re.compile(r'.*/patch_([0-9]+)\.pass$')
-    for f in files:
-        result.append(int(regex.match(f).group(1)))
+    for p in scratch_dir().glob("patch_*.pass"):
+        result.append(int(p.name.removeprefix("patch_").removesuffix(".pass")))
     return tuple(sorted(result))
 
 
@@ -202,12 +199,12 @@ def PopBranch() -> ():
     run(f'git checkout {BRANCHES[-1]} 1>/dev/null 2>/dev/null')
 
 
-def CollectEditsInFile(patches: tuple, scratch_dir: str, label: str) -> str:
+def CollectEditsInFile(patches: tuple, label: str) -> str:
     assert len(patches) != 0, 'should always have at least one patch'
     assert all(isinstance(p, int) for p in patches)
     file_offset_and_replacement = []
     for patch in patches:
-        with open(scratch_dir + f'/patch_{str(patch)}.txt', 'r') as edits:
+        with (scratch_dir() / f"patch_{patch}.txt").open("r") as edits:
             for line in edits.readlines():
                 if line[-1] != '\n':
                     line = line + '\n'
@@ -228,22 +225,22 @@ def CollectEditsInFile(patches: tuple, scratch_dir: str, label: str) -> str:
     file_offset_and_replacement = sorted(file_offset_and_replacement,
                                          key=lambda x: x[0],
                                          reverse=True)
-    output = scratch_dir + f'/combined_edits_{label}.txt'
-    with open(output, 'w') as out:
+    output = scratch_dir() / f"combined_edits_{label}.txt"
+    with output.open('w') as out:
         for offset, replacement in file_offset_and_replacement:
             out.write(replacement)
     return output
 
 
-def ApplyEdits(patches: tuple, scratch_dir, label) -> bool:
+def ApplyEdits(patches: tuple, label) -> bool:
     if len(patches) == 0:
         return True
     assert all(isinstance(p, int) for p in patches)
 
-    edits = CollectEditsInFile(patches, scratch_dir, label)
+    edits = CollectEditsInFile(patches, label)
     print(f'applying {patches} in {label} in {edits}', flush=True)
     try:
-        result = subprocess.run(f"cat {edits}" +
+        result = subprocess.run(f'cat "{edits}"' +
                                 " | tools/clang/scripts/apply_edits.py" +
                                 " -p ./out/linux/",
                                 shell=True,
@@ -254,7 +251,7 @@ def ApplyEdits(patches: tuple, scratch_dir, label) -> bool:
         error_msg = ("\"" + str(e) + " !!! exception(stderr): " +
                      str(e.stderr) + "\"")
         print(f'applying {label} failed because {error_msg}', flush=True)
-        run(f"git diff  > {scratch_dir}/patch_{label}.diff")
+        run(f'git diff  > "{(scratch_dir() / f"patch_{label}.diff")}"')
         run("git restore .", "Failed to restore after failed patch.")
         return False
     run("git cl format")
@@ -269,11 +266,11 @@ def ApplyEdits(patches: tuple, scratch_dir, label) -> bool:
     # third_party) thus don't treat failure to commit as an error.
     if not run("git commit -F commit_message.txt", exit_on_error=False):
         # We fail when there is no diff get the replacements instead.
-        diff = open(scratch_dir + f"/combined_edits_{label}.txt").read()
+        diff = (scratch_dir() / f"combined_edits_{label}.txt").read_text()
         print('had empty diff: ' + diff)
     # Serialize changes
-    run(f"git diff HEAD~...HEAD > {scratch_dir}/patch_{label}.diff")
-    diff = open(scratch_dir + f"/patch_{label}.diff").read()
+    run(f'git diff HEAD~...HEAD > "{(scratch_dir() / f"patch_{label}.diff")}"')
+    diff = (scratch_dir() / f"patch_{label}.diff").read_text()
     print('applied diff')
     return True
 
@@ -322,7 +319,7 @@ def CompileCurrentBranch(out_dir):
 # then generates a GN directory using `target` and `args`. It also uses the
 # global `patches_already_done` in memory cache to avoid redoing this work if
 # the result is already know.
-def CheckPatchesForTarget(target, args, patches, scratch_dir, label) -> bool:
+def CheckPatchesForTarget(target, args, patches, label) -> bool:
     global CACHE
     working = lambda x: x == CacheResult.COMPILED
     # If we've already compiled this set of patches for this target we can skip
@@ -332,7 +329,7 @@ def CheckPatchesForTarget(target, args, patches, scratch_dir, label) -> bool:
         print('returning cached result: ' + str(result))
         return working(result)
     CreateNewBranch(f'spanification_apply_patches_{label}')
-    applied = ApplyEdits(patches, scratch_dir, label)
+    applied = ApplyEdits(patches, label)
     compiled = False
     if applied:
         compiled = CompileCurrentBranch(f'out/{target}')
@@ -342,8 +339,7 @@ def CheckPatchesForTarget(target, args, patches, scratch_dir, label) -> bool:
     return working(CACHE.Result(target, patches))
 
 
-def HandleLen2BaseCase(target, args, base, to_try, scratch_dir,
-                       label) -> tuple:
+def HandleLen2BaseCase(target, args, base, to_try, label) -> tuple:
     assert len(to_try) == 2, "Invalid length passed"
     err_msg = "base has to be a tuple of all ints."
     assert isinstance(base, tuple), err_msg
@@ -351,12 +347,11 @@ def HandleLen2BaseCase(target, args, base, to_try, scratch_dir,
 
     left_patch = to_try[0]
     left_patches = base + (left_patch, )
-    left = CheckPatchesForTarget(target, args, left_patches, scratch_dir,
-                                 f'{label}_left')
+    left = CheckPatchesForTarget(target, args, left_patches, f'{label}_left')
 
     right_patch = to_try[1]
     right_patches = base + (right_patch, )
-    right = CheckPatchesForTarget(target, args, right_patches, scratch_dir,
+    right = CheckPatchesForTarget(target, args, right_patches,
                                   f'{label}_right')
 
     if left and right:
@@ -378,9 +373,8 @@ def HandleLen2BaseCase(target, args, base, to_try, scratch_dir,
         return base
 
 
-def FindCompatiblePatchesByMerging(base, to_try, target, args, scratch_dir,
-                                   label) -> tuple:
-    if CheckPatchesForTarget(target, args, base + to_try, scratch_dir,
+def FindCompatiblePatchesByMerging(base, to_try, target, args, label) -> tuple:
+    if CheckPatchesForTarget(target, args, base + to_try,
                              f'{label}_initial_check'):
         return base + to_try
     # We failed to compile and there is only 1.
@@ -388,34 +382,31 @@ def FindCompatiblePatchesByMerging(base, to_try, target, args, scratch_dir,
         print(f'Patch {to_try[0]} failed when added for {label}, on {target}')
         return base
     if len(to_try) == 2:
-        return HandleLen2BaseCase(target, args, base, to_try, scratch_dir,
-                                  label)
+        return HandleLen2BaseCase(target, args, base, to_try, label)
     midpoint = len(to_try) // 2
     left = FindCompatiblePatchesByMerging(base, to_try[:midpoint], target,
-                                          args, scratch_dir, f'{label}_left')
+                                          args, f'{label}_left')
     return FindCompatiblePatchesByMerging(left, to_try[midpoint:], target,
-                                          args, scratch_dir, f'{label}_right')
+                                          args, f'{label}_right')
 
 
-def FindCompilingAndCompatiblePatchesImpl(target, args, patches, scratch_dir,
+def FindCompilingAndCompatiblePatchesImpl(target, args, patches,
                                           label) -> tuple:
     assert len(patches) > 0, 'No patches provided'
     # optimistically try them all
-    if CheckPatchesForTarget(target, args, patches, scratch_dir, f'{label}'):
+    if CheckPatchesForTarget(target, args, patches, f'{label}'):
         return patches
     if len(patches) == 1:
         return tuple()
     elif len(patches) == 2:
-        return HandleLen2BaseCase(target, args, tuple(), patches, scratch_dir,
-                                  label)
+        return HandleLen2BaseCase(target, args, tuple(), patches, label)
     # Recursive call
     midpoint = len(patches) // 2
     left = FindCompilingAndCompatiblePatchesImpl(target, args,
                                                  patches[:midpoint],
-                                                 scratch_dir, f'{label}_left')
+                                                 f'{label}_left')
     right = FindCompilingAndCompatiblePatchesImpl(target, args,
                                                   patches[midpoint:],
-                                                  scratch_dir,
                                                   f'{label}_right')
 
     # Some early out opportunities to reduce headspace. If we compile on only
@@ -430,7 +421,7 @@ def FindCompilingAndCompatiblePatchesImpl(target, args, patches, scratch_dir,
         return left
 
     # Optimistically try them both together.
-    if CheckPatchesForTarget(target, args, left + right, scratch_dir,
+    if CheckPatchesForTarget(target, args, left + right,
                              f'{label}_left_with_right'):
         # After removing non-compiling/non-compatible patches this combination
         # works.
@@ -443,20 +434,17 @@ def FindCompilingAndCompatiblePatchesImpl(target, args, patches, scratch_dir,
     larger = left if len(left) >= len(right) else right
     smaller = left if len(left) < len(right) else right
     result = FindCompatiblePatchesByMerging(larger, smaller, target, args,
-                                            scratch_dir, f'{label}_merging')
+                                            f'{label}_merging')
     return result
 
 
-def FindCompilingAndCompatiblePatches(target, args, patches,
-                                      scratch_dir) -> tuple:
+def FindCompilingAndCompatiblePatches(target, args, patches) -> tuple:
     assert len(patches) > 0, 'No patches provided'
     assert all(isinstance(p, int) for p in patches)
     # optimistically try them all
-    if CheckPatchesForTarget(target, args, patches, scratch_dir,
-                             f'all_{target}_patches'):
+    if CheckPatchesForTarget(target, args, patches, f'all_{target}_patches'):
         return patches
     return FindCompilingAndCompatiblePatchesImpl(target, args, patches,
-                                                 scratch_dir,
                                                  f'{target}_patches_start')
 
 
@@ -474,8 +462,7 @@ def main():
     CreateNewBranch(f'spanification_apply_patches_base')
 
     # Look in the scratch directory and find all our patches.
-    scratch_dir = os.path.expanduser('~/scratch')
-    patches = FindSuccessfulPatchNumbers(scratch_dir)
+    patches = FindSuccessfulPatchNumbers()
 
     if len(sys.argv) > 1:
         CACHE = MemoizeCache(os.path.expanduser(sys.argv[1]))
@@ -498,7 +485,7 @@ def main():
             # cache that result, and if it didn't we'll give it a chance after
             # a gclient sync to succeed.
             CheckPatchesForTarget(
-                target, args, NO_PATCHES, scratch_dir,
+                target, args, NO_PATCHES,
                 f'spanification_clean_compile_check_{target}')
         # This was either already in the map or was updated above.
         if CACHE.Result(target, NO_PATCHES) != CacheResult.COMPILED:
@@ -506,8 +493,8 @@ def main():
                   flush=True)
             continue
         curr_result = FindCompilingAndCompatiblePatches(
-            target, args, curr_result, scratch_dir)
-        assert CheckPatchesForTarget(target, args, curr_result, scratch_dir,
+            target, args, curr_result)
+        assert CheckPatchesForTarget(target, args, curr_result,
                                      f'{target}_final_patch')
         print(f'working patches for {target}:', flush=True)
         print(curr_result, flush=True)
@@ -519,7 +506,7 @@ def main():
     # Now we create the final branch to store the applied edits.
     branch_name = f'spanification_apply_all_targets_final_patches'
     CreateNewBranch(branch_name)
-    applied = ApplyEdits(curr_result, scratch_dir, branch_name)
+    applied = ApplyEdits(curr_result, branch_name)
     assert applied, "reached end up couldn't apply edits"
     compiled = CompileCurrentBranch(f'out/linux-rel')
     assert compiled, "reached end but couldn't compile linux-rel"
