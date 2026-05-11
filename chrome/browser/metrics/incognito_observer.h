@@ -7,12 +7,12 @@
 
 #include "base/functional/callback.h"
 
-// Encapsulates platform-specific functionality for observing events that may
+// Base class for platform-specific functionality for observing events that may
 // cause "is incognito active?" state to change. The class takes a closure that
 // will be called when an event happens that could result in a state change.
 // The incognito state should then be checked by the callback.
 // TODO(asvitkine): Considering moving the check for incognito to this class
-// too; see ChromeMetricsServicesManagerClient::IsIncognitoSessionActive().
+// too; see ChromeMetricsServicesManagerClient::IsOffTheRecordSessionActive().
 class IncognitoObserver {
  public:
   static std::unique_ptr<IncognitoObserver> Create(
