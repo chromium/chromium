@@ -2179,7 +2179,7 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
 
     // Only show the IPH once per year
     config.trigger = EventConfig("gesture_user_education_trigger",
-                                 Comparator(ANY, 0), 360, 360);
+                                 Comparator(EQUAL, 0), 360, 360);
     // The IPH will only be shown if the back swipe has been used less than two
     // times in the last 360 days.
     config.used = EventConfig("swipe_on_left_edge_for_navigation_used",
