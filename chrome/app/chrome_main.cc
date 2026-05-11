@@ -2,15 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/app/chrome_main.h"
+
 #include <stdint.h>
 
 #include <iostream>
 #include <memory>
+#include <optional>
 
 #include "base/command_line.h"
 #include "base/environment.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/no_destructor.h"
 #include "base/sampling_heap_profiler/poisson_allocation_sampler.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -52,6 +56,23 @@
 
 #define DLLEXPORT __declspec(dllexport)
 #endif  // BUILDFLAG(IS_WIN)
+
+namespace {
+
+// Returns storage to hold the browser process's initial command line.
+std::optional<base::CommandLine>& GetInitialCommandLineStorage() {
+  static base::NoDestructor<std::optional<base::CommandLine>>
+      initial_command_line;
+  return *initial_command_line;
+}
+
+}  // namespace
+
+const base::CommandLine& GetInitialBrowserCommandLine() {
+  // Will `CHECK` if called without a previous assignment during browser
+  // process startup.
+  return GetInitialCommandLineStorage().value();
+}
 
 #if BUILDFLAG(IS_WIN)
 // We use extern C for the prototype DLLEXPORT to avoid C++ name mangling.
@@ -137,12 +158,18 @@ int ChromeMain(int argc, const char** argv) {
   base::CommandLine::Init(params.argc, params.argv);
 #endif  // BUILDFLAG(IS_WIN)
   base::CommandLine::Init(0, nullptr);
-  [[maybe_unused]] base::CommandLine* command_line(
-      base::CommandLine::ForCurrentProcess());
+
+  base::CommandLine* command_line(base::CommandLine::ForCurrentProcess());
+
+  // Capture the unpolluted command line snapshot in the browser process.
+  // This must happen immediately after CommandLine::Init to ensure we capture
+  // the state before any internal programmatic mutations.
+  if (!command_line->HasSwitch(switches::kProcessType)) {
+    GetInitialCommandLineStorage() = *command_line;
+  }
 
 #if BUILDFLAG(IS_WIN)
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ::switches::kRaiseTimerFrequency)) {
+  if (command_line->HasSwitch(::switches::kRaiseTimerFrequency)) {
     // Raise the timer interrupt frequency and leave it raised.
     timeBeginPeriod(1);
   }

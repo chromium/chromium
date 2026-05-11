@@ -277,6 +277,7 @@ if (!is_android && !is_mac) {
       sources += [
         "app/chrome_dll_resource.h",
         "app/chrome_main.cc",
+        "app/chrome_main.h",
         "app/chrome_main_delegate.cc",
         "app/chrome_main_delegate.h",
         "app/startup_timestamps.h",
@@ -402,6 +403,7 @@ if (is_win) {
     sources = [
       "//base/win/dllmain.cc",
       "app/chrome_main.cc",
+      "app/chrome_main.h",
       "app/chrome_main_delegate.cc",
       "app/chrome_main_delegate.h",
       "app/startup_timestamps.h",
@@ -1112,6 +1114,7 @@ if (is_win) {
       "app/chrome_crash_reporter_client_mac.mm",
       "app/chrome_dll_resource.h",
       "app/chrome_main.cc",
+      "app/chrome_main.h",
       "app/chrome_main_delegate.cc",
       "app/chrome_main_delegate.h",
       "app/chrome_main_mac.h",
