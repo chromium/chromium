@@ -668,7 +668,8 @@ void HttpCache::Transaction::WriteModeTransactionAboutToBecomeReader() {
 }
 
 void HttpCache::Transaction::AddDiskCacheWriteTime(base::TimeDelta elapsed) {
-  total_disk_cache_write_time_ += elapsed;
+  total_disk_cache_write_time_ =
+      total_disk_cache_write_time_.value_or(base::TimeDelta()) + elapsed;
 }
 
 //-----------------------------------------------------------------------------
@@ -4006,13 +4007,24 @@ void HttpCache::Transaction::RecordHistograms() {
       break;
   }
 
-  if (!total_disk_cache_read_time_.is_zero()) {
-    base::UmaHistogramTimes("HttpCache.TotalDiskCacheTimePerTransaction.Read",
-                            total_disk_cache_read_time_);
+  if (total_disk_cache_read_time_.has_value()) {
+    base::UmaHistogramTimes("HttpCache.TotalDiskCacheTimePerTransaction.Read2",
+                            *total_disk_cache_read_time_);
+    if (!total_disk_cache_read_time_->is_zero()) {
+      // TODO(crbug.com/511894605): Remove this after M151 branch cut.
+      base::UmaHistogramTimes("HttpCache.TotalDiskCacheTimePerTransaction.Read",
+                              *total_disk_cache_read_time_);
+    }
   }
-  if (!total_disk_cache_write_time_.is_zero()) {
-    base::UmaHistogramTimes("HttpCache.TotalDiskCacheTimePerTransaction.Write",
-                            total_disk_cache_write_time_);
+  if (total_disk_cache_write_time_.has_value()) {
+    base::UmaHistogramTimes("HttpCache.TotalDiskCacheTimePerTransaction.Write2",
+                            *total_disk_cache_write_time_);
+    if (!total_disk_cache_write_time_->is_zero()) {
+      // TODO(crbug.com/511894605): Remove this after M151 branch cut.
+      base::UmaHistogramTimes(
+          "HttpCache.TotalDiskCacheTimePerTransaction.Write",
+          *total_disk_cache_write_time_);
+    }
   }
 }
 
@@ -4146,10 +4158,12 @@ void HttpCache::Transaction::EndDiskCacheAccessTimeCount(
       TimeTicks::Now() - last_disk_cache_access_start_time_;
   switch (type) {
     case DiskCacheAccessType::kRead:
-      total_disk_cache_read_time_ += elapsed;
+      total_disk_cache_read_time_ =
+          total_disk_cache_read_time_.value_or(base::TimeDelta()) + elapsed;
       break;
     case DiskCacheAccessType::kWrite:
-      total_disk_cache_write_time_ += elapsed;
+      total_disk_cache_write_time_ =
+          total_disk_cache_write_time_.value_or(base::TimeDelta()) + elapsed;
       break;
   }
   last_disk_cache_access_start_time_ = TimeTicks();

@@ -780,8 +780,8 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   base::TimeTicks send_request_since_;
   base::TimeTicks read_headers_since_;
   base::TimeTicks last_disk_cache_access_start_time_;
-  base::TimeDelta total_disk_cache_read_time_;
-  base::TimeDelta total_disk_cache_write_time_;
+  std::optional<base::TimeDelta> total_disk_cache_read_time_;
+  std::optional<base::TimeDelta> total_disk_cache_write_time_;
   base::TimeTicks first_nvs_cache_lookup_end_time_;
   bool recorded_histograms_ = false;
   bool has_opened_or_created_entry_ = false;

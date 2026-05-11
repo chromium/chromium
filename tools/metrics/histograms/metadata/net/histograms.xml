@@ -1452,8 +1452,14 @@ chromium-metrics-reviews@google.com.
     record partial requests.
   </summary>
   <token key="AccessType">
-    <variant name="Read" summary="reading from"/>
-    <variant name="Write" summary="writing to"/>
+    <variant name="Read"
+        summary="reading from (this might be inaccurate because zero values
+                 are not recorded)"/>
+    <variant name="Read2" summary="reading from"/>
+    <variant name="Write"
+        summary="writing to (this might be inaccurate because zero values are
+                 not recorded)"/>
+    <variant name="Write2" summary="writing to"/>
   </token>
 </histogram>
 
