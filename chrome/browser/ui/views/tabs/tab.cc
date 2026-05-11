@@ -511,8 +511,8 @@ void Tab::Layout(PassKey) {
     const int title_width = std::max(title_right - title_left, 0);
     // The Label will automatically center the font's cap height within the
     // provided vertical space.
-    const gfx::Rect title_bounds(title_left, contents_rect.y(), title_width,
-                                 contents_rect.height());
+    const gfx::Rect title_bounds(title_left, GetLocalBounds().y(), title_width,
+                                 GetLocalBounds().height());
     show_title = title_width > 0;
 
     if (title_bounds != target_title_bounds_) {
