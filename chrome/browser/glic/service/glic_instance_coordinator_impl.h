@@ -233,7 +233,6 @@ class GlicInstanceCoordinatorImpl
   void CloseFloaty(const CloseOptions& options = {});
 
   void OnMemoryPressure(base::MemoryPressureLevel level) override;
-  void CheckMemoryUsage();
   void ApplyMaxAwakeInstancesLimit();
 
   void RemoveInstance(GlicInstanceImpl* instance) override;
@@ -279,7 +278,6 @@ class GlicInstanceCoordinatorImpl
 
   base::MemoryPressureListenerRegistration
       memory_pressure_listener_registration_;
-  base::RepeatingTimer memory_monitor_timer_;
 
   bool warming_enabled_ = true;
 

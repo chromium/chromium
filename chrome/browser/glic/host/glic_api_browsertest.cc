@@ -187,9 +187,7 @@ std::vector<std::string> GetTestSuiteNames() {
       "GlicApiTestWithGeminiActOnWebPolicy",
       "GlicApiTestWithWebContentsWarming",
       "GlicApiTestHibernateAllOnMemoryPressure",
-      "GlicApiTestHibernateAllAggressiveOnMemoryPressure",
       "GlicOnboardingApiTest",
-      "GlicApiTestHibernateOnMemoryUsage",
       "GlicApiTestWithDaisyChain",
       "GlicApiTestNoFloatyOrLiveMode",
   };
@@ -660,18 +658,6 @@ class GlicApiTestWithGeminiActOnWebPolicy : public GlicApiTestWithOneTab {
 
   ::testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
   base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-class GlicApiTestHibernateOnMemoryUsage : public GlicApiTest {
- public:
-  GlicApiTestHibernateOnMemoryUsage() {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        kGlicHibernateOnMemoryUsage,
-        {{"threshold_mb", "1"}, {"polling_interval", "500ms"}});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Note: Test names must match test function names in api_test.ts.
@@ -3556,24 +3542,6 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithGeminiActOnWebPolicy,
   ContinueJsTest();
 }
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestHibernateOnMemoryUsage,
-                       testHibernateOnMemoryUsage) {
-  // Open Glic, verify it's active.
-  RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents),
-                  RegisterConversation("test_id"));
-  GlicInstanceImpl* instance = GetGlicInstanceImpl();
-
-  GlicHistogramTester histogram_tester;
-  // Close Glic (make it inactive).
-  RunTestSequence(CloseGlic());
-
-  // Wait and verify that IsHibernated() becomes true.
-  ASSERT_TRUE(base::test::RunUntil([&]() { return instance->IsHibernated(); }));
-
-  // Check that the histogram was recorded.
-  histogram_tester.ExpectTotalCount("Glic.Instance.MemoryUsageAtThreshold", 1);
-}
-
 IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testGetZoomLevel) {
   // Confirm that the observer is notified through getZoomLevel of the initial
   // state, i.e. zoom level of 1.0.
@@ -3664,10 +3632,6 @@ INSTANTIATE_TEST_SUITE_P(,
                          GlicOnboardingApiTest,
                          DefaultTestParamSet(),
                          &WithTestParams::PrintTestVariant);
-INSTANTIATE_TEST_SUITE_P(,
-                         GlicApiTestHibernateOnMemoryUsage,
-                         DefaultTestParamSet(),
-                         WithTestParams::PrintTestVariant);
 INSTANTIATE_TEST_SUITE_P(,
                          GlicApiTestWithDaisyChain,
                          DefaultTestParamSet(),

@@ -38,8 +38,6 @@ class ApiTests extends ApiTestFixtureBase {
 
   async testHibernateAllOnMemoryPressure() {}
 
-  async testHibernateOnMemoryUsage() {}
-
   async testCancelActions() {
     assertDefined(this.host.cancelActions);
     const taskId: number = this.testParams;
