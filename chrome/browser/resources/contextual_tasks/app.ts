@@ -582,7 +582,10 @@ export class ContextualTasksAppElement extends CrLitElement {
     // Check if the initial render should be zero state.
     const {isZeroState} =
         await this.browserProxy_.handler.isZeroState(threadUrlAsUrl.href);
+    const {isAiPage} =
+        await this.browserProxy_.handler.isAiPage(threadUrlAsUrl.href);
     this.isZeroState_ = isZeroState;
+    this.isAiPage_ = isAiPage;
 
     this.inNlm_ = this.checkInNlm_(threadUrlAsUrl);
 

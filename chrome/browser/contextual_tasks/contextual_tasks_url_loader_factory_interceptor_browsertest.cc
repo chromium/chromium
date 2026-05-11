@@ -40,6 +40,34 @@ const char kTestHost[] = "www.google.com";
 const char kTestSubHost[] = "sub.google.com";
 const char kDenylistHost[] = "lh3.google.com";
 
+constexpr char kNavigateWebviewScript[] = R"(
+    (async () => {
+      const waitFor = (selector, scope = document) => {
+        return new Promise(resolve => {
+          if (scope.querySelector(selector)) {
+            return resolve(scope.querySelector(selector));
+          }
+          const observer = new MutationObserver(() => {
+            if (scope.querySelector(selector)) {
+              observer.disconnect();
+              resolve(scope.querySelector(selector));
+            }
+          });
+          observer.observe(scope, {childList: true, subtree: true});
+        });
+      };
+      const app = await waitFor('contextual-tasks-app');
+      await new Promise(resolve => {
+        app.setOnLoadStartFinishedCallbackForTesting(resolve);
+      });
+      if (!app.shadowRoot) {
+        await customElements.whenDefined('contextual-tasks-app');
+      }
+      const webview = await waitFor('#threadFrame', app.shadowRoot);
+      webview.src = $1;
+    })();
+  )";
+
 }  // namespace
 
 class ContextualTasksUrlLoaderFactoryInterceptorBrowserTest
@@ -250,26 +278,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUrlLoaderFactoryInterceptorBrowserTest,
   // Script to find the webview and navigate it.
   // Note: We access the shadowRoot of the app.
   std::string script = content::JsReplace(
-      R"(
-    (async () => {
-      let app = document.querySelector('contextual-tasks-app');
-      while (!app) {
-        await new Promise(r => setTimeout(r, 100));
-        app = document.querySelector('contextual-tasks-app');
-      }
-      // Wait for shadow root
-      while (!app.shadowRoot) {
-        await new Promise(r => setTimeout(r, 100));
-      }
-      // Wait for threadFrame
-      let webview = app.shadowRoot.querySelector('#threadFrame');
-      while (!webview) {
-        await new Promise(r => setTimeout(r, 100));
-        webview = app.shadowRoot.querySelector('#threadFrame');
-      }
-      webview.src = $1;
-    })();
-  )",
+      kNavigateWebviewScript,
       https_server_.GetURL(kTestHost, "/echoheader?Authorization").spec());
 
   EXPECT_TRUE(content::ExecJs(web_ui_contents, script));
@@ -320,6 +329,9 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUrlLoaderFactoryInterceptorBrowserTest,
       };
 
       const app = await waitFor('contextual-tasks-app');
+      await new Promise(resolve => {
+        app.setOnLoadStartFinishedCallbackForTesting(resolve);
+      });
       if (!app.shadowRoot) {
         await customElements.whenDefined('contextual-tasks-app');
       }
@@ -403,24 +415,7 @@ IN_PROC_BROWSER_TEST_F(
       TabListInterface::From(browser())->GetActiveTab()->GetContents();
 
   std::string script = content::JsReplace(
-      R"(
-    (async () => {
-      let app = document.querySelector('contextual-tasks-app');
-      while (!app) {
-        await new Promise(r => setTimeout(r, 100));
-        app = document.querySelector('contextual-tasks-app');
-      }
-      while (!app.shadowRoot) {
-        await new Promise(r => setTimeout(r, 100));
-      }
-      let webview = app.shadowRoot.querySelector('#threadFrame');
-      while (!webview) {
-        await new Promise(r => setTimeout(r, 100));
-        webview = app.shadowRoot.querySelector('#threadFrame');
-      }
-      webview.src = $1;
-    })();
-  )",
+      kNavigateWebviewScript,
       https_server_.GetURL(kTestHost, "/echoheader?Authorization").spec());
 
   EXPECT_TRUE(content::ExecJs(web_ui_contents, script));
@@ -444,24 +439,7 @@ IN_PROC_BROWSER_TEST_F(
       TabListInterface::From(browser())->GetActiveTab()->GetContents();
 
   std::string script = content::JsReplace(
-      R"(
-    (async () => {
-      let app = document.querySelector('contextual-tasks-app');
-      while (!app) {
-        await new Promise(r => setTimeout(r, 100));
-        app = document.querySelector('contextual-tasks-app');
-      }
-      while (!app.shadowRoot) {
-        await new Promise(r => setTimeout(r, 100));
-      }
-      let webview = app.shadowRoot.querySelector('#threadFrame');
-      while (!webview) {
-        await new Promise(r => setTimeout(r, 100));
-        webview = app.shadowRoot.querySelector('#threadFrame');
-      }
-      webview.src = $1;
-    })();
-  )",
+      kNavigateWebviewScript,
       https_server_.GetURL(kTestHost, "/echoheader?Authorization").spec());
 
   EXPECT_TRUE(content::ExecJs(web_ui_contents, script));
@@ -509,6 +487,9 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUrlLoaderFactoryInterceptorBrowserTest,
       };
 
       const app = await waitFor('contextual-tasks-app');
+      await new Promise(resolve => {
+        app.setOnLoadStartFinishedCallbackForTesting(resolve);
+      });
       if (!app.shadowRoot) {
         await customElements.whenDefined('contextual-tasks-app');
       }
@@ -564,26 +545,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUrlLoaderFactoryInterceptorBrowserTest,
   // Script to find the webview and navigate it.
   // Note: We access the shadowRoot of the app.
   std::string script = content::JsReplace(
-      R"(
-    (async () => {
-      let app = document.querySelector('contextual-tasks-app');
-      while (!app) {
-        await new Promise(r => setTimeout(r, 100));
-        app = document.querySelector('contextual-tasks-app');
-      }
-      // Wait for shadow root
-      while (!app.shadowRoot) {
-        await new Promise(r => setTimeout(r, 100));
-      }
-      // Wait for threadFrame
-      let webview = app.shadowRoot.querySelector('#threadFrame');
-      while (!webview) {
-        await new Promise(r => setTimeout(r, 100));
-        webview = app.shadowRoot.querySelector('#threadFrame');
-      }
-      webview.src = $1;
-    })();
-  )",
+      kNavigateWebviewScript,
       https_server_.GetURL(kTestHost, "/onegoogle/echoheader?Authorization")
           .spec());
 
@@ -608,24 +570,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUrlLoaderFactoryInterceptorBrowserTest,
       TabListInterface::From(browser())->GetActiveTab()->GetContents();
 
   std::string script = content::JsReplace(
-      R"(
-        (async () => {
-          let app = document.querySelector('contextual-tasks-app');
-          while (!app) {
-            await new Promise(r => setTimeout(r, 100));
-            app = document.querySelector('contextual-tasks-app');
-          }
-          while (!app.shadowRoot) {
-            await new Promise(r => setTimeout(r, 100));
-          }
-          let webview = app.shadowRoot.querySelector('#threadFrame');
-          while (!webview) {
-            await new Promise(r => setTimeout(r, 100));
-            webview = app.shadowRoot.querySelector('#threadFrame');
-          }
-          webview.src = $1;
-        })();
-      )",
+      kNavigateWebviewScript,
       https_server_.GetURL(kDenylistHost, "/denylist/echoheader?Authorization")
           .spec());
 
