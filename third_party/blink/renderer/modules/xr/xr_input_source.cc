@@ -12,6 +12,8 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatcher.h"
 #include "third_party/blink/renderer/core/dom/events/event_path.h"
+#include "third_party/blink/renderer/core/execution_context/security_context.h"
+#include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_frame_element_base.h"
@@ -26,6 +28,7 @@
 #include "third_party/blink/renderer/modules/xr/xr_system.h"
 #include "third_party/blink/renderer/modules/xr/xr_target_ray_space.h"
 #include "third_party/blink/renderer/modules/xr/xr_utils.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
 
@@ -519,13 +522,25 @@ void XRInputSource::ProcessOverlayHitTest(
   // the common base class to cover both. (There's no intention to actively
   // support framesets for DOM Overlay, but this helps prevent them from
   // being used as a mechanism for information leaks.)
-  HTMLFrameElementBase* frame = DynamicTo<HTMLFrameElementBase>(hit_element);
-  if (frame) {
-    Document* hit_document = frame->contentDocument();
-    if (hit_document) {
-      Frame* hit_frame = hit_document->GetFrame();
-      DCHECK(hit_frame);
-      if (hit_frame->IsCrossOriginToOutermostMainFrame()) {
+  HTMLFrameElementBase* frame_element =
+      DynamicTo<HTMLFrameElementBase>(hit_element);
+  if (frame_element) {
+    Frame* hit_frame = frame_element->ContentFrame();
+    if (hit_frame) {
+      bool is_cross_origin = false;
+      if (hit_frame->IsRemoteFrame()) {
+        is_cross_origin = true;
+      } else {
+        const SecurityOrigin* hit_origin =
+            hit_frame->GetSecurityContext()->GetSecurityOrigin();
+        const SecurityOrigin* session_origin =
+            session_->GetExecutionContext()->GetSecurityOrigin();
+        if (!hit_origin->IsSameOriginWith(session_origin)) {
+          is_cross_origin = true;
+        }
+      }
+
+      if (is_cross_origin) {
         // Mark the input source as invisible until the primary button is
         // released.
         state_.is_visible = false;
