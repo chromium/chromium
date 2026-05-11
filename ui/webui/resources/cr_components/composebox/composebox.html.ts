@@ -14,6 +14,8 @@ export function getHtml(this: ComposeboxElement) {
   ${!this.disableComposeboxAnimation ? html`
     <search-animated-glow id="animatedSearchElement"
         animation-state="${this.animationState}"
+        .coloredTicTacVoiceAnimationEnabled=
+            "${this.voiceSearchCoherenceEnabled}"
         .inVoiceSearchMode="${this.inVoiceSearchMode}"
         .entrypointName="${this.entrypointName}"
         .requiresVoice="${this.shouldShowVoiceSearchAnimation()}"
@@ -175,6 +177,8 @@ export function getHtml(this: ComposeboxElement) {
         @transcript-update="${this.onTranscriptUpdate}"
         @speech-received="${this.onSpeechReceived}"
         @recording-stopped="${this.onRecordingStopped}"
+        .submitStopButtonsEnabled="${this.voiceSearchCoherenceEnabled}"
+        .liveTranscriptEnabled="${!this.voiceSearchCoherenceEnabled}"
         .submitButtonIconType="${this.submitButtonIconType}"
         exportparts="voice-close-button, voice-details-link, voice-stop-button, voice-submit-button">
     </cr-composebox-voice-search>

@@ -158,6 +158,8 @@ export class ComposeboxVoiceSearchElement extends
 
   static override get properties() {
     return {
+      submitStopButtonsEnabled: {type: Boolean},
+      liveTranscriptEnabled: {type: Boolean},
       transcript_: {type: String},
       listeningPlaceholder_: {type: String},
       state_: {type: Number},
@@ -168,8 +170,6 @@ export class ComposeboxVoiceSearchElement extends
       detailsUrl_: {type: String},
       detailedError_: {type: Number},
       hasErrorTimer: {type: Boolean},
-      voiceSearchCoherenceComposeboxesEnabled_: {type: Boolean},
-      voiceSearchCoherenceSearchboxEnabled_: {type: Boolean},
       submitButtonIconType: {type: String},
       /**
        * Determines whether to automatically submit the query upon receiving a
@@ -199,6 +199,8 @@ export class ComposeboxVoiceSearchElement extends
     };
   }
 
+  accessor submitStopButtonsEnabled: boolean = false;
+  accessor liveTranscriptEnabled: boolean = true;
   protected accessor transcript_: string = '';
   protected accessor listeningPlaceholder_: string =
       loadTimeData.getString('voiceListening');
@@ -206,11 +208,6 @@ export class ComposeboxVoiceSearchElement extends
   protected accessor interimResult_: string = '';
   protected accessor error_: VoiceSearchError|null = null;
   protected accessor errorMessage_: string = '';
-  protected accessor voiceSearchCoherenceComposeboxesEnabled_: boolean =
-      loadTimeData.getBoolean('voiceSearchCoherenceComposeboxesEnabled');
-  protected accessor voiceSearchCoherenceSearchboxEnabled_: boolean =
-      loadTimeData.getBoolean(
-          'voiceSearchCoherenceAnySearchboxExperimentEnabled');
   accessor detailedError_: VoiceSearchError|null = null;
   protected accessor detailsUrl_: string =
       `https://support.google.com/chrome/?p=ui_voice_search&hl=${
