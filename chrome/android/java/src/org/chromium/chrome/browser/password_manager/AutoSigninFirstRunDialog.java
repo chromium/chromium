@@ -134,7 +134,5 @@ public class AutoSigninFirstRunDialog
         void onOkClicked(long nativeAutoSigninFirstRunDialogAndroid);
 
         void destroy(long nativeAutoSigninFirstRunDialogAndroid);
-
-        void onLinkClicked(long nativeAutoSigninFirstRunDialogAndroid);
     }
 }

@@ -51,10 +51,6 @@ class AccountChooserDialogAndroid : public content::WebContentsObserver {
                            int32_t credential_item,
                            bool sign_button_clicked);
 
-  // Opens new tab with page which explains the Smart Lock branding.
-  // Destroys |this|.
-  void OnLinkClicked(JNIEnv* env);
-
   // content::WebContentsObserver overrides:
   void WebContentsDestroyed() override;
   void OnVisibilityChanged(content::Visibility visibility) override;

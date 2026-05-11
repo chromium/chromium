@@ -31,9 +31,6 @@ class AutoSigninFirstRunDialogAndroid : public content::WebContentsObserver {
   // Closes the dialog and propagates that no credentials was chosen.
   void CancelDialog(JNIEnv* env);
 
-  // Opens new tab with page which explains the Smart Lock branding.
-  void OnLinkClicked(JNIEnv* env);
-
   // Records the user decision to use auto sign-in feature.
   void OnOkClicked(JNIEnv* env);
 

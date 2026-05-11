@@ -13,11 +13,7 @@ import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
-import android.text.SpannableString;
-import android.text.Spanned;
 import android.text.TextUtils;
-import android.text.method.LinkMovementMethod;
-import android.text.style.ClickableSpan;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -58,8 +54,6 @@ public class AccountChooserDialog
     /** Title of the dialog, contains Smart Lock branding for the Smart Lock users. */
     private final String mTitle;
 
-    private final int mTitleLinkStart;
-    private final int mTitleLinkEnd;
     private final String mOrigin;
     private final String mSigninButtonText;
     private @Nullable ArrayAdapter<Credential> mAdapter;
@@ -81,16 +75,12 @@ public class AccountChooserDialog
             long nativeAccountChooserDialog,
             Credential[] credentials,
             String title,
-            int titleLinkStart,
-            int titleLinkEnd,
             String origin,
             String signinButtonText) {
         mNativeAccountChooserDialog = nativeAccountChooserDialog;
         mContext = context;
         mCredentials = credentials.clone();
         mTitle = title;
-        mTitleLinkStart = titleLinkStart;
-        mTitleLinkEnd = titleLinkEnd;
         mOrigin = origin;
         mSigninButtonText = signinButtonText;
         mSigninButtonClicked = false;
@@ -111,8 +101,6 @@ public class AccountChooserDialog
             long nativeAccountChooserDialog,
             Credential[] credentials,
             @JniType("std::u16string") String title,
-            int titleLinkStart,
-            int titleLinkEnd,
             @JniType("std::string") String origin,
             @JniType("std::u16string") String signinButtonText) {
         Activity activity = windowAndroid.getActivity().get();
@@ -123,8 +111,6 @@ public class AccountChooserDialog
                         nativeAccountChooserDialog,
                         credentials,
                         title,
-                        titleLinkStart,
-                        titleLinkEnd,
                         origin,
                         signinButtonText);
         chooser.show();
@@ -211,28 +197,7 @@ public class AccountChooserDialog
         TextView origin = titleView.findViewById(R.id.origin);
         origin.setText(mOrigin);
         TextView titleMessageText = titleView.findViewById(R.id.title);
-        if (mTitleLinkStart != 0 && mTitleLinkEnd != 0) {
-            SpannableString spanableTitle = new SpannableString(mTitle);
-            spanableTitle.setSpan(
-                    new ClickableSpan() {
-                        @Override
-                        public void onClick(View view) {
-                            if (mNativeAccountChooserDialog != 0) {
-                                AccountChooserDialogJni.get()
-                                        .onLinkClicked(mNativeAccountChooserDialog);
-                            }
-                            assumeNonNull(mDialog);
-                            mDialog.dismiss();
-                        }
-                    },
-                    mTitleLinkStart,
-                    mTitleLinkEnd,
-                    Spanned.SPAN_INCLUSIVE_INCLUSIVE);
-            titleMessageText.setText(spanableTitle, TextView.BufferType.SPANNABLE);
-            titleMessageText.setMovementMethod(LinkMovementMethod.getInstance());
-        } else {
-            titleMessageText.setText(mTitle);
-        }
+        titleMessageText.setText(mTitle);
         mAdapter = generateAccountsArrayAdapter(mContext, mCredentials);
         final AlertDialog.Builder builder =
                 new AlertDialog.Builder(mContext, R.style.ThemeOverlay_BrowserUI_AlertDialog)
@@ -369,7 +334,5 @@ public class AccountChooserDialog
                 boolean signinButtonClicked);
 
         void cancelDialog(long nativeAccountChooserDialogAndroid);
-
-        void onLinkClicked(long nativeAccountChooserDialogAndroid);
     }
 }

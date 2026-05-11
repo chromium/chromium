@@ -24,10 +24,6 @@ extern const char kPasswordManagerAccountDashboardURL[];
 // URL to the password manager help center.
 extern const char kPasswordManagerHelpCenteriOSURL[];
 
-// URL to the help center article about Smart Lock;
-// TODO(crbug.com/40584353): remove when "Smart Lock" is completely gone.
-extern const char kPasswordManagerHelpCenterSmartLock[];
-
 // URL which open native Password Manager UI.
 extern const char kManageMyPasswordsURL[];
 

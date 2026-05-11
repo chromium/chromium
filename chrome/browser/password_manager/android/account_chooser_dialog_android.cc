@@ -152,7 +152,7 @@ bool AccountChooserDialogAndroid::ShowDialog() {
   }
   dialog_jobject_.Reset(Java_AccountChooserDialog_createAndShowAccountChooser(
       env, native_window->GetJavaObject(), reinterpret_cast<intptr_t>(this),
-      java_credentials_array, title, 0, 0, origin, signin_button));
+      java_credentials_array, title, origin, signin_button));
   mojo::Remote<network::mojom::URLLoaderFactory> loader_factory =
       GetURLLoaderForMainFrame(web_contents_);
   int avatar_index = 0;
@@ -177,16 +177,6 @@ void AccountChooserDialogAndroid::OnCredentialClicked(
 
 void AccountChooserDialogAndroid::CancelDialog(JNIEnv* env) {
   OnDialogCancel();
-  delete this;
-}
-
-void AccountChooserDialogAndroid::OnLinkClicked(JNIEnv* env) {
-  web_contents_->OpenURL(
-      content::OpenURLParams(
-          GURL(password_manager::kPasswordManagerHelpCenterSmartLock),
-          content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
-          ui::PAGE_TRANSITION_LINK, false /* is_renderer_initiated */),
-      /*navigation_handle_callback=*/{});
   delete this;
 }
 

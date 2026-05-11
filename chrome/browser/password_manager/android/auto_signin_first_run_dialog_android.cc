@@ -102,15 +102,6 @@ void AutoSigninFirstRunDialogAndroid::OnTurnOffClicked(JNIEnv* env) {
 
 void AutoSigninFirstRunDialogAndroid::CancelDialog(JNIEnv* env) {}
 
-void AutoSigninFirstRunDialogAndroid::OnLinkClicked(JNIEnv* env) {
-  web_contents_->OpenURL(
-      content::OpenURLParams(
-          GURL(password_manager::kPasswordManagerHelpCenterSmartLock),
-          content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
-          ui::PAGE_TRANSITION_LINK, false /* is_renderer_initiated */),
-      /*navigation_handle_callback=*/{});
-}
-
 void AutoSigninFirstRunDialogAndroid::WebContentsDestroyed() {
   if (dialog_jobject_) {
     JNIEnv* env = AttachCurrentThread();
