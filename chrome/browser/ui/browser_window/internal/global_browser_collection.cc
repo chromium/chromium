@@ -108,3 +108,18 @@ size_t GlobalBrowserCollection::GetIncognitoBrowserCount() {
   });
   return incognito_browser_count;
 }
+
+size_t GlobalBrowserCollection::GetGuestBrowserCount() {
+  size_t guest_browser_count = 0;
+  ForEach([&guest_browser_count](BrowserWindowInterface* browser) {
+    if (browser->GetProfile()->IsGuestSession()
+#if !BUILDFLAG(IS_ANDROID)
+        && browser->GetType() != BrowserWindowInterface::Type::TYPE_DEVTOOLS
+#endif
+    ) {
+      ++guest_browser_count;
+    }
+    return true;
+  });
+  return guest_browser_count;
+}

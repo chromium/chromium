@@ -48,6 +48,10 @@ class GlobalBrowserCollection : public BrowserCollection {
   // free function.
   size_t GetIncognitoBrowserCount();
 
+  // Returns the number of browser windows whose profile is a Guest session,
+  // excluding DevTools windows.
+  size_t GetGuestBrowserCount();
+
  protected:
   // BrowserCollection:
   BrowserVector GetBrowsers(Order order) override;

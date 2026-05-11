@@ -262,8 +262,8 @@ class GuestStateProvider : public PrivateBaseStateProvider {
     // crbug.com/40169175.
     const int guest_window_count = 1;
 #else
-    const int guest_window_count =
-        static_cast<int>(chrome::GetGuestBrowserCount());
+    const int guest_window_count = static_cast<int>(
+        GlobalBrowserCollection::GetInstance()->GetGuestBrowserCount());
 #endif
     return l10n_util::GetPluralStringFUTF16(IDS_AVATAR_BUTTON_GUEST,
                                             guest_window_count);

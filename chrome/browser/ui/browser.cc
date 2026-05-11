@@ -113,6 +113,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
@@ -657,8 +658,9 @@ Browser::Browser(const CreateParams& params)
   is_initialized_ = true;
 
   if (profile_->IsGuestSession()) {
-    base::UmaHistogramCounts100("Browser.WindowCount.Guest",
-                                chrome::GetGuestBrowserCount());
+    base::UmaHistogramCounts100(
+        "Browser.WindowCount.Guest",
+        GlobalBrowserCollection::GetInstance()->GetGuestBrowserCount());
   } else if (profile_->IsIncognitoProfile()) {
     base::UmaHistogramCounts100(
         "Browser.WindowCount.Incognito",
