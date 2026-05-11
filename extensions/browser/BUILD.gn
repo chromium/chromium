@@ -909,6 +909,8 @@ source_set("webstore_installer") {
     "webstore_data_fetcher_delegate.h",
     "webstore_install_helper.cc",
     "webstore_install_helper.h",
+    "webstore_install_result.cc",
+    "webstore_install_result.h",
     "webstore_installer.cc",
     "webstore_installer.h",
   ]

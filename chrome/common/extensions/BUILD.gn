@@ -25,7 +25,6 @@ source_set("extensions") {
     "permissions/chrome_permission_message_provider.h",
     "permissions/chrome_permission_message_rules.h",
     "sync_helper.h",
-    "webstore_install_result.h",
   ]
 
   # Files that can only be included from here.
@@ -50,7 +49,6 @@ source_set("extensions") {
     "permissions/chrome_permission_message_provider.cc",
     "permissions/chrome_permission_message_rules.cc",
     "sync_helper.cc",
-    "webstore_install_result.cc",
   ]
 
   public_deps = [

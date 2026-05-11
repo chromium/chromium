@@ -79,6 +79,7 @@ source_set("platform_apps") {
     "//content/public/browser",
     "//content/public/common",
     "//extensions/browser",
+    "//extensions/browser:webstore_installer",
     "//extensions/common",
     "//extensions/common/api",
     "//net",

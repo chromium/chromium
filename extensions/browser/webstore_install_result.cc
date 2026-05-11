@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/common/extensions/webstore_install_result.h"
+#include "extensions/browser/webstore_install_result.h"
 
 namespace extensions {
 namespace webstore_install {
