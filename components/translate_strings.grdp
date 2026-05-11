@@ -57,6 +57,10 @@
     Undo
   </message>
 
+  <message name="IDS_TRANSLATE_BUBBLE_CHOOSE_LANGUAGE_TO_TRANSLATE_TO" desc="Text for the button that allows the user to select a target language.">
+    Choose Language to Translate to
+  </message>
+
   <message name="IDS_TRANSLATE_DETECTED_LANGUAGE" desc="Text to use in the translate infobar and translate bubble when the source language is unknown or undetected. The user can select this as an option for the page source language in a translation. Used in place of a language name, so should be capitalized as such (e.g. &quot;Detected Language&quot; for English, &quot;lingua rilevata&quot; for Italian)" meaning="Noun to select from a list of languages, and to use in place of a language name in part of a translate UI message.">
     Detected Language
   </message>

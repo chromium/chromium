@@ -89,6 +89,8 @@ class TranslateBubbleView : public LocationBarBubbleDelegateView,
 
   void CloseTranslateBubble();
 
+  bool ShouldShowAlwaysTranslate();
+
   TranslateBubbleModel* model() { return model_.get(); }
 
   // LocationBarBubbleDelegateView:

@@ -303,7 +303,9 @@ bool TranslateUIDelegate::ShouldShowAlwaysTranslateShortcut() const {
   return !IsIncognito() &&
          prefs_->GetTranslationAcceptedCount(
              translate_ui_languages_manager_->GetSourceLanguageCode()) >=
-             kAlwaysTranslateShortcutMinimumAccepts;
+             kAlwaysTranslateShortcutMinimumAccepts &&
+         translate_ui_languages_manager_->GetSourceLanguageCode() !=
+             language_detection::kUnknownLanguageCode;
 }
 
 bool TranslateUIDelegate::ShouldShowNeverTranslateShortcut() const {

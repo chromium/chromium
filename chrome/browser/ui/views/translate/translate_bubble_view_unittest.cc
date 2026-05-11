@@ -15,6 +15,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/translate/core/browser/translate_prefs.h"
+#include "components/translate/core/common/translate_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/event_constants.h"
@@ -499,7 +500,7 @@ TEST_F(TranslateBubbleViewTest, MenuOptionsHiddenOnUnknownSource) {
   EXPECT_TRUE(
       bubble_->options_menu_model_
           ->GetIndexOfCommandId(static_cast<int>(
-              TranslateBubbleView::OptionsMenuItem::kChangeTargetLanguage))
+              TranslateBubbleView::OptionsMenuItem::kChangeSourceLanguage))
           .has_value());
 }
 
@@ -605,4 +606,39 @@ TEST_F(TranslateBubbleViewTest, SourceLanguageTabUpdatesViewState) {
   bubble_->TabSelectedAt(0);
   EXPECT_EQ(TranslateBubbleModel::VIEW_STATE_BEFORE_TRANSLATE,
             bubble_->GetViewState());
+}
+
+TEST_F(TranslateBubbleViewTest, ChangeTargetLanguageMenuHiddenWhenButtonShown) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(translate::kTranslateLanguageSearchUI);
+
+  // Ensure the "Always Translate" checkbox is not shown.
+  mock_model_->SetShouldShowAlwaysTranslateShortcut(false);
+  CreateAndShowBubble();
+  TriggerOptionsMenu();
+
+  // The option should be removed from the three dot menu.
+  EXPECT_FALSE(
+      options_menu_model()
+          ->GetIndexOfCommandId(static_cast<int>(
+              TranslateBubbleView::OptionsMenuItem::kChangeTargetLanguage))
+          .has_value());
+}
+
+TEST_F(TranslateBubbleViewTest,
+       ChangeTargetLanguageMenuRetainedWhenCheckboxShown) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(translate::kTranslateLanguageSearchUI);
+
+  // Force the "Always Translate" checkbox to be shown.
+  mock_model_->SetShouldShowAlwaysTranslateShortcut(true);
+  CreateAndShowBubble();
+  TriggerOptionsMenu();
+
+  // The option should appear in the three dot menu.
+  EXPECT_TRUE(
+      options_menu_model()
+          ->GetIndexOfCommandId(static_cast<int>(
+              TranslateBubbleView::OptionsMenuItem::kChangeTargetLanguage))
+          .has_value());
 }
