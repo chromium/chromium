@@ -14,6 +14,7 @@
 #include "base/types/strong_alias.h"
 #include "components/password_manager/core/browser/import/csv_password.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store/stored_credential.h"
 
 namespace password_manager {
 
@@ -101,6 +102,8 @@ struct CredentialUIEntry {
   CredentialUIEntry();
   explicit CredentialUIEntry(const PasswordForm& form);
   explicit CredentialUIEntry(const std::vector<PasswordForm>& forms);
+  explicit CredentialUIEntry(StoredCredential cred);
+  explicit CredentialUIEntry(std::vector<StoredCredential> creds);
   explicit CredentialUIEntry(const PasskeyCredential& passkey);
   explicit CredentialUIEntry(
       const CSVPassword& csv_password,

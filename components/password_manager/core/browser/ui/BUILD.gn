@@ -16,6 +16,7 @@ source_set("credential_ui_entry") {
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/browser/form_parsing",
     "//components/password_manager/core/browser/import:csv",
+    "//components/password_manager/core/browser/password_store:password_store_interface",
     "//components/password_manager/core/browser/well_known_change_password",
     "//components/url_formatter",
   ]

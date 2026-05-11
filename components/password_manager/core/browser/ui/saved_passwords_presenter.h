@@ -110,7 +110,7 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   };
 
   using AddCredentialsCallback = base::OnceClosure;
-  using DuplicatePasswordsMap = std::multimap<std::string, PasswordForm>;
+  using DuplicatePasswordsMap = std::multimap<std::string, StoredCredential>;
 
   SavedPasswordsPresenter(affiliations::AffiliationService* affiliation_service,
                           scoped_refptr<PasswordStoreInterface> profile_store,
@@ -246,10 +246,10 @@ class SavedPasswordsPresenter : public PasswordStoreInterface::Observer,
   // exist, the unblocklist operation is a no-op.
   void UnblocklistBothStores(const CredentialUIEntry& credential);
 
-  // Helper functions to update local cache of PasswordForms.
-  void RemoveForms(const std::vector<PasswordForm>& forms);
-  void AddForms(const std::vector<PasswordForm>& forms,
-                base::OnceClosure completion);
+  // Helper functions to update local cache of StoredCredentials.
+  void RemoveCredentials(const std::vector<StoredCredential>& credentials);
+  void AddCredentialsToCache(std::vector<StoredCredential> credentials,
+                             base::OnceClosure completion);
 
   // Collects credentials and groups them if there are no pending store updates.
   void MaybeGroupCredentials(base::OnceClosure completion);

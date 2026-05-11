@@ -14,6 +14,7 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/form_parsing/form_data_parser.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
+#include "components/password_manager/core/browser/password_store/password_form_converters.h"
 #include "components/password_manager/core/browser/well_known_change_password/well_known_change_password_util.h"
 #include "components/url_formatter/elide_url.h"
 
@@ -143,6 +144,12 @@ CredentialUIEntry::CredentialUIEntry(const std::vector<PasswordForm>& forms) {
     }
   }
 }
+
+CredentialUIEntry::CredentialUIEntry(StoredCredential cred)
+    : CredentialUIEntry(ToPasswordForm(std::move(cred))) {}
+
+CredentialUIEntry::CredentialUIEntry(std::vector<StoredCredential> creds)
+    : CredentialUIEntry(ToPasswordForms(std::move(creds))) {}
 
 CredentialUIEntry::CredentialUIEntry(const PasskeyCredential& passkey)
     : passkey_credential_id(passkey.credential_id()),

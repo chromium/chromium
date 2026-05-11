@@ -28,8 +28,6 @@ class SyncService;
 
 namespace password_manager {
 
-struct PasswordForm;
-
 class PasswordStoreBackend;
 class PasswordStoreConsumer;
 class SmartBubbleStatsStore;
@@ -149,24 +147,24 @@ class PasswordStoreInterface : public RefcountedKeyedService {
       const PasswordFormDigest& form_digest,
       base::OnceClosure completion = base::NullCallback()) = 0;
 
-  // Searches for a matching PasswordForm, and notifies `consumer` on
+  // Searches for a matching StoredCredential, and notifies `consumer` on
   // completion.
   // TODO(crbug.com/40185049): Use a smart pointer for consumer.
   virtual void GetLogins(const PasswordFormDigest& form,
                          base::WeakPtr<PasswordStoreConsumer> consumer) = 0;
 
-  // Gets the complete list of non-blocklist PasswordForms.`consumer` will be
-  // notified on completion.
+  // Gets the complete list of non-blocklist StoredCredentials. `consumer` will
+  // be notified on completion.
   // TODO(crbug.com/40185049): Use a smart pointer for consumer.
   virtual void GetAutofillableLogins(
       base::WeakPtr<PasswordStoreConsumer> consumer) = 0;
 
-  // Gets the complete list of PasswordForms (regardless of their blocklist
+  // Gets the complete list of StoredCredentials (regardless of their blocklist
   // status) and notify `consumer` on completion.
   // TODO(crbug.com/40185049): Use a smart pointer for consumer.
   virtual void GetAllLogins(base::WeakPtr<PasswordStoreConsumer> consumer) = 0;
 
-  // Gets the complete list of PasswordForms, regardless of their blocklist
+  // Gets the complete list of StoredCredentials, regardless of their blocklist
   // status. Also fills in affiliation and branding information for Android
   // credentials.
   // TODO(crbug.com/40185049): Use a smart pointer for consumer.
