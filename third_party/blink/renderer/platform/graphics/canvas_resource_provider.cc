@@ -267,8 +267,8 @@ CanvasResourceProviderSharedImage::CanvasResourceProviderSharedImage(
 CanvasResourceProviderSharedImage::~CanvasResourceProviderSharedImage() =
     default;
 
-base::WeakPtr<CanvasResourceProviderSharedImage>
-CanvasResourceProviderSharedImage::CreateWeakPtr() {
+base::WeakPtr<Canvas2DResourceProviderSharedImage>
+Canvas2DResourceProviderSharedImage::CreateWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
@@ -308,6 +308,11 @@ void Canvas2DResourceProviderSharedImage::OnResourceRefReturned(
       resource_recycling_enabled_ && image_pool_) {
     image_pool_->ReleaseImage(std::move(resource));
   }
+}
+
+base::WeakPtr<CanvasNon2DResourceProviderSharedImage>
+CanvasNon2DResourceProviderSharedImage::CreateWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 scoped_refptr<CanvasResourceSharedImage>

@@ -433,8 +433,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
 
   bool current_resource_has_write_access_ = false;
 
-  base::WeakPtr<CanvasResourceProviderSharedImage> CreateWeakPtr();
-
   static void NotifyGpuContextLostTask(
       base::WeakPtr<CanvasResourceProviderSharedImage>);
 
@@ -448,9 +446,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
   const CanvasResourceSharedImage* resource() const {
     return static_cast<const CanvasResourceSharedImage*>(resource_.get());
   }
-
-  base::WeakPtrFactory<CanvasResourceProviderSharedImage> weak_ptr_factory_{
-      this};
 };
 
 // * Subclass of CanvasResourceProviderSharedImage that is specialized for usage
@@ -585,6 +580,8 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   sk_sp<SkSurface> CreateSkSurface() const override;
   gpu::raster::RasterInterface* RasterInterface() const;
 
+  base::WeakPtr<Canvas2DResourceProviderSharedImage> CreateWeakPtr();
+
   // If this instance is single-buffered or |resource_recycling_enabled_| is
   // false, |image_pool_| will not recycle resources.
   std::unique_ptr<gpu::SharedImagePool<CanvasResourceSharedImage>> image_pool_;
@@ -612,6 +609,9 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   bool resource_recycling_enabled_ = true;
   int num_inflight_resources_ = 0;
   int max_inflight_resources_ = 0;
+
+  base::WeakPtrFactory<Canvas2DResourceProviderSharedImage> weak_ptr_factory_{
+      this};
 };
 
 // * Subclass of CanvasResourceProviderSharedImage that is specialized for usage
@@ -770,6 +770,8 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   sk_sp<SkSurface> CreateSkSurface() const override;
   gpu::raster::RasterInterface* RasterInterface() const;
 
+  base::WeakPtr<CanvasNon2DResourceProviderSharedImage> CreateWeakPtr();
+
  private:
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> ContextProviderWrapper()
       const override {
@@ -818,6 +820,9 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
 
   int num_inflight_resources_ = 0;
   int max_inflight_resources_ = 0;
+
+  base::WeakPtrFactory<CanvasNon2DResourceProviderSharedImage>
+      weak_ptr_factory_{this};
 };
 
 }  // namespace blink
