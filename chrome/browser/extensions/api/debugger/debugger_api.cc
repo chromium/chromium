@@ -33,6 +33,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/extensions/extension_constants.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/navigation_entry.h"
@@ -50,6 +51,7 @@
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "pdf/buildflags.h"
@@ -225,10 +227,13 @@ bool ExtensionMayAttachToURLOrInnerURL(const Extension& extension,
 
 constexpr char kBrowserTargetId[] = "browser";
 
-constexpr char kPerfettoUIExtensionId[] = "lfmkphfpdbjijhpomgecfikhfohaoine";
-
 bool ExtensionIsTrusted(const Extension& extension) {
-  return extension.id() == kPerfettoUIExtensionId;
+  if (extension.id() != extension_misc::kPerfettoUIExtensionId) {
+    return false;
+  }
+  return !Manifest::IsUnpackedLocation(extension.location()) ||
+         base::CommandLine::ForCurrentProcess()->HasSwitch(
+             switches::kAllowUnpackedPerfettoExtension);
 }
 
 bool ExtensionMayAttachToRenderFrameHost(

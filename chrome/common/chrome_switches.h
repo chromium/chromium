@@ -42,9 +42,10 @@ extern const char kAllowAppShimSignatureMismatchForTests[];
 #endif
 extern const char kAllowCrossOriginAuthPrompt[];
 extern const char kAllowHttpScreenCapture[];
-extern const char kAllowUnsafeDevToolsRemoteFileLoading[];
 extern const char kAllowRunningInsecureContent[];
 extern const char kAllowSilentPush[];
+extern const char kAllowUnpackedPerfettoExtension[];
+extern const char kAllowUnsafeDevToolsRemoteFileLoading[];
 extern const char kApp[];
 extern const char kAppId[];
 extern const char kAppLaunchUrlForShortcutsMenuItem[];

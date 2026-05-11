@@ -44,18 +44,21 @@ const char kAllowCrossOriginAuthPrompt[] = "allow-cross-origin-auth-prompt";
 // extension API.
 const char kAllowHttpScreenCapture[] = "allow-http-screen-capture";
 
-// Allows DevTools frontend from remote origins to load local file:// resources.
-// This should only be enabled when explicitly needed for remote debugging
-// with local source maps.
-const char kAllowUnsafeDevToolsRemoteFileLoading[] =
-    "allow-unsafe-devtools-remote-file-loading";
-
 // By default, an https page cannot run JavaScript, CSS or plugins from http
 // URLs. This provides an override to get the old insecure behavior.
 const char kAllowRunningInsecureContent[] = "allow-running-insecure-content";
 
 // Allows Web Push notifications that do not show a notification.
 const char kAllowSilentPush[] = "allow-silent-push";
+
+// Allows an unpacked Perfetto UI extension to be trusted.
+const char kAllowUnpackedPerfettoExtension[] = "allow-unpacked-perfetto-extension";
+
+// Allows DevTools frontend from remote origins to load local file:// resources.
+// This should only be enabled when explicitly needed for remote debugging
+// with local source maps.
+const char kAllowUnsafeDevToolsRemoteFileLoading[] =
+    "allow-unsafe-devtools-remote-file-loading";
 
 // Specifies that the associated value should be launched in "application"
 // mode.

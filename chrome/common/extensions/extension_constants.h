@@ -66,6 +66,10 @@ inline constexpr char kTextEditorAppId[] = "mmfbcljfglbokpmkimbfghdkjmjhdgbg";
 inline constexpr char kInAppPaymentsSupportAppId[] =
     "nmmhkkegccagdldgiimedpiccmgmieda";
 
+// The extension id of Perfetto UI extension.
+inline constexpr char kPerfettoUIExtensionId[] =
+    "lfmkphfpdbjijhpomgecfikhfohaoine";
+
 // The extension id of virtual keyboard extension.
 inline constexpr char kKeyboardExtensionId[] =
     "mppnpdlheglhdfmldimlhpnegondlapf";
@@ -203,9 +207,6 @@ inline constexpr char kBruSecurityKeyForwarderExtensionId[] =
     "lcooaekmckohjjnpaaokodoepajbnill";
 // The extension id of the OneDrive FS external component extension.
 inline constexpr char kODFSExtensionId[] = "gnnndjlaomemikopnjhhnoombakkkkdg";
-// The extension id of Perfetto UI extension.
-inline constexpr char kPerfettoUIExtensionId[] =
-    "lfmkphfpdbjijhpomgecfikhfohaoine";
 // The extension id of the Accessibility Common extension.
 inline constexpr char kAccessibilityCommonExtensionId[] =
     "egfdjlfmgnehecnclamagfafdccgfndp";

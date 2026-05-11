@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/extensions/extension_constants.h"
 #include "chrome/test/base/browser_closed_waiter.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/infobars/content/content_infobar_manager.h"
@@ -324,6 +325,119 @@ IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
   EXPECT_TRUE(RunExtensionTest("debugger_file_access")) << message_;
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
+                       BrowserTargetAllowedForUnpackedPerfettoUIWithFlag) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ::switches::kAllowUnpackedPerfettoExtension);
+
+  scoped_refptr<const Extension> unpacked_perfetto =
+      ExtensionBuilder("Perfetto UI")
+          .SetID(extension_misc::kPerfettoUIExtensionId)
+          .SetLocation(mojom::ManifestLocation::kUnpacked)
+          .AddAPIPermission("debugger")
+          .Build();
+
+  auto attach_function = base::MakeRefCounted<DebuggerAttachFunction>();
+  attach_function->set_extension(unpacked_perfetto.get());
+
+  EXPECT_TRUE(api_test_utils::RunFunction(
+      attach_function.get(), R"([{"targetId": "browser"}, "1.1"])", profile()))
+      << attach_function->GetError();
+
+  // Clean up and detach.
+  auto detach_function = base::MakeRefCounted<DebuggerDetachFunction>();
+  detach_function->set_extension(unpacked_perfetto.get());
+  EXPECT_TRUE(api_test_utils::RunFunction(
+      detach_function.get(), R"([{"targetId": "browser"}])", profile()));
+}
+
+IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
+                       BrowserTargetNotAllowedForUnpackedPerfettoUI) {
+  scoped_refptr<const Extension> unpacked_perfetto =
+      ExtensionBuilder("Perfetto UI")
+          .SetID(extension_misc::kPerfettoUIExtensionId)
+          .SetLocation(mojom::ManifestLocation::kUnpacked)
+          .AddAPIPermission("debugger")
+          .Build();
+
+  auto attach_function = base::MakeRefCounted<DebuggerAttachFunction>();
+  attach_function->set_extension(unpacked_perfetto.get());
+
+  std::string actual_error = api_test_utils::RunFunctionAndReturnError(
+      attach_function.get(), R"([{"targetId": "browser"}, "1.1"])", profile());
+
+  EXPECT_EQ("No target with given id browser.", actual_error);
+}
+
+IN_PROC_BROWSER_TEST_F(DebuggerApiTest,
+                       BrowserTargetAllowedForComponentPerfettoUI) {
+  scoped_refptr<const Extension> component_perfetto =
+      ExtensionBuilder("Perfetto UI")
+          .SetID(extension_misc::kPerfettoUIExtensionId)
+          .SetLocation(mojom::ManifestLocation::kComponent)
+          .AddAPIPermission("debugger")
+          .Build();
+
+  auto attach_function = base::MakeRefCounted<DebuggerAttachFunction>();
+  attach_function->set_extension(component_perfetto.get());
+
+  EXPECT_TRUE(api_test_utils::RunFunction(
+      attach_function.get(), R"([{"targetId": "browser"}, "1.1"])", profile()))
+      << attach_function->GetError();
+
+  // Now, try to attach to a WebUI page via Target.attachToTarget through the
+  // browser target (which acts as a root session). This should be blocked by
+  // the child session's delegated MayAttachToRenderFrameHost check.
+
+  // 1. Open a WebUI tab.
+  content::WebContents* web_contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(web_contents, GURL("chrome://version")));
+  int tab_id = sessions::SessionTabHelper::IdForTab(web_contents).id();
+
+  // 2. Find the targetId for the WebUI tab.
+  scoped_refptr<DebuggerGetTargetsFunction> get_targets =
+      new DebuggerGetTargetsFunction();
+  std::optional<base::Value> targets_value(
+      api_test_utils::RunFunctionAndReturnSingleResult(get_targets.get(), "[]",
+                                                       profile()));
+  ASSERT_TRUE(targets_value->is_list());
+
+  std::string webui_target_id;
+  for (const base::Value& target_value : targets_value->GetList()) {
+    std::optional<int> id = target_value.GetDict().FindInt("tabId");
+    if (id == tab_id) {
+      const std::string* id_str = target_value.GetDict().FindString("id");
+      ASSERT_TRUE(id_str);
+      webui_target_id = *id_str;
+      break;
+    }
+  }
+  ASSERT_FALSE(webui_target_id.empty());
+
+  // 3. Send Target.attachToTarget.
+  auto send_command = base::MakeRefCounted<DebuggerSendCommandFunction>();
+  send_command->set_extension(component_perfetto.get());
+
+  std::string command_args = base::StringPrintf(
+      R"([{"targetId": "browser"}, "Target.attachToTarget", )"
+      R"({"targetId": "%s"}])",
+      webui_target_id.c_str());
+
+  // Run the command and expect it to fail (it will return an error response).
+  std::string attach_error = api_test_utils::RunFunctionAndReturnError(
+      send_command.get(), command_args, profile());
+
+  // The attach should fail with an error because the delegated
+  // MayAttachToRenderFrameHost check will block attaching to the WebUI frame.
+  EXPECT_THAT(attach_error, testing::HasSubstr("Not allowed"));
+
+  // Clean up and detach.
+  auto detach_function = base::MakeRefCounted<DebuggerDetachFunction>();
+  detach_function->set_extension(component_perfetto.get());
+  EXPECT_TRUE(api_test_utils::RunFunction(
+      detach_function.get(), R"([{"targetId": "browser"}])", profile()));
+}
 
 class TestInterstitialPage
     : public security_interstitials::SecurityInterstitialPage {
