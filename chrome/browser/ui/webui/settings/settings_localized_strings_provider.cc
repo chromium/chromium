@@ -2113,6 +2113,7 @@ void AddPeopleStrings(content::WebUIDataSource* html_source, Profile* profile) {
        IDS_SETTINGS_SYNC_SYNC_AND_NON_PERSONALIZED_SERVICES},
       {"syncUnavailableForNonGoogleAccount",
        IDS_SYNC_UNAVAILABLE_FOR_NON_GOOGLE_ACCOUNT},
+      {"googleServicesPageTitle", IDS_SETTINGS_GOOGLE_SERVICES_PAGE_TITLE},
 #if BUILDFLAG(IS_CHROMEOS)
       {"accountManagerSubMenuLabel",
        IDS_SETTINGS_ACCOUNT_MANAGER_SUBMENU_LABEL},
@@ -2122,7 +2123,6 @@ void AddPeopleStrings(content::WebUIDataSource* html_source, Profile* profile) {
       {"accountDataTypesHeading", IDS_SETTINGS_ACCOUNT_DATATYPES_HEADING},
       {"accountDataTypesBody", IDS_SETTINGS_ACCOUNT_BODY},
       {"syncDisabledUserInformation", IDS_SETTINGS_ACCOUNT_SYNC_DISABLED},
-      {"googleServicesPageTitle", IDS_SETTINGS_GOOGLE_SERVICES_PAGE_TITLE},
 #endif
 
   // Manage profile strings:

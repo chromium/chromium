@@ -3869,6 +3869,10 @@
       Choice saved. Your choice will apply when you sign in to other Google services.
     </message>
 
+    <message name="IDS_SETTINGS_GOOGLE_SERVICES_PAGE_TITLE" desc="Name of the settings page for managing Google services.">
+      Google services
+    </message>
+
     <if expr="not is_chromeos">
       <message name="IDS_SETTINGS_PROFILE_NAME_INPUT_LABEL" desc="Aria label of the input field where the user can edit the name associated with the profile." meaning="Name of a person">
         Name
@@ -3908,9 +3912,6 @@
       </message>
       <message name="IDS_SETTINGS_ACCOUNT_HISTORY_TOGGLE_SUB_LABEL_OFF" desc="Subtitle describing the effects of turning on the merged toggle in the account settings page, combining the data types history, tabs, and saved tab groups. Shown on next to the toggle that controls whether these data types should be saved in the Google Account and synced across devices. Shown only if the toggle is off.">
         Turn on to get your browsing history and tabs from other devices
-      </message>
-      <message name="IDS_SETTINGS_GOOGLE_SERVICES_PAGE_TITLE" desc="Name of the settings page for managing Google services.">
-        Google services
       </message>
     </if>
 

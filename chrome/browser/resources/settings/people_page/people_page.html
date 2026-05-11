@@ -106,7 +106,36 @@
             </template>
           </div>
         </template>
+</if>
 
+<if expr="is_chromeos">
+        <template is="dom-if" if="[[!shouldLinkToAccountSettingsPage_(
+            syncStatus.signedInState)]]" restamp>
+          <div id="profile-row" class="cr-row first two-line"
+              actionable$="[[isProfileActionable_]]" on-click="onProfileClick_">
+            <template is="dom-if" if="[[syncStatus]]">
+              <div id="profile-icon"
+                  style="background-image: [[getIconImageSet_(
+                      profileIconUrl_)]]">
+              </div>
+              <div class="flex cr-row-gap cr-padded-text text-elide">
+                <span id="profile-name">[[profileName_]]</span>
+                <div class="secondary" hidden="[[!isSyncing_(
+                      syncStatus.signedInState)]]">
+                  [[syncStatus.signedInUsername]]
+                </div>
+              </div>
+              <cr-icon-button class="icon-external"
+                  id="profile-subpage-arrow"
+                  hidden="[[!isProfileActionable_]]"
+                  aria-label="$i18n{accountManagerSubMenuLabel}"
+                  aria-describedby="profile-name"></cr-icon-button>
+            </template>
+          </div>
+        </template>
+</if>
+
+        <!-- Shared Elements -->
         <cr-link-row id="account-subpage-row" on-click="onAccountClick_"
             hidden="[[!shouldLinkToAccountSettingsPage_(
               syncStatus.signedInState)]]">
@@ -126,10 +155,12 @@
 
         <cr-link-row id="sync-setup"
             label="$i18n{syncAndNonPersonalizedServices}"
+            sub-label="[[getSyncAndNonPersonalizedServicesSubtext_(syncStatus)]]"
             on-click="onSyncClick_"
             role-description="$i18n{subpageArrowRoleDescription}"
             hidden="[[shouldHideSyncSetupLinkRow_(syncStatus)]]">
         </cr-link-row>
+
         <cr-link-row id="google-services"
             label="$i18n{googleServicesPageTitle}"
             on-click="onGoogleServicesClick_"
@@ -137,6 +168,7 @@
             hidden="[[!shouldHideSyncSetupLinkRow_(syncStatus)]]">
         </cr-link-row>
 
+<if expr="not is_chromeos">
         <template is="dom-if" if="[[signinAllowed_]]">
           <cr-link-row id="manage-google-account"
               label="$i18n{manageGoogleAccount}"
@@ -160,37 +192,6 @@
             </div>
           </div>
         </template>
-</if>
-
-<if expr="is_chromeos">
-        <div id="profile-row" class="cr-row first two-line"
-            actionable$="[[isProfileActionable_]]" on-click="onProfileClick_">
-          <template is="dom-if" if="[[syncStatus]]">
-            <div id="profile-icon"
-                style="background-image: [[getIconImageSet_(
-                    profileIconUrl_)]]">
-            </div>
-            <div class="flex cr-row-gap cr-padded-text text-elide">
-              <span id="profile-name">[[profileName_]]</span>
-              <div class="secondary" hidden="[[!isSyncing_(
-                    syncStatus.signedInState)]]">
-                [[syncStatus.signedInUsername]]
-              </div>
-            </div>
-            <cr-icon-button class="icon-external"
-                id="profile-subpage-arrow"
-                hidden="[[!isProfileActionable_]]"
-                aria-label="$i18n{accountManagerSubMenuLabel}"
-                aria-describedby="profile-name"></cr-icon-button>
-          </template>
-        </div>
-
-        <cr-link-row id="sync-setup"
-            label="$i18n{syncAndNonPersonalizedServices}"
-            sub-label="[[getSyncAndNonPersonalizedServicesSubtext_(syncStatus)]]"
-            on-click="onSyncClick_"
-            role-description="$i18n{subpageArrowRoleDescription}">
-        </cr-link-row>
 </if>
 
       </div>

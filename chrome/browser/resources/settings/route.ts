@@ -173,15 +173,15 @@ function createRoutes(): SettingsRoutes {
   if (visibility.people !== false) {
     r.PEOPLE = r.BASIC.createSection(
         '/people', 'people', loadTimeData.getString('peoplePageTitle'));
+    if (loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos')) {
+      r.ACCOUNT = r.PEOPLE.createChild('/account');
+      r.GOOGLE_SERVICES = r.PEOPLE.createChild('/googleServices');
+    }
     // <if expr="not is_chromeos">
     r.SIGN_OUT = r.PEOPLE.createChild('/signOut');
     r.SIGN_OUT.isNavigableDialog = true;
     r.IMPORT_DATA = r.PEOPLE.createChild('/importData');
     r.IMPORT_DATA.isNavigableDialog = true;
-    if (loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos')) {
-      r.ACCOUNT = r.PEOPLE.createChild('/account');
-      r.GOOGLE_SERVICES = r.PEOPLE.createChild('/googleServices');
-    }
     r.MANAGE_PROFILE = r.PEOPLE.createChild('/manageProfile');
     // </if>
 

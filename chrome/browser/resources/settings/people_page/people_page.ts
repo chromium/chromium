@@ -163,6 +163,16 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
        */
       profileName_: String,
 
+      primaryAccountName_: String,
+      primaryAccountEmail_: String,
+      primaryAccountIconUrl_: String,
+
+      replaceSyncPromosWithSignInPromos_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos'),
+      },
+
       // <if expr="not is_chromeos">
       shouldShowGoogleAccount_: {
         type: Boolean,
@@ -172,21 +182,12 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
             'storedAccounts.length, syncStatus.signedIn, syncStatus.hasError)',
       },
 
-      replaceSyncPromosWithSignInPromos_: {
-        type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos'),
-      },
-
       showImportDataDialog_: {
         type: Boolean,
         value: false,
       },
 
       showSignoutDialog_: Boolean,
-      primaryAccountName_: String,
-      primaryAccountEmail_: String,
-      primaryAccountIconUrl_: String,
       // </if>
 
       // Exposes ChromeSigninAccessPoint enum to HTML bindings.
@@ -205,16 +206,16 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
   declare private profileIconUrl_: string;
   declare private isProfileActionable_: boolean;
   declare private profileName_: string;
+  declare private replaceSyncPromosWithSignInPromos_: boolean;
+  declare private primaryAccountName_: string;
+  declare private primaryAccountEmail_: string;
+  declare private primaryAccountIconUrl_: string;
 
   // <if expr="not is_chromeos">
   declare storedAccounts: StoredAccount[]|null;
   declare private shouldShowGoogleAccount_: boolean;
-  declare private replaceSyncPromosWithSignInPromos_: boolean;
   declare private showImportDataDialog_: boolean;
   declare private showSignoutDialog_: boolean;
-  declare private primaryAccountName_: string;
-  declare private primaryAccountEmail_: string;
-  declare private primaryAccountIconUrl_: string;
   // </if>
 
   private syncBrowserProxy_: SyncBrowserProxy =
@@ -309,6 +310,10 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
     }
     this.profileName_ = accounts[0].fullName;
     this.profileIconUrl_ = accounts[0].pic;
+
+    this.primaryAccountName_ = accounts[0].fullName;
+    this.primaryAccountEmail_ = accounts[0].email;
+    this.primaryAccountIconUrl_ = accounts[0].pic;
   }
   // </if>
 
@@ -385,7 +390,6 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
     Router.getInstance().navigateTo(routes.SYNC);
   }
 
-  // <if expr="not is_chromeos">
   private onAccountClick_() {
     Router.getInstance().navigateTo(routes.ACCOUNT);
   }
@@ -394,6 +398,12 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
     Router.getInstance().navigateTo(routes.GOOGLE_SERVICES);
   }
 
+  private shouldLinkToAccountSettingsPage_(): boolean {
+    return this.replaceSyncPromosWithSignInPromos_ && !!this.syncStatus &&
+        this.syncStatus.signedInState === SignedInState.SIGNED_IN;
+  }
+
+  // <if expr="not is_chromeos">
   private onImportDataClick_() {
     Router.getInstance().navigateTo(routes.IMPORT_DATA);
   }
@@ -401,11 +411,6 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
   private onImportDataDialogClosed_() {
     Router.getInstance().navigateToPreviousRoute();
     focusWithoutInk(this.$.importDataDialogTrigger);
-  }
-
-  private shouldLinkToAccountSettingsPage_(): boolean {
-    return this.replaceSyncPromosWithSignInPromos_ && !!this.syncStatus &&
-        this.syncStatus.signedInState === SignedInState.SIGNED_IN;
   }
 
   private shouldLinkToProfileRow_(): boolean {
@@ -460,17 +465,16 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
         this.syncStatus.signedInState === SignedInState.SYNCING;
   }
 
-  // <if expr="is_chromeos">
   private getSyncAndNonPersonalizedServicesSubtext_(): string {
+    // <if expr="is_chromeos">
     if (this.syncStatus && this.syncStatus.hasError &&
         this.syncStatus.statusText) {
       return this.syncStatus.statusText;
     }
+    // </if>
     return '';
   }
-  // </if>
 
-  // <if expr="not is_chromeos">
   private shouldHideSyncSetupLinkRow_() {
     return this.replaceSyncPromosWithSignInPromos_ &&
         (!this.syncStatus ||
@@ -492,7 +496,6 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
 
     return this.primaryAccountEmail_;
   }
-  // </if>
 
   // SettingsViewMixin implementation.
   override getFocusConfig() {
