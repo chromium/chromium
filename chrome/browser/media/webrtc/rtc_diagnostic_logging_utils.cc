@@ -19,6 +19,7 @@
 #include "base/uuid.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager.h"
+#include "chrome/browser/media/webrtc/webrtc_event_log_manager_common.h"
 #include "chrome/browser/media/webrtc/webrtc_event_log_uploader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
@@ -303,13 +304,11 @@ void StartRtcPeerConnectionEventDiagnosticLogging(
   static constexpr size_t kMaxLogSize = 1024 * 1024 * 4;
   static constexpr int kOutputPeriodMs = 1000;
   // Use different app_ids for same site vs cross site.
-  static constexpr int kAppIdSameSite = 1;
-  static constexpr int kAppIdCrossSite = 99;
-  const int web_app_id =
+  const size_t web_app_id =
       webrtc_event_logging::IsOriginSameSiteWithUploadEndpoint(
           frame_host.GetLastCommittedOrigin())
-          ? kAppIdSameSite
-          : kAppIdCrossSite;
+          ? webrtc_event_logging::kSameSiteWebAppId
+          : webrtc_event_logging::kCrossSiteWebAppId;
 
   controller->StartEventLogging(
       webrtc_logging::ApiType::kWeb, session_id, kMaxLogSize, kOutputPeriodMs,

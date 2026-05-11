@@ -220,7 +220,7 @@ class WebRtcLoggingController
 
   webrtc_logging::ApiType GetApiType() const;
   bool IsWebApiDiagnosticLoggingStarted() const;
-  std::string GetContentName() const;
+  WebRtcLogUploadSite GetUploadSite() const;
   bool CanOperationProceedInWebApiMode() const;
 
   // Returns true if the operation can proceed in Web API mode. If not, it

@@ -637,7 +637,7 @@ void WebRtcLoggingController::DoUploadLogAndRtpDumps(
   log_uploader->background_task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](const std::string& content_name,
+          [](WebRtcLogUploadSite site,
              std::unique_ptr<WebRtcLogBuffer> log_buffer,
              std::unique_ptr<WebRtcLogMetaDataMap> meta_data,
              WebRtcLogUploader::UploadDoneData upload_done_data,
@@ -651,10 +651,10 @@ void WebRtcLoggingController::DoUploadLogAndRtpDumps(
               return;
             }
             uploader->OnLoggingStopped(
-                content_name, std::move(log_buffer), std::move(meta_data),
+                site, std::move(log_buffer), std::move(meta_data),
                 std::move(upload_done_data), is_text_log_upload_allowed);
           },
-          GetContentName(), std::move(log_buffer), std::move(meta_data),
+          GetUploadSite(), std::move(log_buffer), std::move(meta_data),
           std::move(upload_done_data), is_text_log_upload_allowed));
 }
 
@@ -729,24 +729,22 @@ bool WebRtcLoggingController::IsWebApiDiagnosticLoggingStarted() const {
   return web_api_settings_.has_value();
 }
 
-std::string WebRtcLoggingController::GetContentName() const {
+WebRtcLogUploadSite WebRtcLoggingController::GetUploadSite() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  static constexpr char kUploadSiteContentName[] = "webrtc_log";
-  static constexpr char kNonUploadSiteContentName[] = "other_webrtc_log";
   WebRtcLogUploader* uploader = WebRtcLogUploader::GetInstance();
   if (!uploader) {
-    return kNonUploadSiteContentName;
+    return WebRtcLogUploadSite::kCrossSite;
   }
   const url::Origin upload_site_origin =
       url::Origin::Create(uploader->upload_url());
   switch (GetApiType()) {
     case webrtc_logging::ApiType::kExtension:
-      return kUploadSiteContentName;
+      return WebRtcLogUploadSite::kSameSite;
     case webrtc_logging::ApiType::kWeb:
       return net::SchemefulSite::IsSameSite(web_api_settings_->origin,
                                             upload_site_origin)
-                 ? kUploadSiteContentName
-                 : kNonUploadSiteContentName;
+                 ? WebRtcLogUploadSite::kSameSite
+                 : WebRtcLogUploadSite::kCrossSite;
   }
 }
 

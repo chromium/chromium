@@ -15,6 +15,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/media/webrtc/webrtc_event_log_manager_common.h"
 #include "chrome/browser/media/webrtc/webrtc_log_uploader.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -255,7 +256,14 @@ bool WebRtcEventLogUploaderImpl::PrepareUploadData(std::string* upload_data) {
 
   const char* filename = filename_str.c_str();
 
-  net::AddMultipartValueForUpload("prod", GetLogUploadProduct(), kBoundary,
+  size_t web_app_id =
+      ExtractRemoteBoundWebRtcEventLogWebAppIdFromPath(log_file_.path);
+  WebRtcLogUploadSite site =
+      (web_app_id == webrtc_event_logging::kCrossSiteWebAppId)
+          ? WebRtcLogUploadSite::kCrossSite
+          : WebRtcLogUploadSite::kSameSite;
+
+  net::AddMultipartValueForUpload("prod", GetLogUploadProduct(site), kBoundary,
                                   std::string(), upload_data);
   net::AddMultipartValueForUpload("ver", GetLogUploadVersion(), kBoundary,
                                   std::string(), upload_data);
