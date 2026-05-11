@@ -138,24 +138,17 @@ using credential_provider_promo::IOSCredentialProviderPromoAction;
 - (void)confirmationAlertPrimaryAction {
   [self hidePromo];
   if (self.promoContext == CredentialProviderPromoContext::kFirstStep) {
-    if (@available(iOS 18.0, *)) {
-      // Show the prompt to allow the app to be turned on as a credential
-      // provider.
-      __weak __typeof(self) weakSelf = self;
-      [ASSettingsHelper
-          requestToTurnOnCredentialProviderExtensionWithCompletionHandler:^(
-              BOOL appWasEnabledForAutoFill) {
-            [weakSelf recordTurnOnCredentialProviderExtensionPromptOutcome:
-                          appWasEnabledForAutoFill];
-          }];
-      [self recordAction:IOSCredentialProviderPromoAction::kTurnOnAutofill];
-      return;
-    }
-
-    // Show the screen informing the user on how they can set the app as a
-    // credential provider.
-    [self presentLearnMore];
-    [self recordAction:IOSCredentialProviderPromoAction::kLearnMore];
+    // Show the prompt to allow the app to be turned on as a credential
+    // provider.
+    __weak __typeof(self) weakSelf = self;
+    [ASSettingsHelper
+        requestToTurnOnCredentialProviderExtensionWithCompletionHandler:^(
+            BOOL appWasEnabledForAutoFill) {
+          [weakSelf recordTurnOnCredentialProviderExtensionPromptOutcome:
+                        appWasEnabledForAutoFill];
+        }];
+    [self recordAction:IOSCredentialProviderPromoAction::kTurnOnAutofill];
+    return;
   } else {
     [self openIOSCredentialProviderSettings];
     [self recordAction:IOSCredentialProviderPromoAction::kGoToSettings];
@@ -188,28 +181,6 @@ using credential_provider_promo::IOSCredentialProviderPromoAction;
 }
 
 #pragma mark - Private
-
-// Presents the 'learn more' step of the feature.
-- (void)presentLearnMore {
-  // The 'learn more' step shouldn't be presented on iOS 18+.
-  if (@available(iOS 18.0, *)) {
-    NOTREACHED();
-  }
-
-  self.viewController = [[CredentialProviderPromoViewController alloc] init];
-  self.viewController.actionHandler = self;
-  self.viewController.presentationController.delegate = self;
-  self.mediator.consumer = self.viewController;
-  self.promoContext = CredentialProviderPromoContext::kLearnMore;
-  [self.mediator configureConsumerWithTrigger:self.trigger
-                                      context:self.promoContext];
-  UIViewController* topViewController =
-      top_view_controller::TopPresentedViewControllerFrom(
-          self.baseViewController);
-  [topViewController presentViewController:self.viewController
-                                  animated:YES
-                                completion:nil];
-}
 
 // Dismisses the feature.
 - (void)hidePromo {
@@ -256,19 +227,13 @@ using credential_provider_promo::IOSCredentialProviderPromoAction;
   OpenIOSCredentialProviderSettings();
 }
 
-// Returns the promo context for the given trigger. For SetUpList the first
-// step is skipped because some context is already provided in the SetUpList
-// item's description. But on iOS 18, the first step allows the user to enable
-// the CPE directly in-app, so this is preferred.
+// Returns the promo context for the given trigger. For SetUpList, the first
+// step is preferred only if expanded tips are enabled to allow direct in-app
+// CPE activation. Otherwise, it skips to the settings instructions.
 - (CredentialProviderPromoContext)promoContextFromTrigger:
     (CredentialProviderPromoTrigger)trigger {
-  if (trigger == CredentialProviderPromoTrigger::SetUpList) {
-    if (@available(iOS 18.0, *)) {
-      if (IsIOSExpandedTipsEnabled()) {
-        // Go to the first step, which allows enabling CPE in-app.
-        return CredentialProviderPromoContext::kFirstStep;
-      }
-    }
+  if (trigger == CredentialProviderPromoTrigger::SetUpList &&
+      !IsIOSExpandedTipsEnabled()) {
     return CredentialProviderPromoContext::kLearnMore;
   }
   return CredentialProviderPromoContext::kFirstStep;

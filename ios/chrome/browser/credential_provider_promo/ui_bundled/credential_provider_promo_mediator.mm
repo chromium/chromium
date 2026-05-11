@@ -29,32 +29,14 @@ NSString* const kLearnMoreAnimation = @"CPE_promo_animation_edu_how_to_enable";
 
 // Returns the title string to use when the promo context is `kFirstStep`.
 NSString* GetFirstStepTitleString() {
-  if (@available(iOS 18.0, *)) {
-    return l10n_util::GetNSString(
-        IDS_IOS_CREDENTIAL_PROVIDER_PROMO_TITLE_IOS18);
-  } else {
-    return l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_TITLE);
-  }
-}
-
-// Returns the subtitle string to use when the promo context is `kFirstStep`.
-NSString* GetFirstStepSubtitleString() {
-  if (@available(iOS 18.0, *)) {
-    return nil;
-  } else {
-    return l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_SUBTITLE);
-  }
+  return l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_TITLE);
 }
 
 // Returns the primary action string to use when the promo context is
 // `kFirstStep`.
 NSString* GetFirstStepPrimaryActionString() {
-  if (@available(iOS 18.0, *)) {
-    return l10n_util::GetNSString(
-        IDS_IOS_CREDENTIAL_PROVIDER_SETTINGS_TURN_ON_AUTOFILL);
-  } else {
-    return l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_LEARN_HOW);
-  }
+  return l10n_util::GetNSString(
+      IDS_IOS_CREDENTIAL_PROVIDER_SETTINGS_TURN_ON_AUTOFILL);
 }
 
 // Returns the subtitle string to use when the promo context is `kLearnMore`.
@@ -197,7 +179,6 @@ NSString* GetLearnMoreSubtitleString() {
   switch (self.promoContext) {
     case CredentialProviderPromoContext::kFirstStep:
       titleString = GetFirstStepTitleString();
-      subtitleString = GetFirstStepSubtitleString();
       primaryActionString = GetFirstStepPrimaryActionString();
       image = ios::provider::GetBrandedImage(
           ios::provider::BrandedImage::kPasswordSuggestionKey);

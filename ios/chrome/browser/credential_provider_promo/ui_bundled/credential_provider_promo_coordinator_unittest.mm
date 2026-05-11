@@ -142,14 +142,9 @@ TEST_F(CredentialProviderPromoCoordinatorTest,
 // correctly.
 TEST_F(CredentialProviderPromoCoordinatorTest,
        CredentialProviderPromoPrimaryActionRecorded) {
-  int final_learn_more_action_count = 1;
-  int final_turn_on_autofill_action_count = 0;
-  int final_go_to_settings_action_count = 1;
-  if (@available(iOS 18.0, *)) {
-    final_learn_more_action_count = 0;
-    final_turn_on_autofill_action_count = 1;
-    final_go_to_settings_action_count = 0;
-  }
+  int final_learn_more_action_count = 0;
+  int final_turn_on_autofill_action_count = 1;
+  int final_go_to_settings_action_count = 0;
 
   // Make sure bucket counts are all initially zero.
   histogram_tester_->ExpectBucketCount(
@@ -174,9 +169,7 @@ TEST_F(CredentialProviderPromoCoordinatorTest,
       showCredentialProviderPromoWithTrigger:
           CredentialProviderPromoTrigger::SuccessfulLoginUsingExistingPassword];
 
-  // Perform the action. The coordinator will record the action. The
-  // `promoContext` will be switched to 'Learn more' if the OS version is prior
-  // to iOS 18.
+  // Perform the action. The coordinator will record the action.
   ASSERT_TRUE([coordinator_
       conformsToProtocol:@protocol(ConfirmationAlertActionHandler)]);
   [(id<ConfirmationAlertActionHandler>)
@@ -190,15 +183,6 @@ TEST_F(CredentialProviderPromoCoordinatorTest,
       credential_provider_promo::IOSCredentialProviderPromoAction::
           kTurnOnAutofill,
       final_turn_on_autofill_action_count);
-
-  if (@available(iOS 18.0, *)) {
-    // There's no other button to tap in this case.
-  } else {
-    // When the `promoContext` is 'Learn more', the primary CTA is 'Go to
-    // settings'.
-    [(id<ConfirmationAlertActionHandler>)
-            coordinator_ confirmationAlertPrimaryAction];
-  }
   histogram_tester_->ExpectBucketCount(
       kIOSCredentialProviderPromoOnAutofillUsedHistogram,
       credential_provider_promo::IOSCredentialProviderPromoAction::
@@ -211,33 +195,30 @@ TEST_F(CredentialProviderPromoCoordinatorTest,
 TEST_F(CredentialProviderPromoCoordinatorTest,
        CredentialProviderPromoTurnOnAutoFillPromptOutcomeRecorded) {
   // The "Turn on AutoFill…" action is only available on iOS 18+.
-  if (@available(iOS 18.0, *)) {
-    // Make sure bucket counts are all initially zero.
-    histogram_tester_->ExpectTotalCount(
-        kTurnOnCredentialProviderExtensionPromptOutcomeHistogram, 0);
+  // Make sure bucket counts are all initially zero.
+  histogram_tester_->ExpectTotalCount(
+      kTurnOnCredentialProviderExtensionPromptOutcomeHistogram, 0);
 
-    // Trigger the promo and tap the primary action button.
-    [credential_provider_promo_command_handler_
-        showCredentialProviderPromoWithTrigger:
-            CredentialProviderPromoTrigger::
-                SuccessfulLoginUsingExistingPassword];
-    ASSERT_TRUE([coordinator_
-        conformsToProtocol:@protocol(ConfirmationAlertActionHandler)]);
-    [(id<ConfirmationAlertActionHandler>)
-            coordinator_ confirmationAlertPrimaryAction];
+  // Trigger the promo and tap the primary action button.
+  [credential_provider_promo_command_handler_
+      showCredentialProviderPromoWithTrigger:
+          CredentialProviderPromoTrigger::SuccessfulLoginUsingExistingPassword];
+  ASSERT_TRUE([coordinator_
+      conformsToProtocol:@protocol(ConfirmationAlertActionHandler)]);
+  [(id<ConfirmationAlertActionHandler>)
+          coordinator_ confirmationAlertPrimaryAction];
 
-    // Wait for the histogram to be logged.
-    EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-        TestTimeouts::action_timeout(), ^bool() {
-          return histogram_tester_->GetBucketCount(
-                     kTurnOnCredentialProviderExtensionPromptOutcomeHistogram,
-                     false) == 1;
-        }));
+  // Wait for the histogram to be logged.
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      TestTimeouts::action_timeout(), ^bool() {
+        return histogram_tester_->GetBucketCount(
+                   kTurnOnCredentialProviderExtensionPromptOutcomeHistogram,
+                   false) == 1;
+      }));
 
-    // Verify that only the expected metric was logged.
-    histogram_tester_->ExpectUniqueSample(
-        kTurnOnCredentialProviderExtensionPromptOutcomeHistogram, false, 1);
-  }
+  // Verify that only the expected metric was logged.
+  histogram_tester_->ExpectUniqueSample(
+      kTurnOnCredentialProviderExtensionPromptOutcomeHistogram, false, 1);
 }
 
 // Tests that tapping the secondary CTA is recorded correctly when the promo is
@@ -301,10 +282,6 @@ TEST_F(CredentialProviderPromoCoordinatorTest, SetUpListTrigger) {
 // directly enable the CPE.
 TEST_F(CredentialProviderPromoCoordinatorTest,
        SetUpListTriggerWithExpandedTips) {
-  if (!@available(iOS 18.0, *)) {
-    return;
-  }
-
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kIOSExpandedTips);
   histogram_tester_->ExpectBucketCount(

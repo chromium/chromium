@@ -41,31 +41,21 @@ struct PromoStrings {
 // Returns the expected set of strings for the `kFirstStep` promo context.
 PromoStrings ExpectedFirstStepPromoStrings() {
   NSString* title_string;
-  NSString* subtitle_string;
   NSString* primary_action_string;
   NSString* secondary_action_string;
   NSString* tertiary_action_string;
 
-  if (@available(iOS 18.0, *)) {
-    title_string =
-        l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_TITLE_IOS18);
-    primary_action_string = l10n_util::GetNSString(
-        IDS_IOS_CREDENTIAL_PROVIDER_SETTINGS_TURN_ON_AUTOFILL);
-  } else {
-    title_string =
-        l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_TITLE);
-    subtitle_string =
-        l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_SUBTITLE);
-    primary_action_string =
-        l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_LEARN_HOW);
-  }
+  title_string =
+      l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_TITLE);
+  primary_action_string = l10n_util::GetNSString(
+      IDS_IOS_CREDENTIAL_PROVIDER_SETTINGS_TURN_ON_AUTOFILL);
 
   secondary_action_string =
       l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_NO_THANKS);
   tertiary_action_string =
       l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_REMIND_ME_LATER);
 
-  return {title_string, subtitle_string, primary_action_string,
+  return {title_string, /*subtitle_string=*/nil, primary_action_string,
           secondary_action_string, tertiary_action_string};
 }
 

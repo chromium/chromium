@@ -2334,9 +2334,6 @@
       <message name="IDS_IOS_CREDENTIAL_PROVIDER_PROMO_REMIND_ME_LATER" desc="Text of the tertiary button in the inital step and 'Learn More' step views of the Credential Provider Exention Promo. [iOS only]">
         Remind me later
       </message>
-      <message name="IDS_IOS_CREDENTIAL_PROVIDER_PROMO_TITLE" desc="Title text of the Credential Provider Exention promo. [iOS only]">
-        Sign in with your saved passwords &amp; passkeys from any app
-      </message>
       <message name="IDS_IOS_CREDENTIAL_PROVIDER_SETTINGS_TURN_ON_AUTOFILL" desc="Title of the button that allows setting the app as a credential provider. The translation and capitalization of 'AutoFill' must match that of iOS settings." meaning="The translation and capitalization of 'AutoFill' must match that of iOS settings.">
         Turn on AutoFill…
       </message>
