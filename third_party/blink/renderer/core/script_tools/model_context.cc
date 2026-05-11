@@ -856,6 +856,12 @@ void ModelContext::OnGetScriptToolsCompleted(
     if (!t->input_schema.IsNull()) {
       result->setInputSchema(t->input_schema);
     }
+    if (t->annotations) {
+      auto* annotations = ToolAnnotations::Create();
+      annotations->setReadOnlyHint(t->annotations->read_only);
+      annotations->setUntrustedContentHint(t->annotations->untrusted_content);
+      result->setAnnotations(annotations);
+    }
 
     Frame* frame = Frame::ResolveFrame(t->tool_owner_frame_token);
     // If we can't resolve the token into a concrete frame, that means the
