@@ -14,8 +14,8 @@
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "ui/base/models/image_model.h"
@@ -257,7 +257,10 @@ class NotificationListViewTest : public AshTestBase,
     message_view->OnSlideChanged(/*in_progress=*/true);
   }
 
-  void FinishSlideOutAnimation() { base::RunLoop().RunUntilIdle(); }
+  void WaitForNotificationViewRemoved(const std::string& id) {
+    ASSERT_TRUE(base::test::RunUntil(
+        [&]() { return !message_list_view()->GetNotificationById(id); }));
+  }
 
   void AnimateToMiddle() {
     EXPECT_TRUE(IsAnimating());
@@ -392,7 +395,7 @@ TEST_P(NotificationListViewTest, RemoveNotification) {
 
   gfx::Rect previous_bounds = GetMessageViewBounds(0);
   RemoveNotification(id0);
-  FinishSlideOutAnimation();
+  WaitForNotificationViewRemoved(id0);
   AnimateUntilIdle();
   EXPECT_EQ(1u, message_list_view()->children().size());
   EXPECT_EQ(previous_bounds.y(), GetMessageViewBounds(0).y());
@@ -403,7 +406,7 @@ TEST_P(NotificationListViewTest, RemoveNotification) {
   EXPECT_EQ(top_bottom_corner_radius, GetMessageViewAt(0)->bottom_radius());
 
   RemoveNotification(id1);
-  FinishSlideOutAnimation();
+  WaitForNotificationViewRemoved(id1);
   AnimateUntilIdle();
   EXPECT_EQ(0u, message_list_view()->children().size());
   EXPECT_EQ(0, message_list_view()->GetPreferredSize().height());
@@ -448,7 +451,7 @@ TEST_P(NotificationListViewTest, RemovingNotificationAnimation) {
   gfx::Rect bounds2 = GetMessageViewBounds(2);
 
   RemoveNotification(id1);
-  FinishSlideOutAnimation();
+  WaitForNotificationViewRemoved(id1);
   AnimateToEnd();
   EXPECT_GT(previous_height, message_list_view()->GetPreferredSize().height());
   previous_height = message_list_view()->GetPreferredSize().height();
@@ -457,7 +460,7 @@ TEST_P(NotificationListViewTest, RemovingNotificationAnimation) {
   EXPECT_EQ(bounds1, GetMessageViewBounds(1));
 
   RemoveNotification(id2);
-  FinishSlideOutAnimation();
+  WaitForNotificationViewRemoved(id2);
   AnimateToEnd();
   EXPECT_GT(previous_height, message_list_view()->GetPreferredSize().height());
   previous_height = message_list_view()->GetPreferredSize().height();
@@ -467,7 +470,7 @@ TEST_P(NotificationListViewTest, RemovingNotificationAnimation) {
   EXPECT_EQ(bounds0.origin(), GetMessageViewBounds(0).origin());
 
   RemoveNotification(id0);
-  FinishSlideOutAnimation();
+  WaitForNotificationViewRemoved(id0);
   AnimateToEnd();
   EXPECT_GT(previous_height, message_list_view()->GetPreferredSize().height());
   previous_height = message_list_view()->GetPreferredSize().height();
@@ -482,7 +485,7 @@ TEST_P(NotificationListViewTest, DISABLED_ResetAnimation) {
   CreateMessageListView();
 
   RemoveNotification(id0);
-  FinishSlideOutAnimation();
+  WaitForNotificationViewRemoved(id0);
   EXPECT_TRUE(IsAnimating());
   AnimateToMiddle();
 
@@ -696,7 +699,7 @@ TEST_P(NotificationListViewTest, DISABLED_UserSwipesAwayNotification) {
   // Swiping away the notification should remove it both in the MessageCenter
   // and the MessageListView.
   RemoveNotification(id1);
-  FinishSlideOutAnimation();
+  WaitForNotificationViewRemoved(id1);
   EXPECT_EQ(1u, MessageCenter::Get()->GetVisibleNotifications().size());
   EXPECT_EQ(1u, message_list_view()->children().size());
 
@@ -862,7 +865,6 @@ TEST_P(NotificationListViewTest, PreferredSizeChangesOnToggle) {
             message_list_view()->children()[0]->GetPreferredSize().height());
 
   AnimateToEnd();
-  FinishSlideOutAnimation();
   EXPECT_FALSE(IsAnimating());
   EXPECT_FALSE(message_list_view()->IsAnimatingExpandOrCollapseContainer(
       message_list_view()->children()[0]));
@@ -903,7 +905,6 @@ TEST_P(NotificationListViewTest, TwoExpandsInARow) {
             first_notification_container->GetPreferredSize().height());
 
   AnimateToEnd();
-  FinishSlideOutAnimation();
 
   // `second_notification_container` should animate to its final bounds.
   EXPECT_GT(second_notification_initial_size.height(),
@@ -968,7 +969,7 @@ TEST_P(NotificationListViewTest, RemoveNotificationDuringCollapse) {
 
   EXPECT_LE(notification_container->GetPreferredSize().height(),
             middle_of_collapsed_size.height());
-  FinishSlideOutAnimation();
+  WaitForNotificationViewRemoved(id1);
   AnimateUntilIdle();
 
   EXPECT_EQ(0u, message_list_view()->children().size());
@@ -1008,7 +1009,7 @@ TEST_P(NotificationListViewTest,
   // Finish the slide out animation. Then an animation should begin to shrink
   // MessageListView to contain the remaining notifications via
   // State::MOVE_DOWN. Only one notification should remain.
-  FinishSlideOutAnimation();
+  WaitForNotificationViewRemoved(id1);
   EXPECT_TRUE(message_list_view()->IsAnimating());
   EXPECT_EQ(1u, message_list_view()->children().size());
 }
@@ -1032,7 +1033,7 @@ TEST_P(NotificationListViewTest, DISABLED_CollapseDuringMoveNoAnimation) {
   // Delete the first notification. This should begin the slide out animation.
   // Let that finish, then State::MOVE_DOWN should begin.
   RemoveNotification(to_be_removed_notification);
-  FinishSlideOutAnimation();
+  WaitForNotificationViewRemoved(to_be_removed_notification);
   EXPECT_TRUE(message_list_view()->IsAnimating());
   EXPECT_FALSE(message_list_view()->IsAnimatingExpandOrCollapseContainer(
       to_be_collapsed_message_view_container));
@@ -1116,7 +1117,7 @@ TEST_P(NotificationListViewTest, SlideNotification) {
 
   // Slide out the middle notification.
   RemoveNotification(id2);
-  FinishSlideOutAnimation();
+  WaitForNotificationViewRemoved(id2);
   AnimateUntilIdle();
 
   // The adjacent notification corners should not be rounded like an edge after
@@ -1157,7 +1158,7 @@ TEST_P(NotificationListViewTest, SlideNotification) {
 
   // Remove the top notification.
   RemoveNotification(id0);
-  FinishSlideOutAnimation();
+  WaitForNotificationViewRemoved(id0);
   AnimateUntilIdle();
 
   // Ensure corners are properly rounded for remaining notifications.
@@ -1168,7 +1169,7 @@ TEST_P(NotificationListViewTest, SlideNotification) {
 
   // Remove previous to last notification.
   RemoveNotification(id1);
-  FinishSlideOutAnimation();
+  WaitForNotificationViewRemoved(id1);
   AnimateUntilIdle();
 
   // All corners of the remaining notification should be edge-rounded.
