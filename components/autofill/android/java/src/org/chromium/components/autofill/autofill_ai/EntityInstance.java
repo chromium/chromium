@@ -28,6 +28,7 @@ public class EntityInstance {
     private final @RecordType int mRecordType;
     private final EntityType mEntityType;
     private final Map<AttributeType, AttributeInstance> mAttributes = new HashMap<>();
+    private final String mNickname;
     private final EntityMetadata mMetadata;
     private final boolean mRequiresReauthToSee;
     private final boolean mIsMaskedServerEntity;
@@ -38,6 +39,7 @@ public class EntityInstance {
         private @RecordType int mRecordType = RecordType.LOCAL;
         private final EntityType mEntityType;
         private final List<AttributeInstance> mAttributes = new ArrayList<>();
+        private String mNickname = "";
         private @Nullable LocalDate mModifiedDate;
         private @Nullable Integer mUseCount;
         private boolean mRequiresReauthToSee;
@@ -59,6 +61,11 @@ public class EntityInstance {
 
         public Builder addAttribute(AttributeInstance attribute) {
             mAttributes.add(attribute);
+            return this;
+        }
+
+        public Builder setNickname(String nickname) {
+            mNickname = nickname;
             return this;
         }
 
@@ -101,6 +108,7 @@ public class EntityInstance {
                     mRecordType,
                     mEntityType,
                     mAttributes,
+                    mNickname,
                     metadata,
                     mRequiresReauthToSee,
                     mIsMaskedServerEntity);
@@ -113,6 +121,7 @@ public class EntityInstance {
             @JniType("autofill::EntityTypeAndroid") EntityType entityType,
             @JniType("std::vector<autofill::AttributeInstanceAndroid>")
                     List<AttributeInstance> attributes,
+            @JniType("std::string") String nickname,
             @JniType("autofill::EntityMetadataAndroid") EntityMetadata metadata,
             boolean requiresReauthToSee,
             boolean isMaskedServerEntity) {
@@ -124,6 +133,7 @@ public class EntityInstance {
                     : "Duplicate attribute: " + attribute.getAttributeType().getTypeName();
             mAttributes.put(attribute.getAttributeType(), attribute);
         }
+        mNickname = nickname;
         mRequiresReauthToSee = requiresReauthToSee;
         mIsMaskedServerEntity = isMaskedServerEntity;
     }
@@ -147,6 +157,11 @@ public class EntityInstance {
     public @JniType("std::vector<autofill::AttributeInstanceAndroid>") List<AttributeInstance>
             getAttributes() {
         return new ArrayList<>(mAttributes.values());
+    }
+
+    @CalledByNative
+    public @JniType("std::string") String getNickname() {
+        return mNickname;
     }
 
     public @Nullable AttributeInstance getAttribute(AttributeType attributeType) {

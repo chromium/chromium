@@ -22,8 +22,8 @@ base::android::ScopedJavaLocalRef<jobject> EntityInstanceAndroid::Create(
   return Java_EntityInstance_Constructor(
       env, static_cast<int>(entity_instance.record_type),
       entity_instance.entity_type, entity_instance.attribute_instances,
-      entity_instance.metadata, requires_reauth_to_see,
-      is_masked_server_entity);
+      entity_instance.nickname, entity_instance.metadata,
+      requires_reauth_to_see, is_masked_server_entity);
 }
 
 EntityInstanceAndroid EntityInstanceAndroid::FromJavaEntityInstance(
@@ -38,6 +38,9 @@ EntityInstanceAndroid EntityInstanceAndroid::FromJavaEntityInstance(
   std::vector<AttributeInstanceAndroid> attributes =
       Java_EntityInstance_getAttributes(env, j_entity_instance);
 
+  std::string nickname =
+      Java_EntityInstance_getNickname(env, j_entity_instance);
+
   EntityMetadataAndroid metadata =
       EntityMetadataAndroid::FromJavaEntityMetadata(
           env, Java_EntityInstance_getMetadata(env, j_entity_instance));
@@ -49,8 +52,9 @@ EntityInstanceAndroid EntityInstanceAndroid::FromJavaEntityInstance(
       Java_EntityInstance_isMaskedServerEntity(env, j_entity_instance);
 
   return EntityInstanceAndroid(std::move(entity_type), record_type,
-                               std::move(attributes), std::move(metadata),
-                               requires_reauth_to_see, is_masked_server_entity);
+                               std::move(attributes), std::move(nickname),
+                               std::move(metadata), requires_reauth_to_see,
+                               is_masked_server_entity);
 }
 
 EntityInstanceAndroid::EntityInstanceAndroid(
@@ -79,12 +83,14 @@ EntityInstanceAndroid::EntityInstanceAndroid(
     EntityTypeAndroid entity_type,
     EntityInstance::RecordType record_type,
     std::vector<AttributeInstanceAndroid> attribute_instances,
+    std::string nickname,
     EntityMetadataAndroid metadata,
     bool requires_reauth_to_see,
     bool is_masked_server_entity)
     : entity_type(std::move(entity_type)),
       record_type(record_type),
       attribute_instances(std::move(attribute_instances)),
+      nickname(std::move(nickname)),
       metadata(std::move(metadata)),
       requires_reauth_to_see(requires_reauth_to_see),
       is_masked_server_entity(is_masked_server_entity) {}
@@ -132,7 +138,7 @@ EntityInstance EntityInstanceAndroid::ToEntityInstance(
           metadata.guid.empty()
               ? base::Uuid::GenerateRandomV4().AsLowercaseString()
               : metadata.guid),
-      /*nickname=*/"", metadata.date_modified, metadata.use_count, base::Time(),
+      nickname, metadata.date_modified, metadata.use_count, base::Time(),
       record_type, EntityInstance::AreAttributesReadOnly(false),
       /*frecency_override=*/"");
 }

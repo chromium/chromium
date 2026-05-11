@@ -39,6 +39,7 @@ struct EntityInstanceAndroid {
   EntityInstanceAndroid(EntityTypeAndroid entity_type,
                         EntityInstance::RecordType record_type,
                         std::vector<AttributeInstanceAndroid> attribute_values,
+                        std::string nickname,
                         EntityMetadataAndroid metadata,
                         bool requires_reauth_to_see,
                         bool is_masked_server_entity);
@@ -59,6 +60,7 @@ struct EntityInstanceAndroid {
   EntityTypeAndroid entity_type;
   EntityInstance::RecordType record_type;
   std::vector<AttributeInstanceAndroid> attribute_instances;
+  std::string nickname;
   EntityMetadataAndroid metadata;
   bool requires_reauth_to_see = false;
   // TODO(crbug.com/501037715): Break this down to is_masked_entity and

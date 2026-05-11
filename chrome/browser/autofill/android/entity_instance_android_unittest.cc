@@ -25,6 +25,7 @@ namespace {
 
 // ID of the dummy profile used for filling in tests.
 constexpr char kGuid[] = "00000000-0000-0000-0000-000000000001";
+constexpr char kNickname[] = "Nickname";
 
 class EntityInstanceAndroidTest : public testing::Test {
  protected:
@@ -46,7 +47,7 @@ TEST_F(EntityInstanceAndroidTest, ToEntityInstance_BasicConversion) {
       passport_name_attribute_type_android, passport_name);
   EntityInstanceAndroid entity_instance_android(
       entity_type_android, EntityInstance::RecordType::kLocal,
-      {attribute_instance_android},
+      {attribute_instance_android}, kNickname,
       EntityMetadataAndroid(kGuid, base::Time::Now(), 0),
       /*requires_reauth_to_see=*/false, /*is_masked_server_entity=*/false);
 
@@ -96,7 +97,7 @@ TEST_F(EntityInstanceAndroidTest, ToEntityInstance_ReuseExistingAttribute) {
       password_name_attribute_type_android, passport_name);
   EntityInstanceAndroid entity_instance_android(
       entity_type_android, EntityInstance::RecordType::kLocal,
-      {attribute_instance_android},
+      {attribute_instance_android}, kNickname,
       EntityMetadataAndroid(kGuid, base::Time::Now(), 0),
       /*requires_reauth_to_see=*/false, /*is_masked_server_entity=*/false);
 
@@ -175,7 +176,7 @@ TEST_F(EntityInstanceAndroidTest, ToEntityInstance_UpdateExistingAttribute) {
       entity_type_android, EntityInstance::RecordType::kLocal,
       {passport_name_attribute_instance_android,
        passport_number_attribute_instance_android},
-      EntityMetadataAndroid(kGuid, base::Time::Now(), 0),
+      kNickname, EntityMetadataAndroid(kGuid, base::Time::Now(), 0),
       /*requires_reauth_to_see=*/false, /*is_masked_server_entity=*/false);
 
   EntityInstance converted_entity =
