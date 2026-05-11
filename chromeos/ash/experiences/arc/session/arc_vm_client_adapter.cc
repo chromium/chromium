@@ -387,9 +387,6 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
   // Add hugepages.
   request.set_use_hugepages(IsArcVmUseHugePages());
 
-  // Request guest memory locking, if configured.
-  request.set_lock_guest_memory(base::FeatureList::IsEnabled(kLockGuestMemory));
-
   // Controls whether WebView Zygote is lazily initialized in ARC.
   request.set_enable_web_view_zygote_lazy_init(false);
 

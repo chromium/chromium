@@ -47,7 +47,6 @@ BASE_DECLARE_FEATURE_PARAM(bool, kGuestReclaimOnlyAnonymous);
 BASE_DECLARE_FEATURE_PARAM(bool, kVirtualSwapEnabled);
 BASE_DECLARE_FEATURE_PARAM(int, kVirtualSwapIntervalMs);
 BASE_DECLARE_FEATURE(kArcVmPvclock);
-BASE_DECLARE_FEATURE(kLockGuestMemory);
 BASE_DECLARE_FEATURE(kLvmApplicationContainers);
 BASE_DECLARE_FEATURE(kNativeBridgeToggleFeature);
 BASE_DECLARE_FEATURE(kOutOfProcessVideoDecoding);

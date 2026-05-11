@@ -207,12 +207,6 @@ BASE_FEATURE(kArcVmPvclock,
              "ArcEnablePvclock",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables/disables mlock() of guest memory for ARCVM.
-// Often used in combination with kGuestZram.
-BASE_FEATURE(kLockGuestMemory,
-             "ArcLockGuestMemory",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Toggles between native bridge implementations for ARC.
 // Note, that we keep the original feature name to preserve
 // corresponding metrics.

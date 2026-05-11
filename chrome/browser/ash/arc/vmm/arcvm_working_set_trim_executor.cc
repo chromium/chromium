@@ -124,8 +124,7 @@ void ArcVmWorkingSetTrimExecutor::OnDropArcVmCaches(
 
     const bool should_reclaim_from_host =
         reclaim_type == ArcVmReclaimType::kReclaimAll &&
-        arc::kVirtualSwapEnabled.Get() &&
-        !base::FeatureList::IsEnabled(arc::kLockGuestMemory);
+        arc::kVirtualSwapEnabled.Get();
 
     bridge->Reclaim(
         std::move(reclaim_request),
