@@ -4875,6 +4875,11 @@
     "expiry_milestone": 170
   },
   {
+    "name": "force-enterprise-isolated-mode-replaces-incognito",
+    "owners": [ "proberge@google.com" ],
+    "expiry_milestone": 161
+  },
+  {
     "name": "force-high-performance-gpu",
     "owners": [ "petermcneeley@google.com", "fbeaufort@google.com"],
     "expiry_milestone": 165

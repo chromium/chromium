@@ -407,6 +407,7 @@ test("components_unittests") {
       "//components/enterprise/connectors/core:cloud_content_scanning_unittests",
       "//components/enterprise/connectors/core:unit_tests",
       "//components/enterprise/data_protection:unit_tests",
+      "//components/enterprise/isolated_mode:unit_tests",
       "//components/enterprise/obfuscation/core:unit_tests",
     ]
   }

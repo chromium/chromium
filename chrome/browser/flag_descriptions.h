@@ -1918,6 +1918,11 @@ inline constexpr char kEnableGpuServiceLoggingName[] =
 inline constexpr char kEnableGpuServiceLoggingDescription[] =
     "Enable printing the actual GL driver calls.";
 
+inline constexpr char kEnterpriseIsolatedModeName[] =
+    "Force Enterprise Isolated Mode";
+inline constexpr char kEnterpriseIsolatedModeDescription[] =
+    "Force Enterprise Isolated Mode to replace Incognito mode.";
+
 inline constexpr char kEnableIsolatedWebAppsName[] = "Enable Isolated Web Apps";
 inline constexpr char kEnableIsolatedWebAppsDescription[] =
     "Enables experimental support for Isolated Web Apps. "

@@ -6,12 +6,30 @@ source_set("isolated_mode") {
   configs += [ "//components/enterprise:extra_warnings" ]
 
   sources = [
+    "isolated_mode_features.cc",
+    "isolated_mode_features.h",
     "prefs.cc",
     "prefs.h",
+    "settings.cc",
+    "settings.h",
   ]
 
   deps = [
     "//base",
     "//components/prefs",
+    "//components/version_info",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "settings_unittest.cc" ]
+  deps = [
+    ":isolated_mode",
+    "//base",
+    "//base/test:test_support",
+    "//components/prefs:test_support",
+    "//components/version_info",
+    "//testing/gtest",
   ]
 }

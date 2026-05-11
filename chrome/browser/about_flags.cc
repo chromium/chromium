@@ -113,6 +113,7 @@
 #include "components/enterprise/client_certificates/core/features.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/enterprise/data_controls/core/browser/features.h"
+#include "components/enterprise/isolated_mode/settings.h"
 #include "components/enterprise/networking/features.h"
 #include "components/error_page/common/error_page_switches.h"
 #include "components/feature_engagement/public/feature_constants.h"
@@ -5365,6 +5366,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kStrictSiteIsolationDescription, kOsAndroid,
      SINGLE_VALUE_TYPE(switches::kSitePerProcess)},
 #endif
+
+    {"force-enterprise-isolated-mode-replaces-incognito",
+     flag_descriptions::kEnterpriseIsolatedModeName,
+     flag_descriptions::kEnterpriseIsolatedModeDescription, kOsAll,
+     SINGLE_VALUE_TYPE(enterprise_isolated_mode::switches::
+                           kForceEnterpriseIsolatedModeReplacesIncognito)},
 
 #if !BUILDFLAG(IS_ANDROID)
 #if !BUILDFLAG(IS_CHROMEOS)
