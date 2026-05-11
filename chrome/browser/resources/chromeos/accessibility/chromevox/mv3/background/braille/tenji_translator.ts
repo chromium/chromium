@@ -13,7 +13,7 @@ type QueuedRequest = {
   type: 'translate',
   text: string,
   callback: TranslateCallback
-}|{type: 'backTranslate', cells: ArrayBuffer, callback: BackTranslateCallback};
+};
 
 export class TenjiTranslator implements BrailleTranslator {
   private static initPromise_: Promise<void>|null = null;
@@ -87,12 +87,10 @@ export class TenjiTranslator implements BrailleTranslator {
     }
   }
 
-  backTranslate(cells: ArrayBuffer, callback: BackTranslateCallback): void {
-    TenjiTranslator.requestQueue_.push(
-        {type: 'backTranslate', cells, callback});
-    if (!TenjiTranslator.pendingRequest_) {
-      void TenjiTranslator.processNextRequest_();
-    }
+  backTranslate(_cells: ArrayBuffer, callback: BackTranslateCallback): void {
+    // TODO(crbug.com/510816368): Back translation is not useful without full
+    // IME support. Disable until that is available.
+    callback(null);
   }
 
   private static async processNextRequest_(): Promise<void> {
@@ -112,49 +110,31 @@ export class TenjiTranslator implements BrailleTranslator {
     TenjiTranslator.pendingRequest_ = true;
 
     try {
-      if (req.type === 'translate') {
-        const result = await OffscreenBridge.tenjiTranslate(req.text);
-        if (!result || !result.value) {
-          req.callback(new ArrayBuffer(0), [], []);
-        } else {
-          const tenjiString = result.value;
-          const bytes = new Uint8Array(tenjiString.length);
-          for (let i = 0; i < tenjiString.length; i++) {
-            // Get the character code and subtract the Braille base to get
-            // the cell value, which is expected to be just the bitmask.
-            // See `BrailleCaptionsBackground.setContent()` and [1] for
-            // more details.
-            // The Tenji library passes newlines through unmodified which
-            // could result in characters outside the Braille Unicode block.
-            // Map any character outside the Braille Unicode block
-            // (U+2800–U+28FF) to 0 (empty cell).
-            // [1] https://www.unicode.org/charts/PDF/U2800.pdf
-            const offset =
-                tenjiString.charCodeAt(i) - BRAILLE_UNICODE_BLOCK_START;
-            bytes[i] = (offset >= 0 && offset <= 0xFF) ? offset : 0;
-          }
-          req.callback(
-              bytes.buffer, result.textToBraille, result.brailleToText);
-        }
-      } else {
-        const cellBytes = new Uint8Array(req.cells);
-        const tenjiChars: string[] = [];
-        for (let i = 0; i < cellBytes.length; i++) {
-          tenjiChars.push(
-              String.fromCharCode(cellBytes[i] + BRAILLE_UNICODE_BLOCK_START));
-        }
-        const tenjiString = tenjiChars.join('');
-        const result = await OffscreenBridge.tenjiBackTranslate(tenjiString);
-        req.callback(result);
-      }
-    } catch (error) {
-      if (req.type === 'translate') {
-        console.error('Error during tenji translation: ' + error);
+      const result = await OffscreenBridge.tenjiTranslate(req.text);
+      if (!result || !result.value) {
         req.callback(new ArrayBuffer(0), [], []);
       } else {
-        console.error('Error during tenji back translation: ' + error);
-        req.callback(null);
+        const tenjiString = result.value;
+        const bytes = new Uint8Array(tenjiString.length);
+        for (let i = 0; i < tenjiString.length; i++) {
+          // Get the character code and subtract the Braille base to get
+          // the cell value, which is expected to be just the bitmask.
+          // See `BrailleCaptionsBackground.setContent()` and [1] for
+          // more details.
+          // The Tenji library passes newlines through unmodified which
+          // could result in characters outside the Braille Unicode block.
+          // Map any character outside the Braille Unicode block
+          // (U+2800–U+28FF) to 0 (empty cell).
+          // [1] https://www.unicode.org/charts/PDF/U2800.pdf
+          const offset =
+              tenjiString.charCodeAt(i) - BRAILLE_UNICODE_BLOCK_START;
+          bytes[i] = (offset >= 0 && offset <= 0xFF) ? offset : 0;
+        }
+        req.callback(bytes.buffer, result.textToBraille, result.brailleToText);
       }
+    } catch (error) {
+      console.error('Error during tenji translation: ' + error);
+      req.callback(new ArrayBuffer(0), [], []);
     }
 
     TenjiTranslator.pendingRequest_ = false;
@@ -168,11 +148,7 @@ export class TenjiTranslator implements BrailleTranslator {
         return;
       }
 
-      if (req.type === 'translate') {
-        req.callback(new ArrayBuffer(0), [], []);
-      } else {
-        req.callback(null);
-      }
+      req.callback(new ArrayBuffer(0), [], []);
     }
   }
 }
@@ -198,4 +174,6 @@ const UTF8_ENCODER = new TextEncoder();
 const UTF8_DECODER = new TextDecoder();
 const BRAILLE_UNICODE_BLOCK_START = 0x2800;
 
-TestImportManager.exportForTesting(TenjiTranslator);
+TestImportManager.exportForTesting(
+    TenjiTranslator,
+    ['BRAILLE_UNICODE_BLOCK_START', BRAILLE_UNICODE_BLOCK_START]);
