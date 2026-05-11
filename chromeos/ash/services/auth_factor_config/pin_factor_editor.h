@@ -8,7 +8,6 @@
 #include "chromeos/ash/components/login/auth/auth_factor_editor.h"
 #include "chromeos/ash/services/auth_factor_config/chrome_browser_delegates.h"
 #include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom.h"
-#include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 
 namespace ash::auth {
@@ -80,7 +79,6 @@ class PinFactorEditor : public mojom::PinFactorEditor {
       const std::string& auth_token,
       const std::string& pin,
       base::OnceCallback<void(mojom::ConfigureResult)> callback,
-      mojo::ReportBadMessageCallback bad_message_callback,
       std::unique_ptr<UserContext> context);
   void OnPinSet(const std::string& auth_token,
                 base::OnceCallback<void(mojom::ConfigureResult)> callback,
@@ -95,7 +93,6 @@ class PinFactorEditor : public mojom::PinFactorEditor {
       const std::string& auth_token,
       const std::string& pin,
       base::OnceCallback<void(mojom::ConfigureResult)> callback,
-      mojo::ReportBadMessageCallback bad_message_callback,
       std::unique_ptr<UserContext> context);
   void OnUpdatePinConfigured(
       const std::string& auth_token,
