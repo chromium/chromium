@@ -19,15 +19,18 @@ namespace content {
 class WebContents;
 }
 
+namespace personal_context {
+class PersonalContextEnablementService;
+}
+
 namespace accessibility_annotator {
-class AccessibilityAnnotatorEnablementService;
 
 class AccessibilityAnnotatorFirstRunServiceImpl
     : public AccessibilityAnnotatorFirstRunService {
  public:
   AccessibilityAnnotatorFirstRunServiceImpl(
       std::unique_ptr<AccessibilityAnnotatorFirstRunClient> client,
-      AccessibilityAnnotatorEnablementService* enablement_service,
+      personal_context::PersonalContextEnablementService* enablement_service,
       PrefService* pref_service);
   AccessibilityAnnotatorFirstRunServiceImpl(
       const AccessibilityAnnotatorFirstRunServiceImpl&) = delete;
@@ -46,7 +49,8 @@ class AccessibilityAnnotatorFirstRunServiceImpl
       InfoResult result);
 
   std::unique_ptr<AccessibilityAnnotatorFirstRunClient> client_;
-  raw_ptr<AccessibilityAnnotatorEnablementService> enablement_service_;
+  raw_ptr<personal_context::PersonalContextEnablementService>
+      enablement_service_;
   raw_ptr<PrefService> pref_service_;
 
   base::WeakPtrFactory<AccessibilityAnnotatorFirstRunServiceImpl>

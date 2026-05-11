@@ -32,7 +32,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/accessibility_annotator/core/accessibility_annotator_types.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_autofill_driver_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
@@ -946,9 +945,8 @@ IN_PROC_BROWSER_TEST_F(AtMemoryContextMenuManagerTest, AddAtMemoryFallback) {
 // AtMemory fallback is dropped.
 IN_PROC_BROWSER_TEST_F(AtMemoryContextMenuManagerTest,
                        AtMemoryFallbackDroppedWhenProfileNotEligible) {
-  autofill_client()->set_accessibility_annotator_enablement_state(
-      accessibility_annotator::RemoteAnnotatorEnablementState::
-          kDisabledNotEligible);
+  autofill_client()->set_personal_context_enablement_state(
+      personal_context::PersonalContextEnablementState::kDisabledNotEligible);
 
   autofill_context_menu_manager()->AppendItems();
   ASSERT_FALSE(ContainsAtMemoryFallback(*menu_model()));

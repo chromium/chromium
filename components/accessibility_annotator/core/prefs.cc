@@ -10,7 +10,6 @@
 namespace accessibility_annotator::prefs {
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(kShouldShowRemoteAnnotatorFirstRunInfo, true);
   registry->RegisterStringPref(kUkmLoggingUserSecret, "");
   registry->RegisterTimePref(kUkmLoggingUserSecretCreationTime, base::Time());
 }

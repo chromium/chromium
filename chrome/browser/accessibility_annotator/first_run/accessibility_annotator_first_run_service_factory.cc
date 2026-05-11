@@ -8,8 +8,8 @@
 #include <utility>
 
 #include "base/no_destructor.h"
-#include "chrome/browser/accessibility_annotator/accessibility_annotator_enablement_service_factory.h"
 #include "chrome/browser/accessibility_annotator/first_run/chrome_accessibility_annotator_first_run_client.h"
+#include "chrome/browser/personal_context/personal_context_enablement_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
@@ -38,7 +38,7 @@ AccessibilityAnnotatorFirstRunServiceFactory::
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
               .Build()) {
-  DependsOn(AccessibilityAnnotatorEnablementServiceFactory::GetInstance());
+  DependsOn(PersonalContextEnablementServiceFactory::GetInstance());
 }
 
 AccessibilityAnnotatorFirstRunServiceFactory::
@@ -57,6 +57,6 @@ std::unique_ptr<KeyedService> AccessibilityAnnotatorFirstRunServiceFactory::
   return std::make_unique<
       accessibility_annotator::AccessibilityAnnotatorFirstRunServiceImpl>(
       std::move(client),
-      AccessibilityAnnotatorEnablementServiceFactory::GetForProfile(profile),
+      PersonalContextEnablementServiceFactory::GetForProfile(profile),
       profile->GetPrefs());
 }

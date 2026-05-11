@@ -14,6 +14,7 @@ static_library("first_run") {
     "//base",
     "//components/accessibility_annotator/core",
     "//components/keyed_service/core",
+    "//components/personal_context/core",
     "//content/public/browser",
   ]
 }
@@ -28,6 +29,8 @@ source_set("unit_tests") {
     "//components/accessibility_annotator/core",
     "//components/accessibility_annotator/core:features",
     "//components/accessibility_annotator/core:prefs",
+    "//components/personal_context/core",
+    "//components/personal_context/core:prefs",
     "//components/prefs:test_support",
     "//content/test:test_support",
     "//testing/gmock",

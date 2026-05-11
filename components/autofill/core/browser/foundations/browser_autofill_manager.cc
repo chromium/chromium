@@ -59,7 +59,6 @@
 #include "base/types/zip.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
-#include "components/accessibility_annotator/core/accessibility_annotator_types.h"
 #include "components/autofill/core/browser/at_memory/at_memory_manager.h"
 #include "components/autofill/core/browser/autofill_browser_util.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -175,6 +174,7 @@
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/optimization_guide/proto/features/model_prototyping.pb.h"
+#include "components/personal_context/core/personal_context_types.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/core/pref_names.h"
@@ -1193,8 +1193,8 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
 
   if (IsAtMemoryTriggerSource(trigger_source)) {
     // Do not show the pop up at all for non eligible profiles.
-    if (client().GetAccessibilityAnnotatorEnablementState() ==
-        accessibility_annotator::RemoteAnnotatorEnablementState::
+    if (client().GetPersonalContextEnablementState() ==
+        personal_context::PersonalContextEnablementState::
             kDisabledNotEligible) {
       return;
     }

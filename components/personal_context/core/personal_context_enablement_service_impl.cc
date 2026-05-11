@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/accessibility_annotator/core/accessibility_annotator_enablement_service_impl.h"
+#include "components/personal_context/core/personal_context_enablement_service_impl.h"
 
 #include <string>
 
@@ -13,17 +13,16 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "components/accessibility_annotator/core/accessibility_annotator_debug_features.h"
-#include "components/accessibility_annotator/core/accessibility_annotator_features.h"
-#include "components/accessibility_annotator/core/country_type.h"
-#include "components/accessibility_annotator/core/prefs.h"
 #include "components/account_settings/account_setting_service.h"
+#include "components/personal_context/core/personal_context_debug_features.h"
+#include "components/personal_context/core/personal_context_features.h"
+#include "components/personal_context/core/personal_context_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/subscription_eligibility/subscription_eligibility_service.h"
 
-namespace accessibility_annotator {
+namespace personal_context {
 namespace {
 // Helper function for debugging why a permissions check failed.
 void MaybeOutputReason(std::string* out, std::string_view message) {
@@ -36,8 +35,8 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
 [[nodiscard]] bool SatisfiesFeatureRequirements(
     std::string* debug_message = nullptr) {
   const base::Feature* const kRequiredFeatures[] = {
-      &features::kAccessibilityAnnotator,
-      &features::kAccessibilityAnnotatorFirstRun,
+      &features::kPersonalContext,
+      &features::kPersonalContextFirstRun,
   };
 
   for (const base::Feature* feature : kRequiredFeatures) {
@@ -51,10 +50,9 @@ void MaybeOutputReason(std::string* out, std::string_view message) {
   return true;
 }
 
-const base::flat_set<int32_t>& GetAnnotatorEligibleTiers() {
+const base::flat_set<int32_t>& GetPersonalContextEligibleTiers() {
   static const base::NoDestructor<base::flat_set<int32_t>> eligible_tiers([] {
-    std::string tier_list =
-        features::kAccessibilityAnnotatorEligibleTiers.Get();
+    std::string tier_list = features::kPersonalContextEligibleTiers.Get();
     std::vector<std::string_view> tier_pieces = base::SplitStringPiece(
         tier_list, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     base::flat_set<int32_t> tiers;
@@ -120,7 +118,7 @@ const base::flat_set<int32_t>& GetAnnotatorEligibleTiers() {
 
   const int32_t tier =
       subscription_eligibility_service->GetAiSubscriptionTier();
-  if (!GetAnnotatorEligibleTiers().contains(tier)) {
+  if (!GetPersonalContextEligibleTiers().contains(tier)) {
     MaybeOutputReason(debug_message, "User subscription tier is not eligible.");
     return false;
   }
@@ -169,17 +167,17 @@ const base::flat_set<int32_t>& GetAnnotatorEligibleTiers() {
 }
 
 // Checks whether preference requirements are satisfied.
-[[nodiscard]] RemoteAnnotatorEnablementState SatisfiesPreferenceRequirements(
+[[nodiscard]] PersonalContextEnablementState SatisfiesPreferenceRequirements(
     PrefService* pref_service,
     std::string* debug_message = nullptr) {
-  using enum RemoteAnnotatorEnablementState;
+  using enum PersonalContextEnablementState;
 
   if (!pref_service) {
     MaybeOutputReason(debug_message, "Prefs are not available.");
     return kDisabledNotEligible;
   }
 
-  if (pref_service->GetBoolean(prefs::kShouldShowRemoteAnnotatorFirstRunInfo)) {
+  if (pref_service->GetBoolean(prefs::kShouldShowPersonalContextFirstRunInfo)) {
     MaybeOutputReason(debug_message, "Info not yet acknowledged.");
     return kDisabledPendingInfo;
   }
@@ -188,14 +186,13 @@ const base::flat_set<int32_t>& GetAnnotatorEligibleTiers() {
 }
 }  // namespace
 
-AccessibilityAnnotatorEnablementServiceImpl::
-    AccessibilityAnnotatorEnablementServiceImpl(
-        account_settings::AccountSettingService* account_settings_service,
-        signin::IdentityManager* identity_manager,
-        subscription_eligibility::SubscriptionEligibilityService*
-            subscription_eligibility_service,
-        PrefService* pref_service,
-        GeoIpCountryCode country_code)
+PersonalContextEnablementServiceImpl::PersonalContextEnablementServiceImpl(
+    account_settings::AccountSettingService* account_settings_service,
+    signin::IdentityManager* identity_manager,
+    subscription_eligibility::SubscriptionEligibilityService*
+        subscription_eligibility_service,
+    PrefService* pref_service,
+    GeoIpCountryCode country_code)
     : account_settings_service_(account_settings_service),
       identity_manager_(identity_manager),
       subscription_eligibility_service_(subscription_eligibility_service),
@@ -214,42 +211,41 @@ AccessibilityAnnotatorEnablementServiceImpl::
   if (pref_service_) {
     pref_registrar_.Init(pref_service_);
     pref_registrar_.Add(
-        prefs::kShouldShowRemoteAnnotatorFirstRunInfo,
+        prefs::kShouldShowPersonalContextFirstRunInfo,
         base::BindRepeating(
-            &AccessibilityAnnotatorEnablementServiceImpl::UpdateEnablementState,
+            &PersonalContextEnablementServiceImpl::UpdateEnablementState,
             base::Unretained(this)));
   }
   UpdateEnablementState();
 }
 
-AccessibilityAnnotatorEnablementServiceImpl::
-    ~AccessibilityAnnotatorEnablementServiceImpl() = default;
+PersonalContextEnablementServiceImpl::~PersonalContextEnablementServiceImpl() =
+    default;
 
-void AccessibilityAnnotatorEnablementServiceImpl::AddObserver(
-    AccessibilityAnnotatorEnablementService::Observer* observer) {
+void PersonalContextEnablementServiceImpl::AddObserver(
+    PersonalContextEnablementService::Observer* observer) {
   observers_.AddObserver(observer);
 }
 
-void AccessibilityAnnotatorEnablementServiceImpl::RemoveObserver(
-    AccessibilityAnnotatorEnablementService::Observer* observer) {
+void PersonalContextEnablementServiceImpl::RemoveObserver(
+    PersonalContextEnablementService::Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-RemoteAnnotatorEnablementState
-AccessibilityAnnotatorEnablementServiceImpl::GetEnablementState() {
+PersonalContextEnablementState
+PersonalContextEnablementServiceImpl::GetEnablementState() {
   if (base::FeatureList::IsEnabled(
-          features::debug::kAccessibilityAnnotatorForceEnablementState)) {
-    return static_cast<RemoteAnnotatorEnablementState>(
-        features::debug::kAccessibilityAnnotatorForceEnablementStateParam
-            .Get());
+          features::debug::kPersonalContextForceEnablementState)) {
+    return static_cast<PersonalContextEnablementState>(
+        features::debug::kPersonalContextForceEnablementStateParam.Get());
   }
 
   return enablement_state_;
 }
 
-RemoteAnnotatorEnablementState
-AccessibilityAnnotatorEnablementServiceImpl::ComputeEnablementState() {
-  using enum RemoteAnnotatorEnablementState;
+PersonalContextEnablementState
+PersonalContextEnablementServiceImpl::ComputeEnablementState() {
+  using enum PersonalContextEnablementState;
 
   if (!SatisfiesFeatureRequirements()) {
     return kDisabledNotEligible;
@@ -271,45 +267,45 @@ AccessibilityAnnotatorEnablementServiceImpl::ComputeEnablementState() {
   return SatisfiesPreferenceRequirements(pref_service_.get());
 }
 
-void AccessibilityAnnotatorEnablementServiceImpl::UpdateEnablementState() {
-  RemoteAnnotatorEnablementState new_state = ComputeEnablementState();
+void PersonalContextEnablementServiceImpl::UpdateEnablementState() {
+  PersonalContextEnablementState new_state = ComputeEnablementState();
   if (new_state != enablement_state_) {
     enablement_state_ = new_state;
-    observers_.Notify(&AccessibilityAnnotatorEnablementService::Observer::
-                          OnEnablementStateChanged,
-                      enablement_state_);
+    observers_.Notify(
+        &PersonalContextEnablementService::Observer::OnEnablementStateChanged,
+        enablement_state_);
   }
 }
 
-void AccessibilityAnnotatorEnablementServiceImpl::OnPrimaryAccountChanged(
+void PersonalContextEnablementServiceImpl::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event_details) {
   if (event_details.GetEventTypeFor(signin::ConsentLevel::kSignin) ==
       signin::PrimaryAccountChangeEvent::Type::kCleared) {
     if (pref_service_) {
-      pref_service_->ClearPref(prefs::kShouldShowRemoteAnnotatorFirstRunInfo);
+      pref_service_->ClearPref(prefs::kShouldShowPersonalContextFirstRunInfo);
     }
   }
   UpdateEnablementState();
 }
 
-void AccessibilityAnnotatorEnablementServiceImpl::OnIdentityManagerShutdown(
+void PersonalContextEnablementServiceImpl::OnIdentityManagerShutdown(
     signin::IdentityManager* identity_manager) {
   identity_manager_observer_.Reset();
 }
 
-void AccessibilityAnnotatorEnablementServiceImpl::OnExtendedAccountInfoUpdated(
+void PersonalContextEnablementServiceImpl::OnExtendedAccountInfoUpdated(
     const AccountInfo& info) {
   UpdateEnablementState();
 }
 
-void AccessibilityAnnotatorEnablementServiceImpl::OnAiSubscriptionTierUpdated(
+void PersonalContextEnablementServiceImpl::OnAiSubscriptionTierUpdated(
     int32_t new_subscription_tier) {
   UpdateEnablementState();
 }
 
-void AccessibilityAnnotatorEnablementServiceImpl::OnAccountSettingDataUpdated(
+void PersonalContextEnablementServiceImpl::OnAccountSettingDataUpdated(
     const std::string& setting_name) {
   UpdateEnablementState();
 }
 
-}  // namespace accessibility_annotator
+}  // namespace personal_context

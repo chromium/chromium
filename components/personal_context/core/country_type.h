@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_COUNTRY_TYPE_H_
-#define COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_COUNTRY_TYPE_H_
+#ifndef COMPONENTS_PERSONAL_CONTEXT_CORE_COUNTRY_TYPE_H_
+#define COMPONENTS_PERSONAL_CONTEXT_CORE_COUNTRY_TYPE_H_
 #include <string>
 
 #include "base/types/strong_alias.h"
 
-namespace accessibility_annotator {
+namespace personal_context {
 
 // Country code in the format of uppercase ISO 3166-1 alpha-2. Example: US, BR,
 // IN. Empty if unknown.
@@ -17,6 +17,6 @@ namespace accessibility_annotator {
 using GeoIpCountryCode =
     base::StrongAlias<class GeoIpCountryCodeTag, std::string>;
 
-}  // namespace accessibility_annotator
+}  // namespace personal_context
 
-#endif  // COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_COUNTRY_TYPE_H_
+#endif  // COMPONENTS_PERSONAL_CONTEXT_CORE_COUNTRY_TYPE_H_

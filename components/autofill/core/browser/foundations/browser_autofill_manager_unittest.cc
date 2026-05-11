@@ -1553,15 +1553,14 @@ TEST_F(BrowserAutofillManagerTest, AtMemoryTriggersEmptySuggestions) {
   external_delegate()->CheckNoSuggestions(form.fields()[0].global_id());
 }
 
-// Tests that when `RemoteAnnotatorEnablementState` is `kDisabledNotEligible`
+// Tests that when `PersonalContextEnablementState` is `kDisabledNotEligible`
 // for a given profile, the AtMemory popup doesn't trigger.
 TEST_F(BrowserAutofillManagerTest, AtMemoryTriggerDroppedWhenNotEligible) {
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});
 
-  autofill_client().set_accessibility_annotator_enablement_state(
-      accessibility_annotator::RemoteAnnotatorEnablementState::
-          kDisabledNotEligible);
+  autofill_client().set_personal_context_enablement_state(
+      personal_context::PersonalContextEnablementState::kDisabledNotEligible);
 
   OnAskForValuesToFill(form, form.fields()[0],
                        AutofillSuggestionTriggerSource::kAtMemory);

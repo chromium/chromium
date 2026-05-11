@@ -6,6 +6,10 @@ source_set("core") {
   sources = [
     "context_memory_error.cc",
     "context_memory_error.h",
+    "country_type.h",
+    "personal_context_enablement_service.h",
+    "personal_context_enablement_service_impl.cc",
+    "personal_context_enablement_service_impl.h",
     "personal_context_service.h",
     "personal_context_service_impl.cc",
     "personal_context_service_impl.h",
@@ -14,18 +18,67 @@ source_set("core") {
   ]
 
   public_deps = [
+    ":features",
+    ":prefs",
     "//base",
+    "//components/account_settings",
     "//components/keyed_service/core",
     "//components/personal_context/proto:personal_context_proto",
+    "//components/prefs",
+    "//components/signin/public/identity_manager",
+    "//components/subscription_eligibility",
     "//net",
   ]
 }
 
 source_set("features") {
   sources = [
+    "personal_context_debug_features.cc",
+    "personal_context_debug_features.h",
     "personal_context_features.cc",
     "personal_context_features.h",
   ]
 
   deps = [ "//base" ]
+}
+
+source_set("prefs") {
+  sources = [
+    "personal_context_prefs.cc",
+    "personal_context_prefs.h",
+  ]
+  deps = [
+    "//base",
+    "//components/prefs",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [ "personal_context_enablement_service_impl_test_api.h" ]
+  deps = [
+    ":core",
+    "//base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "personal_context_enablement_service_impl_unittest.cc" ]
+
+  deps = [
+    ":core",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//components/account_settings",
+    "//components/account_settings:test_support",
+    "//components/prefs:test_support",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/subscription_eligibility",
+    "//components/sync_preferences:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
 }

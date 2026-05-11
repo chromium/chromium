@@ -4,15 +4,21 @@
 
 source_set("personal_context") {
   sources = [
+    "personal_context_enablement_service_factory.cc",
+    "personal_context_enablement_service_factory.h",
     "personal_context_service_factory.cc",
     "personal_context_service_factory.h",
   ]
 
   deps = [
     "//base",
+    "//chrome/browser/account_settings",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
+    "//chrome/browser/subscription_eligibility",
     "//components/personal_context/core",
     "//components/personal_context/core:features",
+    "//components/variations/service",
   ]
 }
 

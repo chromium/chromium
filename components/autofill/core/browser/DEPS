@@ -21,6 +21,7 @@ include_rules = [
   "+components/optimization_guide/core",
   "+components/password_manager/core/browser/features/password_features.h",
   "+components/payments/core/currency_formatter.h",
+  "+components/personal_context/core",
   "+components/policy",
   "+components/profile_metrics",
   "+components/resources",

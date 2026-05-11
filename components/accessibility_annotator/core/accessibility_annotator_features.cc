@@ -84,11 +84,6 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    &kAccessibilityAnnotator,
                    "accessibility_annotation_ttl",
                    base::Days(7));
-BASE_FEATURE_PARAM(std::string,
-                   kAccessibilityAnnotatorEligibleTiers,
-                   &kAccessibilityAnnotator,
-                   "accessibility_annotator_eligible_tiers",
-                   "1,2");
 
 BASE_FEATURE(kAccessibilityAnnotatorFirstRun,
              base::FEATURE_DISABLED_BY_DEFAULT);

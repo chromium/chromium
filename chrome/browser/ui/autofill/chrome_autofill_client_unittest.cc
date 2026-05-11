@@ -13,10 +13,10 @@
 #include "base/memory/raw_ref.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "chrome/browser/accessibility_annotator/accessibility_annotator_enablement_service_factory.h"
 #include "chrome/browser/autofill/mock_autofill_agent.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill/ui/ui_util.h"
+#include "chrome/browser/personal_context/personal_context_enablement_service_factory.h"
 #include "chrome/browser/ssl/chrome_security_state_tab_helper.h"
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller_impl.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -27,8 +27,6 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/user_education/mock_browser_user_education_interface.h"
-#include "components/accessibility_annotator/core/accessibility_annotator_enablement_service.h"
-#include "components/accessibility_annotator/core/accessibility_annotator_types.h"
 #include "components/autofill/content/browser/autofill_test_utils.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_autofill_driver_injector.h"
@@ -52,6 +50,8 @@
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/personal_context/core/personal_context_enablement_service.h"
+#include "components/personal_context/core/personal_context_types.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/unified_consent/pref_names.h"
@@ -112,15 +112,15 @@ using ::testing::Return;
 using ::testing::ReturnRef;
 using ::testing::UnorderedElementsAre;
 
-class MockAccessibilityAnnotatorEnablementService
-    : public accessibility_annotator::AccessibilityAnnotatorEnablementService {
+class MockPersonalContextEnablementService
+    : public personal_context::PersonalContextEnablementService {
  public:
-  MockAccessibilityAnnotatorEnablementService() = default;
-  ~MockAccessibilityAnnotatorEnablementService() override = default;
+  MockPersonalContextEnablementService() = default;
+  ~MockPersonalContextEnablementService() override = default;
 
   MOCK_METHOD(void, AddObserver, (Observer*), (override));
   MOCK_METHOD(void, RemoveObserver, (Observer*), (override));
-  MOCK_METHOD(accessibility_annotator::RemoteAnnotatorEnablementState,
+  MOCK_METHOD(personal_context::PersonalContextEnablementState,
               GetEnablementState,
               (),
               (override));
@@ -188,14 +188,14 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
 
   void InitializeAccessibilityAnnotatorEnablementService() {
     accessibility_annotator_enablement_service_ =
-        static_cast<MockAccessibilityAnnotatorEnablementService*>(
-            AccessibilityAnnotatorEnablementServiceFactory::GetInstance()
+        static_cast<MockPersonalContextEnablementService*>(
+            PersonalContextEnablementServiceFactory::GetInstance()
                 ->SetTestingFactoryAndUse(
                     profile(),
                     base::BindRepeating([](content::BrowserContext* context)
                                             -> std::unique_ptr<KeyedService> {
                       return std::make_unique<
-                          MockAccessibilityAnnotatorEnablementService>();
+                          MockPersonalContextEnablementService>();
                     })));
   }
 
@@ -231,7 +231,7 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
     return ContentAutofillDriver::GetForRenderFrameHost(rfh);
   }
 
-  MockAccessibilityAnnotatorEnablementService*
+  MockPersonalContextEnablementService*
   accessibility_annotator_enablement_service() {
     return accessibility_annotator_enablement_service_;
   }
@@ -270,7 +270,7 @@ class ChromeAutofillClientTest : public ChromeRenderViewHostTestHarness {
 #if !BUILDFLAG(IS_ANDROID)
   raw_ptr<MockAutofillFieldPromoController> autofill_field_promo_controller_;
 #endif  // !BUILDFLAG(IS_ANDROID)
-  raw_ptr<MockAccessibilityAnnotatorEnablementService>
+  raw_ptr<MockPersonalContextEnablementService>
       accessibility_annotator_enablement_service_;
   TestAutofillClientInjector<TestChromeAutofillClient>
       test_autofill_client_injector_;
@@ -741,24 +741,22 @@ TEST_F(ChromeAutofillClientTestWithWindow, OpenGeminiInSidebar) {
 
 // Tests that if there is no enablement service available to the profile, client
 // defaults to kDisabledNotEligible state.
-TEST_F(ChromeAutofillClientTest,
-       GetAccessibilityAnnotatorEnablementState_NoService) {
-  EXPECT_EQ(client()->GetAccessibilityAnnotatorEnablementState(),
-            accessibility_annotator::RemoteAnnotatorEnablementState::
-                kDisabledNotEligible);
+TEST_F(ChromeAutofillClientTest, GetPersonalContextEnablementState_NoService) {
+  EXPECT_EQ(
+      client()->GetPersonalContextEnablementState(),
+      personal_context::PersonalContextEnablementState::kDisabledNotEligible);
 }
 
 // Tests that the client correctly pipes the state from the enablement service.
-TEST_F(ChromeAutofillClientTest,
-       GetAccessibilityAnnotatorEnablementState_HappyPath) {
+TEST_F(ChromeAutofillClientTest, GetPersonalContextEnablementState_HappyPath) {
   InitializeAccessibilityAnnotatorEnablementService();
 
   EXPECT_CALL(*accessibility_annotator_enablement_service(),
               GetEnablementState())
-      .WillRepeatedly(Return(
-          accessibility_annotator::RemoteAnnotatorEnablementState::kEnabled));
-  EXPECT_EQ(client()->GetAccessibilityAnnotatorEnablementState(),
-            accessibility_annotator::RemoteAnnotatorEnablementState::kEnabled);
+      .WillRepeatedly(
+          Return(personal_context::PersonalContextEnablementState::kEnabled));
+  EXPECT_EQ(client()->GetPersonalContextEnablementState(),
+            personal_context::PersonalContextEnablementState::kEnabled);
 }
 
 }  // namespace

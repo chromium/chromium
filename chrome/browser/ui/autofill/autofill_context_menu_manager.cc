@@ -29,7 +29,6 @@
 #include "chrome/browser/ui/webauthn/context_menu_helper.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/accessibility_annotator/core/accessibility_annotator_types.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/autofill_feedback_data.h"
@@ -45,6 +44,7 @@
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_manual_fallback_metrics_recorder.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
+#include "components/personal_context/core/personal_context_types.h"
 #include "components/plus_addresses/core/browser/grit/plus_addresses_strings.h"
 #include "components/plus_addresses/core/browser/plus_address_service.h"
 #include "components/plus_addresses/core/common/features.h"
@@ -336,9 +336,8 @@ void AutofillContextMenuManager::MaybeAddAutofillAtMemoryItem() {
 
   if (autofill_driver->GetAutofillManager()
           .client()
-          .GetAccessibilityAnnotatorEnablementState() ==
-      accessibility_annotator::RemoteAnnotatorEnablementState::
-          kDisabledNotEligible) {
+          .GetPersonalContextEnablementState() ==
+      personal_context::PersonalContextEnablementState::kDisabledNotEligible) {
     return;
   }
 

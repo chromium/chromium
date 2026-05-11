@@ -15,6 +15,16 @@
 
 namespace personal_context {
 
+// Tracks the global enablement state of the feature for the current profile.
+// Used by consuming features to determine both feature execution and UI
+// entrypoint visibility.
+enum class PersonalContextEnablementState {
+  kDisabledNotEligible = 0,   // Feature disabled, user not eligible.
+  kDisabledPendingInfo = 1,   // Feature disabled pending Info.
+  kDisabledPendingSetup = 2,  // Feature disabled pending Setup.
+  kEnabled = 3                // Feature enabled, first run completed.
+};
+
 // Defines the result of a PersonalContextService::FetchContext operation.
 struct FetchContextResult {
   FetchContextResult();

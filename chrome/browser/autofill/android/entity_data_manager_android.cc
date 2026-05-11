@@ -15,7 +15,6 @@
 #include "base/containers/to_vector.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/zip.h"
-#include "chrome/browser/accessibility_annotator/accessibility_annotator_enablement_service_factory.h"
 #include "chrome/browser/account_settings/account_setting_service_factory.h"
 #include "chrome/browser/autofill/android/entity_instance_android.h"
 #include "chrome/browser/autofill/android/entity_instance_with_labels.h"
@@ -25,12 +24,10 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/metrics/variations/google_groups_manager_factory.h"
+#include "chrome/browser/personal_context/personal_context_enablement_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "components/accessibility_annotator/core/accessibility_annotator_enablement_service.h"
-#include "components/accessibility_annotator/core/accessibility_annotator_features.h"
-#include "components/accessibility_annotator/core/accessibility_annotator_types.h"
 #include "components/accessibility_annotator/core/url_constants.h"
 #include "components/account_settings/account_setting_service.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -46,6 +43,9 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/consent_auditor/consent_auditor.h"
+#include "components/personal_context/core/personal_context_enablement_service.h"
+#include "components/personal_context/core/personal_context_features.h"
+#include "components/personal_context/core/personal_context_types.h"
 #include "components/wallet/core/common/wallet_features.h"
 #include "third_party/jni_zero/jni_zero.h"
 
@@ -88,17 +88,15 @@ static jboolean JNI_EntityDataManager_IsAccessibilityAnnotatorSettingVisible(
   CHECK(profile);
 
   if (!base::FeatureList::IsEnabled(
-          accessibility_annotator::features::kAccessibilityAnnotator)) {
+          personal_context::features::kPersonalContext)) {
     return false;
   }
 
-  accessibility_annotator::AccessibilityAnnotatorEnablementService*
-      enablement_service =
-          AccessibilityAnnotatorEnablementServiceFactory::GetForProfile(
-              profile);
+  personal_context::PersonalContextEnablementService* enablement_service =
+      PersonalContextEnablementServiceFactory::GetForProfile(profile);
   return enablement_service &&
          enablement_service->GetEnablementState() ==
-             accessibility_annotator::RemoteAnnotatorEnablementState::kEnabled;
+             personal_context::PersonalContextEnablementState::kEnabled;
 }
 
 static std::string JNI_EntityDataManager_GetAccessibilityAnnotatorSettingsUrl(

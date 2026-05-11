@@ -88,7 +88,10 @@ enum class Channel;
 
 namespace accessibility_annotator {
 class AccessibilityQueryService;
-enum class RemoteAnnotatorEnablementState;
+}
+
+namespace personal_context {
+enum class PersonalContextEnablementState;
 }
 
 namespace metrics {
@@ -426,8 +429,8 @@ class AutofillClient {
   GetAccessibilityQueryService();
 
   // Returns the enablement state of the Accessibility Annotator.
-  virtual accessibility_annotator::RemoteAnnotatorEnablementState
-  GetAccessibilityAnnotatorEnablementState() const;
+  virtual personal_context::PersonalContextEnablementState
+  GetPersonalContextEnablementState() const;
 
   // Returns the `PasswordManagerDelegate` responsible to provide
   // password suggestions for the given `field_id`.

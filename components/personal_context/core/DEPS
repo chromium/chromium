@@ -1,4 +1,9 @@
 include_rules = [
+  "+components/account_settings",
   "+components/keyed_service/core",
+  "+components/prefs",
+  "+components/signin/public/identity_manager",
+  "+components/subscription_eligibility",
+  "+components/sync_preferences",
   "+net/http",
 ]

@@ -4,17 +4,12 @@
 
 source_set("core") {
   sources = [
-    "accessibility_annotator_enablement_service.h",
-    "accessibility_annotator_enablement_service_impl.cc",
-    "accessibility_annotator_enablement_service_impl.h",
     "accessibility_annotator_service.cc",
     "accessibility_annotator_service.h",
-    "accessibility_annotator_types.h",
     "accessibility_query_service.cc",
     "accessibility_query_service.h",
     "accessibility_query_service_delegate.cc",
     "accessibility_query_service_delegate.h",
-    "country_type.h",
     "direct_server_entity_provider.cc",
     "direct_server_entity_provider.h",
     "entity_data_provider.h",
@@ -32,6 +27,7 @@ source_set("core") {
     "//components/history/core/browser",
     "//components/keyed_service/core",
     "//components/optimization_guide/core",
+    "//components/personal_context/core",
     "//components/prefs",
     "//components/signin/public/identity_manager",
     "//components/subscription_eligibility",
@@ -41,8 +37,6 @@ source_set("core") {
 
 source_set("features") {
   sources = [
-    "accessibility_annotator_debug_features.cc",
-    "accessibility_annotator_debug_features.h",
     "accessibility_annotator_features.cc",
     "accessibility_annotator_features.h",
   ]
@@ -63,7 +57,6 @@ source_set("prefs") {
 source_set("test_support") {
   testonly = true
   sources = [
-    "accessibility_annotator_enablement_service_impl_test_api.h",
     "mock_accessibility_query_service.cc",
     "mock_accessibility_query_service.h",
   ]
@@ -78,7 +71,6 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "accessibility_annotator_enablement_service_impl_unittest.cc",
     "accessibility_query_service_unittest.cc",
     "direct_server_entity_provider_unittest.cc",
   ]

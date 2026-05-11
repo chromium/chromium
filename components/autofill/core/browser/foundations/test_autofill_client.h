@@ -22,7 +22,6 @@
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
-#include "components/accessibility_annotator/core/accessibility_annotator_types.h"
 #include "components/accessibility_annotator/core/accessibility_query_service.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
@@ -75,6 +74,7 @@
 #include "components/one_time_tokens/core/browser/sms_otp_backend.h"
 #include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#include "components/personal_context/core/personal_context_types.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry.h"
 #include "components/prefs/pref_service.h"
@@ -213,14 +213,14 @@ class TestAutofillClientTemplate : public T {
     return accessibility_query_service_.get();
   }
 
-  accessibility_annotator::RemoteAnnotatorEnablementState
-  GetAccessibilityAnnotatorEnablementState() const override {
-    return accessibility_annotator_enablement_state_;
+  personal_context::PersonalContextEnablementState
+  GetPersonalContextEnablementState() const override {
+    return personal_context_enablement_state_;
   }
 
-  void set_accessibility_annotator_enablement_state(
-      accessibility_annotator::RemoteAnnotatorEnablementState state) {
-    accessibility_annotator_enablement_state_ = state;
+  void set_personal_context_enablement_state(
+      personal_context::PersonalContextEnablementState state) {
+    personal_context_enablement_state_ = state;
   }
 
   IdentityCredentialDelegate* GetIdentityCredentialDelegate() override {
@@ -705,9 +705,9 @@ class TestAutofillClientTemplate : public T {
   std::unique_ptr<OtpPhishGuardDelegate> otp_phish_guard_delegate_;
   std::unique_ptr<accessibility_annotator::AccessibilityQueryService>
       accessibility_query_service_;
-  accessibility_annotator::RemoteAnnotatorEnablementState
-      accessibility_annotator_enablement_state_ =
-          accessibility_annotator::RemoteAnnotatorEnablementState::kEnabled;
+  personal_context::PersonalContextEnablementState
+      personal_context_enablement_state_ =
+          personal_context::PersonalContextEnablementState::kEnabled;
   std::unique_ptr<IdentityCredentialDelegate> identity_credential_delegate_;
   std::unique_ptr<PasswordManagerDelegate> password_manager_delegate_;
   std::unique_ptr<AutofillComposeDelegate> compose_delegate_;

@@ -1051,6 +1051,7 @@ static_library("browser") {
     "//components/os_crypt/async/common",
     "//components/password_manager/core/browser/features:password_features",
     "//components/payments/core:currency_formatter",
+    "//components/personal_context/core",
     "//components/policy/core/browser",
     "//components/policy/core/common",
     "//components/pref_registry",
@@ -1402,6 +1403,7 @@ static_library("test_support") {
     "//components/one_time_tokens/core/browser",
     "//components/one_time_tokens/core/browser:test_support",
     "//components/optimization_guide/core:features",
+    "//components/personal_context/core",
     "//components/strike_database:proto",
     "//components/strike_database:test_support",
   ]

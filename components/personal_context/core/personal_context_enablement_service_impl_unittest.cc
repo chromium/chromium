@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/accessibility_annotator/core/accessibility_annotator_enablement_service_impl.h"
+#include "components/personal_context/core/personal_context_enablement_service_impl.h"
 
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "components/accessibility_annotator/core/accessibility_annotator_debug_features.h"
-#include "components/accessibility_annotator/core/accessibility_annotator_enablement_service_impl_test_api.h"
-#include "components/accessibility_annotator/core/accessibility_annotator_features.h"
-#include "components/accessibility_annotator/core/prefs.h"
 #include "components/account_settings/account_settings.h"
 #include "components/account_settings/account_settings_features.h"
 #include "components/account_settings/mock_account_setting_service.h"
+#include "components/personal_context/core/personal_context_debug_features.h"
+#include "components/personal_context/core/personal_context_enablement_service_impl_test_api.h"
+#include "components/personal_context/core/personal_context_features.h"
+#include "components/personal_context/core/personal_context_prefs.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -23,7 +23,7 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace accessibility_annotator {
+namespace personal_context {
 namespace {
 
 using testing::Return;
@@ -32,28 +32,28 @@ MATCHER_P(AccountSettingWithName, name, "") {
   return std::string(arg.name) == name;
 }
 
-class MockAccessibilityAnnotatorEnablementServiceObserver
-    : public AccessibilityAnnotatorEnablementService::Observer {
+class MockPersonalContextEnablementServiceObserver
+    : public PersonalContextEnablementService::Observer {
  public:
   MOCK_METHOD(void,
               OnEnablementStateChanged,
-              (RemoteAnnotatorEnablementState),
+              (PersonalContextEnablementState),
               (override));
 };
 
-class AccessibilityAnnotatorEnablementServiceImplTest : public testing::Test {
+class PersonalContextEnablementServiceImplTest : public testing::Test {
  public:
-  AccessibilityAnnotatorEnablementServiceImplTest() {
+  PersonalContextEnablementServiceImplTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kAccessibilityAnnotator,
-                              features::kAccessibilityAnnotatorFirstRun},
+        /*enabled_features=*/{features::kPersonalContext,
+                              features::kPersonalContextFirstRun},
         /*disabled_features=*/{});
 
     SetPrefs();
     CreateService("us");
     SignIn("test@gmail.com");
   }
-  ~AccessibilityAnnotatorEnablementServiceImplTest() override = default;
+  ~PersonalContextEnablementServiceImplTest() override = default;
 
  protected:
   void SignIn(const std::string& email,
@@ -64,6 +64,8 @@ class AccessibilityAnnotatorEnablementServiceImplTest : public testing::Test {
     AccountInfo::Builder builder(account_info);
     if (is_managed) {
       builder.SetHostedDomain("example.com");
+    } else {
+      builder.SetHostedDomain("");
     }
     AccountCapabilities capabilities = account_info.GetAccountCapabilities();
     AccountCapabilitiesTestMutator mutator(&capabilities);
@@ -73,18 +75,16 @@ class AccessibilityAnnotatorEnablementServiceImplTest : public testing::Test {
   }
 
   void CreateService(const std::string& country_code) {
-    service_ = std::make_unique<AccessibilityAnnotatorEnablementServiceImpl>(
+    service_ = std::make_unique<PersonalContextEnablementServiceImpl>(
         &mock_account_settings_service_, identity_test_env_.identity_manager(),
         subscription_eligibility_service_.get(), &pref_service_,
         GeoIpCountryCode(base::ToUpperASCII(country_code)));
   }
 
   void SetPrefs() {
-    accessibility_annotator::prefs::RegisterProfilePrefs(
-        pref_service_.registry());
+    personal_context::prefs::RegisterProfilePrefs(pref_service_.registry());
     pref_service_.SetBoolean(
-        accessibility_annotator::prefs::kShouldShowRemoteAnnotatorFirstRunInfo,
-        false);
+        personal_context::prefs::kShouldShowPersonalContextFirstRunInfo, false);
     subscription_eligibility::prefs::RegisterProfilePrefs(
         pref_service_.registry());
     pref_service_.SetInteger(
@@ -98,7 +98,7 @@ class AccessibilityAnnotatorEnablementServiceImplTest : public testing::Test {
         .WillByDefault(Return(true));
   }
 
-  AccessibilityAnnotatorEnablementServiceImpl& service() { return *service_; }
+  PersonalContextEnablementServiceImpl& service() { return *service_; }
 
   base::test::TaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_env_;
@@ -108,138 +108,133 @@ class AccessibilityAnnotatorEnablementServiceImplTest : public testing::Test {
       subscription_eligibility_service_;
   testing::NiceMock<account_settings::MockAccountSettingService>
       mock_account_settings_service_;
-  std::unique_ptr<AccessibilityAnnotatorEnablementServiceImpl> service_;
+  std::unique_ptr<PersonalContextEnablementServiceImpl> service_;
 };
 
-TEST_F(AccessibilityAnnotatorEnablementServiceImplTest, ForcedEnablementState) {
+TEST_F(PersonalContextEnablementServiceImplTest, ForcedEnablementState) {
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeatureWithParameters(
-        features::debug::kAccessibilityAnnotatorForceEnablementState,
-        {{"remote_annotator_enablement_state", "0"}});
+        features::debug::kPersonalContextForceEnablementState,
+        {{"state", "0"}});
     EXPECT_EQ(service().GetEnablementState(),
-              RemoteAnnotatorEnablementState::kDisabledNotEligible);
+              PersonalContextEnablementState::kDisabledNotEligible);
   }
 
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeatureWithParameters(
-        features::debug::kAccessibilityAnnotatorForceEnablementState,
-        {{"remote_annotator_enablement_state", "1"}});
+        features::debug::kPersonalContextForceEnablementState,
+        {{"state", "1"}});
     EXPECT_EQ(service().GetEnablementState(),
-              RemoteAnnotatorEnablementState::kDisabledPendingInfo);
+              PersonalContextEnablementState::kDisabledPendingInfo);
   }
 
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeatureWithParameters(
-        features::debug::kAccessibilityAnnotatorForceEnablementState,
-        {{"remote_annotator_enablement_state", "2"}});
+        features::debug::kPersonalContextForceEnablementState,
+        {{"state", "2"}});
     EXPECT_EQ(service().GetEnablementState(),
-              RemoteAnnotatorEnablementState::kDisabledPendingSetup);
+              PersonalContextEnablementState::kDisabledPendingSetup);
   }
 
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeatureWithParameters(
-        features::debug::kAccessibilityAnnotatorForceEnablementState,
-        {{"remote_annotator_enablement_state", "3"}});
+        features::debug::kPersonalContextForceEnablementState,
+        {{"state", "3"}});
     EXPECT_EQ(service().GetEnablementState(),
-              RemoteAnnotatorEnablementState::kEnabled);
+              PersonalContextEnablementState::kEnabled);
   }
 }
 
-TEST_F(AccessibilityAnnotatorEnablementServiceImplTest,
-       DisabledWhenFeaturesAreOff) {
+TEST_F(PersonalContextEnablementServiceImplTest, DisabledWhenFeaturesAreOff) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
-      /*disabled_features=*/{features::kAccessibilityAnnotator,
-                             features::kAccessibilityAnnotatorFirstRun});
+      /*disabled_features=*/{features::kPersonalContext,
+                             features::kPersonalContextFirstRun});
 
-  test_api(&service()).RecomputeEnablementState();
-  EXPECT_EQ(service().GetEnablementState(),
-            RemoteAnnotatorEnablementState::kDisabledNotEligible);
+  EXPECT_EQ(PersonalContextEnablementServiceImplTestApi(&service())
+                .ComputeEnablementState(),
+            PersonalContextEnablementState::kDisabledNotEligible);
 }
 
-TEST_F(AccessibilityAnnotatorEnablementServiceImplTest,
-       DisabledWhenMainFeatureIsOff) {
+TEST_F(PersonalContextEnablementServiceImplTest, DisabledWhenMainFeatureIsOff) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAccessibilityAnnotatorFirstRun},
-      /*disabled_features=*/{features::kAccessibilityAnnotator});
+      /*enabled_features=*/{features::kPersonalContextFirstRun},
+      /*disabled_features=*/{features::kPersonalContext});
 
-  test_api(&service()).RecomputeEnablementState();
-  EXPECT_EQ(service().GetEnablementState(),
-            RemoteAnnotatorEnablementState::kDisabledNotEligible);
+  EXPECT_EQ(PersonalContextEnablementServiceImplTestApi(&service())
+                .ComputeEnablementState(),
+            PersonalContextEnablementState::kDisabledNotEligible);
 }
 
-TEST_F(AccessibilityAnnotatorEnablementServiceImplTest,
-       EnabledWhenAllFeaturesAreOn) {
+TEST_F(PersonalContextEnablementServiceImplTest, EnabledWhenAllFeaturesAreOn) {
   EXPECT_EQ(service().GetEnablementState(),
-            RemoteAnnotatorEnablementState::kEnabled);
+            PersonalContextEnablementState::kEnabled);
 }
 
-TEST_F(AccessibilityAnnotatorEnablementServiceImplTest,
+TEST_F(PersonalContextEnablementServiceImplTest,
        DisabledPendingInfoWhenInfoNotAcknowledged) {
   pref_service_.SetBoolean(
-      accessibility_annotator::prefs::kShouldShowRemoteAnnotatorFirstRunInfo,
-      true);
+      personal_context::prefs::kShouldShowPersonalContextFirstRunInfo, true);
   EXPECT_EQ(service().GetEnablementState(),
-            RemoteAnnotatorEnablementState::kDisabledPendingInfo);
+            PersonalContextEnablementState::kDisabledPendingInfo);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)  // Signing out does not work on ChromeOS.
-TEST_F(AccessibilityAnnotatorEnablementServiceImplTest, DisabledWhenSignedOut) {
+TEST_F(PersonalContextEnablementServiceImplTest, DisabledWhenSignedOut) {
   identity_test_env_.ClearPrimaryAccount();
   EXPECT_EQ(service().GetEnablementState(),
-            RemoteAnnotatorEnablementState::kDisabledNotEligible);
+            PersonalContextEnablementState::kDisabledNotEligible);
 }
 
-TEST_F(AccessibilityAnnotatorEnablementServiceImplTest, ClearsPrefOnSignout) {
-  pref_service_.SetBoolean(prefs::kShouldShowRemoteAnnotatorFirstRunInfo,
-                           false);
+TEST_F(PersonalContextEnablementServiceImplTest, ClearsPrefOnSignout) {
+  pref_service_.SetBoolean(
+      personal_context::prefs::kShouldShowPersonalContextFirstRunInfo, false);
   identity_test_env_.ClearPrimaryAccount();
-  EXPECT_TRUE(
-      pref_service_.GetBoolean(prefs::kShouldShowRemoteAnnotatorFirstRunInfo));
+  EXPECT_TRUE(pref_service_.GetBoolean(
+      personal_context::prefs::kShouldShowPersonalContextFirstRunInfo));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-TEST_F(AccessibilityAnnotatorEnablementServiceImplTest, DisabledWhenUnderaged) {
+TEST_F(PersonalContextEnablementServiceImplTest, DisabledWhenUnderaged) {
   SignIn("under@gmail.com", /*is_underaged=*/true);
 
   EXPECT_EQ(service().GetEnablementState(),
-            RemoteAnnotatorEnablementState::kDisabledNotEligible);
+            PersonalContextEnablementState::kDisabledNotEligible);
 }
 
-TEST_F(AccessibilityAnnotatorEnablementServiceImplTest, DisabledWhenManaged) {
+TEST_F(PersonalContextEnablementServiceImplTest, DisabledWhenManaged) {
   SignIn("managed@example.com", /*is_underaged=*/false, /*is_managed=*/true);
 
   EXPECT_EQ(service().GetEnablementState(),
-            RemoteAnnotatorEnablementState::kDisabledNotEligible);
+            PersonalContextEnablementState::kDisabledNotEligible);
 }
 
-TEST_F(AccessibilityAnnotatorEnablementServiceImplTest,
-       DisabledWhenTierNotEligible) {
+TEST_F(PersonalContextEnablementServiceImplTest, DisabledWhenTierNotEligible) {
   pref_service_.SetInteger(subscription_eligibility::prefs::kAiSubscriptionTier,
                            3);
 
   EXPECT_EQ(service().GetEnablementState(),
-            RemoteAnnotatorEnablementState::kDisabledNotEligible);
+            PersonalContextEnablementState::kDisabledNotEligible);
 }
 
-TEST_F(AccessibilityAnnotatorEnablementServiceImplTest,
+TEST_F(PersonalContextEnablementServiceImplTest,
        DisabledWhenAccountSettingsServiceNotAvailable) {
-  service_ = std::make_unique<AccessibilityAnnotatorEnablementServiceImpl>(
+  service_ = std::make_unique<PersonalContextEnablementServiceImpl>(
       nullptr, identity_test_env_.identity_manager(),
       subscription_eligibility_service_.get(), &pref_service_,
       GeoIpCountryCode("US"));
 
   EXPECT_EQ(service().GetEnablementState(),
-            RemoteAnnotatorEnablementState::kDisabledNotEligible);
+            PersonalContextEnablementState::kDisabledNotEligible);
 }
 
-TEST_F(AccessibilityAnnotatorEnablementServiceImplTest,
+TEST_F(PersonalContextEnablementServiceImplTest,
        DisabledWhenAccountOptedOutOfContext) {
   EXPECT_CALL(mock_account_settings_service_,
               GetBoolean(AccountSettingWithName(
@@ -249,10 +244,10 @@ TEST_F(AccessibilityAnnotatorEnablementServiceImplTest,
   service().OnAccountSettingDataUpdated(
       account_settings::kAccountSettingContext.name);
   EXPECT_EQ(service().GetEnablementState(),
-            RemoteAnnotatorEnablementState::kDisabledNotEligible);
+            PersonalContextEnablementState::kDisabledNotEligible);
 }
 
-TEST_F(AccessibilityAnnotatorEnablementServiceImplTest,
+TEST_F(PersonalContextEnablementServiceImplTest,
        DisabledWhenNoContextSourcesEnabled) {
   EXPECT_CALL(mock_account_settings_service_,
               GetBoolean(AccountSettingWithName(
@@ -270,10 +265,10 @@ TEST_F(AccessibilityAnnotatorEnablementServiceImplTest,
   service().OnAccountSettingDataUpdated(
       account_settings::kAccountSettingContext.name);
   EXPECT_EQ(service().GetEnablementState(),
-            RemoteAnnotatorEnablementState::kDisabledNotEligible);
+            PersonalContextEnablementState::kDisabledNotEligible);
 }
 
-TEST_F(AccessibilityAnnotatorEnablementServiceImplTest,
+TEST_F(PersonalContextEnablementServiceImplTest,
        EnabledWhenAtLeastOneContextSourceEnabled) {
   EXPECT_CALL(mock_account_settings_service_,
               GetBoolean(AccountSettingWithName(
@@ -293,7 +288,7 @@ TEST_F(AccessibilityAnnotatorEnablementServiceImplTest,
     service().OnAccountSettingDataUpdated(
         account_settings::kAccountSettingContext.name);
     EXPECT_EQ(service().GetEnablementState(),
-              RemoteAnnotatorEnablementState::kEnabled);
+              PersonalContextEnablementState::kEnabled);
   }
   {
     // Only Photos enabled.
@@ -309,42 +304,40 @@ TEST_F(AccessibilityAnnotatorEnablementServiceImplTest,
     service().OnAccountSettingDataUpdated(
         account_settings::kAccountSettingContext.name);
     EXPECT_EQ(service().GetEnablementState(),
-              RemoteAnnotatorEnablementState::kEnabled);
+              PersonalContextEnablementState::kEnabled);
   }
 }
 
-TEST_F(AccessibilityAnnotatorEnablementServiceImplTest,
+TEST_F(PersonalContextEnablementServiceImplTest,
        ObserversNotifiedOnEnablementStateChanged) {
-  MockAccessibilityAnnotatorEnablementServiceObserver observer;
+  MockPersonalContextEnablementServiceObserver observer;
   service().AddObserver(&observer);
 
   // Initial state is kEnabled.
   ASSERT_EQ(service().GetEnablementState(),
-            RemoteAnnotatorEnablementState::kEnabled);
+            PersonalContextEnablementState::kEnabled);
 
   // Trigger a change to kDisabledPendingInfo by setting a pref.
   EXPECT_CALL(observer,
               OnEnablementStateChanged(
-                  RemoteAnnotatorEnablementState::kDisabledPendingInfo));
+                  PersonalContextEnablementState::kDisabledPendingInfo));
   pref_service_.SetBoolean(
-      accessibility_annotator::prefs::kShouldShowRemoteAnnotatorFirstRunInfo,
-      true);
+      personal_context::prefs::kShouldShowPersonalContextFirstRunInfo, true);
 
   // Trigger a change back to kEnabled.
   EXPECT_CALL(observer, OnEnablementStateChanged(
-                            RemoteAnnotatorEnablementState::kEnabled));
+                            PersonalContextEnablementState::kEnabled));
   pref_service_.SetBoolean(
-      accessibility_annotator::prefs::kShouldShowRemoteAnnotatorFirstRunInfo,
-      false);
+      personal_context::prefs::kShouldShowPersonalContextFirstRunInfo, false);
 
   service().RemoveObserver(&observer);
 }
 
-TEST_F(AccessibilityAnnotatorEnablementServiceImplTest,
+TEST_F(PersonalContextEnablementServiceImplTest,
        CacheUpdatedOnAccountSettingChanged) {
   // Initial state is kEnabled.
   ASSERT_EQ(service().GetEnablementState(),
-            RemoteAnnotatorEnablementState::kEnabled);
+            PersonalContextEnablementState::kEnabled);
 
   // Opt out of context in account settings.
   EXPECT_CALL(mock_account_settings_service_,
@@ -358,7 +351,7 @@ TEST_F(AccessibilityAnnotatorEnablementServiceImplTest,
 
   // The cache should be updated to kDisabledNotEligible.
   EXPECT_EQ(service().GetEnablementState(),
-            RemoteAnnotatorEnablementState::kDisabledNotEligible);
+            PersonalContextEnablementState::kDisabledNotEligible);
 
   // Opt back in.
   EXPECT_CALL(mock_account_settings_service_,
@@ -380,30 +373,30 @@ TEST_F(AccessibilityAnnotatorEnablementServiceImplTest,
 
   // The cache should be updated back to kEnabled.
   EXPECT_EQ(service().GetEnablementState(),
-            RemoteAnnotatorEnablementState::kEnabled);
+            PersonalContextEnablementState::kEnabled);
 }
 
-class AccessibilityAnnotatorEnablementServiceImplGeolocationTest
-    : public AccessibilityAnnotatorEnablementServiceImplTest,
+class PersonalContextEnablementServiceImplGeolocationTest
+    : public PersonalContextEnablementServiceImplTest,
       public testing::WithParamInterface<
-          std::tuple<std::string, RemoteAnnotatorEnablementState>> {};
+          std::tuple<std::string, PersonalContextEnablementState>> {};
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    AccessibilityAnnotatorEnablementServiceImplGeolocationTest,
+    PersonalContextEnablementServiceImplGeolocationTest,
     testing::Values(
         std::make_tuple(/*country_code=*/"au",
-                        RemoteAnnotatorEnablementState::kDisabledNotEligible),
+                        PersonalContextEnablementState::kDisabledNotEligible),
         std::make_tuple(/*country_code=*/"fr",
-                        RemoteAnnotatorEnablementState::kDisabledNotEligible),
+                        PersonalContextEnablementState::kDisabledNotEligible),
         std::make_tuple(/*country_code=*/"us",
-                        RemoteAnnotatorEnablementState::kEnabled)));
+                        PersonalContextEnablementState::kEnabled)));
 
-TEST_P(AccessibilityAnnotatorEnablementServiceImplGeolocationTest,
+TEST_P(PersonalContextEnablementServiceImplGeolocationTest,
        CheckCountryEnablement) {
   CreateService(std::get<0>(GetParam()));
   EXPECT_EQ(service().GetEnablementState(), std::get<1>(GetParam()));
 }
 
 }  // namespace
-}  // namespace accessibility_annotator
+}  // namespace personal_context

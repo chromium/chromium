@@ -24,6 +24,7 @@ source_set("first_run") {
   deps = [
     "//base",
     "//chrome/browser/accessibility_annotator",
+    "//chrome/browser/personal_context",
     "//chrome/browser/profiles:profile",
     "//components/accessibility_annotator/core",
     "//components/accessibility_annotator/core:features",

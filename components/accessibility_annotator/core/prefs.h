@@ -9,9 +9,6 @@ class PrefRegistrySimple;
 
 namespace accessibility_annotator::prefs {
 
-inline constexpr char kShouldShowRemoteAnnotatorFirstRunInfo[] =
-    "accessibility_annotator.should_show_remote_annotator_first_run_info";
-
 inline constexpr char kUkmLoggingUserSecret[] =
     "accessibility_annotator.ukm_logging_user_secret";
 
