@@ -39,6 +39,10 @@ enum class AssistantContainerDetent : NSInteger;
 // The layout state.
 @property(nonatomic, weak) LayoutState* layoutState;
 
+// Accessibility property. Whether to only announce the arrival of the assistant
+// instead of moving VoiceOver focus to it.
+@property(nonatomic, assign) BOOL announceArrivalOnly;
+
 // Animates the container to a specific detent.
 // If the detent is not found, acts as a no-op.
 - (void)animateToDetent:(AssistantContainerDetent)detent

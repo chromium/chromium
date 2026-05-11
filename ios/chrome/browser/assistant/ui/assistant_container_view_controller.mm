@@ -9,16 +9,20 @@
 #import <optional>
 
 #import "base/check.h"
+#import "ios/chrome/browser/assistant/ui/assistant_container_accessibility_manager.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_delegate.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_layout_utils.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_view.h"
+#import "ios/chrome/browser/assistant/ui/assistant_grabber_button.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/chrome_overlay_window/chrome_overlay_container_view.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -48,8 +52,10 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
 
 }  // namespace
 
-@interface AssistantContainerViewController () <LayoutStateObserver,
-                                                UIGestureRecognizerDelegate>
+@interface AssistantContainerViewController () <
+    LayoutStateObserver,
+    UIGestureRecognizerDelegate,
+    AssistantContainerAccessibilityManagerDelegate>
 @end
 
 @implementation AssistantContainerViewController {
@@ -90,6 +96,9 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
   // An array of unowned scroll views, modeled through provider blocks that
   // capture weak references to the views in question.
   NSMutableArray<UIScrollView* (^)()>* _disabledScrollViews;
+
+  // Manages accessibility properties and actions.
+  AssistantContainerAccessibilityManager* _accessibilityManager;
 }
 
 @synthesize isAnimating = _isAnimating;
@@ -215,6 +224,19 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
   _hasAppeared = YES;
+
+  // Focus or announce the grabber button on entry.
+  if (_assistantContainerView.grabberButton) {
+    if (self.announceArrivalOnly) {
+      NSString* message = l10n_util::GetNSString(
+          IDS_IOS_ASSISTANT_SHEET_GRABBER_ACCESSIBILITY_LABEL);
+      UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification,
+                                      message);
+      return;
+    }
+    UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
+                                    _assistantContainerView.grabberButton);
+  }
 }
 
 #pragma mark - Public
@@ -336,6 +358,19 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
   [self updateDetentHeights];
   [self updateInteractionEnabledState];
   [self.view setNeedsLayout];
+
+  // Accessibility properties for sheet resizing are not relevant in panel mode.
+  if (self.presentationContext == AssistantPresentationContext::kPanel) {
+    return;
+  }
+
+  if (!_activeDetent.has_value()) {
+    return;
+  }
+
+  [_accessibilityManager
+      updateAccessibilityPropertiesWithCurrentDetent:_activeDetent.value()
+                                    availableDetents:self.detents];
 }
 
 - (void)setMinimizedDetentHeight:(NSInteger)minimizedDetentHeight {
@@ -520,6 +555,20 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
                                                        didChangeDetent:)]) {
       [self.delegate assistantContainer:self didChangeDetent:newDetent];
     }
+
+    if (self.presentationContext == AssistantPresentationContext::kPanel) {
+      return;
+    }
+
+    [_accessibilityManager
+        updateAccessibilityPropertiesWithCurrentDetent:newDetent
+                                      availableDetents:self.detents];
+
+    // Announce the new state without losing VoiceOver focus.
+    NSString* valueString =
+        _assistantContainerView.grabberButton.accessibilityValue;
+    UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification,
+                                    valueString);
   }
 }
 
@@ -537,6 +586,13 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
              addTarget:self
                 action:@selector(handleGrabberButtonTapped:)
       forControlEvents:UIControlEventTouchUpInside];
+
+  _accessibilityManager = [[AssistantContainerAccessibilityManager alloc]
+      initWithGrabberButton:_assistantContainerView.grabberButton
+                   delegate:self];
+  _assistantContainerView.grabberButton.accessibilityDelegate =
+      _accessibilityManager;
+
   [self updateInteractionEnabledState];
 }
 
@@ -958,6 +1014,7 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
   _headerPanGesture.enabled = NO;
   _dimmingView.hidden = YES;
   _assistantContainerView.grabberButton.hidden = YES;
+  _assistantContainerView.accessibilityViewIsModal = NO;
 }
 
 // Applies the constraints and view states for the current presentation context.
@@ -983,6 +1040,7 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
   _headerPanGesture.enabled = YES;
   _dimmingView.hidden = NO;
   _assistantContainerView.grabberButton.hidden = NO;
+  _assistantContainerView.accessibilityViewIsModal = YES;
 
   if (IsRegularXRegularSizeClass(self.traitCollection) ||
       IsIPhoneLandscapeLayout(self.traitCollection)) {
@@ -1057,6 +1115,15 @@ NSInteger GetMediumDetentHeight(NSInteger absoluteMax) {
         break;
     }
   }
+}
+
+#pragma mark - AssistantContainerAccessibilityManagerDelegate
+
+- (void)accessibilityManagerDidRequestDetentChange:
+    (AssistantContainerDetent)detent {
+  [self animateToDetent:detent
+               duration:kAssistantSheetSpringDuration
+                  curve:UIViewAnimationCurveEaseInOut];
 }
 
 @end

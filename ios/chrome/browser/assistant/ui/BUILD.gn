@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 source_set("ui") {
   sources = [
+    "assistant_container_accessibility_manager.h",
+    "assistant_container_accessibility_manager.mm",
     "assistant_container_animatable.h",
     "assistant_container_animator.h",
     "assistant_container_animator.mm",
@@ -15,11 +17,14 @@ source_set("ui") {
     "assistant_container_view.mm",
     "assistant_container_view_controller.h",
     "assistant_container_view_controller.mm",
+    "assistant_grabber_button.h",
+    "assistant_grabber_button.mm",
   ]
   deps = [
     ":constants",
     ":detent",
     "//base",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/coordinator/scene/state",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/chrome_overlay_window",
@@ -50,6 +55,7 @@ source_set("detent") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "assistant_container_accessibility_manager_unittest.mm",
     "assistant_container_layout_utils_unittest.mm",
     "assistant_container_view_controller_unittest.mm",
   ]
@@ -58,10 +64,12 @@ source_set("unit_tests") {
     ":ui",
     "//base",
     "//base/test:test_support",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/coordinator/scene/state",
     "//ios/chrome/common/ui/util",
     "//ios/chrome/test/app:test_support",
     "//testing/gtest",
     "//third_party/ocmock",
+    "//ui/base",
   ]
 }

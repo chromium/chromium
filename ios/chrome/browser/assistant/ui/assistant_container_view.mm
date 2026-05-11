@@ -6,10 +6,13 @@
 
 #import "ios/chrome/browser/assistant/ui/assistant_container_constants.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_layout_utils.h"
+#import "ios/chrome/browser/assistant/ui/assistant_grabber_button.h"
 #import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -175,13 +178,35 @@ const CGSize kAssistantShadowOffset = {0, 8};
 }
 
 // Creates and configures the grabber button.
-- (UIButton*)createGrabberButton {
-  UIButton* grabberButton =
-      [ExtendedTouchTargetButton buttonWithType:UIButtonTypeCustom];
+- (AssistantGrabberButton*)createGrabberButton {
+  AssistantGrabberButton* grabberButton =
+      [AssistantGrabberButton buttonWithType:UIButtonTypeCustom];
   grabberButton.translatesAutoresizingMaskIntoConstraints = NO;
   grabberButton.backgroundColor = [UIColor colorNamed:kTertiaryBackgroundColor];
   grabberButton.layer.cornerRadius = kGrabberHeight / 2.0;
+
+  grabberButton.isAccessibilityElement = YES;
+  grabberButton.accessibilityLabel = l10n_util::GetNSString(
+      IDS_IOS_ASSISTANT_SHEET_GRABBER_ACCESSIBILITY_LABEL);
+  grabberButton.accessibilityHint = l10n_util::GetNSString(
+      IDS_IOS_ASSISTANT_SHEET_GRABBER_ACCESSIBILITY_HINT);
+  grabberButton.accessibilityTraits =
+      UIAccessibilityTraitAdjustable | UIAccessibilityTraitButton;
+
   return grabberButton;
+}
+
+#pragma mark - UIAccessibility
+
+- (NSArray*)accessibilityElements {
+  NSMutableArray* elements = [[NSMutableArray alloc] init];
+  if (_grabberButton && !_grabberButton.isHidden) {
+    [elements addObject:_grabberButton];
+  }
+  if (_contentView) {
+    [elements addObject:_contentView];
+  }
+  return elements;
 }
 
 @end

@@ -554,6 +554,30 @@
       <message name="IDS_IOS_ASK_GEMINI_EDIT_MENU" desc="Edit Menu button to ask Gemini about the selected text.">
         Ask Gemini
       </message>
+      <message name="IDS_IOS_ASSISTANT_GRABBER_ACTION_EXPAND_FULL" desc="Accessibility custom action name to expand the sheet to full screen [iOS only].">
+        Expand to Full screen
+      </message>
+      <message name="IDS_IOS_ASSISTANT_GRABBER_ACTION_EXPAND_MEDIUM" desc="Accessibility custom action name to expand the sheet to medium height [iOS only].">
+        Expand to Medium
+      </message>
+      <message name="IDS_IOS_ASSISTANT_GRABBER_ACTION_MINIMIZE" desc="Accessibility custom action name to minimize the sheet [iOS only].">
+        Minimize
+      </message>
+      <message name="IDS_IOS_ASSISTANT_GRABBER_VALUE_LARGE" desc="Accessibility value for the grabber when sheet is full screen [iOS only].">
+        Full screen
+      </message>
+      <message name="IDS_IOS_ASSISTANT_GRABBER_VALUE_MEDIUM" desc="Accessibility value for the grabber when sheet is medium height [iOS only].">
+        Medium height
+      </message>
+      <message name="IDS_IOS_ASSISTANT_GRABBER_VALUE_MINIMIZED" desc="Accessibility value for the grabber when sheet is minimized [iOS only].">
+        Minimized
+      </message>
+      <message name="IDS_IOS_ASSISTANT_SHEET_GRABBER_ACCESSIBILITY_HINT" desc="Accessibility hint for the bottom sheet grabber in Assistant. Read by Text To Speech [iOS only].">
+        Readjusts the height of the sheet.
+      </message>
+      <message name="IDS_IOS_ASSISTANT_SHEET_GRABBER_ACCESSIBILITY_LABEL" desc="Accessibility label for the bottom sheet grabber in Assistant. Read by Text To Speech [iOS only]." meaning="Voice Over will read this to the user followed by 'Button' when the grabber is focused.">
+        Sheet grabber
+      </message>
       <message name="IDS_IOS_AUTH_REASON" desc="A description that appears when the user needs to authenticate to use a suggestion.">
       Chrome keeps your sensitive data secure with Face ID
       </message>

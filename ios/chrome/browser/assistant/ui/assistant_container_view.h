@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+@class AssistantGrabberButton;
+
 // View that contains the visual elements of the Assistant Container.
 //
 // The layout is structured as follows:
@@ -20,7 +22,7 @@
 @interface AssistantContainerView : UIView
 
 // The grabber button used to minimize and expand the sheet.
-@property(nonatomic, strong, readonly) UIButton* grabberButton;
+@property(nonatomic, strong, readonly) AssistantGrabberButton* grabberButton;
 
 // The content view where subviews should be added.
 @property(nonatomic, strong, readonly) UIView* contentView;
