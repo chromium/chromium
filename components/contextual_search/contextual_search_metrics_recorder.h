@@ -58,7 +58,8 @@ enum class ContextualSearchContextState {
   kWithTabContext = 1,
   kWithNonTabContext = 2,
   kWithContextNoText = 3,
-  kMaxValue = kWithContextNoText,
+  kWithDriveContext = 4,
+  kMaxValue = kWithDriveContext,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_search/enums.xml:ContextualSearchContextState)
 
@@ -120,7 +121,8 @@ class ContextualSearchMetricsRecorder {
   virtual void NotifyQuerySubmitted(bool has_tab_context,
                                     bool has_non_tab_context,
                                     int query_text_length,
-                                    int file_count);
+                                    int file_count,
+                                    bool has_drive_context);
 
   // Activates a funnel for metrics logging.
   virtual void ActivateMetricsFunnel(const std::string& funnel_name);
@@ -144,7 +146,8 @@ class ContextualSearchMetricsRecorder {
   void RecordQueryMetrics(bool has_tab_context,
                           bool has_non_tab_context,
                           int text_length,
-                          int file_count);
+                          int file_count,
+                          bool has_drive_context);
 
   void RecordFileSizeMetric(lens::MimeType mime_type, uint64_t file_size_bytes);
 

@@ -74,9 +74,10 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="WithTabContext"/>
   <int value="2" label="WithNonTabContext"/>
   <int value="3" label="WithContextNoText"/>
+  <int value="4" label="WithDriveContext"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/contextual_search/contextual_search_metrics_recorder.h:ContextualSearchContextState,//ui/webui/resources/cr_components/searchbox/searchbox.ts:ContextualSearchContextState) -->
+<!-- LINT.ThenChange(//components/contextual_search/contextual_search_metrics_recorder.h:ContextualSearchContextState, //chrome/browser/resources/new_tab_page/ntp_searchbox.ts:ContextualSearchContextState) -->
 
 <!-- LINT.IfChange(ContextualSearchErrorPage) -->
 

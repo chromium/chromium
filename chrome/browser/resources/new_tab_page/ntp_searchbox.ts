@@ -590,7 +590,7 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
       // LINT.IfChange(ContextualSearchContextState)
       chrome.histograms.recordEnumerationValue(
           histogramName, /*WithoutContext */ 0,
-          /*ContextualSearchContextState.Size + 1*/ 4);
+          /*ContextualSearchContextState.Size + 1*/ 5);
       // LINT.ThenChange(//tools/metrics/histograms/metadata/contextual_search/enums.xml:ContextualSearchContextState)
 
       const userActionName =

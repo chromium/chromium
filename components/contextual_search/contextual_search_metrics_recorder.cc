@@ -147,7 +147,8 @@ void ContextualSearchMetricsRecorder::RecordQueryMetrics(
     bool has_tab_context,
     bool has_non_tab_context,
     int text_length,
-    int file_count) {
+    int file_count,
+    bool has_drive_context) {
   // Query text length metric.
   base::UmaHistogramCounts1M(
       base::StrCat({kContextualSearchQueryTextLength, ".", metrics_suffix_}),
@@ -189,6 +190,19 @@ void ContextualSearchMetricsRecorder::RecordQueryMetrics(
       base::StrCat(
           {"ContextualSearch.UserAction.SubmitQueryV2.", metrics_suffix_}),
       state);
+
+  if (has_drive_context) {
+    base::RecordAction(base::UserMetricsAction(
+        base::StrCat(
+            {"ContextualSearch.UserAction.SubmitQueryV2.WithDriveContext.",
+             metrics_suffix_})
+            .c_str()));
+
+    base::UmaHistogramEnumeration(
+        base::StrCat(
+            {"ContextualSearch.UserAction.SubmitQueryV2.", metrics_suffix_}),
+        ContextualSearchContextState::kWithDriveContext);
+  }
 
   if (text_length == 0 && file_count > 0) {
     base::RecordAction(base::UserMetricsAction(
@@ -318,10 +332,11 @@ void ContextualSearchMetricsRecorder::NotifyQuerySubmitted(
     bool has_tab_context,
     bool has_non_tab_context,
     int query_text_length,
-    int file_count) {
+    int file_count,
+    bool has_drive_context) {
   NotifySessionStateChanged(SessionState::kQuerySubmitted);
   RecordQueryMetrics(has_tab_context, has_non_tab_context, query_text_length,
-                     file_count);
+                     file_count, has_drive_context);
 }
 
 void ContextualSearchMetricsRecorder::RecordSessionAbandonedMetrics() {

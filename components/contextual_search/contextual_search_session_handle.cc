@@ -492,16 +492,20 @@ void ContextualSearchSessionHandle::NotifyQuerySubmittedSessionState(
   if (auto* metrics_recorder = GetMetricsRecorder()) {
     bool has_tab_context = false;
     bool has_non_tab_context = false;
+    bool has_drive_context = false;
     for (const auto& file_info : file_infos) {
       if (file_info.tab_url.has_value()) {
         has_tab_context = true;
       } else {
         has_non_tab_context = true;
       }
+      if (file_info.input_data && file_info.input_data->drive_id.has_value()) {
+        has_drive_context = true;
+      }
     }
     metrics_recorder->NotifyQuerySubmitted(has_tab_context, has_non_tab_context,
-                                           query_text_length,
-                                           file_infos.size());
+                                           query_text_length, file_infos.size(),
+                                           has_drive_context);
   }
 }
 

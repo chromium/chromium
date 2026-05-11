@@ -135,6 +135,7 @@ should be able to be added at any place in this file.
 
 <variants name="ContextualSearchContextState">
   <variant name="WithContextNoText" summary="with context but no typed text"/>
+  <variant name="WithDriveContext" summary="with drive context"/>
   <variant name="WithNonTabContext"
       summary="with non-tab context (e.g. files)"/>
   <variant name="WithoutContext" summary="without any context"/>
