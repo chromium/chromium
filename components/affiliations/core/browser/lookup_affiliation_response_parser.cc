@@ -13,12 +13,12 @@ namespace affiliations {
 
 namespace {
 
-std::optional<GURL> GetValidChangePasswordUrl(const std::string& url_spec) {
+GURL GetValidCryptographicUrl(const std::string& url_spec) {
   GURL url(url_spec);
-  if (url.is_valid() && url.SchemeIs(url::kHttpsScheme)) {
+  if (url.is_valid() && url.SchemeIsCryptographic()) {
     return url;
   }
-  return std::nullopt;
+  return GURL();
 }
 
 // Template for the affiliation_pb message:
@@ -37,18 +37,21 @@ std::vector<Facet> ParseFacets(const MessageT& response) {
     Facet new_facet(uri);
     if (facet.has_branding_info()) {
       new_facet.branding_info = FacetBrandingInfo{
-          facet.branding_info().name(), GURL(facet.branding_info().icon_url())};
+          facet.branding_info().name(),
+          GetValidCryptographicUrl(facet.branding_info().icon_url())};
     }
     if (facet.has_change_password_info()) {
-      if (auto url = GetValidChangePasswordUrl(
-              facet.change_password_info().change_password_url())) {
-        new_facet.change_password_url = std::move(*url);
+      GURL url = GetValidCryptographicUrl(
+          facet.change_password_info().change_password_url());
+      if (!url.is_empty()) {
+        new_facet.change_password_url = std::move(url);
       }
       for (const auto& pattern : facet.change_password_info().patterns()) {
-        if (auto url =
-                GetValidChangePasswordUrl(pattern.change_password_url())) {
+        GURL pattern_url =
+            GetValidCryptographicUrl(pattern.change_password_url());
+        if (!pattern_url.is_empty()) {
           new_facet.change_password_patterns.push_back(
-              {pattern.url_pattern_re2(), std::move(*url)});
+              {pattern.url_pattern_re2(), std::move(pattern_url)});
         }
       }
     }
@@ -68,9 +71,9 @@ GroupedFacets ParseEqClass(const affiliation_pb::FacetGroup& grouping) {
   GroupedFacets group;
   group.facets = ParseFacets(grouping);
   if (grouping.has_group_branding_info()) {
-    group.branding_info =
-        FacetBrandingInfo{grouping.group_branding_info().name(),
-                          GURL(grouping.group_branding_info().icon_url())};
+    group.branding_info = FacetBrandingInfo{
+        grouping.group_branding_info().name(),
+        GetValidCryptographicUrl(grouping.group_branding_info().icon_url())};
   }
   return group;
 }

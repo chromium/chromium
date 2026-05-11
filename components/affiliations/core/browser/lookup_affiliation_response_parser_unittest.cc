@@ -120,4 +120,84 @@ TEST(LookupAffiliationResponseParserTest, ParseChangePasswordPatterns) {
                                 GURL("https://example.com/change_bar")}));
 }
 
+TEST(LookupAffiliationResponseParserTest, ParseValidIconUrl) {
+  std::vector<FacetURI> requested_facet_uris;
+  requested_facet_uris.push_back(
+      FacetURI::FromCanonicalSpec("https://example.com"));
+
+  affiliation_pb::LookupAffiliationByHashPrefixResponse response;
+  auto* affiliation = response.add_affiliations();
+  auto* facet = affiliation->add_facet();
+  facet->set_id("https://example.com");
+  auto* branding_info = facet->mutable_branding_info();
+  branding_info->set_icon_url("https://example.com/icon.png");
+
+  AffiliationFetcherInterface::ParsedFetchResponse result;
+  bool success =
+      ParseLookupAffiliationResponse(requested_facet_uris, response, &result);
+
+  EXPECT_TRUE(success);
+  ASSERT_EQ(1u, result.affiliations.size());
+  ASSERT_EQ(1u, result.affiliations[0].size());
+  EXPECT_EQ("https://example.com/icon.png",
+            result.affiliations[0][0].branding_info.icon_url.spec());
+}
+
+TEST(LookupAffiliationResponseParserTest, IgnoreNonCryptographicIconUrl) {
+  std::vector<FacetURI> requested_facet_uris;
+  requested_facet_uris.push_back(
+      FacetURI::FromCanonicalSpec("https://example.com"));
+
+  affiliation_pb::LookupAffiliationByHashPrefixResponse response;
+  auto* affiliation = response.add_affiliations();
+  auto* facet = affiliation->add_facet();
+  facet->set_id("https://example.com");
+  auto* branding_info = facet->mutable_branding_info();
+
+  const char* kInvalidUrls[] = {
+      "data:image/"
+      "png;base64,"
+      "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGA"
+      "hKmMIQAAAABJRU5ErkJggg==",
+      "chrome://settings/clearBrowserData",
+      "javascript:alert(1)",
+      "http://example.com/icon.png",
+  };
+
+  for (const char* url : kInvalidUrls) {
+    branding_info->set_icon_url(url);
+    AffiliationFetcherInterface::ParsedFetchResponse result;
+    bool success =
+        ParseLookupAffiliationResponse(requested_facet_uris, response, &result);
+
+    EXPECT_TRUE(success);
+    ASSERT_EQ(1u, result.affiliations.size());
+    ASSERT_EQ(1u, result.affiliations[0].size());
+    EXPECT_TRUE(result.affiliations[0][0].branding_info.icon_url.is_empty())
+        << "Failed for URL: " << url;
+  }
+}
+
+TEST(LookupAffiliationResponseParserTest, ParseValidGroupIconUrl) {
+  std::vector<FacetURI> requested_facet_uris;
+  requested_facet_uris.push_back(
+      FacetURI::FromCanonicalSpec("https://example.com"));
+
+  affiliation_pb::LookupAffiliationByHashPrefixResponse response;
+  auto* group = response.add_groups();
+  auto* facet = group->add_facet();
+  facet->set_id("https://example.com");
+  auto* branding_info = group->mutable_group_branding_info();
+  branding_info->set_icon_url("https://example.com/icon.png");
+
+  AffiliationFetcherInterface::ParsedFetchResponse result;
+  bool success =
+      ParseLookupAffiliationResponse(requested_facet_uris, response, &result);
+
+  EXPECT_TRUE(success);
+  ASSERT_EQ(1u, result.groupings.size());
+  EXPECT_EQ("https://example.com/icon.png",
+            result.groupings[0].branding_info.icon_url.spec());
+}
+
 }  // namespace affiliations
