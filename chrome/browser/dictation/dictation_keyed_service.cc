@@ -71,4 +71,12 @@ void DictationKeyedService::EndSession() {
   session_.reset();
 }
 
+bool DictationKeyedService::ShouldShowContextMenuItem() const {
+  return !session_;
+}
+
+void DictationKeyedService::ContextMenuHandler(BrowserWindowInterface& window) {
+  StartSession(window, /*target=*/nullptr);
+}
+
 }  // namespace dictation

@@ -365,6 +365,7 @@ chromium-metrics-reviews@google.com.
   <int value="162" label="IDC_CONTENT_CONTEXT_GLIC"/>
   <int value="163" label="IDC_CONTENT_CONTEXT_VIDEO_FRAME"/>
   <int value="164" label="IDC_CONTENT_CONTEXT_LISTEN_TO_THIS_PAGE"/>
+  <int value="165" label="IDC_CONTENT_CONTEXT_DICTATION"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/renderer_context_menu/render_view_context_menu.cc:RenderViewContextMenuItem) -->

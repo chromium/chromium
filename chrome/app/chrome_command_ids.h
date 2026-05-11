@@ -457,6 +457,7 @@
 #define IDC_CONTENT_CONTEXT_OPEN_WITH_LAST IDC_CONTENT_CONTEXT_OPEN_WITH14
 // Context menu items that provide fast access to input methods.
 #define IDC_CONTENT_CONTEXT_EMOJI 50220
+#define IDC_CONTENT_CONTEXT_DICTATION  50229
 #define IDC_CONTEXT_COMPOSE 50230
 // Context menu items to control glic
 #define IDC_CONTENT_CONTEXT_RELOAD_GLIC  50232

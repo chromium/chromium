@@ -58,6 +58,12 @@ class DictationKeyedService : public KeyedService,
   // stream.
   void StartSession(BrowserWindowInterface& window, Target* target);
 
+  // Returns true if there is no active session.
+  bool ShouldShowContextMenuItem() const;
+
+  // Handles the context menu item click.
+  void ContextMenuHandler(BrowserWindowInterface& window);
+
   // Returns null when no session is in progress.
   SessionController* session_controller() {
     return session_ ? &session_->controller_ : nullptr;

@@ -639,6 +639,10 @@ are declared in tools/grit/grit_args.gni.
           <message name="IDS_CONTENT_CONTEXT_ARCHIVE_GLIC" desc="Context menu item to archive Glic conversation">
            Archive
           </message>
+          <!-- TODO(b/510738735) Placeholder for now so mark translateable=false -->
+          <message name="IDS_CONTENT_CONTEXT_DICTATION" desc="Context menu item to start dictation" translateable="false">
+           Start dictation
+          </message>
           <message name="IDS_CONTENT_CONTEXT_RELOAD" desc="The name of the Reload command in the content area context menu">
             &amp;Reload
           </message>
@@ -946,6 +950,10 @@ are declared in tools/grit/grit_args.gni.
           </message>
           <message name="IDS_CONTENT_CONTEXT_ARCHIVE_GLIC" desc="Context menu item to archive a Glic conversation">
            Archive
+          </message>
+          <!-- TODO(b/510738735) Placeholder for now so mark translateable=false -->
+          <message name="IDS_CONTENT_CONTEXT_DICTATION" desc="In Title Case: Context menu item to start dictation" translateable="false">
+           Start Dictation
           </message>
           <message name="IDS_CONTENT_CONTEXT_RELOAD" desc="In Title Case: The name of the Reload command in the content area context menu">
             &amp;Reload

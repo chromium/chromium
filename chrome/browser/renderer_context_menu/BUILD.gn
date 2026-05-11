@@ -75,6 +75,7 @@ source_set("impl") {
   if (!is_android) {
     public += [
       "accessibility_labels_menu_observer.h",
+      "dictation_menu_observer.h",
       "link_to_text_menu_observer.h",
       "spelling_menu_observer.h",
     ]
@@ -82,6 +83,7 @@ source_set("impl") {
     sources += [
       "accessibility_labels_bubble_model.cc",
       "accessibility_labels_menu_observer.cc",
+      "dictation_menu_observer.cc",
       "link_to_text_menu_observer.cc",
       "render_view_context_menu.cc",
       "spelling_bubble_model.cc",
@@ -101,6 +103,7 @@ source_set("impl") {
       "//chrome/browser/compose",
       "//chrome/browser/custom_handlers",
       "//chrome/browser/devtools",
+      "//chrome/browser/dictation",
       "//chrome/browser/glic",
       "//chrome/browser/glic/browser_ui",
       "//chrome/browser/glic/public:features",

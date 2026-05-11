@@ -6,6 +6,7 @@ source_set("dictation") {
   public = [
     "dictation_keyed_service.h",
     "dictation_keyed_service_factory.h",
+    "features.h",
     "session_controller.h",
     "session_controller_delegate.h",
     "session_ui.h",
@@ -24,7 +25,6 @@ source_set("impl") {
     "dictation_keyed_service.cc",
     "dictation_keyed_service_factory.cc",
     "features.cc",
-    "features.h",
     "session_controller.cc",
     "session_ui_impl.cc",
     "session_ui_impl.h",

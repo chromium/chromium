@@ -47,6 +47,7 @@
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/features.h"
 #include "chrome/browser/devtools/views/devtools_floaty.h"
+#include "chrome/browser/dictation/features.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/download/download_stats.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h"
@@ -80,6 +81,7 @@
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/renderer_context_menu/accessibility_labels_menu_observer.h"
 #include "chrome/browser/renderer_context_menu/context_menu_content_type_factory.h"
+#include "chrome/browser/renderer_context_menu/dictation_menu_observer.h"
 #include "chrome/browser/renderer_context_menu/link_to_text_menu_observer.h"
 #include "chrome/browser/renderer_context_menu/spelling_menu_observer.h"
 #include "chrome/browser/search/search.h"
@@ -602,13 +604,14 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        {IDC_CONTENT_CONTEXT_GLIC, 162},
        {IDC_CONTENT_CONTEXT_VIDEO_FRAME, 163},
        {IDC_CONTENT_CONTEXT_LISTEN_TO_THIS_PAGE, 164},
+       {IDC_CONTENT_CONTEXT_DICTATION, 165},
        // To add new items:
        //   - Add one more line above this comment block, using the UMA value
        //     from the line below this comment block.
        //   - Increment the UMA value in that latter line.
        //   - Add the new item to the RenderViewContextMenuItem enum in
        //     tools/metrics/histograms/metadata/ui/enums.xml.
-       {0, 165}});
+       {0, 166}});
   // LINT.ThenChange(//tools/metrics/histograms/metadata/ui/enums.xml:RenderViewContextMenuItem)
 
   // LINT.IfChange(ContextMenuOptionDesktop)
@@ -2623,6 +2626,8 @@ void RenderViewContextMenu::AppendSpellingAndSearchSuggestionItems() {
               GetBrowserContext(), compose::features::kEnableCompose));
       render_separator = true;
     }
+
+    AppendDictationItems();
   }
 #endif  // BUILDFLAG(ENABLE_COMPOSE)
   if (render_separator) {
@@ -2736,6 +2741,19 @@ bool RenderViewContextMenu::AppendAccessibilityLabelsItems() {
   observers_.AddObserver(accessibility_labels_menu_observer_.get());
   accessibility_labels_menu_observer_->InitMenu(params_);
   return accessibility_labels_menu_observer_->ShouldShowLabelsItem();
+}
+
+void RenderViewContextMenu::AppendDictationItems() {
+  if (!base::FeatureList::IsEnabled(dictation::kDictation)) {
+    return;
+  }
+
+  if (!dictation_menu_observer_) {
+    dictation_menu_observer_ =
+        std::make_unique<dictation::DictationMenuObserver>(this, GetBrowser());
+  }
+  observers_.AddObserver(dictation_menu_observer_.get());
+  dictation_menu_observer_->InitMenu(params_);
 }
 
 void RenderViewContextMenu::AppendProtocolHandlerSubMenu() {

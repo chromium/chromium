@@ -85,6 +85,10 @@ class MediaPlayerAction;
 }
 }  // namespace blink
 
+namespace dictation {
+class DictationMenuObserver;
+}
+
 namespace ui {
 class DataTransferEndpoint;
 }
@@ -321,6 +325,7 @@ class RenderViewContextMenu
   // Returns true if the items were appended. This might not happen in all
   // cases, e.g. these are only appended if a screen reader is enabled.
   bool AppendAccessibilityLabelsItems();
+  void AppendDictationItems();
   void AppendSearchProvider();
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   void AppendCurrentExtensionItems();
@@ -551,6 +556,8 @@ class RenderViewContextMenu
 #endif
 
   std::unique_ptr<LinkToTextMenuObserver> link_to_text_menu_observer_;
+
+  std::unique_ptr<dictation::DictationMenuObserver> dictation_menu_observer_;
 
   // In the case of a MimeHandlerView this will point to the WebContents that
   // embeds the MimeHandlerViewGuest. Otherwise this will be the same as
