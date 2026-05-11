@@ -32,13 +32,11 @@ source_set("glic") {
     "glic_user_status_request.h",
     "glic_zero_state_suggestions_manager.h",
     "host/auth_controller.h",
-    "host/context/glic_focused_browser_manager.h",
     "host/context/glic_focused_tab_manager_interface.h",
     "host/context/glic_page_context_fetcher.h",
     "host/context/glic_page_features_manager.h",
     "host/context/glic_pinned_tab_manager.h",
     "host/context/glic_sharing_manager_provider.h",
-    "host/context/glic_tab_data.h",
     "host/glic_annotation_manager.h",
     "host/glic_cookie_synchronizer.h",
     "host/glic_internals_page_handler.h",
@@ -49,7 +47,6 @@ source_set("glic") {
     "host/guest_util.h",
     "host/host.h",
     "host/host_metrics.h",
-    "public/context/glic_sharing_manager.h",
     "public/glic_close_options.h",
     "public/glic_context_menu_invocation_helper.cc",
     "public/glic_context_menu_invocation_helper.h",
@@ -64,13 +61,13 @@ source_set("glic") {
     "public/glic_side_panel_coordinator.cc",
     "public/glic_side_panel_coordinator.h",
     "service/glic_instance_helper.h",
-    "service/glic_ui_types.h",
     "service/metrics/metrics_types.cc",
     "service/metrics/metrics_types.h",
   ]
   public_deps = [
     ":enum",
     ":mojo_bindings",
+    ":public_types",
     "//base",
     "//chrome/browser:shell_integration",
     "//chrome/browser/glic/public:features",
@@ -100,6 +97,7 @@ source_set("glic") {
   ]
 
   deps = [
+    ":private_types",
     "//chrome/browser/ui/side_panel",
     "//chrome/common",
     "//components/skills/public:mojo_bindings",
@@ -198,6 +196,38 @@ source_set("enum") {
   sources = [ "glic_enums.h" ]
 }
 
+source_set("public_types") {
+  sources = [
+    "host/context/glic_tab_data.h",
+    "public/context/glic_sharing_manager.h",
+
+    # These files shouldn't actually be public:
+
+    "host/context/glic_focused_browser_manager.h",
+  ]
+  public_deps = [ ":enum" ]
+  deps = [
+    ":mojo_bindings",
+    "//base",
+    "//chrome/browser/ui/browser_window",
+    "//components/favicon/content",
+    "//components/tabs:public",
+  ]
+}
+
+# Definitions used broadly internal to glic, but shouldn't be used externally.
+source_set("private_types") {
+  sources = [ "service/glic_ui_types.h" ]
+  public_deps = [ ":public_types" ]
+  deps = [
+    ":enum",
+    ":mojo_bindings",
+    "//base",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs:tabs_public",
+  ]
+}
+
 source_set("glic_metrics") {
   sources = [
     "service/glic_state_tracker.cc",
@@ -215,6 +245,7 @@ source_set("glic_metrics") {
     ":enum",
     ":glic",
     ":mojo_bindings",
+    ":private_types",
     "//base",
     "//chrome/browser/glic/public:features",
     "//components/metrics",
@@ -326,6 +357,7 @@ source_set("impl") {
   ]
 
   public_deps = [
+    ":private_types",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/actor",
   ]
