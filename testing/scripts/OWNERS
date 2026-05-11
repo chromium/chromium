@@ -7,8 +7,8 @@ kbr@chromium.org
 per-file check_static_initializers.py=thakis@chromium.org
 per-file check_static_initializers.py=thomasanderson@chromium.org
 
-per-file run_performance_tests.py=johnchen@chromium.org
-per-file run_performance_tests.py=wenbinzhang@google.com
+per-file run_performance_tests*=johnchen@chromium.org
+per-file run_performance_tests*=wenbinzhang@google.com
 
 per-file run_chromedriver_tests.py=file://chrome/test/chromedriver/OWNERS
 
