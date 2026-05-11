@@ -121,9 +121,6 @@ class CORE_EXPORT RemoteFrame final : public Frame,
 
   void DidChangeVisibleToHitTesting() override;
 
-  void SetReplicatedPermissionsPolicyHeader(
-      const network::ParsedPermissionsPolicy& parsed_header);
-
   void SetReplicatedSandboxFlags(network::mojom::blink::WebSandboxFlags);
   void SetInsecureRequestPolicy(mojom::blink::InsecureRequestPolicy);
   void FrameRectsChanged(const gfx::Size& local_frame_size,

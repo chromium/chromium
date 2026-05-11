@@ -509,12 +509,6 @@ void RemoteFrame::DidChangeVisibleToHitTesting() {
       .SetHasPointerEventsNone(IsIgnoredForHitTest());
 }
 
-void RemoteFrame::SetReplicatedPermissionsPolicyHeader(
-    const network::ParsedPermissionsPolicy& parsed_header) {
-  permissions_policy_header_ = parsed_header;
-  ApplyReplicatedPermissionsPolicyHeader();
-}
-
 void RemoteFrame::SetReplicatedSandboxFlags(
     network::mojom::blink::WebSandboxFlags flags) {
   security_context_.ResetAndEnforceSandboxFlags(flags);
@@ -785,17 +779,9 @@ void RemoteFrame::DidSetFramePolicyHeaders(
   TRACE_EVENT("navigation", "RemoteFrame::DidSetFramePolicyHeaders");
 
   SetReplicatedSandboxFlags(sandbox_flags);
-  // Convert from blink::Vector<network::ParsedPermissionsPolicyDeclaration>
-  // to std::vector<network::ParsedPermissionsPolicyDeclaration>, since
-  // network::ParsedPermissionsPolicy is an alias for the later.
-  //
-  // TODO(crbug.com/1047273): Remove this conversion by switching
-  // network::ParsedPermissionsPolicy to operate over Vector
-  network::ParsedPermissionsPolicy parsed_permissions_policy_copy(
-      parsed_permissions_policy.size());
-  for (wtf_size_t i = 0; i < parsed_permissions_policy.size(); ++i)
-    parsed_permissions_policy_copy[i] = parsed_permissions_policy[i];
-  SetReplicatedPermissionsPolicyHeader(parsed_permissions_policy_copy);
+  permissions_policy_header_ = {parsed_permissions_policy.begin(),
+                                parsed_permissions_policy.end()};
+  ApplyReplicatedPermissionsPolicyHeader();
 }
 
 // Update the proxy's FrameOwner with new sandbox flags and container policy
