@@ -7,7 +7,6 @@
 
 #include <optional>
 #include <string>
-#include <vector>
 
 #include "base/byte_size.h"
 #include "base/functional/callback.h"
@@ -16,7 +15,6 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
-#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace performance_manager {
 
@@ -191,8 +189,8 @@ class V8DetailedMemoryExecutionContextData {
 
 class V8DetailedMemoryProcessData {
  public:
-  V8DetailedMemoryProcessData();
-  virtual ~V8DetailedMemoryProcessData();
+  V8DetailedMemoryProcessData() = default;
+  virtual ~V8DetailedMemoryProcessData() = default;
 
   bool operator==(const V8DetailedMemoryProcessData& other) const {
     return detached_v8_memory_used_ == other.detached_v8_memory_used_ &&
@@ -239,25 +237,6 @@ class V8DetailedMemoryProcessData {
     blink_memory_used_ = blink_memory_used;
   }
 
-  // Memory entry for a non-main-world V8 context (e.g. extension content
-  // scripts, other isolated worlds). The browser side can inspect
-  // |world_stable_id| to classify the entry.
-  struct NonMainWorldMemoryEntry {
-    std::string world_stable_id;
-    blink::ExecutionContextToken frame_token;
-    base::ByteSize memory_used;
-  };
-
-  // Returns V8 memory used by non-main-world contexts in this process.
-  const std::vector<NonMainWorldMemoryEntry>& non_main_world_entries() const {
-    return non_main_world_entries_;
-  }
-
-  void set_non_main_world_entries(
-      std::vector<NonMainWorldMemoryEntry> entries) {
-    non_main_world_entries_ = std::move(entries);
-  }
-
   // Returns process data for the given node, or nullptr if no measurement has
   // been taken. The returned pointer must only be accessed on the graph
   // sequence and may go invalid at any time after leaving the calling scope.
@@ -273,7 +252,6 @@ class V8DetailedMemoryProcessData {
   base::ByteSize detached_canvas_memory_used_;
   base::ByteSize shared_v8_memory_used_;
   base::ByteSize blink_memory_used_;
-  std::vector<NonMainWorldMemoryEntry> non_main_world_entries_;
 };
 
 class V8DetailedMemoryObserver : public base::CheckedObserver {

@@ -495,19 +495,9 @@ void NodeAttachedProcessData::OnV8MemoryUsage(
       v8_memory;
   std::vector<std::pair<ExecutionContextToken, PerContextCanvasMemoryUsagePtr>>
       canvas_memory;
-  std::vector<V8DetailedMemoryProcessData::NonMainWorldMemoryEntry>
-      non_main_world_entries;
   for (auto& isolate : result->isolates) {
     for (auto& entry : isolate->contexts) {
-      if (entry->world_stable_id.has_value()) {
-        // Non-main-world context — collect with frame token and stable ID.
-        non_main_world_entries.push_back(
-            {std::move(entry->world_stable_id.value()), entry->token,
-             entry->memory_used});
-      } else {
-        // Main-world context — goes into the per-frame lookup map.
-        v8_memory.emplace_back(entry->token, std::move(entry));
-      }
+      v8_memory.emplace_back(entry->token, std::move(entry));
     }
     for (auto& entry : isolate->canvas_contexts) {
       canvas_memory.emplace_back(entry->token, std::move(entry));
@@ -591,7 +581,6 @@ void NodeAttachedProcessData::OnV8MemoryUsage(
   data_.set_detached_canvas_memory_used(detached_canvas_memory_used);
   data_.set_shared_v8_memory_used(shared_v8_memory_used);
   data_.set_blink_memory_used(blink_memory_used);
-  data_.set_non_main_world_entries(std::move(non_main_world_entries));
 
   // Schedule another measurement for this process node unless one is already
   // scheduled.
