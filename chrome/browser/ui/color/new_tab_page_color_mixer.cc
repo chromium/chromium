@@ -338,7 +338,13 @@ void AddSearchboxColors(ui::ColorMixer& mixer, const ui::ColorProviderKey& key) 
       SkColorSetARGB(0x60, 0x1F, 0x1F, 0x1F)};
   mixer[kColorComposeboxContextEntrypointHoverBackground] = {
       SkColorSetARGB(0x06, 0x1F, 0x1F, 0x1F)};
+  mixer[kColorComposeboxContextEntrypointBackground] = {
+      SkColorSetARGB(0x06, 0x1F, 0x1F, 0x1F)};
   mixer[kColorComposeboxToolChipBackground] = {
+      SkColorSetARGB(0x06, 0x1F, 0x1F, 0x1F)};
+  mixer[kColorComposeboxVoiceButtonHoverBackground] = {
+      SkColorSetARGB(0x06, 0x1F, 0x1F, 0x1F)};
+  mixer[kColorComposeboxLensButtonHoverBackground] = {
       SkColorSetARGB(0x06, 0x1F, 0x1F, 0x1F)};
   mixer[kColorComposeboxErrorScrimBackground] = {
       dark_mode ? ui::SetAlpha({ui::kColorRefNeutral0}, 0xE6)

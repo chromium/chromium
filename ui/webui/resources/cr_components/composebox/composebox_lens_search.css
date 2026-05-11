@@ -14,7 +14,7 @@
   --cr-button-disabled-text-color:
       var(--color-composebox-context-entrypoint-text-disabled);
   --cr-hover-background-color:
-      var(--color-composebox-context-entrypoint-hover-background);
+      var(--color-composebox-lens-button-hover-background);
   --cr-button-height: 28px;
 
   align-items: center;

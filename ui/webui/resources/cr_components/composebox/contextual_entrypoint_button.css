@@ -266,11 +266,7 @@ cr-icon-button {
 }
 
 :host([apply-context-button-background]) #entrypoint {
-  --cr-composebox-entrypoint-background-color: var(--color-composebox-context-entrypoint-hover-background);
-  --cr-icon-button-hover-background-color: color-mix(
-      in srgb,
-      var(--color-composebox-context-entrypoint-hover-background),
-      var(--color-searchbox-results-foreground) 10%);
+  --cr-composebox-entrypoint-background-color: var(--color-composebox-context-entrypoint-background);
 }
 
 :host([has-popup-focus]) #entrypoint {
