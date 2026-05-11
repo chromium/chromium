@@ -12,6 +12,11 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
+// This test does not run on Android because it is testing getUserMedia(), which
+// is not available in the service-worker-based extension renderers used with
+// manifest v3 (the only manifest version supported on Android).
+static_assert(!BUILDFLAG(IS_ANDROID));
+
 namespace extensions {
 
 class WebRtcFromWebAccessibleResourceTest : public ExtensionApiTest {
