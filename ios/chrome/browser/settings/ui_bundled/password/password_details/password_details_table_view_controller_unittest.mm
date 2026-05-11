@@ -226,8 +226,6 @@ class PasswordDetailsTableViewControllerTest
   PasswordDetailsTableViewControllerTest() {
     handler_ = [[FakePasswordDetailsHandler alloc] init];
     delegate_ = [[FakePasswordDetailsDelegate alloc] init];
-    reauthentication_module_ = [[MockReauthenticationModule alloc] init];
-    reauthentication_module_.expectedResult = ReauthenticationResult::kSuccess;
     snack_bar_ = [[FakeSnackbarImplementation alloc] init];
   }
 
@@ -387,7 +385,6 @@ class PasswordDetailsTableViewControllerTest
 
   FakePasswordDetailsHandler* handler() { return handler_; }
   FakePasswordDetailsDelegate* delegate() { return delegate_; }
-  MockReauthenticationModule* reauth() { return reauthentication_module_; }
   FakeSnackbarImplementation* snack_bar() {
     return (FakeSnackbarImplementation*)snack_bar_;
   }
@@ -432,7 +429,6 @@ class PasswordDetailsTableViewControllerTest
   id snack_bar_;
   FakePasswordDetailsHandler* handler_ = nil;
   FakePasswordDetailsDelegate* delegate_ = nil;
-  MockReauthenticationModule* reauthentication_module_ = nil;
   CredentialType credential_type_ = CredentialTypeRegularPassword;
   base::test::TaskEnvironment task_environment_;
 };
@@ -759,8 +755,7 @@ TEST_F(PasswordDetailsTableViewControllerTest,
   CheckTextCellTextWithId(IDS_IOS_DISMISS_WARNING, 0, 5);
 }
 
-// Tests federated credential is shown without password value and editing
-// doesn't require reauth.
+// Tests federated credential is shown without password value.
 TEST_F(PasswordDetailsTableViewControllerTest, TestFederatedCredential) {
   SetFederatedPassword();
 
@@ -771,13 +766,11 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestFederatedCredential) {
   CheckEditCellText(Username(), 0, 1);
   CheckEditCellText(@"www.example.com", 0, 2);
 
-  reauth().expectedResult = ReauthenticationResult::kFailure;
   [passwords_controller() editButtonPressed];
   EXPECT_TRUE(passwords_controller().tableView.editing);
 }
 
-// Tests blocked website is shown without password and username values and
-// editing doesn't require reauth.
+// Tests blocked website is shown without password and username values.
 TEST_F(PasswordDetailsTableViewControllerTest, TestBlockedOrigin) {
   SetBlockedOrigin();
 
@@ -786,7 +779,6 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestBlockedOrigin) {
 
   CheckStackedDetailsCellDetails(@[ HTTPWebsite() ], 0, 0);
 
-  reauth().expectedResult = ReauthenticationResult::kFailure;
   [passwords_controller() editButtonPressed];
   EXPECT_TRUE(passwords_controller().tableView.editing);
 }
