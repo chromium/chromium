@@ -7,7 +7,7 @@
 
 #include "base/time/time.h"
 #include "chrome/common/actor/page_stability_metrics_common.h"
-#include "components/page_content_annotations/content/renderer/page_stability_state.h"
+#include "components/page_content_annotations/core/page_stability_state.h"
 
 namespace actor {
 

@@ -6,15 +6,12 @@ source_set("renderer") {
   sources = [
     "network_and_main_thread_stability_monitor.cc",
     "network_and_main_thread_stability_monitor.h",
-    "page_stability_event.h",
     "page_stability_monitor.cc",
     "page_stability_monitor.h",
     "page_stability_monitor_delegate.cc",
     "page_stability_monitor_delegate.h",
     "page_stability_monitor_manager.cc",
     "page_stability_monitor_manager.h",
-    "page_stability_state.cc",
-    "page_stability_state.h",
     "paint_stability_monitor.cc",
     "paint_stability_monitor.h",
   ]
@@ -26,5 +23,8 @@ source_set("renderer") {
     "//third_party/blink/public:blink_headers",
     "//ui/base",
   ]
-  deps = [ "//components/page_content_annotations/core:features" ]
+  deps = [
+    "//components/page_content_annotations/core",
+    "//components/page_content_annotations/core:features",
+  ]
 }

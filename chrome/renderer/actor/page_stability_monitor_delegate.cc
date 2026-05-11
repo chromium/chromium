@@ -12,7 +12,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/renderer/actor/journal.h"
 #include "chrome/renderer/actor/page_stability_metrics.h"
-#include "components/page_content_annotations/content/renderer/page_stability_state.h"
+#include "components/page_content_annotations/core/page_stability_state.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "ui/base/page_transition_types.h"

@@ -5,8 +5,8 @@
 #ifndef COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CONTENT_RENDERER_PAGE_STABILITY_MONITOR_DELEGATE_H_
 #define COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CONTENT_RENDERER_PAGE_STABILITY_MONITOR_DELEGATE_H_
 
-#include "components/page_content_annotations/content/renderer/page_stability_event.h"
-#include "components/page_content_annotations/content/renderer/page_stability_state.h"
+#include "components/page_content_annotations/core/page_stability_event.h"
+#include "components/page_content_annotations/core/page_stability_state.h"
 
 namespace base {
 class TimeDelta;

@@ -12,7 +12,7 @@
 #include "base/task/delayed_task_handle.h"
 #include "base/time/time.h"
 #include "components/page_content_annotations/content/mojom/page_stability.mojom.h"
-#include "components/page_content_annotations/content/renderer/page_stability_state.h"
+#include "components/page_content_annotations/core/page_stability_state.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 

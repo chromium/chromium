@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CONTENT_RENDERER_PAGE_STABILITY_STATE_H_
-#define COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CONTENT_RENDERER_PAGE_STABILITY_STATE_H_
+#ifndef COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_PAGE_STABILITY_STATE_H_
+#define COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_PAGE_STABILITY_STATE_H_
 
 #include <ostream>
 #include <string_view>
@@ -54,4 +54,4 @@ std::ostream& operator<<(std::ostream& o, const PageStabilityState& state);
 
 }  // namespace page_content_annotations
 
-#endif  // COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CONTENT_RENDERER_PAGE_STABILITY_STATE_H_
+#endif  // COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_PAGE_STABILITY_STATE_H_
