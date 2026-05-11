@@ -891,17 +891,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Security.SCTAuditing.OptIn.ReportSampled" enum="Boolean"
-    expires_after="2024-05-26">
-  <owner>cthomp@chromium.org</owner>
-  <owner>trusty-transport@chromium.org</owner>
-  <summary>
-    Records whether a report was sampled to be sent to Safe Browsing. Recorded
-    for each new report seen by the SCT auditing cache that was not
-    deduplicated.
-  </summary>
-</histogram>
-
 <histogram name="Security.SCTAuditing.OptIn.ReportSize" units="bytes"
     expires_after="2024-05-26">
   <owner>cthomp@chromium.org</owner>

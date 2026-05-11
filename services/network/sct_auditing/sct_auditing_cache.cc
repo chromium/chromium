@@ -45,13 +45,6 @@ void RecordSCTAuditingReportDeduplicatedMetrics(bool deduplicated) {
                             deduplicated);
 }
 
-// Records whether a new report that wasn't deduplicated was sampled for
-// sending to the reporting server.
-void RecordSCTAuditingReportSampledMetrics(bool sampled) {
-  base::UmaHistogramBoolean("Security.SCTAuditing.OptIn.ReportSampled",
-                            sampled);
-}
-
 // Records the size of a report that will be sent to the reporting server, in
 // bytes. Used to track how much bandwidth is consumed by sending reports.
 void RecordSCTAuditingReportSizeMetrics(size_t report_size) {
@@ -143,10 +136,8 @@ SCTAuditingCache::MaybeGenerateReportEntry(
   dedupe_cache_.Put(cache_key, true);
 
   if (base::RandDouble() > configuration_->sampling_rate) {
-    RecordSCTAuditingReportSampledMetrics(false);
     return std::nullopt;
   }
-  RecordSCTAuditingReportSampledMetrics(true);
 
   auto* connection_context = tls_report->mutable_context();
   base::TimeDelta time_since_unix_epoch =

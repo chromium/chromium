@@ -326,7 +326,6 @@ TEST_F(SCTAuditingCacheTest, ReportSizeMetrics) {
   EXPECT_FALSE(
       cache.MaybeGenerateReportEntry(host_port_pair, chain_.get(), sct_list));
 
-  histograms.ExpectTotalCount("Security.SCTAuditing.OptIn.ReportSampled", 1);
   histograms.ExpectTotalCount("Security.SCTAuditing.OptIn.ReportSize", 1);
   histograms.ExpectBucketCount("Security.SCTAuditing.OptIn.ReportDeduplicated",
                                true, 1);
@@ -348,8 +347,6 @@ TEST_F(SCTAuditingCacheTest, ReportSampleDroppedMetrics) {
   EXPECT_FALSE(
       cache.MaybeGenerateReportEntry(host_port_pair, chain_.get(), sct_list));
 
-  histograms.ExpectUniqueSample("Security.SCTAuditing.OptIn.ReportSampled",
-                                false, 1);
   histograms.ExpectTotalCount("Security.SCTAuditing.OptIn.ReportSize", 0);
   histograms.ExpectBucketCount("Security.SCTAuditing.OptIn.ReportDeduplicated",
                                false, 1);
