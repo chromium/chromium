@@ -5137,8 +5137,14 @@ void RenderViewContextMenu::OpenLinkInSplitView() {
         /*extra_headers=*/std::string(), /*started_from_context_menu=*/true);
     const WebContents* new_web_contents = source_web_contents_->OpenURL(
         params, /*navigation_handle_callback=*/{});
+    if (!new_web_contents) {
+      return;
+    }
     const int new_tab_index =
         tab_strip_model->GetIndexOfWebContents(new_web_contents);
+    if (new_tab_index == TabStripModel::kNoTab) {
+      return;
+    }
 
     // Create split and activate new tab.
     tab_strip_model->AddToNewSplit(

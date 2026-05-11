@@ -129,6 +129,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -3826,6 +3827,46 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenLinkInNewSplitTab) {
   EXPECT_EQ(tab_strip_model->active_index(), 1);
   EXPECT_TRUE(tab_strip_model->GetActiveTab()->IsSplit());
   EXPECT_TRUE(tab_strip_model->GetTabAtIndex(0)->IsSplit());
+}
+
+// Regression test for crbug.com/511304744: crash in AddToSplitImpl when
+// OpenURL() returns nullptr (e.g., popup blocked, delegate unavailable).
+IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest,
+                       OpenLinkInSplitViewHandlesNullOpenURL) {
+  // A delegate that makes OpenURL() return nullptr, simulating a failed
+  // navigation (popup blocked, prerender abort, etc.).
+  class NullOpenURLDelegate : public content::WebContentsDelegate {
+   public:
+    content::WebContents* OpenURLFromTab(
+        content::WebContents* source,
+        const content::OpenURLParams& params,
+        base::OnceCallback<void(content::NavigationHandle&)> callback)
+        override {
+      return nullptr;
+    }
+  };
+
+  const GURL test_url("http://www.example.com/");
+  std::unique_ptr<TestRenderViewContextMenu> menu =
+      CreateContextMenuMediaTypeNone(test_url, test_url);
+
+  TabStripModel* const tab_strip_model = browser()->tab_strip_model();
+  ASSERT_EQ(tab_strip_model->count(), 1);
+
+  // Swap delegate so OpenURL returns nullptr.
+  content::WebContents* web_contents = tab_strip_model->GetActiveWebContents();
+  NullOpenURLDelegate null_delegate;
+  web_contents->SetDelegate(&null_delegate);
+
+  // Without the fix, this crashes with null deref in AddToSplitImpl.
+  menu->ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKSPLITVIEW, 0);
+
+  // Restore the original delegate before teardown.
+  web_contents->SetDelegate(browser());
+
+  // No new tab was created, no split was formed.
+  EXPECT_EQ(tab_strip_model->count(), 1);
+  EXPECT_FALSE(tab_strip_model->GetActiveTab()->IsSplit());
 }
 
 IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenLinkInNewPinnedSplitTab) {
