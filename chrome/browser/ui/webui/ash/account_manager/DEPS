@@ -11,9 +11,13 @@ include_rules = [
   # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/profiles/profile.h",
-  "+chrome/browser/ui/webui/signin/ash",
   "+chrome/browser/ui/webui/ash/system_web_dialog",
   "+chrome/common",
   "+chrome/grit",
 ]
 
+specific_include_rules = {
+  "account_migration_welcome_ui_browsertest\\.cc": [
+    "+chrome/test/base/in_process_browser_test.h",
+  ],
+}

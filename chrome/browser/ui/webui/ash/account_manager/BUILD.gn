@@ -33,7 +33,6 @@ static_library("account_manager") {
     "//chrome/browser:resources_grit",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/chromeos/account_manager:resources",
-    "//chrome/browser/ui/webui/signin/ash",
     "//chrome/common:constants",
     "//chromeos/ash/components/account_manager",
     "//components/account_manager_core",
@@ -46,5 +45,28 @@ static_library("account_manager") {
     "//ui/views",
     "//ui/webui",
     "//ui/wm",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "account_migration_welcome_ui_browsertest.cc" ]
+
+  deps = [
+    ":account_manager",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/account_manager",
+    "//components/account_manager_core",
+    "//components/account_manager_core:test_support",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
   ]
 }

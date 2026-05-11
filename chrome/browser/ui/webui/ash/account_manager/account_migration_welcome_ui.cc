@@ -9,28 +9,49 @@
 
 #include "ash/constants/url_constants.h"
 #include "ash/constants/webui_url_constants.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/strings/utf_string_conversions.h"
+#include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/signin/ash/inline_login_dialog.h"
 #include "chrome/grit/account_manager_resources.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "components/account_manager_core/account_manager_facade.h"
-#include "content/public/browser/web_contents.h"
+#include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "net/base/url_util.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "ui/strings/grit/ui_strings.h"
-#include "ui/web_dialogs/web_dialog_delegate.h"
 #include "ui/webui/webui_util.h"
 
 namespace ash {
 
 namespace {
+
+// Launches account reauthentication dialog for provided `email`.
+// Note: the added/reauthenticated account may not match the account provided
+// in the `email` field if user decided to edit the email inside the dialog.
+void ShowMigrationWelcomeAccountReauthDialog(
+    content::BrowserContext* browser_context,
+    const std::string& email) {
+  CHECK(browser_context);
+
+  base::UmaHistogramEnumeration(
+      account_manager::AccountManagerFacade::kAccountAdditionSource,
+      account_manager::AccountManagerFacade::AccountAdditionSource::
+          kAccountManagerMigrationWelcomeScreen);
+
+  crosapi::AccountManagerMojoService* account_manager_mojo_service =
+      AccountManagerFactory::Get()->GetAccountManagerMojoService(
+          browser_context->GetPath().value());
+  CHECK(account_manager_mojo_service);
+
+  account_manager_mojo_service->ShowReauthAccountDialog(email,
+                                                        base::DoNothing());
+}
 
 class MigrationMessageHandler : public content::WebUIMessageHandler {
  public:
@@ -62,13 +83,8 @@ class MigrationMessageHandler : public content::WebUIMessageHandler {
     CHECK(!args.empty());
     const std::string& account_email = args[0].GetString();
 
-    Profile* profile = Profile::FromWebUI(web_ui());
-    AccountManagerFactory::Get()
-        ->GetAccountManagerFacade(profile->GetPath().value())
-        ->ShowReauthAccountDialog(
-            account_manager::AccountManagerFacade::AccountAdditionSource::
-                kAccountManagerMigrationWelcomeScreen,
-            account_email, base::DoNothing());
+    ShowMigrationWelcomeAccountReauthDialog(Profile::FromWebUI(web_ui()),
+                                            account_email);
     HandleCloseDialog(args);
   }
 

@@ -52,6 +52,7 @@ group("browser_tests") {
   testonly = true
 
   deps = [
+    "//chrome/browser/ui/webui/ash/account_manager:browser_tests",
     "//chrome/browser/ui/webui/ash/add_supervision:browser_tests",
     "//chrome/browser/ui/webui/ash/app_install:browser_tests",
     "//chrome/browser/ui/webui/ash/cloud_upload:browser_tests",
