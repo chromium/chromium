@@ -57,6 +57,18 @@ std::vector<lens::ContextualInput> ConvertPageContentToContextualInput(
   }
   return contextual_inputs;
 }
+
+omnibox::ChromeAimEntryPoint AimEntryPointFromInvocationSource(
+    lens::LensOverlayInvocationSource invocation_source) {
+  // TODO(crbug.com/483805922): Create individual AIM entry points for each
+  // Lens invocation source.
+  if (invocation_source ==
+      lens::LensOverlayInvocationSource::kOmniboxContextualSuggestion) {
+    return omnibox::DESKTOP_CHROME_OTHER_OMNIBOX_COMPOSEBOX_ENTRY_POINT;
+  }
+  return omnibox::DESKTOP_CHROME_LENS_CONTEXTUAL_SEARCHBOX_ENTRY_POINT;
+}
+
 }  // namespace
 
 namespace lens {
@@ -812,10 +824,8 @@ LensQueryFlowRouter::CreateSearchUrlRequestInfoFromInteraction(
 
   request_info->additional_params = additional_search_query_params;
   request_info->invocation_source = invocation_source;
-  // TODO(crbug.com/483805922): Create individual AIM entry points for each
-  // Lens invocation source.
   request_info->aim_entry_point =
-      omnibox::DESKTOP_CHROME_LENS_CONTEXTUAL_SEARCHBOX_ENTRY_POINT;
+      AimEntryPointFromInvocationSource(invocation_source);
 
   if (region) {
     auto client_logs =
