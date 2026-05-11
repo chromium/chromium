@@ -408,6 +408,7 @@ class ExecutionEngine : public ToolDelegate,
       const url::Origin& destination,
       ukm::SourceId ukm_source_id,
       base::ScopedUmaHistogramTimer timer,
+      State engine_state,
       NavigationDecisionCallback callback,
       webui::mojom::NavigationConfirmationResponsePtr response);
 

@@ -500,7 +500,7 @@ void ExecutionEngine::SendNavigationConfirmationRequest(
       task_->id(), destination,
       base::BindOnce(&ExecutionEngine::OnNavigationConfirmationDecision,
                      GetWeakPtr(), destination, ukm_source_id, std::move(timer),
-                     std::move(callback)));
+                     state_, std::move(callback)));
 }
 
 void ExecutionEngine::MaybeRecordNavigationConfirmationMetrics(
@@ -549,6 +549,7 @@ void ExecutionEngine::OnNavigationConfirmationDecision(
     const url::Origin& destination,
     ukm::SourceId ukm_source_id,
     base::ScopedUmaHistogramTimer timer,
+    State engine_state,
     ExecutionEngine::NavigationDecisionCallback callback,
     webui::mojom::NavigationConfirmationResponsePtr response) {
   switch (response->result->which()) {
@@ -564,7 +565,7 @@ void ExecutionEngine::OnNavigationConfirmationDecision(
               permission_granted
                   ? ExecutionEngine::ActorServerConfirmationResult::kAccepted
                   : ExecutionEngine::ActorServerConfirmationResult::kRejected))
-          .SetEngineState(static_cast<int64_t>(state_));
+          .SetEngineState(static_cast<int64_t>(engine_state));
       builder.Record(ukm::UkmRecorder::Get());
       permission_granted = permission_granted ||
                            kGlicConfirmNavigationToNewOriginsDarkLaunch.Get();
