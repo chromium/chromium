@@ -74,7 +74,7 @@
   --cr-composebox-file-thumbnail-exit-animation-last:
     slide-out 350ms cubic-bezier(0.27, 1.06, 0.18, 1.00) forwards,
     fade-out 150ms cubic-bezier(0.31, 0.94, 0.34, 1.00) forwards;
-  --cancel-button-inline-end: 12px;
+  --cancel-button-inline-end: 16px;
   --context-carousel-inline-start-spacing: 12px;
   --context-carousel-top-position: 12px;
   --cr-composebox-text-container-padding-block-start: 12px;
