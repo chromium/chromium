@@ -7,6 +7,8 @@
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/views/bubble_menu_item_factory.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -16,7 +18,7 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
 
-ExtensionsMenuButton::ExtensionsMenuButton(Browser* browser,
+ExtensionsMenuButton::ExtensionsMenuButton(BrowserWindowInterface* browser,
                                            ToolbarActionViewModel* model)
     : HoverButton(base::BindRepeating(&ExtensionsMenuButton::ButtonPressed,
                                       base::Unretained(this)),
@@ -56,7 +58,7 @@ void ExtensionsMenuButton::UpdateState() {
 }
 
 content::WebContents* ExtensionsMenuButton::GetCurrentWebContents() const {
-  return browser_->tab_strip_model()->GetActiveWebContents();
+  return browser_->GetTabStripModel()->GetActiveWebContents();
 }
 
 void ExtensionsMenuButton::ButtonPressed() {

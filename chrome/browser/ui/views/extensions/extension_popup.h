@@ -21,7 +21,7 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget_observer.h"
 
-class Browser;
+class BrowserWindowInterface;
 class ExtensionViewViews;
 
 namespace content {
@@ -60,7 +60,7 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
   // BOTTOM_*, then the popup 'pops up', otherwise the popup 'drops down'.
   // The actual display of the popup is delayed until the page contents
   // finish loading in order to minimize UI flashing and resizing.
-  static void ShowPopup(Browser* browser,
+  static void ShowPopup(BrowserWindowInterface* browser,
                         std::unique_ptr<extensions::ExtensionViewHost> host,
                         views::BubbleAnchor anchor,
                         views::BubbleBorder::Arrow arrow,
@@ -119,7 +119,7 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
  private:
   class ScopedDevToolsAgentHostObservation;
 
-  ExtensionPopup(Browser* browser,
+  ExtensionPopup(BrowserWindowInterface* browser,
                  std::unique_ptr<extensions::ExtensionViewHost> host,
                  views::BubbleAnchor anchor,
                  views::BubbleBorder::Arrow arrow,
@@ -137,7 +137,7 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
   // Handles a signal from the extension host to close.
   void HandleCloseExtensionHost(extensions::ExtensionHost* host);
 
-  raw_ptr<Browser> browser_;
+  raw_ptr<BrowserWindowInterface> browser_;
 
   // The contained host for the view.
   std::unique_ptr<extensions::ExtensionViewHost> host_;

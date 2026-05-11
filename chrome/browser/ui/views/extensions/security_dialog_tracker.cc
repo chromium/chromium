@@ -66,7 +66,7 @@ void SecurityDialogTracker::RemoveSecurityDialog(views::Widget* widget) {
 }
 
 bool SecurityDialogTracker::BrowserHasVisibleSecurityDialogs(
-    Browser* browser) const {
+    BrowserWindowInterface* browser) const {
   const auto views = BrowserElementsViews::From(browser)->GetAllViews(
       kSecuritySensitiveDialogIdentifier);
   return std::any_of(views.begin(), views.end(),

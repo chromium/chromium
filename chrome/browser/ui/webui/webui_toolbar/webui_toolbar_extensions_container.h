@@ -17,7 +17,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/views/interaction/element_tracker_views.h"
 
-class Browser;
+class BrowserWindowInterface;
 class BrowserWindow;
 class ExtensionsMenuCoordinator;
 
@@ -28,7 +28,7 @@ class WebUIToolbarExtensionsContainer
       public extensions_bar::mojom::PageHandler {
  public:
   WebUIToolbarExtensionsContainer(
-      Browser& browser,
+      BrowserWindowInterface& browser,
       BrowserWindow& window,
       base::WeakPtr<content::WebContents> web_contents);
   ~WebUIToolbarExtensionsContainer() override;
@@ -94,7 +94,7 @@ class WebUIToolbarExtensionsContainer
   void OnContextMenuShownFromToolbar(const std::string& action_id);
   void OnContextMenuClosedFromToolbar();
 
-  const raw_ref<Browser> browser_;
+  const raw_ref<BrowserWindowInterface> browser_;
   const raw_ref<BrowserWindow> window_;
   const base::WeakPtr<content::WebContents> web_contents_;
   const raw_ref<ToolbarActionsModel> model_;

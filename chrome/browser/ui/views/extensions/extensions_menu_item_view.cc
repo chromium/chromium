@@ -15,6 +15,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/extensions/extensions_menu_view_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
@@ -80,12 +81,12 @@ std::u16string GetPinButtonPressedAccText(bool is_pinned) {
 }  // namespace
 
 ExtensionMenuItemView::ExtensionMenuItemView(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     std::unique_ptr<ToolbarActionViewModel> view_model,
     bool allow_pinning)
     : browser_(browser),
       view_model_(std::move(view_model)),
-      model_(ToolbarActionsModel::Get(browser_->profile())) {
+      model_(ToolbarActionsModel::Get(browser_->GetProfile())) {
   CHECK(!base::FeatureList::IsEnabled(
       extensions_features::kExtensionsMenuAccessControl));
 
@@ -182,7 +183,7 @@ void ExtensionMenuItemView::UpdatePinButton(bool is_force_pinned,
   // Extension pinning is not available in Incognito as it leaves a trace of
   // user activity.
   pin_button_->SetEnabled(!is_force_pinned &&
-                          !browser_->profile()->IsOffTheRecord());
+                          !browser_->GetProfile()->IsOffTheRecord());
 
   // Update the icon based on whether the extension is pinned.
   const gfx::VectorIcon& icon = is_pinned ? kKeepOffIcon : kKeepIcon;

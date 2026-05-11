@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/extension_action_view_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/extensions/extension_action_delegate_desktop.h"
@@ -42,7 +43,7 @@ GURL GetDataUrlForImageModel(ui::ImageModel icon_model,
 class WebUIToolbarExtensionsContainer::ActionInfo {
  public:
   ActionInfo(WebUIToolbarExtensionsContainer& extensions_container,
-             Browser& browser,
+             BrowserWindowInterface& browser,
              std::unique_ptr<ExtensionActionViewModel> model)
       : extensions_container_(extensions_container),
         browser_(browser),
@@ -64,7 +65,7 @@ class WebUIToolbarExtensionsContainer::ActionInfo {
   extensions_bar::mojom::ExtensionActionInfoPtr ToMojo(
       BrowserWindow& window) const {
     content::WebContents* web_contents =
-        browser_->tab_strip_model()->GetActiveWebContents();
+        browser_->GetTabStripModel()->GetActiveWebContents();
     auto result = extensions_bar::mojom::ExtensionActionInfo::New();
     result->id = model_->GetId();
     result->accessible_name =
@@ -91,7 +92,7 @@ class WebUIToolbarExtensionsContainer::ActionInfo {
 
  private:
   const raw_ref<WebUIToolbarExtensionsContainer> extensions_container_;
-  const raw_ref<Browser> browser_;
+  const raw_ref<BrowserWindowInterface> browser_;
   std::unique_ptr<ExtensionActionViewModel> model_;
   base::CallbackListSubscription model_subscription_;
 };
@@ -168,15 +169,15 @@ class WebUIToolbarExtensionsContainer::ContextMenu {
 };
 
 WebUIToolbarExtensionsContainer::WebUIToolbarExtensionsContainer(
-    Browser& browser,
+    BrowserWindowInterface& browser,
     BrowserWindow& window,
     base::WeakPtr<content::WebContents> web_contents)
     : browser_(browser),
       window_(window),
       web_contents_(web_contents),
-      model_(*ToolbarActionsModel::Get(browser.profile())),
+      model_(*ToolbarActionsModel::Get(browser.GetProfile())),
       extensions_menu_coordinator_(
-          std::make_unique<ExtensionsMenuCoordinator>(&browser_.get(), this)) {
+          std::make_unique<ExtensionsMenuCoordinator>(&browser, this)) {
   CreateActions();
   observe_actions_.Observe(&model_.get());
 }
@@ -350,7 +351,7 @@ void WebUIToolbarExtensionsContainer::NotifyOfAllActions() {
   }
 
   // Don't notify when the window is being destroyed.
-  if (!browser_->tab_strip_model()->GetActiveWebContents()) {
+  if (!browser_->GetTabStripModel()->GetActiveWebContents()) {
     return;
   }
 
@@ -368,7 +369,7 @@ void WebUIToolbarExtensionsContainer::NotifyOfOneAction(
   }
 
   // Don't notify when the window is being destroyed.
-  if (!browser_->tab_strip_model()->GetActiveWebContents()) {
+  if (!browser_->GetTabStripModel()->GetActiveWebContents()) {
     return;
   }
 

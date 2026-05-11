@@ -11,7 +11,7 @@ namespace views {
 class Widget;
 }
 
-class Browser;
+class BrowserWindowInterface;
 
 namespace extensions {
 
@@ -40,7 +40,7 @@ class SecurityDialogTracker {
   void RemoveSecurityDialog(views::Widget* widget);
 
   // Returns true if `browser` has visible security dialogs.
-  bool BrowserHasVisibleSecurityDialogs(Browser* browser) const;
+  bool BrowserHasVisibleSecurityDialogs(BrowserWindowInterface* browser) const;
 
  private:
   friend class base::NoDestructor<SecurityDialogTracker>;

@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/extensions/extensions_menu_view_model.h"
@@ -118,7 +119,7 @@ std::unique_ptr<views::ImageView> GetSettingsButtonIcon(int icon_size) {
 }  // namespace
 
 ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     extensions::ExtensionId extension_id,
     ExtensionsMenuHandler* menu_handler)
     : browser_(browser), extension_id_(extension_id) {
@@ -264,7 +265,7 @@ ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
                                                0, horizontal_spacing, 0, 0))
                               .SetElideBehavior(gfx::ELIDE_TAIL)
                               .SetProperty(views::kFlexBehaviorKey,
-                                stretch_specification)),
+                                           stretch_specification)),
                   // Close button.
                   views::Builder<views::Button>(
                       views::BubbleFrameView::CreateCloseButton(
@@ -335,7 +336,7 @@ ExtensionsMenuSitePermissionsPageView::ExtensionsMenuSitePermissionsPageView(
                   views::Builder<HoverButton>(
                       std::make_unique<HoverButton>(
                           base::BindRepeating(
-                              [](Browser* browser,
+                              [](BrowserWindowInterface* browser,
                                  extensions::ExtensionId extension_id) {
                                 chrome::ShowExtensions(browser, extension_id);
                               },

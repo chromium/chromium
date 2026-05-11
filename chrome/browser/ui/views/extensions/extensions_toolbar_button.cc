@@ -178,8 +178,8 @@ void ExtensionsToolbarButton::ToggleExtensionsMenu() {
     // extensions_features::kExtensionsMenuAccessControl menu, therefore we can
     // use Browser for the other menu until the feature is rolled out.
     menu = ExtensionsMenuView::ShowBubble(
-        this, browser_->GetBrowserForMigrationOnly(),
-        extensions_toolbar_->GetToolbarViewModel(), extensions_toolbar_);
+        this, browser_, extensions_toolbar_->GetToolbarViewModel(),
+        extensions_toolbar_);
   }
   extensions_menu_widget_ = menu->GetWeakPtr();
   extension_menu_observation_.Observe(menu);

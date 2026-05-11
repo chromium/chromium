@@ -12,7 +12,7 @@
 #include "ui/views/view_observer.h"
 #include "ui/views/view_tracker.h"
 
-class Browser;
+class BrowserWindowInterface;
 class ExtensionsMenuDelegateDesktop;
 class ExtensionsContainerViews;
 
@@ -24,7 +24,7 @@ class Widget;
 // Handles the lifetime and showing/hidden state of the extensions menu bubble.
 class ExtensionsMenuCoordinator : public views::ViewObserver {
  public:
-  ExtensionsMenuCoordinator(Browser* browser,
+  ExtensionsMenuCoordinator(BrowserWindowInterface* browser,
                             ExtensionsContainer* extensions_container);
   ExtensionsMenuCoordinator(const ExtensionsMenuCoordinator&) = delete;
   const ExtensionsMenuCoordinator& operator=(const ExtensionsMenuCoordinator&) =
@@ -63,7 +63,7 @@ class ExtensionsMenuCoordinator : public views::ViewObserver {
   // views::ViewObserver
   void OnViewIsDeleting(views::View* observed_view) override;
 
-  const raw_ptr<Browser> browser_;
+  const raw_ptr<BrowserWindowInterface> browser_;
   views::ViewTracker bubble_tracker_;
 
   // The `ExtensionsContainer` to use. It must outlive `this`.

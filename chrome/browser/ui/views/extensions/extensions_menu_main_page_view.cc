@@ -14,6 +14,7 @@
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/extensions/extension_action_view_model.h"
@@ -117,7 +118,7 @@ END_VIEW_BUILDER
 DEFINE_VIEW_BUILDER(/* No Export */, SectionContainer)
 
 ExtensionsMenuMainPageView::ExtensionsMenuMainPageView(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     ExtensionsMenuHandler* menu_handler)
     : browser_(browser), menu_handler_(menu_handler) {
   views::FlexSpecification stretch_specification =
@@ -593,7 +594,7 @@ ExtensionsMenuMainPageView::CreateManageButtonBuilder() {
   return views::Builder<HoverButton>(
              std::make_unique<HoverButton>(
                  base::BindRepeating(
-                     [](Browser* browser) {
+                     [](BrowserWindowInterface* browser) {
                        base::RecordAction(
                            base::UserMetricsAction("Extensions.Menu."
                                                    "ExtensionsSettingsOpened"));

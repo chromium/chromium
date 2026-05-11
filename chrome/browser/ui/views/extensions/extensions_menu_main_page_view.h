@@ -21,7 +21,7 @@ class Label;
 class ToggleButton;
 }  // namespace views
 
-class Browser;
+class BrowserWindowInterface;
 class ExtensionsMenuHandler;
 class ExtensionActionViewModel;
 
@@ -30,7 +30,7 @@ class ExtensionsMenuMainPageView : public views::View {
   METADATA_HEADER(ExtensionsMenuMainPageView, views::View)
 
  public:
-  explicit ExtensionsMenuMainPageView(Browser* browser,
+  explicit ExtensionsMenuMainPageView(BrowserWindowInterface* browser,
                                       ExtensionsMenuHandler* menu_handler);
   ~ExtensionsMenuMainPageView() override;
   ExtensionsMenuMainPageView(const ExtensionsMenuMainPageView&) = delete;
@@ -122,7 +122,7 @@ class ExtensionsMenuMainPageView : public views::View {
   // Returns the manage extensions button builder.
   [[nodiscard]] views::Builder<HoverButton> CreateManageButtonBuilder();
 
-  const raw_ptr<Browser> browser_;
+  const raw_ptr<BrowserWindowInterface> browser_;
   const raw_ptr<ExtensionsMenuHandler> menu_handler_;
 
   // Site settings section.

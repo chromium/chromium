@@ -8,6 +8,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
@@ -77,7 +78,7 @@ views::Builder<HoverButton> GetSitePermissionsButtonBuilder(
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kExtensionsMenuEntryViewElementId);
 
 ExtensionsMenuEntryView::ExtensionsMenuEntryView(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     bool is_enterprise,
     ToolbarActionViewModel* view_model,
     views::Button::PressedCallback action_button_callback,

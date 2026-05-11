@@ -27,7 +27,7 @@ class Button;
 class View;
 }  // namespace views
 
-class Browser;
+class BrowserWindowInterface;
 class ExtensionsContainerViews;
 class ExtensionMenuItemView;
 
@@ -40,7 +40,7 @@ class ExtensionsMenuView : public views::BubbleDialogDelegateView,
 
  public:
   ExtensionsMenuView(views::View* anchor_view,
-                     Browser* browser,
+                     BrowserWindowInterface* browser,
                      ExtensionsContainer* extensions_container,
                      ExtensionsContainerViews* extensions_container_views);
   ExtensionsMenuView(const ExtensionsMenuView&) = delete;
@@ -52,7 +52,7 @@ class ExtensionsMenuView : public views::BubbleDialogDelegateView,
   // Only one menu is allowed to be shown at a time (outside of tests).
   static views::Widget* ShowBubble(
       views::View* anchor_view,
-      Browser* browser,
+      BrowserWindowInterface* browser,
       ExtensionsContainer* extensions_container,
       ExtensionsContainerViews* extensions_container_views);
 
@@ -158,7 +158,7 @@ class ExtensionsMenuView : public views::BubbleDialogDelegateView,
   // if DCHECKs are disabled.
   void SanityCheck();
 
-  const raw_ptr<Browser> browser_;
+  const raw_ptr<BrowserWindowInterface> browser_;
   const raw_ref<ExtensionsContainer> extensions_container_;
   const raw_ptr<ExtensionsContainerViews> extensions_container_views_;
   const raw_ptr<ToolbarActionsModel> toolbar_model_;

@@ -81,7 +81,7 @@ ExtensionPopup* ExtensionPopup::last_popup_for_testing() {
 
 // static
 void ExtensionPopup::ShowPopup(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     std::unique_ptr<extensions::ExtensionViewHost> host,
     views::BubbleAnchor anchor,
     views::BubbleBorder::Arrow arrow,
@@ -254,7 +254,7 @@ void ExtensionPopup::DevToolsAgentHostDetached(
 }
 
 ExtensionPopup::ExtensionPopup(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     std::unique_ptr<extensions::ExtensionViewHost> host,
     views::BubbleAnchor anchor,
     views::BubbleBorder::Arrow arrow,
@@ -280,8 +280,8 @@ ExtensionPopup::ExtensionPopup(
   // the correct value while calculating max bounds.
   set_adjust_if_offscreen(views::PlatformStyle::kAdjustBubbleIfOffscreen);
 
-  extension_view_ = AddChildView(
-      std::make_unique<ExtensionViewViews>(browser_->profile(), host_.get()));
+  extension_view_ = AddChildView(std::make_unique<ExtensionViewViews>(
+      browser_->GetProfile(), host_.get()));
   extension_view_->SetContainer(this);
   extension_view_->Init();
 
@@ -290,7 +290,7 @@ ExtensionPopup::ExtensionPopup(
 
   scoped_devtools_observation_ =
       std::make_unique<ScopedDevToolsAgentHostObservation>(this);
-  browser_->tab_strip_model()->AddObserver(this);
+  browser_->GetTabStripModel()->AddObserver(this);
 
   CHECK(anchor_widget());
   anchor_widget_observation_.Observe(anchor_widget()->GetPrimaryWindowWidget());

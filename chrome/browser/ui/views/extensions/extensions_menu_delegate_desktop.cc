@@ -18,6 +18,7 @@
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/extensions/extension_action_view_model.h"
 #include "chrome/browser/ui/extensions/extensions_menu_view_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -87,7 +88,7 @@ ExtensionsMenuSitePermissionsPageView* GetSitePermissionsPage(
 }  // namespace
 
 ExtensionsMenuDelegateDesktop::ExtensionsMenuDelegateDesktop(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     ExtensionsContainer* extensions_container,
     ExtensionsContainerViews* extensions_container_views,
     views::View* bubble_contents)
@@ -97,7 +98,7 @@ ExtensionsMenuDelegateDesktop::ExtensionsMenuDelegateDesktop(
       bubble_contents_(bubble_contents),
       menu_model_(std::make_unique<ExtensionsMenuViewModel>(browser_,
                                                             /*delegate=*/this)),
-      toolbar_model_(ToolbarActionsModel::Get(browser_->profile())) {
+      toolbar_model_(ToolbarActionsModel::Get(browser_->GetProfile())) {
   menu_model_observation_.Observe(menu_model_.get());
 }
 
@@ -380,8 +381,8 @@ void ExtensionsMenuDelegateDesktop::OnUserPermissionsSettingsChanged() {
     // Site permissions page can only be opened when site setting is set to
     // "customize by extension". Thus, when site settings changed, we have to
     // return to main page.
-    DCHECK_NE(PermissionsManager::Get(browser_->profile())
-                  ->GetUserSiteSetting(browser_->tab_strip_model()
+    DCHECK_NE(PermissionsManager::Get(browser_->GetProfile())
+                  ->GetUserSiteSetting(browser_->GetTabStripModel()
                                            ->GetActiveWebContents()
                                            ->GetPrimaryMainFrame()
                                            ->GetLastCommittedOrigin()),

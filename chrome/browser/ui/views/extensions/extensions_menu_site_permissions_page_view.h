@@ -19,7 +19,7 @@ class RadioButton;
 class ToggleButton;
 }  // namespace views
 
-class Browser;
+class BrowserWindowInterface;
 class ExtensionsMenuHandler;
 
 class ExtensionsMenuSitePermissionsPageView : public views::View {
@@ -27,7 +27,7 @@ class ExtensionsMenuSitePermissionsPageView : public views::View {
 
  public:
   explicit ExtensionsMenuSitePermissionsPageView(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       extensions::ExtensionId extension_id,
       ExtensionsMenuHandler* menu_handler);
   ExtensionsMenuSitePermissionsPageView(
@@ -55,7 +55,7 @@ class ExtensionsMenuSitePermissionsPageView : public views::View {
   views::Label* GetExtensionNameForTesting();
 
  private:
-  const raw_ptr<Browser> browser_;
+  const raw_ptr<BrowserWindowInterface> browser_;
   extensions::ExtensionId extension_id_;
 
   raw_ptr<views::ImageView> extension_icon_;

@@ -13,7 +13,7 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/layout/flex_layout_view.h"
 
-class Browser;
+class BrowserWindowInterface;
 class HoverButton;
 class ToolbarActionViewModel;
 
@@ -31,7 +31,7 @@ class ExtensionsMenuEntryView
 
  public:
   ExtensionsMenuEntryView(
-      Browser* browser,
+      BrowserWindowInterface* browser,
       bool is_enterprise,
       ToolbarActionViewModel* view_model,
       views::Button::PressedCallback action_button_callback,

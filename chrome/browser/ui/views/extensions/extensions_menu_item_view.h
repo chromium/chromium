@@ -15,7 +15,7 @@
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/metadata/view_factory.h"
 
-class Browser;
+class BrowserWindowInterface;
 class ExtensionContextMenuController;
 class ExtensionsMenuButton;
 class HoverButton;
@@ -30,7 +30,7 @@ class ExtensionMenuItemView : public views::FlexLayoutView,
   METADATA_HEADER(ExtensionMenuItemView, views::FlexLayoutView)
 
  public:
-  ExtensionMenuItemView(Browser* browser,
+  ExtensionMenuItemView(BrowserWindowInterface* browser,
                         std::unique_ptr<ToolbarActionViewModel> view_model,
                         bool allow_pinning);
   ExtensionMenuItemView(const ExtensionMenuItemView&) = delete;
@@ -65,7 +65,7 @@ class ExtensionMenuItemView : public views::FlexLayoutView,
   // `pin_button_`.
   void OnPinButtonPressed();
 
-  const raw_ptr<Browser> browser_;
+  const raw_ptr<BrowserWindowInterface> browser_;
 
   // View Model for an action that is shown in the toolbar.
   const std::unique_ptr<ToolbarActionViewModel> view_model_;
