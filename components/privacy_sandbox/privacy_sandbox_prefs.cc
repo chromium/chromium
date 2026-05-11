@@ -74,7 +74,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kTrackingProtection3pcdEnabled, false);
 }
 
-void ClearAdPrivacyPrefs(PrefService* prefs) {
+void MaybeClearAdPrivacyPrefs(PrefService* prefs) {
   if (!base::FeatureList::IsEnabled(kPrivacySandboxAdPrivacyUxDeprecation)) {
     return;
   }

@@ -2713,9 +2713,6 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kNtpContextMenuClickCount);
 
   // Added 03/2026.
-  privacy_sandbox::ClearAdPrivacyPrefs(profile_prefs);
-
-  // Added 03/2026.
   profile_prefs->ClearPref(kNtpPromoPrefLastSnoozed);
 
   // Added 04/2026.

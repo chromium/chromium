@@ -183,8 +183,8 @@ enum class TopicsConsentUpdateSource {
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 // If the Ad Privacy Deprecation feature is enabled, this function will set all
-// the Ad API prefs to false if it is already set to true.
-void ClearAdPrivacyPrefs(PrefService* pref_service);
+// the Ad API prefs to it's default value.
+void MaybeClearAdPrivacyPrefs(PrefService* pref_service);
 
 }  // namespace privacy_sandbox
 

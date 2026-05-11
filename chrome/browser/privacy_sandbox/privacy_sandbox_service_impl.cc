@@ -295,6 +295,10 @@ PrivacySandboxServiceImpl::PrivacySandboxServiceImpl(
         prefs::kPrivacySandboxTopicsConsentTextAtLastUpdate);
   }
 
+  // Clears the Topics, Fledge, and Measurement Privacy Sandbox API Prefs, if
+  // the PrivacySandboxAdPrivacyUxDeprecation feature is enabled.
+  privacy_sandbox::MaybeClearAdPrivacyPrefs(pref_service_);
+
   // Check for FPS pref init at each startup.
   // TODO(crbug.com/40234448): Remove this logic when most users have run init.
   MaybeInitializeRelatedWebsiteSetsPref();

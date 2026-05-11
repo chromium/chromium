@@ -406,7 +406,8 @@ class BrowsingTopicsBrowserTest : public BrowsingTopicsBrowserTestBase {
           {{"epoch_retention_duration", "3650000d"}}},
          {blink::features::kBrowsingTopicsBypassIPIsPubliclyRoutableCheck, {}},
          {features::kPrivacySandboxAdsAPIsOverride, {}}},
-        /*disabled_features=*/{});
+        /*disabled_features=*/{
+            {privacy_sandbox::kPrivacySandboxAdPrivacyUxDeprecation}});
   }
 
   ~BrowsingTopicsBrowserTest() override = default;

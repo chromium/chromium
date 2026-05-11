@@ -531,6 +531,94 @@ class PrivacySandboxServiceTest : public testing::Test {
   raw_ptr<PrivacySandboxServiceImpl> privacy_sandbox_service_ = nullptr;
 };
 
+class PrivacySandboxServiceAdPrivacyUxDeprecationTest
+    : public PrivacySandboxServiceTest {
+ public:
+  void InitializeFeaturesBeforeStart() override {
+    feature_list_.InitAndEnableFeature(
+        privacy_sandbox::kPrivacySandboxAdPrivacyUxDeprecation);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(PrivacySandboxServiceAdPrivacyUxDeprecationTest, TopicsDataCleared) {
+  prefs()->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, true);
+  EXPECT_CALL(*mock_browsing_topics_service(), ClearAllTopicsData()).Times(1);
+  CreateService();
+  EXPECT_FALSE(prefs()->GetBoolean(prefs::kPrivacySandboxM1TopicsEnabled));
+}
+
+TEST_F(PrivacySandboxServiceAdPrivacyUxDeprecationTest, FledgeDataCleared) {
+  prefs()->SetBoolean(prefs::kPrivacySandboxM1FledgeEnabled, true);
+  ASSERT_EQ(browsing_data_remover()->GetLastUsedRemovalMaskForTesting(),
+            uint64_t(-1));
+  CreateService();
+  EXPECT_FALSE(prefs()->GetBoolean(prefs::kPrivacySandboxM1FledgeEnabled));
+  uint64_t expected_fledge_mask =
+      content::BrowsingDataRemover::DATA_TYPE_INTEREST_GROUPS |
+      content::BrowsingDataRemover::DATA_TYPE_SHARED_STORAGE |
+      content::BrowsingDataRemover::DATA_TYPE_INTEREST_GROUPS_INTERNAL;
+  EXPECT_EQ(browsing_data_remover()->GetLastUsedRemovalMaskForTesting(),
+            expected_fledge_mask);
+}
+
+TEST_F(PrivacySandboxServiceAdPrivacyUxDeprecationTest,
+       AdMeasurementDataCleared) {
+  prefs()->SetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled, true);
+  ASSERT_EQ(browsing_data_remover()->GetLastUsedRemovalMaskForTesting(),
+            uint64_t(-1));
+  CreateService();
+  EXPECT_FALSE(
+      prefs()->GetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled));
+  uint64_t expected_measurement_mask =
+      content::BrowsingDataRemover::DATA_TYPE_ATTRIBUTION_REPORTING |
+      content::BrowsingDataRemover::DATA_TYPE_AGGREGATION_SERVICE |
+      content::BrowsingDataRemover::DATA_TYPE_PRIVATE_AGGREGATION_INTERNAL;
+  EXPECT_EQ(browsing_data_remover()->GetLastUsedRemovalMaskForTesting(),
+            expected_measurement_mask);
+}
+
+class PrivacySandboxServiceAdPrivacyUxDeprecationDisabledTest
+    : public PrivacySandboxServiceTest {
+ public:
+  void InitializeFeaturesBeforeStart() override {
+    feature_list_.InitAndDisableFeature(
+        privacy_sandbox::kPrivacySandboxAdPrivacyUxDeprecation);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(PrivacySandboxServiceAdPrivacyUxDeprecationDisabledTest,
+       TopicsDataNotCleared) {
+  prefs()->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, true);
+  EXPECT_CALL(*mock_browsing_topics_service(), ClearAllTopicsData()).Times(0);
+  CreateService();
+  EXPECT_TRUE(prefs()->GetBoolean(prefs::kPrivacySandboxM1TopicsEnabled));
+}
+
+TEST_F(PrivacySandboxServiceAdPrivacyUxDeprecationDisabledTest,
+       FledgeDataNotCleared) {
+  prefs()->SetBoolean(prefs::kPrivacySandboxM1FledgeEnabled, true);
+  CreateService();
+  EXPECT_TRUE(prefs()->GetBoolean(prefs::kPrivacySandboxM1FledgeEnabled));
+  EXPECT_EQ(browsing_data_remover()->GetLastUsedRemovalMaskForTesting(),
+            uint64_t(-1));
+}
+
+TEST_F(PrivacySandboxServiceAdPrivacyUxDeprecationDisabledTest,
+       AdMeasurementDataNotCleared) {
+  prefs()->SetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled, true);
+  CreateService();
+  EXPECT_TRUE(
+      prefs()->GetBoolean(prefs::kPrivacySandboxM1AdMeasurementEnabled));
+  EXPECT_EQ(browsing_data_remover()->GetLastUsedRemovalMaskForTesting(),
+            uint64_t(-1));
+}
+
 class PrivacySandboxPrivacyGuideShouldShowAdTopicsTest
     : public PrivacySandboxServiceTest,
       public testing::WithParamInterface<bool> {};
