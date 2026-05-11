@@ -13,105 +13,108 @@ namespace policy::local_auth_factors {
 
 using Complexity = ash::LocalAuthFactorsComplexity;
 
+using Result = PasswordComplexityResult;
+
 TEST(LocalAuthFactorsComplexityCheckerTest, PasswordComplexity) {
+  // clang-format off
   const struct TestData {
     std::string test_name;
     std::string_view password;
     Complexity complexity;
-    bool expected_result;
+    Result expected_result;
   } kTestData[] = {
       // kNone tests (Length >= 1).
-      {"NoneEmpty", "", Complexity::kNone, false},
-      {"NoneShort", "z", Complexity::kNone, true},
-      {"NoneLong", "a9B!qPz~wO", Complexity::kNone, true},
-      {"NoneAnyChar", "@", Complexity::kNone, true},
+      {"NoneEmpty", "", Complexity::kNone, Result::kTooShort},
+      {"NoneShort", "z", Complexity::kNone, Result::kOk},
+      {"NoneLong", "a9B!qPz~wO", Complexity::kNone, Result::kOk},
+      {"NoneAnyChar", "@", Complexity::kNone, Result::kOk},
 
       // kLow tests (Length >= 6, must not be all digits).
-      {"LowTooShort", "aB1!", Complexity::kLow, false},
-      {"LowJustEnoughAllDigit", "987654", Complexity::kLow, false},
-      {"LowJustEnoughWithLower", "pqrstu", Complexity::kLow, true},
-      {"LowJustEnoughWithUpper", "ZYXWVU", Complexity::kLow, true},
-      {"LowJustEnoughWithSymbol", "$%^&*()", Complexity::kLow, true},
-      {"LowJustEnoughMixedAlpha", "KzFwXm", Complexity::kLow, true},
-      {"LowJustEnoughMixedAll", "jHkS;2", Complexity::kLow, true},
-      {"LowLong", "QuErTyUiOp", Complexity::kLow, true},
-      {"LowMixedChars", "P@sswOrd", Complexity::kLow, true},
+      {"LowTooShort", "aB1!", Complexity::kLow, Result::kTooShort},
+      {"LowJustEnoughAllDigit", "987654", Complexity::kLow, Result::kMissesCharacters},
+      {"LowJustEnoughWithLower", "pqrstu", Complexity::kLow, Result::kOk},
+      {"LowJustEnoughWithUpper", "ZYXWVU", Complexity::kLow, Result::kOk},
+      {"LowJustEnoughWithSymbol", "$%^&*()", Complexity::kLow, Result::kOk},
+      {"LowJustEnoughMixedAlpha", "KzFwXm", Complexity::kLow, Result::kOk},
+      {"LowJustEnoughMixedAll", "jHkS;2", Complexity::kLow, Result::kOk},
+      {"LowLong", "QuErTyUiOp", Complexity::kLow, Result::kOk},
+      {"LowMixedChars", "P@sswOrd", Complexity::kLow, Result::kOk},
 
       // kMedium tests (Length >= 8, >= 2 character classes).
-      {"MediumTooShort", "aB1!dEf", Complexity::kMedium, false},
-      {"MediumJustEnough1ClassLower", "qwertyui", Complexity::kMedium, false},
-      {"MediumJustEnough1ClassUpper", "ASDFGHJK", Complexity::kMedium, false},
-      {"MediumJustEnough1ClassDigit", "19283746", Complexity::kMedium, false},
-      {"MediumJustEnough1ClassSymbol", "~!@#$%^&", Complexity::kMedium, false},
-      {"MediumJustEnough2ClassLU", "PqRstUvW", Complexity::kMedium, true},
-      {"MediumJustEnough2ClassLD", "mnbvcxz1", Complexity::kMedium, true},
-      {"MediumJustEnough2ClassLS", "lkjhgfd?", Complexity::kMedium, true},
-      {"MediumJustEnough2ClassUD", "ZXCVBNM8", Complexity::kMedium, true},
-      {"MediumJustEnough2ClassUS", "QAZWSXED:", Complexity::kMedium, true},
-      {"MediumJustEnough2ClassDS", "74185296+", Complexity::kMedium, true},
-      {"MediumJustEnough3ClassLUD", "xYxYzZa1", Complexity::kMedium, true},
-      {"MediumJustEnough3ClassLUS", "aBcDeFg@", Complexity::kMedium, true},
-      {"MediumJustEnough4ClassLUNDS", "JkLmnop7$", Complexity::kMedium, true},
-      {"MediumLong2Class", "zxcvbnm,./1", Complexity::kMedium, true},
+      {"MediumTooShort", "aB1!dEf", Complexity::kMedium, Result::kTooShort},
+      {"MediumJustEnough1ClassLower", "qwertyui", Complexity::kMedium, Result::kMissesCharacters},
+      {"MediumJustEnough1ClassUpper", "ASDFGHJK", Complexity::kMedium,Result::kMissesCharacters},
+      {"MediumJustEnough1ClassDigit", "19283746", Complexity::kMedium, Result::kMissesCharacters},
+      {"MediumJustEnough1ClassSymbol", "~!@#$%^&", Complexity::kMedium, Result::kMissesCharacters},
+      {"MediumJustEnough2ClassLU", "PqRstUvW", Complexity::kMedium, Result::kOk},
+      {"MediumJustEnough2ClassLD", "mnbvcxz1", Complexity::kMedium, Result::kOk},
+      {"MediumJustEnough2ClassLS", "lkjhgfd?", Complexity::kMedium, Result::kOk},
+      {"MediumJustEnough2ClassUD", "ZXCVBNM8", Complexity::kMedium, Result::kOk},
+      {"MediumJustEnough2ClassUS", "QAZWSXED:", Complexity::kMedium, Result::kOk},
+      {"MediumJustEnough2ClassDS", "74185296+", Complexity::kMedium, Result::kOk},
+      {"MediumJustEnough3ClassLUD", "xYxYzZa1", Complexity::kMedium, Result::kOk},
+      {"MediumJustEnough3ClassLUS", "aBcDeFg@", Complexity::kMedium, Result::kOk},
+      {"MediumJustEnough4ClassLUNDS", "JkLmnop7$", Complexity::kMedium, Result::kOk},
+      {"MediumLong2Class", "zxcvbnm,./1", Complexity::kMedium, Result::kOk},
 
       // kHigh tests (Length >= 12, all 4 character classes).
-      {"HighTooShort", "aB1!dEfGhIj", Complexity::kHigh, false},
-      {"HighJustEnoughNoDigit", "PqRsTuVwXyZ!", Complexity::kHigh, false},
-      {"HighJustEnoughNoLower", "ASDFGHJK123$", Complexity::kHigh, false},
-      {"HighJustEnoughNoUpper", "zxcvbnm123?/", Complexity::kHigh, false},
-      {"HighJustEnoughNoSymbol", "QwErTyUiOp12", Complexity::kHigh, false},
-      {"HighJustEnoughAll4", "aB1!dEfGhIjK", Complexity::kHigh, true},
-      {"HighLongAll4", "mYpA55wOrd!sVeRy5eCuRe", Complexity::kHigh, true},
-      {"HighVar1", "G00gL3%P@$$wOrd", Complexity::kHigh, true},
-      {"HighVar2", "1s~Th1s_L0ng_En0ugH", Complexity::kHigh, true},
-      {"HighVar3", "cOmPlExItY-Rul3z!23", Complexity::kHigh, true},
+      {"HighTooShort", "aB1!dEfGhIj", Complexity::kHigh, Result::kTooShort},
+      {"HighJustEnoughNoDigit", "PqRsTuVwXyZ!", Complexity::kHigh, Result::kMissesCharacters},
+      {"HighJustEnoughNoLower", "ASDFGHJK123$", Complexity::kHigh, Result::kMissesCharacters},
+      {"HighJustEnoughNoUpper", "zxcvbnm123?/", Complexity::kHigh, Result::kMissesCharacters},
+      {"HighJustEnoughNoSymbol", "QwErTyUiOp12", Complexity::kHigh, Result::kMissesCharacters},
+      {"HighJustEnoughAll4", "aB1!dEfGhIjK", Complexity::kHigh, Result::kOk},
+      {"HighLongAll4", "mYpA55wOrd!sVeRy5eCuRe", Complexity::kHigh, Result::kOk},
+      {"HighVar1", "G00gL3%P@$$wOrd", Complexity::kHigh, Result::kOk},
+      {"HighVar2", "1s~Th1s_L0ng_En0ugH", Complexity::kHigh, Result::kOk},
+      {"HighVar3", "cOmPlExItY-Rul3z!23", Complexity::kHigh, Result::kOk},
 
       // --- Repetitions and Sequences ---
 
       // Identical Characters (Max 4 allowed).
-      {"Medium4IdenticalPass", "aaaa1234", Complexity::kMedium, true},
-      {"Medium5IdenticalFail", "aaaaa123", Complexity::kMedium, false},
-      {"Medium5IdenticalEndFail", "123aaaaa", Complexity::kMedium, false},
-      {"High4IdenticalPass", "aaaaB1!dEfGh", Complexity::kHigh, true},
-      {"High5IdenticalFail", "aaaaaB1!dEfG", Complexity::kHigh, false},
-      {"LowIgnoresIdentical", "aaaaa1", Complexity::kLow, true},
+      {"Medium4IdenticalPass", "aaaa1234", Complexity::kMedium, Result::kOk},
+      {"Medium5IdenticalFail", "aaaaa123", Complexity::kMedium, Result::kContainsTrivialSequence},
+      {"Medium5IdenticalEndFail", "123aaaaa", Complexity::kMedium, Result::kContainsTrivialSequence},
+      {"High4IdenticalPass", "aaaaB1!dEfGh", Complexity::kHigh, Result::kOk},
+      {"High5IdenticalFail", "aaaaaB1!dEfG", Complexity::kHigh, Result::kContainsTrivialSequence},
+      {"LowIgnoresIdentical", "aaaaa1", Complexity::kLow, Result::kOk},
 
       // Alphabetical / Numerical Sequences (Max 4 allowed).
-      {"Medium4SeqPass", "abcd1234", Complexity::kMedium, true},
-      {"Medium5SeqIncFail", "abcde123", Complexity::kMedium, false},
-      {"Medium5SeqDecFail", "edcba123", Complexity::kMedium, false},
-      {"High4SeqPass", "abcdB1!EfGhI", Complexity::kHigh, true},
-      {"High5SeqIncFail", "abcdeB1!fGhI", Complexity::kHigh, false},
-      {"High5SeqDecFail", "654321abCD!@", Complexity::kHigh, false},
-      {"LowIgnoresSequence", "abcde1", Complexity::kLow, true},
+      {"Medium4SeqPass", "abcd1234", Complexity::kMedium, Result::kOk},
+      {"Medium5SeqIncFail", "abcde123", Complexity::kMedium, Result::kContainsTrivialSequence},
+      {"Medium5SeqDecFail", "edcba123", Complexity::kMedium, Result::kContainsTrivialSequence},
+      {"High4SeqPass", "abcdB1!EfGhI", Complexity::kHigh, Result::kOk},
+      {"High5SeqIncFail", "abcdeB1!fGhI", Complexity::kHigh, Result::kContainsTrivialSequence},
+      {"High5SeqDecFail", "654321abCD!@", Complexity::kHigh, Result::kContainsTrivialSequence},
+      {"LowIgnoresSequence", "abcde1", Complexity::kLow, Result::kOk},
 
       // Cross-class ASCII sequences.
-      {"MediumCrossClassIncPass", "XYZ[\\123", Complexity::kMedium, true},
-      {"MediumCrossClassDecPass", "{zyxw123", Complexity::kMedium, true},
-      {"MediumCrossClassPunctDigitPass", "-./012ab", Complexity::kMedium, true},
+      {"MediumCrossClassIncPass", "XYZ[\\123", Complexity::kMedium, Result::kOk},
+      {"MediumCrossClassDecPass", "{zyxw123", Complexity::kMedium, Result::kOk},
+      {"MediumCrossClassPunctDigitPass", "-./012ab", Complexity::kMedium, Result::kOk},
 
       // Mixed delta sequence (Not a single continuous run).
-      {"MediumMixedDeltaPass", "abcdc123", Complexity::kMedium, true},
+      {"MediumMixedDeltaPass", "abcdc123", Complexity::kMedium, Result::kOk},
 
       // Symbol sequence should pass, while symbol repetition should fail.
-      {"HighSymbolSequencePass", "aA1#$%&'()*+,-./", Complexity::kHigh, true},
-      {"HighSymbolRepetitionFail", "aA1@@@@@@", Complexity::kHigh, false},
+      {"HighSymbolSequencePass", "aA1#$%&'()*+,-./", Complexity::kHigh, Result::kOk},
+      {"HighSymbolRepetitionFail", "aA1!B2c3@@@@@@", Complexity::kHigh, Result::kContainsTrivialSequence},
 
       // Off by one errors at symbol <-> alnum boundaries.
       // ASCII 0x5D to 0x65: ]^_`abcde
-      {"MediumSymbolLowerBoundaryPass", "]^_`abcd", Complexity::kMedium, true},
-      {"MediumSymbolLowerBoundaryPass", "]^_`abcde", Complexity::kMedium,
-       false},
+      {"MediumSymbolLowerBoundaryPass", "]^_`abcd", Complexity::kMedium, Result::kOk},
+      {"MediumSymbolLowerBoundaryPass", "]^_`abcde", Complexity::kMedium, Result::kContainsTrivialSequence},
 
       // Unicode characters (counting code points).
-      {"UnicodeLowShort", "aa👋", Complexity::kLow, false},
-      {"UnicodeLowJustEnough", "aaaaa👋", Complexity::kLow, true},
-      {"UnicodeMediumShort", "👋👋👋👋👋👋a", Complexity::kMedium, false},
-      {"UnicodeMediumPass", "👋👋👋👋aa11", Complexity::kMedium, true},
-      {"UnicodeMediumSequence", "👋👋👋👋👋aa1", Complexity::kMedium, false},
-      {"UnicodeNonLatin", "čćšđžaA1!", Complexity::kHigh, false},
-      {"UnicodeNonLatinPass", "čćšđžaaAA11!!", Complexity::kHigh, true},
+      {"UnicodeLowShort", "aa👋", Complexity::kLow, Result::kTooShort},
+      {"UnicodeLowJustEnough", "aaaaa👋", Complexity::kLow, Result::kOk},
+      {"UnicodeMediumShort", "👋👋👋👋👋👋a", Complexity::kMedium, Result::kTooShort},
+      {"UnicodeMediumPass", "👋👋👋👋aa11", Complexity::kMedium, Result::kOk},
+      {"UnicodeMediumSequence", "👋👋👋👋👋aa1", Complexity::kMedium, Result::kContainsTrivialSequence},
+      {"UnicodeNonLatin", "čćšđža1!abcd", Complexity::kHigh, Result::kMissesCharacters},
+      {"UnicodeNonLatinPass", "čćšđžaaAA11!!", Complexity::kHigh, Result::kOk},
   };
+  // clang-format on
 
   for (const auto& t : kTestData) {
     EXPECT_EQ(t.expected_result,

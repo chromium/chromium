@@ -12,12 +12,20 @@
 
 namespace policy::local_auth_factors {
 
+enum class PasswordComplexityResult {
+  kOk,
+  kTooShort,
+  kMissesCharacters,
+  kContainsTrivialSequence,
+};
+
 // Checks the complexity of the given password according to the
-// `LocalAuthFactorsComplexity` policy and returns true if the password passes
-// the complexity check and false otherwise.
+// `LocalAuthFactorsComplexity` policy and returns the result of the complexity
+// check.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY)
-bool CheckPasswordComplexity(std::string_view password,
-                             ash::LocalAuthFactorsComplexity complexity);
+PasswordComplexityResult CheckPasswordComplexity(
+    std::string_view password,
+    ash::LocalAuthFactorsComplexity complexity);
 
 // Checks the complexity of the given pin according to the
 // `LocalAuthFactorsComplexity` policy and returns true if the pin passes the
