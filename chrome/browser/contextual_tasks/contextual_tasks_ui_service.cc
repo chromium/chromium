@@ -1701,6 +1701,11 @@ bool ContextualTasksUiService::IsPendingErrorPage(const base::Uuid& task_id) {
   return true;
 }
 
+bool ContextualTasksUiService::IsContextualTasksUrl(const GURL& url) {
+  return url.scheme() == content::kChromeUIScheme &&
+         url.host() == chrome::kChromeUIContextualTasksHost;
+}
+
 base::Uuid ContextualTasksUiService::GetTaskIdFromUrl(const GURL& url) {
   std::string task_id;
   net::GetValueForKeyInQuery(url, kTaskQueryParam, &task_id);

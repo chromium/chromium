@@ -231,6 +231,9 @@ class ContextualTasksUiService : public KeyedService {
   // error page on load.
   virtual bool IsPendingErrorPage(const base::Uuid& task_id);
 
+  // Returns whether the provided URL is to a contextual tasks WebUI page.
+  static bool IsContextualTasksUrl(const GURL& url);
+
   // Gets the contextual task Id from a contextual task host URL.
   static base::Uuid GetTaskIdFromUrl(const GURL& url);
 

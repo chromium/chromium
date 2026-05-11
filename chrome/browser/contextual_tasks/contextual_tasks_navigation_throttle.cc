@@ -12,7 +12,6 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
@@ -66,7 +65,7 @@ ThrottleCheckResult ContextualTasksNavigationThrottle::ProcessNavigation() {
         service && service->GetFeatureEligibility().IsEligible();
     if ((!base::FeatureList::IsEnabled(contextual_tasks::kContextualTasks) ||
          !is_cobrowse_eligible) &&
-        IsContextualTasksUrl(url_params.url)) {
+        ContextualTasksUiService::IsContextualTasksUrl(url_params.url)) {
       // Redirect contextual tasks URL to aim page URL.
       GURL url = ContextualTasksUiService::CopyParamsFromWebUIUrl(
           GURL(GetContextualTasksAiPageUrl()), url_params.url);

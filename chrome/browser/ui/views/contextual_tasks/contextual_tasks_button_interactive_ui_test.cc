@@ -50,7 +50,6 @@
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
-DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelWebContentsId);
 
 class TestingAimEligibilityService : public ChromeAimEligibilityService {
  public:
@@ -431,22 +430,6 @@ class ContextualTasksEphemeralButtonInteractiveTest
     });
   }
 
-  auto EnsureSidePanelWebUiReady() {
-    return Steps(
-        WaitForShow(kContextualTasksSidePanelWebViewElementId),
-        InstrumentNonTabWebView(kSidePanelWebContentsId,
-                                kContextualTasksSidePanelWebViewElementId),
-        If(
-            [&]() {
-              content::WebContents* wc =
-                  contextual_tasks::ContextualTasksPanelController::From(
-                      browser())
-                      ->GetActiveWebContents();
-              return wc && !contextual_tasks::GetWebUiInterface(wc);
-            },
-            Then(WaitForWebContentsNavigation(kSidePanelWebContentsId))));
-  }
-
   auto SimulateNavigateToAiPage() {
     return Do([&]() {
       content::WebContents* side_panel_contents =
@@ -556,8 +539,7 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksEphemeralButtonInteractiveTest,
       SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
       AddInstrumentedTab(kSecondTab, GetTestURL()),
       SelectTab(kTabStripElementId, 0), CreateTaskForTab(0),
-      SimulateOpeningContextualTaskSidePanel(), EnsureSidePanelWebUiReady(),
-      SimulateNavigateToAiPage(),
+      SimulateOpeningContextualTaskSidePanel(), SimulateNavigateToAiPage(),
       // Ensure close button is visible in horizontal mode.
       EnsurePresent(
           ContextualTasksCloseTabButton::kContextualTasksCloseTabButton),
@@ -582,8 +564,7 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksEphemeralButtonInteractiveTest,
       SignIntoEligibleAccount(), InstrumentTab(kFirstTab),
       AddInstrumentedTab(kSecondTab, GetTestURL()),
       SelectTab(kTabStripElementId, 0), CreateTaskForTab(0),
-      SimulateOpeningContextualTaskSidePanel(), EnsureSidePanelWebUiReady(),
-      SimulateNavigateToAiPage(),
+      SimulateOpeningContextualTaskSidePanel(), SimulateNavigateToAiPage(),
       // Ensure close button is visible in non-immersive mode.
       EnsurePresent(
           ContextualTasksCloseTabButton::kContextualTasksCloseTabButton),
