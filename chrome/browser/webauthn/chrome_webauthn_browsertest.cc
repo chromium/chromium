@@ -425,10 +425,8 @@ class WinWebAuthnBrowserTest
   })())";
 
   WinWebAuthnBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {device::kWebAuthnHelloSignal,
-         device::kWebAuthnSignalApiHidePasskeys},
-        /*disabled_features=*/{});
+    scoped_feature_list_.InitWithFeatures({device::kWebAuthnHelloSignal},
+                                          /*disabled_features=*/{});
   }
 
   void SetUpOnMainThread() override {

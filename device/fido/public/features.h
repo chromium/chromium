@@ -96,11 +96,6 @@ BASE_DECLARE_FEATURE(kDigitalCredentialsHybridLinking);
 COMPONENT_EXPORT(FIDO_PUBLIC)
 BASE_DECLARE_FEATURE(kWebAuthnEnclaveAttestation);
 
-// Enables hiding passkeys instead of hard deleting them when reported as
-// obsolete by the signal API.
-COMPONENT_EXPORT(FIDO_PUBLIC)
-BASE_DECLARE_FEATURE(kWebAuthnSignalApiHidePasskeys);
-
 // Enables rate limiting of immediate requests based on main frame's eTLD+1.
 COMPONENT_EXPORT(FIDO_PUBLIC)
 BASE_DECLARE_FEATURE(kWebAuthnImmediateRequestRateLimit);

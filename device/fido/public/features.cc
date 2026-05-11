@@ -142,11 +142,6 @@ BASE_FEATURE(kWebAuthnEnclaveAttestation,
              "WebAuthenticationEnclaveAttestation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Default enabled in M144. Remove in or after M147.
-BASE_FEATURE(kWebAuthnSignalApiHidePasskeys,
-             "WebAuthenticationSignalApiHidePasskeys",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enabled by default as part of the WebAuthenticationImmediateGet feature. Do
 // not remove before WebAuthenticationImmediateGet is removed.
 BASE_FEATURE(kWebAuthnImmediateRequestRateLimit,

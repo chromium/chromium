@@ -95,8 +95,6 @@ class ChromeWebAuthenticationDelegateTest
  public:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    scoped_feature_list_.InitAndDisableFeature(
-        device::kWebAuthnSignalApiHidePasskeys);
     PasskeyModelFactory::GetInstance()->SetTestingFactoryAndUse(
         profile(),
         base::BindRepeating(
@@ -114,7 +112,6 @@ class ChromeWebAuthenticationDelegateTest
 
  protected:
   Observer observer_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ChromeWebAuthenticationDelegateTest, IndividualAttestation) {
@@ -401,85 +398,6 @@ TEST_F(ChromeWebAuthenticationDelegateTest, MaybeGetRelyingPartyIdOverride) {
   }
 }
 
-TEST_F(ChromeWebAuthenticationDelegateTest, DeletePasskey) {
-  const auto test_origin = url::Origin::Create(GURL("https://example.com"));
-  ChromeWebAuthenticationDelegate delegate;
-  sync_pb::WebauthnCredentialSpecifics passkey;
-  passkey.set_credential_id(kCredentialId1);
-  passkey.set_rp_id(kRpId);
-  webauthn::PasskeyModel* passkey_model =
-      PasskeyModelFactory::GetForProfile(profile());
-  ASSERT_TRUE(passkey_model);
-  passkey_model->AddNewPasskeyForTesting(std::move(passkey));
-  {
-    // Attempt removing an unknown credential.
-    base::HistogramTester histogram_tester;
-    delegate.PasskeyUnrecognized(web_contents(), test_origin,
-                                 ToByteVector(kCredentialId2), kRpId);
-    EXPECT_TRUE(passkey_model->GetPasskey(kRpId, kCredentialId1,
-                                          ShadowedCredentials::kExclude));
-    histogram_tester.ExpectUniqueSample(
-        "WebAuthentication.SignalUnknownCredentialRemovedGPMPasskey",
-        ChromeWebAuthenticationDelegate::SignalUnknownCredentialResult::
-            kPasskeyNotFound,
-        1);
-  }
-  {
-    // Remove a known credential.
-    base::HistogramTester histogram_tester;
-    delegate.PasskeyUnrecognized(web_contents(), test_origin,
-                                 ToByteVector(kCredentialId1), kRpId);
-    EXPECT_FALSE(passkey_model->GetPasskey(kRpId, kCredentialId1,
-                                           ShadowedCredentials::kExclude));
-    histogram_tester.ExpectBucketCount(
-        "WebAuthentication.SignalUnknownCredentialRemovedGPMPasskey",
-        ChromeWebAuthenticationDelegate::SignalUnknownCredentialResult::
-            kPasskeyRemoved,
-        1);
-  }
-}
-
-TEST_F(ChromeWebAuthenticationDelegateTest, DeleteUnacceptedPasskey) {
-  const auto test_origin = url::Origin::Create(GURL("https://example.com"));
-  ChromeWebAuthenticationDelegate delegate;
-  sync_pb::WebauthnCredentialSpecifics passkey;
-  passkey.set_credential_id(kCredentialId1);
-  passkey.set_rp_id(kRpId);
-  passkey.set_user_id(kUserId);
-  webauthn::PasskeyModel* passkey_model =
-      PasskeyModelFactory::GetForProfile(profile());
-  ASSERT_TRUE(passkey_model);
-  passkey_model->AddNewPasskeyForTesting(std::move(passkey));
-  {
-    // Pass a known credential. It should not be removed.
-    base::HistogramTester histogram_tester;
-    delegate.SignalAllAcceptedCredentials(web_contents(), test_origin, kRpId,
-                                          ToByteVector(kUserId),
-                                          {ToByteVector(kCredentialId1)});
-    EXPECT_TRUE(passkey_model->GetPasskey(kRpId, kCredentialId1,
-                                          ShadowedCredentials::kExclude));
-    histogram_tester.ExpectUniqueSample(
-        "WebAuthentication.SignalAllAcceptedCredentialsRemovedGPMPasskey",
-        ChromeWebAuthenticationDelegate::SignalAllAcceptedCredentialsResult::
-            kNoPasskeyChanged,
-        1);
-  }
-  {
-    // Do not pass the known credential. The known credential should be removed.
-    base::HistogramTester histogram_tester;
-    delegate.SignalAllAcceptedCredentials(web_contents(), test_origin, kRpId,
-                                          ToByteVector(kUserId),
-                                          {ToByteVector(kCredentialId2)});
-    EXPECT_FALSE(passkey_model->GetPasskey(kRpId, kCredentialId1,
-                                           ShadowedCredentials::kExclude));
-    histogram_tester.ExpectUniqueSample(
-        "WebAuthentication.SignalAllAcceptedCredentialsRemovedGPMPasskey",
-        ChromeWebAuthenticationDelegate::SignalAllAcceptedCredentialsResult::
-            kPasskeyRemoved,
-        1);
-  }
-}
-
 TEST_F(ChromeWebAuthenticationDelegateTest, UpdatePasskey) {
   const auto test_origin = url::Origin::Create(GURL("https://example.com"));
   std::vector<uint8_t> user_id = ToByteVector(kUserId);
@@ -550,8 +468,6 @@ class ChromeWebAuthenticationSignalApiHidePasskeysTest
  public:
   void SetUp() override {
     ChromeWebAuthenticationDelegateTest::SetUp();
-    scoped_feature_list_.InitWithFeatureState(
-        device::kWebAuthnSignalApiHidePasskeys, true);
     passkey_model_ = PasskeyModelFactory::GetForProfile(profile());
     ASSERT_TRUE(passkey_model_);
     histogram_tester_ = std::make_unique<base::HistogramTester>();
@@ -589,7 +505,6 @@ class ChromeWebAuthenticationSignalApiHidePasskeysTest
       url::Origin::Create(GURL("https://example.com"));
   ChromeWebAuthenticationDelegate delegate_;
   raw_ptr<webauthn::PasskeyModel> passkey_model_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 

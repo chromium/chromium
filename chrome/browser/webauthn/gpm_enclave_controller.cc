@@ -417,9 +417,7 @@ GPMEnclaveController::GPMEnclaveController(
       PasskeyModelFactory::GetInstance()->GetForProfile(profile);
   creds_ = passkey_model->GetPasskeys(
       rp_id_, webauthn::PasskeyModel::ShadowedCredentials::kExclude);
-  if (base::FeatureList::IsEnabled(device::kWebAuthnSignalApiHidePasskeys)) {
-    std::erase_if(creds_, [](const auto& cred) { return cred.hidden(); });
-  }
+  std::erase_if(creds_, [](const auto& cred) { return cred.hidden(); });
 
   // The following code may do some asynchronous processing. However the control
   // flow terminates, it must have called SetAccountState with some value.

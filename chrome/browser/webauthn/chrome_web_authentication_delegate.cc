@@ -180,43 +180,6 @@ bool ExtensionCanAssertRpId(const extensions::Extension& extension,
   return extension.permissions_data()->HasHostPermission(rp_id_url);
 }
 
-void DeleteUnacceptedPasskeys(
-    content::WebContents* web_contents,
-    const std::string& relying_party_id,
-    const std::vector<uint8_t>& user_id,
-    const std::vector<std::vector<uint8_t>>& all_accepted_credentials_ids) {
-  webauthn::PasskeyModel* passkey_store =
-      PasskeyModelFactory::GetInstance()->GetForProfile(
-          Profile::FromBrowserContext(web_contents->GetBrowserContext()));
-  bool is_passkey_deleted = false;
-  for (const auto& passkey : passkey_store->GetPasskeys(
-           relying_party_id,
-           webauthn::PasskeyModel::ShadowedCredentials::kExclude)) {
-    if (std::vector<uint8_t>(passkey.user_id().begin(),
-                             passkey.user_id().end()) == user_id &&
-        !std::ranges::contains(
-            all_accepted_credentials_ids,
-            std::vector<uint8_t>(passkey.credential_id().begin(),
-                                 passkey.credential_id().end()))) {
-      passkey_store->DeletePasskey(passkey.credential_id(), FROM_HERE);
-      is_passkey_deleted = true;
-    }
-  }
-  if (is_passkey_deleted) {
-    PasswordsClientUIDelegate* manage_passwords_ui_controller =
-        PasswordsClientUIDelegateFromWebContents(web_contents);
-    if (manage_passwords_ui_controller) {
-      manage_passwords_ui_controller->OnPasskeyNotAccepted(relying_party_id);
-    }
-  }
-  LogSignalAllAcceptedCredentials(
-      is_passkey_deleted
-          ? ChromeWebAuthenticationDelegate::
-                SignalAllAcceptedCredentialsResult::kPasskeyRemoved
-          : ChromeWebAuthenticationDelegate::
-                SignalAllAcceptedCredentialsResult::kNoPasskeyChanged);
-}
-
 void HideAndRestorePasskeys(
     content::WebContents* web_contents,
     const url::Origin& origin,
@@ -433,13 +396,11 @@ void ChromeWebAuthenticationDelegate::PasskeyUnrecognized(
     const std::string& relying_party_id) {
   webauthn::PasskeyChangeQuotaTracker* quota_tracker =
       webauthn::PasskeyChangeQuotaTracker::GetInstance();
-  if (base::FeatureList::IsEnabled(device::kWebAuthnSignalApiHidePasskeys)) {
-    if (!quota_tracker->CanMakeChange(origin)) {
-      LogSignalUnknownCredential(SignalUnknownCredentialResult::kQuotaExceeded);
-      FIDO_LOG(ERROR) << "Dropping removal request from " << origin
-                      << ": quota exceeded.";
-      return;
-    }
+  if (!quota_tracker->CanMakeChange(origin)) {
+    LogSignalUnknownCredential(SignalUnknownCredentialResult::kQuotaExceeded);
+    FIDO_LOG(ERROR) << "Dropping removal request from " << origin
+                    << ": quota exceeded.";
+    return;
   }
   webauthn::PasskeyModel* passkey_store =
       PasskeyModelFactory::GetInstance()->GetForProfile(
@@ -454,20 +415,15 @@ void ChromeWebAuthenticationDelegate::PasskeyUnrecognized(
     LogSignalUnknownCredential(SignalUnknownCredentialResult::kPasskeyNotFound);
     return;
   }
-  if (base::FeatureList::IsEnabled(device::kWebAuthnSignalApiHidePasskeys)) {
-    if (credential_specifics->hidden()) {
-      LogSignalUnknownCredential(
-          SignalUnknownCredentialResult::kPasskeyAlreadyHidden);
-      return;
-    }
-    quota_tracker->TrackChange(origin);
-    passkey_store->HidePasskey(std::move(credential_id),
-                               /*hidden_time=*/base::Time::Now());
-    LogSignalUnknownCredential(SignalUnknownCredentialResult::kPasskeyHidden);
-  } else {
-    passkey_store->DeletePasskey(std::move(credential_id), FROM_HERE);
-    LogSignalUnknownCredential(SignalUnknownCredentialResult::kPasskeyRemoved);
+  if (credential_specifics->hidden()) {
+    LogSignalUnknownCredential(
+        SignalUnknownCredentialResult::kPasskeyAlreadyHidden);
+    return;
   }
+  quota_tracker->TrackChange(origin);
+  passkey_store->HidePasskey(std::move(credential_id),
+                             /*hidden_time=*/base::Time::Now());
+  LogSignalUnknownCredential(SignalUnknownCredentialResult::kPasskeyHidden);
   PasswordsClientUIDelegate* manage_passwords_ui_controller =
       PasswordsClientUIDelegateFromWebContents(web_contents);
   if (manage_passwords_ui_controller) {
@@ -481,13 +437,8 @@ void ChromeWebAuthenticationDelegate::SignalAllAcceptedCredentials(
     const std::string& relying_party_id,
     const std::vector<uint8_t>& user_id,
     const std::vector<std::vector<uint8_t>>& all_accepted_credentials_ids) {
-  if (base::FeatureList::IsEnabled(device::kWebAuthnSignalApiHidePasskeys)) {
-    HideAndRestorePasskeys(web_contents, origin, relying_party_id, user_id,
-                           all_accepted_credentials_ids);
-  } else {
-    DeleteUnacceptedPasskeys(web_contents, relying_party_id, user_id,
-                             all_accepted_credentials_ids);
-  }
+  HideAndRestorePasskeys(web_contents, origin, relying_party_id, user_id,
+                         all_accepted_credentials_ids);
 }
 
 void ChromeWebAuthenticationDelegate::UpdateUserPasskeys(

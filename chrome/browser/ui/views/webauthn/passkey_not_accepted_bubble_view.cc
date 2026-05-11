@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
@@ -19,7 +18,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "content/public/browser/web_contents.h"
-#include "device/fido/public/features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -56,10 +54,7 @@ PasskeyNotAcceptedBubbleView::PasskeyNotAcceptedBubbleView(
   const std::u16string link =
       l10n_util::GetStringUTF16(IDS_WEBAUTHN_GPM_PASSKEY_DELETED_LINK);
   std::u16string text = l10n_util::GetStringFUTF16(
-      base::FeatureList::IsEnabled(device::kWebAuthnSignalApiHidePasskeys)
-          ? IDS_WEBAUTHN_GPM_PASSKEY_DOESNT_WORK_LABEL
-          : IDS_WEBAUTHN_GPM_PASSKEY_DELETED_LABEL,
-      link, &offset);
+      IDS_WEBAUTHN_GPM_PASSKEY_DOESNT_WORK_LABEL, link, &offset);
 
   auto label = std::make_unique<views::StyledLabel>();
   label->SetText(text);
