@@ -404,6 +404,7 @@ using flags_ui::kDeprecated;
 using flags_ui::kOsAndroid;
 using flags_ui::kOsCrOS;
 using flags_ui::kOsCrOSOwnerOnly;
+using flags_ui::kOsFuchsia;
 using flags_ui::kOsLinux;
 using flags_ui::kOsMac;
 using flags_ui::kOsWin;
@@ -4651,7 +4652,8 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAccelerated2dCanvasDescription, kOsAll,
      SINGLE_DISABLE_VALUE_TYPE(switches::kDisableAccelerated2dCanvas)},
     {"overlay-strategies", flag_descriptions::kOverlayStrategiesName,
-     flag_descriptions::kOverlayStrategiesDescription, kOsAll,
+     flag_descriptions::kOverlayStrategiesDescription,
+     kOsLinux | kOsCrOS | kOsFuchsia,
      MULTI_VALUE_TYPE(kOverlayStrategiesChoices)},
     {"tint-composited-content", flag_descriptions::kTintCompositedContentName,
      flag_descriptions::kTintCompositedContentDescription, kOsAll,
