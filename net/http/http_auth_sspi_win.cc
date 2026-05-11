@@ -545,8 +545,10 @@ int HttpAuthSSPI::GetNextSecurityToken(const std::string& spn,
   // Firefox only sets ISC_REQ_DELEGATE, but MSDN documentation indicates that
   // ISC_REQ_MUTUAL_AUTH must also be set. On Windows delegation by KDC policy
   // is always respected.
-  if (delegation_type_ != DelegationType::kNone)
+  if (scheme_ == HttpAuth::AUTH_SCHEME_NEGOTIATE &&
+      delegation_type_ != DelegationType::kNone) {
     context_flags |= (ISC_REQ_DELEGATE | ISC_REQ_MUTUAL_AUTH);
+  }
 
   net_log.BeginEvent(NetLogEventType::AUTH_LIBRARY_INIT_SEC_CTX, [&] {
     base::DictValue params;
