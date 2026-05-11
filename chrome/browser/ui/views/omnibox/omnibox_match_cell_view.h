@@ -80,6 +80,9 @@ class OmniboxMatchCellView : public views::View {
   void OnMatchUpdate(const OmniboxResultView* result_view,
                      const AutocompleteMatch& match);
 
+  // Notifies the view that the visibility of the secondary text has changed.
+  void OnSecondaryTextVisibilityChanged();
+
   // Set's the `icon_view_` image, possibly with a rounded square background.
   void SetIcon(const gfx::ImageSkia& image, const AutocompleteMatch& match);
 
