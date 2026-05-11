@@ -9801,7 +9801,6 @@ crbug.com/507309053 [ Linux ] virtual/permission-element/external/wpt/html/seman
 crbug.com/510128101 [ Win ] fast/forms/color/color-picker-events-change.html [ Failure ]
 crbug.com/485661974 [ Mac ] external/wpt/client-hints/critical-ch/request-count.multiple.https.window.html [ Failure ]
 crbug.com/485661974 [ Mac ] external/wpt/client-hints/critical-ch/unsafe-method.https.window.html [ Failure ]
-crbug.com/510134469 [ Mac ] external/wpt/css/css-transforms/rotate/svg-rotate-3args-invalid-001.html [ Failure ]
 crbug.com/507309053 [ Mac ] external/wpt/html/semantics/permission-element/usermedia/set-constraints-combinations.tentative.https.html [ Failure ]
 crbug.com/506273267 virtual/permission-element/external/wpt/html/semantics/permission-element/usermedia/set-constraints-combinations.tentative.https.html [ Failure Pass ]
 
