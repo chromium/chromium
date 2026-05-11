@@ -172,51 +172,46 @@ TEST_F(PasskeyRequestDetailsTest, ExcludedPasskey) {
 }
 
 TEST_F(PasskeyRequestDetailsTest, LargeBlobHelperDetectsRequest) {
-  if (@available(iOS 18.0, *)) {
-    NSUserDefaults* defaults = app_group::GetGroupUserDefaults();
-    [defaults
-        setBool:YES
-         forKey:AppGroupUserDefaulsCredentialProviderPasskeyLargeBlobEnabled()];
-    [defaults synchronize];
+  NSUserDefaults* defaults = app_group::GetGroupUserDefaults();
+  [defaults
+      setBool:YES
+       forKey:AppGroupUserDefaulsCredentialProviderPasskeyLargeBlobEnabled()];
+  [defaults synchronize];
 
-    // Large Blob required.
-    id mockInputRequired =
-        OCMClassMock([ASPasskeyRegistrationCredentialExtensionInput class]);
-    id mockLargeBlobRequired = OCMClassMock(
-        [ASAuthorizationPublicKeyCredentialLargeBlobRegistrationInput class]);
-    OCMStub([mockLargeBlobRequired supportRequirement])
-        .andReturn(
-            ASAuthorizationPublicKeyCredentialLargeBlobSupportRequirementRequired);
-    OCMStub([mockInputRequired largeBlob]).andReturn(mockLargeBlobRequired);
-    EXPECT_TRUE([PasskeyRequestDetails
-        isLargeBlobSupportRequestedFromRegistrationInput:mockInputRequired]);
+  // Large Blob required.
+  id mockInputRequired =
+      OCMClassMock([ASPasskeyRegistrationCredentialExtensionInput class]);
+  id mockLargeBlobRequired = OCMClassMock(
+      [ASAuthorizationPublicKeyCredentialLargeBlobRegistrationInput class]);
+  OCMStub([mockLargeBlobRequired supportRequirement])
+      .andReturn(
+          ASAuthorizationPublicKeyCredentialLargeBlobSupportRequirementRequired);
+  OCMStub([mockInputRequired largeBlob]).andReturn(mockLargeBlobRequired);
+  EXPECT_TRUE([PasskeyRequestDetails
+      isLargeBlobSupportRequestedFromRegistrationInput:mockInputRequired]);
 
-    // Large Blob preferred.
-    id mockInputPreferred =
-        OCMClassMock([ASPasskeyRegistrationCredentialExtensionInput class]);
-    id mockLargeBlobPreferred = OCMClassMock(
-        [ASAuthorizationPublicKeyCredentialLargeBlobRegistrationInput class]);
-    OCMStub([mockLargeBlobPreferred supportRequirement])
-        .andReturn(
-            ASAuthorizationPublicKeyCredentialLargeBlobSupportRequirementPreferred);
-    OCMStub([mockInputPreferred largeBlob]).andReturn(mockLargeBlobPreferred);
-    EXPECT_TRUE([PasskeyRequestDetails
-        isLargeBlobSupportRequestedFromRegistrationInput:mockInputPreferred]);
+  // Large Blob preferred.
+  id mockInputPreferred =
+      OCMClassMock([ASPasskeyRegistrationCredentialExtensionInput class]);
+  id mockLargeBlobPreferred = OCMClassMock(
+      [ASAuthorizationPublicKeyCredentialLargeBlobRegistrationInput class]);
+  OCMStub([mockLargeBlobPreferred supportRequirement])
+      .andReturn(
+          ASAuthorizationPublicKeyCredentialLargeBlobSupportRequirementPreferred);
+  OCMStub([mockInputPreferred largeBlob]).andReturn(mockLargeBlobPreferred);
+  EXPECT_TRUE([PasskeyRequestDetails
+      isLargeBlobSupportRequestedFromRegistrationInput:mockInputPreferred]);
 
-    // Large Blob preference none.
-    id mockInputNil =
-        OCMClassMock([ASPasskeyRegistrationCredentialExtensionInput class]);
-    OCMStub([mockInputNil largeBlob]).andReturn(nil);
-    EXPECT_FALSE([PasskeyRequestDetails
-        isLargeBlobSupportRequestedFromRegistrationInput:mockInputNil]);
+  // Large Blob preference none.
+  id mockInputNil =
+      OCMClassMock([ASPasskeyRegistrationCredentialExtensionInput class]);
+  OCMStub([mockInputNil largeBlob]).andReturn(nil);
+  EXPECT_FALSE([PasskeyRequestDetails
+      isLargeBlobSupportRequestedFromRegistrationInput:mockInputNil]);
 
-    // Clean up flag.
-    [defaults
-        removeObjectForKey:
-            AppGroupUserDefaulsCredentialProviderPasskeyLargeBlobEnabled()];
-  } else {
-    GTEST_SKIP() << "Large Blob requires iOS 18.0+.";
-  }
+  // Clean up flag.
+  [defaults removeObjectForKey:
+                AppGroupUserDefaulsCredentialProviderPasskeyLargeBlobEnabled()];
 }
 
 // Tests that the 5-minute time constraint works as expected for passwords.

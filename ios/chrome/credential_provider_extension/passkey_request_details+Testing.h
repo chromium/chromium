@@ -13,8 +13,7 @@
 @interface PasskeyRequestDetails (Testing)
 
 + (BOOL)isLargeBlobSupportRequestedFromRegistrationInput:
-    (ASPasskeyRegistrationCredentialExtensionInput*)registrationInput
-    API_AVAILABLE(ios(18.0));
+    (ASPasskeyRegistrationCredentialExtensionInput*)registrationInput;
 
 // Init with the URL, to use as the relying party identifier.
 - (instancetype)initWithURL:(NSString*)url

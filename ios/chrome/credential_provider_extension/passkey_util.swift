@@ -10,7 +10,7 @@ import Foundation
   public var saltInput1: Data
   public var saltInput2: Data?
 
-  @available(iOS 18.0, *) init(
+  init(
     inputValues: ASAuthorizationPublicKeyCredentialPRFAssertionInput.InputValues
   ) {
     saltInput1 = inputValues.saltInput1
@@ -22,7 +22,7 @@ import Foundation
   public var saltOutput1: Data
   public var saltOutput2: Data?
 
-  @available(iOS 18.0, *) @objc public static func fromValues(
+  @objc public static func fromValues(
     _ outputValues: [Data]
   )
     -> PRFOutputValues?
@@ -30,30 +30,30 @@ import Foundation
     return outputValues.isEmpty ? nil : PRFOutputValues(outputValues: outputValues)
   }
 
-  @available(iOS 18.0, *) init(
+  init(
     outputValues: [Data]
   ) {
     saltOutput1 = outputValues[0]
     saltOutput2 = (outputValues.count > 1) ? outputValues[1] : nil
   }
 
-  @available(iOS 18.0, *) func key1() -> CryptoKit.SymmetricKey {
+  func key1() -> CryptoKit.SymmetricKey {
     return CryptoKit.SymmetricKey(data: saltOutput1)
   }
 
-  @available(iOS 18.0, *) func key2() -> CryptoKit.SymmetricKey? {
+  func key2() -> CryptoKit.SymmetricKey? {
     guard let saltInput = saltOutput2 else { return nil }
     return CryptoKit.SymmetricKey(data: saltInput)
   }
 
-  @available(iOS 18.0, *) func toAssertionOutput()
+  func toAssertionOutput()
     -> ASAuthorizationPublicKeyCredentialPRFAssertionOutput?
   {
     return ASAuthorizationPublicKeyCredentialPRFAssertionOutput(
       first: key1(), second: key2())
   }
 
-  @available(iOS 18.0, *) func toRegistrationOutput()
+  func toRegistrationOutput()
     -> ASAuthorizationPublicKeyCredentialPRFRegistrationOutput?
   {
     return ASAuthorizationPublicKeyCredentialPRFRegistrationOutput(
@@ -66,7 +66,7 @@ import Foundation
   public var perCredentialInputValues: [Data: PRFInputValues] = [:]
   public var checkForSupport: Bool
 
-  @available(iOS 18.0, *) init(
+  init(
     input: ASAuthorizationPublicKeyCredentialPRFAssertionInput
   ) {
     checkForSupport = false
@@ -79,7 +79,7 @@ import Foundation
     }
   }
 
-  @available(iOS 18.0, *) init(
+  init(
     input: ASAuthorizationPublicKeyCredentialPRFRegistrationInput
   ) {
     checkForSupport = input.shouldCheckForSupport
@@ -87,14 +87,14 @@ import Foundation
     setInputValues(input.inputValues)
   }
 
-  @available(iOS 18.0, *) func setInputValues(
+  func setInputValues(
     _ values: ASAuthorizationPublicKeyCredentialPRFAssertionInput.InputValues?
   ) {
     guard let prfInputValues = values else { return }
     inputValues = PRFInputValues(inputValues: prfInputValues)
   }
 
-  @available(iOS 18.0, *) @objc public static func fromParameters(
+  @objc public static func fromParameters(
     _ parameters: ASPasskeyCredentialRequestParameters
   )
     -> PRFData?
@@ -103,7 +103,7 @@ import Foundation
     return PRFData(input: prf)
   }
 
-  @available(iOS 18.0, *) @objc public static func fromRequest(
+  @objc public static func fromRequest(
     _ request: ASPasskeyCredentialRequest
   )
     -> PRFData?
@@ -123,7 +123,7 @@ import Foundation
   }
 }
 
-@available(iOS 18.0, *) @objc extension ASPasskeyAssertionCredential {
+@objc extension ASPasskeyAssertionCredential {
   @objc public func setPRF(fromOutputValues outputValues: PRFOutputValues) {
     guard let prf = outputValues.toAssertionOutput() else { return }
     extensionOutput = ASPasskeyAssertionCredentialExtensionOutput(
@@ -131,7 +131,7 @@ import Foundation
   }
 }
 
-@available(iOS 18.0, *) @objc extension ASPasskeyRegistrationCredential {
+@objc extension ASPasskeyRegistrationCredential {
   @objc public func setPRF(fromOutputValues outputValues: PRFOutputValues) {
     guard let prf = outputValues.toRegistrationOutput() else { return }
     extensionOutput = ASPasskeyRegistrationCredentialExtensionOutput(

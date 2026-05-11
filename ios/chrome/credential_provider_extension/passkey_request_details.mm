@@ -63,8 +63,7 @@ constexpr base::TimeDelta kPasskeyUpgradeRecencyThreshold = base::Minutes(5);
 // This is determined by the presence of the 'largeBlob' property on the input
 // object which indicates that support is either required or preferred.
 + (BOOL)isLargeBlobSupportRequestedFromRegistrationInput:
-    (ASPasskeyRegistrationCredentialExtensionInput*)registrationInput
-    API_AVAILABLE(ios(18.0)) {
+    (ASPasskeyRegistrationCredentialExtensionInput*)registrationInput {
   if (!IsPasskeyLargeBlobEnabled()) {
     return NO;
   }
@@ -92,10 +91,7 @@ constexpr base::TimeDelta kPasskeyUpgradeRecencyThreshold = base::Minutes(5);
     self.algorithmIsSupported = NO;
     self.userName = nil;
     self.userHandle = nil;
-
-    if (@available(iOS 18.0, *)) {
-      _prf = [PRFData fromParameters:passkeyCredentialRequestParameters];
-    }
+    _prf = [PRFData fromParameters:passkeyCredentialRequestParameters];
   }
   return self;
 }
@@ -136,23 +132,21 @@ constexpr base::TimeDelta kPasskeyUpgradeRecencyThreshold = base::Minutes(5);
     self.allowedCredentials = nil;
     self.excludedCredentials = nil;
 
-    if (@available(iOS 18.0, *)) {
-      if (passkeyCredentialRequest.excludedCredentials.count) {
-        NSMutableArray<NSData*>* excludedCredentials = [NSMutableArray array];
-        for (ASAuthorizationPlatformPublicKeyCredentialDescriptor* credential in
-                 passkeyCredentialRequest.excludedCredentials) {
-          [excludedCredentials addObject:credential.credentialID];
-        }
-        self.excludedCredentials = [excludedCredentials copy];
+    if (passkeyCredentialRequest.excludedCredentials.count) {
+      NSMutableArray<NSData*>* excludedCredentials = [NSMutableArray array];
+      for (ASAuthorizationPlatformPublicKeyCredentialDescriptor* credential in
+               passkeyCredentialRequest.excludedCredentials) {
+        [excludedCredentials addObject:credential.credentialID];
       }
-
-      _prf = [PRFData fromRequest:passkeyCredentialRequest];
-
-      // Registration side large blob extension.
-      _largeBlobCheckSupported = [PasskeyRequestDetails
-          isLargeBlobSupportRequestedFromRegistrationInput:
-              passkeyCredentialRequest.registrationExtensionInput];
+      self.excludedCredentials = [excludedCredentials copy];
     }
+
+    _prf = [PRFData fromRequest:passkeyCredentialRequest];
+
+    // Registration side large blob extension.
+    _largeBlobCheckSupported = [PasskeyRequestDetails
+        isLargeBlobSupportRequestedFromRegistrationInput:
+            passkeyCredentialRequest.registrationExtensionInput];
   }
   return self;
 }
@@ -162,32 +156,27 @@ constexpr base::TimeDelta kPasskeyUpgradeRecencyThreshold = base::Minutes(5);
                trustedVaultKeys:(webauthn::SharedKeyList)trustedVaultKeys
     didCompleteUserVerification:(BOOL)didCompleteUserVerification {
   NSArray<NSData*>* prfInputs = nil;
-  if (@available(iOS 18.0, *)) {
-    if (_prf.inputValues) {
-      prfInputs = [NSArray arrayWithObjects:_prf.inputValues.saltInput1,
-                                            _prf.inputValues.saltInput2, nil];
-    } else if (_prf.checkForSupport) {
-      // Initialize prfInputs with a non nil empty array to check for support.
-      prfInputs = [NSArray array];
-    }
+  if (_prf.inputValues) {
+    prfInputs = [NSArray arrayWithObjects:_prf.inputValues.saltInput1,
+                                          _prf.inputValues.saltInput2, nil];
+  } else if (_prf.checkForSupport) {
+    // Initialize prfInputs with a non nil empty array to check for support.
+    prfInputs = [NSArray array];
   }
   PasskeyCreationOutput passkeyCreationOutput = PerformPasskeyCreation(
       self.clientDataHash, self.relyingPartyIdentifier, self.userName,
       self.userHandle, gaia, std::move(trustedVaultKeys), prfInputs,
       didCompleteUserVerification);
-  if (@available(iOS 18.0, *)) {
-    if (passkeyCreationOutput.credential) {
-      if ([passkeyCreationOutput.prf_outputs count]) {
-        PRFOutputValues* prfOutputValues =
-            [PRFOutputValues fromValues:passkeyCreationOutput.prf_outputs];
-        [passkeyCreationOutput.credential
-            setPRFFromOutputValues:prfOutputValues];
-      } else if (_prf.checkForSupport) {
-        [passkeyCreationOutput.credential setPRFIsSupported];
-      }
-      if (_largeBlobCheckSupported) {
-        [passkeyCreationOutput.credential setLargeBlobIsSupported];
-      }
+  if (passkeyCreationOutput.credential) {
+    if ([passkeyCreationOutput.prf_outputs count]) {
+      PRFOutputValues* prfOutputValues =
+          [PRFOutputValues fromValues:passkeyCreationOutput.prf_outputs];
+      [passkeyCreationOutput.credential setPRFFromOutputValues:prfOutputValues];
+    } else if (_prf.checkForSupport) {
+      [passkeyCreationOutput.credential setPRFIsSupported];
+    }
+    if (_largeBlobCheckSupported) {
+      [passkeyCreationOutput.credential setLargeBlobIsSupported];
     }
   }
   return passkeyCreationOutput.credential;
@@ -199,31 +188,26 @@ constexpr base::TimeDelta kPasskeyUpgradeRecencyThreshold = base::Minutes(5);
     didCompleteUserVerification:(BOOL)didCompleteUserVerification {
   NSArray<NSData*>* prfInputs = nil;
   PRFInputValues* inputValues = nil;
-  if (@available(iOS 18.0, *)) {
-    if (_prf) {
-      // Check if there's per credential values available.
-      inputValues = _prf.perCredentialInputValues[credential.credentialId];
-      if (!inputValues) {
-        // If there are no per credential values, use the generic values.
-        inputValues = _prf.inputValues;
-      }
-      if (inputValues) {
-        prfInputs = [NSArray arrayWithObjects:inputValues.saltInput1,
-                                              inputValues.saltInput2, nil];
-      }
+  if (_prf) {
+    // Check if there's per credential values available.
+    inputValues = _prf.perCredentialInputValues[credential.credentialId];
+    if (!inputValues) {
+      // If there are no per credential values, use the generic values.
+      inputValues = _prf.inputValues;
+    }
+    if (inputValues) {
+      prfInputs = [NSArray
+          arrayWithObjects:inputValues.saltInput1, inputValues.saltInput2, nil];
     }
   }
   PasskeyAssertionOutput passkeyAssertionOutput = PerformPasskeyAssertion(
       credential, self.clientDataHash, self.allowedCredentials,
       std::move(trustedVaultKeys), prfInputs, didCompleteUserVerification);
-  if (@available(iOS 18.0, *)) {
-    if (passkeyAssertionOutput.credential &&
-        [passkeyAssertionOutput.prf_outputs count]) {
-      PRFOutputValues* prfOutputValues =
-          [PRFOutputValues fromValues:passkeyAssertionOutput.prf_outputs];
-      [passkeyAssertionOutput.credential
-          setPRFFromOutputValues:prfOutputValues];
-    }
+  if (passkeyAssertionOutput.credential &&
+      [passkeyAssertionOutput.prf_outputs count]) {
+    PRFOutputValues* prfOutputValues =
+        [PRFOutputValues fromValues:passkeyAssertionOutput.prf_outputs];
+    [passkeyAssertionOutput.credential setPRFFromOutputValues:prfOutputValues];
   }
   return passkeyAssertionOutput.credential;
 }
