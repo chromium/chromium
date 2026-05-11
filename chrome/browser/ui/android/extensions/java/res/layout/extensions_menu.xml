@@ -42,17 +42,39 @@ found in the LICENSE file.
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"/>
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/extensions_menu_site_settings_toggle_container"
                 style="@style/ExtensionsMenuControlRow"
                 app:layout_constraintTop_toBottomOf="@+id/extensions_menu_header"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" >
+                app:layout_constraintEnd_toEndOf="parent">
 
                 <TextView
                     android:id="@+id/extensions_menu_site_settings_toggle_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="0dp"
+                    app:layout_constrainedWidth="true"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/extensions_menu_site_settings_info_icon"
+                    app:layout_constraintHorizontal_bias="0"
+                    app:layout_constraintHorizontal_chainStyle="packed"
                     style="@style/ExtensionsMenuAllowAccessText" />
+
+                <ImageView
+                    android:id="@+id/extensions_menu_site_settings_info_icon"
+                    android:layout_width="@dimen/extensions_menu_extension_icon_size"
+                    android:layout_height="@dimen/extensions_menu_extension_icon_size"
+                    android:layout_marginStart="4dp"
+                    android:src="@drawable/ic_info_24dp"
+                    android:visibility="gone"
+                    app:layout_constraintStart_toEndOf="@+id/extensions_menu_site_settings_toggle_text"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/extensions_menu_site_settings_toggle"
+                    android:contentDescription="@string/extensions_menu_message_section_enterprise_tooltip_icon_text" />
 
                 <com.google.android.material.materialswitch.MaterialSwitch
                     android:id="@+id/extensions_menu_site_settings_toggle"
@@ -61,8 +83,12 @@ found in the LICENSE file.
                     android:minHeight="0dp"
                     android:minWidth="0dp"
                     android:focusable="false"
-                    android:clickable="false" />
-            </LinearLayout>
+                    android:clickable="false"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <View
                 android:id="@+id/extensions_menu_header_divider"

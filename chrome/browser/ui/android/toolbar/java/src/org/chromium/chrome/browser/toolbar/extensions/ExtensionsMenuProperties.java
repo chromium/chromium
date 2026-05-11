@@ -85,6 +85,9 @@ class ExtensionsMenuProperties {
      * Properties for the site settings toggle that allows users to block or allow all extensions
      * for the current site.
      */
+    public static final WritableBooleanPropertyKey SITE_SETTINGS_INFO_ICON_VISIBLE =
+            new WritableBooleanPropertyKey();
+
     public static final WritableObjectPropertyKey<String> SITE_SETTINGS_LABEL =
             new WritableObjectPropertyKey<>();
 
@@ -116,6 +119,7 @@ class ExtensionsMenuProperties {
                 OPTIONAL_SECTION_TYPE,
                 RELOAD_CLICK_LISTENER,
                 SITE_SETTINGS_CONTAINER_VISIBLE,
+                SITE_SETTINGS_INFO_ICON_VISIBLE,
                 SITE_SETTINGS_LABEL,
                 SITE_SETTINGS_TOGGLE_CHECKED,
                 SITE_SETTINGS_TOGGLE_CLICK_LISTENER,

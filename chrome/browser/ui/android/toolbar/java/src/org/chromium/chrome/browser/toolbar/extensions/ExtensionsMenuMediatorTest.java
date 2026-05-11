@@ -141,7 +141,10 @@ public class ExtensionsMenuMediatorTest {
         // Mock site settings state.
         mSiteSettingsState =
                 createSiteSettingsState(
-                        "label", ExtensionsMenuTypes.ControlState.Status.HIDDEN, /* isOn= */ false);
+                        "label",
+                        ExtensionsMenuTypes.ControlState.Status.HIDDEN,
+                        /* isOn= */ false,
+                        /* hasTooltip= */ false);
         when(mExtensionsMenuBridgeJniMock.getSiteSettings(anyLong()))
                 .thenReturn(mSiteSettingsState);
         when(mExtensionsMenuBridgeJniMock.init(any(), anyLong(), anyLong()))
@@ -707,7 +710,8 @@ public class ExtensionsMenuMediatorTest {
                 createSiteSettingsState(
                         "test_label",
                         ExtensionsMenuTypes.ControlState.Status.ENABLED,
-                        /* isOn= */ true);
+                        /* isOn= */ true,
+                        /* hasTooltip= */ false);
         when(mExtensionsMenuBridgeJniMock.getSiteSettings(anyLong()))
                 .thenReturn(siteSettingsStateOn);
         mMenuMediator.updateSiteSettingsToggle();
@@ -719,6 +723,8 @@ public class ExtensionsMenuMediatorTest {
         verify(mMenuPropertyModel).set(ExtensionsMenuProperties.SITE_SETTINGS_LABEL, "test_label");
         verify(mMenuPropertyModel)
                 .set(ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_TOOLTIP, "tooltip");
+        verify(mMenuPropertyModel)
+                .set(ExtensionsMenuProperties.SITE_SETTINGS_INFO_ICON_VISIBLE, false);
 
         clearInvocations(mMenuPropertyModel);
 
@@ -727,7 +733,8 @@ public class ExtensionsMenuMediatorTest {
                 createSiteSettingsState(
                         "test_label_2",
                         ExtensionsMenuTypes.ControlState.Status.ENABLED,
-                        /* isOn= */ false);
+                        /* isOn= */ false,
+                        /* hasTooltip= */ false);
         when(mExtensionsMenuBridgeJniMock.getSiteSettings(anyLong()))
                 .thenReturn(siteSettingsStateOff);
         mMenuMediator.updateSiteSettingsToggle();
@@ -741,6 +748,8 @@ public class ExtensionsMenuMediatorTest {
                 .set(ExtensionsMenuProperties.SITE_SETTINGS_LABEL, "test_label_2");
         verify(mMenuPropertyModel)
                 .set(ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_TOOLTIP, "tooltip");
+        verify(mMenuPropertyModel)
+                .set(ExtensionsMenuProperties.SITE_SETTINGS_INFO_ICON_VISIBLE, false);
 
         clearInvocations(mMenuPropertyModel);
 
@@ -749,7 +758,8 @@ public class ExtensionsMenuMediatorTest {
                 createSiteSettingsState(
                         "test_label_3",
                         ExtensionsMenuTypes.ControlState.Status.HIDDEN,
-                        /* isOn= */ false);
+                        /* isOn= */ false,
+                        /* hasTooltip= */ false);
         when(mExtensionsMenuBridgeJniMock.getSiteSettings(anyLong()))
                 .thenReturn(siteSettingsStateHidden);
         mMenuMediator.updateSiteSettingsToggle();
@@ -764,6 +774,30 @@ public class ExtensionsMenuMediatorTest {
                 .set(ExtensionsMenuProperties.SITE_SETTINGS_LABEL, "test_label_3");
         verify(mMenuPropertyModel)
                 .set(ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_TOOLTIP, "tooltip");
+        verify(mMenuPropertyModel)
+                .set(ExtensionsMenuProperties.SITE_SETTINGS_INFO_ICON_VISIBLE, false);
+    }
+
+    @Test
+    public void testUpdateSiteSettingsToggle_WithTooltip() {
+        ExtensionsMenuTypes.SiteSettingsState siteSettingsState =
+                createSiteSettingsState(
+                        "test_label",
+                        ExtensionsMenuTypes.ControlState.Status.ENABLED,
+                        /* isOn= */ true,
+                        /* hasTooltip= */ true);
+        when(mExtensionsMenuBridgeJniMock.getSiteSettings(anyLong())).thenReturn(siteSettingsState);
+        mMenuMediator.updateSiteSettingsToggle();
+
+        verify(mMenuPropertyModel)
+                .set(ExtensionsMenuProperties.SITE_SETTINGS_CONTAINER_VISIBLE, true);
+        verify(mMenuPropertyModel).set(ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_VISIBLE, true);
+        verify(mMenuPropertyModel).set(ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_CHECKED, true);
+        verify(mMenuPropertyModel).set(ExtensionsMenuProperties.SITE_SETTINGS_LABEL, "test_label");
+        verify(mMenuPropertyModel)
+                .set(ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_TOOLTIP, "tooltip");
+        verify(mMenuPropertyModel)
+                .set(ExtensionsMenuProperties.SITE_SETTINGS_INFO_ICON_VISIBLE, true);
     }
 
     @Test
@@ -1531,7 +1565,10 @@ public class ExtensionsMenuMediatorTest {
     }
 
     private ExtensionsMenuTypes.SiteSettingsState createSiteSettingsState(
-            String label, @ExtensionsMenuTypes.ControlState.Status int status, boolean isOn) {
+            String label,
+            @ExtensionsMenuTypes.ControlState.Status int status,
+            boolean isOn,
+            boolean hasTooltip) {
         ExtensionsMenuTypes.ControlState toggleState =
                 new ExtensionsMenuTypes.ControlState(
                         status,
@@ -1540,7 +1577,6 @@ public class ExtensionsMenuMediatorTest {
                         "tooltip",
                         isOn,
                         /* icon= */ null);
-        return new ExtensionsMenuTypes.SiteSettingsState(
-                label, /* hasTooltip= */ false, toggleState);
+        return new ExtensionsMenuTypes.SiteSettingsState(label, hasTooltip, toggleState);
     }
 }

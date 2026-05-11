@@ -155,6 +155,18 @@ public class ExtensionsMenuViewBinder {
             ViewCompat.setTooltipText(
                     toggleContainer,
                     model.get(ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_TOOLTIP));
+        } else if (key == ExtensionsMenuProperties.SITE_SETTINGS_INFO_ICON_VISIBLE) {
+            View infoIcon = view.findViewById(R.id.extensions_menu_site_settings_info_icon);
+            boolean visible = model.get(ExtensionsMenuProperties.SITE_SETTINGS_INFO_ICON_VISIBLE);
+            infoIcon.setVisibility(visible ? View.VISIBLE : View.GONE);
+            String enterpriseTooltipText =
+                    view.getContext()
+                            .getString(
+                                    R.string
+                                            .extensions_menu_message_section_enterprise_tooltip_icon_text);
+            if (visible) {
+                ViewCompat.setTooltipText(infoIcon, enterpriseTooltipText);
+            }
         } else if (key == ExtensionsMenuProperties.MENU_BUTTON_PINNING_CLICK_LISTENER) {
             View.OnClickListener listener =
                     model.get(ExtensionsMenuProperties.MENU_BUTTON_PINNING_CLICK_LISTENER);
