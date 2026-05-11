@@ -527,9 +527,18 @@ public class StripLayoutTrailingButtonsCoordinator {
             mGlicTaskMenuCoordinator =
                     new GlicTaskMenuCoordinator(
                             mContext, mTabModelSelectorSupplier, mGlicClickHandler::onResult);
+            mGlicTaskMenuCoordinator.setOnDismiss(
+                    () -> {
+                        if (mGlicActorButton != null) {
+                            mGlicActorButton.setHighlighted(false);
+                            mRenderHost.requestRender();
+                        }
+                    });
         }
         mGlicTaskMenuCoordinator.show(
                 anchorRectProvider, mToolbarControlContainer.getRootView(), tasks);
+        mGlicActorButton.setHighlighted(true);
+        mRenderHost.requestRender();
     }
 
     /**

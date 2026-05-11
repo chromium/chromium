@@ -39,6 +39,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.actor.ActorKeyedService;
 import org.chromium.chrome.browser.actor.ActorKeyedServiceFactory;
+import org.chromium.chrome.browser.actor.ActorTask;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
@@ -104,6 +105,8 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
         mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
+        when(mToolbarContainerView.getRootView()).thenReturn(mToolbarContainerView);
+        when(mToolbarContainerView.getResources()).thenReturn(mActivity.getResources());
 
         when(mTaskTracker.get(anyInt())).thenReturn(mTask);
         when(mTask.getNativeBrowserWindowPtr(any(), any())).thenReturn(mBwiPtr);
@@ -290,6 +293,41 @@ public class StripLayoutTrailingButtonsCoordinatorTest {
         assertFalse(
                 "Glic button should not be highlighted when UI is hidden globally.",
                 mGlicButton.isHighlighted());
+    }
+
+    @Test
+    public void testGlicActorHighlightedState_TaskMenuShowHide() {
+        assertNotNull("Glic Actor button should be created.", mGlicActorButton);
+
+        mCoordinator.setGlicActorButtonVisible(true);
+        assertFalse(
+                "Glic Actor button should not be highlighted initially.",
+                mGlicActorButton.isHighlighted());
+
+        // Mock active tasks to ensure the menu actually opens
+        ActorTask task = Mockito.mock(ActorTask.class);
+        when(task.getTitle()).thenReturn("Test Task");
+        when(mActorKeyedService.getActiveTasks())
+                .thenReturn(java.util.Collections.singletonList(task));
+
+        // Simulate clicking the actor button to open the task menu
+        float actorX = mGlicActorButton.getDrawX() + mGlicActorButton.getWidth() / 2;
+        float actorY = mGlicActorButton.getDrawY() + mGlicActorButton.getHeight() / 2;
+        mCoordinator.click(0L, actorX, actorY, 0, 0, /* tabWidthDp= */ 100f);
+
+        // Verify button is in highlighted state and task menu is showing
+        assertTrue(
+                "Glic Actor button should be highlighted after task menu is shown.",
+                mGlicActorButton.isHighlighted());
+        assertTrue("Glic task menu should be showing.", mCoordinator.isMenuShowing());
+
+        // Simulate dismissing the task menu
+        mCoordinator.dismissTrailingButtonsMenu();
+
+        // Verify button returns to non-highlighted state
+        assertFalse(
+                "Glic Actor button should not be highlighted after task menu is dismissed.",
+                mGlicActorButton.isHighlighted());
     }
 
     @Test
