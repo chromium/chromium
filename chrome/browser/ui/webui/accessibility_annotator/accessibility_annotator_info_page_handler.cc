@@ -100,9 +100,10 @@ void AccessibilityAnnotatorInfoPageHandler::OnInfoDismissed() {
 void AccessibilityAnnotatorInfoPageHandler::OnManageSettingsClicked() {
   base::RecordAction(base::UserMetricsAction(
       "AccessibilityAnnotator.RemoteAnnotatorInfo.SettingsLinkClick"));
+  auto* browser_window_interface =
+      webui::GetBrowserWindowInterface(web_contents_);
 
-  if (auto* browser_window_interface =
-          webui::GetBrowserWindowInterface(web_contents_)) {
+  if (browser_window_interface) {
     browser_window_interface->OpenURL(
         content::OpenURLParams(
             GURL(accessibility_annotator::kAccessibilityAnnotatorSettingsURL),
@@ -117,8 +118,10 @@ void AccessibilityAnnotatorInfoPageHandler::OnLearnMoreClicked() {
   base::RecordAction(base::UserMetricsAction(
       "AccessibilityAnnotator.RemoteAnnotatorInfo.LearnMoreLinkClick"));
 
-  if (auto* browser_window_interface =
-          webui::GetBrowserWindowInterface(web_contents_)) {
+  auto* browser_window_interface =
+      webui::GetBrowserWindowInterface(web_contents_);
+
+  if (browser_window_interface) {
     browser_window_interface->OpenURL(
         content::OpenURLParams(
             GURL(accessibility_annotator::kAccessibilityAnnotatorLearnMoreURL),

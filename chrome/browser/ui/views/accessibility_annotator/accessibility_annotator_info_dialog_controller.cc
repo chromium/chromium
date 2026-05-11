@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/accessibility_annotator/accessibility_annotator_info_dialog.h"
 #include "chrome/browser/ui/webui/accessibility_annotator/accessibility_annotator_info_ui.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/views/controls/webview/webview.h"
@@ -73,6 +74,14 @@ void AccessibilityAnnotatorInfoDialogController::ShowDialog(
     info_ui->SetDialogCallback(std::move(wrapped_callback));
   } else if (callback) {
     std::move(callback).Run(InfoDialogResult::kDismissed);
+  }
+
+  if (web_contents) {
+    if (auto* browser_window_interface =
+            webui::GetBrowserWindowInterface(web_contents)) {
+      webui::SetBrowserWindowInterface(contents_wrapper->web_contents(),
+                                       browser_window_interface);
+    }
   }
 
   auto dialog_view = std::make_unique<AccessibilityAnnotatorInfoDialog>(

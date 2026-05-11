@@ -51,8 +51,8 @@ export function getHtml(this: AccessibilityAnnotatorInfoElement) {
         </div>
       </div>
     </div>
-    <p class="footer-text" .innerHTML=
-        "${this.i18nAdvanced('accessibilityAnnotatorInfoLearnMore')}">
+    <p class="footer-text" id="learnMore" @click="${this.onLearnMoreClick_}"
+      .innerHTML="${this.i18nAdvanced('accessibilityAnnotatorInfoLearnMore')}">
     </p>
   </div>
 

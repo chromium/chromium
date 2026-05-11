@@ -56,6 +56,15 @@ export class AccessibilityAnnotatorInfoElement extends
         .handler.onManageSettingsClicked();
   }
 
+  protected onLearnMoreClick_(e: Event) {
+    const target = e.target as HTMLElement;
+    if (target.tagName === 'A') {
+      e.preventDefault();
+      AccessibilityAnnotatorInfoBrowserProxy.getInstance()
+          .handler.onLearnMoreClicked();
+    }
+  }
+
   protected onGotItClick_() {
     AccessibilityAnnotatorInfoBrowserProxy.getInstance()
         .handler.onInfoAcknowledged();
