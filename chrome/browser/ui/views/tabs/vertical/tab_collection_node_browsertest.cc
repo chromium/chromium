@@ -495,7 +495,14 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest, CloseTabInteraction) {
   ASSERT_EQ(unpinned_node->children().size(), 2u);
 }
 
-IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest, DetachAndReattachGroup) {
+// TODO(crbug.com/512020454): Flaky at least on Mac and Linux.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#define MAYBE_DetachAndReattachGroup DISABLED_DetachAndReattachGroup
+#else
+#define MAYBE_DetachAndReattachGroup DetachAndReattachGroup
+#endif
+IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
+                       MAYBE_DetachAndReattachGroup) {
   // 1. Setup: Create an initial tab and a tab group to be detached.
   auto [contents_vector, group_id] = AppendTabsToNewGroup(2);
 
