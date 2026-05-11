@@ -95,9 +95,13 @@ which _are_ valid. As a rule:
 
 * If the bug is **not probably valid**, WontFix
 * If the bug is a duplicate of an existing bug (the bug tracker will surface
-  some candidates for you), mark it as a duplicate. Do **not** CC the reporter
-  into the canonical bug unless the canonical bug is already public. If
-  reporters ask to be CCed, tell them to email product-security@chromium.org.
+  some candidates for you), mark it as a duplicate. Use the `Mark as Duplicate`
+  button at the upper right of the report pane. This will provide a pop-up to
+  input the bug number of the canonical report that you are merging this report
+  into as a duplicate of. This button does not CC the reporter on the duplicate.
+  Do **not** manually CC the reporter into the canonical bug unless the
+  canonical bug is already public. If reporters ask to be CCed, tell them to
+  email product-security@chromium.org.
 * If the bug is probably valid but doesn't have security consequences,
   change it to type Bug and remove visibility restrictions
 * If the bug is probably valid but you're missing something critical
@@ -113,10 +117,14 @@ which _are_ valid. As a rule:
 * **If the bug is an in-the-wild report**:
     * Start a thread in the Shepherding chat immediately
 * Is the bug eligible for [delegated triage](delegated-triage.md)?:
-    * If it's a Graphics bug (including Skia, Dawn, ANGLE), put it in [hotlist 8198490](https://b.corp.google.com/hotlists/8198490)
+    * If it's a Graphics bug (including Skia, Dawn, ANGLE), put it in [hotlist 8198490](https://issues.chromium.org/hotlists/8198490)
     * If it's a UI bug, put it in [hotlist 8210976](https://issues.chromium.org/hotlists/8210976)
-    * If it's a BoringSSL bug, put it in [component 1590116](https://b.corp.google.com/components/1590116)
+    * If it's a BoringSSL bug, put it in [component 1590116](https://issues.chromium.org/components/1590116)
     * If it's a V8 (Javascript or WebAssembly) bug, put it in [hotlist 8308879](https://issues.chromium.org/hotlists/8308879)
+    * If it only affects ChromeOS then move the issue into the ChromeOS security
+      triage queue which is [component 1335705](https://b.corp.google.com/components/1335705).
+      Since this bug is being moved between trackers you will need to use your
+      google.com account to move the bug into that tracker component.
     * TODO: add more here :)
     * You are now done triaging this bug, congratulations!
 * If the bug is a privacy bug, rather than a security bug:
