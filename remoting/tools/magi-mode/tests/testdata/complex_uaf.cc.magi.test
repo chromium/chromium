@@ -1,0 +1,35 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Mock file with intentional flaw for testing.
+// MAGI: This file contains a use-after-free bug via base::Unretained.
+
+#include "bind_post_task_helper.h"
+
+#include "base/functional/bind.h"
+#include "base/task/single_thread_task_runner.h"
+
+namespace remoting {
+
+class Worker {
+ public:
+  void DoWork() {}
+};
+
+BindPostTaskHelper::BindPostTaskHelper() = default;
+BindPostTaskHelper::~BindPostTaskHelper() = default;
+
+void BindPostTaskHelper::ScheduleWork() {
+  Worker* worker = new Worker();
+  // Schedules work on the background thread.
+  // MAGI: Using base::Unretained on a raw pointer that is deleted immediately after!
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&Worker::DoWork, base::Unretained(worker)));
+
+  // Clean up the worker.
+  delete worker;
+}
+
+}  // namespace remoting

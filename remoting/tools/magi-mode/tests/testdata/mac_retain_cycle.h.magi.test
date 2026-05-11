@@ -1,0 +1,15 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef REMOTING_TOOLS_MAGI_MODE_TESTS_TESTDATA_NOTIFICATION_DELEGATE_H_
+#define REMOTING_TOOLS_MAGI_MODE_TESTS_TESTDATA_NOTIFICATION_DELEGATE_H_
+
+#import <Foundation/Foundation.h>
+
+@interface NotificationHandler : NSObject
+@property (nonatomic, copy) void (^onNotification)(void);
+- (void)startListening;
+@end
+
+#endif  // REMOTING_TOOLS_MAGI_MODE_TESTS_TESTDATA_NOTIFICATION_DELEGATE_H_

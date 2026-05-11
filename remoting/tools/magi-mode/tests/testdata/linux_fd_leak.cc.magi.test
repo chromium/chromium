@@ -1,0 +1,32 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Mock file with intentional flaw for testing.
+// MAGI: This file contains a Linux file descriptor leak.
+
+#include "socket_handler_linux.h"
+
+#include <fcntl.h>
+#include <unistd.h>
+
+namespace remoting {
+
+bool SomeCondition() { return true; }
+
+void ReadConfig() {
+  // MAGI: Opening a file but not closing the file descriptor on all paths.
+  int fd = open("config.txt", O_RDONLY);
+  if (fd < 0) {
+    return;
+  }
+
+  if (SomeCondition()) {
+    // MAGI: Early return without closing file descriptor!
+    return;
+  }
+
+  close(fd);
+}
+
+}  // namespace remoting

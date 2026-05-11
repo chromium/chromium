@@ -49,7 +49,10 @@ class AgentInvoker:
                 ['agentapi', 'new-conversation', prompt],
                 capture_output=True, text=True, check=True, cwd=cwd
             )
-            print(f"[JETSKI] Agent invoked successfully. Output: {result.stdout[:100]}...")
+            print(
+                f"[JETSKI] Agent invoked successfully. Output: "
+                f"{result.stdout[:100]}..."
+            )
             return True
         except subprocess.CalledProcessError as e:
             print(f"[JETSKI] Error invoking agent: {e.stderr}")
@@ -60,14 +63,22 @@ class AgentInvoker:
 
     def _invoke_generic_cli(self, prompt, expected_files):
         print("\n" + "="*60)
-        print(f"GENERIC_CLI MODE: Please invoke an agent with the following prompt:")
+        print(
+            f"GENERIC_CLI MODE: Please invoke an agent with the following "
+            f"prompt:"
+        )
         print("-"*60)
         print(prompt)
         print("-"*60)
-        print(f"Please place the result file(s) at: {', '.join(expected_files)}")
+        print(
+            f"Please place the result file(s) at: {', '.join(expected_files)}"
+        )
         print("="*60 + "\n")
 
-        input("Press Enter once you have placed the file(s) to continue verification...")
+        input(
+            "Press Enter once you have placed the file(s) to continue "
+            "verification..."
+        )
         return all(os.path.exists(f) for f in expected_files)
 
 def run_test_case(case, base_inputs, invoker, original_test_dir):
@@ -79,7 +90,7 @@ def run_test_case(case, base_inputs, invoker, original_test_dir):
         src_testdata = os.path.join(original_test_dir, 'testdata')
         dst_testdata = os.path.join(temp_dir, 'testdata')
         if os.path.exists(src_testdata):
-            shutil.copytree(src_testdata, dst_testdata)
+            shutil.copytree(src_testdata, dst_testdata, dirs_exist_ok=True)
 
         # Merge inputs with overrides
         inputs = base_inputs.copy()
@@ -87,7 +98,19 @@ def run_test_case(case, base_inputs, invoker, original_test_dir):
         inputs.update(overrides)
 
         # Construct prompt based on inputs (Simplified for prototype)
-        prompt = f"Execute MAGI phase {case.get('phase', 'unknown')} with inputs: {json.dumps(inputs)}"
+        prompt = (
+            f"Execute MAGI phase {case.get('phase', 'unknown')} with inputs: "
+            f"{json.dumps(inputs)}"
+        )
+
+        if invoker.harness_type == 'JETSKI':
+            skill_path = os.path.join(original_test_dir, '..', 'SKILL.md')
+            try:
+                with open(skill_path, 'r', encoding='utf-8') as f:
+                    skill_content = f.read()
+                prompt = f"{skill_content}\n\n{prompt}"
+            except IOError as e:
+                print(f"[WARN] Failed to read SKILL.md for context: {e}")
 
         # Determine expected output file (e.g. from expected_outputs)
         expected_outputs = case['expected_outputs']
@@ -119,10 +142,16 @@ def run_test_case(case, base_inputs, invoker, original_test_dir):
                 with open(full_path, 'r', encoding='utf-8') as file_handle:
                     content = file_handle.read()
                     if not re.search(pattern, content):
-                        print(f"FAIL: Content of {full_path} did not match pattern '{pattern}'")
+                        print(
+                            f"FAIL: Content of {full_path} did not match "
+                            f"pattern '{pattern}'"
+                        )
                         return False
             else:
-                print(f"FAIL: File {full_path} specified in content_patterns does not exist.")
+                print(
+                    f"FAIL: File {full_path} specified in content_patterns "
+                    f"does not exist."
+                )
                 return False
 
         valid_json = expected_outputs.get('valid_json', False)
@@ -130,13 +159,19 @@ def run_test_case(case, base_inputs, invoker, original_test_dir):
             for f in expected_files:
                 if f.endswith('.json'):
                     if not os.path.exists(f):
-                        print(f"FAIL: Expected output file {f} does not exist for JSON validation.")
+                        print(
+                            f"FAIL: Expected output file {f} does not exist "
+                            f"for JSON validation."
+                        )
                         return False
                     with open(f, 'r', encoding='utf-8') as file_handle:
                         try:
                             json.load(file_handle)
                         except ValueError as e:
-                            print(f"FAIL: Output file {f} is not valid JSON: {e}")
+                            print(
+                                f"FAIL: Output file {f} is not valid JSON: "
+                                f"{e}"
+                            )
                             return False
 
         buildable = expected_outputs.get('buildable', False)
@@ -152,7 +187,12 @@ def run_test_case(case, base_inputs, invoker, original_test_dir):
 def main():
     parser = argparse.ArgumentParser(description="MAGI Test Runner")
     parser.add_argument('--tests', required=True, help="Path to test JSON file")
-    parser.add_argument('--harness', default='JETSKI', choices=['JETSKI', 'GENERIC_CLI'], help="Harness type")
+    parser.add_argument(
+        '--harness',
+        default='JETSKI',
+        choices=['JETSKI', 'GENERIC_CLI'],
+        help="Harness type",
+    )
     args = parser.parse_args()
 
     test_file = args.tests
@@ -173,7 +213,9 @@ def main():
     original_test_dir = os.path.dirname(test_file)
 
     for case in scenario['cases']:
-        if run_test_case(case, scenario.get('base_inputs', {}), invoker, original_test_dir):
+        if run_test_case(
+            case, scenario.get("base_inputs", {}), invoker, original_test_dir
+        ):
             passed += 1
         else:
             failed += 1

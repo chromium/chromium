@@ -1,0 +1,24 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef REMOTING_TOOLS_MAGI_MODE_TESTS_TESTDATA_THREAD_SAFE_MANAGER_H_
+#define REMOTING_TOOLS_MAGI_MODE_TESTS_TESTDATA_THREAD_SAFE_MANAGER_H_
+
+#include "base/synchronization/lock.h"
+
+namespace remoting {
+
+class ResourceManager {
+ public:
+  void AcquireResources();
+  void ReleaseResources();
+
+ private:
+  base::Lock lock1_;
+  base::Lock lock2_;
+};
+
+}  // namespace remoting
+
+#endif  // REMOTING_TOOLS_MAGI_MODE_TESTS_TESTDATA_THREAD_SAFE_MANAGER_H_

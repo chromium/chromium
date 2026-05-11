@@ -1,0 +1,29 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef REMOTING_TOOLS_MAGI_MODE_TESTS_TESTDATA_TYPE_CONVERTER_H_
+#define REMOTING_TOOLS_MAGI_MODE_TESTS_TESTDATA_TYPE_CONVERTER_H_
+
+namespace remoting {
+
+class Base {
+ public:
+  virtual ~Base() = default;
+};
+
+class DerivedA : public Base {
+ public:
+  void MethodA();
+};
+
+class DerivedB : public Base {
+ public:
+  void MethodB();
+};
+
+void ConvertType(Base* base_ptr);
+
+}  // namespace remoting
+
+#endif  // REMOTING_TOOLS_MAGI_MODE_TESTS_TESTDATA_TYPE_CONVERTER_H_

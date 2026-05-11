@@ -1,0 +1,21 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef REMOTING_TOOLS_MAGI_MODE_TESTS_TESTDATA_BIND_POST_TASK_HELPER_H_
+#define REMOTING_TOOLS_MAGI_MODE_TESTS_TESTDATA_BIND_POST_TASK_HELPER_H_
+
+namespace remoting {
+
+// Helper class to schedule tasks.
+class BindPostTaskHelper {
+ public:
+  BindPostTaskHelper();
+  ~BindPostTaskHelper();
+
+  void ScheduleWork();
+};
+
+}  // namespace remoting
+
+#endif  // REMOTING_TOOLS_MAGI_MODE_TESTS_TESTDATA_BIND_POST_TASK_HELPER_H_

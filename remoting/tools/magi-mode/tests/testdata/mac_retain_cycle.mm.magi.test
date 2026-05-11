@@ -1,0 +1,23 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Mock file with intentional flaw for testing.
+// MAGI: This file contains an Objective-C retain cycle.
+
+#include "notification_delegate.h"
+
+@implementation NotificationHandler
+
+- (void)handleNotification {
+  // ...
+}
+
+- (void)startListening {
+  // MAGI: Self is captured strongly in the block, creating a retain cycle!
+  self.onNotification = ^{
+    [self handleNotification];
+  };
+}
+
+@end

@@ -25,17 +25,27 @@ the test outputs!
 To prevent automated tooling (like static analyzers) from flagging intentional
 flaws in test data, and to prevent humans from trying to fix them:
 1.  **Extension:** Files containing intentional flaws MUST use the extension
-    `.magi.test` (e.g., `sample_ipc.cc.magi.test`).
-2.  **Generic Naming:** Use generic filenames (e.g., `sample_ipc.cc`) rather
-    than descriptive names like `use_after_free.cc` to prevent anchoring the
-    agent.
-3.  **Annotations:** Annotate the files with `// MAGI: <comment>` to describe
+    `.magi.test` (e.g., `complex_uaf.cc.magi.test`).
+2.  **Descriptive Pre-Copy Naming:** The source file in the repository SHOULD
+    have a name that indicates the flaw (e.g., `complex_uaf.cc.magi.test`) to
+    make it clear to humans what is being tested.
+3.  **Realistic Copied Naming:** The build system MUST rename the file to a
+    normal, realistic name when copying it and stripping comments (e.g.,
+    `bind_post_task_helper.cc`) to prevent the agent from anchoring on the
+    filename.
+4.  **Realistic Code:** Class names, function names, and non-MAGI
+    comments in the file MUST be structured as if the code was valid
+    and expected to work.
+5.  **Annotations:** Annotate the files with `// MAGI: <comment>` to describe
     the flaw or reproduction steps for humans.
-4.  **Preprocessing:** The `BUILD.gn` file MUST contain a GN `action` to copy
-    these files and strip out the `// MAGI:` comments before they are exposed
-    to the agent or build, ensuring the agent doesn't see the answers!
-5.  **Test Only:** All test targets in `BUILD.gn` MUST be marked
+6.  **Preprocessing:** The `BUILD.gn` file MUST contain a GN `action` to copy
+    these files, rename them, and strip out the `// MAGI:` comments.
+7.  **Test Only:** All test targets in `BUILD.gn` MUST be marked
     `testonly = true`.
+8.  **Line Numbers:** Line numbers in test cases are OPTIONAL and should
+    generally be omitted to avoid brittleness caused by line shifts when
+    comments are stripped. The primary verification should be based on file
+    paths and content patterns rather than exact line numbers.
 
 ---
 
@@ -64,3 +74,22 @@ Run a specific test file:
 Run all tests using a shell loop:
 `for f in remoting/tools/magi-mode/tests/magi_*_tests.json; do \`
 `  python3 remoting/tools/magi-mode/run_magi_tests.py --tests "$f"; done`
+
+## Manual Test Execution via Agent
+
+If the automated test runner fails or hangs (e.g., due to environment issues
+with `agentapi`), an agent can manually execute the tests by interpreting the
+JSON files:
+
+1.  **Read the Test JSON**: Locate the test case you want to run.
+2.  **Extract Prompt and Inputs**: Construct a clear prompt for a subagent,
+    explaining the role (e.g., Supervisor) and providing the `base_inputs`
+    and `override_inputs` from the test case.
+3.  **Invoke Subagent**: Use the `invoke_subagent` tool with the constructed
+    prompt.
+4.  **Verify Output**: When the subagent responds, verify that its output
+    matches the `expected_outputs` in the test case (e.g., valid JSON,
+    specific content patterns).
+
+This ensures that tests can still be run even if the automation script is not
+fully functional in the current environment.

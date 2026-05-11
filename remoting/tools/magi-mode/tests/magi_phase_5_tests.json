@@ -28,7 +28,6 @@
                         "comments": [
                             {
                                 "file": "testdata/file1.cc",
-                                "line": 5,
                                 "comment": "Found PII!"
                             }
                         ]
@@ -64,7 +63,6 @@
                         "comments": [
                             {
                                 "file": "testdata/sample_ipc.cc",
-                                "line": 13,
                                 "comment": "Use after free detected!"
                             }
                         ]
@@ -72,9 +70,288 @@
                 ]
             },
             "expected_outputs": {
+                "files_created": [
+                    "testdata/state_block.magi.json"
+                ],
                 "valid_json": true,
                 "content_patterns": {
                     "testdata/state_block.magi.json": "\"no_use_after_free\": false"
+                }
+            }
+        },
+        {
+            "phase": 5,
+            "name": "Detect Deadlock",
+            "override_inputs": {
+                "project_spec_overrides": {
+                    "target_files": [
+                        "testdata/thread_safe_manager.cc"
+                    ]
+                },
+                "mock_reviews": [
+                    {
+                        "persona": "core/security.json",
+                        "verdict": "REJECT",
+                        "checklist": {
+                            "no_deadlocks": false
+                        },
+                        "comments": [
+                            {
+                                "file": "testdata/thread_safe_manager.cc",
+                                "comment": "Potential deadlock detected!"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "expected_outputs": {
+                "files_created": [
+                    "testdata/state_block.magi.json"
+                ],
+                "valid_json": true,
+                "content_patterns": {
+                    "testdata/state_block.magi.json": "\"no_deadlocks\": false"
+                }
+            }
+        },
+        {
+            "phase": 5,
+            "name": "Detect Unsafe Cast",
+            "override_inputs": {
+                "project_spec_overrides": {
+                    "target_files": [
+                        "testdata/type_converter.cc"
+                    ]
+                },
+                "mock_reviews": [
+                    {
+                        "persona": "core/security.json",
+                        "verdict": "REJECT",
+                        "checklist": {
+                            "no_unsafe_casts": false
+                        },
+                        "comments": [
+                            {
+                                "file": "testdata/type_converter.cc",
+                                "comment": "Unsafe reinterpret_cast detected!"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "expected_outputs": {
+                "files_created": [
+                    "testdata/state_block.magi.json"
+                ],
+                "valid_json": true,
+                "content_patterns": {
+                    "testdata/state_block.magi.json": "\"no_unsafe_casts\": false"
+                }
+            }
+        },
+        {
+            "phase": 5,
+            "name": "Detect Callback UaF",
+            "override_inputs": {
+                "project_spec_overrides": {
+                    "target_files": [
+                        "testdata/bind_post_task_helper.cc"
+                    ]
+                },
+                "mock_reviews": [
+                    {
+                        "persona": "core/security.json",
+                        "verdict": "REJECT",
+                        "checklist": {
+                            "no_uaf_via_unretained": false
+                        },
+                        "comments": [
+                            {
+                                "file": "testdata/bind_post_task_helper.cc",
+                                "comment": "Use-after-free via base::Unretained detected!"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "expected_outputs": {
+                "files_created": [
+                    "testdata/state_block.magi.json"
+                ],
+                "valid_json": true,
+                "content_patterns": {
+                    "testdata/state_block.magi.json": "\"no_uaf_via_unretained\": false"
+                }
+            }
+        },
+        {
+            "phase": 5,
+            "name": "Detect Win Handle Leak",
+            "override_inputs": {
+                "project_spec_overrides": {
+                    "target_files": [
+                        "testdata/file_manager_win.cc"
+                    ]
+                },
+                "mock_reviews": [
+                    {
+                        "persona": "core/security.json",
+                        "verdict": "REJECT",
+                        "checklist": {
+                            "no_handle_leaks": false
+                        },
+                        "comments": [
+                            {
+                                "file": "testdata/file_manager_win.cc",
+                                "comment": "Windows handle leak detected!"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "expected_outputs": {
+                "files_created": [
+                    "testdata/state_block.magi.json"
+                ],
+                "valid_json": true,
+                "content_patterns": {
+                    "testdata/state_block.magi.json": "\"no_handle_leaks\": false"
+                }
+            }
+        },
+        {
+            "phase": 5,
+            "name": "Detect Mac Retain Cycle",
+            "override_inputs": {
+                "project_spec_overrides": {
+                    "target_files": [
+                        "testdata/notification_delegate.mm"
+                    ]
+                },
+                "mock_reviews": [
+                    {
+                        "persona": "core/security.json",
+                        "verdict": "REJECT",
+                        "checklist": {
+                            "no_retain_cycles": false
+                        },
+                        "comments": [
+                            {
+                                "file": "testdata/notification_delegate.mm",
+                                "comment": "Objective-C retain cycle detected!"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "expected_outputs": {
+                "files_created": [
+                    "testdata/state_block.magi.json"
+                ],
+                "valid_json": true,
+                "content_patterns": {
+                    "testdata/state_block.magi.json": "\"no_retain_cycles\": false"
+                }
+            }
+        },
+        {
+            "phase": 5,
+            "name": "Detect Linux FD Leak",
+            "override_inputs": {
+                "project_spec_overrides": {
+                    "target_files": [
+                        "testdata/socket_handler_linux.cc"
+                    ]
+                },
+                "mock_reviews": [
+                    {
+                        "persona": "core/security.json",
+                        "verdict": "REJECT",
+                        "checklist": {
+                            "no_fd_leaks": false
+                        },
+                        "comments": [
+                            {
+                                "file": "testdata/socket_handler_linux.cc",
+                                "comment": "Linux file descriptor leak detected!"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "expected_outputs": {
+                "files_created": [
+                    "testdata/state_block.magi.json"
+                ],
+                "valid_json": true,
+                "content_patterns": {
+                    "testdata/state_block.magi.json": "\"no_fd_leaks\": false"
+                }
+            }
+        },
+        {
+            "phase": 5,
+            "name": "Detect Flawed Test",
+            "override_inputs": {
+                "project_spec_overrides": {
+                    "target_files": [
+                        "testdata/mock_helper_unittest.cc"
+                    ]
+                },
+                "mock_reviews": [
+                    {
+                        "persona": "core/security.json",
+                        "verdict": "REJECT",
+                        "checklist": {
+                            "no_flawed_tests": false
+                        },
+                        "comments": [
+                            {
+                                "file": "testdata/mock_helper_unittest.cc",
+                                "comment": "Test asserts on a constant!"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "expected_outputs": {
+                "files_created": [
+                    "testdata/state_block.magi.json"
+                ],
+                "valid_json": true,
+                "content_patterns": {
+                    "testdata/state_block.magi.json": "\"no_flawed_tests\": false"
+                }
+            }
+        },
+        {
+            "phase": 5,
+            "name": "All Accept",
+            "override_inputs": {
+                "mock_reviews": [
+                    {
+                        "persona": "core/security.json",
+                        "verdict": "ACCEPT",
+                        "checklist": {
+                            "no_use_after_free": true
+                        }
+                    },
+                    {
+                        "persona": "domain/signaling.json",
+                        "verdict": "ACCEPT",
+                        "checklist": {
+                            "no_use_after_free": true
+                        }
+                    }
+                ]
+            },
+            "expected_outputs": {
+                "files_created": [
+                    "testdata/state_block.magi.json"
+                ],
+                "valid_json": true,
+                "content_patterns": {
+                    "testdata/state_block.magi.json": "\"no_use_after_free\": true"
                 }
             }
         }

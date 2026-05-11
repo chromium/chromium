@@ -1,0 +1,14 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef REMOTING_TOOLS_MAGI_MODE_TESTS_TESTDATA_SOCKET_HANDLER_LINUX_H_
+#define REMOTING_TOOLS_MAGI_MODE_TESTS_TESTDATA_SOCKET_HANDLER_LINUX_H_
+
+namespace remoting {
+
+void ReadConfig();
+
+}  // namespace remoting
+
+#endif  // REMOTING_TOOLS_MAGI_MODE_TESTS_TESTDATA_SOCKET_HANDLER_LINUX_H_

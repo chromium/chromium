@@ -1,0 +1,24 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Mock file with intentional flaw for testing.
+// MAGI: This file contains a potential deadlock between AcquireResources and ReleaseResources.
+
+#include "thread_safe_manager.h"
+
+namespace remoting {
+
+void ResourceManager::AcquireResources() {
+  // MAGI: Acquires lock1 then lock2
+  base::AutoLock a(lock1_);
+  base::AutoLock b(lock2_);
+}
+
+void ResourceManager::ReleaseResources() {
+  // MAGI: Acquires lock2 then lock1 (Potential deadlock!)
+  base::AutoLock b(lock2_);
+  base::AutoLock a(lock1_);
+}
+
+}  // namespace remoting
