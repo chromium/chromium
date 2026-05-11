@@ -3157,6 +3157,83 @@ TEST_P(GLES2DecoderManualInitTest, DiscardFramebufferEXT) {
   EXPECT_FALSE(framebuffer->IsCleared());
 }
 
+TEST_P(GLES2DecoderManualInitTest,
+       InvalidateFramebufferIncompleteFBOMarkUncleared) {
+  InitState init;
+  init.gl_version = "OpenGL ES 3.0";
+  init.context_type = CONTEXT_TYPE_OPENGLES3;
+
+  gpu::GpuDriverBugWorkarounds workarounds;
+  workarounds.dont_invalidate_incomplete_fbos = true;
+  InitDecoderWithWorkarounds(init, workarounds);
+
+  const GLenum target = GL_FRAMEBUFFER;
+  const GLsizei count = 1;
+  const GLenum attachments[] = {GL_COLOR_ATTACHMENT0};
+
+  // Setup texture 1 (1x1)
+  SetupTexture();
+
+  // Setup texture 2 (2x2)
+  const GLuint kAnotherClientTextureId = 200;
+  const GLuint kAnotherServiceTextureId = 201;
+  EXPECT_CALL(*gl_, GenTextures(1, _))
+      .WillOnce(SetArgPointee<1>(kAnotherServiceTextureId))
+      .RetiresOnSaturation();
+  GenHelper<cmds::GenTexturesImmediate>(kAnotherClientTextureId);
+
+  DoBindTexture(GL_TEXTURE_2D, kAnotherClientTextureId,
+                kAnotherServiceTextureId);
+  DoTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 2, 2, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+               shared_memory_id_, kSharedMemoryOffset);
+
+  DoBindFramebuffer(GL_FRAMEBUFFER, client_framebuffer_id_,
+                    kServiceFramebufferId);
+
+  // Attach 1x1 to COLOR_ATTACHMENT0
+  DoFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
+                         client_texture_id_, kServiceTextureId, 0, GL_NO_ERROR);
+  // Attach 2x2 to COLOR_ATTACHMENT1 -> makes it incomplete
+  // (INCOMPLETE_DIMENSIONS)
+  DoFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D,
+                         kAnotherClientTextureId, kAnotherServiceTextureId, 0,
+                         GL_NO_ERROR);
+
+  FramebufferManager* framebuffer_manager = GetFramebufferManager();
+  Framebuffer* framebuffer =
+      framebuffer_manager->GetFramebuffer(client_framebuffer_id_);
+  ASSERT_TRUE(framebuffer != nullptr);
+
+  // Ensure it is incomplete
+  EXPECT_EQ(static_cast<GLenum>(GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS),
+            DoCheckFramebufferStatus(GL_FRAMEBUFFER));
+
+  // Mark attachments as cleared initially
+  GetFramebufferManager()->MarkAttachmentsAsCleared(
+      framebuffer, group().renderbuffer_manager(), group().texture_manager());
+  EXPECT_TRUE(framebuffer->IsCleared());
+
+  // We expect the driver call to be skipped (Times(0)) because FBO is
+  // incomplete
+  EXPECT_CALL(*gl_, InvalidateFramebuffer(target, count, _)).Times(0);
+
+  auto& cmd = *GetImmediateAs<cmds::InvalidateFramebufferImmediate>();
+  cmd.Init(target, count, attachments);
+
+  EXPECT_EQ(error::kNoError, ExecuteImmediateCmd(cmd, sizeof(attachments)));
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+
+  // BUT we expect the attachment to be marked as uncleared!
+  EXPECT_FALSE(framebuffer->IsCleared());
+  const Framebuffer::Attachment* attachment =
+      framebuffer->GetAttachment(GL_COLOR_ATTACHMENT0);
+  ASSERT_TRUE(attachment != nullptr);
+  EXPECT_FALSE(attachment->cleared());
+
+  // Clean up texture 2
+  DoDeleteTexture(kAnotherClientTextureId, kAnotherServiceTextureId);
+}
+
 TEST_P(GLES2DecoderManualInitTest, ClearBackbufferBitsOnDiscardFramebufferEXT) {
   InitState init;
   init.extensions = "GL_EXT_discard_framebuffer";

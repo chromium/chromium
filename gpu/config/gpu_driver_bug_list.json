@@ -3768,6 +3768,22 @@
       "features": [
         "disable_vaapi"
       ]
+    },
+    {
+      "id": 476,
+      "description": "Qualcomm GPUs crash when invalidating incomplete framebuffers",
+      "cr_bugs": [507508103],
+      "os": {
+        "type": "android"
+      },
+      "gl_vendor": "Qualcomm.*",
+      "driver_version": {
+        "op": "<",
+        "value": "881"
+      },
+      "features": [
+        "dont_invalidate_incomplete_fbos"
+      ]
     }
   ]
 }
