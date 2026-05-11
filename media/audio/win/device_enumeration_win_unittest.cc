@@ -4,6 +4,12 @@
 
 #include "media/audio/win/device_enumeration_win.h"
 
+#include "base/test/task_environment.h"
+#include "media/audio/audio_device_info_accessor_for_tests.h"
+#include "media/audio/audio_manager.h"
+#include "media/audio/audio_unittest_util.h"
+#include "media/audio/test_audio_thread.h"
+#include "media/audio/win/core_audio_util_win.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -40,6 +46,52 @@ TEST(DeviceEnumerationWin, GetDeviceSuffix) {
   EXPECT_TRUE(GetDeviceSuffixWin(std::string()).empty());
   EXPECT_TRUE(GetDeviceSuffixWin("            ").empty());
   EXPECT_TRUE(GetDeviceSuffixWin("USBVID_1234&PID1234").empty());
+}
+
+class DeviceEnumerationWinTest : public ::testing::Test {
+ public:
+  DeviceEnumerationWinTest() {
+    audio_manager_ =
+        AudioManager::CreateForTesting(std::make_unique<TestAudioThread>());
+  }
+  ~DeviceEnumerationWinTest() override { audio_manager_->Shutdown(); }
+
+ protected:
+  base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<AudioManager> audio_manager_;
+};
+
+static bool HasCoreAudioAndInputDevices(AudioManager* audio_man) {
+  return CoreAudioUtil::IsSupported() &&
+         AudioDeviceInfoAccessorForTests(audio_man).HasAudioInputDevices();
+}
+
+// This is a smoke test only. We do not mock the Windows COM interfaces
+// (IMMDevice, IPropertyStore, etc.) here because doing so would require
+// a massive amount of boilerplate code just to simulate the specific hardware
+// edge case (Intel SST DSP masking) that triggers the Bluetooth fallback.
+// Instead, this test simply runs the full enumeration against the host's actual
+// audio hardware. This ensures that the new lazy-loading and Container ID
+// cross-referencing logic does not crash or fail unexpectedly when executed
+// on standard generic hardware setups (like those found on CI bots).
+TEST_F(DeviceEnumerationWinTest, EnumerationDoesNotCrashWithFallbackLogic) {
+  // Gracefully abort if the test environment does not have CoreAudio or any
+  // audio devices.
+  ABORT_AUDIO_TEST_IF_NOT(HasCoreAudioAndInputDevices(audio_manager_.get()));
+
+  media::AudioDeviceDescriptions input_devices;
+  media::AudioDeviceDescriptions output_devices;
+
+  // Executing these will internally run GetDeviceNamesWinImpl, exercising our
+  // lazy-loading opposite_collection logic and Container ID checks on whatever
+  // generic hardware the test bot provides.
+  AudioDeviceInfoAccessorForTests(audio_manager_.get())
+      .GetAudioInputDeviceDescriptions(&input_devices);
+  AudioDeviceInfoAccessorForTests(audio_manager_.get())
+      .GetAudioOutputDeviceDescriptions(&output_devices);
+
+  EXPECT_FALSE(input_devices.empty());
+  EXPECT_FALSE(output_devices.empty());
 }
 
 }  // namespace media
