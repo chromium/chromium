@@ -161,7 +161,11 @@ class ExtensionAccessControlButtonMediator implements Destroyable {
 
             Bitmap iconBitmap =
                     ExtensionActionIconUtil.getIcon(
-                            mContext, mExtensionsToolbarBridge, extensionId, webContents);
+                            mContext,
+                            webContents.getTopLevelNativeWindow(),
+                            mExtensionsToolbarBridge,
+                            extensionId,
+                            webContents);
             if (iconBitmap != null) {
                 iconDrawable = new BitmapDrawable(mContext.getResources(), iconBitmap);
             }

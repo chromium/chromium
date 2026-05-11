@@ -48,6 +48,7 @@ import org.chromium.components.messages.MessagesFactory;
 import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.lang.ref.WeakReference;
@@ -83,6 +84,10 @@ public class ExtensionAccessControlButtonMediatorTest {
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
         when(mWindowAndroid.getUnownedUserDataHost()).thenReturn(new UnownedUserDataHost());
         when(mWindowAndroid.getContext()).thenReturn(new WeakReference<>(mContext));
+        DisplayAndroid displayAndroid = mock(DisplayAndroid.class);
+        when(displayAndroid.getDipScale()).thenReturn(1.0f);
+        when(mWindowAndroid.getDisplay()).thenReturn(displayAndroid);
+        DisplayAndroid.setNonMultiDisplayForTesting(displayAndroid);
 
         Resources resources = mock(Resources.class);
         when(mContext.getResources()).thenReturn(resources);
@@ -291,5 +296,33 @@ public class ExtensionAccessControlButtonMediatorTest {
                 .enqueueWindowScopedMessage(messageCaptor.capture(), any(Boolean.class));
         PropertyModel multiMessageModel = messageCaptor.getValue();
         assertEquals("Allow 2 extensions?", multiMessageModel.get(MessageBannerProperties.TITLE));
+    }
+
+    @Test
+    public void testRequestAccessButtonVisibility_CompactWindow_HighDipScale() {
+        DisplayAndroid displayAndroid = mock(DisplayAndroid.class);
+        when(displayAndroid.getDipScale()).thenReturn(2.0f);
+        when(mWindowAndroid.getDisplay()).thenReturn(displayAndroid);
+
+        ExtensionsToolbarBridge.Observer observer = mToolbarObserverCaptor.getValue();
+        when(mIsWindowCompactSupplier.get()).thenReturn(true);
+
+        String tooltip = "Some tooltip";
+        RequestAccessButtonParams paramsWithRequests =
+                new RequestAccessButtonParams(new String[] {"a"}, tooltip);
+        when(mExtensionsToolbarBridge.getRequestAccessButtonParams(any()))
+                .thenReturn(paramsWithRequests);
+
+        ExtensionAction action = mock(ExtensionAction.class);
+        when(action.getName()).thenReturn("ExtensionName");
+        when(mExtensionsToolbarBridge.getAction("a", mWebContents)).thenReturn(action);
+
+        observer.onRequestAccessButtonParamsChanged();
+
+        // Verify that getIcon was called with scaled dimensions.
+        // widthDp = 10 / 2 = 5
+        // heightDp = 10 / 2 = 5
+        // scaleFactor = 2.0f
+        verify(mExtensionsToolbarBridge).getIcon("a", mWebContents, 5, 5, 2.0f);
     }
 }

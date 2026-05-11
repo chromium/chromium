@@ -215,6 +215,9 @@ public class ExtensionsToolbarCoordinatorImpl
             mWasWindowCompact = isWindowCompact;
             mExtensionAccessControlButtonCoordinator.requestVisibilityUpdate();
         }
+        // Force layout refresh to pick up new dimensions if density changed.
+        ViewUtils.requestLayout(
+                mContainer, "ExtensionsToolbarCoordinatorImpl.onConfigurationChanged");
     }
 
     @Override

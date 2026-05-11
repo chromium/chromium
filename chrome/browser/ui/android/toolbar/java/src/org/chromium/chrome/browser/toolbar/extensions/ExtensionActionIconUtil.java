@@ -11,6 +11,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsToolbarBridge;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayUtil;
 
@@ -30,9 +31,11 @@ public class ExtensionActionIconUtil {
          * convert the icon and badge dimensions from px to dp on Android before passing them to
          * the C++ layer. We also provide the device's display density to C++ to enable accurate
          * scaling and improve resolution. */
-        public ExtensionIconSpec(Context context) {
-            DisplayAndroid display = DisplayAndroid.getNonMultiDisplay(context);
-            this.scaleFactor = display.getDipScale();
+        public ExtensionIconSpec(Context context, @Nullable WindowAndroid windowAndroid) {
+            DisplayAndroid display =
+                    (windowAndroid != null && windowAndroid.getDisplay() != null)
+                            ? windowAndroid.getDisplay()
+                            : DisplayAndroid.getNonMultiDisplay(context);
 
             int widthPx =
                     context.getResources()
@@ -41,8 +44,16 @@ public class ExtensionActionIconUtil {
                     context.getResources()
                             .getDimensionPixelSize(R.dimen.extension_action_icon_canvas_height);
 
-            this.widthDp = DisplayUtil.pxToDp(display, widthPx);
-            this.heightDp = DisplayUtil.pxToDp(display, heightPx);
+            if (display != null) {
+                this.scaleFactor = display.getDipScale();
+                this.widthDp = DisplayUtil.pxToDp(display, widthPx);
+                this.heightDp = DisplayUtil.pxToDp(display, heightPx);
+            } else {
+                // Fallback for testing or cases where display is not available.
+                this.scaleFactor = 1.0f;
+                this.widthDp = widthPx;
+                this.heightDp = heightPx;
+            }
         }
     }
 
@@ -50,6 +61,7 @@ public class ExtensionActionIconUtil {
      * Retrieves the icon for a given extension action with {@link ExtensionsToolbarBridge}.
      *
      * @param context The context to use for accessing resources.
+     * @param windowAndroid The WindowAndroid to use for display metrics.
      * @param extensionsToolbarBridge The JNI bridge to the extension actions.
      * @param actionId The ID of the extension action to get the icon for.
      * @param webContents The webContents of the tab.
@@ -58,10 +70,11 @@ public class ExtensionActionIconUtil {
     @Nullable
     public static Bitmap getIcon(
             Context context,
+            @Nullable WindowAndroid windowAndroid,
             ExtensionsToolbarBridge extensionsToolbarBridge,
             String actionId,
             @Nullable WebContents webContents) {
-        ExtensionIconSpec spec = new ExtensionIconSpec(context);
+        ExtensionIconSpec spec = new ExtensionIconSpec(context, windowAndroid);
         return extensionsToolbarBridge.getIcon(
                 actionId, webContents, spec.widthDp, spec.heightDp, spec.scaleFactor);
     }

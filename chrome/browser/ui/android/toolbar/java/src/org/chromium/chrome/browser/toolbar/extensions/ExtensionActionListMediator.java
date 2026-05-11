@@ -415,7 +415,7 @@ class ExtensionActionListMediator implements Destroyable {
     Bitmap getIconForAction(String actionId, @Nullable WebContents webContents) {
         Bitmap icon =
                 ExtensionActionIconUtil.getIcon(
-                        mContext, mExtensionsToolbarBridge, actionId, webContents);
+                        mContext, mWindowAndroid, mExtensionsToolbarBridge, actionId, webContents);
         assert icon != null;
         return icon;
     }
