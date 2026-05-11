@@ -16,6 +16,7 @@
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "base/debug/debugging_buildflags.h"
+#include "build/robolectric_buildflags.h"
 #include "third_party/jni_zero/jni_zero.h"
 
 namespace base {
@@ -113,7 +114,11 @@ BASE_EXPORT std::string GetJavaExceptionInfo(
 // This returns a string representation of the java stack trace.
 BASE_EXPORT std::string GetJavaStackTraceIfPresent();
 
-void HookJniFindClass(JNIEnv* env);
+BASE_EXPORT void HookJniFindClass(JNIEnv* env);
+BASE_EXPORT void UnhookJniFindClassForTesting(JNIEnv* env);
+#if !BUILDFLAG(IS_ROBOLECTRIC)
+BASE_EXPORT const JNINativeInterface* GetOriginalJniFunctionsForTesting();
+#endif
 
 using MethodID = jni_zero::MethodID;
 }  // namespace android

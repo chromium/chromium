@@ -21,6 +21,11 @@ void CardboardSdkImpl::Initialize(jobject context) {
     return;
   }
 
+  // We need to ensure that the JNI FindClass method is properly hooked on this
+  // thread, otherwise we may see issues with classes failing to be found due
+  // to the way that Chromium is built (with splits).
+  base::android::HookJniFindClass(AttachCurrentThread());
+
   Cardboard_initializeAndroid(base::android::GetVM(), context);
   initialized_ = true;
 }

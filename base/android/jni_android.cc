@@ -28,8 +28,8 @@ namespace android {
 namespace {
 
 #if !BUILDFLAG(IS_ROBOLECTRIC)
-const JNINativeInterface* g_previous_functions = nullptr;
-JNINativeInterface g_hooked_functions;
+thread_local const JNINativeInterface* g_previous_functions = nullptr;
+thread_local JNINativeInterface g_hooked_functions;
 #endif
 
 // If disabled, we LOG(FATAL) immediately in native code when faced with an
@@ -251,12 +251,32 @@ std::string GetJavaStackTraceIfPresent() {
 
 void HookJniFindClass(JNIEnv* env) {
 #if !BUILDFLAG(IS_ROBOLECTRIC)
+  if (g_previous_functions) {
+    return;
+  }
   g_previous_functions = env->functions;
   g_hooked_functions = *g_previous_functions;
   env->functions = &g_hooked_functions;
   g_hooked_functions.FindClass = &FindClassHook;
 #endif
 }
+
+void UnhookJniFindClassForTesting(JNIEnv* env) {
+#if !BUILDFLAG(IS_ROBOLECTRIC)
+  if (g_previous_functions == nullptr) {
+    return;
+  }
+  env->functions = g_previous_functions;
+  g_previous_functions = nullptr;
+  g_hooked_functions = {};
+#endif
+}
+
+#if !BUILDFLAG(IS_ROBOLECTRIC)
+const JNINativeInterface* GetOriginalJniFunctionsForTesting() {
+  return g_previous_functions;
+}
+#endif
 
 }  // namespace android
 }  // namespace base

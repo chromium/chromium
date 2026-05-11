@@ -1,5 +1,0 @@
-include_rules = [
-  "+base/android/jni_android.h",
-  "+third_party/jni_zero/jni_zero.h",
-  '+third_party/jni_zero/jni_zero_helper.h',
-]

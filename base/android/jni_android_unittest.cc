@@ -15,6 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
+#include "build/robolectric_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -258,6 +259,82 @@ TEST(JniAndroidExceptionTest, HandleExceptionInJava_ReentrantOom) {
               Optional(Eq(kReetrantOutOfMemoryMessage)));
   EXPECT_THAT(ctx.assertion_message, Optional(Eq(kReetrantOutOfMemoryMessage)));
 }
+
+#if !BUILDFLAG(IS_ROBOLECTRIC)
+namespace {
+class ScopedJniUnhooker {
+ public:
+  explicit ScopedJniUnhooker(JNIEnv* env) : env_(env) {}
+  ~ScopedJniUnhooker() { UnhookJniFindClassForTesting(env_); }
+
+ private:
+  raw_ptr<JNIEnv> env_;
+};
+
+void TestHookJniFindClassImpl() {
+  JNIEnv* env = AttachCurrentThread();
+  const JNINativeInterface* orig_functions = env->functions;
+
+  // Before hooking, the test helper should return null (meaning not hooked yet
+  // on this thread).
+  EXPECT_EQ(GetOriginalJniFunctionsForTesting(), nullptr);
+
+  ScopedJniUnhooker unhooker(env);
+
+  HookJniFindClass(env);
+
+  const JNINativeInterface* hooked_functions = env->functions;
+  // Verify that functions table was replaced.
+  EXPECT_NE(orig_functions, hooked_functions);
+  EXPECT_NE(orig_functions->FindClass, hooked_functions->FindClass);
+
+  // Verify that the helper returns the correct original functions.
+  EXPECT_EQ(GetOriginalJniFunctionsForTesting(), orig_functions);
+
+  // Verify that FindClass still works (calls through to original eventually).
+  jclass string_class = env->FindClass("java/lang/String");
+  ASSERT_NE(string_class, nullptr);
+  env->DeleteLocalRef(string_class);
+
+  // Call it again, should be a safe no-op.
+  HookJniFindClass(env);
+
+  // It should STILL point to original functions, not the hooked ones.
+  EXPECT_EQ(GetOriginalJniFunctionsForTesting(), orig_functions);
+}
+}  // namespace
+
+TEST(JniAndroidTest, HookJniFindClassSingleThread) {
+  TestHookJniFindClassImpl();
+}
+
+TEST(JniAndroidTest, HookJniFindClassThreadSafe) {
+  JNIEnv* env = AttachCurrentThread();
+  const JNINativeInterface* orig_functions = env->functions;
+
+  // Hook the main thread, and ensure it is cleaned up when this test exits.
+  // The main thread will REMAIN hooked while the background thread runs.
+  ScopedJniUnhooker main_unhooker(env);
+  HookJniFindClass(env);
+
+  const JNINativeInterface* hooked_functions = env->functions;
+  EXPECT_NE(orig_functions, hooked_functions);
+  EXPECT_NE(orig_functions->FindClass, hooked_functions->FindClass);
+  EXPECT_EQ(GetOriginalJniFunctionsForTesting(), orig_functions);
+
+  // Spawn a background thread and hook it as well.
+  // This verifies that HookJniFindClass can be called on multiple threads
+  // and hook multiple threads safely.
+  class HelperThread : public Thread {
+   public:
+    HelperThread() : Thread("HookTestThread") {}
+    void Init() override { TestHookJniFindClassImpl(); }
+  };
+
+  HelperThread t;
+  t.StartAndWaitForTesting();
+}
+#endif  // !BUILDFLAG(IS_ROBOLECTRIC)
 
 }  // namespace android
 }  // namespace base
