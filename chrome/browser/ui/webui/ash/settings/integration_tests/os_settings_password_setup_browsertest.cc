@@ -91,8 +91,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Policy is set to "low" so a different new message is expected.
   password_settings.AssertPasswordInputHint(
-      "Password must be at least 6 characters and include at least one letter "
-      "or symbol");
+      "Must be at least 6 characters and have at least one letter or symbol");
 }
 
 class OSSettingsAuthFactorSetupTestWithLocalPassword
