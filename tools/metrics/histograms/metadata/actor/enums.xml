@@ -307,6 +307,8 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="kAllowByStaticList"/>
   <int value="2" label="kBlockByStaticList"/>
   <int value="3" label="kNeedsAsyncCheck"/>
+  <int value="4" label="kAllowByContainerConfig"/>
+  <int value="5" label="kBlockByContainerConfig"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/actor/execution_engine.h:GatingDecision) -->

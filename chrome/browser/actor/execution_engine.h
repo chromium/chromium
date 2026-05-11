@@ -19,6 +19,7 @@
 #include "base/types/id_type.h"
 #include "base/types/optional_ref.h"
 #include "base/types/pass_key.h"
+#include "chrome/browser/actor/actor_container_config.h"
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/enterprise_policy_checker.h"
 #include "chrome/browser/actor/site_policy.h"
@@ -115,7 +116,12 @@ class ExecutionEngine : public ToolDelegate,
     // The navigation is not on any allowlist or blocklist and requires an
     // asynchronous check to determine the final outcome.
     kNeedsAsyncCheck = 3,
-    kMaxValue = kNeedsAsyncCheck,
+    // AgentContainerConfig was provided and did not block this site. In this
+    // case navigation is allowed.
+    kAllowByContainerConfig = 4,
+    // AgentContainerConfig was provided and blocked this site.
+    kBlockByContainerConfig = 5,
+    kMaxValue = kBlockByContainerConfig,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/enums.xml:GatingDecision)
 
@@ -295,6 +301,10 @@ class ExecutionEngine : public ToolDelegate,
   // restriction for certain tools to function.
   bool TabsCanOpenNewWebContents() const;
 
+  ActorContainerConfig& actor_container_config() {
+    return actor_container_config_;
+  }
+
  protected:
   // Allow derived classes to use the natural constructors.
   explicit ExecutionEngine(ActorTask& owner_task);
@@ -457,6 +467,9 @@ class ExecutionEngine : public ToolDelegate,
   // Manages the sets of origins that have been allowed for navigations and that
   // the user has been prompted about.
   OriginChecker origin_checker_;
+
+  // Manages the container config settings that have been sent by the server.
+  ActorContainerConfig actor_container_config_;
 
   // For overwriting the actor login permission, currently only works for the
   // feature `kPasswordCheckupPrototype` for automated password changes.

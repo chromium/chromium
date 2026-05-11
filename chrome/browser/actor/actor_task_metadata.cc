@@ -12,9 +12,6 @@ ActorTaskMetadata::ActorTaskMetadata() = default;
 
 ActorTaskMetadata::ActorTaskMetadata(ActorTaskMetadata&&) = default;
 
-ActorTaskMetadata& ActorTaskMetadata::operator=(const ActorTaskMetadata&) =
-    default;
-
 ActorTaskMetadata::ActorTaskMetadata(
     const optimization_guide::proto::Actions& actions) {
   if (!actions.has_task_metadata()) {
@@ -34,6 +31,10 @@ ActorTaskMetadata::ActorTaskMetadata(
       added_writable_mainframe_origins_.insert(std::move(parsed_origin));
     }
   }
+  if (task_metadata.security().has_agent_container_config()) {
+    actor_container_config_.Assign(ActorContainerConfig(
+        task_metadata.security().agent_container_config()));
+  }
 }
 
 ActorTaskMetadata::~ActorTaskMetadata() = default;
@@ -45,6 +46,13 @@ ActorTaskMetadata::WithAddedWritableMainframeOriginsForTesting(
   for (auto origin : origins) {
     metadata.added_writable_mainframe_origins_.insert(std::move(origin));
   }
+  return metadata;
+}
+
+ActorTaskMetadata ActorTaskMetadata::WithAgentContainerConfigForTesting(
+    optimization_guide::proto::AgentContainerConfig config_proto) {
+  ActorTaskMetadata metadata;
+  metadata.actor_container_config().Assign(ActorContainerConfig(config_proto));
   return metadata;
 }
 

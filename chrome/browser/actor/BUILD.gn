@@ -17,6 +17,7 @@ if (is_android) {
 
 source_set("actor") {
   public = [
+    "actor_container_config.h",
     "actor_keyed_service.h",
     "actor_keyed_service_factory.h",
     "actor_metrics.h",
@@ -103,6 +104,7 @@ source_set("impl") {
   sources = [
     "action_tracker_for_metrics.cc",
     "action_tracker_for_metrics.h",
+    "actor_container_config.cc",
     "actor_keyed_service.cc",
     "actor_keyed_service_factory.cc",
     "actor_metrics.cc",
@@ -321,6 +323,7 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "actor_container_config_unittest.cc",
     "actor_keyed_service_unittest.cc",
     "actor_metrics_unittest.cc",
     "actor_navigation_throttle_unittest.cc",

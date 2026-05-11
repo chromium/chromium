@@ -25,6 +25,7 @@
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/optimization_guide/core/filters/hints_component_util.h"
 #include "components/optimization_guide/core/filters/optimization_hints_component_update_listener.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -1190,6 +1191,97 @@ IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
           ? mojom::ActionResultCode::kActionsBlockedForSiteRisk
           : mojom::ActionResultCode::kUrlBlocked;
   ExpectErrorResult(result, expected_result);
+}
+
+IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
+                       ActorContainerConfig_Navigation) {
+  optimization_guide::proto::AgentContainerConfig config_proto;
+  optimization_guide::proto::LocationRule* rule =
+      config_proto.add_location_rules();
+  optimization_guide::proto::Site* site =
+      rule->mutable_location()->mutable_site();
+  site->set_protocol(optimization_guide::proto::Protocol::PROTOCOL_HTTPS);
+  site->set_domain("example.com");
+  optimization_guide::proto::RuleMetadata* metadata = rule->mutable_metadata();
+  metadata->add_capabilities(
+      optimization_guide::proto::RuleMetadata::CAPABILITY_ALL);
+  metadata->add_accessible_resources(
+      optimization_guide::proto::RuleMetadata::RESOURCE_SESSION);
+
+  const GURL allowed_url = embedded_https_test_server().GetURL(
+      "foo.example.com", "/actor/blank.html");
+  const GURL start_page_url = embedded_https_test_server().GetURL(
+      "example.com",
+      base::StrCat({"/actor/link_full_page.html?href=",
+                    url::EncodeUriComponent(allowed_url.spec())}));
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), start_page_url));
+  OpenGlicAndCreateTask();
+
+  std::unique_ptr<ToolRequest> click_allowed_link =
+      MakeClickRequest(*active_tab(), gfx::Point(1, 1));
+
+  // Clicking link to go to the allowed page should work.
+  PerformActionsFuture result1;
+  actor_keyed_service().PerformActions(
+      actor_task().id(), ToRequestList(click_allowed_link),
+      ActorTaskMetadata::WithAgentContainerConfigForTesting(config_proto),
+      result1.GetCallback());
+  ExpectOkResult(result1);
+
+  const GURL blocked_url =
+      embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
+
+  std::unique_ptr<ToolRequest> navigate_to_blocked_site =
+      MakeNavigateRequest(*active_tab(), blocked_url.spec());
+
+  // Should block even Navigate actions to a not-explicitly-allowed URL, only
+  // need to supply container config on the first action.
+  PerformActionsFuture result2;
+  actor_keyed_service().PerformActions(
+      actor_task().id(), ToRequestList(navigate_to_blocked_site),
+      ActorTaskMetadata(), result2.GetCallback());
+  ExpectErrorResult(result2,
+                    mojom::ActionResultCode::kTriggeredNavigationBlocked);
+}
+
+IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
+                       ActorContainerConfig_TaskStart) {
+  optimization_guide::proto::AgentContainerConfig config_proto;
+  optimization_guide::proto::LocationRule* rule =
+      config_proto.add_location_rules();
+  optimization_guide::proto::Site* site =
+      rule->mutable_location()->mutable_site();
+  site->set_protocol(optimization_guide::proto::Protocol::PROTOCOL_HTTPS);
+  site->set_domain("example.com");
+  optimization_guide::proto::RuleMetadata* metadata = rule->mutable_metadata();
+  metadata->add_capabilities(
+      optimization_guide::proto::RuleMetadata::CAPABILITY_ALL);
+  metadata->add_accessible_resources(
+      optimization_guide::proto::RuleMetadata::RESOURCE_SESSION);
+  // Add a NavigationSource that should be ignored.
+  optimization_guide::proto::NavigationSource* nav_source =
+      rule->add_navigation_sources();
+  site = nav_source->mutable_source()->mutable_site();
+  site->set_protocol(optimization_guide::proto::Protocol::PROTOCOL_HTTPS);
+  site->set_domain("foo.com");
+
+  const GURL blocked_url =
+      embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), blocked_url));
+  OpenGlicAndCreateTask();
+
+  std::unique_ptr<ToolRequest> click =
+      MakeClickRequest(*active_tab(), gfx::Point(1, 1));
+
+  // Should not be able to actuate the blocked page.
+  PerformActionsFuture result;
+  actor_keyed_service().PerformActions(
+      actor_task().id(), ToRequestList(click),
+      ActorTaskMetadata::WithAgentContainerConfigForTesting(config_proto),
+      result.GetCallback());
+  ExpectErrorResult(result, mojom::ActionResultCode::kUrlBlocked);
 }
 
 class ExecutionEngineOriginGatingParamBrowserTest
