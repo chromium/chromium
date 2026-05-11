@@ -219,7 +219,8 @@ TEST_F(AppBarViewControllerTest, TestAssistantButtonHighlightState) {
 
   // Initially not highlighted.
   [view_controller_ setAssistantButtonState:AppBarAssistantButtonState::kAsk
-                                highlighted:NO];
+                                highlighted:NO
+                                    enabled:YES];
   [button setNeedsUpdateConfiguration];
   [button layoutIfNeeded];
 
@@ -231,7 +232,8 @@ TEST_F(AppBarViewControllerTest, TestAssistantButtonHighlightState) {
 
   // Highlighted.
   [view_controller_ setAssistantButtonState:AppBarAssistantButtonState::kAsk
-                                highlighted:YES];
+                                highlighted:YES
+                                    enabled:YES];
   [button setNeedsUpdateConfiguration];
   [button layoutIfNeeded];
 
@@ -246,7 +248,8 @@ TEST_F(AppBarViewControllerTest, TestAssistantButtonHighlightState) {
 
   // Not highlighted again.
   [view_controller_ setAssistantButtonState:AppBarAssistantButtonState::kAsk
-                                highlighted:NO];
+                                highlighted:NO
+                                    enabled:YES];
   [button setNeedsUpdateConfiguration];
   [button layoutIfNeeded];
 

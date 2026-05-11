@@ -75,6 +75,9 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
    public:
     // Called when the floaty invocation state changes.
     virtual void OnFloatyInvokedChanged(bool is_invoked) {}
+
+    // Called when Gemini availability for the active web state changes.
+    virtual void OnGeminiAvailabilityChanged(bool available) {}
   };
 
   GeminiBrowserAgent(const GeminiBrowserAgent&) = delete;
@@ -88,6 +91,9 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
 
   // Returns true if the floaty is currently invoked.
   bool is_floaty_invoked() const { return is_floaty_invoked_; }
+
+  // Returns true if Gemini is available for the active web state.
+  bool IsGeminiAvailableForActiveWebState() const;
 
   // BrowserObserver:
   void BrowserDestroyed(Browser* browser) override;
@@ -403,6 +409,12 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
 
   // Whether the floaty is hidden by the keyboard.
   bool is_hidden_by_keyboard_ = false;
+
+  // The last known availability of Gemini for the active web state.
+  bool last_known_gemini_availability_ = false;
+
+  // Updates the Gemini availability and notifies observers if it changed.
+  void UpdateGeminiAvailability();
 
   // Weak pointer factory.
   // Observers for GeminiBrowserAgent.

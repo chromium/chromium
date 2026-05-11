@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_configuration.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_impl.h"
+#import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -190,10 +191,8 @@ class AppBarMediatorTest : public PlatformTest {
 
     tab_grid_state_ = [[TabGridState alloc] init];
     incognito_state_ = [[IncognitoState alloc] initWithSceneState:nil];
-    regular_web_state_list_ =
-        std::make_unique<WebStateList>(&regular_web_state_list_delegate_);
-    incognito_web_state_list_ =
-        std::make_unique<WebStateList>(&incognito_web_state_list_delegate_);
+    regular_web_state_list_ = regular_browser_->GetWebStateList();
+    incognito_web_state_list_ = incognito_browser_->GetWebStateList();
 
     TestFullscreenController::CreateForBrowser(regular_browser_.get());
     TestFullscreenController::CreateForBrowser(incognito_browser_.get());
@@ -309,10 +308,8 @@ class AppBarMediatorTest : public PlatformTest {
   AppBarMediator* __strong mediator_;
   raw_ptr<FakeUrlLoadingBrowserAgent> url_loader_;
   search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
-  std::unique_ptr<WebStateList> regular_web_state_list_;
-  std::unique_ptr<WebStateList> incognito_web_state_list_;
-  FakeWebStateListDelegate regular_web_state_list_delegate_;
-  FakeWebStateListDelegate incognito_web_state_list_delegate_;
+  raw_ptr<WebStateList> regular_web_state_list_;
+  raw_ptr<WebStateList> incognito_web_state_list_;
   TabGridState* tab_grid_state_;
   IncognitoState* incognito_state_;
   raw_ptr<AuthenticationService> auth_service_;
@@ -735,8 +732,8 @@ TEST_F(AppBarMediatorTest, TestFullscreenEvent) {
 }
 
 // Tests that the assistant button state is correctly updated when the Gemini
-// floaty invocation state changes.
-TEST_F(AppBarMediatorTest, TestAssistantButtonHighlighted) {
+// floaty invocation state changes and Gemini is available.
+TEST_F(AppBarMediatorTest, TestAssistantButtonHighlighted_GeminiAvailable) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({kPageActionMenu, kGeminiCopresence},
                                        {});
@@ -744,9 +741,20 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonHighlighted) {
   GeminiBrowserAgent* agent =
       GeminiBrowserAgent::FromBrowser(regular_browser_.get());
 
+  // Add active WebState with GeminiTabHelper.
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web_state->SetBrowserState(regular_profile_.get());
+  web_state->SetContentsMimeType("text/html");
+  GeminiTabHelper::CreateForWebState(web_state.get());
+  web_state->SetVisibleURL(GURL("https://example.com"));
+
+  regular_web_state_list_->InsertWebState(std::move(web_state));
+  regular_web_state_list_->ActivateWebStateAt(0);
+
   // Expect highlighted to be YES when floaty is invoked.
   OCMExpect([consumer_ setAssistantButtonState:AppBarAssistantButtonState::kAsk
-                                   highlighted:YES]);
+                                   highlighted:YES
+                                       enabled:YES]);
 
   InvokeFloaty(agent, [[GeminiConfiguration alloc] init]);
 
@@ -754,7 +762,48 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonHighlighted) {
 
   // Expect highlighted to be NO when floaty is dismissed.
   OCMExpect([consumer_ setAssistantButtonState:AppBarAssistantButtonState::kAsk
-                                   highlighted:NO]);
+                                   highlighted:NO
+                                       enabled:YES]);
+
+  agent->DismissFloaty();
+
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that the assistant button state is correctly updated when the Gemini
+// floaty invocation state changes and Gemini is NOT available.
+TEST_F(AppBarMediatorTest, TestAssistantButtonHighlighted_GeminiNotAvailable) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({kPageActionMenu, kGeminiCopresence},
+                                       {});
+
+  GeminiBrowserAgent* agent =
+      GeminiBrowserAgent::FromBrowser(regular_browser_.get());
+
+  // Add active WebState with GeminiTabHelper, but an ineligible URL.
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web_state->SetBrowserState(regular_profile_.get());
+  GeminiTabHelper::CreateForWebState(web_state.get());
+  web_state->SetVisibleURL(GURL("chrome://settings"));
+
+  regular_web_state_list_->InsertWebState(std::move(web_state));
+  regular_web_state_list_->ActivateWebStateAt(0);
+
+  // Expect highlighted to remain NO and enabled to remain NO when floaty is
+  // invoked.
+  OCMExpect([consumer_ setAssistantButtonState:AppBarAssistantButtonState::kAsk
+                                   highlighted:NO
+                                       enabled:NO]);
+
+  InvokeFloaty(agent, [[GeminiConfiguration alloc] init]);
+
+  EXPECT_OCMOCK_VERIFY(consumer_);
+
+  // Expect highlighted to remain NO and enabled to remain NO when floaty is
+  // dismissed.
+  OCMExpect([consumer_ setAssistantButtonState:AppBarAssistantButtonState::kAsk
+                                   highlighted:NO
+                                       enabled:NO]);
 
   agent->DismissFloaty();
 
@@ -767,7 +816,8 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonStateLensFallback) {
   SetLocationEligible(false);
 
   OCMExpect([consumer_ setAssistantButtonState:AppBarAssistantButtonState::kLens
-                                   highlighted:NO]);
+                                   highlighted:NO
+                                       enabled:YES]);
   [mediator_ updateAssistantButton];
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
@@ -778,7 +828,8 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonStateAskLocationEligible) {
   SetLocationEligible(true);
 
   OCMExpect([consumer_ setAssistantButtonState:AppBarAssistantButtonState::kAsk
-                                   highlighted:NO]);
+                                   highlighted:NO
+                                       enabled:NO]);
   [mediator_ updateAssistantButton];
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
@@ -790,7 +841,8 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonStateLensFallbackSignedIn) {
   SignInAndSetCapability(false);
 
   OCMExpect([consumer_ setAssistantButtonState:AppBarAssistantButtonState::kLens
-                                   highlighted:NO]);
+                                   highlighted:NO
+                                       enabled:YES]);
   [mediator_ updateAssistantButton];
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
@@ -802,7 +854,51 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonStateAsk) {
   SignInAndSetCapability(true);
 
   OCMExpect([consumer_ setAssistantButtonState:AppBarAssistantButtonState::kAsk
-                                   highlighted:NO]);
+                                   highlighted:NO
+                                       enabled:NO]);
+  [mediator_ updateAssistantButton];
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that the assistant button is enabled when Gemini is available.
+TEST_F(AppBarMediatorTest, TestAssistantButtonStateAsk_GeminiAvailable) {
+  SetLocationEligible(true);
+  SignInAndSetCapability(true);
+
+  // Add active WebState with GeminiTabHelper.
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web_state->SetBrowserState(regular_profile_.get());
+  web_state->SetContentsMimeType("text/html");
+  GeminiTabHelper::CreateForWebState(web_state.get());
+  web_state->SetVisibleURL(GURL("https://google.com"));
+
+  regular_web_state_list_->InsertWebState(std::move(web_state));
+  regular_web_state_list_->ActivateWebStateAt(0);
+
+  OCMExpect([consumer_ setAssistantButtonState:AppBarAssistantButtonState::kAsk
+                                   highlighted:NO
+                                       enabled:YES]);
+  [mediator_ updateAssistantButton];
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that the assistant button is disabled when Gemini is not available.
+TEST_F(AppBarMediatorTest, TestAssistantButtonStateAsk_GeminiNotAvailable) {
+  SetLocationEligible(true);
+  SignInAndSetCapability(true);
+
+  // Add active WebState with GeminiTabHelper.
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web_state->SetBrowserState(regular_profile_.get());
+  GeminiTabHelper::CreateForWebState(web_state.get());
+  web_state->SetVisibleURL(GURL("chrome://settings"));
+
+  regular_web_state_list_->InsertWebState(std::move(web_state));
+  regular_web_state_list_->ActivateWebStateAt(0);
+
+  OCMExpect([consumer_ setAssistantButtonState:AppBarAssistantButtonState::kAsk
+                                   highlighted:NO
+                                       enabled:NO]);
   [mediator_ updateAssistantButton];
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
@@ -845,7 +941,8 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonStateAIM) {
       {kPageActionMenu});
 
   OCMExpect([consumer_ setAssistantButtonState:AppBarAssistantButtonState::kAIM
-                                   highlighted:NO]);
+                                   highlighted:NO
+                                       enabled:YES]);
   [mediator_ updateAssistantButton];
   EXPECT_OCMOCK_VERIFY(consumer_);
 }

@@ -228,8 +228,14 @@ class TestGeminiObserver : public GeminiBrowserAgent::Observer {
     is_invoked_ = is_invoked;
     call_count_++;
   }
+  void OnGeminiAvailabilityChanged(bool available) override {
+    available_ = available;
+    availability_call_count_++;
+  }
   bool is_invoked_ = false;
   int call_count_ = 0;
+  bool available_ = false;
+  int availability_call_count_ = 0;
 };
 
 // Tests that the GeminiBrowserAgent can be instantiated.
@@ -744,4 +750,40 @@ TEST_F(GeminiBrowserAgentTest, TestNoSwitchOnBackgroundingIfNotLive) {
   // Verify it remained Floaty (text mode).
   EXPECT_EQ(ios::provider::GetCurrentMode(),
             ios::provider::GeminiViewMode::kFloaty);
+}
+
+// Tests that OnGeminiAvailabilityChanged is called when Gemini availability
+// changes.
+TEST_F(GeminiBrowserAgentTest, TestOnGeminiAvailabilityChanged) {
+  TestGeminiObserver observer;
+  gemini_browser_agent_->AddObserver(&observer);
+
+  // Add active WebState with GeminiTabHelper.
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web_state->SetBrowserState(profile_);
+  GeminiTabHelper::CreateForWebState(web_state.get());
+  WebViewProxyTabHelper::CreateForWebState(web_state.get());
+  web_state->SetCurrentURL(GURL("https://example.com"));
+  web_state->SetContentsMimeType("text/html");
+
+  // Insert and activate the web state to trigger active web state change.
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(web_state),
+      WebStateList::InsertionParams::Automatic().Activate(true));
+
+  // The observer should have been notified of availability.
+  EXPECT_TRUE(observer.available_);
+  EXPECT_GE(observer.availability_call_count_, 1);
+
+  // Navigate to an ineligible site.
+  web_state_ = static_cast<web::FakeWebState*>(
+      browser_->GetWebStateList()->GetActiveWebState());
+  web_state_->SetCurrentURL(GURL("chrome://settings"));
+
+  // Manually trigger page context updated to simulate navigation finishing.
+  gemini_browser_agent_->OnPageContextUpdated(web_state_);
+
+  EXPECT_FALSE(observer.available_);
+
+  gemini_browser_agent_->RemoveObserver(&observer);
 }

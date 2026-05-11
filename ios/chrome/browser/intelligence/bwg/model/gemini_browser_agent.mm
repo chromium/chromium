@@ -304,6 +304,7 @@ GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
       identity_manager_->AddObserver(this);
     }
   }
+  last_known_gemini_availability_ = IsGeminiAvailableForActiveWebState();
 }
 
 GeminiBrowserAgent::~GeminiBrowserAgent() {
@@ -377,6 +378,25 @@ void GeminiBrowserAgent::AddObserver(Observer* observer) {
 
 void GeminiBrowserAgent::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
+}
+
+bool GeminiBrowserAgent::IsGeminiAvailableForActiveWebState() const {
+  web::WebState* active_web_state =
+      browser_->GetWebStateList()->GetActiveWebState();
+  GeminiTabHelper* tab_helper =
+      active_web_state ? GeminiTabHelper::FromWebState(active_web_state)
+                       : nullptr;
+  return tab_helper && tab_helper->IsGeminiAvailableForWebState();
+}
+
+void GeminiBrowserAgent::UpdateGeminiAvailability() {
+  bool available = IsGeminiAvailableForActiveWebState();
+  if (available != last_known_gemini_availability_) {
+    last_known_gemini_availability_ = available;
+    for (auto& observer : observers_) {
+      observer.OnGeminiAvailabilityChanged(available);
+    }
+  }
 }
 
 void GeminiBrowserAgent::OnPrimaryAccountChanged(
@@ -1053,13 +1073,13 @@ void GeminiBrowserAgent::OnActiveWebStateChanged(web::WebState* old_active,
     [new_active->GetWebViewProxy().scrollViewProxy
         addObserver:scroll_observer_];
 
-    if (!IsGeminiChatPersistenceEnabled() || !is_floaty_invoked_) {
-      return;
+    if (IsGeminiChatPersistenceEnabled() && is_floaty_invoked_) {
+      ios::provider::RequestUIChange(
+          ios::provider::GeminiUIElementType::kZeroState);
     }
-
-    ios::provider::RequestUIChange(
-        ios::provider::GeminiUIElementType::kZeroState);
   }
+
+  UpdateGeminiAvailability();
 }
 
 void GeminiBrowserAgent::OnScrollEvent() {
@@ -1086,6 +1106,8 @@ void GeminiBrowserAgent::OnScrollEvent() {
 #pragma mark - GeminiTabHelperObserver
 
 void GeminiBrowserAgent::OnPageContextUpdated(web::WebState* web_state) {
+  UpdateGeminiAvailability();
+
   GeminiTabHelper* tab_helper = GetActiveTabHelper(web_state);
   if (!tab_helper || (!is_floaty_invoked_ && IsGeminiCopresenceEnabled())) {
     return;

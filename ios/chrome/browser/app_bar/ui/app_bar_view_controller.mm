@@ -153,6 +153,10 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
   NSArray<NSLayoutConstraint*>* _assistantHighlightConstraints;
   // The background view.
   AppBarBackgroundView* _backgroundView;
+  // Whether the buttons are enabled.
+  BOOL _buttonsEnabled;
+  // Whether the assistant button is enabled.
+  BOOL _assistantButtonEnabled;
   // The stack view constraints that are updated on rotation.
   NSLayoutConstraint* _stackViewTopConstraint;
   NSLayoutConstraint* _stackViewBottomConstraint;
@@ -283,6 +287,8 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
   [self.view insertSubview:_backgroundView atIndex:0];
 
   _buttonsTitleAlpha = 1;
+  _buttonsEnabled = YES;
+  _assistantButtonEnabled = YES;
 
   _assistantButton = [self createAssistantButton];
   _openNewTabButton = [self createOpenNewTabButton];
@@ -383,9 +389,7 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
   }
   _backgroundView.incognito = incognito;
   [self updateNewTabButtonAccessibilityLabel];
-  if (incognito) {
-    _assistantButton.enabled = NO;
-  }
+  [self updateAssistantButton];
 }
 
 - (void)setInTabGroup:(BOOL)inTabGroup {
@@ -413,9 +417,11 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
 }
 
 - (void)setAssistantButtonState:(AppBarAssistantButtonState)state
-                    highlighted:(BOOL)highlighted {
+                    highlighted:(BOOL)highlighted
+                        enabled:(BOOL)enabled {
   _assistantButtonState = state;
   _assistantButtonHighlighted = highlighted;
+  _assistantButtonEnabled = enabled;
 
   [self updateAssistantButton];
 }
@@ -440,9 +446,10 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
 }
 
 - (void)setButtonsEnabled:(BOOL)enabled {
-  _assistantButton.enabled = enabled && !_backgroundView.incognito;
+  _buttonsEnabled = enabled;
   _openNewTabButton.enabled = enabled;
   _tabGridButton.enabled = enabled;
+  [self updateAssistantButton];
 }
 
 #pragma mark - FullscreenUIElement
@@ -657,6 +664,9 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
     ];
     [NSLayoutConstraint activateConstraints:_assistantHighlightConstraints];
   }
+
+  _assistantButton.enabled =
+      _buttonsEnabled && _assistantButtonEnabled && !_backgroundView.incognito;
 }
 
 // Returns a new "Assistant" button.
