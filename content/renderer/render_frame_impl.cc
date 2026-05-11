@@ -560,8 +560,16 @@ void FillNavigationParamsRequest(
   navigation_params->force_enabled_origin_trials = base::ToVector(
       commit_params.force_enabled_origin_trials, &WebString::FromAscii);
 
-  navigation_params->early_hints_preloaded_resources = base::ToVector(
-      commit_params.early_hints_preloaded_resources, blink::ToWebURL);
+  navigation_params->early_hints_preloaded_resources.reserve(
+      commit_params.early_hints_preloaded_resources.size());
+  for (const auto& link : commit_params.early_hints_preloaded_resources) {
+    blink::WebEarlyHintsPreloadInfo web_info;
+    web_info.url = blink::ToWebURL(link->href);
+    web_info.as = link->as;
+    web_info.cross_origin = link->cross_origin;
+    navigation_params->early_hints_preloaded_resources.push_back(
+        std::move(web_info));
+  }
 
   // Pass on the `initiator_base_url` sent via the common_params for srcdoc and
   // about:blank documents. This will be picked up in DocumentLoader.

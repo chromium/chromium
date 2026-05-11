@@ -104,11 +104,6 @@ class PreloadHelper final {
   static std::optional<ResourceType> GetResourceTypeFromAsAttribute(
       const String& as);
 
-  // Returns the "as" attribute value string for a given ResourceType.
-  // Only supports types returned by GetResourceTypeFromAsAttribute();
-  // crashes with NOTREACHED() for unsupported types.
-  // https://html.spec.whatwg.org/C/#preload-destination
-  static String GetAsAttributeFromResourceType(ResourceType type);
 };
 
 }  // namespace blink

@@ -431,8 +431,9 @@ bool NavigationEarlyHintsManager::WasResourceHintsReceived() const {
   return was_resource_hints_received_;
 }
 
-std::vector<GURL> NavigationEarlyHintsManager::TakePreloadedResourceURLs() {
-  return std::move(preloaded_urls_);
+std::vector<network::mojom::LinkHeaderPtr>
+NavigationEarlyHintsManager::TakePreloadedResources() {
+  return std::move(preloaded_infos_);
 }
 
 bool NavigationEarlyHintsManager::HasInflightPreloads() const {
@@ -573,7 +574,7 @@ void NavigationEarlyHintsManager::MaybePreloadHintedResource(
   inflight_preloads_[request.url] = std::make_unique<InflightPreload>(
       std::move(loader), std::move(loader_client));
 
-  preloaded_urls_.push_back(request.url);
+  preloaded_infos_.push_back(link->Clone());
 }
 
 bool NavigationEarlyHintsManager::ShouldHandleResourceHints(

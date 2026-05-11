@@ -258,8 +258,8 @@ class PLATFORM_EXPORT ResourceFetcher
 
   // Information about a <link rel=preload> for the SpeculationMeasurement API.
   struct PreloadInfo {
-    ResourceType resource_type;
-    std::optional<CrossOriginAttributeValue> crossorigin;
+    String as;
+    CrossOriginAttributeValue crossorigin = kCrossOriginAttributeNotSet;
     // Timestamp when the preload was matched/used, or nullopt if unused.
     std::optional<base::TimeTicks> used_time;
   };
@@ -380,9 +380,7 @@ class PLATFORM_EXPORT ResourceFetcher
   }
 
   void SetEarlyHintsPreloadedResources(
-      HashMap<KURL, EarlyHintsPreloadEntry> resources) {
-    unused_early_hints_preloaded_resources_ = std::move(resources);
-  }
+      HashMap<KURL, EarlyHintsPreloadEntry> resources);
 
   // Access the UKMRecorder.
   ukm::MojoUkmRecorder* UkmRecorder();

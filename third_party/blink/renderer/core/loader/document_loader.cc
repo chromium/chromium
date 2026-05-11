@@ -680,8 +680,11 @@ DocumentLoader::DocumentLoader(
   if (was_blocked_by_document_policy_)
     ReplaceWithEmptyDocument();
 
-  for (const auto& resource : params_->early_hints_preloaded_resources)
-    early_hints_preloaded_resources_.insert(resource, EarlyHintsPreloadEntry());
+  for (const auto& resource : params_->early_hints_preloaded_resources) {
+    early_hints_preloaded_resources_.insert(
+        KURL(resource.url),
+        EarlyHintsPreloadEntry(resource.as, resource.cross_origin));
+  }
 
   CHECK_EQ(IsBackForwardOrRestore(params_->frame_load_type), !!history_item_);
 
@@ -775,8 +778,13 @@ DocumentLoader::CreateWebNavigationParamsToCloneDocument() {
       CopyInitiatorOriginTrials(initiator_origin_trial_features_);
   params->force_enabled_origin_trials =
       CopyForceEnabledOriginTrials(force_enabled_origin_trials_);
-  for (const auto& pair : early_hints_preloaded_resources_)
-    params->early_hints_preloaded_resources.push_back(pair.key);
+  for (const auto& pair : early_hints_preloaded_resources_) {
+    WebEarlyHintsPreloadInfo info;
+    info.url = pair.key;
+    info.as = pair.value.as;
+    info.cross_origin = pair.value.cross_origin;
+    params->early_hints_preloaded_resources.push_back(std::move(info));
+  }
   if (ad_auction_components_) {
     params->ad_auction_components.emplace();
     for (const KURL& url : *ad_auction_components_) {

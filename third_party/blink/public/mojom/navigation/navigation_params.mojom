@@ -10,6 +10,7 @@ import "mojo/public/mojom/base/unguessable_token.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "services/network/public/mojom/content_security_policy.mojom";
 import "services/network/public/mojom/fetch_api.mojom";
+import "services/network/public/mojom/link_header.mojom";
 import "services/network/public/mojom/source_location.mojom";
 import "services/network/public/mojom/storage_access_api.mojom";
 import "services/network/public/mojom/trust_tokens.mojom";
@@ -568,7 +569,9 @@ struct CommitNavigationParams {
   // window.navigation API.
   NavigationApiHistoryEntryArrays navigation_api_history_entry_arrays;
 
-  array<url.mojom.Url> early_hints_preloaded_resources;
+  // Resources preloaded by Early Hints responses, represented as LinkHeader
+  // structs containing the parsed href, as, and crossorigin attributes.
+  array<network.mojom.LinkHeader> early_hints_preloaded_resources;
 
   // The time the commit was sent from the browser.
   mojo_base.mojom.TimeTicks commit_sent;

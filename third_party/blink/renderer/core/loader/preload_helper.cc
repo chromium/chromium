@@ -409,34 +409,6 @@ std::optional<ResourceType> PreloadHelper::GetResourceTypeFromAsAttribute(
   return std::nullopt;
 }
 
-// https://html.spec.whatwg.org/C/#preload-destination
-String PreloadHelper::GetAsAttributeFromResourceType(ResourceType type) {
-  switch (type) {
-    case ResourceType::kImage:
-      return "image";
-    case ResourceType::kScript:
-      return "script";
-    case ResourceType::kCSSStyleSheet:
-      return "style";
-    case ResourceType::kTextTrack:
-      return "track";
-    case ResourceType::kFont:
-      return "font";
-    case ResourceType::kRaw:
-      return "fetch";
-    case ResourceType::kAudio:
-    case ResourceType::kVideo:
-    case ResourceType::kManifest:
-    case ResourceType::kSpeculationRules:
-    case ResourceType::kDictionary:
-    case ResourceType::kSVGDocument:
-    case ResourceType::kXSLStyleSheet:
-    case ResourceType::kLinkPrefetch:
-    case ResourceType::kMock:
-      NOTREACHED();
-  }
-}
-
 // |base_url| is used in Link HTTP Header based preloads to resolve relative
 // URLs in srcset, which should be based on the resource's URL, not the
 // document's base URL. If |base_url| is a null URL, relative URLs are resolved

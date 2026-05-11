@@ -63,6 +63,15 @@ class TickClock;
 
 namespace blink {
 
+// Information about a resource preloaded by an Early Hints response.
+struct BLINK_EXPORT WebEarlyHintsPreloadInfo {
+  WebURL url;
+  network::mojom::LinkAsAttribute as =
+      network::mojom::LinkAsAttribute::kUnspecified;
+  network::mojom::CrossOriginAttribute cross_origin =
+      network::mojom::CrossOriginAttribute::kUnspecified;
+};
+
 class WebDocumentLoader;
 class WebServiceWorkerNetworkProvider;
 
@@ -524,11 +533,10 @@ struct BLINK_EXPORT WebNavigationParams {
   std::vector<WebHistoryItem> navigation_api_forward_entries;
   WebHistoryItem navigation_api_previous_entry;
 
-  // List of URLs which are preloaded by HTTP Early Hints.
-  // TODO(https://crbug.com/1317936): Pass information more than URL such as
-  // request destination so that ResourceFetcher can provide more useful
-  // console messages when Early Hints preloaded resources are not used.
-  std::vector<WebURL> early_hints_preloaded_resources;
+  // List of resources preloaded by HTTP Early Hints, including URL and
+  // request attributes (destination from "as", credentials mode from
+  // "crossorigin").
+  std::vector<WebEarlyHintsPreloadInfo> early_hints_preloaded_resources;
 
   // If this is a navigation to fenced frame from an interest group auction,
   // contains URNs mapped to the ad components returned by the winning bid.

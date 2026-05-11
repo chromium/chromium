@@ -104,6 +104,10 @@ enum class ResourceType : uint8_t {
   kMaxValue = kDictionary
 };
 
+// Returns the "as" attribute value string for a given ResourceType.
+// https://html.spec.whatwg.org/C/#preload-destination
+PLATFORM_EXPORT String GetAsAttributeFromResourceType(ResourceType);
+
 // A resource that is held in the cache. Classes who want to use this object
 // should derive from ResourceClient, to get the function calls in case the
 // requested data has arrived. This class also does the actual communication

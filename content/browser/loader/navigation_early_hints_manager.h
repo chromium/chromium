@@ -21,6 +21,7 @@
 #include "net/url_request/referrer_policy.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
+#include "services/network/public/mojom/link_header.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "url/gurl.h"
 
@@ -114,7 +115,7 @@ class CONTENT_EXPORT NavigationEarlyHintsManager {
   // Early Hints responses for main frame navigation.
   bool WasResourceHintsReceived() const;
 
-  std::vector<GURL> TakePreloadedResourceURLs();
+  std::vector<network::mojom::LinkHeaderPtr> TakePreloadedResources();
 
   // True when there are at least one inflight preloads.
   bool HasInflightPreloads() const;
@@ -189,7 +190,7 @@ class CONTENT_EXPORT NavigationEarlyHintsManager {
 
   PreloadedResources preloaded_resources_;
 
-  std::vector<GURL> preloaded_urls_;
+  std::vector<network::mojom::LinkHeaderPtr> preloaded_infos_;
 
   // Set to true when HandleEarlyHints() is called for the first time. Used to
   // ignore following responses.
