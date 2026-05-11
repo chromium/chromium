@@ -13006,6 +13006,21 @@
             ]
         }
     ],
+    "HideToolbarsInOverflowMenu": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "HideToolbarsInOverflowMenu"
+                    ]
+                }
+            ]
+        }
+    ],
     "HistoryDatabaseWriteAheadLogging": [
         {
             "platforms": [
