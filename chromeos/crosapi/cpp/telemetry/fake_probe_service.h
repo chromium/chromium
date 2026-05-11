@@ -32,14 +32,9 @@ class FakeProbeService : public crosapi::mojom::TelemetryProbeService {
       const std::vector<crosapi::mojom::ProbeCategoryEnum>& categories,
       ProbeTelemetryInfoCallback callback) override;
 
-  void GetOemData(GetOemDataCallback callback) override;
-
   // Sets the return value for |ProbeTelemetryInfo|.
   void SetProbeTelemetryInfoResponse(
       crosapi::mojom::ProbeTelemetryInfoPtr response_info);
-
-  // Sets the return value for |GetOemData|.
-  void SetOemDataResponse(crosapi::mojom::ProbeOemDataPtr oem_data);
 
   const std::vector<crosapi::mojom::ProbeCategoryEnum>&
   GetLastRequestedCategories();
@@ -52,10 +47,6 @@ class FakeProbeService : public crosapi::mojom::TelemetryProbeService {
   // Response for a call to |ProbeTelemetryInfo|.
   crosapi::mojom::ProbeTelemetryInfoPtr telem_info_{
       crosapi::mojom::ProbeTelemetryInfo::New()};
-
-  // Response for a call to |GetOemData|.
-  crosapi::mojom::ProbeOemDataPtr oem_data_{
-      crosapi::mojom::ProbeOemData::New()};
 
   std::vector<crosapi::mojom::ProbeCategoryEnum>
       probe_telemetry_info_requested_categories_;

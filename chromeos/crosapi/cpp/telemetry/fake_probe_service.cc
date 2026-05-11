@@ -49,11 +49,6 @@ void FakeProbeService::ProbeTelemetryInfo(
       FROM_HERE, base::BindOnce(std::move(callback), telem_info_.Clone()));
 }
 
-void FakeProbeService::GetOemData(GetOemDataCallback callback) {
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), oem_data_.Clone()));
-}
-
 const std::vector<crosapi::ProbeCategoryEnum>&
 FakeProbeService::GetLastRequestedCategories() {
   return probe_telemetry_info_requested_categories_;
@@ -62,10 +57,6 @@ FakeProbeService::GetLastRequestedCategories() {
 void FakeProbeService::SetProbeTelemetryInfoResponse(
     crosapi::ProbeTelemetryInfoPtr response_info) {
   telem_info_ = std::move(response_info);
-}
-
-void FakeProbeService::SetOemDataResponse(crosapi::ProbeOemDataPtr oem_data) {
-  oem_data_ = std::move(oem_data);
 }
 
 int FakeProbeService::GetProbeTelemetryInfoCallCount() {

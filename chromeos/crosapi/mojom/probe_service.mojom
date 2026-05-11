@@ -52,6 +52,9 @@ import "chromeos/services/network_health/public/mojom/network_health_types.mojom
 // ash-chrome.
 [Uuid="f3dbbe3b-a810-43a9-889e-b130b4f94869"]
 interface TelemetryProbeService {
+  // Removed:
+  //   GetOemData@1
+
   // Returns telemetry information for the desired categories.
   //
   // The request:
@@ -64,12 +67,6 @@ interface TelemetryProbeService {
   //                      will be non-null.
   ProbeTelemetryInfo@0(array<ProbeCategoryEnum> categories)
       => (ProbeTelemetryInfo telemetry_info);
-
-  // Returns OEM data.
-  //
-  // The response:
-  // * |oem_data| - OEM data.
-  GetOemData@1() => (ProbeOemData oem_data);
 };
 
 // An enumeration of each category of information that cros_healthd can report.

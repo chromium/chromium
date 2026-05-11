@@ -12,12 +12,14 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/values.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/remote_probe_service_strategy.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/telemetry/telemetry_api_converters.h"
 #include "chrome/common/chromeos/extensions/api/telemetry.h"
+#include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 
@@ -275,20 +277,22 @@ void OsTelemetryGetOemDataFunction::RunIfAllowed() {
     return;
   }
 
-  auto cb = base::BindOnce(&OsTelemetryGetOemDataFunction::OnResult, this);
-
-  GetRemoteService()->GetOemData(std::move(cb));
+  static constexpr char kOemDataLogName[] = "oemdata";
+  auto& debugd_client = CHECK_DEREF(ash::DebugDaemonClient::Get());
+  debugd_client.GetLog(
+      kOemDataLogName,
+      base::BindOnce(&OsTelemetryGetOemDataFunction::OnResult, this));
 }
 
-void OsTelemetryGetOemDataFunction::OnResult(crosapi::ProbeOemDataPtr ptr) {
-  if (!ptr || !ptr->oem_data.has_value()) {
+void OsTelemetryGetOemDataFunction::OnResult(
+    std::optional<std::string> oem_data) {
+  if (!oem_data.has_value()) {
     Respond(Error("API internal error"));
     return;
   }
 
   cx_telem::OemData result;
-  result.oem_data = std::move(ptr->oem_data);
-
+  result.oem_data = std::move(oem_data);
   Respond(ArgumentList(cx_telem::GetOemData::Results::Create(result)));
 }
 

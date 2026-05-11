@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/telemetry_extension/telemetry/probe_service_converters.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
@@ -17,12 +16,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash {
-
-namespace {
-
-constexpr char kOemDataLogName[] = "oemdata";
-
-}  // namespace
 
 ProbeServiceAsh::ProbeServiceAsh() = default;
 
@@ -44,19 +37,6 @@ void ProbeServiceAsh::ProbeTelemetryInfo(
              cros_healthd::mojom::TelemetryInfoPtr ptr) {
             std::move(callback).Run(
                 converters::telemetry::ConvertProbePtr(std::move(ptr)));
-          },
-          std::move(callback)));
-}
-
-void ProbeServiceAsh::GetOemData(GetOemDataCallback callback) {
-  DebugDaemonClient* debugd_client = DebugDaemonClient::Get();
-
-  debugd_client->GetLog(
-      kOemDataLogName,
-      base::BindOnce(
-          [](GetOemDataCallback callback, std::optional<std::string> oem_data) {
-            std::move(callback).Run(
-                crosapi::mojom::ProbeOemData::New(std::move(oem_data)));
           },
           std::move(callback)));
 }

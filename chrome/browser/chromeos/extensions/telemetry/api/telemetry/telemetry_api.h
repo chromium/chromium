@@ -138,7 +138,7 @@ class OsTelemetryGetOemDataFunction : public TelemetryApiFunctionBase {
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
 
-  void OnResult(crosapi::mojom::ProbeOemDataPtr ptr);
+  void OnResult(std::optional<std::string> oem_data);
 };
 
 class OsTelemetryGetOsVersionInfoFunction : public TelemetryApiFunctionBase {

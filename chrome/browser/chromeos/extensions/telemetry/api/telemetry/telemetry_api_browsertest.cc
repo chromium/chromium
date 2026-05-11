@@ -11,6 +11,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/base_telemetry_extension_browser_test.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/remote_probe_service_strategy.h"
+#include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
+#include "chromeos/ash/components/dbus/debug_daemon/fake_debug_daemon_client.h"
 #include "chromeos/ash/components/telemetry_extension/telemetry/probe_service_ash.h"
 #include "chromeos/crosapi/cpp/telemetry/fake_probe_service.h"
 #include "chromeos/crosapi/mojom/nullable_primitives.mojom.h"
@@ -648,12 +650,10 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetOemDataWithSerialNumberPermission_Success) {
   SetUpProbeService();
-  // Configure FakeProbeService.
-  {
-    auto oem_data = crosapi::ProbeOemData::New();
-    oem_data->oem_data = "123456789";
-    probe_service_->SetOemDataResponse(std::move(oem_data));
-  }
+
+  // Configure DebugDaemon.
+  static_cast<ash::FakeDebugDaemonClient*>(ash::DebugDaemonClient::Get())
+      ->SetLog("oemdata", "123456789");
 
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([

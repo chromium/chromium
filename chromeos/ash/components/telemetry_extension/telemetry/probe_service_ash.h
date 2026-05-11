@@ -31,7 +31,6 @@ class ProbeServiceAsh : public crosapi::mojom::TelemetryProbeService {
   void ProbeTelemetryInfo(
       const std::vector<crosapi::mojom::ProbeCategoryEnum>& categories,
       ProbeTelemetryInfoCallback callback) override;
-  void GetOemData(GetOemDataCallback callback) override;
 
   // Ensures that |service_| created and connected to the
   // CrosHealthdProbeService.
