@@ -18,7 +18,7 @@
 #include "cc/animation/keyframe_effect.h"
 #include "cc/animation/keyframe_model.h"
 #include "cc/paint/filter_operations.h"
-#include "cc/trees/mutator_host_client.h"
+#include "cc/trees/mutator_host_delegate.h"
 #include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
 #include "ui/gfx/geometry/transform_operations.h"
 
@@ -73,7 +73,7 @@ void ElementAnimations::InitAffectedElementTypes() {
   DCHECK(element_id_);
   DCHECK(animation_host_);
 
-  DCHECK(animation_host_->mutator_host_client());
+  DCHECK(animation_host_->mutator_host_delegate());
 }
 
 gfx::TargetProperties ElementAnimations::GetPropertiesMaskForAnimationState() {
@@ -99,12 +99,12 @@ void ElementAnimations::ClearAffectedElementTypes(
   disabled_state_mask.potentially_animating = disable_properties;
 
   // This method may get called from AnimationHost dtor so it is possible for
-  // mutator_host_client() to be null.
-  if (animation_host_->mutator_host_client()) {
-    animation_host_->mutator_host_client()->ElementIsAnimatingChanged(
+  // mutator_host_delegate() to be null.
+  if (animation_host_->mutator_host_delegate()) {
+    animation_host_->mutator_host_delegate()->ElementIsAnimatingChanged(
         element_id_map, ElementListType::ACTIVE, disabled_state_mask,
         disabled_state);
-    animation_host_->mutator_host_client()->ElementIsAnimatingChanged(
+    animation_host_->mutator_host_delegate()->ElementIsAnimatingChanged(
         element_id_map, ElementListType::PENDING, disabled_state_mask,
         disabled_state);
   }
@@ -285,7 +285,7 @@ void ElementAnimations::UpdateMaximumScale(ElementId element_id,
   if (element_id) {
     float maximum_scale = MaximumScale(element_id, list_type);
     if (*cached_scale != maximum_scale) {
-      animation_host_->mutator_host_client()->MaximumScaleChanged(
+      animation_host_->mutator_host_delegate()->MaximumScaleChanged(
           element_id, list_type, maximum_scale);
       *cached_scale = maximum_scale;
     }
@@ -310,8 +310,9 @@ void ElementAnimations::UpdateClientAnimationState() {
     return;
   }
   DCHECK(animation_host_);
-  if (!animation_host_->mutator_host_client())
+  if (!animation_host_->mutator_host_delegate()) {
     return;
+  }
 
   PropertyAnimationState prev_pending = pending_state_;
   PropertyAnimationState prev_active = active_state_;
@@ -350,7 +351,7 @@ void ElementAnimations::UpdateClientAnimationState() {
 
   if (prev_active != active_state_) {
     PropertyAnimationState diff_active = prev_active ^ active_state_;
-    animation_host_->mutator_host_client()->ElementIsAnimatingChanged(
+    animation_host_->mutator_host_delegate()->ElementIsAnimatingChanged(
         element_id_map, ElementListType::ACTIVE, diff_active, active_state_);
   }
 
@@ -367,7 +368,7 @@ void ElementAnimations::UpdateClientAnimationState() {
 
   if (prev_pending != pending_state_) {
     PropertyAnimationState diff_pending = prev_pending ^ pending_state_;
-    animation_host_->mutator_host_client()->ElementIsAnimatingChanged(
+    animation_host_->mutator_host_delegate()->ElementIsAnimatingChanged(
         element_id_map, ElementListType::PENDING, diff_pending, pending_state_);
   }
 
@@ -466,8 +467,8 @@ void ElementAnimations::OnFilterAnimated(ElementListType list_type,
   ElementId target_element_id = CalculateTargetElementId(this, keyframe_model);
   DCHECK(target_element_id);
   DCHECK(animation_host_);
-  DCHECK(animation_host_->mutator_host_client());
-  animation_host_->mutator_host_client()->SetElementFilterMutated(
+  DCHECK(animation_host_->mutator_host_delegate());
+  animation_host_->mutator_host_delegate()->SetElementFilterMutated(
       target_element_id, list_type, filters);
 }
 
@@ -478,8 +479,8 @@ void ElementAnimations::OnBackdropFilterAnimated(
   ElementId target_element_id = CalculateTargetElementId(this, keyframe_model);
   DCHECK(target_element_id);
   DCHECK(animation_host_);
-  DCHECK(animation_host_->mutator_host_client());
-  animation_host_->mutator_host_client()->SetElementBackdropFilterMutated(
+  DCHECK(animation_host_->mutator_host_delegate());
+  animation_host_->mutator_host_delegate()->SetElementBackdropFilterMutated(
       target_element_id, list_type, backdrop_filters);
 }
 
@@ -489,8 +490,8 @@ void ElementAnimations::OnOpacityAnimated(ElementListType list_type,
   ElementId target_element_id = CalculateTargetElementId(this, keyframe_model);
   DCHECK(target_element_id);
   DCHECK(animation_host_);
-  DCHECK(animation_host_->mutator_host_client());
-  animation_host_->mutator_host_client()->SetElementOpacityMutated(
+  DCHECK(animation_host_->mutator_host_delegate());
+  animation_host_->mutator_host_delegate()->SetElementOpacityMutated(
       target_element_id, list_type, opacity);
 }
 
@@ -499,7 +500,7 @@ void ElementAnimations::OnCustomPropertyAnimated(
     KeyframeModel* keyframe_model,
     int target_property_id) {
   DCHECK(animation_host_);
-  DCHECK(animation_host_->mutator_host_client());
+  DCHECK(animation_host_->mutator_host_delegate());
   // No-op background-color animations can have no unique_id. See
   // CompositorAnimations::IsNoOpBackgroundColorAnimation for details.
   if (!keyframe_model->element_id()) {
@@ -512,7 +513,7 @@ void ElementAnimations::OnCustomPropertyAnimated(
                 keyframe_model->native_property_type(), id)
           : PaintWorkletInput::PropertyKey(
                 keyframe_model->custom_property_name(), id);
-  animation_host_->mutator_host_client()->OnCustomPropertyMutated(
+  animation_host_->mutator_host_delegate()->OnCustomPropertyMutated(
       std::move(property_key), std::move(property_value));
 }
 
@@ -523,8 +524,8 @@ void ElementAnimations::OnTransformAnimated(
   ElementId target_element_id = CalculateTargetElementId(this, keyframe_model);
   DCHECK(target_element_id);
   DCHECK(animation_host_);
-  DCHECK(animation_host_->mutator_host_client());
-  animation_host_->mutator_host_client()->SetElementTransformMutated(
+  DCHECK(animation_host_->mutator_host_delegate());
+  animation_host_->mutator_host_delegate()->SetElementTransformMutated(
       target_element_id, list_type, transform);
 }
 
@@ -535,8 +536,8 @@ void ElementAnimations::OnScrollOffsetAnimated(
   ElementId target_element_id = CalculateTargetElementId(this, keyframe_model);
   DCHECK(target_element_id);
   DCHECK(animation_host_);
-  DCHECK(animation_host_->mutator_host_client());
-  animation_host_->mutator_host_client()->SetElementScrollOffsetMutated(
+  DCHECK(animation_host_->mutator_host_delegate());
+  animation_host_->mutator_host_delegate()->SetElementScrollOffsetMutated(
       target_element_id, list_type, scroll_offset);
 }
 

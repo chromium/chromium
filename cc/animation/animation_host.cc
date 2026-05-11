@@ -68,7 +68,7 @@ AnimationHost::AnimationHost(ThreadInstance thread_instance)
 
 AnimationHost::~AnimationHost() {
   ClearMutators();
-  DCHECK(!mutator_host_client());
+  DCHECK(!mutator_host_delegate());
 }
 
 std::unique_ptr<MutatorHost> AnimationHost::CreateImplInstance() const {
@@ -269,12 +269,12 @@ void AnimationHost::RegisterAnimationForElement(ElementId element_id,
     DCHECK(cc_keyframe_model->affects_active_elements() ||
            cc_keyframe_model->affects_pending_elements());
     DCHECK(!cc_keyframe_model->affects_active_elements() ||
-           mutator_host_client()->IsElementInPropertyTrees(
+           mutator_host_delegate()->IsElementInPropertyTrees(
                model_element_id, ElementListType::ACTIVE));
     // Test thread_instance_ because LayerTreeHost has no pending tree.
     DCHECK(thread_instance_ == ThreadInstance::kMain ||
            !cc_keyframe_model->affects_pending_elements() ||
-           mutator_host_client()->IsElementInPropertyTrees(
+           mutator_host_delegate()->IsElementInPropertyTrees(
                model_element_id, ElementListType::PENDING));
   }
 #endif
@@ -326,24 +326,25 @@ void AnimationHost::UpdateClientAnimationStateForElementAnimations(
     element_animations->UpdateClientAnimationState();
 }
 
-void AnimationHost::SetMutatorHostClient(MutatorHostClient* client) {
-  if (mutator_host_client() == client)
+void AnimationHost::SetMutatorHostDelegate(MutatorHostDelegate* delegate) {
+  if (mutator_host_delegate() == delegate) {
     return;
+  }
 
   WaitForProtectedSequenceCompletion();
 
-  if (!client) {
+  if (!delegate) {
     scroll_offset_animations_impl_.Write(*this).reset();
     scroll_offset_animations_.Write(*this).reset();
     ClearMutators();
   }
 
-  mutator_host_client_ = client;
+  mutator_host_delegate_ = delegate;
 
   // Creating ScrollOffsetAnimationsImpl calls back into this, triggering
-  // DCHECKs that are easier to verify once `mutator_host_client_` has been
+  // DCHECKs that are easier to verify once `mutator_host_delegate_` has been
   // set.
-  if (mutator_host_client() && !scroll_offset_animations_impl_.Read(*this)) {
+  if (mutator_host_delegate() && !scroll_offset_animations_impl_.Read(*this)) {
     if (thread_instance_ == ThreadInstance::kImpl) {
       scroll_offset_animations_impl_.Write(*this) =
           std::make_unique<ScrollOffsetAnimationsImpl>(this);
@@ -353,38 +354,42 @@ void AnimationHost::SetMutatorHostClient(MutatorHostClient* client) {
     }
   }
 
-  if (mutator_host_client() && needs_push_properties_.Read(*this))
-    mutator_host_client()->SetMutatorsNeedCommit();
+  if (mutator_host_delegate() && needs_push_properties_.Read(*this)) {
+    mutator_host_delegate()->SetMutatorsNeedCommit();
+  }
 }
 
 bool AnimationHost::IsOwnerThread() const {
-  return !mutator_host_client_ || mutator_host_client_->IsOwnerThread();
+  return !mutator_host_delegate_ || mutator_host_delegate_->IsOwnerThread();
 }
 
 bool AnimationHost::InProtectedSequence() const {
-  return !mutator_host_client_ || mutator_host_client_->InProtectedSequence();
+  return !mutator_host_delegate_ ||
+         mutator_host_delegate_->InProtectedSequence();
 }
 
 void AnimationHost::WaitForProtectedSequenceCompletion() const {
-  if (mutator_host_client_)
-    mutator_host_client_->WaitForProtectedSequenceCompletion();
+  if (mutator_host_delegate_) {
+    mutator_host_delegate_->WaitForProtectedSequenceCompletion();
+  }
 }
 
 void AnimationHost::SetNeedsCommit() {
-  DCHECK(mutator_host_client());
+  DCHECK(mutator_host_delegate());
   DCHECK(IsOwnerThread());
   DCHECK(!InProtectedSequence());
-  mutator_host_client()->SetMutatorsNeedCommit();
+  mutator_host_delegate()->SetMutatorsNeedCommit();
   // TODO(loyso): Invalidate property trees only if really needed.
-  mutator_host_client()->SetMutatorsNeedRebuildPropertyTrees();
+  mutator_host_delegate()->SetMutatorsNeedRebuildPropertyTrees();
 }
 
 void AnimationHost::SetNeedsPushProperties() {
   if (needs_push_properties())
     return;
   needs_push_properties_.Write(*this) = true;
-  if (mutator_host_client())
-    mutator_host_client()->SetMutatorsNeedCommit();
+  if (mutator_host_delegate()) {
+    mutator_host_delegate()->SetMutatorsNeedCommit();
+  }
 }
 
 void AnimationHost::ResetNeedsPushProperties() {
@@ -616,8 +621,8 @@ void AnimationHost::TickMutator(base::TimeTicks monotonic_time,
   auto on_done = base::BindOnce(
       [](base::WeakPtr<AnimationHost> animation_host, ElementListType tree_type,
          MutateStatus status) {
-        if (animation_host->mutator_host_client()) {
-          animation_host->mutator_host_client()
+        if (animation_host->mutator_host_delegate()) {
+          animation_host->mutator_host_delegate()
               ->NotifyAnimationWorkletStateChange(
                   ToAnimationWorkletMutationState(status), tree_type);
         }
@@ -628,7 +633,7 @@ void AnimationHost::TickMutator(base::TimeTicks monotonic_time,
       is_active_tree ? MutateQueuingStrategy::kQueueAndReplaceNormalPriority
                      : MutateQueuingStrategy::kQueueHighPriority;
   if (mutator->Mutate(std::move(state), queuing_strategy, std::move(on_done))) {
-    mutator_host_client()->NotifyAnimationWorkletStateChange(
+    mutator_host_delegate()->NotifyAnimationWorkletStateChange(
         AnimationWorkletMutationState::STARTED, tree_type);
   }
 }
@@ -938,7 +943,7 @@ bool AnimationHost::HasImplOnlyAutoScrollAnimatingElement() const {
 
 bool AnimationHost::IsElementInPropertyTrees(ElementId element_id,
                                              bool commits_to_active) const {
-  return mutator_host_client()->IsElementInPropertyTrees(
+  return mutator_host_delegate()->IsElementInPropertyTrees(
       element_id,
       commits_to_active ? ElementListType::ACTIVE : ElementListType::PENDING);
 }

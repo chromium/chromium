@@ -7,7 +7,7 @@
 #include "base/trace_event/trace_event.h"
 #include "cc/layers/heads_up_display_layer.h"
 #include "cc/trees/layer_tree_host.h"
-#include "cc/trees/mutator_host_client.h"
+#include "cc/trees/mutator_host_delegate.h"
 #include "cc/trees/property_tree_builder.h"
 
 namespace cc {

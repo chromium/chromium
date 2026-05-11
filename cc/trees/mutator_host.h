@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "cc/paint/element_id.h"
-#include "cc/trees/mutator_host_client.h"
+#include "cc/trees/mutator_host_delegate.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
@@ -21,7 +21,7 @@ class TimeTicks;
 namespace cc {
 
 class MutatorEvents;
-class MutatorHostClient;
+class MutatorHostDelegate;
 class LayerTreeMutator;
 class PropertyTrees;
 class ScrollTree;
@@ -36,7 +36,7 @@ inline constexpr float kInvalidScale = 0.f;
 // We synchronize them during the commit in a one-way data-flow process
 // (PushPropertiesTo).
 // A MutatorHost talks to its correspondent LayerTreeHost via
-// MutatorHostClient interface.
+// MutatorHostDelegate interface.
 class MutatorHost {
  public:
   virtual ~MutatorHost() = default;
@@ -49,7 +49,7 @@ class MutatorHost {
 
   virtual void RemoveElementId(ElementId element_id) = 0;
 
-  virtual void SetMutatorHostClient(MutatorHostClient* client) = 0;
+  virtual void SetMutatorHostDelegate(MutatorHostDelegate* delegate) = 0;
 
   virtual void SetLayerTreeMutator(
       std::unique_ptr<LayerTreeMutator> mutator) = 0;

@@ -443,7 +443,7 @@ cc_component("cc") {
     "trees/mobile_optimized_viewport_util.cc",
     "trees/mobile_optimized_viewport_util.h",
     "trees/mutator_host.h",
-    "trees/mutator_host_client.h",
+    "trees/mutator_host_delegate.h",
     "trees/occlusion.cc",
     "trees/occlusion.h",
     "trees/occlusion_tracker.cc",

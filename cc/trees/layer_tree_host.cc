@@ -242,7 +242,7 @@ void LayerTreeHost::SetTaskRunnerProviderForTesting(
   DCHECK(!task_runner_provider_);
   task_runner_provider_ = std::move(task_runner_provider);
   // This is done in InitializeProxy(), but not all tests call it.
-  mutator_host_->SetMutatorHostClient(this);
+  mutator_host_->SetMutatorHostDelegate(this);
 }
 
 void LayerTreeHost::SetUIResourceManagerForTesting(
@@ -255,7 +255,7 @@ void LayerTreeHost::InitializeProxy(std::unique_ptr<Proxy> proxy) {
   DCHECK(task_runner_provider_);
   DCHECK(IsMainThread());
 
-  mutator_host_->SetMutatorHostClient(this);
+  mutator_host_->SetMutatorHostDelegate(this);
 
   proxy_ = std::move(proxy);
   proxy_->Start();
@@ -271,7 +271,7 @@ LayerTreeHost::~LayerTreeHost() {
   TRACE_EVENT0("cc", "LayerTreeHost::~LayerTreeHost");
 
   // Clear any references into the LayerTreeHost.
-  mutator_host()->SetMutatorHostClient(nullptr);
+  mutator_host()->SetMutatorHostDelegate(nullptr);
 
   if (root_layer()) {
     root_layer()->SetLayerTreeHost(nullptr);

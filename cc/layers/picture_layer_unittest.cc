@@ -325,8 +325,8 @@ TEST(PictureLayerTest, NonMonotonicSourceFrameNumber) {
   EXPECT_EQ(3, layer->update_count());
   EXPECT_EQ(1, host2->SourceFrameNumber());
 
-  animation_host->SetMutatorHostClient(nullptr);
-  animation_host2->SetMutatorHostClient(nullptr);
+  animation_host->SetMutatorHostDelegate(nullptr);
+  animation_host2->SetMutatorHostDelegate(nullptr);
 
   host_client1.SetLayerTreeHost(nullptr);
   host_client2.SetLayerTreeHost(nullptr);

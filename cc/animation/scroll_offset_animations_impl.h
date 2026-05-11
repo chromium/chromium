@@ -11,7 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "cc/animation/animation_delegate.h"
 #include "cc/animation/scroll_offset_animation_curve.h"
-#include "cc/trees/mutator_host_client.h"
+#include "cc/trees/mutator_host_delegate.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 namespace cc {

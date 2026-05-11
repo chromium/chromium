@@ -555,7 +555,7 @@ LayerTreeHostImpl::LayerTreeHostImpl(
       base::BindRepeating(&LayerTreeHostImpl::MaybeFlushPendingWork,
                           weak_factory_.GetWeakPtr()));
   DCHECK(mutator_host_);
-  mutator_host_->SetMutatorHostClient(this);
+  mutator_host_->SetMutatorHostDelegate(this);
   mutator_events_ = mutator_host_->CreateEvents();
 
   DCHECK(task_runner_provider_->IsImplThread());
@@ -635,7 +635,7 @@ LayerTreeHostImpl::~LayerTreeHostImpl() {
   resource_provider_->ShutdownAndReleaseAllResources();
 
   mutator_host_->ClearMutators();
-  mutator_host_->SetMutatorHostClient(nullptr);
+  mutator_host_->SetMutatorHostDelegate(nullptr);
 
   // The `compositor_frame_reporting_controller_`
   // was given a `this` pointer for the event_latency_tracker and thus needs

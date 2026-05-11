@@ -60,7 +60,7 @@
 #include "cc/trees/layer_tree_mutator.h"
 #include "cc/trees/layer_tree_settings.h"
 #include "cc/trees/managed_memory_policy.h"
-#include "cc/trees/mutator_host_client.h"
+#include "cc/trees/mutator_host_delegate.h"
 #include "cc/trees/presentation_time_callback_buffer.h"
 #include "cc/trees/raster_capabilities.h"
 #include "cc/trees/render_frame_metadata.h"
@@ -136,7 +136,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
                                     public BrowserControlsOffsetManagerClient,
                                     public ScrollbarAnimationControllerClient,
                                     public VideoFrameControllerClient,
-                                    public MutatorHostClient,
+                                    public MutatorHostDelegate,
                                     public ImageAnimationController::Client,
                                     public CompositorDelegateForInput,
                                     public EventLatencyTracker {
@@ -360,7 +360,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   bool InProtectedSequence() const override;
   void WaitForProtectedSequenceCompletion() const override;
 
-  // MutatorHostClient implementation.
+  // MutatorHostDelegate implementation.
   bool IsElementInPropertyTrees(ElementId element_id,
                                 ElementListType list_type) const override;
   void SetMutatorsNeedCommit() override;

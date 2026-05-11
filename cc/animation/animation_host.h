@@ -18,7 +18,7 @@
 #include "cc/base/protected_sequence_synchronizer.h"
 #include "cc/trees/layer_tree_mutator.h"
 #include "cc/trees/mutator_host.h"
-#include "cc/trees/mutator_host_client.h"
+#include "cc/trees/mutator_host_delegate.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
@@ -43,7 +43,7 @@ enum class ThreadInstance { kMain, kImpl };
 // We synchronize them during the commit process in a one-way data flow process
 // (PushPropertiesTo).
 // An AnimationHost talks to its correspondent LayerTreeHost via
-// MutatorHostClient interface.
+// MutatorHostDelegate interface.
 class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
                                           public LayerTreeMutatorClient,
                                           public ProtectedSequenceSynchronizer {
@@ -102,13 +102,13 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   GetElementAnimationsForElementIdForTesting(ElementId element_id) const;
 
   // Parent LayerTreeHost or LayerTreeHostImpl.
-  MutatorHostClient* mutator_host_client() {
+  MutatorHostDelegate* mutator_host_delegate() {
     DCHECK(IsOwnerThread() || InProtectedSequence());
-    return mutator_host_client_;
+    return mutator_host_delegate_;
   }
-  const MutatorHostClient* mutator_host_client() const {
+  const MutatorHostDelegate* mutator_host_delegate() const {
     DCHECK(IsOwnerThread() || InProtectedSequence());
-    return mutator_host_client_;
+    return mutator_host_delegate_;
   }
 
   // ProtectedSequenceSynchronizer implementation
@@ -132,7 +132,7 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
 
   void RemoveElementId(ElementId element_id) override;
 
-  void SetMutatorHostClient(MutatorHostClient* client) override;
+  void SetMutatorHostDelegate(MutatorHostDelegate* delegate) override;
 
   void SetLayerTreeMutator(std::unique_ptr<LayerTreeMutator> mutator) override;
 
@@ -327,7 +327,7 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   // AnimationHosts's ProtectedSequenceSynchronizer implementation is
   // implemented using this member. As such the various helpers can not be used
   // to protect access (otherwise we would get infinite recursion).
-  raw_ptr<MutatorHostClient> mutator_host_client_ = nullptr;
+  raw_ptr<MutatorHostDelegate> mutator_host_delegate_ = nullptr;
 
   // This is only non-null within the call scope of PushPropertiesTo().
   raw_ptr<const PropertyTrees> property_trees_ = nullptr;

@@ -135,7 +135,7 @@ class BeginFrameTrackingLayerTreeFrameSinkClient
     : public FakeLayerTreeFrameSinkClient,
       public viz::BeginFrameObserverBase {
  public:
-  BeginFrameTrackingLayerTreeFrameSinkClient() {}
+  BeginFrameTrackingLayerTreeFrameSinkClient() = default;
   BeginFrameTrackingLayerTreeFrameSinkClient(
       const ThreadTrackingLayerTreeFrameSinkClient&) = delete;
   ~BeginFrameTrackingLayerTreeFrameSinkClient() override = default;

@@ -40,7 +40,7 @@ class WorkletAnimationTest : public AnimationTimelinesTest {
   ~WorkletAnimationTest() override = default;
 
   void AttachWorkletAnimation() {
-    client_.RegisterElementId(element_id_, ElementListType::ACTIVE);
+    delegate_.RegisterElementId(element_id_, ElementListType::ACTIVE);
 
     worklet_animation_ = WrapRefCounted(
         new WorkletAnimation(1, worklet_animation_id_, "test_name", 1, nullptr,
@@ -111,10 +111,10 @@ TEST_F(WorkletAnimationTest, LocalTimeIsUsedWhenTicking) {
   worklet_animation_->Tick(base::TimeTicks());
 
   TestLayer* layer =
-      client_.FindTestLayer(element_id_, ElementListType::ACTIVE);
+      delegate_.FindTestLayer(element_id_, ElementListType::ACTIVE);
   EXPECT_TRUE(layer->is_property_mutated(TargetProperty::OPACITY));
-  client_.ExpectOpacityPropertyMutated(element_id_, ElementListType::ACTIVE,
-                                       expected_opacity);
+  delegate_.ExpectOpacityPropertyMutated(element_id_, ElementListType::ACTIVE,
+                                         expected_opacity);
 }
 
 // Test generation of animation events by worklet animations.

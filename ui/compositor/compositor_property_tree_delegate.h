@@ -9,7 +9,7 @@
 #include "cc/cc_export.h"
 #include "cc/input/scroll_snap_data.h"
 #include "cc/paint/element_id.h"
-#include "cc/trees/mutator_host_client.h"
+#include "cc/trees/mutator_host_delegate.h"
 #include "cc/trees/property_tree_delegate.h"
 #include "cc/trees/property_tree_layer_tree_delegate.h"
 #include "ui/compositor/compositor_export.h"

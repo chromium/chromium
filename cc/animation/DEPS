@@ -10,7 +10,7 @@ include_rules = [
   "+cc/trees/animation_effect_timings.h",
   "+cc/trees/layer_tree_mutator.h",
   "+cc/trees/mutator_host.h",
-  "+cc/trees/mutator_host_client.h",
+  "+cc/trees/mutator_host_delegate.h",
   "+cc/trees/property_animation_state.h",
   "+cc/trees/property_tree.h",
   "+cc/trees/scroll_node.h",

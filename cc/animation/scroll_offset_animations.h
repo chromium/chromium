@@ -9,7 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "cc/animation/scroll_offset_animations_impl.h"
-#include "cc/trees/mutator_host_client.h"
+#include "cc/trees/mutator_host_delegate.h"
 
 namespace cc {
 

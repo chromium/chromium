@@ -143,7 +143,7 @@ class CC_EXPORT ScopedKeepSurfaceAlive {
   const viz::SurfaceRange range_;
 };
 
-class CC_EXPORT LayerTreeHost : public MutatorHostClient {
+class CC_EXPORT LayerTreeHost : public MutatorHostDelegate {
  public:
   struct CC_EXPORT InitParams {
     InitParams();
@@ -882,7 +882,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
     return !!commit_completion_event_;
   }
 
-  // MutatorHostClient implementation.
+  // MutatorHostDelegate implementation.
   bool IsElementInPropertyTrees(ElementId element_id,
                                 ElementListType list_type) const override;
   void SetMutatorsNeedCommit() override;

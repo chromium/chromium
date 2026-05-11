@@ -232,7 +232,7 @@ class LayerTest : public testing::Test {
     grand_child3_ = nullptr;
 
     layer_tree_host_->SetRootLayer(nullptr);
-    animation_host_->SetMutatorHostClient(nullptr);
+    animation_host_->SetMutatorHostDelegate(nullptr);
     layer_tree_host_ = nullptr;
     animation_host_ = nullptr;
   }

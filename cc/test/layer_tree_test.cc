@@ -791,7 +791,7 @@ LayerTreeTest::LayerTreeTest(viz::RendererType renderer_type,
 
 LayerTreeTest::~LayerTreeTest() {
   if (animation_host_)
-    animation_host_->SetMutatorHostClient(nullptr);
+    animation_host_->SetMutatorHostDelegate(nullptr);
 }
 
 void LayerTreeTest::EndTest() {

@@ -9,7 +9,7 @@
 
 #include "cc/input/scroll_snap_data.h"
 #include "cc/paint/element_id.h"
-#include "cc/trees/mutator_host_client.h"
+#include "cc/trees/mutator_host_delegate.h"
 
 namespace gfx {
 class Vector2dF;

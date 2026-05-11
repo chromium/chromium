@@ -127,7 +127,7 @@ accelerated web animations, and ui/ for accelerated user interface animations.
 Both of these clients utilize
 [cc::Layer](https://codesearch.chromium.org/chromium/src/cc/layers/layer.h)
 as their animation entity and interact with cc/animation via the
-[MutatorHostClient](https://codesearch.chromium.org/chromium/src/cc/trees/mutator_host_client.h)
+[MutatorHostDelegate](https://codesearch.chromium.org/chromium/src/cc/trees/mutator_host_delegate.h)
 interface (which is implemented by cc::LayerTreeHost and cc::LayerTreeHostImpl).
 
 chrome/browser/vr/ also makes use of cc/animations but does not use cc::Layer as

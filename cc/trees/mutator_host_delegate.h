@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CC_TREES_MUTATOR_HOST_CLIENT_H_
-#define CC_TREES_MUTATOR_HOST_CLIENT_H_
+#ifndef CC_TREES_MUTATOR_HOST_DELEGATE_H_
+#define CC_TREES_MUTATOR_HOST_DELEGATE_H_
 
 #include <optional>
 
@@ -16,7 +16,7 @@
 namespace gfx {
 class Transform;
 class PointF;
-}
+}  // namespace gfx
 
 namespace cc {
 
@@ -31,7 +31,7 @@ enum class AnimationWorkletMutationState {
   CANCELED
 };
 
-class MutatorHostClient : public ProtectedSequenceSynchronizer {
+class CC_EXPORT MutatorHostDelegate : public ProtectedSequenceSynchronizer {
  public:
   virtual bool IsElementInPropertyTrees(ElementId element_id,
                                         ElementListType list_type) const = 0;
@@ -83,4 +83,4 @@ class MutatorHostClient : public ProtectedSequenceSynchronizer {
 
 }  // namespace cc
 
-#endif  // CC_TREES_MUTATOR_HOST_CLIENT_H_
+#endif  // CC_TREES_MUTATOR_HOST_DELEGATE_H_

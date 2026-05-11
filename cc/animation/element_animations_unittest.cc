@@ -84,13 +84,13 @@ class ElementAnimationsTest : public AnimationTimelinesTest {
 TEST_F(ElementAnimationsTest, AttachToLayerInActiveTree) {
   // Set up the layer which is in active tree for main thread and not
   // yet passed onto the impl thread.
-  client_.RegisterElementId(element_id_, ElementListType::ACTIVE);
-  client_impl_.RegisterElementId(element_id_, ElementListType::PENDING);
+  delegate_.RegisterElementId(element_id_, ElementListType::ACTIVE);
+  delegate_impl_.RegisterElementId(element_id_, ElementListType::PENDING);
 
   EXPECT_TRUE(
-      client_.IsElementInPropertyTrees(element_id_, ElementListType::ACTIVE));
-  EXPECT_FALSE(
-      client_.IsElementInPropertyTrees(element_id_, ElementListType::PENDING));
+      delegate_.IsElementInPropertyTrees(element_id_, ElementListType::ACTIVE));
+  EXPECT_FALSE(delegate_.IsElementInPropertyTrees(element_id_,
+                                                  ElementListType::PENDING));
 
   AttachTimelineAnimationLayer();
 
@@ -99,15 +99,15 @@ TEST_F(ElementAnimationsTest, AttachToLayerInActiveTree) {
   GetImplTimelineAndAnimationByID();
 
   // Create the layer in the impl active tree.
-  client_impl_.RegisterElementId(element_id_, ElementListType::ACTIVE);
+  delegate_impl_.RegisterElementId(element_id_, ElementListType::ACTIVE);
 
-  EXPECT_TRUE(client_impl_.IsElementInPropertyTrees(element_id_,
-                                                    ElementListType::ACTIVE));
-  EXPECT_TRUE(client_impl_.IsElementInPropertyTrees(element_id_,
-                                                    ElementListType::PENDING));
+  EXPECT_TRUE(delegate_impl_.IsElementInPropertyTrees(element_id_,
+                                                      ElementListType::ACTIVE));
+  EXPECT_TRUE(delegate_impl_.IsElementInPropertyTrees(
+      element_id_, ElementListType::PENDING));
 
   // kill layer on main thread.
-  client_.UnregisterElementId(element_id_, ElementListType::ACTIVE);
+  delegate_.UnregisterElementId(element_id_, ElementListType::ACTIVE);
   EXPECT_EQ(element_animations_,
             animation_->keyframe_effect()->element_animations());
 
@@ -117,12 +117,12 @@ TEST_F(ElementAnimationsTest, AttachToLayerInActiveTree) {
             animation_impl_->keyframe_effect()->element_animations());
 
   // Kill layer on impl thread in pending tree.
-  client_impl_.UnregisterElementId(element_id_, ElementListType::PENDING);
+  delegate_impl_.UnregisterElementId(element_id_, ElementListType::PENDING);
   EXPECT_EQ(element_animations_impl_,
             animation_impl_->keyframe_effect()->element_animations());
 
   // Kill layer on impl thread in active tree.
-  client_impl_.UnregisterElementId(element_id_, ElementListType::ACTIVE);
+  delegate_impl_.UnregisterElementId(element_id_, ElementListType::ACTIVE);
   EXPECT_EQ(element_animations_impl_,
             animation_impl_->keyframe_effect()->element_animations());
 
@@ -231,7 +231,7 @@ TEST_F(ElementAnimationsTest,
   gfx::PointF provider_initial_value(150.f, 300.f);
   gfx::PointF target_value(300.f, 200.f);
 
-  client_.SetScrollOffsetForAnimation(provider_initial_value, element_id_);
+  delegate_.SetScrollOffsetForAnimation(provider_initial_value, element_id_);
 
   // Animation with initial value set.
   std::unique_ptr<ScrollOffsetAnimationCurve> curve_fixed(
@@ -452,8 +452,8 @@ TEST_F(ElementAnimationsTest, Activation) {
   AttachTimelineAnimationLayer();
   CreateImplTimelineAndAnimation();
 
-  AnimationHost* host = client_.host();
-  AnimationHost* host_impl = client_impl_.host();
+  AnimationHost* host = delegate_.host();
+  AnimationHost* host_impl = delegate_impl_.host();
 
   auto events = CreateEventsForTesting();
 
@@ -575,9 +575,9 @@ TEST_F(ElementAnimationsTest, SyncPause) {
                 ->GetKeyframeModelById(keyframe_model_id)
                 ->run_state());
 
-  EXPECT_EQ(0.3f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
+  EXPECT_EQ(0.3f, delegate_.GetOpacity(element_id_, ElementListType::ACTIVE));
   EXPECT_EQ(0.3f,
-            client_impl_.GetOpacity(element_id_, ElementListType::ACTIVE));
+            delegate_impl_.GetOpacity(element_id_, ElementListType::ACTIVE));
 
   EXPECT_EQ(kInitialTickTime - hold_time,
             animation_->keyframe_effect()
@@ -610,9 +610,9 @@ TEST_F(ElementAnimationsTest, SyncPause) {
                                        ->run_state());
 
   // Opacity value doesn't depend on time if paused at specified time offset.
-  EXPECT_EQ(0.4f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
+  EXPECT_EQ(0.4f, delegate_.GetOpacity(element_id_, ElementListType::ACTIVE));
   EXPECT_EQ(0.4f,
-            client_impl_.GetOpacity(element_id_, ElementListType::ACTIVE));
+            delegate_impl_.GetOpacity(element_id_, ElementListType::ACTIVE));
 }
 
 TEST_F(ElementAnimationsTest, DoNotSyncFinishedAnimation) {
@@ -833,11 +833,11 @@ TEST_F(ElementAnimationsTest, TrivialTransition) {
                 ->run_state());
   animation_->UpdateState(true, events.get());
   EXPECT_TRUE(animation_->keyframe_effect()->HasTickingKeyframeModel());
-  EXPECT_EQ(0.f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
+  EXPECT_EQ(0.f, delegate_.GetOpacity(element_id_, ElementListType::ACTIVE));
 
   animation_->Tick(kInitialTickTime + base::Milliseconds(1000));
   animation_->UpdateState(true, events.get());
-  EXPECT_EQ(1.f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
+  EXPECT_EQ(1.f, delegate_.GetOpacity(element_id_, ElementListType::ACTIVE));
   EXPECT_FALSE(animation_->keyframe_effect()->HasTickingKeyframeModel());
 }
 
@@ -868,19 +868,19 @@ TEST_F(ElementAnimationsTest, FilterTransition) {
   animation_->UpdateState(true, events.get());
   EXPECT_TRUE(animation_->keyframe_effect()->HasTickingKeyframeModel());
   EXPECT_EQ(start_filters,
-            client_.GetFilters(element_id_, ElementListType::ACTIVE));
+            delegate_.GetFilters(element_id_, ElementListType::ACTIVE));
 
   animation_->Tick(kInitialTickTime + base::Milliseconds(500));
   animation_->UpdateState(true, events.get());
   EXPECT_EQ(1u,
-            client_.GetFilters(element_id_, ElementListType::ACTIVE).size());
+            delegate_.GetFilters(element_id_, ElementListType::ACTIVE).size());
   EXPECT_EQ(FilterOperation::CreateBrightnessFilter(1.5f),
-            client_.GetFilters(element_id_, ElementListType::ACTIVE).at(0));
+            delegate_.GetFilters(element_id_, ElementListType::ACTIVE).at(0));
 
   animation_->Tick(kInitialTickTime + base::Milliseconds(1000));
   animation_->UpdateState(true, events.get());
   EXPECT_EQ(end_filters,
-            client_.GetFilters(element_id_, ElementListType::ACTIVE));
+            delegate_.GetFilters(element_id_, ElementListType::ACTIVE));
   EXPECT_FALSE(animation_->keyframe_effect()->HasTickingKeyframeModel());
 }
 
@@ -911,21 +911,21 @@ TEST_F(ElementAnimationsTest, BackdropFilterTransition) {
   animation_->UpdateState(true, events.get());
   EXPECT_TRUE(animation_->keyframe_effect()->HasTickingKeyframeModel());
   EXPECT_EQ(start_filters,
-            client_.GetBackdropFilters(element_id_, ElementListType::ACTIVE));
+            delegate_.GetBackdropFilters(element_id_, ElementListType::ACTIVE));
 
   animation_->Tick(kInitialTickTime + base::Milliseconds(500));
   animation_->UpdateState(true, events.get());
-  EXPECT_EQ(
-      1u,
-      client_.GetBackdropFilters(element_id_, ElementListType::ACTIVE).size());
+  EXPECT_EQ(1u,
+            delegate_.GetBackdropFilters(element_id_, ElementListType::ACTIVE)
+                .size());
   EXPECT_EQ(
       FilterOperation::CreateInvertFilter(0.5f),
-      client_.GetBackdropFilters(element_id_, ElementListType::ACTIVE).at(0));
+      delegate_.GetBackdropFilters(element_id_, ElementListType::ACTIVE).at(0));
 
   animation_->Tick(kInitialTickTime + base::Milliseconds(1000));
   animation_->UpdateState(true, events.get());
   EXPECT_EQ(end_filters,
-            client_.GetBackdropFilters(element_id_, ElementListType::ACTIVE));
+            delegate_.GetBackdropFilters(element_id_, ElementListType::ACTIVE));
   EXPECT_FALSE(animation_->keyframe_effect()->HasTickingKeyframeModel());
 }
 
@@ -948,7 +948,7 @@ TEST_F(ElementAnimationsTest, ScrollOffsetTransition) {
   keyframe_model->set_needs_synchronized_start_time(true);
   animation_->AddKeyframeModel(std::move(keyframe_model));
 
-  client_.SetScrollOffsetForAnimation(initial_value, element_id_);
+  delegate_.SetScrollOffsetForAnimation(initial_value, element_id_);
   PushProperties();
   animation_impl_->ActivateKeyframeModels();
   EXPECT_TRUE(animation_impl_->GetKeyframeModel(TargetProperty::SCROLL_OFFSET));
@@ -965,13 +965,13 @@ TEST_F(ElementAnimationsTest, ScrollOffsetTransition) {
   animation_->UpdateState(true, nullptr);
   EXPECT_TRUE(animation_->keyframe_effect()->HasTickingKeyframeModel());
   EXPECT_EQ(initial_value,
-            client_.GetScrollOffset(element_id_, ElementListType::ACTIVE));
+            delegate_.GetScrollOffset(element_id_, ElementListType::ACTIVE));
 
   animation_impl_->Tick(kInitialTickTime);
   animation_impl_->UpdateState(true, events.get());
   EXPECT_TRUE(animation_impl_->keyframe_effect()->HasTickingKeyframeModel());
-  EXPECT_EQ(initial_value,
-            client_impl_.GetScrollOffset(element_id_, ElementListType::ACTIVE));
+  EXPECT_EQ(initial_value, delegate_impl_.GetScrollOffset(
+                               element_id_, ElementListType::ACTIVE));
 
   const AnimationPlaybackEvent& event =
       std::get<AnimationPlaybackEvent>(events->events()[0]);
@@ -981,24 +981,24 @@ TEST_F(ElementAnimationsTest, ScrollOffsetTransition) {
   EXPECT_TRUE(animation_->keyframe_effect()->HasTickingKeyframeModel());
   EXPECT_POINTF_NEAR(
       gfx::PointF(272.304f, 213.848f),
-      client_.GetScrollOffset(element_id_, ElementListType::ACTIVE), 0.001f);
+      delegate_.GetScrollOffset(element_id_, ElementListType::ACTIVE), 0.001f);
 
   animation_impl_->Tick(kInitialTickTime + duration / 2);
   animation_impl_->UpdateState(true, events.get());
   EXPECT_POINTF_NEAR(
       gfx::PointF(272.304f, 213.848f),
-      client_impl_.GetScrollOffset(element_id_, ElementListType::ACTIVE),
+      delegate_impl_.GetScrollOffset(element_id_, ElementListType::ACTIVE),
       0.001f);
 
   animation_impl_->Tick(kInitialTickTime + duration);
   animation_impl_->UpdateState(true, events.get());
-  EXPECT_POINTF_EQ(target_value, client_impl_.GetScrollOffset(
+  EXPECT_POINTF_EQ(target_value, delegate_impl_.GetScrollOffset(
                                      element_id_, ElementListType::ACTIVE));
   EXPECT_FALSE(animation_impl_->keyframe_effect()->HasTickingKeyframeModel());
 
   animation_->Tick(kInitialTickTime + duration);
   animation_->UpdateState(true, nullptr);
-  EXPECT_POINTF_EQ(target_value, client_.GetScrollOffset(
+  EXPECT_POINTF_EQ(target_value, delegate_.GetScrollOffset(
                                      element_id_, ElementListType::ACTIVE));
   EXPECT_FALSE(animation_->keyframe_effect()->HasTickingKeyframeModel());
 }
@@ -1027,8 +1027,8 @@ TEST_F(ElementAnimationsTest, ScrollOffsetTransitionOnImplOnly) {
   animation_impl_->Tick(kInitialTickTime);
   animation_impl_->UpdateState(true, events.get());
   EXPECT_TRUE(animation_impl_->keyframe_effect()->HasTickingKeyframeModel());
-  EXPECT_EQ(initial_value,
-            client_impl_.GetScrollOffset(element_id_, ElementListType::ACTIVE));
+  EXPECT_EQ(initial_value, delegate_impl_.GetScrollOffset(
+                               element_id_, ElementListType::ACTIVE));
 
   base::TimeDelta duration = base::Microseconds(
       duration_in_seconds * base::Time::kMicrosecondsPerSecond);
@@ -1037,12 +1037,12 @@ TEST_F(ElementAnimationsTest, ScrollOffsetTransitionOnImplOnly) {
   animation_impl_->UpdateState(true, events.get());
   EXPECT_POINTF_NEAR(
       gfx::PointF(272.304f, 213.848f),
-      client_impl_.GetScrollOffset(element_id_, ElementListType::ACTIVE),
+      delegate_impl_.GetScrollOffset(element_id_, ElementListType::ACTIVE),
       0.001f);
 
   animation_impl_->Tick(kInitialTickTime + duration);
   animation_impl_->UpdateState(true, events.get());
-  EXPECT_POINTF_EQ(target_value, client_impl_.GetScrollOffset(
+  EXPECT_POINTF_EQ(target_value, delegate_impl_.GetScrollOffset(
                                      element_id_, ElementListType::ACTIVE));
   EXPECT_FALSE(animation_impl_->keyframe_effect()->HasTickingKeyframeModel());
 }
@@ -1096,7 +1096,7 @@ TEST_F(ElementAnimationsTest, UpdateStateWithoutAnimate) {
                 ->run_state());
   EXPECT_POINTF_EQ(
       gfx::PointF(100.f, 200.f),
-      client_impl_.GetScrollOffset(element_id_, ElementListType::ACTIVE));
+      delegate_impl_.GetScrollOffset(element_id_, ElementListType::ACTIVE));
 }
 
 // Ensure that when the impl animations doesn't have a value provider,
@@ -1122,7 +1122,7 @@ TEST_F(ElementAnimationsTest, ScrollOffsetTransitionNoImplProvider) {
   keyframe_model->set_needs_synchronized_start_time(true);
   animation_->AddKeyframeModel(std::move(keyframe_model));
 
-  client_.SetScrollOffsetForAnimation(initial_value, element_id_);
+  delegate_.SetScrollOffsetForAnimation(initial_value, element_id_);
   PushProperties();
   animation_impl_->ActivateKeyframeModels();
   EXPECT_TRUE(animation_impl_->GetKeyframeModel(TargetProperty::SCROLL_OFFSET));
@@ -1140,14 +1140,14 @@ TEST_F(ElementAnimationsTest, ScrollOffsetTransitionNoImplProvider) {
 
   EXPECT_TRUE(animation_->keyframe_effect()->HasTickingKeyframeModel());
   EXPECT_EQ(initial_value,
-            client_.GetScrollOffset(element_id_, ElementListType::ACTIVE));
-  EXPECT_EQ(gfx::PointF(), client_impl_.GetScrollOffset(
+            delegate_.GetScrollOffset(element_id_, ElementListType::ACTIVE));
+  EXPECT_EQ(gfx::PointF(), delegate_impl_.GetScrollOffset(
                                element_id_, ElementListType::PENDING));
 
   animation_impl_->Tick(kInitialTickTime);
 
   EXPECT_TRUE(animation_impl_->keyframe_effect()->HasTickingKeyframeModel());
-  EXPECT_EQ(initial_value, client_impl_.GetScrollOffset(
+  EXPECT_EQ(initial_value, delegate_impl_.GetScrollOffset(
                                element_id_, ElementListType::PENDING));
 
   CreateTestImplLayer(ElementListType::ACTIVE);
@@ -1163,24 +1163,24 @@ TEST_F(ElementAnimationsTest, ScrollOffsetTransitionNoImplProvider) {
   EXPECT_TRUE(animation_->keyframe_effect()->HasTickingKeyframeModel());
   EXPECT_POINTF_NEAR(
       gfx::PointF(327.696f, 186.152f),
-      client_.GetScrollOffset(element_id_, ElementListType::ACTIVE), 0.001f);
+      delegate_.GetScrollOffset(element_id_, ElementListType::ACTIVE), 0.001f);
 
   animation_impl_->Tick(kInitialTickTime + duration / 2);
   animation_impl_->UpdateState(true, events.get());
   EXPECT_POINTF_NEAR(
       gfx::PointF(327.696f, 186.152f),
-      client_impl_.GetScrollOffset(element_id_, ElementListType::PENDING),
+      delegate_impl_.GetScrollOffset(element_id_, ElementListType::PENDING),
       0.001f);
 
   animation_impl_->Tick(kInitialTickTime + duration);
   animation_impl_->UpdateState(true, events.get());
-  EXPECT_POINTF_EQ(target_value, client_impl_.GetScrollOffset(
+  EXPECT_POINTF_EQ(target_value, delegate_impl_.GetScrollOffset(
                                      element_id_, ElementListType::PENDING));
   EXPECT_FALSE(animation_impl_->keyframe_effect()->HasTickingKeyframeModel());
 
   animation_->Tick(kInitialTickTime + duration);
   animation_->UpdateState(true, nullptr);
-  EXPECT_POINTF_EQ(target_value, client_.GetScrollOffset(
+  EXPECT_POINTF_EQ(target_value, delegate_.GetScrollOffset(
                                      element_id_, ElementListType::ACTIVE));
   EXPECT_FALSE(animation_->keyframe_effect()->HasTickingKeyframeModel());
 }
@@ -1416,15 +1416,15 @@ TEST_F(ElementAnimationsTest,
   animation_->Tick(kInitialTickTime);
   animation_->UpdateState(true, events.get());
   EXPECT_TRUE(animation_->keyframe_effect()->HasTickingKeyframeModel());
-  EXPECT_EQ(0.f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
+  EXPECT_EQ(0.f, delegate_.GetOpacity(element_id_, ElementListType::ACTIVE));
   animation_->Tick(kInitialTickTime + base::Milliseconds(1000));
   animation_->UpdateState(true, events.get());
   EXPECT_TRUE(animation_->keyframe_effect()->HasTickingKeyframeModel());
-  EXPECT_EQ(0.f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
+  EXPECT_EQ(0.f, delegate_.GetOpacity(element_id_, ElementListType::ACTIVE));
   animation_->Tick(kInitialTickTime + base::Milliseconds(2000));
   animation_->UpdateState(true, events.get());
   EXPECT_TRUE(animation_->keyframe_effect()->HasTickingKeyframeModel());
-  EXPECT_EQ(0.f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
+  EXPECT_EQ(0.f, delegate_.GetOpacity(element_id_, ElementListType::ACTIVE));
 
   // Send the synchronized start time.
   animation_->DispatchAndDelegateAnimationEvent(AnimationPlaybackEvent(
@@ -1434,7 +1434,7 @@ TEST_F(ElementAnimationsTest,
       1, TargetProperty::OPACITY, kInitialTickTime + base::Milliseconds(2000)));
   animation_->Tick(kInitialTickTime + base::Milliseconds(5000));
   animation_->UpdateState(true, events.get());
-  EXPECT_EQ(1.f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
+  EXPECT_EQ(1.f, delegate_.GetOpacity(element_id_, ElementListType::ACTIVE));
   EXPECT_FALSE(animation_->keyframe_effect()->HasTickingKeyframeModel());
 }
 
@@ -1473,7 +1473,7 @@ TEST_F(ElementAnimationsTest, TrivialQueuing) {
 
   animation_->UpdateState(true, events.get());
   EXPECT_TRUE(animation_->keyframe_effect()->HasTickingKeyframeModel());
-  EXPECT_EQ(0.f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
+  EXPECT_EQ(0.f, delegate_.GetOpacity(element_id_, ElementListType::ACTIVE));
 
   animation_->Tick(kInitialTickTime + base::Milliseconds(1000));
   animation_->UpdateState(true, events.get());
@@ -1491,10 +1491,10 @@ TEST_F(ElementAnimationsTest, TrivialQueuing) {
                                         ->run_state());
 
   EXPECT_TRUE(animation_->keyframe_effect()->HasTickingKeyframeModel());
-  EXPECT_EQ(1.f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
+  EXPECT_EQ(1.f, delegate_.GetOpacity(element_id_, ElementListType::ACTIVE));
   animation_->Tick(kInitialTickTime + base::Milliseconds(2000));
   animation_->UpdateState(true, events.get());
-  EXPECT_EQ(0.5f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
+  EXPECT_EQ(0.5f, delegate_.GetOpacity(element_id_, ElementListType::ACTIVE));
   EXPECT_FALSE(animation_->keyframe_effect()->HasTickingKeyframeModel());
 }
 
@@ -1511,7 +1511,7 @@ TEST_F(ElementAnimationsTest, Interrupt) {
   animation_->Tick(kInitialTickTime);
   animation_->UpdateState(true, events.get());
   EXPECT_TRUE(animation_->keyframe_effect()->HasTickingKeyframeModel());
-  EXPECT_EQ(0.f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
+  EXPECT_EQ(0.f, delegate_.GetOpacity(element_id_, ElementListType::ACTIVE));
 
   std::unique_ptr<KeyframeModel> to_add =
       CreateKeyframeModel(std::make_unique<FakeFloatTransition>(1.0, 1.f, 0.5f),
@@ -1524,10 +1524,10 @@ TEST_F(ElementAnimationsTest, Interrupt) {
   animation_->Tick(kInitialTickTime + base::Milliseconds(500));
   animation_->UpdateState(true, events.get());
   EXPECT_TRUE(animation_->keyframe_effect()->HasTickingKeyframeModel());
-  EXPECT_EQ(1.f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
+  EXPECT_EQ(1.f, delegate_.GetOpacity(element_id_, ElementListType::ACTIVE));
   animation_->Tick(kInitialTickTime + base::Milliseconds(1500));
   animation_->UpdateState(true, events.get());
-  EXPECT_EQ(0.5f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
+  EXPECT_EQ(0.5f, delegate_.GetOpacity(element_id_, ElementListType::ACTIVE));
   EXPECT_FALSE(animation_->keyframe_effect()->HasTickingKeyframeModel());
 }
 
@@ -1551,17 +1551,17 @@ TEST_F(ElementAnimationsTest, ScheduleTogetherWhenAPropertyIsBlocked) {
 
   animation_->Tick(kInitialTickTime);
   animation_->UpdateState(true, events.get());
-  EXPECT_EQ(0.f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
+  EXPECT_EQ(0.f, delegate_.GetOpacity(element_id_, ElementListType::ACTIVE));
   EXPECT_TRUE(animation_->keyframe_effect()->HasTickingKeyframeModel());
   animation_->Tick(kInitialTickTime + base::Milliseconds(1000));
   animation_->UpdateState(true, events.get());
   // Should not have started the float transition yet.
   EXPECT_TRUE(animation_->keyframe_effect()->HasTickingKeyframeModel());
-  EXPECT_EQ(0.f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
+  EXPECT_EQ(0.f, delegate_.GetOpacity(element_id_, ElementListType::ACTIVE));
   // The float animation should have started at time 1 and should be done.
   animation_->Tick(kInitialTickTime + base::Milliseconds(2000));
   animation_->UpdateState(true, events.get());
-  EXPECT_EQ(1.f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
+  EXPECT_EQ(1.f, delegate_.GetOpacity(element_id_, ElementListType::ACTIVE));
   EXPECT_FALSE(animation_->keyframe_effect()->HasTickingKeyframeModel());
 }
 
@@ -1588,7 +1588,7 @@ TEST_F(ElementAnimationsTest, ScheduleTogetherWithAnAnimWaiting) {
   animation_->Tick(kInitialTickTime);
   animation_->UpdateState(true, events.get());
   EXPECT_TRUE(animation_->keyframe_effect()->HasTickingKeyframeModel());
-  EXPECT_EQ(0.f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
+  EXPECT_EQ(0.f, delegate_.GetOpacity(element_id_, ElementListType::ACTIVE));
   // The opacity animation should have finished at time 1, but the group
   // of animations with id 1 don't finish until time 2 because of the length
   // of the transform animation.
@@ -1596,13 +1596,13 @@ TEST_F(ElementAnimationsTest, ScheduleTogetherWithAnAnimWaiting) {
   animation_->UpdateState(true, events.get());
   // Should not have started the float transition yet.
   EXPECT_TRUE(animation_->keyframe_effect()->HasTickingKeyframeModel());
-  EXPECT_EQ(1.f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
+  EXPECT_EQ(1.f, delegate_.GetOpacity(element_id_, ElementListType::ACTIVE));
 
   // The second opacity animation should start at time 2 and should be done by
   // time 3.
   animation_->Tick(kInitialTickTime + base::Milliseconds(3000));
   animation_->UpdateState(true, events.get());
-  EXPECT_EQ(0.5f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
+  EXPECT_EQ(0.5f, delegate_.GetOpacity(element_id_, ElementListType::ACTIVE));
   EXPECT_FALSE(animation_->keyframe_effect()->HasTickingKeyframeModel());
 }
 
@@ -1622,32 +1622,32 @@ TEST_F(ElementAnimationsTest, TrivialLooping) {
   animation_->Tick(kInitialTickTime);
   animation_->UpdateState(true, events.get());
   EXPECT_TRUE(animation_->keyframe_effect()->HasTickingKeyframeModel());
-  EXPECT_EQ(0.f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
+  EXPECT_EQ(0.f, delegate_.GetOpacity(element_id_, ElementListType::ACTIVE));
   animation_->Tick(kInitialTickTime + base::Milliseconds(1250));
   animation_->UpdateState(true, events.get());
   EXPECT_TRUE(animation_->keyframe_effect()->HasTickingKeyframeModel());
-  EXPECT_EQ(0.25f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
+  EXPECT_EQ(0.25f, delegate_.GetOpacity(element_id_, ElementListType::ACTIVE));
   animation_->Tick(kInitialTickTime + base::Milliseconds(1750));
   animation_->UpdateState(true, events.get());
   EXPECT_TRUE(animation_->keyframe_effect()->HasTickingKeyframeModel());
-  EXPECT_EQ(0.75f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
+  EXPECT_EQ(0.75f, delegate_.GetOpacity(element_id_, ElementListType::ACTIVE));
   animation_->Tick(kInitialTickTime + base::Milliseconds(2250));
   animation_->UpdateState(true, events.get());
   EXPECT_TRUE(animation_->keyframe_effect()->HasTickingKeyframeModel());
-  EXPECT_EQ(0.25f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
+  EXPECT_EQ(0.25f, delegate_.GetOpacity(element_id_, ElementListType::ACTIVE));
   animation_->Tick(kInitialTickTime + base::Milliseconds(2750));
   animation_->UpdateState(true, events.get());
   EXPECT_TRUE(animation_->keyframe_effect()->HasTickingKeyframeModel());
-  EXPECT_EQ(0.75f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
+  EXPECT_EQ(0.75f, delegate_.GetOpacity(element_id_, ElementListType::ACTIVE));
   animation_->Tick(kInitialTickTime + base::Milliseconds(3000));
   animation_->UpdateState(true, events.get());
   EXPECT_FALSE(animation_->keyframe_effect()->HasTickingKeyframeModel());
-  EXPECT_EQ(1.f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
+  EXPECT_EQ(1.f, delegate_.GetOpacity(element_id_, ElementListType::ACTIVE));
 
   // Just be extra sure.
   animation_->Tick(kInitialTickTime + base::Milliseconds(4000));
   animation_->UpdateState(true, events.get());
-  EXPECT_EQ(1.f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
+  EXPECT_EQ(1.f, delegate_.GetOpacity(element_id_, ElementListType::ACTIVE));
 }
 
 // Test that an infinitely looping animation does indeed go until aborted.
@@ -1666,30 +1666,30 @@ TEST_F(ElementAnimationsTest, InfiniteLooping) {
   animation_->Tick(kInitialTickTime);
   animation_->UpdateState(true, events.get());
   EXPECT_TRUE(animation_->keyframe_effect()->HasTickingKeyframeModel());
-  EXPECT_EQ(0.f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
+  EXPECT_EQ(0.f, delegate_.GetOpacity(element_id_, ElementListType::ACTIVE));
   animation_->Tick(kInitialTickTime + base::Milliseconds(1250));
   animation_->UpdateState(true, events.get());
   EXPECT_TRUE(animation_->keyframe_effect()->HasTickingKeyframeModel());
-  EXPECT_EQ(0.25f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
+  EXPECT_EQ(0.25f, delegate_.GetOpacity(element_id_, ElementListType::ACTIVE));
   animation_->Tick(kInitialTickTime + base::Milliseconds(1750));
   animation_->UpdateState(true, events.get());
   EXPECT_TRUE(animation_->keyframe_effect()->HasTickingKeyframeModel());
-  EXPECT_EQ(0.75f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
+  EXPECT_EQ(0.75f, delegate_.GetOpacity(element_id_, ElementListType::ACTIVE));
 
   animation_->Tick(kInitialTickTime + base::Milliseconds(1073741824250));
   animation_->UpdateState(true, events.get());
   EXPECT_TRUE(animation_->keyframe_effect()->HasTickingKeyframeModel());
-  EXPECT_EQ(0.25f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
+  EXPECT_EQ(0.25f, delegate_.GetOpacity(element_id_, ElementListType::ACTIVE));
   animation_->Tick(kInitialTickTime + base::Milliseconds(1073741824750));
   animation_->UpdateState(true, events.get());
   EXPECT_TRUE(animation_->keyframe_effect()->HasTickingKeyframeModel());
-  EXPECT_EQ(0.75f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
+  EXPECT_EQ(0.75f, delegate_.GetOpacity(element_id_, ElementListType::ACTIVE));
 
   EXPECT_TRUE(animation_->GetKeyframeModel(TargetProperty::OPACITY));
   animation_->GetKeyframeModel(TargetProperty::OPACITY)
       ->SetRunState(KeyframeModel::ABORTED);
   EXPECT_FALSE(animation_->keyframe_effect()->HasTickingKeyframeModel());
-  EXPECT_EQ(0.75f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
+  EXPECT_EQ(0.75f, delegate_.GetOpacity(element_id_, ElementListType::ACTIVE));
 }
 
 // Test that pausing and resuming work as expected.
@@ -1706,11 +1706,11 @@ TEST_F(ElementAnimationsTest, PauseResume) {
   animation_->Tick(kInitialTickTime);
   animation_->UpdateState(true, events.get());
   EXPECT_TRUE(animation_->keyframe_effect()->HasTickingKeyframeModel());
-  EXPECT_EQ(0.f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
+  EXPECT_EQ(0.f, delegate_.GetOpacity(element_id_, ElementListType::ACTIVE));
   animation_->Tick(kInitialTickTime + base::Milliseconds(500));
   animation_->UpdateState(true, events.get());
   EXPECT_TRUE(animation_->keyframe_effect()->HasTickingKeyframeModel());
-  EXPECT_EQ(0.5f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
+  EXPECT_EQ(0.5f, delegate_.GetOpacity(element_id_, ElementListType::ACTIVE));
 
   EXPECT_TRUE(animation_->GetKeyframeModel(TargetProperty::OPACITY));
   // Pause
@@ -1720,7 +1720,7 @@ TEST_F(ElementAnimationsTest, PauseResume) {
   animation_->Tick(kInitialTickTime + base::Milliseconds(1024000));
   animation_->UpdateState(true, events.get());
   EXPECT_TRUE(animation_->keyframe_effect()->HasTickingKeyframeModel());
-  EXPECT_EQ(0.5f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
+  EXPECT_EQ(0.5f, delegate_.GetOpacity(element_id_, ElementListType::ACTIVE));
 
   EXPECT_TRUE(animation_->GetKeyframeModel(TargetProperty::OPACITY));
   // Resume
@@ -1729,12 +1729,12 @@ TEST_F(ElementAnimationsTest, PauseResume) {
   animation_->Tick(kInitialTickTime + base::Milliseconds(1024250));
   animation_->UpdateState(true, events.get());
   EXPECT_TRUE(animation_->keyframe_effect()->HasTickingKeyframeModel());
-  EXPECT_EQ(0.75f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
+  EXPECT_EQ(0.75f, delegate_.GetOpacity(element_id_, ElementListType::ACTIVE));
 
   animation_->Tick(kInitialTickTime + base::Milliseconds(1024500));
   animation_->UpdateState(true, events.get());
   EXPECT_FALSE(animation_->keyframe_effect()->HasTickingKeyframeModel());
-  EXPECT_EQ(1.f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
+  EXPECT_EQ(1.f, delegate_.GetOpacity(element_id_, ElementListType::ACTIVE));
 }
 
 TEST_F(ElementAnimationsTest, AbortAGroupedAnimation) {
@@ -1757,11 +1757,11 @@ TEST_F(ElementAnimationsTest, AbortAGroupedAnimation) {
   animation_->Tick(kInitialTickTime);
   animation_->UpdateState(true, events.get());
   EXPECT_TRUE(animation_->keyframe_effect()->HasTickingKeyframeModel());
-  EXPECT_EQ(0.f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
+  EXPECT_EQ(0.f, delegate_.GetOpacity(element_id_, ElementListType::ACTIVE));
   animation_->Tick(kInitialTickTime + base::Milliseconds(1000));
   animation_->UpdateState(true, events.get());
   EXPECT_TRUE(animation_->keyframe_effect()->HasTickingKeyframeModel());
-  EXPECT_EQ(0.5f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
+  EXPECT_EQ(0.5f, delegate_.GetOpacity(element_id_, ElementListType::ACTIVE));
 
   EXPECT_TRUE(
       animation_->keyframe_effect()->GetKeyframeModelById(keyframe_model_id));
@@ -1771,11 +1771,11 @@ TEST_F(ElementAnimationsTest, AbortAGroupedAnimation) {
   animation_->Tick(kInitialTickTime + base::Milliseconds(1000));
   animation_->UpdateState(true, events.get());
   EXPECT_TRUE(animation_->keyframe_effect()->HasTickingKeyframeModel());
-  EXPECT_EQ(1.f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
+  EXPECT_EQ(1.f, delegate_.GetOpacity(element_id_, ElementListType::ACTIVE));
   animation_->Tick(kInitialTickTime + base::Milliseconds(2000));
   animation_->UpdateState(true, events.get());
   EXPECT_TRUE(!animation_->keyframe_effect()->HasTickingKeyframeModel());
-  EXPECT_EQ(0.75f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
+  EXPECT_EQ(0.75f, delegate_.GetOpacity(element_id_, ElementListType::ACTIVE));
 }
 
 TEST_F(ElementAnimationsTest, PushUpdatesWhenSynchronizedStartTimeNeeded) {
@@ -1849,13 +1849,13 @@ TEST_F(ElementAnimationsTest, SkipUpdateState) {
 
   // The float transition should still be at its starting point.
   EXPECT_TRUE(animation_->keyframe_effect()->HasTickingKeyframeModel());
-  EXPECT_EQ(0.f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
+  EXPECT_EQ(0.f, delegate_.GetOpacity(element_id_, ElementListType::ACTIVE));
 
   animation_->Tick(kInitialTickTime + base::Milliseconds(3000));
   animation_->UpdateState(true, events.get());
 
   // The float tranisition should now be done.
-  EXPECT_EQ(1.f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
+  EXPECT_EQ(1.f, delegate_.GetOpacity(element_id_, ElementListType::ACTIVE));
   EXPECT_FALSE(animation_->keyframe_effect()->HasTickingKeyframeModel());
 }
 
@@ -1885,7 +1885,7 @@ TEST_F(ElementAnimationsTest, InactiveObserverGetsTicked) {
       KeyframeModel::STARTING,
       animation_impl_->GetKeyframeModel(TargetProperty::OPACITY)->run_state());
   EXPECT_EQ(0.5f,
-            client_impl_.GetOpacity(element_id_, ElementListType::PENDING));
+            delegate_impl_.GetOpacity(element_id_, ElementListType::PENDING));
 
   // Even when already in the STARTING state, the animation should stay
   // there, and shouldn't be ticked past its starting point.
@@ -1896,7 +1896,7 @@ TEST_F(ElementAnimationsTest, InactiveObserverGetsTicked) {
       KeyframeModel::STARTING,
       animation_impl_->GetKeyframeModel(TargetProperty::OPACITY)->run_state());
   EXPECT_EQ(0.5f,
-            client_impl_.GetOpacity(element_id_, ElementListType::PENDING));
+            delegate_impl_.GetOpacity(element_id_, ElementListType::PENDING));
 
   CreateTestImplLayer(ElementListType::ACTIVE);
   animation_impl_->GetKeyframeModel(TargetProperty::OPACITY)
@@ -1911,16 +1911,16 @@ TEST_F(ElementAnimationsTest, InactiveObserverGetsTicked) {
       KeyframeModel::RUNNING,
       animation_impl_->GetKeyframeModel(TargetProperty::OPACITY)->run_state());
   EXPECT_EQ(0.5f,
-            client_impl_.GetOpacity(element_id_, ElementListType::PENDING));
+            delegate_impl_.GetOpacity(element_id_, ElementListType::PENDING));
   EXPECT_EQ(0.5f,
-            client_impl_.GetOpacity(element_id_, ElementListType::ACTIVE));
+            delegate_impl_.GetOpacity(element_id_, ElementListType::ACTIVE));
 
   // The animation should now tick past its starting point.
   animation_impl_->Tick(kInitialTickTime + base::Milliseconds(3500));
   EXPECT_NE(0.5f,
-            client_impl_.GetOpacity(element_id_, ElementListType::PENDING));
+            delegate_impl_.GetOpacity(element_id_, ElementListType::PENDING));
   EXPECT_NE(0.5f,
-            client_impl_.GetOpacity(element_id_, ElementListType::ACTIVE));
+            delegate_impl_.GetOpacity(element_id_, ElementListType::ACTIVE));
 }
 
 // Tests that AbortKeyframeModelsWithProperty aborts all animations targeting
@@ -2605,8 +2605,9 @@ TEST_F(ElementAnimationsTest, NewlyPushedAnimationWaitsForActivation) {
   // Since the animation hasn't been activated, only the pending observer
   // should have been ticked.
   EXPECT_EQ(0.5f,
-            client_impl_.GetOpacity(element_id_, ElementListType::PENDING));
-  EXPECT_EQ(0.f, client_impl_.GetOpacity(element_id_, ElementListType::ACTIVE));
+            delegate_impl_.GetOpacity(element_id_, ElementListType::PENDING));
+  EXPECT_EQ(0.f,
+            delegate_impl_.GetOpacity(element_id_, ElementListType::ACTIVE));
 
   animation_impl_->ActivateKeyframeModels();
   EXPECT_TRUE(KeyframeModel::ToCcKeyframeModel(
@@ -2628,9 +2629,9 @@ TEST_F(ElementAnimationsTest, NewlyPushedAnimationWaitsForActivation) {
                 ->GetKeyframeModelById(keyframe_model_id)
                 ->run_state());
   EXPECT_EQ(0.5f,
-            client_impl_.GetOpacity(element_id_, ElementListType::PENDING));
+            delegate_impl_.GetOpacity(element_id_, ElementListType::PENDING));
   EXPECT_EQ(0.5f,
-            client_impl_.GetOpacity(element_id_, ElementListType::ACTIVE));
+            delegate_impl_.GetOpacity(element_id_, ElementListType::ACTIVE));
 }
 
 TEST_F(ElementAnimationsTest, ActivationBetweenAnimateAndUpdateState) {
@@ -2665,8 +2666,9 @@ TEST_F(ElementAnimationsTest, ActivationBetweenAnimateAndUpdateState) {
   // Since the animation hasn't been activated, only the pending observer
   // should have been ticked.
   EXPECT_EQ(0.5f,
-            client_impl_.GetOpacity(element_id_, ElementListType::PENDING));
-  EXPECT_EQ(0.f, client_impl_.GetOpacity(element_id_, ElementListType::ACTIVE));
+            delegate_impl_.GetOpacity(element_id_, ElementListType::PENDING));
+  EXPECT_EQ(0.f,
+            delegate_impl_.GetOpacity(element_id_, ElementListType::ACTIVE));
 
   animation_impl_->ActivateKeyframeModels();
   EXPECT_TRUE(KeyframeModel::ToCcKeyframeModel(
@@ -2691,9 +2693,9 @@ TEST_F(ElementAnimationsTest, ActivationBetweenAnimateAndUpdateState) {
 
   // Both elements should have been ticked.
   EXPECT_EQ(0.75f,
-            client_impl_.GetOpacity(element_id_, ElementListType::PENDING));
+            delegate_impl_.GetOpacity(element_id_, ElementListType::PENDING));
   EXPECT_EQ(0.75f,
-            client_impl_.GetOpacity(element_id_, ElementListType::ACTIVE));
+            delegate_impl_.GetOpacity(element_id_, ElementListType::ACTIVE));
 }
 
 TEST_F(ElementAnimationsTest, ObserverNotifiedWhenTransformAnimationChanges) {
@@ -2703,44 +2705,44 @@ TEST_F(ElementAnimationsTest, ObserverNotifiedWhenTransformAnimationChanges) {
 
   auto events = CreateEventsForTesting();
 
-  EXPECT_FALSE(client_.GetHasPotentialTransformAnimation(
+  EXPECT_FALSE(delegate_.GetHasPotentialTransformAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_FALSE(client_.GetTransformIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_.GetTransformIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_FALSE(client_impl_.GetHasPotentialTransformAnimation(
+  EXPECT_FALSE(delegate_impl_.GetHasPotentialTransformAnimation(
       element_id_, ElementListType::PENDING));
-  EXPECT_FALSE(client_impl_.GetTransformIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetTransformIsCurrentlyAnimating(
       element_id_, ElementListType::PENDING));
-  EXPECT_FALSE(client_impl_.GetHasPotentialTransformAnimation(
+  EXPECT_FALSE(delegate_impl_.GetHasPotentialTransformAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_FALSE(client_impl_.GetTransformIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetTransformIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   // Case 1: An animation that's allowed to run until its finish point.
   AddAnimatedTransformToAnimation(animation_.get(), 1.0, 1, 1);
-  EXPECT_TRUE(client_.GetHasPotentialTransformAnimation(
+  EXPECT_TRUE(delegate_.GetHasPotentialTransformAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_TRUE(client_.GetTransformIsCurrentlyAnimating(
+  EXPECT_TRUE(delegate_.GetTransformIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   PushProperties();
-  EXPECT_TRUE(client_impl_.GetHasPotentialTransformAnimation(
+  EXPECT_TRUE(delegate_impl_.GetHasPotentialTransformAnimation(
       element_id_, ElementListType::PENDING));
-  EXPECT_TRUE(client_impl_.GetTransformIsCurrentlyAnimating(
+  EXPECT_TRUE(delegate_impl_.GetTransformIsCurrentlyAnimating(
       element_id_, ElementListType::PENDING));
-  EXPECT_FALSE(client_impl_.GetHasPotentialTransformAnimation(
+  EXPECT_FALSE(delegate_impl_.GetHasPotentialTransformAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_FALSE(client_impl_.GetTransformIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetTransformIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   animation_impl_->ActivateKeyframeModels();
-  EXPECT_TRUE(client_impl_.GetHasPotentialTransformAnimation(
+  EXPECT_TRUE(delegate_impl_.GetHasPotentialTransformAnimation(
       element_id_, ElementListType::PENDING));
-  EXPECT_TRUE(client_impl_.GetTransformIsCurrentlyAnimating(
+  EXPECT_TRUE(delegate_impl_.GetTransformIsCurrentlyAnimating(
       element_id_, ElementListType::PENDING));
-  EXPECT_TRUE(client_impl_.GetHasPotentialTransformAnimation(
+  EXPECT_TRUE(delegate_impl_.GetHasPotentialTransformAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_TRUE(client_impl_.GetTransformIsCurrentlyAnimating(
+  EXPECT_TRUE(delegate_impl_.GetTransformIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   animation_impl_->Tick(kInitialTickTime);
@@ -2753,33 +2755,33 @@ TEST_F(ElementAnimationsTest, ObserverNotifiedWhenTransformAnimationChanges) {
   // Finish the animation.
   animation_->Tick(kInitialTickTime + base::Milliseconds(1000));
   animation_->UpdateState(true, nullptr);
-  EXPECT_FALSE(client_.GetHasPotentialTransformAnimation(
+  EXPECT_FALSE(delegate_.GetHasPotentialTransformAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_FALSE(client_.GetTransformIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_.GetTransformIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   PushProperties();
 
   // Finished animations are pushed, but animations_impl hasn't yet ticked
   // at/past the end of the animation.
-  EXPECT_FALSE(client_impl_.GetHasPotentialTransformAnimation(
+  EXPECT_FALSE(delegate_impl_.GetHasPotentialTransformAnimation(
       element_id_, ElementListType::PENDING));
-  EXPECT_FALSE(client_impl_.GetTransformIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetTransformIsCurrentlyAnimating(
       element_id_, ElementListType::PENDING));
-  EXPECT_TRUE(client_impl_.GetHasPotentialTransformAnimation(
+  EXPECT_TRUE(delegate_impl_.GetHasPotentialTransformAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_TRUE(client_impl_.GetTransformIsCurrentlyAnimating(
+  EXPECT_TRUE(delegate_impl_.GetTransformIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   animation_impl_->Tick(kInitialTickTime + base::Milliseconds(1000));
   animation_impl_->UpdateState(true, events.get());
-  EXPECT_FALSE(client_impl_.GetHasPotentialTransformAnimation(
+  EXPECT_FALSE(delegate_impl_.GetHasPotentialTransformAnimation(
       element_id_, ElementListType::PENDING));
-  EXPECT_FALSE(client_impl_.GetTransformIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetTransformIsCurrentlyAnimating(
       element_id_, ElementListType::PENDING));
-  EXPECT_FALSE(client_impl_.GetHasPotentialTransformAnimation(
+  EXPECT_FALSE(delegate_impl_.GetHasPotentialTransformAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_FALSE(client_impl_.GetTransformIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetTransformIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   // Case 2: An animation that's removed before it finishes.
@@ -2793,28 +2795,28 @@ TEST_F(ElementAnimationsTest, ObserverNotifiedWhenTransformAnimationChanges) {
   animation_->keyframe_effect()
       ->GetKeyframeModelById(animation2_id)
       ->set_fill_mode(KeyframeModel::FillMode::NONE);
-  EXPECT_TRUE(client_.GetHasPotentialTransformAnimation(
+  EXPECT_TRUE(delegate_.GetHasPotentialTransformAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_TRUE(client_.GetTransformIsCurrentlyAnimating(
+  EXPECT_TRUE(delegate_.GetTransformIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   PushProperties();
-  EXPECT_TRUE(client_impl_.GetHasPotentialTransformAnimation(
+  EXPECT_TRUE(delegate_impl_.GetHasPotentialTransformAnimation(
       element_id_, ElementListType::PENDING));
-  EXPECT_TRUE(client_impl_.GetTransformIsCurrentlyAnimating(
+  EXPECT_TRUE(delegate_impl_.GetTransformIsCurrentlyAnimating(
       element_id_, ElementListType::PENDING));
-  EXPECT_FALSE(client_impl_.GetHasPotentialTransformAnimation(
+  EXPECT_FALSE(delegate_impl_.GetHasPotentialTransformAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_FALSE(client_impl_.GetTransformIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetTransformIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   animation_impl_->ActivateKeyframeModels();
-  EXPECT_TRUE(client_impl_.GetHasPotentialTransformAnimation(
+  EXPECT_TRUE(delegate_impl_.GetHasPotentialTransformAnimation(
       element_id_, ElementListType::ACTIVE));
   // animation1 is in effect currently and animation2 isn't. As the element has
   // atleast one animation that's in effect currently, client should be notified
   // that the transform is currently animating.
-  EXPECT_TRUE(client_impl_.GetTransformIsCurrentlyAnimating(
+  EXPECT_TRUE(delegate_impl_.GetTransformIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   animation_impl_->Tick(kInitialTickTime + base::Milliseconds(2000));
@@ -2826,49 +2828,49 @@ TEST_F(ElementAnimationsTest, ObserverNotifiedWhenTransformAnimationChanges) {
 
   animation_->RemoveKeyframeModel(keyframe_model_id);
   animation_->RemoveKeyframeModel(animation2_id);
-  EXPECT_FALSE(client_.GetHasPotentialTransformAnimation(
+  EXPECT_FALSE(delegate_.GetHasPotentialTransformAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_FALSE(client_.GetTransformIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_.GetTransformIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   PushProperties();
-  EXPECT_FALSE(client_impl_.GetHasPotentialTransformAnimation(
+  EXPECT_FALSE(delegate_impl_.GetHasPotentialTransformAnimation(
       element_id_, ElementListType::PENDING));
-  EXPECT_FALSE(client_impl_.GetTransformIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetTransformIsCurrentlyAnimating(
       element_id_, ElementListType::PENDING));
-  EXPECT_TRUE(client_impl_.GetHasPotentialTransformAnimation(
+  EXPECT_TRUE(delegate_impl_.GetHasPotentialTransformAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_TRUE(client_impl_.GetTransformIsCurrentlyAnimating(
+  EXPECT_TRUE(delegate_impl_.GetTransformIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   animation_impl_->ActivateKeyframeModels();
-  EXPECT_FALSE(client_impl_.GetHasPotentialTransformAnimation(
+  EXPECT_FALSE(delegate_impl_.GetHasPotentialTransformAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_FALSE(client_impl_.GetTransformIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetTransformIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   // Case 3: An animation that's aborted before it finishes.
   keyframe_model_id =
       AddAnimatedTransformToAnimation(animation_.get(), 10.0, 3, 3);
-  EXPECT_TRUE(client_.GetHasPotentialTransformAnimation(
+  EXPECT_TRUE(delegate_.GetHasPotentialTransformAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_TRUE(client_.GetTransformIsCurrentlyAnimating(
+  EXPECT_TRUE(delegate_.GetTransformIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   PushProperties();
-  EXPECT_TRUE(client_impl_.GetHasPotentialTransformAnimation(
+  EXPECT_TRUE(delegate_impl_.GetHasPotentialTransformAnimation(
       element_id_, ElementListType::PENDING));
-  EXPECT_TRUE(client_impl_.GetTransformIsCurrentlyAnimating(
+  EXPECT_TRUE(delegate_impl_.GetTransformIsCurrentlyAnimating(
       element_id_, ElementListType::PENDING));
-  EXPECT_FALSE(client_impl_.GetHasPotentialTransformAnimation(
+  EXPECT_FALSE(delegate_impl_.GetHasPotentialTransformAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_FALSE(client_impl_.GetTransformIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetTransformIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   animation_impl_->ActivateKeyframeModels();
-  EXPECT_TRUE(client_impl_.GetHasPotentialTransformAnimation(
+  EXPECT_TRUE(delegate_impl_.GetHasPotentialTransformAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_TRUE(client_impl_.GetTransformIsCurrentlyAnimating(
+  EXPECT_TRUE(delegate_impl_.GetTransformIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   animation_impl_->Tick(kInitialTickTime + base::Milliseconds(2000));
@@ -2880,13 +2882,13 @@ TEST_F(ElementAnimationsTest, ObserverNotifiedWhenTransformAnimationChanges) {
 
   animation_impl_->AbortKeyframeModelsWithProperty(TargetProperty::TRANSFORM,
                                                    false);
-  EXPECT_FALSE(client_impl_.GetHasPotentialTransformAnimation(
+  EXPECT_FALSE(delegate_impl_.GetHasPotentialTransformAnimation(
       element_id_, ElementListType::PENDING));
-  EXPECT_FALSE(client_impl_.GetTransformIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetTransformIsCurrentlyAnimating(
       element_id_, ElementListType::PENDING));
-  EXPECT_FALSE(client_impl_.GetHasPotentialTransformAnimation(
+  EXPECT_FALSE(delegate_impl_.GetHasPotentialTransformAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_FALSE(client_impl_.GetTransformIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetTransformIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   animation_impl_->Tick(kInitialTickTime + base::Milliseconds(4000));
@@ -2894,9 +2896,9 @@ TEST_F(ElementAnimationsTest, ObserverNotifiedWhenTransformAnimationChanges) {
 
   event = std::get_if<AnimationPlaybackEvent>(&events->events()[0]);
   animation_->DispatchAndDelegateAnimationEvent(*event);
-  EXPECT_FALSE(client_.GetHasPotentialTransformAnimation(
+  EXPECT_FALSE(delegate_.GetHasPotentialTransformAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_FALSE(client_.GetTransformIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_.GetTransformIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   // Case 4 : An animation that's not in effect.
@@ -2910,19 +2912,19 @@ TEST_F(ElementAnimationsTest, ObserverNotifiedWhenTransformAnimationChanges) {
       ->set_fill_mode(KeyframeModel::FillMode::NONE);
 
   PushProperties();
-  EXPECT_TRUE(client_impl_.GetHasPotentialTransformAnimation(
+  EXPECT_TRUE(delegate_impl_.GetHasPotentialTransformAnimation(
       element_id_, ElementListType::PENDING));
-  EXPECT_FALSE(client_impl_.GetTransformIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetTransformIsCurrentlyAnimating(
       element_id_, ElementListType::PENDING));
-  EXPECT_FALSE(client_impl_.GetHasPotentialTransformAnimation(
+  EXPECT_FALSE(delegate_impl_.GetHasPotentialTransformAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_FALSE(client_impl_.GetTransformIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetTransformIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   animation_impl_->ActivateKeyframeModels();
-  EXPECT_TRUE(client_impl_.GetHasPotentialTransformAnimation(
+  EXPECT_TRUE(delegate_impl_.GetHasPotentialTransformAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_FALSE(client_impl_.GetTransformIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetTransformIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 }
 
@@ -2933,45 +2935,45 @@ TEST_F(ElementAnimationsTest, ObserverNotifiedWhenOpacityAnimationChanges) {
 
   auto events = CreateEventsForTesting();
 
-  EXPECT_FALSE(client_.GetHasPotentialOpacityAnimation(
+  EXPECT_FALSE(delegate_.GetHasPotentialOpacityAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_FALSE(client_.GetOpacityIsCurrentlyAnimating(element_id_,
-                                                      ElementListType::ACTIVE));
-  EXPECT_FALSE(client_impl_.GetHasPotentialOpacityAnimation(
-      element_id_, ElementListType::PENDING));
-  EXPECT_FALSE(client_impl_.GetOpacityIsCurrentlyAnimating(
-      element_id_, ElementListType::PENDING));
-  EXPECT_FALSE(client_impl_.GetHasPotentialOpacityAnimation(
+  EXPECT_FALSE(delegate_.GetOpacityIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_FALSE(client_impl_.GetOpacityIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetHasPotentialOpacityAnimation(
+      element_id_, ElementListType::PENDING));
+  EXPECT_FALSE(delegate_impl_.GetOpacityIsCurrentlyAnimating(
+      element_id_, ElementListType::PENDING));
+  EXPECT_FALSE(delegate_impl_.GetHasPotentialOpacityAnimation(
+      element_id_, ElementListType::ACTIVE));
+  EXPECT_FALSE(delegate_impl_.GetOpacityIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   // Case 1: An animation that's allowed to run until its finish point.
   AddOpacityTransitionToAnimation(animation_.get(), 1.0, 0.f, 1.f,
                                   false /*use_timing_function*/);
-  EXPECT_TRUE(client_.GetHasPotentialOpacityAnimation(element_id_,
-                                                      ElementListType::ACTIVE));
-  EXPECT_TRUE(client_.GetOpacityIsCurrentlyAnimating(element_id_,
-                                                     ElementListType::ACTIVE));
+  EXPECT_TRUE(delegate_.GetHasPotentialOpacityAnimation(
+      element_id_, ElementListType::ACTIVE));
+  EXPECT_TRUE(delegate_.GetOpacityIsCurrentlyAnimating(
+      element_id_, ElementListType::ACTIVE));
 
   PushProperties();
-  EXPECT_TRUE(client_impl_.GetHasPotentialOpacityAnimation(
+  EXPECT_TRUE(delegate_impl_.GetHasPotentialOpacityAnimation(
       element_id_, ElementListType::PENDING));
-  EXPECT_TRUE(client_impl_.GetOpacityIsCurrentlyAnimating(
+  EXPECT_TRUE(delegate_impl_.GetOpacityIsCurrentlyAnimating(
       element_id_, ElementListType::PENDING));
-  EXPECT_FALSE(client_impl_.GetHasPotentialOpacityAnimation(
+  EXPECT_FALSE(delegate_impl_.GetHasPotentialOpacityAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_FALSE(client_impl_.GetOpacityIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetOpacityIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   animation_impl_->ActivateKeyframeModels();
-  EXPECT_TRUE(client_impl_.GetHasPotentialOpacityAnimation(
+  EXPECT_TRUE(delegate_impl_.GetHasPotentialOpacityAnimation(
       element_id_, ElementListType::PENDING));
-  EXPECT_TRUE(client_impl_.GetOpacityIsCurrentlyAnimating(
+  EXPECT_TRUE(delegate_impl_.GetOpacityIsCurrentlyAnimating(
       element_id_, ElementListType::PENDING));
-  EXPECT_TRUE(client_impl_.GetHasPotentialOpacityAnimation(
+  EXPECT_TRUE(delegate_impl_.GetHasPotentialOpacityAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_TRUE(client_impl_.GetOpacityIsCurrentlyAnimating(
+  EXPECT_TRUE(delegate_impl_.GetOpacityIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   animation_impl_->Tick(kInitialTickTime);
@@ -2984,57 +2986,57 @@ TEST_F(ElementAnimationsTest, ObserverNotifiedWhenOpacityAnimationChanges) {
   // Finish the animation.
   animation_->Tick(kInitialTickTime + base::Milliseconds(1000));
   animation_->UpdateState(true, nullptr);
-  EXPECT_FALSE(client_.GetHasPotentialOpacityAnimation(
+  EXPECT_FALSE(delegate_.GetHasPotentialOpacityAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_FALSE(client_.GetOpacityIsCurrentlyAnimating(element_id_,
-                                                      ElementListType::ACTIVE));
+  EXPECT_FALSE(delegate_.GetOpacityIsCurrentlyAnimating(
+      element_id_, ElementListType::ACTIVE));
 
   PushProperties();
 
   // Finished animations are pushed, but animations_impl hasn't yet ticked
   // at/past the end of the animation.
-  EXPECT_FALSE(client_impl_.GetHasPotentialOpacityAnimation(
+  EXPECT_FALSE(delegate_impl_.GetHasPotentialOpacityAnimation(
       element_id_, ElementListType::PENDING));
-  EXPECT_FALSE(client_impl_.GetOpacityIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetOpacityIsCurrentlyAnimating(
       element_id_, ElementListType::PENDING));
-  EXPECT_TRUE(client_impl_.GetHasPotentialOpacityAnimation(
+  EXPECT_TRUE(delegate_impl_.GetHasPotentialOpacityAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_TRUE(client_impl_.GetOpacityIsCurrentlyAnimating(
+  EXPECT_TRUE(delegate_impl_.GetOpacityIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   animation_impl_->Tick(kInitialTickTime + base::Milliseconds(1000));
   animation_impl_->UpdateState(true, events.get());
-  EXPECT_FALSE(client_impl_.GetHasPotentialOpacityAnimation(
+  EXPECT_FALSE(delegate_impl_.GetHasPotentialOpacityAnimation(
       element_id_, ElementListType::PENDING));
-  EXPECT_FALSE(client_impl_.GetOpacityIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetOpacityIsCurrentlyAnimating(
       element_id_, ElementListType::PENDING));
-  EXPECT_FALSE(client_impl_.GetHasPotentialOpacityAnimation(
+  EXPECT_FALSE(delegate_impl_.GetHasPotentialOpacityAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_FALSE(client_impl_.GetOpacityIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetOpacityIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   // Case 2: An animation that's removed before it finishes.
   int keyframe_model_id = AddOpacityTransitionToAnimation(
       animation_.get(), 10.0, 0.f, 1.f, false /*use_timing_function*/);
-  EXPECT_TRUE(client_.GetHasPotentialOpacityAnimation(element_id_,
-                                                      ElementListType::ACTIVE));
-  EXPECT_TRUE(client_.GetOpacityIsCurrentlyAnimating(element_id_,
-                                                     ElementListType::ACTIVE));
+  EXPECT_TRUE(delegate_.GetHasPotentialOpacityAnimation(
+      element_id_, ElementListType::ACTIVE));
+  EXPECT_TRUE(delegate_.GetOpacityIsCurrentlyAnimating(
+      element_id_, ElementListType::ACTIVE));
 
   PushProperties();
-  EXPECT_TRUE(client_impl_.GetHasPotentialOpacityAnimation(
+  EXPECT_TRUE(delegate_impl_.GetHasPotentialOpacityAnimation(
       element_id_, ElementListType::PENDING));
-  EXPECT_TRUE(client_impl_.GetOpacityIsCurrentlyAnimating(
+  EXPECT_TRUE(delegate_impl_.GetOpacityIsCurrentlyAnimating(
       element_id_, ElementListType::PENDING));
-  EXPECT_FALSE(client_impl_.GetHasPotentialOpacityAnimation(
+  EXPECT_FALSE(delegate_impl_.GetHasPotentialOpacityAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_FALSE(client_impl_.GetOpacityIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetOpacityIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   animation_impl_->ActivateKeyframeModels();
-  EXPECT_TRUE(client_impl_.GetHasPotentialOpacityAnimation(
+  EXPECT_TRUE(delegate_impl_.GetHasPotentialOpacityAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_TRUE(client_impl_.GetOpacityIsCurrentlyAnimating(
+  EXPECT_TRUE(delegate_impl_.GetOpacityIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   animation_impl_->Tick(kInitialTickTime + base::Milliseconds(2000));
@@ -3045,49 +3047,49 @@ TEST_F(ElementAnimationsTest, ObserverNotifiedWhenOpacityAnimationChanges) {
   events->events().clear();
 
   animation_->RemoveKeyframeModel(keyframe_model_id);
-  EXPECT_FALSE(client_.GetHasPotentialOpacityAnimation(
+  EXPECT_FALSE(delegate_.GetHasPotentialOpacityAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_FALSE(client_.GetOpacityIsCurrentlyAnimating(element_id_,
-                                                      ElementListType::ACTIVE));
+  EXPECT_FALSE(delegate_.GetOpacityIsCurrentlyAnimating(
+      element_id_, ElementListType::ACTIVE));
 
   PushProperties();
-  EXPECT_FALSE(client_impl_.GetHasPotentialOpacityAnimation(
+  EXPECT_FALSE(delegate_impl_.GetHasPotentialOpacityAnimation(
       element_id_, ElementListType::PENDING));
-  EXPECT_FALSE(client_impl_.GetOpacityIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetOpacityIsCurrentlyAnimating(
       element_id_, ElementListType::PENDING));
-  EXPECT_TRUE(client_impl_.GetHasPotentialOpacityAnimation(
+  EXPECT_TRUE(delegate_impl_.GetHasPotentialOpacityAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_TRUE(client_impl_.GetOpacityIsCurrentlyAnimating(
+  EXPECT_TRUE(delegate_impl_.GetOpacityIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   animation_impl_->ActivateKeyframeModels();
-  EXPECT_FALSE(client_impl_.GetHasPotentialOpacityAnimation(
+  EXPECT_FALSE(delegate_impl_.GetHasPotentialOpacityAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_FALSE(client_impl_.GetOpacityIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetOpacityIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   // Case 3: An animation that's aborted before it finishes.
   keyframe_model_id = AddOpacityTransitionToAnimation(
       animation_.get(), 10.0, 0.f, 0.5f, false /*use_timing_function*/);
-  EXPECT_TRUE(client_.GetHasPotentialOpacityAnimation(element_id_,
-                                                      ElementListType::ACTIVE));
-  EXPECT_TRUE(client_.GetOpacityIsCurrentlyAnimating(element_id_,
-                                                     ElementListType::ACTIVE));
+  EXPECT_TRUE(delegate_.GetHasPotentialOpacityAnimation(
+      element_id_, ElementListType::ACTIVE));
+  EXPECT_TRUE(delegate_.GetOpacityIsCurrentlyAnimating(
+      element_id_, ElementListType::ACTIVE));
 
   PushProperties();
-  EXPECT_TRUE(client_impl_.GetHasPotentialOpacityAnimation(
+  EXPECT_TRUE(delegate_impl_.GetHasPotentialOpacityAnimation(
       element_id_, ElementListType::PENDING));
-  EXPECT_TRUE(client_impl_.GetOpacityIsCurrentlyAnimating(
+  EXPECT_TRUE(delegate_impl_.GetOpacityIsCurrentlyAnimating(
       element_id_, ElementListType::PENDING));
-  EXPECT_FALSE(client_impl_.GetHasPotentialOpacityAnimation(
+  EXPECT_FALSE(delegate_impl_.GetHasPotentialOpacityAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_FALSE(client_impl_.GetOpacityIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetOpacityIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   animation_impl_->ActivateKeyframeModels();
-  EXPECT_TRUE(client_impl_.GetHasPotentialOpacityAnimation(
+  EXPECT_TRUE(delegate_impl_.GetHasPotentialOpacityAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_TRUE(client_impl_.GetOpacityIsCurrentlyAnimating(
+  EXPECT_TRUE(delegate_impl_.GetOpacityIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   animation_impl_->Tick(kInitialTickTime + base::Milliseconds(2000));
@@ -3099,13 +3101,13 @@ TEST_F(ElementAnimationsTest, ObserverNotifiedWhenOpacityAnimationChanges) {
 
   animation_impl_->AbortKeyframeModelsWithProperty(TargetProperty::OPACITY,
                                                    false);
-  EXPECT_FALSE(client_impl_.GetHasPotentialOpacityAnimation(
+  EXPECT_FALSE(delegate_impl_.GetHasPotentialOpacityAnimation(
       element_id_, ElementListType::PENDING));
-  EXPECT_FALSE(client_impl_.GetOpacityIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetOpacityIsCurrentlyAnimating(
       element_id_, ElementListType::PENDING));
-  EXPECT_FALSE(client_impl_.GetHasPotentialOpacityAnimation(
+  EXPECT_FALSE(delegate_impl_.GetHasPotentialOpacityAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_FALSE(client_impl_.GetOpacityIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetOpacityIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   animation_impl_->Tick(kInitialTickTime + base::Milliseconds(4000));
@@ -3113,10 +3115,10 @@ TEST_F(ElementAnimationsTest, ObserverNotifiedWhenOpacityAnimationChanges) {
 
   event = std::get_if<AnimationPlaybackEvent>(&events->events()[0]);
   animation_->DispatchAndDelegateAnimationEvent(*event);
-  EXPECT_FALSE(client_.GetHasPotentialOpacityAnimation(
+  EXPECT_FALSE(delegate_.GetHasPotentialOpacityAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_FALSE(client_.GetOpacityIsCurrentlyAnimating(element_id_,
-                                                      ElementListType::ACTIVE));
+  EXPECT_FALSE(delegate_.GetOpacityIsCurrentlyAnimating(
+      element_id_, ElementListType::ACTIVE));
 
   // Case 4 : An animation that's not in effect.
   keyframe_model_id = AddOpacityTransitionToAnimation(
@@ -3129,19 +3131,19 @@ TEST_F(ElementAnimationsTest, ObserverNotifiedWhenOpacityAnimationChanges) {
       ->set_fill_mode(KeyframeModel::FillMode::NONE);
 
   PushProperties();
-  EXPECT_TRUE(client_impl_.GetHasPotentialOpacityAnimation(
+  EXPECT_TRUE(delegate_impl_.GetHasPotentialOpacityAnimation(
       element_id_, ElementListType::PENDING));
-  EXPECT_FALSE(client_impl_.GetOpacityIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetOpacityIsCurrentlyAnimating(
       element_id_, ElementListType::PENDING));
-  EXPECT_FALSE(client_impl_.GetHasPotentialOpacityAnimation(
+  EXPECT_FALSE(delegate_impl_.GetHasPotentialOpacityAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_FALSE(client_impl_.GetOpacityIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetOpacityIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   animation_impl_->ActivateKeyframeModels();
-  EXPECT_TRUE(client_impl_.GetHasPotentialOpacityAnimation(
+  EXPECT_TRUE(delegate_impl_.GetHasPotentialOpacityAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_FALSE(client_impl_.GetOpacityIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetOpacityIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 }
 
@@ -3152,44 +3154,44 @@ TEST_F(ElementAnimationsTest, ObserverNotifiedWhenFilterAnimationChanges) {
 
   auto events = CreateEventsForTesting();
 
-  EXPECT_FALSE(client_.GetHasPotentialFilterAnimation(element_id_,
-                                                      ElementListType::ACTIVE));
-  EXPECT_FALSE(client_.GetFilterIsCurrentlyAnimating(element_id_,
-                                                     ElementListType::ACTIVE));
-  EXPECT_FALSE(client_impl_.GetHasPotentialFilterAnimation(
-      element_id_, ElementListType::PENDING));
-  EXPECT_FALSE(client_impl_.GetFilterIsCurrentlyAnimating(
-      element_id_, ElementListType::PENDING));
-  EXPECT_FALSE(client_impl_.GetHasPotentialFilterAnimation(
+  EXPECT_FALSE(delegate_.GetHasPotentialFilterAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_FALSE(client_impl_.GetFilterIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_.GetFilterIsCurrentlyAnimating(
+      element_id_, ElementListType::ACTIVE));
+  EXPECT_FALSE(delegate_impl_.GetHasPotentialFilterAnimation(
+      element_id_, ElementListType::PENDING));
+  EXPECT_FALSE(delegate_impl_.GetFilterIsCurrentlyAnimating(
+      element_id_, ElementListType::PENDING));
+  EXPECT_FALSE(delegate_impl_.GetHasPotentialFilterAnimation(
+      element_id_, ElementListType::ACTIVE));
+  EXPECT_FALSE(delegate_impl_.GetFilterIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   // Case 1: An animation that's allowed to run until its finish point.
   AddAnimatedFilterToAnimation(animation_.get(), 1.0, 0.f, 1.f);
-  EXPECT_TRUE(client_.GetHasPotentialFilterAnimation(element_id_,
-                                                     ElementListType::ACTIVE));
-  EXPECT_TRUE(client_.GetFilterIsCurrentlyAnimating(element_id_,
-                                                    ElementListType::ACTIVE));
+  EXPECT_TRUE(delegate_.GetHasPotentialFilterAnimation(
+      element_id_, ElementListType::ACTIVE));
+  EXPECT_TRUE(delegate_.GetFilterIsCurrentlyAnimating(element_id_,
+                                                      ElementListType::ACTIVE));
 
   PushProperties();
-  EXPECT_TRUE(client_impl_.GetHasPotentialFilterAnimation(
+  EXPECT_TRUE(delegate_impl_.GetHasPotentialFilterAnimation(
       element_id_, ElementListType::PENDING));
-  EXPECT_TRUE(client_impl_.GetFilterIsCurrentlyAnimating(
+  EXPECT_TRUE(delegate_impl_.GetFilterIsCurrentlyAnimating(
       element_id_, ElementListType::PENDING));
-  EXPECT_FALSE(client_impl_.GetHasPotentialFilterAnimation(
+  EXPECT_FALSE(delegate_impl_.GetHasPotentialFilterAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_FALSE(client_impl_.GetFilterIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetFilterIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   animation_impl_->ActivateKeyframeModels();
-  EXPECT_TRUE(client_impl_.GetHasPotentialFilterAnimation(
+  EXPECT_TRUE(delegate_impl_.GetHasPotentialFilterAnimation(
       element_id_, ElementListType::PENDING));
-  EXPECT_TRUE(client_impl_.GetFilterIsCurrentlyAnimating(
+  EXPECT_TRUE(delegate_impl_.GetFilterIsCurrentlyAnimating(
       element_id_, ElementListType::PENDING));
-  EXPECT_TRUE(client_impl_.GetHasPotentialFilterAnimation(
+  EXPECT_TRUE(delegate_impl_.GetHasPotentialFilterAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_TRUE(client_impl_.GetFilterIsCurrentlyAnimating(
+  EXPECT_TRUE(delegate_impl_.GetFilterIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   animation_impl_->Tick(kInitialTickTime);
@@ -3202,57 +3204,57 @@ TEST_F(ElementAnimationsTest, ObserverNotifiedWhenFilterAnimationChanges) {
   // Finish the animation.
   animation_->Tick(kInitialTickTime + base::Milliseconds(1000));
   animation_->UpdateState(true, nullptr);
-  EXPECT_FALSE(client_.GetHasPotentialFilterAnimation(element_id_,
-                                                      ElementListType::ACTIVE));
-  EXPECT_FALSE(client_.GetFilterIsCurrentlyAnimating(element_id_,
-                                                     ElementListType::ACTIVE));
+  EXPECT_FALSE(delegate_.GetHasPotentialFilterAnimation(
+      element_id_, ElementListType::ACTIVE));
+  EXPECT_FALSE(delegate_.GetFilterIsCurrentlyAnimating(
+      element_id_, ElementListType::ACTIVE));
 
   PushProperties();
 
   // Finished animations are pushed, but animations_impl hasn't yet ticked
   // at/past the end of the animation.
-  EXPECT_FALSE(client_impl_.GetHasPotentialFilterAnimation(
+  EXPECT_FALSE(delegate_impl_.GetHasPotentialFilterAnimation(
       element_id_, ElementListType::PENDING));
-  EXPECT_FALSE(client_impl_.GetFilterIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetFilterIsCurrentlyAnimating(
       element_id_, ElementListType::PENDING));
-  EXPECT_TRUE(client_impl_.GetHasPotentialFilterAnimation(
+  EXPECT_TRUE(delegate_impl_.GetHasPotentialFilterAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_TRUE(client_impl_.GetFilterIsCurrentlyAnimating(
+  EXPECT_TRUE(delegate_impl_.GetFilterIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   animation_impl_->Tick(kInitialTickTime + base::Milliseconds(1000));
   animation_impl_->UpdateState(true, events.get());
-  EXPECT_FALSE(client_impl_.GetHasPotentialFilterAnimation(
+  EXPECT_FALSE(delegate_impl_.GetHasPotentialFilterAnimation(
       element_id_, ElementListType::PENDING));
-  EXPECT_FALSE(client_impl_.GetFilterIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetFilterIsCurrentlyAnimating(
       element_id_, ElementListType::PENDING));
-  EXPECT_FALSE(client_impl_.GetHasPotentialFilterAnimation(
+  EXPECT_FALSE(delegate_impl_.GetHasPotentialFilterAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_FALSE(client_impl_.GetFilterIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetFilterIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   // Case 2: An animation that's removed before it finishes.
   int keyframe_model_id =
       AddAnimatedFilterToAnimation(animation_.get(), 10.0, 0.f, 1.f);
-  EXPECT_TRUE(client_.GetHasPotentialFilterAnimation(element_id_,
-                                                     ElementListType::ACTIVE));
-  EXPECT_TRUE(client_.GetFilterIsCurrentlyAnimating(element_id_,
-                                                    ElementListType::ACTIVE));
+  EXPECT_TRUE(delegate_.GetHasPotentialFilterAnimation(
+      element_id_, ElementListType::ACTIVE));
+  EXPECT_TRUE(delegate_.GetFilterIsCurrentlyAnimating(element_id_,
+                                                      ElementListType::ACTIVE));
 
   PushProperties();
-  EXPECT_TRUE(client_impl_.GetHasPotentialFilterAnimation(
+  EXPECT_TRUE(delegate_impl_.GetHasPotentialFilterAnimation(
       element_id_, ElementListType::PENDING));
-  EXPECT_TRUE(client_impl_.GetFilterIsCurrentlyAnimating(
+  EXPECT_TRUE(delegate_impl_.GetFilterIsCurrentlyAnimating(
       element_id_, ElementListType::PENDING));
-  EXPECT_FALSE(client_impl_.GetHasPotentialFilterAnimation(
+  EXPECT_FALSE(delegate_impl_.GetHasPotentialFilterAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_FALSE(client_impl_.GetFilterIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetFilterIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   animation_impl_->ActivateKeyframeModels();
-  EXPECT_TRUE(client_impl_.GetHasPotentialFilterAnimation(
+  EXPECT_TRUE(delegate_impl_.GetHasPotentialFilterAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_TRUE(client_impl_.GetFilterIsCurrentlyAnimating(
+  EXPECT_TRUE(delegate_impl_.GetFilterIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   animation_impl_->Tick(kInitialTickTime + base::Milliseconds(2000));
@@ -3263,49 +3265,49 @@ TEST_F(ElementAnimationsTest, ObserverNotifiedWhenFilterAnimationChanges) {
   events->events().clear();
 
   animation_->RemoveKeyframeModel(keyframe_model_id);
-  EXPECT_FALSE(client_.GetHasPotentialFilterAnimation(element_id_,
-                                                      ElementListType::ACTIVE));
-  EXPECT_FALSE(client_.GetFilterIsCurrentlyAnimating(element_id_,
-                                                     ElementListType::ACTIVE));
+  EXPECT_FALSE(delegate_.GetHasPotentialFilterAnimation(
+      element_id_, ElementListType::ACTIVE));
+  EXPECT_FALSE(delegate_.GetFilterIsCurrentlyAnimating(
+      element_id_, ElementListType::ACTIVE));
 
   PushProperties();
-  EXPECT_FALSE(client_impl_.GetHasPotentialFilterAnimation(
+  EXPECT_FALSE(delegate_impl_.GetHasPotentialFilterAnimation(
       element_id_, ElementListType::PENDING));
-  EXPECT_FALSE(client_impl_.GetFilterIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetFilterIsCurrentlyAnimating(
       element_id_, ElementListType::PENDING));
-  EXPECT_TRUE(client_impl_.GetHasPotentialFilterAnimation(
+  EXPECT_TRUE(delegate_impl_.GetHasPotentialFilterAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_TRUE(client_impl_.GetFilterIsCurrentlyAnimating(
+  EXPECT_TRUE(delegate_impl_.GetFilterIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   animation_impl_->ActivateKeyframeModels();
-  EXPECT_FALSE(client_impl_.GetHasPotentialFilterAnimation(
+  EXPECT_FALSE(delegate_impl_.GetHasPotentialFilterAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_FALSE(client_impl_.GetFilterIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetFilterIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   // Case 3: An animation that's aborted before it finishes.
   keyframe_model_id =
       AddAnimatedFilterToAnimation(animation_.get(), 10.0, 0.f, 0.5f);
-  EXPECT_TRUE(client_.GetHasPotentialFilterAnimation(element_id_,
-                                                     ElementListType::ACTIVE));
-  EXPECT_TRUE(client_.GetFilterIsCurrentlyAnimating(element_id_,
-                                                    ElementListType::ACTIVE));
+  EXPECT_TRUE(delegate_.GetHasPotentialFilterAnimation(
+      element_id_, ElementListType::ACTIVE));
+  EXPECT_TRUE(delegate_.GetFilterIsCurrentlyAnimating(element_id_,
+                                                      ElementListType::ACTIVE));
 
   PushProperties();
-  EXPECT_TRUE(client_impl_.GetHasPotentialFilterAnimation(
+  EXPECT_TRUE(delegate_impl_.GetHasPotentialFilterAnimation(
       element_id_, ElementListType::PENDING));
-  EXPECT_TRUE(client_impl_.GetFilterIsCurrentlyAnimating(
+  EXPECT_TRUE(delegate_impl_.GetFilterIsCurrentlyAnimating(
       element_id_, ElementListType::PENDING));
-  EXPECT_FALSE(client_impl_.GetHasPotentialFilterAnimation(
+  EXPECT_FALSE(delegate_impl_.GetHasPotentialFilterAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_FALSE(client_impl_.GetFilterIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetFilterIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   animation_impl_->ActivateKeyframeModels();
-  EXPECT_TRUE(client_impl_.GetHasPotentialFilterAnimation(
+  EXPECT_TRUE(delegate_impl_.GetHasPotentialFilterAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_TRUE(client_impl_.GetFilterIsCurrentlyAnimating(
+  EXPECT_TRUE(delegate_impl_.GetFilterIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   animation_impl_->Tick(kInitialTickTime + base::Milliseconds(2000));
@@ -3317,13 +3319,13 @@ TEST_F(ElementAnimationsTest, ObserverNotifiedWhenFilterAnimationChanges) {
 
   animation_impl_->AbortKeyframeModelsWithProperty(TargetProperty::FILTER,
                                                    false);
-  EXPECT_FALSE(client_impl_.GetHasPotentialFilterAnimation(
+  EXPECT_FALSE(delegate_impl_.GetHasPotentialFilterAnimation(
       element_id_, ElementListType::PENDING));
-  EXPECT_FALSE(client_impl_.GetFilterIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetFilterIsCurrentlyAnimating(
       element_id_, ElementListType::PENDING));
-  EXPECT_FALSE(client_impl_.GetHasPotentialFilterAnimation(
+  EXPECT_FALSE(delegate_impl_.GetHasPotentialFilterAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_FALSE(client_impl_.GetFilterIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetFilterIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   animation_impl_->Tick(kInitialTickTime + base::Milliseconds(4000));
@@ -3331,10 +3333,10 @@ TEST_F(ElementAnimationsTest, ObserverNotifiedWhenFilterAnimationChanges) {
 
   event = std::get_if<AnimationPlaybackEvent>(&events->events()[0]);
   animation_->DispatchAndDelegateAnimationEvent(*event);
-  EXPECT_FALSE(client_.GetHasPotentialFilterAnimation(element_id_,
-                                                      ElementListType::ACTIVE));
-  EXPECT_FALSE(client_.GetFilterIsCurrentlyAnimating(element_id_,
-                                                     ElementListType::ACTIVE));
+  EXPECT_FALSE(delegate_.GetHasPotentialFilterAnimation(
+      element_id_, ElementListType::ACTIVE));
+  EXPECT_FALSE(delegate_.GetFilterIsCurrentlyAnimating(
+      element_id_, ElementListType::ACTIVE));
 
   // Case 4 : An animation that's not in effect.
   keyframe_model_id =
@@ -3347,19 +3349,19 @@ TEST_F(ElementAnimationsTest, ObserverNotifiedWhenFilterAnimationChanges) {
       ->set_fill_mode(KeyframeModel::FillMode::NONE);
 
   PushProperties();
-  EXPECT_TRUE(client_impl_.GetHasPotentialFilterAnimation(
+  EXPECT_TRUE(delegate_impl_.GetHasPotentialFilterAnimation(
       element_id_, ElementListType::PENDING));
-  EXPECT_FALSE(client_impl_.GetFilterIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetFilterIsCurrentlyAnimating(
       element_id_, ElementListType::PENDING));
-  EXPECT_FALSE(client_impl_.GetHasPotentialFilterAnimation(
+  EXPECT_FALSE(delegate_impl_.GetHasPotentialFilterAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_FALSE(client_impl_.GetFilterIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetFilterIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   animation_impl_->ActivateKeyframeModels();
-  EXPECT_TRUE(client_impl_.GetHasPotentialFilterAnimation(
+  EXPECT_TRUE(delegate_impl_.GetHasPotentialFilterAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_FALSE(client_impl_.GetFilterIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetFilterIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 }
 
@@ -3371,44 +3373,44 @@ TEST_F(ElementAnimationsTest,
 
   auto events = CreateEventsForTesting();
 
-  EXPECT_FALSE(client_.GetHasPotentialBackdropFilterAnimation(
+  EXPECT_FALSE(delegate_.GetHasPotentialBackdropFilterAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_FALSE(client_.GetBackdropFilterIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_.GetBackdropFilterIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_FALSE(client_impl_.GetHasPotentialBackdropFilterAnimation(
+  EXPECT_FALSE(delegate_impl_.GetHasPotentialBackdropFilterAnimation(
       element_id_, ElementListType::PENDING));
-  EXPECT_FALSE(client_impl_.GetBackdropFilterIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetBackdropFilterIsCurrentlyAnimating(
       element_id_, ElementListType::PENDING));
-  EXPECT_FALSE(client_impl_.GetHasPotentialBackdropFilterAnimation(
+  EXPECT_FALSE(delegate_impl_.GetHasPotentialBackdropFilterAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_FALSE(client_impl_.GetBackdropFilterIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetBackdropFilterIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   // Case 1: An animation that's allowed to run until its finish point.
   AddAnimatedBackdropFilterToAnimation(animation_.get(), 1.0, 0.f, 1.f);
-  EXPECT_TRUE(client_.GetHasPotentialBackdropFilterAnimation(
+  EXPECT_TRUE(delegate_.GetHasPotentialBackdropFilterAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_TRUE(client_.GetBackdropFilterIsCurrentlyAnimating(
+  EXPECT_TRUE(delegate_.GetBackdropFilterIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   PushProperties();
-  EXPECT_TRUE(client_impl_.GetHasPotentialBackdropFilterAnimation(
+  EXPECT_TRUE(delegate_impl_.GetHasPotentialBackdropFilterAnimation(
       element_id_, ElementListType::PENDING));
-  EXPECT_TRUE(client_impl_.GetBackdropFilterIsCurrentlyAnimating(
+  EXPECT_TRUE(delegate_impl_.GetBackdropFilterIsCurrentlyAnimating(
       element_id_, ElementListType::PENDING));
-  EXPECT_FALSE(client_impl_.GetHasPotentialBackdropFilterAnimation(
+  EXPECT_FALSE(delegate_impl_.GetHasPotentialBackdropFilterAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_FALSE(client_impl_.GetBackdropFilterIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetBackdropFilterIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   animation_impl_->ActivateKeyframeModels();
-  EXPECT_TRUE(client_impl_.GetHasPotentialBackdropFilterAnimation(
+  EXPECT_TRUE(delegate_impl_.GetHasPotentialBackdropFilterAnimation(
       element_id_, ElementListType::PENDING));
-  EXPECT_TRUE(client_impl_.GetBackdropFilterIsCurrentlyAnimating(
+  EXPECT_TRUE(delegate_impl_.GetBackdropFilterIsCurrentlyAnimating(
       element_id_, ElementListType::PENDING));
-  EXPECT_TRUE(client_impl_.GetHasPotentialBackdropFilterAnimation(
+  EXPECT_TRUE(delegate_impl_.GetHasPotentialBackdropFilterAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_TRUE(client_impl_.GetBackdropFilterIsCurrentlyAnimating(
+  EXPECT_TRUE(delegate_impl_.GetBackdropFilterIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   animation_impl_->Tick(kInitialTickTime);
@@ -3421,57 +3423,57 @@ TEST_F(ElementAnimationsTest,
   // Finish the animation.
   animation_->Tick(kInitialTickTime + base::Milliseconds(1000));
   animation_->UpdateState(true, nullptr);
-  EXPECT_FALSE(client_.GetHasPotentialBackdropFilterAnimation(
+  EXPECT_FALSE(delegate_.GetHasPotentialBackdropFilterAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_FALSE(client_.GetBackdropFilterIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_.GetBackdropFilterIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   PushProperties();
 
   // Finished animations are pushed, but animations_impl hasn't yet ticked
   // at/past the end of the animation.
-  EXPECT_FALSE(client_impl_.GetHasPotentialBackdropFilterAnimation(
+  EXPECT_FALSE(delegate_impl_.GetHasPotentialBackdropFilterAnimation(
       element_id_, ElementListType::PENDING));
-  EXPECT_FALSE(client_impl_.GetBackdropFilterIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetBackdropFilterIsCurrentlyAnimating(
       element_id_, ElementListType::PENDING));
-  EXPECT_TRUE(client_impl_.GetHasPotentialBackdropFilterAnimation(
+  EXPECT_TRUE(delegate_impl_.GetHasPotentialBackdropFilterAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_TRUE(client_impl_.GetBackdropFilterIsCurrentlyAnimating(
+  EXPECT_TRUE(delegate_impl_.GetBackdropFilterIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   animation_impl_->Tick(kInitialTickTime + base::Milliseconds(1000));
   animation_impl_->UpdateState(true, events.get());
-  EXPECT_FALSE(client_impl_.GetHasPotentialBackdropFilterAnimation(
+  EXPECT_FALSE(delegate_impl_.GetHasPotentialBackdropFilterAnimation(
       element_id_, ElementListType::PENDING));
-  EXPECT_FALSE(client_impl_.GetBackdropFilterIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetBackdropFilterIsCurrentlyAnimating(
       element_id_, ElementListType::PENDING));
-  EXPECT_FALSE(client_impl_.GetHasPotentialBackdropFilterAnimation(
+  EXPECT_FALSE(delegate_impl_.GetHasPotentialBackdropFilterAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_FALSE(client_impl_.GetBackdropFilterIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetBackdropFilterIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   // Case 2: An animation that's removed before it finishes.
   int keyframe_model_id =
       AddAnimatedBackdropFilterToAnimation(animation_.get(), 10.0, 0.f, 1.f);
-  EXPECT_TRUE(client_.GetHasPotentialBackdropFilterAnimation(
+  EXPECT_TRUE(delegate_.GetHasPotentialBackdropFilterAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_TRUE(client_.GetBackdropFilterIsCurrentlyAnimating(
+  EXPECT_TRUE(delegate_.GetBackdropFilterIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   PushProperties();
-  EXPECT_TRUE(client_impl_.GetHasPotentialBackdropFilterAnimation(
+  EXPECT_TRUE(delegate_impl_.GetHasPotentialBackdropFilterAnimation(
       element_id_, ElementListType::PENDING));
-  EXPECT_TRUE(client_impl_.GetBackdropFilterIsCurrentlyAnimating(
+  EXPECT_TRUE(delegate_impl_.GetBackdropFilterIsCurrentlyAnimating(
       element_id_, ElementListType::PENDING));
-  EXPECT_FALSE(client_impl_.GetHasPotentialBackdropFilterAnimation(
+  EXPECT_FALSE(delegate_impl_.GetHasPotentialBackdropFilterAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_FALSE(client_impl_.GetBackdropFilterIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetBackdropFilterIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   animation_impl_->ActivateKeyframeModels();
-  EXPECT_TRUE(client_impl_.GetHasPotentialBackdropFilterAnimation(
+  EXPECT_TRUE(delegate_impl_.GetHasPotentialBackdropFilterAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_TRUE(client_impl_.GetBackdropFilterIsCurrentlyAnimating(
+  EXPECT_TRUE(delegate_impl_.GetBackdropFilterIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   animation_impl_->Tick(kInitialTickTime + base::Milliseconds(2000));
@@ -3482,49 +3484,49 @@ TEST_F(ElementAnimationsTest,
   events->events().clear();
 
   animation_->RemoveKeyframeModel(keyframe_model_id);
-  EXPECT_FALSE(client_.GetHasPotentialBackdropFilterAnimation(
+  EXPECT_FALSE(delegate_.GetHasPotentialBackdropFilterAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_FALSE(client_.GetBackdropFilterIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_.GetBackdropFilterIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   PushProperties();
-  EXPECT_FALSE(client_impl_.GetHasPotentialBackdropFilterAnimation(
+  EXPECT_FALSE(delegate_impl_.GetHasPotentialBackdropFilterAnimation(
       element_id_, ElementListType::PENDING));
-  EXPECT_FALSE(client_impl_.GetBackdropFilterIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetBackdropFilterIsCurrentlyAnimating(
       element_id_, ElementListType::PENDING));
-  EXPECT_TRUE(client_impl_.GetHasPotentialBackdropFilterAnimation(
+  EXPECT_TRUE(delegate_impl_.GetHasPotentialBackdropFilterAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_TRUE(client_impl_.GetBackdropFilterIsCurrentlyAnimating(
+  EXPECT_TRUE(delegate_impl_.GetBackdropFilterIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   animation_impl_->ActivateKeyframeModels();
-  EXPECT_FALSE(client_impl_.GetHasPotentialBackdropFilterAnimation(
+  EXPECT_FALSE(delegate_impl_.GetHasPotentialBackdropFilterAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_FALSE(client_impl_.GetBackdropFilterIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetBackdropFilterIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   // Case 3: An animation that's aborted before it finishes.
   keyframe_model_id =
       AddAnimatedBackdropFilterToAnimation(animation_.get(), 10.0, 0.f, 0.5f);
-  EXPECT_TRUE(client_.GetHasPotentialBackdropFilterAnimation(
+  EXPECT_TRUE(delegate_.GetHasPotentialBackdropFilterAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_TRUE(client_.GetBackdropFilterIsCurrentlyAnimating(
+  EXPECT_TRUE(delegate_.GetBackdropFilterIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   PushProperties();
-  EXPECT_TRUE(client_impl_.GetHasPotentialBackdropFilterAnimation(
+  EXPECT_TRUE(delegate_impl_.GetHasPotentialBackdropFilterAnimation(
       element_id_, ElementListType::PENDING));
-  EXPECT_TRUE(client_impl_.GetBackdropFilterIsCurrentlyAnimating(
+  EXPECT_TRUE(delegate_impl_.GetBackdropFilterIsCurrentlyAnimating(
       element_id_, ElementListType::PENDING));
-  EXPECT_FALSE(client_impl_.GetHasPotentialBackdropFilterAnimation(
+  EXPECT_FALSE(delegate_impl_.GetHasPotentialBackdropFilterAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_FALSE(client_impl_.GetBackdropFilterIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetBackdropFilterIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   animation_impl_->ActivateKeyframeModels();
-  EXPECT_TRUE(client_impl_.GetHasPotentialBackdropFilterAnimation(
+  EXPECT_TRUE(delegate_impl_.GetHasPotentialBackdropFilterAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_TRUE(client_impl_.GetBackdropFilterIsCurrentlyAnimating(
+  EXPECT_TRUE(delegate_impl_.GetBackdropFilterIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   animation_impl_->Tick(kInitialTickTime + base::Milliseconds(2000));
@@ -3536,13 +3538,13 @@ TEST_F(ElementAnimationsTest,
 
   animation_impl_->AbortKeyframeModelsWithProperty(
       TargetProperty::BACKDROP_FILTER, false);
-  EXPECT_FALSE(client_impl_.GetHasPotentialBackdropFilterAnimation(
+  EXPECT_FALSE(delegate_impl_.GetHasPotentialBackdropFilterAnimation(
       element_id_, ElementListType::PENDING));
-  EXPECT_FALSE(client_impl_.GetBackdropFilterIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetBackdropFilterIsCurrentlyAnimating(
       element_id_, ElementListType::PENDING));
-  EXPECT_FALSE(client_impl_.GetHasPotentialBackdropFilterAnimation(
+  EXPECT_FALSE(delegate_impl_.GetHasPotentialBackdropFilterAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_FALSE(client_impl_.GetBackdropFilterIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetBackdropFilterIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   animation_impl_->Tick(kInitialTickTime + base::Milliseconds(4000));
@@ -3550,9 +3552,9 @@ TEST_F(ElementAnimationsTest,
 
   event = std::get_if<AnimationPlaybackEvent>(&events->events()[0]);
   animation_->DispatchAndDelegateAnimationEvent(*event);
-  EXPECT_FALSE(client_.GetHasPotentialBackdropFilterAnimation(
+  EXPECT_FALSE(delegate_.GetHasPotentialBackdropFilterAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_FALSE(client_.GetBackdropFilterIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_.GetBackdropFilterIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   // Case 4 : An animation that's not in effect.
@@ -3566,19 +3568,19 @@ TEST_F(ElementAnimationsTest,
       ->set_fill_mode(KeyframeModel::FillMode::NONE);
 
   PushProperties();
-  EXPECT_TRUE(client_impl_.GetHasPotentialBackdropFilterAnimation(
+  EXPECT_TRUE(delegate_impl_.GetHasPotentialBackdropFilterAnimation(
       element_id_, ElementListType::PENDING));
-  EXPECT_FALSE(client_impl_.GetBackdropFilterIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetBackdropFilterIsCurrentlyAnimating(
       element_id_, ElementListType::PENDING));
-  EXPECT_FALSE(client_impl_.GetHasPotentialBackdropFilterAnimation(
+  EXPECT_FALSE(delegate_impl_.GetHasPotentialBackdropFilterAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_FALSE(client_impl_.GetBackdropFilterIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetBackdropFilterIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 
   animation_impl_->ActivateKeyframeModels();
-  EXPECT_TRUE(client_impl_.GetHasPotentialBackdropFilterAnimation(
+  EXPECT_TRUE(delegate_impl_.GetHasPotentialBackdropFilterAnimation(
       element_id_, ElementListType::ACTIVE));
-  EXPECT_FALSE(client_impl_.GetBackdropFilterIsCurrentlyAnimating(
+  EXPECT_FALSE(delegate_impl_.GetBackdropFilterIsCurrentlyAnimating(
       element_id_, ElementListType::ACTIVE));
 }
 
@@ -3589,11 +3591,11 @@ TEST_F(ElementAnimationsTest, ClippedOpacityValues) {
   AddOpacityTransitionToAnimation(animation_.get(), 1, 1.f, 2.f, true);
 
   animation_->Tick(kInitialTickTime);
-  EXPECT_EQ(1.f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
+  EXPECT_EQ(1.f, delegate_.GetOpacity(element_id_, ElementListType::ACTIVE));
 
   // Opacity values are clipped [0,1]
   animation_->Tick(kInitialTickTime + base::Milliseconds(1000));
-  EXPECT_EQ(1.f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
+  EXPECT_EQ(1.f, delegate_.GetOpacity(element_id_, ElementListType::ACTIVE));
 }
 
 TEST_F(ElementAnimationsTest, ClippedNegativeOpacityValues) {
@@ -3603,11 +3605,11 @@ TEST_F(ElementAnimationsTest, ClippedNegativeOpacityValues) {
   AddOpacityTransitionToAnimation(animation_.get(), 1, 0.f, -2.f, true);
 
   animation_->Tick(kInitialTickTime);
-  EXPECT_EQ(0.f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
+  EXPECT_EQ(0.f, delegate_.GetOpacity(element_id_, ElementListType::ACTIVE));
 
   // Opacity values are clipped [0,1]
   animation_->Tick(kInitialTickTime + base::Milliseconds(1000));
-  EXPECT_EQ(0.f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
+  EXPECT_EQ(0.f, delegate_.GetOpacity(element_id_, ElementListType::ACTIVE));
 }
 
 TEST_F(ElementAnimationsTest, PushedDeletedAnimationWaitsForActivation) {
@@ -3628,9 +3630,9 @@ TEST_F(ElementAnimationsTest, PushedDeletedAnimationWaitsForActivation) {
                 ->GetKeyframeModelById(keyframe_model_id)
                 ->run_state());
   EXPECT_EQ(0.5f,
-            client_impl_.GetOpacity(element_id_, ElementListType::PENDING));
+            delegate_impl_.GetOpacity(element_id_, ElementListType::PENDING));
   EXPECT_EQ(0.5f,
-            client_impl_.GetOpacity(element_id_, ElementListType::ACTIVE));
+            delegate_impl_.GetOpacity(element_id_, ElementListType::ACTIVE));
 
   EXPECT_TRUE(KeyframeModel::ToCcKeyframeModel(
                   animation_impl_->keyframe_effect()->GetKeyframeModelById(
@@ -3661,9 +3663,9 @@ TEST_F(ElementAnimationsTest, PushedDeletedAnimationWaitsForActivation) {
 
   // Only the active observer should have been ticked.
   EXPECT_EQ(0.5f,
-            client_impl_.GetOpacity(element_id_, ElementListType::PENDING));
+            delegate_impl_.GetOpacity(element_id_, ElementListType::PENDING));
   EXPECT_EQ(0.75f,
-            client_impl_.GetOpacity(element_id_, ElementListType::ACTIVE));
+            delegate_impl_.GetOpacity(element_id_, ElementListType::ACTIVE));
 
   animation_impl_->ActivateKeyframeModels();
   events = CreateEventsForTesting();
@@ -3746,9 +3748,9 @@ TEST_F(ElementAnimationsTest, StartAnimationsAffectingDifferentObservers) {
   // The active observer should have been ticked by the original animation,
   // and the pending observer should have been ticked by the new animation.
   EXPECT_EQ(1.f,
-            client_impl_.GetOpacity(element_id_, ElementListType::PENDING));
+            delegate_impl_.GetOpacity(element_id_, ElementListType::PENDING));
   EXPECT_EQ(0.5f,
-            client_impl_.GetOpacity(element_id_, ElementListType::ACTIVE));
+            delegate_impl_.GetOpacity(element_id_, ElementListType::ACTIVE));
 
   animation_impl_->ActivateKeyframeModels();
 
@@ -3787,8 +3789,9 @@ TEST_F(ElementAnimationsTest, StartAnimationsAffectingDifferentObservers) {
                 ->GetKeyframeModelById(second_keyframe_model_id)
                 ->run_state());
   EXPECT_EQ(1.f,
-            client_impl_.GetOpacity(element_id_, ElementListType::PENDING));
-  EXPECT_EQ(1.f, client_impl_.GetOpacity(element_id_, ElementListType::ACTIVE));
+            delegate_impl_.GetOpacity(element_id_, ElementListType::PENDING));
+  EXPECT_EQ(1.f,
+            delegate_impl_.GetOpacity(element_id_, ElementListType::ACTIVE));
 }
 
 TEST_F(ElementAnimationsTest, TestIsCurrentlyAnimatingProperty) {
@@ -3842,7 +3845,7 @@ TEST_F(ElementAnimationsTest, TestIsCurrentlyAnimatingProperty) {
   EXPECT_FALSE(animation_->keyframe_effect()->IsCurrentlyAnimatingProperty(
       TargetProperty::FILTER, ElementListType::ACTIVE));
 
-  EXPECT_EQ(0.f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
+  EXPECT_EQ(0.f, delegate_.GetOpacity(element_id_, ElementListType::ACTIVE));
 
   // Tick past the end of the animation.
   animation_->Tick(kInitialTickTime + base::Milliseconds(1100));
@@ -3857,7 +3860,7 @@ TEST_F(ElementAnimationsTest, TestIsCurrentlyAnimatingProperty) {
   EXPECT_FALSE(animation_->keyframe_effect()->IsCurrentlyAnimatingProperty(
       TargetProperty::FILTER, ElementListType::ACTIVE));
 
-  EXPECT_EQ(1.f, client_.GetOpacity(element_id_, ElementListType::ACTIVE));
+  EXPECT_EQ(1.f, delegate_.GetOpacity(element_id_, ElementListType::ACTIVE));
 }
 
 TEST_F(ElementAnimationsTest, TestIsAnimatingPropertyTimeOffsetFillMode) {
@@ -3996,7 +3999,7 @@ TEST_F(ElementAnimationsTest, FinishedKeyframeModelsNotCopiedToImpl) {
 }
 
 TEST_F(ElementAnimationsTest, ClientAnimationState) {
-  client_.RegisterElementId(element_id_, ElementListType::ACTIVE);
+  delegate_.RegisterElementId(element_id_, ElementListType::ACTIVE);
   AttachTimelineAnimationLayer();
   CreateImplTimelineAndAnimation();
 
@@ -4004,7 +4007,7 @@ TEST_F(ElementAnimationsTest, ClientAnimationState) {
       std::make_unique<FakeTransformTransition>(1.0), 1, 1,
       KeyframeModel::TargetPropertyId(TargetProperty::TRANSFORM)));
 
-  auto* layer = client_.FindTestLayer(element_id_, ElementListType::ACTIVE);
+  auto* layer = delegate_.FindTestLayer(element_id_, ElementListType::ACTIVE);
   EXPECT_TRUE(layer->is_currently_animating(TargetProperty::TRANSFORM));
   EXPECT_EQ(1.f, layer->maximum_animation_scale());
 

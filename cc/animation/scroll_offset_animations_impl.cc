@@ -210,8 +210,8 @@ void ScrollOffsetAnimationImpl::NotifyAnimationFinished(
     int target_property,
     int group) {
   DCHECK_EQ(target_property, TargetProperty::SCROLL_OFFSET);
-  DCHECK(animation_host_->mutator_host_client());
-  animation_host_->mutator_host_client()->ScrollOffsetAnimationFinished(
+  DCHECK(animation_host_->mutator_host_delegate());
+  animation_host_->mutator_host_delegate()->ScrollOffsetAnimationFinished(
       scroll_offset_animation_->element_id());
   TRACE_EVENT_INSTANT("cc", "NotifyAnimationFinished");
 }
