@@ -31,6 +31,11 @@ struct StructTraits<viz::mojom::TrackedElementRectDataView,
     return data.visible_bounds;
   }
 
+  static bool should_add_to_compositor_frame_metadata(
+      const viz::TrackedElementRect& data) {
+    return data.should_add_to_compositor_frame_metadata;
+  }
+
   static std::optional<blink::FrameToken> frame_token(
       const viz::TrackedElementRect& data) {
     return data.frame_token;
@@ -43,6 +48,8 @@ struct StructTraits<viz::mojom::TrackedElementRectDataView,
 
   static bool Read(viz::mojom::TrackedElementRectDataView data,
                    viz::TrackedElementRect* out) {
+    out->should_add_to_compositor_frame_metadata =
+        data.should_add_to_compositor_frame_metadata();
     if (!data.ReadTrackedElementId(&out->id) ||
         !data.ReadVisibleBounds(&out->visible_bounds) ||
         !data.ReadFrameToken(&out->frame_token) ||

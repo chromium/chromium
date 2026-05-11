@@ -63,6 +63,7 @@
 #include "services/viz/public/mojom/compositing/selection.mojom.h"
 #include "services/viz/public/mojom/compositing/surface_info.mojom.h"
 #include "services/viz/public/mojom/compositing/surface_range.mojom.h"
+#include "services/viz/public/mojom/compositing/tracked_element_rects.mojom.h"
 #include "services/viz/public/mojom/compositing/transferable_resource.mojom.h"
 #include "services/viz/public/mojom/compositing/trees_in_viz_timing.mojom.h"
 #include "skia/public/mojom/bitmap_skbitmap_mojom_traits.h"
@@ -1498,7 +1499,8 @@ TEST_F(StructTraitsTest, CopyOutputResult_Bitmap) {
   bitmap.eraseARGB(123, 213, 77, 33);
   TrackedElementRects tracked_element_rects;
   tracked_element_rects[TrackedElementFeature::kTrackedElementFeatureMax] = {
-      {base::Token(1, 1), gfx::Rect(40, 40, 20, 20)}};
+      {base::Token(1, 1), gfx::Rect(40, 40, 20, 20),
+       /*should_add_to_compositor_frame_metadata=*/true}};
   std::unique_ptr<CopyOutputResult> input =
       std::make_unique<CopyOutputSkBitmapResult>(result_rect,
                                                  std::move(bitmap));
@@ -1533,6 +1535,36 @@ TEST_F(StructTraitsTest, CopyOutputResult_Bitmap) {
                                    out_bitmap.colorSpace()));
 
   EXPECT_EQ(output->GetTrackedElementRects(), tracked_element_rects);
+}
+
+TEST_F(StructTraitsTest, TrackedElementRects) {
+  TrackedElementRects input;
+  const auto token1 = base::Token(1, 1);
+  const auto token2 = base::Token(2, 2);
+  const gfx::Rect rect1(1, 2, 3, 4);
+  const gfx::Rect rect2(5, 6, 7, 8);
+  const blink::FrameToken frame_token = blink::LocalFrameToken();
+  const blink::LocalFrameToken parent_frame_token = blink::LocalFrameToken();
+
+  input[TrackedElementFeature::kTrackedElementFeatureMax] = {
+      TrackedElementRect(token1, rect1,
+                         /*should_add_to_compositor_frame_metadata=*/true,
+                         frame_token, parent_frame_token),
+      TrackedElementRect(token2, rect2,
+                         /*should_add_to_compositor_frame_metadata=*/false,
+                         std::nullopt, std::nullopt)};
+
+  TrackedElementRects output;
+  mojo::test::SerializeAndDeserialize<mojom::TrackedElementRects>(input,
+                                                                  output);
+
+  EXPECT_EQ(input, output);
+  EXPECT_EQ(output[TrackedElementFeature::kTrackedElementFeatureMax].size(),
+            2u);
+  EXPECT_TRUE(output[TrackedElementFeature::kTrackedElementFeatureMax][0]
+                  .should_add_to_compositor_frame_metadata);
+  EXPECT_FALSE(output[TrackedElementFeature::kTrackedElementFeatureMax][1]
+                   .should_add_to_compositor_frame_metadata);
 }
 
 TEST_F(StructTraitsTest, CopyOutputResult_Texture) {

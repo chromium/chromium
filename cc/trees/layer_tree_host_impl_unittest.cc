@@ -15381,4 +15381,44 @@ TEST_P(OverscrollEffectTest, RespectsOverscrollBehaviorOnRoot) {
   VerifyOverscrollBehavior(OuterViewportScrollLayer());
 }
 
+TEST_P(LayerTreeHostImplTest, CollectTrackedElementRects) {
+  auto* root_layer = SetupRootLayer<SolidColorLayerImpl>(
+      host_impl_->active_tree(), gfx::Size(100, 100));
+
+  const base::Token kId1 = base::Token(1, 2);
+  const base::Token kId2 = base::Token(2, 3);
+  const viz::TrackedElementFeature kFeature0 =
+      static_cast<viz::TrackedElementFeature>(0);
+  const viz::TrackedElementFeature kFeature1 =
+      static_cast<viz::TrackedElementFeature>(1);
+
+  viz::TrackedElementRects combined_rects;
+  combined_rects[kFeature0] = {viz::TrackedElementRect(
+      kId1, gfx::Rect(0, 0, 50, 50),
+      /*should_add_to_compositor_frame_metadata=*/false)};
+  combined_rects[kFeature1] = {viz::TrackedElementRect(
+      kId2, gfx::Rect(0, 0, 10, 20),
+      /*should_add_to_compositor_frame_metadata=*/true)};
+
+  root_layer->SetTrackedElementRects(combined_rects);
+  root_layer->SetDrawsContent(true);
+  UpdateDrawProperties(host_impl_->active_tree());
+
+  viz::TrackedElementRects compositor_rects =
+      host_impl_->CollectTrackedElementRects(
+          /*is_for_compositor_frame_metadata=*/true);
+  EXPECT_EQ(1u, compositor_rects.size());
+  EXPECT_TRUE(compositor_rects.contains(kFeature1));
+  EXPECT_EQ(1u, compositor_rects.at(kFeature1).size());
+  EXPECT_EQ(kId2, compositor_rects.at(kFeature1)[0].id);
+
+  viz::TrackedElementRects render_frame_rects =
+      host_impl_->CollectTrackedElementRects(
+          /*is_for_compositor_frame_metadata=*/false);
+  EXPECT_EQ(1u, render_frame_rects.size());
+  EXPECT_TRUE(render_frame_rects.contains(kFeature0));
+  EXPECT_EQ(1u, render_frame_rects.at(kFeature0).size());
+  EXPECT_EQ(kId1, render_frame_rects.at(kFeature0)[0].id);
+}
+
 }  // namespace cc

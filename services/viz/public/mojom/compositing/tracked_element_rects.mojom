@@ -21,6 +21,9 @@ struct TrackedElementRect {
   // element.
   gfx.mojom.Rect visible_bounds;
 
+  // Whether the element should be added to the compositor frame metadata.
+  bool should_add_to_compositor_frame_metadata;
+
   // The frame token of the frame containing the element being tracked.
   blink.mojom.FrameToken? frame_token;
 
