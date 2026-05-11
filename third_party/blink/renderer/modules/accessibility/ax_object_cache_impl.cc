@@ -3008,18 +3008,12 @@ void AXObjectCacheImpl::NodeIsAttachedWithCleanLayout(Node* node) {
   }
 }
 
-void AXObjectCacheImpl::NotifyParentChildrenChanged(
-    AXObject* parent,
-    bool allow_immediate_update) {
+void AXObjectCacheImpl::NotifyParentChildrenChanged(AXObject* parent) {
   if (!parent) {
     return;
   }
   if (lifecycle_.StateAllowsImmediateTreeUpdates()) {
-    if (allow_immediate_update) {
-      ChildrenChangedWithCleanLayout(parent);
-    } else {
-      InvalidateChildren(parent);
-    }
+    ChildrenChangedWithCleanLayout(parent);
   } else {
     AXObject* ax_ancestor = ChildrenChanged(parent);
     if (!ax_ancestor) {
@@ -3037,18 +3031,15 @@ void AXObjectCacheImpl::NotifyParentChildrenChanged(
 
 // Note: do not call this when a child is becoming newly included, because
 // it will return early if |obj| was last known to be unincluded.
-void AXObjectCacheImpl::ChildrenChangedOnAncestorOf(
-    AXObject* obj,
-    bool allow_immediate_update) {
+void AXObjectCacheImpl::ChildrenChangedOnAncestorOf(AXObject* obj) {
   DCHECK(obj);
   DCHECK(!obj->IsDetached());
-  AXObject* parent = obj->ParentObjectIfPresent();
 
   // Clear children of ancestors in order to ensure this detached object is not
   // cached in an ancestor's list of children:
   // Any ancestor up to the first included ancestor can contain the now-detached
   // child in it's cached children, and therefore must update children.
-  NotifyParentChildrenChanged(parent, allow_immediate_update);
+  NotifyParentChildrenChanged(obj->ParentObjectIfPresent());
 }
 
 void AXObjectCacheImpl::ChildrenChangedWithCleanLayout(AXObject* obj) {

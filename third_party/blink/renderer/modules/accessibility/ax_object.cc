@@ -3674,11 +3674,8 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
         // Defers a ChildrenChanged() on the first included ancestor.
         // Must defer it, otherwise it can cause reentry into
         // UpdateCachedAttributeValuesIfNeeded() on |this|.
-        // During deferred event processing, ChildrenChangedOnAncestorOf() can
-        // immediately update an ancestor's children and detach |this| before
-        // this cached-value update finishes.
-        AXObjectCache().ChildrenChangedOnAncestorOf(
-            this, /*allow_immediate_update=*/false);
+        // ParentObjectUnignored()->SetNeedsToUpdateChildren();
+        AXObjectCache().ChildrenChangedOnAncestorOf(this);
       }
     } else if (included_in_tree_changed && AXObjectCache().IsUpdatingTree()) {
       // In some cases changes to inherited properties can cause an object
