@@ -82,6 +82,12 @@ class MemoryConsumerRegistry;
 //   LRUCache cache_;
 // };
 //
+// Note: If you need to support multiple memory interventions in the same class,
+// do not inherit from MemoryConsumer directly. Instead, use
+// MultiMemoryConsumer (defined in
+// base/memory_coordinator/multi_memory_consumer.h) which is specifically
+// designed to support multiple registrations.
+//
 class BASE_EXPORT MemoryConsumer {
  public:
   // This is the default value for a consumer's memory limit. It corresponds to
