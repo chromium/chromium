@@ -1208,9 +1208,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #endif
   passage_embeddings::PassageEmbedderModelObserverFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(device::kPasskeyUnlockManager)) {
-    webauthn::PasskeyUnlockManagerFactory::GetInstance();
-  }
+  webauthn::PasskeyUnlockManagerFactory::GetInstance();
 #endif
   password_manager::PasswordManagerLogRouterFactory::GetInstance();
   password_manager::PasswordRequirementsServiceFactory::GetInstance();

@@ -2471,8 +2471,7 @@ PROFILE_MENU_CLICK_TEST_WITH_FEATURE_STATES_F(
     ProfileMenuClickTest_PasskeyUnlockError,
     /*enabled_features=*/
     std::vector<base::test::FeatureRef>(
-        {device::kPasskeyUnlockErrorUi, device::kPasskeyUnlockManager,
-         device::kWebAuthnOpportunisticRetrieval,
+        {device::kPasskeyUnlockErrorUi, device::kWebAuthnOpportunisticRetrieval,
          // Enabling the feature `ReplaceSyncPromosWithSignInPromos` because it
          // will be fully rolled-out it soon.
          syncer::kReplaceSyncPromosWithSignInPromos}),
@@ -2509,8 +2508,7 @@ PROFILE_MENU_CLICK_TEST_WITH_FEATURE_STATES_F(
     ProfileMenuClickTest_PasskeyUnlockError_WhenUnconsentedAccountSignedIn,
     /*enabled_features=*/
     std::vector<base::test::FeatureRef>(
-        {device::kPasskeyUnlockErrorUi, device::kPasskeyUnlockManager,
-         device::kWebAuthnOpportunisticRetrieval,
+        {device::kPasskeyUnlockErrorUi, device::kWebAuthnOpportunisticRetrieval,
          // Enabling the feature `ReplaceSyncPromosWithSignInPromos` because it
          // will be fully rolled-out it soon.
          syncer::kReplaceSyncPromosWithSignInPromos}),

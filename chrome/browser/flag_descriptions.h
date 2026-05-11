@@ -3711,11 +3711,6 @@ inline constexpr char kPasskeyUnlockErrorUiDescription[] =
     "verification mechanism (either a system UV or a GPM PIN). This flag "
     "requires the flag `PasskeyUnlockManager` to be active.";
 
-inline constexpr char kPasskeyUnlockManagerName[] = "Passkey Unlock Manager";
-inline constexpr char kPasskeyUnlockManagerDescription[] =
-    "Enables the Passkey Unlock Manager, which tracks the state of passkeys "
-    "and publishes the corresponding metrics.";
-
 inline constexpr char kPasswordFormGroupedAffiliationsName[] =
     "Grouped affiliation password suggestions";
 inline constexpr char kPasswordFormGroupedAffiliationsDescription[] =

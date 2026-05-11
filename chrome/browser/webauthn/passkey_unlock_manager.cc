@@ -160,7 +160,6 @@ std::u16string PasskeyUnlockManager::GetPasskeyErrorProfileMenuButtonLabel()
 // static
 bool PasskeyUnlockManager::IsPasskeyUnlockErrorUiEnabled() {
   return base::FeatureList::IsEnabled(device::kPasskeyUnlockErrorUi) &&
-         base::FeatureList::IsEnabled(device::kPasskeyUnlockManager) &&
          base::FeatureList::IsEnabled(device::kWebAuthnOpportunisticRetrieval);
 }
 

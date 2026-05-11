@@ -12013,10 +12013,6 @@ const FeatureEntry kFeatureEntries[] = {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-    {"passkey-unlock-manager", flag_descriptions::kPasskeyUnlockManagerName,
-     flag_descriptions::kPasskeyUnlockManagerDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(device::kPasskeyUnlockManager)},
-
     {"passkey-unlock-error-ui", flag_descriptions::kPasskeyUnlockErrorUiName,
      flag_descriptions::kPasskeyUnlockErrorUiDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(device::kPasskeyUnlockErrorUi)},

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/webauthn/passkey_unlock_manager.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -19,7 +18,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
-#include "device/fido/public/features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -98,7 +96,7 @@ class PasskeyUnlockManagerBrowserTest : public EnclaveAuthenticatorTestBase {
     ASSERT_TRUE(sync_harness()->SetupSync());
     ASSERT_TRUE(
         identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
- }
+  }
 
  protected:
   void SetUpOnMainThread() override {
@@ -119,9 +117,6 @@ class PasskeyUnlockManagerBrowserTest : public EnclaveAuthenticatorTestBase {
 
     EnableSync();
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_{device::kPasskeyUnlockManager};
 };
 
 IN_PROC_BROWSER_TEST_F(PasskeyUnlockManagerBrowserTest, IsCreated) {

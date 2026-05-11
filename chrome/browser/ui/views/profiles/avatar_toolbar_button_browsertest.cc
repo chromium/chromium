@@ -3843,7 +3843,6 @@ class AvatarToolbarButtonPasskeyUnlockErrorBrowserTest
   AvatarToolbarButtonPasskeyUnlockErrorBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{device::kPasskeyUnlockErrorUi,
-                              device::kPasskeyUnlockManager,
                               device::kWebAuthnOpportunisticRetrieval},
         /*disabled_features=*/{});
   }

@@ -7498,11 +7498,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "passkey-unlock-manager",
-    "owners": ["ylahodiuk@google.com", "izuzic@google.com", "anki-team@google.com"],
-    "expiry_milestone": 150
-  },
-  {
     "name": "password-auto-submission-ios",
     "owners": ["vincb@google.com", "bling-transactions@google.com"],
     "expiry_milestone": 152
