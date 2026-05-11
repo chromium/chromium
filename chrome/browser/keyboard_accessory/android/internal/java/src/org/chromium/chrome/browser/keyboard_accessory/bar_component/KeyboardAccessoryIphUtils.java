@@ -12,7 +12,6 @@ import androidx.annotation.StringRes;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.keyboard_accessory.R;
-import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.components.feature_engagement.EventConstants;
@@ -191,13 +190,7 @@ class KeyboardAccessoryIphUtils {
         // If the help text is provided, then use it directly to generate the text bubble.
         if (helpText != null && !helpText.isEmpty()) {
             helpBubble =
-                    new TextBubble.Builder(
-                                    context,
-                                    rootView,
-                                    rectProvider,
-                                    helpText,
-                                    helpText,
-                                    ChromeAccessibilityUtil.get().isAccessibilityEnabled())
+                    new TextBubble.Builder(context, rootView, rectProvider, helpText, helpText)
                             .setShowArrow(true)
                             .build();
         } else {
@@ -208,8 +201,7 @@ class KeyboardAccessoryIphUtils {
                                     rootView,
                                     rectProvider,
                                     helpTextResourceId,
-                                    helpTextResourceId,
-                                    ChromeAccessibilityUtil.get().isAccessibilityEnabled())
+                                    helpTextResourceId)
                             .build();
         }
         helpBubble.setDismissOnTouchInteraction(true);

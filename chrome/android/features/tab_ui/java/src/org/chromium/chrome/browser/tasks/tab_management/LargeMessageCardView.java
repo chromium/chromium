@@ -20,7 +20,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData.PriceDrop;
-import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow;
@@ -225,8 +224,7 @@ class LargeMessageCardView extends FrameLayout {
                                 view,
                                 rectProvider,
                                 R.string.price_drop_spotted_lower_price,
-                                R.string.price_drop_spotted_lower_price,
-                                ChromeAccessibilityUtil.get().isAccessibilityEnabled())
+                                R.string.price_drop_spotted_lower_price)
                         .build();
         textBubble.setFocusable(true);
         textBubble.setDismissOnTouchInteraction(true);

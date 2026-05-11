@@ -33,6 +33,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.R;
+import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.RectProvider;
 
@@ -114,8 +115,6 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
     /** The accessibility string associated with the bubble. */
     private final String mAccessibilityString;
 
-    private final boolean mIsAccessibilityEnabled;
-
     /** The content view shown in the popup window. */
     protected View mContentView;
 
@@ -133,9 +132,6 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
      *     should be no image.
      * @param isRoundBubble Whether the bubble should be round.
      * @param inverseColor Whether the background and icon/text colors should be inverted.
-     * @param isAccessibilityEnabled Whether accessibility mode is enabled. Used to determine bubble
-     *     text and dismiss UX. At most one of the two following arguments will be non-null. Used in
-     *     Snooze IPH experiment.
      * @param snoozeRunnable The callback for when snooze button is clicked.
      * @param snoozeDismissRunnable The callback to be invoked when dismiss button is clicked.
      */
@@ -149,7 +145,6 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
             @Nullable Drawable imageDrawable,
             boolean isRoundBubble,
             boolean inverseColor,
-            boolean isAccessibilityEnabled,
             @Nullable Runnable snoozeRunnable,
             @Nullable Runnable snoozeDismissRunnable) {
         assert snoozeRunnable == null || snoozeDismissRunnable == null;
@@ -158,7 +153,6 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
         mAccessibilityString = accessibilityString;
         mImageDrawable = imageDrawable;
         mInverseColor = inverseColor;
-        mIsAccessibilityEnabled = isAccessibilityEnabled;
         mSnoozeRunnable = snoozeRunnable;
         mSnoozeDismissRunnable = snoozeDismissRunnable;
 
@@ -187,7 +181,7 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
         mPopupWindow.setAnimationStyle(R.style.TextBubbleAnimation);
 
         addOnDismissListener(mDismissListener);
-        if (mIsAccessibilityEnabled) setDismissOnTouchInteraction(true);
+        if (AccessibilityState.isTouchExplorationEnabled()) setDismissOnTouchInteraction(true);
     }
 
     /** Get the background to use. May be overridden by subclasses. */
@@ -300,14 +294,15 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
     }
 
     /**
-     * Updates the timeout that is used to determine when to automatically dismiss the bubble.  If
-     * the bubble is already showing, the timeout will start from the time of this call.  Any
-     * previous timeouts will be canceled.  {@link #NO_TIMEOUT} is the default value.
-     * @param timeoutMs The time (in milliseconds) the bubble should be dismissed after.  Use
-     *                  {@link #NO_TIMEOUT} for no timeout.
+     * Updates the timeout that is used to determine when to automatically dismiss the bubble. If
+     * the bubble is already showing, the timeout will start from the time of this call. Any
+     * previous timeouts will be canceled. {@link #NO_TIMEOUT} is the default value.
+     *
+     * @param timeoutMs The time (in milliseconds) the bubble should be dismissed after. Use {@link
+     *     #NO_TIMEOUT} for no timeout.
      */
     public void setAutoDismissTimeout(long timeoutMs) {
-        if (mIsAccessibilityEnabled) return;
+        if (AccessibilityState.isTouchExplorationEnabled()) return;
 
         mAutoDismissTimeoutMs = timeoutMs;
         mHandler.removeCallbacks(mDismissRunnable);
@@ -324,7 +319,7 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
     public void setDismissOnTouchInteraction(boolean dismiss) {
         // For accessibility mode, since there is no timeout value, the bubble can be dismissed
         // only on touch interaction.
-        mDismissOnTouchInteraction = mIsAccessibilityEnabled || dismiss;
+        mDismissOnTouchInteraction = AccessibilityState.isTouchExplorationEnabled() || dismiss;
         mPopupWindow.setDismissOnTouchInteraction(mDismissOnTouchInteraction);
     }
 
@@ -442,9 +437,12 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
         return view;
     }
 
-    /** @param view The {@link TextView} to set text on. */
+    /**
+     * @param view The {@link TextView} to set text on.
+     */
     private void setText(TextView view) {
-        view.setText(mIsAccessibilityEnabled ? mAccessibilityString : mString);
+        view.setText(
+                AccessibilityState.isTouchExplorationEnabled() ? mAccessibilityString : mString);
         updateTextStyle(view, mInverseColor);
     }
 
@@ -481,7 +479,6 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
         private final RectProvider mAnchorRectProvider;
         private final String mString;
         private final String mAccessibilityString;
-        private final boolean mIsAccessibilityEnabled;
 
         private boolean mShowArrow = true;
         private @Nullable Drawable mImageDrawable;
@@ -495,8 +492,7 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
                 View rootView,
                 RectProvider anchorRectProvider,
                 String string,
-                String accessibilityString,
-                boolean isAccessibilityEnabled) {
+                String accessibilityString) {
             mContext = context;
             mRootView = rootView;
             mAnchorRectProvider = anchorRectProvider;
@@ -505,7 +501,6 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
                     (accessibilityString != null && !accessibilityString.isEmpty())
                             ? accessibilityString
                             : mString;
-            mIsAccessibilityEnabled = isAccessibilityEnabled;
         }
 
         public Builder(
@@ -513,15 +508,13 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
                 View rootView,
                 RectProvider anchorRectProvider,
                 @StringRes int stringId,
-                @StringRes int accessibilityStringId,
-                boolean isAccessibilityEnabled) {
+                @StringRes int accessibilityStringId) {
             mContext = context;
             mRootView = rootView;
             mAnchorRectProvider = anchorRectProvider;
             mString = mContext.getString(stringId);
             String a11yString = mContext.getString(accessibilityStringId);
             mAccessibilityString = a11yString.isEmpty() ? mString : a11yString;
-            mIsAccessibilityEnabled = isAccessibilityEnabled;
         }
 
         public Builder setShowArrow(boolean showArrow) {
@@ -570,7 +563,6 @@ public class TextBubble implements AnchoredPopupWindow.LayoutObserver {
                     mImageDrawable,
                     mIsRoundBubble,
                     mInverseColor,
-                    mIsAccessibilityEnabled,
                     mSnoozeRunnable,
                     mSnoozeDismissRunnable);
         }

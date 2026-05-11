@@ -52,7 +52,6 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonConstants.TransitionType;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonProperties.OnBeforeWidthTransitionCallback;
-import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.listmenu.ListMenuButton;
@@ -897,12 +896,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         //     have appeared. Consider displaying IPH for setting a different cadence.
         var textBubble =
                 new TextBubble.Builder(
-                                getContext(),
-                                this,
-                                new ViewRectProvider(this),
-                                stringId,
-                                stringId,
-                                ChromeAccessibilityUtil.get().isAccessibilityEnabled())
+                                getContext(), this, new ViewRectProvider(this), stringId, stringId)
                         .build();
         textBubble.setAutoDismissTimeout(TEXT_BUBBLE_FOR_ANIMATION_DURATION_MS);
         textBubble.show();

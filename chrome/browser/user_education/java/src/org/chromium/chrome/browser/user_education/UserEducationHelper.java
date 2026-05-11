@@ -18,7 +18,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
@@ -169,8 +168,7 @@ public class UserEducationHelper {
                                             ? viewRectProvider
                                             : assumeNonNull(rectProvider),
                                     contentString,
-                                    accessibilityString,
-                                    ChromeAccessibilityUtil.get().isAccessibilityEnabled())
+                                    accessibilityString)
                             .setShowArrow(!iphCommand.removeArrow)
                             .build();
             mTextBubble.setPreferredVerticalOrientation(iphCommand.preferredVerticalOrientation);
