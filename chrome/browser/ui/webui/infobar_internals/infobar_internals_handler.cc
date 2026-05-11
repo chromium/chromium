@@ -16,6 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/buildflags.h"
 #include "chrome/browser/devtools/devtools_infobar_delegate.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/global_features.h"
@@ -52,6 +53,10 @@
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/browser/win/installer_downloader/installer_downloader_controller.h"
 #include "chrome/browser/win/installer_downloader/installer_downloader_pref_names.h"
+#endif
+
+#if BUILDFLAG(IS_MAC) && BUILDFLAG(ENABLE_UPDATER)
+#include "chrome/browser/ui/cocoa/keystone_infobar_delegate.h"
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -129,6 +134,16 @@ void InfoBarInternalsHandler::GetInfoBars(GetInfoBarsCallback callback) {
       "The Installer Downloader can only be triggered on Windows. The "
       "manual trigger consist to reset any browser state that can "
       "prevent it to shown and then trigger a show request."));
+#endif
+
+#if BUILDFLAG(IS_MAC) && BUILDFLAG(ENABLE_UPDATER)
+  infobar_list.emplace_back(InfoBarEntry::New(
+      /*type=*/InfoBarType::kKeystone, /*name=*/"Keystone",
+      /*description=*/
+      "The Keystone infobar asks the user to promote the updater to "
+      "system scope. This trigger resets any browser state that "
+      "prevents the infobar from being shown, then shows the infobar. "
+      "This can only be triggered on Mac."));
 #endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -336,6 +351,25 @@ bool InfoBarInternalsHandler::TriggerInfoBarInternal(InfoBarType type) {
           l10n_util::GetStringFUTF16(IDS_PLUGIN_CRASHED_PROMPT,
                                      u"Infobar Internals"));
       return true;
+    }
+#endif
+#if BUILDFLAG(IS_MAC)
+    case InfoBarType::kKeystone: {
+#if BUILDFLAG(ENABLE_UPDATER)
+      BrowserWindowInterface* const bwi =
+          GetLastActiveBrowserWindowInterfaceWithAnyProfile();
+      Profile* profile = bwi->GetProfile();
+
+      if (!profile) {
+        return false;
+      }
+
+      profile->GetPrefs()->SetBoolean(prefs::kShowUpdatePromotionInfoBar, true);
+      ShowUpdaterPromotionInfoBar();
+      return true;
+#else
+      return false;
+#endif
     }
 #endif
 #if BUILDFLAG(IS_WIN)

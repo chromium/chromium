@@ -26,6 +26,10 @@ enum InfoBarType {
   [EnableIf=is_win_and_chrome_branded]
   kInstallerDownloader,
 
+  // Keystone promotion infobar. Can only be triggered on Mac.
+  [EnableIf=is_mac]
+  kKeystone,
+
   // Reload plugin infobar.
   [EnableIf=enable_plugins]
   kReloadPlugin,
