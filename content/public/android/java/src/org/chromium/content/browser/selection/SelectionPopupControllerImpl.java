@@ -640,6 +640,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     public void showActionModeOrClearOnFailure() {
         if (!isActionModeSupported()
                 || mView == null
+                || !mView.isAttachedToWindow()
                 || getMenuType() != SelectionMenuType.ACTION_MODE) {
             return;
         }
