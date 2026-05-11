@@ -93,7 +93,7 @@ function denyPermissionRequest(
     webview.addEventListener('permissionrequest', function f(e: Event) {
       assertTrue(e instanceof PermissionRequestEvent);
       assertEquals(permission, e.permission);
-      assertEquals(getOrigin(webview.src), e.request.url);
+      assertEquals(getOrigin(webview.src), getOrigin(e.request.url));
       e.request.deny();
       console.info(`Denied ${permission} permission request`);
       resolve(e);
@@ -289,6 +289,21 @@ suite('Operations', function() {
 
     assertEquals('NotAllowedError', mediaError.name);
     assertTrue(await isFulfilled(requestDeniedPromise));
+  });
+
+  test('DownloadPermissionEventDeniedByEmbedder', async function() {
+    const requestDeniedPromise = denyPermissionRequest(webview, 'download');
+
+    evalOnWebview(webview, () => {
+      const a = document.createElement('a');
+      a.href = '/download-file';
+      a.download = 'file.txt';
+      document.body.appendChild(a);
+      a.click();
+    });
+
+    const event = await requestDeniedPromise;
+    assertEquals(getTestUrl('/download-file'), event.request.url);
   });
 });
 

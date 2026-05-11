@@ -373,6 +373,13 @@ void SlimWebViewGuest::RequestMediaAccessPermission(
   GuestRequestMediaAccessPermission(request, std::move(callback));
 }
 
+void SlimWebViewGuest::CanDownload(const GURL& url,
+                                   const std::string& request_method,
+                                   base::OnceCallback<void(bool)> callback) {
+  CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+  permission_helper_.CanDownload(url, request_method, std::move(callback));
+}
+
 void SlimWebViewGuest::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!IsObservedNavigationWithinGuest(navigation_handle)) {

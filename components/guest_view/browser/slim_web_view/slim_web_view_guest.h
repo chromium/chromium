@@ -95,6 +95,9 @@ class SlimWebViewGuest : public GuestView<SlimWebViewGuest> {
       content::WebContents* web_contents,
       const content::MediaStreamRequest& request,
       content::MediaResponseCallback callback) final;
+  void CanDownload(const GURL& url,
+                   const std::string& request_method,
+                   base::OnceCallback<void(bool)> callback) final;
 
   // content::WebContentsObserver:
   void DidStartNavigation(content::NavigationHandle* navigation_handle) final;

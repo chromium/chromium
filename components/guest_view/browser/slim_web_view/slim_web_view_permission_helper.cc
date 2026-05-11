@@ -29,6 +29,8 @@ std::string SlimWebViewPermissionTypeToString(
       return "media";
     case SlimWebViewPermissionType::kGeolocation:
       return "geolocation";
+    case SlimWebViewPermissionType::kDownload:
+      return "download";
   }
 }
 
@@ -79,6 +81,19 @@ void SlimWebViewPermissionHelper::RequestMediaAccessPermission(
       SlimWebViewPermissionType::kMedia, std::move(request_info),
       base::BindOnce(&SlimWebViewPermissionHelper::OnMediaPermissionResponse,
                      weak_factory_.GetWeakPtr(), request, std::move(callback)),
+      /*allowed_by_default=*/false);
+}
+
+void SlimWebViewPermissionHelper::CanDownload(
+    const GURL& url,
+    const std::string& request_method,
+    base::OnceCallback<void(bool)> callback) {
+  base::DictValue request_info;
+  request_info.Set(guest_view::kUrl, url.spec());
+  RequestPermission(
+      SlimWebViewPermissionType::kDownload, std::move(request_info),
+      base::BindOnce(&SlimWebViewPermissionHelper::OnDownloadPermissionResponse,
+                     weak_factory_.GetWeakPtr(), std::move(callback)),
       /*allowed_by_default=*/false);
 }
 
@@ -184,6 +199,12 @@ void SlimWebViewPermissionHelper::OnMediaPermissionResponse(
 
   guest_->embedder_web_contents()->GetDelegate()->RequestMediaAccessPermission(
       guest_->embedder_web_contents(), embedder_request, std::move(callback));
+}
+
+void SlimWebViewPermissionHelper::OnDownloadPermissionResponse(
+    base::OnceCallback<void(bool)> callback,
+    bool allow) {
+  std::move(callback).Run(allow && guest_->attached());
 }
 
 void SlimWebViewPermissionHelper::RequestEmbedderFramePermission(

@@ -36,6 +36,7 @@ class SlimWebViewGuest;
 enum class SlimWebViewPermissionType {
   kGeolocation,
   kMedia,
+  kDownload,
 };
 
 class SlimWebViewPermissionHelper {
@@ -62,6 +63,9 @@ class SlimWebViewPermissionHelper {
       base::OnceCallback<void(content::PermissionResult)> callback);
   void RequestMediaAccessPermission(const content::MediaStreamRequest& request,
                                     content::MediaResponseCallback callback);
+  void CanDownload(const GURL& url,
+                   const std::string& request_method,
+                   base::OnceCallback<void(bool)> callback);
   void RequestPermission(SlimWebViewPermissionType permission_type,
                          base::DictValue request_info,
                          PermissionResponseCallback callback,
@@ -80,6 +84,8 @@ class SlimWebViewPermissionHelper {
   void OnMediaPermissionResponse(const content::MediaStreamRequest& request,
                                  content::MediaResponseCallback callback,
                                  bool allow);
+  void OnDownloadPermissionResponse(base::OnceCallback<void(bool)> callback,
+                                    bool allow);
   void RequestEmbedderFramePermission(
       bool user_gesture,
       base::OnceCallback<void(content::PermissionResult)> callback,

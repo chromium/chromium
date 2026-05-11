@@ -188,4 +188,23 @@ TEST_F(SlimWebViewPermissionHelperTest, RequestGeolocationPermission) {
   EXPECT_EQ(final_result.status, blink::mojom::PermissionStatus::GRANTED);
 }
 
+TEST_F(SlimWebViewPermissionHelperTest, RequestDownloadPermission) {
+  base::test::TestFuture<bool> permission_future;
+
+  permission_helper().CanDownload(GURL("https://example.com"), "GET",
+                                  permission_future.GetCallback());
+
+  std::vector<PermissionEventInfo> expected_events{
+      {.request_id = 1, .permission = "download"}};
+  EXPECT_EQ(delegate()->permission_events(), expected_events);
+
+  // Allow the permission.
+  auto set_result = permission_helper().SetPermission(
+      1, mojom::PageHandler_PermissionResponseAction::kAllow);
+
+  EXPECT_EQ(set_result,
+            SlimWebViewPermissionHelper::SetPermissionResult::kAllowed);
+  EXPECT_TRUE(permission_future.Get());
+}
+
 }  // namespace guest_view
