@@ -15918,7 +15918,8 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     //
     // Guest views currently don't appear to set the origin correctly for
     // synchronous new window commits under MPArch.
-    if ((!frame_tree_->is_guest() ||
+    if (is_synchronous_about_blank_commit &&
+        (!frame_tree_->is_guest() ||
          !base::FeatureList::IsEnabled(features::kGuestViewMPArch)) &&
         !params->origin.opaque() &&
         !params->origin.CanBeDerivedFrom(last_committed_origin_.GetURL())) {
