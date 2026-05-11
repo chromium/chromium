@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
+#include "chrome/browser/ui/views/side_panel/tabs_from_other_devices/tabs_from_other_devices_side_panel_metrics.h"
 #include "chrome/browser/ui/webui/side_panel/tabs_from_other_devices/tabs_from_other_devices_side_panel_ui.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "chrome/common/webui_url_constants.h"
@@ -32,6 +33,7 @@ namespace {
 std::unique_ptr<views::View> CreateTabsFromOtherDevicesWebView(
     BrowserWindowInterface* browser,
     Profile* profile,
+    base::WeakPtr<TabsFromOtherDevicesSidePanelMetrics> metrics_recorder,
     SidePanelEntryScope& scope) {
   auto contents_wrapper =
       std::make_unique<WebUIContentsWrapperT<TabsFromOtherDevicesSidePanelUI>>(
@@ -40,6 +42,7 @@ std::unique_ptr<views::View> CreateTabsFromOtherDevicesWebView(
           /*esc_closes_ui=*/false,
           /*supports_draggable_regions=*/false);
   contents_wrapper->GetWebUIController()->SetBrowserWindowInterface(browser);
+  contents_wrapper->GetWebUIController()->SetMetricsRecorder(metrics_recorder);
 
   return std::make_unique<SidePanelWebUIViewT<TabsFromOtherDevicesSidePanelUI>>(
       scope, base::RepeatingClosure(), base::RepeatingClosure(),
@@ -64,9 +67,15 @@ bool TabsFromOtherDevicesSidePanelCoordinator::IsSupported(Profile* profile) {
 
 void TabsFromOtherDevicesSidePanelCoordinator::CreateAndRegisterEntry(
     SidePanelRegistry* global_registry) {
-  global_registry->Register(std::make_unique<SidePanelEntry>(
+  metrics_recorder_ = std::make_unique<TabsFromOtherDevicesSidePanelMetrics>();
+
+  auto entry = std::make_unique<SidePanelEntry>(
       SidePanelEntry::Key(SidePanelEntry::Id::kTabsFromOtherDevices),
       base::BindRepeating(&CreateTabsFromOtherDevicesWebView, &browser_.get(),
-                          &profile_.get()),
-      /*default_content_width_callback=*/base::NullCallback()));
+                          &profile_.get(), metrics_recorder_->GetWeakPtr()),
+      /*default_content_width_callback=*/base::NullCallback());
+
+  metrics_recorder_->Observe(entry.get());
+
+  global_registry->Register(std::move(entry));
 }

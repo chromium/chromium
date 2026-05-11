@@ -26,6 +26,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
+#include "chrome/browser/ui/views/side_panel/tabs_from_other_devices/tabs_from_other_devices_side_panel_metrics.h"
 #include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
 #include "chrome/browser/ui/webui/side_panel/tabs_from_other_devices/tabs_from_other_devices_side_panel_ui.h"
 #include "chrome/common/pref_names.h"
@@ -208,6 +209,10 @@ void ForeignSessionHandler::GetForeignSessions(
 
 void ForeignSessionHandler::OpenForeignSessionAllTabs(
     const std::string& session_tag) {
+  // This is not used by the side panel. If it becomes used in the future, the
+  // metrics should be updated to cover this case.
+  CHECK(!side_panel_ui_);
+
   sync_sessions::OpenTabsUIDelegate* open_tabs =
       GetOpenTabsUIDelegate(profile_);
   if (!open_tabs) {
@@ -264,6 +269,10 @@ void ForeignSessionHandler::OpenForeignSessionTab(
                            ->GetActiveWebContents()
                      : web_contents_.get();
   restore_tab_callback_.Run(web_contents, *tab, disposition);
+
+  if (side_panel_ui_ && side_panel_ui_->metrics_recorder()) {
+    side_panel_ui_->metrics_recorder()->RecordTabOpened();
+  }
 }
 
 void ForeignSessionHandler::DeleteForeignSession(

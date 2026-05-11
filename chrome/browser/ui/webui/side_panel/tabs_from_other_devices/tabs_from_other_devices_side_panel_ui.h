@@ -11,6 +11,7 @@
 #include "ui/webui/resources/cr_components/history/foreign_sessions.mojom-forward.h"
 
 class BrowserWindowInterface;
+class TabsFromOtherDevicesSidePanelMetrics;
 class TabsFromOtherDevicesSidePanelUI;
 
 namespace browser_sync {
@@ -50,6 +51,14 @@ class TabsFromOtherDevicesSidePanelUI : public TopChromeWebUIController {
     return browser_window_interface_;
   }
 
+  void SetMetricsRecorder(
+      base::WeakPtr<TabsFromOtherDevicesSidePanelMetrics> metrics_recorder) {
+    metrics_recorder_ = metrics_recorder;
+  }
+  base::WeakPtr<TabsFromOtherDevicesSidePanelMetrics> metrics_recorder() {
+    return metrics_recorder_;
+  }
+
   static constexpr std::string_view GetWebUIName() {
     return "TabsFromOtherDevicesSidePanel";
   }
@@ -58,6 +67,8 @@ class TabsFromOtherDevicesSidePanelUI : public TopChromeWebUIController {
   raw_ptr<BrowserWindowInterface> browser_window_interface_;
 
   std::unique_ptr<browser_sync::ForeignSessionHandler> foreign_session_handler_;
+
+  base::WeakPtr<TabsFromOtherDevicesSidePanelMetrics> metrics_recorder_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

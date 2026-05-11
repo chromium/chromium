@@ -56,6 +56,8 @@ source_set("side_panel") {
     "side_panel_web_ui_view.h",
     "tabs_from_other_devices/tabs_from_other_devices_side_panel_coordinator.cc",
     "tabs_from_other_devices/tabs_from_other_devices_side_panel_coordinator.h",
+    "tabs_from_other_devices/tabs_from_other_devices_side_panel_metrics.cc",
+    "tabs_from_other_devices/tabs_from_other_devices_side_panel_metrics.h",
   ]
   public_deps = [
     "//base",

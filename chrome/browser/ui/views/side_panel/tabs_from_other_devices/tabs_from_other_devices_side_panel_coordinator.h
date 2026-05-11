@@ -10,6 +10,7 @@
 class BrowserWindowInterface;
 class Profile;
 class SidePanelRegistry;
+class TabsFromOtherDevicesSidePanelMetrics;
 
 // TabsFromOtherDevicesSidePanelCoordinator handles the creation and
 // registration of the "Tabs from other devices" SidePanelEntry.
@@ -31,6 +32,7 @@ class TabsFromOtherDevicesSidePanelCoordinator {
  private:
   const raw_ref<BrowserWindowInterface> browser_;
   const raw_ref<Profile> profile_;
+  std::unique_ptr<TabsFromOtherDevicesSidePanelMetrics> metrics_recorder_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_TABS_FROM_OTHER_DEVICES_TABS_FROM_OTHER_DEVICES_SIDE_PANEL_COORDINATOR_H_

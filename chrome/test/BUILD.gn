@@ -8383,6 +8383,7 @@ test("unit_tests") {
       "../browser/ui/views/passwords/password_save_update_view_unittest.cc",
       "../browser/ui/views/passwords/post_save_compromised_bubble_view_unittest.cc",
       "../browser/ui/views/passwords/shared_passwords_notification_view_unittest.cc",
+      "../browser/ui/views/side_panel/tabs_from_other_devices/tabs_from_other_devices_side_panel_metrics_unittest.cc",
       "../browser/ui/views/tab_sharing/tab_sharing_infobar_unittest.cc",
       "../browser/ui/views/tab_sharing/tab_sharing_status_message_view_unittest.cc",
       "../browser/ui/views/tab_sharing/tab_sharing_test_utils.cc",

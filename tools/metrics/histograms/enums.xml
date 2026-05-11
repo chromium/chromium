@@ -26173,6 +26173,17 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="Closed"/>
 </enum>
 
+<!-- LINT.IfChange(TabsFromOtherDevicesSidePanelEvent) -->
+
+<enum name="TabsFromOtherDevicesSidePanelEvent">
+  <int value="0" label="Startup"/>
+  <int value="1" label="Opened"/>
+  <int value="2" label="Closed"/>
+  <int value="3" label="TabOpened"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/views/side_panel/tabs_from_other_devices/tabs_from_other_devices_side_panel_metrics.h:Event) -->
+
 <enum name="TestOnlyModesetOutcome">
   <int value="0" label="Success"/>
   <int value="1" label="Success with fallback"/>
