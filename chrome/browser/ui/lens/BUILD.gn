@@ -404,6 +404,7 @@ source_set("unit_tests") {
     "lens_overlay_side_panel_navigation_throttle_unittest.cc",
     "lens_overlay_url_builder_unittest.cc",
     "lens_query_flow_router_unittest.cc",
+    "lens_searchbox_controller_unittest.cc",
     "lens_url_matcher_unittest.cc",
   ]
   deps = [
@@ -422,6 +423,7 @@ source_set("unit_tests") {
     "//chrome/browser/ui/contextual_search",
     "//chrome/browser/ui/tabs:tabs_public",
     "//chrome/browser/ui/webui/new_tab_page/composebox/variations",
+    "//chrome/browser/ui/webui/searchbox:searchbox_test_utils",
     "//chrome/test:test_support",
     "//components/base32",
     "//components/contextual_search:test_support",

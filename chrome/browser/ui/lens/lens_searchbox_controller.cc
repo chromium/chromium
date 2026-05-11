@@ -58,11 +58,13 @@ void LensSearchboxController::OnSessionStart(bool suppress_contextualization) {
 void LensSearchboxController::SetSidePanelSearchboxHandler(
     std::unique_ptr<LensSearchboxHandler> handler) {
   side_panel_searchbox_handler_ = std::move(handler);
+  OnPageBound();
 }
 
 void LensSearchboxController::SetContextualSearchboxHandler(
     std::unique_ptr<LensSearchboxHandler> handler) {
   overlay_searchbox_handler_ = std::move(handler);
+  OnPageBound();
 }
 
 void LensSearchboxController::ResetOverlaySearchboxHandler() {
