@@ -34,7 +34,8 @@ class CachedPolicyKeyLoader {
   CachedPolicyKeyLoader(ash::CryptohomeMiscClient* cryptohome_misc_client,
                         scoped_refptr<base::SequencedTaskRunner> task_runner,
                         const AccountId& account_id,
-                        const base::FilePath& user_policy_key_dir);
+                        const base::FilePath& user_policy_key_dir,
+                        const std::string& policy_type);
 
   CachedPolicyKeyLoader(const CachedPolicyKeyLoader&) = delete;
   CachedPolicyKeyLoader& operator=(const CachedPolicyKeyLoader&) = delete;
@@ -73,12 +74,15 @@ class CachedPolicyKeyLoader {
 
   void NotifyAndClearCallbacks();
 
+  base::FilePath GetPolicyKeyPath(const std::string& sanitized_username);
+
   // Task runner for background file operations.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   const raw_ptr<ash::CryptohomeMiscClient> cryptohome_misc_client_;
   const AccountId account_id_;
   const base::FilePath user_policy_key_dir_;
+  const std::string policy_type_;
   base::FilePath cached_policy_key_path_;
 
   // The current key used to verify signatures of policy. This value is loaded

@@ -17,6 +17,7 @@
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_cryptohome_misc_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace policy {
@@ -40,12 +41,20 @@ class CachedPolicyKeyLoaderTest : public testing::Test {
 
     cached_policy_key_loader_ = std::make_unique<CachedPolicyKeyLoader>(
         &cryptohome_misc_client_, task_environment_.GetMainThreadTaskRunner(),
-        account_id_, user_policy_keys_dir());
+        account_id_, user_policy_keys_dir(),
+        dm_protocol::GetChromeUserPolicyType());
   }
 
   void StoreUserPolicyKey(const std::string& public_key) {
     ASSERT_TRUE(base::CreateDirectory(user_policy_key_file().DirName()));
     ASSERT_TRUE(base::WriteFile(user_policy_key_file(), public_key));
+  }
+
+  void StoreExtensionInstallPolicyKey(const std::string& public_key) {
+    ASSERT_TRUE(base::CreateDirectory(
+        user_extension_install_policy_key_file().DirName()));
+    ASSERT_TRUE(
+        base::WriteFile(user_extension_install_policy_key_file(), public_key));
   }
 
   base::FilePath user_policy_keys_dir() const {
@@ -58,6 +67,14 @@ class CachedPolicyKeyLoaderTest : public testing::Test {
     return user_policy_keys_dir()
         .AppendASCII(sanitized_username)
         .AppendASCII("policy.pub");
+  }
+
+  base::FilePath user_extension_install_policy_key_file() const {
+    const std::string sanitized_username =
+        ash::UserDataAuthClient::GetStubSanitizedUsername(cryptohome_id_);
+    return user_policy_keys_dir()
+        .AppendASCII(sanitized_username)
+        .AppendASCII("policy_extension_install.pub");
   }
 
   void OnPolicyKeyLoaded() { ++policy_key_loaded_callback_invocations_; }
@@ -97,6 +114,38 @@ TEST_F(CachedPolicyKeyLoaderTest, Basic) {
   task_environment_.RunUntilIdle();
 
   EXPECT_EQ(1, policy_key_loaded_callback_invocations_);
+  EXPECT_EQ(kDummyKey1, cached_policy_key_loader_->cached_policy_key());
+}
+
+// Loads an existing key file using EnsurePolicyKeyLoaded for extension install
+// policy.
+TEST_F(CachedPolicyKeyLoaderTest, ExtensionInstallPath) {
+  StoreExtensionInstallPolicyKey(kDummyKey1);
+
+  cached_policy_key_loader_ = std::make_unique<CachedPolicyKeyLoader>(
+      &cryptohome_misc_client_, task_environment_.GetMainThreadTaskRunner(),
+      account_id_, user_policy_keys_dir(),
+      dm_protocol::kChromeExtensionInstallUserCloudPolicyType);
+
+  CallEnsurePolicyKeyLoaded();
+
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(1, policy_key_loaded_callback_invocations_);
+  EXPECT_EQ(kDummyKey1, cached_policy_key_loader_->cached_policy_key());
+}
+
+// Synchronous load on the caller's thread.
+TEST_F(CachedPolicyKeyLoaderTest, ExtensionInstallPathLoadImmediately) {
+  StoreExtensionInstallPolicyKey(kDummyKey1);
+
+  cached_policy_key_loader_ = std::make_unique<CachedPolicyKeyLoader>(
+      &cryptohome_misc_client_, task_environment_.GetMainThreadTaskRunner(),
+      account_id_, user_policy_keys_dir(),
+      dm_protocol::kChromeExtensionInstallUserCloudPolicyType);
+
+  cached_policy_key_loader_->LoadPolicyKeyImmediately();
+
   EXPECT_EQ(kDummyKey1, cached_policy_key_loader_->cached_policy_key());
 }
 

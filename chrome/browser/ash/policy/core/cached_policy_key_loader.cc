@@ -17,6 +17,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/userdataauth/cryptohome_misc_client.h"
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 
 namespace policy {
 
@@ -26,6 +27,8 @@ namespace {
 // "%s" must be substituted with the sanitized username.
 const base::FilePath::CharType kPolicyKeyFile[] =
     FILE_PATH_LITERAL("%s/policy.pub");
+const base::FilePath::CharType kExtensionInstallPolicyKeyFile[] =
+    FILE_PATH_LITERAL("%s/policy_extension_install.pub");
 
 // Maximum key size that will be loaded, in bytes.
 const size_t kKeySizeLimit = 16 * 1024;
@@ -36,11 +39,13 @@ CachedPolicyKeyLoader::CachedPolicyKeyLoader(
     ash::CryptohomeMiscClient* cryptohome_misc_client,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     const AccountId& account_id,
-    const base::FilePath& user_policy_key_dir)
+    const base::FilePath& user_policy_key_dir,
+    const std::string& policy_type)
     : task_runner_(task_runner),
       cryptohome_misc_client_(cryptohome_misc_client),
       account_id_(account_id),
-      user_policy_key_dir_(user_policy_key_dir) {}
+      user_policy_key_dir_(user_policy_key_dir),
+      policy_type_(policy_type) {}
 
 CachedPolicyKeyLoader::~CachedPolicyKeyLoader() = default;
 
@@ -84,9 +89,7 @@ bool CachedPolicyKeyLoader::LoadPolicyKeyImmediately() {
   if (!reply.has_value() || reply->sanitized_username().empty()) {
     return false;
   }
-
-  cached_policy_key_path_ = user_policy_key_dir_.Append(
-      base::StringPrintf(kPolicyKeyFile, reply->sanitized_username().c_str()));
+  cached_policy_key_path_ = GetPolicyKeyPath(reply->sanitized_username());
   cached_policy_key_ = LoadPolicyKey(cached_policy_key_path_);
   key_loaded_ = true;
   return true;
@@ -181,8 +184,7 @@ void CachedPolicyKeyLoader::OnGetSanitizedUsername(
     return;
   }
 
-  cached_policy_key_path_ = user_policy_key_dir_.Append(
-      base::StringPrintf(kPolicyKeyFile, reply->sanitized_username().c_str()));
+  cached_policy_key_path_ = GetPolicyKeyPath(reply->sanitized_username());
   TriggerLoadPolicyKey();
 }
 
@@ -192,6 +194,20 @@ void CachedPolicyKeyLoader::NotifyAndClearCallbacks() {
 
   for (auto& callback : callbacks)
     std::move(callback).Run();
+}
+
+base::FilePath CachedPolicyKeyLoader::GetPolicyKeyPath(
+    const std::string& sanitized_username) {
+  bool is_extension_install_policy =
+      policy_type_ == dm_protocol::kChromeExtensionInstallUserCloudPolicyType;
+
+  if (is_extension_install_policy) {
+    return user_policy_key_dir_.Append(base::StringPrintf(
+        kExtensionInstallPolicyKeyFile, sanitized_username.c_str()));
+  }
+
+  return user_policy_key_dir_.Append(
+      base::StringPrintf(kPolicyKeyFile, sanitized_username.c_str()));
 }
 
 }  // namespace policy

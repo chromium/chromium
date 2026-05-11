@@ -65,7 +65,8 @@ UserCloudPolicyStoreAsh::UserCloudPolicyStoreAsh(
           std::make_unique<CachedPolicyKeyLoader>(cryptohome_misc_client,
                                                   background_task_runner,
                                                   account_id,
-                                                  user_policy_key_dir)) {
+                                                  user_policy_key_dir,
+                                                  policy_type)) {
   CHECK(policy_type == dm_protocol::GetChromeUserPolicyType() ||
         policy_type == dm_protocol::kChromeExtensionInstallUserCloudPolicyType)
       << "Unsupported policy type: " << policy_type;
