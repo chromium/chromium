@@ -142,15 +142,8 @@ IN_PROC_BROWSER_TEST_F(ReportUnsafeSiteDialogBrowserTest,
       "SafeBrowsing.ReportUnsafeSiteDialog.IsTabSplit", false, 1);
 }
 
-// TODO(crbug.com/492304871): Re-enable when the test is fixed.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_RecordsIsTabSplitHistogram_Split \
-  DISABLED_RecordsIsTabSplitHistogram_Split
-#else
-#define MAYBE_RecordsIsTabSplitHistogram_Split RecordsIsTabSplitHistogram_Split
-#endif
 IN_PROC_BROWSER_TEST_F(ReportUnsafeSiteDialogBrowserTest,
-                       MAYBE_RecordsIsTabSplitHistogram_Split) {
+                       RecordsIsTabSplitHistogram_Split) {
   base::HistogramTester histogram_tester;
 
   chrome::NewTab(browser());
