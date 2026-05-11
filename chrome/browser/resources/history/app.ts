@@ -22,6 +22,7 @@ import './side_bar.js';
 import './synced_device_manager.js';
 import '/strings.m.js';
 
+import {ColorChangeUpdater, COLORS_CSS_SELECTOR} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 import {HistoryResultType} from 'chrome://resources/cr_components/history/constants.js';
 import type {PageCallbackRouter, PageHandlerRemote, QueryResult, QueryState} from 'chrome://resources/cr_components/history/history.mojom-webui.js';
@@ -260,6 +261,14 @@ export class HistoryAppElement extends HistoryAppElementBase {
 
   override connectedCallback() {
     super.connectedCallback();
+
+    const enableWebuiRefresh2026 =
+        loadTimeData.getString('webuiRefresh2026') !== '';
+    if (enableWebuiRefresh2026) {
+      this.addThemedColors_();
+      ColorChangeUpdater.forDocument().start();
+    }
+
     this.eventTracker_.add(document, 'click', onDocumentClick);
     this.eventTracker_.add(document, 'auxclick', onDocumentClick);
     this.eventTracker_.add(
@@ -924,6 +933,15 @@ export class HistoryAppElement extends HistoryAppElementBase {
   protected showFilterChips_(): boolean {
     return this.isBrowsingHistoryActorIntegrationM3Enabled_ &&
         this.isGlicWebActuationAvailable_ && !this.getShowResultsByGroup_();
+  }
+
+  // TODO(crub.com/509908129): Add static stylesheet in history.html
+  private addThemedColors_() {
+    assert(document.body.querySelector(COLORS_CSS_SELECTOR) === null);
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'chrome://theme/colors.css?sets=ui,chrome';
+    document.body.appendChild(link);
   }
 }
 

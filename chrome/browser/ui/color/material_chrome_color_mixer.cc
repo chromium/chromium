@@ -259,6 +259,11 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
       ui::kColorLabelForegroundDisabled};
 #endif  // BUILDFLAG(ENABLE_COMPOSE)
 
+  // History colors.
+  mixer[kColorHistoryPageBookmarkStar] = {ui::kColorSysPrimary};
+  mixer[kColorHistoryPageSeparator] = {ui::kColorSysSurfaceVariant};
+  mixer[kColorHistoryPageText] = {ui::kColorSysOnSurfaceSubtle};
+
   // History Embeddings colors.
   mixer[kColorHistoryEmbeddingsBackground] = {
       ui::kColorSysBaseContainerElevated};

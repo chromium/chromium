@@ -24,6 +24,12 @@
   --first-cluster-padding-top: 0;
 }
 
+:host-context([webui-refresh-2026]) {
+  #tabs {
+    border-color: var(--color-history-page-separator);
+  }
+}
+
 #main-container {
   anchor-name: --main-container;
   display: flex;

@@ -182,6 +182,10 @@
   /* Frame caption colors. */ \
   E_CPONLY(kColorFrameCaptionActive) \
   E_CPONLY(kColorFrameCaptionInactive) \
+  /* History colors. */ \
+  E_CPONLY(kColorHistoryPageBookmarkStar) \
+  E_CPONLY(kColorHistoryPageSeparator) \
+  E_CPONLY(kColorHistoryPageText) \
   /* History embedding colors. */ \
   E_CPONLY(kColorHistoryEmbeddingsBackground) \
   E_CPONLY(kColorHistoryEmbeddingsDivider) \

@@ -45,6 +45,10 @@ cr-menu-selector > a[disabled] {
   width: var(--side-bar-width);
 }
 
+#footer a {
+  color: var(--cr-link-color);
+}
+
 managed-footnote {
   --managed-footnote-icon-padding: 12px;
   border: none;

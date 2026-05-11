@@ -34,6 +34,10 @@ a {
   white-space: nowrap;
 }
 
+:host-context([webui-refresh-2026]) .card-title:not([aria-expanded='false']) {
+  border-bottom: 1px solid var(--color-history-page-separator);
+}
+
 .centered-message {
   align-items: center;
   color: var(--md-loading-message-color);
