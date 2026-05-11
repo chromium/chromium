@@ -4158,12 +4158,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Video{TypeOfStream}.CorruptionLikelihoodPermille"
-    units="permille (‰)" expires_after="2026-02-22">
+    units="permille (‰)" expires_after="2027-05-11">
   <owner>sprang@chromium.org</owner>
   <owner>webrtc-video@google.com</owner>
   <summary>
     The average corruption score (in permille) for a received {TypeOfStream}.
-    Recorded when a stream is removed.
+    Recorded when a stream is removed. Warning: this histogram was expired from
+    2026-02-22 to 2026-05-11; data may be missing.
   </summary>
   <token key="TypeOfStream">
     <variant name="" summary="video stream"/>
