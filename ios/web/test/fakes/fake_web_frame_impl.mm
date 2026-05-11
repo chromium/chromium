@@ -117,7 +117,11 @@ url::Origin FakeWebFrameImpl::GetSecurityOrigin() const {
 }
 
 GURL FakeWebFrameImpl::GetUrl() const {
-  return GURL();
+  return url_;
+}
+
+void FakeWebFrameImpl::set_url(GURL url) {
+  url_ = std::move(url);
 }
 
 BrowserState* FakeWebFrameImpl::GetBrowserState() {

@@ -61,6 +61,7 @@ class FakeWebFrameImpl : public FakeWebFrame, public WebFrameInternal {
   const std::vector<std::u16string>& GetJavaScriptCallHistory() override;
   void ClearJavaScriptCallHistory() override;
   void set_browser_state(BrowserState* browser_state) override;
+  void set_url(GURL url) override;
   void AddJsResultForFunctionCall(base::Value* js_result,
                                   const std::string& function_name) override;
   void AddResultForExecutedJs(base::Value* js_result,
@@ -124,6 +125,8 @@ class FakeWebFrameImpl : public FakeWebFrame, public WebFrameInternal {
   bool is_main_frame_ = false;
   // The security origin associated with this frame.
   url::Origin security_origin_;
+  // The URL associated with this frame.
+  GURL url_;
   // Vector holding history of all javascript handler calls made in this frame.
   // The calls are sorted with the most recent appended at the end.
   std::vector<std::u16string> java_script_calls_;

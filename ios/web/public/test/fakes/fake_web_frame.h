@@ -77,6 +77,9 @@ class FakeWebFrame : public WebFrame {
   // Sets the browser state associated with this frame.
   virtual void set_browser_state(BrowserState* browser_state) = 0;
 
+  // Sets the URL associated with this frame.
+  virtual void set_url(GURL url) = 0;
+
   // Sets `js_result` that will be passed into callback for `name` function
   // call. The same result will be pass regardless of call arguments.
   // NOTE: The caller is responsible for keeping `js_result` alive for as
