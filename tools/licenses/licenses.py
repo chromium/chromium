@@ -27,6 +27,11 @@ _REPOSITORY_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..', '..'))
 sys.path.insert(0, os.path.join(_REPOSITORY_ROOT, 'build'))
 import action_helpers
+import find_depot_tools
+
+find_depot_tools.add_depot_tools_to_path()
+
+import metadata.fields.custom.license_allowlist as depot_tools_allowlist
 
 METADATA_FILE_NAMES = frozenset({
     "README.chromium", "README.crashpad", "README.v8", "README.pdfium",
@@ -144,7 +149,8 @@ ADDITIONAL_PATHS_FILENAME = 'additional_readme_paths.json'
 
 # A list of paths that contain license information but that would otherwise
 # not be included.  Possible reasons include:
-#   - Third party directories in //internal which are considered to be Google-owned
+#   - Third party directories in //internal which are considered to be
+#     Google-owned
 #   - Directories that are directly checked out from upstream, and thus
 #     don't have a README.chromium
 #   - Directories that contain example code, or build tooling.
@@ -382,6 +388,11 @@ ALIAS_FIELDS = {
     "Shipped in Chromium": "Shipped",
 }
 
+# Optional metadata fields to parse if present.
+OPTIONAL_FIELDS = [
+    "License Android Compatible",
+]
+
 # The metadata fields that can have multiple values.
 MULTIVALUE_FIELDS = {
     "License File",
@@ -459,6 +470,18 @@ KNOWN_NON_IOS_LIBRARIES = set([
     os.path.join('third_party', 'yasm'),
     os.path.join('v8', 'strongtalk'),
 ])
+
+SAFE_RECIPROCAL_HOSTS = {
+    "https://chromium.googlesource.com",
+    "https://dawn.googlesource.com",
+    "https://pdfium.googlesource.com",
+    "https://quiche.googlesource.com",
+    "https://skia.googlesource.com",
+    "https://swiftshader.googlesource.com",
+    "https://webrtc.googlesource.com",
+    "https://aomedia.googlesource.com",
+    "https://boringssl.googlesource.com",
+}
 
 
 _read_paths = set()
@@ -990,6 +1013,7 @@ def _DiscoverMetadatas(args):
       dir_metadatas, errors = ParseDir(d,
                                        args.scan_root,
                                        require_license_file=True,
+                                       optional_keys=OPTIONAL_FIELDS,
                                        enable_warnings=args.enable_warnings)
 
       for m in dir_metadatas:
@@ -1072,7 +1096,8 @@ def GenerateCredits(args, metadatas):
     new_entry = MetadataToTemplateEntry(metadata, entry_template)
     # Skip entries that we've already seen (it exists in multiple
     # directories).
-    prev_entry = entries_by_name.setdefault(new_entry['name'].lower(), new_entry)
+    prev_entry = entries_by_name.setdefault(new_entry['name'].lower(),
+                                            new_entry)
     if prev_entry is not new_entry and (prev_entry['content'].lower()
                                         == new_entry['content'].lower()):
       continue
@@ -1129,7 +1154,7 @@ def GenerateLicenseFile(args, metadatas):
   elif args.format == 'txt':
     license_txt = GenerateLicenseFilePlainText(metadatas, args.scan_root)
   elif args.format == 'csv':
-    license_txt = GenerateLicenseFileCsv(metadatas)
+    license_txt = GenerateLicenseFileCsv(metadatas, args.scan_root)
   elif args.format == 'notice':
     license_txt = GenerateNoticeFilePlainText(metadatas, args.scan_root)
   else:
@@ -1138,7 +1163,42 @@ def GenerateLicenseFile(args, metadatas):
   _WriteIfChanged(pathlib.Path(args.output_file), license_txt)
 
 
-def GenerateLicenseFileCsv(metadatas: List[Dict[str, Any]], ) -> str:
+def _GetGitOriginUrls(dep_dir: str) -> List[str]:
+  """Dynamically queries all Git remote URLs of the given directory."""
+  if not os.path.exists(dep_dir):
+    return []
+  try:
+    # Use .* instead of assuming 'origin'.
+    output = subprocess.check_output(
+        ["git", "config", "--get-regexp", r"^remote\..*\.url$"],
+        cwd=dep_dir,
+        stderr=subprocess.DEVNULL).decode("utf-8").strip()
+    urls = []
+    for line in output.splitlines():
+      parts = line.split(None, 1)
+      if len(parts) == 2:
+        urls.append(parts[1].strip())
+    return urls
+  except Exception:
+    return []
+
+
+def _IsSafeForReciprocal(dep_dir: str) -> bool:
+  """Determines if a dependency directory is hosted on a safe open-source
+  Git domain.
+
+  Checks all Git remote URLs in the dependency directory and validates them.
+  Returns True if at least one remote URL matches SAFE_RECIPROCAL_HOSTS.
+  """
+  for url in _GetGitOriginUrls(dep_dir):
+    for safe_host in SAFE_RECIPROCAL_HOSTS:
+      if url.startswith(safe_host):
+        return True
+  return False
+
+
+def GenerateLicenseFileCsv(metadatas: List[Dict[str, Any]],
+                           scan_root: str) -> str:
   """Generates a CSV formatted file which contains license data to be used as
     part of the submission to the Open Source Licensing Review process.
   """
@@ -1162,7 +1222,7 @@ def GenerateLicenseFileCsv(metadatas: List[Dict[str, Any]], ) -> str:
       "Library Name", "Link to LICENSE file", "License Name",
       "Binary which uses library", "License text for library included?",
       "Source code for library includes the mirrored source?",
-      "Authorization date"
+      "Authorization date", "Validation"
   ])
 
   for m in metadatas:
@@ -1183,8 +1243,36 @@ def GenerateLicenseFileCsv(metadatas: List[Dict[str, Any]], ) -> str:
     data_row.append(", ".join(urls) or "UNKNOWN")
     data_row.append(m["License"] or "UNKNOWN")
 
-    # Join the default data which applies to each row
-    csv_writer.writerow(data_row + static_data)
+    # Evaluate validation status.
+    status = "UNKNOWN"
+    # Resolve the directory containing the README.
+    readme_dir = os.path.join(scan_root, m['dir'])
+
+    # Resolve the directory containing the license file if it exists.
+    # If no license files exist on disk, assume closed-source.
+    license_files = m.get("License File", [])
+    is_open_source = False
+    if license_files:
+      dep_dir = os.path.dirname(os.path.join(scan_root, license_files[0]))
+      is_open_source = _IsSafeForReciprocal(dep_dir)
+
+    try:
+      status = depot_tools_allowlist.get_license_validation_status(
+          m.get("License"),
+          readme_dir,
+          is_open_source_project=is_open_source,
+          android_compatible=m.get("License Android Compatible"))
+    except Exception as e:
+      logging.warning(
+          f"Error evaluating validation status for {m['Name']}: {e}")
+      status = "ERROR"
+
+    # If no license files were found on disk, append 'LICENSE_NOT_FOUND'
+    if not license_files:
+      status = f"{status}, LICENSE_NOT_FOUND"
+
+    # Join the default data and status which applies to each row.
+    csv_writer.writerow(data_row + static_data + [status])
 
   return csv_content.getvalue()
 

@@ -1,0 +1,5 @@
+license_approval {
+  license_path: "LICENSE"
+  id: "My-Custom-License"
+  bug: 123456789
+}

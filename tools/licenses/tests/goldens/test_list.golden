@@ -5,6 +5,11 @@ stdout:
 //subdir/third_party/narluga_v1: subdir/third_party/narluga_v1/LICENSE
 //subdir/third_party/narluga_v2: subdir/third_party/narluga_v2/LICENSE
 //third_party/sample3: third_party/sample3/the_license
+//third_party/sample4: third_party/sample4/LICENSE
+//third_party/sample5: third_party/sample5/LICENSE
+//third_party/sample6: third_party/sample6/LICENSE
+//clank/third_party/sample7: clank/third_party/sample7/LICENSE
+//clank/third_party/sample8: clank/third_party/sample8/LICENSE
 //third_party/sample: third_party/sample/LICENSE
 //third_party/sample2: third_party/sample2/LICENSE.apache, third_party/sample2/LICENSE.mit
 //third_party/sample2: third_party/sample2/LICENSE.notshipped

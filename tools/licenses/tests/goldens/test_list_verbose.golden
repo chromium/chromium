@@ -5,6 +5,11 @@ stdout:
 {'Name': 'narluga', 'URL': 'https://example.com', 'Shipped': 'Yes', 'License': 'Apache 2.0', 'License File': ['subdir/third_party/narluga_v1/LICENSE'], 'dir': 'subdir/third_party/narluga_v1'}
 {'Name': 'narluga', 'URL': 'https://example.com', 'Shipped': 'Yes', 'License': 'MIT', 'License File': ['subdir/third_party/narluga_v2/LICENSE'], 'dir': 'subdir/third_party/narluga_v2'}
 {'Name': 'Sample 3', 'URL': 'https://sample3', 'Shipped': 'yes', 'License': 'Apache 2.0', 'License File': ['third_party/sample3/the_license'], 'dir': 'third_party/sample3'}
+{'Name': 'Sample 4 (Restricted Approved)', 'URL': 'https://example.com/sample4', 'Shipped': 'yes', 'License': 'My-Custom-License', 'License File': ['third_party/sample4/LICENSE'], 'dir': 'third_party/sample4'}
+{'Name': 'Sample 5 (Restricted Not Approved)', 'URL': 'https://example.com/sample5', 'Shipped': 'yes', 'License': 'My-Custom-License', 'License File': ['third_party/sample5/LICENSE'], 'dir': 'third_party/sample5'}
+{'Name': 'Sample 6 (Reciprocal)', 'URL': 'https://example.com/sample6', 'Shipped': 'yes', 'License': 'CDDL-1.0', 'License File': ['third_party/sample6/LICENSE'], 'dir': 'third_party/sample6'}
+{'Name': 'Sample 7 (Reciprocal Internal)', 'URL': 'https://example.com/sample7', 'Shipped': 'yes', 'License': 'CDDL-1.0', 'License File': ['clank/third_party/sample7/LICENSE'], 'dir': 'clank/third_party/sample7'}
+{'Name': 'Sample 8 (Reciprocal Internal Android Compatible)', 'URL': 'https://example.com/sample8', 'Shipped': 'yes', 'License': 'CDDL-1.0', 'License File': ['clank/third_party/sample8/LICENSE'], 'License Android Compatible': 'yes', 'dir': 'clank/third_party/sample8'}
 {'Name': 'Sample Library', 'URL': 'https://example.com', 'Shipped': 'No', 'License': 'Apache 2.0', 'License File': ['third_party/sample/LICENSE'], 'dir': 'third_party/sample'}
 {'Name': 'Sample Library 2a', 'URL': 'https://example.com', 'Shipped': 'Yes', 'License': 'Apache 2.0, MIT', 'License File': ['third_party/sample2/LICENSE.apache', 'third_party/sample2/LICENSE.mit'], 'dir': 'third_party/sample2'}
 {'Name': 'Sample Library 2b', 'URL': 'https://chromium.tools.licenses.test/multi/src.git', 'License': 'Shakespearean', 'License File': ['third_party/sample2/LICENSE.notshipped'], 'Shipped': 'no', 'dir': 'third_party/sample2'}

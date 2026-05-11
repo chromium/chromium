@@ -38,6 +38,28 @@ class LicensesIntegrationTest(unittest.TestCase):
 
     cls._mock_root_dir = cls._temp_dir / 'mock_root'
     shutil.copytree(_THIS_DIR / 'mock_root', cls._mock_root_dir)
+
+    # Initialize git repository for public mock_root
+    subprocess.check_call(['git', 'init'],
+                          cwd=str(cls._mock_root_dir),
+                          stdout=subprocess.DEVNULL)
+    subprocess.check_call(
+        ['git', 'remote', 'add', 'origin', 'https://chromium.googlesource.com'],
+        cwd=str(cls._mock_root_dir),
+        stdout=subprocess.DEVNULL)
+
+    # Initialize git repository for internal clank folder
+    clank_dir = cls._mock_root_dir / 'clank'
+    subprocess.check_call(['git', 'init'],
+                          cwd=str(clank_dir),
+                          stdout=subprocess.DEVNULL)
+    subprocess.check_call([
+        'git', 'remote', 'add', 'origin',
+        'https://chrome-internal.googlesource.com/clank/internal/apps.git'
+    ],
+                          cwd=str(clank_dir),
+                          stdout=subprocess.DEVNULL)
+
     for root, _, files in os.walk(cls._mock_root_dir):
       for f in files:
         if f.endswith('.chromium.test'):
@@ -157,6 +179,9 @@ stderr:
 
   def test_license_file_csv(self):
     self._run_test('license_file', extra_args=['--format=csv'])
+
+  def test_license_file_csv_open_source(self):
+    self._run_test('license_file', extra_args=['--format=csv', '--open-source'])
 
   def test_license_file_notice(self):
     self._run_test('license_file', extra_args=['--format=notice'])

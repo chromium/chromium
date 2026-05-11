@@ -1,0 +1,6 @@
+exit code: 2
+stdout:
+stderr:
+usage: licenses.py [-h] {scan,list,credits,license_file} ...
+licenses.py: error: unrecognized arguments: --open-source
+OUTPUT FILE WAS MISSING

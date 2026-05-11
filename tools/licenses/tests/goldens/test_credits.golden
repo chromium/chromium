@@ -73,6 +73,66 @@ output:
 </div>
 
 <div class="product">
+<span class="title">Sample 4 (Restricted Approved)</span>
+<span class="homepage"><a href="https://example.com/sample4">homepage</a></span>
+<label class="show" tabindex="0">
+<input type="checkbox" hidden>
+</label>
+<div class="license">
+<pre>GPL-2.0 License Content
+</pre>
+</div>
+</div>
+
+<div class="product">
+<span class="title">Sample 5 (Restricted Not Approved)</span>
+<span class="homepage"><a href="https://example.com/sample5">homepage</a></span>
+<label class="show" tabindex="0">
+<input type="checkbox" hidden>
+</label>
+<div class="license">
+<pre>GPL-2.0 License Content
+</pre>
+</div>
+</div>
+
+<div class="product">
+<span class="title">Sample 6 (Reciprocal)</span>
+<span class="homepage"><a href="https://example.com/sample6">homepage</a></span>
+<label class="show" tabindex="0">
+<input type="checkbox" hidden>
+</label>
+<div class="license">
+<pre>CDDL-1.0 License Content
+</pre>
+</div>
+</div>
+
+<div class="product">
+<span class="title">Sample 7 (Reciprocal Internal)</span>
+<span class="homepage"><a href="https://example.com/sample7">homepage</a></span>
+<label class="show" tabindex="0">
+<input type="checkbox" hidden>
+</label>
+<div class="license">
+<pre>Mock CDDL-1.0 License text for Sample 7.
+</pre>
+</div>
+</div>
+
+<div class="product">
+<span class="title">Sample 8 (Reciprocal Internal Android Compatible)</span>
+<span class="homepage"><a href="https://example.com/sample8">homepage</a></span>
+<label class="show" tabindex="0">
+<input type="checkbox" hidden>
+</label>
+<div class="license">
+<pre>Mock CDDL-1.0 License text for Sample 8.
+</pre>
+</div>
+</div>
+
+<div class="product">
 <span class="title">Sample Library</span>
 <span class="homepage"><a href="https://example.com">homepage</a></span>
 <label class="show" tabindex="0">
@@ -127,6 +187,10 @@ MIT license.
 depfile:
 {REL_TMP}/out/test_output.txt: \
  {REL_TMP}/mock_root/LICENSE \
+ {REL_TMP}/mock_root/clank/third_party/sample7/LICENSE \
+ {REL_TMP}/mock_root/clank/third_party/sample7/README.chromium \
+ {REL_TMP}/mock_root/clank/third_party/sample8/LICENSE \
+ {REL_TMP}/mock_root/clank/third_party/sample8/README.chromium \
  {REL_TMP}/mock_root/extra_dir/LICENSE \
  {REL_TMP}/mock_root/extra_dir/README.chromium \
  {REL_TMP}/mock_root/subdir/third_party/narluga_v1/LICENSE \
@@ -143,4 +207,10 @@ depfile:
  {REL_TMP}/mock_root/third_party/sample3/sub_component/LICENSE \
  {REL_TMP}/mock_root/third_party/sample3/sub_component/README.chromium \
  {REL_TMP}/mock_root/third_party/sample3/the_license \
+ {REL_TMP}/mock_root/third_party/sample4/LICENSE \
+ {REL_TMP}/mock_root/third_party/sample4/README.chromium \
+ {REL_TMP}/mock_root/third_party/sample5/LICENSE \
+ {REL_TMP}/mock_root/third_party/sample5/README.chromium \
+ {REL_TMP}/mock_root/third_party/sample6/LICENSE \
+ {REL_TMP}/mock_root/third_party/sample6/README.chromium \
  build.ninja

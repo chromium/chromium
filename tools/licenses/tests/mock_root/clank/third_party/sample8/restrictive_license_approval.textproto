@@ -1,0 +1,5 @@
+license_approval {
+  license_path: "LICENSE"
+  id: "CDDL-1.0"
+  bug: 888888888
+}
