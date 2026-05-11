@@ -88,7 +88,10 @@ BASE_FEATURE_PARAM(base::TimeDelta,
 BASE_FEATURE(kAccessibilityAnnotatorFirstRun,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAccessibilityAnnotatorFirstRunPhase2,
+BASE_FEATURE(kAccessibilityAnnotatorFirstRunInfoPhase2,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAccessibilityAnnotatorFirstRunSetup,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAccessibilityAnnotatorGetEntities,
@@ -130,7 +133,18 @@ BASE_FEATURE(kAccessibilityAnnotatorDatabaseStorage,
 
 bool IsAccessibilityAnnotatorFirstRunEnabled() {
   return base::FeatureList::IsEnabled(kAccessibilityAnnotatorFirstRun) ||
-         base::FeatureList::IsEnabled(kAccessibilityAnnotatorFirstRunPhase2);
+         base::FeatureList::IsEnabled(
+             kAccessibilityAnnotatorFirstRunInfoPhase2) ||
+         base::FeatureList::IsEnabled(kAccessibilityAnnotatorFirstRunSetup);
+}
+
+bool IsAccessibilityAnnotatorFirstRunInfoPhase2Enabled() {
+  return base::FeatureList::IsEnabled(
+      kAccessibilityAnnotatorFirstRunInfoPhase2);
+}
+
+bool IsAccessibilityAnnotatorFirstRunSetupEnabled() {
+  return base::FeatureList::IsEnabled(kAccessibilityAnnotatorFirstRunSetup);
 }
 
 }  // namespace accessibility_annotator::features
