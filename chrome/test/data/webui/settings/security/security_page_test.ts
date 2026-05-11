@@ -13,15 +13,15 @@ import {assertEquals, assertFalse, assertTrue, assertNotEquals} from 'chrome://w
 import {isChildVisible, eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';
-import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
-import {createContentSettingTypeToValuePair, createDefaultContentSetting, createSiteSettingsPrefs} from './test_util.js';
+import {TestHatsBrowserProxy} from '../test_hats_browser_proxy.js';
+import {TestMetricsBrowserProxy} from '../test_metrics_browser_proxy.js';
+import {createContentSettingTypeToValuePair, createDefaultContentSetting, createSiteSettingsPrefs} from '../test_util.js';
 
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 
-import {TestPrivacyPageBrowserProxy} from './test_privacy_page_browser_proxy.js';
-import {TestSecurityPageBrowserProxy} from './test_security_page_browser_proxy.js';
-import {TestSiteSettingsBrowserProxy} from './test_site_settings_browser_proxy.js';
+import {TestPrivacyPageBrowserProxy} from '../test_privacy_page_browser_proxy.js';
+import {TestSecurityPageBrowserProxy} from '../test_security_page_browser_proxy.js';
+import {TestSiteSettingsBrowserProxy} from '../test_site_settings_browser_proxy.js';
 
 // clang-format on
 
@@ -536,7 +536,6 @@ suite('FlagsDisabled', function() {
         assertTrue(page.$.safeBrowsingStandard.expanded);
         assertTrue(isChildVisible(page, '#safeBrowsingReportingToggle'));
       });
-
 });
 
 // Separate test suite for tests specifically related to Safe Browsing controls.

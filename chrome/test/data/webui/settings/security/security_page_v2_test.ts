@@ -14,9 +14,9 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {eventToPromise, isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
-import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
-import {TestHatsBrowserProxy} from './test_hats_browser_proxy.js';
-import {TestSecurityPageBrowserProxy} from './test_security_page_browser_proxy.js';
+import {TestMetricsBrowserProxy} from '../test_metrics_browser_proxy.js';
+import {TestHatsBrowserProxy} from '../test_hats_browser_proxy.js';
+import {TestSecurityPageBrowserProxy} from '../test_security_page_browser_proxy.js';
 
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 

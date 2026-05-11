@@ -36,7 +36,7 @@ IN_PROC_BROWSER_TEST_F(SettingsFocusTest, SyncPage) {
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsFocusTest, SecureDns) {
-  RunTest("settings/secure_dns_interactive_test.js", "mocha.run()");
+  RunTest("settings/security/secure_dns_interactive_test.js", "mocha.run()");
 }
 
 // Times out on Mac. See https://crbug.com/40679346.

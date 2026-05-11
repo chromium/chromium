@@ -10,8 +10,9 @@ import {BioEnrollDialogPage, Ctap2Status, SampleStatus, SecurityKeysBioEnrollPro
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
+import {TestSecurityKeysBrowserProxy} from '../test_security_keys_browser_proxy.js';
+
 import {assertShown} from './security_keys_test_util.js';
-import {TestSecurityKeysBrowserProxy} from './test_security_keys_browser_proxy.js';
 
 const currentMinPinLength = 6;
 

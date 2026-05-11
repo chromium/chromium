@@ -438,7 +438,7 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, PrefUtils) {
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, SecurityPageFeatureRow) {
-  RunTest("settings/security_page_feature_row_test.js", "mocha.run()");
+  RunTest("settings/security/security_page_feature_row_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, GlicPage) {
@@ -1079,39 +1079,43 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, Section) {
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, SecureDnsInput) {
-  RunTest("settings/secure_dns_test.js",
+  RunTest("settings/security/secure_dns_test.js",
           "runMochaSuite('SettingsSecureDnsInput')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, SecureDns) {
-  RunTest("settings/secure_dns_test.js", "runMochaSuite('SettingsSecureDns')");
+  RunTest("settings/security/secure_dns_test.js",
+          "runMochaSuite('SettingsSecureDns')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, SecureDnsV2Input) {
-  RunTest("settings/secure_dns_v2_test.js",
+  RunTest("settings/security/secure_dns_v2_test.js",
           "runMochaSuite('SettingsSecureDnsV2Input')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, SecureDnsV2) {
-  RunTest("settings/secure_dns_v2_test.js",
+  RunTest("settings/security/secure_dns_v2_test.js",
           "runMochaSuite('SettingsSecureDnsV2')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, SecurityKeysBioEnrollment) {
-  RunTest("settings/security_keys_bio_enrollment_test.js", "mocha.run()");
+  RunTest("settings/security/security_keys_bio_enrollment_test.js",
+          "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, SecurityKeysCredentialManagement) {
-  RunTest("settings/security_keys_credential_management_test.js",
+  RunTest("settings/security/security_keys_credential_management_test.js",
           "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, SecurityKeysResetDialog) {
-  RunTest("settings/security_keys_reset_dialog_test.js", "mocha.run()");
+  RunTest("settings/security/security_keys_reset_dialog_test.js",
+          "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, SecurityKeysSetPinDialog) {
-  RunTest("settings/security_keys_set_pin_dialog_test.js", "mocha.run()");
+  RunTest("settings/security/security_keys_set_pin_dialog_test.js",
+          "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, SettingsCategoryDefaultRadioGroup) {
@@ -1360,7 +1364,7 @@ class SettingsWithPixelOutputTest : public SettingsBrowserTest {
 #endif
 IN_PROC_BROWSER_TEST_F(SettingsWithPixelOutputTest,
                        MAYBE_FingerprintProgressArc) {
-  RunTest("settings/fingerprint_progress_arc_test.js", "mocha.run()");
+  RunTest("settings/security/fingerprint_progress_arc_test.js", "mocha.run()");
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -1853,21 +1857,22 @@ IN_PROC_BROWSER_TEST_F(SettingsSafetyHubTest, SafetyHubExtensions) {
 using SettingsSecurityPageTest = SettingsBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(SettingsSecurityPageTest, Main) {
-  RunTest("settings/security_page_test.js", "runMochaSuite('Main')");
+  RunTest("settings/security/security_page_test.js", "runMochaSuite('Main')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsSecurityPageTest, FlagsDisabled) {
-  RunTest("settings/security_page_test.js", "runMochaSuite('FlagsDisabled')");
+  RunTest("settings/security/security_page_test.js",
+          "runMochaSuite('FlagsDisabled')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsSecurityPageTest,
                        SecurityPageHappinessTrackingSurveys) {
-  RunTest("settings/security_page_test.js",
+  RunTest("settings/security/security_page_test.js",
           "runMochaSuite('SecurityPageHappinessTrackingSurveys')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsSecurityPageTest, JavascriptOptimizer) {
-  RunTest("settings/security_page_test.js",
+  RunTest("settings/security/security_page_test.js",
           "runMochaSuite('JavascriptOptimizer')");
 }
 
@@ -1880,41 +1885,43 @@ IN_PROC_BROWSER_TEST_F(SettingsSecurityPageTest, JavascriptOptimizer) {
 #define MAYBE_SafeBrowsing SafeBrowsing
 #endif
 IN_PROC_BROWSER_TEST_F(SettingsSecurityPageTest, MAYBE_SafeBrowsing) {
-  RunTest("settings/security_page_test.js", "runMochaSuite('SafeBrowsing')");
+  RunTest("settings/security/security_page_test.js",
+          "runMochaSuite('SafeBrowsing')");
 }
 
 using SettingsSecurityPageV2Test = SettingsBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(SettingsSecurityPageV2Test, Main) {
-  RunTest("settings/security_page_v2_test.js", "runMochaSuite('Main')");
+  RunTest("settings/security/security_page_v2_test.js",
+          "runMochaSuite('Main')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsSecurityPageV2Test,
                        SecurityKeysSubpageDisabled) {
-  RunTest("settings/security_page_v2_test.js",
+  RunTest("settings/security/security_page_v2_test.js",
           "runMochaSuite('SecurityKeysSubpageDisabled')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsSecurityPageV2Test,
                        SecurityPageHappinessTrackingSurveys) {
-  RunTest("settings/security_page_v2_test.js",
+  RunTest("settings/security/security_page_v2_test.js",
           "runMochaSuite('SecurityPageV2HappinessTrackingSurveys')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsSecurityPageV2Test,
                        SecurityPageHappinessTrackingSurveys_SecureDnsLegacy) {
-  RunTest("settings/security_page_v2_test.js",
+  RunTest("settings/security/security_page_v2_test.js",
           "runMochaSuite('SecurityPageV2HappinessTrackingSurveys_"
           "SecureDnsLegacy')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsSecurityPageV2Test, ManagedEnvironment) {
-  RunTest("settings/security_page_v2_test.js",
+  RunTest("settings/security/security_page_v2_test.js",
           "runMochaSuite('ManagedEnvironment')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsSecurityPageV2Test, SecureDnsBundling) {
-  RunTest("settings/security_page_v2_test.js",
+  RunTest("settings/security/security_page_v2_test.js",
           "runMochaSuite('SecureDnsBundling')");
 }
 

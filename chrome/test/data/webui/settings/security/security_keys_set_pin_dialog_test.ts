@@ -3,14 +3,15 @@
 // found in the LICENSE file.
 
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
-import {loadTimeData} from 'chrome://settings/settings.js';
 import type {CrInputElement, SecurityKeysPinBrowserProxy, SettingsSecurityKeysSetPinDialogElement} from 'chrome://settings/lazy_load.js';
 import {SecurityKeysPinBrowserProxyImpl, SetPinDialogPage} from 'chrome://settings/lazy_load.js';
+import {loadTimeData} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
+import {TestSecurityKeysBrowserProxy} from '../test_security_keys_browser_proxy.js';
+
 import {assertShown} from './security_keys_test_util.js';
-import {TestSecurityKeysBrowserProxy} from './test_security_keys_browser_proxy.js';
 
 const currentMinPinLength = 6;
 const newMinPinLength = 8;

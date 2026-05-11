@@ -20,7 +20,7 @@ import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_as
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
-import {TestSecurityPageBrowserProxy} from './test_security_page_browser_proxy.js';
+import {TestSecurityPageBrowserProxy} from '../test_security_page_browser_proxy.js';
 
 // clang-format on
 

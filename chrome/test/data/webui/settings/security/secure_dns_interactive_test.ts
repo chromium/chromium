@@ -19,7 +19,7 @@ import {loadTimeData, SecureDnsMode, SecureDnsUiManagementMode, SecurityPageBrow
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
-import {TestSecurityPageBrowserProxy} from './test_security_page_browser_proxy.js';
+import {TestSecurityPageBrowserProxy} from '../test_security_page_browser_proxy.js';
 
 // clang-format on
 
