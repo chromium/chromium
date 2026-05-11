@@ -241,7 +241,7 @@ void FlexGapAccumulator::PopulateCrossGapForCurrentItem(
     // Middle line, so the cross gap will start at midpoint between the start
     // of this line and the end of the previous line.
     cross_intersection_offset =
-        flex_line.cross_axis_offset - (effective_gap_between_lines_ / 2);
+        cross_start - (effective_gap_between_lines_ / 2);
   }
 
   LogicalOffset logical_offset(
