@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_item.h"
 
+#import "ios/chrome/browser/composebox/shared/ui/composebox_ui_constants.h"
+
 @implementation ComposeboxMenuItem
 
 - (instancetype)initWithTitle:(NSString*)title
@@ -79,3 +81,24 @@
 }
 
 @end
+
+NSString* AccessibilityIdentifierForMenuItemType(ComposeboxMenuItemType type) {
+  switch (type) {
+    case ComposeboxMenuItemType::kAIM:
+      return kComposeboxAIMActionAccessibilityIdentifier;
+    case ComposeboxMenuItemType::kCreateImage:
+      return kComposeboxImageGenerationActionAccessibilityIdentifier;
+    case ComposeboxMenuItemType::kCurrentTab:
+      return kComposeboxAttachCurrentTabActionAccessibilityIdentifier;
+    case ComposeboxMenuItemType::kAttachmentTabs:
+      return kComposeboxSelectTabsActionAccessibilityIdentifier;
+    case ComposeboxMenuItemType::kAttachmentCamera:
+      return kComposeboxCameraActionAccessibilityIdentifier;
+    case ComposeboxMenuItemType::kAttachmentGallery:
+      return kComposeboxGalleryActionAccessibilityIdentifier;
+    case ComposeboxMenuItemType::kAttachmentFiles:
+      return kComposeboxAttachFileActionAccessibilityIdentifier;
+    default:
+      return nil;
+  }
+}

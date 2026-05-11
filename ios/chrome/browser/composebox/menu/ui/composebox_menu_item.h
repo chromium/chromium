@@ -46,4 +46,7 @@
 
 @end
 
+// Returns the accessibility identifier for the given menu item type.
+NSString* AccessibilityIdentifierForMenuItemType(ComposeboxMenuItemType type);
+
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_MENU_UI_COMPOSEBOX_MENU_ITEM_H_

@@ -31,7 +31,6 @@ NSString* const kComposeboxAIMButtonAccessibilityIdentifier =
     @"kComposeboxAIMButtonAccessibilityIdentifier";
 NSString* const kComposeboxImageGenerationButtonAccessibilityIdentifier =
     @"kComposeboxImageGenerationButtonAccessibilityIdentifier";
-
 NSString* const kComposeboxAIMActionAccessibilityIdentifier =
     @"kComposeboxAIMActionAccessibilityIdentifier";
 NSString* const kComposeboxImageGenerationActionAccessibilityIdentifier =
@@ -46,7 +45,6 @@ NSString* const kComposeboxAttachCurrentTabActionAccessibilityIdentifier =
     @"kComposeboxAttachCurrentTabActionAccessibilityIdentifier";
 NSString* const kComposeboxSelectTabsActionAccessibilityIdentifier =
     @"kComposeboxSelectTabsActionAccessibilityIdentifier";
-
 NSString* const kComposeboxCarouselAccessibilityIdentifier =
     @"kComposeboxCarouselAccessibilityIdentifier";
 NSString* const kComposeboxCarouselItemAccessibilityIdentifier =

@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/composebox/menu/ui/composebox_menu_separator_footer.h"
 #import "ios/chrome/browser/composebox/public/composebox_mode.h"
 #import "ios/chrome/browser/composebox/public/composebox_model_option.h"
+#import "ios/chrome/browser/composebox/shared/ui/composebox_ui_constants.h"
 #import "ios/chrome/browser/composebox/ui/composebox_strings.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_input_state.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_util.h"
@@ -590,11 +591,22 @@ UIImage* IconForModel(ComposeboxModelOption option) {
   configuration.text = item.title;
   configuration.image = item.image;
 
-  configuration.textProperties.color = [UIColor
-      colorNamed:item.disabled ? kTextSecondaryColor : kTextPrimaryColor];
-  configuration.imageProperties.tintColor = [UIColor
-      colorNamed:item.disabled ? kTextSecondaryColor : kTextPrimaryColor];
-  cell.userInteractionEnabled = !item.disabled;
+  if (item.disabled) {
+    configuration.textProperties.color =
+        [UIColor colorNamed:kTextSecondaryColor];
+    configuration.imageProperties.tintColor =
+        [UIColor colorNamed:kTextSecondaryColor];
+    cell.userInteractionEnabled = NO;
+    cell.accessibilityTraits |= UIAccessibilityTraitNotEnabled;
+    cell.isAccessibilityElement = YES;
+  } else {
+    configuration.textProperties.color = [UIColor colorNamed:kTextPrimaryColor];
+    configuration.imageProperties.tintColor =
+        [UIColor colorNamed:kTextPrimaryColor];
+    cell.userInteractionEnabled = YES;
+    cell.accessibilityTraits &= ~UIAccessibilityTraitNotEnabled;
+    cell.isAccessibilityElement = YES;
+  }
 
   cell.contentConfiguration = configuration;
 
@@ -620,6 +632,8 @@ UIImage* IconForModel(ComposeboxModelOption option) {
   } else {
     cell.accessories = @[];
   }
+  cell.accessibilityIdentifier =
+      AccessibilityIdentifierForMenuItemType(item.type);
 }
 #pragma mark - UIResponder
 

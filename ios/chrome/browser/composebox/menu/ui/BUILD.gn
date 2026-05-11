@@ -31,6 +31,7 @@ source_set("ui") {
     "//ios/chrome/browser/composebox/public:attachment_options",
     "//ios/chrome/browser/composebox/public:composebox_mode",
     "//ios/chrome/browser/composebox/public:model_options",
+    "//ios/chrome/browser/composebox/shared/ui:ui_constants",
     "//ios/chrome/browser/composebox/ui:state",
     "//ios/chrome/browser/composebox/ui:ui_util",
     "//ios/chrome/browser/keyboard/ui_bundled",
