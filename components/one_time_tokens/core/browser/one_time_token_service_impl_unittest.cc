@@ -11,6 +11,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "build/build_config.h"
 #include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_backend_notification.h"
@@ -869,7 +870,15 @@ TEST_F(OneTimeTokenServiceImplTest, SourceIsolation) {
 }
 
 // Test that subscribing with an unknown source crashes.
-TEST_F(OneTimeTokenServiceImplTest, SubscribeWithUnknownSourceCrashes) {
+// TODO(crbug.com/511734560): Re-enable this test on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_SubscribeWithUnknownSourceCrashes \
+  DISABLED_SubscribeWithUnknownSourceCrashes
+#else
+#define MAYBE_SubscribeWithUnknownSourceCrashes \
+  SubscribeWithUnknownSourceCrashes
+#endif
+TEST_F(OneTimeTokenServiceImplTest, MAYBE_SubscribeWithUnknownSourceCrashes) {
   OneTimeTokenServiceImpl service(nullptr, nullptr);
   OneTimeTokenServiceTestObserver observer;
 
