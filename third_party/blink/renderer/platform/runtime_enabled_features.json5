@@ -737,11 +737,6 @@
       status: "experimental",
     },
     {
-      name: "AuthenticatorPasswordsOnlyImmediateRequests",
-      base_feature: "none",
-      public: true,
-    },
-    {
       // https://drafts.csswg.org/css-scroll-snap
       name: "AuthorSpecifiedLayoutScrollSnapBehavior",
       status: "stable",

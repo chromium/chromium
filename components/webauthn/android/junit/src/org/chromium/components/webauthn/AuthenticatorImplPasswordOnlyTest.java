@@ -42,10 +42,7 @@ import org.chromium.url.Origin;
 @Config(manifest = Config.NONE)
 @Batch(Batch.UNIT_TESTS)
 @SmallTest
-@EnableFeatures({
-    DeviceFeatureList.WEBAUTHN_AUTHENTICATOR_PASSWORDS_ONLY_IMMEDIATE_REQUESTS,
-    DeviceFeatureList.WEBAUTHN_IMMEDIATE_GET
-})
+@EnableFeatures({DeviceFeatureList.WEBAUTHN_IMMEDIATE_GET})
 public class AuthenticatorImplPasswordOnlyTest {
     private AuthenticatorImpl mAuthenticator;
     private Origin mOrigin;

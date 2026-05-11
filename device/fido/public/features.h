@@ -150,12 +150,6 @@ BASE_DECLARE_FEATURE(kWebAuthnIWARemoteDesktopAllowedOriginsPolicy);
 COMPONENT_EXPORT(FIDO_PUBLIC)
 BASE_DECLARE_FEATURE(kWebAuthnSendPinGeneration);
 
-// Enables the Authenticator interface to support
-// 'navigator.credentials.get({password: true, mediation: "immediate"})'
-// requests.
-COMPONENT_EXPORT(FIDO_PUBLIC)
-BASE_DECLARE_FEATURE(kAuthenticatorPasswordsOnlyImmediateRequests);
-
 // Controls setting the `create_new_vault` flag when refreshing a PIN. When
 // enabled, the enclave will produce new Vault parameters to create a new Vault
 // instead of replacing it.

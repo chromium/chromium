@@ -604,8 +604,9 @@ void OnGetComplete(std::unique_ptr<ScopedPromiseResolver> scoped_resolver,
   UseCounter::Count(resolver->GetExecutionContext(),
                     WebFeature::kCredentialManagerGetReturnedCredential);
   if (mediation == Mediation::IMMEDIATE) {
-    UseCounter::Count(resolver->GetExecutionContext(),
-                      WebFeature::kCredentialsGetImmediateMediationPasswordSuccess);
+    UseCounter::Count(
+        resolver->GetExecutionContext(),
+        WebFeature::kCredentialsGetImmediateMediationPasswordSuccess);
   }
   resolver->Resolve(mojo::ConvertTo<Credential*>(std::move(credential_info)));
 }
@@ -828,8 +829,9 @@ void OnGetAssertionComplete(
       UseCounter::Count(resolver->GetExecutionContext(),
                         WebFeature::kWebAuthnConditionalUiGetSuccess);
     } else if (mediation == Mediation::IMMEDIATE) {
-      UseCounter::Count(resolver->GetExecutionContext(),
-                        WebFeature::kCredentialsGetImmediateMediationPublicKeySuccess);
+      UseCounter::Count(
+          resolver->GetExecutionContext(),
+          WebFeature::kCredentialsGetImmediateMediationPublicKeySuccess);
     }
 
     auto* authenticator_response =
@@ -894,7 +896,8 @@ void OnAuthenticatorGetCredentialComplete(
   auto password_response =
       std::move(get_credential_response->get_password_response());
   OnGetComplete(std::move(scoped_resolver), RequiredOriginType::kSecure,
-                mediation, CredentialManagerError::SUCCESS, std::move(password_response));
+                mediation, CredentialManagerError::SUCCESS,
+                std::move(password_response));
 }
 
 void OnSmsReceive(ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
@@ -1527,21 +1530,12 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
   }
   if (IsImmediateGetRequest(*context, *options)) {
     if (options->password()) {
-      if (RuntimeEnabledFeatures::
-              AuthenticatorPasswordsOnlyImmediateRequestsEnabled(context)) {
-        ForwardRequestToAuthenticator(script_state, resolver, options);
-        return promise;
-      }
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNotSupportedError,
-          "Immediate mediation is not yet implemented for requests that do "
-          "not accept PublicKeyCredential. An Immediate request for "
-          "passwords must also include a request for passkeys."));
-    } else {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNotSupportedError,
-          "Immediate mediation is not supported for this credential type"));
+      ForwardRequestToAuthenticator(script_state, resolver, options);
+      return promise;
     }
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kNotSupportedError,
+        "Immediate uiMode is not supported for this credential type"));
     return promise;
   }
   switch (options->mediation().AsEnum()) {

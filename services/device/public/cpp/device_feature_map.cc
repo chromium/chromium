@@ -23,9 +23,7 @@ namespace {
 // services/device/public/cpp/device_features.h or in other locations in the
 // code base.
 const base::Feature* const kFeaturesExposedToJava[] = {
-    &device::kAuthenticatorPasswordsOnlyImmediateRequests,
-    &device::kWebAuthnImmediateGet,
-    &kGenericSensorExtraClasses,
+    &device::kWebAuthnImmediateGet, &kGenericSensorExtraClasses,
     &kSensorsAllowAskBlockPermissionModel,
     &kBatteryStatusManagerBroadcastReceiverInBackground,
     &device::features::kGmsCoreLocationRequestParamOverride};

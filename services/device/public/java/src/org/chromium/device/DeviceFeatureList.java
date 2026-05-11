@@ -26,8 +26,6 @@ public abstract class DeviceFeatureList {
             "SensorsAllowAskBlockPermissionModel";
     public static final String BATTERY_STATUS_MANAGER_BROADCAST_RECEIVER_IN_BACKGROUND =
             "BatteryStatusManagerBroadcastReceiverInBackground";
-    public static final String WEBAUTHN_AUTHENTICATOR_PASSWORDS_ONLY_IMMEDIATE_REQUESTS =
-            "AuthenticatorPasswordsOnlyImmediateRequests";
     public static final String WEBAUTHN_IMMEDIATE_GET = "WebAuthenticationImmediateGet";
 
     public static final MutableFlagWithSafeDefault sGmsCoreLocationRequestParamOverride =

@@ -171,8 +171,6 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {wf::EnableAudioOutputDevices,
            raw_ref(features::kAAudioPerStreamDeviceSelection)},
 #endif
-          {wf::EnableAuthenticatorPasswordsOnlyImmediateRequests,
-           raw_ref(device::kAuthenticatorPasswordsOnlyImmediateRequests)},
           {wf::EnableBackgroundFetch, raw_ref(features::kBackgroundFetch)},
           {wf::EnableBoundaryEventDispatchTracksNodeRemoval,
            raw_ref(blink::features::kBoundaryEventDispatchTracksNodeRemoval)},

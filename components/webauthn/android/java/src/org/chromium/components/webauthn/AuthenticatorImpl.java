@@ -250,10 +250,7 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
         boolean isPasswordOnlyFlux =
                 options.publicKey == null
                         && options.password
-                        && options.mediation == Mediation.IMMEDIATE
-                        && DeviceFeatureMap.isEnabled(
-                                DeviceFeatureList
-                                        .WEBAUTHN_AUTHENTICATOR_PASSWORDS_ONLY_IMMEDIATE_REQUESTS);
+                        && options.mediation == Mediation.IMMEDIATE;
         if (!GmsCoreUtils.isWebauthnSupported()
                 || (!isChrome(mWebContents) && !GmsCoreUtils.isResultReceiverSupported())
                 || (options.publicKey == null && !isPasswordOnlyFlux)) {
