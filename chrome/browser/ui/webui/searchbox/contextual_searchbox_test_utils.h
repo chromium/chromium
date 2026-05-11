@@ -102,6 +102,10 @@ class MockQueryController
     TestComposeboxQueryController::InitializeIfNeeded();
   }
 
+  void TriggerFetchClusterInfoBase() {
+    TestComposeboxQueryController::TriggerFetchClusterInfo();
+  }
+
   void CreateSearchUrlBase(std::unique_ptr<CreateSearchUrlRequestInfo>
                                search_url_request_info,
                            base::OnceCallback<void(GURL)> callback) {
