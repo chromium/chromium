@@ -4282,29 +4282,6 @@ const FeatureEntry::FeatureVariation kSeamlessSigninVariations[] = {
      kSeamlessSigninCompactSignin, nullptr}};
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-const FeatureEntry::FeatureParam kProfilePickerTextVariation1[] = {
-    {"profile-picker-variation", "keep-work-and-life-separate"}};
-const FeatureEntry::FeatureParam kProfilePickerTextVariation2[] = {
-    {"profile-picker-variation", "got-another-google-account"}};
-const FeatureEntry::FeatureParam kProfilePickerTextVariation3[] = {
-    {"profile-picker-variation", "keep-tasks-separate"}};
-const FeatureEntry::FeatureParam kProfilePickerTextVariation4[] = {
-    {"profile-picker-variation", "sharing-a-computer"}};
-const FeatureEntry::FeatureParam kProfilePickerTextVariation5[] = {
-    {"profile-picker-variation", "keep-everything-in-chrome"}};
-
-const FeatureEntry::FeatureVariation kProfilePickerTextVariations[] = {
-    {"V1: Keep work and life separate", kProfilePickerTextVariation1, nullptr},
-    {"V2: Got another Google Account?", kProfilePickerTextVariation2, nullptr},
-    {"V3: Keep school, side projects, and other tasks separate",
-     kProfilePickerTextVariation3, nullptr},
-    {"V4: Sharing a computer?", kProfilePickerTextVariation4, nullptr},
-    {"V5: Keep everything in Chrome", kProfilePickerTextVariation5, nullptr},
-};
-
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-
 #if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kAndroidBookmarkBarFastFollowDynamic[] = {
     {"dynamic_width_enabled", "true"}};
@@ -12122,16 +12099,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kAndroidDesktopZoomScalingVariations,
                                     "AndroidDesktopZoomScaling")},
 #endif
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-    {"profile-picker-text-variations",
-     flag_descriptions::kProfilePickerTextVariationsName,
-     flag_descriptions::kProfilePickerTextVariationsDescription,
-     kOsLinux | kOsMac | kOsWin,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(switches::kProfilePickerTextVariations,
-                                    kProfilePickerTextVariations,
-                                    "ProfilePickerTextVariations")},
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)

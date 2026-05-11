@@ -2554,20 +2554,8 @@ Google Chrome is unable to recover your settings.
         <message name="IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_V2" desc="Title of a screen that lets the user choose which profile to use when browsing the web. *If the EN source doesn't translate well in your language, an alternative string 'Which Chrome profile would you like to use?' may be used instead">
           Who's using Chrome?
         </message>
-        <message name="IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_KEEP_EVERYTHING_IN_CHROME" desc="Profile picker main view title.">
-          Keep everything in Chrome
-        </message>
         <message name="IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE" desc="Profile picker main view subtitle">
           With Chrome profiles, you can separate all your Chrome stuff. Create profiles for friends and family, or split between work and fun.
-        </message>
-        <message name="IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE_KEEP_WORK_AND_LIFE_SEPARATE" desc="Profile picker main view subtitle.">
-          Chrome profiles let you keep personal browsing and work apart. Add a new profile now.
-        </message>
-        <message name="IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE_GOT_ANOTHER_GOOGLE_ACCOUNT" desc="Profile picker main view subtitle.">
-          Chrome profiles help you separate different parts of your life. Add a new profile now.
-        </message>
-        <message name="IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE_KEEP_TASKS_SEPARATE" desc="Profile picker main view subtitle.">
-          Add a new Chrome profile to keep bookmarks, passwords, and settings apart.
         </message>
         <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_TITLE" desc="Profile picker profile type choice title">
           Set up your new Chrome profile

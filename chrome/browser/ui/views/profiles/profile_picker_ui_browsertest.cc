@@ -60,7 +60,6 @@ struct ProfilePickerTestParam {
   bool no_glic_eligible_profiles = false;
   bool is_enterprise_badging_enabled = false;
   bool is_profile_picker_first_run = true;
-  std::string text_variation_feature_param;
   std::optional<std::variant<ForceSigninUIError::Type, SigninUIError::Type>>
       signin_error_dialog_type;
   bool error_with_signin_button = false;
@@ -145,16 +144,6 @@ const ProfilePickerTestParam kTestParams[] = {
                               PixelTestParam::kPortraitModeWindowSize},
      .use_multiple_profiles = true,
      .use_glic_version = true},
-    {.pixel_test_param = {.test_suffix = "VariationKeepWorkAndLifeSeparate"},
-     .text_variation_feature_param = "keep-work-and-life-separate"},
-    {.pixel_test_param = {.test_suffix = "VariationGotAnotherGoogleAccount"},
-     .text_variation_feature_param = "got-another-google-account"},
-    {.pixel_test_param = {.test_suffix = "VariationKeepTasksSeparate"},
-     .text_variation_feature_param = "keep-tasks-separate"},
-    {.pixel_test_param = {.test_suffix = "VariationSharingAComputer"},
-     .text_variation_feature_param = "sharing-a-computer"},
-    {.pixel_test_param = {.test_suffix = "VariationKeepEverythingInChrome"},
-     .text_variation_feature_param = "keep-everything-in-chrome"},
     /* Force Signin UI error dialog params */
     {.pixel_test_param = {.test_suffix = "SigninErrorDialogPattern"},
      .signin_error_dialog_type =
@@ -289,11 +278,6 @@ class ProfilePickerUIPixelTest
       : ProfilesPixelTestBaseT<UiBrowserTest>(GetParam().pixel_test_param) {
     std::vector<base::test::FeatureRefAndParams> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
-    if (!GetParam().text_variation_feature_param.empty()) {
-      enabled_features.push_back({switches::kProfilePickerTextVariations,
-                                  {{"profile-picker-variation",
-                                    GetParam().text_variation_feature_param}}});
-    }
     if (GetParam().use_refreshed_ui) {
       enabled_features.push_back({switches::kFirstRunDesktopRefresh, {}});
     } else {

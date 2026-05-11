@@ -4287,12 +4287,6 @@ inline constexpr char kProfileCreationDeclineSigninCTAExperimentDescription[] =
     "As part of the Sign In Level Up experiment, changes the decline "
     "sign in CTA string in profile creation entry points";
 
-inline constexpr char kProfilePickerTextVariationsName[] =
-    "Profile Picker Text Variations";
-inline constexpr char kProfilePickerTextVariationsDescription[] =
-    "As part of the Profile experiments, enables variations of the profile "
-    "picker text.";
-
 inline constexpr char kShowProfilePickerToAllUsersExperimentName[] =
     "Show profile picker to all users";
 inline constexpr char kShowProfilePickerToAllUsersExperimentDescription[] =

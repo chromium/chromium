@@ -19735,7 +19735,6 @@
                 {
                     "name": "Control",
                     "disable_features": [
-                        "ProfilePickerTextVariations",
                         "ShowProfilePickerToAllUsersExperiment"
                     ]
                 }

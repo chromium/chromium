@@ -894,24 +894,6 @@
     <message name="IDS_PROFILE_PICKER_BACK_BUTTON_SIGN_IN_LABEL" desc="Label for a button that navigates user to the previous page from the 'Sign in' page">
       Back from sign in
     </message>
-    <message name="IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_KEEP_WORK_AND_LIFE_SEPARATE" desc="Profile picker main view title.">
-      Keep work and life separate
-    </message>
-    <message name="IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_GOT_ANOTHER_GOOGLE_ACCOUNT" desc="Profile picker main view title.">
-      Got another Google Account?
-    </message>
-    <message name="IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_KEEP_TASKS_SEPARATE" desc="Profile picker main view title.">
-      Keep school, side projects, and other tasks separate
-    </message>
-    <message name="IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_SHARING_A_COMPUTER" desc="Profile picker main view title.">
-      Sharing a computer?
-    </message>
-    <message name="IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE_SHARING_A_COMPUTER" desc="Profile picker main view subtitle.">
-      Keep your bookmarks, passwords, and settings separate. Add a new profile now.
-    </message>
-    <message name="IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE_KEEP_EVERYTHING_IN_CHROME" desc="Profile picker main view subtitle.">
-      Profiles let you separate work, personal, and play without switching to another browser. Add a new profile now.
-    </message>
     <message name="IDS_PROFILE_PICKER_PROFILE_CARD_NEEDS_SIGNIN_PROMPT" desc="Text on the profile card signaling that the user must sign-in in order to open a profile">
       Sign in
     </message>
