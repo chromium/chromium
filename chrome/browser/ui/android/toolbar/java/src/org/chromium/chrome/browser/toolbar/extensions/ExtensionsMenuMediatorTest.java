@@ -636,6 +636,55 @@ public class ExtensionsMenuMediatorTest {
         verify(mActionContextMenuBridgeJniMock).destroy(eq(ACTION_CONTEXT_MENU_BRIDGE_POINTER));
     }
 
+    /** Tests that the context menu button's accessible name is correctly updated in the model. */
+    @Test
+    public void testMenuItemContextMenuButtonAccessibleName() {
+        List<ExtensionsMenuTypes.MenuEntryState> entries = new ArrayList<>();
+        ExtensionsMenuTypes.ControlState actionButton =
+                new ExtensionsMenuTypes.ControlState(
+                        ExtensionsMenuTypes.ControlState.Status.ENABLED,
+                        "Extension A",
+                        /* accessibleName= */ "",
+                        /* tooltipText= */ "",
+                        /* isOn= */ false,
+                        ICON_RED);
+        ExtensionsMenuTypes.ControlState contextMenuButton =
+                new ExtensionsMenuTypes.ControlState(
+                        ExtensionsMenuTypes.ControlState.Status.ENABLED,
+                        /* text= */ "",
+                        /* accessibleName= */ "More options for Extension A",
+                        /* tooltipText= */ "",
+                        /* isOn= */ false,
+                        /* icon= */ null);
+
+        // updateMenuItem() accesses fields on siteAccessToggle and sitePermissionsButton, so
+        // they cannot be null. We use a placeholder state since they are not relevant to this test.
+        ExtensionsMenuTypes.ControlState placeholderState =
+                new ExtensionsMenuTypes.ControlState(
+                        ExtensionsMenuTypes.ControlState.Status.HIDDEN,
+                        /* text= */ "",
+                        /* accessibleName= */ "",
+                        /* tooltipText= */ "",
+                        /* isOn= */ false,
+                        /* icon= */ null);
+        entries.add(
+                new ExtensionsMenuTypes.MenuEntryState(
+                        "id_a",
+                        actionButton,
+                        contextMenuButton,
+                        placeholderState,
+                        placeholderState,
+                        /* isEnterprise= */ false));
+        when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(entries);
+
+        mBridgeCaptor.getValue().onReady();
+
+        PropertyModel model = mActionModels.get(0).model;
+        assertEquals(
+                "More options for Extension A",
+                model.get(ExtensionsMenuItemProperties.CONTEXT_MENU_BUTTON_ACCESSIBLE_NAME));
+    }
+
     /** Helper to create a mock {@link ListMenuButton} with a mock {@link ListMenuHost}. */
     private ListMenuButton createMockMenuButton() {
         ListMenuHost mockListMenuHost = mock(ListMenuHost.class);

@@ -468,6 +468,9 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
         itemModel.set(ExtensionsMenuItemProperties.ICON, itemState.actionButton.icon);
         itemModel.set(ExtensionsMenuItemProperties.IS_PINNED, itemState.contextMenuButton.isOn);
         itemModel.set(
+                ExtensionsMenuItemProperties.CONTEXT_MENU_BUTTON_ACCESSIBLE_NAME,
+                itemState.contextMenuButton.accessibleName);
+        itemModel.set(
                 ExtensionsMenuItemProperties.SITE_ACCESS_TOGGLE_CHECKED,
                 itemState.siteAccessToggle.isOn);
         itemModel.set(

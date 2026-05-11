@@ -52,6 +52,12 @@ public class ExtensionsMenuItemViewBinder {
             view.findViewById(R.id.extensions_menu_item_context_menu)
                     .setOnClickListener(
                             model.get(ExtensionsMenuItemProperties.CONTEXT_MENU_BUTTON_ON_CLICK));
+        } else if (key == ExtensionsMenuItemProperties.CONTEXT_MENU_BUTTON_ACCESSIBLE_NAME) {
+            view.findViewById(R.id.extensions_menu_item_context_menu)
+                    .setContentDescription(
+                            model.get(
+                                    ExtensionsMenuItemProperties
+                                            .CONTEXT_MENU_BUTTON_ACCESSIBLE_NAME));
         } else if (key == ExtensionsMenuItemProperties.PRIMARY_ACTION_ON_CLICK) {
             view.findViewById(R.id.extensions_menu_item_primary_action)
                     .setOnClickListener(
