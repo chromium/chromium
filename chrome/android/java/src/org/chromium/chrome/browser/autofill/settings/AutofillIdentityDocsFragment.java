@@ -101,6 +101,8 @@ public class AutofillIdentityDocsFragment extends ChromeBaseSettingsFragment
         screen.removeAll();
         screen.setOrderingAsAdded(true);
 
+        mAutofillAiDelegate.maybeAddDisabledWalletDataSharingDataCard(screen);
+
         if (shouldShowOptInToggle()) {
             addOptInToggle(screen);
         }
@@ -139,6 +141,8 @@ public class AutofillIdentityDocsFragment extends ChromeBaseSettingsFragment
                 @Override
                 public void updateDynamicPreferences(
                         Context context, SettingsIndexData indexData, Profile profile) {
+                    AutofillAiDelegate.maybeAddDisabledWalletDataSharingDataCard(
+                            indexData, profile, getPrefFragmentName());
                     if (shouldShowOptInToggle()) {
                         indexData.addEntryForKey(
                                 getPrefFragmentName(),
