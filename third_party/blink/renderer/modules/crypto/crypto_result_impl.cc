@@ -171,9 +171,8 @@ void CryptoResultImpl::CompleteWithBoolean(bool b) {
   if (!resolver_)
     return;
 
-  CHECK_EQ(type_, ResolverType::kAny);
-  resolver_->DowncastTo<IDLAny>()->Resolve(
-      v8::Boolean::New(resolver_->GetScriptState()->GetIsolate(), b));
+  CHECK_EQ(type_, ResolverType::kTyped);
+  resolver_->DowncastTo<IDLBoolean>()->Resolve(b);
   ClearResolver();
 }
 

@@ -297,10 +297,6 @@ std::vector<unsigned char> ConvertCryptoResult<std::vector<unsigned char>>(
   }
   return {};
 }
-template <>
-bool ConvertCryptoResult<bool>(v8::Isolate*, const ScriptValue& value) {
-  return value.V8Value()->IsTrue();
-}
 
 template <typename IDLType, typename T>
 class WebCryptoResultAdapter
@@ -313,6 +309,11 @@ class WebCryptoResultAdapter
     requires(std::is_same_v<I, IDLAny>)
   void React(ScriptState* script_state, ScriptValue value) {
     function_.Run(ConvertCryptoResult<T>(script_state->GetIsolate(), value));
+  }
+  template <typename I = IDLType>
+    requires(std::is_same_v<I, IDLBoolean>)
+  void React(ScriptState* script_state, bool value) {
+    function_.Run(value);
   }
   template <typename I = IDLType>
     requires(std::is_same_v<I, CryptoKey>)
@@ -433,8 +434,8 @@ bool SyncVerifySignature(V8TestingScope& scope,
                          const WebCryptoKey& key,
                          std::vector<unsigned char> signature,
                          std::vector<unsigned char> message) {
-  return SubtleCryptoSync<bool, IDLAny>(scope, &WebCrypto::VerifySignature,
-                                        algorithm, key, signature, message);
+  return SubtleCryptoSync<bool, IDLBoolean>(scope, &WebCrypto::VerifySignature,
+                                            algorithm, key, signature, message);
 }
 
 std::vector<uint8_t> SyncDeriveBits(V8TestingScope& scope,

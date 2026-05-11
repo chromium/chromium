@@ -52,7 +52,7 @@ typedef (object or DOMString) AlgorithmIdentifier;
 
     [CallWith=ScriptState, ImplementedAs=verifySignature,
      MeasureAs=SubtleCryptoVerify, RaisesException]
-    Promise<any> verify(
+    Promise<boolean> verify(
         AlgorithmIdentifier algorithm,
         CryptoKey key,
         BufferSource signature,

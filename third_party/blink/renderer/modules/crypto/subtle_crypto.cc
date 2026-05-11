@@ -374,7 +374,7 @@ ScriptPromise<IDLAny> SubtleCrypto::sign(
   return promise;
 }
 
-ScriptPromise<IDLAny> SubtleCrypto::verifySignature(
+ScriptPromise<IDLBoolean> SubtleCrypto::verifySignature(
     ScriptState* script_state,
     const V8AlgorithmIdentifier* raw_algorithm,
     CryptoKey* key,
@@ -402,7 +402,7 @@ ScriptPromise<IDLAny> SubtleCrypto::verifySignature(
   }
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(script_state);
+      MakeGarbageCollected<ScriptPromiseResolver<IDLBoolean>>(script_state);
   auto* result = MakeGarbageCollected<CryptoResultImpl>(script_state, resolver);
   auto promise = resolver->Promise();
 
