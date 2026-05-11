@@ -26,13 +26,7 @@ void ToolbarGlicActorTaskIcon::AddedToWidget() {
   split_rounded_edge_radius_ = GetRoundedCornerRadius();
   SetLeftRightCornerRadii(kSplitLeftEdgeRadius, GetSplitRoundedEdgeRadius());
 
-  bool show_before_avatar =
-      base::FeatureList::IsEnabled(features::kGlicToolbarButtonLocation) &&
-      features::kGlicToolbarButtonLocationParam.Get() ==
-          features::GlicToolbarButtonLocation::kLeftOfProfileChip;
-  SetDefaultBackgroundColorId(show_before_avatar
-                                  ? kColorToolbar
-                                  : kColorToolbarGlicButtonBackgroundDefault);
+  SetDefaultBackgroundColorId(kColorToolbarGlicButtonBackgroundDefault);
   UpdateIconsWithStandardColors(
       glic::GlicVectorIconManager::GetVectorIcon(IDR_ACTOR_AUTO_BROWSE_ICON));
   GlicActorTaskIcon<ToolbarButton>::AddedToWidget();
