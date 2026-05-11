@@ -96,13 +96,6 @@ void PhishingImageEmbedder::CancelPendingImageEmbedding() {
 void PhishingImageEmbedder::OnImageEmbeddingDone(
     bool can_extract_visual_features,
     ImageFeatureEmbedding image_feature_embedding) {
-  if (!base::FeatureList::IsEnabled(kClientSideDetectionDeprecateDOMModel) &&
-      image_feature_embedding.embedding_value_size() > 0) {
-    Scorer* scorer = ScorerStorage::GetInstance()->GetScorer();
-    image_feature_embedding.set_embedding_model_version(
-        scorer->image_embedding_tflite_model_version());
-  }
-
   if (can_extract_visual_features) {
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE,

@@ -113,9 +113,6 @@ extern const base::FeatureParam<bool>
 // Specifies whether to enable triggering on detection of a credit card form.
 extern const base::FeatureParam<bool> kCsdCreditCardFormEnableDetectionTrigger;
 
-// Deprecate the DOM model and do not onboard to renderer.
-BASE_DECLARE_FEATURE(kClientSideDetectionDeprecateDOMModel);
-
 // Killswitch for Llama forced trigger info redirect chain check.
 BASE_DECLARE_FEATURE(kClientSideDetectionForcedLlamaRedirectChainKillswitch);
 

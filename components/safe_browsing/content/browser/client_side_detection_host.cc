@@ -1938,10 +1938,8 @@ void ClientSideDetectionHost::PhishingImageEmbeddingDone(
       embedding = image_feature_embedding_wrapper->As<ImageFeatureEmbedding>();
     }
     if (embedding.has_value()) {
-      if (base::FeatureList::IsEnabled(kClientSideDetectionDeprecateDOMModel)) {
-        embedding->set_embedding_model_version(
-            csd_service_->GetImageEmbeddingModelVersion());
-      }
+      embedding->set_embedding_model_version(
+          csd_service_->GetImageEmbeddingModelVersion());
       *verdict->mutable_image_feature_embedding() =
           std::move(embedding.value());
       // Tier 2 and higher will add embedding metadata information because lower
