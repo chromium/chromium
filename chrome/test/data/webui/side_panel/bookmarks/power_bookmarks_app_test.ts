@@ -141,7 +141,6 @@ suite('General', () => {
       emptyBodyFolder: 'folder body',
       emptyTitleGuest: 'guest title',
       emptyBodyGuest: 'guest body',
-      bookmarksTreeViewEnabled: false,
       isBookmarksMigrationUiChanges: false,
     });
 
@@ -1020,6 +1019,8 @@ suite('General', () => {
     });
 
     test('LogsBookmarkCountMetric', async () => {
+      await flushTasks();
+
       // Initially should have 4 bookmarks shown.
       assertEquals(
           1, metrics.count('PowerBookmarks.SidePanel.BookmarksShown', 4));

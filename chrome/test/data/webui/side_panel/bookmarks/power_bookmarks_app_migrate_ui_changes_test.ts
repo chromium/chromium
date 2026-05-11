@@ -65,7 +65,6 @@ suite('MigrateUiChangesUseBrowserEditDialog', () => {
       emptyBodyFolder: 'folder body',
       emptyTitleGuest: 'guest title',
       emptyBodyGuest: 'guest body',
-      bookmarksTreeViewEnabled: false,
       isBookmarksMigrationUiChanges: true,
       tooltipBack: 'Back',
     });

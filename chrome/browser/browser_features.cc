@@ -21,10 +21,6 @@ BASE_FEATURE(kAllowUnmutedAutoplayForTWA, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAutocompleteActionPredictorConfidenceCutoff,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// This is used to enable an experiment for the bookmarks tree view in the
-// side panel, providing users with a hierarchical view of their bookmarks.
-BASE_FEATURE(kBookmarksTreeView, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // This is used as a kill switch for Bookmark triggered prerendering. See
 // crbug.com/40259793 for more details of Bookmark triggered prerendering.
 BASE_FEATURE(kBookmarkTriggerForPrerender2KillSwitch,

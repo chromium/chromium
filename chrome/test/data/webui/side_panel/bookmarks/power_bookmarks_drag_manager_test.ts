@@ -208,9 +208,6 @@ suite('SidePanelPowerBookmarkDragManagerTest', () => {
 
   suite('WithTreeView', () => {
     setup(() => {
-      loadTimeData.overrideValues({
-        bookmarksTreeViewEnabled: true,
-      });
     });
 
     test('CancelsDropWithinSameParent', () => {

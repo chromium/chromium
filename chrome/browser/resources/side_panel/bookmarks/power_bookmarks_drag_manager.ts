@@ -87,14 +87,7 @@ class DragSession {
       return target instanceof PowerBookmarkRowElement && !target.bookmark.url;
     }) as PowerBookmarkRowElement;
 
-    const isTreeViewEnabled =
-        loadTimeData.getBoolean('bookmarksTreeViewEnabled');
-
-    if (!isTreeViewEnabled && !bookmarkRowElement) {
-      // Invalid drag over element. Cancel session.
-      this.cancel();
-      return;
-    } else if (bookmarkRowElement === this.lastDragOverElement_) {
+    if (bookmarkRowElement === this.lastDragOverElement_) {
       // State has not changed, nothing to update.
       return;
     }
@@ -104,21 +97,9 @@ class DragSession {
     let dropTargetBookmark: BookmarksTreeNode = bookmarkRowElement?.bookmark;
     let dragOverElement: HTMLElement = bookmarkRowElement;
 
-    if (isTreeViewEnabled) {
-      if (!bookmarkRowElement || bookmarkRowElement.bookmark.unmodifiable) {
-        dropTargetBookmark = this.delegate_.getFallbackBookmark();
-        dragOverElement = this.delegate_.getFallbackDropTargetElement();
-      }
-    } else {
-      const invalidDropTarget = dropTargetBookmark.unmodifiable ||
-          dropTargetBookmark.url ||
-          (this.dragData_.elements &&
-           this.dragData_.elements.some(
-               element => element.id === dropTargetBookmark.id));
-      if (invalidDropTarget) {
-        dropTargetBookmark = this.delegate_.getFallbackBookmark();
-        dragOverElement = this.delegate_.getFallbackDropTargetElement();
-      }
+    if (!bookmarkRowElement || bookmarkRowElement.bookmark.unmodifiable) {
+      dropTargetBookmark = this.delegate_.getFallbackBookmark();
+      dragOverElement = this.delegate_.getFallbackDropTargetElement();
     }
 
     const draggedBookmarks = this.dragData_.elements!;

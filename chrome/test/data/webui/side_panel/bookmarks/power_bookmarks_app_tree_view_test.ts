@@ -266,7 +266,6 @@ suite('TreeView', () => {
       emptyBodyFolder: 'folder body',
       emptyTitleGuest: 'guest title',
       emptyBodyGuest: 'guest body',
-      bookmarksTreeViewEnabled: true,
       tooltipBack: 'Back',
     });
 
