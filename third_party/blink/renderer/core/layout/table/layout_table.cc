@@ -24,19 +24,6 @@
 
 namespace blink {
 
-namespace {
-
-inline bool NeedsTableSection(const LayoutObject& object) {
-  // Return true if 'object' can't exist in an anonymous table without being
-  // wrapped in a table section box.
-  EDisplay display = object.StyleRef().Display();
-  return display != EDisplay::kTableCaption &&
-         display != EDisplay::kTableColumnGroup &&
-         display != EDisplay::kTableColumn;
-}
-
-}  // namespace
-
 LayoutTable::LayoutTable(Element* element) : LayoutBlock(element) {}
 
 LayoutTable::~LayoutTable() = default;
@@ -219,55 +206,63 @@ bool LayoutTable::HasBackgroundForPaint() const {
   return false;
 }
 
-void LayoutTable::AddChild(LayoutObject* child, LayoutObject* before_child) {
+void LayoutTable::AddChildBeforeDescendant(LayoutObject* new_child,
+                                           LayoutObject* before_descendant,
+                                           bool can_be_direct_child) {
+  NOT_DESTROYED();
+  DCHECK_NE(before_descendant->Parent(), this);
+
+  if (can_be_direct_child) {
+    LayoutObject* before_child =
+        SplitAnonymousBoxesAroundChild(before_descendant);
+    DCHECK_EQ(before_child->Parent(), this);
+    AddChild(new_child, before_child);
+    return;
+  }
+
+  LayoutObject* before_descendant_container = before_descendant->Parent();
+  while (before_descendant_container->Parent() != this) {
+    before_descendant_container = before_descendant_container->Parent();
+  }
+  CHECK(before_descendant_container->IsAnonymous());
+  CHECK(before_descendant_container->IsTableSection());
+
+  // Insert the child into the anonymous table-section instead of here.
+  before_descendant_container->AddChild(new_child, before_descendant);
+}
+
+void LayoutTable::AddChild(LayoutObject* new_child,
+                           LayoutObject* before_child) {
   NOT_DESTROYED();
   TableGridStructureChanged();
 
-  const bool can_be_direct_child = child->IsTableCaption() ||
-                                   child->IsLayoutTableCol() ||
-                                   child->IsTableSection();
+  const bool can_be_direct_child = new_child->IsTableCaption() ||
+                                   new_child->IsLayoutTableCol() ||
+                                   new_child->IsTableSection();
 
-  if (can_be_direct_child) {
-    if (before_child && before_child->Parent() != this)
-      before_child = SplitAnonymousBoxesAroundChild(before_child);
-    LayoutBox::AddChild(child, before_child);
+  if (before_child && before_child->Parent() != this) {
+    AddChildBeforeDescendant(new_child, before_child, can_be_direct_child);
     return;
   }
 
-  if (!before_child && LastChild() && LastChild()->IsTableSection() &&
-      LastChild()->IsAnonymous()) {
-    LastChild()->AddChild(child);
-    return;
-  }
+  if (!can_be_direct_child) {
+    LayoutObject* after_child =
+        before_child ? before_child->PreviousSibling() : LastChild();
 
-  if (before_child && !before_child->IsAnonymous() &&
-      before_child->Parent() == this) {
-    auto* section =
-        DynamicTo<LayoutTableSection>(before_child->PreviousSibling());
-    if (section && section->IsAnonymous()) {
-      section->AddChild(child);
+    if (after_child && after_child->IsAnonymous()) {
+      after_child->AddChild(new_child);
       return;
     }
-  }
 
-  LayoutObject* last_box = before_child;
-  while (last_box && last_box->Parent()->IsAnonymous() &&
-         !last_box->IsTableSection() && NeedsTableSection(*last_box))
-    last_box = last_box->Parent();
-  if (last_box && last_box->IsAnonymous() && last_box->IsTablePart()) {
-    if (before_child == last_box)
-      before_child = last_box->SlowFirstChild();
-    last_box->AddChild(child, before_child);
+    // No suitable existing anonymous table-section - create a new one.
+    LayoutTableSection* section =
+        LayoutTableSection::CreateAnonymousWithParent(*this);
+    LayoutBox::AddChild(section, before_child);
+    section->AddChild(new_child);
     return;
   }
 
-  if (before_child && !before_child->IsTableSection() &&
-      NeedsTableSection(*before_child))
-    before_child = nullptr;
-
-  auto* section = LayoutTableSection::CreateAnonymousWithParent(*this);
-  AddChild(section, before_child);
-  section->AddChild(child);
+  LayoutBox::AddChild(new_child, before_child);
 }
 
 void LayoutTable::RemoveChild(LayoutObject* child) {
