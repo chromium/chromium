@@ -2,6 +2,9 @@
   "name": "chromium-bidi",
   "version": "15.0.0",
   "description": "An implementation of the WebDriver BiDi protocol for Chromium implemented as a JavaScript layer translating between BiDi and CDP, running inside a Chrome tab.",
+  "engines": {
+    "node": ">=20.19.0 <22.0.0 || >=22.12.0"
+  },
   "scripts": {
     "build": "wireit",
     "clean": "node tools/clean.mjs",
@@ -25,26 +28,8 @@
     "wpt:all": "wireit",
     "yapf": "yapf -i --parallel --recursive --exclude=wpt examples/ tests/"
   },
-  "type": "commonjs",
-  "main": "./lib/cjs/index.js",
-  "exports": {
-    ".": {
-      "import": "./lib/esm/index.js",
-      "require": "./lib/cjs/index.js"
-    },
-    "./*": {
-      "import": "./lib/esm/*",
-      "require": "./lib/cjs/*"
-    },
-    "./lib/cjs/*.js": {
-      "import": "./lib/cjs/*.js",
-      "require": "./lib/cjs/*.js"
-    },
-    "./lib/cjs/*": {
-      "import": "./lib/cjs/*.js",
-      "require": "./lib/cjs/*.js"
-    }
-  },
+  "type": "module",
+  "main": "./lib/index.js",
   "wireit": {
     "build": {
       "dependencies": [
@@ -74,7 +59,7 @@
         "tsc"
       ],
       "files": [
-        "lib/esm/bidiMapper/",
+        "lib/bidiMapper/",
         "rollup.config.mjs"
       ],
       "output": [
@@ -103,13 +88,7 @@
       ]
     },
     "tsc": {
-      "dependencies": [
-        "tsc:esm",
-        "tsc:cjs"
-      ]
-    },
-    "tsc:esm": {
-      "command": "tsc --build src/tsconfig.json --pretty && node ./tools/generate-module-package-json.mjs lib/esm/package.json",
+      "command": "tsc --build src/tsconfig.json --pretty",
       "clean": "if-file-deleted",
       "files": [
         "tsconfig.base.json",
@@ -117,19 +96,7 @@
         "src/**/*.ts"
       ],
       "output": [
-        "lib/esm/**"
-      ]
-    },
-    "tsc:cjs": {
-      "command": "tsc --build src/tsconfig.cjs.json --pretty",
-      "clean": "if-file-deleted",
-      "files": [
-        "tsconfig.base.json",
-        "src/**/tsconfig*.cjs.json",
-        "src/**/*.ts"
-      ],
-      "output": [
-        "lib/cjs/**"
+        "lib/**"
       ]
     },
     "unit": {

@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "../../lib/esm/protocol-parser"
+    "outDir": "../../lib/protocol-parser"
   },
   "references": [
     {"path": "../protocol/tsconfig.json"},

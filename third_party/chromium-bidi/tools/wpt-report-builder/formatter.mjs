@@ -16,9 +16,6 @@
  */
 import fs from 'fs';
 import path from 'path';
-import url from 'url';
-
-const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 export function escapeHtml(str) {
   return str
@@ -218,7 +215,7 @@ function generateHtml(
     </div>`;
 
   const template = fs.readFileSync(
-    path.join(__dirname, './template.html'),
+    path.join(import.meta.dirname, './template.html'),
     'utf-8',
   );
 

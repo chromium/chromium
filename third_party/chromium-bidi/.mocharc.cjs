@@ -18,7 +18,7 @@
 module.exports = {
   logLevel: 'debug',
   require: ['source-map-support/register'],
-  spec: '{lib/esm,tools}/**/*.spec.{js,mjs}',
+  spec: '{lib,tools}/**/*.spec.{js,mjs}',
   // This should make mocha crash on uncaught errors.
   // See https://github.com/mochajs/mocha/blob/master/docs/index.md#--allow-uncaught.
   allowUncaught: true,

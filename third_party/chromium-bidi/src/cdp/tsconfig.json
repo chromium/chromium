@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "../../lib/esm/cdp"
+    "outDir": "../../lib/cdp"
   },
   "references": [{"path": "../utils/tsconfig.json"}]
 }

@@ -17,15 +17,12 @@
 import child_process from 'child_process';
 import fs from 'fs';
 import path from 'path';
-import url from 'url';
 
 import yargs from 'yargs';
 import {hideBin} from 'yargs/helpers';
 
 import {apply2023Filter} from './filter-2023.mjs';
 import {generateReport} from './formatter.mjs';
-
-const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 export function parseCommandLineArgs() {
   return yargs(hideBin(process.argv))
@@ -77,7 +74,7 @@ function getWptCommit() {
 
 function getChromeVersion() {
   const version = fs.readFileSync(
-    path.join(__dirname, '../../.browser'),
+    path.join(import.meta.dirname, '../../.browser'),
     'utf8',
   );
 

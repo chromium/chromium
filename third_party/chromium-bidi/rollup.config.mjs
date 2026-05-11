@@ -20,9 +20,9 @@ import {nodeResolve} from '@rollup/plugin-node-resolve';
 import cleanup from 'rollup-plugin-cleanup';
 import license from 'rollup-plugin-license';
 
-// Generate Mapper Tab from ESM as we can run that in the browser
+// Generate Mapper Tab
 const mapperTabConfig = {
-  input: 'lib/esm/bidiTab/bidiTab.js',
+  input: 'lib/bidiTab/bidiTab.js',
   output: {
     name: 'mapperTab',
     file: 'lib/iife/mapperTab.js',

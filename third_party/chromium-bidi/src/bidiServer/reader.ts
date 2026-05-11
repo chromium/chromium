@@ -17,14 +17,10 @@
 
 import fs from 'fs/promises';
 import path from 'path';
-import url from 'url';
-
-const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
 
 export async function getMapperTabSource(): Promise<string> {
   return await fs.readFile(
-    path.join(__dirname, '../../iife/mapperTab.js'),
+    path.join(import.meta.dirname, '../iife/mapperTab.js'),
     'utf8',
   );
 }
-//

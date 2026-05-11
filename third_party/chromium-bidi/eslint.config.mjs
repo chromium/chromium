@@ -112,12 +112,7 @@ export default defineConfig([
       'no-negated-condition': 'error',
       'no-undef': 'error',
 
-      'no-underscore-dangle': [
-        'error',
-        {
-          allow: ['__dirname', '__filename'],
-        },
-      ],
+      'no-underscore-dangle': 'error',
 
       'object-shorthand': 'error',
       'prefer-promise-reject-errors': 'error',

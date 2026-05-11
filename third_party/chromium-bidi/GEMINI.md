@@ -21,7 +21,7 @@ To restore the project to a known good state, run the following commands in orde
 1. **Build:** `npm run build`
 2. **Unit Tests:** `npm run unit`
 3. **Format:** `npm run format`
-4. **Verify BidiMapper Import:** `node lib/esm/bidiMapper/BidiMapper.js`. If this
+4. **Verify BidiMapper Import:** `node lib/bidiMapper/BidiMapper.js`. If this
    fails with `ERR_MODULE_NOT_FOUND`, it's likely due to a missing `.js` extension in
    an import statement in one of the TypeScript source files.
 
