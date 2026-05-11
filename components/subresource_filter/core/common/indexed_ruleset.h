@@ -38,7 +38,10 @@ namespace subresource_filter {
 
 class FirstPartyOrigin;
 
-// Returns a hash for a style rule selector, e.g., a class or ID name.
+// Returns a hash for a style rule's anchor (e.g., a class or ID name without
+// the '.' or '#' prefix). This is meant to provide the exact same hash value as
+// blink's `AtomicString` would, and there are blink unittests to verify as
+// much.
 uint32_t GetStyleRuleHash(std::string_view name);
 
 // Detailed result of IndexedRulesetMatcher::Verify.

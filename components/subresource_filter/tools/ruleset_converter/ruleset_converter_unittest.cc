@@ -293,6 +293,21 @@ TEST_F(RulesetConverterTest, FormatConversions) {
 
       TestRulesetContents input_contents = input_file.ReadContents();
       TestRulesetContents output_contents = output_file.ReadContents();
+
+      // Sort style rules to put site-specific first, matching the behavior of
+      // ProtobufRuleOutputStream.
+      std::stable_partition(
+          input_contents.style_rules.begin(), input_contents.style_rules.end(),
+          [](const url_pattern_index::proto::StyleRule& rule) {
+            return !rule.domains().empty();
+          });
+      std::stable_partition(
+          output_contents.style_rules.begin(),
+          output_contents.style_rules.end(),
+          [](const url_pattern_index::proto::StyleRule& rule) {
+            return !rule.domains().empty();
+          });
+
       EXPECT_EQ(input_contents, output_contents);
     }
   }

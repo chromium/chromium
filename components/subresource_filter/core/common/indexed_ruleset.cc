@@ -17,6 +17,8 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "components/subresource_filter/core/common/first_party_origin.h"
 #include "components/url_pattern_index/url_pattern_index.h"

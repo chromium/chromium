@@ -15,9 +15,6 @@ namespace subresource_filter {
 
 namespace {
 
-// Constants for implicit rules.
-constexpr uint16_t kImplicitRuleIndex = 65535;
-
 // Helper function to set bits in Bloom filter.
 // The bloom filter makes 2 hashes out of the 24 bit blink string hash. The
 // first is the first 16 bits. The second shuffles the original 24 bit hash
@@ -43,19 +40,21 @@ BuildNameToRules(
 
   for (const auto& [name, indices] : rules_map) {
     auto name_offset = builder.CreateSharedString(name);
-    uint16_t first_index = kImplicitRuleIndex;
+    uint16_t first_index = StyleRuleIndexer::kImplicitStyleRuleIndex;
     flatbuffers::Offset<flatbuffers::Vector<uint16_t>> more_offset;
 
     if (!indices.empty()) {
       // Ensure that if the implicit rule is in the list, that it goes to
       // `first_index`.
-      bool has_implicit = std::ranges::contains(indices, kImplicitRuleIndex);
-      uint16_t first = has_implicit ? kImplicitRuleIndex : indices[0];
+      bool has_implicit = std::ranges::contains(
+          indices, StyleRuleIndexer::kImplicitStyleRuleIndex);
+      first_index =
+          has_implicit ? StyleRuleIndexer::kImplicitStyleRuleIndex : indices[0];
       std::vector<uint16_t> more;
       more.reserve(indices.size() - 1);
-      std::ranges::copy_if(indices.begin(), indices.end(),
-                           std::back_inserter(more),
-                           [first](int val) { return val != first; });
+      std::ranges::copy_if(
+          indices.begin(), indices.end(), std::back_inserter(more),
+          [first_index](int val) { return val != first_index; });
 
       if (!more.empty()) {
         more_offset = builder.CreateVector(more);
@@ -123,21 +122,12 @@ std::optional<uint16_t> StyleRuleIndexer::GetOrCreateStyleRuleIndex(
     // We have an existing index for this selector.
     uint16_t rule_index = it->second;
 
-    // The implicit index is only allowed for global rules, so if it's
-    // site-specific make a new one.
-    if (rule_index == kImplicitRuleIndex && is_site_specific) {
-      std::optional<uint16_t> explicit_index =
-          CreateExplicitStyleRule(selector);
-      if (!explicit_index) {
-        return std::nullopt;
-      }
-      rule_index = *explicit_index;
-
-      // From now on we'll use the explicit index instead of implicit. It's
-      // because of this that we process global rules (which can use implicit)
-      // before site-specific.
-      selector_to_index_[selector] = rule_index;
-    }
+    // The incoming unindexed ruleset should be in order of site-specific
+    // before global rules. If it's not, we DCHECK instead of CHECK to avoid
+    // a crash, as in the worst case a exception rule may fail to properly
+    // apply, but that is better than crashing the browser.
+    DCHECK(!(rule_index == kImplicitStyleRuleIndex && is_site_specific))
+        << "Site-specific rule processed after global rule for: " << selector;
     return rule_index;
   }
 
@@ -153,8 +143,8 @@ std::optional<uint16_t> StyleRuleIndexer::GetOrCreateStyleRuleIndex(
         selector_view.substr(1) == ids.at(0)));
 
   if (can_be_implicit) {
-    selector_to_index_[selector] = kImplicitRuleIndex;
-    return kImplicitRuleIndex;
+    selector_to_index_[selector] = kImplicitStyleRuleIndex;
+    return kImplicitStyleRuleIndex;
   }
 
   auto explicit_index = CreateExplicitStyleRule(selector);
@@ -167,9 +157,9 @@ std::optional<uint16_t> StyleRuleIndexer::GetOrCreateStyleRuleIndex(
 
 std::optional<uint16_t> StyleRuleIndexer::CreateExplicitStyleRule(
     const std::string& selector) {
-  if (style_rules_.size() >= kImplicitRuleIndex) {
+  if (style_rules_.size() >= kImplicitStyleRuleIndex) {
     LOG(ERROR) << "Maximum number of explicit style rules reached ("
-               << kImplicitRuleIndex
+               << kImplicitStyleRuleIndex
                << "). Skipping rule with selector: " << selector;
     return std::nullopt;
   }

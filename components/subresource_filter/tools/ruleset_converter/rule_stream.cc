@@ -191,14 +191,15 @@ class ProtobufRuleOutputStream : public RuleOutputStream {
   }
 
   bool Finish() override {
-    // Move generic rules (rules that apply to all domains) to the front.
-    // This ensures that the indexer processes them before site-specific rules
-    // for the same selector, which maximizes the use of space-efficient
-    // implicit rules and avoids redundant entries in the index.
+    // Move site-specific rules (rules that apply to specific domains) to the
+    // front. This ensures that rules that must have explicit selectors have
+    // them so that generic rules utilize them too. Otherwise we could have
+    // situations where global rules are implicit but site-specific exclusion
+    // rules are explicit, and they don't share a selector.
     auto* style_rules = all_rules_.mutable_style_rules();
     std::stable_partition(style_rules->begin(), style_rules->end(),
                           [](const url_pattern_index::proto::StyleRule& rule) {
-                            return rule.domains().empty();
+                            return !rule.domains().empty();
                           });
 
     std::string buffer;

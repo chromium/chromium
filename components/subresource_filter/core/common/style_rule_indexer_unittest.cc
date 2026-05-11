@@ -82,16 +82,15 @@ TEST(StyleRuleIndexerTest, SelectorSharing) {
   flatbuffers::FlatBufferBuilder builder;
   StyleRuleIndexer indexer(&builder);
 
-  // 1. Generic rule (implicit)
-  EXPECT_TRUE(indexer.AddStyleRuleFromProto(
-      testing::CreateStyleRule(".shared", {}, false, {"shared"})));
-
-  // 2. Two site-specific rules with the same selector.
-  // Both should upgrade the implicit rule to an explicit one.
+  // 1. Two site-specific rules with the same selector.
   EXPECT_TRUE(indexer.AddStyleRuleFromProto(
       testing::CreateStyleRule(".shared", {"a.com"}, false, {"shared"})));
   EXPECT_TRUE(indexer.AddStyleRuleFromProto(
       testing::CreateStyleRule(".shared", {"b.com"}, false, {"shared"})));
+
+  // 2. Generic rule
+  EXPECT_TRUE(indexer.AddStyleRuleFromProto(
+      testing::CreateStyleRule(".shared", {}, false, {"shared"})));
 
   auto offset = indexer.Finish();
   builder.Finish(offset);

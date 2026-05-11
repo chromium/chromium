@@ -23,6 +23,11 @@ namespace subresource_filter {
 // style rules.
 class StyleRuleIndexer {
  public:
+  // The style rule index used for implicit selectors. Implicit selectors
+  // aren't explicitly listed in the flatbuffer because the class name or id is
+  // sufficient for generating the entire selector.
+  static constexpr uint16_t kImplicitStyleRuleIndex = 65535;
+
   explicit StyleRuleIndexer(flatbuffers::FlatBufferBuilder* builder);
 
   StyleRuleIndexer(const StyleRuleIndexer&) = delete;

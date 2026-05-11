@@ -142,6 +142,12 @@ TEST(RuleStreamTest, WriteAndReadRuleset) {
     TestRulesetContents only_url_rules;
     only_url_rules.url_rules = contents.url_rules;
 
+    std::stable_partition(contents.style_rules.begin(),
+                          contents.style_rules.end(),
+                          [](const url_pattern_index::proto::StyleRule& rule) {
+                            return !rule.domains().empty();
+                          });
+
     for (auto format : {RulesetFormat::kFilterList, RulesetFormat::kProto,
                         RulesetFormat::kUnindexedRuleset}) {
       ScopedTempRulesetFile ruleset_file(format);
@@ -170,9 +176,9 @@ TEST(RuleStreamTest, SortStyleRulesInProto) {
   TestRulesetContents read_contents = ruleset_file.ReadContents();
 
   ASSERT_EQ(2u, read_contents.style_rules.size());
-  // The generic rule should have been moved to the front.
-  EXPECT_EQ(".generic", read_contents.style_rules[0].selector());
-  EXPECT_EQ(".site", read_contents.style_rules[1].selector());
+  // The site-specific rule should have been moved to the front.
+  EXPECT_EQ(".site", read_contents.style_rules[0].selector());
+  EXPECT_EQ(".generic", read_contents.style_rules[1].selector());
 }
 
 TEST(RuleStreamTest, WriteAndReadHalfRuleset) {
@@ -417,18 +423,26 @@ TEST(RuleStreamTest, FilterStyleRules) {
     ASSERT_EQ(3u, target_contents.style_rules.size())
         << "Failed for format: " << static_cast<int>(format);
 
-    EXPECT_EQ(".class", target_contents.style_rules[0].selector());
-    EXPECT_EQ("#id", target_contents.style_rules[1].selector());
-    EXPECT_EQ("div", target_contents.style_rules[2].selector());
+    if (format == RulesetFormat::kProto) {
+      EXPECT_EQ("div", target_contents.style_rules[0].selector());
+      EXPECT_EQ(".class", target_contents.style_rules[1].selector());
+      EXPECT_EQ("#id", target_contents.style_rules[2].selector());
 
-    // kProto and kUnindexedRuleset preserve pre-parsed anchors, but kFilterList
-    // serializes back to text and loses them.
-    if (format == RulesetFormat::kProto ||
-        format == RulesetFormat::kUnindexedRuleset) {
-      EXPECT_THAT(target_contents.style_rules[0].classes(),
+      EXPECT_THAT(target_contents.style_rules[1].classes(),
                   ::testing::ElementsAre("class"));
-      EXPECT_THAT(target_contents.style_rules[1].ids(),
+      EXPECT_THAT(target_contents.style_rules[2].ids(),
                   ::testing::ElementsAre("id"));
+    } else {
+      EXPECT_EQ(".class", target_contents.style_rules[0].selector());
+      EXPECT_EQ("#id", target_contents.style_rules[1].selector());
+      EXPECT_EQ("div", target_contents.style_rules[2].selector());
+
+      if (format == RulesetFormat::kUnindexedRuleset) {
+        EXPECT_THAT(target_contents.style_rules[0].classes(),
+                    ::testing::ElementsAre("class"));
+        EXPECT_THAT(target_contents.style_rules[1].ids(),
+                    ::testing::ElementsAre("id"));
+      }
     }
   }
 }
