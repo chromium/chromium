@@ -9,6 +9,7 @@
 #include <set>
 #include <string>
 
+#include "base/byte_size.h"
 #include "base/time/time.h"
 #include "net/base/auth.h"
 #include "net/base/ip_endpoint.h"
@@ -73,6 +74,14 @@ class NET_EXPORT HttpResponseInfo {
   // unique_ptr because base::Pickle doesn't support std::move().
   std::unique_ptr<base::Pickle> MakePickle(bool skip_transient_headers,
                                            bool response_truncated) const;
+
+  // As MakePickle(), but replaces `encoded_body_size` with the given
+  // `signed_body_size`. For testing backwards-compatibility with pickles
+  // created when `encoded_body_size` was an int64_t.
+  std::unique_ptr<base::Pickle> MakePickleWithSignedBodySizeForTesting(
+      bool skip_transient_headers,
+      bool response_truncated,
+      int64_t signed_body_size) const;
 
   // Whether QUIC is used or not.
   bool DidUseQuic() const;
@@ -212,7 +221,15 @@ class NET_EXPORT HttpResponseInfo {
   // (which stores the decoded body), we can still report the correct
   // encodedBodySize for Resource Timing.
   // Only set after the full body has been received.
-  std::optional<int64_t> encoded_body_size;
+  std::optional<base::ByteSize> encoded_body_size;
+
+ private:
+  // Implements MakePickle(), writing `encoded_body_size` as a signed int for
+  // backwards compatibility.
+  std::unique_ptr<base::Pickle> MakePickleImpl(
+      bool skip_transient_headers,
+      bool response_truncated,
+      std::optional<int64_t> signed_body_size) const;
 };
 
 }  // namespace net

@@ -300,7 +300,7 @@ void HttpCache::Writers::UpdateEncodedBodySizeInCacheEntry() {
     return;
   }
 
-  response_info_truncation_.encoded_body_size = encoded_body_bytes.InBytes();
+  response_info_truncation_.encoded_body_size = encoded_body_bytes;
   auto data = base::MakeRefCounted<PickledIOBuffer>(
       response_info_truncation_.MakePickle(
           /*skip_transient_headers=*/true,

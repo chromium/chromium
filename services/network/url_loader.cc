@@ -2064,7 +2064,7 @@ void URLLoader::NotifyCompleted(int error_code) {
     // raw body bytes from the request.
     const auto& resp_info = url_request_->response_info();
     if (resp_info.encoded_body_size.has_value()) {
-      status.encoded_body_length = resp_info.encoded_body_size.value();
+      status.encoded_body_length = resp_info.encoded_body_size->InBytes();
     } else {
       status.encoded_body_length = url_request_->GetRawBodyBytes().InBytes();
     }

@@ -4,6 +4,7 @@
 
 #include "net/http/http_response_info.h"
 
+#include "base/byte_size.h"
 #include "base/pickle.h"
 #include "net/base/proxy_chain.h"
 #include "net/cert/signed_certificate_timestamp.h"
@@ -326,16 +327,27 @@ TEST_F(HttpResponseInfoTest, DidUseSharedDictionary) {
 }
 
 TEST_F(HttpResponseInfoTest, EncodedBodySize) {
-  response_info_.encoded_body_size = 12345;
+  response_info_.encoded_body_size = base::ByteSize(12345u);
   HttpResponseInfo restored_response_info;
   PickleAndRestore(response_info_, &restored_response_info);
   ASSERT_TRUE(restored_response_info.encoded_body_size.has_value());
-  EXPECT_EQ(12345, restored_response_info.encoded_body_size.value());
+  EXPECT_EQ(12345u, restored_response_info.encoded_body_size->InBytes());
 }
 
 TEST_F(HttpResponseInfoTest, EmptyEncodedBodySize) {
   HttpResponseInfo restored_response_info;
   PickleAndRestore(response_info_, &restored_response_info);
+  EXPECT_FALSE(restored_response_info.encoded_body_size.has_value());
+}
+
+TEST_F(HttpResponseInfoTest, NegativeEncodedBodySize) {
+  std::unique_ptr<base::Pickle> pickle =
+      response_info_.MakePickleWithSignedBodySizeForTesting(
+          /*skip_transient_headers=*/false, /*response_truncated=*/false, -1);
+  bool truncated = false;
+  HttpResponseInfo restored_response_info;
+  EXPECT_TRUE(restored_response_info.InitFromPickle(
+      base::PickleIterator(*pickle), &truncated));
   EXPECT_FALSE(restored_response_info.encoded_body_size.has_value());
 }
 

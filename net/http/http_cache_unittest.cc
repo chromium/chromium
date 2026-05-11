@@ -15455,7 +15455,7 @@ TEST_F(HttpCacheTest, EncodedBodySizePreservedFromCache) {
     const HttpResponseInfo* response_info = trans->GetResponseInfo();
     ASSERT_TRUE(response_info);
     ASSERT_TRUE(response_info->encoded_body_size.has_value());
-    EXPECT_EQ(MockNetworkTransaction::kReceivedBodyBytes.InBytes(),
+    EXPECT_EQ(MockNetworkTransaction::kReceivedBodyBytes,
               response_info->encoded_body_size.value());
   }
 
