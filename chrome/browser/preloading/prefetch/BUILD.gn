@@ -133,6 +133,7 @@ if (!is_android) {
     deps = [
       ":test_support",
       "//base/test:test_support",
+      "//chrome/browser:chrome_content_browser_client",
       "//chrome/browser/browsing_data:constants",
       "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/devtools",

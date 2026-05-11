@@ -398,6 +398,7 @@ if (!is_android) {
       "//base/test:test_support",
       "//chrome/app:command_ids",
       "//chrome/browser",
+      "//chrome/browser:chrome_content_browser_client",
       "//chrome/browser/custom_handlers",
       "//chrome/browser/enterprise/data_controls:test_support",
       "//chrome/browser/glic",

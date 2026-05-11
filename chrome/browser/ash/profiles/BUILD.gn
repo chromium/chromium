@@ -19,6 +19,7 @@ static_library("profiles") {
   deps = [
     "//ash/constants",
     "//chrome/browser:browser_process",
+    "//chrome/browser:browser_process_platform_part",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_manager",
     "//chromeos/ash/components/browser_context_helper",
@@ -37,6 +38,7 @@ static_library("signin_profile_handler") {
   deps = [
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser:browser_process_platform_part",
     "//chrome/browser/ash/login/signin",
     "//chrome/browser/browsing_data:constants",
     "//chrome/browser/extensions",

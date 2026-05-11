@@ -156,6 +156,7 @@ source_set("impl") {
     "//base:build_time",
     "//chrome/browser:browser_features",
     "//chrome/browser:browser_process",
+    "//chrome/browser:browser_process_platform_part",
     "//chrome/browser:primitives",
     "//chrome/browser/browsing_data:constants",
     "//chrome/browser/component_updater",

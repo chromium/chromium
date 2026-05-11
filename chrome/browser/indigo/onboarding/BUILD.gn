@@ -11,6 +11,7 @@ source_set("onboarding") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
     "//base",
+    "//chrome/browser:file_select_helper",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/browser/ui/tabs:tabs_public",

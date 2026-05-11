@@ -132,6 +132,7 @@ source_set("impl") {
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_features",
     "//chrome/browser:browser_process",
+    "//chrome/browser:defaults",
     "//chrome/browser/actor",
     "//chrome/browser/devtools",
     "//chrome/browser/first_run",

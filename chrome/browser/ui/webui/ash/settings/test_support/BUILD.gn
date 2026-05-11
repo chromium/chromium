@@ -42,6 +42,7 @@ static_library("test_support") {
     "//ash/public/cpp",
     "//base/test:test_support",
     "//chrome/app:generated_resources",
+    "//chrome/browser:chrome_content_browser_client",
     "//chrome/browser/ui/webui/ash/settings",
     "//chrome/browser/ui/webui/ash/settings/constants",
     "//chromeos/ash/components/osauth/impl",

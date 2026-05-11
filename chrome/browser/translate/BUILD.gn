@@ -126,6 +126,7 @@ if (!is_android) {
       "//base",
       "//base/test:test_support",
       "//chrome/browser",
+      "//chrome/browser:chrome_content_browser_client",
       "//chrome/browser/language",
       "//chrome/browser/prefs:util",
       "//chrome/browser/search_engines",

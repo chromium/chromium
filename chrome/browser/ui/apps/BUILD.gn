@@ -32,6 +32,7 @@ source_set("impl") {
     ":apps",
     "//chrome/app:generated_resources",
     "//chrome/app:generated_resources_grit",
+    "//chrome/browser:file_select_helper",
     "//chrome/browser:primitives",
     "//chrome/browser:shell_integration",
     "//chrome/browser/app_mode",

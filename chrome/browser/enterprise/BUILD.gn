@@ -423,6 +423,8 @@ source_set("impl") {
   deps = [
     "//chrome/app:command_ids",
     "//chrome/browser:browser_process",
+    "//chrome/browser:browser_process_platform_part",
+    "//chrome/browser:file_util_service",
     "//chrome/browser/browsing_data:constants",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/devtools",

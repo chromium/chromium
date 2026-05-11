@@ -39,6 +39,7 @@ static_library("safe_browsing") {
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_features",
     "//chrome/browser:browser_process",
+    "//chrome/browser:file_util_service",
     "//chrome/browser/enterprise",
     "//chrome/browser/enterprise/connectors/reporting",
     "//chrome/browser/google",

@@ -37,6 +37,7 @@ source_set("metrics") {
   ]
   public_deps = [
     "//base",
+    "//chrome/browser:chrome_browser_field_trials",
     "//chrome/browser:main_extra_parts",
     "//chrome/browser/policy",
     "//chrome/browser/profiles:profile",
@@ -252,6 +253,7 @@ source_set("impl") {
 
   deps = [
     "//build/config/compiler:compiler_buildflags",
+    "//chrome/browser:browser_process_platform_part",
     "//chrome/browser:flags",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/devtools",

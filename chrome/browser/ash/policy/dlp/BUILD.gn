@@ -188,6 +188,7 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser:browser_process",
+    "//chrome/browser:file_select_helper",
     "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/crostini:test_support",
     "//chrome/browser/ash/extensions/file_manager",

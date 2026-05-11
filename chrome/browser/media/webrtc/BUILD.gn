@@ -129,6 +129,7 @@ source_set("webrtc") {
     "//chrome/app:command_ids",
     "//chrome/app:generated_resources",
     "//chrome/app:generated_resources_grit",
+    "//chrome/browser:bad_message",
     "//chrome/browser:browser_features",
     "//chrome/browser:browser_process",
     "//chrome/browser/content_settings:content_settings_factory",

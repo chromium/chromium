@@ -60,6 +60,7 @@ static_library("system") {
     "//ash/constants",
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
+    "//chrome/browser:browser_process_platform_part",
     "//chrome/browser/ash/policy/enrollment",
     "//chrome/browser/ash/policy/server_backed_state",
     "//chrome/browser/ash/profiles",
@@ -78,8 +79,8 @@ static_library("system") {
     "//third_party/icu:icuuc_public",
     "//ui/ozone",
 
-    # TODO(crbug.com/353408109): Use //chrome/browser/ash/login instead after fixing cyclic
-    # dependency.
+    # TODO(crbug.com/353408109): Use //chrome/browser/ash/login instead after
+    # fixing cyclic dependency.
     "//chrome/browser/apps/almanac_api_client/proto",
     "//chrome/browser/ash/login/fjord_oobe/proto",
     "//chrome/browser/ash/login/oobe_apps_service/proto",
@@ -113,6 +114,7 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser:browser_process",
+    "//chrome/browser:browser_process_platform_part",
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/login:test_support",
     "//chrome/browser/ash/policy/core:test_support",
@@ -167,6 +169,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
+    "//chrome/browser:browser_process_platform_part",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/policy/core:test_support",
     "//chrome/browser/ash/policy/server_backed_state",

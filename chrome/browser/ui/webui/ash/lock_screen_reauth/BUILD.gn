@@ -53,6 +53,7 @@ static_library("lock_screen_reauth") {
     "//ash/webui/common:trusted_types_util",
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
+    "//chrome/browser:browser_process_platform_part",
     "//chrome/browser:resources",
     "//chrome/browser/ash/login/lock/online_reauth",
     "//chrome/browser/ash/login/signin",

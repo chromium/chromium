@@ -149,6 +149,7 @@ static_library("chrome_test_launcher") {
 
   deps = [
     ":test_support",
+    "//chrome/browser:chrome_content_browser_client",
     "//chrome/browser:main_extra_parts",
     "//testing/libfuzzer:fuzztest_init_support",
   ]
@@ -171,6 +172,9 @@ static_library("test_support") {
   defines = []
   deps = [
     "//chrome/browser:browser_features",
+    "//chrome/browser:browser_process_impl",
+    "//chrome/browser:browser_process_platform_part",
+    "//chrome/browser:chrome_content_browser_client",
     "//chrome/browser:global_features",
     "//chrome/browser/background",
     "//chrome/browser/bookmarks",
@@ -513,7 +517,8 @@ static_library("test_support") {
       "//google_apis/drive",
     ]
 
-    # TODO(crbug.com/429171097): Remove this dependency when `task_manager_tester.h` gets modularized.
+    # TODO(crbug.com/429171097): Remove this dependency when
+    # `task_manager_tester.h` gets modularized.
     public_deps += [ "//chrome/browser/ui/task_manager" ]
   }
 
@@ -876,8 +881,8 @@ static_library("test_support") {
       "//components/webapps/isolated_web_apps",
     ]
 
-    # TODO(crbug.com/428666921): Remove this dependency when c/b/ui/views/performance_controls/test_support/
-    # get componentized.
+    # TODO(crbug.com/428666921): Remove this dependency when
+    # c/b/ui/views/performance_controls/test_support/ get componentized.
     deps += [ "//chrome/browser/ui/performance_controls/test_support" ]
 
     if (!is_chromeos) {
@@ -1422,6 +1427,7 @@ source_set("platform_browser_tests") {
     "//chrome/browser",
     "//chrome/browser:browser_features",
     "//chrome/browser:browser_process",
+    "//chrome/browser:chrome_content_browser_client",
     "//chrome/browser/autocomplete",
     "//chrome/browser/bookmarks",
     "//chrome/browser/browsing_data:constants",
@@ -2062,6 +2068,7 @@ if (is_android) {
       "//chrome:chrome_android_core",
       "//chrome/android:chrome_jni_headers",
       "//chrome/android:delegate_public_impl_java",
+      "//chrome/browser:chrome_content_browser_client",
       "//chrome/browser/accessibility/accessibility_prefs:browser_tests",
       "//chrome/browser/actor:browser_tests",
       "//chrome/browser/autofill",
@@ -2276,7 +2283,8 @@ if (is_android) {
 
     extra_args = []
 
-    # TODO(crbug.com/473636857): Include once all Android builds correctly use BrowserWindowInterface.
+    # TODO(crbug.com/473636857): Include once all Android builds correctly use
+    # BrowserWindowInterface.
     if (is_desktop_android) {
       deps += [
         "//chrome/browser/ui/android:browser_tests",
@@ -2625,9 +2633,16 @@ if (!is_android) {
       "//chrome/app:command_ids",
       "//chrome/app/vector_icons",
       "//chrome/browser",
+      "//chrome/browser:after_startup_task_utils",
+      "//chrome/browser:bad_message",
       "//chrome/browser:browser_features",
+      "//chrome/browser:browser_process_impl",
+      "//chrome/browser:browser_process_platform_part",
       "//chrome/browser:buildflags",
+      "//chrome/browser:chained_back_navigation_tracker",
+      "//chrome/browser:chrome_content_browser_client",
       "//chrome/browser:global_features",
+      "//chrome/browser:icon_loader",
       "//chrome/browser:main_extra_parts",
       "//chrome/browser:primitives",
       "//chrome/browser:shell_integration",
@@ -3403,7 +3418,8 @@ if (!is_android) {
     deps += [ "//chrome/browser/ui/performance_controls/test_support" ]
 
     # TODO(crbug.com/437811373): Remove this dependency when
-    # c/b/ui/passwords/password_change_ui_controller.h gets built from `//c/b/ui/passwords:passwords`.
+    # c/b/ui/passwords/password_change_ui_controller.h gets built from
+    # `//c/b/ui/passwords:passwords`.
     deps += [ "//chrome/browser/ui/passwords:impl" ]
 
     deps += [ "//chrome/browser/indigo/onboarding" ]
@@ -4340,7 +4356,8 @@ if (!is_android) {
         sources += [ "../browser/pdf/pdf_extension_printing_test.cc" ]
         deps += [ "//chrome/browser/printing" ]
 
-        # TODO(crbug.com/40892214): All printToPdf tests consistently fail on ChromeOS
+        # TODO(crbug.com/40892214): All printToPdf tests consistently fail on
+        # ChromeOS
         if (!is_chromeos) {
           sources += [
             "../browser/devtools/protocol/devtools_printtopdf_browsertest.cc",
@@ -4671,8 +4688,9 @@ if (!is_android) {
         "//chrome/browser/signin:signin_promo",
 
         # TODO(crubug.com/430804948): This dependency is needed because
-        # `signin_intercept_first_run_experience_dialog_browsertest.cc` includes `signin_intercept_first_run_experience_dialog.h`,
-        # temporarily built from profiles:impl, due to a circular dependency.
+        # `signin_intercept_first_run_experience_dialog_browsertest.cc` includes
+        # `signin_intercept_first_run_experience_dialog.h`, temporarily built
+        # from profiles:impl, due to a circular dependency.
         "//chrome/browser/ui/profiles:impl",
       ]
     } else {
@@ -4885,7 +4903,8 @@ if (!is_android) {
       ]
 
       sources += [
-        # TODO(crbug.com/424013924): Move settings_overridden_dialog_browsertest.cc to
+        # TODO(crbug.com/424013924): Move
+        # settings_overridden_dialog_browsertest.cc to
         # chrome/browser/ui/extensions/ once we enable it on Android.
         "../browser/ui/extensions/settings_overridden_dialog_browsertest.cc",
       ]
@@ -4925,8 +4944,8 @@ if (!is_android) {
 
       if (enterprise_cloud_content_analysis || is_android) {
         # Use this scope to migrate files/deps from
-        # `enterprise_cloud_content_analysis` conditions that now need to compile
-        # on Android.
+        # `enterprise_cloud_content_analysis` conditions that now need to
+        # compile on Android.
         sources += [
           "../browser/enterprise/connectors/connectors_service_browsertest.cc",
         ]
@@ -5127,9 +5146,10 @@ if (!is_android) {
       # - web_view_browsertest.cc
       deps += [ "//chrome/browser/serial" ]
 
-      # TODO(357784804): Remove this explicit dependency on `//c/b/ui/zoom`
-      # when tests that include chrome_zoom_level_prefs.h get modularized, eg
-      # tabs_test.cc, app_browsertest.cc, host_zoom_map_browsertest.cc and ats_browsertest.cc.
+      # TODO(357784804): Remove this explicit dependency on `//c/b/ui/zoom` when
+      # tests that include chrome_zoom_level_prefs.h get modularized, eg
+      # tabs_test.cc, app_browsertest.cc, host_zoom_map_browsertest.cc and
+      # ats_browsertest.cc.
       deps += [ "//chrome/browser/ui/zoom" ]
 
       data += [
@@ -5324,7 +5344,8 @@ if (!is_android) {
           # TaskManagerView is not used or built on Mac.
           "../browser/ui/views/task_manager_view_browsertest.cc",
 
-          # Excluded on Mac: Cannot reliably check window focus on this platform.
+          # Excluded on Mac: Cannot reliably check window focus on this
+          # platform.
           "../browser/web_applications/isolated_web_apps/window_management/isolated_web_apps_focus_window_browsertest.cc",
         ]
       }
@@ -6230,7 +6251,8 @@ if (!is_android) {
 
       # Extension approvals tests for Windows/Linux/Mac platforms only.
       # ChromeOS has a different platform-specific approval flow.
-      # TODOO(crbug.com/437238062): Move this test to c/b/ui/extensions once tests are enabled on Android.
+      # TODOO(crbug.com/437238062): Move this test to c/b/ui/extensions once
+      # tests are enabled on Android.
       sources += [ "../browser/ui/supervised_user/extension_install_blocked_by_parent_dialog_browsertest.cc" ]
 
       deps += [
@@ -6885,8 +6907,9 @@ test("unit_tests") {
 
   if (!is_android) {
     sources += [
-      # The test is disabled for Android. The respective functionality is currently not being used on
-      # Android. We should enable this test when Android becomes supported.
+      # The test is disabled for Android. The respective functionality is
+      # currently not being used on Android. We should enable this test when
+      # Android becomes supported.
       "../browser/devtools/device/usb/android_rsa_unittest.cc",
       "../browser/devtools/devtools_availability_checker_unittest.cc",
       "../browser/metrics/power/battery_discharge_reporter_unittest.cc",
@@ -7038,8 +7061,14 @@ test("unit_tests") {
     "//chrome/app/theme:chrome_unscaled_resources_grit",
     "//chrome/app/vector_icons",
     "//chrome/browser:active_use_util",
+    "//chrome/browser:after_startup_task_utils",
+    "//chrome/browser:browser_about_handler",
     "//chrome/browser:browser_features",
     "//chrome/browser:buildflags",
+    "//chrome/browser:chained_back_navigation_tracker",
+    "//chrome/browser:chrome_content_browser_client",
+    "//chrome/browser:command_updater_impl",
+    "//chrome/browser:file_select_helper",
     "//chrome/browser:flags",
     "//chrome/browser:font_pref",
     "//chrome/browser:global_features",
@@ -7654,8 +7683,8 @@ test("unit_tests") {
     "//v8",
   ]
 
-  # TODO(crbug.com/437811373): Remove this dependency when display_account_info_unittest.cc
-  # gets componentized.
+  # TODO(crbug.com/437811373): Remove this dependency when
+  # display_account_info_unittest.cc gets componentized.
   deps += [ "//chrome/browser/ui/passwords" ]
 
   # Duplicate these tests here because PathService has more providers in
@@ -8234,7 +8263,8 @@ test("unit_tests") {
         # `test()` target. Otherwise, the Java classes can't be found by the
         # test as they won't be compiled into the test APK.
 
-        # Unit test targets for //chrome/browser/ui/android/extensions/windowing/internal.
+        # Unit test targets for
+        # //chrome/browser/ui/android/extensions/windowing/internal.
         "//chrome/browser/ui/android/extensions/windowing/internal:unit_tests",
         "//chrome/browser/ui/android/extensions/windowing/test:native_unit_test_support_java",
       ]
@@ -8646,7 +8676,8 @@ test("unit_tests") {
     ]
 
     # TODO(crbug.com/437811373): Remove this dependency when
-    # c/b/ui/passwords/password_change_ui_controller.h gets built from `//c/b/ui/passwords:passwords`.
+    # c/b/ui/passwords/password_change_ui_controller.h gets built from
+    # `//c/b/ui/passwords:passwords`.
     deps += [ "//chrome/browser/ui/passwords:impl" ]
 
     if (enable_dice_support) {
@@ -8721,7 +8752,8 @@ test("unit_tests") {
     ]
 
     sources += [
-      # Background tab loading from performance_manager isn't supported on Android.
+      # Background tab loading from performance_manager isn't supported on
+      # Android.
       "../browser/performance_manager/policies/background_tab_loading_policy_helpers_unittest.cc",
       "../browser/performance_manager/policies/background_tab_loading_policy_unittest.cc",
     ]
@@ -8766,7 +8798,8 @@ test("unit_tests") {
 
     # Non-android deps for "unit_tests" target.
     #
-    # TODO(crbug.com/417513088): Maybe merge with the non-android `deps` declaration above?
+    # TODO(crbug.com/417513088): Maybe merge with the non-android `deps`
+    # declaration above?
     deps += [
       "../browser/screen_ai:screen_ai_install_state",
       "//chrome:packed_resources",
@@ -9717,7 +9750,8 @@ test("unit_tests") {
     deps += [
       "//chrome/browser/sharing_hub:unit_tests",
 
-      # TODO(crbug.com/419210492): Remove this dependency when chrome/browser/ui/views/sharing_hub/sharing_hub_bubble_view_impl_unittest.cc
+      # TODO(crbug.com/419210492): Remove this dependency when
+      # chrome/browser/ui/views/sharing_hub/sharing_hub_bubble_view_impl_unittest.cc
       # (above) gets componentized.
       "//chrome/browser/ui/sharing_hub:test_support_ui",
     ]
@@ -10700,6 +10734,7 @@ static_library("test_support_unit") {
   ]
 
   deps = [
+    "//chrome/browser:chrome_content_browser_client",
     "//chrome/browser/autofill",
     "//components/autofill/content/browser:test_support",
   ]
@@ -10870,8 +10905,10 @@ if (!is_android) {
     deps = [
       "//chrome/app:command_ids",
       "//chrome/browser",
+      "//chrome/browser:after_startup_task_utils",
       "//chrome/browser:browser_features",
       "//chrome/browser:browser_process",
+      "//chrome/browser:chrome_content_browser_client",
       "//chrome/browser:main_extra_parts",
       "//chrome/browser:shell_integration",
       "//chrome/browser/apps/app_service",
@@ -11311,7 +11348,8 @@ if (!is_android && !is_chromeos_device) {
     ldflags = []
 
     # TODO(crbug.com/434882143): Remove this circular dependency when
-    # c/b/ui/views/extensions/extensions_toolbar_interactive_uitest.h gets componentized.
+    # c/b/ui/views/extensions/extensions_toolbar_interactive_uitest.h gets
+    # componentized.
     allow_circular_includes_from =
         [ "//chrome/browser/ui/views/toolbar:interactive_ui_tests" ]
 
@@ -11329,6 +11367,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser",
       "//chrome/browser:browser_features",
       "//chrome/browser:buildflags",
+      "//chrome/browser:chrome_content_browser_client",
       "//chrome/browser:main_extra_parts",
       "//chrome/browser:unexpire_flags",
       "//chrome/browser/actor",
@@ -12352,8 +12391,8 @@ test("chrome_app_unittests") {
 }
 
 if (!is_android) {
-  # Everything needed to build/copy to run the performance_browser_tests isolate.
-  # See: //testing/buildbot/gn_isolate_map.pyl
+  # Everything needed to build/copy to run the performance_browser_tests
+  # isolate. See: //testing/buildbot/gn_isolate_map.pyl
   group("performance_browser_tests") {
     testonly = true
     data_deps = [

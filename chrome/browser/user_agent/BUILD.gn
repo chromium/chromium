@@ -22,6 +22,7 @@ source_set("browser_tests") {
     sources += [ "user_agent_browsertest.cc" ]
     deps += [
       "//chrome/browser:browser_process",
+      "//chrome/browser:chrome_content_browser_client",
       "//chrome/browser/profiles:profile",
       "//chrome/common",
       "//chrome/test:test_support_ui",

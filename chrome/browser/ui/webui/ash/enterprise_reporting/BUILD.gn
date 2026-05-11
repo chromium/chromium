@@ -38,6 +38,7 @@ static_library("enterprise_reporting") {
   deps = [
     "//ash/constants",
     "//chrome/browser:browser_process",
+    "//chrome/browser:browser_process_platform_part",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_util",

@@ -25,6 +25,7 @@ static_library("main_extra_parts") {
     "//ash/webui/annotator",
     "//ash/webui/system_apps/public:system_web_app_type",
     "//chrome/browser:browser_process",
+    "//chrome/browser:browser_process_platform_part",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser:global_features",
     "//chrome/browser/ash/app_list",

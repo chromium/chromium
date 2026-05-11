@@ -79,6 +79,7 @@ source_set("unit_tests") {
     "//ash/constants",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser:browser_process_platform_part",
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash/new_window",
     "//chrome/test:test_support",

@@ -72,6 +72,7 @@ source_set("impl") {
   deps = [
     ":icon_label_bubble",
     ":location_bar",
+    "//chrome/browser:defaults",
     "//chrome/browser/ui/dialogs",
     "//chrome/browser/ui/select_file_policy",
   ]
@@ -250,6 +251,7 @@ source_set("browser_tests") {
   ]
   deps = [
     ":location_bar",
+    "//chrome/browser:chrome_content_browser_client",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:app_registry_cache_waiter",
     "//chrome/browser/apps/link_capturing",

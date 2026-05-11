@@ -17,6 +17,7 @@ source_set("impl") {
   deps = [
     ":invalidation",
     "//chrome/browser:browser_process",
+    "//chrome/browser:browser_process_platform_part",
     "//chrome/browser/gcm",
     "//chrome/browser/signin",
     "//components/gcm_driver/instance_id",

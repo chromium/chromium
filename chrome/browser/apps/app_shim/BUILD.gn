@@ -2,6 +2,22 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# app_shim_listener and mach_bootstrap_acceptor are split out so that
+# //chrome/browser:browser_process_platform_part can include
+# browser_process_platform_part_mac.h (which transitively includes
+# app_shim_listener.h) without depending on the rest of :app_shim.
+source_set("app_shim_listener") {
+  public = [
+    "app_shim_listener.h",
+    "mach_bootstrap_acceptor.h",
+  ]
+  public_deps = [
+    "//base",
+    "//content/public/browser",
+    "//mojo/public/cpp/platform",
+  ]
+}
+
 # This is the part of the Chrome browser process responsible for launching and
 # communicating with app_shim processes on Mac.
 source_set("app_shim") {
@@ -10,7 +26,6 @@ source_set("app_shim") {
     "app_shim_host_bootstrap_mac.h",
     "app_shim_host_mac.cc",
     "app_shim_host_mac.h",
-    "app_shim_listener.h",
     "app_shim_listener.mm",
     "app_shim_manager_mac.cc",
     "app_shim_manager_mac.h",
@@ -19,18 +34,21 @@ source_set("app_shim") {
     "code_signature_mac.cc",
     "code_signature_mac.h",
     "mach_bootstrap_acceptor.cc",
-    "mach_bootstrap_acceptor.h",
     "web_app_shim_manager_delegate_mac.cc",
     "web_app_shim_manager_delegate_mac.h",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  public_deps = [
+    ":app_shim_listener",
+    "//chrome/browser:browser_public_dependencies",
+  ]
 
   deps = [
     "//apps",
     "//chrome/browser:browser_process",
+    "//chrome/browser:browser_process_platform_part",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/badging",
     "//chrome/browser/lifetime",

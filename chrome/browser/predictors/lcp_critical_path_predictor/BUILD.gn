@@ -38,6 +38,7 @@ source_set("impl") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
     ":headers",
+    "//chrome/browser:after_startup_task_utils",
     "//chrome/browser/page_load_metrics",
     "//chrome/browser/predictors",
     "//net",

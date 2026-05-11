@@ -93,6 +93,7 @@ if (is_android) {
     deps = [
       ":jni_headers",
       "//base",
+      "//chrome/browser:after_startup_task_utils",
       "//chrome/browser:browser_process",
       "//chrome/browser:test_support",
       "//components/subresource_filter/content/browser",

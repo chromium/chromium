@@ -20,6 +20,7 @@ source_set("sessions") {
 
   public_deps = [
     "//base",
+    "//chrome/browser:defaults",
     "//chrome/browser/profiles:profile",
     "//components/sessions",
     "//ui/base:types",

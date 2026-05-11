@@ -132,6 +132,7 @@ source_set("cocoa") {
     "//chrome/app/theme:chrome_unscaled_resources_grit",
     "//chrome/browser:browser_features",
     "//chrome/browser:browser_process",
+    "//chrome/browser:command_updater_impl",
     "//chrome/browser:primitives",
     "//chrome/browser/apps/platform_apps",
     "//chrome/browser/bookmarks",

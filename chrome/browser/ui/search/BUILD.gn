@@ -42,7 +42,8 @@ source_set("impl") {
     "search_ipc_router.cc",
     "search_ipc_router_policy_impl.cc",
 
-    # The three files below cause circular dependencies against //c/b:b or //c/b/ui:ui.
+    # The three files below cause circular dependencies against //c/b:b or
+    # //c/b/ui:ui.
     "ntp_user_data_logger.cc",
     "omnibox_utils.cc",
     "search_tab_helper.cc",
@@ -50,6 +51,7 @@ source_set("impl") {
   deps = [
     ":search",
     "//base",
+    "//chrome/browser:after_startup_task_utils",
     "//chrome/browser/bookmarks",
     "//chrome/browser/history",
     "//chrome/browser/profiles:profile",

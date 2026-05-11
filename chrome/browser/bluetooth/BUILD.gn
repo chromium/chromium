@@ -64,6 +64,7 @@ if (!is_android) {
     public_deps = [
       ":bluetooth",
       "//chrome/browser",
+      "//chrome/browser:chrome_content_browser_client",
       "//device/bluetooth",
       "//device/bluetooth:mocks",
       "//device/bluetooth/public/cpp",

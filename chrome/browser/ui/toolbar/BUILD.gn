@@ -123,6 +123,7 @@ source_set("impl") {
       "//chrome/app/theme:theme_resources",
       "//chrome/app/vector_icons",
       "//chrome/browser:browser_process",
+      "//chrome/browser:defaults",
       "//chrome/browser/favicon",
       "//chrome/browser/feedback",
       "//chrome/browser/feedback:feedback_impl",

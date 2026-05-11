@@ -278,6 +278,7 @@ source_set("browser_test_support") {
     ":usb",
     "//base",
     "//chrome/browser",
+    "//chrome/browser:chrome_content_browser_client",
   ]
 }
 
@@ -293,6 +294,7 @@ source_set("platform_browser_tests") {
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser:browser_process",
+    "//chrome/browser:chrome_content_browser_client",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/ui/navigator",
     "//chrome/test:test_support",

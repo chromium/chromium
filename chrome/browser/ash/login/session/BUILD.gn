@@ -46,6 +46,7 @@ static_library("session") {
     "//ash/constants",
     "//ash/webui/shimless_rma",
     "//chrome/browser:browser_process",
+    "//chrome/browser:browser_process_platform_part",
     "//chrome/browser:flags",
     "//chrome/browser:global_features",
     "//chrome/browser/app_mode",
@@ -149,7 +150,8 @@ static_library("session") {
     "//ui/aura",
     "//url",
 
-    # TODO(b/353449319): Use //chrome/browser/ash after fixing cyclic dependency from
+    # TODO(b/353449319): Use //chrome/browser/ash after fixing cyclic dependency
+    # from
     # obj/chrome/browser/ash/login/session/session/user_session_initializer.o.
     "//chrome/browser/policy/messaging_layer/proto:app_install_events_proto",
   ]

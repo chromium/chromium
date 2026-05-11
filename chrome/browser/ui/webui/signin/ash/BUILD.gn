@@ -90,6 +90,7 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser:browser_process",
+    "//chrome/browser:browser_process_platform_part",
     "//chrome/browser/ash/account_manager",
     "//chrome/browser/ash/test:test_support",
     "//chrome/browser/profiles:profile",

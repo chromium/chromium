@@ -66,6 +66,7 @@ if (!is_android) {
       ":login",
       "//base/test:test_support",
       "//chrome/browser:browser_process",
+      "//chrome/browser:chrome_content_browser_client",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_enums",

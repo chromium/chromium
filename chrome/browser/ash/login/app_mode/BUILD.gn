@@ -70,6 +70,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
+    "//chrome/browser:browser_process_platform_part",
     "//chrome/browser/ash/app_mode:test_support",
     "//chrome/browser/ash/app_mode/web_app",
     "//chrome/browser/ash/login/screens",

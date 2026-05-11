@@ -287,6 +287,8 @@ if (!is_android && !is_mac) {
         # On Linux, link the dependencies (libraries) that make up actual
         # Chromium functionality directly into the executable.
         ":dependencies",
+        "//chrome/browser:chrome_content_browser_client",
+        "//chrome/browser:startup_data",
         "//chrome/browser/lifetime",
         "//chrome/common:version_header",
 
@@ -418,6 +420,8 @@ if (is_win) {
       "//chrome/app:chrome_dll_resources",
       "//chrome/app:command_ids",
       "//chrome/app/theme:chrome_unscaled_resources",
+      "//chrome/browser:chrome_content_browser_client",
+      "//chrome/browser:startup_data",
       "//chrome/browser/lifetime",
       "//chrome/browser/win:isolated_browser_support",
       "//chrome/chrome_elf",
@@ -778,7 +782,9 @@ if (is_win) {
         deps += [ ":chrome_framework+link_nested" ]
 
         ldflags += [
-          # The helper is in Chromium.app/Contents/Frameworks/Chromium Framework.framework/Versions/X/Helpers/Chromium Helper.app/Contents/MacOS
+          # The helper is in Chromium.app/Contents/Frameworks/Chromium
+          # Framework.framework/Versions/X/Helpers/Chromium
+          # Helper.app/Contents/MacOS
 
           # Set up an rpath to the Contents/Frameworks directory so that
           # Chromium.framework will be found there. This matches the path that
@@ -1126,6 +1132,8 @@ if (is_win) {
       ":dependencies",
       "//build:chromeos_buildflags",
       "//chrome/app:command_ids",
+      "//chrome/browser:chrome_content_browser_client",
+      "//chrome/browser:startup_data",
       "//chrome/browser/lifetime",
       "//chrome/browser/mac",
       "//chrome/common:buildflags",
@@ -1242,8 +1250,8 @@ if (is_win) {
   assert(_framework_binary_path != "",
          "Ignore configuration-dependent unused variable warning")
 
-  # TOOD(crbug.com/40740432#comment9) - thakis@ look into why profile and coverage
-  # instrumentation adds these symbols in different orders
+  # TOOD(crbug.com/40740432#comment9) - thakis@ look into why profile and
+  # coverage instrumentation adds these symbols in different orders
   if (!is_component_build && chrome_pgo_phase != 1 && !using_sanitizer) {
     action("verify_chrome_framework_order") {
       script = "//chrome/tools/build/mac/verify_order.py"
@@ -1623,6 +1631,9 @@ if (is_android) {
 
     deps = [
       ":dependencies",
+      "//chrome/browser:chrome_content_browser_client",
+      "//chrome/browser:defaults",
+      "//chrome/browser:startup_data",
       "//chrome/browser/flags:flags_android",
       "//chrome/browser/lifetime",
       "//chrome/browser/payments:impl",

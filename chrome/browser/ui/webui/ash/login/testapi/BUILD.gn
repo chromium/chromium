@@ -22,6 +22,7 @@ static_library("testapi") {
     "//ash/public/mojom:input_device_settings",
     "//build:branding_buildflags",
     "//chrome/browser:browser_process",
+    "//chrome/browser:browser_process_platform_part",
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/quick_unlock",
     "//chrome/browser/ash/policy/core",

@@ -36,6 +36,7 @@ source_set("unit_tests") {
   deps = [
     ":site_isolation",
     "//base/test:test_support",
+    "//chrome/browser:chrome_content_browser_client",
     "//chrome/common:chrome_features",
     "//chrome/test:test_support",
     "//components/site_isolation",
@@ -64,6 +65,7 @@ if (!is_android) {
     public_deps = [ "//chrome/test:test_support_ui" ]
     deps = [
       ":site_isolation",
+      "//chrome/browser:chrome_content_browser_client",
       "//chrome/common:chrome_features",
       "//chrome/test:test_support",
       "//components/javascript_dialogs",

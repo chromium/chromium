@@ -130,6 +130,7 @@ source_set("app_service") {
       "//ash/webui/projector_app/public/cpp",
       "//chrome/app/theme:chrome_unscaled_resources_grit",
       "//chrome/browser:browser_process",
+      "//chrome/browser:browser_process_platform_part",
       "//chrome/browser/apps/almanac_api_client",
       "//chrome/browser/apps/app_service/app_icon",
       "//chrome/browser/apps/app_service/app_install",

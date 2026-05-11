@@ -28,6 +28,7 @@ static_library("main") {
     "//chrome/app:branded_strings",
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
+    "//chrome/browser:browser_process_platform_part",
     "//chrome/browser:resources",
     "//chrome/browser/ash/browser_delegate",
     "//chrome/browser/ash/policy/core",

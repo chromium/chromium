@@ -65,6 +65,7 @@ source_set("impl") {
     ":bookmarks",
     "//chrome/app:command_ids",
     "//chrome/browser:browser_features",
+    "//chrome/browser:defaults",
     "//chrome/browser/bookmarks",
     "//chrome/browser/prefs",
     "//chrome/browser/profiles:profile",

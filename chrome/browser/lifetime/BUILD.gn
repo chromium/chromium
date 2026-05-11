@@ -68,6 +68,7 @@ source_set("impl") {
     ":termination_notification",
     "//build/config/compiler:compiler_buildflags",
     "//chrome/browser:browser_process",
+    "//chrome/browser:browser_process_platform_part",
     "//chrome/browser:flags",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/profiles:profile_util",

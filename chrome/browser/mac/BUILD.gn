@@ -40,6 +40,15 @@ test("install_sh_test") {
   ]
 }
 
+# key_window_notifier is split out so that
+# //chrome/browser:browser_process_platform_part can include
+# browser_process_platform_part_mac.h (which transitively includes
+# key_window_notifier.h) without depending on the rest of :mac.
+source_set("key_window_notifier") {
+  public = [ "key_window_notifier.h" ]
+  public_deps = [ "//base" ]
+}
+
 source_set("mac") {
   public = [
     "auth_session_request.h",
@@ -49,13 +58,13 @@ source_set("mac") {
     "exception_processor.h",
     "initial_prefs.h",
     "install_from_dmg.h",
-    "key_window_notifier.h",
     "metrics.h",
     "nsprocessinfo_additions.h",
     "relauncher.h",
   ]
   sources = public
   public_deps = [
+    ":key_window_notifier",
     "//base",
     "//chrome/browser:main_extra_parts",
     "//chrome/browser/upgrade_detector",

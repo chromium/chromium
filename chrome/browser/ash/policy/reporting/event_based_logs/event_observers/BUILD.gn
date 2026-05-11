@@ -19,6 +19,7 @@ static_library("event_observers") {
   deps = [
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser:browser_process_platform_part",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/reporting/os_updates",
     "//chrome/browser/policy/messaging_layer/proto:log_upload_event_proto",
@@ -42,6 +43,7 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser:browser_process",
+    "//chrome/browser:browser_process_platform_part",
     "//chrome/browser/ash/login/test:test_support",
     "//chrome/browser/ash/policy/affiliation:test_support",
     "//chrome/browser/ash/policy/core",

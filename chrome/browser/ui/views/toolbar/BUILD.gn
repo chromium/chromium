@@ -55,6 +55,7 @@ source_set("toolbar") {
   public_deps = [
     "//base",
     "//build:buildflag_header_h",
+    "//chrome/browser:command_updater_impl",
     "//chrome/browser/bookmarks",
     "//chrome/browser/glic",
     "//chrome/browser/glic/browser_ui",
@@ -160,6 +161,7 @@ source_set("impl") {
     "//chrome/app/theme:theme_resources_grit",
     "//chrome/app/vector_icons",
     "//chrome/browser:browser_process",
+    "//chrome/browser:chained_back_navigation_tracker",
     "//chrome/browser:flags",
     "//chrome/browser:primitives",
     "//chrome/browser:resources",

@@ -115,6 +115,7 @@ static_library("printing") {
     "//chrome/app:generated_resources",
     "//chrome/app/vector_icons",
     "//chrome/browser:browser_process",
+    "//chrome/browser:browser_process_platform_part",
     "//chrome/browser/ash/plugin_vm",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/printing/enterprise",

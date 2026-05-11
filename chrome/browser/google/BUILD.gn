@@ -31,6 +31,7 @@ source_set("google") {
 
     deps += [
       "//chrome/browser:browser_process",
+      "//chrome/browser:browser_process_platform_part",
       "//chrome/browser/ash/policy/core",
       "//chromeos/ash/components/system",
       "//components/policy/core/common:common_constants",

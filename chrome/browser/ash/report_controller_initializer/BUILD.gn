@@ -41,6 +41,7 @@ source_set("unit_tests") {
     ":report_controller_initializer",
     "//base",
     "//chrome/browser",
+    "//chrome/browser:browser_process_platform_part",
     "//chrome/browser/ash/settings",
     "//chrome/test:test_support",
     "//chromeos/ash/components/install_attributes:test_support",

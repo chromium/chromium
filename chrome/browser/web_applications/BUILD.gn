@@ -1349,6 +1349,7 @@ source_set("web_applications_browser_tests") {
     ":web_applications_test_support",
     "//base",
     "//chrome/app:command_ids",
+    "//chrome/browser:browser_process_platform_part",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:app_registry_cache_waiter",
     "//chrome/browser/apps/app_service:test_support",

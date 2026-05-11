@@ -69,6 +69,7 @@ if (is_win || is_chromeos || is_mac) {
     public_deps = [ ":webshare" ]
 
     deps = [
+      "//chrome/browser:bad_message",
       "//chrome/browser:browser_process",
       "//chrome/browser:browser_public_dependencies",
       "//mojo/public/cpp/bindings",

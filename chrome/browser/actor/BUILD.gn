@@ -400,6 +400,7 @@ source_set("browser_tests") {
     ":test_support",
     ":tools_test_support",
     "ui:event_dispatcher",
+    "//chrome/browser:chrome_content_browser_client",
     "//chrome/browser/affiliations",
     "//chrome/browser/glic",
     "//chrome/browser/glic/actor:browser_tests",

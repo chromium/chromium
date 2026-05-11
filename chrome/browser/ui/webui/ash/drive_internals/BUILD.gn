@@ -15,6 +15,7 @@ static_library("drive_internals") {
   deps = [
     "//ash/constants",
     "//base",
+    "//chrome/browser:file_util_service",
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/profiles:profile",

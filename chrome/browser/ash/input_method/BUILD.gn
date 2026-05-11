@@ -192,6 +192,7 @@ static_library("input_method") {
     "//build:branding_buildflags",
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
+    "//chrome/browser:browser_process_platform_part",
     "//chrome/browser:resources",
     "//chrome/browser/ash/browser_delegate",
     "//chrome/browser/ash/file_manager",

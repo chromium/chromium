@@ -342,6 +342,7 @@ source_set("browser_tests") {
       "//base/test:test_support",
       "//chrome/app:command_ids",
       "//chrome/app:generated_resources",
+      "//chrome/browser:chrome_content_browser_client",
       "//chrome/browser/apps/app_service:test_support",
       "//chrome/browser/extensions",
       "//chrome/browser/extensions:test_support",
