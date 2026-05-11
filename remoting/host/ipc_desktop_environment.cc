@@ -26,6 +26,7 @@
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "remoting/base/errors.h"
+#include "remoting/base/fifo_buffer.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/action_executor.h"
 #include "remoting/host/active_display_monitor.h"
@@ -139,6 +140,10 @@ IpcDesktopEnvironment::CreateRemoteWebAuthnStateChangeNotifier() {
 
 std::unique_ptr<AudioInjector> IpcDesktopEnvironment::CreateAudioInjector() {
   return std::make_unique<IpcAudioInjector>(desktop_session_proxy_);
+}
+
+std::unique_ptr<FifoBufferWriter> IpcDesktopEnvironment::TakeAudioWriter() {
+  return desktop_session_proxy_->TakeAudioWriter();
 }
 
 IpcDesktopEnvironmentFactory::DesktopConnection::DesktopConnection(

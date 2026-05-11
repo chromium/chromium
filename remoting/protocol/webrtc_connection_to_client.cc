@@ -13,6 +13,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "components/webrtc/thread_wrapper.h"
 #include "net/base/io_buffer.h"
+#include "remoting/base/fifo_buffer.h"
 #include "remoting/base/logging.h"
 #include "remoting/codec/webrtc_video_encoder_vpx.h"
 #include "remoting/protocol/audio_source.h"
@@ -27,6 +28,7 @@
 #include "remoting/protocol/input_stub.h"
 #include "remoting/protocol/message_pipe.h"
 #include "remoting/protocol/transport_context.h"
+#include "remoting/protocol/webrtc_audio_fifo_sink_adapter.h"
 #include "remoting/protocol/webrtc_audio_module.h"
 #include "remoting/protocol/webrtc_audio_sink_adapter.h"
 #include "remoting/protocol/webrtc_audio_stream.h"
@@ -120,6 +122,18 @@ std::unique_ptr<AudioStream> WebrtcConnectionToClient::StartAudioStream(
   std::unique_ptr<WebrtcAudioStream> stream(new WebrtcAudioStream());
   stream->Start(audio_task_runner_, std::move(audio_source), transport_.get());
   return std::move(stream);
+}
+
+void WebrtcConnectionToClient::SetAudioWriter(
+    std::unique_ptr<FifoBufferWriter> writer) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  audio_fifo_sink_adapter_ = std::make_unique<WebrtcAudioFifoSinkAdapter>(
+      std::move(writer),
+      base::BindRepeating(&WebrtcConnectionToClient::OnAudioFormatChanged,
+                          weak_factory_.GetWeakPtr()));
+
+  BindAudioFifoSinkAdapter();
 }
 
 // Return pointer to ClientStub.
@@ -296,6 +310,7 @@ void WebrtcConnectionToClient::OnWebrtcTransportMediaStreamAdded(
     audio_sink_adapter_ = std::make_unique<WebrtcAudioSinkAdapter>(
         incoming_audio_stream_, audio_stub_);
   }
+  BindAudioFifoSinkAdapter();
 }
 
 void WebrtcConnectionToClient::OnWebrtcTransportMediaStreamRemoved(
@@ -303,8 +318,37 @@ void WebrtcConnectionToClient::OnWebrtcTransportMediaStreamRemoved(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (incoming_audio_stream_ == stream) {
     audio_sink_adapter_.reset();
+    if (audio_fifo_sink_adapter_) {
+      audio_fifo_sink_adapter_->SetTrack(nullptr);
+    }
     incoming_audio_stream_ = nullptr;
   }
+}
+
+void WebrtcConnectionToClient::OnAudioFormatChanged(
+    const AudioSampleInfo& info,
+    base::OnceClosure acknowledgment_callback) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  std::move(acknowledgment_callback).Run();
+}
+
+void WebrtcConnectionToClient::BindAudioFifoSinkAdapter() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (!audio_fifo_sink_adapter_ || !incoming_audio_stream_) {
+    return;
+  }
+
+  webrtc::AudioTrackVector audio_tracks =
+      incoming_audio_stream_->GetAudioTracks();
+  if (!audio_tracks.empty()) {
+    audio_fifo_sink_adapter_->SetTrack(audio_tracks[0]);
+  }
+}
+
+bool WebrtcConnectionToClient::FormatHandshakeCompleteForTesting() const {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  return audio_fifo_sink_adapter_ &&
+         audio_fifo_sink_adapter_->FormatHandshakeCompleteForTesting();
 }
 
 void WebrtcConnectionToClient::OnWebrtcTransportRouteChanged(

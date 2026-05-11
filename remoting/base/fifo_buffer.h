@@ -13,6 +13,12 @@
 
 namespace remoting {
 
+// 64 KB provides 340 ms of playout buffering at standard format (48kHz,
+// 2 channels, 16-bit PCM).
+// Calculation: 64 * 1024 bytes / (48000 samples/sec * 2 channels * 2 bytes)
+// = 65,536 / 192,000 bytes/sec = ~0.341 seconds.
+inline constexpr size_t kDefaultFifoBufferCapacity = 64 * 1024;
+
 // A generic interface for writing to a Single-Producer Single-Consumer (SPSC)
 // FIFO buffer of raw bytes.
 class FifoBufferWriter {

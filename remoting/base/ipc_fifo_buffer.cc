@@ -55,7 +55,6 @@ FifoBufferWriter::Result IpcFifoBufferWriter::Write(
     return FifoBufferWriter::Result::kFailed;
   }
 
-  LOG(ERROR) << "Failed to write to Mojo Data Pipe: " << result;
   return FifoBufferWriter::Result::kFailed;
 }
 

@@ -27,6 +27,7 @@ class SingleThreadTaskRunner;
 namespace remoting {
 
 class DesktopDisplayInfoMonitor;
+class FifoBufferWriter;
 
 // Used to create audio/video capturers and event executor that work with
 // the local console.
@@ -60,6 +61,7 @@ class BasicDesktopEnvironment : public DesktopEnvironment {
   std::unique_ptr<RemoteWebAuthnStateChangeNotifier>
   CreateRemoteWebAuthnStateChangeNotifier() override;
   std::unique_ptr<AudioInjector> CreateAudioInjector() override;
+  std::unique_ptr<FifoBufferWriter> TakeAudioWriter() override;
 
  protected:
   friend class BasicDesktopEnvironmentFactory;

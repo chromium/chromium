@@ -13,6 +13,7 @@
 #include "remoting/base/fifo_buffer.h"
 #include "remoting/base/in_memory_fifo_buffer.h"
 #include "remoting/protocol/audio_sample_info.h"
+#include "remoting/protocol/fake_webrtc_audio_classes.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/webrtc/api/media_stream_interface.h"
@@ -20,74 +21,6 @@
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
 
 namespace remoting::protocol {
-
-namespace {
-
-class FakeAudioTrackSource : public webrtc::AudioSourceInterface {
- public:
-  FakeAudioTrackSource() = default;
-
-  // webrtc::NotifierInterface implementation.
-  void RegisterObserver(webrtc::ObserverInterface* observer) override {}
-  void UnregisterObserver(webrtc::ObserverInterface* observer) override {}
-
-  // webrtc::MediaSourceInterface implementation.
-  SourceState state() const override { return kLive; }
-  bool remote() const override { return false; }
-
-  // webrtc::AudioSourceInterface implementation.
-  void AddSink(webrtc::AudioTrackSinkInterface* sink) override {
-    sinks_.push_back(sink);
-  }
-  void RemoveSink(webrtc::AudioTrackSinkInterface* sink) override {
-    std::erase(sinks_, sink);
-  }
-
-  const std::vector<webrtc::AudioTrackSinkInterface*>& sinks() const {
-    return sinks_;
-  }
-
- protected:
-  ~FakeAudioTrackSource() override = default;
-
- private:
-  std::vector<webrtc::AudioTrackSinkInterface*> sinks_;
-};
-
-class FakeAudioTrack : public webrtc::AudioTrackInterface {
- public:
-  explicit FakeAudioTrack(FakeAudioTrackSource* source) : source_(source) {}
-
-  // webrtc::NotifierInterface implementation.
-  void RegisterObserver(webrtc::ObserverInterface* observer) override {}
-  void UnregisterObserver(webrtc::ObserverInterface* observer) override {}
-
-  // webrtc::MediaStreamTrackInterface implementation.
-  std::string kind() const override { return "audio"; }
-  std::string id() const override { return "audio_track"; }
-  bool enabled() const override { return true; }
-  bool set_enabled(bool enable) override { return true; }
-  TrackState state() const override { return kLive; }
-
-  // webrtc::AudioTrackInterface implementation.
-  void AddSink(webrtc::AudioTrackSinkInterface* sink) override {
-    source_->AddSink(sink);
-  }
-  void RemoveSink(webrtc::AudioTrackSinkInterface* sink) override {
-    source_->RemoveSink(sink);
-  }
-  webrtc::AudioSourceInterface* GetSource() const override {
-    return source_.get();
-  }
-
- protected:
-  ~FakeAudioTrack() override = default;
-
- private:
-  webrtc::scoped_refptr<FakeAudioTrackSource> source_;
-};
-
-}  // namespace
 
 class WebrtcAudioFifoSinkAdapterTest : public testing::Test {
  public:

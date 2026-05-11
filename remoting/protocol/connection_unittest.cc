@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/math_constants.h"
 #include "base/run_loop.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
@@ -19,6 +20,8 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "remoting/base/constants.h"
+#include "remoting/base/fifo_buffer.h"
+#include "remoting/base/in_memory_fifo_buffer.h"
 #include "remoting/proto/audio.pb.h"
 #include "remoting/protocol/audio_source.h"
 #include "remoting/protocol/audio_stream.h"
@@ -27,6 +30,7 @@
 #include "remoting/protocol/desktop_capturer_wrapper.h"
 #include "remoting/protocol/fake_session.h"
 #include "remoting/protocol/fake_video_renderer.h"
+#include "remoting/protocol/fake_webrtc_audio_classes.h"
 #include "remoting/protocol/network_settings.h"
 #include "remoting/protocol/protocol_mock_objects.h"
 #include "remoting/protocol/transport_context.h"
@@ -680,6 +684,59 @@ TEST_F(ConnectionTest, DISABLED_SecondCaptureFailed) {
 
   WaitNextVideoFrame();
   WaitNextVideoFrame();
+}
+
+TEST_F(ConnectionTest, WebrtcAudioFifoPlayoutBinding) {
+  Connect();
+
+  // 1. Instantiate SPSC pipe.
+  std::unique_ptr<InMemoryFifoBufferWriter> writer;
+  std::unique_ptr<InMemoryFifoBufferReader> reader;
+  ASSERT_TRUE(
+      CreateInMemoryFifoBuffer(kDefaultFifoBufferCapacity, writer, reader));
+
+  // 2. Bind the SPSC writer to WebrtcConnectionToClient.
+  host_connection_->SetAudioWriter(std::move(writer));
+
+  // 3. Create a fake audio track and stream.
+  webrtc::scoped_refptr<FakeAudioTrackSource> source(
+      new webrtc::RefCountedObject<FakeAudioTrackSource>());
+  webrtc::scoped_refptr<FakeAudioTrack> track(
+      new webrtc::RefCountedObject<FakeAudioTrack>(source.get()));
+  webrtc::scoped_refptr<FakeMediaStream> stream(
+      new webrtc::RefCountedObject<FakeMediaStream>(track.get()));
+
+  // 4. Trigger track addition.
+  // Cast to WebrtcConnectionToClient to call OnWebrtcTransportMediaStreamAdded.
+  auto* webrtc_connection =
+      static_cast<WebrtcConnectionToClient*>(host_connection_.get());
+  webrtc_connection->OnWebrtcTransportMediaStreamAdded(stream);
+
+  // Verify that the track is registered.
+  ASSERT_FALSE(source->sinks().empty());
+
+  // 5. Inject a frame to trigger format handshake.
+  std::vector<uint8_t> data = {1, 2, 3, 4};
+  source->sinks()[0]->OnData(data.data(), 16, 48000, 2, 1);
+
+  // Wait for the SPSC format changed handshake to complete deterministically!
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return webrtc_connection->FormatHandshakeCompleteForTesting();
+  }));
+
+  // The first frame is dropped due to handshake pending, so buffer remains
+  // empty.
+  ASSERT_EQ(reader->GetBufferedBytes(), 0u);
+
+  // 6. Inject a second frame. Playout direct SPSC write succeeds!
+  source->sinks()[0]->OnData(data.data(), 16, 48000, 2, 1);
+  ASSERT_EQ(reader->GetBufferedBytes(), 4u);
+
+  // 7. Trigger track removal.
+  webrtc_connection->OnWebrtcTransportMediaStreamRemoved(stream);
+
+  // Verify that the track is safely unregistered.
+  ASSERT_TRUE(source->sinks().empty());
 }
 
 }  // namespace remoting::protocol

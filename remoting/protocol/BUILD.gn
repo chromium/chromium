@@ -299,6 +299,8 @@ static_library("test_support") {
       "fake_connection_to_client.h",
       "fake_desktop_capturer.cc",
       "fake_desktop_capturer.h",
+      "fake_webrtc_audio_classes.cc",
+      "fake_webrtc_audio_classes.h",
     ]
   }
 
@@ -351,7 +353,6 @@ source_set("unit_tests") {
     "spake2_authenticator_unittest.cc",
     "stream_packet_socket_unittest.cc",
     "validating_authenticator_unittest.cc",
-    "webrtc_audio_fifo_sink_adapter_unittest.cc",
     "webrtc_event_log_data_unittest.cc",
     "webrtc_video_renderer_adapter_unittest.cc",
   ]
@@ -359,6 +360,7 @@ source_set("unit_tests") {
   if (enable_remoting_host) {
     sources += [
       "connection_unittest.cc",
+      "webrtc_audio_fifo_sink_adapter_unittest.cc",
       "webrtc_audio_source_adapter_unittest.cc",
       "webrtc_frame_scheduler_unittest.cc",
       "webrtc_transport_unittest.cc",
