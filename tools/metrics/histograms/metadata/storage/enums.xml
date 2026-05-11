@@ -315,26 +315,6 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Notifications"/>
 </enum>
 
-<!-- LINT.IfChange(IndexedDbLevelDbCleanupVerificationEvent) -->
-
-<enum name="IndexedDbLevelDbCleanupVerificationEvent">
-  <int value="0"
-      label="Cleanup was started and a verification snapshot was taken (or at
-             least attempted)"/>
-  <int value="1"
-      label="Error while trying to open the databases before cleanup"/>
-  <int value="2"
-      label="Error while trying to create the snapshot before cleanup"/>
-  <int value="3"
-      label="Error while trying to open the databases after cleanup"/>
-  <int value="4"
-      label="Error while trying to create the snapshot after cleanup"/>
-  <int value="5" label="Snapshots matched before and after cleanup"/>
-  <int value="6" label="Snapshots didn't match"/>
-</enum>
-
-<!-- LINT.ThenChange(//content/browser/indexed_db/instance/leveldb/backing_store.h:InSessionCleanupVerificationEvent) -->
-
 <!-- LINT.IfChange(IndexedDbSqliteSpecificEvent) -->
 
 <enum name="IndexedDbSqliteSpecificEvent">
@@ -462,17 +442,6 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/interest_group/interest_group_storage.cc:InterestGroupStorageVacuumResult) -->
-
-<!-- LINT.IfChange(LevelDBCleanupSchedulerPhase) -->
-
-<enum name="LevelDBCleanupSchedulerPhase">
-  <int value="0" label="Run scheduled"/>
-  <int value="1" label="Tombstone sweeper"/>
-  <int value="2" label="Database compaction"/>
-  <int value="3" label="Logging and cleanup"/>
-</enum>
-
-<!-- LINT.ThenChange(//content/browser/indexed_db/instance/leveldb_cleanup_scheduler.h:Phase) -->
 
 <enum name="RequestStorageResult">
   <int value="0" label="Approved due to existing storage access"/>

@@ -31,7 +31,6 @@
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
 #include "content/browser/indexed_db/instance/backing_store.h"
 #include "content/browser/indexed_db/instance/backing_store_pre_close_task_queue.h"
-#include "content/browser/indexed_db/instance/leveldb/cleanup_scheduler.h"
 #include "content/browser/indexed_db/instance/leveldb/indexed_db_leveldb_operations.h"
 #include "content/browser/indexed_db/status.h"
 #include "content/common/content_export.h"
@@ -65,8 +64,7 @@ namespace level_db {
 class ActiveBlobRegistry;
 class AutoDidCommitTransaction;
 
-class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
-                                    public LevelDBCleanupScheduler::Delegate {
+class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore {
  public:
   // This struct contains extra metadata only relevant to this implementation of
   // the backing store.
@@ -226,10 +224,6 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
       return transaction_.get();
     }
 
-    void SetTombstoneThresholdExceeded(bool tombstone_threshold_exceeded) {
-      tombstone_threshold_exceeded_ = tombstone_threshold_exceeded;
-    }
-
     Status GetExternalObjectsForRecord(const std::string& object_store_data_key,
                                        IndexedDBValue* value);
 
@@ -313,10 +307,6 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
     // via ShouldSyncOnCommit.
     const blink::mojom::IDBTransactionDurability durability_;
     const blink::mojom::IDBTransactionMode mode_;
-
-    // This flag is set when tombstones encountered during a read-only
-    // cursor operation exceed `kCursorTombstoneThreshold`.
-    bool tombstone_threshold_exceeded_ = false;
 
     std::optional<DatabaseMetadata> metadata_before_transaction_;
 
@@ -416,7 +406,6 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
         const blink::IndexedDBKey& primary_key,
         IteratorState state);
 
-    int tombstones_count_ = 0;
     // `iterator_` and `current_key_` are saved when `SavePosition()` is called.
     std::optional<std::tuple<std::unique_ptr<TransactionalLevelDBIterator>,
                              blink::IndexedDBKey>>
@@ -464,8 +453,6 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
     return active_blob_registry_.get();
   }
 
-  void OnTransactionComplete(bool tombstone_threshold_exceeded);
-
   static void HandleCorruption(const base::FilePath& path_base,
                                const storage::BucketLocator& bucket_locator,
                                const std::string& message);
@@ -488,12 +475,8 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
   GetDatabaseNamesAndVersions() override;
   uint64_t EstimateSize(bool write_in_progress) const override;
 
-  // LevelDBCleanupScheduler::Delegate:
-  void OnCleanupStarted() override;
-  void OnCleanupStopped(bool completed) override;
   Status GetCompleteMetadata(
-      std::vector<std::unique_ptr<blink::IndexedDBDatabaseMetadata>>* output)
-      override;
+      std::vector<std::unique_ptr<blink::IndexedDBDatabaseMetadata>>* output);
 
   base::FilePath GetBlobFileName(int64_t database_id, int64_t key) const;
 
@@ -512,10 +495,6 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
   }
   void SetExecuteJournalCleaningOnNoTransactionsForTesting() {
     execute_journal_cleaning_on_no_txns_ = true;
-  }
-
-  const LevelDBCleanupScheduler& GetLevelDBCleanupSchedulerForTesting() const {
-    return level_db_cleanup_scheduler_;
   }
 
   bool in_memory() const { return backing_store_mode_ == Mode::kInMemory; }
@@ -542,20 +521,6 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
 
   static uint64_t ReadSizeFromDisk(const base::FilePath& database_path,
                                    const base::FilePath& blob_path);
-
-  // LINT.IfChange(InSessionCleanupVerificationEvent)
-  enum class InSessionCleanupVerificationEvent {
-    kCleanupStarted = 0,
-    kErrorOpeningBefore = 1,
-    kErrorSnapshottingBefore = 2,
-    kErrorOpeningAfter = 3,
-    kErrorSnapshottingAfter = 4,
-    kMatchedSnapshot = 5,
-    kMismatchedSnapshot = 6,
-
-    kMaxValue = kMismatchedSnapshot,
-  };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/storage/enums.xml:IndexedDbLevelDbCleanupVerificationEvent)
 
  private:
   FRIEND_TEST_ALL_PREFIXES(LevelDbBackingStoreTestWithExternalObjects,
@@ -592,10 +557,6 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
   // Updates the next run timestamp for the level db compaction in the database
   // metadata. Returns if writing the update to the LevelDB db was successful.
   bool UpdateEarliestCompactionTime();
-
-  // Dumps and returns all the databases in this store. If an error Status is
-  // returned, this method will also log UMA to that effect.
-  StatusOr<base::ListValue> SnapshotAllDatabases(bool before_cleanup);
 
   // A helper function for V4 schema migration.
   // It iterates through all blob files.  It will add to the db entry both the
@@ -698,9 +659,6 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
   // indexed_db_factory_ will hold a reference to this backing store.
   std::unique_ptr<ActiveBlobRegistry> active_blob_registry_;
 
-  // Ensures tombstones are removed periodically during an active session.
-  LevelDBCleanupScheduler level_db_cleanup_scheduler_;
-
   // Incremented whenever a transaction starts committing, decremented when
   // complete. While > 0, temporary journal entries may exist so out-of-band
   // journal cleaning must be deferred.
@@ -709,10 +667,6 @@ class CONTENT_EXPORT BackingStore : public indexed_db::BackingStore,
 #if DCHECK_IS_ON()
   bool initialized_ = false;
 #endif
-
-  // Snapshot of all known DBs. Used for debugging/verification of potentially
-  // destructive cleanup operations.
-  std::optional<base::ListValue> dbs_snapshot_;
 
   std::unique_ptr<BackingStorePreCloseTaskQueue> pre_close_task_queue_;
 

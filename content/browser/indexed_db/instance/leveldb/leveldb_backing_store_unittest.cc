@@ -39,7 +39,6 @@
 #include "content/browser/indexed_db/indexed_db_value.h"
 #include "content/browser/indexed_db/instance/backing_store_test_base.h"
 #include "content/browser/indexed_db/instance/leveldb/backing_store.h"
-#include "content/browser/indexed_db/instance/leveldb/cleanup_scheduler.h"
 #include "content/browser/indexed_db/status.h"
 #include "net/base/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1128,31 +1127,6 @@ TEST_F(LevelDbBackingStoreTestWithBlobs, SchemaUpgradeV4ToV5) {
   }
 }
 
-class LevelDbBackingStoreTestForCleanupScheduler
-    : public LevelDbBackingStoreTest {
- public:
-  LevelDbBackingStoreTestForCleanupScheduler() {
-    scoped_feature_list_.InitAndEnableFeature(kIdbInSessionDbCleanup);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(LevelDbBackingStoreTestForCleanupScheduler,
-       SchedulerInitializedIfTombstoneThresholdExceeded) {
-  backing_store()->OnTransactionComplete(false);
-  EXPECT_FALSE(backing_store()
-                   ->GetLevelDBCleanupSchedulerForTesting()
-                   .GetRunningStateForTesting()
-                   .has_value());
-  backing_store()->OnTransactionComplete(true);
-  EXPECT_TRUE(backing_store()
-                  ->GetLevelDBCleanupSchedulerForTesting()
-                  .GetRunningStateForTesting()
-                  .has_value());
-}
-
 TEST_F(LevelDbBackingStoreTest, TombstoneSweeperTiming) {
   // Open a connection.
   EXPECT_FALSE(backing_store()->ShouldRunTombstoneSweeper());
@@ -1193,83 +1167,6 @@ TEST_F(LevelDbBackingStoreTest, CompactionTaskTiming) {
   task_environment_.FastForwardBy(kMaxBucketCompactionDelay);
 
   EXPECT_TRUE(backing_store()->ShouldRunCompaction());
-}
-
-TEST_F(LevelDbBackingStoreTest, InSessionCleanupVerification) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {content::indexed_db::level_db::kIdbInSessionDbCleanup,
-       content::indexed_db::level_db::kIdbVerifyInSessionDbCleanup},
-      /*disabled_features=*/{});
-
-  const int object_store_id = 1;
-  auto db_creation_result = backing_store()->CreateOrOpenDatabase(u"name");
-  ASSERT_TRUE(db_creation_result.has_value());
-  indexed_db::BackingStore::Database& db = **db_creation_result;
-
-  {
-    auto txn =
-        db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
-                             blink::mojom::IDBTransactionMode::VersionChange);
-    txn->Begin(CreateDummyLock());
-
-    EXPECT_TRUE(txn->CreateObjectStore(object_store_id, u"object_store_name",
-                                       IndexedDBKeyPath(u"object_store_key"),
-                                       /*auto_increment=*/true)
-                    .ok());
-    CommitTransactionAndVerify(std::move(txn));
-  }
-
-  {
-    auto txn =
-        db.CreateTransaction(blink::mojom::IDBTransactionDurability::Relaxed,
-                             blink::mojom::IDBTransactionMode::ReadWrite);
-    txn->Begin(CreateDummyLock());
-    EXPECT_TRUE(txn->PutRecord(object_store_id, IndexedDBKey("key"),
-                               IndexedDBValue("value", {}))
-                    .has_value());
-    CommitTransactionAndVerify(std::move(txn));
-  }
-
-  // Verify that cleanup verification only occurs once in a while, not on every
-  // cleanup.
-  base::HistogramTester histograms;
-
-  // Verify on first cleanup.
-  backing_store()->OnCleanupStarted();
-  backing_store()->OnCleanupStopped(/*completed=*/true);
-  histograms.ExpectBucketCount(
-      "IndexedDB.LevelDB.InSessionCleanupVerificationEvent",
-      level_db::BackingStore::InSessionCleanupVerificationEvent::
-          kCleanupStarted,
-      1);
-
-  // Don't verify on next few cleanups.
-  for (int i = 0; i < 60; ++i) {
-    backing_store()->OnCleanupStarted();
-    backing_store()->OnCleanupStopped(/*completed=*/true);
-  }
-
-  histograms.ExpectBucketCount(
-      "IndexedDB.LevelDB.InSessionCleanupVerificationEvent",
-      level_db::BackingStore::InSessionCleanupVerificationEvent::
-          kCleanupStarted,
-      1);
-
-  // Verify again eventually.
-  for (int i = 0; i < 60; ++i) {
-    backing_store()->OnCleanupStarted();
-    backing_store()->OnCleanupStopped(/*completed=*/false);
-    backing_store()->OnCleanupStopped(/*completed=*/false);
-    backing_store()->OnCleanupStopped(/*completed=*/true);
-  }
-
-  histograms.ExpectBucketCount(
-      "IndexedDB.LevelDB.InSessionCleanupVerificationEvent",
-      level_db::BackingStore::InSessionCleanupVerificationEvent::
-          kCleanupStarted,
-      2);
 }
 
 }  // namespace content::indexed_db::level_db
