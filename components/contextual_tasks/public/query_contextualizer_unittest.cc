@@ -386,6 +386,19 @@ TEST_F(QueryContextualizerTest, Contextualize_ExtractsUrls) {
   CompleteAllUploads();
 }
 
+TEST_F(QueryContextualizerTest, Contextualize_WithNullService) {
+  auto null_service_contextualizer = std::make_unique<QueryContextualizer>(
+      /*service=*/nullptr, delegate_.get());
+
+  base::MockCallback<QueryContextualizer::ContextualizedCallback> done_callback;
+  EXPECT_CALL(done_callback, Run(testing::_)).Times(1);
+
+  null_service_contextualizer->Contextualize(
+      /*task_id=*/std::nullopt, "test query", {}, {}, base::DoNothing(),
+      base::DoNothing(), done_callback.Get(),
+      /*enable_smart_tab_selection=*/false);
+}
+
 TEST(QueryContextualizerStaticTest, ExtractUrlsFromQuery) {
   // Test simple extraction.
   std::vector<GURL> urls = QueryContextualizer::ExtractUrlsFromQuery(

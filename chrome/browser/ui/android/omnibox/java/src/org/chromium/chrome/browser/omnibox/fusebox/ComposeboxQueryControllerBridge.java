@@ -134,19 +134,20 @@ public class ComposeboxQueryControllerBridge {
                 .addTabContextFromCache(mNativeInstance, tabId);
     }
 
-    public void getAimUrl(GURL url, Callback<GURL> callback) {
-        ComposeboxQueryControllerBridgeJni.get().getAimUrl(mNativeInstance, url, callback);
-    }
-
-    public void getImageGenerationUrl(GURL url, Callback<GURL> callback) {
+    public void getAimUrl(GURL url, String queryText, Callback<GURL> callback) {
         ComposeboxQueryControllerBridgeJni.get()
-                .getImageGenerationUrl(mNativeInstance, url, callback);
+                .getAimUrl(mNativeInstance, url, queryText, callback);
     }
 
-    public void getAimUrlFromInputState(GURL url, Callback<GURL> callback) {
+    public void getImageGenerationUrl(GURL url, String queryText, Callback<GURL> callback) {
+        ComposeboxQueryControllerBridgeJni.get()
+                .getImageGenerationUrl(mNativeInstance, url, queryText, callback);
+    }
+
+    public void getAimUrlFromInputState(GURL url, String queryText, Callback<GURL> callback) {
         assert OmniboxFeatures.sShowModelPicker.getValue();
         ComposeboxQueryControllerBridgeJni.get()
-                .getAimUrlFromInputState(mNativeInstance, url, callback);
+                .getAimUrlFromInputState(mNativeInstance, url, queryText, callback);
     }
 
     /** Remove the given file from the current session. */
@@ -235,16 +236,19 @@ public class ComposeboxQueryControllerBridge {
         void getAimUrl(
                 long nativeComposeboxQueryControllerBridge,
                 @JniType("GURL") GURL url,
+                @JniType("std::string") String queryText,
                 Callback<@JniType("GURL") GURL> callback);
 
         void getImageGenerationUrl(
                 long nativeComposeboxQueryControllerBridge,
                 @JniType("GURL") GURL url,
+                @JniType("std::string") String queryText,
                 Callback<@JniType("GURL") GURL> callback);
 
         void getAimUrlFromInputState(
                 long nativeComposeboxQueryControllerBridge,
                 @JniType("GURL") GURL url,
+                @JniType("std::string") String queryText,
                 Callback<@JniType("GURL") GURL> callback);
 
         void removeAttachment(

@@ -121,11 +121,9 @@ ComposeboxQueryControllerBridge::ComposeboxQueryControllerBridge(
 
   contextual_tasks::ContextualTasksService* tasks_service =
       contextual_tasks::ContextualTasksServiceFactory::GetForProfile(profile);
-  if (tasks_service) {
-    query_contextualizer_ =
-        std::make_unique<contextual_tasks::QueryContextualizer>(tasks_service,
-                                                                this);
-  }
+  query_contextualizer_ =
+      std::make_unique<contextual_tasks::QueryContextualizer>(tasks_service,
+                                                              this);
 
   query_controller()->AddObserver(this);
 }
@@ -303,11 +301,13 @@ ComposeboxQueryControllerBridge::AddTabContextFromCache(JNIEnv* env,
 }
 
 std::unique_ptr<ComposeboxQueryController::CreateSearchUrlRequestInfo>
-ComposeboxQueryControllerBridge::CreateSearchUrlRequestInfoFromUrl(GURL url) {
+ComposeboxQueryControllerBridge::CreateSearchUrlRequestInfoFromUrl(
+    GURL url,
+    const std::string& query_text) {
   std::unique_ptr<ComposeboxQueryController::CreateSearchUrlRequestInfo>
       search_url_request_info = std::make_unique<
           ComposeboxQueryController::CreateSearchUrlRequestInfo>();
-  net::GetValueForKeyInQuery(url, "q", &search_url_request_info->query_text);
+  search_url_request_info->query_text = query_text;
   search_url_request_info->additional_params =
       lens::GetParametersMapWithoutQuery(url);
   search_url_request_info->query_start_time = base::Time::Now();
@@ -328,37 +328,36 @@ void ComposeboxQueryControllerBridge::ContextualizeAndCreateSearchUrl(
       base::BindOnce(&RunJavaCallback,
                      base::android::ScopedJavaGlobalRef<jobject>(j_callback)));
 
-  if (query_contextualizer_) {
-    query_contextualizer_->Contextualize(
-        /*task_id=*/std::nullopt, query_text, /*tabs_to_recontextualize=*/{},
-        /*tabs_to_force_contextualize=*/{},
-        /*on_ineligible_callback=*/base::DoNothing(),
-        /*on_processed_callback=*/base::DoNothing(),
-        base::BindOnce(
-            [](base::OnceClosure closure,
-               base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
-                   ignored_handle) { std::move(closure).Run(); },
-            std::move(callback)),
-        /*enable_smart_tab_selection=*/false);
-  } else {
-    std::move(callback).Run();
-  }
+  query_contextualizer_->Contextualize(
+      /*task_id=*/std::nullopt, query_text, /*tabs_to_recontextualize=*/{},
+      /*tabs_to_force_contextualize=*/{},
+      /*on_ineligible_callback=*/base::DoNothing(),
+      /*on_processed_callback=*/base::DoNothing(),
+      base::BindOnce(
+          [](base::OnceClosure closure,
+             base::WeakPtr<contextual_search::ContextualSearchSessionHandle>
+                 ignored_handle) { std::move(closure).Run(); },
+          std::move(callback)),
+      /*enable_smart_tab_selection=*/false);
 }
 
 void ComposeboxQueryControllerBridge::GetAimUrl(
     JNIEnv* env,
     GURL url,
+    const std::string& query_text,
     const base::android::JavaRef<jobject>& j_callback) {
   ContextualizeAndCreateSearchUrl(
-      CreateSearchUrlRequestInfoFromUrl(std::move(url)), j_callback);
+      CreateSearchUrlRequestInfoFromUrl(std::move(url), query_text),
+      j_callback);
 }
 
 void ComposeboxQueryControllerBridge::GetImageGenerationUrl(
     JNIEnv* env,
     GURL url,
+    const std::string& query_text,
     const base::android::JavaRef<jobject>& j_callback) {
   auto search_url_request_info =
-      CreateSearchUrlRequestInfoFromUrl(std::move(url));
+      CreateSearchUrlRequestInfoFromUrl(std::move(url), query_text);
   search_url_request_info->additional_params["imgn"] = "1";
   ContextualizeAndCreateSearchUrl(std::move(search_url_request_info),
                                   j_callback);
@@ -367,9 +366,10 @@ void ComposeboxQueryControllerBridge::GetImageGenerationUrl(
 void ComposeboxQueryControllerBridge::GetAimUrlFromInputState(
     JNIEnv* env,
     GURL url,
+    const std::string& query_text,
     const base::android::JavaRef<jobject>& j_callback) {
   auto search_url_request_info =
-      CreateSearchUrlRequestInfoFromUrl(std::move(url));
+      CreateSearchUrlRequestInfoFromUrl(std::move(url), query_text);
 
   if (input_state_model_) {
     for (const auto& [key, value] :
