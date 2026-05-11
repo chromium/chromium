@@ -546,6 +546,8 @@ IN_PROC_BROWSER_TEST_F(
                     Contains(Pair(HatsDialog::kHatsPsdUserChoice,
                                   HatsDialog::kHatsUserChoiceNewProvider)),
                     Contains(Pair(HatsDialog::kHatsPsdTimeDialogVisible, _)),
+                    Contains(Pair(HatsDialog::kHatsPsdNewExtensionId,
+                                  Not(IsEmpty()))),
                     Contains(Pair(HatsDialog::kHatsPsdNewExtensionName,
                                   "Search Override Extension")))))
             .WillOnce(testing::Return(true));

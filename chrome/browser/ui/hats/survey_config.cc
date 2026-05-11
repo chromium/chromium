@@ -333,7 +333,7 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       /*product_specific_string_data_fields=*/
       std::vector<std::string>{"Channel", "User choice",
                                "Duration dialog was visible",
-                               "New extension name"});
+                               "New extension name", "New extension ID"});
 
   // NTP modules survey.
   survey_configs.emplace_back(
