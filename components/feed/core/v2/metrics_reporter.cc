@@ -39,7 +39,7 @@
 
 namespace feed {
 namespace {
-StreamKind kStreamKinds[] = {StreamKind::kForYou, StreamKind::kFollowing};
+StreamKind kStreamKinds[] = {StreamKind::kForYou};
 
 using feed::FeedEngagementType;
 using feed::FeedUserActionType;
@@ -79,8 +79,8 @@ std::string_view HistogramReplacement(const StreamType& stream_type) {
   switch (stream_type.GetKind()) {
     case StreamKind::kForYou:
       return "Feed.";
+      // TODO(crbug.com/407797637): Remove kFollowing from StreamKind
     case StreamKind::kFollowing:
-      return "Feed.WebFeed.";
     case StreamKind::kUnknown:
       DCHECK(false) << "unknown feed kind";
       return "Feed.";
@@ -108,9 +108,7 @@ void ReportContentSuggestionsOpened(const StreamType& stream_type,
                                     index_in_stream, kMaxSuggestionsTotal);
       break;
     case StreamKind::kFollowing:
-      base::UmaHistogramExactLinear("ContentSuggestions.Feed.WebFeed.Opened",
-                                    index_in_stream, kMaxSuggestionsTotal);
-      break;
+      // TODO(crbug.com/407797637): Remove kFollowing from StreamKind
     case StreamKind::kUnknown:
       DCHECK(false) << "unknown feed kind";
       break;
@@ -456,9 +454,7 @@ void MetricsReporter::ContentSliceViewed(const StreamType& stream_type,
                                     index_in_stream, kMaxSuggestionsTotal);
       break;
     case StreamKind::kFollowing:
-      base::UmaHistogramExactLinear("ContentSuggestions.Feed.WebFeed.Shown",
-                                    index_in_stream, kMaxSuggestionsTotal);
-      break;
+      // TODO(crbug.com/407797637): Remove kFollowing from StreamKind
     case StreamKind::kUnknown:
       DCHECK(false) << "unknown feed kind";
       break;
@@ -1049,10 +1045,9 @@ MetricsReporter::StreamStats& MetricsReporter::ForStream(
     case StreamKind::kForYou:
       return for_you_stats_;
     case StreamKind::kFollowing:
-      return web_feed_stats_;
     case StreamKind::kUnknown:
       DCHECK(false) << "unknown feed kind";
-      return web_feed_stats_;
+      return for_you_stats_;
   }
 }
 

@@ -197,7 +197,6 @@ class MetricsReporter {
   raw_ptr<Delegate, DanglingUntriaged> delegate_ = nullptr;
 
   StreamStats for_you_stats_;
-  StreamStats web_feed_stats_;
   StreamStats combined_stats_;
 
   // State below here is shared between all stream types.

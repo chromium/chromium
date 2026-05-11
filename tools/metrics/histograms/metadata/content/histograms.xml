@@ -1784,14 +1784,12 @@ chromium-metrics-reviews@google.com.
   <owner>feed@chromium.org</owner>
   <summary>
     Android: Status of loading new {FeedType} data in the background. Reported
-    any time Chrome attempts to fetch fresh Feed content in the background.
-    Thisf is either due to a background fetch schedule, or when fetching the
-    Web-Feed while the For-You feed is active.
+    any time Chrome attempts to fetch fresh Feed content in the background. This
+    is either due to a background fetch schedule, or when fetching the Web-Feed
+    while the For-You feed is active.
   </summary>
   <token key="FeedType">
     <variant name="Feed" summary="For-You Feed"/>
-    <variant name="Feed.SupervisedFeed" summary="the supervised Feed"/>
-    <variant name="Feed.WebFeed" summary="Web Feed"/>
   </token>
 </histogram>
 
@@ -1805,8 +1803,6 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="FeedType">
     <variant name="Feed" summary="For-You Feed"/>
-    <variant name="Feed.SupervisedFeed" summary="the supervised Feed"/>
-    <variant name="Feed.WebFeed" summary="Web Feed"/>
   </token>
 </histogram>
 
@@ -1823,8 +1819,6 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="FeedType">
     <variant name="Feed" summary="For-You Feed"/>
-    <variant name="Feed.SupervisedFeed" summary="the supervised Feed"/>
-    <variant name="Feed.WebFeed" summary="Web Feed"/>
   </token>
 </histogram>
 
@@ -1838,30 +1832,6 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="FeedType">
     <variant name="Feed" summary="For-You Feed"/>
-    <variant name="Feed.SupervisedFeed" summary="the supervised Feed"/>
-    <variant name="Feed.WebFeed" summary="Web Feed"/>
-  </token>
-</histogram>
-
-<histogram name="ContentSuggestions.{FeedType}.Opened" units="index"
-    expires_after="never">
-<!-- expires-never: key feature metric.  We will need the Opened
-     metric as long as we have a feed, and it will be removed with the
-     feed code if the feed is ever removed. -->
-
-  <owner>freedjm@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: The position of the {FeedType} card on it's surface, that is
-    clicked through to the host website of the content. We track the position
-    the card had in the list when it was first seen by the user. This tracked
-    position can be different from the position observed by the user, e.g. when
-    the user dismissed some suggestions from the list or requested more that got
-    inserted in the middle of the feed.
-  </summary>
-  <token key="FeedType">
-    <variant name="Feed.SupervisedFeed" summary="the supervised Feed"/>
-    <variant name="Feed.WebFeed" summary="the Web Feed"/>
   </token>
 </histogram>
 
@@ -1879,8 +1849,6 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="FeedType">
     <variant name="Feed" summary="For-You Feed"/>
-    <variant name="Feed.SupervisedFeed" summary="the supervised Feed"/>
-    <variant name="Feed.WebFeed" summary="Web Feed"/>
   </token>
 </histogram>
 
@@ -1895,31 +1863,6 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="FeedType">
     <variant name="Feed" summary="For-You Feed"/>
-    <variant name="Feed.SupervisedFeed" summary="the supervised Feed"/>
-    <variant name="Feed.WebFeed" summary="Web Feed"/>
-  </token>
-</histogram>
-
-<histogram name="ContentSuggestions.{FeedType}.Shown" units="index"
-    expires_after="never">
-<!-- expires-never: key feature metric.  We will need the Shown
-       metric as long as we have a feed, and it will be removed with
-       the feed code if the feed is ever removed. -->
-
-  <owner>freedjm@chromium.org</owner>
-  <owner>feed@chromium.org</owner>
-  <summary>
-    Android: The position of a {FeedType} card that was shown on it's surface. A
-    card is considered shown when at least 2/3 of its height is visible on the
-    screen. For each card, at most one impression is recorded per instance. We
-    track the position the card had in the list when it was first seen by the
-    user. This tracked position can be different from the position observed by
-    the user, e.g. when the user dismissed some suggestions from the list or
-    requested more that got inserted in the middle of the feed.
-  </summary>
-  <token key="FeedType">
-    <variant name="Feed.SupervisedFeed" summary="Supervised Feed"/>
-    <variant name="Feed.WebFeed" summary="Web Feed"/>
   </token>
 </histogram>
 
@@ -1935,8 +1878,6 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="FeedType">
     <variant name="Feed" summary="For-You Feed"/>
-    <variant name="Feed.SupervisedFeed" summary="the supervised Feed"/>
-    <variant name="Feed.WebFeed" summary="Web Feed"/>
   </token>
 </histogram>
 
