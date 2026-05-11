@@ -50,10 +50,34 @@ GURL GetComponentExtensionUrl() {
       "index.html");
 }
 
+std::string WaitUntilReplacementImageSrcIsSet(content::RenderFrameHost* rfh) {
+  return content::EvalJs(rfh, R"js(
+    (async () => {
+      const app = document.body.querySelector('indigo-image-replacement-app');
+      if (!app) return 'no app';
+      const img = app.$.image;
+      if (img.src.startsWith('data:')) {
+        return img.src;
+      }
+      return new Promise(resolve => {
+        const observer = new MutationObserver(() => {
+          if (img.src.startsWith('data:')) {
+            observer.disconnect();
+            resolve(img.src);
+          }
+        });
+        observer.observe(img, { attributes: true, attributeFilter: ['src'] });
+      });
+    })();
+  )js")
+      .ExtractString();
+}
+
 class MockImageReplacement : public blink::mojom::ImageReplacement {
  public:
-  explicit MockImageReplacement(content::WebContents* web_contents)
-      : web_contents_(web_contents) {}
+  explicit MockImageReplacement(content::WebContents* web_contents,
+                                size_t frame_index = 0)
+      : web_contents_(web_contents), frame_index_(frame_index) {}
 
   void StartReplacement(mojo::PendingRemote<blink::mojom::ImageReplacementHost>
                             host_remote) override {
@@ -67,10 +91,8 @@ class MockImageReplacement : public blink::mojom::ImageReplacement {
                         "document.body.appendChild(iframe);"));
 
     // Find the subframe RFH.
-    // Note: ExecJs uses a frame associated interface, so it is guaranteed that
-    // frame creation will happen before it returns.
-    content::RenderFrameHost* raw_subframe =
-        content::ChildFrameAt(web_contents_->GetPrimaryMainFrame(), 0);
+    content::RenderFrameHost* raw_subframe = content::ChildFrameAt(
+        web_contents_->GetPrimaryMainFrame(), frame_index_);
     ASSERT_TRUE(raw_subframe);
     frame_tree_node_id_ = raw_subframe->GetFrameTreeNodeId();
 
@@ -107,8 +129,15 @@ class MockImageReplacement : public blink::mojom::ImageReplacement {
 
   void WaitForDisconnect() { EXPECT_TRUE(disconnect_future_.Wait()); }
 
+  void Disconnect() { host_remote_.reset(); }
+
+  void ExpectStartReplacementToNotBeCalled() {
+    EXPECT_FALSE(start_replacement_future_.IsReady());
+  }
+
  private:
   raw_ptr<content::WebContents> web_contents_;
+  const size_t frame_index_;
   mojo::Remote<blink::mojom::ImageReplacementHost> host_remote_;
   base::test::TestFuture<void> start_replacement_future_;
   base::test::TestFuture<void> render_replacement_future_;
@@ -140,7 +169,7 @@ class IndigoImageReplacementManagerBrowserTest : public InProcessBrowserTest {
     identity_test_env_adaptor_->identity_test_env()
         ->MakePrimaryAccountAvailable("user@gmail.com",
                                       signin::ConsentLevel::kSignin);
-    fake_api_.StartAcceptingConnections();
+    fake_api_.StartAcceptingConnections(5);
   }
 
   void SetUpBrowserContextKeyedServices(
@@ -172,7 +201,8 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   MockImageReplacement mock_replacement(web_contents);
   mojo::Receiver<blink::mojom::ImageReplacement> receiver(&mock_replacement);
 
-  manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote());
+  manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote(),
+                                    /*is_primary=*/true);
   mock_replacement.WaitForStartReplacement();
 
   GURL component_extension_url = GetComponentExtensionUrl();
@@ -217,7 +247,8 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   MockImageReplacement mock_replacement(web_contents);
   mojo::Receiver<blink::mojom::ImageReplacement> receiver(&mock_replacement);
 
-  manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote());
+  manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote(),
+                                    /*is_primary=*/true);
   mock_replacement.WaitForStartReplacement();
   mock_replacement.WaitForRenderReplacement();
 
@@ -244,7 +275,8 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   MockImageReplacement mock_replacement(web_contents);
   mojo::Receiver<blink::mojom::ImageReplacement> receiver(&mock_replacement);
 
-  manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote());
+  manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote(),
+                                    /*is_primary=*/true);
   mock_replacement.WaitForStartReplacement();
 
   GURL component_extension_url = GetComponentExtensionUrl();
@@ -291,7 +323,8 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   MockImageReplacement mock_replacement(web_contents);
   mojo::Receiver<blink::mojom::ImageReplacement> receiver(&mock_replacement);
 
-  manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote());
+  manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote(),
+                                    /*is_primary=*/true);
   mock_replacement.WaitForStartReplacement();
   mock_replacement.WaitForRenderReplacement();
 
@@ -307,26 +340,7 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
       content::ChildFrameAt(main_rfh.get(), 0));
   ASSERT_TRUE(subframe.get());
 
-  std::string actual_src = content::EvalJs(subframe.get(), R"js(
-    (async () => {
-      const app = document.body.querySelector('indigo-image-replacement-app');
-      if (!app) return 'no app';
-      const img = app.$.image;
-      if (img.src.startsWith('data:')) {
-        return img.src;
-      }
-      return new Promise(resolve => {
-        const observer = new MutationObserver(() => {
-          if (img.src.startsWith('data:')) {
-            observer.disconnect();
-            resolve(img.src);
-          }
-        });
-        observer.observe(img, { attributes: true, attributeFilter: ['src'] });
-      });
-    })();
-  )js")
-                               .ExtractString();
+  std::string actual_src = WaitUntilReplacementImageSrcIsSet(subframe.get());
 
   EXPECT_EQ(actual_src, success_url.spec());
 }
@@ -347,7 +361,8 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   MockImageReplacement mock_replacement(web_contents);
   mojo::Receiver<blink::mojom::ImageReplacement> receiver(&mock_replacement);
 
-  manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote());
+  manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote(),
+                                    /*is_primary=*/true);
   mock_replacement.WaitForStartReplacement();
   mock_replacement.WaitForRenderReplacement();
 
@@ -355,6 +370,203 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   fake_api_.SendErrorResponse();
 
   mock_replacement.WaitForDisconnect();
+}
+
+IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
+                       IgnoresNonPrimaryReplacementBeforePrimaryIsRegistered) {
+  GURL test_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::RenderFrameHostWrapper main_rfh(web_contents->GetPrimaryMainFrame());
+
+  IndigoImageReplacementManager* manager =
+      IndigoImageReplacementManager::GetOrCreateForPage(main_rfh->GetPage());
+  ASSERT_TRUE(manager);
+
+  MockImageReplacement mock_replacement(web_contents, 0);
+  mojo::Receiver<blink::mojom::ImageReplacement> receiver(&mock_replacement);
+  base::test::TestFuture<void> disconnect_future;
+  auto pending_remote = receiver.BindNewPipeAndPassRemote();
+  receiver.set_disconnect_handler(disconnect_future.GetCallback());
+
+  // A non-primary replacement registered before any primary should be ignored
+  // and dropped.
+  manager->RegisterImageReplacement(std::move(pending_remote),
+                                    /*is_primary=*/false);
+  ASSERT_TRUE(disconnect_future.Wait());
+  mock_replacement.ExpectStartReplacementToNotBeCalled();
+}
+
+IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
+                       ResetsAllReplacementsOnNewPrimaryRegistration) {
+  GURL test_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::RenderFrameHostWrapper main_rfh(web_contents->GetPrimaryMainFrame());
+
+  IndigoImageReplacementManager* manager =
+      IndigoImageReplacementManager::GetOrCreateForPage(main_rfh->GetPage());
+  ASSERT_TRUE(manager);
+
+  // Register first primary replacement.
+  MockImageReplacement mock_replacement1(web_contents, 0);
+  mojo::Receiver<blink::mojom::ImageReplacement> receiver1(&mock_replacement1);
+  manager->RegisterImageReplacement(receiver1.BindNewPipeAndPassRemote(),
+                                    /*is_primary=*/true);
+  mock_replacement1.WaitForStartReplacement();
+
+  // Register second primary replacement - should reset the first one.
+  MockImageReplacement mock_replacement2(web_contents, 1);
+  mojo::Receiver<blink::mojom::ImageReplacement> receiver2(&mock_replacement2);
+  manager->RegisterImageReplacement(receiver2.BindNewPipeAndPassRemote(),
+                                    /*is_primary=*/true);
+
+  mock_replacement1.WaitForDisconnect();
+  mock_replacement2.WaitForStartReplacement();
+}
+
+IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
+                       DisconnectsAllIfPrimaryDisconnectsBeforeGeneratedImage) {
+  GURL test_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::RenderFrameHostWrapper main_rfh(web_contents->GetPrimaryMainFrame());
+
+  IndigoImageReplacementManager* manager =
+      IndigoImageReplacementManager::GetOrCreateForPage(main_rfh->GetPage());
+  ASSERT_TRUE(manager);
+
+  // Register primary replacement.
+  MockImageReplacement mock_replacement1(web_contents, 0);
+  mojo::Receiver<blink::mojom::ImageReplacement> receiver1(&mock_replacement1);
+  manager->RegisterImageReplacement(receiver1.BindNewPipeAndPassRemote(),
+                                    /*is_primary=*/true);
+  mock_replacement1.WaitForStartReplacement();
+
+  // Register non-primary replacement.
+  MockImageReplacement mock_replacement2(web_contents, 1);
+  mojo::Receiver<blink::mojom::ImageReplacement> receiver2(&mock_replacement2);
+  manager->RegisterImageReplacement(receiver2.BindNewPipeAndPassRemote(),
+                                    /*is_primary=*/false);
+  mock_replacement2.WaitForStartReplacement();
+
+  // Disconnect primary before generated image is ready.
+  mock_replacement1.Disconnect();
+
+  // Second non-primary replacement should be disconnected as well.
+  mock_replacement2.WaitForDisconnect();
+}
+
+IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
+                       SharesGeneratedImageUrlWithNonPrimaryReplacement) {
+  GURL test_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::RenderFrameHostWrapper main_rfh(web_contents->GetPrimaryMainFrame());
+
+  IndigoImageReplacementManager* manager =
+      IndigoImageReplacementManager::GetOrCreateForPage(main_rfh->GetPage());
+  ASSERT_TRUE(manager);
+
+  // Register primary replacement.
+  MockImageReplacement mock_replacement1(web_contents, 0);
+  mojo::Receiver<blink::mojom::ImageReplacement> receiver1(&mock_replacement1);
+  manager->RegisterImageReplacement(receiver1.BindNewPipeAndPassRemote(),
+                                    /*is_primary=*/true);
+  mock_replacement1.WaitForStartReplacement();
+
+  // Register non-primary replacement.
+  MockImageReplacement mock_replacement2(web_contents, 1);
+  mojo::Receiver<blink::mojom::ImageReplacement> receiver2(&mock_replacement2);
+  manager->RegisterImageReplacement(receiver2.BindNewPipeAndPassRemote(),
+                                    /*is_primary=*/false);
+  mock_replacement2.WaitForStartReplacement();
+
+  mock_replacement1.WaitForRenderReplacement();
+  mock_replacement2.WaitForRenderReplacement();
+
+  fake_api_.WaitForGenerateRequest();
+  GURL success_url(
+      "data:image/"
+      "png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+"
+      "M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==");
+  fake_api_.SendSuccessResponse(success_url);
+
+  // Verify the second non-primary subframe also receives the identical
+  // generated image URL.
+  content::RenderFrameHostWrapper subframe2(
+      content::ChildFrameAt(main_rfh.get(), 1));
+  ASSERT_TRUE(subframe2.get());
+
+  std::string actual_src = WaitUntilReplacementImageSrcIsSet(subframe2.get());
+
+  EXPECT_EQ(actual_src, success_url.spec());
+}
+
+IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
+                       HandlesDelayedResponseAfterNewPrimaryIsRegistered) {
+  GURL test_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::RenderFrameHostWrapper main_rfh(web_contents->GetPrimaryMainFrame());
+
+  IndigoImageReplacementManager* manager =
+      IndigoImageReplacementManager::GetOrCreateForPage(main_rfh->GetPage());
+  ASSERT_TRUE(manager);
+
+  // Create the first image replacement (primary).
+  MockImageReplacement mock_replacement1(web_contents, 0);
+  mojo::Receiver<blink::mojom::ImageReplacement> receiver1(&mock_replacement1);
+  manager->RegisterImageReplacement(receiver1.BindNewPipeAndPassRemote(),
+                                    /*is_primary=*/true);
+  mock_replacement1.WaitForStartReplacement();
+  mock_replacement1.WaitForRenderReplacement();
+
+  // Wait for the first generate request to arrive.
+  fake_api_.WaitForGenerateRequest(0);
+
+  // Create a second primary image replacement. This should automatically reset
+  // the first one.
+  MockImageReplacement mock_replacement2(web_contents, 1);
+  mojo::Receiver<blink::mojom::ImageReplacement> receiver2(&mock_replacement2);
+  manager->RegisterImageReplacement(receiver2.BindNewPipeAndPassRemote(),
+                                    /*is_primary=*/true);
+  mock_replacement2.WaitForStartReplacement();
+  mock_replacement2.WaitForRenderReplacement();
+
+  // Wait for first image replacement to be reset.
+  mock_replacement1.WaitForDisconnect();
+
+  // Wait for the second generate request to arrive.
+  fake_api_.WaitForGenerateRequest(1);
+
+  // First generate request fails. This should not reset the second image
+  // replacement.
+  fake_api_.SendErrorResponse(0);
+
+  // Second generate request succeeds.
+  GURL success_url(
+      "data:image/"
+      "png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+"
+      "M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==");
+  fake_api_.SendSuccessResponse(success_url, 1);
+
+  // Second image replacement should successfully receive generated image URL.
+  content::RenderFrameHostWrapper subframe(
+      content::ChildFrameAt(main_rfh.get(), 1));
+  ASSERT_TRUE(subframe.get());
+  std::string actual_src = WaitUntilReplacementImageSrcIsSet(subframe.get());
+  EXPECT_EQ(actual_src, success_url.spec());
 }
 
 }  // namespace indigo

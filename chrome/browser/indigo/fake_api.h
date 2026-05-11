@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/containers/span.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
@@ -26,28 +27,29 @@ class FakeApi {
   bool InitializeAndListen();
 
   // Starts accepting connections on the embedded test server.
-  void StartAcceptingConnections();
+  void StartAcceptingConnections(int num_requests = 1);
 
   // Returns the URL to be used for the generate endpoint.
   GURL GetGenerateUrl() const;
 
   // Waits for a request to arrive at the generate endpoint.
-  void WaitForGenerateRequest();
+  void WaitForGenerateRequest(size_t index = 0);
 
   // Sends a successful response with the given image URL.
-  void SendSuccessResponse(const GURL& image_url);
+  void SendSuccessResponse(const GURL& image_url, size_t index = 0);
 
   // Sends an error response.
-  void SendErrorResponse();
+  void SendErrorResponse(size_t index = 0);
 
   // Checks that the request has a valid product image.
   testing::AssertionResult RequestHasValidProductImage(
-      base::span<const uint8_t> expected_image_bytes);
+      base::span<const uint8_t> expected_image_bytes,
+      size_t index = 0);
 
  private:
   net::EmbeddedTestServer test_server_;
-  std::unique_ptr<net::test_server::ControllableHttpResponse>
-      controllable_response_;
+  std::vector<std::unique_ptr<net::test_server::ControllableHttpResponse>>
+      controllable_responses_;
 };
 
 }  // namespace indigo

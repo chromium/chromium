@@ -22,10 +22,12 @@ bool FakeApi::InitializeAndListen() {
   return test_server_.InitializeAndListen();
 }
 
-void FakeApi::StartAcceptingConnections() {
-  controllable_response_ =
-      std::make_unique<net::test_server::ControllableHttpResponse>(
-          &test_server_, "/generate");
+void FakeApi::StartAcceptingConnections(int num_requests) {
+  for (int i = 0; i < num_requests; ++i) {
+    controllable_responses_.push_back(
+        std::make_unique<net::test_server::ControllableHttpResponse>(
+            &test_server_, "/generate"));
+  }
 
   test_server_.StartAcceptingConnections();
 }
@@ -34,14 +36,14 @@ GURL FakeApi::GetGenerateUrl() const {
   return test_server_.GetURL("/generate");
 }
 
-void FakeApi::WaitForGenerateRequest() {
-  DCHECK(controllable_response_);
-
-  controllable_response_->WaitForRequest();
+void FakeApi::WaitForGenerateRequest(size_t index) {
+  CHECK_LT(index, controllable_responses_.size());
+  controllable_responses_[index]->WaitForRequest();
 }
 
-void FakeApi::SendSuccessResponse(const GURL& image_url) {
-  DCHECK(controllable_response_);
+void FakeApi::SendSuccessResponse(const GURL& image_url, size_t index) {
+  CHECK_LT(index, controllable_responses_.size());
+  auto& controllable_response = controllable_responses_[index];
   CHECK(image_url.SchemeIs(url::kDataScheme));
 
   std::string mime_type, charset, data;
@@ -50,22 +52,25 @@ void FakeApi::SendSuccessResponse(const GURL& image_url) {
 
   std::string response_body = absl::StrFormat(
       R"({"result": {"generatedImageUrl": "%s"}})", image_url.spec());
-  controllable_response_->Send(net::HTTP_OK, "application/json", response_body);
-  controllable_response_->Done();
+  controllable_response->Send(net::HTTP_OK, "application/json", response_body);
+  controllable_response->Done();
 }
 
-void FakeApi::SendErrorResponse() {
-  DCHECK(controllable_response_);
+void FakeApi::SendErrorResponse(size_t index) {
+  CHECK_LT(index, controllable_responses_.size());
+  auto& controllable_response = controllable_responses_[index];
   std::string response_body =
       R"({"error": {"code": "INTERNAL", "message": "Generation failed"}})";
-  controllable_response_->Send(net::HTTP_OK, "application/json", response_body);
-  controllable_response_->Done();
+  controllable_response->Send(net::HTTP_OK, "application/json", response_body);
+  controllable_response->Done();
 }
 
 testing::AssertionResult FakeApi::RequestHasValidProductImage(
-    base::span<const uint8_t> expected_image_bytes) {
+    base::span<const uint8_t> expected_image_bytes,
+    size_t index) {
+  CHECK_LT(index, controllable_responses_.size());
   const net::test_server::HttpRequest* request =
-      controllable_response_->http_request();
+      controllable_responses_[index]->http_request();
   if (!request) {
     return testing::AssertionFailure() << "No request received";
   }

@@ -88,7 +88,7 @@ IndigoPrivateGetReplacementImageFunction::Run() {
     return RespondNow(Error("No image replacement found"));
   }
 
-  GURL url = replacement->TakeReplacementImageURL();
+  const GURL& url = replacement->GetReplacementImageURL();
   if (!url.is_empty()) {
     api::indigo_private::ImageData result;
     api::indigo_private::ImageData::Value value;
@@ -108,7 +108,7 @@ IndigoPrivateGetReplacementImageFunction::Run() {
 }
 
 void IndigoPrivateGetReplacementImageFunction::OnReplacementImageAvailable(
-    GURL replacement_image_url) {
+    const GURL& replacement_image_url) {
   if (!browser_context()) {
     return;
   }

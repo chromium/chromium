@@ -38,6 +38,7 @@ class IndigoAgentHost : public content::PageUserData<IndigoAgentHost>,
   // chrome::mojom::IndigoAgentHost:
   void StartImageReplacement(
       mojo::PendingRemote<blink::mojom::ImageReplacement> replacement,
+      bool is_primary,
       StartImageReplacementCallback callback) override;
 
  private:

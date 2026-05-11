@@ -13,7 +13,8 @@ import "url/mojom/url.mojom";
 interface IndigoAgentHost {
   // Asks the browser to start an image replacement on the given element.
   StartImageReplacement(
-      pending_remote<blink.mojom.ImageReplacement> replacement) => ();
+      pending_remote<blink.mojom.ImageReplacement> replacement,
+      bool is_primary) => ();
 };
 
 // Browser -> renderer interface for Indigo. This exists on the main frame only.

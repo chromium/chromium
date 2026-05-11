@@ -542,7 +542,8 @@ TEST_F(IndigoPageActionControllerTest, OnCloseResetsReplacements) {
   FakeImageReplacement fake_replacement;
   mojo::Receiver<blink::mojom::ImageReplacement> receiver(&fake_replacement);
 
-  manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote());
+  manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote(),
+                                    /*is_primary=*/true);
   receiver.set_disconnect_handler(disconnect_future.GetCallback());
 
   controller_->OnClose(nullptr);

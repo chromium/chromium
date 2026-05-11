@@ -93,9 +93,10 @@ void IndigoAgentHost::OnScriptLoaded(
 
 void IndigoAgentHost::StartImageReplacement(
     mojo::PendingRemote<blink::mojom::ImageReplacement> replacement,
+    bool is_primary,
     StartImageReplacementCallback callback) {
   auto* manager = IndigoImageReplacementManager::GetOrCreateForPage(page());
-  manager->RegisterImageReplacement(std::move(replacement));
+  manager->RegisterImageReplacement(std::move(replacement), is_primary);
   std::move(callback).Run();
 }
 

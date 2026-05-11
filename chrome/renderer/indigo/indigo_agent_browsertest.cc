@@ -46,16 +46,21 @@ class MockIndigoAgentHost : public chrome::mojom::IndigoAgentHost {
   // chrome::mojom::IndigoAgentHost:
   void StartImageReplacement(
       mojo::PendingRemote<blink::mojom::ImageReplacement> replacement,
+      bool is_primary,
       StartImageReplacementCallback callback) override {
+    last_is_primary_ = is_primary;
     replacements_.Add(std::move(replacement));
     replacement_started_.SetValue();
     std::move(callback).Run();
   }
 
+  bool last_is_primary() const { return last_is_primary_; }
+
  private:
   mojo::AssociatedReceiver<chrome::mojom::IndigoAgentHost> receiver_{this};
   mojo::RemoteSet<blink::mojom::ImageReplacement> replacements_;
   base::test::TestFuture<void> replacement_started_;
+  bool last_is_primary_ = false;
 };
 
 class IndigoAgentBrowserTest : public ChromeRenderViewTest {
@@ -238,6 +243,137 @@ TEST_F(IndigoAgentBrowserTest, StartImageReplacementWithValidElement) {
 
   // Verify that the host received the replacement start request.
   ASSERT_TRUE(host_.WaitForReplacementStarted());
+  EXPECT_TRUE(host_.last_is_primary());
+}
+
+TEST_F(IndigoAgentBrowserTest, StartImageReplacementWithPrimaryDisposition) {
+  mojo::AssociatedRemote<chrome::mojom::IndigoAgent> remote = BindIndigoAgent();
+
+  const std::string kScript = R"(
+    window.indigo.setup({
+      invoke: function() {
+        const img = document.createElement('img');
+        img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=";
+        document.body.appendChild(img);
+        window.indigo.startImageReplacement(img, {disposition: 'primary'});
+      }
+    });
+  )";
+  const GURL kUrl("https://example.com/test.js");
+  const url::Origin kOrigin = url::Origin::Create(kUrl);
+
+  base::test::TestFuture<void> inject_done;
+  remote->InjectScript(kScript, kUrl, kOrigin, host_.BindAndPassRemote(),
+                       inject_done.GetCallback());
+  ASSERT_TRUE(inject_done.Wait());
+
+  base::test::TestFuture<void> invoke_done;
+  remote->Invoke(invoke_done.GetCallback());
+  ASSERT_TRUE(invoke_done.Wait());
+
+  ASSERT_TRUE(host_.WaitForReplacementStarted());
+  EXPECT_TRUE(host_.last_is_primary());
+}
+
+TEST_F(IndigoAgentBrowserTest, StartImageReplacementWithMirrorDisposition) {
+  mojo::AssociatedRemote<chrome::mojom::IndigoAgent> remote = BindIndigoAgent();
+
+  const std::string kScript = R"(
+    window.indigo.setup({
+      invoke: function() {
+        const img = document.createElement('img');
+        img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=";
+        document.body.appendChild(img);
+        window.indigo.startImageReplacement(img, {disposition: 'mirror'});
+      }
+    });
+  )";
+  const GURL kUrl("https://example.com/test.js");
+  const url::Origin kOrigin = url::Origin::Create(kUrl);
+
+  base::test::TestFuture<void> inject_done;
+  remote->InjectScript(kScript, kUrl, kOrigin, host_.BindAndPassRemote(),
+                       inject_done.GetCallback());
+  ASSERT_TRUE(inject_done.Wait());
+
+  base::test::TestFuture<void> invoke_done;
+  remote->Invoke(invoke_done.GetCallback());
+  ASSERT_TRUE(invoke_done.Wait());
+
+  ASSERT_TRUE(host_.WaitForReplacementStarted());
+  EXPECT_FALSE(host_.last_is_primary());
+}
+
+TEST_F(IndigoAgentBrowserTest,
+       StartImageReplacementWithInvalidDispositionThrows) {
+  mojo::AssociatedRemote<chrome::mojom::IndigoAgent> remote = BindIndigoAgent();
+
+  const std::string kScript = R"(
+    window.indigo.setup({
+      invoke: function() {
+        try {
+          const img = document.createElement('img');
+          img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=";
+          document.body.appendChild(img);
+          window.indigo.startImageReplacement(img, {disposition: 'invalid'});
+        } catch (e) {
+          window.exception_name = e.name;
+          window.exception_message = e.message;
+        }
+      }
+    });
+  )";
+  const GURL kUrl("https://example.com/test.js");
+  const url::Origin kOrigin = url::Origin::Create(kUrl);
+
+  base::test::TestFuture<void> inject_done;
+  remote->InjectScript(kScript, kUrl, kOrigin, host_.BindAndPassRemote(),
+                       inject_done.GetCallback());
+  ASSERT_TRUE(inject_done.Wait());
+
+  base::test::TestFuture<void> invoke_done;
+  remote->Invoke(invoke_done.GetCallback());
+  ASSERT_TRUE(invoke_done.Wait());
+
+  EXPECT_EQ("Error", EvaluateAs<std::string>("window.exception_name"));
+  EXPECT_EQ("Invalid disposition value \"invalid\".",
+            EvaluateAs<std::string>("window.exception_message"));
+}
+
+TEST_F(IndigoAgentBrowserTest,
+       StartImageReplacementWithInvalidParamsTypeThrows) {
+  mojo::AssociatedRemote<chrome::mojom::IndigoAgent> remote = BindIndigoAgent();
+
+  const std::string kScript = R"(
+    window.indigo.setup({
+      invoke: function() {
+        try {
+          const img = document.createElement('img');
+          img.src = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+ip1sAAAAASUVORK5CYII=";
+          document.body.appendChild(img);
+          window.indigo.startImageReplacement(img, 'not an object');
+        } catch (e) {
+          window.exception_name = e.name;
+          window.exception_message = e.message;
+        }
+      }
+    });
+  )";
+  const GURL kUrl("https://example.com/test.js");
+  const url::Origin kOrigin = url::Origin::Create(kUrl);
+
+  base::test::TestFuture<void> inject_done;
+  remote->InjectScript(kScript, kUrl, kOrigin, host_.BindAndPassRemote(),
+                       inject_done.GetCallback());
+  ASSERT_TRUE(inject_done.Wait());
+
+  base::test::TestFuture<void> invoke_done;
+  remote->Invoke(invoke_done.GetCallback());
+  ASSERT_TRUE(invoke_done.Wait());
+
+  EXPECT_EQ("TypeError", EvaluateAs<std::string>("window.exception_name"));
+  EXPECT_EQ("Invalid params object.",
+            EvaluateAs<std::string>("window.exception_message"));
 }
 
 }  // namespace
