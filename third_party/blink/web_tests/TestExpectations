@@ -9808,3 +9808,6 @@ crbug.com/506273267 virtual/permission-element/external/wpt/html/semantics/permi
 # Gardener 2026-05-07
 crbug.com/510507820 [ Win10.20h2 ] external/wpt/speech-api/SpeechRecognition-installOnDevice.https.html [ Failure Pass Timeout ]
 crbug.com/510507820 [ Win10.20h2 ] virtual/speech-with-unified-autoplay/external/wpt/speech-api/SpeechRecognition-installOnDevice.https.html [ Failure Pass Timeout ]
+
+# Gardener 2026-05-11
+crbug.com/511249206 [ Mac ] virtual/compositor-timeline-trigger/external/wpt/scroll-animations/animation-trigger/animation-trigger-multiple-animations.tentative.html [ Failure Pass ]
