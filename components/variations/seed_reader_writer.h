@@ -436,6 +436,11 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // reason for the error is that the seed file is missing.
   bool check_missing_seed_file_ = false;
 
+  // Whether the client is migrating from local state or the old SeedFile to the
+  // new one. This is used to determine whether the old sources should be
+  // cleared.
+  bool migrating_from_old_source_ = false;
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<SeedReaderWriter> weak_ptr_factory_{this};

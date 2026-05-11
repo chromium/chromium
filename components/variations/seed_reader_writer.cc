@@ -730,6 +730,13 @@ bool SeedReaderWriter::ShouldClearSeedDataFromMemory() {
 
 void SeedReaderWriter::OnSeedWriteComplete(bool write_success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (migrating_from_old_source_ && write_success) {
+    // Clients using a seed file should clear seed from local state and the old
+    // seed file, as it will no longer be used.
+    local_state_->ClearPref(fields_prefs_->seed);
+    DeleteOldSeedFile();
+    migrating_from_old_source_ = false;
+  }
   if (ShouldClearSeedDataFromMemory()) {
     ClearSeedDataField(stored_seed_info_);
   }
@@ -838,6 +845,13 @@ void SeedReaderWriter::ReadSeedFile() {
     stored_seed_info_ = std::move(read_seed_info_result.value());
     // Record that the seed file was read successfully.
     seed_source = SeedSource::kSeedFile;
+    // If we're using the seed file, clear the seed from local state and the old
+    // seed file, as it will no longer be used. If they don't exist, this is a
+    // no-op.
+    local_state_->ClearPref(fields_prefs_->seed);
+    // Do a scheduled write immediately instead of waiting to ensure that the
+    // migration to the new seed file is done as soon as possible.
+    DeleteOldSeedFile();
   } else if (read_seed_info_result.error() !=
                  LoadSeedResult::kErrorReadingFile &&
              read_seed_info_result.error() != LoadSeedResult::kFileNotFound) {
@@ -873,13 +887,9 @@ void SeedReaderWriter::ReadSeedFile() {
   base::UmaHistogramBoolean(
       base::StrCat({"Variations.SeedFileRead.", histogram_suffix_}),
       seed_source == SeedSource::kSeedFile);
-
-  // Clients using a seed file should clear seed from local state and the old
-  // seed file, as it will no longer be used.
-  local_state_->ClearPref(fields_prefs_->seed);
-  DeleteOldSeedFile();
 }
 
+// TODO(b/510295477): Remove this function once the migration is complete.
 bool SeedReaderWriter::ReadOldSeedFile() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::string seed_file_data;
@@ -920,7 +930,11 @@ bool SeedReaderWriter::ReadOldSeedFile() {
   stored_seed_info_.set_permanent_version(permanent_country_version.version);
 
   // Schedule a write to the new seed file for future Chrome sessions.
+  migrating_from_old_source_ = true;
   seed_writer_->ScheduleWriteWithBackgroundDataSerializer(this);
+  // Do a scheduled write immediately instead of waiting to ensure that the
+  // migration to the new seed file is done as soon as possible.
+  seed_writer_->DoScheduledWrite();
 
   return success;
 }
@@ -930,7 +944,6 @@ bool SeedReaderWriter::MigrateFromLocalStateToSeedFile() {
 
   std::string seed_data =
       GetSeedDataFromLocalStatePref(local_state_, fields_prefs_->seed);
-
   PermanentCountryVersion permanent_country_version =
       GetPermanentCountryVersion(local_state_,
                                  fields_prefs_->permanent_country_code_version);
@@ -938,6 +951,7 @@ bool SeedReaderWriter::MigrateFromLocalStateToSeedFile() {
   // because the Local State pref was empty or because it was corrupt and
   // failed to decode/uncompress, this will result in an empty seed being
   // written to the seed file, effectively resetting the seed file.
+  migrating_from_old_source_ = true;
   ScheduleSeedFileWrite(ValidatedSeedInfo{
       .seed_data = seed_data,
       .signature = local_state_->GetString(fields_prefs_->signature),
