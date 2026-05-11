@@ -108,9 +108,12 @@ please read [this article](https://www.chromium.org/developers/enterprise-change
     -   We strongly encourage developers to make their policies support this
         attribute. It means the admin can change the policy value and Chrome
         will honor the change at run-time without requiring a restart of the
-        browser. ChromeOS does not always support non-dynamic profile policies.
-        Please verify with a ChromeOS policy owner if your profile policy does
-        not support dynamic refresh on ChromeOS.
+        browser.
+        -  If your policy is not dynamic in the sense that its value is only
+           evaluated at browser process startup time, it will require special
+           care to support ChomeOS and should be avoid in general. Reach out to
+           someone from `chromeos/ash/components/policy/OWNERS` early to discuss
+           this.
     -   Most of the time, this requires a
         [PrefChangeRegistrar](https://cs.chromium.org/chromium/src/components/prefs/pref_change_registrar.h)
         to listen to the preference change notification and update UI or
