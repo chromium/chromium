@@ -7,12 +7,16 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/webshare/share_service_impl.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/safe_browsing/content/common/file_type_policies_test_util.h"
 #include "components/safe_browsing/core/browser/db/fake_database_manager.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
@@ -99,6 +103,31 @@ IN_PROC_BROWSER_TEST_F(ShareServiceBrowserTest, Text) {
 
   histogram_tester.ExpectBucketCount(kWebShareApiCountMetric,
                                      WebShareMethod::kShare, kRepeats);
+}
+
+IN_PROC_BROWSER_TEST_F(ShareServiceBrowserTest, InactiveWebContents) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/webshare/index.html")));
+  content::WebContents* contents_0 =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Create a split and verify there are now 2 tabs
+  chrome::NewSplitTab(browser(),
+                      split_tabs::SplitTabCreatedSource::kToolbarButton);
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
+  EXPECT_TRUE(browser()->tab_strip_model()->GetTabAtIndex(0)->IsSplit());
+  EXPECT_TRUE(browser()->tab_strip_model()->GetTabAtIndex(1)->IsSplit());
+
+  // Tab 0 is now inactive.
+  tabs::TabInterface* tab_0 = tabs::TabInterface::GetFromContents(contents_0);
+  EXPECT_FALSE(tab_0->IsActivated());
+
+  // Initiate share from tab 0. Permission in denied because it's inactive.
+  std::string result =
+      content::EvalJs(contents_0, "share_text('hello')").ExtractString();
+  EXPECT_THAT(result, testing::HasSubstr("share failed"));
+  EXPECT_THAT(result, testing::HasSubstr("NotAllowedError"));
 }
 
 #if BUILDFLAG(IS_WIN)

@@ -30,6 +30,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/intent.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/visibility_timer/visibility_timer_tab_helper.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -143,6 +144,14 @@ void SharesheetClient::Share(
             base::BindOnce(std::move(callback),
                            blink::mojom::ShareError::CANCELED),
             base::Seconds(delay_seconds));
+    return;
+  }
+
+  // If the tab is no longer active, return permission denied.
+  tabs::TabInterface* tab_interface =
+      tabs::TabInterface::MaybeGetFromContents(web_contents());
+  if (tab_interface && !tab_interface->IsActivated()) {
+    std::move(callback).Run(blink::mojom::ShareError::PERMISSION_DENIED);
     return;
   }
 

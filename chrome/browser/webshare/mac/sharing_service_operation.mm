@@ -21,6 +21,7 @@
 #include "chrome/browser/webshare/prepare_subdirectory_task.h"
 #include "chrome/browser/webshare/share_service_impl.h"
 #include "chrome/browser/webshare/store_files_task.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/visibility_timer/visibility_timer_tab_helper.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -86,6 +87,14 @@ void SharingServiceOperation::Share(
             base::BindOnce(std::move(callback_),
                            blink::mojom::ShareError::CANCELED),
             base::Seconds(delay_seconds));
+    return;
+  }
+
+  // If the tab is no longer active, return permission denied.
+  tabs::TabInterface* tab_interface =
+      tabs::TabInterface::MaybeGetFromContents(web_contents_.get());
+  if (tab_interface && !tab_interface->IsActivated()) {
+    std::move(callback_).Run(blink::mojom::ShareError::PERMISSION_DENIED);
     return;
   }
 

@@ -26,6 +26,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/webshare/share_service_impl.h"
 #include "chrome/browser/webshare/win/show_share_ui_for_window_operation.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -383,6 +384,14 @@ void ShareOperation::Run(SharedFiles files,
   // the operation.
   if (!web_contents_) {
     Complete(blink::mojom::ShareError::CANCELED);
+    return;
+  }
+
+  // If the tab is no longer active, return permission denied.
+  tabs::TabInterface* tab_interface =
+      tabs::TabInterface::MaybeGetFromContents(web_contents_.get());
+  if (tab_interface && !tab_interface->IsActivated()) {
+    Complete(blink::mojom::ShareError::PERMISSION_DENIED);
     return;
   }
 

@@ -143,6 +143,7 @@ if (is_win || is_chromeos || is_mac) {
       "//content/test:test_support",
       "//net:test_support",
       "//testing/gtest",
+      "//ui/base",
     ]
 
     if (is_chromeos) {
