@@ -29,11 +29,11 @@
 #   the root cause is something else, and the test should be marked in
 #   TestExpectations instead.
 
-
-rbyers@chromium.org
-masonf@chromium.org
-pdr@chromium.org
+cbiesinger@chromium.org
 futhark@chromium.org
 ikilpatrick@chromium.org
-cbiesinger@chromium.org
+jonathanjlee@google.com
+masonf@chromium.org
+pdr@chromium.org
+rbyers@chromium.org
 # Other owners are welcome
