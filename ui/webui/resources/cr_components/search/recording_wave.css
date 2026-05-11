@@ -15,11 +15,11 @@
   display: flex;
   inline-size: 100%;
   justify-content: flex-start;
-  max-inline-size: 100%;
-  min-inline-size: 100%;
-  mask-image: linear-gradient(to right, transparent 0%,
-                                black 20%, black 90%,
-                                transparent 100%);
+  mask-image: linear-gradient(to right,
+                              transparent 0%,
+                              black 20%,
+                              black 70%,
+                              transparent 100%);
   overflow: visible;
   padding-block-start: 10px;
   position: relative;
