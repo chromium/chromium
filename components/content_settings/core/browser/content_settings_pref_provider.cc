@@ -229,7 +229,7 @@ bool PrefProvider::SetWebsiteSetting(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
-    base::Value&& in_value,
+    const base::Value& in_value,
     const ContentSettingConstraints& constraints) {
   DCHECK(CalledOnValidThread());
   DCHECK(prefs_);
@@ -278,16 +278,18 @@ bool PrefProvider::SetWebsiteSetting(
         primary_pattern, secondary_pattern, content_type, in_value, constraints,
         &session_model);
     if (new_value.has_value()) {
-      in_value = std::move(new_value).value();
       metadata.set_session_model(session_model);
-    } else {
-      return true;
+      GetPref(content_type)
+          ->SetWebsiteSetting(primary_pattern, secondary_pattern,
+                              std::move(new_value).value(),
+                              std::move(metadata));
     }
+    return true;
   }
 
   GetPref(content_type)
-      ->SetWebsiteSetting(primary_pattern, secondary_pattern,
-                          std::move(in_value), std::move(metadata));
+      ->SetWebsiteSetting(primary_pattern, secondary_pattern, in_value.Clone(),
+                          std::move(metadata));
   return true;
 }
 

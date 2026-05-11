@@ -51,10 +51,9 @@ class ProviderInterface {
                                         bool off_the_record) const;
 
   // Asks the provider to set the website setting for a particular
-  // |primary_pattern|, |secondary_pattern|, |content_type| tuple. If the
-  // provider accepts the setting it returns true and takes the ownership of the
-  // |value|. Otherwise false is returned and the ownership of the |value| stays
-  // with the caller.
+  // |primary_pattern|, |secondary_pattern|, |content_type| tuple. Returns
+  // `true` if the provider accepts the setting, which hence does not need to be
+  // further processed in any lower-priority provider.
   //
   // This should only be called on the UI thread, and not after
   // ShutdownOnUIThread has been called.
@@ -62,7 +61,7 @@ class ProviderInterface {
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern,
       ContentSettingsType content_type,
-      base::Value&& value,
+      const base::Value& value,
       const ContentSettingConstraints& constraints) = 0;
 
   // Resets all content settings for the given |content_type| and empty resource

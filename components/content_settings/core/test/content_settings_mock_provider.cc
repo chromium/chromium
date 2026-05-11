@@ -32,7 +32,7 @@ bool MockProvider::SetWebsiteSetting(
     const ContentSettingsPattern& requesting_url_pattern,
     const ContentSettingsPattern& embedding_url_pattern,
     ContentSettingsType content_type,
-    base::Value&& in_value,
+    const base::Value& in_value,
     const ContentSettingConstraints& constraints) {
   if (read_only_)
     return false;
@@ -41,9 +41,8 @@ bool MockProvider::SetWebsiteSetting(
     RuleMetaData metadata;
     metadata.SetFromConstraints(constraints);
     value_map_.SetValue(requesting_url_pattern, embedding_url_pattern,
-                        content_type, std::move(in_value), std::move(metadata));
+                        content_type, in_value.Clone(), std::move(metadata));
   } else {
-    base::Value value(std::move(in_value));
     value_map_.DeleteValue(requesting_url_pattern, embedding_url_pattern,
                            content_type);
   }

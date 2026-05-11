@@ -215,7 +215,7 @@ bool DefaultProvider::SetWebsiteSetting(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
-    base::Value&& in_value,
+    const base::Value& in_value,
     const ContentSettingConstraints& constraints) {
   DCHECK(CalledOnValidThread());
   DCHECK(prefs_);
@@ -225,10 +225,6 @@ bool DefaultProvider::SetWebsiteSetting(
       secondary_pattern != ContentSettingsPattern::Wildcard()) {
     return false;
   }
-
-  // Move |in_value| to ensure that it gets cleaned up properly even if we don't
-  // pass on the ownership.
-  base::Value value(std::move(in_value));
 
   // The default settings may not be directly modified for OTR sessions.
   // Instead, they are synced to the main profile's setting.
@@ -243,9 +239,9 @@ bool DefaultProvider::SetWebsiteSetting(
     // whose callbacks may try to reacquire the lock on the same thread.
     {
       base::AutoLock lock(lock_);
-      ChangeSetting(content_type, value.Clone());
+      ChangeSetting(content_type, in_value.Clone());
     }
-    WriteToPref(content_type, value);
+    WriteToPref(content_type, in_value);
   }
 
   NotifyObservers(ContentSettingsPattern::Wildcard(),

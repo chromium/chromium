@@ -100,7 +100,7 @@ bool InstalledWebappProvider::SetWebsiteSetting(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
-    base::Value&& value,
+    const base::Value& value,
     const content_settings::ContentSettingConstraints& constraints) {
   // You can't set settings through this provider.
   return false;

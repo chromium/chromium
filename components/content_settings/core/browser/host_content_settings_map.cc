@@ -541,7 +541,7 @@ void HostContentSettingsMap::SetWebsiteSettingDefaultScope(
     const GURL& primary_url,
     const GURL& secondary_url,
     ContentSettingsType content_type,
-    base::Value value,
+    const base::Value& value,
     const content_settings::ContentSettingConstraints& constraints) {
   content_settings::PatternPair patterns = GetPatternsForContentSettingsType(
       primary_url, secondary_url, content_type);
@@ -552,14 +552,14 @@ void HostContentSettingsMap::SetWebsiteSettingDefaultScope(
   }
 
   SetWebsiteSettingCustomScope(primary_pattern, secondary_pattern, content_type,
-                               std::move(value), constraints);
+                               value, constraints);
 }
 
 void HostContentSettingsMap::SetWebsiteSettingCustomScope(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
-    base::Value value,
+    const base::Value& value,
     const content_settings::ContentSettingConstraints& constraints) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   CHECK(IsSecondaryPatternAllowed(primary_pattern, secondary_pattern,
@@ -568,30 +568,15 @@ void HostContentSettingsMap::SetWebsiteSettingCustomScope(
   // settings are met.
   UsedContentSettingsProviders();
 
-#if DCHECK_IS_ON()
-  base::Value clone = value.Clone();
-#endif
   for (const auto& provider_pair : content_settings_providers_) {
-    // The std::move(value) here just turns the value into an r-value reference.
-    // It doesn't actually move the value yet. The provider can decide to accept
-    // the value. If successful then ownership is passed to the provider.
-    if (provider_pair.second->SetWebsiteSetting(
-            primary_pattern, secondary_pattern, content_type, std::move(value),
-            constraints)) {
+    if (provider_pair.second->SetWebsiteSetting(primary_pattern,
+                                                secondary_pattern, content_type,
+                                                value, constraints)) {
       if (content_settings::ShouldTypeExpireActively(content_type)) {
         UpdateExpiryEnforcementTimer(content_type, constraints.expiration());
       }
       return;
     }
-
-    // Ensure that the value is unmodified until accepted by a provider.
-#if DCHECK_IS_ON()
-    if (!(value.is_none() &&
-          constraints.session_model() == SessionModel::ONE_TIME &&
-          provider_pair.first == ProviderType::kOneTimePermissionProvider)) {
-      DCHECK_EQ(value, clone) << provider_pair.first;
-    }
-#endif
   }
   NOTREACHED();
 }
@@ -1325,7 +1310,7 @@ void HostContentSettingsMap::
                                    base::Value());
       SetWebsiteSettingCustomScope(pattern.primary_pattern,
                                    ContentSettingsPattern::Wildcard(), type,
-                                   pattern.setting_value.Clone());
+                                   pattern.setting_value);
     }
   }
 }

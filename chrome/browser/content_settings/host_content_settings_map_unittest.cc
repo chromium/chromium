@@ -117,7 +117,7 @@ class MockUserModifiableProvider
                bool(const ContentSettingsPattern&,
                     const ContentSettingsPattern&,
                     ContentSettingsType,
-                    base::Value&&,
+                    const base::Value&,
                     const content_settings::ContentSettingConstraints&));
 
   MOCK_METHOD1(ClearAllContentSettingsRules, void(ContentSettingsType));
