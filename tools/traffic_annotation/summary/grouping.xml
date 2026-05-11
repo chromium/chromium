@@ -454,6 +454,7 @@ after discussions on the right group.
       <annotation id="safe_browsing_ohttp_key_fetch"/>
       <annotation id="safe_browsing_v4_get_hash"/>
       <annotation id="safe_browsing_v4_update"/>
+      <annotation id="safe_browsing_v5_update"/>
       <annotation id="safe_browsing_binary_upload_app"/>
       <annotation id="safe_browsing_binary_upload_connector"/>
       <annotation id="safe_browsing_realtime_url_lookup"/>

@@ -293,6 +293,8 @@ static_library("sb_update_protocol_manager") {
     "sb_update_protocol_manager.h",
     "v4_update_protocol_manager.cc",
     "v4_update_protocol_manager.h",
+    "v5_update_protocol_manager.cc",
+    "v5_update_protocol_manager.h",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
@@ -301,12 +303,15 @@ static_library("sb_update_protocol_manager") {
 
   deps = [
     ":safebrowsing_proto",
+    ":util",
     ":v4_protocol_manager_util",
     "//base",
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/safe_browsing/core/common/proto:safebrowsingv5_proto",
     "//components/safe_browsing/core/common/proto:webui_proto",
+    "//google_apis",
     "//net",
     "//services/network/public/cpp",
     "//url",
@@ -348,6 +353,7 @@ source_set("unit_tests_local_db") {
     "v4_rice_unittest.cc",
     "v4_store_unittest.cc",
     "v4_update_protocol_manager_unittest.cc",
+    "v5_update_protocol_manager_unittest.cc",
   ]
   deps = [
     ":database_manager",

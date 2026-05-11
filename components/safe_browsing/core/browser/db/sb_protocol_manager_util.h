@@ -235,6 +235,12 @@ class ListIdentifier {
 
   bool uses_v5_api() const { return uses_v5_api_; }
 
+  bool operator<(const ListIdentifier& rhs) const {
+    CHECK(uses_v5_api());
+    CHECK(rhs.uses_v5_api());
+    return sb_threat_type_ < rhs.sb_threat_type_;
+  }
+
  private:
   // For v4:
   PlatformType platform_type_;
