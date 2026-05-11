@@ -45,46 +45,51 @@ static CustomElementDefinition* DefinitionIfStyleChangedCallback(
 }  // namespace
 
 unsigned StyleAttributeMutationScope::scope_count_ = 0;
-AbstractPropertySetCSSStyleDeclaration*
-    StyleAttributeMutationScope::current_decl_ = nullptr;
+Element* StyleAttributeMutationScope::current_element_ = nullptr;
 bool StyleAttributeMutationScope::should_notify_inspector_ = false;
 bool StyleAttributeMutationScope::should_deliver_ = false;
 
-DISABLE_CFI_PERF
 StyleAttributeMutationScope::StyleAttributeMutationScope(
     AbstractPropertySetCSSStyleDeclaration* decl) {
+  Initialize(decl->ParentElement());
+}
+
+StyleAttributeMutationScope::StyleAttributeMutationScope(Element* element) {
+  Initialize(element);
+}
+
+DISABLE_CFI_PERF
+void StyleAttributeMutationScope::Initialize(Element* element) {
   ++scope_count_;
 
   if (scope_count_ != 1) {
-    DCHECK_EQ(current_decl_, decl);
+    DCHECK_EQ(current_element_, element);
     return;
   }
 
-  DCHECK(!current_decl_);
-  current_decl_ = decl;
+  DCHECK(!current_element_);
+  current_element_ = element;
 
-  if (!current_decl_->ParentElement()) {
+  if (!current_element_) {
     return;
   }
 
   mutation_recipients_ =
       MutationObserverInterestGroup::CreateForAttributesMutation(
-          *current_decl_->ParentElement(), html_names::kStyleAttr);
+          *current_element_, html_names::kStyleAttr);
   bool should_read_old_value =
       (mutation_recipients_ && mutation_recipients_->IsOldValueRequested()) ||
-      DefinitionIfStyleChangedCallback(current_decl_->ParentElement());
+      DefinitionIfStyleChangedCallback(current_element_);
 
   if (should_read_old_value) {
-    old_value_ =
-        current_decl_->ParentElement()->getAttribute(html_names::kStyleAttr);
+    old_value_ = current_element_->getAttribute(html_names::kStyleAttr);
   }
 
   if (mutation_recipients_) {
     AtomicString requested_old_value =
         mutation_recipients_->IsOldValueRequested() ? old_value_ : g_null_atom;
-    mutation_ = MutationRecord::CreateAttributes(current_decl_->ParentElement(),
-                                                 html_names::kStyleAttr,
-                                                 requested_old_value);
+    mutation_ = MutationRecord::CreateAttributes(
+        current_element_, html_names::kStyleAttr, requested_old_value);
   }
 }
 
@@ -102,7 +107,7 @@ StyleAttributeMutationScope::~StyleAttributeMutationScope() {
     should_deliver_ = false;
   }
 
-  Element* element = current_decl_->ParentElement();
+  Element* element = current_element_;
   if (CustomElementDefinition* definition =
           DefinitionIfStyleChangedCallback(element)) {
     definition->EnqueueAttributeChangedCallback(
@@ -111,16 +116,15 @@ StyleAttributeMutationScope::~StyleAttributeMutationScope() {
   }
 
   // We have to clear internal state before calling Inspector's code.
-  AbstractPropertySetCSSStyleDeclaration* local_copy_style_decl = current_decl_;
-  current_decl_ = nullptr;
+  current_element_ = nullptr;
 
   if (!should_notify_inspector_) {
     return;
   }
 
   should_notify_inspector_ = false;
-  if (local_copy_style_decl->ParentElement()) {
-    probe::DidInvalidateStyleAttr(local_copy_style_decl->ParentElement());
+  if (element) {
+    probe::DidInvalidateStyleAttr(element);
   }
 }
 
