@@ -7,12 +7,13 @@
 
 #include <memory>
 
-#include "third_party/blink/renderer/platform/graphics/dark_mode_settings.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_types.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace blink {
+
+struct DarkModeSettings;
 
 class PLATFORM_EXPORT DarkModeColorClassifier {
  public:

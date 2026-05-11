@@ -10,7 +10,6 @@
 
 #include "base/containers/span.h"
 #include "base/memory/singleton.h"
-#include "third_party/blink/renderer/platform/graphics/dark_mode_settings.h"
 #include "third_party/blink/renderer/platform/graphics/darkmode/darkmode_classifier.h"
 #include "ui/gfx/geometry/size.h"
 

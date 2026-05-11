@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/graphics/dark_mode_color_classifier.h"
 
 #include "base/check_op.h"
+#include "third_party/blink/renderer/platform/graphics/dark_mode_settings.h"
 
 namespace blink {
 namespace {

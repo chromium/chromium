@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "third_party/blink/renderer/platform/graphics/dark_mode_settings.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -17,6 +16,8 @@ class ColorFilter;
 }
 
 namespace blink {
+
+struct DarkModeSettings;
 
 // Contains logic specific to modifying colors drawn when dark mode is active.
 class PLATFORM_EXPORT DarkModeColorFilter {

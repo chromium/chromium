@@ -254,9 +254,9 @@ DarkModeFilter* GraphicsContext::GetDarkModeFilterForImage(
   return dark_mode_filter;
 }
 
-void GraphicsContext::UpdateDarkModeSettingsForTest(
-    const DarkModeSettings& settings) {
-  dark_mode_filter_ = std::make_unique<DarkModeFilter>(settings);
+void GraphicsContext::SetDarkModeFilterForTest(
+    std::unique_ptr<DarkModeFilter> dark_mode_filter) {
+  dark_mode_filter_ = std::move(dark_mode_filter);
 }
 
 void GraphicsContext::Save() {

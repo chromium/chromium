@@ -35,7 +35,6 @@
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/geometry/dash_array.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_filter.h"
-#include "third_party/blink/renderer/platform/graphics/dark_mode_settings.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
@@ -213,7 +212,7 @@ class PLATFORM_EXPORT GraphicsContext {
   DarkModeFilter* GetDarkModeFilterForImage(
       const ImageAutoDarkMode& auto_dark_mode);
 
-  void UpdateDarkModeSettingsForTest(const DarkModeSettings&);
+  void SetDarkModeFilterForTest(std::unique_ptr<DarkModeFilter>);
 
   // ---------- State management methods -----------------
   void Save();

@@ -142,7 +142,7 @@ class LABColorFilter : public DarkModeColorFilter {
 }  // namespace
 
 std::unique_ptr<DarkModeColorFilter> DarkModeColorFilter::FromSettings(
-    const DarkModeSettings& settings) {
+    const DarkModeSettings&) {
   return std::make_unique<LABColorFilter>();
 }
 

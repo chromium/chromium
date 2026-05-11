@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/platform/geometry/path.h"
 #include "third_party/blink/renderer/platform/geometry/path_builder.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
+#include "third_party/blink/renderer/platform/graphics/dark_mode_settings.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
@@ -150,25 +151,25 @@ class GraphicsContextDarkModeTest : public testing::Test {
     canvas_ = std::make_unique<SkiaPaintCanvas>(bitmap_);
   }
 
-  void DrawColorsToContext(bool is_dark_mode_on,
-                           const DarkModeSettings& settings) {
+  void DrawColorsToContext(bool is_dark_mode_on) {
     PaintController paint_controller;
     GraphicsContext context(paint_controller);
-    if (is_dark_mode_on)
-      context.UpdateDarkModeSettingsForTest(settings);
+    AutoDarkMode auto_dark_mode = AutoDarkMode::Disabled();
+    if (is_dark_mode_on) {
+      DarkModeSettings settings;
+      context.SetDarkModeFilterForTest(
+          std::make_unique<DarkModeFilter>(settings));
+
+      auto_dark_mode = AutoDarkMode(DarkModeFilter::ElementRole::kBackground,
+                                    /*enabled=*/true);
+    }
     context.BeginRecording();
-    context.FillRect(gfx::RectF(0, 0, 1, 1), Color::kBlack,
-                     AutoDarkMode(DarkModeFilter::ElementRole::kBackground,
-                                  is_dark_mode_on));
-    context.FillRect(gfx::RectF(1, 0, 1, 1), Color::kWhite,
-                     AutoDarkMode(DarkModeFilter::ElementRole::kBackground,
-                                  is_dark_mode_on));
+    context.FillRect(gfx::RectF(0, 0, 1, 1), Color::kBlack, auto_dark_mode);
+    context.FillRect(gfx::RectF(1, 0, 1, 1), Color::kWhite, auto_dark_mode);
     context.FillRect(gfx::RectF(2, 0, 1, 1), Color::FromSkColor(SK_ColorRED),
-                     AutoDarkMode(DarkModeFilter::ElementRole::kBackground,
-                                  is_dark_mode_on));
+                     auto_dark_mode);
     context.FillRect(gfx::RectF(3, 0, 1, 1), Color::FromSkColor(SK_ColorGRAY),
-                     AutoDarkMode(DarkModeFilter::ElementRole::kBackground,
-                                  is_dark_mode_on));
+                     auto_dark_mode);
     // Capture the result in the bitmap.
     canvas_->drawPicture(context.EndRecording());
   }
@@ -180,9 +181,7 @@ class GraphicsContextDarkModeTest : public testing::Test {
 // This is a baseline test where dark mode is turned off. Compare other variants
 // of the test where dark mode is enabled.
 TEST_F(GraphicsContextDarkModeTest, DarkModeOff) {
-  DarkModeSettings settings;
-
-  DrawColorsToContext(false, settings);
+  DrawColorsToContext(false);
 
   EXPECT_EQ(SK_ColorBLACK, bitmap_.getColor(0, 0));
   EXPECT_EQ(SK_ColorWHITE, bitmap_.getColor(1, 0));
@@ -191,9 +190,7 @@ TEST_F(GraphicsContextDarkModeTest, DarkModeOff) {
 }
 
 TEST_F(GraphicsContextDarkModeTest, InvertLightnessLAB) {
-  DarkModeSettings settings;
-
-  DrawColorsToContext(true, settings);
+  DrawColorsToContext(true);
 
   EXPECT_EQ(SK_ColorWHITE, bitmap_.getColor(0, 0));
   EXPECT_EQ(0xff121212, bitmap_.getColor(1, 0));
