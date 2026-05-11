@@ -119,19 +119,20 @@ ExclusionShapeData* CreateExclusionShapeData(
 
   const ComputedStyle& style = unpositioned_float.node.Style();
   switch (style.ShapeOutside()->CssBox()) {
-    case CSSBoxType::kMissing:
-    case CSSBoxType::kMargin:
+    case ShapeBox::kMissing:
+    case ShapeBox::kMarginBox:
       shape_insets -= new_margins;
       break;
-    case CSSBoxType::kBorder:
+    case ShapeBox::kBorderBox:
       break;
-    case CSSBoxType::kPadding:
-    case CSSBoxType::kContent:
+    case ShapeBox::kPaddingBox:
+    case ShapeBox::kContentBox:
       const ConstraintSpace space =
           CreateConstraintSpaceForFloat(unpositioned_float);
       BoxStrut strut = ComputeBorders(space, unpositioned_float.node);
-      if (style.ShapeOutside()->CssBox() == CSSBoxType::kContent)
+      if (style.ShapeOutside()->CssBox() == ShapeBox::kContentBox) {
         strut += ComputePadding(space, style);
+      }
       // |TextDirection::kLtr| is used as this is line relative.
       shape_insets = strut.ConvertToPhysical(style.GetWritingDirection())
                          .ConvertToLogical({parent_space.GetWritingMode(),

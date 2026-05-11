@@ -109,8 +109,8 @@ class ComputedStyleTest : public testing::Test {
 };
 
 TEST_F(ComputedStyleTest, ShapeOutsideBoxEqual) {
-  auto* shape1 = MakeGarbageCollected<ShapeValue>(CSSBoxType::kContent);
-  auto* shape2 = MakeGarbageCollected<ShapeValue>(CSSBoxType::kContent);
+  auto* shape1 = MakeGarbageCollected<ShapeValue>(ShapeBox::kContentBox);
+  auto* shape2 = MakeGarbageCollected<ShapeValue>(ShapeBox::kContentBox);
   ComputedStyleBuilder builder1 = CreateComputedStyleBuilder();
   ComputedStyleBuilder builder2 = CreateComputedStyleBuilder();
   builder1.SetShapeOutside(shape1);
@@ -122,9 +122,9 @@ TEST_F(ComputedStyleTest, ShapeOutsideCircleEqual) {
   BasicShapeCircle* circle1 = MakeGarbageCollected<BasicShapeCircle>();
   BasicShapeCircle* circle2 = MakeGarbageCollected<BasicShapeCircle>();
   auto* shape1 =
-      MakeGarbageCollected<ShapeValue>(*circle1, CSSBoxType::kContent);
+      MakeGarbageCollected<ShapeValue>(*circle1, ShapeBox::kContentBox);
   auto* shape2 =
-      MakeGarbageCollected<ShapeValue>(*circle2, CSSBoxType::kContent);
+      MakeGarbageCollected<ShapeValue>(*circle2, ShapeBox::kContentBox);
   ComputedStyleBuilder builder1 = CreateComputedStyleBuilder();
   ComputedStyleBuilder builder2 = CreateComputedStyleBuilder();
   builder1.SetShapeOutside(shape1);

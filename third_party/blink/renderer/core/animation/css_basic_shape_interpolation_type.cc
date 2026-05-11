@@ -46,8 +46,9 @@ BasicShapeInfo GetBasicShapeInfo(const CSSProperty& property,
         return info;
       if (style.ShapeOutside()->GetType() != ShapeValue::kShape)
         return info;
-      if (style.ShapeOutside()->CssBox() != CSSBoxType::kMissing)
+      if (style.ShapeOutside()->CssBox() != ShapeBox::kMissing) {
         return info;
+      }
       info.shape = &style.ShapeOutside()->Shape();
       return info;
     case CSSPropertyID::kOffsetPath: {
@@ -261,7 +262,7 @@ void CSSBasicShapeInterpolationType::ApplyStandardPropertyValue(
   switch (CssProperty().PropertyID()) {
     case CSSPropertyID::kShapeOutside:
       state.StyleBuilder().SetShapeOutside(
-          MakeGarbageCollected<ShapeValue>(*shape, CSSBoxType::kMissing));
+          MakeGarbageCollected<ShapeValue>(*shape, ShapeBox::kMissing));
       break;
     case CSSPropertyID::kOffsetPath: {
       CoordBox coord_box = CoordBox::kBorderBox;

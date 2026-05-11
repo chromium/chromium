@@ -51,12 +51,12 @@ class ShapeValue final : public GarbageCollected<ShapeValue> {
   };
 
   explicit ShapeValue(ShapeValueType type)
-      : type_(type), css_box_(CSSBoxType::kMissing) {}
+      : type_(type), box_(ShapeBox::kMissing) {}
   explicit ShapeValue(StyleImage* image)
-      : type_(kImage), image_(image), css_box_(CSSBoxType::kContent) {}
-  explicit ShapeValue(CSSBoxType css_box) : type_(kBox), css_box_(css_box) {}
-  ShapeValue(const BasicShape& shape, CSSBoxType css_box)
-      : type_(kShape), shape_(shape), css_box_(css_box) {}
+      : type_(kImage), image_(image), box_(ShapeBox::kContentBox) {}
+  explicit ShapeValue(ShapeBox shape_box) : type_(kBox), box_(shape_box) {}
+  ShapeValue(const BasicShape& shape, ShapeBox shape_box)
+      : type_(kShape), shape_(shape), box_(shape_box) {}
 
   ShapeValueType GetType() const { return type_; }
   const BasicShape& Shape() const { return *shape_; }
@@ -68,7 +68,7 @@ class ShapeValue final : public GarbageCollected<ShapeValue> {
       image_ = image;
     }
   }
-  CSSBoxType CssBox() const { return css_box_; }
+  ShapeBox CssBox() const { return box_; }
 
   bool operator==(const ShapeValue& other) const;
 
@@ -81,7 +81,7 @@ class ShapeValue final : public GarbageCollected<ShapeValue> {
   ShapeValueType type_;
   Member<const BasicShape> shape_;
   Member<StyleImage> image_;
-  CSSBoxType css_box_;
+  ShapeBox box_;
 };
 
 inline bool ShapeValue::operator==(const ShapeValue& other) const {

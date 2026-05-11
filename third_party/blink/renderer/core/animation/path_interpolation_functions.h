@@ -34,7 +34,7 @@ class CORE_EXPORT PathInterpolationFunctions {
   static InterpolationValue ConvertValue(
       const StylePath*,
       CoordinateConversion,
-      std::optional<CSSBoxType> css_box = std::nullopt);
+      std::optional<ShapeBox> css_box = std::nullopt);
 
   static InterpolationValue MaybeConvertNeutral(
       const InterpolationValue& underlying,
@@ -47,7 +47,7 @@ class CORE_EXPORT PathInterpolationFunctions {
 
   // Returns the <shape-box> stored on the non-interpolable value for
   // shape-outside path() animations. Other callers leave this unset.
-  static std::optional<CSSBoxType> GetCssBox(const NonInterpolableValue&);
+  static std::optional<ShapeBox> GetCssBox(const NonInterpolableValue&);
 
   static PairwiseInterpolationValue MaybeMergeSingles(
       InterpolationValue&& start,
@@ -55,12 +55,12 @@ class CORE_EXPORT PathInterpolationFunctions {
 };
 
 // shape-outside's spec default <shape-box> is margin-box, so an absent
-// <shape-box> (CSSBoxType::kMissing) compares equal to an explicit margin-box.
-inline bool ShapeOutsideBoxesMatch(std::optional<CSSBoxType> a,
-                                   std::optional<CSSBoxType> b) {
-  auto canon = [](std::optional<CSSBoxType> x) {
-    auto v = x.value_or(CSSBoxType::kMissing);
-    return v == CSSBoxType::kMissing ? CSSBoxType::kMargin : v;
+// <shape-box> (ShapeBox::kMissing) compares equal to an explicit margin-box.
+inline bool ShapeOutsideBoxesMatch(std::optional<ShapeBox> a,
+                                   std::optional<ShapeBox> b) {
+  auto canon = [](std::optional<ShapeBox> x) {
+    auto v = x.value_or(ShapeBox::kMissing);
+    return v == ShapeBox::kMissing ? ShapeBox::kMarginBox : v;
   };
   return canon(a) == canon(b);
 }

@@ -3613,7 +3613,7 @@ CSSValue* ComputedStyleUtils::ValueForShape(const ComputedStyle& style,
 
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   list->Append(*ValueForBasicShape(style, shape_value->Shape()));
-  if (shape_value->CssBox() != CSSBoxType::kMissing) {
+  if (shape_value->CssBox() != ShapeBox::kMissing) {
     list->Append(*CSSIdentifierValue::Create(shape_value->CssBox()));
   }
   return list;
