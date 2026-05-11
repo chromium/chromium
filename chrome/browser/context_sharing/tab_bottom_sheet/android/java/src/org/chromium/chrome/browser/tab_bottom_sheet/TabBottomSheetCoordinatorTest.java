@@ -62,9 +62,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Stat
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.browser_ui.widget.TouchEventProvider;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.KeyboardVisibilityDelegate;
-import org.chromium.ui.base.EventForwarder;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
@@ -670,18 +668,6 @@ public class TabBottomSheetCoordinatorTest {
         listener.keyboardVisibilityChanged(false);
 
         verify(mMockBottomSheetController, never()).collapseSheet(anyBoolean());
-    }
-
-    @Test
-    public void testSetWebContents_resetsTouchOffset() {
-        WebContents mockWebContents = mock(WebContents.class);
-        EventForwarder mockEventForwarder = mock(EventForwarder.class);
-        when(mockWebContents.getEventForwarder()).thenReturn(mockEventForwarder);
-
-        mCoBrowseViews.setWebContents(mockWebContents);
-
-        verify(mockEventForwarder).setCurrentTouchOffsetX(0.0f);
-        verify(mockEventForwarder).setCurrentTouchOffsetY(0.0f);
     }
 
     @Test

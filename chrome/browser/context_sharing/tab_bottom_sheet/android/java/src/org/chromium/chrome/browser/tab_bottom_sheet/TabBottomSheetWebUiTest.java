@@ -42,6 +42,7 @@ import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.components.thinwebview.ThinWebViewAttachParams;
 import org.chromium.components.thinwebview.ThinWebViewFactory;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.EventForwarder;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -60,6 +61,7 @@ public class TabBottomSheetWebUiTest {
     @Mock private ContentView mMockContentView;
     @Mock private Window mMockWindow;
     @Mock private View mMockDecorView;
+    @Mock private EventForwarder mEventForwarder;
 
     private TabBottomSheetWebUi mWebUi;
 
@@ -72,6 +74,7 @@ public class TabBottomSheetWebUiTest {
         when(mMockWindow.getDecorView()).thenReturn(mMockDecorView);
         when(mMockDecorView.getHeight()).thenReturn(1000);
 
+        Mockito.lenient().doReturn(mEventForwarder).when(mWebContents).getEventForwarder();
         Context context =
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
@@ -110,6 +113,8 @@ public class TabBottomSheetWebUiTest {
         verify(mWebContents, times(1)).setDelegates(any(), any(), any(), eq(mWindowAndroid), any());
 
         WebContents secondWebContents = mock(WebContents.class);
+        Mockito.doReturn(mEventForwarder).when(secondWebContents).getEventForwarder();
+
         mWebUi.setWebContents(secondWebContents);
         verify(secondWebContents, times(1))
                 .setDelegates(any(), any(), any(), eq(mWindowAndroid), any());
@@ -165,6 +170,9 @@ public class TabBottomSheetWebUiTest {
     @Test
     public void testSetWebContents_Null_ResetsThinWebView() {
         WebContents nonNullWebContents = mock(WebContents.class);
+        EventForwarder mockEventForwarder = mock(EventForwarder.class);
+        Mockito.doReturn(mockEventForwarder).when(nonNullWebContents).getEventForwarder();
+
         mWebUi.setWebContents(nonNullWebContents);
         mWebUi.setWebContents(null);
         verify(mThinWebView, times(1)).destroy();
@@ -202,6 +210,14 @@ public class TabBottomSheetWebUiTest {
 
         delegate.contentsZoomChange(false);
         verify(mZoomControl).zoomOut(mWebContents);
+    }
+
+    @Test
+    public void testSetWebContents_resetsTouchOffset() {
+        mWebUi.setWebContents(mWebContents);
+
+        verify(mEventForwarder).setCurrentTouchOffsetX(0.0f);
+        verify(mEventForwarder).setCurrentTouchOffsetY(0.0f);
     }
 
     private static class TestTabBottomSheetWebUi extends TabBottomSheetWebUi {

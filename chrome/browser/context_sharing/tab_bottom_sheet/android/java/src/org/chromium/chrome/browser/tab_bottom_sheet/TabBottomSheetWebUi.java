@@ -71,6 +71,8 @@ public class TabBottomSheetWebUi {
         }
         mWebContents = webContents;
         if (mWebContents != null) {
+            mWebContents.getEventForwarder().setCurrentTouchOffsetX(0.0f);
+            mWebContents.getEventForwarder().setCurrentTouchOffsetY(0.0f);
             // Use a local variable to ensure we are using the correct ContentView instance.
             ContentView contentView = createContentView(mContext, mWebContents);
             mContentView = contentView;
