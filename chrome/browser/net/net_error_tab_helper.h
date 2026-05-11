@@ -114,6 +114,11 @@ class NetErrorTabHelper
     return network_diagnostics_receivers_;
   }
 
+  content::RenderFrameHostReceiverSet<chrome::mojom::NetErrorPageSupport>&
+  net_error_page_support_for_testing() {
+    return net_error_page_support_;
+  }
+
  private:
   friend class content::WebContentsUserData<NetErrorTabHelper>;
 

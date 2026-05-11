@@ -69,6 +69,8 @@ class TestNetErrorTabHelper : public NetErrorTabHelper {
   void SetCurrentTargetFrame(content::RenderFrameHost* render_frame_host) {
     network_diagnostics_receivers_for_testing().SetCurrentTargetFrameForTesting(
         render_frame_host);
+    net_error_page_support_for_testing().SetCurrentTargetFrameForTesting(
+        render_frame_host);
   }
 
   chrome::mojom::NetworkDiagnostics* network_diagnostics_interface() {
@@ -172,6 +174,7 @@ class NetErrorTabHelperTest : public ChromeRenderViewHostTestHarness {
                                             bool succeeded) {
     GURL url(url_string);
     LoadURL(url, succeeded);
+    tab_helper()->SetCurrentTargetFrame(web_contents()->GetPrimaryMainFrame());
     tab_helper()->DownloadPageLater();
     EXPECT_EQ(0, tab_helper()->times_download_page_later_invoked());
   }
@@ -373,6 +376,7 @@ TEST_F(NetErrorTabHelperTest, NoDiagnosticsForNonHttpSchemes) {
 TEST_F(NetErrorTabHelperTest, DownloadPageLater) {
   GURL url("http://somewhere:123/");
   LoadURL(url, false /*succeeded*/);
+  tab_helper()->SetCurrentTargetFrame(web_contents()->GetPrimaryMainFrame());
   tab_helper()->DownloadPageLater();
   EXPECT_EQ(url, tab_helper()->download_page_later_url());
   EXPECT_EQ(1, tab_helper()->times_download_page_later_invoked());
@@ -381,6 +385,7 @@ TEST_F(NetErrorTabHelperTest, DownloadPageLater) {
 TEST_F(NetErrorTabHelperTest, NoDownloadPageLaterOnNonErrorPage) {
   GURL url("http://somewhere:123/");
   LoadURL(url, true /*succeeded*/);
+  tab_helper()->SetCurrentTargetFrame(web_contents()->GetPrimaryMainFrame());
   tab_helper()->DownloadPageLater();
   EXPECT_EQ(0, tab_helper()->times_download_page_later_invoked());
 }

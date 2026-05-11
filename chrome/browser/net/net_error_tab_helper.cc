@@ -150,6 +150,11 @@ void NetErrorTabHelper::DownloadPageLater() {
   if (!entry || entry->GetPageType() != content::PAGE_TYPE_ERROR)
     return;
 
+  if (!net_error_page_support_.GetCurrentTargetFrame()
+           ->IsInPrimaryMainFrame()) {
+    return;
+  }
+
   // Only download the page for HTTP/HTTPS URLs.
   GURL url(entry->GetVirtualURL());
   if (!url.SchemeIsHTTPOrHTTPS())
