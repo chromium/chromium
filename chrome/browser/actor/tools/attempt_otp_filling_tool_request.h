@@ -38,6 +38,12 @@ class AttemptOtpFillingToolRequest : public TabToolRequest {
 
   void Apply(ToolRequestVisitorFunctor& f) const override;
 
+  bool GetForSigninForTesting() const { return for_signin_; }
+
+  const std::vector<PageTarget>& GetTriggerFieldsForTesting() const {
+    return trigger_fields_;
+  }
+
  private:
   std::vector<PageTarget> trigger_fields_;
   bool for_signin_;

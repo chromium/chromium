@@ -28,7 +28,11 @@ AttemptOtpFillingTool::AttemptOtpFillingTool(
     : Tool(task_id, tool_delegate),
       tab_handle_(tab_handle),
       trigger_fields_(std::move(trigger_fields)),
-      for_signin_(for_signin) {}
+      for_signin_(for_signin) {
+  // Guaranteed by validation in CreateAttemptOtpFillingRequest in
+  // actor_proto_conversion.cc.
+  CHECK(!trigger_fields_.empty());
+}
 
 AttemptOtpFillingTool::~AttemptOtpFillingTool() = default;
 
@@ -38,15 +42,6 @@ void AttemptOtpFillingTool::Validate(ToolCallback callback) {
   // Note: There's also the method TimeOfUseValidation for checks that happen
   // synchronously just before Invoke().
 
-  // TODO(b/500265255): Move this validation to the converter once we add it in
-  // chrome/browser/actor/actor_proto_conversion.cc .
-  if (trigger_fields_.empty()) {
-    std::move(callback).Run(
-        MakeResult(mojom::ActionResultCode::kArgumentsInvalid,
-                   /*requires_page_stabilization=*/false,
-                   "At least one trigger field must be provided."));
-    return;
-  }
   std::move(callback).Run(MakeOkResult());
 }
 

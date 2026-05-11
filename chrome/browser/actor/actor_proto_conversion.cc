@@ -27,6 +27,7 @@
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/tools/attempt_form_filling_tool_request.h"
 #include "chrome/browser/actor/tools/attempt_login_tool_request.h"
+#include "chrome/browser/actor/tools/attempt_otp_filling_tool_request.h"
 #include "chrome/browser/actor/tools/click_tool_request.h"
 #include "chrome/browser/actor/tools/drag_and_release_tool_request.h"
 #include "chrome/browser/actor/tools/history_tool_request.h"
@@ -87,6 +88,7 @@ using apc::ActivateTabAction;
 using apc::ActivateWindowAction;
 using apc::AttemptFormFillingAction;
 using apc::AttemptLoginAction;
+using apc::AttemptOtpFillingAction;
 using apc::ClickAction;
 using apc::CloseTabAction;
 using apc::CloseWindowAction;
@@ -608,6 +610,36 @@ std::unique_ptr<ToolRequest> CreateAttemptFormFillingRequest(
                                                          std::move(requests));
 }
 
+std::unique_ptr<ToolRequest> CreateAttemptOtpFillingRequest(
+    const AttemptOtpFillingAction& action) {
+  if (!base::FeatureList::IsEnabled(
+          features::kGlicActorAutofillOneTimePassword)) {
+    return nullptr;
+  }
+
+  const tabs::TabHandle tab_handle = GetTabHandle(action);
+  if (tab_handle == TabHandle::Null()) {
+    return nullptr;
+  }
+
+  if (action.target_fields_size() == 0) {
+    return nullptr;
+  }
+
+  std::vector<PageTarget> trigger_fields;
+  for (const auto& target_field : action.target_fields()) {
+    std::optional<PageTarget> page_target = ToPageTarget(target_field);
+    if (!page_target) {
+      // One of the targets is invalid.
+      return nullptr;
+    }
+    trigger_fields.push_back(*page_target);
+  }
+
+  return std::make_unique<AttemptOtpFillingToolRequest>(
+      tab_handle, std::move(trigger_fields), action.for_signin());
+}
+
 std::unique_ptr<ToolRequest> CreateScriptToolRequest(
     const ScriptToolAction& action) {
   if (!base::FeatureList::IsEnabled(actor::kGlicActorEnableScriptTools)) {
@@ -784,6 +816,11 @@ CreateToolRequest(const optimization_guide::proto::Action& action) {
       const AttemptFormFillingAction& attempt_form_fill_action =
           action.attempt_form_filling();
       return CreateAttemptFormFillingRequest(attempt_form_fill_action);
+    }
+    case optimization_guide::proto::Action::kAttemptOtpFilling: {
+      const AttemptOtpFillingAction& attempt_otp_fill_action =
+          action.attempt_otp_filling();
+      return CreateAttemptOtpFillingRequest(attempt_otp_fill_action);
     }
     case optimization_guide::proto::Action::kScriptTool: {
       const ScriptToolAction& script_tool_action = action.script_tool();

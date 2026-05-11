@@ -332,6 +332,7 @@ source_set("unit_tests") {
     "site_policy_unittest.cc",
     "tools/attempt_form_filling_tool_request_unittest.cc",
     "tools/attempt_login_tool_request_unittest.cc",
+    "tools/attempt_otp_filling_tool_request_unittest.cc",
   ]
   deps = [
     ":actor",
@@ -435,8 +436,8 @@ source_set("browser_tests") {
     deps += [ "//ui/ozone" ]
   }
 
-  # TODO(crbug.com/482145079): Migrate over history_tool, media_control_tool, and
-  # attempt_form_filling_tool tests once flakiness is resolved.
+  # TODO(crbug.com/482145079): Migrate over history_tool, media_control_tool,
+  # and attempt_form_filling_tool tests once flakiness is resolved.
   if (!skip_android_unmigrated_actor_files) {
     sources += [
       "execution_engine_browsertest.cc",

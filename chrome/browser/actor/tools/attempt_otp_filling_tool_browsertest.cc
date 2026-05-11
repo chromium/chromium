@@ -291,22 +291,5 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
                   "AttemptOtpFillingTool::Invoke;.*for_signin=false")));
 }
 
-// The tool fails validation if there are 0 trigger fields passed.
-IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
-                       ToolValidationFailsWithoutTriggerFields) {
-  const GURL url = embedded_https_test_server().GetURL("example.com",
-                                                       "/actor/otp_page.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
-  std::unique_ptr<ToolRequest> request =
-      std::make_unique<AttemptOtpFillingToolRequest>(active_tab()->GetHandle(),
-                                                     std::vector<PageTarget>{},
-                                                     /*for_signin=*/true);
-
-  ActResultFuture result;
-  actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
-
-  ExpectErrorResult(result, mojom::ActionResultCode::kArgumentsInvalid);
-}
-
 }  // namespace
 }  // namespace actor
