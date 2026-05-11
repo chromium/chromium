@@ -2256,6 +2256,10 @@ class CORE_EXPORT Document : public ContainerNode,
                                    const V8UnionStringOrTrustedHTML* html,
                                    SetHTMLUnsafeOptions* options,
                                    ExceptionState& exception_state);
+  static Document* parseHTMLUnsafe(ExecutionContext* context,
+                                   const V8UnionStringOrTrustedHTML* html,
+                                   TrustedParserOptions* options,
+                                   ExceptionState& exception_state);
   static Document* parseHTML(ExecutionContext* context,
                              const String& html,
                              SetHTMLOptions* options,
