@@ -871,7 +871,9 @@ TEST_F(OneTimeTokenServiceImplTest, SourceIsolation) {
 
 // Test that subscribing with an unknown source crashes.
 // TODO(crbug.com/511734560): Re-enable this test on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/511915604): Re-enable this test on Android ARM.
+#if BUILDFLAG(IS_CHROMEOS) || \
+    (BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM_FAMILY))
 #define MAYBE_SubscribeWithUnknownSourceCrashes \
   DISABLED_SubscribeWithUnknownSourceCrashes
 #else
