@@ -98,6 +98,31 @@ GlicE2ETest::GlicE2ETest() {
       });
 }
 
+GlicE2ETest::GlicE2ETest(
+    const std::vector<base::test::FeatureRef>& additional_enabled_features,
+    const std::vector<base::test::FeatureRef>& additional_disabled_features) {
+  // TODO(crbug.com/440578183): ZeroStateSuggestionsV2 is enabled here
+  // due to the associated bug and should be removed here once fixed.
+  std::vector<base::test::FeatureRef> enabled = {
+      features::kGlic, features::kGlicKeyboardShortcutNewBadge,
+      features::kGlicRollout, kContextualCueing,
+      mojom::features::kZeroStateSuggestionsV2};
+  enabled.insert(enabled.end(), additional_enabled_features.begin(),
+                 additional_enabled_features.end());
+
+  std::vector<base::test::FeatureRef> disabled = {
+      syncer::kReplaceSyncPromosWithSignInPromos,
+      syncer::kReplaceSyncPromosWithSigninPromosNewSignin,
+      // Don't disable glic based on country/locale.
+      features::kGlicCountryFiltering,
+      features::kGlicLocaleFiltering,
+  };
+  disabled.insert(disabled.end(), additional_disabled_features.begin(),
+                  additional_disabled_features.end());
+
+  scoped_feature_list_.InitWithFeatures(enabled, disabled);
+}
+
 GlicE2ETest::~GlicE2ETest() = default;
 
 void GlicE2ETest::SetUp() {

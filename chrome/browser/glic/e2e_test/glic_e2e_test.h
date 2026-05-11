@@ -28,6 +28,10 @@ namespace glic::test {
 class GlicE2ETest : public InteractiveBrowserTestMixin<signin::test::LiveTest> {
  public:
   GlicE2ETest();
+  explicit GlicE2ETest(const std::vector<base::test::FeatureRef>&
+                           additional_enabled_features = {},
+                       const std::vector<base::test::FeatureRef>&
+                           additional_disabled_features = {});
   ~GlicE2ETest() override;
 
   enum GlicE2ETestMode {
