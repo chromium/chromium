@@ -211,7 +211,7 @@ found in the LICENSE file.
 
     <!-- Omnibox chip. -->
     <dimen name="omnibox_chip_min_expanded_width">80dp</dimen>
-    <dimen name="omnibox_chip_max_expanded_width">160dp</dimen>
+    <dimen name="omnibox_chip_max_expanded_width">200dp</dimen>
     <dimen name="omnibox_chip_padding">4dp</dimen>
     <dimen name="omnibox_chip_padding_horizontal_collapsed">12dp</dimen>
     <dimen name="omnibox_chip_padding_horizontal_expanded_start">8dp</dimen>
