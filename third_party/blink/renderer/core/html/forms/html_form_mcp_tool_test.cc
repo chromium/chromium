@@ -1215,7 +1215,10 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_Checkbox_Multiple) {
   EXPECT_EQ(expected_json->ToJSONString(), actual);
 }
 
-TEST_F(HTMLFormMcpToolTest, ParameterSchema_Checkbox_ToolParamAttributes) {
+// For parameters backed by multiple elements, the `toolparamdescription`
+// has no effect when specified on those elements.
+TEST_F(HTMLFormMcpToolTest,
+       ParameterSchema_Checkbox_IgnoreToolParamAttributes) {
   SetBodyInnerHTML(
       R"HTML(
     <form id=form toolname="mytool" tooldescription="pick fruits you like">
@@ -1224,14 +1227,14 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_Checkbox_ToolParamAttributes) {
         name="fruit"
         type="checkbox"
         value="apple"
-        toolparamdescription="DESC"
+        toolparamdescription="ERR1"
         >
       <input
         id="melon"
         name="fruit"
         type="checkbox"
         value="melon"
-        toolparamdescription="ERR"
+        toolparamdescription="ERR2"
         >
       <input id="grape" name="fruit" type="checkbox" value="grape">
     </form>
@@ -1256,8 +1259,7 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_Checkbox_ToolParamAttributes) {
              ],
              "enum": ["apple", "melon", "grape"]
           },
-          "uniqueItems": true,
-          "description": "DESC"
+          "uniqueItems": true
         }
       },
       "required": []
@@ -2493,15 +2495,15 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_Radio_Required) {
   EXPECT_EQ(expected_json->ToJSONString(), actual);
 }
 
-// The toolparamdescription for the parameter (as a whole) is
-// sources from the first <input type=radio> in the group.
-TEST_F(HTMLFormMcpToolTest, ParameterSchema_Radio_ToolParamDescription) {
+// For parameters backed by multiple elements, the `toolparamdescription`
+// has no effect when specified on those elements.
+TEST_F(HTMLFormMcpToolTest, ParameterSchema_Radio_IgnoreToolParamDescription) {
   SetBodyInnerHTML(
       R"HTML(
     <form id="form" toolname="mytool" tooldescription="perform task">
-      <input type=radio name=size value=s toolparamdescription="DESC">
-      <input type=radio name=size value=m toolparamdescription="ERR1">
-      <input type=radio name=size value=l toolparamdescription="ERR2">
+      <input type=radio name=size value=s toolparamdescription="ERR1">
+      <input type=radio name=size value=m toolparamdescription="ERR2">
+      <input type=radio name=size value=l toolparamdescription="ERR3">
     </form>
   )HTML");
 
@@ -2529,8 +2531,7 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_Radio_ToolParamDescription) {
                "const": "l"
              }
            ],
-           "enum": ["s", "m", "l"],
-           "description": "DESC"
+           "enum": ["s", "m", "l"]
          }
       },
       "required": []

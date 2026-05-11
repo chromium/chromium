@@ -1185,12 +1185,6 @@ String FormMCPSchema::ComputeDescription(const ControlVector& controls) {
     }
   }
 
-  // Fall back to the `toolparamdescription` of the first control in the group.
-  if (String description = ToolParamDescriptionAttribute(*controls.front());
-      !description.empty()) {
-    return description;
-  }
-
   return g_empty_string;
 }
 
