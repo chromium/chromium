@@ -65,6 +65,7 @@ class DriveTabHelperTest : public PlatformTest {
     browser_->GetWebStateList()->InsertWebState(
         std::move(web_state),
         WebStateList::InsertionParams::Automatic().Activate(true));
+    web_state_->WasShown();
 
     download_task_ =
         std::make_unique<web::FakeDownloadTask>(GURL(kTestUrl), kTestMimeType);

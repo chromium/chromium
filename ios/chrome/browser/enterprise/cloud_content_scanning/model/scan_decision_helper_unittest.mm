@@ -58,6 +58,7 @@ class ScanDecisionHelperTest : public PlatformTest {
     browser_->GetWebStateList()->InsertWebState(
         std::move(web_state),
         WebStateList::InsertionParams::Automatic().Activate(true));
+    web_state_->WasShown();
   }
 
   void TearDown() override {
@@ -178,6 +179,75 @@ TEST_F(ScanDecisionHelperTest, NullWebState) {
   HandleScanDecision(nullptr, TriggerType::kSavePrompt, future.GetCallback(),
                      result);
 
+  EXPECT_FALSE(future.Get());
+}
+
+// Tests that the scan decision UI is deferred when the WebState is not active.
+TEST_F(ScanDecisionHelperTest, DeferredNotification) {
+  base::test::TestFuture<bool> future;
+
+  // Insert a second WebState and activate it.
+  std::unique_ptr<web::FakeWebState> web_state2 =
+      std::make_unique<web::FakeWebState>();
+  web_state2->SetBrowserState(profile_.get());
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(web_state2),
+      WebStateList::InsertionParams::Automatic().Activate(true));
+  web_state_->WasHidden();
+  ASSERT_FALSE(web_state_->IsVisible());
+
+  // Trigger a warning scan decision for the inactive web_state_.
+  RequestHandlerResult result =
+      CreateResult(FinalContentAnalysisResult::WARNING);
+  HandleScanDecision(web_state_->GetWeakPtr(), TriggerType::kSavePrompt,
+                     future.GetCallback(), result);
+
+  // Verify that the dialog has NOT been shown yet.
+  EXPECT_TRUE(fake_commands_handler_->_callback.is_null());
+  web_state_->WasShown();
+  EXPECT_FALSE(fake_commands_handler_->_callback.is_null());
+  std::move(fake_commands_handler_->_callback).Run(true);
+  EXPECT_TRUE(future.Get());
+}
+
+// Tests that the snackbar notification is deferred when the WebState is not
+// active.
+TEST_F(ScanDecisionHelperTest, DeferredSnackbarNotification) {
+  base::test::TestFuture<bool> future;
+  web_state_->WasHidden();
+  ASSERT_FALSE(web_state_->IsVisible());
+
+  // Trigger a failure scan decision for the inactive web_state_.
+  RequestHandlerResult result =
+      CreateResult(FinalContentAnalysisResult::FAILURE);
+  HandleScanDecision(web_state_->GetWeakPtr(), TriggerType::kSavePrompt,
+                     future.GetCallback(), result);
+
+  // Verify that the download is blocked immediately even if UI is deferred.
+  EXPECT_FALSE(future.Get());
+  OCMExpect([mock_snackbar_handler_
+      showSnackbarMessageAfterDismissingKeyboard:[OCMArg any]]);
+  web_state_->WasShown();
+  [mock_snackbar_handler_ verify];
+}
+
+// Tests that closing the tab while a decision is pending correctly blocks the
+// download and cleans up.
+TEST_F(ScanDecisionHelperTest, CloseTabWithPendingDecision) {
+  base::test::TestFuture<bool> future;
+  web_state_->WasHidden();
+
+  // Trigger a warning scan decision for the inactive web_state_.
+  RequestHandlerResult result =
+      CreateResult(FinalContentAnalysisResult::WARNING);
+  HandleScanDecision(web_state_->GetWeakPtr(), TriggerType::kSavePrompt,
+                     future.GetCallback(), result);
+
+  // Verify that the dialog has NOT been shown.
+  EXPECT_TRUE(fake_commands_handler_->_callback.is_null());
+  web_state_ = nullptr;
+  browser_->GetWebStateList()->CloseWebStateAt(
+      0, WebStateList::ClosingReason::kUserAction);
   EXPECT_FALSE(future.Get());
 }
 
