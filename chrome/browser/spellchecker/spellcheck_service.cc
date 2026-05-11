@@ -42,6 +42,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -391,6 +392,14 @@ void SpellcheckService::StartRecordingMetrics(bool spellcheck_enabled) {
 }
 
 void SpellcheckService::InitForRenderer(content::RenderProcessHost* host) {
+  // Skip initialization of the spellcheck service for top chrome web UI pages
+  // when Initial WebUI feature is enabled for optimizing browser startup.
+  if (host->IsForTopChromeWebUI() &&
+      base::FeatureList::IsEnabled(features::kInitialWebUI) &&
+      features::kInitialWebUIWithoutSpellCheck.Get()) {
+    return;
+  }
+
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   content::BrowserContext* context = host->GetBrowserContext();

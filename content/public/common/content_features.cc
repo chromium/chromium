@@ -539,6 +539,13 @@ BASE_FEATURE_PARAM(bool,
                    "high_stream_priority",
                    true);
 
+// If enabled, the initial WebUI skips spell check initialization on startup.
+BASE_FEATURE_PARAM(bool,
+                   kInitialWebUIWithoutSpellCheck,
+                   &features::kInitialWebUI,
+                   "without_spellcheck",
+                   false);
+
 // Whether initial WebUI navigations should synchronously go from navigation
 // start to commit, by doing e.g. in-renderer body loading.
 BASE_FEATURE(kInitialWebUISyncNavStartToCommit,
