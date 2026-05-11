@@ -539,6 +539,44 @@ public final class LaunchTest {
                         RuntimeEnvironment.application, /* isNewStyleWebApk= */ true));
     }
 
+    public static class TestH2OOpaqueMainActivity extends H2OOpaqueMainActivity {
+        public ActivityManager mActivityManager;
+
+        @Override
+        public Object getSystemService(String name) {
+            if (Context.ACTIVITY_SERVICE.equals(name) && mActivityManager != null) {
+                return mActivityManager;
+            }
+            return super.getSystemService(name);
+        }
+    }
+
+    /**
+     * Tests that sending a bring-to-front intent to H2OOpaqueMainActivity correctly calls
+     * moveTaskToFront() on ActivityManager and finishes immediately.
+     */
+    @Test
+    public void testH2OOpaqueMainActivityBringToFront() {
+        Intent launchIntent = new Intent();
+        launchIntent.setComponent(
+                new ComponentName(sWebApkPackageName, H2OOpaqueMainActivity.class.getName()));
+        launchIntent.putExtra(WebApkConstants.EXTRA_BRING_TO_FRONT, true);
+
+        ActivityManager activityManagerMock = Mockito.mock(ActivityManager.class);
+
+        ActivityController<TestH2OOpaqueMainActivity> controller =
+                Robolectric.buildActivity(TestH2OOpaqueMainActivity.class, launchIntent);
+        TestH2OOpaqueMainActivity activity = controller.get();
+        activity.mActivityManager = activityManagerMock;
+        int taskId = activity.getTaskId();
+
+        controller.create();
+
+        Assert.assertTrue(activity.isFinishing());
+        Mockito.verify(activityManagerMock).moveTaskToFront(taskId, 0);
+        Assert.assertNull(mShadowApplication.getNextStartedActivity());
+    }
+
     /**
      * Tests that we add site settings shortcuts both when opaque main activity is enabled and when
      * it is not enabled.
