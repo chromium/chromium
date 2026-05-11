@@ -11,6 +11,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/i18n/string_search.h"
 #include "base/memory/raw_ptr.h"
+#include "base/numerics/checked_math.h"
 #include "base/win/scoped_safearray.h"
 #include "base/win/scoped_variant.h"
 #include "base/win/variant_vector.h"
@@ -93,9 +94,48 @@ class AXRangePhysicalPixelRectDelegate : public AXRangeRectDelegate {
   raw_ptr<AXPlatformNodeTextRangeProviderWin> host_;
 };
 
-AXPlatformNodeTextRangeProviderWin::AXPlatformNodeTextRangeProviderWin() {}
+AXPlatformNodeTextRangeProviderWin::AXPlatformNodeTextRangeProviderWin(
+    AXPositionInstance start,
+    AXPositionInstance end) {
+  SetStart(std::move(start));
+  SetEnd(std::move(end));
+}
 
 AXPlatformNodeTextRangeProviderWin::~AXPlatformNodeTextRangeProviderWin() {}
+
+IFACEMETHODIMP_(ULONG) AXPlatformNodeTextRangeProviderWin::AddRef() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ref_count_ = base::CheckAdd(ref_count_, 1).ValueOrDie();
+  return ref_count_;
+}
+
+IFACEMETHODIMP_(ULONG) AXPlatformNodeTextRangeProviderWin::Release() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ULONG ref_count = base::CheckSub(ref_count_, 1).ValueOrDie();
+  ref_count_ = ref_count;
+  if (ref_count == 0) {
+    delete this;
+  }
+  return ref_count;
+}
+
+IFACEMETHODIMP AXPlatformNodeTextRangeProviderWin::QueryInterface(
+    REFIID iid,
+    void** ppvObject) {
+  if (!ppvObject) {
+    return E_INVALIDARG;
+  }
+  *ppvObject = nullptr;
+  if (iid == __uuidof(IUnknown) || iid == __uuidof(ITextRangeProvider)) {
+    *ppvObject = static_cast<ITextRangeProvider*>(this);
+  } else if (iid == __uuidof(AXPlatformNodeTextRangeProviderWin)) {
+    *ppvObject = this;
+  } else {
+    return E_NOINTERFACE;
+  }
+  AddRef();
+  return S_OK;
+}
 
 void AXPlatformNodeTextRangeProviderWin::CreateTextRangeProvider(
     AXPositionInstance start,
@@ -103,18 +143,9 @@ void AXPlatformNodeTextRangeProviderWin::CreateTextRangeProvider(
     ITextRangeProvider** text_range_provider) {
   DCHECK(text_range_provider);
   DCHECK_EQ(*text_range_provider, nullptr);
-  *text_range_provider = nullptr;
 
-  CComObject<AXPlatformNodeTextRangeProviderWin>* text_range_provider_win =
-      nullptr;
-  if (SUCCEEDED(CComObject<AXPlatformNodeTextRangeProviderWin>::CreateInstance(
-          &text_range_provider_win))) {
-    DCHECK(text_range_provider_win);
-    text_range_provider_win->SetStart(std::move(start));
-    text_range_provider_win->SetEnd(std::move(end));
-    text_range_provider_win->AddRef();
-    *text_range_provider = text_range_provider_win;
-  }
+  *text_range_provider =
+      new AXPlatformNodeTextRangeProviderWin(std::move(start), std::move(end));
 }
 
 void AXPlatformNodeTextRangeProviderWin::CreateTextRangeProviderForTesting(
@@ -123,12 +154,8 @@ void AXPlatformNodeTextRangeProviderWin::CreateTextRangeProviderForTesting(
     AXPositionInstance end,
     ITextRangeProvider** text_range_provider) {
   CreateTextRangeProvider(start->Clone(), end->Clone(), text_range_provider);
-  Microsoft::WRL::ComPtr<AXPlatformNodeTextRangeProviderWin>
-      text_range_provider_win;
-  if (SUCCEEDED((*text_range_provider)
-                    ->QueryInterface(IID_PPV_ARGS(&text_range_provider_win)))) {
-    text_range_provider_win->SetOwnerForTesting(owner);  // IN-TEST
-  }
+  static_cast<AXPlatformNodeTextRangeProviderWin*>(*text_range_provider)
+      ->SetOwnerForTesting(owner);  // IN-TEST
 }
 
 //

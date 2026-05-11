@@ -15,12 +15,12 @@
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/win/scoped_safearray.h"
+#include "base/win/shlwapi.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "ui/accessibility/platform/ax_fragment_root_delegate_win.h"
 #include "ui/accessibility/platform/ax_platform.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
 #include "ui/accessibility/platform/uia_registrar_win.h"
-#include "ui/base/win/atl_module.h"
 
 namespace ui {
 
@@ -29,26 +29,44 @@ class AXFragmentRootPlatformNodeWin : public AXPlatformNodeWin,
                                       public IRawElementProviderFragmentRoot,
                                       public IRawElementProviderAdviseEvents {
  public:
-  BEGIN_COM_MAP(AXFragmentRootPlatformNodeWin)
-  COM_INTERFACE_ENTRY(IItemContainerProvider)
-  COM_INTERFACE_ENTRY(IRawElementProviderFragmentRoot)
-  COM_INTERFACE_ENTRY(IRawElementProviderAdviseEvents)
-  COM_INTERFACE_ENTRY_CHAIN(AXPlatformNodeWin)
-  END_COM_MAP()
+  AXFragmentRootPlatformNodeWin() = default;
+
+  IFACEMETHODIMP_(ULONG) AddRef() override {
+    return AXPlatformNodeWin::AddRef();
+  }
+
+  IFACEMETHODIMP_(ULONG) Release() override {
+    return AXPlatformNodeWin::Release();
+  }
+
+  IFACEMETHODIMP QueryInterface(REFIID iid, void** ppvObject) override {
+    return AXPlatformNodeWin::QueryInterface(iid, ppvObject);
+  }
 
   static Pointer Create(AXFragmentRootWin& delegate) {
-    // Make sure ATL is initialized in this module.
-    win::CreateATLModuleIfNeeded();
-
-    CComObject<AXFragmentRootPlatformNodeWin>* instance = nullptr;
-    HRESULT hr =
-        CComObject<AXFragmentRootPlatformNodeWin>::CreateInstance(&instance);
-    CHECK(SUCCEEDED(hr));
+    auto* instance = new AXFragmentRootPlatformNodeWin();
     instance->Init(delegate);
-    instance->AddRef();
     return Pointer(instance);
   }
 
+ protected:
+  HRESULT ResolveInterfaces(REFIID iid, void** ppvObject) override {
+    static const QITAB qit[] = {
+        QITABENT(AXFragmentRootPlatformNodeWin, IItemContainerProvider),
+        QITABENT(AXFragmentRootPlatformNodeWin,
+                 IRawElementProviderFragmentRoot),
+        QITABENT(AXFragmentRootPlatformNodeWin,
+                 IRawElementProviderAdviseEvents),
+        {nullptr, 0},
+    };
+    HRESULT hr = QISearch(this, qit, iid, ppvObject);
+    if (SUCCEEDED(hr)) {
+      return hr;
+    }
+    return AXPlatformNodeWin::ResolveInterfaces(iid, ppvObject);
+  }
+
+ public:
   //
   // IItemContainerProvider methods.
   //

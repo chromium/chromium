@@ -20,6 +20,7 @@
 #include "base/trace_event/typed_macros.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "base/win/win_util.h"
+#include "base/win/windowsx_shim.h"
 #include "base/win/wrapped_window_proc.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
 #include "content/browser/renderer_host/direct_manipulation_helper_win.h"

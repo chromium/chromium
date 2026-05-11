@@ -19,7 +19,6 @@
 #include "third_party/iaccessible2/ia2_api_all.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_utils_win.h"
-#include "ui/base/win/atl_module.h"
 #include "ui/base/win/internal_constants.h"
 #include "ui/gfx/win/hwnd_util.h"
 

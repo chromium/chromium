@@ -29,7 +29,6 @@
 #include "ui/accessibility/platform/ax_platform_tree_manager_delegate.h"
 #include "ui/accessibility/platform/browser_accessibility_win.h"
 #include "ui/accessibility/platform/uia_registrar_win.h"
-#include "ui/base/win/atl_module.h"
 
 namespace ui {
 
@@ -94,7 +93,6 @@ BrowserAccessibilityManagerWin::BrowserAccessibilityManagerWin(
     AXNodeIdDelegate& node_id_delegate,
     AXPlatformTreeManagerDelegate* delegate)
     : BrowserAccessibilityManager(node_id_delegate, delegate) {
-  win::CreateATLModuleIfNeeded();
   // Hydrate the custom property registry if MathML support is enabled.
   // Since we don't fire any events that call into the registrar like the other
   // custom properties, we need to ensure it's initialized here.

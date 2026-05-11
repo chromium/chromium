@@ -19,15 +19,14 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
+#include "base/sequence_checker.h"
 #include "base/timer/elapsed_timer.h"
-#include "base/win/atl.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/iaccessible2/ia2_api_all.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/platform/ax_platform_node_base.h"
 #include "ui/accessibility/platform/ax_platform_text_boundary.h"
 #include "ui/accessibility/platform/ichromeaccessible.h"
-#include "ui/accessibility/platform/sequence_affine_com_object_root_win.h"
 #include "ui/gfx/range/range.h"
 
 #include <uiautomation.h>
@@ -373,10 +372,7 @@ class COMPONENT_EXPORT(AX_PLATFORM)
 
 class COMPONENT_EXPORT(AX_PLATFORM)
     __declspec(uuid("26f5641a-246d-457b-a96d-07f3fae6acf2")) AXPlatformNodeWin
-    : public SequenceAffineComObjectRoot,
-      public IDispatchImpl<IAccessible2_4,
-                           &IID_IAccessible2_4,
-                           &LIBID_IAccessible2Lib>,
+    : public IAccessible2_4,
       public IAccessibleEx,
       public IAccessibleHypertext,
       public IAccessibleTable,
@@ -404,51 +400,37 @@ class COMPONENT_EXPORT(AX_PLATFORM)
       public IWindowProvider,
       public IChromeAccessible,
       public AXPlatformNodeBase {
-  using IDispatchImpl::Invoke;
+ public:
+  // IUnknown:
+  IFACEMETHODIMP_(ULONG) AddRef() override;
+  IFACEMETHODIMP_(ULONG) Release() override;
+  IFACEMETHODIMP QueryInterface(REFIID iid, void** ppvObject) override;
+
+  // IDispatch:
+  IFACEMETHODIMP GetTypeInfoCount(UINT* pctinfo) override;
+  IFACEMETHODIMP GetTypeInfo(UINT iTInfo,
+                             LCID lcid,
+                             ITypeInfo** ppTInfo) override;
+  IFACEMETHODIMP GetIDsOfNames(REFIID riid,
+                               LPOLESTR* rgszNames,
+                               UINT cNames,
+                               LCID lcid,
+                               DISPID* rgDispId) override;
+  IFACEMETHODIMP Invoke(DISPID dispIdMember,
+                        REFIID riid,
+                        LCID lcid,
+                        WORD wFlags,
+                        DISPPARAMS* pDispParams,
+                        VARIANT* pVarResult,
+                        EXCEPINFO* pExcepInfo,
+                        UINT* puArgErr) override;
+
+ protected:
+  // Resolves interface pointers for QueryInterface. Subclasses can override
+  // to add their own interfaces and chain to this base implementation.
+  virtual HRESULT ResolveInterfaces(REFIID iid, void** ppvObject);
 
  public:
-  BEGIN_COM_MAP(AXPlatformNodeWin)
-    // TODO(nektar): Change the following to COM_INTERFACE_ENTRY(IDispatch).
-    COM_INTERFACE_ENTRY2(IDispatch, IAccessible2_2)
-    COM_INTERFACE_ENTRY2(IUnknown, IDispatchImpl)
-    // TODO(nektar): Find a way to remove the following entry because it's not
-    // an interface.
-    COM_INTERFACE_ENTRY(AXPlatformNodeWin)
-    COM_INTERFACE_ENTRY(IAccessible)
-    COM_INTERFACE_ENTRY(IAccessible2)
-    COM_INTERFACE_ENTRY(IAccessible2_2)
-    COM_INTERFACE_ENTRY(IAccessible2_3)
-    COM_INTERFACE_ENTRY(IAccessible2_4)
-    COM_INTERFACE_ENTRY(IAccessibleEx)
-    COM_INTERFACE_ENTRY(IAccessibleText)
-    COM_INTERFACE_ENTRY(IAccessibleHypertext)
-    COM_INTERFACE_ENTRY(IAccessibleTable)
-    COM_INTERFACE_ENTRY(IAccessibleTable2)
-    COM_INTERFACE_ENTRY(IAccessibleTableCell)
-    COM_INTERFACE_ENTRY(IAccessibleTextSelectionContainer)
-    COM_INTERFACE_ENTRY(IAccessibleValue)
-    COM_INTERFACE_ENTRY(IChromeAccessible)
-    COM_INTERFACE_ENTRY(IAnnotationProvider)
-    COM_INTERFACE_ENTRY(IExpandCollapseProvider)
-    COM_INTERFACE_ENTRY(IGridItemProvider)
-    COM_INTERFACE_ENTRY(IGridProvider)
-    COM_INTERFACE_ENTRY(IInvokeProvider)
-    COM_INTERFACE_ENTRY(IRangeValueProvider)
-    COM_INTERFACE_ENTRY(IRawElementProviderFragment)
-    COM_INTERFACE_ENTRY(IRawElementProviderSimple)
-    COM_INTERFACE_ENTRY(IRawElementProviderSimple2)
-    COM_INTERFACE_ENTRY(IScrollItemProvider)
-    COM_INTERFACE_ENTRY(IScrollProvider)
-    COM_INTERFACE_ENTRY(ISelectionItemProvider)
-    COM_INTERFACE_ENTRY(ISelectionProvider)
-    COM_INTERFACE_ENTRY(ITableItemProvider)
-    COM_INTERFACE_ENTRY(ITableProvider)
-    COM_INTERFACE_ENTRY(IToggleProvider)
-    COM_INTERFACE_ENTRY(IValueProvider)
-    COM_INTERFACE_ENTRY(IWindowProvider)
-    COM_INTERFACE_ENTRY(IServiceProvider)
-  END_COM_MAP()
-
   // AXPlatformNode overrides.
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
   void NotifyAccessibilityEvent(ax::mojom::Event event_type) override;
@@ -457,9 +439,11 @@ class COMPONENT_EXPORT(AX_PLATFORM)
   void Destroy() override;
   bool IsPlatformCheckable() const override;
 
-  // CComObjectRootEx (non-virtual) overrides.
-  ULONG InternalAddRef();
-  ULONG InternalRelease();
+  // Returns the current reference count (for testing only).
+  ULONG ref_count_for_testing() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return ref_count_;
+  }
 
   // Invoked when the instance is first referenced. This generally means that a
   // reference to an interface pointer is being handed out to an accessibility
@@ -1123,16 +1107,6 @@ class COMPONENT_EXPORT(AX_PLATFORM)
                               REFIID riid,
                               void** object) override;
 
-  //
-  // Methods used by the ATL COM map.
-  //
-
-  // Called by BEGIN_COM_MAP() / END_COM_MAP().
-  static STDMETHODIMP InternalQueryInterface(void* this_ptr,
-                                             const _ATL_INTMAP_ENTRY* entries,
-                                             REFIID riid,
-                                             void** object);
-
   // Support method for ITextRangeProvider::GetAttributeValue.
   // If either |start_offset| or |end_offset| are not provided then the
   // endpoint is treated as the start or end of the node respectively.
@@ -1603,13 +1577,24 @@ class COMPONENT_EXPORT(AX_PLATFORM)
 
   bool IsInvokeSupported() const;
 
-  // Start and end offsets of an active composition
-  gfx::Range active_composition_range_;
+  // Cached type info for IDispatch implementation.
+  HRESULT EnsureDispatchTypeInfo(LCID lcid, ITypeInfo** ppTInfo);
 
   friend AXPlatformNode::Pointer AXPlatformNode::Create(
       AXPlatformNodeDelegate& delegate);
 
+  // Start and end offsets of an active composition
+  gfx::Range active_composition_range_;
+
   static bool pause_ax_mode_changes_;
+
+  // Reference count starts at 1 (the self-reference held by the delegate).
+  // When acquiring the initial ComPtr<>, use ComPtr::Attach() rather than
+  // the constructor to avoid an extra AddRef.
+  ULONG ref_count_ GUARDED_BY_CONTEXT(sequence_checker_) = 1;
+  SEQUENCE_CHECKER(sequence_checker_);
+  Microsoft::WRL::ComPtr<ITypeInfo> dispatch_type_info_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 }  // namespace ui

@@ -6,22 +6,19 @@
 #define UI_ACCESSIBILITY_PLATFORM_AX_PLATFORM_NODE_TEXTCHILDPROVIDER_WIN_H_
 
 #include <wrl/client.h>
+#include <wrl/implements.h>
 
 #include "base/component_export.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
-#include "ui/accessibility/platform/sequence_affine_com_object_root_win.h"
 
 namespace ui {
 class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeTextChildProviderWin
-    : public SequenceAffineComObjectRoot,
-      public ITextChildProvider {
+    : public Microsoft::WRL::RuntimeClass<
+          Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
+          ITextChildProvider> {
  public:
-  BEGIN_COM_MAP(AXPlatformNodeTextChildProviderWin)
-  COM_INTERFACE_ENTRY(ITextChildProvider)
-  END_COM_MAP()
-
-  AXPlatformNodeTextChildProviderWin();
-  ~AXPlatformNodeTextChildProviderWin();
+  explicit AXPlatformNodeTextChildProviderWin(AXPlatformNodeWin* owner);
+  ~AXPlatformNodeTextChildProviderWin() override;
 
   static Microsoft::WRL::ComPtr<AXPlatformNodeTextChildProviderWin> Create(
       AXPlatformNodeWin* owner);

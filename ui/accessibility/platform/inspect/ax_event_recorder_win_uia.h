@@ -9,6 +9,7 @@
 
 #include <stdint.h>
 #include <wrl/client.h>
+#include <wrl/implements.h>
 
 #include <atomic>
 #include <string>
@@ -21,7 +22,6 @@
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/platform_thread.h"
-#include "base/win/atl.h"
 #include "ui/accessibility/platform/inspect/ax_event_recorder.h"
 #include "ui/accessibility/platform/inspect/ax_inspect.h"
 
@@ -80,31 +80,24 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXEventRecorderWinUia
 
     // An implementation of various UIA interfaces that forward event
     // notifications to the owning event recorder.
-    class EventHandler : public CComObjectRootEx<CComMultiThreadModel>,
-                         public IUIAutomationFocusChangedEventHandler,
-                         public IUIAutomationPropertyChangedEventHandler,
-                         public IUIAutomationStructureChangedEventHandler,
-                         public IUIAutomationEventHandler,
-                         public IUIAutomationChangesEventHandler {
+    class EventHandler final
+        : public Microsoft::WRL::RuntimeClass<
+              Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
+              IUIAutomationFocusChangedEventHandler,
+              IUIAutomationPropertyChangedEventHandler,
+              IUIAutomationStructureChangedEventHandler,
+              IUIAutomationEventHandler,
+              IUIAutomationChangesEventHandler> {
      public:
-      EventHandler();
+      EventHandler(AXEventRecorderWinUia::Thread* owner,
+                   Microsoft::WRL::ComPtr<IUIAutomationElement> root);
 
       EventHandler(const EventHandler&) = delete;
       EventHandler& operator=(const EventHandler&) = delete;
 
-      virtual ~EventHandler();
+      ~EventHandler() override;
 
-      void Init(AXEventRecorderWinUia::Thread* owner,
-                Microsoft::WRL::ComPtr<IUIAutomationElement> root);
       void CleanUp();
-
-      BEGIN_COM_MAP(EventHandler)
-      COM_INTERFACE_ENTRY(IUIAutomationFocusChangedEventHandler)
-      COM_INTERFACE_ENTRY(IUIAutomationPropertyChangedEventHandler)
-      COM_INTERFACE_ENTRY(IUIAutomationStructureChangedEventHandler)
-      COM_INTERFACE_ENTRY(IUIAutomationEventHandler)
-      COM_INTERFACE_ENTRY(IUIAutomationChangesEventHandler)
-      END_COM_MAP()
 
       // IUIAutomationFocusChangedEventHandler interface.
       IFACEMETHODIMP HandleFocusChangedEvent(
@@ -143,7 +136,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXEventRecorderWinUia
 
       std::vector<int32_t> last_focused_runtime_id_;
     };
-    Microsoft::WRL::ComPtr<CComObject<EventHandler>> uia_event_handler_;
+    Microsoft::WRL::ComPtr<EventHandler> uia_event_handler_;
   };
 
   Thread thread_;

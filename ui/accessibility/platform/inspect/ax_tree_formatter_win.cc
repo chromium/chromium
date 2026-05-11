@@ -33,7 +33,6 @@
 #include "ui/accessibility/platform/inspect/ax_property_node.h"
 #include "ui/accessibility/platform/inspect/ax_script_instruction.h"
 #include "ui/accessibility/platform/inspect/ax_tree_indexer_win.h"
-#include "ui/base/win/atl_module.h"
 #include "ui/gfx/win/hwnd_util.h"
 
 namespace ui {
@@ -85,11 +84,9 @@ void AXTreeFormatterWin::AddDefaultFilters(
   AddPropertyFilter(property_filters, "OFFSCREEN", AXPropertyFilter::DENY);
 }
 
-AXTreeFormatterWin::AXTreeFormatterWin() {
-  win::CreateATLModuleIfNeeded();
-}
+AXTreeFormatterWin::AXTreeFormatterWin() = default;
 
-AXTreeFormatterWin::~AXTreeFormatterWin() {}
+AXTreeFormatterWin::~AXTreeFormatterWin() = default;
 
 Microsoft::WRL::ComPtr<IAccessible> GetIAObject(AXPlatformNodeDelegate* node,
                                                 LONG& root_x,

@@ -99,10 +99,8 @@ TEST_F(AXFragmentRootTest, UIAFindItemByPropertyUniqueId) {
     unique_id_variant.Set(
         SysAllocString(base::NumberToWString(-unique_id).c_str()));
 
-    ComPtr<IRawElementProviderSimple> invalid_element_provider_simple;
-    EXPECT_HRESULT_SUCCEEDED(
-        MockIRawElementProviderSimple::CreateMockIRawElementProviderSimple(
-            &invalid_element_provider_simple));
+    ComPtr<IRawElementProviderSimple> invalid_element_provider_simple =
+        Microsoft::WRL::Make<MockIRawElementProviderSimple>();
 
     EXPECT_HRESULT_FAILED(item_container_provider->FindItemByProperty(
         invalid_element_provider_simple.Get(),

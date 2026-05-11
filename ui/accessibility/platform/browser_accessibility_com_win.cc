@@ -24,18 +24,18 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/win/enum_variant.h"
+#include "base/win/shlwapi.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
-#include "ui/accessibility/platform/browser_accessibility_manager_win.h"
-#include "ui/accessibility/platform/browser_accessibility_win.h"
 #include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_enum_localization_util.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/platform/ax_platform.h"
+#include "ui/accessibility/platform/browser_accessibility_manager_win.h"
+#include "ui/accessibility/platform/browser_accessibility_win.h"
 #include "ui/base/win/accessibility_ids_win.h"
-#include "ui/base/win/atl_module.h"
 
 namespace ui {
 
@@ -1625,44 +1625,59 @@ IFACEMETHODIMP BrowserAccessibilityComWin::QueryService(REFGUID guid_service,
   return E_FAIL;
 }
 
+IFACEMETHODIMP_(ULONG) BrowserAccessibilityComWin::AddRef() {
+  return AXPlatformNodeWin::AddRef();
+}
+
+IFACEMETHODIMP_(ULONG) BrowserAccessibilityComWin::Release() {
+  return AXPlatformNodeWin::Release();
+}
+
+IFACEMETHODIMP
+BrowserAccessibilityComWin::QueryInterface(REFIID iid, void** ppvObject) {
+  return AXPlatformNodeWin::QueryInterface(iid, ppvObject);
+}
+
 //
-// CComObjectRootEx methods.
+// QueryInterface override for conditional interface filtering.
 //
 
-// static
-STDMETHODIMP BrowserAccessibilityComWin::InternalQueryInterface(
-    void* this_ptr,
-    const _ATL_INTMAP_ENTRY* entries,
-    REFIID iid,
-    void** object) {
-  BrowserAccessibilityComWin* accessibility =
-      reinterpret_cast<BrowserAccessibilityComWin*>(this_ptr);
-
-  if (!accessibility || accessibility->IsDestroyed()) {
-    *object = nullptr;
-    return E_NOINTERFACE;
-  }
-
+HRESULT BrowserAccessibilityComWin::ResolveInterfaces(REFIID iid,
+                                                      void** ppvObject) {
+  // Conditional interfaces - reject based on role/state before resolving.
   if (iid == IID_IAccessibleImage) {
-    const ax::mojom::Role role = accessibility->GetOwner()->GetRole();
-    if (!IsImage(role)) {
-      *object = nullptr;
+    if (!IsImage(GetOwner()->GetRole())) {
       return E_NOINTERFACE;
     }
   } else if (iid == IID_ISimpleDOMDocument) {
-    if (!ui::IsPlatformDocument(accessibility->GetRole())) {
-      *object = nullptr;
+    if (!ui::IsPlatformDocument(GetRole())) {
       return E_NOINTERFACE;
     }
   } else if (iid == IID_IAccessibleHyperlink) {
-    if (!accessibility->IsHyperlink()) {
-      *object = nullptr;
+    if (!IsHyperlink()) {
       return E_NOINTERFACE;
     }
   }
 
-  return AXPlatformNodeWin::InternalQueryInterface(this_ptr, entries, iid,
-                                                   object);
+  static const QITAB qit[] = {
+      // IAccessibleAction resolves through IAccessibleHyperlink.
+      QITABENTMULTI(BrowserAccessibilityComWin, IAccessibleAction,
+                    IAccessibleHyperlink),
+      QITABENT(BrowserAccessibilityComWin, IAccessibleApplication),
+      QITABENT(BrowserAccessibilityComWin, IAccessibleHyperlink),
+      QITABENT(BrowserAccessibilityComWin, IAccessibleImage),
+      QITABENT(BrowserAccessibilityComWin, ISimpleDOMDocument),
+      QITABENT(BrowserAccessibilityComWin, ISimpleDOMNode),
+      QITABENT(BrowserAccessibilityComWin, ISimpleDOMText),
+      {nullptr, 0},
+  };
+  HRESULT hr = QISearch(this, qit, iid, ppvObject);
+  if (SUCCEEDED(hr)) {
+    return hr;
+  }
+
+  // Chain to parent class for all other interfaces.
+  return AXPlatformNodeWin::ResolveInterfaces(iid, ppvObject);
 }
 
 void BrowserAccessibilityComWin::ComputeStylesIfNeeded() {

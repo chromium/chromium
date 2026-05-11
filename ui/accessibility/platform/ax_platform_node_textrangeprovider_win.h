@@ -12,24 +12,24 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/sequence_checker.h"
 #include "ui/accessibility/ax_node_position.h"
 #include "ui/accessibility/ax_position.h"
 #include "ui/accessibility/ax_range.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
-#include "ui/accessibility/platform/sequence_affine_com_object_root_win.h"
 
 namespace ui {
-class COMPONENT_EXPORT(AX_PLATFORM) __declspec(uuid(
-    "3071e40d-a10d-45ff-a59f-6e8e1138e2c1")) AXPlatformNodeTextRangeProviderWin
-    : public SequenceAffineComObjectRoot,
-      public ITextRangeProvider {
+class COMPONENT_EXPORT(AX_PLATFORM)
+    __declspec(uuid("3071e40d-a10d-45ff-a59f-6e8e1138e2c1"))
+    AXPlatformNodeTextRangeProviderWin final : public ITextRangeProvider {
  public:
-  BEGIN_COM_MAP(AXPlatformNodeTextRangeProviderWin)
-  COM_INTERFACE_ENTRY(ITextRangeProvider)
-  COM_INTERFACE_ENTRY(AXPlatformNodeTextRangeProviderWin)
-  END_COM_MAP()
+  // IUnknown.
+  IFACEMETHODIMP_(ULONG) AddRef() override;
+  IFACEMETHODIMP_(ULONG) Release() override;
+  IFACEMETHODIMP QueryInterface(REFIID iid, void** ppvObject) override;
 
-  AXPlatformNodeTextRangeProviderWin();
+  AXPlatformNodeTextRangeProviderWin(AXNodePosition::AXPositionInstance start,
+                                     AXNodePosition::AXPositionInstance end);
   ~AXPlatformNodeTextRangeProviderWin();
 
   // Creates an instance of the class.
@@ -334,6 +334,10 @@ class COMPONENT_EXPORT(AX_PLATFORM) __declspec(uuid(
   // This is marked as mutable since endpoints will lazily validate their
   // positions after a deletion of interest was actually deleted.
   mutable TextRangeEndpoints endpoints_;
+  // Reference count starts at 1. When acquiring the initial ComPtr<>, use
+  // ComPtr::Attach() rather than the constructor to avoid an extra AddRef.
+  ULONG ref_count_ GUARDED_BY_CONTEXT(sequence_checker_) = 1;
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace ui

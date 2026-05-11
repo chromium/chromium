@@ -4,11 +4,10 @@
 
 #include "ui/accessibility/platform/ax_platform_node_textchildprovider_win.h"
 
+#include "ui/accessibility/platform/ax_platform_node_textprovider_win.h"
+
 #include <UIAutomationClient.h>
 #include <UIAutomationCoreApi.h>
-
-#include "ui/accessibility/platform/ax_platform_node_textprovider_win.h"
-#include "ui/base/win/atl_module.h"
 
 #define UIA_VALIDATE_TEXTCHILDPROVIDER_CALL() \
   if (owner()->IsDestroyed())                 \
@@ -29,22 +28,16 @@ AXPlatformNodeWin* GetParentAXPlatformNodeWin(AXPlatformNodeWin* node) {
 
 }  // namespace
 
-AXPlatformNodeTextChildProviderWin::AXPlatformNodeTextChildProviderWin() {}
+AXPlatformNodeTextChildProviderWin::AXPlatformNodeTextChildProviderWin(
+    AXPlatformNodeWin* owner)
+    : owner_(owner) {}
 
 AXPlatformNodeTextChildProviderWin::~AXPlatformNodeTextChildProviderWin() {}
 
 // static
 Microsoft::WRL::ComPtr<AXPlatformNodeTextChildProviderWin>
 AXPlatformNodeTextChildProviderWin::Create(AXPlatformNodeWin* owner) {
-  CComObject<AXPlatformNodeTextChildProviderWin>* text_child_provider = nullptr;
-  if (SUCCEEDED(CComObject<AXPlatformNodeTextChildProviderWin>::CreateInstance(
-          &text_child_provider))) {
-    DCHECK(text_child_provider);
-    text_child_provider->owner_ = owner;
-    return text_child_provider;
-  }
-
-  return nullptr;
+  return Microsoft::WRL::Make<AXPlatformNodeTextChildProviderWin>(owner);
 }
 
 // static

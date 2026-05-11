@@ -24,7 +24,6 @@
 #include "build/build_config.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_utils_win.h"
 #include "ui/accessibility/platform/uia_registrar_win.h"
-#include "ui/base/win/atl_module.h"
 
 namespace ui {
 
@@ -150,11 +149,8 @@ void AXEventRecorderWinUia::Thread::ThreadMain() {
   CHECK(root_.Get());
 
   // Create the event handler
-  win::CreateATLModuleIfNeeded();
-  CHECK(
-      SUCCEEDED(CComObject<EventHandler>::CreateInstance(&uia_event_handler_)));
-  uia_event_handler_->AddRef();
-  uia_event_handler_->Init(this, root_);
+  uia_event_handler_ = Microsoft::WRL::Make<Thread::EventHandler>(this, root_);
+  CHECK(uia_event_handler_);
 
   // Create a cache request to avoid cross-thread issues when logging.
   CHECK(SUCCEEDED(uia_->CreateCacheRequest(&cache_request_)));
@@ -248,7 +244,10 @@ void AXEventRecorderWinUia::Thread::OnEvent(const std::string& event) {
   owner_->OnEvent(event);
 }
 
-AXEventRecorderWinUia::Thread::EventHandler::EventHandler() {
+AXEventRecorderWinUia::Thread::EventHandler::EventHandler(
+    AXEventRecorderWinUia::Thread* owner,
+    Microsoft::WRL::ComPtr<IUIAutomationElement> root)
+    : owner_(owner), root_(std::move(root)) {
   // Some events are duplicated between UIAutomationCore.dll and RPCRT4.dll.
   // Before WIN10_19H1, events are mainly sent from RPCRT4.dll, with a few
   // duplicates sent from UIAutomationCore.dll.
@@ -261,13 +260,6 @@ AXEventRecorderWinUia::Thread::EventHandler::EventHandler() {
 }
 
 AXEventRecorderWinUia::Thread::EventHandler::~EventHandler() = default;
-
-void AXEventRecorderWinUia::Thread::EventHandler::Init(
-    AXEventRecorderWinUia::Thread* owner,
-    Microsoft::WRL::ComPtr<IUIAutomationElement> root) {
-  owner_ = owner;
-  root_ = root;
-}
 
 void AXEventRecorderWinUia::Thread::EventHandler::CleanUp() {
   owner_ = nullptr;

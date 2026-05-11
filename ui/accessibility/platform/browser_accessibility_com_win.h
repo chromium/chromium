@@ -5,6 +5,10 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_BROWSER_ACCESSIBILITY_COM_WIN_H_
 #define UI_ACCESSIBILITY_PLATFORM_BROWSER_ACCESSIBILITY_COM_WIN_H_
 
+#include <objbase.h>
+
+#include <windows.h>
+
 #include <oleacc.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -16,7 +20,6 @@
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
-#include "base/win/atl.h"
 #include "third_party/iaccessible2/ia2_api_all.h"
 #include "third_party/isimpledom/ISimpleDOMDocument.h"
 #include "third_party/isimpledom/ISimpleDOMNode.h"
@@ -58,17 +61,9 @@ BrowserAccessibilityComWin : public AXPlatformNodeWin,
                              public ISimpleDOMNode,
                              public ISimpleDOMText {
  public:
-  BEGIN_COM_MAP(BrowserAccessibilityComWin)
-  COM_INTERFACE_ENTRY(IAccessibleAction)
-  COM_INTERFACE_ENTRY(IAccessibleApplication)
-  COM_INTERFACE_ENTRY(IAccessibleHyperlink)
-  COM_INTERFACE_ENTRY(IAccessibleImage)
-  COM_INTERFACE_ENTRY(ISimpleDOMDocument)
-  COM_INTERFACE_ENTRY(ISimpleDOMNode)
-  COM_INTERFACE_ENTRY(ISimpleDOMText)
-  COM_INTERFACE_ENTRY_CHAIN(AXPlatformNodeWin)
-  END_COM_MAP()
-
+  IFACEMETHODIMP_(ULONG) AddRef() override;
+  IFACEMETHODIMP_(ULONG) Release() override;
+  IFACEMETHODIMP QueryInterface(REFIID iid, void** ppvObject) override;
   // Mappings from roles and states to human readable strings. Initialize
   // with |InitializeStringMaps|.
   static std::map<int32_t, std::u16string> role_string_map;
@@ -364,17 +359,6 @@ BrowserAccessibilityComWin : public AXPlatformNodeWin,
                                              REFIID riid,
                                              void** object) override;
 
-  //
-  // CComObjectRootEx methods.
-  //
-
-  // Called by BEGIN_COM_MAP() / END_COM_MAP().
-  static COMPONENT_EXPORT(AX_PLATFORM) STDMETHODIMP
-  InternalQueryInterface(void* this_ptr,
-                         const _ATL_INTMAP_ENTRY* entries,
-                         REFIID iid,
-                         void** object);
-
   // Computes and caches the IA2 text style attributes for the text and other
   // embedded child objects.
   COMPONENT_EXPORT(AX_PLATFORM) void ComputeStylesIfNeeded();
@@ -383,6 +367,10 @@ BrowserAccessibilityComWin : public AXPlatformNodeWin,
   const TextAttributeMap& offset_to_text_attributes() const {
     return win_attributes_->offset_to_text_attributes;
   }
+
+ protected:
+  // QueryInterface override for conditional interface filtering.
+  HRESULT ResolveInterfaces(REFIID iid, void** ppvObject) override;
 
  private:
   // Private accessors.

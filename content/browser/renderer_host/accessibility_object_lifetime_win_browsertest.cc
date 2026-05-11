@@ -80,7 +80,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityObjectLifetimeWinBrowserTest,
   shell()->Close();
 
   // At this point our test reference should be the only one remaining.
-  EXPECT_EQ(test_node_->m_dwRef, 1);
+  EXPECT_EQ(test_node_->ref_count_for_testing(), 1u);
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityObjectLifetimeWinBrowserTest,
@@ -103,7 +103,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityObjectLifetimeWinBrowserTest,
   shell()->Close();
 
   // At this point our test reference should be the only one remaining.
-  EXPECT_EQ(test_node_->m_dwRef, 1);
+  EXPECT_EQ(test_node_->ref_count_for_testing(), 1u);
 }
 
 // Window subclassing message filter for the legacy window to allow us to
@@ -201,7 +201,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityObjectLifetimeUiaWinBrowserTest,
   shell()->Close();
 
   // At this point our test reference should be the only one remaining.
-  EXPECT_EQ(test_node_->m_dwRef, 1);
+  EXPECT_EQ(test_node_->ref_count_for_testing(), 1u);
 }
 
 }  // namespace content

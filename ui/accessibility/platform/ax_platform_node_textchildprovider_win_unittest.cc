@@ -107,12 +107,8 @@ class AXPlatformNodeTextChildProviderTest : public AXPlatformNodeWinTest {
 
   void SetOwner(AXPlatformNodeWin* owner,
                 ITextRangeProvider* destination_range) {
-    ComPtr<ITextRangeProvider> destination_provider = destination_range;
-    ComPtr<AXPlatformNodeTextRangeProviderWin> destination_provider_interal;
-
-    destination_provider->QueryInterface(
-        IID_PPV_ARGS(&destination_provider_interal));
-    destination_provider_interal->SetOwnerForTesting(owner);
+    static_cast<AXPlatformNodeTextRangeProviderWin*>(destination_range)
+        ->SetOwnerForTesting(owner);
   }
 
   ComPtr<IRawElementProviderSimple> root_provider_raw_;

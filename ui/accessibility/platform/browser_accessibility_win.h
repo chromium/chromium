@@ -5,13 +5,16 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_BROWSER_ACCESSIBILITY_WIN_H_
 #define UI_ACCESSIBILITY_PLATFORM_BROWSER_ACCESSIBILITY_WIN_H_
 
+#include <objbase.h>
+
+#include <windows.h>
+
 #include <vector>
 
-#include "base/win/atl.h"
 #include "base/component_export.h"
+#include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/platform/browser_accessibility.h"
 #include "ui/accessibility/platform/browser_accessibility_com_win.h"
-#include "ui/accessibility/ax_node.h"
 
 namespace ui {
 

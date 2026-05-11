@@ -8,7 +8,6 @@
 #include "ui/accessibility/platform/ax_platform.h"
 #include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/accessibility/platform/browser_accessibility_manager_win.h"
-#include "ui/base/win/atl_module.h"
 
 namespace ui {
 
@@ -22,15 +21,9 @@ std::unique_ptr<BrowserAccessibility> BrowserAccessibility::Create(
 BrowserAccessibilityWin::BrowserAccessibilityWin(
     BrowserAccessibilityManager* manager,
     AXNode* node)
-    : BrowserAccessibility(manager, node) {
-  win::CreateATLModuleIfNeeded();
-  CComObject<BrowserAccessibilityComWin>* instance = nullptr;
-  HRESULT hr =
-      CComObject<BrowserAccessibilityComWin>::CreateInstance(&instance);
-  DCHECK(SUCCEEDED(hr));
-  instance->Init(*this);
-  instance->AddRef();
-  browser_accessibility_com_.reset(instance);
+    : BrowserAccessibility(manager, node),
+      browser_accessibility_com_(new BrowserAccessibilityComWin()) {
+  GetCOM()->Init(*this);
 }
 
 BrowserAccessibilityWin::~BrowserAccessibilityWin() = default;

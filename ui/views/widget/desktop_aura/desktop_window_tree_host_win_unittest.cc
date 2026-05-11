@@ -144,7 +144,7 @@ TEST_F(DesktopWindowTreeHostWinAccessibilityObjectTest, RootDoesNotLeak) {
   }
 
   // At this point our test reference should be the only one remaining.
-  EXPECT_EQ(test_node_->m_dwRef, 1);
+  EXPECT_EQ(test_node_->ref_count_for_testing(), 1u);
 }
 
 // This test validates that we do not leak the caret accessibility object when
@@ -176,7 +176,7 @@ TEST_F(DesktopWindowTreeHostWinAccessibilityObjectTest, CaretDoesNotLeak) {
   }
 
   // At this point our test reference should be the only one remaining.
-  EXPECT_EQ(test_node_->m_dwRef, 1);
+  EXPECT_EQ(test_node_->ref_count_for_testing(), 1u);
 }
 
 // This test validates that we do not leak the root accessibility object when
@@ -219,7 +219,7 @@ TEST_F(DesktopWindowTreeHostWinAccessibilityObjectTest, UiaRootDoesNotLeak) {
   }
 
   // At this point our test reference should be the only one remaining.
-  EXPECT_EQ(test_node_->m_dwRef, 1);
+  EXPECT_EQ(test_node_->ref_count_for_testing(), 1u);
 }
 
 }  // namespace test

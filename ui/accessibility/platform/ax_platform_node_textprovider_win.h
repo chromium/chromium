@@ -6,28 +6,22 @@
 #define UI_ACCESSIBILITY_PLATFORM_AX_PLATFORM_NODE_TEXTPROVIDER_WIN_H_
 
 #include <wrl/client.h>
+#include <wrl/implements.h>
 
 #include "base/component_export.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
-#include "ui/accessibility/platform/sequence_affine_com_object_root_win.h"
 
 namespace ui {
 
-class COMPONENT_EXPORT(AX_PLATFORM) __declspec(
-    uuid("3e1c192b-4348-45ac-8eb6-4b58eeb3dcca")) AXPlatformNodeTextProviderWin
-    : public SequenceAffineComObjectRoot,
-      public ITextEditProvider {
+class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeTextProviderWin
+    : public Microsoft::WRL::RuntimeClass<
+          Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
+          Microsoft::WRL::ChainInterfaces<ITextEditProvider, ITextProvider>> {
  public:
-  BEGIN_COM_MAP(AXPlatformNodeTextProviderWin)
-  COM_INTERFACE_ENTRY(ITextProvider)
-  COM_INTERFACE_ENTRY(ITextEditProvider)
-  COM_INTERFACE_ENTRY(AXPlatformNodeTextProviderWin)
-  END_COM_MAP()
+  explicit AXPlatformNodeTextProviderWin(AXPlatformNodeWin* owner);
+  ~AXPlatformNodeTextProviderWin() override;
 
-  AXPlatformNodeTextProviderWin();
-  ~AXPlatformNodeTextProviderWin();
-
-  static Microsoft::WRL::ComPtr<AXPlatformNodeTextProviderWin> Create(
+  static Microsoft::WRL::ComPtr<ITextEditProvider> Create(
       AXPlatformNodeWin* owner);
   static void CreateIUnknown(AXPlatformNodeWin* owner, IUnknown** unknown);
 

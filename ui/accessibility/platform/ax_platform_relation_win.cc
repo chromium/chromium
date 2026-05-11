@@ -15,16 +15,14 @@
 #include "third_party/iaccessible2/ia2_api_all.h"
 #include "ui/accessibility/platform/ax_platform_node_base.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
-#include "ui/base/win/atl_module.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace ui {
 
-AXPlatformRelationWin::AXPlatformRelationWin() {
-  win::CreateATLModuleIfNeeded();
-}
+AXPlatformRelationWin::AXPlatformRelationWin(std::wstring type)
+    : type_(std::move(type)) {}
 
-AXPlatformRelationWin::~AXPlatformRelationWin() {}
+AXPlatformRelationWin::~AXPlatformRelationWin() = default;
 
 std::wstring GetIA2RelationFromIntAttr(ax::mojom::IntAttribute attribute) {
   switch (attribute) {
@@ -218,10 +216,6 @@ int AXPlatformRelationWin::EnumerateRelationships(
   }
 
   return total_count;
-}
-
-void AXPlatformRelationWin::Initialize(const std::wstring& type) {
-  type_ = type;
 }
 
 void AXPlatformRelationWin::Invalidate() {

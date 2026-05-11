@@ -26,7 +26,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
-#include "base/win/atl.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/scoped_safearray.h"
@@ -40,9 +39,7 @@
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
 #include "ui/accessibility/platform/ax_platform.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
-#include "ui/accessibility/platform/sequence_affine_com_object_root_win.h"
 #include "ui/accessibility/platform/test_ax_node_wrapper.h"
-#include "ui/base/win/atl_module.h"
 
 using Microsoft::WRL::ComPtr;
 using base::win::ScopedBstr;
@@ -247,19 +244,6 @@ void ReleasePointers(IUnknown** pointers, LONG count) {
 MockIRawElementProviderSimple::MockIRawElementProviderSimple() = default;
 MockIRawElementProviderSimple::~MockIRawElementProviderSimple() = default;
 
-HRESULT
-MockIRawElementProviderSimple::CreateMockIRawElementProviderSimple(
-    IRawElementProviderSimple** provider) {
-  CComObject<MockIRawElementProviderSimple>* raw_element_provider = nullptr;
-  HRESULT hr = CComObject<MockIRawElementProviderSimple>::CreateInstance(
-      &raw_element_provider);
-  if (SUCCEEDED(hr)) {
-    *provider = raw_element_provider;
-  }
-
-  return hr;
-}
-
 //
 // IRawElementProviderSimple methods.
 //
@@ -292,10 +276,6 @@ AXPlatformNodeWinTest::AXPlatformNodeWinTest()
 }
 
 AXPlatformNodeWinTest::~AXPlatformNodeWinTest() {}
-
-void AXPlatformNodeWinTest::SetUp() {
-  win::CreateATLModuleIfNeeded();
-}
 
 void AXPlatformNodeWinTest::TearDown() {
   // Destroy the tree and make sure we're not leaking any objects.
@@ -8072,21 +8052,89 @@ TEST_F(AXPlatformNodeWinTest, AriaRoleForInsertionAndDeletion) {
 }
 
 //
+// IDispatch tests
+//
+
+TEST_F(AXPlatformNodeWinTest, IDispatchGetTypeInfoCount) {
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+
+  Init(root);
+
+  ComPtr<IDispatch> dispatch = QueryInterfaceFromNode<IDispatch>(GetRoot());
+  ASSERT_NE(nullptr, dispatch.Get());
+
+  UINT type_info_count = 0;
+  EXPECT_HRESULT_SUCCEEDED(dispatch->GetTypeInfoCount(&type_info_count));
+  EXPECT_EQ(1u, type_info_count);
+}
+
+TEST_F(AXPlatformNodeWinTest, IDispatchGetTypeInfo) {
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+
+  Init(root);
+
+  ComPtr<IDispatch> dispatch = QueryInterfaceFromNode<IDispatch>(GetRoot());
+  ASSERT_NE(nullptr, dispatch.Get());
+
+  ComPtr<ITypeInfo> type_info;
+  HRESULT hr = dispatch->GetTypeInfo(0, LOCALE_USER_DEFAULT, &type_info);
+  if (hr == TYPE_E_LIBNOTREGISTERED) {
+    // IAccessible2 type library is not registered on this machine; skip.
+    GTEST_SKIP() << "IAccessible2 type library not registered";
+  }
+  EXPECT_HRESULT_SUCCEEDED(hr);
+  ASSERT_NE(nullptr, type_info.Get());
+
+  // Verify the type info is for the IAccessible2 interface.
+  TYPEATTR* type_attr = nullptr;
+  EXPECT_HRESULT_SUCCEEDED(type_info->GetTypeAttr(&type_attr));
+  ASSERT_NE(nullptr, type_attr);
+  type_info->ReleaseTypeAttr(type_attr);
+
+  // GetTypeInfo with invalid index should fail.
+  ComPtr<ITypeInfo> type_info_invalid;
+  EXPECT_EQ(DISP_E_BADINDEX,
+            dispatch->GetTypeInfo(1, LOCALE_USER_DEFAULT, &type_info_invalid));
+}
+
+TEST_F(AXPlatformNodeWinTest, IDispatchGetIDsOfNames) {
+  AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+
+  Init(root);
+
+  ComPtr<IDispatch> dispatch = QueryInterfaceFromNode<IDispatch>(GetRoot());
+  ASSERT_NE(nullptr, dispatch.Get());
+
+  // Look up the DISPID for "accName" (IAccessible::get_accName).
+  LPOLESTR name = const_cast<LPOLESTR>(L"accName");
+  DISPID dispid = 0;
+  HRESULT hr =
+      dispatch->GetIDsOfNames(IID_NULL, &name, 1, LOCALE_USER_DEFAULT, &dispid);
+  if (hr == TYPE_E_LIBNOTREGISTERED) {
+    // IAccessible2 type library is not registered on this machine; skip.
+    GTEST_SKIP() << "IAccessible2 type library not registered";
+  }
+  EXPECT_HRESULT_SUCCEEDED(hr);
+  EXPECT_EQ(DISPID_ACC_NAME, dispid);
+}
+
+//
 // IChromeAccessible tests
 //
 
 class TestIChromeAccessibleDelegate
-    : public SequenceAffineComObjectRoot,
-      public IDispatchImpl<IChromeAccessibleDelegate> {
-  using IDispatchImpl::Invoke;
-
+    : public Microsoft::WRL::RuntimeClass<
+          Microsoft::WRL::RuntimeClassFlags<Microsoft::WRL::ClassicCom>,
+          IChromeAccessibleDelegate> {
  public:
-  BEGIN_COM_MAP(TestIChromeAccessibleDelegate)
-  COM_INTERFACE_ENTRY(IChromeAccessibleDelegate)
-  END_COM_MAP()
-
   TestIChromeAccessibleDelegate() = default;
-  ~TestIChromeAccessibleDelegate() = default;
+  ~TestIChromeAccessibleDelegate() override = default;
 
   std::string WaitForBulkFetchResult(LONG expected_request_id) {
     if (bulk_fetch_result_.empty())
@@ -8142,12 +8190,9 @@ TEST_F(AXPlatformNodeWinTest, BulkFetch) {
   ComPtr<IChromeAccessible> chrome_accessible =
       QueryInterfaceFromNode<IChromeAccessible>(GetRoot());
 
-  CComObject<TestIChromeAccessibleDelegate>* delegate = nullptr;
-  ASSERT_HRESULT_SUCCEEDED(
-      CComObject<TestIChromeAccessibleDelegate>::CreateInstance(&delegate));
-  ComPtr<TestIChromeAccessibleDelegate> delegate_ptr(delegate);
+  auto delegate = Microsoft::WRL::Make<TestIChromeAccessibleDelegate>();
   ScopedBstr input_bstr(L"Potato");
-  chrome_accessible->get_bulkFetch(input_bstr.Get(), 99, delegate);
+  chrome_accessible->get_bulkFetch(input_bstr.Get(), 99, delegate.Get());
   std::string response = delegate->WaitForBulkFetchResult(99);
 
   // Note: base::JSONReader is fine for unit tests, but production code
@@ -8172,12 +8217,9 @@ TEST_F(AXPlatformNodeWinTest, AsyncHitTest) {
   ComPtr<IChromeAccessible> chrome_accessible =
       QueryInterfaceFromNode<IChromeAccessible>(GetRoot());
 
-  CComObject<TestIChromeAccessibleDelegate>* delegate = nullptr;
-  ASSERT_HRESULT_SUCCEEDED(
-      CComObject<TestIChromeAccessibleDelegate>::CreateInstance(&delegate));
-  ComPtr<TestIChromeAccessibleDelegate> delegate_ptr(delegate);
+  auto delegate = Microsoft::WRL::Make<TestIChromeAccessibleDelegate>();
   ScopedBstr input_bstr(L"Potato");
-  chrome_accessible->get_hitTest(400, 300, 12345, delegate);
+  chrome_accessible->get_hitTest(400, 300, 12345, delegate.Get());
   ComPtr<IUnknown> result = delegate->WaitForHitTestResult(12345);
   ComPtr<IAccessible2> accessible = ToIAccessible2(result);
   LONG result_unique_id = 0;

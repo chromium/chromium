@@ -16,7 +16,6 @@
 #include "ui/accessibility/platform/test_ax_node_id_delegate.h"
 #include "ui/accessibility/platform/test_ax_node_wrapper.h"
 #include "ui/accessibility/platform/test_ax_platform_tree_manager_delegate.h"
-#include "ui/base/win/atl_module.h"
 
 namespace {
 
@@ -184,7 +183,6 @@ TEST_F(BrowserAccessibilityManagerWinTest, ChildTree) {
 // incorrectly suppress events. See crbug.com/40672441.
 TEST_F(BrowserAccessibilityManagerWinTest,
        AriaNotificationSkipsListenerCheckForNonWebContent) {
-  win::CreateATLModuleIfNeeded();
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {::features::kUiaProvider, ::features::kUiaEventOptimization}, {});

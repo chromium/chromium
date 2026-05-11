@@ -10,7 +10,6 @@
 
 #include "base/at_exit.h"
 #include "base/i18n/icu_util.h"
-#include "base/win/atl.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_variant.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -92,13 +91,12 @@ void GetTextRangeProviderFromTextNode(
 
   text_provider->get_DocumentRange(&text_range_provider);
 
-  ComPtr<ui::AXPlatformNodeTextRangeProviderWin> text_range_provider_interal;
-  text_range_provider->QueryInterface(
-      IID_PPV_ARGS(&text_range_provider_interal));
   ui::AXPlatformNode* ax_platform_node =
       AXPlatformNodeFromNode(tree, text_node);
-  text_range_provider_interal->SetOwnerForTesting(
-      static_cast<ui::AXPlatformNodeWin*>(ax_platform_node));
+  static_cast<ui::AXPlatformNodeTextRangeProviderWin*>(
+      text_range_provider.Get())
+      ->SetOwnerForTesting(
+          static_cast<ui::AXPlatformNodeWin*>(ax_platform_node));
 }
 
 void CallComparisonAPIs(const ComPtr<ITextRangeProvider>& text_range,

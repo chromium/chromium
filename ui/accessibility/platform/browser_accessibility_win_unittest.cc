@@ -27,7 +27,6 @@
 #include "ui/accessibility/platform/browser_accessibility_manager_win.h"
 #include "ui/accessibility/platform/test_ax_node_id_delegate.h"
 #include "ui/accessibility/platform/test_ax_platform_tree_manager_delegate.h"
-#include "ui/base/win/atl_module.h"
 
 namespace ui {
 
@@ -119,7 +118,6 @@ BrowserAccessibilityWinTest::BrowserAccessibilityWinTest() {}
 BrowserAccessibilityWinTest::~BrowserAccessibilityWinTest() {}
 
 void BrowserAccessibilityWinTest::SetUp() {
-  win::CreateATLModuleIfNeeded();
   test_browser_accessibility_delegate_ =
       std::make_unique<TestAXPlatformTreeManagerDelegate>();
 }

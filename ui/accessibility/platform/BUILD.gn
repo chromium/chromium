@@ -238,8 +238,6 @@ component("platform") {
         "inspect/ax_tree_formatter_win.cc",
         "inspect/ax_tree_formatter_win.h",
         "inspect/ax_tree_indexer_win.h",
-        "sequence_affine_com_object_root_win.cc",
-        "sequence_affine_com_object_root_win.h",
         "uia_client_info_source_win.cc",
         "uia_client_info_source_win.h",
         "uia_registrar_win.cc",
