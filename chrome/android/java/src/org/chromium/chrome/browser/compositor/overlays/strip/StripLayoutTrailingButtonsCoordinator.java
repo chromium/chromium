@@ -221,7 +221,7 @@ public class StripLayoutTrailingButtonsCoordinator {
                             /* parentView= */ null,
                             GLIC_DISMISS_ICON_WIDTH_DP,
                             GLIC_DISMISS_ICON_WIDTH_DP,
-                            /* tooltipHandler= */ null,
+                            (tooltipText) -> mToolbarControlContainer.setTooltipText(tooltipText),
                             (time, view, motionEventButtonState, modifiers) -> {
                                 handleGlicDismissNudgeButtonClick();
                             },
@@ -234,14 +234,10 @@ public class StripLayoutTrailingButtonsCoordinator {
             mGlicDismissNudgeButton.setDrawY(GLIC_DISMISS_BUTTON_Y_OFFSET_DP);
             mGlicDismissNudgeButton.setVisible(false);
             mGlicDismissNudgeButton.setAccessibilityDescription(
-                    mContext.getString(
-                            R.string.accessibility_tabstrip_btn_close_tab,
-                            mContext.getString(R.string.glic_button_entrypoint_label)));
+                    mContext.getString(R.string.tooltip_glic_close));
             @ColorInt
             int dismissIconDefaultColor = SemanticColorUtils.getDefaultIconColor(mContext);
             mGlicDismissNudgeButton.setTint(dismissIconDefaultColor);
-
-            // TODO(crbug.com/491225976): Add accessibility string
 
             mGlicButton =
                     new TintedCompositorTextButton(
@@ -301,7 +297,7 @@ public class StripLayoutTrailingButtonsCoordinator {
                             /* parentView= */ null,
                             GLIC_BUTTON_BACKGROUND_WIDTH_DP,
                             GLIC_BUTTON_BACKGROUND_HEIGHT_DP,
-                            /* tooltipHandler= */ null,
+                            (tooltipText) -> mToolbarControlContainer.setTooltipText(tooltipText),
                             (time, view, motionEventButtonState, modifiers) ->
                                     toggleActorTaskMenu(),
                             keyboardFocusHandler,
@@ -321,7 +317,8 @@ public class StripLayoutTrailingButtonsCoordinator {
 
             mGlicActorButton.setTint(SemanticColorUtils.getDefaultIconColor(mContext));
 
-            // TODO(crbug.com/491225976): Add accessibility string
+            mGlicActorButton.setAccessibilityDescription(
+                    mContext.getString(R.string.actor_task_indicator_tooltip));
         }
 
         updateGlicButtonOpacity(isAppInDesktopWindow, isTopResumedActivity);
@@ -591,6 +588,15 @@ public class StripLayoutTrailingButtonsCoordinator {
                             text, /* isActor= */ button == mGlicActorButton));
         } else {
             button.setTextResourceId(Resources.ID_NULL);
+        }
+
+        if (button == mGlicActorButton) {
+            if (TextUtils.isEmpty(text)) {
+                button.setAccessibilityDescription(
+                        mContext.getString(R.string.actor_task_indicator_tooltip));
+            } else {
+                button.setAccessibilityDescription(text);
+            }
         }
 
         updateGlicButtonWidth(mLayerTitleCache);

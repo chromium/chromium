@@ -38,7 +38,7 @@
   <message name="IDS_ACTOR_TASK_LIST_BUBBLE_A11Y_LABEL" desc="Text used by screenreaders for the list of tasks the user is running." translateable="true">
     Task list
   </message>
-  <message name="IDS_ACTOR_TASK_INDICATOR_TOOLTIP" desc="Tooltip text for the task indicator button. The button will open a bubble containing the list of tasks currently running." translateable="true">
+  <message name="IDS_ACTOR_TASK_INDICATOR_TOOLTIP" desc="Tooltip text for the task indicator button. The button will open a bubble containing the list of tasks currently running." formatter_data="android_java" translateable="true">
     Check your tasks
   </message>
   <message name="IDR_ACTOR_TASK_LIST_BUBBLE_ROW_PAUSED_TASK_SUBTITLE" desc="Subtitle shown for a task in the task list bubble informing the user that the task is paused." translateable="true">

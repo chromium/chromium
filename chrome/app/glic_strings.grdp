@@ -7,7 +7,7 @@
   <message name="IDS_TOOLTIP_TAB_ALERT_STATE_GLIC_SHARING" desc="Extra tool tip text, when the tab's context is being shared with Gemini">
     You're sharing this tab with Gemini
   </message>
-  <message name="IDS_TOOLTIP_GLIC_CLOSE" desc="The tooltip for the close button within the Glic nudge button.">
+  <message name="IDS_TOOLTIP_GLIC_CLOSE" desc="The tooltip for the close button within the Glic nudge button." formatter_data="android_java">
     Dismiss suggestion
   </message>
   <message name="IDS_TAB_AX_LABEL_GLIC_ACCESSING" is_accessibility_with_no_ui="true" desc="Accessibility label text, when the tab is sharing data with Gemini. Example: 'Wikipedia - Tab context shared with Gemini'">
