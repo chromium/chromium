@@ -223,10 +223,6 @@ void WebuiOmniboxHandler::AddTabContext(int32_t tab_id,
 void WebuiOmniboxHandler::StepSelection(
     OmniboxPopupSelection::Direction direction,
     OmniboxPopupSelection::Step step) {
-  if (!IsRemoteBound()) {
-    return;
-  }
-
   searchbox::mojom::SelectionStep mojom_step;
   switch (step) {
     case OmniboxPopupSelection::Step::kWholeLine: {
@@ -253,18 +249,10 @@ void WebuiOmniboxHandler::StepSelection(
 
 void WebuiOmniboxHandler::OpenCurrentSelection(
     WindowOpenDisposition disposition) {
-  if (!IsRemoteBound()) {
-    return;
-  }
-
   page_->OpenCurrentSelection(disposition);
 }
 
 void WebuiOmniboxHandler::SetAimButtonVisible(bool visible) {
-  if (!IsRemoteBound()) {
-    return;
-  }
-
   page_->SetAimButtonVisible(visible);
 }
 
@@ -309,11 +297,6 @@ WebuiOmniboxHandler::CreateAutocompleteMatch(
 //   *every* keystroke in the Omnibox.
 void WebuiOmniboxHandler::OnStart(AutocompleteController* controller,
                                   const AutocompleteInput& input) {
-  // Ignore the call until the page remote is bound and ready to receive calls.
-  if (!IsRemoteBound()) {
-    return;
-  }
-
   const AutocompleteProviderClient* client =
       autocomplete_controller()->autocomplete_provider_client();
   // Check if there are zero suggest (either on NTP or on web) or the
@@ -326,16 +309,12 @@ void WebuiOmniboxHandler::OnStart(AutocompleteController* controller,
 
 void WebuiOmniboxHandler::OnResultChanged(AutocompleteController* controller,
                                           bool default_match_changed) {
-  const bool ready = IsRemoteBound();
+  // TODO: (crbug.com/506266490) - Clean up these metrics since it is no longer
+  // relevant to track after moving to factory pattern for searchbox::mojom.
   if (metrics_reporter_ && !metrics_reporter_->HasLocalMark("FirstAccess")) {
     metrics_reporter_->Mark("FirstAccess");
     base::UmaHistogramBoolean(
-        "Omnibox.Popup.WebUI.PageRemoteIsBoundOnFirstCall", ready);
-  }
-
-  // Ignore the call until the page remote is bound and ready to receive calls.
-  if (!ready) {
-    return;
+        "Omnibox.Popup.WebUI.PageRemoteIsBoundOnFirstCall", true);
   }
 
   if (metrics_reporter_ && !metrics_reporter_->HasLocalMark("ResultChanged")) {
@@ -347,18 +326,6 @@ void WebuiOmniboxHandler::OnResultChanged(AutocompleteController* controller,
 void WebuiOmniboxHandler::OnSelectionChanged(
     OmniboxPopupSelection old_selection,
     OmniboxPopupSelection selection) {
-  const bool ready = IsRemoteBound();
-  if (metrics_reporter_ && !metrics_reporter_->HasLocalMark("FirstAccess")) {
-    metrics_reporter_->Mark("FirstAccess");
-    base::UmaHistogramBoolean("Omnibox.Popup.WebUI.PageIsReadyOnFirstCall",
-                              ready);
-  }
-
-  // Ignore the call until the page remote is bound and ready to receive calls.
-  if (!ready) {
-    return;
-  }
-
   page_->UpdateSelection(
       searchbox::mojom::OmniboxPopupSelection::New(
           old_selection.line, ConvertLineState(old_selection.state),
@@ -369,11 +336,6 @@ void WebuiOmniboxHandler::OnSelectionChanged(
 }
 
 void WebuiOmniboxHandler::OnKeywordStateChanged(bool is_keyword_selected) {
-  // Ignore the call until the page remote is bound and ready to receive calls.
-  if (!IsRemoteBound()) {
-    return;
-  }
-
   page_->SetKeywordSelected(is_keyword_selected);
 }
 
@@ -455,11 +417,6 @@ int WebuiOmniboxHandler::GetContextMenuMaxTabSuggestions() {
 }
 
 void WebuiOmniboxHandler::OnContentSharingPolicyChanged() {
-  // Ignore the call until the page remote is bound and ready to receive calls.
-  if (!IsRemoteBound()) {
-    return;
-  }
-
   page_->UpdateContentSharingPolicy(
       contextual_search::ContextualSearchService::IsContextSharingEnabled(
           profile_->GetPrefs()));
@@ -468,18 +425,14 @@ void WebuiOmniboxHandler::OnContentSharingPolicyChanged() {
 void WebuiOmniboxHandler::OnAimPopupEligibilityChanged() {
   InitializeInputStateModel();
 
-  if (IsRemoteBound()) {
-    page_->UpdateAimPopupEligibility(
-        omnibox::IsAimPopupEnabled(profile_) &&
-        profile_->GetPrefs()->GetBoolean(omnibox::kShowAiModeOmniboxButton));
-  }
+  page_->UpdateAimPopupEligibility(
+      omnibox::IsAimPopupEnabled(profile_) &&
+      profile_->GetPrefs()->GetBoolean(omnibox::kShowAiModeOmniboxButton));
 }
 
 void WebuiOmniboxHandler::OnNavigationFinished(
     content::NavigationHandle* navigation_handle) {
   if (navigation_handle->HasCommitted() && navigation_handle->IsInMainFrame()) {
-    if (IsRemoteBound()) {
-      page_->OnTabStripChanged();
-    }
+    page_->OnTabStripChanged();
   }
 }

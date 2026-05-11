@@ -112,9 +112,6 @@ class OmniboxPopupViewWebUITest : public InProcessBrowserTest {
 
   void SetUp() override;
 
-  // Wait until page remote is bound and ready to receive calls.
-  void WaitForHandler();
-
  private:
   OmniboxTriggeredFeatureService triggered_feature_service_;
   base::test::ScopedFeatureList feature_list_;
@@ -185,23 +182,7 @@ void OmniboxPopupViewWebUITest::SetUp() {
   InProcessBrowserTest::SetUp();
 }
 
-void OmniboxPopupViewWebUITest::WaitForHandler() {
-  auto* popup_view = static_cast<OmniboxPopupViewWebUI*>(
-      location_bar()->GetOmniboxPopupViewForTesting());
-  auto* omnibox_popup_webui_content =
-      popup_view->presenter()->GetWebUIContent();
 
-  auto* web_contents = omnibox_popup_webui_content->GetWebContents();
-  content::WaitForLoadStop(web_contents);
-
-  WebuiOmniboxHandler* handler =
-      static_cast<OmniboxPopupUI*>(web_contents->GetWebUI()->GetController())
-          ->omnibox_handler();
-  base::test::TestFuture<void> future;
-  handler->set_page_is_bound_callback_for_testing(future.GetCallback());
-  EXPECT_TRUE(future.Wait());
-  EXPECT_TRUE(handler->IsRemoteBound());
-}
 
 // Check that the location bar background (and the background of the textfield
 // it contains) changes when it receives focus, and matches the popup background
@@ -239,7 +220,6 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUITest,
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxPopupViewWebUITest, PopupLoadsAndAcceptsCalls) {
-  WaitForHandler();
   auto* popup_view = static_cast<OmniboxPopupViewWebUI*>(
       location_bar()->GetOmniboxPopupViewForTesting());
   popup_view->presenter()->Show();

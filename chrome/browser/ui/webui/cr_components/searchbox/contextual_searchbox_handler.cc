@@ -364,29 +364,17 @@ void ContextualSearchboxHandler::UpdateTabListObservation(
 void ContextualSearchboxHandler::OnTabAdded(TabListInterface& tab_list,
                                             tabs::TabInterface* tab,
                                             int index) {
-  if (!IsRemoteBound()) {
-    return;
-  }
-
   page_->OnTabStripChanged();
 }
 
 void ContextualSearchboxHandler::OnActiveTabChanged(TabListInterface& tab_list,
                                                     tabs::TabInterface* tab) {
-  if (!IsRemoteBound()) {
-    return;
-  }
-
   page_->OnTabStripChanged();
 }
 
 void ContextualSearchboxHandler::OnTabRemoved(TabListInterface& tab_list,
                                               tabs::TabInterface* tab,
                                               TabRemovedReason removed_reason) {
-  if (!IsRemoteBound()) {
-    return;
-  }
-
   page_->OnTabStripChanged();
 }
 
@@ -397,10 +385,6 @@ void ContextualSearchboxHandler::OnTabListDestroyed(
 
 void ContextualSearchboxHandler::OnAllTabsAreClosing(
     TabListInterface& tab_list) {
-  if (!IsRemoteBound()) {
-    return;
-  }
-
   page_->OnTabStripChanged();
 }
 
@@ -734,9 +718,6 @@ void ContextualSearchboxHandler::GetInputState(GetInputStateCallback callback) {
 
 void ContextualSearchboxHandler::OnInputStateChanged(
     const contextual_search::InputState& state) {
-  if (!IsRemoteBound()) {
-    return;
-  }
   page_->OnInputStateChanged(state);
 }
 
@@ -964,10 +945,8 @@ void ContextualSearchboxHandler::OnContextUploadStatusChanged(
     contextual_search::ContextUploadStatus context_upload_status,
     const std::optional<contextual_search::ContextUploadErrorType>&
         error_type) {
-  if (IsRemoteBound()) {
-    page_->OnContextualInputStatusChanged(context_token, context_upload_status,
-                                          error_type);
-  }
+  page_->OnContextualInputStatusChanged(context_token, context_upload_status,
+                                        error_type);
 
   // Ensure `input_state_model_` is updated when file is uploaded.
   if (input_state_model_) {
