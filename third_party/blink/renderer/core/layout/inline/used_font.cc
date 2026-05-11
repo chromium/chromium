@@ -6,4 +6,14 @@
 
 namespace blink {
 
+std::optional<float> UsedFont::UnderlineThickness() const {
+  if (const auto* font_data = PrimaryFont()) {
+    if (auto optional_thickness =
+            font_data->GetFontMetrics().UnderlineThickness()) {
+      return *optional_thickness * text_fit_scaling_factor_;
+    }
+  }
+  return std::nullopt;
+}
+
 }  // namespace blink

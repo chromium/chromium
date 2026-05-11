@@ -1106,7 +1106,19 @@ void HighlightPainter::ClipToPartRect(const LineRelativeRect& part_rect) {
   if (fragment_item_.IsSvgText()) [[unlikely]] {
     clip_rect = TextDecorationPainter::ExpandRectForSVGDecorations(part_rect);
   } else {
-    clip_rect.Offset(0, fragment_item_.InkOverflowRect().Y());
+    const auto used_font = fragment_item_.GetUsedFont();
+    float scale = used_font.ScalingFactor();
+    if (scale != 1.0f) {
+      float unscaled_ascent =
+          used_font.PrimaryFont()->GetFontMetrics().FloatAscent();
+      float local_y_scaled = fragment_item_.InkOverflowRect().Y().ToFloat();
+      float offset_y =
+          local_y_scaled / scale - unscaled_ascent * (1.0f - scale);
+      clip_rect.set_y(clip_rect.y() + offset_y);
+      clip_rect.set_height(clip_rect.height() / scale);
+    } else {
+      clip_rect.Offset(0, fragment_item_.InkOverflowRect().Y());
+    }
   }
   paint_info_.context.Clip(clip_rect);
 }

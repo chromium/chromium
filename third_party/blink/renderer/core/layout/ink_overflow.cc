@@ -443,8 +443,7 @@ std::optional<PhysicalRect> InkOverflow::ComputeTextInkOverflow(
     const InlinePaintContext* inline_context) {
   const UsedFont& used_font = cursor.CurrentItem()->GetUsedFont();
   // Glyph bounds is in logical coordinate, origin at the alphabetic baseline.
-  const gfx::RectF text_ink_bounds =
-      used_font.GetFont().TextInkBounds(text_info);
+  const gfx::RectF text_ink_bounds = used_font.TextInkBounds(text_info);
   LogicalRect ink_overflow = LogicalRect::EnclosingRect(text_ink_bounds);
   const WritingMode writing_mode = style.GetWritingMode();
 
