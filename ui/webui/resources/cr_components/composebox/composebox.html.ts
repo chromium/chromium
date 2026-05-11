@@ -100,7 +100,7 @@ export function getHtml(this: ComposeboxElement) {
               </cr-composebox-submit>
               ` : ''}
             </div>
-            ${this.shouldShowDivider_() ? html`
+            ${this.shouldShowDivider() ? html`
             <div class="carousel-divider" part="carousel-divider"></div>
             ` : ''}
             <cr-composebox-dropdown

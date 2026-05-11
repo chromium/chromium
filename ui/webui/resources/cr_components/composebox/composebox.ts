@@ -23,7 +23,6 @@ import {ComposeboxContextAddedMethod, GlowAnimationState} from '//resources/cr_c
 import {DragAndDropHandler} from '//resources/cr_components/search/drag_drop_handler.js';
 import type {DragAndDropHost} from '//resources/cr_components/search/drag_drop_host.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
-import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {AutocompleteResult, FileAttachment, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, SearchContext, TabAttachment, TabInfo} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
@@ -144,12 +143,16 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
         type: Boolean,
         reflect: true,
       },
+      enableFileHint: {type: Boolean},
+      inputPlaceholderOverride: {type: String},
     };
   }
 
   accessor energyEffectAnimationEnabled: boolean = false;
   accessor isZeroState: boolean = false;
   accessor isFollowupQuery: boolean = false;
+  accessor enableFileHint: boolean = false;
+  accessor inputPlaceholderOverride: string = '';
   accessor suggestionActivityEnabled: boolean = true;
   accessor disableCaretColorAnimation: boolean = false;
   accessor disableComposeboxAnimation: boolean = false;
@@ -186,7 +189,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   private searchboxHandler_: SearchboxPageHandlerRemote;
   private eventTracker_: EventTracker = new EventTracker();
   private resizeObservers_: ResizeObserver[] = [];
-  protected shouldShowDivider_(): boolean {
+  override shouldShowDivider(): boolean {
     // TODO(crbug.com/476175193): Remove `entrypointName` condition.
     if (this.entrypointName === 'Omnibox' &&
         this.searchboxLayoutMode === 'TallBottomContext' &&
@@ -194,9 +197,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       return false;
     }
 
-    return this.showDropdown &&
-        (this.showFileCarousel || this.shouldShowSubmitButton() ||
-         this.inToolMode);
+    return super.shouldShowDivider();
   }
 
   override computeSubmitEnabled(): boolean {
@@ -318,6 +319,10 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
         changedProperties.has('searchboxLayoutMode')) {
       this.isOmniboxInCompactMode_ = this.entrypointName === 'Omnibox' &&
           this.searchboxLayoutMode === 'Compact';
+    }
+    if (changedProperties.has('inputPlaceholderOverride') ||
+        changedProperties.has('enableFileHint')) {
+      this.updateInputPlaceholder();
     }
   }
 
@@ -833,41 +838,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
       }
     }
 
-    if (this.inputState) {
-      if (this.inputState.activeTool !== ToolMode.kUnspecified) {
-        const config = this.inputState.toolConfigs.find(
-            c => c.tool === this.inputState!.activeTool);
-        if (config?.hintText) {
-          this.inputPlaceholder = config.hintText;
-          return;
-        }
-      }
-
-      if (this.inputState.activeModel !== ModelMode.kUnspecified) {
-        const config = this.inputState.modelConfigs.find(
-            c => c.model === this.inputState!.activeModel);
-        if (config?.hintText) {
-          this.inputPlaceholder = config.hintText;
-          return;
-        }
-      }
-
-      if (this.inputState.hintText) {
-        this.inputPlaceholder = this.inputState.hintText;
-        return;
-      }
-    }
-
-    if (this.inputState?.activeTool === ToolMode.kDeepSearch) {
-      this.inputPlaceholder =
-          loadTimeData.getString('composeDeepSearchPlaceholder');
-    } else if (this.inputState?.activeTool === ToolMode.kImageGen) {
-      this.inputPlaceholder =
-          loadTimeData.getString('composeCreateImagePlaceholder');
-    } else {
-      this.inputPlaceholder =
-          loadTimeData.getString('searchboxComposePlaceholder');
-    }
+    super.updateInputPlaceholder();
   }
 
   protected onComposeboxFocusin_(e: FocusEvent) {

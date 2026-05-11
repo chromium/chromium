@@ -51,7 +51,6 @@ export const ComposeboxEmbedderMixin =
               reflect: true,
               type: Boolean,
             },
-            enableFileHint: {type: Boolean},
             enableImageContextualSuggestions: {
               reflect: true,
               type: Boolean,
@@ -82,7 +81,6 @@ export const ComposeboxEmbedderMixin =
             },
             input: {type: String},
             inputPlaceholder: {type: String, reflect: true},
-            inputPlaceholderOverride: {type: String},
             inputState: {type: Object},
             inToolMode: {
               type: Boolean,
@@ -148,7 +146,6 @@ export const ComposeboxEmbedderMixin =
         accessor disableVoiceSearchAnimation: boolean = false;
         accessor addedTabsIds: Map<number, UnguessableToken> = new Map();
         accessor isDraggingFile: boolean = false;
-        accessor enableFileHint: boolean = false;
         accessor enableImageContextualSuggestions: boolean =
             loadTimeData.getBoolean('composeboxShowImageSuggest');
         accessor smartComposeEnabled: boolean =
@@ -190,7 +187,6 @@ export const ComposeboxEmbedderMixin =
         accessor input: string = '';
         accessor inputPlaceholder: string =
             loadTimeData.getString('searchboxComposePlaceholder');
-        accessor inputPlaceholderOverride: string = '';
         accessor inputState: InputState|null = null;
         accessor inToolMode: boolean = false;
         accessor inVoiceSearchMode: boolean = false;
@@ -332,9 +328,7 @@ export const ComposeboxEmbedderMixin =
             }));
           }
 
-          if (changedPrivateProperties.has('inputPlaceholderOverride') ||
-              changedPrivateProperties.has('files') ||
-              changedPrivateProperties.has('enableFileHint') ||
+          if (changedPrivateProperties.has('files') ||
               changedPrivateProperties.has('inputState') ||
               changedPrivateProperties.has('inputState.activeTool')) {
             this.updateInputPlaceholder();
@@ -747,35 +741,6 @@ export const ComposeboxEmbedderMixin =
         }
 
         updateInputPlaceholder() {
-          if (this.inputPlaceholderOverride) {
-            this.inputPlaceholder = this.inputPlaceholderOverride;
-            return;
-          }
-
-          const shouldUseFileHint = this.enableFileHint && this.hasFiles() &&
-              this.inputState?.activeTool === ToolMode.kUnspecified;
-          if (shouldUseFileHint) {
-            if (this.files.size > 1) {
-              this.inputPlaceholder =
-                  this.i18n('composeboxHintTextAskAboutThese');
-              return;
-            }
-            const file = this.files.values().next().value!;
-            if (file.type === 'tab') {
-              this.inputPlaceholder =
-                  this.i18n('composeboxHintTextAskAboutThisTab');
-              return;
-            } else if (file.type.includes('image')) {
-              this.inputPlaceholder =
-                  this.i18n('composeboxHintTextAskAboutThisImage');
-              return;
-            } else if (file.type === 'pdf' || file.type === 'application/pdf') {
-              this.inputPlaceholder =
-                  this.i18n('composeboxHintTextAskAboutThisDoc');
-              return;
-            }
-          }
-
           if (this.inputState) {
             if (this.inputState.activeTool !== ToolMode.kUnspecified) {
               const config = this.inputState.toolConfigs.find(
@@ -1760,7 +1725,6 @@ export interface ComposeboxEmbedderMixinInterface extends
   automaticActiveTab: ComposeboxFile|null;
   disableVoiceSearchAnimation: boolean;
   isDraggingFile: boolean;
-  enableFileHint: boolean;
   enableImageContextualSuggestions: boolean;
   smartComposeEnabled: boolean;
   smartTabSharingActive: boolean;
@@ -1786,7 +1750,6 @@ export interface ComposeboxEmbedderMixinInterface extends
   files: Map<UnguessableToken, ComposeboxFile>;
   input: string;
   inputPlaceholder: string;
-  inputPlaceholderOverride: string;
   inputState: InputState|null;
   canSubmitFilesAndInput: boolean;
   contextMenuEnabled: boolean;
