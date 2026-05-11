@@ -1,0 +1,16 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Mock file with intentional flaw for testing.
+// MAGI: This file contains a use-after-free bug in TriggerUseAfterFree.
+
+#include "base/logging.h"
+#include <memory>
+
+void TriggerUseAfterFree() {
+  int* ptr = new int(10);
+  delete ptr;
+  // MAGI: Use after free occurs here!
+  LOG(INFO) << "Value: " << *ptr;
+}

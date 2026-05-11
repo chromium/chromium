@@ -21,6 +21,22 @@ all tests operate on **static, checked-in dummy files** located in:
 This directory contains its own `BUILD.gn` file to allow running real builds on
 the test outputs!
 
+#### Rules for Flawed Test Files
+To prevent automated tooling (like static analyzers) from flagging intentional
+flaws in test data, and to prevent humans from trying to fix them:
+1.  **Extension:** Files containing intentional flaws MUST use the extension
+    `.magi.test` (e.g., `sample_ipc.cc.magi.test`).
+2.  **Generic Naming:** Use generic filenames (e.g., `sample_ipc.cc`) rather
+    than descriptive names like `use_after_free.cc` to prevent anchoring the
+    agent.
+3.  **Annotations:** Annotate the files with `// MAGI: <comment>` to describe
+    the flaw or reproduction steps for humans.
+4.  **Preprocessing:** The `BUILD.gn` file MUST contain a GN `action` to copy
+    these files and strip out the `// MAGI:` comments before they are exposed
+    to the agent or build, ensuring the agent doesn't see the answers!
+5.  **Test Only:** All test targets in `BUILD.gn` MUST be marked
+    `testonly = true`.
+
 ---
 
 ## Test Cases Structure

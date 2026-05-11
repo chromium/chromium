@@ -4,7 +4,25 @@
 
 # Mock BUILD.gn for testing.
 
+action("generate_flawed_ipc") {
+  testonly = true
+  script = "strip_magi_comments.py"
+  inputs = [ "sample_ipc.cc.magi.test" ]
+  outputs = [ "$target_gen_dir/sample_ipc.cc" ]
+  args = [
+    "--input",
+    rebase_path("sample_ipc.cc.magi.test", root_build_dir),
+    "--output",
+    rebase_path("$target_gen_dir/sample_ipc.cc", root_build_dir),
+  ]
+}
+
 source_set("test_target") {
+  testonly = true
   sources = [ "file1.cc" ]
-  deps = [ "//base" ]
+  sources += get_target_outputs(":generate_flawed_ipc")
+  deps = [
+    ":generate_flawed_ipc",
+    "//base",
+  ]
 }

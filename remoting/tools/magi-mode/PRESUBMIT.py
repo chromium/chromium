@@ -344,7 +344,9 @@ def CheckJsonFiles(input_api, output_api):
         ),
     )
 
-  for f in input_api.AffectedFiles(file_filter=FileFilter):
+  for f in input_api.AffectedFiles(
+      file_filter=FileFilter, include_deletes=False
+  ):
     content_str = input_api.ReadFile(f)
     if not content_str.strip():
       continue
@@ -429,7 +431,9 @@ def CheckJsonFiles(input_api, output_api):
             )
           else:
             items_schema = properties[key].get('items', {})
-            if isinstance(items_schema, dict) and items_schema.get('type') == 'string':
+            if isinstance(items_schema, dict) and items_schema.get(
+                'type'
+            ) == 'string':
               for item in value:
                 if not isinstance(item, str):
                   results.append(
@@ -515,9 +519,13 @@ def CheckJsonFiles(input_api, output_api):
         if project_file_path not in project_content_cache:
           proj_content_str = None
           if project_file_path in affected_files_map:
-            proj_content_str = input_api.ReadFile(affected_files_map[project_file_path])
+            proj_content_str = input_api.ReadFile(
+                affected_files_map[project_file_path]
+            )
 
-          if not proj_content_str and input_api.os_path.exists(project_file_path):
+          if not proj_content_str and input_api.os_path.exists(
+              project_file_path
+          ):
             try:
               with open(project_file_path, 'r', encoding='utf-8') as proj_f:
                 proj_content_str = proj_f.read()
@@ -526,7 +534,9 @@ def CheckJsonFiles(input_api, output_api):
 
           if proj_content_str:
             try:
-              project_content_cache[project_file_path] = json.loads(proj_content_str)
+              project_content_cache[project_file_path] = json.loads(
+                  proj_content_str
+              )
             except ValueError:
               pass
 
@@ -581,7 +591,9 @@ def CheckJsonFiles(input_api, output_api):
             is_present = False
 
             if abs_persona_path in affected_files_map:
-              persona_content_str = input_api.ReadFile(affected_files_map[abs_persona_path])
+              persona_content_str = input_api.ReadFile(
+                  affected_files_map[abs_persona_path]
+              )
               is_present = True
 
             if not is_present:
@@ -690,7 +702,8 @@ def CheckJsonFiles(input_api, output_api):
           ):
             results.append(
                 output_api.PresubmitError(
-                    f'File {f.LocalPath()} environment.output_directory must be '
+                    f'File {f.LocalPath()} environment.output_directory '
+                    f'must be '
                     f'a string, got {type(output_directory).__name__}'
                 )
             )

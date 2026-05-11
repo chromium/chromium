@@ -44,6 +44,39 @@
                     "testdata/state_block.magi.json": "\"no_pii_leaks\": false"
                 }
             }
+        },
+        {
+            "phase": 5,
+            "name": "Detect Use-After-Free",
+            "override_inputs": {
+                "project_spec_overrides": {
+                    "target_files": [
+                        "testdata/sample_ipc.cc"
+                    ]
+                },
+                "mock_reviews": [
+                    {
+                        "persona": "core/security.json",
+                        "verdict": "REJECT",
+                        "checklist": {
+                            "no_use_after_free": false
+                        },
+                        "comments": [
+                            {
+                                "file": "testdata/sample_ipc.cc",
+                                "line": 13,
+                                "comment": "Use after free detected!"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "expected_outputs": {
+                "valid_json": true,
+                "content_patterns": {
+                    "testdata/state_block.magi.json": "\"no_use_after_free\": false"
+                }
+            }
         }
     ]
 }
