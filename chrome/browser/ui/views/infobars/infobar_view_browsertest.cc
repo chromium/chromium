@@ -102,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(InfoBarViewBrowserTest,
   const ui::ColorProvider* color_provider = infobar->GetColorProvider();
   ASSERT_TRUE(color_provider);
 
-  const SkColor expected_bg = color_provider->GetColor(ui::kColorSysSurface2);
+  const SkColor expected_bg = color_provider->GetColor(kColorInfoBarBackground);
   const SkColor expected_fg = color_provider->GetColor(kColorInfoBarForeground);
 
   infobar->OnThemeChanged();
@@ -142,12 +142,12 @@ IN_PROC_BROWSER_TEST_F(InfoBarRefreshViewBrowserTest,
       ThemeServiceFactory::GetForProfile(browser()->profile());
   EXPECT_NE(SK_ColorGREEN, theme_service->GetUserColor());
   test::ThemeServiceChangedWaiter waiter(theme_service);
-  const SkColor expected_bg = color_provider->GetColor(ui::kColorSysSurface2);
+  const SkColor expected_bg = color_provider->GetColor(kColorInfoBarBackground);
 
   theme_service->SetUserColor(SK_ColorGREEN);
   waiter.WaitForThemeChanged();
 
   EXPECT_EQ(SK_ColorGREEN, theme_service->GetUserColor());
   EXPECT_NE(expected_bg,
-            infobar_view->GetColorProvider()->GetColor(ui::kColorSysSurface2));
+            infobar_view->GetColorProvider()->GetColor(kColorInfoBarBackground));
 }

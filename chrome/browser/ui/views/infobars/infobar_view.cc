@@ -273,7 +273,7 @@ gfx::Size InfoBarView::CalculatePreferredSize(
 void InfoBarView::OnThemeChanged() {
   views::View::OnThemeChanged();
   const auto* cp = GetColorProvider();
-  const SkColor background_theme_color = cp->GetColor(ui::kColorSysSurface2);
+  const SkColor background_theme_color = cp->GetColor(kColorInfoBarBackground);
   SetBackground(views::CreateSolidBackground(background_theme_color));
 
   const SkColor text_color = cp->GetColor(kColorInfoBarForeground);
