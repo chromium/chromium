@@ -674,7 +674,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     "DelayedInstallManager",
 #endif
     "DeveloperPrivateAPI",
-    "DeviceInfoSyncService",
 #if !BUILDFLAG(IS_CHROMEOS)
     "DownloadCoreService",
 #endif
@@ -835,11 +834,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     "SafeBrowsingPrivateEventRouter",
     "SafeBrowsingTailoredSecurityService",
     "SearchEngineChoiceServiceFactory",
-#if !BUILDFLAG(IS_CHROMEOS)
-    // TODO(crbug.com/374351946): Investigate if this is necessary on CrOS.
-    "SendTabToSelfClientService",
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-    "SendTabToSelfSyncService",
 #if BUILDFLAG(IS_CHROMEOS)
     "SerialConnectionManager",
     "SerialPortManager",
@@ -849,7 +843,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     "SessionDataService",
     "SessionProtoDBFactory",
-    "SessionSyncService",
     "SessionsAPI",
     "sessions::TabRestoreService",
     "SettingsOverridesAPI",
@@ -871,8 +864,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     "StorageFrontend",
     "StorageNotificationService",
     "SupervisedUserService",
-    "SyncInvalidationsService",
-    "SyncSessionsWebContentsRouter",
     "SystemInfoAPI",
     "TCPServerSocketEventDispatcher",
     "TCPSocketEventDispatcher",
