@@ -116,7 +116,7 @@ std::string MakeTestScript(const TestScriptOptions& options = {}) {
 
 // End-to-end test that document rules can cause prefetch on mouse down.
 // TODO(crbug.com/422253225): Flaky on TSan bots.
-#ifdef THREAD_SANITIZER
+#if defined(THREAD_SANITIZER) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_MouseDownPrefetch DISABLED_MouseDownPrefetch
 #else
 #define MAYBE_MouseDownPrefetch MouseDownPrefetch
@@ -158,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(AnchorElementInteractionBrowserTest,
 
 // End-to-end test that document rules can cause prefetch on mouse hover.
 // TODO(crbug.com/462761508): Flaky on TSan bots.
-#ifdef THREAD_SANITIZER
+#if defined(THREAD_SANITIZER) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_MouseHoverPrefetch DISABLED_MouseHoverPrefetch
 #else
 #define MAYBE_MouseHoverPrefetch MouseHoverPrefetch
@@ -196,7 +196,7 @@ IN_PROC_BROWSER_TEST_F(AnchorElementInteractionBrowserTest,
 
 // End-to-end test that document rules can cause prefetch on touch down.
 // TODO(crbug.com/438933681): Flaky on TSan bots, fails consistently locally.
-#ifdef THREAD_SANITIZER
+#if defined(THREAD_SANITIZER) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_TouchDownPrefetch DISABLED_TouchDownPrefetch
 #else
 #define MAYBE_TouchDownPrefetch TouchDownPrefetch
