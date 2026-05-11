@@ -816,6 +816,7 @@ BrowserAutofillManager::BrowserAutofillManager(AutofillDriver* driver)
     : AutofillManager(driver),
       otp_manager_(
           new OtpManagerImpl(*this, client().GetOneTimeTokenService())),
+      at_memory_manager_(std::make_unique<AtMemoryManager>(this)),
       account_name_email_strike_manager_(
           std::make_unique<AccountNameEmailStrikeManager>(*this)),
       address_on_typing_manager_(client()) {}
@@ -847,7 +848,7 @@ BrowserAutofillManager::GetCreditCardAccessManager() const {
 }
 
 AtMemoryManager& BrowserAutofillManager::GetAtMemoryManager() {
-  return at_memory_manager_;
+  return *at_memory_manager_;
 }
 
 payments::AmountExtractionManager&
@@ -2678,6 +2679,7 @@ void BrowserAutofillManager::Reset() {
   // a navigation.
   otp_manager_ = std::make_unique<OtpManagerImpl>(
       *this, client().GetOneTimeTokenService());
+  at_memory_manager_ = std::make_unique<AtMemoryManager>(this);
   account_name_email_strike_manager_ =
       std::make_unique<AccountNameEmailStrikeManager>(*this);
   metrics_.reset();

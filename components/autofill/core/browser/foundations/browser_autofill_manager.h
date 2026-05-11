@@ -669,7 +669,7 @@ class BrowserAutofillManager : public AutofillManager {
 
   // The `AtMemoryManager`, used to handle queries to the
   // `AccessibilityQueryService` and manage session-based metrics.
-  AtMemoryManager at_memory_manager_{this};
+  std::unique_ptr<AtMemoryManager> at_memory_manager_;
 
   std::unique_ptr<AccountNameEmailStrikeManager>
       account_name_email_strike_manager_;
