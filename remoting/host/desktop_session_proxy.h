@@ -56,7 +56,6 @@ namespace remoting {
 class AudioPacket;
 class ClientSessionControl;
 class DesktopSessionConnector;
-class FifoBufferWriter;
 class IpcAudioCapturer;
 class IpcMouseCursorMonitor;
 class IpcKeyboardLayoutMonitor;
@@ -169,7 +168,6 @@ class DesktopSessionProxy
 
   // APIs used to implement the AudioInjector interface.
   void StartAudioInjector();
-  std::unique_ptr<FifoBufferWriter> TakeAudioWriter();
   void InjectAudioPacket(std::unique_ptr<AudioPacket> packet);
 
   // API used to implement the ActionExecutor interface.
@@ -216,8 +214,6 @@ class DesktopSessionProxy
   friend class base::DeleteHelper<DesktopSessionProxy>;
 
   ~DesktopSessionProxy() override;
-
-  void DoStartAudioInjector();
 
   // Called when the desktop agent has started and provides the remote used to
   // inject input events and control A/V capture.
@@ -355,8 +351,6 @@ class DesktopSessionProxy
   // `desktop_session_control_` is bound.
   bool should_start_audio_injector_ GUARDED_BY_CONTEXT(sequence_checker_) =
       false;
-  std::unique_ptr<FifoBufferWriter> audio_writer_
-      GUARDED_BY_CONTEXT(sequence_checker_);
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

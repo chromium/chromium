@@ -71,7 +71,6 @@ class FakeConnectionToClient : public ConnectionToClient {
       std::unique_ptr<DesktopCapturer> desktop_capturer) override;
   std::unique_ptr<AudioStream> StartAudioStream(
       std::unique_ptr<AudioSource> audio_source) override;
-  void SetAudioWriter(std::unique_ptr<FifoBufferWriter> writer) override;
 
   ClientStub* client_stub() override;
   void Disconnect(ErrorCode error,
@@ -125,7 +124,6 @@ class FakeConnectionToClient : public ConnectionToClient {
   bool is_connected_ = true;
   ErrorCode disconnect_error_ = ErrorCode::OK;
   NetworkSettings network_settings_;
-  std::unique_ptr<FifoBufferWriter> audio_writer_;
 };
 
 }  // namespace remoting::protocol

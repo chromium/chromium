@@ -39,7 +39,6 @@
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/base/capabilities.h"
 #include "remoting/base/constants.h"
-#include "remoting/base/fifo_buffer.h"
 #include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/desktop_environment.h"
 #include "remoting/host/desktop_process.h"
@@ -821,39 +820,6 @@ TEST_F(IpcDesktopEnvironmentTest, BufferedDesktopPipeReconnection) {
   DeleteDesktopEnvironment();
   DestroyDesktopProcess();
   desktop_environment_factory_.reset();
-}
-
-TEST_F(IpcDesktopEnvironmentTest, StartAudioInjectorCreatesSpscBuffer) {
-  SetPersistentDesktopSessions(false);
-
-  // 1. Run setup loop to attach desktop process.
-  setup_run_loop_->Run();
-
-  // 2. Retrieve connection terminal ID and proxy pointer.
-  int id = terminal_id_;
-  auto* connection = GetConnection(id);
-  ASSERT_NE(connection, nullptr);
-  DesktopSessionProxy* proxy = connection->desktop_session_proxy;
-  ASSERT_NE(proxy, nullptr);
-
-  // 3. Verify initial SPSC writer state is null.
-  ASSERT_EQ(proxy->TakeAudioWriter(), nullptr);
-
-  // 4. Call StartAudioInjector to trigger Mojo SPSC pipe creation.
-  proxy->StartAudioInjector();
-
-  // Verify SPSC writer is populated and successfully cached.
-  std::unique_ptr<FifoBufferWriter> writer = proxy->TakeAudioWriter();
-  ASSERT_NE(writer, nullptr);
-
-  // 5. Verify subsequent calls cleanly clear and recreate the pipe.
-  proxy->StartAudioInjector();
-  std::unique_ptr<FifoBufferWriter> writer2 = proxy->TakeAudioWriter();
-  ASSERT_NE(writer2, nullptr);
-  ASSERT_NE(writer.get(), writer2.get());
-
-  // Cleanup.
-  DeleteDesktopEnvironment();
 }
 
 // Tests injection of clipboard events.

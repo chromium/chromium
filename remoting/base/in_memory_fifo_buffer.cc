@@ -78,6 +78,8 @@ FifoBufferWriter::Result InMemoryFifoBuffer::Write(
   size_t space = capacity_ - buffered;
 
   if (space < data.size()) {
+    LOG(WARNING) << "InMemoryFifoBuffer overflow, dropping " << data.size()
+                 << " bytes. Buffered: " << buffered;
     return FifoBufferWriter::Result::kFull;
   }
 

@@ -36,7 +36,6 @@ class SingleThreadTaskRunner;
 namespace remoting {
 
 class ClientSessionControl;
-class FifoBufferWriter;
 class DesktopSessionProxy;
 class ScreenResolution;
 
@@ -84,7 +83,6 @@ class IpcDesktopEnvironment : public DesktopEnvironment {
   std::unique_ptr<RemoteWebAuthnStateChangeNotifier>
   CreateRemoteWebAuthnStateChangeNotifier() override;
   std::unique_ptr<AudioInjector> CreateAudioInjector() override;
-  std::unique_ptr<FifoBufferWriter> TakeAudioWriter() override;
 
  private:
   scoped_refptr<DesktopSessionProxy> desktop_session_proxy_;

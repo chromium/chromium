@@ -111,9 +111,4 @@ void WebrtcAudioFifoSinkAdapter::NotifyFormatChanged(
                            weak_factory_.GetWeakPtr(), sequence));
 }
 
-bool WebrtcAudioFifoSinkAdapter::FormatHandshakeCompleteForTesting() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return latest_acknowledged_sequence_.load() == latest_posted_sequence_.load();
-}
-
 }  // namespace remoting::protocol

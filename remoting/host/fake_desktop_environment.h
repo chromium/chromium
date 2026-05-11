@@ -32,8 +32,6 @@
 namespace remoting {
 
 class FakeInputInjector : public InputInjector {
-  class FifoBufferWriter;
-
  public:
   FakeInputInjector();
 
@@ -131,7 +129,6 @@ class FakeDesktopEnvironment : public DesktopEnvironment {
   std::unique_ptr<RemoteWebAuthnStateChangeNotifier>
   CreateRemoteWebAuthnStateChangeNotifier() override;
   std::unique_ptr<AudioInjector> CreateAudioInjector() override;
-  std::unique_ptr<FifoBufferWriter> TakeAudioWriter() override;
 
   base::WeakPtr<FakeInputInjector> last_input_injector() {
     return last_input_injector_;

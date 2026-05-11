@@ -64,8 +64,6 @@ class WebrtcAudioFifoSinkAdapter : public webrtc::AudioTrackSinkInterface {
               size_t number_of_channels,
               size_t number_of_frames) override;
 
-  bool FormatHandshakeCompleteForTesting() const;
-
  private:
   // Resumes SPSC writing once the new format is acknowledged by the consumer.
   void OnFormatAcknowledged(uint32_t sequence);

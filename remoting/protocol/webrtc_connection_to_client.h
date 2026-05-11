@@ -14,7 +14,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
-#include "remoting/base/session_options.h"
 #include "remoting/protocol/channel_dispatcher_base.h"
 #include "remoting/protocol/connection_to_client.h"
 #include "remoting/protocol/host_video_stats_dispatcher.h"
@@ -22,13 +21,7 @@
 #include "remoting/protocol/webrtc_transport.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
 
-namespace remoting {
-class FifoBufferWriter;
-}  // namespace remoting
-
 namespace remoting::protocol {
-struct AudioSampleInfo;
-class WebrtcAudioFifoSinkAdapter;
 
 class WebrtcVideoEncoderFactory;
 class HostControlDispatcher;
@@ -63,7 +56,6 @@ class WebrtcConnectionToClient : public ConnectionToClient,
       std::unique_ptr<DesktopCapturer> desktop_capturer) override;
   std::unique_ptr<AudioStream> StartAudioStream(
       std::unique_ptr<AudioSource> audio_source) override;
-  void SetAudioWriter(std::unique_ptr<FifoBufferWriter> writer) override;
   ClientStub* client_stub() override;
   void set_clipboard_stub(ClipboardStub* clipboard_stub) override;
   void set_host_stub(HostStub* host_stub) override;
@@ -92,7 +84,6 @@ class WebrtcConnectionToClient : public ConnectionToClient,
   void OnWebrtcTransportMediaStreamRemoved(
       webrtc::scoped_refptr<webrtc::MediaStreamInterface> stream) override;
   void OnWebrtcTransportRouteChanged(const TransportRoute& route) override;
-  bool FormatHandshakeCompleteForTesting() const;
 
   // ChannelDispatcherBase::EventHandler interface.
   void OnChannelInitialized(ChannelDispatcherBase* channel_dispatcher) override;
@@ -131,12 +122,6 @@ class WebrtcConnectionToClient : public ConnectionToClient,
   // audio stub. This is created only when both the audio stub and the media
   // stream are available.
   std::unique_ptr<WebrtcAudioSinkAdapter> audio_sink_adapter_;
-  std::unique_ptr<WebrtcAudioFifoSinkAdapter> audio_fifo_sink_adapter_;
-
-  void OnAudioFormatChanged(const AudioSampleInfo& info,
-                            base::OnceClosure acknowledgment_callback);
-
-  void BindAudioFifoSinkAdapter();
 
   THREAD_CHECKER(thread_checker_);
 

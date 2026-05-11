@@ -22,7 +22,6 @@ class ActionExecutor;
 class ActiveDisplayMonitor;
 class AudioCapturer;
 class ClientSessionControl;
-class FifoBufferWriter;
 class ClientSessionEvents;
 class DesktopDisplayInfoMonitor;
 class FileOperations;
@@ -70,7 +69,6 @@ class DesktopEnvironment {
   virtual std::unique_ptr<RemoteWebAuthnStateChangeNotifier>
   CreateRemoteWebAuthnStateChangeNotifier() = 0;
   virtual std::unique_ptr<AudioInjector> CreateAudioInjector() = 0;
-  virtual std::unique_ptr<FifoBufferWriter> TakeAudioWriter() = 0;
 
   // Returns the set of all capabilities supported by |this|.
   virtual std::string GetCapabilities() const = 0;

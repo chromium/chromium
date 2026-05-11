@@ -33,7 +33,6 @@
 #include "remoting/base/capabilities.h"
 #include "remoting/base/constants.h"
 #include "remoting/base/errors.h"
-#include "remoting/base/fifo_buffer.h"
 #include "remoting/base/local_session_policies_provider.h"
 #include "remoting/base/logging.h"
 #include "remoting/base/session_options.h"
@@ -712,12 +711,6 @@ void ClientSession::OnConnectionChannelsConnected() {
 
   DCHECK(!channels_connected_);
   channels_connected_ = true;
-
-  std::unique_ptr<FifoBufferWriter> audio_writer =
-      desktop_environment_->TakeAudioWriter();
-  if (audio_writer) {
-    connection_->SetAudioWriter(std::move(audio_writer));
-  }
 
   // Negotiate capabilities with the client.
   VLOG(1) << "Host capabilities: " << host_capabilities_;
