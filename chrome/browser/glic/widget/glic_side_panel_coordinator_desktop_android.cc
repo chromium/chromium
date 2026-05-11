@@ -127,7 +127,8 @@ void GlicSidePanelCoordinatorDesktopAndroid::OnEntryHiddenWithReason(
     SidePanelEntry* entry,
     SidePanelEntryHideReason reason) {
   CHECK_EQ(entry->key().id(), SidePanelEntry::Id::kGlic);
-  if (reason == SidePanelEntryHideReason::kBackgrounded) {
+  if (reason == SidePanelEntryHideReason::kBackgrounded ||
+      reason == SidePanelEntryHideReason::kWindowResized) {
     SetState(State::kBackgrounded);
   } else {
     SetState(State::kClosed);
