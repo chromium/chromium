@@ -26,6 +26,7 @@ import androidx.core.view.accessibility.AccessibilityNodeProviderCompat;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
+import org.mockito.Mockito;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Criteria;
@@ -160,6 +161,8 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
      */
     /* @Before */
     public void setupTestFramework(boolean shouldFilterTrivialEvents) {
+        mockWebContentsAccessibilityImpl();
+
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(true);
@@ -177,9 +180,12 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
 
         mTracker = new AccessibilityActionAndEventTracker(shouldFilterTrivialEvents);
         mWcax.setAccessibilityTrackerForTesting(mTracker);
+
     }
 
     public void setupTestFrameworkForBasicMode(boolean includeEventMaskByDefault) {
+        mockWebContentsAccessibilityImpl();
+
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(true);
@@ -194,9 +200,12 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
 
         mTracker = new AccessibilityActionAndEventTracker();
         mWcax.setAccessibilityTrackerForTesting(mTracker);
+
     }
 
     public void setupTestFrameworkForFormControlsMode(boolean includeEventMaskByDefault) {
+        mockWebContentsAccessibilityImpl();
+
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(true);
@@ -212,9 +221,12 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
 
         mTracker = new AccessibilityActionAndEventTracker();
         mWcax.setAccessibilityTrackerForTesting(mTracker);
+
     }
 
     public void setupTestFrameworkForCompleteMode(boolean includeEventMaskByDefault) {
+        mockWebContentsAccessibilityImpl();
+
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(true);
@@ -230,6 +242,28 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
 
         mTracker = new AccessibilityActionAndEventTracker();
         mWcax.setAccessibilityTrackerForTesting(mTracker);
+
+    }
+
+    public void mockWebContentsAccessibilityImpl() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    org.chromium.content_public.browser.WebContents webContents = getWebContents();
+                    if (webContents.getOrSetUserData(WebContentsAccessibilityImpl.class, null)
+                            != null) {
+                        webContents.removeUserData(WebContentsAccessibilityImpl.class);
+                    }
+                    WebContentsAccessibilityImpl mockWcax =
+                            Mockito.mock(
+                                    WebContentsAccessibilityImpl.class,
+                                    Mockito.withSettings()
+                                            .useConstructor(
+                                                    new WebContentsAccessibilityDelegate(
+                                                            webContents))
+                                            .defaultAnswer(Mockito.CALLS_REAL_METHODS));
+                    webContents.getOrSetUserData(
+                            WebContentsAccessibilityImpl.class, (wc) -> mockWcax);
+                });
     }
 
     /** Helper method to tear down our tests so we can start the next test clean. */

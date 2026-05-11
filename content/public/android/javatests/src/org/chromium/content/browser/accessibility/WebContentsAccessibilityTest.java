@@ -127,6 +127,7 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
@@ -513,6 +514,30 @@ public class WebContentsAccessibilityTest {
     }
 
     // ------------------ Tests of WebContentsAccessibilityImpl methods ------------------ //
+
+    /** Test that setNativeHelperForTesting works. */
+    @Test
+    @SmallTest
+    public void testWCAIisWrappedByMock() throws Throwable {
+        setupTestWithHTML("<button id='button' onclick='this.focus()'>Button</button>");
+
+        executeJS("document.getElementById('button').click()");
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    try {
+                        org.mockito.Mockito.verify(
+                                        mActivityTestRule.getWebContentsAccessibility(),
+                                        Mockito.atLeastOnce())
+                                .sendAccessibilityEvent(
+                                        org.mockito.ArgumentMatchers.anyInt(),
+                                        org.mockito.ArgumentMatchers.anyInt());
+                        return true;
+                    } catch (Throwable e) {
+                        return false;
+                    }
+                });
+    }
 
     /** Ensure we throttle TYPE_WINDOW_CONTENT_CHANGED events for large tree updates. */
     @Test
@@ -3738,6 +3763,57 @@ public class WebContentsAccessibilityTest {
         mNodeInfo2 = createAccessibilityNodeInfo(vvid2);
         Assert.assertTrue(PERFORM_ACTION_ERROR, mNodeInfo1.isFocused());
         Assert.assertFalse(PERFORM_ACTION_ERROR, mNodeInfo2.isFocused());
+    }
+
+    /** Test that the findFocus method works properly with accessibility. */
+    @Test
+    @SmallTest
+    public void testFindFocus() throws Throwable {
+        // Build a simple web page with elements that can be focused.
+        setupTestWithHTML("<input type='text' id='id1'><input type='text' id='id2'>");
+
+        // Find the relevant nodes.
+        int vvid1 = waitForNodeMatching(sViewIdResourceNameMatcher, "id1");
+        int vvid2 = waitForNodeMatching(sViewIdResourceNameMatcher, "id2");
+        AccessibilityNodeInfoCompat mNodeInfo1 = createAccessibilityNodeInfo(vvid1);
+        AccessibilityNodeInfoCompat mNodeInfo2 = createAccessibilityNodeInfo(vvid2);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo1);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo2);
+
+        // Send an action to focus the first input using ACTION_ACCESSIBILITY_FOCUS
+        Assert.assertTrue(
+                performActionOnUiThread(
+                        vvid1,
+                        ACTION_ACCESSIBILITY_FOCUS,
+                        null,
+                        () -> createAccessibilityNodeInfo(vvid1).isAccessibilityFocused()));
+
+        // Use findFocus to get the accessibility focused node
+        AccessibilityNodeInfoCompat accessibilityFocusedNode =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                mActivityTestRule.mNodeProvider.findFocus(
+                                        AccessibilityNodeInfoCompat.FOCUS_ACCESSIBILITY));
+        Assert.assertNotNull(FOCUSING_ERROR, accessibilityFocusedNode);
+        Assert.assertEquals(
+                FOCUSING_ERROR, "id1", accessibilityFocusedNode.getViewIdResourceName());
+
+        // Send an action to focus the second input using ACTION_FOCUS
+        Assert.assertTrue(
+                performActionOnUiThread(
+                        vvid2,
+                        ACTION_FOCUS,
+                        null,
+                        () -> createAccessibilityNodeInfo(vvid2).isFocused()));
+
+        // Use findFocus to get the input focused node
+        AccessibilityNodeInfoCompat inputFocusedNode =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                mActivityTestRule.mNodeProvider.findFocus(
+                                        AccessibilityNodeInfoCompat.FOCUS_INPUT));
+        Assert.assertNotNull(FOCUSING_ERROR, inputFocusedNode);
+        Assert.assertEquals(FOCUSING_ERROR, "id2", inputFocusedNode.getViewIdResourceName());
     }
 
     /** Test that the performAction for ACTION_CLEAR_FOCUS works properly with accessibility. */
