@@ -13,9 +13,6 @@
 
 namespace mojom = ash::boca::mojom;
 
-using GetWindowsTabsListCallback =
-    base::OnceCallback<void(std::vector<mojom::WindowPtr>)>;
-
 namespace ash::boca {
 class TabInfoCollector {
  public:
@@ -25,16 +22,15 @@ class TabInfoCollector {
   TabInfoCollector& operator=(const TabInfoCollector&) = delete;
   ~TabInfoCollector();
 
-  // Fetches window tab info based on current boca role.
-  void GetWindowTabInfo(GetWindowsTabsListCallback callback);
+  // Fetches window tab info based on current boca role synchronously.
+  std::vector<mojom::WindowPtr> GetWindowTabInfo();
 
-  // Fetches window tab info for provided `target_window`.
-  void GetWindowTabInfoForTarget(aura::Window* target_window,
-                                 GetWindowsTabsListCallback callback);
+  // Fetches window tab info for provided `target_window` synchronously.
+  std::vector<mojom::WindowPtr> GetWindowTabInfoForTarget(
+      aura::Window* target_window);
 
-  // Fetches window tab info for all browser windows.
-  void GetWindowTabInfoForAllBrowserWindows(
-      GetWindowsTabsListCallback callback);
+  // Fetches window tab info for all browser windows synchronously.
+  std::vector<mojom::WindowPtr> GetWindowTabInfoForAllBrowserWindows();
 
  private:
   mojom::TabInfoPtr AshToPageTabInfo(ash::TabInfo tab);

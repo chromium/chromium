@@ -69,6 +69,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "url/origin.h"
 
 namespace ash::boca {
 
@@ -379,7 +380,11 @@ BocaAppHandler::~BocaAppHandler() {
 }
 
 void BocaAppHandler::GetWindowsTabsList(GetWindowsTabsListCallback callback) {
-  tab_info_collector_.GetWindowTabInfo(std::move(callback));
+  std::move(callback).Run(GetWindowTabInfoSync());
+}
+
+std::vector<mojom::WindowPtr> BocaAppHandler::GetWindowTabInfoSync() {
+  return tab_info_collector_.GetWindowTabInfo();
 }
 
 void BocaAppHandler::ListCourses(ListCoursesCallback callback) {
@@ -737,6 +742,46 @@ void BocaAppHandler::SetSitePermission(const std::string& url,
                                        mojom::Permission permission,
                                        mojom::PermissionSetting setting,
                                        SetSitePermissionCallback callback) {
+  if (is_producer_) {
+    receiver_.ReportBadMessage("SetSitePermission called by producer.");
+    std::move(callback).Run(false);
+    return;
+  }
+
+  GURL request_gurl(url);
+  if (!request_gurl.is_valid()) {
+    std::move(callback).Run(false);
+    return;
+  }
+  url::Origin request_origin = url::Origin::Create(request_gurl);
+
+  // For consumers, `GetWindowTabInfoSync` should only return the single window
+  // containing the Boca app (and its tabs).
+  std::vector<mojom::WindowPtr> windows = GetWindowTabInfoSync();
+  if (windows.size() != 1) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  bool is_allowed = false;
+  for (const auto& window : windows) {
+    for (const auto& tab : window->tab_list) {
+      if (url::Origin::Create(tab->url).IsSameOriginWith(request_origin)) {
+        is_allowed = true;
+        break;
+      }
+    }
+    if (is_allowed) {
+      break;
+    }
+  }
+
+  if (!is_allowed) {
+    receiver_.ReportBadMessage("Unauthorized site permission request.");
+    std::move(callback).Run(false);
+    return;
+  }
+
   const bool success = content_settings_handler_->SetContentSettingForOrigin(
       url, permission, setting);
   std::move(callback).Run(success);

@@ -17,11 +17,11 @@ class ContentSettingsHandler {
   explicit ContentSettingsHandler(Profile* profile);
   ContentSettingsHandler(const ContentSettingsHandler&) = delete;
   ContentSettingsHandler& operator=(const ContentSettingsHandler&) = delete;
-  ~ContentSettingsHandler();
+  virtual ~ContentSettingsHandler();
 
-  bool SetContentSettingForOrigin(const std::string& url,
-                                  mojom::Permission content_type,
-                                  mojom::PermissionSetting setting);
+  virtual bool SetContentSettingForOrigin(const std::string& url,
+                                          mojom::Permission content_type,
+                                          mojom::PermissionSetting setting);
 
  private:
   const raw_ptr<Profile> profile_;

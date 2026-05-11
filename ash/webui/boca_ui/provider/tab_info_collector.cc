@@ -33,31 +33,43 @@ TabInfoCollector::TabInfoCollector(bool is_producer)
     : is_producer_(is_producer) {}
 TabInfoCollector::~TabInfoCollector() = default;
 
-void TabInfoCollector::GetWindowTabInfo(GetWindowsTabsListCallback callback) {
+std::vector<mojom::WindowPtr> TabInfoCollector::GetWindowTabInfo() {
   if (!is_producer_) {
-    GetWindowTabInfoForTarget(
-        web_ui_->GetWebContents()->GetTopLevelNativeWindow(),
-        std::move(callback));
-    return;
+    if (web_ui_ && web_ui_->GetWebContents()) {
+      return GetWindowTabInfoForTarget(
+          web_ui_->GetWebContents()->GetTopLevelNativeWindow());
+    }
+    return {};
   }
-  GetWindowTabInfoForAllBrowserWindows(std::move(callback));
+  return GetWindowTabInfoForAllBrowserWindows();
 }
 
-void TabInfoCollector::GetWindowTabInfoForTarget(
-    aura::Window* target_window,
-    GetWindowsTabsListCallback callback) {
+std::vector<mojom::WindowPtr> TabInfoCollector::GetWindowTabInfoForTarget(
+    aura::Window* target_window) {
+  if (!Shell::HasInstance()) {
+    return {};
+  }
   auto* delegate = Shell::Get()->tab_strip_delegate();
+  if (!delegate) {
+    return {};
+  }
   std::vector<std::vector<ash::TabInfo>> windows = {
       delegate->GetTabsListForWindow(target_window)};
-  std::move(callback).Run(AshToPageWindows(windows));
+  return AshToPageWindows(windows);
 }
 
-void TabInfoCollector::GetWindowTabInfoForAllBrowserWindows(
-    GetWindowsTabsListCallback callback) {
+std::vector<mojom::WindowPtr>
+TabInfoCollector::GetWindowTabInfoForAllBrowserWindows() {
+  if (!Shell::HasInstance()) {
+    return {};
+  }
   auto* const shell = Shell::Get();
   auto mru_windows =
       shell->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
   auto* delegate = shell->tab_strip_delegate();
+  if (!delegate) {
+    return {};
+  }
 
   std::vector<std::vector<ash::TabInfo>> windows;
   for (aura::Window* window : mru_windows) {
@@ -76,7 +88,7 @@ void TabInfoCollector::GetWindowTabInfoForAllBrowserWindows(
     }
   }
   SortWindowList(windows);
-  std::move(callback).Run(AshToPageWindows(windows));
+  return AshToPageWindows(windows);
 }
 
 mojom::TabInfoPtr TabInfoCollector::AshToPageTabInfo(ash::TabInfo tab) {

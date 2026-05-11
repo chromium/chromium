@@ -68,6 +68,9 @@ class BocaAppHandler : public mojom::PageHandler,
                                              aura::Window* window,
                                              SetFloatModeCallback callback);
 
+  using GetWindowsTabsListCallback =
+      mojom::PageHandler::GetWindowsTabsListCallback;
+
   // mojom::PageHandler:
   void GetWindowsTabsList(GetWindowsTabsListCallback callback) override;
   void ListCourses(ListCoursesCallback callback) override;
@@ -181,6 +184,9 @@ class BocaAppHandler : public mojom::PageHandler,
   void SetPrefForTesting(PrefService* pref_service) {
     pref_service_ = pref_service;
   }
+
+ protected:
+  virtual std::vector<mojom::WindowPtr> GetWindowTabInfoSync();
 
  private:
   using UpdateSessionCallback =
