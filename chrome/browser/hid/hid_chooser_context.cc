@@ -481,7 +481,7 @@ bool HidChooserContext::HasDevicePermission(
     }
   }
 
-  if (CanApplyPolicy() &&
+  if (CanApplyPolicy() && !embedding_origin_of_web_view &&
       HidPolicyAllowedDevicesFactory::GetForProfile(profile_)
           ->HasDevicePermission(origin, device)) {
     return true;

@@ -6,9 +6,12 @@
 #include <string>
 #include <vector>
 
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/test/values_test_util.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/controlled_frame/controlled_frame_permission_request_test_base.h"
 #include "chrome/browser/hid/chrome_hid_delegate.h"
@@ -16,9 +19,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/hid/hid_chooser_controller.h"
+#include "chrome/common/pref_names.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/download/public/common/download_item.h"
 #include "components/permissions/mock_chooser_controller_view.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -455,5 +460,51 @@ INSTANTIATE_TEST_SUITE_P(/*no prefix*/
                              PermissionRequestTestParam>& info) {
                            return info.param.name;
                          });
+
+IN_PROC_BROWSER_TEST_P(ControlledFramePermissionRequestWebHidTest,
+                       PolicyGrantDoesNotBypassEmbedderForGuest) {
+  // 1. Install and open IWA, then create ControlledFrame.
+  auto [app_frame, controlled_frame] =
+      InstallAndOpenIwaThenCreateControlledFrame(
+          /*controlled_frame_host_name=*/std::nullopt, "/empty.html");
+  ASSERT_TRUE(app_frame);
+  ASSERT_TRUE(controlled_frame);
+
+  url::Origin guest_origin = controlled_frame->GetLastCommittedOrigin();
+
+  // 2. Set up policy allowing the guest origin.
+  // Note: vendor_id 0 and product_id 0 match the default device added in
+  // ControlledFramePermissionRequestWebHidTest::SetUpOnMainThread.
+  const char kPolicySetting[] = R"(
+      [
+        {
+          "devices": [{ "vendor_id": 0, "product_id": 0 }],
+          "urls": ["%s"]
+        }
+      ])";
+  g_browser_process->local_state()->Set(
+      prefs::kManagedWebHidAllowDevicesForUrls,
+      base::test::ParseJson(base::StringPrintf(
+          kPolicySetting, guest_origin.Serialize().c_str())));
+
+  // 3. Guest calls getDevices() and should NOT see the device because it needs
+  // embedder delegation.
+  constexpr char kTestScript[] = R"(
+    (async function() {
+      try {
+        const devices = await navigator.hid.getDevices();
+        if (devices.length === 0) {
+          return 'SUCCESS: NO_DEVICES';
+        }
+        return 'FAIL: Got ' + devices.length + ' devices';
+      } catch (err) {
+        return 'FAIL: ' + err.name + ': ' + err.message;
+      }
+    })();
+  )";
+
+  EXPECT_EQ("SUCCESS: NO_DEVICES",
+            content::EvalJs(controlled_frame, kTestScript).ExtractString());
+}
 
 }  // namespace controlled_frame
