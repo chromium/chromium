@@ -54,14 +54,6 @@ def main():
                       help='Linking command')
   args = parser.parse_args()
 
-  # TODO(crbug.com/508678496): Remove temporary hack.
-  if args.output.endswith('libcrashpad_handler_trampoline.so'):
-    if '-fuse-ld=lld' not in args.command:
-      args.command = [
-        a for a in args.command
-        if not a.startswith(('-Wl,--linker-path', '--ld-path='))
-      ] + ['-fuse-ld=lld']
-
   # Work-around for gold being slow-by-default. http://crbug.com/632230
   fast_env = dict(os.environ)
   fast_env['LC_ALL'] = 'C'
