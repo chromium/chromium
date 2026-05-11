@@ -13,6 +13,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_mixer.h"
+#include "ui/color/color_mixers.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/color/color_recipe.h"
@@ -123,6 +124,16 @@ TEST_F(ColorProviderManagerTest, KeyOrderIsStable) {
 
   // Verify that the order hasn't changed.
   EXPECT_LT(keys[0], keys[1]);
+}
+
+TEST_F(ColorProviderManagerTest, ForcedColorsCrash) {
+  ColorProviderManager& manager = ColorProviderManager::GetForTesting();
+  manager.AppendColorProviderInitializer(base::BindRepeating(AddColorMixers));
+
+  ColorProviderKey key;
+  key.forced_colors = ColorProviderKey::ForcedColors::kSystem;
+
+  EXPECT_TRUE(manager.GetColorProviderFor(key));
 }
 
 }  // namespace ui

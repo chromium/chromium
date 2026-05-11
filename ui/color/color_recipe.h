@@ -5,7 +5,7 @@
 #ifndef UI_COLOR_COLOR_RECIPE_H_
 #define UI_COLOR_COLOR_RECIPE_H_
 
-#include <list>
+#include <vector>
 
 #include "base/component_export.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -41,7 +41,7 @@ class COMPONENT_EXPORT(COLOR) ColorRecipe {
   bool Invariant() const;
 
  private:
-  std::list<ColorTransform> transforms_;
+  std::vector<ColorTransform> transforms_;
 };
 
 COMPONENT_EXPORT(COLOR)
