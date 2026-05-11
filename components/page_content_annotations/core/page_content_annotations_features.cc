@@ -272,7 +272,7 @@ size_t PageContentAnnotationsValidationBatchSize() {
 
 base::TimeDelta PageContentAnnotationBatchSizeTimeoutDuration() {
   return base::Seconds(GetFieldTrialParamByFeatureAsInt(
-      kPageContentAnnotations, "batch_annotations_timeout_seconds", 30));
+      kPageContentAnnotations, "batch_annotations_timeout_seconds", 1));
 }
 
 size_t MaxVisitAnnotationCacheSize() {
