@@ -122,6 +122,9 @@ class DeviceImpl : public mojom::UsbDevice, public device::UsbDevice::Observer {
   void OnDeviceRemoved(scoped_refptr<device::UsbDevice> device) override;
 
   void OnInterfaceClaimed(ClaimInterfaceCallback callback, bool success);
+  void OnSetConfigurationComplete(SetConfigurationCallback callback,
+                                  bool success);
+  void OnResetComplete(ResetCallback callback, bool success);
   void OnClientConnectionError();
 
   // Reject and report bad mojo messaage if `length` exceeds limit.
@@ -135,6 +138,7 @@ class DeviceImpl : public mojom::UsbDevice, public device::UsbDevice::Observer {
   // has been closed. |opening_| is set to true while the asynchronous open is
   // in progress.
   bool opening_ = false;
+  bool device_state_change_in_progress_ = false;
   scoped_refptr<UsbDeviceHandle> device_handle_;
 
   const base::flat_set<uint8_t> blocked_interface_classes_;

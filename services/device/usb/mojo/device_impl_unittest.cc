@@ -860,6 +860,53 @@ TEST_F(USBDeviceImplTest, ClaimProtectedInterface) {
   EXPECT_CALL(mock_handle(), Close());
 }
 
+TEST_F(USBDeviceImplTest, ClaimInterfaceFailsDuringSetConfiguration) {
+  mojo::Remote<mojom::UsbDevice> device = GetMockDeviceProxy();
+
+  EXPECT_CALL(mock_device(), OpenInternal(_));
+
+  {
+    base::test::TestFuture<mojom::UsbOpenDeviceResultPtr> future;
+    device->Open(future.GetCallback());
+    EXPECT_TRUE(future.Get()->is_success());
+  }
+
+  AddMockConfig(ConfigBuilder(1).AddInterface(0, 0, 1, 2, 3).Build());
+
+  UsbDeviceHandle::ResultCallback saved_callback;
+  EXPECT_CALL(mock_handle(), SetConfigurationInternal(1, _))
+      .WillOnce([&saved_callback](int value,
+                                  UsbDeviceHandle::ResultCallback& callback) {
+        saved_callback = std::move(callback);
+      });
+
+  // Initiate SetConfiguration but only save the callback without invoking it.
+  base::test::TestFuture<bool> set_config_future;
+  device->SetConfiguration(1, set_config_future.GetCallback());
+
+  // Ensure the request has reached the service.
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(saved_callback);
+
+  // Immediately try to claim interface; should fail synchronously in service.
+  base::test::TestFuture<mojom::UsbClaimInterfaceResult> claim_future;
+  device->ClaimInterface(0, claim_future.GetCallback());
+  EXPECT_EQ(claim_future.Get(), mojom::UsbClaimInterfaceResult::kFailure);
+
+  // Now resolve the pending SetConfiguration.
+  mock_device().ActiveConfigurationChanged(1);
+  std::move(saved_callback).Run(true);
+  EXPECT_TRUE(set_config_future.Get());
+
+  // After SetConfiguration completes, claiming should succeed.
+  EXPECT_CALL(mock_handle(), ClaimInterfaceInternal(0, _));
+  base::test::TestFuture<mojom::UsbClaimInterfaceResult> claim_future2;
+  device->ClaimInterface(0, claim_future2.GetCallback());
+  EXPECT_EQ(claim_future2.Get(), mojom::UsbClaimInterfaceResult::kSuccess);
+
+  EXPECT_CALL(mock_handle(), Close());
+}
+
 TEST_F(USBDeviceImplTest, SetInterfaceAlternateSetting) {
   mojo::Remote<mojom::UsbDevice> device = GetMockDeviceProxy();
 
