@@ -18,6 +18,8 @@ from pathlib import Path
 
 _PROJECT_ROOT = Path(__file__).resolve().parents[2]
 SKILL_DIRS = [
+    _PROJECT_ROOT / 'agents' / 'internal' / 'skills',
+    _PROJECT_ROOT / 'agents' / 'shared' / 'skills',
     _PROJECT_ROOT / 'agents' / 'skills',
     _PROJECT_ROOT / 'internal' / 'agents' / 'skills',
     _PROJECT_ROOT / 'third_party' / 'depot_tools' / 'agents' / 'skills'
