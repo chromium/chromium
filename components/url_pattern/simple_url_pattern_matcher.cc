@@ -85,7 +85,7 @@ bool IsAbsolutePathname(std::string_view pathname) {
 std::string ResolveRelativePathnamePattern(const GURL* base_url,
                                            std::string_view pathname) {
   if (base_url && base_url->IsStandard() && !IsAbsolutePathname(pathname)) {
-    std::string base_path = EscapePatternString(base_url->GetPath());
+    std::string base_path = EscapePatternString(base_url->path());
     auto slash_index = base_path.rfind('/');
     if (slash_index != std::string::npos) {
       // Extract the baseURL path up to and including the first slash.  Append
@@ -279,7 +279,7 @@ SimpleUrlPatternMatcher::CreatePatternInit(
   }
   std::optional<std::string> protocol =
       init.protocol ? std::string(*init.protocol)
-                    : EscapePatternString(base_url->GetScheme());
+                    : EscapePatternString(base_url->scheme());
   // [username]
   // - Spec: If type is not "pattern" and init contains none of "protocol",
   //   "hostname", "port" and "username", then set result["username"] to the
@@ -313,11 +313,11 @@ SimpleUrlPatternMatcher::CreatePatternInit(
   //   result of process hostname for init given init["hostname"] and type.
   // Note: "process hostname for init" do nothing when type is "pattern".
   std::optional<std::string> hostname =
-      init.hostname ? std::make_optional(std::string(*init.hostname))
-                    : (init.protocol || !base_url
-                           ? std::nullopt
-                           : std::make_optional(
-                                 EscapePatternString(base_url->GetHost())));
+      init.hostname
+          ? std::make_optional(std::string(*init.hostname))
+          : (init.protocol || !base_url
+                 ? std::nullopt
+                 : std::make_optional(EscapePatternString(base_url->host())));
   // [port]
   // - Spec: If init contains none of "protocol", "hostname", and "port", then:
   //   - If baseURL’s port is null, then set result["port"] to the empty string.
@@ -367,8 +367,7 @@ SimpleUrlPatternMatcher::CreatePatternInit(
                 ResolveRelativePathnamePattern(base_url, *init.pathname))
           : ((init.protocol || init.hostname || init.port || !base_url)
                  ? std::nullopt
-                 : std::make_optional(
-                       EscapePatternString(base_url->GetPath())));
+                 : std::make_optional(EscapePatternString(base_url->path())));
   // [search]
   // - Spec: If init contains none of "protocol", "hostname", "port",
   //   "pathname", and "search", then:
@@ -382,12 +381,12 @@ SimpleUrlPatternMatcher::CreatePatternInit(
   //       ConstructorStringParser doesn't set the leading "?". So we don't
   //       need the logic for the leading "?" removal.
   std::optional<std::string> search =
-      init.search ? std::make_optional(std::string(*init.search))
-                  : ((init.protocol || init.hostname || init.port ||
-                      init.pathname || !base_url)
-                         ? std::nullopt
-                         : std::make_optional(
-                               EscapePatternString(base_url->GetQuery())));
+      init.search
+          ? std::make_optional(std::string(*init.search))
+          : ((init.protocol || init.hostname || init.port || init.pathname ||
+              !base_url)
+                 ? std::nullopt
+                 : std::make_optional(EscapePatternString(base_url->query())));
   // [hash]
   // - Spec: If init contains none of "protocol", "hostname", "port",
   //   "pathname", "search", and "hash", then:
@@ -406,7 +405,7 @@ SimpleUrlPatternMatcher::CreatePatternInit(
           : ((init.protocol || init.hostname || init.port || init.pathname ||
               init.search || !base_url)
                  ? std::nullopt
-                 : std::make_optional(EscapePatternString(base_url->GetRef())));
+                 : std::make_optional(EscapePatternString(base_url->ref())));
 
   CHECK(protocol);
 
@@ -555,15 +554,14 @@ SimpleUrlPatternMatcher::SimpleUrlPatternMatcher(
       hash_(std::move(hash)) {}
 
 bool SimpleUrlPatternMatcher::Match(const GURL& url) const {
-  return protocol_.Match(url.GetScheme()) &&
-         username_.Match(url.GetUsername()) &&
-         password_.Match(url.GetPassword()) && hostname_.Match(url.GetHost()) &&
-         port_.Match(url.GetPort()) && pathname_.Match(url.GetPath()) &&
-         search_.Match(url.GetQuery()) && hash_.Match(url.GetRef());
+  return protocol_.Match(url.scheme()) && username_.Match(url.username()) &&
+         password_.Match(url.password()) && hostname_.Match(url.host()) &&
+         port_.Match(url.port()) && pathname_.Match(url.path()) &&
+         search_.Match(url.query()) && hash_.Match(url.ref());
 }
 
 bool SimpleUrlPatternMatcher::HostOnlyMatch(const GURL& url) const {
-  return hostname_.Match(url.GetHost());
+  return hostname_.Match(url.host());
 }
 
 SimpleUrlPatternMatcher::~SimpleUrlPatternMatcher() = default;
