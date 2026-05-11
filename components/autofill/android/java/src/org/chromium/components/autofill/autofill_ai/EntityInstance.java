@@ -14,6 +14,7 @@ import org.chromium.components.autofill.autofill_ai.AttributeInstance.DateValue;
 import org.chromium.components.autofill.autofill_ai.AttributeInstance.StringValue;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -91,9 +92,10 @@ public class EntityInstance {
             }
             EntityMetadata metadata =
                     new EntityMetadata(
-                            mModifiedDate.getDayOfMonth(),
-                            mModifiedDate.getMonthValue(),
-                            mModifiedDate.getYear(),
+                            mModifiedDate
+                                    .atStartOfDay(ZoneId.systemDefault())
+                                    .toInstant()
+                                    .toEpochMilli(),
                             mUseCount);
             return new EntityInstance(
                     mGUID,

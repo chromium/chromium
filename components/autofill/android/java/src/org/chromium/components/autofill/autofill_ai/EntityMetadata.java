@@ -13,32 +13,19 @@ import org.chromium.build.annotations.NullMarked;
 @JNINamespace("autofill")
 @NullMarked
 public class EntityMetadata {
-    private final int mModifiedDay;
-    private final int mModifiedMonth;
-    private final int mModifiedYear;
+    // The dates are stored as raw long values to avoid using java.time.*.
+    private final long mModifiedTime;
     private final int mUseCount;
 
     @CalledByNative
-    public EntityMetadata(int day, int month, int year, int useCount) {
-        mModifiedDay = day;
-        mModifiedMonth = month;
-        mModifiedYear = year;
+    public EntityMetadata(long modifiedTimeMillis, int useCount) {
+        mModifiedTime = modifiedTimeMillis;
         mUseCount = useCount;
     }
 
     @CalledByNative
-    public int getModifiedDay() {
-        return mModifiedDay;
-    }
-
-    @CalledByNative
-    public int getModifiedMonth() {
-        return mModifiedMonth;
-    }
-
-    @CalledByNative
-    public int getModifiedYear() {
-        return mModifiedYear;
+    public long getModifiedTimeMillis() {
+        return mModifiedTime;
     }
 
     @CalledByNative

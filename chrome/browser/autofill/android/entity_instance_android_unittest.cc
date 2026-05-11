@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
+#include "components/autofill/core/browser/test_utils/entity_data_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
@@ -202,6 +203,26 @@ TEST_F(EntityInstanceAndroidTest, ToEntityInstance_UpdateExistingAttribute) {
   EXPECT_EQ(updated_entity_passport_number->GetVerificationStatus(
                 passport_number_attribute_type.field_type()),
             VerificationStatus::kNoStatus);
+}
+
+TEST_F(EntityInstanceAndroidTest, DateConversion) {
+  EntityInstance passport = test::GetPassportEntityInstance();
+  EntityInstanceAndroid entity_instance_android(
+      passport, /*is_enabled=*/true, /*is_eligible_for_wallet_storage=*/true,
+      /*requires_reauth_to_see=*/true);
+
+  JNIEnv* env = jni_zero::AttachCurrentThread();
+  jni_zero::ScopedJavaLocalRef<jobject> java_instance =
+      jni_zero::ToJniType<EntityInstanceAndroid>(env, entity_instance_android);
+
+  EntityInstanceAndroid converted_entity =
+      jni_zero::FromJniType<EntityInstanceAndroid>(env, java_instance);
+
+  EntityInstance converted_passport =
+      converted_entity.ToEntityInstance(passport);
+
+  EXPECT_EQ(passport.date_modified().InMillisecondsSinceUnixEpoch(),
+            converted_passport.date_modified().InMillisecondsSinceUnixEpoch());
 }
 
 }  // namespace
