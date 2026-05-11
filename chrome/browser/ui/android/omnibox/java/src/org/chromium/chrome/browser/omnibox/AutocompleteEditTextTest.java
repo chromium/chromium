@@ -1500,4 +1500,24 @@ public class AutocompleteEditTextTest {
         assertTrue(mInputConnection.commitText(":", 1));
         assertEquals("javascript:", mAutocomplete.getText().toString());
     }
+
+    @Test
+    public void testSiteSearchActivation_DoNotRestoreText() {
+        assertTrue(mInputConnection.commitText("yahoo", 1));
+        mAutocomplete.setAutocompleteText("yahoo", " test", null, null);
+        assertTexts(
+                /* userText= */ "yahoo", /* autocompleteText= */ " test", /* additionalText= */ "");
+
+        // Site search is activated: text is cleared inside a batch edit.
+        assertTrue(mInputConnection.beginBatchEdit());
+        mAutocomplete.setText("");
+        assertEquals("", mAutocomplete.getText().toString());
+
+        // End the batch edit.
+        assertLastBatchEdit(mInputConnection.endBatchEdit());
+
+        // The text should remain completely empty (no "yahoo" restored).
+        assertEquals("", mAutocomplete.getText().toString());
+        assertTexts(/* userText= */ "", /* autocompleteText= */ "", /* additionalText= */ "");
+    }
 }
