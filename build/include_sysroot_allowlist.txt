@@ -39,8 +39,10 @@ bits/mbstate_t.h, textual=False, lazy
 # If this is textual it complains that pid_types isn't accessible from sched.h
 bits/timespec.h, textual=False, lazy
 
+ctype.h
 endian.h
 features.h
+fenv.h
 
 # See https://codebrowser.dev/glibc/glibc/sysdeps/unix/sysv/linux/bits/local_lim.h.html#56
 # if linux/limits.h is non-textual, then limits.h undefs the limits.h
