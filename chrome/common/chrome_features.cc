@@ -1739,6 +1739,12 @@ const base::FeatureParam<base::TimeDelta>
 // See crbug.com/475397687.
 const base::FeatureParam<bool> kWebUIReloadButtonRestartUnresponsive{
     &kWebUIReloadButton, "WebUIReloadButtonRestartUnresponsive", false};
+const base::FeatureParam<base::TimeDelta>
+    kWebUIReloadButtonRestartUnresponsiveRenderersTimeout{
+        &kWebUIReloadButton,
+        "WebUIReloadButtonRestartUnresponsiveRenderersTimeout",
+        base::Seconds(15)};
+
 // When this is enabled, the `BrowserView` will not show until the reload button
 // has finished loading.
 const base::FeatureParam<bool> kWebUIReloadButtonDeferBrowserViewShow{
@@ -1751,11 +1757,6 @@ const base::FeatureParam<bool> kWebUIReloadButtonPrewarmWebUI{
 // first non-empty paint.
 const base::FeatureParam<bool> kWebUIReloadButtonKeepVisibleUntilPaint{
     &kWebUIReloadButton, "WebUIReloadButtonKeepVisibleUntilPaint", false};
-const base::FeatureParam<base::TimeDelta>
-    kWebUIReloadButtonRestartUnresponsiveRenderersTimeout{
-        &kWebUIReloadButton,
-        "WebUIReloadButtonRestartUnresponsiveRenderersTimeout",
-        base::Seconds(15)};
 // When enabled, the split tabs button will be replaced with WebUI loaded from
 // chrome://webui-toolbar.top-chrome.
 // crbug.com/470039098
