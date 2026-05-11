@@ -1618,6 +1618,15 @@
     "expiry_milestone": 140
   },
   {
+    "name": "child-process-security-policy-rust",
+    "owners": [
+      "alexmos@chromium.org",
+      "creis@chromium.org",
+      "lbrady@google.com"
+    ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "chrome-finds",
     "owners": [
       "wylieb@google.com",

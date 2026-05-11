@@ -56,10 +56,6 @@ class IsolationContext;
 class ProcessLock;
 struct UrlInfo;
 
-// When enabled, replaces certain ChildProcessSecurityPolicy functionality with
-// an experimental Rust implementation. See https://crbug.com/482216433.
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kChildProcessSecurityPolicyRust);
-
 // Determines how the experimental Rust ChildProcessSecurityPolicy
 // implementation should be enabled.
 enum class RustPolicy {

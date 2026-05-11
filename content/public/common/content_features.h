@@ -92,6 +92,13 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kBrokerFileOperationsOnDiskCacheInNetworkService);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kBypassRedirectChecksPerRequest);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kCacheControlNoStoreEnterBackForwardCache);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kChildProcessSecurityPolicyRust);
+inline constexpr const char kChildProcessSecurityPolicyRustPolicyName[] =
+    "policy";
+inline constexpr const char kChildProcessSecurityPolicyRustPolicyRustOnly[] =
+    "rust-only";
+inline constexpr const char kChildProcessSecurityPolicyRustPolicyRustAndCpp[] =
+    "rust-and-cpp";
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kClearCrossSiteCrossBrowsingContextGroupWindowName);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kCompositeBGColorAnimation);

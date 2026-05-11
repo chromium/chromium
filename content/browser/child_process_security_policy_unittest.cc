@@ -118,10 +118,10 @@ class ChildProcessSecurityPolicyTest
     // while the other two modes should enable it with a proper FeatureParam to
     // set the mode.
     if (GetParam() == RustPolicy::kCppOnly) {
-      disabled_features.push_back(kChildProcessSecurityPolicyRust);
+      disabled_features.push_back(features::kChildProcessSecurityPolicyRust);
     } else {
       enabled_features.push_back(
-          {kChildProcessSecurityPolicyRust,
+          {features::kChildProcessSecurityPolicyRust,
            {{kRustPolicyParam.name, kRustPolicyParam.GetName(GetParam())}}});
     }
 

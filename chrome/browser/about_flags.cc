@@ -4617,6 +4617,19 @@ const FeatureEntry::FeatureVariation kSendTabToSelfGestureVariations[] = {
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// The choices for Rust-based ChildProcessSecurityPolicy feature.
+const FeatureEntry::FeatureParam kChildProcessSecurityPolicyRustRustOnly[] = {
+    {features::kChildProcessSecurityPolicyRustPolicyName,
+     features::kChildProcessSecurityPolicyRustPolicyRustOnly}};
+const FeatureEntry::FeatureParam kChildProcessSecurityPolicyRustRustAndCpp[] = {
+    {features::kChildProcessSecurityPolicyRustPolicyName,
+     features::kChildProcessSecurityPolicyRustPolicyRustAndCpp}};
+const FeatureEntry::FeatureVariation
+    kChildProcessSecurityPolicyRustVariations[] = {
+        {"Rust only", kChildProcessSecurityPolicyRustRustOnly, nullptr},
+        {"Rust and C++", kChildProcessSecurityPolicyRustRustAndCpp, nullptr},
+};
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -13003,6 +13016,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableCancelUploadOnContentAnalysisDescription, kOsAll,
      FEATURE_VALUE_TYPE(
          enterprise_connectors::kEnableCancelUploadOnContentAnalysis)},
+
+    {"child-process-security-policy-rust",
+     flag_descriptions::kChildProcessSecurityPolicyRustName,
+     flag_descriptions::kChildProcessSecurityPolicyRustDescription, kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kChildProcessSecurityPolicyRust,
+                                    kChildProcessSecurityPolicyRustVariations,
+                                    "ChildProcessSecurityPolicyRust")},
 
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

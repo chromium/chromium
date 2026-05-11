@@ -359,6 +359,16 @@ inline constexpr char kCanvasDrawElementDescription[] =
     "drawing HTML content into a canvas. "
     "See: https://github.com/WICG/html-in-canvas";
 
+inline constexpr char kChildProcessSecurityPolicyRustName[] =
+    "Rust-based ChildProcessSecurityPolicy";
+inline constexpr char kChildProcessSecurityPolicyRustDescription[] =
+    "Enables the experimental Rust implementation of "
+    "ChildProcessSecurityPolicy. Provides options to run just the Rust "
+    "implementation or Rust and C++ implementations side-by-side for "
+    "validation. The default mode when enabled is Rust-only. Portions of "
+    "ChildProcessSecurityPolicy that haven't been implemented in Rust yet will "
+    "fall back to their C++ implementations.";
+
 inline constexpr char kClickToCallName[] = "Click-To-Call";
 inline constexpr char kClickToCallDescription[] =
     "Enable the click-to-call feature.";

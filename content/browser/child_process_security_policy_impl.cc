@@ -76,23 +76,21 @@ BASE_FEATURE(kDumpWithoutCrashingForMissingSecurityState,
 
 namespace content {
 
-// When enabled, replaces certain ChildProcessSecurityPolicy functionality with
-// an experimental Rust implementation. See https://crbug.com/482216433.
-BASE_FEATURE(kChildProcessSecurityPolicyRust,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Defines a FeatureParam to control `RustPolicy` in field trials or from
 // command line. Note that the `kCppOnly` policy is achieved by turning off
-// kChildProcessSecurityPolicyRust; this param controls whether to run in
-// kRustOnly or kRustAndCpp mode if that feature is enabled. The default is
-// Rust-only. To enable kRustAndCpp for command-line testing, use:
-// --enable-features=ChildProcessSecurityPolicyRust:policy/rust-and-cpp
+// features::kChildProcessSecurityPolicyRust; this param controls whether to run
+// in kRustOnly or kRustAndCpp mode if that feature is enabled. The default
+// (when enabled) is Rust-only. To enable kRustAndCpp for command-line testing,
+// use: --enable-features=ChildProcessSecurityPolicyRust:policy/rust-and-cpp
 constexpr base::FeatureParam<RustPolicy>::Option rust_policy_options[] = {
-    {RustPolicy::kRustOnly, "rust-only"},
-    {RustPolicy::kRustAndCpp, "rust-and-cpp"}};
+    {RustPolicy::kRustOnly,
+     features::kChildProcessSecurityPolicyRustPolicyRustOnly},
+    {RustPolicy::kRustAndCpp,
+     features::kChildProcessSecurityPolicyRustPolicyRustAndCpp}};
 
 const base::FeatureParam<RustPolicy> kRustPolicyParam{
-    &kChildProcessSecurityPolicyRust, "policy", RustPolicy::kRustOnly,
+    &features::kChildProcessSecurityPolicyRust,
+    features::kChildProcessSecurityPolicyRustPolicyName, RustPolicy::kRustOnly,
     &rust_policy_options};
 
 namespace {
@@ -101,7 +99,8 @@ namespace {
 // implementation is enabled, and whether both Rust and the legacy C++
 // implementations should run in parallel.
 RustPolicy GetRustPolicy() {
-  if (!base::FeatureList::IsEnabled(kChildProcessSecurityPolicyRust)) {
+  if (!base::FeatureList::IsEnabled(
+          features::kChildProcessSecurityPolicyRust)) {
     return RustPolicy::kCppOnly;
   }
   return kRustPolicyParam.Get();
