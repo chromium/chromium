@@ -19424,7 +19424,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
       Change your preferences
     </message>
     <message name="IDS_IWA_INSTALLER_DISABLED_SUBTITLE" desc="Subtitle of the feature disabled screen of the IWA installer. $1 = IDS_IWA_INSTALLER_DISABLED_CHANGE_PREFERENCE">
-      You security preferences do not allow installations of Isolated Apps. <ph name="CHANGE_PREFERENCE">$1<ex>Change your preferences</ex></ph>
+      You security preferences do not allow installations of Isolated Apps. <ph name="CHANGE_PREFERENCE">$1<ex>Change your preferences</ex></ph>.
     </message>
     <message name="IDS_IWA_INSTALLER_ALREADY_INSTALLED_TITLE" desc="Title of an error dialog shown when the bundle trying to be installed is already installed.">
       <ph name="APP_NAME">$1<ex>Google Maps</ex></ph> is already installed
@@ -19472,7 +19472,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
       Something went wrong
     </message>
     <message name="IDS_IWA_INSTALLER_INSTALL_FAILED_SUBTITLE" desc="Subtitle of the error dialog that is shown when an Isolated Web App failed to install">
-      The installation could not be completed. Please try again or close this window
+      The installation could not be completed. Please try again or close this window.
     </message>
     <message name="IDS_IWA_INSTALLER_INSTALL_FAILED_BUNDLE_BLOCKED_USER_INSTALL_ALLOWLIST_BLOCKLIST_TITLE" desc="Title of the error dialog that is shown when an Isolated Web App failed to install because it's not on the user install allowlist or because it's on the blocklist">
       Can't install app
