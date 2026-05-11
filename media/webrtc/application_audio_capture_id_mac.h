@@ -40,8 +40,7 @@ struct COMPONENT_EXPORT(MEDIA_WEBRTC) ApplicationAudioCaptureId {
 // Returns std::nullopt if the process does not exist or is not a bundled
 // application, or if `pid` is a PWA, and there are no, or more than one,
 // running apps with the PWA's browser Bundle ID.
-// TODO(crbug.com/507803904): Add logging for error cases and operation
-// duration.
+// TODO(crbug.com/507803904): Add RTC logs.
 COMPONENT_EXPORT(MEDIA_WEBRTC)
 std::optional<ApplicationAudioCaptureId> GetApplicationAudioCaptureIdForProcess(
     pid_t pid);

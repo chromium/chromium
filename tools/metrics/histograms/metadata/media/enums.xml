@@ -1219,6 +1219,12 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Enum placerholder. See crbug/1179826"/>
 </enum>
 
+<enum name="GetAppAudioCaptureIdMacResult">
+  <int value="0" label="kSuccess"/>
+  <int value="1" label="kFailedToFindBundleId"/>
+  <int value="2" label="kFailedToFindBrowserForPWA"/>
+</enum>
+
 <enum name="GetAppMainProcessIdWinResult">
   <int value="0" label="kSuccess"/>
   <int value="1" label="kFailedToGetWindowProcessId"/>

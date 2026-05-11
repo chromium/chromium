@@ -1145,6 +1145,23 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Media.Audio.Capture.Mac.GetApplicationAudioCaptureIdDuration.{Status}"
+    units="ms" expires_after="2027-05-04">
+  <owner>brandstrom@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    Measures the time required to retrieve the ApplicationAudioCaptureId for a
+    given process identifier on macOS. Logged for each call to
+    GetApplicationAudioCaptureIdForProcess() with the status variant (Success or
+    Failure).
+  </summary>
+  <token key="Status">
+    <variant name="Failure"/>
+    <variant name="Success"/>
+  </token>
+</histogram>
+
+<histogram
     name="Media.Audio.Capture.Mac.MicSystemPermission.FixedTime.SinceFirstFailure"
     units="ms" expires_after="2024-03-17">
   <owner>toprice@chromium.org</owner>
@@ -4796,6 +4813,19 @@ chromium-metrics-reviews@google.com.
   <summary>
     The reason why a fullscreen video Picture-in-Picture session ended on
     Android. Recorded when the PiP session is exited.
+  </summary>
+</histogram>
+
+<histogram
+    name="Media.GetDisplayMedia.BasicFlow.Mac.GetAppAudioCaptureIdResult"
+    enum="GetAppAudioCaptureIdMacResult" expires_after="2027-05-06">
+  <owner>brandstrom@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    Records the result of trying to get the audio capture ID of an application
+    whose window was selected in the getDisplayMedia() media picker on macOS.
+    This is recorded once for each call to
+    GetApplicationAudioCaptureIdForProcess().
   </summary>
 </histogram>
 

@@ -9,13 +9,39 @@
 
 #include <string_view>
 
+#include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/timer/elapsed_timer.h"
 
 namespace media {
 namespace {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class GetAppAudioCaptureIdMacResult {
+  kSuccess = 0,
+  kFailedToFindBundleId = 1,
+  kFailedToFindBrowserForPWA = 2,
+  kMaxValue = kFailedToFindBrowserForPWA,
+};
+
+void RecordGetAppAudioCaptureIdMetrics(base::TimeDelta elapsed,
+                                       GetAppAudioCaptureIdMacResult result) {
+  base::UmaHistogramEnumeration(
+      "Media.GetDisplayMedia.BasicFlow.Mac.GetAppAudioCaptureIdResult", result);
+
+  const bool success = (result == GetAppAudioCaptureIdMacResult::kSuccess);
+  base::UmaHistogramTimes(success
+                              ? "Media.Audio.Capture.Mac."
+                                "GetApplicationAudioCaptureIdDuration.Success"
+                              : "Media.Audio.Capture.Mac."
+                                "GetApplicationAudioCaptureIdDuration.Failure",
+                          elapsed);
+}
 
 // Checks if the browser_bundle_id is a PWA installed by a browser and if so,
 // returns the bundle_id of the browser that installed it.
@@ -66,9 +92,15 @@ std::optional<std::string> GetBundleIdForProcess(pid_t pid) {
 
 std::optional<ApplicationAudioCaptureId> GetApplicationAudioCaptureIdForProcess(
     pid_t pid) {
+  base::ElapsedTimer timer;
   std::optional<std::string> bundle_id = GetBundleIdForProcess(pid);
 
   if (!bundle_id) {
+    LOG(ERROR) << "GetApplicationAudioCaptureIdForProcess: Failed to find "
+                  "Bundle ID for PID "
+               << pid << ". Duration: " << timer.Elapsed();
+    RecordGetAppAudioCaptureIdMetrics(
+        timer.Elapsed(), GetAppAudioCaptureIdMacResult::kFailedToFindBundleId);
     return std::nullopt;
   }
 
@@ -77,6 +109,8 @@ std::optional<ApplicationAudioCaptureId> GetApplicationAudioCaptureIdForProcess(
 
   if (!truncated_chromium_bundle_id) {
     // Capturing non-Chromium application window.
+    RecordGetAppAudioCaptureIdMetrics(timer.Elapsed(),
+                                      GetAppAudioCaptureIdMacResult::kSuccess);
     return std::make_optional<ApplicationAudioCaptureId>(*bundle_id,
                                                          std::nullopt);
   }
@@ -86,6 +120,8 @@ std::optional<ApplicationAudioCaptureId> GetApplicationAudioCaptureIdForProcess(
   if (!pwa_installer_bundle_id) {
     // Capturing Chromium browser window. Window PID is the main PID of the
     // browser.
+    RecordGetAppAudioCaptureIdMetrics(timer.Elapsed(),
+                                      GetAppAudioCaptureIdMacResult::kSuccess);
     return std::make_optional<ApplicationAudioCaptureId>(
         *truncated_chromium_bundle_id, std::make_optional(pid));
   }
@@ -97,8 +133,20 @@ std::optional<ApplicationAudioCaptureId> GetApplicationAudioCaptureIdForProcess(
       runningApplicationsWithBundleIdentifier:base::SysUTF8ToNSString(
                                                   *pwa_installer_bundle_id)];
   if (browser_apps.count != 1) {
+    LOG(ERROR)
+        << "GetApplicationAudioCaptureIdForProcess: Failed to uniquely resolve"
+           " browser for PWA PID "
+        << pid << ", PWA Bundle ID: " << *bundle_id
+        << ", Installer Bundle ID: " << *pwa_installer_bundle_id
+        << ", running browsers count: " << browser_apps.count
+        << ". Duration: " << timer.Elapsed();
+    RecordGetAppAudioCaptureIdMetrics(
+        timer.Elapsed(),
+        GetAppAudioCaptureIdMacResult::kFailedToFindBrowserForPWA);
     return std::nullopt;
   }
+  RecordGetAppAudioCaptureIdMetrics(timer.Elapsed(),
+                                    GetAppAudioCaptureIdMacResult::kSuccess);
   return std::make_optional<ApplicationAudioCaptureId>(
       *truncated_chromium_bundle_id,
       std::make_optional(browser_apps[0].processIdentifier));
