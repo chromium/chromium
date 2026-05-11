@@ -987,9 +987,15 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     }
 
     // Populate the smart compose suggestion.
-    this.smartComposeInlineHint = this.result.smartComposeInlineHint?.trim() ?
+    const nextHint = this.result.smartComposeInlineHint?.trim() ?
         this.result.smartComposeInlineHint :
         '';
+    if (this.smartComposeInlineHint !== nextHint) {
+      this.smartComposeInlineHint = nextHint;
+    }
+
+    // Smart compose stats are incremented on every response from the
+    // server.
     if (this.smartComposeInlineHint) {
       this.smartComposeStats.shownCount++;
       this.smartComposeStats.shownLength += this.smartComposeInlineHint.length;
