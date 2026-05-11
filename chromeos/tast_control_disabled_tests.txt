@@ -133,9 +133,4 @@ tast.secagentd.NetworkEvents.relaxed_udp@chromeos-betty-cfi-thin-lto-chrome
 # b/488388275
 tast.health.RunCameraFrameAnalysisRoutine
 
-# b/511161202
-tast.arc.ManagedBoot.disabled_vm
-tast.arc.ManagedPlayStoreIcon.disabled_vm
-tast.arc.ManagedProvisioning.vm
-
 # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
