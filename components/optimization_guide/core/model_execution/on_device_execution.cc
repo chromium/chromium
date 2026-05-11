@@ -84,6 +84,19 @@ bool GetOnDeviceModelWithholdNewlines() {
       "on_device_model_withhold_newlines", true};
   return kOnDeviceModelWitholdNewlines.Get();
 }
+
+// Returns whether the feature tracks repetition.
+// TODO(crbug.com/512149280): Move repetition checker to manifest config.
+bool IsRepetitionTrackedFeature(mojom::OnDeviceFeature feature) {
+  switch (feature) {
+    case mojom::OnDeviceFeature::kProofreaderApi:
+    case mojom::OnDeviceFeature::kClassifier:
+      return false;
+    default:
+      return true;
+  }
+}
+
 }  // namespace
 
 OnDeviceExecution::OnDeviceExecution(
@@ -258,7 +271,8 @@ void OnDeviceExecution::OnResponse(
     num_response_tokens_++;
   }
 
-  if (HasRepeatingSuffix(current_response_)) {
+  if (IsRepetitionTrackedFeature(feature_) &&
+      HasRepeatingSuffix(current_response_)) {
     // If a repeat is detected, halt the response, and cancel/finish early.
     receiver_.reset();
     logged_response->set_has_repeats(true);

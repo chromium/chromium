@@ -1913,6 +1913,65 @@ TEST_F(SessionImplTest, DetectsRepeatsAndCancelsResponse) {
       ExecuteModelResult::kResponseHadRepeats, 1);
 }
 
+TEST_F(SessionImplTest, ExcusedFeaturesIgnoreRepeats) {
+  // Mark kProofreaderApi as used so the model is eligible.
+  model_execution::prefs::RecordFeatureUsage(
+      &broker_.local_state(), mojom::OnDeviceFeature::kProofreaderApi);
+
+  base::HistogramTester histogram_tester;
+  FakeAdaptationAsset proofreader_asset({.config = [] {
+    auto cfg = UnsafeComposeConfig();
+    cfg.set_feature(proto::MODEL_EXECUTION_FEATURE_PROOFREADER_API);
+    return cfg;
+  }()});
+  Initialize({
+      .base_model_content = standard_assets_.base_model_content,
+      .adaptations = {&proofreader_asset},
+  });
+
+  const std::vector<std::string> expected_responses = {
+      "some text",
+      " some more repeating text",
+      " some more repeating text",
+      " more stuff",
+  };
+  broker_.service_settings().set_execute_result(expected_responses);
+
+  auto session = CreateSession(mojom::OnDeviceFeature::kProofreaderApi,
+                               SessionConfigParams{});
+  ASSERT_TRUE(session);
+  session->ExecuteModel(UserInputRequest("foo"),
+                        response_.GetStreamingCallback());
+  EXPECT_TRUE(response_.GetFinalStatus());
+
+  EXPECT_TRUE(response_.value());
+  EXPECT_FALSE(response_.error());
+
+  EXPECT_EQ(*response_.value(), ConcatResponses(expected_responses));
+  EXPECT_THAT(response_.partials(), ElementsAreArray(expected_responses));
+
+  ASSERT_TRUE(response_.model_execution_info());
+  EXPECT_GT(response_.model_execution_info()
+                ->on_device_model_execution_info()
+                .execution_infos_size(),
+            0);
+  EXPECT_FALSE(response_.model_execution_info()
+                   ->on_device_model_execution_info()
+                   .execution_infos(0)
+                   .response()
+                   .on_device_model_service_response()
+                   .has_repeats());
+
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceExecuteModelResult."
+      "ProofreaderApi",
+      ExecuteModelResult::kUsedOnDevice, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceResponseHasRepeats."
+      "ProofreaderApi",
+      false, 1);
+}
+
 TEST_F(SessionImplTest, DetectsRepeatsAcrossResponses) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeatureWithParameters(
