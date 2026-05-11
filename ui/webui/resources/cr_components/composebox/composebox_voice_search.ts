@@ -258,6 +258,7 @@ export class ComposeboxVoiceSearchElement extends
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+    this.removeOutsideListeners_();
     this.voiceRecognition_.abort();
   }
 
@@ -276,11 +277,40 @@ export class ComposeboxVoiceSearchElement extends
     this.recordMetric_(
         VoiceSearchMetricType.ACTION, VoiceSearchAction.ACTIVATED_BY_ICON,
         VoiceSearchAction.MAX_VALUE + 1);
+    this.addOutsideListeners_();
   }
 
-  protected onStopClick_(e: Event) {
-    e.preventDefault();
-    e.stopPropagation();
+  private onOutsideInteraction_ = (e: Event) => {
+    if (e.type === 'pointerdown' && e.composedPath().includes(this)) {
+      return;
+    }
+    this.onStopClick_();
+  };
+
+  /**
+   * Adds global listeners to close voice search on outside interactions.
+   * `pointerdown` captures clicks on flat DOMs (e.g., NTP).
+   * `blur` captures clicks inside isolated webviews (e.g., Contextual Tasks
+   * `#threadFrame`) which steal focus but do not bubble click events.
+   */
+  private addOutsideListeners_() {
+    WindowProxy.getInstance().setTimeout(() => {
+      document.addEventListener('pointerdown', this.onOutsideInteraction_);
+      window.addEventListener('blur', this.onOutsideInteraction_);
+    }, 0);
+  }
+
+  private removeOutsideListeners_() {
+    document.removeEventListener('pointerdown', this.onOutsideInteraction_);
+    window.removeEventListener('blur', this.onOutsideInteraction_);
+  }
+
+
+  protected onStopClick_(e?: Event) {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     this.fire('recording-stopped', this.transcript_);
     this.recordMetric_(
         VoiceSearchMetricType.ACTION, VoiceSearchAction.STOP_BUTTON_CLICKED,
@@ -550,6 +580,7 @@ export class ComposeboxVoiceSearchElement extends
   }
 
   protected voiceModeEndCleanup_() {
+    this.removeOutsideListeners_();
     this.voiceRecognition_.abort();
     this.resetState_();
   }
