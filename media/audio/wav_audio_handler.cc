@@ -254,21 +254,21 @@ T ReadLittleEndian(base::span<const uint8_t, sizeof(T)> bytes) {
 
 template <typename Traits>
 void InterleavedBytesToAudioBus(AudioBus* bus,
+                                int dest_start_frame,
+                                int requested_frame_count,
                                 base::span<const uint8_t> source_data,
                                 size_t frames) {
   using SampleType = typename Traits::ValueType;
-  const size_t requested_frames = static_cast<size_t>(bus->frames());
-  CHECK_LE(frames, requested_frames);
+  CHECK_LE(frames, static_cast<size_t>(requested_frame_count));
 
-  if (base::IsAligned(source_data.data(), alignof(SampleType))) {
+  if (dest_start_frame == 0 && requested_frame_count == bus->frames() &&
+      base::IsAligned(source_data.data(), alignof(SampleType))) {
     bus->FromInterleavedBytes<Traits>(source_data,
                                       /*zero_remaining_frames=*/true);
     return;
   }
 
-  // WAV data might not be aligned with the start of the file, depending on the
-  // metadata sections. We cannot simply reinterpret_cast, and treat bytes
-  auto channels = bus->AllChannelsSubspan(0, frames);
+  auto channels = bus->AllChannelsSubspan(dest_start_frame, frames);
   const size_t num_channels = channels.size();
   const size_t sample_size = sizeof(SampleType);
   const size_t frame_size_in_bytes = num_channels * sample_size;
@@ -284,8 +284,9 @@ void InterleavedBytesToAudioBus(AudioBus* bus,
     }
   }
 
-  if (frames < requested_frames) {
-    bus->ZeroFramesPartial(frames, requested_frames - frames);
+  if (frames < static_cast<size_t>(requested_frame_count)) {
+    bus->ZeroFramesPartial(dest_start_frame + frames,
+                           requested_frame_count - frames);
   }
 }
 
@@ -341,19 +342,32 @@ bool WavAudioHandler::AtEnd() const {
 }
 
 bool WavAudioHandler::CopyTo(AudioBus* bus, size_t* frames_written) {
-  DCHECK(bus);
-  DCHECK_EQ(bus->channels(), num_channels_);
+  CHECK(bus);
+  return CopyPartialFramesTo(bus, bus->frames(), /*bus_start_frame=*/0,
+                             frames_written);
+}
+
+bool WavAudioHandler::CopyPartialFramesTo(AudioBus* bus,
+                                          int frame_count,
+                                          int bus_start_frame,
+                                          size_t* frames_written) {
+  CHECK(bus);
+  CHECK_EQ(bus->channels(), num_channels_);
+  CHECK_LE(bus_start_frame + frame_count, bus->frames());
+  CHECK_GE(frame_count, 0);
+  CHECK_GE(bus_start_frame, 0);
 
   if (AtEnd()) {
-    bus->Zero();
+    bus->ZeroFramesPartial(bus_start_frame, frame_count);
     *frames_written = 0;
     return true;
   }
 
   const size_t bytes_per_frame = num_channels_ * bits_per_sample_ / 8;
   const size_t remaining_frames = remaining_data_.size() / bytes_per_frame;
-  const size_t requested_frames = static_cast<size_t>(bus->frames());
-  const size_t frames = std::min(requested_frames, remaining_frames);
+  const size_t frames =
+      std::min(static_cast<size_t>(frame_count), remaining_frames);
+
   base::span<const uint8_t> source =
       remaining_data_.take_first(frames * bytes_per_frame);
 
@@ -361,16 +375,16 @@ bool WavAudioHandler::CopyTo(AudioBus* bus, size_t* frames_written) {
     case AudioFormat::kAudioFormatPCM:
       switch (bits_per_sample_) {
         case 8:
-          InterleavedBytesToAudioBus<UnsignedInt8SampleTypeTraits>(bus, source,
-                                                                   frames);
+          InterleavedBytesToAudioBus<UnsignedInt8SampleTypeTraits>(
+              bus, bus_start_frame, frame_count, source, frames);
           break;
         case 16:
-          InterleavedBytesToAudioBus<SignedInt16SampleTypeTraits>(bus, source,
-                                                                  frames);
+          InterleavedBytesToAudioBus<SignedInt16SampleTypeTraits>(
+              bus, bus_start_frame, frame_count, source, frames);
           break;
         case 32:
-          InterleavedBytesToAudioBus<SignedInt32SampleTypeTraits>(bus, source,
-                                                                  frames);
+          InterleavedBytesToAudioBus<SignedInt32SampleTypeTraits>(
+              bus, bus_start_frame, frame_count, source, frames);
           break;
         default:
           NOTREACHED()
@@ -381,12 +395,12 @@ bool WavAudioHandler::CopyTo(AudioBus* bus, size_t* frames_written) {
     case AudioFormat::kAudioFormatFloat:
       switch (bits_per_sample_) {
         case 32:
-          InterleavedBytesToAudioBus<Float32SampleTypeTraitsNoClip>(bus, source,
-                                                                    frames);
+          InterleavedBytesToAudioBus<Float32SampleTypeTraitsNoClip>(
+              bus, bus_start_frame, frame_count, source, frames);
           break;
         case 64:
-          InterleavedBytesToAudioBus<Float64SampleTypeTraits>(bus, source,
-                                                              frames);
+          InterleavedBytesToAudioBus<Float64SampleTypeTraits>(
+              bus, bus_start_frame, frame_count, source, frames);
           break;
         default:
           NOTREACHED()
@@ -398,6 +412,7 @@ bool WavAudioHandler::CopyTo(AudioBus* bus, size_t* frames_written) {
       NOTREACHED() << "Unsupported audio format encountered: "
                    << static_cast<uint16_t>(audio_format_);
   }
+
   *frames_written = frames;
   return true;
 }

@@ -41,6 +41,10 @@ class MEDIA_EXPORT FlacAudioHandler : public AudioHandler {
   base::TimeDelta GetDuration() const override;
   bool AtEnd() const override;
   bool CopyTo(AudioBus* bus, size_t* frames_written) override;
+  bool CopyPartialFramesTo(AudioBus* bus,
+                           int frame_count,
+                           int bus_start_frame,
+                           size_t* frames_written) override;
   void Reset() override;
 
   int total_frames_for_testing() const { return total_frames_; }

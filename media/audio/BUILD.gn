@@ -451,10 +451,12 @@ source_set("unit_tests") {
     "audio_output_unittest.cc",
     "audio_system_impl_unittest.cc",
     "audio_thread_hang_monitor_unittest.cc",
+    "flac_audio_handler_unittest.cc",
     "null_audio_sink_unittest.cc",
     "power_observer_helper_unittest.cc",
     "reconfigurable_audio_bus_pool_unittest.cc",
     "simple_sources_unittest.cc",
+    "test_data.h",
     "wav_audio_handler_unittest.cc",
   ]
 
@@ -504,13 +506,6 @@ source_set("unit_tests") {
     deps += [ "//third_party/ocmock" ]
     frameworks = [ "CoreMedia.framework" ]
     weak_frameworks = [ "ScreenCaptureKit.framework" ]  # macOS 13.0
-  }
-
-  if (is_chromeos || is_castos || is_cast_android) {
-    sources += [
-      "flac_audio_handler_unittest.cc",
-      "test_data.h",
-    ]
   }
 
   if (use_cras) {

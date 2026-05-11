@@ -48,6 +48,10 @@ class MEDIA_EXPORT WavAudioHandler : public AudioHandler {
   base::TimeDelta GetDuration() const override;
   bool AtEnd() const override;
   bool CopyTo(AudioBus* bus, size_t* frames_written) override;
+  bool CopyPartialFramesTo(AudioBus* bus,
+                           int frame_count,
+                           int bus_start_frame,
+                           size_t* frames_written) override;
   void Reset() override;
 
   // Accessors.

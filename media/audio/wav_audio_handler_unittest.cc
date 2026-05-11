@@ -13,12 +13,18 @@
 #include <string_view>
 
 #include "base/containers/span.h"
+#include "base/types/zip.h"
 #include "media/audio/test_data.h"
 #include "media/base/audio_bus.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
 namespace {
+
+using ::testing::AllOf;
+using ::testing::Ne;
+
 // WAV header comes first in the test data.
 constexpr size_t kWavHeaderSize = 12;
 constexpr size_t kWavDataSizeIndex = 4;
@@ -836,6 +842,108 @@ TEST(WavAudioHandlerTest, UnalignedFloat64DataTest) {
   EXPECT_EQ(1.0f, bus->channel(0)[0]);
   // The second frame should be zeroed.
   EXPECT_EQ(0.0f, bus->channel(0)[1]);
+}
+
+// Tests that multiple sequential partial copies perfectly match a single full
+// copy.
+TEST(WavAudioHandlerTest, CopyPartialFramesTo) {
+  // Create a 4-frame 16-bit PCM WAV.
+  // Structure: 12 (RIFF) + 24 (fmt) + 16 (data) = 52 bytes.
+  // Chunk size is 52 - 8 = 44 bytes (0x2C).
+  // clang-format off
+  constexpr auto kMultiFrameWav = std::to_array<uint8_t>({
+      // RIFF header.
+      'R', 'I', 'F', 'F',
+      0x2C, 0x00, 0x00, 0x00,  // chunk size (44 bytes).
+      'W', 'A', 'V', 'E',
+      // fmt chunk.
+      'f', 'm', 't', ' ',
+      0x10, 0x00, 0x00, 0x00,  // chunk size (16 bytes).
+      0x01, 0x00,              // PCM format.
+      0x02, 0x00,              // 2 channels.
+      0x44, 0xAC, 0x00, 0x00,  // 44100 Hz sample rate.
+      0x10, 0xB1, 0x02, 0x00,  // byte rate (44100 * 2 * 2 = 176400).
+      0x04, 0x00,              // block align (2 channels * 2 bytes).
+      0x10, 0x00,              // 16 bits per sample.
+      // data chunk.
+      'd', 'a', 't', 'a',
+      // data size (16 bytes = 4 frames * 2 ch * 2 bytes).
+      0x10, 0x00, 0x00, 0x00,
+      0x01, 0x00, 0x02, 0x00,  // frame 1 (little-endian 1, 2).
+      0x03, 0x00, 0x04, 0x00,  // frame 2 (little-endian 3, 4).
+      0x05, 0x00, 0x06, 0x00,  // frame 3 (little-endian 5, 6).
+      0x07, 0x00, 0x08, 0x00   // frame 4 (little-endian 7, 8).
+  });
+  // clang-format on
+
+  // Get the baseline from a single full CopyTo().
+  auto handler = WavAudioHandler::Create(base::span(kMultiFrameWav));
+  ASSERT_TRUE(handler);
+  auto bus_expected = AudioBus::Create(handler->GetNumChannels(), /*frames=*/4);
+  size_t expected_frames_written = 0u;
+  ASSERT_TRUE(handler->CopyTo(bus_expected.get(), &expected_frames_written));
+  ASSERT_EQ(expected_frames_written, 4u);
+
+  // Reset to decode the same section again.
+  handler->Reset();
+
+  // Fill a second bus using multiple partial copies at varying offsets.
+  auto bus_actual = AudioBus::Create(handler->GetNumChannels(), /*frames=*/4);
+
+  size_t frames_written = 0u;
+
+  // Read 2 frames at offset 0.
+  ASSERT_TRUE(handler->CopyPartialFramesTo(bus_actual.get(), /*frame_count=*/2,
+                                           /*bus_start_frame=*/0,
+                                           &frames_written));
+  ASSERT_EQ(frames_written, 2u);
+
+  // Read remaining 2 frames at offset 2.
+  ASSERT_TRUE(handler->CopyPartialFramesTo(bus_actual.get(), /*frame_count=*/2,
+                                           /*bus_start_frame=*/2,
+                                           &frames_written));
+  ASSERT_EQ(frames_written, 2u);
+
+  // Compare the contents of the two buses.
+  for (auto [channel_actual, channel_expected] :
+       base::zip(bus_actual->AllChannels(), bus_expected->AllChannels())) {
+    EXPECT_EQ(channel_actual, channel_expected);
+  }
+}
+
+// Tests that when reaching the end of the stream, only the remainder of the
+// requested frame block is zeroed out, leaving the rest of the bus untouched.
+TEST(WavAudioHandlerTest, CopyPartialFramesToZeroesOnlyLeftoverFrames) {
+  std::string data(kTestAudioData, kTestAudioDataSize);
+  auto handler = WavAudioHandler::Create(base::as_byte_span(data));
+  ASSERT_TRUE(handler);
+  ASSERT_EQ(handler->total_frames_for_testing(), 1);
+
+  auto bus = AudioBus::Create(handler->GetNumChannels(), /*frames=*/5);
+  for (auto channel : bus->AllChannels()) {
+    std::ranges::fill(channel, 1.0f);
+  }
+
+  size_t frames_written = 0;
+  ASSERT_TRUE(handler->CopyPartialFramesTo(
+      bus.get(), /*frame_count=*/3, /*bus_start_frame=*/1, &frames_written));
+  ASSERT_EQ(frames_written, 1u);
+
+  for (auto channel : bus->AllChannels()) {
+    // Frame 0: Untouched (`bus_start_frame=1`).
+    EXPECT_FLOAT_EQ(channel[0], 1.0f);
+
+    // Frame 1: Valid data from WAV (not 0.0f, not 1.0f).
+    EXPECT_THAT(channel[1], AllOf(Ne(0.0f), Ne(1.0f)));
+
+    // Frame 2, 3: Zeroed because we asked for 3 frames (`frame_count=3`) but
+    // only had 1.
+    EXPECT_FLOAT_EQ(channel[2], 0.0f);
+    EXPECT_FLOAT_EQ(channel[3], 0.0f);
+
+    // Frame 4: Untouched.
+    EXPECT_FLOAT_EQ(channel[4], 1.0f);
+  }
 }
 
 }  // namespace media

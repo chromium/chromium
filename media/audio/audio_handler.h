@@ -40,6 +40,12 @@ class MEDIA_EXPORT AudioHandler {
   // where the previous `CopyTo()` stops.
   virtual bool CopyTo(AudioBus* bus, size_t* frames_written) = 0;
 
+  // Same as `CopyTo()`, but allows writing to a partial bus.
+  virtual bool CopyPartialFramesTo(AudioBus* bus,
+                                   int frame_count,
+                                   int bus_start_frame,
+                                   size_t* frames_written) = 0;
+
   // Restores initial state to the head of the stream.
   virtual void Reset() = 0;
 };

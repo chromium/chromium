@@ -78,21 +78,35 @@ bool FlacAudioHandler::AtEnd() const {
 }
 
 bool FlacAudioHandler::CopyTo(AudioBus* bus, size_t* frames_written) {
-  DCHECK(bus);
-  DCHECK(is_initialized());
+  CHECK(bus);
+  CHECK(is_initialized());
+  CHECK_EQ(bus->frames(), kDefaultFrameCount);
+
+  return CopyPartialFramesTo(bus, bus->frames(), /*bus_start_frame=*/0,
+                             frames_written);
+}
+
+bool FlacAudioHandler::CopyPartialFramesTo(AudioBus* bus,
+                                           int frame_count,
+                                           int bus_start_frame,
+                                           size_t* frames_written) {
+  CHECK(bus);
+  CHECK(is_initialized());
+  CHECK_EQ(bus->channels(), num_channels_);
+  CHECK_LE(bus_start_frame + frame_count, bus->frames());
+  CHECK_GE(frame_count, 0);
+  CHECK_GE(bus_start_frame, 0);
 
   if (AtEnd()) {
-    DCHECK_EQ(fifo_->frames(), 0u);
-    bus->Zero();
+    CHECK_EQ(fifo_->frames(), 0u);
+    bus->ZeroFramesPartial(bus_start_frame, frame_count);
+    *frames_written = 0;
     return true;
   }
 
-  DCHECK_EQ(bus->frames(), kDefaultFrameCount);
-  DCHECK_EQ(bus->channels(), num_channels_);
-
   // Records the number of frames copied into `bus`.
   size_t frames_copied = 0;
-  size_t bus_size = static_cast<size_t>(bus->frames());
+  size_t frames_to_copy = static_cast<size_t>(frame_count);
 
   do {
     if (fifo_->frames() == 0 && !AtEnd()) {
@@ -103,11 +117,19 @@ bool FlacAudioHandler::CopyTo(AudioBus* bus, size_t* frames_written) {
     }
 
     if (fifo_->frames() > 0u) {
-      const size_t frames = std::min(bus_size - frames_copied, fifo_->frames());
-      fifo_->Consume(bus, frames_copied, frames);
+      const size_t frames = std::min(frames_to_copy - frames_copied,
+                                     static_cast<size_t>(fifo_->frames()));
+
+      // Consume writes to `bus` starting at the requested offset
+      fifo_->Consume(bus, bus_start_frame + frames_copied, frames);
       frames_copied += frames;
     }
-  } while (!AtEnd() && frames_copied < bus_size);
+  } while (!AtEnd() && frames_copied < frames_to_copy);
+
+  if (frames_copied < frames_to_copy) {
+    bus->ZeroFramesPartial(bus_start_frame + frames_copied,
+                           frames_to_copy - frames_copied);
+  }
 
   *frames_written = frames_copied;
   return true;
