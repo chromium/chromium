@@ -236,6 +236,7 @@
       "chrome://contextual-tasks/*",
       "chrome://glic/*",
       "chrome://glic-fre/*",
+      "chrome://glic-experimental-opt-in/*",
       "chrome://graduation/*",
       "chrome://mobilesetup/*",
       "chrome://oobe/*",

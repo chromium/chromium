@@ -912,6 +912,19 @@ GlicEnabling::GetExperimentalTriggeringState() const {
   return syncer::DeviceInfo::GlicExperimentalTriggeringState::kNeedsOptIn;
 }
 
+RequiredExperimentalOptIn GlicEnabling::GetRequiredExperimentalOptIn() const {
+  if (!HasConsented()) {
+    return RequiredExperimentalOptIn::kGlic;
+  }
+  if (!GetUserEnabledActuationOnWeb()) {
+    return RequiredExperimentalOptIn::kActuation;
+  }
+  if (!GetExperimentalTriggeringEnabled()) {
+    return RequiredExperimentalOptIn::kExperimental;
+  }
+  return RequiredExperimentalOptIn::kNotNeeded;
+}
+
 void GlicEnabling::SetExperimentalTriggeringEnabled(bool enabled) {
   profile_->GetPrefs()->SetBoolean(prefs::kGlicExperimentalTriggeringEnabled,
                                    enabled);

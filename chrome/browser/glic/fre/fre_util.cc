@@ -29,19 +29,7 @@
 
 namespace glic {
 
-GURL GetFreURL(Profile* profile) {
-  // Use the corresponding command line argument as the URL, if available.
-  auto* command_line = base::CommandLine::ForCurrentProcess();
-  bool has_glic_fre_url = command_line->HasSwitch(::switches::kGlicFreURL);
-  GURL url =
-      GURL(has_glic_fre_url
-               ? command_line->GetSwitchValueASCII(::switches::kGlicFreURL)
-               : features::kGlicFreURL.Get());
-  if (url.is_empty()) {
-    LOG(ERROR) << "No glic fre url";
-    return GURL();
-  }
-
+GURL DecorateGlicFreUrl(Profile* profile, GURL url) {
 #if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
   // Add the hotkey configuration to the URL as a query parameter.
   std::string hotkey_param_value;
@@ -71,6 +59,21 @@ GURL GetFreURL(Profile* profile) {
 
   // Localize to Chrome UI language.
   return GetLocalizedGuestURL(url);
+}
+
+GURL GetFreURL(Profile* profile) {
+  // Use the corresponding command line argument as the URL, if available.
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  bool has_glic_fre_url = command_line->HasSwitch(::switches::kGlicFreURL);
+  GURL url =
+      GURL(has_glic_fre_url
+               ? command_line->GetSwitchValueASCII(::switches::kGlicFreURL)
+               : features::kGlicFreURL.Get());
+  if (url.is_empty()) {
+    LOG(ERROR) << "No glic fre url";
+    return GURL();
+  }
+  return DecorateGlicFreUrl(profile, url);
 }
 
 content::StoragePartitionConfig GetFreStoragePartitionConfig(

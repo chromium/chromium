@@ -207,6 +207,10 @@ BASE_FEATURE(kGlicExperimentalTriggering, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicExperimentalTriggeringOptInBypass,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<std::string> kGlicExperimentalTriggeringOptInURL{
+    &kGlicExperimentalTriggering, "glic-experimental-triggering-opt-in-url",
+    "https://gemini.google.com/glic/intro?"};
+
 const base::FeatureParam<base::TimeDelta> kGlicActorPageToolTimeout{
     &kGlicActor, "glic-actor-page-tool-timeout", base::Seconds(30)};
 

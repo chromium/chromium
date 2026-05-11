@@ -90,6 +90,13 @@ class GlicGlobalEnabling {
   std::optional<bool> country_enablement_;
 };
 
+enum class RequiredExperimentalOptIn {
+  kGlic,
+  kActuation,
+  kExperimental,
+  kNotNeeded,
+};
+
 // This class provides a central location for checking if Glic is enabled. It
 // allows for future expansion to include other ways the feature may be disabled
 // such as based on user preferences or system settings.
@@ -353,6 +360,9 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
   // Returns the state of experimental triggering.
   syncer::DeviceInfo::GlicExperimentalTriggeringState
   GetExperimentalTriggeringState() const;
+
+  // Returns the required opt-in state for experimental triggering.
+  RequiredExperimentalOptIn GetRequiredExperimentalOptIn() const;
 
   // Checks if startup metrics have already been recorded, and if not, records
   // them.

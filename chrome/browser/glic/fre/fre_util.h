@@ -15,6 +15,12 @@ class StoragePartitionConfig;
 
 namespace glic {
 
+// Decorates any Glic guest FRE URL (such as the Glic FRE URL or the
+// experimental opt-in URL) with standard dynamic environment parameters like
+// hotkeys, theme, and localization.
+GURL DecorateGlicFreUrl(Profile* profile, GURL url);
+
+// Returns fully-decorated Glic FRE URL.
 GURL GetFreURL(Profile* profile);
 
 // Returns the storage partition config used for the Glic first-run experience.
