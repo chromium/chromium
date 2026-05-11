@@ -321,6 +321,12 @@ template("single_gcc_toolchain") {
       md = "-MMD"
     }
 
+    # -fmodule-name is not supported by gcc.
+    module_name_flag = ""
+    if (is_clang) {
+      module_name_flag = " -fmodule-name=\"{{cc_module_name}}_Private\""
+    }
+
     enable_linker_map = defined(invoker.enable_linker_map) &&
                         invoker.enable_linker_map && generate_linker_map
 
@@ -336,8 +342,9 @@ template("single_gcc_toolchain") {
       depfile = "$output.d"
       precompiled_header_type = "gcc"
 
-      # {{output}} may contain .dwo file, so use $output instead of {{output}} in command.
-      command = "$coverage_wrapper$cc $md -MF $depfile {{defines}} {{include_dirs}} {{cflags}} {{cflags_c}}${extra_cppflags}${extra_cflags} -c {{source}} -o $output"
+      # {{output}} may contain .dwo file, so use $output instead of {{output}}
+      # in command.
+      command = "$coverage_wrapper$cc $md -MF $depfile {{defines}} {{include_dirs}} {{cflags}} {{cflags_c}}${extra_cppflags}${extra_cflags}${module_name_flag} -c {{source}} -o $output"
       depsformat = "gcc"
       description = "CC {{output}}"
       outputs = [ output ]
@@ -348,8 +355,9 @@ template("single_gcc_toolchain") {
       depfile = "$output.d"
       precompiled_header_type = "gcc"
 
-      # {{output}} may contain .dwo file, so use $output instead of {{output}} in command.
-      command = "$coverage_wrapper$cxx $md -MF $depfile {{defines}} {{include_dirs}} {{cflags}} {{cflags_cc}}${extra_cppflags}${extra_cxxflags} {{module_deps_no_self}} -c {{source}} -o $output"
+      # {{output}} may contain .dwo file, so use $output instead of {{output}}
+      # in command.
+      command = "$coverage_wrapper$cxx $md -MF $depfile {{defines}} {{include_dirs}} {{cflags}} {{cflags_cc}}${extra_cppflags}${extra_cxxflags} {{module_deps_no_self}}${module_name_flag} -c {{source}} -o $output"
       depsformat = "gcc"
       description = "CXX {{output}}"
       outputs = [ output ]
@@ -360,7 +368,7 @@ template("single_gcc_toolchain") {
 
       # Module file doesn't need coverage instrumentation because module files
       # represent interfaces rather than implementations.
-      command = "$cxx -MD -MF $depfile {{defines}} {{include_dirs}} {{cflags}} {{cflags_cc}}${extra_cppflags}${extra_cxxflags} {{module_deps_no_self}} -fmodule-name={{cc_module_name}} -x c++ -Xclang -emit-module -c {{source}} -o {{output}}"
+      command = "$cxx -MD -MF $depfile {{defines}} {{include_dirs}} {{cflags}} {{cflags_cc}}${extra_cppflags}${extra_cxxflags} {{module_deps_no_self}} -fmodule-name=\"{{cc_module_name}}\" -x c++ -Xclang -emit-module -c {{source}} -o {{output}}"
       depsformat = "gcc"
       description = "CXX_MODULE {{output}}"
       outputs = [ "$object_subdir/{{source_name_part}}.pcm" ]

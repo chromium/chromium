@@ -218,6 +218,12 @@ template("msvc_toolchain") {
       show_includes = "/showIncludes"
     }
 
+    # -fmodule-name is not supported by MSVC.
+    module_name_flag = ""
+    if (toolchain_is_clang) {
+      module_name_flag = " \"-fmodule-name={{cc_module_name}}_Private\""
+    }
+
     tool("cc") {
       precompiled_header_type = "msvc"
       pdbname = "{{target_out_dir}}/{{label_name}}_c.pdb"
@@ -231,7 +237,7 @@ template("msvc_toolchain") {
 
       # Note that the code coverage wrapper scripts assumes that {{source}}
       # comes immediately after /c.
-      command = "$coverage_wrapper$env_wrapper$cl /c {{source}} /nologo $show_includes $sys_include_flags{{defines}} {{include_dirs}} {{cflags}} {{cflags_c}} /Fo{{output}} /Fd\"$pdbname\""
+      command = "$coverage_wrapper$env_wrapper$cl /c {{source}} /nologo $show_includes $sys_include_flags{{defines}} {{include_dirs}} {{cflags}} {{cflags_c}}${module_name_flag} /Fo{{output}} /Fd\"$pdbname\""
     }
 
     tool("cxx_module") {
@@ -239,7 +245,7 @@ template("msvc_toolchain") {
       depsformat = "msvc"
       description = "CXX_MODULE {{output}}"
       outputs = [ "$object_subdir/{{source_name_part}}.pcm" ]
-      command = "$env_wrapper$cl /Fo{{output}} /nologo $show_includes $sys_include_flags{{defines}} {{include_dirs}} {{cflags}} {{cflags_cc}} {{module_deps_no_self}} /Fd\"$pdbname\" -fmodule-name={{cc_module_name}} /c -x c++ -Xclang -emit-module {{source}}"
+      command = "$env_wrapper$cl /Fo{{output}} /nologo $show_includes $sys_include_flags{{defines}} {{include_dirs}} {{cflags}} {{cflags_cc}} {{module_deps_no_self}} -fmodule-name=\"{{cc_module_name}}\" /Fd\"$pdbname\" /c -x c++ -Xclang -emit-module {{source}}"
     }
 
     tool("cxx") {
@@ -255,7 +261,7 @@ template("msvc_toolchain") {
 
       # Note that the code coverage wrapper scripts assumes that {{source}}
       # comes immediately after /c.
-      command = "$coverage_wrapper$env_wrapper$cl /c {{source}} /Fo{{output}} /nologo $show_includes $sys_include_flags{{defines}} {{include_dirs}} {{cflags}} /TP {{cflags_cc}} {{module_deps_no_self}} /Fd\"$pdbname\""
+      command = "$coverage_wrapper$env_wrapper$cl /c {{source}} /Fo{{output}} /nologo $show_includes $sys_include_flags{{defines}} {{include_dirs}} {{cflags}} {{cflags_cc}} /TP {{module_deps_no_self}}${module_name_flag} /Fd\"$pdbname\""
     }
 
     tool("rc") {
