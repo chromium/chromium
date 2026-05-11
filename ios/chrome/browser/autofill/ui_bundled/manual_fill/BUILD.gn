@@ -205,7 +205,6 @@ source_set("unit_tests") {
     "manual_fill_credit_card+CreditCard_unittest.mm",
     "manual_fill_credit_card_unittest.mm",
     "manual_fill_labeled_chip_unittest.mm",
-    "manual_fill_virtual_card_cache_unittest.mm",
     "password_view_controller_unittest.mm",
   ]
   deps = [
@@ -233,6 +232,7 @@ source_set("unit_tests") {
     "//components/test/ios",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/affiliations/model",
+    "//ios/chrome/browser/autofill/model",
     "//ios/chrome/browser/autofill/ui_bundled:bridges",
     "//ios/chrome/browser/autofill/ui_bundled:coordinator",
     "//ios/chrome/browser/device_reauth/model",
@@ -273,8 +273,6 @@ source_set("requesters") {
     "full_card_request_result_delegate_bridge.h",
     "manual_fill_full_card_requester.h",
     "manual_fill_full_card_requester.mm",
-    "manual_fill_virtual_card_cache.h",
-    "manual_fill_virtual_card_cache.mm",
   ]
   deps = [
     ":manual_fill_constants",

@@ -35,6 +35,8 @@ source_set("model") {
     "ios_autofill_field_classification_model_handler_factory.mm",
     "ios_wallet_pass_access_manager_factory.h",
     "ios_wallet_pass_access_manager_factory.mm",
+    "manual_fill_virtual_card_cache.h",
+    "manual_fill_virtual_card_cache.mm",
     "personal_data_manager_factory.h",
     "personal_data_manager_factory.mm",
     "strike_database_factory.h",
@@ -201,6 +203,7 @@ source_set("unit_tests") {
     "form_input_accessory_view_handler_unittest.mm",
     "form_structure_browsertest.mm",
     "form_suggestion_controller_unittest.mm",
+    "manual_fill_virtual_card_cache_unittest.mm",
     "suggestion_controller_java_script_feature_unittest.mm",
   ]
   deps = [
@@ -244,6 +247,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/autofill/model/bottom_sheet",
     "//ios/chrome/browser/autofill/model/bottom_sheet:save_card_bottom_sheet_model",
     "//ios/chrome/browser/autofill/ui_bundled:coordinator",
+    "//ios/chrome/browser/autofill/ui_bundled/manual_fill",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/passwords/model",
     "//ios/chrome/browser/settings/ui_bundled:test_support",
@@ -251,6 +255,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/ssl/model",
     "//ios/chrome/browser/sync/model",

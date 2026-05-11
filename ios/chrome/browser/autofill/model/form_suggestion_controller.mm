@@ -17,6 +17,7 @@
 #import "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_prefs.h"
+#import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
 #import "components/autofill/ios/common/features.h"
@@ -28,11 +29,13 @@
 #import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/model/form_input_navigator.h"
 #import "ios/chrome/browser/autofill/model/form_input_suggestions_provider.h"
+#import "ios/chrome/browser/autofill/model/manual_fill_virtual_card_cache.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/web/common/url_scheme_util.h"
+#import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/web_state.h"
@@ -564,6 +567,20 @@ bool IsRequestDedupingAllowed() {
   // sheet dismiss count to 0.
   if (provider.type == SuggestionProviderTypePassword) {
     [self resetCredentialBottomSheetDismissCount];
+  }
+
+  if (suggestion.type == autofill::SuggestionType::kVirtualCreditCardEntry) {
+    if (_webState) {
+      ManualFillVirtualCardCache::CreateForWebState(_webState);
+      web::WebFrame* frame =
+          autofill::AutofillJavaScriptFeature::GetInstance()
+              ->GetWebFramesManager(_webState)
+              ->GetFrameWithId(suggestionState.frame_identifier);
+      if (frame) {
+        ManualFillVirtualCardCache::FromWebState(_webState)->SetUnmaskingOrigin(
+            frame->GetSecurityOrigin());
+      }
+    }
   }
 
   // Send the suggestion to the provider. Upon completion advance the cursor
