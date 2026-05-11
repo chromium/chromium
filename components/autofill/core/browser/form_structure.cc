@@ -593,6 +593,8 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
   form_parsed_timestamp_ =
       std::min(form_parsed_timestamp_, cached_form.form_parsed_timestamp_);
   last_filling_timestamp_ = cached_form.last_filling_timestamp_;
+  server_predictions_received_timestamp_ =
+      cached_form.server_predictions_received_timestamp_;
 
   // The form signature should match between query and upload requests to the
   // server. On many websites, form elements are dynamically added, removed, or

@@ -909,6 +909,7 @@ void AutofillManager::OnLoadedServerPredictions(
     base::span<const FormData> forms,
     base::TimeTicks form_seen_timestamp,
     std::optional<AutofillCrowdsourcingManager::QueryResponse> response) {
+  base::TimeTicks predictions_received_timestamp = base::TimeTicks::Now();
   if (!form_seen_timestamp.is_null()) {
     base::UmaHistogramTimes(
         "Autofill.TimingInterval.FormsSeen.LoadedServerPredictions",
@@ -951,6 +952,8 @@ void AutofillManager::OnLoadedServerPredictions(
       }
 
       queried_forms.emplace_back(*form_structure);
+      form_structure->set_server_predictions_received_timestamp(
+          predictions_received_timestamp);
       server_predictions.ApplyTo(*form_structure);
       form_structure->RationalizeAndAssignSections(
           client().GetVariationConfigCountryCode(), GetCurrentPageLanguage(),

@@ -1951,6 +1951,18 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram
+    name="Autofill.Ai.TimingInterval.LoadedServerPredictionsToSuggestionsShown"
+    units="ms" expires_after="2026-11-01">
+  <owner>vizcay@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the time elapsed from when Chrome receives Autofill server
+    predictions to the first time the user interacts with any Autofill AI form
+    on the page and sees suggestions. Logged at most once per page.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Ai.WalletContextualSurfacingEnabled" enum="Boolean"
     expires_after="2026-12-12">
   <owner>jihadghanna@google.com</owner>

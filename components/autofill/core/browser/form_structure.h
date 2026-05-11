@@ -246,6 +246,13 @@ class FormStructure {
     last_filling_timestamp_ = last_filling_timestamp;
   }
 
+  base::TimeTicks server_predictions_received_timestamp() const {
+    return server_predictions_received_timestamp_;
+  }
+  void set_server_predictions_received_timestamp(base::TimeTicks timestamp) {
+    server_predictions_received_timestamp_ = timestamp;
+  }
+
   bool may_run_autofill_ai_model() const { return may_run_autofill_ai_model_; }
 
   void set_may_run_autofill_ai_model(bool may_run_autofill_ai_model) {
@@ -405,6 +412,9 @@ class FormStructure {
 
   // The timestamp when this form or one of its fields was last filled.
   std::optional<base::TimeTicks> last_filling_timestamp_;
+
+  // The timestamp when server predictions were received for this form.
+  base::TimeTicks server_predictions_received_timestamp_;
 
   mojom::SubmissionSource submission_source_ = mojom::SubmissionSource::NONE;
 

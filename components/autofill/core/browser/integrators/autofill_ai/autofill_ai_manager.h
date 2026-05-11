@@ -228,6 +228,10 @@ class AutofillAiManager {
       user_suggestion_interactions_per_form_{
           kSuggestionInteractionCacheMaxSize};
 
+  // Tracks the UKM source ID for which the suggestions shown timing metric was
+  // last logged, ensuring it is logged at most once per page.
+  ukm::SourceId last_logged_ukm_source_id_ = ukm::kInvalidSourceId;
+
   base::WeakPtrFactory<AutofillAiManager> weak_ptr_factory_{this};
 };
 
