@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/composebox/coordinator/composebox_input_plate_mediator.h"
 
 #import <PDFKit/PDFKit.h>
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 #import <memory>
 #import <queue>
@@ -1989,9 +1990,24 @@ class QueryContextualizerDelegateBridge
     // that it can listen to all file upload events.
     [self onFileContextAdded:serverToken forIdentifier:identifier];
     std::string fileName = base::SysNSStringToUTF8(item.title);
+    std::string mimeType;
+    if (item.type == ComposeboxInputItemType::kComposeboxInputItemTypeRawFile) {
+      mimeType = "application/octet-stream";
+      NSURL* nsURL = net::NSURLWithGURL(url);
+      if (nsURL) {
+        UTType* contentType = nil;
+        [nsURL getResourceValue:&contentType
+                                forKey:NSURLContentTypeKey
+                                 error:nil];
+        if (contentType.preferredMIMEType) {
+          mimeType = base::SysNSStringToUTF8(contentType.preferredMIMEType);
+        }
+      }
+    } else {
+      mimeType = kAdobePortableDocumentFormatMimeType;
+    }
     _contextualSearchSession->StartFileContextUploadFlow(
-        serverToken, fileName, kAdobePortableDocumentFormatMimeType,
-        std::move(buffer),
+        serverToken, fileName, mimeType, std::move(buffer),
         /*image_options=*/std::nullopt);
     [self notifyContextChanged];
   }
