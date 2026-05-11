@@ -6407,7 +6407,7 @@
     "owners": [
       "ssolarewicz@chromium.com", "cec-growth-eng@google.com"
     ],
-    "expiry_milestone": 150
+    "expiry_milestone": 155
   },
   {
     "name": "magic-boost-revamp-for-quick-answers",
