@@ -4163,7 +4163,7 @@ ci.builder(
             ),
             "components_browsertests": targets.mixin(
                 swarming = targets.swarming(
-                    shards = 23,
+                    shards = 3,
                 ),
             ),
             "chrome_public_test_apk": targets.mixin(
