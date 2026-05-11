@@ -556,7 +556,7 @@ public class BookmarkBarCoordinatorTest {
     @Test
     @SmallTest
     public void testUpdateBackgroundColor_SetsModelProperties_Incognito() {
-        PropertyModel bookmarBarModel = mCoordinator.getModelForTesting();
+        PropertyModel bookmarkBarModel = mCoordinator.getModelForTesting();
 
         when(mCurrentTab.isIncognito()).thenReturn(true);
         when(mTopUiThemeColorProvider.getToolbarBackgroundColor(mCurrentTab))
@@ -577,21 +577,21 @@ public class BookmarkBarCoordinatorTest {
         assertEquals(
                 "Hairline color should be set to the dark divider color.",
                 expectedDarkHairline,
-                bookmarBarModel.get(BookmarkBarProperties.HAIRLINE_COLOR));
+                bookmarkBarModel.get(BookmarkBarProperties.HAIRLINE_COLOR));
         assertEquals(
                 "Divider color should be set to the dark divider color.",
                 expectedDarkHairline,
-                bookmarBarModel.get(BookmarkBarProperties.DIVIDER_COLOR));
+                bookmarkBarModel.get(BookmarkBarProperties.DIVIDER_COLOR));
         assertEquals(
                 "Overflow tint should be set to the light tint.",
                 expectedLightTint,
-                bookmarBarModel.get(BookmarkBarProperties.OVERFLOW_BUTTON_TINT_LIST));
+                bookmarkBarModel.get(BookmarkBarProperties.OVERFLOW_BUTTON_TINT_LIST));
     }
 
     @Test
     @SmallTest
     public void testUpdateBackgroundColor_SetsModelProperties_RegularLightTheme() {
-        PropertyModel bookmarBarModel = mCoordinator.getModelForTesting();
+        PropertyModel bookmarkBarModel = mCoordinator.getModelForTesting();
 
         // Simulate being on a regular light theme tab (BrandedColorScheme.APP_DEFAULT).
         when(mCurrentTab.isIncognito()).thenReturn(false);
@@ -613,15 +613,15 @@ public class BookmarkBarCoordinatorTest {
         assertEquals(
                 "Hairline color should be set for regular light theme.",
                 expectedDarkHairline,
-                bookmarBarModel.get(BookmarkBarProperties.HAIRLINE_COLOR));
+                bookmarkBarModel.get(BookmarkBarProperties.HAIRLINE_COLOR));
         assertEquals(
                 "Divider color should be set for regular light theme.",
                 expectedDarkHairline,
-                bookmarBarModel.get(BookmarkBarProperties.DIVIDER_COLOR));
+                bookmarkBarModel.get(BookmarkBarProperties.DIVIDER_COLOR));
         assertEquals(
                 "Overflow tint should be set for regular light theme.",
                 expectedDarkTint,
-                bookmarBarModel.get(BookmarkBarProperties.OVERFLOW_BUTTON_TINT_LIST));
+                bookmarkBarModel.get(BookmarkBarProperties.OVERFLOW_BUTTON_TINT_LIST));
     }
 
     @Test
