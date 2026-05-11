@@ -182,6 +182,7 @@ source_set("impl") {
       "//chrome/browser/ui/tabs:tab_menu",
       "//chrome/browser/web_applications:features",
       "//chrome/browser/web_applications/app_service",
+      "//chrome/browser/web_applications/isolated_web_apps/window_management",
       "//chrome/browser/web_share_target",
       "//components/infobars/content",
       "//components/keep_alive_registry",

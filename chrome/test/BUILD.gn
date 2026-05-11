@@ -5082,6 +5082,7 @@ if (!is_android) {
         "//chrome/browser/ui/tabs/alert:tab_alert",
         "//chrome/browser/ui/views/web_apps:browser_tests",
         "//chrome/browser/web_applications/extensions",
+        "//chrome/browser/web_applications/isolated_web_apps/window_management",
         "//chrome/common/extensions/api",
         "//chrome/renderer/controlled_frame",
         "//chrome/services/media_gallery_util/public/cpp:browser_tests",

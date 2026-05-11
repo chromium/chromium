@@ -3460,6 +3460,8 @@ static_library("browser") {
       "//chrome/browser/dictation",
       "//chrome/browser/dictation:impl",
       "//chrome/browser/payments:impl",
+      "//chrome/browser/web_applications/isolated_web_apps/window_management",
+      "//chrome/browser/web_applications/isolated_web_apps/window_management:impl",
       "//chrome/browser/webapps:desktop",
       "//chrome/browser/webapps:desktop_impl",
     ]
@@ -3485,15 +3487,6 @@ static_library("browser") {
       "process_singleton_startup_lock.h",
       "repost_form_warning_controller.cc",
       "repost_form_warning_controller.h",
-    ]
-
-    sources += [
-      "web_applications/isolated_web_apps/window_management/isolated_web_apps_window_open_permission_service.cc",
-      "web_applications/isolated_web_apps/window_management/isolated_web_apps_window_open_permission_service.h",
-      "web_applications/isolated_web_apps/window_management/isolated_web_apps_window_open_permission_service_delegate.cc",
-      "web_applications/isolated_web_apps/window_management/isolated_web_apps_window_open_permission_service_delegate.h",
-      "web_applications/isolated_web_apps/window_management/isolated_web_apps_window_open_permission_service_factory.cc",
-      "web_applications/isolated_web_apps/window_management/isolated_web_apps_window_open_permission_service_factory.h",
     ]
 
     #!is_android

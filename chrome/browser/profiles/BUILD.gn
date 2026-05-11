@@ -821,6 +821,7 @@ source_set("profiles_extra_parts_impl") {
       "//chrome/browser/ui/webui/signin",
       "//chrome/browser/ui/webui/signin:login_ui_service",
       "//chrome/browser/user_education",
+      "//chrome/browser/web_applications/isolated_web_apps/window_management",
     ]
   }
   if (is_chromeos) {

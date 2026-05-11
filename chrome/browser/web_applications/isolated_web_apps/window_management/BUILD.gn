@@ -1,0 +1,39 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("window_management") {
+  public = [
+    "isolated_web_apps_window_open_permission_service.h",
+    "isolated_web_apps_window_open_permission_service_factory.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/web_applications",
+    "//components/keyed_service/core",
+    "//components/webapps/isolated_web_apps/service",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "isolated_web_apps_window_open_permission_service.cc",
+    "isolated_web_apps_window_open_permission_service_delegate.cc",
+    "isolated_web_apps_window_open_permission_service_delegate.h",
+    "isolated_web_apps_window_open_permission_service_factory.cc",
+  ]
+
+  deps = [
+    ":window_management",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/notifications",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/web_applications",
+    "//components/webapps/common",
+    "//content/public/browser",
+    "//ui/base",
+    "//ui/message_center/public/cpp",
+  ]
+}
