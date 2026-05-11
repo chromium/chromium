@@ -7,7 +7,6 @@
 #include "base/types/to_address.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/defaults.h"
-#include "chrome/browser/extensions/extension_url_overrides.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
@@ -52,11 +51,7 @@ bool IsShowingNTP(content::WebContents* web_contents) {
   if (entry->IsInitialEntry()) {
     entry = web_contents->GetController().GetVisibleEntry();
   }
-  GURL url = entry->GetURL();
-  // Attempt reverse lookup of the url in case an extension overrode the new tab
-  // page. This function updates the url parameter in place.
-  ExtensionUrlOverrides::HandleChromeURLOverrideReverse(
-      &url, web_contents->GetBrowserContext());
+  const GURL& url = entry->GetURL();
   return NewTabUI::IsNewTab(url) || NewTabPageUI::IsNewTabPageOrigin(url) ||
          NewTabPageThirdPartyUI::IsNewTabPageOrigin(url) ||
          search::NavEntryIsInstantNTP(web_contents, entry);

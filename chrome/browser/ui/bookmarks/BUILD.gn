@@ -66,7 +66,6 @@ source_set("impl") {
     "//chrome/app:command_ids",
     "//chrome/browser:browser_features",
     "//chrome/browser/bookmarks",
-    "//chrome/browser/extensions",
     "//chrome/browser/prefs",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/renderer_host",
