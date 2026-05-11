@@ -18,6 +18,7 @@
 #include "RawPtrHelpers.h"
 #include "SeparateRepositoryPaths.h"
 #include "SpanifyManualPathsToIgnore.h"
+#include "angle_project.h"
 #include "chrome_project.h"
 #include "clang/AST/ASTContext.h"
 #include "clang/ASTMatchers/ASTMatchFinder.h"
@@ -57,6 +58,7 @@ const Project* GetProject() {
   static constexpr SkiaProject kSkiaProject;
   static constexpr DawnProject kDawnProject;
   static constexpr WebrtcProject kWebrtcProject;
+  static constexpr AngleProject kAngleProject;
   switch (g_project) {
     case ProjectName::kChrome:
       return &kChromeProject;
@@ -68,6 +70,8 @@ const Project* GetProject() {
       return &kDawnProject;
     case ProjectName::kWebrtc:
       return &kWebrtcProject;
+    case ProjectName::kAngle:
+      return &kAngleProject;
     default:
       llvm_unreachable("Unhandled project type in GetProject()");
   }

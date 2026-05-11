@@ -192,7 +192,9 @@ def main():
     total_passed = 0
     total_failed = 0
 
-    for project in ['chrome', 'partition_alloc', 'skia', 'dawn', 'webrtc']:
+    for project in [
+            'chrome', 'partition_alloc', 'skia', 'dawn', 'webrtc', 'angle'
+    ]:
         passed, failed = RunTestsForProject(spanify_dir, scripts_dir, src_dir,
                                             project)
         total_passed += passed
