@@ -112,9 +112,9 @@ class GlicGlobalEnabling {
 // Finally, an eligible profile may be Glic-Enabled. In this state, Glic UI is
 // visible and usable by the user. This state can change at runtime so Glic
 // entry points should depend on this state.
-class GlicEnabling final : public signin::IdentityManager::Observer,
-                           public subscription_eligibility::
-                               SubscriptionEligibilityService::Observer {
+class GlicEnabling : public signin::IdentityManager::Observer,
+                     public subscription_eligibility::
+                         SubscriptionEligibilityService::Observer {
  public:
   // Returns whether the global Glic feature is enabled for Chrome. This status
   // will not change at runtime.
@@ -399,10 +399,6 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
   base::CallbackListSubscription RegisterOnExperimentalTriggeringEnabledChanged(
       ExperimentalTriggeringEnabledChangedCallback callback);
 
-  using ExperimentalTriggeringStateChangedCallback = base::RepeatingClosure;
-  base::CallbackListSubscription RegisterOnExperimentalTriggeringStateChanged(
-      ExperimentalTriggeringStateChangedCallback callback);
-
   // This is called anytime ShouldShowSettingsPage() might return a different
   // value.
   using ShowSettingsPageChangedCallback = base::RepeatingClosure;
@@ -417,7 +413,6 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
   void OnGlicSettingsPolicyChanged();
   void OnUserEnabledActuationOnWebChanged();
   void OnExperimentalTriggeringEnabledChanged();
-  void MaybeNotifyExperimentalTriggeringStateChanged();
 
   // IdentityManagerObserver:
   void OnPrimaryAccountChanged(
@@ -466,10 +461,6 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
       base::RepeatingCallbackList<void()>;
   ExperimentalTriggeringEnabledChangedCallbackList
       experimental_triggering_enabled_changed_callback_list_;
-  using ExperimentalTriggeringStateChangedCallbackList =
-      base::RepeatingCallbackList<void()>;
-  ExperimentalTriggeringStateChangedCallbackList
-      experimental_triggering_state_changed_callback_list_;
   using OnShowSettingsPageChangeCallbackList =
       base::RepeatingCallbackList<void()>;
   OnShowSettingsPageChangeCallbackList
@@ -487,8 +478,6 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
       subscription_eligibility::SubscriptionEligibilityService,
       subscription_eligibility::SubscriptionEligibilityService::Observer>
       subscription_eligibility_service_observation_{this};
-  syncer::DeviceInfo::GlicExperimentalTriggeringState
-      last_experimental_triggering_state_;
 };
 
 }  // namespace glic

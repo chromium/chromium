@@ -282,8 +282,6 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
 
   void FinishPreload(GlicPrewarmingChecksResult reason);
 
-  void OnExperimentalTriggeringStateChanged();
-
   // List of callbacks to be notified when the client requests a change to the
   // context access indicator status.
   base::RepeatingCallbackList<void(bool)>
@@ -317,8 +315,6 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
 
   std::unique_ptr<GlicTabDataObserver> tab_data_observer_;
   std::unique_ptr<GlicTabFaviconObserver> tab_favicon_observer_;
-
-  base::CallbackListSubscription experimental_triggering_state_subscription_;
 
   base::WeakPtrFactory<GlicKeyedService> weak_ptr_factory_{this};
 };
