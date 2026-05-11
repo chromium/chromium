@@ -39,7 +39,8 @@ bool EnsureAuthorizationRightExists() {
       right_definition) {
     CFStringRef rule = base::apple::GetValueFromDictionary<CFStringRef>(
         right_definition.get(), CFSTR("rule"));
-    if (CFEqual(rule, CFSTR(kAuthorizationRuleAuthenticateAsSessionUser))) {
+    if (rule &&
+        CFEqual(rule, CFSTR(kAuthorizationRuleAuthenticateAsSessionUser))) {
       return true;
     }
   }
