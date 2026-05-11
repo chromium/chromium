@@ -246,6 +246,7 @@ source_set("test_sources") {
     "//base",
     "//base/test:test_support",
     "//build:blink_buildflags",
+    "//build:chromeos_buildflags",
     "//mojo:buildflags",
     "//mojo/core:embedder_internal",
     "//mojo/core/embedder",

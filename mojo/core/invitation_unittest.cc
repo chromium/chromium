@@ -33,6 +33,7 @@
 #include "base/test/multiprocess_test.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "mojo/buildflags.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/ipcz_api.h"
@@ -873,7 +874,17 @@ TEST_F(MAYBE_InvitationTest, SendIsolatedInvitationWithDuplicateName) {
   EXPECT_EQ(MOJO_RESULT_OK, MojoClose(pipe1));
 }
 
-TEST_F(MAYBE_InvitationTest, SendIsolatedInvitationToSelf) {
+// TODO(crbug.com/504855187): Flaky due to a race condition in isolated
+// self-connections where MergePortEvent bypasses the channel and arrives before
+// OnAcceptPeer updates the expected peer name. Disabled on ChromeOS devices due
+// to high retry cost on cros_test_platform. Preserves coverage on
+// linux-chromeos-chrome, linux-chromeos-rel, and etc.
+#if BUILDFLAG(IS_CHROMEOS_DEVICE)
+#define MAYBE_SendIsolatedInvitationToSelf DISABLED_SendIsolatedInvitationToSelf
+#else
+#define MAYBE_SendIsolatedInvitationToSelf SendIsolatedInvitationToSelf
+#endif
+TEST_F(MAYBE_InvitationTest, MAYBE_SendIsolatedInvitationToSelf) {
   if (IsMojoIpczEnabled()) {
     GTEST_SKIP() << "MojoIpcz does not support nodes sending isolated "
                  << "invitations to themselves.";
