@@ -5780,6 +5780,9 @@ const char kChromeAppStoreUrl[] =
 }
 
 - (void)showDownloadList {
+  if (self.downloadListCoordinator) {
+    [self hideDownloadList];
+  }
   self.downloadListCoordinator = [[DownloadListCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser];
