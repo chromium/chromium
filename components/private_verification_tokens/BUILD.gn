@@ -7,6 +7,7 @@ import("//testing/test.gni")
 source_set("unit_tests") {
   testonly = true
   deps = [
+    "//components/private_verification_tokens/common:private_verification_tokens_database_unittest",
     "//components/private_verification_tokens/common:private_verification_tokens_fetcher_unittest",
     "//components/private_verification_tokens/common:private_verification_tokens_public_key_unittest",
     "//components/private_verification_tokens/common:private_verification_tokens_token_unittest",

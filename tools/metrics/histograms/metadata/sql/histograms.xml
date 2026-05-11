@@ -78,6 +78,8 @@ chromium-metrics-reviews@google.com.
   <variant name="PowerBookmarks" summary="PowerBookmarks"/>
   <variant name="Predictor" summary="Predictor"/>
   <variant name="PrivateAggregation" summary="PrivateAggregation"/>
+  <variant name="PrivateVerificationTokens"
+      summary="PrivateVerificationTokens"/>
   <variant name="Quota" summary="Quota"/>
   <variant name="RazeNullDB" summary="RazeNullDB"/>
   <variant name="Recovery" summary="Recovery"/>

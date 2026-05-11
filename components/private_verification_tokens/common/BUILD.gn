@@ -67,3 +67,29 @@ source_set("private_verification_tokens_fetcher_unittest") {
     "//url",
   ]
 }
+
+source_set("private_verification_tokens_database") {
+  sources = [
+    "private_verification_tokens_database.cc",
+    "private_verification_tokens_database.h",
+  ]
+  public_deps = [ ":private_verification_tokens_public_key" ]
+  deps = [
+    "//base",
+    "//sql",
+  ]
+}
+
+source_set("private_verification_tokens_database_unittest") {
+  testonly = true
+  sources = [ "private_verification_tokens_database_unittest.cc" ]
+  deps = [
+    ":private_verification_tokens_database",
+    "//base",
+    "//base/test:test_support",
+    "//sql",
+    "//sql:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
