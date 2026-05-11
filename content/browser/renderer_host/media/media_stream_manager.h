@@ -784,18 +784,19 @@ class CONTENT_EXPORT MediaStreamManager
       int page_request_id,
       PermissionResult permission_result);
 
-  // Start tracking capture-handle changes for tab-capture.
+  // Start tracking capture-handle changes for tab and window capture.
   void MaybeStartTrackingCaptureHandleConfig(
       const std::string& label,
       const blink::MediaStreamDevice& captured_device,
       DeviceRequest& request);
 
-  // Stop tracking capture-handle changes for tab-capture.
+  // Stop tracking capture-handle changes for tab and window capture.
   void MaybeStopTrackingCaptureHandleConfig(
       const std::string& label,
       const blink::MediaStreamDevice& captured_device);
 
-  // When device changes, update which tabs' capture-handles are tracked.
+  // When device changes, update which tabs/windows' capture-handles are
+  // tracked.
   void MaybeUpdateTrackedCaptureHandleConfigs(
       const std::string& label,
       const blink::mojom::StreamDevicesSet& new_stream_devices_set,
@@ -869,7 +870,7 @@ class CONTENT_EXPORT MediaStreamManager
   // * Otherwise, the capturing tab will capture itself.
   std::optional<WebContentsMediaCaptureId> fake_ui_factory_captured_tab_id_;
 
-  // Observes changes of captured tabs' CaptureHandleConfig and reports
+  // Observes changes of captured tabs/windows' CaptureHandleConfig and reports
   // this changes back to their capturers. This object lives on the UI thread
   // and must be accessed on it and torn down from it.
   CaptureHandleManager capture_handle_manager_;
