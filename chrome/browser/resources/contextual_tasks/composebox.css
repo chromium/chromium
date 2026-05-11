@@ -549,7 +549,8 @@
       + var(--composebox-submit-container-inline-end));
 }
 
-:host([energy-effect-enabled_])#composebox::part(voice-submit-button) {
+:host([voice-search-coherence-enabled_])
+    #composebox::part(voice-submit-button) {
   --cr-composebox-submit-icon-offset: 0;
 }
 
