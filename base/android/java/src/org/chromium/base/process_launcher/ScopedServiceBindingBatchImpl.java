@@ -89,21 +89,18 @@ import org.chromium.build.annotations.Nullable;
     }
 
     static boolean tryActivate(Handler launcherHandler) {
-        // BaseFeatureList.sRebindingChildServiceConnectionController.isEnabled() is checked instead
-        // of RebindingChildServiceConnectionController.isEnabled() to bypass
-        // AconfigFlaggedApiDelegate check in test.
-        boolean isFeatureEnabled =
-                BaseFeatureList.sRebindingChildServiceConnectionController.isEnabled()
-                        && BaseFeatureList.sRebindServiceBatchApi.isEnabled();
-        if (!isFeatureEnabled) {
-            return false;
-        }
         assert sContextHolder == null : "ScopedServiceBindingBatchImpl was already activated.";
 
         BindingRequestQueue queue;
         if (sBindingRequestQueueForTesting == null) {
             AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
             if (delegate == null || !delegate.isUpdateServiceBindingApiAvailable()) {
+                return false;
+            }
+            boolean isFeatureEnabled =
+                    BaseFeatureList.sRebindingChildServiceConnectionController.isEnabled()
+                            && BaseFeatureList.sRebindServiceBatchApi.isEnabled();
+            if (!isFeatureEnabled) {
                 return false;
             }
             queue = delegate.getBindingRequestQueue();

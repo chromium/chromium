@@ -192,6 +192,7 @@ public class ScopedServiceBindingBatchImplTest {
     @Test
     @Features.DisableFeatures(BaseFeatures.REBIND_SERVICE_BATCH_API)
     public void testFeatureDisabled() {
+        ScopedServiceBindingBatchImpl.setBindingRequestQueueForTesting(null);
         assertFalse(ScopedServiceBindingBatchImpl.tryActivate(mLauncherHandler));
 
         try (ScopedServiceBindingBatchImpl batch = ScopedServiceBindingBatchImpl.scoped()) {
