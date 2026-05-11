@@ -282,11 +282,19 @@ void ActorTask::SetState(State new_state) {
   }
 
   // Stopped tasks are tracked separately as they need to store additional
-  // information before they're cleared.
+  // stopped_reason_ before they're cleared.
   if (!stopped_reason_) {
+    ActorTask::State ui_task_state = new_state;
+    // TODO(crbug.com/484367299): Implement a proper actor task state for
+    // interrupt-with-user-control.
+    if (base::FeatureList::IsEnabled(kActorFormScriptToolInterrupt) &&
+        new_state == kWaitingOnUser && interrupted_task_needs_user_control_) {
+      ui_task_state = kPausedByActor;
+    }
     ui_event_dispatcher_->OnActorTaskSyncChange(
-        ui::UiEventDispatcher::ChangeTaskState{
-            .task_id = id_, .old_state = old_state, .new_state = new_state});
+        ui::UiEventDispatcher::ChangeTaskState{.task_id = id_,
+                                               .old_state = old_state,
+                                               .new_state = ui_task_state});
   }
   service_->NotifyTaskStateChanged(*this);
 
@@ -490,10 +498,12 @@ void ActorTask::Resume() {
   SetState(State::kReflecting);
 }
 
-void ActorTask::Interrupt() {
+void ActorTask::Interrupt(bool retain_user_control) {
   if (GetState() != State::kReflecting && GetState() != State::kActing) {
     return;
   }
+  interrupted_task_needs_user_control_ = retain_user_control;
+  execution_engine_->PauseOngoingActions();
   SetState(State::kWaitingOnUser);
 }
 
@@ -501,6 +511,7 @@ void ActorTask::Uninterrupt(State resumed_state) {
   if (GetState() != State::kWaitingOnUser) {
     return;
   }
+  interrupted_task_needs_user_control_ = false;
   SetState(resumed_state);
   execution_engine_->DidUninterruptTask();
 }
@@ -531,11 +542,13 @@ bool ActorTask::CancelOngoingActions(mojom::ActionResultCode reason) {
 
 bool ActorTask::IsUnderUserControl() const {
   return GetState() == State::kPausedByActor ||
-         GetState() == State::kPausedByUser;
+         GetState() == State::kPausedByUser ||
+         interrupted_task_needs_user_control_;
 }
 
 bool ActorTask::IsUnderActorControl() const {
-  return IsStateActorControlled(state_);
+  return IsStateActorControlled(state_) &&
+         !interrupted_task_needs_user_control_;
 }
 
 bool ActorTask::IsCompleted() const {

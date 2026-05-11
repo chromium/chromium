@@ -6,6 +6,7 @@
 
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
+#include "components/actor/core/actor_features.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 
@@ -38,8 +39,14 @@ void ActorScriptToolReceiver::PauseExecution() {
   if (const auto* task =
           service->GetActingActorTaskForWebContents(web_contents)) {
     if (auto* mutable_task = service->GetTask(task->id())) {
-      mutable_task->Pause(/*from_actor=*/true,
-                          /*cancel_existing_action=*/false);
+      // TODO(crbug.com/484367299): Implement a proper actor task state for
+      // interrupt-with-user-control.
+      if (base::FeatureList::IsEnabled(kActorFormScriptToolInterrupt)) {
+        mutable_task->Interrupt(/*retain_user_control*/ true);
+      } else {
+        mutable_task->Pause(/*from_actor=*/true,
+                            /*cancel_existing_action=*/false);
+      }
     }
   }
 }
