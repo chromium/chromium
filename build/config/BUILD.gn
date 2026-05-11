@@ -420,9 +420,17 @@ config("precompiled_headers") {
   }
 }
 
-# Add this config to link steps in order to compress debug sections. This is
-# especially useful on 32-bit architectures in order to keep file sizes under
-# 4gb.
-config("compress_debug_sections") {
-  ldflags = [ "-gz" ]
+# Flag is specific to ELF binaries.
+if (!is_win && !is_mac && !is_ios) {
+  config("compress_debug_sections") {
+    # Use zstd only for Android since debug info is used only in offline
+    # contexts there. For other platforms, and for official builds, use
+    # gzip for best compatibility.
+    # Also for arm32, since unwind_table_v2() doesn't support it.
+    if (is_android && !is_official_build && current_cpu != "arm") {
+      ldflags = [ "-gz=zstd" ]
+    } else {
+      ldflags = [ "-gz" ]
+    }
+  }
 }

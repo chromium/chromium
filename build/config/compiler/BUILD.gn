@@ -3051,6 +3051,13 @@ config("minimal_symbols") {
       cflags += [ "-fdebug-info-for-profiling" ]
     }
 
+    # Compressing debug info speeds up "isolate tests" step (https://crbug.com/503797275)
+    # TODO(crbug.com/510291227): Enabling for linux & chromeos breaks
+    # sandbox_linux_unittests's BaselinePolicy tests. Figure out why.
+    if (is_android) {
+      configs += [ "//build/config:compress_debug_sections" ]
+    }
+
     asmflags = cflags
   }
   rustflags += [ "-Cdebuginfo=1" ]
