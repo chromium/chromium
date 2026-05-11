@@ -1324,6 +1324,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Navigation.GestureTransition.IgnoredInputCount.{Reason}.{Position}"
     units="count" expires_after="2026-06-21">
+  <owner>acondor@google.com</owner>
   <owner>liuwilliam@google.com</owner>
   <owner>baranerf@google.com</owner>
   <owner>chrome-seamless-core@google.com</owner>
@@ -1358,6 +1359,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Navigation.GestureTransition.ScreenshotCacheSize" units="MB"
     expires_after="2026-10-18">
+  <owner>acondor@google.com</owner>
   <owner>liuwilliam@google.com</owner>
   <owner>baranerf@google.com</owner>
   <owner>chrome-seamless-core@google.com</owner>
