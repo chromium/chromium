@@ -154,6 +154,36 @@ TODO(http://crbug.com/485940935): Delete this.
             android:inflatedId="@+id/tab_hover_card_holder"
             android:layout="@layout/tab_hover_card_holder" />
 
+        <FrameLayout
+            android:id="@+id/secondary_ui_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ViewStub
+                android:id="@+id/tab_modal_dialog_container_stub"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:inflatedId="@+id/tab_modal_dialog_container" />
+
+            <!-- Please do not add anything in between tab_modal_dialog_container_stub and
+                 tab_modal_dialog_container_sibling_view. -->
+            <ViewStub
+                android:id="@+id/tab_modal_dialog_container_sibling_view"
+                android:layout_width="0dp"
+                android:layout_height="0dp" />
+
+            <org.chromium.components.messages.MessageContainer
+                android:id="@+id/message_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:layout_gravity="start|top"
+                android:descendantFocusability="afterDescendants" />
+
+        </FrameLayout>
+
+        <!-- TODO(crbug.com/510892470): Revisit layout now that secondary
+              container has been moved out. -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constrained_views_container"
             android:layout_height="match_parent"
@@ -176,15 +206,6 @@ TODO(http://crbug.com/485940935): Delete this.
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent" />
 
-            <!-- This Barrier provides a boundary at the end of the start anchor (or its stub),
-                ensuring the secondary UI container is always positioned correctly. -->
-            <androidx.constraintlayout.widget.Barrier
-                android:id="@+id/start_side_barrier"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                app:barrierDirection="end"
-                app:constraint_referenced_ids="side_ui_start_anchor_container_stub,side_ui_start_anchor_container" />
-
             <!-- Please do not add anything in between
                 side_ui_start_anchor_container_stub and
                 side_ui_end_anchor_container_stub. -->
@@ -197,15 +218,6 @@ TODO(http://crbug.com/485940935): Delete this.
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent" />
-
-            <!-- This Barrier provides a boundary at the start of the end anchor (or its stub),
-                ensuring the secondary UI container is always positioned correctly. -->
-            <androidx.constraintlayout.widget.Barrier
-                android:id="@+id/end_side_barrier"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                app:barrierDirection="start"
-                app:constraint_referenced_ids="side_ui_end_anchor_container_stub,side_ui_end_anchor_container" />
 
             <!-- Some Views need to show over Side UI, but behind Secondary UI,
                 such as the GTS, so they can be placed in this ConstraintLayout,
@@ -228,38 +240,6 @@ TODO(http://crbug.com/485940935): Delete this.
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent" />
-
-            <FrameLayout
-                android:id="@+id/secondary_ui_container"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                app:layout_constraintStart_toEndOf="@+id/start_side_barrier"
-                app:layout_constraintEnd_toStartOf="@+id/end_side_barrier"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent">
-
-                <ViewStub
-                    android:id="@+id/tab_modal_dialog_container_stub"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:inflatedId="@+id/tab_modal_dialog_container" />
-
-                <!-- Please do not add anything in between tab_modal_dialog_container_stub and
-                     tab_modal_dialog_container_sibling_view. -->
-                <ViewStub
-                    android:id="@+id/tab_modal_dialog_container_sibling_view"
-                    android:layout_width="0dp"
-                    android:layout_height="0dp" />
-
-                <org.chromium.components.messages.MessageContainer
-                    android:id="@+id/message_container"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    android:layout_gravity="start|top"
-                    android:descendantFocusability="afterDescendants" />
-
-            </FrameLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

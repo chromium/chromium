@@ -237,6 +237,7 @@ import org.chromium.chrome.browser.ui.side_panel_container.dev.SidePanelDevFeatu
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinatorFactory;
 import org.chromium.chrome.browser.ui.side_ui.SideUiStateProvider;
+import org.chromium.chrome.browser.ui.side_ui.ViewMarginAdjusterForSideUi;
 import org.chromium.chrome.browser.ui.signin.ForcedSigninController;
 import org.chromium.chrome.browser.ui.signin.FullscreenSigninPromoLauncher;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarColorProvider;
@@ -367,6 +368,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             new OneshotSupplierImpl<>();
     private final OneshotSupplierImpl<SideUiStateProvider> mSideUiStateProviderSupplier =
             new OneshotSupplierImpl<>();
+    private @Nullable ViewMarginAdjusterForSideUi mSecondaryUiContainerMarginAdjuster;
     private @Nullable ContextualTasksBridge mContextualTasksBridge;
     private @Nullable ActorOverlayCoordinator mActorOverlayCoordinator;
     private @Nullable ActorControlCoordinator mActorControlCoordinator;
@@ -2172,6 +2174,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
 
         mSideUiStateProviderSupplier.set(mSideUiCoordinator);
+
+        // TODO(crbug.com/510890983): Add render tests for the secondary container adjustment.
+        View secondaryUiContainer = mActivity.findViewById(R.id.secondary_ui_container);
+        mSecondaryUiContainerMarginAdjuster = new ViewMarginAdjusterForSideUi(secondaryUiContainer);
+        mSideUiCoordinator.addObserver(mSecondaryUiContainerMarginAdjuster);
     }
 
     private void destroySideUi() {
@@ -2196,6 +2203,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
 
         if (mSideUiCoordinator != null) {
+            // Remove observers.
+            if (mSecondaryUiContainerMarginAdjuster != null) {
+                mSideUiCoordinator.removeObserver(mSecondaryUiContainerMarginAdjuster);
+            }
+
             mSideUiCoordinator.destroy();
             mSideUiCoordinator = null;
         }
