@@ -28,6 +28,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/autofill/mock_manual_filling_view.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_address_accessory_controller.h"
+#include "chrome/browser/keyboard_accessory/test_utils/android/mock_at_memory_accessory_controller.h"
 #include "chrome/browser/password_manager/chrome_password_change_service.h"
 #include "chrome/browser/password_manager/factories/password_manager_settings_service_factory.h"
 #include "chrome/browser/password_manager/factories/profile_password_store_factory.h"
@@ -1526,6 +1527,7 @@ class ChromePasswordManagerClientAndroidTest
   NiceMock<MockAddressAccessoryController> mock_address_controller_;
   NiceMock<MockPaymentMethodAccessoryController>
       mock_payment_method_controller_;
+  NiceMock<MockAtMemoryAccessoryController> mock_at_memory_controller_;
   std::unique_ptr<
       password_manager::MockKeyboardReplacingSurfaceVisibilityController>
       visibility_controller_;
@@ -1558,6 +1560,7 @@ void ChromePasswordManagerClientAndroidTest::CreateManualFillingController(
       web_contents, mock_pwd_controller_.AsWeakPtr(),
       mock_address_controller_.AsWeakPtr(),
       mock_payment_method_controller_.AsWeakPtr(),
+      mock_at_memory_controller_.AsWeakPtr(),
       std::make_unique<NiceMock<MockManualFillingView>>());
 }
 

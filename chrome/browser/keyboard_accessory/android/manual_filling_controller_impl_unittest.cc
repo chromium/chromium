@@ -16,6 +16,7 @@
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_enums.h"
 #include "chrome/browser/keyboard_accessory/android/affiliated_plus_profiles_cache.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_address_accessory_controller.h"
+#include "chrome/browser/keyboard_accessory/test_utils/android/mock_at_memory_accessory_controller.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_password_accessory_controller.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_payment_method_accessory_controller.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
@@ -80,8 +81,6 @@ std::unique_ptr<KeyedService> BuildFakePlusAddressService(
 
 constexpr autofill::FieldRendererId kFocusedFieldId(123);
 
-}  // namespace
-
 // Fixture that tests the manual filling experience with the most recent version
 // of the keyboard accessory and all its fallback sheets.
 class ManualFillingControllerTest : public ChromeRenderViewHostTestHarness {
@@ -105,6 +104,7 @@ class ManualFillingControllerTest : public ChromeRenderViewHostTestHarness {
         web_contents(), mock_pwd_controller_.AsWeakPtr(),
         mock_address_controller_.AsWeakPtr(),
         mock_payment_method_controller_.AsWeakPtr(),
+        mock_at_memory_controller_.AsWeakPtr(),
         std::make_unique<NiceMock<MockManualFillingView>>());
   }
 
@@ -143,12 +143,13 @@ class ManualFillingControllerTest : public ChromeRenderViewHostTestHarness {
   NiceMock<MockAddressAccessoryController> mock_address_controller_;
   NiceMock<MockPaymentMethodAccessoryController>
       mock_payment_method_controller_;
+  NiceMock<MockAtMemoryAccessoryController> mock_at_memory_controller_;
 
   AccessoryController::FillingSourceObserver pwd_source_observer_;
   AccessoryController::FillingSourceObserver cc_source_observer_;
   AccessoryController::FillingSourceObserver address_source_observer_;
 
-  TestAutofillClientInjector<TestContentAutofillClient>
+  TestAutofillClientInjector<autofill::TestContentAutofillClient>
       autofill_client_injector_;
 };
 
@@ -503,3 +504,5 @@ TEST_F(ManualFillingControllerTest, LogsHistogramOnOptionSelected) {
       "AccessoryActionSelected2",
       AccessoryAction::MANAGE_CREDIT_CARDS, 3);
 }
+
+}  // namespace

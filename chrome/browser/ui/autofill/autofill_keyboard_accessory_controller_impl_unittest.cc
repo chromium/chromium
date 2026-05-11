@@ -164,6 +164,41 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest, ShowCallsView) {
                                          SuggestionType::kAutocompleteEntry)});
 }
 
+TEST_F(AutofillKeyboardAccessoryControllerImplTest,
+       ShowAtMemoryBottomSheetDoesNotShowPopupView) {
+  // Ensure that controller and view have been created.
+  client().suggestion_controller(manager());
+
+  EXPECT_CALL(*client().popup_view(), Show()).Times(0);
+
+  std::vector<Suggestion> suggestions = {
+      Suggestion(u"test", SuggestionType::kAddressEntry)};
+  client().suggestion_controller(manager()).Show(
+      AutofillSuggestionController::GenerateSuggestionUiSessionId(),
+      suggestions, AutofillSuggestionTriggerSource::kAtMemory,
+      AutoselectFirstSuggestion(false),
+      AutofillSuggestionsIgnoreFocusLoss(false));
+}
+
+TEST_F(AutofillKeyboardAccessoryControllerImplTest,
+       HideDoesNotHideForAtMemoryWhenReasonIsEndEditing) {
+  client().suggestion_controller(manager());
+
+  std::vector<Suggestion> suggestions = {
+      Suggestion(u"test", SuggestionType::kAddressEntry)};
+
+  client().suggestion_controller(manager()).Show(
+      AutofillSuggestionController::GenerateSuggestionUiSessionId(),
+      suggestions, AutofillSuggestionTriggerSource::kAtMemory,
+      AutoselectFirstSuggestion(false),
+      AutofillSuggestionsIgnoreFocusLoss(false));
+
+  EXPECT_CALL(manager().external_delegate(), OnSuggestionsHidden).Times(0);
+
+  client().suggestion_controller(manager()).Hide(
+      SuggestionHidingReason::kEndEditing);
+}
+
 // Tests that calling `Hide()` on the controller hides and destroys the view.
 TEST_F(AutofillKeyboardAccessoryControllerImplTest, HideDestroysView) {
   ShowSuggestions(manager(), {Suggestion(u"Autocomplete entry",

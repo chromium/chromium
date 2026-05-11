@@ -10,6 +10,7 @@ import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ui.autofill.internal.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
 /** Implements the content for the @memory bottom sheet. */
@@ -87,11 +88,13 @@ class AtMemoryBottomSheetContent implements BottomSheetContent {
 
     @Override
     public int getSheetFullHeightAccessibilityStringId() {
-        return Resources.ID_NULL;
+        // TODO(crbug.com/502801668): Implement a string.
+        return R.string.done;
     }
 
     @Override
     public int getSheetClosedAccessibilityStringId() {
-        return Resources.ID_NULL;
+        // TODO(crbug.com/502801668): Implement a string.
+        return R.string.done;
     }
 }

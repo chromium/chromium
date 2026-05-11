@@ -22,11 +22,14 @@
 #include "chrome/browser/keyboard_accessory/android/accessory_sheet_enums.h"
 #include "chrome/browser/keyboard_accessory/android/address_accessory_controller.h"
 #include "chrome/browser/keyboard_accessory/android/affiliated_plus_profiles_cache.h"
+#include "chrome/browser/keyboard_accessory/android/at_memory_accessory_controller.h"
 #include "chrome/browser/keyboard_accessory/android/password_accessory_controller.h"
 #include "chrome/browser/keyboard_accessory/android/payment_method_accessory_controller.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
+#include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/plus_addresses/core/common/features.h"
 #include "content/public/browser/web_contents.h"
 
 using autofill::AccessoryAction;
@@ -78,6 +81,7 @@ void ManualFillingControllerImpl::CreateForWebContentsForTesting(
     base::WeakPtr<PasswordAccessoryController> pwd_controller,
     base::WeakPtr<AddressAccessoryController> address_controller,
     base::WeakPtr<PaymentMethodAccessoryController> payment_method_controller,
+    base::WeakPtr<AtMemoryAccessoryController> at_memory_controller,
     std::unique_ptr<ManualFillingViewInterface> view) {
   DCHECK(web_contents) << "Need valid WebContents to attach controller to!";
   DCHECK(!FromWebContents(web_contents)) << "Controller already attached!";
@@ -92,7 +96,7 @@ void ManualFillingControllerImpl::CreateForWebContentsForTesting(
       base::WrapUnique(new ManualFillingControllerImpl(
           web_contents, std::move(pwd_controller),
           std::move(address_controller), std::move(payment_method_controller),
-          std::move(view))));
+          std::move(at_memory_controller), std::move(view))));
 
   FromWebContents(web_contents)->Initialize();
 }
@@ -283,6 +287,10 @@ ManualFillingControllerImpl::ManualFillingControllerImpl(
       PaymentMethodAccessoryController::GetOrCreate(web_contents)->AsWeakPtr();
   DCHECK(payment_method_controller_);
 
+  at_memory_controller_ =
+      AtMemoryAccessoryController::GetOrCreate(web_contents)->AsWeakPtr();
+  DCHECK(at_memory_controller_);
+
   InitializePlusProfilesCache();
 }
 
@@ -291,11 +299,13 @@ ManualFillingControllerImpl::ManualFillingControllerImpl(
     base::WeakPtr<PasswordAccessoryController> pwd_controller,
     base::WeakPtr<AddressAccessoryController> address_controller,
     base::WeakPtr<PaymentMethodAccessoryController> payment_method_controller,
+    base::WeakPtr<AtMemoryAccessoryController> at_memory_controller,
     std::unique_ptr<ManualFillingViewInterface> view)
     : content::WebContentsUserData<ManualFillingControllerImpl>(*web_contents),
       pwd_controller_(std::move(pwd_controller)),
       address_controller_(std::move(address_controller)),
       payment_method_controller_(std::move(payment_method_controller)),
+      at_memory_controller_(std::move(at_memory_controller)),
       view_(std::move(view)) {
   InitializePlusProfilesCache();
 }
@@ -448,11 +458,11 @@ AccessoryController* ManualFillingControllerImpl::GetControllerForAction(
     case AccessoryAction::MANAGE_CREDIT_CARDS:
     case AccessoryAction::MANAGE_LOYALTY_CARDS:
       return payment_method_controller_.get();
+    case AccessoryAction::SHOW_AT_MEMORY_BOTTOMSHEET:
+      return at_memory_controller_.get();
     case AccessoryAction::AUTOFILL_SUGGESTION:
     case AccessoryAction::DISMISS:
     case AccessoryAction::AUTOFILL_SUGGESTION_FROM_ACCESSORY_SHEET:
-    case AccessoryAction::SHOW_AT_MEMORY_BOTTOMSHEET:
-      // TODO(crbug.com/458644290): Implement @memory sheet controller.
     case AccessoryAction::COUNT:
       NOTREACHED() << "Controller not defined for action: "
                    << static_cast<int>(action);

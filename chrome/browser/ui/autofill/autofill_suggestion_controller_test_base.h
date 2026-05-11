@@ -34,6 +34,7 @@
 #include "chrome/browser/autofill/mock_manual_filling_view.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller_impl.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_address_accessory_controller.h"
+#include "chrome/browser/keyboard_accessory/test_utils/android/mock_at_memory_accessory_controller.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_password_accessory_controller.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_payment_method_accessory_controller.h"
 #include "chrome/browser/ui/autofill/autofill_keyboard_accessory_controller_impl.h"
@@ -118,6 +119,7 @@ class AutofillSuggestionControllerTestBase
         web_contents(), mock_pwd_controller_.AsWeakPtr(),
         mock_address_controller_.AsWeakPtr(),
         mock_payment_method_controller_.AsWeakPtr(),
+        mock_at_memory_controller_.AsWeakPtr(),
         std::make_unique<::testing::NiceMock<MockManualFillingView>>());
 #endif  // BUILDFLAG(IS_ANDROID)
   }
@@ -207,6 +209,8 @@ class AutofillSuggestionControllerTestBase
   ::testing::NiceMock<MockAddressAccessoryController> mock_address_controller_;
   ::testing::NiceMock<MockPaymentMethodAccessoryController>
       mock_payment_method_controller_;
+  ::testing::NiceMock<MockAtMemoryAccessoryController>
+      mock_at_memory_controller_;
 #endif  // BUILDFLAG(IS_ANDROID)
 };
 

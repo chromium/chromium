@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/autofill/autofill_keyboard_accessory_view.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_utils.h"
+#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/autofill/next_idle_barrier.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
@@ -35,6 +36,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
+#include "components/autofill/core/common/autofill_util.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -287,6 +289,14 @@ AutofillKeyboardAccessoryControllerImpl::
 
 void AutofillKeyboardAccessoryControllerImpl::Hide(
     SuggestionHidingReason reason) {
+  // Ignore kEndEditing for @memory sources because showing the bottom sheet
+  // causes focus loss on the text field, which triggers kEndEditing. This
+  // keeps the sheet open.
+  if (IsAtMemoryTriggerSource(trigger_source_) &&
+      reason == SuggestionHidingReason::kEndEditing) {
+    return;
+  }
+
   // For tests, keep open when hiding is due to external stimuli.
   if (keep_popup_open_for_testing_ &&
       (reason == SuggestionHidingReason::kWidgetChanged ||
@@ -612,6 +622,17 @@ void AutofillKeyboardAccessoryControllerImpl::Show(
 
   if (IsPointerLocked(web_contents_.get())) {
     Hide(SuggestionHidingReason::kMouseLocked);
+    return;
+  }
+
+  if (IsAtMemoryTriggerSource(trigger_source)) {
+    trigger_source_ = trigger_source;
+    suggestions_filling_product_ = FillingProduct::kAtMemory;
+    if (auto* client =
+            ChromeAutofillClient::FromWebContents(web_contents_.get())) {
+      client->ShowAtMemoryBottomSheet();
+    }
+    delegate_->OnSuggestionsShown(suggestions);
     return;
   }
 

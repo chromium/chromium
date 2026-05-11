@@ -240,6 +240,9 @@ class BrowserAutofillManager : public AutofillManager {
   // queries to the `AccessibilityQueryService`.
   AtMemoryManager& GetAtMemoryManager();
 
+  // Triggers suggestions for @memory.
+  void TriggerAtMemorySuggestions(const FieldGlobalId& field_id);
+
   // Gets the payments BNPL manager owned by `this`. This will be used to
   // handle BNPL flows. May return nullptr if BNPL is not supported on the
   // current platform.

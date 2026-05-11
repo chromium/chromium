@@ -653,7 +653,7 @@ class AutofillClient {
   virtual const AutofillAblationStudy& GetAblationStudy() const;
 
 #if BUILDFLAG(IS_ANDROID)
-  // Shows the @memory bottom sheet on Android.
+  // Shows the @memory bottom sheet. Triggered by keyboard accessory controller.
   virtual void ShowAtMemoryBottomSheet();
 
   // The AutofillSnackbarController is used to show a snackbar notification
