@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/wm/core/cursor_manager.h"
+
 #include "ash/constants/ash_switches.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/command_line.h"
-#include "ui/wm/core/cursor_manager.h"
+#include "ui/events/event_switches.h"
 
 namespace ash {
 
@@ -66,6 +68,41 @@ TEST_F(ForceShowCursorManagerChromeosTest, Basic) {
 
   Shell::Get()->SetCursorCompositingEnabled(true);
   EXPECT_TRUE(cursor_manager->IsCursorVisible());
+}
+
+class ForceShowCursorForTouchEmulationManagerChromeosTest : public AshTestBase {
+ public:
+  ForceShowCursorForTouchEmulationManagerChromeosTest() = default;
+  ForceShowCursorForTouchEmulationManagerChromeosTest(
+      const ForceShowCursorForTouchEmulationManagerChromeosTest&) = delete;
+  ForceShowCursorForTouchEmulationManagerChromeosTest& operator=(
+      const ForceShowCursorForTouchEmulationManagerChromeosTest&) = delete;
+  ~ForceShowCursorForTouchEmulationManagerChromeosTest() override = default;
+
+  // AshTestBase:
+  void SetUp() override {
+    // Allow debug shortcuts so we can use the accelerator to force showing the
+    // cursor.
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kForceShowCursor);
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        ::switches::kTouchDevices);
+    AshTestBase::SetUp();
+  }
+};
+
+TEST_F(ForceShowCursorForTouchEmulationManagerChromeosTest, Basic) {
+  auto* cursor_manager = Shell::Get()->cursor_manager();
+  EXPECT_FALSE(cursor_manager->IsCursorVisible());
+
+  cursor_manager->HideCursor();
+  EXPECT_FALSE(cursor_manager->IsCursorVisible());
+
+  cursor_manager->ShowCursor();
+  EXPECT_FALSE(cursor_manager->IsCursorVisible());
+
+  Shell::Get()->SetCursorCompositingEnabled(true);
+  EXPECT_FALSE(cursor_manager->IsCursorVisible());
 }
 
 }  // namespace ash

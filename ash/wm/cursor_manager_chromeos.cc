@@ -19,6 +19,7 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
+#include "ui/events/event_switches.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -32,8 +33,8 @@ CursorManager::CursorManager(std::unique_ptr<wm::NativeCursorManager> delegate)
 CursorManager::~CursorManager() = default;
 
 void CursorManager::Init() {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kForceShowCursor)) {
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kForceShowCursor)) {
     // Set a custom cursor so users know that the switch is turned on.
     const gfx::ImageSkia custom_icon =
         gfx::CreateVectorIcon(kTouchIndicatorIcon);
@@ -49,6 +50,12 @@ void CursorManager::Init() {
             cursor.image_scale_factor()));
 
     SetCursor(std::move(cursor));
+    // Disable mouse events and tells the cursor is not visible when emulating
+    // touch devices.
+    if (command_line->HasSwitch(::switches::kTouchDevices)) {
+      NativeCursorManagerDelegate* delegate = this;
+      delegate->CommitMouseEventsEnabled(false);
+    }
     LockCursor();
     return;
   }
