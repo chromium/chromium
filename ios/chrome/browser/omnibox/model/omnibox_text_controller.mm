@@ -96,6 +96,10 @@ const char kOmniboxFocusResultedInNavigation[] =
   return [self.textInput.view isFirstResponder];
 }
 
+- (BOOL)hasFocus {
+  return _omniboxTextModel && _omniboxTextModel->HasFocus();
+}
+
 - (void)focusOmnibox {
   id<OmniboxTextInput> textInput = self.textInput;
   if ([self isOmniboxFirstResponder]) {
