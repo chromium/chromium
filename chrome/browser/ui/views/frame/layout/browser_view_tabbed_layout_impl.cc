@@ -129,9 +129,10 @@ BrowserViewTabbedLayoutImpl::GetTopSeparatorType() const {
       is_fullscreen(window_state)) {
     // If the top container is always visible, then the top container still
     // needs a separator to visually distinguish it from the content, unless
-    // there's also a shadow box.
+    // there's also a shadow box or in split view.
     if (window_state == WindowState::kFullscreenWithToolbar &&
-        ShadowOverlayVisible()) {
+        (ShadowOverlayVisible() ||
+         (delegate().IsActiveTabSplit() && !delegate().IsInfobarVisible()))) {
       return TopSeparatorType::kNone;
     }
     return TopSeparatorType::kTopContainer;
@@ -886,7 +887,8 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
   // surrounds other elements like the toolbar.
   const bool is_split_outline_replacing_shadow_or_separator =
       delegate().IsActiveTabSplit() &&
-      horizontal_layout.force_top_container_to_top;
+      (horizontal_layout.force_top_container_to_top ||
+       is_fullscreen(window_state));
   const bool show_shadow_overlay =
       ShadowOverlayVisible() && !is_split_outline_replacing_shadow_or_separator;
   gfx::Insets shadow_overlay_insets;
@@ -929,9 +931,9 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
   }
 
   // Lay out infobar container.
+  const bool infobar_visible = delegate().IsInfobarVisible();
   if (IsParentedTo(views().infobar_container, views().browser_view)) {
     gfx::Rect infobar_bounds;
-    const bool infobar_visible = delegate().IsInfobarVisible();
     if (infobar_visible) {
       // Infobars slide down with top container reveal, but not when they're in
       // the toolbar-height side panel shadow box. This is because they only
@@ -962,6 +964,40 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
       is_split_outline_replacing_shadow_or_separator ||
       (!suppress_top_separator &&
        top_separator_type == TopSeparatorType::kMultiContents));
+
+  // Updating the top, left and right insets for contents container view when
+  // in split view. This is dependent on a number of other browser states.
+  if (delegate().IsActiveTabSplit()) {
+    const bool include_top_inset =
+        window_state == WindowState::kFullscreen || infobar_visible;
+    const bool include_leading_inset =
+        !(is_split_outline_replacing_shadow_or_separator &&
+          horizontal_layout.has_side_panel() && side_panel_leading);
+    const bool include_trailing_inset =
+        !(is_split_outline_replacing_shadow_or_separator &&
+          horizontal_layout.has_side_panel() && !side_panel_leading);
+
+    gfx::Insets start_contents_view_inset;
+    start_contents_view_inset
+        .set_top(include_top_inset ? MultiContentsView::kSplitViewContentInset
+                                   : 0)
+        .set_bottom(MultiContentsView::kSplitViewContentInset)
+        .set_left(include_leading_inset
+                      ? MultiContentsView::kSplitViewContentInset
+                      : 0);
+
+    gfx::Insets end_contents_view_inset;
+    end_contents_view_inset
+        .set_top(include_top_inset ? MultiContentsView::kSplitViewContentInset
+                                   : 0)
+        .set_bottom(MultiContentsView::kSplitViewContentInset)
+        .set_right(include_trailing_inset
+                       ? MultiContentsView::kSplitViewContentInset
+                       : 0);
+
+    views().multi_contents_view->SetSplitViewInsets(start_contents_view_inset,
+                                                    end_contents_view_inset);
+  }
 
   // Update the multi-contents view about if we will be animating content
   // bounds. This is to make optimizations during animations e.g. avoid
@@ -1175,18 +1211,12 @@ gfx::Rect BrowserViewTabbedLayoutImpl::CalculateTopContainerLayoutImpl(
     const bool show_separator =
         !suppress_top_separator &&
         top_separator_type == TopSeparatorType::kTopContainer;
-    const int preferred_separator_height =
-        views().top_container_separator->GetPreferredSize().height();
     if (show_separator) {
       separator_bounds = gfx::Rect(
           params.visual_client_area.x(), params.visual_client_area.y(),
-          params.visual_client_area.width(), preferred_separator_height);
+          params.visual_client_area.width(),
+          views().top_container_separator->GetPreferredSize().height());
       params.SetTop(separator_bounds.bottom());
-    } else if (delegate().GetBrowserWindowState() ==
-               WindowState::kFullscreenWithToolbar) {
-      // Reserve space for the separator even when it's hidden, because this
-      // affects the y-coordinate of the top of the content area.
-      params.Inset(gfx::Insets::TLBR(preferred_separator_height, 0, 0, 0));
     }
     layout.AddChild(views().top_container_separator, separator_bounds,
                     show_separator);

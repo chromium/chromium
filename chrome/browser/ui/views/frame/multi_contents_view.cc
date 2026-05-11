@@ -799,11 +799,20 @@ void MultiContentsView::SetShouldShowTopSeparator(bool should_show) {
     return;
   }
   contents_separators_.should_show_top = should_show;
-  start_contents_view_inset_.set_top(
-      should_show ? 0 : MultiContentsView::kSplitViewContentInset);
-  end_contents_view_inset_.set_top(
-      should_show ? 0 : MultiContentsView::kSplitViewContentInset);
+  // This can be called during BrowserView layout, so protect against creating a
+  // layout loop.
+  InvalidateLayout(/*avoid_propagate_during_layout=*/true);
+}
 
+void MultiContentsView::SetSplitViewInsets(
+    gfx::Insets start_contents_view_inset,
+    gfx::Insets end_contents_view_inset) {
+  if (start_contents_view_inset == start_contents_view_inset_ &&
+      end_contents_view_inset == end_contents_view_inset_) {
+    return;
+  }
+  start_contents_view_inset_ = std::move(start_contents_view_inset);
+  end_contents_view_inset_ = std::move(end_contents_view_inset);
   // This can be called during BrowserView layout, so protect against creating a
   // layout loop.
   InvalidateLayout(/*avoid_propagate_during_layout=*/true);
