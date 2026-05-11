@@ -1242,9 +1242,6 @@ TEST_F(VisitDatabaseTest, GetVisibleVisitsForURL) {
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 TEST_F(VisitDatabaseTest, GetVisibleVisits_ActorVisits) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kBrowsingHistoryActorIntegrationM2);
-
   const URLID kUrlId1 = 1U;
   VisitRow visit_browsed(
       kUrlId1, Time::Now(), 0,
@@ -1298,9 +1295,6 @@ TEST_F(VisitDatabaseTest, GetVisibleVisits_ActorVisits) {
 }
 
 TEST_F(VisitDatabaseTest, GetVisibleVisits_SeparateBySource) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kBrowsingHistoryActorIntegrationM2);
-
   const URLID kUrlId = 1U;
   const Time kDay = Time::Now().LocalMidnight() + base::Hours(1);
 
@@ -2353,16 +2347,13 @@ TEST_F(VisitDatabaseTest, ShouldFilterUserAndActorVisits) {
     SCOPED_TRACE(c.name);
     base::test::ScopedFeatureList feature_list;
 
-    std::vector<base::test::FeatureRef> enabled = {
-        history::kBrowsingHistoryActorIntegrationM2};
-    std::vector<base::test::FeatureRef> disabled;
-
     if (c.m3_enabled) {
-      enabled.push_back(history::kBrowsingHistoryActorIntegrationM3);
+      feature_list.InitAndEnableFeature(
+          history::kBrowsingHistoryActorIntegrationM3);
     } else {
-      disabled.push_back(history::kBrowsingHistoryActorIntegrationM3);
+      feature_list.InitAndDisableFeature(
+          history::kBrowsingHistoryActorIntegrationM3);
     }
-    feature_list.InitWithFeatures(enabled, disabled);
 
     QueryOptions options;
     options.include_user_visits = c.include_user;

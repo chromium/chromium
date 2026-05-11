@@ -629,11 +629,9 @@ void BrowsingHistoryService::MergeDuplicateResults(
     }
 
 #if !BUILDFLAG(IS_IOS)
-    auto& current_day_entries =
-        history::IsBrowsingHistoryActorIntegrationM2Enabled() &&
-                entry.is_actor_visit
-            ? actor_current_day_entries
-            : non_actor_current_day_entries;
+    auto& current_day_entries = entry.is_actor_visit
+                                    ? actor_current_day_entries
+                                    : non_actor_current_day_entries;
 #else
     auto& current_day_entries = non_actor_current_day_entries;
 #endif
@@ -724,11 +722,9 @@ BrowsingHistoryService::GroupSimilarVisits(QueryHistoryState* state) {
     }
 
 #if !BUILDFLAG(IS_IOS)
-    auto& current_day_entries =
-        history::IsBrowsingHistoryActorIntegrationM2Enabled() &&
-                entry.is_actor_visit
-            ? actor_current_day_entries
-            : non_actor_current_day_entries;
+    auto& current_day_entries = entry.is_actor_visit
+                                    ? actor_current_day_entries
+                                    : non_actor_current_day_entries;
 #else
     auto& current_day_entries = non_actor_current_day_entries;
 #endif

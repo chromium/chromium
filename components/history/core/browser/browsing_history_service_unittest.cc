@@ -965,9 +965,6 @@ TEST_F(BrowsingHistoryServiceTest, ActorVisitsExcludedByDefault) {
 }
 
 TEST_F(BrowsingHistoryServiceTest, ActorVisitDeduplication) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(kBrowsingHistoryActorIntegrationM2);
-
   AddHistory({
       {kUrl1, 1, kRemote},
       {kUrl1, 2, kLocal},

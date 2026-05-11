@@ -342,9 +342,7 @@ bool VisitDatabase::FillVisitVectorWithOptions(sql::Statement& statement,
 
       bool is_actor_visit = false;
 #if !BUILDFLAG(IS_IOS)
-      if (history::IsBrowsingHistoryActorIntegrationM2Enabled()) {
-        is_actor_visit = (visit.source == SOURCE_ACTOR);
-      }
+      is_actor_visit = visit.source == SOURCE_ACTOR;
 #endif
 
       // Make sure the (URLID, is_actor_visit) is unique.
@@ -610,26 +608,24 @@ bool VisitDatabase::PrepareVisibleVisitsQuery(
 // TODO(crbug.com/457641486) Clean up preprocessor statements once feature is
 // rolled out.
 #if !BUILDFLAG(IS_IOS)
-  if (history::IsBrowsingHistoryActorIntegrationM2Enabled()) {
-    sql += ", IFNULL(visit_source.source, 1)";
-    joins += " LEFT JOIN visit_source ON visits.id = visit_source.id";
+  sql += ", IFNULL(visit_source.source, 1)";
+  joins += " LEFT JOIN visit_source ON visits.id = visit_source.id";
 
-    if (history::IsBrowsingHistoryActorIntegrationM3Enabled()) {
-      CHECK(options.include_user_visits || options.include_actor_visits);
+  if (history::IsBrowsingHistoryActorIntegrationM3Enabled()) {
+    CHECK(options.include_user_visits || options.include_actor_visits);
 
-      if (options.include_user_visits && !options.include_actor_visits) {
-        where_clauses.push_back(
-            "(visit_source.source IS NULL OR visit_source.source != ?)");
-        binding_values.push_back(SOURCE_ACTOR);
-      } else if (!options.include_user_visits && options.include_actor_visits) {
-        where_clauses.push_back("visit_source.source = ?");
-        binding_values.push_back(SOURCE_ACTOR);
-      }
-    } else if (!options.include_actor_visits) {
+    if (options.include_user_visits && !options.include_actor_visits) {
       where_clauses.push_back(
           "(visit_source.source IS NULL OR visit_source.source != ?)");
       binding_values.push_back(SOURCE_ACTOR);
+    } else if (!options.include_user_visits && options.include_actor_visits) {
+      where_clauses.push_back("visit_source.source = ?");
+      binding_values.push_back(SOURCE_ACTOR);
     }
+  } else if (!options.include_actor_visits) {
+    where_clauses.push_back(
+        "(visit_source.source IS NULL OR visit_source.source != ?)");
+    binding_values.push_back(SOURCE_ACTOR);
   }
 #endif
 

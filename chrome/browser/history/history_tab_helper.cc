@@ -325,21 +325,17 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
       !(base::FeatureList::IsEnabled(history::kVisitedLinksOn404) &&
         http_response_code == 404);
 
-  // If the visit was initiated by an actor, it should not contribute to the
-  // Most Visited tiles in the NTP.
-  bool visit_source_qualifies_for_ntp_most_visited = true;
   std::optional<int32_t> actor_task_id;
   actor_task_id =
       chrome_ui_data && chrome_ui_data->actor_task_id()
           ? std::make_optional(chrome_ui_data->actor_task_id().value())
           : std::nullopt;
-  visit_source_qualifies_for_ntp_most_visited =
-      !history::IsBrowsingHistoryActorIntegrationM2Enabled() ||
-      !actor_task_id.has_value();
 
+  // If the visit was initiated by an actor, it should not contribute to the
+  // Most Visited tiles in the NTP.
   const bool should_consider_for_ntp_most_visited =
       status_code_qualifies_for_ntp_most_visited &&
-      visit_source_qualifies_for_ntp_most_visited &&
+      !actor_task_id.has_value() &&
       ShouldConsiderForNtpMostVisited(*web_contents(), navigation_handle);
 
   // Reloads do not result in calling TitleWasSet() (which normally sets

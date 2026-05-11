@@ -562,7 +562,6 @@ void HistoryService::AddPage(const GURL& url,
   bool consider_for_ntp_most_visited = true;
 #if !BUILDFLAG(IS_IOS)
   consider_for_ntp_most_visited =
-      !history::IsBrowsingHistoryActorIntegrationM2Enabled() ||
       visit_source != VisitSource::SOURCE_ACTOR;
 #endif
 
@@ -582,7 +581,6 @@ void HistoryService::AddPage(const GURL& url,
   bool consider_for_ntp_most_visited = true;
 #if !BUILDFLAG(IS_IOS)
   consider_for_ntp_most_visited =
-      !history::IsBrowsingHistoryActorIntegrationM2Enabled() ||
       visit_source != VisitSource::SOURCE_ACTOR;
 #endif
 
