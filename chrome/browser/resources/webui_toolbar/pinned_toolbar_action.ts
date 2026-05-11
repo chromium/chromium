@@ -5,6 +5,10 @@
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import './pinned_toolbar_action_icons.html.js';
 
+// <if expr="_google_chrome">
+import './internal/icons.html.js';
+// </if>
+
 import {assertNotReached, assertNotReachedCase} from '//resources/js/assert.js';
 import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -95,7 +99,6 @@ export class PinnedToolbarActionElement extends CrLitElement {
       case PinnedToolbarAction.kShowDownloads:
       case PinnedToolbarAction.kClearBrowsingData:
       case PinnedToolbarAction.kPrint:
-      case PinnedToolbarAction.kSidePanelShowLensOverlayResults:
       case PinnedToolbarAction.kShowTranslate:
       case PinnedToolbarAction.kQrCodeGenerator:
       case PinnedToolbarAction.kRouteMedia:
@@ -111,14 +114,28 @@ export class PinnedToolbarActionElement extends CrLitElement {
       case PinnedToolbarAction.kTabSearch:
       case PinnedToolbarAction.kSidePanelShowContextualTasks:
       case PinnedToolbarAction.kSidePanelShowLens:
-      case PinnedToolbarAction.kSidePanelShowAboutThisSite:
       case PinnedToolbarAction.kSidePanelShowCustomizeChrome:
       case PinnedToolbarAction.kSidePanelShowShoppingInsights:
       case PinnedToolbarAction.kSidePanelShowMerchantTrust:
       case PinnedToolbarAction.kSendSharedTabGroupFeedback:
-      case PinnedToolbarAction.kSidePanelShowComments:
+      case PinnedToolbarAction.kSidePanelShowComments: {
         const iconName = PinnedToolbarAction[type].slice(1);
         return {ironIcon: `pinned-toolbar-action:${iconName}`};
+      }
+      case PinnedToolbarAction.kSidePanelShowAboutThisSite:
+        // <if expr="_google_chrome">
+        return {ironIcon: 'internal-icons:page_insights'};
+        // </if>
+        // <if expr="not _google_chrome">
+        return {ironIcon: 'pinned-toolbar-action:SidePanelShowAboutThisSite'};
+        // </if>
+      case PinnedToolbarAction.kSidePanelShowLensOverlayResults:
+        // <if expr="_google_chrome">
+        return {ironIcon: 'internal-icons:google_lens_monochrome_logo'};
+        // </if>
+        // <if expr="not _google_chrome">
+        return {ironIcon: 'pinned-toolbar-action:SidePanelShowLensOverlayResults'};
+        // </if>
       default:
         assertNotReachedCase(type);
     }

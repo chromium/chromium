@@ -3622,6 +3622,64 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
   ASSERT_FALSE(model_->Contains(action_id));
 }
 
+IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
+                       AboutThisSiteIcon) {
+  auto* webui_toolbar_view = GetWebUIToolbarWebView(browser());
+  views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
+  content::WebContents* web_contents = web_view->GetWebContents();
+
+  // Pin "About This Site" action.
+  PinAction(
+      kActionSidePanelShowAboutThisSite,
+      toolbar_ui_api::mojom::PinnedToolbarAction::kSidePanelShowAboutThisSite);
+
+  // Define the expected icon name.
+  std::string expected_icon;
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  expected_icon = "internal-icons:page_insights";
+#else
+  expected_icon = "pinned-toolbar-action:SidePanelShowAboutThisSite";
+#endif
+
+  // Verify iron-icon attribute in WebUI.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return EvalJsOnPinnedButton(web_contents,
+                                toolbar_ui_api::mojom::PinnedToolbarAction::
+                                    kSidePanelShowAboutThisSite,
+                                "return btn?.getAttribute('iron-icon') || '';")
+               .ExtractString() == expected_icon;
+  }));
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
+                       LensOverlayResultsIcon) {
+  auto* webui_toolbar_view = GetWebUIToolbarWebView(browser());
+  views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
+  content::WebContents* web_contents = web_view->GetWebContents();
+
+  // Pin "Lens Overlay Results" action.
+  PinAction(kActionSidePanelShowLensOverlayResults,
+            toolbar_ui_api::mojom::PinnedToolbarAction::
+                kSidePanelShowLensOverlayResults);
+
+  // Define the expected icon name.
+  std::string expected_icon;
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  expected_icon = "internal-icons:google_lens_monochrome_logo";
+#else
+  expected_icon = "pinned-toolbar-action:SidePanelShowLensOverlayResults";
+#endif
+
+  // Verify iron-icon attribute in WebUI.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return EvalJsOnPinnedButton(web_contents,
+                                toolbar_ui_api::mojom::PinnedToolbarAction::
+                                    kSidePanelShowLensOverlayResults,
+                                "return btn?.getAttribute('iron-icon') || '';")
+               .ExtractString() == expected_icon;
+  }));
+}
+
 struct DragTestParam {
   const char* test_name;
   const char* selector;
