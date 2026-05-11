@@ -103,6 +103,7 @@ public class ContentView extends FrameLayout
     private EventOffsetHandler mDragDropEventOffsetHandler;
     private boolean mDeferKeepScreenOnChanges;
     private Boolean mPendingKeepScreenOnValue;
+    private boolean mIgnoreClearFocus;
 
     /**
      * Constructs a new ContentView for the appropriate Android version.
@@ -210,6 +211,14 @@ public class ContentView extends FrameLayout
 
     public void setVirtualStructureProvider(VirtualStructureProvider virtualStructureProvider) {
         mVirtualStructureProvider = virtualStructureProvider;
+    }
+
+    /**
+     * Sets whether clear focus events should be ignored. This is useful for cases where the clear
+     * focus event is unavoidable.
+     */
+    public void setIgnoreClearFocus(boolean ignore) {
+        mIgnoreClearFocus = ignore;
     }
 
     @Override
@@ -405,6 +414,12 @@ public class ContentView extends FrameLayout
         } finally {
             TraceEvent.end("ContentView.onFocusChanged");
         }
+    }
+
+    @Override
+    public void clearFocus() {
+        if (mIgnoreClearFocus) return;
+        super.clearFocus();
     }
 
     @Override

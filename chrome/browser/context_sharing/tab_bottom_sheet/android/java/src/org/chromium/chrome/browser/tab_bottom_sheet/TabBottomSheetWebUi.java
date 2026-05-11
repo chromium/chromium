@@ -45,6 +45,7 @@ public class TabBottomSheetWebUi {
 
     private ThinWebView mThinWebView;
     private @Nullable WebContents mWebContents;
+    private @Nullable ContentView mContentView;
 
     TabBottomSheetWebUi(
             Context context,
@@ -70,7 +71,10 @@ public class TabBottomSheetWebUi {
         }
         mWebContents = webContents;
         if (mWebContents != null) {
+            // Use a local variable to ensure we are using the correct ContentView instance.
             ContentView contentView = createContentView(mContext, mWebContents);
+            mContentView = contentView;
+
             contentView.addOnAttachStateChangeListener(
                     new View.OnAttachStateChangeListener() {
                         private final ViewTreeObserver.OnWindowFocusChangeListener mListener =
@@ -143,6 +147,12 @@ public class TabBottomSheetWebUi {
         return mWebContents;
     }
 
+    void setIgnoreClearFocus(boolean ignoreClearFocus) {
+        if (mContentView != null) {
+            mContentView.setIgnoreClearFocus(ignoreClearFocus);
+        }
+    }
+
     WebViewResizingHelper getWebViewResizingHelper() {
         return mWebViewResizingHelper;
     }
@@ -150,6 +160,7 @@ public class TabBottomSheetWebUi {
     void destroy() {
         // We expect the life cycle of webContents to be managed by native.
         mWebContents = null;
+        mContentView = null;
         mWebViewResizingHelper.reset();
         mThinWebView.destroy();
     }

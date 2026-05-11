@@ -147,6 +147,12 @@ public class CoBrowseViews {
         }
     }
 
+    void setIgnoreClearFocus(boolean ignoreClearFocus) {
+        if (mWebUi != null) {
+            mWebUi.setIgnoreClearFocus(ignoreClearFocus);
+        }
+    }
+
     @TabBottomSheetClientType
     int getClientType() {
         return mClientType;

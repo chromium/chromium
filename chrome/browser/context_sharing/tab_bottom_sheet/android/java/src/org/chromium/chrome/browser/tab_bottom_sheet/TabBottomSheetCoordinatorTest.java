@@ -683,4 +683,21 @@ public class TabBottomSheetCoordinatorTest {
         verify(mockEventForwarder).setCurrentTouchOffsetX(0.0f);
         verify(mockEventForwarder).setCurrentTouchOffsetY(0.0f);
     }
+
+    @Test
+    public void testKeyboardVisibility_SetsIgnoreClearFocusOnWebUi() {
+        simulateShowSuccessAndGetObserver();
+
+        verify(mKeyboardDelegate)
+                .addKeyboardVisibilityListener(mKeyboardVisibilityListenerCaptor.capture());
+        KeyboardVisibilityDelegate.KeyboardVisibilityListener listener =
+                mKeyboardVisibilityListenerCaptor.getValue();
+        assertNotNull(listener);
+
+        listener.keyboardVisibilityChanged(true);
+        verify(mMockWebUi).setIgnoreClearFocus(true);
+
+        listener.keyboardVisibilityChanged(false);
+        verify(mMockWebUi).setIgnoreClearFocus(false);
+    }
 }

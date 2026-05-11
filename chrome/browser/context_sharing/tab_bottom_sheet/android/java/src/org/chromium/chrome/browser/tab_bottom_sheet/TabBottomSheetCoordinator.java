@@ -441,11 +441,17 @@ public class TabBottomSheetCoordinator {
                     mIsShowingTabBottomSheet = false;
                 }
             }
+
+            @Override
+            public void onInsetAnimationEnd() {
+                mCoBrowseViews.setIgnoreClearFocus(/* ignoreClearFocus= */ false);
+            }
         };
     }
 
     private KeyboardVisibilityListener buildKeyboardVisibilityListener() {
         return isShowing -> {
+            mCoBrowseViews.setIgnoreClearFocus(isShowing);
             if (isShowing
                     && mIsShowingTabBottomSheet
                     && mContentView != null
