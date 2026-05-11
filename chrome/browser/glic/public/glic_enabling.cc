@@ -276,6 +276,7 @@ void GlicEnabling::ProfileEnablement::RecordMetrics(
 
   if (feature_disabled) {
     record_reason(Reason::kFeatureDisabled);
+    RecordFeatureDisabledReason(suffix);
   }
   if (not_regular_profile) {
     record_reason(Reason::kNotRegularProfile);
@@ -308,6 +309,28 @@ void GlicEnabling::ProfileEnablement::RecordMetrics(
       !primary_account_not_fully_signed_in);
 }
 
+void GlicEnabling::ProfileEnablement::RecordFeatureDisabledReason(
+    const std::string& suffix) const {
+  auto record_reason = [&](FeatureDisabledReason reason) {
+    base::UmaHistogramEnumeration(
+        base::StrCat({"Glic.GlobalEnabling.FeatureDisabledReason.", suffix}),
+        reason);
+  };
+
+  if (feature_flag_disabled) {
+    record_reason(FeatureDisabledReason::kFeatureFlagDisabled);
+  }
+  if (disallowed_by_country_filter) {
+    record_reason(FeatureDisabledReason::kCountryDisabled);
+  }
+  if (disallowed_by_locale_filter) {
+    record_reason(FeatureDisabledReason::kLocaleDisabled);
+  }
+  if (system_requirement_not_met) {
+    record_reason(FeatureDisabledReason::kSystemRequirementNotMet);
+  }
+}
+
 GlicEnabling::ProfileEnablement GlicEnabling::EnablementForProfile(
     Profile* profile) {
   ProfileEnablement result;
@@ -319,11 +342,16 @@ GlicEnabling::ProfileEnablement GlicEnabling::EnablementForProfile(
   GlicGlobalEnabling& global_enabling =
       g_browser_process->GetFeatures()->glic_global_enabling();
 
-  result.disallowed_by_country_filter = !global_enabling.IsCountryEnabled();
-  result.disallowed_by_locale_filter = !global_enabling.IsLocaleEnabled();
-
   if (!global_enabling.IsEnabledByFlags()) {
     result.feature_disabled = true;
+
+    result.feature_flag_disabled =
+        !base::FeatureList::IsEnabled(features::kGlic);
+    result.disallowed_by_country_filter = !global_enabling.IsCountryEnabled();
+    result.disallowed_by_locale_filter = !global_enabling.IsLocaleEnabled();
+    result.system_requirement_not_met =
+        !global_enabling.IsSystemRequirementMet();
+
     return result;
   }
 
@@ -443,15 +471,7 @@ GlicGlobalEnabling::GlicGlobalEnabling(Delegate& delegate) {
 
 GlicGlobalEnabling::~GlicGlobalEnabling() = default;
 
-bool GlicGlobalEnabling::IsEnabledByFlags() {
-  if (g_bypass_enablement_checks_for_testing) {
-    return true;
-  }
-  // It is important that this value not change at runtime in production. Any
-  // future updates to this function must maintain that property.
-  bool is_enabled = base::FeatureList::IsEnabled(features::kGlic) &&
-                    locale_enablement_.value_or(true) &&
-                    country_enablement_.value_or(true);
+bool GlicGlobalEnabling::IsSystemRequirementMet() const {
 #if BUILDFLAG(IS_CHROMEOS)
   static const bool supported_system_requirements = [] {
     constexpr base::ByteCount kMinimumMemoryThreshold = base::GiB(8);
@@ -467,9 +487,23 @@ bool GlicGlobalEnabling::IsEnabledByFlags() {
                 chromeos::features::kFeatureManagementGlic));
   }();
 
-  is_enabled = is_enabled && supported_system_requirements;
+  return supported_system_requirements;
+#else
+  return true;
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  return is_enabled;
+}
+
+bool GlicGlobalEnabling::IsEnabledByFlags() {
+  if (g_bypass_enablement_checks_for_testing) {
+    return true;
+  }
+  // It is important that this value not change at runtime in production. Any
+  // future updates to this function must maintain that property.
+  bool is_enabled = base::FeatureList::IsEnabled(features::kGlic) &&
+                    locale_enablement_.value_or(true) &&
+                    country_enablement_.value_or(true);
+
+  return is_enabled && IsSystemRequirementMet();
 }
 
 bool GlicEnabling::IsEnabledByFlags() {

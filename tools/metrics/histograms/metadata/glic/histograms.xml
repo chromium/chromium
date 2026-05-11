@@ -733,6 +733,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.GlobalEnabling.FeatureDisabledReason.{Suffix}"
+    enum="GlicFeatureDisabledReason" expires_after="2026-09-27">
+  <owner>cuianthony@chromium.org</owner>
+  <owner>glic@chromium.org</owner>
+  <summary>
+    Records specific reasons why the Glic feature is considered disabled. This
+    provides a granular breakdown for clients that would otherwise simply report
+    'Feature disabled' in Glic.ProfileEnablement.DisabledReason metrics.
+    Multiple reasons may be recorded per client. This is {Suffix}.
+  </summary>
+  <token key="Suffix" variants="ProfileEnablementSuffix"/>
+</histogram>
+
 <histogram name="Glic.Host.ClientSendMessageQueueLength" units="message count"
     expires_after="2027-02-06">
   <owner>harringtond@chromium.org</owner>

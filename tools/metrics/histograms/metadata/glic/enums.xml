@@ -192,6 +192,13 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.h:EntryPointStatus) -->
 
+<enum name="GlicFeatureDisabledReason">
+  <int value="0" label="Feature Flag Disabled"/>
+  <int value="1" label="Country Disabled"/>
+  <int value="2" label="Locale Disabled"/>
+  <int value="3" label="System Requirement Not Met"/>
+</enum>
+
 <!-- LINT.IfChange(GlicFilteringResult) -->
 
 <enum name="GlicFilteringResult">

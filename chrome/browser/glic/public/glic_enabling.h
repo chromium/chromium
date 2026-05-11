@@ -79,6 +79,7 @@ class GlicGlobalEnabling {
   explicit GlicGlobalEnabling(Delegate& delegate);
   ~GlicGlobalEnabling();
   bool IsEnabledByFlags();
+  bool IsSystemRequirementMet() const;
   bool IsLocaleEnabled() const { return locale_enablement_.value_or(true); }
   bool IsCountryEnabled() const { return country_enablement_.value_or(true); }
 
@@ -213,11 +214,28 @@ class GlicEnabling : public signin::IdentityManager::Observer,
     // Whether disallowed by locale filtering.
     bool disallowed_by_locale_filter : 1 = false;
 
+    // Whether the Glic feature flag is disabled.
+    bool feature_flag_disabled : 1 = false;
+
+    // Whether system requirements (relevant to ChromeOS only) for Glic are not
+    // met.
+    bool system_requirement_not_met : 1 = false;
+
     // Whether live (audio) functionality is disallowed for this account type.
     bool live_disallowed : 1 = false;
 
     // Whether share image functionality is disallowed for this account type.
     bool share_image_disallowed : 1 = false;
+
+    // LINT.IfChange(FeatureDisabledReason)
+    enum class FeatureDisabledReason {
+      kFeatureFlagDisabled = 0,
+      kCountryDisabled = 1,
+      kLocaleDisabled = 2,
+      kSystemRequirementNotMet = 3,
+      kMaxValue = kSystemRequirementNotMet,
+    };
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicFeatureDisabledReason)
 
     enum class Reason {
       kFeatureDisabled = 0,
@@ -278,6 +296,7 @@ class GlicEnabling : public signin::IdentityManager::Observer,
    private:
     // `suffix` should be either "Startup" or "SteadyState".
     void RecordMetrics(const std::string& suffix) const;
+    void RecordFeatureDisabledReason(const std::string& suffix) const;
   };
   static ProfileEnablement EnablementForProfile(Profile* profile);
 
