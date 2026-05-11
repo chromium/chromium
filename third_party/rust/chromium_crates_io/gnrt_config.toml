@@ -698,6 +698,11 @@ extra_build_script_input_roots = ['../build/rustc.rs']
 [crate.ryu.extra_kv]
 allow_unsafe = true
 
+[crate.safe_arch]
+group = 'test'
+allow_first_party_usage = false
+extra_kv = { allow_unsafe = true }
+
 [crate.scopeguard]
 extra_kv = { allow_unsafe = true }
 
