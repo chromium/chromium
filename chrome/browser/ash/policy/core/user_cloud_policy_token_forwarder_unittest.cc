@@ -208,8 +208,7 @@ class UserCloudPolicyTokenForwarderTest : public testing::Test {
   void IssueOAuthTokenError() {
     identity_test_env_profile_adaptor_->identity_test_env()
         ->WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-            GoogleServiceAuthError(
-                GoogleServiceAuthError::State::SERVICE_UNAVAILABLE));
+            GoogleServiceAuthError::FromServiceUnavailable(""));
   }
 
   // Simulates CloudPolicyService changing state to initialized.

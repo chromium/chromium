@@ -388,8 +388,8 @@ TEST_F(EntryPointEligibilityManagerTest,
   identity_test_env_adaptor_->identity_test_env()
       ->UpdatePersistentErrorOfRefreshTokenForAccount(
           account_info.account_id,
-          GoogleServiceAuthError(
-              GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+          GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+              GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
   EXPECT_EQ(notified_eligibility, false);
 }
 

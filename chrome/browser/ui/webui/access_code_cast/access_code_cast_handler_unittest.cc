@@ -271,8 +271,8 @@ class AccessCodeCastHandlerTest : public ChromeRenderViewHostTestHarness {
         identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
     identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
         account_id,
-        GoogleServiceAuthError(
-            GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS));
+        GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+            GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
   }
 
   const MediaSinkInternal& cast_sink_1() { return cast_sink_1_; }

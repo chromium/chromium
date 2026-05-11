@@ -449,7 +449,7 @@ TEST_F(IndigoApiClientTest, GenerateAuthError) {
   client.Generate(kTestBytes, future.GetCallback());
 
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_UNAVAILABLE));
+      GoogleServiceAuthError::FromServiceUnavailable(""));
 
   auto result = future.Get();
   ASSERT_FALSE(result.has_value());

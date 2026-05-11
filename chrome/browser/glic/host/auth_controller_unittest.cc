@@ -182,8 +182,7 @@ TEST_F(AuthControllerTest,
 
   // Trigger error update.
   identity_test_env_->UpdatePersistentErrorOfRefreshTokenForAccount(
-      account_info.account_id,
-      GoogleServiceAuthError(GoogleServiceAuthError::SERVICE_ERROR));
+      account_info.account_id, GoogleServiceAuthError::FromServiceError(""));
 
   ASSERT_EQ(synchronizer_->copy_cookies_called_count(), 0);
 

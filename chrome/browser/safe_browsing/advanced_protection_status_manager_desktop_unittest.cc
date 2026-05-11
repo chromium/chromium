@@ -76,10 +76,11 @@ class AdvancedProtectionStatusManagerDesktopTest : public TestWithPrefService {
                                bool is_transient_error) {
     identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
         account_id,
-        GoogleServiceAuthError(
-            is_transient_error
-                ? GoogleServiceAuthError::CONNECTION_FAILED
-                : GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+        is_transient_error
+            ? GoogleServiceAuthError::FromConnectionError(net::ERR_FAILED)
+            : GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+                  GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                      UNKNOWN));
   }
 
  protected:

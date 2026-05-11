@@ -305,8 +305,8 @@ TEST_F(ComposeEnablingTest, SignedInErrorTest) {
       kEmail, signin::ConsentLevel::kSignin);
   identity_test_env_.UpdatePersistentErrorOfRefreshTokenForAccount(
       account_info.account_id,
-      GoogleServiceAuthError(
-          GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS));
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
 
   CheckIsEnabledError(compose_enabling_.get(),
                       compose::ComposeShowStatus::kSignedOut);
