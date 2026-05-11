@@ -5468,6 +5468,10 @@ if (!is_android) {
         "../browser/feedback/show_feedback_page_browsertest.cc",
         "../browser/file_system_access/cloud_identifier/cloud_identifier_util_ash_browsertest.cc",
         "../browser/lifetime/application_lifetime_chromeos_browsertest.cc",
+
+        # TODO(crbug.com/510716187): Enable for other platforms once macOS native
+        # window ID translation is implemented.
+        "../browser/media/webrtc/capture_handle_app_window_browsertest.cc",
         "../browser/media/webrtc/get_all_screens_media_browsertest.cc",
         "../browser/media/webrtc/multi_capture/multi_capture_data_service_browsertest.cc",
         "../browser/media/webrtc/multi_capture/multi_capture_usage_indicator_service_browsertest.cc",

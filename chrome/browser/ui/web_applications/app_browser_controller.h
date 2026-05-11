@@ -293,6 +293,10 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
   // Returns whether prevent close is enabled.
   bool IsPreventCloseEnabled() const;
 
+  // Returns true if the Capture Handle should be exposed for this
+  // app window when captured via window capture.
+  virtual bool IsWindowCaptureHandleAllowed() const;
+
 #if !BUILDFLAG(IS_CHROMEOS)
   // Whether the browser should show the profile menu button in the toolbar.
   // Not appliccable to ChromeOS, because apps can be installed only for
