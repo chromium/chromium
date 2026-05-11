@@ -1350,6 +1350,11 @@ def main():
     runtimes_triples_args['x86_64-unknown-linux-gnu'] = {
         "args": [
             'CMAKE_SYSROOT=%s' % sysroot_amd64,
+            # Enable CET IBT so that binaries compiled with
+            # -fcf-protection=branch can enable kernel IBT enforcement.
+            'CMAKE_C_FLAGS=-fcf-protection=branch',
+            'CMAKE_CXX_FLAGS=-fcf-protection=branch',
+            'CMAKE_ASM_FLAGS=-fcf-protection=branch',
         ],
         "profile": True,
         "sanitizers": True,
