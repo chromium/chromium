@@ -107,7 +107,9 @@ const base::FeatureParam<GlicToolbarButtonLocation>::Option
         {GlicToolbarButtonLocation::kRightOfOmnibox,
          kGlicToolbarButtonLocationRightOfOmnibox},
         {GlicToolbarButtonLocation::kLeftOfProfileChip,
-         kGlicToolbarButtonLocationLeftOfProfileChip}};
+         kGlicToolbarButtonLocationLeftOfProfileChip},
+        {GlicToolbarButtonLocation::kLeftOfProfileChipWithBackground,
+         kGlicToolbarButtonLocationLeftOfProfileChipWithBackground}};
 
 const base::FeatureParam<GlicToolbarButtonLocation>
     kGlicToolbarButtonLocationParam{

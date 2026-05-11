@@ -57,6 +57,7 @@ BASE_DECLARE_FEATURE(kGlicHorizontalTabToolbarButton);
 enum class GlicToolbarButtonLocation {
   kRightOfOmnibox,
   kLeftOfProfileChip,
+  kLeftOfProfileChipWithBackground,
 };
 BASE_DECLARE_FEATURE(kGlicToolbarButtonLocation);
 extern const base::FeatureParam<GlicToolbarButtonLocation>
@@ -67,6 +68,9 @@ inline constexpr char kGlicToolbarButtonLocationRightOfOmnibox[] =
     "RightOfOmnibox";
 inline constexpr char kGlicToolbarButtonLocationLeftOfProfileChip[] =
     "LeftOfProfileChip";
+inline constexpr char
+    kGlicToolbarButtonLocationLeftOfProfileChipWithBackground[] =
+        "LeftOfProfileChipWithBackground";
 
 BASE_DECLARE_FEATURE(kGlicButtonAutoSummarize);
 

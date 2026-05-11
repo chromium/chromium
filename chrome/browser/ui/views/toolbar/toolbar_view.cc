@@ -459,9 +459,10 @@ void ToolbarView::Init() {
   }
 
   bool is_glic_left_of_profile =
-      base::FeatureList::IsEnabled(features::kGlicToolbarButtonLocation) &&
       features::kGlicToolbarButtonLocationParam.Get() ==
-          features::GlicToolbarButtonLocation::kLeftOfProfileChip;
+          features::GlicToolbarButtonLocation::kLeftOfProfileChip ||
+      features::kGlicToolbarButtonLocationParam.Get() ==
+          features::GlicToolbarButtonLocation::kLeftOfProfileChipWithBackground;
   if (glic::GlicEnabling::IsProfileEligible(browser_view_->GetProfile()) &&
       !is_glic_left_of_profile) {
     InitGlicContainer();

@@ -3817,10 +3817,15 @@ const FeatureEntry::FeatureParam kGlicToolbarButtonLocation_LeftOfProfile[] = {
     {"glic-toolbar-button-location", "LeftOfProfileChip"}};
 const FeatureEntry::FeatureParam kGlicToolbarButtonLocation_RightOfOmnibox[] = {
     {"glic-toolbar-button-location", "RightOfOmnibox"}};
+const FeatureEntry::FeatureParam
+    kGlicToolbarButtonLocation_LeftOfProfileChipWithBackground[] = {
+        {"glic-toolbar-button-location", "LeftOfProfileChipWithBackground"}};
 
 const FeatureEntry::FeatureVariation kGlicToolbarButtonLocationVariations[] = {
     {"Left of Profile", kGlicToolbarButtonLocation_LeftOfProfile, nullptr},
     {"Right of Omnibox", kGlicToolbarButtonLocation_RightOfOmnibox, nullptr},
+    {"Left of Profile with Background",
+     kGlicToolbarButtonLocation_LeftOfProfileChipWithBackground, nullptr},
 };
 
 const FeatureEntry::FeatureParam kGlicGuestUrlPresetTypeAutopush[] = {
