@@ -241,5 +241,36 @@ TEST_F(PopupSearchBarViewTest, SetLoading) {
   EXPECT_TRUE(view->GetSearchIconForTesting()->GetVisible());
 }
 
+// Tests that pressing the Enter (VKEY_RETURN) key synchronously stops the
+// debounced input changed timer, preventing any trailing incremental queries
+// from executing after a full search is submitted.
+TEST_F(PopupSearchBarViewTest, PressingEnterStopsInputChangedTimer) {
+  std::unique_ptr<PopupSearchBarView> view =
+      std::make_unique<PopupSearchBarView>(u"placeholder", delegate());
+
+  // We expect the Enter key to be passed to the delegate, and we return true.
+  EXPECT_CALL(delegate(), SearchBarHandleKeyPressed)
+      .WillOnce([](const ui::KeyEvent& event) {
+        return event.key_code() == ui::VKEY_RETURN;
+      });
+
+  // Because Enter stops the timer, SearchBarOnInputChanged should never be
+  // called.
+  EXPECT_CALL(delegate(), SearchBarOnInputChanged).Times(0);
+
+  // Set input text, starting the debouncing timer.
+  view->SetInputTextForTesting(u"input text");
+
+  // Simulate pressing Enter by invoking the key event handler on the view.
+  ui::KeyEvent key_event(ui::EventType::kKeyPressed, ui::VKEY_RETURN,
+                         ui::EF_NONE);
+  view->HandleKeyEvent(nullptr, key_event);
+
+  // Fast forward by the full delay, and verify that the callback was not
+  // called.
+  task_environment()->FastForwardBy(
+      PopupSearchBarView::kInputChangeCallbackDelay);
+}
+
 }  // namespace
 }  // namespace autofill
