@@ -2095,11 +2095,6 @@
       name: "DateTimeInputTypeEarlyAdvanceFix",
       status: "stable",
     },
-    {
-      // crbug.com/40153320
-      name: "DateTimeLocalArabicCommaWorkaround",
-      status: "stable",
-    },
     // https://crbug.com/448174611
     {
       name: "DeclarativeCSSModules",

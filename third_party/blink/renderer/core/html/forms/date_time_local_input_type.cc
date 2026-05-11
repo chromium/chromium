@@ -177,8 +177,7 @@ void DateTimeLocalInputType::SetupLayoutParameters(
 
   // Workaround for an Arabic date-time format issue.
   // TODO(crbug.com/40153320): Support ARABIC COMMA.
-  if (RuntimeEnabledFeatures::DateTimeLocalArabicCommaWorkaroundEnabled() &&
-      layout_parameters.locale.IsRTL()) {
+  if (layout_parameters.locale.IsRTL()) {
     layout_parameters.date_time_format =
         layout_parameters.date_time_format.RemoveCharacters(
             [](UChar ch) -> bool { return ch == uchar::kArabicComma; });
