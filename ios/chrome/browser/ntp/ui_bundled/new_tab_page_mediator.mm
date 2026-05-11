@@ -1009,7 +1009,7 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
   __weak __typeof(self) weakSelf = self;
   _imageTranscoder->TranscodeImage(
       [NSData dataWithBytes:imageData.data() length:imageData.length()],
-      base::SysUTF8ToNSString(metadata.mime_type), nil, nil, @1.0,
+      base::SysUTF8ToNSString(metadata.mime_type), nil, nil, nil,
       base::BindOnce(^(NSData* safeData, NSError* error) {
         UIImage* image = [UIImage imageWithData:safeData];
         if (image) {
