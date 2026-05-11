@@ -86,8 +86,7 @@ bool IsDisallowedCustomSearchEngine(const TemplateURL* template_url) {
     return false;
   }
 
-  return template_url->prepopulate_id() == 0 &&
-         !template_url->CreatedByPolicy() &&
+  return !template_url->CreatedByPolicy() &&
          template_url->starter_pack_id() ==
              template_url_starter_pack_data::StarterPackId::kNone &&
          !SearchEngineAllowlist::GetInstance()->IsAllowed(template_url->url());
@@ -252,7 +251,6 @@ SearchIntegrityReport SearchIntegrity::CheckSearchEnginesReport() {
           break;
         }
       }
-      break;
     }
   }
 

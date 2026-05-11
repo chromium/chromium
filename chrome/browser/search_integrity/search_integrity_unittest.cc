@@ -70,6 +70,16 @@ class SearchIntegrityTest : public testing::Test {
     return test_util_->model()->Add(std::make_unique<TemplateURL>(data));
   }
 
+  void ClearAllButDefault() {
+    const TemplateURL* def_turl =
+        test_util_->model()->GetDefaultSearchProvider();
+    for (const auto& turl : test_util_->model()->GetTemplateURLs()) {
+      if (turl != def_turl) {
+        test_util_->model()->Remove(turl);
+      }
+    }
+  }
+
   void SetDefaultSearchProvider(TemplateURL* template_url) {
     test_util_->model()->SetUserSelectedDefaultSearchProvider(template_url);
   }
@@ -95,6 +105,7 @@ TEST_F(SearchIntegrityTest, CheckCustomSearchEngines_ExtractsNoReferralParam) {
       AddSearchEngine(u"No Referral Engine", "http://custom.com");
   SetDefaultSearchProvider(turl);
   TriggerAllowlistInitialized();
+  ClearAllButDefault();
   SearchIntegrityReport report = CheckSearchEnginesReport();
 
   EXPECT_TRUE(report.has_custom_option);
@@ -280,17 +291,6 @@ TEST_F(SearchIntegrityTest, CheckDefaultSearchEngine_DefaultIsStarterPack) {
                                       /*created_by_policy=*/false,
                                       /*prepopulate_id=*/0,
                                       /*starter_pack_id=*/1);
-  SetDefaultSearchProvider(turl);
-
-  SearchIntegrityReport report = CheckSearchEnginesReport();
-
-  EXPECT_FALSE(report.is_default_custom);
-}
-
-TEST_F(SearchIntegrityTest, CheckDefaultSearchEngine_DefaultIsPrepopulated) {
-  TemplateURL* turl =
-      AddSearchEngine(u"Prepopulated", "http://prepopulated.com",
-                      /*created_by_policy=*/false, /*prepopulate_id=*/1);
   SetDefaultSearchProvider(turl);
 
   SearchIntegrityReport report = CheckSearchEnginesReport();
