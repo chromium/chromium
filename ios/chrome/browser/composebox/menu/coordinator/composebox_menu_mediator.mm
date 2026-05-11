@@ -43,7 +43,12 @@
 
 - (void)processImageItems:(NSArray<ComposeboxPickerImageResult*>*)imageItems {
   NSMutableArray<ComposeboxPickerImageResult*>* updatedImageResults =
-      [_preselection.images mutableCopy];
+      [[NSMutableArray alloc] init];
+
+  if (_preselection.images) {
+    updatedImageResults = [_preselection.images mutableCopy];
+  }
+
   [updatedImageResults addObjectsFromArray:imageItems];
 
   ComposeboxAttachmentSelection* selection =
