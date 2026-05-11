@@ -2536,7 +2536,7 @@ TEST_P(PasswordManagerTest, SyncCredentialsNotSaved) {
       .WillByDefault(Return(true));
   ON_CALL(*client_.GetStoreResultFilter(), IsSyncAccountEmail(_))
       .WillByDefault(Return(true));
-  EXPECT_CALL(reuse_manager_, MaybeSavePasswordHash(_, _));
+  EXPECT_CALL(reuse_manager_, MaybeSavePasswordHash);
 
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(form_data.url()))
       .WillRepeatedly(Return(true));
@@ -2601,7 +2601,7 @@ TEST_P(PasswordManagerTest,
       .WillByDefault(Return(false));
   ON_CALL(*client_.GetStoreResultFilter(), IsSyncAccountEmail(_))
       .WillByDefault(Return(true));
-  EXPECT_CALL(reuse_manager_, MaybeSavePasswordHash(_, _));
+  EXPECT_CALL(reuse_manager_, MaybeSavePasswordHash);
 
   EXPECT_CALL(client_, IsNewTabPage()).WillRepeatedly(Return(true));
   OnPasswordFormSubmitted(form_data);
@@ -3832,7 +3832,7 @@ TEST_P(PasswordManagerTest, SaveOtherGaiaPasswordHash) {
 
   ON_CALL(*client_.GetStoreResultFilter(), ShouldSaveGaiaPasswordHash(_))
       .WillByDefault(Return(true));
-  EXPECT_CALL(reuse_manager_, MaybeSavePasswordHash(_, _));
+  EXPECT_CALL(reuse_manager_, MaybeSavePasswordHash);
 
   client_.FilterAllResultsForSaving();
   OnPasswordFormSubmitted(form_data);

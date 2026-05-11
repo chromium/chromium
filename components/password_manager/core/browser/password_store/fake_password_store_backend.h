@@ -22,8 +22,6 @@ class SequencedTaskRunner;
 
 namespace password_manager {
 
-struct PasswordForm;
-
 class SmartBubbleStatsStore;
 
 using PasswordMap = std::map<std::string /* signon_realm */,
@@ -52,7 +50,7 @@ class FakePasswordStoreBackend : public PasswordStoreBackend {
   ~FakePasswordStoreBackend() override;
 
   void TriggerOnLoginsRetainedForAndroid(
-      const std::vector<PasswordForm>& password_forms);
+      const std::vector<StoredCredential>& credentials);
   void ReturnErrorOnRequest(
       PasswordStoreBackendError password_store_backend_error);
   void SetError(ActionableError error);

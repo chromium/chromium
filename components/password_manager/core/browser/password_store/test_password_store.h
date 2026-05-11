@@ -63,7 +63,7 @@ class TestPasswordStore : public PasswordStore {
   void CallSyncEnabledOrDisabledCallbacks();
 
   void TriggerOnLoginsRetainedForAndroid(
-      const std::vector<PasswordForm>& password_forms);
+      const std::vector<StoredCredential>& credentials);
 
   void ReturnErrorOnRequest(
       PasswordStoreBackendError password_store_backend_error);

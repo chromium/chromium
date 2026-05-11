@@ -42,7 +42,7 @@ struct MatchingReusedCredential {
       GURL url,
       std::u16string username,
       PasswordForm::Store in_store = PasswordForm::Store::kNotSet);
-  explicit MatchingReusedCredential(const PasswordForm& form);
+  explicit MatchingReusedCredential(const StoredCredential& cred);
   MatchingReusedCredential(const MatchingReusedCredential& other);
   MatchingReusedCredential(MatchingReusedCredential&& other);
   ~MatchingReusedCredential();

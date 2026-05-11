@@ -15,11 +15,11 @@ MatchingReusedCredential::MatchingReusedCredential(std::string signon_realm,
       username(std::move(username)),
       in_store(in_store) {}
 
-MatchingReusedCredential::MatchingReusedCredential(const PasswordForm& form)
-    : MatchingReusedCredential(form.signon_realm,
-                               form.url,
-                               form.username_value,
-                               form.in_store) {}
+MatchingReusedCredential::MatchingReusedCredential(const StoredCredential& cred)
+    : MatchingReusedCredential(cred.signon_realm,
+                               cred.url,
+                               cred.username_value,
+                               cred.in_store) {}
 MatchingReusedCredential::MatchingReusedCredential(
     const MatchingReusedCredential& other) = default;
 MatchingReusedCredential::MatchingReusedCredential(
