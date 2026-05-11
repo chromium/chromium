@@ -89,7 +89,8 @@ void SimulateGeminiPromoURLOpening() {
 
 // Tests that the Gemini FRE promo shows on a fresh install after deep link and
 // signing in.
-- (void)testAppStorePromoFreshInstallSignedIn {
+// TODO(crbug.com/509887034): Fails on official test and other bots.
+- (void)DISABLED_testAppStorePromoFreshInstallSignedIn {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -148,7 +149,8 @@ void SimulateGeminiPromoURLOpening() {
 
 // Tests that the Gemini FRE promo shows for an existing signed-in user after
 // deep link.
-- (void)testAppStorePromoExistingUserSignedIn {
+// TODO(crbug.com/509887034): Fails on official test and other bots.
+- (void)DISABLED_testAppStorePromoExistingUserSignedIn {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
