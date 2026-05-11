@@ -1160,6 +1160,13 @@ class CONTENT_EXPORT WebContentsImpl
                          bool should_show_context_menu) override;
   void MoveCaret(const gfx::Point& extent) override;
   base::UnguessableToken GetCompositorFrameSinkGroupingId() const override;
+
+  // Called just after a surface embed child web contents is attached.
+  void SurfaceEmbedChildWebContentsAttached(
+      WebContents* inner_web_contents,
+      RenderFrameHost* embedder_render_frame_host);
+  // Called just after a surface embed child web contents is detached.
+  void SurfaceEmbedChildWebContentsDetached(WebContents* inner_web_contents);
   void AdjustSelectionByCharacterOffset(int start_adjust,
                                         int end_adjust,
                                         bool show_selection_menu) override;

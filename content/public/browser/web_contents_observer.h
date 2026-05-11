@@ -709,6 +709,26 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
   virtual void InnerWebContentsAttached(WebContents* inner_web_contents,
                                         RenderFrameHost* render_frame_host) {}
 
+  // Called when a SurfaceEmbed child WebContents is attached to its embedder.
+  // `inner_web_contents` is the child WebContents. `embedder_render_frame_host`
+  // is the outer document's RenderFrameHost that embeds it.
+  //
+  // NOTE: This API is intended only for a very specific, narrow use-case.
+  // Very few observers should need this. Do not use this unless you are
+  // specifically managing SurfaceEmbed relationships.
+  virtual void SurfaceEmbedChildWebContentsAttached(
+      WebContents* inner_web_contents,
+      RenderFrameHost* embedder_render_frame_host) {}
+
+  // Called when a SurfaceEmbed child WebContents is detached from its parent.
+  // `inner_web_contents` is the child WebContents.
+  //
+  // NOTE: This API is intended only for a very specific, narrow use-case.
+  // Very few observers should need this. Do not use this unless you are
+  // specifically managing SurfaceEmbed relationships.
+  virtual void SurfaceEmbedChildWebContentsDetached(
+      WebContents* inner_web_contents) {}
+
   // Invoked when WebContents::Clone() was used to clone a WebContents.
   virtual void DidCloneToNewWebContents(WebContents* old_web_contents,
                                         WebContents* new_web_contents) {}

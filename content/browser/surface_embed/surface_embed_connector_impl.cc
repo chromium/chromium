@@ -19,6 +19,7 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "third_party/blink/public/common/frame/frame_visual_properties.h"
 #include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom.h"
+#include "third_party/blink/public/mojom/frame/lifecycle.mojom-shared.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_result.mojom.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/compositor/compositor.h"
@@ -50,9 +51,12 @@ class SurfaceEmbedConnectorImpl::WCObserver : public WebContentsObserver {
 
 // static
 void SurfaceEmbedConnector::Attach(WebContents* child_web_contents,
-                                   WebContents* parent_web_contents,
+                                   RenderFrameHost* outer_document_rfh,
                                    SurfaceEmbedConnector::Delegate* delegate) {
   CHECK(child_web_contents);
+  CHECK(outer_document_rfh);
+  WebContents* parent_web_contents =
+      WebContents::FromRenderFrameHost(outer_document_rfh);
   CHECK(parent_web_contents);
   // Must Detach the child before re-Attaching.
   CHECK(!child_web_contents->GetSurfaceEmbedConnector());
@@ -60,10 +64,29 @@ void SurfaceEmbedConnector::Attach(WebContents* child_web_contents,
       child_web_contents, parent_web_contents, delegate));
   static_cast<WebContentsImpl*>(child_web_contents)
       ->SetSurfaceEmbedConnector(std::move(connector));
+
+  static_cast<WebContentsImpl*>(parent_web_contents)
+      ->SurfaceEmbedChildWebContentsAttached(child_web_contents,
+                                             outer_document_rfh);
 }
 
 // static
 void SurfaceEmbedConnector::Detach(WebContents* child_web_contents) {
+  if (auto* connector = static_cast<SurfaceEmbedConnectorImpl*>(
+          child_web_contents->GetSurfaceEmbedConnector())) {
+    // Note: we set visibility to not-rendered prior to detachment because if
+    // the WebContents isn't attached to any surface, it won't be rendered so it
+    // SHOULD have the visibility of kNotRendered, to prevent
+    // visibility/intersection notifications from being sent to it.
+    connector->OnVisibilityChanged(blink::mojom::FrameVisibility::kNotRendered);
+
+    if (WebContentsImpl* parent_web_contents =
+            connector->parent_web_contents()) {
+      parent_web_contents->SurfaceEmbedChildWebContentsDetached(
+          child_web_contents);
+    }
+  }
+
   // Connector will be freed by ClearSurfaceEmbedConnector().
   static_cast<WebContentsImpl*>(child_web_contents)
       ->ClearSurfaceEmbedConnector();
@@ -423,11 +446,9 @@ void SurfaceEmbedConnectorImpl::OnVisibilityChanged(
     return;
   }
 
-  // TODO(crbug.com/496266441): Once we have upstreamed the fix to "Teach
-  // performance manager about our things" so that it can find the parent frame,
-  // propagate the change in visibility to the current child render frame host
-  // (if there is one).
-  // current_child_frame_host()->VisibilityChanged(visibility_);
+  if (current_child_frame_host()) {
+    current_child_frame_host()->VisibilityChanged(visibility_);
+  }
 
   switch (visibility) {
     case blink::mojom::FrameVisibility::kRenderedInViewport:

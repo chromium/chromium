@@ -8,6 +8,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "components/performance_manager/embedder/performance_manager_registry.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/performance_manager_tab_helper.h"
 #include "components/performance_manager/public/graph/frame_node.h"
@@ -18,6 +19,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/surface_embed_connector.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
@@ -265,6 +267,52 @@ IN_PROC_BROWSER_TEST_F(PerformanceManagerFencedFrameBrowserTest,
   // The outer document of the fenced frame is available.
   EXPECT_EQ(fenced_frame_node->parent_or_outer_document_or_embedder(),
             main_frame_node);
+}
+
+IN_PROC_BROWSER_TEST_F(PerformanceManagerBrowserTest,
+                       SetViewportIntersectionForSurfaceEmbedChild) {
+  content::WebContents* parent_contents = shell()->web_contents();
+  ASSERT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
+
+  // Create a child WebContents directly without a Shell window to avoid Android
+  // crashes.
+  content::WebContents::CreateParams create_params(
+      parent_contents->GetBrowserContext());
+  std::unique_ptr<content::WebContents> child_contents_owner =
+      content::WebContents::Create(create_params);
+  content::WebContents* child_contents = child_contents_owner.get();
+
+  content::SurfaceEmbedConnector::Attach(
+      child_contents, parent_contents->GetPrimaryMainFrame(), nullptr);
+
+  auto page_node =
+      PerformanceManager::GetPrimaryPageNodeForWebContents(child_contents);
+  ASSERT_TRUE(page_node);
+
+  const FrameNode* embedder_frame = page_node->GetEmbedderFrameNode();
+  ASSERT_TRUE(embedder_frame);
+  EXPECT_EQ(
+      embedder_frame->GetPageNode(),
+      PerformanceManager::GetPrimaryPageNodeForWebContents(parent_contents)
+          .get());
+
+  auto* frame_node = page_node->GetMainFrameNode();
+  ASSERT_TRUE(frame_node);
+
+  auto* frame_node_impl = FrameNodeImpl::FromNode(frame_node);
+
+  // This should not crash. We use kNotIntersecting to ensure the round-tripping
+  // behavior is tested and to confirm that the "set" worked for surface embed,
+  // as kIntersecting is the default return value.
+  frame_node_impl->SetViewportIntersection(
+      ViewportIntersection::kNotIntersecting);
+  EXPECT_EQ(ViewportIntersection::kNotIntersecting,
+            frame_node_impl->GetViewportIntersection());
+
+  content::SurfaceEmbedConnector::Detach(child_contents);
+
+  // The embedder frame node should be null after detaching.
+  EXPECT_FALSE(page_node->GetEmbedderFrameNode());
 }
 
 }  // namespace performance_manager

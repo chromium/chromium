@@ -144,11 +144,8 @@ void SurfaceEmbedHost::AttachConnector(
   }
 
   child_contents_ = web_contents_to_attach->GetWeakPtr();
-  content::WebContents* parent_web_contents =
-      content::WebContents::FromRenderFrameHost(
-          &collection_->render_frame_host());
-  content::SurfaceEmbedConnector::Attach(web_contents_to_attach,
-                                         parent_web_contents, this);
+  content::SurfaceEmbedConnector::Attach(
+      web_contents_to_attach, &collection_->render_frame_host(), this);
 
   auto* connector = GetConnector();
   CHECK(connector->GetFrameSinkId().is_valid());

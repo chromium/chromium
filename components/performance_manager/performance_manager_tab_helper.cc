@@ -588,6 +588,32 @@ void PerformanceManagerTabHelper::InnerWebContentsAttached(
   page->SetEmbedderFrameNode(frame);
 }
 
+void PerformanceManagerTabHelper::SurfaceEmbedChildWebContentsAttached(
+    content::WebContents* inner_web_contents,
+    content::RenderFrameHost* embedder_render_frame_host) {
+  auto* helper = FromWebContents(inner_web_contents);
+  CHECK(helper);
+  auto* page = helper->page_node_.get();
+  CHECK(page);
+  auto* frame = GetFrameNode(embedder_render_frame_host);
+
+  // For a surface embed, the RFH should already have been seen.
+  CHECK(frame);
+  CHECK(!page->embedder_frame_node());
+  page->SetEmbedderFrameNode(frame);
+}
+
+void PerformanceManagerTabHelper::SurfaceEmbedChildWebContentsDetached(
+    content::WebContents* inner_web_contents) {
+  auto* helper = FromWebContents(inner_web_contents);
+  CHECK(helper);
+  auto* page = helper->page_node_.get();
+  CHECK(page);
+
+  CHECK(page->embedder_frame_node());
+  page->ClearEmbedderFrameNode();
+}
+
 void PerformanceManagerTabHelper::WebContentsDestroyed() {
   TearDownAndSelfDelete();
   // `this` is now invalid.

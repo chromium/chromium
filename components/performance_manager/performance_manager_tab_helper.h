@@ -97,6 +97,11 @@ class PerformanceManagerTabHelper
   void InnerWebContentsAttached(
       content::WebContents* inner_web_contents,
       content::RenderFrameHost* render_frame_host) override;
+  void SurfaceEmbedChildWebContentsAttached(
+      content::WebContents* inner_web_contents,
+      content::RenderFrameHost* embedder_render_frame_host) override;
+  void SurfaceEmbedChildWebContentsDetached(
+      content::WebContents* inner_web_contents) override;
   void WebContentsDestroyed() override;
   void DidUpdateFaviconURL(
       content::RenderFrameHost* render_frame_host,

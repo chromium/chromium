@@ -202,6 +202,15 @@ class MockWebContentsObserver : public WebContentsObserver {
                RenderFrameHost* render_frame_host),
               (override));
   MOCK_METHOD(void,
+              SurfaceEmbedChildWebContentsAttached,
+              (WebContents * inner_web_contents,
+               RenderFrameHost* embedder_render_frame_host),
+              (override));
+  MOCK_METHOD(void,
+              SurfaceEmbedChildWebContentsDetached,
+              (WebContents * inner_web_contents),
+              (override));
+  MOCK_METHOD(void,
               DidCloneToNewWebContents,
               (WebContents* old_web_contents, WebContents* new_web_contents),
               (override));

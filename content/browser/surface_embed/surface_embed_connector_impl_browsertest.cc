@@ -79,9 +79,9 @@ class SurfaceEmbedConnectorImplBrowserTest : public ContentBrowserTest {
   }
 
   struct ConnectorTestContext {
+    std::unique_ptr<WebContents> parent_web_contents;
     std::unique_ptr<WebContents> child_web_contents;
     raw_ptr<RenderWidgetHostViewChildFrame> rwhvcf;
-    std::unique_ptr<WebContents> parent_web_contents;
     raw_ptr<SurfaceEmbedConnectorImpl> connector;
   };
 
@@ -99,8 +99,10 @@ class SurfaceEmbedConnectorImplBrowserTest : public ContentBrowserTest {
     WebContentsImpl* child_web_contents_impl =
         static_cast<WebContentsImpl*>(context.child_web_contents.get());
 
-    SurfaceEmbedConnector::Attach(child_web_contents_impl,
-                                  parent_web_contents_impl, delegate);
+    EXPECT_TRUE(NavigateToURL(parent_web_contents_impl, GURL("about:blank")));
+    SurfaceEmbedConnector::Attach(
+        child_web_contents_impl,
+        parent_web_contents_impl->GetPrimaryMainFrame(), delegate);
 
     context.connector = static_cast<SurfaceEmbedConnectorImpl*>(
         child_web_contents_impl->GetSurfaceEmbedConnector());
@@ -178,6 +180,32 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest, ConstGetters) {
             parent_impl->GetDelegateView());
 }
 
+IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest, Detach) {
+  MockSurfaceEmbedConnectorDelegate delegate;
+  auto context = SetupConnectorTest(&delegate);
+
+  auto* child_impl =
+      static_cast<WebContentsImpl*>(context.child_web_contents.get());
+
+  auto* connector = child_impl->GetSurfaceEmbedConnector();
+  connector->OnVisibilityChanged(
+      blink::mojom::FrameVisibility::kRenderedInViewport);
+  EXPECT_EQ(context.child_web_contents->GetVisibility(),
+            content::Visibility::VISIBLE);
+
+  // Detach should set it back to kNotRendered, although we cannot directly
+  // observe the connector after detachment since it is destroyed. We ensure
+  // calling Detach does not trigger failed CHECKs in performance_manager
+  // (e.g., in FrameVisibilityDecorator::OnViewportIntersectionChanged and
+  // FrameNodeImpl::SetViewportIntersection) and correctly clears the connector.
+  context.connector = nullptr;  // Clear raw_ptr to avoid DanglingPtr crash.
+  context.rwhvcf = nullptr;     // Clear raw_ptr to avoid DanglingPtr crash.
+  SurfaceEmbedConnector::Detach(context.child_web_contents.get());
+  EXPECT_FALSE(context.child_web_contents->GetSurfaceEmbedConnector());
+  EXPECT_EQ(context.child_web_contents->GetVisibility(),
+            content::Visibility::HIDDEN);
+}
+
 IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest, Attach) {
   MockSurfaceEmbedConnectorDelegate delegate;
   auto context = SetupConnectorTest(&delegate);
@@ -210,9 +238,6 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
   // respectively). These tests should be updated to verify the actual behavior
   // once implemented.
 
-  EXPECT_EQ(connector->GetParentRenderWidgetHostView(), nullptr);
-  EXPECT_TRUE(
-      NavigateToURL(context.parent_web_contents.get(), GURL("about:blank")));
   EXPECT_NE(connector->GetParentRenderWidgetHostView(), nullptr);
   EXPECT_EQ(connector->GetRootRenderWidgetHostView(),
             connector->GetParentRenderWidgetHostView());
@@ -458,16 +483,17 @@ IN_PROC_BROWSER_TEST_F(SurfaceEmbedConnectorImplBrowserTest,
       WebContents::Create(create_params);
   WebContentsImpl* parent_impl =
       static_cast<WebContentsImpl*>(parent_web_contents.get());
-  SurfaceEmbedConnector::Attach(parent_impl, grandparent_impl,
-                                &parent_delegate);
+  SurfaceEmbedConnector::Attach(
+      parent_impl, grandparent_impl->GetPrimaryMainFrame(), &parent_delegate);
 
   // Setup Child
   std::unique_ptr<WebContents> child_web_contents =
       WebContents::Create(create_params);
   WebContentsImpl* child_impl =
       static_cast<WebContentsImpl*>(child_web_contents.get());
-  SurfaceEmbedConnector::Attach(child_impl, parent_impl, &child_delegate);
-
+  EXPECT_TRUE(NavigateToURL(parent_impl, GURL("about:blank")));
+  SurfaceEmbedConnector::Attach(child_impl, parent_impl->GetPrimaryMainFrame(),
+                                &child_delegate);
   auto* child_connector = static_cast<SurfaceEmbedConnectorImpl*>(
       child_impl->GetSurfaceEmbedConnector());
 
