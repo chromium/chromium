@@ -590,7 +590,7 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
         drive_picker_host::mojom::DrivePickerHostHandler, DrivePickerHostUI>(
         map);
     RegisterWebUIControllerInterfaceBinder<
-        drive_picker_host_untrusted::mojom::DrivePickerUntrustedHostHandler,
+        drive_picker_host_untrusted::mojom::PageHandlerFactory,
         DrivePickerUntrustedHostUI>(map);
   }
 
@@ -749,8 +749,7 @@ void PopulateChromeWebUIFrameInterfaceBrokersUntrustedPartsDesktop(
   if (base::FeatureList::IsEnabled(
           omnibox::kComposeboxDriveContextMenuOption)) {
     registry.ForWebUI<DrivePickerUntrustedHostUI>()
-        .Add<drive_picker_host_untrusted::mojom::
-                 DrivePickerUntrustedHostHandler>();
+        .Add<drive_picker_host_untrusted::mojom::PageHandlerFactory>();
   }
 }
 

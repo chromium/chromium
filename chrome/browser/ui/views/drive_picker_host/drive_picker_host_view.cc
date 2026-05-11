@@ -10,10 +10,10 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/compositor/layer.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view_utils.h"
-#include "ui/views/widget/widget.h"
 
 namespace {
 constexpr int kDefaultWidth = 800;
@@ -26,10 +26,18 @@ DrivePickerHostView::DrivePickerHostView(Profile* profile) {
   // before the WebUI content determines the final layout.
   SetPreferredSize(gfx::Size(kDefaultWidth, kDefaultHeight));
 
+  // Set the view to paint to a layer so that the view can be transparent over
+  // the web contents. This allows the web contents to appear like a floating
+  // dialog over the browser window.
+  SetPaintToLayer();
+  layer()->SetFillsBoundsOpaquely(false);
+  SetBackground(nullptr);
+  SetBorder(nullptr);
   SetLayoutManager(std::make_unique<views::FillLayout>());
   views::WebView* web_view =
       AddChildView(std::make_unique<views::WebView>(profile));
   view_tracker_.SetView(web_view);
+  web_view->SetBackground(nullptr);
 
   // Since the WebView was just created with a valid profile, GetWebContents()
   // is guaranteed to return a valid pointer. We use a CHECK here to assert

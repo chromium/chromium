@@ -54,7 +54,7 @@ class DrivePickerHostController : public content::WebContentsObserver {
 
   // Shows the Drive Picker Host (either a consent dialog or the picker
   // UI), and relays results to the provided result handler.
-  void ShowDrivePickerHost(
+  virtual void ShowDrivePickerHost(
       mojo::PendingRemote<drive_picker_host::mojom::DrivePickerResultHandler>
           result_handler);
 

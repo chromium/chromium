@@ -8,11 +8,16 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/drive_picker_host/drive_picker_host_view.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/base_window.h"
+#include "ui/compositor/layer.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/views/controls/webview/webview.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -27,18 +32,30 @@ void DrivePickerHostController::ShowDrivePickerHost(
     mojo::PendingRemote<drive_picker_host::mojom::DrivePickerResultHandler>
         result_handler) {
   // Ensure that we only have one Drive Picker Host view at a time.
-  CHECK(!widget_);
+  if (widget_) {
+    return;
+  }
+
+  ui::BaseWindow* window = browser_window_interface_->GetWindow();
+  if (!window) {
+    return;
+  }
 
   auto view = std::make_unique<DrivePickerHostView>(
       browser_window_interface_->GetProfile());
+  // Ensure the view has a non-zero preferred size before creating the widget.
+  // Mac does not support zero-sized windows, and this also ensures the dialog
+  // starts with the correct dimensions (covering the entire browser window).
+  view->SetPreferredSize(window->GetBounds().size());
 
-  gfx::NativeWindow native_window =
-      browser_window_interface_->GetWindow()->GetNativeWindow();
+  gfx::NativeWindow native_window = window->GetNativeWindow();
   if (!native_window) {
     return;
   }
 
   delegate_ = std::make_unique<views::DialogDelegate>();
+  delegate_->set_use_custom_frame(true);
+  delegate_->SetCanResize(false);
   // Ensure the widget is owned by the controller (via unique_ptr).
   delegate_->SetOwnershipOfNewWidget(
       views::Widget::InitParams::Ownership::CLIENT_OWNS_WIDGET);
@@ -68,14 +85,17 @@ void DrivePickerHostController::ShowDrivePickerHost(
 
   // Use standard Chrome constrained window utility to create and show the modal
   // picker overlay. This utility manages the lifecycle and positioning of the
-  // dialog relative to the browser window, ensuring it correctly handles window
-  // resizes and modality. Despite CreateBrowserModalDialogViews being
-  // deprecated, it is the only option for creating a resizable *browser-modal*
-  // dialog that supports a WebContents view.
+  // dialog relative to the browser window, ensuring it correctly handles
+  // window resizes and modality. Despite CreateBrowserModalDialogViews being
+  // deprecated, it is the only option for creating a resizable
+  // *browser-modal* dialog that supports a WebContents view.
   views::Widget* widget = constrained_window::CreateBrowserModalDialogViews(
       delegate_.get(), native_window);
 
   widget_.reset(widget);
+
+  widget_->SetBounds(window->GetBounds());
+
   widget_->MakeCloseSynchronous(
       base::BindOnce(&DrivePickerHostController::ResetControllerState,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -93,6 +113,7 @@ void DrivePickerHostController::ShowDrivePickerHost(
     pending_picker_result_handler_ = std::move(result_handler);
   }
 
+  widget_->Activate();
   widget_->Show();
 }
 
@@ -111,8 +132,10 @@ void DrivePickerHostController::DocumentOnLoadCompletedInPrimaryMainFrame() {
   // We use `pending_picker_result_handler_` to check if there was a request to
   // trigger the picker UI before the document finished loading. This controller
   // only manages a single active picker session at a time.
-  if (pending_picker_result_handler_ && widget_ && delegate_) {
-    views::AsViewClass<DrivePickerHostView>(delegate_->GetContentsView())
+  if (pending_picker_result_handler_ && widget_ &&
+      widget_->widget_delegate()->GetContentsView()) {
+    views::AsViewClass<DrivePickerHostView>(
+        widget_->widget_delegate()->GetContentsView())
         ->TriggerDrivePickerHostUi(std::move(pending_picker_result_handler_));
   }
 }

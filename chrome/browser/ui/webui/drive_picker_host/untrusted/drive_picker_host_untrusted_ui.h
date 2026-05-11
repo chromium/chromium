@@ -30,12 +30,12 @@ class DrivePickerUntrustedHostUIConfig
 
 // The WebUI controller for chrome-untrusted://drive-picker-host.
 // It implements DrivePickerBridge for communication from the Trusted side,
-// and DrivePickerUntrustedHostHandler for communication from the Untrusted JS.
+// and PageHandlerFactory for communication from the Untrusted JS.
 class DrivePickerUntrustedHostUI
     : public ui::UntrustedWebUIController,
       public drive_picker_host_untrusted::mojom::DrivePickerBridge,
-      public drive_picker_host_untrusted::mojom::
-          DrivePickerUntrustedHostHandler {
+      public drive_picker_host_untrusted::mojom::PageHandlerFactory,
+      public drive_picker_host_untrusted::mojom::PageHandler {
  public:
   explicit DrivePickerUntrustedHostUI(content::WebUI* web_ui);
   ~DrivePickerUntrustedHostUI() override;
@@ -46,37 +46,49 @@ class DrivePickerUntrustedHostUI
 
   void BindInterface(
       mojo::PendingReceiver<
-          drive_picker_host_untrusted::mojom::DrivePickerUntrustedHostHandler>
-          receiver);
+          drive_picker_host_untrusted::mojom::PageHandlerFactory> receiver);
 
   void BindInterface(
       mojo::PendingReceiver<
           drive_picker_host_untrusted::mojom::DrivePickerBridge> receiver);
 
-  // drive_picker_host_untrusted::mojom::DrivePickerUntrustedHostHandler:
-  void BindPage(mojo::PendingRemote<drive_picker_host_untrusted::mojom::Page>
-                    page) override;
+  // drive_picker_host_untrusted::mojom::PageHandlerFactory:
+  void CreatePageHandler(
+      mojo::PendingRemote<drive_picker_host_untrusted::mojom::Page> page,
+      mojo::PendingReceiver<drive_picker_host_untrusted::mojom::PageHandler>
+          handler) override;
 
   // drive_picker_host_untrusted::mojom::DrivePickerBridge:
   void ShowDrivePicker(
       mojo::PendingRemote<drive_picker_host::mojom::DrivePickerResultHandler>
-          result_handler) override;
+          result_handler,
+      drive_picker_host_untrusted::mojom::DrivePickerKeysPtr keys) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(DrivePickerUntrustedHostUITest,
                            ShowDrivePickerQueuesOnDisconnect);
 
-  mojo::Receiver<
-      drive_picker_host_untrusted::mojom::DrivePickerUntrustedHostHandler>
-      untrusted_host_receiver_{this};
+  mojo::Receiver<drive_picker_host_untrusted::mojom::PageHandlerFactory>
+      factory_receiver_{this};
+  mojo::Receiver<drive_picker_host_untrusted::mojom::PageHandler>
+      page_handler_receiver_{this};
   mojo::Receiver<drive_picker_host_untrusted::mojom::DrivePickerBridge>
       bridge_receiver_{this};
 
   mojo::Remote<drive_picker_host_untrusted::mojom::Page> page_;
 
-  // Stores a single request that arrived before the page was bound.
-  mojo::PendingRemote<drive_picker_host::mojom::DrivePickerResultHandler>
-      pending_request_;
+  // Data for a single request that arrived before the page was bound.
+  struct PendingRequest {
+    PendingRequest(
+        mojo::PendingRemote<drive_picker_host::mojom::DrivePickerResultHandler>
+            handler,
+        drive_picker_host_untrusted::mojom::DrivePickerKeysPtr keys);
+    ~PendingRequest();
+    mojo::PendingRemote<drive_picker_host::mojom::DrivePickerResultHandler>
+        result_handler;
+    drive_picker_host_untrusted::mojom::DrivePickerKeysPtr keys;
+  };
+  std::unique_ptr<PendingRequest> pending_request_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

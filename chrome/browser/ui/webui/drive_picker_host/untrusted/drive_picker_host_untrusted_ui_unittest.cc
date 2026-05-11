@@ -20,6 +20,10 @@
 
 namespace {
 
+constexpr char kAccessToken[] = "token";
+constexpr char kApiKey[] = "key";
+constexpr char kAppId[] = "id";
+
 class MockPage : public drive_picker_host_untrusted::mojom::Page {
  public:
   MockPage() = default;
@@ -33,7 +37,8 @@ class MockPage : public drive_picker_host_untrusted::mojom::Page {
   MOCK_METHOD(
       void,
       ShowDrivePicker,
-      (mojo::PendingRemote<drive_picker_host::mojom::DrivePickerResultHandler>),
+      (mojo::PendingRemote<drive_picker_host::mojom::DrivePickerResultHandler>,
+       drive_picker_host_untrusted::mojom::DrivePickerKeysPtr),
       (override));
 
  private:
@@ -100,17 +105,31 @@ TEST_F(DrivePickerUntrustedHostUITest, ShowDrivePickerForwardsToPage) {
   DrivePickerUntrustedHostUI controller(&test_web_ui);
 
   MockPage mock_page;
-  mojo::Remote<
-      drive_picker_host_untrusted::mojom::DrivePickerUntrustedHostHandler>
-      untrusted_host;
-  controller.BindInterface(untrusted_host.BindNewPipeAndPassReceiver());
+  mojo::Remote<drive_picker_host_untrusted::mojom::PageHandlerFactory>
+      untrusted_factory;
+  controller.BindInterface(untrusted_factory.BindNewPipeAndPassReceiver());
 
-  untrusted_host->BindPage(mock_page.BindAndGetRemote());
+  mojo::Remote<drive_picker_host_untrusted::mojom::PageHandler> untrusted_host;
+  untrusted_factory->CreatePageHandler(
+      mock_page.BindAndGetRemote(),
+      untrusted_host.BindNewPipeAndPassReceiver());
   base::RunLoop().RunUntilIdle();
 
   MockResultHandler result_handler;
-  EXPECT_CALL(mock_page, ShowDrivePicker(testing::_));
-  controller.ShowDrivePicker(result_handler.BindAndGetRemote());
+  EXPECT_CALL(mock_page, ShowDrivePicker(testing::_, testing::_))
+      .WillOnce(testing::WithArg<1>(
+          [](drive_picker_host_untrusted::mojom::DrivePickerKeysPtr keys) {
+            EXPECT_EQ(keys->oauth_token, kAccessToken);
+            EXPECT_EQ(keys->api_key, kApiKey);
+            EXPECT_EQ(keys->app_id, kAppId);
+          }));
+  drive_picker_host_untrusted::mojom::DrivePickerKeysPtr keys =
+      drive_picker_host_untrusted::mojom::DrivePickerKeys::New();
+  keys->oauth_token = kAccessToken;
+  keys->api_key = kApiKey;
+  keys->app_id = kAppId;
+  controller.ShowDrivePicker(result_handler.BindAndGetRemote(),
+                             std::move(keys));
 
   // Need to flush mojo calls.
   base::RunLoop().RunUntilIdle();
@@ -123,16 +142,31 @@ TEST_F(DrivePickerUntrustedHostUITest, ShowDrivePickerQueuesUntilPageBound) {
 
   MockResultHandler result_handler;
   // Trigger before page is bound.
-  controller.ShowDrivePicker(result_handler.BindAndGetRemote());
+  drive_picker_host_untrusted::mojom::DrivePickerKeysPtr keys =
+      drive_picker_host_untrusted::mojom::DrivePickerKeys::New();
+  keys->oauth_token = kAccessToken;
+  keys->api_key = kApiKey;
+  keys->app_id = kAppId;
+  controller.ShowDrivePicker(result_handler.BindAndGetRemote(),
+                             std::move(keys));
 
   MockPage mock_page;
-  mojo::Remote<
-      drive_picker_host_untrusted::mojom::DrivePickerUntrustedHostHandler>
-      untrusted_host;
-  controller.BindInterface(untrusted_host.BindNewPipeAndPassReceiver());
+  mojo::Remote<drive_picker_host_untrusted::mojom::PageHandlerFactory>
+      untrusted_factory;
+  controller.BindInterface(untrusted_factory.BindNewPipeAndPassReceiver());
 
-  EXPECT_CALL(mock_page, ShowDrivePicker(testing::_));
-  untrusted_host->BindPage(mock_page.BindAndGetRemote());
+  // Binding page should flush the pending request.
+  EXPECT_CALL(mock_page, ShowDrivePicker(testing::_, testing::_))
+      .WillOnce(testing::WithArg<1>(
+          [](drive_picker_host_untrusted::mojom::DrivePickerKeysPtr keys) {
+            EXPECT_EQ(keys->oauth_token, kAccessToken);
+            EXPECT_EQ(keys->api_key, kApiKey);
+            EXPECT_EQ(keys->app_id, kAppId);
+          }));
+  mojo::Remote<drive_picker_host_untrusted::mojom::PageHandler> untrusted_host;
+  untrusted_factory->CreatePageHandler(
+      mock_page.BindAndGetRemote(),
+      untrusted_host.BindNewPipeAndPassReceiver());
 
   base::RunLoop().RunUntilIdle();
 }
@@ -144,7 +178,10 @@ TEST_F(DrivePickerUntrustedHostUITest, ShowDrivePickerQueuesOnDisconnect) {
 
   {
     MockPage mock_page;
-    controller.BindPage(mock_page.BindAndGetRemote());
+    mojo::PendingRemote<drive_picker_host_untrusted::mojom::PageHandler>
+        handler;
+    controller.CreatePageHandler(mock_page.BindAndGetRemote(),
+                                 handler.InitWithNewPipeAndPassReceiver());
     EXPECT_TRUE(controller.page_.is_connected());
   }
 
@@ -154,12 +191,26 @@ TEST_F(DrivePickerUntrustedHostUITest, ShowDrivePickerQueuesOnDisconnect) {
 
   MockResultHandler result_handler;
   // This should now be queued because it's not connected.
-  controller.ShowDrivePicker(result_handler.BindAndGetRemote());
-  EXPECT_TRUE(controller.pending_request_.is_valid());
+  drive_picker_host_untrusted::mojom::DrivePickerKeysPtr keys =
+      drive_picker_host_untrusted::mojom::DrivePickerKeys::New();
+  keys->oauth_token = kAccessToken;
+  keys->api_key = kApiKey;
+  keys->app_id = kAppId;
+  controller.ShowDrivePicker(result_handler.BindAndGetRemote(),
+                             std::move(keys));
+  EXPECT_TRUE(controller.pending_request_);
 
   MockPage mock_page2;
-  EXPECT_CALL(mock_page2, ShowDrivePicker(testing::_));
-  controller.BindPage(mock_page2.BindAndGetRemote());
+  EXPECT_CALL(mock_page2, ShowDrivePicker(testing::_, testing::_))
+      .WillOnce(testing::WithArg<1>(
+          [](drive_picker_host_untrusted::mojom::DrivePickerKeysPtr keys) {
+            EXPECT_EQ(keys->oauth_token, kAccessToken);
+            EXPECT_EQ(keys->api_key, kApiKey);
+            EXPECT_EQ(keys->app_id, kAppId);
+          }));
+  mojo::PendingRemote<drive_picker_host_untrusted::mojom::PageHandler> handler2;
+  controller.CreatePageHandler(mock_page2.BindAndGetRemote(),
+                               handler2.InitWithNewPipeAndPassReceiver());
 
   base::RunLoop().RunUntilIdle();
 }
