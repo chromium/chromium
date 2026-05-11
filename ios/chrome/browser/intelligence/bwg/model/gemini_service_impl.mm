@@ -16,6 +16,7 @@
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_feature_availability.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
@@ -74,9 +75,9 @@ bool GeminiServiceImpl::IsWorkspacePolicyCheckPending() {
 
 std::optional<gemini::IneligibilityReasons>
 GeminiServiceImpl::GeminiIneligibilityForProfile() {
-  AccountInfo account_info = identity_manager_->FindExtendedAccountInfo(
-      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
-  const bool can_use_model_execution = CanUseGeminiModelExecution(account_info);
+  AccountInfo account_info = PrimaryAccountInfo();
+  const bool has_capabilities =
+      gemini::HasGeminiInChromeCapability(account_info);
   const bool allowed_by_enterprise =
       gemini::GeminiAllowedByPolicy(pref_service_);
   const bool authenticated =
@@ -92,7 +93,7 @@ GeminiServiceImpl::GeminiIneligibilityForProfile() {
   const bool is_managed_account =
       auth_service_ && auth_service_->HasPrimaryIdentityManaged();
   const bool is_eligible =
-      can_use_model_execution && allowed_by_enterprise &&
+      has_capabilities && allowed_by_enterprise &&
       !is_disabled_by_gemini_policy_.value_or(is_managed_account) &&
       authenticated && !profile_->IsOffTheRecord();
   // We ignore the gemini workspace log until we actually get the response to
@@ -101,7 +102,7 @@ GeminiServiceImpl::GeminiIneligibilityForProfile() {
       gemini::IneligibilityReasons()
           .set_workspace(is_disabled_by_gemini_policy_.value_or(false))
           .set_chrome_enterprise(!allowed_by_enterprise)
-          .set_account_capability(!can_use_model_execution)
+          .set_account_capability(!has_capabilities)
           .set_authentication(!authenticated);
   RecordGeminiIneligibilityReasons(ineligibility_reasons);
   RecordGeminiEligibility(is_eligible);
@@ -172,24 +173,12 @@ void GeminiServiceImpl::CheckGeminiEnterpriseEligibilityIfNeeded() {
   }
 }
 
-bool GeminiServiceImpl::CanUseGeminiModelExecution(
-    const AccountInfo& account_info) {
-  // If the account info was not found, the user is likely not authenticated.
-  if (account_info.IsEmpty()) {
-    return false;
-  }
+bool GeminiServiceImpl::HasGeminiInChromeCapability() {
+  return gemini::HasGeminiInChromeCapability(PrimaryAccountInfo());
+}
 
-  const AccountCapabilities capabilities =
-      account_info.GetAccountCapabilities();
-
-  // Checks whether the account capabilities permit model execution.
-  if (IsGeminiUpdatedEligibilityEnabled()) {
-    return signin::TriboolToBoolOr(capabilities.can_use_gemini_in_chrome(),
-                                   false);
-  }
-
-  return capabilities.can_use_model_execution_features() ==
-         signin::Tribool::kTrue;
+bool GeminiServiceImpl::HasModelExecutionCapability() {
+  return gemini::HasModelExecutionCapability(PrimaryAccountInfo());
 }
 
 void GeminiServiceImpl::ClearConsentPref() {
@@ -209,4 +198,9 @@ void GeminiServiceImpl::LogFREState() {
 
 void GeminiServiceImpl::OnGeminiEligibilityResult(bool eligible) {
   is_disabled_by_gemini_policy_ = !eligible;
+}
+
+AccountInfo GeminiServiceImpl::PrimaryAccountInfo() const {
+  return identity_manager_->FindExtendedAccountInfo(
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
 }

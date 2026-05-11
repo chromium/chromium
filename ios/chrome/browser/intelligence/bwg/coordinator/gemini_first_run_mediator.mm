@@ -17,7 +17,6 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_first_run_mediator_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
-#import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_feature_availability.h"
@@ -55,9 +54,6 @@ const CGFloat kPromoMaxImpressionCount = 3;
   // The profile-scoped Gemini service.
   raw_ptr<GeminiService> _geminiService;
 
-  // The browser-scoped Gemini browser agent.
-  raw_ptr<GeminiBrowserAgent> _geminiBrowserAgent;
-
   // Start time for the preparation of the presentation of BWG overlay.
   base::TimeTicks _geminiOverlayPreparationStartTime;
 
@@ -78,7 +74,6 @@ const CGFloat kPromoMaxImpressionCount = 3;
                        webStateList:(WebStateList*)webStateList
                  baseViewController:(UIViewController*)baseViewController
                       geminiService:(GeminiService*)geminiService
-                 geminiBrowserAgent:(GeminiBrowserAgent*)geminiBrowserAgent
                     identityManager:(signin::IdentityManager*)identityManager
                             tracker:(feature_engagement::Tracker*)tracker
                          entryPoint:(gemini::EntryPoint)entryPoint
@@ -87,6 +82,7 @@ const CGFloat kPromoMaxImpressionCount = 3;
   if (self) {
     _prefService = prefService;
     _webStateList = webStateList;
+    _geminiService = geminiService;
     _tracker = tracker;
     _entryPoint = entryPoint;
     _FRECompletion = completion;
@@ -143,6 +139,11 @@ const CGFloat kPromoMaxImpressionCount = 3;
 
   return _entryPoint != gemini::EntryPoint::AIHub && [self shouldShowPromo] &&
          wouldTriggerIPH;
+}
+
+// Returns whether the UI must enforce strict legal consent requirements.
+- (BOOL)useStrictLegalConsent {
+  return !_geminiService->HasModelExecutionCapability();
 }
 
 #pragma mark - GeminiConsentMutator

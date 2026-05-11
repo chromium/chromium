@@ -43,6 +43,8 @@ class GeminiServiceImpl : public GeminiService,
       override;
   bool IsWorkspacePolicyCheckPending() override;
   void CheckGeminiEnterpriseEligibilityIfNeeded() override;
+  bool HasGeminiInChromeCapability() override;
+  bool HasModelExecutionCapability() override;
 
   // signin::IdentityManager::Observer:
   void OnPrimaryAccountChanged(
@@ -81,9 +83,6 @@ class GeminiServiceImpl : public GeminiService,
   // `is_disabled_by_gemini_policy_`.
   void CheckGeminiEnterpriseEligibility();
 
-  // Checks if the account has eligibility for executing the Gemini model.
-  bool CanUseGeminiModelExecution(const AccountInfo& account_info);
-
   // Clears the Gemini consent profile pref.
   void ClearConsentPref();
 
@@ -92,6 +91,9 @@ class GeminiServiceImpl : public GeminiService,
 
   // Invoked when the eligibility check is done.
   void OnGeminiEligibilityResult(bool eligible);
+
+  // Returns the extended AccountInfo for the primary account.
+  AccountInfo PrimaryAccountInfo() const;
 
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>

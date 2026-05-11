@@ -36,6 +36,13 @@ class GeminiService : public KeyedService {
   // check is currently in flight. Called when the eligibility result is
   // about to be needed (when the Page Action Menu opens).
   virtual void CheckGeminiEnterpriseEligibilityIfNeeded() = 0;
+
+  // Returns whether the account capabilities permit using Gemini in Chrome.
+  virtual bool HasGeminiInChromeCapability() = 0;
+
+  // Returns whether the account capabilities permit standard model execution
+  // features.
+  virtual bool HasModelExecutionCapability() = 0;
 };
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_SERVICE_H_

@@ -49,11 +49,14 @@ BOOL HasLinkWithURL(UITextView* text_view, NSString* url) {
 // Test fixture for GeminiConsentViewController.
 class GeminiConsentViewControllerTest : public PlatformTest {
  public:
-  GeminiConsentViewController* CreateViewController(BOOL is_account_managed,
-                                                    NSString* country = nil) {
+  GeminiConsentViewController* CreateViewController(
+      BOOL is_account_managed,
+      NSString* country = nil,
+      BOOL use_strict_consent = NO) {
     GeminiConsentViewController* controller =
         [[GeminiConsentViewController alloc]
             initWithIsAccountManaged:is_account_managed
+               useStrictLegalConsent:use_strict_consent
                              FREType:GeminiFREType::kNewUser
                              country:country];
     // Force view initialization since this view controller is never added into

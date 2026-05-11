@@ -178,4 +178,60 @@ TEST_F(GeminiFeatureAvailabilityTest, ProfileUnavailable) {
   EXPECT_FALSE(IsFeatureAvailable(Feature::kImageRemix, profile.get()));
 }
 
+#pragma mark - Capabilities
+
+// Tests HasGeminiInChromeCapability with an empty account.
+TEST_F(GeminiFeatureAvailabilityTest,
+       HasGeminiInChromeCapability_EmptyAccount) {
+  AccountInfo empty_account;
+  EXPECT_FALSE(HasGeminiInChromeCapability(empty_account));
+}
+
+// Tests HasGeminiInChromeCapability when updated eligibility is disabled.
+TEST_F(GeminiFeatureAvailabilityTest,
+       HasGeminiInChromeCapability_LegacyEligibility) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({kPageActionMenu}, {kGeminiUpdatedEligibility});
+
+  AccountInfo account = CreateAccountInfoWithCapability(true);
+  AccountCapabilitiesTestMutator mutator(&account.capabilities);
+  mutator.set_can_use_gemini_in_chrome(false);
+  EXPECT_TRUE(HasGeminiInChromeCapability(account));
+}
+
+// Tests HasGeminiInChromeCapability when updated eligibility is enabled.
+TEST_F(GeminiFeatureAvailabilityTest,
+       HasGeminiInChromeCapability_UpdatedEligibility) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({kPageActionMenu, kGeminiUpdatedEligibility},
+                                {});
+
+  AccountInfo account = CreateAccountInfoWithCapability(false);
+  AccountCapabilitiesTestMutator mutator(&account.capabilities);
+  mutator.set_can_use_gemini_in_chrome(true);
+  EXPECT_TRUE(HasGeminiInChromeCapability(account));
+
+  mutator.set_can_use_gemini_in_chrome(false);
+  EXPECT_FALSE(HasGeminiInChromeCapability(account));
+}
+
+// Tests HasModelExecutionCapability with an empty account.
+TEST_F(GeminiFeatureAvailabilityTest,
+       HasModelExecutionCapability_EmptyAccount) {
+  AccountInfo empty_account;
+  EXPECT_FALSE(HasModelExecutionCapability(empty_account));
+}
+
+// Tests HasModelExecutionCapability when standard capability is possessed.
+TEST_F(GeminiFeatureAvailabilityTest, HasModelExecutionCapability_Enabled) {
+  AccountInfo account = CreateAccountInfoWithCapability(true);
+  EXPECT_TRUE(HasModelExecutionCapability(account));
+}
+
+// Tests HasModelExecutionCapability when standard capability is not possessed.
+TEST_F(GeminiFeatureAvailabilityTest, HasModelExecutionCapability_Disabled) {
+  AccountInfo account = CreateAccountInfoWithCapability(false);
+  EXPECT_FALSE(HasModelExecutionCapability(account));
+}
+
 }  // namespace gemini

@@ -37,6 +37,7 @@
 // `freType` specifies the type of Gemini FRE being shown.
 - (instancetype)initWithPromo:(BOOL)showPromo
              isAccountManaged:(BOOL)isAccountManaged
+        useStrictLegalConsent:(BOOL)useStrictLegalConsent
                       FREType:(GeminiFREType)FREType
                       country:(NSString*)country NS_DESIGNATED_INITIALIZER;
 

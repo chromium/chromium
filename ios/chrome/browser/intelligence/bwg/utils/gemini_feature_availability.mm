@@ -13,6 +13,8 @@
 
 namespace gemini {
 
+#pragma mark - Features
+
 bool IsFeatureAvailable(Feature feature, const AccountInfo& account_info) {
   switch (feature) {
     case Feature::kImageRemix: {
@@ -56,6 +58,37 @@ bool IsFeatureAvailable(Feature feature,
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
 
   return IsFeatureAvailable(feature, account_info);
+}
+
+#pragma mark - Capabilities
+
+bool HasGeminiInChromeCapability(const AccountInfo& account_info) {
+  if (account_info.IsEmpty()) {
+    return false;
+  }
+
+  const AccountCapabilities capabilities =
+      account_info.GetAccountCapabilities();
+
+  if (IsGeminiUpdatedEligibilityEnabled()) {
+    return signin::TriboolToBoolOr(capabilities.can_use_gemini_in_chrome(),
+                                   false);
+  }
+
+  return signin::TriboolToBoolOr(
+      capabilities.can_use_model_execution_features(), false);
+}
+
+bool HasModelExecutionCapability(const AccountInfo& account_info) {
+  if (account_info.IsEmpty()) {
+    return false;
+  }
+
+  const AccountCapabilities capabilities =
+      account_info.GetAccountCapabilities();
+
+  return signin::TriboolToBoolOr(
+      capabilities.can_use_model_execution_features(), false);
 }
 
 }  // namespace gemini

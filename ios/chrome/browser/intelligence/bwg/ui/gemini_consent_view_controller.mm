@@ -68,14 +68,18 @@ NSDictionary* GetDefaultTextAttributes() {
   GeminiFREType _FREType;
   // The country for the consent UI.
   NSString* _country;
+  // Whether the UI must enforce strict legal consent requirements.
+  BOOL _useStrictLegalConsent;
 }
 
 - (instancetype)initWithIsAccountManaged:(BOOL)isAccountManaged
+                   useStrictLegalConsent:(BOOL)useStrictLegalConsent
                                  FREType:(GeminiFREType)FREType
                                  country:(NSString*)country {
   self = [super init];
   if (self) {
     _isAccountManaged = isAccountManaged;
+    _useStrictLegalConsent = useStrictLegalConsent;
     _FREType = FREType;
     _country = country;
   }
@@ -515,6 +519,7 @@ NSDictionary* GetDefaultTextAttributes() {
           ? [self createLiveAccordionItemsWithConfig:config]
           : [self createStandardAccordionItemsWithConfig:config];
 
+  // TODO(crbug.com/509551298): useStrictLegalConsent for collapsible parameter
   // We use non-collapsible mode to match the current static UI behavior.
   GeminiConsentAccordionView* accordionView =
       [[GeminiConsentAccordionView alloc] initWithRows:rows collapsible:NO];

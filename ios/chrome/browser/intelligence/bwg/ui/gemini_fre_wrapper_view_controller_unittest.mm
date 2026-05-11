@@ -23,14 +23,17 @@
 // Test fixture for GeminiFREWrapperViewController.
 class GeminiFREWrapperViewControllerTest : public PlatformTest {
  public:
-  GeminiFREWrapperViewController* CreateController(bool with_promo,
-                                                   bool is_account_managed) {
+  GeminiFREWrapperViewController* CreateController(
+      bool with_promo,
+      bool is_account_managed,
+      bool use_strict_consent = false) {
     GeminiFREWrapperViewController* view_controller =
         [[GeminiFREWrapperViewController alloc]
-               initWithPromo:with_promo
-            isAccountManaged:is_account_managed
-                     FREType:GeminiFREType::kNewUser
-                     country:@"us"];
+                    initWithPromo:with_promo
+                 isAccountManaged:is_account_managed
+            useStrictLegalConsent:use_strict_consent
+                          FREType:GeminiFREType::kNewUser
+                          country:@"us"];
     mock_mutator_ =
         [OCMockObject mockForProtocol:@protocol(GeminiConsentMutator)];
     [[[mock_mutator_ stub] andReturnValue:@NO] shouldShowImageRemixRow];

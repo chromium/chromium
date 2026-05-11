@@ -32,6 +32,13 @@ bool IsFeatureAvailable(Feature feature, ProfileIOS* profile);
 bool IsFeatureAvailable(Feature feature,
                         signin::IdentityManager* identity_manager);
 
+// Returns whether the account capabilities permit using Gemini in Chrome.
+bool HasGeminiInChromeCapability(const AccountInfo& account_info);
+
+// Returns whether the account capabilities permit standard model execution
+// features.
+bool HasModelExecutionCapability(const AccountInfo& account_info);
+
 }  // namespace gemini
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_UTILS_GEMINI_FEATURE_AVAILABILITY_H_

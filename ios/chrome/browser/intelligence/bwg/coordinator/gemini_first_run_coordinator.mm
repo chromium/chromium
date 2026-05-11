@@ -17,7 +17,6 @@
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_first_run_mediator.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_first_run_mediator_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
-#import "ios/chrome/browser/intelligence/bwg/model/gemini_browser_agent.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_fre_wrapper_view_controller.h"
@@ -111,7 +110,6 @@
              webStateList:self.browser->GetWebStateList()
        baseViewController:self.baseViewController
             geminiService:GeminiServiceFactory::GetForProfile(self.profile)
-       geminiBrowserAgent:GeminiBrowserAgent::FromBrowser(self.browser)
           identityManager:IdentityManagerFactory::GetForProfile(self.profile)
                   tracker:_tracker
                entryPoint:_entryPoint
@@ -131,10 +129,11 @@
           : "";
   NSString* nsCountry = base::SysUTF8ToNSString(country);
   _viewController = [[GeminiFREWrapperViewController alloc]
-         initWithPromo:_mediator.shouldShowPromo
-      isAccountManaged:[self isManagedAccount]
-               FREType:_FREType
-               country:nsCountry];
+              initWithPromo:_mediator.shouldShowPromo
+           isAccountManaged:[self isManagedAccount]
+      useStrictLegalConsent:_mediator.useStrictLegalConsent
+                    FREType:_FREType
+                    country:nsCountry];
   _viewController.sheetPresentationController.delegate = self;
   _viewController.mutator = _mediator;
 

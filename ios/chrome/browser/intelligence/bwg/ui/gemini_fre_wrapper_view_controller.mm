@@ -86,10 +86,13 @@ const CGFloat kInsetAdjustment = 20;
   NSLayoutConstraint* _contentHeightConstraint;
   // Whether an accordion item has been expanded at least once.
   BOOL _hasExpandedAccordion;
+  // Whether the UI must enforce strict legal consent requirements.
+  BOOL _useStrictLegalConsent;
 }
 
 - (instancetype)initWithPromo:(BOOL)showPromo
              isAccountManaged:(BOOL)isAccountManaged
+        useStrictLegalConsent:(BOOL)useStrictLegalConsent
                       FREType:(GeminiFREType)FREType
                       country:(NSString*)country {
   ButtonStackConfiguration* configuration =
@@ -99,6 +102,7 @@ const CGFloat kInsetAdjustment = 20;
   if (self) {
     _showPromo = showPromo;
     _isAccountManaged = isAccountManaged;
+    _useStrictLegalConsent = useStrictLegalConsent;
     _FREType = FREType;
     _country = country;
   }
@@ -285,6 +289,7 @@ const CGFloat kInsetAdjustment = 20;
 
   _consentViewController = [[GeminiConsentViewController alloc]
       initWithIsAccountManaged:_isAccountManaged
+         useStrictLegalConsent:_useStrictLegalConsent
                        FREType:_FREType
                        country:_country];
   _consentViewController.mutator = self.mutator;

@@ -20,3 +20,11 @@ bool FakeGeminiService::IsWorkspacePolicyCheckPending() {
 void FakeGeminiService::CheckGeminiEnterpriseEligibilityIfNeeded() {
   // Do nothing in the fake service.
 }
+
+bool FakeGeminiService::HasGeminiInChromeCapability() {
+  return has_gemini_in_chrome_capability_;
+}
+
+bool FakeGeminiService::HasModelExecutionCapability() {
+  return has_model_execution_capability_;
+}

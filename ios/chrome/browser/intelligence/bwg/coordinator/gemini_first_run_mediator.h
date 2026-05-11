@@ -13,7 +13,6 @@
 
 @protocol SceneCommands;
 class GeminiService;
-class GeminiBrowserAgent;
 class PrefService;
 class WebStateList;
 
@@ -26,27 +25,25 @@ class IdentityManager;
 // Gemini First Run Mediator.
 @interface GeminiFirstRunMediator : NSObject <GeminiConsentMutator>
 
+// The delegate for this mediator.
+@property(nonatomic, weak) id<GeminiFirstRunMediatorDelegate> delegate;
+// The handler for sending scene commands.
+@property(nonatomic, weak) id<SceneCommands> sceneHandler;
+// Returns YES if the Gemini promo should be shown.
+@property(nonatomic, readonly) BOOL shouldShowPromo;
+// Returns YES if the AI Hub IPH should be shown.
+@property(nonatomic, readonly) BOOL shouldShowAIHubIPH;
+// Returns YES if the UI must enforce strict legal consent requirements.
+@property(nonatomic, readonly) BOOL useStrictLegalConsent;
+
 - (instancetype)initWithPrefService:(PrefService*)prefService
                        webStateList:(WebStateList*)webStateList
                  baseViewController:(UIViewController*)baseViewController
                       geminiService:(GeminiService*)geminiService
-                 geminiBrowserAgent:(GeminiBrowserAgent*)geminiBrowserAgent
                     identityManager:(signin::IdentityManager*)identityManager
                             tracker:(feature_engagement::Tracker*)tracker
                          entryPoint:(gemini::EntryPoint)entryPoint
                   completionHandler:(void (^)(BOOL success))completion;
-
-// The delegate for this mediator.
-@property(nonatomic, weak) id<GeminiFirstRunMediatorDelegate> delegate;
-
-// The handler for sending scene commands.
-@property(nonatomic, weak) id<SceneCommands> sceneHandler;
-
-// Returns YES if the Gemini promo should be shown.
-@property(nonatomic, readonly) BOOL shouldShowPromo;
-
-// Returns YES if the AI Hub IPH should be shown.
-@property(nonatomic, readonly) BOOL shouldShowAIHubIPH;
 
 // Aborts the flow due to mic permission denial without resetting consent.
 - (void)didRefuseLiveMicPermission;

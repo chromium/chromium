@@ -22,6 +22,7 @@ enum class GeminiFREType;
 // UI to present. `country` is an optional field, leaving it as nil will show
 // the default consent UI.
 - (instancetype)initWithIsAccountManaged:(BOOL)isAccountManaged
+                   useStrictLegalConsent:(BOOL)useStrictLegalConsent
                                  FREType:(GeminiFREType)FREType
                                  country:(NSString*)country;
 

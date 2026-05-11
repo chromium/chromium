@@ -43,9 +43,23 @@ class FakeGeminiService : public GeminiService {
     workspace_policy_check_pending_ = pending;
   }
 
+  bool HasGeminiInChromeCapability() override;
+
+  void SetHasGeminiInChromeCapability(bool allowed) {
+    has_gemini_in_chrome_capability_ = allowed;
+  }
+
+  bool HasModelExecutionCapability() override;
+
+  void SetHasModelExecutionCapability(bool allowed) {
+    has_model_execution_capability_ = allowed;
+  }
+
  private:
   std::optional<gemini::IneligibilityReasons> ineligibility_reasons_;
   bool workspace_policy_check_pending_ = false;
+  bool has_gemini_in_chrome_capability_ = true;
+  bool has_model_execution_capability_ = true;
 };
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_FAKE_GEMINI_SERVICE_H_
