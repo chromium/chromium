@@ -271,6 +271,7 @@
 <translation id="2226826835915474236">الاختصارات غير النشطة</translation>
 <translation id="2227179592712503583">إزالة الاقتراح</translation>
 <translation id="2227444325776770048">المتابعة بحساب "<ph name="USER_FULL_NAME" />"</translation>
+<translation id="2230411774874187555">لتكُن جميع معلوماتك المحفوظة في متناول يدك</translation>
 <translation id="2230777942707397948">نافذة فارغة</translation>
 <translation id="223356358902285214">النشاط على الويب وفي التطبيقات</translation>
 <translation id="2233735624724508540">اختَر فترة زمنية ثم انقر على "حذف البيانات"</translation>
@@ -483,6 +484,7 @@
 <translation id="3057938290530993634">يُرجى النقر مع الاستمرار لتثبيت المواقع الإلكترونية الأكثر زيارة لتسهيل الوصول إليها في المرة القادمة</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{إشارة مرجعية <ph name="BOOKMARKS_COUNT_ONE" />}zero{<ph name="BOOKMARKS_COUNT_MANY" /> إشارات مرجعية}two{إشارتان مرجعيتان (<ph name="BOOKMARKS_COUNT_MANY" />)}few{<ph name="BOOKMARKS_COUNT_MANY" /> إشارات مرجعية}many{<ph name="BOOKMARKS_COUNT_MANY" /> إشارةً مرجعيةً}other{<ph name="BOOKMARKS_COUNT_MANY" /> إشارة مرجعية}}</translation>
 <translation id="3062802207422175757">‏اقرأ مقالات حول مواضيع تهمّك على متصفِّح Chrome.</translation>
+<translation id="3066107845790462226">تنزيل إطار الفيديو</translation>
 <translation id="3066573403916685335">الانتقال للأسفل
 </translation>
 <translation id="3067505415088964188">السعر منخفض</translation>
@@ -1217,6 +1219,7 @@
 <translation id="6264485186158353794">الرجوع</translation>
 <translation id="6267106249090587268">‏الإشعارات <ph name="SEPARATOR" /> أزال Chrome هذه الأذونات لأنّ محتوى الموقع غير مرغوب فيه أو مخادع</translation>
 <translation id="6276708887952587684">عرض مصدر الصفحة</translation>
+<translation id="62768169905160414">نسخ إطار الفيديو</translation>
 <translation id="6277522088822131679">حدثت مشكلة أثناء طباعة الصفحة. يُرجى إعادة المحاولة.</translation>
 <translation id="6278428485366576908">المظهر</translation>
 <translation id="6291294824436685757">حذف بيانات التصفّح واختيار البيانات المراد حذفها</translation>

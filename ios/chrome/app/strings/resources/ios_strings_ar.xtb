@@ -566,6 +566,7 @@
 <translation id="2969979262385602596">تعذّر تسجيل الدخول. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="2975761176769946178">‏عنوان URL مطلوب.</translation>
 <translation id="297667759942911166">التعاون في مجموعات علامات التبويب</translation>
+<translation id="298696743524648170">‏لاستخدام "Gemini في Chrome"، يُرجى تسجيل الدخول إلى Chrome باستخدام حسابك على Google</translation>
 <translation id="2987670534697681860">يُرجى إثبات هويتك للوصول إلى جميع كلمات المرور على هذا الجهاز.</translation>
 <translation id="2989523299700148168">تم الانتقال إليها مؤخرًا</translation>
 <translation id="2989805286512600854">الفتح في علامة تبويب جديدة</translation>
@@ -620,6 +621,7 @@
 <translation id="31652791196570636">إغلاق</translation>
 <translation id="3167868116600277716">خلاصة ميزة "اقتراحات"</translation>
 <translation id="3169472444629675720">اقتراحات</translation>
+<translation id="3172755898799085680">‏‫Gemini غير متاح على هذه الصفحة</translation>
 <translation id="3174662312949010067">يمكنك أيضًا استخدام كلمات المرور المحفوظة على أجهزتك الأخرى.</translation>
 <translation id="3177338796769255211">يمكنك تسجيل الدخول للوصول إلى الإشارات المرجعية وغير ذلك على جميع أجهزتك</translation>
 <translation id="3181954750937456830">التصفُّح الآمن (يحميك ويحمي جهازك من المواقع الإلكترونية الضارة)</translation>
@@ -995,6 +997,7 @@
 <translation id="4552042254369397518">جارٍ النسخ…</translation>
 <translation id="4553044860350038560">المزيد من مفاتيح المرور</translation>
 <translation id="4564893319561643483">إخفاء "<ph name="TITLE" />"</translation>
+<translation id="456502772933839252">جارٍ مشاركة "<ph name="PAGE_TITLE" />"</translation>
 <translation id="4565377596337484307">إخفاء كلمة المرور</translation>
 <translation id="4568230126482344545">إخفاء "علامات التبويب الأخيرة"</translation>
 <translation id="4578835633387306383">تفعيل…</translation>

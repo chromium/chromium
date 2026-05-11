@@ -754,6 +754,7 @@
 <translation id="2168151236314517198">Отпечатването на това съдържание е блокирано чрез администраторско правило</translation>
 <translation id="2171244127100824330">В(ъв) <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> за <ph name="ACCOUNT" /></translation>
 <translation id="2172089022819052306">Ремонт и поддръжка на превозни средства</translation>
+<translation id="217231402430591139">Свържете профила си</translation>
 <translation id="2173302385160625112">Проверете връзката си с интернет</translation>
 <translation id="2174875517416416684">Транзакцията ви не бе успешна. Не са изтеглени средства от профила ви.</translation>
 <translation id="2175630235841878061">Файловете над 100 MB не са налице за изтегляне</translation>
@@ -3217,6 +3218,7 @@
 <translation id="6006365096047131769">3 x 5 инча</translation>
 <translation id="6008122969617370890">Подредба от N до 1</translation>
 <translation id="6008256403891681546">JCB</translation>
+<translation id="6012135807160718387">Шифроването от Google защитава информацията ви</translation>
 <translation id="6014801569448771146">Проверка на паролите ви</translation>
 <translation id="6014851866995737824">Правилото бе пренебрегнато, защото липсва списъкът за активиране или този за деактивиране.</translation>
 <translation id="6015796118275082299">Година</translation>

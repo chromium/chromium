@@ -566,6 +566,7 @@
 <translation id="2969979262385602596">Нэвтэрч чадсангүй. Дараа дахин оролдоно уу.</translation>
 <translation id="2975761176769946178">URL шаардлагатай</translation>
 <translation id="297667759942911166">Табын бүлэгт хамтран ажиллах</translation>
+<translation id="298696743524648170">Chrome дахь Gemini-г ашиглахын тулд Google Бүртгэлээрээ Chrome-д нэвтэрнэ үү</translation>
 <translation id="2987670534697681860">Энэ төхөөрөмж дээр бүх нууц үгэндээ хандахын тулд өөрийгөө мөн болохыг баталгаажуулна уу.</translation>
 <translation id="2989523299700148168">Саяхан хандсан</translation>
 <translation id="2989805286512600854">Шинэ цонхонд нээ</translation>
@@ -620,6 +621,7 @@
 <translation id="31652791196570636">Хаах</translation>
 <translation id="3167868116600277716">Discover-н хангамж</translation>
 <translation id="3169472444629675720">Олох</translation>
+<translation id="3172755898799085680">Gemini-г энэ хуудсан дээр ашиглах боломжгүй</translation>
 <translation id="3174662312949010067">Та мөн хадгалсан нууц үгээ бусад төхөөрөмж дээрээ ашиглах боломжтой.</translation>
 <translation id="3177338796769255211">Хавчуурга болон бусад зүйлээ бүх төхөөрөмж дээрээ авахын тулд нэвтэрнэ үү</translation>
 <translation id="3181954750937456830">Аюулгүй хөтөч (таныг болон таны төхөөрөмжийг аюултай сайтаас хамгаалдаг)</translation>
@@ -995,6 +997,7 @@
 <translation id="4552042254369397518">Хуулж байна…</translation>
 <translation id="4553044860350038560">Бусад нэвтрэх түлхүүр</translation>
 <translation id="4564893319561643483">"<ph name="TITLE" />"-г нуух</translation>
+<translation id="456502772933839252"><ph name="PAGE_TITLE" />-г хуваалцаж байна</translation>
 <translation id="4565377596337484307">Нууц үгийг нуух</translation>
 <translation id="4568230126482344545">Саяхны табуудыг нуух</translation>
 <translation id="4578835633387306383">Асаах…</translation>

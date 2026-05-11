@@ -147,6 +147,9 @@
 <translation id="2569974318947988067">‏سيحاول Chrome ترقية عمليات الانتقال إلى بروتوكول HTTPS.</translation>
 <translation id="2571392474191184472">‏تدير مؤسستك متصفِّح Chrome</translation>
 <translation id="2574930892358684005">‏سبَق تسجيل دخول <ph name="EXISTING_USER" /> إلى هذا الملف الشخصي على Chrome. للحصول على تجربة تصفّح منفصلة، يمكن لمتصفِّح Chrome إنشاء ملف شخصي خاص بك.</translation>
+<translation id="2575799939951057838">‏للحفاظ على الأمان، يوقف Chrome ميزة تحسين محتوى JavaScript عند زيارة موقع إلكتروني للمرة الأولى.
+
+فإذا كانت هذه الصفحة لا تعمل على النحو المتوقّع، يُرجى السماح بميزة التحسين.</translation>
 <translation id="2580411288591421699">‏لا يمكن تثبيت نفس الإصدار المثبت من Google Chrome والذي يتم تشغيله حاليًا. يُرجى إغلاق Google Chrome وإعادة المحاولة.</translation>
 <translation id="2586406160782125153">‏سيؤدي هذا إلى حذف بيانات التصفح من هذا الجهاز. لاسترداد بياناتك لاحقًا، سجّل الدخول إلى Chrome كـ <ph name="USER_EMAIL" />.</translation>
 <translation id="259935314519650377">تعذَّر إجراء تخزين مؤقت للمثبّت الذي تم تنزيله. الخطأ: <ph name="UNPACK_CACHING_ERROR_CODE" />.</translation>

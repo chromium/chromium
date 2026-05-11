@@ -409,6 +409,9 @@
 <translation id="5524890928877629608">أعلى يمين مساحة البحث: %<ph name="LEFT" /> من الجهة اليمنى و%<ph name="TOP" /> من الأعلى</translation>
 <translation id="5527463683072221100">‏فتح ملفات PDF في Chromium</translation>
 <translation id="5536164441519929134">طرح سؤال<ph name="LINE_BREAK" />حول علامة التبويب هذه</translation>
+<translation id="555970465369471303">‏للحفاظ على الأمان، يوقف Chromium ميزة تحسين محتوى JavaScript عند زيارة موقع إلكتروني للمرة الأولى.
+
+فإذا كانت هذه الصفحة لا تعمل على النحو المتوقّع، يُرجى السماح بميزة التحسين.</translation>
 <translation id="5579324208890605088">خطأ في بدء التشغيل: يُرجى تشغيل أداة التثبيت بصفتك مستخدمًا عاديًا وليس بصفتك مشرفًا.</translation>
 <translation id="5580770360767802657">‏استخدام Chromium كمتصفّح تلقائي وتثبيته</translation>
 <translation id="5596627076506792578">خيارات إضافية</translation>

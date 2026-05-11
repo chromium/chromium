@@ -566,6 +566,7 @@
 <translation id="2969979262385602596">Erro ao iniciar sesión. Téntao de novo máis tarde.</translation>
 <translation id="2975761176769946178">Necesítase un URL</translation>
 <translation id="297667759942911166">Colabora en grupos de pestanas</translation>
+<translation id="298696743524648170">Para usar Gemini en Chrome, inicia sesión en Chrome coa túa Conta de Google</translation>
 <translation id="2987670534697681860">Verifica a túa identidade para acceder a todos os teus contrasinais neste dispositivo.</translation>
 <translation id="2989523299700148168">Visitados recentemente</translation>
 <translation id="2989805286512600854">Abrir nunha pestana nova</translation>
@@ -620,6 +621,7 @@
 <translation id="31652791196570636">Pechar</translation>
 <translation id="3167868116600277716">Feed de Discover</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3172755898799085680">Gemini non está dispoñible nesta páxina</translation>
 <translation id="3174662312949010067">Tamén podes utilizar os contrasinais gardados nos teus outros dispositivos.</translation>
 <translation id="3177338796769255211">Inicia sesión para poder acceder aos teus marcadores e moito máis en todos os teus dispositivos</translation>
 <translation id="3181954750937456830">Navegación segura (protección para ti e o teu dispositivo contra os sitios perigosos)</translation>
@@ -995,6 +997,7 @@
 <translation id="4552042254369397518">Copiando…</translation>
 <translation id="4553044860350038560">Máis claves de acceso</translation>
 <translation id="4564893319561643483">Ocultar <ph name="TITLE" /></translation>
+<translation id="456502772933839252">Compartindo <ph name="PAGE_TITLE" /></translation>
 <translation id="4565377596337484307">Ocultar contrasinal</translation>
 <translation id="4568230126482344545">Ocultar Pestanas recentes</translation>
 <translation id="4578835633387306383">Activar…</translation>

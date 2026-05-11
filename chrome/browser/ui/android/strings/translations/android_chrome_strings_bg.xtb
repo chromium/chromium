@@ -271,6 +271,7 @@
 <translation id="2226826835915474236">Неактивни преки пътища</translation>
 <translation id="2227179592712503583">Премахване на предложението</translation>
 <translation id="2227444325776770048">Продължаване като <ph name="USER_FULL_NAME" /></translation>
+<translation id="2230411774874187555">Получаване на цялата запазена информация</translation>
 <translation id="2230777942707397948">Празен прозорец</translation>
 <translation id="223356358902285214">Активност в мрежата и приложенията</translation>
 <translation id="2233735624724508540">Изберете период от време и докоснете „Изтриване на данните“.</translation>
@@ -483,6 +484,7 @@
 <translation id="3057938290530993634">Докоснете и задръжте, за да фиксирате най-посещаваните от вас уебсайтове за лесен достъп следващия път</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> отметка}other{<ph name="BOOKMARKS_COUNT_MANY" /> отметки}}</translation>
 <translation id="3062802207422175757">Статии, свързани с интересите ви, в Chrome</translation>
+<translation id="3066107845790462226">Изтегляне на кадъра от клипа</translation>
 <translation id="3066573403916685335">Преместване надолу</translation>
 <translation id="3067505415088964188">Цената е ниска</translation>
 <translation id="3070005020161560471">Да се превежда автоматично от</translation>
@@ -1216,6 +1218,7 @@
 <translation id="6264485186158353794">Назад към безопасната страница</translation>
 <translation id="6267106249090587268">Известия <ph name="SEPARATOR" /> Chrome премахна тези разрешения поради спам или подвеждащо съдържание</translation>
 <translation id="6276708887952587684">Преглед на изходния код на страницата</translation>
+<translation id="62768169905160414">Копиране на кадъра от клипа</translation>
 <translation id="6277522088822131679">При отпечатването на страницата възникна проблем. Моля, опитайте отново.</translation>
 <translation id="6278428485366576908">Тема</translation>
 <translation id="6291294824436685757">Изтриване на данните за сърфирането: изберете данните, които да бъдат изтрити</translation>

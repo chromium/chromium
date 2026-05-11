@@ -566,6 +566,7 @@
 <translation id="2969979262385602596">Влизането не бе успешно. Моля, опитайте пак по-късно.</translation>
 <translation id="2975761176769946178">Изисква се URL адрес</translation>
 <translation id="297667759942911166">Сътрудничество в групи раздели</translation>
+<translation id="298696743524648170">За да използвате Gemini в Chrome, влезте в браузъра с профила си в Google</translation>
 <translation id="2987670534697681860">Потвърдете самоличността си, за да имате достъп до всичките си пароли на това устройство.</translation>
 <translation id="2989523299700148168">Наскоро посетени</translation>
 <translation id="2989805286512600854">Отваряне в нов раздел</translation>
@@ -620,6 +621,7 @@
 <translation id="31652791196570636">Отхвърляне</translation>
 <translation id="3167868116600277716">Емисия Discover</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3172755898799085680">Gemini не е налице на тази страница</translation>
 <translation id="3174662312949010067">Имате възможност да използвате запазените си пароли и на другите си устройства.</translation>
 <translation id="3177338796769255211">Влезте в профила си, за да имате достъп до своите отметки и др. на всичките си устройства</translation>
 <translation id="3181954750937456830">„Безопасно сърфиране“ (защитава вас и устройството ви от опасни сайтове)</translation>
@@ -995,6 +997,7 @@
 <translation id="4552042254369397518">Копира се…</translation>
 <translation id="4553044860350038560">Още ключове за достъп</translation>
 <translation id="4564893319561643483">Скриване на „<ph name="TITLE" />“</translation>
+<translation id="456502772933839252"><ph name="PAGE_TITLE" /> се споделя</translation>
 <translation id="4565377596337484307">Скриване на паролата</translation>
 <translation id="4568230126482344545">Скриване на „Скорошни раздели“</translation>
 <translation id="4578835633387306383">Включване на…</translation>

@@ -409,6 +409,9 @@
 <translation id="5524890928877629608">хайлтын хэсгийн зүүн дээд булан: зүүн <ph name="LEFT" />%, дээд <ph name="TOP" />%</translation>
 <translation id="5527463683072221100">PDF-г Chromium-д нээх</translation>
 <translation id="5536164441519929134">Энэ табын талаар<ph name="LINE_BREAK" />асуух</translation>
+<translation id="555970465369471303">Аюулгүй байдлын үүднээс таныг анх удаа сайтад зочлоход Chromium JavaScript-н оновчлолыг унтраадаг.
+
+Хэрэв энэ хуудас хүлээлтийн дагуу ажиллахгүй байвал оновчлолыг зөвшөөрч үзнэ үү.</translation>
 <translation id="5579324208890605088">Эхлэхэд алдаа гарлаа: суулгагчийг администратораар бус, энгийн хэрэглэгчээр ажиллуулна уу.</translation>
 <translation id="5580770360767802657">Chromium-г өгөгдмөлөөр ашиглаж, бэхлээрэй</translation>
 <translation id="5596627076506792578">Бусад сонголт</translation>

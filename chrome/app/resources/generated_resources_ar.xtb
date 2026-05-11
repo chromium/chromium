@@ -6827,6 +6827,7 @@
 <translation id="5712153969432126546">‏تنشر المواقع الإلكترونية أحيانًا ملفات PDF، مثل مستندات أو عقود أو نماذج.</translation>
 <translation id="571222594670061844">السماح للمواقع الإلكترونية بعرض طلبات تسجيل الدخول من خدمات إدارة الهوية</translation>
 <translation id="5713158217420111469">متّصل بجهاز <ph name="DEVICE" /></translation>
+<translation id="5713988532993992900">معكوس</translation>
 <translation id="5714100381896040477">تقليل التأثيرات المتحركة على الشاشة</translation>
 <translation id="5719854774000914513">‏السماح للمواقع الإلكترونية بطلب الاتصال بأجهزة HID</translation>
 <translation id="5720729194423017301">اختصارات للمواقع الإلكترونية ومحركات البحث</translation>
@@ -8749,6 +8750,7 @@
 <translation id="7044606776288350625">مزامنة البيانات</translation>
 <translation id="7050037487872780845">إعدادات نقطة الاتصال غير صالحة.</translation>
 <translation id="7051222203795962489">{COUNT,plural, =1{‏تم حفظ كلمة المرور في حسابك على Google، <ph name="USER_EMAIL" />}zero{‏تم حفظ كلمات المرور في حسابك على Google، <ph name="USER_EMAIL" />}two{‏تم حفظ كلمتَي المرور في حسابك على Google، <ph name="USER_EMAIL" />}few{‏تم حفظ كلمات المرور في حسابك على Google، <ph name="USER_EMAIL" />}many{‏تم حفظ كلمات المرور في حسابك على Google، <ph name="USER_EMAIL" />}other{‏تم حفظ كلمات المرور في حسابك على Google، <ph name="USER_EMAIL" />}}</translation>
+<translation id="7051728324516005763">‏الذكاء الاصطناعي في Chrome</translation>
 <translation id="7052762602787632571">&amp;حذف بيانات التصفّح…</translation>
 <translation id="705352103640172578">شلال</translation>
 <translation id="7053983685419859001">حظر</translation>

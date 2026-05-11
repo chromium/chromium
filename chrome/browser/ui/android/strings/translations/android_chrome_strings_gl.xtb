@@ -271,6 +271,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="2226826835915474236">Atallos inactivos</translation>
 <translation id="2227179592712503583">Quitar suxestión</translation>
 <translation id="2227444325776770048">Continuar como <ph name="USER_FULL_NAME" /></translation>
+<translation id="2230411774874187555">Accede a toda a información que gardaches</translation>
 <translation id="2230777942707397948">Ventá baleira</translation>
 <translation id="223356358902285214">Actividade web e das aplicacións</translation>
 <translation id="2233735624724508540">Escolle un período e, a continuación, toca Eliminar datos</translation>
@@ -483,6 +484,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="3057938290530993634">Mantén premidos os sitios web que máis visitas para fixalos e acceder facilmente a eles a próxima vez</translation>
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> marcador}other{<ph name="BOOKMARKS_COUNT_MANY" /> marcadores}}</translation>
 <translation id="3062802207422175757">Artigos sobre os teus intereses en Chrome</translation>
+<translation id="3066107845790462226">Descargar fotograma do vídeo</translation>
 <translation id="3066573403916685335">Mover para abaixo</translation>
 <translation id="3067505415088964188">Prezo baixo</translation>
 <translation id="3070005020161560471">Traducir automaticamente</translation>
@@ -1216,6 +1218,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6264485186158353794">Volver para estar a salvo</translation>
 <translation id="6267106249090587268">Notificacións <ph name="SEPARATOR" /> Chrome quitou estes permisos porque o sitio inclúe contido enganoso ou spam</translation>
 <translation id="6276708887952587684">Consultar fonte da páxina</translation>
+<translation id="62768169905160414">Copiar fotograma do vídeo</translation>
 <translation id="6277522088822131679">Produciuse un problema ao imprimir a páxina. Téntao de novo.</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6291294824436685757">Eliminar os datos de navegación. Seleccionar os datos que queres eliminar</translation>
