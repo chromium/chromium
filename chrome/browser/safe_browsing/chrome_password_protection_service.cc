@@ -1338,7 +1338,8 @@ void ChromePasswordProtectionService::MaybeReportPasswordReuseDetected(
     const std::string& username,
     PasswordType password_type,
     bool is_phishing_url,
-    bool warning_shown) {
+    bool warning_shown,
+    const ReferrerChain& referrer_chain) {
   auto reused_password_account_type =
       GetPasswordProtectionReusedPasswordAccountType(password_type, username);
   if (reused_password_account_type.account_type() ==
@@ -1381,7 +1382,8 @@ void ChromePasswordProtectionService::MaybeReportPasswordReuseDetected(
         ReportingEventRouterFactory::GetForBrowserContext(profile_);
     if (reporting_event_router) {
       reporting_event_router->OnPasswordReuse(main_frame_url, username_or_email,
-                                              is_phishing_url, warning_shown);
+                                              is_phishing_url, warning_shown,
+                                              referrer_chain);
     }
   }
 }

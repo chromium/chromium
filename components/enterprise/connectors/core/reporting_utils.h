@@ -81,7 +81,8 @@ GetPasswordReuseEvent(const GURL& url,
                       bool is_phishing_url,
                       bool warning_shown,
                       const std::string& profile_identifier,
-                      const std::string& profile_username);
+                      const std::string& profile_username,
+                      const ReferrerChain& referrer_chain);
 
 chrome::cros::reporting::proto::SafeBrowsingPasswordChangedEvent
 GetPasswordChangedEvent(const std::string& user_name,

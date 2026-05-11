@@ -252,10 +252,12 @@ void ReportingEventRouter::OnPasswordBreach(
   }
 }
 
-void ReportingEventRouter::OnPasswordReuse(const GURL& url,
-                                           const std::string& user_name,
-                                           bool is_phishing_url,
-                                           bool warning_shown) {
+void ReportingEventRouter::OnPasswordReuse(
+    const GURL& url,
+    const std::string& user_name,
+    bool is_phishing_url,
+    bool warning_shown,
+    const ReferrerChain& referrer_chain) {
   if (!IsEventEnabled(kKeyPasswordReuseEvent)) {
     return;
   }
@@ -265,10 +267,10 @@ void ReportingEventRouter::OnPasswordReuse(const GURL& url,
   if (base::FeatureList::IsEnabled(
           policy::kUploadRealtimeReportingEventsUsingProto)) {
     chrome::cros::reporting::proto::Event event;
-    *event.mutable_password_reuse_event() =
-        GetPasswordReuseEvent(url, user_name, is_phishing_url, warning_shown,
-                              reporting_client_->GetProfileIdentifier(),
-                              reporting_client_->GetProfileUserName());
+    *event.mutable_password_reuse_event() = GetPasswordReuseEvent(
+        url, user_name, is_phishing_url, warning_shown,
+        reporting_client_->GetProfileIdentifier(),
+        reporting_client_->GetProfileUserName(), referrer_chain);
     *event.mutable_time() = ToProtoTimestamp(base::Time::Now());
 
     reporting_client_->ReportEvent(std::move(event), settings.value());
@@ -280,6 +282,10 @@ void ReportingEventRouter::OnPasswordReuse(const GURL& url,
     event.Set(kKeyEventResult,
               EventResultToString(warning_shown ? EventResult::WARNED
                                                 : EventResult::ALLOWED));
+
+    if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
+      AddReferrerChainToEvent(referrer_chain, event);
+    }
 
     reporting_client_->ReportEventWithTimestampDeprecated(
         kKeyPasswordReuseEvent, std::move(settings.value()), std::move(event),

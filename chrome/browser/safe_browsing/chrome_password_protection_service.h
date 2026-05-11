@@ -204,11 +204,14 @@ class ChromePasswordProtectionService
   //
   // |username| can be an email address or a username for a non-GAIA or
   // saved-password reuse. No validation has been done on it.
-  void MaybeReportPasswordReuseDetected(const GURL& main_frame_url,
-                                        const std::string& username,
-                                        PasswordType password_type,
-                                        bool is_phishing_url,
-                                        bool warning_shown) override;
+  // |referrer_chain| is the referrer chain of the main frame URL.
+  void MaybeReportPasswordReuseDetected(
+      const GURL& main_frame_url,
+      const std::string& username,
+      PasswordType password_type,
+      bool is_phishing_url,
+      bool warning_shown,
+      const ReferrerChain& referrer_chain) override;
 
   // Triggers "safeBrowsingPrivate.OnPolicySpecifiedPasswordChanged" (on desktop
   // platforms) and a password changed enterprise event report (on both desktop

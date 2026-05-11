@@ -83,11 +83,17 @@ TEST(ReportingUtilsTest,
 }
 
 TEST(ReportingUtilsTest, GetPasswordReuseEventWithWarning) {
+  ReferrerChain chain;
+  auto* entry1 = chain.Add();
+  entry1->set_url("https://referrer1.com/");
+  entry1->add_ip_addresses("1.2.3.4");
+
   auto event = GetPasswordReuseEvent(
       /*url=*/GURL("https://google.com/"), /*user_name=*/kUsername,
       /*is_phishing_url=*/false, /*warning_shown=*/true,
       /*profile_identifier=*/"identifier",
-      /*profile_username=*/"profile_username");
+      /*profile_username=*/"profile_username",
+      /*referrer_chain=*/chain);
   ASSERT_EQ(event.url(), "https://google.com/");
   ASSERT_EQ(event.user_name(), kUsername);
   ASSERT_FALSE(event.is_phishing_url());
@@ -95,14 +101,23 @@ TEST(ReportingUtilsTest, GetPasswordReuseEventWithWarning) {
             chrome::cros::reporting::proto::EVENT_RESULT_WARNED);
   ASSERT_EQ(event.profile_identifier(), "identifier");
   ASSERT_EQ(event.profile_user_name(), "profile_username");
+  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
+    ASSERT_EQ(event.referrers_size(), 1);
+    EXPECT_EQ(event.referrers(0).url(), "https://referrer1.com/");
+    EXPECT_EQ(event.referrers(0).ip(), "1.2.3.4");
+  } else {
+    ASSERT_EQ(event.referrers_size(), 0);
+  }
 }
 
 TEST(ReportingUtilsTest, GetPasswordReuseEventWithoutWarning) {
+  ReferrerChain chain;
   auto event = GetPasswordReuseEvent(
       /*url=*/GURL("https://google.com/"), /*user_name=*/kUsername,
       /*is_phishing_url=*/false, /*warning_shown=*/true,
       /*profile_identifier=*/"identifier",
-      /*profile_username=*/"profile_username");
+      /*profile_username=*/"profile_username",
+      /*referrer_chain=*/chain);
   ASSERT_EQ(event.url(), "https://google.com/");
   ASSERT_EQ(event.user_name(), kUsername);
   ASSERT_FALSE(event.is_phishing_url());

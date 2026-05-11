@@ -116,9 +116,12 @@ void PasswordProtectionService::MaybeStartProtectedPasswordEntryRequest(
       LogNoPingingReason(trigger_type, reason, reused_password_account_type);
 
       if (reason == RequestOutcome::PASSWORD_ALERT_MODE) {
+        LoginReputationClientRequest::Frame temp_frame;
+        FillReferrerChain(main_frame_url, SessionID::InvalidValue(),
+                          &temp_frame);
         MaybeReportPasswordReuseDetected(
             main_frame_url, username, password_type, /*is_phishing_url=*/false,
-            can_show_interstitial);
+            can_show_interstitial, temp_frame.referrer_chain());
       }
       if (reused_password_account_type.is_account_syncing())
         MaybeLogPasswordReuseLookupEvent(web_contents, reason, password_type,

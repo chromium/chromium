@@ -206,10 +206,17 @@ void PasswordProtectionServiceBase::RequestFinished(
     // If verdict declares a security sensitive event, log accordingly.
     MaybeRecordSecuritySensitiveEvent(metrics_collector_, verdict);
 
+    ReferrerChain referrer_chain;
+    if (request->request_proto() &&
+        request->request_proto()->frames_size() > 0) {
+      referrer_chain = request->request_proto()->frames(0).referrer_chain();
+    }
+
     MaybeReportPasswordReuseDetected(
         request->main_frame_url(), request->username(),
         request->password_type(),
-        verdict == LoginReputationClientResponse::PHISHING, warning_shown);
+        verdict == LoginReputationClientResponse::PHISHING, warning_shown,
+        referrer_chain);
 
     // Persist a bit in CompromisedCredentials table when saved password is
     // reused on a phishing or low reputation site.

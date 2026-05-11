@@ -1525,7 +1525,7 @@ TEST_F(ChromePasswordProtectionServiceTest,
       web_contents()->GetLastCommittedURL(), kUserName,
       PasswordType::ENTERPRISE_PASSWORD,
       /*is_phishing_url =*/true,
-      /*warning_shown =*/true);
+      /*warning_shown =*/true, safe_browsing::ReferrerChain());
   run_loop.Run();
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -1546,7 +1546,7 @@ TEST_F(ChromePasswordProtectionServiceTest,
   service_->MaybeReportPasswordReuseDetected(
       request_->main_frame_url(), kUserName, PasswordType::OTHER_GAIA_PASSWORD,
       /*is_phishing_url =*/true,
-      /*warning_shown =*/true);
+      /*warning_shown =*/true, ReferrerChain());
 
 #if !BUILDFLAG(IS_ANDROID)
   ASSERT_EQ(1, test_event_router_->GetEventCount(
@@ -1556,11 +1556,11 @@ TEST_F(ChromePasswordProtectionServiceTest,
   // consumer accounts and reports are not sent even if there is a hosted
   // domain.
   service_->SetAccountInfo(kGmailUserName, /*hosted_domain=*/"example.com");
-  service_->MaybeReportPasswordReuseDetected(request_->main_frame_url(),
-                                             kGmailUserName,
-                                             PasswordType::OTHER_GAIA_PASSWORD,
-                                             /*is_phishing_url =*/true,
-                                             /*warning_shown =*/true);
+  service_->MaybeReportPasswordReuseDetected(
+      request_->main_frame_url(), kGmailUserName,
+      PasswordType::OTHER_GAIA_PASSWORD,
+      /*is_phishing_url =*/true,
+      /*warning_shown =*/true, ReferrerChain());
   base::RunLoop().RunUntilIdle();
 #if !BUILDFLAG(IS_ANDROID)
   ASSERT_EQ(1, test_event_router_->GetEventCount(
@@ -1569,11 +1569,11 @@ TEST_F(ChromePasswordProtectionServiceTest,
   service_->SetAccountInfo(kGooglemailUserName,
                            /*hosted_domain=*/"example.com");
   EXPECT_CALL(*client_, UploadSecurityEventReport).Times(0);
-  service_->MaybeReportPasswordReuseDetected(request_->main_frame_url(),
-                                             kGooglemailUserName,
-                                             PasswordType::OTHER_GAIA_PASSWORD,
-                                             /*is_phishing_url =*/true,
-                                             /*warning_shown =*/true);
+  service_->MaybeReportPasswordReuseDetected(
+      request_->main_frame_url(), kGooglemailUserName,
+      PasswordType::OTHER_GAIA_PASSWORD,
+      /*is_phishing_url =*/true,
+      /*warning_shown =*/true, ReferrerChain());
 #if !BUILDFLAG(IS_ANDROID)
   ASSERT_EQ(1, test_event_router_->GetEventCount(
                    OnPolicySpecifiedPasswordReuseDetected::kEventName));
@@ -1595,7 +1595,7 @@ TEST_F(ChromePasswordProtectionServiceTest,
   service_->MaybeReportPasswordReuseDetected(
       request_->main_frame_url(), kUserName, PasswordType::OTHER_GAIA_PASSWORD,
       /*is_phishing_url =*/true,
-      /*warning_shown =*/true);
+      /*warning_shown =*/true, ReferrerChain());
   run_loop2.Run();
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -1613,7 +1613,7 @@ TEST_F(ChromePasswordProtectionServiceTest,
   service_->MaybeReportPasswordReuseDetected(
       request_->main_frame_url(), kUserName,
       PasswordType::PASSWORD_TYPE_UNKNOWN,
-      /*is_phishing_url =*/true, /*warning_shown =*/true);
+      /*is_phishing_url =*/true, /*warning_shown =*/true, ReferrerChain());
   base::RunLoop().RunUntilIdle();
 #if !BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(2, test_event_router_->GetEventCount(
@@ -1631,7 +1631,7 @@ TEST_F(ChromePasswordProtectionServiceTest,
   service_->MaybeReportPasswordReuseDetected(
       request_->main_frame_url(), kUserName, PasswordType::ENTERPRISE_PASSWORD,
       /*is_phishing_url =*/true,
-      /*warning_shown =*/true);
+      /*warning_shown =*/true, ReferrerChain());
   base::RunLoop().RunUntilIdle();
 #if !BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(2, test_event_router_->GetEventCount(
@@ -1669,7 +1669,7 @@ TEST_F(ChromePasswordProtectionServiceTest,
   service_->MaybeReportPasswordReuseDetected(
       request_->main_frame_url(), kUserName, PasswordType::ENTERPRISE_PASSWORD,
       /*is_phishing_url =*/true,
-      /*warning_shown =*/true);
+      /*warning_shown =*/true, ReferrerChain());
   run_loop.Run();
 #if !BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(1, test_event_router_->GetEventCount(
@@ -1687,7 +1687,7 @@ TEST_F(ChromePasswordProtectionServiceTest,
   service_->MaybeReportPasswordReuseDetected(
       request_->main_frame_url(), kUserName, PasswordType::OTHER_GAIA_PASSWORD,
       /*is_phishing_url =*/true,
-      /*warning_shown =*/true);
+      /*warning_shown =*/true, ReferrerChain());
   base::RunLoop().RunUntilIdle();
 #if !BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(1, test_event_router_->GetEventCount(
@@ -1704,7 +1704,7 @@ TEST_F(ChromePasswordProtectionServiceTest,
   service_->MaybeReportPasswordReuseDetected(
       request_->main_frame_url(), kUserName,
       PasswordType::PASSWORD_TYPE_UNKNOWN,
-      /*is_phishing_url =*/true, /*warning_shown*/ true);
+      /*is_phishing_url =*/true, /*warning_shown*/ true, ReferrerChain());
   base::RunLoop().RunUntilIdle();
 #if !BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(1, test_event_router_->GetEventCount(

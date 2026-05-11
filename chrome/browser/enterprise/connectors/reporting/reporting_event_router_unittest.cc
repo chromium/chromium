@@ -639,10 +639,11 @@ TEST_F(ReportingEventRouterTest, TestPasswordReuseWarned) {
 
     validator.ExpectPasswordReuseEvent(std::move(expected_event));
 
-  reporting_event_router_->OnPasswordReuse(
-      GURL("https://phishing.com/"), "user_name_1", /*is_phishing_url*/ true,
-      /*warning_shown*/ true);
-  run_loop.Run();
+    ReferrerChain referrer_chain;
+    reporting_event_router_->OnPasswordReuse(
+        GURL("https://phishing.com/"), "user_name_1", /*is_phishing_url*/ true,
+        /*warning_shown*/ true, referrer_chain);
+    run_loop.Run();
 }
 
 TEST_F(ReportingEventRouterTest, TestPasswordReuseAllowed) {
@@ -665,10 +666,11 @@ TEST_F(ReportingEventRouterTest, TestPasswordReuseAllowed) {
 
     validator.ExpectPasswordReuseEvent(std::move(expected_event));
 
-  reporting_event_router_->OnPasswordReuse(
-      GURL("https://phishing.com/"), "user_name_1", /*is_phishing_url*/ true,
-      /*warning_shown*/ false);
-  run_loop.Run();
+    ReferrerChain referrer_chain;
+    reporting_event_router_->OnPasswordReuse(
+        GURL("https://phishing.com/"), "user_name_1", /*is_phishing_url*/ true,
+        /*warning_shown*/ false, referrer_chain);
+    run_loop.Run();
 }
 
 TEST_F(ReportingEventRouterTest, TestPasswordChanged) {

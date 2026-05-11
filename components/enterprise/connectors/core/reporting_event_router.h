@@ -62,7 +62,8 @@ class ReportingEventRouter : public KeyedService {
   void OnPasswordReuse(const GURL& url,
                        const std::string& user_name,
                        bool is_phishing_url,
-                       bool warning_shown);
+                       bool warning_shown,
+                       const ReferrerChain& referrer_chain);
 
   // Notifies listeners that the user changed the password associated with
   // `user_name`

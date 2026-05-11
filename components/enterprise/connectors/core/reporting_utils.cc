@@ -516,7 +516,8 @@ proto::SafeBrowsingPasswordReuseEvent GetPasswordReuseEvent(
     bool is_phishing_url,
     bool warning_shown,
     const std::string& profile_identifier,
-    const std::string& profile_username) {
+    const std::string& profile_username,
+    const ReferrerChain& referrer_chain) {
   proto::SafeBrowsingPasswordReuseEvent event;
   event.set_url(url.spec());
   event.set_user_name(user_name);
@@ -525,6 +526,8 @@ proto::SafeBrowsingPasswordReuseEvent GetPasswordReuseEvent(
                                        : proto::EVENT_RESULT_ALLOWED);
   event.set_profile_identifier(profile_identifier);
   event.set_profile_user_name(profile_username);
+
+  AddReferrersToEventProto(referrer_chain, &event);
 
   return event;
 }

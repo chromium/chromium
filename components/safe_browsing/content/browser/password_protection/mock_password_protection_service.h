@@ -79,8 +79,13 @@ class MockPasswordProtectionService : public PasswordProtectionService {
                     LoginReputationClientResponse::VerdictType,
                     const std::string&,
                     ReusedPasswordAccountType));
-  MOCK_METHOD5(MaybeReportPasswordReuseDetected,
-               void(const GURL&, const std::string&, PasswordType, bool, bool));
+  MOCK_METHOD6(MaybeReportPasswordReuseDetected,
+               void(const GURL&,
+                    const std::string&,
+                    PasswordType,
+                    bool,
+                    bool,
+                    const ReferrerChain&));
   MOCK_METHOD3(UpdateSecurityState,
                void(safe_browsing::SBThreatType,
                     ReusedPasswordAccountType,
