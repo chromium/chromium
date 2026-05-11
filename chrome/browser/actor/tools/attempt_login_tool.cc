@@ -436,8 +436,6 @@ void AttemptLoginTool::OnCredentialSelected(
 void AttemptLoginTool::SetUserSelectedCredential(
     actor_login::Credential selected_credential,
     webui::mojom::UserGrantedPermissionDuration permission_duration) {
-  // TODO(crbug.com/504897444): Test this once browser tests are available on
-  // Android.
   if (!affiliations_updated_) {
     on_affiliations_updated_callback_ =
         base::BindOnce(&AttemptLoginTool::SetUserSelectedCredential,
