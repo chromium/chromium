@@ -3484,10 +3484,18 @@ class WebViewChromium
     @Override
     public void onProvideContentCaptureStructure(ViewStructure structure, int flags) {
         // This is a View method - don't forbid builder.
-        mAwInit.triggerAndWaitForChromiumStarted(
-                CallSite.WEBVIEW_INSTANCE_ON_PROVIDE_CONTENT_CAPTURE_STRUCTURE);
         if (ContentCaptureFeatures.isDumpForTestingEnabled()) {
             Log.i("ContentCapture", "onProvideContentCaptureStructure");
+        }
+        if (checkNeedsPost()) {
+            mFactory.addTask(
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            onProvideContentCaptureStructure(structure, flags);
+                        }
+                    });
+            return;
         }
         try (TraceEvent event =
                 TraceEvent.scoped(
@@ -3607,17 +3615,10 @@ class WebViewChromium
 
     @Override
     public boolean performAccessibilityAction(final int action, final Bundle arguments) {
-        mAwInit.triggerAndWaitForChromiumStarted(
-                CallSite.WEBVIEW_INSTANCE_PERFORM_ACCESSIBILITY_ACTION);
-        if (checkNeedsPost()) {
+        if (!ThreadUtils.runningOnUiThread()) {
             boolean ret =
-                    mFactory.runOnUiThreadBlocking(
-                            new Callable<Boolean>() {
-                                @Override
-                                public Boolean call() {
-                                    return performAccessibilityAction(action, arguments);
-                                }
-                            });
+                    ThreadUtils.runOnUiThreadBlocking(
+                            () -> performAccessibilityAction(action, arguments));
             return ret;
         }
         return mWebViewPrivate.super_performAccessibilityAction(action, arguments);
