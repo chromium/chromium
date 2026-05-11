@@ -5,14 +5,42 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_BROWSER_HELP_BUBBLE_H_
 #define CHROME_BROWSER_UI_VIEWS_USER_EDUCATION_BROWSER_HELP_BUBBLE_H_
 
+#include <initializer_list>
+#include <set>
+
 #include "base/gtest_prod_util.h"
 #include "components/user_education/common/feature_promo/feature_promo_specification.h"
 #include "components/user_education/views/help_bubble_delegate.h"
 #include "components/user_education/webui/floating_webui_help_bubble_factory.h"
 #include "components/user_education/webui/help_bubble_webui.h"
+#include "content/public/browser/web_contents_user_data.h"
+#include "ui/base/interaction/element_identifier.h"
 
 // This file provides support classes required to create browser-specific help
 // bubbles.
+
+// User data attached to WebContents to indicate that help bubbles for specific
+// anchors should be hosted in WebUI. Secondary UI (side panel) usually
+// gets a Views bubble floating over it, but with this the help bubble can
+// exist within the WebUI itself, matching the behavior for non-secondary (tab)
+// UI when using a WebUI anchor.
+class ForceWebUIHelpBubbles
+    : public content::WebContentsUserData<ForceWebUIHelpBubbles> {
+ public:
+  ~ForceWebUIHelpBubbles() override;
+
+  void SetForceWebUIForAnchors(
+      std::initializer_list<ui::ElementIdentifier> help_bubble_anchors);
+  bool ShouldForceWebUIForAnchor(ui::ElementIdentifier anchor_id) const;
+
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
+
+ private:
+  explicit ForceWebUIHelpBubbles(content::WebContents* contents);
+  friend class content::WebContentsUserData<ForceWebUIHelpBubbles>;
+
+  std::set<ui::ElementIdentifier> forced_anchors_;
+};
 
 // Implementation of the help bubble delegate for chromium; uses browser theme,
 // color, and accelerator mappings.

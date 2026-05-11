@@ -96,6 +96,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/user_education/browser_help_bubble.h"
 #include "components/omnibox/browser/searchbox.mojom-forward.h"
 #include "components/zoom/zoom_controller.h"  // nogncheck
 #endif
@@ -282,6 +283,18 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
               Profile::FromBrowserContext(
                   web_ui->GetWebContents()->GetBrowserContext()))) {
   Profile* profile = Profile::FromWebUI(web_ui);
+
+#if !BUILDFLAG(IS_ANDROID)
+  // This hints the IPH system to use the webui help bubble factory. It is
+  // necessary to avoid floating a Views bubble when side paneled (cobrowse)
+  // because the webui modal dialog can only work well with a help bubble
+  // when it is part of the dialog's DOM in the browser "top layer".
+  ForceWebUIHelpBubbles::CreateForWebContents(web_ui->GetWebContents());
+  if (auto* forced =
+          ForceWebUIHelpBubbles::FromWebContents(web_ui->GetWebContents())) {
+    forced->SetForceWebUIForAnchors({kSmartTabSharingMenuItemElementId});
+  }
+#endif
 
   // In MPArch, a single webcontents is used to host multiple frame trees rather
   // than having a separate webcontents for each. In that case there's no need

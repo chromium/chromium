@@ -32,6 +32,23 @@
 #include "ui/webui/tracked_element/tracked_element_handler.h"
 #include "ui/webui/tracked_element/tracked_element_web_ui.h"
 
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ForceWebUIHelpBubbles);
+
+ForceWebUIHelpBubbles::ForceWebUIHelpBubbles(content::WebContents* contents)
+    : content::WebContentsUserData<ForceWebUIHelpBubbles>(*contents) {}
+ForceWebUIHelpBubbles::~ForceWebUIHelpBubbles() = default;
+
+void ForceWebUIHelpBubbles::SetForceWebUIForAnchors(
+    std::initializer_list<ui::ElementIdentifier> help_bubble_anchors) {
+  forced_anchors_.insert(help_bubble_anchors.begin(),
+                         help_bubble_anchors.end());
+}
+
+bool ForceWebUIHelpBubbles::ShouldForceWebUIForAnchor(
+    ui::ElementIdentifier anchor_id) const {
+  return forced_anchors_.contains(anchor_id);
+}
+
 BrowserHelpBubbleDelegate::BrowserHelpBubbleDelegate() = default;
 BrowserHelpBubbleDelegate::~BrowserHelpBubbleDelegate() = default;
 
@@ -144,6 +161,13 @@ bool FloatingWebUIHelpBubbleFactoryBrowser::CanBuildBubbleForTrackedElement(
   // If this is a WebUI in a tab, then don't use this factory.
   const auto* contents =
       element->AsA<ui::TrackedElementWebUI>()->handler()->web_contents();
+  if (contents) {
+    if (auto* forced = ForceWebUIHelpBubbles::FromWebContents(contents)) {
+      if (forced->ShouldForceWebUIForAnchor(element->identifier())) {
+        return false;
+      }
+    }
+  }
   // Note: this checks all tabs for their WebContents.
   if (GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(contents)) {
     return false;
