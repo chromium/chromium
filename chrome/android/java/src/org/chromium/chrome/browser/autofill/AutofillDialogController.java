@@ -78,10 +78,11 @@ public class AutofillDialogController {
             @JniType("std::u16string") String description,
             @JniType("std::u16string") String buttonText) {
         mDialog.show(
-                new ConfirmationDialogParams(mContext)
+                new ConfirmationDialogParams.Builder(mContext)
                         .withTitle(title)
                         .withDescription(description)
-                        .withPositiveButton(buttonText),
+                        .withPositiveButton(buttonText)
+                        .build(),
                 this::handleDialogAction);
     }
 

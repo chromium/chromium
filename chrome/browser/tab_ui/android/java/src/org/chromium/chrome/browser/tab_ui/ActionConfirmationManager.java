@@ -224,12 +224,13 @@ public class ActionConfirmationManager {
         ActionConfirmationDialog dialog =
                 new ActionConfirmationDialog(mContext, mModalDialogManager);
         dialog.show(
-                new ConfirmationDialogParams(mContext)
+                new ConfirmationDialogParams.Builder(mContext)
                         .withTitle(R.string.stop_actor_task_dialog_title)
                         .withDescription(R.string.stop_actor_task_dialog_description)
                         .withPositiveButton(R.string.leave_tab_group_menu_item)
                         .withNegativeButton(R.string.cancel)
-                        .withSupportStopShowing(false),
+                        .withSupportStopShowing(false)
+                        .build(),
                 onDialogInteracted);
     }
 
@@ -272,12 +273,13 @@ public class ActionConfirmationManager {
         ActionConfirmationDialog dialog =
                 new ActionConfirmationDialog(mContext, mModalDialogManager);
         dialog.show(
-                new ConfirmationDialogParams(mContext)
+                new ConfirmationDialogParams.Builder(mContext)
                         .withTitle(titleRes)
                         .withDescription(description)
                         .withPositiveButton(actionRes)
                         .withNegativeButton(R.string.cancel)
-                        .withSupportStopShowing(true),
+                        .withSupportStopShowing(true)
+                        .build(),
                 onDialogInteracted);
     }
 
@@ -314,12 +316,13 @@ public class ActionConfirmationManager {
         ActionConfirmationDialog dialog =
                 new ActionConfirmationDialog(mContext, mModalDialogManager);
         dialog.show(
-                new ConfirmationDialogParams(mContext)
+                new ConfirmationDialogParams.Builder(mContext)
                         .withTitle(titleRes)
                         .withDescription(desription)
                         .withPositiveButton(actionRes)
                         .withNegativeButton(R.string.cancel)
-                        .withSupportStopShowing(false),
+                        .withSupportStopShowing(false)
+                        .build(),
                 onDialogInteracted);
     }
 
@@ -390,12 +393,13 @@ public class ActionConfirmationManager {
         ActionConfirmationDialog dialog =
                 new ActionConfirmationDialog(mContext, mModalDialogManager);
         dialog.show(
-                new ConfirmationDialogParams(mContext)
+                new ConfirmationDialogParams.Builder(mContext)
                         .withTitle(titleRes)
                         .withDescription(desription)
                         .withPositiveButton(positiveButtonRes)
                         .withNegativeButton(negativeButtonRes)
-                        .withSupportStopShowing(false),
+                        .withSupportStopShowing(false)
+                        .build(),
                 onDialogInteracted);
     }
 

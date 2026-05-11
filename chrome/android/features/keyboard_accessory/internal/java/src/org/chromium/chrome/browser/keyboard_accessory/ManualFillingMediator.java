@@ -804,12 +804,13 @@ class ManualFillingMediator
             Runnable declinedCallback) {
         mConfirmationDialogDismissHandler =
                 mActionConfirmationDialog.show(
-                        new ConfirmationDialogParams(mActivity)
+                        new ConfirmationDialogParams.Builder(mActivity)
                                 .withTitle(title)
                                 .withDescription(message)
                                 .withPositiveButton(confirmButtonText)
                                 .withNegativeButton(R.string.cancel)
-                                .withSupportStopShowing(false),
+                                .withSupportStopShowing(false)
+                                .build(),
                         (handler, result, stopShowing) ->
                                 onConfirmationDialogInteracted(
                                         result, confirmedCallback, declinedCallback));

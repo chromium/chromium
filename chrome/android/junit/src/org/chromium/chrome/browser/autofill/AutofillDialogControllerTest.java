@@ -74,10 +74,11 @@ public class AutofillDialogControllerTest {
         ConfirmationDialogParams dialogParams = mDialogParamsCaptor.getValue();
 
         ConfirmationDialogParams expectedParams =
-                new ConfirmationDialogParams(mActivity)
+                new ConfirmationDialogParams.Builder(mActivity)
                         .withTitle(TEST_TITLE)
                         .withDescription(TEST_DESCRIPTION)
-                        .withPositiveButton(TEST_BUTTON_TEXT);
+                        .withPositiveButton(TEST_BUTTON_TEXT)
+                        .build();
         assertEquals(expectedParams, dialogParams);
     }
 

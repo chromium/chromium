@@ -292,75 +292,36 @@ public class ActionConfirmationDialog {
         mModalDialogManager = modalDialogManager;
     }
 
-    /** Parameters for the confirmation dialog. */
-    public static class ConfirmationDialogParams {
-        private final Context mContext;
+    /**
+     * Immutable parameters for the confirmation dialog.
+     *
+     * <p>Build instances via {@link Builder}. The params object intentionally does not retain a
+     * {@link Context} so it is safe to keep around without leaking an Activity.
+     */
+    public static final class ConfirmationDialogParams {
         // The title of the dialog.
-        private String mTitle = "";
+        private final String mTitle;
         // The description of the dialog.
-        private CharSequence mDescription = "";
+        private final CharSequence mDescription;
         // The text for the positive button.
-        private String mPositiveButtonText = "";
+        private final String mPositiveButtonText;
         // The text for the negative button.
-        private String mNegativeButtonText = "";
+        private final String mNegativeButtonText;
         // Whether to show the "don't show again" checkbox.
-        private boolean mSupportStopShowing;
+        private final boolean mSupportStopShowing;
 
-        public ConfirmationDialogParams(Context context) {
-            mContext = context;
-        }
-
-        public ConfirmationDialogParams withTitle(String title) {
-            mTitle = title;
-            return this;
-        }
-
-        public ConfirmationDialogParams withTitle(@StringRes int titleRes) {
-            mTitle = mContext.getString(titleRes);
-            return this;
-        }
-
-        public ConfirmationDialogParams withDescription(CharSequence description) {
-            mDescription = description;
-            return this;
-        }
-
-        public ConfirmationDialogParams withDescription(@StringRes int descriptionRes) {
-            mDescription = mContext.getText(descriptionRes);
-            return this;
-        }
-
-        public ConfirmationDialogParams withPositiveButton(String positiveButtonText) {
-            mPositiveButtonText = positiveButtonText;
-            return this;
-        }
-
-        public ConfirmationDialogParams withPositiveButton(@StringRes int positiveButtonRes) {
-            mPositiveButtonText = mContext.getString(positiveButtonRes);
-            return this;
-        }
-
-        public ConfirmationDialogParams withNegativeButton(String negativeButtonText) {
-            mNegativeButtonText = negativeButtonText;
-            return this;
-        }
-
-        public ConfirmationDialogParams withNegativeButton(@StringRes int negativeButtonRes) {
-            mNegativeButtonText = mContext.getString(negativeButtonRes);
-            return this;
-        }
-
-        public ConfirmationDialogParams withSupportStopShowing(boolean supportStopShowing) {
-            mSupportStopShowing = supportStopShowing;
-            return this;
+        private ConfirmationDialogParams(Builder builder) {
+            mTitle = builder.mTitle;
+            mDescription = builder.mDescription;
+            mPositiveButtonText = builder.mPositiveButtonText;
+            mNegativeButtonText = builder.mNegativeButtonText;
+            mSupportStopShowing = builder.mSupportStopShowing;
         }
 
         @Override
         public String toString() {
             return "ConfirmationDialogParams{"
-                    + "mContext="
-                    + mContext
-                    + ", mTitle='"
+                    + "mTitle='"
                     + mTitle
                     + '\''
                     + ", mDescription="
@@ -383,7 +344,6 @@ public class ActionConfirmationDialog {
             if (!(o instanceof ConfirmationDialogParams)) return false;
             ConfirmationDialogParams that = (ConfirmationDialogParams) o;
             return mSupportStopShowing == that.mSupportStopShowing
-                    && Objects.equals(mContext, that.mContext)
                     && Objects.equals(mTitle, that.mTitle)
                     && Objects.equals(mDescription, that.mDescription)
                     && Objects.equals(mPositiveButtonText, that.mPositiveButtonText)
@@ -393,12 +353,80 @@ public class ActionConfirmationDialog {
         @Override
         public int hashCode() {
             return Objects.hash(
-                    mContext,
                     mTitle,
                     mDescription,
                     mPositiveButtonText,
                     mNegativeButtonText,
                     mSupportStopShowing);
+        }
+
+        /**
+         * Builder for {@link ConfirmationDialogParams}.
+         *
+         * <p>The builder holds a {@link Context} only for resolving string resources. The
+         * {@link Context} is dropped at {@link #build()} time and is never stored on the resulting
+         * params object.
+         */
+        public static final class Builder {
+            private final Context mContext;
+            private String mTitle = "";
+            private CharSequence mDescription = "";
+            private String mPositiveButtonText = "";
+            private String mNegativeButtonText = "";
+            private boolean mSupportStopShowing;
+
+            public Builder(Context context) {
+                mContext = context;
+            }
+
+            public Builder withTitle(String title) {
+                mTitle = title;
+                return this;
+            }
+
+            public Builder withTitle(@StringRes int titleRes) {
+                mTitle = mContext.getString(titleRes);
+                return this;
+            }
+
+            public Builder withDescription(CharSequence description) {
+                mDescription = description;
+                return this;
+            }
+
+            public Builder withDescription(@StringRes int descriptionRes) {
+                mDescription = mContext.getText(descriptionRes);
+                return this;
+            }
+
+            public Builder withPositiveButton(String positiveButtonText) {
+                mPositiveButtonText = positiveButtonText;
+                return this;
+            }
+
+            public Builder withPositiveButton(@StringRes int positiveButtonRes) {
+                mPositiveButtonText = mContext.getString(positiveButtonRes);
+                return this;
+            }
+
+            public Builder withNegativeButton(String negativeButtonText) {
+                mNegativeButtonText = negativeButtonText;
+                return this;
+            }
+
+            public Builder withNegativeButton(@StringRes int negativeButtonRes) {
+                mNegativeButtonText = mContext.getString(negativeButtonRes);
+                return this;
+            }
+
+            public Builder withSupportStopShowing(boolean supportStopShowing) {
+                mSupportStopShowing = supportStopShowing;
+                return this;
+            }
+
+            public ConfirmationDialogParams build() {
+                return new ConfirmationDialogParams(this);
+            }
         }
     }
 

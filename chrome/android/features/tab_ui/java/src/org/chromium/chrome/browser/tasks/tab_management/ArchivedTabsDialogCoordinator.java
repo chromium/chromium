@@ -871,7 +871,7 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                                 tabCount,
                                 tabCount);
         mActionConfirmationDialog.show(
-                new ConfirmationDialogParams(mActivity)
+                new ConfirmationDialogParams.Builder(mActivity)
                         .withTitle(title)
                         .withDescription(
                                 R.string
@@ -879,7 +879,8 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                         .withPositiveButton(
                                 R.string.archive_dialog_close_all_inactive_tabs_confirmation)
                         .withNegativeButton(R.string.cancel)
-                        .withSupportStopShowing(false),
+                        .withSupportStopShowing(false)
+                        .build(),
                 (dismissHandler, buttonClickResult, stopShowing) -> {
                     if (buttonClickResult == ButtonClickResult.POSITIVE) {
                         mArchivedTabModel

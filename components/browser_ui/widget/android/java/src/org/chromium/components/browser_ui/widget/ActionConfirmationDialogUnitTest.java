@@ -103,12 +103,13 @@ public class ActionConfirmationDialogUnitTest {
         ActionConfirmationDialog dialog =
                 new ActionConfirmationDialog(mContext, mModalDialogManager);
         dialog.show(
-                new ConfirmationDialogParams(mContext)
+                new ConfirmationDialogParams.Builder(mContext)
                         .withTitle(R.string.title)
                         .withDescription(R.string.learn_more)
                         .withPositiveButton(R.string.confirm)
                         .withNegativeButton(R.string.cancel)
-                        .withSupportStopShowing(true),
+                        .withSupportStopShowing(true)
+                        .build(),
                 mConfirmationDialogHandler);
 
         verify(mModalDialogManager)
@@ -127,7 +128,7 @@ public class ActionConfirmationDialogUnitTest {
                 new ActionConfirmationDialog(mContext, mModalDialogManager);
         // chip_remove_icon_content_description can be any string with formal args.
         dialog.show(
-                new ConfirmationDialogParams(mContext)
+                new ConfirmationDialogParams.Builder(mContext)
                         .withTitle(R.string.title)
                         .withDescription(
                                 mContext.getString(
@@ -135,7 +136,8 @@ public class ActionConfirmationDialogUnitTest {
                                         "test@gmail.com"))
                         .withPositiveButton(R.string.confirm)
                         .withNegativeButton(R.string.cancel)
-                        .withSupportStopShowing(true),
+                        .withSupportStopShowing(true)
+                        .build(),
                 mConfirmationDialogHandler);
 
         verify(mModalDialogManager)
@@ -152,12 +154,13 @@ public class ActionConfirmationDialogUnitTest {
         ActionConfirmationDialog dialog =
                 new ActionConfirmationDialog(mContext, mModalDialogManager);
         dialog.show(
-                new ConfirmationDialogParams(mContext)
+                new ConfirmationDialogParams.Builder(mContext)
                         .withTitle(R.string.title)
                         .withDescription(R.string.learn_more)
                         .withPositiveButton(R.string.confirm)
                         .withNegativeButton(R.string.cancel)
-                        .withSupportStopShowing(true),
+                        .withSupportStopShowing(true)
+                        .build(),
                 mConfirmationDialogHandler);
 
         verify(mModalDialogManager)
@@ -180,11 +183,12 @@ public class ActionConfirmationDialogUnitTest {
         ActionConfirmationDialog dialog =
                 new ActionConfirmationDialog(mContext, mModalDialogManager);
         dialog.show(
-                new ConfirmationDialogParams(mContext)
+                new ConfirmationDialogParams.Builder(mContext)
                         .withTitle(R.string.title)
                         .withDescription(R.string.learn_more)
                         .withPositiveButton(R.string.confirm)
-                        .withSupportStopShowing(true),
+                        .withSupportStopShowing(true)
+                        .build(),
                 mConfirmationDialogHandler);
 
         verify(mModalDialogManager)
@@ -207,12 +211,13 @@ public class ActionConfirmationDialogUnitTest {
         ActionConfirmationDialog dialog =
                 new ActionConfirmationDialog(mContext, mModalDialogManager);
         dialog.show(
-                new ConfirmationDialogParams(mContext)
+                new ConfirmationDialogParams.Builder(mContext)
                         .withTitle(R.string.title)
                         .withDescription(R.string.learn_more)
                         .withPositiveButton(R.string.confirm)
                         .withNegativeButton(R.string.cancel)
-                        .withSupportStopShowing(true),
+                        .withSupportStopShowing(true)
+                        .build(),
                 mConfirmationDialogHandler);
 
         verify(mModalDialogManager)
@@ -235,12 +240,13 @@ public class ActionConfirmationDialogUnitTest {
         ActionConfirmationDialog dialog =
                 new ActionConfirmationDialog(mContext, mModalDialogManager);
         dialog.show(
-                new ConfirmationDialogParams(mContext)
+                new ConfirmationDialogParams.Builder(mContext)
                         .withTitle(R.string.title)
                         .withDescription(R.string.learn_more)
                         .withPositiveButton(R.string.confirm)
                         .withNegativeButton(R.string.cancel)
-                        .withSupportStopShowing(true),
+                        .withSupportStopShowing(true)
+                        .build(),
                 mConfirmationDialogHandler);
 
         verify(mModalDialogManager)
@@ -267,12 +273,13 @@ public class ActionConfirmationDialogUnitTest {
         ActionConfirmationDialog dialog =
                 new ActionConfirmationDialog(mContext, mModalDialogManager);
         dialog.show(
-                new ConfirmationDialogParams(mContext)
+                new ConfirmationDialogParams.Builder(mContext)
                         .withTitle(R.string.title)
                         .withDescription(R.string.learn_more)
                         .withPositiveButton(R.string.confirm)
                         .withNegativeButton(R.string.cancel)
-                        .withSupportStopShowing(true),
+                        .withSupportStopShowing(true)
+                        .build(),
                 mConfirmationDialogHandler);
 
         verify(mModalDialogManager)
@@ -299,12 +306,13 @@ public class ActionConfirmationDialogUnitTest {
         ActionConfirmationDialog dialog =
                 new ActionConfirmationDialog(mContext, mModalDialogManager);
         dialog.show(
-                new ConfirmationDialogParams(mContext)
+                new ConfirmationDialogParams.Builder(mContext)
                         .withTitle(R.string.title)
                         .withDescription(R.string.learn_more)
                         .withPositiveButton(R.string.confirm)
                         .withNegativeButton(R.string.cancel)
-                        .withSupportStopShowing(false),
+                        .withSupportStopShowing(false)
+                        .build(),
                 mConfirmationDialogHandler);
 
         verify(mModalDialogManager)
@@ -321,12 +329,13 @@ public class ActionConfirmationDialogUnitTest {
         ActionConfirmationDialog dialog =
                 new ActionConfirmationDialog(mContext, mModalDialogManager);
         dialog.show(
-                new ConfirmationDialogParams(mContext)
+                new ConfirmationDialogParams.Builder(mContext)
                         .withTitle(R.string.title)
                         .withDescription(R.string.learn_more)
                         .withPositiveButton(R.string.confirm)
                         .withNegativeButton(R.string.cancel)
-                        .withSupportStopShowing(true),
+                        .withSupportStopShowing(true)
+                        .build(),
                 mConfirmationDialogHandler);
 
         verify(mModalDialogManager)
@@ -357,12 +366,13 @@ public class ActionConfirmationDialogUnitTest {
                 new ActionConfirmationDialog(mContext, mModalDialogManager);
         DialogHandle dismissHandler =
                 dialog.show(
-                        new ConfirmationDialogParams(mContext)
+                        new ConfirmationDialogParams.Builder(mContext)
                                 .withTitle(R.string.title)
                                 .withDescription(R.string.learn_more)
                                 .withPositiveButton(R.string.confirm)
                                 .withNegativeButton(R.string.cancel)
-                                .withSupportStopShowing(true),
+                                .withSupportStopShowing(true)
+                                .build(),
                         mConfirmationDialogHandler);
 
         verify(mModalDialogManager)
@@ -384,12 +394,13 @@ public class ActionConfirmationDialogUnitTest {
                 new ActionConfirmationDialog(mContext, mModalDialogManager);
         DialogHandle dismissHandler =
                 dialog.show(
-                        new ConfirmationDialogParams(mContext)
+                        new ConfirmationDialogParams.Builder(mContext)
                                 .withTitle(R.string.title)
                                 .withDescription(R.string.learn_more)
                                 .withPositiveButton(R.string.confirm)
                                 .withNegativeButton(R.string.cancel)
-                                .withSupportStopShowing(true),
+                                .withSupportStopShowing(true)
+                                .build(),
                         mConfirmationDialogHandler);
 
         verify(mModalDialogManager)
@@ -412,12 +423,13 @@ public class ActionConfirmationDialogUnitTest {
         ActionConfirmationDialog dialog =
                 new ActionConfirmationDialog(mContext, mModalDialogManager);
         dialog.show(
-                new ConfirmationDialogParams(mContext)
+                new ConfirmationDialogParams.Builder(mContext)
                         .withTitle(R.string.title)
                         .withDescription(R.string.learn_more)
                         .withPositiveButton(R.string.confirm)
                         .withNegativeButton(R.string.cancel)
-                        .withSupportStopShowing(true),
+                        .withSupportStopShowing(true)
+                        .build(),
                 mConfirmationDialogHandler);
 
         verify(mModalDialogManager)
@@ -455,12 +467,13 @@ public class ActionConfirmationDialogUnitTest {
         ActionConfirmationDialog dialog =
                 new ActionConfirmationDialog(mContext, mModalDialogManager);
         dialog.show(
-                new ConfirmationDialogParams(mContext)
+                new ConfirmationDialogParams.Builder(mContext)
                         .withTitle(R.string.title)
                         .withDescription(R.string.learn_more)
                         .withPositiveButton(R.string.confirm)
                         .withNegativeButton(R.string.cancel)
-                        .withSupportStopShowing(true),
+                        .withSupportStopShowing(true)
+                        .build(),
                 mConfirmationDialogHandler);
 
         verify(mModalDialogManager)
@@ -498,12 +511,13 @@ public class ActionConfirmationDialogUnitTest {
         ActionConfirmationDialog dialog =
                 new ActionConfirmationDialog(mContext, mModalDialogManager);
         dialog.show(
-                new ConfirmationDialogParams(mContext)
+                new ConfirmationDialogParams.Builder(mContext)
                         .withTitle(R.string.title)
                         .withDescription(R.string.learn_more)
                         .withPositiveButton(R.string.confirm)
                         .withNegativeButton(R.string.cancel)
-                        .withSupportStopShowing(true),
+                        .withSupportStopShowing(true)
+                        .build(),
                 mConfirmationDialogHandler);
 
         verify(mModalDialogManager)
