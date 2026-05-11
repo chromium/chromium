@@ -2044,7 +2044,7 @@ void GpuImageDecodeCache::DecodeImageIfNecessary(
       const auto info = image_data->GetImageInfo(aux_image);
       int num_planes = 0;
       if (info.yuva) {
-        num_planes = image_data->info.yuva->numPlanes();
+        num_planes = info.yuva->numPlanes();
       }
       if (info.rgba) {
         num_planes = 1;
