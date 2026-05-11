@@ -15,6 +15,7 @@ source_set("unit_tests") {
     "interaction_test_util_views_unittest.cc",
     "interactive_views_test_unittest.cc",
     "view_focus_observer_unittest.cc",
+    "view_subregion_anchor_unittest.cc",
     "widget_focus_observer_unittest.cc",
   ]
 

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/framework_specific_implementation.h"
@@ -35,8 +36,13 @@ class VIEWS_EXPORT ViewSubregionAnchor : public ui::TrackedElement {
   // Specifies the anchor region within the view.
   void MaybeUpdateAnchor(gfx::Rect local_anchor_region);
 
+  // Switches the host view to `new_view`, optionally updating the anchor to
+  // `new_anchor_region`.
+  void MoveTo(View& new_view,
+              std::optional<gfx::Rect> new_anchor_region = std::nullopt);
+
   // Gets the view associated with this element.
-  views::View& view() { return *view_; }
+  View& view() { return *view_; }
 
   // Sets a "manually hidden" state in which this anchor does not register as
   // visible even when the underlying view is visible.
@@ -51,13 +57,14 @@ class VIEWS_EXPORT ViewSubregionAnchor : public ui::TrackedElement {
   void OnAnchorViewShown(ui::TrackedElement* el);
   void OnAnchorViewHidden(ui::TrackedElement* el);
 
+  void SetView(View& view);
   void UpdateVisibility();
 
   bool visible_ = false;
   bool view_visible_ = false;
   bool manually_hidden_ = false;
   gfx::Rect last_anchor_region_;
-  const raw_ref<views::View> view_;
+  raw_ptr<views::View> view_;
   base::CallbackListSubscription anchor_view_shown_subscription_;
   base::CallbackListSubscription anchor_view_hidden_subscription_;
 };

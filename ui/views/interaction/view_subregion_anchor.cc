@@ -21,30 +21,8 @@ DEFINE_FRAMEWORK_SPECIFIC_METADATA(ViewSubregionAnchor)
 
 ViewSubregionAnchor::ViewSubregionAnchor(ui::ElementIdentifier id,
                                          views::View& view)
-    : TrackedElement(id, views::ElementTrackerViews::GetContextForView(&view)),
-      view_(view) {
-  const ui::ElementIdentifier view_id =
-      view.GetProperty(views::kElementIdentifierKey);
-  CHECK(view_id);
-  anchor_view_shown_subscription_ =
-      ui::ElementTracker::GetElementTracker()->AddElementShownCallback(
-          view_id, context(),
-          base::BindRepeating(&ViewSubregionAnchor::OnAnchorViewShown,
-                              base::Unretained(this)));
-  anchor_view_hidden_subscription_ =
-      ui::ElementTracker::GetElementTracker()->AddElementHiddenCallback(
-          view_id, context(),
-          base::BindRepeating(&ViewSubregionAnchor::OnAnchorViewHidden,
-                              base::Unretained(this)));
-  auto candidates =
-      ui::ElementTracker::GetElementTracker()->GetAllMatchingElements(
-          view_id, context());
-  view_visible_ = std::ranges::any_of(
-      candidates, [to_find = &view](ui::TrackedElement* found) {
-        auto* const view_el = found->AsA<views::TrackedElementViews>();
-        return view_el && view_el->view() == to_find;
-      });
-  UpdateVisibility();
+    : TrackedElement(id, views::ElementTrackerViews::GetContextForView(&view)) {
+  SetView(view);
 }
 
 ViewSubregionAnchor::~ViewSubregionAnchor() {
@@ -58,6 +36,26 @@ void ViewSubregionAnchor::MaybeUpdateAnchor(gfx::Rect local_anchor_region) {
   }
 
   last_anchor_region_ = local_anchor_region;
+  if (visible_) {
+    ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
+        this, kAnchorBoundsChangedEvent);
+  }
+}
+
+void ViewSubregionAnchor::MoveTo(View& new_view,
+                                 std::optional<gfx::Rect> new_anchor_region) {
+  if (view_ == &new_view) {
+    if (new_anchor_region) {
+      MaybeUpdateAnchor(*new_anchor_region);
+    }
+    return;
+  }
+
+  SetView(new_view);
+
+  if (new_anchor_region) {
+    last_anchor_region_ = *new_anchor_region;
+  }
   if (visible_) {
     ui::ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(
         this, kAnchorBoundsChangedEvent);
@@ -109,6 +107,35 @@ void ViewSubregionAnchor::OnAnchorViewHidden(ui::TrackedElement* el) {
       UpdateVisibility();
     }
   }
+}
+
+void ViewSubregionAnchor::SetView(View& view) {
+  view_ = &view;
+  CHECK(view_);
+  CHECK_EQ(context(), views::ElementTrackerViews::GetContextForView(&view))
+      << "Moving an anchor to a different context is not supported.";
+  const ui::ElementIdentifier view_id =
+      view.GetProperty(views::kElementIdentifierKey);
+  CHECK(view_id);
+  anchor_view_shown_subscription_ =
+      ui::ElementTracker::GetElementTracker()->AddElementShownCallback(
+          view_id, context(),
+          base::BindRepeating(&ViewSubregionAnchor::OnAnchorViewShown,
+                              base::Unretained(this)));
+  anchor_view_hidden_subscription_ =
+      ui::ElementTracker::GetElementTracker()->AddElementHiddenCallback(
+          view_id, context(),
+          base::BindRepeating(&ViewSubregionAnchor::OnAnchorViewHidden,
+                              base::Unretained(this)));
+  auto candidates =
+      ui::ElementTracker::GetElementTracker()->GetAllMatchingElements(
+          view_id, context());
+  view_visible_ = std::ranges::any_of(
+      candidates, [to_find = &view](ui::TrackedElement* found) {
+        auto* const view_el = found->AsA<views::TrackedElementViews>();
+        return view_el && view_el->view() == to_find;
+      });
+  UpdateVisibility();
 }
 
 void ViewSubregionAnchor::UpdateVisibility() {
