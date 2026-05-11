@@ -804,6 +804,9 @@ TEST_F(PageContentProtoUtilTest, ConvertGeometry_Default) {
       gfx::Rect(10, 20, 30, 40);
   text_node->content_attributes->geometry->visible_bounding_box =
       gfx::Rect(11, 21, 31, 41);
+  // Use a non-default value to prove the conversion copies css_position.
+  text_node->content_attributes->geometry->css_position =
+      blink::mojom::AIPageContentCssPosition::kFixed;
   root_content->root_node->children_nodes.emplace_back(std::move(text_node));
 
   auto text_node2 =
@@ -845,6 +848,8 @@ TEST_F(PageContentProtoUtilTest, ConvertGeometry_Default) {
   EXPECT_EQ(geometry.visible_bounding_box().y(), 21);
   EXPECT_EQ(geometry.visible_bounding_box().width(), 31);
   EXPECT_EQ(geometry.visible_bounding_box().height(), 41);
+  EXPECT_EQ(geometry.css_position(),
+            optimization_guide::proto::CSS_POSITION_FIXED);
 
   EXPECT_EQ(page_content.proto.root_node()
                 .children_nodes(1)
@@ -869,6 +874,9 @@ TEST_F(PageContentProtoUtilTest, ConvertGeometry_ActionableElements) {
       gfx::Rect(10, 20, 30, 40);
   text_node->content_attributes->geometry->visible_bounding_box =
       gfx::Rect(11, 21, 31, 41);
+  // Use a non-default value to prove actionable conversion also preserves it.
+  text_node->content_attributes->geometry->css_position =
+      blink::mojom::AIPageContentCssPosition::kFixed;
   root_content->root_node->children_nodes.emplace_back(std::move(text_node));
 
   AIPageContentResult page_content;
@@ -898,6 +906,8 @@ TEST_F(PageContentProtoUtilTest, ConvertGeometry_ActionableElements) {
   EXPECT_EQ(geometry.visible_bounding_box().y(), 21);
   EXPECT_EQ(geometry.visible_bounding_box().width(), 31);
   EXPECT_EQ(geometry.visible_bounding_box().height(), 41);
+  EXPECT_EQ(geometry.css_position(),
+            optimization_guide::proto::CSS_POSITION_FIXED);
 }
 
 TEST_F(PageContentProtoUtilTest, ConvertGeometryInIframe) {

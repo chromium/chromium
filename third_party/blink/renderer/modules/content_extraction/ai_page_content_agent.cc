@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/containers/adapters.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
@@ -72,6 +73,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/script_tools/model_context_supplement.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
 #include "third_party/blink/renderer/modules/content_extraction/ai_page_content_debug_utils.h"
 #include "third_party/blink/renderer/platform/geometry/infinite_int_rect.h"
@@ -1362,6 +1364,23 @@ void ProcessTableRowNode(const LayoutTableRow& layout_table_row,
   attributes.table_row_data = std::move(table_row_data);
 }
 
+mojom::blink::AIPageContentCssPosition ConvertCssPosition(
+    EPosition css_position) {
+  switch (css_position) {
+    case EPosition::kStatic:
+      return mojom::blink::AIPageContentCssPosition::kStatic;
+    case EPosition::kRelative:
+      return mojom::blink::AIPageContentCssPosition::kRelative;
+    case EPosition::kAbsolute:
+      return mojom::blink::AIPageContentCssPosition::kAbsolute;
+    case EPosition::kFixed:
+      return mojom::blink::AIPageContentCssPosition::kFixed;
+    case EPosition::kSticky:
+      return mojom::blink::AIPageContentCssPosition::kSticky;
+  }
+  NOTREACHED();
+}
+
 // Records latency metrics for the given latency and total latency.
 void RecordLatencyMetrics(base::TimeTicks start_time,
                           base::TimeTicks synchronous_execution_start_time,
@@ -2528,6 +2547,7 @@ void AIPageContentAgent::ContentBuilder::AddNodeGeometry(
 
   attributes.geometry = mojom::blink::AIPageContentGeometry::New();
   mojom::blink::AIPageContentGeometry& geometry = *attributes.geometry;
+  geometry.css_position = ConvertCssPosition(object.StyleRef().GetPosition());
 
   // Compute the two fundamental bounding boxes:
   //

@@ -6827,6 +6827,36 @@ TEST_F(AIPageContentAgentTest, InlineBlockFixedDescendantKeepsGeometry) {
   EXPECT_EQ(geometry.outer_bounding_box, geometry.visible_bounding_box);
 }
 
+TEST_F(AIPageContentAgentTest, GeometryIncludesCssPosition) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      R"HTML(
+      <style>
+        body { margin: 0; font: 10px/10px Ahem; }
+        #fixed {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 50px;
+          height: 10px;
+        }
+      </style>
+      <body>
+        <button id="fixed">Action</button>
+      </body>)HTML",
+      url_test_helpers::ToKURL("http://example.com"));
+
+  GetAIPageContentWithActionableElements();
+
+  const auto* fixed_node = FindNodeBySelector("#fixed");
+  ASSERT_TRUE(fixed_node);
+  ASSERT_TRUE(fixed_node->content_attributes);
+  ASSERT_TRUE(fixed_node->content_attributes->geometry);
+  // A fixed control should carry its computed CSS position alongside geometry.
+  EXPECT_EQ(fixed_node->content_attributes->geometry->css_position,
+            mojom::blink::AIPageContentCssPosition::kFixed);
+}
+
 TEST_F(AIPageContentAgentTest, TableTextClippedByScrollerBeforeScroll) {
   frame_test_helpers::LoadHTMLString(
       helper_.LocalMainFrame(),

@@ -710,6 +710,28 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, ForLabel) {
 }
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
+                       GeometryIncludesCssPosition) {
+  ASSERT_TRUE(content::NavigateToURL(web_contents(),
+                                     https_server()->GetURL("/simple.html")));
+  ASSERT_TRUE(content::ExecJs(
+      web_contents()->GetPrimaryMainFrame(),
+      "document.body.innerHTML = "
+      "'<button id=\"fixed\" "
+      "style=\"position: fixed; top: 0; left: 0\">Action</button>';"));
+
+  // Actionable mode populates geometry for interactive elements.
+  LoadData(GetActionableAIPageContentOptions());
+
+  const auto* button = FindFirstNodeWithAttributeType(
+      page_content().root_node(), proto::CONTENT_ATTRIBUTE_FORM_CONTROL);
+  ASSERT_TRUE(button);
+  ASSERT_TRUE(button->content_attributes().has_geometry());
+  // The browser-visible proto should preserve the renderer's computed value.
+  EXPECT_EQ(button->content_attributes().geometry().css_position(),
+            proto::CSS_POSITION_FIXED);
+}
+
+IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
                        ClickabilityReason) {
   LoadPage(https_server()->GetURL("/clickability_reason.html"),
            GetActionableAIPageContentOptions());

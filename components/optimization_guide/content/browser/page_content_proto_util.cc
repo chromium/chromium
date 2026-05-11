@@ -299,6 +299,23 @@ void ConvertRect(const gfx::Rect& mojom_rect,
   proto_rect->set_height(mojom_rect.height());
 }
 
+optimization_guide::proto::CssPosition ConvertCssPosition(
+    blink::mojom::AIPageContentCssPosition mojom_css_position) {
+  switch (mojom_css_position) {
+    case blink::mojom::AIPageContentCssPosition::kStatic:
+      return optimization_guide::proto::CSS_POSITION_STATIC_DEFAULT;
+    case blink::mojom::AIPageContentCssPosition::kRelative:
+      return optimization_guide::proto::CSS_POSITION_RELATIVE;
+    case blink::mojom::AIPageContentCssPosition::kAbsolute:
+      return optimization_guide::proto::CSS_POSITION_ABSOLUTE;
+    case blink::mojom::AIPageContentCssPosition::kFixed:
+      return optimization_guide::proto::CSS_POSITION_FIXED;
+    case blink::mojom::AIPageContentCssPosition::kSticky:
+      return optimization_guide::proto::CSS_POSITION_STICKY;
+  }
+  NOTREACHED();
+}
+
 void ConvertGeometry(const blink::mojom::AIPageContentGeometry& mojom_geometry,
                      optimization_guide::proto::Geometry* proto_geometry) {
   ConvertRect(mojom_geometry.outer_bounding_box,
@@ -308,6 +325,8 @@ void ConvertGeometry(const blink::mojom::AIPageContentGeometry& mojom_geometry,
   for (const gfx::Rect& rect : mojom_geometry.fragment_visible_bounding_boxes) {
     ConvertRect(rect, proto_geometry->add_fragment_visible_bounding_boxes());
   }
+  proto_geometry->set_css_position(
+      ConvertCssPosition(mojom_geometry.css_position));
 }
 
 void ConvertScrollerInfo(
