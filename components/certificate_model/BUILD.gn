@@ -1,0 +1,19 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("certificate_model") {
+  sources = [
+    "x509_certificate_model_base.cc",
+    "x509_certificate_model_base.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/strings",
+    "//crypto",
+    "//net",
+    "//third_party/boringssl",
+    "//ui/base",
+  ]
+}

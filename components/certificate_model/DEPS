@@ -1,0 +1,10 @@
+include_rules = [
+  # keep-sorted start
+  "+components/strings/grit/components_strings.h",
+  "+crypto",
+  "+net/cert",
+  "+third_party/boringssl/src/include/openssl",
+  "+third_party/boringssl/src/pki",
+  "+ui/base/l10n/l10n_util.h",
+  # keep-sorted end
+]

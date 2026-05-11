@@ -4645,31 +4645,12 @@ are declared in tools/grit/grit_args.gni.
         <message name="IDS_CERT_EXT_MS_NTDS_REPLICATION" desc="description of extension Microsoft Domain GUID">
           Microsoft Domain GUID
         </message>
-        <message name="IDS_CERT_EKU_TLS_WEB_SERVER_AUTHENTICATION" desc="description of extended key usage TLS WWW Server Authentication">
-          TLS WWW Server Authentication
-        </message>
-        <message name="IDS_CERT_EKU_TLS_WEB_CLIENT_AUTHENTICATION" desc="description of extended key usage TLS WWW Client Authentication">
-          TLS WWW Client Authentication
-        </message>
-        <message name="IDS_CERT_EKU_OCSP_SIGNING" desc="description of extended key usage Signing OCSP Responses">
-          Signing OCSP Responses
-        </message>
 
         <message name="IDS_CERT_POLICY_ETSI_QEVCP_W" desc="description of ETSI qualified website certificates that offer the Extended Validated level of assurance" translateable="false">
           ETSI QEVCP-w
         </message>
         <message name="IDS_CERT_POLICY_ETSI_QNCP_W" desc="description of ETSI qualified website certificates that offer the Organization Validated or Individual Validated level of assurance" translateable="false">
           ETSI QNCP-w
-        </message>
-
-        <message name="IDS_CERT_QC_ETSI_QCS_QCCOMPLIANCE" desc="description of ETSI qualified certificate statement compliance" translateable="false">
-          ETSI QcCompliance
-        </message>
-        <message name="IDS_CERT_QC_ETSI_QCS_QCTYPE" desc="description of ETSI qualified certificate statement certificate type" translateable="false">
-          ETSI QcType
-        </message>
-        <message name="IDS_CERT_QC_ETSI_QCT_WEB" desc="description of ETSI qualified certificate statement certificate type for web site authentication" translateable="false">
-          ETSI qct-web
         </message>
 
         <message name="IDS_CERT_EKU_MS_INDIVIDUAL_CODE_SIGNING" desc="description of extended key usage Microsoft Individual Code Signing">

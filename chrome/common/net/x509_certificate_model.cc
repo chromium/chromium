@@ -14,12 +14,10 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/strings/string_view_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/url_formatter.h"
-#include "crypto/sha2.h"
 #include "net/base/ip_address.h"
 #include "net/cert/ct_objects_extractor.h"
 #include "net/cert/qwac.h"
@@ -28,7 +26,6 @@
 #include "third_party/boringssl/src/include/openssl/bn.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
-#include "third_party/boringssl/src/include/openssl/nid.h"
 #include "third_party/boringssl/src/include/openssl/rsa.h"
 #include "third_party/boringssl/src/pki/cert_errors.h"
 #include "third_party/boringssl/src/pki/certificate_policies.h"
@@ -38,7 +35,6 @@
 #include "third_party/boringssl/src/pki/parse_name.h"
 #include "third_party/boringssl/src/pki/parse_values.h"
 #include "third_party/boringssl/src/pki/parser.h"
-#include "third_party/boringssl/src/pki/signature_algorithm.h"
 #include "third_party/boringssl/src/pki/verify_signed_data.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -87,81 +83,6 @@ constexpr uint8_t kIssuerAltNameOid[] = {0x55, 0x1d, 0x12};
 //     id-ce-subjectDirectoryAttributes OBJECT IDENTIFIER ::=  { id-ce 9 }
 // In dotted notation: 2.5.29.9
 constexpr uint8_t kSubjectDirectoryAttributesOid[] = {0x55, 0x1d, 0x09};
-
-// From RFC 3447:
-// pkcs-1    OBJECT IDENTIFIER ::= {
-//     iso(1) member-body(2) us(840) rsadsi(113549) pkcs(1) 1
-// }
-// rsaEncryption    OBJECT IDENTIFIER ::= { pkcs-1 1 }
-constexpr uint8_t kPkcs1RsaEncryption[] = {0x2a, 0x86, 0x48, 0x86, 0xf7,
-                                           0x0d, 0x01, 0x01, 0x01};
-// md2WithRSAEncryption       OBJECT IDENTIFIER ::= { pkcs-1 2 }
-constexpr uint8_t kPkcs1Md2WithRsaEncryption[] = {0x2a, 0x86, 0x48, 0x86, 0xf7,
-                                                  0x0d, 0x01, 0x01, 0x02};
-// From RFC 2314: md4WithRSAEncryption OBJECT IDENTIFIER ::= { pkcs-1 3 }
-constexpr uint8_t kPkcs1Md4WithRsaEncryption[] = {0x2a, 0x86, 0x48, 0x86, 0xf7,
-                                                  0x0d, 0x01, 0x01, 0x03};
-// md5WithRSAEncryption       OBJECT IDENTIFIER ::= { pkcs-1 4 }
-constexpr uint8_t kPkcs1Md5WithRsaEncryption[] = {0x2a, 0x86, 0x48, 0x86, 0xf7,
-                                                  0x0d, 0x01, 0x01, 0x04};
-// sha1WithRSAEncryption      OBJECT IDENTIFIER ::= { pkcs-1 5 }
-constexpr uint8_t kPkcs1Sha1WithRsaEncryption[] = {0x2a, 0x86, 0x48, 0x86, 0xf7,
-                                                   0x0d, 0x01, 0x01, 0x05};
-// sha256WithRSAEncryption    OBJECT IDENTIFIER ::= { pkcs-1 11 }
-constexpr uint8_t kPkcs1Sha256WithRsaEncryption[] = {
-    0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x0b};
-// sha384WithRSAEncryption    OBJECT IDENTIFIER ::= { pkcs-1 12 }
-constexpr uint8_t kPkcs1Sha384WithRsaEncryption[] = {
-    0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x0c};
-// sha512WithRSAEncryption    OBJECT IDENTIFIER ::= { pkcs-1 13 }
-constexpr uint8_t kPkcs1Sha512WithRsaEncryption[] = {
-    0x2a, 0x86, 0x48, 0x86, 0xf7, 0x0d, 0x01, 0x01, 0x0d};
-// From RFC 3279:
-//   ansi-X9-62  OBJECT IDENTIFIER ::= {
-//            iso(1) member-body(2) us(840) 10045 }
-//   id-ecSigType OBJECT IDENTIFIER  ::=  {
-//        ansi-X9-62 signatures(4) }
-//   ecdsa-with-SHA1  OBJECT IDENTIFIER ::= {
-//        id-ecSigType 1 }
-constexpr uint8_t kAnsiX962EcdsaWithSha1[] = {0x2a, 0x86, 0x48, 0xce,
-                                              0x3d, 0x04, 0x01};
-// From RFC 5758:
-//    ecdsa-with-SHA256 OBJECT IDENTIFIER ::= { iso(1) member-body(2)
-//            us(840) ansi-X9-62(10045) signatures(4) ecdsa-with-SHA2(3) 2 }
-constexpr uint8_t kAnsiX962EcdsaWithSha256[] = {0x2a, 0x86, 0x48, 0xce,
-                                                0x3d, 0x04, 0x03, 0x02};
-//    ecdsa-with-SHA384 OBJECT IDENTIFIER ::= { iso(1) member-body(2)
-//            us(840) ansi-X9-62(10045) signatures(4) ecdsa-with-SHA2(3) 3 }
-constexpr uint8_t kAnsiX962EcdsaWithSha384[] = {0x2a, 0x86, 0x48, 0xce,
-                                                0x3d, 0x04, 0x03, 0x03};
-//    ecdsa-with-SHA512 OBJECT IDENTIFIER ::= { iso(1) member-body(2)
-//            us(840) ansi-X9-62(10045) signatures(4) ecdsa-with-SHA2(3) 4 }
-constexpr uint8_t kAnsiX962EcdsaWithSha512[] = {0x2a, 0x86, 0x48, 0xce,
-                                                0x3d, 0x04, 0x03, 0x04};
-// From RFC 3279:
-//    ansi-X9-62 OBJECT IDENTIFIER ::=
-//                            { iso(1) member-body(2) us(840) 10045 }
-//    id-public-key-type OBJECT IDENTIFIER  ::= { ansi-X9.62 2 }
-//    id-ecPublicKey OBJECT IDENTIFIER ::= { id-publicKeyType 1 }
-constexpr uint8_t kAnsiX962EcPublicKey[] = {0x2a, 0x86, 0x48, 0xce,
-                                            0x3d, 0x02, 0x01};
-// From RFC 5480:
-//     secp256r1 OBJECT IDENTIFIER ::= {
-//       iso(1) member-body(2) us(840) ansi-X9-62(10045) curves(3)
-//       prime(1) 7 }
-constexpr uint8_t kSecgEcSecp256r1[] = {0x2a, 0x86, 0x48, 0xce,
-                                        0x3d, 0x03, 0x01, 0x07};
-//     secp384r1 OBJECT IDENTIFIER ::= {
-//       iso(1) identified-organization(3) certicom(132) curve(0) 34 }
-constexpr uint8_t kSecgEcSecp384r1[] = {0x2b, 0x81, 0x04, 0x00, 0x22};
-//     secp521r1 OBJECT IDENTIFIER ::= {
-//       iso(1) identified-organization(3) certicom(132) curve(0) 35 }
-constexpr uint8_t kSecgEcSecp512r1[] = {0x2b, 0x81, 0x04, 0x00, 0x23};
-
-// From RFC 9881
-constexpr uint8_t kOidAlgMldsa44[] = {OBJ_ENC_ML_DSA_44};
-constexpr uint8_t kOidAlgMldsa65[] = {OBJ_ENC_ML_DSA_65};
-constexpr uint8_t kOidAlgMldsa87[] = {OBJ_ENC_ML_DSA_87};
 
 // Old Netscape OIDs. Do we still need all these?
 // #define NETSCAPE_OID 0x60, 0x86, 0x48, 0x01, 0x86, 0xf8, 0x42
@@ -292,92 +213,8 @@ constexpr uint8_t kEkuMsSmartCardLogon[] = {0x2b, 0x06, 0x01, 0x04, 0x01,
 constexpr uint8_t kEkuMsKeyRecoveryAgent[] = {0x2b, 0x06, 0x01, 0x04, 0x01,
                                               0x82, 0x37, 0x15, 0x06};
 
-// The certificate viewer may be used to view client certificates, so use the
-// relaxed parsing mode. See crbug.com/41347446 and crbug.com/41357486.
-constexpr auto kNameStringHandling =
-    bssl::X509NameAttribute::PrintableStringHandling::kAsUTF8Hack;
-
-std::string ProcessRawBytesWithSeparators(base::span<const unsigned char> data,
-                                          char hex_separator,
-                                          char line_separator) {
-  // Each input byte creates two output hex characters + a space or newline,
-  // except for the last byte.
-  std::string ret;
-  size_t kMin = 0U;
-
-  if (data.empty()) {
-    return std::string();
-  }
-
-  ret.reserve(std::max(kMin, data.size() * 3 - 1));
-
-  for (size_t i = 0; i < data.size(); ++i) {
-    base::AppendHexEncodedByte(data[i], ret);
-    if (i + 1 < data.size()) {
-      ret.push_back(((i + 1) % 16) ? hex_separator : line_separator);
-    }
-  }
-  return ret;
-}
-
 std::string ProcessRawBytes(base::span<const uint8_t> data) {
   return ProcessRawBytesWithSeparators(data, ' ', '\n');
-}
-
-OptionalStringOrError FindAttributeOfType(
-    bssl::der::Input oid,
-    const bssl::RelativeDistinguishedName& rdn) {
-  // In X.509, RelativeDistinguishedName is a Set, so order has no meaning, and
-  // generally only has one element anyway. Just traverse in encoded order.
-  for (const bssl::X509NameAttribute& name_attribute : rdn) {
-    if (name_attribute.type == oid) {
-      std::string rv;
-      if (!name_attribute.ValueAsStringWithUnsafeOptions(kNameStringHandling,
-                                                         &rv)) {
-        return Error();
-      }
-      // TODO(mattm): do something about newlines (or other control chars)?
-      return rv;
-    }
-  }
-  return NotPresent();
-}
-
-// Returns the value of the most general name of |oid| type.
-// Distinguished Names are specified in least to most specific.
-OptionalStringOrError FindFirstNameOfType(bssl::der::Input oid,
-                                          const bssl::RDNSequence& rdns) {
-  for (const bssl::RelativeDistinguishedName& rdn : rdns) {
-    OptionalStringOrError r = FindAttributeOfType(oid, rdn);
-    if (!std::holds_alternative<NotPresent>(r)) {
-      return r;
-    }
-  }
-  return NotPresent();
-}
-
-// Returns the value of the most specific name of |oid| type.
-// Distinguished Names are specified in least to most specific.
-OptionalStringOrError FindLastNameOfType(bssl::der::Input oid,
-                                         const bssl::RDNSequence& rdns) {
-  for (const bssl::RelativeDistinguishedName& rdn : base::Reversed(rdns)) {
-    OptionalStringOrError r = FindAttributeOfType(oid, rdn);
-    if (!std::holds_alternative<NotPresent>(r)) {
-      return r;
-    }
-  }
-  return NotPresent();
-}
-
-// Returns a string containing the dotted numeric form of |oid| prefixed by
-// "OID.", or an empty string on error.
-std::string OidToNumericString(bssl::der::Input oid) {
-  CBS cbs;
-  CBS_init(&cbs, oid.data(), oid.size());
-  bssl::UniquePtr<char> text(CBS_asn1_oid_to_text(&cbs));
-  if (!text)
-    return std::string();
-  return std::string("OID.") + text.get();
 }
 
 constexpr auto kOidStringMap = base::MakeFixedFlatMap<bssl::der::Input, int>({
@@ -412,39 +249,6 @@ constexpr auto kOidStringMap = base::MakeFixedFlatMap<bssl::der::Input, int>({
     {bssl::der::Input(bssl::kTypeStreetAddressOid),
      IDS_CERT_OID_AVA_STREET_ADDRESS},
     {bssl::der::Input(kTypePostalCode), IDS_CERT_OID_AVA_POSTAL_CODE},
-
-    // Algorithm fields:
-    {bssl::der::Input(kPkcs1RsaEncryption), IDS_CERT_OID_PKCS1_RSA_ENCRYPTION},
-    {bssl::der::Input(kPkcs1Md2WithRsaEncryption),
-     IDS_CERT_OID_PKCS1_MD2_WITH_RSA_ENCRYPTION},
-    {bssl::der::Input(kPkcs1Md4WithRsaEncryption),
-     IDS_CERT_OID_PKCS1_MD4_WITH_RSA_ENCRYPTION},
-    {bssl::der::Input(kPkcs1Md5WithRsaEncryption),
-     IDS_CERT_OID_PKCS1_MD5_WITH_RSA_ENCRYPTION},
-    {bssl::der::Input(kPkcs1Sha1WithRsaEncryption),
-     IDS_CERT_OID_PKCS1_SHA1_WITH_RSA_ENCRYPTION},
-    {bssl::der::Input(kPkcs1Sha256WithRsaEncryption),
-     IDS_CERT_OID_PKCS1_SHA256_WITH_RSA_ENCRYPTION},
-    {bssl::der::Input(kPkcs1Sha384WithRsaEncryption),
-     IDS_CERT_OID_PKCS1_SHA384_WITH_RSA_ENCRYPTION},
-    {bssl::der::Input(kPkcs1Sha512WithRsaEncryption),
-     IDS_CERT_OID_PKCS1_SHA512_WITH_RSA_ENCRYPTION},
-    {bssl::der::Input(kAnsiX962EcdsaWithSha1),
-     IDS_CERT_OID_ANSIX962_ECDSA_SHA1_SIGNATURE},
-    {bssl::der::Input(kAnsiX962EcdsaWithSha256),
-     IDS_CERT_OID_ANSIX962_ECDSA_SHA256_SIGNATURE},
-    {bssl::der::Input(kAnsiX962EcdsaWithSha384),
-     IDS_CERT_OID_ANSIX962_ECDSA_SHA384_SIGNATURE},
-    {bssl::der::Input(kAnsiX962EcdsaWithSha512),
-     IDS_CERT_OID_ANSIX962_ECDSA_SHA512_SIGNATURE},
-    {bssl::der::Input(kAnsiX962EcPublicKey),
-     IDS_CERT_OID_ANSIX962_EC_PUBLIC_KEY},
-    {bssl::der::Input(kSecgEcSecp256r1), IDS_CERT_OID_SECG_EC_SECP256R1},
-    {bssl::der::Input(kSecgEcSecp384r1), IDS_CERT_OID_SECG_EC_SECP384R1},
-    {bssl::der::Input(kSecgEcSecp512r1), IDS_CERT_OID_SECG_EC_SECP521R1},
-    {bssl::der::Input(kOidAlgMldsa44), IDS_CERT_OID_ML_DSA_44},
-    {bssl::der::Input(kOidAlgMldsa65), IDS_CERT_OID_ML_DSA_65},
-    {bssl::der::Input(kOidAlgMldsa87), IDS_CERT_OID_ML_DSA_87},
 
     // Extension fields (including details of extensions):
     {bssl::der::Input(kNetscapeCertificateTypeOid), IDS_CERT_EXT_NS_CERT_TYPE},
@@ -487,35 +291,16 @@ constexpr auto kOidStringMap = base::MakeFixedFlatMap<bssl::der::Input, int>({
     {bssl::der::Input(bssl::kExtKeyUsageOid), IDS_CERT_X509_EXT_KEY_USAGE},
     {bssl::der::Input(bssl::kAuthorityInfoAccessOid),
      IDS_CERT_X509_AUTH_INFO_ACCESS},
-    {bssl::der::Input(bssl::kCpsPointerId),
-     IDS_CERT_PKIX_CPS_POINTER_QUALIFIER},
-    {bssl::der::Input(bssl::kUserNoticeId),
-     IDS_CERT_PKIX_USER_NOTICE_QUALIFIER},
     {bssl::der::Input(net::ct::kEmbeddedSCTOid), IDS_CERT_X509_SCT_LIST},
     {bssl::der::Input(net::kQcStatementsOid), IDS_CERT_QC_STATEMENTS},
 
     // Extended Key Usages:
-    {bssl::der::Input(bssl::kAnyEKU), IDS_CERT_EKU_ANY_EKU},
-    {bssl::der::Input(bssl::kServerAuth),
-     IDS_CERT_EKU_TLS_WEB_SERVER_AUTHENTICATION},
-    {bssl::der::Input(bssl::kClientAuth),
-     IDS_CERT_EKU_TLS_WEB_CLIENT_AUTHENTICATION},
-    {bssl::der::Input(bssl::kCodeSigning), IDS_CERT_EKU_CODE_SIGNING},
-    {bssl::der::Input(bssl::kEmailProtection), IDS_CERT_EKU_EMAIL_PROTECTION},
-    {bssl::der::Input(bssl::kTimeStamping), IDS_CERT_EKU_TIME_STAMPING},
-    {bssl::der::Input(bssl::kOCSPSigning), IDS_CERT_EKU_OCSP_SIGNING},
     {bssl::der::Input(kNetscapeServerGatedCrypto),
      IDS_CERT_EKU_NETSCAPE_INTERNATIONAL_STEP_UP},
 
     // Policies:
     {bssl::der::Input(net::kQevcpwOid), IDS_CERT_POLICY_ETSI_QEVCP_W},
     {bssl::der::Input(net::kQncpwOid), IDS_CERT_POLICY_ETSI_QNCP_W},
-
-    // QcStatements:
-    {bssl::der::Input(net::kEtsiQcsQcComplianceOid),
-     IDS_CERT_QC_ETSI_QCS_QCCOMPLIANCE},
-    {bssl::der::Input(net::kEtsiQcsQcTypeOid), IDS_CERT_QC_ETSI_QCS_QCTYPE},
-    {bssl::der::Input(net::kEtsiQctWebOid), IDS_CERT_QC_ETSI_QCT_WEB},
 
     // Microsoft oids:
     {bssl::der::Input(kMsCertExtCerttype), IDS_CERT_EXT_MS_CERT_TYPE},
@@ -553,6 +338,13 @@ std::optional<std::string> GetOidText(bssl::der::Input oid) {
   const auto i = kOidStringMap.find(oid);
   if (i != kOidStringMap.end())
     return l10n_util::GetStringUTF8(i->second);
+
+  // Fall through to common OIDs shared across platforms.
+  std::optional<int> common_id = GetCommonOidStringId(oid);
+  if (common_id.has_value()) {
+    return l10n_util::GetStringUTF8(*common_id);
+  }
+
   return std::nullopt;
 }
 
@@ -607,20 +399,8 @@ OptionalStringOrError RDNSequenceToStringMultiLine(
   return rv;
 }
 
-std::optional<std::string> ProcessIA5String(bssl::der::Input extension_data) {
-  bssl::der::Input value;
-  bssl::der::Parser parser(extension_data);
-  std::string rv;
-  if (!parser.ReadTag(CBS_ASN1_IA5STRING, &value) || parser.HasMore() ||
-      !bssl::der::ParseIA5String(value, &rv)) {
-    return std::nullopt;
-  }
-  // TODO(mattm): do something about newlines (or other control chars)?
-  return rv;
-}
-
-// Returns a comma-separated string of the strings in |string_map| for the bits
-// in |bitfield| that are set.
+// Returns a comma-separated string of the strings in `string_map` for the bits
+// in `bitfield` that are set.
 // string_map may contain -1 for reserved positions that should not be set.
 std::optional<std::string> ProcessBitField(bssl::der::BitString bitfield,
                                            base::span<const int> string_map,
@@ -638,7 +418,7 @@ std::optional<std::string> ProcessBitField(bssl::der::BitString bitfield,
       rv += l10n_util::GetStringUTF8(string_id);
     }
   }
-  // TODO(mattm): should it be an error if bitfield asserts bits beyond |len|?
+  // TODO(mattm): should it be an error if bitfield asserts bits beyond `len`?
   // Or encode them with some generic string like "bit N set"?
   return rv;
 }
@@ -934,40 +714,6 @@ std::optional<std::string> ProcessAuthorityKeyId(
   return rv;
 }
 
-std::optional<std::string> ProcessUserNoticeDisplayText(
-    CBS_ASN1_TAG tag,
-    bssl::der::Input value) {
-  std::string display_text;
-  switch (tag) {
-    case CBS_ASN1_IA5STRING:
-      if (!bssl::der::ParseIA5String(value, &display_text)) {
-        return std::nullopt;
-      }
-      break;
-    case CBS_ASN1_VISIBLESTRING:
-      if (!bssl::der::ParseVisibleString(value, &display_text)) {
-        return std::nullopt;
-      }
-      break;
-    case CBS_ASN1_BMPSTRING:
-      if (!bssl::der::ParseBmpString(value, &display_text)) {
-        return std::nullopt;
-      }
-      break;
-    case CBS_ASN1_UTF8STRING:
-      if (!base::IsStringUTF8AllowingNoncharacters(
-              base::as_string_view(value))) {
-        return std::nullopt;
-      }
-      display_text = base::as_string_view(value);
-      break;
-    default:
-      return std::nullopt;
-  }
-  // TODO(mattm): do something about newlines (or other control chars)?
-  return display_text;
-}
-
 std::optional<std::string> ProcessUserNotice(bssl::der::Input qualifier) {
   // RFC 5280 section 4.2.1.4:
   //
@@ -1221,15 +967,6 @@ std::optional<std::string> ProcessAuthorityInfoAccess(
   return rv;
 }
 
-std::string ProcessAlgorithmIdentifier(bssl::der::Input algorithm_tlv) {
-  bssl::der::Input oid;
-  bssl::der::Input params;
-  if (!bssl::ParseAlgorithmIdentifier(algorithm_tlv, &oid, &params)) {
-    return std::string();
-  }
-  return GetOidTextOrNumeric(oid);
-}
-
 bool ParseSubjectPublicKeyInfo(bssl::der::Input spki_tlv,
                                bssl::der::Input* algorithm_tlv,
                                bssl::der::Input* subject_public_key_value) {
@@ -1301,156 +1038,27 @@ std::optional<std::string> ProcessQcStatements(
 
 X509CertificateModel::X509CertificateModel(
     bssl::UniquePtr<CRYPTO_BUFFER> cert_data)
-    : cert_data_(std::move(cert_data)) {
-  DCHECK(cert_data_);
-
-  bssl::ParseCertificateOptions options;
-  options.allow_invalid_serial_numbers = true;
-  bssl::CertErrors unused_errors;
-  if (!bssl::ParseCertificate(
-          bssl::der::Input(
-              net::x509_util::CryptoBufferAsSpan(cert_data_.get())),
-          &tbs_certificate_tlv_, &signature_algorithm_tlv_, &signature_value_,
-          &unused_errors) ||
-      !ParseTbsCertificate(tbs_certificate_tlv_, options, &tbs_,
-                           &unused_errors) ||
-      !bssl::ParseName(tbs_.subject_tlv, &subject_rdns_) ||
-      !bssl::ParseName(tbs_.issuer_tlv, &issuer_rdns_)) {
-    return;
-  }
-  if (tbs_.extensions_tlv && !ParseExtensions(tbs_.extensions_tlv.value())) {
-    return;
-  }
-  parsed_successfully_ = true;
-}
+    : X509CertificateModelBase(std::move(cert_data)) {}
 
 X509CertificateModel::X509CertificateModel(X509CertificateModel&& other) =
     default;
 
 X509CertificateModel::~X509CertificateModel() = default;
 
-std::string X509CertificateModel::HashCertSHA256() const {
-  auto hash =
-      crypto::SHA256Hash(net::x509_util::CryptoBufferAsSpan(cert_data_.get()));
-  return base::HexEncodeLower(hash);
-}
-
-std::string X509CertificateModel::GetTitle() const {
-  if (!parsed_successfully_)
-    return HashCertSHA256();
-
-  if (!subject_rdns_.empty()) {
-    OptionalStringOrError common_name = FindLastNameOfType(
-        bssl::der::Input(bssl::kTypeCommonNameOid), subject_rdns_);
-    if (auto* str = std::get_if<std::string>(&common_name); str) {
-      return std::move(*str);
-    }
-    if (std::holds_alternative<Error>(common_name)) {
-      return HashCertSHA256();
-    }
-
-    std::string rv;
-    if (!bssl::ConvertToRFC2253(subject_rdns_, &rv)) {
-      return HashCertSHA256();
-    }
-    return rv;
-  }
-
-  if (subject_alt_names_) {
-    // TODO(mattm): do something about newlines (or other control chars)?
-    if (!subject_alt_names_->dns_names.empty())
-      return std::string(subject_alt_names_->dns_names[0]);
-    if (!subject_alt_names_->rfc822_names.empty())
-      return std::string(subject_alt_names_->rfc822_names[0]);
-  }
-
-  return HashCertSHA256();
-}
-
-std::string X509CertificateModel::GetVersion() const {
-  DCHECK(parsed_successfully_);
-  switch (tbs_.version) {
-    case bssl::CertificateVersion::V1:
-      return "1";
-    case bssl::CertificateVersion::V2:
-      return "2";
-    case bssl::CertificateVersion::V3:
-      return "3";
-  }
-}
-
-std::string X509CertificateModel::GetSerialNumberHexified() const {
-  DCHECK(parsed_successfully_);
-  return ProcessRawBytesWithSeparators(tbs_.serial_number, ':', ':');
-}
-
-bool X509CertificateModel::GetTimes(base::Time* not_before,
-                                    base::Time* not_after) const {
-  DCHECK(parsed_successfully_);
-  return net::GeneralizedTimeToTime(tbs_.validity_not_before, not_before) &&
-         net::GeneralizedTimeToTime(tbs_.validity_not_after, not_after);
-}
-
-OptionalStringOrError X509CertificateModel::GetIssuerCommonName() const {
-  DCHECK(parsed_successfully_);
-  // Return the last (most specific) commonName. This matches NSS
-  // CERT_GetCommonName.
-  return FindLastNameOfType(bssl::der::Input(bssl::kTypeCommonNameOid),
-                            issuer_rdns_);
-}
-
-OptionalStringOrError X509CertificateModel::GetIssuerOrgName() const {
-  DCHECK(parsed_successfully_);
-  // Return the first (most general) orgName. This matches NSS CERT_GetOrgName.
-  return FindFirstNameOfType(bssl::der::Input(bssl::kTypeOrganizationNameOid),
-                             issuer_rdns_);
-}
-
-OptionalStringOrError X509CertificateModel::GetIssuerOrgUnitName() const {
-  DCHECK(parsed_successfully_);
-  // Return the first (most general) orgUnitName. This matches NSS
-  // CERT_GetOrgUnitName.
-  return FindFirstNameOfType(
-      bssl::der::Input(bssl::kTypeOrganizationUnitNameOid), issuer_rdns_);
-}
-
-OptionalStringOrError X509CertificateModel::GetSubjectCommonName() const {
-  DCHECK(parsed_successfully_);
-  // Return the last (most specific) commonName. This matches NSS
-  // CERT_GetCommonName.
-  return FindLastNameOfType(bssl::der::Input(bssl::kTypeCommonNameOid),
-                            subject_rdns_);
-}
-
-OptionalStringOrError X509CertificateModel::GetSubjectOrgName() const {
-  DCHECK(parsed_successfully_);
-  // Return the first (most general) orgName. This matches NSS CERT_GetOrgName.
-  return FindFirstNameOfType(bssl::der::Input(bssl::kTypeOrganizationNameOid),
-                             subject_rdns_);
-}
-
-OptionalStringOrError X509CertificateModel::GetSubjectOrgUnitName() const {
-  DCHECK(parsed_successfully_);
-  // Return the first (most general) orgUnitName. This matches NSS
-  // CERT_GetOrgUnitName.
-  return FindFirstNameOfType(
-      bssl::der::Input(bssl::kTypeOrganizationUnitNameOid), subject_rdns_);
-}
-
 OptionalStringOrError X509CertificateModel::GetIssuerName() const {
-  DCHECK(parsed_successfully_);
+  CHECK(is_valid());
   return RDNSequenceToStringMultiLine(issuer_rdns_);
 }
 
 OptionalStringOrError X509CertificateModel::GetSubjectName() const {
-  DCHECK(parsed_successfully_);
+  CHECK(is_valid());
   return RDNSequenceToStringMultiLine(subject_rdns_);
 }
 
 std::vector<Extension> X509CertificateModel::GetExtensions(
     std::string_view critical_label,
     std::string_view non_critical_label) const {
-  DCHECK(parsed_successfully_);
+  CHECK(is_valid());
   std::vector<Extension> extensions;
   for (const auto& extension : extensions_) {
     Extension processed_extension;
@@ -1460,49 +1068,6 @@ std::vector<Extension> X509CertificateModel::GetExtensions(
     extensions.push_back(processed_extension);
   }
   return extensions;
-}
-
-bool X509CertificateModel::ParseExtensions(
-    const bssl::der::Input& extensions_tlv) {
-  bssl::CertErrors unused_errors;
-  bssl::der::Parser parser(extensions_tlv);
-
-  //    Extensions  ::=  SEQUENCE SIZE (1..MAX) OF Extension
-  bssl::der::Parser extensions_parser;
-  if (!parser.ReadSequence(&extensions_parser))
-    return false;
-
-  // The Extensions SEQUENCE must contains at least 1 element (otherwise it
-  // should have been omitted).
-  if (!extensions_parser.HasMore())
-    return false;
-
-  while (extensions_parser.HasMore()) {
-    bssl::ParsedExtension extension;
-
-    bssl::der::Input extension_tlv;
-    if (!extensions_parser.ReadRawTLV(&extension_tlv))
-      return false;
-
-    if (!ParseExtension(extension_tlv, &extension))
-      return false;
-
-    extensions_.push_back(extension);
-
-    if (extension.oid == bssl::der::Input(bssl::kSubjectAltNameOid)) {
-      subject_alt_names_ =
-          bssl::GeneralNames::Create(extension.value, &unused_errors);
-      if (!subject_alt_names_)
-        return false;
-    }
-  }
-
-  // By definition the input was a single Extensions sequence, so there
-  // shouldn't be unconsumed data.
-  if (parser.HasMore())
-    return false;
-
-  return true;
 }
 
 std::string X509CertificateModel::ProcessExtension(
@@ -1537,7 +1102,7 @@ std::optional<std::string> X509CertificateModel::ProcessExtensionData(
   if (extension.oid == bssl::der::Input(bssl::kSubjectAltNameOid)) {
     // The subjectAltName extension was already parsed in the constructor, use
     // that rather than parse it again.
-    DCHECK(subject_alt_names_);
+    CHECK(subject_alt_names_);
     return ProcessGeneralNames(*subject_alt_names_);
   }
   if (extension.oid == bssl::der::Input(kIssuerAltNameOid)) {
@@ -1579,45 +1144,16 @@ std::optional<std::string> X509CertificateModel::ProcessExtensionData(
   return ProcessRawBytes(extension.value);
 }
 
-std::string X509CertificateModel::ProcessSecAlgorithmSignature() const {
-  DCHECK(parsed_successfully_);
-  return ProcessAlgorithmIdentifier(signature_algorithm_tlv_);
-}
-
-std::string X509CertificateModel::ProcessSecAlgorithmSubjectPublicKey() const {
-  DCHECK(parsed_successfully_);
-
-  bssl::der::Input algorithm_tlv;
-  bssl::der::Input unused_spk_value;
-  if (!ParseSubjectPublicKeyInfo(tbs_.spki_tlv, &algorithm_tlv,
-                                 &unused_spk_value)) {
-    return std::string();
-  }
-
-  return ProcessAlgorithmIdentifier(algorithm_tlv);
-}
-
-std::string X509CertificateModel::ProcessSecAlgorithmSignatureWrap() const {
-  DCHECK(parsed_successfully_);
-  return ProcessAlgorithmIdentifier(tbs_.signature_algorithm_tlv);
-}
-
 std::string X509CertificateModel::ProcessSubjectPublicKeyInfo() const {
-  DCHECK(parsed_successfully_);
+  CHECK(is_valid());
   std::string rv = ProcessRawSubjectPublicKeyInfo(tbs_.spki_tlv);
   if (rv.empty())
     return std::string();
   return rv;
 }
 
-std::string X509CertificateModel::HashSpkiSHA256() const {
-  DCHECK(parsed_successfully_);
-  auto hash = crypto::SHA256Hash(tbs_.spki_tlv);
-  return base::HexEncodeLower(hash);
-}
-
 std::string X509CertificateModel::ProcessRawBitsSignatureWrap() const {
-  DCHECK(parsed_successfully_);
+  CHECK(is_valid());
   return ProcessRawBytes(signature_value_.bytes());
 }
 
@@ -1652,11 +1188,11 @@ std::string ProcessRawSubjectPublicKeyInfo(base::span<const uint8_t> spki_der) {
       RSA* rsa = EVP_PKEY_get0_RSA(public_key.get());
       // EVP_PKEY_get0_RSA can only fail if the type was wrong, which was just
       // checked in the switch.
-      DCHECK(rsa);
+      CHECK(rsa);
       const BIGNUM* modulus = RSA_get0_n(rsa);
       const BIGNUM* public_exponent = RSA_get0_e(rsa);
-      DCHECK(modulus);
-      DCHECK(public_exponent);
+      CHECK(modulus);
+      CHECK(public_exponent);
 
       return l10n_util::GetStringFUTF8(
           IDS_CERT_RSA_PUBLIC_KEY_DUMP_FORMAT,
