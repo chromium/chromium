@@ -104,10 +104,7 @@ namespace {
     return;
   }
 
-  BOOL isGoogleHost = lens::IsGoogleHostURL(URL);
-  BOOL isAim = IsAimURL(URL);
-
-  if (isGoogleHost && isAim) {
+  if (IsAimURL(URL) || IsAimZeroStateURL(URL)) {
     decisionHandler(web::WebStatePolicyDecider::PolicyDecision::Allow());
     return;
   }
