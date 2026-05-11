@@ -147,8 +147,13 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
   // defined instead of using GM3 color variables.
   mixer[kColorNewTabPageCommonInputPlaceholder] = {SkColorSetARGB(0x60, 0x1F, 0x1F, 0x1F)};
   mixer[kColorNewTabPageRealboxNextIconHover] = {kColorSysStateHoverOnSubtle_Light};
-  mixer[kColorNewTabPageComposeboxSubmitButtonBackground] = {
-      SkColorSetRGB(0x34, 0x6B, 0xF1)};
+  if (base::FeatureList::IsEnabled(ntp_features::kEnergyEffect)) {
+    mixer[kColorNewTabPageComposeboxSubmitButtonBackground] = {
+        SkColorSetRGB(0x33, 0x6E, 0xF3)};
+  } else {
+    mixer[kColorNewTabPageComposeboxSubmitButtonBackground] = {
+        SkColorSetRGB(0x34, 0x6B, 0xF1)};
+  }
   mixer[kColorComposeboxBackground] = {SK_ColorWHITE};
   mixer[kColorComposeboxFileChipSpinner] = {kColorSysPrimary_Light};
   mixer[kColorComposeboxFont] = {
