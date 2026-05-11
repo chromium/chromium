@@ -234,8 +234,10 @@ StringView::size_type StringView::rfind(const StringView& value,
   }
   return VisitCharacters(*this, [&](auto chars) {
     if (value_length == 1u) {
-      // SAFETY: length of one means first element valid.
-      return internal::ReverseFind(chars, UNSAFE_TODO(value[0]), start);
+      return internal::ReverseFind(
+          chars,
+          value.Is8Bit() ? value.Span8().front() : value.Span16().front(),
+          start);
     }
     return VisitCharacters(value, [&](auto value_chars) {
       return internal::ReverseFind(chars, value_chars, start);
@@ -297,36 +299,35 @@ String StringView::EncodeForDebugging() const {
 
   StringBuilder builder;
   builder.Append('"');
-  for (size_type index = 0; index < length(); ++index) {
-    // Print shorthands for select cases.
-    // SAFETY: index checked against length in loop body.
-    UChar character = UNSAFE_BUFFERS((*this)[index]);
-    switch (character) {
-      case '\t':
-        builder.Append("\\t");
-        break;
-      case '\n':
-        builder.Append("\\n");
-        break;
-      case '\r':
-        builder.Append("\\r");
-        break;
-      case '"':
-        builder.Append("\\\"");
-        break;
-      case '\\':
-        builder.Append("\\\\");
-        break;
-      default:
-        if (IsAsciiPrintable(character)) {
-          builder.Append(static_cast<char>(character));
-        } else {
-          // Print "\uXXXX" for control or non-ASCII characters.
-          builder.AppendFormat("\\u%04X", character);
-        }
-        break;
+  VisitCharacters(*this, [&](auto chars) {
+    for (auto character : chars) {
+      switch (character) {
+        case '\t':
+          builder.Append("\\t");
+          break;
+        case '\n':
+          builder.Append("\\n");
+          break;
+        case '\r':
+          builder.Append("\\r");
+          break;
+        case '"':
+          builder.Append("\\\"");
+          break;
+        case '\\':
+          builder.Append("\\\\");
+          break;
+        default:
+          if (IsAsciiPrintable(character)) {
+            builder.Append(static_cast<char>(character));
+          } else {
+            // Print "\uXXXX" for control or non-ASCII characters.
+            builder.AppendFormat("\\u%04X", character);
+          }
+          break;
+      }
     }
-  }
+  });
   builder.Append('"');
   return builder.ToString();
 }
@@ -393,8 +394,7 @@ int CodeUnitCompareIgnoringAsciiCase(const StringView& a, const StringView& b) {
 UChar32 StringView::CodePointAt(size_type i) const {
   SECURITY_DCHECK(i < length());
   if (Is8Bit()) {
-    // SAFETY: required from caller, enforced by UNSAFE_BUFFER_USAGE in header.
-    return UNSAFE_BUFFERS((*this)[i]);
+    return Span8()[i];
   }
   return blink::CodePointAt(Span16(), i);
 }
@@ -413,8 +413,7 @@ StringView::size_type StringView::NextCodePointOffset(size_type i) const {
 
 UChar32 StringView::CodePointAtAndNext(size_type& i) const {
   if (Is8Bit()) {
-    // SAFETY: required from caller, enforced by UNSAFE_BUFFER_USAGE in header.
-    return UNSAFE_BUFFERS((*this)[i++]);
+    return Span8()[i++];
   }
   return blink::CodePointAtAndNext(Span16(), i);
 }
