@@ -365,7 +365,7 @@ void Canvas2DResourceProviderSharedImage::OnContextLost() {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &CanvasResourceProviderSharedImage::NotifyGpuContextLostTask,
+          &Canvas2DResourceProviderSharedImage::NotifyGpuContextLostTask,
           CreateWeakPtr()));
   notified_context_lost_ = true;
 }
@@ -652,7 +652,7 @@ void CanvasNon2DResourceProviderSharedImage::OnContextLost() {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &CanvasResourceProviderSharedImage::NotifyGpuContextLostTask,
+          &CanvasNon2DResourceProviderSharedImage::NotifyGpuContextLostTask,
           CreateWeakPtr()));
   notified_context_lost_ = true;
 }
@@ -1972,8 +1972,18 @@ void CanvasResourceProvider::UnacceleratedRasterRecordForCanvas2D(
   skia_canvas_for_canvas_2d_->drawPicture(std::move(last_recording));
 }
 
-void CanvasResourceProviderSharedImage::NotifyGpuContextLostTask(
-    base::WeakPtr<CanvasResourceProviderSharedImage> provider) {
+void Canvas2DResourceProviderSharedImage::NotifyGpuContextLostTask(
+    base::WeakPtr<Canvas2DResourceProviderSharedImage> provider) {
+  if (provider && provider->delegate_) {
+    // Move `provider` as hint that it shouldn't be reused after this point.
+    // The `delegate` owns the provider and can delete it in
+    // `NotifyGpuContextLost()`.
+    std::move(provider)->delegate_->NotifyGpuContextLost();
+  }
+}
+
+void CanvasNon2DResourceProviderSharedImage::NotifyGpuContextLostTask(
+    base::WeakPtr<CanvasNon2DResourceProviderSharedImage> provider) {
   if (provider && provider->delegate_) {
     // Move `provider` as hint that it shouldn't be reused after this point.
     // The `delegate` owns the provider and can delete it in

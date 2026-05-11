@@ -425,9 +425,6 @@ class PLATFORM_EXPORT CanvasResourceProviderSharedImage
 
   virtual scoped_refptr<CanvasResourceSharedImage> NewOrRecycledResource() = 0;
 
-  static void NotifyGpuContextLostTask(
-      base::WeakPtr<CanvasResourceProviderSharedImage>);
-
   // The maximum number of in-flight resources waiting to be used for
   // recycling.
   static constexpr int kMaxRecycledCanvasResources = 3;
@@ -568,6 +565,9 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   gpu::raster::RasterInterface* RasterInterface() const;
 
   base::WeakPtr<Canvas2DResourceProviderSharedImage> CreateWeakPtr();
+
+  static void NotifyGpuContextLostTask(
+      base::WeakPtr<Canvas2DResourceProviderSharedImage>);
 
   CanvasResourceSharedImage* resource() {
     return static_cast<CanvasResourceSharedImage*>(resource_.get());
@@ -769,6 +769,9 @@ class PLATFORM_EXPORT CanvasNon2DResourceProviderSharedImage
   gpu::raster::RasterInterface* RasterInterface() const;
 
   base::WeakPtr<CanvasNon2DResourceProviderSharedImage> CreateWeakPtr();
+
+  static void NotifyGpuContextLostTask(
+      base::WeakPtr<CanvasNon2DResourceProviderSharedImage>);
 
   CanvasResourceSharedImage* resource() {
     return static_cast<CanvasResourceSharedImage*>(resource_.get());
