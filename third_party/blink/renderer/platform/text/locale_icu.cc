@@ -425,7 +425,7 @@ const Vector<String>& LocaleIcu::ShortStandAloneMonthLabels() {
   return short_stand_alone_month_labels_;
 }
 
-const Vector<String>& LocaleIcu::TimeAMPMLabels() {
+const Vector<String>& LocaleIcu::TimeAmPmLabels() {
   InitializeDateTimeFormat();
   return time_ampm_labels_;
 }

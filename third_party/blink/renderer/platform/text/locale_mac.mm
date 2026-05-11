@@ -296,7 +296,7 @@ const Vector<String>& LocaleMac::ShortStandAloneMonthLabels() {
   return short_stand_alone_month_labels_;
 }
 
-const Vector<String>& LocaleMac::TimeAMPMLabels() {
+const Vector<String>& LocaleMac::TimeAmPmLabels() {
   if (!time_ampm_labels_.empty())
     return time_ampm_labels_;
   time_ampm_labels_.reserve(2);

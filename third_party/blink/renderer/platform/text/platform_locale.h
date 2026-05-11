@@ -149,7 +149,7 @@ class PLATFORM_EXPORT Locale {
   virtual const Vector<String>& ShortStandAloneMonthLabels() = 0;
 
   // Returns localized period field(AM/PM) strings.
-  virtual const Vector<String>& TimeAMPMLabels() = 0;
+  virtual const Vector<String>& TimeAmPmLabels() = 0;
 
   // Returns a vector of string of which size is 12. The first item is a
   // localized string of January, and the last item is a localized string of

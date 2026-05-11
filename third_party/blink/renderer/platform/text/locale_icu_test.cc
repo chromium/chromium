@@ -111,9 +111,9 @@ class LocaleIcuTest : public testing::Test {
     return locale->StandAloneMonthLabels()[index];
   }
 
-  Labels TimeAMPMLabels(const char* locale_string) {
+  Labels TimeAmPmLabels(const char* locale_string) {
     auto locale = std::make_unique<LocaleIcu>(locale_string);
-    return Labels(locale->TimeAMPMLabels());
+    return Labels(locale->TimeAmPmLabels());
   }
 
   bool IsRTL(const char* locale_string) {
@@ -233,14 +233,14 @@ TEST_F(LocaleIcuTest, shortMonthLabels) {
             ShortStandAloneMonthLabel("ru_RU", 4).Utf8());
 }
 
-TEST_F(LocaleIcuTest, timeAMPMLabels) {
-  EXPECT_EQ(LabelsFromTwoElements("AM", "PM"), TimeAMPMLabels("en_US"));
-  EXPECT_EQ(LabelsFromTwoElements("AM", "PM"), TimeAMPMLabels("fr"));
+TEST_F(LocaleIcuTest, TimeAmPmLabels) {
+  EXPECT_EQ(LabelsFromTwoElements("AM", "PM"), TimeAmPmLabels("en_US"));
+  EXPECT_EQ(LabelsFromTwoElements("AM", "PM"), TimeAmPmLabels("fr"));
 
   UChar ja_am[3] = {0x5348, 0x524d, 0};
   UChar ja_pm[3] = {0x5348, 0x5F8C, 0};
   EXPECT_EQ(LabelsFromTwoElements(String(ja_am), String(ja_pm)),
-            TimeAMPMLabels("ja"));
+            TimeAmPmLabels("ja"));
 }
 
 static String TestDecimalSeparator(const AtomicString& locale_identifier) {

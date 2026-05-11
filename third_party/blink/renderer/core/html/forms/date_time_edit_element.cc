@@ -271,7 +271,7 @@ void DateTimeEditBuilder::VisitField(DateTimeFormat::FieldType field_type,
     case DateTimeFormat::kFieldTypePeriodFlexible: {
       DateTimeFieldElement* field =
           MakeGarbageCollected<DateTimeAMPMFieldElement>(
-              document, EditElement(), parameters_.locale.TimeAMPMLabels());
+              document, EditElement(), parameters_.locale.TimeAmPmLabels());
       EditElement().AddField(field);
       return;
     }

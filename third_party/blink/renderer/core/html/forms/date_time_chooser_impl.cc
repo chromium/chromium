@@ -191,7 +191,7 @@ void DateTimeChooserImpl::WriteDocument(SegmentedBuffer& data) {
   AddProperty("weekStartDay", locale_->FirstDayOfWeek(), data);
   AddProperty("shortMonthLabels", locale_->ShortMonthLabels(), data);
   AddProperty("dayLabels", locale_->WeekDayShortLabels(), data);
-  AddProperty("ampmLabels", locale_->TimeAMPMLabels(), data);
+  AddProperty("ampmLabels", locale_->TimeAmPmLabels(), data);
   AddProperty("isLocaleRTL", locale_->IsRTL(), data);
   AddProperty("isRTL", parameters_->is_anchor_element_rtl, data);
 #if BUILDFLAG(IS_MAC)

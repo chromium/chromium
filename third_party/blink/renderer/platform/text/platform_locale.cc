@@ -134,7 +134,7 @@ void DateTimeStringBuilder::VisitField(DateTimeFormat::FieldType field_type,
       return;
     case DateTimeFormat::kFieldTypePeriod:
       builder_.Append(
-          localizer_.TimeAMPMLabels()[(date_.Hour() >= 12 ? 1 : 0)]);
+          localizer_.TimeAmPmLabels()[(date_.Hour() >= 12 ? 1 : 0)]);
       return;
     case DateTimeFormat::kFieldTypeHour12: {
       int hour12 = date_.Hour() % 12;

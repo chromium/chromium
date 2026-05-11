@@ -183,9 +183,9 @@ class LocaleMacTest : public testing::Test {
     return locale->ShortStandAloneMonthLabels()[index];
   }
 
-  String TimeAMPMLabel(const String& locale_string, unsigned index) {
+  String TimeAmPmLabel(const String& locale_string, unsigned index) {
     std::unique_ptr<LocaleMac> locale = LocaleMac::Create(locale_string);
-    return locale->TimeAMPMLabels()[index];
+    return locale->TimeAmPmLabels()[index];
   }
 
   String DecimalSeparator(const String& locale_string) {
@@ -356,15 +356,15 @@ TEST_F(LocaleMacTest, shortMonthLabels) {
   //  "\xD0\x9C\xD0\xB0\xD1\x80\xD1\x82" "\xD0\x9C\xD0\xB0\xD0\xB9" on 10.8
 }
 
-TEST_F(LocaleMacTest, timeAMPMLabels) {
-  EXPECT_EQ("AM", TimeAMPMLabel("en_US", 0));
-  EXPECT_EQ("PM", TimeAMPMLabel("en_US", 1));
+TEST_F(LocaleMacTest, TimeAmPmLabels) {
+  EXPECT_EQ("AM", TimeAmPmLabel("en_US", 0));
+  EXPECT_EQ("PM", TimeAmPmLabel("en_US", 1));
 
-  EXPECT_EQ("AM", TimeAMPMLabel("fr_FR", 0));
-  EXPECT_EQ("PM", TimeAMPMLabel("fr_FR", 1));
+  EXPECT_EQ("AM", TimeAmPmLabel("fr_FR", 0));
+  EXPECT_EQ("PM", TimeAmPmLabel("fr_FR", 1));
 
-  EXPECT_EQ("\xE5\x8D\x88\xE5\x89\x8D", TimeAMPMLabel("ja_JP", 0).Utf8());
-  EXPECT_EQ("\xE5\x8D\x88\xE5\xBE\x8C", TimeAMPMLabel("ja_JP", 1).Utf8());
+  EXPECT_EQ("\xE5\x8D\x88\xE5\x89\x8D", TimeAmPmLabel("ja_JP", 0).Utf8());
+  EXPECT_EQ("\xE5\x8D\x88\xE5\xBE\x8C", TimeAmPmLabel("ja_JP", 1).Utf8());
 }
 
 TEST_F(LocaleMacTest, decimalSeparator) {

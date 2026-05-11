@@ -66,7 +66,7 @@ class PLATFORM_EXPORT LocaleIcu : public Locale {
   const Vector<String>& ShortMonthLabels() override;
   const Vector<String>& StandAloneMonthLabels() override;
   const Vector<String>& ShortStandAloneMonthLabels() override;
-  const Vector<String>& TimeAMPMLabels() override;
+  const Vector<String>& TimeAmPmLabels() override;
 
  private:
   String DecimalSymbol(UNumberFormatSymbol);

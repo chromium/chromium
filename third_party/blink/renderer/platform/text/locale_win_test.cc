@@ -146,10 +146,10 @@ class LocaleWinTest : public testing::Test {
     return locale->ShortMonthLabels()[index];
   }
 
-  String TimeAMPMLabel(LCID lcid, unsigned index) {
+  String TimeAmPmLabel(LCID lcid, unsigned index) {
     std::unique_ptr<LocaleWin> locale =
         LocaleWin::CreateForTesting(lcid, true /* defaultsForLocale */);
-    return locale->TimeAMPMLabels()[index];
+    return locale->TimeAmPmLabels()[index];
   }
 
   String DecimalSeparator(LCID lcid) {
@@ -249,15 +249,15 @@ TEST_F(LocaleWinTest, shortMonthLabels) {
   EXPECT_EQ("12", ShortMonthLabel(kJapaneseJP, 11));
 }
 
-TEST_F(LocaleWinTest, timeAMPMLabels) {
-  EXPECT_EQ("AM", TimeAMPMLabel(kEnglishUS, 0));
-  EXPECT_EQ("PM", TimeAMPMLabel(kEnglishUS, 1));
+TEST_F(LocaleWinTest, TimeAmPmLabels) {
+  EXPECT_EQ("AM", TimeAmPmLabel(kEnglishUS, 0));
+  EXPECT_EQ("PM", TimeAmPmLabel(kEnglishUS, 1));
 
-  EXPECT_EQ("", TimeAMPMLabel(kFrenchFR, 0).Utf8());
-  EXPECT_EQ("", TimeAMPMLabel(kFrenchFR, 1).Utf8());
+  EXPECT_EQ("", TimeAmPmLabel(kFrenchFR, 0).Utf8());
+  EXPECT_EQ("", TimeAmPmLabel(kFrenchFR, 1).Utf8());
 
-  EXPECT_EQ("\xE5\x8D\x88\xE5\x89\x8D", TimeAMPMLabel(kJapaneseJP, 0).Utf8());
-  EXPECT_EQ("\xE5\x8D\x88\xE5\xBE\x8C", TimeAMPMLabel(kJapaneseJP, 1).Utf8());
+  EXPECT_EQ("\xE5\x8D\x88\xE5\x89\x8D", TimeAmPmLabel(kJapaneseJP, 0).Utf8());
+  EXPECT_EQ("\xE5\x8D\x88\xE5\xBE\x8C", TimeAmPmLabel(kJapaneseJP, 1).Utf8());
 }
 
 TEST_F(LocaleWinTest, decimalSeparator) {
