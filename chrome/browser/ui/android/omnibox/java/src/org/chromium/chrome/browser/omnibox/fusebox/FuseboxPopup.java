@@ -124,7 +124,11 @@ class FuseboxPopup {
         mToolsDivider = contentView.findViewById(R.id.fusebox_tools_divider);
         mToolsHeader = contentView.findViewById(R.id.fusebox_tools_header);
 
-        initializeItem(mAddCurrentTab, R.string.fusebox_add_current_tab, 0, 0);
+        initializeItem(
+                mAddCurrentTab,
+                isBottomSheet ? R.string.fusebox_current_tab : R.string.fusebox_add_current_tab,
+                0,
+                0);
         initializeItem(
                 mTabButton,
                 R.string.omnibox_navattach_tabs,

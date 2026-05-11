@@ -170,6 +170,9 @@
       <message name="IDS_FUSEBOX_ADD_CURRENT_TAB" desc="The text displayed in the omnibox attachments popup. When clicked - adds the curernt tab as context." formatter_data="android_java">
         Add current tab
       </message>
+      <message name="IDS_FUSEBOX_CURRENT_TAB" desc="The text displayed in the omnibox attachments popup for the Current tab option." formatter_data="android_java">
+        Current tab
+      </message>
       <message name="IDS_FUSEBOX_UPLOAD_FAILED" desc="The text displayed in a snackbar when an attachment fails to upload" formatter_data="android_java">
         Unable to add attachments
       </message>
