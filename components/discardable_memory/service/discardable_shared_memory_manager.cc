@@ -12,9 +12,13 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/discardable_memory.h"
 #include "base/memory/shared_memory_tracker.h"
+#include "base/memory_coordinator/memory_consumer.h"
+#include "base/memory_coordinator/memory_coordinator_features.h"
+#include "base/memory_coordinator/utils.h"
 #include "base/numerics/safe_math.h"
 #include "base/process/memory.h"
 #include "base/strings/string_number_conversions.h"
@@ -238,6 +242,9 @@ DiscardableSharedMemoryManager::DiscardableSharedMemoryManager()
           FROM_HERE,
           base::MemoryPressureListenerTag::kDiscardableSharedMemoryManager,
           this),
+      memory_limit_(base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)
+                        ? GetMemoryLimit()
+                        : base::MemoryConsumer::kDefaultMemoryLimit),
       memory_pressure_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::WithBaseSyncPrimitives()})) {
   DCHECK(!g_instance)
@@ -472,17 +479,18 @@ void DiscardableSharedMemoryManager::AllocateLockedDiscardableSharedMemory(
   // Memory usage must be reduced to prevent the addition of |size| from
   // taking usage above the max bytes. Usage should be reduced to 0 in
   // cases where |size| is greater than the max bytes.
-  size_t max_bytes_before_allocation = 0;
+  size_t required_max_bytes = 0;
+  size_t effective_max_bytes = GetEffectiveMaxBytes();
   // Note: the actual mapped size can be larger than requested and cause
   // |bytes_allocated_| to temporarily be larger than |max_bytes_|. The
   // error is minimized by incrementing |bytes_allocated_| with the actual
   // mapped size rather than |size| below.
-  if (size < max_bytes_) {
-    max_bytes_before_allocation = max_bytes_ - size;
+  if (size < effective_max_bytes) {
+    required_max_bytes = effective_max_bytes - size;
   }
 
-  if (bytes_allocated_ > max_bytes_before_allocation) {
-    ReduceMemoryUsageUntilWithinBytes(max_bytes_before_allocation);
+  if (bytes_allocated_ > required_max_bytes) {
+    ReduceMemoryUsageUntilWithinBytes(required_max_bytes);
   }
 
   std::unique_ptr<base::DiscardableSharedMemory> memory(
@@ -511,7 +519,7 @@ void DiscardableSharedMemoryManager::AllocateLockedDiscardableSharedMemory(
   segments_.push_back(segment.get());
   std::push_heap(segments_.begin(), segments_.end(), CompareMemoryUsageTime);
 
-  if (bytes_allocated_ > max_bytes_) {
+  if (bytes_allocated_ > effective_max_bytes) {
     ScheduleEnforceMemoryPolicy();
   }
 }
@@ -542,12 +550,13 @@ void DiscardableSharedMemoryManager::DeletedDiscardableSharedMemory(
 void DiscardableSharedMemoryManager::ReduceMemoryUsageUntilWithinMaxBytes() {
   lock_.AssertAcquired();
 
-  if (bytes_allocated_ <= max_bytes_) {
+  size_t effective_max_bytes = GetEffectiveMaxBytes();
+  if (bytes_allocated_ <= effective_max_bytes) {
     return;
   }
 
-  ReduceMemoryUsageUntilWithinBytes(max_bytes_);
-  if (bytes_allocated_ > max_bytes_) {
+  ReduceMemoryUsageUntilWithinBytes(effective_max_bytes);
+  if (bytes_allocated_ > effective_max_bytes) {
     ScheduleEnforceMemoryPolicy();
   }
 }
@@ -626,6 +635,11 @@ void DiscardableSharedMemoryManager::BytesAllocatedChanged(
   total_discardable_memory.Set(base::NumberToString(new_bytes_allocated));
 }
 
+size_t DiscardableSharedMemoryManager::GetEffectiveMaxBytes() const {
+  lock_.AssertAcquired();
+  return base::ScaleByMemoryLimit(max_bytes_, memory_limit_);
+}
+
 void DiscardableSharedMemoryManager::ScheduleEnforceMemoryPolicy() {
   lock_.AssertAcquired();
 
@@ -651,10 +665,6 @@ void DiscardableSharedMemoryManager::InvalidateMojoThreadWeakPtrs(
 
 void DiscardableSharedMemoryManager::OnMemoryPressure(
     base::MemoryPressureLevel memory_pressure_level) {
-  if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_NONE) {
-    return;
-  }
-
   memory_pressure_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -676,6 +686,22 @@ void DiscardableSharedMemoryManager::HandleMemoryPressureOnSequence(
 
   base::AutoLock lock(lock_);
 
+  if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
+    switch (memory_pressure_level) {
+      case base::MEMORY_PRESSURE_LEVEL_NONE:
+        memory_limit_ = base::MemoryConsumer::kDefaultMemoryLimit;
+        break;
+      case base::MEMORY_PRESSURE_LEVEL_MODERATE:
+        memory_limit_ = base::kModerateMemoryPressureThreshold;
+        break;
+      case base::MEMORY_PRESSURE_LEVEL_CRITICAL:
+        memory_limit_ = base::kCriticalMemoryPressureThreshold;
+        break;
+    }
+    ReduceMemoryUsageUntilWithinMaxBytes();
+    return;
+  }
+
   switch (memory_pressure_level) {
     case base::MEMORY_PRESSURE_LEVEL_NONE:
       break;
@@ -688,6 +714,17 @@ void DiscardableSharedMemoryManager::HandleMemoryPressureOnSequence(
       ReduceMemoryUsageUntilWithinBytes(0);
       break;
   }
+}
+
+void DiscardableSharedMemoryManager::NotifyMemoryPressureAsyncForTesting(
+    base::MemoryPressureLevel level,
+    base::OnceClosure closure) {
+  memory_pressure_task_runner_->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(
+          &DiscardableSharedMemoryManager::HandleMemoryPressureOnSequence,
+          base::Unretained(this), level),
+      std::move(closure));
 }
 
 }  // namespace discardable_memory

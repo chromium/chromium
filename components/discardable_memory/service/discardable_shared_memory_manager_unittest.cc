@@ -12,6 +12,9 @@
 
 #include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/unsafe_shared_memory_region.h"
+#include "base/memory_coordinator/memory_coordinator_features.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/simple_thread.h"
 #include "base/time/time.h"
@@ -34,23 +37,13 @@ class TestDiscardableSharedMemoryManager
     return enforce_memory_policy_pending_;
   }
 
-  size_t on_memory_pressure_call_count() const {
-    return on_memory_pressure_call_count_;
-  }
-
  private:
   // Overriden from DiscardableSharedMemoryManager:
-  void OnMemoryPressure(
-      base::MemoryPressureLevel memory_pressure_level) override {
-    DiscardableSharedMemoryManager::OnMemoryPressure(memory_pressure_level);
-    ++on_memory_pressure_call_count_;
-  }
   void ScheduleEnforceMemoryPolicy() override {
     enforce_memory_policy_pending_ = true;
   }
 
   bool enforce_memory_policy_pending_ = false;
-  size_t on_memory_pressure_call_count_ = 0;
 };
 
 class DiscardableSharedMemoryManagerTest : public testing::Test {
@@ -256,20 +249,13 @@ TEST_F(DiscardableSharedMemoryManagerTest, OnModerateMemoryPressure) {
   // Manager time must be after all segment unlock times for eviction to work.
   task_environment_.FastForwardBy(base::Seconds(1));
 
-  base::MemoryPressureListenerRegistry::NotifyMemoryPressure(
-      base::MEMORY_PRESSURE_LEVEL_MODERATE);
-  if (manager_->memory_pressure_level() !=
-      base::MEMORY_PRESSURE_LEVEL_MODERATE) {
-    GTEST_SKIP() << "Moderate memory pressure notifications are suppressed for "
-                    "kDiscardableSharedMemoryManager.";
-  }
-
-  task_environment_.RunUntilIdle();
+  manager_->NotifyMemoryPressureAsyncForTesting(
+      base::MEMORY_PRESSURE_LEVEL_MODERATE, task_environment_.QuitClosure());
+  task_environment_.RunUntilQuit();
 
   EXPECT_EQ(memory2.mapped_size(), manager_->GetBytesAllocated());
   EXPECT_FALSE(memory1.IsMemoryResident());
   EXPECT_TRUE(memory2.IsMemoryResident());
-  EXPECT_EQ(1u, manager_->on_memory_pressure_call_count());
 }
 
 TEST_F(DiscardableSharedMemoryManagerTest, OnCriticalMemoryPressure) {
@@ -298,20 +284,13 @@ TEST_F(DiscardableSharedMemoryManagerTest, OnCriticalMemoryPressure) {
   // Manager time must be after all segment unlock times for eviction to work.
   task_environment_.FastForwardBy(base::Seconds(1));
 
-  base::MemoryPressureListenerRegistry::NotifyMemoryPressure(
-      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
-  if (manager_->memory_pressure_level() !=
-      base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
-    GTEST_SKIP() << "Critical memory pressure notifications are suppressed for "
-                    "kDiscardableSharedMemoryManager.";
-  }
-
-  task_environment_.RunUntilIdle();
+  manager_->NotifyMemoryPressureAsyncForTesting(
+      base::MEMORY_PRESSURE_LEVEL_CRITICAL, task_environment_.QuitClosure());
+  task_environment_.RunUntilQuit();
 
   EXPECT_EQ(0u, manager_->GetBytesAllocated());
   EXPECT_FALSE(memory1.IsMemoryResident());
   EXPECT_FALSE(memory2.IsMemoryResident());
-  EXPECT_EQ(1u, manager_->on_memory_pressure_call_count());
 }
 
 class DiscardableSharedMemoryManagerScheduleEnforceMemoryPolicyTest
@@ -356,6 +335,61 @@ TEST_F(DiscardableSharedMemoryManagerScheduleEnforceMemoryPolicyTest,
   base::DelegateSimpleThread thread(&runner, "max_bytes_setter");
   thread.Start();
   thread.Join();
+}
+
+TEST_F(DiscardableSharedMemoryManagerTest, OnStatefulMemoryPressure) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(base::kStatefulMemoryPressure);
+
+  constexpr int kDataSize = 1024;
+
+  base::UnsafeSharedMemoryRegion shared_region1;
+  manager_->AllocateLockedDiscardableSharedMemoryForClient(
+      kInvalidUniqueID, kDataSize, 1, &shared_region1);
+  ASSERT_TRUE(shared_region1.IsValid());
+  base::DiscardableSharedMemory memory1(std::move(shared_region1));
+  ASSERT_TRUE(memory1.Map(kDataSize));
+
+  base::UnsafeSharedMemoryRegion shared_region2;
+  manager_->AllocateLockedDiscardableSharedMemoryForClient(
+      kInvalidUniqueID, kDataSize, 2, &shared_region2);
+  ASSERT_TRUE(shared_region2.IsValid());
+  base::DiscardableSharedMemory memory2(std::move(shared_region2));
+  ASSERT_TRUE(memory2.Map(kDataSize));
+
+  // Allow two segments to be resident.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  manager_->SetMaxBytes(memory1.mapped_size() + memory2.mapped_size());
+  task_environment_.FastForwardBy(base::Seconds(1));
+  memory1.Unlock(0, 0);
+  task_environment_.FastForwardBy(base::Seconds(1));
+  memory2.Unlock(0, 0);
+  // Manager time must be after all segment unlock times for eviction to work.
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  // Moderate pressure should reduce effective limit to 50% (one segment).
+  manager_->NotifyMemoryPressureAsyncForTesting(
+      base::MEMORY_PRESSURE_LEVEL_MODERATE, task_environment_.QuitClosure());
+  task_environment_.RunUntilQuit();
+
+  EXPECT_EQ(memory2.mapped_size(), manager_->GetBytesAllocated());
+  EXPECT_FALSE(memory1.IsMemoryResident());
+  EXPECT_TRUE(memory2.IsMemoryResident());
+
+  // Relieving pressure should restore the limit, but not re-allocate memory.
+  manager_->NotifyMemoryPressureAsyncForTesting(
+      base::MEMORY_PRESSURE_LEVEL_NONE, task_environment_.QuitClosure());
+  task_environment_.RunUntilQuit();
+
+  EXPECT_EQ(memory2.mapped_size(), manager_->GetBytesAllocated());
+
+  // Critical pressure should reduce effective limit to 0% (zero segments).
+  manager_->NotifyMemoryPressureAsyncForTesting(
+      base::MEMORY_PRESSURE_LEVEL_CRITICAL, task_environment_.QuitClosure());
+  task_environment_.RunUntilQuit();
+
+  EXPECT_EQ(0u, manager_->GetBytesAllocated());
+  EXPECT_FALSE(memory2.IsMemoryResident());
 }
 
 }  // namespace

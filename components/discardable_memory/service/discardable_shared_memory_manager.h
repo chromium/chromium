@@ -99,7 +99,7 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryManager
   // cause memory usage to be reduced if currently above |bytes|.
   void SetMaxBytes(size_t bytes);
 
-  // Reduce memory usage if above current maximum bytes.
+  // Reduce memory usage if above current effective maximum bytes.
   void EnforceMemoryPolicy();
 
   // Returns bytes of allocated discardable memory.
@@ -108,6 +108,9 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryManager
   void ReleaseFreeMemory() override {
     // Do nothing since we already subscribe to memory pressure notifications.
   }
+
+  void NotifyMemoryPressureAsyncForTesting(base::MemoryPressureLevel level,
+                                           base::OnceClosure closure);
 
  private:
   friend TestDiscardableSharedMemoryManager;
@@ -151,6 +154,8 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryManager
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
   void BytesAllocatedChanged(size_t new_bytes_allocated) const;
 
+  size_t GetEffectiveMaxBytes() const EXCLUSIVE_LOCKS_REQUIRED(lock_);
+
   virtual void ScheduleEnforceMemoryPolicy() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Invalidate weak pointers for the mojo thread.
@@ -193,13 +198,17 @@ class DISCARDABLE_MEMORY_EXPORT DiscardableSharedMemoryManager
   base::MemoryPressureListenerRegistration
       memory_pressure_listener_registration_;
 
+  // The current memory limit. This has to be cached since GetMemoryLimit() is
+  // not thread-safe.
+  int memory_limit_ GUARDED_BY(lock_);
+
   // A task runner to create `memory_pressure_listener_` on worker threads so
   // that `OnMemoryPressure` notification happens on the worker thread too.
   scoped_refptr<base::SequencedTaskRunner> memory_pressure_task_runner_;
 
   base::WeakPtrFactory<DiscardableSharedMemoryManager> weak_ptr_factory_{this};
 
-  // WeakPtrFractory for generating weak pointers used in the mojo thread.
+  // WeakPtrFactory for generating weak pointers used in the mojo thread.
   base::WeakPtrFactory<DiscardableSharedMemoryManager>
       mojo_thread_weak_ptr_factory_{this};
 };
