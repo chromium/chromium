@@ -423,6 +423,14 @@
     "expiry_milestone": 150
   },
   {
+    "name": "android-vertical-tabs",
+    "owners": [
+      "agazal@google.com",
+      "clank-app-team@google.com"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "android-window-management-web-api",
     "owners": [
       "renkens@google.com",

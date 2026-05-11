@@ -7333,6 +7333,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidSetupListDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidSetupList)},
 
+    {"android-vertical-tabs", flag_descriptions::kAndroidVerticalTabsName,
+     flag_descriptions::kAndroidVerticalTabsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidVerticalTabs)},
+
     {"price-insights", commerce::flag_descriptions::kPriceInsightsName,
      commerce::flag_descriptions::kPriceInsightsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(commerce::kPriceInsights)},
@@ -11950,7 +11954,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLensSearchReinvocationAffordanceDescription,
      kOsDesktop,
      FEATURE_VALUE_TYPE(lens::features::kLensSearchReinvocationAffordance)},
-
 
     {"lens-updated-feedback-entrypoint",
      flag_descriptions::kLensUpdatedFeedbackEntrypointName,

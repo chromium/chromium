@@ -11599,6 +11599,7 @@ from previous Chrome versions.
   <int value="-824243751"
       label="FRESignInAlternativeSecondaryButtonText:enabled"/>
   <int value="-824199802" label="ContextualSearchSimplifiedServer:enabled"/>
+  <int value="-824054832" label="AndroidVerticalTabs:disabled"/>
   <int value="-823394398" label="TargetEmbeddingLookalikes:enabled"/>
   <int value="-823165021" label="MaterialDesignUserMenu:enabled"/>
   <int value="-822712881"
@@ -14962,6 +14963,7 @@ from previous Chrome versions.
   <int value="291968978" label="HomepagePromoCard:enabled"/>
   <int value="291998717" label="AccessibilitySnapshotStressTests:disabled"/>
   <int value="292058664" label="OpenDownloadDialog:disabled"/>
+  <int value="292150395" label="AndroidVerticalTabs:enabled"/>
   <int value="292560715" label="ViewsCastDialog:disabled"/>
   <int value="292731264" label="PasswordChangeInSettings:disabled"/>
   <int value="292842744"

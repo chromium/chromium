@@ -60,6 +60,7 @@ BASE_DECLARE_FEATURE(kAndroidThemeModule);
 BASE_DECLARE_FEATURE(kAndroidThemeResourceProvider);
 BASE_DECLARE_FEATURE(kAndroidToolbarScrollAblation);
 BASE_DECLARE_FEATURE(kAndroidUseAdminsForEnterpriseInfo);
+BASE_DECLARE_FEATURE(kAndroidVerticalTabs);
 BASE_DECLARE_FEATURE(kAndroidWindowPopupCustomTabUi);
 BASE_DECLARE_FEATURE(kAndroidWindowPopupLargeScreen);
 BASE_DECLARE_FEATURE(kAndroidWindowPopupPredictFinalBounds);

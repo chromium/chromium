@@ -1280,6 +1280,10 @@ inline constexpr char kAndroidSetupListName[] = "Android Setup List";
 inline constexpr char kAndroidSetupListDescription[] =
     "Enables the Android Setup List feature.";
 
+inline constexpr char kAndroidVerticalTabsName[] = "Android Vertical Tabs";
+inline constexpr char kAndroidVerticalTabsDescription[] =
+    "Enables the Vertical Tabs feature on Android.";
+
 inline constexpr char kCCTNavigationMetricsName[] = "CCT Navigation Metrics";
 inline constexpr char kCCTNavigationMetricsDescription[] =
     "Enables detailed navigation-related metrics in CustomTabsCallback.";

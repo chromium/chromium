@@ -214,6 +214,7 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_TIPS_NOTIFICATIONS_V2 = "AndroidTipsNotificationsV2";
     public static final String ANDROID_USE_ADMINS_FOR_ENTERPRISE_INFO =
             "AndroidUseAdminsForEnterpriseInfo";
+    public static final String ANDROID_VERTICAL_TABS = "AndroidVerticalTabs";
     public static final String ANDROID_WINDOW_MANAGEMENT_WEB_API = "AndroidWindowManagementWebApi";
     public static final String ANDROID_WINDOW_POPUP_CUSTOM_TAB_UI = "AndroidWindowPopupCustomTabUi";
     public static final String ANDROID_WINDOW_POPUP_LARGE_SCREEN = "AndroidWindowPopupLargeScreen";
@@ -799,6 +800,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ANDROID_THEME_RESOURCE_PROVIDER, false, /* defaultValueInTests= */ false);
     public static final CachedFlag sAndroidUseAdminsForEnterpriseInfo =
             newCachedFlag(ANDROID_USE_ADMINS_FOR_ENTERPRISE_INFO, true);
+    public static final CachedFlag sAndroidVerticalTabs =
+            newCachedFlag(ANDROID_VERTICAL_TABS, false);
     public static final CachedFlag sAndroidWindowManagementWebApi =
             newCachedFlag(
                     ANDROID_WINDOW_MANAGEMENT_WEB_API,
@@ -1254,6 +1257,7 @@ public abstract class ChromeFeatureList {
                     sAndroidThemeModule,
                     sAndroidThemeResourceProvider,
                     sAndroidUseAdminsForEnterpriseInfo,
+                    sAndroidVerticalTabs,
                     sAndroidWindowManagementWebApi,
                     sAndroidWindowPopupCustomTabUi,
                     sAndroidWindowPopupLargeScreen,
